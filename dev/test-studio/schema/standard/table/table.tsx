@@ -7,6 +7,11 @@ export default defineType({
   title: 'Table',
   type: 'document',
   fields: [
+    {
+      name: 'title',
+      type: 'string',
+      title: 'Title',
+    },
     defineTable([
       {type: 'string', name: 'stringCell', title: 'String'},
       {type: 'slug', name: 'slugCell', title: 'Slug'},

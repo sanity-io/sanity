@@ -34,7 +34,6 @@ const RowCellContainer = styled.td<{theme: Theme}>((props) => {
     border-right: 1px solid ${theme.color.border};
     position: relative;
     background: ${theme.color.bg};
-    vertical-align: bottom;
     min-width: 180px;
     max-width: 300px;
 
@@ -52,6 +51,15 @@ const RowCellContainer = styled.td<{theme: Theme}>((props) => {
     &:first-child {
       border-left: 1px solid ${theme.color.border};
     }
+  `
+})
+
+const CellContent = styled.div<{theme: Theme}>((props) => {
+  return css`
+    min-height: 80px;
+    display: flex;
+    align-items: flex-start;
+    position: relative;
   `
 })
 
@@ -91,30 +99,36 @@ export function RowCell(props: {
   if (!cellType) {
     return (
       <RowCellContainer>
-        <Card tone="critical" padding={2} key={cell?._key}>
-          <Text muted>No cell type found</Text>
-        </Card>
+        <CellContent>
+          <Card tone="critical" padding={2} key={cell?._key}>
+            <Text muted>
+              No cell type <code>{column.dataType}</code> found
+            </Text>
+          </Card>
+        </CellContent>
       </RowCellContainer>
     )
   }
 
   return (
     <RowCellContainer>
-      <FloatingButtons>
-        {cell ? (
-          <Button
-            mode="ghost"
-            data-ui="remove-cell"
-            iconRight={TrashIcon}
-            onClick={handleRemoveCell}
-            space={2}
-            padding={2}
-          />
-        ) : (
-          <Button icon={AddIcon} mode="bleed" padding={2} onClick={handleInsertCell} />
-        )}
-      </FloatingButtons>
-      {cell ? <>{renderInline ? input : <NotInlineInputs input={input} />}</> : null}
+      <CellContent>
+        <FloatingButtons>
+          {cell ? (
+            <Button
+              mode="ghost"
+              data-ui="remove-cell"
+              iconRight={TrashIcon}
+              onClick={handleRemoveCell}
+              space={2}
+              padding={2}
+            />
+          ) : (
+            <Button icon={AddIcon} mode="bleed" padding={2} onClick={handleInsertCell} />
+          )}
+        </FloatingButtons>
+        {cell ? <>{renderInline ? input : <NotInlineInputs input={input} />}</> : null}
+      </CellContent>
     </RowCellContainer>
   )
 }

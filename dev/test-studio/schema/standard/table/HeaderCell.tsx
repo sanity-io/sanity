@@ -23,6 +23,7 @@ export const Header = styled.th<{theme: Theme}>((props) => {
   return css`
     padding: ${theme.space[1]}px ${theme.space[0]}px;
     text-align: left;
+    border-top: 1px solid ${theme.color.border};
     border-bottom: 1px solid ${theme.color.border};
     border-right: 1px solid ${theme.color.border};
     white-space: nowrap;

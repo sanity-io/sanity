@@ -1,24 +1,12 @@
-import {
-  Box,
-  Button,
-  Code,
-  Flex,
-  Menu,
-  MenuButton,
-  MenuItem,
-  Stack,
-  Text,
-  type Theme,
-} from '@sanity/ui'
+import {JsonIcon} from '@sanity/icons'
+import {Box, Button, Flex, Menu, MenuButton, MenuItem, Stack, Text, type Theme} from '@sanity/ui'
 // eslint-disable-next-line camelcase
 import {getTheme_v2} from '@sanity/ui/theme'
-import {uuid} from '@sanity/uuid'
 import {useMemo, useState} from 'react'
 import {
   type ArraySchemaType,
   type FieldDefinition,
   FormInput,
-  insert,
   type ObjectField,
   type ObjectInputProps,
   type ObjectSchemaType,
@@ -27,11 +15,11 @@ import {css, styled} from 'styled-components'
 
 import {HeaderCell} from './HeaderCell'
 import {RowCell} from './RowCell'
-import {getInsertTablePatch} from './tablePatches'
+import {getInsertColumnPatch, getInsertDataRowPatch} from './tablePatches'
 import {type Cell, type Table} from './types'
 import {getTableDataRows, getTableHeaderRow} from './utils'
 
-const DEBUG = false
+const DEBUG = true
 
 const TableContainer = styled.div<{theme: Theme}>((props) => {
   const theme = getTheme_v2(props.theme)
@@ -40,17 +28,16 @@ const TableContainer = styled.div<{theme: Theme}>((props) => {
     overflow-y: auto;
     position: relative;
     border-radius: ${props.theme.sanity.radius[2]}px;
-    border: 1px solid ${theme.color.border};
     background: ${theme.color.bg};
     margin-top: ${theme.space[3]}px;
     max-height: 70vh;
+    min-height: 200px;
   `
 })
 
 const StyledTable = styled.table<{theme: Theme}>((props) => {
   const theme = getTheme_v2(props.theme)
   return css`
-    width: 100%;
     min-width: max-content;
     border-collapse: separate;
     border-spacing: 0;
@@ -78,7 +65,7 @@ const AddColumnWrapper = styled(Flex)<{theme: Theme}>((props) => {
   const theme = getTheme_v2(props.theme)
   return css`
     padding: ${theme.space[3]}px;
-    border-bottom: 1px solid ${theme.color.border};
+    /* border-bottom: 1px solid ${theme.color.border}; */
     background: ${theme.color.bg};
     gap: ${theme.space[2]}px;
     align-items: center;
@@ -95,21 +82,11 @@ const AddRowWrapper = styled(Box)<{theme: Theme}>((props) => {
   `
 })
 
-const DebugWrapper = styled(Stack)<{theme: Theme}>((props) => {
-  const theme = getTheme_v2(props.theme)
-  return css`
-    margin-top: ${props.theme.sanity.space[4]}px;
-    padding: ${props.theme.sanity.space[3]}px;
-    border: 1px solid ${theme.color.border};
-    border-radius: ${props.theme.sanity.radius[2]}px;
-    background: ${theme.color.bg};
-  `
-})
-
 export function RenderTable(
   props: ObjectInputProps<Table, ObjectSchemaType> & {supportedTypes: FieldDefinition[]},
 ) {
   const [mode, setMode] = useState<'array' | 'table'>('table')
+  const table = props.value
   const {onChange} = props
   const headerRow = getTableHeaderRow(props.value)
   const dataRows = getTableDataRows(props.value)
@@ -125,17 +102,28 @@ export function RenderTable(
   }, [props.schemaType])
 
   return (
-    <>
+    <div>
       {mode === 'array' ? (
-        props.renderDefault(props)
+        <>
+          <Flex justify="flex-end" flex={1}>
+            <Button
+              padding={2}
+              icon={JsonIcon}
+              mode="ghost"
+              // eslint-disable-next-line react/jsx-no-bind
+              onClick={() => setMode((prev) => (prev === 'array' ? 'table' : 'array'))}
+            />
+          </Flex>
+          {props.renderDefault(props)}
+        </>
       ) : (
         <Stack space={0}>
-          <AddColumnWrapper>
+          <AddColumnWrapper flex={1}>
             <Text size={1} weight="medium" muted>
               Table columns
             </Text>
             <MenuButton
-              button={<Button text="Add column" mode="ghost" />}
+              button={<Button text="Add column" mode="ghost" padding={2} />}
               id="menu"
               menu={
                 <Menu>
@@ -144,119 +132,117 @@ export function RenderTable(
                       key={type.type}
                       padding={3}
                       text={type.title || type.type}
-                      onClick={() => {
-                        onChange(getInsertTablePatch(headerRow, type))
-                      }}
+                      onClick={() => onChange(getInsertColumnPatch(table, type))}
                     />
                   ))}
                 </Menu>
               }
               popover={{portal: true, placement: 'bottom-start', tone: 'default'}}
             />
+            {DEBUG && (
+              <Flex justify="flex-end" flex={1}>
+                <Button
+                  padding={2}
+                  icon={JsonIcon}
+                  mode="ghost"
+                  // eslint-disable-next-line react/jsx-no-bind
+                  onClick={() => setMode((prev) => (prev === 'array' ? 'table' : 'array'))}
+                />
+              </Flex>
+            )}
           </AddColumnWrapper>
-
-          <TableContainer>
-            <StyledTable>
-              <TableHead>
-                <tr>
-                  {headerRow?.columns?.map((column) => {
-                    return (
-                      <HeaderCell
-                        key={column._key}
-                        column={column}
-                        headerRow={headerRow}
-                        onChange={onChange}
-                      >
-                        <FormInput
-                          {...props}
-                          includeField={false}
-                          relativePath={[
-                            'rows',
-                            {_key: headerRow?._key},
-                            'columns',
-                            {_key: column._key},
-                            'title',
-                          ]}
-                        />
-                      </HeaderCell>
-                    )
-                  })}
-                </tr>
-              </TableHead>
-              <TableBody>
-                {dataRows?.map((row) => (
-                  <tr key={row._key}>
-                    {headerRow?.columns?.map((column) => {
-                      const {dataKey, dataType} = column
-                      const cell = row.cells?.find((c) => c.dataKey === dataKey) as Cell | undefined
-                      const cellType = props.supportedTypes.find((t) => t.name === dataType)
-
-                      const arrayCellSchemaType = dataRowSchemaType?.of?.find(
-                        (f) => f.name === dataType,
-                      ) as ObjectSchemaType | undefined
-
-                      const fieldValueSchemaType = arrayCellSchemaType?.fields.find(
-                        (f) => f.name === 'value',
-                      )
-                      return (
-                        <RowCell
-                          key={cell?._key || dataKey}
-                          dataRow={row}
-                          onChange={onChange}
-                          cell={cell}
-                          cellType={cellType}
-                          fieldValueSchemaType={fieldValueSchemaType}
-                          column={column}
-                          input={
+          {table && (
+            <>
+              <TableContainer>
+                <StyledTable>
+                  <TableHead>
+                    <tr>
+                      {headerRow?.columns?.map((column) => {
+                        return (
+                          <HeaderCell
+                            key={column._key}
+                            column={column}
+                            headerRow={headerRow}
+                            onChange={onChange}
+                          >
                             <FormInput
                               {...props}
-                              includeField
+                              includeField={false}
                               relativePath={[
                                 'rows',
-                                {_key: row._key},
-                                'cells',
-                                {_key: cell?._key || ''},
-                                'value',
+                                {_key: headerRow?._key},
+                                'columns',
+                                {_key: column._key},
+                                'title',
                               ]}
                             />
-                          }
-                        />
-                      )
-                    })}
-                  </tr>
-                ))}
-              </TableBody>
-            </StyledTable>
-          </TableContainer>
+                          </HeaderCell>
+                        )
+                      })}
+                    </tr>
+                  </TableHead>
+                  <TableBody>
+                    {dataRows?.map((row) => (
+                      <tr key={row._key}>
+                        {headerRow?.columns?.map((column) => {
+                          const {dataKey, dataType} = column
+                          const cell = row.cells?.find((c) => c.dataKey === dataKey) as
+                            | Cell
+                            | undefined
+                          const cellType = props.supportedTypes.find((t) => t.name === dataType)
 
-          <AddRowWrapper>
-            <Button
-              text="Add row"
-              width="fill"
-              mode="ghost"
-              disabled={!headerRow} // Before adding a data row we need to create the header row
-              onClick={() => {
-                onChange(
-                  insert([{_type: 'dataRow', _key: uuid(), cells: []}], 'after', ['rows', -1]),
-                )
-              }}
-            />
-          </AddRowWrapper>
+                          const arrayCellSchemaType = dataRowSchemaType?.of?.find(
+                            (f) => f.name === dataType,
+                          ) as ObjectSchemaType | undefined
+
+                          const fieldValueSchemaType = arrayCellSchemaType?.fields.find(
+                            (f) => f.name === 'value',
+                          )
+                          return (
+                            <RowCell
+                              key={cell?._key || dataKey}
+                              dataRow={row}
+                              onChange={onChange}
+                              cell={cell}
+                              cellType={cellType}
+                              fieldValueSchemaType={fieldValueSchemaType}
+                              column={column}
+                              input={
+                                <FormInput
+                                  {...props}
+                                  includeField
+                                  relativePath={[
+                                    'rows',
+                                    {_key: row._key},
+                                    'cells',
+                                    {_key: cell?._key || ''},
+                                    'value',
+                                  ]}
+                                />
+                              }
+                            />
+                          )
+                        })}
+                      </tr>
+                    ))}
+                  </TableBody>
+                </StyledTable>
+              </TableContainer>
+
+              <AddRowWrapper>
+                <Button
+                  text="Add row"
+                  width="fill"
+                  mode="ghost"
+                  // Before adding a data row we need to create the header row
+                  disabled={!headerRow}
+                  onClick={() => onChange(getInsertDataRowPatch())}
+                />
+              </AddRowWrapper>
+            </>
+          )}
         </Stack>
       )}
-
-      {DEBUG && (
-        <DebugWrapper space={3}>
-          <Button
-            padding={2}
-            text="Change mode"
-            mode="ghost"
-            onClick={() => setMode(mode === 'array' ? 'table' : 'array')}
-          />
-          <Text size={1}> Value:</Text>
-          <Code size={1}>{JSON.stringify(props.value, null, 2)}</Code>
-        </DebugWrapper>
-      )}
-    </>
+    </div>
   )
 }
