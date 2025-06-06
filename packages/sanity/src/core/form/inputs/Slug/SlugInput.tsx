@@ -9,11 +9,12 @@ import {
 } from '@sanity/types'
 import {Box, Card, Flex, Stack, TextInput} from '@sanity/ui'
 import * as PathUtils from '@sanity/util/paths'
-import {type FormEvent, useCallback, useMemo} from 'react'
+import {type FormEvent, useCallback, useImperativeHandle, useMemo, useRef} from 'react'
 
 import {Button} from '../../../../ui-components'
 import {useTranslation} from '../../../i18n'
 import {useGetFormValue} from '../../contexts/GetFormValue'
+import {useDidUpdate} from '../../hooks/useDidUpdate'
 import {PatchEvent, set, setIfMissing, unset} from '../../patch'
 import {type ObjectInputProps} from '../../types'
 import {slugify} from './utils/slugify'
@@ -55,9 +56,20 @@ async function getNewFromSource(
  */
 export function SlugInput(props: SlugInputProps) {
   const getFormValue = useGetFormValue()
-  const {path, value, schemaType, validation, onChange, readOnly, elementProps} = props
+  const {
+    path,
+    value,
+    schemaType,
+    validation,
+    onChange,
+    readOnly,
+    elementProps,
+    focused,
+    focusPath,
+  } = props
   const sourceField = schemaType.options?.source
   const errors = useMemo(() => validation.filter((item) => item.level === 'error'), [validation])
+  const inputRef = useRef<HTMLInputElement | null>(null)
 
   const slugContext = useSlugContext()
 
@@ -99,6 +111,30 @@ export function SlugInput(props: SlugInputProps) {
     [updateSlug],
   )
 
+  // Make sure the slug input is focused when the `focused` prop becomes true, regardless of wether the focusPath is `slug` or `slug.current` (both should work)
+  useDidUpdate(focused, (hadFocus, hasFocus) => {
+    if (!hadFocus && hasFocus) {
+      inputRef.current?.focus()
+    }
+  })
+  // Handle stega visual editing links, which uses `slug.current` as the focus path
+  useDidUpdate(focusPath, (prevFocusPath = [], currentFocusPath) => {
+    // It's an array in both cases, we care only about a transition from `[]` to `['current']`, not `['current']` to `['current']` so we have to deep equal the array
+    if (
+      prevFocusPath !== currentFocusPath &&
+      Array.isArray(prevFocusPath) &&
+      Array.isArray(currentFocusPath) &&
+      prevFocusPath.length === 0 &&
+      currentFocusPath.length === 1 &&
+      currentFocusPath[0] === 'current'
+    ) {
+      inputRef.current?.focus()
+    }
+  })
+
+  // Merge the elementProps.ref with our local ref, so that parent callers still have access to the node after we added the local ref
+  useImperativeHandle(elementProps.ref, () => inputRef.current)
+
   return (
     <Stack space={3}>
       <Flex gap={1}>
@@ -110,6 +146,7 @@ export function SlugInput(props: SlugInputProps) {
             value={value?.current || ''}
             readOnly={readOnly}
             {...elementProps}
+            ref={inputRef}
           />
 
           {generateState?.status === 'error' && (

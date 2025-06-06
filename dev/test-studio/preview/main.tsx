@@ -5,10 +5,11 @@ import {createRoot} from 'react-dom/client'
 
 import {FieldGroups} from './FieldGroups'
 import {useLiveMode} from './loader'
+import {Markdown} from './Markdown'
 import {SimpleBlockPortableText} from './SimpleBlockPortableText'
 
 function Main() {
-  const [id, setId] = useState('simple')
+  const [id, setId] = useState<'simple' | 'nested' | 'markdown'>('simple')
   return (
     <>
       <ThemeProvider theme={studioTheme}>
@@ -29,6 +30,13 @@ function Main() {
                 onClick={() => setId('nested')}
                 selected={id === 'nested'}
               />
+              <Tab
+                aria-controls="markdown-pabel"
+                id="markdown-tab"
+                label="Markdown"
+                onClick={() => setId('markdown')}
+                selected={id === 'markdown'}
+              />
             </TabList>
           </Box>
 
@@ -41,6 +49,12 @@ function Main() {
           {id === 'nested' && (
             <TabPanel aria-labelledby="nested-tab" id="nested-panel">
               <FieldGroups />
+            </TabPanel>
+          )}
+
+          {id === 'markdown' && (
+            <TabPanel aria-labelledby="markdown-tab" id="markdown-panel">
+              <Markdown />
             </TabPanel>
           )}
         </Flex>
