@@ -67,5 +67,4 @@ export interface OperationArgs {
   draft: DocumentVersionSnapshots
   published: DocumentVersionSnapshots
   version?: DocumentVersionSnapshots
-  serverActionsEnabled: boolean
 }

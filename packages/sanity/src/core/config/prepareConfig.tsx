@@ -49,7 +49,6 @@ import {
   resolveProductionUrlReducer,
   schemaTemplatesReducer,
   searchStrategyReducer,
-  serverDocumentActionsReducer,
   toolsReducer,
 } from './configPropertyReducers'
 import {ConfigResolutionError} from './ConfigResolutionError'
@@ -723,10 +722,6 @@ function resolveSource({
         startInCreateEnabled: false,
         fallbackStudioOrigin: undefined,
       },
-    },
-    // eslint-disable-next-line camelcase
-    __internal_serverDocumentActions: {
-      enabled: serverDocumentActionsReducer({config, initialValue: undefined}),
     },
 
     announcements: {
