@@ -140,6 +140,9 @@ export const ptAllTheBellsAndWhistlesType = defineType({
           icon: ImageIcon,
           name: 'image',
           title: 'Image',
+          deprecated: {
+            reason: 'Use imageObject instead',
+          },
           options: {
             hotspot: true,
           },
