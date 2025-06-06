@@ -134,11 +134,7 @@ export const ptAllTheBellsAndWhistlesType = defineType({
             },
           },
         }),
-        // {
-        //   name: 'sizeChart',
-        //   title: 'Size Chart',
-        //   type: 'table',
-        // },
+
         defineField({
           type: 'image',
           icon: ImageIcon,

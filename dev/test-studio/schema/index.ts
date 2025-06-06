@@ -118,7 +118,7 @@ import spotifyEmbed from './standard/portableText/spotifyEmbed'
 import references, {referenceAlias} from './standard/references'
 import slugs, {slugAlias} from './standard/slugs'
 import strings from './standard/strings'
-import rowedTable from './standard/table/table'
+import table from './standard/table/table'
 import texts from './standard/texts'
 import urls from './standard/urls'
 
@@ -290,7 +290,7 @@ export function createSchemaTypes(projectId: string) {
     playlist,
     playlistTrack,
 
-    rowedTable,
+    table,
     // CI documents
     allNativeInputComponents,
     allTypes,

@@ -229,7 +229,6 @@ const FormInputInner = memo(function FormInputInner(
       }
 
       const index = isIndexSegment(relativePath[0]) ? relativePath[0] : relativePath[0][0]
-      console.log('index', {index, relativePath})
       return (
         <div>
           <Translate t={t} i18nKey="form.error.no-array-item-at-index" values={{index, path}} />
