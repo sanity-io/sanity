@@ -24,7 +24,7 @@
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
     "sanity": "workspace:*",
-    "sanity-plugin-markdown": "^5.0.0",
+    "sanity-plugin-markdown": "^5.1.1",
     "sanity-plugin-media": "^3.0.0",
     "sanity-plugin-mux-input": "^2.5.0",
     "sanity-test-studio": "workspace:*",
