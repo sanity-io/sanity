@@ -11,11 +11,13 @@ export * from './FIXME'
 export * from './form'
 export * from './hooks'
 export * from './i18n'
+export {ReleasesNav} from './perspective/navbar/ReleasesNav'
 export {PerspectiveProvider} from './perspective/PerspectiveProvider'
 export {
   type PerspectiveContextValue,
   type PerspectiveStack,
   type ReleaseId,
+  type ReleasesNavMenuItemPropsGetter,
   type SelectedPerspective,
 } from './perspective/types'
 export {useExcludedPerspective} from './perspective/useExcludedPerspective'

@@ -5,7 +5,7 @@ import {useCallback} from 'react'
 import {useTranslation} from '../../i18n/hooks/useTranslation'
 import {usePerspective} from '../../perspective/usePerspective'
 import {getReleaseIdFromReleaseDocumentId} from '../../releases/util/getReleaseIdFromReleaseDocumentId'
-import {type ReleaseId} from '../types'
+import {type ReleaseId, type ReleasesNavMenuItemPropsGetter} from '../types'
 import {
   getRangePosition,
   GlobalPerspectiveMenuItem,
@@ -25,11 +25,13 @@ export function ReleaseTypeMenuSection({
   releases,
   range,
   currentGlobalBundleMenuItemRef,
+  menuItemProps,
 }: {
   releaseType: ReleaseType
   releases: ReleaseDocument[]
   range: LayerRange
   currentGlobalBundleMenuItemRef: React.RefObject<ScrollElement>
+  menuItemProps?: ReleasesNavMenuItemPropsGetter
 }): React.JSX.Element | null {
   const {t} = useTranslation()
   const {selectedReleaseId} = usePerspective()
@@ -66,6 +68,7 @@ export function ReleaseTypeMenuSection({
             key={release._id}
             ref={getMenuItemRef(getReleaseIdFromReleaseDocumentId(release._id))}
             rangePosition={getRangePosition(range, releaseTypeOffset + index)}
+            menuItemProps={menuItemProps}
           />
         ))}
       </Flex>

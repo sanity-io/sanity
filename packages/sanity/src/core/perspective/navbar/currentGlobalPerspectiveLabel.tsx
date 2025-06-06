@@ -57,7 +57,14 @@ function AnimatedTextWidth({children, text}: {children: ReactNode; text: string}
       onAnimationStart={onAnimationStart}
       onAnimationComplete={onAnimationComplete}
     >
-      <div ref={textRef} style={{display: 'inline-block', whiteSpace: 'nowrap'}}>
+      <div
+        ref={textRef}
+        style={{
+          display: 'inline-block',
+          whiteSpace: 'nowrap',
+          verticalAlign: 'middle',
+        }}
+      >
         {children}
       </div>
     </motion.div>

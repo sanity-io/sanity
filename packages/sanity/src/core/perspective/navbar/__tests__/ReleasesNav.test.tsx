@@ -61,7 +61,7 @@ const renderTest = async () => {
   const wrapper = await createTestProvider({
     resources: [],
   })
-  currentRenderedInstance = render(<ReleasesNav />, {wrapper})
+  currentRenderedInstance = render(<ReleasesNav withReleasesToolButton />, {wrapper})
 
   return currentRenderedInstance
 }
