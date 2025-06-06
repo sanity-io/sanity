@@ -1,4 +1,4 @@
-import {useToast} from '@sanity/ui'
+import {useToast} from '@sanity/ui-v3'
 import {useEffect} from 'react'
 
 import {definePlugin, type LayoutProps} from '../config'

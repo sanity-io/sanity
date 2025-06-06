@@ -1,5 +1,5 @@
 import {type ArraySchemaType, isKeyedObject, type SchemaType, type TypedObject} from '@sanity/types'
-import {Box, Flex} from '@sanity/ui'
+import {Box, Flex} from '@sanity/ui-v3'
 
 import {useTranslation} from '../../../../i18n'
 import {Preview} from '../../../../preview/components/Preview'

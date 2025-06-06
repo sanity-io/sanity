@@ -1,4 +1,4 @@
-import {BoundaryElementProvider, Card, type CardProps, Code, Flex} from '@sanity/ui'
+import {BoundaryElementProvider, Card, type CardProps, Code, Flex} from '@sanity/ui-v3'
 import {
   type ForwardedRef,
   forwardRef,

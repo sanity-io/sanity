@@ -1,4 +1,4 @@
-import {Box, Flex, Select, TextInput} from '@sanity/ui'
+import {Box, Flex, Select, TextInput} from '@sanity/ui-v3'
 import {type ChangeEvent, useCallback, useRef, useState} from 'react'
 
 import {type StudioLocaleResourceKeys, useTranslation} from '../../../../../../../../../i18n'

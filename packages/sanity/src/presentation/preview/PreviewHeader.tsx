@@ -1,7 +1,7 @@
 /* eslint-disable no-nested-ternary */
 import {DesktopIcon, MobileDeviceIcon, PanelLeftIcon, RefreshIcon} from '@sanity/icons'
 import {withoutSecretSearchParams} from '@sanity/preview-url-secret/without-secret-search-params'
-import {Box, Card, Flex, Hotkeys, Switch, Text} from '@sanity/ui'
+import {Box, Card, Flex, Hotkeys, Switch, Text} from '@sanity/ui-v3'
 import {useSelector} from '@xstate/react'
 import {type RefObject, useCallback, useMemo} from 'react'
 import {useTranslation} from 'sanity'

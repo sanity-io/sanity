@@ -1,4 +1,4 @@
-import {Box, Flex, Layer, useMediaIndex} from '@sanity/ui'
+import {Box, Flex, Layer, useMediaIndex} from '@sanity/ui-v3'
 import {AnimatePresence, motion, type Transition, type Variants} from 'framer-motion'
 import {css, styled} from 'styled-components'
 

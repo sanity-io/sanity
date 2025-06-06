@@ -1,5 +1,5 @@
 import {type SanityDocument, type SchemaType} from '@sanity/types'
-import {Flex} from '@sanity/ui'
+import {Flex} from '@sanity/ui-v3'
 import {type ComponentType, useMemo} from 'react'
 import {useObservable} from 'react-rx'
 import {

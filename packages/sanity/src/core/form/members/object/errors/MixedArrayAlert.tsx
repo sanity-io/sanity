@@ -1,4 +1,4 @@
-import {Stack, Text} from '@sanity/ui'
+import {Stack, Text} from '@sanity/ui-v3'
 import {isPlainObject} from 'lodash'
 
 import {Button} from '../../../../../ui-components'

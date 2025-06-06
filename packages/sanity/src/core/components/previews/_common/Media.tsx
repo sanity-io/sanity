@@ -1,4 +1,4 @@
-import {Text} from '@sanity/ui'
+import {Text} from '@sanity/ui-v3'
 import {isValidElement, type ReactNode} from 'react'
 import {isValidElementType} from 'react-is'
 

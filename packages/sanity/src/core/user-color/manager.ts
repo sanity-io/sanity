@@ -1,5 +1,5 @@
 import {COLOR_HUES, type ColorHueKey, type ColorTintKey, hues} from '@sanity/color'
-import {type ThemeColorSchemeKey} from '@sanity/ui'
+import {type ThemeColorSchemeKey} from '@sanity/ui-v3'
 import {Observable} from 'rxjs'
 import {shareReplay} from 'rxjs/operators'
 

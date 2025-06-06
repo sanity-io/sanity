@@ -1,4 +1,4 @@
-import {Flex} from '@sanity/ui'
+import {Flex} from '@sanity/ui-v3'
 import {useMemo} from 'react'
 import {css, styled} from 'styled-components'
 

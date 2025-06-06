@@ -1,5 +1,5 @@
 import {type StackablePerspective} from '@sanity/client'
-import {Card, Portal, useClickOutsideEvent, useLayer} from '@sanity/ui'
+import {Card, Portal, useClickOutsideEvent, useLayer} from '@sanity/ui-v3'
 import {AnimatePresence, motion, type Transition, type Variants} from 'framer-motion'
 import {useRef, useState} from 'react'
 import FocusLock from 'react-focus-lock'

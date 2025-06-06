@@ -1,4 +1,4 @@
-import {Box} from '@sanity/ui'
+import {Box} from '@sanity/ui-v3'
 import {motion, type VariantLabels, type Variants} from 'framer-motion'
 import {forwardRef, type ReactEventHandler, useEffect, useImperativeHandle, useRef} from 'react'
 import {createGlobalStyle, styled} from 'styled-components'

@@ -1,4 +1,4 @@
-import {Card, Code} from '@sanity/ui'
+import {Card, Code} from '@sanity/ui-v3'
 import {isEqual} from 'lodash'
 import {memo, useMemo, useState} from 'react'
 import {

@@ -1,5 +1,5 @@
 import {type SchemaType} from '@sanity/types'
-import {Card, Text} from '@sanity/ui'
+import {Card, Text} from '@sanity/ui-v3'
 import {useMemo} from 'react'
 
 import {useTranslation} from '../../../../../../i18n'

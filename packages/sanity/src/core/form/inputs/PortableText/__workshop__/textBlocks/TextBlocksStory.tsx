@@ -1,5 +1,5 @@
 import {type ValidationMarker} from '@sanity/types'
-import {Box, Card, Container} from '@sanity/ui'
+import {Box, Card, Container} from '@sanity/ui-v3'
 import {useAction, useBoolean} from '@sanity/ui-workshop'
 import {useMemo} from 'react'
 

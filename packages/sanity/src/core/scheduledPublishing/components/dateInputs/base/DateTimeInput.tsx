@@ -6,7 +6,7 @@ import {
   LayerProvider,
   useClickOutsideEvent,
   usePortal,
-} from '@sanity/ui'
+} from '@sanity/ui-v3'
 import {
   type FocusEvent,
   type ForwardedRef,

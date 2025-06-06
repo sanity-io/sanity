@@ -1,5 +1,5 @@
 import {CloseIcon} from '@sanity/icons'
-import {Card, type CardTone, Text} from '@sanity/ui'
+import {Card, type CardTone, Text} from '@sanity/ui-v3'
 import {isWeekend} from 'date-fns'
 import {useCallback} from 'react'
 

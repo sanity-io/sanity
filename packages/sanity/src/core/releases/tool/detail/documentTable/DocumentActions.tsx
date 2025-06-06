@@ -1,5 +1,5 @@
 import {CloseIcon, UnpublishIcon} from '@sanity/icons'
-import {Box, Card, Label, Menu, MenuDivider} from '@sanity/ui'
+import {Box, Card, Label, Menu, MenuDivider} from '@sanity/ui-v3'
 import {memo, useMemo, useState} from 'react'
 
 import {MenuButton, MenuItem} from '../../../../../ui-components'

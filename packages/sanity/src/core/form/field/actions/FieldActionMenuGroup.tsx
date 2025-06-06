@@ -1,4 +1,4 @@
-import {Box, Text} from '@sanity/ui'
+import {Box, Text} from '@sanity/ui-v3'
 
 import {MenuGroup, type MenuGroupProps} from '../../../../ui-components'
 import {type DocumentFieldActionGroup} from '../../../config'

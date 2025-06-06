@@ -5,7 +5,7 @@ import {
   MenuItem as UIMenuItem,
   Stack,
   Text,
-} from '@sanity/ui'
+} from '@sanity/ui-v3'
 
 import {MenuItem} from '../../../../../ui-components'
 import {LoadingBlock} from '../../../../components/loadingBlock'

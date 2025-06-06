@@ -1,5 +1,5 @@
 import {type CurrentUser} from '@sanity/types'
-import {Box, Flex, Stack, Text} from '@sanity/ui'
+import {Box, Flex, Stack, Text} from '@sanity/ui-v3'
 import {useCallback} from 'react'
 import {styled} from 'styled-components'
 

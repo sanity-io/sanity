@@ -1,5 +1,5 @@
 import {WarningOutlineIcon} from '@sanity/icons'
-import {Box, Flex} from '@sanity/ui'
+import {Box, Flex} from '@sanity/ui-v3'
 
 import {TextWithTone} from '../../../../../components/textWithTone/TextWithTone'
 import {useTranslation} from '../../../../../i18n'

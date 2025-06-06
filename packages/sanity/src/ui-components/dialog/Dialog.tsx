@@ -7,7 +7,7 @@ import {
   type DialogProps as UIDialogProps,
   Flex,
   Text,
-} from '@sanity/ui'
+} from '@sanity/ui-v3'
 import {type ComponentProps, forwardRef, type HTMLProps, type ReactNode, type Ref} from 'react'
 import {useTranslation} from 'react-i18next'
 

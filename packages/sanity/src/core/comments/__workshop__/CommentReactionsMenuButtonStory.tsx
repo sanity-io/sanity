@@ -1,5 +1,5 @@
 // eslint-disable-next-line no-restricted-imports
-import {Button, Flex} from '@sanity/ui'
+import {Button, Flex} from '@sanity/ui-v3'
 import {useCallback, useState} from 'react'
 
 import {CommentReactionsMenuButton} from '../components'

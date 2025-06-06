@@ -3,7 +3,7 @@ import {
   Button,
   Flex,
   Text,
-} from '@sanity/ui'
+} from '@sanity/ui-v3'
 import {useStateLink} from 'sanity/router'
 
 import {SCHEDULE_STATE_DICTIONARY} from '../../constants'

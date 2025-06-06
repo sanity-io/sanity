@@ -1,5 +1,5 @@
 /* eslint-disable camelcase */
-import {Menu} from '@sanity/ui'
+import {Menu} from '@sanity/ui-v3'
 import {fireEvent, render, screen} from '@testing-library/react'
 import {type ReactNode} from 'react'
 import {afterEach, describe, expect, test, vi} from 'vitest'

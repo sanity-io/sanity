@@ -1,5 +1,5 @@
 import {ChevronDownIcon} from '@sanity/icons'
-import {Card, Flex, Inline, Stack, useClickOutsideEvent, useGlobalKeyDown} from '@sanity/ui'
+import {Card, Flex, Inline, Stack, useClickOutsideEvent, useGlobalKeyDown} from '@sanity/ui-v3'
 import {useSelect} from '@sanity/ui-workshop'
 import {useCallback, useRef, useState} from 'react'
 

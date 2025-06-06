@@ -1,4 +1,4 @@
-import {Card, Flex} from '@sanity/ui'
+import {Card, Flex} from '@sanity/ui-v3'
 import {motion} from 'framer-motion'
 import {type Ref, useCallback, useMemo, useState} from 'react'
 import {

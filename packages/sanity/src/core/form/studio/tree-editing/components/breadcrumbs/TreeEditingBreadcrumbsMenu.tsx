@@ -6,7 +6,7 @@ import {
   Flex,
   Stack,
   Text,
-} from '@sanity/ui'
+} from '@sanity/ui-v3'
 import {isEqual} from 'lodash'
 import {useCallback} from 'react'
 

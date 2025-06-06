@@ -1,4 +1,4 @@
-import {Container, Flex} from '@sanity/ui'
+import {Container, Flex} from '@sanity/ui-v3'
 
 import {useUserListWithPermissions} from '../../hooks'
 import {MentionsMenu} from '../components/mentions'

@@ -1,4 +1,4 @@
-import {Text} from '@sanity/ui'
+import {Text} from '@sanity/ui-v3'
 import {useMemo} from 'react'
 import {
   getReleaseIdFromReleaseDocumentId,

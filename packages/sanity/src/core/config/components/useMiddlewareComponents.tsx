@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/ban-types */
-import {Skeleton} from '@sanity/ui'
+import {Skeleton} from '@sanity/ui-v3'
 import {type ComponentType, Fragment, Suspense, useMemo} from 'react'
 
 import {useSource} from '../../studio'

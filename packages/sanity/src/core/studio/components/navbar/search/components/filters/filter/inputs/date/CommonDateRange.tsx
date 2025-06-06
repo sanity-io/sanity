@@ -1,4 +1,4 @@
-import {Flex, Stack} from '@sanity/ui'
+import {Flex, Stack} from '@sanity/ui-v3'
 import {addDays} from 'date-fns'
 import {useCallback, useState} from 'react'
 

@@ -1,4 +1,4 @@
-import {Select} from '@sanity/ui'
+import {Select} from '@sanity/ui-v3'
 import {type ChangeEvent, useCallback} from 'react'
 
 import {useTranslation} from '../../../../../../../../../i18n'

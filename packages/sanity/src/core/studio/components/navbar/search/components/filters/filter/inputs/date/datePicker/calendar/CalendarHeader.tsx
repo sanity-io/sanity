@@ -1,5 +1,5 @@
 import {ChevronLeftIcon, ChevronRightIcon} from '@sanity/icons'
-import {Flex, Inline, Text} from '@sanity/ui'
+import {Flex, Inline, Text} from '@sanity/ui-v3'
 import {upperFirst} from 'lodash'
 import {useCallback} from 'react'
 

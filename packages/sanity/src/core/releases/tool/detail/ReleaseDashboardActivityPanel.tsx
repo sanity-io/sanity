@@ -2,7 +2,7 @@
 // The `use no memo` directive is due to a known issue with react-virtual and react compiler: https://github.com/TanStack/virtual/issues/736
 
 import {type ReleaseDocument} from '@sanity/client'
-import {Box, Card, Flex, Text} from '@sanity/ui'
+import {Box, Card, Flex, Text} from '@sanity/ui-v3'
 import {AnimatePresence, motion} from 'framer-motion'
 import {styled} from 'styled-components'
 

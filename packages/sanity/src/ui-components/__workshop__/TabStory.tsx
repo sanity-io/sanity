@@ -1,4 +1,4 @@
-import {Box, Card, Container, Stack, TabList, Text} from '@sanity/ui'
+import {Box, Card, Container, Stack, TabList, Text} from '@sanity/ui-v3'
 
 import {Tab} from '../tab'
 

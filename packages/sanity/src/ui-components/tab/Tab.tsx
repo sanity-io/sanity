@@ -1,5 +1,5 @@
 /* eslint-disable no-restricted-imports */
-import {Tab as UITab, type TabProps as UITabProps} from '@sanity/ui'
+import {Tab as UITab, type TabProps as UITabProps} from '@sanity/ui-v3'
 import {type ForwardedRef, forwardRef, type HTMLProps} from 'react'
 
 /**

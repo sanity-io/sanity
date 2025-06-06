@@ -1,6 +1,6 @@
 import {AddDocumentIcon, CopyIcon, InsertAboveIcon, InsertBelowIcon, TrashIcon} from '@sanity/icons'
 import {type SchemaType} from '@sanity/types'
-import {Box, Flex, Menu} from '@sanity/ui'
+import {Box, Flex, Menu} from '@sanity/ui-v3'
 import {type ForwardedRef, forwardRef, useCallback, useMemo} from 'react'
 
 import {MenuButton, MenuItem} from '../../../../../ui-components'

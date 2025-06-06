@@ -1,4 +1,4 @@
-import {Card, Container, Flex, LayerProvider} from '@sanity/ui'
+import {Card, Container, Flex, LayerProvider} from '@sanity/ui-v3'
 import {useBoolean, useSelect} from '@sanity/ui-workshop'
 
 import {valueOptions, values} from './values'

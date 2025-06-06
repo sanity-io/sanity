@@ -1,4 +1,4 @@
-import {Card, Code} from '@sanity/ui'
+import {Card, Code} from '@sanity/ui-v3'
 
 import {useUserListWithPermissions} from '../../hooks'
 

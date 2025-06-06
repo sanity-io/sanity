@@ -1,5 +1,5 @@
 import {type PortableTextBlock} from '@sanity/types'
-import {Card, Container, Flex} from '@sanity/ui'
+import {Card, Container, Flex} from '@sanity/ui-v3'
 import {useBoolean} from '@sanity/ui-workshop'
 import {useState} from 'react'
 

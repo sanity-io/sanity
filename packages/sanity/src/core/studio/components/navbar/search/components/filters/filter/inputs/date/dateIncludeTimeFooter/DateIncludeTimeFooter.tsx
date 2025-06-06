@@ -1,4 +1,4 @@
-import {Flex, Stack, Switch, Text} from '@sanity/ui'
+import {Flex, Stack, Switch, Text} from '@sanity/ui-v3'
 import {styled} from 'styled-components'
 
 import {useTranslation} from '../../../../../../../../../../i18n'

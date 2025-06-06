@@ -1,7 +1,7 @@
 import {ErrorOutlineIcon, InfoOutlineIcon, WarningOutlineIcon} from '@sanity/icons'
 import {type Path, type ValidationMarker} from '@sanity/types'
 // eslint-disable-next-line no-restricted-imports
-import {Box, type ButtonTone, Flex, MenuItem, Stack, Text} from '@sanity/ui'
+import {Box, type ButtonTone, Flex, MenuItem, Stack, Text} from '@sanity/ui-v3'
 import {useCallback} from 'react'
 import {styled} from 'styled-components'
 

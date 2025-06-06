@@ -1,4 +1,4 @@
-import {Card, Code, Stack, Text} from '@sanity/ui'
+import {Card, Code, Stack, Text} from '@sanity/ui-v3'
 import {isDev, Translate, useTranslation} from 'sanity'
 
 import {ErrorPane} from '../../error'

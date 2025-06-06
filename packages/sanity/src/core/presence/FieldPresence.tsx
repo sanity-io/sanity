@@ -1,4 +1,4 @@
-import {AvatarCounter, type AvatarPosition} from '@sanity/ui'
+import {AvatarCounter, type AvatarPosition} from '@sanity/ui-v3'
 import {sortBy, uniqBy} from 'lodash'
 import {memo, useCallback, useContext, useId, useMemo, useState} from 'react'
 import {FormFieldPresenceContext} from 'sanity/_singletons'

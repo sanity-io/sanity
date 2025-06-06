@@ -1,4 +1,4 @@
-import {Box, Flex, Stack, Text, useClickOutsideEvent} from '@sanity/ui'
+import {Box, Flex, Stack, Text, useClickOutsideEvent} from '@sanity/ui-v3'
 import {
   Fragment,
   type HTMLAttributes,

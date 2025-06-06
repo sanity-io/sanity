@@ -1,6 +1,6 @@
 import {CalendarIcon, WarningOutlineIcon} from '@sanity/icons'
 import {type ValidationMarker} from '@sanity/types'
-import {Badge, Box, Card, Flex, Inline, Stack, Text} from '@sanity/ui'
+import {Badge, Box, Card, Flex, Inline, Stack, Text} from '@sanity/ui-v3'
 import {format} from 'date-fns'
 
 import {DATE_FORMAT, DOCUMENT_HAS_ERRORS_TEXT} from '../../constants'

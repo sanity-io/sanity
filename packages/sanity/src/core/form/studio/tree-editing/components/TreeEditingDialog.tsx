@@ -1,12 +1,12 @@
 import {isKeySegment, type ObjectSchemaType, type Path} from '@sanity/types'
+// eslint-disable-next-line camelcase
+import {getTheme_v2, type Theme} from '@sanity/ui/theme'
 import {
   Card,
   // eslint-disable-next-line no-restricted-imports
   Dialog, // Custom dialog needed
   Flex,
-} from '@sanity/ui'
-// eslint-disable-next-line camelcase
-import {getTheme_v2, type Theme} from '@sanity/ui/theme'
+} from '@sanity/ui-v3'
 import {toString} from '@sanity/util/paths'
 import {AnimatePresence, motion, type Transition, type Variants} from 'framer-motion'
 import {debounce, isEqual} from 'lodash'

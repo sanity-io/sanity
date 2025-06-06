@@ -1,5 +1,5 @@
 import {type PreviewValue, type SanityDocument} from '@sanity/types'
-import {type BadgeTone, Flex, Text} from '@sanity/ui'
+import {type BadgeTone, Flex, Text} from '@sanity/ui-v3'
 import {useMemo} from 'react'
 
 import {useRelativeTime} from '../../hooks'

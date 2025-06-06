@@ -1,5 +1,5 @@
 import {type Path, type PortableTextTextBlock} from '@sanity/types'
-import {Box, Card, Stack, Text} from '@sanity/ui'
+import {Box, Card, Stack, Text} from '@sanity/ui-v3'
 import {type MouseEvent, useCallback, useContext} from 'react'
 import {DiffContext, ReviewChangesContext} from 'sanity/_singletons'
 

@@ -1,5 +1,5 @@
 import {LaunchIcon} from '@sanity/icons'
-import {Card, Text} from '@sanity/ui'
+import {Card, Text} from '@sanity/ui-v3'
 import {styled} from 'styled-components'
 
 import {useTranslation} from '../../../i18n'

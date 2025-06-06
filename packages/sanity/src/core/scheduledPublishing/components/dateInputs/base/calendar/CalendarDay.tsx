@@ -1,4 +1,4 @@
-import {Card, Text} from '@sanity/ui'
+import {Card, Text} from '@sanity/ui-v3'
 import {endOfDay} from 'date-fns'
 import {useCallback, useMemo} from 'react'
 

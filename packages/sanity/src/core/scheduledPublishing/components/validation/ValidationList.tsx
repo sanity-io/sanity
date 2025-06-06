@@ -6,7 +6,7 @@ import {
   type Path,
   type ValidationMarker,
 } from '@sanity/types'
-import {Container} from '@sanity/ui'
+import {Container} from '@sanity/ui-v3'
 import {useCallback} from 'react'
 
 import {ValidationListItem} from './ValidationListItem'

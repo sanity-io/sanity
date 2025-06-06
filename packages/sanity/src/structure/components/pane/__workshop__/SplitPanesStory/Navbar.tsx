@@ -1,4 +1,4 @@
-import {Box, Card, Flex, Layer, Text, useTheme} from '@sanity/ui'
+import {Box, Card, Flex, Layer, Text, useTheme} from '@sanity/ui-v3'
 import {type Dispatch, type SetStateAction, useCallback} from 'react'
 import {LegacyLayerProvider} from 'sanity'
 import {styled} from 'styled-components'

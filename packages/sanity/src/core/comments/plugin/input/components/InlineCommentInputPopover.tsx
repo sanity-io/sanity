@@ -1,5 +1,5 @@
 import {type CurrentUser} from '@sanity/types'
-import {Stack, useClickOutsideEvent} from '@sanity/ui'
+import {Stack, useClickOutsideEvent} from '@sanity/ui-v3'
 import {motion, type Variants} from 'framer-motion'
 import {useCallback, useRef} from 'react'
 import {styled} from 'styled-components'

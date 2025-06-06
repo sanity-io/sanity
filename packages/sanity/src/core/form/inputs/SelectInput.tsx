@@ -1,5 +1,5 @@
 import {isTitledListValue, type TitledListValue} from '@sanity/types'
-import {Box, Card, Flex, Inline, Radio, Select, Stack, Text} from '@sanity/ui'
+import {Box, Card, Flex, Inline, Radio, Select, Stack, Text} from '@sanity/ui-v3'
 import {capitalize} from 'lodash'
 import {
   type ChangeEvent,

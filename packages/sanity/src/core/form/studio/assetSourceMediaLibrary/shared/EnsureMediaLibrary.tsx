@@ -1,5 +1,5 @@
 import {ErrorOutlineIcon} from '@sanity/icons'
-import {Card, Flex, Spinner, Stack, Text} from '@sanity/ui'
+import {Card, Flex, Spinner, Stack, Text} from '@sanity/ui-v3'
 import {useEffect} from 'react'
 
 import {useTranslation} from '../../../../i18n'

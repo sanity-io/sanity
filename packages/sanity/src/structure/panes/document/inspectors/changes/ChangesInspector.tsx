@@ -1,5 +1,5 @@
 import {type ObjectDiff} from '@sanity/diff'
-import {BoundaryElementProvider, Box, Card, Flex, Text} from '@sanity/ui'
+import {BoundaryElementProvider, Box, Card, Flex, Text} from '@sanity/ui-v3'
 import {useMemo, useState} from 'react'
 import {
   ChangeFieldWrapper,

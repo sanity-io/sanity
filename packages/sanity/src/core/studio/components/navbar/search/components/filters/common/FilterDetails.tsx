@@ -1,5 +1,5 @@
 import {ChevronRightIcon} from '@sanity/icons'
-import {Box, Flex, Stack, Text} from '@sanity/ui'
+import {Box, Flex, Stack, Text} from '@sanity/ui-v3'
 import {Fragment} from 'react'
 
 import {useSearchState} from '../../../contexts/search/useSearchState'

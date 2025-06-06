@@ -1,4 +1,4 @@
-import {LayerProvider, studioTheme, ThemeProvider, useMediaIndex} from '@sanity/ui'
+import {LayerProvider, studioTheme, ThemeProvider, useMediaIndex} from '@sanity/ui-v3'
 import {uuid} from '@sanity/uuid'
 import {render, screen} from '@testing-library/react'
 import {act} from 'react'

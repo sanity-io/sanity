@@ -1,6 +1,6 @@
 import {hues} from '@sanity/color'
-import {Card, type CardProps} from '@sanity/ui'
 import {type Theme} from '@sanity/ui/theme'
+import {Card, type CardProps} from '@sanity/ui-v3'
 import {css, styled} from 'styled-components'
 
 import {COMMENTS_HIGHLIGHT_HUE_KEY} from '../../constants'

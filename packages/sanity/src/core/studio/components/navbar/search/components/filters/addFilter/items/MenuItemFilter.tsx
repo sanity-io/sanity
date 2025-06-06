@@ -4,7 +4,7 @@ import {
   Button, // Button with specific styling and children.
   type ResponsiveMarginProps,
   type ResponsivePaddingProps,
-} from '@sanity/ui'
+} from '@sanity/ui-v3'
 import {memo, useCallback} from 'react'
 
 import {useSearchState} from '../../../../contexts/search/useSearchState'

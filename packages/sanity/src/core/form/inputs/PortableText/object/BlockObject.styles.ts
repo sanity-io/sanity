@@ -1,5 +1,5 @@
 import {hues} from '@sanity/color'
-import {Box, Card, Flex, type Theme} from '@sanity/ui'
+import {Box, Card, Flex, type Theme} from '@sanity/ui-v3'
 import {css, styled} from 'styled-components'
 
 import {DEBUG} from '../../../../changeIndicators/constants'

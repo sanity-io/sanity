@@ -1,5 +1,5 @@
 import {SearchIcon, SpinnerIcon} from '@sanity/icons'
-import {Box, TextInput} from '@sanity/ui'
+import {Box, TextInput} from '@sanity/ui-v3'
 import {memo, useCallback, useEffect, useMemo, useState} from 'react'
 import {useObservableEvent} from 'react-rx'
 import {debounce, map, type Observable, of, tap, timer} from 'rxjs'

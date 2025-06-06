@@ -12,7 +12,7 @@ import {
   Text,
   TextInput,
   useTheme,
-} from '@sanity/ui'
+} from '@sanity/ui-v3'
 import {useAction} from '@sanity/ui-workshop'
 import {type ReactNode, useCallback, useState} from 'react'
 import {ChangeConnectorRoot, ChangeFieldWrapper, ChangeIndicator, ScrollContainer} from 'sanity'

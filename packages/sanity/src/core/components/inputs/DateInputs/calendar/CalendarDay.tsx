@@ -1,4 +1,4 @@
-import {Card, Text} from '@sanity/ui'
+import {Card, Text} from '@sanity/ui-v3'
 import {isPast} from 'date-fns'
 import {useCallback} from 'react'
 

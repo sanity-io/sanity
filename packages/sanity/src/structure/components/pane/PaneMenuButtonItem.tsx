@@ -1,5 +1,5 @@
 import {CheckmarkIcon} from '@sanity/icons'
-import {MenuDivider, Text} from '@sanity/ui'
+import {MenuDivider, Text} from '@sanity/ui-v3'
 import {type MouseEvent, useCallback} from 'react'
 import {TooltipOfDisabled, useGetI18nText, useI18nText} from 'sanity'
 import {useIntentLink} from 'sanity/router'

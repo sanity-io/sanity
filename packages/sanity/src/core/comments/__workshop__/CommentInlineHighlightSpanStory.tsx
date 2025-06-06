@@ -1,4 +1,4 @@
-import {Card, Container, Flex, Stack, Text} from '@sanity/ui'
+import {Card, Container, Flex, Stack, Text} from '@sanity/ui-v3'
 
 import {CommentInlineHighlightSpan} from '../components'
 

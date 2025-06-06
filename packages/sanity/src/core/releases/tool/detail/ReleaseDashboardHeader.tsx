@@ -7,7 +7,7 @@ import {
   Button, // Custom button with a different textWeight, consider adding textWeight to the shared
   Flex,
   Text,
-} from '@sanity/ui'
+} from '@sanity/ui-v3'
 import {type Dispatch, type SetStateAction, useCallback} from 'react'
 import {useRouter} from 'sanity/router'
 

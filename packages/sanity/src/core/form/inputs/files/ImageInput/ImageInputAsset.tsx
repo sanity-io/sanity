@@ -1,5 +1,5 @@
 import {type AssetSource, type UploadState} from '@sanity/types'
-import {Box, type CardTone} from '@sanity/ui'
+import {Box, type CardTone} from '@sanity/ui-v3'
 import {type FocusEvent, memo, useCallback, useMemo, useState} from 'react'
 
 import {ChangeIndicator} from '../../../../changeIndicators'

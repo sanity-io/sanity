@@ -1,5 +1,5 @@
 import {PublishIcon} from '@sanity/icons'
-import {Flex, Menu, Stack, useToast} from '@sanity/ui'
+import {Flex, Menu, Stack, useToast} from '@sanity/ui-v3'
 import {useCallback} from 'react'
 import {ContextMenuButton} from 'sanity'
 

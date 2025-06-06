@@ -1,5 +1,5 @@
 import {AddIcon, ArrowLeftIcon, ChevronRightIcon} from '@sanity/icons'
-import {Box, Card, Flex, Stack} from '@sanity/ui'
+import {Box, Card, Flex, Stack} from '@sanity/ui-v3'
 import {useCallback, useState} from 'react'
 
 import {Button} from '../../../../../../ui-components'

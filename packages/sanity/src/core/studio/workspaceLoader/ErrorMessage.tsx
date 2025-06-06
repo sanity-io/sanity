@@ -1,5 +1,5 @@
 /* eslint-disable i18next/no-literal-string,@sanity/i18n/no-attribute-string-literals */
-import {Box, Card, Code, Flex, Text} from '@sanity/ui'
+import {Box, Card, Code, Flex, Text} from '@sanity/ui-v3'
 import {startCase} from 'lodash'
 import {useEffect} from 'react'
 import {styled} from 'styled-components'

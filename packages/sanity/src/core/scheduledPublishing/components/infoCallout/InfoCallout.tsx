@@ -1,5 +1,5 @@
 import {InfoOutlineIcon} from '@sanity/icons'
-import {Card, Flex, Inline, Stack, Text} from '@sanity/ui'
+import {Card, Flex, Inline, Stack, Text} from '@sanity/ui-v3'
 
 import {RELEASES_DOCS_URL} from '../../constants'
 

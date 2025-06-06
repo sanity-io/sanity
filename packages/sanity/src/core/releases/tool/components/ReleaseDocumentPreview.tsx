@@ -1,6 +1,6 @@
 import {type ReleaseState} from '@sanity/client'
 import {type PreviewValue} from '@sanity/types'
-import {Card} from '@sanity/ui'
+import {Card} from '@sanity/ui-v3'
 import {type ForwardedRef, forwardRef, useMemo} from 'react'
 import {IntentLink} from 'sanity/router'
 

@@ -1,4 +1,4 @@
-import {useToast} from '@sanity/ui'
+import {useToast} from '@sanity/ui-v3'
 import {type ComponentType, type PropsWithChildren} from 'react'
 import {type DocumentLayoutProps, useTranslation} from 'sanity'
 

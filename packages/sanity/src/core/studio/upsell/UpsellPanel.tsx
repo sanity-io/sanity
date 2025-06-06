@@ -1,7 +1,7 @@
 import {LaunchIcon} from '@sanity/icons'
-import {_responsive, Box, Card, Flex, type FlexDirection, Stack} from '@sanity/ui'
 // eslint-disable-next-line camelcase
 import {getTheme_v2} from '@sanity/ui/theme'
+import {_responsive, Box, Card, Flex, type FlexDirection, Stack} from '@sanity/ui-v3'
 import {css, styled} from 'styled-components'
 
 import {Button} from '../../../ui-components'

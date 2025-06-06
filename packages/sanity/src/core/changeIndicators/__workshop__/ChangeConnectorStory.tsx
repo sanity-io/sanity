@@ -1,5 +1,5 @@
 import {type Path} from '@sanity/types'
-import {Card, Container, Flex, LayerProvider, Stack, Text} from '@sanity/ui'
+import {Card, Container, Flex, LayerProvider, Stack, Text} from '@sanity/ui-v3'
 import {type ReactNode, useCallback, useState} from 'react'
 import {styled} from 'styled-components'
 

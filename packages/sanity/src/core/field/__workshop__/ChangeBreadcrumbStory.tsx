@@ -1,4 +1,4 @@
-import {Card, Container, Flex} from '@sanity/ui'
+import {Card, Container, Flex} from '@sanity/ui-v3'
 
 import {ChangeBreadcrumb} from '../diff/components/ChangeBreadcrumb'
 

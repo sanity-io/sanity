@@ -1,5 +1,5 @@
 import {WarningOutlineIcon} from '@sanity/icons'
-import {Box, Card, Flex, Text} from '@sanity/ui'
+import {Box, Card, Flex, Text} from '@sanity/ui-v3'
 import {type HTMLProps, useCallback, useMemo} from 'react'
 import {
   getPreviewValueWithFallback,

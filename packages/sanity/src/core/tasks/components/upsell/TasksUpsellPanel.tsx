@@ -1,4 +1,4 @@
-import {Box, Container} from '@sanity/ui'
+import {Box, Container} from '@sanity/ui-v3'
 
 import {UpsellPanel} from '../../../studio/upsell/UpsellPanel'
 import {useTasksUpsell} from '../../context'

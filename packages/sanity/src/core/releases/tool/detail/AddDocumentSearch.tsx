@@ -1,5 +1,5 @@
 import {type SanityDocument} from '@sanity/client'
-import {LayerProvider, PortalProvider} from '@sanity/ui'
+import {LayerProvider, PortalProvider} from '@sanity/ui-v3'
 
 import {SearchPopover} from '../../../studio/components/navbar/search/components/SearchPopover'
 import {SearchProvider} from '../../../studio/components/navbar/search/contexts/search/SearchProvider'

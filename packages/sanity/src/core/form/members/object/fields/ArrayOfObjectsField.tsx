@@ -1,5 +1,5 @@
 import {type Path, type SchemaType} from '@sanity/types'
-import {useToast} from '@sanity/ui'
+import {useToast} from '@sanity/ui-v3'
 import {get} from 'lodash'
 import {type FocusEvent, useCallback, useEffect, useMemo, useRef} from 'react'
 import {type Subscription} from 'rxjs'

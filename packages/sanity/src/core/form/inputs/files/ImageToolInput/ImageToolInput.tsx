@@ -1,5 +1,5 @@
 import {type HotspotPreview, type Image, type ImageSchemaType} from '@sanity/types'
-import {Box, Card, Flex, Grid, Heading, Stack, Text} from '@sanity/ui'
+import {Box, Card, Flex, Grid, Heading, Stack, Text} from '@sanity/ui-v3'
 import {type ReactNode, useCallback, useEffect, useMemo, useState} from 'react'
 import {styled} from 'styled-components'
 

@@ -1,5 +1,5 @@
 import {type SchemaType} from '@sanity/types'
-import {Badge, Box, Flex} from '@sanity/ui'
+import {Badge, Box, Flex} from '@sanity/ui-v3'
 import {useMemo} from 'react'
 import {useObservable} from 'react-rx'
 import {styled} from 'styled-components'

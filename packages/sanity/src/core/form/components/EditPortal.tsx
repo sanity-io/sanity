@@ -1,4 +1,4 @@
-import {Box, type ResponsiveWidthProps} from '@sanity/ui'
+import {Box, type ResponsiveWidthProps} from '@sanity/ui-v3'
 import {type DragEvent, type ReactNode, useRef, useState} from 'react'
 
 import {Dialog} from '../../../ui-components'

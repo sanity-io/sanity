@@ -1,4 +1,4 @@
-import {Card, Flex} from '@sanity/ui'
+import {Card, Flex} from '@sanity/ui-v3'
 import {type MouseEvent, useCallback} from 'react'
 import {
   type DocumentGroupEvent,

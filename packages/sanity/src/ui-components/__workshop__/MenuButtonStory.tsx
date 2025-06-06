@@ -1,4 +1,4 @@
-import {Box, Card, Container, Menu, Stack, Text} from '@sanity/ui'
+import {Box, Card, Container, Menu, Stack, Text} from '@sanity/ui-v3'
 
 import {Button} from '../button'
 import {MenuButton} from '../menuButton'

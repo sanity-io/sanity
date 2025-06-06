@@ -1,5 +1,5 @@
 import {type ArraySchemaType} from '@sanity/types'
-import {Box, Checkbox, Flex, Grid, Text} from '@sanity/ui'
+import {Box, Checkbox, Flex, Grid, Text} from '@sanity/ui-v3'
 import {resolveTypeName} from '@sanity/util/content'
 import {startCase} from 'lodash'
 import {useMemo} from 'react'

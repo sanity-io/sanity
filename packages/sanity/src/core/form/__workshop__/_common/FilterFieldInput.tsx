@@ -1,4 +1,4 @@
-import {Card, Code, Grid, Stack, Text, TextArea} from '@sanity/ui'
+import {Card, Code, Grid, Stack, Text, TextArea} from '@sanity/ui-v3'
 import {type ForwardedRef, forwardRef, useCallback, useMemo} from 'react'
 import {styled} from 'styled-components'
 

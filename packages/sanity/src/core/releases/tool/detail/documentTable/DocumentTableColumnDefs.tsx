@@ -1,6 +1,6 @@
 import {type ReleaseState} from '@sanity/client'
 import {ErrorOutlineIcon} from '@sanity/icons'
-import {Badge, Box, Flex, Text} from '@sanity/ui'
+import {Badge, Box, Flex, Text} from '@sanity/ui-v3'
 import {type TFunction} from 'i18next'
 import {memo} from 'react'
 

@@ -2,7 +2,7 @@ import {toPlainText} from '@portabletext/react'
 import {hues} from '@sanity/color'
 import {LinkRemovedIcon} from '@sanity/icons'
 import {isPortableTextTextBlock} from '@sanity/types'
-import {Box, Flex, Stack, Text, type Theme} from '@sanity/ui'
+import {Box, Flex, Stack, Text, type Theme} from '@sanity/ui-v3'
 import {useMemo} from 'react'
 import {css, styled} from 'styled-components'
 

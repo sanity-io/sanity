@@ -1,5 +1,5 @@
 /* eslint-disable i18next/no-literal-string,@sanity/i18n/no-attribute-string-literals */
-import {Card, Flex, Heading, Inline, Stack} from '@sanity/ui'
+import {Card, Flex, Heading, Inline, Stack} from '@sanity/ui-v3'
 
 import {Button} from '../../../ui-components'
 

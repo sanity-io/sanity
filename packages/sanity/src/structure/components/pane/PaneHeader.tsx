@@ -1,4 +1,4 @@
-import {Box, Card, Flex, LayerProvider, useElementRect} from '@sanity/ui'
+import {Box, Card, Flex, LayerProvider, useElementRect} from '@sanity/ui-v3'
 import {type ForwardedRef, forwardRef, type ReactNode, useCallback, useMemo} from 'react'
 import {LegacyLayerProvider} from 'sanity'
 

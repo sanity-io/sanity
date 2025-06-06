@@ -5,7 +5,7 @@ import {
   MenuItem,
   Text,
   usePortal,
-} from '@sanity/ui'
+} from '@sanity/ui-v3'
 import {useCallback} from 'react'
 import {
   ContextMenuButton,

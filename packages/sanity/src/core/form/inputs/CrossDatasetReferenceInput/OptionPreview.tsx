@@ -1,5 +1,5 @@
 import {type CrossDatasetReferenceSchemaType} from '@sanity/types'
-import {Stack, Text, TextSkeleton} from '@sanity/ui'
+import {Stack, Text, TextSkeleton} from '@sanity/ui-v3'
 import {type Observable} from 'rxjs'
 
 import {useTranslation} from '../../../i18n'

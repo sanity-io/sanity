@@ -7,7 +7,7 @@ import {
   type MenuItemProps as UIMenuItemProps,
   Stack,
   Text,
-} from '@sanity/ui'
+} from '@sanity/ui-v3'
 import {
   forwardRef,
   type HTMLProps,

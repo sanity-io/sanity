@@ -1,5 +1,5 @@
 /* eslint-disable i18next/no-literal-string */
-import {Box, Card, Code, Container, Heading, Stack, Text} from '@sanity/ui'
+import {Box, Card, Code, Container, Heading, Stack, Text} from '@sanity/ui-v3'
 import {styled} from 'styled-components'
 
 import {ErrorActions} from '../../components'

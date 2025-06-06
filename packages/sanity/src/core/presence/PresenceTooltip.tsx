@@ -1,4 +1,4 @@
-import {Flex, Stack, Text} from '@sanity/ui'
+import {Flex, Stack, Text} from '@sanity/ui-v3'
 import {useMemo} from 'react'
 
 import {Tooltip} from '../../ui-components'

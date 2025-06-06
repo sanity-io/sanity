@@ -1,6 +1,6 @@
 /* eslint-disable no-nested-ternary */
 import {type ReleaseDocument} from '@sanity/client'
-import {Card, Flex} from '@sanity/ui'
+import {Card, Flex} from '@sanity/ui-v3'
 import {useMemo} from 'react'
 
 import {isReleaseScheduledOrScheduling} from '../../index'

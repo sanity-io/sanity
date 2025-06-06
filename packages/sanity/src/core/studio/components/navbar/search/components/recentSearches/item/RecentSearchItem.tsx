@@ -9,7 +9,7 @@ import {
   type ResponsiveMarginProps,
   type ResponsivePaddingProps,
   Text,
-} from '@sanity/ui'
+} from '@sanity/ui-v3'
 import {type MouseEvent, useCallback} from 'react'
 import {styled} from 'styled-components'
 

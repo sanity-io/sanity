@@ -1,4 +1,4 @@
-import {Flex} from '@sanity/ui'
+import {Flex} from '@sanity/ui-v3'
 import {styled} from 'styled-components'
 
 import {AVATAR_SIZE} from './constants'

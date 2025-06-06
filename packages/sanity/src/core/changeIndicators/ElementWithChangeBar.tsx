@@ -1,4 +1,4 @@
-import {useLayer} from '@sanity/ui'
+import {useLayer} from '@sanity/ui-v3'
 import {type ReactNode, useContext, useMemo} from 'react'
 import {ReviewChangesContext} from 'sanity/_singletons'
 

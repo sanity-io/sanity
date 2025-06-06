@@ -7,7 +7,7 @@ import {
   Flex,
   Text,
   TextSkeleton,
-} from '@sanity/ui'
+} from '@sanity/ui-v3'
 import {useCallback, useMemo} from 'react'
 import {styled} from 'styled-components'
 

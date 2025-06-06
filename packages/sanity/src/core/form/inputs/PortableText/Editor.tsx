@@ -14,9 +14,14 @@ import {
   type RenderStyleFunction,
 } from '@portabletext/editor'
 import {type Path} from '@sanity/types'
-import {BoundaryElementProvider, useBoundaryElement, useGlobalKeyDown, useLayer} from '@sanity/ui'
 // eslint-disable-next-line camelcase
 import {getTheme_v2} from '@sanity/ui/theme'
+import {
+  BoundaryElementProvider,
+  useBoundaryElement,
+  useGlobalKeyDown,
+  useLayer,
+} from '@sanity/ui-v3'
 import {type ReactNode, useCallback, useMemo} from 'react'
 import {css, styled} from 'styled-components'
 

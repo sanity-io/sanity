@@ -3,7 +3,7 @@ import {
   isValidationWarningMarker,
   type ValidationMarker,
 } from '@sanity/types'
-import {type ButtonTone} from '@sanity/ui'
+import {type ButtonTone} from '@sanity/ui-v3'
 import {useMemo} from 'react'
 
 import {type ValidationStatus} from '../types'

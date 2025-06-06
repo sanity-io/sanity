@@ -1,5 +1,5 @@
 import {type ObjectField, type ObjectSchemaTypeWithOptions} from '@sanity/types'
-import {Card, Grid, Stack, useToast} from '@sanity/ui'
+import {Card, Grid, Stack, useToast} from '@sanity/ui-v3'
 import {useBoolean, useProps} from '@sanity/ui-workshop'
 import {useCallback, useEffect, useMemo, useState} from 'react'
 

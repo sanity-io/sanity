@@ -1,4 +1,4 @@
-import {DialogProvider, type DialogProviderProps, PortalProvider} from '@sanity/ui'
+import {DialogProvider, type DialogProviderProps, PortalProvider} from '@sanity/ui-v3'
 import {type Dispatch, type SetStateAction, useMemo} from 'react'
 import {getSanityCreateLinkMetadata, useZIndex} from 'sanity'
 

@@ -1,4 +1,4 @@
-import {useGlobalKeyDown, useLayer} from '@sanity/ui'
+import {useGlobalKeyDown, useLayer} from '@sanity/ui-v3'
 import {isHotkey} from 'is-hotkey-esm'
 import {useCallback} from 'react'
 

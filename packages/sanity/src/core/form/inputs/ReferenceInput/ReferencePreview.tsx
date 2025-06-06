@@ -1,5 +1,5 @@
 import {type ObjectSchemaType} from '@sanity/types'
-import {Badge, Box, Inline} from '@sanity/ui'
+import {Badge, Box, Inline} from '@sanity/ui-v3'
 import {useMemo} from 'react'
 
 import {type PreviewLayoutKey} from '../../../components'

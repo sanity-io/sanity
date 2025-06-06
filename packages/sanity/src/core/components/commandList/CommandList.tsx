@@ -1,7 +1,7 @@
 'use no memo'
 // The `use no memo` directive is due to a known issue with react-virtual and react compiler: https://github.com/TanStack/virtual/issues/736
 
-import {Box, rem, Stack} from '@sanity/ui'
+import {Box, rem, Stack} from '@sanity/ui-v3'
 import {type ScrollToOptions, useVirtualizer, type Virtualizer} from '@tanstack/react-virtual'
 import {throttle} from 'lodash'
 import {

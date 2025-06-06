@@ -1,4 +1,4 @@
-import {_raf2, type CardTone, Flex} from '@sanity/ui'
+import {_raf2, type CardTone, Flex} from '@sanity/ui-v3'
 import {memo, useEffect, useMemo, useState} from 'react'
 import {type Observable} from 'rxjs'
 import {LoadingBlock, useTranslation} from 'sanity'

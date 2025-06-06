@@ -1,4 +1,4 @@
-import {Box, type BoxProps, Card, Code, Stack, Text} from '@sanity/ui'
+import {Box, type BoxProps, Card, Code, Stack, Text} from '@sanity/ui-v3'
 import {type ReactNode, useCallback, useEffect, useRef, useState} from 'react'
 import {type ExecutionProps, styled} from 'styled-components'
 

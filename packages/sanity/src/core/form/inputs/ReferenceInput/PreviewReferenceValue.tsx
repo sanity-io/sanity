@@ -1,6 +1,6 @@
 import {AccessDeniedIcon, HelpCircleIcon} from '@sanity/icons'
 import {type Reference, type ReferenceSchemaType} from '@sanity/types'
-import {Badge, Box, Flex, Inline, Stack, Text} from '@sanity/ui'
+import {Badge, Box, Flex, Inline, Stack, Text} from '@sanity/ui-v3'
 import {type ComponentType, Fragment, type ReactNode} from 'react'
 
 import {Tooltip} from '../../../../ui-components'

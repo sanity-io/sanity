@@ -1,5 +1,5 @@
 import {type AssetFromSource, type FileSchemaType, type ImageSchemaType} from '@sanity/types'
-import {Flex, Stack, useTheme, useToast} from '@sanity/ui'
+import {Flex, Stack, useTheme, useToast} from '@sanity/ui-v3'
 import {type ReactNode, useCallback, useState} from 'react'
 
 import {Button} from '../../../../../ui-components'

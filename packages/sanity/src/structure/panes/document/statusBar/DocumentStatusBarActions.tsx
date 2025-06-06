@@ -1,6 +1,6 @@
 /* eslint-disable no-warning-comments */
 /* eslint-disable camelcase */
-import {Flex, LayerProvider, Stack, Text} from '@sanity/ui'
+import {Flex, LayerProvider, Stack, Text} from '@sanity/ui-v3'
 import {memo, useCallback, useMemo, useState} from 'react'
 import {
   type DocumentActionComponent,

@@ -1,5 +1,5 @@
 import {SearchIcon} from '@sanity/icons'
-import {TextInput} from '@sanity/ui'
+import {TextInput} from '@sanity/ui-v3'
 import {type ChangeEvent, useCallback} from 'react'
 import {useTranslation} from 'sanity'
 

@@ -1,5 +1,5 @@
 import {type CurrentUser} from '@sanity/types'
-import {Box, type SelectableTone} from '@sanity/ui'
+import {Box, type SelectableTone} from '@sanity/ui-v3'
 import {type ComponentType, type ReactNode} from 'react'
 
 import {MenuItem, Tooltip} from '../../../../ui-components'

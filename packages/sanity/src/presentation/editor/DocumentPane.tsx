@@ -1,4 +1,4 @@
-import {Card, Code, Label, Stack} from '@sanity/ui'
+import {Card, Code, Label, Stack} from '@sanity/ui-v3'
 import {type ErrorInfo, Suspense, useCallback, useEffect, useMemo, useState} from 'react'
 import {type Path, useTranslation} from 'sanity'
 import {decodeJsonParams} from 'sanity/router'

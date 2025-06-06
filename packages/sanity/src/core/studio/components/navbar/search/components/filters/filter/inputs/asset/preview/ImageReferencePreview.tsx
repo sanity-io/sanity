@@ -1,5 +1,5 @@
 import {type ImageAsset, type ReferenceValue} from '@sanity/types'
-import {Card} from '@sanity/ui'
+import {Card} from '@sanity/ui-v3'
 import {useCallback, useState} from 'react'
 import {styled} from 'styled-components'
 

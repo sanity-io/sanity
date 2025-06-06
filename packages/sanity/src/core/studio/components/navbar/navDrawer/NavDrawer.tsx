@@ -1,5 +1,5 @@
 import {CloseIcon, LeaveIcon} from '@sanity/icons'
-import {Box, Card, Flex, Layer, Stack, Text} from '@sanity/ui'
+import {Box, Card, Flex, Layer, Stack, Text} from '@sanity/ui-v3'
 import {AnimatePresence, motion, type Transition, type Variants} from 'framer-motion'
 import {type KeyboardEvent, memo, useCallback, useMemo} from 'react'
 import TrapFocus from 'react-focus-lock'

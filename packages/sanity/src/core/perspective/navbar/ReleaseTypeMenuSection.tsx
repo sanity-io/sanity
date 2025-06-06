@@ -1,5 +1,5 @@
 import {type ReleaseDocument, type ReleaseType} from '@sanity/client'
-import {Flex, Label} from '@sanity/ui'
+import {Flex, Label} from '@sanity/ui-v3'
 import {useCallback} from 'react'
 
 import {useTranslation} from '../../i18n/hooks/useTranslation'

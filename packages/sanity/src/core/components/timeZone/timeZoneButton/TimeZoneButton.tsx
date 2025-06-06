@@ -1,5 +1,5 @@
 import {EarthAmericasIcon} from '@sanity/icons'
-import {Box, Inline, Text} from '@sanity/ui'
+import {Box, Inline, Text} from '@sanity/ui-v3'
 import {noop} from 'lodash'
 import {type ReactNode} from 'react'
 

@@ -1,6 +1,6 @@
 import {type StackablePerspective} from '@sanity/client'
 import {type SanityDocumentLike} from '@sanity/types'
-import {Box, type ResponsiveMarginProps, type ResponsivePaddingProps} from '@sanity/ui'
+import {Box, type ResponsiveMarginProps, type ResponsivePaddingProps} from '@sanity/ui-v3'
 import {type MouseEvent, useCallback, useEffect, useMemo, useState} from 'react'
 import {useIntentLink} from 'sanity/router'
 

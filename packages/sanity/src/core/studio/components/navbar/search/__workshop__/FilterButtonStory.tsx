@@ -1,4 +1,4 @@
-import {Card, Text} from '@sanity/ui'
+import {Card, Text} from '@sanity/ui-v3'
 import {useBoolean} from '@sanity/ui-workshop'
 import {useMemo} from 'react'
 

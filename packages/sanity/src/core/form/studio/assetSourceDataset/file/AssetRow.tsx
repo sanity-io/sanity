@@ -10,7 +10,7 @@ import {
   Stack,
   Text,
   useToast,
-} from '@sanity/ui'
+} from '@sanity/ui-v3'
 import {type KeyboardEvent, type MouseEvent, useCallback, useMemo, useRef, useState} from 'react'
 import {type Subscription} from 'rxjs'
 import {css, styled} from 'styled-components'

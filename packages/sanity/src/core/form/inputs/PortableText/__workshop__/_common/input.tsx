@@ -1,5 +1,5 @@
 import {type SchemaType} from '@sanity/types'
-import {TextArea, type Theme} from '@sanity/ui'
+import {TextArea, type Theme} from '@sanity/ui-v3'
 import {type ComponentType, forwardRef, useImperativeHandle, useRef} from 'react'
 import {css, styled} from 'styled-components'
 

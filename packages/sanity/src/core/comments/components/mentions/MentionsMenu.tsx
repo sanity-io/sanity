@@ -1,4 +1,4 @@
-import {Box, Flex, Stack, Text} from '@sanity/ui'
+import {Box, Flex, Stack, Text} from '@sanity/ui-v3'
 import {deburr} from 'lodash'
 import {
   forwardRef,

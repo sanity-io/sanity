@@ -1,6 +1,8 @@
 /* eslint-disable complexity */
 import {hues} from '@sanity/color'
 import {type CurrentUser} from '@sanity/types'
+// eslint-disable-next-line camelcase
+import {getTheme_v2} from '@sanity/ui/theme'
 import {
   type AvatarSize,
   Box,
@@ -10,9 +12,7 @@ import {
   Text,
   TextSkeleton,
   useClickOutsideEvent,
-} from '@sanity/ui'
-// eslint-disable-next-line camelcase
-import {getTheme_v2} from '@sanity/ui/theme'
+} from '@sanity/ui-v3'
 import {useCallback, useEffect, useMemo, useRef, useState} from 'react'
 import {IntentLink} from 'sanity/router'
 import {css, styled} from 'styled-components'

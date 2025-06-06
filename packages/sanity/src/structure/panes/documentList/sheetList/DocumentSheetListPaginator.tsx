@@ -10,7 +10,7 @@ import {
   DoubleChevronLeftIcon,
   DoubleChevronRightIcon,
 } from '@sanity/icons'
-import {Flex, Text} from '@sanity/ui'
+import {Flex, Text} from '@sanity/ui-v3'
 import {type Table} from '@tanstack/react-table'
 import {type SanityDocument} from 'sanity'
 

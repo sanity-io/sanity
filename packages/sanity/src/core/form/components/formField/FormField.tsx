@@ -1,5 +1,5 @@
 import {type DeprecatedProperty, type FormNodeValidation} from '@sanity/types'
-import {Stack} from '@sanity/ui'
+import {Stack} from '@sanity/ui-v3'
 import {type HTMLProps, memo, type ReactNode} from 'react'
 
 import {type DocumentFieldActionNode} from '../../../config'

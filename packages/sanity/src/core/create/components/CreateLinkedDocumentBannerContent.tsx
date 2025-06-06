@@ -9,7 +9,7 @@ import {
   Text,
   useClickOutsideEvent,
   useGlobalKeyDown,
-} from '@sanity/ui'
+} from '@sanity/ui-v3'
 import {useCallback, useRef, useState} from 'react'
 
 import {Button, Popover} from '../../../ui-components'

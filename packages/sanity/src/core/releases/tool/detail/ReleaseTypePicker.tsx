@@ -1,6 +1,15 @@
 import {type ReleaseType} from '@sanity/client'
 import {LockIcon, PublishIcon} from '@sanity/icons'
-import {Card, Flex, Spinner, Stack, TabList, Text, useClickOutsideEvent, useToast} from '@sanity/ui'
+import {
+  Card,
+  Flex,
+  Spinner,
+  Stack,
+  TabList,
+  Text,
+  useClickOutsideEvent,
+  useToast,
+} from '@sanity/ui-v3'
 import {format, isBefore, isValid, parse, startOfMinute} from 'date-fns'
 import {isEqual} from 'lodash'
 import {useCallback, useMemo, useRef, useState} from 'react'

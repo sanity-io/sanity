@@ -1,6 +1,6 @@
 import {hues} from '@sanity/color'
 import {type PortableTextBlock} from '@sanity/types'
-import {Stack, useBoundaryElement} from '@sanity/ui'
+import {Stack, useBoundaryElement} from '@sanity/ui-v3'
 import * as PathUtils from '@sanity/util/paths'
 import {uuid} from '@sanity/uuid'
 import {AnimatePresence, motion, type Variants} from 'framer-motion'

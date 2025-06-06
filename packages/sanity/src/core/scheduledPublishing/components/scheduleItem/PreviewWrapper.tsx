@@ -1,5 +1,5 @@
 import {type SchemaType} from '@sanity/types'
-import {Badge, Box, Card, Flex, Stack, Text} from '@sanity/ui'
+import {Badge, Box, Card, Flex, Stack, Text} from '@sanity/ui-v3'
 import {type ElementType, type ReactNode, useState} from 'react'
 import {styled} from 'styled-components'
 

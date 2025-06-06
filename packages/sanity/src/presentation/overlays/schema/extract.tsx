@@ -23,7 +23,7 @@ import {
   type SchemaType as SanitySchemaType,
   type StringSchemaType,
 } from '@sanity/types'
-import {type ThemeContextValue} from '@sanity/ui'
+import {type ThemeContextValue} from '@sanity/ui-v3'
 import {renderToString} from 'react-dom/server'
 import {type Workspace} from 'sanity'
 

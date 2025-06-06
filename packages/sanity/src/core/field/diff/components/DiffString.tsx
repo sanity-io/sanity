@@ -1,4 +1,4 @@
-import {Card, rem, Text} from '@sanity/ui'
+import {Card, rem, Text} from '@sanity/ui-v3'
 import {styled} from 'styled-components'
 
 import {useTranslation} from '../../../i18n'

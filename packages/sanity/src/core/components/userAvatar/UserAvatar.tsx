@@ -1,4 +1,6 @@
 import {type User} from '@sanity/types'
+// eslint-disable-next-line camelcase
+import {getTheme_v2} from '@sanity/ui/theme'
 import {
   Avatar,
   type AvatarPosition,
@@ -6,9 +8,7 @@ import {
   type AvatarSize,
   type AvatarStatus,
   Skeleton,
-} from '@sanity/ui'
-// eslint-disable-next-line camelcase
-import {getTheme_v2} from '@sanity/ui/theme'
+} from '@sanity/ui-v3'
 import {type ForwardedRef, forwardRef, useState} from 'react'
 import {css, styled} from 'styled-components'
 

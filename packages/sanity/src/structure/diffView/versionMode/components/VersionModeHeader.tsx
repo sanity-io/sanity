@@ -10,7 +10,7 @@ import {
   MenuItem,
   Stack,
   Text,
-} from '@sanity/ui'
+} from '@sanity/ui-v3'
 import {type TFunction} from 'i18next'
 import {type ComponentProps, type ComponentType, useCallback, useMemo} from 'react'
 import {

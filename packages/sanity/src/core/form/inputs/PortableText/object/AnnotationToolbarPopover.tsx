@@ -1,6 +1,6 @@
 import {PortableTextEditor, usePortableTextEditor} from '@portabletext/editor'
 import {EditIcon, TrashIcon} from '@sanity/icons'
-import {Box, Flex, Text, useGlobalKeyDown, useTheme} from '@sanity/ui'
+import {Box, Flex, Text, useGlobalKeyDown, useTheme} from '@sanity/ui-v3'
 import {type ReactNode, useCallback, useEffect, useMemo, useRef, useState} from 'react'
 
 import {Button, Popover, type PopoverProps} from '../../../../../ui-components'

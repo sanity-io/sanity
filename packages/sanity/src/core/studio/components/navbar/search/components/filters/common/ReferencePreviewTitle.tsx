@@ -1,5 +1,5 @@
 import {type SchemaType} from '@sanity/types'
-import {Skeleton} from '@sanity/ui'
+import {Skeleton} from '@sanity/ui-v3'
 import {useMemo} from 'react'
 import {useObservable} from 'react-rx'
 

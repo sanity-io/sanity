@@ -1,4 +1,4 @@
-import {Box, Container, Flex, Stack, Text} from '@sanity/ui'
+import {Box, Container, Flex, Stack, Text} from '@sanity/ui-v3'
 import {useBoolean, useSelect} from '@sanity/ui-workshop'
 import {css, styled} from 'styled-components'
 

@@ -1,4 +1,4 @@
-import {Box, Card, Portal} from '@sanity/ui'
+import {Box, Card, Portal} from '@sanity/ui-v3'
 import {useState} from 'react'
 import FocusLock from 'react-focus-lock'
 import {styled} from 'styled-components'

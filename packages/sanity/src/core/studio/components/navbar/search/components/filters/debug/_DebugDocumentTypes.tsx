@@ -1,4 +1,4 @@
-import {Card, Code, Stack} from '@sanity/ui'
+import {Card, Code, Stack} from '@sanity/ui-v3'
 
 import {useSearchState} from '../../../contexts/search/useSearchState'
 import {type SearchFilter} from '../../../types'

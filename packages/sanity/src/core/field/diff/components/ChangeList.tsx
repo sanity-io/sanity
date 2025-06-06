@@ -1,7 +1,7 @@
 import {type SanityDocument} from '@sanity/client'
 import {RevertIcon} from '@sanity/icons'
 import {type ObjectSchemaType} from '@sanity/types'
-import {Box, Card, Flex, Stack, Text, useClickOutsideEvent} from '@sanity/ui'
+import {Box, Card, Flex, Stack, Text, useClickOutsideEvent} from '@sanity/ui-v3'
 import {useCallback, useContext, useMemo, useRef, useState} from 'react'
 import {DiffContext} from 'sanity/_singletons'
 

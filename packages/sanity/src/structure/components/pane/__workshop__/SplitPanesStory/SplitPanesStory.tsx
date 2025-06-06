@@ -1,4 +1,4 @@
-import {Flex, PortalProvider, ToastProvider, useTheme} from '@sanity/ui'
+import {Flex, PortalProvider, ToastProvider, useTheme} from '@sanity/ui-v3'
 import {useBoolean} from '@sanity/ui-workshop'
 import {type Dispatch, type SetStateAction, useCallback, useState} from 'react'
 

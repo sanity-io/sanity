@@ -1,4 +1,4 @@
-import {ToastProvider} from '@sanity/ui'
+import {ToastProvider} from '@sanity/ui-v3'
 import {type ReactNode, useMemo} from 'react'
 import Refractor from 'react-refractor'
 import bash from 'refractor/lang/bash.js'

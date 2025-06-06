@@ -1,5 +1,5 @@
 import {ErrorOutlineIcon} from '@sanity/icons'
-import {Card, Flex, Stack, Text} from '@sanity/ui'
+import {Card, Flex, Stack, Text} from '@sanity/ui-v3'
 import {useCallback, useState} from 'react'
 import {MediaLibraryIdContext} from 'sanity/_singletons'
 

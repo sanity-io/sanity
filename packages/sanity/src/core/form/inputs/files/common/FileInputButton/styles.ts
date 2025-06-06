@@ -1,4 +1,4 @@
-import {type Theme} from '@sanity/ui'
+import {type Theme} from '@sanity/ui-v3'
 import {css, styled} from 'styled-components'
 
 import {Button, MenuItem} from '../../../../../../ui-components'

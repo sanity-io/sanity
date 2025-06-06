@@ -1,5 +1,5 @@
 import {DocumentIcon} from '@sanity/icons'
-import {Card, Container, Flex, Heading, Stack, Text} from '@sanity/ui'
+import {Card, Container, Flex, Heading, Stack, Text} from '@sanity/ui-v3'
 import {useBoolean, useString} from '@sanity/ui-workshop'
 import {styled} from 'styled-components'
 

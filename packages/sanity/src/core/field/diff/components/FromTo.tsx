@@ -1,4 +1,4 @@
-import {Flex, Grid, rem, useTheme} from '@sanity/ui'
+import {Flex, Grid, rem, useTheme} from '@sanity/ui-v3'
 import {forwardRef, type HTMLProps, type ReactNode, useMemo} from 'react'
 
 import {FromToArrow} from './FromToArrow'

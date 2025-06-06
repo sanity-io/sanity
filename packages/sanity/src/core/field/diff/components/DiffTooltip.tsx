@@ -1,5 +1,5 @@
 import {type Path} from '@sanity/types'
-import {Card, Flex, Inline, Stack, Text} from '@sanity/ui'
+import {Card, Flex, Inline, Stack, Text} from '@sanity/ui-v3'
 import {type ReactNode} from 'react'
 
 import {Tooltip, type TooltipProps} from '../../../../ui-components'

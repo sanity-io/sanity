@@ -1,6 +1,6 @@
 import {red} from '@sanity/color'
 import {ErrorOutlineIcon} from '@sanity/icons'
-import {type CardTone, Container, Flex, Menu, Text} from '@sanity/ui'
+import {type CardTone, Container, Flex, Menu, Text} from '@sanity/ui-v3'
 
 import {Button, MenuButton} from '../../../../ui-components'
 import {SCHEDULE_FAILED_TEXT} from '../../constants'

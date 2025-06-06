@@ -1,5 +1,5 @@
 import {ArrowLeftIcon, ControlsIcon, SearchIcon, SpinnerIcon} from '@sanity/icons'
-import {Box, Card, Flex} from '@sanity/ui'
+import {Box, Card, Flex} from '@sanity/ui-v3'
 import {forwardRef, type KeyboardEvent, useCallback, useEffect, useRef} from 'react'
 import {keyframes, styled} from 'styled-components'
 

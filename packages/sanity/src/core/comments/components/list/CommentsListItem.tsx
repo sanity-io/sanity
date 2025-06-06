@@ -1,6 +1,6 @@
 import {ChevronDownIcon} from '@sanity/icons'
 import {type CurrentUser} from '@sanity/types'
-import {type AvatarSize, Flex, Stack, type StackProps, useLayer} from '@sanity/ui'
+import {type AvatarSize, Flex, Stack, type StackProps, useLayer} from '@sanity/ui-v3'
 import {
   type KeyboardEvent,
   memo,

@@ -1,4 +1,4 @@
-import {Flex, Layer, useClickOutsideEvent, useLayer, useToast} from '@sanity/ui'
+import {Flex, Layer, useClickOutsideEvent, useLayer, useToast} from '@sanity/ui-v3'
 import * as PathUtils from '@sanity/util/paths'
 import {Fragment, useCallback, useEffect, useMemo, useRef, useState} from 'react'
 import {styled} from 'styled-components'

@@ -4,7 +4,7 @@ import {
   Button,
   Card,
   useToast,
-} from '@sanity/ui'
+} from '@sanity/ui-v3'
 import {memo, useCallback, useEffect, useMemo, useRef, useState} from 'react'
 import {type Subscription} from 'rxjs'
 import {styled} from 'styled-components'

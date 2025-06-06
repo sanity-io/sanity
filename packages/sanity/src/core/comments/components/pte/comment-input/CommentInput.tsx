@@ -5,7 +5,7 @@ import {
   type RenderBlockFunction,
 } from '@portabletext/editor'
 import {type CurrentUser, type PortableTextBlock} from '@sanity/types'
-import {type AvatarSize, focusFirstDescendant, focusLastDescendant, Stack} from '@sanity/ui'
+import {type AvatarSize, focusFirstDescendant, focusLastDescendant, Stack} from '@sanity/ui-v3'
 import {
   type FocusEvent,
   type FormEvent,

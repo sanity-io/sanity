@@ -1,4 +1,4 @@
-import {Card, Grid} from '@sanity/ui'
+import {Card, Grid} from '@sanity/ui-v3'
 import {styled} from 'styled-components'
 
 // The negative margins here removes the extra space between the tabs and the fields when inside of a grid

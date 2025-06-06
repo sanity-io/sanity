@@ -5,7 +5,7 @@ import {
   InfoOutlineIcon,
   WarningOutlineIcon,
 } from '@sanity/icons'
-import {Box, Card, Flex, Spinner, Stack, Text} from '@sanity/ui'
+import {Box, Card, Flex, Spinner, Stack, Text} from '@sanity/ui-v3'
 import {type ComponentType, type ReactNode, useCallback, useContext, useState} from 'react'
 import {type ObjectSchemaType, useTranslation} from 'sanity'
 import {PresentationContext} from 'sanity/_singletons'

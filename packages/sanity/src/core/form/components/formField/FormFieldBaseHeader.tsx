@@ -1,4 +1,4 @@
-import {Box, Card, Flex} from '@sanity/ui'
+import {Box, Card, Flex} from '@sanity/ui-v3'
 import {type ReactNode, useCallback, useEffect, useMemo, useState} from 'react'
 import {css, styled} from 'styled-components'
 

@@ -1,4 +1,4 @@
-import {Box, Card, Inline, Stack, Text} from '@sanity/ui'
+import {Box, Card, Inline, Stack, Text} from '@sanity/ui-v3'
 
 import {StructureToolProvider} from '../../../../StructureToolProvider'
 import {type DocumentPaneNode} from '../../../../types'

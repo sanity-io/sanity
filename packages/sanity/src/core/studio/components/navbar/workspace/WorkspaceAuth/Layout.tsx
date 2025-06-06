@@ -1,5 +1,5 @@
 import {SanityLogo} from '@sanity/logos'
-import {Box, Card, Flex, Heading, Stack, Text, usePrefersDark} from '@sanity/ui'
+import {Box, Card, Flex, Heading, Stack, Text, usePrefersDark} from '@sanity/ui-v3'
 import {Fragment, type ReactNode} from 'react'
 import {styled} from 'styled-components'
 

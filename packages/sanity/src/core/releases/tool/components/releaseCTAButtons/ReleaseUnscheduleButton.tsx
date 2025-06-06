@@ -1,7 +1,7 @@
 import {type ReleaseDocument} from '@sanity/client'
 import {CloseCircleIcon} from '@sanity/icons'
 import {useTelemetry} from '@sanity/telemetry/react'
-import {Text, useToast} from '@sanity/ui'
+import {Text, useToast} from '@sanity/ui-v3'
 import {useCallback, useMemo, useState} from 'react'
 
 import {Button, Dialog} from '../../../../../ui-components'

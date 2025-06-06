@@ -1,5 +1,5 @@
 import {type Path} from '@sanity/types'
-import {Box, Card, Code, Stack, Text} from '@sanity/ui'
+import {Box, Card, Code, Stack, Text} from '@sanity/ui-v3'
 
 export interface FormDebuggerOptions {
   value: any | null

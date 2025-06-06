@@ -1,7 +1,7 @@
 import {ChevronLeftIcon, ChevronRightIcon} from '@sanity/icons'
-import {Box, Flex, Text} from '@sanity/ui'
 // eslint-disable-next-line camelcase
 import {getTheme_v2} from '@sanity/ui/theme'
+import {Box, Flex, Text} from '@sanity/ui-v3'
 import {useCallback} from 'react'
 import {styled} from 'styled-components'
 

@@ -1,6 +1,6 @@
 import {isImageSource} from '@sanity/asset-utils'
 import {type AssetFromSource, type AssetSource, type UploadState} from '@sanity/types'
-import {Stack, useToast} from '@sanity/ui'
+import {Stack, useToast} from '@sanity/ui-v3'
 import {get} from 'lodash'
 import {type FocusEvent, memo, type ReactNode, useCallback, useMemo, useRef, useState} from 'react'
 import {type Subscription} from 'rxjs'

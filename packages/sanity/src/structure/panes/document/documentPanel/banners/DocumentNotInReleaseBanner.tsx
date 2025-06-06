@@ -1,4 +1,4 @@
-import {Text, useToast} from '@sanity/ui'
+import {Text, useToast} from '@sanity/ui-v3'
 import {useCallback, useEffect, useState} from 'react'
 import {
   getReleaseIdFromReleaseDocumentId,

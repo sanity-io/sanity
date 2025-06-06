@@ -21,7 +21,7 @@ import {
   Text,
   usePrefersReducedMotion,
   useToast,
-} from '@sanity/ui'
+} from '@sanity/ui-v3'
 import {useSelector} from '@xstate/react'
 import {AnimatePresence, motion, MotionConfig} from 'framer-motion'
 import {

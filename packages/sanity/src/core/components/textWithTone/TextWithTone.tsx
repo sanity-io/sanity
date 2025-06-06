@@ -1,4 +1,4 @@
-import {type ButtonTone, Text} from '@sanity/ui'
+import {type ButtonTone, Text} from '@sanity/ui-v3'
 import {type ComponentProps, forwardRef, type Ref} from 'react'
 import {styled} from 'styled-components'
 

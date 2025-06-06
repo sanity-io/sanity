@@ -6,7 +6,7 @@ import {
   PinIcon,
   WarningOutlineIcon,
 } from '@sanity/icons'
-import {Box, Card, Container, Flex, Stack, Text} from '@sanity/ui'
+import {Box, Card, Container, Flex, Stack, Text} from '@sanity/ui-v3'
 import {useCallback, useEffect, useRef, useState} from 'react'
 
 import {Button} from '../../../../ui-components/button/Button'

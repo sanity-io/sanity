@@ -1,4 +1,4 @@
-import {Flex} from '@sanity/ui'
+import {Flex} from '@sanity/ui-v3'
 import {uuid} from '@sanity/uuid'
 import {useCallback, useState} from 'react'
 

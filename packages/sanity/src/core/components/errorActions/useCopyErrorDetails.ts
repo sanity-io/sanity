@@ -1,4 +1,4 @@
-import {useToast} from '@sanity/ui'
+import {useToast} from '@sanity/ui-v3'
 import {pick} from 'lodash'
 import {useCallback} from 'react'
 import {catchError, EMPTY, map, of, type OperatorFunction, tap} from 'rxjs'

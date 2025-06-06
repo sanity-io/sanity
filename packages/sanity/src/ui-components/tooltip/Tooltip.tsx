@@ -7,7 +7,7 @@ import {
   Tooltip as UITooltip,
   // eslint-disable-next-line no-restricted-imports
   type TooltipProps as UITooltipProps,
-} from '@sanity/ui'
+} from '@sanity/ui-v3'
 import {type ForwardedRef, forwardRef} from 'react'
 
 import {Hotkeys} from '../../core/components/Hotkeys'

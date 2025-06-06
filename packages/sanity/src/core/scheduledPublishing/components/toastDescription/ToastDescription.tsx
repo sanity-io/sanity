@@ -1,5 +1,5 @@
 import {CalendarIcon} from '@sanity/icons'
-import {Inline, Stack, Text} from '@sanity/ui'
+import {Inline, Stack, Text} from '@sanity/ui-v3'
 
 interface Props {
   body?: string

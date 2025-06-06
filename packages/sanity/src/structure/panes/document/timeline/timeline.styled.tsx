@@ -1,4 +1,4 @@
-import {Box, Flex, Stack} from '@sanity/ui'
+import {Box, Flex, Stack} from '@sanity/ui-v3'
 import {css, styled} from 'styled-components'
 
 export const StackWrapper = styled(Stack)`

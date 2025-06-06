@@ -1,6 +1,6 @@
-import {Badge, Card, Flex, Text, TextSkeleton} from '@sanity/ui'
 // eslint-disable-next-line camelcase
 import {getTheme_v2} from '@sanity/ui/theme'
+import {Badge, Card, Flex, Text, TextSkeleton} from '@sanity/ui-v3'
 import {useCallback, useMemo} from 'react'
 import {css, styled} from 'styled-components'
 

@@ -1,4 +1,4 @@
-import {Box} from '@sanity/ui'
+import {Box} from '@sanity/ui-v3'
 
 import {ReferenceAutocomplete} from '../components/filters/filter/inputs/reference/ReferenceAutocomplete'
 import {SearchProvider} from '../contexts/search/SearchProvider'

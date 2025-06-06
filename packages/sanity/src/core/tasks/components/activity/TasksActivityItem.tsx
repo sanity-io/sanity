@@ -1,4 +1,4 @@
-import {Box, Flex} from '@sanity/ui'
+import {Box, Flex} from '@sanity/ui-v3'
 import {styled} from 'styled-components'
 
 import {TasksUserAvatar} from '../TasksUserAvatar'

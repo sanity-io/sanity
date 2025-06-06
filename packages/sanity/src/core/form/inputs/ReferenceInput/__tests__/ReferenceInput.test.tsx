@@ -1,6 +1,6 @@
 import {Schema} from '@sanity/schema'
 import {type Reference} from '@sanity/types'
-import {LayerProvider, studioTheme, ThemeProvider, ToastProvider} from '@sanity/ui'
+import {LayerProvider, studioTheme, ThemeProvider, ToastProvider} from '@sanity/ui-v3'
 import {render} from '@testing-library/react'
 import {noop} from 'lodash'
 import {forwardRef, useImperativeHandle} from 'react'

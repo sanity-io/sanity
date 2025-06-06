@@ -1,8 +1,8 @@
 import {UserIcon} from '@sanity/icons'
 import {type User} from '@sanity/types'
-import {type AvatarSize, Text} from '@sanity/ui'
 // eslint-disable-next-line camelcase
 import {getTheme_v2} from '@sanity/ui/theme'
+import {type AvatarSize, Text} from '@sanity/ui-v3'
 import {css, styled} from 'styled-components'
 
 import {Tooltip} from '../../../ui-components'

@@ -1,6 +1,6 @@
 import {UploadIcon} from '@sanity/icons'
 import {type AssetSource} from '@sanity/types'
-import {Flex, useElementSize} from '@sanity/ui'
+import {Flex, useElementSize} from '@sanity/ui-v3'
 import {memo, type ReactNode, useCallback, useMemo, useState} from 'react'
 
 import {useSource} from '../../../../../core/studio'

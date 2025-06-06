@@ -1,4 +1,4 @@
-import {Card, Stack, Text} from '@sanity/ui'
+import {Card, Stack, Text} from '@sanity/ui-v3'
 
 import {PaneLayout} from '../components'
 import {LoadingPane} from '../panes'

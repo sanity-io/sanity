@@ -1,6 +1,6 @@
-import {type AvatarSize} from '@sanity/ui'
 // eslint-disable-next-line camelcase
 import {getTheme_v2} from '@sanity/ui/theme'
+import {type AvatarSize} from '@sanity/ui-v3'
 import {css, styled} from 'styled-components'
 
 /**

@@ -1,6 +1,6 @@
 import {type EditorSelection, PortableTextEditor, usePortableTextEditor} from '@portabletext/editor'
 import {type ObjectSchemaType, type Path, type PortableTextTextBlock} from '@sanity/types'
-import {Box, Flex, type ResponsivePaddingProps, Text} from '@sanity/ui'
+import {Box, Flex, type ResponsivePaddingProps, Text} from '@sanity/ui-v3'
 import {isEqual} from '@sanity/util/paths'
 import {type ReactNode, useCallback, useMemo, useState} from 'react'
 

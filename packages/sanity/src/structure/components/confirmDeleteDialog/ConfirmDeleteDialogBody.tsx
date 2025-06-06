@@ -5,7 +5,7 @@ import {
   UnknownIcon,
   WarningOutlineIcon,
 } from '@sanity/icons'
-import {Box, Card, Flex, Stack, Text, useToast} from '@sanity/ui'
+import {Box, Card, Flex, Stack, Text, useToast} from '@sanity/ui-v3'
 import {useCallback} from 'react'
 import {SanityDefaultPreview, Translate, useSchema, useTranslation} from 'sanity'
 

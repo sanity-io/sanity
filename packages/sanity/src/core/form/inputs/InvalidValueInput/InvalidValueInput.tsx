@@ -1,4 +1,4 @@
-import {Card, Code, Stack, Text} from '@sanity/ui'
+import {Card, Code, Stack, Text} from '@sanity/ui-v3'
 import {isPlainObject} from 'lodash'
 import {forwardRef, type Ref, useCallback, useImperativeHandle, useMemo} from 'react'
 

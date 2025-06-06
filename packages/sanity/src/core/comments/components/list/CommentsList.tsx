@@ -1,5 +1,5 @@
 import {type CurrentUser} from '@sanity/types'
-import {BoundaryElementProvider, Flex, Stack} from '@sanity/ui'
+import {BoundaryElementProvider, Flex, Stack} from '@sanity/ui-v3'
 import {forwardRef, memo, useMemo, useState} from 'react'
 
 import {type UserListWithPermissionsHookValue} from '../../../hooks'

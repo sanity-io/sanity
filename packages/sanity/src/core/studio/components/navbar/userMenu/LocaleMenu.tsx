@@ -1,5 +1,5 @@
 import {CheckmarkIcon} from '@sanity/icons'
-import {MenuDivider} from '@sanity/ui'
+import {MenuDivider} from '@sanity/ui-v3'
 import {useCallback} from 'react'
 
 import {MenuItem} from '../../../../../ui-components'

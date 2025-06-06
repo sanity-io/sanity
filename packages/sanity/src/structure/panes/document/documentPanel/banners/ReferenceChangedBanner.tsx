@@ -1,6 +1,6 @@
 import {CloseIcon, SyncIcon, WarningOutlineIcon} from '@sanity/icons'
 import {type KeyedSegment, type Reference} from '@sanity/types'
-import {Text} from '@sanity/ui'
+import {Text} from '@sanity/ui-v3'
 import {fromString as pathFromString, get as pathGet} from '@sanity/util/paths'
 import {memo, useCallback, useMemo} from 'react'
 import {useObservable} from 'react-rx'

@@ -1,4 +1,4 @@
-import {Text} from '@sanity/ui'
+import {Text} from '@sanity/ui-v3'
 import {useCallback} from 'react'
 import {useRouter} from 'sanity/router'
 

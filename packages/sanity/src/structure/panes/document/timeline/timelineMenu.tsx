@@ -6,7 +6,7 @@ import {
   useClickOutsideEvent,
   useGlobalKeyDown,
   useToast,
-} from '@sanity/ui'
+} from '@sanity/ui-v3'
 import {useCallback, useMemo, useState} from 'react'
 import {type Chunk, useTimelineSelector, useTranslation} from 'sanity'
 import {styled} from 'styled-components'

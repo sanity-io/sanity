@@ -6,7 +6,7 @@ import {
   Flex,
   Stack,
   Text,
-} from '@sanity/ui'
+} from '@sanity/ui-v3'
 import {isThisISOWeek, isToday} from 'date-fns'
 import {useMemo} from 'react'
 import {styled} from 'styled-components'

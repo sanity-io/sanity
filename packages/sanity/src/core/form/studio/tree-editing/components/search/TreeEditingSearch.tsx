@@ -1,6 +1,6 @@
 import {SearchIcon} from '@sanity/icons'
 import {type Path} from '@sanity/types'
-import {Card, Flex, Stack, Text, TextInput} from '@sanity/ui'
+import {Card, Flex, Stack, Text, TextInput} from '@sanity/ui-v3'
 import {type ChangeEvent, type KeyboardEvent, useCallback, useMemo, useState} from 'react'
 import {css, styled} from 'styled-components'
 

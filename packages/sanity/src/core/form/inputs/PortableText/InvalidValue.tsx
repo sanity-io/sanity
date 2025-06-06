@@ -9,7 +9,7 @@ import {
   Grid,
   Stack,
   Text,
-} from '@sanity/ui'
+} from '@sanity/ui-v3'
 import {useCallback} from 'react'
 
 import {Translate, useTranslation} from '../../../i18n'

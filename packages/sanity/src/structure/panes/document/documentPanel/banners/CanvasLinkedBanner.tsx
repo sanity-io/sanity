@@ -1,5 +1,5 @@
 import {ComposeSparklesIcon, InfoOutlineIcon, LaunchIcon} from '@sanity/icons'
-import {Box, Card, Container, Flex, Heading, Text, useClickOutsideEvent} from '@sanity/ui'
+import {Box, Card, Container, Flex, Heading, Text, useClickOutsideEvent} from '@sanity/ui-v3'
 import {useCallback, useMemo, useRef, useState} from 'react'
 import {
   getDocumentVariantType,

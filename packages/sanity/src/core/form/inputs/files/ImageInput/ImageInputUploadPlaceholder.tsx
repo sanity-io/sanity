@@ -1,5 +1,5 @@
 import {type AssetSource} from '@sanity/types'
-import {Card} from '@sanity/ui'
+import {Card} from '@sanity/ui-v3'
 import {get} from 'lodash'
 import {memo, useMemo} from 'react'
 

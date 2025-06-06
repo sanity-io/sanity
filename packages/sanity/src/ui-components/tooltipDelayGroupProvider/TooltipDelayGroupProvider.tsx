@@ -2,7 +2,7 @@
 import {
   TooltipDelayGroupProvider as UITooltipDelayGroupProvider,
   type TooltipDelayGroupProviderProps as UITooltipDelayGroupProviderProps,
-} from '@sanity/ui'
+} from '@sanity/ui-v3'
 
 import {TOOLTIP_DELAY_PROPS} from '../tooltip/constants'
 

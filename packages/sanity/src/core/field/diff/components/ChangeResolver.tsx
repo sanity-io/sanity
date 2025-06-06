@@ -1,5 +1,5 @@
 import {type ConditionalProperty, type SanityDocument} from '@sanity/types'
-import {Text} from '@sanity/ui'
+import {Text} from '@sanity/ui-v3'
 import {Fragment} from 'react'
 
 import {unstable_useConditionalProperty as useConditionalProperty} from '../../conditional-property'

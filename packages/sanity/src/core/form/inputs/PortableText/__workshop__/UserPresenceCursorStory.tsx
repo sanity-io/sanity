@@ -1,4 +1,4 @@
-import {Card, Container, Flex, Heading, Stack, Text} from '@sanity/ui'
+import {Card, Container, Flex, Heading, Stack, Text} from '@sanity/ui-v3'
 
 import {HighlightSpan} from '../../../../comments/components/pte/CommentInlineHighlightSpan'
 import {UserPresenceCursor} from '../presence-cursors/UserPresenceCursor'

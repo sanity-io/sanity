@@ -1,5 +1,5 @@
 import {type Reference} from '@sanity/types'
-import {Box} from '@sanity/ui'
+import {Box} from '@sanity/ui-v3'
 import {styled} from 'styled-components'
 
 import {Preview} from '../../../../preview/components/Preview'

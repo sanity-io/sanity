@@ -1,4 +1,4 @@
-import {Badge, Box, Card, Flex, Text, TextSkeleton} from '@sanity/ui'
+import {Badge, Box, Card, Flex, Text, TextSkeleton} from '@sanity/ui-v3'
 import {type CSSProperties, useCallback} from 'react'
 import {styled} from 'styled-components'
 

@@ -1,7 +1,7 @@
 import {type ReleaseDocument} from '@sanity/client'
 import {ErrorOutlineIcon, PublishIcon} from '@sanity/icons'
 import {useTelemetry} from '@sanity/telemetry/react'
-import {Flex, Text, useToast} from '@sanity/ui'
+import {Flex, Text, useToast} from '@sanity/ui-v3'
 import {useCallback, useEffect, useMemo, useRef, useState} from 'react'
 
 import {Button, Dialog, MenuItem, type TooltipProps} from '../../../../../ui-components'

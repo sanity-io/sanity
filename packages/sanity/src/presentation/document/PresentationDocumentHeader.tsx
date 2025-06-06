@@ -1,4 +1,4 @@
-import {rem, Stack} from '@sanity/ui'
+import {rem, Stack} from '@sanity/ui-v3'
 import {type ReactNode, useContext} from 'react'
 import {type ObjectSchemaType, type PublishedId} from 'sanity'
 import {PresentationDocumentContext} from 'sanity/_singletons'

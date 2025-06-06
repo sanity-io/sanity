@@ -1,4 +1,4 @@
-import {DialogProvider, Text, ThemeColorProvider} from '@sanity/ui'
+import {DialogProvider, Text, ThemeColorProvider} from '@sanity/ui-v3'
 import {type MouseEvent, useCallback} from 'react'
 
 import {Dialog} from '../../../../../ui-components'

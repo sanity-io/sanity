@@ -1,5 +1,5 @@
 import {type ReleaseDocument} from '@sanity/client'
-import {Flex} from '@sanity/ui'
+import {Flex} from '@sanity/ui-v3'
 import {useMemo} from 'react'
 
 import {AvatarSkeleton, RelativeTime, UserAvatar} from '../../../components'

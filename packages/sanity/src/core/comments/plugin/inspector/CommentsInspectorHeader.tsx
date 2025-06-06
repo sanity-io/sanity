@@ -1,5 +1,5 @@
 import {CheckmarkIcon, ChevronDownIcon, CloseIcon} from '@sanity/icons'
-import {Card, Flex, Menu, Text} from '@sanity/ui'
+import {Card, Flex, Menu, Text} from '@sanity/ui-v3'
 import {forwardRef, useCallback} from 'react'
 import {styled} from 'styled-components'
 

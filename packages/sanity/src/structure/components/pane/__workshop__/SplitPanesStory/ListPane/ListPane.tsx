@@ -1,5 +1,5 @@
 import {ArrowLeftIcon, ChevronRightIcon} from '@sanity/icons'
-import {Box, Card, Flex, Stack, Text} from '@sanity/ui'
+import {Box, Card, Flex, Stack, Text} from '@sanity/ui-v3'
 import {type Dispatch, type SetStateAction, useCallback} from 'react'
 import {ContextMenuButton} from 'sanity'
 

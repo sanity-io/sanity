@@ -8,7 +8,7 @@ import {
   TextInput,
   type TextInputProps,
   useClickOutsideEvent,
-} from '@sanity/ui'
+} from '@sanity/ui-v3'
 import {type ChangeEvent, type KeyboardEvent, useCallback, useMemo, useRef, useState} from 'react'
 import ReactFocusLock from 'react-focus-lock'
 

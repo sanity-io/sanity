@@ -1,4 +1,4 @@
-import {Stack, Text} from '@sanity/ui'
+import {Stack, Text} from '@sanity/ui-v3'
 import {useCallback, useId, useState} from 'react'
 
 import {Dialog} from '../../../ui-components'

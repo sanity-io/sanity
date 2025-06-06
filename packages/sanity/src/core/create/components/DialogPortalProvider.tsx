@@ -1,4 +1,4 @@
-import {PortalProvider, usePortal} from '@sanity/ui'
+import {PortalProvider, usePortal} from '@sanity/ui-v3'
 import {type ReactNode} from 'react'
 
 export function DialogPortalProvider(props: {portalElementId: string; children: ReactNode}) {

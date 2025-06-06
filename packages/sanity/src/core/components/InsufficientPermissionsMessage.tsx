@@ -1,6 +1,6 @@
 import {AccessDeniedIcon} from '@sanity/icons'
 import {type CurrentUser} from '@sanity/types'
-import {Box, Inline, Text} from '@sanity/ui'
+import {Box, Inline, Text} from '@sanity/ui-v3'
 import {startCase} from 'lodash'
 import {Fragment, useCallback} from 'react'
 

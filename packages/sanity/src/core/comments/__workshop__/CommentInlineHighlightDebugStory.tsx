@@ -9,7 +9,7 @@ import {
 } from '@portabletext/editor'
 import {Schema} from '@sanity/schema'
 import {defineArrayMember, defineField, isKeySegment, type PortableTextBlock} from '@sanity/types'
-import {Box, Button, Card, Code, Container, Flex, Label, Stack, Text} from '@sanity/ui'
+import {Box, Button, Card, Code, Container, Flex, Label, Stack, Text} from '@sanity/ui-v3'
 import {uuid} from '@sanity/uuid'
 import {isEqual} from 'lodash'
 import {useCallback, useEffect, useMemo, useRef, useState} from 'react'

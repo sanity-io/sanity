@@ -1,6 +1,6 @@
 import {ResetIcon, WarningOutlineIcon} from '@sanity/icons'
 import {type CrossDatasetReferenceValue} from '@sanity/types'
-import {Box, Card, Flex, Stack, Text} from '@sanity/ui'
+import {Box, Card, Flex, Stack, Text} from '@sanity/ui-v3'
 import {useMemo} from 'react'
 
 import {Button} from '../../../../ui-components'

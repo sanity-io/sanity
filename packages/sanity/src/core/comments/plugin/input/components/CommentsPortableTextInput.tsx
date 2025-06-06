@@ -7,7 +7,7 @@ import {
   type RangeDecorationOnMovedDetails,
 } from '@portabletext/editor'
 import {isPortableTextTextBlock} from '@sanity/types'
-import {BoundaryElementProvider, Stack, usePortal} from '@sanity/ui'
+import {BoundaryElementProvider, Stack, usePortal} from '@sanity/ui-v3'
 import * as PathUtils from '@sanity/util/paths'
 import {uuid} from '@sanity/uuid'
 import {AnimatePresence} from 'framer-motion'

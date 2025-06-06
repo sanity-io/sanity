@@ -1,4 +1,4 @@
-import {Card} from '@sanity/ui'
+import {Card} from '@sanity/ui-v3'
 import {type CSSProperties, forwardRef, type Ref} from 'react'
 
 export interface IframeProps {

@@ -1,4 +1,4 @@
-import {Text} from '@sanity/ui'
+import {Text} from '@sanity/ui-v3'
 
 type Props = {
   documentCount: number | undefined

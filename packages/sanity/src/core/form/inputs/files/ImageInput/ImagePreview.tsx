@@ -1,5 +1,5 @@
 import {AccessDeniedIcon, ImageIcon, ReadOnlyIcon} from '@sanity/icons'
-import {Box, type Card, type CardTone, Heading, Text} from '@sanity/ui'
+import {Box, type Card, type CardTone, Heading, Text} from '@sanity/ui-v3'
 import {type ComponentProps, type ReactNode, useCallback, useEffect, useState} from 'react'
 
 import {LoadingBlock} from '../../../../components/loadingBlock'

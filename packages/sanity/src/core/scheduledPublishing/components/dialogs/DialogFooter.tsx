@@ -1,4 +1,4 @@
-import {type ButtonTone, Flex} from '@sanity/ui'
+import {type ButtonTone, Flex} from '@sanity/ui-v3'
 import {type ComponentType, type ReactNode} from 'react'
 
 import {Button} from '../../../../ui-components'

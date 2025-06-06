@@ -1,4 +1,4 @@
-import {TextInput, type TextInputProps} from '@sanity/ui'
+import {TextInput, type TextInputProps} from '@sanity/ui-v3'
 import {
   type ChangeEvent,
   type FocusEvent,

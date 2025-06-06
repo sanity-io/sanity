@@ -1,6 +1,6 @@
 /* eslint-disable no-restricted-imports */
 
-import {Button as UIButton, type ButtonProps as UIButtonProps} from '@sanity/ui'
+import {Button as UIButton, type ButtonProps as UIButtonProps} from '@sanity/ui-v3'
 import {type ForwardedRef, forwardRef, type HTMLProps, useCallback} from 'react'
 import {styled} from 'styled-components'
 

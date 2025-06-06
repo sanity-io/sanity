@@ -1,6 +1,6 @@
 import {Schema} from '@sanity/schema'
 import {type Path} from '@sanity/types'
-import {Card, Code, Stack} from '@sanity/ui'
+import {Card, Code, Stack} from '@sanity/ui-v3'
 import {useCallback, useMemo, useState} from 'react'
 
 import {TreeEditingLayout} from '../components'

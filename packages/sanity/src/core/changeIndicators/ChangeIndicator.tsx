@@ -1,5 +1,5 @@
 import {type Path} from '@sanity/types'
-import {Text, useLayer} from '@sanity/ui'
+import {Text, useLayer} from '@sanity/ui-v3'
 import * as PathUtils from '@sanity/util/paths'
 import {
   type ComponentProps,

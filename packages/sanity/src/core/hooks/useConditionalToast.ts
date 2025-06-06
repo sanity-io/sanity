@@ -1,4 +1,4 @@
-import {type ToastParams, useToast} from '@sanity/ui'
+import {type ToastParams, useToast} from '@sanity/ui-v3'
 import {useEffect, useState} from 'react'
 /**
  * Workaround to support conditional toast (e.g. a toast that is visible as long as a condition holds true)

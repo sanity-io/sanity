@@ -1,5 +1,5 @@
 import {type Path} from '@sanity/types'
-import {Box, Card, Flex, Text, useClickOutsideEvent} from '@sanity/ui'
+import {Box, Card, Flex, Text, useClickOutsideEvent} from '@sanity/ui-v3'
 // eslint-disable-next-line camelcase
 import {cloneElement, type KeyboardEvent, useCallback, useRef, useState} from 'react'
 import ReactFocusLock from 'react-focus-lock'

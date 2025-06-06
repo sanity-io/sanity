@@ -1,5 +1,5 @@
 import {type ReferenceSchemaType} from '@sanity/types'
-import {Stack, Text} from '@sanity/ui'
+import {Stack, Text} from '@sanity/ui-v3'
 
 import {Button} from '../../../../ui-components'
 import {Translate, useTranslation} from '../../../i18n'

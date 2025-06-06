@@ -1,5 +1,5 @@
 import {EditIcon, PublishIcon} from '@sanity/icons'
-import {Container, Flex} from '@sanity/ui'
+import {Container, Flex} from '@sanity/ui-v3'
 import {useBoolean} from '@sanity/ui-workshop'
 
 import {DocumentPreviewPresence} from '../../../presence'

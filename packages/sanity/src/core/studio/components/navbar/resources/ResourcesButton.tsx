@@ -1,5 +1,5 @@
 import {HelpCircleIcon} from '@sanity/icons'
-import {Menu} from '@sanity/ui'
+import {Menu} from '@sanity/ui-v3'
 import {useCallback, useState} from 'react'
 import {styled} from 'styled-components'
 

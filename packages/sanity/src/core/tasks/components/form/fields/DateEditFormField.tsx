@@ -1,6 +1,6 @@
 import {CalendarIcon} from '@sanity/icons'
 import {type Path} from '@sanity/types'
-import {Box, Flex, useClickOutsideEvent} from '@sanity/ui'
+import {Box, Flex, useClickOutsideEvent} from '@sanity/ui-v3'
 import {DEFAULT_DATE_FORMAT, format, parse} from '@sanity/util/legacyDateFormat'
 import {type KeyboardEvent, useCallback, useMemo, useRef, useState} from 'react'
 import ReactFocusLock from 'react-focus-lock'

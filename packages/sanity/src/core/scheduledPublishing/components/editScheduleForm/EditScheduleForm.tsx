@@ -1,4 +1,4 @@
-import {Stack} from '@sanity/ui'
+import {Stack} from '@sanity/ui-v3'
 import {type PropsWithChildren} from 'react'
 
 import {type ScheduleFormData} from '../../types'

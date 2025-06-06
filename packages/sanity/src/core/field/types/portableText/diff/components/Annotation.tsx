@@ -1,6 +1,6 @@
 import {ChevronDownIcon} from '@sanity/icons'
 import {isKeySegment, type ObjectSchemaType, type Path, type PortableTextChild} from '@sanity/types'
-import {Flex, Text, useClickOutsideEvent} from '@sanity/ui'
+import {Flex, Text, useClickOutsideEvent} from '@sanity/ui-v3'
 import {toString} from '@sanity/util/paths'
 import {
   type MouseEvent,

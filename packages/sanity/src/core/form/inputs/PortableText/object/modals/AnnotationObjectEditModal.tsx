@@ -1,5 +1,5 @@
 import {PortableTextEditor, usePortableTextEditor} from '@portabletext/editor'
-import {useBoundaryElement} from '@sanity/ui'
+import {useBoundaryElement} from '@sanity/ui-v3'
 import {useCallback, useMemo} from 'react'
 
 import {isEmptyItem} from '../../../../store/utils/isEmptyItem'

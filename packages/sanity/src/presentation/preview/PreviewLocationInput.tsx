@@ -1,5 +1,5 @@
 import {ResetIcon} from '@sanity/icons'
-import {TextInput, type TextInputClearButtonProps} from '@sanity/ui'
+import {TextInput, type TextInputClearButtonProps} from '@sanity/ui-v3'
 import {
   type ChangeEvent,
   type KeyboardEvent,

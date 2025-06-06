@@ -1,5 +1,5 @@
 import {type User} from '@sanity/types'
-import {Avatar, type AvatarProps} from '@sanity/ui'
+import {Avatar, type AvatarProps} from '@sanity/ui-v3'
 import {useMemo} from 'react'
 import {styled} from 'styled-components'
 

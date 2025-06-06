@@ -1,5 +1,5 @@
 import {ErrorOutlineIcon} from '@sanity/icons'
-import {Card, Flex, Inline, Text} from '@sanity/ui'
+import {Card, Flex, Inline, Text} from '@sanity/ui-v3'
 
 interface Props {
   description?: string

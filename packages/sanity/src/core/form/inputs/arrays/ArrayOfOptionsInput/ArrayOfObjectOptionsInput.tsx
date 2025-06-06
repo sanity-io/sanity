@@ -1,5 +1,5 @@
 import {type ArraySchemaType, isKeyedObject} from '@sanity/types'
-import {Box, Card, Checkbox, Flex, Grid} from '@sanity/ui'
+import {Box, Card, Checkbox, Flex, Grid} from '@sanity/ui-v3'
 import {resolveTypeName} from '@sanity/util/content'
 import {useCallback, useMemo} from 'react'
 

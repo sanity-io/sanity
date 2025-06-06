@@ -1,4 +1,4 @@
-import {Card, Inline, Text} from '@sanity/ui'
+import {Card, Inline, Text} from '@sanity/ui-v3'
 import {useBoolean} from '@sanity/ui-workshop'
 import {useCallback, useState} from 'react'
 

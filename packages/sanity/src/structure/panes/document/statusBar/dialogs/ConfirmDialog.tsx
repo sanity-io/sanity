@@ -8,7 +8,7 @@ import {
   useClickOutsideEvent,
   useGlobalKeyDown,
   useLayer,
-} from '@sanity/ui'
+} from '@sanity/ui-v3'
 import {useCallback, useRef} from 'react'
 import {type DocumentActionConfirmDialogProps, useTranslation} from 'sanity'
 

@@ -1,7 +1,7 @@
 import {
   type ButtonTone,
   type DialogProps, // eslint-disable-line no-restricted-imports
-} from '@sanity/ui'
+} from '@sanity/ui-v3'
 import {type ComponentType, type ReactNode} from 'react'
 
 import {type EditStateFor, type MapDocument} from '../../store/_legacy'

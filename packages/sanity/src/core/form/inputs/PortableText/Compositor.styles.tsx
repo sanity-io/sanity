@@ -1,7 +1,7 @@
 /* eslint-disable camelcase */
 
-import {Layer} from '@sanity/ui'
 import {getTheme_v2} from '@sanity/ui/theme'
+import {Layer} from '@sanity/ui-v3'
 import {css, styled} from 'styled-components'
 
 import {focusRingBorderStyle, focusRingStyle} from '../../components/withFocusRing/helpers'

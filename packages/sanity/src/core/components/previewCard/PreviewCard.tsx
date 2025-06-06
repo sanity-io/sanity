@@ -1,4 +1,4 @@
-import {Card, type CardProps} from '@sanity/ui'
+import {Card, type CardProps} from '@sanity/ui-v3'
 import {type ForwardedRef, forwardRef, type HTMLProps, useContext, useMemo} from 'react'
 import {PreviewCardContext} from 'sanity/_singletons'
 import {css, styled} from 'styled-components'

@@ -1,4 +1,4 @@
-import {Box, Card, Code, Stack, Text} from '@sanity/ui'
+import {Box, Card, Code, Stack, Text} from '@sanity/ui-v3'
 import {useCallback, useMemo, useState} from 'react'
 import {useHotModuleReload} from 'use-hot-module-reload'
 

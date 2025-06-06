@@ -1,5 +1,5 @@
 import {ChevronLeftIcon, ChevronRightIcon} from '@sanity/icons'
-import {Box, Flex, Text} from '@sanity/ui'
+import {Box, Flex, Text} from '@sanity/ui-v3'
 import {addDays, addMonths, setHours, setMinutes} from 'date-fns'
 import {
   type ComponentProps,

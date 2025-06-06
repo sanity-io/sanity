@@ -1,8 +1,8 @@
 import {white} from '@sanity/color'
 import {CloseIcon, LaunchIcon} from '@sanity/icons'
-import {Box, Stack} from '@sanity/ui'
 // eslint-disable-next-line camelcase
 import {getTheme_v2} from '@sanity/ui/theme'
+import {Box, Stack} from '@sanity/ui-v3'
 import {styled} from 'styled-components'
 
 import {Button, Dialog} from '../../../ui-components'

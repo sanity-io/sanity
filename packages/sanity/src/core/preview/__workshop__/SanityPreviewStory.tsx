@@ -1,5 +1,5 @@
 import {type Image, type ObjectSchemaType} from '@sanity/types'
-import {Box, Card, Container} from '@sanity/ui'
+import {Box, Card, Container} from '@sanity/ui-v3'
 import {useSelect} from '@sanity/ui-workshop'
 import {useMemo} from 'react'
 

@@ -1,5 +1,7 @@
 import {ChevronDownIcon} from '@sanity/icons'
 import {type Path} from '@sanity/types'
+// eslint-disable-next-line camelcase
+import {getTheme_v2, type Theme} from '@sanity/ui/theme'
 import {
   Box,
   // eslint-disable-next-line no-restricted-imports
@@ -7,9 +9,7 @@ import {
   Flex,
   Text,
   useElementSize,
-} from '@sanity/ui'
-// eslint-disable-next-line camelcase
-import {getTheme_v2, type Theme} from '@sanity/ui/theme'
+} from '@sanity/ui-v3'
 import {isEqual} from 'lodash'
 import {
   type ForwardedRef,

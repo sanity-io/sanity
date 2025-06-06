@@ -1,6 +1,6 @@
 import {ErrorOutlineIcon, InfoOutlineIcon, WarningOutlineIcon} from '@sanity/icons'
 import {type FormNodeValidation} from '@sanity/types'
-import {Box, Flex, Stack, Text, type Theme} from '@sanity/ui'
+import {Box, Flex, Stack, Text, type Theme} from '@sanity/ui-v3'
 import {css, styled} from 'styled-components'
 
 import {type PortableTextMarker, type RenderCustomMarkers} from '../../../types'

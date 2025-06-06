@@ -1,4 +1,4 @@
-import {Card, Container, Stack} from '@sanity/ui'
+import {Card, Container, Stack} from '@sanity/ui-v3'
 
 import {CommentMessageSerializer} from '../components'
 import {type CommentMessage} from '../types'

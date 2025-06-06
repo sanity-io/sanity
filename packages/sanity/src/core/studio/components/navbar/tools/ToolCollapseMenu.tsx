@@ -1,4 +1,4 @@
-import {Flex} from '@sanity/ui'
+import {Flex} from '@sanity/ui-v3'
 import {startCase} from 'lodash'
 import {forwardRef, type Ref, useMemo, useState} from 'react'
 

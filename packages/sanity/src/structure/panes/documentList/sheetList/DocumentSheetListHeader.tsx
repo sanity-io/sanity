@@ -3,7 +3,7 @@
 
 import {CloseIcon, EllipsisHorizontalIcon} from '@sanity/icons'
 import {type SanityDocument} from '@sanity/types'
-import {Box, Flex, Menu, Text} from '@sanity/ui'
+import {Box, Flex, Menu, Text} from '@sanity/ui-v3'
 import {flexRender, type Header as HeaderType, type HeaderGroup} from '@tanstack/react-table'
 import {useTranslation} from 'sanity'
 import {styled} from 'styled-components'

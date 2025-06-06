@@ -1,4 +1,4 @@
-import {TabList} from '@sanity/ui'
+import {TabList} from '@sanity/ui-v3'
 import {type ComponentType, type ReactNode, useCallback} from 'react'
 
 import {Tab} from '../../../../../ui-components'

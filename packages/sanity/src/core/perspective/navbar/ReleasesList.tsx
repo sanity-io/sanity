@@ -1,5 +1,5 @@
 import {type ReleaseDocument, type ReleaseType} from '@sanity/client'
-import {Box, Flex, MenuDivider, Spinner} from '@sanity/ui'
+import {Box, Flex, MenuDivider, Spinner} from '@sanity/ui-v3'
 import {type RefObject, useCallback, useMemo} from 'react'
 import {css, styled} from 'styled-components'
 

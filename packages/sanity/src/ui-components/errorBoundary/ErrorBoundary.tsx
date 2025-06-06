@@ -2,7 +2,7 @@ import {
   // eslint-disable-next-line no-restricted-imports
   ErrorBoundary as UIErrorBoundary,
   type ErrorBoundaryProps as UIErrorBoundaryProps,
-} from '@sanity/ui'
+} from '@sanity/ui-v3'
 import {useCallback, useContext} from 'react'
 
 import {SourceContext} from '../../_singletons'

@@ -1,4 +1,4 @@
-import {Stack} from '@sanity/ui'
+import {Stack} from '@sanity/ui-v3'
 import {startCase} from 'lodash'
 import {forwardRef, type Ref, useMemo} from 'react'
 

@@ -1,4 +1,4 @@
-import {BoundaryElementProvider, Box, Flex, PortalProvider, usePortal} from '@sanity/ui'
+import {BoundaryElementProvider, Box, Flex, PortalProvider, usePortal} from '@sanity/ui-v3'
 import {useEffect, useMemo, useRef, useState} from 'react'
 import {
   getSanityCreateLinkMetadata,

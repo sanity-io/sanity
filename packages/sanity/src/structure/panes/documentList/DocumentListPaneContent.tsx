@@ -1,5 +1,5 @@
 import {type SanityDocument} from '@sanity/types'
-import {Box, Container, Flex, Heading, Stack, Text} from '@sanity/ui'
+import {Box, Container, Flex, Heading, Stack, Text} from '@sanity/ui-v3'
 import {useCallback, useEffect, useMemo, useState} from 'react'
 import {
   CommandList,

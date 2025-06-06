@@ -9,7 +9,7 @@ import {
   MenuDivider,
   Stack,
   Text,
-} from '@sanity/ui'
+} from '@sanity/ui-v3'
 import {useMemo} from 'react'
 import {styled} from 'styled-components'
 

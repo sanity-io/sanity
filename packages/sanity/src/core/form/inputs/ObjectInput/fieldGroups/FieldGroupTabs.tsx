@@ -1,4 +1,4 @@
-import {ElementQuery, Select, TabList} from '@sanity/ui'
+import {ElementQuery, Select, TabList} from '@sanity/ui-v3'
 import {type ChangeEvent, memo, useCallback} from 'react'
 import {styled} from 'styled-components'
 

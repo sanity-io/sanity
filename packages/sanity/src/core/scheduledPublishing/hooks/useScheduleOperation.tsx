@@ -1,4 +1,4 @@
-import {useToast} from '@sanity/ui'
+import {useToast} from '@sanity/ui-v3'
 
 import {useTimeZone} from '../../hooks/useTimeZone'
 import ToastDescription from '../components/toastDescription/ToastDescription'

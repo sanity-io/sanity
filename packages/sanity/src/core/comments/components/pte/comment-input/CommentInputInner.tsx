@@ -1,8 +1,8 @@
 import {type RenderBlockFunction} from '@portabletext/editor'
 import {type CurrentUser} from '@sanity/types'
-import {type AvatarSize, Box, Card, Flex, MenuDivider, Stack} from '@sanity/ui'
 // eslint-disable-next-line camelcase
 import {getTheme_v2} from '@sanity/ui/theme'
+import {type AvatarSize, Box, Card, Flex, MenuDivider, Stack} from '@sanity/ui-v3'
 import {useCallback} from 'react'
 import {css, styled} from 'styled-components'
 

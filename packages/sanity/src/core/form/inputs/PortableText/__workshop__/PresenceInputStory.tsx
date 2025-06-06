@@ -7,7 +7,7 @@ import {
 } from '@portabletext/editor'
 import {Schema} from '@sanity/schema'
 import {defineArrayMember, defineField, type PortableTextBlock} from '@sanity/types'
-import {Card, Container, Flex, Stack, Text} from '@sanity/ui'
+import {Card, Container, Flex, Stack, Text} from '@sanity/ui-v3'
 import {useCallback, useMemo, useRef, useState} from 'react'
 import {css, styled} from 'styled-components'
 

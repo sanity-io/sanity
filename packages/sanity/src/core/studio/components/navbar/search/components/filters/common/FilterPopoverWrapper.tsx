@@ -1,4 +1,4 @@
-import {Card, Flex, useGlobalKeyDown, useLayer} from '@sanity/ui'
+import {Card, Flex, useGlobalKeyDown, useLayer} from '@sanity/ui-v3'
 import {isHotkey} from 'is-hotkey-esm'
 import {type ReactNode, useCallback, useEffect, useState} from 'react'
 import FocusLock from 'react-focus-lock'

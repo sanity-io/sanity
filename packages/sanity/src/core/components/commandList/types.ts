@@ -1,4 +1,4 @@
-import {type ResponsivePaddingProps} from '@sanity/ui'
+import {type ResponsivePaddingProps} from '@sanity/ui-v3'
 import {type ScrollToOptions} from '@tanstack/react-virtual'
 import {type ReactNode} from 'react'
 

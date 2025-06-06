@@ -1,4 +1,4 @@
-import {Flex, Text, TextSkeleton} from '@sanity/ui'
+import {Flex, Text, TextSkeleton} from '@sanity/ui-v3'
 import {css, styled} from 'styled-components'
 
 import {Tooltip} from '../../../../../ui-components'

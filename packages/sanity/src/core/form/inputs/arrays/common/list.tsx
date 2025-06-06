@@ -19,7 +19,7 @@ import {
   verticalListSortingStrategy,
 } from '@dnd-kit/sortable'
 import {CSS} from '@dnd-kit/utilities'
-import {Box, type Card, Grid} from '@sanity/ui'
+import {Box, type Card, Grid} from '@sanity/ui-v3'
 import {
   type ComponentProps,
   type ForwardedRef,

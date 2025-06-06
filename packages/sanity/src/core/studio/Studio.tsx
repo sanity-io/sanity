@@ -1,11 +1,14 @@
 /* eslint-disable simple-import-sort/imports */
 /* disabling for now because the imports trigger side effects causing test snapshots to update */
+import ui from '@sanity/ui-v3/ui.css?url'
 import {type Config} from '../config'
 import {type StudioThemeColorSchemeKey} from '../theme/types'
 import {GlobalStyle} from './GlobalStyle'
 import {type RouterHistory} from './router'
 import {StudioLayout} from './StudioLayout'
 import {StudioProvider} from './StudioProvider'
+import {useEffect} from 'react'
+import {defaultTheme} from '@sanity/ui-v3/css'
 
 /**
  * @hidden
@@ -24,7 +27,7 @@ export interface StudioProps {
    * To resolve `"system"` to the same color scheme as the Studio use the `usePrefersDark` hook from `@sanity/ui`:
    *
    * ```tsx
-   * import {usePrefersDark} from '@sanity/ui'
+   * import {usePrefersDark} from '@sanity/ui-v3'
    * import {Studio} from 'sanity'
    *
    * export default function StudioPage() {
@@ -103,6 +106,14 @@ export function Studio(props: StudioProps): React.JSX.Element {
     unstable_noAuthBoundary,
   } = props
 
+  useEffect(() => {
+    document.documentElement.classList.add(defaultTheme)
+    document.documentElement.dataset.colorScheme = 'dark'
+    return () => {
+      document.documentElement.classList.remove(defaultTheme)
+    }
+  }, [])
+
   return (
     <StudioProvider
       basePath={basePath}
@@ -112,6 +123,12 @@ export function Studio(props: StudioProps): React.JSX.Element {
       unstable_history={unstable_history}
       unstable_noAuthBoundary={unstable_noAuthBoundary}
     >
+      <link
+        rel="stylesheet"
+        href={ui}
+        // eslint-disable-next-line react/no-unknown-property, @sanity/i18n/no-attribute-string-literals
+        precedence="high"
+      />
       {globalStyles && <GlobalStyle />}
       <StudioLayout />
     </StudioProvider>

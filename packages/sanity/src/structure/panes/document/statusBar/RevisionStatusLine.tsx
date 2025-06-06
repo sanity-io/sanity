@@ -1,5 +1,5 @@
 import {RestoreIcon} from '@sanity/icons'
-import {Box, Flex, Text} from '@sanity/ui'
+import {Box, Flex, Text} from '@sanity/ui-v3'
 import {format} from 'date-fns'
 import {Translate, useTranslation} from 'sanity'
 import {styled} from 'styled-components'

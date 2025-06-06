@@ -6,7 +6,7 @@ import {
   type PortableTextChild,
   type PortableTextObject,
 } from '@sanity/types'
-import {Card, Flex, Text, useClickOutsideEvent} from '@sanity/ui'
+import {Card, Flex, Text, useClickOutsideEvent} from '@sanity/ui-v3'
 import {FOCUS_TERMINATOR, toString} from '@sanity/util/paths'
 import {type MouseEvent, useCallback, useContext, useEffect, useMemo, useRef, useState} from 'react'
 import {DiffContext, ReviewChangesContext} from 'sanity/_singletons'

@@ -1,4 +1,4 @@
-import {Flex} from '@sanity/ui'
+import {Flex} from '@sanity/ui-v3'
 import {useNumber} from '@sanity/ui-workshop'
 
 import {CommentBreadcrumbs} from '../components'

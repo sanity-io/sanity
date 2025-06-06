@@ -3,7 +3,7 @@ import {
   MenuButton as UIMenuButton,
   type MenuButtonProps as UIMenuButtonProps,
   type PopoverProps,
-} from '@sanity/ui'
+} from '@sanity/ui-v3'
 import {type ForwardedRef, forwardRef} from 'react'
 
 /** @internal */

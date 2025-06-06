@@ -1,7 +1,7 @@
 /* eslint-disable camelcase */
 import {useTelemetry} from '@sanity/telemetry/react'
 import {type ObjectSchemaType, type SanityDocument, type SanityDocumentLike} from '@sanity/types'
-import {useToast} from '@sanity/ui'
+import {useToast} from '@sanity/ui-v3'
 import {fromString as pathFromString, resolveKeyedPath} from '@sanity/util/paths'
 import {memo, useCallback, useEffect, useMemo, useState} from 'react'
 import {

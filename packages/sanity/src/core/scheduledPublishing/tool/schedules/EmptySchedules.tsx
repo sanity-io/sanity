@@ -1,4 +1,4 @@
-import {Card, Flex, Heading, Stack, Text} from '@sanity/ui'
+import {Card, Flex, Heading, Stack, Text} from '@sanity/ui-v3'
 import {format} from 'date-fns'
 
 import {type ScheduleState} from '../../types'

@@ -1,4 +1,4 @@
-import {Flex} from '@sanity/ui'
+import {Flex} from '@sanity/ui-v3'
 import {type Dispatch, type SetStateAction, useCallback, useEffect, useState} from 'react'
 
 import {Pane} from '../../../Pane'

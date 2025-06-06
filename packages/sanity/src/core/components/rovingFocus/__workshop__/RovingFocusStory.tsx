@@ -1,4 +1,4 @@
-import {Card, Flex} from '@sanity/ui'
+import {Card, Flex} from '@sanity/ui-v3'
 import {useBoolean, useSelect} from '@sanity/ui-workshop'
 import {useState} from 'react'
 

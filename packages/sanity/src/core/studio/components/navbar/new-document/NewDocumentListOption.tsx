@@ -1,5 +1,5 @@
 import {type CurrentUser} from '@sanity/types'
-import {Card, Text} from '@sanity/ui'
+import {Card, Text} from '@sanity/ui-v3'
 import {type MouseEvent, useCallback, useMemo} from 'react'
 import {useIntentLink} from 'sanity/router'
 

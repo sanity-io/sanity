@@ -1,6 +1,6 @@
 /* eslint-disable i18next/no-literal-string,@sanity/i18n/no-attribute-string-literals,@sanity/i18n/no-attribute-template-literals */
 import {SyncIcon} from '@sanity/icons'
-import {Box, Card, Code, Container, Heading, Inline, Stack, Text} from '@sanity/ui'
+import {Box, Card, Code, Container, Heading, Inline, Stack, Text} from '@sanity/ui-v3'
 import {useEffect, useReducer, useState} from 'react'
 import {styled} from 'styled-components'
 

@@ -1,4 +1,4 @@
-import {PortalProvider, Text, usePortal} from '@sanity/ui'
+import {PortalProvider, Text, usePortal} from '@sanity/ui-v3'
 import {type ReactNode, useId} from 'react'
 import {type DocumentActionDialogProps} from 'sanity'
 

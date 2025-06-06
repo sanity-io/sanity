@@ -1,5 +1,5 @@
 import {LaunchIcon} from '@sanity/icons'
-import {Box, Text} from '@sanity/ui'
+import {Box, Text} from '@sanity/ui-v3'
 import {styled} from 'styled-components'
 
 import {Translate, useTranslation} from '../../../i18n'

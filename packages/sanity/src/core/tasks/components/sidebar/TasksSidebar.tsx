@@ -1,4 +1,4 @@
-import {Card, Flex, Spinner, Stack} from '@sanity/ui'
+import {Card, Flex, Spinner, Stack} from '@sanity/ui-v3'
 import {useCallback, useMemo} from 'react'
 import {styled} from 'styled-components'
 

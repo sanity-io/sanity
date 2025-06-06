@@ -1,5 +1,5 @@
 /* eslint-disable no-nested-ternary */
-import {Box, Container, Flex, focusFirstDescendant, Spinner, Text} from '@sanity/ui'
+import {Box, Container, Flex, focusFirstDescendant, Spinner, Text} from '@sanity/ui-v3'
 import {type FormEvent, forwardRef, useCallback, useEffect, useMemo, useState} from 'react'
 import {tap} from 'rxjs/operators'
 import {

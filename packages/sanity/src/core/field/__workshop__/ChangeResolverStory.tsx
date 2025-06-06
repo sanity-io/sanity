@@ -1,5 +1,5 @@
 import {type ObjectSchemaType} from '@sanity/types'
-import {Box, Card} from '@sanity/ui'
+import {Box, Card} from '@sanity/ui-v3'
 import {useCallback, useMemo} from 'react'
 import {DocumentChangeContext} from 'sanity/_singletons'
 

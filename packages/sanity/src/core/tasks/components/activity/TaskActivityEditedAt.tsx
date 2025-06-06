@@ -1,4 +1,4 @@
-import {Box, Flex, Text} from '@sanity/ui'
+import {Box, Flex, Text} from '@sanity/ui-v3'
 import {memo} from 'react'
 
 import {Tooltip} from '../../../../ui-components'

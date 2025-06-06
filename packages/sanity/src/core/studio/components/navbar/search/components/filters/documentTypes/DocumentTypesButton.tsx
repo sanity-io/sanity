@@ -1,5 +1,5 @@
 import {ChevronDownIcon} from '@sanity/icons'
-import {type Placement, useClickOutsideEvent} from '@sanity/ui'
+import {type Placement, useClickOutsideEvent} from '@sanity/ui-v3'
 import {useCallback, useMemo, useRef, useState} from 'react'
 
 import {Button, Popover} from '../../../../../../../../ui-components'

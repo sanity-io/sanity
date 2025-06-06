@@ -5,7 +5,7 @@ import {
   Container as UiContainer,
   DialogProvider,
   PortalProvider,
-} from '@sanity/ui'
+} from '@sanity/ui-v3'
 import {noop} from 'lodash'
 import {
   type ComponentType,

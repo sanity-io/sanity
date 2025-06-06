@@ -1,5 +1,5 @@
 import {SortIcon} from '@sanity/icons'
-import {Card, Flex, Menu, MenuDivider} from '@sanity/ui'
+import {Card, Flex, Menu, MenuDivider} from '@sanity/ui-v3'
 import {isEqual} from 'lodash'
 import {useCallback, useId, useMemo} from 'react'
 import {styled} from 'styled-components'

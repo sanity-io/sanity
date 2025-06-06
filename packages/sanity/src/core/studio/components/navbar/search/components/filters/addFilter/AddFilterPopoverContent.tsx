@@ -1,4 +1,4 @@
-import {Box, Flex, Text} from '@sanity/ui'
+import {Box, Flex, Text} from '@sanity/ui-v3'
 import {type KeyboardEvent, useCallback, useMemo, useState} from 'react'
 
 import {

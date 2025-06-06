@@ -1,6 +1,6 @@
 /* eslint-disable i18next/no-literal-string */
 import {type AuthProvider, type AuthProviderResponse, type SanityClient} from '@sanity/client'
-import {Heading, Stack} from '@sanity/ui'
+import {Heading, Stack} from '@sanity/ui-v3'
 import {useEffect, useState} from 'react'
 import {type Observable} from 'rxjs'
 

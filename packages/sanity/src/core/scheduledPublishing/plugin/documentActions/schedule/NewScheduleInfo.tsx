@@ -1,4 +1,4 @@
-import {Card, Flex, Stack, Text} from '@sanity/ui'
+import {Card, Flex, Stack, Text} from '@sanity/ui-v3'
 
 import {useValidationStatus} from '../../../../hooks/useValidationStatus'
 import {ValidationInfo} from '../../../components/validation/ValidationInfo'

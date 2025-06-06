@@ -1,6 +1,6 @@
 import {BinaryDocumentIcon} from '@sanity/icons'
 import {type FileAsset, type ReferenceValue} from '@sanity/types'
-import {Card, Flex, Stack, Text, TextSkeleton} from '@sanity/ui'
+import {Card, Flex, Stack, Text, TextSkeleton} from '@sanity/ui-v3'
 import {useCallback} from 'react'
 
 import {formatBytes} from '../../../../../../../../../../form/inputs/common/helper'

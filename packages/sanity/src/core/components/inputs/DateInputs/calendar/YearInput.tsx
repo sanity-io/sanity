@@ -1,4 +1,4 @@
-import {type TextInputProps} from '@sanity/ui'
+import {type TextInputProps} from '@sanity/ui-v3'
 import {type ChangeEvent, type HTMLProps, useCallback} from 'react'
 
 import {LazyTextInput} from '../LazyTextInput'

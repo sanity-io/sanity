@@ -1,4 +1,4 @@
-import {Card, Flex, Menu} from '@sanity/ui'
+import {Card, Flex, Menu} from '@sanity/ui-v3'
 import {useBoolean} from '@sanity/ui-workshop'
 
 import {ResourcesMenuItems} from '../resources/ResourcesMenuItems'

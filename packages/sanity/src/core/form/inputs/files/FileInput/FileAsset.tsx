@@ -1,6 +1,6 @@
 import {isFileSource} from '@sanity/asset-utils'
 import {type AssetSource} from '@sanity/types'
-import {Box, Card, type ThemeColorToneKey} from '@sanity/ui'
+import {Box, Card, type ThemeColorToneKey} from '@sanity/ui-v3'
 import {get} from 'lodash'
 import {useCallback, useMemo, useState} from 'react'
 

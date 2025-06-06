@@ -1,5 +1,5 @@
 import {ErrorOutlineIcon} from '@sanity/icons'
-import {Box, Card, Flex, Text} from '@sanity/ui'
+import {Box, Card, Flex, Text} from '@sanity/ui-v3'
 
 import {useTranslation} from '../../../i18n'
 import {type FieldValueError} from '../../validation'

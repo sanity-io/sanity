@@ -1,4 +1,4 @@
-import {rem} from '@sanity/ui'
+import {rem} from '@sanity/ui-v3'
 import {styled} from 'styled-components'
 
 export const FieldChangeContainer = styled.div`

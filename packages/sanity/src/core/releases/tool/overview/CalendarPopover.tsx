@@ -1,6 +1,6 @@
 import {CalendarIcon} from '@sanity/icons'
 // eslint-disable-next-line no-restricted-imports
-import {Button, useClickOutsideEvent} from '@sanity/ui'
+import {Button, useClickOutsideEvent} from '@sanity/ui-v3'
 import {type ReactNode, useRef, useState} from 'react'
 
 import {Popover} from '../../../../ui-components/popover/Popover'

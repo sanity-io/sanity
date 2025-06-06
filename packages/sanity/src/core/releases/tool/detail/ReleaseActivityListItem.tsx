@@ -1,4 +1,4 @@
-import {Card, Flex, Stack, Text} from '@sanity/ui'
+import {Card, Flex, Stack, Text} from '@sanity/ui-v3'
 import {motion} from 'framer-motion'
 import {memo, type ReactNode, useMemo} from 'react'
 import {styled} from 'styled-components'

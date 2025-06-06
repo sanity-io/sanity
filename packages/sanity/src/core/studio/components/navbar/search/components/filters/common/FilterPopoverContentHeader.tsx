@@ -1,5 +1,5 @@
 import {SearchIcon} from '@sanity/icons'
-import {Box, Flex} from '@sanity/ui'
+import {Box, Flex} from '@sanity/ui-v3'
 import {forwardRef, type KeyboardEvent} from 'react'
 import {styled} from 'styled-components'
 

@@ -1,5 +1,7 @@
 /* eslint-disable i18next/no-literal-string */
 
+import {defaultTheme} from '@sanity/ui-v3/css'
+
 import {Favicons} from './Favicons'
 import {GlobalErrorHandler} from './globalErrorHandler/GlobalErrorHandler'
 import {NoJavascript} from './NoJavascript'
@@ -130,7 +132,7 @@ export function DefaultDocument(props: DefaultDocumentProps): React.JSX.Element 
   const {entryPath, css = EMPTY_ARRAY} = props
 
   return (
-    <html lang="en">
+    <html lang="en" className={defaultTheme}>
       <head>
         <meta charSet="utf-8" />
         <meta

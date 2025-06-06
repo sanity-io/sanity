@@ -1,4 +1,4 @@
-import {Box, Card, Container, Stack, Text} from '@sanity/ui'
+import {Box, Card, Container, Stack, Text} from '@sanity/ui-v3'
 import {useCallback, useMemo, useState} from 'react'
 import {
   type Chunk,

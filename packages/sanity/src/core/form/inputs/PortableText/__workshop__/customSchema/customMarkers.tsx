@@ -1,5 +1,5 @@
 import {CommentIcon} from '@sanity/icons'
-import {Box, Flex, Text} from '@sanity/ui'
+import {Box, Flex, Text} from '@sanity/ui-v3'
 
 import {type PortableTextMarker} from '../../../../types'
 

@@ -1,4 +1,4 @@
-import {Layer} from '@sanity/ui'
+import {Layer} from '@sanity/ui-v3'
 import {useCallback, useState} from 'react'
 import {styled} from 'styled-components'
 

@@ -1,5 +1,5 @@
 /* eslint-disable no-restricted-imports */
-import {MenuGroup as UIMenuGroup, type MenuGroupProps as UIMenuGroupProps} from '@sanity/ui'
+import {MenuGroup as UIMenuGroup, type MenuGroupProps as UIMenuGroupProps} from '@sanity/ui-v3'
 import {type HTMLProps, useCallback} from 'react'
 
 import {

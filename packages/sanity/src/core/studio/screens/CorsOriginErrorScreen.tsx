@@ -1,6 +1,6 @@
 /* eslint-disable i18next/no-literal-string,@sanity/i18n/no-attribute-string-literals */
 import {LaunchIcon} from '@sanity/icons'
-import {Card, Stack, Text, TextInput} from '@sanity/ui'
+import {Card, Stack, Text, TextInput} from '@sanity/ui-v3'
 import {useEffect, useMemo} from 'react'
 import {styled} from 'styled-components'
 

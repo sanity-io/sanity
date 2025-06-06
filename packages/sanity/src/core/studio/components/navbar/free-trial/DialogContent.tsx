@@ -1,5 +1,5 @@
 import {CloseIcon} from '@sanity/icons'
-import {Box, Flex, Heading} from '@sanity/ui'
+import {Box, Flex, Heading} from '@sanity/ui-v3'
 import {styled} from 'styled-components'
 
 import {Button, Dialog} from '../../../../../ui-components'

@@ -1,4 +1,4 @@
-import {Box} from '@sanity/ui'
+import {Box} from '@sanity/ui-v3'
 import {type ForwardedRef, forwardRef, type ReactNode} from 'react'
 import {LegacyLayerProvider} from 'sanity'
 

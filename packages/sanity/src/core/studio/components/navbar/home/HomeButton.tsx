@@ -1,5 +1,5 @@
 import {SanityMonogram} from '@sanity/logos'
-import {Box, Card, Flex, rem, Text} from '@sanity/ui'
+import {Box, Card, Flex, rem, Text} from '@sanity/ui-v3'
 import {useStateLink} from 'sanity/router'
 import {styled} from 'styled-components'
 

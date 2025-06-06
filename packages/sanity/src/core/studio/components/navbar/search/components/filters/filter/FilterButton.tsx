@@ -5,7 +5,7 @@ import {
   Card,
   rem,
   useClickOutsideEvent,
-} from '@sanity/ui'
+} from '@sanity/ui-v3'
 import {type KeyboardEvent, useCallback, useRef, useState} from 'react'
 import {styled} from 'styled-components'
 

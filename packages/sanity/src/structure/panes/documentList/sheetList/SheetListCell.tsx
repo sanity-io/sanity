@@ -3,7 +3,7 @@
 
 /* eslint-disable i18next/no-literal-string */
 import {type ObjectFieldType} from '@sanity/types'
-import {Select, TextInput} from '@sanity/ui'
+import {Select, TextInput} from '@sanity/ui-v3'
 import {type Cell, type CellContext, flexRender} from '@tanstack/react-table'
 import {type MouseEventHandler, useCallback, useEffect, useRef, useState} from 'react'
 import {type SanityDocument} from 'sanity'

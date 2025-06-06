@@ -1,5 +1,5 @@
 import {ChevronLeftIcon, ChevronRightIcon, EarthGlobeIcon} from '@sanity/icons'
-import {Box, Flex, Grid, Select, Text} from '@sanity/ui'
+import {Box, Flex, Grid, Select, Text} from '@sanity/ui-v3'
 import {format} from '@sanity/util/legacyDateFormat'
 import {addDays, addMonths, parse, setDate, setHours, setMinutes, setMonth, setYear} from 'date-fns'
 import {utcToZonedTime, zonedTimeToUtc} from 'date-fns-tz'

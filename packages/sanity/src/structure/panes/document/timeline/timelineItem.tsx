@@ -1,6 +1,6 @@
-import {Box, Card, Flex, Skeleton, Stack, Text} from '@sanity/ui'
 // eslint-disable-next-line camelcase
 import {getTheme_v2, type ThemeColorAvatarColorKey} from '@sanity/ui/theme'
+import {Box, Card, Flex, Skeleton, Stack, Text} from '@sanity/ui-v3'
 import {type MouseEvent, useCallback, useMemo} from 'react'
 import {
   AvatarSkeleton,

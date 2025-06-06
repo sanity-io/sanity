@@ -9,7 +9,7 @@ import {
   LayerProvider,
   PortalProvider,
   useMediaIndex,
-} from '@sanity/ui'
+} from '@sanity/ui-v3'
 import {useCallback, useContext, useEffect, useMemo, useRef, useState} from 'react'
 import {NavbarContext} from 'sanity/_singletons'
 import {type RouterState, useRouterState} from 'sanity/router'

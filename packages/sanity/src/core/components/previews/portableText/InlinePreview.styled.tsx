@@ -1,4 +1,4 @@
-import {rem, Text, type Theme} from '@sanity/ui'
+import {rem, Text, type Theme} from '@sanity/ui-v3'
 import {css, styled} from 'styled-components'
 
 export const RootSpan = styled.span`

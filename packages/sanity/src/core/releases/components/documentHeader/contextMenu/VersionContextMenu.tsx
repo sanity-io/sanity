@@ -1,6 +1,6 @@
 import {type ReleaseDocument} from '@sanity/client'
 import {CalendarIcon, CopyIcon, TrashIcon} from '@sanity/icons'
-import {Menu, MenuDivider, Spinner, Stack} from '@sanity/ui'
+import {Menu, MenuDivider, Spinner, Stack} from '@sanity/ui-v3'
 import {memo, useEffect, useRef, useState} from 'react'
 import {IntentLink} from 'sanity/router'
 import {styled} from 'styled-components'

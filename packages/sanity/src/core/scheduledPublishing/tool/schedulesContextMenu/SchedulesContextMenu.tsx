@@ -1,5 +1,5 @@
 import {CheckmarkIcon, SortIcon} from '@sanity/icons'
-import {Menu} from '@sanity/ui'
+import {Menu} from '@sanity/ui-v3'
 
 import {MenuItem} from '../../../../ui-components'
 import {MenuButton} from '../../../../ui-components/menuButton'

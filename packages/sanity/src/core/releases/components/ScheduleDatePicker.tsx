@@ -1,5 +1,5 @@
 import {EarthGlobeIcon} from '@sanity/icons'
-import {Flex} from '@sanity/ui'
+import {Flex} from '@sanity/ui-v3'
 import {format, isValid, parse} from 'date-fns'
 import {useCallback, useMemo} from 'react'
 

@@ -1,6 +1,8 @@
 import {hues} from '@sanity/color'
 import {ChevronRightIcon, StackCompactIcon} from '@sanity/icons'
 import {type Path} from '@sanity/types'
+// eslint-disable-next-line camelcase
+import {getTheme_v2} from '@sanity/ui/theme'
 import {
   // eslint-disable-next-line no-restricted-imports
   Button, // Custom button needed, special children support required
@@ -8,9 +10,7 @@ import {
   Flex,
   Stack,
   Text,
-} from '@sanity/ui'
-// eslint-disable-next-line camelcase
-import {getTheme_v2} from '@sanity/ui/theme'
+} from '@sanity/ui-v3'
 import {toString} from '@sanity/util/paths'
 import {isEqual} from 'lodash'
 import {useCallback, useEffect, useMemo, useState} from 'react'

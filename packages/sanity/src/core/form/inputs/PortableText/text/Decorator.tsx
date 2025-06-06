@@ -1,5 +1,5 @@
 import {type BlockDecoratorRenderProps} from '@portabletext/editor'
-import {type Theme} from '@sanity/ui'
+import {type Theme} from '@sanity/ui-v3'
 import {useCallback, useMemo} from 'react'
 import {css, styled} from 'styled-components'
 

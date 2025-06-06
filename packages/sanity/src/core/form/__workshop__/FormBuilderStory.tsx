@@ -1,5 +1,5 @@
 import {type Path} from '@sanity/types'
-import {Card, Container} from '@sanity/ui'
+import {Card, Container} from '@sanity/ui-v3'
 import {type FocusEvent, useCallback, useMemo, useState} from 'react'
 
 import {useDocumentOperation, useEditState, useSchema, useValidationStatus} from '../../hooks'

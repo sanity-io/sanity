@@ -1,4 +1,4 @@
-import {Card, Code, ErrorBoundary, Stack} from '@sanity/ui'
+import {Card, Code, ErrorBoundary, Stack} from '@sanity/ui-v3'
 import {type ErrorInfo, useCallback, useState} from 'react'
 
 import {Button} from '../../../../ui-components'

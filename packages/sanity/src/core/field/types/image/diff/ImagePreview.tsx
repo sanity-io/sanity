@@ -2,7 +2,7 @@ import {getImageDimensions, isDefaultCrop, isDefaultHotspot} from '@sanity/asset
 import {hues} from '@sanity/color'
 import {ImageIcon} from '@sanity/icons'
 import imageUrlBuilder from '@sanity/image-url'
-import {Box, Card, Flex, Text} from '@sanity/ui'
+import {Box, Card, Flex, Text} from '@sanity/ui-v3'
 import {type SyntheticEvent, useMemo, useState} from 'react'
 import {styled} from 'styled-components'
 

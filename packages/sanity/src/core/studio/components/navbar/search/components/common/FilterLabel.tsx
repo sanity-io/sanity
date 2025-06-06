@@ -1,4 +1,4 @@
-import {Box, Flex} from '@sanity/ui'
+import {Box, Flex} from '@sanity/ui-v3'
 import {useMemo} from 'react'
 import {styled} from 'styled-components'
 

@@ -1,7 +1,7 @@
 import {type EditableReleaseDocument} from '@sanity/client'
-import {Stack} from '@sanity/ui'
 // eslint-disable-next-line camelcase
 import {getTheme_v2} from '@sanity/ui/theme'
+import {Stack} from '@sanity/ui-v3'
 import {type ChangeEvent, useCallback, useEffect, useRef, useState} from 'react'
 import {css, styled} from 'styled-components'
 

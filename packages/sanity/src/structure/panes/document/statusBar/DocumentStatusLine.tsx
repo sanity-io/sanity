@@ -5,7 +5,7 @@ import {
   Flex,
   Skeleton,
   Text,
-} from '@sanity/ui'
+} from '@sanity/ui-v3'
 import {AnimatePresence, motion} from 'framer-motion'
 import {useEffect, useLayoutEffect, useMemo, useState} from 'react'
 import {

@@ -1,4 +1,4 @@
-import {Box, Flex} from '@sanity/ui'
+import {Box, Flex} from '@sanity/ui-v3'
 
 import {TimeZoneButton} from '../../../components/timeZone/timeZoneButton/TimeZoneButton'
 import TimeZoneButtonElementQuery from '../../../components/timeZone/timeZoneButton/TimeZoneButtonElementQuery'

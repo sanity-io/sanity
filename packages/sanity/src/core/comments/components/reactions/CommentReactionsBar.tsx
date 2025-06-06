@@ -4,7 +4,7 @@ import {
   Button as UIButton,
   Flex,
   Text,
-} from '@sanity/ui'
+} from '@sanity/ui-v3'
 import {memo, useCallback, useMemo, useState} from 'react'
 
 import {Tooltip, TooltipDelayGroupProvider} from '../../../../ui-components'

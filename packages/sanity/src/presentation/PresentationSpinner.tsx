@@ -1,4 +1,4 @@
-import {Flex, Spinner} from '@sanity/ui'
+import {Flex, Spinner} from '@sanity/ui-v3'
 
 export function PresentationSpinner(): React.JSX.Element {
   return (

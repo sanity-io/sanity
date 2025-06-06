@@ -6,7 +6,7 @@ import {
   Flex,
   Menu,
   Text,
-} from '@sanity/ui'
+} from '@sanity/ui-v3'
 import {styled} from 'styled-components'
 
 import {MenuButton, type MenuButtonProps, MenuItem, Tooltip} from '../../../../../ui-components'

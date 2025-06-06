@@ -1,7 +1,7 @@
 /* eslint-disable max-nested-callbacks */
 import {type ClientPerspective} from '@sanity/client'
 import {type UnresolvedPath} from '@sanity/presentation-comlink'
-import {useRootTheme} from '@sanity/ui'
+import {useRootTheme} from '@sanity/ui-v3'
 import {memo, useEffect} from 'react'
 import {
   getPublishedId,

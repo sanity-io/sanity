@@ -1,5 +1,5 @@
 import {type SchemaType} from '@sanity/types'
-import {Menu} from '@sanity/ui'
+import {Menu} from '@sanity/ui-v3'
 
 import {MenuButton} from '../../../../ui-components'
 import {ContextMenuButton} from '../../../components/contextMenuButton'

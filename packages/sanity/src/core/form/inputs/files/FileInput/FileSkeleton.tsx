@@ -1,4 +1,4 @@
-import {Flex, Skeleton, Stack, TextSkeleton} from '@sanity/ui'
+import {Flex, Skeleton, Stack, TextSkeleton} from '@sanity/ui-v3'
 
 export function FileSkeleton() {
   return (

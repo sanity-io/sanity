@@ -5,7 +5,7 @@ import {
   // eslint-disable-next-line no-restricted-imports
   MenuItem,
   Text,
-} from '@sanity/ui'
+} from '@sanity/ui-v3'
 import {memo, type MouseEvent, type ReactNode, useCallback, useMemo} from 'react'
 import {styled} from 'styled-components'
 

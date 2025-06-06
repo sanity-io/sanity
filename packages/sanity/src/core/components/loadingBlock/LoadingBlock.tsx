@@ -1,4 +1,4 @@
-import {Card, Layer, Spinner, Text} from '@sanity/ui'
+import {Card, Layer, Spinner, Text} from '@sanity/ui-v3'
 import {css, styled} from 'styled-components'
 
 import {useTranslation} from '../..'

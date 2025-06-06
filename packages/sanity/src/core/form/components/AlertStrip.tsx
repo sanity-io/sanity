@@ -1,5 +1,5 @@
 import {ErrorOutlineIcon, InfoOutlineIcon, WarningOutlineIcon} from '@sanity/icons'
-import {Box, Card, type CardProps, Flex} from '@sanity/ui'
+import {Box, Card, type CardProps, Flex} from '@sanity/ui-v3'
 import {type HTMLProps, type ReactNode} from 'react'
 
 import {Details} from './Details'

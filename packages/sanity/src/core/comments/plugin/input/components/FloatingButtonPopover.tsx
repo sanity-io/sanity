@@ -1,5 +1,5 @@
 import {AddCommentIcon} from '@sanity/icons'
-import {useClickOutsideEvent} from '@sanity/ui'
+import {useClickOutsideEvent} from '@sanity/ui-v3'
 import {motion, type Variants} from 'framer-motion'
 import {useRef} from 'react'
 import {styled} from 'styled-components'

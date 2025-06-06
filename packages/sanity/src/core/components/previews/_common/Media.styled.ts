@@ -1,4 +1,4 @@
-import {rem} from '@sanity/ui'
+import {rem} from '@sanity/ui-v3'
 import {css, styled} from 'styled-components'
 
 import {PREVIEW_SIZES} from '../constants'

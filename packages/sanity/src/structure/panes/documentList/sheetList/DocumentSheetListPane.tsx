@@ -2,7 +2,7 @@
 // The `use no memo` directive is due to a known issue with react-table and react compiler: https://github.com/TanStack/table/issues/5567
 
 import {isDocumentSchemaType, type ObjectSchemaType, type SanityDocument} from '@sanity/types'
-import {Box, Flex, Text} from '@sanity/ui'
+import {Box, Flex, Text} from '@sanity/ui-v3'
 import {
   getCoreRowModel,
   getFilteredRowModel,

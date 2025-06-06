@@ -1,5 +1,5 @@
 import {type SanityDocument} from '@sanity/types'
-import {Box, Code, Text} from '@sanity/ui'
+import {Box, Code, Text} from '@sanity/ui-v3'
 import {useEffect, useState} from 'react'
 
 import {useHistoryStore} from '../datastores'

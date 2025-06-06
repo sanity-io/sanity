@@ -1,4 +1,4 @@
-import {TabList, Text} from '@sanity/ui'
+import {TabList, Text} from '@sanity/ui-v3'
 import {useCallback, useMemo} from 'react'
 import {type CSSProperties} from 'styled-components'
 

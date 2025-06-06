@@ -3,7 +3,7 @@
 
 import {type DragStartEvent} from '@dnd-kit/core'
 import {isKeySegment} from '@sanity/types'
-import {Card, Stack, Text, useTheme} from '@sanity/ui'
+import {Card, Stack, Text, useTheme} from '@sanity/ui-v3'
 import {
   defaultRangeExtractor,
   elementScroll,

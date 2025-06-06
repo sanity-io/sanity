@@ -1,6 +1,6 @@
 import {type EditableReleaseDocument} from '@sanity/client'
 import {useTelemetry} from '@sanity/telemetry/react'
-import {type BadgeTone, Box, Card, Flex, Text, useToast} from '@sanity/ui'
+import {type BadgeTone, Box, Card, Flex, Text, useToast} from '@sanity/ui-v3'
 import {useCallback, useState} from 'react'
 
 import {Dialog} from '../../../../../ui-components/dialog/Dialog'

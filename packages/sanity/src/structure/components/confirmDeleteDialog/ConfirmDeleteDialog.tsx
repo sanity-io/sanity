@@ -1,4 +1,4 @@
-import {Box, Flex} from '@sanity/ui'
+import {Box, Flex} from '@sanity/ui-v3'
 import {useId, useMemo} from 'react'
 import {LoadingBlock, useTranslation} from 'sanity'
 import {styled} from 'styled-components'

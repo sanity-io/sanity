@@ -1,5 +1,5 @@
 import {type ObjectSchemaType, type Path} from '@sanity/types'
-import {Box, Flex, Stack, Text, useClickOutsideEvent} from '@sanity/ui'
+import {Box, Flex, Stack, Text, useClickOutsideEvent} from '@sanity/ui-v3'
 import {Fragment, type HTMLAttributes, useCallback, useMemo, useRef, useState} from 'react'
 import {DiffContext} from 'sanity/_singletons'
 

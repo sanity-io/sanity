@@ -1,4 +1,4 @@
-import {studioTheme, ThemeProvider} from '@sanity/ui'
+import {studioTheme, ThemeProvider} from '@sanity/ui-v3'
 import {renderHook} from '@testing-library/react'
 import {beforeAll, beforeEach, describe, expect, it} from 'vitest'
 

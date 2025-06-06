@@ -1,5 +1,5 @@
 import {AddIcon} from '@sanity/icons'
-import {useClickOutsideEvent} from '@sanity/ui'
+import {useClickOutsideEvent} from '@sanity/ui-v3'
 import {useCallback, useRef, useState} from 'react'
 
 import {Button, Popover} from '../../../../../../../../ui-components'

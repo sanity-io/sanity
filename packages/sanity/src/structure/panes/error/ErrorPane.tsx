@@ -1,4 +1,4 @@
-import {Box, type CardTone} from '@sanity/ui'
+import {Box, type CardTone} from '@sanity/ui-v3'
 
 import {Pane, PaneContent, PaneHeader} from '../../components/pane'
 

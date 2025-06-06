@@ -10,7 +10,7 @@ import {
   Text,
   TextInput,
   VirtualList,
-} from '@sanity/ui'
+} from '@sanity/ui-v3'
 import {deburr} from 'lodash'
 import {type ChangeEvent, type KeyboardEvent, useCallback, useMemo, useRef, useState} from 'react'
 import {styled} from 'styled-components'

@@ -1,5 +1,5 @@
 // eslint-disable-next-line no-restricted-imports
-import {Button as UIButton, Grid} from '@sanity/ui'
+import {Button as UIButton, Grid} from '@sanity/ui-v3'
 import {useCallback, useEffect, useState} from 'react'
 
 import {useTranslation} from '../../../i18n'

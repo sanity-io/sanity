@@ -14,7 +14,7 @@ import {
 import {EventListenerPlugin, MarkdownPlugin} from '@portabletext/editor/plugins'
 import {useTelemetry} from '@sanity/telemetry/react'
 import {isKeySegment, type Path, type PortableTextBlock} from '@sanity/types'
-import {Box, Flex, Text, useToast} from '@sanity/ui'
+import {Box, Flex, Text, useToast} from '@sanity/ui-v3'
 import {randomKey} from '@sanity/util/content'
 import {sortBy} from 'lodash'
 import {

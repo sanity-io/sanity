@@ -1,6 +1,6 @@
 /* eslint-disable i18next/no-literal-string */
 /* eslint-disable @sanity/i18n/no-attribute-string-literals */
-import {type ErrorBoundaryProps} from '@sanity/ui'
+import {type ErrorBoundaryProps} from '@sanity/ui-v3'
 import {lazy, type ReactNode, useCallback, useState} from 'react'
 import {useHotModuleReload} from 'use-hot-module-reload'
 

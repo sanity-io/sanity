@@ -4,7 +4,7 @@ import {
   Button, // Button with specific styling and children behavior.
   Flex,
   Stack,
-} from '@sanity/ui'
+} from '@sanity/ui-v3'
 import {uuid} from '@sanity/uuid'
 import {type MouseEvent, type ReactNode, useCallback, useMemo} from 'react'
 import {css, styled} from 'styled-components'

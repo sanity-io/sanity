@@ -1,4 +1,4 @@
-import {Container, Flex} from '@sanity/ui'
+import {Container, Flex} from '@sanity/ui-v3'
 import {useBoolean, useText} from '@sanity/ui-workshop'
 import {useMemo} from 'react'
 

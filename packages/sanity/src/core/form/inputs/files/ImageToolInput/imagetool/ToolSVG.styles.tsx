@@ -1,5 +1,5 @@
-import {type ThemeProps} from '@sanity/ui'
 import {getTheme_v2 as getThemeV2} from '@sanity/ui/theme'
+import {type ThemeProps} from '@sanity/ui-v3'
 import {css, styled} from 'styled-components'
 
 export const SVGContainer = styled.div`

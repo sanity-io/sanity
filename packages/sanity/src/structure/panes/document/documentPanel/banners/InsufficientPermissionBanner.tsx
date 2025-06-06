@@ -1,6 +1,6 @@
 import {ReadOnlyIcon} from '@sanity/icons'
 import {useTelemetry} from '@sanity/telemetry/react'
-import {Text} from '@sanity/ui'
+import {Text} from '@sanity/ui-v3'
 import {useMemo, useState} from 'react'
 import {Translate, useCurrentUser, useListFormat, useTranslation} from 'sanity'
 

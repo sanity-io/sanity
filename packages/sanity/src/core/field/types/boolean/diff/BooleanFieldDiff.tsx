@@ -1,4 +1,4 @@
-import {Box, Flex, Text} from '@sanity/ui'
+import {Box, Flex, Text} from '@sanity/ui-v3'
 
 import {DiffTooltip, FromToArrow, useDiffAnnotationColor, useDocumentChange} from '../../../diff'
 import {type BooleanDiff, type DiffComponent} from '../../../types'

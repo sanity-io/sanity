@@ -1,7 +1,7 @@
 /* eslint-disable react/no-unused-prop-types */
 
 import {CloseIcon} from '@sanity/icons'
-import {Box, Flex, Text, useClickOutsideEvent, useGlobalKeyDown} from '@sanity/ui'
+import {Box, Flex, Text, useClickOutsideEvent, useGlobalKeyDown} from '@sanity/ui-v3'
 import {type PropsWithChildren, type ReactNode, useCallback, useRef, useState} from 'react'
 import FocusLock from 'react-focus-lock'
 import {type PortableTextEditorElement} from 'sanity/_singletons'

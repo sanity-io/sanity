@@ -1,4 +1,4 @@
-import {Flex, Stack} from '@sanity/ui'
+import {Flex, Stack} from '@sanity/ui-v3'
 import {styled} from 'styled-components'
 
 import {CommentsUpsellProvider} from '../../../context'

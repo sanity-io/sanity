@@ -1,4 +1,4 @@
-import {Box, Card, type CardProps, Flex, Text} from '@sanity/ui'
+import {Box, Card, type CardProps, Flex, Text} from '@sanity/ui-v3'
 import {type ComponentType, type ReactNode} from 'react'
 
 type Props = {

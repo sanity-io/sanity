@@ -1,5 +1,5 @@
 import {ArrowLeftIcon, RestoreIcon} from '@sanity/icons'
-import {Box, Container, Flex, Stack, Text} from '@sanity/ui'
+import {Box, Container, Flex, Stack, Text} from '@sanity/ui-v3'
 
 import {Button} from '../../../../../../ui-components'
 import {PaneContent} from '../../../PaneContent'

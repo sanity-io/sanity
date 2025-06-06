@@ -1,4 +1,4 @@
-import {Card, useClickOutsideEvent} from '@sanity/ui'
+import {Card, useClickOutsideEvent} from '@sanity/ui-v3'
 import {cloneElement, useCallback, useMemo, useRef, useState} from 'react'
 
 import {Popover, type PopoverProps} from '../../../../ui-components'

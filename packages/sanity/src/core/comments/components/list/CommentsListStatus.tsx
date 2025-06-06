@@ -1,4 +1,4 @@
-import {Container, Flex, Stack, Text} from '@sanity/ui'
+import {Container, Flex, Stack, Text} from '@sanity/ui-v3'
 
 import {LoadingBlock} from '../../../components'
 import {type TFunction, useTranslation} from '../../../i18n'

@@ -1,4 +1,4 @@
-import {Card, Flex} from '@sanity/ui'
+import {Card, Flex} from '@sanity/ui-v3'
 import {styled} from 'styled-components'
 
 export const RatioBox = styled(Card)`

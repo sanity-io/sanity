@@ -7,7 +7,7 @@ import {
   TrashIcon,
 } from '@sanity/icons'
 import {type Reference, type ReferenceSchemaType, type SchemaType} from '@sanity/types'
-import {Box, type CardTone, Menu, MenuDivider} from '@sanity/ui'
+import {Box, type CardTone, Menu, MenuDivider} from '@sanity/ui-v3'
 import {
   type ComponentProps,
   type ForwardedRef,

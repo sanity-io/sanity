@@ -1,4 +1,4 @@
-import {PortalProvider, useTheme, useToast} from '@sanity/ui'
+import {PortalProvider, useTheme, useToast} from '@sanity/ui-v3'
 import {isHotkey} from 'is-hotkey-esm'
 import {Fragment, memo, useCallback, useEffect, useState} from 'react'
 import {_isCustomDocumentTypeDefinition, useSchema} from 'sanity'

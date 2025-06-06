@@ -1,6 +1,6 @@
 import {EditIcon, EllipsisHorizontalIcon, EyeOpenIcon, LinkIcon, TrashIcon} from '@sanity/icons'
 import {isReference, type PortableTextBlock} from '@sanity/types'
-import {Box, Flex, Menu, useGlobalKeyDown} from '@sanity/ui'
+import {Box, Flex, Menu, useGlobalKeyDown} from '@sanity/ui-v3'
 import {
   forwardRef,
   type MouseEvent,

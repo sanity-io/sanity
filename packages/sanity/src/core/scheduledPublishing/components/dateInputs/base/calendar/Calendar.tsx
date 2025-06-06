@@ -6,7 +6,7 @@ import {
   Flex,
   Select,
   Text,
-} from '@sanity/ui'
+} from '@sanity/ui-v3'
 import {addDays, addMonths, setDate, setHours, setMinutes, setMonth, setYear} from 'date-fns'
 import {range} from 'lodash'
 import {

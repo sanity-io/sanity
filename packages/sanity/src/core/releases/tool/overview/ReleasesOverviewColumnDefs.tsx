@@ -1,5 +1,5 @@
 import {ErrorOutlineIcon, LockIcon} from '@sanity/icons'
-import {Flex, Text} from '@sanity/ui'
+import {Flex, Text} from '@sanity/ui-v3'
 import {type TFunction} from 'i18next'
 import {Fragment} from 'react'
 

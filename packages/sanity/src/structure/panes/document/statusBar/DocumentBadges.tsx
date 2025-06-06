@@ -1,4 +1,4 @@
-import {Badge, type BadgeTone, Inline} from '@sanity/ui'
+import {Badge, type BadgeTone, Inline} from '@sanity/ui-v3'
 import {memo, useCallback, useDeferredValue} from 'react'
 import {type DocumentBadgeDescription} from 'sanity'
 

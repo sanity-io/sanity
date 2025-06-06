@@ -1,5 +1,5 @@
 import {type ObjectSchemaType} from '@sanity/types'
-import {LayerProvider, studioTheme, ThemeProvider} from '@sanity/ui'
+import {LayerProvider, studioTheme, ThemeProvider} from '@sanity/ui-v3'
 import {render} from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import {type PropsWithChildren} from 'react'

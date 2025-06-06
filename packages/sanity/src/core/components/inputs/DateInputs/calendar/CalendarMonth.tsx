@@ -1,4 +1,4 @@
-import {Box, Grid, Text} from '@sanity/ui'
+import {Box, Grid, Text} from '@sanity/ui-v3'
 import {isSameDay, isSameMonth} from 'date-fns'
 
 import {useCurrentLocale} from '../../../../i18n/hooks/useLocale'

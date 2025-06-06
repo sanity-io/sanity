@@ -4,7 +4,7 @@ import {
   type FileSchemaType,
   type ImageSchemaType,
 } from '@sanity/types'
-import {useTheme, useToast} from '@sanity/ui'
+import {useTheme, useToast} from '@sanity/ui-v3'
 import {type ReactNode, useCallback, useEffect, useState} from 'react'
 
 import {useTranslation} from '../../../../i18n'

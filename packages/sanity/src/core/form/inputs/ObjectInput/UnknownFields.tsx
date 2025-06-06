@@ -1,5 +1,5 @@
 import {TrashIcon} from '@sanity/icons'
-import {Box, Card, Code, Stack, Text} from '@sanity/ui'
+import {Box, Card, Code, Stack, Text} from '@sanity/ui-v3'
 import {useCallback} from 'react'
 
 import {Button} from '../../../../ui-components'

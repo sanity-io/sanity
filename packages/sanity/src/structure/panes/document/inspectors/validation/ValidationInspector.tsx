@@ -11,7 +11,7 @@ import {
   type SchemaType,
   type ValidationMarker,
 } from '@sanity/types'
-import {Box, Card, type CardTone, Flex, Stack, Text} from '@sanity/ui'
+import {Box, Card, type CardTone, Flex, Stack, Text} from '@sanity/ui-v3'
 import {type ErrorInfo, Fragment, useCallback, useMemo, useState} from 'react'
 import {type DocumentInspectorProps, useTranslation} from 'sanity'
 

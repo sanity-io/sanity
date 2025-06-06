@@ -1,5 +1,5 @@
 import {WarningOutlineIcon} from '@sanity/icons'
-import {Card, Flex, Grid, Text} from '@sanity/ui'
+import {Card, Flex, Grid, Text} from '@sanity/ui-v3'
 import {type CSSProperties} from 'react'
 
 import {Translate, useTranslation} from '../../../../i18n'

@@ -1,4 +1,4 @@
-import {useToast} from '@sanity/ui'
+import {useToast} from '@sanity/ui-v3'
 import {memo, useEffect, useMemo, useRef} from 'react'
 import {Translate, useDocumentOperationEvent, useTranslation} from 'sanity'
 

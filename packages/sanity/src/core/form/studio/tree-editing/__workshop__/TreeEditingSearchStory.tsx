@@ -1,5 +1,5 @@
 import {Schema} from '@sanity/schema'
-import {Container, Flex} from '@sanity/ui'
+import {Container, Flex} from '@sanity/ui-v3'
 import {useMemo} from 'react'
 
 import {TreeEditingSearch} from '../components'

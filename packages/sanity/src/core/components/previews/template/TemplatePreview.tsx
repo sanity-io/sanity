@@ -1,4 +1,4 @@
-import {Box, Flex, rem, Stack, Text, TextSkeleton} from '@sanity/ui'
+import {Box, Flex, rem, Stack, Text, TextSkeleton} from '@sanity/ui-v3'
 import {type ElementType, isValidElement, type ReactNode} from 'react'
 import {isValidElementType} from 'react-is'
 import {styled} from 'styled-components'

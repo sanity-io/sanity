@@ -1,7 +1,7 @@
 /* eslint-disable camelcase */
 
-import {Card, rem} from '@sanity/ui'
 import {getTheme_v2} from '@sanity/ui/theme'
+import {Card, rem} from '@sanity/ui-v3'
 import {css, styled} from 'styled-components'
 
 import {ScrollContainer} from '../../../components/scroll'

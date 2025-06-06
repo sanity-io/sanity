@@ -1,5 +1,5 @@
 import {type Path} from '@sanity/types'
-import {Card, Container, Flex} from '@sanity/ui'
+import {Card, Container, Flex} from '@sanity/ui-v3'
 import {memo, type ReactNode, useCallback, useRef, useState} from 'react'
 
 import {PresenceOverlay} from '../../../../../presence/overlay/PresenceOverlay'

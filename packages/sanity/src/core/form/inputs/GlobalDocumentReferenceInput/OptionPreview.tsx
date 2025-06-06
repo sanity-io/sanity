@@ -1,5 +1,5 @@
 import {type GlobalDocumentReferenceSchemaType} from '@sanity/types'
-import {Stack, Text, TextSkeleton} from '@sanity/ui'
+import {Stack, Text, TextSkeleton} from '@sanity/ui-v3'
 import {type ReactNode} from 'react'
 import {type Observable} from 'rxjs'
 

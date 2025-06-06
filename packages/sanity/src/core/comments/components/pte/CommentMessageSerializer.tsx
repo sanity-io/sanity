@@ -1,5 +1,5 @@
 import {PortableText, type PortableTextComponents} from '@portabletext/react'
-import {Stack} from '@sanity/ui'
+import {Stack} from '@sanity/ui-v3'
 import {Fragment, type PropsWithChildren, useMemo} from 'react'
 import {css, styled} from 'styled-components'
 

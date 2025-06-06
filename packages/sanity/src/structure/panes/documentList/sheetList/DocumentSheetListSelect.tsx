@@ -2,7 +2,7 @@
 // The `use no memo` directive is due to a known issue with react-table and react compiler: https://github.com/TanStack/table/issues/5567
 
 import {type SanityDocument} from '@sanity/client'
-import {Checkbox} from '@sanity/ui'
+import {Checkbox} from '@sanity/ui-v3'
 import {type CellContext} from '@tanstack/react-table'
 import {type MouseEvent, useCallback} from 'react'
 

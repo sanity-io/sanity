@@ -1,4 +1,4 @@
-import {Flex, Text, TextSkeleton} from '@sanity/ui'
+import {Flex, Text, TextSkeleton} from '@sanity/ui-v3'
 import {memo} from 'react'
 import {styled} from 'styled-components'
 

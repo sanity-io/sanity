@@ -1,4 +1,4 @@
-import {useToast} from '@sanity/ui'
+import {useToast} from '@sanity/ui-v3'
 import {forwardRef, type ReactNode, useImperativeHandle} from 'react'
 
 /** @internal */

@@ -7,7 +7,7 @@ import {
   type SlugSourceFn,
   type SlugValue,
 } from '@sanity/types'
-import {Box, Card, Flex, Stack, TextInput} from '@sanity/ui'
+import {Box, Card, Flex, Stack, TextInput} from '@sanity/ui-v3'
 import * as PathUtils from '@sanity/util/paths'
 import {type FormEvent, useCallback, useImperativeHandle, useMemo, useRef} from 'react'
 

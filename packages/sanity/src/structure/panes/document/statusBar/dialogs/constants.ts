@@ -1,4 +1,4 @@
-import {type Placement} from '@sanity/ui'
+import {type Placement} from '@sanity/ui-v3'
 
 import {type DialogProps} from '../../../../../ui-components'
 

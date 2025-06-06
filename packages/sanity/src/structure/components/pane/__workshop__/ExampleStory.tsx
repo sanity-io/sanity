@@ -1,5 +1,5 @@
 import {ChevronDownIcon} from '@sanity/icons'
-import {Container, Stack, TabList, Text} from '@sanity/ui'
+import {Container, Stack, TabList, Text} from '@sanity/ui-v3'
 import {useBoolean, useSelect} from '@sanity/ui-workshop'
 import {useMemo} from 'react'
 import {ContextMenuButton} from 'sanity'

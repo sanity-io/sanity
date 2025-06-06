@@ -1,6 +1,7 @@
 const entryModule = `
 // This file is auto-generated on 'sanity dev'
 // Modifications to this file is automatically discarded
+import '@sanity/ui/ui.css'
 import {renderStudio} from "sanity"
 import studioConfig from %STUDIO_CONFIG_LOCATION%
 

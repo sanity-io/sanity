@@ -1,5 +1,5 @@
 import {type Asset} from '@sanity/types'
-import {Box, Card, Flex, Grid, Spinner, Stack, Text, useMediaIndex} from '@sanity/ui'
+import {Box, Card, Flex, Grid, Spinner, Stack, Text, useMediaIndex} from '@sanity/ui-v3'
 import {type KeyboardEvent, type MouseEvent} from 'react'
 
 import {useTranslation} from '../../../../i18n'

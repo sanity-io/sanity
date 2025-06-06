@@ -1,5 +1,5 @@
 import {Schema} from '@sanity/schema'
-import {Container, Flex} from '@sanity/ui'
+import {Container, Flex} from '@sanity/ui-v3'
 import {useBoolean, useSelect} from '@sanity/ui-workshop'
 import {uuid} from '@sanity/uuid'
 import {useCallback, useMemo, useState} from 'react'

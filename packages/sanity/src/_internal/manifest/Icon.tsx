@@ -1,5 +1,5 @@
-import {ThemeProvider} from '@sanity/ui'
 import {buildTheme} from '@sanity/ui/theme'
+import {ThemeProvider} from '@sanity/ui-v3'
 import {type ComponentType, isValidElement, type ReactNode} from 'react'
 import {isValidElementType} from 'react-is'
 import {createDefaultIcon} from 'sanity'

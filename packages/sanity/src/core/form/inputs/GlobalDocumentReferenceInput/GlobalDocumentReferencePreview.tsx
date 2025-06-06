@@ -2,7 +2,7 @@ import {isImageSource} from '@sanity/asset-utils'
 import {AccessDeniedIcon, HelpCircleIcon, LaunchIcon} from '@sanity/icons'
 import imageUrlBuilder from '@sanity/image-url'
 import {type GlobalDocumentReferenceType, type PreviewValue} from '@sanity/types'
-import {Badge, Box, Flex, Inline, Text} from '@sanity/ui'
+import {Badge, Box, Flex, Inline, Text} from '@sanity/ui-v3'
 import {isValidElement as ReactIsValidElement, useMemo} from 'react'
 
 import {Tooltip} from '../../../../ui-components'

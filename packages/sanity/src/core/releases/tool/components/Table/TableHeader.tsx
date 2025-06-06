@@ -1,5 +1,5 @@
 import {ArrowUpIcon, SearchIcon} from '@sanity/icons'
-import {Box, Card, Flex, Stack, Text, TextInput} from '@sanity/ui'
+import {Box, Card, Flex, Stack, Text, TextInput} from '@sanity/ui-v3'
 import {motion} from 'framer-motion'
 import {useMemo} from 'react'
 

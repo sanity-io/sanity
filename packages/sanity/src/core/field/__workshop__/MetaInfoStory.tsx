@@ -1,5 +1,5 @@
 import {ImageIcon} from '@sanity/icons'
-import {Box, Card} from '@sanity/ui'
+import {Box, Card} from '@sanity/ui-v3'
 
 import {MetaInfo} from '../diff'
 

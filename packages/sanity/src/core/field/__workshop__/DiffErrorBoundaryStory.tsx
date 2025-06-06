@@ -1,4 +1,4 @@
-import {Box} from '@sanity/ui'
+import {Box} from '@sanity/ui-v3'
 import {useCallback, useState} from 'react'
 
 import {Button} from '../../../ui-components'

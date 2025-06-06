@@ -1,5 +1,5 @@
 import {CalendarIcon, ClockIcon} from '@sanity/icons'
-import {Box, Text} from '@sanity/ui'
+import {Box, Text} from '@sanity/ui-v3'
 import {useCallback, useState} from 'react'
 
 import {InsufficientPermissionsMessage} from '../../../../components/InsufficientPermissionsMessage'

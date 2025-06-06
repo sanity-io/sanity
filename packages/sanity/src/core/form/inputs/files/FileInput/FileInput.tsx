@@ -9,7 +9,7 @@ import {
   type FileSchemaType,
   type UploadState,
 } from '@sanity/types'
-import {useToast} from '@sanity/ui'
+import {useToast} from '@sanity/ui-v3'
 import {get} from 'lodash'
 import {useCallback, useEffect, useRef, useState} from 'react'
 import {type Observable} from 'rxjs'

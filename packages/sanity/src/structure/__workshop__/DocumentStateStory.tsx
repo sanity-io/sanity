@@ -4,7 +4,7 @@ import {
   Code,
   Dialog, // eslint-disable-line no-restricted-imports
   Stack,
-} from '@sanity/ui'
+} from '@sanity/ui-v3'
 import {useCallback, useEffect, useMemo, useState} from 'react'
 import {
   type DocumentActionComponent,

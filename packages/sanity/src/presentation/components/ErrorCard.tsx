@@ -1,5 +1,5 @@
 /* eslint-disable no-nested-ternary */
-import {Box, Card, type CardProps, Container, Flex, Inline, Stack, Text} from '@sanity/ui'
+import {Box, Card, type CardProps, Container, Flex, Inline, Stack, Text} from '@sanity/ui-v3'
 import {type ReactNode} from 'react'
 import {useTranslation} from 'sanity'
 

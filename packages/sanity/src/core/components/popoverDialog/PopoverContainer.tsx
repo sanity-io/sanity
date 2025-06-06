@@ -5,7 +5,7 @@ import {
   rem,
   type ResponsiveWidthStyleProps,
   useArrayProp,
-} from '@sanity/ui'
+} from '@sanity/ui-v3'
 import {forwardRef, type ReactNode, type Ref} from 'react'
 import {styled} from 'styled-components'
 

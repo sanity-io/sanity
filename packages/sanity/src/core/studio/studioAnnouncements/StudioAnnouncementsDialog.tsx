@@ -1,7 +1,7 @@
 /* eslint-disable camelcase */
 import {CloseIcon} from '@sanity/icons'
 import {useTelemetry} from '@sanity/telemetry/react'
-import {Box, Flex, Grid, Text} from '@sanity/ui'
+import {Box, Flex, Grid, Text} from '@sanity/ui-v3'
 import {Fragment, useCallback, useEffect, useMemo, useRef} from 'react'
 import {useTranslation} from 'react-i18next'
 import {styled} from 'styled-components'

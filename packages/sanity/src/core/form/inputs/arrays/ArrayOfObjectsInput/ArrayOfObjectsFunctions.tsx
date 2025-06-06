@@ -1,7 +1,7 @@
 /* eslint-disable react/jsx-no-bind */
 import {AddIcon} from '@sanity/icons'
 import {type ArraySchemaType} from '@sanity/types'
-import {Grid} from '@sanity/ui'
+import {Grid} from '@sanity/ui-v3'
 import {useCallback, useState} from 'react'
 
 import {Button, Tooltip} from '../../../../../ui-components'

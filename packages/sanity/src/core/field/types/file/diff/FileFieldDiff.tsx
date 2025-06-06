@@ -1,5 +1,5 @@
 import {DocumentIcon} from '@sanity/icons'
-import {Box, Card, Flex, Text} from '@sanity/ui'
+import {Box, Card, Flex, Text} from '@sanity/ui-v3'
 import {useMemo} from 'react'
 import {styled} from 'styled-components'
 

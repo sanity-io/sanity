@@ -1,4 +1,4 @@
-import {Box, useToast} from '@sanity/ui'
+import {Box, useToast} from '@sanity/ui-v3'
 import {type ReactNode, useCallback, useEffect, useRef} from 'react'
 import semver from 'semver'
 

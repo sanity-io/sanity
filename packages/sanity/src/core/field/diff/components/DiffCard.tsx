@@ -1,5 +1,5 @@
 import {type Path} from '@sanity/types'
-import {Card, rem} from '@sanity/ui'
+import {Card, rem} from '@sanity/ui-v3'
 import {type ElementType, forwardRef, type HTMLProps, type ReactNode, useMemo} from 'react'
 import {styled} from 'styled-components'
 

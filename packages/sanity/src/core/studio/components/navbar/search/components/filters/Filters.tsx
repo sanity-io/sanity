@@ -1,4 +1,4 @@
-import {Flex} from '@sanity/ui'
+import {Flex} from '@sanity/ui-v3'
 import {useCallback, useEffect, useState} from 'react'
 
 import {Button} from '../../../../../../../ui-components'

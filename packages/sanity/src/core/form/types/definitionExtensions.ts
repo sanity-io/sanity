@@ -390,7 +390,7 @@ declare module '@sanity/types' {
      * and bolder, but will adapt to what the current `@sanity/ui` theme has defined
      * as actual values for weight "bold" and `size={3}`.
      * ```ts
-     * import {Text} from '@sanity/ui'
+     * import {Text} from '@sanity/ui-v3'
      *
      * const LeadStyle = (props: BlockStyleProps) => (
      *   <Text weight="bold" size={3}>

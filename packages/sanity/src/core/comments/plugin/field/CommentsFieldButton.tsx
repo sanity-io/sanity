@@ -7,7 +7,7 @@ import {
   Stack,
   Text,
   useClickOutsideEvent,
-} from '@sanity/ui'
+} from '@sanity/ui-v3'
 import {useCallback, useMemo, useRef, useState} from 'react'
 import {styled} from 'styled-components'
 

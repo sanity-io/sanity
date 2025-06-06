@@ -1,5 +1,5 @@
 import {ChevronDownIcon} from '@sanity/icons'
-import {Box, Flex, MenuDivider, Stack, Text} from '@sanity/ui'
+import {Box, Flex, MenuDivider, Stack, Text} from '@sanity/ui-v3'
 import {Fragment, useMemo} from 'react'
 import {styled} from 'styled-components'
 

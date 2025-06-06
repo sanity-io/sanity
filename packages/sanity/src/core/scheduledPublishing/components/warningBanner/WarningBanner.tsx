@@ -1,7 +1,7 @@
 import {ArrowRightIcon, WarningOutlineIcon} from '@sanity/icons'
-import {Card, Flex, rem, Text, useMediaIndex} from '@sanity/ui'
 // eslint-disable-next-line camelcase
 import {getTheme_v2} from '@sanity/ui/theme'
+import {Card, Flex, rem, Text, useMediaIndex} from '@sanity/ui-v3'
 import {css, styled} from 'styled-components'
 
 import {RELEASES_DOCS_URL} from '../../constants'

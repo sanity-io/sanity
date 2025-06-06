@@ -1,4 +1,4 @@
-import {Box, Code, Text} from '@sanity/ui'
+import {Box, Code, Text} from '@sanity/ui-v3'
 import {useEffect, useState} from 'react'
 
 import {useGrantsStore} from '../datastores'

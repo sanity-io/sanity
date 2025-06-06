@@ -11,7 +11,7 @@ import {
   Stack,
   TabPanel,
   Text,
-} from '@sanity/ui'
+} from '@sanity/ui-v3'
 import {addHours, isValid, startOfHour} from 'date-fns'
 import {
   type ComponentType,

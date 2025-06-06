@@ -1,5 +1,5 @@
 import {type ReleaseDocument} from '@sanity/client'
-import {Text, useToast} from '@sanity/ui'
+import {Text, useToast} from '@sanity/ui-v3'
 import {type ReactNode, useEffect, useMemo} from 'react'
 import {useRouter} from 'sanity/router'
 

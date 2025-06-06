@@ -1,5 +1,5 @@
 import {LaunchIcon} from '@sanity/icons'
-import {Flex} from '@sanity/ui'
+import {Flex} from '@sanity/ui-v3'
 import {useCallback, useState} from 'react'
 
 import {Button} from '../../../ui-components'

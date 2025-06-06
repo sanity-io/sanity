@@ -1,4 +1,4 @@
-import {type ResponsivePaddingProps} from '@sanity/ui'
+import {type ResponsivePaddingProps} from '@sanity/ui-v3'
 import {type ElementType} from 'react'
 
 export const TEXT_LEVELS = [1, 2, 3, 4, 5, 6, 7, 8, 9]

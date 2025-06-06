@@ -1,5 +1,5 @@
 import {DocumentIcon, EditIcon} from '@sanity/icons'
-import {Card, Container, Flex, Text} from '@sanity/ui'
+import {Card, Container, Flex, Text} from '@sanity/ui-v3'
 import {useBoolean, useSelect, useString} from '@sanity/ui-workshop'
 import {type ComponentType, useMemo} from 'react'
 

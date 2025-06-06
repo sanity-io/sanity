@@ -1,5 +1,5 @@
 import {type Asset as AssetType, type SanityDocument} from '@sanity/types'
-import {Card, Flex, Text} from '@sanity/ui'
+import {Card, Flex, Text} from '@sanity/ui-v3'
 import {type HTMLProps, useCallback} from 'react'
 import {IntentLink} from 'sanity/router'
 

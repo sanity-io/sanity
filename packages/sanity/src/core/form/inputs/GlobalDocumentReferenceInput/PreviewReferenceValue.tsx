@@ -2,7 +2,7 @@ import {
   type GlobalDocumentReferenceSchemaType,
   type GlobalDocumentReferenceValue,
 } from '@sanity/types'
-import {Stack, Text, TextSkeleton} from '@sanity/ui'
+import {Stack, Text, TextSkeleton} from '@sanity/ui-v3'
 
 import {Translate, useTranslation} from '../../../i18n'
 import {GlobalDocumentReferencePreview} from './GlobalDocumentReferencePreview'

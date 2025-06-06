@@ -1,4 +1,4 @@
-import {BoundaryElementProvider, Card, Flex, useToast} from '@sanity/ui'
+import {BoundaryElementProvider, Card, Flex, useToast} from '@sanity/ui-v3'
 import {useCallback, useState} from 'react'
 import {
   type DocumentGroupEvent,

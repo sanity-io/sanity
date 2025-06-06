@@ -10,7 +10,7 @@ import {
   usePortableTextEditor,
 } from '@portabletext/editor'
 import {type Path, type PortableTextBlock, type PortableTextTextBlock} from '@sanity/types'
-import {Box, Portal, PortalProvider, useBoundaryElement, usePortal} from '@sanity/ui'
+import {Box, Portal, PortalProvider, useBoundaryElement, usePortal} from '@sanity/ui-v3'
 import {type ReactNode, useCallback, useMemo, useState} from 'react'
 
 import {ChangeIndicator} from '../../../changeIndicators'

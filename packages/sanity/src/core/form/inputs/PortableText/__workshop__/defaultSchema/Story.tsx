@@ -1,6 +1,6 @@
 import {type SanityClient} from '@sanity/client'
 import {type Path} from '@sanity/types'
-import {Card, Container, Flex} from '@sanity/ui'
+import {Card, Container, Flex} from '@sanity/ui-v3'
 import {useAction, useSelect} from '@sanity/ui-workshop'
 import {useCallback, useMemo, useRef, useState} from 'react'
 

@@ -1,4 +1,4 @@
-import {Box} from '@sanity/ui'
+import {Box} from '@sanity/ui-v3'
 import {css, styled} from 'styled-components'
 
 const INDICATOR_LEFT_OFFSET = 18

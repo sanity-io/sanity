@@ -1,5 +1,5 @@
 import {BulbOutlineIcon, UnknownIcon} from '@sanity/icons'
-import {Box, Card, Code, Stack, Text, type Theme, useClickOutsideEvent} from '@sanity/ui'
+import {Box, Card, Code, Stack, Text, type Theme, useClickOutsideEvent} from '@sanity/ui-v3'
 import {resolveTypeName} from '@sanity/util/content'
 import {type FocusEvent, useCallback, useRef, useState} from 'react'
 import {styled} from 'styled-components'

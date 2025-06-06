@@ -5,7 +5,7 @@ import {
   type SchemaType,
   type ValidationMarker,
 } from '@sanity/types'
-import {type CardTone, Container, Menu, Stack} from '@sanity/ui'
+import {type CardTone, Container, Menu, Stack} from '@sanity/ui-v3'
 import * as PathUtils from '@sanity/util/paths'
 import {type ReactNode, useCallback, useId} from 'react'
 import {useRouter} from 'sanity/router'

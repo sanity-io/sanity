@@ -1,5 +1,5 @@
 import {type Slug} from '@sanity/types'
-import {Box} from '@sanity/ui'
+import {Box} from '@sanity/ui-v3'
 import {styled} from 'styled-components'
 
 import {type FieldPreviewComponent} from '../../../preview'

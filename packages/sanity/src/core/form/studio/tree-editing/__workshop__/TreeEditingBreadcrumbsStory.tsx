@@ -1,6 +1,6 @@
 import {Schema} from '@sanity/schema'
 import {type Path} from '@sanity/types'
-import {Card, Flex} from '@sanity/ui'
+import {Card, Flex} from '@sanity/ui-v3'
 import {useMemo, useState} from 'react'
 
 import {TreeEditingBreadcrumbs} from '../components'

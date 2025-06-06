@@ -1,4 +1,4 @@
-import {Box} from '@sanity/ui'
+import {Box} from '@sanity/ui-v3'
 import {useEffect, useRef, useState} from 'react'
 import {styled} from 'styled-components'
 

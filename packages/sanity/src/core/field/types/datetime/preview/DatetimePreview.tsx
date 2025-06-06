@@ -1,5 +1,5 @@
 import {type StringSchemaType} from '@sanity/types'
-import {Box} from '@sanity/ui'
+import {Box} from '@sanity/ui-v3'
 import * as legacyDateFormat from '@sanity/util/legacyDateFormat'
 import {styled} from 'styled-components'
 

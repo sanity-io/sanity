@@ -5,7 +5,7 @@ import {
   Button as UIButton,
   Flex,
   Text,
-} from '@sanity/ui'
+} from '@sanity/ui-v3'
 // eslint-disable-next-line camelcase
 import {useCallback} from 'react'
 

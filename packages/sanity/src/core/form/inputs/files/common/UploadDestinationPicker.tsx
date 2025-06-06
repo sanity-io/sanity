@@ -1,6 +1,6 @@
 import {CloseIcon} from '@sanity/icons'
 import {type AssetSource} from '@sanity/types'
-import {Box, Flex, Text, useGlobalKeyDown} from '@sanity/ui'
+import {Box, Flex, Text, useGlobalKeyDown} from '@sanity/ui-v3'
 import {useCallback, useState} from 'react'
 import {useTranslation} from 'react-i18next'
 import {isValidElementType} from 'react-is'

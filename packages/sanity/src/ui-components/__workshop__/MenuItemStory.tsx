@@ -1,6 +1,6 @@
 import {hues} from '@sanity/color'
 import {CheckmarkIcon, CircleIcon} from '@sanity/icons'
-import {Avatar, Box, Card, Container, Menu, Stack, Text} from '@sanity/ui'
+import {Avatar, Box, Card, Container, Menu, Stack, Text} from '@sanity/ui-v3'
 import {useString} from '@sanity/ui-workshop'
 
 import {MenuItem} from '../menuItem'

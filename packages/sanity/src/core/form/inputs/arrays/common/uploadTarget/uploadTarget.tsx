@@ -1,5 +1,5 @@
 import {type SchemaType} from '@sanity/types'
-import {Box, Flex, Text, useToast} from '@sanity/ui'
+import {Box, Flex, Text, useToast} from '@sanity/ui-v3'
 import {sortBy} from 'lodash'
 import {
   type ComponentType,

@@ -1,4 +1,4 @@
-import {type ButtonTone, Flex, Text} from '@sanity/ui'
+import {type ButtonTone, Flex, Text} from '@sanity/ui-v3'
 import {TextWithTone, useTranslation} from 'sanity'
 
 import {structureLocaleNamespace} from '../../../../i18n'

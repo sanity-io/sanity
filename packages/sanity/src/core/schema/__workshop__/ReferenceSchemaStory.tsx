@@ -1,5 +1,5 @@
 import {type SchemaType} from '@sanity/types'
-import {Box, Card, Code, Flex, Text} from '@sanity/ui'
+import {Box, Card, Code, Flex, Text} from '@sanity/ui-v3'
 import {useMemo} from 'react'
 
 import {createSchema} from '../createSchema'

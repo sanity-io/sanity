@@ -1,4 +1,4 @@
-import {Box, Container, Flex, Text, useTheme} from '@sanity/ui'
+import {Box, Container, Flex, Text, useTheme} from '@sanity/ui-v3'
 import {parse} from 'date-fns'
 import {useEffect, useMemo, useRef} from 'react'
 import {type RouterContextValue, useRouter} from 'sanity/router'

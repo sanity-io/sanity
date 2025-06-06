@@ -1,6 +1,6 @@
 import {CheckmarkIcon} from '@sanity/icons'
 import {type SchemaType} from '@sanity/types'
-import {Box, type ResponsiveMarginProps, type ResponsivePaddingProps} from '@sanity/ui'
+import {Box, type ResponsiveMarginProps, type ResponsivePaddingProps} from '@sanity/ui-v3'
 import {memo, useCallback} from 'react'
 
 import {Button} from '../../../../../../../../../ui-components'

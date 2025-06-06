@@ -1,4 +1,4 @@
-import {Box, Card, Container} from '@sanity/ui'
+import {Box, Card, Container} from '@sanity/ui-v3'
 
 import {SanityDefaultPreview} from '../components/SanityDefaultPreview'
 

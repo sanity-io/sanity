@@ -1,4 +1,4 @@
-import {Box, Card, Text, useMediaIndex} from '@sanity/ui'
+import {Box, Card, Text, useMediaIndex} from '@sanity/ui-v3'
 import {useCallback, useMemo, useRef} from 'react'
 import {styled} from 'styled-components'
 

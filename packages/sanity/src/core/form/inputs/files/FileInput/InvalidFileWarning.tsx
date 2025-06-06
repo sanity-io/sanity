@@ -1,5 +1,5 @@
 import {ResetIcon, WarningOutlineIcon} from '@sanity/icons'
-import {Box, Card, Flex, Stack, Text} from '@sanity/ui'
+import {Box, Card, Flex, Stack, Text} from '@sanity/ui-v3'
 
 import {Button} from '../../../../../ui-components'
 import {useTranslation} from '../../../../i18n'

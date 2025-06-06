@@ -1,6 +1,6 @@
 /* eslint-disable i18next/no-literal-string,@sanity/i18n/no-attribute-string-literals */
 import {type CurrentUser} from '@sanity/types'
-import {Card, Stack, Text} from '@sanity/ui'
+import {Card, Stack, Text} from '@sanity/ui-v3'
 import {useCallback, useEffect, useState} from 'react'
 
 import {Dialog} from '../../../ui-components'

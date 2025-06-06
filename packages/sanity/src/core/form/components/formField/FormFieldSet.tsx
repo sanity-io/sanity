@@ -1,6 +1,6 @@
 /* eslint-disable camelcase */
 import {type DeprecatedProperty, type FormNodeValidation} from '@sanity/types'
-import {Badge, Box, Flex, Stack, Text, type Theme} from '@sanity/ui'
+import {Badge, Box, Flex, Stack, Text, type Theme} from '@sanity/ui-v3'
 import {
   type FocusEvent,
   type ForwardedRef,

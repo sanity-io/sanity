@@ -1,4 +1,4 @@
-import {Box, Card, Flex, Text} from '@sanity/ui'
+import {Box, Card, Flex, Text} from '@sanity/ui-v3'
 import {type ReactNode} from 'react'
 
 export function StatusItem(props: {avatar?: ReactNode; text: ReactNode; testId?: string}) {

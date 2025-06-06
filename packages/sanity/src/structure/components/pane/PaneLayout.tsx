@@ -1,4 +1,4 @@
-import {type CardProps, useElementRect} from '@sanity/ui'
+import {type CardProps, useElementRect} from '@sanity/ui-v3'
 import {type HTMLProps, useEffect, useMemo, useState} from 'react'
 import {PaneLayoutContext} from 'sanity/_singletons'
 

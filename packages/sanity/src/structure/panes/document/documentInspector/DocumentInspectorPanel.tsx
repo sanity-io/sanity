@@ -1,4 +1,4 @@
-import {Box} from '@sanity/ui'
+import {Box} from '@sanity/ui-v3'
 import {useCallback} from 'react'
 import {Resizable} from 'sanity'
 

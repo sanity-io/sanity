@@ -1,6 +1,6 @@
 import {type SanityClient} from '@sanity/client'
 import {type ObjectSchemaType} from '@sanity/types'
-import {useToast} from '@sanity/ui'
+import {useToast} from '@sanity/ui-v3'
 import {act, renderHook} from '@testing-library/react'
 import {beforeEach, describe, expect, it, vi} from 'vitest'
 

@@ -1,5 +1,5 @@
 import {EditIcon, EllipsisHorizontalIcon, PublishIcon, TrashIcon} from '@sanity/icons'
-import {Box, Card, Container, Menu, Stack, Text} from '@sanity/ui'
+import {Box, Card, Container, Menu, Stack, Text} from '@sanity/ui-v3'
 
 import {MenuGroup} from '../menuGroup'
 import {MenuItem} from '../menuItem'

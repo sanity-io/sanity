@@ -1,4 +1,4 @@
-import {Flex, Text} from '@sanity/ui'
+import {Flex, Text} from '@sanity/ui-v3'
 import {useCallback, useMemo} from 'react'
 import {
   getReleaseIdFromReleaseDocumentId,

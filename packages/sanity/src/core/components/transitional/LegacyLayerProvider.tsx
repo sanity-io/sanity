@@ -1,4 +1,4 @@
-import {LayerProvider} from '@sanity/ui'
+import {LayerProvider} from '@sanity/ui-v3'
 import {type ReactNode} from 'react'
 
 import {type ZIndexContextValue} from '../zOffsets/types'

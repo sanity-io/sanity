@@ -1,5 +1,5 @@
 import {CheckmarkCircleIcon, CopyIcon} from '@sanity/icons'
-import {Stack, Text, useToast} from '@sanity/ui'
+import {Stack, Text, useToast} from '@sanity/ui-v3'
 import {useCallback, useEffect, useId, useState} from 'react'
 
 import {Button, Dialog} from '../../../../../ui-components'

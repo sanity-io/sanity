@@ -1,4 +1,4 @@
-import {Heading, Text} from '@sanity/ui'
+import {Heading, Text} from '@sanity/ui-v3'
 import {type ComponentType, type HTMLProps} from 'react'
 import {styled} from 'styled-components'
 

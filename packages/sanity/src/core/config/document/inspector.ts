@@ -1,4 +1,4 @@
-import {type ButtonTone} from '@sanity/ui'
+import {type ButtonTone} from '@sanity/ui-v3'
 import {type ComponentType} from 'react'
 
 /** @hidden @beta */

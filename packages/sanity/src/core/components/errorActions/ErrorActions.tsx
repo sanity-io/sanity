@@ -1,5 +1,5 @@
 import {CopyIcon, SyncIcon} from '@sanity/icons'
-import {Inline} from '@sanity/ui'
+import {Inline} from '@sanity/ui-v3'
 import {type ComponentProps, type ComponentType} from 'react'
 
 import {Button, Tooltip} from '../../../ui-components'

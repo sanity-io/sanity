@@ -1,5 +1,5 @@
 import {type DefinedTelemetryLog} from '@sanity/telemetry/react'
-import {type ButtonTone} from '@sanity/ui'
+import {type ButtonTone} from '@sanity/ui-v3'
 
 import {
   ArchivedRelease,

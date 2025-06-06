@@ -1,7 +1,7 @@
 import {type ReleaseDocument, type SanityDocument} from '@sanity/client'
 import {AddIcon} from '@sanity/icons'
 import {useTelemetry} from '@sanity/telemetry/react'
-import {Card, Container, useToast} from '@sanity/ui'
+import {Card, Container, useToast} from '@sanity/ui-v3'
 import {type RefObject, useCallback, useEffect, useMemo, useState} from 'react'
 
 import {Button} from '../../../../ui-components'

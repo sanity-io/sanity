@@ -1,5 +1,5 @@
 import {type SchemaType as SanitySchemaType} from '@sanity/types'
-import {type ThemeContextValue, ThemeProvider} from '@sanity/ui'
+import {type ThemeContextValue, ThemeProvider} from '@sanity/ui-v3'
 import {type FunctionComponent, isValidElement} from 'react'
 import {ServerStyleSheet, StyleSheetManager} from 'styled-components'
 

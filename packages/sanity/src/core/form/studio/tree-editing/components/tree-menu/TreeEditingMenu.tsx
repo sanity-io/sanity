@@ -1,5 +1,5 @@
 import {type Path} from '@sanity/types'
-import {Stack} from '@sanity/ui'
+import {Stack} from '@sanity/ui-v3'
 import {toString} from '@sanity/util/paths'
 import {memo} from 'react'
 

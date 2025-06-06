@@ -1,5 +1,5 @@
 import {type ReleaseDocument} from '@sanity/client'
-import {type BadgeTone} from '@sanity/ui'
+import {type BadgeTone} from '@sanity/ui-v3'
 import {type FC, type PropsWithChildren} from 'react'
 import {css, styled} from 'styled-components'
 

@@ -1,6 +1,6 @@
 import {type ReleaseDocument} from '@sanity/client'
 import {LockIcon} from '@sanity/icons'
-import {Flex, Stack, Text} from '@sanity/ui'
+import {Flex, Stack, Text} from '@sanity/ui-v3'
 import {memo} from 'react'
 
 import {useTranslation} from '../../../../i18n'

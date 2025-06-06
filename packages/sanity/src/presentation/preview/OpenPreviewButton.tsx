@@ -1,6 +1,6 @@
 import {LaunchIcon} from '@sanity/icons'
 import {urlSearchParamPreviewPerspective} from '@sanity/preview-url-secret/constants'
-import {Text} from '@sanity/ui'
+import {Text} from '@sanity/ui-v3'
 import {useCallback, useMemo} from 'react'
 import {useTranslation} from 'sanity'
 

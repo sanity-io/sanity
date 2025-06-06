@@ -1,4 +1,4 @@
-import {Box, Card, Grid, Label} from '@sanity/ui'
+import {Box, Card, Grid, Label} from '@sanity/ui-v3'
 import {isSameDay, isSameMonth} from 'date-fns'
 
 import {type TimeZoneScope, useTimeZone} from '../../../../hooks/useTimeZone'

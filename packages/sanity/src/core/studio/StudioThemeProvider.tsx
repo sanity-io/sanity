@@ -1,7 +1,7 @@
 /* eslint-disable no-nested-ternary */
 
-import {LayerProvider, ThemeProvider} from '@sanity/ui'
 import {type RootTheme} from '@sanity/ui/theme'
+import {LayerProvider, ThemeProvider} from '@sanity/ui-v3'
 import {type ReactNode} from 'react'
 import {ColorSchemeSetValueContext, ColorSchemeValueContext} from 'sanity/_singletons'
 

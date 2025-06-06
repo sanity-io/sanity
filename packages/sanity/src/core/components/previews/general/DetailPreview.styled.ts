@@ -1,4 +1,4 @@
-import {Box, Flex, rem, Skeleton, Text, TextSkeleton} from '@sanity/ui'
+import {Box, Flex, rem, Skeleton, Text, TextSkeleton} from '@sanity/ui-v3'
 import {css, styled} from 'styled-components'
 
 import {PREVIEW_SIZES} from '../constants'

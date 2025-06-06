@@ -6,7 +6,7 @@ import {
 } from '@portabletext/editor'
 import {CollapseIcon, ExpandIcon} from '@sanity/icons'
 import {type ObjectSchemaType, type Path, type SchemaType} from '@sanity/types'
-import {Box, Flex, useElementRect, useToast} from '@sanity/ui'
+import {Box, Flex, useElementRect, useToast} from '@sanity/ui-v3'
 import {memo, type MouseEvent, useCallback, useMemo, useState} from 'react'
 import {css, styled} from 'styled-components'
 

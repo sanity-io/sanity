@@ -1,5 +1,5 @@
 import {CheckmarkCircleIcon, EditIcon, LinkIcon, TrashIcon, UndoIcon} from '@sanity/icons'
-import {Card, Flex, Menu, MenuDivider} from '@sanity/ui'
+import {Card, Flex, Menu, MenuDivider} from '@sanity/ui-v3'
 import {styled} from 'styled-components'
 
 import {

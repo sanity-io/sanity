@@ -1,4 +1,4 @@
-import {Box, Card, Flex, Stack} from '@sanity/ui'
+import {Box, Card, Flex, Stack} from '@sanity/ui-v3'
 import {
   DEFAULT_DATE_FORMAT,
   DEFAULT_TIME_FORMAT,

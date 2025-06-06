@@ -8,7 +8,7 @@ import {
   Text,
   useClickOutsideEvent,
   useGlobalKeyDown,
-} from '@sanity/ui'
+} from '@sanity/ui-v3'
 import {type ReactNode, useCallback, useEffect, useState} from 'react'
 
 import {Popover} from '../../../../../ui-components'

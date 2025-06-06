@@ -1,4 +1,4 @@
-import {ElementQuery} from '@sanity/ui'
+import {ElementQuery} from '@sanity/ui-v3'
 import {styled} from 'styled-components'
 
 const TimeZoneButtonElementQuery = styled(ElementQuery)`

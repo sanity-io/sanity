@@ -1,4 +1,4 @@
-import {Badge, type BadgeProps} from '@sanity/ui'
+import {Badge, type BadgeProps} from '@sanity/ui-v3'
 import {type HTMLProps} from 'react'
 
 /** @internal */

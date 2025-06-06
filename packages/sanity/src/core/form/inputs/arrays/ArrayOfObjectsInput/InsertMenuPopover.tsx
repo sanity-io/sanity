@@ -3,7 +3,7 @@ import {
   type InsertMenuProps as SanityInsertMenuProps,
 } from '@sanity/insert-menu'
 import {type SchemaType} from '@sanity/types'
-import {useClickOutsideEvent, useGlobalKeyDown} from '@sanity/ui'
+import {useClickOutsideEvent, useGlobalKeyDown} from '@sanity/ui-v3'
 import {useCallback, useMemo, useReducer, useRef} from 'react'
 
 import {Popover, type PopoverProps} from '../../../../../ui-components'

@@ -1,6 +1,6 @@
 import {RestoreIcon} from '@sanity/icons'
 import {type SanityDocument} from '@sanity/types'
-import {Box, Card, Code, Flex, Inline, Stack, Text} from '@sanity/ui'
+import {Box, Card, Code, Flex, Inline, Stack, Text} from '@sanity/ui-v3'
 import {format} from 'date-fns'
 import {omit} from 'lodash'
 import {useCallback, useMemo, useState} from 'react'

@@ -1,4 +1,4 @@
-import {Container, Flex, TextArea} from '@sanity/ui'
+import {Container, Flex, TextArea} from '@sanity/ui-v3'
 import {useBoolean} from '@sanity/ui-workshop'
 
 import {ElementWithChangeBar} from '../ElementWithChangeBar'

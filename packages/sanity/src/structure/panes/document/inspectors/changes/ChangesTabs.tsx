@@ -1,5 +1,5 @@
 import {CloseIcon, InfoOutlineIcon} from '@sanity/icons'
-import {Box, Card, Flex, TabList, TabPanel, Text} from '@sanity/ui'
+import {Box, Card, Flex, TabList, TabPanel, Text} from '@sanity/ui-v3'
 import {useState} from 'react'
 import {
   type DocumentInspectorProps,

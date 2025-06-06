@@ -1,5 +1,5 @@
 import {UnknownIcon} from '@sanity/icons'
-import {Menu} from '@sanity/ui'
+import {Menu} from '@sanity/ui-v3'
 import {type MouseEvent, useCallback, useId} from 'react'
 import {StatusButton, useI18nText, useTranslation} from 'sanity'
 import {useIntentLink} from 'sanity/router'

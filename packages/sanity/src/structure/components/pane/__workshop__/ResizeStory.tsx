@@ -1,4 +1,4 @@
-import {Box, Card, Code, Flex} from '@sanity/ui'
+import {Box, Card, Code, Flex} from '@sanity/ui-v3'
 import {memo, useCallback, useEffect, useMemo, useState} from 'react'
 import {PaneLayoutContext} from 'sanity/_singletons'
 import {styled} from 'styled-components'

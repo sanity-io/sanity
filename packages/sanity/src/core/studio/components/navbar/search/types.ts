@@ -1,6 +1,6 @@
 import {type ClientPerspective} from '@sanity/client'
 import {type SchemaType} from '@sanity/types'
-import {type ButtonTone, type CardTone} from '@sanity/ui'
+import {type ButtonTone, type CardTone} from '@sanity/ui-v3'
 
 import {
   type SearchHit,

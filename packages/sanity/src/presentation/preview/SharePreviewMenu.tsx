@@ -19,7 +19,7 @@ import {
   Switch,
   Text,
   useToast,
-} from '@sanity/ui'
+} from '@sanity/ui-v3'
 import {AnimatePresence, motion} from 'framer-motion'
 import {lazy, memo, Suspense, useCallback, useEffect, useMemo, useState} from 'react'
 import {useClient, useCurrentUser, useTranslation} from 'sanity'

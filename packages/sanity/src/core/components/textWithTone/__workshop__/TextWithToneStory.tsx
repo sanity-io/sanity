@@ -1,5 +1,5 @@
 import {InfoOutlineIcon} from '@sanity/icons'
-import {Box, Card, Flex, Grid, Stack} from '@sanity/ui'
+import {Box, Card, Flex, Grid, Stack} from '@sanity/ui-v3'
 import {useBoolean, useSelect} from '@sanity/ui-workshop'
 
 import {TextWithTone} from '../TextWithTone'

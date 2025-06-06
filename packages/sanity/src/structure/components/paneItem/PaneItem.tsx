@@ -5,7 +5,7 @@ import {
   type SanityDocument,
   type SchemaType,
 } from '@sanity/types'
-import {Box, type CardProps, Text} from '@sanity/ui'
+import {Box, type CardProps, Text} from '@sanity/ui-v3'
 import {
   type ComponentType,
   type MouseEvent,

@@ -1,6 +1,6 @@
 import {LaunchIcon as OpenInNewTabIcon, SyncIcon as ReplaceIcon, TrashIcon} from '@sanity/icons'
 import {type Reference, type ReferenceSchemaType} from '@sanity/types'
-import {Box, Card, type CardTone, Flex, Menu, MenuDivider, Stack} from '@sanity/ui'
+import {Box, Card, type CardTone, Flex, Menu, MenuDivider, Stack} from '@sanity/ui-v3'
 import {
   type ComponentProps,
   type FocusEvent,

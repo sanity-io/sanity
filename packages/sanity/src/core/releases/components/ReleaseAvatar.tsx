@@ -1,5 +1,5 @@
 import {DotIcon} from '@sanity/icons'
-import {type BadgeTone, Box, Text} from '@sanity/ui'
+import {type BadgeTone, Box, Text} from '@sanity/ui-v3'
 import {type CSSProperties} from 'react'
 
 export const ReleaseAvatarIcon = ({tone}: {tone: BadgeTone}) => {

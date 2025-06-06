@@ -6,7 +6,7 @@ import {
   IceCreamIcon,
   MasterDetailIcon,
 } from '@sanity/icons'
-import {Card} from '@sanity/ui'
+import {Card} from '@sanity/ui-v3'
 import {useBoolean, useString} from '@sanity/ui-workshop'
 import {createContext, useMemo, useState} from 'react'
 import {styled} from 'styled-components'

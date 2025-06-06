@@ -1,5 +1,5 @@
 import {type DeprecatedProperty, type FormNodeValidation} from '@sanity/types'
-import {Badge, Box, Flex, Stack, Text} from '@sanity/ui'
+import {Badge, Box, Flex, Stack, Text} from '@sanity/ui-v3'
 import {memo, type ReactNode} from 'react'
 import {styled} from 'styled-components'
 

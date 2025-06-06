@@ -1,4 +1,4 @@
-import {Card, Stack} from '@sanity/ui'
+import {Card, Stack} from '@sanity/ui-v3'
 import {useState} from 'react'
 
 import {useTimeZone} from '../../../hooks/useTimeZone'

@@ -1,5 +1,5 @@
 /* eslint-disable i18next/no-literal-string,@sanity/i18n/no-attribute-string-literals */
-import {Card, type CardTone, Code, Inline, Stack} from '@sanity/ui'
+import {Card, type CardTone, Code, Inline, Stack} from '@sanity/ui-v3'
 import {styled} from 'styled-components'
 
 import {Tooltip} from '../../../../../../../../ui-components'

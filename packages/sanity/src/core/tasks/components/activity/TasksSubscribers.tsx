@@ -1,5 +1,5 @@
 import {type Path} from '@sanity/types'
-import {AvatarStack, Flex} from '@sanity/ui'
+import {AvatarStack, Flex} from '@sanity/ui-v3'
 import {AnimatePresence, motion} from 'framer-motion'
 import {useCallback, useMemo} from 'react'
 

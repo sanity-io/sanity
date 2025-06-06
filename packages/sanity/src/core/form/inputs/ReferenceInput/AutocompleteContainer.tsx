@@ -1,4 +1,4 @@
-import {Grid, useElementRect} from '@sanity/ui'
+import {Grid, useElementRect} from '@sanity/ui-v3'
 import {type ForwardedRef, forwardRef, type ReactNode, useCallback, useState} from 'react'
 import {css, styled} from 'styled-components'
 

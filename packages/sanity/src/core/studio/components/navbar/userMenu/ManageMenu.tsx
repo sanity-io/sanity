@@ -1,5 +1,5 @@
 import {AddUserIcon, CogIcon} from '@sanity/icons'
-import {MenuDivider} from '@sanity/ui'
+import {MenuDivider} from '@sanity/ui-v3'
 
 import {MenuItem} from '../../../../../ui-components'
 import {useTranslation} from '../../../../i18n'

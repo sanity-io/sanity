@@ -1,5 +1,5 @@
 import {CheckmarkIcon} from '@sanity/icons'
-import {Card, Stack} from '@sanity/ui'
+import {Card, Stack} from '@sanity/ui-v3'
 
 import {Button} from '../../../../../ui-components'
 import {useTranslation} from '../../../../i18n'

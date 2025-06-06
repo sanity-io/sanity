@@ -1,4 +1,4 @@
-import {Stack} from '@sanity/ui'
+import {Stack} from '@sanity/ui-v3'
 import {memo, useMemo} from 'react'
 
 import {Dialog} from '../../../../../ui-components'

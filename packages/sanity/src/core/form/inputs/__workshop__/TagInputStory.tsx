@@ -1,4 +1,4 @@
-import {Container, Flex} from '@sanity/ui'
+import {Container, Flex} from '@sanity/ui-v3'
 import {useBoolean} from '@sanity/ui-workshop'
 import {useCallback, useState} from 'react'
 

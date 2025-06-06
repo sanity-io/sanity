@@ -1,4 +1,4 @@
-import {Box, Flex, rem, Skeleton, Stack, Text, TextSkeleton} from '@sanity/ui'
+import {Box, Flex, rem, Skeleton, Stack, Text, TextSkeleton} from '@sanity/ui-v3'
 import {styled} from 'styled-components'
 import {getDevicePixelRatio} from 'use-device-pixel-ratio'
 

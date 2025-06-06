@@ -1,4 +1,4 @@
-import {Container, Stack, Text} from '@sanity/ui'
+import {Container, Stack, Text} from '@sanity/ui-v3'
 
 import {useTranslation} from '../../../../../i18n'
 

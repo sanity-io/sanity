@@ -1,4 +1,4 @@
-import {Box, Card, type CardTone, Checkbox, Flex, Switch} from '@sanity/ui'
+import {Box, Card, type CardTone, Checkbox, Flex, Switch} from '@sanity/ui-v3'
 import {styled} from 'styled-components'
 
 import {Tooltip} from '../../../ui-components'

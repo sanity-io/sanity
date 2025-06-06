@@ -1,4 +1,4 @@
-import {Box, Flex} from '@sanity/ui'
+import {Box, Flex} from '@sanity/ui-v3'
 import {addDays, addMonths, isAfter, isBefore, set} from 'date-fns'
 import {
   type ComponentProps,

@@ -1,4 +1,4 @@
-import {Card, Stack, Text, TextArea} from '@sanity/ui'
+import {Card, Stack, Text, TextArea} from '@sanity/ui-v3'
 import {useCallback, useEffect, useMemo, useRef, useState} from 'react'
 import {createGlobalStyle, styled} from 'styled-components'
 

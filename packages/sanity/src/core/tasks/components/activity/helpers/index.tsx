@@ -1,5 +1,5 @@
 import {CalendarIcon, CircleIcon, EditIcon, LinkIcon, UserIcon} from '@sanity/icons'
-import {TextSkeleton} from '@sanity/ui'
+import {TextSkeleton} from '@sanity/ui-v3'
 import {IntentLink} from 'sanity/router'
 import {styled} from 'styled-components'
 

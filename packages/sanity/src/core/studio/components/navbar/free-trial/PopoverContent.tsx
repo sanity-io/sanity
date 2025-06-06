@@ -1,4 +1,4 @@
-import {Box, Card, Container, Flex, Heading} from '@sanity/ui'
+import {Box, Card, Container, Flex, Heading} from '@sanity/ui-v3'
 import {styled} from 'styled-components'
 
 import {Button} from '../../../../../ui-components'

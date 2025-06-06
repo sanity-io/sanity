@@ -1,4 +1,4 @@
-import {rgba} from '@sanity/ui'
+import {rgba} from '@sanity/ui-v3'
 import {css, styled} from 'styled-components'
 
 export const ReviewChangesHighlightBlock = styled.div<{

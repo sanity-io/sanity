@@ -1,4 +1,4 @@
-import {Box, Text} from '@sanity/ui'
+import {Box, Text} from '@sanity/ui-v3'
 import {isRecord, Translate, useTranslation} from 'sanity'
 
 import {Pane, PaneContent, PaneHeader} from '../../components/pane'
