@@ -34,9 +34,9 @@ const testSanityClient = createClient({
   useCdn: false,
   apiVersion: '2021-08-31',
   apiHost: 'https://api.sanity.work',
-  headers: {
-    'x-sanity-studio-version': SANITY_VERSION,
-  },
+  // headers: {
+  //   'x-sanity-studio-version': SANITY_VERSION,
+  // },
 })
 
 /* eslint-disable callback-return*/
