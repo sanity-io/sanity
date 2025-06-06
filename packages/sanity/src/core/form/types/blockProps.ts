@@ -1,3 +1,4 @@
+import {type MarkdownPluginConfig} from '@portabletext/editor/plugins'
 import {
   type ArraySchemaType,
   type BlockDecoratorDefinition,
@@ -434,4 +435,14 @@ export interface BlockProps {
    * Value of the block.
    */
   value: PortableTextBlock
+}
+
+/**
+ * Props for rendering Portable Text plugins
+ *
+ * @beta
+ */
+export interface PortableTextPluginsProps {
+  renderDefault: (props: PortableTextPluginsProps) => React.JSX.Element
+  plugins: {markdown: {config: MarkdownPluginConfig}}
 }
