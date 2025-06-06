@@ -696,6 +696,22 @@ export default Schema.compile({
           ],
         },
         {
+          name: 'productReference',
+          type: 'globalDocumentReference',
+          resourceType: 'dataset',
+          resourceId: 'myProject.myDataset',
+          to: [
+            {
+              type: 'product',
+              preview: {
+                select: {
+                  title: 'title',
+                },
+              },
+            },
+          ],
+        },
+        {
           name: 'cdrFieldNamed',
           type: 'cdrPersonReference',
         },

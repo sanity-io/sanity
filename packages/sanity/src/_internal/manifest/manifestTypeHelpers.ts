@@ -1,5 +1,6 @@
 import {
   type CrossDatasetReferenceSchemaType,
+  type GlobalDocumentReferenceSchemaType,
   type ObjectField,
   type ObjectSchemaType,
   type ReferenceSchemaType,
@@ -48,6 +49,12 @@ export function isReference(type: SchemaType): type is ReferenceSchemaType {
 
 export function isCrossDatasetReference(type: SchemaType): type is CrossDatasetReferenceSchemaType {
   return isType(type, 'crossDatasetReference')
+}
+
+export function isGlobalDocumentReference(
+  type: SchemaType,
+): type is GlobalDocumentReferenceSchemaType {
+  return isType(type, 'globalDocumentReference')
 }
 
 export function isObjectField(maybeOjectField: unknown): boolean {
