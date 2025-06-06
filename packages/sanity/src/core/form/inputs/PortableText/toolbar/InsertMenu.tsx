@@ -47,16 +47,20 @@ export const InsertMenu = memo(function InsertMenu(props: InsertMenuProps) {
             {typeName: title},
           )}
           mode="bleed"
-          disabled={disabled || (isVoidFocus && item.inline === true)}
+          disabled={
+            disabled || (isVoidFocus && item.inline === true) || Boolean(item.type.deprecated)
+          }
           icon={item.icon}
           key={item.key}
           // eslint-disable-next-line react/jsx-no-bind, react/jsx-handler-names
           onClick={item.handle}
           text={title}
           tooltipText={t(
-            item.inline
-              ? 'inputs.portable-text.action.insert-inline-object'
-              : 'inputs.portable-text.action.insert-block',
+            item.type.deprecated
+              ? item.type.deprecated.reason
+              : item.inline
+                ? 'inputs.portable-text.action.insert-inline-object'
+                : 'inputs.portable-text.action.insert-block',
             {typeName: title},
           )}
           tooltipProps={{
