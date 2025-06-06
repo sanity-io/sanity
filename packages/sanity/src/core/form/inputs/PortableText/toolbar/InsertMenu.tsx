@@ -50,6 +50,7 @@ export const InsertMenu = memo(function InsertMenu(props: InsertMenuProps) {
           disabled={
             disabled || (isVoidFocus && item.inline === true) || Boolean(item.type.deprecated)
           }
+          data-testid={`${item.type.name}-insert-menu-button`}
           icon={item.icon}
           key={item.key}
           // eslint-disable-next-line react/jsx-no-bind, react/jsx-handler-names
