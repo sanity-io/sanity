@@ -11,6 +11,7 @@ export * from './FIXME'
 export * from './form'
 export * from './hooks'
 export * from './i18n'
+export {isPerspectiveWriteable} from './perspective/isPerspectiveWriteable'
 export {ReleasesNav} from './perspective/navbar/ReleasesNav'
 export {PerspectiveProvider} from './perspective/PerspectiveProvider'
 export {
