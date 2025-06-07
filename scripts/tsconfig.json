@@ -2,6 +2,8 @@
   "include": ["./**/*.ts", "./**/*.tsx", "./**/*.js", "./**/*.jsx", "./**/*.json"],
   "extends": "@repo/tsconfig/base.json",
   "compilerOptions": {
-    "rootDir": "."
+    "rootDir": ".",
+    "esModuleInterop": true,
+    "allowSyntheticDefaultImports": true
   }
 }
