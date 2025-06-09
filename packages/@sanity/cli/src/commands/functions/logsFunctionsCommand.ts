@@ -20,13 +20,13 @@ Examples
   sanity functions logs echo --limit 2
 
   # Retrieve logs for Sanity Function in json format
-  sanity functions logs --name echo --json
+  sanity functions logs echo --json
 
   # Delete all logs for Sanity Function
-  sanity functions logs --name echo --delete
+  sanity functions logs echo --delete
 
   # Watch for new logs (streaming mode)
-  sanity functions logs --name echo --watch
+  sanity functions logs echo --watch
 `
 
 export interface FunctionsLogsFlags {
