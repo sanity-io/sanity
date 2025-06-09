@@ -55,7 +55,7 @@ const stacksBlueprintsCommand: CliCommandDefinition<BlueprintsStacksFlags> = {
     const {success, error} = await blueprintStacksCore({
       ...cmdConfig.value,
       flags: {
-        projectId: flags['project-id'] ?? flags.projectId ?? flags.project,
+        'project-id': flags['project-id'] ?? flags.projectId ?? flags.project,
       },
     })
 
