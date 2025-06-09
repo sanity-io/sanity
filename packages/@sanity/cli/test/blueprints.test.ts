@@ -298,7 +298,7 @@ describe('blueprints commands with mocked cores', () => {
 
       expect(mockCores.blueprintStacksCore).toHaveBeenCalledWith({
         ...config,
-        flags: {projectId: 'proj123'},
+        flags: {'project-id': 'proj123'},
       })
     })
   })
