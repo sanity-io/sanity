@@ -25,6 +25,21 @@ export interface DocumentActionProps extends EditStateFor {
   initialValueResolved: boolean
 }
 
+const SANITY_DEFINED_ACTIONS = [
+  'delete',
+  'discardChanges',
+  'discardVersion',
+  'duplicate',
+  'restore',
+  'publish',
+  'unpublish',
+  'unpublishVersion',
+  'linkToCanvas',
+  'editInCanvas',
+  'unlinkFromCanvas',
+  'schedule',
+] as const
+
 /**
  * @hidden
  * @beta */
@@ -47,17 +62,7 @@ export interface DocumentActionComponent extends ActionComponent<DocumentActionP
    * })
    * ```
    */
-  action?:
-    | 'delete'
-    | 'discardChanges'
-    | 'duplicate'
-    | 'restore'
-    | 'publish'
-    | 'unpublish'
-    | 'linkToCanvas'
-    | 'editInCanvas'
-    | 'unlinkFromCanvas'
-    | 'schedule'
+  action?: (typeof SANITY_DEFINED_ACTIONS)[number]
   /**
    * For debugging purposes
    */
@@ -170,4 +175,18 @@ export interface DocumentActionDescription {
    * @beta
    */
   group?: DocumentActionGroup[]
+}
+
+/**
+ * @public
+ * Indicates whether the action is a Sanity defined action or a custom action.
+ *
+ * @param action - The action to check.
+ * @returns `true` if the action is a Sanity defined action, `false` otherwise.
+ */
+export const isSanityDefinedAction = (
+  action: DocumentActionDescription & {action?: DocumentActionComponent['action']},
+): boolean => {
+  if (!action.action) return false
+  return SANITY_DEFINED_ACTIONS.includes(action.action)
 }

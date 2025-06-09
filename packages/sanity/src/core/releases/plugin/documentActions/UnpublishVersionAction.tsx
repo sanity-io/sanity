@@ -4,6 +4,7 @@ import {useTranslation} from 'react-i18next'
 
 import {InsufficientPermissionsMessage} from '../../../components/InsufficientPermissionsMessage'
 import {
+  type DocumentActionComponent,
   type DocumentActionDescription,
   type DocumentActionProps,
 } from '../../../config/document/actions'
@@ -16,7 +17,7 @@ import {isGoingToUnpublish} from '../../util/isGoingToUnpublish'
 /**
  * @internal
  */
-export const UnpublishVersionAction = (
+export const UnpublishVersionAction: DocumentActionComponent = (
   props: DocumentActionProps,
 ): DocumentActionDescription | null => {
   const {id, type, release, published, version} = props
@@ -73,3 +74,6 @@ export const UnpublishVersionAction = (
     title: t('action.unpublish-doc-actions'),
   }
 }
+
+UnpublishVersionAction.action = 'unpublishVersion'
+UnpublishVersionAction.displayName = 'UnpublishVersionAction'
