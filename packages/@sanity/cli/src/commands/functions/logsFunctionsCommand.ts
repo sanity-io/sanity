@@ -6,10 +6,11 @@ Arguments
 
 Options
   --limit <limit> The number of log entries to retrieve [default 50]
-  --json If set return json
-  --utc Use UTC dates in logs
-  --delete Delete all logs for the Function
-  --force Force delete all logs for the Function
+  --json          If set return json
+  --utc           Use UTC dates in logs
+  --delete        Delete all logs for the Function
+  --force         Force delete all logs for the Function
+  --watch         Watch for new logs (streaming mode)
 
 Examples
   # Retrieve logs for Sanity Function
@@ -23,6 +24,9 @@ Examples
 
   # Delete all logs for Sanity Function
   sanity functions logs --name echo --delete
+
+  # Watch for new logs (streaming mode)
+  sanity functions logs --name echo --watch
 `
 
 export interface FunctionsLogsFlags {
