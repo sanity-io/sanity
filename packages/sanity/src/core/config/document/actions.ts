@@ -178,7 +178,7 @@ export interface DocumentActionDescription {
 }
 
 /**
- * @public
+ * @beta
  * Indicates whether the action is a Sanity defined action or a custom action.
  *
  * @param action - The action to check.

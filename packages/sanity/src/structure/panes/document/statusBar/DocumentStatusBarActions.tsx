@@ -7,12 +7,13 @@ import {
   type DocumentActionDescription,
   type DocumentActionProps,
   Hotkeys,
+  isSanityDefinedAction,
   usePerspective,
   useSource,
 } from 'sanity'
 
 import {Button, Tooltip} from '../../../../ui-components'
-import {RenderActionCollectionState} from '../../../components'
+import {RenderActionCollectionState, type ResolvedAction} from '../../../components'
 import {HistoryRestoreAction} from '../../../documentActions'
 import {toLowerCaseNoSpaces} from '../../../util/toLowerCaseNoSpaces'
 import {useDocumentPane} from '../useDocumentPane'
@@ -22,7 +23,7 @@ import {ActionStateDialog} from './ActionStateDialog'
 interface DocumentStatusBarActionsInnerProps {
   disabled: boolean
   showMenu: boolean
-  states: DocumentActionDescription[]
+  states: ResolvedAction[]
 }
 
 const DocumentStatusBarActionsInner = memo(function DocumentStatusBarActionsInner(
@@ -55,7 +56,10 @@ const DocumentStatusBarActionsInner = memo(function DocumentStatusBarActionsInne
       </Flex>
     )
   }, [firstActionState])
-  const showFirstActionButton = firstActionState && !selectedReleaseId && !editState?.liveEdit
+  const showFirstActionButton = selectedReleaseId
+    ? // If the first action is a custom action and we are in a version document show it.
+      firstActionState && !isSanityDefinedAction(firstActionState)
+    : firstActionState && !editState?.liveEdit
 
   const sideMenuItems = useMemo(() => {
     return showFirstActionButton ? menuActionStates : [firstActionState, ...menuActionStates]
@@ -82,8 +86,7 @@ const DocumentStatusBarActionsInner = memo(function DocumentStatusBarActionsInne
           </Tooltip>
         </LayerProvider>
       )}
-      {/* if it's in version we always only want to show the items on the side menu and not on the main action */}
-      {((showMenu && menuActionStates.length > 0) || selectedReleaseId) && (
+      {showMenu && menuActionStates.length > 0 && (
         <ActionMenuButton actionStates={sideMenuItems} disabled={disabled} />
       )}
       {firstActionState && firstActionState.dialog && (
@@ -101,10 +104,6 @@ export const DocumentStatusBarActions = memo(function DocumentStatusBarActions()
     editState,
     isInitialValueLoading,
   } = useDocumentPane()
-  // const [isMenuOpen, setMenuOpen] = useState(false)
-  // const handleMenuOpen = useCallback(() => setMenuOpen(true), [])
-  // const handleMenuClose = useCallback(() => setMenuOpen(false), [])
-  // const handleActionComplete = useCallback(() => setMenuOpen(false), [])
 
   // The restore action has a dedicated place in the UI; it's only visible when the user is viewing
   // a different document revision. It must be omitted from this collection.
@@ -118,14 +117,11 @@ export const DocumentStatusBarActions = memo(function DocumentStatusBarActions()
   )
 
   const renderDocumentStatusBarActions = useCallback<
-    (props: {states: DocumentActionDescription[]}) => React.ReactNode
+    (props: {states: ResolvedAction[]}) => React.ReactNode
   >(
     ({states}) => (
       <DocumentStatusBarActionsInner
         disabled={connectionState !== 'connected'}
-        // isMenuOpen={isMenuOpen}
-        // onMenuOpen={handleMenuOpen}
-        // onMenuClose={handleMenuClose}
         showMenu={actions.length > 1}
         states={states}
         // Use document ID as key to make sure that the actions state is reset when the document changes
@@ -140,13 +136,7 @@ export const DocumentStatusBarActions = memo(function DocumentStatusBarActions()
   }
 
   return (
-    <RenderActionCollectionState
-      // component={}
-      // onActionComplete={handleActionComplete}
-      actions={actions}
-      actionProps={actionProps}
-      group="default"
-    >
+    <RenderActionCollectionState actions={actions} actionProps={actionProps} group="default">
       {renderDocumentStatusBarActions}
     </RenderActionCollectionState>
   )
