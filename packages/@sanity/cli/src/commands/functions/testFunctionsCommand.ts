@@ -53,7 +53,7 @@ const testFunctionsCommand: CliCommandDefinition<FunctionsTestFlags> = {
       requireUser: true,
       requireProject: false,
     })
-    const {token} = client.config()
+    const {dataset, projectId, token} = client.config()
 
     if (!token) throw new Error('No API token found. Please run `sanity login`.')
 
@@ -80,8 +80,8 @@ const testFunctionsCommand: CliCommandDefinition<FunctionsTestFlags> = {
         'file': flags.file,
         'timeout': flags.timeout,
         'api': flags.api,
-        'dataset': flags.dataset,
-        'project-id': flags['project-id'],
+        'dataset': flags.dataset || dataset === '~dummy-placeholder-dataset-' ? undefined : dataset,
+        'project-id': flags['project-id'] || projectId,
       },
     })
 
