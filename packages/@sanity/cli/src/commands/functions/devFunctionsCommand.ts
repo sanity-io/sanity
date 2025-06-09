@@ -5,7 +5,7 @@ import {type CliCommandDefinition} from '../../types'
 const helpText = `
 Options
   --port <port> Port to start emulator on
-  --no-open Skip opening dev server in a browser tab
+  --open Open dev server in a new browser tab
 
 Examples
   # Start dev server on default port
@@ -14,8 +14,8 @@ Examples
   # Start dev server on specific port
   sanity functions dev --port 3333
 
-  # Start dev server without opening a browser tab
-  sanity functions dev --no-open
+  # Start dev server and open a new browser tab
+  sanity functions dev --open
 `
 
 export interface FunctionsDevFlags {
@@ -24,7 +24,7 @@ export interface FunctionsDevFlags {
 }
 
 const defaultFlags: FunctionsDevFlags = {
-  open: true,
+  open: false,
   port: 8080,
 }
 
@@ -32,7 +32,7 @@ const devFunctionsCommand: CliCommandDefinition<FunctionsDevFlags> = {
   name: 'dev',
   group: 'functions',
   helpText,
-  signature: '[--port <port> --no-open]',
+  signature: '[--port <port> --open]',
   description: 'Start the Sanity Function emulator',
   async action(args, context) {
     const {apiClient, output} = context
