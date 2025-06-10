@@ -453,8 +453,8 @@ importers:
         specifier: ^1.1.29
         version: 1.1.29(@sanity/types@packages+@sanity+types)(@types/react@19.1.3)
       '@portabletext/editor':
-        specifier: ^1.50.8
-        version: 1.50.8(@sanity/schema@packages+@sanity+schema)(@sanity/types@packages+@sanity+types)(@types/react@19.1.3)(react-dom@19.1.0(react@19.1.0))(react@19.1.0)(rxjs@7.8.2)
+        specifier: ^1.52.0
+        version: 1.52.0(@sanity/schema@packages+@sanity+schema)(@sanity/types@packages+@sanity+types)(@types/react@19.1.3)(react-dom@19.1.0(react@19.1.0))(react@19.1.0)(rxjs@7.8.2)
       '@portabletext/react':
         specifier: ^3.0.0
         version: 3.2.1(react@19.1.0)
@@ -1399,8 +1399,8 @@ importers:
         specifier: ^1.1.29
         version: 1.1.29(@sanity/types@packages+@sanity+types)(@types/react@19.1.3)
       '@portabletext/editor':
-        specifier: ^1.50.8
-        version: 1.50.8(@sanity/schema@packages+@sanity+schema)(@sanity/types@packages+@sanity+types)(@types/react@19.1.3)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(rxjs@7.8.2)
+        specifier: ^1.52.0
+        version: 1.52.0(@sanity/schema@packages+@sanity+schema)(@sanity/types@packages+@sanity+types)(@types/react@19.1.3)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(rxjs@7.8.2)
       '@portabletext/react':
         specifier: ^3.0.0
         version: 3.2.1(react@18.3.1)
@@ -4066,24 +4066,18 @@ packages:
     resolution: {integrity: sha512-c83qWb22rNRuB0UaVCI0uRPNRr8Z0FWnEIvT47jiHAmOIUHbBOg5XvV7pM5x+rKn9HRpjxquDbXYSXr3fAKFcw==}
     engines: {node: '>=12'}
 
-  '@portabletext/block-tools@1.1.28':
-    resolution: {integrity: sha512-TJ5i8w/dFW6x85//xKsiDQYiVk2WLA5oKXm+uFh/y34hPK6X3s95gYJXaEv52XzU1FxyfHEybMdhKcJkt863XA==}
-    peerDependencies:
-      '@sanity/types': ^3.90.0
-      '@types/react': 18 || 19
-
   '@portabletext/block-tools@1.1.29':
     resolution: {integrity: sha512-yEPpMwl7mXd8WlOqkxqUdio4I9v9RFkDVXi+fTjgVAjAvlaYMkIqN+DAHJ4J8j52n6r+sf0M0WVbKuUlUfcI1w==}
     peerDependencies:
       '@sanity/types': ^3.91.0
       '@types/react': 18 || 19
 
-  '@portabletext/editor@1.50.8':
-    resolution: {integrity: sha512-+MzIklu44o7qFvzJujTVZ6UYL+V92OvYBRMBATwqvtyKbsocJzmG175imVDru88FmQ1LinO+f8FAUwr7Ro07PQ==}
+  '@portabletext/editor@1.52.0':
+    resolution: {integrity: sha512-pSeaMatCFYg0/fX4jq7PUMzIvLo4cIrQ2aZa0Ypw8bHWIDFTQ/PQArR8MGO+YoiTVMU1NUTS+/q+Pm1BwvLPCA==}
     engines: {node: '>=18'}
     peerDependencies:
-      '@sanity/schema': ^3.90.0
-      '@sanity/types': ^3.90.0
+      '@sanity/schema': ^3.91.0
+      '@sanity/types': ^3.91.0
       react: ^16.9 || ^17 || ^18 || ^19
       rxjs: ^7.8.2
 
@@ -10536,8 +10530,8 @@ packages:
       slate: '>=0.114.0'
       slate-dom: '>=0.110.2'
 
-  slate@0.114.0:
-    resolution: {integrity: sha512-r3KHl22433DlN5BpLAlL4b3D8ItoGKAkj91YT6GhP39XuLoBT+YFd9ObKuL/okgiPb5lbwnW+71fM45hHceN9w==}
+  slate@0.115.1:
+    resolution: {integrity: sha512-bxbafyzIl8p8scBROZy+3fxFm8eWWmCXUp1NnC+qK+kI5XkGhfdp6M27QhHwMLnjJ3EBPHsPsmzMTUBwLEgECw==}
 
   slice-ansi@3.0.0:
     resolution: {integrity: sha512-pSyv7bSTC7ig9Dcgbw9AuRNUb5k5V6oDudjZoMBSr13qpLBG7tB+zgCkARjq7xIUgdz5P1Qe8u+rSGdouOOIyQ==}
@@ -14325,13 +14319,6 @@ snapshots:
       '@pnpm/network.ca-file': 1.0.2
       config-chain: 1.1.13
 
-  '@portabletext/block-tools@1.1.28(@sanity/types@packages+@sanity+types)(@types/react@19.1.3)':
-    dependencies:
-      '@sanity/types': link:packages/@sanity/types
-      '@types/react': 19.1.3
-      get-random-values-esm: 1.0.2
-      lodash: 4.17.21
-
   '@portabletext/block-tools@1.1.29(@sanity/types@packages+@sanity+types)(@types/react@19.1.3)':
     dependencies:
       '@sanity/types': link:packages/@sanity/types
@@ -14339,9 +14326,9 @@ snapshots:
       get-random-values-esm: 1.0.2
       lodash: 4.17.21
 
-  '@portabletext/editor@1.50.8(@sanity/schema@packages+@sanity+schema)(@sanity/types@packages+@sanity+types)(@types/react@19.1.3)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(rxjs@7.8.2)':
+  '@portabletext/editor@1.52.0(@sanity/schema@packages+@sanity+schema)(@sanity/types@packages+@sanity+types)(@types/react@19.1.3)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(rxjs@7.8.2)':
     dependencies:
-      '@portabletext/block-tools': 1.1.28(@sanity/types@packages+@sanity+types)(@types/react@19.1.3)
+      '@portabletext/block-tools': 1.1.29(@sanity/types@packages+@sanity+types)(@types/react@19.1.3)
       '@portabletext/patches': 1.1.4
       '@portabletext/to-html': 2.0.14
       '@sanity/schema': link:packages/@sanity/schema
@@ -14355,19 +14342,19 @@ snapshots:
       react: 18.3.1
       react-compiler-runtime: 19.1.0-rc.1(react@18.3.1)
       rxjs: 7.8.2
-      slate: 0.114.0
-      slate-dom: 0.114.0(slate@0.114.0)
-      slate-react: 0.114.2(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(slate-dom@0.114.0(slate@0.114.0))(slate@0.114.0)
-      use-effect-event: 1.0.2(react@18.3.1)
+      slate: 0.115.1
+      slate-dom: 0.114.0(slate@0.115.1)
+      slate-react: 0.114.2(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(slate-dom@0.114.0(slate@0.115.1))(slate@0.115.1)
+      use-effect-event: 2.0.0(react@18.3.1)
       xstate: 5.19.4
     transitivePeerDependencies:
       - '@types/react'
       - react-dom
       - supports-color
 
-  '@portabletext/editor@1.50.8(@sanity/schema@packages+@sanity+schema)(@sanity/types@packages+@sanity+types)(@types/react@19.1.3)(react-dom@19.1.0(react@19.1.0))(react@19.1.0)(rxjs@7.8.2)':
+  '@portabletext/editor@1.52.0(@sanity/schema@packages+@sanity+schema)(@sanity/types@packages+@sanity+types)(@types/react@19.1.3)(react-dom@19.1.0(react@19.1.0))(react@19.1.0)(rxjs@7.8.2)':
     dependencies:
-      '@portabletext/block-tools': 1.1.28(@sanity/types@packages+@sanity+types)(@types/react@19.1.3)
+      '@portabletext/block-tools': 1.1.29(@sanity/types@packages+@sanity+types)(@types/react@19.1.3)
       '@portabletext/patches': 1.1.4
       '@portabletext/to-html': 2.0.14
       '@sanity/schema': link:packages/@sanity/schema
@@ -14381,10 +14368,10 @@ snapshots:
       react: 19.1.0
       react-compiler-runtime: 19.1.0-rc.1(react@19.1.0)
       rxjs: 7.8.2
-      slate: 0.114.0
-      slate-dom: 0.114.0(slate@0.114.0)
-      slate-react: 0.114.2(react-dom@19.1.0(react@19.1.0))(react@19.1.0)(slate-dom@0.114.0(slate@0.114.0))(slate@0.114.0)
-      use-effect-event: 1.0.2(react@19.1.0)
+      slate: 0.115.1
+      slate-dom: 0.114.0(slate@0.115.1)
+      slate-react: 0.114.2(react-dom@19.1.0(react@19.1.0))(react@19.1.0)(slate-dom@0.114.0(slate@0.115.1))(slate@0.115.1)
+      use-effect-event: 2.0.0(react@19.1.0)
       xstate: 5.19.4
     transitivePeerDependencies:
       - '@types/react'
@@ -22266,7 +22253,7 @@ snapshots:
 
   slash@5.1.0: {}
 
-  slate-dom@0.114.0(slate@0.114.0):
+  slate-dom@0.114.0(slate@0.115.1):
     dependencies:
       '@juggle/resize-observer': 3.4.0
       direction: 1.0.4
@@ -22274,10 +22261,10 @@ snapshots:
       is-plain-object: 5.0.0
       lodash: 4.17.21
       scroll-into-view-if-needed: 3.1.0
-      slate: 0.114.0
+      slate: 0.115.1
       tiny-invariant: 1.3.1
 
-  slate-react@0.114.2(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(slate-dom@0.114.0(slate@0.114.0))(slate@0.114.0):
+  slate-react@0.114.2(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(slate-dom@0.114.0(slate@0.115.1))(slate@0.115.1):
     dependencies:
       '@juggle/resize-observer': 3.4.0
       direction: 1.0.4
@@ -22287,11 +22274,11 @@ snapshots:
       react: 18.3.1
       react-dom: 18.3.1(react@18.3.1)
       scroll-into-view-if-needed: 3.1.0
-      slate: 0.114.0
-      slate-dom: 0.114.0(slate@0.114.0)
+      slate: 0.115.1
+      slate-dom: 0.114.0(slate@0.115.1)
       tiny-invariant: 1.3.1
 
-  slate-react@0.114.2(react-dom@19.1.0(react@19.1.0))(react@19.1.0)(slate-dom@0.114.0(slate@0.114.0))(slate@0.114.0):
+  slate-react@0.114.2(react-dom@19.1.0(react@19.1.0))(react@19.1.0)(slate-dom@0.114.0(slate@0.115.1))(slate@0.115.1):
     dependencies:
       '@juggle/resize-observer': 3.4.0
       direction: 1.0.4
@@ -22301,14 +22288,13 @@ snapshots:
       react: 19.1.0
       react-dom: 19.1.0(react@19.1.0)
       scroll-into-view-if-needed: 3.1.0
-      slate: 0.114.0
-      slate-dom: 0.114.0(slate@0.114.0)
+      slate: 0.115.1
+      slate-dom: 0.114.0(slate@0.115.1)
       tiny-invariant: 1.3.1
 
-  slate@0.114.0:
+  slate@0.115.1:
     dependencies:
       immer: 10.1.1
-      is-plain-object: 5.0.0
       tiny-warning: 1.0.3
 
   slice-ansi@3.0.0:
