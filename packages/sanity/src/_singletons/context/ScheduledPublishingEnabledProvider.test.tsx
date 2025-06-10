@@ -2,25 +2,27 @@ import {renderHook} from '@testing-library/react'
 import {of} from 'rxjs'
 import {beforeEach, describe, expect, it, vi} from 'vitest'
 
-import {useFeatureEnabled} from '../../../hooks'
-import {useClient} from '../../../hooks/useClient'
-import {useWorkspace} from '../../../studio/workspace'
-import type {Schedule} from '../../types'
+import {useClient} from '../../core/hooks/useClient'
+import {useFeatureEnabled} from '../../core/hooks/useFeatureEnabled'
+import {cachedUsedScheduledPublishing} from '../../core/hooks/useHasUsedScheduledPublishing'
+import type {Schedule} from '../../core/studio/timezones/types'
+import {useWorkspace} from '../../core/studio/workspace'
 import {
   ScheduledPublishingEnabledProvider,
   useScheduledPublishingEnabled,
 } from './ScheduledPublishingEnabledProvider'
-import {cachedUsedScheduledPublishing} from './useHasUsedScheduledPublishing'
 
-vi.mock('../../../hooks/useFeatureEnabled', () => ({
+vi.mock('../../core/hooks/useFeatureEnabled', () => ({
   useFeatureEnabled: vi.fn().mockReturnValue({}),
 }))
 
-vi.mock('../../../studio/workspace', () => ({
+vi.mock('../../core/studio/workspace', () => ({
   useWorkspace: vi.fn().mockReturnValue({}),
 }))
 
-vi.mock('../../../hooks/useClient')
+vi.mock('../../core/hooks/useClient', () => ({
+  useClient: vi.fn(),
+}))
 
 const useClientMock = useClient as ReturnType<typeof vi.fn>
 const mockObservableRequest = vi.fn((schedules) => of({schedules}))
