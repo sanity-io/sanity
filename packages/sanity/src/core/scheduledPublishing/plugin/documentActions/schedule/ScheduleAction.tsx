@@ -2,7 +2,6 @@ import {CalendarIcon, ClockIcon} from '@sanity/icons'
 import {Box, Text} from '@sanity/ui'
 import {useCallback, useState} from 'react'
 
-import {useScheduledPublishingEnabled} from '../../../../../_singletons/context/ScheduledPublishingEnabledProvider'
 import {InsufficientPermissionsMessage} from '../../../../components/InsufficientPermissionsMessage'
 import {
   type DocumentActionComponent,
@@ -11,6 +10,7 @@ import {
 } from '../../../../config/document/actions'
 import {useCurrentUser, useDocumentPairPermissions} from '../../../../store'
 import {SCHEDULED_PUBLISHING_TIME_ZONE_SCOPE} from '../../../../studio/constants'
+import {useScheduledPublishingEnabled} from '../../../../studio/timezones/ScheduledPublishingEnabledProvider'
 import {debugWithName} from '../../../../studio/timezones/utils/debug'
 import DialogFooter from '../../../components/dialogs/DialogFooter'
 import DialogHeader from '../../../components/dialogs/DialogHeader'

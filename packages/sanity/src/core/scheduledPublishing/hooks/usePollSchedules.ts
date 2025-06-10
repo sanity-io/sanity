@@ -1,8 +1,8 @@
 import {useCallback, useEffect, useMemo} from 'react'
 import useSWR from 'swr'
 
-import {useScheduledPublishingEnabled} from '../../../_singletons/context/ScheduledPublishingEnabledProvider'
 import {useClient} from '../../hooks/useClient'
+import {useScheduledPublishingEnabled} from '../../studio/timezones/ScheduledPublishingEnabledProvider'
 import {type Schedule, type ScheduleState} from '../../studio/timezones/types'
 import {sortByExecuteDate} from '../utils/sortByExecuteDate'
 import {

@@ -1,12 +1,12 @@
 import {useContext, useMemo} from 'react'
-// eslint-disable-next-line import/no-duplicates
-import type {ScheduledPublishingEnabledContextValue} from 'sanity/_singletons'
-// eslint-disable-next-line import/no-duplicates
-import {ScheduledPublishingEnabledContext} from 'sanity/_singletons'
+import {
+  ScheduledPublishingEnabledContext,
+  type ScheduledPublishingEnabledContextValue,
+} from 'sanity/_singletons'
 
-import {useFeatureEnabled} from '../../core/hooks/useFeatureEnabled'
-import {useHasUsedScheduledPublishing} from '../../core/hooks/useHasUsedScheduledPublishing'
-import {useWorkspace} from '../../core/studio/workspace'
+import {useFeatureEnabled} from '../../hooks/useFeatureEnabled'
+import {useHasUsedScheduledPublishing} from '../../hooks/useHasUsedScheduledPublishing'
+import {useWorkspace} from '../workspace'
 
 interface ScheduledPublishingEnabledProviderProps {
   children: React.ReactNode

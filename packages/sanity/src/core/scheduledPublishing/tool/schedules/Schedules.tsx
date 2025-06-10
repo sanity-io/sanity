@@ -3,7 +3,7 @@ import {WarningOutlineIcon} from '@sanity/icons'
 import {Box, Card, Container, Flex, Text} from '@sanity/ui'
 import {styled} from 'styled-components'
 
-import {useScheduledPublishingEnabled} from '../../../../_singletons/context/ScheduledPublishingEnabledProvider'
+import {useScheduledPublishingEnabled} from '../../../studio/timezones/ScheduledPublishingEnabledProvider'
 import {UpsellPanel} from '../../../studio/upsell/UpsellPanel'
 import {useSchedulePublishingUpsell} from '../contexts/SchedulePublishingUpsellProvider'
 import {useSchedules} from '../contexts/schedules'

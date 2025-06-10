@@ -3,13 +3,13 @@ import {Badge, Box, Card, Flex, Stack, Text} from '@sanity/ui'
 import {type ElementType, type ReactNode, useState} from 'react'
 import {styled} from 'styled-components'
 
-import {useScheduledPublishingEnabled} from '../../../../_singletons/context/ScheduledPublishingEnabledProvider'
 import {Tooltip} from '../../../../ui-components/tooltip'
 import {DocumentStatus} from '../../../components/documentStatus'
 import {DocumentStatusIndicator} from '../../../components/documentStatusIndicator'
 import {useTimeZone} from '../../../hooks/useTimeZone'
 import {SanityDefaultPreview} from '../../../preview/components/SanityDefaultPreview'
 import {useDocumentVersionInfo} from '../../../releases'
+import {useScheduledPublishingEnabled} from '../../../studio/timezones/ScheduledPublishingEnabledProvider'
 import {type Schedule} from '../../../studio/timezones/types'
 import {
   DOCUMENT_HAS_ERRORS_TEXT,
