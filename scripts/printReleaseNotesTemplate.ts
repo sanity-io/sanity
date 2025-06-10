@@ -2,6 +2,8 @@ import execa from 'execa'
 import yargs from 'yargs'
 import {hideBin} from 'yargs/helpers'
 
+const GITHUB_PR_URL = 'https://github.com/sanity-io/sanity/pull/'
+
 const flags = yargs(hideBin(process.argv)).argv as Record<string, any>
 
 const revParsed = execa.commandSync('git rev-parse --abbrev-ref HEAD', {shell: true}).stdout.trim()
@@ -11,6 +13,9 @@ const BASE_BRANCH = isFromV3 ? revParsed : 'main'
 const PREV_RELEASE =
   flags.from || execa.commandSync('git describe --abbrev=0', {shell: true}).stdout.trim()
 const CHANGELOG_COMMAND = `git log --pretty=format:'%aN | %s | %h' --abbrev-commit --reverse ${PREV_RELEASE}..origin/${BASE_BRANCH}`
+
+const withPrLinks = (changelog: string) =>
+  changelog.replace(/\(#(\d+)\)/g, `([#$1](${GITHUB_PR_URL}$1))`)
 
 const TEMPLATE = `
 # ✨ Highlights
@@ -41,7 +46,7 @@ If you are updating from a version earlier than [3.37.0](https://www.sanity.io/c
 # 📓 Full changelog
 Author | Message | Commit
 ------------ | ------------- | -------------
-${execa.commandSync(CHANGELOG_COMMAND, {shell: true}).stdout}
+${withPrLinks(execa.commandSync(CHANGELOG_COMMAND, {shell: true}).stdout)}
 `
 
 // eslint-disable-next-line no-console
