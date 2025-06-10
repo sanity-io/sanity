@@ -17,12 +17,15 @@ import {structureLocaleNamespace} from '../i18n'
 export interface Action<Args, Description> {
   (args: Args): Description | null
 }
+export interface ResolvedAction extends DocumentActionDescription {
+  action?: DocumentActionComponent['action']
+}
 
 /** @internal */
 export interface RenderActionCollectionProps {
   actions: Action<DocumentActionProps, DocumentActionDescription>[]
   actionProps: Omit<DocumentActionProps, 'onComplete'>
-  children: (props: {states: DocumentActionDescription[]}) => ReactNode
+  children: (props: {states: ResolvedAction[]}) => ReactNode
   onActionComplete?: () => void
   group?: DocumentActionGroup
 }
@@ -32,10 +35,7 @@ export const RenderActionCollectionState = memo((props: RenderActionCollectionPr
   const {actions, children, actionProps, onActionComplete, group} = props
 
   return (
-    <GetHookCollectionState<
-      Omit<DocumentActionProps, 'onComplete'>,
-      DocumentActionDescription & {action?: DocumentActionComponent['action']}
-    >
+    <GetHookCollectionState<Omit<DocumentActionProps, 'onComplete'>, ResolvedAction>
       onReset={onActionComplete}
       hooks={actions}
       args={actionProps}
@@ -74,9 +74,9 @@ const SUPPORTED_LINKED_TO_CANVAS_ACTIONS: DocumentActionComponent['action'][] = 
 ]
 
 interface ActionsGuardWrapperProps {
-  states: Array<DocumentActionDescription & {action?: DocumentActionComponent['action']}>
+  states: ResolvedAction[]
   documentId: string
-  children: (props: {states: DocumentActionDescription[]}) => ReactNode
+  children: (props: {states: ResolvedAction[]}) => ReactNode
 }
 
 const ActionsGuardWrapper = (props: ActionsGuardWrapperProps) => {

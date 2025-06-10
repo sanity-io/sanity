@@ -40,6 +40,7 @@ import {
 } from './components/studioComponents'
 import {GoogleLogo, TailwindLogo, VercelLogo} from './components/workspaceLogos'
 import {resolveDocumentActions as documentActions} from './documentActions'
+import {TestVersionAction} from './documentActions/actions/TestVersionAction'
 import {assistFieldActionGroup} from './fieldActions/assistFieldActionGroup'
 import {resolveInitialValueTemplates} from './initialValueTemplates'
 import {customInspector} from './inspectors/custom'
@@ -223,6 +224,18 @@ const defaultWorkspace = defineConfig({
   },
   tasks: {
     enabled: true,
+  },
+  document: {
+    actions: (prev, ctx) => {
+      if (ctx.schemaType === 'book' && ctx.releaseId) {
+        return [TestVersionAction, ...prev]
+      }
+      if (ctx.schemaType === 'author' && ctx.releaseId) {
+        return [...prev, TestVersionAction]
+      }
+
+      return prev
+    },
   },
 })
 

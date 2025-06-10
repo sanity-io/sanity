@@ -598,9 +598,9 @@ export interface DocumentActionsContext extends ConfigContext {
   schemaType: string
 
   /** releaseId of the open document, it's undefined if it's published or the draft */
-  releaseId?: string
+  releaseId: string | undefined
   /** the type of the currently active document. */
-  versionType?: DocumentActionsVersionType
+  versionType: DocumentActionsVersionType
 }
 
 /**
@@ -712,7 +712,7 @@ export interface Source {
      * @hidden
      * @beta
      */
-    badges: (props: PartialContext<DocumentActionsContext>) => DocumentBadgeComponent[]
+    badges: (props: PartialContext<DocumentBadgesContext>) => DocumentBadgeComponent[]
 
     /**
      * Components for the document.

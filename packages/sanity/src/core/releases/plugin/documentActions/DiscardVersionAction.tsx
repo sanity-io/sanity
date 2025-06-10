@@ -4,6 +4,7 @@ import {useTranslation} from 'react-i18next'
 
 import {InsufficientPermissionsMessage} from '../../../components/InsufficientPermissionsMessage'
 import {
+  type DocumentActionComponent,
   type DocumentActionDescription,
   type DocumentActionProps,
 } from '../../../config/document/actions'
@@ -15,7 +16,7 @@ import {DiscardVersionDialog} from '../../components/dialog/DiscardVersionDialog
 /**
  * @internal
  */
-export const DiscardVersionAction = (
+export const DiscardVersionAction: DocumentActionComponent = (
   props: DocumentActionProps,
 ): DocumentActionDescription | null => {
   const {id, type, release, version} = props
@@ -68,3 +69,6 @@ export const DiscardVersionAction = (
     title: t('release.action.discard-version'),
   }
 }
+
+DiscardVersionAction.action = 'discardVersion'
+DiscardVersionAction.displayName = 'DiscardVersionAction'
