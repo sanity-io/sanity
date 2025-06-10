@@ -7,6 +7,7 @@ import {
   type FieldProps,
   type InputProps,
   type ItemProps,
+  type PortableTextPluginsProps,
 } from '../../form'
 
 /**
@@ -20,4 +21,7 @@ export interface FormComponents {
   input?: ComponentType<InputProps>
   item?: ComponentType<ItemProps>
   preview?: ComponentType<PreviewProps>
+  portableText?: {
+    plugins?: ComponentType<PortableTextPluginsProps>
+  }
 }

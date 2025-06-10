@@ -108,6 +108,7 @@ import {ptAllTheBellsAndWhistlesType} from './standard/portableText/allTheBellsA
 import blocks from './standard/portableText/blocks'
 import {ptCustomBlockEditors} from './standard/portableText/customBlockEditors'
 import {ptCustomMarkersTestType} from './standard/portableText/customMarkers'
+import {customPlugins} from './standard/portableText/customPlugins'
 import manyEditors from './standard/portableText/manyEditors'
 import richTextObject from './standard/portableText/richTextObject'
 import simpleBlock from './standard/portableText/simpleBlock'
@@ -175,6 +176,7 @@ export function createSchemaTypes(projectId: string) {
     ptCustomMarkersTestType,
     richTextObject,
     ...Object.values(scrollBugTypes),
+    customPlugins,
     simpleBlock,
     manyEditors,
     simpleBlockNote,
