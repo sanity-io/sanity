@@ -88,8 +88,14 @@ export function PreviewItem<Item extends ObjectItem = ObjectItem>(props: Preview
     [previewCardElement],
   )
 
+  // An item may be focused whilst it only exists in a virtualized list, e.g. in
+  // Presentation a focus can be initiated from outside of the document pane. In
+  // this case `open` may be true, but `previewCardElement` may be null. We need
+  // to ensure that the element actually exists in the DOM before scrolling it
+  // into view.
+  const canScrollIntoView = open && previewCardElement !== null
   // this is here to make sure the item is visible if it's being edited behind a modal
-  useScrollIntoViewOnFocusWithin(previewCardRef, open)
+  useScrollIntoViewOnFocusWithin(previewCardRef, canScrollIntoView)
 
   useDidUpdate(focused, (hadFocus, hasFocus) => {
     if (!hadFocus && hasFocus && previewCardRef.current) {
