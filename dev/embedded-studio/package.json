@@ -9,10 +9,10 @@
   },
   "dependencies": {
     "@sanity/ui": "^2.15.18",
-    "react": "^18.3.1",
-    "react-dom": "^18.3.1",
+    "react": "catalog:react18",
+    "react-dom": "catalog:react18",
     "sanity": "workspace:*",
-    "styled-components": "^6.1.15"
+    "styled-components": "catalog:"
   },
   "devDependencies": {
     "@types/react": "^19.1.3",

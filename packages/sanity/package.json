@@ -319,10 +319,10 @@
     "babel-plugin-react-compiler": "19.1.0-rc.2",
     "blob-polyfill": "^9.0.20240710",
     "date-fns-tz": "2.0.1",
-    "react": "^18.3.1",
+    "react": "catalog:react18",
     "react-dom": "^18.3.1",
     "rxjs-etc": "^10.6.2",
-    "styled-components": "^6.1.18",
+    "styled-components": "catalog:",
     "swr": "2.2.5",
     "vitest": "^3.2.2",
     "vitest-package-exports": "^0.1.1"

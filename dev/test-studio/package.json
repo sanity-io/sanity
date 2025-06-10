@@ -53,8 +53,8 @@
     "history": "^5.3.0",
     "lodash": "^4.17.21",
     "qs": "^6.10.2",
-    "react": "^19.0.0",
-    "react-dom": "^19.0.0",
+    "react": "catalog:",
+    "react-dom": "catalog:",
     "react-refractor": "^2.1.6",
     "refractor": "^3.6.0",
     "rxjs": "^7.8.0",
@@ -63,7 +63,7 @@
     "sanity-plugin-markdown": "^5.1.1",
     "sanity-plugin-media": "^3.0.0",
     "sanity-plugin-mux-input": "^2.5.0",
-    "styled-components": "^6.1.15"
+    "styled-components": "catalog:"
   },
   "devDependencies": {
     "babel-plugin-react-compiler": "19.1.0-rc.2",
