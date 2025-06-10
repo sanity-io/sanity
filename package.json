@@ -20,7 +20,6 @@
     "check:react-compiler": "eslint --cache --no-inline-config --no-eslintrc --ext .cjs,.mjs,.js,.jsx,.ts,.tsx --parser @typescript-eslint/parser --plugin react-compiler --rule 'react-compiler/react-compiler: [warn]' --ignore-path .eslintignore.react-compiler --max-warnings 1 .",
     "check:test": "run-s test -- --silent",
     "check:types": "tsc && turbo run check:types --filter='./packages/*' --filter='./packages/@sanity/*'",
-    "report:react-compiler-bailout": "eslint --cache --no-inline-config --no-eslintrc --ext .cjs,.mjs,.js,.jsx,.ts,.tsx --parser @typescript-eslint/parser --plugin react-compiler --rule 'react-compiler/react-compiler: [error,{__unstable_donotuse_reportAllBailouts:true}]' --ignore-path .eslintignore.react-compiler -f ./scripts/reactCompilerBailouts.cjs . || true",
     "chore:format:fix": "prettier --cache --write .",
     "chore:lint:fix": "turbo run lint -- --quiet --fix",
     "chore:normalize-versions": "node -r esbuild-register scripts/normalizeDependencyVersions.ts",
@@ -41,9 +40,6 @@
     "dev:test-studio": "pnpm --filter sanity-test-studio dev",
     "dev:test-create-studio": "pnpm --filter test-create-integration-studio dev",
     "dev:test-studio-production-profiling": "REACT_PRODUCTION_PROFILING=true turbo run start --filter=sanity-test-studio",
-    "dev:million-lint": "pnpm report:react-compiler-bailout && pnpm dev:test-studio-million-lint",
-    "dev:million-lint-everything": "REACT_MILLION_LINT=true REACT_MILLION_LINT_EVERYTHING=true pnpm --filter sanity-test-studio dev",
-    "dev:test-studio-million-lint": "REACT_MILLION_LINT=true pnpm --filter sanity-test-studio dev",
     "generate:docs": "tsx --env-file=.env.local ./scripts/generate-documents/cli.ts",
     "docs:report": "node -r dotenv-flow/config -r esbuild-register scripts/doc-report/docReport",
     "docs:report:cleanup": "node -r dotenv-flow/config -r esbuild-register scripts/doc-report/docReportCleanup",
@@ -177,14 +173,14 @@
     "turbo": "^2.4.4",
     "typescript": "5.8.3",
     "vite": "^6.3.5",
-    "vite-tsconfig-paths": "^4.3.2",
+    "vite-tsconfig-paths": "^5.1.4",
     "vitest": "3.2.2",
     "yargs": "^17.3.0"
   },
   "optionalDependencies": {
     "node-notifier": "^10.0.0"
   },
-  "packageManager": "pnpm@9.15.6",
+  "packageManager": "pnpm@10.12.1",
   "pnpm": {
     "peerDependencyRules": {
       "allowAny": [

@@ -1,8 +1,14 @@
+/**
+ * The import order here is significant.
+ * The `import studioConfig from %STUDIO_CONFIG_LOCATION%` line should always come first,
+ * otherwise it's impossible to setup tooling like React Scan which requires userland to import a dependency
+ * _before_ any `import from 'react'` happens.
+ */
 const entryModule = `
 // This file is auto-generated on 'sanity dev'
 // Modifications to this file is automatically discarded
-import {renderStudio} from "sanity"
 import studioConfig from %STUDIO_CONFIG_LOCATION%
+import {renderStudio} from "sanity"
 
 renderStudio(
   document.getElementById("sanity"),
