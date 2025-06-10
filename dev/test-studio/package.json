@@ -20,7 +20,7 @@
     "@portabletext/block-tools": "^1.1.28",
     "@portabletext/editor": "^1.50.8",
     "@portabletext/react": "^3.0.0",
-    "@sanity/assist": "^3.2.2",
+    "@sanity/assist": "^4.2.0",
     "@sanity/cli": "workspace:*",
     "@sanity/client": "^7.5.0",
     "@sanity/color": "^3.0.0",
