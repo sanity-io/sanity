@@ -64,3 +64,6 @@ export const TOOL_TITLE = 'Schedules'
 export const RELEASES_DOCS_URL = 'https://www.sanity.io/blog/introducing-content-releases'
 
 export const SCHEDULED_PUBLISHING_TOOL_NAME = 'schedules'
+
+export const FORBIDDEN_RESPONSE_TEXT =
+  'Forbidden. Please check that your project has access to Scheduled Publishing.'
