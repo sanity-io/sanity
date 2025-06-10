@@ -9,6 +9,7 @@ import {
   createSchema,
   type CrossDatasetReferenceSchemaType,
   type FileSchemaType,
+  type GlobalDocumentReferenceSchemaType,
   type MultiFieldSet,
   type NumberSchemaType,
   type ObjectField,
@@ -31,6 +32,7 @@ import {
   isCrossDatasetReference,
   isCustomized,
   isDefined,
+  isGlobalDocumentReference,
   isPrimitive,
   isRecord,
   isReference,
@@ -125,6 +127,9 @@ function transformCommonTypeFields(
   const crossDatasetRefProps = isCrossDatasetReference(type)
     ? transformCrossDatasetReference(type)
     : {}
+  const globalRefProps = isGlobalDocumentReference(type)
+    ? transformGlobalDocumentReference(type)
+    : {}
 
   const objectFields: ObjectFields =
     type.jsonType === 'object' && type.type && INLINE_TYPES.includes(typeName) && isCustomized(type)
@@ -141,6 +146,7 @@ function transformCommonTypeFields(
     ...arrayProps,
     ...referenceProps,
     ...crossDatasetRefProps,
+    ...globalRefProps,
     ...ensureConditional('readOnly', type.readOnly),
     ...ensureConditional('hidden', type.hidden),
     ...transformFieldsets(type),
@@ -315,6 +321,23 @@ function transformReference(reference: ReferenceSchemaType): Pick<ManifestSchema
 
 function transformCrossDatasetReference(
   reference: CrossDatasetReferenceSchemaType,
+): Pick<ManifestSchemaType, 'to' | 'preview'> {
+  return {
+    to: (reference.to ?? []).map((crossDataset) => {
+      const preview = crossDataset.preview?.select
+        ? {preview: {select: crossDataset.preview.select}}
+        : {}
+      return {
+        type: crossDataset.type,
+        ...ensureCustomTitle(crossDataset.type, crossDataset.title),
+        ...preview,
+      }
+    }),
+  }
+}
+
+function transformGlobalDocumentReference(
+  reference: GlobalDocumentReferenceSchemaType,
 ): Pick<ManifestSchemaType, 'to' | 'preview'> {
   return {
     to: (reference.to ?? []).map((crossDataset) => {

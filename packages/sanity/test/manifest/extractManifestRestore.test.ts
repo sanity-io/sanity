@@ -32,6 +32,7 @@ describe('Extract studio manifest', () => {
             defineField({name: 'file', type: 'file'}),
             defineField({name: 'slug', type: 'slug'}),
             defineField({name: 'url', type: 'url'}),
+
             defineField({name: 'object', type: documentType}),
             defineField({
               type: 'object',
@@ -94,6 +95,20 @@ describe('Extract studio manifest', () => {
                   preview: {select: {title: 'title'}},
                 },
               ],
+            }),
+            defineField({
+              type: 'globalDocumentReference',
+              name: 'globalRef',
+              to: [
+                {
+                  type: documentType,
+                  preview: {
+                    select: {title: 'title'},
+                  },
+                },
+              ],
+              resourceId: 'a.b',
+              resourceType: 'dataset',
             }),
             defineField({
               name: 'refArray',

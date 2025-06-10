@@ -8,7 +8,7 @@ function normalizeToProp(typeDef: any) {
   if (Array.isArray(typeDef.to)) {
     return typeDef.to
   }
-  return typeDef.to ? [typeDef.to] : typeDef.to
+  return typeDef.to ? [typeDef.to] : []
 }
 
 export function isValidResourceType(resourceType: string): string | true {

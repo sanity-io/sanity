@@ -1,5 +1,6 @@
 import {
   type CrossDatasetReferenceSchemaType,
+  type GlobalDocumentReferenceSchemaType,
   type ObjectField,
   type ObjectSchemaType,
   type ReferenceSchemaType,
@@ -50,6 +51,12 @@ export function isCrossDatasetReference(type: SchemaType): type is CrossDatasetR
   return isType(type, 'crossDatasetReference')
 }
 
+export function isGlobalDocumentReference(
+  type: SchemaType,
+): type is GlobalDocumentReferenceSchemaType {
+  return isType(type, 'globalDocumentReference')
+}
+
 export function isObjectField(maybeOjectField: unknown): boolean {
   return (
     typeof maybeOjectField === 'object' && maybeOjectField !== null && 'name' in maybeOjectField
@@ -59,8 +66,9 @@ export function isObjectField(maybeOjectField: unknown): boolean {
 export function isCustomized(maybeCustomized: SchemaType): boolean {
   const hasFieldsArray =
     isObjectField(maybeCustomized) &&
-    !isType(maybeCustomized, 'reference') &&
-    !isType(maybeCustomized, 'crossDatasetReference') &&
+    !isReference(maybeCustomized) &&
+    !isCrossDatasetReference(maybeCustomized) &&
+    !isGlobalDocumentReference(maybeCustomized) &&
     'fields' in maybeCustomized &&
     Array.isArray(maybeCustomized.fields)
 

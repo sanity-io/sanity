@@ -847,6 +847,21 @@ describe('Extract studio manifest', () => {
                 ],
               }),
               defineField({
+                type: 'globalDocumentReference',
+                name: 'globalRef',
+                to: [
+                  {
+                    type: documentType,
+                    preview: {
+                      select: {title: 'title'},
+                    },
+                  },
+                ],
+                resourceId: 'a.b',
+                resourceType: 'dataset',
+                weak: true,
+              }),
+              defineField({
                 title: 'Reference array',
                 name: 'refArray',
                 type: 'array',
@@ -888,6 +903,21 @@ describe('Extract studio manifest', () => {
                 },
               },
             ],
+          },
+          {
+            type: 'globalDocumentReference',
+            name: 'globalRef',
+            weak: true,
+            to: [
+              {
+                type: documentType,
+                preview: {
+                  select: {title: 'title'},
+                },
+              },
+            ],
+            resourceId: 'a.b',
+            resourceType: 'dataset',
           },
           {
             name: 'refArray',
