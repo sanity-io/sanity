@@ -1,7 +1,7 @@
-import {useDialogVisible} from '../../hooks/useDialogVisibile'
 import {type TimeZoneScope} from '../../hooks/useTimeZone'
 import {type Schedule} from '../../studio/timezones/types'
 import DialogScheduleEdit from '../components/dialogs/DialogScheduleEdit'
+import {useDialogVisible} from './useDialogVisibile'
 
 function useDialogScheduleEdit(schedule: Schedule, tzScope: TimeZoneScope) {
   const {visible, show, hide, timeZoneScope} = useDialogVisible(tzScope)
