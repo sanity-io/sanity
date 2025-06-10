@@ -1411,7 +1411,7 @@ importers:
         specifier: ^9.0.1
         version: 9.0.1(react@18.3.1)
       '@sanity/asset-utils':
-        specifier: ^2.0.6
+        specifier: ^2.2.1
         version: 2.2.1
       '@sanity/bifur-client':
         specifier: ^0.4.1
