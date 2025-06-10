@@ -21,10 +21,6 @@ overrides:
 importers:
 
   .:
-    optionalDependencies:
-      node-notifier:
-        specifier: ^10.0.0
-        version: 10.0.1
     devDependencies:
       '@google-cloud/storage':
         specifier: ^7.11.0
@@ -257,6 +253,10 @@ importers:
       yargs:
         specifier: ^17.3.0
         version: 17.3.0
+    optionalDependencies:
+      node-notifier:
+        specifier: ^10.0.0
+        version: 10.0.1
 
   dev/depcheck-test: {}
 
