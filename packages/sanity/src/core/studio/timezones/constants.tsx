@@ -1,5 +1,3 @@
-import {type ScheduledPublishingPluginOptions} from './types'
-
 // Text displayed in toasts on any 403 Forbidden request
 // (usually if a project doesn't have access to the Scheduled Publishing feature)
 export const FORBIDDEN_RESPONSE_TEXT =
@@ -14,13 +12,4 @@ export const DATE_FORMAT = {
   MEDIUM: `d MMMM yyyy',' p`,
   // Saturday, 1 October 2022, 10:00 PM
   LARGE: `iiii',' d MMMM yyyy',' p`,
-}
-
-export const DEFAULT_SCHEDULED_PUBLISH_PLUGIN_OPTIONS: Required<
-  Omit<ScheduledPublishingPluginOptions, '__internal__workspaceEnabled'>
-> = {
-  enabled: true,
-  // 25/12/2022 22:00
-  inputDateTimeFormat: 'dd/MM/yyyy HH:mm',
-  showReleasesBanner: true,
 }

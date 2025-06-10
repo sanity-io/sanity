@@ -3,7 +3,6 @@ import {comments} from '../comments/plugin'
 import {createIntegration} from '../create/createIntegrationPlugin'
 import {releases, RELEASES_NAME} from '../releases/plugin'
 import {SCHEDULED_PUBLISHING_NAME, scheduledPublishing} from '../scheduledPublishing/plugin'
-import {DEFAULT_SCHEDULED_PUBLISH_PLUGIN_OPTIONS} from '../studio/timezones/constants'
 import {tasks, TASKS_NAME} from '../tasks/plugin'
 import {
   type AppsOptions,
@@ -55,7 +54,10 @@ export function getDefaultPluginsOptions(
       ...workspace.tasks,
     },
     scheduledPublishing: {
-      ...DEFAULT_SCHEDULED_PUBLISH_PLUGIN_OPTIONS,
+      enabled: true,
+      // 25/12/2022 22:00
+      inputDateTimeFormat: 'dd/MM/yyyy HH:mm',
+      showReleasesBanner: true,
       ...workspace.scheduledPublishing,
       // If the user has explicitly enabled scheduled publishing, we should respect that
       // eslint-disable-next-line camelcase
