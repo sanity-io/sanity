@@ -3,7 +3,7 @@ import {Menu} from '@sanity/ui'
 
 import {MenuButton} from '../../../../ui-components'
 import {ContextMenuButton} from '../../../components/contextMenuButton'
-import {type Schedule} from '../../types'
+import {type Schedule} from '../../../studio/timezones/types'
 import ContextMenuItems from './ContextMenuItems'
 
 interface Props {

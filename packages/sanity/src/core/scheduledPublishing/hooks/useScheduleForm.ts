@@ -1,6 +1,7 @@
 import {useCallback, useState} from 'react'
 
-import {type Schedule, type ScheduleFormData} from '../types'
+import {type Schedule} from '../../studio/timezones/types'
+import {type ScheduleFormData} from '../types'
 
 // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
 export default function useScheduleForm(schedule?: Schedule) {

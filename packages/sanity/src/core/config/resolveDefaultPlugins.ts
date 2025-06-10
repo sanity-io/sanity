@@ -2,8 +2,8 @@ import {CANVAS_INTEGRATION_NAME, canvasIntegration} from '../canvas/canvasIntegr
 import {comments} from '../comments/plugin'
 import {createIntegration} from '../create/createIntegrationPlugin'
 import {releases, RELEASES_NAME} from '../releases/plugin'
-import {DEFAULT_SCHEDULED_PUBLISH_PLUGIN_OPTIONS} from '../scheduledPublishing/constants'
 import {SCHEDULED_PUBLISHING_NAME, scheduledPublishing} from '../scheduledPublishing/plugin'
+import {DEFAULT_SCHEDULED_PUBLISH_PLUGIN_OPTIONS} from '../studio/timezones/constants'
 import {tasks, TASKS_NAME} from '../tasks/plugin'
 import {
   type AppsOptions,

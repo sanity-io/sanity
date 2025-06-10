@@ -1,7 +1,10 @@
 import {useTelemetry} from '@sanity/telemetry/react'
 import {template} from 'lodash'
 import {useCallback, useContext, useEffect, useMemo, useState} from 'react'
-import {SchedulePublishUpsellContext} from 'sanity/_singletons'
+import {
+  SchedulePublishUpsellContext,
+  type SchedulePublishUpsellContextValue,
+} from 'sanity/_singletons'
 
 import {useClient} from '../../../hooks/useClient'
 import {useProjectId} from '../../../hooks/useProjectId'
@@ -15,20 +18,6 @@ import {
 import {type UpsellData} from '../../../studio/upsell/types'
 import {UpsellDialog} from '../../../studio/upsell/UpsellDialog'
 import {DEFAULT_STUDIO_CLIENT_OPTIONS} from '../../../studioClient'
-
-export interface SchedulePublishUpsellContextValue {
-  upsellDialogOpen: boolean
-  handleOpenDialog: (source: UpsellDialogViewedInfo['source']) => void
-  upsellData: UpsellData | null
-  telemetryLogs: {
-    dialogSecondaryClicked: () => void
-    dialogPrimaryClicked: () => void
-    panelViewed: (source: UpsellDialogViewedInfo['source']) => void
-    panelDismissed: () => void
-    panelPrimaryClicked: () => void
-    panelSecondaryClicked: () => void
-  }
-}
 
 const FEATURE = 'scheduled_publishing' as const
 const TEMPLATE_OPTIONS = {interpolate: /{{([\s\S]+?)}}/g}

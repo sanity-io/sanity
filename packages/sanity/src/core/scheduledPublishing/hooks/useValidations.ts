@@ -1,6 +1,7 @@
 import {useState} from 'react'
 
-import {type Schedule, type ScheduledDocValidations, type ValidationStatus} from '../types'
+import {type Schedule} from '../../studio/timezones/types'
+import {type ScheduledDocValidations, type ValidationStatus} from '../types'
 
 const EMPTY_VALIDATIONS: ScheduledDocValidations = {}
 // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types

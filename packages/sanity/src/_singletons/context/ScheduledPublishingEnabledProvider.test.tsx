@@ -5,7 +5,7 @@ import {beforeEach, describe, expect, it, vi} from 'vitest'
 import {useFeatureEnabled} from '../../../hooks'
 import {useClient} from '../../../hooks/useClient'
 import {useWorkspace} from '../../../studio/workspace'
-import {type Schedule} from '../../types'
+import type {Schedule} from '../../types'
 import {
   ScheduledPublishingEnabledProvider,
   useScheduledPublishingEnabled,

@@ -3,22 +3,9 @@ import {type ReactNode, useCallback, useContext, useMemo, useState} from 'react'
 import {SchedulesContext} from 'sanity/_singletons'
 
 import {useTimeZone} from '../../../hooks/useTimeZone'
-import {type Schedule, type ScheduleSort, type ScheduleState} from '../../types'
+import {type Schedule, type ScheduleSort, type ScheduleState} from '../../../studio/timezones/types'
 import {getLastExecuteDate} from '../../utils/scheduleUtils'
 import {sortByExecuteDate} from '../../utils/sortByExecuteDate'
-
-/**
- * @internal
- */
-export interface SchedulesContextValue {
-  activeSchedules: Schedule[]
-  schedules: Schedule[]
-  schedulesByDate: (date: Date) => Schedule[]
-  scheduleState?: ScheduleState
-  selectedDate?: Date
-  setSortBy: (sortBy: ScheduleSort) => void
-  sortBy?: ScheduleSort
-}
 
 const EMPTY_SCHEDULE: Schedule[] = []
 

@@ -5,12 +5,12 @@ import {useCallback, useEffect, useMemo, useState} from 'react'
 import {useObservable} from 'react-rx'
 import {startWith} from 'rxjs/operators'
 
-import ToastDescription from '../scheduledPublishing/components/toastDescription/ToastDescription'
-import {DATE_FORMAT} from '../scheduledPublishing/constants'
-import {type NormalizedTimeZone} from '../scheduledPublishing/types'
-import {debugWithName} from '../scheduledPublishing/utils/debug'
-import getErrorMessage from '../scheduledPublishing/utils/getErrorMessage'
 import {useKeyValueStore} from '../store'
+import {DATE_FORMAT} from '../studio/timezones/constants'
+import ToastDescription from '../studio/timezones/toastDescription/ToastDescription'
+import {type NormalizedTimeZone} from '../studio/timezones/types'
+import {debugWithName} from '../studio/timezones/utils/debug'
+import getErrorMessage from '../studio/timezones/utils/getErrorMessage'
 
 enum TimeZoneEvents {
   update = 'timeZoneEventUpdate',

@@ -1,6 +1,21 @@
 import {createContext} from 'sanity/_createContext'
 
-import type {ScheduledPublishingEnabledContextValue} from '../../core/scheduledPublishing/tool/contexts/ScheduledPublishingEnabledProvider'
+import type {HasUsedScheduledPublishing} from '../../core/hooks/useHasUsedScheduledPublishing'
+
+/**
+ * @internal
+ */
+export type ScheduledPublishingEnabledContextValue =
+  | {
+      enabled: false
+      mode: null
+      hasUsedScheduledPublishing: HasUsedScheduledPublishing
+    }
+  | {
+      enabled: true
+      mode: 'default' | 'upsell'
+      hasUsedScheduledPublishing: HasUsedScheduledPublishing
+    }
 
 const DEFAULT: ScheduledPublishingEnabledContextValue = {
   enabled: false,

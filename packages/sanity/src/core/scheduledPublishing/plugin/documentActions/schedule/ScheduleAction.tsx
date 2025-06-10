@@ -2,6 +2,7 @@ import {CalendarIcon, ClockIcon} from '@sanity/icons'
 import {Box, Text} from '@sanity/ui'
 import {useCallback, useState} from 'react'
 
+import {useScheduledPublishingEnabled} from '../../../../../_singletons/context/ScheduledPublishingEnabledProvider'
 import {InsufficientPermissionsMessage} from '../../../../components/InsufficientPermissionsMessage'
 import {
   type DocumentActionComponent,
@@ -10,6 +11,7 @@ import {
 } from '../../../../config/document/actions'
 import {useCurrentUser, useDocumentPairPermissions} from '../../../../store'
 import {SCHEDULED_PUBLISHING_TIME_ZONE_SCOPE} from '../../../../studio/constants'
+import {debugWithName} from '../../../../studio/timezones/utils/debug'
 import DialogFooter from '../../../components/dialogs/DialogFooter'
 import DialogHeader from '../../../components/dialogs/DialogHeader'
 import {EditScheduleForm} from '../../../components/editScheduleForm'
@@ -18,9 +20,7 @@ import {DocumentActionPropsProvider} from '../../../contexts/documentActionProps
 import usePollSchedules from '../../../hooks/usePollSchedules'
 import useScheduleForm from '../../../hooks/useScheduleForm'
 import useScheduleOperation from '../../../hooks/useScheduleOperation'
-import {useScheduledPublishingEnabled} from '../../../tool/contexts/ScheduledPublishingEnabledProvider'
 import {useSchedulePublishingUpsell} from '../../../tool/contexts/SchedulePublishingUpsellProvider'
-import {debugWithName} from '../../../utils/debug'
 import {NewScheduleInfo} from './NewScheduleInfo'
 import Schedules from './Schedules'
 

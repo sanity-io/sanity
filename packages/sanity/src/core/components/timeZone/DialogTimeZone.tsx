@@ -6,7 +6,7 @@ import {css, styled} from 'styled-components'
 import {Dialog} from '../../../ui-components'
 import {type TimeZoneScope, type TimeZoneScopeType, useTimeZone} from '../../hooks/useTimeZone'
 import {useTranslation} from '../../i18n/hooks/useTranslation'
-import {type NormalizedTimeZone} from '../../scheduledPublishing/types'
+import {type NormalizedTimeZone} from '../../studio/timezones/types'
 
 export interface DialogTimeZoneProps {
   onClose?: () => void

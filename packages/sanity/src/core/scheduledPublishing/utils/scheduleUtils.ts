@@ -1,4 +1,4 @@
-import {type Schedule} from '../types'
+import {type Schedule} from '../../studio/timezones/types'
 
 /**
  * Return a schedule's `executedAt` date if it exists, otherwise just return `executeAt`.

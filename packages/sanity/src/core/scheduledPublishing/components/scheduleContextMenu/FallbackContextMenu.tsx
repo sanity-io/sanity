@@ -3,8 +3,8 @@ import {Menu} from '@sanity/ui'
 
 import {MenuButton, MenuItem} from '../../../../ui-components'
 import {ContextMenuButton} from '../../../components/contextMenuButton'
+import {type Schedule} from '../../../studio/timezones/types'
 import useScheduleOperation from '../../hooks/useScheduleOperation'
-import {type Schedule} from '../../types'
 
 interface Props {
   onDelete?: () => void

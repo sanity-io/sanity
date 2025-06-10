@@ -2,7 +2,7 @@ import {type SchemaType} from '@sanity/types'
 import {useMemo} from 'react'
 
 import {useSchema} from '../../hooks/useSchema'
-import {type Schedule} from '../types'
+import {type Schedule} from '../../studio/timezones/types'
 import {getScheduledDocument} from '../utils/paneItemHelpers'
 
 export function useScheduleSchemaType(schedule: Schedule): SchemaType | undefined {

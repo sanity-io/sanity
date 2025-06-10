@@ -6,9 +6,9 @@ import {
 } from '@sanity/ui'
 import {useStateLink} from 'sanity/router'
 
+import {type Schedule, type ScheduleState} from '../../../studio/timezones/types'
 import {SCHEDULE_STATE_DICTIONARY} from '../../constants'
 import {useFilteredSchedules} from '../../hooks/useFilteredSchedules'
-import {type Schedule, type ScheduleState} from '../../types'
 
 interface Props {
   schedules: Schedule[]

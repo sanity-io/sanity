@@ -1,8 +1,8 @@
 import {useMemo} from 'react'
 
+import {type Schedule} from '../../../studio/timezones/types'
 import usePreviewState from '../../hooks/usePreviewState'
 import {useScheduleSchemaType} from '../../hooks/useSchemaType'
-import {type Schedule} from '../../types'
 import {getScheduledDocument} from '../../utils/paneItemHelpers'
 import DateWithTooltipElementQuery from './dateWithTooltip/DateWithTooltipElementQuery'
 import DocumentPreview from './DocumentPreview'

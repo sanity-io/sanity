@@ -2,7 +2,8 @@ import {CalendarIcon} from '@sanity/icons'
 import {route} from 'sanity/router'
 
 import {definePlugin} from '../../config'
-import {SCHEDULED_PUBLISHING_TOOL_NAME, TOOL_TITLE} from '../constants'
+import {SCHEDULED_PUBLISHING_TOOL_NAME} from '../../studio/timezones/constants'
+import {TOOL_TITLE} from '../constants'
 import Tool from '../tool/Tool'
 import resolveDocumentActions from './documentActions/schedule'
 import resolveDocumentBadges from './documentBadges/scheduled'
@@ -11,7 +12,6 @@ import {SchedulePublishingStudioLayout} from './SchedulePublishingStudioLayout'
 
 export {EditScheduleForm} from '../components/editScheduleForm/EditScheduleForm'
 export {resolveDocumentActions, resolveDocumentBadges}
-export {type Schedule} from '../types'
 
 /**
  * @internal

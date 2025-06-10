@@ -1,9 +1,9 @@
 import {useToast} from '@sanity/ui'
 
 import {useTimeZone} from '../../hooks/useTimeZone'
-import ToastDescription from '../components/toastDescription/ToastDescription'
-import {type Schedule} from '../types'
-import getErrorMessage from '../utils/getErrorMessage'
+import ToastDescription from '../../studio/timezones/toastDescription/ToastDescription'
+import {type Schedule} from '../../studio/timezones/types'
+import getErrorMessage from '../../studio/timezones/utils/getErrorMessage'
 import {useScheduleApi} from './useScheduleApi'
 
 // Custom events
