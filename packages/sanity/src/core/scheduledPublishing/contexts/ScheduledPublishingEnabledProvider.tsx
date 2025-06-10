@@ -6,7 +6,7 @@ import {
 
 import {useFeatureEnabled} from '../../hooks/useFeatureEnabled'
 import {useHasUsedScheduledPublishing} from '../../hooks/useHasUsedScheduledPublishing'
-import {useWorkspace} from '../workspace'
+import {useWorkspace} from '../../studio/workspace'
 
 interface ScheduledPublishingEnabledProviderProps {
   children: React.ReactNode

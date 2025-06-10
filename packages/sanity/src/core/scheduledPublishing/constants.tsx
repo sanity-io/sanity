@@ -62,3 +62,5 @@ export const SCHEDULE_FAILED_TEXT = 'This schedule failed to run.'
 export const TOOL_TITLE = 'Schedules'
 
 export const RELEASES_DOCS_URL = 'https://www.sanity.io/blog/introducing-content-releases'
+
+export const SCHEDULED_PUBLISHING_TOOL_NAME = 'schedules'

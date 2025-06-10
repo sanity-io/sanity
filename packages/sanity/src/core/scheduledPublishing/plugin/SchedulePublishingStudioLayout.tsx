@@ -3,7 +3,7 @@ import {type LayoutProps} from '../../config/studio/types'
 import {
   ScheduledPublishingEnabledProvider,
   useScheduledPublishingEnabled,
-} from '../../studio/timezones/ScheduledPublishingEnabledProvider'
+} from '../contexts/ScheduledPublishingEnabledProvider'
 import {SchedulePublishingUpsellProvider} from '../tool/contexts/SchedulePublishingUpsellProvider'
 
 function SchedulePublishingStudioLayoutInner(props: LayoutProps) {

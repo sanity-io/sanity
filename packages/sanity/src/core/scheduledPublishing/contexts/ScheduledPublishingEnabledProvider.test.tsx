@@ -5,12 +5,12 @@ import {beforeEach, describe, expect, it, vi} from 'vitest'
 import {useClient} from '../../hooks/useClient'
 import {useFeatureEnabled} from '../../hooks/useFeatureEnabled'
 import {cachedUsedScheduledPublishing} from '../../hooks/useHasUsedScheduledPublishing'
-import {useWorkspace} from '../workspace'
+import {type Schedule} from '../../studio/timezones/types'
+import {useWorkspace} from '../../studio/workspace'
 import {
   ScheduledPublishingEnabledProvider,
   useScheduledPublishingEnabled,
 } from './ScheduledPublishingEnabledProvider'
-import {type Schedule} from './types'
 
 vi.mock('../../hooks/useFeatureEnabled', () => ({
   useFeatureEnabled: vi.fn().mockReturnValue({}),

@@ -24,5 +24,3 @@ export const DEFAULT_SCHEDULED_PUBLISH_PLUGIN_OPTIONS: Required<
   inputDateTimeFormat: 'dd/MM/yyyy HH:mm',
   showReleasesBanner: true,
 }
-
-export const SCHEDULED_PUBLISHING_TOOL_NAME = 'schedules'

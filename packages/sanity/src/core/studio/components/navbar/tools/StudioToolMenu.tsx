@@ -1,8 +1,8 @@
 import {useMemo} from 'react'
 
 import {type ToolMenuProps} from '../../../../config'
-import {SCHEDULED_PUBLISHING_TOOL_NAME} from '../../../timezones/constants'
-import {useScheduledPublishingEnabled} from '../../../timezones/ScheduledPublishingEnabledProvider'
+import {SCHEDULED_PUBLISHING_TOOL_NAME} from '../../../../scheduledPublishing/constants'
+import {useScheduledPublishingEnabled} from '../../../../scheduledPublishing/contexts/ScheduledPublishingEnabledProvider'
 import {ToolCollapseMenu} from './ToolCollapseMenu'
 import {ToolVerticalMenu} from './ToolVerticalMenu'
 
