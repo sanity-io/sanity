@@ -416,6 +416,7 @@ exports[`exports snapshot 1`] = `
     "isSanityCreateLinked": "function",
     "isSanityCreateLinkedDocument": "function",
     "isSanityCreateStartCompatibleDoc": "function",
+    "isSanityDefinedAction": "function",
     "isSanityDocument": "function",
     "isScheduleDocumentVersionEvent": "function",
     "isSearchStrategy": "function",
