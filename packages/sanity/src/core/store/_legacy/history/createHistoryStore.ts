@@ -227,7 +227,7 @@ function performRestore(
 ): Observable<void> {
   const documentId = getPublishedId(targetDocumentId)
 
-  return from(Promise.resolve(document)).pipe(
+  return of(document).pipe(
     mergeMap((documentToRestore) => {
       const existingIdsQuery = getAllRefIds(documentToRestore)
         .map((refId) => `"${refId}": defined(*[_id=="${refId}"]._id)`)
