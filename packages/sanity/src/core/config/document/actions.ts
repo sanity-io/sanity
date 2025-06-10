@@ -25,6 +25,49 @@ export interface DocumentActionProps extends EditStateFor {
   initialValueResolved: boolean
 }
 
+type SanityDefinedAction =
+  | 'delete'
+  | 'discardChanges'
+  | 'discardVersion'
+  | 'duplicate'
+  | 'restore'
+  | 'publish'
+  | 'unpublish'
+  | 'unpublishVersion'
+  | 'linkToCanvas'
+  | 'editInCanvas'
+  | 'unlinkFromCanvas'
+  | 'schedule'
+
+const SANITY_DEFINED_ACTIONS: Record<SanityDefinedAction, SanityDefinedAction> = {
+  delete: 'delete',
+  discardChanges: 'discardChanges',
+  discardVersion: 'discardVersion',
+  duplicate: 'duplicate',
+  restore: 'restore',
+  publish: 'publish',
+  unpublish: 'unpublish',
+  unpublishVersion: 'unpublishVersion',
+  linkToCanvas: 'linkToCanvas',
+  editInCanvas: 'editInCanvas',
+  unlinkFromCanvas: 'unlinkFromCanvas',
+  schedule: 'schedule',
+}
+
+/**
+ * @beta
+ * Indicates whether the action is a Sanity defined action or a custom action.
+ *
+ * @param action - The action to check.
+ * @returns `true` if the action is a Sanity defined action, `false` otherwise.
+ */
+export const isSanityDefinedAction = (
+  action: DocumentActionDescription & {action?: DocumentActionComponent['action']},
+): boolean => {
+  if (!action.action) return false
+  return SANITY_DEFINED_ACTIONS[action.action] !== undefined
+}
+
 /**
  * @hidden
  * @beta */
@@ -47,17 +90,7 @@ export interface DocumentActionComponent extends ActionComponent<DocumentActionP
    * })
    * ```
    */
-  action?:
-    | 'delete'
-    | 'discardChanges'
-    | 'duplicate'
-    | 'restore'
-    | 'publish'
-    | 'unpublish'
-    | 'linkToCanvas'
-    | 'editInCanvas'
-    | 'unlinkFromCanvas'
-    | 'schedule'
+  action?: SanityDefinedAction
   /**
    * For debugging purposes
    */

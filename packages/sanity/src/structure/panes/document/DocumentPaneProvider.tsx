@@ -239,7 +239,7 @@ export const DocumentPaneProvider = memo((props: DocumentPaneProviderProps) => {
       schemaType: documentType,
       documentId,
       versionType: actionsPerspective,
-      ...(selectedReleaseId && {versionName: selectedReleaseId}),
+      releaseId: selectedReleaseId,
     }),
     [documentType, documentId, actionsPerspective, selectedReleaseId],
   )
