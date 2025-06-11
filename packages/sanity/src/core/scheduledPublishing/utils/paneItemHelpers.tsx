@@ -7,8 +7,8 @@ import {combineLatest, type Observable, of} from 'rxjs'
 import {map, startWith} from 'rxjs/operators'
 
 import {type DocumentPreviewStore} from '../../preview'
-import {type Schedule} from '../../studio/timezones/types'
 import {getDraftId, getPublishedId} from '../../util/draftUtils'
+import {type Schedule} from '../types'
 
 export interface PaneItemPreviewState {
   isLoading?: boolean

@@ -9,13 +9,13 @@ import {DocumentStatusIndicator} from '../../../components/documentStatusIndicat
 import {useTimeZone} from '../../../hooks/useTimeZone'
 import {SanityDefaultPreview} from '../../../preview/components/SanityDefaultPreview'
 import {useDocumentVersionInfo} from '../../../releases'
-import {type Schedule} from '../../../studio/timezones/types'
 import {
   DOCUMENT_HAS_ERRORS_TEXT,
   DOCUMENT_HAS_WARNINGS_TEXT,
   SCHEDULE_ACTION_DICTIONARY,
 } from '../../constants'
 import {useScheduledPublishingEnabled} from '../../contexts/ScheduledPublishingEnabledProvider'
+import {type Schedule} from '../../types'
 import {type PaneItemPreviewState} from '../../utils/paneItemHelpers'
 import {getLastExecuteDate} from '../../utils/scheduleUtils'
 import {EMPTY_VALIDATION_STATUS, useValidationState} from '../../utils/validationUtils'

@@ -3,7 +3,7 @@ import {type ReactNode, useCallback, useContext, useMemo, useState} from 'react'
 import {SchedulesContext} from 'sanity/_singletons'
 
 import {useTimeZone} from '../../../hooks/useTimeZone'
-import {type Schedule, type ScheduleSort, type ScheduleState} from '../../../studio/timezones/types'
+import {type Schedule, type ScheduleSort, type ScheduleState} from '../../types'
 import {getLastExecuteDate} from '../../utils/scheduleUtils'
 import {sortByExecuteDate} from '../../utils/sortByExecuteDate'
 

@@ -1,6 +1,6 @@
 import {createContext} from 'sanity/_createContext'
 
-import type {Schedule, ScheduleSort, ScheduleState} from '../../core/studio/timezones/types'
+import type {Schedule, ScheduleSort, ScheduleState} from '../../core/scheduledPublishing/types'
 
 /**
  * @internal

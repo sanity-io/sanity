@@ -1,6 +1,6 @@
 import {type BadgeTone} from '@sanity/ui'
 
-import {type ScheduleAction, type ScheduleState} from '../studio/timezones/types'
+import {type ScheduleAction, type ScheduleState} from './types'
 
 export const SCHEDULE_ACTION_DICTIONARY: Record<
   ScheduleAction,

@@ -4,9 +4,9 @@ import {useObservable} from 'react-rx'
 import {catchError, map, type Observable, of, shareReplay} from 'rxjs'
 
 import {useClient} from '../../../hooks/useClient'
-import {type Schedule} from '../../../studio/timezones/types'
 import {useWorkspace} from '../../../studio/workspace'
 import {DEFAULT_STUDIO_CLIENT_OPTIONS} from '../../../studioClient'
+import {type Schedule} from '../../types'
 
 export interface HasUsedScheduledPublishing {
   used: boolean

@@ -1,4 +1,4 @@
-import {type Schedule} from '../../studio/timezones/types'
+import {type Schedule} from '../types'
 import {getLastExecuteDate} from './scheduleUtils'
 
 export function sortByExecuteDate({reverseOrder}: {reverseOrder: boolean} = {reverseOrder: false}) {

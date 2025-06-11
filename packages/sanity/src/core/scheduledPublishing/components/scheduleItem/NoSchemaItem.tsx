@@ -2,7 +2,7 @@ import {red} from '@sanity/color'
 import {UnknownIcon} from '@sanity/icons'
 
 import {SanityDefaultPreview} from '../../../preview/components/SanityDefaultPreview'
-import {type Schedule} from '../../../studio/timezones/types'
+import {type Schedule} from '../../types'
 import {FallbackContextMenu} from '../scheduleContextMenu/FallbackContextMenu'
 import PreviewWrapper from './PreviewWrapper'
 

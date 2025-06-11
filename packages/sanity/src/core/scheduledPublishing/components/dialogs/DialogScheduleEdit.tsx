@@ -2,9 +2,9 @@ import {useCallback} from 'react'
 
 import {Dialog} from '../../../../ui-components'
 import {SCHEDULED_PUBLISHING_TIME_ZONE_SCOPE} from '../../../studio/constants'
-import {type Schedule} from '../../../studio/timezones/types'
 import useScheduleForm from '../../hooks/useScheduleForm'
 import useScheduleOperation from '../../hooks/useScheduleOperation'
+import {type Schedule} from '../../types'
 import {EditScheduleForm} from '../editScheduleForm/EditScheduleForm'
 import DialogHeader from './DialogHeader'
 

@@ -2,7 +2,7 @@ import {useToast} from '@sanity/ui'
 
 import {useTimeZone} from '../../hooks/useTimeZone'
 import ToastDescription from '../../studio/timezones/toastDescription/ToastDescription'
-import {type Schedule} from '../../studio/timezones/types'
+import {type Schedule} from '../types'
 import getErrorMessage from '../utils/getErrorMessage'
 import {useScheduleApi} from './useScheduleApi'
 
