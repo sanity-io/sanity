@@ -16,7 +16,7 @@ vi.mock('../../hooks/useFeatureEnabled', () => ({
   useFeatureEnabled: vi.fn().mockReturnValue({}),
 }))
 
-vi.mock('../workspace', () => ({
+vi.mock('../../studio/workspace', () => ({
   useWorkspace: vi.fn().mockReturnValue({}),
 }))
 
