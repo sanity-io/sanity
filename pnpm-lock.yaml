@@ -326,6 +326,9 @@ importers:
 
   dev/page-building-studio:
     dependencies:
+      '@repo/eslint-config':
+        specifier: workspace:*
+        version: link:../../packages/@repo/eslint-config
       '@sanity/vision':
         specifier: workspace:*
         version: link:../../packages/@sanity/vision

@@ -101,7 +101,7 @@
       "prettier --write",
       "oxlint --fix"
     ],
-    "*.{md,yml,yaml,css}": [
+    "*.{md,yml,yaml,css,json}": [
       "prettier --write"
     ]
   },
