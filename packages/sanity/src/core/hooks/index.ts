@@ -1,4 +1,3 @@
-export * from '../scheduledPublishing/hooks/useDialogVisibile'
 export * from './useClient'
 export * from './useConditionalToast'
 export * from './useConnectionState'
