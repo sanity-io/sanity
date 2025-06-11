@@ -34,8 +34,7 @@
   ],
   "globalDependencies": [
     ".npmrc",
-    ".eslintrc.cjs",
-    ".prettierrc",
+    ".oxlintrc.json",
     "lerna.json"
   ],
   "tasks": {
@@ -65,7 +64,11 @@
       ],
       "outputLogs": "errors-only"
     },
+    "transit": {
+      "dependsOn": ["^transit"]
+    },
     "lint": {
+      "dependsOn": ["transit"],
       "outputLogs": "errors-only"
     },
     "//#check:format": {}
