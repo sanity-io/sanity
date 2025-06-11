@@ -11,18 +11,25 @@ for (const [workspace, paths] of Object.entries(workspaces)) {
       return
     }
     for (const path of paths) {
-      // eslint-disable-next-line @typescript-eslint/no-shadow, @typescript-eslint/no-unused-vars
-      await t.test(`await import('${path}')`, async (t) => {
-        try {
-          await import(path)
-        } catch (error) {
-          if (workspace === '@sanity/cli' || workspace === '@sanity/codegen') {
-            t.todo('native ESM not supported yet')
-          } else {
-            throw error
+      // Awaiting during the loop is fine, and intentional here, we want tests to run in serial
+      // oxlint-disable-next-line no-await-in-loop
+      await t.test(
+        `await import('${path}')`,
+        async (
+          // eslint-disable-next-line @typescript-eslint/no-shadow
+          t,
+        ) => {
+          try {
+            await import(path)
+          } catch (error) {
+            if (workspace === '@sanity/cli' || workspace === '@sanity/codegen') {
+              t.todo('native ESM not supported yet')
+            } else {
+              throw error
+            }
           }
-        }
-      })
+        },
+      )
     }
   })
 }
