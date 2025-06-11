@@ -1,6 +1,6 @@
 import {createContext} from 'sanity/_createContext'
 
-import type {HasUsedScheduledPublishing} from '../../core/hooks/useHasUsedScheduledPublishing'
+import type {HasUsedScheduledPublishing} from '../../core/scheduledPublishing/tool/contexts/useHasUsedScheduledPublishing'
 
 /**
  * @internal

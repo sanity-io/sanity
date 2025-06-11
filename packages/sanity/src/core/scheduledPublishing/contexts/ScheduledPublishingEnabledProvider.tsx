@@ -5,8 +5,8 @@ import {
 } from 'sanity/_singletons'
 
 import {useFeatureEnabled} from '../../hooks/useFeatureEnabled'
-import {useHasUsedScheduledPublishing} from '../../hooks/useHasUsedScheduledPublishing'
 import {useWorkspace} from '../../studio/workspace'
+import {useHasUsedScheduledPublishing} from '../tool/contexts/useHasUsedScheduledPublishing'
 
 interface ScheduledPublishingEnabledProviderProps {
   children: React.ReactNode

@@ -4,9 +4,9 @@ import {beforeEach, describe, expect, it, vi} from 'vitest'
 
 import {useClient} from '../../hooks/useClient'
 import {useFeatureEnabled} from '../../hooks/useFeatureEnabled'
-import {cachedUsedScheduledPublishing} from '../../hooks/useHasUsedScheduledPublishing'
 import {type Schedule} from '../../studio/timezones/types'
 import {useWorkspace} from '../../studio/workspace'
+import {cachedUsedScheduledPublishing} from '../tool/contexts/useHasUsedScheduledPublishing'
 import {
   ScheduledPublishingEnabledProvider,
   useScheduledPublishingEnabled,
