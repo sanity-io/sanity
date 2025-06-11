@@ -95,7 +95,7 @@ export interface InitFlags {
   'package-manager'?: PackageManager
 }
 
-export const initCommand: CliCommandDefinition<InitFlags> = {
+const initCommand: CliCommandDefinition<InitFlags> = {
   name: 'init',
   signature: '',
   description: 'Initializes a new Sanity Studio and/or project',

@@ -1,4 +1,3 @@
-/* eslint-disable no-sync */
 import fs from 'node:fs'
 import {isBuiltin} from 'node:module'
 import path from 'node:path'

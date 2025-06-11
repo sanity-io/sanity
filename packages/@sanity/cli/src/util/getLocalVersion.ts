@@ -29,7 +29,7 @@ function tryGetVersion(modulePath: string): string | undefined {
     const fileContent = readFileSync(modulePath, 'utf8')
     const manifest = JSON.parse(fileContent)
     return manifest.version
-  } catch (err) {
+  } catch {
     return undefined
   }
 }

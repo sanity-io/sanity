@@ -86,8 +86,8 @@ export function getClientWrapper(
     const token = getCliToken()
     const apiHost = apiHosts[sanityEnv]
     const apiConfig = {
-      ...(cliApiConfig || {}),
-      ...(api || {}),
+      ...cliApiConfig,
+      ...api,
     }
 
     if (apiHost) {

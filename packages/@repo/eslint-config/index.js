@@ -4,7 +4,7 @@ import {fileURLToPath} from 'node:url'
 
 import js from '@eslint/js'
 import {defineConfig} from 'eslint/config'
-import eslintConfigPrettier from 'eslint-config-prettier'
+import eslintConfigPrettier from 'eslint-config-prettier/flat'
 import sanityImport from 'eslint-config-sanity/import.js'
 import sanityRecommended from 'eslint-config-sanity/index.js'
 import sanityReact from 'eslint-config-sanity/react.js'
@@ -50,11 +50,13 @@ const extensions = ['.cjs', '.mjs', '.js', '.jsx', '.ts', '.tsx', '.mts']
 
 export default [
   defineConfig({
+    name: 'global-ignores',
     ignores,
     // ^  DO NOT REMOVE THIS LINE
     //  - this is necessary for the ignores pattern to be treated as a "global ignores"
   }),
   defineConfig({
+    name: 'language-options+globals+react-settings',
     languageOptions: {
       ecmaVersion: 'latest',
       sourceType: 'module',
@@ -67,12 +69,22 @@ export default [
     },
     settings: {react: {version: '19'}},
   }),
-  js.configs.recommended,
-  importPlugin.flatConfigs?.typescript,
+  {
+    name: '@eslint/js/recommended',
+    ...js.configs.recommended,
+  },
+  {
+    name: 'eslint-plugin-import/typescript',
+    ...importPlugin.flatConfigs?.typescript,
+  },
   tsLint.configs.eslintRecommended,
-  pluginReact.configs.flat.recommended,
+  {
+    name: 'react/recommended',
+    ...pluginReact.configs.flat.recommended,
+  },
   reactHooks.configs.recommended,
   {
+    name: 'sanity/recommended',
     // Equivalent to `extends: ['sanity', 'sanity/react', 'sanity/import', 'sanity/typescript']` in ESLint 8
     plugins: {
       'simple-import-sort': simpleImportSort,
@@ -183,10 +195,20 @@ export default [
     },
   },
   ...tsLint.configs.recommended,
-  pluginReact.configs.flat['jsx-runtime'],
+  {
+    name: 'react/jsx-runtime',
+    ...pluginReact.configs.flat['jsx-runtime'],
+  },
   ...turboConfig,
   // Disables rules that are handled by prettier, we run prettier separately as running it within ESLint is too slow
   eslintConfigPrettier,
   // oxlint should be the last one so it is able to turn off rules that it's handling
   ...oxlint.buildFromOxlintConfigFile(rootOxlintrc),
+  // Since we use useEffectEvent, we can't use the oxlint checker for this rule, we must use the ESLint variant
+  {
+    name: 'react-hooks/exhaustive-deps/useEffectEvent',
+    rules: {
+      'react-hooks/exhaustive-deps': 'error',
+    },
+  },
 ]
