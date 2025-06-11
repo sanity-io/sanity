@@ -61,10 +61,8 @@ jobs:
           --conventional-commits \
           --conventional-prerelease \
           --dist-tag=next \
-          --no-git-reset \
           --preid=next \
           --exact \
-          --dry-run \
           --yes
         env:
           NPM_CONFIG_PROVENANCE: true
@@ -77,5 +75,4 @@ jobs:
           GOOGLE_PROJECT_ID: ${{ secrets.GCS_STAGING_PROJECT_ID }}
           GCLOUD_SERVICE_KEY: ${{ secrets.GCS_STAGING_SERVICE_KEY }}
           GCLOUD_BUCKET: ${{ secrets.GCS_STAGING_BUCKET }}
-        # TODO: do we need --no-git-reset for this to work?
         run: pnpm bundle:upload --tag=next
