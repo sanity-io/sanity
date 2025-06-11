@@ -97,11 +97,11 @@
   },
   "lint-staged": {
     "*.{js,jsx,ts,tsx,mjs,cjs}": [
-      "prettier --write",
+      "prettier --cache --write",
       "oxlint --fix"
     ],
     "*.{md,yml,yaml,css,json}": [
-      "prettier --write"
+      "prettier --cache --write"
     ]
   },
   "prettier": "@sanity/prettier-config",
