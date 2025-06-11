@@ -49,6 +49,8 @@
     "react_perf/jsx-no-jsx-as-prop": "off",
     // False negatives
     "jsx_a11y/anchor-is-valid": "off",
+    "jest/no-conditional-expect": "off",
+    "jest/no-standalone-expect": "off",
     // Handy rules that are disabled by default
     "react/rules-of-hooks": "error",
     "typescript/prefer-ts-expect-error": "error",
