@@ -30,7 +30,9 @@
     "*.json",
     "*.css",
     "*.snap",
-    "*.md"
+    "*.md",
+    "dev/test-studio/sanity.theme.mjs",
+    "dev/test-studio/workshop/scopes.js"
   ],
   "categories": {
     "correctness": "error",
