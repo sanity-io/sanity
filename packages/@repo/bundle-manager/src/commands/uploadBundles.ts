@@ -68,7 +68,7 @@ async function copyPackages(cwd: string, asVersion?: string) {
     // Needed for `@sanity/vision` and other scoped packages
     const cleanDir = cleanDirName(pkg)
 
-    for await (const filePath of getFiles(`packages/${pkg}/dist`)) {
+    for await (const filePath of getFiles(path.join(cwd, `packages/${pkg}/dist`))) {
       try {
         const fileName = path.basename(filePath)
         const ext = path.extname(fileName)
@@ -106,12 +106,12 @@ async function cleanupSourceMaps(cwd: string, asVersion?: string) {
   const packageVersions: Record<string, string> = {}
   // First we iterate through each core package located in `packages/`
   for (const pkg of corePkgs) {
-    const {packageJson} = await readPackageJson(`packages/${pkg}/package.json`)
+    const {packageJson} = await readPackageJson(path.join(cwd, `packages/${pkg}/package.json`))
 
     const version = asVersion || packageJson.version
     packageVersions[pkg] = version
 
-    for await (const filePath of getFiles(`packages/${pkg}/dist`)) {
+    for await (const filePath of getFiles(path.join(cwd, `packages/${pkg}/dist`))) {
       if (path.extname(filePath) !== '.map') {
         continue
       }
