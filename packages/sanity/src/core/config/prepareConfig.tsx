@@ -221,8 +221,16 @@ export function prepareConfig(
       })
 
       if (process.env.SANITY_STUDIO_SCHEMA_DESCRIPTOR) {
+        const before = performance.now()
         const sync = DESCRIPTOR_CONVERTER.get(schema)
-        debug('Built schema for synchronization', {sync})
+        const after = performance.now()
+        const duration = after - before
+        debug('Built schema for synchronization', {sync, duration})
+        if (duration > 1000) {
+          console.warn(
+            `Building schema for synchronization took more than 1 second (${duration}ms)`,
+          )
+        }
       }
 
       const schemaValidationProblemGroups = schema._validation
