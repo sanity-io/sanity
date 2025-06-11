@@ -2,8 +2,8 @@ import {type SanityClient} from '@sanity/client'
 import {useMemo} from 'react'
 
 import {useClient} from '../../hooks/useClient'
+import {debugWithName} from '../../studio/timezones/utils/debug'
 import {type Schedule} from '../types'
-import {debugWithName} from '../utils/debug'
 
 const debug = debugWithName('useScheduleOperation')
 

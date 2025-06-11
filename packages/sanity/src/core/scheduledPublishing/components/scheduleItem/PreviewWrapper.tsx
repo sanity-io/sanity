@@ -14,7 +14,7 @@ import {
   DOCUMENT_HAS_WARNINGS_TEXT,
   SCHEDULE_ACTION_DICTIONARY,
 } from '../../constants'
-import {useScheduledPublishingEnabled} from '../../tool/contexts/ScheduledPublishingEnabledProvider'
+import {useScheduledPublishingEnabled} from '../../contexts/ScheduledPublishingEnabledProvider'
 import {type Schedule} from '../../types'
 import {type PaneItemPreviewState} from '../../utils/paneItemHelpers'
 import {getLastExecuteDate} from '../../utils/scheduleUtils'

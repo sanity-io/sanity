@@ -4,8 +4,8 @@ import {noop} from 'lodash'
 import {type ReactNode} from 'react'
 
 import {Button, Tooltip} from '../../../../ui-components'
+import useDialogTimeZone from '../../../hooks/useDialogTimeZone'
 import {type TimeZoneScope, useTimeZone} from '../../../hooks/useTimeZone'
-import useDialogTimeZone from '../../../scheduledPublishing/hooks/useDialogTimeZone'
 
 export interface TimeZoneButtonZoneProps {
   useElementQueries?: boolean

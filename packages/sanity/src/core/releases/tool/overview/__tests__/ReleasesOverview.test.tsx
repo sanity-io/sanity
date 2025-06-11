@@ -8,14 +8,11 @@ import {beforeEach, describe, expect, it, vi} from 'vitest'
 import {getByDataUi, queryByDataUi} from '../../../../../../test/setup/customQueries'
 import {setupVirtualListEnv} from '../../../../../../test/testUtils/setupVirtualListEnv'
 import {createTestProvider} from '../../../../../../test/testUtils/TestProvider'
+import {mockUseTimeZone, useTimeZoneMockReturn} from '../../../../hooks/__mocks__/useTimeZone.mock'
 import {
   mockUsePerspective,
   usePerspectiveMockReturn,
 } from '../../../../perspective/__mocks__/usePerspective.mock'
-import {
-  mockUseTimeZone,
-  useTimeZoneMockReturn,
-} from '../../../../scheduledPublishing/hooks/__tests__/__mocks__/useTimeZone.mock'
 import {
   activeASAPRelease,
   activeScheduledRelease,

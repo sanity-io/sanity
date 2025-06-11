@@ -3,10 +3,11 @@ import {type ValidationMarker} from '@sanity/types'
 import {Badge, Box, Card, Flex, Inline, Stack, Text} from '@sanity/ui'
 import {format} from 'date-fns'
 
-import {DATE_FORMAT, DOCUMENT_HAS_ERRORS_TEXT} from '../../constants'
+import {DATE_FORMAT} from '../../../studio/timezones/constants'
+import {DOCUMENT_HAS_ERRORS_TEXT} from '../../constants'
+import {useScheduledPublishingEnabled} from '../../contexts/ScheduledPublishingEnabledProvider'
 import usePollSchedules from '../../hooks/usePollSchedules'
 import {usePublishedId} from '../../hooks/usePublishedId'
-import {useScheduledPublishingEnabled} from '../../tool/contexts/ScheduledPublishingEnabledProvider'
 import {useValidationState} from '../../utils/validationUtils'
 
 interface Props {

@@ -11,7 +11,6 @@ import {SchedulePublishingStudioLayout} from './SchedulePublishingStudioLayout'
 
 export {EditScheduleForm} from '../components/editScheduleForm/EditScheduleForm'
 export {resolveDocumentActions, resolveDocumentBadges}
-export {type Schedule} from '../types'
 
 /**
  * @internal

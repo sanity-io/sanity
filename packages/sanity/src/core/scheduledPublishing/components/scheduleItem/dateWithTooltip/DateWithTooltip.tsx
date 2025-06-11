@@ -3,7 +3,7 @@ import {formatDistance} from 'date-fns'
 
 import {Tooltip} from '../../../../../ui-components'
 import {useTimeZone} from '../../../../hooks/useTimeZone'
-import {DATE_FORMAT} from '../../../constants'
+import {DATE_FORMAT} from '../../../../studio/timezones/constants'
 
 interface Props {
   date: Date // local date in UTC

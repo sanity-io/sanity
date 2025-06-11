@@ -4,7 +4,7 @@ import {Box, Card, Container, Flex, Text} from '@sanity/ui'
 import {styled} from 'styled-components'
 
 import {UpsellPanel} from '../../../studio/upsell/UpsellPanel'
-import {useScheduledPublishingEnabled} from '../contexts/ScheduledPublishingEnabledProvider'
+import {useScheduledPublishingEnabled} from '../../contexts/ScheduledPublishingEnabledProvider'
 import {useSchedulePublishingUpsell} from '../contexts/SchedulePublishingUpsellProvider'
 import {useSchedules} from '../contexts/schedules'
 import EmptySchedules from './EmptySchedules'

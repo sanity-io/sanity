@@ -1,27 +1,12 @@
 import {useContext, useMemo} from 'react'
-import {ScheduledPublishingEnabledContext} from 'sanity/_singletons'
-
-import {useFeatureEnabled} from '../../../hooks/useFeatureEnabled'
-import {useWorkspace} from '../../../studio/workspace'
 import {
-  type HasUsedScheduledPublishing,
-  useHasUsedScheduledPublishing,
-} from './useHasUsedScheduledPublishing'
+  ScheduledPublishingEnabledContext,
+  type ScheduledPublishingEnabledContextValue,
+} from 'sanity/_singletons'
 
-/**
- * @internal
- */
-export type ScheduledPublishingEnabledContextValue =
-  | {
-      enabled: false
-      mode: null
-      hasUsedScheduledPublishing: HasUsedScheduledPublishing
-    }
-  | {
-      enabled: true
-      mode: 'default' | 'upsell'
-      hasUsedScheduledPublishing: HasUsedScheduledPublishing
-    }
+import {useFeatureEnabled} from '../../hooks/useFeatureEnabled'
+import {useWorkspace} from '../../studio/workspace'
+import {useHasUsedScheduledPublishing} from '../tool/contexts/useHasUsedScheduledPublishing'
 
 interface ScheduledPublishingEnabledProviderProps {
   children: React.ReactNode
