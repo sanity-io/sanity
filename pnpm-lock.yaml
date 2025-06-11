@@ -901,6 +901,9 @@ importers:
         specifier: ^3.0.0
         version: 3.0.0
     devDependencies:
+      '@repo/eslint-config':
+        specifier: workspace:*
+        version: link:../../@repo/eslint-config
       '@repo/package.config':
         specifier: workspace:*
         version: link:../../@repo/package.config
@@ -914,8 +917,8 @@ importers:
         specifier: ^15.2.3
         version: 15.3.1(rollup@4.41.1)
       '@sanity/eslint-config-studio':
-        specifier: ^4.0.0
-        version: 4.0.0(eslint@9.29.0(jiti@2.4.2))(typescript@5.8.3)
+        specifier: ^5.0.2
+        version: 5.0.2(eslint@9.29.0(jiti@2.4.2))(typescript@5.8.3)
       '@sanity/generate-help-url':
         specifier: ^3.0.0
         version: 3.0.0
@@ -1000,6 +1003,9 @@ importers:
       git-user-info:
         specifier: ^2.0.3
         version: 2.0.3
+      globals:
+        specifier: ^16.2.0
+        version: 16.2.0
       inquirer:
         specifier: ^6.0.0
         version: 6.5.2
@@ -4693,6 +4699,12 @@ packages:
 
   '@sanity/eslint-config-studio@4.0.0':
     resolution: {integrity: sha512-7NLgYv94NofaMV1yPmzjEcMUWgAcOaXOrcrED8Pno1DXDda4y3ux55cIi+Q/0fw5PbWOjsM8AY9lSIm5Oq+w/A==}
+
+  '@sanity/eslint-config-studio@5.0.2':
+    resolution: {integrity: sha512-uxa0gA+h/OwafzItTcK/XY7xnVbJTXZLPAsDHbdz1PU1LHek571r36d1A3pREl7H4fSgDnkjFV0xaB1tc9onWA==}
+    engines: {node: '>=18.18'}
+    peerDependencies:
+      eslint: ^9.0.0
 
   '@sanity/eslint-plugin-i18n@1.1.0':
     resolution: {integrity: sha512-EpoqPVqaP2NSmG8vGa4zsD6BuyBTVHwmD3VigOya7roHB8GZXuJjDg6+SXzhb+cTVuZtWaAjt8NMYVYx4uWCIQ==}
@@ -15180,6 +15192,17 @@ snapshots:
       eslint-plugin-react-hooks: 0.0.0-experimental-56408a5b-20250610(eslint@9.29.0(jiti@2.4.2))
     transitivePeerDependencies:
       - eslint
+      - supports-color
+      - typescript
+
+  '@sanity/eslint-config-studio@5.0.2(eslint@9.29.0(jiti@2.4.2))(typescript@5.8.3)':
+    dependencies:
+      eslint: 9.29.0(jiti@2.4.2)
+      eslint-plugin-jsx-a11y: 6.10.2(eslint@9.29.0(jiti@2.4.2))
+      eslint-plugin-react: 7.37.5(eslint@9.29.0(jiti@2.4.2))
+      eslint-plugin-react-hooks: 0.0.0-experimental-56408a5b-20250610(eslint@9.29.0(jiti@2.4.2))
+      typescript-eslint: 8.34.0(eslint@9.29.0(jiti@2.4.2))(typescript@5.8.3)
+    transitivePeerDependencies:
       - supports-color
       - typescript
 

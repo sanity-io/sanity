@@ -1,4 +1,4 @@
-/* eslint-disable no-console */
+/* oxlint-disable no-console */
 // Tests that `sanity exec` in v3 can import the CLI client
 import {getCliClient} from 'sanity/cli'
 

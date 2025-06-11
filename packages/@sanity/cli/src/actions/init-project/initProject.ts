@@ -725,7 +725,7 @@ export default async function initSanity(
     print('')
 
     // Provide login options (`sanity login`)
-    const {extOptions, ...otherArgs} = args
+    const {extOptions: _extOptions, ...otherArgs} = args
     const loginArgs: CliCommandArguments<LoginFlags> = {...otherArgs, extOptions: {}}
     await login(loginArgs, {...context, telemetry: trace.newContext('login')})
     return getUserData(apiClient)
@@ -1129,7 +1129,7 @@ export default async function initSanity(
           body: {metadata: {cliInitializedAt: new Date().toISOString()}},
         })
       }
-    } catch (err) {
+    } catch {
       // Non-critical update
       debug('Failed to update cliInitializedAt metadata')
     }

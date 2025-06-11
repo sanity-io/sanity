@@ -12,7 +12,6 @@ import createDebug from 'debug'
 import {typeEvaluate, type TypeNode} from 'groq-js'
 
 const $info = createDebug('sanity:codegen:generate:info')
-const $warn = createDebug('sanity:codegen:generate:warn')
 
 export interface TypegenGenerateTypesWorkerData {
   workDir: string

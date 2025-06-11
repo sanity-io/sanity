@@ -93,7 +93,7 @@ function getLocalManifest(workDir: string): Partial<PackageJson> {
   try {
     const fileContent = readFileSync(joinPath(workDir, 'package.json'), 'utf8')
     return JSON.parse(fileContent)
-  } catch (err) {
+  } catch {
     return {}
   }
 }
