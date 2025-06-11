@@ -1,0 +1,41 @@
+{
+  "$schema": "./node_modules/oxlint/configuration_schema.json",
+  "env": {
+    "node": true,
+    "browser": true
+  },
+  "plugins": ["typescript", "unicorn", "react", "react-perf", "oxc", "import", "jsx-a11y", "node", "promise", "vitest"],
+  "ignorePatterns": [
+    "**/etc/*",
+    "**/.sanity/*",
+    "**/public/*",
+    "**/build/*",
+    "**/.next/*",
+    "**/static/*",
+    "**/coverage/*",
+    "**/lib/*",
+    "**/node_modules/*",
+    "**/dist/*",
+    "*.json",
+    "*.css",
+    "*.snap",
+    "*.md",
+    "dev/test-studio/sanity.theme.mjs",
+    "dev/test-studio/workshop/scopes.js"
+  ],
+  "categories": {
+    "correctness": "error",
+    "suspicious": "error",
+    "perf": "error"
+  },
+  "rules": {
+    // Not relevant as we use the modern jsx-runtime transform
+    "react-in-jsx-scope": "off",
+    // Not relevant due to React Compiler
+    "react_perf/jsx-no-new-array-as-prop": "off",
+    "react_perf/jsx-no-new-object-as-prop": "off",
+    // False negatives
+    "jsx_a11y/anchor-is-valid": "off"
+
+  }
+}
