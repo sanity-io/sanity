@@ -1,12 +1,11 @@
 import fs from 'node:fs/promises'
 import path from 'node:path'
 
+import {readEnv, startTimer} from '@repo/utils'
 import {groupBy} from 'lodash'
 import prettier from 'prettier'
 import {combineLatest, map} from 'rxjs'
 
-import {readEnv} from '../utils/envVars'
-import {startTimer} from '../utils/startTimer'
 import {createDocClient, type KnownEnvVar} from './docClient'
 
 const QUERY = `*[_type=='exportSymbol'] {

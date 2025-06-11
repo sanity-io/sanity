@@ -1,11 +1,11 @@
 import path from 'node:path'
 
 import baseConfig from '@repo/package.config'
+import {startTimer} from '@repo/utils'
 import {createClient} from '@sanity/client'
 import {_loadConfig, extract, load, type SanityTSDocConfigOptions, transform} from '@sanity/tsdoc'
 import cac from 'cac'
 import chalk from 'chalk'
-import ora from 'ora'
 
 const cli = cac('pnpm etl')
 
@@ -126,16 +126,4 @@ async function etl(options: {
   } else {
     console.log('NOTE: Set EXTRACT_SANITY_API_TOKEN in .env.local to write to Sanity')
   }
-}
-
-function startTimer(label: string) {
-  const spinner = ora(label).start()
-  const start = Date.now()
-  return {
-    end: () => spinner.succeed(`${label} (${formatMs(Date.now() - start)})`),
-  }
-}
-
-function formatMs(ms: number) {
-  return ms < 1000 ? `${ms}ms` : `${(ms / 1000).toFixed(2)}s`
 }

@@ -5,10 +5,8 @@ import path from 'node:path'
 
 /* eslint-disable import/no-extraneous-dependencies */
 import {Storage, type UploadOptions} from '@google-cloud/storage'
+import {readEnv} from '@repo/utils'
 import {type NormalizedReadResult, readPackageUp} from 'read-package-up'
-
-/* eslint-enable import/no-extraneous-dependencies */
-import {readEnv} from './utils/envVars'
 
 const BASE_PATH = path.resolve(path.dirname(new URL(import.meta.url).pathname), '..')
 

@@ -1,6 +1,7 @@
 import fs from 'node:fs'
 import path from 'node:path'
 
+import {readEnv, sanityIdify, startTimer} from '@repo/utils'
 import {
   at,
   createIfNotExists,
@@ -15,10 +16,7 @@ import {filter, map, mergeMap, of, tap} from 'rxjs'
 import ts, {type JSDoc, type JSDocComment, SyntaxKind} from 'typescript'
 
 import {type PackageManifest} from '../types'
-import {readEnv} from '../utils/envVars'
 import readPackages from '../utils/readPackages'
-import {sanityIdify} from '../utils/sanityIdify'
-import {startTimer} from '../utils/startTimer'
 import {createDocClient, type KnownEnvVar} from './docClient'
 
 const ALLOWED_TAGS = ['public', 'alpha', 'beta', 'internal', 'experimental', 'deprecated']
