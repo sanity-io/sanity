@@ -2,8 +2,8 @@ import {CalendarIcon, CheckmarkCircleIcon, PublishIcon, TrashIcon} from '@sanity
 import {type SchemaType} from '@sanity/types'
 
 import {useCurrentUser, useDocumentPairPermissions} from '../../../store'
+import {useScheduledPublishingEnabled} from '../../contexts/ScheduledPublishingEnabledProvider'
 import useScheduleOperation from '../../hooks/useScheduleOperation'
-import {useScheduledPublishingEnabled} from '../../tool/contexts/ScheduledPublishingEnabledProvider'
 import {type Schedule} from '../../types'
 import {getScheduledDocument} from '../../utils/paneItemHelpers'
 import MenuItemWithPermissionsTooltip from './MenuItemWithPermissionsTooltip'

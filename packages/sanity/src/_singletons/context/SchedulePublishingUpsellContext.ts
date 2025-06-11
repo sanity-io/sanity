@@ -1,6 +1,24 @@
 import {createContext} from 'sanity/_createContext'
 
-import type {SchedulePublishUpsellContextValue} from '../../core/scheduledPublishing/tool/contexts/SchedulePublishingUpsellProvider'
+import type {UpsellDialogViewedInfo} from '../../core/studio/upsell'
+import type {UpsellData} from '../../core/studio/upsell/types'
+
+/**
+ * @internal
+ */
+export interface SchedulePublishUpsellContextValue {
+  upsellDialogOpen: boolean
+  handleOpenDialog: (source: UpsellDialogViewedInfo['source']) => void
+  upsellData: UpsellData | null
+  telemetryLogs: {
+    dialogSecondaryClicked: () => void
+    dialogPrimaryClicked: () => void
+    panelViewed: (source: UpsellDialogViewedInfo['source']) => void
+    panelDismissed: () => void
+    panelPrimaryClicked: () => void
+    panelSecondaryClicked: () => void
+  }
+}
 
 /**
  * @internal

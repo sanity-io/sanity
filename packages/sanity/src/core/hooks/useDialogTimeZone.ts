@@ -1,10 +1,18 @@
-import DialogTimeZone from '../../components/timeZone/DialogTimeZone'
-import {type TimeZoneScope} from '../../hooks/useTimeZone'
-import {useDialogVisible} from './useDialogVisibile'
+import {useCallback, useState} from 'react'
+
+import DialogTimeZone from '../components/timeZone/DialogTimeZone'
+import {type TimeZoneScope} from './useTimeZone'
 
 // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
 function useDialogTimeZone(timeZoneScope: TimeZoneScope) {
-  const {visible, show, hide} = useDialogVisible(timeZoneScope)
+  const [visible, setVisible] = useState(false)
+
+  const hide = useCallback(() => {
+    setVisible(false)
+  }, [])
+  const show = useCallback(() => {
+    setVisible(true)
+  }, [])
 
   const dialogProps = {
     onClose: hide,

@@ -1,3 +1,4 @@
+import {type ClientError} from '@sanity/client'
 import {useToast} from '@sanity/ui'
 import {sanitizeLocale} from '@sanity/util/legacyDateFormat'
 import {formatInTimeZone, utcToZonedTime, zonedTimeToUtc} from 'date-fns-tz'
@@ -5,12 +6,11 @@ import {useCallback, useEffect, useMemo, useState} from 'react'
 import {useObservable} from 'react-rx'
 import {startWith} from 'rxjs/operators'
 
-import ToastDescription from '../scheduledPublishing/components/toastDescription/ToastDescription'
-import {DATE_FORMAT} from '../scheduledPublishing/constants'
-import {type NormalizedTimeZone} from '../scheduledPublishing/types'
-import {debugWithName} from '../scheduledPublishing/utils/debug'
-import getErrorMessage from '../scheduledPublishing/utils/getErrorMessage'
 import {useKeyValueStore} from '../store'
+import {DATE_FORMAT} from '../studio/timezones/constants'
+import ToastDescription from '../studio/timezones/toastDescription/ToastDescription'
+import {type NormalizedTimeZone} from '../studio/timezones/types'
+import {debugWithName} from '../studio/timezones/utils/debug'
 
 enum TimeZoneEvents {
   update = 'timeZoneEventUpdate',
@@ -368,4 +368,33 @@ export const useTimeZone = (scope: TimeZoneScope) => {
       zoneDateToUtc,
     ],
   )
+}
+
+// this is used in place of `instanceof` so the matching can be more robust and
+// won't have any issues with dual packages etc
+// https://nodejs.org/api/packages.html#dual-package-hazard
+function isClientError(e: unknown): e is ClientError {
+  if (typeof e !== 'object') return false
+  if (!e) return false
+  return 'statusCode' in e && 'response' in e
+}
+
+function getErrorMessage(err: unknown): string {
+  let message
+
+  if (isClientError(err)) {
+    // The request was made and the server responded with a status code
+    if (err.response.statusCode === 403) {
+      message = 'Forbidden. Please check that your project has access to the feature.'
+    } else {
+      message = err.message
+    }
+  } else {
+    if (err instanceof Error) {
+      message = err.message
+    }
+    message = String(err)
+  }
+
+  return message
 }

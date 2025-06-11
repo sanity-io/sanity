@@ -1,7 +1,7 @@
 import {type Mock, type Mocked, vi} from 'vitest'
 
-import {useTimeZone} from '../../../../hooks/useTimeZone'
-import {type NormalizedTimeZone} from '../../../types'
+import {type NormalizedTimeZone} from '../../studio/timezones/types'
+import {useTimeZone} from '../useTimeZone'
 
 const mockTimeZone: NormalizedTimeZone = {
   abbreviation: 'SCT', // Sanity Central Time :)
