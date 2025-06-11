@@ -53,7 +53,7 @@ export const structure: StructureResolver = (S) => {
 
   // The default root list items (except custom ones)
   const defaultListItems = S.documentTypeListItems().filter(
-    (listItem: any) => !STRUCTURE_CUSTOM_TYPES.has(listItem.getId()),
+    (listItem) => !STRUCTURE_CUSTOM_TYPES.has(listItem.getId()!),
   )
 
   const listExample = S.listItem()
@@ -66,7 +66,7 @@ export const structure: StructureResolver = (S) => {
           S.menuItem()
             .title('Callback')
             .action(() => {
-              // eslint-disable-next-line no-console
+              // oxlint-disable-next-line no-console
               console.log('Callback!')
             }),
           S.menuItem()

@@ -1,36 +1,36 @@
 // @ts-check
+import {dirname, resolve} from 'node:path'
+import {fileURLToPath} from 'node:url'
+
 import js from '@eslint/js'
 import {defineConfig} from 'eslint/config'
 import eslintConfigPrettier from 'eslint-config-prettier'
+import sanityImport from 'eslint-config-sanity/import.js'
 import sanityRecommended from 'eslint-config-sanity/index.js'
 import sanityReact from 'eslint-config-sanity/react.js'
-import sanityImport from 'eslint-config-sanity/import.js'
 import sanityTypescript from 'eslint-config-sanity/typescript.js'
 import turboConfig from 'eslint-config-turbo/flat'
 import {createTypeScriptImportResolver} from 'eslint-import-resolver-typescript'
 import * as importPlugin from 'eslint-plugin-import'
 import oxlint from 'eslint-plugin-oxlint'
 import pluginReact from 'eslint-plugin-react'
+import reactCompiler from 'eslint-plugin-react-compiler'
 import * as reactHooks from 'eslint-plugin-react-hooks'
 import simpleImportSort from 'eslint-plugin-simple-import-sort'
-import unusedImports from 'eslint-plugin-unused-imports'
 import tsdocPlugin from 'eslint-plugin-tsdoc'
+import unicorn from 'eslint-plugin-unicorn'
+import unusedImports from 'eslint-plugin-unused-imports'
 import globals from 'globals'
 import tsLint from 'typescript-eslint'
-import reactCompiler from 'eslint-plugin-react-compiler'
-import unicorn from 'eslint-plugin-unicorn'
-import {resolve, dirname, } from 'node:path'
-import {fileURLToPath} from 'node:url'
 
 const __filename = fileURLToPath(import.meta.url)
 const __dirname = dirname(__filename)
 const rootOxlintrc = resolve(__dirname, '../../../.oxlintrc.json')
 
-
-
 const ignores = [
   '**/etc/*',
   '**/.sanity/*',
+  '**/.cache/*',
   '**/public/*',
   '**/build/*',
   '**/.next/*',
@@ -38,6 +38,7 @@ const ignores = [
   '**/coverage/*',
   '**/lib/*',
   '**/node_modules/*',
+  '**/report/trace/*',
   '**/dist/*',
   '*.json',
   '*.css',
@@ -198,5 +199,3 @@ export default [
   // oxlint should be the last one so it is able to turn off rules that it's handling
   ...oxlint.buildFromOxlintConfigFile(rootOxlintrc),
 ]
-
-console.log(oxlint.buildFromOxlintConfigFile(rootOxlintrc))

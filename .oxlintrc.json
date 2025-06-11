@@ -4,7 +4,18 @@
     "node": true,
     "browser": true
   },
-  "plugins": ["typescript", "unicorn", "react", "react-perf", "oxc", "import", "jsx-a11y", "node", "promise", "vitest"],
+  "plugins": [
+    "typescript",
+    "unicorn",
+    "react",
+    "react-perf",
+    "oxc",
+    "import",
+    "jsx-a11y",
+    "node",
+    "promise",
+    "vitest"
+  ],
   "ignorePatterns": [
     "**/etc/*",
     "**/.sanity/*",
@@ -34,10 +45,14 @@
     // Not relevant due to React Compiler
     "react_perf/jsx-no-new-array-as-prop": "off",
     "react_perf/jsx-no-new-object-as-prop": "off",
+    "react_perf/jsx-no-new-function-as-prop": "off",
+    "react_perf/jsx-no-jsx-as-prop": "off",
     // False negatives
     "jsx_a11y/anchor-is-valid": "off",
     // Handy rules that are disabled by default
     "react/rules-of-hooks": "error",
-    "typescript/prefer-ts-expect-error": "error"
+    "typescript/prefer-ts-expect-error": "error",
+    "eslint/no-console": ["error", {"allow": ["warn", "error"]}],
+    "typescript/no-explicit-any": "warn"
   }
 }

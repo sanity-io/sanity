@@ -21,7 +21,10 @@
     "check:test": "pnpm test -- --silent",
     "check:types": "tsc && turbo run check:types --filter='./packages/*' --filter='./packages/@sanity/*'",
     "chore:format:fix": "prettier --cache --write .",
-    "chore:lint:fix": "turbo run lint -- --quiet --fix",
+    "chore:report-unused-disable-directives": "oxlint --report-unused-disable-directives || eslint --report-unused-disable-directives",
+    "chore:lint:fix": "turbo run lint -- --quiet --fix --report-unused-disable-directives --report-unused-inline-configs error",
+    "chore:lint:inspect": "eslint --inspect-config",
+    "chore:lint:changed": "turbo run lint:fix --affected",
     "chore:oxlint:fix": "oxlint --fix --fix-suggestions --fix-dangerously",
     "chore:normalize-versions": "node -r esbuild-register scripts/normalizeDependencyVersions.ts",
     "clean": "run-s build:clean clean:deps",
@@ -65,7 +68,7 @@
     "install:deps": "pnpm install",
     "postinstall": "husky",
     "lint": "pnpm check:lint",
-    "lint:fix": "pnpm chore:lint:fix",
+    "lint:fix": "pnpm chore:oxlint:fix && pnpm chore:lint:fix",
     "list:deps-updates": "npm-check-updates --workspaces --root -m",
     "normalize-pkgfields": "node -r esbuild-register scripts/normalizePackageFields",
     "normalize:versions": "node -r esbuild-register scripts/normalizeDependencyVersions.ts",
@@ -96,8 +99,7 @@
   "lint-staged": {
     "*.{js,jsx,ts,tsx,mjs,cjs}": [
       "prettier --write",
-      "oxlint --fix",
-      "eslint --quiet --fix"
+      "oxlint --fix"
     ],
     "*.{md,yml,yaml,css}": [
       "prettier --write"
@@ -113,8 +115,8 @@
     "@lerna-lite/version": "^4.4.1",
     "@playwright/test": "1.51.1",
     "@repo/bundle-manager": "workspace:*",
-    "@repo/eslint-config": "workspace:*",
     "@repo/dev-aliases": "workspace:*",
+    "@repo/eslint-config": "workspace:*",
     "@repo/package.config": "workspace:*",
     "@repo/test-config": "workspace:*",
     "@repo/tsconfig": "workspace:*",
@@ -134,6 +136,8 @@
     "@types/react": "^19.1.0",
     "@types/semver": "^7.5.6",
     "@types/yargs": "^17.0.7",
+    "@typescript-eslint/eslint-plugin": "^8.34.0",
+    "@typescript-eslint/parser": "^8.34.0",
     "@vitejs/plugin-react": "catalog:",
     "@vitest/coverage-v8": "^3.2.2",
     "cac": "^6.7.12",
@@ -151,7 +155,7 @@
     "husky": "^9.0.11",
     "js-yaml": "^4.1.0",
     "jsdom": "^23.0.1",
-    "lint-staged": "^12.1.2",
+    "lint-staged": "^16.1.0",
     "lodash": "^4.17.21",
     "minimist": "^1.2.5",
     "npm-run-all2": "^6.2.3",
@@ -186,6 +190,8 @@
       "@npmcli/arborist": "^7.5.4",
       "@sanity/ui@2": "$@sanity/ui",
       "@types/node": "$@types/node",
+      "@typescript-eslint/eslint-plugin": "$@typescript-eslint/eslint-plugin",
+      "@typescript-eslint/parser": "$@typescript-eslint/parser",
       "@vitest/coverage-v8": "$vitest",
       "@vitest/expect": "$vitest",
       "eslint-plugin-react-hooks": "0.0.0-experimental-56408a5b-20250610",
