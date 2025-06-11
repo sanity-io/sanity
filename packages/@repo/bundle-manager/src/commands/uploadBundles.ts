@@ -7,11 +7,13 @@ import {Storage, type UploadOptions} from '@google-cloud/storage'
 import {readEnv} from '@repo/utils'
 import {type NormalizedReadResult, readPackageUp} from 'read-package-up'
 
-import {isValidTag} from './assert'
-import {appVersion, corePkgs, validTags} from './constants'
-import {updateManifest} from './helpers/updateManifest'
-import {type KnownEnvVar} from './types'
-import {cleanDirName} from './utils'
+import {isValidTag} from '../assert'
+import {appVersion, corePkgs, validTags} from '../constants'
+import {updateManifestWith} from '../helpers/updateManifestWith'
+import {addVersion} from '../operations/addVersion'
+import {tagVersion} from '../operations/tagVersion'
+import {type DistTag, type KnownEnvVar, type Manifest} from '../types'
+import {cleanDirName} from '../utils'
 
 const storage = new Storage({
   projectId: readEnv<KnownEnvVar>('GOOGLE_PROJECT_ID'),
@@ -44,19 +46,23 @@ async function* getFiles(directory: string): AsyncGenerator<string, void, unknow
   }
 }
 
-async function copyPackages(cwd: string) {
+async function copyPackages(cwd: string, asVersion?: string) {
   console.log('**Copying Core packages**')
 
-  const packageVersions = new Map<string, string>()
+  const packageVersions: Record<string, string> = {}
 
   // First we iterate through each core package located in `packages/`
   for (const pkg of corePkgs) {
     console.log(`Copying files from ${pkg}`)
 
-    const {packageJson} = await readPackageJson(`packages/${pkg}/package.json`)
+    const {packageJson} = await readPackageJson(path.join(cwd, `packages/${pkg}/package.json`))
 
-    const {version} = packageJson
-    packageVersions.set(pkg, version)
+    if (asVersion && (process.env.CI || process.env.NODE_ENV === 'production')) {
+      throw new Error('The `asVersion` option can not be used in CI or production')
+    }
+
+    const version = asVersion || packageJson.version
+    packageVersions[pkg] = version
 
     // Convert slashes to double underscores
     // Needed for `@sanity/vision` and other scoped packages
@@ -94,16 +100,16 @@ async function copyPackages(cwd: string) {
   return packageVersions
 }
 
-async function cleanupSourceMaps(cwd: string) {
+async function cleanupSourceMaps(cwd: string, asVersion?: string) {
   const monoRepoPackageVersions = getMonorepoPackageVersions(cwd)
 
-  const packageVersions = new Map<string, string>()
+  const packageVersions: Record<string, string> = {}
   // First we iterate through each core package located in `packages/`
   for (const pkg of corePkgs) {
     const {packageJson} = await readPackageJson(`packages/${pkg}/package.json`)
 
-    const {version} = packageJson
-    packageVersions.set(pkg, version)
+    const version = asVersion || packageJson.version
+    packageVersions[pkg] = version
 
     for await (const filePath of getFiles(`packages/${pkg}/dist`)) {
       if (path.extname(filePath) !== '.map') {
@@ -209,8 +215,8 @@ async function rewriteSource(options: {
   return `https://github.com/sanity-io/sanity/blob/v${pkgVersion}/${cleanDir}`
 }
 
-export async function uploadBundles(args: {cwd: string; tag: string; version: string}) {
-  const {cwd, tag, version} = args
+export async function uploadBundles(args: {cwd: string; tag: string; asVersion?: string}) {
+  const {cwd, tag, asVersion} = args
 
   if (!isValidTag(tag)) {
     throw new Error(`Unsupported tag, must be one of [${validTags.join(', ')}] required options`)
@@ -221,11 +227,11 @@ export async function uploadBundles(args: {cwd: string; tag: string; version: st
   console.log('**Completed cleaning up source maps** ✅')
 
   // Copy all the bundles
-  const pkgVersions = await copyPackages(cwd)
+  const pkgVersions = await copyPackages(cwd, asVersion)
   console.log('**Completed copying all files** ✅')
 
   // Update the manifest json file
-  await updateManifest({bucket, tag, newVersions: pkgVersions})
+  await updateManifest({tag, newVersions: pkgVersions})
   console.log('**Completed updating manifest** ✅')
 }
 
@@ -279,4 +285,35 @@ function getMonorepoPackageVersions(cwd: string): Record<string, string> {
   })
 
   return versions
+}
+
+async function updateManifest(options: {tag: DistTag; newVersions: Record<string, string>}) {
+  const {tag, newVersions} = options
+  const timestamp = Math.floor(Date.now() / 1000)
+  await updateManifestWith(bucket, (existingManifest) => {
+    // Add the new version to the manifest with timestamp
+    const updatedPackages = Object.entries(newVersions).reduce(
+      (acc, [key, version]): Manifest['packages'] => {
+        const packageId = cleanDirName(key)
+
+        const existingPackage = acc[packageId] || {versions: []}
+        let updatedPackage = addVersion(existingPackage, {version: version, timestamp})
+
+        // tag the version in addition to adding it to the manifest
+        if (tag) {
+          updatedPackage = tagVersion(updatedPackage, tag, version)
+        }
+        return {
+          ...acc,
+          [packageId]: updatedPackage,
+        }
+      },
+      existingManifest?.packages || {},
+    )
+
+    return {
+      updatedAt: new Date().toISOString(),
+      packages: updatedPackages,
+    }
+  })
 }

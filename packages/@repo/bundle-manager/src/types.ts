@@ -4,21 +4,21 @@ export type KnownEnvVar = 'GOOGLE_PROJECT_ID' | 'GCLOUD_SERVICE_KEY' | 'GCLOUD_B
 
 // eg 3.90.0 (without `v`-prefix)
 export type Semver = string
-export type MajorVersion = number
 
 export type DistTag = (typeof validTags)[number]
 
-export type TagDict = Record<DistTag, VersionEntry[]>
+export type TagDict = {[Tag in DistTag]?: Semver | undefined}
+export type PackageDict = {[PackageId in string]?: ManifestPackage}
 
-type VersionEntry = {version: Semver; timestamp: number}
+export type VersionEntry = {version: Semver; timestamp: number}
 
 export interface ManifestPackage {
-  default: Semver
-  tags: TagDict
+  default?: Semver
   versions: VersionEntry[]
+  tags?: TagDict
 }
 
 export interface Manifest {
   updatedAt: string
-  packages: Record<string, ManifestPackage>
+  packages: PackageDict
 }
