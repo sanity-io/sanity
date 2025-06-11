@@ -7,7 +7,7 @@ import {
   type PlaywrightTestProject,
 } from '@playwright/test'
 
-import {loadEnvFiles} from './scripts/utils/loadEnvFiles'
+import {loadEnvFiles} from '@repo/utils'
 import {findEnv, readBoolEnv, readEnv} from './test/e2e/helpers/envVars'
 
 loadEnvFiles()

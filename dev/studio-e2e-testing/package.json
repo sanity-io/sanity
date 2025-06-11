@@ -15,6 +15,7 @@
     "start": "sanity preview --port 3339"
   },
   "dependencies": {
+    "@repo/utils": "workspace:*",
     "@sanity/color-input": "^4.0.1",
     "@sanity/google-maps-input": "^4.0.0",
     "@sanity/icons": "^3.7.0",

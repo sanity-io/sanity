@@ -1,10 +1,10 @@
 import path from 'node:path'
 import {parseArgs} from 'node:util'
 
+import {readEnv} from '@repo/utils'
 import {createClient} from '@sanity/client'
 import {tap} from 'rxjs'
 
-import {readEnv} from '../utils/envVars'
 import {run} from './run'
 import {book} from './templates/book'
 import {species} from './templates/species'

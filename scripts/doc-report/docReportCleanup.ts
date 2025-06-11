@@ -1,6 +1,5 @@
-import {readEnv} from '../utils/envVars'
-import {sanityIdify} from '../utils/sanityIdify'
-import {startTimer} from '../utils/startTimer'
+import {readEnv, sanityIdify, startTimer} from '@repo/utils'
+
 import {createDocClient, type KnownEnvVar} from './docClient'
 
 const DATASET = readEnv<KnownEnvVar>('DOCS_REPORT_DATASET')

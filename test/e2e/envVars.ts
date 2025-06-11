@@ -1,4 +1,4 @@
-import {loadEnvFiles} from '../../scripts/utils/loadEnvFiles'
+import {loadEnvFiles} from '@repo/utils'
 
 loadEnvFiles()
 
