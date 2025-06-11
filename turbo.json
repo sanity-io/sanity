@@ -68,8 +68,7 @@
       "dependsOn": ["^transit"]
     },
     "lint": {
-      "dependsOn": ["transit"],
-      "outputLogs": "errors-only"
+      "dependsOn": ["transit"]
     },
     "//#check:format": {}
   }
