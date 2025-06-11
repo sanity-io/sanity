@@ -66,18 +66,10 @@ jobs:
         env:
           NPM_CONFIG_PROVENANCE: true
 
-      - name: Get version
-        id: release-as
+      - name: Upload bundles to staging bucket
+        env:
+          GOOGLE_PROJECT_ID: ${{ secrets.GCS_STAGING_PROJECT_ID }}
+          GCLOUD_SERVICE_KEY: ${{ secrets.GCS_STAGING_SERVICE_KEY }}
+          GCLOUD_BUCKET: ${{ secrets.GCS_STAGING_BUCKET }}
         # TODO: do we need --no-git-reset for this to work?
-        run: echo "version=$(cat lerna.json | jq -r .version)" >> $GITHUB_OUTPUT
-
-      - name: Dispatch npm-publish event
-        uses: peter-evans/repository-dispatch@v3
-        with:
-          token: "${{ github.token }}"
-          event-type: npm-publish
-          client-payload: |-
-            {
-              "tag": "latest",
-              "version": "${{steps.release-as.outputs.version}}"
-            }
+        run: pnpm bundle:upload --tag=next
