@@ -7,25 +7,21 @@ import {CustomInputWithDialogOverlay} from './components/CustomInputWithDialogOv
 export const objectWithNestedArray = {
   type: 'object',
   name: 'objectWithNestedArray',
-  fields: [
-    ...range(20).map((n) =>
-      n % 2 === 0
-        ? {type: 'string', name: `fieldNo${n}`}
-        : {type: 'array', name: `arrayNo${n}`, of: [{type: 'objectWithNestedArray'}]},
-    ),
-  ],
+  fields: range(20).map((n) =>
+    n % 2 === 0
+      ? {type: 'string', name: `fieldNo${n}`}
+      : {type: 'array', name: `arrayNo${n}`, of: [{type: 'objectWithNestedArray'}]},
+  ),
 }
 
 export const collapsibleObject = {
   type: 'object',
   name: 'nestedCollapsibleObject',
-  fields: [
-    ...range(4).map((n) =>
-      n % 2 === 0
-        ? {type: 'string', name: `fieldNo${n}`}
-        : {type: 'nestedCollapsibleObject', name: `nestedCollapsibleObject${n}`},
-    ),
-  ],
+  fields: range(4).map((n) =>
+    n % 2 === 0
+      ? {type: 'string', name: `fieldNo${n}`}
+      : {type: 'nestedCollapsibleObject', name: `nestedCollapsibleObject${n}`},
+  ),
 }
 
 export default {

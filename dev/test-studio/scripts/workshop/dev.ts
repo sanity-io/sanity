@@ -48,7 +48,6 @@ function watch() {
   function _writeModule() {
     fs.writeFileSync(WORKSHOP_SCOPES_PATH, compileModule(scopeFiles))
 
-    // eslint-disable-next-line no-console
     console.log('[workshop] wrote scopes')
   }
 }

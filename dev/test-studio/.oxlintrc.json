@@ -1,0 +1,12 @@
+{
+  "$schema": "../../node_modules/oxlint/configuration_schema.json",
+  "extends": ["../../.oxlintrc.json"],
+  "rules": {
+    "eslint/no-console": "off",
+    "no-explicit-any": "off",
+    "jsx_a11y/iframe-has-title": "off",
+    "react/iframe-missing-sandbox": "off",
+    "unicorn/prefer-array-find": "off"
+  },
+  "ignorePatterns": ["sanity.theme.mjs", "workshop/scopes.js"]
+}

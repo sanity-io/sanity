@@ -2,11 +2,11 @@ import {assist} from '@sanity/assist'
 import {colorInput} from '@sanity/color-input'
 import {googleMapsInput} from '@sanity/google-maps-input'
 import {BookIcon} from '@sanity/icons'
-import {koKRLocale} from '@sanity/locale-ko-kr'
-import {nbNOLocale} from '@sanity/locale-nb-no'
-import {nnNOLocale} from '@sanity/locale-nn-no'
-import {ptPTLocale} from '@sanity/locale-pt-pt'
-import {svSELocale} from '@sanity/locale-sv-se'
+// import {koKRLocale} from '@sanity/locale-ko-kr'
+// import {nbNOLocale} from '@sanity/locale-nb-no'
+// import {nnNOLocale} from '@sanity/locale-nn-no'
+// import {ptPTLocale} from '@sanity/locale-pt-pt'
+// import {svSELocale} from '@sanity/locale-sv-se'
 import {SanityMonogram} from '@sanity/logos'
 import {debugSecrets} from '@sanity/preview-url-secret/sanity-plugin-debug-secrets'
 import {tsdoc} from '@sanity/tsdoc/studio'
@@ -50,6 +50,7 @@ import {autoCloseBrackets} from './plugins/input/auto-close-brackets-plugin'
 import {wave} from './plugins/input/wave-plugin'
 import {languageFilter} from './plugins/language-filter'
 import {routerDebugTool} from './plugins/router-debug'
+// eslint-disable-next-line import/extensions
 import {theme as tailwindTheme} from './sanity.theme.mjs'
 import {createSchemaTypes} from './schema'
 import {StegaDebugger} from './schema/debug/components/DebugStega'
@@ -61,7 +62,7 @@ import {googleTheme} from './themes/google'
 import {vercelTheme} from './themes/vercel'
 import {workshopTool} from './workshop'
 
-const localePlugins = [koKRLocale(), nbNOLocale(), nnNOLocale(), ptPTLocale(), svSELocale()]
+// const localePlugins = [koKRLocale(), nbNOLocale(), nnNOLocale(), ptPTLocale(), svSELocale()]
 
 const sharedSettings = ({projectId}: {projectId: string}) => {
   return definePlugin({
@@ -206,9 +207,7 @@ const defaultWorkspace = defineConfig({
   plugins: [sharedSettings({projectId: 'ppsg7ml5'})],
 
   onUncaughtError: (error, errorInfo) => {
-    // eslint-disable-next-line no-console
     console.log(error)
-    // eslint-disable-next-line no-console
     console.log(errorInfo)
   },
   basePath: '/test',
@@ -351,9 +350,7 @@ export default defineConfig([
     ],
     basePath: '/custom-components',
     onUncaughtError: (error, errorInfo) => {
-      // eslint-disable-next-line no-console
       console.log(error)
-      // eslint-disable-next-line no-console
       console.log(errorInfo)
     },
     form: {

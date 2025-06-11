@@ -16,7 +16,6 @@
     "eslint-config-sanity": "^7.1.4",
     "eslint-config-turbo": "^2.5.4",
     "eslint-import-resolver-typescript": "^4.4.3",
-    "eslint-plugin-boundaries": "^5.0.1",
     "eslint-plugin-import": "^2.31.0",
     "eslint-plugin-oxlint": "^1.0.0",
     "eslint-plugin-react": "^7.37.5",
