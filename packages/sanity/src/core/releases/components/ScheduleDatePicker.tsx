@@ -8,7 +8,7 @@ import {MONTH_PICKER_VARIANT} from '../../components/inputs/DateInputs/calendar/
 import {type CalendarLabels} from '../../components/inputs/DateInputs/calendar/types'
 import {DateTimeInput} from '../../components/inputs/DateInputs/DateTimeInput'
 import {getCalendarLabels} from '../../form/inputs/DateInputs'
-import {useDialogTimeZone} from '../../hooks/useDialogTimeZone'
+import useDialogTimeZone from '../../hooks/useDialogTimeZone'
 import {type TimeZoneScope, useTimeZone} from '../../hooks/useTimeZone'
 import {useTranslation} from '../../i18n/hooks/useTranslation'
 

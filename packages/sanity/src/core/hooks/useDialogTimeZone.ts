@@ -3,10 +3,8 @@ import {useCallback, useState} from 'react'
 import DialogTimeZone from '../components/timeZone/DialogTimeZone'
 import {type TimeZoneScope} from './useTimeZone'
 
-/**
- * @internal
- */
-export const useDialogTimeZone = (timeZoneScope: TimeZoneScope) => {
+// eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
+function useDialogTimeZone(timeZoneScope: TimeZoneScope) {
   const [visible, setVisible] = useState(false)
 
   const hide = useCallback(() => {
@@ -30,3 +28,5 @@ export const useDialogTimeZone = (timeZoneScope: TimeZoneScope) => {
     hide,
   }
 }
+
+export default useDialogTimeZone
