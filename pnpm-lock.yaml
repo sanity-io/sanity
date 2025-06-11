@@ -763,7 +763,11 @@ importers:
 
   packages/@repo/package.bundle: {}
 
-  packages/@repo/package.config: {}
+  packages/@repo/package.config:
+    devDependencies:
+      '@repo/eslint-config':
+        specifier: workspace:*
+        version: link:../eslint-config
 
   packages/@repo/test-config:
     devDependencies:
