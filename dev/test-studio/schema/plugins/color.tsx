@@ -1,5 +1,3 @@
-/* eslint-disable react/display-name */
-
 import {DropIcon} from '@sanity/icons'
 import {defineType} from 'sanity'
 
@@ -17,7 +15,7 @@ export default defineType({
     prepare({title, color}) {
       let subtitle = (color && color.hex) || 'No color set'
       if (color && color.hsl) {
-        subtitle = `${color.hex}` //eslint-disable-line max-len
+        subtitle = `${color.hex}`
       }
       return {
         title: title,

@@ -6,7 +6,7 @@ export default defineMigration({
   title: 'Convert string to PortableText at `some.path` in documents of type `someType`',
   documentTypes: ['someType'],
   migrate: {
-    string(node, path, ctx) {
+    string(node, path) {
       if (isEqual(path, ['some', 'path'])) {
         return set([
           {

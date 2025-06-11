@@ -1,0 +1,3 @@
+{
+  "ignores": ["eslint", "babel-plugin-react-compiler", "react-compiler-runtime"]
+}

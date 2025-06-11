@@ -42,8 +42,8 @@ export const CustomObjectSelectInput = forwardRef(function CustomObjectSelectInp
       customValidity={errors?.[0]?.message}
       value={value?.value || ''}
     >
-      {[{title: '', value: undefined}, ...items].map((item, i) => (
-        <option key={i} value={item.value}>
+      {[{title: '', value: undefined}, ...items].map((item) => (
+        <option key={item.value} value={item.value}>
           {item.title}
         </option>
       ))}

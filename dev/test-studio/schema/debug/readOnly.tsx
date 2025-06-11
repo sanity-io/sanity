@@ -278,7 +278,6 @@ export default {
             prepare({title, name}) {
               return {
                 title: title,
-                // eslint-disable-next-line react/display-name
                 media: () => (
                   <div
                     style={{
