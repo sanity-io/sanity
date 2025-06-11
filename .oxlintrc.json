@@ -35,7 +35,9 @@
     "react_perf/jsx-no-new-array-as-prop": "off",
     "react_perf/jsx-no-new-object-as-prop": "off",
     // False negatives
-    "jsx_a11y/anchor-is-valid": "off"
-
+    "jsx_a11y/anchor-is-valid": "off",
+    // Handy rules that are disabled by default
+    "react/rules-of-hooks": "error",
+    "typescript/prefer-ts-expect-error": "error"
   }
 }

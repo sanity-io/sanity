@@ -57,7 +57,7 @@
     "@repo/test-config": "workspace:*",
     "@sanity/insert-menu": "1.1.12",
     "@types/react": "^19.1.0",
-    "@vitejs/plugin-react": "^4.5.1",
+    "@vitejs/plugin-react": "catalog:",
     "react": "catalog:react18",
     "rimraf": "^5.0.10",
     "vitest": "^3.2.2"

@@ -55,32 +55,32 @@ const extensions = ['.cjs', '.mjs', '.js', '.jsx', '.ts', '.tsx']
 const config = {
   root: true,
   env: {
-    node: true,
-    browser: true,
+    node: true, // done
+    browser: true, //done
   },
   extends: [
-    'sanity',
-    'sanity/react',
-    'sanity/import',
-    'sanity/typescript',
+    'sanity', // done
+    'sanity/react', // done
+    'sanity/import', // done
+    'sanity/typescript', // done
     'plugin:@typescript-eslint/recommended',
-    'plugin:react-hooks/recommended',
-    'plugin:react/jsx-runtime',
-    'prettier',
+    'plugin:react-hooks/recommended', // done
+    'plugin:react/jsx-runtime', // done
+    'prettier', // done
     '@sanity/eslint-config-i18n',
-    'turbo',
+    'turbo', // done
   ],
-  parser: '@typescript-eslint/parser',
+  parser: '@typescript-eslint/parser', // done
   plugins: [
-    'import',
-    'simple-import-sort',
-    'unused-imports',
-    '@typescript-eslint',
-    'prettier',
-    'react',
-    'react-compiler',
-    'tsdoc',
-    'unicorn',
+    'import', // done
+    'simple-import-sort', // done
+    'unused-imports', // done
+    '@typescript-eslint', // done
+    'prettier', // done
+    'react', // done
+    'react-compiler', // done
+    'tsdoc', // done
+    'unicorn', // done
   ],
   ignorePatterns: [
     '**/etc/*',

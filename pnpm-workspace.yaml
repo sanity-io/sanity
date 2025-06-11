@@ -10,9 +10,14 @@ packages:
   - 'packages/sanity/fixtures/examples/*'
 
 catalog:
-  react: ^19.1.0
+  '@vitejs/plugin-react': ^4.5.2
+  esbuild-register: ^3.6.0
+  esbuild: 0.25.5
+  prettier: ^3.5.3
   react-dom: ^19.1.0
+  react: ^19.1.0
   styled-components: ^6.1.18
+  typescript: 5.8.3
 
 catalogs:
   react18:

@@ -28,10 +28,10 @@
   "devDependencies": {
     "@repo/test-config": "workspace:*",
     "@types/lodash": "^4.17.7",
-    "@types/node": "^22.10.0",
-    "esbuild": "0.25.5",
+    "@types/node": "^18.15.3",
+    "esbuild": "catalog:",
     "ts-node": "^10.9.2",
-    "typescript": "5.8.3",
+    "typescript": "catalog:",
     "vitest": "^3.2.2"
   }
 }
