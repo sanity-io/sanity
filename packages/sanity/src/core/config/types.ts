@@ -882,6 +882,15 @@ export interface Source {
      * @internal
      */
     i18next: i18n
+
+    /**
+     * The schema descriptor ID.
+     *
+     * This can be `undefined` in the case where uploading the schema has been disabled.
+     *
+     * @internal
+     */
+    schemaDescriptorId: Promise<string | undefined>
   }
   /** @beta */
   tasks?: WorkspaceOptions['tasks']
