@@ -1,0 +1,170 @@
+# Overview  
+Implement bidirectional reference functionality in Sanity CMS Studio that automatically maintains reference relationships between documents. When a reference field is set on one document, the corresponding reference field on the target document is automatically updated to maintain bidirectional consistency. This solves the problem of manual relationship maintenance, data inconsistency risks, and poor developer experience when managing document relationships in Sanity.
+
+# Core Features  
+
+## Bidirectional Schema Configuration
+- Extend ReferenceDefinition interface to include optional bidirectional configuration
+- Simple syntax: bidirectional: {targetField: 'fieldName'}  
+- Configuration specifies the target field name on the referenced document type
+- Opt-in behavior that doesn't affect existing schemas
+
+## Automatic Reference Updates
+- When a reference field is set, automatically update the target document's corresponding field
+- When a reference field is cleared, automatically clear the target document's corresponding field  
+- Support cascade operations ensuring both sides of relationship stay synchronized
+- Graceful error handling for missing target documents or fields
+
+## Perspective-Aware Operations
+- Respect current studio perspective (draft, published, or release)
+- Create new document versions in release perspective when needed
+- Handle cross-version scenarios gracefully
+- Work correctly with live edit documents vs non-live edit documents
+
+# User Experience  
+
+## Developer Personas
+- Content Developers: Need simple relationship management without manual maintenance
+- Studio Developers: Want easy schema configuration with minimal code changes
+- Content Editors: Expect relationships to "just work" without understanding technical details
+
+## Key User Flows
+1. Developer configures bidirectional references in schema using simple bidirectional: {targetField: 'fieldName'} syntax
+2. Content editor sets book.author = "John Doe" in studio
+3. System automatically sets author("John Doe").currentBook = current book
+4. Editor later clears book.author and system automatically clears author.currentBook
+5. All operations work seamlessly across draft/release perspectives
+
+## UI/UX Considerations
+- No UI changes required - bidirectional updates happen transparently
+- Error states are logged but don't block primary operations
+- Inline warnings for cross-version scenarios (future enhancement)
+
+# Technical Architecture  
+
+## System Components
+- Extended ReferenceDefinition TypeScript interface
+- useBidirectionalUpdate React hook for form integration
+- Bidirectional update engine using existing Sanity client APIs
+- Perspective detection using usePerspective() hook
+
+## Data Models
+- Reference fields with optional bidirectional: {targetField: string} configuration
+- Support for draft, published, and release document versions
+- Document ID mapping (draft IDs, published IDs, version IDs)
+
+## APIs and Integrations  
+- Hook into existing ReferenceInput mutation system
+- Use Sanity client patch/createOrReplace APIs for target updates
+- Leverage existing perspective and document version systems
+- Integration at form level rather than server-side
+
+## Infrastructure Requirements
+- Client-side implementation only (no server changes)
+- Uses existing Sanity mutation and versioning infrastructure
+- Requires appropriate API permissions for target document updates
+
+# Development Roadmap  
+
+## Phase 1: MVP Foundation (2-3 days)
+- Extend ReferenceDefinition interface with bidirectional config
+- Create basic useBidirectionalUpdate hook with logging only
+- Integrate hook into ReferenceInput component
+- No actual document updates - just proof of concept
+
+## Phase 2: Core Functionality (2-3 days)  
+- Implement draft-to-draft bidirectional updates
+- Handle setting new references between draft documents
+- Test with simple book ↔ author relationship in test studio
+- Basic error handling for missing documents
+
+## Phase 3: Cascade Support (1-2 days)
+- Add logic for clearing old references when new ones are set
+- Ensure both sides of relationship stay synchronized during updates
+- Test reference replacement scenarios thoroughly
+
+## Phase 4: Perspective Integration (2-3 days)
+- Integrate with usePerspective hook for version awareness
+- Support draft and release perspectives correctly
+- Handle version ID generation for target documents
+- Create release versions when source is in release
+
+## Phase 5: Production Readiness (1-2 days)
+- Comprehensive error handling and logging
+- Graceful degradation for missing target documents
+- Performance optimization and testing
+- Documentation and examples
+
+## Phase 6: Live Edit Support (2-3 days)
+- Handle cross-version document creation scenarios
+- Create release versions of target documents when needed
+- Test mixed live edit states between source and target documents
+
+# Logical Dependency Chain
+
+## Foundation First
+- Phase 1 must complete before any functional work (establishes interfaces)
+- Schema extensions and hook structure are prerequisites for all functionality
+
+## Quick Usability
+- Phase 2 provides immediate value with basic draft-to-draft updates
+- Testable in studio with simple book/author relationship
+- Demonstrates core concept working end-to-end
+
+## Atomic Feature Building
+- Phase 3 adds essential cascade functionality on solid foundation
+- Phase 4 leverages existing Sanity perspective system
+- Phase 5 makes it production-ready before advanced features
+- Phase 6 handles complex live edit scenarios last
+
+## Incremental Value
+- Each phase delivers working, testable functionality
+- Can ship after Phase 3 for basic use cases
+- Phases 4-6 add enterprise-level robustness
+- Each phase builds directly on previous without rework
+
+# Risks and Mitigations  
+
+## Technical Challenges
+- Risk: Infinite update loops between bidirectional fields
+- Mitigation: Track update source in hook to prevent circular updates
+
+- Risk: Performance impact on reference field changes  
+- Mitigation: Implement feature flag for easy disable, add monitoring, keep client-side only
+
+- Risk: Complex cross-version update scenarios
+- Mitigation: Start with same-version updates only, add cross-version incrementally
+
+## MVP Scope Management
+- Risk: Over-engineering in early phases
+- Mitigation: Strict incremental approach, ship basic functionality first
+
+- Risk: Integration complexity with existing form system
+- Mitigation: Hook into existing ReferenceInput rather than rebuilding
+
+## Resource Constraints  
+- Risk: Breaking existing reference functionality
+- Mitigation: Opt-in configuration, comprehensive regression testing
+
+- Risk: Maintenance overhead for edge cases
+- Mitigation: Graceful error handling, extensive logging, clear documentation
+
+# Appendix  
+
+## Research Findings
+- Existing Sanity reference system is robust and extensible
+- Perspective system provides version management for free
+- Form mutation system has clear integration points
+- Client-side approach avoids server deployment complexity
+
+## Technical Specifications
+- TypeScript interfaces for type safety
+- React hooks for clean integration
+- Existing Sanity client APIs for reliability
+- Feature flag support for gradual rollout
+
+## Success Criteria
+- Bidirectional updates work correctly 95%+ of the time
+- Less than 200ms latency added to reference field changes
+- No regression in existing reference functionality
+- Clear error messages and graceful degradation 
