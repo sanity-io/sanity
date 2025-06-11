@@ -1,4 +1,6 @@
+import {defineBehavior} from '@portabletext/editor/behaviors'
 import {
+  BehaviorPlugin,
   MarkdownPlugin,
   type MarkdownPluginConfig,
   OneLinePlugin,
@@ -45,7 +47,19 @@ export const PortableTextEditorPlugins = (props: {
 
   return (
     <>
-      {isOneLineEditor && <OneLinePlugin />}
+      {isOneLineEditor && (
+        <>
+          <OneLinePlugin />
+          <BehaviorPlugin
+            behaviors={[
+              defineBehavior({
+                on: 'insert.soft break',
+                actions: [],
+              }),
+            ]}
+          />
+        </>
+      )}
       {CustomComponent ? (
         <CustomComponent {...componentProps} />
       ) : (
