@@ -1,0 +1,42 @@
+{
+  "name": "@repo/bundle-manager",
+  "version": "3.92.0",
+  "private": true,
+  "description": "Internal tool for building and uploading bundles to modules.sanity-cdn.com",
+  "license": "MIT",
+  "author": "Sanity.io <hello@sanity.io>",
+  "sideEffects": false,
+  "type": "module",
+  "exports": {
+    ".": {
+      "source": "./src/index.ts",
+      "import": "./src/index.ts",
+      "default": "./src/index.ts"
+    },
+    "./package.json": "./package.json"
+  },
+  "main": "./src/index.ts",
+  "module": "./src/index.ts",
+  "types": "./src/index.ts",
+  "files": [
+    "src"
+  ],
+  "scripts": {
+    "check:types": "tsc",
+    "test": "vitest run"
+  },
+  "dependencies": {
+    "@google-cloud/storage": "^7.11.0",
+    "@repo/utils": "workspace:*",
+    "read-package-up": "^11.0.0"
+  },
+  "devDependencies": {
+    "@repo/test-config": "workspace:*",
+    "@repo/tsconfig": "workspace:*",
+    "@repo/utils": "workspace:*",
+    "vitest": "^3.2.2"
+  },
+  "engines": {
+    "node": ">=18"
+  }
+}

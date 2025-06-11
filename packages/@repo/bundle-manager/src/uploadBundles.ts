@@ -8,7 +8,7 @@ import {Storage, type UploadOptions} from '@google-cloud/storage'
 import {readEnv} from '@repo/utils'
 import {type NormalizedReadResult, readPackageUp} from 'read-package-up'
 
-const BASE_PATH = path.resolve(path.dirname(new URL(import.meta.url).pathname), '..')
+const BASE_PATH = path.resolve(path.dirname(new URL(import.meta.url).pathname), '../../../../')
 
 type KnownEnvVar = 'GOOGLE_PROJECT_ID' | 'GCLOUD_SERVICE_KEY' | 'GCLOUD_BUCKET'
 
@@ -266,7 +266,7 @@ async function rewriteSource(source: string, sourceMapPath: string): Promise<str
   return `https://github.com/sanity-io/sanity/blob/v${pkgVersion}/${cleanDir}`
 }
 
-async function uploadBundles() {
+export async function uploadBundles() {
   // Clean up source maps
   await cleanupSourceMaps()
   console.log('**Completed cleaning up source maps** ✅')
@@ -331,8 +331,3 @@ function getMonorepoPackageVersions(): Record<string, string> {
 
   return versions
 }
-
-uploadBundles().catch((err) => {
-  console.error(err)
-  process.exit(1)
-})
