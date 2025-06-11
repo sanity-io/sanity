@@ -52,7 +52,7 @@ jobs:
         # (see https://github.com/actions/runner-images/blob/main/images/ubuntu/Ubuntu2404-Readme.md#project-management)
         # It's important that we call lerna using npx in the command below so we get the
         # locally installed lerna instead of the one installed on the system
-        # todo remove --dry-run
+        # Note: --no-git-reset is required for the bundle uploading step later on
         run: |
           npx lerna publish \
           --canary \
@@ -61,6 +61,7 @@ jobs:
           --conventional-commits \
           --conventional-prerelease \
           --dist-tag=next \
+          --no-git-reset \
           --preid=next \
           --exact \
           --yes
