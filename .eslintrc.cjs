@@ -302,6 +302,7 @@ const config = {
         'packages/@sanity/cli/**',
         'packages/sanity/src/_internal/cli/**',
         'packages/sanity/playwright-ct/**',
+        'packages/@sanity/scheduled-publishing/**',
       ],
       rules: {
         'turbo/no-undeclared-env-vars': 'off',

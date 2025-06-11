@@ -14,6 +14,7 @@ export interface TimeZoneButtonZoneProps {
   tooltipContent: ReactNode
 }
 
+/** @internal */
 export const TimeZoneButton = (props: TimeZoneButtonZoneProps) => {
   const {useElementQueries, timeZoneScope, allowTimeZoneSwitch = true, tooltipContent} = props
   const {timeZone} = useTimeZone(timeZoneScope)

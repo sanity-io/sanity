@@ -1,0 +1,6 @@
+.eslintrc.js
+commitlint.config.js
+lib
+lint-staged.config.js
+package.config.ts
+*.js
