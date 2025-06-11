@@ -356,6 +356,9 @@ importers:
 
   dev/starter-studio:
     dependencies:
+      '@repo/eslint-config':
+        specifier: workspace:*
+        version: link:../../packages/@repo/eslint-config
       babel-plugin-react-compiler:
         specifier: 19.1.0-rc.2
         version: 19.1.0-rc.2
