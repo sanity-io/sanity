@@ -266,7 +266,7 @@ async function rewriteSource(source: string, sourceMapPath: string): Promise<str
   return `https://github.com/sanity-io/sanity/blob/v${pkgVersion}/${cleanDir}`
 }
 
-async function uploadBundles() {
+export async function uploadBundles() {
   // Clean up source maps
   await cleanupSourceMaps()
   console.log('**Completed cleaning up source maps** ✅')
@@ -331,8 +331,3 @@ function getMonorepoPackageVersions(): Record<string, string> {
 
   return versions
 }
-
-uploadBundles().catch((err) => {
-  console.error(err)
-  process.exit(1)
-})
