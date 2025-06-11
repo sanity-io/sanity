@@ -52,6 +52,7 @@ jobs:
         # (see https://github.com/actions/runner-images/blob/main/images/ubuntu/Ubuntu2404-Readme.md#project-management)
         # It's important that we call lerna using npx in the command below so we get the
         # locally installed lerna instead of the one installed on the system
+        # todo remove --dry-run
         run: |
           npx lerna publish \
           --canary \
@@ -62,6 +63,7 @@ jobs:
           --dist-tag=next \
           --preid=next \
           --exact \
+          --dry-run \
           --yes
         env:
           NPM_CONFIG_PROVENANCE: true
