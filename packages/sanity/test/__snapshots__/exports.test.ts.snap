@@ -399,6 +399,7 @@ exports[`exports snapshot 1`] = `
     "isObjectSchemaType": "function",
     "isPatchMutation": "function",
     "isPerspectiveRaw": "function",
+    "isPerspectiveWriteable": "function",
     "isPortableTextListBlock": "function",
     "isPortableTextSpan": "function",
     "isPortableTextTextBlock": "function",
