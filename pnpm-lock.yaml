@@ -380,6 +380,9 @@ importers:
 
   dev/strict-studio:
     dependencies:
+      '@repo/eslint-config':
+        specifier: workspace:*
+        version: link:../../packages/@repo/eslint-config
       react:
         specifier: catalog:react18
         version: 18.3.1
