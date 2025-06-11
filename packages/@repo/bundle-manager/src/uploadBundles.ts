@@ -3,14 +3,15 @@ import {readdir, readFile, stat, writeFile} from 'node:fs/promises'
 import {type SourceMapPayload} from 'node:module'
 import path from 'node:path'
 
-/* eslint-disable import/no-extraneous-dependencies */
 import {Storage, type UploadOptions} from '@google-cloud/storage'
 import {readEnv} from '@repo/utils'
 import {type NormalizedReadResult, readPackageUp} from 'read-package-up'
 
-const BASE_PATH = path.resolve(path.dirname(new URL(import.meta.url).pathname), '..')
-
-type KnownEnvVar = 'GOOGLE_PROJECT_ID' | 'GCLOUD_SERVICE_KEY' | 'GCLOUD_BUCKET'
+import {isValidTag} from './assert'
+import {appVersion, corePkgs, validTags} from './constants'
+import {updateManifest} from './helpers/updateManifest'
+import {type KnownEnvVar} from './types'
+import {cleanDirName} from './utils'
 
 const storage = new Storage({
   projectId: readEnv<KnownEnvVar>('GOOGLE_PROJECT_ID'),
@@ -19,22 +20,9 @@ const storage = new Storage({
 
 const bucket = storage.bucket(readEnv<KnownEnvVar>('GCLOUD_BUCKET'))
 
-const monoRepoPackageVersions: Record<string, string> = getMonorepoPackageVersions()
-
-const corePkgs = ['sanity', '@sanity/vision'] as const
-
-const appVersion = 'v1'
-
 const mimeTypes: Record<string, string | undefined> = {
   '.mjs': 'application/javascript',
   '.map': 'application/json',
-}
-
-/**
- * Replaces all slashes with double underscores
- */
-function cleanDirName(dirName: string) {
-  return dirName.replace(/\//g, '__')
 }
 
 /**
@@ -56,7 +44,7 @@ async function* getFiles(directory: string): AsyncGenerator<string, void, unknow
   }
 }
 
-async function copyPackages() {
+async function copyPackages(cwd: string) {
   console.log('**Copying Core packages**')
 
   const packageVersions = new Map<string, string>()
@@ -106,69 +94,10 @@ async function copyPackages() {
   return packageVersions
 }
 
-interface ManifestPackage {
-  default: string
-  versions: {version: string; timestamp: number}[]
-}
+async function cleanupSourceMaps(cwd: string) {
+  const monoRepoPackageVersions = getMonorepoPackageVersions(cwd)
 
-interface Manifest {
-  packages: Record<string, ManifestPackage>
-}
-
-async function updateManifest(newVersions: Map<string, string>) {
-  console.log('**Updating manifest**')
-
-  let existingManifest: Manifest = {packages: {}}
-
-  try {
-    // Download the manifest
-    const buffer = await bucket.file('modules/v1/manifest-v1.json').download()
-    existingManifest = JSON.parse(buffer.toString())
-  } catch (error) {
-    console.log('Existing manifest not found', error)
-  }
-
-  const timestamp = Math.floor(Date.now() / 1000)
-
-  // Add the new version to the manifest with timestamp
-  const newManifest = Array.from(newVersions).reduce((initial, [key, value]) => {
-    const dirName = cleanDirName(key)
-
-    return {
-      ...initial,
-      packages: {
-        ...initial.packages,
-        [dirName]: {
-          ...initial.packages[dirName],
-          default: value,
-          versions: [...(initial.packages[dirName]?.versions || []), {version: value, timestamp}],
-        },
-      },
-    }
-  }, existingManifest)
-
-  await writeFile('./manifest-v1.json', JSON.stringify(newManifest), {encoding: 'utf-8'})
-
-  try {
-    const options = {
-      destination: 'modules/v1/manifest-v1.json',
-      contentType: 'application/json',
-      metadata: {
-        // no-cache to help with consistency across pods when this manifest
-        // is downloaded in the module-server
-        cacheControl: 'no-cache, max-age=0',
-      },
-    }
-
-    await bucket.upload('manifest-v1.json', options)
-  } catch (error) {
-    throw new Error('Error copying manifest file', {cause: error})
-  }
-}
-
-async function cleanupSourceMaps() {
   const packageVersions = new Map<string, string>()
-
   // First we iterate through each core package located in `packages/`
   for (const pkg of corePkgs) {
     const {packageJson} = await readPackageJson(`packages/${pkg}/package.json`)
@@ -184,7 +113,14 @@ async function cleanupSourceMaps() {
       try {
         const sourceMap = await readSourceMap(filePath)
         const newSources = await Promise.all(
-          sourceMap.sources.map((source) => rewriteSource(source, filePath)),
+          sourceMap.sources.map((source) =>
+            rewriteSource({
+              source,
+              cwd,
+              sourceMapPath: filePath,
+              monoRepoPackageVersions,
+            }),
+          ),
         )
         sourceMap.sources = newSources
         await writeFile(filePath, JSON.stringify(sourceMap), 'utf-8')
@@ -222,7 +158,14 @@ async function cleanupSourceMaps() {
  * @returns The rewritten source path (URL)
  * @internal
  */
-async function rewriteSource(source: string, sourceMapPath: string): Promise<string> {
+async function rewriteSource(options: {
+  cwd: string
+  source: string
+  sourceMapPath: string
+  monoRepoPackageVersions: Record<string, string>
+}): Promise<string> {
+  const {cwd, source, sourceMapPath, monoRepoPackageVersions} = options
+
   if (/^https?:\/\//.test(source)) {
     return source
   }
@@ -246,7 +189,7 @@ async function rewriteSource(source: string, sourceMapPath: string): Promise<str
 
   // eg `../src/core/schema/createSchema.ts` =>
   // => `https://github.com/sanity-io/sanity/blob/v3.59.1/packages/sanity/src/core/schema/createSchema.ts`
-  const relativePath = path.posix.relative(BASE_PATH, sourcePath)
+  const relativePath = path.posix.relative(cwd, sourcePath)
   const pathParts = relativePath.split('/')
 
   if (pathParts.shift() !== 'packages') {
@@ -266,17 +209,23 @@ async function rewriteSource(source: string, sourceMapPath: string): Promise<str
   return `https://github.com/sanity-io/sanity/blob/v${pkgVersion}/${cleanDir}`
 }
 
-export async function uploadBundles() {
+export async function uploadBundles(args: {cwd: string; tag: string; version: string}) {
+  const {cwd, tag, version} = args
+
+  if (!isValidTag(tag)) {
+    throw new Error(`Unsupported tag, must be one of [${validTags.join(', ')}] required options`)
+  }
+
   // Clean up source maps
-  await cleanupSourceMaps()
+  await cleanupSourceMaps(cwd)
   console.log('**Completed cleaning up source maps** ✅')
 
   // Copy all the bundles
-  const pkgVersions = await copyPackages()
+  const pkgVersions = await copyPackages(cwd)
   console.log('**Completed copying all files** ✅')
 
   // Update the manifest json file
-  await updateManifest(pkgVersions)
+  await updateManifest({bucket, tag, newVersions: pkgVersions})
   console.log('**Completed updating manifest** ✅')
 }
 
@@ -306,16 +255,16 @@ async function readPackageJson(
   return {...depPkg, packagePath: path.dirname(depPkg.path)}
 }
 
-function getMonorepoPackageVersions(): Record<string, string> {
+function getMonorepoPackageVersions(cwd: string): Record<string, string> {
   const isDir = (dirent: Dirent) => dirent.isDirectory() && !dirent.name.startsWith('.')
   const getFullPath = (dirent: Dirent) => path.join(dirent.parentPath, dirent.name)
   const listOpts = {withFileTypes: true} as const
 
-  const scoped = readdirSync(path.join(BASE_PATH, 'packages', '@sanity'), listOpts)
+  const scoped = readdirSync(path.join(cwd, 'packages', '@sanity'), listOpts)
     .filter(isDir)
     .map(getFullPath)
 
-  const unscoped = readdirSync(path.join(BASE_PATH, 'packages'), listOpts)
+  const unscoped = readdirSync(path.join(cwd, 'packages'), listOpts)
     .filter((dirent) => isDir(dirent) && !dirent.name.startsWith('@'))
     .map(getFullPath)
 
