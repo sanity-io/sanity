@@ -1,4 +1,3 @@
-// eslint-disable-next-line import/no-extraneous-dependencies
 import {codeInput} from '@sanity/code-input'
 import {defineConfig} from 'sanity'
 import {structureTool} from 'sanity/structure'
