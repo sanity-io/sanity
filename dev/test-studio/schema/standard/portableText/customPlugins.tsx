@@ -1,6 +1,6 @@
 /* eslint-disable react/jsx-no-bind */
 import {defineBehavior, effect, forward} from '@portabletext/editor/behaviors'
-import {BehaviorPlugin, DecoratorShortcutPlugin, OneLinePlugin} from '@portabletext/editor/plugins'
+import {BehaviorPlugin, DecoratorShortcutPlugin} from '@portabletext/editor/plugins'
 import {defineType} from 'sanity'
 
 export const customPlugins = defineType({
@@ -30,14 +30,7 @@ export const customPlugins = defineType({
       ],
       components: {
         portableText: {
-          plugins: (props) => {
-            return (
-              <>
-                {props.renderDefault(props)}
-                <OneLinePlugin />
-              </>
-            )
-          },
+          oneLine: true,
         },
       },
     },
@@ -210,6 +203,18 @@ export const customPlugins = defineType({
                 {props.renderDefault(props)}
                 <BehaviorPlugin
                   behaviors={[
+                    defineBehavior({
+                      on: '*',
+                      actions: [
+                        ({event}) => [
+                          effect(() => {
+                            // eslint-disable-next-line no-console
+                            console.log(event)
+                          }),
+                          forward(event),
+                        ],
+                      ],
+                    }),
                     defineBehavior({
                       on: 'insert.text',
                       actions: [

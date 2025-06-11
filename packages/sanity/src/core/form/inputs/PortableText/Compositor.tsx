@@ -49,7 +49,7 @@ interface InputProps extends ArrayOfObjectsInputProps<PortableTextBlock> {
 }
 
 /** @internal */
-export function Compositor(props: Omit<InputProps, 'schemaType' | 'arrayFunctions'>): ReactNode {
+export function Compositor(props: Omit<InputProps, 'arrayFunctions'>): ReactNode {
   const {
     changed,
     elementRef,
@@ -83,6 +83,7 @@ export function Compositor(props: Omit<InputProps, 'schemaType' | 'arrayFunction
     renderItem,
     renderPreview,
     resolveUploader,
+    schemaType,
     value,
   } = props
 
@@ -400,6 +401,7 @@ export function Compositor(props: Omit<InputProps, 'schemaType' | 'arrayFunction
     return undefined
   })
 
+  const isOneLineEditor = schemaType.components?.portableText?.oneLine ?? false
   const editorNode = useMemo(
     () => (
       <UploadTargetCard
@@ -416,6 +418,7 @@ export function Compositor(props: Omit<InputProps, 'schemaType' | 'arrayFunction
           hotkeys={editorHotkeys}
           isActive={isActive}
           isFullscreen={isFullscreen}
+          isOneLine={isOneLineEditor}
           onItemOpen={onItemOpen}
           onCopy={onCopy}
           onPaste={onPaste}
@@ -447,6 +450,7 @@ export function Compositor(props: Omit<InputProps, 'schemaType' | 'arrayFunction
       initialSelection,
       isActive,
       isFullscreen,
+      isOneLineEditor,
       onCopy,
       onItemOpen,
       onPaste,

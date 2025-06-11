@@ -7,16 +7,16 @@ import {css, styled} from 'styled-components'
 import {ScrollContainer} from '../../../components/scroll'
 import {createListName, TEXT_LEVELS} from './text'
 
-export const Root = styled(Card)`
+export const Root = styled(Card)<{$isOneLine: boolean}>`
   &[data-fullscreen='true'] {
     height: 100%;
   }
 
   &[data-fullscreen='false'] {
     min-height: 5em;
-    resize: vertical;
+    resize: ${({$isOneLine}) => ($isOneLine ? 'none' : 'vertical')};
     overflow: auto;
-    height: 19em;
+    height: ${({$isOneLine}) => ($isOneLine ? 'auto' : '19em')};
   }
 
   &:not([hidden]) {
@@ -68,7 +68,7 @@ export const Scroller = styled(ScrollContainer)`
   }
 `
 
-export const EditableWrapper = styled(Card)<{$isFullscreen: boolean; $readOnly?: boolean}>`
+export const EditableWrapper = styled(Card)<{$isFullscreen: boolean; $isOneLine: boolean}>`
   height: 100%;
   width: 100%;
   counter-reset: ${TEXT_LEVELS.map((l) => createListName(l)).join(' ')};
@@ -121,7 +121,8 @@ export const EditableWrapper = styled(Card)<{$isFullscreen: boolean; $readOnly?:
       padding-top: ${({$isFullscreen, theme}) => theme.sanity.space[$isFullscreen ? 5 : 3]}px;
     }
 
-    padding-bottom: ${({$isFullscreen, theme}) => theme.sanity.space[$isFullscreen ? 9 : 5]}px;
+    padding-bottom: ${({$isFullscreen, $isOneLine, theme}) =>
+      $isOneLine ? '0' : theme.sanity.space[$isFullscreen ? 9 : 5]}px;
 
     & > .pt-block {
       margin: 0 auto;
