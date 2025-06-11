@@ -61,6 +61,7 @@ jobs:
           --conventional-commits \
           --conventional-prerelease \
           --dist-tag=next \
+          --no-git-reset \
           --preid=next \
           --exact \
           --dry-run \
