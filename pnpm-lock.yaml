@@ -653,9 +653,18 @@ importers:
       '@repo/utils':
         specifier: workspace:*
         version: link:../utils
+      lodash-es:
+        specifier: ^4.17.21
+        version: 4.17.21
       read-package-up:
         specifier: ^11.0.0
         version: 11.0.0
+      semver:
+        specifier: ^7.3.5
+        version: 7.7.2
+      yargs:
+        specifier: ^18.0.0
+        version: 18.0.0
     devDependencies:
       '@repo/eslint-config':
         specifier: workspace:*
@@ -666,6 +675,9 @@ importers:
       '@repo/tsconfig':
         specifier: workspace:*
         version: link:../tsconfig
+      '@types/lodash-es':
+        specifier: ^4.17.12
+        version: 4.17.12
       vitest:
         specifier: 3.2.3
         version: 3.2.3(@types/debug@4.1.12)(@types/node@22.15.32)(esbuild@0.25.5)(jiti@2.4.2)(jsdom@23.2.0)(terser@5.42.0)(tsx@4.20.3)(yaml@2.8.0)

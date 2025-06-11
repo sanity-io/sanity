@@ -13,7 +13,6 @@
     "build:e2e": "pnpm e2e:build",
     "build:performance-studio": "pnpm perf:studio:build",
     "build:test-studio": "pnpm build --filter=sanity-test-studio",
-    "bundle:upload": "tsx scripts/uploadBundles_old.ts",
     "check": "npm-run-all build --parallel check:*",
     "check:deps": "pnpm --recursive --parallel exec depcheck",
     "check:format": "prettier --cache --check .",

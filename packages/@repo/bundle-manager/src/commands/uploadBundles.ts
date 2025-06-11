@@ -3,14 +3,17 @@ import {readdir, readFile, stat, writeFile} from 'node:fs/promises'
 import {type SourceMapPayload} from 'node:module'
 import path from 'node:path'
 
-/* eslint-disable import/no-extraneous-dependencies */
 import {Storage, type UploadOptions} from '@google-cloud/storage'
-import {readEnv} from '@repo/utils'
+import {MONOREPO_ROOT, readEnv} from '@repo/utils'
 import {type NormalizedReadResult, readPackageUp} from 'read-package-up'
 
-const BASE_PATH = path.resolve(path.dirname(new URL(import.meta.url).pathname), '../../../../')
-
-type KnownEnvVar = 'GOOGLE_PROJECT_ID' | 'GCLOUD_SERVICE_KEY' | 'GCLOUD_BUCKET'
+import {isValidTag} from '../assert'
+import {appVersion, corePkgs, VALID_TAGS} from '../constants'
+import {updateManifestWith} from '../helpers/updateManifestWith'
+import {addVersion} from '../operations/addVersion'
+import {tagVersion} from '../operations/tagVersion'
+import {type DistTag, type KnownEnvVar, type Manifest} from '../types'
+import {cleanDirName, currentUnixTime} from '../utils'
 
 const storage = new Storage({
   projectId: readEnv<KnownEnvVar>('GOOGLE_PROJECT_ID'),
@@ -19,22 +22,9 @@ const storage = new Storage({
 
 const bucket = storage.bucket(readEnv<KnownEnvVar>('GCLOUD_BUCKET'))
 
-const monoRepoPackageVersions: Record<string, string> = getMonorepoPackageVersions()
-
-const corePkgs = ['sanity', '@sanity/vision'] as const
-
-const appVersion = 'v1'
-
 const mimeTypes: Record<string, string | undefined> = {
   '.mjs': 'application/javascript',
   '.map': 'application/json',
-}
-
-/**
- * Replaces all slashes with double underscores
- */
-function cleanDirName(dirName: string) {
-  return dirName.replace(/\//g, '__')
 }
 
 /**
@@ -56,25 +46,31 @@ async function* getFiles(directory: string): AsyncGenerator<string, void, unknow
   }
 }
 
-async function copyPackages() {
+async function copyPackages(asVersion?: string) {
   console.log('**Copying Core packages**')
 
-  const packageVersions = new Map<string, string>()
+  const packageVersions: Record<string, string> = {}
 
   // First we iterate through each core package located in `packages/`
   for (const pkg of corePkgs) {
     console.log(`Copying files from ${pkg}`)
 
-    const {packageJson} = await readPackageJson(`packages/${pkg}/package.json`)
+    const {packageJson} = await readPackageJson(
+      path.join(MONOREPO_ROOT, `packages/${pkg}/package.json`),
+    )
 
-    const {version} = packageJson
-    packageVersions.set(pkg, version)
+    if (asVersion && (process.env.CI || process.env.NODE_ENV === 'production')) {
+      throw new Error('The `asVersion` option can not be used in CI or production')
+    }
+
+    const version = asVersion || packageJson.version
+    packageVersions[pkg] = version
 
     // Convert slashes to double underscores
     // Needed for `@sanity/vision` and other scoped packages
     const cleanDir = cleanDirName(pkg)
 
-    for await (const filePath of getFiles(`packages/${pkg}/dist`)) {
+    for await (const filePath of getFiles(path.join(MONOREPO_ROOT, `packages/${pkg}/dist`))) {
       try {
         const fileName = path.basename(filePath)
         const ext = path.extname(fileName)
@@ -106,77 +102,20 @@ async function copyPackages() {
   return packageVersions
 }
 
-interface ManifestPackage {
-  default: string
-  versions: {version: string; timestamp: number}[]
-}
+async function cleanupSourceMaps(asVersion?: string) {
+  const monoRepoPackageVersions = getMonorepoPackageVersions()
 
-interface Manifest {
-  packages: Record<string, ManifestPackage>
-}
-
-async function updateManifest(newVersions: Map<string, string>) {
-  console.log('**Updating manifest**')
-
-  let existingManifest: Manifest = {packages: {}}
-
-  try {
-    // Download the manifest
-    const buffer = await bucket.file('modules/v1/manifest-v1.json').download()
-    existingManifest = JSON.parse(buffer.toString())
-  } catch (error) {
-    console.log('Existing manifest not found', error)
-  }
-
-  const timestamp = Math.floor(Date.now() / 1000)
-
-  // Add the new version to the manifest with timestamp
-  const newManifest = Array.from(newVersions).reduce((initial, [key, value]) => {
-    const dirName = cleanDirName(key)
-
-    return {
-      ...initial,
-      packages: {
-        ...initial.packages,
-        [dirName]: {
-          ...initial.packages[dirName],
-          default: value,
-          versions: [...(initial.packages[dirName]?.versions || []), {version: value, timestamp}],
-        },
-      },
-    }
-  }, existingManifest)
-
-  await writeFile('./manifest-v1.json', JSON.stringify(newManifest), {encoding: 'utf-8'})
-
-  try {
-    const options = {
-      destination: 'modules/v1/manifest-v1.json',
-      contentType: 'application/json',
-      metadata: {
-        // no-cache to help with consistency across pods when this manifest
-        // is downloaded in the module-server
-        cacheControl: 'no-cache, max-age=0',
-      },
-    }
-
-    await bucket.upload('manifest-v1.json', options)
-  } catch (error) {
-    throw new Error('Error copying manifest file', {cause: error})
-  }
-}
-
-async function cleanupSourceMaps() {
-  const packageVersions = new Map<string, string>()
-
+  const packageVersions: Record<string, string> = {}
   // First we iterate through each core package located in `packages/`
   for (const pkg of corePkgs) {
-    const {packageJson} = await readPackageJson(`packages/${pkg}/package.json`)
+    const {packageJson} = await readPackageJson(
+      path.join(MONOREPO_ROOT, `packages/${pkg}/package.json`),
+    )
 
-    const {version} = packageJson
-    packageVersions.set(pkg, version)
+    const version = asVersion || packageJson.version
+    packageVersions[pkg] = version
 
-    for await (const filePath of getFiles(`packages/${pkg}/dist`)) {
+    for await (const filePath of getFiles(path.join(MONOREPO_ROOT, `packages/${pkg}/dist`))) {
       if (path.extname(filePath) !== '.map') {
         continue
       }
@@ -184,7 +123,13 @@ async function cleanupSourceMaps() {
       try {
         const sourceMap = await readSourceMap(filePath)
         const newSources = await Promise.all(
-          sourceMap.sources.map((source) => rewriteSource(source, filePath)),
+          sourceMap.sources.map((source) =>
+            rewriteSource({
+              source,
+              sourceMapPath: filePath,
+              monoRepoPackageVersions,
+            }),
+          ),
         )
         sourceMap.sources = newSources
         await writeFile(filePath, JSON.stringify(sourceMap), 'utf-8')
@@ -222,7 +167,13 @@ async function cleanupSourceMaps() {
  * @returns The rewritten source path (URL)
  * @internal
  */
-async function rewriteSource(source: string, sourceMapPath: string): Promise<string> {
+async function rewriteSource(options: {
+  source: string
+  sourceMapPath: string
+  monoRepoPackageVersions: Record<string, string>
+}): Promise<string> {
+  const {source, sourceMapPath, monoRepoPackageVersions} = options
+
   if (/^https?:\/\//.test(source)) {
     return source
   }
@@ -246,7 +197,7 @@ async function rewriteSource(source: string, sourceMapPath: string): Promise<str
 
   // eg `../src/core/schema/createSchema.ts` =>
   // => `https://github.com/sanity-io/sanity/blob/v3.59.1/packages/sanity/src/core/schema/createSchema.ts`
-  const relativePath = path.posix.relative(BASE_PATH, sourcePath)
+  const relativePath = path.posix.relative(MONOREPO_ROOT, sourcePath)
   const pathParts = relativePath.split('/')
 
   if (pathParts.shift() !== 'packages') {
@@ -266,17 +217,23 @@ async function rewriteSource(source: string, sourceMapPath: string): Promise<str
   return `https://github.com/sanity-io/sanity/blob/v${pkgVersion}/${cleanDir}`
 }
 
-export async function uploadBundles() {
+export async function uploadBundles(args: {tag?: string; asVersion?: string}) {
+  const {tag, asVersion} = args
+
+  if (typeof tag !== 'undefined' && !isValidTag(tag)) {
+    throw new Error(`Unsupported tag, must be one of [${VALID_TAGS.join(', ')}] required options`)
+  }
+
   // Clean up source maps
-  await cleanupSourceMaps()
+  await cleanupSourceMaps(MONOREPO_ROOT)
   console.log('**Completed cleaning up source maps** ✅')
 
   // Copy all the bundles
-  const pkgVersions = await copyPackages()
+  const pkgVersions = await copyPackages(asVersion)
   console.log('**Completed copying all files** ✅')
 
   // Update the manifest json file
-  await updateManifest(pkgVersions)
+  await updateManifest({tag, newVersions: pkgVersions})
   console.log('**Completed updating manifest** ✅')
 }
 
@@ -311,11 +268,11 @@ function getMonorepoPackageVersions(): Record<string, string> {
   const getFullPath = (dirent: Dirent) => path.join(dirent.parentPath, dirent.name)
   const listOpts = {withFileTypes: true} as const
 
-  const scoped = readdirSync(path.join(BASE_PATH, 'packages', '@sanity'), listOpts)
+  const scoped = readdirSync(path.join(MONOREPO_ROOT, 'packages', '@sanity'), listOpts)
     .filter(isDir)
     .map(getFullPath)
 
-  const unscoped = readdirSync(path.join(BASE_PATH, 'packages'), listOpts)
+  const unscoped = readdirSync(path.join(MONOREPO_ROOT, 'packages'), listOpts)
     .filter((dirent) => isDir(dirent) && !dirent.name.startsWith('@'))
     .map(getFullPath)
 
@@ -330,4 +287,35 @@ function getMonorepoPackageVersions(): Record<string, string> {
   })
 
   return versions
+}
+
+async function updateManifest(options: {tag?: DistTag; newVersions: Record<string, string>}) {
+  const {tag, newVersions} = options
+  const timestamp = Math.floor(Date.now() / 1000)
+  await updateManifestWith(bucket, (existingManifest) => {
+    // Add the new version to the manifest with timestamp
+    const updatedPackages = Object.entries(newVersions).reduce(
+      (acc, [key, version]): Manifest['packages'] => {
+        const packageId = cleanDirName(key)
+
+        const existingPackage = acc[packageId] || {versions: []}
+        let updatedPackage = addVersion(existingPackage, {version: version, timestamp})
+
+        // tag the version in addition to adding it to the manifest
+        if (tag) {
+          updatedPackage = tagVersion(updatedPackage, tag, {timestamp: currentUnixTime(), version})
+        }
+        return {
+          ...acc,
+          [packageId]: updatedPackage,
+        }
+      },
+      existingManifest?.packages || {},
+    )
+
+    return {
+      updatedAt: new Date().toISOString(),
+      packages: updatedPackages,
+    }
+  })
 }
