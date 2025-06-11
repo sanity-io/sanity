@@ -766,7 +766,11 @@ importers:
         specifier: ^8.34.0
         version: 8.34.0(eslint@9.29.0(jiti@2.4.2))(typescript@5.8.3)
 
-  packages/@repo/package.bundle: {}
+  packages/@repo/package.bundle:
+    devDependencies:
+      '@repo/eslint-config':
+        specifier: workspace:*
+        version: link:../eslint-config
 
   packages/@repo/package.config:
     devDependencies:
