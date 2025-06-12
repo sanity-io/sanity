@@ -9,6 +9,7 @@ import {ptPTLocale} from '@sanity/locale-pt-pt'
 import {svSELocale} from '@sanity/locale-sv-se'
 import {SanityMonogram} from '@sanity/logos'
 import {debugSecrets} from '@sanity/preview-url-secret/sanity-plugin-debug-secrets'
+import {scheduledPublishing} from '@sanity/scheduled-publishing'
 import {tsdoc} from '@sanity/tsdoc/studio'
 import {visionTool} from '@sanity/vision'
 import {defineConfig, definePlugin, type WorkspaceOptions} from 'sanity'
@@ -64,6 +65,8 @@ import {workshopTool} from './workshop'
 const localePlugins = [koKRLocale(), nbNOLocale(), nnNOLocale(), ptPTLocale(), svSELocale()]
 
 const sharedSettings = ({projectId}: {projectId: string}) => {
+  console.log('sharedSettings', projectId)
+  console.log(scheduledPublishing)
   return definePlugin({
     name: 'sharedSettings',
     schema: {
@@ -184,6 +187,7 @@ const sharedSettings = ({projectId}: {projectId: string}) => {
         // uncomment to test
         //defaultApiVersion: '2025-02-05',
       }),
+      scheduledPublishing(),
       // eslint-disable-next-line camelcase
       muxInput({mp4_support: 'standard'}),
       imageHotspotArrayPlugin(),

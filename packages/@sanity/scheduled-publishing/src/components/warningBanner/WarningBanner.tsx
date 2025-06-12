@@ -1,7 +1,7 @@
 import {ArrowRightIcon, WarningOutlineIcon} from '@sanity/icons'
 import {Card, Flex, rem, Text, useMediaIndex} from '@sanity/ui'
 // eslint-disable-next-line camelcase
-import {getTheme_v2} from '@sanity/ui/theme'
+import {getTheme_v2, type Theme} from '@sanity/ui/theme'
 import styled, {css} from 'styled-components'
 
 import {RELEASES_DOCS_URL} from '../../constants'
@@ -11,7 +11,7 @@ import {RELEASES_DOCS_URL} from '../../constants'
  * Text element, allowing to sit inline in the same anchor element.
  */
 const SmallIcon = styled(ArrowRightIcon)((props) => {
-  const {font} = getTheme_v2(props.theme)
+  const {font} = getTheme_v2(props.theme as Theme)
   const {ascenderHeight, descenderHeight, lineHeight, iconSize} = font.text.sizes[0]
   const negHeight = ascenderHeight + descenderHeight
   const capHeight = lineHeight - negHeight

@@ -15,7 +15,7 @@ export {resolveDocumentActions, resolveDocumentBadges}
 /**
  * @internal
  */
-export const SCHEDULED_PUBLISHING_NAME = 'sanity/scheduled-publishing'
+export const SCHEDULED_PUBLISHING_NAME = '@sanity/scheduled-publishing'
 
 /**
  * @internal

@@ -11,7 +11,7 @@ import {
   useWorkspace,
 } from 'sanity'
 import {type RouterContextValue, useRouter} from 'sanity/router'
-import styled from 'styled-components'
+import {styled} from 'styled-components'
 
 import TimeZoneButtonElementQuery from '../components/dialogs/TimeZoneButtonElementQuery'
 import ErrorCallout from '../components/errorCallout/ErrorCallout'

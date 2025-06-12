@@ -1,6 +1,6 @@
 import {Button as UIButton, type ButtonProps as UIButtonProps} from '@sanity/ui'
 import {type ForwardedRef, forwardRef, type HTMLProps, useCallback} from 'react'
-import styled from 'styled-components'
+import {styled} from 'styled-components'
 
 import {
   ConditionalWrapper,

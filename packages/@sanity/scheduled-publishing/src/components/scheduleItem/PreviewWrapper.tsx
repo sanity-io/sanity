@@ -9,7 +9,7 @@ import {
   useScheduledPublishingEnabled,
   useTimeZone,
 } from 'sanity'
-import styled from 'styled-components'
+import {styled} from 'styled-components'
 
 import {
   DOCUMENT_HAS_ERRORS_TEXT,
