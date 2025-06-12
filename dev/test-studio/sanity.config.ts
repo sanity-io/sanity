@@ -65,8 +65,6 @@ import {workshopTool} from './workshop'
 const localePlugins = [koKRLocale(), nbNOLocale(), nnNOLocale(), ptPTLocale(), svSELocale()]
 
 const sharedSettings = ({projectId}: {projectId: string}) => {
-  console.log('sharedSettings', projectId)
-  console.log(scheduledPublishing)
   return definePlugin({
     name: 'sharedSettings',
     schema: {
@@ -187,7 +185,6 @@ const sharedSettings = ({projectId}: {projectId: string}) => {
         // uncomment to test
         //defaultApiVersion: '2025-02-05',
       }),
-      scheduledPublishing(),
       // eslint-disable-next-line camelcase
       muxInput({mp4_support: 'standard'}),
       imageHotspotArrayPlugin(),
@@ -198,6 +195,7 @@ const sharedSettings = ({projectId}: {projectId: string}) => {
       markdownSchema(),
       wave(),
       autoCloseBrackets(),
+      scheduledPublishing(),
     ],
   })()
 }
