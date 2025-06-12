@@ -164,7 +164,7 @@ jobs:
           echo "DEPLOY_URL=$(vercel deploy --prebuilt --token=${{ secrets.VERCEL_E2E_STUDIO_TOKEN }} \
           -m githubDeployment="1" \
           -m githubCommitAuthorName="${{ github.event.sender.name || 'GitHub Actions' }}" \
-          -m githubCommitMessage="${{ github.event.head_commit.message || github.event.pull_request.title }}" \
+          -m githubCommitMessage=${{ toJSON(github.event.head_commit.message || github.event.pull_request.title) }} \
           -m githubCommitOrg="${{ github.repository_owner }}" \
           -m githubCommitRef="${{ github.head_ref || github.ref_name }}" \
           -m githubCommitRepo="${{ github.event.repository.name }}" \
@@ -176,7 +176,7 @@ jobs:
       - name: Echo the preview URL
         run: |
           if [ -z "${{ steps.deploy.outputs.DEPLOY_URL }}" ]; then
-           echo "::error::Preview URL was not found. Deployment may have failed, does your PR title has double quotes? Try removing them."
+           echo "::error::Preview URL was not found. Deployment may have failed."
            exit 1
           fi
           echo "Preview URL: ${{ steps.deploy.outputs.DEPLOY_URL }}"
