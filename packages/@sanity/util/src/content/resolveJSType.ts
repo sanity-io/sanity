@@ -21,12 +21,10 @@ export function resolveJSType(val: unknown) {
   if (typeof val == 'object' && val && typeof (val as any).length == 'number') {
     try {
       if (typeof (val as any).callee == 'function') {
-        // eslint-disable-line max-depth
         return 'arguments'
       }
     } catch (ex) {
       if (ex instanceof TypeError) {
-        // eslint-disable-line max-depth
         return 'arguments'
       }
     }
