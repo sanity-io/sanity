@@ -146,12 +146,34 @@ export function createReleaseOperationsStore(options: {
   const handleDeleteRelease = (releaseId: string, opts?: BaseActionOptions) =>
     client.releases.delete({releaseId: getReleaseIdFromReleaseDocumentId(releaseId)}, opts)
 
-  const handleCreateVersion = async (
+  const handleCreateVersionExperimental = async (
     releaseId: string,
     documentId: string,
-    initialValue?: Omit<EditableReleaseDocument, '_id' | '_type'>,
     opts?: BaseActionOptions,
   ) => {
+    const document = await client.getDocument(documentId)
+
+    if (!document) {
+      throw new Error(`Document with id ${documentId} not found`)
+    }
+
+    return client.withConfig({apiVersion: 'vX'}).action(
+      {
+        actionType: 'sanity.action.document.version.create',
+        publishedId: getPublishedId(documentId),
+        // id of a document to copy the attributes from
+        baseId: documentId,
+        // document id to be created
+        versionId: getVersionId(documentId, releaseId),
+        // the action will fail if this does not match what is in the database
+        ifBaseRevisionId: document?._rev,
+      } as unknown as CreateVersionAction,
+      opts,
+    )
+  }
+
+  const handleCreateVersionStable = async (...args: Parameters<typeof handleCreateVersion>) => {
+    const [releaseId, documentId, initialValue, opts] = args
     // the documentId will show you where the document is coming from and which
     // document should it copy from
 
@@ -172,6 +194,21 @@ export function createReleaseOperationsStore(options: {
       {document: versionDocument, publishedId: getPublishedId(documentId), releaseId},
       opts,
     )
+  }
+
+  const handleCreateVersion = async (
+    releaseId: string,
+    documentId: string,
+    initialValue?: Omit<EditableReleaseDocument, '_id' | '_type'>,
+    opts?: BaseActionOptions,
+  ) => {
+    const isExperiment = (window as any).__sanityCreateVersionExperimental === true
+
+    if (isExperiment) {
+      return handleCreateVersionExperimental(releaseId, documentId, opts)
+    }
+
+    return handleCreateVersionStable(releaseId, documentId, initialValue, opts)
   }
 
   const handleDiscardVersion = (releaseId: string, documentId: string, opts?: BaseActionOptions) =>
