@@ -1,7 +1,7 @@
 /* eslint-disable react/jsx-no-bind */
 import {defineBehavior, effect, forward} from '@portabletext/editor/behaviors'
 import {BehaviorPlugin, DecoratorShortcutPlugin} from '@portabletext/editor/plugins'
-import {defineType} from 'sanity'
+import {defineArrayMember, defineType} from 'sanity'
 
 export const customPlugins = defineType({
   name: 'customPlugins',
@@ -24,15 +24,13 @@ export const customPlugins = defineType({
       title: 'One-Line Editor',
       description: 'The editor is restricted to one line of text using the <OneLinePlugin />',
       of: [
-        {
+        defineArrayMember({
           type: 'block',
-        },
+          options: {
+            oneLine: true,
+          },
+        }),
       ],
-      components: {
-        portableText: {
-          oneLine: true,
-        },
-      },
     },
 
     /**

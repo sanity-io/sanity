@@ -53,7 +53,6 @@ declare module '@sanity/types' {
     item?: ComponentType<ObjectItemProps>
     preview?: ComponentType<PreviewProps>
     portableText?: {
-      oneLine?: boolean
       plugins?: ComponentType<PortableTextPluginsProps>
     }
   }

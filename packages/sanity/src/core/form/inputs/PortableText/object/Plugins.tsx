@@ -1,3 +1,4 @@
+import {usePortableTextEditor} from '@portabletext/editor'
 import {defineBehavior} from '@portabletext/editor/behaviors'
 import {
   BehaviorPlugin,
@@ -32,7 +33,9 @@ const markdownConfig: MarkdownPluginConfig = {
 export const PortableTextEditorPlugins = (props: {
   schemaType: ArraySchemaType<PortableTextBlock>
 }) => {
-  const isOneLineEditor = props.schemaType.components?.portableText?.oneLine ?? false
+  const editor = usePortableTextEditor()
+  const isOneLineEditor = Boolean(editor.schemaTypes.block.options?.oneLine)
+
   const componentProps = useMemo(
     (): PortableTextPluginsProps => ({
       plugins: {markdown: {config: markdownConfig}},

@@ -401,7 +401,8 @@ export function Compositor(props: Omit<InputProps, 'arrayFunctions'>): ReactNode
     return undefined
   })
 
-  const isOneLineEditor = schemaType.components?.portableText?.oneLine ?? false
+  const isOneLineEditor = Boolean(editor.schemaTypes.block.options?.oneLine)
+
   const editorNode = useMemo(
     () => (
       <UploadTargetCard
