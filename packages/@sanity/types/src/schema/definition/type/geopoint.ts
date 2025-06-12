@@ -32,11 +32,9 @@ export interface GeopointValue {
 }
 
 /** @public */
-// eslint-disable-next-line @typescript-eslint/no-empty-interface
 export interface GeopointRule extends RuleDef<GeopointRule, GeopointValue> {}
 
 /** @public */
-// eslint-disable-next-line @typescript-eslint/no-empty-interface
 export interface GeopointOptions extends BaseSchemaTypeOptions {}
 
 /** @public */
