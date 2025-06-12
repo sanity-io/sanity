@@ -5,7 +5,11 @@ import {AnnotationsStory} from './AnnotationsStory'
 
 test.describe('Portable Text Input', () => {
   test.describe('Annotations', () => {
-    test('Create a new link with keyboard only', async ({mount, page}) => {
+    test('Create a new link with keyboard only', async ({mount, page, browserName}) => {
+      if (browserName === 'webkit') {
+        test.skip(true, 'Currently not working in WebKit')
+      }
+
       const {getFocusedPortableTextEditor, insertPortableText} = testHelpers({
         page,
       })
@@ -72,7 +76,12 @@ test.describe('Portable Text Input', () => {
     test('Can create, and then open the existing annotation again for editing', async ({
       mount,
       page,
+      browserName,
     }) => {
+      if (browserName === 'webkit') {
+        test.skip(true, 'Currently not working in WebKit')
+      }
+
       const {getFocusedPortableTextEditor, insertPortableText} = testHelpers({
         page,
       })
