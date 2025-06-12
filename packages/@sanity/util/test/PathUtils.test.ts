@@ -1,6 +1,6 @@
 import {expect, test} from 'vitest'
 
-/* eslint-disable max-nested-callbacks, @typescript-eslint/ban-ts-comment */
+/* eslint-disable @typescript-eslint/ban-ts-comment */
 import {fromString, get, resolveKeyedPath, toString} from '../src/paths'
 
 const srcObject = {
