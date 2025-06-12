@@ -1155,6 +1155,9 @@ importers:
         specifier: ^3.2.0
         version: 3.2.0
     devDependencies:
+      '@repo/eslint-config':
+        specifier: workspace:*
+        version: link:../../@repo/eslint-config
       '@repo/package.config':
         specifier: workspace:*
         version: link:../../@repo/package.config
