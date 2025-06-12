@@ -11,6 +11,7 @@
     "#config": "./placeholderConfig.ts"
   },
   "scripts": {
+    "lint": "eslint .",
     "start": "node --import @swc-node/register/esm-register ./index.ts",
     "test": "npm start",
     "write:report": "node --import @swc-node/register/esm-register ./formatefpsResult.ts"
