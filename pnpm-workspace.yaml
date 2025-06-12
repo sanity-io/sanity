@@ -10,6 +10,7 @@ packages:
   - 'packages/sanity/fixtures/examples/*'
 
 catalog:
+  '@sanity/eslint-config-i18n': ^2.0.0
   '@vitejs/plugin-react': ^4.5.2
   esbuild-register: ^3.6.0
   esbuild: 0.25.5
