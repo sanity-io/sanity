@@ -204,17 +204,6 @@ const config = {
     },
     // Ignore i18n in ScheduledPublishing files.
     {
-      files: [
-        '**/*/scheduledPublishing/**/*', // For sanity/src/core/scheduledPublishing
-        '**/*/scheduled-publishing/**/*', // For @sanity/scheduled-publishing package
-      ],
-      rules: {
-        'i18next/no-literal-string': 'off',
-        '@sanity/i18n/no-attribute-string-literals': 'off',
-        '@sanity/i18n/no-attribute-template-literals': 'off',
-      },
-    }, // Ignore i18n in ScheduledPublishing files.
-    {
       files: ['**/*/scheduledPublishing/**/*'],
       rules: {
         'i18next/no-literal-string': 'off',
@@ -313,7 +302,6 @@ const config = {
         'packages/@sanity/cli/**',
         'packages/sanity/src/_internal/cli/**',
         'packages/sanity/playwright-ct/**',
-        'packages/@sanity/scheduled-publishing/**',
       ],
       rules: {
         'turbo/no-undeclared-env-vars': 'off',
