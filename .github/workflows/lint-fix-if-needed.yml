@@ -1,5 +1,5 @@
 ---
-name: ESLint --fix
+name: Prettier & Lint --fix
 
 on:
   push:
@@ -17,8 +17,6 @@ jobs:
   run:
     name: Should the linter fix? 🤔
     runs-on: ubuntu-latest
-    # workflow_dispatch always lets you select the branch ref, even though in this case we only ever want to run the action on `main` thus we need an if check
-    if: ${{ github.ref_name == 'main' }}
     steps:
       - uses: actions/checkout@v4
       - uses: pnpm/action-setup@v4
@@ -30,12 +28,12 @@ jobs:
       - name: Install project dependencies
         run: pnpm install
 
-      - name: Cache ESLint cache
+      - name: Cache Prettier
         uses: actions/cache@v4
         with:
-          path: .eslintcache
-          key: eslint-v1-${{ hashFiles('.eslintrc.cjs') }}
-      - run: "pnpm lint:fix -- --rule 'prettier/prettier: [off]'"
+          path: node_modules/.cache/prettier/.prettier-cache
+          key: prettier-${{ hashFiles('pnpm-lock.yaml') }}
+      - run: pnpm lint:fix
       - uses: actions/create-github-app-token@v2
         # Run even if `pnpm lint:fix` fails
         if: always()
@@ -47,7 +45,7 @@ jobs:
         # Run even if `lint:fix` fails
         if: always()
         with:
-          body: "I ran `pnpm lint:fix --rule 'prettier/prettier: [off]'` 🧑‍💻"
+          body: "I ran `pnpm lint:fix` 🧑‍💻"
           branch: actions/lint-fix-if-needed
           commit-message: "chore(lint): fix linter issues 🤖 ✨"
           labels: 🤖 bot
