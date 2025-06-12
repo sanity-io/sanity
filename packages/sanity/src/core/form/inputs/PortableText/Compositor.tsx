@@ -49,7 +49,7 @@ interface InputProps extends ArrayOfObjectsInputProps<PortableTextBlock> {
 }
 
 /** @internal */
-export function Compositor(props: Omit<InputProps, 'arrayFunctions'>): ReactNode {
+export function Compositor(props: Omit<InputProps, 'schemaType' | 'arrayFunctions'>): ReactNode {
   const {
     changed,
     elementRef,
@@ -83,7 +83,6 @@ export function Compositor(props: Omit<InputProps, 'arrayFunctions'>): ReactNode
     renderItem,
     renderPreview,
     resolveUploader,
-    schemaType,
     value,
   } = props
 
