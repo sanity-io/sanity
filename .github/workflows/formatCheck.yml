@@ -26,5 +26,11 @@ jobs:
       - name: Install project dependencies
         run: pnpm install
 
+      - name: Cache Prettier
+        uses: actions/cache@v4
+        with:
+          path: node_modules/.cache/prettier/.prettier-cache
+          key: prettier-${{ hashFiles('pnpm-lock.yaml') }}
+
       - name: Run format check
         run: pnpm turbo run check:format

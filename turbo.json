@@ -101,6 +101,11 @@
     "lint": {
       "dependsOn": ["transit"]
     },
-    "//#check:format": {}
+    "//#check:format": {},
+    "//#check:oxlint": {},
+    "//#chore:format:fix": {},
+    "//#chore:oxlint:fix": {
+      "cache": false
+    }
   }
 }
