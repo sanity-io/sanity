@@ -5,7 +5,6 @@ import {type Reference} from '../reference'
 import {type FileSchemaType, type ImageSchemaType, type SchemaType} from '../schema'
 
 /** @public */
-// eslint-disable-next-line @typescript-eslint/no-empty-interface
 export interface EmptyProps {}
 
 /** @public */

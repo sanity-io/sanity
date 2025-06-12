@@ -14,13 +14,7 @@ export default defineConfig([
     rules: {
       'import/no-extraneous-dependencies': ['error', {packageDir: [ROOT_PATH, __dirname]}],
       // These rules should be enabled in the future, they are disabled for now to reduce the PR scope for landing oxlint
-      '@typescript-eslint/no-require-imports': 'off',
-    },
-  },
-  {
-    files: ['perf/**/*'],
-    rules: {
-      '@typescript-eslint/no-var-requires': 'off',
+      '@typescript-eslint/no-empty-object-type': 'off',
     },
   },
 ])

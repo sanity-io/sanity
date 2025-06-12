@@ -5,7 +5,7 @@ import {defineType} from '../src/schema/types'
 
 declare module '../src/schema/definition' {
   // here we type up our custom schema definition
-  // eslint-disable-next-line @typescript-eslint/no-shadow
+
   export type ExtensionTypeExampleDef = Omit<ObjectDefinition, 'type' | 'fields'> & {
     type: 'test-added-extension-type'
     options: {
