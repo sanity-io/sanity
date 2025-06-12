@@ -54,20 +54,16 @@ const extensions = ['.cjs', '.mjs', '.js', '.jsx', '.ts', '.tsx']
 /** @type {import('eslint').Linter.Config} */
 const config = {
   root: true,
-  env: {
-    node: true, // done
-    browser: true, //done
-  },
   extends: [
     'sanity', // done
     'sanity/react', // done
     'sanity/import', // done
     'sanity/typescript', // done
-    'plugin:@typescript-eslint/recommended',
+    'plugin:@typescript-eslint/recommended', // done
     'plugin:react-hooks/recommended', // done
     'plugin:react/jsx-runtime', // done
     'prettier', // done
-    '@sanity/eslint-config-i18n',
+    '@sanity/eslint-config-i18n', // done
     'turbo', // done
   ],
   parser: '@typescript-eslint/parser', // done
@@ -294,17 +290,6 @@ const config = {
       ],
       rules: {
         'react-compiler/react-compiler': 'off',
-      },
-    },
-    // Don't lint Turbo undeclared process env variables in code that is used in the CLI at runtime
-    {
-      files: [
-        'packages/@sanity/cli/**',
-        'packages/sanity/src/_internal/cli/**',
-        'packages/sanity/playwright-ct/**',
-      ],
-      rules: {
-        'turbo/no-undeclared-env-vars': 'off',
       },
     },
   ],

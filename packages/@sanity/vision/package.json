@@ -47,6 +47,7 @@
     "build:bundle": "vite build --config package.bundle.ts",
     "check:types": "tsc --project tsconfig.lib.json",
     "clean": "rimraf lib",
+    "lint": "eslint .",
     "prepublishOnly": "turbo run build",
     "watch": "pkg-utils watch"
   },
@@ -84,6 +85,7 @@
     "@sanity/client": "^7.6.0",
     "@sanity/codegen": "workspace:*",
     "@sanity/diff": "workspace:*",
+    "@sanity/eslint-config-i18n": "catalog:",
     "@sanity/migrate": "workspace:*",
     "@sanity/mutator": "workspace:*",
     "@sanity/schema": "workspace:*",

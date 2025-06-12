@@ -6,6 +6,9 @@ settings:
 
 catalogs:
   default:
+    '@sanity/eslint-config-i18n':
+      specifier: ^2.0.0
+      version: 2.0.0
     '@vitejs/plugin-react':
       specifier: ^4.5.2
       version: 4.5.2
@@ -1482,6 +1485,9 @@ importers:
       '@sanity/diff':
         specifier: workspace:*
         version: link:../diff
+      '@sanity/eslint-config-i18n':
+        specifier: 'catalog:'
+        version: 2.0.0(eslint@9.28.0(jiti@2.4.2))
       '@sanity/migrate':
         specifier: workspace:*
         version: link:../migrate
@@ -4672,6 +4678,11 @@ packages:
 
   '@sanity/eslint-config-i18n@1.0.0':
     resolution: {integrity: sha512-BIeD9IVT7O5I6vDyDaICoidN02qeImdXDRAW062iHY9gV4JrGScWBFio2HQLso7C+Z6SrQB8jOft6SzeYqDhdQ==}
+
+  '@sanity/eslint-config-i18n@2.0.0':
+    resolution: {integrity: sha512-A1yCklgMxs9wGYwLIwCUzJR91+NYAIVnCPso2qv86XOpfNnTRhve726JQrZog6JyiFa1Dk/gDJ07D8AV2TujzQ==}
+    peerDependencies:
+      eslint: ^9.0.0
 
   '@sanity/eslint-config-studio@4.0.0':
     resolution: {integrity: sha512-7NLgYv94NofaMV1yPmzjEcMUWgAcOaXOrcrED8Pno1DXDda4y3ux55cIi+Q/0fw5PbWOjsM8AY9lSIm5Oq+w/A==}
@@ -14996,6 +15007,12 @@ snapshots:
       - eslint
       - supports-color
       - typescript
+
+  '@sanity/eslint-config-i18n@2.0.0(eslint@9.28.0(jiti@2.4.2))':
+    dependencies:
+      '@sanity/eslint-plugin-i18n': 1.1.0
+      eslint: 9.28.0(jiti@2.4.2)
+      eslint-plugin-i18next: 6.1.1
 
   '@sanity/eslint-config-studio@4.0.0(eslint@9.28.0(jiti@2.4.2))(typescript@5.8.3)':
     dependencies:
