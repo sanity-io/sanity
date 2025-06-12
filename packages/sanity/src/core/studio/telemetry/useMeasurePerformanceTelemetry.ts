@@ -42,7 +42,7 @@ export function useMeasurePerformanceTelemetry() {
     (list: PerformanceObserverEntryList, observer: PerformanceObserver) => {
       const entries = list.getEntries()
 
-      let maxEntry: PerformanceEventTiming | undefined = undefined
+      let maxEntry: PerformanceEventTiming | undefined
       for (const entry of entries) {
         if (!isPerformanceEventTiming(entry)) continue
         if (entry.duration > (maxEntry?.duration || 0)) {

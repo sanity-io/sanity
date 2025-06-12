@@ -20,8 +20,15 @@ import {
 } from 'react'
 import {css, styled} from 'styled-components'
 
+import {type FIXME} from '../../FIXME'
 import {focusRingStyle} from '../../form/components/formField/styles'
-import {type CommandListElementType, type CommandListHandle, type CommandListProps} from './types'
+import {
+  type CommandListElementType,
+  type CommandListGetItemDisabledCallback,
+  type CommandListGetItemSelectedCallback,
+  type CommandListHandle,
+  type CommandListProps,
+} from './types'
 
 // Data attribute to assign to the current active virtual list element
 const LIST_ITEM_DATA_ATTR_ACTIVE = 'data-active'
@@ -170,28 +177,10 @@ const CommandListComponent = forwardRef<CommandListHandle, CommandListProps>(fun
    *
    * Disabled virtual list items are ignored when creating aria attributes.
    */
-  const itemIndices = useMemo(() => {
-    let i = -1
-    return items.reduce<
-      {
-        activeIndex: number | null
-        selected: boolean
-        disabled: boolean
-      }[]
-    >((acc, _, index) => {
-      const disabled = getItemDisabled?.(index) ?? false
-      const selected = getItemSelected?.(index) ?? false
-      if (!disabled) {
-        i += 1
-      }
-      acc[index] = {
-        activeIndex: disabled ? null : i,
-        disabled,
-        selected,
-      }
-      return acc
-    }, [])
-  }, [getItemDisabled, getItemSelected, items])
+  const itemIndices = useMemo(
+    () => getItemIndicies(items, getItemDisabled, getItemSelected),
+    [getItemDisabled, getItemSelected, items],
+  )
 
   const activeItemCount = useMemo(
     () => itemIndices.filter((v) => !v.disabled).length,
@@ -735,3 +724,30 @@ const CommandListItemComponent = forwardRef(function CommandListItem(
 
 const CommandListItem = memo(CommandListItemComponent)
 CommandListItem.displayName = 'Memo(ForwardRef(CommandListItem))'
+
+function getItemIndicies(
+  items: FIXME[],
+  getItemDisabled: CommandListGetItemDisabledCallback | undefined,
+  getItemSelected: CommandListGetItemSelectedCallback | undefined,
+) {
+  let i = -1
+  return items.reduce<
+    {
+      activeIndex: number | null
+      selected: boolean
+      disabled: boolean
+    }[]
+  >((acc, _, index) => {
+    const disabled = getItemDisabled?.(index) ?? false
+    const selected = getItemSelected?.(index) ?? false
+    if (!disabled) {
+      i += 1
+    }
+    acc[index] = {
+      activeIndex: disabled ? null : i,
+      disabled,
+      selected,
+    }
+    return acc
+  }, [])
+}

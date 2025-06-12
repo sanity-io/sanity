@@ -1,3 +1,9 @@
 {
-  "ignores": ["@repo/tsconfig", "sanity", "babel-plugin-react-compiler", "eslint"]
+  "ignores": [
+    "@repo/tsconfig",
+    "sanity",
+    "babel-plugin-react-compiler",
+    "eslint",
+    "@repo/eslint-config"
+  ]
 }

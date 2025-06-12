@@ -98,7 +98,7 @@
   "lint-staged": {
     "*.{js,jsx,ts,tsx,mjs,cjs}": [
       "prettier --cache --write",
-      "oxlint --fix"
+      "oxlint --fix --quiet"
     ],
     "*.{md,yml,yaml,css,json}": [
       "prettier --cache --write"

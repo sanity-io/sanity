@@ -10,6 +10,7 @@ import {
   type SchemaTypeDefinition,
   type SearchStrategy,
 } from '@sanity/types'
+// eslint-disable-next-line @sanity/i18n/no-i18next-import -- figure out how to have the linter be fine with importing types-only
 import {type i18n} from 'i18next'
 import {type ComponentType, type ErrorInfo, type ReactNode} from 'react'
 import {type Observable} from 'rxjs'

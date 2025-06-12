@@ -1,10 +1,15 @@
 import {ToastProvider} from '@sanity/ui'
 import {type ReactNode, useMemo} from 'react'
 import Refractor from 'react-refractor'
+// eslint-disable-next-line import/extensions
 import bash from 'refractor/lang/bash.js'
+// eslint-disable-next-line import/extensions
 import javascript from 'refractor/lang/javascript.js'
+// eslint-disable-next-line import/extensions
 import json from 'refractor/lang/json.js'
+// eslint-disable-next-line import/extensions
 import jsx from 'refractor/lang/jsx.js'
+// eslint-disable-next-line import/extensions
 import typescript from 'refractor/lang/typescript.js'
 
 import {LoadingBlock} from '../components/loadingBlock'

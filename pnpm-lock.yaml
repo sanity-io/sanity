@@ -9,6 +9,9 @@ catalogs:
     '@sanity/eslint-config-i18n':
       specifier: ^2.0.0
       version: 2.0.0
+    '@sanity/eslint-config-studio':
+      specifier: ^5.0.2
+      version: 5.0.2
     '@vitejs/plugin-react':
       specifier: ^4.5.2
       version: 4.5.2
@@ -18,6 +21,9 @@ catalogs:
     esbuild-register:
       specifier: ^3.6.0
       version: 3.6.0
+    globals:
+      specifier: ^16.2.0
+      version: 16.2.0
     prettier:
       specifier: ^3.5.3
       version: 3.5.3
@@ -35,10 +41,10 @@ catalogs:
       version: 5.8.3
   react18:
     react:
-      specifier: ^18.3.0
+      specifier: ^18.3.1
       version: 18.3.1
     react-dom:
-      specifier: ^18.3.0
+      specifier: ^18.3.1
       version: 18.3.1
 
 overrides:
@@ -766,7 +772,7 @@ importers:
         specifier: ^4.1.4
         version: 4.1.4(@typescript-eslint/eslint-plugin@8.34.0(@typescript-eslint/parser@8.34.0(eslint@9.28.0(jiti@2.4.2))(typescript@5.8.3))(eslint@9.28.0(jiti@2.4.2))(typescript@5.8.3))(eslint@9.28.0(jiti@2.4.2))
       globals:
-        specifier: ^16.2.0
+        specifier: 'catalog:'
         version: 16.2.0
       typescript-eslint:
         specifier: ^8.34.0
@@ -923,7 +929,7 @@ importers:
         specifier: ^15.2.3
         version: 15.3.1(rollup@4.41.1)
       '@sanity/eslint-config-studio':
-        specifier: ^5.0.2
+        specifier: 'catalog:'
         version: 5.0.2(eslint@9.28.0(jiti@2.4.2))(typescript@5.8.3)
       '@sanity/generate-help-url':
         specifier: ^3.0.0
@@ -1010,7 +1016,7 @@ importers:
         specifier: ^2.0.3
         version: 2.0.3
       globals:
-        specifier: ^16.2.0
+        specifier: 'catalog:'
         version: 16.2.0
       inquirer:
         specifier: ^6.0.0
@@ -1976,6 +1982,9 @@ importers:
       '@sanity/codegen':
         specifier: workspace:*
         version: link:../@sanity/codegen
+      '@sanity/eslint-config-i18n':
+        specifier: 'catalog:'
+        version: 2.0.0(eslint@9.28.0(jiti@2.4.2))
       '@sanity/generate-help-url':
         specifier: ^3.0.0
         version: 3.0.0
@@ -2066,11 +2075,14 @@ importers:
       eslint-plugin-boundaries:
         specifier: ^5.0.1
         version: 5.0.1(@typescript-eslint/parser@8.34.0(eslint@9.28.0(jiti@2.4.2))(typescript@5.8.3))(eslint@9.28.0(jiti@2.4.2))
+      globals:
+        specifier: 'catalog:'
+        version: 16.2.0
       react:
         specifier: catalog:react18
         version: 18.3.1
       react-dom:
-        specifier: ^18.3.1
+        specifier: catalog:react18
         version: 18.3.1(react@18.3.1)
       rxjs-etc:
         specifier: ^10.6.2

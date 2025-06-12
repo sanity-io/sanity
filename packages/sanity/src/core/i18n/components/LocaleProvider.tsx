@@ -1,3 +1,4 @@
+/* eslint-disable @sanity/i18n/no-i18next-import */
 import {type i18n} from 'i18next'
 import {type PropsWithChildren, Suspense, useCallback, useMemo, useSyncExternalStore} from 'react'
 import {I18nextProvider} from 'react-i18next'

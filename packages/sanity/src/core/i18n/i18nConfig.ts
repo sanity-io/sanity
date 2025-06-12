@@ -1,3 +1,4 @@
+/* eslint-disable @sanity/i18n/no-i18next-import */
 import {createInstance as createI18nInstance, type i18n, type InitOptions} from 'i18next'
 import {initReactI18next} from 'react-i18next'
 
