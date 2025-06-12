@@ -45,7 +45,7 @@
     "build": "pkg-utils build --strict --check --clean",
     "check:types": "tsc --project tsconfig.lib.json",
     "clean": "rimraf lib coverage",
-    "lint": "eslint --cache .",
+    "lint": "eslint .",
     "prepublishOnly": "turbo run build",
     "test": "vitest",
     "watch": "pkg-utils watch"
@@ -62,6 +62,7 @@
     "p-map": "^7.0.1"
   },
   "devDependencies": {
+    "@repo/eslint-config": "workspace:*",
     "@repo/package.config": "workspace:*",
     "@repo/test-config": "workspace:*",
     "@types/debug": "^4.1.12",

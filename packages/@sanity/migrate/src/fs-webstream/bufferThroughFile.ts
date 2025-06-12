@@ -47,7 +47,6 @@ export function bufferThroughFile(
 
   async function pump(reader: ReadableStreamDefaultReader<Uint8Array>) {
     try {
-      // eslint-disable-next-line no-constant-condition
       while (true) {
         const {done, value} = await reader.read()
         if (done || signal?.aborted) {

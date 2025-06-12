@@ -161,6 +161,7 @@ export default [
       'unicorn/prefer-node-protocol': 'error',
       'unicorn/prefer-keyboard-event-key': 'error',
       'unicorn/custom-error-definition': 'error',
+      'no-warning-comments': 'off',
     },
     settings: {
       'import/extensions': extensions,
