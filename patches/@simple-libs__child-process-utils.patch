@@ -1,0 +1,23 @@
+diff --git a/dist/index.js b/dist/index.js
+index da0890eeb9dce4f839ee94c787fb96b6202a699b..8e5f4c45e1b92b1ebe3ebe514d081dd9a12242f1 100644
+--- a/dist/index.js
++++ b/dist/index.js
+@@ -24,14 +24,13 @@ export async function catchProcessError(process) {
+         error = err;
+     });
+     if (process.stderr) {
+-        let chunk;
+-        for await (chunk of process.stderr) {
+-            stderr += chunk.toString();
+-        }
++        process.stderr.on('data', (chunk) => {
++          stderr += chunk.toString()
++        })
+     }
+     const code = await exitCode(process);
+     if (stderr) {
+-        error = new Error(stderr);
++        error = new Error("PATCHED "+stderr);
+     }
+     return code ? error : null;
+ }

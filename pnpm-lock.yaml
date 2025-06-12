@@ -18,6 +18,11 @@ overrides:
   vite: ^6.3.5
   vitest: 3.2.2
 
+patchedDependencies:
+  '@simple-libs/child-process-utils':
+    hash: 88b14c01493cd3940660723d1a8a508b1d663916beb1046a93a1f0def819da80
+    path: patches/@simple-libs__child-process-utils.patch
+
 importers:
 
   .:
@@ -12801,7 +12806,7 @@ snapshots:
 
   '@conventional-changelog/git-client@2.5.1(conventional-commits-filter@5.0.0)(conventional-commits-parser@6.1.0)':
     dependencies:
-      '@simple-libs/child-process-utils': 1.0.0
+      '@simple-libs/child-process-utils': 1.0.0(patch_hash=88b14c01493cd3940660723d1a8a508b1d663916beb1046a93a1f0def819da80)
       '@simple-libs/stream-utils': 1.1.0
       semver: 7.7.2
     optionalDependencies:
@@ -15702,7 +15707,7 @@ snapshots:
       '@sigstore/core': 2.0.0
       '@sigstore/protobuf-specs': 0.4.2
 
-  '@simple-libs/child-process-utils@1.0.0':
+  '@simple-libs/child-process-utils@1.0.0(patch_hash=88b14c01493cd3940660723d1a8a508b1d663916beb1046a93a1f0def819da80)':
     dependencies:
       '@simple-libs/stream-utils': 1.1.0
       '@types/node': 22.13.1
