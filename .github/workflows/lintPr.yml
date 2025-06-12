@@ -30,7 +30,7 @@ jobs:
         run: pnpm install
 
       - name: Oxlint files
-        run: pnpm oxlint --format github
+        run: pnpm turbo run check:oxlint -- --format github
 
       - name: Register Problem Matcher for ESLint that handles -f compact and shows warnings inline on PRs
         run: echo "::add-matcher::.github/eslint-compact.json"
