@@ -25,7 +25,7 @@
     "chore:lint:fix": "turbo run lint -- --quiet --fix",
     "chore:lint:inspect": "eslint --inspect-config",
     "chore:lint:changed": "turbo run lint:fix --affected",
-    "chore:oxlint:fix": "oxlint --fix --fix-suggestions --fix-dangerously",
+    "chore:oxlint:fix": "oxlint --fix --fix-suggestions",
     "chore:normalize-versions": "node -r esbuild-register scripts/normalizeDependencyVersions.ts",
     "clean": "run-s build:clean clean:deps",
     "clean:deps": "rimraf packages/@repo/*/node_modules packages/@sanity/*/node_modules packages/*/node_modules dev/*/node_modules node_modules",
@@ -188,7 +188,6 @@
     "overrides": {
       "@npmcli/arborist": "^7.5.4",
       "@sanity/ui@2": "$@sanity/ui",
-      "@types/node": "$@types/node",
       "@typescript-eslint/eslint-plugin": "$@typescript-eslint/eslint-plugin",
       "@typescript-eslint/parser": "$@typescript-eslint/parser",
       "@vitest/coverage-v8": "$vitest",
