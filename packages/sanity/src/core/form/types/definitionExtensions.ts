@@ -52,9 +52,7 @@ declare module '@sanity/types' {
     input?: ComponentType<ArrayOfObjectsInputProps>
     item?: ComponentType<ObjectItemProps>
     preview?: ComponentType<PreviewProps>
-    portableText?: {
-      plugins?: ComponentType<PortableTextPluginsProps>
-    }
+    portableText?: {plugins: ComponentType<PortableTextPluginsProps>}
   }
 
   /**
