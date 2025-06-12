@@ -6,8 +6,9 @@ import {css, styled} from 'styled-components'
 import {CreateReleaseMenuItem} from '../../releases/components/CreateReleaseMenuItem'
 import {useReleasesUpsell} from '../../releases/contexts/upsell/useReleasesUpsell'
 import {useActiveReleases} from '../../releases/store/useActiveReleases'
-import {LATEST} from '../../releases/util/const'
+import {LATEST, PUBLISHED} from '../../releases/util/const'
 import {getReleaseIdFromReleaseDocumentId} from '../../releases/util/getReleaseIdFromReleaseDocumentId'
+import {useWorkspace} from '../../studio/workspace'
 import {type ReleasesNavMenuItemPropsGetter} from '../types'
 import {usePerspective} from '../usePerspective'
 import {
@@ -19,8 +20,6 @@ import {ReleaseTypeMenuSection} from './ReleaseTypeMenuSection'
 import {type ScrollElement} from './useScrollIndicatorVisibility'
 
 const orderedReleaseTypes: ReleaseType[] = ['asap', 'scheduled', 'undecided']
-
-const ASAP_RANGE_OFFSET = 2
 
 const StyledBox = styled(Box)`
   overflow: auto;
@@ -65,6 +64,12 @@ export function ReleasesList({
   const {loading, data: releases} = useActiveReleases()
   const {selectedPerspectiveName} = usePerspective()
 
+  const {
+    document: {
+      drafts: {enabled: isDraftModelEnabled},
+    },
+  } = useWorkspace()
+
   const handleCreateBundleClick = useCallback(
     () => guardWithReleaseLimitUpsell(() => setCreateBundleDialogOpen(true)),
     [guardWithReleaseLimitUpsell, setCreateBundleDialogOpen],
@@ -86,14 +91,13 @@ export function ReleasesList({
     const isDraftsPerspective = typeof selectedPerspectiveName === 'undefined'
     let lastIndex = isDraftsPerspective ? 1 : 0
 
+    const systemStack = [PUBLISHED, isDraftModelEnabled ? LATEST : []].flat()
     const {asap, scheduled} = sortedReleaseTypeReleases
-    const countAsapReleases = asap.length
-    const countScheduledReleases = scheduled.length
 
     const offsets = {
-      asap: ASAP_RANGE_OFFSET,
-      scheduled: ASAP_RANGE_OFFSET + countAsapReleases,
-      undecided: ASAP_RANGE_OFFSET + countAsapReleases + countScheduledReleases,
+      asap: systemStack.length,
+      scheduled: systemStack.length + asap.length,
+      undecided: systemStack.length + asap.length + scheduled.length,
     }
 
     const adjustIndexForReleaseType = (type: ReleaseType) => {
@@ -115,7 +119,7 @@ export function ReleasesList({
       lastIndex,
       offsets,
     }
-  }, [selectedPerspectiveName, selectedReleaseId, sortedReleaseTypeReleases])
+  }, [isDraftModelEnabled, selectedPerspectiveName, selectedReleaseId, sortedReleaseTypeReleases])
 
   if (loading) {
     return (
@@ -137,11 +141,13 @@ export function ReleasesList({
             release={'published'}
             menuItemProps={menuItemProps}
           />
-          <GlobalPerspectiveMenuItem
-            rangePosition={isRangeVisible ? getRangePosition(range, 1) : undefined}
-            release={LATEST}
-            menuItemProps={menuItemProps}
-          />
+          {isDraftModelEnabled && (
+            <GlobalPerspectiveMenuItem
+              rangePosition={isRangeVisible ? getRangePosition(range, 1) : undefined}
+              release={LATEST}
+              menuItemProps={menuItemProps}
+            />
+          )}
         </StyledPublishedBox>
         {areReleasesEnabled && (
           <>
