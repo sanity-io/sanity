@@ -19,5 +19,8 @@
     "react-dom": "catalog:",
     "sanity": "workspace:*",
     "styled-components": "catalog:"
+  },
+  "devDependencies": {
+    "@repo/eslint-config": "workspace:*"
   }
 }

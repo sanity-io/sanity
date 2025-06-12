@@ -11,7 +11,6 @@ const ROOT_PATH = resolve(__dirname, '../../..')
 export default defineConfig([
   ...baseConfig,
   {
-    name: '@sanity/diff/overrides',
     rules: {
       'complexity': 'off',
       'max-depth': 'off',

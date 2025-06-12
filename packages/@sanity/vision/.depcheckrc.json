@@ -12,6 +12,7 @@
     "@sanity/codegen",
     "@sanity/schema",
     "vite",
-    "react-compiler-runtime"
+    "react-compiler-runtime",
+    "eslint"
   ]
 }

@@ -74,6 +74,7 @@
     "object-inspect": "^1.13.1"
   },
   "devDependencies": {
+    "@repo/eslint-config": "workspace:*",
     "@repo/package.config": "workspace:*",
     "@repo/test-config": "workspace:*",
     "@sanity/icons": "^3.7.0",
