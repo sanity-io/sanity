@@ -24,7 +24,7 @@
     "chore:report-unused-disable-directives": "oxlint --quiet --report-unused-disable-directives && turbo run lint --continue -- --quiet --report-unused-disable-directives --report-unused-inline-configs error",
     "chore:lint:fix": "turbo run lint -- --quiet --fix",
     "chore:lint:inspect": "eslint --inspect-config",
-    "chore:lint:changed": "turbo run lint:fix --affected",
+    "chore:lint:changed": "turbo run lint --filter=[HEAD^1] -- --quiet --fix",
     "chore:oxlint:fix": "oxlint --fix --fix-suggestions",
     "chore:normalize-versions": "node -r esbuild-register scripts/normalizeDependencyVersions.ts",
     "clean": "run-s build:clean clean:deps",
