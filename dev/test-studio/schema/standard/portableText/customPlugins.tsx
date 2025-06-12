@@ -202,18 +202,6 @@ export const customPlugins = defineType({
                 <BehaviorPlugin
                   behaviors={[
                     defineBehavior({
-                      on: '*',
-                      actions: [
-                        ({event}) => [
-                          effect(() => {
-                            // eslint-disable-next-line no-console
-                            console.log(event)
-                          }),
-                          forward(event),
-                        ],
-                      ],
-                    }),
-                    defineBehavior({
                       on: 'insert.text',
                       actions: [
                         ({event}) => [
