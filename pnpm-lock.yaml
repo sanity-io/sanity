@@ -5,7 +5,6 @@ settings:
   excludeLinksFromLockfile: false
 
 overrides:
-  '@conventional-changelog/git-client': 2.4.0
   '@npmcli/arborist': ^7.5.4
   '@sanity/ui@2': ^2.15.18
   '@types/node': ^22.10.0
