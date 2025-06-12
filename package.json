@@ -111,7 +111,7 @@
     "@repo/test-config": "workspace:*",
     "@repo/tsconfig": "workspace:*",
     "@sanity/client": "^7.5.0",
-    "@sanity/eslint-config-i18n": "1.0.0",
+    "@sanity/eslint-config-i18n": "2.0.0",
     "@sanity/eslint-config-studio": "^4.0.0",
     "@sanity/mutate": "^0.12.4",
     "@sanity/pkg-utils": "6.13.4",
