@@ -166,7 +166,7 @@ export function createReleaseOperationsStore(options: {
         // document id to be created
         versionId: getVersionId(documentId, releaseId),
         // the action will fail if this does not match what is in the database
-        ifBaseRevisionId: document?._rev,
+        ifBaseRevisionId: document._rev,
       } as unknown as CreateVersionAction,
       opts,
     )
