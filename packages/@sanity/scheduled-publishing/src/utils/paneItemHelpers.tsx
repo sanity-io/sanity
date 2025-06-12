@@ -81,5 +81,5 @@ export function getScheduledDocument(schedule: Schedule) {
  * Whilst schedules can contain multiple documents, this plugin specifically limits schedules to one document only
  */
 export function getScheduledDocumentId(schedule: Schedule): string | undefined {
-  return getScheduledDocument(schedule)?.documentId.replaceAll('drafts.', '')
+  return getScheduledDocument(schedule)?.documentId.replace('drafts.', '')
 }
