@@ -20,7 +20,9 @@ import {
   type CommonTypeDef,
   type CoreTypeDef,
   type CyclicMarker,
+  type DepthMarker,
   type FunctionMarker,
+  type JSXMarker,
   type ObjectField,
   type ObjectFieldset,
   type ObjectGroup,
@@ -31,6 +33,8 @@ import {
   type UndefinedMarker,
   type UnknownMarker,
 } from './types'
+
+const MAX_DEPTH_UKNOWN = 5
 
 type UnknownRecord<T> = {[P in keyof T]: unknown}
 
@@ -121,7 +125,7 @@ function convertCommonTypeDef(schemaType: SchemaType, opts: Options): CommonType
 
   return {
     title: maybeString(ownProps.title),
-    description: maybeString(ownProps.description),
+    description: maybeStringOrJSX(ownProps.description),
     readOnly: conditionalTrue(ownProps.readOnly),
     hidden: conditionalTrue(ownProps.hidden),
     liveEdit: maybeTrue(ownProps.liveEdit),
@@ -225,8 +229,15 @@ const FUNCTION_MARKER: FunctionMarker = {__type: 'function'}
 const UNKNOWN_MARKER: UnknownMarker = {__type: 'unknown'}
 const UNDEFINED_MARKER: UndefinedMarker = {__type: 'undefined'}
 const CYCLIC_MARKER: CyclicMarker = {__type: 'cyclic'}
+const MAX_DEPTH_MARKER: DepthMarker = {__type: 'maxDepth'}
 
-function convertUnknown(val: unknown, seen = new Set()): EncodableValue | undefined {
+function convertUnknown(
+  val: unknown,
+  seen = new Set(),
+  maxDepth = MAX_DEPTH_UKNOWN,
+): EncodableValue | undefined {
+  if (maxDepth === 0) return MAX_DEPTH_MARKER
+
   if (typeof val === 'string' || typeof val === 'boolean' || val === null || val === undefined) {
     return val
   }
@@ -246,20 +257,43 @@ function convertUnknown(val: unknown, seen = new Set()): EncodableValue | undefi
   if (typeof val === 'object') {
     if (Array.isArray(val)) {
       return val.map((elem) => {
-        const res = convertUnknown(elem, seen)
+        const res = convertUnknown(elem, seen, maxDepth - 1)
         return res === undefined ? UNDEFINED_MARKER : res
       })
+    }
+
+    if ('$$typeof' in val && 'type' in val && 'props' in val) {
+      // React element:
+      const {type, props} = val
+      const strType = typeof type === 'function' ? type.name : type
+      if (typeof strType !== 'string') return undefined
+      return {
+        __type: 'jsx',
+        type: strType,
+        props: convertUnknown(props, seen, maxDepth - 1) as EncodableObject,
+      }
     }
 
     let hasType = false
     const result: EncodableObject = {}
     for (const [key, field] of Object.entries(val)) {
       if (key === '__type') hasType = true
-      result[key] = convertUnknown(field, seen)
+      result[key] = convertUnknown(field, seen, maxDepth - 1)
     }
 
     return hasType ? {__type: 'object', value: result} : result
   }
 
   return UNKNOWN_MARKER
+}
+
+function maybeStringOrJSX(val: unknown): string | undefined | JSXMarker {
+  if (typeof val === 'string') return val
+  if (val && typeof val === 'object' && '$$typeof' in val && 'type' in val && 'props' in val) {
+    const {type, props} = val
+    const strType = typeof type === 'function' ? type.name : type
+    if (typeof strType !== 'string') return undefined
+    return {__type: 'jsx', type: strType, props: convertUnknown(props) as EncodableObject}
+  }
+  return undefined
 }

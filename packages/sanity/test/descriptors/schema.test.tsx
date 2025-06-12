@@ -4,6 +4,7 @@ import {
   type FieldsetDefinition,
   type SchemaTypeDefinition,
 } from '@sanity/types'
+import {type ReactNode} from 'react'
 import {assert, describe, expect, test} from 'vitest'
 
 import {
@@ -86,7 +87,43 @@ describe('Base features', () => {
       expect(
         convertType({name: 'foo', type: 'string', description: <div>Hello</div>}).typeDef,
       ).toMatchObject({
-        description: undefined,
+        description: {__type: 'jsx', type: 'div', props: {children: 'Hello'}},
+      })
+    })
+
+    test('custom JSX', () => {
+      function Foo({bar, children}: {bar: number; children: ReactNode}) {
+        return (
+          <div>
+            {bar} and {children}
+          </div>
+        )
+      }
+
+      expect(
+        convertType({
+          name: 'foo',
+          type: 'string',
+          description: (
+            <Foo bar={1}>
+              Hello <br /> <strong>world</strong>
+            </Foo>
+          ),
+        }).typeDef,
+      ).toMatchObject({
+        description: {
+          __type: 'jsx',
+          type: 'Foo',
+          props: {
+            bar: {__type: 'number', value: '1'},
+            children: [
+              'Hello ',
+              {__type: 'jsx', type: 'br', props: {}},
+              ' ',
+              {__type: 'jsx', type: 'strong', props: {children: 'world'}},
+            ],
+          },
+        },
       })
     })
   })
@@ -235,6 +272,19 @@ describe('Base features', () => {
           } as object,
         }).typeDef,
       ).toMatchObject({options: {foo: {__type: 'object', value: {__type: 'yes'}}}})
+    })
+
+    test('max depth', () => {
+      const val = {a: {b: {c: {d: {e: {f: {}}}}}}}
+      expect(
+        convertType({
+          name: 'foo',
+          type: 'string',
+          options: {
+            val,
+          } as object,
+        }).typeDef,
+      ).toMatchObject({options: {val: {a: {b: {c: {d: {__type: 'maxDepth'}}}}}}})
     })
   })
 

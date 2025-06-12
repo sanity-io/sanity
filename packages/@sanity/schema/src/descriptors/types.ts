@@ -16,7 +16,7 @@ export type NamedType = {
 
 export interface CommonTypeDef extends EncodableObject {
   title?: string
-  description?: string
+  description?: string | JSXMarker
 
   fields?: ObjectField[]
   groups?: ObjectGroup[]
@@ -36,13 +36,26 @@ export interface CommonTypeDef extends EncodableObject {
   rows?: string
 }
 
-/** In some scenarios we  */
-export type Marker = FunctionMarker | CyclicMarker | UndefinedMarker | UnknownMarker | NumberMarker
+/** In some scenarios we need to encode special information. */
+export type Marker =
+  | FunctionMarker
+  | UndefinedMarker
+  | UnknownMarker
+  | NumberMarker
+  | CyclicMarker
+  | JSXMarker
+  | ObjectMarker
 
 export type FunctionMarker = {__type: 'function'}
 
-/** Denotes that a  */
+/** Denotes that we've reached the max depth of what we're willing to encode. */
+export type DepthMarker = {__type: 'maxDepth'}
+
+/** Denotes that we've reached a cycle in the object graph. */
 export type CyclicMarker = {__type: 'cyclic'}
+
+/** Denotes that a JSX value was encountered. */
+export type JSXMarker = {__type: 'jsx'; type: string; props: EncodableObject}
 
 /** Denotes an undefined value. This can only appear inside arrays. */
 export type UndefinedMarker = {__type: 'undefined'}
