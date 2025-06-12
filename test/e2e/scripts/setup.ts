@@ -1,5 +1,4 @@
-import {sanityIdify} from '../../../scripts/utils/sanityIdify'
-import {startTimer} from '../../../scripts/utils/startTimer'
+import {startTimer, sanityIdify} from '@repo/utils'
 import {readEnv} from '../envVars'
 import {createE2EClient} from './e2eClient'
 
