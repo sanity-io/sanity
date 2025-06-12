@@ -58,6 +58,39 @@ export default defineConfig([
   ...i18nConfig,
   {
     name: 'sanity/overrides',
+    rules: {
+      '@typescript-eslint/no-require-imports': 'off',
+      'import/no-extraneous-dependencies': ['error', {packageDir: [ROOT_PATH, __dirname]}],
+      'i18next/no-literal-string': ['error'],
+      '@sanity/i18n/no-attribute-string-literals': [
+        'error',
+        {
+          ignores: {
+            componentPatterns: ['motion$'],
+            attributes: [
+              'animate',
+              'closed',
+              'documentType',
+              'exit',
+              'fill',
+              'full',
+              'initial',
+              'size',
+              'sortOrder',
+              'status',
+              'group',
+              'textWeight',
+              'showChangesBy',
+            ],
+          },
+        },
+      ],
+    },
+  },
+  {
+    name: 'sanity/boundaries-setup',
+    // It's unclear why the boundaries plugin is failing the check on the `definitionExtensions.test.ts` file, investigate why
+    ignores: ['src/core/form/types/definitionExtensions.test.ts'],
     plugins: {
       boundaries,
     },
@@ -397,17 +430,10 @@ export default defineConfig([
       'import/no-unresolved': 'off',
     },
   },
-  // Workaround false positives in the boundaries plugin
-  {
-    files: ['packages/sanity/src/core/form/types/definitionExtensions.test.ts'],
-    rules: {
-      'boundaries/element-types': 'off',
-    },
-  },
   // An issue with the vitest suite prevented this file from changing the 'react-i18next' import to 'sanity'.
   // This should be fixed, and the rule is disabled here rather than with an inline comment to give the override visibility so we don't forget about it.
   {
-    files: ['packages/sanity/src/ui-components/dialog/Dialog.tsx'],
+    files: ['src/ui-components/dialog/Dialog.tsx'],
     rules: {
       '@sanity/i18n/no-i18next-import': 'off',
     },
