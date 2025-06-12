@@ -1232,6 +1232,9 @@ importers:
         specifier: ^4.17.21
         version: 4.17.21
     devDependencies:
+      '@repo/eslint-config':
+        specifier: workspace:*
+        version: link:../../@repo/eslint-config
       '@repo/package.config':
         specifier: workspace:*
         version: link:../../@repo/package.config
@@ -1281,6 +1284,9 @@ importers:
         specifier: ^1.13.1
         version: 1.13.4
     devDependencies:
+      '@repo/eslint-config':
+        specifier: workspace:*
+        version: link:../../@repo/eslint-config
       '@repo/package.config':
         specifier: workspace:*
         version: link:../../@repo/package.config
@@ -1312,6 +1318,9 @@ importers:
         specifier: ^7.6.0
         version: 7.6.0(debug@4.4.1)
     devDependencies:
+      '@repo/eslint-config':
+        specifier: workspace:*
+        version: link:../../@repo/eslint-config
       '@repo/package.config':
         specifier: workspace:*
         version: link:../../@repo/package.config
@@ -1361,6 +1370,9 @@ importers:
         specifier: ^7.8.2
         version: 7.8.2
     devDependencies:
+      '@repo/eslint-config':
+        specifier: workspace:*
+        version: link:../../@repo/eslint-config
       '@repo/package.config':
         specifier: workspace:*
         version: link:../../@repo/package.config
@@ -1452,6 +1464,9 @@ importers:
         specifier: ^1.0.2
         version: 1.0.2(react@18.3.1)
     devDependencies:
+      '@repo/eslint-config':
+        specifier: workspace:*
+        version: link:../../@repo/eslint-config
       '@repo/package.config':
         specifier: workspace:*
         version: link:../../@repo/package.config
@@ -1506,9 +1521,16 @@ importers:
       resolve-pkg:
         specifier: ^2.0.0
         version: 2.0.0
+    devDependencies:
+      '@repo/eslint-config':
+        specifier: workspace:*
+        version: link:../@repo/eslint-config
 
   packages/groq:
     devDependencies:
+      '@repo/eslint-config':
+        specifier: workspace:*
+        version: link:../@repo/eslint-config
       '@repo/package.config':
         specifier: workspace:*
         version: link:../@repo/package.config
@@ -1936,6 +1958,9 @@ importers:
       '@repo/dev-aliases':
         specifier: workspace:*
         version: link:../@repo/dev-aliases
+      '@repo/eslint-config':
+        specifier: workspace:*
+        version: link:../@repo/eslint-config
       '@repo/package.config':
         specifier: workspace:*
         version: link:../@repo/package.config
@@ -2095,6 +2120,9 @@ importers:
 
   perf/efps:
     devDependencies:
+      '@repo/eslint-config':
+        specifier: workspace:*
+        version: link:../../packages/@repo/eslint-config
       '@sanity/client':
         specifier: ^7.6.0
         version: 7.6.0(debug@4.4.1)
@@ -2179,6 +2207,10 @@ importers:
       styled-components:
         specifier: 'catalog:'
         version: 6.1.18(react-dom@19.1.0(react@19.1.0))(react@19.1.0)
+    devDependencies:
+      '@repo/eslint-config':
+        specifier: workspace:*
+        version: link:../../packages/@repo/eslint-config
 
   perf/tests:
     dependencies:
@@ -2210,6 +2242,9 @@ importers:
         specifier: workspace:*
         version: link:../../packages/sanity
     devDependencies:
+      '@repo/eslint-config':
+        specifier: workspace:*
+        version: link:../../packages/@repo/eslint-config
       '@repo/test-config':
         specifier: workspace:*
         version: link:../../packages/@repo/test-config

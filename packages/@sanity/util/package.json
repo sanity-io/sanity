@@ -124,6 +124,7 @@
     "rxjs": "^7.8.2"
   },
   "devDependencies": {
+    "@repo/eslint-config": "workspace:*",
     "@repo/package.config": "workspace:*",
     "@repo/test-config": "workspace:*",
     "rimraf": "^5.0.10",

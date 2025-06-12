@@ -52,6 +52,7 @@
     "watch": "pkg-utils watch"
   },
   "devDependencies": {
+    "@repo/eslint-config": "workspace:*",
     "@repo/package.config": "workspace:*"
   },
   "engines": {

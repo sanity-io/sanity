@@ -286,6 +286,7 @@
     "@playwright/experimental-ct-react": "1.51.1",
     "@playwright/test": "1.51.1",
     "@repo/dev-aliases": "workspace:*",
+    "@repo/eslint-config": "workspace:*",
     "@repo/package.config": "workspace:*",
     "@repo/test-config": "workspace:*",
     "@sanity/codegen": "workspace:*",

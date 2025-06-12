@@ -53,6 +53,7 @@
     "@sanity/client": "^7.6.0"
   },
   "devDependencies": {
+    "@repo/eslint-config": "workspace:*",
     "@repo/package.config": "workspace:*",
     "@repo/test-config": "workspace:*",
     "@sanity/insert-menu": "1.1.12",

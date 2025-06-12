@@ -78,6 +78,7 @@
     "use-effect-event": "^1.0.2"
   },
   "devDependencies": {
+    "@repo/eslint-config": "workspace:*",
     "@repo/package.config": "workspace:*",
     "@sanity/cli": "workspace:*",
     "@sanity/client": "^7.6.0",

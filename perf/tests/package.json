@@ -26,6 +26,7 @@
     "sanity": "workspace:*"
   },
   "devDependencies": {
+    "@repo/eslint-config": "workspace:*",
     "@repo/test-config": "workspace:*",
     "@types/lodash": "^4.17.7",
     "@types/node": "^18.15.3",
