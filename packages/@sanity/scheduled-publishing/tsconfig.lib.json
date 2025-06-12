@@ -13,4 +13,4 @@
     "outDir": "./lib",
     "lib": ["dom", "es2021", "ES2022.Error", "ES2022.Intl"]
   }
-} 
+}
