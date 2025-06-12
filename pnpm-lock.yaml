@@ -509,9 +509,6 @@ importers:
       '@sanity/react-loader':
         specifier: ^1.10.35
         version: 1.11.0(@sanity/types@packages+@sanity+types)(react@19.1.0)(typescript@5.7.3)
-      '@sanity/scheduled-publishing':
-        specifier: workspace:*
-        version: link:../../packages/@sanity/scheduled-publishing
       '@sanity/tsdoc':
         specifier: 1.0.169
         version: 1.0.169(@emotion/is-prop-valid@1.3.1)(@types/babel__core@7.20.5)(@types/node@22.13.1)(babel-plugin-react-compiler@19.1.0-rc.2)(jiti@2.4.2)(react-dom@19.1.0(react@19.1.0))(react-is@18.3.1)(react@19.1.0)(sanity@packages+sanity)(styled-components@6.1.18(react-dom@19.1.0(react@19.1.0))(react@19.1.0))(terser@5.38.2)(yaml@2.8.0)
@@ -1121,85 +1118,6 @@ importers:
       vitest:
         specifier: 3.2.2
         version: 3.2.2(@types/debug@4.1.12)(@types/node@22.13.1)(jiti@2.4.2)(jsdom@23.2.0)(terser@5.38.2)(yaml@2.8.0)
-
-  packages/@sanity/scheduled-publishing:
-    dependencies:
-      '@sanity/color':
-        specifier: ^3.0.0
-        version: 3.0.6
-      '@sanity/icons':
-        specifier: ^2.0.0
-        version: 2.11.8(react@18.3.1)
-      '@sanity/telemetry':
-        specifier: ^0.8.0
-        version: 0.8.1(react@18.3.1)
-      '@sanity/ui':
-        specifier: ^2.15.18
-        version: 2.15.18(@emotion/is-prop-valid@1.3.1)(react-dom@18.3.1(react@18.3.1))(react-is@18.3.1)(react@18.3.1)(styled-components@6.1.18(react-dom@18.3.1(react@18.3.1))(react@18.3.1))
-      '@tanstack/react-virtual':
-        specifier: ^3.11.2
-        version: 3.13.2(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
-      date-fns:
-        specifier: ^2.25.0
-        version: 2.30.0
-      lodash:
-        specifier: ^4.17.21
-        version: 4.17.21
-      react-focus-lock:
-        specifier: ^2.13.6
-        version: 2.13.6(@types/react@19.1.3)(react@18.3.1)
-      react-is:
-        specifier: ^18.2.0
-        version: 18.3.1
-      rxjs:
-        specifier: ^7.8.2
-        version: 7.8.2
-    devDependencies:
-      '@sanity/client':
-        specifier: ^7.5.0
-        version: 7.5.0(debug@4.4.1)
-      '@sanity/types':
-        specifier: workspace:*
-        version: link:../types
-      '@sanity/util':
-        specifier: workspace:*
-        version: link:../util
-      '@types/lodash':
-        specifier: ^4.14.0
-        version: 4.17.15
-      '@types/react':
-        specifier: ^19.1.0
-        version: 19.1.3
-      '@types/react-is':
-        specifier: ^19.0.0
-        version: 19.0.0
-      '@types/styled-components':
-        specifier: ^5.1.0
-        version: 5.1.34
-      date-fns-tz:
-        specifier: 2.0.1
-        version: 2.0.1(date-fns@2.30.0)
-      react:
-        specifier: ^18.0.0
-        version: 18.3.1
-      react-dom:
-        specifier: ^18.0.0
-        version: 18.3.1(react@18.3.1)
-      rimraf:
-        specifier: ^3.0.0
-        version: 3.0.2
-      sanity:
-        specifier: workspace:*
-        version: link:../../sanity
-      styled-components:
-        specifier: ^6.1.18
-        version: 6.1.18(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
-      swr:
-        specifier: 2.2.5
-        version: 2.2.5(react@18.3.1)
-      typescript:
-        specifier: 5.8.3
-        version: 5.8.3
 
   packages/@sanity/schema:
     dependencies:
@@ -1991,6 +1909,9 @@ importers:
       styled-components:
         specifier: ^6.1.18
         version: 6.1.18(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
+      swr:
+        specifier: 2.2.5
+        version: 2.2.5(react@18.3.1)
       vitest:
         specifier: 3.2.2
         version: 3.2.2(@types/debug@4.1.12)(@types/node@22.13.1)(jiti@2.4.2)(jsdom@23.2.0)(terser@5.38.2)(yaml@2.8.0)
@@ -4524,12 +4445,6 @@ packages:
       sanity: ^3.19.0
       styled-components: ^6.1
 
-  '@sanity/icons@2.11.8':
-    resolution: {integrity: sha512-C4ViXtk6eyiNTQ5OmxpfmcK6Jw+LLTi9zg9XBUD15DzC4xTHaGW9SVfUa43YtPGs3WC3M0t0K59r0GDjh52HIg==}
-    engines: {node: '>=14.0.0'}
-    peerDependencies:
-      react: ^18
-
   '@sanity/icons@3.7.0':
     resolution: {integrity: sha512-MVh5C55X8Vn2oIsraSPVx4MkHvkqUimkmv7yP++IfJBCLgb38/7G2CM+GB95GTpLPRdF2m3QEwwXcaeljjqKOQ==}
     engines: {node: '>=14.0.0'}
@@ -5108,9 +5023,6 @@ packages:
   '@types/hast@2.3.10':
     resolution: {integrity: sha512-McWspRw8xx8J9HurkVBfYj0xKoE25tOFlHGdx4MJ5xORQrMGZNqJhVQWaIbm6Oyla5kYOXtDiopzKRJzEOkwJw==}
 
-  '@types/hoist-non-react-statics@3.3.6':
-    resolution: {integrity: sha512-lPByRJUer/iN/xa4qpyL0qmL11DqNW81iU/IG1S3uvRUq4oKagz8VCxZjiWkumgt66YT3vOdDgZ0o32sGKtCEw==}
-
   '@types/inquirer@6.5.0':
     resolution: {integrity: sha512-rjaYQ9b9y/VFGOpqBEXRavc3jh0a+e6evAbI31tMda8VlPaSy0AZJfXsvmIe3wklc7W6C3zCSfleuMXR7NOyXw==}
 
@@ -5216,9 +5128,6 @@ packages:
 
   '@types/speakingurl@13.0.6':
     resolution: {integrity: sha512-ywkRHNHBwq0mFs/2HRgW6TEBAzH66G8f2Txzh1aGR0UC9ZoAUHfHxLZGDhwMpck4BpSnB61eNFIFmlV+TJ+KUA==}
-
-  '@types/styled-components@5.1.34':
-    resolution: {integrity: sha512-mmiVvwpYklFIv9E8qfxuPyIt/OuyIrn6gMOAMOFUO3WJfSrSE+sGUoa4PiZj77Ut7bKZpaa6o1fBKS/4TOEvnA==}
 
   '@types/stylis@4.2.5':
     resolution: {integrity: sha512-1Xve+NMN7FWjY14vLoY5tL3BVEQ/n42YLwaqJIPYhotZ9uBHt87VceMwWQpzmdEt2TNXIorIFG+YeCUUW7RInw==}
@@ -14917,10 +14826,6 @@ snapshots:
       - react-dom
       - react-is
 
-  '@sanity/icons@2.11.8(react@18.3.1)':
-    dependencies:
-      react: 18.3.1
-
   '@sanity/icons@3.7.0(react@18.3.1)':
     dependencies:
       react: 18.3.1
@@ -16059,11 +15964,6 @@ snapshots:
     dependencies:
       '@types/unist': 2.0.11
 
-  '@types/hoist-non-react-statics@3.3.6':
-    dependencies:
-      '@types/react': 19.1.3
-      hoist-non-react-statics: 3.3.2
-
   '@types/inquirer@6.5.0':
     dependencies:
       '@types/through': 0.0.33
@@ -16161,12 +16061,6 @@ snapshots:
   '@types/shallow-equals@1.0.3': {}
 
   '@types/speakingurl@13.0.6': {}
-
-  '@types/styled-components@5.1.34':
-    dependencies:
-      '@types/hoist-non-react-statics': 3.3.6
-      '@types/react': 19.1.3
-      csstype: 3.1.3
 
   '@types/stylis@4.2.5': {}
 

@@ -1,3 +1,4 @@
+import {scheduledPublishing} from '../../scheduled-publishing/plugin'
 import {CANVAS_INTEGRATION_NAME, canvasIntegration} from '../canvas/canvasIntegrationPlugin'
 import {comments} from '../comments/plugin'
 import {createIntegration} from '../create/createIntegrationPlugin'
@@ -14,7 +15,7 @@ import {
 const defaultPlugins = [
   comments(),
   tasks(),
-  //scheduledPublishing(),
+  scheduledPublishing(),
   createIntegration(),
   releases(),
   canvasIntegration(),

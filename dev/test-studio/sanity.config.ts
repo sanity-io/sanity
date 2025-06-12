@@ -9,7 +9,6 @@ import {ptPTLocale} from '@sanity/locale-pt-pt'
 import {svSELocale} from '@sanity/locale-sv-se'
 import {SanityMonogram} from '@sanity/logos'
 import {debugSecrets} from '@sanity/preview-url-secret/sanity-plugin-debug-secrets'
-import {scheduledPublishing} from '@sanity/scheduled-publishing'
 import {tsdoc} from '@sanity/tsdoc/studio'
 import {visionTool} from '@sanity/vision'
 import {defineConfig, definePlugin, type WorkspaceOptions} from 'sanity'
@@ -195,7 +194,6 @@ const sharedSettings = ({projectId}: {projectId: string}) => {
       markdownSchema(),
       wave(),
       autoCloseBrackets(),
-      scheduledPublishing(),
     ],
   })()
 }
