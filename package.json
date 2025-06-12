@@ -158,7 +158,7 @@
     "lodash": "^4.17.21",
     "minimist": "^1.2.5",
     "npm-run-all2": "^6.2.3",
-    "oxlint": "^1.0.0",
+    "oxlint": "^1.1.0",
     "pkg-pr-new": "^0.0.41",
     "prettier": "catalog:",
     "read-package-up": "^11.0.0",
@@ -192,7 +192,7 @@
       "@typescript-eslint/parser": "$@typescript-eslint/parser",
       "@vitest/coverage-v8": "$vitest",
       "@vitest/expect": "$vitest",
-      "eslint-plugin-react-hooks": "0.0.0-experimental-56408a5b-20250610",
+      "eslint-plugin-react-hooks": "0.0.0-experimental-a00ca6f6-20250611",
       "jsdom": "$jsdom",
       "vite": "$vite",
       "vitest": "$vitest"
