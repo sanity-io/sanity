@@ -43,16 +43,9 @@ export function getStudioConfig({
       throw new Error(`Failed to resolve sanity.config.(js|ts) for base path "${basePath}"`)
     }
 
-    let config: Config | undefined
-    try {
-      // eslint-disable-next-line import/no-dynamic-require
-      const mod = require(configPath)
-      config = mod.__esModule && mod.default ? mod.default : mod
-    } catch (err) {
-      const message = `Failed to load configuration file "${configPath}":\n${err.message}`
-      // this helps preserve the stack trace
-      throw Object.assign(err, {message})
-    }
+    // eslint-disable-next-line import/no-dynamic-require
+    const mod = require(configPath)
+    const config: Config | undefined = mod.__esModule && mod.default ? mod.default : mod
 
     if (!config) throw new Error('Configuration did not export expected config shape')
     const normalized = Array.isArray(config)
