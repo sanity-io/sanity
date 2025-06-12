@@ -41,6 +41,44 @@
     "perf": "error"
   },
   "rules": {
+    "eslint/no-restricted-imports": [
+      "error",
+      {
+        "paths": [
+          {
+            "name": "styled-components",
+            "importNames": ["default"],
+            "message": "Please use `import {styled} from 'styled-components'` instead."
+          },
+          {
+            "name": "react",
+            "importNames": ["default"],
+            "message": "Please use named imports, e.g. `import {useEffect, useMemo, type ComponentType} from 'react'` instead."
+          },
+          {
+            "name": "react",
+            "importNames": ["createElement"],
+            "message": "Please use JSX instead of createElement, for example `createElement(Icon)` should be `<Icon />`"
+          },
+          {
+            "name": "react/jsx-runtime",
+            "message": "Do not attempt importing from the jsx runtime manually, instead use JSX syntax and let the bundler transform it"
+          },
+          {
+            "name": "react/jsx-dev-runtime",
+            "message": "Do not attempt importing from the jsx runtime manually, instead use JSX syntax and let the bundler transform it"
+          },
+          {
+            "name": "react/compiler-runtime",
+            "message": "Do not attempt importing from the compiler runtime manually, instead let react compiler transform it"
+          },
+          {
+            "name": "react-compiler-runtime",
+            "message": "Do not attempt importing from the compiler runtime manually, instead let react compiler transform it"
+          }
+        ]
+      }
+    ],
     // Not relevant as we use the modern jsx-runtime transform
     "react-in-jsx-scope": "off",
     // Not relevant due to React Compiler

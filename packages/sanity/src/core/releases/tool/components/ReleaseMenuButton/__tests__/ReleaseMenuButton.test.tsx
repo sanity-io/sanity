@@ -61,6 +61,12 @@ vi.mock('sanity/router', async (importOriginal) => ({
   ...(await importOriginal()),
   useRouter: vi.fn().mockReturnValue({state: {}, navigate: vi.fn()}),
 }))
+vi.mock('sanity', async (importOriginal) => {
+  return {
+    ...(await importOriginal()),
+    useTranslation: vi.fn(() => ({t: (key: string) => key})),
+  }
+})
 
 const renderTest = async ({
   release,

@@ -4,6 +4,7 @@
     "@types/react",
     "@types/react-dom",
     "babel-plugin-react-compiler",
-    "eslint"
+    "eslint",
+    "@repo/eslint-config"
   ]
 }

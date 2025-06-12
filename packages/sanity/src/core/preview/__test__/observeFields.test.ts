@@ -32,7 +32,7 @@ describe('observeFields', () => {
     expect(await first).toMatchInlineSnapshot(`null`)
 
     // After we got first value from server and it turned out to be `null`, we should have `null` as the memoized sync value
-    let syncValue = undefined
+    let syncValue
     observeFields('foo', ['bar'])
       .pipe(
         tap((value) => {

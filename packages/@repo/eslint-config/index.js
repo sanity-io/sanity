@@ -39,6 +39,7 @@ const ignores = [
   '**/lib/*',
   '**/node_modules/*',
   '**/report/trace/*',
+  '**/playwright-ct/report/*',
   '**/dist/*',
   '*.json',
   '*.css',
@@ -111,30 +112,6 @@ export default [
       'react-hooks/exhaustive-deps': 'error',
       'react-compiler/react-compiler': 'error',
       'react/no-unescaped-entities': 'off',
-      // 'i18next/no-literal-string': ['error'],
-      // '@sanity/i18n/no-attribute-string-literals': [
-      //   'error',
-      //   {
-      //     ignores: {
-      //       componentPatterns: ['motion$'],
-      //       attributes: [
-      //         'animate',
-      //         'closed',
-      //         'documentType',
-      //         'exit',
-      //         'fill',
-      //         'full',
-      //         'initial',
-      //         'size',
-      //         'sortOrder',
-      //         'status',
-      //         'group',
-      //         'textWeight',
-      //         'showChangesBy',
-      //       ],
-      //     },
-      //   },
-      // ],
       '@typescript-eslint/no-explicit-any': ['warn'],
       '@typescript-eslint/no-dupe-class-members': ['error'],
       '@typescript-eslint/no-shadow': ['error'],
@@ -200,6 +177,20 @@ export default [
     name: 'react/jsx-runtime',
     ...pluginReact.configs.flat['jsx-runtime'],
   },
+  // Don't lint React Compiler rules on test code
+  {
+    name: 'sanity/no-react-compiler-on-test-code',
+    files: [
+      `**/*/test/**/*`,
+      `**/*/__workshop__/**/*`,
+      '**/*/__tests__/**/*',
+      '**/*.test.{js,ts,tsx}',
+      'packages/sanity/playwright-ct/**',
+    ],
+    rules: {
+      'react-compiler/react-compiler': 'off',
+    },
+  },
   ...turboConfig,
   // Disables rules that are handled by prettier, we run prettier separately as running it within ESLint is too slow
   eslintConfigPrettier,
@@ -210,6 +201,24 @@ export default [
     name: 'react-hooks/exhaustive-deps/useEffectEvent',
     rules: {
       'react-hooks/exhaustive-deps': 'error',
+    },
+  },
+  // Since we also use no-restricted-imports in oxlint, we need to add this after `buildFromOxlintConfigFile` or the rule is disabled
+  {
+    files: ['test/e2e/**'],
+    rules: {
+      'no-restricted-imports': [
+        'error',
+        {
+          paths: [
+            {
+              name: '@playwright/test',
+              importNames: ['test', 'default'],
+              message: 'Please use named imports, e.g. `import {test} from "studio-test"` instead.',
+            },
+          ],
+        },
+      ],
     },
   },
 ]

@@ -21,7 +21,7 @@ Examples:
   sanity migration create "Rename field from location to address"
 `
 
-// eslint-disable-next-line @typescript-eslint/no-empty-interface
+// eslint-disable-next-line @typescript-eslint/no-empty-object-type
 interface CreateMigrationFlags {}
 
 const TEMPLATES = [

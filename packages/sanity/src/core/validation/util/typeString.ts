@@ -16,7 +16,6 @@ export function typeString(obj: unknown): string {
   const stringType = _toString.call(obj).slice(8, -1)
   if (obj === null || obj === undefined) return stringType.toLowerCase()
 
-  // eslint-disable-next-line @typescript-eslint/ban-types
   const constructorType = (obj as object).constructor
   if (constructorType && !isBuiltIn(constructorType)) return constructorType.name
   return stringType

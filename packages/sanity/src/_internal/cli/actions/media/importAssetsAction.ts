@@ -473,7 +473,7 @@ function reportResult({
   chalk,
   spinner,
 }: Pick<Context, 'chalk' | 'spinner'>): OperatorFunction<State, [number, State | undefined]> {
-  let previousState: State | undefined = undefined
+  let previousState: State | undefined
 
   return pipe(
     scan<State, [number, State | undefined]>(

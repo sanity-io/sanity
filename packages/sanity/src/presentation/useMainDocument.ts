@@ -60,7 +60,7 @@ export function getRouteContext(route: Path, url: URL): DocumentResolverContext 
   const routes = Array.isArray(route) ? route : [route]
 
   for (route of routes) {
-    let origin: DocumentResolverContext['origin'] = undefined
+    let origin: DocumentResolverContext['origin']
     let path = route
 
     // Handle absolute URLs
