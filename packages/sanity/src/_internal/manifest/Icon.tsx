@@ -13,7 +13,11 @@ interface SchemaIconProps {
 }
 
 const SchemaIcon = ({icon, title, subtitle}: SchemaIconProps): React.JSX.Element => {
-  return <ThemeProvider theme={theme}>{normalizeIcon(icon, title, subtitle)}</ThemeProvider>
+  return (
+    <>
+      <ThemeProvider theme={theme}>{normalizeIcon(icon, title, subtitle)}</ThemeProvider>
+    </>
+  )
 }
 
 function normalizeIcon(
