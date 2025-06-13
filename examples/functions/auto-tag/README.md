@@ -25,17 +25,18 @@ This Sanity Function automatically generates relevant tags for blog posts by ana
 npx sanity functions init --example auto-tag
 ```
 
-2. Add the function configurations to your blueprint's resources array:
+2. Add the function configurations to your blueprint config's resources array:
 
-```json
-{
-  "name": "auto-tag",
-  "memory": 2,
-  "timeout": 30,
-  "on": ["publish"],
-  "filter": "_type == 'post' && !defined(tags)",
-  "projection": "_id"
-}
+```ts
+// sanity.blueprint.ts
+defineDocumentFunction({
+  name: 'auto-tag',
+  memory: 2,
+  timeout: 30,
+  on: ['publish'],
+  filter: "_type == 'post' && !defined(tags)",
+  projection: '_id',
+})
 ```
 
 3. Install the function dependencies with your prefered package manager:
