@@ -92,6 +92,12 @@ export const ptAllTheBellsAndWhistlesType = defineType({
                   },
                 ],
               }),
+              defineField({
+                type: 'reference',
+                name: 'reference',
+                title: 'Inline reference annotation',
+                to: [{type: 'book'}],
+              }),
             ],
           },
           of: [
@@ -116,6 +122,12 @@ export const ptAllTheBellsAndWhistlesType = defineType({
                   validation: (rule) => rule.required(),
                 }),
               ],
+            }),
+            defineField({
+              type: 'reference',
+              name: 'inlineReference',
+              title: 'Inline reference',
+              to: [{type: 'book'}],
             }),
           ],
         }),
