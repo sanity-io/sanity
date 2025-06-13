@@ -2,7 +2,7 @@ import {
   type Asset as MediaLibraryAsset,
   type AssetInstanceDocument,
 } from '@sanity/media-library-types'
-import {type CustomValidatorResult, isReference, type Validators} from '@sanity/types'
+import {type CustomValidatorResult, isReference, MediaAssetTypes, type Validators} from '@sanity/types'
 
 import {getPublishedId} from '../../util'
 import {isLocalizedMessages, localizeMessage} from '../util/localizeMessage'
@@ -96,7 +96,7 @@ export const objectValidators: Validators = {
       return context.i18n.t('validation:object.not-media-library-asset')
     }
 
-    let result: CustomValidatorResult = []
+    let result: CustomValidatorResult = true
 
     try {
       const [type, libraryId, documentId] = value.media._ref.split(':', 3)
@@ -120,7 +120,7 @@ export const objectValidators: Validators = {
       result = await fn(
         {
           media: {
-            asset: asset,
+            asset,
           },
           value,
         },
