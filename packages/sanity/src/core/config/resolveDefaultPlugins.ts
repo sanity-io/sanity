@@ -1,8 +1,8 @@
-import {scheduledPublishing} from '../../scheduled-publishing/plugin'
 import {CANVAS_INTEGRATION_NAME, canvasIntegration} from '../canvas/canvasIntegrationPlugin'
 import {comments} from '../comments/plugin'
 import {createIntegration} from '../create/createIntegrationPlugin'
 import {releases, RELEASES_NAME} from '../releases/plugin'
+import {SCHEDULED_PUBLISHING_NAME, scheduledPublishing} from '../scheduled-publishing/plugin'
 import {tasks, TASKS_NAME} from '../tasks/plugin'
 import {
   type AppsOptions,
@@ -24,9 +24,6 @@ const defaultPlugins = [
 type DefaultPluginsOptions = DefaultPluginsWorkspaceOptions & {
   apps: AppsOptions
 }
-
-/** TODO: remove this once we have a proper package */
-export const SCHEDULED_PUBLISHING_NAME = '@sanity/scheduled-publishing'
 
 export function getDefaultPlugins(options: DefaultPluginsOptions, plugins?: PluginOptions[]) {
   return defaultPlugins.filter((plugin) => {
