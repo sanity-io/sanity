@@ -714,6 +714,9 @@ importers:
         specifier: ^11.0.0
         version: 11.0.0
     devDependencies:
+      '@repo/eslint-config':
+        specifier: workspace:*
+        version: link:../eslint-config
       '@repo/test-config':
         specifier: workspace:*
         version: link:../test-config
