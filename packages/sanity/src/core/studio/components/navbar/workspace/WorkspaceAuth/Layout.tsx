@@ -5,7 +5,7 @@ import {styled} from 'styled-components'
 
 const LINKS = [
   {
-    url: 'https://slack.sanity.io/',
+    url: 'https://snty.link/community',
     i18nKey: 'workspaces.community-title',
     title: 'Community',
   },
