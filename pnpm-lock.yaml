@@ -36,6 +36,11 @@ overrides:
   vite: npm:rolldown-vite@6.3.19
   vitest: 3.2.2
 
+patchedDependencies:
+  '@vitejs/plugin-react':
+    hash: dbddf1bce8ebe7035b95d4ff9b5ec4fcc2d24e6f27b2dc6e3af349eb9e42fbf6
+    path: patches/@vitejs__plugin-react.patch
+
 importers:
 
   .:
@@ -132,7 +137,7 @@ importers:
         version: 7.18.0(eslint@8.57.1)(typescript@5.8.3)
       '@vitejs/plugin-react':
         specifier: ^4.5.1
-        version: 4.5.1(rolldown-vite@6.3.19(@types/node@22.13.1)(esbuild@0.25.5)(jiti@2.4.2)(terser@5.38.2)(yaml@2.8.0))
+        version: 4.5.1(patch_hash=dbddf1bce8ebe7035b95d4ff9b5ec4fcc2d24e6f27b2dc6e3af349eb9e42fbf6)(rolldown-vite@6.3.19(@types/node@22.13.1)(esbuild@0.25.5)(jiti@2.4.2)(terser@5.38.2)(yaml@2.8.0))
       '@vitest/coverage-v8':
         specifier: 3.2.2
         version: 3.2.2(vitest@3.2.2(@types/debug@4.1.12)(@types/node@22.13.1)(esbuild@0.25.5)(jiti@2.4.2)(jsdom@23.2.0)(terser@5.38.2)(yaml@2.8.0))
@@ -328,7 +333,7 @@ importers:
         version: 19.1.3(@types/react@19.1.3)
       '@vitejs/plugin-react':
         specifier: ^4.5.1
-        version: 4.5.1(rolldown-vite@6.3.19(@types/node@22.13.1)(esbuild@0.25.5)(jiti@2.4.2)(terser@5.38.2)(yaml@2.8.0))
+        version: 4.5.1(patch_hash=dbddf1bce8ebe7035b95d4ff9b5ec4fcc2d24e6f27b2dc6e3af349eb9e42fbf6)(rolldown-vite@6.3.19(@types/node@22.13.1)(esbuild@0.25.5)(jiti@2.4.2)(terser@5.38.2)(yaml@2.8.0))
       typescript:
         specifier: 5.8.3
         version: 5.8.3
@@ -1252,7 +1257,7 @@ importers:
         version: 19.1.3
       '@vitejs/plugin-react':
         specifier: ^4.5.1
-        version: 4.5.1(vite@6.3.5(@types/node@22.13.1)(jiti@2.4.2)(lightningcss@1.30.1)(terser@5.38.2)(yaml@2.8.0))
+        version: 4.5.1(patch_hash=dbddf1bce8ebe7035b95d4ff9b5ec4fcc2d24e6f27b2dc6e3af349eb9e42fbf6)(vite@6.3.5(@types/node@22.13.1)(jiti@2.4.2)(lightningcss@1.30.1)(terser@5.38.2)(yaml@2.8.0))
       react:
         specifier: catalog:react18
         version: 18.3.1
@@ -1587,7 +1592,7 @@ importers:
         version: 3.0.4
       '@vitejs/plugin-react':
         specifier: ^4.5.1
-        version: 4.5.1(rolldown-vite@6.3.19(@types/node@22.13.1)(esbuild@0.25.5)(jiti@2.4.2)(terser@5.38.2)(yaml@2.8.0))
+        version: 4.5.1(patch_hash=dbddf1bce8ebe7035b95d4ff9b5ec4fcc2d24e6f27b2dc6e3af349eb9e42fbf6)(rolldown-vite@6.3.19(@types/node@22.13.1)(esbuild@0.25.5)(jiti@2.4.2)(terser@5.38.2)(yaml@2.8.0))
       '@xstate/react':
         specifier: ^5.0.5
         version: 5.0.5(@types/react@19.1.3)(react@18.3.1)(xstate@5.19.4)
@@ -2038,7 +2043,7 @@ importers:
         version: 17.0.33
       '@vitejs/plugin-react':
         specifier: ^4.5.1
-        version: 4.5.1(rolldown-vite@6.3.19(@types/node@22.13.1)(esbuild@0.25.5)(jiti@2.4.2)(terser@5.38.2)(yaml@2.8.0))
+        version: 4.5.1(patch_hash=dbddf1bce8ebe7035b95d4ff9b5ec4fcc2d24e6f27b2dc6e3af349eb9e42fbf6)(rolldown-vite@6.3.19(@types/node@22.13.1)(esbuild@0.25.5)(jiti@2.4.2)(terser@5.38.2)(yaml@2.8.0))
       babel-plugin-react-compiler:
         specifier: 19.1.0-rc.2
         version: 19.1.0-rc.2
@@ -14569,7 +14574,7 @@ snapshots:
   '@playwright/experimental-ct-react@1.51.1(@types/node@22.13.1)(esbuild@0.25.5)(jiti@2.4.2)(rolldown-vite@6.3.19(@types/node@22.13.1)(esbuild@0.25.5)(jiti@2.4.2)(terser@5.38.2)(yaml@2.8.0))(terser@5.38.2)(yaml@2.8.0)':
     dependencies:
       '@playwright/experimental-ct-core': 1.51.1(@types/node@22.13.1)(esbuild@0.25.5)(jiti@2.4.2)(terser@5.38.2)(yaml@2.8.0)
-      '@vitejs/plugin-react': 4.5.1(rolldown-vite@6.3.19(@types/node@22.13.1)(esbuild@0.25.5)(jiti@2.4.2)(terser@5.38.2)(yaml@2.8.0))
+      '@vitejs/plugin-react': 4.5.1(patch_hash=dbddf1bce8ebe7035b95d4ff9b5ec4fcc2d24e6f27b2dc6e3af349eb9e42fbf6)(rolldown-vite@6.3.19(@types/node@22.13.1)(esbuild@0.25.5)(jiti@2.4.2)(terser@5.38.2)(yaml@2.8.0))
     transitivePeerDependencies:
       - '@types/node'
       - esbuild
@@ -15596,7 +15601,7 @@ snapshots:
       '@sanity/pkg-utils': 6.13.4(@types/babel__core@7.20.5)(@types/node@22.13.1)(babel-plugin-react-compiler@19.1.0-rc.2)(debug@4.4.1)(typescript@5.7.3)
       '@sanity/ui': 2.15.18(@emotion/is-prop-valid@1.3.1)(react-dom@18.3.1(react@18.3.1))(react-is@18.3.1)(react@18.3.1)(styled-components@6.1.18(react-dom@18.3.1(react@18.3.1))(react@18.3.1))
       '@types/cpx': 1.5.5
-      '@vitejs/plugin-react': 4.5.1(rolldown-vite@6.3.19(@types/node@22.13.1)(esbuild@0.25.5)(jiti@2.4.2)(terser@5.38.2)(yaml@2.8.0))
+      '@vitejs/plugin-react': 4.5.1(patch_hash=dbddf1bce8ebe7035b95d4ff9b5ec4fcc2d24e6f27b2dc6e3af349eb9e42fbf6)(rolldown-vite@6.3.19(@types/node@22.13.1)(esbuild@0.25.5)(jiti@2.4.2)(terser@5.38.2)(yaml@2.8.0))
       cac: 6.7.14
       chalk: 4.1.2
       chokidar: 4.0.3
@@ -15653,7 +15658,7 @@ snapshots:
       '@sanity/pkg-utils': 6.13.4(@types/babel__core@7.20.5)(@types/node@22.13.1)(babel-plugin-react-compiler@19.1.0-rc.2)(typescript@5.7.3)
       '@sanity/ui': 2.15.18(@emotion/is-prop-valid@1.3.1)(react-dom@19.1.0(react@19.1.0))(react-is@18.3.1)(react@19.1.0)(styled-components@6.1.18(react-dom@19.1.0(react@19.1.0))(react@19.1.0))
       '@types/cpx': 1.5.5
-      '@vitejs/plugin-react': 4.5.1(rolldown-vite@6.3.19(@types/node@22.13.1)(esbuild@0.19.12)(jiti@2.4.2)(terser@5.38.2)(yaml@2.8.0))
+      '@vitejs/plugin-react': 4.5.1(patch_hash=dbddf1bce8ebe7035b95d4ff9b5ec4fcc2d24e6f27b2dc6e3af349eb9e42fbf6)(rolldown-vite@6.3.19(@types/node@22.13.1)(esbuild@0.19.12)(jiti@2.4.2)(terser@5.38.2)(yaml@2.8.0))
       cac: 6.7.14
       chalk: 4.1.2
       chokidar: 4.0.3
@@ -15710,7 +15715,7 @@ snapshots:
       '@sanity/pkg-utils': 6.13.4(@types/babel__core@7.20.5)(@types/node@22.13.1)(babel-plugin-react-compiler@19.1.0-rc.2)(typescript@5.7.3)
       '@sanity/ui': 2.15.18(@emotion/is-prop-valid@1.3.1)(react-dom@19.1.0(react@19.1.0))(react-is@18.3.1)(react@19.1.0)(styled-components@6.1.18(react-dom@19.1.0(react@19.1.0))(react@19.1.0))
       '@types/cpx': 1.5.5
-      '@vitejs/plugin-react': 4.5.1(rolldown-vite@6.3.19(@types/node@22.13.1)(esbuild@0.25.5)(jiti@2.4.2)(terser@5.38.2)(yaml@2.8.0))
+      '@vitejs/plugin-react': 4.5.1(patch_hash=dbddf1bce8ebe7035b95d4ff9b5ec4fcc2d24e6f27b2dc6e3af349eb9e42fbf6)(rolldown-vite@6.3.19(@types/node@22.13.1)(esbuild@0.25.5)(jiti@2.4.2)(terser@5.38.2)(yaml@2.8.0))
       cac: 6.7.14
       chalk: 4.1.2
       chokidar: 4.0.3
@@ -15764,7 +15769,7 @@ snapshots:
     dependencies:
       '@sanity/icons': 3.7.0(react@18.3.1)
       '@sanity/ui': 2.15.18(@emotion/is-prop-valid@1.3.1)(react-dom@18.3.1(react@18.3.1))(react-is@18.3.1)(react@18.3.1)(styled-components@6.1.18(react-dom@18.3.1(react@18.3.1))(react@18.3.1))
-      '@vitejs/plugin-react': 4.5.1(rolldown-vite@6.3.19(@types/node@22.13.1)(esbuild@0.25.5)(jiti@2.4.2)(terser@5.38.2)(yaml@2.8.0))
+      '@vitejs/plugin-react': 4.5.1(patch_hash=dbddf1bce8ebe7035b95d4ff9b5ec4fcc2d24e6f27b2dc6e3af349eb9e42fbf6)(rolldown-vite@6.3.19(@types/node@22.13.1)(esbuild@0.25.5)(jiti@2.4.2)(terser@5.38.2)(yaml@2.8.0))
       axe-core: 4.10.2
       cac: 6.7.14
       chokidar: 3.6.0
@@ -15798,7 +15803,7 @@ snapshots:
     dependencies:
       '@sanity/icons': 3.7.0(react@19.1.0)
       '@sanity/ui': 2.15.18(@emotion/is-prop-valid@1.3.1)(react-dom@19.1.0(react@19.1.0))(react-is@18.3.1)(react@19.1.0)(styled-components@6.1.18(react-dom@19.1.0(react@19.1.0))(react@19.1.0))
-      '@vitejs/plugin-react': 4.5.1(rolldown-vite@6.3.19(@types/node@22.13.1)(esbuild@0.19.12)(jiti@2.4.2)(terser@5.38.2)(yaml@2.8.0))
+      '@vitejs/plugin-react': 4.5.1(patch_hash=dbddf1bce8ebe7035b95d4ff9b5ec4fcc2d24e6f27b2dc6e3af349eb9e42fbf6)(rolldown-vite@6.3.19(@types/node@22.13.1)(esbuild@0.19.12)(jiti@2.4.2)(terser@5.38.2)(yaml@2.8.0))
       axe-core: 4.10.2
       cac: 6.7.14
       chokidar: 3.6.0
@@ -16704,7 +16709,7 @@ snapshots:
 
   '@vercel/stega@0.1.2': {}
 
-  '@vitejs/plugin-react@4.5.1(rolldown-vite@6.3.19(@types/node@22.13.1)(esbuild@0.19.12)(jiti@2.4.2)(terser@5.38.2)(yaml@2.8.0))':
+  '@vitejs/plugin-react@4.5.1(patch_hash=dbddf1bce8ebe7035b95d4ff9b5ec4fcc2d24e6f27b2dc6e3af349eb9e42fbf6)(rolldown-vite@6.3.19(@types/node@22.13.1)(esbuild@0.19.12)(jiti@2.4.2)(terser@5.38.2)(yaml@2.8.0))':
     dependencies:
       '@babel/core': 7.27.1
       '@babel/plugin-transform-react-jsx-self': 7.25.9(@babel/core@7.27.1)
@@ -16716,7 +16721,7 @@ snapshots:
     transitivePeerDependencies:
       - supports-color
 
-  '@vitejs/plugin-react@4.5.1(rolldown-vite@6.3.19(@types/node@22.13.1)(esbuild@0.25.5)(jiti@2.4.2)(terser@5.38.2)(yaml@2.8.0))':
+  '@vitejs/plugin-react@4.5.1(patch_hash=dbddf1bce8ebe7035b95d4ff9b5ec4fcc2d24e6f27b2dc6e3af349eb9e42fbf6)(rolldown-vite@6.3.19(@types/node@22.13.1)(esbuild@0.25.5)(jiti@2.4.2)(terser@5.38.2)(yaml@2.8.0))':
     dependencies:
       '@babel/core': 7.27.1
       '@babel/plugin-transform-react-jsx-self': 7.25.9(@babel/core@7.27.1)
@@ -16728,7 +16733,7 @@ snapshots:
     transitivePeerDependencies:
       - supports-color
 
-  '@vitejs/plugin-react@4.5.1(vite@6.3.5(@types/node@22.13.1)(jiti@2.4.2)(lightningcss@1.30.1)(terser@5.38.2)(yaml@2.8.0))':
+  '@vitejs/plugin-react@4.5.1(patch_hash=dbddf1bce8ebe7035b95d4ff9b5ec4fcc2d24e6f27b2dc6e3af349eb9e42fbf6)(vite@6.3.5(@types/node@22.13.1)(jiti@2.4.2)(lightningcss@1.30.1)(terser@5.38.2)(yaml@2.8.0))':
     dependencies:
       '@babel/core': 7.27.1
       '@babel/plugin-transform-react-jsx-self': 7.25.9(@babel/core@7.27.1)
