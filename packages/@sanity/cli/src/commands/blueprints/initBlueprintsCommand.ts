@@ -9,14 +9,18 @@ Options
   --project-id <id>                  Project ID to use
 
 Examples:
-  # Create a new Blueprint manifest file in the current directory
+  # Create a new Blueprint project in the current directory
   sanity blueprints init
 
-  # Create a new Blueprint manifest file in a specific directory
+  # Create a new Blueprint project in a specific directory
   sanity blueprints init my-sanity-project --type json
+
+  # Create a new Blueprint project in a specific directory with an example
+  sanity blueprints init --example example-name
 `
 
 export interface BlueprintsInitFlags {
+  'example'?: string
   'dir'?: string
   'blueprint-type'?: string
   'type'?: string
@@ -56,6 +60,23 @@ const initBlueprintsCommand: CliCommandDefinition<BlueprintsInitFlags> = {
 
     const {blueprintInitCore} = await import('@sanity/runtime-cli/cores/blueprints')
 
+    if (flags.example) {
+      const conflictingFlags: (keyof BlueprintsInitFlags)[] = [
+        'blueprint-type',
+        'type',
+        'stack-id',
+        'stackId',
+        'stack',
+        'stack-name',
+        'name',
+      ]
+      if (conflictingFlags.some((key) => flags[key])) {
+        throw new Error(
+          "--example can't be used with --blueprint-type, --stack-id, or --stack-name",
+        )
+      }
+    }
+
     const {success, error} = await blueprintInitCore({
       bin: 'sanity',
       log: (message) => output.print(message),
@@ -64,6 +85,7 @@ const initBlueprintsCommand: CliCommandDefinition<BlueprintsInitFlags> = {
         dir: dir ?? flags.dir,
       },
       flags: {
+        'example': flags.example,
         'blueprint-type': flags['blueprint-type'] ?? flags.type,
         'project-id': flags['project-id'] ?? flags.projectId ?? flags.project,
         'stack-id': flags['stack-id'] ?? flags.stackId ?? flags.stack,
