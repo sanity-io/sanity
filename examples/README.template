@@ -62,8 +62,16 @@ BEST PRACTICE:
 
 1. **Initialize the example**
 
+   For a new project:
+
    ```bash
-   npx sanity functions init --example [example-name]
+   npx sanity blueprints init --example [example-name]
+   ```
+
+   For an existing project:
+
+   ```bash
+   npx sanity blueprints add function --example [example-name]
    ```
 
 2. **Add configuration to your blueprint**

@@ -22,8 +22,16 @@ This Sanity Function automatically generates 3 relevant tags for blog posts by a
 
 1. **Initialize the example**
 
+   For a new project:
+
    ```bash
-   npx sanity functions init --example auto-tag
+   npx sanity blueprints init --example auto-tag
+   ```
+
+   For an existing project:
+
+   ```bash
+   npx sanity blueprints add function --example auto-tag
    ```
 
 2. **Add configuration to your blueprint**
