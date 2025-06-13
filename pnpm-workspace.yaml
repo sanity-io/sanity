@@ -8,3 +8,13 @@ packages:
   - 'packages/groq'
   - 'packages/sanity'
   - 'packages/sanity/fixtures/examples/*'
+
+catalog:
+  react: ^19.1.0
+  react-dom: ^19.1.0
+  styled-components: ^6.1.18
+
+catalogs:
+  react18:
+    react: ^18.3.0
+    react-dom: ^18.3.0
