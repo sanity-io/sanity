@@ -6,7 +6,7 @@ This directory contains comprehensive examples and reference implementations for
 
 ```text
 examples/
-├── functions/             # Sanity Functions examples
+├── functions/            # Sanity Functions examples
 └── studios/              # Studio configuration examples
 ```
 
