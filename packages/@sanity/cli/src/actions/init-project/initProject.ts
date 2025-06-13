@@ -679,23 +679,35 @@ export default async function initSanity(
   const devCommand = devCommandMap[pkgManager]
 
   const isCurrentDir = outputPath === process.cwd()
-  if (isCurrentDir) {
-    print(`\n${chalk.green('Success!')} Now, use this command to continue:\n`)
-    print(
-      `${chalk.cyan(devCommand)} - to run ${isAppTemplate ? 'your Sanity application' : 'Sanity Studio'}\n`,
-    )
-  } else {
-    print(`\n${chalk.green('Success!')} Now, use these commands to continue:\n`)
-    print(`First: ${chalk.cyan(`cd ${outputPath}`)} - to enter project's directory`)
-    print(
-      `Then: ${chalk.cyan(devCommand)} -to run ${isAppTemplate ? 'your Sanity application' : 'Sanity Studio'}\n`,
-    )
-  }
+  const goToProjectDir = `(${chalk.cyan(`cd ${outputPath}`)} to navigate to your new project directory)`
 
-  print(`Other helpful commands`)
-  print(`npx sanity docs - to open the documentation in a browser`)
-  print(`npx sanity manage - to open the project settings in a browser`)
-  print(`npx sanity help - to explore the CLI manual`)
+  if (isAppTemplate) {
+    //output for custom apps here
+    print(`✅ ${chalk.green.bold('Success!')} Your custom app has been scaffolded.`)
+    if (!isCurrentDir) print(goToProjectDir)
+    print(
+      `\n${chalk.bold('Next')}, configure the project(s) and dataset(s) your app should work with.`,
+    )
+    print('\nGet started in `src/App.tsx`, or refer to our documentation for a walkthrough:')
+    print(chalk.blue.underline('https://www.sanity.io/docs/app-sdk/sdk-configuration'))
+    print('\n')
+    print(`Other helpful commands:`)
+    print(`npx sanity docs       to open the documentation in a browser`)
+    print(`npx sanity dev        to start the development server for your app`)
+    print(`npx sanity deploy     to deploy your app`)
+  } else {
+    //output for Studios here
+    print(`✅ ${chalk.green.bold('Success!')} Your Studio has been created.`)
+    if (!isCurrentDir) print(goToProjectDir)
+    print(
+      `Get started by running ${chalk.cyan(devCommand)} to launch your Studio’s development server`,
+    )
+    print('\n')
+    print(`Other helpful commands:`)
+    print(`npx sanity docs     to open the documentation in a browser`)
+    print(`npx sanity manage   to open the project settings in a browser`)
+    print(`npx sanity help     to explore the CLI manual`)
+  }
 
   if (isFirstProject) {
     trace.log({step: 'sendCommunityInvite', selectedOption: 'yes'})
