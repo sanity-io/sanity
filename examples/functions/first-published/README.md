@@ -22,8 +22,16 @@ This Sanity Function automatically sets a `firstPublished` timestamp when a post
 
 1. **Initialize the example**
 
+   For a new project:
+
    ```bash
-   npx sanity functions init --example first-published
+   npx sanity blueprints init --example first-published
+   ```
+
+   For an existing project:
+
+   ```bash
+   npx sanity blueprints add function --example first-published
    ```
 
 2. **Add configuration to your blueprint**
