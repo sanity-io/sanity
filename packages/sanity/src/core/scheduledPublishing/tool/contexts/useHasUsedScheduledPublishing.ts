@@ -6,7 +6,6 @@ import {catchError, map, type Observable, of, shareReplay} from 'rxjs'
 import {useClient} from '../../../hooks/useClient'
 import {useWorkspace} from '../../../studio/workspace'
 import {DEFAULT_STUDIO_CLIENT_OPTIONS} from '../../../studioClient'
-import {type Schedule} from '../../types'
 
 export interface HasUsedScheduledPublishing {
   used: boolean
@@ -25,9 +24,7 @@ function fetchUsedScheduledPublishing(
 ): Observable<HasUsedScheduledPublishing> {
   const {dataset, projectId} = client.config()
   return client.observable
-    .request<{
-      schedules: Schedule[]
-    }>({uri: `/schedules/${projectId}/${dataset}?limit=1`, tag: 'scheduled-publishing-used'})
+    .request({uri: `/schedules/${projectId}/${dataset}?limit=1`, tag: 'scheduled-publishing-used'})
     .pipe(
       map((res) => {
         return {used: res.schedules?.length > 0, loading: false}
