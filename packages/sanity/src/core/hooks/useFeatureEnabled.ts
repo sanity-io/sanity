@@ -36,19 +36,35 @@ function fetchFeatures({versionedClient}: {versionedClient: SanityClient}): Obse
 
 const cachedFeatureRequest = new Map<string, Observable<string[]>>()
 
+/**
+ * Retrieves the features for a given project. This returns a cached observable.
+ * The client should be initialized with the options in `DEFAULT_STUDIO_CLIENT_OPTIONS`.
+ */
+export function getFeatures({
+  projectId,
+  versionedClient,
+}: {
+  projectId: string
+  versionedClient: SanityClient
+}): Observable<string[]> {
+  let features = cachedFeatureRequest.get(projectId)
+  if (!features) {
+    features = fetchFeatures({versionedClient}).pipe(shareReplay())
+    cachedFeatureRequest.set(projectId, features)
+  }
+  return features
+}
+
 /** @internal */
 export function useFeatureEnabled(featureKey: string): Features {
   const versionedClient = useClient(DEFAULT_STUDIO_CLIENT_OPTIONS)
   const {projectId} = useSource()
 
-  if (!cachedFeatureRequest.get(projectId)) {
-    const features = fetchFeatures({versionedClient}).pipe(shareReplay())
-    cachedFeatureRequest.set(projectId, features)
-  }
+  const req = getFeatures({projectId, versionedClient})
 
   const featureInfoObservable = useMemo(
     () =>
-      (cachedFeatureRequest.get(projectId) || of(EMPTY_ARRAY)).pipe(
+      req.pipe(
         map((features = []) => ({
           isLoading: false,
           enabled: Boolean(features?.includes(featureKey)),
@@ -60,7 +76,7 @@ export function useFeatureEnabled(featureKey: string): Features {
           return of({isLoading: false, enabled: false, features: EMPTY_ARRAY, error})
         }),
       ),
-    [featureKey, projectId],
+    [featureKey, req],
   )
   const featureInfo = useObservable(featureInfoObservable, INITIAL_LOADING_STATE)
 
