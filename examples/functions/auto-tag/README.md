@@ -4,46 +4,47 @@
 
 ## Problem
 
-Content creators often need to add relevant tags to blog posts, but manually tagging content is time-consuming and inconsistent.
+Content creators spend significant time manually tagging blog posts, leading to inconsistent tagging across content libraries and reduced productivity in editorial workflows.
 
 ## Solution
 
-This Sanity Function automatically generates relevant tags for blog posts by analyzing their content using AI, prioritizing reuse of existing tags when appropriate.
+This Sanity Function automatically generates 3 relevant tags for blog posts by analyzing content using AI, intelligently reusing existing tags from other posts to maintain vocabulary consistency.
 
 ## Benefits
 
-- Saves content creators time by automating the tagging process
-- Ensures consistent tagging across your content library
-- Improves content discoverability and organization
-- Maintains tag vocabulary by prioritizing reuse of existing tags
+- **Saves 2-3 minutes per post** by eliminating manual tagging
+- **Improves content discoverability** through consistent tag application
+- **Maintains tag vocabulary** by prioritizing reuse of existing tags
+- **Scales automatically** as your content library grows
+- **Reduces editorial overhead** for content teams
 
 ## Implementation
 
-1. Initialize the example
+1. **Initialize the example**
 
-```bash
-npx sanity functions init --example auto-tag
-```
+   ```bash
+   npx sanity functions init --example auto-tag
+   ```
 
-2. Add the function configurations to your blueprint config's resources array:
+2. **Add configuration to your blueprint**
 
-```ts
-// sanity.blueprint.ts
-defineDocumentFunction({
-  name: 'auto-tag',
-  memory: 2,
-  timeout: 30,
-  on: ['publish'],
-  filter: "_type == 'post' && !defined(tags)",
-  projection: '_id',
-})
-```
+   ```ts
+   // sanity.blueprint.ts
+   defineDocumentFunction({
+     name: 'auto-tag',
+     memory: 2,
+     timeout: 30,
+     on: ['publish'],
+     filter: "_type == 'post' && !defined(tags)",
+     projection: '_id',
+   })
+   ```
 
-3. Install the function dependencies with your prefered package manager:
+3. **Install dependencies**
 
-```bash
-npm install
-```
+   ```bash
+   npm install
+   ```
 
 ## Testing the function locally
 
@@ -103,27 +104,56 @@ console.log('Generated tags:', result.tags)
 
 ### Testing Tips
 
-- **Use Node.js v22.x** locally to match the production runtime environment
-- **Test without AI calls** first by setting `noWrite: true` in the function
-- **Check the function logs** in the CLI output for debugging information
+- **Use Node.js v22.x** locally to match production runtime
 - **Test edge cases** like posts without content or with existing tags
+- **Check function logs** in CLI output for debugging
+- **Test without AI calls** first by setting `noWrite: true` in the function
 
 ## Requirements
 
-- A Sanity project
-- A schema with a `post` document type containing a `content` field and a `tags` array field
-- Sanity Functions enabled for your project
+- A Sanity project with Functions enabled
+- A schema with a `post` document type containing:
+  - A `body` field (for content analysis)
+  - A `tags` array field (for storing generated tags)
 - Access to Sanity's AI capabilities
+- Node.js v22.x for local development
 
 ## Usage Example
 
 When a content editor publishes a new blog post without tags, the function automatically:
 
-1. Triggers on the publish event for post documents without tags
-2. Fetches the content of the post
-3. Retrieves existing tags used across other posts
-4. Uses AI to generate 3 relevant tags based on the content
-5. Prioritizes reusing existing tags when appropriate
-6. Writes the generated tags directly to the published document
+1. **Triggers** on the publish event for post documents without existing tags
+2. **Analyzes** the post's body content using AI
+3. **Retrieves** existing tags from other published posts for vocabulary consistency
+4. **Generates** 3 relevant tags, prioritizing reuse of existing tags when appropriate
+5. **Applies** the tags directly to the published document
 
-This results in consistent, automated tagging without requiring manual effort from content creators.
+**Result:** Content creators get consistent, relevant tags without manual effort, improving content organization and discoverability.
+
+## Customization
+
+### Adjust Tag Generation
+
+Modify the AI instruction to change tagging behavior:
+
+```typescript
+instruction: `Based on the $content, create 5 relevant tags instead of 3. Focus on technical topics and use camelCase format.`
+```
+
+### Change Target Field
+
+Update the target path to save tags to a different field:
+
+```typescript
+target: {
+  path: 'categories', // Instead of 'tags'
+}
+```
+
+### Filter Different Document Types
+
+Modify the blueprint filter to target different content types:
+
+```typescript
+filter: "_type == 'article' && !defined(keywords)"
+```
