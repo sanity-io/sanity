@@ -46,7 +46,7 @@ export function mockBrowserEnvironment(basePath: string): () => void {
     target: `node${process.versions.node}`,
     supported: {'dynamic-import': true},
     format: isEsm ? 'esm' : 'cjs',
-    extensions: ['.js', '.jsx', '.ts', '.tsx', '.mjs'],
+    extensions: ['.js', '.jsx', '.ts', '.tsx', '.mjs', ...getFileExtensions()],
     jsx: 'automatic',
     define: {
       // define the `process.env` global
