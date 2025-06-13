@@ -28,6 +28,7 @@ The `functions/` directory contains examples of [Sanity Functions](https://www.s
 ### Available Function Examples
 
 - **[auto-tag](./functions/auto-tag/README.md)** - AI-powered automatic tagging for blog posts
+- **[first-published](./functions/first-published/README.md)** - Automatic timestamp tracking for first publication
 
 ## 🎨 Studios
 
