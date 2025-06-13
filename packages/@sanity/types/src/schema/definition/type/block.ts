@@ -15,6 +15,17 @@ export interface BlockOptions extends BaseSchemaTypeOptions {
    */
   spellCheck?: boolean
   unstable_whitespaceOnPasteMode?: 'preserve' | 'normalize' | 'remove'
+
+  /**
+   * When enabled, the editor will restrict all line breaks and soft breaks,
+   * forcing content to remain on a single line. This will also update
+   * the styling of the editor to reflect the single-line constraint.
+   *
+   * Pasting content that is on multiple lines will be normalized to a single line, if possible.
+   *
+   * @defaultValue false
+   */
+  oneLine?: boolean
 }
 
 /** @public */

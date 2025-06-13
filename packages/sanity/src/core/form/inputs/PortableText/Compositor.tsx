@@ -400,6 +400,8 @@ export function Compositor(props: Omit<InputProps, 'schemaType' | 'arrayFunction
     return undefined
   })
 
+  const isOneLineEditor = Boolean(editor.schemaTypes.block.options?.oneLine)
+
   const editorNode = useMemo(
     () => (
       <UploadTargetCard
@@ -416,6 +418,7 @@ export function Compositor(props: Omit<InputProps, 'schemaType' | 'arrayFunction
           hotkeys={editorHotkeys}
           isActive={isActive}
           isFullscreen={isFullscreen}
+          isOneLine={isOneLineEditor}
           onItemOpen={onItemOpen}
           onCopy={onCopy}
           onPaste={onPaste}
@@ -447,6 +450,7 @@ export function Compositor(props: Omit<InputProps, 'schemaType' | 'arrayFunction
       initialSelection,
       isActive,
       isFullscreen,
+      isOneLineEditor,
       onCopy,
       onItemOpen,
       onPaste,

@@ -1,4 +1,11 @@
-import {MarkdownPlugin, type MarkdownPluginConfig} from '@portabletext/editor/plugins'
+import {usePortableTextEditor} from '@portabletext/editor'
+import {defineBehavior} from '@portabletext/editor/behaviors'
+import {
+  BehaviorPlugin,
+  MarkdownPlugin,
+  type MarkdownPluginConfig,
+  OneLinePlugin,
+} from '@portabletext/editor/plugins'
 import {type ArraySchemaType, type PortableTextBlock} from '@sanity/types'
 import {type ComponentType, useMemo} from 'react'
 
@@ -26,6 +33,9 @@ const markdownConfig: MarkdownPluginConfig = {
 export const PortableTextEditorPlugins = (props: {
   schemaType: ArraySchemaType<PortableTextBlock>
 }) => {
+  const editor = usePortableTextEditor()
+  const isOneLineEditor = Boolean(editor.schemaTypes.block.options?.oneLine)
+
   const componentProps = useMemo(
     (): PortableTextPluginsProps => ({
       plugins: {markdown: {config: markdownConfig}},
@@ -38,10 +48,27 @@ export const PortableTextEditorPlugins = (props: {
     | ComponentType<PortableTextPluginsProps>
     | undefined
 
-  return CustomComponent ? (
-    <CustomComponent {...componentProps} />
-  ) : (
-    <RenderDefault {...componentProps} />
+  return (
+    <>
+      {isOneLineEditor && (
+        <>
+          <OneLinePlugin />
+          <BehaviorPlugin
+            behaviors={[
+              defineBehavior({
+                on: 'insert.soft break',
+                actions: [],
+              }),
+            ]}
+          />
+        </>
+      )}
+      {CustomComponent ? (
+        <CustomComponent {...componentProps} />
+      ) : (
+        <RenderDefault {...componentProps} />
+      )}
+    </>
   )
 }
 

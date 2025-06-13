@@ -51,6 +51,7 @@ interface EditorProps {
   initialSelection?: EditorSelection
   isActive: boolean
   isFullscreen: boolean
+  isOneLine: boolean
   onCopy?: OnCopyFn
   onItemOpen: (path: Path) => void
   onPaste?: OnPasteFn
@@ -89,6 +90,7 @@ export function Editor(props: EditorProps): ReactNode {
     initialSelection,
     isActive,
     isFullscreen,
+    isOneLine,
     onCopy,
     onItemOpen,
     onPaste,
@@ -186,7 +188,7 @@ export function Editor(props: EditorProps): ReactNode {
   const collapsibleToolbar = id === FORM_BUILDER_DEFAULT_ID
 
   return (
-    <Root data-fullscreen={isFullscreen} data-testid="pt-editor">
+    <Root data-fullscreen={isFullscreen} data-testid="pt-editor" $isOneLine={isOneLine}>
       {isActive && !hideToolbar && (
         <TooltipDelayGroupProvider>
           <ToolbarCard data-testid="pt-editor__toolbar-card" shadow={1}>
@@ -207,6 +209,7 @@ export function Editor(props: EditorProps): ReactNode {
           <div>
             <EditableWrapper
               $isFullscreen={isFullscreen}
+              $isOneLine={isOneLine}
               tone={readOnly ? 'transparent' : 'default'}
             >
               <BoundaryElementProvider element={isFullscreen ? scrollElement : boundaryElement}>
