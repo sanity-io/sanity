@@ -157,6 +157,9 @@ export async function runCli(cliRoot: string, {cliVersion}: {cliVersion: string}
       const error = typeof err.details === 'string' ? err.details : err
       // eslint-disable-next-line no-console
       console.error(`\n${error.stack ? neatStack(err) : error}`)
+      if (err.cause) {
+        console.error(`\nCaused by:\n\n${err.cause.stack ? neatStack(err.cause) : err.cause}`)
+      }
       // eslint-disable-next-line no-process-exit
       cliCommandTrace.error(error)
       process.exit(1)
