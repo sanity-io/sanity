@@ -678,12 +678,6 @@ export default async function initSanity(
   }
   const devCommand = devCommandMap[pkgManager]
 
-  const printSuccess = ({singular = true}: {singular?: boolean} = {}) => {
-    print(
-      `\n✅ ${chalk.green.bold('Success!')} Now, use ${singular ? 'this command' : 'these commands'} to continue:\n`,
-    )
-  }
-
   const isCurrentDir = outputPath === process.cwd()
   const goToProjectDir = `(${chalk.cyan(`cd ${outputPath}`)} to navigate to your new project directory)`
 
