@@ -3,50 +3,6 @@ lockfileVersion: '9.0'
 settings:
   autoInstallPeers: true
   excludeLinksFromLockfile: false
-
-catalogs:
-  default:
-    '@sanity/eslint-config-i18n':
-      specifier: ^2.0.0
-      version: 2.0.0
-    '@sanity/eslint-config-studio':
-      specifier: ^5.0.2
-      version: 5.0.2
-    '@vitejs/plugin-react':
-      specifier: ^4.5.2
-      version: 4.5.2
-    esbuild:
-      specifier: 0.25.5
-      version: 0.25.5
-    esbuild-register:
-      specifier: ^3.6.0
-      version: 3.6.0
-    globals:
-      specifier: ^16.2.0
-      version: 16.2.0
-    prettier:
-      specifier: ^3.5.3
-      version: 3.5.3
-    react:
-      specifier: ^19.1.0
-      version: 19.1.0
-    react-dom:
-      specifier: ^19.1.0
-      version: 19.1.0
-    styled-components:
-      specifier: ^6.1.18
-      version: 6.1.18
-    typescript:
-      specifier: 5.8.3
-      version: 5.8.3
-  react18:
-    react:
-      specifier: ^18.3.1
-      version: 18.3.1
-    react-dom:
-      specifier: ^18.3.1
-      version: 18.3.1
-
 overrides:
   '@npmcli/arborist': ^7.5.4
   '@sanity/ui@2': ^2.15.18
@@ -630,77 +586,18 @@ importers:
         specifier: ^6.3.5
         version: 6.3.5(@types/node@22.13.1)(jiti@2.4.2)(terser@5.38.2)(tsx@4.20.1)(yaml@2.8.0)
 
-  examples/blog-studio:
+  examples:
     dependencies:
-      react:
-        specifier: catalog:react18
-        version: 18.3.1
-      react-dom:
-        specifier: catalog:react18
-        version: 18.3.1(react@18.3.1)
-      sanity:
-        specifier: workspace:*
-        version: link:../../packages/sanity
-      styled-components:
-        specifier: 'catalog:'
-        version: 6.1.18(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
-
-  examples/clean-studio:
-    dependencies:
-      react:
-        specifier: catalog:react18
-        version: 18.3.1
-      react-dom:
-        specifier: catalog:react18
-        version: 18.3.1(react@18.3.1)
-      sanity:
-        specifier: workspace:*
-        version: link:../../packages/sanity
-      styled-components:
-        specifier: 'catalog:'
-        version: 6.1.18(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
-
-  examples/ecommerce-studio:
-    dependencies:
-      '@sanity/cli':
-        specifier: workspace:*
-        version: link:../../packages/@sanity/cli
-      '@sanity/ui':
-        specifier: ^2.15.18
-        version: 2.15.18(@emotion/is-prop-valid@1.3.1)(react-dom@18.3.1(react@18.3.1))(react-is@18.3.1)(react@18.3.1)(styled-components@6.1.18(react-dom@18.3.1(react@18.3.1))(react@18.3.1))
-      react:
-        specifier: catalog:react18
-        version: 18.3.1
-      react-barcode:
-        specifier: ^1.4.1
-        version: 1.5.3(react@18.3.1)
-      react-dom:
-        specifier: catalog:react18
-        version: 18.3.1(react@18.3.1)
-      sanity:
-        specifier: workspace:*
-        version: link:../../packages/sanity
-      styled-components:
-        specifier: 'catalog:'
-        version: 6.1.18(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
-
-  examples/movies-studio:
-    dependencies:
-      '@sanity/google-maps-input':
-        specifier: ^4.0.0
-        version: 4.1.0(@emotion/is-prop-valid@1.3.1)(react-dom@18.3.1(react@18.3.1))(react-is@18.3.1)(react@18.3.1)(sanity@packages+sanity)(styled-components@6.1.18(react-dom@18.3.1(react@18.3.1))(react@18.3.1))
-      react:
-        specifier: catalog:react18
-        version: 18.3.1
-      react-dom:
-        specifier: catalog:react18
-        version: 18.3.1(react@18.3.1)
-      sanity:
-        specifier: workspace:*
-        version: link:../../packages/sanity
-      styled-components:
-        specifier: 'catalog:'
-        version: 6.1.18(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
+      '@sanity/client':
+        specifier: ^7.6.0
+        version: 7.6.0
+      '@sanity/functions':
+        specifier: ^1.0.2
+        version: 1.0.2
+    devDependencies:
+      '@sanity/blueprints':
+        specifier: 0.0.1
+        version: 0.0.1
 
   packages/@repo/bundle-manager:
     dependencies:
@@ -4638,6 +4535,10 @@ packages:
   '@sanity/bifur-client@0.4.1':
     resolution: {integrity: sha512-mHM8WR7pujbIw2qxuV0lzinS1izOoyLza/ejWV6quITTLpBhUoPIQGPER3Ar0SON5JV0VEEqkJGa1kjiYYgx2w==}
 
+  '@sanity/blueprints@0.0.1':
+    resolution: {integrity: sha512-/UukSy8g6+M93oAYpO9olF36ZL3gja9tlTDtkbzw1f2CbyySRYI1fHJZmVNVSjWFLtKvaJIHiR7EhD1MzMvOSw==}
+    engines: {node: '>=20'}
+
   '@sanity/browserslist-config@1.0.5':
     resolution: {integrity: sha512-so+/UtCge8t1jq509hH0otbbptRz0zM/Aa0dh5MhMD7HGT6n2igWIL2VWH/9QR9e77Jn3dJsjz23mW1WCxT+sg==}
 
@@ -4720,6 +4621,10 @@ packages:
   '@sanity/export@3.44.0':
     resolution: {integrity: sha512-InTmE5SWDM2JOXZvyB3whk5dX6udxIFexWl+0vSRPvezfuL+EBhcjPQioC7FPX9co+K5lgRD16G1IygB+YBGyQ==}
     engines: {node: '>=18'}
+
+  '@sanity/functions@1.0.2':
+    resolution: {integrity: sha512-qbLNmrNKn6QH8qjxWsuWZlg+tNzmqDVx0pbRDClgIOSpTFZGH4jhm1WHCoAxj267AJsmQO6+mbOc6tmKmG/vaA==}
+    engines: {node: '>=20'}
 
   '@sanity/generate-help-url@3.0.0':
     resolution: {integrity: sha512-wtMYcV5GIDIhVyF/jjmdwq1GdlK07dRL40XMns73VbrFI7FteRltxv48bhYVZPcLkRXb0SHjpDS/icj9/yzbVA==}
@@ -8604,9 +8509,6 @@ packages:
     resolution: {integrity: sha512-wpxZs9NoxZaJESJGIZTyDEaYpl0FKSA+FB9aJiyemKhMwkxQg63h4T1KJgUGHpTqPDNRcmmYLugrRjJlBtWvRA==}
     hasBin: true
 
-  jsbarcode@3.11.6:
-    resolution: {integrity: sha512-G5TKGyKY1zJo0ZQKFM1IIMfy0nF2rs92BLlCz+cU4/TazIc4ZH+X1GYeDRt7TKjrYqmPfTjwTBkU/QnQlsYiuA==}
-
   jsbn@1.1.0:
     resolution: {integrity: sha512-4bYVV3aAMtDTTu4+xsDYa6sy9GyJ69/amsu9sYF2zqjiEoZA5xJi3BrfX3uY+/IekIu7MwdObdbDWpoZdBv3/A==}
 
@@ -10042,11 +9944,6 @@ packages:
   rc@1.2.8:
     resolution: {integrity: sha512-y3bGgqKj3QBdxLbLkomlohkvsA8gdAiUQlSBJnBhfn+BPxg4bc62d8TcBW15wavDfgexCgccckhcZvywyQYPOw==}
     hasBin: true
-
-  react-barcode@1.5.3:
-    resolution: {integrity: sha512-EJPUwuERKpApcQ9qXzdVZzddFYRT7+3R/jJ3OrTfW6m2iq+WT+CBaVB7DsQazhPRXDfMcx9+dmMmzjsmveOViQ==}
-    peerDependencies:
-      react: ^16.0.0 || ^17.0.0 || ^18.0.0
 
   react-clientside-effect@1.2.7:
     resolution: {integrity: sha512-gce9m0Pk/xYYMEojRI9bgvqQAkl6hm7ozQvqWPyQx+kULiatdHgkNM1QG4DQRx5N9BAzWSCJmt9mMV8/KsdgVg==}
@@ -14917,12 +14814,23 @@ snapshots:
       nanoid: 3.3.11
       rxjs: 7.8.2
 
+  '@sanity/blueprints@0.0.1': {}
+
   '@sanity/browserslist-config@1.0.5': {}
 
   '@sanity/client@6.29.1(debug@4.4.1)':
     dependencies:
       '@sanity/eventsource': 5.0.2
       get-it: 8.6.9(debug@4.4.1)
+      rxjs: 7.8.2
+    transitivePeerDependencies:
+      - debug
+
+  '@sanity/client@7.6.0':
+    dependencies:
+      '@sanity/eventsource': 5.0.2
+      get-it: 8.6.9
+      nanoid: 3.3.11
       rxjs: 7.8.2
     transitivePeerDependencies:
       - debug
@@ -15095,20 +15003,9 @@ snapshots:
       - '@types/react'
       - supports-color
 
-  '@sanity/generate-help-url@3.0.0': {}
+  '@sanity/functions@1.0.2': {}
 
-  '@sanity/google-maps-input@4.1.0(@emotion/is-prop-valid@1.3.1)(react-dom@18.3.1(react@18.3.1))(react-is@18.3.1)(react@18.3.1)(sanity@packages+sanity)(styled-components@6.1.18(react-dom@18.3.1(react@18.3.1))(react@18.3.1))':
-    dependencies:
-      '@sanity/icons': 3.7.0(react@18.3.1)
-      '@sanity/incompatible-plugin': 1.0.5(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
-      '@sanity/ui': 2.15.18(@emotion/is-prop-valid@1.3.1)(react-dom@18.3.1(react@18.3.1))(react-is@18.3.1)(react@18.3.1)(styled-components@6.1.18(react-dom@18.3.1(react@18.3.1))(react@18.3.1))
-      react: 18.3.1
-      sanity: link:packages/sanity
-      styled-components: 6.1.18(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
-    transitivePeerDependencies:
-      - '@emotion/is-prop-valid'
-      - react-dom
-      - react-is
+  '@sanity/generate-help-url@3.0.0': {}
 
   '@sanity/google-maps-input@4.1.0(@emotion/is-prop-valid@1.3.1)(react-dom@19.1.0(react@19.1.0))(react-is@18.3.1)(react@19.1.0)(sanity@packages+sanity)(styled-components@6.1.18(react-dom@19.1.0(react@19.1.0))(react@19.1.0))':
     dependencies:
@@ -18990,6 +18887,8 @@ snapshots:
     dependencies:
       tslib: 2.8.1
 
+  follow-redirects@1.15.9: {}
+
   follow-redirects@1.15.9(debug@4.4.1):
     optionalDependencies:
       debug: 4.4.1(supports-color@5.5.0)
@@ -19160,6 +19059,17 @@ snapshots:
       has-symbols: 1.1.0
       hasown: 2.0.2
       math-intrinsics: 1.1.0
+
+  get-it@8.6.9:
+    dependencies:
+      '@types/follow-redirects': 1.14.4
+      decompress-response: 7.0.0
+      follow-redirects: 1.15.9
+      is-retry-allowed: 2.2.0
+      through2: 4.0.2
+      tunnel-agent: 0.6.0
+    transitivePeerDependencies:
+      - debug
 
   get-it@8.6.9(debug@4.4.1):
     dependencies:
@@ -20049,8 +19959,6 @@ snapshots:
   js-yaml@4.1.0:
     dependencies:
       argparse: 2.0.1
-
-  jsbarcode@3.11.6: {}
 
   jsbn@1.1.0: {}
 
@@ -21619,12 +21527,6 @@ snapshots:
       ini: 1.3.8
       minimist: 1.2.8
       strip-json-comments: 2.0.1
-
-  react-barcode@1.5.3(react@18.3.1):
-    dependencies:
-      jsbarcode: 3.11.6
-      prop-types: 15.8.1
-      react: 18.3.1
 
   react-clientside-effect@1.2.7(react@18.3.1):
     dependencies:
