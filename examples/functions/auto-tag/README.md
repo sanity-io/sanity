@@ -46,6 +46,67 @@ npm install
 
 ## Testing the function locally
 
+You can test the auto-tag function locally using the Sanity CLI before deploying it to production:
+
+### 1. Basic Function Test
+
+Test the function with the included sample document:
+
+```bash
+npx sanity functions test auto-tag --file document.json
+```
+
+### 2. Interactive Development Mode
+
+Start the development server for interactive testing:
+
+```bash
+npx sanity functions dev
+```
+
+This opens an interactive playground where you can test functions with custom data
+
+### 3. Test with Custom Data
+
+Test with your own document data:
+
+```bash
+npx sanity functions test auto-tag --data '{
+  "_type": "post",
+  "_id": "your-post-id",
+  "body": "Your blog post content here..."
+}'
+```
+
+### 4. Test with Real Document Data
+
+Capture a real document from your dataset for testing:
+
+```bash
+# Export a real document for testing
+npx sanity documents get "your-post-id" > test-document.json
+
+# Test with the real document
+npx sanity functions test auto-tag --file test-document.json
+```
+
+### 5. Enable Debugging
+
+To see detailed logs during testing, modify the function temporarily to add logging:
+
+```typescript
+// Add this to your function for debugging
+console.log('Event data:', JSON.stringify(event.data, null, 2))
+console.log('Generated tags:', result.tags)
+```
+
+### Testing Tips
+
+- **Use Node.js v22.x** locally to match the production runtime environment
+- **Test without AI calls** first by setting `noWrite: true` in the function
+- **Check the function logs** in the CLI output for debugging information
+- **Test edge cases** like posts without content or with existing tags
+
 ## Requirements
 
 - A Sanity project
