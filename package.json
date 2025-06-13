@@ -197,6 +197,9 @@
       "jsdom": "$jsdom",
       "vite": "$vite",
       "vitest": "$vitest"
+    },
+    "patchedDependencies": {
+      "@vitejs/plugin-react": "patches/@vitejs__plugin-react.patch"
     }
   },
   "isSanityMonorepo": true
