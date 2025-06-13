@@ -16,6 +16,7 @@ import {structureUsEnglishLocaleBundle} from './i18n'
 import {changesInspector} from './panes/document/inspectors/changes'
 import {validationInspector} from './panes/document/inspectors/validation'
 import {router} from './router'
+import {scheduledPublishing} from '../scheduled-publishing/plugin'
 import {type StructureToolOptions} from './types'
 
 const documentActions = [
@@ -99,7 +100,7 @@ export const structureTool = definePlugin<StructureToolOptions | void>((options)
         return Array.from(new Set([...prevInspectors, ...inspectors]))
       },
     },
-
+    plugins: [scheduledPublishing()],
     tools: [
       {
         name: options?.name || 'structure',
