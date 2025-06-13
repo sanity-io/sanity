@@ -1,74 +1,63 @@
-# Sanity Functions Examples
+# Sanity Examples
 
-This directory contains examples of Sanity Functions that you can use with your Sanity project.
+This directory contains comprehensive examples and reference implementations for various Sanity features and integrations. Whether you're building your first Sanity project or exploring advanced functionality, these examples provide practical code you can reference and adapt.
 
-## Setup
+## 📁 Directory Structure
 
-To work with these examples, you need to install the dependencies:
-
-```bash
-cd examples/functions
-pnpm install
+```text
+examples/
+├── functions/             # Sanity Functions examples
+└── studios/              # Studio configuration examples
 ```
 
-## Testing Functions Locally
+## 🔧 Functions
 
-You can test functions locally using the Sanity CLI:
+The `functions/` directory contains examples of [Sanity Functions](https://www.sanity.io/docs/compute-and-ai/functions-introduction) - serverless functions that run in Sanity's cloud environment. Each function example includes:
 
-```bash
-# Test a function with sample data
-pnpx sanity functions test auto-tag --file auto-tag/document.json
-```
+- **Implementation code** (`index.ts`) - The actual function logic
+- **Configuration** (`package.json`) - Dependencies and blueprint resource configuration
+- **Test data** (`document.json`) - Sample data for testing
+- **Documentation** (`README.md`) - Usage instructions and explanations
 
-## Troubleshooting
+### Key Files
 
-### Bundling Errors
+- **`sanity.blueprint.ts`** - Automatically discovers and configures all function examples for easy testing
+- **`package.json`** - Shared dependencies for all function examples
+- **`vite.config.js`** - Build configuration for bundling functions
 
-If you encounter errors like:
+### Available Function Examples
 
-```
-Error: Bundling of function failed: [vite]: Rollup failed to resolve import "@sanity/functions" from "/path/to/function/index.ts"
-```
+- **[auto-tag](./functions/auto-tag/README.md)** - AI-powered automatic tagging for blog posts
 
-Make sure you:
+## 🎨 Studios
 
-1. Have installed dependencies in the examples/functions directory:
-   ```bash
-   pnpm add @sanity/functions @sanity/client
-   ```
+The `studios/` directory contains complete Sanity Studio configurations showcasing different use cases:
 
-2. Have a `vite.config.js` file that externalizes these dependencies:
-   ```js
-   import { defineConfig } from 'vite';
+- **Blog Studio** - Content management for blogs and editorial sites
+- **E-commerce Studio** - Product catalogs and inventory management
+- **Portfolio Studio** - Creative portfolios and case studies
+- **Documentation Studio** - Knowledge bases and help centers
 
-   export default defineConfig({
-     build: {
-       rollupOptions: {
-         external: ['@sanity/functions', '@sanity/client']
-       }
-     }
-   });
-   ```
+Each studio example demonstrates schema design, custom components, and workflow configurations.
 
-## Structure
+## 🚀 Getting Started
 
-This directory uses a flat structure where each subdirectory is a standalone function:
+1. **Browse the examples** - Each directory contains detailed README files explaining the implementation
+2. **Copy reference code** - Use the examples as starting points for your own projects
+3. **Test locally** - Many examples include setup instructions for local development
+4. **Adapt and extend** - Modify the examples to fit your specific use case
 
-```
-examples/functions/
-├── auto-tag/              # Auto-tagging function
-│   ├── document.json      # Test document
-│   ├── index.ts           # Function implementation
-│   ├── package.json       # Function configuration
-│   └── README.md          # Function documentation
-├── package.json           # Root dependencies
-├── README.md              # This file
-├── sanity.blueprint.ts    # Blueprint configuration
-└── vite.config.js         # Build configuration
-```
+## 📖 Learning Resources
 
-The `sanity.blueprint.ts` file automatically discovers all function directories and configures them based on their `package.json` files.
+For comprehensive documentation and tutorials, visit:
 
-## Available Examples
+- [Sanity Documentation](https://www.sanity.io/docs)
+- [Sanity Exchange](https://www.sanity.io/exchange) - Community plugins and starters
 
-- [auto-tag](./auto-tag/README.md) - Automatically generates tags for blog posts using AI
+## 💡 Contributing
+
+Found a bug or have an idea for a new example? Contributions are welcome! Please check the project's contribution guidelines before submitting pull requests.
+
+---
+
+**Note**: These examples are part of the Sanity monorepo and are designed for reference and learning. For production use, always review and adapt the code to meet your specific requirements and security standards.
