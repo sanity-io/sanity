@@ -31,10 +31,21 @@ export function mockBrowserEnvironment(basePath: string): () => void {
     },
   )
 
+  const isEsm = (() => {
+    try {
+      // this will fail with "Uncaught SyntaxError: Cannot use 'import.meta' outside a module" if not running in esm mode
+      // eslint-disable-next-line no-unused-expressions
+      import.meta
+      return true
+    } catch {
+      return false
+    }
+  })()
+
   const {unregister: unregisterESBuild} = registerESBuild({
     target: `node${process.versions.node}`,
     supported: {'dynamic-import': true},
-    format: 'cjs',
+    format: isEsm ? 'esm' : 'cjs',
     extensions: ['.js', '.jsx', '.ts', '.tsx', '.mjs'],
     jsx: 'automatic',
     define: {
