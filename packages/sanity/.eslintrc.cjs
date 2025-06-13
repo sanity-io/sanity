@@ -10,6 +10,17 @@ module.exports = {
   plugins: ['boundaries'],
   rules: {
     'import/no-extraneous-dependencies': ['error', {packageDir: [ROOT_PATH, __dirname]}],
+    'no-restricted-imports': [
+      'error',
+      {
+        patterns: [
+          {
+            group: ['**/scheduled-publishing/**'],
+            message: 'Importing from scheduled-publishing folder is discouraged',
+          },
+        ],
+      },
+    ],
     'boundaries/element-types': [
       2,
       {
