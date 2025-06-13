@@ -37,8 +37,12 @@ export const handler = documentEventHandler(
         forcePublishedWrite: true,
       })
       // Generated tags: result.tags
+      // eslint-disable-next-line no-console
+      console.log('Generated tags:', result.tags)
     } catch (error) {
       // Error occurred during tag generation
+      // eslint-disable-next-line no-console
+      console.error('Error occurred during tag generation:', error)
     }
   },
 )
