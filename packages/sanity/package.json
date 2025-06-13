@@ -152,7 +152,7 @@
     "@portabletext/block-tools": "^1.1.29",
     "@portabletext/editor": "^1.52.7",
     "@portabletext/react": "^3.2.1",
-    "@portabletext/toolkit": "^2.0.16",
+    "@portabletext/toolkit": "^2.0.17",
     "@rexxars/react-json-inspector": "^9.0.1",
     "@sanity/asset-utils": "^2.2.1",
     "@sanity/bifur-client": "^0.4.1",

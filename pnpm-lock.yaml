@@ -1422,7 +1422,7 @@ importers:
         specifier: ^3.2.1
         version: 3.2.1(react@18.3.1)
       '@portabletext/toolkit':
-        specifier: ^2.0.16
+        specifier: ^2.0.17
         version: 2.0.17
       '@rexxars/react-json-inspector':
         specifier: ^9.0.1
