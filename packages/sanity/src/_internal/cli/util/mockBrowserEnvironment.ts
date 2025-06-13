@@ -34,7 +34,7 @@ export function mockBrowserEnvironment(basePath: string): () => void {
   const {unregister: unregisterESBuild} = registerESBuild({
     target: 'node18',
     supported: {'dynamic-import': true},
-    format: 'cjs',
+    format: 'esm',
     extensions: ['.js', '.jsx', '.ts', '.tsx', '.mjs'],
     jsx: 'automatic',
     define: {
