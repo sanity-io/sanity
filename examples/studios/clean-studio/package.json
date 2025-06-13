@@ -18,7 +18,7 @@
   "repository": {
     "type": "git",
     "url": "git+https://github.com/sanity-io/sanity.git",
-    "directory": "examples/clean-studio"
+    "directory": "examples/studios/clean-studio"
   },
   "license": "MIT",
   "author": "Sanity.io <hello@sanity.io>",

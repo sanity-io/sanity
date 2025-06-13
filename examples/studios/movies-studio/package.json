@@ -1,15 +1,15 @@
 {
-  "name": "ecommerce-studio",
+  "name": "movies-studio",
   "version": "3.92.0",
   "private": true,
-  "description": "",
+  "description": "Content studio running with schema from the moviedb init template",
   "keywords": [
     "sanity",
     "cms",
     "headless",
     "realtime",
     "content",
-    "ecommerce-studio"
+    "movies-studio"
   ],
   "homepage": "https://www.sanity.io/",
   "bugs": {
@@ -18,20 +18,18 @@
   "repository": {
     "type": "git",
     "url": "git+https://github.com/sanity-io/sanity.git",
-    "directory": "examples/ecommerce-studio"
+    "directory": "examples/studios/movies-studio"
   },
   "license": "MIT",
   "author": "Sanity.io <hello@sanity.io>",
   "main": "package.json",
   "scripts": {
     "clean": "rimraf lib dest",
-    "start": "sanity dev --port 3337"
+    "start": "sanity dev --port 3334"
   },
   "dependencies": {
-    "@sanity/cli": "workspace:*",
-    "@sanity/ui": "^2.15.18",
+    "@sanity/google-maps-input": "^4.0.0",
     "react": "catalog:react18",
-    "react-barcode": "^1.4.1",
     "react-dom": "catalog:react18",
     "sanity": "workspace:*",
     "styled-components": "catalog:"
