@@ -29,7 +29,6 @@ export interface BlockOptions extends BaseSchemaTypeOptions {
 }
 
 /** @public */
-// eslint-disable-next-line @typescript-eslint/no-empty-interface
 export interface BlockRule extends RuleDef<BlockRule, any[]> {}
 
 /**

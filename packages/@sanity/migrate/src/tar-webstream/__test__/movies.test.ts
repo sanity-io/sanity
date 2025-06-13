@@ -9,7 +9,6 @@ import {untar} from '../untar'
 
 function getCrypto() {
   if (typeof globalThis.crypto === 'undefined') {
-    // eslint-disable-next-line @typescript-eslint/no-var-requires
     return require('node:crypto').webcrypto
   }
   return globalThis.crypto

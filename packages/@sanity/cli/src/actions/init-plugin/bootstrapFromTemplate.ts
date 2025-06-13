@@ -4,7 +4,6 @@ import path from 'node:path'
 import {absolutify, pathIsEmpty} from '@sanity/util/fs'
 import decompress from 'decompress'
 import {getIt} from 'get-it'
-// eslint-disable-next-line import/extensions
 import {promise} from 'get-it/middleware'
 import resolveFrom from 'resolve-from'
 import semver from 'semver'
@@ -44,7 +43,7 @@ export async function bootstrapFromTemplate(
   try {
     const projectManifest = await readJson<SanityJson>(path.join(workDir, 'sanity.json'))
     inProjectContext = Boolean(projectManifest.root)
-  } catch (err) {
+  } catch {
     // Intentional noop
   }
 
@@ -185,7 +184,7 @@ function getZip(url: string): Promise<decompress.File[]> {
 function parseJson<T = any>(json: string): T | undefined {
   try {
     return JSON.parse(json)
-  } catch (err) {
+  } catch {
     return undefined
   }
 }

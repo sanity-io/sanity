@@ -152,7 +152,7 @@ export const virtualizationDebug = defineType({
         modal: {type: 'popover'},
       },
       initialValue: () => {
-        const arr = new Array(10).fill(null)
+        const arr = Array.from({length: 10}).fill(null)
         return [
           {
             _type: 'playlist',
@@ -179,7 +179,7 @@ export const virtualizationDebug = defineType({
         modal: {type: 'dialog'},
       },
       initialValue: () => {
-        const arr = new Array(10).fill(null)
+        const arr = Array.from({length: 10}).fill(null)
         return [
           {
             _type: 'playlist',
@@ -243,7 +243,7 @@ export const virtualizationDebug = defineType({
             },
           ],
           initialValue: () => {
-            const arr = new Array(10).fill(null)
+            const arr = Array.from({length: 10}).fill(null)
             return arr.map((_, i) => ({
               _type: 'playlist',
               name: `Playlist ${i}`,
@@ -300,7 +300,7 @@ export const virtualizationDebug = defineType({
             },
           ],
           initialValue: () => {
-            const arr = new Array(10).fill(null)
+            const arr = Array.from({length: 10}).fill(null)
             return arr.map((_, i) => ({
               _type: 'playlist',
               name: `Playlist ${i}`,

@@ -6,11 +6,15 @@
   "main": "./src/index.ts",
   "types": "./src/index.ts",
   "scripts": {
-    "check:types": "tsc --noEmit --skipLibCheck src/index.ts"
+    "check:types": "tsc --noEmit --skipLibCheck src/index.ts",
+    "lint": "eslint ."
   },
   "dependencies": {
     "dotenv": "^16.0.3",
     "lodash": "^4.17.21",
     "ora": "^8.0.1"
+  },
+  "devDependencies": {
+    "@repo/eslint-config": "workspace:*"
   }
 }

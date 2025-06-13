@@ -28,8 +28,8 @@ export function VisionContainer(props: VisionProps) {
 
   return (
     <VisionGui
-      {...props}
       key={projectId}
+      {...props}
       datasets={datasets}
       projectId={projectId}
       defaultDataset={defaultDataset}

@@ -166,7 +166,7 @@ test('Tokenization of jsonpath', () => {
   Object.keys(cases).forEach((path) => {
     const expected = (cases as any)[path]
     if (!expected) {
-      // eslint-disable-next-line no-console
+      // oxlint-disable-next-line no-console
       console.log(`Result of tokenizing '${path}'`, tokenize(path))
     }
     expect(tokenize(path)).toEqual(expected) // `Tokenization failed for '${path

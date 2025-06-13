@@ -3,6 +3,7 @@ import {createClient, type SanityClient} from '@sanity/client'
 import {type CurrentUser, type Schema, type SchemaValidationProblem} from '@sanity/types'
 import {studioTheme} from '@sanity/ui'
 import debugit from 'debug'
+// eslint-disable-next-line @sanity/i18n/no-i18next-import -- figure out how to have the linter be fine with importing types-only
 import {type i18n} from 'i18next'
 import {startCase} from 'lodash'
 import {type ComponentType, type ElementType, type ErrorInfo, isValidElement} from 'react'
@@ -400,7 +401,7 @@ function resolveSource({
       reducer: schemaTemplatesReducer,
       initialValue: schema
         .getTypeNames()
-        .filter((typeName) => !/^sanity\./.test(typeName))
+        .filter((typeName) => !typeName.startsWith('sanity.'))
         .map((typeName) => schema.get(typeName))
         .filter(isNonNullable)
         .filter((schemaType) => schemaType.type?.name === 'document')

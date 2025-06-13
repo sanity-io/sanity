@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-empty-object-type */
 import {type OperatorFunction} from 'rxjs'
 
 type Snapshot<A, B> = [A, B | typeof NO_EMISSION]

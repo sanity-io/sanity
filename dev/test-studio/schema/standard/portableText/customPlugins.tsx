@@ -1,4 +1,3 @@
-/* eslint-disable react/jsx-no-bind */
 import {defineBehavior, effect, forward} from '@portabletext/editor/behaviors'
 import {BehaviorPlugin, DecoratorShortcutPlugin} from '@portabletext/editor/plugins'
 import {defineArrayMember, defineType} from 'sanity'
@@ -170,7 +169,7 @@ export const customPlugins = defineType({
       ],
       components: {
         portableText: {
-          plugins: (props) => {
+          plugins: () => {
             return null
           },
         },
@@ -206,7 +205,6 @@ export const customPlugins = defineType({
                       actions: [
                         ({event}) => [
                           effect(() => {
-                            // eslint-disable-next-line no-console
                             console.log(event)
                           }),
                           forward(event),

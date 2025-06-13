@@ -10,7 +10,6 @@ export interface UrlRule extends RuleDef<UrlRule, string> {
 
 /** @public */
 // only exists to support declaration extensions
-// eslint-disable-next-line @typescript-eslint/no-empty-interface
 export interface UrlOptions extends BaseSchemaTypeOptions {}
 
 /** @public */

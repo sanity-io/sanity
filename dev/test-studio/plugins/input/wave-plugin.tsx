@@ -1,4 +1,3 @@
-/* eslint-disable no-negated-condition */
 import {useEditor} from '@portabletext/editor'
 import {defineBehavior, execute} from '@portabletext/editor/behaviors'
 import {useEffect} from 'react'

@@ -1,0 +1,8 @@
+{
+  "ignores": [
+    "eslint",
+    "@sanity/eslint-config-studio",
+    "babel-plugin-react-compiler",
+    "@repo/eslint-config"
+  ]
+}

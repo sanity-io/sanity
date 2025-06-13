@@ -110,6 +110,7 @@
     "build": "pnpm clean && pkg-utils build --strict --check --clean",
     "check:types": "tsc --project tsconfig.lib.json",
     "clean": "rimraf client.js concurrency-limiter.js content.js createSafeJsonParser.js fs.js legacyDateFormat.js lib paths.js",
+    "lint": "eslint .",
     "prepublishOnly": "turbo run build",
     "test": "vitest run",
     "watch": "pkg-utils watch"
@@ -124,6 +125,7 @@
     "rxjs": "^7.8.2"
   },
   "devDependencies": {
+    "@repo/eslint-config": "workspace:*",
     "@repo/package.config": "workspace:*",
     "@repo/test-config": "workspace:*",
     "rimraf": "^5.0.10",

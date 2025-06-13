@@ -1,4 +1,5 @@
-/* eslint-disable no-console */
+// oxlint-disable no-console
+
 const {BufferedDocument, Mutation} = require('../lib')
 const mutations = require('./fixtures/patches')
 const snapshot = require('./fixtures/snapshot')

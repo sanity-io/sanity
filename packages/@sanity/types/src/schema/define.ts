@@ -185,7 +185,6 @@ export function defineType<
     NarrowPreview<TType, TAlias, TSelect, TPrepareValue> &
     MaybeAllowUnknownProps<TStrict>,
 
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   defineOptions?: DefineSchemaOptions<TStrict, TAlias>,
 ): typeof schemaDefinition {
   return schemaDefinition
@@ -227,7 +226,6 @@ export function defineField<
     MaybeAllowUnknownProps<TStrict> &
     FieldDefinitionBase,
 
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   defineOptions?: DefineSchemaOptions<TStrict, TAlias>,
 ): typeof schemaField & WidenValidation & WidenInitialValue {
   // TODO: re-evaluate the need for this cast
@@ -275,7 +273,6 @@ export function defineArrayMember<
     NarrowPreview<TType, TAlias, TSelect, TPrepareValue> &
     MaybeAllowUnknownProps<TStrict>,
 
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   defineOptions?: DefineSchemaOptions<TStrict, TAlias>,
 ): typeof arrayOfSchema & WidenValidation & WidenInitialValue {
   // TODO: re-evaluate the need for this cast

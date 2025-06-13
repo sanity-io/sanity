@@ -25,9 +25,15 @@
   "files": [
     "index.js"
   ],
+  "scripts": {
+    "lint": "eslint ."
+  },
   "dependencies": {
     "@sanity/cli": "workspace:*",
     "resolve-pkg": "^2.0.0"
+  },
+  "devDependencies": {
+    "@repo/eslint-config": "workspace:*"
   },
   "engines": {
     "node": ">=18"

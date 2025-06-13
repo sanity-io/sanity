@@ -31,7 +31,6 @@ export function peekInto(readable: ReadableStream, options: {size: number}) {
       ])
     }
     ;(async () => {
-      // eslint-disable-next-line no-constant-condition
       while (true) {
         const {done, value: chunk} = await reader.read()
         if (done) {

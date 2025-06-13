@@ -9,10 +9,11 @@
     "clean": "rimraf .sanity dist",
     "deploy": "npx sanity deploy",
     "dev": "../.bin/sanity dev",
-    "lint": "eslint --cache .",
+    "lint": "eslint .",
     "start": "../.bin/sanity start"
   },
   "dependencies": {
+    "@repo/eslint-config": "workspace:*",
     "@sanity/code-input": "^5.0.0",
     "react": "catalog:react18",
     "react-dom": "catalog:react18",

@@ -10,9 +10,8 @@ import {type PackageJson} from '../../types'
  */
 export function readPackageJson(filePath: string): PackageJson | undefined {
   try {
-    // eslint-disable-next-line no-sync
     return JSON.parse(fs.readFileSync(filePath, 'utf8'))
-  } catch (err) {
+  } catch {
     return undefined
   }
 }

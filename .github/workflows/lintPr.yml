@@ -20,6 +20,8 @@ jobs:
 
     steps:
       - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0 # needed for the --affected flag in turbo to work correctly
       - uses: pnpm/action-setup@v4
       - uses: actions/setup-node@v4
         with:
@@ -29,8 +31,11 @@ jobs:
       - name: Install project dependencies
         run: pnpm install
 
+      - name: Oxlint files
+        run: pnpm turbo run check:oxlint -- --format github
+
       - name: Register Problem Matcher for ESLint that handles -f compact and shows warnings inline on PRs
         run: echo "::add-matcher::.github/eslint-compact.json"
 
-      - name: Lint files
-        run: pnpm turbo run lint --output-logs=full --continue -- -f compact
+      - name: ESLint files
+        run: pnpm turbo run lint --affected --output-logs=full --continue -- -f compact

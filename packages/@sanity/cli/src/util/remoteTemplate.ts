@@ -264,7 +264,7 @@ export async function applyEnvVariables(
     }
 
     await writeFile(join(root, targetName), envContent)
-  } catch (err) {
+  } catch {
     throw new Error(
       'Failed to set environment variables. This could be due to file permissions or the .env file format. See https://www.sanity.io/docs/environment-variables for details on environment variable setup.',
     )
@@ -278,7 +278,7 @@ export async function tryApplyPackageName(root: string, name: string): Promise<v
     pkg.name = name
 
     await writeFile(join(root, 'package.json'), JSON.stringify(pkg, null, 2))
-  } catch (err) {
+  } catch {
     // noop
   }
 }
