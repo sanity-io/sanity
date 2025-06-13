@@ -27,6 +27,13 @@ jobs:
           cache: pnpm
           node-version: lts/*
 
+      - name: Add report comment placeholder
+        uses: thollander/actions-comment-pull-request@fabd468d3a1a0b97feee5f6b9e499eab0dd903f6 # v2
+        if: ${{ github.event_name == 'pull_request' }}
+        with:
+          comment_tag: "docs-report"
+          message: Waiting for docs report to finish…
+
       - name: Install project dependencies
         run: pnpm install
 

@@ -43,6 +43,16 @@ jobs:
           cache: pnpm
           node-version: lts/*
 
+      - name: Add PR comment placeholder
+        uses: thollander/actions-comment-pull-request@fabd468d3a1a0b97feee5f6b9e499eab0dd903f6 # v2
+        if: ${{ github.event_name == 'pull_request' }}
+        with:
+          comment_tag: "efps-report"
+          message: |
+            ### ⚡️ Editor Performance Report
+
+            Waiting for Editor Performance Tests to finish…
+
       - name: Install project dependencies
         run: pnpm install
 

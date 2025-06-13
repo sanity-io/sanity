@@ -38,6 +38,26 @@ jobs:
           cache: pnpm
           node-version: lts/*
 
+      - name: Add PR Comment placeholder for e2e Preview Environment
+        uses: thollander/actions-comment-pull-request@fabd468d3a1a0b97feee5f6b9e499eab0dd903f6 # v2
+        if: ${{ github.event_name == 'pull_request' }}
+        with:
+          comment_tag: "e2e-preview-url"
+          message: |
+            ### 🧪 E2E Preview environment
+
+            Waiting for preview deployment to finish…
+
+      - name: Add PR Comment placeholder for e2e report
+        uses: thollander/actions-comment-pull-request@fabd468d3a1a0b97feee5f6b9e499eab0dd903f6 # v2
+        if: ${{ github.event_name == 'pull_request' }}
+        with:
+          comment_tag: "playwright-e2e-report"
+          message: |
+            ### 📊 Playwright Test Report
+
+            Waiting for E2E tests to finish…
+
       - name: Install project dependencies
         run: pnpm install
 
@@ -189,7 +209,7 @@ jobs:
         with:
           comment_tag: "e2e-preview-url"
           message: |
-            ### 🧪 [E2E Preview environment](${{ steps.deploy.outputs.DEPLOY_URL }}) 
+            ### 🧪 [E2E Preview environment](${{ steps.deploy.outputs.DEPLOY_URL }})
 
             <details>
             <summary> 🔑 Environment Variables for Local Testing</summary>
