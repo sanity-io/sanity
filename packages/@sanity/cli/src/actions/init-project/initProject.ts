@@ -290,6 +290,44 @@ export default async function initSanity(
     print('')
   }
 
+  // Returns true if not unattended and the flag was not explicitly set
+  function shouldPromptFor(setting: keyof InitFlags) {
+    return !unattended && cliFlags[setting] === undefined
+  }
+
+  // Returns the flag value if it's a boolean, otherwise returns the defaultValue
+  function flagOrDefault(flag: keyof InitFlags, defaultValue: boolean) {
+    return typeof cliFlags[flag] === 'boolean' ? cliFlags[flag] : defaultValue
+  }
+
+  // Resolves the package manager to use, respecting CLI flags and falling back to detection
+  async function resolvePackageManager(targetDir: string): Promise<PackageManager> {
+    // If the user has specified a package manager, and it's allowed use that
+    if (packageManager && ALLOWED_PACKAGE_MANAGERS.includes(packageManager)) {
+      return packageManager
+    }
+
+    // Otherwise, try to find the most optimal package manager to use
+    const chosen = (
+      await getPackageManagerChoice(targetDir, {
+        prompt,
+        interactive: unattended ? false : isInteractive,
+      })
+    ).chosen
+
+    // only log warning if a package manager flag is passed
+    if (packageManager) {
+      output.warn(
+        chalk.yellow(
+          `Given package manager "${packageManager}" is not supported. Supported package managers are ${allowedPackageManagersString}.`,
+        ),
+      )
+      output.print(`Using ${chosen} as package manager`)
+    }
+
+    return chosen
+  }
+
   const isNextJs = detectedFramework?.slug === 'nextjs'
 
   const flags = await prepareFlags()
@@ -314,16 +352,16 @@ export default async function initSanity(
     return
   }
 
-  let initNext = false
+  let initNext = flagOrDefault('nextjs-add-config-files', false)
   if (isNextJs) {
-    initNext =
-      unattended ||
-      (await prompt.single({
+    if (shouldPromptFor('nextjs-add-config-files')) {
+      initNext = await prompt.single({
         type: 'confirm',
         message:
           'Would you like to add configuration files for a Sanity project in this Next.js folder?',
         default: true,
-      }))
+      })
+    }
 
     trace.log({
       step: 'useDetectedFramework',
@@ -367,12 +405,18 @@ export default async function initSanity(
     }
   }
 
+  let useTypeScript = flagOrDefault('typescript', true)
   if (initNext) {
-    const useTypeScript = unattended ? true : await promptForTypeScript(prompt)
+    if (shouldPromptFor('typescript')) {
+      useTypeScript = await promptForTypeScript(prompt)
+    }
     trace.log({step: 'useTypeScript', selectedOption: useTypeScript ? 'yes' : 'no'})
     const fileExtension = useTypeScript ? 'ts' : 'js'
 
-    const embeddedStudio = unattended ? true : await promptForEmbeddedStudio(prompt)
+    let embeddedStudio = flagOrDefault('nextjs-embed-studio', true)
+    if (shouldPromptFor('nextjs-embed-studio')) {
+      embeddedStudio = await promptForEmbeddedStudio(prompt)
+    }
     let hasSrcFolder = false
 
     if (embeddedStudio) {
@@ -455,14 +499,28 @@ export default async function initSanity(
     }
 
     // ask what kind of schema setup the user wants
-    const templateToUse = unattended ? 'clean' : await promptForNextTemplate(prompt)
+    let templateToUse = flags.template ?? 'clean'
+    if (shouldPromptFor('template')) {
+      templateToUse = await promptForNextTemplate(prompt)
+    }
 
-    await writeSourceFiles(sanityFolder(useTypeScript, templateToUse), undefined, hasSrcFolder)
+    if (['clean', 'blog'].includes(templateToUse)) {
+      await writeSourceFiles(
+        sanityFolder(useTypeScript, templateToUse as 'clean' | 'blog'),
+        undefined,
+        hasSrcFolder,
+      )
+    } else {
+      throw new Error(`Invalid template for nextjs: '${templateToUse}'. Pick 'clean' or 'blog'.`)
+    }
 
-    const appendEnv = unattended ? true : await promptForAppendEnv(prompt, envFilename)
+    let appendEnv = flagOrDefault('nextjs-append-env', true)
+    if (shouldPromptFor('nextjs-append-env')) {
+      appendEnv = await promptForAppendEnv(prompt, envFilename)
+    }
 
     if (appendEnv) {
-      await createOrAppendEnvVars(envFilename, detectedFramework, {log: true})
+      await createOrAppendEnvVars(envFilename, detectedFramework, {log: true, targetDir: workDir})
     }
 
     if (embeddedStudio) {
@@ -495,7 +553,7 @@ export default async function initSanity(
       }
     }
 
-    const {chosen} = await getPackageManagerChoice(workDir, {interactive: false})
+    const chosen = await resolvePackageManager(workDir)
     trace.log({step: 'selectPackageManager', selectedOption: chosen})
     const packages = ['@sanity/vision@3', 'sanity@3', '@sanity/image-url@1', 'styled-components@6']
     if (templateToUse === 'blog') {
@@ -543,13 +601,16 @@ export default async function initSanity(
 
   async function writeOrOverwrite(filePath: string, content: string) {
     if (existsSync(filePath)) {
-      const overwrite = await prompt.single({
-        type: 'confirm',
-        message: `File ${chalk.yellow(
-          filePath.replace(workDir, ''),
-        )} already exists. Do you want to overwrite it?`,
-        default: false,
-      })
+      let overwrite = flagOrDefault('overwrite-files', false)
+      if (shouldPromptFor('overwrite-files')) {
+        overwrite = await prompt.single({
+          type: 'confirm',
+          message: `File ${chalk.yellow(
+            filePath.replace(workDir, ''),
+          )} already exists. Do you want to overwrite it?`,
+          default: false,
+        })
+      }
 
       if (!overwrite) {
         return
@@ -583,12 +644,11 @@ export default async function initSanity(
   }
 
   // Use typescript?
-  let useTypeScript = true
   if (!remoteTemplateInfo && template) {
     const typescriptOnly = template.typescriptOnly === true
-    if (!typescriptOnly && typeof cliFlags.typescript === 'boolean') {
-      useTypeScript = cliFlags.typescript
-    } else if (!typescriptOnly && !unattended) {
+    if (typescriptOnly) {
+      useTypeScript = true
+    } else if (shouldPromptFor('typescript')) {
       useTypeScript = await promptForTypeScript(prompt)
       trace.log({step: 'useTypeScript', selectedOption: useTypeScript ? 'yes' : 'no'})
     }
@@ -615,30 +675,7 @@ export default async function initSanity(
     throw bootstrapPromise.reason
   }
 
-  let pkgManager: PackageManager
-
-  // If the user has specified a package manager, and it's allowed use that
-  if (packageManager && ALLOWED_PACKAGE_MANAGERS.includes(packageManager)) {
-    pkgManager = packageManager
-  } else {
-    // Otherwise, try to find the most optimal package manager to use
-    pkgManager = (
-      await getPackageManagerChoice(outputPath, {
-        prompt,
-        interactive: unattended ? false : isInteractive,
-      })
-    ).chosen
-
-    // only log warning if a package manager flag is passed
-    if (packageManager) {
-      output.warn(
-        chalk.yellow(
-          `Given package manager "${packageManager}" is not supported. Supported package managers are ${allowedPackageManagersString}.`,
-        ),
-      )
-      output.print(`Using ${pkgManager} as package manager`)
-    }
-  }
+  const pkgManager = await resolvePackageManager(outputPath)
 
   trace.log({step: 'selectPackageManager', selectedOption: pkgManager})
 
@@ -1165,6 +1202,7 @@ export default async function initSanity(
         schemaUrl,
         useTypeScript,
         variables: bootstrapVariables,
+        overwriteFiles: flagOrDefault('overwrite-files', false),
       },
       context,
     )
@@ -1452,7 +1490,7 @@ export default async function initSanity(
   async function createOrAppendEnvVars(
     filename: string,
     framework: Framework | null,
-    options?: {log?: boolean},
+    options?: {log?: boolean; targetDir?: string},
   ) {
     // we will prepend SANITY_ to these variables later, together with the prefix
     const envVars = {
@@ -1471,7 +1509,7 @@ export default async function initSanity(
 
       await writeEnvVarsToFile(filename, envVars, {
         framework,
-        outputPath,
+        outputPath: options?.targetDir || outputPath,
         log: options?.log,
       })
     } catch (err) {
