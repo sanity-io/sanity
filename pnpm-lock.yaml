@@ -1522,6 +1522,9 @@ importers:
       '@sanity/logos':
         specifier: ^2.2.0
         version: 2.2.0(@sanity/color@3.0.6)(react@18.3.1)
+      '@sanity/media-library-types':
+        specifier: ^0.0.2
+        version: 0.0.2
       '@sanity/message-protocol':
         specifier: ^0.13.0
         version: 0.13.0
@@ -4583,6 +4586,9 @@ packages:
     peerDependencies:
       '@sanity/color': ^2.0 || ^3.0 || ^3.0.0-beta
       react: ^18.3 || >=19.0.0-rc
+
+  '@sanity/media-library-types@0.0.2':
+    resolution: {integrity: sha512-DWFBmqFpzjxnQQWt6qA5zpY27UtvooGVPhuAo2yZUQ6EQB8EDtmv5eh5xelvwJLxAIKhr3IsvQEEReVyOfmKow==}
 
   '@sanity/message-protocol@0.13.0':
     resolution: {integrity: sha512-rUg5sFvAlwYoILMAk9M7yDHf3424jZ7AGXWDONdeXy489JeO4Ey7JZM61wElSVZUc2PlMd/FZE51DewhNNEYfg==}
@@ -15040,6 +15046,8 @@ snapshots:
     dependencies:
       '@sanity/color': 3.0.6
       react: 19.1.0
+
+  '@sanity/media-library-types@0.0.2': {}
 
   '@sanity/message-protocol@0.13.0':
     dependencies:
