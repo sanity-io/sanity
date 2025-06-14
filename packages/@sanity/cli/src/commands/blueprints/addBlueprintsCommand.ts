@@ -25,6 +25,9 @@ Examples:
   # Add a Function with a specific type
   sanity blueprints add function --fn-type document-publish
 
+  # Add a Function using an example
+  sanity blueprints add function --example example-name
+
   # Add a JavaScript Function
   sanity blueprints add function --js
 
@@ -36,6 +39,8 @@ Examples:
 `
 
 export interface BlueprintsAddFlags {
+  'example'?: string
+
   'name'?: string
   'n'?: string
 
@@ -44,8 +49,8 @@ export interface BlueprintsAddFlags {
   'fn-language'?: string
   'lang'?: string
 
-  'js'?: boolean
   'javascript'?: boolean
+  'js'?: boolean
 
   'fn-helpers'?: boolean
   'helpers'?: boolean
@@ -73,7 +78,31 @@ const addBlueprintsCommand: CliCommandDefinition<BlueprintsAddFlags> = {
 
   async action(args, context) {
     const {output, apiClient} = context
-    const flags = {...defaultFlags, ...args.extOptions}
+    const {extOptions} = args
+
+    if (extOptions.example) {
+      // example is exclusive to 'name', 'fn-type', 'fn-language', 'javascript', 'fn-helpers', 'fn-installer'
+      // check before merging default flags
+      const conflictingFlags: (keyof BlueprintsAddFlags)[] = [
+        'name',
+        'n',
+        'fn-type',
+        'fn-language',
+        'lang',
+        'javascript',
+        'js',
+        'fn-helpers',
+        'helpers',
+        'fn-installer',
+        'installer',
+      ]
+      const foundConflict = conflictingFlags.find((key) => extOptions[key])
+      if (foundConflict) {
+        throw new Error(`--example can't be used with --${foundConflict}`)
+      }
+    }
+
+    const flags = {...defaultFlags, ...extOptions}
 
     const client = apiClient({
       requireUser: true,
@@ -108,6 +137,7 @@ const addBlueprintsCommand: CliCommandDefinition<BlueprintsAddFlags> = {
       ...cmdConfig.value,
       args: {type: resourceType},
       flags: {
+        'example': flags.example,
         'name': flags.n ?? flags.name,
         'fn-type': flags['fn-type'],
         'language': flags.lang ?? flags['fn-language'],

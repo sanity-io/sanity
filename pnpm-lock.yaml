@@ -800,8 +800,8 @@ importers:
         specifier: workspace:*
         version: link:../codegen
       '@sanity/runtime-cli':
-        specifier: ^8.0.0
-        version: 8.0.0(@types/node@22.13.1)(terser@5.38.2)(tsx@4.20.1)(typescript@5.8.3)(yaml@2.8.0)
+        specifier: ^8.1.0
+        version: 8.1.0(@types/node@22.13.1)(terser@5.38.2)(tsx@4.20.1)(typescript@5.8.3)(yaml@2.8.0)
       '@sanity/telemetry':
         specifier: ^0.8.0
         version: 0.8.1(react@19.1.0)
@@ -4635,8 +4635,8 @@ packages:
     peerDependencies:
       react: ^18.3 || >=19.0.0-rc
 
-  '@sanity/runtime-cli@8.0.0':
-    resolution: {integrity: sha512-ApwAN3S2KhfUS1kpBTiYRTGqfXYrqhkYE0Ej3qGsAg42JbcchSsnQeqmIO+RUa2L9vq86IZoSkNUapXfnEkxLg==}
+  '@sanity/runtime-cli@8.1.0':
+    resolution: {integrity: sha512-AdjPQufJTLKR1lSGJmdub2qqz05DB/+hk3+3FekkZLKYDGCOTfQ7jr3qbaPLT4NoyutG8KhtmohR/jnFzWjAVA==}
     engines: {node: '>=20.11.0'}
     hasBin: true
 
@@ -15273,7 +15273,7 @@ snapshots:
       - debug
       - typescript
 
-  '@sanity/runtime-cli@8.0.0(@types/node@22.13.1)(terser@5.38.2)(tsx@4.20.1)(typescript@5.8.3)(yaml@2.8.0)':
+  '@sanity/runtime-cli@8.1.0(@types/node@22.13.1)(terser@5.38.2)(tsx@4.20.1)(typescript@5.8.3)(yaml@2.8.0)':
     dependencies:
       '@oclif/core': 4.3.0
       '@oclif/plugin-help': 6.2.28
@@ -15288,6 +15288,7 @@ snapshots:
       jiti: 2.4.2
       mime-types: 3.0.1
       ora: 8.2.0
+      tar-stream: 3.1.7
       vite: 6.3.5(@types/node@22.13.1)(jiti@2.4.2)(terser@5.38.2)(tsx@4.20.1)(yaml@2.8.0)
       vite-tsconfig-paths: 5.1.4(typescript@5.8.3)(vite@6.3.5(@types/node@22.13.1)(jiti@2.4.2)(terser@5.38.2)(tsx@4.20.1)(yaml@2.8.0))
       ws: 8.18.2
