@@ -125,6 +125,7 @@ export interface BlockStyleDefinition {
   value: string
   i18nTitleKey?: string
   icon?: ReactNode | ComponentType
+  hidden?: boolean
 }
 
 /**
