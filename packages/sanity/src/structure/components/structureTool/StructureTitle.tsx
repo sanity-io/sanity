@@ -1,6 +1,10 @@
 import {type ObjectSchemaType} from '@sanity/types'
-import {useEffect} from 'react'
+import {useEffect, useMemo} from 'react'
 import {
+  getDraftId,
+  getPublishedId,
+  isDraftId,
+  isGoingToUnpublish,
   unstable_useValuePreview as useValuePreview,
   useEditState,
   usePerspective,
@@ -9,6 +13,7 @@ import {
 } from 'sanity'
 
 import {LOADING_PANE} from '../../constants'
+import {useDocumentIdStack} from '../../hooks/useDocumentIdStack'
 import {structureLocaleNamespace} from '../../i18n'
 import {type Panes} from '../../structureResolvers'
 import {type DocumentPaneNode} from '../../types'
@@ -21,7 +26,7 @@ interface StructureTitleProps {
 // TODO: Fix state jank when editing different versions inside panes.
 const DocumentTitle = (props: {documentId: string; documentType: string}) => {
   const {documentId, documentType} = props
-  const {selectedReleaseId} = usePerspective()
+  const {selectedReleaseId, selectedPerspectiveName} = usePerspective()
 
   const editState = useEditState(documentId, documentType, 'default', selectedReleaseId)
   const schema = useSchema()
@@ -30,10 +35,42 @@ const DocumentTitle = (props: {documentId: string; documentType: string}) => {
   const documentValue = editState?.version || editState?.draft || editState?.published
   const schemaType = schema.get(documentType) as ObjectSchemaType | undefined
 
+  const {previousId} = useDocumentIdStack({
+    documentId,
+    editState,
+    displayed: documentValue,
+  })
+
+  const previewDocId = useMemo(() => {
+    // If no document value exists, return the original document ID
+    if (!documentValue) return documentId
+
+    // If no perspective is selected or we're in draft mode, use draft ID
+    if (!selectedPerspectiveName || selectedPerspectiveName === 'drafts') {
+      return getDraftId(documentValue._id)
+    }
+
+    // If we're in published mode, use published ID
+    if (selectedPerspectiveName === 'published') {
+      return getPublishedId(documentValue._id)
+    }
+
+    // If document is being unpublished and we have a previous ID
+    if (isGoingToUnpublish(documentValue) && selectedReleaseId) {
+      return previousId && isDraftId(previousId) ? getPublishedId(documentValue._id) : previousId
+    }
+
+    // Default to the document's current ID
+    return documentValue._id
+  }, [documentValue, documentId, selectedPerspectiveName, selectedReleaseId, previousId])
+
   const {value, isLoading: previewValueIsLoading} = useValuePreview({
     enabled: true,
     schemaType,
-    value: documentValue,
+    value: {
+      _id: previewDocId,
+      _type: documentType,
+    },
   })
 
   const documentTitle = isNewDocument
