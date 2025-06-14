@@ -313,6 +313,96 @@ describe('createSearchQuery', () => {
       expect(splitQuery[1]).toEqual('// foo=1')
       expect(splitQuery[2]).toEqual('// bar')
     })
+
+    it('should always include __types parameter with all types', () => {
+      const {query, params} = createSearchQuery({
+        query: 'test',
+        types: [testType],
+      })
+
+      expect(query).toContain('_type in $__types')
+      expect(params.__types).toEqual(['basic-schema-test'])
+    })
+
+    it('should limit search paths when path count exceeds threshold', () => {
+      // Create a type with many search paths to exceed the 1000 path limit
+      const manyPathsType = Schema.compile({
+        types: [
+          defineType({
+            name: 'many-paths-type',
+            type: 'document',
+            fields: Array.from({length: 600}, (_, i) =>
+              defineField({
+                name: `field${i}`,
+                type: 'string',
+                options: {
+                  search: {
+                    weight: 1,
+                  },
+                },
+              })
+            ),
+          }),
+        ],
+      }).get('many-paths-type')
+
+      const {query, params, searchSpec} = createSearchQuery({
+        query: 'test',
+        types: [manyPathsType],
+      })
+
+      // Should still include __types (no binary cutoff)
+      expect(query).toContain('_type in $__types')
+      expect(params.__types).toEqual(['many-paths-type'])
+      
+      // But should limit the number of searchable paths
+      const totalPaths = searchSpec[0]?.paths?.length || 0
+      expect(totalPaths).toBeLessThanOrEqual(1000)
+    })
+
+    it('should prioritise user-provided paths when limiting', () => {
+      // Create a type with both user-provided (high weight) and default paths
+      const mixedWeightType = Schema.compile({
+        types: [
+          defineType({
+            name: 'mixed-weight-type',
+            type: 'document',
+            fields: [
+              defineField({
+                name: 'importantField',
+                type: 'string',
+                options: {
+                  search: {
+                    weight: 10, // User-provided high weight
+                  },
+                },
+              }),
+              defineField({
+                name: 'normalField',
+                type: 'string',
+                // No weight specified - gets default weight of 1
+              }),
+            ],
+          }),
+        ],
+      }).get('mixed-weight-type')
+
+      const {searchSpec} = createSearchQuery({
+        query: 'test',
+        types: [mixedWeightType],
+      })
+
+      const paths = searchSpec[0]?.paths || []
+      const importantPath = paths.find(p => p.path === 'importantField')
+      const normalPath = paths.find(p => p.path === 'normalField')
+
+      // Important field should be included (high weight = user-provided)
+      expect(importantPath).toBeDefined()
+      expect(importantPath?.weight).toBe(10)
+      
+      // Normal field should also be included (under the limit)
+      expect(normalPath).toBeDefined()
+    })
   })
 
   describe('searchSpec', () => {
