@@ -1,3 +1,4 @@
+import {type SanityDocument} from '@sanity/client'
 import {RevertIcon} from '@sanity/icons'
 import {useCallback, useEffect, useMemo, useRef, useState} from 'react'
 import {
@@ -20,8 +21,8 @@ export const HistoryRestoreAction: DocumentActionComponent = ({
   onComplete,
   release,
 }) => {
-  const {restore} = useDocumentOperation(id, type, release)
-  const {revisionNotFound} = useDocumentPane()
+  const {restoreRevision, restoreDocument} = useDocumentOperation(id, type, release)
+  const {revisionNotFound, displayed} = useDocumentPane()
   const event = useDocumentOperationEvent(id, type)
   const {navigateIntent} = useRouter()
   const prevEvent = useRef(event)
@@ -29,9 +30,18 @@ export const HistoryRestoreAction: DocumentActionComponent = ({
   const {t} = useTranslation(structureLocaleNamespace)
 
   const handleConfirm = useCallback(() => {
-    restore.execute(revision!)
+    if (displayed) {
+      const documentToRestore = {
+        ...displayed,
+        _id: id,
+      } as SanityDocument
+      restoreDocument.execute(documentToRestore)
+    } else {
+      // Fallback to revision-based restore if no displayed document
+      restoreRevision.execute(revision!)
+    }
     onComplete()
-  }, [restore, revision, onComplete])
+  }, [restoreRevision, restoreDocument, displayed, revision, id, onComplete])
 
   /**
    * If the restore operation is successful, navigate to the document edit view
@@ -39,7 +49,10 @@ export const HistoryRestoreAction: DocumentActionComponent = ({
   useEffect(() => {
     if (!event || event === prevEvent.current) return
 
-    if (event.type === 'success' && event.op === 'restore') {
+    if (
+      event.type === 'success' &&
+      (event.op === 'restoreRevision' || event.op === 'restoreDocument')
+    ) {
       navigateIntent('edit', {id, type})
     }
 
