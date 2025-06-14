@@ -70,10 +70,9 @@ const initBlueprintsCommand: CliCommandDefinition<BlueprintsInitFlags> = {
         'stack-name',
         'name',
       ]
-      if (conflictingFlags.some((key) => flags[key])) {
-        throw new Error(
-          "--example can't be used with --blueprint-type, --stack-id, or --stack-name",
-        )
+      const foundConflict = conflictingFlags.find((key) => flags[key])
+      if (foundConflict) {
+        throw new Error(`--example can't be used with --${foundConflict}`)
       }
     }
 

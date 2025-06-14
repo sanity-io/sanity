@@ -78,7 +78,31 @@ const addBlueprintsCommand: CliCommandDefinition<BlueprintsAddFlags> = {
 
   async action(args, context) {
     const {output, apiClient} = context
-    const flags = {...defaultFlags, ...args.extOptions}
+    const {extOptions} = args
+
+    if (extOptions.example) {
+      // example is exclusive to 'name', 'fn-type', 'fn-language', 'javascript', 'fn-helpers', 'fn-installer'
+      // check before merging default flags
+      const conflictingFlags: (keyof BlueprintsAddFlags)[] = [
+        'name',
+        'n',
+        'fn-type',
+        'fn-language',
+        'lang',
+        'javascript',
+        'js',
+        'fn-helpers',
+        'helpers',
+        'fn-installer',
+        'installer',
+      ]
+      const foundConflict = conflictingFlags.find((key) => extOptions[key])
+      if (foundConflict) {
+        throw new Error(`--example can't be used with --${foundConflict}`)
+      }
+    }
+
+    const flags = {...defaultFlags, ...extOptions}
 
     const client = apiClient({
       requireUser: true,
@@ -105,28 +129,6 @@ const addBlueprintsCommand: CliCommandDefinition<BlueprintsAddFlags> = {
     })
 
     if (!cmdConfig.ok) throw new Error(cmdConfig.error)
-
-    if (flags.example) {
-      // example is exclusive to 'name', 'fn-type', 'fn-language', 'javascript', 'fn-helpers', 'fn-installer'
-      const conflictingFlags: (keyof BlueprintsAddFlags)[] = [
-        'name',
-        'n',
-        'fn-type',
-        'fn-language',
-        'lang',
-        'javascript',
-        'js',
-        'fn-helpers',
-        'helpers',
-        'fn-installer',
-        'installer',
-      ]
-      if (conflictingFlags.some((key) => flags[key])) {
-        throw new Error(
-          "--example can't be used with --name, --fn-type, --fn-language, --javascript, --fn-helpers, or --fn-installer",
-        )
-      }
-    }
 
     let userWantsFnHelpers = flags.helpers || flags['fn-helpers']
     if (flags['no-fn-helpers'] === true) userWantsFnHelpers = false // override
