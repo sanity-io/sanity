@@ -45,6 +45,7 @@ interface UpsellDialogProps {
   interpolation?: InterpolationProp
 }
 
+/** @internal */
 export function UpsellDialog(props: UpsellDialogProps) {
   const {data, onClose, onPrimaryClick, onSecondaryClick, interpolation} = props
 

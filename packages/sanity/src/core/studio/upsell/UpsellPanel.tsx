@@ -41,6 +41,7 @@ interface CommentsUpsellPanelProps {
  */
 const HORIZONTAL_PADDING_Y = [3, 3, 5]
 
+/** @internal */
 export function UpsellPanel(props: CommentsUpsellPanelProps) {
   const {data, onPrimaryClick, onSecondaryClick, layout = 'vertical'} = props
   const direction: FlexDirection[] = [

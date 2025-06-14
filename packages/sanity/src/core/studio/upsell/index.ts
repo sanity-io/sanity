@@ -1,2 +1,5 @@
 export * from './__telemetry__/'
+export * from './types'
 export * from './upsellDescriptionSerializer'
+export {UpsellDialog} from './UpsellDialog'
+export {UpsellPanel} from './UpsellPanel'

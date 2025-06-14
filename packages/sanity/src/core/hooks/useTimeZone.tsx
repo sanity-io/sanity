@@ -16,6 +16,9 @@ enum TimeZoneEvents {
   update = 'timeZoneEventUpdate',
 }
 
+/**
+ * @internal
+ */
 export type TimeZoneScopeType = 'scheduledPublishing' | 'contentReleases' | 'input'
 
 type NoIdRequiredTypes = 'scheduledPublishing' | 'contentReleases'
@@ -33,10 +36,16 @@ type InputScope = {
   relativeDate?: Date // offsets can change over time, so we use a relative date to get the offset
 }
 
+/**
+ * @internal
+ */
 export type TimeZoneScope = ReleasesOrScheduledPublishingScope | InputScope
 
 const debug = debugWithName('useScheduleOperation')
 
+/**
+ * @internal
+ */
 export const timeZoneLocalStorageNamespace = 'studio.timezone.'
 
 const timeZoneCache = new Map<string, NormalizedTimeZone[]>()
@@ -140,12 +149,19 @@ function getGloballyCachedTimeZones(locale: string, relativeDate?: Date): Normal
   return computedTimeZones
 }
 
+/**
+ * @internal
+ */
 export const TIME_ZONE_SCOPE_TYPE = {
   scheduledPublishing: 'scheduled-publishing',
   contentReleases: 'content-releases',
   input: 'input',
 }
 
+/**
+ * Hook to get the time zone for a given scope.
+ * @internal
+ */
 export const useTimeZone = (scope: TimeZoneScope) => {
   const toast = useToast()
   const keyValueStore = useKeyValueStore()

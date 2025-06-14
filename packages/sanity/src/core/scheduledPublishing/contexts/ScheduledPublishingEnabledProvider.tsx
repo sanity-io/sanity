@@ -66,6 +66,7 @@ export function ScheduledPublishingEnabledProvider({
 }
 
 /**
+ * Hook to check if scheduled publishing is enabled for the current workspace
  * @internal
  */
 export function useScheduledPublishingEnabled(): ScheduledPublishingEnabledContextValue {

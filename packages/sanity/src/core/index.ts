@@ -48,6 +48,7 @@ export {
   useIsReleaseActive,
   useOnlyHasVersions,
   useReleasesIds,
+  useReleasesToolAvailable,
   useVersionOperations,
   VersionChip,
   type VersionInfoDocumentStub,

@@ -1,5 +1,8 @@
 // date-fns compatible date formats
 // https://date-fns.org/v2.28.0/docs/format
+/**
+ * @internal
+ */
 export const DATE_FORMAT = {
   // 1 Oct 22, 10:00 PM
   SMALL: `d MMM yy',' p`,
