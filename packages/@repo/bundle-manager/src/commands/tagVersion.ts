@@ -2,7 +2,7 @@ import {Storage} from '@google-cloud/storage'
 import {readEnv} from '@repo/utils'
 
 import {isValidTag} from '../assert'
-import {corePkgs, validTags} from '../constants'
+import {corePkgs, VALID_TAGS} from '../constants'
 import {updateManifestWith} from '../helpers/updateManifestWith'
 import {tagVersion as tagManifestVersion} from '../operations/tagVersion'
 import {type KnownEnvVar} from '../types'
@@ -19,7 +19,7 @@ export async function tagVersion(args: {tag: string; version: string}) {
   const {tag, version} = args
 
   if (!isValidTag(tag)) {
-    throw new Error(`Unsupported tag, must be one of [${validTags.join(', ')}] required options`)
+    throw new Error(`Unsupported tag, must be one of [${VALID_TAGS.join(', ')}] required options`)
   }
 
   console.log(`Tagging the following packages as "${tag}": ${corePkgs.join(', ')}`)

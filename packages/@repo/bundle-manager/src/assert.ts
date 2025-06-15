@@ -1,6 +1,6 @@
-import {validTags} from './constants'
+import {VALID_TAGS} from './constants'
 import {type DistTag} from './types'
 
 export function isValidTag(tag: string): tag is DistTag {
-  return validTags.includes(tag as any)
+  return VALID_TAGS.includes(tag as any)
 }

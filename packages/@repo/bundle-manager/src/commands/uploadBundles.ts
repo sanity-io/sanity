@@ -8,7 +8,7 @@ import {MONOREPO_ROOT, readEnv} from '@repo/utils'
 import {type NormalizedReadResult, readPackageUp} from 'read-package-up'
 
 import {isValidTag} from '../assert'
-import {appVersion, corePkgs, validTags} from '../constants'
+import {appVersion, corePkgs, VALID_TAGS} from '../constants'
 import {updateManifestWith} from '../helpers/updateManifestWith'
 import {addVersion} from '../operations/addVersion'
 import {tagVersion} from '../operations/tagVersion'
@@ -221,7 +221,7 @@ export async function uploadBundles(args: {tag: string; asVersion?: string}) {
   const {tag, asVersion} = args
 
   if (!isValidTag(tag)) {
-    throw new Error(`Unsupported tag, must be one of [${validTags.join(', ')}] required options`)
+    throw new Error(`Unsupported tag, must be one of [${VALID_TAGS.join(', ')}] required options`)
   }
 
   // Clean up source maps
