@@ -1335,25 +1335,25 @@ importers:
   packages/@sanity/vision:
     dependencies:
       '@codemirror/autocomplete':
-        specifier: ^6.1.0
+        specifier: ^6.18.6
         version: 6.18.6
       '@codemirror/commands':
-        specifier: ^6.0.1
+        specifier: ^6.8.1
         version: 6.8.1
       '@codemirror/lang-javascript':
-        specifier: ^6.0.2
-        version: 6.2.3
+        specifier: ^6.2.4
+        version: 6.2.4
       '@codemirror/language':
-        specifier: ^6.2.1
+        specifier: ^6.11.1
         version: 6.11.1
       '@codemirror/search':
-        specifier: ^6.0.1
+        specifier: ^6.5.11
         version: 6.5.11
       '@codemirror/state':
-        specifier: ^6.0.0
+        specifier: ^6.5.2
         version: 6.5.2
       '@codemirror/view':
-        specifier: ^6.1.1
+        specifier: ^6.37.2
         version: 6.37.2
       '@juggle/resize-observer':
         specifier: ^3.4.0
@@ -2835,8 +2835,8 @@ packages:
   '@codemirror/lang-java@6.0.1':
     resolution: {integrity: sha512-OOnmhH67h97jHzCuFaIEspbmsT98fNdhVhmA3zCxW0cn7l8rChDhZtwiwJ/JOKXgfm4J+ELxQihxaI7bj7mJRg==}
 
-  '@codemirror/lang-javascript@6.2.3':
-    resolution: {integrity: sha512-8PR3vIWg7pSu7ur8A07pGiYHgy3hHj+mRYRCSG8q+mPIrl0F02rgpGv+DsQTHRTc30rydOsf5PZ7yjKFg2Ackw==}
+  '@codemirror/lang-javascript@6.2.4':
+    resolution: {integrity: sha512-0WVmhp1QOqZ4Rt6GlVGwKJN3KW7Xh4H2q8ZZNGZaP6lRdxXJzmjm4FqvmOojVj6khWJHIb9sp7U/72W7xQgqAA==}
 
   '@codemirror/lang-json@6.0.1':
     resolution: {integrity: sha512-+T1flHdgpqDDlJZ2Lkil/rLiRy684WMLc74xUnjJH48GQdfJo/pudlTRreZmKwzP8/tGdKf83wlbAdOCzlJOGQ==}
@@ -12802,7 +12802,7 @@ snapshots:
     dependencies:
       '@codemirror/autocomplete': 6.18.6
       '@codemirror/lang-css': 6.3.1
-      '@codemirror/lang-javascript': 6.2.3
+      '@codemirror/lang-javascript': 6.2.4
       '@codemirror/language': 6.11.1
       '@codemirror/state': 6.5.2
       '@codemirror/view': 6.37.2
@@ -12815,7 +12815,7 @@ snapshots:
       '@codemirror/language': 6.11.1
       '@lezer/java': 1.1.3
 
-  '@codemirror/lang-javascript@6.2.3':
+  '@codemirror/lang-javascript@6.2.4':
     dependencies:
       '@codemirror/autocomplete': 6.18.6
       '@codemirror/language': 6.11.1
@@ -14829,7 +14829,7 @@ snapshots:
       '@codemirror/commands': 6.8.1
       '@codemirror/lang-html': 6.4.9
       '@codemirror/lang-java': 6.0.1
-      '@codemirror/lang-javascript': 6.2.3
+      '@codemirror/lang-javascript': 6.2.4
       '@codemirror/lang-json': 6.0.1
       '@codemirror/lang-markdown': 6.3.2
       '@codemirror/lang-php': 6.0.1
