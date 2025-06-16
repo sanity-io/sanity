@@ -79,6 +79,8 @@
         ]
       }
     ],
+    "typescript/ban-ts-comment": "error",
+    "typescript/prefer-ts-expect-error": "error",
     // Not relevant as we use the modern jsx-runtime transform
     "react-in-jsx-scope": "off",
     // Not relevant due to React Compiler
@@ -115,7 +117,6 @@
     "eslint/no-useless-catch": "warn",
     "eslint/no-unneeded-ternary": "warn",
     "eslint/no-unused-vars": "warn",
-    "typescript/prefer-ts-expect-error": "warn",
     "unicorn/no-useless-fallback-in-spread": "warn",
     "import/no-named-as-default": "warn",
     "unicorn/prefer-string-starts-ends-with": "warn",

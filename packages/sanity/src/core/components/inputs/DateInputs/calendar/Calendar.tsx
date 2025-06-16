@@ -448,8 +448,6 @@ function CalendarYearSelect(props: {
         mode="bleed"
         icon={ChevronLeftIcon}
         tooltipProps={{content: 'Previous year'}}
-        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-        // @ts-ignore - Button with specific styling requirements
         {...CALENDAR_ICON_BUTTON_PROPS}
       />
       <YearInput value={value} onChange={onChange} radius={0} style={{width: 48}} />
@@ -459,8 +457,6 @@ function CalendarYearSelect(props: {
         mode="bleed"
         icon={ChevronRightIcon}
         tooltipProps={{content: 'Next year'}}
-        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-        // @ts-ignore - Button with specific styling requirements
         {...CALENDAR_ICON_BUTTON_PROPS}
       />
     </Flex>

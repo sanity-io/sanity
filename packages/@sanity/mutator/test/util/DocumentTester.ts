@@ -56,8 +56,8 @@ export class DocumentTester {
     const mut = new Mutation({
       transactionId: toRev,
       resultRev: toRev,
-      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-      // @ts-ignore
+      // oxlint-disable-next-line ban-ts-comment
+      // @ts-expect-error
       _previousRev: fromRev, // not known to receiver yet
       mutations: [{patch}],
     })
