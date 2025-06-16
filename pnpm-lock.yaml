@@ -3,6 +3,50 @@ lockfileVersion: '9.0'
 settings:
   autoInstallPeers: true
   excludeLinksFromLockfile: false
+
+catalogs:
+  default:
+    '@sanity/eslint-config-i18n':
+      specifier: ^2.0.0
+      version: 2.0.0
+    '@sanity/eslint-config-studio':
+      specifier: ^5.0.2
+      version: 5.0.2
+    '@vitejs/plugin-react':
+      specifier: ^4.5.2
+      version: 4.5.2
+    esbuild:
+      specifier: 0.25.5
+      version: 0.25.5
+    esbuild-register:
+      specifier: ^3.6.0
+      version: 3.6.0
+    globals:
+      specifier: ^16.2.0
+      version: 16.2.0
+    prettier:
+      specifier: ^3.5.3
+      version: 3.5.3
+    react:
+      specifier: ^19.1.0
+      version: 19.1.0
+    react-dom:
+      specifier: ^19.1.0
+      version: 19.1.0
+    styled-components:
+      specifier: ^6.1.18
+      version: 6.1.18
+    typescript:
+      specifier: 5.8.3
+      version: 5.8.3
+  react18:
+    react:
+      specifier: ^18.3.1
+      version: 18.3.1
+    react-dom:
+      specifier: ^18.3.1
+      version: 18.3.1
+
 overrides:
   '@npmcli/arborist': ^7.5.4
   '@sanity/ui@2': ^2.15.18
@@ -65,8 +109,8 @@ importers:
         specifier: ^7.6.0
         version: 7.6.0(debug@4.4.1)
       '@sanity/eslint-config-i18n':
-        specifier: 1.0.0
-        version: 1.0.0(eslint@9.28.0(jiti@2.4.2))(typescript@5.8.3)
+        specifier: 1.1.0
+        version: 1.1.0(eslint@9.28.0(jiti@2.4.2))(typescript@5.8.3)
       '@sanity/eslint-config-studio':
         specifier: ^4.0.0
         version: 4.0.0(eslint@9.28.0(jiti@2.4.2))(typescript@5.8.3)
@@ -588,19 +632,6 @@ importers:
       vite:
         specifier: ^6.3.5
         version: 6.3.5(@types/node@22.13.1)(jiti@2.4.2)(terser@5.38.2)(tsx@4.20.3)(yaml@2.8.0)
-
-  examples:
-    dependencies:
-      '@sanity/client':
-        specifier: ^7.6.0
-        version: 7.6.0
-      '@sanity/functions':
-        specifier: ^1.0.2
-        version: 1.0.2
-    devDependencies:
-      '@sanity/blueprints':
-        specifier: 0.0.1
-        version: 0.0.1
 
   packages/@repo/bundle-manager:
     dependencies:
@@ -4541,10 +4572,6 @@ packages:
   '@sanity/bifur-client@0.4.1':
     resolution: {integrity: sha512-mHM8WR7pujbIw2qxuV0lzinS1izOoyLza/ejWV6quITTLpBhUoPIQGPER3Ar0SON5JV0VEEqkJGa1kjiYYgx2w==}
 
-  '@sanity/blueprints@0.0.1':
-    resolution: {integrity: sha512-/UukSy8g6+M93oAYpO9olF36ZL3gja9tlTDtkbzw1f2CbyySRYI1fHJZmVNVSjWFLtKvaJIHiR7EhD1MzMvOSw==}
-    engines: {node: '>=20'}
-
   '@sanity/browserslist-config@1.0.5':
     resolution: {integrity: sha512-so+/UtCge8t1jq509hH0otbbptRz0zM/Aa0dh5MhMD7HGT6n2igWIL2VWH/9QR9e77Jn3dJsjz23mW1WCxT+sg==}
 
@@ -4601,8 +4628,8 @@ packages:
     resolution: {integrity: sha512-JASdNaZsxUFBx8GQ1sX2XehYhdhOcurh7KwzQ3cXgOTdjvIQyQcLwmMeYCsU/K26GiI81ODbCEb/C0c92t2Unw==}
     engines: {node: '>=18.2'}
 
-  '@sanity/eslint-config-i18n@1.0.0':
-    resolution: {integrity: sha512-BIeD9IVT7O5I6vDyDaICoidN02qeImdXDRAW062iHY9gV4JrGScWBFio2HQLso7C+Z6SrQB8jOft6SzeYqDhdQ==}
+  '@sanity/eslint-config-i18n@1.1.0':
+    resolution: {integrity: sha512-mMD0CB1R3n9vN+wWpmjIge1EW2yVYlNIO/N4LJd1kNZUs5FhyT4ZeFoJT79wj3lmr9K+yoHjqjTQ5HuZkRCSXw==}
 
   '@sanity/eslint-config-i18n@2.0.0':
     resolution: {integrity: sha512-A1yCklgMxs9wGYwLIwCUzJR91+NYAIVnCPso2qv86XOpfNnTRhve726JQrZog6JyiFa1Dk/gDJ07D8AV2TujzQ==}
@@ -4627,10 +4654,6 @@ packages:
   '@sanity/export@3.44.0':
     resolution: {integrity: sha512-InTmE5SWDM2JOXZvyB3whk5dX6udxIFexWl+0vSRPvezfuL+EBhcjPQioC7FPX9co+K5lgRD16G1IygB+YBGyQ==}
     engines: {node: '>=18'}
-
-  '@sanity/functions@1.0.2':
-    resolution: {integrity: sha512-qbLNmrNKn6QH8qjxWsuWZlg+tNzmqDVx0pbRDClgIOSpTFZGH4jhm1WHCoAxj267AJsmQO6+mbOc6tmKmG/vaA==}
-    engines: {node: '>=20'}
 
   '@sanity/generate-help-url@3.0.0':
     resolution: {integrity: sha512-wtMYcV5GIDIhVyF/jjmdwq1GdlK07dRL40XMns73VbrFI7FteRltxv48bhYVZPcLkRXb0SHjpDS/icj9/yzbVA==}
@@ -14824,23 +14847,12 @@ snapshots:
       nanoid: 3.3.11
       rxjs: 7.8.2
 
-  '@sanity/blueprints@0.0.1': {}
-
   '@sanity/browserslist-config@1.0.5': {}
 
   '@sanity/client@6.29.1(debug@4.4.1)':
     dependencies:
       '@sanity/eventsource': 5.0.2
       get-it: 8.6.9(debug@4.4.1)
-      rxjs: 7.8.2
-    transitivePeerDependencies:
-      - debug
-
-  '@sanity/client@7.6.0':
-    dependencies:
-      '@sanity/eventsource': 5.0.2
-      get-it: 8.6.9
-      nanoid: 3.3.11
       rxjs: 7.8.2
     transitivePeerDependencies:
       - debug
@@ -14939,7 +14951,7 @@ snapshots:
     dependencies:
       '@sanity/diff-match-patch': 3.2.0
 
-  '@sanity/eslint-config-i18n@1.0.0(eslint@9.28.0(jiti@2.4.2))(typescript@5.8.3)':
+  '@sanity/eslint-config-i18n@1.1.0(eslint@9.28.0(jiti@2.4.2))(typescript@5.8.3)':
     dependencies:
       '@rushstack/eslint-patch': 1.11.0
       '@sanity/eslint-plugin-i18n': 1.1.0
@@ -15012,8 +15024,6 @@ snapshots:
     transitivePeerDependencies:
       - '@types/react'
       - supports-color
-
-  '@sanity/functions@1.0.2': {}
 
   '@sanity/generate-help-url@3.0.0': {}
 
@@ -18901,8 +18911,6 @@ snapshots:
     dependencies:
       tslib: 2.8.1
 
-  follow-redirects@1.15.9: {}
-
   follow-redirects@1.15.9(debug@4.4.1):
     optionalDependencies:
       debug: 4.4.1(supports-color@5.5.0)
@@ -19073,17 +19081,6 @@ snapshots:
       has-symbols: 1.1.0
       hasown: 2.0.2
       math-intrinsics: 1.1.0
-
-  get-it@8.6.9:
-    dependencies:
-      '@types/follow-redirects': 1.14.4
-      decompress-response: 7.0.0
-      follow-redirects: 1.15.9
-      is-retry-allowed: 2.2.0
-      through2: 4.0.2
-      tunnel-agent: 0.6.0
-    transitivePeerDependencies:
-      - debug
 
   get-it@8.6.9(debug@4.4.1):
     dependencies:
