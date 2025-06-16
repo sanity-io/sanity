@@ -1,8 +1,7 @@
 name: Type check
 on:
   push:
-    paths-ignore:
-      - "examples/**"
+
 jobs:
   typeCheck:
     timeout-minutes: 15
