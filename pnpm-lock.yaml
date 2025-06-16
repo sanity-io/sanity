@@ -1817,8 +1817,8 @@ importers:
         specifier: ^2.1.6
         version: 2.2.0(react@18.3.1)
       react-rx:
-        specifier: ^4.1.29
-        version: 4.1.29(react@18.3.1)(rxjs@7.8.2)
+        specifier: ^4.1.30
+        version: 4.1.30(react@18.3.1)(rxjs@7.8.2)
       read-pkg-up:
         specifier: ^7.0.1
         version: 7.0.1
@@ -10049,8 +10049,8 @@ packages:
     resolution: {integrity: sha512-z6F7K9bV85EfseRCp2bzrpyQ0Gkw1uLoCel9XBVWPg/TjRj94SkJzUTGfOa4bs7iJvBWtQG0Wq7wnI0syw3EBQ==}
     engines: {node: '>=0.10.0'}
 
-  react-rx@4.1.29:
-    resolution: {integrity: sha512-ET39XJwZyYtBb3dw3hiQjuXVwHB+X6K6SxqRskE3gh3Se5gjly9WrryxiEQy0WsYZ5rJopnCf06TzUvOIkz0yQ==}
+  react-rx@4.1.30:
+    resolution: {integrity: sha512-O5+9CDr+yYqmPNb0Ddc6/wdc4EGpfZnZaK4h5Kf6d6ruleVb++usLUW39PmZowUH2bYCF7QnW5Gl0vLNVIlT0A==}
     peerDependencies:
       react: ^18.3 || >=19.0.0-0
       rxjs: ^7
@@ -11512,8 +11512,8 @@ packages:
     peerDependencies:
       react: ^18.3 || ^19.0.0-0
 
-  use-effect-event@2.0.0:
-    resolution: {integrity: sha512-CIRGe/RUfngbmivpY5F7rc0m7q0VYzqtQOcKJ19FPEeyf7tS44Zk+9tcDicP+z+d32+E2r+Zs7+20MHXa8JBUA==}
+  use-effect-event@2.0.1:
+    resolution: {integrity: sha512-76rGQGL83WpjyqrYNsQXA9U7y68HNfeGecBz7q8jvEGXucnh0oUedjxHuOmwVucv8kzpHOYx6OlrLAuQ66fvbg==}
     peerDependencies:
       react: ^18.3 || ^19.0.0-0
 
@@ -21661,21 +21661,21 @@ snapshots:
 
   react-refresh@0.17.0: {}
 
-  react-rx@4.1.29(react@18.3.1)(rxjs@7.8.2):
+  react-rx@4.1.30(react@18.3.1)(rxjs@7.8.2):
     dependencies:
       observable-callback: 1.0.3(rxjs@7.8.2)
       react: 18.3.1
       react-compiler-runtime: 19.1.0-rc.2(react@18.3.1)
       rxjs: 7.8.2
-      use-effect-event: 2.0.0(react@18.3.1)
+      use-effect-event: 2.0.1(react@18.3.1)
 
-  react-rx@4.1.29(react@19.1.0)(rxjs@7.8.2):
+  react-rx@4.1.30(react@19.1.0)(rxjs@7.8.2):
     dependencies:
       observable-callback: 1.0.3(rxjs@7.8.2)
       react: 19.1.0
       react-compiler-runtime: 19.1.0-rc.2(react@19.1.0)
       rxjs: 7.8.2
-      use-effect-event: 2.0.0(react@19.1.0)
+      use-effect-event: 2.0.1(react@19.1.0)
 
   react-select@5.10.1(@types/react@19.1.8)(react-dom@19.1.0(react@19.1.0))(react@19.1.0):
     dependencies:
@@ -22217,7 +22217,7 @@ snapshots:
       lodash: 4.17.21
       react: 19.1.0
       react-is: 18.3.1
-      react-rx: 4.1.29(react@19.1.0)(rxjs@7.8.2)
+      react-rx: 4.1.30(react@19.1.0)(rxjs@7.8.2)
       rxjs: 7.8.2
       sanity: link:packages/sanity
       scroll-into-view-if-needed: 3.1.0
@@ -23453,11 +23453,11 @@ snapshots:
     dependencies:
       react: 19.1.0
 
-  use-effect-event@2.0.0(react@18.3.1):
+  use-effect-event@2.0.1(react@18.3.1):
     dependencies:
       react: 18.3.1
 
-  use-effect-event@2.0.0(react@19.1.0):
+  use-effect-event@2.0.1(react@19.1.0):
     dependencies:
       react: 19.1.0
 
