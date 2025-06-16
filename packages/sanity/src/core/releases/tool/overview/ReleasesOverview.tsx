@@ -55,7 +55,7 @@ const DEFAULT_ARCHIVED_RELEASES_OVERVIEW_SORT: TableSort = {
   column: 'lastActivity',
   direction: 'desc',
 }
-// eslint-disable-next-line max-statements
+
 export function ReleasesOverview() {
   const {data: releases, loading: loadingReleases} = useActiveReleases()
   const {data: archivedReleases} = useArchivedReleases()
@@ -107,13 +107,11 @@ export function ReleasesOverview() {
 
   const tableReleases = useMemo<TableRelease[]>(() => {
     if (!hasReleases || !releasesMetadata) return []
-    return [
-      ...releases.map((release) => ({
-        ...release,
-        publishAt: release.publishAt || release.metadata.intendedPublishAt,
-        documentsMetadata: releasesMetadata[release._id] || {},
-      })),
-    ]
+    return releases.map((release) => ({
+      ...release,
+      publishAt: release.publishAt || release.metadata.intendedPublishAt,
+      documentsMetadata: releasesMetadata[release._id] || {},
+    }))
   }, [hasReleases, releasesMetadata, releases])
 
   const isMounted = useRef(false)
@@ -191,7 +189,7 @@ export function ReleasesOverview() {
         ? {
             initial: {opacity: 0},
             animate: {opacity: 1},
-            transition: {duration: 0.4, ease: 'easeInOut'},
+            transition: {duration: 0.4, ease: 'easeInOut' as const},
           }
         : {}),
     }
