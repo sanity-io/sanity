@@ -286,7 +286,6 @@ export interface ValidationContext {
  *
  * @internal
  */
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export type Validator<T = any, Value = any> = (
   constraint: T,
   value: Value,

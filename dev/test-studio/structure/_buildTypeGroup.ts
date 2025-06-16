@@ -16,7 +16,7 @@ interface TypeGroupOpts {
   defaultLayout?: PreviewLayoutKey
 }
 
-const TYPE_GROUP_SUPPORTED_INTENTS = ['create', 'edit', 'setLayout']
+const TYPE_GROUP_SUPPORTED_INTENTS = new Set(['create', 'edit', 'setLayout'])
 
 export function _buildTypeGroup(
   S: StructureBuilder,
@@ -58,8 +58,7 @@ export function _buildTypeGroup(
                         .defaultLayout(defaultLayout)
                         .canHandleIntent((intentName, params) => {
                           return (
-                            TYPE_GROUP_SUPPORTED_INTENTS.includes(intentName) &&
-                            typeName === params.type
+                            TYPE_GROUP_SUPPORTED_INTENTS.has(intentName) && typeName === params.type
                           )
                         })
                         .id(typeName)

@@ -1,6 +1,7 @@
 import {type ReleaseState} from '@sanity/client'
 import {ErrorOutlineIcon} from '@sanity/icons'
 import {Badge, Box, Flex, Text} from '@sanity/ui'
+// eslint-disable-next-line @sanity/i18n/no-i18next-import -- figure out how to have the linter be fine with importing types-only
 import {type TFunction} from 'i18next'
 import {memo} from 'react'
 

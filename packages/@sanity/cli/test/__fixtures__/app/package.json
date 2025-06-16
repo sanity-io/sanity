@@ -19,7 +19,7 @@
     "react-dom": "^19"
   },
   "devDependencies": {
-    "@sanity/eslint-config-studio": "^5.0.1",
+    "@sanity/eslint-config-studio": "catalog:",
     "@types/react": "^18.3.20",
     "eslint": "^9.25.1",
     "prettier": "^3.5.3",

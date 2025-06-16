@@ -1,4 +1,4 @@
-/* eslint-disable @typescript-eslint/ban-types */
+/* eslint-disable @typescript-eslint/no-empty-object-type */
 import {Skeleton} from '@sanity/ui'
 import {type ComponentType, Fragment, Suspense, useMemo} from 'react'
 

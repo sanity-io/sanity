@@ -1,0 +1,150 @@
+{
+  "$schema": "./node_modules/oxlint/configuration_schema.json",
+  "env": {
+    "node": true,
+    "browser": true
+  },
+  "plugins": [
+    "typescript",
+    "unicorn",
+    "react",
+    "react-perf",
+    "oxc",
+    "import",
+    "jsx-a11y",
+    "node",
+    "promise",
+    "vitest"
+  ],
+  "ignorePatterns": [
+    "**/etc/*",
+    "**/.sanity/*",
+    "**/public/*",
+    "**/build/*",
+    "**/.next/*",
+    "**/static/*",
+    "**/coverage/*",
+    "**/lib/*",
+    "**/node_modules/*",
+    "**/dist/*",
+    "*.json",
+    "*.css",
+    "*.snap",
+    "*.md",
+    "dev/test-studio/sanity.theme.mjs",
+    "dev/test-studio/workshop/scopes.js",
+    "packages/@sanity/cli/templates/*"
+  ],
+  "categories": {
+    "correctness": "error",
+    "suspicious": "error",
+    "perf": "error"
+  },
+  "rules": {
+    "eslint/no-restricted-imports": [
+      "error",
+      {
+        "paths": [
+          {
+            "name": "styled-components",
+            "importNames": ["default"],
+            "message": "Please use `import {styled} from 'styled-components'` instead."
+          },
+          {
+            "name": "react",
+            "importNames": ["default"],
+            "message": "Please use named imports, e.g. `import {useEffect, useMemo, type ComponentType} from 'react'` instead."
+          },
+          {
+            "name": "react",
+            "importNames": ["createElement"],
+            "message": "Please use JSX instead of createElement, for example `createElement(Icon)` should be `<Icon />`"
+          },
+          {
+            "name": "react/jsx-runtime",
+            "message": "Do not attempt importing from the jsx runtime manually, instead use JSX syntax and let the bundler transform it"
+          },
+          {
+            "name": "react/jsx-dev-runtime",
+            "message": "Do not attempt importing from the jsx runtime manually, instead use JSX syntax and let the bundler transform it"
+          },
+          {
+            "name": "react/compiler-runtime",
+            "message": "Do not attempt importing from the compiler runtime manually, instead let react compiler transform it"
+          },
+          {
+            "name": "react-compiler-runtime",
+            "message": "Do not attempt importing from the compiler runtime manually, instead let react compiler transform it"
+          }
+        ]
+      }
+    ],
+    // Not relevant as we use the modern jsx-runtime transform
+    "react-in-jsx-scope": "off",
+    // Not relevant due to React Compiler
+    "react_perf/jsx-no-new-array-as-prop": "off",
+    "react_perf/jsx-no-new-object-as-prop": "off",
+    "react_perf/jsx-no-new-function-as-prop": "off",
+    "react_perf/jsx-no-jsx-as-prop": "off",
+    // False negatives
+    "jsx_a11y/anchor-is-valid": "off",
+    "jest/no-conditional-expect": "off",
+    "jest/no-standalone-expect": "off",
+    "jest/no-commented-out-tests": "off",
+    "jest/no-disabled-tests": "off",
+    "jest/require-to-throw-message": "off",
+    "jest/no-export": "off",
+    "jest/expect-expect": "off",
+    "jest/valid-expect": "off",
+    "jest/valid-title": "off",
+    "jest/valid-describe-callback": "off",
+    // Since we use useEffectEvent, we can't use the oxlint checker for this rule, as it doesn't understand effect event semantics
+    "react/exhaustive-deps": "off",
+    // Handy rules that are disabled by default
+    "react/rules-of-hooks": "error",
+    "eslint/no-console": ["error", {"allow": ["warn", "error"]}],
+    // These rules should be enabled in the future, they are disabled for now to reduce the PR scope for landing oxlint
+    "typescript/no-explicit-any": "warn",
+    "unicorn/prefer-set-has": "warn",
+    "eslint/no-await-in-loop": "warn",
+    "unicorn/no-new-array": "warn",
+    "unicorn/consistent-function-scoping": "warn",
+    "unicorn/no-useless-spread": "warn",
+    "unicorn/no-await-in-promise-methods": "warn",
+    "eslint/no-useless-catch": "warn",
+    "eslint/no-unneeded-ternary": "warn",
+    "eslint/no-unused-vars": "warn",
+    "typescript/prefer-ts-expect-error": "warn",
+    "unicorn/no-useless-fallback-in-spread": "warn",
+    "jsx_a11y/no-autofocus": "warn",
+    "import/no-named-as-default": "warn",
+    "unicorn/require-post-message-target-origin": "warn",
+    "unicorn/prefer-string-starts-ends-with": "warn",
+    "unicorn/no-single-promise-in-promise-methods": "warn",
+    "import/no-named-as-default-member": "warn",
+    "import/default": "warn",
+    "oxc/no-async-endpoint-handlers": "warn",
+    "unicorn/prefer-array-find": "warn",
+    "jsx_a11y/alt-text": "warn",
+    "eslint/no-constant-binary-expression": "warn",
+    "eslint/no-extend-native": "warn",
+    "jsx_a11y/anchor-has-content": "warn",
+    "react/no-array-index-key": "warn",
+    "oxc/no-accumulating-spread": "warn",
+    "jsx_a11y/prefer-tag-over-role": "warn",
+    "jsx_a11y/click-events-have-key-events": "warn",
+    "jsx_a11y/role-has-required-aria-props": "warn",
+    "unicorn/no-instanceof-builtins": "warn",
+    "jsx_a11y/aria-role": "warn",
+    "jsx_a11y/label-has-associated-control": "warn",
+    "unicorn/prefer-add-event-listener": "warn",
+    "react/jsx-key": "warn",
+    "jsx_a11y/role-supports-aria-props": "warn",
+    "unicorn/no-useless-length-check": "warn",
+    "react/iframe-missing-sandbox": "warn",
+    "jsx_a11y/iframe-has-title": "warn",
+    "promise/no-callback-in-promise": "warn",
+    "eslint/no-unsafe-optional-chaining": "warn"
+  },
+  "overrides": [{"files": ["scripts/**/*"], "rules": {"no-console": "off"}}]
+}

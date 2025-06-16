@@ -7,6 +7,7 @@
     "@sanity/codegen",
     "@types/react",
     "eslint-plugin-boundaries",
-    "react-compiler-runtime"
+    "react-compiler-runtime",
+    "eslint"
   ]
 }

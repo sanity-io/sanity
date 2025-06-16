@@ -8,7 +8,7 @@ function getUserAgent() {
       const pkg = require('../../package.json')
       return `${pkg.name}@${pkg.version}`
       // eslint-disable-next-line no-empty
-    } catch (err) {}
+    } catch {}
   }
   return null
 }

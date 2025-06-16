@@ -1,3 +1,4 @@
+// eslint-disable-next-line @typescript-eslint/no-require-imports
 const path = require('node:path')
 
 partsTypeDirective.parser = 'tsx'
@@ -13,7 +14,6 @@ function partsTypeDirective(fileInfo, api) {
     return fileInfo.source
   }
   const partImports = root.find(api.jscodeshift.ImportDeclaration, (node) =>
-    // eslint-disable-next-line no-use-before-define
     isSanityPart(node.source.value),
   )
   if (partImports.length === 0) {
@@ -21,7 +21,6 @@ function partsTypeDirective(fileInfo, api) {
   }
 
   const existingDirectives = root.find(api.jscodeshift.Comment, (node) =>
-    // eslint-disable-next-line no-use-before-define
     isSanityTypesReferenceDirective(node),
   )
   if (existingDirectives.length > 0) {

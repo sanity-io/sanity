@@ -35,14 +35,15 @@ export async function getCliConfig(
   if (forked) {
     try {
       return await getCliConfigForked(cwd)
-    } catch (err) {
+    } catch {
       // Intentional noop - try unforked variant
     }
   }
 
   const {unregister} = __DEV__
     ? {unregister: () => undefined}
-    : require('esbuild-register/dist/node').register({supported: {'dynamic-import': true}})
+    : // eslint-disable-next-line @typescript-eslint/no-require-imports
+      require('esbuild-register/dist/node').register({supported: {'dynamic-import': true}})
 
   try {
     const v3Config = getSanityCliConfig(cwd)
@@ -68,7 +69,6 @@ async function getCliConfigForked(cwd: string): Promise<CliConfigResult | null> 
   return new Promise((resolve, reject) => {
     const worker = new Worker(workerPath, {
       workerData: cwd,
-      // eslint-disable-next-line no-process-env
       env: process.env,
     })
     worker.on('message', (message) => {

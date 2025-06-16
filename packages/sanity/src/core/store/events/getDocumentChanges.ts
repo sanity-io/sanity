@@ -197,7 +197,7 @@ export function getDocumentChanges({
   return combineLatest(to$, since$, eventsObservable$).pipe(
     switchMap(([toObs, since, {events}]) => {
       const to = toObs?.document
-      let sinceDoc: SanityDocument | undefined = undefined
+      let sinceDoc: SanityDocument | undefined
       if (since?.document) {
         sinceDoc = since?.document
       } else {

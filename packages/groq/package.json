@@ -45,13 +45,14 @@
     "build": "pkg-utils build --strict --check --clean",
     "check:types": "tsc --project tsconfig.lib.json",
     "clean": "rimraf lib",
-    "lint": "eslint --cache .",
+    "lint": "eslint .",
     "prepublishOnly": "turbo run build",
     "pretest": "run-s build",
     "test": "node --test",
     "watch": "pkg-utils watch"
   },
   "devDependencies": {
+    "@repo/eslint-config": "workspace:*",
     "@repo/package.config": "workspace:*"
   },
   "engines": {

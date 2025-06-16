@@ -9,11 +9,9 @@ import {type ObjectDefinition} from './object'
  *
  * @public
  */
-// eslint-disable-next-line @typescript-eslint/no-empty-interface
 export interface DocumentOptions extends BaseSchemaTypeOptions {}
 
 /** @public */
-// eslint-disable-next-line @typescript-eslint/no-empty-interface
 export interface DocumentRule extends RuleDef<DocumentRule, SanityDocument> {}
 
 /** @public */

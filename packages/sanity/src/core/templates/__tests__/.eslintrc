@@ -1,9 +1,0 @@
-{
-  "env": {
-    "browser": true,
-    "node": true
-  },
-  "rules": {
-    "no-sync": 0
-  }
-}

@@ -1,6 +1,7 @@
 // @todo We're using straight up JS here to work around weird worker issues
 // when testing with Jest. Once we've moved away from Jest, rewrite this to
 // regular TS/TSX.
+// eslint-disable-next-line @typescript-eslint/no-require-imports
 const {createElement: h} = require('react')
 
 module.exports = function EnvDocument(props) {

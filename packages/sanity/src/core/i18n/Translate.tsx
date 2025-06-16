@@ -1,3 +1,4 @@
+/* eslint-disable @sanity/i18n/no-i18next-import */
 import {type TFunction} from 'i18next'
 import {type ComponentType, type ReactNode, useMemo} from 'react'
 
@@ -5,7 +6,7 @@ import {useListFormat} from '../hooks/useListFormat'
 import {type CloseTagToken, simpleParser, type TextToken, type Token} from './simpleParser'
 
 const COMPONENT_NAME_RE = /^[A-Z]/
-const RECOGNIZED_HTML_TAGS = [
+const RECOGNIZED_HTML_TAGS = new Set([
   'abbr',
   'address',
   'cite',
@@ -19,7 +20,7 @@ const RECOGNIZED_HTML_TAGS = [
   'strong',
   'sub',
   'sup',
-]
+])
 
 type FormatterFns = {list: (value: Iterable<string>) => string}
 
@@ -175,7 +176,7 @@ function render(
       throw new Error(`Component not defined: ${head.name}`)
     }
 
-    if (!Component && !RECOGNIZED_HTML_TAGS.includes(head.name)) {
+    if (!Component && !RECOGNIZED_HTML_TAGS.has(head.name)) {
       throw new Error(`HTML tag "${head.name}" is not allowed`)
     }
 

@@ -2,11 +2,11 @@ import {CloseIcon} from '@sanity/icons'
 import {type AssetSource} from '@sanity/types'
 import {Box, Flex, Text, useGlobalKeyDown} from '@sanity/ui'
 import {useCallback, useState} from 'react'
-import {useTranslation} from 'react-i18next'
 import {isValidElementType} from 'react-is'
 import {styled} from 'styled-components'
 
 import {Button, Popover} from '../../../../../ui-components'
+import {useTranslation} from '../../../../i18n'
 
 // Prevent button text from interfering with drag events
 const TargetButton = styled(Button)`
@@ -28,15 +28,15 @@ export function UploadDestinationPicker(props: UploadDestinationPickerProps) {
   const {t} = useTranslation()
 
   const assetSourcesWithUpload = assetSources.filter((s) => Boolean(s.uploader))
-  const [modes, setModes] = useState<Record<string, 'bleed' | 'default'>>({
-    ...assetSourcesWithUpload.reduce(
+  const [modes, setModes] = useState<Record<string, 'bleed' | 'default'>>(
+    assetSourcesWithUpload.reduce(
       (acc, source) => {
         acc[source.name] = 'bleed'
         return acc
       },
       {} as Record<string, 'bleed' | 'default'>,
     ),
-  })
+  )
 
   const handleDragEnter = useCallback(
     (event: React.DragEvent) => {

@@ -13,6 +13,7 @@ const COMMENTS_LIST_ITEM_AVATAR_CONFIG: CommentsListItemProps['avatarConfig'] = 
   avatarSize: 0,
 }
 
+// eslint-disable-next-line @typescript-eslint/no-empty-object-type
 interface TasksActivityCommentItemProps extends Omit<CommentsListItemProps, 'mode' | 'isSelected'> {
   // ...
 }

@@ -1,4 +1,3 @@
-/* eslint-disable no-process-env */
 import {spawn, type SpawnOptions} from 'node:child_process'
 import {existsSync, readFileSync} from 'node:fs'
 import {platform, tmpdir} from 'node:os'

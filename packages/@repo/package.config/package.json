@@ -6,6 +6,10 @@
   "main": "./src/package.config.ts",
   "types": "./src/package.config.ts",
   "scripts": {
-    "check:types": "tsc --noEmit --skipLibCheck src/package.config.ts"
+    "check:types": "tsc --noEmit --skipLibCheck src/package.config.ts",
+    "lint": "eslint ."
+  },
+  "devDependencies": {
+    "@repo/eslint-config": "workspace:*"
   }
 }
