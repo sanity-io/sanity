@@ -3,6 +3,7 @@ import {
   type FieldReference,
   type FieldRules,
   type LocalizedValidationMessages,
+  type MediaAssetTypes,
   type MediaValidator,
   type Rule as IRule,
   type RuleClass,
@@ -12,7 +13,6 @@ import {
   type SchemaType,
   type ValidationMarker,
   type Validator,
-  MediaAssetTypes,
 } from '@sanity/types'
 import {cloneDeep, get} from 'lodash'
 

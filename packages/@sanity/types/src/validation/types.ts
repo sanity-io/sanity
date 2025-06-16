@@ -1,5 +1,8 @@
 import {type SanityClient} from '@sanity/client'
-import {AssetInstanceDocument, type Asset as MediaLibraryAsset} from '@sanity/media-library-types'
+import {
+  type Asset as MediaLibraryAsset,
+  type AssetInstanceDocument,
+} from '@sanity/media-library-types'
 
 import {type SanityDocument} from '../documents'
 import {type ValidationMarker} from '../markers'

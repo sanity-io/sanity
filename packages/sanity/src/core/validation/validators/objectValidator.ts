@@ -2,7 +2,7 @@ import {
   type Asset as MediaLibraryAsset,
   type AssetInstanceDocument,
 } from '@sanity/media-library-types'
-import {type CustomValidatorResult, isReference, MediaAssetTypes, type Validators} from '@sanity/types'
+import {type CustomValidatorResult, isReference, type Validators} from '@sanity/types'
 
 import {getPublishedId} from '../../util'
 import {isLocalizedMessages, localizeMessage} from '../util/localizeMessage'
