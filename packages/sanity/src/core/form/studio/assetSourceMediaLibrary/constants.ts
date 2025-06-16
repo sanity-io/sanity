@@ -3,6 +3,9 @@ import {isDev} from '../../../environment'
 // TODO: change this to what the official GDR release version is
 export const DEFAULT_API_VERSION = 'vX'
 
+/* Plugin API version as served by Media Library frontend app */
+export const PLUGIN_API_VERSION = 'v2'
+
 // Staging
 export const DEPLOYED_FRONTEND_HOST_STAGING = 'https://media.sanity.work'
 export const CDN_HOST_STAGING = 'https://sanity-cdn.work'
