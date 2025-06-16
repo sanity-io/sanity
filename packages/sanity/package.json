@@ -163,7 +163,7 @@
     "@sanity/diff": "workspace:*",
     "@sanity/diff-match-patch": "^3.2.0",
     "@sanity/diff-patch": "^5.0.0",
-    "@sanity/eventsource": "^5.0.0",
+    "@sanity/eventsource": "^5.0.2",
     "@sanity/export": "^3.44.0",
     "@sanity/icons": "^3.7.0",
     "@sanity/id-utils": "^1.0.0",
