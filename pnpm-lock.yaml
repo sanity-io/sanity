@@ -3,6 +3,50 @@ lockfileVersion: '9.0'
 settings:
   autoInstallPeers: true
   excludeLinksFromLockfile: false
+
+catalogs:
+  default:
+    '@sanity/eslint-config-i18n':
+      specifier: ^2.0.0
+      version: 2.0.0
+    '@sanity/eslint-config-studio':
+      specifier: ^5.0.2
+      version: 5.0.2
+    '@vitejs/plugin-react':
+      specifier: ^4.5.2
+      version: 4.5.2
+    esbuild:
+      specifier: 0.25.5
+      version: 0.25.5
+    esbuild-register:
+      specifier: ^3.6.0
+      version: 3.6.0
+    globals:
+      specifier: ^16.2.0
+      version: 16.2.0
+    prettier:
+      specifier: ^3.5.3
+      version: 3.5.3
+    react:
+      specifier: ^19.1.0
+      version: 19.1.0
+    react-dom:
+      specifier: ^19.1.0
+      version: 19.1.0
+    styled-components:
+      specifier: ^6.1.18
+      version: 6.1.18
+    typescript:
+      specifier: 5.8.3
+      version: 5.8.3
+  react18:
+    react:
+      specifier: ^18.3.1
+      version: 18.3.1
+    react-dom:
+      specifier: ^18.3.1
+      version: 18.3.1
+
 overrides:
   '@npmcli/arborist': ^7.5.4
   '@sanity/ui@2': ^2.15.18
@@ -64,12 +108,6 @@ importers:
       '@sanity/client':
         specifier: ^7.6.0
         version: 7.6.0(debug@4.4.1)
-      '@sanity/eslint-config-i18n':
-        specifier: 1.0.0
-        version: 1.0.0(eslint@9.29.0(jiti@2.4.2))(typescript@5.8.3)
-      '@sanity/eslint-config-studio':
-        specifier: ^4.0.0
-        version: 4.0.0(eslint@9.29.0(jiti@2.4.2))(typescript@5.8.3)
       '@sanity/mutate':
         specifier: ^0.12.4
         version: 0.12.4(debug@4.4.1)
@@ -591,19 +629,6 @@ importers:
       vite:
         specifier: ^6.3.5
         version: 6.3.5(@types/node@22.13.1)(jiti@2.4.2)(terser@5.38.2)(tsx@4.20.3)(yaml@2.8.0)
-
-  examples:
-    dependencies:
-      '@sanity/client':
-        specifier: ^7.6.0
-        version: 7.6.0
-      '@sanity/functions':
-        specifier: ^1.0.2
-        version: 1.0.2
-    devDependencies:
-      '@sanity/blueprints':
-        specifier: 0.0.1
-        version: 0.0.1
 
   packages/@repo/bundle-manager:
     dependencies:
@@ -2239,13 +2264,6 @@ packages:
     resolution: {integrity: sha512-bXYxrXFubeYdvB0NhD/NBB3Qi6aZeV20GOWVI47t2dkecCEoneR4NPVcb7abpXDEvejgrUfFtG6vG/zxAKmg+g==}
     engines: {node: '>=6.9.0'}
 
-  '@babel/eslint-parser@7.27.5':
-    resolution: {integrity: sha512-HLkYQfRICudzcOtjGwkPvGc5nF1b4ljLZh1IRDj50lRZ718NAKVgQpIAUX8bfg6u/yuSKY3L7E0YzIV+OxrB8Q==}
-    engines: {node: ^10.13.0 || ^12.13.0 || >=14.0.0}
-    peerDependencies:
-      '@babel/core': ^7.11.0
-      eslint: ^7.5.0 || ^8.0.0 || ^9.0.0
-
   '@babel/generator@7.27.5':
     resolution: {integrity: sha512-ZGhA37l0e/g2s1Cnzdix0O3aLYm66eF8aufiVteOgnwxgnRP8GoyMj7VWsgWnQbVKXyge7hqrFh2K2TQM6t1Hw==}
     engines: {node: '>=6.9.0'}
@@ -3876,9 +3894,6 @@ packages:
   '@napi-rs/wasm-runtime@0.2.11':
     resolution: {integrity: sha512-9DPkXtvHydrcOsopiYpUgPHpmj0HWZKMUnL2dZqpvC42lsratuBG06V5ipyno0fUek5VlFsNQ+AcFATSrJXgMA==}
 
-  '@nicolo-ribaudo/eslint-scope-5-internals@5.1.1-v1':
-    resolution: {integrity: sha512-54/JRvkLIzzDWshCWfuhadfrfZVPiElY8Fcgmg1HroEly/EDSszzhBAsarCux+D/kOslTRquNzuyGSmUSTTHGg==}
-
   '@nodelib/fs.scandir@2.1.5':
     resolution: {integrity: sha512-vq24Bq3ym5HEQm2NKCr3yXDwjc7vTsEThRDnkp2DK9p1uqLR+DHurm/NOTo0KG7HYHU7eppKZj3MyqYuMBf62g==}
     engines: {node: '>= 8'}
@@ -4503,9 +4518,6 @@ packages:
   '@rtsao/scc@1.1.0':
     resolution: {integrity: sha512-zt6OdqaDoOnJ1ZYsCYGt9YmWzDXl4vQdKTyJev62gFhRGKdx7mcT54V9KIjg+d2wi9EXsPvAPKe7i7WjfVWB8g==}
 
-  '@rushstack/eslint-patch@1.11.0':
-    resolution: {integrity: sha512-zxnHvoMQVqewTJr/W4pKjF0bMGiKJv1WX7bSrkl46Hg0QjESbzBROWK0Wg4RphzSOS5Jiy7eFimmM3UgMrMZbQ==}
-
   '@rushstack/node-core-library@5.10.1':
     resolution: {integrity: sha512-BSb/KcyBHmUQwINrgtzo6jiH0HlGFmrUy33vO6unmceuVKTEyL2q+P0fQq2oB5hvXVWOEUhxB2QvlkZluvUEmg==}
     peerDependencies:
@@ -4543,10 +4555,6 @@ packages:
 
   '@sanity/bifur-client@0.4.1':
     resolution: {integrity: sha512-mHM8WR7pujbIw2qxuV0lzinS1izOoyLza/ejWV6quITTLpBhUoPIQGPER3Ar0SON5JV0VEEqkJGa1kjiYYgx2w==}
-
-  '@sanity/blueprints@0.0.1':
-    resolution: {integrity: sha512-/UukSy8g6+M93oAYpO9olF36ZL3gja9tlTDtkbzw1f2CbyySRYI1fHJZmVNVSjWFLtKvaJIHiR7EhD1MzMvOSw==}
-    engines: {node: '>=20'}
 
   '@sanity/browserslist-config@1.0.5':
     resolution: {integrity: sha512-so+/UtCge8t1jq509hH0otbbptRz0zM/Aa0dh5MhMD7HGT6n2igWIL2VWH/9QR9e77Jn3dJsjz23mW1WCxT+sg==}
@@ -4604,16 +4612,10 @@ packages:
     resolution: {integrity: sha512-JASdNaZsxUFBx8GQ1sX2XehYhdhOcurh7KwzQ3cXgOTdjvIQyQcLwmMeYCsU/K26GiI81ODbCEb/C0c92t2Unw==}
     engines: {node: '>=18.2'}
 
-  '@sanity/eslint-config-i18n@1.0.0':
-    resolution: {integrity: sha512-BIeD9IVT7O5I6vDyDaICoidN02qeImdXDRAW062iHY9gV4JrGScWBFio2HQLso7C+Z6SrQB8jOft6SzeYqDhdQ==}
-
   '@sanity/eslint-config-i18n@2.0.0':
     resolution: {integrity: sha512-A1yCklgMxs9wGYwLIwCUzJR91+NYAIVnCPso2qv86XOpfNnTRhve726JQrZog6JyiFa1Dk/gDJ07D8AV2TujzQ==}
     peerDependencies:
       eslint: ^9.0.0
-
-  '@sanity/eslint-config-studio@4.0.0':
-    resolution: {integrity: sha512-7NLgYv94NofaMV1yPmzjEcMUWgAcOaXOrcrED8Pno1DXDda4y3ux55cIi+Q/0fw5PbWOjsM8AY9lSIm5Oq+w/A==}
 
   '@sanity/eslint-config-studio@5.0.2':
     resolution: {integrity: sha512-uxa0gA+h/OwafzItTcK/XY7xnVbJTXZLPAsDHbdz1PU1LHek571r36d1A3pREl7H4fSgDnkjFV0xaB1tc9onWA==}
@@ -4630,10 +4632,6 @@ packages:
   '@sanity/export@3.44.0':
     resolution: {integrity: sha512-InTmE5SWDM2JOXZvyB3whk5dX6udxIFexWl+0vSRPvezfuL+EBhcjPQioC7FPX9co+K5lgRD16G1IygB+YBGyQ==}
     engines: {node: '>=18'}
-
-  '@sanity/functions@1.0.2':
-    resolution: {integrity: sha512-qbLNmrNKn6QH8qjxWsuWZlg+tNzmqDVx0pbRDClgIOSpTFZGH4jhm1WHCoAxj267AJsmQO6+mbOc6tmKmG/vaA==}
-    engines: {node: '>=20'}
 
   '@sanity/generate-help-url@3.0.0':
     resolution: {integrity: sha512-wtMYcV5GIDIhVyF/jjmdwq1GdlK07dRL40XMns73VbrFI7FteRltxv48bhYVZPcLkRXb0SHjpDS/icj9/yzbVA==}
@@ -6417,9 +6415,6 @@ packages:
     resolution: {integrity: sha512-aMKprgk5YhBNyH25hj8wGt2+D52Sw1DRRIzqBwLp2Ya9mFmY8KPvvtvmna8SxVR9JMZ4kzMD68N22vlaRpkeFA==}
     engines: {node: '>=8'}
 
-  confusing-browser-globals@1.0.11:
-    resolution: {integrity: sha512-JsPKdmh8ZkmnHxDk55FZ1TqVLvEQTvoByJZRN9jzI0UjxK/QgAmsphz7PGtqgPieQZ/CQcHWXCR7ATDNhGe+YA==}
-
   console-control-strings@1.1.0:
     resolution: {integrity: sha512-ty/fTekppD2fIwRvnZAVdeOiGd1c7YXEixbgJTNzqcxJWKQnjJ/V1bNEEE6hygpM3WjwHFUVK6HTjWSzV4a8sQ==}
 
@@ -7188,17 +7183,9 @@ packages:
       '@typescript-eslint/eslint-plugin':
         optional: true
 
-  eslint-scope@5.1.1:
-    resolution: {integrity: sha512-2NxwbF/hZ0KpepYN0cNbo+FN6XoK7GaHlQhgx/hIZl6Va0bF45RQOOwhLIy8lQDbuCiadSLCBnH2CFYquit5bw==}
-    engines: {node: '>=8.0.0'}
-
   eslint-scope@8.4.0:
     resolution: {integrity: sha512-sNXOfKCn74rt8RICKMvJS7XKV/Xk9kA7DyJr8mJik3S7Cwgy3qlkkmyS2uQB3jiJg6VNdZd/pDBJu0nvG2NlTg==}
     engines: {node: ^18.18.0 || ^20.9.0 || >=21.1.0}
-
-  eslint-visitor-keys@2.1.0:
-    resolution: {integrity: sha512-0rSmRBzXgDzIsD6mGdJgevzgezI534Cer5L/vyMX0kHzT/jiB43jRhd9YUlMGYLQy2zprNmoT8qasCGtY+QaKw==}
-    engines: {node: '>=10'}
 
   eslint-visitor-keys@3.4.3:
     resolution: {integrity: sha512-wpc+LXeiyiisxPlEkUzU6svyS1frIO3Mgxj1fdy7Pm8Ygzguax2N3Fa/D/ag1WqbOprdI+uY6wMUl8/a2G+iag==}
@@ -7233,10 +7220,6 @@ packages:
 
   esrecurse@4.3.0:
     resolution: {integrity: sha512-KmfKL3b6G+RXvP8N1vr3Tq1kL/oCFgn2NYXEtqP8/L3pKapUA4G8cFVaoF3SU323CD4XypR/ffioHmkti6/Tag==}
-    engines: {node: '>=4.0'}
-
-  estraverse@4.3.0:
-    resolution: {integrity: sha512-39nnKffWz8xN1BU/2c79n9nB9HDzo0niYUqx6xyqUnyoAnQyyWpOTdZEeiCch8BBu515t4wp9ZmgVfVhn9EBpw==}
     engines: {node: '>=4.0'}
 
   estraverse@5.3.0:
@@ -12075,14 +12058,6 @@ snapshots:
     transitivePeerDependencies:
       - supports-color
 
-  '@babel/eslint-parser@7.27.5(@babel/core@7.27.4)(eslint@9.29.0(jiti@2.4.2))':
-    dependencies:
-      '@babel/core': 7.27.4
-      '@nicolo-ribaudo/eslint-scope-5-internals': 5.1.1-v1
-      eslint: 9.29.0(jiti@2.4.2)
-      eslint-visitor-keys: 2.1.0
-      semver: 6.3.1
-
   '@babel/generator@7.27.5':
     dependencies:
       '@babel/parser': 7.27.5
@@ -14011,10 +13986,6 @@ snapshots:
       '@tybys/wasm-util': 0.9.0
     optional: true
 
-  '@nicolo-ribaudo/eslint-scope-5-internals@5.1.1-v1':
-    dependencies:
-      eslint-scope: 5.1.1
-
   '@nodelib/fs.scandir@2.1.5':
     dependencies:
       '@nodelib/fs.stat': 2.0.5
@@ -14764,8 +14735,6 @@ snapshots:
 
   '@rtsao/scc@1.1.0': {}
 
-  '@rushstack/eslint-patch@1.11.0': {}
-
   '@rushstack/node-core-library@5.10.1(@types/node@22.13.1)':
     dependencies:
       ajv: 8.13.0
@@ -14827,23 +14796,12 @@ snapshots:
       nanoid: 3.3.11
       rxjs: 7.8.2
 
-  '@sanity/blueprints@0.0.1': {}
-
   '@sanity/browserslist-config@1.0.5': {}
 
   '@sanity/client@6.29.1(debug@4.4.1)':
     dependencies:
       '@sanity/eventsource': 5.0.2
       get-it: 8.6.9(debug@4.4.1)
-      rxjs: 7.8.2
-    transitivePeerDependencies:
-      - debug
-
-  '@sanity/client@7.6.0':
-    dependencies:
-      '@sanity/eventsource': 5.0.2
-      get-it: 8.6.9
-      nanoid: 3.3.11
       rxjs: 7.8.2
     transitivePeerDependencies:
       - debug
@@ -14942,40 +14900,11 @@ snapshots:
     dependencies:
       '@sanity/diff-match-patch': 3.2.0
 
-  '@sanity/eslint-config-i18n@1.0.0(eslint@9.29.0(jiti@2.4.2))(typescript@5.8.3)':
-    dependencies:
-      '@rushstack/eslint-patch': 1.11.0
-      '@sanity/eslint-plugin-i18n': 1.1.0
-      '@typescript-eslint/parser': 8.34.0(eslint@9.29.0(jiti@2.4.2))(typescript@5.8.3)
-      eslint-plugin-i18next: 6.1.1
-    transitivePeerDependencies:
-      - eslint
-      - supports-color
-      - typescript
-
   '@sanity/eslint-config-i18n@2.0.0(eslint@9.29.0(jiti@2.4.2))':
     dependencies:
       '@sanity/eslint-plugin-i18n': 1.1.0
       eslint: 9.29.0(jiti@2.4.2)
       eslint-plugin-i18next: 6.1.1
-
-  '@sanity/eslint-config-studio@4.0.0(eslint@9.29.0(jiti@2.4.2))(typescript@5.8.3)':
-    dependencies:
-      '@babel/core': 7.27.4
-      '@babel/eslint-parser': 7.27.5(@babel/core@7.27.4)(eslint@9.29.0(jiti@2.4.2))
-      '@babel/preset-env': 7.26.8(@babel/core@7.27.4)
-      '@babel/preset-react': 7.26.3(@babel/core@7.27.4)
-      '@rushstack/eslint-patch': 1.11.0
-      '@typescript-eslint/eslint-plugin': 8.34.0(@typescript-eslint/parser@8.34.0(eslint@9.29.0(jiti@2.4.2))(typescript@5.8.3))(eslint@9.29.0(jiti@2.4.2))(typescript@5.8.3)
-      '@typescript-eslint/parser': 8.34.0(eslint@9.29.0(jiti@2.4.2))(typescript@5.8.3)
-      confusing-browser-globals: 1.0.11
-      eslint-plugin-jsx-a11y: 6.10.2(eslint@9.29.0(jiti@2.4.2))
-      eslint-plugin-react: 7.37.5(eslint@9.29.0(jiti@2.4.2))
-      eslint-plugin-react-hooks: 0.0.0-experimental-12bc60f5-20250613(eslint@9.29.0(jiti@2.4.2))
-    transitivePeerDependencies:
-      - eslint
-      - supports-color
-      - typescript
 
   '@sanity/eslint-config-studio@5.0.2(eslint@9.29.0(jiti@2.4.2))(typescript@5.8.3)':
     dependencies:
@@ -15015,8 +14944,6 @@ snapshots:
     transitivePeerDependencies:
       - '@types/react'
       - supports-color
-
-  '@sanity/functions@1.0.2': {}
 
   '@sanity/generate-help-url@3.0.0': {}
 
@@ -17525,8 +17452,6 @@ snapshots:
       write-file-atomic: 3.0.3
       xdg-basedir: 4.0.0
 
-  confusing-browser-globals@1.0.11: {}
-
   console-control-strings@1.1.0: {}
 
   console-table-printer@2.12.1:
@@ -18500,17 +18425,10 @@ snapshots:
     optionalDependencies:
       '@typescript-eslint/eslint-plugin': 8.34.0(@typescript-eslint/parser@8.34.0(eslint@9.29.0(jiti@2.4.2))(typescript@5.8.3))(eslint@9.29.0(jiti@2.4.2))(typescript@5.8.3)
 
-  eslint-scope@5.1.1:
-    dependencies:
-      esrecurse: 4.3.0
-      estraverse: 4.3.0
-
   eslint-scope@8.4.0:
     dependencies:
       esrecurse: 4.3.0
       estraverse: 5.3.0
-
-  eslint-visitor-keys@2.1.0: {}
 
   eslint-visitor-keys@3.4.3: {}
 
@@ -18573,8 +18491,6 @@ snapshots:
   esrecurse@4.3.0:
     dependencies:
       estraverse: 5.3.0
-
-  estraverse@4.3.0: {}
 
   estraverse@5.3.0: {}
 
@@ -18904,8 +18820,6 @@ snapshots:
     dependencies:
       tslib: 2.8.1
 
-  follow-redirects@1.15.9: {}
-
   follow-redirects@1.15.9(debug@4.4.1):
     optionalDependencies:
       debug: 4.4.1(supports-color@5.5.0)
@@ -19076,17 +18990,6 @@ snapshots:
       has-symbols: 1.1.0
       hasown: 2.0.2
       math-intrinsics: 1.1.0
-
-  get-it@8.6.9:
-    dependencies:
-      '@types/follow-redirects': 1.14.4
-      decompress-response: 7.0.0
-      follow-redirects: 1.15.9
-      is-retry-allowed: 2.2.0
-      through2: 4.0.2
-      tunnel-agent: 0.6.0
-    transitivePeerDependencies:
-      - debug
 
   get-it@8.6.9(debug@4.4.1):
     dependencies:
