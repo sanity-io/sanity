@@ -68,7 +68,7 @@ function matchPath(
 
   const mergedState: RouterState = {
     ...state,
-    ...(childState || {}),
+    ...(childState === null ? {} : childState),
     ...(selfParams.length > 0 ? {_searchParams: selfParams} : {}),
   }
 
