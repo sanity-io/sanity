@@ -1083,7 +1083,7 @@ importers:
   packages/@sanity/diff:
     dependencies:
       '@sanity/diff-match-patch':
-        specifier: ^3.1.1
+        specifier: ^3.2.0
         version: 3.2.0
     devDependencies:
       '@repo/package.config':
@@ -1142,7 +1142,7 @@ importers:
   packages/@sanity/mutator:
     dependencies:
       '@sanity/diff-match-patch':
-        specifier: ^3.1.1
+        specifier: ^3.2.0
         version: 3.2.0
       '@sanity/types':
         specifier: workspace:*
@@ -1492,7 +1492,7 @@ importers:
         specifier: workspace:*
         version: link:../@sanity/diff
       '@sanity/diff-match-patch':
-        specifier: ^3.1.1
+        specifier: ^3.2.0
         version: 3.2.0
       '@sanity/diff-patch':
         specifier: ^5.0.0
