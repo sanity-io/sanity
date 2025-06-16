@@ -36,7 +36,7 @@ const props = {
 const renderTest = (renderProps?: Partial<CellContext<SanityDocument, unknown>>) =>
   render(
     <ThemeProvider theme={studioTheme}>
-      <DocumentSheetListSelect {...{...props, ...(renderProps || {})}} />
+      <DocumentSheetListSelect {...{...props, ...renderProps}} />
     </ThemeProvider>,
   )
 

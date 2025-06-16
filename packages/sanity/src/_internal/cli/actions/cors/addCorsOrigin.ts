@@ -158,7 +158,7 @@ function validateOrigin(origin: string | null, givenOrigin: string): true | stri
     // Fall-through to error
   }
 
-  if (/^file:\/\//.test(givenOrigin)) {
+  if (givenOrigin.startsWith('file://')) {
     return `Only a local file wildcard is currently allowed: file:///*`
   }
 

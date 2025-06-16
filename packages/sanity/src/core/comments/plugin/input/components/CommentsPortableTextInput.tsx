@@ -335,7 +335,7 @@ export const CommentsPortableTextInputInner = memo(function CommentsPortableText
         target: {
           ...comment.target,
           path: {
-            ...(comment.target?.path || {}),
+            ...comment.target?.path,
             field: comment.target.path?.field || '',
             selection: {
               type: 'text',

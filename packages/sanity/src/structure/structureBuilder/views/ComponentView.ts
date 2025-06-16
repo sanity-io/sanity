@@ -113,7 +113,7 @@ export class ComponentViewBuilder extends GenericViewBuilder<
    */
   clone(withSpec?: Partial<ComponentView>): ComponentViewBuilder {
     const builder = new ComponentViewBuilder()
-    builder.spec = {...this.spec, ...(withSpec || {})}
+    builder.spec = {...this.spec, ...withSpec}
     return builder
   }
 }

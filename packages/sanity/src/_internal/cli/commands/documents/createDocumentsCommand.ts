@@ -255,7 +255,7 @@ function getResultMessage(
 }
 
 function getEditor() {
-  const defaultEditor = /^win/.test(process.platform) ? 'notepad' : 'vim'
+  const defaultEditor = process.platform.startsWith('win') ? 'notepad' : 'vim'
   // eslint-disable-next-line no-process-env
   const editor = process.env.VISUAL || process.env.EDITOR || defaultEditor
   const args = editor.split(/\s+/)

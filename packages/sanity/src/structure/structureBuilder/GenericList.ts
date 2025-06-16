@@ -250,7 +250,7 @@ export abstract class GenericListBuilder<TList extends BuildableGenericList, Con
    */
   showIcons(enabled = true): ConcreteImpl {
     return this.clone({
-      displayOptions: {...(this.spec.displayOptions || {}), showIcons: enabled},
+      displayOptions: {...this.spec.displayOptions, showIcons: enabled},
     })
   }
 

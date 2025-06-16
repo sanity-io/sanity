@@ -33,7 +33,7 @@ export function defaultTemplateForType(schemaType: SchemaType): Template {
 export function defaultTemplatesForSchema(schema: Schema): Template[] {
   const schemaTypes = schema
     .getTypeNames()
-    .filter((typeName) => !/^sanity\./.test(typeName))
+    .filter((typeName) => !typeName.startsWith('sanity.'))
     .map((typeName) => schema.get(typeName))
     .filter(isNonNullable)
     .filter((schemaType) => schemaType.type?.name === 'document')

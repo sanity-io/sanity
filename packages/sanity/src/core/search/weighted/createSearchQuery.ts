@@ -190,7 +190,7 @@ export function createSearchQuery(
       ...toGroqParams(terms),
       __types: specs.map((spec) => spec.typeName),
       __limit: limit,
-      ...(params || {}),
+      ...params,
     },
     options: {
       tag,

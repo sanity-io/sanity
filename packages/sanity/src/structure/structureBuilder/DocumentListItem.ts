@@ -98,7 +98,7 @@ export class DocumentListItemBuilder extends ListItemBuilder {
    */
   clone(withSpec?: PartialDocumentListItem): DocumentListItemBuilder {
     const builder = new DocumentListItemBuilder(this._context)
-    builder.spec = {...this.spec, ...(withSpec || {})}
+    builder.spec = {...this.spec, ...withSpec}
     return builder
   }
 }

@@ -266,7 +266,7 @@ export class MenuItemBuilder implements Serializable<MenuItem> {
    */
   clone(withSpec?: PartialMenuItem): MenuItemBuilder {
     const builder = new MenuItemBuilder(this._context)
-    builder.spec = {...this.spec, ...(withSpec || {})}
+    builder.spec = {...this.spec, ...withSpec}
     return builder
   }
 }
