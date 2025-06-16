@@ -1,4 +1,4 @@
-export function readEnv<KnownEnvVar extends keyof NodeJS.ProcessEnv>(name: KnownEnvVar): string {
+export function readEnv<KnownEnvVar extends string>(name: KnownEnvVar): string {
   const val = findEnv<KnownEnvVar>(name)
   if (val === undefined) {
     throw new Error(`Missing required environment variable "${name}"`)
@@ -6,8 +6,6 @@ export function readEnv<KnownEnvVar extends keyof NodeJS.ProcessEnv>(name: Known
   return val
 }
 
-export function findEnv<KnownEnvVar extends keyof NodeJS.ProcessEnv>(
-  name: KnownEnvVar,
-): string | undefined {
+export function findEnv<KnownEnvVar extends string>(name: KnownEnvVar): string | undefined {
   return process.env[name]
 }

@@ -1,5 +1,6 @@
 import {readFileSync} from 'node:fs'
-import path from 'node:path'
+import path, {dirname} from 'node:path'
+import {fileURLToPath} from 'node:url'
 
 import {expect, type Page} from '@playwright/test'
 
@@ -7,7 +8,9 @@ import {createFileDataTransferHandle} from '../../helpers'
 import {test} from '../../studio-test'
 
 const fileName = 'capybara.jpg'
-const image = readFileSync(path.join(__dirname, '..', '..', 'resources', fileName))
+const image = readFileSync(
+  path.join(dirname(fileURLToPath(import.meta.url)), '..', '..', 'resources', fileName),
+)
 
 test(`file drop event should not propagate to dialog parent`, async ({
   page,
