@@ -107,13 +107,11 @@ export function ReleasesOverview() {
 
   const tableReleases = useMemo<TableRelease[]>(() => {
     if (!hasReleases || !releasesMetadata) return []
-    return [
-      ...releases.map((release) => ({
-        ...release,
-        publishAt: release.publishAt || release.metadata.intendedPublishAt,
-        documentsMetadata: releasesMetadata[release._id] || {},
-      })),
-    ]
+    return releases.map((release) => ({
+      ...release,
+      publishAt: release.publishAt || release.metadata.intendedPublishAt,
+      documentsMetadata: releasesMetadata[release._id] || {},
+    }))
   }, [hasReleases, releasesMetadata, releases])
 
   const isMounted = useRef(false)

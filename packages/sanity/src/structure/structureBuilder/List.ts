@@ -211,7 +211,7 @@ export class ListBuilder extends GenericListBuilder<BuildableList, ListBuilder> 
    */
   clone(withSpec?: BuildableList): ListBuilder {
     const builder = new ListBuilder(this._context)
-    builder.spec = {...this.spec, ...(withSpec || {})}
+    builder.spec = {...this.spec, ...withSpec}
     return builder
   }
 }

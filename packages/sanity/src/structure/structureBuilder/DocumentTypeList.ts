@@ -52,7 +52,7 @@ export class DocumentTypeListBuilder extends DocumentListBuilder {
   clone(withSpec?: PartialDocumentList): DocumentTypeListBuilder {
     const parent = super.clone(withSpec)
     const builder = new DocumentTypeListBuilder(this._context)
-    builder.spec = {...this.spec, ...parent.getSpec(), ...(withSpec || {})}
+    builder.spec = {...this.spec, ...parent.getSpec(), ...withSpec}
     return builder
   }
 
@@ -69,7 +69,7 @@ export class DocumentTypeListBuilder extends DocumentListBuilder {
     builder.spec = {
       ...parent.getSpec(),
       ...this.spec,
-      ...(withSpec || {}),
+      ...withSpec,
       ...override,
     }
     return builder

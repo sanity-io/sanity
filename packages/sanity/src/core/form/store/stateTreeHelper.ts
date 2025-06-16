@@ -9,7 +9,7 @@ export function setAtPath<T>(
   value: T,
 ): StateTree<T> {
   if (path.length === 0) {
-    return {...(currentTree || {}), value}
+    return {...currentTree, value}
   }
   const [head, ...tail] = path
   const key = isKeySegment(head) ? head._key : String(head)

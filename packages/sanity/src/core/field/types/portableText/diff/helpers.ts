@@ -350,9 +350,9 @@ function buildSegments(fromInput: string, toInput: string): StringDiffSegment[] 
 }
 
 export function getInlineObjects(diff: ObjectDiff): PortableTextObject[] {
-  const allChildren = [
-    ...(diff.toValue ? diff.toValue.children.filter((cld: any) => cld._type !== 'span') : []),
-  ]
+  const allChildren = diff.toValue
+    ? diff.toValue.children.filter((cld: any) => cld._type !== 'span')
+    : []
   const previousChildren = diff.fromValue
     ? diff.fromValue.children.filter((cld: any) => cld._type !== 'span')
     : []
