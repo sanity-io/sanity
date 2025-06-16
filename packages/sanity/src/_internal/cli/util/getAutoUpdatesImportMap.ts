@@ -30,19 +30,20 @@ function getTimestamp(): string {
 export function getStudioAutoUpdateImportMap(
   version: string,
   includeVision = true,
+  channel: 'managed' | 'default',
 ): StudioAutoUpdatesImportMap {
   const timestamp = getTimestamp()
 
   const autoUpdatesImports = {
-    'sanity': `${MODULES_HOST}/v1/modules/sanity/default/${version}/${timestamp}`,
-    'sanity/': `${MODULES_HOST}/v1/modules/sanity/default/${version}/${timestamp}/`,
+    'sanity': `${MODULES_HOST}/v1/modules/sanity/${channel}/${version}/${timestamp}`,
+    'sanity/': `${MODULES_HOST}/v1/modules/sanity/${channel}/${version}/${timestamp}/`,
   }
 
   if (includeVision) {
     return {
       ...autoUpdatesImports,
-      '@sanity/vision': `${MODULES_HOST}/v1/modules/@sanity__vision/default/${version}/${timestamp}`,
-      '@sanity/vision/': `${MODULES_HOST}/v1/modules/@sanity__vision/default/${version}/${timestamp}/`,
+      '@sanity/vision': `${MODULES_HOST}/v1/modules/@sanity__vision/${channel}/${version}/${timestamp}`,
+      '@sanity/vision/': `${MODULES_HOST}/v1/modules/@sanity__vision/${channel}/${version}/${timestamp}/`,
     }
   }
 
@@ -72,7 +73,7 @@ export function getAppAutoUpdateImportMap(
   }
 
   if (sanityVersion) {
-    const sanityImportMap = getStudioAutoUpdateImportMap(sanityVersion, false)
+    const sanityImportMap = getStudioAutoUpdateImportMap(sanityVersion, false, 'default')
     return {...autoUpdatesImports, ...sanityImportMap}
   }
 
