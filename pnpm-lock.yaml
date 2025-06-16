@@ -10,7 +10,7 @@ overrides:
   '@typescript-eslint/parser': ^8.34.0
   '@vitest/coverage-v8': 3.2.2
   '@vitest/expect': 3.2.2
-  eslint-plugin-react-hooks: 0.0.0
+  eslint-plugin-react-hooks: 0.0.0-experimental-12bc60f5-20250613
   jsdom: ^23.0.1
   vite: ^6.3.5
   vitest: 3.2.2
@@ -148,6 +148,9 @@ importers:
       eslint-formatter-compact:
         specifier: ^8.40.0
         version: 8.40.0
+      eslint-plugin-react-hooks:
+        specifier: 0.0.0-experimental-12bc60f5-20250613
+        version: 0.0.0-experimental-12bc60f5-20250613(eslint@9.29.0(jiti@2.4.2))
       execa:
         specifier: ^2.0.0
         version: 2.1.0
@@ -639,7 +642,7 @@ importers:
         version: 10.1.5(eslint@9.29.0(jiti@2.4.2))
       eslint-config-sanity:
         specifier: ^7.1.4
-        version: 7.1.4(@typescript-eslint/eslint-plugin@8.34.0(@typescript-eslint/parser@8.34.0(eslint@9.29.0(jiti@2.4.2))(typescript@5.8.3))(eslint@9.29.0(jiti@2.4.2))(typescript@5.8.3))(@typescript-eslint/parser@8.34.0(eslint@9.29.0(jiti@2.4.2))(typescript@5.8.3))(eslint-plugin-import@2.31.0)(eslint-plugin-react-hooks@0.0.0(eslint@9.29.0(jiti@2.4.2)))(eslint-plugin-react@7.37.5(eslint@9.29.0(jiti@2.4.2)))(eslint@9.29.0(jiti@2.4.2))
+        version: 7.1.4(@typescript-eslint/eslint-plugin@8.34.0(@typescript-eslint/parser@8.34.0(eslint@9.29.0(jiti@2.4.2))(typescript@5.8.3))(eslint@9.29.0(jiti@2.4.2))(typescript@5.8.3))(@typescript-eslint/parser@8.34.0(eslint@9.29.0(jiti@2.4.2))(typescript@5.8.3))(eslint-plugin-import@2.31.0)(eslint-plugin-react-hooks@0.0.0-experimental-12bc60f5-20250613(eslint@9.29.0(jiti@2.4.2)))(eslint-plugin-react@7.37.5(eslint@9.29.0(jiti@2.4.2)))(eslint@9.29.0(jiti@2.4.2))
       eslint-config-turbo:
         specifier: ^2.5.4
         version: 2.5.4(eslint@9.29.0(jiti@2.4.2))(turbo@2.5.4)
@@ -659,8 +662,8 @@ importers:
         specifier: 19.1.0-rc.2
         version: 19.1.0-rc.2(eslint@9.29.0(jiti@2.4.2))
       eslint-plugin-react-hooks:
-        specifier: 0.0.0
-        version: 0.0.0(eslint@9.29.0(jiti@2.4.2))
+        specifier: 0.0.0-experimental-12bc60f5-20250613
+        version: 0.0.0-experimental-12bc60f5-20250613(eslint@9.29.0(jiti@2.4.2))
       eslint-plugin-simple-import-sort:
         specifier: ^12.1.1
         version: 12.1.1(eslint@9.29.0(jiti@2.4.2))
@@ -7144,11 +7147,11 @@ packages:
     peerDependencies:
       eslint: '>=7'
 
-  eslint-plugin-react-hooks@0.0.0:
-    resolution: {integrity: sha512-SXyU7C3E8AJbXKMdb10P/zHazcxzfuWR5OFwAVZKXVU7P/H56NLszVG6WdQBo9Pt80FfnPXtUGGbWhs3/98N4w==}
-    engines: {node: '>=6'}
+  eslint-plugin-react-hooks@0.0.0-experimental-12bc60f5-20250613:
+    resolution: {integrity: sha512-CaHYj4VctRKFUy832egidoj6iZWE+1bQqs2YOeI7iVX63lC+KNt27dbx72tyOTl46HN9xH/aByKryZ+lmWv6iw==}
+    engines: {node: '>=18'}
     peerDependencies:
-      eslint: ^3.0.0 || ^4.0.0 || ^5.0.0
+      eslint: ^3.0.0 || ^4.0.0 || ^5.0.0 || ^6.0.0 || ^7.0.0 || ^8.0.0-0 || ^9.0.0
 
   eslint-plugin-react@7.37.5:
     resolution: {integrity: sha512-Qteup0SqU15kdocexFNAJMvCJEfa2xUKNV4CC1xsVMrIIqEy3SQ/rqyxCWNzfrd3/ldy6HMlD2e0JDVpDg2qIA==}
@@ -14968,7 +14971,7 @@ snapshots:
       confusing-browser-globals: 1.0.11
       eslint-plugin-jsx-a11y: 6.10.2(eslint@9.29.0(jiti@2.4.2))
       eslint-plugin-react: 7.37.5(eslint@9.29.0(jiti@2.4.2))
-      eslint-plugin-react-hooks: 0.0.0(eslint@9.29.0(jiti@2.4.2))
+      eslint-plugin-react-hooks: 0.0.0-experimental-12bc60f5-20250613(eslint@9.29.0(jiti@2.4.2))
     transitivePeerDependencies:
       - eslint
       - supports-color
@@ -14979,7 +14982,7 @@ snapshots:
       eslint: 9.29.0(jiti@2.4.2)
       eslint-plugin-jsx-a11y: 6.10.2(eslint@9.29.0(jiti@2.4.2))
       eslint-plugin-react: 7.37.5(eslint@9.29.0(jiti@2.4.2))
-      eslint-plugin-react-hooks: 0.0.0(eslint@9.29.0(jiti@2.4.2))
+      eslint-plugin-react-hooks: 0.0.0-experimental-12bc60f5-20250613(eslint@9.29.0(jiti@2.4.2))
       typescript-eslint: 8.34.0(eslint@9.29.0(jiti@2.4.2))(typescript@5.8.3)
     transitivePeerDependencies:
       - supports-color
@@ -18279,7 +18282,7 @@ snapshots:
     dependencies:
       eslint: 9.29.0(jiti@2.4.2)
 
-  eslint-config-sanity@7.1.4(@typescript-eslint/eslint-plugin@8.34.0(@typescript-eslint/parser@8.34.0(eslint@9.29.0(jiti@2.4.2))(typescript@5.8.3))(eslint@9.29.0(jiti@2.4.2))(typescript@5.8.3))(@typescript-eslint/parser@8.34.0(eslint@9.29.0(jiti@2.4.2))(typescript@5.8.3))(eslint-plugin-import@2.31.0)(eslint-plugin-react-hooks@0.0.0(eslint@9.29.0(jiti@2.4.2)))(eslint-plugin-react@7.37.5(eslint@9.29.0(jiti@2.4.2)))(eslint@9.29.0(jiti@2.4.2)):
+  eslint-config-sanity@7.1.4(@typescript-eslint/eslint-plugin@8.34.0(@typescript-eslint/parser@8.34.0(eslint@9.29.0(jiti@2.4.2))(typescript@5.8.3))(eslint@9.29.0(jiti@2.4.2))(typescript@5.8.3))(@typescript-eslint/parser@8.34.0(eslint@9.29.0(jiti@2.4.2))(typescript@5.8.3))(eslint-plugin-import@2.31.0)(eslint-plugin-react-hooks@0.0.0-experimental-12bc60f5-20250613(eslint@9.29.0(jiti@2.4.2)))(eslint-plugin-react@7.37.5(eslint@9.29.0(jiti@2.4.2)))(eslint@9.29.0(jiti@2.4.2)):
     dependencies:
       eslint: 9.29.0(jiti@2.4.2)
       eslint-plugin-simple-import-sort: 12.1.1(eslint@9.29.0(jiti@2.4.2))
@@ -18288,7 +18291,7 @@ snapshots:
       '@typescript-eslint/parser': 8.34.0(eslint@9.29.0(jiti@2.4.2))(typescript@5.8.3)
       eslint-plugin-import: 2.31.0(@typescript-eslint/parser@8.34.0(eslint@9.29.0(jiti@2.4.2))(typescript@5.8.3))(eslint-import-resolver-typescript@4.4.3)(eslint@9.29.0(jiti@2.4.2))
       eslint-plugin-react: 7.37.5(eslint@9.29.0(jiti@2.4.2))
-      eslint-plugin-react-hooks: 0.0.0(eslint@9.29.0(jiti@2.4.2))
+      eslint-plugin-react-hooks: 0.0.0-experimental-12bc60f5-20250613(eslint@9.29.0(jiti@2.4.2))
 
   eslint-config-turbo@2.5.4(eslint@9.29.0(jiti@2.4.2))(turbo@2.5.4):
     dependencies:
@@ -18421,9 +18424,17 @@ snapshots:
     transitivePeerDependencies:
       - supports-color
 
-  eslint-plugin-react-hooks@0.0.0(eslint@9.29.0(jiti@2.4.2)):
+  eslint-plugin-react-hooks@0.0.0-experimental-12bc60f5-20250613(eslint@9.29.0(jiti@2.4.2)):
     dependencies:
+      '@babel/core': 7.27.4
+      '@babel/parser': 7.27.5
+      '@babel/plugin-transform-private-methods': 7.25.9(@babel/core@7.27.4)
       eslint: 9.29.0(jiti@2.4.2)
+      hermes-parser: 0.25.1
+      zod: 3.24.4
+      zod-validation-error: 3.4.0(zod@3.24.4)
+    transitivePeerDependencies:
+      - supports-color
 
   eslint-plugin-react@7.37.5(eslint@9.29.0(jiti@2.4.2)):
     dependencies:
