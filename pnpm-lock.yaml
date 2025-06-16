@@ -178,8 +178,8 @@ importers:
         specifier: ^16.0.3
         version: 16.5.0
       dotenv-flow:
-        specifier: ^3.2.0
-        version: 3.3.0
+        specifier: ^4.1.0
+        version: 4.1.0
       esbuild:
         specifier: 'catalog:'
         version: 0.25.5
@@ -6952,6 +6952,10 @@ packages:
   dotenv-flow@3.3.0:
     resolution: {integrity: sha512-GLSvRqDZ1TGhloS6ZCZ5chdqqv/3XMqZxAnX9rliJiHn6uyJLguKeu+3M2kcagBkoVCnLWYfbR4rfFe1xSU39A==}
     engines: {node: '>= 8.0.0'}
+
+  dotenv-flow@4.1.0:
+    resolution: {integrity: sha512-0cwP9jpQBQfyHwvE0cRhraZMkdV45TQedA8AAUZMsFzvmLcQyc1HPv+oX0OOYwLFjIlvgVepQ+WuQHbqDaHJZg==}
+    engines: {node: '>= 12.0.0'}
 
   dotenv@16.0.3:
     resolution: {integrity: sha512-7GO6HghkA5fYG9TYnNxi14/7K9f5occMlp3zXAuSxn7CKCxt9xbNWG7yF8hTCSUchlfWSe3uLmlPfigevRItzQ==}
@@ -18071,6 +18075,10 @@ snapshots:
   dotenv-flow@3.3.0:
     dependencies:
       dotenv: 8.6.0
+
+  dotenv-flow@4.1.0:
+    dependencies:
+      dotenv: 16.5.0
 
   dotenv@16.0.3: {}
 
