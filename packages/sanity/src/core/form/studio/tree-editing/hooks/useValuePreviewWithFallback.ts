@@ -30,7 +30,7 @@ export function useValuePreviewWithFallback(props: UseValuePreviewWithFallbackPr
     (): ReturnType => ({
       ...preview,
       value: {
-        ...(preview?.value || {}),
+        ...preview?.value,
         title: preview?.value?.title || t('preview.default.title-fallback'),
       },
     }),

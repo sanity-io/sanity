@@ -451,7 +451,7 @@ describe.each(
 
     const updatedFormState = prepareFormState({
       ...defaultOptions,
-      ...{[property]: deriveInput(path)},
+      [property]: deriveInput(path),
     })
     const updatedNodes = Array.from(traverseForm(updatedFormState)).reverse()
 

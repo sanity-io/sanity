@@ -35,7 +35,7 @@ export const ObjectType = {
   extend(rawSubTypeDef: any, createMemberType: any) {
     const subTypeDef = {fields: [], ...rawSubTypeDef}
 
-    const options = {...(subTypeDef.options || {})}
+    const options = {...subTypeDef.options}
 
     const ownProps = {
       ...subTypeDef,

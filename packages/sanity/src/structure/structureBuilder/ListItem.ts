@@ -211,7 +211,7 @@ export class ListItemBuilder implements Serializable<ListItem> {
    */
   showIcon(enabled = true): ListItemBuilder {
     return this.clone({
-      displayOptions: {...(this.spec.displayOptions || {}), showIcon: enabled},
+      displayOptions: {...this.spec.displayOptions, showIcon: enabled},
     })
   }
 
@@ -339,7 +339,7 @@ export class ListItemBuilder implements Serializable<ListItem> {
    */
   clone(withSpec?: PartialListItem): ListItemBuilder {
     const builder = new ListItemBuilder(this._context)
-    builder.spec = {...this.spec, ...(withSpec || {})}
+    builder.spec = {...this.spec, ...withSpec}
     return builder
   }
 }

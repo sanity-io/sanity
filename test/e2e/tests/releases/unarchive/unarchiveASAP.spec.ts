@@ -48,9 +48,7 @@ test.describe('Unarchive ASAP', () => {
     skipIfBrowser(browserName)
     const dataset = sanityClient.config().dataset
 
-    await Promise.all([
-      archiveAndDeleteRelease({sanityClient, dataset, releaseId: asapReleaseIdTestOne}),
-    ])
+    await archiveAndDeleteRelease({sanityClient, dataset, releaseId: asapReleaseIdTestOne})
   })
 
   // Archive -> Unarchive -> ASAP release

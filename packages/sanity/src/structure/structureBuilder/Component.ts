@@ -258,7 +258,7 @@ export class ComponentBuilder implements Serializable<Component> {
    */
   clone(withSpec?: BuildableComponent): ComponentBuilder {
     const builder = new ComponentBuilder()
-    builder.spec = {...this.spec, ...(withSpec || {})}
+    builder.spec = {...this.spec, ...withSpec}
     return builder
   }
 }

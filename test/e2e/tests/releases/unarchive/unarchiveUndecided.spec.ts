@@ -48,9 +48,7 @@ test.describe('Unarchive Undecided', () => {
     skipIfBrowser(browserName)
     const dataset = sanityClient.config().dataset
 
-    await Promise.all([
-      archiveAndDeleteRelease({sanityClient, dataset, releaseId: undecidedReleaseIdTestOne}),
-    ])
+    await archiveAndDeleteRelease({sanityClient, dataset, releaseId: undecidedReleaseIdTestOne})
   })
 
   // Archive -> Unarchive -> Undecided release
