@@ -178,6 +178,7 @@
     "@sanity/preview-url-secret": "^2.1.11",
     "@sanity/schema": "workspace:*",
     "@sanity/sdk": "0.0.0-alpha.25",
+    "@sanity/styled-components": "6.1.18-18",
     "@sanity/telemetry": "^0.8.0",
     "@sanity/types": "workspace:*",
     "@sanity/ui": "^2.15.18",
