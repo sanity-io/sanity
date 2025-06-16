@@ -1323,7 +1323,7 @@ importers:
         specifier: ^6.1.1
         version: 6.36.7
       '@juggle/resize-observer':
-        specifier: ^3.3.1
+        specifier: ^3.4.0
         version: 3.4.0
       '@lezer/highlight':
         specifier: ^1.0.0
@@ -1453,7 +1453,7 @@ importers:
         specifier: ^3.2.0
         version: 3.2.2(react@18.3.1)
       '@juggle/resize-observer':
-        specifier: ^3.3.1
+        specifier: ^3.4.0
         version: 3.4.0
       '@portabletext/block-tools':
         specifier: ^1.1.30
