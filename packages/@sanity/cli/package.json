@@ -57,7 +57,7 @@
     "watch": "pkg-utils watch"
   },
   "dependencies": {
-    "@babel/traverse": "^7.23.5",
+    "@babel/traverse": "^7.27.4",
     "@sanity/client": "^7.6.0",
     "@sanity/codegen": "workspace:*",
     "@sanity/runtime-cli": "^8.1.0",
