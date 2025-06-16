@@ -1,0 +1,10 @@
+{
+  "dependencies": {
+    "@sanity/client": "^7.6.0",
+    "@sanity/functions": "^1.0.2"
+  },
+  "devDependencies": {
+    "@sanity/blueprints": "0.0.1",
+    "vite": "^5.0.0"
+  }
+}

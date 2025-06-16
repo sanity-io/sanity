@@ -1,0 +1,20 @@
+{
+  "name": "auto-tag",
+  "type": "module",
+  "main": "index.ts",
+  "dependencies": {
+    "@sanity/client": "^7.6.0",
+    "@sanity/functions": "1.0.2"
+  },
+  "blueprintResourceItem": {
+    "name": "auto-tag",
+    "memory": 2,
+    "timeout": 30,
+    "on": [
+      "publish"
+    ],
+    "filter": "_type == 'post' && !defined(tags)",
+    "projection": "_id"
+  },
+  "exampleInstructions": "Add this configuraiton to your blueprint config's resources array. Go to README.md for more details."
+}
