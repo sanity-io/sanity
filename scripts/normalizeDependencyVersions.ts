@@ -1,6 +1,7 @@
 /* eslint-disable no-sync, no-console, id-length */
 import fs from 'node:fs'
-import path from 'node:path'
+import path, {dirname} from 'node:path'
+import {fileURLToPath} from 'node:url'
 
 import chalk from 'chalk'
 import {globSync} from 'glob'
@@ -15,10 +16,10 @@ interface PackageJson {
 }
 
 const corePkg: PackageJson = JSON.parse(
-  fs.readFileSync(path.join(__dirname, '..', 'package.json'), 'utf8'),
+  fs.readFileSync(path.join(dirname(fileURLToPath(import.meta.url)), '..', 'package.json'), 'utf8'),
 )
 const config: LernaConfig = JSON.parse(
-  fs.readFileSync(path.join(__dirname, '..', 'lerna.json'), 'utf8'),
+  fs.readFileSync(path.join(dirname(fileURLToPath(import.meta.url)), '..', 'lerna.json'), 'utf8'),
 )
 
 if (!('packages' in config) || !Array.isArray(config.packages)) {
@@ -29,7 +30,7 @@ if (!('name' in corePkg) || typeof corePkg.name !== 'string') {
   throw new Error('Core package.json is missing "name" string')
 }
 
-const rootPath = path.join(__dirname, '..')
+const rootPath = path.join(dirname(fileURLToPath(import.meta.url)), '..')
 const stripRange = (version: string) => version.replace(/^[~^]/, '')
 const sortRanges = (ranges: string[]) =>
   ranges.sort((a, b) => {

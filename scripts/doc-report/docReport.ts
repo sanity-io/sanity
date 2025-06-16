@@ -1,5 +1,6 @@
 import fs from 'node:fs/promises'
-import path from 'node:path'
+import path, {dirname} from 'node:path'
+import {fileURLToPath} from 'node:url'
 
 import {readEnv, startTimer} from '@repo/utils'
 import {groupBy} from 'lodash-es'
@@ -148,7 +149,11 @@ combineLatest([
     }
 
     // save it to a file
-    await fs.writeFile(path.resolve(path.join(__dirname, '..', 'docs-report.md')), report, 'utf8')
+    await fs.writeFile(
+      path.resolve(path.join(dirname(fileURLToPath(import.meta.url)), '..', 'docs-report.md')),
+      report,
+      'utf8',
+    )
 
     timer.end()
   })
