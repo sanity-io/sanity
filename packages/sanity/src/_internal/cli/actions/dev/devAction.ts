@@ -164,7 +164,7 @@ export default async function startSanityDevServer(
     throw new Error(`Failed to parse installed Sanity version: ${installedSanityVersion}`)
   }
   const version = encodeURIComponent(`^${coercedSanityVersion}`)
-  const autoUpdatesImports = getStudioAutoUpdateImportMap(version)
+  const autoUpdatesImports = getStudioAutoUpdateImportMap(version, true, 'managed')
 
   if (autoUpdatesEnabled) {
     output.print(`${info} Running with auto-updates enabled`)
@@ -279,7 +279,7 @@ export function getDevServerConfig({
   })
   configSpinner.succeed()
 
-  const env = process.env // eslint-disable-line no-process-env
+  const env = process.env
   const reactStrictMode = env.SANITY_STUDIO_REACT_STRICT_MODE
     ? env.SANITY_STUDIO_REACT_STRICT_MODE === 'true'
     : Boolean(cliConfig?.reactStrictMode)

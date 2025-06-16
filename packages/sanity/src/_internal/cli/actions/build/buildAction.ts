@@ -68,7 +68,7 @@ export default async function buildSanityStudio(
     throw new Error(`Failed to parse installed Sanity version: ${installedSanityVersion}`)
   }
   const version = encodeURIComponent(`^${coercedSanityVersion}`)
-  const autoUpdatesImports = getStudioAutoUpdateImportMap(version)
+  const autoUpdatesImports = getStudioAutoUpdateImportMap(version, true, 'managed')
 
   if (autoUpdatesEnabled) {
     output.print(`${info} Building with auto-updates enabled`)
