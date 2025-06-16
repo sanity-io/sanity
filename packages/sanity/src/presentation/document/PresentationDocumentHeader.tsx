@@ -1,19 +1,28 @@
-import {rem, Stack} from '@sanity/ui'
+import {rem} from '@sanity/ui'
+// eslint-disable-next-line camelcase
+import {getTheme_v2} from '@sanity/ui/theme'
 import {type ReactNode, useContext} from 'react'
 import {type ObjectSchemaType, type PublishedId} from 'sanity'
 import {PresentationDocumentContext} from 'sanity/_singletons'
-import {styled} from 'styled-components'
+import {css, styled} from 'styled-components'
 
 import {type PresentationPluginOptions} from '../types'
 import {LocationsBanner} from './LocationsBanner'
 
-const LocationStack = styled(Stack)`
-  min-height: ${rem(42)};
+const LocationStack = styled.div((props) => {
+  const theme = getTheme_v2(props.theme)
+  return css`
+    display: flex;
+    flex-direction: column;
+    gap: ${rem(theme.space[2])};
+    min-height: ${rem(42)};
+    margin-bottom: ${rem(theme.space[5])};
 
-  & + &:empty {
-    display: none;
-  }
-`
+    &:empty {
+      display: none;
+    }
+  `
+})
 
 export function PresentationDocumentHeader(props: {
   documentId: PublishedId
@@ -33,20 +42,18 @@ export function PresentationDocumentHeader(props: {
   }
 
   return (
-    <LocationStack marginBottom={5} space={5}>
-      <Stack space={2}>
-        {contextOptions.map((_options, idx) => (
-          <LocationsBanner
-            key={idx}
-            documentId={documentId}
-            options={_options}
-            resolvers={resolvers[idx]}
-            schemaType={schemaType}
-            showPresentationTitle={contextOptions.length > 1}
-            version={version}
-          />
-        ))}
-      </Stack>
+    <LocationStack>
+      {contextOptions.map((_options, idx) => (
+        <LocationsBanner
+          key={idx}
+          documentId={documentId}
+          options={_options}
+          resolvers={resolvers[idx]}
+          schemaType={schemaType}
+          showPresentationTitle={contextOptions.length > 1}
+          version={version}
+        />
+      ))}
     </LocationStack>
   )
 }

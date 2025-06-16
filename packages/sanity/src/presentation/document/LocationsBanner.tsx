@@ -65,7 +65,7 @@ export function LocationsBanner(props: {
 
   const ToneIcon = tone ? TONE_ICONS[tone] : undefined
 
-  if (!resolvers) return null
+  if (!resolvers || status === 'empty') return null
   return (
     <Card padding={1} radius={2} border tone={tone}>
       <div style={{margin: -1}}>
