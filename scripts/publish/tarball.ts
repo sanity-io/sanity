@@ -1,6 +1,7 @@
 import {spawn} from 'node:child_process'
 import fs from 'node:fs/promises'
 import path from 'node:path'
+import {fileURLToPath} from 'node:url'
 
 import chalk from 'chalk'
 import globby from 'globby'
@@ -24,11 +25,18 @@ async function main() {
   const versions: Record<string, string> = {}
 
   for (const pkgJsonPath of pkgJsonPaths) {
-    const pkg = require(path.resolve(__dirname, '../..', pkgJsonPath))
+    const pkg = require(
+      path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../..', pkgJsonPath),
+    )
 
     if (!pkg.private) {
       const cwd = path.dirname(pkgJsonPath)
-      const filename = path.resolve(__dirname, '../../etc/npm/', pkg.name, `v${pkg.version}.tgz`)
+      const filename = path.resolve(
+        path.dirname(fileURLToPath(import.meta.url)),
+        '../../etc/npm/',
+        pkg.name,
+        `v${pkg.version}.tgz`,
+      )
       const dirname = path.dirname(filename)
 
       await fs.mkdir(dirname, {recursive: true})
@@ -45,7 +53,10 @@ async function main() {
     }
   }
 
-  const versionsJsonPath = path.resolve(__dirname, '../../etc/npm/versions.json')
+  const versionsJsonPath = path.resolve(
+    path.dirname(fileURLToPath(import.meta.url)),
+    '../../etc/npm/versions.json',
+  )
 
   await fs.mkdir(path.dirname(versionsJsonPath), {recursive: true})
 

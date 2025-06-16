@@ -1,17 +1,26 @@
 import {createReadStream} from 'node:fs'
-import path from 'node:path'
+import path, {dirname} from 'node:path'
 
 import {expect} from '@playwright/test'
 import {type SanityImageAssetDocument} from '@sanity/client'
 
 import {test} from '../../studio-test'
+import {fileURLToPath} from 'node:url'
 
 test.describe('Portable Text Input - ImageArrayDraft', () => {
   let uploadedAsset: SanityImageAssetDocument
   test.beforeAll(async ({sanityClient}) => {
     const asset = await sanityClient.assets.upload(
       'image',
-      createReadStream(path.join(__dirname, '..', '..', 'resources', 'capybara-studio.jpg')),
+      createReadStream(
+        path.join(
+          dirname(fileURLToPath(import.meta.url)),
+          '..',
+          '..',
+          'resources',
+          'capybara-studio.jpg',
+        ),
+      ),
       {
         filename: 'capybara-studio.jpg',
         title: 'capybara-studio',
