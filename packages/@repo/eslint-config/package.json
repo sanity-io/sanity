@@ -11,7 +11,7 @@
     "lint": "eslint ."
   },
   "dependencies": {
-    "@eslint/js": "^9.28.0",
+    "@eslint/js": "^9.29.0",
     "eslint-config-prettier": "^10.1.5",
     "eslint-config-sanity": "^7.1.4",
     "eslint-config-turbo": "^2.5.4",
