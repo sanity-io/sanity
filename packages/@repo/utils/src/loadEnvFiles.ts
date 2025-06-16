@@ -4,7 +4,7 @@ import path from 'node:path'
 
 import dotenv from 'dotenv'
 
-import {repoRoot} from './constants'
+import {MONOREPO_ROOT} from './constants'
 
 /**
  * Load environment variables from .env files, mirroring the behavior of Vite.
@@ -12,7 +12,7 @@ import {repoRoot} from './constants'
  * @returns Array of environment file paths loaded.
  */
 export function loadEnvFiles(
-  cwd = repoRoot,
+  cwd = MONOREPO_ROOT,
   mode = process.env.NODE_ENV || 'development',
 ): string[] {
   const envFiles = ['.env', '.env.local', `.env.${mode}`, `.env.${mode}.local`]

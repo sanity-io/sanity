@@ -135,9 +135,9 @@ importers:
       '@types/glob':
         specifier: ^7.2.0
         version: 7.2.0
-      '@types/lodash':
+      '@types/lodash-es':
         specifier: ^4.17.7
-        version: 4.17.15
+        version: 4.17.12
       '@types/node':
         specifier: ^22.10.0
         version: 22.13.1
@@ -213,7 +213,7 @@ importers:
       lint-staged:
         specifier: ^16.1.0
         version: 16.1.0
-      lodash:
+      lodash-es:
         specifier: ^4.17.21
         version: 4.17.21
       minimist:
@@ -851,7 +851,7 @@ importers:
       dotenv:
         specifier: ^16.0.3
         version: 16.5.0
-      lodash:
+      lodash-es:
         specifier: ^4.17.21
         version: 4.17.21
       ora:
@@ -861,6 +861,9 @@ importers:
       '@repo/eslint-config':
         specifier: workspace:*
         version: link:../eslint-config
+      '@types/lodash-es':
+        specifier: ^4.17.12
+        version: 4.17.12
 
   packages/@sanity/cli:
     dependencies:
