@@ -149,6 +149,7 @@
     "esbuild-register": "catalog:",
     "eslint": "^9.28.0",
     "eslint-formatter-compact": "^8.40.0",
+    "eslint-plugin-react-hooks": "0.0.0-experimental-12bc60f5-20250613",
     "execa": "^2.0.0",
     "glob": "^11.0.0",
     "globby": "^11.1.0",
@@ -194,7 +195,7 @@
       "@typescript-eslint/parser": "$@typescript-eslint/parser",
       "@vitest/coverage-v8": "$vitest",
       "@vitest/expect": "$vitest",
-      "eslint-plugin-react-hooks": "0.0.0-experimental-a00ca6f6-20250611",
+      "eslint-plugin-react-hooks": "$eslint-plugin-react-hooks",
       "jsdom": "$jsdom",
       "vite": "$vite",
       "vitest": "$vitest"
