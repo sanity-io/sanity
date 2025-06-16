@@ -193,6 +193,7 @@
       "@typescript-eslint/parser": "$@typescript-eslint/parser",
       "@vitest/coverage-v8": "$vitest",
       "@vitest/expect": "$vitest",
+      "efps>vite": "npm:vite@6.3.5",
       "eslint-plugin-react-hooks": "$eslint-plugin-react-hooks",
       "jsdom": "$jsdom",
       "vite": "$vite",

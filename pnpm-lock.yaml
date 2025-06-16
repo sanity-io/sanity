@@ -63,6 +63,7 @@ overrides:
   '@typescript-eslint/parser': ^8.34.0
   '@vitest/coverage-v8': 3.2.3
   '@vitest/expect': 3.2.3
+  efps>vite: npm:vite@6.3.5
   eslint-plugin-react-hooks: 0.0.0-experimental-12bc60f5-20250613
   jsdom: ^23.0.1
   vite: npm:rolldown-vite@6.3.20
@@ -2112,7 +2113,7 @@ importers:
         version: 17.0.33
       '@vitejs/plugin-react':
         specifier: 'catalog:'
-        version: 4.5.2(patch_hash=dbddf1bce8ebe7035b95d4ff9b5ec4fcc2d24e6f27b2dc6e3af349eb9e42fbf6)(rolldown-vite@6.3.20(@types/node@22.15.32)(esbuild@0.25.5)(jiti@2.4.2)(terser@5.42.0)(tsx@4.20.3)(yaml@2.8.0))
+        version: 4.5.2(patch_hash=dbddf1bce8ebe7035b95d4ff9b5ec4fcc2d24e6f27b2dc6e3af349eb9e42fbf6)(vite@6.3.5(@types/node@22.15.32)(jiti@2.4.2)(lightningcss@1.30.1)(terser@5.42.0)(tsx@4.20.3)(yaml@2.8.0))
       babel-plugin-react-compiler:
         specifier: 19.1.0-rc.2
         version: 19.1.0-rc.2
@@ -2153,8 +2154,8 @@ importers:
         specifier: ^0.7.4
         version: 0.7.4
       vite:
-        specifier: npm:rolldown-vite@6.3.20
-        version: rolldown-vite@6.3.20(@types/node@22.15.32)(esbuild@0.25.5)(jiti@2.4.2)(terser@5.42.0)(tsx@4.20.3)(yaml@2.8.0)
+        specifier: npm:vite@6.3.5
+        version: 6.3.5(@types/node@22.15.32)(jiti@2.4.2)(lightningcss@1.30.1)(terser@5.42.0)(tsx@4.20.3)(yaml@2.8.0)
       yargs:
         specifier: 17.3.0
         version: 17.3.0
