@@ -1290,6 +1290,9 @@ importers:
       '@sanity/client':
         specifier: ^7.6.0
         version: 7.6.0(debug@4.4.1)
+      '@sanity/media-library-types':
+        specifier: ^0.0.2
+        version: 0.0.2
     devDependencies:
       '@repo/eslint-config':
         specifier: workspace:*

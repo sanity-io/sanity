@@ -51,7 +51,8 @@
     "watch": "pkg-utils watch"
   },
   "dependencies": {
-    "@sanity/client": "^7.6.0"
+    "@sanity/client": "^7.6.0",
+    "@sanity/media-library-types": "^0.0.2"
   },
   "devDependencies": {
     "@repo/eslint-config": "workspace:*",
