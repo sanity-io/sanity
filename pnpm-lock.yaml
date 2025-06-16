@@ -109,8 +109,8 @@ importers:
         specifier: ^7.6.0
         version: 7.6.0(debug@4.4.1)
       '@sanity/eslint-config-i18n':
-        specifier: 1.0.0
-        version: 1.0.0(eslint@9.28.0(jiti@2.4.2))(typescript@5.8.3)
+        specifier: 2.0.0
+        version: 2.0.0(eslint@9.28.0(jiti@2.4.2))
       '@sanity/eslint-config-studio':
         specifier: ^4.0.0
         version: 4.0.0(eslint@9.28.0(jiti@2.4.2))(typescript@5.8.3)
@@ -4699,9 +4699,6 @@ packages:
   '@sanity/diff-patch@5.0.0':
     resolution: {integrity: sha512-JASdNaZsxUFBx8GQ1sX2XehYhdhOcurh7KwzQ3cXgOTdjvIQyQcLwmMeYCsU/K26GiI81ODbCEb/C0c92t2Unw==}
     engines: {node: '>=18.2'}
-
-  '@sanity/eslint-config-i18n@1.0.0':
-    resolution: {integrity: sha512-BIeD9IVT7O5I6vDyDaICoidN02qeImdXDRAW062iHY9gV4JrGScWBFio2HQLso7C+Z6SrQB8jOft6SzeYqDhdQ==}
 
   '@sanity/eslint-config-i18n@2.0.0':
     resolution: {integrity: sha512-A1yCklgMxs9wGYwLIwCUzJR91+NYAIVnCPso2qv86XOpfNnTRhve726JQrZog6JyiFa1Dk/gDJ07D8AV2TujzQ==}
@@ -15030,17 +15027,6 @@ snapshots:
   '@sanity/diff-patch@5.0.0':
     dependencies:
       '@sanity/diff-match-patch': 3.2.0
-
-  '@sanity/eslint-config-i18n@1.0.0(eslint@9.28.0(jiti@2.4.2))(typescript@5.8.3)':
-    dependencies:
-      '@rushstack/eslint-patch': 1.11.0
-      '@sanity/eslint-plugin-i18n': 1.1.0
-      '@typescript-eslint/parser': 8.34.0(eslint@9.28.0(jiti@2.4.2))(typescript@5.8.3)
-      eslint-plugin-i18next: 6.1.1
-    transitivePeerDependencies:
-      - eslint
-      - supports-color
-      - typescript
 
   '@sanity/eslint-config-i18n@2.0.0(eslint@9.28.0(jiti@2.4.2))':
     dependencies:
