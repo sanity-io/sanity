@@ -1,5 +1,4 @@
-import path, {dirname} from 'node:path'
-import {fileURLToPath} from 'node:url'
+import path from 'node:path'
 
 import baseConfig from '@repo/package.config'
 import {startTimer} from '@repo/utils'
@@ -30,11 +29,7 @@ async function main(options: {packageName: string; releaseVersion?: string}): Pr
     throw new Error('Missing package name. Usage: pnpm etl [packageName]')
   }
 
-  const packagePath = path.resolve(
-    dirname(fileURLToPath(import.meta.url)),
-    '../packages',
-    packageName,
-  )
+  const packagePath = path.resolve(__dirname, '../packages', packageName)
 
   await etl({cwd: process.cwd(), packageName, packagePath, releaseVersion})
 }
