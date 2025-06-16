@@ -1498,7 +1498,7 @@ importers:
         specifier: ^5.0.0
         version: 5.0.0
       '@sanity/eventsource':
-        specifier: ^5.0.0
+        specifier: ^5.0.2
         version: 5.0.2
       '@sanity/export':
         specifier: ^3.44.0
