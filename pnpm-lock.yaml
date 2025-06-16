@@ -1335,7 +1335,7 @@ importers:
         specifier: ^1.0.0
         version: 1.0.0(react-dom@19.1.0(react@18.3.1))(react@18.3.1)
       '@sanity/color':
-        specifier: ^3.0.0
+        specifier: ^3.0.6
         version: 3.0.6
       '@sanity/icons':
         specifier: ^3.7.0
@@ -1483,7 +1483,7 @@ importers:
         specifier: ^7.6.0
         version: 7.6.0(debug@4.4.1)
       '@sanity/color':
-        specifier: ^3.0.0
+        specifier: ^3.0.6
         version: 3.0.6
       '@sanity/comlink':
         specifier: ^3.0.5

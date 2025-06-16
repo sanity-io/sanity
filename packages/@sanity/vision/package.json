@@ -62,7 +62,7 @@
     "@lezer/highlight": "^1.0.0",
     "@rexxars/react-json-inspector": "^9.0.1",
     "@rexxars/react-split-pane": "^1.0.0",
-    "@sanity/color": "^3.0.0",
+    "@sanity/color": "^3.0.6",
     "@sanity/icons": "^3.7.0",
     "@sanity/ui": "^2.15.18",
     "@sanity/uuid": "^3.0.2",
