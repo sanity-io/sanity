@@ -1,6 +1,8 @@
 name: Dependency check
 on:
   push:
+    paths-ignore:
+      - "examples/**"
 jobs:
   depCheck:
     timeout-minutes: 30

@@ -1,6 +1,8 @@
 name: Test exports works in native node ESM and CJS
 on:
   push:
+    paths-ignore:
+      - "examples/**"
 jobs:
   testExports:
     timeout-minutes: 15
