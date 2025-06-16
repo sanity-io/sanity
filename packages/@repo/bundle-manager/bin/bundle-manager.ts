@@ -4,7 +4,7 @@ import yargs from 'yargs'
 
 import {tagVersion, uploadBundles} from '../src'
 
-// eslint-disable-next-line no-unused-expressions
+// eslint-disable-next-line @typescript-eslint/no-unused-expressions
 yargs(process.argv.slice(2))
   .usage('$0 <command>')
   .command({
