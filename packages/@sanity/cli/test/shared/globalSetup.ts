@@ -30,7 +30,7 @@ import {
   testIdPath,
 } from './environment'
 
-const SYMLINK_SCRIPT = path.resolve(__dirname, '../../../../../scripts/symlinkDependencies.js')
+const SYMLINK_SCRIPT = path.resolve(__dirname, '../../../../../scripts/symlinkDependencies.cjs')
 
 export async function setup(): Promise<void> {
   // Write a file with the test id, so it can be shared across workers
