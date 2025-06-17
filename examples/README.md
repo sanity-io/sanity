@@ -29,6 +29,7 @@ The `functions/` directory contains examples of [Sanity Functions](https://www.s
 
 - **[auto-tag](./functions/auto-tag/README.md)** - AI-powered automatic tagging for blog posts
 - **[first-published](./functions/first-published/README.md)** - Automatic timestamp tracking for first publication
+- **[capture-tone-of-voice](./functions/capture-tone-of-voice/README.md)** - Analyze a field and display the tone of voice
 
 ## 🎨 Studios
 

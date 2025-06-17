@@ -1,0 +1,20 @@
+{
+  "name": "capture-tone-of-voice",
+  "type": "module",
+  "main": "index.ts",
+  "dependencies": {
+    "@sanity/client": "^7.6.0",
+    "@sanity/functions": "1.0.2"
+  },
+  "blueprintResourceItem": {
+    "name": "capture-tone-of-voice",
+    "memory": 2,
+    "timeout": 60,
+    "on": [
+      "publish"
+    ],
+    "filter": "_type == 'post'",
+    "projection": "_id,"
+  },
+  "exampleInstructions": "Add this configuration to your blueprint config's resources array. Go to README.md for more details."
+}
