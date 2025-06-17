@@ -3,6 +3,43 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [3.93.0](https://github.com/sanity-io/sanity/compare/v3.92.0...v3.93.0) (2025-06-17)
+
+### Features
+
+* Add comprehensive examples directory structure ([#9651](https://github.com/sanity-io/sanity/issues/9651)) ([3548bd0](https://github.com/sanity-io/sanity/commit/3548bd0d6fd14e6d5c36ece8dcf880b1c5c0ae8d)) by Knut Melvær (knut@sanity.io)
+* **ci:** optimize workflows to skip examples-only changes ([#9680](https://github.com/sanity-io/sanity/issues/9680)) ([92b1fa5](https://github.com/sanity-io/sanity/commit/92b1fa5c51d104c8075b04a7204118356903cb7d)) by Knut Melvær (knut@sanity.io)
+* **cli:** Improve guidance after SDK app init ([#9640](https://github.com/sanity-io/sanity/issues/9640)) ([52ea1d6](https://github.com/sanity-io/sanity/commit/52ea1d6df9f4ada9eb472d1cea718ac5aedbc929)) by Cole Peters (cole@colepeters.com)
+* **cli:** report error cause after catching CLI error ([b137973](https://github.com/sanity-io/sanity/commit/b1379735325373d96a7a11ad05ac2a91648b8979)) by Ash (ash@sanity.io)
+* **cli:** update runtime-cli and enable example flag ([#9652](https://github.com/sanity-io/sanity/issues/9652)) ([2daf089](https://github.com/sanity-io/sanity/commit/2daf089745f2556d35f0380279d441ee6d10c92b)) by Taylor Beseda (tbeseda@gmail.com)
+* **core:** add one line portable text editor option ([#9625](https://github.com/sanity-io/sanity/issues/9625)) ([f64bd68](https://github.com/sanity-io/sanity/commit/f64bd6823ef00b09bf9dd6ccaac702723918dd8b)) by Pedro Bonamin (46196328+pedrobonamin@users.noreply.github.com)
+* **schema:** serialize schema in debug mode ([#9503](https://github.com/sanity-io/sanity/issues/9503)) ([d9d9d67](https://github.com/sanity-io/sanity/commit/d9d9d673919dcdb95acc78fd117d36c4382d6b6f)) by Magnus Holm (judofyr@gmail.com)
+
+### Bug Fixes
+
+* **actions:** Vercel deployment failure when PR titles "contain" double quotes ([#9630](https://github.com/sanity-io/sanity/issues/9630)) ([a0c9889](https://github.com/sanity-io/sanity/commit/a0c9889063c806735225ce3076711e3c5ea0158e)) by Pedro Bonamin (46196328+pedrobonamin@users.noreply.github.com)
+* **ci:** remove @conventional-changelog/git-client version override ([#9653](https://github.com/sanity-io/sanity/issues/9653)) ([093bcb6](https://github.com/sanity-io/sanity/commit/093bcb6a023c98e6f22fb74ab797b7bb8ff3b78f)) by Bjørge Næss (bjoerge@gmail.com)
+* **core:** ensure virtualized array items are rendered before scroll ([#9611](https://github.com/sanity-io/sanity/issues/9611)) ([8d8cfa2](https://github.com/sanity-io/sanity/commit/8d8cfa2aeecded328547a46a86c1d1ae8514378b)) by Rupert Dunk (rupert@rupertdunk.com)
+* **deps:** bump react virtual to v3.13.6 ([#9705](https://github.com/sanity-io/sanity/issues/9705)) ([85eacd8](https://github.com/sanity-io/sanity/commit/85eacd8a4803572010e40b5799fc9166bf507740)) by Cody Olsen (81981+stipsan@users.noreply.github.com)
+* **deps:** bump react-virtual to v3.13.10 ([#9711](https://github.com/sanity-io/sanity/issues/9711)) ([6bbf3bd](https://github.com/sanity-io/sanity/commit/6bbf3bda4252399cf4cb48e1db1f8b87cea859b8)) by Cody Olsen (81981+stipsan@users.noreply.github.com)
+* **deps:** pin react-virtual to v3.13.2 ([#9700](https://github.com/sanity-io/sanity/issues/9700)) ([aa28847](https://github.com/sanity-io/sanity/commit/aa28847ed9833224b5e1d58c59cadf1682b99133)) by Cody Olsen (81981+stipsan@users.noreply.github.com)
+* **deps:** Update babel monorepo ([#9690](https://github.com/sanity-io/sanity/issues/9690)) ([6d52330](https://github.com/sanity-io/sanity/commit/6d523302ffa0232653baacde84bbf6244953f599)) by renovate[bot] (29139614+renovate[bot]@users.noreply.github.com)
+* **deps:** Update CodeMirror ([#9691](https://github.com/sanity-io/sanity/issues/9691)) ([6538309](https://github.com/sanity-io/sanity/commit/6538309add507cb38257b43be5d6fece2021a14f)) by renovate[bot] (29139614+renovate[bot]@users.noreply.github.com)
+* **deps:** update dependency @portabletext/block-tools to ^1.1.29 ([#9602](https://github.com/sanity-io/sanity/issues/9602)) ([8d6ac7c](https://github.com/sanity-io/sanity/commit/8d6ac7cf267195659721a7dee4a5167a296f7df9)) by renovate[bot] (29139614+renovate[bot]@users.noreply.github.com)
+* **deps:** update dependency @portabletext/block-tools to ^1.1.30 ([#9619](https://github.com/sanity-io/sanity/issues/9619)) ([408c5e3](https://github.com/sanity-io/sanity/commit/408c5e3892ffd1846ae3ab357f0c9e39da272fc4)) by renovate[bot] (29139614+renovate[bot]@users.noreply.github.com)
+* **deps:** update dependency @portabletext/editor to ^1.52.0 ([#9603](https://github.com/sanity-io/sanity/issues/9603)) ([7bdcbcb](https://github.com/sanity-io/sanity/commit/7bdcbcb39a178b74fce51905c7d5c47c93e4aec9)) by renovate[bot] (29139614+renovate[bot]@users.noreply.github.com)
+* **deps:** update dependency @portabletext/editor to ^1.52.7 ([#9620](https://github.com/sanity-io/sanity/issues/9620)) ([6673c7f](https://github.com/sanity-io/sanity/commit/6673c7fe309f057e744e3a2c19cdaa1fb87e9ead)) by renovate[bot] (29139614+renovate[bot]@users.noreply.github.com)
+* **deps:** update dependency @portabletext/editor to ^1.53.0 ([#9642](https://github.com/sanity-io/sanity/issues/9642)) ([8b60220](https://github.com/sanity-io/sanity/commit/8b602207abead2eaa4d06edb437ac929ecaa71a1)) by renovate[bot] (29139614+renovate[bot]@users.noreply.github.com)
+* **deps:** update dependency @sanity/client to ^7.6.0 ([#9649](https://github.com/sanity-io/sanity/issues/9649)) ([e41e814](https://github.com/sanity-io/sanity/commit/e41e8140d2de74151228f535181d368407aa9111)) by renovate[bot] (29139614+renovate[bot]@users.noreply.github.com)
+* **deps:** update dependency framer-motion to ^12.18.1 ([#9674](https://github.com/sanity-io/sanity/issues/9674)) ([3969445](https://github.com/sanity-io/sanity/commit/39694453147d50198d565d96b39fc512d58fe63f)) by renovate[bot] (29139614+renovate[bot]@users.noreply.github.com)
+* **deps:** update dependency react-rx to ^4.1.30 ([#9693](https://github.com/sanity-io/sanity/issues/9693)) ([0f09c4c](https://github.com/sanity-io/sanity/commit/0f09c4c430f242c3f5f49a3f955a1935bdd4cc4c)) by renovate[bot] (29139614+renovate[bot]@users.noreply.github.com)
+* **deps:** Update dnd-kit monorepo ([#9692](https://github.com/sanity-io/sanity/issues/9692)) ([571808d](https://github.com/sanity-io/sanity/commit/571808d07b90034bfa99113ee79e275ded53782d)) by renovate[bot] (29139614+renovate[bot]@users.noreply.github.com)
+* manifest extract now correctly serializes global document references ([#9604](https://github.com/sanity-io/sanity/issues/9604)) ([5b15f40](https://github.com/sanity-io/sanity/commit/5b15f40a543d9285925ad5ca33c5922ebb060121)) by Snorre Eskeland Brekke (snorre.e.brekke@gmail.com)
+* **presentation:** hide locations banner if location is empty ([#9655](https://github.com/sanity-io/sanity/issues/9655)) ([f636721](https://github.com/sanity-io/sanity/commit/f6367213fff469f5edf312d96a0ae6ca98ceffa2)) by Pedro Bonamin (46196328+pedrobonamin@users.noreply.github.com)
+* **sanity:** avoid writing to `message` property of unknown caught value ([cedda92](https://github.com/sanity-io/sanity/commit/cedda92b038b013d6c3380fcfc72c9f39b6e052d)) by Ash (ash@sanity.io)
+* update link to join community ([#9646](https://github.com/sanity-io/sanity/issues/9646)) ([608e0a2](https://github.com/sanity-io/sanity/commit/608e0a2db57391a57fe16cd1b79818ff46ac5811)) by Bjørge Næss (bjoerge@gmail.com)
+* update readme broken links ([#9618](https://github.com/sanity-io/sanity/issues/9618)) ([b1f95e8](https://github.com/sanity-io/sanity/commit/b1f95e883d04b179bfa08d79f012a82d9de44421)) by David T (73550581+JoanCTO@users.noreply.github.com)
+
 ## [3.92.0](https://github.com/sanity-io/sanity/compare/v3.91.0...v3.92.0) (2025-06-10)
 
 ### Features
