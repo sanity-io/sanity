@@ -48,6 +48,7 @@ jspm_packages
 
 # VS Code settings
 /.vscode
+!/.vscode/extensions.json
 
 # Environment files
 # ignore all local .env files

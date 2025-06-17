@@ -1,0 +1,13 @@
+{
+  "recommendations": [
+    "dbaeumer.vscode-eslint",
+    "github.vscode-github-actions",
+    "mattpocock.ts-error-translator",
+    "oxc.oxc-vscode",
+    "sanity-io.vscode-sanity",
+    "statelyai.stately-vscode",
+    "styled-components.vscode-styled-components",
+    "Vercel.turbo-vsc",
+    "vitest.explorer"
+  ]
+}
