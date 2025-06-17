@@ -158,7 +158,19 @@ export const CopyPasteProvider: React.FC<{
         value,
       )!
 
-      const clipboardItem = await getClipboardItem()
+      let clipboardItem: SanityClipboardItem | null = null
+      try {
+        clipboardItem = await getClipboardItem()
+      } catch (error) {
+        if (error.name === 'NotAllowedError') {
+          toast.push({
+            status: 'error',
+            title: t('copy-paste.on-copy.validation.clipboard-not-supported.title'),
+            description: t('copy-paste.on-copy.validation.clipboard-not-supported.description'),
+          })
+        }
+        return
+      }
 
       // Return early if no clipboard item or if clipboard item is invalid
       if (!clipboardItem) {
