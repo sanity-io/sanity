@@ -27,6 +27,7 @@ import {ScheduleFilters} from './scheduleFilters'
 import {Schedules} from './schedules'
 import SchedulesContextMenu from './schedulesContextMenu/SchedulesContextMenu'
 import {ToolCalendar} from './toolCalendar'
+import {scheduledPublishingLocaleNamespace} from '../i18n'
 
 const Column = styled(Box)`
   flex-direction: column;
@@ -45,7 +46,7 @@ export default function Tool() {
 
   const {sanity: theme} = useTheme()
   const {error, isInitialLoading, schedules = NO_SCHEDULE} = usePollSchedules()
-  const {t} = useTranslation()
+  const {t} = useTranslation(scheduledPublishingLocaleNamespace)
   const {enabled, hasUsedScheduledPublishing} = useScheduledPublishingEnabled()
 
   const lastScheduleState = useRef<ScheduleState | undefined>(undefined)
@@ -159,7 +160,7 @@ export default function Tool() {
                   {/* Time zone select + context menu */}
                   <Flex align="center" gap={1}>
                     <TimeZoneButton
-                      tooltipContent={t('time-zone.time-zone-tooltip-content-releases', {
+                      tooltipContent={t('time-zone.time-zone-tooltip-scheduled-publishing', {
                         alternativeName: timeZone.alternativeName,
                         offset: timeZone.offset,
                       })}

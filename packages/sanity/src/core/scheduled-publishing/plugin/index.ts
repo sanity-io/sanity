@@ -8,6 +8,7 @@ import resolveDocumentActions from './documentActions/schedule'
 import resolveDocumentBadges from './documentBadges/scheduled'
 import {DocumentBannerInput} from './inputResolver'
 import {SchedulePublishingStudioLayout} from './SchedulePublishingStudioLayout'
+import {scheduledPublishingUsEnglishLocaleBundle} from '../i18n'
 
 export {EditScheduleForm} from '../components/editScheduleForm/EditScheduleForm'
 export {resolveDocumentActions, resolveDocumentBadges}
@@ -52,5 +53,8 @@ export const scheduledPublishing = definePlugin({
         __internalApplicationType: 'sanity/scheduled-publishing',
       },
     ]
+  },
+  i18n: {
+    bundles: [scheduledPublishingUsEnglishLocaleBundle],
   },
 })

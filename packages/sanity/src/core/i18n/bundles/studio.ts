@@ -1843,15 +1843,8 @@ export const studioLocaleStrings = defineLocalesResources('studio', {
   /* Label for the time zone button */
   'time-zone.time-zone': 'Time zone',
   /* Tooltip content for the time zone dialog */
-  'time-zone.time-zone-tooltip-content-releases':
-    'Displaying releases in {{alternativeName}} GMT{{offset}}',
-  /* Tooltip content for the time zone dialog */
   'time-zone.time-zone-tooltip-input':
     'Displaying <em>{{title}}</em> in {{alternativeName}} GMT{{offset}}',
-  /* Tooltip content for the time zone dialog */
-  'time-zone.time-zone-tooltip-scheduled-publishing':
-    'Displaying schedules in {{alternativeName}} GMT{{offset}}',
-
   /** Title for the changes tooltip in the history inspector*/
   'timeline.changes.title': 'Changes by',
   /** Description for error when the timeline for the given document can't be loaded */

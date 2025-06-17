@@ -4,6 +4,7 @@ import {TimeZoneButton} from '../../../components/timeZone/timeZoneButton/TimeZo
 import {type TimeZoneScope, useTimeZone} from '../../../hooks/useTimeZone'
 import {useTranslation} from '../../../i18n/hooks/useTranslation'
 import TimeZoneButtonElementQuery from './TimeZoneButtonElementQuery'
+import {scheduledPublishingLocaleNamespace} from '../../i18n'
 
 interface Props {
   title: string
@@ -13,7 +14,7 @@ interface Props {
 const DialogHeader = (props: Props) => {
   const {title, timeZoneScope} = props
   const {timeZone} = useTimeZone(timeZoneScope)
-  const {t} = useTranslation()
+  const {t} = useTranslation(scheduledPublishingLocaleNamespace)
   return (
     <TimeZoneButtonElementQuery>
       <Flex align="center">
