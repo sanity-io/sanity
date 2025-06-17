@@ -305,7 +305,6 @@ function CalendarTimePresetButton(props: {
   return (
     <Button
       text={formatted}
-      // eslint-disable-next-line @sanity/i18n/no-attribute-template-literals
       aria-label={`${formatted} on ${selectedDate.toDateString()}`}
       mode="bleed"
       fontSize={1}
