@@ -139,6 +139,7 @@ export const CopyPasteProvider: React.FC<{
         toast.push({
           status: 'error',
           title: t('copy-paste.on-copy.validation.clipboard-not-supported.title'),
+          description: t('copy-paste.on-copy.validation.clipboard-not-supported.description'),
         })
       }
     },
