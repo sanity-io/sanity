@@ -3,12 +3,12 @@ import {route} from 'sanity/router'
 
 import {definePlugin} from '../../config/definePlugin'
 import {SCHEDULED_PUBLISHING_TOOL_NAME, TOOL_TITLE} from '../constants'
+import {scheduledPublishingUsEnglishLocaleBundle} from '../i18n'
 import Tool from '../tool/Tool'
 import resolveDocumentActions from './documentActions/schedule'
 import resolveDocumentBadges from './documentBadges/scheduled'
 import {DocumentBannerInput} from './inputResolver'
 import {SchedulePublishingStudioLayout} from './SchedulePublishingStudioLayout'
-import {scheduledPublishingUsEnglishLocaleBundle} from '../i18n'
 
 export {EditScheduleForm} from '../components/editScheduleForm/EditScheduleForm'
 export {resolveDocumentActions, resolveDocumentBadges}

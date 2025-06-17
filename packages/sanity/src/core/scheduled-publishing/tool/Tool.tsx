@@ -21,13 +21,13 @@ import {
   TOOL_HEADER_HEIGHT,
 } from '../constants'
 import usePollSchedules from '../hooks/usePollSchedules'
+import {scheduledPublishingLocaleNamespace} from '../i18n'
 import {type Schedule, type ScheduleState} from '../types'
 import {SchedulesProvider} from './contexts/schedules'
 import {ScheduleFilters} from './scheduleFilters'
 import {Schedules} from './schedules'
 import SchedulesContextMenu from './schedulesContextMenu/SchedulesContextMenu'
 import {ToolCalendar} from './toolCalendar'
-import {scheduledPublishingLocaleNamespace} from '../i18n'
 
 const Column = styled(Box)`
   flex-direction: column;
