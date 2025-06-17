@@ -1,6 +1,7 @@
 {
   "recommendations": [
     "dbaeumer.vscode-eslint",
+    "eamodio.gitlens",
     "github.vscode-github-actions",
     "mattpocock.ts-error-translator",
     "oxc.oxc-vscode",
