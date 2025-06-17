@@ -5,7 +5,6 @@ import type {SearchContextValue} from '../../core/studio/components/navbar/searc
 /**
  * @internal
  */
-export const SearchContext = createContext<SearchContextValue | undefined>(
-  'sanity/_singletons/context/search',
-  undefined,
-)
+export const SearchContext: React.Context<SearchContextValue | undefined> = createContext<
+  SearchContextValue | undefined
+>('sanity/_singletons/context/search', undefined)

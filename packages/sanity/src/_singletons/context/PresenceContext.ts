@@ -5,7 +5,7 @@ import type {FormNodePresence} from '../../core/presence/types'
 /**
  * @internal
  */
-export const PresenceContext = createContext<FormNodePresence[]>(
+export const PresenceContext: React.Context<FormNodePresence[]> = createContext<FormNodePresence[]>(
   'sanity/_singletons/context/presence',
   [],
 )

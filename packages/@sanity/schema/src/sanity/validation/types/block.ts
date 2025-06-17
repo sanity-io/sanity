@@ -2,6 +2,7 @@ import humanizeList from 'humanize-list'
 import {isPlainObject, omit} from 'lodash'
 
 import {coreTypeNames} from '../../coreTypes'
+import {type SchemaValidationResult} from '../../typedefs'
 import {error, HELP_IDS, warning} from '../createValidationResult'
 import {isJSONTypeOf} from '../utils/isJSONTypeOf'
 
@@ -32,7 +33,16 @@ const supportedBuiltInObjectTypes = [
   'globalDocumentReference',
 ]
 
-export default function validateBlockType(typeDef: any, visitorContext: any) {
+export default function validateBlockType(
+  typeDef: any,
+  visitorContext: any,
+): {
+  marks: any
+  styles: any
+  name: any
+  of: any
+  _problems: SchemaValidationResult[]
+} {
   const problems = []
   let styles = typeDef.styles
   let lists = typeDef.lists

@@ -5,7 +5,8 @@ import type {PortableTextMemberItem} from '../../core/form/inputs/PortableText/P
 /**
  * @internal
  */
-export const PortableTextMemberItemsContext = createContext<PortableTextMemberItem[]>(
-  'sanity/_singletons/context/portable-text-member-items',
-  [],
-)
+export const PortableTextMemberItemsContext: React.Context<PortableTextMemberItem[]> =
+  createContext<PortableTextMemberItem[]>(
+    'sanity/_singletons/context/portable-text-member-items',
+    [],
+  )

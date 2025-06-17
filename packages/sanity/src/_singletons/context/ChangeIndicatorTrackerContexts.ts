@@ -6,14 +6,14 @@ import type {
 } from '../../core/changeIndicators/ChangeIndicatorTrackerContexts'
 
 /** @internal */
-export const ChangeIndicatorTrackerContextStore =
+export const ChangeIndicatorTrackerContextStore: React.Context<ChangeIndicatorTrackerContextStoreType> =
   createContext<ChangeIndicatorTrackerContextStoreType>(
     'sanity/_singletons/context/change-indicator-tracker-store',
     null,
   )
 
 /** @internal */
-export const ChangeIndicatorTrackerContextGetSnapshot =
+export const ChangeIndicatorTrackerContextGetSnapshot: React.Context<ChangeIndicatorTrackerGetSnapshotType> =
   createContext<ChangeIndicatorTrackerGetSnapshotType>(
     'sanity/_singletons/context/change-indicator-tracker-get-snapshot',
     null,

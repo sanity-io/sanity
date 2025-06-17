@@ -1,6 +1,6 @@
 import {Card, Code} from '@sanity/ui'
 import {isEqual} from 'lodash'
-import {memo, useMemo, useState} from 'react'
+import {memo, type NamedExoticComponent, useMemo, useState} from 'react'
 import {
   EMPTY_ARRAY,
   type GeneralDocumentListLayoutKey,
@@ -60,91 +60,91 @@ export function useShallowUnique<ValueType>(value: ValueType): ValueType {
 /**
  * @internal
  */
-export const PaneContainer = memo(function PaneContainer(
-  props: BaseStructureToolPaneProps<'documentList'>,
-) {
-  const {index, isSelected, pane, paneKey} = props
-  const {name: parentSourceName} = useSource()
+export const PaneContainer: NamedExoticComponent<BaseStructureToolPaneProps<'documentList'>> = memo(
+  function PaneContainer(props) {
+    const {index, isSelected, pane, paneKey} = props
+    const {name: parentSourceName} = useSource()
 
-  const {
-    defaultLayout = 'default',
-    initialValueTemplates = EMPTY_ARRAY,
-    menuItemGroups,
-    menuItems,
-    options,
-  } = pane
-  const {defaultOrdering = EMPTY_ARRAY, filter} = options
-  const params = useShallowUnique(options.params || EMPTY_RECORD)
-  const sourceName = pane.source
-  const typeName = useMemo(() => {
-    const staticTypes = findStaticTypesInFilter(filter, params)
-    if (staticTypes?.length === 1) return staticTypes[0]
-    return null
-  }, [filter, params])
+    const {
+      defaultLayout = 'default',
+      initialValueTemplates = EMPTY_ARRAY,
+      menuItemGroups,
+      menuItems,
+      options,
+    } = pane
+    const {defaultOrdering = EMPTY_ARRAY, filter} = options
+    const params = useShallowUnique(options.params || EMPTY_RECORD)
+    const sourceName = pane.source
+    const typeName = useMemo(() => {
+      const staticTypes = findStaticTypesInFilter(filter, params)
+      if (staticTypes?.length === 1) return staticTypes[0]
+      return null
+    }, [filter, params])
 
-  const [layout, setLayout] = useStructureToolSetting<GeneralDocumentListLayoutKey>(
-    'layout',
-    typeName ?? pane.id, //pane.id for anything that is not documentTypeList
-    defaultLayout,
-  )
+    const [layout, setLayout] = useStructureToolSetting<GeneralDocumentListLayoutKey>(
+      'layout',
+      typeName ?? pane.id, //pane.id for anything that is not documentTypeList
+      defaultLayout,
+    )
 
-  const {title} = useI18nText(pane)
+    const {title} = useI18nText(pane)
 
-  // Ensure that we use the defaultOrdering value from structure builder if any as the default
-  const defaultSortOrder = useMemo(() => {
-    return defaultOrdering?.length > 0 ? {by: defaultOrdering} : DEFAULT_ORDERING
-  }, [defaultOrdering])
+    // Ensure that we use the defaultOrdering value from structure builder if any as the default
+    const defaultSortOrder = useMemo(() => {
+      return defaultOrdering?.length > 0 ? {by: defaultOrdering} : DEFAULT_ORDERING
+    }, [defaultOrdering])
 
-  const [sortOrderRaw, setSortOrder] = useStructureToolSetting<SortOrder>(
-    'sort-order',
-    typeName ?? pane.id, //pane.id for anything that is not documentTypeList
-    defaultSortOrder,
-  )
+    const [sortOrderRaw, setSortOrder] = useStructureToolSetting<SortOrder>(
+      'sort-order',
+      typeName ?? pane.id, //pane.id for anything that is not documentTypeList
+      defaultSortOrder,
+    )
 
-  const menuItemsWithSelectedState = useMemo(
-    () =>
-      addSelectedStateToMenuItems({
-        menuItems,
-        sortOrderRaw,
-        layout,
-      }),
-    [layout, menuItems, sortOrderRaw],
-  )
+    const menuItemsWithSelectedState = useMemo(
+      () =>
+        addSelectedStateToMenuItems({
+          menuItems,
+          sortOrderRaw,
+          layout,
+        }),
+      [layout, menuItems, sortOrderRaw],
+    )
 
-  const isSheetListLayout = layout === 'sheetList'
-  const paneLayout = isSheetListLayout ? (
-    <DocumentSheetListPane {...props} key={props.pane.id} />
-  ) : (
-    <DocumentListPane {...props} sortOrder={sortOrderRaw} layout={layout} />
-  )
+    const isSheetListLayout = layout === 'sheetList'
+    const paneLayout = isSheetListLayout ? (
+      <DocumentSheetListPane {...props} key={props.pane.id} />
+    ) : (
+      <DocumentListPane {...props} sortOrder={sortOrderRaw} layout={layout} />
+    )
 
-  return (
-    <SourceProvider name={sourceName || parentSourceName}>
-      <Pane
-        data-ui="DocumentListPane"
-        id={paneKey}
-        minWidth={320}
-        {...(isSheetListLayout ? {} : {currentMaxWidth: 350, maxWidth: 640})}
-        selected={isSelected}
-      >
-        {_DEBUG && (
-          <Card padding={4} tone="transparent">
-            <Code>{pane.source || '(none)'}</Code>
-          </Card>
-        )}
+    return (
+      <SourceProvider name={sourceName || parentSourceName}>
+        <Pane
+          data-ui="DocumentListPane"
+          id={paneKey}
+          minWidth={320}
+          {...(isSheetListLayout ? {} : {currentMaxWidth: 350, maxWidth: 640})}
+          selected={isSelected}
+        >
+          {_DEBUG && (
+            <Card padding={4} tone="transparent">
+              <Code>{pane.source || '(none)'}</Code>
+            </Card>
+          )}
 
-        <PaneHeader
-          index={index}
-          initialValueTemplates={initialValueTemplates}
-          menuItemGroups={menuItemGroups}
-          menuItems={menuItemsWithSelectedState}
-          setLayout={setLayout}
-          setSortOrder={setSortOrder}
-          title={title}
-        />
-        {paneLayout}
-      </Pane>
-    </SourceProvider>
-  )
-})
+          <PaneHeader
+            index={index}
+            initialValueTemplates={initialValueTemplates}
+            menuItemGroups={menuItemGroups}
+            menuItems={menuItemsWithSelectedState}
+            setLayout={setLayout}
+            setSortOrder={setSortOrder}
+            title={title}
+          />
+          {paneLayout}
+        </Pane>
+      </SourceProvider>
+    )
+  },
+)
 PaneContainer.displayName = 'Memo(PaneContainer)'

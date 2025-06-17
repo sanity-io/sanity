@@ -5,7 +5,8 @@ import type {StudioAnnouncementsContextValue} from '../../core/studio/studioAnno
 /**
  * @internal
  */
-export const StudioAnnouncementContext = createContext<StudioAnnouncementsContextValue | undefined>(
-  'sanity/_singletons/context/studioAnnouncements',
-  undefined,
-)
+export const StudioAnnouncementContext: React.Context<StudioAnnouncementsContextValue | undefined> =
+  createContext<StudioAnnouncementsContextValue | undefined>(
+    'sanity/_singletons/context/studioAnnouncements',
+    undefined,
+  )

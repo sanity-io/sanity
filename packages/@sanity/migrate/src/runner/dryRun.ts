@@ -3,6 +3,8 @@ import {type SanityDocument} from '@sanity/types'
 import {bufferThroughFile} from '../fs-webstream/bufferThroughFile'
 import {decodeText} from '../it-utils'
 import {parse, stringify} from '../it-utils/ndjson'
+import {type Transaction} from '../mutations/transaction'
+import {type Mutation} from '../mutations/types'
 import {fromExportArchive} from '../sources/fromExportArchive'
 import {fromExportEndpoint, safeJsonParser} from '../sources/fromExportEndpoint'
 import {type APIConfig, type Migration, type MigrationContext} from '../types'
@@ -19,7 +21,10 @@ interface MigrationRunnerOptions {
   exportPath?: string
 }
 
-export async function* dryRun(config: MigrationRunnerOptions, migration: Migration) {
+export async function* dryRun(
+  config: MigrationRunnerOptions,
+  migration: Migration,
+): AsyncGenerator<Transaction | Mutation | (Transaction | Mutation)[], void, any> {
   const source = config.exportPath
     ? fromExportArchive(config.exportPath)
     : streamToAsyncIterator(

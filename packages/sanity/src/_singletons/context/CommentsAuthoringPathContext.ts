@@ -6,7 +6,5 @@ import type {CommentsAuthoringPathContextValue} from '../../core/comments/contex
  * @beta
  * @hidden
  */
-export const CommentsAuthoringPathContext = createContext<CommentsAuthoringPathContextValue | null>(
-  'sanity/_singletons/context/comments-authoring-path',
-  null,
-)
+export const CommentsAuthoringPathContext: React.Context<CommentsAuthoringPathContextValue | null> =
+  createContext('sanity/_singletons/context/comments-authoring-path', null)

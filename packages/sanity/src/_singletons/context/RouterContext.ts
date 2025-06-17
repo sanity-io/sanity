@@ -5,7 +5,5 @@ import type {RouterContextValue} from '../../router/types'
 /**
  * @internal
  */
-export const RouterContext = createContext<RouterContextValue | null>(
-  'sanity/_singletons/context/router',
-  null,
-)
+export const RouterContext: React.Context<RouterContextValue | null> =
+  createContext<RouterContextValue | null>('sanity/_singletons/context/router', null)

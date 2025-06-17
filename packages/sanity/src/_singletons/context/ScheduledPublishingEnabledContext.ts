@@ -29,7 +29,7 @@ const DEFAULT: ScheduledPublishingEnabledContextValue = {
 /**
  * @internal
  */
-export const ScheduledPublishingEnabledContext =
+export const ScheduledPublishingEnabledContext: React.Context<ScheduledPublishingEnabledContextValue> =
   createContext<ScheduledPublishingEnabledContextValue>(
     'sanity/_singletons/context/scheduled-publishing-enabled',
     DEFAULT,
