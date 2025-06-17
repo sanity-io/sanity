@@ -5,4 +5,4 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 ## [3.93.0](https://github.com/sanity-io/sanity/compare/v3.92.0...v3.93.0) (2025-06-17)
 
-**Note:** Version bump only for package @repo/bundle-manager
+**Note:** Version bump only for package @repo/eslint-config
