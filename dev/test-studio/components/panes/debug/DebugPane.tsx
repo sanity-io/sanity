@@ -1,6 +1,5 @@
 import {ChevronDownIcon, ChevronRightIcon, ControlsIcon, LinkIcon} from '@sanity/icons'
 import {Box, Card, Code, Flex, Stack, Text} from '@sanity/ui'
-import type * as React from 'react'
 import {useMemo, useState} from 'react'
 import {usePaneRouter, type UserComponent} from 'sanity/structure'
 

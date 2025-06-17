@@ -1,4 +1,4 @@
-/* eslint-disable @typescript-eslint/ban-types */
+/* eslint-disable @typescript-eslint/no-unsafe-function-type */
 
 // `WeakMap`s require the first type param to extend `object`
 const bindCache = new WeakMap<object, Map<string, Function>>()

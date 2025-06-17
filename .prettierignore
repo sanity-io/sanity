@@ -24,11 +24,13 @@ CHANGELOG.md
 /examples/*/static
 
 /packages/*/coverage
+/packages/*/dist
 /packages/*/lib
 /packages/*/node_modules
 
 /packages/@repo/*/node_modules
 /packages/@sanity/*/coverage
+/packages/@sanity/*/dist
 /packages/@sanity/*/lib
 /packages/@sanity/*/node_modules
 /packages/@sanity/client/umd

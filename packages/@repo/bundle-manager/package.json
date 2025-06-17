@@ -23,6 +23,7 @@
   ],
   "scripts": {
     "check:types": "tsc",
+    "lint": "eslint .",
     "test": "vitest run"
   },
   "dependencies": {
@@ -31,10 +32,11 @@
     "read-package-up": "^11.0.0"
   },
   "devDependencies": {
+    "@repo/eslint-config": "workspace:*",
     "@repo/test-config": "workspace:*",
     "@repo/tsconfig": "workspace:*",
     "@repo/utils": "workspace:*",
-    "vitest": "^3.2.2"
+    "vitest": "^3.2.3"
   },
   "engines": {
     "node": ">=18"

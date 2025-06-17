@@ -4,6 +4,7 @@
   "globalEnv": [
     "CI",
     "GITHUB_ACTIONS",
+    "CONTINUOUS_INTEGRATION",
     "DEBUG",
     "NODE_ENV",
     "PKG_FORMAT",
@@ -18,7 +19,12 @@
     "SANITY_E2E_DATASET",
     "EXTRACT_SANITY_PROJECT_ID",
     "EXTRACT_SANITY_DATASET",
-    "EXTRACT_SANITY_API_TOKEN"
+    "SANITY_INTERNAL_ENV",
+    "SANITY_ACTIVE_ENV",
+    "SANITY_APP_BASEPATH",
+    "SANITY_CLI_EXTRACT_MANIFEST_ENABLED",
+    "SANITY_CLI_EXTRACT_MANIFEST_LOG_ERRORS",
+    "SANITY_CLI_QUERY_API_VERSION"
   ],
   // Variables that should be passed through but not invalidate the cache
   "globalPassThroughEnv": [
@@ -26,16 +32,40 @@
     "RUNNER_OS",
     "SANITY_BASE_PATH",
     "TZ",
-    // these is for the perf/efps perf suite and should not be cached
+    "SANITY_CLI_TEST_ID_TIMESTAMP",
+    "SANITY_CLI_TEST_ID",
+    "GITHUB_RUN_ID",
+    "GITHUB_RUN_ATTEMPT",
+    "GITHUB_RUN_NUMBER",
+    "GITHUB_RUN_ID",
+    "SANITY_CLI_TEST_ID",
+    "SANITY_STUDIO_FROM_ACTUAL_ENV",
+    "SANITY_STUDIO_FROM_DOTENV",
+    "NO_UPDATE_NOTIFIER",
+    "BROWSER_ARGS",
+    "BROWSER",
+    "TERM",
+    "BUILD_NUMBER",
+    "XDG_CURRENT_DESKTOP",
+    "GDMSESSION",
+    "npm_config_user_agent",
+    "SystemRoot",
+    "SYSTEMROOT",
+    "VISUAL",
+    "EDITOR",
+    // These are for the perf/efps perf suite and should not be cached
     "VITE_PERF_EFPS_PROJECT_ID",
     "VITE_PERF_EFPS_DATASET",
+    // These should be passed through but not be used as cache keys since they are tokens
     "PERF_EFPS_SANITY_TOKEN",
-    "SANITY_E2E_SESSION_TOKEN"
+    "SANITY_E2E_SESSION_TOKEN",
+    "SANITY_CI_CLI_AUTH_TOKEN_STAGING",
+    "EXTRACT_SANITY_API_TOKEN",
+    "SANITY_AUTH_TOKEN"
   ],
   "globalDependencies": [
     ".npmrc",
-    ".eslintrc.cjs",
-    ".prettierrc",
+    ".oxlintrc.json",
     "lerna.json"
   ],
   "tasks": {
@@ -65,9 +95,17 @@
       ],
       "outputLogs": "errors-only"
     },
-    "lint": {
-      "outputLogs": "errors-only"
+    "transit": {
+      "dependsOn": ["^transit"]
     },
-    "//#check:format": {}
+    "lint": {
+      "dependsOn": ["transit"]
+    },
+    "//#check:format": {},
+    "//#check:oxlint": {},
+    "//#chore:format:fix": {},
+    "//#chore:oxlint:fix": {
+      "cache": false
+    }
   }
 }

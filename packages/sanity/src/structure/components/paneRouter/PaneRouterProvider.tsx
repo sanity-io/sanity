@@ -47,7 +47,7 @@ export function PaneRouterProvider(props: {
         nextGroup,
         ...routerPaneGroups.slice(groupIndex + 1),
       ]
-      const nextRouterState = {...(routerState || {}), panes: nextPanes}
+      const nextRouterState = {...routerState, panes: nextPanes}
 
       return nextRouterState
     },
@@ -186,7 +186,7 @@ export function PaneRouterProvider(props: {
           expand(lastPane.element)
         }
         navigate({
-          panes: [...routerPaneGroups.slice(0, groupIndex)],
+          panes: routerPaneGroups.slice(0, groupIndex),
         })
       },
 

@@ -1,6 +1,7 @@
 name: Type check
 on:
   push:
+
 jobs:
   typeCheck:
     timeout-minutes: 15

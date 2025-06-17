@@ -49,8 +49,6 @@ export const hotspotArrayTest = defineType({
       type: 'array',
       of: [{type: 'hotspot'}],
       options: {
-        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-        // @ts-ignore nbd
         imageHotspot: {
           imagePath: 'featureImage',
           descriptionPath: 'details',

@@ -1,0 +1,314 @@
+# [Example Name]
+
+<!-- 
+BEST PRACTICE: Use a clear, descriptive name that explains what the example does
+Example: "Auto-Tag Function" instead of "Tagging Example"
+-->
+
+[Explore all examples](https://github.com/sanity-io/sanity/tree/main/examples)
+
+<!-- 
+BEST PRACTICE: Always include the link back to examples directory for discoverability
+Add demo link if available: [See it in action](demo-url) | 
+-->
+
+## Problem
+
+<!-- 
+BEST PRACTICE: 
+- Write 1-2 clear sentences describing the specific content management challenge
+- Focus on pain points developers/content creators actually face
+- Be specific rather than generic (e.g., "manually tagging is time-consuming" not "content management is hard")
+-->
+
+[Describe the specific content management challenge this example solves]
+
+## Solution
+
+<!-- 
+BEST PRACTICE:
+- Explain the approach in simple terms
+- Mention key technologies used (AI, webhooks, etc.)
+- Keep it concise - save technical details for Implementation section
+-->
+
+[Brief explanation of how this example addresses the problem using Sanity features]
+
+## Benefits
+
+<!-- 
+BEST PRACTICE:
+- Focus on tangible outcomes for content teams or developers
+- Use action-oriented language ("Saves time", "Improves consistency")
+- Include both immediate and long-term benefits
+- Aim for 3-5 clear bullet points
+-->
+
+- [Specific benefit #1 - quantify when possible]
+- [Specific benefit #2 - focus on workflow improvements]
+- [Specific benefit #3 - mention scalability/consistency gains]
+- [Additional benefits as needed]
+
+## Implementation
+
+<!-- 
+BEST PRACTICE:
+- Provide step-by-step instructions
+- Include all necessary code snippets
+- Use proper syntax highlighting for code blocks
+- Test instructions to ensure they work
+- Include both CLI commands and configuration examples
+-->
+
+1. **Initialize the example**
+
+   For a new project:
+
+   ```bash
+   npx sanity blueprints init --example [example-name]
+   ```
+
+   For an existing project:
+
+   ```bash
+   npx sanity blueprints add function --example [example-name]
+   ```
+
+2. **Add configuration to your blueprint**
+
+   ```ts
+   // sanity.blueprint.ts
+   defineDocumentFunction({
+     name: '[function-name]',
+     // Include all necessary configuration options
+   })
+   ```
+
+3. **Install dependencies**
+
+   ```bash
+   npm install
+   ```
+
+4. **[Additional setup steps as needed]**
+
+## Testing the function locally
+
+<!-- 
+BEST PRACTICE:
+- Always include local testing instructions
+- Provide multiple testing approaches (basic, interactive, custom data)
+- Include debugging tips
+- Mention Node.js version requirements
+- Add troubleshooting for common issues
+-->
+
+You can test the [example-name] function locally using the Sanity CLI before deploying:
+
+### 1. Basic Function Test
+
+Test with the included sample document:
+
+```bash
+npx sanity functions test [function-name] --file document.json
+```
+
+### 2. Interactive Development Mode
+
+Start the development server for interactive testing:
+
+```bash
+npx sanity functions dev
+```
+
+### 3. Test with Custom Data
+
+Test with your own document data:
+
+```bash
+npx sanity functions test [function-name] --data '{
+  "_type": "your-type",
+  "_id": "test-id",
+  "field": "test data"
+}'
+```
+
+### 4. Test with Real Document Data
+
+Capture a real document from your dataset:
+
+```bash
+# Export a real document for testing
+npx sanity documents get "document-id" > test-document.json
+
+# Test with the real document
+npx sanity functions test [function-name] --file test-document.json
+```
+
+### 5. Enable Debugging
+
+Add temporary logging to your function:
+
+```typescript
+// Add debugging logs
+console.log('Event data:', JSON.stringify(event.data, null, 2))
+console.log('Result:', result)
+```
+
+### Testing Tips
+
+- **Use Node.js v22.x** locally to match production runtime
+- **Test edge cases** like missing fields or unexpected data
+- **Check function logs** in CLI output for debugging
+- **Test without external API calls** first when applicable
+
+## Requirements
+
+<!-- 
+BEST PRACTICE:
+- List all prerequisites clearly
+- Include both technical and account requirements
+- Mention schema requirements specifically
+- Note any paid features or API access needed
+-->
+
+- A Sanity project
+- [Specific schema requirements - be detailed about field names and types]
+- [Any Sanity feature requirements (Functions, AI, etc.)]
+- [External service requirements if applicable]
+- [Node.js version or other technical requirements]
+
+## Usage Example
+
+<!-- 
+BEST PRACTICE:
+- Show the function in action with a realistic scenario
+- Use numbered steps to show the workflow
+- Include before/after states when relevant
+- Explain the outcome clearly
+-->
+
+When [trigger condition occurs], the function automatically:
+
+1. [Step 1 - what triggers the function]
+2. [Step 2 - what data it processes]
+3. [Step 3 - what actions it takes]
+4. [Step 4 - what the result/outcome is]
+
+This results in [clear description of the end benefit].
+
+## Customization
+
+<!-- 
+BEST PRACTICE:
+- Include this section for complex examples
+- Show common modifications developers might need
+- Provide code examples for customizations
+- Explain configuration options
+-->
+
+[Optional section for examples that have common customization needs]
+
+## Troubleshooting
+
+<!-- 
+BEST PRACTICE:
+- Include this section for examples with common issues
+- Use clear problem/solution format
+- Include error messages developers might see
+- Provide debugging steps
+-->
+
+[Optional section for examples with known issues or complex setup]
+
+### Common Issues
+
+**Error: [Common error message]**
+- Cause: [Why this happens]
+- Solution: [How to fix it]
+
+## Related Examples
+
+<!-- 
+BEST PRACTICE:
+- Link to related examples when relevant
+- Help developers discover complementary functionality
+- Use descriptive link text
+-->
+
+[Optional section linking to related examples]
+
+---
+
+<!-- 
+CODING GUIDELINES FOR FUNCTION EXAMPLES:
+
+When writing function examples, follow these best practices to ensure
+consistency and beginner-friendliness:
+
+## Code Quality Standards
+
+1. **Always use TypeScript** - But keep typing light to maintain readability
+   - Use explicit types for function parameters and return values
+   - Avoid complex generic types or advanced TypeScript features
+   - Focus on clarity over type sophistication
+
+2. **Documentation and Comments**
+   - Use light inline comments for key concepts and non-obvious logic
+   - Avoid over-commenting obvious operations
+   - Include comments explaining Sanity-specific concepts (setIfMissing, projections, etc.)
+
+3. **Beginner-Friendly Patterns**
+   - Avoid complex patterns that might confuse newcomers
+   - Use straightforward control flow (avoid deeply nested logic)
+   - Prefer explicit operations over clever one-liners
+   - Structure code in logical, easy-to-follow steps
+
+4. **Error Handling**
+   - Include error handling for common edge cases
+   - Use try-catch blocks for external API calls and database operations
+   - Provide meaningful error messages in logs
+   - Handle missing fields and unexpected data gracefully
+
+5. **Self-Contained Code**
+   - Make examples work independently without external dependencies
+   - Include all necessary imports and configuration
+   - Avoid requiring complex setup beyond basic Sanity project requirements
+   - Keep external service dependencies minimal and well-documented
+
+6. **Clear Input/Output Examples**
+   - Provide realistic sample data in document.json
+   - Include TypeScript types that show expected input structure
+   - Document what the function returns or modifies
+   - Show before/after states in documentation
+
+7. **Naming and Structure**
+   - Use descriptive variable and function names
+   - Choose names that explain purpose over implementation
+   - Structure code in logical flow from input → processing → output
+   - Group related operations together
+
+8. **Package Configuration**
+   - Include complete package.json with all necessary dependencies
+   - Use stable, well-supported package versions
+   - Include blueprintResourceItem configuration
+   - Add clear example instructions
+
+## Example Structure Checklist
+
+Every function example should include:
+- [ ] index.ts with TypeScript implementation
+- [ ] package.json with dependencies and blueprint config
+- [ ] document.json with realistic test data
+- [ ] README.md following this template
+- [ ] Error handling for common edge cases
+- [ ] Clear inline documentation
+- [ ] Self-contained, runnable code
+
+TEMPLATE MAINTENANCE NOTES:
+- Keep sections in this order for consistency
+- Always test instructions before publishing
+- Include realistic sample data in document.json
+- Ensure all code snippets use proper syntax highlighting
+- Update links when examples are moved or renamed
+-->

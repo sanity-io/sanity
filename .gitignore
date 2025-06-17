@@ -80,6 +80,9 @@ blob-report
 # Developer scratch
 **/scratch
 
+# Examples build folders
+examples/**/.build/
+
 # Temporary files made when running canary releases
 .turbo
 .yalc

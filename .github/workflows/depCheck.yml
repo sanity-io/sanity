@@ -1,6 +1,7 @@
 name: Dependency check
 on:
   push:
+
 jobs:
   depCheck:
     timeout-minutes: 30

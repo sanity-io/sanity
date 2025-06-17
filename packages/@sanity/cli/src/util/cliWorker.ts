@@ -28,7 +28,7 @@ export async function getCliWorkerPath(workerPath: string): Promise<string> {
   const resolvedPath = path.resolve(cliDir, 'lib', 'workers', workerPath)
   try {
     return require.resolve(resolvedPath)
-  } catch (err) {
+  } catch {
     throw new Error(`Unable to resolve path for worker: ${workerPath}`)
   }
 }

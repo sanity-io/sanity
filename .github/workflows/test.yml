@@ -3,9 +3,13 @@ name: Unit tests
 on:
   # Build on pushes branches that have a PR (including drafts)
   pull_request:
+    paths-ignore:
+      - "examples/**"
   # Build on commits pushed to branches without a PR if it's in the allowlist
   push:
     branches: [main]
+    paths-ignore:
+      - "examples/**"
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.head_ref || github.run_id }}

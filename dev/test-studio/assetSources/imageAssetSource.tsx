@@ -4,7 +4,7 @@ import {Box, Button, Dialog, Text} from '@sanity/ui'
 import {useCallback} from 'react'
 
 function ImageAssetSource(props: AssetSourceComponentProps) {
-  const {dialogHeaderTitle, onClose, onSelect, ...restProps} = props
+  const {dialogHeaderTitle, onClose, onSelect} = props
 
   const handleSelect = useCallback(() => {
     onSelect([

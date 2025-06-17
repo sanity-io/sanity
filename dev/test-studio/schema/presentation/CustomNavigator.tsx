@@ -1,4 +1,3 @@
-/* eslint-disable react/jsx-no-bind */
 import {AddDocumentIcon} from '@sanity/icons'
 import {Button, Card, Flex, Stack, Text} from '@sanity/ui'
 import {useActiveWorkspace} from 'sanity'

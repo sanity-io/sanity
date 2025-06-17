@@ -1,4 +1,3 @@
-/* eslint-disable complexity */
 import {type MutationEvent} from '@sanity/client'
 import {Box, Text} from '@sanity/ui'
 import {Translate, useTranslation} from 'sanity'

@@ -163,8 +163,8 @@ export function createReleaseOperationsStore(options: {
     }
 
     const versionDocument = prepareVersionReferences({
-      ...(document || {}),
-      ...(initialValue || {}),
+      ...document,
+      ...initialValue,
       _id: getVersionId(documentId, releaseId),
     }) as IdentifiedSanityDocumentStub
 

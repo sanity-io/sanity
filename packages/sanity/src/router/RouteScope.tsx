@@ -133,7 +133,8 @@ export const RouteScope = function RouteScope(props: RouteScopeProps): React.JSX
 
   const childRouter: RouterContextValue = useMemo(() => {
     const parentState = parentRouter.state
-    const childState = {...(parentState[scope] || {})} as RouterState
+    const childState =
+      typeof parentState[scope] === 'object' ? ({...parentState[scope]} as RouterState) : {}
     if (__unsafe_disableScopedSearchParams) {
       childState._searchParams = parentState._searchParams
     }

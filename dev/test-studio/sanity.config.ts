@@ -50,6 +50,7 @@ import {autoCloseBrackets} from './plugins/input/auto-close-brackets-plugin'
 import {wave} from './plugins/input/wave-plugin'
 import {languageFilter} from './plugins/language-filter'
 import {routerDebugTool} from './plugins/router-debug'
+// eslint-disable-next-line import/extensions
 import {theme as tailwindTheme} from './sanity.theme.mjs'
 import {createSchemaTypes} from './schema'
 import {StegaDebugger} from './schema/debug/components/DebugStega'
@@ -206,9 +207,7 @@ const defaultWorkspace = defineConfig({
   plugins: [sharedSettings({projectId: 'ppsg7ml5'})],
 
   onUncaughtError: (error, errorInfo) => {
-    // eslint-disable-next-line no-console
     console.log(error)
-    // eslint-disable-next-line no-console
     console.log(errorInfo)
   },
   basePath: '/test',
@@ -351,9 +350,7 @@ export default defineConfig([
     ],
     basePath: '/custom-components',
     onUncaughtError: (error, errorInfo) => {
-      // eslint-disable-next-line no-console
       console.log(error)
-      // eslint-disable-next-line no-console
       console.log(errorInfo)
     },
     form: {

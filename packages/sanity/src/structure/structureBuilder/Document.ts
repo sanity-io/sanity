@@ -167,7 +167,7 @@ export class DocumentBuilder implements Serializable<DocumentNode> {
     return this.clone({
       id: paneId,
       options: {
-        ...(this.spec.options || {}),
+        ...this.spec.options,
         id: documentId,
       },
     })
@@ -187,7 +187,7 @@ export class DocumentBuilder implements Serializable<DocumentNode> {
   schemaType(documentType: SchemaType | string): DocumentBuilder {
     return this.clone({
       options: {
-        ...(this.spec.options || {}),
+        ...this.spec.options,
         type: typeof documentType === 'string' ? documentType : documentType.name,
       },
     })
@@ -208,7 +208,7 @@ export class DocumentBuilder implements Serializable<DocumentNode> {
   initialValueTemplate(templateId: string, parameters?: Record<string, unknown>): DocumentBuilder {
     return this.clone({
       options: {
-        ...(this.spec.options || {}),
+        ...this.spec.options,
         template: templateId,
         templateParameters: parameters,
       },
@@ -319,7 +319,7 @@ export class DocumentBuilder implements Serializable<DocumentNode> {
    */
   clone(withSpec: PartialDocumentNode = {}): DocumentBuilder {
     const builder = new DocumentBuilder(this._context)
-    const options = {...(this.spec.options || {}), ...(withSpec.options || {})}
+    const options = {...this.spec.options, ...withSpec.options}
     builder.spec = {...this.spec, ...withSpec, options}
     return builder
   }

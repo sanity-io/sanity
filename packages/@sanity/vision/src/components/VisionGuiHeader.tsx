@@ -86,7 +86,6 @@ export function VisionGuiHeader({
       el.select()
       document.execCommand('copy')
     } catch (err) {
-      // eslint-disable-next-line no-console
       console.error('Unable to copy to clipboard :(')
     }
   }, [])

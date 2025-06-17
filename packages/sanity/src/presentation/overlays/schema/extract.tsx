@@ -182,7 +182,7 @@ function createReferenceNodeDefintion(
 function gatherReferenceNames(type: ReferenceSchemaType): string[] {
   const allReferences = gatherReferenceTypes(type)
   // Remove duplicates
-  return [...new Set([...allReferences.map((ref) => ref.name)])]
+  return [...new Set(allReferences.map((ref) => ref.name))]
 }
 
 function gatherReferenceTypes(type: ReferenceSchemaType): ObjectSchemaType[] {

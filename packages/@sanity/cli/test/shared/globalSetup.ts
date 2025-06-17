@@ -1,4 +1,3 @@
-/* eslint-disable no-process-exit */
 import {execFileSync, spawnSync} from 'node:child_process'
 import {copyFile, mkdir, readFile, rename, rm, stat, writeFile} from 'node:fs/promises'
 import {hostname} from 'node:os'
@@ -31,7 +30,7 @@ import {
   testIdPath,
 } from './environment'
 
-const SYMLINK_SCRIPT = path.resolve(__dirname, '../../../../../scripts/symlinkDependencies.js')
+const SYMLINK_SCRIPT = path.resolve(__dirname, '../../../../../scripts/symlinkDependencies.cjs')
 
 export async function setup(): Promise<void> {
   // Write a file with the test id, so it can be shared across workers
@@ -39,7 +38,6 @@ export async function setup(): Promise<void> {
   const testId = `${localHost}-${process.ppid || process.pid}`
 
   // Set Staging Env Var
-  // eslint-disable-next-line no-process-env
   process.env.SANITY_INTERNAL_ENV = 'staging'
 
   await mkdir(baseTestPath, {recursive: true})
@@ -152,7 +150,7 @@ async function prepareDatasets() {
 
     await Promise.all(
       datasets.map((ds) => {
-        // eslint-disable-next-line no-console
+        // oxlint-disable-next-line no-console
         console.log(`Creating dataset ${ds}...`)
         return client.datasets.create(ds, {aclMode: 'public'}).catch((err) => {
           err.message = `Failed to create dataset "${ds}":\n${err.message}`

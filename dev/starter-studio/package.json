@@ -8,10 +8,11 @@
     "build": "../.bin/sanity build",
     "clean": "rimraf .sanity dist",
     "dev": "../.bin/sanity dev --port 3337",
-    "lint": "eslint --cache .",
+    "lint": "eslint .",
     "start": "../.bin/sanity start --port 3337"
   },
   "dependencies": {
+    "@repo/eslint-config": "workspace:*",
     "babel-plugin-react-compiler": "19.1.0-rc.2",
     "react": "catalog:react18",
     "react-compiler-runtime": "19.1.0-rc.2",

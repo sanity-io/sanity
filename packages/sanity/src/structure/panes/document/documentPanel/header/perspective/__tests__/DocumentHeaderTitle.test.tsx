@@ -79,8 +79,8 @@ describe('DocumentHeaderTitle', () => {
   beforeEach(() => {
     mockUseDocumentPane.mockReturnValue(defaultProps as unknown as DocumentPaneContextValue)
     mockUseValuePreview.mockReturnValue({...defaultValue, error: undefined, value: undefined})
-    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-    // @ts-ignore
+    // oxlint-disable-next-line ban-ts-comment
+    // @ts-expect-error
     mockUseRouter.mockReturnValue({stickyParams: {}, state: {}, navigate: vi.fn()})
     mockUseDocumentVersions.mockReturnValue({data: [], loading: false, error: undefined})
     mockUseActiveReleases.mockReturnValue({

@@ -36,7 +36,6 @@ export {defineArrayMember, defineField, defineType, typed} from './define'
  *
  * @beta
  */
-// eslint-disable-next-line @typescript-eslint/ban-types
 export type AutocompleteString = string & {}
 
 /**
@@ -132,9 +131,9 @@ export interface ConditionalPropertyCallbackContext {
   document: SanityDocument | undefined
   // `any` should be fine here. leaving this as `unknown` would cause more
   // friction for end users
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  // oxlint-disable-next-line no-explicit-any
   parent: any
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  // oxlint-disable-next-line no-explicit-any
   value: any
   currentUser: Omit<CurrentUser, 'role'> | null
 }

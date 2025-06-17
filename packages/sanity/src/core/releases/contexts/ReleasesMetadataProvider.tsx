@@ -41,7 +41,7 @@ const ReleasesMetadataProviderInner = ({children}: {children: React.ReactNode}) 
       setReleasesMetadata((prevReleaseMetadata) => {
         if (!observedResult.data) return prevReleaseMetadata
 
-        return {...(prevReleaseMetadata || {}), ...observedResult.data}
+        return {...prevReleaseMetadata, ...observedResult.data}
       }),
     [observedResult.data],
   )

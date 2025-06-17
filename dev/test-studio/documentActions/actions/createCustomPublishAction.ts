@@ -1,4 +1,3 @@
-/* eslint-disable react-hooks/rules-of-hooks */
 import {type DocumentActionComponent, type DocumentActionProps, useDocumentOperation} from 'sanity'
 
 export function createCustomPublishAction(

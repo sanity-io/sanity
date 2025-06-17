@@ -19,10 +19,10 @@ export const routerDebugTool = definePlugin<RouterDebugConfig | void>((options) 
         title: title || 'Router debug',
         icon: icon || PinIcon,
         component: RouterDebug,
-        canHandleIntent: (intent, params) => {
+        canHandleIntent: (intent) => {
           return intent === 'router-debug-please'
         },
-        getIntentState: (intent, params) => {
+        getIntentState: (_intent, params) => {
           return {
             section: 'from-intent',
             _searchParams: [

@@ -61,7 +61,7 @@ export class DividerBuilder implements Serializable<Divider> {
    */
   clone(withSpec?: Partial<Divider>): DividerBuilder {
     const builder = new DividerBuilder()
-    builder.spec = {...this.spec, ...(withSpec || {})}
+    builder.spec = {...this.spec, ...withSpec}
     return builder
   }
 }

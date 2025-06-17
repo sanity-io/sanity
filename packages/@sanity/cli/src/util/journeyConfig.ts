@@ -154,7 +154,7 @@ export async function fetchJourneyConfig(
       schemaUrl: response.schemaUrl,
       isFirstProject: true,
     }
-  } catch (err) {
+  } catch {
     throw new Error(`Failed to fetch remote schema config: ${projectId}`)
   }
 }
@@ -169,7 +169,7 @@ async function fetchJourneySchema(schemaUrl: string): Promise<DocumentOrObject[]
   try {
     const response = await import(schemaUrl)
     return response.default
-  } catch (err) {
+  } catch {
     throw new Error(`Failed to fetch remote schema: ${schemaUrl}`)
   }
 }

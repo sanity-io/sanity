@@ -86,8 +86,8 @@ export async function bootstrapLocalTemplate(
   const dependencyVersions = await resolveLatestVersions({
     ...(isAppTemplate ? {} : studioDependencies.dependencies),
     ...(isAppTemplate ? {} : studioDependencies.devDependencies),
-    ...(template.dependencies || {}),
-    ...(template.devDependencies || {}),
+    ...template.dependencies,
+    ...template.devDependencies,
   })
   spinner.succeed()
 

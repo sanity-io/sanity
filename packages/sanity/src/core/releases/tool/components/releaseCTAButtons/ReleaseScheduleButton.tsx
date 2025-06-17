@@ -94,9 +94,8 @@ export const ReleaseScheduleButton = ({
         metadata: {
           ...release.metadata,
           releaseType: 'scheduled' as const,
-          ...{
-            intendedPublishAt: publishAt.toISOString(),
-          },
+
+          intendedPublishAt: publishAt.toISOString(),
         },
       }
 

@@ -1,4 +1,4 @@
-/* eslint-disable no-bitwise,callback-return */
+/* eslint-disable no-bitwise */
 import {BufferList} from './BufferList'
 import * as headers from './headers'
 import {type TarHeader} from './headers'

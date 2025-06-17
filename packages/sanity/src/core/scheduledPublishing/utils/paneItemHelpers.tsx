@@ -63,9 +63,9 @@ export function getPreviewStateObservable(
 
   return combineLatest([draft$, published$]).pipe(
     map(([draft, published]: any) => ({
-      draft: draft.snapshot ? {title, ...(draft.snapshot || {})} : null,
+      draft: draft.snapshot ? {title, ...draft.snapshot} : null,
       isLoading: false,
-      published: published.snapshot ? {title, ...(published.snapshot || {})} : null,
+      published: published.snapshot ? {title, ...published.snapshot} : null,
     })),
     startWith({draft: null, isLoading: true, published: null}),
   )

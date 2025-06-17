@@ -1,6 +1,5 @@
 import {TrashIcon} from '@sanity/icons'
 import {useCallback, useState} from 'react'
-import {useTranslation} from 'react-i18next'
 
 import {InsufficientPermissionsMessage} from '../../../components/InsufficientPermissionsMessage'
 import {
@@ -8,6 +7,7 @@ import {
   type DocumentActionDescription,
   type DocumentActionProps,
 } from '../../../config/document/actions'
+import {useTranslation} from '../../../i18n'
 import {usePerspective} from '../../../perspective/usePerspective'
 import {useDocumentPairPermissions} from '../../../store/_legacy/grants/documentPairPermissions'
 import {useCurrentUser} from '../../../store/user/hooks'

@@ -787,7 +787,7 @@ async function collateObjectValue({
       if (isPortableTextSpan(child) && child.marks) {
         return {
           ...child,
-          marks: [...child.marks.map((markKey: string) => markDefKeyMap[markKey] || markKey)],
+          marks: child.marks.map((markKey: string) => markDefKeyMap[markKey] || markKey),
         }
       }
       return child
@@ -839,7 +839,7 @@ async function collateArrayValue({
   targetValue: unknown
   errors: TransferValueError[]
 }> {
-  let targetValue: unknown[] | undefined = undefined
+  let targetValue: unknown[] | undefined
 
   const genericValue = sourceValue as unknown[]
 
@@ -1038,9 +1038,9 @@ function collatePrimitiveValue({
 }
 
 function cleanObjectKeys(obj: TypedObject): TypedObject {
-  const disallowedKeys = ['_id', '_createdAt', '_updatedAt', '_rev']
+  const disallowedKeys = new Set(['_id', '_createdAt', '_updatedAt', '_rev'])
   return Object.keys(obj).reduce((acc, key) => {
-    if (disallowedKeys.includes(key)) {
+    if (disallowedKeys.has(key)) {
       return acc
     }
     return {...acc, [key]: obj[key]}

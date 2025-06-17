@@ -18,6 +18,7 @@
     "styled-components",
     "sanity-plugin-hotspot-array",
     "react-icons",
-    "react-barcode"
+    "react-barcode",
+    "eslint"
   ]
 }

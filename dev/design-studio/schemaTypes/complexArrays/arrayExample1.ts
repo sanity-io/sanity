@@ -1,5 +1,5 @@
 function generateOf(num: number) {
-  return Array.from(new Array(num)).map((_, idx) => {
+  return Array.from({length: num}).map((_, idx) => {
     return {
       type: 'object',
       name: `array${idx}`,

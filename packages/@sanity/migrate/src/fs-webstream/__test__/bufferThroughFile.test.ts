@@ -1,4 +1,3 @@
-/* eslint-disable no-constant-condition */
 import {stat} from 'node:fs/promises'
 import path from 'node:path'
 
@@ -24,6 +23,7 @@ describe('using primary stream', () => {
       for (let n = 0; n < 100; n++) {
         yield encoder.encode(`{"foo": ${n},`)
         // simulate a bit of delay in the producer (which is often the case)
+        // oxlint-disable-next-line no-await-in-loop
         await sleep(1)
         yield encoder.encode(`"bar": ${n}, "baz": ${n}}`)
         yield encoder.encode('\n')

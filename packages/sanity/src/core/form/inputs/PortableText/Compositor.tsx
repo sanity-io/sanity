@@ -102,7 +102,7 @@ export function Compositor(props: Omit<InputProps, 'schemaType' | 'arrayFunction
       ...hotkeys,
       custom: {
         'mod+enter': onToggleFullscreen,
-        ...(hotkeys?.custom || {}),
+        ...hotkeys?.custom,
       },
     }),
 
