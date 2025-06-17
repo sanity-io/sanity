@@ -54,16 +54,30 @@ This Sanity Function automatically generates 3 relevant tags for blog posts by a
    npm install
    ```
 
+4. **Make sure you have a schema deployed**
+
+From a Studio project, run:
+
+```bash
+npx sanity schema deploy
+```
+
 ## Testing the function locally
 
-You can test the auto-tag function locally using the Sanity CLI before deploying it to production:
+You can test the auto-tag function locally using the Sanity CLI before deploying it to production.
 
 ### 1. Basic Function Test
+
+Upload the test document to your dataset ([requires your CLI to be configured](https://www.sanity.io/docs/apis-and-sdks/cli#k4baf8325e0e3)):
+
+```bash
+npx sanity documents create functions/auto-tag/document.json
+```
 
 Test the function with the included sample document:
 
 ```bash
-npx sanity functions test auto-tag --file document.json
+npx sanity functions test auto-tag --file functions/auto-tag/document.json
 ```
 
 ### 2. Interactive Development Mode
