@@ -112,7 +112,7 @@
     "@lerna-lite/publish": "^4.4.1",
     "@lerna-lite/run": "^4.4.1",
     "@lerna-lite/version": "^4.4.1",
-    "@playwright/test": "1.51.1",
+    "@playwright/test": "1.53.0",
     "@repo/bundle-manager": "workspace:*",
     "@repo/dev-aliases": "workspace:*",
     "@repo/eslint-config": "workspace:*",

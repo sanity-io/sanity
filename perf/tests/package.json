@@ -15,7 +15,7 @@
     "studio:dev": "cd perf/studio && SANITY_STUDIO_DATASET=dev pnpm dev"
   },
   "dependencies": {
-    "@playwright/test": "1.51.1",
+    "@playwright/test": "1.53.0",
     "@sanity/client": "^7.6.0",
     "@sanity/uuid": "^3.0.1",
     "dotenv": "^16.0.3",
