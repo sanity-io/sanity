@@ -123,7 +123,7 @@
     "@sanity/client": "^7.6.0",
     "@sanity/mutate": "^0.12.4",
     "@sanity/pkg-utils": "6.13.4",
-    "@sanity/prettier-config": "^1.0.3",
+    "@sanity/prettier-config": "^1.0.4",
     "@sanity/tsdoc": "1.0.169",
     "@sanity/ui": "^2.15.18",
     "@sanity/uuid": "^3.0.2",
