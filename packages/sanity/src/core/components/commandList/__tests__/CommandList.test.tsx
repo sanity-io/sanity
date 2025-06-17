@@ -1,10 +1,10 @@
-import {afterEach} from 'node:test'
+// oxlint-disable no-extend-native
 
 import {studioTheme, ThemeProvider} from '@sanity/ui'
 import {render, screen, waitFor} from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import {useCallback} from 'react'
-import {beforeEach, describe, expect, it, vi} from 'vitest'
+import {beforeEach, describe, expect, it} from 'vitest'
 
 import {CommandList} from '../CommandList'
 
@@ -63,35 +63,40 @@ function TestComponent(props: TestComponentProps) {
 }
 
 describe('core/components: CommandList', () => {
-  const originalGetBoundingClientRect = Element.prototype.getBoundingClientRect
-
-  const getDOMRect = (width: number, height: number) => ({
-    width,
-    height,
-    top: 0,
-    left: 0,
-    bottom: 0,
-    right: 0,
-    x: 0,
-    y: 0,
-    toJSON: () => {},
-  })
-
   beforeEach(() => {
+    const originalOffsetHeight = Object.getOwnPropertyDescriptor(
+      HTMLElement.prototype,
+      'offsetHeight',
+    )
+    const originalOffsetWidth = Object.getOwnPropertyDescriptor(
+      HTMLElement.prototype,
+      'offsetWidth',
+    )
     // Virtual list will return an empty list of items unless we have some size,
-    // so we need to mock getBoundingClientRect to return a size for the list.
+    // so we need to mock offsetHeight and offsetWidth to return a size for the list.
     // Not pretty, but it's what they recommend for testing outside of browsers:
     // https://github.com/TanStack/virtual/issues/641
-    Element.prototype.getBoundingClientRect = vi.fn(function (this: Element) {
-      if (this.getAttribute('data-testid') === COMMAND_LIST_TEST_ID) {
-        return getDOMRect(350, 800)
-      }
-      return getDOMRect(0, 0)
+    Object.defineProperty(HTMLElement.prototype, 'offsetHeight', {
+      configurable: true,
+      get() {
+        return 800
+      },
     })
-  })
+    Object.defineProperty(HTMLElement.prototype, 'offsetWidth', {
+      configurable: true,
+      get() {
+        return 800
+      },
+    })
 
-  afterEach(() => {
-    Element.prototype.getBoundingClientRect = originalGetBoundingClientRect
+    return () => {
+      if (originalOffsetHeight) {
+        Object.defineProperty(HTMLElement.prototype, 'offsetHeight', originalOffsetHeight)
+      }
+      if (originalOffsetWidth) {
+        Object.defineProperty(HTMLElement.prototype, 'offsetWidth', originalOffsetWidth)
+      }
+    }
   })
 
   it('should change active item on pressing arrow keys', async () => {
