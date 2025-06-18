@@ -40,7 +40,7 @@ export function BooleanInput(props: BooleanInputProps) {
   const tone: CardTone | undefined = readOnly ? 'transparent' : undefined
 
   const input = (
-    <Box padding={3}>
+    <Box padding={3} style={{paddingTop: '0.85rem'}}>
       <LayoutSpecificInput
         label={schemaType.title}
         {...elementProps}
