@@ -495,10 +495,10 @@ importers:
     dependencies:
       '@portabletext/block-tools':
         specifier: ^1.1.30
-        version: 1.1.30(@sanity/types@packages+@sanity+types)(@types/react@19.1.8)
+        version: 1.1.31(@sanity/types@packages+@sanity+types)(@types/react@19.1.8)
       '@portabletext/editor':
-        specifier: ^1.53.0
-        version: 1.53.0(@sanity/schema@packages+@sanity+schema)(@sanity/types@packages+@sanity+types)(@types/react@19.1.8)(react-dom@19.1.0(react@19.1.0))(react@19.1.0)(rxjs@7.8.2)
+        specifier: ^1.53.1
+        version: 1.53.1(@sanity/schema@packages+@sanity+schema)(@sanity/types@packages+@sanity+types)(@types/react@19.1.8)(react-dom@19.1.0(react@19.1.0))(react@19.1.0)(rxjs@7.8.2)
       '@portabletext/react':
         specifier: ^3.2.1
         version: 3.2.1(react@19.1.0)
@@ -1536,10 +1536,10 @@ importers:
         version: 3.4.0
       '@portabletext/block-tools':
         specifier: ^1.1.30
-        version: 1.1.30(@sanity/types@packages+@sanity+types)(@types/react@19.1.8)
+        version: 1.1.31(@sanity/types@packages+@sanity+types)(@types/react@19.1.8)
       '@portabletext/editor':
-        specifier: ^1.53.0
-        version: 1.53.0(@sanity/schema@packages+@sanity+schema)(@sanity/types@packages+@sanity+types)(@types/react@19.1.8)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(rxjs@7.8.2)
+        specifier: ^1.53.1
+        version: 1.53.1(@sanity/schema@packages+@sanity+schema)(@sanity/types@packages+@sanity+types)(@types/react@19.1.8)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(rxjs@7.8.2)
       '@portabletext/react':
         specifier: ^3.2.1
         version: 3.2.1(react@18.3.1)
@@ -4316,18 +4316,18 @@ packages:
     resolution: {integrity: sha512-c83qWb22rNRuB0UaVCI0uRPNRr8Z0FWnEIvT47jiHAmOIUHbBOg5XvV7pM5x+rKn9HRpjxquDbXYSXr3fAKFcw==}
     engines: {node: '>=12'}
 
-  '@portabletext/block-tools@1.1.30':
-    resolution: {integrity: sha512-vYOyioB6b2EMriVfgt+eOrRIdrL4a7DgYestANGBQXaGgqdNnGOxgd6Ije3AxxCrosA2qGjZ6KuKkJzLZHb1YA==}
+  '@portabletext/block-tools@1.1.31':
+    resolution: {integrity: sha512-s6K+u9QVQ1nD3x410LAPWvK93Gp00MR/471QfJK4l27Sn3YvfC1XerYTOFkQtds/sFTMggCmy6DRsz2dC7TlbQ==}
     peerDependencies:
-      '@sanity/types': ^3.92.0
+      '@sanity/types': ^3.93.0
       '@types/react': 18 || 19
 
-  '@portabletext/editor@1.53.0':
-    resolution: {integrity: sha512-72D1TZV4Uqu/21JC/M9lBSiUfzmg8xN1ijnrLlPny6g+ljm/UVjk3xVcgufCbRy8P8/ZE5mSVcbHgFx/ddc01w==}
+  '@portabletext/editor@1.53.1':
+    resolution: {integrity: sha512-HL2IeqwfyjHZ9D3BtHsqkGpmOlOMLBcG+/fCGR8ySc9M1ky5uCP0ZGbQNldFCxF+UNTog9WhrzowQDcGn4Lg6Q==}
     engines: {node: '>=18'}
     peerDependencies:
-      '@sanity/schema': ^3.92.0
-      '@sanity/types': ^3.92.0
+      '@sanity/schema': ^3.93.0
+      '@sanity/types': ^3.93.0
       react: ^16.9 || ^17 || ^18 || ^19
       rxjs: ^7.8.2
 
@@ -10171,11 +10171,6 @@ packages:
     peerDependencies:
       react: '*'
 
-  react-compiler-runtime@19.1.0-rc.1:
-    resolution: {integrity: sha512-wCt6g+cRh8g32QT18/9blfQHywGjYu+4FlEc3CW1mx3pPxYzZZl1y+VtqxRgnKKBCFLIGUYxog4j4rs5YS86hw==}
-    peerDependencies:
-      react: ^17.0.0 || ^18.0.0 || ^19.0.0 || ^0.0.0-experimental
-
   react-compiler-runtime@19.1.0-rc.2:
     resolution: {integrity: sha512-852AwyIsbWJ5o1LkQVAZsVK3iLjMxOfKZuxqeGd/RfD+j1GqHb6j3DSHLtpu4HhFbQHsP2DzxjJyKR6luv4D8w==}
     peerDependencies:
@@ -14748,16 +14743,16 @@ snapshots:
       '@pnpm/network.ca-file': 1.0.2
       config-chain: 1.1.13
 
-  '@portabletext/block-tools@1.1.30(@sanity/types@packages+@sanity+types)(@types/react@19.1.8)':
+  '@portabletext/block-tools@1.1.31(@sanity/types@packages+@sanity+types)(@types/react@19.1.8)':
     dependencies:
       '@sanity/types': link:packages/@sanity/types
       '@types/react': 19.1.8
       get-random-values-esm: 1.0.2
       lodash: 4.17.21
 
-  '@portabletext/editor@1.53.0(@sanity/schema@packages+@sanity+schema)(@sanity/types@packages+@sanity+types)(@types/react@19.1.8)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(rxjs@7.8.2)':
+  '@portabletext/editor@1.53.1(@sanity/schema@packages+@sanity+schema)(@sanity/types@packages+@sanity+types)(@types/react@19.1.8)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(rxjs@7.8.2)':
     dependencies:
-      '@portabletext/block-tools': 1.1.30(@sanity/types@packages+@sanity+types)(@types/react@19.1.8)
+      '@portabletext/block-tools': 1.1.31(@sanity/types@packages+@sanity+types)(@types/react@19.1.8)
       '@portabletext/patches': 1.1.4
       '@portabletext/to-html': 2.0.14
       '@sanity/schema': link:packages/@sanity/schema
@@ -14769,7 +14764,7 @@ snapshots:
       lodash: 4.17.21
       lodash.startcase: 4.4.0
       react: 18.3.1
-      react-compiler-runtime: 19.1.0-rc.1(react@18.3.1)
+      react-compiler-runtime: 19.1.0-rc.2(react@18.3.1)
       rxjs: 7.8.2
       slate: 0.115.1
       slate-dom: 0.114.0(slate@0.115.1)
@@ -14781,9 +14776,9 @@ snapshots:
       - react-dom
       - supports-color
 
-  '@portabletext/editor@1.53.0(@sanity/schema@packages+@sanity+schema)(@sanity/types@packages+@sanity+types)(@types/react@19.1.8)(react-dom@19.1.0(react@19.1.0))(react@19.1.0)(rxjs@7.8.2)':
+  '@portabletext/editor@1.53.1(@sanity/schema@packages+@sanity+schema)(@sanity/types@packages+@sanity+types)(@types/react@19.1.8)(react-dom@19.1.0(react@19.1.0))(react@19.1.0)(rxjs@7.8.2)':
     dependencies:
-      '@portabletext/block-tools': 1.1.30(@sanity/types@packages+@sanity+types)(@types/react@19.1.8)
+      '@portabletext/block-tools': 1.1.31(@sanity/types@packages+@sanity+types)(@types/react@19.1.8)
       '@portabletext/patches': 1.1.4
       '@portabletext/to-html': 2.0.14
       '@sanity/schema': link:packages/@sanity/schema
@@ -14795,7 +14790,7 @@ snapshots:
       lodash: 4.17.21
       lodash.startcase: 4.4.0
       react: 19.1.0
-      react-compiler-runtime: 19.1.0-rc.1(react@19.1.0)
+      react-compiler-runtime: 19.1.0-rc.2(react@19.1.0)
       rxjs: 7.8.2
       slate: 0.115.1
       slate-dom: 0.114.0(slate@0.115.1)
@@ -21901,14 +21896,6 @@ snapshots:
       react: 19.1.0
       reactcss: 1.2.3(react@19.1.0)
       tinycolor2: 1.6.0
-
-  react-compiler-runtime@19.1.0-rc.1(react@18.3.1):
-    dependencies:
-      react: 18.3.1
-
-  react-compiler-runtime@19.1.0-rc.1(react@19.1.0):
-    dependencies:
-      react: 19.1.0
 
   react-compiler-runtime@19.1.0-rc.2(react@18.3.1):
     dependencies:
