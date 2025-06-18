@@ -68,7 +68,7 @@ export interface AssetMenuAction {
   type: 'delete' | 'showUsage'
 }
 
-export type AssetType = 'image' | 'file'
+export type AssetType = 'image' | 'file' | 'video'
 
 /**
  * The type that is returned from the Media Library for an selected asset item

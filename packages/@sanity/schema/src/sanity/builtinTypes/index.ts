@@ -9,6 +9,8 @@ import imageMetadata from './imageMetadata'
 import imagePalette from './imagePalette'
 import imagePaletteSwatch from './imagePaletteSwatch'
 import slug from './slug'
+import videoAsset from './videoAsset'
+import videoMetadata from './videoMetadata'
 
 export const builtinTypes = [
   assetSourceData,
@@ -17,9 +19,11 @@ export const builtinTypes = [
   // legacyRichDate,
   imageAsset,
   fileAsset,
+  videoAsset,
   imageCrop,
   imageHotspot,
   imageMetadata,
+  videoMetadata,
   imageDimensions,
   imagePalette,
   imagePaletteSwatch,
