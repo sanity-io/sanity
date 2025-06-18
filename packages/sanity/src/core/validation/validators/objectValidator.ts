@@ -77,7 +77,6 @@ export const objectValidators: Validators = {
       // only show this warning in the studio
       if (context.environment !== 'studio') return
 
-      // eslint-disable-next-line no-console
       console.warn(
         `Media validator at ${pathToString(
           context.path,
@@ -127,7 +126,13 @@ export const objectValidators: Validators = {
         context,
       )
     } catch (err) {
-      console.error(err)
+      const error = new Error(
+        `Media validator at ${pathToString(
+          context.path,
+        )} failed with an error: ${err instanceof Error ? err.message : String(err)}`,
+      )
+      error.cause = err
+      throw error
     } finally {
       clearTimeout(slowTimer)
     }
