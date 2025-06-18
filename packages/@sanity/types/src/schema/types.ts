@@ -18,6 +18,7 @@ import {
   type SlugOptions,
   type StringOptions,
   type TextOptions,
+  type VideoOptions,
 } from './definition/type'
 import {type ArrayOptions} from './definition/type/array'
 import {type PreviewConfig} from './preview'
@@ -505,4 +506,9 @@ export interface FileSchemaType extends Omit<ObjectSchemaType, 'options'> {
 /** @public */
 export interface ImageSchemaType extends Omit<ObjectSchemaType, 'options'> {
   options?: ImageOptions
+}
+
+/** @public */
+export interface VideoSchemaType extends Omit<ObjectSchemaType, 'options'> {
+  options?: VideoOptions
 }

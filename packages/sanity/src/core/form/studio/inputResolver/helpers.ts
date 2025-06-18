@@ -5,7 +5,7 @@ export function getOption(type: SchemaType, optionName: string) {
   return get(type.options, optionName)
 }
 
-const PSEUDO_OBJECTS = ['array', 'file', 'image', 'reference', 'slug']
+const PSEUDO_OBJECTS = ['array', 'file', 'image', 'reference', 'slug', 'video']
 const HIDDEN_FIELDS = ['asset', 'crop', 'hotspot', '_ref', '_weak', 'media']
 const NO_LEVEL_LAYOUTS = ['tags']
 const NO_LEVEL_TYPES = ['slug']
