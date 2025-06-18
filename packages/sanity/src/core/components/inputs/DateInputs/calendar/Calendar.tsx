@@ -14,6 +14,7 @@ import {
   useImperativeHandle,
   useMemo,
   useRef,
+  useState,
 } from 'react'
 
 import {Button} from '../../../../../ui-components/button/Button'
@@ -100,6 +101,16 @@ export const Calendar = forwardRef(function Calendar(
 
   const {DialogTimeZone, dialogProps, dialogTimeZoneShow} = useDialogTimeZone(timeZoneScope)
 
+  const [savedSelectedDate, setSavedSelectedDate] = useState<Date>(selectedDate)
+
+  useEffect(() => {
+    if (timeZone) {
+      const utcDate = zonedTimeToUtc(selectedDate, timeZone.name)
+      const zonedDate = utcToZonedTime(utcDate, timeZone.name)
+      setSavedSelectedDate(zonedDate)
+    }
+  }, [selectedDate, timeZone])
+
   const setFocusedDate = useCallback(
     (date: Date) => onFocusedDateChange(date),
     [onFocusedDateChange],
@@ -127,23 +138,36 @@ export const Calendar = forwardRef(function Calendar(
 
   const handleDateChange = useCallback(
     (date: Date) => {
-      onSelect(setMinutes(setHours(date, selectedDate.getHours()), selectedDate.getMinutes()))
+      const newDate = setMinutes(
+        setHours(date, savedSelectedDate.getHours()),
+        savedSelectedDate.getMinutes(),
+      )
+      if (!timeZone) {
+        onSelect(newDate)
+        return
+      }
+
+      const utcDate = zonedTimeToUtc(newDate, timeZone.name)
+      const zonedDate = utcToZonedTime(utcDate, timeZone.name)
+
+      onSelect(zonedDate)
+      return
     },
-    [onSelect, selectedDate],
+    [onSelect, savedSelectedDate, timeZone],
   )
 
   const handleTimeChange = useCallback(
     (hours: number, mins: number) => {
       if (!timeZone) {
-        onSelect(setHours(setMinutes(selectedDate, mins), hours))
+        onSelect(setHours(setMinutes(savedSelectedDate, mins), hours))
         return
       }
-      const zonedDate = utcToZonedTime(selectedDate, timeZone.name)
+      const zonedDate = utcToZonedTime(savedSelectedDate, timeZone.name)
       const newZonedDate = setHours(setMinutes(zonedDate, mins), hours)
       const utcDate = zonedTimeToUtc(newZonedDate, timeZone.name)
       onSelect(utcDate)
     },
-    [onSelect, selectedDate, timeZone],
+    [onSelect, savedSelectedDate, timeZone],
   )
 
   const handleTimeChangeInputChange = useCallback(
@@ -329,7 +353,7 @@ export const Calendar = forwardRef(function Calendar(
             date={focusedDate}
             focused={focusedDate}
             onSelect={handleDateChange}
-            selected={selectedDate}
+            selected={savedSelectedDate}
             isPastDisabled={isPastDisabled}
           />
           {PRESERVE_FOCUS_ELEMENT}
@@ -344,7 +368,7 @@ export const Calendar = forwardRef(function Calendar(
               <Flex align="center">
                 <TimeInput
                   aria-label={labels.selectTime}
-                  value={format(selectedDate, 'HH:mm', {timeZone: timeZone.name})}
+                  value={format(savedSelectedDate, 'HH:mm', {timeZone: timeZone.name})}
                   onChange={handleTimeChangeInputChange}
                 />
                 <Box marginLeft={2}>
@@ -373,7 +397,7 @@ export const Calendar = forwardRef(function Calendar(
                         minutes={minutes}
                         onTimeChange={handleTimeChange}
                         text={text}
-                        aria-label={labels.setToTimePreset(text, selectedDate)}
+                        aria-label={labels.setToTimePreset(text, savedSelectedDate)}
                       />
                     )
                   })}
