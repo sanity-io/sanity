@@ -730,16 +730,16 @@ importers:
         version: link:../eslint-config
       '@vitejs/plugin-react':
         specifier: 'catalog:'
-        version: 4.5.2(vite@6.3.5(@types/node@22.15.32)(jiti@2.4.2)(terser@5.42.0)(tsx@4.20.3)(yaml@2.8.0))
+        version: 4.5.2(patch_hash=dbddf1bce8ebe7035b95d4ff9b5ec4fcc2d24e6f27b2dc6e3af349eb9e42fbf6)(rolldown-vite@6.3.21(@types/node@22.15.32)(esbuild@0.25.5)(jiti@2.4.2)(terser@5.42.0)(tsx@4.20.3)(yaml@2.8.0))
       lodash-es:
         specifier: ^4.17.21
         version: 4.17.21
       vite:
-        specifier: ^6.3.5
-        version: 6.3.5(@types/node@22.15.32)(jiti@2.4.2)(terser@5.42.0)(tsx@4.20.3)(yaml@2.8.0)
+        specifier: npm:rolldown-vite@6.3.21
+        version: rolldown-vite@6.3.21(@types/node@22.15.32)(esbuild@0.25.5)(jiti@2.4.2)(terser@5.42.0)(tsx@4.20.3)(yaml@2.8.0)
       vite-tsconfig-paths:
         specifier: ^5.1.4
-        version: 5.1.4(typescript@5.8.3)(vite@6.3.5(@types/node@22.15.32)(jiti@2.4.2)(terser@5.42.0)(tsx@4.20.3)(yaml@2.8.0))
+        version: 5.1.4(rolldown-vite@6.3.21(@types/node@22.15.32)(esbuild@0.25.5)(jiti@2.4.2)(terser@5.42.0)(tsx@4.20.3)(yaml@2.8.0))(typescript@5.8.3)
 
   packages/@repo/package.config:
     devDependencies:
