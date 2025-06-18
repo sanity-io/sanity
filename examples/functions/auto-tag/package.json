@@ -7,7 +7,9 @@
     "@sanity/functions": "1.0.2"
   },
   "blueprintResourceItem": {
+    "type": "sanity.function.document",
     "name": "auto-tag",
+    "src": "./functions/auto-tag",
     "memory": 2,
     "timeout": 30,
     "event": {
