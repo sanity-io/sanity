@@ -14,6 +14,12 @@ export interface File {
 }
 
 /** @public */
+export interface Video {
+  [key: string]: unknown // We allow meta-fields on video
+  asset?: Reference
+}
+
+/** @public */
 export interface Image {
   [key: string]: unknown // We allow meta-fields on image
   asset?: Reference
@@ -52,6 +58,21 @@ export interface ImageAsset extends Asset {
 export interface FileAsset extends Asset {
   _type: 'sanity.fileAsset'
   metadata: Record<string, unknown>
+}
+
+/** @public */
+export interface VideoAsset extends Asset {
+  _type: 'sanity.videoAsset'
+  metadata: VideoMetadata
+}
+
+/** @public */
+export interface VideoMetadata {
+  [key: string]: unknown
+  _type: 'sanity.videoMetadata'
+  aspectRatio?: number
+  duration?: number
+  framerate?: number
 }
 
 /** @public */
@@ -146,7 +167,7 @@ export type AssetFromSource = {
 export interface AssetSourceComponentProps {
   action?: 'select' | 'upload'
   assetSource: AssetSource
-  assetType?: 'file' | 'image'
+  assetType?: 'file' | 'image' | 'video'
   accept: string
   selectionType: 'single'
   dialogHeaderTitle?: React.ReactNode

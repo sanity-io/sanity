@@ -20,6 +20,7 @@ const coreTypes = [
   {name: 'telephone', jsonType: 'string', type: 'type'},
   {name: 'text', jsonType: 'string', type: 'type'},
   {name: 'url', jsonType: 'string', type: 'type'},
+  {name: 'video', jsonType: 'object', type: 'type'},
 ] as const
 
 export const coreTypeNames = coreTypes.map((t) => t.name)
