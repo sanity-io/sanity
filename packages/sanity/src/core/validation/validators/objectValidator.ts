@@ -130,8 +130,8 @@ export const objectValidators: Validators = {
         `Media validator at ${pathToString(
           context.path,
         )} failed with an error: ${err instanceof Error ? err.message : String(err)}`,
+        {cause: err},
       )
-      error.cause = err
       throw error
     } finally {
       clearTimeout(slowTimer)
