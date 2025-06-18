@@ -236,6 +236,7 @@ export async function buildVendorDependencies({
           exports: 'named',
           format: 'es',
         },
+        // @ts-expect-error - this is fine, it's a rolldown-vite thing but we're only using rolldown-vite on the monorepo, not in the regular cli
         treeshake: {preset: 'recommended'},
       },
     },
