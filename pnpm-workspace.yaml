@@ -20,8 +20,8 @@ catalog:
   globals: ^16.2.0
   playwright: 1.52.0
   prettier: ^3.5.3
-  react-dom: ^19.1.0
   react: ^19.1.0
+  react-dom: ^19.1.0
   styled-components: ^6.1.18
   typescript: 5.8.3
 
