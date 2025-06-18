@@ -96,6 +96,109 @@ describe('schema validation inference', () => {
     })
   })
 
+  describe('media validation', () => {
+    const documentWithImage = {
+      type: 'document',
+      name: 'documentWithImage',
+      title: 'Document with Image',
+      fields: [
+        {
+          name: 'imageField',
+          type: 'image',
+          validation: (Rule: Rule) =>
+            Rule.required().media(async ({media}) => {
+              // Validate that the image is a summer image when the document topic is summer
+              if (media.asset.assetType === 'sanity.imageAsset') {
+                const aspects = media.asset.aspects
+                if (aspects?.season === 'summer') {
+                  return true
+                }
+                return 'Image must be a summer image'
+              }
+              return true
+            }),
+        },
+      ],
+    }
+    const schema = createSchema({
+      name: 'default',
+      types: [documentWithImage],
+    })
+
+    const mockDocument: SanityDocument = {
+      _id: 'mockDocument',
+      _type: 'documentWithImage',
+      imageField: {
+        _type: 'image',
+        asset: {
+          _ref: 'image-12345-67890-png',
+          _type: 'reference',
+        },
+        media: {
+          _type: 'globalDocumentReference',
+          _ref: 'media-library:abc:def',
+        },
+      },
+      _createdAt: '2021-08-26T18:47:55.497Z',
+      _updatedAt: '2021-08-26T18:47:55.497Z',
+      _rev: 'example-rev',
+    }
+
+    afterEach(() => {
+      client.fetch.mockReset()
+    })
+
+    test("gives error if media can't be found", async () => {
+      client.fetch.mockImplementation(() => Promise.resolve(false))
+
+      await expect(
+        validateDocument({
+          document: mockDocument,
+          getClient,
+          getDocumentExists: () => Promise.resolve(true),
+          workspace: {schema} as Workspace,
+        }),
+      ).resolves.toEqual([
+        {
+          item: {
+            message: 'The asset could not found in the Media Library',
+          },
+          level: 'error',
+          message: 'The asset could not found in the Media Library',
+          path: ['imageField'],
+        },
+      ])
+    })
+
+    test("gives error if media doesn't validate according to media validation rule", async () => {
+      client.fetch.mockImplementation(() =>
+        Promise.resolve({
+          _id: 'image-12345-67890-png',
+          assetType: 'sanity.imageAsset',
+          aspects: {season: 'winter'}, // Not a summer image
+        }),
+      )
+
+      await expect(
+        validateDocument({
+          document: mockDocument,
+          getClient,
+          getDocumentExists: () => Promise.resolve(true),
+          workspace: {schema} as Workspace,
+        }),
+      ).resolves.toEqual([
+        {
+          item: {
+            message: 'Image must be a summer image',
+          },
+          level: 'error',
+          message: 'Image must be a summer image',
+          path: ['imageField'],
+        },
+      ])
+    })
+  })
+
   describe('slug validation', () => {
     const slugField = {
       type: 'document',
