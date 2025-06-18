@@ -43,7 +43,7 @@ This function automatically analyzes the tone of voice of your content using San
      memory: 2,
      timeout: 60,
      on: ['publish'],
-     filter: "_type == 'post',
+     filter: "_type == 'post'"",
      projection: '_id',
    })
    ```
@@ -114,16 +114,6 @@ sanity documents query '*[_id == "<insert_document_id>"][0]{_id, _type}' >> func
 
 # Test with the real document
 npx sanity functions test capture-tone-of-voice --file functions/capture-tone-of-voice/actual-document.json
-```
-
-### 5. Enable Debugging
-
-Add temporary logging to your function:
-
-```typescript
-// Add debugging logs
-console.log('Event data:', JSON.stringify(event.data, null, 2))
-console.log('Tone of Voice:', generateToneOfVoice.toneOfVoice)
 ```
 
 ### Testing Tips
