@@ -22,6 +22,7 @@ import {
   type StringDefinition,
   type TextDefinition,
   type UrlDefinition,
+  type VideoDefinition,
 } from './type'
 import {type BaseSchemaDefinition} from './type/common'
 
@@ -48,6 +49,7 @@ export interface IntrinsicDefinitions {
   datetime: DatetimeDefinition
   document: DocumentDefinition
   file: FileDefinition
+  video: VideoDefinition
   geopoint: GeopointDefinition
   image: ImageDefinition
   number: NumberDefinition

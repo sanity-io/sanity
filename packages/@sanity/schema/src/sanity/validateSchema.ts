@@ -12,6 +12,7 @@ import object from './validation/types/object'
 import reference from './validation/types/reference'
 import rootType from './validation/types/rootType'
 import slug from './validation/types/slug'
+import video from './validation/types/video'
 
 const typeVisitors = {
   array,
@@ -19,6 +20,7 @@ const typeVisitors = {
   slug,
   file,
   image,
+  video,
   block,
   document: documentVisitor,
   reference: reference,

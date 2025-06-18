@@ -18,6 +18,11 @@ export default defineType({
       type: 'file',
     },
     {
+      name: 'someVideo',
+      title: 'A simple video',
+      type: 'video',
+    },
+    {
       name: 'arrayOfFiles',
       title: 'An array of files',
       type: 'array',
