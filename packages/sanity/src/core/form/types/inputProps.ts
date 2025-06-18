@@ -22,6 +22,7 @@ import {
   type SchemaType,
   type SlugValue,
   type StringSchemaType,
+  type VideoValue,
 } from '@sanity/types'
 import {
   type ComponentType,
@@ -590,6 +591,7 @@ export type InputProps =
   | ObjectInputProps<FileValue>
   | ObjectInputProps<GeopointValue>
   | ObjectInputProps<ImageValue>
+  | ObjectInputProps<VideoValue>
   | ObjectInputProps<ReferenceValue>
   | ObjectInputProps<SlugValue>
   | PortableTextInputProps
