@@ -14,7 +14,7 @@
   <img alt="" src="https://img.shields.io/npm/v/sanity?style=flat">
   <img alt="" src="https://img.shields.io/npm/dm/@sanity/client?style=flat">
   <img alt="" src="https://img.shields.io/npm/l/sanity.svg?style=flat">
-  <a aria-label="Join the community on Discord" href="https://snty.link/community">
+  <a aria-label="Join the Sanity community" href="https://snty.link/community">
     <img alt="" src="https://img.shields.io/badge/Join%20Slack-f03e2f?logo=Slack&style=flat"></a>
   <a aria-label="Follow Sanity on Bluesky" href="https://bsky.app/profile/sanity.io">
     <img alt="" src="https://img.shields.io/badge/follow-@sanity.io-blue?logo=bluesky"></a>
@@ -80,7 +80,7 @@ Check out [the docs](https://www.sanity.io/docs/sanity-studio) and [plugins](htt
 - Subscribe to our [YouTube channel](https://www.youtube.com/@sanity_io)
 - Subscribe to [our blog by RSS](https://www.sanity.io/feed/rss)
 - Subscribe to our [newsletter](https://www.sanity.io/newsletter)
-- Join the [developer community on Discord](https://snty.link/community)
+- Join the [Sanity community](https://snty.link/community)
 
 ## Code of Conduct
 
