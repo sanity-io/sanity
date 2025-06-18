@@ -18,6 +18,33 @@ This Sanity Function automatically generates 3 relevant tags for blog posts by a
 - **Scales automatically** as your content library grows
 - **Reduces editorial overhead** for content teams
 
+## Compatible Templates
+
+This function is built to be compatible with any of [the official "clean" templates](https://www.sanity.io/exchange/type=templates/by=sanity). We recommend testing the function out in one of those after you have installed them locally.
+
+### Adding the tags field to your schema
+
+If you're using the [nextjs-clean template](https://github.com/sanity-io/sanity-template-nextjs-clean), you'll need to add a `tags` field to your post schema:
+
+1. Open `studio/src/schemaTypes/documents/post.ts`
+2. Add this field to the `fields` array:
+
+```typescript
+defineField({
+  name: 'tags',
+  title: 'Tags',
+  type: 'array',
+  of: [{ type: 'string' }],
+  description: 'Tags will be automatically generated when you publish a post',
+}),
+```
+
+3. Deploy your updated schema:
+
+```bash
+npx sanity schema deploy
+```
+
 ## Implementation
 
 1. **Initialize the example**
