@@ -5,6 +5,7 @@
   },
   "devDependencies": {
     "@sanity/blueprints": "0.0.1",
+    "sanity": "workspace:*",
     "vite": "^5.0.0"
   }
 }
