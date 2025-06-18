@@ -2,7 +2,7 @@
   "_type": "post",
   "_id": "drafts.test-document-id",
   "title": "My first post",
-  "body": [
+  "content": [
     {
       "_type": "block",
       "children": [

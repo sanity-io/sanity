@@ -2,7 +2,7 @@
   "_type": "post",
   "_id": "1bcef8ce-b129-4f95-a30c-b958b65ead10",
   "title": "My first post",
-  "body": [
+  "content": [
     {
       "_type": "block",
       "children": [

@@ -5,7 +5,7 @@
   "slug": {
     "current": "my-first-blog-post"
   },
-  "body": "This is the content of my first blog post. It contains valuable information that readers will find useful.",
+  "content": "This is the content of my first blog post. It contains valuable information that readers will find useful.",
   "author": {
     "_type": "reference",
     "_ref": "author-123"

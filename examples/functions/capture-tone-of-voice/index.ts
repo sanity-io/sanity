@@ -19,7 +19,7 @@ export const handler = documentEventHandler(
         instructionParams: {
           content: {
             type: 'field',
-            path: 'body',
+            path: 'content',
           },
         },
         instruction: `Examine the $content. Explain the tone of voice for the post.`,

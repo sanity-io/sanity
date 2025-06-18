@@ -18,7 +18,7 @@ export const handler = documentEventHandler(
         instructionParams: {
           content: {
             type: 'field',
-            path: 'body',
+            path: 'content',
           },
           tagsUsedInOtherPosts: {
             type: 'groq',

@@ -127,7 +127,7 @@ npx sanity functions test capture-tone-of-voice --file functions/capture-tone-of
 
 - A Sanity project with Functions enabled
 - A schema with a `post` document type containing:
-  - A `body` field (for content analysis)
+  - A `content` field (for content analysis)
   - A `toneOfVoice` field in your schema (type: text, optionally hidden or readonly)
 - Access to Sanity's AI capabilities
 - Node.js v22.x for local development
@@ -136,7 +136,7 @@ npx sanity functions test capture-tone-of-voice --file functions/capture-tone-of
 
 When a document is created or updated, the function automatically:
 
-1. Analyzes the content in the `body` field
+1. Analyzes the content in the `content` field
 2. Generates a tone of voice analysis using Sanity's AI (temporarily utilizing the toneOfVoice field)
 3. Writes the tone of voice to the capture-tone-of-voice field
 
