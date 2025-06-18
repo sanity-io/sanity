@@ -133,7 +133,7 @@
   ],
   "scripts": {
     "build": "pnpm clean && pkg-utils build --strict --check --clean",
-    "build:bundle": "vite build --config package.bundle.ts",
+    "build:bundle": "vite build --configLoader runner --config package.bundle.ts",
     "check:types": "tsc --project tsconfig.lib.json",
     "clean": "rimraf _internal.js _singletons.js _createContext.js cli.js desk.js migrate.js presentation.js router.js structure.js lib",
     "coverage": "vitest --coverage",
@@ -287,6 +287,7 @@
     "@playwright/test": "catalog:",
     "@repo/dev-aliases": "workspace:*",
     "@repo/eslint-config": "workspace:*",
+    "@repo/package.bundle": "workspace:*",
     "@repo/package.config": "workspace:*",
     "@repo/test-config": "workspace:*",
     "@sanity/codegen": "workspace:*",

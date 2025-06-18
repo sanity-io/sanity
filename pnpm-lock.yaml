@@ -728,6 +728,18 @@ importers:
       '@repo/eslint-config':
         specifier: workspace:*
         version: link:../eslint-config
+      '@vitejs/plugin-react':
+        specifier: 'catalog:'
+        version: 4.5.2(vite@6.3.5(@types/node@22.15.32)(jiti@2.4.2)(terser@5.42.0)(tsx@4.20.3)(yaml@2.8.0))
+      lodash-es:
+        specifier: ^4.17.21
+        version: 4.17.21
+      vite:
+        specifier: ^6.3.5
+        version: 6.3.5(@types/node@22.15.32)(jiti@2.4.2)(terser@5.42.0)(tsx@4.20.3)(yaml@2.8.0)
+      vite-tsconfig-paths:
+        specifier: ^5.1.4
+        version: 5.1.4(typescript@5.8.3)(vite@6.3.5(@types/node@22.15.32)(jiti@2.4.2)(terser@5.42.0)(tsx@4.20.3)(yaml@2.8.0))
 
   packages/@repo/package.config:
     devDependencies:
@@ -1428,6 +1440,9 @@ importers:
       '@repo/eslint-config':
         specifier: workspace:*
         version: link:../../@repo/eslint-config
+      '@repo/package.bundle':
+        specifier: workspace:*
+        version: link:../../@repo/package.bundle
       '@repo/package.config':
         specifier: workspace:*
         version: link:../../@repo/package.config
@@ -1925,6 +1940,9 @@ importers:
       '@repo/eslint-config':
         specifier: workspace:*
         version: link:../@repo/eslint-config
+      '@repo/package.bundle':
+        specifier: workspace:*
+        version: link:../@repo/package.bundle
       '@repo/package.config':
         specifier: workspace:*
         version: link:../@repo/package.config
