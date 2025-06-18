@@ -89,13 +89,18 @@ npx sanity functions dev
 
 ### 3. Test with Custom Data
 
-Test with your own document data:
+Test with your own document data by:
+
+1. Creating an ephemeral draft document
+2. Testing your function against that document
+3. Deleting the draft document
 
 ```bash
-npx sanity functions test capture-tone-of-voice --data '{
-  "_type": "post",
-  "_id": "insert-document-id"
-}'
+# Requires sanity.cli.js|ts to be present https://www.sanity.io/docs/apis-and-sdks/cli#k4baf8325e0e3
+sanity documents create functions/capture-tone-of-voice/document.json --replace &&
+npx sanity functions test capture-tone-of-voice --file functions/capture-tone-of-voice/document.json &&
+npx sanity documents delete drafts.test-document-id
+
 ```
 
 ### 4. Test with Real Document Data
@@ -103,11 +108,12 @@ npx sanity functions test capture-tone-of-voice --data '{
 Capture a real document from your dataset:
 
 ```bash
+# Requires sanity.cli.js|ts to be present https://www.sanity.io/docs/apis-and-sdks/cli#k4baf8325e0e3
 # Export a real document for testing
-npx sanity documents get "document-id" > test-document.json
+sanity documents query '*[_id == "<insert_document_id>"][0]{_id, _type}' >> functions/capture-tone-of-voice/actual-document.json
 
 # Test with the real document
-npx sanity functions test tone-of-voice --file test-document.json
+npx sanity functions test capture-tone-of-voice --file functions/capture-tone-of-voice/actual-document.json
 ```
 
 ### 5. Enable Debugging
