@@ -1,5 +1,5 @@
-import {Text} from '@sanity/ui'
-import {memo, useCallback, useMemo} from 'react'
+import {Box, Text} from '@sanity/ui'
+import {memo, useCallback, useEffect, useMemo, useRef, useState} from 'react'
 import {
   formatRelativeLocalePublishDate,
   getReleaseIdFromReleaseDocumentId,
@@ -76,6 +76,7 @@ const DATE_TIME_FORMAT: UseDateTimeFormatOptions = {
   timeStyle: 'short',
 }
 
+// eslint-disable-next-line complexity
 export const DocumentPerspectiveList = memo(function DocumentPerspectiveList() {
   const {selectedReleaseId, selectedPerspectiveName} = usePerspective()
   const {t} = useTranslation()
@@ -88,6 +89,49 @@ export const DocumentPerspectiveList = memo(function DocumentPerspectiveList() {
   const isCreatingDocument = displayed && !displayed._createdAt
   const filteredReleases = useFilteredReleases({displayed, documentId})
   const onlyHasVersions = useOnlyHasVersions({documentId})
+
+  // Scroll detection
+  const containerRef = useRef<HTMLDivElement>(null)
+  const [needsScroll, setNeedsScroll] = useState(false)
+  const [isAtEnd, setIsAtEnd] = useState(false)
+
+  useEffect(() => {
+    const checkScroll = () => {
+      if (containerRef.current) {
+        const {scrollWidth, clientWidth, scrollLeft} = containerRef.current
+        const needsScrolling = scrollWidth > clientWidth
+        setNeedsScroll(needsScrolling)
+
+        if (needsScrolling) {
+          const isAtEndOfScroll = scrollLeft + clientWidth >= scrollWidth - 1 // -1 for rounding errors
+          setIsAtEnd(isAtEndOfScroll)
+        }
+      }
+    }
+
+    const handleScroll = () => {
+      checkScroll()
+    }
+
+    checkScroll()
+    window.addEventListener('resize', checkScroll)
+
+    const container = containerRef.current
+    if (container) {
+      container.addEventListener('scroll', handleScroll)
+    }
+
+    // Check again after a short delay to ensure content is rendered
+    const timeoutId = setTimeout(checkScroll, 100)
+
+    return () => {
+      window.removeEventListener('resize', checkScroll)
+      if (container) {
+        container.removeEventListener('scroll', handleScroll)
+      }
+      clearTimeout(timeoutId)
+    }
+  }, [filteredReleases, editState])
 
   const handlePerspectiveChange = useCallback(
     (perspective: Parameters<typeof setPerspective>[0]) => () => {
@@ -202,127 +246,157 @@ export const DocumentPerspectiveList = memo(function DocumentPerspectiveList() {
   }, [editState?.draft, isCreatingDocument, isLiveEdit, onlyHasVersions, selectedReleaseId])
 
   return (
-    <>
-      <VersionChip
-        tooltipContent={
-          <Text size={1}>
-            {editState?.published && editState?.published?._updatedAt ? (
-              <Translate
-                t={t}
-                i18nKey="release.chip.tooltip.published-date"
-                values={{date: dateTimeFormat.format(new Date(editState?.published._updatedAt))}}
-              />
-            ) : (
-              <>{t('release.chip.tooltip.not-published')}</>
-            )}
-          </Text>
-        }
-        disabled={isPublishedChipDisabled}
-        onClick={handlePerspectiveChange('published')}
-        selected={isPublishSelected}
-        text={t('release.chip.published')}
-        tone="positive"
-        contextValues={{
-          documentId: editState?.published?._id || editState?.id || '',
-          menuReleaseId: editState?.published?._id || editState?.id || '',
-          releases: filteredReleases.notCurrentReleases,
-          releasesLoading: loading,
-          documentType,
-          fromRelease: 'published',
-          isVersion: false,
-          disabled: !editState?.published,
+    <Box style={{position: 'relative'}}>
+      <Box
+        ref={containerRef}
+        style={{
+          display: 'flex',
+          gap: '8px',
+          overflowX: 'auto',
+          scrollbarWidth: 'none', // Hide scrollbar for Firefox
+          msOverflowStyle: 'none', // Hide scrollbar for IE/Edge
         }}
-      />
-      <VersionChip
-        tooltipContent={
-          <Text size={1}>
-            {editState?.draft ? (
-              <>
-                {editState?.draft._updatedAt ? (
-                  <Translate
-                    t={t}
-                    i18nKey="release.chip.tooltip.edited-date"
-                    values={{date: dateTimeFormat.format(new Date(editState?.draft._updatedAt))}}
-                  />
-                ) : (
-                  <Translate
-                    t={t}
-                    i18nKey="release.chip.tooltip.created-date"
-                    values={{date: dateTimeFormat.format(new Date(editState?.draft._createdAt))}}
-                  />
-                )}
-              </>
-            ) : (
-              <>
-                {isLiveEdit
-                  ? t('release.chip.tooltip.draft-disabled.live-edit')
-                  : t('release.chip.tooltip.no-edits')}
-              </>
-            )}
-          </Text>
-        }
-        selected={isDraftSelected}
-        disabled={isDraftDisabled}
-        text={t('release.chip.draft')}
-        tone={editState?.draft ? 'caution' : 'neutral'}
-        onClick={handlePerspectiveChange('drafts')}
-        contextValues={{
-          documentId: editState?.draft?._id || editState?.published?._id || editState?.id || '',
-          menuReleaseId: editState?.draft?._id || editState?.published?._id || editState?.id || '',
-          releases: filteredReleases.notCurrentReleases,
-          releasesLoading: loading,
-          documentType: documentType,
-          fromRelease: 'draft',
-          isVersion: false,
-          disabled: !editState?.draft,
-        }}
-      />
-      {filteredReleases.inCreation && (
+      >
         <VersionChip
-          tooltipContent={<TooltipContent release={filteredReleases.inCreation} />}
-          selected
-          onClick={() => {}}
-          locked={false}
-          tone={getReleaseTone(filteredReleases.inCreation)}
-          text={
-            filteredReleases.inCreation.metadata.title || t('release.placeholder-untitled-release')
+          tooltipContent={
+            <Text size={1}>
+              {editState?.published && editState?.published?._updatedAt ? (
+                <Translate
+                  t={t}
+                  i18nKey="release.chip.tooltip.published-date"
+                  values={{date: dateTimeFormat.format(new Date(editState?.published._updatedAt))}}
+                />
+              ) : (
+                <>{t('release.chip.tooltip.not-published')}</>
+              )}
+            </Text>
           }
+          disabled={isPublishedChipDisabled}
+          onClick={handlePerspectiveChange('published')}
+          selected={isPublishSelected}
+          text={t('release.chip.published')}
+          tone="positive"
           contextValues={{
-            disabled: true, // disable the chip context menu, this one is in creation
-            documentId: displayed?._id || '',
-            menuReleaseId: filteredReleases.inCreation._id,
+            documentId: editState?.published?._id || editState?.id || '',
+            menuReleaseId: editState?.published?._id || editState?.id || '',
             releases: filteredReleases.notCurrentReleases,
             releasesLoading: loading,
             documentType,
-            fromRelease: getReleaseIdFromReleaseDocumentId(filteredReleases.inCreation._id),
-            releaseState: filteredReleases.inCreation.state,
-            isVersion: true,
+            fromRelease: 'published',
+            isVersion: false,
+            disabled: !editState?.published,
           }}
         />
-      )}
-
-      {displayed &&
-        filteredReleases.currentReleases?.map((release) => (
+        <VersionChip
+          tooltipContent={
+            <Text size={1}>
+              {editState?.draft ? (
+                <>
+                  {editState?.draft._updatedAt ? (
+                    <Translate
+                      t={t}
+                      i18nKey="release.chip.tooltip.edited-date"
+                      values={{date: dateTimeFormat.format(new Date(editState?.draft._updatedAt))}}
+                    />
+                  ) : (
+                    <Translate
+                      t={t}
+                      i18nKey="release.chip.tooltip.created-date"
+                      values={{date: dateTimeFormat.format(new Date(editState?.draft._createdAt))}}
+                    />
+                  )}
+                </>
+              ) : (
+                <>
+                  {isLiveEdit
+                    ? t('release.chip.tooltip.draft-disabled.live-edit')
+                    : t('release.chip.tooltip.no-edits')}
+                </>
+              )}
+            </Text>
+          }
+          selected={isDraftSelected}
+          disabled={isDraftDisabled}
+          text={t('release.chip.draft')}
+          tone={editState?.draft ? 'caution' : 'neutral'}
+          onClick={handlePerspectiveChange('drafts')}
+          contextValues={{
+            documentId: editState?.draft?._id || editState?.published?._id || editState?.id || '',
+            menuReleaseId:
+              editState?.draft?._id || editState?.published?._id || editState?.id || '',
+            releases: filteredReleases.notCurrentReleases,
+            releasesLoading: loading,
+            documentType: documentType,
+            fromRelease: 'draft',
+            isVersion: false,
+            disabled: !editState?.draft,
+          }}
+        />
+        {filteredReleases.inCreation && (
           <VersionChip
-            key={release._id}
-            tooltipContent={<TooltipContent release={release} />}
-            {...getReleaseChipState(release)}
-            onClick={handlePerspectiveChange(getReleaseIdFromReleaseDocumentId(release._id))}
-            text={release.metadata.title || t('release.placeholder-untitled-release')}
-            tone={getReleaseTone(release)}
-            locked={isReleaseScheduledOrScheduling(release)}
+            tooltipContent={<TooltipContent release={filteredReleases.inCreation} />}
+            selected
+            onClick={() => {}}
+            locked={false}
+            tone={getReleaseTone(filteredReleases.inCreation)}
+            text={
+              filteredReleases.inCreation.metadata.title ||
+              t('release.placeholder-untitled-release')
+            }
             contextValues={{
+              disabled: true, // disable the chip context menu, this one is in creation
               documentId: displayed?._id || '',
-              menuReleaseId: release._id,
+              menuReleaseId: filteredReleases.inCreation._id,
               releases: filteredReleases.notCurrentReleases,
               releasesLoading: loading,
-              documentType: documentType,
-              fromRelease: getReleaseIdFromReleaseDocumentId(release._id),
-              releaseState: release.state,
+              documentType,
+              fromRelease: getReleaseIdFromReleaseDocumentId(filteredReleases.inCreation._id),
+              releaseState: filteredReleases.inCreation.state,
               isVersion: true,
             }}
           />
-        ))}
-    </>
+        )}
+
+        {displayed &&
+          filteredReleases.currentReleases?.map((release) => (
+            <VersionChip
+              key={release._id}
+              tooltipContent={<TooltipContent release={release} />}
+              {...getReleaseChipState(release)}
+              onClick={handlePerspectiveChange(getReleaseIdFromReleaseDocumentId(release._id))}
+              text={release.metadata.title || t('release.placeholder-untitled-release')}
+              tone={getReleaseTone(release)}
+              locked={isReleaseScheduledOrScheduling(release)}
+              contextValues={{
+                documentId: displayed?._id || '',
+                menuReleaseId: release._id,
+                releases: filteredReleases.notCurrentReleases,
+                releasesLoading: loading,
+                documentType: documentType,
+                fromRelease: getReleaseIdFromReleaseDocumentId(release._id),
+                releaseState: release.state,
+                isVersion: true,
+              }}
+            />
+          ))}
+      </Box>
+
+      {/* Gradient overlay that fades out when at the end of scroll */}
+      {needsScroll && !isAtEnd && (
+        <Box
+          style={{
+            position: 'absolute',
+            right: '0',
+            top: 0,
+            bottom: 0,
+            width: '150px',
+            background: 'linear-gradient(to right, transparent, var(--card-bg-color))',
+            pointerEvents: 'none',
+            opacity: 1,
+            transition: 'opacity 0.2s ease-out',
+          }}
+        />
+      )}
+    </Box>
   )
 })
