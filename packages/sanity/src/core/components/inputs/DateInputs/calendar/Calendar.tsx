@@ -94,10 +94,10 @@ export const Calendar = forwardRef(function Calendar(
   const [displayMonth, displayYear] = useMemo(() => {
     return [
       // month is 0-indexed
-      Number(format(focusedDate, 'MM', {timeZone: timeZone.name})) - 1,
-      Number(format(focusedDate, 'YYYY', {timeZone: timeZone.name})),
+      Number(format(focusedDate, 'MM', {timeZone: timeZone?.name})) - 1,
+      Number(format(focusedDate, 'YYYY', {timeZone: timeZone?.name})),
     ]
-  }, [focusedDate, timeZone.name])
+  }, [focusedDate, timeZone?.name])
 
   const {DialogTimeZone, dialogProps, dialogTimeZoneShow} = useDialogTimeZone(timeZoneScope)
 
@@ -324,7 +324,7 @@ export const Calendar = forwardRef(function Calendar(
   const handleNowClick = useCallback(() => onSelect(new Date()), [onSelect])
 
   return (
-    <Box data-ui="Calendar" {...restProps} ref={ref}>
+    <Box data-testid="calendar" data-ui="Calendar" {...restProps} ref={ref}>
       {/* Select date */}
       <Box padding={padding}>
         {/* Day presets */}
@@ -367,7 +367,7 @@ export const Calendar = forwardRef(function Calendar(
               <Flex align="center">
                 <TimeInput
                   aria-label={labels.selectTime}
-                  value={format(savedSelectedDate, 'HH:mm', {timeZone: timeZone.name})}
+                  value={format(savedSelectedDate, 'HH:mm', {timeZone: timeZone?.name})}
                   onChange={handleTimeChangeInputChange}
                 />
                 <Box marginLeft={2}>
@@ -380,7 +380,7 @@ export const Calendar = forwardRef(function Calendar(
                   icon={EarthGlobeIcon}
                   mode="bleed"
                   size="default"
-                  text={`${timeZone.abbreviation}`}
+                  text={`${timeZone?.abbreviation}`}
                   onClick={dialogTimeZoneShow}
                 />
               )}
