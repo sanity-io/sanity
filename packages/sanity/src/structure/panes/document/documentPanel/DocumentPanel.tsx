@@ -36,7 +36,7 @@ import {CanvasLinkedBanner} from './banners/CanvasLinkedBanner'
 import {ChooseNewDocumentDestinationBanner} from './banners/ChooseNewDocumentDestinationBanner'
 import {CreateLinkedBanner} from './banners/CreateLinkedBanner'
 import {DocumentNotInReleaseBanner} from './banners/DocumentNotInReleaseBanner'
-import {DraftLiveEditBanner} from './banners/DraftLiveEditBanner'
+import {ObsoleteDraftBanner} from './banners/ObsoleteDraftBanner'
 import {OpenReleaseToEditBanner} from './banners/OpenReleaseToEditBanner'
 import {RevisionNotFoundBanner} from './banners/RevisionNotFoundBanner'
 import {ScheduledReleaseBanner} from './banners/ScheduledReleaseBanner'
@@ -155,6 +155,7 @@ export const DocumentPanel = function DocumentPanel(props: DocumentPanelProps) {
   }, [activeView, displayed, documentId, editState?.draft, editState?.published, schemaType, value])
 
   const isLiveEdit = isLiveEditEnabled(schemaType)
+  const draftExists = editState?.ready && editState.draft !== null
 
   // Scroll to top as `documentId` changes
   useEffect(() => {
@@ -235,18 +236,13 @@ export const DocumentPanel = function DocumentPanel(props: DocumentPanelProps) {
       )
     }
 
-    if (
-      activeView.type === 'form' &&
-      isLiveEdit &&
-      ready &&
-      editState?.draft?._id &&
-      !selectedReleaseId
-    ) {
+    if (activeView.type === 'form' && isLiveEdit && draftExists && !selectedReleaseId) {
       return (
-        <DraftLiveEditBanner
+        <ObsoleteDraftBanner
           displayed={displayed}
           documentId={documentId}
           schemaType={schemaType}
+          i18nKey="banners.live-edit-draft-banner.text"
         />
       )
     }
@@ -281,6 +277,7 @@ export const DocumentPanel = function DocumentPanel(props: DocumentPanelProps) {
     ready,
     activeView.type,
     isLiveEdit,
+    draftExists,
     isPermissionsLoading,
     showCreateBanner,
     permissions?.granted,
