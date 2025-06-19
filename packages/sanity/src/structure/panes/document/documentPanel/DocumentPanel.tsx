@@ -246,6 +246,7 @@ export const DocumentPanel = function DocumentPanel(props: DocumentPanelProps) {
           documentId={documentId}
           schemaType={schemaType}
           i18nKey="banners.live-edit-draft-banner.text"
+          isEditBlocking
         />
       )
     }

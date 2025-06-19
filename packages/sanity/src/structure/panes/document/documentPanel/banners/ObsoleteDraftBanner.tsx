@@ -23,6 +23,10 @@ interface ObsoleteDraftBannerProps {
   documentId: string
   schemaType: ObjectSchemaType
   i18nKey: string
+  /**
+   * Whether the user is blocked from editing the document while an obsolete draft exists.
+   */
+  isEditBlocking?: boolean
 }
 
 export const ObsoleteDraftBanner: ComponentType<ObsoleteDraftBannerProps> = ({
@@ -30,6 +34,7 @@ export const ObsoleteDraftBanner: ComponentType<ObsoleteDraftBannerProps> = ({
   documentId,
   schemaType,
   i18nKey,
+  isEditBlocking,
 }) => {
   const {t} = useTranslation(structureLocaleNamespace)
   const [isPublishing, setPublishing] = useState(false)
@@ -91,15 +96,27 @@ export const ObsoleteDraftBanner: ComponentType<ObsoleteDraftBannerProps> = ({
           />
           <Button
             onClick={handlePublish}
-            text={t('action.publish.live-edit.label')}
-            tooltipProps={{content: t('banners.live-edit-draft-banner.publish.tooltip')}}
+            text={t('banners.obsolete-draft.actions.publish-draft.text')}
+            tooltipProps={
+              isEditBlocking
+                ? {
+                    content: t('banners.live-edit-draft-banner.publish.tooltip'),
+                  }
+                : {}
+            }
             loading={isPublishing}
             tone="positive"
           />
           <Button
             onClick={handleDiscard}
-            text={t('banners.live-edit-draft-banner.discard.tooltip')}
-            tooltipProps={{content: t('banners.live-edit-draft-banner.discard.tooltip')}}
+            text={t('banners.obsolete-draft.actions.discard-draft.text')}
+            tooltipProps={
+              isEditBlocking
+                ? {
+                    content: t('banners.live-edit-draft-banner.discard.tooltip'),
+                  }
+                : {}
+            }
             loading={isDiscarding}
             tone="caution"
           />
