@@ -7,7 +7,8 @@ import type {PerspectiveContextValue} from '../../core/perspective/types'
  * @hidden
  * @beta
  */
-export const PerspectiveContext = createContext<PerspectiveContextValue | null>(
-  'sanity/_singletons/context/perspective-context',
-  null,
-)
+export const PerspectiveContext: React.Context<PerspectiveContextValue | null> =
+  createContext<PerspectiveContextValue | null>(
+    'sanity/_singletons/context/perspective-context',
+    null,
+  )

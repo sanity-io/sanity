@@ -5,10 +5,8 @@ import type {TreeEditingEnabledContextValue} from '../../core/form/studio/tree-e
 /**
  * @internal
  */
-export const TreeEditingEnabledContext = createContext<TreeEditingEnabledContextValue>(
-  'sanity/_singletons/context/tree-editing-enabled',
-  {
+export const TreeEditingEnabledContext: React.Context<TreeEditingEnabledContextValue> =
+  createContext<TreeEditingEnabledContextValue>('sanity/_singletons/context/tree-editing-enabled', {
     enabled: false,
     legacyEditing: false,
-  },
-)
+  })

@@ -6,7 +6,8 @@ import type {ReleasesUpsellContextValue} from '../../core/releases/contexts/upse
  * @beta
  * @hidden
  */
-export const ReleasesUpsellContext = createContext<ReleasesUpsellContextValue | null>(
-  'sanity/_singletons/context/releases-upsell',
-  null,
-)
+export const ReleasesUpsellContext: React.Context<ReleasesUpsellContextValue | null> =
+  createContext<ReleasesUpsellContextValue | null>(
+    'sanity/_singletons/context/releases-upsell',
+    null,
+  )

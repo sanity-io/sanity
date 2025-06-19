@@ -39,7 +39,7 @@ export const zIndexContextDefaults: ZIndexContextValue = {
  *
  * @internal
  */
-export const ZIndexContext = createContext<ZIndexContextValue>(
+export const ZIndexContext: React.Context<ZIndexContextValue> = createContext<ZIndexContextValue>(
   'sanity/_singletons/context/z-index',
   zIndexContextDefaults,
 )
