@@ -44,7 +44,7 @@
   ],
   "scripts": {
     "build": "pkg-utils build --strict --check --clean",
-    "build:bundle": "vite build --config package.bundle.ts",
+    "build:bundle": "vite build --configLoader runner --config package.bundle.ts",
     "check:types": "tsc --project tsconfig.lib.json",
     "clean": "rimraf lib",
     "lint": "eslint .",
@@ -65,7 +65,7 @@
     "@rexxars/react-split-pane": "^1.0.0",
     "@sanity/color": "^3.0.6",
     "@sanity/icons": "^3.7.0",
-    "@sanity/ui": "^2.15.18",
+    "@sanity/ui": "^2.16.0",
     "@sanity/uuid": "^3.0.2",
     "@uiw/react-codemirror": "^4.23.8",
     "is-hotkey-esm": "^1.0.0",
@@ -80,6 +80,7 @@
   },
   "devDependencies": {
     "@repo/eslint-config": "workspace:*",
+    "@repo/package.bundle": "workspace:*",
     "@repo/package.config": "workspace:*",
     "@sanity/cli": "workspace:*",
     "@sanity/client": "^7.6.0",
