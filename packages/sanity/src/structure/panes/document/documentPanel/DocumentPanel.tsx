@@ -236,6 +236,17 @@ export const DocumentPanel = function DocumentPanel(props: DocumentPanelProps) {
       )
     }
 
+    if (activeView.type === 'form' && !isDraftModelEnabled && draftExists && !selectedReleaseId) {
+      return (
+        <ObsoleteDraftBanner
+          displayed={displayed}
+          documentId={documentId}
+          schemaType={schemaType}
+          i18nKey="banners.obsolete-draft.draft-model-inactive.text"
+        />
+      )
+    }
+
     if (activeView.type === 'form' && isLiveEdit && draftExists && !selectedReleaseId) {
       return (
         <ObsoleteDraftBanner
