@@ -33,5 +33,5 @@ export default defineConfig({
     noImplicitBrowsersList: 'off',
     noImplicitSideEffects: 'error',
   },
-  dts: 'rolldown',
+  dts: process.env.SANITY_PKG_DTS === 'api-extractor' ? 'api-extractor' : 'rolldown',
 })
