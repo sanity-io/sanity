@@ -3,9 +3,17 @@ import {ErrorOutlineIcon} from '@sanity/icons'
 import {useTelemetry} from '@sanity/telemetry/react'
 import {Flex, Text} from '@sanity/ui'
 import {type ComponentType, useCallback, useEffect, useState} from 'react'
-import {type ObjectSchemaType, Translate, useDocumentOperation, useTranslation} from 'sanity'
+import {
+  getDraftId,
+  getPublishedId,
+  type ObjectSchemaType,
+  Translate,
+  useDocumentOperation,
+  useTranslation,
+} from 'sanity'
 
 import {Button} from '../../../../../ui-components'
+import {useDiffViewRouter} from '../../../../diffView/hooks/useDiffViewRouter'
 import {structureLocaleNamespace} from '../../../../i18n'
 import {ResolvedLiveEdit} from './__telemetry__/DraftLiveEditBanner.telemetry'
 import {Banner} from './Banner'
@@ -49,6 +57,26 @@ export const ObsoleteDraftBanner: ComponentType<ObsoleteDraftBannerProps> = ({
     }
   })
 
+  const diffViewRouter = useDiffViewRouter()
+
+  const compareDraft = useCallback(() => {
+    if (typeof displayed?._id === 'undefined') {
+      return
+    }
+
+    diffViewRouter.navigateDiffView({
+      mode: 'version',
+      previousDocument: {
+        type: schemaType.name,
+        id: getPublishedId(displayed?._id),
+      },
+      nextDocument: {
+        type: schemaType.name,
+        id: getDraftId(displayed?._id),
+      },
+    })
+  }, [diffViewRouter, displayed?._id, schemaType.name])
+
   return (
     <Banner
       content={
@@ -56,19 +84,24 @@ export const ObsoleteDraftBanner: ComponentType<ObsoleteDraftBannerProps> = ({
           <Text size={1} weight="medium">
             <Translate t={t} i18nKey={i18nKey} values={{schemaType: schemaType.title}} />
           </Text>
-
+          <Button
+            text={t('banners.obsolete-draft.actions.compare-draft.text')}
+            mode="ghost"
+            onClick={compareDraft}
+          />
           <Button
             onClick={handlePublish}
             text={t('action.publish.live-edit.label')}
             tooltipProps={{content: t('banners.live-edit-draft-banner.publish.tooltip')}}
             loading={isPublishing}
+            tone="positive"
           />
-
           <Button
             onClick={handleDiscard}
             text={t('banners.live-edit-draft-banner.discard.tooltip')}
             tooltipProps={{content: t('banners.live-edit-draft-banner.discard.tooltip')}}
             loading={isDiscarding}
+            tone="caution"
           />
         </Flex>
       }

@@ -121,6 +121,8 @@ const structureLocaleStrings = defineLocalesResources('structure', {
   /** The text content for the live edit document when it's a draft */
   'banners.live-edit-draft-banner.text':
     'The type <strong>{{schemaType}}</strong> has <code>liveEdit</code> enabled, but a draft version of this document exists. Publish or discard the draft in order to continue live editing it.',
+  /** The label for the "compare draft" action */
+  'banners.obsolete-draft.actions.compare-draft.text': 'Compare draft',
   /** The text for the permission check banner if the user only has one role, and it does not allow publishing this document */
   'banners.permission-check-banner.missing-permission_create_one':
     'Your role <Roles/> does not have permission to publish this document.',
