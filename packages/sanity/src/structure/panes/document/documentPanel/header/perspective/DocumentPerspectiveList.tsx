@@ -20,6 +20,7 @@ import {
   useSchema,
   useSetPerspective,
   useTranslation,
+  useWorkspace,
   VersionChip,
 } from 'sanity'
 
@@ -88,6 +89,7 @@ export const DocumentPerspectiveList = memo(function DocumentPerspectiveList() {
   const isCreatingDocument = displayed && !displayed._createdAt
   const filteredReleases = useFilteredReleases({displayed, documentId})
   const onlyHasVersions = useOnlyHasVersions({documentId})
+  const workspace = useWorkspace()
 
   const handlePerspectiveChange = useCallback(
     (perspective: Parameters<typeof setPerspective>[0]) => () => {
@@ -201,6 +203,8 @@ export const DocumentPerspectiveList = memo(function DocumentPerspectiveList() {
     return false
   }, [editState?.draft, isCreatingDocument, isLiveEdit, onlyHasVersions, selectedReleaseId])
 
+  const isDraftModelEnabled = workspace.document.drafts?.enabled
+
   return (
     <>
       <VersionChip
@@ -233,50 +237,53 @@ export const DocumentPerspectiveList = memo(function DocumentPerspectiveList() {
           disabled: !editState?.published,
         }}
       />
-      <VersionChip
-        tooltipContent={
-          <Text size={1}>
-            {editState?.draft ? (
-              <>
-                {editState?.draft._updatedAt ? (
-                  <Translate
-                    t={t}
-                    i18nKey="release.chip.tooltip.edited-date"
-                    values={{date: dateTimeFormat.format(new Date(editState?.draft._updatedAt))}}
-                  />
-                ) : (
-                  <Translate
-                    t={t}
-                    i18nKey="release.chip.tooltip.created-date"
-                    values={{date: dateTimeFormat.format(new Date(editState?.draft._createdAt))}}
-                  />
-                )}
-              </>
-            ) : (
-              <>
-                {isLiveEdit
-                  ? t('release.chip.tooltip.draft-disabled.live-edit')
-                  : t('release.chip.tooltip.no-edits')}
-              </>
-            )}
-          </Text>
-        }
-        selected={isDraftSelected}
-        disabled={isDraftDisabled}
-        text={t('release.chip.draft')}
-        tone={editState?.draft ? 'caution' : 'neutral'}
-        onClick={handlePerspectiveChange('drafts')}
-        contextValues={{
-          documentId: editState?.draft?._id || editState?.published?._id || editState?.id || '',
-          menuReleaseId: editState?.draft?._id || editState?.published?._id || editState?.id || '',
-          releases: filteredReleases.notCurrentReleases,
-          releasesLoading: loading,
-          documentType: documentType,
-          fromRelease: 'draft',
-          isVersion: false,
-          disabled: !editState?.draft,
-        }}
-      />
+      {isDraftModelEnabled && (
+        <VersionChip
+          tooltipContent={
+            <Text size={1}>
+              {editState?.draft ? (
+                <>
+                  {editState?.draft._updatedAt ? (
+                    <Translate
+                      t={t}
+                      i18nKey="release.chip.tooltip.edited-date"
+                      values={{date: dateTimeFormat.format(new Date(editState?.draft._updatedAt))}}
+                    />
+                  ) : (
+                    <Translate
+                      t={t}
+                      i18nKey="release.chip.tooltip.created-date"
+                      values={{date: dateTimeFormat.format(new Date(editState?.draft._createdAt))}}
+                    />
+                  )}
+                </>
+              ) : (
+                <>
+                  {isLiveEdit
+                    ? t('release.chip.tooltip.draft-disabled.live-edit')
+                    : t('release.chip.tooltip.no-edits')}
+                </>
+              )}
+            </Text>
+          }
+          selected={isDraftSelected}
+          disabled={isDraftDisabled}
+          text={t('release.chip.draft')}
+          tone={editState?.draft ? 'caution' : 'neutral'}
+          onClick={handlePerspectiveChange('drafts')}
+          contextValues={{
+            documentId: editState?.draft?._id || editState?.published?._id || editState?.id || '',
+            menuReleaseId:
+              editState?.draft?._id || editState?.published?._id || editState?.id || '',
+            releases: filteredReleases.notCurrentReleases,
+            releasesLoading: loading,
+            documentType: documentType,
+            fromRelease: 'draft',
+            isVersion: false,
+            disabled: !editState?.draft,
+          }}
+        />
+      )}
       {filteredReleases.inCreation && (
         <VersionChip
           tooltipContent={<TooltipContent release={filteredReleases.inCreation} />}

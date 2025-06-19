@@ -22,6 +22,7 @@ import {
   useStudioUrl,
   useTranslation,
   useUnique,
+  useWorkspace,
 } from 'sanity'
 import {DocumentPaneContext} from 'sanity/_singletons'
 
@@ -71,6 +72,7 @@ export const DocumentPaneProvider = memo((props: DocumentPaneProviderProps) => {
       badges: documentBadges,
       unstable_fieldActions: fieldActionsResolver,
       unstable_languageFilter: languageFilterResolver,
+      drafts: {enabled: draftsEnabled},
     },
   } = useSource()
   const telemetry = useTelemetry()
@@ -91,6 +93,12 @@ export const DocumentPaneProvider = memo((props: DocumentPaneProviderProps) => {
   const {buildStudioUrl} = useStudioUrl()
 
   const perspective = usePerspective()
+
+  const {
+    document: {
+      drafts: {enabled: isDraftModelEnabled},
+    },
+  } = useWorkspace()
 
   const {selectedReleaseId, selectedPerspectiveName} = useMemo(() => {
     // TODO: COREL - Remove this after updating sanity-assist to use <PerspectiveProvider>
@@ -169,11 +177,19 @@ export const DocumentPaneProvider = memo((props: DocumentPaneProviderProps) => {
         isDeleted ||
         !isPerspectiveWriteable({
           selectedPerspective: perspective.selectedPerspective,
+          isDraftModelEnabled,
           schemaType,
         }).result
       )
     },
-    [getIsDeleted, isDeleting, params.rev, perspective.selectedPerspective, schemaType],
+    [
+      getIsDeleted,
+      isDeleting,
+      isDraftModelEnabled,
+      params.rev,
+      perspective.selectedPerspective,
+      schemaType,
+    ],
   )
 
   const getDisplayed = useCallback(
@@ -234,12 +250,15 @@ export const DocumentPaneProvider = memo((props: DocumentPaneProviderProps) => {
       case selectedPerspectiveName === 'published':
         version = 'published'
         break
-      default:
+      case draftsEnabled:
         version = 'draft'
+        break
+      default:
+        version = 'published'
     }
 
     return version
-  }, [selectedPerspectiveName, selectedReleaseId, params, value._id])
+  }, [params.rev, selectedReleaseId, value._id, selectedPerspectiveName, draftsEnabled])
 
   const actionsPerspective = useMemo(() => getDocumentVersionType(), [getDocumentVersionType])
 

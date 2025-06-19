@@ -13,6 +13,7 @@ import {
   type ReleaseDocument,
   ScrollContainer,
   usePerspective,
+  useWorkspace,
   VirtualizerScrollInstanceProvider,
 } from 'sanity'
 import {css, styled} from 'styled-components'
@@ -34,7 +35,7 @@ import {CanvasLinkedBanner} from './banners/CanvasLinkedBanner'
 import {ChooseNewDocumentDestinationBanner} from './banners/ChooseNewDocumentDestinationBanner'
 import {CreateLinkedBanner} from './banners/CreateLinkedBanner'
 import {DocumentNotInReleaseBanner} from './banners/DocumentNotInReleaseBanner'
-import {DraftLiveEditBanner} from './banners/DraftLiveEditBanner'
+import {ObsoleteDraftBanner} from './banners/ObsoleteDraftBanner'
 import {OpenReleaseToEditBanner} from './banners/OpenReleaseToEditBanner'
 import {RevisionNotFoundBanner} from './banners/RevisionNotFoundBanner'
 import {ScheduledReleaseBanner} from './banners/ScheduledReleaseBanner'
@@ -103,6 +104,12 @@ export const DocumentPanel = function DocumentPanel(props: DocumentPanelProps) {
   const [documentScrollElement, setDocumentScrollElement] = useState<HTMLDivElement | null>(null)
   const formContainerElement = useRef<HTMLDivElement | null>(null)
 
+  const {
+    document: {
+      drafts: {enabled: isDraftModelEnabled},
+    },
+  } = useWorkspace()
+
   const requiredPermission = value._createdAt ? 'update' : 'create'
 
   const activeView = useMemo(
@@ -147,6 +154,7 @@ export const DocumentPanel = function DocumentPanel(props: DocumentPanelProps) {
   }, [activeView, displayed, documentId, editState?.draft, editState?.published, schemaType, value])
 
   const isLiveEdit = isLiveEditEnabled(schemaType)
+  const draftExists = editState?.ready && editState.draft !== null
 
   // Scroll to top as `documentId` changes
   useEffect(() => {
@@ -184,6 +192,7 @@ export const DocumentPanel = function DocumentPanel(props: DocumentPanelProps) {
 
     const isSelectedPerspectiveWriteable = isPerspectiveWriteable({
       selectedPerspective,
+      isDraftModelEnabled,
       schemaType,
     })
 
@@ -219,18 +228,25 @@ export const DocumentPanel = function DocumentPanel(props: DocumentPanelProps) {
       )
     }
 
-    if (
-      activeView.type === 'form' &&
-      isLiveEdit &&
-      ready &&
-      editState?.draft?._id &&
-      !selectedReleaseId
-    ) {
+    if (activeView.type === 'form' && !isDraftModelEnabled && draftExists && !selectedReleaseId) {
       return (
-        <DraftLiveEditBanner
+        <ObsoleteDraftBanner
           displayed={displayed}
           documentId={documentId}
           schemaType={schemaType}
+          i18nKey="banners.obsolete-draft.draft-model-inactive.text"
+        />
+      )
+    }
+
+    if (activeView.type === 'form' && isLiveEdit && draftExists && !selectedReleaseId) {
+      return (
+        <ObsoleteDraftBanner
+          displayed={displayed}
+          documentId={documentId}
+          schemaType={schemaType}
+          i18nKey="banners.live-edit-draft-banner.text"
+          isEditBlocking
         />
       )
     }
@@ -260,10 +276,12 @@ export const DocumentPanel = function DocumentPanel(props: DocumentPanelProps) {
     selectedPerspective,
     displayed,
     selectedReleaseId,
+    isDraftModelEnabled,
     editState,
     ready,
     activeView.type,
     isLiveEdit,
+    draftExists,
     isPermissionsLoading,
     showCreateBanner,
     permissions?.granted,
