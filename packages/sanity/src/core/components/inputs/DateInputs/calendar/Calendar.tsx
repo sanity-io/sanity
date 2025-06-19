@@ -151,7 +151,6 @@ export const Calendar = forwardRef(function Calendar(
       const zonedDate = utcToZonedTime(utcDate, timeZone.name)
 
       onSelect(zonedDate)
-      return
     },
     [onSelect, savedSelectedDate, timeZone],
   )
