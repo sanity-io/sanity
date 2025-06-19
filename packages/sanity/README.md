@@ -80,7 +80,7 @@ Check out [the docs](https://www.sanity.io/docs/sanity-studio) and [plugins](htt
 - Subscribe to our [YouTube channel](https://www.youtube.com/@sanity_io)
 - Subscribe to [our blog by RSS](https://www.sanity.io/feed/rss)
 - Subscribe to our [newsletter](https://www.sanity.io/newsletter)
-- Join the [Sanity community](https://snty.link/community)
+- Join the [Sanity community](https://www.sanity.io/community/join?utm_source=readme)
 
 ## Code of Conduct
 
