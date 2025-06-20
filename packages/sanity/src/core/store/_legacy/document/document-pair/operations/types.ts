@@ -49,7 +49,8 @@ export interface OperationsAPI {
         'NOTHING_TO_DUPLICATE'
       >
     | GuardedOperation
-  restore: Operation<[revision: DocumentRevision]> | GuardedOperation
+  restoreRevision: Operation<[revision: DocumentRevision]> | GuardedOperation
+  restoreDocument: Operation<[document: SanityDocument]> | GuardedOperation
 }
 
 /** @internal */
