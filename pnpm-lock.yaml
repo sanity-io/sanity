@@ -1670,8 +1670,8 @@ importers:
         specifier: 'catalog:'
         version: 4.5.2(patch_hash=dbddf1bce8ebe7035b95d4ff9b5ec4fcc2d24e6f27b2dc6e3af349eb9e42fbf6)(rolldown-vite@6.3.21(@types/node@22.15.32)(esbuild@0.25.5)(jiti@2.4.2)(terser@5.42.0)(tsx@4.20.3)(yaml@2.8.0))
       '@xstate/react':
-        specifier: ^5.0.5
-        version: 5.0.5(@types/react@19.1.8)(react@18.3.1)(xstate@5.20.0)
+        specifier: ^6.0.0
+        version: 6.0.0(@types/react@19.1.8)(react@18.3.1)(xstate@5.20.0)
       archiver:
         specifier: ^7.0.0
         version: 7.0.1
@@ -5784,6 +5784,15 @@ packages:
     peerDependencies:
       react: ^16.8.0 || ^17.0.0 || ^18.0.0 || ^19.0.0
       xstate: ^5.19.4
+    peerDependenciesMeta:
+      xstate:
+        optional: true
+
+  '@xstate/react@6.0.0':
+    resolution: {integrity: sha512-xXlLpFJxqLhhmecAXclBECgk+B4zYSrDTl8hTfPZBogkn82OHKbm9zJxox3Z/YXoOhAQhKFTRLMYGdlbhc6T9A==}
+    peerDependencies:
+      react: ^16.8.0 || ^17.0.0 || ^18.0.0 || ^19.0.0
+      xstate: ^5.20.0
     peerDependenciesMeta:
       xstate:
         optional: true
@@ -16967,6 +16976,16 @@ snapshots:
       react: 19.1.0
       use-isomorphic-layout-effect: 1.2.1(@types/react@19.1.8)(react@19.1.0)
       use-sync-external-store: 1.5.0(react@19.1.0)
+    optionalDependencies:
+      xstate: 5.20.0
+    transitivePeerDependencies:
+      - '@types/react'
+
+  '@xstate/react@6.0.0(@types/react@19.1.8)(react@18.3.1)(xstate@5.20.0)':
+    dependencies:
+      react: 18.3.1
+      use-isomorphic-layout-effect: 1.2.1(@types/react@19.1.8)(react@18.3.1)
+      use-sync-external-store: 1.5.0(react@18.3.1)
     optionalDependencies:
       xstate: 5.20.0
     transitivePeerDependencies:
