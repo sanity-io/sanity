@@ -79,6 +79,32 @@ describe('tagVersion()', () => {
       versions,
     })
   })
+
+  it('sets default when passed options.setAsDefault is true', () => {
+    const newEntry = {timestamp: currentUnixTime(), version: '1.2.4' as const}
+
+    const versions = [
+      {timestamp: currentUnixTime() - 100, version: '1.2.4'},
+      {timestamp: currentUnixTime() - 100, version: '1.2.3'},
+    ]
+
+    const manifest = {
+      tags: {
+        latest: [
+          // stale, can and should be removed
+          {timestamp: currentUnixTime() - 60 * 31, version: '1.2.3' as const},
+        ],
+      },
+      versions,
+    }
+    expect(tagVersion(manifest, 'latest', newEntry, {setAsDefault: true})).toEqual({
+      default: newEntry.version,
+      tags: {
+        latest: [newEntry],
+      },
+      versions,
+    })
+  })
   it('allows several tags to be added in a row', () => {
     // in an ideal world, there should just be a single tagged version per channel
     // but to allow for updated manifests to reach all pods, we add new versions with a timestamp,
