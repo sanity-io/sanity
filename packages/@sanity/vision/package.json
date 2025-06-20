@@ -39,8 +39,7 @@
   "module": "./lib/index.mjs",
   "types": "./lib/index.d.ts",
   "files": [
-    "lib",
-    "src"
+    "lib"
   ],
   "scripts": {
     "build": "pkg-utils build --strict --check --clean",
@@ -64,8 +63,8 @@
     "@rexxars/react-json-inspector": "^9.0.1",
     "@rexxars/react-split-pane": "^1.0.0",
     "@sanity/color": "^3.0.6",
-    "@sanity/icons": "^3.7.0",
-    "@sanity/ui": "^2.16.0",
+    "@sanity/icons": "^3.7.3",
+    "@sanity/ui": "^2.16.2",
     "@sanity/uuid": "^3.0.2",
     "@uiw/react-codemirror": "^4.23.8",
     "is-hotkey-esm": "^1.0.0",

@@ -103,8 +103,7 @@
     }
   },
   "files": [
-    "lib",
-    "src"
+    "lib"
   ],
   "scripts": {
     "build": "pnpm clean && pkg-utils build --strict --check --clean",

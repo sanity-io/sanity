@@ -38,8 +38,7 @@
   "module": "./lib/groq.js",
   "types": "./lib/groq.d.ts",
   "files": [
-    "lib",
-    "src"
+    "lib"
   ],
   "scripts": {
     "build": "pkg-utils build --strict --check --clean",
