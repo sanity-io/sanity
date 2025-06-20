@@ -1,0 +1,24 @@
+{
+  "name": "suggest-content-changes",
+  "type": "module",
+  "main": "index.ts",
+  "dependencies": {
+    "@sanity/client": "^7.6.0",
+    "@sanity/functions": "^1.0.2"
+  },
+  "blueprintResourceItem": {
+    "type": "sanity.function.document",
+    "name": "suggest-content-changes",
+    "src": "./functions/suggest-content-changes",
+    "memory": 5,
+    "timeout": 60,
+    "event": {
+      "on": [
+        "publish"
+      ],
+      "filter": "_type == 'post'",
+      "projection": "_id"
+    }
+  },
+  "exampleInstructions": "Add this resource to your Blueprint config's resources array. Go to README.md for more details on how to use this function."
+}
