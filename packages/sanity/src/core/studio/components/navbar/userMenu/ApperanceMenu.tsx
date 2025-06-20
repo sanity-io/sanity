@@ -1,9 +1,9 @@
 import {CheckmarkIcon} from '@sanity/icons'
 import {MenuDivider} from '@sanity/ui'
 
-import {MenuItem} from '../../../../../ui-components'
-import {useTranslation} from '../../../../i18n'
-import {type StudioThemeColorSchemeKey} from '../../../../theme'
+import {MenuItem} from '../../../../../ui-components/menuItem/MenuItem'
+import {useTranslation} from '../../../../i18n/hooks/useTranslation'
+import type {StudioThemeColorSchemeKey} from '../../../../theme/types'
 import {useColorSchemeOptions} from '../../../colorScheme'
 
 export function AppearanceMenu({

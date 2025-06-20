@@ -12,7 +12,8 @@ import {
 } from '@sanity/ui'
 import {useCallback} from 'react'
 
-import {Translate, useTranslation} from '../../../i18n'
+import {Translate} from '../../../i18n/Translate'
+import {useTranslation} from '../../../i18n/hooks/useTranslation'
 import {
   PortableTextInvalidValueIgnore,
   PortableTextInvalidValueResolve,

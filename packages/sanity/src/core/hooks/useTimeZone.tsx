@@ -6,7 +6,7 @@ import {useCallback, useEffect, useMemo, useState} from 'react'
 import {useObservable} from 'react-rx'
 import {startWith} from 'rxjs/operators'
 
-import {useKeyValueStore} from '../store'
+import {useKeyValueStore} from '../store/_legacy/datastores'
 import {DATE_FORMAT} from '../studio/timezones/constants'
 import ToastDescription from '../studio/timezones/toastDescription/ToastDescription'
 import {type NormalizedTimeZone} from '../studio/timezones/types'

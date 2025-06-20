@@ -1,6 +1,6 @@
 import {describe, expect, test} from 'vitest'
 
-import {defaultTemplatesForSchema, prepareTemplates} from '../'
+import {defaultTemplatesForSchema, prepareTemplates} from '../prepare'
 import {schema} from './schema'
 
 describe('getTemplates', () => {

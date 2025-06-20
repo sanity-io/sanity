@@ -1,6 +1,6 @@
 import {MenuDivider} from '@sanity/ui'
 
-import {type DocumentFieldActionNode} from '../../../config'
+import type {DocumentFieldActionNode} from '../../../config/document/fieldActions/types'
 import {FieldActionMenuGroup} from './FieldActionMenuGroup'
 import {FieldActionMenuItem} from './FieldActionMenuItem'
 

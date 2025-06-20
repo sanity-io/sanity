@@ -5,7 +5,7 @@ import {type ForwardedRef, forwardRef, useMemo} from 'react'
 import {IntentLink} from 'sanity/router'
 
 import {type PreviewLayoutKey} from '../../../components/previews/types'
-import {DocumentPreviewPresence} from '../../../presence'
+import {DocumentPreviewPresence} from '../../../presence/DocumentPreviewPresence'
 import {SanityDefaultPreview} from '../../../preview/components/SanityDefaultPreview'
 import {useDocumentPresence} from '../../../store/_legacy/presence/useDocumentPresence'
 import {getPublishedId} from '../../../util/draftUtils'

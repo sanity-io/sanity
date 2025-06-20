@@ -3,8 +3,8 @@ import {find, get} from 'lodash'
 import {useCallback} from 'react'
 import shallowEquals from 'shallow-equals'
 
-import {isRecord} from '../../../util'
-import {type FormPatch} from '../../patch'
+import {isRecord} from '../../../util/isRecord'
+import type {FormPatch} from '../../patch/types'
 import {useFormBuilder} from '../../useFormBuilder'
 
 /**

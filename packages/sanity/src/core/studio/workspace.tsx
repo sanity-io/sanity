@@ -1,7 +1,7 @@
 import {useContext} from 'react'
 import {WorkspaceContext} from 'sanity/_singletons'
 
-import {type Workspace} from '../config'
+import type {Workspace} from '../config/types'
 
 /** @internal */
 export interface WorkspaceProviderProps {

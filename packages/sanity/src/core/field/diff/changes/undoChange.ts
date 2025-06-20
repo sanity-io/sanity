@@ -14,14 +14,14 @@ import {
   type Path,
 } from '@sanity/types'
 
-import {isRecord} from '../../../util'
+import {isRecord} from '../../../util/isRecord'
 import {
   findIndex,
   getItemKeySegment,
   getValueAtPath,
   isEmptyObject,
   pathToString,
-} from '../../paths'
+} from '../../paths/helpers'
 import {
   type ArrayDiff,
   type ChangeNode,

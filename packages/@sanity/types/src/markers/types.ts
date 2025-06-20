@@ -1,5 +1,5 @@
-import {type Path} from '../paths'
-import {type ValidationError} from '../validation'
+import type {Path} from '../paths/types'
+import type {ValidationError} from '../validation/types'
 
 /** @public */
 export interface ValidationMarker {

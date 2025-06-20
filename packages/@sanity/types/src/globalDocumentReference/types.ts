@@ -1,9 +1,10 @@
 import {type ComponentType} from 'react'
 
-import {type SanityDocument} from '../documents'
-import {type Path} from '../paths'
-import {type ReferenceFilterOptions} from '../reference'
-import {type ObjectSchemaType, type PreviewConfig} from '../schema'
+import type {SanityDocument} from '../documents/types'
+import type {Path} from '../paths/types'
+import type {ReferenceFilterOptions} from '../reference/types'
+import type {ObjectSchemaType} from '../schema/types'
+import type {PreviewConfig} from '../schema/preview'
 
 /** @beta */
 export interface GlobalDocumentReferenceValue {

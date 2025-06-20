@@ -2,7 +2,8 @@ import {red} from '@sanity/color'
 import {ErrorOutlineIcon} from '@sanity/icons'
 import {type CardTone, Container, Flex, Menu, Text} from '@sanity/ui'
 
-import {Button, MenuButton} from '../../../../ui-components'
+import {Button} from '../../../../ui-components/button/Button'
+import {MenuButton} from '../../../../ui-components/menuButton/MenuButton'
 import {SCHEDULE_FAILED_TEXT} from '../../constants'
 
 interface Props {

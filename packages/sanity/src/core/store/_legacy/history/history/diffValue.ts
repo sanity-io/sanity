@@ -9,7 +9,8 @@ import {
 } from '@sanity/diff'
 import {type incremental} from 'mendoza'
 
-import {type Annotation, type Chunk} from '../../../../field'
+import type {Annotation} from '../../../../field/types'
+import type {Chunk} from '../../../../field'
 import {type Timeline} from './Timeline'
 import {isSameAnnotation} from './utils'
 

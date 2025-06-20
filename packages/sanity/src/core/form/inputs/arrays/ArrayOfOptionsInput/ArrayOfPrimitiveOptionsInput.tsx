@@ -4,9 +4,9 @@ import {resolveTypeName} from '@sanity/util/content'
 import {startCase} from 'lodash'
 import {useMemo} from 'react'
 
-import {ChangeIndicator} from '../../../../changeIndicators'
-import {set, unset} from '../../../patch'
-import {type ArrayOfPrimitivesInputProps} from '../../../types'
+import {ChangeIndicator} from '../../../../changeIndicators/ChangeIndicator'
+import {set, unset} from '../../../patch/patch'
+import type {ArrayOfPrimitivesInputProps} from '../../../types/inputProps'
 import {IncompatibleItemType} from '../ArrayOfObjectsInput/List/IncompatibleItemType'
 
 function isPrimitiveOption(option: unknown): option is NormalizedPrimitiveOption {

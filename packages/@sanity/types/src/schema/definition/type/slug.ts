@@ -1,6 +1,6 @@
-import {type Path} from '../../../paths'
-import {type SlugifierFn, type SlugSourceFn} from '../../../slug'
-import {type SlugIsUniqueValidator} from '../../../validation'
+import type {Path} from '../../../paths/types'
+import {type SlugifierFn, type SlugSourceFn} from '../../../slug/types'
+import type {SlugIsUniqueValidator} from '../../../validation/types'
 import {type RuleDef, type ValidationBuilder} from '../../ruleBuilder'
 import {type InitialValueProperty} from '../../types'
 import {

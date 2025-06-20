@@ -2,7 +2,9 @@ import {type MultipleMutationResult, type Mutation as RawMutation} from '@sanity
 import {type Path, type SanityDocument} from '@sanity/types'
 
 import {type JsonArray, type JsonObject, type JsonValue} from './json'
-import {type Mutation, type NodePatch, type Operation, type Transaction} from './mutations'
+import {type Mutation, type NodePatch} from './mutations/types'
+import type {Operation} from './mutations/operations/types'
+import type {Transaction} from './mutations/transaction'
 import {type RestrictedClient} from './runner/utils/createContextClient'
 
 export type {Path}

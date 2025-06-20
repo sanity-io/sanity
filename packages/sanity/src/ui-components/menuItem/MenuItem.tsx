@@ -21,11 +21,11 @@ import {isValidElementType} from 'react-is'
 import {styled} from 'styled-components'
 
 import {Hotkeys} from '../../core/components/Hotkeys'
-import {Tooltip, type TooltipProps} from '..'
+import {Tooltip, type TooltipProps} from '../tooltip/Tooltip'
 import {
   ConditionalWrapper,
   type ConditionalWrapperRenderWrapperCallback,
-} from '../conditionalWrapper'
+} from '../conditionalWrapper/ConditionalWrapper'
 
 const FONT_SIZE = 1
 const SUBTITLE_FONT_SIZE = 0

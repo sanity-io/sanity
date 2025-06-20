@@ -1,12 +1,12 @@
 import {Stack} from '@sanity/ui'
 import {memo, useMemo} from 'react'
 
-import {Dialog} from '../../../../../ui-components'
+import {Dialog} from '../../../../../ui-components/dialog/Dialog'
 import {type FIXME} from '../../../../FIXME'
-import {useTranslation} from '../../../../i18n'
-import {PresenceOverlay} from '../../../../presence'
-import {type InputProps} from '../../../types'
-import {ImageToolInput} from '../ImageToolInput'
+import {useTranslation} from '../../../../i18n/hooks/useTranslation'
+import {PresenceOverlay} from '../../../../presence/overlay/PresenceOverlay'
+import type {InputProps} from '../../../types/inputProps'
+import {ImageToolInput} from '../ImageToolInput/ImageToolInput'
 import {type BaseImageInputProps} from './types'
 
 export const ImageInputHotspotInput = memo(function ImageInputHotspotInputComponent(props: {

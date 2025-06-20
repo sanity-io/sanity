@@ -13,11 +13,10 @@ import {filter, map, mergeMap, scan, share, take, tap, withLatestFrom} from 'rxj
 import {type DocumentVariantType} from '../../../../util/getDocumentVariantType'
 import {
   type BufferedDocumentEvent,
-  type CommitRequest,
   createBufferedDocument,
-  type MutationPayload,
-  type RemoteSnapshotEvent,
-} from '../buffered-doc'
+} from '../buffered-doc/createBufferedDocument'
+import type {CommitRequest} from '../buffered-doc/createObservableBufferedDocument'
+import {type MutationPayload, type RemoteSnapshotEvent} from '../buffered-doc/types'
 import {
   type DocumentStoreExtraOptions,
   getPairListener,

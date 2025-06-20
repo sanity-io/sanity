@@ -3,15 +3,13 @@ import {castArray} from 'lodash'
 
 import {isMemberArrayOfObjects, isMemberObject} from '../../members/object/fields/asserters'
 import {ALL_FIELDS_GROUP} from '../constants'
+import {type ArrayOfObjectsFormNode, type BaseFormNode, type ObjectFormNode} from '../types/nodes'
 import {
-  type ArrayOfObjectsFormNode,
   type ArrayOfObjectsItemMember,
-  type BaseFormNode,
   type FieldMember,
   type FieldSetMember,
-  type ObjectFormNode,
   type ObjectMember,
-} from '../types'
+} from '../types/members'
 import {isArrayOfObjectsFormNode, isObjectFormNode} from '../types/asserters'
 
 /** @internal */

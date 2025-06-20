@@ -1,15 +1,14 @@
 import {type Image} from '@sanity/types'
 import {Box, Card, Text} from '@sanity/ui'
 
-import {type TFunction, useTranslation} from '../../../../i18n'
-import {
-  ChangeList,
-  DiffCard,
-  DiffTooltip,
-  getAnnotationAtPath,
-  useDocumentChange,
-} from '../../../diff'
-import {FromTo} from '../../../diff/components'
+import type {TFunction} from '../../../../i18n'
+import {useTranslation} from '../../../../i18n/hooks/useTranslation'
+import {ChangeList} from '../../../diff/components/ChangeList'
+import {DiffCard} from '../../../diff/components/DiffCard'
+import {DiffTooltip} from '../../../diff/components/DiffTooltip'
+import {getAnnotationAtPath} from '../../../diff/annotations/helpers'
+import {useDocumentChange} from '../../../diff/hooks/useDocumentChange'
+import {FromTo} from '../../../diff/components/FromTo'
 import {type DiffComponent, type ObjectDiff} from '../../../types'
 import {ImagePreview, NoImagePreview} from './ImagePreview'
 

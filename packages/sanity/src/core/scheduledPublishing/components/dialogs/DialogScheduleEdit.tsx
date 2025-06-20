@@ -1,6 +1,6 @@
 import {useCallback} from 'react'
 
-import {Dialog} from '../../../../ui-components'
+import {Dialog} from '../../../../ui-components/dialog/Dialog'
 import {SCHEDULED_PUBLISHING_TIME_ZONE_SCOPE} from '../../../studio/constants'
 import useScheduleForm from '../../hooks/useScheduleForm'
 import useScheduleOperation from '../../hooks/useScheduleOperation'

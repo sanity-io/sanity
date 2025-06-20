@@ -8,18 +8,20 @@ import {styled} from 'styled-components'
 import {
   type CommentBaseCreatePayload,
   type CommentCreatePayload,
-  type CommentInputProps,
   type CommentReactionOption,
   type CommentThreadItem,
   type CommentUpdatePayload,
-  useComments,
-} from '../../../comments'
-import {CommentDeleteDialog} from '../../../comments/components'
-import {LoadingBlock} from '../../../components'
-import {type FormPatch, type PatchEvent, set} from '../../../form'
-import {useTranslation} from '../../../i18n'
-import {useCurrentUser} from '../../../store'
-import {useWorkspace} from '../../../studio'
+} from '../../../comments/types'
+import type {CommentInputProps} from '../../../comments/components/pte/comment-input/CommentInput'
+import {useComments} from '../../../comments/hooks/useComments'
+import {CommentDeleteDialog} from '../../../comments/components/CommentDeleteDialog'
+import {LoadingBlock} from '../../../components/loadingBlock/LoadingBlock'
+import type {FormPatch} from '../../../form/patch/types'
+import type {PatchEvent} from '../../../form/patch/PatchEvent'
+import {set} from '../../../form/patch/patch'
+import {useTranslation} from '../../../i18n/hooks/useTranslation'
+import {useCurrentUser} from '../../../store/user/hooks'
+import {useWorkspace} from '../../../studio/workspace'
 import {tasksLocaleNamespace} from '../../i18n'
 import {type TaskDocument} from '../../types'
 import {getMentionedUsers} from '../form/utils'

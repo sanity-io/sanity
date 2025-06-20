@@ -3,14 +3,14 @@ import {type Schema} from '@sanity/types'
 import {concat, EMPTY, merge, type Observable, of} from 'rxjs'
 import {map, mergeMap, shareReplay} from 'rxjs/operators'
 
-import {type HistoryStore} from '../../history'
+import type {HistoryStore} from '../../history/createHistoryStore'
 import {type DocumentStoreExtraOptions} from '../getPairListener'
 import {type IdPair} from '../types'
 import {memoize} from '../utils/createMemoizer'
 import {memoizeKeyGen} from './memoizeKeyGen'
 import {operationArgs} from './operationArgs'
 import {operationEvents} from './operationEvents'
-import {type OperationsAPI} from './operations'
+import type {OperationsAPI} from './operations/types'
 import {createOperationsAPI, GUARDED} from './operations/helpers'
 
 export const editOperations = memoize(

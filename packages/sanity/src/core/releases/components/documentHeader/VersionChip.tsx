@@ -20,7 +20,8 @@ import {
 import {useObservable} from 'react-rx'
 import {styled} from 'styled-components'
 
-import {Popover, Tooltip} from '../../../../ui-components'
+import {Popover} from '../../../../ui-components/popover/Popover'
+import {Tooltip} from '../../../../ui-components/tooltip/Tooltip'
 import {useCanvasCompanionDocsStore} from '../../../canvas/store/useCanvasCompanionDocsStore'
 import {useTranslation} from '../../../i18n/hooks/useTranslation'
 import {getDraftId, getPublishedId, getVersionId} from '../../../util/draftUtils'

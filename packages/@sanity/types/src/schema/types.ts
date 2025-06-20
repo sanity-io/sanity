@@ -1,24 +1,21 @@
 import {type SanityClient} from '@sanity/client'
 import {type ComponentType} from 'react'
 
-import {type SanityDocument} from '../documents'
-import {type CurrentUser} from '../user'
-import {type Rule} from '../validation'
+import type {SanityDocument} from '../documents/types'
+import type {CurrentUser} from '../user/types'
+import type {Rule} from '../validation/types'
 import {type SchemaTypeDefinition} from './definition/schemaDefinition'
-import {
-  type BlockDecoratorDefinition,
-  type BlockOptions,
-  type BooleanOptions,
-  type DateOptions,
-  type DatetimeOptions,
-  type FileOptions,
-  type ImageOptions,
-  type NumberOptions,
-  type ReferenceOptions,
-  type SlugOptions,
-  type StringOptions,
-  type TextOptions,
-} from './definition/type'
+import {type BlockDecoratorDefinition, type BlockOptions} from './definition/type/block'
+import type {BooleanOptions} from './definition/type/boolean'
+import type {DateOptions} from './definition/type/date'
+import type {DatetimeOptions} from './definition/type/datetime'
+import type {FileOptions} from './definition/type/file'
+import type {ImageOptions} from './definition/type/image'
+import type {NumberOptions} from './definition/type/number'
+import type {ReferenceOptions} from './definition/type/reference'
+import type {SlugOptions} from './definition/type/slug'
+import type {StringOptions} from './definition/type/string'
+import type {TextOptions} from './definition/type/text'
 import {type ArrayOptions} from './definition/type/array'
 import {type PreviewConfig} from './preview'
 

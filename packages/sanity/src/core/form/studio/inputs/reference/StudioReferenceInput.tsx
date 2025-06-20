@@ -13,21 +13,21 @@ import {from, throwError} from 'rxjs'
 import {catchError, mergeMap} from 'rxjs/operators'
 
 import {type FIXME} from '../../../../FIXME'
-import {useSchema} from '../../../../hooks'
+import {useSchema} from '../../../../hooks/useSchema'
 import {usePerspective} from '../../../../perspective/usePerspective'
-import {useDocumentPreviewStore} from '../../../../store'
-import {useSource} from '../../../../studio'
+import {useDocumentPreviewStore} from '../../../../store/_legacy/datastores'
+import {useSource} from '../../../../studio/source'
 import {useSearchMaxFieldDepth} from '../../../../studio/components/navbar/search/hooks/useSearchMaxFieldDepth'
 import {DEFAULT_STUDIO_CLIENT_OPTIONS} from '../../../../studioClient'
-import {isNonNullable} from '../../../../util'
+import {isNonNullable} from '../../../../util/isNonNullable'
 import {useFormValue} from '../../../contexts/FormValue'
 import {ReferenceInput} from '../../../inputs/ReferenceInput/ReferenceInput'
 import {
   type CreateReferenceOption,
   type EditReferenceEvent,
 } from '../../../inputs/ReferenceInput/types'
-import {type ObjectInputProps} from '../../../types'
-import {useReferenceInputOptions} from '../../contexts'
+import type {ObjectInputProps} from '../../../types/inputProps'
+import {useReferenceInputOptions} from '../../contexts/ReferenceInputOptions'
 import * as adapter from '../client-adapters/reference'
 import {resolveUserDefinedFilter} from './resolveUserDefinedFilter'
 

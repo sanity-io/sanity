@@ -4,7 +4,8 @@ import {describe, it} from 'vitest'
  * Some of these tests have no expect statement;
  * use of ts-expect-error serves the same purpose - TypeScript is the testrunner here
  */
-import {type DocumentDefinition, type StringDefinition} from '../src/schema/definition'
+import type {DocumentDefinition} from '../src/schema/definition/type/document'
+import type {StringDefinition} from '../src/schema/definition/type/string'
 import {defineArrayMember, defineField, defineType} from '../src/schema/types'
 
 describe('document types', () => {

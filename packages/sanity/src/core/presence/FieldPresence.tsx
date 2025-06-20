@@ -3,7 +3,7 @@ import {sortBy, uniqBy} from 'lodash'
 import {memo, useCallback, useContext, useId, useMemo, useState} from 'react'
 import {FormFieldPresenceContext} from 'sanity/_singletons'
 
-import {UserAvatar} from '../components/userAvatar'
+import {UserAvatar} from '../components/userAvatar/UserAvatar'
 import {AVATAR_DISTANCE, AVATAR_SIZE, DEFAULT_MAX_AVATARS_FIELDS} from './constants'
 import {FlexWrapper, InnerBox} from './FieldPresence.styled'
 import {usePresenceReporter} from './overlay/tracker'

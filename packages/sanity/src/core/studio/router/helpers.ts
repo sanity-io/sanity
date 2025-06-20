@@ -1,6 +1,6 @@
 import {type Router, type RouterState, STICKY_PARAMS} from 'sanity/router'
 
-import {type Tool} from '../../config'
+import type {Tool} from '../../config/types'
 import {isRecord} from '../../util/isRecord'
 import {type RouterEvent, type RouterStateEvent} from './types'
 import {getOrderedTools} from './util/getOrderedTools'

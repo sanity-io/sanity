@@ -1,4 +1,4 @@
-import {type WorkspaceSummary} from '../../config'
+import type {WorkspaceSummary} from '../../config/types'
 
 /** @internal */
 export interface ActiveWorkspaceMatcherContextValue {

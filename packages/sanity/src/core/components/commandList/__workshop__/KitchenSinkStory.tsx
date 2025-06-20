@@ -4,7 +4,7 @@ import {useBoolean} from '@sanity/ui-workshop'
 import {type KeyboardEvent, useCallback, useMemo, useRef, useState} from 'react'
 import {styled} from 'styled-components'
 
-import {Button} from '../../../../ui-components'
+import {Button} from '../../../../ui-components/button/Button'
 import {CommandList} from '../CommandList'
 import {
   type CommandListGetItemDisabledCallback,

@@ -1,8 +1,8 @@
 import {type AssetSourceComponentProps} from '@sanity/types'
 import {type ForwardedRef, forwardRef, memo} from 'react'
 
-import {useClient} from '../../../../hooks'
-import {useTranslation} from '../../../../i18n'
+import {useClient} from '../../../../hooks/useClient'
+import {useTranslation} from '../../../../i18n/hooks/useTranslation'
 import {DEFAULT_API_VERSION} from '../constants'
 import {MediaLibraryProvider} from './MediaLibraryProvider'
 import {SelectAssetsDialog} from './SelectAssetsDialog'

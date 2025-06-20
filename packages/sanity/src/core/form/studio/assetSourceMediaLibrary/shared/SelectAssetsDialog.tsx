@@ -2,8 +2,8 @@ import {type AssetFromSource, type FileSchemaType, type ImageSchemaType} from '@
 import {Flex, Stack, useTheme, useToast} from '@sanity/ui'
 import {type ReactNode, useCallback, useState} from 'react'
 
-import {Button} from '../../../../../ui-components'
-import {useTranslation} from '../../../../i18n'
+import {Button} from '../../../../../ui-components/button/Button'
+import {useTranslation} from '../../../../i18n/hooks/useTranslation'
 import {useAuthType} from '../hooks/useAuthType'
 import {useLinkAssets} from '../hooks/useLinkAssets'
 import {useMediaLibraryId} from '../hooks/useMediaLibraryId'

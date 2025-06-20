@@ -5,22 +5,20 @@ import {noop} from 'lodash'
 import {type ReactNode} from 'react'
 import {AddonDatasetContext, PerspectiveContext} from 'sanity/_singletons'
 
-import {
-  CopyPasteProvider,
-  type LocaleResourceBundle,
-  ResourceCacheProvider,
-  type SingleWorkspace,
-  SourceProvider,
-  WorkspaceProvider,
-  type WorkspaceSummary,
-} from '../../src/core'
+import {CopyPasteProvider} from '../../src/core/studio/copyPaste/CopyPasteProvider'
+import type {LocaleResourceBundle} from '../../src/core/i18n/types'
+import {ResourceCacheProvider} from '../../src/core/store/_legacy/ResourceCacheProvider'
+import {type SingleWorkspace, type WorkspaceSummary} from '../../src/core/config/types'
+import {SourceProvider} from '../../src/core/studio/source'
+import {WorkspaceProvider} from '../../src/core/studio/workspace'
 import {studioDefaultLocaleResources} from '../../src/core/i18n/bundles/studio'
 import {LocaleProviderBase} from '../../src/core/i18n/components/LocaleProvider'
 import {prepareI18n} from '../../src/core/i18n/i18nConfig'
 import {usEnglishLocale} from '../../src/core/i18n/locales'
 import {perspectiveContextValueMock} from '../../src/core/perspective/__mocks__/usePerspective.mock'
 import {ActiveWorkspaceMatcherProvider} from '../../src/core/studio/activeWorkspaceMatcher/ActiveWorkspaceMatcherProvider'
-import {route, RouterProvider} from '../../src/router'
+import {route} from '../../src/router/route'
+import {RouterProvider} from '../../src/router/RouterProvider'
 import {getMockWorkspace} from './getMockWorkspaceFromConfig'
 
 export interface TestProviderOptions {

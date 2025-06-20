@@ -11,10 +11,11 @@ import {useBoolean, useString} from '@sanity/ui-workshop'
 import {createContext, useMemo, useState} from 'react'
 import {styled} from 'styled-components'
 
-import {defineConfig, type Tool} from '../../../../config'
+import {defineConfig} from '../../../../config/defineConfig'
+import type {Tool} from '../../../../config/types'
 import {isNonNullable} from '../../../../util/isNonNullable'
 import {isTruthy} from '../../../../util/isTruthy'
-import {useNavbarComponent} from '../../../studio-components-hooks'
+import {useNavbarComponent} from '../../../studio-components-hooks/componentHooks'
 import {StudioProvider} from '../../../StudioProvider'
 
 const SearchFullscreenPortalCard = styled(Card)`

@@ -17,7 +17,7 @@ import {DocumentChangeContext} from 'sanity/_singletons'
 import {styled} from 'styled-components'
 
 import {structureLocaleNamespace} from '../../../../i18n'
-import {TimelineMenu} from '../../timeline'
+import {TimelineMenu} from '../../timeline/timelineMenu'
 import {TimelineError} from '../../timeline/TimelineError'
 import {useDocumentPane} from '../../useDocumentPane'
 

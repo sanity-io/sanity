@@ -1,7 +1,7 @@
 import {type ReactNode} from 'react'
 import {PortableTextMarkersContext} from 'sanity/_singletons'
 
-import {type PortableTextMarker} from '../../../types'
+import type {PortableTextMarker} from '../../../types/_transitional'
 
 export function PortableTextMarkersProvider(props: {
   markers: PortableTextMarker[]

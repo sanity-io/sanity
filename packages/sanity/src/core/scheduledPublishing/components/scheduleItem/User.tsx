@@ -1,4 +1,4 @@
-import {UserAvatar} from '../../../components/userAvatar'
+import {UserAvatar} from '../../../components/userAvatar/UserAvatar'
 
 interface Props {
   id: string

@@ -1,9 +1,9 @@
 /* eslint-disable simple-import-sort/imports */
 /* disabling for now because the imports trigger side effects causing test snapshots to update */
-import {type Config} from '../config'
+import type {Config} from '../config/types'
 import {type StudioThemeColorSchemeKey} from '../theme/types'
 import {GlobalStyle} from './GlobalStyle'
-import {type RouterHistory} from './router'
+import type {RouterHistory} from './router/types'
 import {StudioLayout} from './StudioLayout'
 import {StudioProvider} from './StudioProvider'
 

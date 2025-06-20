@@ -2,7 +2,8 @@ import {type Mutation as SanityMutation} from '@sanity/client'
 import {SanityEncoder} from '@sanity/mutate'
 import arrify from 'arrify'
 
-import {type Mutation, type Transaction} from '../../mutations'
+import type {Mutation} from '../../mutations/types'
+import type {Transaction} from '../../mutations/transaction'
 import {isTransaction} from '../../mutations/asserters'
 
 export interface TransactionPayload {

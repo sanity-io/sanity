@@ -7,7 +7,7 @@ import {
   useId,
 } from 'react'
 
-import {type MenuItemProps} from '../../../../../../ui-components'
+import type {MenuItemProps} from '../../../../../../ui-components/menuItem/MenuItem'
 import {FileMenuItem} from './FileInputMenuItem.styled'
 
 export interface FileInputMenuItemProps extends Omit<MenuItemProps, 'onSelect'> {

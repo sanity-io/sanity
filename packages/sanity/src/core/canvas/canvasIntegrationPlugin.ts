@@ -1,4 +1,4 @@
-import {definePlugin} from '../config'
+import {definePlugin} from '../config/definePlugin'
 import {EditInCanvasAction} from './actions/EditInCanvas/EditInCanvasAction'
 import {LinkToCanvasAction} from './actions/LinkToCanvas/LinkToCanvasAction'
 import {UnlinkFromCanvasAction} from './actions/UnlinkFromCanvas/UnlinkFromCanvasAction'

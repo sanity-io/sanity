@@ -1,10 +1,10 @@
 import {type Reference} from '@sanity/types'
 import {isValid} from 'date-fns'
 
-import {useSchema} from '../../../../../../../hooks'
+import {useSchema} from '../../../../../../../hooks/useSchema'
 import {useDateTimeFormat} from '../../../../../../../hooks/useDateTimeFormat'
 import {useUnitFormatter} from '../../../../../../../hooks/useUnitFormatter'
-import {useTranslation} from '../../../../../../../i18n'
+import {useTranslation} from '../../../../../../../i18n/hooks/useTranslation'
 import {
   type OperatorDateEqualValue,
   type OperatorDateLastValue,

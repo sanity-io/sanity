@@ -2,27 +2,25 @@ import {type ComponentType, type ReactNode} from 'react'
 
 import {type PreviewConfig} from '../preview'
 import {type InitialValueProperty, type SchemaValidationValue} from '../types'
-import {
-  type ArrayDefinition,
-  type BlockDefinition,
-  type BooleanDefinition,
-  type CrossDatasetReferenceDefinition,
-  type DateDefinition,
-  type DatetimeDefinition,
-  type DocumentDefinition,
-  type EmailDefinition,
-  type FileDefinition,
-  type GeopointDefinition,
-  type GlobalDocumentReferenceDefinition,
-  type ImageDefinition,
-  type NumberDefinition,
-  type ObjectDefinition,
-  type ReferenceDefinition,
-  type SlugDefinition,
-  type StringDefinition,
-  type TextDefinition,
-  type UrlDefinition,
-} from './type'
+import type {ArrayDefinition} from './type/array'
+import type {BlockDefinition} from './type/block'
+import type {BooleanDefinition} from './type/boolean'
+import type {CrossDatasetReferenceDefinition} from './type/crossDatasetReference'
+import type {DateDefinition} from './type/date'
+import type {DatetimeDefinition} from './type/datetime'
+import type {DocumentDefinition} from './type/document'
+import type {EmailDefinition} from './type/email'
+import type {FileDefinition} from './type/file'
+import type {GeopointDefinition} from './type/geopoint'
+import type {GlobalDocumentReferenceDefinition} from './type/globalDocumentReference'
+import type {ImageDefinition} from './type/image'
+import type {NumberDefinition} from './type/number'
+import type {ObjectDefinition} from './type/object'
+import type {ReferenceDefinition} from './type/reference'
+import type {SlugDefinition} from './type/slug'
+import type {StringDefinition} from './type/string'
+import type {TextDefinition} from './type/text'
+import type {UrlDefinition} from './type/url'
 import {type BaseSchemaDefinition} from './type/common'
 
 /**

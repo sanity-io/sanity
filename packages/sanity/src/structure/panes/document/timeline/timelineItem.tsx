@@ -14,7 +14,7 @@ import {
 } from 'sanity'
 import {css, styled} from 'styled-components'
 
-import {Tooltip} from '../../../../ui-components'
+import {Tooltip} from '../../../../ui-components/tooltip/Tooltip'
 import {getTimelineEventIconComponent} from './helpers'
 import {TIMELINE_ITEM_I18N_KEY_MAPPING} from './timelineI18n'
 import {UserAvatarStack} from './userAvatarStack'

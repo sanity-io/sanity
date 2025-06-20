@@ -3,9 +3,9 @@ import {type FormNodeValidation} from '@sanity/types'
 import {Box, Flex, type Placement, Stack, Text} from '@sanity/ui'
 import {styled} from 'styled-components'
 
-import {Tooltip} from '../../../../ui-components'
-import {useListFormat} from '../../../hooks'
-import {useTranslation} from '../../../i18n'
+import {Tooltip} from '../../../../ui-components/tooltip/Tooltip'
+import {useListFormat} from '../../../hooks/useListFormat'
+import {useTranslation} from '../../../i18n/hooks/useTranslation'
 
 const StatusIconWrapper = styled.div`
   left: 8px;

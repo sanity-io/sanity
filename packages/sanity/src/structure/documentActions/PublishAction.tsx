@@ -17,7 +17,8 @@ import {
   useValidationStatus,
 } from 'sanity'
 
-import {structureLocaleNamespace, type StructureLocaleResourceKeys} from '../i18n'
+import {structureLocaleNamespace} from '../i18n'
+import type {StructureLocaleResourceKeys} from '../i18n/resources'
 import {useDocumentPane} from '../panes/document/useDocumentPane'
 import {DocumentPublished} from './__telemetry__/documentActions.telemetry'
 
