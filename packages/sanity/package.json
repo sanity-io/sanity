@@ -165,7 +165,7 @@
     "@sanity/diff-patch": "^5.0.0",
     "@sanity/eventsource": "^5.0.2",
     "@sanity/export": "^3.44.0",
-    "@sanity/icons": "^3.7.0",
+    "@sanity/icons": "^3.7.3",
     "@sanity/id-utils": "^1.0.0",
     "@sanity/image-url": "^1.0.2",
     "@sanity/import": "^3.38.2",
