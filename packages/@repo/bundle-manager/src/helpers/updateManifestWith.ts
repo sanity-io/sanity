@@ -4,7 +4,7 @@ import {type Manifest} from '../types'
 
 export async function updateManifestWith(
   bucket: Bucket,
-  updater: (manifest: Manifest | undefined) => Manifest,
+  updater: (manifest: Manifest | undefined) => Manifest | undefined,
 ) {
   // note: look into enabling versioning on the bucket
   const file = bucket.file('modules/v1/manifest-v1.json')
@@ -21,6 +21,9 @@ export async function updateManifestWith(
   }
 
   const updatedManifest = updater(existingManifest)
+  if (!updatedManifest) {
+    return
+  }
 
   try {
     await file.save(JSON.stringify(updatedManifest), {

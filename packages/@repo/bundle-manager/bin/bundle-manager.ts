@@ -3,6 +3,7 @@
 import yargs from 'yargs'
 
 import {tagVersion, uploadBundles} from '../src'
+import {verify} from '../src/commands/verify'
 
 // eslint-disable-next-line @typescript-eslint/no-unused-expressions
 yargs(process.argv.slice(2))
@@ -42,6 +43,11 @@ yargs(process.argv.slice(2))
         process.exit(1)
       })
     },
+  })
+  .command({
+    command: 'verify',
+    describe: 'Verify read/write access to bucket',
+    handler: () => verify(),
   })
   .demandCommand(1, 'must provide a valid command')
   .help('h')
