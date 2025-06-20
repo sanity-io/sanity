@@ -5,7 +5,7 @@ import {
   type ImageSchemaType,
 } from '@sanity/types'
 import {useTheme, useToast} from '@sanity/ui'
-import {type ReactNode, useCallback, useEffect, useState} from 'react'
+import {createRef, type ReactNode, useCallback, useEffect, useState} from 'react'
 
 import {useTranslation} from '../../../../i18n'
 import {useAuthType} from '../hooks/useAuthType'
@@ -49,6 +49,10 @@ export const UploadAssetsDialog = function UploadAssetsDialog(
   const pluginApiVersion = pluginConfig.__internal.pluginApiVersion
   const appBasePath = pluginConfig.__internal.appBasePath
   const iframeUrl = `${appHost}${appBasePath}/plugin/${pluginApiVersion}/library/${libraryId}/upload?scheme=${dark ? 'dark' : 'light'}&auth=${authType}`
+  const uploaderRef = createRef<{
+    uploader: AssetSourceUploader
+    unsubscribe: () => void
+  }>()
 
   const [pageReadyForUploads, setPageReadyForUploads] = useState(false)
 
@@ -73,7 +77,6 @@ export const UploadAssetsDialog = function UploadAssetsDialog(
   const handlePluginMessage = useCallback(
     (message: PluginPostMessage) => {
       if (!open) return
-
       // Initiate the upload if the iframe is ready
       if (message.type === 'pageLoaded' && message.page === 'upload') {
         setPageReadyForUploads(true)
@@ -117,21 +120,28 @@ export const UploadAssetsDialog = function UploadAssetsDialog(
           setPageReadyForUploads(false)
         }
       }
-      return uploader.subscribe((event) => {
-        if (event.type === 'status' && event.status === 'aborted') {
-          postMessage({
-            type: 'abortUploadRequest',
-            files: [
-              {
-                id: event.file.id,
-              },
-            ],
-          })
-        }
-      })
+      const subscribe = () => {
+        return uploader.subscribe((event) => {
+          if (event.type === 'status' && event.status === 'aborted') {
+            postMessage({
+              type: 'abortUploadRequest',
+              files: [
+                {
+                  id: event.file.id,
+                },
+              ],
+            })
+          }
+        })
+      }
+      uploaderRef.current = {
+        uploader,
+        unsubscribe: subscribe(),
+      }
+      return uploaderRef.current.unsubscribe
     }
-    return undefined
-  }, [open, pageReadyForUploads, postMessage, uploader])
+    return uploaderRef.current?.unsubscribe()
+  }, [open, pageReadyForUploads, postMessage, uploader, uploaderRef])
 
   if (!open) {
     return null
