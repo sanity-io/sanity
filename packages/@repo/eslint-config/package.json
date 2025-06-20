@@ -17,7 +17,7 @@
     "eslint-config-turbo": "^2.5.4",
     "eslint-import-resolver-typescript": "^4.4.3",
     "eslint-plugin-import": "^2.31.0",
-    "eslint-plugin-oxlint": "^1.1.0",
+    "eslint-plugin-oxlint": "^1.2.0",
     "eslint-plugin-react": "^7.37.5",
     "eslint-plugin-react-compiler": "19.1.0-rc.2",
     "eslint-plugin-react-hooks": "experimental",
@@ -26,6 +26,6 @@
     "eslint-plugin-unicorn": "^59.0.1",
     "eslint-plugin-unused-imports": "^4.1.4",
     "globals": "catalog:",
-    "typescript-eslint": "^8.34.0"
+    "typescript-eslint": "^8.34.1"
   }
 }
