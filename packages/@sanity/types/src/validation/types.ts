@@ -1,4 +1,8 @@
 import {type SanityClient} from '@sanity/client'
+import {
+  type Asset as MediaLibraryAsset,
+  type AssetInstanceDocument,
+} from '@sanity/media-library-types'
 
 import {type SanityDocument} from '../documents'
 import {type ValidationMarker} from '../markers'
@@ -159,6 +163,7 @@ export interface Rule {
   optional(): Rule
   required(): Rule
   custom<T = unknown>(fn: CustomValidator<T>, options?: {bypassConcurrencyLimit?: boolean}): Rule
+  media<T extends MediaAssetTypes = MediaAssetTypes>(fn: MediaValidator<T>): Rule
   min(len: number | string | FieldReference): Rule
   max(len: number | string | FieldReference): Rule
   length(len: number | FieldReference): Rule
@@ -218,6 +223,7 @@ export type RuleSpec =
   | {flag: 'greaterThan'; constraint: number | FieldReference}
   | {flag: 'stringCasing'; constraint: 'uppercase' | 'lowercase'}
   | {flag: 'assetRequired'; constraint: {assetType: 'asset' | 'image' | 'file'}}
+  | {flag: 'media'; constraint: MediaValidator<any>}
   | {
       flag: 'regex'
       constraint: {
@@ -404,6 +410,34 @@ export type CustomValidatorResult =
 export interface CustomValidator<T = unknown> {
   (value: T, context: ValidationContext): CustomValidatorResult | Promise<CustomValidatorResult>
   bypassConcurrencyLimit?: boolean
+}
+
+/** @public */
+export type MediaAssetTypes = AssetInstanceDocument['_type']
+
+/** @public */
+export interface MediaValidator<T extends MediaAssetTypes = MediaAssetTypes> {
+  (
+    value: MediaValidationValue<T>,
+    context: ValidationContext,
+  ): CustomValidatorResult | Promise<CustomValidatorResult>
+}
+
+/** @public */
+export interface MediaValidationValue<T extends MediaAssetTypes = MediaAssetTypes> {
+  /**
+   * Media information
+   */
+  media: {
+    /**
+     * The Media Library Asset.
+     */
+    asset: MediaLibraryAsset & {currentVersion: Extract<AssetInstanceDocument, {_type: T}>}
+  }
+  /**
+   * The field value which the media is used in.
+   */
+  value: unknown
 }
 
 /** @public */

@@ -37,8 +37,7 @@
   "module": "./lib/index.mjs",
   "types": "./lib/index.d.ts",
   "files": [
-    "lib",
-    "src"
+    "lib"
   ],
   "scripts": {
     "build": "pkg-utils build --strict --check --clean",
@@ -51,7 +50,8 @@
     "watch": "pkg-utils watch"
   },
   "dependencies": {
-    "@sanity/client": "^7.6.0"
+    "@sanity/client": "^7.6.0",
+    "@sanity/media-library-types": "^1.0.0"
   },
   "devDependencies": {
     "@repo/eslint-config": "workspace:*",

@@ -3,13 +3,9 @@ name: CLI Unit tests
 on:
   # Build on pushes branches that have a PR (including drafts)
   pull_request:
-    paths-ignore:
-      - "examples/**"
   # Build on commits pushed to branches without a PR if it's in the allowlist
   push:
     branches: [main]
-    paths-ignore:
-      - "examples/**"
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.head_ref || github.run_id }}
@@ -52,24 +48,58 @@ jobs:
 
       - uses: actions/checkout@v4
         if: steps.check_release.outputs.skip != 'true'
+        with:
+          fetch-depth: 0
+
+      - name: Check if only examples files changed
+        if: steps.check_release.outputs.skip != 'true'
+        id: check_examples_only
+        run: |
+          if [ "${{ github.event_name }}" = "pull_request" ]; then
+            # For PRs, check files changed in the PR
+            CHANGED_FILES=$(git diff --name-only origin/${{ github.base_ref }}...HEAD)
+          else
+            # For pushes, check files in the last commit
+            CHANGED_FILES=$(git diff --name-only HEAD~1)
+          fi
+
+          echo "Changed files:"
+          echo "$CHANGED_FILES"
+
+          # Check if all changed files are in examples/ directory
+          EXAMPLES_ONLY="true"
+          while IFS= read -r file; do
+            if [[ ! "$file" =~ ^examples/ ]]; then
+              EXAMPLES_ONLY="false"
+              break
+            fi
+          done <<< "$CHANGED_FILES"
+
+          echo "examples_only=$EXAMPLES_ONLY" >> $GITHUB_OUTPUT
+
+      - name: Skip CLI tests for examples-only changes
+        if: steps.check_release.outputs.skip != 'true' && steps.check_examples_only.outputs.examples_only == 'true'
+        run: |
+          echo "Only examples files changed, skipping CLI tests"
+          exit 0
       - uses: pnpm/action-setup@v4
-        if: steps.check_release.outputs.skip != 'true'
+        if: steps.check_release.outputs.skip != 'true' && steps.check_examples_only.outputs.examples_only != 'true'
       - uses: actions/setup-node@v4
-        if: steps.check_release.outputs.skip != 'true'
+        if: steps.check_release.outputs.skip != 'true' && steps.check_examples_only.outputs.examples_only != 'true'
         with:
           cache: pnpm
           node-version: ${{ matrix.node }}
 
       - name: Install project dependencies
-        if: steps.check_release.outputs.skip != 'true'
+        if: steps.check_release.outputs.skip != 'true' && steps.check_examples_only.outputs.examples_only != 'true'
         run: pnpm install
 
       - name: Build CLI
-        if: steps.check_release.outputs.skip != 'true'
+        if: steps.check_release.outputs.skip != 'true' && steps.check_examples_only.outputs.examples_only != 'true'
         run: pnpm build --output-logs=full --log-order=grouped # Needed for CLI tests
 
       - name: Test
-        if: steps.check_release.outputs.skip != 'true'
+        if: steps.check_release.outputs.skip != 'true' && steps.check_examples_only.outputs.examples_only != 'true'
         id: test
         run: pnpm test:vitest --retry 4 --silent --project=@sanity/cli
         env:

@@ -1,8 +1,6 @@
 name: eFPS Test
 on:
   pull_request:
-    paths-ignore:
-      - "examples/**"
   workflow_dispatch:
     inputs:
       reference_tag:

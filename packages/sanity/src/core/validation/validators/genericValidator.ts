@@ -6,7 +6,7 @@ import {isLocalizedMessages, localizeMessage} from '../util/localizeMessage'
 import {pathToString} from '../util/pathToString'
 import {typeString} from '../util/typeString'
 
-const SLOW_VALIDATOR_TIMEOUT = 5000
+export const SLOW_VALIDATOR_TIMEOUT = 5000
 
 const formatValidationErrors = (options: {
   message: string | undefined
