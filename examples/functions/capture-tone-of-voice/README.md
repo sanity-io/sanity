@@ -18,7 +18,37 @@ This function automatically analyzes the tone of voice of your content using San
 - Stores tone analysis directly in the document for easy reference
 - Enables quick review of content tone during editing
 
+## Compatible Templates
+
+This function is built to be compatible with any of [the official "clean" templates](https://www.sanity.io/exchange/type=templates/by=sanity). We recommend testing the function out in one of those after you have installed them locally.
+
+### Adding the toneOfVoice field to your schema
+
+If you're using the [nextjs-clean template](https://github.com/sanity-io/sanity-template-nextjs-clean), you'll need to add a `toneOfVoice` field to your post schema:
+
+1. Open `studio/src/schemaTypes/documents/post.ts`
+2. Add this field to the `fields` array:
+
+```typescript
+defineField({
+  name: 'toneOfVoice',
+  title: 'Tone of Voice',
+  type: 'text',
+  readOnly: () => true, // This is optional
+  description: 'Tone of voice analysis will be automatically generated when you publish a post',
+}),
+```
+
+3. Deploy your updated schema:
+
+```bash
+# From the studio/ folder
+npx sanity schema deploy
+```
+
 ## Implementation
+
+**Important:** Run these commands from the root of your project (not inside the `studio/` folder).
 
 1. **Initialize the example**
 
@@ -38,45 +68,86 @@ This function automatically analyzes the tone of voice of your content using San
 
    ```ts
    // sanity.blueprint.ts
-   defineDocumentFunction({
-     name: 'capture-tone-of-voice',
-     memory: 2,
-     timeout: 60,
-     on: ['publish'],
-     filter: "_type == 'post'"",
-     projection: '_id',
+   import {defineBlueprint, defineDocumentFunction} from '@sanity/blueprints'
+
+   export default defineBlueprint({
+     resources: [
+       defineDocumentFunction({
+         type: 'sanity.function.document',
+         name: 'capture-tone-of-voice',
+         src: './functions/capture-tone-of-voice',
+         memory: 2,
+         timeout: 60,
+         event: {
+           on: ['publish'],
+           filter: "_type == 'post'",
+           projection: '_id',
+         },
+       }),
+     ],
    })
    ```
 
 3. **Install dependencies**
 
+   Install dependencies in the project root:
+
    ```bash
    npm install
    ```
 
-4. **Add the required schema field**
+   And install function dependencies:
 
-   Add a `toneOfVoice` field to your Studio schema:
+   ```bash
+   npm install @sanity/functions
+   cd functions/capture-tone-of-voice
+   npm install
+   cd ../..
+   ```
 
-   ```ts
-   defineField({
-      name: 'toneOfVoice',
-      title: 'Tone of Voice',
-      type: 'text',
-      readOnly: () => true, // This is optional
-    }),
+4. **Make sure you have a schema deployed**
+
+   From the studio folder, run:
+
+   ```bash
+   # In the studio/ folder
+   npx sanity schema deploy
    ```
 
 ## Testing the function locally
 
-You can test the capture-tone-of-voice function locally using the Sanity CLI before deploying:
+You can test the capture-tone-of-voice function locally using the Sanity CLI before deploying it to production.
+
+**Important:** Document functions require that the document ID used in testing actually exists in your dataset. The examples below show how to work with real document IDs.
 
 ### 1. Basic Function Test
 
-Test with the included sample document:
+Since document functions require the document ID to exist in your dataset, create a test document first:
 
 ```bash
+# From the studio/ folder, create a test document
+cd studio
+npx sanity documents create ../functions/capture-tone-of-voice/document.json --replace
+```
+
+Then test the function with the created document (from project root):
+
+```bash
+# Back to project root for function testing
+cd ..
 npx sanity functions test capture-tone-of-voice --file functions/capture-tone-of-voice/document.json
+```
+
+**Alternative:** Test with a real document from your dataset:
+
+```bash
+# From the studio/ folder, find and export an existing post document
+cd studio
+npx sanity documents query "*[_type == 'post'][0]" > ../real-post.json
+
+# Back to project root for function testing
+cd ..
+npx sanity functions test capture-tone-of-voice --file real-post.json
 ```
 
 ### 2. Interactive Development Mode
@@ -87,41 +158,76 @@ Start the development server for interactive testing:
 npx sanity functions dev
 ```
 
+This opens an interactive playground where you can test functions with custom data
+
 ### 3. Test with Custom Data
 
-Test with your own document data by:
-
-1. Creating an ephemeral draft document
-2. Testing your function against that document
-3. Deleting the draft document
+For custom data testing, you still need to use a real document ID that exists in your dataset:
 
 ```bash
-# Requires sanity.cli.js|ts to be present https://www.sanity.io/docs/apis-and-sdks/cli#k4baf8325e0e3
-sanity documents create functions/capture-tone-of-voice/document.json --replace &&
-npx sanity functions test capture-tone-of-voice --file functions/capture-tone-of-voice/document.json &&
-npx sanity documents delete drafts.test-document-id
+# From the studio/ folder, create or find a real document ID
+cd studio
+REAL_DOC_ID=$(npx sanity documents query "*[_type == 'post'][0]._id")
 
+# Create a temporary JSON file with custom data in project root
+cd ..
+cat > test-custom-data.json << EOF
+{
+  "_type": "post",
+  "_id": $REAL_DOC_ID,
+  "content": [
+    {
+      "_type": "block",
+      "_key": "test-block",
+      "children": [
+        {
+          "_type": "span",
+          "_key": "test-span",
+          "text": "Your custom blog post content here..."
+        }
+      ]
+    }
+  ]
+}
+EOF
+
+# Test with the custom data file
+npx sanity functions test capture-tone-of-voice --file test-custom-data.json
 ```
 
 ### 4. Test with Real Document Data
 
-Capture a real document from your dataset:
+The most reliable approach is to test with existing documents from your dataset:
 
 ```bash
-# Requires sanity.cli.js|ts to be present https://www.sanity.io/docs/apis-and-sdks/cli#k4baf8325e0e3
-# Export a real document for testing
-sanity documents query '*[_id == "<insert_document_id>"][0]{_id, _type}' >> functions/capture-tone-of-voice/actual-document.json
+# From the studio/ folder, find and export a document that matches your function's filter
+cd studio
+npx sanity documents query "*[_type == 'post'][0]" > ../test-real-document.json
 
-# Test with the real document
-npx sanity functions test capture-tone-of-voice --file functions/capture-tone-of-voice/actual-document.json
+# Back to project root for function testing
+cd ..
+npx sanity functions test capture-tone-of-voice --file test-real-document.json
+```
+
+### 5. Enable Debugging
+
+To see detailed logs during testing, modify the function temporarily to add logging:
+
+```typescript
+// Add this to your function for debugging
+console.log('Event data:', JSON.stringify(event.data, null, 2))
+console.log('Tone analysis result:', result)
 ```
 
 ### Testing Tips
 
+- **Use real document IDs** - Document functions require IDs that exist in your dataset
+- **Query for test documents** - Use `npx sanity documents query` to find suitable test documents
 - **Use Node.js v22.x** locally to match production runtime
 - **Test edge cases** like missing fields or unexpected data
 - **Check function logs** in CLI output for debugging
 - **Test without external API calls** first when applicable
+- **Create test content** - If you don't have suitable documents, create some test documents first
 
 ## Requirements
 
@@ -136,11 +242,12 @@ npx sanity functions test capture-tone-of-voice --file functions/capture-tone-of
 
 When a document is created or updated, the function automatically:
 
-1. Analyzes the content in the `content` field
-2. Generates a tone of voice analysis using Sanity's AI (temporarily utilizing the toneOfVoice field)
-3. Writes the tone of voice to the capture-tone-of-voice field
+1. **Triggers** on the publish event for post documents
+2. **Analyzes** the content in the `content` field using Sanity's AI
+3. **Generates** a tone of voice analysis
+4. **Writes** the tone analysis to the `toneOfVoice` field
 
-This results in an automatic tone analysis that helps content creators maintain consistent voice across their content.
+**Result:** Content creators get automatic tone analysis that helps maintain consistent voice across their content.
 
 ## Customization
 
@@ -148,10 +255,10 @@ This results in an automatic tone analysis that helps content creators maintain 
 
 ```typescript
 instructionParams: {
-	content: {
-		type: "field",
-		path: "DESIRED_FIELD",
-	},
+  content: {
+    type: "field",
+    path: "DESIRED_FIELD",
+  },
 },
 ```
 
