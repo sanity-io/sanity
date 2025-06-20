@@ -171,6 +171,7 @@ export function BaseFileInput(props: BaseFileInputProps) {
         uploadWith: uploadExternalFileToDataset,
       })
       setSelectedAssetSource(null)
+      setIsUploading(false) // This function is also called on after a successful upload completion though an asset source, so reset that state here.
     },
     [onChange, schemaType, uploadExternalFileToDataset],
   )
@@ -209,8 +210,8 @@ export function BaseFileInput(props: BaseFileInputProps) {
                   break
                 case 'all-complete':
                   onChange(PatchEvent.from([unset([UPLOAD_STATUS_KEY])]))
-                  setSelectedAssetSource(null)
-                  setIsUploading(false)
+                  uploaderRef.current?.unsubscribe()
+                  uploaderRef.current = null
                   break
                 default:
               }
@@ -224,7 +225,7 @@ export function BaseFileInput(props: BaseFileInputProps) {
           onChange(PatchEvent.from([unset([UPLOAD_STATUS_KEY])]))
           setIsUploading(false)
           setSelectedAssetSource(null)
-          uploaderRef.current = null
+          uploaderRef.current?.unsubscribe()
           push({
             status: 'error',
             description: t('asset-sources.common.uploader.upload-failed.description'),
@@ -240,19 +241,13 @@ export function BaseFileInput(props: BaseFileInputProps) {
   // Abort asset source uploads and unsubscribe from the uploader is the component unmounts
   useEffect(() => {
     return () => {
-      if (uploaderRef.current?.uploader) {
-        uploaderRef.current?.uploader.abort()
-      }
-      if (uploaderRef.current?.unsubscribe) {
-        uploaderRef.current?.unsubscribe()
-      }
+      uploaderRef.current?.uploader?.abort()
+      uploaderRef.current?.unsubscribe()
     }
   }, [])
 
   const handleCancelUpload = useCallback(() => {
-    if (uploaderRef.current?.uploader) {
-      uploaderRef.current?.uploader.abort()
-    }
+    uploaderRef.current?.uploader?.abort()
   }, [])
 
   const renderAsset = useCallback(() => {
