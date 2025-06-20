@@ -28,13 +28,10 @@ This function expects your post schema to include:
 
 - `title` field (string)
 - `slug` field (slug type with `current` property)
-- `_updatedAt` (automatically provided by Sanity)
 
 Most official templates already include these fields.
 
 ## Implementation
-
-**Important:** Run these commands from the root of your project (not inside the `studio/` folder).
 
 1. **Set up Slack Integration**
 
@@ -53,7 +50,7 @@ Most official templates already include these fields.
       - Once your app is created, go to "OAuth & Permissions" in the sidebar
       - Scroll down to the "Scopes" section
       - Under "Bot Token Scopes", click "Add an OAuth Scope"
-      - Add the `chat:write` permission (this allows your bot to send messages)
+      - Add the `chat:write` permission (this allows your bot to send messages).
 
    3. **Install the app:**
 
@@ -63,12 +60,11 @@ Most official templates already include these fields.
 
    4. **Invite the app to your channel:**
 
-      - Go to the Slack channel where you want notifications (e.g., `#kens-test-channel`)
+      - Go to the Slack channel where you want notifications (e.g., `#test-channel`)
       - Type `/invite @your-app-name` or click the channel name → Settings → Integrations → Add apps
       - Select your newly created app to add it to the channel
 
-      **Important:** Your Slack app must be invited to the channel to send messages. If you forget this step, you'll get a "channel_not_found" error.
-      ![Invite Slack App](invite-slack-app.png)
+      ![Invite Slack App](invite-slack-app.png){width=600}
 
 2. **Initialize the example**
 
@@ -96,12 +92,12 @@ Most official templates already include these fields.
          type: 'sanity.function.document',
          name: 'slack-notification',
          src: './functions/slack-notification',
-         memory: 2,
-         timeout: 30,
+         memory: 1,
+         timeout: 10,
          event: {
            on: ['publish'],
            filter: "_type == 'post'",
-           projection: '_id',
+           projection: '_id, title, slug, _updatedAt',
          },
        }),
      ],
@@ -113,13 +109,13 @@ Most official templates already include these fields.
    Install dependencies in the project root:
 
    ```bash
+   npm install @sanity/functions
    npm install
    ```
 
    And install function dependencies:
 
    ```bash
-   npm install @sanity/functions
    cd functions/slack-notification
    npm install
    cd ../..
@@ -201,12 +197,15 @@ DateTime Published: 1/15/2024, 10:30:00 AM
 
 ## Customization
 
-You can customize the notification by modifying the function code:
+### Change URLs and Slack channel
 
-### Change the Slack channel
+You can customize the notification by modifying the configuration constants at the top of the function:
 
 ```typescript
-channel: 'your-channel-name', // Update this line
+// Configuration constants
+const baseUrl = 'https://your-domain.com' // Update to your production URL
+const studioUrl = 'https://your-studio.sanity.studio' // Update to your studio URL
+const slackChannel = 'your-channel-name' // Update to your target channel
 ```
 
 ### Modify the message format

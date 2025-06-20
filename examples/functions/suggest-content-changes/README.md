@@ -93,13 +93,13 @@ npx sanity schema deploy
    Install dependencies in the project root:
 
    ```bash
+   npm install @sanity/functions
    npm install
    ```
 
    And install function dependencies:
 
    ```bash
-   npm install @sanity/functions
    cd functions/suggest-content-changes
    npm install
    cd ../..

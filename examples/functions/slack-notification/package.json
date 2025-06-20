@@ -10,14 +10,14 @@
     "type": "sanity.function.document",
     "name": "slack-notification",
     "src": "./functions/slack-notification",
-    "memory": 2,
-    "timeout": 30,
+    "memory": 1,
+    "timeout": 10,
     "event": {
       "on": [
         "publish"
       ],
       "filter": "_type == 'post'",
-      "projection": "_id"
+      "projection": "_id, title, slug, _updatedAt"
     }
   },
   "exampleInstructions": "Add this resource to your Blueprint config's resources array. Go to README.md for more details on how to use this function."
