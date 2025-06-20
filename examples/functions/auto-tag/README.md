@@ -174,11 +174,6 @@ cd ..
 cat > test-custom-data.json << EOF
 {
   "_type": "post",
-<<<<<<< HEAD
-  "_id": "your-post-id",
-  "content": "Your blog post content here..."
-}'
-=======
   "_id": $REAL_DOC_ID,
   "content": [
     {
@@ -198,7 +193,6 @@ EOF
 
 # Test with the custom data file
 npx sanity functions test auto-tag --file test-custom-data.json
->>>>>>> d4316e0a87 (docs(examples): update auto-tag function configuration and testing instructions)
 ```
 
 ### 4. Test with Real Document Data
@@ -239,11 +233,7 @@ console.log('Generated tags:', result.tags)
 
 - A Sanity project with Functions enabled
 - A schema with a `post` document type containing:
-<<<<<<< HEAD
-  - A `content` field (for content analysis)
-=======
   - A `content` field with portable text (for content analysis)
->>>>>>> d4316e0a87 (docs(examples): update auto-tag function configuration and testing instructions)
   - A `tags` array field (for storing generated tags)
 - Access to Sanity's AI capabilities
 - Node.js v22.x for local development
@@ -253,11 +243,7 @@ console.log('Generated tags:', result.tags)
 When a content editor publishes a new blog post without tags, the function automatically:
 
 1. **Triggers** on the publish event for post documents without existing tags
-<<<<<<< HEAD
-2. **Analyzes** the post's content content using AI
-=======
 2. **Analyzes** the post's content field using AI
->>>>>>> d4316e0a87 (docs(examples): update auto-tag function configuration and testing instructions)
 3. **Retrieves** existing tags from other published posts for vocabulary consistency
 4. **Generates** 3 relevant tags, prioritizing reuse of existing tags when appropriate
 5. **Applies** the tags directly to the published document
