@@ -29,6 +29,8 @@ The `functions/` directory contains examples of [Sanity Functions](https://www.s
 
 - **[auto-tag](./functions/auto-tag/README.md)** - AI-powered automatic tagging for blog posts
 - **[first-published](./functions/first-published/README.md)** - Automatic timestamp tracking for first publication
+- **[slack-notification](./functions/slack-notification/README.md)** - Automatic Slack notifications when content is published
+- **[suggest-content-changes](./functions/suggest-content-changes/README.md)** - AI-powered content analysis and improvement suggestions
 
 ## 🎨 Studios
 
