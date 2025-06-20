@@ -4,7 +4,6 @@ import {beforeEach, describe, expect, it, vi} from 'vitest'
 
 import {useClient} from '../../hooks/useClient'
 import {useFeatureEnabled} from '../../hooks/useFeatureEnabled'
-import {type Schedule} from '../../studio/timezones/types'
 import {useWorkspace} from '../../studio/workspace'
 import {cachedUsedScheduledPublishing} from '../tool/contexts/useHasUsedScheduledPublishing'
 import {
@@ -26,7 +25,7 @@ vi.mock('../../hooks/useClient', () => ({
 
 const useClientMock = useClient as ReturnType<typeof vi.fn>
 const mockObservableRequest = vi.fn((schedules) => of({schedules}))
-const scheduleResponse: Schedule[] = [
+const scheduleResponse = [
   {
     id: 'sch-2scsu4bVs6S66HXyCb8LYqpsrA9',
     name: '2025-02-14T14:40:00.000Z',
@@ -43,7 +42,7 @@ const scheduleResponse: Schedule[] = [
   },
 ]
 
-const mockClient = (schedules: Schedule[]) => {
+const mockClient = (schedules: typeof scheduleResponse) => {
   useClientMock.mockReturnValue({
     config: () => ({dataset: 'dataset', projectId: 'projectId'}),
     observable: {

@@ -76,6 +76,12 @@
             "name": "react-compiler-runtime",
             "message": "Do not attempt importing from the compiler runtime manually, instead let react compiler transform it"
           }
+        ],
+        "patterns": [
+          {
+            "group": ["**/scheduled-publishing/**"],
+            "message": "Importing from scheduled-publishing folder is discouraged since we are dropping support for it in the near future"
+          }
         ]
       }
     ],
