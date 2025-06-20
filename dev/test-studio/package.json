@@ -18,7 +18,7 @@
   },
   "dependencies": {
     "@portabletext/block-tools": "^1.1.30",
-    "@portabletext/editor": "^1.53.1",
+    "@portabletext/editor": "^1.54.2",
     "@portabletext/react": "^3.2.1",
     "@sanity/assist": "^4.3.0",
     "@sanity/cli": "workspace:*",
