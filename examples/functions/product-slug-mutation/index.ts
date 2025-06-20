@@ -23,7 +23,7 @@ export const handler = documentEventHandler(
 
     try {
       const result = await client.patch(data._id, {
-        setIfMissing: {
+        set: {
           slug: {
             current: data.store.slug.current,
           },

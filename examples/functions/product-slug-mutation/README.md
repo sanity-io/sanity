@@ -6,7 +6,7 @@
 
 When working with e-commerce products in Sanity, you often need to maintain both a nested slug structure (like `store.slug.current`) and a root-level slug field for easier querying and URL generation. Manually keeping these two slug fields in sync is error-prone and time-consuming, leading to inconsistent URLs and broken links.
 
-While this is a real example if you're using Sanity Connect Shopify app, it's also a good example of manipulating data in your schema that you might not have control of. Rather than write a custom Sync for your product data, this small change can improve some of the UX that would otherwise be out of your control.
+While this is a real example, if you're using [Sanity Connect for Shopify](https://www.sanity.io/docs/apis-and-sdks/sanity-connect-for-shopify) app, it's also a good example of manipulating data in your schema that you might not have control of. Rather than write a custom Sync for your product data, this small change can improve some of the UX that would otherwise be out of your control.
 
 ## Solution
 
@@ -46,7 +46,7 @@ This function automatically synchronizes the nested `store.slug.current` field t
      timeout: 10,
      on: ['publish'],
      filter: "_type == 'product' && store.slug.current != slug.current",
-     projection: '_id'
+     projection: '_id',
    })
    ```
 
@@ -67,7 +67,7 @@ This function automatically synchronizes the nested `store.slug.current` field t
          readOnly: true, // Since it's managed by the function
        },
        // ... other fields
-     ]
+     ],
    }
    ```
 
@@ -86,7 +86,6 @@ This function automatically synchronizes the nested `store.slug.current` field t
 ## Testing the function locally
 
 You can test the product-slug-mutation function locally using the Sanity CLI before deploying:
-
 
 ### 1. Interactive Development Mode
 
@@ -147,7 +146,7 @@ console.log('Result:', result)
 ## Requirements
 
 - A Sanity project with Functions enabled
-- Ideally a schema with products linked from Sanity-Connect (Shopify plugin)
+- Ideally a schema with products linked from [Sanity Connect for Shopify](https://www.sanity.io/docs/apis-and-sdks/sanity-connect-for-shopify)
 - Product documents with the following schema structure:
   - `_type: 'product'`
   - `store.slug.current` (string) - The source slug field
@@ -219,18 +218,22 @@ const result = await client.patch(data._id, {
 ### Common Issues
 
 **Error: "Cannot find module '@sanity/client'"**
+
 - Cause: Dependencies not installed
 - Solution: Run `npm install` in the function directory
 
 **Error: "Function not triggered on product publish"**
+
 - Cause: Filter condition too restrictive
 - Solution: Check that your product documents match the filter condition in the blueprint configuration
 
 **Error: "Slug fields not synchronized"**
+
 - Cause: Missing or malformed slug data
 - Solution: Verify that `store.slug.current` exists and contains valid string data
 
 **Error: "Permission denied"**
+
 - Cause: Function lacks write permissions
 - Solution: Ensure your Sanity project has Functions enabled and proper permissions configured
 
@@ -246,4 +249,3 @@ const result = await client.patch(data._id, {
 - [Auto-Tag Function](https://github.com/sanity-io/sanity/tree/main/examples/functions/auto-tag) - Automatically tag documents based on content
 - [SEO Field Sync](https://github.com/sanity-io/sanity/tree/main/examples/functions/seo-sync) - Synchronize SEO fields across document types
 - [URL Generation](https://github.com/sanity-io/sanity/tree/main/examples/functions/url-generation) - Generate and validate URL structures
-
