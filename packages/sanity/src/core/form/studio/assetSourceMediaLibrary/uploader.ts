@@ -15,7 +15,6 @@ export class MediaLibraryUploader implements AssetSourceUploader {
       this.files.length > 0 &&
       this.files.every((file) => ['complete', 'error', 'aborted'].includes(file.status))
     if (isDone) {
-      this.emit({type: 'all-complete', files: this.files})
       const hasError = this.files.some((file) => file.status === 'error')
       if (hasError) {
         this.emit({
@@ -23,6 +22,7 @@ export class MediaLibraryUploader implements AssetSourceUploader {
           files: this.files.filter((file) => file.status === 'error'),
         })
       }
+      this.emit({type: 'all-complete', files: this.files})
       this.reset()
     }
   }
