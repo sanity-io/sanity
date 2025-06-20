@@ -7,14 +7,18 @@
     "@sanity/functions": "1.0.2"
   },
   "blueprintResourceItem": {
+    "type": "sanity.function.document",
     "name": "auto-tag",
+    "src": "./functions/auto-tag",
     "memory": 2,
     "timeout": 30,
-    "on": [
-      "publish"
-    ],
-    "filter": "_type == 'post' && !defined(tags)",
-    "projection": "_id"
+    "event": {
+      "on": [
+        "publish"
+      ],
+      "filter": "_type == 'post' && !defined(tags)",
+      "projection": "_id"
+    }
   },
-  "exampleInstructions": "Add this configuraiton to your blueprint config's resources array. Go to README.md for more details."
+  "exampleInstructions": "Add this resource to your Blueprint config's resources array. Go to README.md for more details on how to use this function."
 }
