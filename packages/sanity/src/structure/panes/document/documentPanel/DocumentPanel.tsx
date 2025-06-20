@@ -3,6 +3,7 @@ import {useEffect, useMemo, useRef, useState} from 'react'
 import {
   getSanityCreateLinkMetadata,
   getVersionFromId,
+  isGoingToUnpublish,
   isReleaseDocument,
   isReleaseScheduledOrScheduling,
   isSanityCreateLinked,
@@ -183,12 +184,14 @@ export const DocumentPanel = function DocumentPanel(props: DocumentPanelProps) {
       return <ScheduledReleaseBanner currentRelease={selectedPerspective as ReleaseDocument} />
     }
     const isPinnedDraftOrPublish = isSystemBundle(selectedPerspective)
+    const isCurrentToDelete = editState?.version && isGoingToUnpublish(editState?.version)
 
     if (
       displayed?._id &&
       getVersionFromId(displayed._id) !== selectedReleaseId &&
       ready &&
-      !isPinnedDraftOrPublish
+      !isPinnedDraftOrPublish &&
+      !isCurrentToDelete
     ) {
       return (
         <DocumentNotInReleaseBanner
@@ -241,10 +244,11 @@ export const DocumentPanel = function DocumentPanel(props: DocumentPanelProps) {
     selectedPerspective,
     displayed,
     selectedReleaseId,
+    editState?.version,
+    editState?.draft?._id,
     ready,
     activeView.type,
     isLiveEdit,
-    editState?.draft?._id,
     isPermissionsLoading,
     showCreateBanner,
     permissions?.granted,
