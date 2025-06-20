@@ -3,6 +3,8 @@ import {
   type FieldReference,
   type FieldRules,
   type LocalizedValidationMessages,
+  type MediaAssetTypes,
+  type MediaValidator,
   type Rule as IRule,
   type RuleClass,
   type RuleSpec,
@@ -374,6 +376,10 @@ export const Rule: RuleClass = class Rule implements IRule {
     }
 
     return this.cloneWithRules([{flag: 'assetRequired', constraint: {assetType}}])
+  }
+
+  media<T extends MediaAssetTypes = MediaAssetTypes>(fn: MediaValidator<T>): Rule {
+    return this.cloneWithRules([{flag: 'media', constraint: fn}])
   }
 
   async validate(

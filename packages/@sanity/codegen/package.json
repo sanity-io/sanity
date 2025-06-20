@@ -37,8 +37,6 @@
   "types": "./lib/index.d.ts",
   "files": [
     "lib",
-    "src",
-    "!**/__tests__/**",
     "babel.config.json"
   ],
   "scripts": {

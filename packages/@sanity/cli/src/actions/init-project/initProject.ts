@@ -712,9 +712,9 @@ export default async function initSanity(
   if (isFirstProject) {
     trace.log({step: 'sendCommunityInvite', selectedOption: 'yes'})
 
-    const DISCORD_INVITE_LINK = 'https://snty.link/community'
+    const DISCORD_INVITE_LINK = 'https://www.sanity.io/community/join'
 
-    print(`\nJoin our wonderful developer community as well: ${chalk.cyan(DISCORD_INVITE_LINK)}`)
+    print(`\nJoin the Sanity community: ${chalk.cyan(DISCORD_INVITE_LINK)}`)
     print('We look forward to seeing you there!\n')
   }
 

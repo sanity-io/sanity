@@ -10,6 +10,10 @@
     "lint": "eslint ."
   },
   "devDependencies": {
-    "@repo/eslint-config": "workspace:*"
+    "@repo/eslint-config": "workspace:*",
+    "@vitejs/plugin-react": "catalog:",
+    "lodash-es": "^4.17.21",
+    "vite": "^6.3.5",
+    "vite-tsconfig-paths": "^5.1.4"
   }
 }
