@@ -143,7 +143,7 @@
     "@dnd-kit/sortable": "^7.0.2",
     "@dnd-kit/utilities": "^3.2.2",
     "@juggle/resize-observer": "^3.4.0",
-    "@portabletext/block-tools": "^1.1.30",
+    "@portabletext/block-tools": "^1.1.31",
     "@portabletext/editor": "^1.54.2",
     "@portabletext/react": "^3.2.1",
     "@portabletext/toolkit": "^2.0.17",
