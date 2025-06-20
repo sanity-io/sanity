@@ -6,7 +6,7 @@ import {corePkgs, VALID_TAGS} from '../constants'
 import {updateManifestWith} from '../helpers/updateManifestWith'
 import {tagVersion as tagManifestVersion} from '../operations/tagVersion'
 import {type KnownEnvVar} from '../types'
-import {cleanDirName} from '../utils'
+import {cleanDirName, currentUnixTime} from '../utils'
 
 const storage = new Storage({
   projectId: readEnv<KnownEnvVar>('GOOGLE_PROJECT_ID'),
@@ -34,7 +34,15 @@ export async function tagVersion(args: {tag: string; version: string}) {
         if (!existingPackage) {
           throw new Error('Cannot tag non-existing package')
         }
-        return [pkgName, tagManifestVersion(existingPackage, tag, version)]
+        return [
+          pkgName,
+          tagManifestVersion(
+            existingPackage,
+            tag,
+            {timestamp: currentUnixTime(), version},
+            {setAsDefault: tag === 'latest'},
+          ),
+        ]
       }),
     )
 

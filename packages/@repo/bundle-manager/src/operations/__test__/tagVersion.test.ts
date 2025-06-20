@@ -96,9 +96,9 @@ describe('tagVersion()', () => {
       versions,
     }
 
-    const tag1 = {timestamp: currentUnixTime() - 200, version: '1.2.2' as const}
-    const tag2 = {timestamp: currentUnixTime() - 300, version: '1.2.3' as const}
-    const tag3 = {timestamp: currentUnixTime() - 400, version: '1.2.4' as const}
+    const tag1 = {timestamp: currentUnixTime() - 20, version: '1.2.2' as const}
+    const tag2 = {timestamp: currentUnixTime() - 30, version: '1.2.3' as const}
+    const tag3 = {timestamp: currentUnixTime() - 40, version: '1.2.4' as const}
 
     const v3 = tagVersion(
       tagVersion(tagVersion(manifest, 'stable', tag1), 'stable', tag2),

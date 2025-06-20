@@ -303,7 +303,12 @@ async function updateManifest(options: {tag?: DistTag; newVersions: Record<strin
 
         // tag the version in addition to adding it to the manifest
         if (tag) {
-          updatedPackage = tagVersion(updatedPackage, tag, {timestamp: currentUnixTime(), version})
+          updatedPackage = tagVersion(
+            updatedPackage,
+            tag,
+            {timestamp: currentUnixTime(), version},
+            {setAsDefault: tag === 'latest'},
+          )
         }
         return {
           ...acc,

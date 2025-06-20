@@ -6,10 +6,14 @@ import {STALE_TAGS_EXPIRY_SECONDS, VALID_TAGS} from '../constants'
 import {type DistTag, type ManifestPackage, type Semver, type TagEntry} from '../types'
 import {currentUnixTime} from '../utils'
 
+interface TagVersionOptions {
+  setAsDefault?: boolean
+}
 export function tagVersion(
   manifestPackage: ManifestPackage,
   tag: DistTag,
   tagEntry: {timestamp: number; version: Semver},
+  options: TagVersionOptions = {},
 ): ManifestPackage {
   const targetVersionExists = manifestPackage.versions.some(
     (entry) => entry.version === tagEntry.version,
@@ -28,17 +32,19 @@ export function tagVersion(
   }
 
   const existingEntry = existingTags.find((entry) => entry.version === tagEntry.version)
-  // tag already exists on target version
-  if (existingEntry) {
-    return manifestPackage
-  }
-  return {
-    ...manifestPackage,
-    tags: {
-      ...manifestPackage.tags,
-      [tag]: sortAndRemoveOldEntries([tagEntry, ...existingTags]),
-    },
-  }
+
+  const updatedPackage = existingEntry
+    ? manifestPackage
+    : // entry doesn't exist in list of tags, add it
+      {
+        ...manifestPackage,
+        tags: {
+          ...manifestPackage.tags,
+          [tag]: sortAndRemoveOldEntries([tagEntry, ...existingTags]),
+        },
+      }
+
+  return options.setAsDefault ? setDefault(updatedPackage, tagEntry.version) : updatedPackage
 }
 
 function sortAndRemoveOldEntries(versions: TagEntry[]): TagEntry[] {
@@ -54,4 +60,8 @@ function sortAndRemoveOldEntries(versions: TagEntry[]): TagEntry[] {
       .toSorted((a, b) => semver.compare(b.version, a.version))
       .filter((entry) => currentUnixTime() - entry.timestamp < STALE_TAGS_EXPIRY_SECONDS)
   )
+}
+
+function setDefault(manifestPackage: ManifestPackage, version: Semver): ManifestPackage {
+  return {...manifestPackage, default: version}
 }
