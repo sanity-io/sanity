@@ -2,7 +2,16 @@ import {isImageSource} from '@sanity/asset-utils'
 import {type AssetFromSource, type AssetSource, type UploadState} from '@sanity/types'
 import {Stack, useToast} from '@sanity/ui'
 import {get} from 'lodash'
-import {type FocusEvent, memo, type ReactNode, useCallback, useMemo, useRef, useState} from 'react'
+import {
+  type FocusEvent,
+  memo,
+  type ReactNode,
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from 'react'
 import {type Subscription} from 'rxjs'
 
 import {useTranslation} from '../../../../i18n'
@@ -14,7 +23,7 @@ import {UPLOAD_STATUS_KEY} from '../../../studio/uploads/constants'
 import {type Uploader, type UploadOptions} from '../../../studio/uploads/types'
 import {createInitialUploadPatches} from '../../../studio/uploads/utils'
 import {type InputProps} from '../../../types'
-import {handleSelectAssetFromSource as _handleSelectAssetFromSource} from '../common/assetSource'
+import {handleSelectAssetFromSource as handleSelectAssetFromSourceShared} from '../common/assetSource'
 import {UploadProgress} from '../common/UploadProgress'
 import {ImageInputAsset} from './ImageInputAsset'
 import {ImageInputAssetMenu} from './ImageInputAssetMenu'
@@ -150,14 +159,12 @@ function BaseImageInputComponent(props: BaseImageInputProps): React.JSX.Element 
           }
         },
         error: (err) => {
-          // eslint-disable-next-line no-console
           console.error(err)
           push({
             status: 'error',
             description: t('inputs.image.upload-error.description'),
             title: t('inputs.image.upload-error.title'),
           })
-
           clearUploadStatus()
         },
         complete: () => {
@@ -206,7 +213,7 @@ function BaseImageInputComponent(props: BaseImageInputProps): React.JSX.Element 
 
   const handleSelectAssetFromSource = useCallback(
     (assetsFromSource: AssetFromSource[]) => {
-      _handleSelectAssetFromSource({
+      handleSelectAssetFromSourceShared({
         assetsFromSource,
         onChange,
         type: schemaType,
@@ -216,6 +223,7 @@ function BaseImageInputComponent(props: BaseImageInputProps): React.JSX.Element 
       })
 
       setSelectedAssetSource(null)
+      setIsUploading(false) // This function is also called on after a successful upload completion though an asset source, so reset that state here.
     },
     [onChange, resolveUploader, schemaType, uploadWith],
   )
@@ -250,10 +258,15 @@ function BaseImageInputComponent(props: BaseImageInputProps): React.JSX.Element 
 
   const handleSelectFilesToUpload = useCallback(
     (assetSource: AssetSource, files: File[]) => {
+      if (files.length === 0) {
+        return
+      }
       setSelectedAssetSource(assetSource)
       const uploader = assetSource.uploader
       if (uploader) {
         try {
+          // Unsubscribe from the previous uploader
+          uploaderRef.current?.unsubscribe()
           uploaderRef.current = {
             unsubscribe: uploader.subscribe((event) => {
               switch (event.type) {
@@ -277,9 +290,8 @@ function BaseImageInputComponent(props: BaseImageInputProps): React.JSX.Element 
                   break
                 case 'all-complete':
                   onChange(PatchEvent.from([unset([UPLOAD_STATUS_KEY])]))
-                  setSelectedAssetSource(null)
-                  setIsUploading(false)
                   setMenuOpen(false)
+                  uploaderRef.current?.unsubscribe()
                   uploaderRef.current = null
                   break
                 default:
@@ -293,6 +305,7 @@ function BaseImageInputComponent(props: BaseImageInputProps): React.JSX.Element 
         } catch (err) {
           onChange(PatchEvent.from([unset([UPLOAD_STATUS_KEY])]))
           setIsUploading(false)
+          uploaderRef.current?.unsubscribe()
           setSelectedAssetSource(null)
           uploaderRef.current = null
           push({
@@ -306,6 +319,14 @@ function BaseImageInputComponent(props: BaseImageInputProps): React.JSX.Element 
     },
     [onChange, push, schemaType, t],
   )
+
+  // Abort asset source uploads and unsubscribe from the uploader is the component unmounts
+  useEffect(() => {
+    return () => {
+      uploaderRef.current?.uploader?.abort()
+      uploaderRef.current?.unsubscribe()
+    }
+  }, [])
 
   const handleSelectImageFromAssetSource = useCallback((source: AssetSource) => {
     setSelectedAssetSource(source)
