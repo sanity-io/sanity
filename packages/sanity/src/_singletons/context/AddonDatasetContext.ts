@@ -6,7 +6,5 @@ import type {AddonDatasetContextValue} from '../../core/studio/addonDataset/type
  * @beta
  * @hidden
  */
-export const AddonDatasetContext = createContext<AddonDatasetContextValue | null>(
-  'sanity/_singletons/context/addon-dataset',
-  null,
-)
+export const AddonDatasetContext: React.Context<AddonDatasetContextValue | null> =
+  createContext<AddonDatasetContextValue | null>('sanity/_singletons/context/addon-dataset', null)

@@ -18,7 +18,6 @@ export interface SchedulesContextValue {
 /**
  * @internal
  */
-export const SchedulesContext = createContext<SchedulesContextValue | undefined>(
-  'sanity/_singletons/context/schedules',
-  undefined,
-)
+export const SchedulesContext: React.Context<SchedulesContextValue | undefined> = createContext<
+  SchedulesContextValue | undefined
+>('sanity/_singletons/context/schedules', undefined)

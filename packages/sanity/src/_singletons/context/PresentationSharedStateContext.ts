@@ -5,7 +5,7 @@ import type {PresentationSharedStateContextValue} from '../../presentation/overl
 /**
  * @internal
  */
-export const PresentationSharedStateContext =
+export const PresentationSharedStateContext: React.Context<PresentationSharedStateContextValue | null> =
   createContext<PresentationSharedStateContextValue | null>(
     'sanity/_singletons/context/presentation/shared-state',
     null,

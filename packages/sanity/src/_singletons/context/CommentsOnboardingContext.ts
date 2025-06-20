@@ -5,7 +5,8 @@ import type {CommentsOnboardingContextValue} from '../../core/comments/context/o
 /**
  * @internal
  */
-export const CommentsOnboardingContext = createContext<CommentsOnboardingContextValue | null>(
-  'sanity/_singletons/context/comments-onboarding',
-  null,
-)
+export const CommentsOnboardingContext: React.Context<CommentsOnboardingContextValue | null> =
+  createContext<CommentsOnboardingContextValue | null>(
+    'sanity/_singletons/context/comments-onboarding',
+    null,
+  )

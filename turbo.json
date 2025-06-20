@@ -24,7 +24,8 @@
     "SANITY_APP_BASEPATH",
     "SANITY_CLI_EXTRACT_MANIFEST_ENABLED",
     "SANITY_CLI_EXTRACT_MANIFEST_LOG_ERRORS",
-    "SANITY_CLI_QUERY_API_VERSION"
+    "SANITY_CLI_QUERY_API_VERSION",
+    "SANITY_PKG_DTS"
   ],
   // Variables that should be passed through but not invalidate the cache
   "globalPassThroughEnv": [

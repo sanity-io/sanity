@@ -4,7 +4,5 @@ import {createContext} from 'sanity/_createContext'
 /**
  * @internal
  */
-export const ScrollContext = createContext<null | PubSub<Event>>(
-  'sanity/_singletons/context/scroll',
-  null,
-)
+export const ScrollContext: React.Context<null | PubSub<Event>> =
+  createContext<null | PubSub<Event>>('sanity/_singletons/context/scroll', null)
