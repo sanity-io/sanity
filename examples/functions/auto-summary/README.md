@@ -12,12 +12,42 @@ This example demonstrates how to use a Sanity Function to automatically generate
 
 ## Benefits
 
+- **Saves 2-3 minutes per post** by eliminating manual summary writing
 - **Saves editorial time** by automating summary creation for every post
 - **Improves consistency** in summary style and length across all content
 - **Scales easily** as content volume increases, with no extra manual effort
-- **Enables new workflows** (e.g., automated previews, SEO descriptions) with minimal setup
+- **Reduces editorial overhead** for content teams
+
+## Compatible Templates
+
+This function is built to be compatible with any of [the official "clean" templates](https://www.sanity.io/exchange/type=templates/by=sanity). We recommend testing the function out in one of those after you have installed them locally.
+
+### Adding the autoSummary field to your schema
+
+If you're using the [nextjs-clean template](https://github.com/sanity-io/sanity-template-nextjs-clean), you'll need to add a `tags` field to your post schema:
+
+1. Open `studio/src/schemaTypes/documents/post.ts`
+2. Add this field to the `fields` array:
+
+```typescript
+defineField({
+  name: 'autoSummary',
+  title: 'Auto Summary',
+  type: 'text',
+  description: 'Summary will be automatically generated when you publish a post',
+}),
+```
+
+3. Deploy your updated schema:
+
+```bash
+# /studio
+npx sanity schema deploy
+```
 
 ## Implementation
+
+**Important:** Run these commands from the root of your project (not inside the `studio/` folder).
 
 1. **Initialize the example**
 
@@ -39,34 +69,79 @@ This example demonstrates how to use a Sanity Function to automatically generate
 
    ```ts
    defineDocumentFunction({
+     type: 'sanity.function.document',
+     src: './functions/auto-summary',
+     memory: 2,
+     timeout: 30,
      name: 'auto-summary',
-     on: ['publish'],
-     filter: "_type == 'post' && !defined(autoSummary)",
-     projection: '_id',
-     // ...other options as needed
+     event: {
+       on: ['publish'],
+       filter: "_type == 'post' && !defined(autoSummary)",
+       projection: '_id',
+     },
    })
    ```
 
 3. **Install dependencies**
 
+   Install dependencies in the project root:
+
    ```bash
    npm install
    ```
 
-4. **Adjust schema**
+   And install function dependencies:
 
-   Ensure your `post` schema includes a `body` field (Portable Text or string) and an `autoSummary` field (string or text).
+   ```bash
+   npm install @sanity/functions
+   cd functions/auto-summary
+   npm install
+   cd ../..
+   ```
+
+4. **Make sure you have a schema deployed**
+
+From the studio folder, run:
+
+```bash
+# In the studio/ folder
+npx sanity schema deploy
+```
 
 ## Testing the function locally
 
-You can test the auto-summary function locally using the Sanity CLI before deploying:
+You can test the auto-summary function locally using the Sanity CLI before deploying it to production.
+
+**Important:** Document functions require that the document ID used in testing actually exists in your dataset. The examples below show how to work with real document IDs.
 
 ### 1. Basic Function Test
 
-Test with the included sample document:
+Since document functions require the document ID to exist in your dataset, create a test document first:
 
 ```bash
-npx sanity functions test auto-summary --file document.json
+# From the studio/ folder, create a test document
+cd studio
+npx sanity documents create ../functions/auto-summary/document.json --replace
+```
+
+Then test the function with the created document (from project root):
+
+```bash
+# Back to project root for function testing
+cd ..
+npx sanity functions test auto-summary --file functions/auto-summary/document.json
+```
+
+**Alternative:** Test with a real document from your dataset:
+
+```bash
+# From the studio/ folder, find and export an existing post document
+cd studio
+npx sanity documents query "*[_type == 'post' && !defined(autoSummary)][0]" > ../real-post.json
+
+# Back to project root for function testing
+cd ..
+npx sanity functions test auto-summary --file real-post.json
 ```
 
 ### 2. Interactive Development Mode
@@ -79,26 +154,51 @@ npx sanity functions dev
 
 ### 3. Test with Custom Data
 
-Test with your own document data:
+For custom data testing, you still need to use a real document ID that exists in your dataset:
 
 ```bash
-npx sanity functions test auto-summary --data '{
+# From the studio/ folder, create or find a real document ID
+cd studio
+REAL_DOC_ID=$(npx sanity documents query "*[_type == 'post'][0]._id")
+
+# Create a temporary JSON file with custom data in project root
+cd ..
+cat > test-custom-data.json << EOF
+{
   "_type": "post",
-  "_id": "your-post-id",
-  "body": [{"_type": "block", "children": [{"_type": "span", "text": "Your content here."}]}]
-}'
+  "_id": $REAL_DOC_ID,
+  "content": [
+    {
+      "_type": "block",
+      "_key": "test-block",
+      "children": [
+        {
+          "_type": "span",
+          "_key": "test-span",
+          "text": "Your custom blog post content here..."
+        }
+      ]
+    }
+  ]
+}
+EOF
+
+# Test with the custom data file
+npx sanity functions test auto-summary --file test-custom-data.json
 ```
 
 ### 4. Test with Real Document Data
 
-Capture a real document from your dataset:
+The most reliable approach is to test with existing documents from your dataset:
 
 ```bash
-# Export a real document for testing
-npx sanity documents get "document-id" > test-document.json
+# From the studio/ folder, find and export a document that matches your function's filter
+cd studio
+npx sanity documents query "*[_type == 'post' && !defined(autoSummary)][0]" > ../test-real-document.json
 
-# Test with the real document
-npx sanity functions test auto-summary --file test-document.json
+# Back to project root for function testing
+cd ..
+npx sanity functions test auto-summary --file test-real-document.json
 ```
 
 ### 5. Enable Debugging
@@ -113,10 +213,13 @@ console.log('Result:', result)
 
 ### Testing Tips
 
+- **Use real document IDs** - Document functions require IDs that exist in your dataset
+- **Query for test documents** - Use `npx sanity documents query` to find suitable test documents
 - **Use Node.js v22.x** locally to match production runtime
-- **Test edge cases** like missing fields or unexpected data
+- **Test edge cases** like posts without content or with existing tags
 - **Check function logs** in CLI output for debugging
-- **Test without external API calls** first when applicable
+- **Test without AI calls** first by setting `noWrite: true` in the function
+- **Create test content** - If you don't have posts without tags, create some test documents first
 
 ## Requirements
 
@@ -129,37 +232,14 @@ console.log('Result:', result)
 
 ## Usage Example
 
-When a `post` document is published and does not have an `autoSummary`, the function automatically:
+When a content editor publishes a new blog post without a sumamry, the function automatically:
 
-1. Detects the publish event for a `post` without an `autoSummary`
-2. Reads the `body` field from the document
-3. Uses Sanity's AI action to generate a summary (max 250 words)
-4. Writes the summary to the `autoSummary` field (if `noWrite` is set to `false`)
+1. **Triggers** on the publish event for post documents without existing summary
+2. **Analyzes** the post's content field using AI
+3. **Generates** a summary (max 250 words) based on the content field
+4. **Applies** the summary directly to the published document
 
-**Sample input document:**
-
-```json
-{
-  "_type": "post",
-  "_id": "1bcef8ce-b129-4f95-a30c-b958b65ead10",
-  "title": "My first post",
-  "body": [
-    {
-      "_type": "block",
-      "children": [
-        {
-          "_type": "span",
-          "text": "The latest advancements in artificial intelligence and machine learning are revolutionizing how businesses operate. Deep learning models can now process natural language with remarkable accuracy, enabling more sophisticated chatbots and virtual assistants. These AI systems are particularly effective at automating customer service tasks and analyzing large datasets to identify patterns and insights."
-        }
-      ]
-    }
-  ]
-}
-```
-
-**Result:**
-
-A summary is generated and written to the `autoSummary` field of the document.
+**Result:** Content creators get consistent, relevant summaries without manual effort.
 
 ## Customization
 
@@ -170,6 +250,7 @@ A summary is generated and written to the `autoSummary` field of the document.
 ## Troubleshooting
 
 **Error: "Error occurred during summary generation"**
+
 - Cause: The AI action may fail if the document is missing a `body` field or if there are API issues.
 - Solution: Ensure the document has a valid `body` field and check your Sanity project configuration.
 
