@@ -280,7 +280,7 @@
     "uuid": "^11.0.5",
     "vite": "^6.3.5",
     "which": "^5.0.0",
-    "xstate": "^5.19.4",
+    "xstate": "^5.20.0",
     "yargs": "^17.3.0"
   },
   "devDependencies": {
