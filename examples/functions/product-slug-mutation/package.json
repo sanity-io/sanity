@@ -11,11 +11,11 @@
     "memory": 1,
     "timeout": 10,
     "event": {
-      "filter": "_type == 'product' && store.slug.current != slug.current",
-      "projection": "_id",
       "on": [
         "publish"
-      ]
+      ],
+      "filter": "_type == 'product' && store.slug.current != slug.current",
+      "projection": "_id"
     }
   },
   "exampleInstructions": "Add this resource to your Blueprint config's resources array. Go to README.md for more details on how to use this function."

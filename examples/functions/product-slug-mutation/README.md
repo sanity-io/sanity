@@ -20,7 +20,30 @@ This function automatically synchronizes the nested `store.slug.current` field t
 - **Reduces content management errors** - Automatic synchronization prevents human error
 - **Maintains data consistency** - Guarantees both slug fields always match
 
+## Compatible Templates
+
+This function is built to be compatible with any of [the official "clean" templates](https://www.sanity.io/exchange/type=templates/by=sanity). We recommend testing the function out in one of those after you have installed them locally.
+
+### Adding the tags field to your schema
+
+If you're using the [shopify-online-storefront template](https://github.com/sanity-io/sanity/tree/main/packages/%40sanity/cli/templates/shopify-online-storefront), you'll need to add a `slug` field to your product schema:
+
+1. Open `studio/src/schemaTypes/documents/product.ts`
+2. Add this field to the `fields` array:
+
+```typescript
+defineField({
+  name: 'slug',
+  title: 'Slug',
+  type: 'slug',
+    description: 'This field is automatically synced with store.slug.current',
+  readOnly: true, // Since it's managed by the function
+}),
+```
+
 ## Implementation
+
+**Important:** Run these commands from the root of your project (not inside the `studio/` folder).
 
 1. **Initialize the example**
 
@@ -40,47 +63,42 @@ This function automatically synchronizes the nested `store.slug.current` field t
 
    ```ts
    // sanity.blueprint.ts
-   defineDocumentFunction({
-     name: 'product-slug-mutation',
-     memory: 1,
-     timeout: 10,
-     on: ['publish'],
-     filter: "_type == 'product' && store.slug.current != slug.current",
-     projection: '_id',
+   import {defineBlueprint, defineDocumentFunction} from '@sanity/blueprints'
+
+   export default defineBlueprint({
+     resources: [
+       defineDocumentFunction({
+         type: 'sanity.function.document',
+         src: './functions/product-slug-mutation',
+         name: 'product-slug-mutation',
+         memory: 1,
+         timeout: 10,
+         event: {
+           on: ['publish'],
+           filter: "_type == 'product' && store.slug.current != slug.current",
+           projection: '_id',
+         },
+       }),
+       // Other functions
+     ],
    })
    ```
 
-3. **Add the slug field to your schema**
+3. **Install dependencies**
 
-   ```ts
-   // schemas/product.ts
-   export default {
-     name: 'product',
-     type: 'document',
-     fields: [
-       // ... other fields
-       {
-         name: 'slug',
-         type: 'slug',
-         title: 'URL Slug',
-         description: 'This field is automatically synced with store.slug.current',
-         readOnly: true, // Since it's managed by the function
-       },
-       // ... other fields
-     ],
-   }
-   ```
-
-4. **Install dependencies**
+   Install dependencies in the project root:
 
    ```bash
    npm install
    ```
 
-5. **Deploy the function**
+   And install function dependencies:
 
    ```bash
-   npx sanity functions deploy
+   npm install @sanity/functions
+   cd functions/product-slug-mutation
+   npm install
+   cd ../..
    ```
 
 ## Testing the function locally
@@ -202,7 +220,7 @@ You can extend the function to synchronize other fields as well:
 
 ```typescript
 const result = await client.patch(data._id, {
-  setIfMissing: {
+  set: {
     slug: {
       current: data.store.slug.current,
     },
