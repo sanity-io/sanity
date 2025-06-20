@@ -1,0 +1,11 @@
+{
+  "_type": "product",
+  "_id": "test-product-123",
+  "title": "My First Product",
+  "store": {
+    "slug": {
+      "current": "my-first-product"
+    }
+  },
+  "publishedAt": "2024-01-15T10:00:00.000Z"
+}
