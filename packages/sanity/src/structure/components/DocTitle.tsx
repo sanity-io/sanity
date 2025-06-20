@@ -1,5 +1,5 @@
 import {type SanityDocumentLike} from '@sanity/types'
-import {unstable_useValuePreview as useValuePreview, useSchema, useTranslation} from 'sanity'
+import {useSchema, useTranslation, useValuePreview} from 'sanity'
 
 import {structureLocaleNamespace} from '../i18n'
 
