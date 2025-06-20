@@ -40,6 +40,11 @@ jobs:
       - name: Build
         run: pnpm build --output-logs=full --log-order=grouped
 
+      - name: Set publishing config
+        run: pnpm config set '//registry.npmjs.org/:_authToken' "${NPM_PUBLISH_TOKEN}"
+        env:
+          NPM_PUBLISH_TOKEN: ${{secrets.NPM_PUBLISH_TOKEN}}
+
       - name: Publish packages to npm
         # Note: ubuntu-latest ships with lerna installed on the system
         # (see https://github.com/actions/runner-images/blob/main/images/ubuntu/Ubuntu2404-Readme.md#project-management)
@@ -81,8 +86,3 @@ jobs:
           GCLOUD_SERVICE_KEY: ${{ secrets.GCS_PRODUCTION_SERVICE_KEY }}
           GCLOUD_BUCKET: ${{ secrets.GCS_PRODUCTION_BUCKET }}
         run: pnpm bundle-manager publish --tag=next
-
-      - name: Set publishing config
-        run: pnpm config set '//registry.npmjs.org/:_authToken' "${NPM_PUBLISH_TOKEN}"
-        env:
-          NPM_PUBLISH_TOKEN: ${{secrets.NPM_PUBLISH_TOKEN}}
