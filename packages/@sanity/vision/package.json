@@ -64,7 +64,7 @@
     "@rexxars/react-json-inspector": "^9.0.1",
     "@rexxars/react-split-pane": "^1.0.0",
     "@sanity/color": "^3.0.6",
-    "@sanity/icons": "^3.7.0",
+    "@sanity/icons": "^3.7.3",
     "@sanity/ui": "^2.16.0",
     "@sanity/uuid": "^3.0.2",
     "@uiw/react-codemirror": "^4.23.8",
