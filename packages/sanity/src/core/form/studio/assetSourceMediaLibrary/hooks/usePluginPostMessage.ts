@@ -1,4 +1,4 @@
-import {useCallback, useEffect, useRef} from 'react'
+import {useCallback, useEffect, useState} from 'react'
 
 import {type PluginPostMessage} from '../types'
 import {useToken} from './useToken'
@@ -11,22 +11,28 @@ export const usePluginPostMessage = (
   ) => void,
 ): {
   postMessage: (message: PluginPostMessage) => void
-  setIframe: (iframe: HTMLIFrameElement) => void
+  setIframe: (iframe: HTMLIFrameElement | null) => void
 } => {
   const token = useToken()
-  const iframeRef = useRef<HTMLIFrameElement | null>(null)
+  const [iframe, setIframe] = useState<HTMLIFrameElement | null>(null)
 
   const postFn = useCallback(
     (message: PluginPostMessage) => {
-      if (iframeRef.current?.contentWindow) {
-        iframeRef.current.contentWindow?.postMessage(message, origin)
+      if (iframe?.contentWindow) {
+        iframe.contentWindow?.postMessage(message, origin)
       }
     },
-    [origin],
+    [origin, iframe],
   )
 
   useEffect(() => {
     const handler = (event: MessageEvent) => {
+      if (!iframe) {
+        return
+      }
+      if (event.source !== iframe?.contentWindow) {
+        return
+      }
       if (event.data.type === 'tokenRequest') {
         postFn({
           type: 'tokenResponse',
@@ -39,11 +45,9 @@ export const usePluginPostMessage = (
     }
     window.addEventListener('message', handler, false)
     return () => {
-      if (iframeRef.current?.contentWindow) {
-        window.removeEventListener('message', handler, false)
-      }
+      window.removeEventListener('message', handler, false)
     }
-  }, [handleMessage, iframeRef, postFn, token])
+  }, [handleMessage, iframe, postFn, token])
 
-  return {postMessage: postFn, setIframe: (iframe) => (iframeRef.current = iframe)}
+  return {postMessage: postFn, setIframe}
 }
