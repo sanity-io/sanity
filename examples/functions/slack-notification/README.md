@@ -64,7 +64,7 @@ Most official templates already include these fields.
       - Type `/invite @your-app-name` or click the channel name → Settings → Integrations → Add apps
       - Select your newly created app to add it to the channel
 
-      ![Invite Slack App](invite-slack-app.png){width=600}
+      <img src="invite-slack-app.png" alt="Invite Slack App" width="600">
 
 2. **Initialize the example**
 
