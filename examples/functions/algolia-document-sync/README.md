@@ -18,7 +18,13 @@ This Sanity Function automatically syncs published documents to Algolia's search
 - **Simplifies search implementation** with automatic document synchronization
 - **Supports scalable content** by handling updates automatically as content grows
 
+## Compatible Templates
+
+This function is built to be compatible with any of [the official "clean" templates](https://www.sanity.io/exchange/type=templates/by=sanity). We recommend testing the function out in one of those after you have installed them locally.
+
 ## Implementation
+
+**Important:** Run these commands from the root of your project (not inside the `studio/` folder).
 
 1. **Initialize the example**
 
@@ -38,37 +44,53 @@ This Sanity Function automatically syncs published documents to Algolia's search
 
    ```ts
    // sanity.blueprint.ts
-    import 'dotenv/config'
-    import process from 'node:process'
+   import 'dotenv/config'
+   import process from 'node:process'
 
-    const { ALGOLIA_APP_ID, ALOGLIA_WRITE_KEY } = process.env
-    if (typeof ALGOLIA_APP_ID !== 'string' || typeof ALOGLIA_WRITE_KEY !== 'string') {
-      throw new Error('ALGOLIA_APP_ID and ALGOLIA_WRITE_KEY must be set')
-    }
+   const {ALGOLIA_APP_ID, ALOGLIA_WRITE_KEY} = process.env
+   if (typeof ALGOLIA_APP_ID !== 'string' || typeof ALOGLIA_WRITE_KEY !== 'string') {
+     throw new Error('ALGOLIA_APP_ID and ALGOLIA_WRITE_KEY must be set')
+   }
 
    defineDocumentFunction({
+     type: 'sanity.function.document',
      name: 'algolia-document-sync',
      memory: 1,
      timeout: 10,
-     on: ['publish'],
-     filter: "_type == 'post'",
-     projection: '_id',
+     src: './functions/algolia-document-sync',
+     event: {
+       on: ['publish'],
+       filter: "_type == 'post'",
+       projection: '_id',
+     },
      env: {
        ALGOLIA_APP_ID: 'YOUR_ALGOLIA_APP_ID',
-       ALOGLIA_WRITE_KEY: 'YOUR_ALGOLIA_WRITE_KEY'
-     }
+       ALOGLIA_WRITE_KEY: 'YOUR_ALGOLIA_WRITE_KEY',
+     },
    })
    ```
 
 3. **Install dependencies**
 
+   Install dependencies in the project root:
+
    ```bash
    npm install
+   ```
+
+   And install function dependencies:
+
+   ```bash
+   npm install @sanity/functions
+   cd functions/algolia-document-sync
+   npm install
+   cd ../..
    ```
 
 4. **Set up environment variables**
 
    Add your Algolia credentials to your root .env file:
+
    - `ALGOLIA_APP_ID`: Your Algolia application ID
    - `ALOGLIA_WRITE_KEY`: Your Algolia write API key
 
@@ -77,6 +99,8 @@ This Sanity Function automatically syncs published documents to Algolia's search
 You can test the algolia-document-sync function locally using the Sanity CLI before deploying:
 
 ### 1. Basic Function Test
+
+This function writes directly to Algolia, so we can test locally with our doucment.json without relying on any Sanity schema.
 
 Test with the included sample document:
 
@@ -109,16 +133,19 @@ npx sanity functions test algolia-document-sync --data '{
 Capture a real document from your dataset:
 
 ```bash
-# Export a real document for testing
-npx sanity documents get "your-post-id" > test-document.json
+# From the studio/ folder export a real document for testing
+cd studio
+npx sanity documents get "your-post-id" > ../test-document.json
 
-# Test with the real document
+
+# Back to project root for function testing
+cd ..
 npx sanity functions test algolia-document-sync --file test-document.json
 ```
 
 ### 5. Enable Debugging
 
-Add temporary logging to your function:
+To see detailed logs during testing, modify the function temporarily to add logging:
 
 ```typescript
 // Add debugging logs
@@ -128,6 +155,7 @@ console.log('Syncing to Algolia:', data._id)
 
 ### Testing Tips
 
+- **Query for test documents** - Use `npx sanity documents query` to find suitable test documents
 - **Use Node.js v22.x** locally to match production runtime
 - **Test with valid Algolia credentials** to ensure proper syncing
 - **Check function logs** in CLI output for debugging
@@ -136,6 +164,8 @@ console.log('Syncing to Algolia:', data._id)
 ## Requirements
 
 - A Sanity project with Functions enabled
+- A schema with a `post` document type containing:
+  - A `title` field to sync to Algolia
 - An Algolia account with:
   - Application ID
   - Write API key
@@ -167,7 +197,7 @@ When a content editor publishes a blog post, the function automatically:
     "_ref": "author-123"
   },
   "publishedAt": "2024-01-15T10:00:00.000Z",
-  "hideFromSearch": false,
+  "hideFromSearch": false
 }
 ```
 
@@ -188,7 +218,7 @@ await algolia.addOrUpdateObject({
     slug: data.slug?.current,
     publishedAt: data.publishedAt,
     // Add more fields as needed
-  }
+  },
 })
 ```
 
@@ -201,8 +231,8 @@ await algolia.addOrUpdateObject({
   indexName: 'your-custom-index', // Different index name
   objectID: _id,
   body: {
-    title
-  }
+    title,
+  },
 })
 ```
 
