@@ -3,7 +3,6 @@
 import {useTelemetry} from '@sanity/telemetry/react'
 import {useCallback, useMemo} from 'react'
 import {useObservable} from 'react-rx'
-import {of} from 'rxjs'
 
 import {useClient, useSchema, useTemplates} from '../../hooks'
 import {createDocumentPreviewStore, type DocumentPreviewStore} from '../../preview'
@@ -145,12 +144,6 @@ export function useDocumentStore(): DocumentStore {
   const historyStore = useHistoryStore()
   const documentPreviewStore = useDocumentPreviewStore()
   const workspace = useWorkspace()
-
-  const serverActionsEnabled = useMemo(() => {
-    const configFlag = workspace.__internal_serverDocumentActions?.enabled
-    return typeof configFlag === 'boolean' ? of(configFlag) : of(true)
-  }, [workspace.__internal_serverDocumentActions?.enabled])
-
   const telemetry = useTelemetry()
 
   const handleSyncErrorRecovery = useCallback(
@@ -186,7 +179,6 @@ export function useDocumentStore(): DocumentStore {
         initialValueTemplates: templates,
         schema,
         i18n,
-        serverActionsEnabled,
         extraOptions: {
           onReportLatency: handleReportLatency,
           onSyncErrorRecovery: handleSyncErrorRecovery,
@@ -209,7 +201,6 @@ export function useDocumentStore(): DocumentStore {
     i18n,
     workspace,
     templates,
-    serverActionsEnabled,
     handleReportLatency,
     handleSyncErrorRecovery,
   ])
