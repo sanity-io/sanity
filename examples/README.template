@@ -2,7 +2,11 @@
 
 <!-- 
 BEST PRACTICE: Use a clear, descriptive name that explains what the example does
-Example: "Auto-Tag Function" instead of "Tagging Example"
+- For general functions: "Auto-Tag Function" instead of "Tagging Example"
+- For external service integrations: Include the service name in the title
+  Example: "Updating Search Index with Algolia" instead of "Search Integration"
+  Example: "Syncing Products with Shopify" instead of "Product Sync"
+  Example: "Sending Notifications to Slack" instead of "Notification Function"
 -->
 
 [Explore all examples](https://github.com/sanity-io/sanity/tree/main/examples)
@@ -49,6 +53,42 @@ BEST PRACTICE:
 - [Specific benefit #3 - mention scalability/consistency gains]
 - [Additional benefits as needed]
 
+## Compatible Templates
+
+<!-- 
+BEST PRACTICE:
+- Specify which Sanity templates the example is designed to work with
+- Include schema requirements if the example assumes specific document structures
+- Provide setup instructions for adding missing fields to existing schemas
+- Link to the specific templates for easy access
+- Include both general compatibility and specific tested templates
+-->
+
+This function is built to be compatible with [specific template(s) or "any of the official templates"]. We recommend testing the function out in one of those after you have installed them locally.
+
+### Adding required fields to your schema
+
+If you're using the [specific template name], you may need to add required fields:
+
+1. Open `path/to/schema/file.ts`
+2. Add this field to the `fields` array:
+
+```typescript
+defineField({
+  name: 'fieldName',
+  title: 'Field Title',
+  type: 'field-type',
+  description: 'Description of what this field is used for',
+}),
+```
+
+3. Deploy your updated schema:
+
+```bash
+# From the studio/ folder (adjust path as needed for template structure)
+npx sanity schema deploy
+```
+
 ## Implementation
 
 <!-- 
@@ -58,7 +98,11 @@ BEST PRACTICE:
 - Use proper syntax highlighting for code blocks
 - Test instructions to ensure they work
 - Include both CLI commands and configuration examples
+- Specify correct working directories for monorepo templates
+- Include function dependency installation
 -->
+
+**Important:** Run these commands from the root of your project (not inside the `studio/` folder).
 
 1. **Initialize the example**
 
@@ -78,19 +122,51 @@ BEST PRACTICE:
 
    ```ts
    // sanity.blueprint.ts
-   defineDocumentFunction({
-     name: '[function-name]',
-     // Include all necessary configuration options
-   })
+   import { defineBlueprint, defineDocumentFunction } from "@sanity/blueprints";
+
+   export default defineBlueprint({
+     resources: [
+       defineDocumentFunction({
+         type: "sanity.function.document",
+         name: "[function-name]",
+         src: "./functions/[function-name]",
+         memory: 2,
+         timeout: 30,
+         event: {
+           on: ["publish"],
+           filter: "_type == 'document-type' && condition",
+           projection: "_id",
+         },
+       }),
+     ],
+   });
    ```
 
 3. **Install dependencies**
+
+   Install dependencies in the project root:
 
    ```bash
    npm install
    ```
 
-4. **[Additional setup steps as needed]**
+   And install function dependencies:
+
+   ```bash
+   npm install @sanity/functions
+   cd functions/[function-name]
+   npm install
+   cd ../..
+   ```
+
+4. **Make sure you have a schema deployed**
+
+   From the studio folder, run:
+
+   ```bash
+   # In the studio/ folder (adjust path for template structure)
+   npx sanity schema deploy
+   ```
 
 ## Testing the function locally
 
@@ -101,16 +177,42 @@ BEST PRACTICE:
 - Include debugging tips
 - Mention Node.js version requirements
 - Add troubleshooting for common issues
+- Document the requirement for real document IDs in dataset
+- Include proper folder navigation for monorepo templates
 -->
 
-You can test the [example-name] function locally using the Sanity CLI before deploying:
+You can test the [example-name] function locally using the Sanity CLI before deploying it to production.
+
+**Important:** Document functions require that the document ID used in testing actually exists in your dataset. The examples below show how to work with real document IDs.
 
 ### 1. Basic Function Test
 
-Test with the included sample document:
+Since document functions require the document ID to exist in your dataset, create a test document first:
 
 ```bash
-npx sanity functions test [function-name] --file document.json
+# From the studio/ folder, create a test document
+cd studio
+npx sanity documents create ../functions/[function-name]/document.json --replace
+```
+
+Then test the function with the created document (from project root):
+
+```bash
+# Back to project root for function testing
+cd ..
+npx sanity functions test [function-name] --file functions/[function-name]/document.json
+```
+
+**Alternative:** Test with a real document from your dataset:
+
+```bash
+# From the studio/ folder, find and export an existing document
+cd studio
+npx sanity documents query "*[_type == 'document-type'][0]" > ../real-document.json
+
+# Back to project root for function testing
+cd ..
+npx sanity functions test [function-name] --file real-document.json
 ```
 
 ### 2. Interactive Development Mode
@@ -121,46 +223,64 @@ Start the development server for interactive testing:
 npx sanity functions dev
 ```
 
+This opens an interactive playground where you can test functions with custom data
+
 ### 3. Test with Custom Data
 
-Test with your own document data:
+For custom data testing, you still need to use a real document ID that exists in your dataset:
 
 ```bash
-npx sanity functions test [function-name] --data '{
-  "_type": "your-type",
-  "_id": "test-id",
-  "field": "test data"
-}'
+# From the studio/ folder, create or find a real document ID
+cd studio
+REAL_DOC_ID=$(npx sanity documents query "*[_type == 'document-type'][0]._id")
+
+# Create a temporary JSON file with custom data in project root
+cd ..
+cat > test-custom-data.json << EOF
+{
+  "_type": "document-type",
+  "_id": $REAL_DOC_ID,
+  "field": "Your custom data here..."
+}
+EOF
+
+# Test with the custom data file
+npx sanity functions test [function-name] --file test-custom-data.json
 ```
 
 ### 4. Test with Real Document Data
 
-Capture a real document from your dataset:
+The most reliable approach is to test with existing documents from your dataset:
 
 ```bash
-# Export a real document for testing
-npx sanity documents get "document-id" > test-document.json
+# From the studio/ folder, find and export a document that matches your function's filter
+cd studio
+npx sanity documents query "*[_type == 'document-type' && condition][0]" > ../test-real-document.json
 
-# Test with the real document
-npx sanity functions test [function-name] --file test-document.json
+# Back to project root for function testing
+cd ..
+npx sanity functions test [function-name] --file test-real-document.json
 ```
 
 ### 5. Enable Debugging
 
-Add temporary logging to your function:
+To see detailed logs during testing, modify the function temporarily to add logging:
 
 ```typescript
-// Add debugging logs
+// Add this to your function for debugging
 console.log('Event data:', JSON.stringify(event.data, null, 2))
 console.log('Result:', result)
 ```
 
 ### Testing Tips
 
+- **Use real document IDs** - Document functions require IDs that exist in your dataset
+- **Query for test documents** - Use `npx sanity documents query` to find suitable test documents
 - **Use Node.js v22.x** locally to match production runtime
 - **Test edge cases** like missing fields or unexpected data
 - **Check function logs** in CLI output for debugging
 - **Test without external API calls** first when applicable
+- **Create test content** - If you don't have suitable documents, create some test documents first
 
 ## Requirements
 

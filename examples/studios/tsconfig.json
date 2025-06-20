@@ -2,8 +2,8 @@
   "extends": "@repo/tsconfig/base.json",
   "include": ["**/*.ts", "**/*.tsx"],
   "compilerOptions": {
-    "rootDir": "..",
-    "baseUrl": "..",
+    "rootDir": "../..",
+    "baseUrl": "../../",
     "paths": {
       "@sanity/diff": ["./packages/@sanity/diff/src/index.ts"],
       "@sanity/cli": ["./packages/@sanity/cli/src/index.ts"],
