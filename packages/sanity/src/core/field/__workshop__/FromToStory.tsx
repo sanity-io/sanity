@@ -1,6 +1,6 @@
 import {Box} from '@sanity/ui'
 
-import {FromTo} from '../diff'
+import {FromTo} from '../diff/components/FromTo'
 
 export default function FromToStory() {
   return (

@@ -9,7 +9,7 @@ import {
 import {type Observable} from 'rxjs'
 
 import {type UploaderResolver} from '../../../studio/uploads/types'
-import {type ObjectInputProps} from '../../../types'
+import type {ObjectInputProps} from '../../../types/inputProps'
 import {type ImageUrlBuilder} from '../types'
 
 /**

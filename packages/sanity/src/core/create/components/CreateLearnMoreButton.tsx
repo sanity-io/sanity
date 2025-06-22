@@ -1,8 +1,8 @@
 import {LaunchIcon} from '@sanity/icons'
 import {type ForwardedRef, forwardRef} from 'react'
 
-import {Button} from '../../../ui-components'
-import {useTranslation} from '../../i18n'
+import {Button} from '../../../ui-components/button/Button'
+import {useTranslation} from '../../i18n/hooks/useTranslation'
 import {createLocaleNamespace} from '../i18n'
 import {createUserDocumentationUrl} from './constants'
 

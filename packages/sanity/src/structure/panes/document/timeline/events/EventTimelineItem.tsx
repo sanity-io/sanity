@@ -11,7 +11,7 @@ import {
   useTranslation,
 } from 'sanity'
 
-import {Tooltip} from '../../../../../ui-components'
+import {Tooltip} from '../../../../../ui-components/tooltip/Tooltip'
 
 export interface TimelineItemProps {
   event: DocumentGroupEvent

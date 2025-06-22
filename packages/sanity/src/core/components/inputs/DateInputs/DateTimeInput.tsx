@@ -18,7 +18,7 @@ import FocusLock from 'react-focus-lock'
 import {Button} from '../../../../ui-components/button/Button'
 import {Popover} from '../../../../ui-components/popover/Popover'
 import {type TimeZoneScope, useTimeZone} from '../../../hooks/useTimeZone'
-import {useTranslation} from '../../../i18n'
+import {useTranslation} from '../../../i18n/hooks/useTranslation'
 import {type CalendarProps} from './calendar/Calendar'
 import {type CalendarLabels} from './calendar/types'
 import {DatePicker} from './DatePicker'
@@ -44,6 +44,9 @@ export interface DateTimeInputProps {
   timeZoneScope: TimeZoneScope
 }
 
+/**
+ * @public
+ */
 export const DateTimeInput = forwardRef(function DateTimeInput(
   props: DateTimeInputProps,
   forwardedRef: ForwardedRef<HTMLInputElement>,

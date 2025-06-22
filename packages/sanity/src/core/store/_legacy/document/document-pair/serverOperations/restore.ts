@@ -1,4 +1,4 @@
-import {type DocumentRevision} from '../../../history'
+import type {DocumentRevision} from '../../../history/createHistoryStore'
 import {type OperationImpl} from '../operations/types'
 import {isLiveEditEnabled} from '../utils/isLiveEditEnabled'
 

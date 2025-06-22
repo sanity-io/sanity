@@ -7,14 +7,16 @@ import {
 } from '@sanity/types'
 import {type ErrorInfo, type ReactNode} from 'react'
 
-import {type LocaleConfigContext, type LocaleDefinition, type LocaleResourceBundle} from '../i18n'
-import {type Template, type TemplateItem} from '../templates'
-import {getPrintableType} from '../util/getPrintableType'
 import {
-  type DocumentActionComponent,
-  type DocumentBadgeComponent,
-  type DocumentInspector,
-} from './document'
+  type LocaleConfigContext,
+  type LocaleDefinition,
+  type LocaleResourceBundle,
+} from '../i18n/types'
+import {type Template, type TemplateItem} from '../templates/types'
+import {getPrintableType} from '../util/getPrintableType'
+import type {DocumentActionComponent} from './document/actions'
+import type {DocumentBadgeComponent} from './document/badges'
+import type {DocumentInspector} from './document/inspector'
 import {flattenConfig} from './flattenConfig'
 import {
   type AsyncConfigPropertyReducer,

@@ -4,7 +4,7 @@ import {uniq} from 'lodash'
 import {type Observable, of as observableOf} from 'rxjs'
 import {switchMap} from 'rxjs/operators'
 
-import {isRecord} from '../util'
+import {isRecord} from '../util/isRecord'
 import {type ApiConfig, type FieldName, type Previewable, type PreviewPath} from './types'
 import {props} from './utils/props'
 

@@ -4,12 +4,14 @@ import {type FIXME} from '../../FIXME'
 import {
   type DocumentMutationEvent,
   type DocumentRebaseEvent,
-  type DocumentStore,
+} from '../../store/_legacy/document/buffered-doc/types'
+import type {DocumentStore} from '../../store/_legacy/document/document-store'
+import {
   type DocumentVersion,
   type DocumentVersionEvent,
-  type IdPair,
-} from '../../store'
-import {type FormPatch} from '../patch'
+} from '../../store/_legacy/document/document-pair/checkoutPair'
+import type {IdPair} from '../../store/_legacy/document/types'
+import type {FormPatch} from '../patch/types'
 import {fromMutationPatches, toMutationPatches} from '../utils/mutationPatch'
 
 interface LocalMutationEvent extends DocumentMutationEvent {

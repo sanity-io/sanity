@@ -14,9 +14,10 @@ import {
 import {useCallback, useMemo, useRef, useState} from 'react'
 import shallowEquals from 'shallow-equals'
 
-import {useTranslation} from '../../../../../i18n'
-import {ArrayOfObjectsItem} from '../../../../members'
-import {type ArrayOfObjectsInputProps, type ObjectItem} from '../../../../types'
+import {useTranslation} from '../../../../../i18n/hooks/useTranslation'
+import {ArrayOfObjectsItem} from '../../../../members/array/items/ArrayOfObjectsItem'
+import type {ArrayOfObjectsInputProps} from '../../../../types/inputProps'
+import type {ObjectItem} from '../../../../types/itemProps'
 import {Item, List} from '../../common/list'
 import {UploadTargetCard} from '../../common/UploadTargetCard'
 import {ArrayOfObjectsFunctions} from '../ArrayOfObjectsFunctions'

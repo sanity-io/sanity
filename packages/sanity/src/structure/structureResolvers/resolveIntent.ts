@@ -1,7 +1,7 @@
 import {omit} from 'lodash'
 import {firstValueFrom, type Observable} from 'rxjs'
 
-import {type StructureContext} from '../structureBuilder'
+import type {StructureContext} from '../structureBuilder/types'
 import {
   type PaneNode,
   type RouterPanes,

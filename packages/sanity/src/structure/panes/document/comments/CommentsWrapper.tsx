@@ -8,7 +8,7 @@ import {
   useStudioUrl,
 } from 'sanity'
 
-import {usePaneRouter} from '../../../components'
+import {usePaneRouter} from '../../../components/paneRouter/usePaneRouter'
 import {useDocumentPane} from '../useDocumentPane'
 
 interface CommentsWrapperProps {

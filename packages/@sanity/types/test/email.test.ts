@@ -1,6 +1,7 @@
 import {describe, it} from 'vitest'
 
-import {type BooleanDefinition, type EmailDefinition} from '../src/schema/definition'
+import type {BooleanDefinition} from '../src/schema/definition/type/boolean'
+import type {EmailDefinition} from '../src/schema/definition/type/email'
 import {defineType} from '../src/schema/types'
 
 describe('email types', () => {

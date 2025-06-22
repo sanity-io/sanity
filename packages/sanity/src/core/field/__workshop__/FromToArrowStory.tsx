@@ -1,6 +1,6 @@
 import {Box} from '@sanity/ui'
 
-import {FromToArrow} from '../diff'
+import {FromToArrow} from '../diff/components/FromToArrow'
 
 export default function FromToArrowStory() {
   return (

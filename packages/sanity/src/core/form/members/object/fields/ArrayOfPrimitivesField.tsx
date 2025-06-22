@@ -12,31 +12,39 @@ import {type Subscription} from 'rxjs'
 import {filter, map, tap} from 'rxjs/operators'
 
 import {type FIXME} from '../../../../FIXME'
-import {useClient} from '../../../../hooks'
+import {useClient} from '../../../../hooks/useClient'
 import {DEFAULT_STUDIO_CLIENT_OPTIONS} from '../../../../studioClient'
 import {useDidUpdate} from '../../../hooks/useDidUpdate'
 import {type PrimitiveValue} from '../../../inputs/arrays/ArrayOfPrimitivesInput/types'
-import {insert, type PatchArg, PatchEvent, set, setIfMissing, unset} from '../../../patch'
+import {insert, set, setIfMissing, unset} from '../../../patch/patch'
+import type {PatchArg} from '../../../patch/types'
+import {PatchEvent} from '../../../patch/PatchEvent'
 import {applyAll} from '../../../patch/applyPatch'
-import {type ArrayOfPrimitivesFormNode, type FieldMember} from '../../../store'
-import {type Uploader, type UploaderResolver, type UploadProgressEvent} from '../../../studio'
+import type {ArrayOfPrimitivesFormNode} from '../../../store/types/nodes'
+import type {FieldMember} from '../../../store/types/members'
+import {
+  type Uploader,
+  type UploaderResolver,
+  type UploadProgressEvent,
+} from '../../../studio/uploads/types'
 import {useDocumentFieldActions} from '../../../studio/contexts/DocumentFieldActions'
 import {FormCallbacksProvider, useFormCallbacks} from '../../../studio/contexts/FormCallbacks'
 import {accepts} from '../../../studio/uploads/accepts'
 import {readAsText} from '../../../studio/uploads/file/readAsText'
+import {type ArrayInputMoveItemEvent, type UploadEvent} from '../../../types/event'
 import {
-  type ArrayInputMoveItemEvent,
   type ArrayOfObjectsInputProps,
-  type ArrayOfPrimitivesFieldProps,
   type ArrayOfPrimitivesInputProps,
+} from '../../../types/inputProps'
+import type {ArrayOfPrimitivesFieldProps} from '../../../types/fieldProps'
+import {
   type RenderAnnotationCallback,
   type RenderArrayOfPrimitivesItemCallback,
   type RenderBlockCallback,
   type RenderFieldCallback,
   type RenderInputCallback,
   type RenderPreviewCallback,
-  type UploadEvent,
-} from '../../../types'
+} from '../../../types/renderCallback'
 import {createDescriptionId} from '../../common/createDescriptionId'
 
 function move<T>(arr: T[], from: number, to: number): T[] {

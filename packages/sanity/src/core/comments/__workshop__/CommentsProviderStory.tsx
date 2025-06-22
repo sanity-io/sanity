@@ -2,12 +2,16 @@
 import {useSelect, useString} from '@sanity/ui-workshop'
 import {useMemo} from 'react'
 
-import {ConditionalWrapper} from '../../../ui-components'
-import {useCurrentUser} from '../../store'
-import {AddonDatasetProvider} from '../../studio'
-import {CommentsList, CommentsUpsellPanel} from '../components'
-import {CommentsEnabledProvider, CommentsProvider, CommentsUpsellProvider} from '../context'
-import {useComments, useCommentsUpsell} from '../hooks'
+import {ConditionalWrapper} from '../../../ui-components/conditionalWrapper/ConditionalWrapper'
+import {useCurrentUser} from '../../store/user/hooks'
+import {AddonDatasetProvider} from '../../studio/addonDataset/AddonDatasetProvider'
+import {CommentsList} from '../components/list/CommentsList'
+import {CommentsUpsellPanel} from '../components/upsell/CommentsUpsellPanel'
+import {CommentsEnabledProvider} from '../context/enabled/CommentsEnabledProvider'
+import {CommentsProvider} from '../context/comments/CommentsProvider'
+import {CommentsUpsellProvider} from '../context/upsell/CommentsUpsellProvider'
+import {useComments} from '../hooks/useComments'
+import {useCommentsUpsell} from '../hooks/useCommentsUpsell'
 import {type CommentsUIMode} from '../types'
 
 const noop = () => {

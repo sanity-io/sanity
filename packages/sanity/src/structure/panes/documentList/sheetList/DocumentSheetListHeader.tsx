@@ -8,7 +8,10 @@ import {flexRender, type Header as HeaderType, type HeaderGroup} from '@tanstack
 import {useTranslation} from 'sanity'
 import {styled} from 'styled-components'
 
-import {Button, MenuButton, MenuItem, Tooltip} from '../../../../ui-components'
+import {Button} from '../../../../ui-components/button/Button'
+import {MenuButton} from '../../../../ui-components/menuButton/MenuButton'
+import {MenuItem} from '../../../../ui-components/menuItem/MenuItem'
+import {Tooltip} from '../../../../ui-components/tooltip/Tooltip'
 
 const Header = styled.th<{width: number}>`
   margin: 16px;

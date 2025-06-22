@@ -1,7 +1,7 @@
 import {type SanityDocument} from '@sanity/types'
 import {beforeEach, describe, expect, it, vi} from 'vitest'
 
-import {type DocumentRevision} from '../../../history'
+import type {DocumentRevision} from '../../../history/createHistoryStore'
 import {type OperationArgs} from '../operations/types'
 import {isLiveEditEnabled} from '../utils/isLiveEditEnabled'
 import {restore} from './restore'

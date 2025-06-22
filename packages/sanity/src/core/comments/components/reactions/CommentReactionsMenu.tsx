@@ -2,7 +2,7 @@
 import {Button as UIButton, Grid} from '@sanity/ui'
 import {useCallback, useEffect, useState} from 'react'
 
-import {useTranslation} from '../../../i18n'
+import {useTranslation} from '../../../i18n/hooks/useTranslation'
 import {COMMENT_REACTION_EMOJIS} from '../../constants'
 import {commentsLocaleNamespace} from '../../i18n'
 import {type CommentReactionOption} from '../../types'

@@ -2,21 +2,23 @@ import {isBooleanSchemaType, isNumberSchemaType, type SchemaType} from '@sanity/
 import {type ChangeEvent, type FocusEvent, useCallback, useMemo, useRef, useState} from 'react'
 
 import {type FIXME} from '../../../../FIXME'
-import {useCopyPaste} from '../../../../studio'
+import {useCopyPaste} from '../../../../studio/copyPaste/CopyPasteProvider'
 import {useGetFormValue} from '../../../contexts/GetFormValue'
 import {useDidUpdate} from '../../../hooks/useDidUpdate'
 import {getEmptyValue} from '../../../inputs/arrays/ArrayOfPrimitivesInput/getEmptyValue'
-import {insert, type PatchArg, PatchEvent, set, unset} from '../../../patch'
-import {type ArrayOfPrimitivesItemMember} from '../../../store'
+import {insert, set, unset} from '../../../patch/patch'
+import type {PatchArg} from '../../../patch/types'
+import {PatchEvent} from '../../../patch/PatchEvent'
+import type {ArrayOfPrimitivesItemMember} from '../../../store/types/members'
 import {useFormCallbacks} from '../../../studio/contexts/FormCallbacks'
+import type {ArrayInputCopyEvent} from '../../../types/event'
+import type {FormDocumentValue} from '../../../types/formDocumentValue'
+import type {PrimitiveInputProps} from '../../../types/inputProps'
+import type {PrimitiveItemProps} from '../../../types/itemProps'
 import {
-  type ArrayInputCopyEvent,
-  type FormDocumentValue,
-  type PrimitiveInputProps,
-  type PrimitiveItemProps,
   type RenderArrayOfPrimitivesItemCallback,
   type RenderInputCallback,
-} from '../../../types'
+} from '../../../types/renderCallback'
 import {createDescriptionId} from '../../common/createDescriptionId'
 import {resolveNativeNumberInputValue} from '../../common/resolveNativeNumberInputValue'
 

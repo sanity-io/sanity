@@ -5,8 +5,8 @@ import {type FocusEvent, Fragment, memo, useCallback, useMemo, useRef} from 'rea
 import {styled} from 'styled-components'
 
 import {EMPTY_ARRAY} from '../../../util/empty'
-import {ObjectInputMembers} from '../../members'
-import {type ObjectInputProps} from '../../types'
+import {ObjectInputMembers} from '../../members/object/ObjectInputMembers'
+import type {ObjectInputProps} from '../../types/inputProps'
 import {FieldGroupTabs} from './fieldGroups/FieldGroupTabs'
 import {AlignedBottomGrid, FieldGroupTabsWrapper} from './ObjectInput.styled'
 import {UnknownFields} from './UnknownFields'

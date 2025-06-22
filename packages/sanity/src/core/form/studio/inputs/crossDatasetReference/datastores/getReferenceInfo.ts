@@ -5,14 +5,11 @@ import {combineLatest, type Observable, of} from 'rxjs'
 import {map, switchMap} from 'rxjs/operators'
 
 import {type FIXME} from '../../../../../FIXME'
-import {
-  type DocumentAvailability,
-  type DocumentPreviewStore,
-  getPreviewPaths,
-  prepareForPreview,
-  type Previewable,
-} from '../../../../../preview'
-import {isRecord} from '../../../../../util'
+import {type DocumentAvailability, type Previewable} from '../../../../../preview/types'
+import type {DocumentPreviewStore} from '../../../../../preview/documentPreviewStore'
+import {getPreviewPaths} from '../../../../../preview/utils/getPreviewPaths'
+import {prepareForPreview} from '../../../../../preview/utils/prepareForPreview'
+import {isRecord} from '../../../../../util/isRecord'
 import {type CrossDatasetReferenceInfo} from '../../../../inputs/CrossDatasetReferenceInput/types'
 
 const REQUEST_TAG_BASE = 'cross-dataset-refs'

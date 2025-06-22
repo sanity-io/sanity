@@ -1,7 +1,8 @@
 import {type ComponentType, type ReactNode, useEffect, useState} from 'react'
 import {WorkspacesContext} from 'sanity/_singletons'
 
-import {type Config, prepareConfig} from '../../config'
+import type {Config} from '../../config/types'
+import {prepareConfig} from '../../config/prepareConfig'
 import {type WorkspacesContextValue} from './WorkspacesContext'
 
 /** @internal */

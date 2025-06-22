@@ -60,7 +60,7 @@ import type {
 /* eslint-enable import/consistent-type-specifier-style,no-restricted-imports */
 import {describe, it} from 'vitest'
 
-import {type PreviewProps} from '../../components'
+import type {PreviewProps} from '../../components/previews/types'
 import {type CrossDatasetReferenceInputProps, type ReferenceInputProps} from '../studio'
 import {
   type ArrayFieldProps,

@@ -2,7 +2,8 @@ import {type ReactNode, useMemo, useState} from 'react'
 import {useConfigContextFromSource, useDocumentStore, usePerspective, useSource} from 'sanity'
 import {StructureToolContext} from 'sanity/_singletons'
 
-import {createStructureBuilder, type DefaultDocumentNodeResolver} from './structureBuilder'
+import {createStructureBuilder} from './structureBuilder/createStructureBuilder'
+import type {DefaultDocumentNodeResolver} from './structureBuilder/types'
 import {
   type StructureResolver,
   type StructureToolContextValue,

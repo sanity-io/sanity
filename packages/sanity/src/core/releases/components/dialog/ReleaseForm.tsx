@@ -22,9 +22,10 @@ import {
   useState,
 } from 'react'
 
-import {MenuButton, Tooltip} from '../../../../ui-components'
+import {MenuButton} from '../../../../ui-components/menuButton/MenuButton'
+import {Tooltip} from '../../../../ui-components/tooltip/Tooltip'
 import {useTimeZone} from '../../../hooks/useTimeZone'
-import {useTranslation} from '../../../i18n'
+import {useTranslation} from '../../../i18n/hooks/useTranslation'
 import {CONTENT_RELEASES_TIME_ZONE_SCOPE} from '../../../studio/constants'
 import {isReleaseType} from '../../store/types'
 import {RELEASE_TYPES_TONES} from '../../util/const'

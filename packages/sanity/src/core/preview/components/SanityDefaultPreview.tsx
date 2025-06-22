@@ -14,11 +14,11 @@ import {
 } from 'react'
 import {isValidElementType} from 'react-is'
 
-import {Tooltip} from '../../../ui-components'
-import {type PreviewProps} from '../../components/previews'
-import {useClient} from '../../hooks'
+import {Tooltip} from '../../../ui-components/tooltip/Tooltip'
+import type {PreviewProps} from '../../components/previews/types'
+import {useClient} from '../../hooks/useClient'
 import {DEFAULT_STUDIO_CLIENT_OPTIONS} from '../../studioClient'
-import {isString} from '../../util'
+import {isString} from '../../util/isString'
 import {_previewComponents} from './_previewComponents'
 
 function FallbackIcon() {

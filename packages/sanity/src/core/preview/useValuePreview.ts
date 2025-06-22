@@ -11,7 +11,7 @@ import {catchError, map} from 'rxjs/operators'
 
 import {usePerspective} from '../perspective/usePerspective'
 import {isGoingToUnpublish} from '../releases/util/isGoingToUnpublish'
-import {useDocumentPreviewStore} from '../store'
+import {useDocumentPreviewStore} from '../store/_legacy/datastores'
 import {type Previewable} from './types'
 
 export {useDocumentPreview as unstable_useValuePreview}

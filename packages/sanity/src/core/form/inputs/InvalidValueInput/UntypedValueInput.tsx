@@ -1,13 +1,15 @@
 import {Card, Code, Grid, Stack, Text} from '@sanity/ui'
 import {useCallback, useMemo} from 'react'
 
-import {Button} from '../../../../ui-components'
+import {Button} from '../../../../ui-components/button/Button'
 import {isDev} from '../../../environment'
-import {useSchema} from '../../../hooks'
-import {Translate, useTranslation} from '../../../i18n'
+import {useSchema} from '../../../hooks/useSchema'
+import {Translate} from '../../../i18n/Translate'
+import {useTranslation} from '../../../i18n/hooks/useTranslation'
 import {Alert} from '../../components/Alert'
 import {Details} from '../../components/Details'
-import {PatchEvent, setIfMissing, unset} from '../../patch'
+import {PatchEvent} from '../../patch/PatchEvent'
+import {setIfMissing, unset} from '../../patch/patch'
 
 interface UntypedValueInputProps {
   validTypes: string[]

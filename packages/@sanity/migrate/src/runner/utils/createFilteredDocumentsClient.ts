@@ -1,6 +1,8 @@
 import {type SanityDocument} from '@sanity/types'
 
-import {decodeText, type JSONParser, parse} from '../../it-utils'
+import {decodeText} from '../../it-utils'
+import type {JSONParser} from '../../it-utils/json'
+import {parse} from '../../it-utils/ndjson'
 import {safeJsonParser} from '../../sources/fromExportEndpoint'
 import {type MigrationContext} from '../../types'
 import {streamToAsyncIterator} from '../../utils/streamToAsyncIterator'

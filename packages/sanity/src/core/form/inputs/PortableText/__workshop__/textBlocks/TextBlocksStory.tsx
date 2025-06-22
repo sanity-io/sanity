@@ -3,8 +3,8 @@ import {Box, Card, Container} from '@sanity/ui'
 import {useAction, useBoolean} from '@sanity/ui-workshop'
 import {useMemo} from 'react'
 
-import {useSource} from '../../../../../studio'
-import {type PortableTextMarker} from '../../../../types'
+import {useSource} from '../../../../../studio/source'
+import type {PortableTextMarker} from '../../../../types/_transitional'
 
 const message = 'There is an error with this text block'
 

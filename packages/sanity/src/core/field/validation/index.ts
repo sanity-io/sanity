@@ -1,6 +1,6 @@
 import {type ObjectSchemaType, type SchemaType} from '@sanity/types'
 
-import {type StudioLocaleResourceKeys} from '../../i18n'
+import type {StudioLocaleResourceKeys} from '../../i18n'
 import {getPrintableType} from '../../util/getPrintableType'
 
 /** @internal */

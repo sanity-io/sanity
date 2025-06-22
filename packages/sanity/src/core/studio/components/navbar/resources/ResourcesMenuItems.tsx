@@ -7,10 +7,10 @@ import {
   Text,
 } from '@sanity/ui'
 
-import {MenuItem} from '../../../../../ui-components'
-import {LoadingBlock} from '../../../../components/loadingBlock'
+import {MenuItem} from '../../../../../ui-components/menuItem/MenuItem'
+import {LoadingBlock} from '../../../../components/loadingBlock/LoadingBlock'
 import {hasSanityPackageInImportMap} from '../../../../environment/hasSanityPackageInImportMap'
-import {useTranslation} from '../../../../i18n'
+import {useTranslation} from '../../../../i18n/hooks/useTranslation'
 import {SANITY_VERSION} from '../../../../version'
 import {StudioAnnouncementsMenuItem} from '../../../studioAnnouncements/StudioAnnouncementsMenuItem'
 import {type ResourcesResponse, type Section} from './helper-functions/types'

@@ -1,6 +1,6 @@
 import {type InsertMenuOptions} from '@sanity/insert-menu'
 
-import {type FieldReference} from '../../../validation'
+import type {FieldReference} from '../../../validation/types'
 import {type RuleDef, type ValidationBuilder} from '../../ruleBuilder'
 import {type InitialValueProperty, type SchemaValidationValue} from '../../types'
 import {

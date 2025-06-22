@@ -6,7 +6,7 @@ import {useDocumentActionProps} from '../../contexts/documentActionProps'
 import useDialogScheduleEdit from '../../hooks/useDialogScheduleEdit'
 import {type Schedule} from '../../types'
 import {getScheduledDocumentId} from '../../utils/paneItemHelpers'
-import {ScheduleContextMenu} from '../scheduleContextMenu'
+import {ScheduleContextMenu} from '../scheduleContextMenu/ScheduleContextMenu'
 import PreviewWrapper from './PreviewWrapper'
 
 interface Props {

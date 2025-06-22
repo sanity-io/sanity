@@ -12,10 +12,10 @@ import {getTheme_v2} from '@sanity/ui/theme'
 import {type ForwardedRef, forwardRef, useState} from 'react'
 import {css, styled} from 'styled-components'
 
-import {Tooltip} from '../../../ui-components'
-import {useUser} from '../../store'
-import {useUserColor} from '../../user-color'
-import {isRecord} from '../../util'
+import {Tooltip} from '../../../ui-components/tooltip/Tooltip'
+import {useUser} from '../../store/user/hooks'
+import {useUserColor} from '../../user-color/hooks'
+import {isRecord} from '../../util/isRecord'
 
 interface AvatarSkeletonProps {
   $size?: AvatarSize

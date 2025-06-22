@@ -1,5 +1,5 @@
-import {type AssetSource} from '../../../assets'
-import {type Reference} from '../../../reference'
+import type {AssetSource} from '../../../assets/types'
+import type {Reference} from '../../../reference/types'
 import {type RuleDef, type ValidationBuilder} from '../../ruleBuilder'
 import {type InitialValueProperty} from '../../types'
 import {type ObjectDefinition, type ObjectOptions} from './object'

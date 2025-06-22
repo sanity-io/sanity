@@ -25,7 +25,10 @@ import {lazy, memo, Suspense, useCallback, useEffect, useMemo, useState} from 'r
 import {useClient, useCurrentUser, useTranslation} from 'sanity'
 import {styled} from 'styled-components'
 
-import {Button, MenuButton, MenuItem, Tooltip} from '../../ui-components'
+import {Button} from '../../ui-components/button/Button'
+import {MenuButton} from '../../ui-components/menuButton/MenuButton'
+import {MenuItem} from '../../ui-components/menuItem/MenuItem'
+import {Tooltip} from '../../ui-components/tooltip/Tooltip'
 import {API_VERSION} from '../constants'
 import {presentationLocaleNamespace} from '../i18n'
 import {encodeStudioPerspective} from '../util/encodeStudioPerspective'

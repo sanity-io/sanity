@@ -2,10 +2,10 @@ import {CheckmarkIcon} from '@sanity/icons'
 import {Text} from '@sanity/ui'
 import {useCallback} from 'react'
 
-import {MenuItem} from '../../../../ui-components'
-import {TooltipOfDisabled} from '../../../components'
-import {type DocumentFieldActionItem} from '../../../config'
-import {useI18nText} from '../../../i18n'
+import {MenuItem} from '../../../../ui-components/menuItem/MenuItem'
+import {TooltipOfDisabled} from '../../../components/TooltipOfDisabled'
+import type {DocumentFieldActionItem} from '../../../config/document/fieldActions/types'
+import {useI18nText} from '../../../i18n/hooks/useI18nText'
 
 export function FieldActionMenuItem(props: {action: DocumentFieldActionItem}) {
   const {action} = props

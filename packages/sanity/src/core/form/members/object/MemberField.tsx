@@ -1,7 +1,7 @@
 import {memo} from 'react'
 
 import {type FIXME} from '../../../FIXME'
-import {type FieldMember} from '../../store'
+import type {FieldMember} from '../../store/types/members'
 import {
   type RenderAnnotationCallback,
   type RenderArrayOfObjectsItemCallback,
@@ -9,7 +9,7 @@ import {
   type RenderFieldCallback,
   type RenderInputCallback,
   type RenderPreviewCallback,
-} from '../../types'
+} from '../../types/renderCallback'
 import {ArrayOfObjectsField} from './fields/ArrayOfObjectsField'
 import {ArrayOfPrimitivesField} from './fields/ArrayOfPrimitivesField'
 import {isMemberArrayOfObjects, isMemberArrayOfPrimitives, isMemberObject} from './fields/asserters'

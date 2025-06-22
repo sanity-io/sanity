@@ -3,16 +3,12 @@ import {TextSkeleton} from '@sanity/ui'
 import {IntentLink} from 'sanity/router'
 import {styled} from 'styled-components'
 
-import {
-  type RelativeTimeOptions,
-  useDateTimeFormat,
-  type UseDateTimeFormatOptions,
-  useRelativeTime,
-  useSchema,
-} from '../../../../hooks'
-import {useUser} from '../../../../store'
-import {TASK_STATUS} from '../../../constants'
-import {useDocumentPreviewValues} from '../../../hooks'
+import {type RelativeTimeOptions, useRelativeTime} from '../../../../hooks/useRelativeTime'
+import {useDateTimeFormat, type UseDateTimeFormatOptions} from '../../../../hooks/useDateTimeFormat'
+import {useSchema} from '../../../../hooks/useSchema'
+import {useUser} from '../../../../store/user/hooks'
+import {TASK_STATUS} from '../../../constants/TaskStatus'
+import {useDocumentPreviewValues} from '../../../hooks/useDocumentPreviewValues'
 import {type TaskTarget} from '../../../types'
 import {type FieldChange} from './parseTransactions'
 

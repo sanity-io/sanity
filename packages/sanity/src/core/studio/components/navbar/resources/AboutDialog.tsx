@@ -2,9 +2,11 @@ import {CheckmarkCircleIcon, CopyIcon} from '@sanity/icons'
 import {Stack, Text, useToast} from '@sanity/ui'
 import {useCallback, useEffect, useId, useState} from 'react'
 
-import {Button, Dialog} from '../../../../../ui-components'
+import {Button} from '../../../../../ui-components/button/Button'
+import {Dialog} from '../../../../../ui-components/dialog/Dialog'
 import {hasSanityPackageInImportMap} from '../../../../environment/hasSanityPackageInImportMap'
-import {Translate, useTranslation} from '../../../../i18n'
+import {Translate} from '../../../../i18n/Translate'
+import {useTranslation} from '../../../../i18n/hooks/useTranslation'
 
 interface AboutDialogProps {
   latestVersion: string

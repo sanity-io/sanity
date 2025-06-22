@@ -14,7 +14,7 @@ import {
   VersionInlineBadge,
 } from 'sanity'
 
-import {Button} from '../../../../../ui-components'
+import {Button} from '../../../../../ui-components/button/Button'
 import {structureLocaleNamespace} from '../../../../i18n'
 import {Banner} from './Banner'
 

@@ -1,8 +1,8 @@
 import {type Path} from '@sanity/types'
 import {useCallback, useMemo, useState} from 'react'
 
-import {type Reported} from '../../components/react-track-elements'
-import {useOnScroll} from '../../components/scroll'
+import type {Reported} from '../../components/react-track-elements/types'
+import {useOnScroll} from '../../components/scroll/hooks'
 import {useReviewChanges} from '../../hooks/useReviewChanges'
 import {DEBUG_LAYER_BOUNDS} from '../constants'
 import {findMostSpecificTarget} from '../helpers/findMostSpecificTarget'

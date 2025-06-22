@@ -1,5 +1,5 @@
-import {type Tool} from '../config'
-import {useSource} from '../studio'
+import type {Tool} from '../config/types'
+import {useSource} from '../studio/source'
 
 /**
  *

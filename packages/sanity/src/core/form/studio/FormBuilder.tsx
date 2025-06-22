@@ -1,10 +1,10 @@
 import {type ObjectSchemaType, type Path, type ValidationMarker} from '@sanity/types'
 import {useCallback, useMemo, useRef} from 'react'
 
-import {type DocumentFieldAction} from '../../config'
-import {type FormNodePresence} from '../../presence'
-import {PreviewLoader} from '../../preview'
-import {EMPTY_ARRAY} from '../../util'
+import type {DocumentFieldAction} from '../../config/document/fieldActions/types'
+import type {FormNodePresence} from '../../presence/types'
+import {PreviewLoader} from '../../preview/components/PreviewLoader'
+import {EMPTY_ARRAY} from '../../util/empty'
 import {FormValueProvider} from '../contexts/FormValue'
 import {GetFormValueProvider} from '../contexts/GetFormValue'
 import {
@@ -15,24 +15,24 @@ import {
   useInputComponent,
   useItemComponent,
   usePreviewComponent,
-} from '../form-components-hooks'
-import {type FormPatch, type PatchChannel, PatchEvent} from '../patch'
-import {type StateTree} from '../store'
+} from '../form-components-hooks/componentHooks'
+import type {FormPatch} from '../patch/types'
+import type {PatchChannel} from '../patch/PatchChannel'
+import {PatchEvent} from '../patch/PatchEvent'
+import type {StateTree} from '../store/types/state'
 import {type ObjectFormNode} from '../store/types/nodes'
-import {
-  type BlockAnnotationProps,
-  type BlockProps,
-  type FieldProps,
-  type FormDocumentValue,
-  type InputProps,
-  type ItemProps,
-  type ObjectInputProps,
-  type RenderPreviewCallbackProps,
-} from '../types'
+import {type BlockAnnotationProps, type BlockProps} from '../types/blockProps'
+import type {FieldProps} from '../types/fieldProps'
+import type {FormDocumentValue} from '../types/formDocumentValue'
+import {type InputProps, type ObjectInputProps} from '../types/inputProps'
+import type {ItemProps} from '../types/itemProps'
+import type {RenderPreviewCallbackProps} from '../types/renderCallback'
 import {DocumentFieldActionsProvider} from './contexts/DocumentFieldActions'
 import {FormBuilderInputErrorBoundary} from './FormBuilderInputErrorBoundary'
 import {FormProvider} from './FormProvider'
-import {TreeEditingDialog, TreeEditingEnabledProvider, useTreeEditingEnabled} from './tree-editing'
+import {TreeEditingDialog} from './tree-editing/components/TreeEditingDialog'
+import {TreeEditingEnabledProvider} from './tree-editing/context/enabled/TreeEditingEnabledProvider'
+import {useTreeEditingEnabled} from './tree-editing/context/enabled/useTreeEditingEnabled'
 
 /**
  * @alpha

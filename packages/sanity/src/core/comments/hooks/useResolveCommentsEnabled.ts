@@ -1,8 +1,8 @@
 import {useMemo} from 'react'
 
-import {useFeatureEnabled} from '../../hooks'
-import {useSource} from '../../studio'
-import {getPublishedId} from '../../util'
+import {useFeatureEnabled} from '../../hooks/useFeatureEnabled'
+import {useSource} from '../../studio/source'
+import {getPublishedId} from '../../util/draftUtils'
 import {type CommentsUIMode} from '../types'
 
 type ResolveCommentsEnabled =

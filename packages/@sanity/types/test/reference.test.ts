@@ -4,11 +4,9 @@ import {describe, it} from 'vitest'
  * Some of these tests have no expect statement;
  * use of ts-expect-error serves the same purpose - TypeScript is the testrunner here
  */
-import {
-  type BooleanDefinition,
-  type GlobalDocumentReferenceDefinition,
-  type ReferenceDefinition,
-} from '../src/schema/definition'
+import type {BooleanDefinition} from '../src/schema/definition/type/boolean'
+import type {GlobalDocumentReferenceDefinition} from '../src/schema/definition/type/globalDocumentReference'
+import type {ReferenceDefinition} from '../src/schema/definition/type/reference'
 import {defineType} from '../src/schema/types'
 
 describe('reference types', () => {

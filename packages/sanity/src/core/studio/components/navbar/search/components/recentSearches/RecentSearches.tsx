@@ -2,13 +2,13 @@ import {Box, Card, Text, useMediaIndex} from '@sanity/ui'
 import {useCallback, useMemo, useRef} from 'react'
 import {styled} from 'styled-components'
 
-import {Button} from '../../../../../../../ui-components'
+import {Button} from '../../../../../../../ui-components/button/Button'
+import {CommandList} from '../../../../../../components/commandList/CommandList'
 import {
-  CommandList,
   type CommandListHandle,
   type CommandListRenderItemCallback,
-} from '../../../../../../components'
-import {useTranslation} from '../../../../../../i18n'
+} from '../../../../../../components/commandList/types'
+import {useTranslation} from '../../../../../../i18n/hooks/useTranslation'
 import {useSearchState} from '../../contexts/search/useSearchState'
 import {type RecentSearch, useRecentSearchesStore} from '../../datastores/recentSearches'
 import {Instructions} from '../Instructions'

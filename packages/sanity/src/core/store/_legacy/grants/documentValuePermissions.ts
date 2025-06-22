@@ -2,7 +2,8 @@ import {isEqual} from 'lodash'
 import {useEffect, useReducer, useRef} from 'react'
 import {distinctUntilChanged, type Observable, type Subscription} from 'rxjs'
 
-import {type LoadingTuple, type PartialExcept} from '../../../util'
+import type {LoadingTuple} from '../../../util/createHookFromObservableFactory'
+import type {PartialExcept} from '../../../util/PartialExcept'
 import {useGrantsStore} from '../datastores'
 import {type DocumentValuePermission, type GrantsStore, type PermissionCheckResult} from './types'
 

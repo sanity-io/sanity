@@ -3,8 +3,10 @@ import {AvatarStack, Flex} from '@sanity/ui'
 import {AnimatePresence, motion} from 'framer-motion'
 import {useCallback, useMemo} from 'react'
 
-import {Button} from '../../../../ui-components'
-import {type FormPatch, type PatchEvent, set} from '../../../form/patch'
+import {Button} from '../../../../ui-components/button/Button'
+import type {FormPatch} from '../../../form/patch/types'
+import type {PatchEvent} from '../../../form/patch/PatchEvent'
+import {set} from '../../../form/patch/patch'
 import {type TaskDocument} from '../../types'
 import {TasksUserAvatar} from '../TasksUserAvatar'
 

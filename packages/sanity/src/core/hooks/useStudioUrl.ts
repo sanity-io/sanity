@@ -3,7 +3,7 @@ import {useCallback, useMemo} from 'react'
 import {useStudioAppIdStore} from '../create/studio-app/useStudioAppIdStore'
 import {useProjectOrganizationId} from '../store/_legacy/project/useProjectOrganizationId'
 import {useRenderingContext} from '../store/renderingContext/useRenderingContext'
-import {useActiveWorkspace} from '../studio'
+import {useActiveWorkspace} from '../studio/activeWorkspaceMatcher/useActiveWorkspace'
 import {getDashboardPath} from '../util/dashboardPath'
 
 type StudioUrlBuilder = (url: string) => string

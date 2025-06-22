@@ -3,7 +3,7 @@ import {type Path} from '@sanity/types'
 import {Flex} from '@sanity/ui'
 import {useState} from 'react'
 
-import {TreeEditingBreadcrumbsMenuButton} from '../components'
+import {TreeEditingBreadcrumbsMenuButton} from '../components/breadcrumbs/TreeEditingBreadcrumbsMenuButton'
 import {type TreeEditingBreadcrumb} from '../types'
 
 const schema = Schema.compile({

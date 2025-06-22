@@ -5,7 +5,7 @@ import {memo, type ReactNode, useCallback, useRef, useState} from 'react'
 import {PresenceOverlay} from '../../../../../presence/overlay/PresenceOverlay'
 import {VirtualizerScrollInstanceProvider} from '../../../../inputs/arrays/ArrayOfObjectsInput/List/VirtualizerScrollInstanceProvider'
 import {type TreeEditingBreadcrumb, type TreeEditingMenuItem} from '../../types'
-import {TreeEditingBreadcrumbs} from '../breadcrumbs'
+import {TreeEditingBreadcrumbs} from '../breadcrumbs/TreeEditingBreadcrumbs'
 import {FixedHeightFlex} from './styles'
 import {TreeEditingLayoutSidebar} from './TreeEditingLayoutSidebar'
 

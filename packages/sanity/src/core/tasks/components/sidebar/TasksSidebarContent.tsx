@@ -1,6 +1,6 @@
 import {Card} from '@sanity/ui'
 
-import {type SidebarTabsIds} from '../../context'
+import type {SidebarTabsIds} from '../../context/navigation/types'
 import {type TaskDocument} from '../../types'
 import {TasksList} from '../list/TasksList'
 import {TasksListTabs} from './TasksListTabs'

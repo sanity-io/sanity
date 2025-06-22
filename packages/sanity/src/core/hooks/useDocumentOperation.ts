@@ -1,7 +1,8 @@
 import {useMemo} from 'react'
 import {useObservable} from 'react-rx'
 
-import {type OperationsAPI, useDocumentStore} from '../store'
+import type {OperationsAPI} from '../store/_legacy/document/document-pair/operations/types'
+import {useDocumentStore} from '../store/_legacy/datastores'
 import {useDocumentOperationWithComlinkHistory} from './useDocumentOperationWithComlinkHistory'
 
 /** @internal */

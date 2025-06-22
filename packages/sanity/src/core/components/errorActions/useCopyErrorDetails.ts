@@ -3,7 +3,7 @@ import {pick} from 'lodash'
 import {useCallback} from 'react'
 import {catchError, EMPTY, map, of, type OperatorFunction, tap} from 'rxjs'
 
-import {isRecord} from '../../util'
+import {isRecord} from '../../util/isRecord'
 import {strings} from './strings'
 import {type ErrorWithId} from './types'
 

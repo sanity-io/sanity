@@ -1,7 +1,7 @@
 import {type Path, type SchemaType} from '@sanity/types'
 import {type CSSProperties} from 'react'
 
-import {type FieldPreviewComponent} from '../../preview'
+import type {FieldPreviewComponent} from '../../preview/types'
 import {type Diff} from '../../types'
 import {useChangeVerb} from '../hooks/useChangeVerb'
 import {DiffCard} from './DiffCard'

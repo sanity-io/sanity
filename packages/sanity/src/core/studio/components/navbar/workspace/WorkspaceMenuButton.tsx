@@ -9,11 +9,13 @@ import {
 } from '@sanity/ui'
 import {styled} from 'styled-components'
 
-import {MenuButton, type MenuButtonProps, MenuItem, Tooltip} from '../../../../../ui-components'
-import {useTranslation} from '../../../../i18n'
-import {useActiveWorkspace} from '../../../activeWorkspaceMatcher'
-import {useWorkspaces} from '../../../workspaces'
-import {useWorkspaceAuthStates} from './hooks'
+import {MenuButton, type MenuButtonProps} from '../../../../../ui-components/menuButton/MenuButton'
+import {MenuItem} from '../../../../../ui-components/menuItem/MenuItem'
+import {Tooltip} from '../../../../../ui-components/tooltip/Tooltip'
+import {useTranslation} from '../../../../i18n/hooks/useTranslation'
+import {useActiveWorkspace} from '../../../activeWorkspaceMatcher/useActiveWorkspace'
+import {useWorkspaces} from '../../../workspaces/useWorkspaces'
+import {useWorkspaceAuthStates} from './hooks/useWorkspaceAuthStates'
 import {STATE_TITLES, WorkspacePreviewIcon} from './WorkspacePreview'
 
 const StyledMenu = styled(Menu)`

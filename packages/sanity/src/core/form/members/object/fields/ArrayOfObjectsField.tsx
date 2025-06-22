@@ -5,33 +5,37 @@ import {type FocusEvent, useCallback, useEffect, useMemo, useRef} from 'react'
 import {type Subscription} from 'rxjs'
 import {map, tap} from 'rxjs/operators'
 
-import {useClient} from '../../../../hooks'
-import {useResolveInitialValueForType} from '../../../../store'
+import {useClient} from '../../../../hooks/useClient'
+import {useResolveInitialValueForType} from '../../../../store/_legacy/document/useResolveInitialValueForType'
 import {DEFAULT_STUDIO_CLIENT_OPTIONS} from '../../../../studioClient'
 import {useDidUpdate} from '../../../hooks/useDidUpdate'
 import {createProtoArrayValue} from '../../../inputs/arrays/ArrayOfObjectsInput/createProtoArrayValue'
-import {insert, type PatchArg, PatchEvent, setIfMissing, unset} from '../../../patch'
+import {insert, setIfMissing, unset} from '../../../patch/patch'
+import type {PatchArg} from '../../../patch/types'
+import {PatchEvent} from '../../../patch/PatchEvent'
 import {applyAll} from '../../../patch/applyPatch'
-import {type ArrayOfObjectsFormNode, type FieldMember} from '../../../store'
+import type {ArrayOfObjectsFormNode} from '../../../store/types/nodes'
+import type {FieldMember} from '../../../store/types/members'
 import {useDocumentFieldActions} from '../../../studio/contexts/DocumentFieldActions'
 import {FormCallbacksProvider, useFormCallbacks} from '../../../studio/contexts/FormCallbacks'
 import {resolveUploader as defaultResolveUploader} from '../../../studio/uploads/resolveUploader'
 import {type FileLike, type UploadProgressEvent} from '../../../studio/uploads/types'
+import type {ArrayFieldProps} from '../../../types/fieldProps'
 import {
-  type ArrayFieldProps,
   type ArrayInputInsertEvent,
   type ArrayInputMoveItemEvent,
-  type ArrayOfObjectsInputProps,
-  type ObjectItem,
-  type OnPathFocusPayload,
+  type UploadEvent,
+} from '../../../types/event'
+import {type ArrayOfObjectsInputProps, type OnPathFocusPayload} from '../../../types/inputProps'
+import type {ObjectItem} from '../../../types/itemProps'
+import {
   type RenderAnnotationCallback,
   type RenderArrayOfObjectsItemCallback,
   type RenderBlockCallback,
   type RenderFieldCallback,
   type RenderInputCallback,
   type RenderPreviewCallback,
-  type UploadEvent,
-} from '../../../types'
+} from '../../../types/renderCallback'
 import {useFormBuilder} from '../../../useFormBuilder'
 import {ensureKey} from '../../../utils/ensureKey'
 import * as is from '../../../utils/is'

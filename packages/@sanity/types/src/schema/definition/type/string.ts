@@ -1,4 +1,4 @@
-import {type FieldReference} from '../../../validation'
+import type {FieldReference} from '../../../validation/types'
 import {type RuleDef, type ValidationBuilder} from '../../ruleBuilder'
 import {type InitialValueProperty} from '../../types'
 import {

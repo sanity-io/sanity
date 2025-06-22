@@ -3,7 +3,8 @@ import path from 'node:path'
 
 import {describe, expect, test} from 'vitest'
 
-import {decodeText, parse} from '../../it-utils'
+import {decodeText} from '../../it-utils'
+import {parse} from '../../it-utils/ndjson'
 import {firstValueFrom} from '../../it-utils/firstValueFrom'
 import {lastValueFrom} from '../../it-utils/lastValueFrom'
 import {asyncIterableToStream} from '../../utils/asyncIterableToStream'

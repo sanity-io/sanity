@@ -31,7 +31,7 @@ import {css, styled} from 'styled-components'
 
 import {applyAll} from '../../../../src/core/form/patch/applyPatch'
 import {PresenceProvider} from '../../../../src/core/form/studio/contexts/Presence'
-import {type FormDocumentValue} from '../../../../src/core/form/types'
+import type {FormDocumentValue} from '../../../../src/core/form/types/formDocumentValue'
 import {createMockSanityClient} from '../../mocks/createMockSanityClient'
 
 const NOOP = () => null

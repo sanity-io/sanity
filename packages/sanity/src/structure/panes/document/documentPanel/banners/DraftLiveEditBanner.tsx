@@ -5,7 +5,7 @@ import {Flex, Text} from '@sanity/ui'
 import {useCallback, useEffect, useState} from 'react'
 import {type ObjectSchemaType, Translate, useDocumentOperation, useTranslation} from 'sanity'
 
-import {Button} from '../../../../../ui-components'
+import {Button} from '../../../../../ui-components/button/Button'
 import {structureLocaleNamespace} from '../../../../i18n'
 import {ResolvedLiveEdit} from './__telemetry__/DraftLiveEditBanner.telemetry'
 import {Banner} from './Banner'

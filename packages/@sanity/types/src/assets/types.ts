@@ -1,8 +1,8 @@
 import {type ComponentType} from 'react'
 
-import {type SanityDocument} from '../documents'
-import {type Reference} from '../reference'
-import {type FileSchemaType, type ImageSchemaType, type SchemaType} from '../schema'
+import type {SanityDocument} from '../documents/types'
+import type {Reference} from '../reference/types'
+import {type FileSchemaType, type ImageSchemaType, type SchemaType} from '../schema/types'
 
 /** @public */
 export interface EmptyProps {}

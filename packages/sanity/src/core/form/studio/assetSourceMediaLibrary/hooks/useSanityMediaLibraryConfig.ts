@@ -1,4 +1,4 @@
-import {useClient} from '../../../../hooks'
+import {useClient} from '../../../../hooks/useClient'
 import {
   API_HOST_PRODUCTION,
   API_HOST_STAGING,

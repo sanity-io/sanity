@@ -1,6 +1,6 @@
 import {type KeyedSegment, type SchemaType} from '@sanity/types'
 
-import {type Uploader} from '../studio'
+import type {Uploader} from '../studio/uploads/types'
 
 /**
  * @hidden

@@ -18,13 +18,13 @@ import {
   throttleTime,
 } from 'rxjs/operators'
 
-import {type HistoryStore} from '../../history'
+import type {HistoryStore} from '../../history/createHistoryStore'
 import {type DocumentStoreExtraOptions} from '../getPairListener'
 import {type IdPair} from '../types'
 import {memoize} from '../utils/createMemoizer'
 import {consistencyStatus} from './consistencyStatus'
 import {operationArgs} from './operationArgs'
-import {type OperationArgs, type OperationsAPI} from './operations'
+import {type OperationArgs, type OperationsAPI} from './operations/types'
 import {commit} from './operations/commit'
 import {del} from './operations/delete'
 import {discardChanges} from './operations/discardChanges'

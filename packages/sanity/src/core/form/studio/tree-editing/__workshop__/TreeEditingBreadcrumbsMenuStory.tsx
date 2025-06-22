@@ -3,7 +3,7 @@ import {type Path} from '@sanity/types'
 import {Container, Flex} from '@sanity/ui'
 import {useState} from 'react'
 
-import {TreeEditingBreadcrumbsMenu} from '../components'
+import {TreeEditingBreadcrumbsMenu} from '../components/breadcrumbs/TreeEditingBreadcrumbsMenu'
 import {type TreeEditingBreadcrumb} from '../types'
 
 const schema = Schema.compile({

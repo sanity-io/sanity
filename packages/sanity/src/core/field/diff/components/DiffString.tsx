@@ -1,7 +1,7 @@
 import {Card, rem, Text} from '@sanity/ui'
 import {styled} from 'styled-components'
 
-import {useTranslation} from '../../../i18n'
+import {useTranslation} from '../../../i18n/hooks/useTranslation'
 import {type StringDiff, type StringDiffSegment} from '../../types'
 import {DiffCard} from './DiffCard'
 

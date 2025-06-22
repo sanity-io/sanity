@@ -8,12 +8,13 @@ import {
   type DocumentActionDialogProps,
   type DocumentActionProps,
 } from '../../../../config/document/actions'
-import {useCurrentUser, useDocumentPairPermissions} from '../../../../store'
+import {useCurrentUser} from '../../../../store/user/hooks'
+import {useDocumentPairPermissions} from '../../../../store/_legacy/grants/documentPairPermissions'
 import {SCHEDULED_PUBLISHING_TIME_ZONE_SCOPE} from '../../../../studio/constants'
 import {debugWithName} from '../../../../studio/timezones/utils/debug'
 import DialogFooter from '../../../components/dialogs/DialogFooter'
 import DialogHeader from '../../../components/dialogs/DialogHeader'
-import {EditScheduleForm} from '../../../components/editScheduleForm'
+import {EditScheduleForm} from '../../../components/editScheduleForm/EditScheduleForm'
 import ErrorCallout from '../../../components/errorCallout/ErrorCallout'
 import {DocumentActionPropsProvider} from '../../../contexts/documentActionProps'
 import {useScheduledPublishingEnabled} from '../../../contexts/ScheduledPublishingEnabledProvider'

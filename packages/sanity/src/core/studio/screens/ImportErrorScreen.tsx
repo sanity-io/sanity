@@ -4,7 +4,7 @@ import {Box, Card, Code, Container, Heading, Inline, Stack, Text} from '@sanity/
 import {useEffect, useReducer, useState} from 'react'
 import {styled} from 'styled-components'
 
-import {Button} from '../../../ui-components'
+import {Button} from '../../../ui-components/button/Button'
 import {isDev} from '../../environment'
 
 const View = styled(Box)`
