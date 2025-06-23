@@ -1,0 +1,13 @@
+{
+  "extends": "@repo/tsconfig/build.json",
+  "include": ["./test"],
+  "compilerOptions": {
+    "rootDir": ".",
+    "emitDeclarationOnly": false,
+    "noEmit": true,
+    "module": "Preserve",
+    "allowJs": true,
+    "checkJs": true,
+    "noImplicitAny": false
+  }
+}
