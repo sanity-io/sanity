@@ -221,7 +221,7 @@ export function prepareConfig(
         types: schemaTypes,
       })
 
-      if (process.env.SANITY_STUDIO_SCHEMA_DESCRIPTOR) {
+      if (typeof process !== 'undefined' && process?.env?.SANITY_STUDIO_SCHEMA_DESCRIPTOR) {
         const before = performance.now()
         const sync = DESCRIPTOR_CONVERTER.get(schema)
         const after = performance.now()
