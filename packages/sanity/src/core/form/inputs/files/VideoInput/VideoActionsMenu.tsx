@@ -1,15 +1,23 @@
-// eslint-disable-next-line import/no-extraneous-dependencies, import/no-unassigned-import
-import 'player.style/sutro'
-
-import MuxPlayer from '@mux/mux-player-react'
-import {Box, Card, Inline, Menu, useClickOutsideEvent, useGlobalKeyDown} from '@sanity/ui'
-import {type CSSProperties, type ReactNode, useCallback, useEffect, useState} from 'react'
+import {Box, Card, Inline, Menu, Spinner, useClickOutsideEvent, useGlobalKeyDown} from '@sanity/ui'
+import {
+  type CSSProperties,
+  lazy,
+  type ReactNode,
+  Suspense,
+  useCallback,
+  useEffect,
+  useState,
+} from 'react'
 import {styled} from 'styled-components'
 
 import {Popover} from '../../../../../ui-components'
 import {ContextMenuButton} from '../../../../components/contextMenuButton'
 import {useTranslation} from '../../../../i18n'
 import {RatioBox} from './styles'
+
+const VideoPlayer = lazy(() =>
+  import('./VideoPlayer').then((module) => ({default: module.VideoPlayer})),
+)
 
 type Props = {
   children: ReactNode
@@ -105,21 +113,14 @@ export function VideoActionsMenu(props: Props) {
           }
         >
           {playbackId && (
-            <>
-              <MuxPlayer
-                theme={'sutro' as const}
+            <Suspense fallback={<Spinner />}>
+              <VideoPlayer
                 playbackId={playbackId}
-                autoPlay={false}
-                loop={false}
-                style={{
-                  width: wrapperWidth,
-                  height: wrapperHeight,
-                  maxWidth: '100%',
-                  maxHeight: '100%',
-                  aspectRatio,
-                }}
+                aspectRatio={aspectRatio}
+                muted={muted}
+                disabled={disabled}
               />
-            </>
+            </Suspense>
           )}
         </RatioBox>
       </Card>
