@@ -27,6 +27,7 @@ import {resolveSchemaTypeForPath} from './resolveSchemaTypeForPath'
 import {transferValue, type TransferValueOptions} from './transferValue'
 import {
   type CopyOptions,
+  type CopyPasteContextType,
   type DocumentMeta,
   type PasteOptions,
   type SanityClipboardItem,
@@ -347,7 +348,7 @@ export const CopyPasteProvider: React.FC<{
  * @beta
  * @hidden
  */
-export const useCopyPaste = () => {
+export const useCopyPaste = (): CopyPasteContextType => {
   const context = useContext(CopyPasteContext)
   if (!context) {
     throw new Error('useCopyPaste must be used within a CopyPasteProvider')

@@ -6,6 +6,7 @@ export default defineConfig({
   },
   dist: 'lib',
   extract: {
+    enabled: process.env.SANITY_PKG_DTS === 'api-extractor',
     customTags: [
       {
         name: 'hidden',
@@ -20,13 +21,11 @@ export default defineConfig({
     ],
     rules: {
       // Disable rules for now
-      'ae-forgotten-export': 'off',
       'ae-incompatible-release-tags': 'off',
       'ae-internal-missing-underscore': 'off',
       'ae-missing-release-tag': 'off',
     },
   },
-  legacyExports: false,
   rollup: {
     optimizeLodash: true,
   },
@@ -35,4 +34,6 @@ export default defineConfig({
     noImplicitBrowsersList: 'off',
     noImplicitSideEffects: 'error',
   },
+  // @TODO Disabled until https://github.com/sxzz/rolldown-plugin-dts/issues/45 is fixed
+  // dts: process.env.SANITY_PKG_DTS === 'api-extractor' ? 'api-extractor' : 'rolldown',
 })

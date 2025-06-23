@@ -14,6 +14,7 @@ import {
   getPublishedId,
   type PartialExcept,
 } from '../../../util'
+import {type LoadingTuple, type ReactHook} from '../../../util/createHookFromObservableFactory'
 import {useGrantsStore} from '../datastores'
 import {type DocumentStoreExtraOptions, snapshotPair} from '../document'
 import {type GrantsStore, type PermissionCheckResult} from './types'
@@ -290,9 +291,10 @@ export function getDocumentPairPermissions({
  *
  * @internal
  */
-export const useDocumentPairPermissionsFromHookFactory = createHookFromObservableFactory(
-  getDocumentPairPermissions,
-)
+export const useDocumentPairPermissionsFromHookFactory: ReactHook<
+  DocumentPairPermissionsOptions,
+  LoadingTuple<PermissionCheckResult | undefined>
+> = createHookFromObservableFactory(getDocumentPairPermissions)
 
 /** @internal */
 export function useDocumentPairPermissions({
