@@ -9,6 +9,7 @@ import {
   useCallback,
   useDeferredValue,
   useMemo,
+  useRef,
   useState,
 } from 'react'
 import {type DocumentActionDescription, useFieldActions, useTranslation} from 'sanity'
@@ -32,6 +33,7 @@ import {ActionDialogWrapper, ActionMenuListItem} from '../../statusBar/ActionMen
 import {isRestoreAction} from '../../statusBar/DocumentStatusBarActions'
 import {useDocumentPane} from '../../useDocumentPane'
 import {DocumentHeaderTitle} from './DocumentHeaderTitle'
+import {useChipScrollPosition} from './hook/useChipScrollPosition'
 import {DocumentPerspectiveList} from './perspective/DocumentPerspectiveList'
 
 // eslint-disable-next-line @typescript-eslint/no-empty-interface
@@ -39,7 +41,7 @@ export interface DocumentPanelHeaderProps {
   menuItems: PaneMenuItem[]
 }
 
-const HorizontalScroller = styled(Card)((props) => {
+const HorizontalScroller = styled(Card)<{$showGradient: boolean}>((props) => {
   const theme = getTheme_v2(props.theme)
 
   return css`
@@ -54,16 +56,20 @@ const HorizontalScroller = styled(Card)((props) => {
       }
     }
 
-    &::after {
-      content: '';
-      display: block;
-      position: absolute;
-      top: 0;
-      right: 0;
-      bottom: 0;
-      width: ${theme.space[3]}px;
-      background: linear-gradient(to right, ${rgba(theme.color.bg, 0)}, var(--card-bg-color));
-    }
+    ${props.$showGradient &&
+    css`
+      &::after {
+        content: '';
+        display: block;
+        position: absolute;
+        top: 0;
+        right: 0;
+        bottom: 0;
+        width: 150px;
+        background: linear-gradient(to right, ${rgba(theme.color.bg, 0)}, var(--card-bg-color));
+        transition: 'opacity 300ms ease-out';
+      }
+    `}
   `
 })
 
@@ -90,6 +96,8 @@ export const DocumentPanelHeader = memo(
     const {index, BackLink, hasGroupSiblings} = usePaneRouter()
     const {actions: fieldActions} = useFieldActions()
     const [referenceElement, setReferenceElement] = useState<HTMLElement | null>(null)
+    const scrollContainerRef = useRef<HTMLDivElement>(null)
+    const showGradient = useChipScrollPosition(scrollContainerRef)
 
     // The restore action has a dedicated place in the UI; it's only visible when the user is
     // viewing a different document revision. It must be omitted from this collection.
@@ -261,13 +269,14 @@ export const DocumentPanelHeader = memo(
         ) : (
           <Card hidden={collapsed} style={{lineHeight: 0}} borderBottom>
             <Flex gap={3} paddingY={3}>
-              <HorizontalScroller>
+              <HorizontalScroller $showGradient={showGradient}>
                 <Flex
                   flex={1}
                   gap={1}
                   overflow="auto"
                   paddingX={3}
                   data-testid="document-perspective-list"
+                  ref={scrollContainerRef}
                 >
                   <DocumentPerspectiveList />
                 </Flex>
