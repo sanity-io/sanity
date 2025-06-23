@@ -5,7 +5,5 @@ import type {ReferenceInputOptions} from '../../core/form/studio/contexts/Refere
 /**
  * @internal
  */
-export const ReferenceInputOptionsContext = createContext<ReferenceInputOptions>(
-  'sanity/_singletons/context/reference-input-options',
-  {},
-)
+export const ReferenceInputOptionsContext: React.Context<ReferenceInputOptions> =
+  createContext<ReferenceInputOptions>('sanity/_singletons/context/reference-input-options', {})
