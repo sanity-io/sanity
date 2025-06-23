@@ -5,7 +5,5 @@ import type {FormBuilderContextValue} from '../../core/form/FormBuilderContext'
 /**
  * @internal
  */
-export const FormBuilderContext = createContext<FormBuilderContextValue | null>(
-  'sanity/_singletons/context/form-builder',
-  null,
-)
+export const FormBuilderContext: React.Context<FormBuilderContextValue | null> =
+  createContext<FormBuilderContextValue | null>('sanity/_singletons/context/form-builder', null)

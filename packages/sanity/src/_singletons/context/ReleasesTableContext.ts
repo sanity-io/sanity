@@ -5,7 +5,5 @@ import type {TableContextValue} from '../../core/releases/tool/components/Table/
 /**
  * @internal
  */
-export const TableContext = createContext<TableContextValue | null>(
-  'sanity/_singletons/context/releases-table',
-  null,
-)
+export const TableContext: React.Context<TableContextValue | null> =
+  createContext<TableContextValue | null>('sanity/_singletons/context/releases-table', null)

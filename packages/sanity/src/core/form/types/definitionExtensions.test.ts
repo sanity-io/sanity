@@ -21,7 +21,7 @@ import {
 // See: https://github.com/sanity-io/sanity/issues/6542
 //
 // This involves moving the component type definitions from
-// './definitionExtensions' into the '@sanity/types' module,
+// './src/_exports/index.ts' into the '@sanity/types' module,
 // ensuring TypeScript properly recognizes the 'preview' property as part of
 // 'DocumentComponents'.
 //

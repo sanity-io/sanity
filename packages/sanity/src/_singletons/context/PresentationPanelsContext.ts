@@ -5,7 +5,8 @@ import type {PresentationPanelsContextValue} from '../../presentation/panels/typ
 /**
  * @internal
  */
-export const PresentationPanelsContext = createContext<PresentationPanelsContextValue | null>(
-  'sanity/_singletons/context/presentation/panels',
-  null,
-)
+export const PresentationPanelsContext: React.Context<PresentationPanelsContextValue | null> =
+  createContext<PresentationPanelsContextValue | null>(
+    'sanity/_singletons/context/presentation/panels',
+    null,
+  )

@@ -4,6 +4,8 @@
  *
  * @deprecated Use `sanity/structure` instead.
  */
+import {type Plugin} from 'sanity'
+
 import {
   type BackLinkProps as _BackLinkProps,
   type BaseGenericList as _BaseGenericList,
@@ -154,6 +156,7 @@ import {
   type View as _View,
   type ViewBuilder as _ViewBuilder,
 } from '../structure'
+import {type BaseStructureToolPaneProps} from '../structure/panes/types'
 
 /**
  * @deprecated Import from `sanity/structure` instead
@@ -835,7 +838,10 @@ export const DocumentListItemBuilder = _DocumentListItemBuilder
  * @hidden
  * @beta
  */
-export const DocumentListPane = _DocumentListPane
+
+export const DocumentListPane: React.NamedExoticComponent<
+  BaseStructureToolPaneProps<'documentList'>
+> = _DocumentListPane
 /**
  * @deprecated Import from `sanity/structure` instead!
  * @hidden
@@ -950,7 +956,7 @@ export const defaultIntentChecker = _defaultIntentChecker
  * @hidden
  * @public
  */
-export const deskTool = _structureTool
+export const deskTool: Plugin<void | _DeskToolOptions> = _structureTool
 /**
  * @deprecated Import from `sanity/structure` instead!
  * @hidden

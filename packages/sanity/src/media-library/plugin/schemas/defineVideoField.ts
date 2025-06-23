@@ -1,4 +1,10 @@
-import {defineField} from '@sanity/types'
+import {
+  defineField,
+  type FieldDefinitionBase,
+  type PreviewConfig,
+  type WidenInitialValue,
+  type WidenValidation,
+} from '@sanity/types'
 
 import {type VideoDefinition} from './types'
 
@@ -24,7 +30,14 @@ import {type VideoDefinition} from './types'
  *
  * @beta
  */
-export function defineVideoField(definition: Omit<VideoDefinition, 'type'>) {
+export function defineVideoField(definition: Omit<VideoDefinition, 'type'>): {
+  type: 'sanity.video'
+  name: string
+} & Omit<VideoDefinition, 'preview'> & {
+    preview?: PreviewConfig<Record<string, string>, Record<string, any>> | undefined
+  } & FieldDefinitionBase &
+  WidenValidation &
+  WidenInitialValue {
   // @ts-expect-error FIXME
   return defineField({
     ...definition,

@@ -14,6 +14,7 @@ import {
   defineSearchOperator,
   type SearchOperatorButtonValue,
   type SearchOperatorInput,
+  type SearchOperatorParams,
 } from './operatorTypes'
 import {toJSON} from './operatorUtils'
 
@@ -23,7 +24,7 @@ export const arrayOperators = {
   arrayCountEqual: defineSearchOperator({
     nameKey: 'search.operator.array-count-equal.name',
     descriptionKey: 'search.operator.array-count-equal.description',
-    groqFilter: ({fieldPath, value}) =>
+    groqFilter: ({fieldPath, value}: SearchOperatorParams<number>) =>
       Number.isFinite(value) && fieldPath ? `count(${fieldPath}) == ${toJSON(value)}` : null,
     initialValue: null,
     inputComponent: SearchFilterNumberInput as SearchOperatorInput<number>,

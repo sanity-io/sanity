@@ -6,18 +6,19 @@ import {
   type AvatarSize,
   type AvatarStatus,
   Skeleton,
+  type SkeletonProps,
 } from '@sanity/ui'
 // eslint-disable-next-line camelcase
 import {getTheme_v2} from '@sanity/ui/theme'
 import {type ForwardedRef, forwardRef, useState} from 'react'
-import {css, styled} from 'styled-components'
+import {css, type IStyledComponent, styled} from 'styled-components'
 
 import {Tooltip} from '../../../ui-components'
 import {useUser} from '../../store'
 import {useUserColor} from '../../user-color'
 import {isRecord} from '../../util'
 
-interface AvatarSkeletonProps {
+interface AvatarSkeletonProps extends SkeletonProps {
   $size?: AvatarSize
 }
 
@@ -25,7 +26,9 @@ interface AvatarSkeletonProps {
  * A loading skeleton element representing a user avatar
  * @beta
  */
-export const AvatarSkeleton = styled(Skeleton)<AvatarSkeletonProps>((props) => {
+export const AvatarSkeleton: IStyledComponent<'web', AvatarSkeletonProps> = styled(
+  Skeleton,
+)<AvatarSkeletonProps>((props) => {
   const theme = getTheme_v2(props.theme)
   const size = props.$size ?? 1
   return css`

@@ -1,6 +1,6 @@
 import {MasterDetailIcon} from '@sanity/icons'
 import {lazy} from 'react'
-import {definePlugin} from 'sanity'
+import {definePlugin, type Plugin} from 'sanity'
 
 import {
   DeleteAction,
@@ -77,7 +77,7 @@ const inspectors = [validationInspector, changesInspector]
  * })
  * ```
  * */
-export const structureTool = definePlugin<StructureToolOptions | void>((options) => {
+export const structureTool: Plugin<void | StructureToolOptions> = definePlugin((options) => {
   const icon = options?.icon || MasterDetailIcon
 
   return {

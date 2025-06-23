@@ -5,7 +5,8 @@ import type {DocumentActionProps} from '../../core/config/document/actions'
 /**
  * @internal
  */
-export const DocumentActionPropsContext = createContext<DocumentActionProps | undefined>(
-  'sanity/_singletons/context/document-action-props',
-  undefined,
-)
+export const DocumentActionPropsContext: React.Context<DocumentActionProps | undefined> =
+  createContext<DocumentActionProps | undefined>(
+    'sanity/_singletons/context/document-action-props',
+    undefined,
+  )

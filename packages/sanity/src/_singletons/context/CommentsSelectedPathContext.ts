@@ -5,7 +5,8 @@ import type {CommentsSelectedPathContextValue} from '../../core/comments/context
 /**
  * @internal
  */
-export const CommentsSelectedPathContext = createContext<CommentsSelectedPathContextValue | null>(
-  'sanity/_singletons/context/comments-selected-path',
-  null,
-)
+export const CommentsSelectedPathContext: React.Context<CommentsSelectedPathContextValue | null> =
+  createContext<CommentsSelectedPathContextValue | null>(
+    'sanity/_singletons/context/comments-selected-path',
+    null,
+  )

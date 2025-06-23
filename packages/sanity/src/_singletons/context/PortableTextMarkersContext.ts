@@ -5,7 +5,6 @@ import type {PortableTextMarker} from '../../core/form/types/_transitional'
 /**
  * @internal
  */
-export const PortableTextMarkersContext = createContext<PortableTextMarker[]>(
-  'sanity/_singletons/context/portable-text-markers',
-  [],
-)
+export const PortableTextMarkersContext: React.Context<PortableTextMarker[]> = createContext<
+  PortableTextMarker[]
+>('sanity/_singletons/context/portable-text-markers', [])

@@ -19,7 +19,6 @@ export interface SchedulesContextValue {
  * @deprecated we will be dropping support for scheduled publishing on a future major version
  * @internal
  */
-export const SchedulesContext = createContext<SchedulesContextValue | undefined>(
-  'sanity/_singletons/context/schedules',
-  undefined,
-)
+export const SchedulesContext: React.Context<SchedulesContextValue | undefined> = createContext<
+  SchedulesContextValue | undefined
+>('sanity/_singletons/context/schedules', undefined)
