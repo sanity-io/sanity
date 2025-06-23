@@ -500,8 +500,8 @@ importers:
         specifier: ^1.1.31
         version: 1.1.31(@sanity/types@packages+@sanity+types)(@types/react@19.1.8)
       '@portabletext/editor':
-        specifier: ^1.54.4
-        version: 1.54.4(@sanity/schema@packages+@sanity+schema)(@sanity/types@packages+@sanity+types)(@types/react@19.1.8)(react-dom@19.1.0(react@19.1.0))(react@19.1.0)(rxjs@7.8.2)
+        specifier: ^1.55.0
+        version: 1.55.0(@sanity/schema@packages+@sanity+schema)(@sanity/types@packages+@sanity+types)(@types/react@19.1.8)(react-dom@19.1.0(react@19.1.0))(react@19.1.0)(rxjs@7.8.2)
       '@portabletext/react':
         specifier: ^3.2.1
         version: 3.2.1(react@19.1.0)
@@ -1553,8 +1553,8 @@ importers:
         specifier: ^1.1.31
         version: 1.1.31(@sanity/types@packages+@sanity+types)(@types/react@19.1.8)
       '@portabletext/editor':
-        specifier: ^1.54.4
-        version: 1.54.4(@sanity/schema@packages+@sanity+schema)(@sanity/types@packages+@sanity+types)(@types/react@19.1.8)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(rxjs@7.8.2)
+        specifier: ^1.55.0
+        version: 1.55.0(@sanity/schema@packages+@sanity+schema)(@sanity/types@packages+@sanity+types)(@types/react@19.1.8)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(rxjs@7.8.2)
       '@portabletext/react':
         specifier: ^3.2.1
         version: 3.2.1(react@18.3.1)
@@ -4199,8 +4199,8 @@ packages:
       '@sanity/types': ^3.93.0
       '@types/react': 18 || 19
 
-  '@portabletext/editor@1.54.4':
-    resolution: {integrity: sha512-jqkfI2dzWKtzHh7pYbDDfbcSuudQQ3NToga4uC4OuldXtp9ZyM8yxm9ybluSiAGqJcsU3ngMNGhTRm35Lxy+hQ==}
+  '@portabletext/editor@1.55.0':
+    resolution: {integrity: sha512-dMKGkFE5eanem+FbbSgc6uiruOUzNBZz0UfpmXk+CLrdLEuawuoR/n3TIhGCZo4HIFj8WLqbt2K62CYgO2uYng==}
     engines: {node: '>=18'}
     peerDependencies:
       '@sanity/schema': ^3.93.0
@@ -5646,15 +5646,6 @@ packages:
 
   '@vue/shared@3.5.16':
     resolution: {integrity: sha512-c/0fWy3Jw6Z8L9FmTyYfkpM5zklnqqa9+a6dz3DvONRKW2NEbh46BP0FHuLFSWi2TnQEtp91Z6zOWNrU6QiyPg==}
-
-  '@xstate/react@5.0.5':
-    resolution: {integrity: sha512-MfF/cPHa3lNKJmGFpUycMbNP25qBXyZXrxc8VYNroAu0Nnk0DV5WzAkTcQXma0xEC4dSwsoA+YQuKbZATtqvgg==}
-    peerDependencies:
-      react: ^16.8.0 || ^17.0.0 || ^18.0.0 || ^19.0.0
-      xstate: ^5.19.4
-    peerDependenciesMeta:
-      xstate:
-        optional: true
 
   '@xstate/react@6.0.0':
     resolution: {integrity: sha512-xXlLpFJxqLhhmecAXclBECgk+B4zYSrDTl8hTfPZBogkn82OHKbm9zJxox3Z/YXoOhAQhKFTRLMYGdlbhc6T9A==}
@@ -14617,14 +14608,14 @@ snapshots:
       get-random-values-esm: 1.0.2
       lodash: 4.17.21
 
-  '@portabletext/editor@1.54.4(@sanity/schema@packages+@sanity+schema)(@sanity/types@packages+@sanity+types)(@types/react@19.1.8)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(rxjs@7.8.2)':
+  '@portabletext/editor@1.55.0(@sanity/schema@packages+@sanity+schema)(@sanity/types@packages+@sanity+types)(@types/react@19.1.8)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(rxjs@7.8.2)':
     dependencies:
       '@portabletext/block-tools': 1.1.31(@sanity/types@packages+@sanity+types)(@types/react@19.1.8)
       '@portabletext/patches': 1.1.5
       '@portabletext/to-html': 2.0.14
       '@sanity/schema': link:packages/@sanity/schema
       '@sanity/types': link:packages/@sanity/types
-      '@xstate/react': 5.0.5(@types/react@19.1.8)(react@18.3.1)(xstate@5.20.0)
+      '@xstate/react': 6.0.0(@types/react@19.1.8)(react@18.3.1)(xstate@5.20.0)
       debug: 4.4.1(supports-color@5.5.0)
       get-random-values-esm: 1.0.2
       immer: 10.1.1
@@ -14643,14 +14634,14 @@ snapshots:
       - react-dom
       - supports-color
 
-  '@portabletext/editor@1.54.4(@sanity/schema@packages+@sanity+schema)(@sanity/types@packages+@sanity+types)(@types/react@19.1.8)(react-dom@19.1.0(react@19.1.0))(react@19.1.0)(rxjs@7.8.2)':
+  '@portabletext/editor@1.55.0(@sanity/schema@packages+@sanity+schema)(@sanity/types@packages+@sanity+types)(@types/react@19.1.8)(react-dom@19.1.0(react@19.1.0))(react@19.1.0)(rxjs@7.8.2)':
     dependencies:
       '@portabletext/block-tools': 1.1.31(@sanity/types@packages+@sanity+types)(@types/react@19.1.8)
       '@portabletext/patches': 1.1.5
       '@portabletext/to-html': 2.0.14
       '@sanity/schema': link:packages/@sanity/schema
       '@sanity/types': link:packages/@sanity/types
-      '@xstate/react': 5.0.5(@types/react@19.1.8)(react@19.1.0)(xstate@5.20.0)
+      '@xstate/react': 6.0.0(@types/react@19.1.8)(react@19.1.0)(xstate@5.20.0)
       debug: 4.4.1(supports-color@5.5.0)
       get-random-values-esm: 1.0.2
       immer: 10.1.1
@@ -16746,31 +16737,21 @@ snapshots:
 
   '@vue/shared@3.5.16': {}
 
-  '@xstate/react@5.0.5(@types/react@19.1.8)(react@18.3.1)(xstate@5.20.0)':
-    dependencies:
-      react: 18.3.1
-      use-isomorphic-layout-effect: 1.2.1(@types/react@19.1.8)(react@18.3.1)
-      use-sync-external-store: 1.5.0(react@18.3.1)
-    optionalDependencies:
-      xstate: 5.20.0
-    transitivePeerDependencies:
-      - '@types/react'
-
-  '@xstate/react@5.0.5(@types/react@19.1.8)(react@19.1.0)(xstate@5.20.0)':
-    dependencies:
-      react: 19.1.0
-      use-isomorphic-layout-effect: 1.2.1(@types/react@19.1.8)(react@19.1.0)
-      use-sync-external-store: 1.5.0(react@19.1.0)
-    optionalDependencies:
-      xstate: 5.20.0
-    transitivePeerDependencies:
-      - '@types/react'
-
   '@xstate/react@6.0.0(@types/react@19.1.8)(react@18.3.1)(xstate@5.20.0)':
     dependencies:
       react: 18.3.1
       use-isomorphic-layout-effect: 1.2.1(@types/react@19.1.8)(react@18.3.1)
       use-sync-external-store: 1.5.0(react@18.3.1)
+    optionalDependencies:
+      xstate: 5.20.0
+    transitivePeerDependencies:
+      - '@types/react'
+
+  '@xstate/react@6.0.0(@types/react@19.1.8)(react@19.1.0)(xstate@5.20.0)':
+    dependencies:
+      react: 19.1.0
+      use-isomorphic-layout-effect: 1.2.1(@types/react@19.1.8)(react@19.1.0)
+      use-sync-external-store: 1.5.0(react@19.1.0)
     optionalDependencies:
       xstate: 5.20.0
     transitivePeerDependencies:
