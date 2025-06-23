@@ -23,6 +23,7 @@ export const browserCompatibleSanityPackageSpecifiers = [
   'sanity/presentation',
   'sanity/router',
   'sanity/structure',
+  'sanity/media-library',
   'sanity/package.json',
 ]
 
