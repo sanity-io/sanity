@@ -1,12 +1,11 @@
-/* eslint-disable @typescript-eslint/no-non-null-assertion */
 import {type VideoAsset, type VideoSchemaType} from '@sanity/types'
 import {fireEvent, waitFor} from '@testing-library/react'
 import {type Observable, of} from 'rxjs'
 import {describe, expect, it} from 'vitest'
 
 import {renderVideoInput} from '../../../../../../../test/form'
-import {BaseVideoInput} from '../VideoInput'
 import {sourceName} from '../../../../studio/assetSourceMediaLibrary'
+import {BaseVideoInput} from '../VideoInput'
 
 const ASSET_SOURCE_NAME = sourceName
 
