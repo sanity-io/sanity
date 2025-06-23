@@ -27,7 +27,7 @@ export function createSanityMediaLibraryImageSource(
       <MediaLibraryAssetSource {...sourceProps} libraryId={props.libraryId} />
     ),
     icon: props.icon || ImageIcon,
-    uploader: new MediaLibraryUploader(),
+    Uploader: MediaLibraryUploader,
   }
 }
 
@@ -46,6 +46,6 @@ export function createSanityMediaLibraryFileSource(
       <MediaLibraryAssetSource {...sourceProps} libraryId={props.libraryId} />
     ),
     icon: props.icon || DocumentIcon,
-    uploader: new MediaLibraryUploader(),
+    Uploader: MediaLibraryUploader,
   }
 }

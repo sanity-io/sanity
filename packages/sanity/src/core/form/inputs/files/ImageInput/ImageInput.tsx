@@ -1,5 +1,10 @@
 import {isImageSource} from '@sanity/asset-utils'
-import {type AssetFromSource, type AssetSource, type UploadState} from '@sanity/types'
+import {
+  type AssetFromSource,
+  type AssetSource,
+  type AssetSourceUploader,
+  type UploadState,
+} from '@sanity/types'
 import {Stack, useToast} from '@sanity/ui'
 import {get} from 'lodash'
 import {
@@ -78,9 +83,9 @@ function BaseImageInputComponent(props: BaseImageInputProps): React.JSX.Element 
 
   const uploadSubscription = useRef<null | Subscription>(null)
 
-  const uploaderRef = useRef<{
+  const assetSourceUploaderRef = useRef<{
     unsubscribe: () => void
-    uploader: AssetSource['uploader']
+    uploader: AssetSourceUploader
   } | null>(null)
 
   const getFileTone = useCallback(() => {
@@ -262,12 +267,12 @@ function BaseImageInputComponent(props: BaseImageInputProps): React.JSX.Element 
         return
       }
       setSelectedAssetSource(assetSource)
-      const uploader = assetSource.uploader
-      if (uploader) {
+      if (assetSource.Uploader) {
         try {
+          const uploader = new assetSource.Uploader()
           // Unsubscribe from the previous uploader
-          uploaderRef.current?.unsubscribe()
-          uploaderRef.current = {
+          assetSourceUploaderRef.current?.unsubscribe()
+          assetSourceUploaderRef.current = {
             unsubscribe: uploader.subscribe((event) => {
               switch (event.type) {
                 case 'progress':
@@ -291,13 +296,11 @@ function BaseImageInputComponent(props: BaseImageInputProps): React.JSX.Element 
                 case 'all-complete':
                   onChange(PatchEvent.from([unset([UPLOAD_STATUS_KEY])]))
                   setMenuOpen(false)
-                  uploaderRef.current?.unsubscribe()
-                  uploaderRef.current = null
                   break
                 default:
               }
             }),
-            uploader: assetSource.uploader,
+            uploader,
           }
           setIsUploading(true)
           onChange(PatchEvent.from(createInitialUploadPatches(files[0])))
@@ -305,9 +308,9 @@ function BaseImageInputComponent(props: BaseImageInputProps): React.JSX.Element 
         } catch (err) {
           onChange(PatchEvent.from([unset([UPLOAD_STATUS_KEY])]))
           setIsUploading(false)
-          uploaderRef.current?.unsubscribe()
+          assetSourceUploaderRef.current?.unsubscribe()
           setSelectedAssetSource(null)
-          uploaderRef.current = null
+          assetSourceUploaderRef.current = null
           push({
             status: 'error',
             description: t('asset-sources.common.uploader.upload-failed.description'),
@@ -323,8 +326,8 @@ function BaseImageInputComponent(props: BaseImageInputProps): React.JSX.Element 
   // Abort asset source uploads and unsubscribe from the uploader is the component unmounts
   useEffect(() => {
     return () => {
-      uploaderRef.current?.uploader?.abort()
-      uploaderRef.current?.unsubscribe()
+      assetSourceUploaderRef.current?.uploader?.abort()
+      assetSourceUploaderRef.current?.unsubscribe()
     }
   }, [])
 
@@ -523,6 +526,7 @@ function BaseImageInputComponent(props: BaseImageInputProps): React.JSX.Element 
         observeAsset={observeAsset}
         schemaType={schemaType}
         selectedAssetSource={selectedAssetSource}
+        uploader={assetSourceUploaderRef.current?.uploader}
         value={value}
       />
     )

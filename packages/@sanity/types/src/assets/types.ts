@@ -154,6 +154,8 @@ export interface AssetSourceComponentProps {
   onClose: () => void
   onSelect: (assetFromSource: AssetFromSource[]) => void
   schemaType?: ImageSchemaType | FileSchemaType
+  /** @beta */
+  uploader?: AssetSourceUploader
 }
 
 /** @public */
@@ -166,6 +168,9 @@ export type AssetMetadataType =
   | 'blurhash'
   | 'none'
 
+/** @beta */
+export type AssetSourceUploaderClass = new (...args: any[]) => AssetSourceUploader
+
 /** @public */
 export interface AssetSource {
   name: string
@@ -176,7 +181,7 @@ export interface AssetSource {
   component: ComponentType<AssetSourceComponentProps>
   icon?: ComponentType<EmptyProps>
   /** @beta */
-  uploader?: AssetSourceUploader
+  Uploader?: AssetSourceUploaderClass
 }
 
 /** @beta */

@@ -1,9 +1,8 @@
-/* eslint-disable import/no-unresolved,react/jsx-handler-names, react/display-name, react/no-this-in-sfc */
-
 import {type SanityClient} from '@sanity/client'
 import {
   type AssetFromSource,
   type AssetSource,
+  type AssetSourceUploader,
   type File as BaseFile,
   type FileAsset,
   type FileSchemaType,
@@ -79,9 +78,9 @@ export function BaseFileInput(props: BaseFileInputProps) {
 
   const browseButtonElementRef = useRef<HTMLButtonElement>(null)
 
-  const uploaderRef = useRef<{
+  const assetSourceUploaderRef = useRef<{
     unsubscribe: () => void
-    uploader: AssetSource['uploader']
+    uploader: AssetSourceUploader
   } | null>(null)
 
   const setBrowseButtonElement = useCallback(
@@ -136,7 +135,6 @@ export function BaseFileInput(props: BaseFileInputProps) {
           }
         },
         error: (err) => {
-          // eslint-disable-next-line no-console
           console.error(err)
           push({
             status: 'error',
@@ -182,12 +180,12 @@ export function BaseFileInput(props: BaseFileInputProps) {
         return
       }
       setSelectedAssetSource(assetSource)
-      const uploader = assetSource.uploader
-      if (uploader) {
+      if (assetSource.Uploader) {
+        const uploader = new assetSource.Uploader()
         // Unsubscribe from the previous uploader
-        uploaderRef.current?.unsubscribe()
+        assetSourceUploaderRef.current?.unsubscribe()
         try {
-          uploaderRef.current = {
+          assetSourceUploaderRef.current = {
             unsubscribe: uploader.subscribe((event) => {
               switch (event.type) {
                 case 'progress':
@@ -210,13 +208,11 @@ export function BaseFileInput(props: BaseFileInputProps) {
                   break
                 case 'all-complete':
                   onChange(PatchEvent.from([unset([UPLOAD_STATUS_KEY])]))
-                  uploaderRef.current?.unsubscribe()
-                  uploaderRef.current = null
                   break
                 default:
               }
             }),
-            uploader: assetSource.uploader,
+            uploader,
           }
           setIsUploading(true)
           onChange(PatchEvent.from(createInitialUploadPatches(files[0])))
@@ -225,7 +221,7 @@ export function BaseFileInput(props: BaseFileInputProps) {
           onChange(PatchEvent.from([unset([UPLOAD_STATUS_KEY])]))
           setIsUploading(false)
           setSelectedAssetSource(null)
-          uploaderRef.current?.unsubscribe()
+          assetSourceUploaderRef.current?.unsubscribe()
           push({
             status: 'error',
             description: t('asset-sources.common.uploader.upload-failed.description'),
@@ -241,13 +237,13 @@ export function BaseFileInput(props: BaseFileInputProps) {
   // Abort asset source uploads and unsubscribe from the uploader is the component unmounts
   useEffect(() => {
     return () => {
-      uploaderRef.current?.uploader?.abort()
-      uploaderRef.current?.unsubscribe()
+      assetSourceUploaderRef.current?.uploader?.abort()
+      assetSourceUploaderRef.current?.unsubscribe()
     }
   }, [])
 
   const handleCancelUpload = useCallback(() => {
-    uploaderRef.current?.uploader?.abort()
+    assetSourceUploaderRef.current?.uploader?.abort()
   }, [])
 
   const renderAsset = useCallback(() => {
@@ -347,6 +343,7 @@ export function BaseFileInput(props: BaseFileInputProps) {
           setIsBrowseMenuOpen={setIsBrowseMenuOpen}
           setIsUploading={setIsUploading}
           setSelectedAssetSource={setSelectedAssetSource}
+          uploader={assetSourceUploaderRef.current?.uploader}
         />
       )}
     </>

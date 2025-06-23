@@ -1,4 +1,4 @@
-import {type AssetFromSource, type AssetSource} from '@sanity/types'
+import {type AssetFromSource, type AssetSource, type AssetSourceUploader} from '@sanity/types'
 import {get} from 'lodash'
 import {memo, useMemo} from 'react'
 
@@ -10,6 +10,7 @@ function ImageInputAssetSourceComponent(
     selectedAssetSource: AssetSource | null
     handleAssetSourceClosed: () => void
     handleSelectAssetFromSource: (assetFromSource: AssetFromSource[]) => void
+    uploader?: AssetSourceUploader
   },
 ) {
   const {
@@ -19,6 +20,7 @@ function ImageInputAssetSourceComponent(
     observeAsset,
     schemaType,
     selectedAssetSource,
+    uploader,
     value,
   } = props
   const accept = useMemo(() => get(schemaType, 'options.accept', 'image/*'), [schemaType])
@@ -42,6 +44,7 @@ function ImageInputAssetSourceComponent(
             schemaType={schemaType}
             selectedAssets={[imageAsset]}
             selectionType="single"
+            uploader={uploader}
           />
         )}
       </WithReferencedAsset>
@@ -58,6 +61,7 @@ function ImageInputAssetSourceComponent(
       schemaType={schemaType}
       selectedAssets={[]}
       selectionType="single"
+      uploader={uploader}
     />
   )
 }
