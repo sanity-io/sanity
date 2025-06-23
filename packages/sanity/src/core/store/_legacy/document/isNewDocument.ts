@@ -9,6 +9,7 @@ import {type EditStateFor} from './document-pair/editState'
  *
  * This is `undefined` while loading.
  *
+ * @returns A boolean reflecting whether any version of the document exists in the dataset, and `undefined` while loading.
  * @internal
  */
 export function isNewDocument(
