@@ -29,6 +29,7 @@ import {ServerStyleSheet} from 'styled-components'
 import {SchemaIcon, type SchemaIconProps} from './Icon'
 import {
   getCustomFields,
+  getDefinedTypeName,
   isCrossDatasetReference,
   isCustomized,
   isDefined,
@@ -74,7 +75,6 @@ type ManifestValidationFlag = ManifestValidationRule['flag']
 type ValidationRuleTransformer = (rule: RuleSpec) => ManifestValidationRule | undefined
 
 const MAX_CUSTOM_PROPERTY_DEPTH = 5
-const INLINE_TYPES = ['document', 'object', 'image', 'file']
 
 export function extractCreateWorkspaceManifest(workspace: Workspace): CreateWorkspaceManifest {
   const serializedSchema = extractManifestSchemaTypes(workspace.schema)
@@ -132,7 +132,7 @@ function transformCommonTypeFields(
     : {}
 
   const objectFields: ObjectFields =
-    type.jsonType === 'object' && type.type && INLINE_TYPES.includes(typeName) && isCustomized(type)
+    type.jsonType === 'object' && type.type && isCustomized(type)
       ? {
           fields: getCustomFields(type).map((objectField) => transformField(objectField, context)),
         }
@@ -278,8 +278,7 @@ function retainSerializableProps(maybeSerializable: unknown, depth = 0): Seriali
 
 function transformField(field: ObjectField & {fieldset?: string}, context: Context): ManifestField {
   const fieldType = field.type
-  const typeNameExists = !!context.schema.get(fieldType.name)
-  const typeName = typeNameExists ? fieldType.name : (fieldType.type?.name ?? fieldType.name)
+  const typeName = getDefinedTypeName(fieldType) ?? fieldType.name
   return {
     ...transformCommonTypeFields(fieldType, typeName, context),
     name: field.name,
@@ -296,8 +295,7 @@ function transformArrayMember(
 ): Pick<ManifestField, 'of'> {
   return {
     of: arrayMember.of.map((type) => {
-      const typeNameExists = !!context.schema.get(type.name)
-      const typeName = typeNameExists ? type.name : (type.type?.name ?? type.name)
+      const typeName = getDefinedTypeName(type) ?? type.name
       return {
         ...transformCommonTypeFields(type, typeName, context),
         type: typeName,
