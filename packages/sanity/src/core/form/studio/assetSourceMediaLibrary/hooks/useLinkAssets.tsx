@@ -114,8 +114,10 @@ export function useLinkAssets({schemaType}: {schemaType?: ImageSchemaType | File
           throw new Error('Asset linking was aborted')
         }
 
-        // Ensure asset is ready before linking
-        await ensureAssetIsReady(asset.asset._id, asset.assetInstanceId, signal)
+        if (asset.asset._type === 'sanity.videoAsset') {
+          // Ensure video asset is ready before linking
+          await ensureAssetIsReady(asset.asset._id, asset.assetInstanceId, signal)
+        }
 
         // Link asset from media library to current dataset
         try {
@@ -129,7 +131,7 @@ export function useLinkAssets({schemaType}: {schemaType?: ImageSchemaType | File
               assetId: asset.asset._id,
             },
             tag: 'media-library.link-asset',
-            signal, // Pass the abort signal to the request
+            signal,
           })
           const assetDocument: SanityDocument = result.document
           assetsFromSource.push({
