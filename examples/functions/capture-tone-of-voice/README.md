@@ -229,6 +229,96 @@ console.log('Tone analysis result:', result)
 - **Test without external API calls** first when applicable
 - **Create test content** - If you don't have suitable documents, create some test documents first
 
+## Deploying your function
+
+Once you've tested your function locally and are satisfied with its behavior, you can deploy it to production.
+
+**Important:** Make sure you have the Deploy Studio permission for your Sanity project before attempting to deploy.
+
+### Prerequisites for deployment
+
+- Sanity CLI v3.92.0 or later
+- Deploy Studio permissions for your Sanity project
+- Node.js v22.x (matches production runtime)
+
+### Deploy to production
+
+1. **Verify your blueprint configuration**
+
+Make sure your `sanity.blueprint.ts` file is properly configured with your function:
+
+```ts
+// sanity.blueprint.ts
+import {defineBlueprint, defineDocumentFunction} from '@sanity/blueprints'
+
+export default defineBlueprint({
+  resources: [
+    defineDocumentFunction({
+      type: 'sanity.function.document',
+      name: 'capture-tone-of-voice',
+      src: './functions/capture-tone-of-voice',
+      memory: 2,
+      timeout: 60,
+      event: {
+        on: ['publish'],
+        filter: "_type == 'post'",
+        projection: '_id',
+      },
+    }),
+  ],
+})
+```
+
+2. **Deploy your blueprint**
+
+From your project root, run:
+
+```bash
+npx sanity blueprints deploy
+```
+
+This command will:
+
+- Package your function code
+- Upload it to Sanity's infrastructure
+- Configure the event triggers for post publications
+- Make your capture-tone-of-voice function live in production
+
+3. **Verify deployment**
+
+After deployment, you can verify your function is active by:
+
+- Checking the Sanity Studio under "Compute"
+- Publishing a new post and confirming the `toneOfVoice` field is populated
+- Monitoring function logs in the CLI
+
+### Deployment best practices
+
+- **Test thoroughly first** - Always test your function locally before deploying
+- **Avoid recursion** - When the `toneOfVoice` function runs, it writes changes to the same document's `toneOfVoice` field but **does not** publish the document. Be sure not to add `skipforcePublishedWrite: true,` to your index.ts's agent.action.generate function, as this will create an infinite loop
+- **Monitor AI usage** - Agent Actions have usage limits and costs. Visit Settings in your Manage console to learn more
+- **Use specific filters** - The current filter targets all posts. To avoid unnecessary executions, setup additional logic to trigger this function only when certain criteria is met
+- **Monitor performance** - This function uses AI processing and may have longer execution times
+
+### Troubleshooting deployment
+
+**Error: "Deploy Studio permission required"**
+
+- Cause: Your account doesn't have deployment permissions for this project
+- Solution: Ask a project admin to grant you Deploy Studio permissions
+
+**Error: "Blueprint validation failed"**
+
+- Cause: Issues with your `sanity.blueprint.ts` configuration
+- Solution: Check the configuration matches the expected schema
+
+**Function not analyzing tone after deployment**
+
+- Cause: Posts may not trigger the function, or AI features may not be enabled
+- Solution: Test with new posts and verify AI features are enabled in your project settings
+
+For more details, see the [official function deployment documentation](https://www.sanity.io/docs/compute-and-ai/function-quickstart).
+
 ## Requirements
 
 - A Sanity project with Functions enabled

@@ -168,6 +168,118 @@ This opens an interactive playground where you can test functions with custom da
 - **Monitor Slack during testing** - Watch your designated channel for test messages
 - **Test edge cases** - Try documents without titles or slugs to ensure graceful handling
 
+## Deploying your function
+
+Once you've tested your function locally and are satisfied with its behavior, you can deploy it to production.
+
+**Important:** Make sure you have the Deploy Studio permission for your Sanity project before attempting to deploy.
+
+### Prerequisites for deployment
+
+- Sanity CLI v3.92.0 or later
+- Deploy Studio permissions for your Sanity project
+- Node.js v22.x (matches production runtime)
+- Valid Slack OAuth token with `chat:write` permissions
+
+### Deploy to production
+
+1. **Verify your blueprint configuration**
+
+Make sure your `sanity.blueprint.ts` file is properly configured with your function:
+
+```ts
+// sanity.blueprint.ts
+import {defineBlueprint, defineDocumentFunction} from '@sanity/blueprints'
+
+export default defineBlueprint({
+  resources: [
+    defineDocumentFunction({
+      type: 'sanity.function.document',
+      name: 'slack-notification',
+      src: './functions/slack-notification',
+      memory: 1,
+      timeout: 10,
+      event: {
+        on: ['publish'],
+        filter: "_type == 'post'",
+        projection: '_id, title, slug, _updatedAt',
+      },
+    }),
+  ],
+})
+```
+
+2. **Deploy your blueprint**
+
+From your project root, run:
+
+```bash
+npx sanity blueprints deploy
+```
+
+This command will:
+
+- Package your function code
+- Upload it to Sanity's infrastructure
+- Configure the event triggers for post publications
+- Make your slack-notification function live in production
+
+3. **Add environment variables**
+
+After deployment, you need to add the Slack OAuth token as an environment variable:
+
+```bash
+npx sanity functions env add slack-notification SLACK_OAUTH_TOKEN "your-slack-oauth-token-here"
+```
+
+Replace `"your-slack-oauth-token-here"` with your actual Slack OAuth token (the one that starts with `xoxb-`).
+
+You can verify the environment variable was added successfully:
+
+```bash
+npx sanity functions env list slack-notification
+```
+
+Learn more about working with environment variables in Functions here: [https://www.sanity.io/docs/compute-and-ai/function-env-vars](https://www.sanity.io/docs/compute-and-ai/function-env-vars)
+
+4. **Verify deployment**
+
+After deployment, you can verify your function is active by:
+
+- Checking the Sanity Studio under "Compute"
+- Publishing a new post and confirming Slack notifications are sent
+- Monitoring function logs in the CLI
+
+### Deployment best practices
+
+- **Test thoroughly first** - Always test your function locally before deploying
+- **Use specific filters** - The current filter only targets posts to avoid unnecessary executions
+- **Monitor performance** - This is a lightweight function with minimal resource requirements
+
+### Troubleshooting deployment
+
+**Error: "Deploy Studio permission required"**
+
+- Cause: Your account doesn't have deployment permissions for this project
+- Solution: Ask a project admin to grant you Deploy Studio permissions
+
+**Error: "Blueprint validation failed"**
+
+- Cause: Issues with your `sanity.blueprint.ts` configuration
+- Solution: Check the configuration matches the expected schema
+
+**Function not sending Slack notifications after deployment**
+
+- Cause: Slack OAuth token may be invalid, or channel access issues
+- Solution: Verify your Slack app configuration and ensure the bot is invited to the target channel
+
+**Error: "Missing environment variable SLACK_OAUTH_TOKEN"**
+
+- Cause: Environment variable not set in production
+- Solution: Configure the `SLACK_OAUTH_TOKEN` environment variable in your Sanity project settings
+
+For more details, see the [official function deployment documentation](https://www.sanity.io/docs/compute-and-ai/function-quickstart).
+
 ## Requirements
 
 - A Sanity project
