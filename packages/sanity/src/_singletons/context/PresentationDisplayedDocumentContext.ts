@@ -5,7 +5,7 @@ import type {PresentationDisplayedDocumentContextValue} from '../../presentation
 /**
  * @internal
  */
-export const PresentationDisplayedDocumentContext =
+export const PresentationDisplayedDocumentContext: React.Context<PresentationDisplayedDocumentContextValue | null> =
   createContext<PresentationDisplayedDocumentContextValue | null>(
     'sanity/_singletons/context/presentation/displayed-document',
     null,

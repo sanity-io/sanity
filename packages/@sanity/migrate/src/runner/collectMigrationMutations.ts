@@ -1,5 +1,7 @@
 import {type SanityDocument} from '@sanity/types'
 
+import {type Transaction} from '../mutations/transaction'
+import {type Mutation} from '../mutations/types'
 import {type Migration, type MigrationContext} from '../types'
 import {normalizeMigrateDefinition} from './normalizeMigrateDefinition'
 
@@ -31,7 +33,7 @@ export function collectMigrationMutations(
   migration: Migration,
   documents: () => AsyncIterableIterator<SanityDocument>,
   context: MigrationContext,
-) {
+): AsyncGenerator<Transaction | Mutation | (Transaction | Mutation)[], any, any> {
   const migrate = normalizeMigrateDefinition(migration)
   return migrate(wrapDocumentsIteratorProducer(documents), context)
 }

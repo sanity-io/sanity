@@ -21,7 +21,6 @@ export interface LocaleContextValue {
  * @internal
  * @hidden
  */
-export const LocaleContext = createContext<LocaleContextValue | undefined>(
-  'sanity/_singletons/context/locale',
-  undefined,
-)
+export const LocaleContext: React.Context<LocaleContextValue | undefined> = createContext<
+  LocaleContextValue | undefined
+>('sanity/_singletons/context/locale', undefined)

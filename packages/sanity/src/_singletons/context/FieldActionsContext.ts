@@ -16,9 +16,8 @@ export interface FieldActionsContextValue {
 }
 
 /** @internal */
-export const FieldActionsContext = createContext<FieldActionsContextValue>(
-  'sanity/_singletons/context/field-actions',
-  {
+export const FieldActionsContext: React.Context<FieldActionsContextValue> =
+  createContext<FieldActionsContextValue>('sanity/_singletons/context/field-actions', {
     actions: [],
     focused: false,
     hovered: false,
@@ -28,5 +27,4 @@ export const FieldActionsContext = createContext<FieldActionsContextValue>(
     __internal_comments: undefined,
     onMouseEnter: () => undefined,
     onMouseLeave: () => undefined,
-  },
-)
+  })
