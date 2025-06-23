@@ -75,6 +75,12 @@
       "require": "./lib/structure.js",
       "default": "./lib/structure.js"
     },
+    "./media-library": {
+      "source": "./src/_exports/media-library.ts",
+      "import": "./lib/media-library.mjs",
+      "require": "./lib/media-library.js",
+      "default": "./lib/media-library.js"
+    },
     "./migrate": {
       "source": "./src/_exports/migrate.ts",
       "require": "./lib/migrate.js",

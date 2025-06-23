@@ -6,6 +6,7 @@ export const STANDARD_INPUT_TYPES = [
   'emailsTest',
   'filesTest',
   'imagesTest',
+  'videosTest',
   'numbersTest',
   'objectsTest',
   'referenceTest',

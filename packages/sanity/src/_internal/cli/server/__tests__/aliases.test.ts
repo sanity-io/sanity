@@ -12,7 +12,7 @@ import {
 import {getMonorepoAliases} from '../sanityMonorepo'
 
 const sanityPkgPath = path.resolve(__dirname, '../../../../../package.json')
-// eslint-disable-next-line import/no-dynamic-require
+
 const pkg = await import(sanityPkgPath)
 
 vi.mock(import('resolve.exports'), async (importOriginal) => {
@@ -44,6 +44,7 @@ describe('browserCompatibleSanityPackageSpecifiers', () => {
       'sanity/cli',
       'sanity/desk',
       'sanity/migrate',
+      'sanity/media-library',
       'sanity/package.json',
       'sanity/presentation',
       'sanity/router',

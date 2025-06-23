@@ -11,6 +11,7 @@ export default defineConfig(() => {
           // 'sanity' module
           index: './src/_exports/index.ts',
           desk: './src/_exports/desk.ts',
+          mediaLibrary: './src/_exports/media-library.ts',
           presentation: './src/_exports/presentation.ts',
           router: './src/_exports/router.ts',
           structure: './src/_exports/structure.ts',
