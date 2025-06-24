@@ -51,6 +51,7 @@ export default defineCliConfig({
       },
       optimizeDeps: {
         ...viteConfig.optimizeDeps,
+        include: ['react/jsx-runtime'],
         exclude: [
           ...(viteConfig.optimizeDeps?.exclude || []),
           '@sanity/tsdoc',

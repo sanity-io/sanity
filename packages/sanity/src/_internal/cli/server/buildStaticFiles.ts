@@ -123,7 +123,6 @@ export async function buildStaticFiles(
 
         return {
           name: path.isAbsolute(filePath) ? path.relative(cwd, filePath) : filePath,
-          // @ts-expect-error - this is fine, it's a rolldown-vite thing but we're only using rolldown-vite on the monorepo, not in the regular cli
           originalLength: chunkModule.originalLength,
           renderedLength: chunkModule.renderedLength,
         }
