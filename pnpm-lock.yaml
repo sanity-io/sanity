@@ -1893,8 +1893,8 @@ importers:
         specifier: ^3.0.3
         version: 3.1.0
       scrollmirror:
-        specifier: 1.2.0
-        version: 1.2.0
+        specifier: ^1.2.3
+        version: 1.2.3
       semver:
         specifier: ^7.3.5
         version: 7.7.2
@@ -10653,8 +10653,8 @@ packages:
   scroll-into-view-if-needed@3.1.0:
     resolution: {integrity: sha512-49oNpRjWRvnU8NyGVmUaYG4jtTkNonFZI86MmGRDqBphEK2EXT9gdEUoQPZhuBM8yWHxCWbobltqYO5M4XrUvQ==}
 
-  scrollmirror@1.2.0:
-    resolution: {integrity: sha512-81kLoolfRECsobTkCECpEDacpHXf2pDABtyZfj0wuEZXFBgODM+/NVuiFSB+gvoiWxjf//G+kt3tRkISvbNEGw==}
+  scrollmirror@1.2.3:
+    resolution: {integrity: sha512-WQBV3VWrMY+T5smh8DPmzQI5SA7jyHytPSRJRlKDhP8iTx5PsdIg9zsN1SoZISkNL1Xp2bLbRSK1+gpW1hJsCQ==}
 
   seek-bzip@1.0.6:
     resolution: {integrity: sha512-e1QtP3YL5tWww8uKaOCQ18UxIT2laNBXHjV/S2WYCiK4udiv8lkG89KRIoCjUagnAmCBurjF4zEVX2ByBbnCjQ==}
@@ -22482,7 +22482,7 @@ snapshots:
     dependencies:
       compute-scroll-into-view: 3.1.1
 
-  scrollmirror@1.2.0: {}
+  scrollmirror@1.2.3: {}
 
   seek-bzip@1.0.6:
     dependencies:
