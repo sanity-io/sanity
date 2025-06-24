@@ -168,7 +168,7 @@
     "tsx": "^4.20.3",
     "turbo": "^2.5.4",
     "typescript": "catalog:",
-    "vite": "npm:rolldown-vite@6.3.21",
+    "vite": "^6.3.5",
     "vite-tsconfig-paths": "^5.1.4",
     "vitest": "3.2.3",
     "yargs": "^17.3.0"
@@ -192,7 +192,6 @@
       "@typescript-eslint/parser": "$@typescript-eslint/parser",
       "@vitest/coverage-v8": "$vitest",
       "@vitest/expect": "$vitest",
-      "efps>vite": "npm:vite@6.3.5",
       "eslint-plugin-react-hooks": "$eslint-plugin-react-hooks",
       "jsdom": "$jsdom",
       "vite": "$vite",
