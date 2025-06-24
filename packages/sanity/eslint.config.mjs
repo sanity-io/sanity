@@ -336,9 +336,9 @@ export default defineConfig([
       '@sanity/i18n/no-attribute-template-literals': 'off',
     },
   },
-  // Ignore i18n in ScheduledPublishing files.
+  // Ignore i18n in ScheduledPublishing / scheduled-publishing files.
   {
-    files: ['**/*/scheduledPublishing/**/*'],
+    files: ['**/*/scheduledPublishing/**/*', '**/*/scheduled-publishing/**/*'],
     rules: {
       'i18next/no-literal-string': 'off',
       '@sanity/i18n/no-attribute-string-literals': 'off',
