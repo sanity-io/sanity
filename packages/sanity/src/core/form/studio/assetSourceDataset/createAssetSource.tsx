@@ -26,7 +26,7 @@ export function createDatasetImageAssetSource(props: CreateDatasetAssetSourcePro
     // i18nKey: 'asset-sources.dataset.image.title',
     component: DatasetAssetSource,
     icon: ImageIcon,
-    uploader: createDatasetUploader(props),
+    Uploader: createDatasetUploader(props),
   }
 }
 
@@ -43,6 +43,6 @@ export function createDatasetFileAssetSource(props: CreateDatasetAssetSourceProp
     // i18nKey: 'asset-sources.dataset.file.title',
     component: DatasetAssetSource,
     icon: DocumentsIcon,
-    uploader: createDatasetUploader(props),
+    Uploader: createDatasetUploader(props),
   }
 }

@@ -53,7 +53,7 @@ export function FileAsset(props: FileAssetProps) {
   const [filesToUploadFromPaste, setFilesToUploadFromPaste] = useState<File[]>([])
   const elementRef = elementProps.ref?.current
 
-  const hasMultipleUploadSources = assetSources.filter((s) => Boolean(s.uploader)).length > 1
+  const hasMultipleUploadSources = assetSources.filter((s) => Boolean(s.Uploader)).length > 1
 
   const handleFileTargetFocus = useCallback(
     (event: React.FocusEvent) => {
@@ -179,7 +179,7 @@ export function FileAsset(props: FileAssetProps) {
         setShowDestinationSourcePicker(true)
         setFilesToUploadFromPaste(files)
       } else {
-        const firstAssetSourceWithUpload = assetSources.filter((s) => s.uploader)[0]
+        const firstAssetSourceWithUpload = assetSources.filter((s) => s.Uploader)[0]
         if (firstAssetSourceWithUpload) {
           onSelectFiles(firstAssetSourceWithUpload, files)
         }
