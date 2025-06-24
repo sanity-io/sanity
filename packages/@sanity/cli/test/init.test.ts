@@ -975,4 +975,29 @@ describeCliTest('CLI: `sanity init v3`', () => {
       )
     })
   })
+
+  testConcurrent('supports --project-id as alias for --project', async () => {
+    const version = 'v3'
+    const testRunArgs = getTestRunArgs(version)
+    const outpath = 'test-project-id-alias'
+
+    await cleanOutputDirectory(outpath)
+
+    await runSanityCmdCommand(version, [
+      'init',
+      '--y',
+      '--project-id',
+      cliProjectId,
+      '--dataset',
+      testRunArgs.dataset,
+      '--output-path',
+      `${baseTestPath}/${outpath}`,
+      '--package-manager',
+      'manual',
+    ])
+
+    const cliConfig = await fs.readFile(path.join(baseTestPath, outpath, 'sanity.cli.ts'), 'utf-8')
+
+    expect(cliConfig).toContain(`projectId: '${cliProjectId}'`)
+  })
 })
