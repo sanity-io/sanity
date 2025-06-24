@@ -1,15 +1,9 @@
-import {
-  type PreviewValue,
-  type SanityDocument,
-  type SchemaType,
-  type SortOrdering,
-} from '@sanity/types'
+import {type PreviewValue, type SchemaType, type SortOrdering} from '@sanity/types'
 import {useMemo} from 'react'
 import {useObservable} from 'react-rx'
 import {type Observable, of} from 'rxjs'
 import {catchError, map} from 'rxjs/operators'
 
-import {isGoingToUnpublish} from '../releases/util/isGoingToUnpublish'
 import {useDocumentPreviewStore} from '../store'
 import {type Previewable} from './types'
 
@@ -45,13 +39,7 @@ function useDocumentPreview(props: {
   const {observeForPreview} = useDocumentPreviewStore()
   const observable = useMemo<Observable<State>>(() => {
     // this will render previews as "loaded" (i.e. not in loading state) – typically with "Untitled" text
-    if (
-      !enabled ||
-      !previewValue ||
-      !schemaType ||
-      isGoingToUnpublish(previewValue as SanityDocument)
-    )
-      return of(IDLE_STATE)
+    if (!enabled || !previewValue || !schemaType) return of(IDLE_STATE)
 
     return observeForPreview(previewValue as Previewable, schemaType, {
       perspective: [],
