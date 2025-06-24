@@ -271,7 +271,7 @@
     "use-effect-event": "^2.0.2",
     "use-hot-module-reload": "^2.0.0",
     "use-sync-external-store": "^1.5.0",
-    "uuid": "^11.0.5",
+    "uuid": "^11.1.0",
     "vite": "^6.3.5",
     "which": "^5.0.0",
     "xstate": "^5.20.0",
