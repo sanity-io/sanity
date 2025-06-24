@@ -68,6 +68,7 @@ const HorizontalScroller = styled(Card)<{$showGradient: boolean}>((props) => {
         width: 150px;
         background: linear-gradient(to right, ${rgba(theme.color.bg, 0)}, var(--card-bg-color));
         transition: 'opacity 300ms ease-out';
+        pointer-events: none;
       }
     `}
   `
