@@ -10,6 +10,7 @@ export const handler = documentEventHandler(
       ...context.clientOptions,
       apiVersion: 'vX',
       useCdn: false,
+      dataset: 'production',
     })
 
     const brandsWritingStyleGuide = `
