@@ -64,7 +64,7 @@ jobs:
       - name: Store Playwright's Version
         id: playwright-version
         run: |
-          PLAYWRIGHT_VERSION=$(npx playwright --version | sed 's/Version //')
+          PLAYWRIGHT_VERSION=$(pnpm exec playwright --version | sed 's/Version //')
           echo "Playwright's Version: $PLAYWRIGHT_VERSION"
           echo "version=${PLAYWRIGHT_VERSION}" >> "$GITHUB_OUTPUT"
 
@@ -77,7 +77,7 @@ jobs:
 
       - name: Install Playwright Browsers
         if: steps.cache-playwright-browsers.outputs.cache-hit != 'true'
-        run: npx playwright install --with-deps
+        run: pnpm exec playwright install --with-deps
 
   dataset-setup:
     timeout-minutes: 30
@@ -262,7 +262,7 @@ jobs:
       - name: Store Playwright's Version
         id: playwright-version
         run: |
-          PLAYWRIGHT_VERSION=$(npx playwright --version | sed 's/Version //')
+          PLAYWRIGHT_VERSION=$(pnpm exec playwright --version | sed 's/Version //')
           echo "Playwright's Version: $PLAYWRIGHT_VERSION"
           echo "version=${PLAYWRIGHT_VERSION}" >> "$GITHUB_OUTPUT"
 
@@ -275,7 +275,7 @@ jobs:
 
       - name: Install Playwright Browsers
         if: steps.cache-playwright-browsers.outputs.cache-hit != 'true'
-        run: npx playwright install --with-deps
+        run: pnpm exec playwright install --with-deps
 
       - name: Run E2E tests on main
         if: ${{ github.event_name == 'push' && github.ref == 'refs/heads/main' }}
@@ -338,7 +338,7 @@ jobs:
           path: all-blob-reports
 
       - name: Merge into HTML Report
-        run: npx playwright merge-reports --reporter html all-blob-reports/blob-report
+        run: pnpm exec playwright merge-reports --reporter html all-blob-reports/blob-report
 
       - name: Upload HTML report
         id: upload-playwright-report
