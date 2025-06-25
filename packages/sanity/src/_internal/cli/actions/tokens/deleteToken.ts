@@ -1,4 +1,5 @@
 import {type CliCommandContext} from '@sanity/cli'
+
 import {type Token} from '../../commands/tokens/types'
 import {isInteractive} from '../../util/isInteractive'
 
