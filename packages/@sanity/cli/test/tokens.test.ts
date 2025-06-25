@@ -5,11 +5,11 @@ import {getTestRunArgs, runSanityCmdCommand, studioVersions} from './shared/envi
 
 describeCliTest('CLI: `sanity tokens`', () => {
   describe.each(studioVersions)('%s', (version) => {
-    let tokenCounter = 1
     const testRunArgs = getTestRunArgs(version)
+    const testId = Math.random().toString(36).slice(2, 15)
 
     testConcurrent('tokens add/list/delete', async () => {
-      const tokenLabel = `test-token-${tokenCounter++}`
+      const tokenLabel = `test-token-${testId}-${Date.now()}`
 
       // `tokens add`
       let result = await runSanityCmdCommand(version, ['tokens', 'add', tokenLabel])
@@ -48,7 +48,7 @@ describeCliTest('CLI: `sanity tokens`', () => {
     })
 
     testConcurrent('tokens add with role', async () => {
-      const tokenLabel = `test-token-viewer-${tokenCounter++}`
+      const tokenLabel = `test-token-viewer-${testId}-${Date.now()}`
 
       const result = await runSanityCmdCommand(version, [
         'tokens',
@@ -67,7 +67,7 @@ describeCliTest('CLI: `sanity tokens`', () => {
 
     // Helper method for adding a new unique token
     async function addToken(): Promise<string> {
-      const tokenLabel = `test-token-${tokenCounter++}`
+      const tokenLabel = `test-token-${testId}-${Date.now()}`
       const result = await runSanityCmdCommand(version, ['tokens', 'add', tokenLabel, '--yes'])
       expect(result.code).toBe(0)
       expect(result.stdout).toMatch(/token created successfully/i)
