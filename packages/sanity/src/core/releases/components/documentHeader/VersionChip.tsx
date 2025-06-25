@@ -25,6 +25,7 @@ import {useCanvasCompanionDocsStore} from '../../../canvas/store/useCanvasCompan
 import {useTranslation} from '../../../i18n/hooks/useTranslation'
 import {getDraftId, getPublishedId, getVersionId} from '../../../util/draftUtils'
 import {useReleasesUpsell} from '../../contexts/upsell/useReleasesUpsell'
+import { useReleasesToolAvailable } from '../../hooks/useReleasesToolAvailable'
 import {useVersionOperations} from '../../hooks/useVersionOperations'
 import {getReleaseIdFromReleaseDocumentId} from '../../util/getReleaseIdFromReleaseDocumentId'
 import {DiscardVersionDialog} from '../dialog/DiscardVersionDialog'
@@ -102,6 +103,7 @@ export const VersionChip = memo(function VersionChip(props: {
       disabled: contextMenuDisabled = false,
     },
   } = props
+  const releasesToolAvailable = useReleasesToolAvailable()
   const isLinked = useVersionIsLinked(documentId, fromRelease)
 
   const [contextMenuPoint, setContextMenuPoint] = useState<{x: number; y: number} | undefined>(
@@ -200,7 +202,7 @@ export const VersionChip = memo(function VersionChip(props: {
     } as HTMLElement
   }, [contextMenuPoint])
 
-  const contextMenuHandler = disabled ? undefined : handleContextMenu
+  const contextMenuHandler = disabled || !releasesToolAvailable ? undefined : handleContextMenu
 
   return (
     <>
