@@ -34,26 +34,49 @@ export function useChipScrollPosition(containerRef: React.RefObject<HTMLDivEleme
       checkOverflow()
       // container is the parent that contains all the chips
       const container = containerRef.current
-      if (!container) return {observer: null}
+      if (!container) return {intersectionObserver: null, mutationObserver: null}
 
-      const observer = new IntersectionObserver((entries) => {
+      const intersectionObserver = new IntersectionObserver((entries) => {
         const entry = entries[0]
 
         if (entry) {
-          setShowGradient(entry.isIntersecting)
+          setShowGradient(!entry.isIntersecting)
         }
       })
 
-      const lastChip = container.children[container.children.length - 1]
-      observer.observe(lastChip)
+      const updateLastChipObserver = () => {
+        // Disconnect previous observation
+        intersectionObserver.disconnect()
 
-      return {observer}
+        // Get the new last child
+        const lastChip = container.children[container.children.length - 1]
+        intersectionObserver.observe(lastChip)
+      }
+
+      // Set up initial observation
+      updateLastChipObserver()
+
+      // Set up mutation observer to watch for changes to children
+      // this is needed because sometimes the list of releases takes some time to be rendered
+      // otherwise it could accidentally set the last child as the "drafts" / "published" chip
+      const mutationObserver = new MutationObserver(() => {
+        updateLastChipObserver()
+        checkOverflow()
+      })
+
+      mutationObserver.observe(container, {
+        childList: true,
+        subtree: false,
+      })
+
+      return {intersectionObserver, mutationObserver}
     }
 
-    const {observer} = setupObservers()
+    const {intersectionObserver, mutationObserver} = setupObservers()
 
     return () => {
-      observer?.disconnect()
+      intersectionObserver?.disconnect()
+      mutationObserver?.disconnect()
     }
   }, [containerRef])
 

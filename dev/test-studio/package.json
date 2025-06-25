@@ -1,6 +1,6 @@
 {
   "name": "sanity-test-studio",
-  "version": "3.94.0",
+  "version": "3.95.0",
   "private": true,
   "license": "MIT",
   "author": "Sanity.io <hello@sanity.io>",
@@ -17,8 +17,8 @@
     "workshop:dev": "node -r esbuild-register scripts/workshop/dev.ts"
   },
   "dependencies": {
-    "@portabletext/block-tools": "^1.1.31",
-    "@portabletext/editor": "^1.55.3",
+    "@portabletext/block-tools": "^1.1.32",
+    "@portabletext/editor": "^1.55.5",
     "@portabletext/react": "^3.2.1",
     "@sanity/assist": "^4.3.1",
     "@sanity/cli": "workspace:*",
