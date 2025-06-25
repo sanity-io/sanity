@@ -11,7 +11,9 @@ export async function deleteToken(
   context: CliCommandContext,
 ): Promise<boolean> {
   const {apiClient} = context
-  const client = apiClient({requireUser: true, requireProject: true})
+  const client = apiClient({requireUser: true, requireProject: true}).config({
+    apiVersion: '2021-06-07',
+  })
 
   const tokenId = await promptForToken(specifiedToken, context)
 
@@ -19,9 +21,10 @@ export async function deleteToken(
     return false
   }
 
+  const config = client.config()
   await client.request({
     method: 'DELETE',
-    uri: `/tokens/${tokenId}`,
+    uri: `/projects/${config.projectId}/tokens/${tokenId}`,
   })
 
   return true
@@ -32,9 +35,12 @@ async function promptForToken(
   context: CliCommandContext,
 ): Promise<string> {
   const {prompt, apiClient} = context
-  const client = apiClient({requireUser: true, requireProject: true})
+  const client = apiClient({requireUser: true, requireProject: true}).config({
+    apiVersion: '2021-06-07',
+  })
 
-  const tokens = await client.request<Token[]>({url: '/tokens'})
+  const config = client.config()
+  const tokens = await client.request<Token[]>({url: `/projects/${config.projectId}/tokens`})
 
   if (tokens.length === 0) {
     throw new Error('No tokens found')
@@ -58,7 +64,7 @@ async function promptForToken(
 
   const choices = tokens.map((token) => ({
     value: token.id,
-    name: `${token.label} (${token.roles.map((r) => r.title).join(', ')})`,
+    name: `${token.label} (${(token.roles || []).map((r) => r.title).join(', ')})`,
   }))
 
   return prompt.single({
@@ -70,9 +76,12 @@ async function promptForToken(
 
 async function confirmDeletion(tokenId: string, context: CliCommandContext): Promise<boolean> {
   const {prompt, apiClient} = context
-  const client = apiClient({requireUser: true, requireProject: true})
+  const client = apiClient({requireUser: true, requireProject: true}).config({
+    apiVersion: '2021-06-07',
+  })
 
-  const tokens = await client.request<Token[]>({url: '/tokens'})
+  const config = client.config()
+  const tokens = await client.request<Token[]>({url: `/projects/${config.projectId}/tokens`})
   const token = tokens.find((t) => t.id === tokenId)
 
   if (!token) {

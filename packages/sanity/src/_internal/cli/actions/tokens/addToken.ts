@@ -1,5 +1,6 @@
 import {type CliCommandContext, type CliPrompter} from '@sanity/cli'
-import {type TokenResponse, type ProjectRole} from '../../commands/tokens/types'
+
+import {type ProjectRole, type TokenResponse} from '../../commands/tokens/types'
 
 interface AddTokenFlags {
   role?: string
@@ -11,14 +12,17 @@ export async function addToken(
   context: CliCommandContext,
 ): Promise<TokenResponse> {
   const {apiClient, prompt, output} = context
-  const client = apiClient({requireUser: true, requireProject: true})
+  const client = apiClient({requireUser: true, requireProject: true}).config({
+    apiVersion: '2021-06-07',
+  })
 
   const label = givenLabel || (await promptForLabel(prompt))
   const roleName = await (flags.role ? validateRole(flags.role, context) : promptForRole(context))
 
+  const {projectId} = client.config()
   const response = await client.request<TokenResponse>({
     method: 'POST',
-    url: '/tokens',
+    url: `/projects/${projectId}/tokens`,
     body: {label, roleName},
   })
 
@@ -35,9 +39,12 @@ async function promptForLabel(prompt: CliPrompter): Promise<string> {
 
 async function promptForRole(context: CliCommandContext): Promise<string> {
   const {apiClient, prompt} = context
-  const client = apiClient({requireUser: true, requireProject: true})
+  const client = apiClient({requireUser: true, requireProject: true}).config({
+    apiVersion: '2021-06-07',
+  })
 
-  const roles = await client.request<ProjectRole[]>({url: '/roles'})
+  const {projectId} = client.config()
+  const roles = await client.request<ProjectRole[]>({url: `/projects/${projectId}/roles`})
   const robotRoles = roles.filter((role) => role.appliesToRobots)
 
   if (robotRoles.length === 0) {
@@ -60,9 +67,12 @@ async function promptForRole(context: CliCommandContext): Promise<string> {
 
 async function validateRole(roleName: string, context: CliCommandContext): Promise<string> {
   const {apiClient} = context
-  const client = apiClient({requireUser: true, requireProject: true})
+  const client = apiClient({requireUser: true, requireProject: true}).config({
+    apiVersion: '2021-06-07',
+  })
 
-  const roles = await client.request<ProjectRole[]>({url: '/roles'})
+  const {projectId} = client.config()
+  const roles = await client.request<ProjectRole[]>({url: `/projects/${projectId}/roles`})
   const robotRoles = roles.filter((role) => role.appliesToRobots)
 
   const role = robotRoles.find((r) => r.name === roleName)
