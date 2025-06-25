@@ -23,12 +23,18 @@ export async function deleteToken(
   }
 
   const config = client.config()
-  await client.request({
-    method: 'DELETE',
-    uri: `/projects/${config.projectId}/tokens/${tokenId}`,
-  })
-
-  return true
+  try {
+    await client.request({
+      method: 'DELETE',
+      uri: `/projects/${config.projectId}/tokens/${tokenId}`,
+    })
+    return true
+  } catch (err) {
+    if (err.statusCode === 404) {
+      throw new Error(`Token with ID "${tokenId}" not found`)
+    }
+    throw err
+  }
 }
 
 async function promptForToken(
@@ -36,6 +42,18 @@ async function promptForToken(
   context: CliCommandContext,
   unattended?: boolean,
 ): Promise<string> {
+  // If token ID is specified, just return it (validation happens during deletion)
+  if (specified) {
+    return specified
+  }
+
+  if (unattended || !isInteractive) {
+    throw new Error(
+      'Token ID is required in non-interactive mode. Provide a token ID as an argument.',
+    )
+  }
+
+  // Only fetch tokens for interactive selection when no ID provided
   const {prompt, apiClient} = context
   const client = apiClient({requireUser: true, requireProject: true}).config({
     apiVersion: '2021-06-07',
@@ -46,28 +64,6 @@ async function promptForToken(
 
   if (tokens.length === 0) {
     throw new Error('No tokens found')
-  }
-
-  if (specified) {
-    // Try to find by ID first
-    let selected = tokens.find((token) => token.id === specified)
-
-    // If not found by ID, try to find by label
-    if (!selected) {
-      selected = tokens.find((token) => token.label.toLowerCase() === specified.toLowerCase())
-    }
-
-    if (!selected) {
-      throw new Error(`Token "${specified}" not found`)
-    }
-
-    return selected.id
-  }
-
-  if (unattended || !isInteractive) {
-    throw new Error(
-      'Token ID or label is required in non-interactive mode. Provide a token as an argument.',
-    )
   }
 
   const choices = tokens.map((token) => ({
@@ -91,22 +87,11 @@ async function confirmDeletion(
     return true // Skip confirmation in unattended mode
   }
 
-  const {prompt, apiClient} = context
-  const client = apiClient({requireUser: true, requireProject: true}).config({
-    apiVersion: '2021-06-07',
-  })
-
-  const config = client.config()
-  const tokens = await client.request<Token[]>({url: `/projects/${config.projectId}/tokens`})
-  const token = tokens.find((t) => t.id === tokenId)
-
-  if (!token) {
-    throw new Error('Token not found')
-  }
+  const {prompt} = context
 
   return prompt.single({
     type: 'confirm',
-    message: `Are you sure you want to delete the token "${token.label}"?`,
+    message: `Are you sure you want to delete the token with ID "${tokenId}"?`,
     default: false,
   })
 }
