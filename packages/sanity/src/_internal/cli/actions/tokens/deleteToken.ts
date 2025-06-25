@@ -1,8 +1,9 @@
 import {type CliCommandContext} from '@sanity/cli'
 import {type Token} from '../../commands/tokens/types'
+import {isInteractive} from '../../util/isInteractive'
 
 interface DeleteTokenFlags {
-  force?: boolean
+  unattended?: boolean
 }
 
 export async function deleteToken(
@@ -15,9 +16,9 @@ export async function deleteToken(
     apiVersion: '2021-06-07',
   })
 
-  const tokenId = await promptForToken(specifiedToken, context)
+  const tokenId = await promptForToken(specifiedToken, context, flags.unattended)
 
-  if (!flags.force && !(await confirmDeletion(tokenId, context))) {
+  if (!(await confirmDeletion(tokenId, context, flags.unattended))) {
     return false
   }
 
@@ -33,6 +34,7 @@ export async function deleteToken(
 async function promptForToken(
   specified: string | undefined,
   context: CliCommandContext,
+  unattended?: boolean,
 ): Promise<string> {
   const {prompt, apiClient} = context
   const client = apiClient({requireUser: true, requireProject: true}).config({
@@ -62,6 +64,12 @@ async function promptForToken(
     return selected.id
   }
 
+  if (unattended || !isInteractive) {
+    throw new Error(
+      'Token ID or label is required in non-interactive mode. Provide a token as an argument.',
+    )
+  }
+
   const choices = tokens.map((token) => ({
     value: token.id,
     name: `${token.label} (${(token.roles || []).map((r) => r.title).join(', ')})`,
@@ -74,7 +82,15 @@ async function promptForToken(
   })
 }
 
-async function confirmDeletion(tokenId: string, context: CliCommandContext): Promise<boolean> {
+async function confirmDeletion(
+  tokenId: string,
+  context: CliCommandContext,
+  unattended?: boolean,
+): Promise<boolean> {
+  if (unattended || !isInteractive) {
+    return true // Skip confirmation in unattended mode
+  }
+
   const {prompt, apiClient} = context
   const client = apiClient({requireUser: true, requireProject: true}).config({
     apiVersion: '2021-06-07',

@@ -6,9 +6,11 @@ Examples
   sanity tokens add "My API Token"
   sanity tokens add "My API Token" --role=editor
   sanity tokens add "My API Token" --role=viewer
+  sanity tokens add "CI Token" --role=editor --yes
 
 Options
   --role <role> Role to assign to the token. Default: editor
+  -y, --yes     Skip prompts and use defaults (unattended mode)
 `
 
 const addTokenCommand: CliCommandDefinition = {
@@ -20,10 +22,10 @@ const addTokenCommand: CliCommandDefinition = {
   action: async (args, context) => {
     const {output} = context
     const [label] = args.argsWithoutOptions
-    const {role} = args.extOptions as {role?: string}
+    const {role, yes, y} = args.extOptions as {role?: string; yes?: boolean; y?: boolean}
 
     try {
-      const token = await addToken(label, {role}, context)
+      const token = await addToken(label, {role, unattended: Boolean(yes || y)}, context)
       output.print(`Token created successfully!`)
       output.print(`Label: ${token.label}`)
       output.print(`Role: ${token.roles.map((r) => r.title).join(', ')}`)

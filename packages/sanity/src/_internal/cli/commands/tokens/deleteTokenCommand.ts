@@ -6,9 +6,10 @@ Examples
   sanity tokens delete
   sanity tokens delete silJ2lFmK6dONB
   sanity tokens delete "My API Token"
+  sanity tokens delete silJ2lFmK6dONB --yes
 
 Options
-  --force Skip confirmation prompt
+  -y, --yes     Skip confirmation prompt (unattended mode)
 `
 
 const deleteTokenCommand: CliCommandDefinition = {
@@ -20,10 +21,10 @@ const deleteTokenCommand: CliCommandDefinition = {
   action: async (args, context) => {
     const {output} = context
     const [token] = args.argsWithoutOptions
-    const {force} = args.extOptions as {force?: boolean}
+    const {yes, y} = args.extOptions as {yes?: boolean; y?: boolean}
 
     try {
-      const success = await deleteToken(token, {force}, context)
+      const success = await deleteToken(token, {unattended: Boolean(yes || y)}, context)
       if (success) {
         output.print('Token deleted successfully')
       }
