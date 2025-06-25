@@ -31,7 +31,7 @@ jobs:
         uses: thollander/actions-comment-pull-request@24bffb9b452ba05a4f3f77933840a6a841d1b32b # v3
         if: ${{ github.event_name == 'pull_request' }}
         with:
-          comment_tag: "docs-report"
+          comment-tag: "docs-report"
           message: Waiting for docs report to finish…
 
       - name: Install project dependencies
@@ -67,5 +67,5 @@ jobs:
         uses: thollander/actions-comment-pull-request@24bffb9b452ba05a4f3f77933840a6a841d1b32b # v3
         if: ${{ github.event_name == 'pull_request' }}
         with:
-          comment_tag: "docs-report"
-          filePath: ${{ github.workspace }}/scripts/docs-report.md
+          comment-tag: "docs-report"
+          file-path: ${{ github.workspace }}/scripts/docs-report.md
