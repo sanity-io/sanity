@@ -1254,7 +1254,7 @@ importers:
         specifier: workspace:*
         version: link:../types
       '@sanity/uuid':
-        specifier: ^3.0.1
+        specifier: ^3.0.2
         version: 3.0.2
       debug:
         specifier: ^4.3.4
@@ -2273,7 +2273,7 @@ importers:
         specifier: ^7.6.0
         version: 7.6.0(debug@4.4.1)
       '@sanity/uuid':
-        specifier: ^3.0.1
+        specifier: ^3.0.2
         version: 3.0.2
       dotenv:
         specifier: ^16.0.3
