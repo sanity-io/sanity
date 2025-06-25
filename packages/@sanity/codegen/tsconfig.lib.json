@@ -1,8 +1,10 @@
 {
   "extends": "@repo/tsconfig/build.json",
   "include": ["./src"],
+  "exclude": ["./src/**/__tests__/**", "./src/**/fixtures/**"],
   "compilerOptions": {
     "rootDir": ".",
-    "outDir": "./lib"
+    "outDir": "./lib",
+    "declaration": true
   }
 }

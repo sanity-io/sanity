@@ -9,7 +9,7 @@ export const ToneIcon = ({
 }: {
   tone: Tone
   icon: React.FC<React.SVGProps<SVGSVGElement>>
-}) => {
+}): React.JSX.Element => {
   return (
     <Icon
       style={

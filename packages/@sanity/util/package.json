@@ -107,7 +107,7 @@
   ],
   "scripts": {
     "build": "pnpm clean && pkg-utils build --strict --check --clean",
-    "check:types": "tsc --project tsconfig.lib.json",
+    "check:types": "(cd ../../.. && tsc --project packages/@sanity/util/tsconfig.lib.json --erasableSyntaxOnly --isolatedDeclarations)",
     "clean": "rimraf client.js concurrency-limiter.js content.js createSafeJsonParser.js fs.js legacyDateFormat.js lib paths.js",
     "lint": "eslint .",
     "prepublishOnly": "turbo run build",

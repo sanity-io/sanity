@@ -139,14 +139,19 @@ export type PartialListItem = Partial<UnserializedListItem>
 export class ListItemBuilder implements Serializable<ListItem> {
   /** List item option object. See {@link PartialListItem} */
   protected spec: PartialListItem
+  /**
+   * Structure context. See {@link StructureContext}
+   */
+  protected _context: StructureContext
 
   constructor(
     /**
      * Structure context. See {@link StructureContext}
      */
-    protected _context: StructureContext,
+    _context: StructureContext,
     spec?: ListItemInput,
   ) {
+    this._context = _context
     this.spec = spec ? spec : {}
   }
 

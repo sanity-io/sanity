@@ -25,6 +25,6 @@ jobs:
         # and ensure that dependencies are built with @sanity/pkg-utils to output dts
         # used by other packages as they are type checked
         id: typeCheckModules
-        run: pnpm check:types --output-logs=full --log-order=grouped
+        run: pnpm check:types --log-prefix=none
         env:
           NODE_OPTIONS: --max_old_space_size=8192

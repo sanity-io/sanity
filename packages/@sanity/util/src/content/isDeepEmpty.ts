@@ -48,16 +48,16 @@ export function isDeepEmpty(value: unknown): boolean {
  * @deprecated Use `isDeepEmpty` instead
  * todo: remove in v4
  */
-export const isEmptyArray = isDeepEmptyArray
+export const isEmptyArray: (value: unknown[]) => boolean = isDeepEmptyArray
 
 /**
  * @deprecated Use `isDeepEmpty` instead
  * todo: remove in v4
  */
-export const isEmpty = isDeepEmpty
+export const isEmpty: (value: unknown[]) => boolean = isDeepEmpty
 
 /**
  * @deprecated Use `isDeepEmpty` instead
  * todo: remove in v4
  */
-export const isEmptyObject = isDeepEmptyObject
+export const isEmptyObject: (value: unknown[]) => boolean = isDeepEmptyObject

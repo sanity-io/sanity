@@ -37,14 +37,19 @@ export class MenuItemGroupBuilder implements Serializable<MenuItemGroup> {
   protected _title: string
 
   protected _i18n?: I18nTextRecord<'title'>
+  /**
+   * Structure context. See {@link StructureContext}
+   */
+  protected _context: StructureContext
 
   constructor(
     /**
      * Structure context. See {@link StructureContext}
      */
-    protected _context: StructureContext,
+    _context: StructureContext,
     spec?: MenuItemGroup,
   ) {
+    this._context = _context
     this._id = spec ? spec.id : ''
     this._title = spec ? spec.title : ''
     this._i18n = spec ? spec.i18n : undefined

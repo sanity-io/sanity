@@ -14,7 +14,9 @@ export type TooltipDelayGroupProviderProps = Omit<UITooltipDelayGroupProviderPro
  *
  * @internal
  */
-export const TooltipDelayGroupProvider = (props: TooltipDelayGroupProviderProps) => {
+export const TooltipDelayGroupProvider = (
+  props: TooltipDelayGroupProviderProps,
+): React.JSX.Element => {
   return (
     <UITooltipDelayGroupProvider delay={TOOLTIP_DELAY_PROPS}>
       {props.children}

@@ -57,7 +57,7 @@ export interface BaseIntentParams {
 }
 
 /** @internal */
-export const DEFAULT_INTENT_HANDLER = Symbol('Document type list canHandleIntent')
+export const DEFAULT_INTENT_HANDLER: symbol = Symbol('Document type list canHandleIntent')
 
 /**
  * Intent parameters
