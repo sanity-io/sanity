@@ -233,7 +233,7 @@ console.log('Tone analysis result:', result)
 
 Once you've tested your function locally and are satisfied with its behavior, you can deploy it to production.
 
-**Important:** Make sure you have the Deploy Studio permission for your Sanity project before attempting to deploy.
+**Important:** Be sure to set `noWrite: false` in your Agent Action Function.
 
 ### Prerequisites for deployment
 
@@ -288,9 +288,8 @@ This command will:
 
 After deployment, you can verify your function is active by:
 
-- Checking the Sanity Studio under "Compute"
 - Publishing a new post and confirming the `toneOfVoice` field is populated
-- Monitoring function logs in the CLI
+- Monitoring function logs in the CLI by running `npx sanity functions logs log-event`
 
 ### Deployment best practices
 

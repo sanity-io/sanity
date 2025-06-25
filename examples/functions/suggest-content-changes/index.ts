@@ -40,7 +40,7 @@ Keep the language casual, clear, and friendly. Speak directly to readers as "you
     try {
       const result = await client.agent.action.generate({
         // Set `noWrite` to `false` to write the suggestions to the document
-        noWrite: false,
+        noWrite: true,
         instructionParams: {
           content: {
             type: 'field',

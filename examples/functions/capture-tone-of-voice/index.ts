@@ -32,7 +32,6 @@ export const handler = documentEventHandler(
         },
         documentId: event.data._id,
         schemaId: '_.schemas.default',
-        forcePublishedWrite: true,
       })
       // eslint-disable-next-line no-console
       console.log('Successfully generated tone of voice analysis:', result.toneOfVoice)

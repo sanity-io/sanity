@@ -10,7 +10,7 @@
     "type": "sanity.function.document",
     "name": "suggest-content-changes",
     "src": "./functions/suggest-content-changes",
-    "memory": 5,
+    "memory": 2,
     "timeout": 60,
     "event": {
       "on": [

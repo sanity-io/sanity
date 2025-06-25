@@ -257,7 +257,7 @@ export default defineBlueprint({
       type: 'sanity.function.document',
       name: 'suggest-content-changes',
       src: './functions/suggest-content-changes',
-      memory: 5,
+      memory: 2,
       timeout: 60,
       event: {
         on: ['publish'],
@@ -284,11 +284,12 @@ This command will:
 - Configure the event triggers for post publications
 - Make your suggest-content-changes function live in production
 
+**Important:** Be sure to set `noWrite: false` in your Agent Action Function.
+
 3. **Verify deployment**
 
 After deployment, you can verify your function is active by:
 
-- Checking the Sanity Studio under "Compute"
 - Publishing a new post and confirming the `suggestedChanges` field is populated
 - Monitoring function logs in the CLI
 
