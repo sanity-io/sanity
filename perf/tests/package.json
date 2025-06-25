@@ -17,7 +17,7 @@
   "dependencies": {
     "@playwright/test": "catalog:",
     "@sanity/client": "^7.6.0",
-    "@sanity/uuid": "^3.0.1",
+    "@sanity/uuid": "^3.0.2",
     "dotenv": "^16.0.3",
     "execa": "^2.0.0",
     "globby": "^11.1.0",
