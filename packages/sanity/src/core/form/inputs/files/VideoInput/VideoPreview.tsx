@@ -1,4 +1,3 @@
-import {isFileSource} from '@sanity/asset-utils'
 import {ImageIcon, SearchIcon, UploadIcon} from '@sanity/icons'
 import {type AssetSource} from '@sanity/types'
 import {get, startCase} from 'lodash'
@@ -157,17 +156,10 @@ export function VideoPreview(props: VideoAssetProps) {
       observeAsset={observeAsset}
       waitPlaceholder={<VideoSkeleton />}
     >
-      {({url, metadata}) => {
-        let copyUrl: string | undefined
-        let downloadUrl: string | undefined
+      {({metadata}) => {
         // @ts-expect-error - TODO: fix this
         const playbackId = metadata?.playbacks?.[0]?._id
         const aspectRatio = metadata?.aspectRatio
-
-        if (isFileSource(value)) {
-          downloadUrl = `${url}?dl`
-          copyUrl = url
-        }
 
         return (
           <VideoActionsMenu
@@ -182,8 +174,6 @@ export function VideoPreview(props: VideoAssetProps) {
               browse={browseMenuItem}
               upload={uploadMenuItem}
               onReset={clearField}
-              downloadUrl={downloadUrl}
-              copyUrl={copyUrl}
               readOnly={readOnly}
             />
           </VideoActionsMenu>

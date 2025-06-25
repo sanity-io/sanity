@@ -1,4 +1,3 @@
-// eslint-disable-next-line import/no-extraneous-dependencies, import/no-unassigned-import
 import 'player.style/sutro'
 
 import MuxPlayer from '@mux/mux-player-react'
@@ -12,8 +11,12 @@ type VideoPlayerProps = {
 
 export function VideoPlayer({playbackId, aspectRatio, muted, disabled}: VideoPlayerProps) {
   const isPortrait = aspectRatio && aspectRatio < 1
-  const wrapperWidth = isPortrait ? undefined : 'auto'
+  const wrapperWidth = isPortrait ? 'auto' : '100%'
   const wrapperHeight = isPortrait ? '100%' : undefined
+  const maxWidth = isPortrait ? 'fit-content' : '100%'
+  const maxHeight = isPortrait ? '100%' : 'fit-content'
+
+  console.log({aspectRatio, wrapperWidth, wrapperHeight, maxWidth, maxHeight})
 
   return (
     <MuxPlayer
@@ -24,8 +27,8 @@ export function VideoPlayer({playbackId, aspectRatio, muted, disabled}: VideoPla
       style={{
         width: wrapperWidth,
         height: wrapperHeight,
-        maxWidth: '100%',
-        maxHeight: '100%',
+        maxWidth,
+        maxHeight,
         aspectRatio,
       }}
     />
