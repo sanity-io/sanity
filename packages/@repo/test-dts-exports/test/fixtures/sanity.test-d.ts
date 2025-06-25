@@ -1661,7 +1661,7 @@ describe('sanity', () => {
     expectTypeOf<ArrayDefinition>().toBeObject()
     // Source: packages/sanity/lib/_singletons.d.ts:13015
     expectTypeOf<ArrayDefinition>().toBeObject()
-    // Source: packages/sanity/lib/index.d.ts:18622
+    // Source: packages/sanity/lib/index.d.ts:18618
     expectTypeOf<ArrayDefinition>().toBeObject()
   })
   test('ArrayDiff', () => {
@@ -1697,7 +1697,7 @@ describe('sanity', () => {
   test('ArrayOfObjectsComponents', () => {
     // Source: packages/sanity/lib/_singletons.d.ts:12768
     expectTypeOf<ArrayOfObjectsComponents>().toBeObject()
-    // Source: packages/sanity/lib/index.d.ts:18375
+    // Source: packages/sanity/lib/index.d.ts:18371
     expectTypeOf<ArrayOfObjectsComponents>().toBeObject()
   })
   test('ArrayOfObjectsFormNode', () => {
@@ -1742,7 +1742,7 @@ describe('sanity', () => {
   test('ArrayOfPrimitivesComponents', () => {
     // Source: packages/sanity/lib/_singletons.d.ts:12786
     expectTypeOf<ArrayOfPrimitivesComponents>().toBeObject()
-    // Source: packages/sanity/lib/index.d.ts:18393
+    // Source: packages/sanity/lib/index.d.ts:18389
     expectTypeOf<ArrayOfPrimitivesComponents>().toBeObject()
   })
   test('ArrayOfPrimitivesElementType', () => {
@@ -1921,7 +1921,7 @@ describe('sanity', () => {
     expectTypeOf<BlockAnnotationDefinition>().toBeObject()
     // Source: packages/sanity/lib/_singletons.d.ts:13124
     expectTypeOf<BlockAnnotationDefinition>().toBeObject()
-    // Source: packages/sanity/lib/index.d.ts:18731
+    // Source: packages/sanity/lib/index.d.ts:18727
     expectTypeOf<BlockAnnotationDefinition>().toBeObject()
   })
   test('BlockAnnotationProps', () => {
@@ -1935,7 +1935,7 @@ describe('sanity', () => {
     expectTypeOf<BlockDecoratorDefinition>().toBeObject()
     // Source: packages/sanity/lib/_singletons.d.ts:13059
     expectTypeOf<BlockDecoratorDefinition>().toBeObject()
-    // Source: packages/sanity/lib/index.d.ts:18666
+    // Source: packages/sanity/lib/index.d.ts:18662
     expectTypeOf<BlockDecoratorDefinition>().toBeObject()
   })
   test('BlockDecoratorProps', () => {
@@ -1946,7 +1946,7 @@ describe('sanity', () => {
     expectTypeOf<BlockDefinition>().toBeObject()
     // Source: packages/sanity/lib/_singletons.d.ts:13023
     expectTypeOf<BlockDefinition>().toBeObject()
-    // Source: packages/sanity/lib/index.d.ts:18630
+    // Source: packages/sanity/lib/index.d.ts:18626
     expectTypeOf<BlockDefinition>().toBeObject()
   })
   test('BlockEditor', () => {
@@ -1963,7 +1963,7 @@ describe('sanity', () => {
     expectTypeOf<BlockListDefinition>().toBeObject()
     // Source: packages/sanity/lib/_singletons.d.ts:13109
     expectTypeOf<BlockListDefinition>().toBeObject()
-    // Source: packages/sanity/lib/index.d.ts:18716
+    // Source: packages/sanity/lib/index.d.ts:18712
     expectTypeOf<BlockListDefinition>().toBeObject()
   })
   test('BlockListItemProps', () => {
@@ -1995,7 +1995,7 @@ describe('sanity', () => {
     expectTypeOf<BlockStyleDefinition>().toBeObject()
     // Source: packages/sanity/lib/_singletons.d.ts:13082
     expectTypeOf<BlockStyleDefinition>().toBeObject()
-    // Source: packages/sanity/lib/index.d.ts:18689
+    // Source: packages/sanity/lib/index.d.ts:18685
     expectTypeOf<BlockStyleDefinition>().toBeObject()
   })
   test('BlockStyleObjectField', () => {
@@ -2007,7 +2007,7 @@ describe('sanity', () => {
   test('BooleanComponents', () => {
     // Source: packages/sanity/lib/_singletons.d.ts:12798
     expectTypeOf<BooleanComponents>().toBeObject()
-    // Source: packages/sanity/lib/index.d.ts:18405
+    // Source: packages/sanity/lib/index.d.ts:18401
     expectTypeOf<BooleanComponents>().toBeObject()
   })
   test('BooleanDefinition', () => {
@@ -2015,7 +2015,7 @@ describe('sanity', () => {
     expectTypeOf<BooleanDefinition>().toBeObject()
     // Source: packages/sanity/lib/_singletons.d.ts:13134
     expectTypeOf<BooleanDefinition>().toBeObject()
-    // Source: packages/sanity/lib/index.d.ts:18741
+    // Source: packages/sanity/lib/index.d.ts:18737
     expectTypeOf<BooleanDefinition>().toBeObject()
   })
   test('BooleanDiff', () => {
@@ -2540,7 +2540,7 @@ describe('sanity', () => {
   test('CrossDatasetReferenceComponents', () => {
     // Source: packages/sanity/lib/_singletons.d.ts:12933
     expectTypeOf<CrossDatasetReferenceComponents>().toBeObject()
-    // Source: packages/sanity/lib/index.d.ts:18540
+    // Source: packages/sanity/lib/index.d.ts:18536
     expectTypeOf<CrossDatasetReferenceComponents>().toBeObject()
   })
   test('CrossDatasetReferenceDefinition', () => {
@@ -2548,7 +2548,7 @@ describe('sanity', () => {
     expectTypeOf<CrossDatasetReferenceDefinition>().toBeObject()
     // Source: packages/sanity/lib/_singletons.d.ts:13204
     expectTypeOf<CrossDatasetReferenceDefinition>().toBeObject()
-    // Source: packages/sanity/lib/index.d.ts:18811
+    // Source: packages/sanity/lib/index.d.ts:18807
     expectTypeOf<CrossDatasetReferenceDefinition>().toBeObject()
   })
   test('CrossDatasetReferenceFilterResolver', () => {
@@ -2584,7 +2584,7 @@ describe('sanity', () => {
   test('DateComponents', () => {
     // Source: packages/sanity/lib/_singletons.d.ts:12810
     expectTypeOf<DateComponents>().toBeObject()
-    // Source: packages/sanity/lib/index.d.ts:18417
+    // Source: packages/sanity/lib/index.d.ts:18413
     expectTypeOf<DateComponents>().toBeObject()
   })
   test('DateDefinition', () => {
@@ -2592,7 +2592,7 @@ describe('sanity', () => {
     expectTypeOf<DateDefinition>().toBeObject()
     // Source: packages/sanity/lib/_singletons.d.ts:13137
     expectTypeOf<DateDefinition>().toBeObject()
-    // Source: packages/sanity/lib/index.d.ts:18744
+    // Source: packages/sanity/lib/index.d.ts:18740
     expectTypeOf<DateDefinition>().toBeObject()
   })
   test('DateInput', () => {
@@ -2610,7 +2610,7 @@ describe('sanity', () => {
   test('DatetimeComponents', () => {
     // Source: packages/sanity/lib/_singletons.d.ts:12822
     expectTypeOf<DatetimeComponents>().toBeObject()
-    // Source: packages/sanity/lib/index.d.ts:18429
+    // Source: packages/sanity/lib/index.d.ts:18425
     expectTypeOf<DatetimeComponents>().toBeObject()
   })
   test('DatetimeDefinition', () => {
@@ -2618,7 +2618,7 @@ describe('sanity', () => {
     expectTypeOf<DatetimeDefinition>().toBeObject()
     // Source: packages/sanity/lib/_singletons.d.ts:13145
     expectTypeOf<DatetimeDefinition>().toBeObject()
-    // Source: packages/sanity/lib/index.d.ts:18752
+    // Source: packages/sanity/lib/index.d.ts:18748
     expectTypeOf<DatetimeDefinition>().toBeObject()
   })
   test('DateTimeInput', () => {
@@ -2894,7 +2894,7 @@ describe('sanity', () => {
   test('DocumentComponents', () => {
     // Source: packages/sanity/lib/_singletons.d.ts:12834
     expectTypeOf<DocumentComponents>().toBeObject()
-    // Source: packages/sanity/lib/index.d.ts:18441
+    // Source: packages/sanity/lib/index.d.ts:18437
     expectTypeOf<DocumentComponents>().toBeObject()
   })
   test('DocumentDefinition', () => {
@@ -2902,7 +2902,7 @@ describe('sanity', () => {
     expectTypeOf<DocumentDefinition>().toBeObject()
     // Source: packages/sanity/lib/_singletons.d.ts:13148
     expectTypeOf<DocumentDefinition>().toBeObject()
-    // Source: packages/sanity/lib/index.d.ts:18755
+    // Source: packages/sanity/lib/index.d.ts:18751
     expectTypeOf<DocumentDefinition>().toBeObject()
   })
   test('DocumentField', () => {
@@ -3115,7 +3115,7 @@ describe('sanity', () => {
   test('EmailComponents', () => {
     // Source: packages/sanity/lib/_singletons.d.ts:13008
     expectTypeOf<EmailComponents>().toBeObject()
-    // Source: packages/sanity/lib/index.d.ts:18615
+    // Source: packages/sanity/lib/index.d.ts:18611
     expectTypeOf<EmailComponents>().toBeObject()
   })
   test('EmailDefinition', () => {
@@ -3123,7 +3123,7 @@ describe('sanity', () => {
     expectTypeOf<EmailDefinition>().toBeObject()
     // Source: packages/sanity/lib/_singletons.d.ts:13247
     expectTypeOf<EmailDefinition>().toBeObject()
-    // Source: packages/sanity/lib/index.d.ts:18854
+    // Source: packages/sanity/lib/index.d.ts:18850
     expectTypeOf<EmailDefinition>().toBeObject()
   })
   test('EmailInput', () => {
@@ -3315,7 +3315,7 @@ describe('sanity', () => {
   test('FileComponents', () => {
     // Source: packages/sanity/lib/_singletons.d.ts:12846
     expectTypeOf<FileComponents>().toBeObject()
-    // Source: packages/sanity/lib/index.d.ts:18453
+    // Source: packages/sanity/lib/index.d.ts:18449
     expectTypeOf<FileComponents>().toBeObject()
   })
   test('FileDefinition', () => {
@@ -3323,7 +3323,7 @@ describe('sanity', () => {
     expectTypeOf<FileDefinition>().toBeObject()
     // Source: packages/sanity/lib/_singletons.d.ts:13156
     expectTypeOf<FileDefinition>().toBeObject()
-    // Source: packages/sanity/lib/index.d.ts:18763
+    // Source: packages/sanity/lib/index.d.ts:18759
     expectTypeOf<FileDefinition>().toBeObject()
   })
   test('FileInput', () => {
@@ -3542,7 +3542,7 @@ describe('sanity', () => {
   test('GeopointComponents', () => {
     // Source: packages/sanity/lib/_singletons.d.ts:12861
     expectTypeOf<GeopointComponents>().toBeObject()
-    // Source: packages/sanity/lib/index.d.ts:18468
+    // Source: packages/sanity/lib/index.d.ts:18464
     expectTypeOf<GeopointComponents>().toBeObject()
   })
   test('GeopointDefinition', () => {
@@ -3550,7 +3550,7 @@ describe('sanity', () => {
     expectTypeOf<GeopointDefinition>().toBeObject()
     // Source: packages/sanity/lib/_singletons.d.ts:13164
     expectTypeOf<GeopointDefinition>().toBeObject()
-    // Source: packages/sanity/lib/index.d.ts:18771
+    // Source: packages/sanity/lib/index.d.ts:18767
     expectTypeOf<GeopointDefinition>().toBeObject()
   })
   test('GeopointOptions', () => {
@@ -3784,7 +3784,7 @@ describe('sanity', () => {
   test('ImageComponents', () => {
     // Source: packages/sanity/lib/_singletons.d.ts:12876
     expectTypeOf<ImageComponents>().toBeObject()
-    // Source: packages/sanity/lib/index.d.ts:18483
+    // Source: packages/sanity/lib/index.d.ts:18479
     expectTypeOf<ImageComponents>().toBeObject()
   })
   test('ImageCrop', () => {
@@ -3795,7 +3795,7 @@ describe('sanity', () => {
     expectTypeOf<ImageDefinition>().toBeObject()
     // Source: packages/sanity/lib/_singletons.d.ts:13172
     expectTypeOf<ImageDefinition>().toBeObject()
-    // Source: packages/sanity/lib/index.d.ts:18779
+    // Source: packages/sanity/lib/index.d.ts:18775
     expectTypeOf<ImageDefinition>().toBeObject()
   })
   test('ImageDimensions', () => {
@@ -4593,7 +4593,7 @@ describe('sanity', () => {
   test('NumberComponents', () => {
     // Source: packages/sanity/lib/_singletons.d.ts:12891
     expectTypeOf<NumberComponents>().toBeObject()
-    // Source: packages/sanity/lib/index.d.ts:18498
+    // Source: packages/sanity/lib/index.d.ts:18494
     expectTypeOf<NumberComponents>().toBeObject()
   })
   test('NumberDefinition', () => {
@@ -4601,7 +4601,7 @@ describe('sanity', () => {
     expectTypeOf<NumberDefinition>().toBeObject()
     // Source: packages/sanity/lib/_singletons.d.ts:13180
     expectTypeOf<NumberDefinition>().toBeObject()
-    // Source: packages/sanity/lib/index.d.ts:18787
+    // Source: packages/sanity/lib/index.d.ts:18783
     expectTypeOf<NumberDefinition>().toBeObject()
   })
   test('NumberDiff', () => {
@@ -4634,7 +4634,7 @@ describe('sanity', () => {
   test('ObjectComponents', () => {
     // Source: packages/sanity/lib/_singletons.d.ts:12903
     expectTypeOf<ObjectComponents>().toBeObject()
-    // Source: packages/sanity/lib/index.d.ts:18510
+    // Source: packages/sanity/lib/index.d.ts:18506
     expectTypeOf<ObjectComponents>().toBeObject()
   })
   test('ObjectDefinition', () => {
@@ -4642,7 +4642,7 @@ describe('sanity', () => {
     expectTypeOf<ObjectDefinition>().toBeObject()
     // Source: packages/sanity/lib/_singletons.d.ts:13188
     expectTypeOf<ObjectDefinition>().toBeObject()
-    // Source: packages/sanity/lib/index.d.ts:18795
+    // Source: packages/sanity/lib/index.d.ts:18791
     expectTypeOf<ObjectDefinition>().toBeObject()
   })
   test('ObjectDiff', () => {
@@ -5014,7 +5014,7 @@ describe('sanity', () => {
   test('ReferenceComponents', () => {
     // Source: packages/sanity/lib/_singletons.d.ts:12918
     expectTypeOf<ReferenceComponents>().toBeObject()
-    // Source: packages/sanity/lib/index.d.ts:18525
+    // Source: packages/sanity/lib/index.d.ts:18521
     expectTypeOf<ReferenceComponents>().toBeObject()
   })
   test('ReferenceDefinition', () => {
@@ -5022,7 +5022,7 @@ describe('sanity', () => {
     expectTypeOf<ReferenceDefinition>().toBeObject()
     // Source: packages/sanity/lib/_singletons.d.ts:13196
     expectTypeOf<ReferenceDefinition>().toBeObject()
-    // Source: packages/sanity/lib/index.d.ts:18803
+    // Source: packages/sanity/lib/index.d.ts:18799
     expectTypeOf<ReferenceDefinition>().toBeObject()
   })
   test('ReferenceDiff', () => {
@@ -5474,7 +5474,7 @@ describe('sanity', () => {
   test('SlugComponents', () => {
     // Source: packages/sanity/lib/_singletons.d.ts:12948
     expectTypeOf<SlugComponents>().toBeObject()
-    // Source: packages/sanity/lib/index.d.ts:18555
+    // Source: packages/sanity/lib/index.d.ts:18551
     expectTypeOf<SlugComponents>().toBeObject()
   })
   test('SlugDefinition', () => {
@@ -5482,7 +5482,7 @@ describe('sanity', () => {
     expectTypeOf<SlugDefinition>().toBeObject()
     // Source: packages/sanity/lib/_singletons.d.ts:13212
     expectTypeOf<SlugDefinition>().toBeObject()
-    // Source: packages/sanity/lib/index.d.ts:18819
+    // Source: packages/sanity/lib/index.d.ts:18815
     expectTypeOf<SlugDefinition>().toBeObject()
   })
   test('SlugifierFn', () => {
@@ -5551,13 +5551,13 @@ describe('sanity', () => {
   test('SpanComponents', () => {
     // Source: packages/sanity/lib/_singletons.d.ts:12960
     expectTypeOf<SpanComponents>().toBeObject()
-    // Source: packages/sanity/lib/index.d.ts:18567
+    // Source: packages/sanity/lib/index.d.ts:18563
     expectTypeOf<SpanComponents>().toBeObject()
   })
   test('SpanDefinition', () => {
     // Source: packages/sanity/lib/_singletons.d.ts:13220
     expectTypeOf<SpanDefinition>().toBeObject()
-    // Source: packages/sanity/lib/index.d.ts:18827
+    // Source: packages/sanity/lib/index.d.ts:18823
     expectTypeOf<SpanDefinition>().toBeObject()
   })
   test('SpanMarksObjectField', () => {
@@ -5590,7 +5590,7 @@ describe('sanity', () => {
   test('StringComponents', () => {
     // Source: packages/sanity/lib/_singletons.d.ts:12972
     expectTypeOf<StringComponents>().toBeObject()
-    // Source: packages/sanity/lib/index.d.ts:18579
+    // Source: packages/sanity/lib/index.d.ts:18575
     expectTypeOf<StringComponents>().toBeObject()
   })
   test('StringDefinition', () => {
@@ -5598,7 +5598,7 @@ describe('sanity', () => {
     expectTypeOf<StringDefinition>().toBeObject()
     // Source: packages/sanity/lib/_singletons.d.ts:13223
     expectTypeOf<StringDefinition>().toBeObject()
-    // Source: packages/sanity/lib/index.d.ts:18830
+    // Source: packages/sanity/lib/index.d.ts:18826
     expectTypeOf<StringDefinition>().toBeObject()
   })
   test('StringDiff', () => {
@@ -5751,7 +5751,7 @@ describe('sanity', () => {
   test('TextComponents', () => {
     // Source: packages/sanity/lib/_singletons.d.ts:12984
     expectTypeOf<TextComponents>().toBeObject()
-    // Source: packages/sanity/lib/index.d.ts:18591
+    // Source: packages/sanity/lib/index.d.ts:18587
     expectTypeOf<TextComponents>().toBeObject()
   })
   test('TextDefinition', () => {
@@ -5759,7 +5759,7 @@ describe('sanity', () => {
     expectTypeOf<TextDefinition>().toBeObject()
     // Source: packages/sanity/lib/_singletons.d.ts:13231
     expectTypeOf<TextDefinition>().toBeObject()
-    // Source: packages/sanity/lib/index.d.ts:18838
+    // Source: packages/sanity/lib/index.d.ts:18834
     expectTypeOf<TextDefinition>().toBeObject()
   })
   test('TextInput', () => {
@@ -5972,7 +5972,7 @@ describe('sanity', () => {
   test('UrlComponents', () => {
     // Source: packages/sanity/lib/_singletons.d.ts:12996
     expectTypeOf<UrlComponents>().toBeObject()
-    // Source: packages/sanity/lib/index.d.ts:18603
+    // Source: packages/sanity/lib/index.d.ts:18599
     expectTypeOf<UrlComponents>().toBeObject()
   })
   test('UrlDefinition', () => {
@@ -5980,7 +5980,7 @@ describe('sanity', () => {
     expectTypeOf<UrlDefinition>().toBeObject()
     // Source: packages/sanity/lib/_singletons.d.ts:13239
     expectTypeOf<UrlDefinition>().toBeObject()
-    // Source: packages/sanity/lib/index.d.ts:18846
+    // Source: packages/sanity/lib/index.d.ts:18842
     expectTypeOf<UrlDefinition>().toBeObject()
   })
   test('UrlInput', () => {
@@ -6020,9 +6020,9 @@ describe('sanity', () => {
     expectTypeOf<typeof useChangeIndicatorsReporter>().not.toBeNever()
   })
   test('useClient', () => {
-    // Source: packages/sanity/lib/index.d.ts:16305
+    // Source: packages/sanity/lib/index.d.ts:16301
     expectTypeOf<typeof useClient>().toBeFunction()
-    // Source: packages/sanity/lib/index.d.ts:16326
+    // Source: packages/sanity/lib/index.d.ts:16322
     expectTypeOf<typeof useClient>().toBeFunction()
   })
   test('useColorScheme', () => {
@@ -6221,9 +6221,9 @@ describe('sanity', () => {
     expectTypeOf<UseListFormatOptions>().toBeObject()
   })
   test('useLoadable', () => {
-    // Source: packages/sanity/lib/index.d.ts:16943
+    // Source: packages/sanity/lib/index.d.ts:16939
     expectTypeOf<typeof useLoadable>().toBeFunction()
-    // Source: packages/sanity/lib/index.d.ts:16946
+    // Source: packages/sanity/lib/index.d.ts:16942
     expectTypeOf<typeof useLoadable>().toBeFunction()
   })
   test('useLocale', () => {
@@ -6501,7 +6501,7 @@ describe('sanity', () => {
     expectTypeOf<ValidationContext>().toBeObject()
     // Source: packages/sanity/lib/_singletons.d.ts:12752
     expectTypeOf<ValidationContext>().toBeObject()
-    // Source: packages/sanity/lib/index.d.ts:18359
+    // Source: packages/sanity/lib/index.d.ts:18355
     expectTypeOf<ValidationContext>().toBeObject()
   })
   test('ValidationError', () => {
