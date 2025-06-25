@@ -1,0 +1,49 @@
+name: Run `pnpm generate:dts-exports` if needed
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref_name }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  run:
+    name: Should we run `pnpm generate:dts-exports`? 🤔
+    runs-on: ubuntu-latest
+    env:
+      TURBO_TOKEN: ${{ secrets.TURBO_TOKEN }}
+      TURBO_TEAM: ${{ vars.TURBO_TEAM }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@v4
+        with:
+          cache: pnpm
+          node-version: lts/*
+
+      - name: Install project dependencies
+        run: pnpm install
+
+      - name: Generate DTS exports
+        run: pnpm generate:dts-exports
+
+      - uses: actions/create-github-app-token@v2
+        id: app-token
+        with:
+          app-id: ${{ secrets.ECOSPARK_APP_ID }}
+          private-key: ${{ secrets.ECOSPARK_APP_PRIVATE_KEY }}
+      - uses: peter-evans/create-pull-request@271a8d0340265f705b14b6d32b9829c1cb33d45e # v7
+        with:
+          body: "I ran `pnpm generate:dts-exports` 🧑‍💻"
+          branch: actions/generate-dts-tests-if-needed
+          commit-message: "chore(tests): generate dts tests 🤖 ✨"
+          labels: 🤖 bot
+          sign-commits: true
+          title: "chore(tests): generate dts tests 🤖 ✨"
+          token: ${{ steps.app-token.outputs.token }}
