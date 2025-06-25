@@ -28,10 +28,11 @@ const addTokenCommand: CliCommandDefinition = {
       const token = await addToken(label, {role, unattended: Boolean(yes || y)}, context)
       output.print(`Token created successfully!`)
       output.print(`Label: ${token.label}`)
+      output.print(`ID: ${token.id}`)
       output.print(`Role: ${token.roles.map((r) => r.title).join(', ')}`)
       output.print(`Token: ${token.key}`)
       output.print('')
-      output.print('⚠️  WARNING: This token will only be shown once. Store it securely!')
+      output.print('Copy the token above – this is your only chance to do so!')
     } catch (err) {
       throw new Error(`Token creation failed:\n${err.message}`)
     }
