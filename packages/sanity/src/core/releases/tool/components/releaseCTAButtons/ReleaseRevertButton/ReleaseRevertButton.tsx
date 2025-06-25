@@ -282,6 +282,7 @@ export const ReleaseRevertButton = ({
          * @todo Permissions to create each schema type within the release (not implemented)
          */
         disabled={isPendingGuardResponse || !hasCreatePermission || disabled || mode === 'disabled'}
+        loading={isPendingGuardResponse}
         data-testid="revert-button"
       />
       {revertReleaseStatus !== 'idle' && (
