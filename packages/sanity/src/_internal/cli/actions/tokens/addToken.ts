@@ -49,7 +49,7 @@ async function promptForLabel(prompt: CliPrompter, unattended?: boolean): Promis
 
 async function promptForRole(context: CliCommandContext, unattended?: boolean): Promise<string> {
   if (unattended || !isInteractive) {
-    return 'editor' // Default role for unattended mode
+    return 'viewer' // Default role for unattended mode
   }
 
   const {apiClient, prompt} = context
@@ -75,7 +75,7 @@ async function promptForRole(context: CliCommandContext, unattended?: boolean): 
     type: 'list',
     message: 'Select role for the token:',
     choices,
-    default: 'editor',
+    default: 'viewer',
   })
 }
 

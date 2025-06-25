@@ -9,7 +9,7 @@ Examples
   sanity tokens add "CI Token" --role=editor --yes
 
 Options
-  --role <role> Role to assign to the token. Default: editor
+  --role <role> Role to assign to the token. Default: viewer
   -y, --yes     Skip prompts and use defaults (unattended mode)
 `
 
