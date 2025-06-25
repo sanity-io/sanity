@@ -28,7 +28,7 @@ jobs:
           node-version: lts/*
 
       - name: Add report comment placeholder
-        uses: thollander/actions-comment-pull-request@fabd468d3a1a0b97feee5f6b9e499eab0dd903f6 # v2
+        uses: thollander/actions-comment-pull-request@24bffb9b452ba05a4f3f77933840a6a841d1b32b # v3
         if: ${{ github.event_name == 'pull_request' }}
         with:
           comment_tag: "docs-report"
@@ -64,7 +64,7 @@ jobs:
         run: pnpm docs:report
 
       - name: PR comment with report
-        uses: thollander/actions-comment-pull-request@fabd468d3a1a0b97feee5f6b9e499eab0dd903f6 # v2
+        uses: thollander/actions-comment-pull-request@24bffb9b452ba05a4f3f77933840a6a841d1b32b # v3
         if: ${{ github.event_name == 'pull_request' }}
         with:
           comment_tag: "docs-report"
