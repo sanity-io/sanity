@@ -145,7 +145,7 @@ describe('CLI: `sanity projects` (unit tests)', () => {
         projectId: 'test-project-123',
         displayName: 'Test Project',
         organization: {id: 'org-456', name: 'Dataset Org'},
-        dataset: {name: 'production'},
+        dataset: {name: 'production', visibility: 'public'},
       })
 
       // Verify dataset creation API call
@@ -195,7 +195,7 @@ describe('CLI: `sanity projects` (unit tests)', () => {
         projectId: 'test-project-456',
         displayName: 'Custom Project',
         organization: {id: 'org-789', name: 'Custom Org'},
-        dataset: {name: 'staging'},
+        dataset: {name: 'staging', visibility: 'private'},
       })
 
       // Verify correct dataset creation call with private visibility

@@ -22,6 +22,7 @@ export interface CreateProjectActionResult {
   }
   dataset?: {
     name: string
+    visibility: 'public' | 'private'
   }
 }
 
@@ -96,7 +97,7 @@ export async function createProjectAction(
         body: {aclMode},
       })
 
-      result.dataset = {name: datasetName}
+      result.dataset = {name: datasetName, visibility: aclMode}
     } catch (err) {
       // Dataset creation is optional, don't fail the whole operation
       context.output.warn(`Project created but dataset creation failed: ${err.message}`)

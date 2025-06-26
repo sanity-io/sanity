@@ -79,7 +79,7 @@ const createProjectCommand: CliCommandDefinition = {
     context.output.print(`Organization: ${result.organization?.name || 'Personal'}`)
 
     if (result.dataset) {
-      context.output.print(`Dataset: ${result.dataset.name}`)
+      context.output.print(`Dataset: ${result.dataset.name} (${result.dataset.visibility})`)
     }
 
     const {apiHost} = context
