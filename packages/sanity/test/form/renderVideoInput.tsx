@@ -14,7 +14,7 @@ import {renderObjectInput} from './renderObjectInput'
 import {type TestRenderProps} from './types'
 
 // The video input filters asset sources and only allows the media library source
-const STUB_ASSET_SOURCES: AssetSource[] = [{uploader: {}, name: sourceName} as AssetSource] // @todo
+const STUB_ASSET_SOURCES: AssetSource[] = [{Uploader: {}, name: sourceName} as AssetSource] // @todo
 
 const STUB_OBSERVE_ASSET = () => EMPTY
 

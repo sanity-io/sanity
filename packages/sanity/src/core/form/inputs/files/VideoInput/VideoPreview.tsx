@@ -33,7 +33,7 @@ export function VideoPreview(props: VideoAssetProps) {
 
   const accept = get(schemaType, 'options.accept', '')
 
-  const assetSourcesWithUpload = assetSources.filter((s) => Boolean(s.uploader))
+  const assetSourcesWithUpload = assetSources.filter((s) => Boolean(s.Uploader))
 
   const handleSelectVideoMenuItemClicked = useCallback(
     (event: React.MouseEvent) => {
