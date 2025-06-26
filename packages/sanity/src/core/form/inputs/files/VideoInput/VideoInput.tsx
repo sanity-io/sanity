@@ -1,9 +1,8 @@
-/* eslint-disable import/no-unresolved,react/jsx-handler-names, react/display-name, react/no-this-in-sfc */
-
 import {type SanityClient} from '@sanity/client'
 import {
   type AssetFromSource,
   type AssetSource,
+  type AssetSourceUploader,
   type UploadState,
   type Video as BaseVideo,
   type VideoAsset,
@@ -86,9 +85,9 @@ export function BaseVideoInput(props: BaseVideoInputProps) {
 
   const browseButtonElementRef = useRef<HTMLButtonElement>(null)
 
-  const uploaderRef = useRef<{
+  const assetSourceUploaderRef = useRef<{
     unsubscribe: () => void
-    uploader: AssetSource['uploader']
+    uploader: AssetSourceUploader
   } | null>(null)
 
   const setBrowseButtonElement = useCallback(
@@ -145,7 +144,6 @@ export function BaseVideoInput(props: BaseVideoInputProps) {
             }
           },
           error: (err) => {
-            // eslint-disable-next-line no-console
             console.error(err)
             push({
               status: 'error',
@@ -180,22 +178,23 @@ export function BaseVideoInput(props: BaseVideoInputProps) {
         uploadWith: uploadExternalVideoToDataset,
       })
       setSelectedAssetSource(null)
+      setIsUploading(false) // This function is also called on after a successful upload completion though an asset source, so reset that state here.
     },
     [onChange, schemaType, uploadExternalVideoToDataset],
   )
 
-  const handleSelectVideosToUpload = useCallback(
-    (assetSource: AssetSource, videos: File[]) => {
-      if (videos.length === 0) {
+  const handleSelectFilesToUpload = useCallback(
+    (assetSource: AssetSource, files: File[]) => {
+      if (files.length === 0) {
         return
       }
       setSelectedAssetSource(assetSource)
-      const uploader = assetSource.uploader
-      if (uploader) {
+      if (assetSource.Uploader) {
+        const uploader = new assetSource.Uploader()
         // Unsubscribe from the previous uploader
-        uploaderRef.current?.unsubscribe()
+        assetSourceUploaderRef.current?.unsubscribe()
         try {
-          uploaderRef.current = {
+          assetSourceUploaderRef.current = {
             unsubscribe: uploader.subscribe((event) => {
               switch (event.type) {
                 case 'progress':
@@ -224,16 +223,17 @@ export function BaseVideoInput(props: BaseVideoInputProps) {
                 default:
               }
             }),
-            uploader: assetSource.uploader,
+            uploader,
           }
           setIsUploading(true)
-          onChange(PatchEvent.from(createInitialUploadPatches(videos[0])))
-          uploader.upload(videos, {schemaType, onChange: onChange as (patch: unknown) => void})
+          onChange(PatchEvent.from(createInitialUploadPatches(files[0])))
+          uploader.upload(files, {schemaType, onChange: onChange as (patch: unknown) => void})
         } catch (err) {
           onChange(PatchEvent.from([unset([UPLOAD_STATUS_KEY])]))
           setIsUploading(false)
+          assetSourceUploaderRef.current?.unsubscribe()
           setSelectedAssetSource(null)
-          uploaderRef.current = null
+          assetSourceUploaderRef.current = null
           push({
             status: 'error',
             description: t('asset-sources.common.uploader.upload-failed.description'),
@@ -249,19 +249,13 @@ export function BaseVideoInput(props: BaseVideoInputProps) {
   // Abort asset source uploads and unsubscribe from the uploader is the component unmounts
   useEffect(() => {
     return () => {
-      if (uploaderRef.current?.uploader) {
-        uploaderRef.current?.uploader.abort()
-      }
-      if (uploaderRef.current?.unsubscribe) {
-        uploaderRef.current?.unsubscribe()
-      }
+      assetSourceUploaderRef.current?.uploader?.abort()
+      assetSourceUploaderRef.current?.unsubscribe()
     }
   }, [])
 
   const handleCancelUpload = useCallback(() => {
-    if (uploaderRef.current?.uploader) {
-      uploaderRef.current?.uploader.abort()
-    }
+    assetSourceUploaderRef.current?.uploader?.abort()
   }, [])
 
   const renderAsset = useCallback(() => {
@@ -277,7 +271,7 @@ export function BaseVideoInput(props: BaseVideoInputProps) {
         onCancelUpload={handleCancelUpload}
         onClearUploadStatus={handleClearUploadStatus}
         onSelectAssets={handleSelectAssets}
-        onSelectFiles={handleSelectVideosToUpload}
+        onSelectFiles={handleSelectFilesToUpload}
         onStale={handleStaleUpload}
         selectedAssetSource={selectedAssetSource}
         setBrowseButtonElement={setBrowseButtonElement}
@@ -292,7 +286,7 @@ export function BaseVideoInput(props: BaseVideoInputProps) {
     handleClearField,
     handleClearUploadStatus,
     handleSelectAssets,
-    handleSelectVideosToUpload,
+    handleSelectFilesToUpload,
     handleStaleUpload,
     hoveringFiles,
     isBrowseMenuOpen,
@@ -300,6 +294,7 @@ export function BaseVideoInput(props: BaseVideoInputProps) {
     isUploading,
     props,
     selectedAssetSource,
+    browseButtonElementRef,
     setBrowseButtonElement,
   ])
 
@@ -354,13 +349,14 @@ export function BaseVideoInput(props: BaseVideoInputProps) {
           onClearUploadStatus={handleClearUploadStatus}
           onStale={handleStaleUpload}
           onSelectAssets={handleSelectAssets}
-          onSelectFiles={handleSelectVideosToUpload}
+          onSelectFiles={handleSelectFilesToUpload}
           selectedAssetSource={selectedAssetSource}
           setBrowseButtonElement={setBrowseButtonElement}
           setHoveringFiles={setHoveringFiles}
           setIsBrowseMenuOpen={setIsBrowseMenuOpen}
           setIsUploading={setIsUploading}
           setSelectedAssetSource={setSelectedAssetSource}
+          uploader={assetSourceUploaderRef.current?.uploader}
         />
       )}
     </>

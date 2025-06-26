@@ -56,7 +56,7 @@ export function VideoAsset(props: VideoAssetProps) {
   const [videosToUploadFromPaste, setVideosToUploadFromPaste] = useState<File[]>([])
   const elementRef = elementProps.ref?.current
 
-  const hasMultipleUploadSources = assetSources.filter((s) => Boolean(s.uploader)).length > 1
+  const hasMultipleUploadSources = assetSources.filter((s) => Boolean(s.Uploader)).length > 1
 
   const handleFileTargetFocus = useCallback(
     (event: React.FocusEvent) => {
@@ -160,7 +160,7 @@ export function VideoAsset(props: VideoAssetProps) {
     [videosToUploadFromPaste, onSelectFiles, setAssetSourceDestination],
   )
 
-  const handleOnVideos = useCallback(
+  const handleOnFiles = useCallback(
     (videos: globalThis.File[]) => {
       const acceptedFiles = videos.filter((file) => resolveUploader?.(schemaType, file))
       const rejectedFilesCount = videos.length - acceptedFiles.length
@@ -182,7 +182,7 @@ export function VideoAsset(props: VideoAssetProps) {
         setShowDestinationSourcePicker(true)
         setVideosToUploadFromPaste(videos)
       } else {
-        const firstAssetSourceWithUpload = assetSources.filter((s) => s.uploader)[0]
+        const firstAssetSourceWithUpload = assetSources.filter((s) => s.Uploader)[0]
         if (firstAssetSourceWithUpload) {
           onSelectFiles(firstAssetSourceWithUpload, videos)
         }
@@ -231,7 +231,7 @@ export function VideoAsset(props: VideoAssetProps) {
             onFocus={handleFileTargetFocus}
             tabIndex={0}
             disabled={readOnly || directUploads === false}
-            onFiles={handleOnVideos}
+            onFiles={handleOnFiles}
             onFilesOver={handleVideosOver}
             onFilesOut={handleVideosOut}
             tone={getVideoTone()}
