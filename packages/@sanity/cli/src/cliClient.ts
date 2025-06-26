@@ -13,7 +13,17 @@ export interface CliClientOptions {
   apiVersion?: string
 }
 
-export function getCliClient(options: CliClientOptions = {}): SanityClient {
+interface GetCliClient {
+  (options?: CliClientOptions): SanityClient
+  /**
+   * @internal
+   * @deprecated This is only for INTERNAL use, and should not be relied upon outside of official Sanity modules
+   * @returns A token to use when constructing a client without a `token` explicitly defined, or undefined
+   */
+  __internal__getToken: () => string | undefined
+}
+
+function getCliClientImpl(options: CliClientOptions = {}): SanityClient {
   if (typeof process !== 'object') {
     throw new Error('getCliClient() should only be called from node.js scripts')
   }
@@ -53,10 +63,8 @@ export function getCliClient(options: CliClientOptions = {}): SanityClient {
 }
 
 /* eslint-disable camelcase */
-/**
- * @internal
- * @deprecated This is only for INTERNAL use, and should not be relied upon outside of official Sanity modules
- * @returns A token to use when constructing a client without a `token` explicitly defined, or undefined
- */
-getCliClient.__internal__getToken = (): string | undefined => undefined
+getCliClientImpl.__internal__getToken = (): string | undefined => undefined
 /* eslint-enable camelcase */
+
+/** @internal */
+export const getCliClient: GetCliClient = getCliClientImpl
