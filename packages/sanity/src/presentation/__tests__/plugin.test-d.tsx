@@ -2,7 +2,7 @@
 import {type SanityClient} from 'sanity'
 import {assertType, describe, expectTypeOf, test} from 'vitest'
 
-import {presentationTool} from '../plugin'
+import {defineLocations, presentationTool} from '../plugin'
 import {type PresentationPluginOptions, type PreviewUrlOption} from '../types'
 
 describe('presentationTool()', () => {
@@ -164,6 +164,32 @@ describe('presentationTool()', () => {
             enable: '/api/draft-mode/enable',
           },
         })
+      })
+    })
+  })
+
+  describe('options.resolve', () => {
+    test('catches defineLocations footgun', () => {
+      const product = defineLocations({
+        select: {title: 'title', slug: 'slug.current'},
+        resolve: (doc) => ({
+          locations: [
+            {title: doc?.title, href: `/products/${doc?.slug}`},
+            {title: 'Products Index', href: `/products`},
+          ],
+        }),
+      })
+      const locations = defineLocations({
+        // Map document types to frontend routes
+        product: {
+          select: {title: 'title', slug: 'slug.current'},
+          resolve: (doc) => ({
+            locations: [
+              {title: doc.title, href: `/products/${doc.slug}`},
+              {title: 'Products Index', href: `/products`},
+            ],
+          }),
+        },
       })
     })
   })
