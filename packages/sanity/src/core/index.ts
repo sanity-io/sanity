@@ -57,6 +57,12 @@ export {
   type VersionInfoDocumentStub,
   VersionInlineBadge,
 } from './releases'
+export {
+  EditScheduleForm,
+  ScheduleAction,
+  ScheduledBadge,
+  SchedulesContext,
+} from './scheduled-publishing'
 export {createSchema, getSchemaTypeTitle} from './schema'
 export type {SearchFactoryOptions, SearchOptions, SearchSort, SearchTerms} from './search'
 export {createSearch, getSearchableTypes, isPerspectiveRaw} from './search'

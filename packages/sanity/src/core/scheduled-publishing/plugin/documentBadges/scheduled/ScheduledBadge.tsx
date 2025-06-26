@@ -9,6 +9,7 @@ import usePollSchedules from '../../../hooks/usePollSchedules'
 const debug = debugWithName('ScheduledBadge')
 
 /**
+ * @deprecated we will be dropping support for scheduled publishing on a future major version
  * @beta
  */
 export const ScheduledBadge: DocumentBadgeComponent = (props) => {

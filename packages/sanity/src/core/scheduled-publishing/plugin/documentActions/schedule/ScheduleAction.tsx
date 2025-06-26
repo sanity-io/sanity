@@ -43,6 +43,7 @@ const debug = debugWithName('ScheduleAction')
  */
 
 /**
+ * @deprecated we will be dropping support for scheduled publishing on a future major version
  * @beta
  */
 export const ScheduleAction: DocumentActionComponent = (props: DocumentActionProps) => {
