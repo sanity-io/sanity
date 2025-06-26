@@ -9,9 +9,8 @@ import {Box, Card, Flex, Text, useTheme, useToast} from '@sanity/ui'
 import {type ReactNode, useCallback, useMemo, useState} from 'react'
 import {encodeJsonParams} from 'sanity/router'
 
-// eslint-disable-next-line boundaries/element-types
-import {useDocumentPane} from '../../../../../structure/panes/document/useDocumentPane'
 import {Button} from '../../../../../ui-components'
+import {useFormValue} from '../../../../form'
 import {useClient} from '../../../../hooks'
 import {useSchema} from '../../../../hooks/useSchema'
 import {useTranslation} from '../../../../i18n'
@@ -73,7 +72,7 @@ export function SelectAssetsDialog(props: SelectAssetsDialogProps): ReactNode {
 
   const schema = useSchema()
 
-  const {value: document} = useDocumentPane()
+  const document = useFormValue([])
 
   const validateSelection = useCallback(
     async (assetSelectionItem: AssetSelectionItem) => {
