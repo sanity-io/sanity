@@ -92,8 +92,7 @@
       "outputs": [],
       "dependsOn": [
         "^build"
-      ],
-      "outputLogs": "errors-only"
+      ]
     },
     "transit": {
       "dependsOn": ["^transit"]

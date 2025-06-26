@@ -7,12 +7,12 @@ import getErrorMessage from '../utils/getErrorMessage'
 import {useScheduleApi} from './useScheduleApi'
 
 // Custom events
-export enum ScheduleEvents {
-  create = 'scheduleCreate',
-  delete = 'scheduleDelete',
-  deleteMultiple = 'scheduleDeleteMultiple',
-  publish = 'schedulePublish',
-  update = 'scheduleUpdate',
+export const ScheduleEvents = {
+  create: 'scheduleCreate' as const,
+  delete: 'scheduleDelete' as const,
+  deleteMultiple: 'scheduleDeleteMultiple' as const,
+  publish: 'schedulePublish' as const,
+  update: 'scheduleUpdate' as const,
 }
 
 export type ScheduleCreateEvent = {
@@ -56,7 +56,7 @@ function pluralize(word: string, count: number) {
 // Proxy that generates type safe CustomEvents.
 // We infer our CustomEvent's `detail` using `UnpackCustomEventPayload`
 export const scheduleCustomEvent = <
-  T extends ScheduleEvents,
+  T extends (typeof ScheduleEvents)[keyof typeof ScheduleEvents],
   D extends UnpackCustomEventPayload<WindowEventMap[T]>,
 >(
   name: T,

@@ -4,6 +4,7 @@
   "compilerOptions": {
     "rootDir": ".",
     "outDir": "./lib",
+    "declaration": true,
     "paths": {
       "@sanity/types": ["./src/index.ts"]
     }

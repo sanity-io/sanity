@@ -23,7 +23,7 @@
     "useUnknownInCatchVariables": false,
     "isolatedModules": true,
     "forceConsistentCasingInFileNames": true,
-    "allowJs": true,
+    "allowJs": false,
     "checkJs": false,
 
     // Strict type-checking

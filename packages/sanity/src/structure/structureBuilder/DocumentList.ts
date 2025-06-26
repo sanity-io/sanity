@@ -113,15 +113,20 @@ export class DocumentListBuilder extends GenericListBuilder<
 > {
   /** Document list options. See {@link PartialDocumentList} */
   protected spec: PartialDocumentList
+  /**
+   * Structure context. See {@link StructureContext}
+   */
+  protected _context: StructureContext
 
   constructor(
     /**
      * Structure context. See {@link StructureContext}
      */
-    protected _context: StructureContext,
+    _context: StructureContext,
     spec?: DocumentListInput,
   ) {
     super()
+    this._context = _context
     this.spec = spec || {}
     this.initialValueTemplatesSpecified = Boolean(spec?.initialValueTemplates)
   }

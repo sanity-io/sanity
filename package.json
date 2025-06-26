@@ -19,7 +19,7 @@
     "check:lint": "turbo run lint --continue -- --quiet",
     "check:oxlint": "oxlint",
     "check:test": "pnpm test -- --silent",
-    "check:types": "tsc && turbo run check:types --filter='./packages/*' --filter='./packages/@sanity/*'",
+    "check:types": "tsc && turbo run check:types --filter='./packages/*' --filter='./packages/@sanity/*' --continue",
     "chore:format:fix": "prettier --cache --write .",
     "chore:lint:changed": "turbo run lint --filter=[HEAD^1] -- --quiet --fix",
     "chore:lint:fix": "turbo run lint --ui tui -- --quiet --fix",

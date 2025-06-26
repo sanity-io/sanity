@@ -147,6 +147,13 @@ export class QrCode {
   // Indicates function modules that are not subjected to masking. Discarded when constructor finishes.
   private readonly isFunction: Array<Array<boolean>> = []
 
+  // The version number of this QR Code, which is between 1 and 40 (inclusive).
+  // This determines the size of this barcode.
+  public readonly version: int
+
+  // The error correction level used in this QR Code.
+  public readonly errorCorrectionLevel: Ecc
+
   /*-- Constructor (low level) and fields --*/
 
   // Creates a new QR Code with the given version number,
@@ -156,15 +163,18 @@ export class QrCode {
   public constructor(
     // The version number of this QR Code, which is between 1 and 40 (inclusive).
     // This determines the size of this barcode.
-    public readonly version: int,
+    version: int,
 
     // The error correction level used in this QR Code.
-    public readonly errorCorrectionLevel: Ecc,
+    errorCorrectionLevel: Ecc,
 
     dataCodewords: Readonly<Array<byte>>,
 
     msk: int,
   ) {
+    this.version = version
+    this.errorCorrectionLevel = errorCorrectionLevel
+
     // Check scalar arguments
     if (version < QrCode.MIN_VERSION || version > QrCode.MAX_VERSION)
       throw new RangeError('Version value out of range')
@@ -823,6 +833,15 @@ export class QrSegment {
     return QrSegment.ALPHANUMERIC_REGEX.test(text)
   }
 
+  // The mode indicator of this segment.
+  public readonly mode: Mode
+  // The length of this segment's unencoded data. Measured in characters for
+  // numeric/alphanumeric/kanji mode, bytes for byte mode, and 0 for ECI mode.
+  // Always zero or positive. Not the same as the data's bit length.
+  public readonly numChars: int
+  // The data bits of this segment. Accessed through getData().
+  private readonly bitData: Array<bit>
+
   /*-- Constructor (low level) and fields --*/
 
   // Creates a new QR Code segment with the given attributes and data.
@@ -830,16 +849,19 @@ export class QrSegment {
   // but the constraint isn't checked. The given bit buffer is cloned and stored.
   public constructor(
     // The mode indicator of this segment.
-    public readonly mode: Mode,
+    mode: Mode,
 
     // The length of this segment's unencoded data. Measured in characters for
     // numeric/alphanumeric/kanji mode, bytes for byte mode, and 0 for ECI mode.
     // Always zero or positive. Not the same as the data's bit length.
-    public readonly numChars: int,
+    numChars: int,
 
     // The data bits of this segment. Accessed through getData().
-    private readonly bitData: Array<bit>,
+    bitData: Array<bit>,
   ) {
+    this.mode = mode
+    this.numChars = numChars
+
     if (numChars < 0) throw new RangeError('Invalid argument')
     this.bitData = bitData.slice() // Make defensive copy
   }
@@ -902,14 +924,22 @@ export class Ecc {
   public static readonly QUARTILE = new Ecc(2, 3) // The QR Code can tolerate about 25% erroneous codewords
   public static readonly HIGH = new Ecc(3, 2) // The QR Code can tolerate about 30% erroneous codewords
 
+  // In the range 0 to 3 (unsigned 2-bit integer).
+  public readonly ordinal: int
+  // (Package-private) In the range 0 to 3 (unsigned 2-bit integer).
+  public readonly formatBits: int
+
   /*-- Constructor and fields --*/
 
   private constructor(
     // In the range 0 to 3 (unsigned 2-bit integer).
-    public readonly ordinal: int,
+    ordinal: int,
     // (Package-private) In the range 0 to 3 (unsigned 2-bit integer).
-    public readonly formatBits: int,
-  ) {}
+    formatBits: int,
+  ) {
+    this.ordinal = ordinal
+    this.formatBits = formatBits
+  }
 }
 
 /*
@@ -924,14 +954,22 @@ export class Mode {
   public static readonly KANJI = new Mode(0x8, [8, 10, 12])
   public static readonly ECI = new Mode(0x7, [0, 0, 0])
 
+  // The mode indicator bits, which is a uint4 value (range 0 to 15).
+  public readonly modeBits: int
+  // Number of character count bits for three different version ranges.
+  private readonly numBitsCharCount: [int, int, int]
+
   /*-- Constructor and fields --*/
 
   private constructor(
     // The mode indicator bits, which is a uint4 value (range 0 to 15).
-    public readonly modeBits: int,
+    modeBits: int,
     // Number of character count bits for three different version ranges.
-    private readonly numBitsCharCount: [int, int, int],
-  ) {}
+    numBitsCharCount: [int, int, int],
+  ) {
+    this.modeBits = modeBits
+    this.numBitsCharCount = numBitsCharCount
+  }
 
   /*-- Method --*/
 

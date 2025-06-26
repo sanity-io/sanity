@@ -86,14 +86,19 @@ export interface PartialDocumentNode {
 export class DocumentBuilder implements Serializable<DocumentNode> {
   /** Component builder option object See {@link PartialDocumentNode} */
   protected spec: PartialDocumentNode
+  /**
+   * Structure context. See {@link StructureContext}
+   */
+  protected _context: StructureContext
 
   constructor(
     /**
      * Structure context. See {@link StructureContext}
      */
-    protected _context: StructureContext,
+    _context: StructureContext,
     spec?: PartialDocumentNode,
   ) {
+    this._context = _context
     this.spec = spec ? spec : {}
   }
 

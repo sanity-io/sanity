@@ -1,7 +1,23 @@
 const toString = Object.prototype.toString
 // Copied from https://github.com/ForbesLindesay/type-of, but inlined to have fine grained control
 
-export function resolveJSType(val: unknown) {
+export function resolveJSType(
+  val: unknown,
+):
+  | 'string'
+  | 'number'
+  | 'bigint'
+  | 'boolean'
+  | 'symbol'
+  | 'undefined'
+  | 'object'
+  | 'function'
+  | 'date'
+  | 'regexp'
+  | 'arguments'
+  | 'array'
+  | 'null'
+  | 'element' {
   switch (toString.call(val)) {
     case '[object Function]':
       return 'function'

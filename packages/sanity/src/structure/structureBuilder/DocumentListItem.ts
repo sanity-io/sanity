@@ -60,15 +60,20 @@ const createDefaultChildResolver =
 export class DocumentListItemBuilder extends ListItemBuilder {
   /** Document list options. See {@link PartialDocumentListItem} */
   protected spec: PartialDocumentListItem
+  /**
+   * Structure context. See {@link StructureContext}
+   */
+  protected _context: StructureContext
 
   constructor(
     /**
      * Structure context. See {@link StructureContext}
      */
-    protected _context: StructureContext,
+    _context: StructureContext,
     spec?: DocumentListItemInput,
   ) {
     super(_context, spec)
+    this._context = _context
     this.spec = spec ? spec : {}
   }
 

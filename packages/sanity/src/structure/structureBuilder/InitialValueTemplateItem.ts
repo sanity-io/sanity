@@ -15,14 +15,19 @@ import {type StructureContext} from './types'
 export class InitialValueTemplateItemBuilder implements Serializable<InitialValueTemplateItem> {
   /** Initial Value template item option object. See {@link InitialValueTemplateItem} */
   protected spec: Partial<InitialValueTemplateItem>
+  /**
+   * Structure context. See {@link StructureContext}
+   */
+  protected _context: StructureContext
 
   constructor(
     /**
      * Structure context. See {@link StructureContext}
      */
-    protected _context: StructureContext,
+    _context: StructureContext,
     spec?: Partial<InitialValueTemplateItem>,
   ) {
+    this._context = _context
     this.spec = spec ? spec : {}
   }
 

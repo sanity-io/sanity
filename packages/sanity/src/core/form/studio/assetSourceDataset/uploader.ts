@@ -21,9 +21,11 @@ export class DatasetUploader implements AssetSourceUploader {
   private subscribers = new Set<AssetSourceUploadSubscriber>()
   private client: SanityClient
   private subscriptions: Map<string, Subscription> = new Map()
+  private props: CreateDatasetAssetSourceProps
 
-  public constructor(private props: CreateDatasetAssetSourceProps) {
+  public constructor(props: CreateDatasetAssetSourceProps) {
     this.client = props.client
+    this.props = props
   }
 
   private checkAllComplete(): void {
