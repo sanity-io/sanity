@@ -5,9 +5,11 @@
     "./src/**/__fixtures__",
     "./src/**/__mocks__",
     "./src/**/__workshop__",
+    "./src/**/__test__",
     "./src/**/*.test.ts",
     "./src/**/*.test.tsx",
     "./src/**/*.test-d.ts",
-    "./src/**/*.test-d.tsx"
+    "./src/**/*.test-d.tsx",
+    "./src/**/vitest.config.mts"
   ]
 }

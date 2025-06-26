@@ -25,14 +25,17 @@ export class DocumentTypeListBuilder extends DocumentListBuilder {
   /** Document list options. See {@link PartialDocumentList} */
   protected spec: PartialDocumentList
 
+  protected _context: StructureContext
+
   constructor(
     /**
      * Structure context. See {@link StructureContext}
      */
-    protected _context: StructureContext,
+    _context: StructureContext,
     spec?: DocumentListInput,
   ) {
     super(_context)
+    this._context = _context
     this.spec = spec ? spec : {}
   }
 

@@ -40,7 +40,7 @@
   ],
   "scripts": {
     "build": "pkg-utils build --strict --check --clean",
-    "check:types": "tsc --project tsconfig.lib.json",
+    "check:types": "(cd ../../.. && tsc --project packages/@sanity/mutator/tsconfig.lib.json --erasableSyntaxOnly)",
     "clean": "rimraf lib",
     "lint": "eslint .",
     "perf": "node ./perf/run.js",
