@@ -90,7 +90,7 @@ describe('VideoInput with empty state', () => {
       render: (inputProps) => (
         <BaseVideoInput
           {...inputProps}
-          assetSources={[{name: 'source1', uploader: {}}, {name: 'source2'}] as any}
+          assetSources={[{name: 'source1', Uploader: {}}, {name: 'source2'}] as any}
         />
       ),
     })

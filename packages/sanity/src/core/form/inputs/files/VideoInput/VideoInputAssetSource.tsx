@@ -15,6 +15,7 @@ export function VideoInputAssetSource(props: VideoAssetProps) {
     setSelectedAssetSource,
     onSelectAssets,
     value,
+    uploader,
   } = props
   const assetType = 'video' as const
 
@@ -50,6 +51,7 @@ export function VideoInputAssetSource(props: VideoAssetProps) {
             schemaType={schemaType}
             selectedAssets={[videoAsset]}
             selectionType="single"
+            uploader={uploader}
           />
         )}
       </WithReferencedAsset>
@@ -67,6 +69,7 @@ export function VideoInputAssetSource(props: VideoAssetProps) {
       schemaType={schemaType}
       selectedAssets={[]}
       selectionType="single"
+      uploader={uploader}
     />
   )
 }
