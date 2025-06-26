@@ -19,7 +19,7 @@ import {
 import {css, styled} from 'styled-components'
 
 import {PaneContent, usePane, usePaneLayout, usePaneRouter} from '../../../components'
-import {isLiveEditEnabled} from '../../../components/paneItem/helpers'
+import {hasObsoleteDraft} from '../../../hasObsoleteDraft'
 import {mustChooseNewDocumentDestination} from '../../../mustChooseNewDocumentDestination'
 import {useStructureTool} from '../../../useStructureTool'
 import {DocumentInspectorPanel} from '../documentInspector'
@@ -104,12 +104,7 @@ export const DocumentPanel = function DocumentPanel(props: DocumentPanelProps) {
   const [_portalElement, setPortalElement] = useState<HTMLDivElement | null>(null)
   const [documentScrollElement, setDocumentScrollElement] = useState<HTMLDivElement | null>(null)
   const formContainerElement = useRef<HTMLDivElement | null>(null)
-
-  const {
-    document: {
-      drafts: {enabled: isDraftModelEnabled},
-    },
-  } = useWorkspace()
+  const workspace = useWorkspace()
 
   const requiredPermission = value._createdAt ? 'update' : 'create'
 
@@ -154,9 +149,6 @@ export const DocumentPanel = function DocumentPanel(props: DocumentPanelProps) {
     return false
   }, [activeView, displayed, documentId, editState?.draft, editState?.published, schemaType, value])
 
-  const isLiveEdit = isLiveEditEnabled(schemaType)
-  const draftExists = editState?.ready && editState.draft !== null
-
   // Scroll to top as `documentId` changes
   useEffect(() => {
     if (!documentScrollElement?.scrollTo) return
@@ -193,7 +185,7 @@ export const DocumentPanel = function DocumentPanel(props: DocumentPanelProps) {
 
     const isSelectedPerspectiveWriteable = isPerspectiveWriteable({
       selectedPerspective,
-      isDraftModelEnabled,
+      isDraftModelEnabled: workspace.document.drafts.enabled,
       schemaType,
     })
 
@@ -236,27 +228,35 @@ export const DocumentPanel = function DocumentPanel(props: DocumentPanelProps) {
       )
     }
 
-    if (activeView.type === 'form' && !isDraftModelEnabled && draftExists && !selectedReleaseId) {
-      return (
-        <ObsoleteDraftBanner
-          displayed={displayed}
-          documentId={documentId}
-          schemaType={schemaType}
-          i18nKey="banners.obsolete-draft.draft-model-inactive.text"
-        />
-      )
-    }
+    const displayedHasObsoleteDraft = hasObsoleteDraft({
+      editState,
+      workspace,
+      schemaType,
+    })
 
-    if (activeView.type === 'form' && isLiveEdit && draftExists && !selectedReleaseId) {
-      return (
-        <ObsoleteDraftBanner
-          displayed={displayed}
-          documentId={documentId}
-          schemaType={schemaType}
-          i18nKey="banners.live-edit-draft-banner.text"
-          isEditBlocking
-        />
-      )
+    if (activeView.type === 'form' && !selectedReleaseId && displayedHasObsoleteDraft.result) {
+      if (displayedHasObsoleteDraft.reason === 'DRAFT_MODEL_INACTIVE') {
+        return (
+          <ObsoleteDraftBanner
+            displayed={displayed}
+            documentId={documentId}
+            schemaType={schemaType}
+            i18nKey="banners.obsolete-draft.draft-model-inactive.text"
+          />
+        )
+      }
+
+      if (displayedHasObsoleteDraft.reason === 'LIVE_EDIT_ACTIVE') {
+        return (
+          <ObsoleteDraftBanner
+            displayed={displayed}
+            documentId={documentId}
+            schemaType={schemaType}
+            i18nKey="banners.live-edit-draft-banner.text"
+            isEditBlocking
+          />
+        )
+      }
     }
 
     if (activeView.type !== 'form' || isPermissionsLoading) return null
@@ -284,12 +284,9 @@ export const DocumentPanel = function DocumentPanel(props: DocumentPanelProps) {
     selectedPerspective,
     displayed,
     selectedReleaseId,
-    isDraftModelEnabled,
     editState,
     ready,
     activeView.type,
-    isLiveEdit,
-    draftExists,
     isPermissionsLoading,
     showCreateBanner,
     permissions?.granted,
@@ -297,6 +294,7 @@ export const DocumentPanel = function DocumentPanel(props: DocumentPanelProps) {
     documentId,
     value._id,
     schemaType,
+    workspace,
   ])
   const showFormView = features.resizablePanes || !showInspector
   return (
