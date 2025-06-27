@@ -1902,7 +1902,7 @@ importers:
         specifier: 19.1.0-rc.2
         version: 19.1.0-rc.2(react@18.3.1)
       react-fast-compare:
-        specifier: ^3.2.0
+        specifier: ^3.2.2
         version: 3.2.2
       react-focus-lock:
         specifier: ^2.13.6
