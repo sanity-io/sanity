@@ -8,6 +8,7 @@ import {type detectFrameworkRecord} from '@vercel/fs-detectors'
 import dotenv from 'dotenv'
 import execa, {type CommonOptions} from 'execa'
 import {deburr, noop} from 'lodash'
+import pMap from 'p-map'
 import resolveFrom from 'resolve-from'
 import semver from 'semver'
 
@@ -42,19 +43,6 @@ import {getUserConfig} from '../../util/getUserConfig'
 import {isCommandGroup} from '../../util/isCommandGroup'
 import {isInteractive} from '../../util/isInteractive'
 import {fetchJourneyConfig} from '../../util/journeyConfig'
-import {
-  createOrganization,
-  getOrganizationChoices,
-  getOrganizationId,
-  hasProjectAttachGrant,
-  type ProjectOrganization,
-  promptForOrganizationSelection,
-} from '../../util/organizationUtils'
-import {
-  createDatasetForProject,
-  promptAndCreateDataset,
-  promptForProjectName,
-} from '../../util/projectUtils'
 import {checkIsRemoteTemplate, getGitHubRepoInfo, type RepoInfo} from '../../util/remoteTemplate'
 import {login, type LoginFlags} from '../login/login'
 import {createProject} from '../project/createProject'
@@ -64,7 +52,8 @@ import {type GenerateConfigOptions} from './createStudioConfig'
 import {determineAppTemplate} from './determineAppTemplate'
 import {absolutify, validateEmptyPath} from './fsUtils'
 import {tryGitInit} from './git'
-import {promptForAclMode, promptForTypeScript} from './prompts'
+import {promptForDatasetName} from './promptForDatasetName'
+import {promptForAclMode, promptForDefaultConfig, promptForTypeScript} from './prompts'
 import {
   promptForAppendEnv,
   promptForEmbeddedStudio,
@@ -80,6 +69,7 @@ import {
   sanityStudioTemplate,
 } from './templates/nextjs'
 
+// eslint-disable-next-line no-process-env
 const isCI = Boolean(process.env.CI)
 
 /**
@@ -110,6 +100,22 @@ export interface ProjectTemplate {
   typescriptOnly?: boolean
   entry?: string
   scripts?: Record<string, string>
+}
+
+export interface ProjectOrganization {
+  id: string
+  name: string
+  slug: string
+}
+
+interface OrganizationCreateResponse {
+  id: string
+  name: string
+  createdByUserId: string
+  slug: string | null
+  defaultRoleName: string | null
+  members: unknown[]
+  features: unknown[]
 }
 
 // eslint-disable-next-line max-statements, complexity
@@ -143,7 +149,7 @@ export default async function initSanity(
     remoteTemplateInfo = await getGitHubRepoInfo(cliFlags.template, cliFlags['template-token'])
   }
 
-  const defaultConfig = cliFlags['dataset-default']
+  let defaultConfig = cliFlags['dataset-default']
   let showDefaultConfigPrompt = !defaultConfig
 
   trace.start()
@@ -896,7 +902,7 @@ export default async function initSanity(
         )
       }
 
-      if (!(await hasProjectAttachGrant(flags.organization, context))) {
+      if (!(await hasProjectAttachGrant(flags.organization))) {
         throw new Error(
           'You lack the necessary permissions to attach a project to this organization',
         )
@@ -912,11 +918,26 @@ export default async function initSanity(
           ? 'No projects found for user, prompting for name'
           : 'Using a coupon - skipping project selection',
       )
-      const projectName = await promptForProjectName(prompt)
+      const projectName = await prompt.single({
+        type: 'input',
+        message: 'Project name:',
+        default: 'My Sanity Project',
+        validate(input) {
+          if (!input || input.trim() === '') {
+            return 'Project name cannot be empty'
+          }
+
+          if (input.length > 80) {
+            return 'Project name cannot be longer than 80 characters'
+          }
+
+          return true
+        },
+      })
 
       return createProject(apiClient, {
         displayName: projectName,
-        organizationId: cliFlags.organization || (await getOrganizationId(context, user)),
+        organizationId: cliFlags.organization || (await getOrganizationId(organizations)),
         subscription: selectedPlan ? {planId: selectedPlan} : undefined,
         metadata: {coupon: intendedCoupon},
       }).then((response) => ({
@@ -952,7 +973,7 @@ export default async function initSanity(
           message: 'Your project name:',
           default: 'My Sanity Project',
         }),
-        organizationId: cliFlags.organization || (await getOrganizationId(context, user)),
+        organizationId: cliFlags.organization || (await getOrganizationId(organizations)),
         subscription: selectedPlan ? {planId: selectedPlan} : undefined,
         metadata: {coupon: intendedCoupon},
       }).then((response) => ({
@@ -1028,15 +1049,24 @@ export default async function initSanity(
       return {datasetName: opts.dataset, userAction: 'none'}
     }
 
+    const datasetInfo =
+      'Your content will be stored in a dataset that can be public or private, depending on\nwhether you want to query your content with or without authentication.\nThe default dataset configuration has a public dataset named "production".'
+
     if (datasets.length === 0) {
       debug('No datasets found for project, prompting for name')
-      const {name, visibility} = await promptAndCreateDataset({
-        context,
-        datasetName: undefined, // Let it prompt
-        datasetVisibility: opts.aclMode as 'public' | 'private' | undefined,
-        unattended: unattended || !showDefaultConfigPrompt,
-      })
-      await createDatasetForProject(context, opts.projectId, name, visibility)
+      if (showDefaultConfigPrompt) {
+        output.print(datasetInfo)
+        defaultConfig = await promptForDefaultConfig(prompt)
+      }
+      const name = defaultConfig
+        ? 'production'
+        : await promptForDatasetName(prompt, {
+            message: 'Name of your first dataset:',
+          })
+      const aclMode = await getAclMode()
+      const spinner = context.output.spinner('Creating dataset').start()
+      await client.datasets.create(name, {aclMode: aclMode as DatasetAclMode})
+      spinner.succeed()
       return {datasetName: name, userAction: 'create'}
     }
 
@@ -1054,15 +1084,27 @@ export default async function initSanity(
     })
 
     if (selected === 'new') {
+      const existingDatasetNames = datasets.map((ds) => ds.name)
       debug('User wants to create a new dataset, prompting for name')
-      const {name, visibility} = await promptAndCreateDataset({
-        context,
-        datasetName: undefined, // Let it prompt
-        datasetVisibility: opts.aclMode as 'public' | 'private' | undefined,
-        unattended: unattended || !showDefaultConfigPrompt,
-      })
-      await createDatasetForProject(context, opts.projectId, name, visibility)
-      return {datasetName: name, userAction: 'create'}
+      if (showDefaultConfigPrompt && !existingDatasetNames.includes('production')) {
+        output.print(datasetInfo)
+        defaultConfig = await promptForDefaultConfig(prompt)
+      }
+
+      const newDatasetName = defaultConfig
+        ? 'production'
+        : await promptForDatasetName(
+            prompt,
+            {
+              message: 'Dataset name:',
+            },
+            existingDatasetNames,
+          )
+      const aclMode = await getAclMode()
+      const spinner = context.output.spinner('Creating dataset').start()
+      await client.datasets.create(newDatasetName, {aclMode: aclMode as DatasetAclMode})
+      spinner.succeed()
+      return {datasetName: newDatasetName, userAction: 'create'}
     }
 
     debug(`Returning selected dataset (${selected})`)
@@ -1259,7 +1301,9 @@ export default async function initSanity(
       let orgForCreateProjectFlag = cliFlags.organization
       if (!orgForCreateProjectFlag) {
         debug('no organization specified, selecting one')
-        orgForCreateProjectFlag = await getOrganizationId(context, user)
+        const client = apiClient({requireUser: true, requireProject: false})
+        const organizations = await client.request({uri: '/organizations'})
+        orgForCreateProjectFlag = await getOrganizationId(organizations)
       }
 
       debug('creating a new project')
@@ -1293,15 +1337,48 @@ export default async function initSanity(
     return cliFlags
   }
 
+  async function createOrganization(
+    props: {name?: string} = {},
+  ): Promise<OrganizationCreateResponse> {
+    const name =
+      props.name ||
+      (await prompt.single({
+        type: 'input',
+        message: 'Organization name:',
+        default: user ? user.name : undefined,
+        validate(input) {
+          if (input.length === 0) {
+            return 'Organization name cannot be empty'
+          } else if (input.length > 100) {
+            return 'Organization name cannot be longer than 100 characters'
+          }
+          return true
+        },
+      }))
+
+    const spinner = context.output.spinner('Creating organization').start()
+    const client = apiClient({requireProject: false, requireUser: true})
+    const organization = await client.request({
+      uri: '/organizations',
+      method: 'POST',
+      body: {name},
+    })
+    spinner.succeed()
+
+    return organization
+  }
+
   async function getOrganizationIdForAppTemplate(organizations: ProjectOrganization[]) {
     // If the user is using an app template, we don't need to check for attach access
-    // Create fake grant info where all organizations have access
-    const withGrantInfo = organizations.map((organization) => ({
-      organization,
-      hasAttachGrant: true,
-    }))
-
-    const organizationChoices = getOrganizationChoices(withGrantInfo, prompt)
+    const organizationChoices = [
+      ...organizations.map((organization) => ({
+        value: organization.id,
+        name: `${organization.name} [${organization.id}]`,
+      })),
+      new prompt.Separator(),
+      {value: '-new-', name: 'Create new organization'},
+      new prompt.Separator(),
+    ]
 
     // If the user only has a single organization, we'll default to that one.
     const defaultOrganizationId =
@@ -1309,17 +1386,105 @@ export default async function initSanity(
         ? organizations[0].id
         : organizations.find((org) => org.name === user?.name)?.id
 
-    const chosenOrg = await promptForOrganizationSelection(
-      organizationChoices,
-      defaultOrganizationId,
-      context,
-    )
+    const chosenOrg = await prompt.single({
+      message: 'Select organization:',
+      type: 'list',
+      default: defaultOrganizationId || undefined,
+      choices: organizationChoices,
+    })
 
     if (chosenOrg === '-new-') {
-      return createOrganization(context, user).then((org) => org.id)
+      return createOrganization().then((org) => org.id)
     }
 
     return chosenOrg || undefined
+  }
+
+  async function getOrganizationId(organizations: ProjectOrganization[]) {
+    // If the user has no organizations, prompt them to create one with the same name as
+    // their user, but allow them to customize it if they want
+    if (organizations.length === 0) {
+      return createOrganization().then((org) => org.id)
+    }
+
+    // If the user has organizations, let them choose from them, but also allow them to
+    // create a new one in case they do not have access to any of them, or they want to
+    // create a personal/other organization.
+    debug(`User has ${organizations.length} organization(s), checking attach access`)
+    const withGrantInfo = await getOrganizationsWithAttachGrantInfo(organizations)
+    const withAttach = withGrantInfo.filter(({hasAttachGrant}) => hasAttachGrant)
+
+    debug('User has attach access to %d organizations.', withAttach.length)
+    const organizationChoices = [
+      ...withGrantInfo.map(({organization, hasAttachGrant}) => ({
+        value: organization.id,
+        name: `${organization.name} [${organization.id}]`,
+        disabled: hasAttachGrant ? false : 'Insufficient permissions',
+      })),
+      new prompt.Separator(),
+      {value: '-new-', name: 'Create new organization'},
+      new prompt.Separator(),
+    ]
+
+    // If the user only has a single organization (and they have attach access to it),
+    // we'll default to that one. Otherwise, we'll default to the organization with the
+    // same name as the user if it exists.
+    const defaultOrganizationId =
+      withAttach.length === 1
+        ? withAttach[0].organization.id
+        : organizations.find((org) => org.name === user?.name)?.id
+
+    const chosenOrg = await prompt.single({
+      message: 'Select organization:',
+      type: 'list',
+      default: defaultOrganizationId || undefined,
+      choices: organizationChoices,
+    })
+
+    if (chosenOrg === '-new-') {
+      return createOrganization().then((org) => org.id)
+    }
+
+    return chosenOrg || undefined
+  }
+
+  async function hasProjectAttachGrant(orgId: string) {
+    const requiredGrantGroup = 'sanity.organization.projects'
+    const requiredGrant = 'attach'
+
+    const client = apiClient({requireProject: false, requireUser: true})
+      .clone()
+      .config({apiVersion: 'v2021-06-07'})
+
+    try {
+      const grants = await client.request({uri: `organizations/${orgId}/grants`})
+      const group: {grants: {name: string}[]}[] = grants[requiredGrantGroup] || []
+      return group.some(
+        (resource) =>
+          resource.grants && resource.grants.some((grant) => grant.name === requiredGrant),
+      )
+    } catch (err) {
+      // If we get a 401, it means we don't have access to this organization
+      // probably because of implicit membership
+      if (err.statusCode === 401) {
+        debug('No access to organization %s (401)', orgId)
+        return false
+      }
+      // For other errors, log them but still return false
+      debug('Error checking grants for organization %s: %s', orgId, err.message)
+      return false
+    }
+  }
+
+  function getOrganizationsWithAttachGrantInfo(organizations: ProjectOrganization[]) {
+    return pMap(
+      organizations,
+      async (organization) => ({
+        hasAttachGrant: await hasProjectAttachGrant(organization.id),
+        organization,
+      }),
+      {concurrency: 3},
+    )
   }
 
   async function createOrAppendEnvVars(
