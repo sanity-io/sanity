@@ -55,13 +55,13 @@ npx sanity schema deploy
    For a new project:
 
    ```bash
-   npx sanity blueprints init --example suggest-content-changes
+   npx sanity blueprints init --example brand-voice-validator
    ```
 
    For an existing project:
 
    ```bash
-   npx sanity blueprints add function --example suggest-content-changes
+   npx sanity blueprints add function --example brand-voice-validator
    ```
 
 2. **Add configuration to your blueprint**
@@ -74,8 +74,8 @@ npx sanity schema deploy
      resources: [
        defineDocumentFunction({
          type: 'sanity.function.document',
-         name: 'suggest-content-changes',
-         src: './functions/suggest-content-changes',
+         name: 'brand-voice-validator',
+         src: './functions/brand-voice-validator',
          memory: 2,
          timeout: 60,
          event: {
@@ -100,7 +100,7 @@ npx sanity schema deploy
    And install function dependencies:
 
    ```bash
-   cd functions/suggest-content-changes
+   cd functions/brand-voice-validator
    npm install
    cd ../..
    ```
@@ -116,7 +116,7 @@ npx sanity schema deploy
 
 ## Testing the function locally
 
-You can test the suggest-content-changes function locally using the Sanity CLI before deploying it to production.
+You can test the brand-voice-validator function locally using the Sanity CLI before deploying it to production.
 
 **Important:** Document functions require that the document ID used in testing actually exists in your dataset. The examples below show how to work with real document IDs.
 
@@ -127,7 +127,7 @@ Since document functions require the document ID to exist in your dataset, creat
 ```bash
 # From the studio/ folder, create a test document
 cd studio
-npx sanity documents create ../functions/suggest-content-changes/document.json --replace
+npx sanity documents create ../functions/brand-voice-validator/document.json --replace
 ```
 
 Then test the function with the created document (from project root):
@@ -135,7 +135,7 @@ Then test the function with the created document (from project root):
 ```bash
 # Back to project root for function testing
 cd ..
-npx sanity functions test suggest-content-changes --file functions/suggest-content-changes/document.json
+npx sanity functions test brand-voice-validator --file functions/brand-voice-validator/document.json
 ```
 
 **Alternative:** Test with a real document from your dataset:
@@ -147,7 +147,7 @@ npx sanity documents query "*[_type == 'post'][0]" > ../real-post.json
 
 # Back to project root for function testing
 cd ..
-npx sanity functions test suggest-content-changes --file real-post.json
+npx sanity functions test brand-voice-validator --file real-post.json
 ```
 
 ### 2. Interactive Development Mode
@@ -192,7 +192,7 @@ cat > test-custom-data.json << EOF
 EOF
 
 # Test with the custom data file
-npx sanity functions test suggest-content-changes --file test-custom-data.json
+npx sanity functions test brand-voice-validator --file test-custom-data.json
 ```
 
 ### 4. Test with Real Document Data
@@ -206,7 +206,7 @@ npx sanity documents query "*[_type == 'post'][0]" > ../test-real-document.json
 
 # Back to project root for function testing
 cd ..
-npx sanity functions test suggest-content-changes --file test-real-document.json
+npx sanity functions test brand-voice-validator --file test-real-document.json
 ```
 
 ### 5. Enable Debugging
@@ -255,8 +255,8 @@ export default defineBlueprint({
   resources: [
     defineDocumentFunction({
       type: 'sanity.function.document',
-      name: 'suggest-content-changes',
-      src: './functions/suggest-content-changes',
+      name: 'brand-voice-validator',
+      src: './functions/brand-voice-validator',
       memory: 2,
       timeout: 60,
       event: {
@@ -282,7 +282,7 @@ This command will:
 - Package your function code
 - Upload it to Sanity's infrastructure
 - Configure the event triggers for post publications
-- Make your suggest-content-changes function live in production
+- Make your brand-voice-validator function live in production
 
 **Important:** Be sure to set `noWrite: false` in your Agent Action Function.
 

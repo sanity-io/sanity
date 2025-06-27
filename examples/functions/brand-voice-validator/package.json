@@ -1,5 +1,5 @@
 {
-  "name": "suggest-content-changes",
+  "name": "brand-voice-validator",
   "type": "module",
   "main": "index.ts",
   "dependencies": {
@@ -8,8 +8,8 @@
   },
   "blueprintResourceItem": {
     "type": "sanity.function.document",
-    "name": "suggest-content-changes",
-    "src": "./functions/suggest-content-changes",
+    "name": "brand-voice-validator",
+    "src": "./functions/brand-voice-validator",
     "memory": 2,
     "timeout": 60,
     "event": {
