@@ -59,7 +59,7 @@ vi.mock('../src/actions/project/createProject', () => ({
 
 const mockCreateProject = vi.mocked(createProject)
 
-describe('CLI: `sanity projects` (unit tests)', () => {
+describe('CLI: `sanity projects`', () => {
   describe('createProjectAction', () => {
     beforeEach(() => {
       vi.clearAllMocks()

@@ -49,6 +49,7 @@ export async function promptAndCreateDataset(
 
   let finalDatasetName: string
   let finalVisibility: 'public' | 'private'
+  let useDefaultConfig = false
 
   // Determine dataset name - exactly like init command
   if (datasetName) {
@@ -57,10 +58,11 @@ export async function promptAndCreateDataset(
   } else if (unattended) {
     // Unattended mode - use default
     finalDatasetName = 'production'
+    useDefaultConfig = true
   } else {
     // Interactive mode - show info and prompt (exactly like init)
     output.print(DATASET_INFO_TEXT)
-    const useDefaultConfig = await promptForDefaultConfig(prompt)
+    useDefaultConfig = await promptForDefaultConfig(prompt)
 
     if (useDefaultConfig) {
       finalDatasetName = 'production'
@@ -75,11 +77,11 @@ export async function promptAndCreateDataset(
   if (datasetVisibility) {
     // Explicit visibility provided
     finalVisibility = datasetVisibility
-  } else if (unattended) {
-    // Unattended mode - use default
+  } else if (unattended || useDefaultConfig) {
+    // Unattended mode or user chose default config - use default
     finalVisibility = 'public'
   } else {
-    // Interactive mode - prompt for ACL (exactly like init)
+    // Interactive mode and user didn't choose default - prompt for ACL
     finalVisibility = (await promptForAclMode(prompt, output)) as 'public' | 'private'
   }
 
