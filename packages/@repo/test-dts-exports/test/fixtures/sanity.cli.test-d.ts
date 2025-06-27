@@ -27,8 +27,6 @@ describe('sanity/cli', () => {
     expectTypeOf<typeof defineCliConfig>().toBeFunction()
   })
   test('getCliClient', () => {
-    // This export has 2 declarations, run `TEST_DTS_EXPORTS_DIAGNOSTICS=duplicates pnpm generate:dts-exports` to see where each declaration is coming from
-    expectTypeOf<typeof getCliClient>().toBeFunction()
     expectTypeOf<typeof getCliClient>().not.toBeNever()
   })
   test('getStudioEnvironmentVariables', () => {
