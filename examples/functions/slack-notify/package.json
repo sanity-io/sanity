@@ -1,0 +1,24 @@
+{
+  "name": "slack-notify",
+  "type": "module",
+  "main": "index.ts",
+  "dependencies": {
+    "@sanity/functions": "^1.0.2",
+    "@slack/web-api": "^7.9.3"
+  },
+  "blueprintResourceItem": {
+    "type": "sanity.function.document",
+    "name": "slack-notify",
+    "src": "./functions/slack-notify",
+    "memory": 1,
+    "timeout": 10,
+    "event": {
+      "on": [
+        "publish"
+      ],
+      "filter": "_type == 'post'",
+      "projection": "_id, title, slug, _updatedAt"
+    }
+  },
+  "exampleInstructions": "Add this resource to your Blueprint config's resources array. Go to README.md for more details on how to use this function."
+}
