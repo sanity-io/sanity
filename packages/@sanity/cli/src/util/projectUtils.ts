@@ -111,23 +111,34 @@ export async function createDatasetForProject(
   }
 }
 
-// Project creation with shared metadata
+// Project creation with shared metadata and progress indicator
 export async function createProjectWithMetadata(
   apiClient: any,
   displayName: string,
   organizationId: string | undefined,
+  context: CliCommandContext,
   extraMetadata: Record<string, any> = {},
 ): Promise<{projectId: string; displayName: string}> {
-  const createOptions: CreateProjectOptions = {
-    displayName,
-    organizationId,
-    metadata: {
-      integration: 'cli',
-      ...extraMetadata,
-    },
-  }
+  const {output} = context
+  const spinner = output.spinner('Creating project').start()
 
-  return createProject(apiClient, createOptions)
+  try {
+    const createOptions: CreateProjectOptions = {
+      displayName,
+      organizationId,
+      metadata: {
+        integration: 'cli',
+        ...extraMetadata,
+      },
+    }
+
+    const result = await createProject(apiClient, createOptions)
+    spinner.succeed()
+    return result
+  } catch (error) {
+    spinner.fail()
+    throw error
+  }
 }
 
 // Organization details fetching for responses

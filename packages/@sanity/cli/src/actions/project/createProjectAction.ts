@@ -44,7 +44,7 @@ export async function createProjectAction(
   )
 
   // Create the project
-  const project = await createProjectWithMetadata(apiClient, projectName, organizationId)
+  const project = await createProjectWithMetadata(apiClient, projectName, organizationId, context)
 
   // Get organization details for response
   const organization = await getOrganizationDetails(context, organizationId)
