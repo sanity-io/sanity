@@ -19,11 +19,10 @@ export function useDatasets({
     }
     return client.observable.datasets.list().pipe(
       map((result) => {
-        const datasets = result.map((ds) => ds.name)
         if (typeof configDatasets == 'function') {
-          return configDatasets(datasets)
+          return configDatasets(result).map((d) => d.name)
         }
-        return datasets
+        return result.map((ds) => ds.name)
       }),
       catchError((err) => of(err)),
     )

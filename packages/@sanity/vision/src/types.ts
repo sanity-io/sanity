@@ -1,4 +1,4 @@
-import {type SanityClient} from '@sanity/client'
+import {type DatasetsResponse, type SanityClient} from '@sanity/client'
 import {type ComponentType} from 'react'
 
 export interface VisionProps {
@@ -7,7 +7,7 @@ export interface VisionProps {
 }
 
 export interface VisionConfig {
-  datasets?: string[] | ((datasets: string[]) => string[])
+  datasets?: string[] | ((datasets: DatasetsResponse) => DatasetsResponse)
   defaultApiVersion: string
   defaultDataset?: string
 }

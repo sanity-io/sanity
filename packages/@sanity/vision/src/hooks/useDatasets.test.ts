@@ -1,4 +1,4 @@
-import {type SanityClient} from '@sanity/client'
+import {type DatasetsResponse, type SanityClient} from '@sanity/client'
 import {renderHook} from '@testing-library/react'
 import {of, throwError} from 'rxjs'
 import {beforeEach, describe, expect, it, vi} from 'vitest'
@@ -14,14 +14,46 @@ const mockClient = {
   },
 } as unknown as SanityClient
 
+const MOCK_DATASETS: DatasetsResponse = [
+  {
+    name: 'production',
+    aclMode: 'public',
+    createdAt: '2017-11-02T14:45:09.221Z',
+    createdByUserId: '123',
+    addonFor: null,
+    datasetProfile: 'content',
+    features: [],
+    tags: [],
+  },
+  {
+    name: 'staging',
+    aclMode: 'public',
+    createdAt: '2017-11-02T14:45:09.221Z',
+    createdByUserId: '456',
+    addonFor: null,
+    datasetProfile: 'content',
+    features: [],
+    tags: [],
+  },
+  {
+    name: 'development',
+    aclMode: 'public',
+    createdAt: '2017-11-02T14:45:09.221Z',
+    createdByUserId: '789',
+    addonFor: null,
+    datasetProfile: 'content',
+    features: [],
+    tags: [],
+  },
+]
+
 describe('useDatasets', () => {
   beforeEach(() => {
     vi.clearAllMocks()
   })
 
   it('should get datasets from client.observable.datasets.list() and return them', async () => {
-    const mockDatasets = [{name: 'production'}, {name: 'staging'}, {name: 'development'}]
-    mockDatasetsList.mockReturnValue(of(mockDatasets))
+    mockDatasetsList.mockReturnValue(of(MOCK_DATASETS))
 
     const {result} = renderHook(() => useDatasets({client: mockClient, datasets: undefined}))
 
@@ -40,22 +72,18 @@ describe('useDatasets', () => {
   })
 
   it('should call client.observable.datasets.list() and apply callback function when configDatasets is a function', () => {
-    const mockDatasets = [
-      {name: 'production'},
-      {name: 'staging'},
-      {name: 'development'},
-      {name: 'test'},
-    ]
-    const configDatasets = (datasets: string[]) => datasets.filter((ds) => ds !== 'test')
-    mockDatasetsList.mockReturnValue(of(mockDatasets))
+    const datasetsCallback = (datasets: DatasetsResponse) =>
+      datasets.filter((ds) => ds.name !== 'development')
+
+    mockDatasetsList.mockReturnValue(of(MOCK_DATASETS))
     const {result} = renderHook(() =>
       useDatasets({
         client: mockClient,
-        datasets: configDatasets,
+        datasets: datasetsCallback,
       }),
     )
     expect(mockDatasetsList).toHaveBeenCalledTimes(1)
-    expect(result.current).toEqual(['production', 'staging', 'development'])
+    expect(result.current).toEqual(['production', 'staging'])
   })
 
   it('should handle client error and return Error when configDatasets is undefined', async () => {
@@ -73,12 +101,12 @@ describe('useDatasets', () => {
   })
   it('should handle client error and return Error even with function config', () => {
     const mockError = new Error('Network error')
-    const configDatasets = (datasets: string[]) => datasets
+    const datasetsCallback = (datasets: DatasetsResponse) => datasets
     mockDatasetsList.mockReturnValue(throwError(() => mockError))
     const {result} = renderHook(() =>
       useDatasets({
         client: mockClient,
-        datasets: configDatasets,
+        datasets: datasetsCallback,
       }),
     )
     expect(mockDatasetsList).toHaveBeenCalledTimes(1)
