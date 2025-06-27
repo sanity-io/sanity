@@ -26,6 +26,7 @@ import {
 import {type CliConfigResult} from './util/getCliConfig'
 import {isCommandGroup} from './util/isCommandGroup'
 import {getNoSuchCommandText} from './util/noSuchCommandText'
+import {printNewMajorVersionMessage} from './util/printNewMajorMessage'
 
 interface Handlers {
   outputter: CliOutputter
@@ -54,6 +55,7 @@ export class CommandRunner {
     }
   }
 
+  // eslint-disable-next-line complexity
   async runCommand(
     commandOrGroup: string,
     args: CliCommandArguments,
@@ -111,6 +113,9 @@ export class CommandRunner {
     }
 
     debug(`Running command "${command.name}"`)
+
+    printNewMajorVersionMessage(context)
+
     return command.action(cmdArgs, context)
   }
 
