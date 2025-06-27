@@ -68,6 +68,7 @@ import {
   sanityFolder,
   sanityStudioTemplate,
 } from './templates/nextjs'
+import {OrganizationCreateResponse, ProjectOrganization} from '../../util/organizationUtils'
 
 // eslint-disable-next-line no-process-env
 const isCI = Boolean(process.env.CI)
@@ -100,22 +101,6 @@ export interface ProjectTemplate {
   typescriptOnly?: boolean
   entry?: string
   scripts?: Record<string, string>
-}
-
-export interface ProjectOrganization {
-  id: string
-  name: string
-  slug: string
-}
-
-interface OrganizationCreateResponse {
-  id: string
-  name: string
-  createdByUserId: string
-  slug: string | null
-  defaultRoleName: string | null
-  members: unknown[]
-  features: unknown[]
 }
 
 // eslint-disable-next-line max-statements, complexity
