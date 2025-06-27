@@ -1510,6 +1510,9 @@ importers:
       '@repo/package.config':
         specifier: workspace:*
         version: link:../../@repo/package.config
+      '@repo/test-config':
+        specifier: workspace:*
+        version: link:../../@repo/test-config
       '@sanity/cli':
         specifier: workspace:*
         version: link:../cli
@@ -1540,9 +1543,6 @@ importers:
       '@sanity/util':
         specifier: workspace:*
         version: link:../util
-      '@testing-library/jest-dom':
-        specifier: ^6.6.3
-        version: 6.6.3
       '@testing-library/react':
         specifier: ^16.3.0
         version: 16.3.0(@testing-library/dom@10.4.0)(@types/react-dom@19.1.6(@types/react@19.1.8))(@types/react@19.1.8)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
