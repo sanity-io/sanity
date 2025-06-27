@@ -93,6 +93,7 @@ describe('CLI: `sanity projects`', () => {
           spinner: vi.fn(() => ({
             start: vi.fn().mockReturnThis(),
             succeed: vi.fn(),
+            fail: vi.fn(),
           })),
         },
       } as any
@@ -108,7 +109,7 @@ describe('CLI: `sanity projects`', () => {
       expect(result).toEqual({
         projectId: 'test-project-123',
         displayName: 'Test Project',
-        organization: {id: 'org-123', name: 'Test Org'},
+        organization: {id: 'org-123', name: 'Test Org', slug: 'test-org'},
       })
 
       // Verify organization lookup was called
@@ -153,6 +154,7 @@ describe('CLI: `sanity projects`', () => {
           spinner: vi.fn(() => ({
             start: vi.fn().mockReturnThis(),
             succeed: vi.fn(),
+            fail: vi.fn(),
           })),
         },
       } as any
@@ -168,7 +170,7 @@ describe('CLI: `sanity projects`', () => {
       expect(result).toEqual({
         projectId: 'test-project-123',
         displayName: 'Test Project',
-        organization: {id: 'org-456', name: 'Dataset Org'},
+        organization: {id: 'org-456', name: 'Dataset Org', slug: 'dataset-org'},
         dataset: {name: 'production', visibility: 'public'},
       })
 
@@ -205,6 +207,7 @@ describe('CLI: `sanity projects`', () => {
           spinner: vi.fn(() => ({
             start: vi.fn().mockReturnThis(),
             succeed: vi.fn(),
+            fail: vi.fn(),
           })),
         },
       } as any
@@ -222,7 +225,7 @@ describe('CLI: `sanity projects`', () => {
       expect(result).toEqual({
         projectId: 'test-project-456',
         displayName: 'Custom Project',
-        organization: {id: 'org-789', name: 'Custom Org'},
+        organization: {id: 'org-789', name: 'Custom Org', slug: 'custom-org'},
         dataset: {name: 'staging', visibility: 'private'},
       })
 
@@ -261,6 +264,7 @@ describe('CLI: `sanity projects`', () => {
           spinner: vi.fn(() => ({
             start: vi.fn().mockReturnThis(),
             succeed: vi.fn(),
+            fail: vi.fn(),
           })),
         },
       } as any
@@ -276,7 +280,7 @@ describe('CLI: `sanity projects`', () => {
       expect(result).toEqual({
         projectId: 'test-project-slug',
         displayName: 'Slug Project',
-        organization: {id: 'org-abc123', name: 'Test Org'},
+        organization: {id: 'org-abc123', name: 'Test Org', slug: 'test-org'},
       })
 
       // Verify createProject was called with the resolved organization ID, not the slug
@@ -320,6 +324,7 @@ describe('CLI: `sanity projects`', () => {
           spinner: vi.fn(() => ({
             start: vi.fn().mockReturnThis(),
             succeed: vi.fn(),
+            fail: vi.fn(),
           })),
         },
       } as any
@@ -334,7 +339,7 @@ describe('CLI: `sanity projects`', () => {
       expect(result).toEqual({
         projectId: 'test-project-unattended',
         displayName: 'My Sanity Project',
-        organization: {id: 'org-unattended', name: 'Unattended Org'},
+        organization: {id: 'org-unattended', name: 'Unattended Org', slug: 'unattended-org'},
       })
 
       // Should not prompt user when in unattended mode
@@ -377,6 +382,7 @@ describe('CLI: `sanity projects`', () => {
           spinner: vi.fn(() => ({
             start: vi.fn().mockReturnThis(),
             succeed: vi.fn(),
+            fail: vi.fn(),
           })),
         },
       } as any
@@ -393,7 +399,7 @@ describe('CLI: `sanity projects`', () => {
       expect(result).toEqual({
         projectId: 'test-project-error',
         displayName: 'Error Project',
-        organization: {id: 'org-error', name: 'Error Org'},
+        organization: {id: 'org-error', name: 'Error Org', slug: 'error-org'},
       })
 
       // Should log warning about dataset creation failure
