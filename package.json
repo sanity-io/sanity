@@ -19,7 +19,7 @@
     "check:lint": "turbo run lint --continue -- --quiet",
     "check:oxlint": "oxlint",
     "check:test": "pnpm test -- --silent",
-    "check:types": "tsc && turbo run check:types --filter='./packages/*' --filter='./packages/@sanity/*'",
+    "check:types": "tsc && turbo run check:types --filter='./packages/*' --filter='./packages/@sanity/*' --continue",
     "chore:format:fix": "prettier --cache --write .",
     "chore:lint:changed": "turbo run lint --filter=[HEAD^1] -- --quiet --fix",
     "chore:lint:fix": "turbo run lint --ui tui -- --quiet --fix",
@@ -63,8 +63,7 @@
     "example:example-studio": "cd examples/studios/blog-studio && pnpm start",
     "example:movies-studio": "cd examples/studios/movies-studio && pnpm start",
     "generate:docs": "tsx -r dotenv-flow/config ./scripts/generate-documents/cli.ts",
-    "generate:dts-exports": "pnpm --filter=@repo/test-dts-exports generate:dts-exports",
-    "preinstall": "npx only-allow pnpm",
+    "generate:dts-exports": "turbo run generate:dts-exports",
     "postinstall": "husky",
     "install:deps": "pnpm install",
     "lint": "turbo run check:oxlint lint --ui tui -- --quiet",
@@ -197,6 +196,12 @@
       "jsdom": "$jsdom",
       "vite": "$vite",
       "vitest": "$vitest"
+    }
+  },
+  "devEngines": {
+    "packageManager": {
+      "name": "pnpm",
+      "onFail": "error"
     }
   },
   "isSanityMonorepo": true

@@ -65,6 +65,11 @@ export function TextWithDiff({diff, childDiff, children, path, segment, ...restP
   const diffWithFallback = realSeg || diff || childDiff
   const annotation =
     (diffWithFallback && diffWithFallback.action !== 'unchanged' && diffWithFallback.annotation) ||
+    (realSeg &&
+      diff &&
+      diff.action !== 'unchanged' &&
+      realSeg.action === 'removed' &&
+      diff.annotation) ||
     null
 
   const diffCard =
