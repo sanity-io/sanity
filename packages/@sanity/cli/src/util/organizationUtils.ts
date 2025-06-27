@@ -142,24 +142,35 @@ export async function getOrganizationId(
   unattended?: boolean,
   specifiedOrgId?: string,
 ): Promise<string | undefined> {
-  const {apiClient} = context
+  const {apiClient, output} = context
   const client = apiClient({requireUser: true, requireProject: false})
 
   // Get available organizations
-  const organizations = await client.request<ProjectOrganization[]>({uri: '/organizations'})
+  const spinner = output.spinner('Loading organizations').start()
+  let organizations: ProjectOrganization[]
+  try {
+    organizations = await client.request<ProjectOrganization[]>({uri: '/organizations'})
+  } catch (error) {
+    spinner.fail()
+    throw error
+  }
 
   // If organization is specified, validate it
   if (specifiedOrgId) {
     const org = organizations.find((o) => o.id === specifiedOrgId || o.slug === specifiedOrgId)
     if (!org) {
+      spinner.fail()
       throw new Error(`Organization "${specifiedOrgId}" not found or you don't have access to it`)
     }
+    spinner.succeed()
     return org.id
   }
 
   // If the user has no organizations, prompt them to create one with the same name as
   // their user, but allow them to customize it if they want
   if (organizations.length === 0) {
+    spinner.succeed()
+    output.print('You need to create an organization to create projects.')
     return createOrganization(context, user).then((org) => org.id)
   }
 
@@ -167,6 +178,7 @@ export async function getOrganizationId(
   // create a new one in case they do not have access to any of them, or they want to
   // create a personal/other organization.
   const withGrantInfo = await getOrganizationsWithAttachGrantInfo(organizations, context)
+  spinner.succeed()
   const withAttach = withGrantInfo.filter(({hasAttachGrant}) => hasAttachGrant)
 
   // In unattended mode or non-interactive mode, use defaults without prompting
