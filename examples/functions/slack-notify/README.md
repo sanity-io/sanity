@@ -71,13 +71,13 @@ Most official templates already include these fields.
    For a new project:
 
    ```bash
-   npx sanity blueprints init --example slack-notification
+   npx sanity blueprints init --example slack-notify
    ```
 
    For an existing project:
 
    ```bash
-   npx sanity blueprints add function --example slack-notification
+   npx sanity blueprints add function --example slack-notify
    ```
 
 3. **Add configuration to your blueprint**
@@ -90,8 +90,8 @@ Most official templates already include these fields.
      resources: [
        defineDocumentFunction({
          type: 'sanity.function.document',
-         name: 'slack-notification',
-         src: './functions/slack-notification',
+         name: 'slack-notify',
+         src: './functions/slack-notify',
          memory: 1,
          timeout: 10,
          event: {
@@ -116,14 +116,14 @@ Most official templates already include these fields.
    And install function dependencies:
 
    ```bash
-   cd functions/slack-notification
+   cd functions/slack-notify
    npm install
    cd ../..
    ```
 
 ## Testing the function locally
 
-You can test the slack-notification function locally using the Sanity CLI before deploying it to production.
+You can test the slack-notify function locally using the Sanity CLI before deploying it to production.
 
 **Important:** This function requires a valid Slack OAuth token and will send real messages to your Slack channel during testing. You'll need to provide the `SLACK_OAUTH_TOKEN` environment variable directly in each command.
 
@@ -132,7 +132,7 @@ You can test the slack-notification function locally using the Sanity CLI before
 Test the function with the created document (from project root):
 
 ```bash
-SLACK_OAUTH_TOKEN=slack-OAuth-token npx sanity functions test slack-notification --file functions/slack-notification/document.json
+SLACK_OAUTH_TOKEN=slack-OAuth-token npx sanity functions test slack-notify --file functions/slack-notify/document.json
 ```
 
 **Alternative:** Test with a real document from your dataset:
@@ -144,7 +144,7 @@ npx sanity documents query "*[_type == 'post'][0]" > ../real-post.json
 
 # Back to project root for function testing
 cd ..
-SLACK_OAUTH_TOKEN=slack-OAuth-token npx sanity functions test slack-notification --file real-post.json
+SLACK_OAUTH_TOKEN=slack-OAuth-token npx sanity functions test slack-notify --file real-post.json
 ```
 
 ### 2. Test Without Sending Messages
@@ -195,8 +195,8 @@ export default defineBlueprint({
   resources: [
     defineDocumentFunction({
       type: 'sanity.function.document',
-      name: 'slack-notification',
-      src: './functions/slack-notification',
+      name: 'slack-notify',
+      src: './functions/slack-notify',
       memory: 1,
       timeout: 10,
       event: {
@@ -222,14 +222,14 @@ This command will:
 - Package your function code
 - Upload it to Sanity's infrastructure
 - Configure the event triggers for post publications
-- Make your slack-notification function live in production
+- Make your slack-notify function live in production
 
 3. **Add environment variables**
 
 After deployment, you need to add the Slack OAuth token as an environment variable:
 
 ```bash
-npx sanity functions env add slack-notification SLACK_OAUTH_TOKEN "your-slack-oauth-token-here"
+npx sanity functions env add slack-notify SLACK_OAUTH_TOKEN "your-slack-oauth-token-here"
 ```
 
 Replace `"your-slack-oauth-token-here"` with your actual Slack OAuth token (the one that starts with `xoxb-`).
@@ -237,7 +237,7 @@ Replace `"your-slack-oauth-token-here"` with your actual Slack OAuth token (the 
 You can verify the environment variable was added successfully:
 
 ```bash
-npx sanity functions env list slack-notification
+npx sanity functions env list slack-notify
 ```
 
 Learn more about working with environment variables in Functions here: [https://www.sanity.io/docs/compute-and-ai/function-env-vars](https://www.sanity.io/docs/compute-and-ai/function-env-vars)

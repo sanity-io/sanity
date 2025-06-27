@@ -1,5 +1,5 @@
 {
-  "name": "slack-notification",
+  "name": "slack-notify",
   "type": "module",
   "main": "index.ts",
   "dependencies": {
@@ -8,8 +8,8 @@
   },
   "blueprintResourceItem": {
     "type": "sanity.function.document",
-    "name": "slack-notification",
-    "src": "./functions/slack-notification",
+    "name": "slack-notify",
+    "src": "./functions/slack-notify",
     "memory": 1,
     "timeout": 10,
     "event": {
