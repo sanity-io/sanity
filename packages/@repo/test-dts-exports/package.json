@@ -8,6 +8,7 @@
   },
   "scripts": {
     "generate:dts-exports": "node generate.mjs",
+    "lint": "eslint .",
     "test": "vitest run"
   },
   "dependencies": {
@@ -26,6 +27,7 @@
   "devDependencies": {
     "@repo/eslint-config": "workspace:*",
     "@repo/tsconfig": "workspace:*",
+    "@types/node": "^24.0.4",
     "ts-morph": "^26.0.0",
     "vitest": "^3.2.3"
   }
