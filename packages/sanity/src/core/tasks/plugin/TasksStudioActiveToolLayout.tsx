@@ -1,17 +1,10 @@
 import {Box, Flex, Layer, useMediaIndex} from '@sanity/ui'
-import {AnimatePresence, motion, type Transition, type Variants} from 'framer-motion'
+import {AnimatePresence} from 'framer-motion'
 import {css, styled} from 'styled-components'
 
 import {type ActiveToolLayoutProps} from '../../config'
 import {TasksStudioSidebar} from '../components'
 import {useTasksEnabled, useTasksNavigation} from '../context'
-
-const VARIANTS: Variants = {
-  hidden: {opacity: 0},
-  visible: {opacity: 1},
-}
-
-const TRANSITION: Transition = {duration: 0.2}
 
 const FULLSCREEN_MEDIA_INDEX = 1
 const POSITION_ABSOLUTE_MEDIA_INDEX = 3
@@ -27,8 +20,7 @@ const RootFlex = styled(Flex)(({theme}) => {
     }
   `
 })
-
-const SidebarMotionLayer = styled(motion.create(Layer))(({theme}) => {
+const SidebarMotionLayer = styled(Layer)(({theme}) => {
   const media = theme.sanity.media
 
   return css`
@@ -75,14 +67,7 @@ function TasksStudioActiveToolLayoutInner(props: ActiveToolLayoutProps) {
 
       <AnimatePresence initial={false}>
         {isOpen && (
-          <SidebarMotionLayer
-            animate="visible"
-            zOffset={100}
-            height="fill"
-            initial="hidden"
-            transition={TRANSITION}
-            variants={VARIANTS}
-          >
+          <SidebarMotionLayer zOffset={100} height="fill">
             <TasksStudioSidebar />
           </SidebarMotionLayer>
         )}
