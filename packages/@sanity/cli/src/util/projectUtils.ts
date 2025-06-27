@@ -2,6 +2,7 @@ import {promptForDatasetName} from '../actions/init-project/promptForDatasetName
 import {promptForAclMode, promptForDefaultConfig} from '../actions/init-project/prompts/index'
 import {createProject, type CreateProjectOptions} from '../actions/project/createProject'
 import {type CliCommandContext, type CliPrompter} from '../types'
+import {type ProjectOrganization} from './organizationUtils'
 
 // Project name validation and prompting
 export function validateProjectName(input: string): string | true {
@@ -141,38 +142,11 @@ export async function createProjectWithMetadata(
   }
 }
 
-// Organization details fetching for responses
-export interface ProjectOrganization {
-  id: string
-  name: string
-  slug: string
-}
-
-export async function getOrganizationDetails(
-  context: CliCommandContext,
-  organizationId: string | undefined,
-): Promise<{id: string; name: string} | undefined> {
-  if (!organizationId) return undefined
-
-  try {
-    const client = context.apiClient({requireUser: true, requireProject: false})
-    const orgs = await client.request<ProjectOrganization[]>({uri: '/organizations'})
-    const org = orgs.find((o) => o.id === organizationId)
-    return org ? {id: org.id, name: org.name} : undefined
-  } catch (err) {
-    // Organization details are optional for response
-    return undefined
-  }
-}
-
 // Project output formatting
 export interface ProjectCreationResult {
   projectId: string
   displayName: string
-  organization?: {
-    id: string
-    name: string
-  }
+  organization?: ProjectOrganization
   dataset?: {
     name: string
     visibility: 'public' | 'private'

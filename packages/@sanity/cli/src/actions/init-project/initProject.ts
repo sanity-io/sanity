@@ -43,6 +43,10 @@ import {getUserConfig} from '../../util/getUserConfig'
 import {isCommandGroup} from '../../util/isCommandGroup'
 import {isInteractive} from '../../util/isInteractive'
 import {fetchJourneyConfig} from '../../util/journeyConfig'
+import {
+  type OrganizationCreateResponse,
+  type ProjectOrganization,
+} from '../../util/organizationUtils'
 import {checkIsRemoteTemplate, getGitHubRepoInfo, type RepoInfo} from '../../util/remoteTemplate'
 import {login, type LoginFlags} from '../login/login'
 import {createProject} from '../project/createProject'
@@ -68,7 +72,6 @@ import {
   sanityFolder,
   sanityStudioTemplate,
 } from './templates/nextjs'
-import {OrganizationCreateResponse, ProjectOrganization} from '../../util/organizationUtils'
 
 // eslint-disable-next-line no-process-env
 const isCI = Boolean(process.env.CI)

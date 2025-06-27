@@ -136,12 +136,12 @@ export async function promptForOrganizationSelection(
   })
 }
 
-export async function getOrganizationId(
+export async function getOrganization(
   context: CliCommandContext,
   user?: {name: string},
   unattended?: boolean,
   specifiedOrgId?: string,
-): Promise<string | undefined> {
+): Promise<ProjectOrganization | undefined> {
   const {apiClient, output} = context
   const client = apiClient({requireUser: true, requireProject: false})
 
@@ -163,7 +163,7 @@ export async function getOrganizationId(
       throw new Error(`Organization "${specifiedOrgId}" not found or you don't have access to it`)
     }
     spinner.succeed()
-    return org.id
+    return org
   }
 
   // If the user has no organizations, prompt them to create one with the same name as
@@ -171,7 +171,11 @@ export async function getOrganizationId(
   if (organizations.length === 0) {
     spinner.succeed()
     output.print('You need to create an organization to create projects.')
-    return createOrganization(context, user).then((org) => org.id)
+    return createOrganization(context, user).then((org) => ({
+      id: org.id,
+      name: org.name,
+      slug: org.slug || org.id,
+    }))
   }
 
   // If the user has organizations, let them choose from them, but also allow them to
@@ -184,7 +188,7 @@ export async function getOrganizationId(
   // In unattended mode or non-interactive mode, use defaults without prompting
   if (unattended || !isInteractive) {
     // Use the first organization with attach permissions
-    return withAttach.length > 0 ? withAttach[0].organization.id : undefined
+    return withAttach.length > 0 ? withAttach[0].organization : undefined
   }
 
   const organizationChoices = getOrganizationChoices(withGrantInfo, context.prompt)
@@ -204,8 +208,14 @@ export async function getOrganizationId(
   )
 
   if (chosenOrg === '-new-') {
-    return createOrganization(context, user).then((org) => org.id)
+    return createOrganization(context, user).then((org) => ({
+      id: org.id,
+      name: org.name,
+      slug: org.slug || org.id,
+    }))
   }
 
-  return chosenOrg || undefined
+  // Find the selected organization and return full object
+  const selectedOrg = organizations.find((org) => org.id === chosenOrg)
+  return selectedOrg || undefined
 }

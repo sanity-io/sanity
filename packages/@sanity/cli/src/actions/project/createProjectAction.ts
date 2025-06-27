@@ -1,10 +1,9 @@
 import {type CliCommandContext} from '../../types'
 import {isInteractive} from '../../util/isInteractive'
-import {getOrganizationId} from '../../util/organizationUtils'
+import {getOrganization} from '../../util/organizationUtils'
 import {
   createDatasetForProject,
   createProjectWithMetadata,
-  getOrganizationDetails,
   type ProjectCreationResult,
   promptAndCreateDataset,
   promptForProjectName,
@@ -19,12 +18,10 @@ export interface CreateProjectActionOptions {
   unattended?: boolean
 }
 
-export type CreateProjectActionResult = ProjectCreationResult
-
 export async function createProjectAction(
   options: CreateProjectActionOptions,
   context: CliCommandContext,
-): Promise<CreateProjectActionResult> {
+): Promise<ProjectCreationResult> {
   const {apiClient, prompt} = context
   const client = apiClient({requireUser: true, requireProject: false})
 
@@ -36,7 +33,7 @@ export async function createProjectAction(
       : await promptForProjectName(prompt))
 
   // Get organization
-  const organizationId = await getOrganizationId(
+  const organization = await getOrganization(
     context,
     undefined, // user - not needed for projects create
     options.unattended,
@@ -44,12 +41,9 @@ export async function createProjectAction(
   )
 
   // Create the project
-  const project = await createProjectWithMetadata(apiClient, projectName, organizationId, context)
+  const project = await createProjectWithMetadata(apiClient, projectName, organization?.id, context)
 
-  // Get organization details for response
-  const organization = await getOrganizationDetails(context, organizationId)
-
-  const result: CreateProjectActionResult = {
+  const result: ProjectCreationResult = {
     projectId: project.projectId,
     displayName: project.displayName,
     organization,
