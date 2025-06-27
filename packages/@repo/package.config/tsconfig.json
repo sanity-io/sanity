@@ -3,8 +3,8 @@
   "include": ["./src"],
   "compilerOptions": {
     "rootDir": ".",
+    "module": "esnext",
     "noEmit": true,
-    "module": "Preserve",
     "skipLibCheck": true
   }
 }

@@ -53,7 +53,7 @@
   ],
   "scripts": {
     "build": "pnpm clean && pkg-utils build --strict --check --clean",
-    "check:types": "tsc --project tsconfig.lib.json",
+    "check:types": "(cd ../../.. && tsc --project packages/@sanity/schema/tsconfig.lib.json --erasableSyntaxOnly)",
     "clean": "rimraf _internal.js lib",
     "lint": "eslint .",
     "prepublishOnly": "turbo run build",
