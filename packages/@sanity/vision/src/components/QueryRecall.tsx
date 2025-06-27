@@ -240,6 +240,7 @@ export function QueryRecall({
             {t('label.saved-queries')}
           </Text>
           <Button
+            // @ts-expect-error - TODO: fix this
             label={t('action.save-query')}
             icon={AddIcon}
             disabled={saving}
@@ -282,7 +283,7 @@ export function QueryRecall({
               }}
               style={{position: 'relative'}}
             >
-              <Stack space={3}>
+              <Stack gap={3}>
                 <Flex justify="space-between" align={'center'}>
                   <Flex align="center" gap={2} paddingRight={1}>
                     {editingKey === q._key ? (
@@ -355,7 +356,7 @@ export function QueryRecall({
                   />
                 </Flex>
 
-                <Code muted>{queryObj?.query.split('{')[0]}</Code>
+                <Code>{queryObj?.query.split('{')[0]}</Code>
 
                 <Flex align="center" gap={1}>
                   <Text size={1} muted>
@@ -367,7 +368,7 @@ export function QueryRecall({
                   <Button
                     mode="ghost"
                     tone="default"
-                    size={1}
+                    fontSize={1}
                     padding={2}
                     style={{
                       height: '24px',

@@ -9,7 +9,7 @@ interface SaveButtonProps {
   blobUrl: string | undefined
 }
 
-function preventSave(evt: MouseEvent<HTMLButtonElement>) {
+function preventSave(evt: MouseEvent<HTMLAnchorElement>) {
   return evt.preventDefault()
 }
 
