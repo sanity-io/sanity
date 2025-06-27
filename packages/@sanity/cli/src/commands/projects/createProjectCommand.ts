@@ -1,5 +1,6 @@
 import {createProjectAction} from '../../actions/project/createProjectAction'
 import {type CliCommandDefinition} from '../../types'
+import {printProjectCreationSuccess} from '../../util/projectUtils'
 
 const helpText = `
 Examples
@@ -12,10 +13,10 @@ Examples
 
 Options
   --organization <slug|id>     Organization to create the project in
-  --dataset [name]             Create a dataset after project creation. Default name: production
-  --dataset-visibility <mode>  Dataset visibility (public, private). Default: public
-  --format <format>            Output format (table, json). Default: table
-  -y, --yes                    Skip prompts and use defaults (unattended mode)
+  --dataset [name]             Create a dataset. Prompts for name/visibility unless specified or --yes used
+  --dataset-visibility <mode>  Dataset visibility: public or private
+  --format <format>            Output format: table or json (default: table)
+  -y, --yes                    Skip prompts and use defaults (dataset: production, visibility: public)
 `
 
 const createProjectCommand: CliCommandDefinition = {
@@ -47,9 +48,9 @@ const createProjectCommand: CliCommandDefinition = {
     let createDataset = false
 
     if (dataset === true) {
-      // --dataset flag without value
+      // --dataset flag without value - let action handle prompting
       createDataset = true
-      datasetName = 'production'
+      datasetName = undefined // Don't set default here
     } else if (typeof dataset === 'string') {
       // --dataset=name
       createDataset = true
@@ -62,7 +63,7 @@ const createProjectCommand: CliCommandDefinition = {
         organizationId: organization,
         createDataset,
         datasetName,
-        datasetVisibility: datasetVisibility || 'public',
+        datasetVisibility: datasetVisibility, // Don't default here
         unattended: y || yes,
       },
       context,
@@ -73,19 +74,7 @@ const createProjectCommand: CliCommandDefinition = {
       return
     }
 
-    context.output.print(`Project created successfully!`)
-    context.output.print(`ID: ${result.projectId}`)
-    context.output.print(`Name: ${result.displayName}`)
-    context.output.print(`Organization: ${result.organization?.name || 'Personal'}`)
-
-    if (result.dataset) {
-      context.output.print(`Dataset: ${result.dataset.name} (${result.dataset.visibility})`)
-    }
-
-    context.output.print(``)
-    context.output.print(
-      `Manage your project: https://www.sanity.io/manage/project/${result.projectId}`,
-    )
+    printProjectCreationSuccess(result, context)
   },
 }
 

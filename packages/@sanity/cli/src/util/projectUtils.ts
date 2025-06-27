@@ -1,0 +1,196 @@
+import {promptForDatasetName} from '../actions/init-project/promptForDatasetName'
+import {promptForAclMode, promptForDefaultConfig} from '../actions/init-project/prompts/index'
+import {createProject, type CreateProjectOptions} from '../actions/project/createProject'
+import {type CliCommandContext, type CliPrompter} from '../types'
+
+// Project name validation and prompting
+export function validateProjectName(input: string): string | true {
+  if (!input || input.trim() === '') {
+    return 'Project name cannot be empty'
+  }
+  if (input.length > 80) {
+    return 'Project name cannot be longer than 80 characters'
+  }
+  return true
+}
+
+export async function promptForProjectName(prompt: CliPrompter): Promise<string> {
+  return prompt.single({
+    type: 'input',
+    message: 'Project name:',
+    default: 'My Sanity Project',
+    validate: validateProjectName,
+  })
+}
+
+// Dataset prompting and creation - matches init command behavior exactly
+export const DATASET_INFO_TEXT =
+  'Your content will be stored in a dataset that can be public or private, depending on\n' +
+  'whether you want to query your content with or without authentication.\n' +
+  'The default dataset configuration has a public dataset named "production".'
+
+export interface DatasetCreationOptions {
+  context: CliCommandContext
+  datasetName?: string // If provided, skip name prompting
+  datasetVisibility?: 'public' | 'private' // If provided, skip visibility prompting
+  unattended?: boolean // If true, use defaults without prompting
+}
+
+export interface DatasetResult {
+  name: string
+  visibility: 'public' | 'private'
+}
+
+export async function promptAndCreateDataset(
+  options: DatasetCreationOptions,
+): Promise<{name: string; visibility: 'public' | 'private'}> {
+  const {context, datasetName, datasetVisibility, unattended} = options
+  const {prompt, output} = context
+
+  let finalDatasetName: string
+  let finalVisibility: 'public' | 'private'
+
+  // Determine dataset name - exactly like init command
+  if (datasetName) {
+    // Explicit name provided
+    finalDatasetName = datasetName
+  } else if (unattended) {
+    // Unattended mode - use default
+    finalDatasetName = 'production'
+  } else {
+    // Interactive mode - show info and prompt (exactly like init)
+    output.print(DATASET_INFO_TEXT)
+    const useDefaultConfig = await promptForDefaultConfig(prompt)
+
+    if (useDefaultConfig) {
+      finalDatasetName = 'production'
+    } else {
+      finalDatasetName = await promptForDatasetName(prompt, {
+        message: 'Name of your first dataset:',
+      })
+    }
+  }
+
+  // Determine dataset visibility - exactly like init command
+  if (datasetVisibility) {
+    // Explicit visibility provided
+    finalVisibility = datasetVisibility
+  } else if (unattended) {
+    // Unattended mode - use default
+    finalVisibility = 'public'
+  } else {
+    // Interactive mode - prompt for ACL (exactly like init)
+    finalVisibility = (await promptForAclMode(prompt, output)) as 'public' | 'private'
+  }
+
+  return {name: finalDatasetName, visibility: finalVisibility}
+}
+
+export async function createDatasetForProject(
+  context: CliCommandContext,
+  projectId: string,
+  datasetName: string,
+  visibility: 'public' | 'private',
+): Promise<DatasetResult | null> {
+  const {apiClient, output} = context
+
+  try {
+    // Use the same pattern as init command - create client with project context
+    const client = apiClient({api: {projectId}})
+    const spinner = output.spinner('Creating dataset').start()
+
+    await client.datasets.create(datasetName, {aclMode: visibility})
+
+    spinner.succeed()
+    return {name: datasetName, visibility}
+  } catch (err) {
+    output.warn(`Project created but dataset creation failed: ${(err as Error).message}`)
+    return null
+  }
+}
+
+// Project creation with shared metadata
+export async function createProjectWithMetadata(
+  apiClient: any,
+  displayName: string,
+  organizationId: string | undefined,
+  extraMetadata: Record<string, any> = {},
+): Promise<{projectId: string; displayName: string}> {
+  const createOptions: CreateProjectOptions = {
+    displayName,
+    organizationId,
+    metadata: {
+      integration: 'cli',
+      ...extraMetadata,
+    },
+  }
+
+  return createProject(apiClient, createOptions)
+}
+
+// Organization details fetching for responses
+export interface ProjectOrganization {
+  id: string
+  name: string
+  slug: string
+}
+
+export async function getOrganizationDetails(
+  context: CliCommandContext,
+  organizationId: string | undefined,
+): Promise<{id: string; name: string} | undefined> {
+  if (!organizationId) return undefined
+
+  try {
+    const client = context.apiClient({requireUser: true, requireProject: false})
+    const orgs = await client.request<ProjectOrganization[]>({uri: '/organizations'})
+    const org = orgs.find((o) => o.id === organizationId)
+    return org ? {id: org.id, name: org.name} : undefined
+  } catch (err) {
+    // Organization details are optional for response
+    return undefined
+  }
+}
+
+// Project output formatting
+export interface ProjectCreationResult {
+  projectId: string
+  displayName: string
+  organization?: {
+    id: string
+    name: string
+  }
+  dataset?: {
+    name: string
+    visibility: 'public' | 'private'
+  }
+}
+
+export function formatProjectUrl(projectId: string, apiHost: string): string {
+  const mainHostname = new URL(apiHost).hostname.split('.').slice(-2).join('.')
+  return `https://www.${mainHostname}/manage/project/${projectId}`
+}
+
+export function printProjectCreationSuccess(
+  result: ProjectCreationResult,
+  context: CliCommandContext,
+): void {
+  const {output, apiClient} = context
+
+  output.print(`Project created successfully!`)
+  output.print(`ID: ${result.projectId}`)
+  output.print(`Name: ${result.displayName}`)
+  output.print(`Organization: ${result.organization?.name || 'Personal'}`)
+
+  if (result.dataset) {
+    output.print(`Dataset: ${result.dataset.name} (${result.dataset.visibility})`)
+  }
+
+  const {apiHost} = apiClient({
+    requireProject: false,
+    requireUser: false,
+  }).config()
+
+  output.print(``)
+  output.print(`Manage your project: ${formatProjectUrl(result.projectId, apiHost)}`)
+}

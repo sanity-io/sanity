@@ -10,6 +10,7 @@ function createMockSanityClient(
       uri: string
       method: string
     }) => {statusCode: number; data: any} | undefined
+    datasetCreateShouldFail?: boolean
   } = {},
 ) {
   const requests = config.requests || {}
@@ -19,6 +20,11 @@ function createMockSanityClient(
     $log: {request: requestLog},
     config: () => ({projectId: 'test-project', dataset: 'test'}),
     withConfig: () => mockClient,
+    datasets: {
+      create: config.datasetCreateShouldFail
+        ? vi.fn().mockRejectedValue(new Error('Dataset creation failed'))
+        : vi.fn().mockResolvedValue({}),
+    },
     request: async (opts: {uri: string; method?: string; body?: any}) => {
       requestLog.push(opts)
 
@@ -77,9 +83,18 @@ describe('CLI: `sanity projects` (unit tests)', () => {
       })
 
       const mockContext = {
-        apiClient: vi.fn(() => mockClient),
+        apiClient: vi.fn((config) => {
+          // Return the same mock client regardless of config
+          return config?.api?.projectId ? mockClient : mockClient
+        }),
         prompt: {single: vi.fn().mockResolvedValue('org-123')},
-        output: {warn: vi.fn()},
+        output: {
+          warn: vi.fn(),
+          spinner: vi.fn(() => ({
+            start: vi.fn().mockReturnThis(),
+            succeed: vi.fn(),
+          })),
+        },
       } as any
 
       const result = await createProjectAction(
@@ -128,9 +143,18 @@ describe('CLI: `sanity projects` (unit tests)', () => {
       })
 
       const mockContext = {
-        apiClient: vi.fn(() => mockClient),
+        apiClient: vi.fn((config) => {
+          // Return the same mock client regardless of config
+          return config?.api?.projectId ? mockClient : mockClient
+        }),
         prompt: {single: vi.fn().mockResolvedValue('org-456')},
-        output: {warn: vi.fn()},
+        output: {
+          warn: vi.fn(),
+          spinner: vi.fn(() => ({
+            start: vi.fn().mockReturnThis(),
+            succeed: vi.fn(),
+          })),
+        },
       } as any
 
       const result = await createProjectAction(
@@ -148,13 +172,8 @@ describe('CLI: `sanity projects` (unit tests)', () => {
         dataset: {name: 'production', visibility: 'public'},
       })
 
-      // Verify dataset creation API call
-      expect(mockClient.$log.request).toContainEqual(
-        expect.objectContaining({
-          method: 'PUT',
-          uri: '/projects/test-project-123/datasets/production',
-        }),
-      )
+      // Verify dataset creation was called
+      expect(mockClient.datasets.create).toHaveBeenCalledWith('production', {aclMode: 'public'})
     })
 
     test('creates project with custom dataset settings', async () => {
@@ -176,9 +195,18 @@ describe('CLI: `sanity projects` (unit tests)', () => {
       })
 
       const mockContext = {
-        apiClient: vi.fn(() => mockClient),
+        apiClient: vi.fn((config) => {
+          // Return the same mock client regardless of config
+          return config?.api?.projectId ? mockClient : mockClient
+        }),
         prompt: {single: vi.fn().mockResolvedValue('org-789')},
-        output: {warn: vi.fn()},
+        output: {
+          warn: vi.fn(),
+          spinner: vi.fn(() => ({
+            start: vi.fn().mockReturnThis(),
+            succeed: vi.fn(),
+          })),
+        },
       } as any
 
       const result = await createProjectAction(
@@ -199,12 +227,7 @@ describe('CLI: `sanity projects` (unit tests)', () => {
       })
 
       // Verify correct dataset creation call with private visibility
-      expect(mockClient.$log.request).toContainEqual(
-        expect.objectContaining({
-          method: 'PUT',
-          uri: '/projects/test-project-456/datasets/staging',
-        }),
-      )
+      expect(mockClient.datasets.create).toHaveBeenCalledWith('staging', {aclMode: 'private'})
     })
 
     test('resolves organization slug to ID', async () => {
@@ -228,9 +251,18 @@ describe('CLI: `sanity projects` (unit tests)', () => {
       })
 
       const mockContext = {
-        apiClient: vi.fn(() => mockClient),
+        apiClient: vi.fn((config) => {
+          // Return the same mock client regardless of config
+          return config?.api?.projectId ? mockClient : mockClient
+        }),
         prompt: {single: vi.fn()},
-        output: {warn: vi.fn()},
+        output: {
+          warn: vi.fn(),
+          spinner: vi.fn(() => ({
+            start: vi.fn().mockReturnThis(),
+            succeed: vi.fn(),
+          })),
+        },
       } as any
 
       const result = await createProjectAction(
@@ -278,9 +310,18 @@ describe('CLI: `sanity projects` (unit tests)', () => {
       })
 
       const mockContext = {
-        apiClient: vi.fn(() => mockClient),
+        apiClient: vi.fn((config) => {
+          // Return the same mock client regardless of config
+          return config?.api?.projectId ? mockClient : mockClient
+        }),
         prompt: {single: vi.fn()},
-        output: {warn: vi.fn()},
+        output: {
+          warn: vi.fn(),
+          spinner: vi.fn(() => ({
+            start: vi.fn().mockReturnThis(),
+            succeed: vi.fn(),
+          })),
+        },
       } as any
 
       const result = await createProjectAction(
@@ -322,18 +363,22 @@ describe('CLI: `sanity projects` (unit tests)', () => {
             'sanity.organization.projects': [{grants: [{name: 'attach'}]}],
           },
         },
-        requestCallback: (request) => {
-          if (request.uri.includes('/datasets/') && request.method === 'PUT') {
-            return {statusCode: 400, data: 'Dataset creation failed'}
-          }
-          return undefined
-        },
+        datasetCreateShouldFail: true,
       })
 
       const mockContext = {
-        apiClient: vi.fn(() => mockClient),
+        apiClient: vi.fn((config) => {
+          // Return the same mock client regardless of config
+          return config?.api?.projectId ? mockClient : mockClient
+        }),
         prompt: {single: vi.fn().mockResolvedValue('org-error')},
-        output: {warn: vi.fn()},
+        output: {
+          warn: vi.fn(),
+          spinner: vi.fn(() => ({
+            start: vi.fn().mockReturnThis(),
+            succeed: vi.fn(),
+          })),
+        },
       } as any
 
       const result = await createProjectAction(

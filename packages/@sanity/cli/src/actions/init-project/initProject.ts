@@ -50,6 +50,11 @@ import {
   type ProjectOrganization,
   promptForOrganizationSelection,
 } from '../../util/organizationUtils'
+import {
+  createDatasetForProject,
+  promptAndCreateDataset,
+  promptForProjectName,
+} from '../../util/projectUtils'
 import {checkIsRemoteTemplate, getGitHubRepoInfo, type RepoInfo} from '../../util/remoteTemplate'
 import {login, type LoginFlags} from '../login/login'
 import {createProject} from '../project/createProject'
@@ -59,8 +64,7 @@ import {type GenerateConfigOptions} from './createStudioConfig'
 import {determineAppTemplate} from './determineAppTemplate'
 import {absolutify, validateEmptyPath} from './fsUtils'
 import {tryGitInit} from './git'
-import {promptForDatasetName} from './promptForDatasetName'
-import {promptForAclMode, promptForDefaultConfig, promptForTypeScript} from './prompts'
+import {promptForAclMode, promptForTypeScript} from './prompts'
 import {
   promptForAppendEnv,
   promptForEmbeddedStudio,
@@ -139,7 +143,7 @@ export default async function initSanity(
     remoteTemplateInfo = await getGitHubRepoInfo(cliFlags.template, cliFlags['template-token'])
   }
 
-  let defaultConfig = cliFlags['dataset-default']
+  const defaultConfig = cliFlags['dataset-default']
   let showDefaultConfigPrompt = !defaultConfig
 
   trace.start()
@@ -908,22 +912,7 @@ export default async function initSanity(
           ? 'No projects found for user, prompting for name'
           : 'Using a coupon - skipping project selection',
       )
-      const projectName = await prompt.single({
-        type: 'input',
-        message: 'Project name:',
-        default: 'My Sanity Project',
-        validate(input) {
-          if (!input || input.trim() === '') {
-            return 'Project name cannot be empty'
-          }
-
-          if (input.length > 80) {
-            return 'Project name cannot be longer than 80 characters'
-          }
-
-          return true
-        },
-      })
+      const projectName = await promptForProjectName(prompt)
 
       return createProject(apiClient, {
         displayName: projectName,
@@ -1039,24 +1028,15 @@ export default async function initSanity(
       return {datasetName: opts.dataset, userAction: 'none'}
     }
 
-    const datasetInfo =
-      'Your content will be stored in a dataset that can be public or private, depending on\nwhether you want to query your content with or without authentication.\nThe default dataset configuration has a public dataset named "production".'
-
     if (datasets.length === 0) {
       debug('No datasets found for project, prompting for name')
-      if (showDefaultConfigPrompt) {
-        output.print(datasetInfo)
-        defaultConfig = await promptForDefaultConfig(prompt)
-      }
-      const name = defaultConfig
-        ? 'production'
-        : await promptForDatasetName(prompt, {
-            message: 'Name of your first dataset:',
-          })
-      const aclMode = await getAclMode()
-      const spinner = context.output.spinner('Creating dataset').start()
-      await client.datasets.create(name, {aclMode: aclMode as DatasetAclMode})
-      spinner.succeed()
+      const {name, visibility} = await promptAndCreateDataset({
+        context,
+        datasetName: undefined, // Let it prompt
+        datasetVisibility: opts.aclMode as 'public' | 'private' | undefined,
+        unattended: unattended || !showDefaultConfigPrompt,
+      })
+      await createDatasetForProject(context, opts.projectId, name, visibility)
       return {datasetName: name, userAction: 'create'}
     }
 
@@ -1074,27 +1054,15 @@ export default async function initSanity(
     })
 
     if (selected === 'new') {
-      const existingDatasetNames = datasets.map((ds) => ds.name)
       debug('User wants to create a new dataset, prompting for name')
-      if (showDefaultConfigPrompt && !existingDatasetNames.includes('production')) {
-        output.print(datasetInfo)
-        defaultConfig = await promptForDefaultConfig(prompt)
-      }
-
-      const newDatasetName = defaultConfig
-        ? 'production'
-        : await promptForDatasetName(
-            prompt,
-            {
-              message: 'Dataset name:',
-            },
-            existingDatasetNames,
-          )
-      const aclMode = await getAclMode()
-      const spinner = context.output.spinner('Creating dataset').start()
-      await client.datasets.create(newDatasetName, {aclMode: aclMode as DatasetAclMode})
-      spinner.succeed()
-      return {datasetName: newDatasetName, userAction: 'create'}
+      const {name, visibility} = await promptAndCreateDataset({
+        context,
+        datasetName: undefined, // Let it prompt
+        datasetVisibility: opts.aclMode as 'public' | 'private' | undefined,
+        unattended: unattended || !showDefaultConfigPrompt,
+      })
+      await createDatasetForProject(context, opts.projectId, name, visibility)
+      return {datasetName: name, userAction: 'create'}
     }
 
     debug(`Returning selected dataset (${selected})`)
