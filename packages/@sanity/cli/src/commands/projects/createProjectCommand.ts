@@ -82,20 +82,9 @@ const createProjectCommand: CliCommandDefinition = {
       context.output.print(`Dataset: ${result.dataset.name} (${result.dataset.visibility})`)
     }
 
-    const {apiHost} = context
-      .apiClient({
-        requireProject: false,
-        requireUser: false,
-      })
-      .config()
-    // Get main hostname from the API host URL
-    // Ex: api.sanity.io -> sanity.io
-    // Ex: api.sanity.work -> sanity.work
-    const mainHostname = new URL(apiHost).hostname.split('.').slice(-2).join('.')
-
     context.output.print(``)
     context.output.print(
-      `Manage your project: https://www.${mainHostname}/manage/project/${result.projectId}`,
+      `Manage your project: https://www.sanity.io/manage/project/${result.projectId}`,
     )
   },
 }
