@@ -50,7 +50,7 @@ const createProjectCommand: CliCommandDefinition = {
     if (dataset === true) {
       // --dataset flag without value - let action handle prompting
       createDataset = true
-      datasetName = undefined // Don't set default here
+      datasetName = undefined
     } else if (typeof dataset === 'string') {
       // --dataset=name
       createDataset = true
@@ -63,18 +63,13 @@ const createProjectCommand: CliCommandDefinition = {
         organizationId: organization,
         createDataset,
         datasetName,
-        datasetVisibility: datasetVisibility, // Don't default here
+        datasetVisibility: datasetVisibility,
         unattended: y || yes,
       },
       context,
     )
 
-    if (format === 'json') {
-      context.output.print(JSON.stringify(result, null, 2))
-      return
-    }
-
-    printProjectCreationSuccess(result, context)
+    printProjectCreationSuccess(result, format || 'text', context)
   },
 }
 

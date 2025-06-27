@@ -160,9 +160,15 @@ export function formatProjectUrl(projectId: string, apiHost: string): string {
 
 export function printProjectCreationSuccess(
   result: ProjectCreationResult,
+  format: 'text' | 'json' | string,
   context: CliCommandContext,
 ): void {
   const {output, apiClient} = context
+
+  if (format === 'json') {
+    output.print(JSON.stringify(result, null, 2))
+    return
+  }
 
   output.print(`Project created successfully!`)
   output.print(`ID: ${result.projectId}`)
