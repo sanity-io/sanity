@@ -1,4 +1,5 @@
 import {Box, Flex, Layer, useMediaIndex} from '@sanity/ui'
+import {BREAKPOINTS} from '@sanity/ui/css'
 import {AnimatePresence, motion, type Transition, type Variants} from 'framer-motion'
 import {css, styled} from 'styled-components'
 
@@ -13,24 +14,20 @@ const VARIANTS: Variants = {
 
 const TRANSITION: Transition = {duration: 0.2}
 
-const FULLSCREEN_MEDIA_INDEX = 1
-const POSITION_ABSOLUTE_MEDIA_INDEX = 3
+const FULLSCREEN_MEDIA_INDEX = 2
+const POSITION_ABSOLUTE_MEDIA_INDEX = 4
 
-const RootFlex = styled(Flex)(({theme}) => {
-  const media = theme.sanity.media
-
+const RootFlex = styled(Flex)(() => {
   return css`
     min-height: 100%;
 
-    @media (max-width: ${media[POSITION_ABSOLUTE_MEDIA_INDEX]}px) {
+    @media (max-width: ${BREAKPOINTS[POSITION_ABSOLUTE_MEDIA_INDEX]}px) {
       position: relative;
     }
   `
 })
 
-const SidebarMotionLayer = styled(motion.create(Layer))(({theme}) => {
-  const media = theme.sanity.media
-
+const SidebarMotionLayer = styled(motion.create(Layer))(() => {
   return css`
     display: flex;
     flex-direction: column;
@@ -44,14 +41,14 @@ const SidebarMotionLayer = styled(motion.create(Layer))(({theme}) => {
       0px 6px 8px -4px var(--card-shadow-umbra-color),
       0px 12px 17px -1px var(--card-shadow-penumbra-color);
 
-    @media (max-width: ${media[POSITION_ABSOLUTE_MEDIA_INDEX]}px) {
+    @media (max-width: ${BREAKPOINTS[POSITION_ABSOLUTE_MEDIA_INDEX]}px) {
       bottom: 0;
       position: absolute;
       right: 0;
       top: 0;
     }
 
-    @media (max-width: ${media[FULLSCREEN_MEDIA_INDEX]}px) {
+    @media (max-width: ${BREAKPOINTS[FULLSCREEN_MEDIA_INDEX]}px) {
       border-left: 0;
       min-width: 100%;
       left: 0;

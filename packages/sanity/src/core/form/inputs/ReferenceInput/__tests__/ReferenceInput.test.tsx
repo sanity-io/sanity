@@ -1,6 +1,6 @@
 import {Schema} from '@sanity/schema'
 import {type Reference} from '@sanity/types'
-import {LayerProvider, studioTheme, ThemeProvider, ToastProvider} from '@sanity/ui'
+import {LayerProvider, studioTheme, ThemeProvider, ToastProvider} from '@sanity/ui-v2'
 import {render} from '@testing-library/react'
 import {noop} from 'lodash'
 import {forwardRef, useImperativeHandle} from 'react'
@@ -27,7 +27,7 @@ const UNAVAILABLE_PERMISSION_DENIED = {
 } as const
 
 const infinityNoop: any = new Proxy<any>(() => infinityNoop, {get: () => infinityNoop})
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
+
 const StubComponent = forwardRef(
   ({documentId, documentType}: {documentId: string; documentType: string}, ref) => {
     useImperativeHandle(ref, () => infinityNoop, [])

@@ -1,6 +1,7 @@
 import {AddDocumentIcon, CopyIcon, TrashIcon} from '@sanity/icons'
 import {type SchemaType} from '@sanity/types'
-import {Box, Card, type CardTone, Menu} from '@sanity/ui'
+import {Box, Card, Menu} from '@sanity/ui'
+import {type CardTone} from '@sanity/ui/theme'
 import {useCallback, useImperativeHandle, useMemo, useRef, useState} from 'react'
 import {styled} from 'styled-components'
 

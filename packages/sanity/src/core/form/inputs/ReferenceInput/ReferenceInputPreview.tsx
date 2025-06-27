@@ -1,6 +1,7 @@
 import {LaunchIcon as OpenInNewTabIcon, SyncIcon as ReplaceIcon, TrashIcon} from '@sanity/icons'
 import {type Reference} from '@sanity/types'
-import {Box, Card, type CardTone, Flex, Menu, MenuDivider, Stack} from '@sanity/ui'
+import {Box, Card, Flex, Menu, MenuDivider, Stack} from '@sanity/ui'
+import {type CardTone} from '@sanity/ui/theme'
 import {
   type ComponentProps,
   type FocusEvent,
@@ -47,6 +48,7 @@ function getTone({
 }
 const MENU_POPOVER_PROPS = {portal: true, tone: 'default'} as const
 
+// eslint-disable-next-line complexity
 export function ReferenceInputPreview(props: ReferenceInputProps & {children: React.ReactNode}) {
   const elementRef = useRef<HTMLDivElement | null>(null)
   const {schemaType, path, children, focusPath} = props
@@ -228,7 +230,7 @@ export function ReferenceInputPreview(props: ReferenceInputProps & {children: Re
 
   return (
     <Card border radius={2} padding={1} tone={tone}>
-      <Stack space={1}>
+      <Stack gap={1}>
         <Flex gap={1} align="center" style={{lineHeight: 0}}>
           <TooltipDelayGroupProvider>
             <ReferenceLinkCard

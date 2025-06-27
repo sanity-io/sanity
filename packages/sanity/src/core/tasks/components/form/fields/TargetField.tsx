@@ -1,8 +1,14 @@
 import {CloseIcon, DocumentIcon} from '@sanity/icons'
 import {Box, Card, Flex, LayerProvider, Stack, Text} from '@sanity/ui'
-// eslint-disable-next-line camelcase
-import {getTheme_v2} from '@sanity/ui/theme'
-import {type ForwardedRef, forwardRef, useCallback, useMemo, useState} from 'react'
+import {vars} from '@sanity/ui/css'
+import {
+  type ComponentProps,
+  type ForwardedRef,
+  forwardRef,
+  useCallback,
+  useMemo,
+  useState,
+} from 'react'
 import {IntentLink} from 'sanity/router'
 import {css, styled} from 'styled-components'
 
@@ -25,8 +31,6 @@ import {getTargetValue} from '../utils'
 import {FieldWrapperRoot} from './FieldWrapper'
 
 const EmptyReferenceRoot = styled(Card)((props) => {
-  const theme = getTheme_v2(props.theme)
-
   return css`
     &:focus {
       border: 1px solid var(--card-focus-ring-color);
@@ -36,15 +40,14 @@ const EmptyReferenceRoot = styled(Card)((props) => {
       border: 1px solid var(--card-focus-ring-color);
     }
     &:hover {
-      border-color: ${theme.color.input.default.hovered.border};
+      border-color: ${vars.color.tinted.default.border[2]};
     }
   `
 })
 
 const Placeholder = styled(Text)((props) => {
-  const theme = getTheme_v2(props.theme)
   return `
-      color: ${theme.color.input.default.enabled.placeholder};
+      color: ${vars.color.tinted.default.border[4]};
       margin-left: 3px;
   `
 })
@@ -98,7 +101,10 @@ function Preview(props: {value: TaskTarget; handleRemove: () => void}) {
   const {t} = useTranslation(tasksLocaleNamespace)
   const CardLink = useMemo(
     () =>
-      forwardRef(function LinkComponent(linkProps, ref: ForwardedRef<HTMLAnchorElement>) {
+      forwardRef(function LinkComponent(
+        linkProps: ComponentProps<'a'>,
+        ref: ForwardedRef<HTMLAnchorElement>,
+      ) {
         const versionId = getVersionFromId(documentId)
 
         return (
@@ -199,7 +205,7 @@ export function TargetField(
         <LayerProvider zOffset={100}>
           <CurrentWorkspaceProvider>
             <SearchProvider>
-              <Stack space={2}>
+              <Stack gap={2}>
                 {mode === 'create' && (
                   <Box data-ui="fieldHeaderContentBox">
                     <FormFieldHeaderText

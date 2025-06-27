@@ -1,6 +1,8 @@
 import {ChevronDownIcon} from '@sanity/icons'
 import {type CurrentUser} from '@sanity/types'
-import {type AvatarSize, Flex, Stack, type StackProps, useLayer} from '@sanity/ui'
+import {Flex, Stack, type StackProps, useCard, useLayer} from '@sanity/ui'
+import {vars} from '@sanity/ui/css'
+import {type AvatarSize} from '@sanity/ui/theme'
 import {
   type KeyboardEvent,
   memo,
@@ -75,10 +77,8 @@ const StyledThreadCard = styled(ThreadCard)(() => {
 })
 
 const ExpandButton = styled(Button)(({theme}) => {
-  const {medium} = theme.sanity.fonts.text.weights
-
   return css`
-    font-weight: ${medium};
+    font-weight: ${vars.font.text.weight.medium};
   `
 })
 
@@ -142,6 +142,7 @@ export const CommentsListItem = memo(function CommentsListItem(props: CommentsLi
     readOnly,
     replies = EMPTY_ARRAY,
   } = props
+  const card = useCard()
   const {t} = useTranslation(commentsLocaleNamespace)
   const [value, setValue] = useState<CommentMessage>(EMPTY_ARRAY)
   const [collapsed, setCollapsed] = useState<boolean>(true)
@@ -309,6 +310,7 @@ export const CommentsListItem = memo(function CommentsListItem(props: CommentsLi
 
   return (
     <StyledThreadCard
+      $isDark={card.scheme === 'dark'}
       data-active={isSelected ? 'true' : 'false'}
       data-hovered={mouseOver ? 'true' : 'false'}
       data-testid="comments-list-item"
@@ -328,7 +330,7 @@ export const CommentsListItem = memo(function CommentsListItem(props: CommentsLi
         // Add some extra padding to the bottom if there is no reply input.
         // This is to make the UI look more balanced.
         paddingBottom={canReply ? undefined : 1}
-        space={4}
+        gap={4}
       >
         <Stack as="li" {...applyCommentIdAttr(parentComment._id)}>
           <CommentsListItemLayout

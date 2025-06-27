@@ -1,14 +1,7 @@
-import {buildTheme, type RootTheme} from '@sanity/ui/theme'
+import {buildTheme, type RootTheme} from '@sanity/ui-v2/theme'
 
 export * from './_legacy'
 export * from './types'
 
-let c: RootTheme
-
 /** @internal */
-export const defaultTheme = (): RootTheme => {
-  if (!c) {
-    c = buildTheme()
-  }
-  return c
-}
+export const defaultTheme: RootTheme = buildTheme()

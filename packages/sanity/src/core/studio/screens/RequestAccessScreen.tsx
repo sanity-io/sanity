@@ -177,7 +177,7 @@ export function RequestAccessScreen() {
     <Card height="fill">
       <Dialog id="not-authorized-dialog" header="Not authorized" width={1}>
         <Box>
-          <Stack space={4}>
+          <Stack gap={4}>
             <Text>
               You are not authorized to access this studio (currently signed in as{' '}
               <strong>
@@ -225,7 +225,7 @@ export function RequestAccessScreen() {
                     </>
                   )}
                 </Text>
-                <Stack space={3} paddingBottom={0}>
+                <Stack gap={3} paddingBottom={0}>
                   <TextInput
                     maxLength={MAX_NOTE_LENGTH}
                     disabled={isSubmitting}

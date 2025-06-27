@@ -1,4 +1,5 @@
 import {Card, Flex} from '@sanity/ui'
+import {vars} from '@sanity/ui/css'
 import {css, styled} from 'styled-components'
 
 import {Dialog, Popover} from '../../../../../ui-components'
@@ -9,7 +10,7 @@ export const StyledPopover = styled(Popover)(() => {
       width: 320px;
       display: flex;
       flex-direction: column;
-      border-radius: ${({theme}) => theme.sanity.radius[3]}px;
+      border-radius: ${vars.radius[3]};
       position: relative;
       overflow: hidden;
       overflow: clip;

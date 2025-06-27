@@ -58,6 +58,7 @@
     "@repo/package.config": "workspace:*",
     "@repo/test-config": "workspace:*",
     "@sanity/insert-menu": "1.1.12",
+    "@sanity/ui": "3.0.0-static.38",
     "@types/react": "^19.1.0",
     "@vitejs/plugin-react": "catalog:",
     "react": "catalog:react18",
@@ -65,6 +66,7 @@
     "vitest": "^3.2.3"
   },
   "peerDependencies": {
+    "@sanity/ui": "^3",
     "@types/react": "18 || 19"
   }
 }

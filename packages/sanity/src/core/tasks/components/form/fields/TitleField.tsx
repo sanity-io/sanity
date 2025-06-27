@@ -1,22 +1,19 @@
 import {type Path} from '@sanity/types'
-// eslint-disable-next-line camelcase
-import {getTheme_v2} from '@sanity/ui/theme'
+import {vars} from '@sanity/ui/css'
 import {type ChangeEvent, useCallback, useEffect, useRef} from 'react'
 import {css, styled} from 'styled-components'
 
 import {type FormPatch, type PatchEvent, set, type StringFieldProps, unset} from '../../../../form'
 
-const Root = styled.div((props) => {
-  const theme = getTheme_v2(props.theme)
+const Root = styled.div(() => {
   return `
-      display: grid;
-      grid-template-columns: 1fr;
-      padding-top: ${theme.space[3]}px;
-    `
+    display: grid;
+    grid-template-columns: 1fr;
+    padding-top: ${vars.space[3]};
+  `
 })
-const TitleInput = styled.textarea((props) => {
-  const {color, font} = getTheme_v2(props.theme)
 
+const TitleInput = styled.textarea(() => {
   return css`
     resize: none;
     overflow: hidden;
@@ -28,10 +25,10 @@ const TitleInput = styled.textarea((props) => {
     outline: none;
     width: 100%;
     box-sizing: border-box;
-    font-family: ${font.text.family};
-    font-weight: ${font.text.weights.semibold};
-    font-size: ${font.text.sizes[3].fontSize}px;
-    line-height: ${font.text.sizes[3].lineHeight}px;
+    font-family: ${vars.font.text.family};
+    font-weight: ${vars.font.text.weight.semibold};
+    font-size: ${vars.font.text.scale[3].fontSize}px;
+    line-height: ${vars.font.text.scale[3].lineHeight}px;
     margin: 0;
     position: relative;
     z-index: 1;
@@ -47,10 +44,10 @@ const TitleInput = styled.textarea((props) => {
       transition-delay: 86400s /* 24h */;
     }
 
-    color: ${color.input.default.enabled.fg};
+    color: ${vars.color.tinted.default.fg[2]};
 
     &::placeholder {
-      color: ${color.input.default.enabled.placeholder};
+      color: ${vars.color.tinted.default.border[4]};
     }
   `
 })

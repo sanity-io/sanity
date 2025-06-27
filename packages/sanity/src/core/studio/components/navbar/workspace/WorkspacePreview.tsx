@@ -61,7 +61,7 @@ export function WorkspacePreview(props: WorkspacePreviewProps) {
     <Flex align="center" flex="none" gap={3}>
       <WorkspacePreviewIcon icon={icon} size="small" />
 
-      <Stack flex={1} space={2}>
+      <Stack flex={1} gap={2}>
         <Text size={1} textOverflow="ellipsis" weight="medium">
           {title}
         </Text>

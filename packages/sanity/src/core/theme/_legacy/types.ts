@@ -1,7 +1,7 @@
 import {type ColorTintKey} from '@sanity/color'
 
 /** @internal */
-// eslint-disable-next-line no-unused-vars
+
 export type LegacyThemeTints = {[key in ColorTintKey]: string}
 
 /**

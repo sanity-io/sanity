@@ -18,7 +18,7 @@ export function DebugDocumentTypes({filter}: DebugDocumentTypesProps) {
 
   return (
     <Card borderTop padding={3} tone="transparent">
-      <Stack space={2}>
+      <Stack gap={2}>
         <Code size={0} weight="medium">
           Document types
         </Code>

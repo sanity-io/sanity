@@ -1,4 +1,4 @@
-import {type Columns, type ResponsiveProp} from '@sanity/ui/css'
+import {type GridTemplateColumns, type ResponsiveProp} from '@sanity/ui/css'
 
 import {type PreviewConfig} from '../../preview'
 import {type RuleDef, type ValidationBuilder} from '../../ruleBuilder'
@@ -15,7 +15,7 @@ import {
 export interface ObjectOptions extends BaseSchemaTypeOptions {
   collapsible?: boolean
   collapsed?: boolean
-  columns?: ResponsiveProp<Columns>
+  columns?: ResponsiveProp<GridTemplateColumns>
   modal?: {
     type?: 'dialog' | 'popover'
     width?: number | number[] | 'auto'

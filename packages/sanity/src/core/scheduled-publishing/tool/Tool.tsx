@@ -1,4 +1,5 @@
-import {Box, Container, Flex, Text, useTheme} from '@sanity/ui'
+import {Box, Container, Flex, Text} from '@sanity/ui'
+import {vars} from '@sanity/ui/css'
 import {parse} from 'date-fns'
 import {useEffect, useMemo, useRef} from 'react'
 import {type RouterContextValue, useRouter} from 'sanity/router'
@@ -43,7 +44,6 @@ export default function Tool() {
   const {scheduledPublishing, releases} = useWorkspace()
   const releasesToolAvailable = useReleasesToolAvailable()
 
-  const {sanity: theme} = useTheme()
   const {error, isInitialLoading, schedules = NO_SCHEDULE} = usePollSchedules()
   const {t} = useTranslation()
   const {enabled, hasUsedScheduledPublishing} = useScheduledPublishingEnabled()
@@ -136,7 +136,7 @@ export default function Tool() {
           <Column display="flex" flex={1} overflow="hidden">
             <TimeZoneButtonElementQuery
               style={{
-                background: theme.color.card.enabled.bg,
+                background: vars.color.bg,
                 position: 'sticky',
                 top: 0,
                 zIndex: 1,

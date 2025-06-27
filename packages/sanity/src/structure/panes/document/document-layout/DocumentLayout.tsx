@@ -1,4 +1,5 @@
-import {DialogProvider, type DialogProviderProps, Flex, useElementRect} from '@sanity/ui'
+import {DialogProvider, type DialogProviderProps, Flex} from '@sanity/ui'
+import {useElementRect} from '@sanity/ui-v2'
 import {isHotkey} from 'is-hotkey-esm'
 import {useCallback, useMemo, useState} from 'react'
 import {

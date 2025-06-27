@@ -1,4 +1,5 @@
-import {Card, rem, Text} from '@sanity/ui'
+import {Card, Text} from '@sanity/ui'
+import {vars} from '@sanity/ui/css'
 import {styled} from 'styled-components'
 
 import {useTranslation} from '../../../i18n'
@@ -6,7 +7,7 @@ import {type StringDiff, type StringDiffSegment} from '../../types'
 import {DiffCard} from './DiffCard'
 
 const RoundedCard = styled.span`
-  border-radius: ${({theme}) => rem(theme.sanity.radius[1])};
+  border-radius: ${vars.radius[1]};
 `
 
 const ChangeSegment = styled(Text)`
@@ -81,11 +82,7 @@ export function DiffString(props: {diff: StringDiff}) {
   return (
     <>
       {(diff.segments || []).map((segment, segmentIndex) => (
-        <DiffStringSegment
-          // eslint-disable-next-line react/no-array-index-key
-          key={segmentIndex}
-          segment={segment}
-        />
+        <DiffStringSegment key={segmentIndex} segment={segment} />
       ))}
     </>
   )

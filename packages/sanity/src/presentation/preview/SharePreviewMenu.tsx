@@ -1,4 +1,4 @@
-/* eslint-disable @typescript-eslint/no-shadow,no-negated-condition,no-nested-ternary */
+/* eslint-disable @typescript-eslint/no-shadow,no-negated-condition */
 import {type ClientPerspective, type SyncTag} from '@sanity/client'
 import {CopyIcon, ShareIcon} from '@sanity/icons'
 import {SanityMonogram} from '@sanity/logos'
@@ -207,8 +207,8 @@ export const SharePreviewMenu = memo(function SharePreviewMenuComponent(
             <>
               <label style={{cursor: 'pointer'}}>
                 <Grid
-                  columns={2}
-                  rows={2}
+                  gridTemplateColumns={2}
+                  gridTemplateRows={2}
                   gapX={3}
                   gapY={1}
                   style={{
@@ -256,7 +256,7 @@ export const SharePreviewMenu = memo(function SharePreviewMenuComponent(
                 </Grid>
               </label>
               <Box padding={3} paddingTop={2}>
-                <Stack space={3}>
+                <Stack gap={3}>
                   <Card
                     tone={busy || !url ? 'transparent' : undefined}
                     style={{

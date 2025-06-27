@@ -10,6 +10,7 @@ import {
   PortalProvider,
   useMediaIndex,
 } from '@sanity/ui'
+import {BREAKPOINTS} from '@sanity/ui/css'
 import {useCallback, useContext, useEffect, useMemo, useRef, useState} from 'react'
 import {NavbarContext} from 'sanity/_singletons'
 import {type RouterState, useRouterState} from 'sanity/router'
@@ -57,7 +58,7 @@ const RootCard = styled(Card)`
 
 const NavGrid = styled(Grid)`
   grid-template-columns: auto auto auto;
-  @media screen and (min-width: ${({theme}) => `${theme.sanity.media[4]}px`}) {
+  @media screen and (min-width: ${BREAKPOINTS[5]}px) {
     grid-template-columns: 1fr auto 1fr;
   }
 `
@@ -66,10 +67,7 @@ const NavGrid = styled(Grid)`
  * @hidden
  * @beta */
 export function StudioNavbar(props: Omit<NavbarProps, 'renderDefault'>) {
-  const {
-    // eslint-disable-next-line camelcase
-    __internal_actions: actions = EMPTY_ARRAY,
-  } = props
+  const {__internal_actions: actions = EMPTY_ARRAY} = props
 
   const {name, tools} = useWorkspace()
   const routerState = useRouterState()

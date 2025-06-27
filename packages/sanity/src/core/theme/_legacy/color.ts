@@ -1,5 +1,5 @@
 import {hues} from '@sanity/color'
-import {createColorTheme, rgba, type ThemeColorSchemes} from '@sanity/ui/theme'
+import {createColorTheme, rgba, type ThemeColorSchemes} from '@sanity/ui-v2/theme'
 
 import {_isDark, _multiply, _screen} from './helpers'
 import {type LegacyPalette} from './palette'

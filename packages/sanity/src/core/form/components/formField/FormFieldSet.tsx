@@ -1,6 +1,5 @@
-/* eslint-disable camelcase */
 import {type DeprecatedProperty, type FormNodeValidation} from '@sanity/types'
-import {Badge, Box, type BoxProps, Flex, Stack, Text, type Theme} from '@sanity/ui'
+import {Badge, Box, type BoxProps, Flex, Stack, Text} from '@sanity/ui'
 import {
   type FocusEvent,
   type ForwardedRef,
@@ -24,7 +23,7 @@ import {type FieldCommentsProps} from '../../types'
 import {FormFieldBaseHeader} from './FormFieldBaseHeader'
 import {FormFieldSetLegend} from './FormFieldSetLegend'
 import {FormFieldValidationStatus} from './FormFieldValidationStatus'
-import {AlignedBottomGrid, focusRingStyle} from './styles'
+import {AlignedBottomGrid} from './styles'
 
 /** @internal */
 export interface FormFieldSetProps {
@@ -85,11 +84,10 @@ const Content = styled(Box)<{
    */
   $borderLeft: boolean
   $focused?: boolean
-  theme: Theme
 }>((props) => {
-  const {$borderLeft, $focused, theme} = props
-  const {focusRing} = theme.sanity
-  const {base} = theme.sanity.color
+  const {$borderLeft, $focused} = props
+  // const {focusRing} = theme.sanity
+  // const {base} = theme.sanity.color
 
   return css`
     outline: none;
@@ -110,7 +108,7 @@ const Content = styled(Box)<{
     `}
 
     &:focus {
-      box-shadow: ${focusRingStyle({base, focusRing: {...focusRing, offset: 2}})};
+      /* TODO */
     }
 
     &:focus:not(:focus-visible) {
@@ -190,7 +188,7 @@ export const FormFieldSet = forwardRef(function FormFieldSet(
       {...restProps}
       onMouseEnter={onMouseEnter}
       onMouseLeave={onMouseLeave}
-      space={2}
+      gap={2}
     >
       <FormFieldBaseHeader
         __internal_comments={comments}
@@ -201,7 +199,7 @@ export const FormFieldSet = forwardRef(function FormFieldSet(
         presence={presence}
         inputId={inputId}
         content={
-          <Stack space={3}>
+          <Stack gap={3}>
             <Flex align="center">
               {title && (
                 <FormFieldSetLegend

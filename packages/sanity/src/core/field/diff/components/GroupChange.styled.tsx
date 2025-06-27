@@ -1,4 +1,4 @@
-import {rem} from '@sanity/ui'
+import {vars} from '@sanity/ui/css'
 import {styled} from 'styled-components'
 
 export const ChangeListWrapper = styled.div`
@@ -7,9 +7,9 @@ export const ChangeListWrapper = styled.div`
 `
 
 export const GroupChangeContainer = styled.div`
-  --field-change-error: ${({theme}) => theme.sanity.color.solid.critical.enabled.bg};
-  --diff-inspect-padding-xsmall: ${({theme}) => rem(theme.sanity.space[1])};
-  --diff-inspect-padding-small: ${({theme}) => rem(theme.sanity.space[2])};
+  --field-change-error: ${vars.color.solid.critical.bg[0]};
+  --diff-inspect-padding-xsmall: ${vars.space[1]};
+  --diff-inspect-padding-small: ${vars.space[2]};
 
   position: relative;
   padding: var(--diff-inspect-padding-xsmall) var(--diff-inspect-padding-small);

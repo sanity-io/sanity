@@ -1,7 +1,8 @@
 'use no memo'
 // The `use no memo` directive is due to a known issue with react-virtual and react compiler: https://github.com/TanStack/virtual/issues/736
 
-import {Box, Card, type CardProps, Flex, rem, Stack, Text, useTheme} from '@sanity/ui'
+import {Box, Card, type CardProps, Flex, Stack, Text} from '@sanity/ui'
+import {vars} from '@sanity/ui/css'
 import {
   defaultRangeExtractor,
   type Range,
@@ -32,7 +33,8 @@ type RowDatum<TableData, AdditionalRowTableData> = (AdditionalRowTableData exten
   : TableData & AdditionalRowTableData) & {isLoading?: boolean}
 
 export type TableRowProps = Omit<
-  CardProps & Omit<HTMLProps<HTMLDivElement>, 'as' | 'height'>,
+  // @ts-expect-error Fix this in @sanity/ui
+  CardProps<'tr'> & Omit<HTMLProps<HTMLDivElement>, 'as' | 'height'>,
   'ref'
 > &
   RefAttributes<HTMLDivElement> & {
@@ -164,14 +166,30 @@ const TableInner = <TableData, AdditionalRowTableData>({
       sorting: false,
       width: 50,
       header: ({headerProps: {id}}) => (
-        <Flex as="th" id={id} paddingY={3} paddingX={3} sizing="border" style={{width: '50px'}}>
+        <Flex
+          // @ts-expect-error Fix this in @sanity/ui
+          as="th"
+          id={id}
+          paddingY={3}
+          paddingX={3}
+          sizing="border"
+          style={{width: '50px'}}
+        >
           <Text muted size={1} weight="medium">
             &nbsp;
           </Text>
         </Flex>
       ),
       cell: ({datum, cellProps: {id}}) => (
-        <Flex as="td" id={id} align="center" flex="none" padding={3} style={{width: '25px'}}>
+        <Flex
+          // @ts-expect-error Fix this in @sanity/ui
+          as="td"
+          id={id}
+          align="center"
+          flex="none"
+          padding={3}
+          style={{width: '25px'}}
+        >
           {(!datum.isLoading && rowActions?.({datum})) || <Box style={{width: '25px'}} />}
         </Flex>
       ),
@@ -200,6 +218,7 @@ const TableInner = <TableData, AdditionalRowTableData>({
           <Card
             key={cardKey}
             data-testid="table-row"
+            // @ts-expect-error Fix this in @sanity/ui
             as="tr"
             borderBottom
             display="flex"
@@ -220,6 +239,7 @@ const TableInner = <TableData, AdditionalRowTableData>({
                     {...datum, isLoading: loading} as RowDatum<TableData, AdditionalRowTableData>
                   }
                   cellProps={{
+                    // @ts-expect-error Fix this in @sanity/ui
                     as: 'td',
                     id: String(id),
                     style: {...style, width: width || undefined},
@@ -238,6 +258,7 @@ const TableInner = <TableData, AdditionalRowTableData>({
     if (typeof emptyState === 'string') {
       return (
         <Card
+          // @ts-expect-error Fix this in @sanity/ui
           as="tr"
           borderBottom
           display="flex"
@@ -246,7 +267,12 @@ const TableInner = <TableData, AdditionalRowTableData>({
             justifyContent: 'center',
           }}
         >
-          <Text as="td" muted size={1}>
+          <Text
+            // @ts-expect-error Fix this in @sanity/ui
+            as="td"
+            muted
+            size={1}
+          >
             {emptyState}
           </Text>
         </Card>
@@ -264,9 +290,7 @@ const TableInner = <TableData, AdditionalRowTableData>({
     [amalgamatedColumnDefs],
   )
 
-  const theme = useTheme()
-
-  const maxInlineSize = (!hideTableInlinePadding && theme.sanity.v2?.container[3]) || 0
+  // const theme = useTheme()
 
   const renderLoadingRows = (
     rowRenderer: (
@@ -324,17 +348,25 @@ const TableInner = <TableData, AdditionalRowTableData>({
           {
             'width': '100%',
             'position': 'relative',
-            '--maxInlineSize': rem(maxInlineSize),
-            '--paddingInline': rem(theme.sanity.v2?.space[3] ?? 0),
+            '--maxInlineSize': hideTableInlinePadding ? 0 : vars.container[3],
+            '--paddingInline': vars.space[3],
           } as CSSProperties
         }
       >
-        <Stack as="table">
+        <Stack
+          // @ts-expect-error Fix this in @sanity/ui
+          as="table"
+        >
           <TableHeader
             headers={headers}
             searchDisabled={loading || (!searchTerm && !data.length)}
           />
-          <Stack as="tbody">{tableContent()}</Stack>
+          <Stack
+            // @ts-expect-error Fix this in @sanity/ui
+            as="tbody"
+          >
+            {tableContent()}
+          </Stack>
         </Stack>
       </div>
     </div>

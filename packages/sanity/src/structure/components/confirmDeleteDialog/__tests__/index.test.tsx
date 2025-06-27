@@ -6,7 +6,7 @@ describe('confirmDeleteDialog', () => {
 // // eslint-disable-next-line import/no-unassigned-import
 // import React from 'react'
 // import {render, act} from '@testing-library/react'
-// import {ThemeProvider, ToastProvider, studioTheme} from '@sanity/ui'
+// import {ThemeProvider, ToastProvider, studioTheme} from '@sanity/ui-v2'
 // import type {Subject} from 'rxjs'
 // import documentStore from 'part:@sanity/base/datastore/document'
 // import client from 'part:@sanity/base/client'

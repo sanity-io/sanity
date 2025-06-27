@@ -1,6 +1,6 @@
 import {type Path} from '@sanity/types'
 import {Box, Card, Flex, Text, useClickOutsideEvent} from '@sanity/ui'
-// eslint-disable-next-line camelcase
+import {vars} from '@sanity/ui/css'
 import {cloneElement, type KeyboardEvent, useCallback, useRef, useState} from 'react'
 import ReactFocusLock from 'react-focus-lock'
 import {css, styled} from 'styled-components'
@@ -41,7 +41,7 @@ const StyledPopover = styled(Popover)(() => {
       width: 250px;
       display: flex;
       flex-direction: column;
-      border-radius: ${({theme}) => theme.sanity.radius[3]}px;
+      border-radius: ${vars.radius[3]};
       position: relative;
       overflow: hidden;
       overflow: clip;

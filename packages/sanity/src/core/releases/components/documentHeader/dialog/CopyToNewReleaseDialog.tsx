@@ -1,6 +1,7 @@
 import {type EditableReleaseDocument} from '@sanity/client'
 import {useTelemetry} from '@sanity/telemetry/react'
-import {type BadgeTone, Box, Card, Flex, Text, useToast} from '@sanity/ui'
+import {Box, Card, Flex, Text, useToast} from '@sanity/ui'
+import {type ElementTone} from '@sanity/ui/theme'
 import {useCallback, useState} from 'react'
 
 import {Dialog} from '../../../../../ui-components/dialog/Dialog'
@@ -23,7 +24,7 @@ export function CopyToNewReleaseDialog(props: {
   onClose: () => void
   documentId: string
   documentType: string
-  tone: BadgeTone
+  tone: ElementTone
   title: string
   onCreateVersion: (releaseId: string) => void
 }): React.JSX.Element {

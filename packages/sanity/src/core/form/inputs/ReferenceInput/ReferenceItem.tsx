@@ -7,7 +7,8 @@ import {
   TrashIcon,
 } from '@sanity/icons'
 import {type Reference, type ReferenceSchemaType, type SchemaType} from '@sanity/types'
-import {Box, type CardTone, Menu, MenuDivider} from '@sanity/ui'
+import {Box, Menu, MenuDivider} from '@sanity/ui'
+import {type CardTone} from '@sanity/ui/theme'
 import {
   type ComponentProps,
   type ForwardedRef,
@@ -71,6 +72,7 @@ function getTone({
 }
 const MENU_POPOVER_PROPS = {portal: true, tone: 'default'} as const
 
+// eslint-disable-next-line complexity
 export function ReferenceItem<Item extends ReferenceItemValue = ReferenceItemValue>(
   props: ReferenceItemProps<Item>,
 ) {

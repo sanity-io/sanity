@@ -2,8 +2,7 @@ import {CopyIcon, LinkIcon, TrashIcon} from '@sanity/icons'
 import {useTelemetry} from '@sanity/telemetry/react'
 import {type PortableTextBlock} from '@sanity/types'
 import {Box, Card, Flex, Menu, MenuDivider, Stack} from '@sanity/ui'
-// eslint-disable-next-line camelcase
-import {getTheme_v2} from '@sanity/ui/theme'
+import {vars} from '@sanity/ui/css'
 import {useCallback} from 'react'
 import {css, styled} from 'styled-components'
 
@@ -30,11 +29,10 @@ import {AssigneeEditFormField, DateEditFormField, StatusSelector, Title} from '.
 import {RemoveTaskDialog} from '../RemoveTaskDialog'
 import {getMentionedUsers} from '../utils'
 
-const FirstRow = styled(Flex)((props) => {
-  const theme = getTheme_v2(props.theme)
+const FirstRow = styled(Flex)(() => {
   return css`
-    column-gap: ${theme.space[2]}px;
-    row-gap: ${theme.space[3]}px;
+    column-gap: ${vars.space[2]};
+    row-gap: ${vars.space[3]};
   `
 })
 

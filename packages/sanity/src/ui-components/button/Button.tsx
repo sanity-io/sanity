@@ -1,17 +1,22 @@
 /* eslint-disable no-restricted-imports */
 
-import {Button as UIButton, type ButtonProps as UIButtonProps} from '@sanity/ui'
-import {type ElementType, type ForwardedRef, forwardRef, type HTMLProps, useCallback} from 'react'
+import {
+  Button as UIButton,
+  type ButtonElementType,
+  type ButtonProps as UIButtonProps,
+  type Props,
+} from '@sanity/ui'
+import {useCallback} from 'react'
 import {styled} from 'styled-components'
 
-import {Tooltip, type TooltipProps} from '..'
 import {
   ConditionalWrapper,
   type ConditionalWrapperRenderWrapperCallback,
 } from '../conditionalWrapper'
+import {Tooltip, type TooltipProps} from '../tooltip'
 
 type BaseButtonProps = Pick<
-  UIButtonProps,
+  UIButtonProps<'button'>,
   | 'fontSize'
   | 'icon'
   | 'iconRight'
@@ -24,7 +29,7 @@ type BaseButtonProps = Pick<
   | 'type'
   | 'width'
 > & {
-  as?: ElementType
+  as?: ButtonElementType
   size?: 'default' | 'large'
   radius?: 'full'
 }
@@ -44,8 +49,10 @@ type IconButton = {
   tooltipProps: TooltipProps | null
 }
 
+type ButtonOwnProps = BaseButtonProps & (ButtonWithText | IconButton)
+
 /** @internal */
-export type ButtonProps = BaseButtonProps & (ButtonWithText | IconButton)
+export type ButtonProps<E extends ButtonElementType = 'button'> = Props<ButtonOwnProps, E>
 
 const LARGE_BUTTON_PROPS: UIButtonProps = {
   space: 3,
@@ -64,17 +71,17 @@ const TooltipButtonWrapper = styled.span`
  *
  * @internal
  */
-export const Button = forwardRef(function Button(
-  {
+export function Button<E extends ButtonElementType = 'button'>(props: ButtonProps<E>) {
+  const {
+    as = 'button',
     size = 'default',
     mode = 'default',
     paddingY,
     tone = 'default',
     tooltipProps,
     ...rest
-  }: ButtonProps & Omit<HTMLProps<HTMLButtonElement>, 'as' | 'size' | 'title' | 'width' | 'wrap'>,
-  ref: ForwardedRef<HTMLButtonElement>,
-) {
+  } = props as ButtonProps<'button'>
+
   const renderWrapper = useCallback<ConditionalWrapperRenderWrapperCallback>(
     (children) => {
       return (
@@ -91,7 +98,7 @@ export const Button = forwardRef(function Button(
 
   return (
     <ConditionalWrapper condition={!!tooltipProps} wrapper={renderWrapper}>
-      <UIButton {...rest} {...sizeProps} paddingY={paddingY} ref={ref} mode={mode} tone={tone} />
+      <UIButton {...rest} {...sizeProps} as={as} paddingY={paddingY} mode={mode} tone={tone} />
     </ConditionalWrapper>
   )
-})
+}

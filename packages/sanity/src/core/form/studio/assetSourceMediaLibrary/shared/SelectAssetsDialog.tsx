@@ -1,5 +1,5 @@
 import {type AssetFromSource, type FileSchemaType, type ImageSchemaType} from '@sanity/types'
-import {Flex, Stack, useTheme, useToast} from '@sanity/ui'
+import {Flex, Stack, useCard, useToast} from '@sanity/ui'
 import {type ReactNode, useCallback, useState} from 'react'
 
 import {Button} from '../../../../../ui-components'
@@ -26,9 +26,8 @@ export interface SelectAssetsDialogProps {
 }
 
 export function SelectAssetsDialog(props: SelectAssetsDialogProps): ReactNode {
-  const theme = useTheme()
+  const card = useCard()
   const {t} = useTranslation()
-  const {dark} = theme.sanity.color
   const libraryId = useMediaLibraryId()
 
   const mediaLibraryConfig = useSanityMediaLibraryConfig()
@@ -57,7 +56,7 @@ export function SelectAssetsDialog(props: SelectAssetsDialogProps): ReactNode {
   const appBasePath = mediaLibraryConfig.__internal.appBasePath
   const iframeUrl =
     `${appHost}${appBasePath}/plugin/${pluginApiVersion}/library/${libraryId}/assets?selectionType=${selectionType}` +
-    `&selectAssetTypes=${selectAssetType}&scheme=${dark ? 'dark' : 'light'}&auth=${authType}`
+    `&selectAssetTypes=${selectAssetType}&scheme=${card.scheme}&auth=${authType}`
   const {onLinkAssets} = useLinkAssets({schemaType})
 
   const handleSelect = useCallback(async () => {
@@ -104,9 +103,9 @@ export function SelectAssetsDialog(props: SelectAssetsDialogProps): ReactNode {
       data-testid="media-library-plugin-dialog-select-assets"
       width={3}
       footer={
-        <Flex width="full" gap={3} justify="flex-end" padding={2}>
-          <Stack space={3}>
-            <Flex width="full" gap={3} justify="flex-end" padding={3}>
+        <Flex width="fill" gap={3} justify="flex-end" padding={2}>
+          <Stack gap={3}>
+            <Flex width="fill" gap={3} justify="flex-end" padding={3}>
               <Button
                 mode="ghost"
                 onClick={handleClose}

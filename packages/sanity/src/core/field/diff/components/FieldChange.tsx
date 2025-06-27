@@ -120,7 +120,7 @@ export function FieldChange(
   const content = useMemo(
     () =>
       hidden ? null : (
-        <Stack space={1} as={FieldChangeContainer}>
+        <Stack gap={1} as={FieldChangeContainer}>
           {change.showHeader && <ChangeBreadcrumb change={change} titlePath={change.titlePath} />}
           <ParentWrapper
             path={fieldPath}
@@ -152,7 +152,7 @@ export function FieldChange(
                 {isComparingCurrent && !isPermissionsLoading && permissions?.granted && (
                   <Popover
                     content={
-                      <Stack space={3}>
+                      <Stack gap={3}>
                         <Box paddingY={3}>
                           <Text size={1}>
                             {t('changes.action.revert-changes-description', {count: 1})}

@@ -1,5 +1,5 @@
 /* eslint-disable import/export */
-import {LayerProvider, studioTheme, ThemeProvider} from '@sanity/ui'
+import {LayerProvider, studioTheme, ThemeProvider} from '@sanity/ui-v2'
 import {render, type RenderOptions} from '@testing-library/react'
 
 const Providers = ({children}: {children: React.ReactNode}) => {

@@ -78,7 +78,7 @@ export function TasksStudioSidebarInner() {
 
   return (
     <RootCard display="flex" height="fill" flex={1} overflow="hidden">
-      <HeaderStack space={3} padding={3} sizing="border">
+      <HeaderStack gap={3} padding={3} sizing="border">
         <TasksSidebarHeader items={filteredList} />
         {viewMode === 'list' && !isLoading && (
           <TasksListTabs activeTabId={activeTabId} onChange={setActiveTab} />

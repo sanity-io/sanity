@@ -1,7 +1,6 @@
 import {type EditableReleaseDocument} from '@sanity/client'
 import {Stack} from '@sanity/ui'
-// eslint-disable-next-line camelcase
-import {getTheme_v2} from '@sanity/ui/theme'
+import {vars} from '@sanity/ui/css'
 import {type ChangeEvent, useCallback, useEffect, useRef, useState} from 'react'
 import {css, styled} from 'styled-components'
 
@@ -9,8 +8,7 @@ import {useTranslation} from '../../../i18n/hooks/useTranslation'
 
 const MAX_DESCRIPTION_HEIGHT = 200
 
-const TitleInput = styled.input((props) => {
-  const {color, font} = getTheme_v2(props.theme)
+const TitleInput = styled.input(() => {
   return css`
     resize: none;
     overflow: hidden;
@@ -22,10 +20,10 @@ const TitleInput = styled.input((props) => {
     outline: none;
     width: 100%;
     box-sizing: border-box;
-    font-family: ${font.text.family};
-    font-weight: ${font.text.weights.bold};
-    font-size: ${font.text.sizes[4].fontSize}px;
-    line-height: ${font.text.sizes[4].lineHeight}px;
+    font-family: ${vars.font.text.family};
+    font-weight: ${vars.font.text.weight.bold};
+    font-size: ${vars.font.text.scale[4].fontSize}px;
+    line-height: ${vars.font.text.scale[4].lineHeight}px;
     margin: 0;
     position: relative;
     z-index: 1;
@@ -41,17 +39,15 @@ const TitleInput = styled.input((props) => {
       transition-delay: 86400s /* 24h */;
     }
 
-    color: ${color.input.default.enabled.fg};
+    color: ${vars.color.tinted.default.fg[2]};
 
     &::placeholder {
-      color: ${color.input.default.enabled.placeholder};
+      color: ${vars.color.tinted.default.border[4]};
     }
   `
 })
 
-const DescriptionTextArea = styled.textarea((props) => {
-  const {color, font} = getTheme_v2(props.theme)
-
+const DescriptionTextArea = styled.textarea(() => {
   return css`
     resize: none;
     overflow: hidden;
@@ -63,20 +59,20 @@ const DescriptionTextArea = styled.textarea((props) => {
     outline: none;
     width: 100%;
     box-sizing: border-box;
-    font-family: ${font.text.family};
-    font-weight: ${font.text.weights.regular};
-    font-size: ${font.text.sizes[2].fontSize}px;
+    font-family: ${vars.font.text.family};
+    font-weight: ${vars.font.text.weight.regular};
+    font-size: ${vars.font.text.scale[2].fontSize}px;
     height: auto;
-    line-height: ${font.text.sizes[2].lineHeight}px;
+    line-height: ${vars.font.text.scale[2].lineHeight}px;
     margin: 0;
     max-width: 624px;
     position: relative;
     z-index: 1;
     display: block;
-    color: ${color.input.default.enabled.fg};
+    color: ${vars.color.tinted.default.fg[2]};
 
     &::placeholder {
-      color: ${color.input.default.enabled.placeholder};
+      color: ${vars.color.tinted.default.border[4]};
     }
   `
 })
@@ -156,7 +152,7 @@ export function TitleDescriptionForm({
   const shouldShowDescription = isReleaseOpen || value.metadata.description
 
   return (
-    <Stack space={3}>
+    <Stack gap={3}>
       <TitleInput
         onChange={handleTitleChange}
         value={value.metadata.title}

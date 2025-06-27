@@ -1,6 +1,7 @@
 import {SearchIcon} from '@sanity/icons'
 import {type Path} from '@sanity/types'
 import {Card, Flex, Stack, Text, TextInput} from '@sanity/ui'
+import {vars} from '@sanity/ui/css'
 import {type ChangeEvent, type KeyboardEvent, useCallback, useMemo, useState} from 'react'
 import {css, styled} from 'styled-components'
 
@@ -40,7 +41,7 @@ const StyledPopover = styled(Popover)(() => {
       min-width: 250px;
       display: flex;
       flex-direction: column;
-      border-radius: ${({theme}) => theme.sanity.radius[3]}px;
+      border-radius: ${vars.radius[3]};
       position: relative;
       overflow: hidden;
       overflow: clip;
@@ -109,7 +110,7 @@ export function TreeEditingSearch(props: TreeEditingSearchProps): React.JSX.Elem
     if (filteredList.length === 0) {
       return (
         <Card>
-          <Stack padding={4} sizing="border" space={3}>
+          <Stack padding={4} sizing="border" gap={3}>
             <Text align="center" muted size={1} weight="medium">
               {t('tree-editing-dialog.search.no-results-title')}
             </Text>

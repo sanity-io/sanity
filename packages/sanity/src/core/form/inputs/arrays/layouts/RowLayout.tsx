@@ -1,4 +1,5 @@
-import {Box, Card, type CardTone, Flex, Stack} from '@sanity/ui'
+import {Box, Card, Flex, Stack} from '@sanity/ui'
+import {type CardTone} from '@sanity/ui/theme'
 import {type ReactNode, useRef} from 'react'
 import {styled} from 'styled-components'
 
@@ -73,7 +74,7 @@ export function RowLayout(props: RowLayoutProps) {
       padding={1}
       tone={tone}
     >
-      <Stack space={1}>
+      <Stack gap={1}>
         <Flex align="center" gap={1}>
           {dragHandle && <DragHandle paddingY={3} readOnly={readOnly} />}
 

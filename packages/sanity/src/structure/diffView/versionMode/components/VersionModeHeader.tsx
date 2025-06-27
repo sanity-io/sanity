@@ -3,7 +3,6 @@ import {
   Box,
   // eslint-disable-next-line no-restricted-imports -- we need more control over how the `Button` component is rendered
   Button,
-  type ButtonTone,
   Flex,
   Menu,
   // eslint-disable-next-line no-restricted-imports -- the `VersionModeHeader` component needs more control over how the `MenuItem` component is rendered
@@ -11,6 +10,7 @@ import {
   Stack,
   Text,
 } from '@sanity/ui'
+import {type ElementTone} from '@sanity/ui/theme'
 // eslint-disable-next-line @sanity/i18n/no-i18next-import -- figure out how to have the linter be fine with importing types-only
 import {type TFunction} from 'i18next'
 import {type ComponentProps, type ComponentType, useCallback, useMemo} from 'react'
@@ -266,7 +266,7 @@ const VersionMenuItem: ComponentType<VersionMenuItemProps> = ({
   }, [type, onSelect, documentId, release?._id])
 
   if (type) {
-    const tone: ButtonTone = type === 'published' ? 'positive' : 'caution'
+    const tone: ElementTone = type === 'published' ? 'positive' : 'caution'
 
     return (
       <MenuItem padding={1} paddingRight={3} onClick={onClick} pressed={isSelected}>
@@ -282,13 +282,13 @@ const VersionMenuItem: ComponentType<VersionMenuItemProps> = ({
     )
   }
 
-  const tone: ButtonTone = release ? getReleaseTone(release) : 'neutral'
+  const tone: ElementTone = release ? getReleaseTone(release) : 'neutral'
 
   return (
     <MenuItem padding={1} paddingRight={3} onClick={onClick} pressed={isSelected}>
       <Flex gap={1}>
         <ReleaseAvatar padding={2} tone={tone} />
-        <Stack flex={1} paddingY={2} paddingRight={2} space={2}>
+        <Stack flex={1} paddingY={2} paddingRight={2} gap={2}>
           <Text size={1} weight="medium">
             {release.metadata.title || tCore('release.placeholder-untitled-release')}
           </Text>
@@ -335,7 +335,7 @@ function getMenuButtonProps({
   }
 
   if (isReleaseDocument(selected)) {
-    const tone: ButtonTone = selected ? getReleaseTone(selected) : 'neutral'
+    const tone: ElementTone = selected ? getReleaseTone(selected) : 'neutral'
 
     return {
       disabled: false,
@@ -346,7 +346,7 @@ function getMenuButtonProps({
     }
   }
 
-  const tone: ButtonTone = selected === 'published' ? 'positive' : 'caution'
+  const tone: ElementTone = selected === 'published' ? 'positive' : 'caution'
 
   return {
     disabled: false,

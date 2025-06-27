@@ -1,5 +1,5 @@
 import {type SanityDocument} from '@sanity/types'
-import {studioTheme, ThemeProvider} from '@sanity/ui'
+import {studioTheme, ThemeProvider} from '@sanity/ui-v2'
 import {type CellContext} from '@tanstack/react-table'
 import {fireEvent, render, screen} from '@testing-library/react'
 import {beforeEach, describe, expect, it, vi} from 'vitest'

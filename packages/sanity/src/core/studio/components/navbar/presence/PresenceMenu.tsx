@@ -92,7 +92,7 @@ export function PresenceMenu() {
 
           {!hasPresence && (
             <Box padding={3}>
-              <Stack space={3}>
+              <Stack gap={3}>
                 <Text weight="medium" size={1}>
                   {t('presence.no-one-else-title')}
                 </Text>
@@ -104,7 +104,7 @@ export function PresenceMenu() {
             </Box>
           )}
 
-          <FooterStack space={1}>
+          <FooterStack gap={1}>
             <MenuDivider />
 
             <MenuItem

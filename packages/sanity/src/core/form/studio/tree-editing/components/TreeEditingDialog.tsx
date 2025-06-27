@@ -5,8 +5,7 @@ import {
   Dialog, // Custom dialog needed
   Flex,
 } from '@sanity/ui'
-// eslint-disable-next-line camelcase
-import {getTheme_v2, type Theme} from '@sanity/ui/theme'
+import {vars} from '@sanity/ui/css'
 import {toString} from '@sanity/util/paths'
 import {AnimatePresence, motion, type Transition, type Variants} from 'framer-motion'
 import {debounce, isEqual} from 'lodash'
@@ -40,12 +39,10 @@ function renderDefault(props: InputProps) {
   return props.renderDefault(props)
 }
 
-const StyledDialog = styled(Dialog)(({theme}: {theme: Theme}) => {
-  const spacing = getTheme_v2(theme)?.space[4]
-
+const StyledDialog = styled(Dialog)(() => {
   return css`
     [data-ui='DialogCard'] {
-      padding: ${spacing}px;
+      padding: ${vars.space[4]};
       box-sizing: border-box;
 
       // Make the dialog full height

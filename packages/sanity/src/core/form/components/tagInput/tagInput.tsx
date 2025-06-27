@@ -1,9 +1,6 @@
-/* eslint-disable camelcase */
-
 import {CloseIcon} from '@sanity/icons'
-import {Box, Card, Flex, isHTMLElement, rem, Text, type Theme} from '@sanity/ui'
-import {_input, _inputPresentation} from '@sanity/ui/css'
-import {getTheme_v2} from '@sanity/ui/theme'
+import {Box, Card, Flex, isHTMLElement, Text} from '@sanity/ui'
+import {_input, _inputPresentation, vars} from '@sanity/ui/css'
 import {
   type ChangeEvent,
   type FocusEvent,
@@ -22,33 +19,19 @@ import {css, type CSSObject, styled} from 'styled-components'
 import {Button} from '../../../../ui-components'
 import {useTranslation} from '../../../i18n'
 import {studioLocaleNamespace} from '../../../i18n/localeNamespaces'
-import {focusRingBorderStyle, focusRingStyle} from './styles'
 
-const Root = styled(Card)((props: {theme: Theme}): CSSObject => {
-  const theme = getTheme_v2(props.theme)
-  const {input, radius} = theme
-  const color = theme.color.input
-  const space = rem(theme.space[1])
-
+const Root = styled(Card)((): CSSObject => {
   return {
-    // 'position': 'relative',
-    // 'borderRadius': `${radius[1]}px`,
-    // 'color': color.default.enabled.fg,
-    // 'boxShadow': focusRingBorderStyle({
-    //   color: color.default.enabled.border,
-    //   width: input.border.width,
-    // }),
-
     '& > .content': {
       position: 'relative',
       lineHeight: 0,
-      margin: `-${space} 0 0 -${space}`,
+      margin: `calc(0 - ${vars.space[1]}) 0 0 calc(0 - ${vars.space[1]})`,
     },
 
     '& > .content > div': {
       display: 'inline-block',
       verticalAlign: 'top',
-      padding: `${space} 0 0 ${space}`,
+      padding: `${vars.space[1]} 0 0 ${vars.space[1]}`,
     },
 
     // enabled
@@ -58,38 +41,40 @@ const Root = styled(Card)((props: {theme: Theme}): CSSObject => {
 
     // hovered
     '@media(hover:hover):not([data-disabled]):not([data-read-only]):hover': {
-      borderColor: color.default.hovered.border,
+      borderColor: vars.color.tinted.default.border[3],
     },
 
     // focused
     '&:not([data-disabled]):not([data-read-only])[data-focused]': {
-      boxShadow: focusRingStyle({
-        border: {
-          color: color.default.enabled.border,
-          width: input.border.width,
-        },
-        focusRing: input.text.focusRing,
-      }),
+      // TODO
+      // boxShadow: focusRingStyle({
+      //   border: {
+      //     color: vars.color.default.enabled.border,
+      //     width: input.border.width,
+      //   },
+      //   focusRing: input.text.focusRing,
+      // }),
     },
 
     // disabled
     '*:disabled + &': {
-      color: color.default.disabled.fg,
-      backgroundColor: color.default.disabled.bg,
-      boxShadow: focusRingBorderStyle({
-        color: color.default.disabled.border,
-        width: input.border.width,
-      }),
+      color: vars.color.tinted.default.border[3],
+      backgroundColor: vars.color.tinted.default.bg[1],
+      // TODO
+      // boxShadow: focusRingBorderStyle({
+      //   color: vars.color.default.disabled.border,
+      //   width: vars.input.border.width,
+      // }),
     },
   }
 })
 
-const Input = styled.input((props: {theme: Theme}): CSSObject => {
-  const {theme} = props
-  const font = theme.sanity.fonts.text
-  const color = theme.sanity.color.input
-  const p = theme.sanity.space[2]
-  const size = theme.sanity.fonts.text.sizes[2]
+const Input = styled.input((): CSSObject => {
+  // const {theme} = props
+  // const font = theme.sanity.fonts.text
+  // const color = theme.sanity.color.input
+  // const p = theme.sanity.space[2]
+  // const size = theme.sanity.fonts.text.sizes[2]
 
   return {
     'appearance': 'none',
@@ -97,35 +82,35 @@ const Input = styled.input((props: {theme: Theme}): CSSObject => {
     'border': 0,
     'borderRadius': 0,
     'outline': 'none',
-    'fontSize': rem(size.fontSize),
-    'lineHeight': size.lineHeight / size.fontSize,
-    'fontFamily': font.family,
-    'fontWeight': font.weights.regular,
+    'fontSize': vars.font.text.scale[2].fontSize, // rem(size.fontSize),
+    'lineHeight': vars.font.text.scale[2].lineHeight, // size.lineHeight / size.fontSize,
+    'fontFamily': vars.font.text.family,
+    'fontWeight': vars.font.weight.regular,
     'margin': 0,
     'display': 'block',
     'minWidth': '1px',
     'maxWidth': '100%',
     'boxSizing': 'border-box',
-    'paddingTop': rem(p - size.ascenderHeight),
-    'paddingRight': rem(p),
-    'paddingBottom': rem(p - size.descenderHeight),
-    'paddingLeft': rem(p),
+    'paddingTop': `calc(${vars.space[2]} - ${vars.font.text.scale[2].ascenderHeight})`, // rem(p - size.ascenderHeight),
+    'paddingRight': vars.space[2], // rem(p),
+    'paddingBottom': `calc(${vars.space[2]} - ${vars.font.text.scale[2].descenderHeight})`, // rem(p - size.descenderHeight),
+    'paddingLeft': vars.space[2], // rem(p),
 
     // enabled
     '&:not(:invalid):not(:disabled)': {
-      color: color.default.enabled.fg,
+      color: vars.color.tinted.default.fg[0], // vars.color.default.enabled.fg,
     },
 
     // disabled
     '&:not(:invalid):disabled': {
-      color: color.default.disabled.fg,
+      color: vars.color.tinted.default.border[3],
     },
   }
 })
 
-const Placeholder = styled(Box)((props: {theme: Theme}) => {
-  const {theme} = props
-  const color = theme.sanity.color.input
+const Placeholder = styled(Box)(() => {
+  // const {theme} = props
+  // const color = theme.sanity.color.input
 
   return css`
     position: absolute;
@@ -133,7 +118,7 @@ const Placeholder = styled(Box)((props: {theme: Theme}) => {
     left: 0;
     right: 0;
     pointer-events: none;
-    --card-fg-color: ${color.default.enabled.placeholder};
+    --card-fg-color: ${vars.color.input.text.placeholder};
   `
 })
 
@@ -272,7 +257,6 @@ export const TagInput = forwardRef(
 
         <div className="content">
           {value.map((tag, tagIndex) => (
-            // eslint-disable-next-line react/no-array-index-key
             <TagBox key={`tag-${tagIndex}`}>
               <Tag
                 enabled={enabled}

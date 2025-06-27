@@ -1,4 +1,4 @@
-import {studioTheme, ThemeProvider} from '@sanity/ui'
+import {studioTheme, ThemeProvider} from '@sanity/ui-v2'
 import {render} from '@testing-library/react'
 import {type ComponentProps, type ReactNode} from 'react'
 import {describe, expect, it} from 'vitest'

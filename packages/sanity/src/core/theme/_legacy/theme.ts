@@ -1,5 +1,5 @@
 import {black, blue, gray, green, red, white, yellow} from '@sanity/color'
-import {studioTheme as defaults} from '@sanity/ui'
+import {studioTheme as defaults} from '@sanity/ui-v2'
 
 import {type StudioTheme} from '../types'
 import {buildColor} from './color'

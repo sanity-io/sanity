@@ -83,7 +83,7 @@ export function FilterForm({filter}: FilterFormProps) {
 
           {/* Title, description and operator */}
           <Card padding={3}>
-            <Stack space={3}>
+            <Stack gap={3}>
               <Flex align="flex-start" gap={3} justify="space-between">
                 <Box paddingLeft={1} paddingRight={2} paddingY={1}>
                   <FilterDetails filter={filter} />

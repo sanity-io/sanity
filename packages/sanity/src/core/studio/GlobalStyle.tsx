@@ -1,14 +1,10 @@
-/* eslint-disable camelcase */
-
-import {getTheme_v2, rgba} from '@sanity/ui/theme'
+import {vars} from '@sanity/ui/css'
 import {createGlobalStyle, css} from 'styled-components'
 
-export const GlobalStyle = createGlobalStyle((props) => {
-  const {color, font} = getTheme_v2(props.theme)
-
+export const GlobalStyle = createGlobalStyle(() => {
   return css`
     *::selection {
-      background-color: ${rgba(color.focusRing, 0.3)};
+      background-color: color-mix(in srgb, transparent, ${vars.color.focusRing} 30%);
     }
 
     body {
@@ -16,15 +12,15 @@ export const GlobalStyle = createGlobalStyle((props) => {
     }
 
     #sanity {
-      font-family: ${font.text.family};
+      font-family: ${vars.font.text.family};
     }
 
     b {
-      font-weight: ${font.text.weights.medium};
+      font-weight: ${vars.font.text.weight.medium};
     }
 
     strong {
-      font-weight: ${font.text.weights.medium};
+      font-weight: ${vars.font.text.weight.medium};
     }
   `
 })

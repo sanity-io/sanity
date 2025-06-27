@@ -54,7 +54,7 @@ const ReleaseEventDocumentPreview = ({
     documentType: event.documentType,
   })
   return (
-    <Stack space={2}>
+    <Stack gap={2}>
       <ReleaseDocumentPreview
         releaseId={releaseId}
         documentId={event.documentId}

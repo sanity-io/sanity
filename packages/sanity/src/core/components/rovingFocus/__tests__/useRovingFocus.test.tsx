@@ -1,4 +1,4 @@
-import {Card, studioTheme, ThemeProvider} from '@sanity/ui'
+import {Card, studioTheme, ThemeProvider} from '@sanity/ui-v2'
 import {fireEvent, render} from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import {useState} from 'react'

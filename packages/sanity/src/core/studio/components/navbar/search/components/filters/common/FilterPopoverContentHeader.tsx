@@ -1,5 +1,6 @@
 import {SearchIcon} from '@sanity/icons'
 import {Box, Flex} from '@sanity/ui'
+import {vars} from '@sanity/ui/css'
 import {type ChangeEvent, forwardRef} from 'react'
 import {styled} from 'styled-components'
 
@@ -15,7 +16,7 @@ interface FilterPopoverContentHeaderProps {
 }
 
 const SearchHeaderBox = styled(Box)`
-  border-bottom: 1px solid ${({theme}) => theme.sanity.color.base.border};
+  border-bottom: 1px solid ${vars.color.border};
   flex-shrink: 0;
 `
 

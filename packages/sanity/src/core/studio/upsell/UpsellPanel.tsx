@@ -1,8 +1,8 @@
 import {LaunchIcon} from '@sanity/icons'
-import {_responsive, Box, Card, Flex, type FlexDirection, Stack} from '@sanity/ui'
-import {type ResponsiveProp} from '@sanity/ui/css'
-// eslint-disable-next-line camelcase
-import {getTheme_v2, type Space} from '@sanity/ui/theme'
+import {Box, Card, Flex, Stack} from '@sanity/ui'
+import {BREAKPOINTS, type FlexDirection, type ResponsiveProp} from '@sanity/ui/css'
+import {type Space} from '@sanity/ui/theme'
+import {_responsive} from '@sanity/ui-v2'
 import {css, styled} from 'styled-components'
 
 import {Button} from '../../../ui-components'
@@ -11,14 +11,16 @@ import {UpsellDescriptionSerializer} from './upsellDescriptionSerializer/UpsellD
 
 type Layout = 'vertical' | 'horizontal'
 const Image = styled.img<{$direction: FlexDirection[]}>((props) => {
-  const {media} = getTheme_v2(props.theme)
-
-  const responsiveStyles = _responsive(media, props.$direction, (val) => {
-    return {
-      width: val === 'row' ? '50%' : '100%',
-      height: val === 'row' ? 'auto' : '180px',
-    }
-  })
+  const responsiveStyles = _responsive(
+    Object.values(BREAKPOINTS).slice(1),
+    props.$direction,
+    (val) => {
+      return {
+        width: val === 'row' ? '50%' : '100%',
+        height: val === 'row' ? 'auto' : '180px',
+      }
+    },
+  )
 
   return css`
     object-fit: cover;
@@ -52,7 +54,7 @@ export function UpsellPanel(props: CommentsUpsellPanelProps) {
 
   return (
     <Card radius={3} overflow={'hidden'} border>
-      <Flex direction={direction} gap={2}>
+      <Flex direction={direction as ResponsiveProp<FlexDirection>} gap={2}>
         {data.image && (
           <Image
             src={data.image.asset.url}
@@ -61,7 +63,7 @@ export function UpsellPanel(props: CommentsUpsellPanelProps) {
           />
         )}
         <DescriptionRoot paddingX={3} paddingY={layout === 'horizontal' ? HORIZONTAL_PADDING_Y : 3}>
-          <Stack space={4}>
+          <Stack gap={4}>
             <UpsellDescriptionSerializer blocks={data.descriptionText} />
           </Stack>
           <Flex gap={2} justify={'flex-end'} marginTop={5}>

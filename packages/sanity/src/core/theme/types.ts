@@ -1,4 +1,4 @@
-import {type RootTheme, type ThemeColorSchemeKey} from '@sanity/ui/theme'
+import {type RootTheme, type ThemeColorSchemeKey} from '@sanity/ui-v2/theme'
 
 /** @public */
 export interface StudioTheme

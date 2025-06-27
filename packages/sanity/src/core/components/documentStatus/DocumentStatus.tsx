@@ -1,5 +1,6 @@
 import {type PreviewValue, type SanityDocument} from '@sanity/types'
-import {type BadgeTone, Flex, Text} from '@sanity/ui'
+import {Flex, Text} from '@sanity/ui'
+import {type ElementTone} from '@sanity/ui/theme'
 import {useMemo} from 'react'
 
 import {useRelativeTime} from '../../hooks'
@@ -96,7 +97,7 @@ const VersionStatus = ({
   title: string | undefined
   mode: Mode
   timestamp?: string
-  tone: BadgeTone
+  tone: ElementTone
 }) => {
   const {t} = useTranslation()
 

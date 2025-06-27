@@ -1,6 +1,7 @@
 import {type ReleaseDocument} from '@sanity/client'
 import {AddIcon, ChevronDownIcon, EarthGlobeIcon} from '@sanity/icons'
-import {Box, type ButtonMode, Card, Flex, Inline, Stack, Text, useMediaIndex} from '@sanity/ui'
+import {Box, Card, Flex, Inline, Stack, Text, useMediaIndex} from '@sanity/ui'
+import {type ButtonMode} from '@sanity/ui/theme'
 import {format, isSameDay} from 'date-fns'
 import {AnimatePresence, motion} from 'framer-motion'
 import {type MouseEventHandler, useCallback, useEffect, useMemo, useRef, useState} from 'react'
@@ -371,7 +372,7 @@ export function ReleasesOverview() {
           <Text size={1} muted>
             {t('overview.description')}
           </Text>
-          <Inline space={2}>
+          <Inline gap={2}>
             {createReleaseButton}
             <Button
               as="a"
@@ -401,7 +402,7 @@ export function ReleasesOverview() {
                 <Flex align="center" flex={1} gap={3}>
                   <Inline>
                     {!showCalendar && <CalendarPopover content={renderCalendarFilter} />}
-                    <Stack padding={2} space={4}>
+                    <Stack padding={2} gap={4}>
                       <Text as="h1" size={1} weight="semibold">
                         {t('overview.title')}
                       </Text>

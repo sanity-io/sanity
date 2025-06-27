@@ -1,4 +1,4 @@
-/* eslint-disable complexity, max-nested-callbacks, no-nested-ternary */
+/* eslint-disable complexity */
 import {ResetIcon as ClearIcon, SyncIcon as ReplaceIcon} from '@sanity/icons'
 import {type CrossDatasetReferenceSchemaType, type CrossDatasetReferenceValue} from '@sanity/types'
 import {Box, Card, Flex, Inline, Menu, Stack, useClickOutsideEvent, useToast} from '@sanity/ui'
@@ -279,9 +279,9 @@ export function CrossDatasetReferenceInput(props: CrossDatasetReferenceInputProp
         <DisabledFeatureWarning value={value} onClearValue={handleClear} />
       )}
       {(featureInfo.isLoading || featureInfo.enabled) && (
-        <Stack space={1}>
+        <Stack gap={1}>
           {isEditing ? (
-            <Stack space={2} ref={clickOutsideBoundaryRef}>
+            <Stack gap={2} ref={clickOutsideBoundaryRef}>
               <ChangeIndicator path={path} isChanged={changed} hasFocus={!!focused}>
                 <div ref={setAutocompletePopoverReferenceElement}>
                   <ReferenceAutocomplete
@@ -401,8 +401,7 @@ export function CrossDatasetReferenceInput(props: CrossDatasetReferenceInputProp
                           )}
                         </Menu>
                       }
-                      placement="right"
-                      popover={{portal: true, tone: 'default'}}
+                      popover={{placement: 'right', portal: true, tone: 'default'}}
                     />
                   </Inline>
                 </Flex>

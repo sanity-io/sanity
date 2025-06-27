@@ -1,6 +1,7 @@
 import {hues} from '@sanity/color'
 import {type PortableTextBlock} from '@sanity/types'
-import {Stack, useBoundaryElement} from '@sanity/ui'
+import {Stack, useBoundaryElement, useCard} from '@sanity/ui'
+import {vars} from '@sanity/ui/css'
 import * as PathUtils from '@sanity/util/paths'
 import {uuid} from '@sanity/uuid'
 import {AnimatePresence, motion, type Variants} from 'framer-motion'
@@ -54,22 +55,22 @@ export function CommentsField(props: FieldProps) {
   return <CommentFieldInner {...props} mode={mode} />
 }
 
-const HighlightDiv = styled(motion.div)(({theme}) => {
-  const {radius, space, color} = theme.sanity
-  const bg = hues[COMMENTS_HIGHLIGHT_HUE_KEY][color.dark ? 900 : 50].hex
+const HighlightDiv = styled(motion.div)<{$isDark: boolean}>(({$isDark}) => {
+  // const {radius, space, color} = theme.sanity
+  const bg = hues[COMMENTS_HIGHLIGHT_HUE_KEY][$isDark ? 900 : 50].hex
 
   return css`
-    mix-blend-mode: ${color.dark ? 'screen' : 'multiply'};
-    border-radius: ${radius[3]}px;
-    top: -${space[2]}px;
-    left: -${space[2]}px;
-    bottom: -${space[2]}px;
-    right: -${space[2]}px;
+    mix-blend-mode: ${$isDark ? 'screen' : 'multiply'};
+    border-radius: ${vars.radius[3]};
+    top: calc(0px - ${vars.space[2]});
+    left: calc(0px - ${vars.space[2]});
+    bottom: calc(0px - ${vars.space[2]});
+    right: calc(0px - ${vars.space[2]});
     pointer-events: none;
     position: absolute;
     z-index: 1;
-    width: calc(100% + ${space[2] * 2}px);
-    height: calc(100% + ${space[2] * 2}px);
+    width: calc(100% + (${vars.space[2]} * 2));
+    height: calc(100% + (${vars.space[2]} * 2));
     background-color: ${bg};
   `
 })
@@ -84,6 +85,7 @@ function CommentFieldInner(
   },
 ) {
   const {mode} = props
+  const card = useCard()
 
   const currentUser = useCurrentUser()
   const {element: boundaryElement} = useBoundaryElement()
@@ -327,6 +329,7 @@ function CommentFieldInner(
       <AnimatePresence>
         {isSelected && !isInlineCommentThread && (
           <HighlightDiv
+            $isDark={card.scheme === 'dark'}
             animate="animate"
             exit="exit"
             initial="initial"

@@ -16,7 +16,7 @@ export function DebugFilterValues({filter}: DebugFilterValuesProps) {
 
   return (
     <Card borderTop padding={3} tone="transparent">
-      <Stack space={2}>
+      <Stack gap={2}>
         <Code size={0} weight="medium">
           Filter
         </Code>

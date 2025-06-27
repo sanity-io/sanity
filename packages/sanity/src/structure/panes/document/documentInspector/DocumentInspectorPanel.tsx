@@ -1,5 +1,5 @@
 import {Box} from '@sanity/ui'
-import {type FlexValue, type ResponsiveProp} from '@sanity/ui/css'
+import {type Flex as FlexValue, type ResponsiveProp} from '@sanity/ui/css'
 import {useCallback} from 'react'
 import {Resizable} from 'sanity'
 

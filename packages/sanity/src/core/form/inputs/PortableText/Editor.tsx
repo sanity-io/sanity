@@ -15,8 +15,7 @@ import {
 } from '@portabletext/editor'
 import {type Path} from '@sanity/types'
 import {BoundaryElementProvider, useBoundaryElement, useGlobalKeyDown, useLayer} from '@sanity/ui'
-// eslint-disable-next-line camelcase
-import {getTheme_v2} from '@sanity/ui/theme'
+import {vars} from '@sanity/ui/css'
 import {type ReactNode, useCallback, useMemo} from 'react'
 import {css, styled} from 'styled-components'
 
@@ -38,9 +37,8 @@ const noOutlineStyle = {outline: 'none'} as const
 const FORM_BUILDER_DEFAULT_ID = 'root'
 
 const PlaceholderWrapper = styled.span((props) => {
-  const {color} = getTheme_v2(props.theme)
   return css`
-    color: ${color.input.default.enabled.placeholder};
+    color: ${vars.color.input.text.placeholder};
   `
 })
 

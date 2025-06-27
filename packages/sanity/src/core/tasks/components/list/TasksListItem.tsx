@@ -66,11 +66,14 @@ function TaskDueDate({dueBy}: {dueBy: string}) {
     <Tooltip content={fullDate}>
       <Card tone={isDueByToday ? 'critical' : 'transparent'} padding={1} radius={2}>
         <Flex align="center" gap={2}>
-          <Text as="time" size={1} dateTime={dueBy} muted>
-            {
-              // eslint-disable-next-line no-nested-ternary
-              isDueByToday ? 'Today' : isDueThisWeek ? day : monthAndDay
-            }
+          <Text
+            // @ts-expect-error - TODO: fix this in `@sanity/ui`
+            as="time"
+            size={1}
+            dateTime={dueBy}
+            muted
+          >
+            {isDueByToday ? 'Today' : isDueThisWeek ? day : monthAndDay}
           </Text>
         </Flex>
       </Card>
@@ -83,7 +86,7 @@ export function TasksListItem(props: TasksListItemProps) {
   const targetDocument = useMemo(() => getTargetDocumentMeta(target), [target])
 
   return (
-    <Stack space={3}>
+    <Stack gap={3}>
       <Flex align="center" gap={1}>
         <Box>
           <TasksStatus documentId={documentId} status={status} />

@@ -1,23 +1,23 @@
 import {hues} from '@sanity/color'
-import {type Theme} from '@sanity/ui'
+import {useCard} from '@sanity/ui'
 import {forwardRef} from 'react'
 import {css, styled} from 'styled-components'
 
 import {COMMENTS_HIGHLIGHT_HUE_KEY} from '../../constants'
 
-export const HighlightSpan = styled.span(({theme}: {theme: Theme}) => {
-  const isDark = theme.sanity.v2?.color._dark
+export const HighlightSpan = styled.span<{$isDark: boolean}>(({$isDark}) => {
+  // const isDark = theme.sanity.v2?.color._dark
 
   // Colors used when a comment is added
-  const addedBg = hues[COMMENTS_HIGHLIGHT_HUE_KEY][isDark ? 800 : 100].hex
-  const addedBorder = hues[COMMENTS_HIGHLIGHT_HUE_KEY][isDark ? 700 : 300].hex
+  const addedBg = hues[COMMENTS_HIGHLIGHT_HUE_KEY][$isDark ? 800 : 100].hex
+  const addedBorder = hues[COMMENTS_HIGHLIGHT_HUE_KEY][$isDark ? 700 : 300].hex
 
-  const addedHoverBg = hues[COMMENTS_HIGHLIGHT_HUE_KEY][isDark ? 700 : 200].hex
-  const addedHoverBorder = hues[COMMENTS_HIGHLIGHT_HUE_KEY][isDark ? 600 : 400].hex
+  const addedHoverBg = hues[COMMENTS_HIGHLIGHT_HUE_KEY][$isDark ? 700 : 200].hex
+  const addedHoverBorder = hues[COMMENTS_HIGHLIGHT_HUE_KEY][$isDark ? 600 : 400].hex
 
   // Colors used when a comment is added and it is a nested comment
-  const addedNestedBg = hues[COMMENTS_HIGHLIGHT_HUE_KEY][isDark ? 700 : 200].hex
-  const addedNesterBorder = hues[COMMENTS_HIGHLIGHT_HUE_KEY][isDark ? 600 : 400].hex
+  const addedNestedBg = hues[COMMENTS_HIGHLIGHT_HUE_KEY][$isDark ? 700 : 200].hex
+  const addedNesterBorder = hues[COMMENTS_HIGHLIGHT_HUE_KEY][$isDark ? 600 : 400].hex
 
   // Colors used when a comment is being authored.
   // For now, we use the same colors as when a comment is added.
@@ -33,7 +33,7 @@ export const HighlightSpan = styled.span(({theme}: {theme: Theme}) => {
     // Make sure that child elements appropriately blend with the
     // background of the highlight span
     * {
-      mix-blend-mode: ${isDark ? 'screen' : 'multiply'};
+      mix-blend-mode: ${$isDark ? 'screen' : 'multiply'};
     }
 
     &[data-inline-comment-state='added'][data-inline-comment-nested='false'] {
@@ -75,12 +75,14 @@ export const CommentInlineHighlightSpan = forwardRef(function CommentInlineHighl
 ) {
   const {children, isAdded, isAuthoring, isHovered, isNested, ...rest} = props
 
-  // eslint-disable-next-line no-nested-ternary
+  const card = useCard()
+
   const state = isAdded ? 'added' : isAuthoring ? 'authoring' : undefined
 
   return (
     <HighlightSpan
       {...rest}
+      $isDark={card.scheme === 'dark'}
       data-hovered={isHovered ? 'true' : 'false'}
       data-inline-comment-nested={isNested ? 'true' : 'false'}
       data-inline-comment-state={state}

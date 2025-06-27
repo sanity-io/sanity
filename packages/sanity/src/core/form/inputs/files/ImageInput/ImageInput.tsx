@@ -551,7 +551,7 @@ function BaseImageInputComponent(props: BaseImageInputProps): React.JSX.Element 
 
   return (
     // The Stack space should match the space in ObjectInput
-    <Stack space={5} data-testid="image-input">
+    <Stack gap={5} data-testid="image-input">
       {members.map((member) => {
         if (member.kind === 'field' && (member.name === 'crop' || member.name === 'hotspot')) {
           // we're rendering these separately

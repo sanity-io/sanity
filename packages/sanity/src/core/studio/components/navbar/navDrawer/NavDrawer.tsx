@@ -159,7 +159,7 @@ export const NavDrawer = memo(function NavDrawer(props: NavDrawerProps) {
               variants={INNER_CARD_VARIANTS}
             >
               <Card borderBottom>
-                <Stack space={3} padding={3}>
+                <Stack gap={3} padding={3}>
                   <Flex align="center">
                     {/* Current user */}
                     <Flex flex={1} align="center" paddingRight={2}>
@@ -211,7 +211,7 @@ export const NavDrawer = memo(function NavDrawer(props: NavDrawerProps) {
                 <Flex direction="column">
                   {actionNodes && (
                     <Card flex="none" padding={2}>
-                      <Stack space={1}>{actionNodes}</Stack>
+                      <Stack gap={1}>{actionNodes}</Stack>
                     </Card>
                   )}
 

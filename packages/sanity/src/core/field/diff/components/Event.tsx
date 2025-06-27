@@ -1,6 +1,6 @@
-import {type AvatarSize, AvatarStack, Box, Flex, Skeleton, Stack, Text} from '@sanity/ui'
-// eslint-disable-next-line camelcase
-import {getTheme_v2, type ThemeColorAvatarColorKey} from '@sanity/ui/theme'
+import {AvatarStack, Box, Flex, Skeleton, Stack, Text} from '@sanity/ui'
+import {vars} from '@sanity/ui/css'
+import {type AvatarColor, type AvatarSize} from '@sanity/ui/theme'
 import {useMemo} from 'react'
 import {css, styled} from 'styled-components'
 
@@ -41,18 +41,17 @@ function UserAvatarStack({maxLength, userIds, size, withTooltip = true}: UserAva
   )
 }
 
-const IconBox = styled(Flex)<{$color: ThemeColorAvatarColorKey}>((props) => {
-  const theme = getTheme_v2(props.theme)
+const IconBox = styled(Flex)<{$color: AvatarColor}>((props) => {
   const color = props.$color
 
   return css`
-    --card-icon-color: ${theme.color.avatar[color].fg};
-    background-color: ${theme.color.avatar[color].bg};
+    --card-icon-color: ${vars.color.avatar[color].fg};
+    background-color: ${vars.color.avatar[color].bg};
     box-shadow: 0 0 0 1px var(--card-bg-color);
 
     position: absolute;
-    width: ${theme.avatar.sizes[0].size}px;
-    height: ${theme.avatar.sizes[0].size}px;
+    width: ${vars.avatar.scale[0].size}px;
+    height: ${vars.avatar.scale[0].size}px;
     right: -3px;
     bottom: -3px;
     border-radius: 50%;
@@ -64,20 +63,18 @@ const RELATIVE_TIME_OPTIONS: RelativeTimeOptions = {
   useTemporalPhrase: true,
 }
 
-const AvatarSkeleton = styled(Skeleton)((props) => {
-  const theme = getTheme_v2(props.theme)
+const AvatarSkeleton = styled(Skeleton)(() => {
   return css`
     border-radius: 50%;
-    width: ${theme.avatar.sizes[1].size}px;
-    height: ${theme.avatar.sizes[1].size}px;
+    width: ${vars.avatar.scale[1].size}px;
+    height: ${vars.avatar.scale[1].size}px;
   `
 })
 
 const NameSkeleton = styled(Skeleton)((props) => {
-  const theme = getTheme_v2(props.theme)
   return css`
     width: 6ch;
-    height: ${theme.font.text.sizes[0].lineHeight}px;
+    height: ${vars.font.text.scale[0].lineHeight}px;
   `
 })
 
@@ -154,7 +151,7 @@ export function Event({event, showChangesBy = 'tooltip'}: TimelineItemProps) {
             <Text size={0}>{IconComponent && <IconComponent />}</Text>
           </IconBox>
         </div>
-        <Stack space={2}>
+        <Stack gap={2}>
           <Text size={1} weight="medium">
             {t(TIMELINE_ITEM_I18N_KEY_MAPPING[documentVariantType][type])}
             {isPublishDocumentVersionEvent(event) && documentVariantType === 'published' && (
@@ -177,7 +174,14 @@ export function Event({event, showChangesBy = 'tooltip'}: TimelineItemProps) {
             )}
           </Text>
 
-          <Text as="time" size={1} muted dateTime={timestamp} title={formattedTimestamp}>
+          <Text
+            // @ts-expect-error - TODO: @sanity/ui should support this
+            as="time"
+            size={1}
+            muted
+            dateTime={timestamp}
+            title={formattedTimestamp}
+          >
             {updatedTimeAgo}
           </Text>
         </Stack>

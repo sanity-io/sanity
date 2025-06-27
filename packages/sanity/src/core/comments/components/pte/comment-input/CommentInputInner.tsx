@@ -1,8 +1,8 @@
 import {type RenderBlockFunction} from '@portabletext/editor'
 import {type CurrentUser} from '@sanity/types'
-import {type AvatarSize, Box, Card, Flex, MenuDivider, Stack} from '@sanity/ui'
-// eslint-disable-next-line camelcase
-import {getTheme_v2} from '@sanity/ui/theme'
+import {Box, Card, Flex, MenuDivider, Stack} from '@sanity/ui'
+import {vars} from '@sanity/ui/css'
+import {type AvatarSize} from '@sanity/ui/theme'
 import {useCallback} from 'react'
 import {css, styled} from 'styled-components'
 
@@ -30,17 +30,11 @@ function focusRingBorderStyle(border: {color: string; width: number}): string {
 }
 
 const RootCard = styled(Card)(({theme}) => {
-  const {color, input, radius} = getTheme_v2(theme)
-  const radii = radius[2]
+  const radii = vars.radius[2]
 
   return css`
-    border-radius: ${radii}px;
+    border-radius: ${radii};
     box-shadow: var(--input-box-shadow);
-
-    --input-box-shadow: ${focusRingBorderStyle({
-      color: color.input.default.enabled.border,
-      width: input.border.width,
-    })};
 
     &:not([data-expand-on-focus='false'], :focus-within) {
       background: transparent;
@@ -51,12 +45,6 @@ const RootCard = styled(Card)(({theme}) => {
       ${EditableWrap} {
         min-height: 1em;
       }
-
-      /* box-shadow: inset 0 0 0 1px var(--card-focus-ring-color); */
-      --input-box-shadow: ${focusRingBorderStyle({
-        color: 'var(--card-focus-ring-color)',
-        width: input.border.width,
-      })};
     }
 
     &:focus-within {
@@ -83,18 +71,13 @@ const RootCard = styled(Card)(({theme}) => {
       }
     }
     &:hover {
-      --input-box-shadow: ${focusRingBorderStyle({
-        color: color.input.default.hovered.border,
-        width: input.border.width,
-      })};
     }
   `
 })
 
 const AvatarContainer = styled.div((props) => {
-  const theme = getTheme_v2(props.theme)
   return `
-    min-height: ${theme.avatar.sizes[1]?.size}px;
+    min-height: ${vars.avatar.scale[1]?.size}px;
     display: flex;
     align-items: center;
   `

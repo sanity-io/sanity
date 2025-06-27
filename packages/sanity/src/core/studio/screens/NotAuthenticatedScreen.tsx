@@ -49,7 +49,7 @@ export function NotAuthenticatedScreen() {
           },
         }}
       >
-        <Stack space={4}>
+        <Stack gap={4}>
           <Text>
             You are not authorized to access this studio. Please contact someone with access to
             invite you to this project.
