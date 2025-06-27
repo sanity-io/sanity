@@ -15,8 +15,8 @@ Options
   --organization <slug|id>     Organization to create the project in
   --dataset [name]             Create a dataset. Prompts for name/visibility unless specified or --yes used
   --dataset-visibility <mode>  Dataset visibility: public or private
-  --format <format>            Output format: table or json (default: table)
-  -y, --yes                    Skip prompts and use defaults (dataset: production, visibility: public)
+  --format <format>            Output format: text or json (default: text)
+  -y, --yes                    Skip prompts and use defaults (project: "My Sanity Project", dataset: production, visibility: public)
 `
 
 const createProjectCommand: CliCommandDefinition = {
