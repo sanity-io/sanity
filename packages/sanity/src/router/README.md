@@ -96,7 +96,6 @@ history.listen(() => render(document.location))
 - `route(path : string, ?options : Options, ?children : ) : Router`
 - `route.scope(name : string, path : string, ?options : Options, ?children : ) : Router`
 - `Router`:
-
   - `encode(state : object) : string`
   - `decode(path : string) : object`
   - `isRoot(path : string) : boolean`
@@ -118,7 +117,6 @@ history.listen(() => render(document.location))
     scope?: string
   }
   ```
-
   - `children` can be either another router returned from another `route()-call`, an array of routers or a function that gets passed the matched parameters, and conditionally returns child routes
 
 ## Limitations

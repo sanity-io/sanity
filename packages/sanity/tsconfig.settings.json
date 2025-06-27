@@ -23,5 +23,6 @@
       // For `Scheduler` API (can be removed if we adopt scheduler-polyfill, which comes with its own types)
       "@types/wicg-task-scheduling"
     ]
+    // "noCheck": true
   }
 }

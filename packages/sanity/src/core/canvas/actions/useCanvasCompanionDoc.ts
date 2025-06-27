@@ -3,12 +3,19 @@ import {useObservable} from 'react-rx'
 
 import {getPublishedId} from '../../util/draftUtils'
 import {useCanvasCompanionDocsStore} from '../store/useCanvasCompanionDocsStore'
+import {type CompanionDoc} from '../types'
 
 /**
  * Given a document id, returns whether it is linked to canvas and the companion doc if it exists.
  * @beta
  */
-export const useCanvasCompanionDoc = (documentId: string) => {
+export const useCanvasCompanionDoc = (
+  documentId: string,
+): {
+  isLinked: boolean
+  companionDoc: CompanionDoc | undefined
+  loading: boolean | undefined
+} => {
   const companionDocsStore = useCanvasCompanionDocsStore()
   const publishedId = getPublishedId(documentId)
   const companionDocs$ = useMemo(

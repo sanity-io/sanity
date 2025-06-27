@@ -14,6 +14,9 @@ catalog:
   '@playwright/test': 1.53.1
   '@sanity/eslint-config-i18n': ^2.0.0
   '@sanity/eslint-config-studio': ^5.0.2
+  # '@sanity/pkg-utils': ^7.8.6
+  '@sanity/pkg-utils': 7.8.8-canary.0
+  '@sanity/tsdoc': ^2.0.51
   '@sanity/ui-workshop': ^2.1.4
   '@vitejs/plugin-react': ^4.6.0
   esbuild-register: ^3.6.0

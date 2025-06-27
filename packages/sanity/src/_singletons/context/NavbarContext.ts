@@ -3,7 +3,7 @@ import {createContext} from 'sanity/_createContext'
 import type {NavbarContextValue} from '../../core/studio/StudioLayout'
 
 /** @internal */
-export const NavbarContext = createContext<NavbarContextValue>(
+export const NavbarContext: React.Context<NavbarContextValue> = createContext<NavbarContextValue>(
   'sanity/_singletons/context/navbar',
   {
     onSearchFullscreenOpenChange: () => '',
