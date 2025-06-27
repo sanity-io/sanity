@@ -7,6 +7,7 @@ export interface VisionProps {
 }
 
 export interface VisionConfig {
+  datasets?: string[] | ((datasets: string[]) => string[])
   defaultApiVersion: string
   defaultDataset?: string
 }

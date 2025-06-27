@@ -6,7 +6,7 @@ import {useDatasets} from '../hooks/useDatasets'
 import {type VisionProps} from '../types'
 
 export function VisionContainer(props: VisionProps) {
-  const loadedDatasets = useDatasets(props.client)
+  const loadedDatasets = useDatasets({client: props.client, datasets: props.config.datasets})
 
   if (!loadedDatasets) {
     return (
