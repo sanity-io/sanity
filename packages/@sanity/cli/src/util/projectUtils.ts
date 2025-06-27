@@ -1,7 +1,7 @@
 import {promptForDatasetName} from '../actions/init-project/promptForDatasetName'
 import {promptForAclMode, promptForDefaultConfig} from '../actions/init-project/prompts/index'
 import {createProject, type CreateProjectOptions} from '../actions/project/createProject'
-import {type CliCommandContext, type CliPrompter} from '../types'
+import {type CliApiClient, type CliCommandContext, type CliPrompter} from '../types'
 import {type ProjectOrganization} from './organizationUtils'
 
 // Project name validation and prompting
@@ -94,27 +94,26 @@ export async function createDatasetForProject(
   projectId: string,
   datasetName: string,
   visibility: 'public' | 'private',
-): Promise<DatasetResult | null> {
+): Promise<DatasetResult> {
   const {apiClient, output} = context
 
+  const spinner = output.spinner('Creating dataset').start()
   try {
     // Use the same pattern as init command - create client with project context
     const client = apiClient({api: {projectId}})
-    const spinner = output.spinner('Creating dataset').start()
-
     await client.datasets.create(datasetName, {aclMode: visibility})
 
     spinner.succeed()
     return {name: datasetName, visibility}
   } catch (err) {
-    output.warn(`Project created but dataset creation failed: ${(err as Error).message}`)
-    return null
+    spinner.fail()
+    throw err
   }
 }
 
 // Project creation with shared metadata and progress indicator
 export async function createProjectWithMetadata(
-  apiClient: any,
+  apiClient: CliApiClient,
   displayName: string,
   organizationId: string | undefined,
   context: CliCommandContext,

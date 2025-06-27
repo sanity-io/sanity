@@ -59,15 +59,16 @@ export async function createProjectAction(
       unattended: options.unattended || !isInteractive,
     })
 
-    const dataset = await createDatasetForProject(
-      context,
-      project.projectId,
-      datasetName,
-      visibility,
-    )
-
-    if (dataset) {
+    try {
+      const dataset = await createDatasetForProject(
+        context,
+        project.projectId,
+        datasetName,
+        visibility,
+      )
       result.dataset = dataset
+    } catch (err) {
+      context.output.warn(`Project created but dataset creation failed: ${(err as Error).message}`)
     }
   }
 
