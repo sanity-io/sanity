@@ -1,4 +1,4 @@
-import {rem} from '@sanity/ui'
+import {vars} from '@sanity/ui/css'
 import {styled} from 'styled-components'
 
 export const EditorRoot = styled.div`
@@ -22,11 +22,11 @@ export const EditorRoot = styled.div`
   }
 
   & .cm-line {
-    padding-left: ${({theme}) => rem(theme.sanity.space[3])};
+    padding-left: ${vars.space[3]};
   }
 
   & .cm-content {
-    border-right-width: ${({theme}) => rem(theme.sanity.space[4])} !important;
-    padding-top: ${({theme}) => rem(theme.sanity.space[5])};
+    border-right-width: ${vars.space[4]} !important;
+    padding-top: ${vars.space[5]};
   }
 `

@@ -1,4 +1,5 @@
-import {Box, Card, Flex, Label, rem, Text} from '@sanity/ui'
+import {Box, Card, Flex, Label, Text} from '@sanity/ui'
+import {vars} from '@sanity/ui/css'
 import {css, styled} from 'styled-components'
 
 export const Root = styled(Flex)`
@@ -142,13 +143,12 @@ export const TimingsContainer = styled(Box)`
 
 export const TimingsTextContainer = styled(Flex)`
   height: 100%;
-  min-height: ${({theme}) =>
-    rem(
-      theme.sanity.space[3] * 2 +
-        theme.sanity.fonts.text.sizes[2].lineHeight -
-        theme.sanity.fonts.text.sizes[2].ascenderHeight -
-        theme.sanity.fonts.text.sizes[2].descenderHeight,
-    )};
+  min-height: calc(
+    (${vars.space[3]} * 2) +
+    ${vars.font.text.scale[2].lineHeight} -
+    ${vars.font.text.scale[2].ascenderHeight} -
+    ${vars.font.text.scale[2].descenderHeight})
+  );
 `
 
 export const DownloadsCard = styled(Card)`
@@ -163,7 +163,7 @@ export const SaveResultLabel = styled(Text)`
   }
   > span {
     display: flex !important;
-    gap: ${({theme}) => rem(theme.sanity.space[3])};
+    gap: ${vars.space[3]};
     align-items: center;
   }
 `

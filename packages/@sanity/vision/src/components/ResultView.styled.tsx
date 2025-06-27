@@ -1,24 +1,24 @@
-import {rem, type Theme} from '@sanity/ui'
+import {vars} from '@sanity/ui/css'
 import {css, styled} from 'styled-components'
 
-export const ResultViewWrapper = styled.div<{theme: Theme}>(({theme}) => {
-  const {color, fonts, space} = theme.sanity
+export const ResultViewWrapper = styled.div(() => {
+  // const {color, fonts, space} = theme.sanity
 
   return css`
     & .json-inspector,
     & .json-inspector .json-inspector__selection {
-      font-family: ${fonts.code.family};
-      font-size: ${fonts.code.sizes[2].fontSize}px;
-      line-height: ${fonts.code.sizes[2].lineHeight}px;
+      font-family: ${vars.font.code.family};
+      font-size: ${vars.font.code.scale[2].fontSize}px;
+      line-height: ${vars.font.code.scale[2].lineHeight}px;
       color: var(--card-code-fg-color);
     }
 
     & .json-inspector .json-inspector__leaf {
-      padding-left: ${rem(space[4])};
+      padding-left: ${vars.space[4]};
     }
 
     & .json-inspector .json-inspector__leaf.json-inspector__leaf_root {
-      padding-top: ${rem(space[0])};
+      padding-top: ${vars.space[0]};
       padding-left: 0;
     }
 
@@ -53,9 +53,9 @@ export const ResultViewWrapper = styled.div<{theme: Theme}>(({theme}) => {
 
     & .json-inspector .json-inspector__leaf_composite > .json-inspector__line::before {
       content: '▸ ';
-      margin-left: calc(0px - ${rem(space[4])});
-      font-size: ${fonts.code.sizes[2].fontSize}px;
-      line-height: ${fonts.code.sizes[2].lineHeight}px;
+      margin-left: calc(0px - ${vars.space[4]});
+      font-size: ${vars.font.code.scale[2].fontSize}px;
+      line-height: ${vars.font.code.scale[2].lineHeight}px;
     }
 
     &
@@ -63,8 +63,8 @@ export const ResultViewWrapper = styled.div<{theme: Theme}>(({theme}) => {
       .json-inspector__leaf_expanded.json-inspector__leaf_composite
       > .json-inspector__line::before {
       content: '▾ ';
-      font-size: ${fonts.code.sizes[2].fontSize}px;
-      line-height: ${fonts.code.sizes[2].lineHeight}px;
+      font-size: ${vars.font.code.scale[2].fontSize}px;
+      line-height: ${vars.font.code.scale[2].lineHeight}px;
     }
 
     & .json-inspector .json-inspector__radio,
@@ -73,7 +73,7 @@ export const ResultViewWrapper = styled.div<{theme: Theme}>(({theme}) => {
     }
 
     & .json-inspector .json-inspector__value {
-      margin-left: ${rem(space[4] / 2)};
+      margin-left: calc(${vars.space[4]} / 2);
     }
 
     &
@@ -86,29 +86,29 @@ export const ResultViewWrapper = styled.div<{theme: Theme}>(({theme}) => {
     }
 
     & .json-inspector .json-inspector__key {
-      color: ${color.syntax.property};
+      color: ${vars.color.code.token.property};
     }
 
     & .json-inspector .json-inspector__value_helper,
     & .json-inspector .json-inspector__value_null {
-      color: ${color.syntax.constant};
+      color: ${vars.color.code.token.constant};
     }
 
     & .json-inspector .json-inspector__not-found {
-      padding-top: ${rem(space[2])};
+      padding-top: ${vars.space[2]};
     }
 
     & .json-inspector .json-inspector__value_string {
-      color: ${color.syntax.string};
+      color: ${vars.color.code.token.string};
       word-break: break-word;
     }
 
     & .json-inspector .json-inspector__value_boolean {
-      color: ${color.syntax.boolean};
+      color: ${vars.color.code.token.boolean};
     }
 
     & .json-inspector .json-inspector__value_number {
-      color: ${color.syntax.number};
+      color: ${vars.color.code.token.number};
     }
 
     & .json-inspector .json-inspector__show-original {
