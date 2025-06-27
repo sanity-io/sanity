@@ -1,5 +1,5 @@
-import {Card, Flex, Layer, Text, TextSkeleton, type Theme} from '@sanity/ui'
-// eslint-disable-next-line camelcase
+import {Card, Flex, Layer, Text, TextSkeleton} from '@sanity/ui'
+import {vars} from '@sanity/ui/css'
 import {css, styled} from 'styled-components'
 
 interface RootProps {
@@ -33,15 +33,15 @@ export const Layout = styled(Flex)`
   }
 `
 
-export const TitleCard = styled(Card)(({theme}: {theme: Theme}) => {
-  const {fg, bg} = theme.sanity.color.card.enabled
+export const TitleCard = styled(Card)(() => {
+  const color = vars.color.tinted.default
 
   // Disable color updates on hover
   return css`
-    background-color: ${bg};
+    background-color: ${color.bg[0]};
 
     [data-ui='Text'] {
-      color: ${fg};
+      color: ${color.fg[0]};
     }
   `
 })

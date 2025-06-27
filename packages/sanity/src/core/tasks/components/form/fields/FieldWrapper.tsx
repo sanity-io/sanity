@@ -1,5 +1,4 @@
-// eslint-disable-next-line camelcase
-import {getTheme_v2} from '@sanity/ui/theme'
+import {vars} from '@sanity/ui/css'
 import {css, styled} from 'styled-components'
 
 import {type StringFieldProps} from '../../../../form'
@@ -8,15 +7,13 @@ import {type StringFieldProps} from '../../../../form'
  * @internal
  * Updates the padding and font weight of the field header content box.
  */
-export const FieldWrapperRoot = styled.div((props) => {
-  const theme = getTheme_v2(props.theme)
-
+export const FieldWrapperRoot = styled.div(() => {
   return css`
     // Reset the padding of the field header content box
     [data-ui='fieldHeaderContentBox'] {
       padding: 0;
       label {
-        font-weight: ${theme.font.text.weights.regular};
+        font-weight: ${vars.font.text.weight.regular};
       }
     }
   `

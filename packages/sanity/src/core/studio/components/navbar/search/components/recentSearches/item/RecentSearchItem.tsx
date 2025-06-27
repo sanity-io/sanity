@@ -6,9 +6,9 @@ import {
   Button, // Button with specific styling and children behavior.
   Flex,
   Inline,
-  rem,
   Text,
 } from '@sanity/ui'
+import {vars} from '@sanity/ui/css'
 import {type MouseEvent, useCallback} from 'react'
 import {styled} from 'styled-components'
 
@@ -26,7 +26,7 @@ export interface RecentSearchesProps extends BoxProps {
 const DEFAULT_COMBINED_TYPE_COUNT = 40
 
 const RecentSearchItemButton = styled(Button)`
-  border-radius: ${({theme}) => rem(theme.sanity.radius[2])};
+  border-radius: ${vars.radius[2]};
   cursor: default;
   width: 100%;
 `
@@ -121,7 +121,6 @@ export function RecentSearchItem({
             )}
             {/* Filters */}
             {value?.filters?.map((filter, i) => {
-              // eslint-disable-next-line react/no-array-index-key
               return <FilterPill filter={filter} key={i} />
             })}
           </Flex>

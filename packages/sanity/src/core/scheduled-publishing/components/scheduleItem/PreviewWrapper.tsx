@@ -1,6 +1,7 @@
 import {type SchemaType} from '@sanity/types'
+import {type CardElementType} from '@sanity/ui'
 import {Badge, Box, Card, Flex, Stack, Text} from '@sanity/ui'
-import {type ElementType, type ReactNode, useState} from 'react'
+import {type ReactNode, useState} from 'react'
 import {styled} from 'styled-components'
 
 import {Tooltip} from '../../../../ui-components/tooltip/Tooltip'
@@ -31,8 +32,7 @@ const StatusDotPlaceholder = styled(Box)`
 interface Props {
   children?: ReactNode
   contextMenu?: ReactNode
-  // eslint-disable-next-line no-undef
-  linkComponent?: ElementType | keyof React.JSX.IntrinsicElements
+  linkComponent?: CardElementType
   onClick?: () => void
   previewState?: PaneItemPreviewState
   publishedDocumentId?: string
@@ -96,11 +96,7 @@ const PreviewWrapper = (props: Props) => {
               {/* Badge */}
               {schedule.action === 'unpublish' && (
                 <Flex style={{flexShrink: 0}}>
-                  <Badge
-                    fontSize={0}
-                    mode="outline"
-                    tone={SCHEDULE_ACTION_DICTIONARY[schedule.action].badgeTone}
-                  >
+                  <Badge fontSize={0} tone={SCHEDULE_ACTION_DICTIONARY[schedule.action].badgeTone}>
                     {schedule.action}
                   </Badge>
                 </Flex>
@@ -108,7 +104,7 @@ const PreviewWrapper = (props: Props) => {
 
               {/* Schedule date */}
               <Box display={['block', 'none']} style={{flexShrink: 0, width: '90px'}}>
-                <Stack space={2}>
+                <Stack gap={2}>
                   {scheduleDate ? (
                     <>
                       <Text size={1}>

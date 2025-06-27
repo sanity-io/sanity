@@ -1,5 +1,5 @@
 import {type SanityClient} from '@sanity/client'
-import {type Columns, type ResponsiveProp} from '@sanity/ui/css'
+import {type GridTemplateColumns, type ResponsiveProp} from '@sanity/ui/css'
 import {type ComponentType} from 'react'
 
 import {type SanityDocument} from '../documents'
@@ -462,7 +462,7 @@ export interface MultiFieldSet {
   single?: false
   group?: string | string[]
   options?: CollapseOptions & {
-    columns?: ResponsiveProp<Columns>
+    columns?: ResponsiveProp<GridTemplateColumns>
   }
   fields: ObjectField[]
   hidden?: ConditionalProperty

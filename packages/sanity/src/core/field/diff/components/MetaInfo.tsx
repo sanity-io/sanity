@@ -29,7 +29,7 @@ export function MetaInfo(props: MetaInfoProps) {
         </Box>
       )}
 
-      <Stack space={2} paddingLeft={2}>
+      <Stack gap={2} paddingLeft={2}>
         <MetaText
           size={1}
           weight="medium"

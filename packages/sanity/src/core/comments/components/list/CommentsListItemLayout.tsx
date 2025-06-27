@@ -1,18 +1,8 @@
 /* eslint-disable complexity */
-import {hues} from '@sanity/color'
 import {type CurrentUser} from '@sanity/types'
-import {
-  type AvatarSize,
-  Box,
-  Card,
-  Flex,
-  Stack,
-  Text,
-  TextSkeleton,
-  useClickOutsideEvent,
-} from '@sanity/ui'
-// eslint-disable-next-line camelcase
-import {getTheme_v2} from '@sanity/ui/theme'
+import {Box, Card, Flex, Stack, Text, TextSkeleton, useClickOutsideEvent} from '@sanity/ui'
+import {vars} from '@sanity/ui/css'
+import {type AvatarSize} from '@sanity/ui-v2'
 import {useCallback, useEffect, useMemo, useRef, useState} from 'react'
 import {IntentLink} from 'sanity/router'
 import {css, styled} from 'styled-components'
@@ -53,31 +43,23 @@ const SKELETON_INLINE_STYLE: React.CSSProperties = {width: '50%'}
 
 const EMPTY_ARRAY: [] = []
 
-const TimeText = styled(Text)(({theme}) => {
-  const isDark = theme.sanity.color.dark
-  const fg = hues.gray[isDark ? 200 : 800].hex
-
+const TimeText = styled(Text)(() => {
   return css`
     min-width: max-content;
-    --card-fg-color: ${fg};
+    --card-fg-color: ${vars.color.tinted.default.fg[2]};
     color: var(--card-fg-color);
   `
 })
 
 const HeaderFlex = styled(Flex)<{$size: AvatarSize}>((props) => {
-  const theme = getTheme_v2(props.theme)
-
   return css`
-    min-height: ${theme.avatar.sizes[props.$size]?.size}px;
+    min-height: ${vars.avatar.scale[props.$size]?.size}px;
   `
 })
 
-const IntentText = styled(Text)(({theme}) => {
-  const isDark = theme.sanity.color.dark
-  const fg = hues.gray[isDark ? 200 : 800].hex
-
+const IntentText = styled(Text)(() => {
   return css`
-    --card-fg-color: ${fg};
+    --card-fg-color: ${vars.color.tinted.default.fg[2]};
     color: var(--card-fg-color);
   `
 })
@@ -92,10 +74,8 @@ const InnerStack = styled(Stack)`
 `
 
 const ErrorFlex = styled(Flex)<{$size: AvatarSize}>((props) => {
-  const theme = getTheme_v2(props.theme)
-
   return css`
-    min-height: ${theme.avatar.sizes[props.$size]?.size}px;
+    min-height: ${vars.avatar.scale[props.$size]?.size}px;
   `
 })
 
@@ -107,8 +87,6 @@ const RetryCardButton = styled(Card)`
 `
 
 const RootStack = styled(Stack)(({theme}) => {
-  const {space} = theme.sanity
-
   return css`
     position: relative;
 
@@ -120,7 +98,7 @@ const RootStack = styled(Stack)(({theme}) => {
         position: absolute;
         right: 0;
         top: 0;
-        transform: translate(${space[1]}px, -${space[1]}px);
+        transform: translate(${vars.space[1]}, calc(0 - ${vars.space[1]}));
       }
 
       ${ContextMenuBox} {
@@ -342,9 +320,9 @@ export function CommentsListItemLayout(props: CommentsListItemLayoutProps) {
       data-testid="comments-list-item-layout"
       onKeyDown={handleRootKeyDown}
       ref={rootElementRef}
-      space={4}
+      gap={4}
     >
-      <InnerStack space={1} data-muted={displayError}>
+      <InnerStack gap={1} data-muted={displayError}>
         <HeaderFlex align="center" gap={FLEX_GAP} flex={1} $size={avatarSize}>
           {withAvatar && <CommentsAvatar user={user} size={avatarSize} />}
 

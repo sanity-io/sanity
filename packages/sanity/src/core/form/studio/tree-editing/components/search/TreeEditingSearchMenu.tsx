@@ -41,7 +41,7 @@ function ResultItem(props: ResultItemProps): React.JSX.Element {
         // eslint-disable-next-line react/jsx-no-bind
         onClick={() => onPathSelect(item.path)}
       >
-        <Stack space={2} flex={1}>
+        <Stack gap={2} flex={1}>
           <SanityDefaultPreview title={title} media={value.media} layout="inline" />
 
           <Box>

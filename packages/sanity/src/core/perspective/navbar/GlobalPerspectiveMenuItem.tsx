@@ -168,7 +168,7 @@ export const GlobalPerspectiveMenuItem = forwardRef<
             flex={1}
             paddingY={2}
             paddingRight={2}
-            space={2}
+            gap={2}
             style={{
               opacity: isReleasePerspectiveExcluded ? 0.5 : undefined,
             }}

@@ -27,7 +27,7 @@ export function EnsureMediaLibrary(props: {
           <Text size={1}>
             <ErrorOutlineIcon />
           </Text>
-          <Stack space={4} data-testid={errorCodeTestId}>
+          <Stack gap={4} data-testid={errorCodeTestId}>
             <Text size={1} weight="semibold">
               {error.message ||
                 t('asset-sources.media-library.error.library-could-not-be-resolved')}
@@ -44,7 +44,7 @@ export function EnsureMediaLibrary(props: {
           <Text size={1}>
             <Spinner />
           </Text>
-          <Stack space={4}>
+          <Stack gap={4}>
             <Text size={1} weight="semibold" data-testid="media-library-provisioning-message">
               {t('asset-sources.media-library.info.provisioning')}
             </Text>

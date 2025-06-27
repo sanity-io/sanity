@@ -69,6 +69,7 @@ export function useReferenceInput(options: Options) {
         return EditReferenceLinkComponent ? (
           <EditReferenceLinkComponent
             {..._props}
+            // @ts-expect-error - TODO: fix this
             ref={forwardedRef}
             parentRefPath={path}
             template={template}
@@ -98,29 +99,26 @@ export function useReferenceInput(options: Options) {
     if (disableNew) {
       return []
     }
-    return (
-      (initialValueTemplateItems || [])
-        // eslint-disable-next-line max-nested-callbacks
-        .filter((i) => schemaType.to.some((refType) => refType.name === i.template?.schemaType))
-        .map((item) =>
-          item.template?.schemaType
-            ? {
-                id: item.id,
-                title:
-                  item.title || `${item.template.schemaType} from template ${item.template.id}`,
-                type: item.template.schemaType,
-                icon: item.icon,
-                template: {
-                  id: item.template.id,
-                  params: item.parameters,
-                },
+    return (initialValueTemplateItems || [])
 
-                permission: {granted: item.granted, reason: item.reason},
-              }
-            : undefined,
-        )
-        .filter(isNonNullable)
-    )
+      .filter((i) => schemaType.to.some((refType) => refType.name === i.template?.schemaType))
+      .map((item) =>
+        item.template?.schemaType
+          ? {
+              id: item.id,
+              title: item.title || `${item.template.schemaType} from template ${item.template.id}`,
+              type: item.template.schemaType,
+              icon: item.icon,
+              template: {
+                id: item.template.id,
+                params: item.parameters,
+              },
+
+              permission: {granted: item.granted, reason: item.reason},
+            }
+          : undefined,
+      )
+      .filter(isNonNullable)
   }, [disableNew, initialValueTemplateItems, schemaType.to])
 
   const getReferenceInfo = useCallback(

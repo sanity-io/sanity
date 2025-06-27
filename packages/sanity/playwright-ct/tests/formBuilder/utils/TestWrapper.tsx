@@ -1,6 +1,6 @@
 import {type SanityClient} from '@sanity/client'
-import {Card, LayerProvider, ThemeProvider, ToastProvider} from '@sanity/ui'
-import {buildTheme, type RootTheme} from '@sanity/ui/theme'
+import {Card, LayerProvider, ThemeProvider, ToastProvider} from '@sanity/ui-v2'
+import {buildTheme, type RootTheme} from '@sanity/ui-v2/theme'
 import {noop} from 'lodash'
 import {type ReactNode, Suspense, useEffect, useState} from 'react'
 import {

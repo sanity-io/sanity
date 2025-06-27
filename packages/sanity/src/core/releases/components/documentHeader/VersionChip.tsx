@@ -1,12 +1,12 @@
 import {type ReleaseDocument, type ReleaseState} from '@sanity/client'
 import {ComposeSparklesIcon, LockIcon} from '@sanity/icons'
 import {
-  type BadgeTone,
   Button, // eslint-disable-line no-restricted-imports
   useClickOutsideEvent,
   useGlobalKeyDown,
   useToast,
 } from '@sanity/ui'
+import {type ElementTone} from '@sanity/ui/theme'
 import {
   memo,
   type MouseEvent,
@@ -69,7 +69,7 @@ export const VersionChip = memo(function VersionChip(props: {
   tooltipContent: ReactNode
   onClick: () => void
   text: string
-  tone: BadgeTone
+  tone: ElementTone
   locked?: boolean
   contextValues: {
     documentId: string
@@ -221,7 +221,7 @@ export const VersionChip = memo(function VersionChip(props: {
             paddingY={2}
             paddingLeft={2}
             paddingRight={3}
-            space={2}
+            gap={2}
             radius="full"
             icon={<ReleaseAvatarIcon tone={tone} />}
             iconRight={isLinked ? <ComposeSparklesIcon /> : locked && <LockIcon />}

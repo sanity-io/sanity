@@ -1,15 +1,16 @@
-/* eslint-disable i18next/no-literal-string,@sanity/i18n/no-attribute-string-literals */
+/* eslint-disable i18next/no-literal-string */
 import {generateHelpUrl} from '@sanity/generate-help-url'
 import {ErrorOutlineIcon, WarningOutlineIcon} from '@sanity/icons'
 import {type SchemaValidationProblemGroup} from '@sanity/types'
-import {Box, Breadcrumbs, Card, Flex, Stack, Text, type ThemeColorToneKey} from '@sanity/ui'
+import {Box, Breadcrumbs, Card, Flex, Stack, Text} from '@sanity/ui'
+import {type CardTone} from '@sanity/ui/theme'
 import {capitalize} from 'lodash'
 import {useMemo} from 'react'
 import {styled} from 'styled-components'
 
 import {useTranslation} from '../../../i18n'
 
-const TONES: Record<'error' | 'warning', ThemeColorToneKey> = {
+const TONES: Record<'error' | 'warning', CardTone> = {
   error: 'critical',
   warning: 'caution',
 }
@@ -42,7 +43,7 @@ export function SchemaProblemGroups(props: {problemGroups: SchemaValidationProbl
   }, [problemGroups])
 
   return (
-    <Stack as="ul" space={4}>
+    <Stack as="ul" gap={4}>
       {items.map(({group, problem}, i) => {
         const isError = problem.severity === 'error'
         const isWarning = problem.severity === 'warning'
@@ -104,7 +105,7 @@ export function SchemaProblemGroups(props: {problemGroups: SchemaValidationProbl
 
             <Box as="ul" marginTop={4}>
               <Box as="li">
-                <Stack space={3}>
+                <Stack gap={3}>
                   <ErrorMessageText muted size={1}>
                     {problem.message}
                   </ErrorMessageText>

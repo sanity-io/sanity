@@ -1,6 +1,6 @@
 // oxlint-disable no-extend-native
 
-import {studioTheme, ThemeProvider} from '@sanity/ui'
+import {studioTheme, ThemeProvider} from '@sanity/ui-v2'
 import {render, screen, waitFor} from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import {useCallback} from 'react'

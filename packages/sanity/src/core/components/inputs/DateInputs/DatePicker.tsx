@@ -25,6 +25,7 @@ export const DatePicker = forwardRef(function DatePicker(
     onChange,
     calendarLabels,
     padding = 2,
+    // @ts-expect-error - TODO: Fix this.
     showTimeZone = false,
     timeZoneScope,
     ...rest

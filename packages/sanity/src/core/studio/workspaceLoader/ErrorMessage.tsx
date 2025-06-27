@@ -1,4 +1,4 @@
-/* eslint-disable i18next/no-literal-string,@sanity/i18n/no-attribute-string-literals */
+/* eslint-disable i18next/no-literal-string */
 import {Box, Card, Code, Flex, Text} from '@sanity/ui'
 import {startCase} from 'lodash'
 import {useEffect} from 'react'
@@ -57,7 +57,12 @@ export function ErrorMessage({error, message, path, stack}: ErrorMessageProps) {
 
       {stack && (
         <details>
-          <Text as="summary">Stack Trace</Text>
+          <Text
+            // @ts-expect-error - TODO: fix this in `@sanity/ui`
+            as="summary"
+          >
+            Stack Trace
+          </Text>
 
           <Box overflow="auto" marginTop={4}>
             <Code>{stack}</Code>

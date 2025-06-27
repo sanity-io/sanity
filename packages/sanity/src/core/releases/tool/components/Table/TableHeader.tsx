@@ -82,8 +82,13 @@ const TableHeaderSearch = ({
  */
 export const TableHeader = ({headers, searchDisabled}: TableHeaderProps) => {
   return (
-    <Card as="thead" borderBottom>
+    <Card
+      // @ts-expect-error - TODO: fix this in `@sanity/ui`
+      as="thead"
+      borderBottom
+    >
       <Flex
+        // @ts-expect-error - TODO: fix this in `@sanity/ui`
         as="tr"
         style={{
           paddingInline: `max(
@@ -98,6 +103,7 @@ export const TableHeader = ({headers, searchDisabled}: TableHeaderProps) => {
               <Header
                 key={String(id)}
                 headerProps={{
+                  // @ts-expect-error - TODO: fix this in `@sanity/ui`
                   as: 'th',
                   id: String(id),
                   style: {...style, width: width || undefined},

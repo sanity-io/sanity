@@ -1,5 +1,7 @@
-import {Box, Flex, rem, Skeleton, Stack} from '@sanity/ui'
+import {Box, Flex, Skeleton, Stack} from '@sanity/ui'
 import {styled} from 'styled-components'
+
+const rem = (value: number) => `${value / 16}rem`
 
 export const RootBox = styled(Box)`
   position: relative;

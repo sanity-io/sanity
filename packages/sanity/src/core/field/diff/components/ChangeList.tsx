@@ -100,8 +100,8 @@ export function ChangeList({diff, fields, schemaType}: ChangeListProps): React.J
 
   return (
     <Card>
-      <Stack space={5}>
-        <Stack as={ChangeListWrapper} space={5}>
+      <Stack gap={5}>
+        <Stack as={ChangeListWrapper} gap={5}>
           {changes.map((change) => (
             <div key={change.key}>
               <ChangeResolver
@@ -121,7 +121,7 @@ export function ChangeList({diff, fields, schemaType}: ChangeListProps): React.J
         {showFooter && isComparingCurrent && !isPermissionsLoading && permissions?.granted && (
           <Popover
             content={
-              <Stack space={3}>
+              <Stack gap={3}>
                 <Box paddingY={3}>
                   <Text size={1}>
                     {t('changes.action.revert-all-description', {

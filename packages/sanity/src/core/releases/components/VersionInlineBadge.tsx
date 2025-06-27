@@ -1,12 +1,12 @@
 import {type ReleaseDocument} from '@sanity/client'
-import {type BadgeTone} from '@sanity/ui'
+import {type ElementTone} from '@sanity/ui/theme'
 import {type FC, type PropsWithChildren} from 'react'
 import {css, styled} from 'styled-components'
 
 import {LATEST} from '../util/const'
 import {getReleaseTone} from '../util/getReleaseTone'
 
-const StyledVersionInlineBadge = styled.span<{$tone?: BadgeTone}>((props) => {
+const StyledVersionInlineBadge = styled.span<{$tone?: ElementTone}>((props) => {
   const {$tone} = props
   return css`
     color: var(--card-badge-${$tone ?? 'default'}-fg-color);
@@ -25,7 +25,7 @@ export const VersionInlineBadge = ({
   children,
   $tone,
 }: PropsWithChildren<{
-  $tone?: BadgeTone
+  $tone?: ElementTone
 }>) => <StyledVersionInlineBadge $tone={$tone}>{children}</StyledVersionInlineBadge>
 
 /**

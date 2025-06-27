@@ -6,8 +6,7 @@ import {
 } from '@portabletext/editor'
 import {isPortableTextSpan, isPortableTextTextBlock} from '@sanity/types'
 import {useClickOutsideEvent} from '@sanity/ui'
-// eslint-disable-next-line camelcase
-import {getTheme_v2} from '@sanity/ui/theme'
+import {vars} from '@sanity/ui/css'
 import {isEqual} from 'lodash'
 import {type KeyboardEvent, useCallback, useEffect, useMemo, useRef, useState} from 'react'
 import {css, styled} from 'styled-components'
@@ -24,10 +23,9 @@ const POPOVER_FALLBACK_PLACEMENTS: PopoverProps['fallbackPlacements'] = ['bottom
 const INLINE_STYLE: React.CSSProperties = {outline: 'none'}
 const EMPTY_ARRAY: [] = []
 
-const PlaceholderWrapper = styled.span((props) => {
-  const {color} = getTheme_v2(props.theme)
+const PlaceholderWrapper = styled.span(() => {
   return css`
-    color: ${color.input.default.enabled.placeholder};
+    color: ${vars.color.input.text.placeholder};
     overflow: hidden;
     text-overflow: ellipsis;
     text-wrap: nowrap;
@@ -35,20 +33,18 @@ const PlaceholderWrapper = styled.span((props) => {
   `
 })
 
-export const StyledPopover = styled(Popover)(({theme}) => {
-  const {space, radius} = theme.sanity
-
+export const StyledPopover = styled(Popover)(() => {
   return css`
     &[data-placement='bottom'] {
-      transform: translateY(${space[1]}px);
+      transform: translateY(${vars.space[1]});
     }
 
     &[data-placement='top'] {
-      transform: translateY(-${space[1]}px);
+      transform: translateY(-${vars.space[1]});
     }
 
     [data-ui='Popover__wrapper'] {
-      border-radius: ${radius[3]}px;
+      border-radius: ${vars.radius[3]};
       display: flex;
       flex-direction: column;
       overflow: clip;

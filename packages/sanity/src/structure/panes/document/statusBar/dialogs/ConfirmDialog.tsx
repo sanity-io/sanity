@@ -71,7 +71,7 @@ function ConfirmDialogContent(props: {dialog: DocumentActionConfirmDialogProps})
         <Text>{message}</Text>
       </Box>
       <Box paddingX={4} paddingY={3} style={{borderTop: '1px solid var(--card-border-color)'}}>
-        <Grid columns={2} gap={2}>
+        <Grid gridTemplateColumns={2} gap={2}>
           <Button
             data-testid="confirm-dialog-cancel-button"
             icon={cancelButtonIcon}

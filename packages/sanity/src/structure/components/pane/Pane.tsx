@@ -2,7 +2,6 @@ import {BoundaryElementProvider, Card, type CardProps, Code, Flex} from '@sanity
 import {
   type ForwardedRef,
   forwardRef,
-  type HTMLProps,
   type ReactNode,
   useCallback,
   useImperativeHandle,
@@ -19,7 +18,8 @@ import {PANE_COLLAPSED_WIDTH, PANE_DEBUG, PANE_DEFAULT_MIN_WIDTH} from './consta
 import {PaneDivider} from './PaneDivider'
 import {usePaneLayout} from './usePaneLayout'
 
-interface PaneProps {
+interface PaneProps
+  extends Omit<CardProps<'div'>, 'as' | 'flex' | 'id' | 'maxWidth' | 'minWidth' | 'overflow'> {
   children?: ReactNode
   currentMinWidth?: number
   currentMaxWidth?: number
@@ -42,11 +42,9 @@ const Root = styled(Card)`
  * @hidden
  * @internal
  */
-// eslint-disable-next-line complexity
+
 export const Pane = forwardRef(function Pane(
-  props: PaneProps &
-    Omit<CardProps, 'as' | 'flex' | 'maxWidth' | 'minWidth' | 'overflow'> &
-    Omit<HTMLProps<HTMLDivElement>, 'as' | 'height' | 'hidden' | 'id' | 'style'>,
+  props: PaneProps,
   forwardedRef: ForwardedRef<HTMLDivElement>,
 ) {
   const {
@@ -60,6 +58,7 @@ export const Pane = forwardRef(function Pane(
     selected = false,
     ...restProps
   } = props
+
   const [rootElement, setRootElement] = useState<HTMLDivElement | null>(null)
   const {
     collapse,

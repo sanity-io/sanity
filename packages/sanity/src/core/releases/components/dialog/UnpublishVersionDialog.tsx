@@ -97,7 +97,7 @@ export function UnpublishVersionDialog(props: {
         },
       }}
     >
-      <Stack space={4} paddingX={4} paddingBottom={4}>
+      <Stack gap={4} paddingX={4} paddingBottom={4}>
         {schemaType ? (
           <Preview value={{_id: documentVersionId}} schemaType={schemaType} />
         ) : (

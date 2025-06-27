@@ -192,7 +192,7 @@ export function List(props: ListProps) {
   )
 }
 
-interface ItemProps extends CardProps {
+interface ItemProps extends CardProps<'div'> {
   'id': string
 
   // false positive:

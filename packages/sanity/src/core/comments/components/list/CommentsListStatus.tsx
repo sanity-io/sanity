@@ -55,7 +55,7 @@ export function CommentsListStatus(props: CommentsListStatusProps) {
     return (
       <Flex align="center" justify="center" flex={1} sizing="border">
         <Container width={0} padding={4}>
-          <Stack space={3}>
+          <Stack gap={3}>
             <Text align="center" size={1} muted weight="medium">
               {emptyStateMessages[status].title}
             </Text>

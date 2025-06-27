@@ -1,5 +1,5 @@
 import {type SanityClient} from '@sanity/client'
-import {LayerProvider, studioTheme, ThemeProvider, ToastProvider} from '@sanity/ui'
+import {LayerProvider, studioTheme, ThemeProvider, ToastProvider} from '@sanity/ui-v2'
 import {createMemoryHistory} from 'history'
 import {noop} from 'lodash'
 import {type ReactNode} from 'react'

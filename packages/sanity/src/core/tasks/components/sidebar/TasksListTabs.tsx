@@ -55,7 +55,7 @@ export function TasksListTabs({activeTabId, onChange}: TasksListTabsProps) {
   )
 
   return (
-    <TabList space={2} style={LIST_STYLES}>
+    <TabList gap={2} style={LIST_STYLES}>
       {tabs.map((tab) => (
         <Tab
           key={`${tab.id}-tab`}

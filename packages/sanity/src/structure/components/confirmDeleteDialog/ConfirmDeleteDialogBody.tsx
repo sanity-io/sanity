@@ -130,7 +130,7 @@ export function ConfirmDeleteDialogBody({
       <Card radius={2} shadow={1} flex="auto" padding={2}>
         <Flex direction="column">
           {internalReferences.totalCount > 0 && (
-            <Stack as="ul" marginBottom={2} space={2} data-testid="internal-references">
+            <Stack as="ul" marginBottom={2} gap={2} data-testid="internal-references">
               {internalReferences?.references.map((item) => (
                 <Box as="li" key={item._id}>
                   {renderPreviewItem(item)}
@@ -168,7 +168,7 @@ export function ConfirmDeleteDialogBody({
                     <Text size={1}>
                       <DocumentsIcon />
                     </Text>
-                    <Stack space={2}>
+                    <Stack gap={2}>
                       <Text textOverflow="ellipsis" size={1}>
                         {t('confirm-delete-dialog.cdr-summary.title', {
                           count: normalizedDatasetNames.length,

@@ -85,7 +85,6 @@ function DocumentPaneInner(props: DocumentPaneProviderProps) {
       ? {
           path: pathFromString(parentRefPath),
           state:
-            // eslint-disable-next-line no-nested-ternary
             groupIndex >= routerPanesStateLength - 1
               ? 'none'
               : groupIndex >= routerPanesStateLength - 2
@@ -100,7 +99,7 @@ function DocumentPaneInner(props: DocumentPaneProviderProps) {
   if (options.type === '*' && !isLoaded) {
     return (
       <LoadingPane
-        flex={2.5}
+        flex={2}
         minWidth={320}
         paneKey={paneKey}
         title={t('panes.document-pane.document-not-found.loading')}
@@ -111,12 +110,12 @@ function DocumentPaneInner(props: DocumentPaneProviderProps) {
   if (!documentType) {
     return (
       <ErrorPane
-        flex={2.5}
+        flex={2}
         minWidth={320}
         paneKey={paneKey}
         title={t('panes.document-pane.document-not-found.title')}
       >
-        <Stack space={4}>
+        <Stack gap={4}>
           <Text as="p">
             <Translate
               t={t}
@@ -139,7 +138,7 @@ function DocumentPaneInner(props: DocumentPaneProviderProps) {
     >
       {/* NOTE: this is a temporary location for this provider until we */}
       {/* stabilize the reference input options formally in the form builder */}
-      {/* eslint-disable-next-line react/jsx-pascal-case */}
+      {}
       <ReferenceInputOptionsProvider
         EditReferenceLinkComponent={ReferenceChildLink}
         onEditReference={handleEditReference}

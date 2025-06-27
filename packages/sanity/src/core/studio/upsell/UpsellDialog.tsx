@@ -1,8 +1,7 @@
 import {white} from '@sanity/color'
 import {CloseIcon, LaunchIcon} from '@sanity/icons'
 import {Box, Stack} from '@sanity/ui'
-// eslint-disable-next-line camelcase
-import {getTheme_v2} from '@sanity/ui/theme'
+import {vars} from '@sanity/ui/css'
 import {styled} from 'styled-components'
 
 import {Button, Dialog} from '../../../ui-components'
@@ -12,22 +11,21 @@ import {type InterpolationProp, UpsellDescriptionSerializer} from './upsellDescr
 /**
  * Absolute positioned button to close the dialog.
  */
-const StyledButton = styled(Button)(({theme}) => {
-  const {space} = getTheme_v2(theme)
+const StyledButton = styled(Button)(() => {
   return `
-      position: absolute;
-      top: ${space[3]}px;
-      right: ${space[3]}px;
-      z-index: 20;
-      background: transparent;
-      border-radius: 9999px;
-      box-shadow: none;
-      color: ${white.hex};
+    position: absolute;
+    top: ${vars.space[3]};
+    right: ${vars.space[3]};
+    z-index: 20;
+    background: transparent;
+    border-radius: 9999px;
+    box-shadow: none;
+    color: ${white.hex};
+    --card-fg-color: ${white.hex};
+    :hover {
       --card-fg-color: ${white.hex};
-      :hover {
-        --card-fg-color: ${white.hex};
-      }
-    `
+    }
+  `
 })
 
 const Image = styled.img`
@@ -96,7 +94,7 @@ export function UpsellDialog(props: UpsellDialogProps) {
       />
       {data.image && <Image src={data.image.asset.url} alt={data.image.asset.altText ?? ''} />}
       <Box padding={3} marginTop={2}>
-        <Stack space={4} paddingBottom={2}>
+        <Stack gap={4} paddingBottom={2}>
           <UpsellDescriptionSerializer
             blocks={data.descriptionText}
             interpolation={interpolation}

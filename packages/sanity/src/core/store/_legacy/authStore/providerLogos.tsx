@@ -1,14 +1,12 @@
-import {type Theme} from '@sanity/ui'
+import {vars} from '@sanity/ui/css'
 import {type ComponentType} from 'react'
 import {css, styled} from 'styled-components'
 
 import {type AuthProvider} from '../../../config'
 
-const GithubRootSvg = styled.svg(({theme}: {theme: Theme}) => {
-  const {fg} = theme.sanity.color.base
-
+const GithubRootSvg = styled.svg(() => {
   return css`
-    fill: ${fg};
+    fill: ${vars.color.fg};
   `
 })
 

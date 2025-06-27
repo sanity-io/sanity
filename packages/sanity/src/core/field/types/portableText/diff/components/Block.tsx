@@ -66,7 +66,7 @@ export function Block(props: {
         diff-block-action={diff.action}
         data-block-note={`changed_from_style_${fromStyle || 'undefined'}`}
       >
-        <Stack space={2}>
+        <Stack gap={2}>
           <DiffTooltip
             annotations={[diff.origin.fields.style?.annotation]}
             diff={diff.origin.fields.style}

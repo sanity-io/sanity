@@ -1,17 +1,13 @@
 import {type StackablePerspective} from '@sanity/client'
 import {Card, Portal, useClickOutsideEvent, useLayer} from '@sanity/ui'
+import {vars} from '@sanity/ui/css'
 import {AnimatePresence, motion, type Transition, type Variants} from 'framer-motion'
 import {useRef, useState} from 'react'
 import FocusLock from 'react-focus-lock'
 import {styled} from 'styled-components'
 
 import {supportsTouch} from '../../../../../util'
-import {
-  POPOVER_INPUT_PADDING,
-  POPOVER_MAX_HEIGHT,
-  POPOVER_MAX_WIDTH,
-  POPOVER_RADIUS,
-} from '../constants'
+import {POPOVER_MAX_HEIGHT, POPOVER_MAX_WIDTH, POPOVER_RADIUS} from '../constants'
 import {useSearchState} from '../contexts/search/useSearchState'
 import {hasSearchableTerms} from '../utils/hasSearchableTerms'
 import {SearchWrapper} from './common/SearchWrapper'
@@ -67,13 +63,10 @@ const SearchMotionCard = styled(motion.create(Card))`
   display: flex !important;
   flex-direction: column;
   left: 50%;
-  max-height: min(
-    calc(100vh - ${Y_POSITION}vh - ${POPOVER_INPUT_PADDING}px),
-    ${POPOVER_MAX_HEIGHT}px
-  );
+  max-height: min(calc(100vh - ${Y_POSITION}vh - ${vars.space[4]}), ${POPOVER_MAX_HEIGHT}px);
   position: absolute;
   top: ${Y_POSITION}vh;
-  width: min(calc(100vw - ${POPOVER_INPUT_PADDING * 2}px), ${POPOVER_MAX_WIDTH}px);
+  width: min(calc(100vw - (${vars.space[4]} * 2)), ${POPOVER_MAX_WIDTH}px);
 `
 
 /**

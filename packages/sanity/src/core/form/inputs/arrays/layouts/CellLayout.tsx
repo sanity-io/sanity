@@ -1,4 +1,5 @@
-import {Box, Card, type CardTone, Flex} from '@sanity/ui'
+import {Box, Card, Flex} from '@sanity/ui'
+import {type CardTone} from '@sanity/ui/theme'
 import {type ComponentProps, type ReactNode} from 'react'
 import {styled} from 'styled-components'
 

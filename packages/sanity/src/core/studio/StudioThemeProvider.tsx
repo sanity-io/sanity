@@ -1,14 +1,10 @@
-/* eslint-disable no-nested-ternary */
-
-
-import {LayerProvider, StyleTags, ThemeProvider} from '@sanity/ui'
-import {type RootTheme} from '@sanity/ui/theme'
+import {LayerProvider, ThemeProvider} from '@sanity/ui-v2'
+import {type RootTheme} from '@sanity/ui-v2/theme'
 import {type ReactNode} from 'react'
 import {ColorSchemeSetValueContext, ColorSchemeValueContext} from 'sanity/_singletons'
 
 import {defaultTheme, type StudioTheme} from '../theme'
 import {useActiveWorkspace} from './activeWorkspaceMatcher'
-import {HTMLClassNames} from './HTMLClassNames'
 
 interface StudioThemeProviderProps {
   children: ReactNode
@@ -21,13 +17,11 @@ interface StudioThemeProviderProps {
 const isThemerTheme = (theme: StudioTheme): boolean => theme.__themer === true
 
 function getThemeValues(theme: StudioTheme): RootTheme {
-  const t = defaultTheme()
-
   return {
-    ...t,
+    ...defaultTheme,
     v2: theme.v2,
-    fonts: isThemerTheme(theme) ? t.fonts : (theme.fonts ?? t.fonts),
-    color: theme.color ?? t.color,
+    fonts: isThemerTheme(theme) ? defaultTheme.fonts : (theme.fonts ?? defaultTheme.fonts),
+    color: theme.color ?? defaultTheme.color,
   }
 }
 
@@ -41,8 +35,6 @@ export function StudioThemeProvider({children}: StudioThemeProviderProps) {
       <ColorSchemeSetValueContext.Provider value={false}>
         <ColorSchemeValueContext.Provider value={scheme}>
           <ThemeProvider scheme={scheme} theme={getThemeValues(theme)}>
-            <HTMLClassNames />
-            <StyleTags />
             <LayerProvider>{children}</LayerProvider>
           </ThemeProvider>
         </ColorSchemeValueContext.Provider>
@@ -52,8 +44,6 @@ export function StudioThemeProvider({children}: StudioThemeProviderProps) {
 
   return (
     <ThemeProvider theme={getThemeValues(theme)}>
-      <HTMLClassNames />
-      <StyleTags />
       <LayerProvider>{children}</LayerProvider>
     </ThemeProvider>
   )

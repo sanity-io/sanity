@@ -1,4 +1,5 @@
-import {Card, Text, type Theme} from '@sanity/ui'
+import {Card, Text} from '@sanity/ui'
+import {vars} from '@sanity/ui/css'
 import {isAfter, isBefore, isSameDay, isSameMonth} from 'date-fns'
 import {useCallback} from 'react'
 import {css, styled} from 'styled-components'
@@ -10,7 +11,7 @@ interface CalendarDayProps {
   onSelect: (date: Date) => void
 }
 
-const CircleSvg = styled.svg(({theme}: {theme: Theme}) => {
+const CircleSvg = styled.svg(() => {
   return css`
     bottom: 0;
     left: 0;
@@ -19,7 +20,7 @@ const CircleSvg = styled.svg(({theme}: {theme: Theme}) => {
     top: 0;
 
     circle {
-      stroke: ${theme.sanity.color.card.enabled.border};
+      stroke: ${vars.color.tinted.default.border[1]};
       stroke-width: 3;
       fill: none;
     }

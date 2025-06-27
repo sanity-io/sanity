@@ -70,7 +70,7 @@ export function AssetDeleteDialog({
         <Stack
           paddingX={hasResults ? [2, 3, 4] : 0}
           paddingY={hasResults ? [3, 3, 3, 4] : 0}
-          space={1}
+          gap={1}
         >
           <ConfirmMessage asset={asset} assetType={assetType} hasResults={hasResults} />
 

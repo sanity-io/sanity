@@ -6,8 +6,7 @@ import {
 import {Icon, LinkIcon} from '@sanity/icons'
 import {type PortableTextBlock} from '@sanity/types'
 import {Box, Card, Flex, Heading, Text} from '@sanity/ui'
-// eslint-disable-next-line camelcase
-import {getTheme_v2} from '@sanity/ui/theme'
+import {vars} from '@sanity/ui/css'
 import {template} from 'lodash'
 import {type ReactNode, useEffect, useMemo, useState} from 'react'
 import {css, styled} from 'styled-components'
@@ -50,11 +49,9 @@ const AccentSpan = styled.span`
   --card-icon-color: var(--card-accent-fg-color);
 `
 
-const SemiboldSpan = styled.span(({theme}) => {
-  const {weights} = theme.sanity.fonts.text
-
+const SemiboldSpan = styled.span(() => {
   return css`
-    font-weight: ${weights.semibold};
+    font-weight: ${vars.font.text.weight.semibold};
   `
 })
 
@@ -156,13 +153,11 @@ function H3Block(props: {children: ReactNode}) {
   )
 }
 
-const Image = styled.img((props) => {
-  const theme = getTheme_v2(props.theme)
-
+const Image = styled.img(() => {
   return css`
     object-fit: cover;
     width: 100%;
-    border-radius: ${theme.radius[3]}px;
+    border-radius: ${vars.radius[3]};
   `
 })
 
@@ -309,12 +304,20 @@ const createComponents = ({
                 <>{props.value.icon?.url && <DynamicIcon icon={props.value.icon} />} </>
               )}
             </IconTextContainer>
-            <Text size={1} weight="semibold" accent={props.value.accent}>
+            <Text
+              size={1}
+              weight="semibold"
+              // accent={props.value.accent}
+            >
               {interpolateChildren(props.value.title)}
             </Text>
           </Flex>
 
-          <Text size={1} muted accent={props.value.accent}>
+          <Text
+            size={1}
+            muted
+            // accent={props.value.accent}
+          >
             {interpolateChildren(props.value.text)}
           </Text>
         </Flex>

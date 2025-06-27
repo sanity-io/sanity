@@ -330,7 +330,7 @@ export const Calendar = forwardRef(function Calendar(
       <Box padding={padding}>
         {/* Day presets */}
         {features.dayPresets && (
-          <Grid columns={3} data-ui="CalendaryDayPresets" gap={1}>
+          <Grid gridTemplateColumns={3} data-ui="CalendaryDayPresets" gap={1}>
             <Button text={labels.goToYesterday} mode="bleed" onClick={handleYesterdayClick} />
             <Button text={labels.goToToday} mode="bleed" onClick={handleTodayClick} />
             <Button text={labels.goToTomorrow} mode="bleed" onClick={handleTomorrowClick} />
@@ -441,7 +441,6 @@ function CalendarMonthSelect(props: {
       <Box flex={1}>
         <Select fontSize={1} radius={2} value={value} onChange={onChange} padding={2}>
           {monthNames.map((monthName, i) => (
-            // eslint-disable-next-line react/no-array-index-key
             <option key={i} value={i}>
               {monthName}
             </option>

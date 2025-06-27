@@ -1,6 +1,6 @@
 import {type ArraySchemaType, isKeyedObject} from '@sanity/types'
 import {Box, Card, Checkbox, Flex, Grid} from '@sanity/ui'
-import {type Columns} from '@sanity/ui/css'
+import {type GridTemplateColumns} from '@sanity/ui/css'
 import {resolveTypeName} from '@sanity/util/content'
 import {type ChangeEvent, useCallback, useMemo} from 'react'
 
@@ -110,7 +110,7 @@ export function ArrayOfObjectOptionsInput(props: ArrayOfObjectsInputProps) {
     <ChangeIndicator path={path} isChanged={changed} hasFocus={false}>
       <Grid
         gap={2}
-        columns={isGrid ? (Math.min(options.length, 4) as Columns) : 1}
+        gridTemplateColumns={isGrid ? (Math.min(options.length, 4) as GridTemplateColumns) : 1}
         tabIndex={0}
         {...elementProps}
       >

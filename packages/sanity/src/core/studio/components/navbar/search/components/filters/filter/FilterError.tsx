@@ -13,7 +13,7 @@ export function FilterError(props: BoxProps) {
         <TextWithTone tone="critical">
           <ErrorOutlineIcon />
         </TextWithTone>
-        <Stack space={4}>
+        <Stack gap={4}>
           <TextWithTone size={1} tone="critical" weight="medium">
             {t('search.error.display-filter-title')}
           </TextWithTone>

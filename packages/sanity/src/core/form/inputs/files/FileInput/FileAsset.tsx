@@ -1,6 +1,7 @@
 import {isFileSource} from '@sanity/asset-utils'
 import {type AssetSource} from '@sanity/types'
-import {Box, Card, type ThemeColorToneKey} from '@sanity/ui'
+import {Box, Card} from '@sanity/ui'
+import {type CardTone} from '@sanity/ui/theme'
 import {get} from 'lodash'
 import {useCallback, useMemo, useState} from 'react'
 
@@ -320,7 +321,7 @@ function FileUploadPlaceHolder(props: FileAssetProps) {
   )
 }
 
-function AssetPlaceholder(props: FileAssetProps & {tone: ThemeColorToneKey}) {
+function AssetPlaceholder(props: FileAssetProps & {tone: CardTone}) {
   const {directUploads, schemaType, readOnly, resolveUploader, hoveringFiles, tone} = props
 
   const acceptedFiles = hoveringFiles.filter((file) => resolveUploader?.(schemaType, file))

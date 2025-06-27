@@ -27,7 +27,7 @@ export function ReferenceStrengthMismatchAlertStrip({
       status="warning"
       data-testid="alert-reference-strength-mismatch"
     >
-      <Stack space={3}>
+      <Stack gap={3}>
         <Text as="p" muted size={1}>
           <Translate
             t={t}

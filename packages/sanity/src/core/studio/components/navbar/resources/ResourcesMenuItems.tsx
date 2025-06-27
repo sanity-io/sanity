@@ -74,7 +74,7 @@ export function ResourcesMenuItems({
 
       {/* Studio version information */}
       <UIMenuItem onClick={onAboutDialogOpen}>
-        <Stack space={1}>
+        <Stack gap={1}>
           <Text size={1} weight="medium" textOverflow="ellipsis">
             {t('help-resources.studio-version', {studioVersion: SANITY_VERSION})}
           </Text>

@@ -1,4 +1,5 @@
-import {type ButtonTone, Flex} from '@sanity/ui'
+import {Flex} from '@sanity/ui'
+import {type ElementTone} from '@sanity/ui/theme'
 import {type ComponentType, type ReactNode} from 'react'
 
 import {Button} from '../../../../ui-components/button/Button'
@@ -9,7 +10,7 @@ interface Props {
   icon?: ComponentType | ReactNode
   onAction?: () => void
   onComplete?: () => void
-  tone?: ButtonTone
+  tone?: ElementTone
 }
 
 const DialogFooter = (props: Props) => {

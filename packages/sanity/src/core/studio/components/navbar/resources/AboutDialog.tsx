@@ -64,8 +64,8 @@ ${navigator.userAgent}
       onClose={onClose}
       id={aboutDialogId}
     >
-      <Stack space={4}>
-        <Stack space={3}>
+      <Stack gap={4}>
+        <Stack gap={3}>
           <Text as="h2" size={1} weight="medium">
             {t('about-dialog.version-info.current-version.header')}
           </Text>
@@ -73,7 +73,7 @@ ${navigator.userAgent}
             {currentVersion}
           </Text>
         </Stack>
-        <Stack space={3}>
+        <Stack gap={3}>
           <Text as="h2" size={1} weight="medium">
             {t('about-dialog.version-info.current-version.header')}
           </Text>
@@ -93,7 +93,7 @@ ${navigator.userAgent}
             )}
           </Text>
         </Stack>
-        <Stack space={3}>
+        <Stack gap={3}>
           <Text as="h2" size={1} weight="medium">
             {t('about-dialog.version-info.auto-updates.header')}
           </Text>
@@ -111,7 +111,7 @@ ${navigator.userAgent}
             </Text>
           )}
         </Stack>
-        <Stack space={3}>
+        <Stack gap={3}>
           <Text as="h2" size={1} weight="medium">
             {t('about-dialog.version-info.user-agent.header')}
           </Text>

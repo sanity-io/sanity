@@ -1,5 +1,4 @@
-// eslint-disable-next-line camelcase
-import {getTheme_v2} from '@sanity/ui/theme'
+import {vars} from '@sanity/ui/css'
 import {css, styled} from 'styled-components'
 
 import {CommentsListItem, type CommentsListItemProps} from '../../../comments/components'
@@ -18,16 +17,15 @@ interface TasksActivityCommentItemProps extends Omit<CommentsListItemProps, 'mod
   // ...
 }
 
-const CommentListItemRoot = styled.div((props) => {
-  const theme = getTheme_v2(props.theme)
+const CommentListItemRoot = styled.div(() => {
   return css`
     [data-ui='CommentsListItem'] {
-      padding-right: ${theme.space[2]}px;
+      padding-right: ${vars.space[2]};
     }
 
     // Increase the padding when the comment input is focused
     [data-ui='CommentInputEditableWrap']:focus-within {
-      padding-bottom: ${theme.space[2]}px;
+      padding-bottom: ${vars.space[2]};
     }
   `
 })

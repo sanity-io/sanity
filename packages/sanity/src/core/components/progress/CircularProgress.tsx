@@ -1,5 +1,4 @@
-import {hues} from '@sanity/color'
-import {type Theme} from '@sanity/ui'
+import {vars} from '@sanity/ui/css'
 import {css, styled} from 'styled-components'
 
 const SIZE = 43
@@ -11,22 +10,20 @@ const Root = styled.svg`
   transform: rotate(-90deg);
 `
 
-const BgCircle = styled.circle(({theme}: {theme: Theme}) => {
-  const {color} = theme.sanity
+const BgCircle = styled.circle(() => {
+  // const {color} = theme.sanity
 
   return css`
     fill: none;
-    stroke: ${hues.gray[color.dark ? 900 : 100].hex};
+    stroke: ${vars.color.tinted.default.border[0]};
     stroke-width: ${STROKE_WIDTH}px;
   `
 })
 
-const ProgressCircle = styled.circle(({theme}: {theme: Theme}) => {
-  const {color} = theme.sanity
-
+const ProgressCircle = styled.circle(() => {
   return css`
     fill: none;
-    stroke: ${hues.blue[color.dark ? 400 : 500].hex};
+    stroke: ${vars.color.solid.primary.bg[0]};
     stroke-width: ${STROKE_WIDTH}px;
     transition: stroke-dashoffset 75ms;
   `

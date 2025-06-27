@@ -11,7 +11,8 @@ import {
   type SchemaType,
   type ValidationMarker,
 } from '@sanity/types'
-import {Box, Card, type CardTone, Flex, Stack, Text} from '@sanity/ui'
+import {Box, Card, Flex, Stack, Text} from '@sanity/ui'
+import {type CardTone} from '@sanity/ui/theme'
 import {type ErrorInfo, Fragment, useCallback, useMemo, useState} from 'react'
 import {type DocumentInspectorProps, useTranslation} from 'sanity'
 
@@ -65,10 +66,9 @@ export function ValidationInspector(props: DocumentInspectorProps) {
         )}
 
         {validation.length > 0 && (
-          <Stack space={2}>
+          <Stack gap={2}>
             {validation.map((marker, i) => (
               <ValidationCard
-                // eslint-disable-next-line react/no-array-index-key
                 key={i}
                 marker={marker}
                 onOpen={handleOpen}
@@ -118,7 +118,7 @@ function ValidationCard(props: {
               </Text>
             </Box>
 
-            <Stack flex={1} space={2}>
+            <Stack flex={1} gap={2}>
               <DocumentNodePathBreadcrumbs
                 path={marker.path}
                 schemaType={schemaType}

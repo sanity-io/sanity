@@ -1,6 +1,7 @@
 import {ErrorOutlineIcon, InfoOutlineIcon, WarningOutlineIcon} from '@sanity/icons'
 import {type FormNodeValidation} from '@sanity/types'
 import {Box, Flex, type Placement, Stack, Text} from '@sanity/ui'
+import {type FontTextSize} from '@sanity/ui/theme'
 import {styled} from 'styled-components'
 
 import {Tooltip} from '../../../../ui-components'
@@ -27,7 +28,7 @@ export interface FormFieldValidationStatusProps {
    * @beta
    */
   __unstable_showSummary?: boolean
-  fontSize?: number | number
+  fontSize?: FontTextSize
   placement?: Placement
 }
 
@@ -66,20 +67,18 @@ export function FormFieldValidationStatus(props: FormFieldValidationStatusProps)
   const hasErrors = validation.some((v) => v.level === 'error')
   const hasWarnings = validation.some((v) => v.level === 'warning')
 
-  // eslint-disable-next-line no-nested-ternary
   const status = hasErrors ? 'error' : hasWarnings ? 'warning' : 'info'
   const StatusIcon = VALIDATION_ICONS[status]
 
   return (
     <Tooltip
       content={
-        <StyledStack space={3}>
+        <StyledStack gap={3}>
           {showSummary && <FormFieldValidationSummary validation={validation} />}
 
           {!showSummary && (
             <>
               {validation.map((item, itemIndex) => (
-                // eslint-disable-next-line react/no-array-index-key
                 <FormFieldValidationStatusItem validation={item} key={itemIndex} />
               ))}
             </>

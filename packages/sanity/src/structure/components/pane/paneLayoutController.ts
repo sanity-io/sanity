@@ -81,7 +81,6 @@ export function createPaneLayoutController(): PaneLayoutController {
     }
   }
 
-  // eslint-disable-next-line complexity
   function resize(type: 'start' | 'move' | 'end', leftElement: HTMLElement, deltaX: number) {
     const leftIndex = elements.indexOf(leftElement)
     const leftOptions = optionsMap.get(leftElement)
@@ -98,13 +97,13 @@ export function createPaneLayoutController(): PaneLayoutController {
 
       cache.left = {
         element: leftElement,
-        flex: leftOptions.flex || 1,
+        flex: leftOptions.flex ?? 1,
         width: leftElement.offsetWidth,
       }
 
       cache.right = {
         element: rightElement,
-        flex: rightOptions.flex || 1,
+        flex: rightOptions.flex ?? 1,
         width: rightElement.offsetWidth,
       }
 
@@ -184,7 +183,6 @@ export function createPaneLayoutController(): PaneLayoutController {
 
   return {collapse, expand, mount, resize, setRootElement, setRootWidth, subscribe}
 
-  // eslint-disable-next-line complexity
   function _notifyObservers() {
     if (!rootWidth) return
 

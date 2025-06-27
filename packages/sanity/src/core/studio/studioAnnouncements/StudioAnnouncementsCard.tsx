@@ -2,8 +2,7 @@
 import {CloseIcon} from '@sanity/icons'
 import {useTelemetry} from '@sanity/telemetry/react'
 import {Box, Card, Stack, Text} from '@sanity/ui'
-// eslint-disable-next-line camelcase
-import {getTheme_v2} from '@sanity/ui/theme'
+import {vars} from '@sanity/ui/css'
 import {useEffect} from 'react'
 import {css, keyframes, styled} from 'styled-components'
 
@@ -21,10 +20,9 @@ const keyframe = keyframes`
   }
 `
 
-const Root = styled.div((props) => {
-  const theme = getTheme_v2(props.theme)
-  const cardHoverBg = theme.color.selectable.default.hovered.bg
-  const cardNormalBg = theme.color.selectable.default.enabled.bg
+const Root = styled.div(() => {
+  const cardHoverBg = vars.color.tinted.default.bg[1]
+  const cardNormalBg = vars.color.tinted.default.bg[0]
 
   return css`
     position: relative;
@@ -62,7 +60,7 @@ const Root = styled.div((props) => {
 
         &:hover {
           transition: all 0.2s;
-          box-shadow: 0 0 0 1px ${theme.color.selectable.default.hovered.border};
+          box-shadow: 0 0 0 1px ${vars.color.tinted.default.border[2]};
         }
       }
     }
@@ -136,7 +134,7 @@ export function StudioAnnouncementsCard({
             role="button"
             aria-label={t('announcement.floating-button.open-label')}
           >
-            <Stack space={3}>
+            <Stack gap={3}>
               <Box marginRight={6}>
                 <Text as={'h3'} size={1} muted>
                   {preHeader}

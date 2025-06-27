@@ -235,7 +235,7 @@ const SelectAssetsComponent = function SelectAssetsComponent(
       ref={ref}
       width={2}
     >
-      <Stack space={5}>
+      <Stack gap={5}>
         {!isImageOnlyWildCard && !isLoading && accept?.length > 0 && (
           <Card tone="primary" padding={3} border radius={2}>
             <Flex gap={3} align="center">

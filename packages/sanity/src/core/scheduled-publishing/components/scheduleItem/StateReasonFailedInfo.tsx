@@ -1,7 +1,6 @@
 import {red} from '@sanity/color'
 import {ErrorOutlineIcon} from '@sanity/icons'
 import {
-  type CardTone,
   Container,
   Flex,
   Menu,
@@ -22,7 +21,7 @@ const POPOVER_PROPS: PopoverProps = {
   portal: true,
   constrainSize: true,
   preventOverflow: true,
-  tone: 'default' as CardTone,
+  tone: 'default',
   width: 0,
 }
 

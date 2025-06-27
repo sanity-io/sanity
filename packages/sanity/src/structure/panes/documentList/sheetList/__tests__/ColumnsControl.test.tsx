@@ -1,7 +1,7 @@
 'use no memo'
 // The `use no memo` directive is due to a known issue with react-table and react compiler: https://github.com/TanStack/table/issues/5567
 
-import {studioTheme, ThemeProvider} from '@sanity/ui'
+import {studioTheme, ThemeProvider} from '@sanity/ui-v2'
 import {type ColumnDef, useReactTable} from '@tanstack/react-table'
 import {fireEvent, render, screen} from '@testing-library/react'
 import {type SanityDocument} from 'sanity'

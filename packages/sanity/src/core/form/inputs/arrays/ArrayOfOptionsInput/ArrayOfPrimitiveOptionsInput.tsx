@@ -1,6 +1,6 @@
 import {type ArraySchemaType} from '@sanity/types'
 import {Box, Checkbox, Flex, Grid, Text} from '@sanity/ui'
-import {type Columns} from '@sanity/ui/css'
+import {type GridTemplateColumns} from '@sanity/ui/css'
 import {resolveTypeName} from '@sanity/util/content'
 import {startCase} from 'lodash'
 import {type ChangeEvent, useMemo} from 'react'
@@ -80,7 +80,7 @@ export function ArrayOfPrimitiveOptionsInput(props: ArrayOfPrimitivesInputProps)
     <ChangeIndicator path={path} isChanged={changed} hasFocus={false}>
       <Grid
         gap={2}
-        columns={(isGrid ? Math.min(options.length, 4) : 1) as Columns}
+        gridTemplateColumns={(isGrid ? Math.min(options.length, 4) : 1) as GridTemplateColumns}
         {...elementProps}
       >
         {options.map((option, index) => {

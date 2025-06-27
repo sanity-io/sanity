@@ -105,7 +105,7 @@ export const VersionContextMenu = memo(function VersionContextMenu(props: {
             content: t('release.action.permission.error'),
           }}
         >
-          <ReleasesList key={fromRelease} space={1}>
+          <ReleasesList key={fromRelease} gap={1}>
             {optionsReleaseList.map((release) => {
               return (
                 <MenuItem

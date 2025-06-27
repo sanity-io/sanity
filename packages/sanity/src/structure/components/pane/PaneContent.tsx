@@ -1,4 +1,4 @@
-import {type BoxOverflow} from '@sanity/ui'
+import {type Overflow} from '@sanity/ui/css'
 import {type ElementType, type ForwardedRef, forwardRef, type HTMLProps} from 'react'
 
 import {Root} from './PaneContent.styles'
@@ -7,7 +7,7 @@ import {usePaneLayout} from './usePaneLayout'
 
 interface PaneContentProps {
   as?: ElementType | keyof React.JSX.IntrinsicElements
-  overflow?: BoxOverflow
+  overflow?: Overflow
   padding?: number | number[]
 }
 

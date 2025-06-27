@@ -1,6 +1,7 @@
 import {ErrorOutlineIcon, InfoOutlineIcon, WarningOutlineIcon} from '@sanity/icons'
 import {type FormNodeValidation} from '@sanity/types'
-import {Box, Flex, Stack, Text, type Theme} from '@sanity/ui'
+import {Box, Flex, Stack, Text} from '@sanity/ui'
+import {vars} from '@sanity/ui/css'
 import {css, styled} from 'styled-components'
 
 import {type PortableTextMarker, type RenderCustomMarkers} from '../../../types'
@@ -24,18 +25,18 @@ const getIcon = (level: 'error' | 'warning' | 'info') => {
   return <InfoOutlineIcon />
 }
 
-const IconText = styled(Text)(({theme}: {theme: Theme}) => {
+const IconText = styled(Text)(() => {
   return css`
     &[data-info] {
-      color: ${theme.sanity.color.muted.primary.enabled.fg};
+      color: ${vars.color.tinted.primary.fg[0]};
     }
 
     &[data-warning] {
-      color: ${theme.sanity.color.muted.caution.enabled.fg};
+      color: ${vars.color.tinted.caution.fg[0]};
     }
 
     &[data-error] {
-      color: ${theme.sanity.color.muted.critical.enabled.fg};
+      color: ${vars.color.tinted.critical.fg[0]};
     }
   `
 })
@@ -49,10 +50,9 @@ export function DefaultMarkers(props: MarkersProps) {
   }
 
   return (
-    <Stack space={1}>
+    <Stack gap={1}>
       {validation.length > 0 &&
         validation.map(({message, level}, index) => (
-          // eslint-disable-next-line react/no-array-index-key
           <Flex key={`validationItem-${index}`}>
             <Box marginRight={2} marginBottom={index + 1 === validation.length ? 0 : 2}>
               <IconText

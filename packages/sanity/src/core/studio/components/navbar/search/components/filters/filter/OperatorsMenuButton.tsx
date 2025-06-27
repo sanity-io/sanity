@@ -75,7 +75,6 @@ export function OperatorsMenuButton({filter, operator}: OperatorsMenuButtonProps
                 }
                 return (
                   <CustomMenuItem
-                    // eslint-disable-next-line react/no-array-index-key
                     key={index}
                     onClick={handleClick}
                     operator={menuOperator}
@@ -84,16 +83,15 @@ export function OperatorsMenuButton({filter, operator}: OperatorsMenuButtonProps
                 )
               }
               if (item.type === 'divider') {
-                // eslint-disable-next-line react/no-array-index-key
                 return <MenuDivider key={index} />
               }
               return null
             })}
           </Menu>
         }
-        placement="bottom-start"
         popover={{
           constrainSize: true,
+          placement: 'bottom-start',
           portal: false,
           radius: 2,
         }}

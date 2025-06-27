@@ -1,4 +1,5 @@
-import {Flex, Grid, rem, useTheme} from '@sanity/ui'
+import {Flex, Grid} from '@sanity/ui'
+import {vars} from '@sanity/ui/css'
 import {forwardRef, type HTMLProps, type ReactNode, useMemo} from 'react'
 
 import {FromToArrow} from './FromToArrow'
@@ -24,7 +25,7 @@ const FLEX_ALIGN: Record<string, 'flex-start' | 'center' | 'flex-end'> = {
 /** @internal */
 export const FromTo = forwardRef<HTMLDivElement, FromToProps>(function FromTo(props, ref) {
   const {align = 'top', layout = 'inline', from, to, style, ...restProps} = props
-  const theme = useTheme()
+  // const theme = useTheme()
 
   const Layout = layout === 'inline' ? Flex : Grid
   const layoutStyles = useMemo(
@@ -32,9 +33,9 @@ export const FromTo = forwardRef<HTMLDivElement, FromToProps>(function FromTo(pr
       ...style,
       ...(layout === 'inline'
         ? {maxWidth: '100%', display: 'inline-flex'}
-        : {gridTemplateColumns: `minmax(0, 1fr) ${rem(theme.sanity.space[5])} minmax(0, 1fr)`}),
+        : {gridTemplateColumns: `minmax(0, 1fr) ${vars.space[5]} minmax(0, 1fr)`}),
     }),
-    [layout, style, theme],
+    [layout, style],
   )
 
   const columnStyles = layout === 'inline' ? INLINE_COLUMN_STYLES : BLOCK_COLUMN_STYLES

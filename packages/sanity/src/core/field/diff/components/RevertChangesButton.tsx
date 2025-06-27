@@ -1,4 +1,5 @@
 import {RevertIcon} from '@sanity/icons'
+import {vars} from '@sanity/ui/css'
 import {type ForwardedRef, forwardRef, type HTMLProps} from 'react'
 import {styled} from 'styled-components'
 
@@ -16,7 +17,7 @@ const Root = styled(Button)`
 
   &:not([data-disabled='true']):hover,
   &:not([data-disabled='true']):focus {
-    --card-fg-color: ${({theme}) => theme.sanity.color.solid.critical.enabled.bg};
+    --card-fg-color: ${vars.color.solid.critical.bg[0]};
     --card-bg-color: transparent;
     --card-border-color: transparent;
 

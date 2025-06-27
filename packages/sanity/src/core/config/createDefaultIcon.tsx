@@ -1,4 +1,5 @@
 import {COLOR_HUES, hues} from '@sanity/color'
+import {vars} from '@sanity/ui/css'
 import {darken, hasBadContrast, lighten, readableColor} from 'color2k'
 import {styled} from 'styled-components'
 
@@ -11,9 +12,9 @@ function pseudoRandomNumber(seed: string) {
 }
 
 const SvgText = styled.text`
-  font-family: ${({theme}) => theme.sanity.fonts.text.family};
-  font-weight: ${({theme}) => theme.sanity.fonts.text.weights.medium};
-  font-size: ${({theme}) => theme.sanity.fonts.text.sizes[1].fontSize}px;
+  font-family: ${vars.font.text.family};
+  font-weight: ${vars.font.text.weight.medium};
+  font-size: ${vars.font.text.scale[1].fontSize};
   transform: translateY(1px);
 `
 
@@ -47,7 +48,7 @@ export function createDefaultIcon(title: string, subtitle: string) {
   const lightened = lighten(color, 0.4)
 
   /* eslint-disable no-negated-condition */
-  // eslint-disable-next-line no-nested-ternary
+
   const textColor = !hasBadContrast(color, 'readable', darkened)
     ? darkened
     : !hasBadContrast(color, 'readable', lightened)

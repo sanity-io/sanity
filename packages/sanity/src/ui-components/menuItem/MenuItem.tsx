@@ -38,7 +38,7 @@ const SubtitleText = styled(Text)`
 
 /** @internal */
 export type MenuItemProps = Pick<
-  UIMenuItemProps,
+  UIMenuItemProps<'button'>,
   'icon' | 'iconRight' | 'pressed' | 'selected' | 'tone' | 'hotkeys'
 > & {
   as?: ElementType
@@ -129,7 +129,7 @@ export const MenuItem = forwardRef(function MenuItem(
         {text && (
           <Stack
             flex={1}
-            space={__unstable_subtitle ? 1 : 2}
+            gap={__unstable_subtitle ? 1 : 2}
             paddingLeft={__unstable_subtitle ? 1 : 0}
           >
             <Text size={FONT_SIZE} textOverflow="ellipsis" weight="medium">

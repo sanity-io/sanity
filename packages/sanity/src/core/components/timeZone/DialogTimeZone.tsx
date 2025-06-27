@@ -1,5 +1,6 @@
 import {SearchIcon} from '@sanity/icons'
-import {Autocomplete, Card, Flex, Inline, Stack, Text, type Theme} from '@sanity/ui'
+import {Autocomplete, Card, Flex, Inline, Stack, Text} from '@sanity/ui'
+import {vars} from '@sanity/ui/css'
 import {useCallback, useMemo, useState} from 'react'
 import {css, styled} from 'styled-components'
 
@@ -13,24 +14,24 @@ export interface DialogTimeZoneProps {
   timeZoneScope: TimeZoneScope
 }
 
-const TimeZoneCitySpan = styled.span(({theme}: {theme: Theme}) => {
+const TimeZoneCitySpan = styled.span(() => {
   return css`
-    color: ${theme.sanity.color.base.fg};
+    color: ${vars.color.fg};
     font-weight: 500;
     margin-left: 1em;
   `
 })
 
-const TimeZoneOffsetSpan = styled.span(({theme}: {theme: Theme}) => {
+const TimeZoneOffsetSpan = styled.span(() => {
   return css`
-    color: ${theme.sanity.color.muted.default.enabled.fg};
+    color: ${vars.color.tinted.default.fg[0]};
     font-weight: 500;
   `
 })
 
-const TimeZoneAlternativeNameSpan = styled.span(({theme}: {theme: Theme}) => {
+const TimeZoneAlternativeNameSpan = styled.span(() => {
   return css`
-    color: ${theme.sanity.color.input.default.readOnly.fg};
+    color: ${vars.color.tinted.default.fg[4]};
     float: right;
   `
 })
@@ -111,11 +112,11 @@ const DialogTimeZone = (props: DialogTimeZoneProps) => {
       onClose={onClose}
       width={1}
     >
-      <Stack padding={4} space={5}>
+      <Stack padding={4} gap={5}>
         <Text size={1}>{timeZoneScopeTypeToLabel[timeZoneScope.type]}</Text>
-        <Stack space={3}>
+        <Stack gap={3}>
           <Flex align="center" justify="space-between">
-            <Inline space={2}>
+            <Inline gap={2}>
               <Text size={1} weight="semibold">
                 {t('time-zone.time-zone')}
               </Text>

@@ -86,21 +86,13 @@ export function SortMenu() {
             <Menu>
               {menuOrderings.map((item, index) => {
                 if (isSearchDivider(item)) {
-                  // eslint-disable-next-line react/no-array-index-key
                   return <MenuDivider key={index} />
                 }
-                return (
-                  <CustomMenuItem
-                    // eslint-disable-next-line react/no-array-index-key
-                    key={index}
-                    ordering={item}
-                  />
-                )
+                return <CustomMenuItem key={index} ordering={item} />
               })}
             </Menu>
           }
-          placement="bottom-start"
-          popover={{portal: true, radius: 2}}
+          popover={{placement: 'bottom-start', portal: true, radius: 2}}
         />
       </SortMenuContentFlex>
     </Card>

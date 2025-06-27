@@ -1,6 +1,4 @@
-/* eslint-disable camelcase */
-
-import {getTheme_v2} from '@sanity/ui/theme'
+import {BREAKPOINTS} from '@sanity/ui/css'
 import {css, styled} from 'styled-components'
 
 interface RootProps {
@@ -82,8 +80,6 @@ export const ChangeBar = styled.div<{$zIndex: number}>`
 `
 
 export const ChangeBarMarker = styled.div((props) => {
-  const {media} = getTheme_v2(props.theme)
-
   return css`
     position: absolute;
     top: -1px;
@@ -92,7 +88,7 @@ export const ChangeBarMarker = styled.div((props) => {
     bottom: -1px;
     background-color: var(--card-bg-color);
 
-    @media (min-width: ${media[0]}px) {
+    @media (min-width: ${BREAKPOINTS[1]}px) {
       display: unset;
     }
 

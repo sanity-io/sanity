@@ -72,7 +72,7 @@ export const FormField = memo(function FormField(
       data-level={level}
       onMouseEnter={onMouseEnter}
       onMouseLeave={onMouseLeave}
-      space={2}
+      gap={2}
     >
       {/*
         NOTE: It’s not ideal to hide validation, presence and description when there's no `title`.

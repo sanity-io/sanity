@@ -139,12 +139,12 @@ export function createLoginComponent({
     }
 
     return (
-      <Stack space={4}>
+      <Stack gap={4}>
         <Heading align="center" size={1}>
           Choose login provider
         </Heading>
 
-        <Stack space={2}>
+        <Stack gap={2}>
           {providers.map((provider, index) => (
             <Button
               // eslint-disable-next-line react/no-array-index-key
