@@ -439,9 +439,6 @@ export interface PluginOptions {
     enableLegacySearch?: boolean
   }
 
-  /** @internal */
-  __internal_serverDocumentActions?: WorkspaceOptions['__internal_serverDocumentActions']
-
   /** Configuration for studio beta features.
    * @internal
    */
@@ -520,17 +517,6 @@ export interface WorkspaceOptions extends SourceOptions {
    */
   releases?: DefaultPluginsWorkspaceOptions['releases']
   apps?: AppsOptions
-
-  /**
-   * @hidden
-   * @internal
-   */
-  __internal_serverDocumentActions?: {
-    /**
-     * @deprecated The Mutations API integration will be removed in a future release.
-     */
-    enabled?: boolean
-  }
 
   scheduledPublishing?: DefaultPluginsWorkspaceOptions['scheduledPublishing']
 }
@@ -865,8 +851,6 @@ export interface Source {
   /** @beta */
   releases?: WorkspaceOptions['releases']
 
-  /** @internal */
-  __internal_serverDocumentActions?: WorkspaceOptions['__internal_serverDocumentActions']
   /** Configuration for studio features.
    * @internal
    */

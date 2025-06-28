@@ -158,11 +158,6 @@ export function useTimelineStore({
     return () => controller.suspend()
   }, [rev, since, controller, timelineController$])
 
-  const serverActionsEnabled = useMemo(() => {
-    const configFlag = workspace.__internal_serverDocumentActions?.enabled
-    return typeof configFlag === 'boolean' ? of(configFlag) : of(true)
-  }, [workspace.__internal_serverDocumentActions?.enabled])
-
   /**
    * Fetch document snapshots and update the mutable controller.
    * Unsubscribes on clean up, preventing double fetches in strict mode.
@@ -173,7 +168,6 @@ export function useTimelineStore({
         client,
         {draftId: `drafts.${documentId}`, publishedId: documentId},
         documentType,
-        serverActionsEnabled,
       ).subscribe((ev: RemoteSnapshotVersionEvent) => {
         controller.handleRemoteMutation(ev)
       })
@@ -184,7 +178,7 @@ export function useTimelineStore({
         snapshotsSubscriptionRef.current = null
       }
     }
-  }, [client, controller, documentId, documentType, serverActionsEnabled])
+  }, [client, controller, documentId, documentType])
 
   const timelineStore = useMemo(() => {
     return {
