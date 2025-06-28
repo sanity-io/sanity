@@ -21,6 +21,7 @@ import {
 } from 'react'
 import deepEquals from 'react-fast-compare'
 
+import {useDocumentIdStack} from '../../structure/hooks/useDocumentIdStack'
 import {useCanvasCompanionDoc} from '../canvas/actions/useCanvasCompanionDoc'
 import {isSanityCreateLinkedDocument} from '../create/createUtils'
 import {useReconnectingToast} from '../hooks'
@@ -32,6 +33,7 @@ import {useValidationStatus} from '../hooks/useValidationStatus'
 import {getSelectedPerspective} from '../perspective/getSelectedPerspective'
 import {type ReleaseId} from '../perspective/types'
 import {usePerspective} from '../perspective/usePerspective'
+import {useObserveDocument} from '../preview/useObserveDocument'
 import {useDocumentVersions} from '../releases/hooks/useDocumentVersions'
 import {useDocumentVersionTypeSortedList} from '../releases/hooks/useDocumentVersionTypeSortedList'
 import {useOnlyHasVersions} from '../releases/hooks/useOnlyHasVersions'
@@ -55,6 +57,7 @@ import {
   getPublishedId,
   getVersionFromId,
   getVersionId,
+  isDraftId,
   useUnique,
 } from '../util'
 import {
@@ -118,6 +121,7 @@ interface DocumentFormValue {
   onProgrammaticFocus: (nextPath: Path) => void
   formStateRef: RefObject<FormState>
   schemaType: ObjectSchemaType
+  fallbackValue: SanityDocumentLike | null
 }
 
 /**
@@ -145,7 +149,9 @@ export function useDocumentForm(options: DocumentFormOptions): DocumentFormValue
   const schema = useSchema()
   const presenceStore = usePresenceStore()
   const {data: releases} = useActiveReleases()
-  const {data: documentVersions} = useDocumentVersions({documentId})
+  const {data: documentVersions} = useDocumentVersions({
+    documentId,
+  })
   const {selectedReleaseId} = usePerspective()
 
   const schemaType = schema.get(documentType) as ObjectSchemaType | undefined
@@ -223,16 +229,16 @@ export function useDocumentForm(options: DocumentFormOptions): DocumentFormValue
     }
     return editState?.draft || editState?.published || baseValue
   }, [
+    initialValue?.value,
     documentId,
     documentType,
-    editState.draft,
-    editState.published,
-    editState.version,
-    initialValue,
-    liveEdit,
     releaseId,
     selectedPerspectiveName,
     onlyHasVersions,
+    editState.draft,
+    editState.published,
+    editState.version,
+    liveEdit,
   ])
 
   const [presence, setPresence] = useState<DocumentPresence[]>([])
@@ -291,7 +297,21 @@ export function useDocumentForm(options: DocumentFormOptions): DocumentFormValue
   const isNonExistent = !value?._id
   const isCreateLinked = isSanityCreateLinkedDocument(value)
 
-  const ready = connectionState === 'connected' && editState.ready && !initialValue?.loading
+  const {previousId} = useDocumentIdStack({documentId, editState, displayed: value})
+  const {document, loading: previousLoading} = useObserveDocument(
+    isDraftId(previousId || '') ? getPublishedId(previousId || '') : previousId || '',
+  )
+  const formDocumentValue = useMemo(() => {
+    if (value._system?.delete) {
+      if (document) return getFormDocumentValue ? getFormDocumentValue(document) : value
+
+      return {}
+    }
+    return getFormDocumentValue ? getFormDocumentValue(value) : value
+  }, [getFormDocumentValue, value, document])
+
+  const ready =
+    connectionState === 'connected' && editState.ready && !initialValue?.loading && !previousLoading
 
   const selectedPerspective = useMemo(() => {
     return getSelectedPerspective(selectedPerspectiveName, releases)
@@ -429,11 +449,6 @@ export function useDocumentForm(options: DocumentFormOptions): DocumentFormValue
     readOnly,
     isCreateLinked,
   ])
-
-  const formDocumentValue = useMemo(() => {
-    if (getFormDocumentValue) return getFormDocumentValue(value)
-    return value
-  }, [getFormDocumentValue, value])
 
   const formState = useFormState({
     schemaType,
@@ -577,5 +592,6 @@ export function useDocumentForm(options: DocumentFormOptions): DocumentFormValue
     onSetActiveFieldGroup: handleSetActiveFieldGroup,
     onSetCollapsedPath: handleOnSetCollapsedPath,
     onSetCollapsedFieldSet: handleOnSetCollapsedFieldSet,
+    fallbackValue: value._system?.delete ? document : null,
   }
 }

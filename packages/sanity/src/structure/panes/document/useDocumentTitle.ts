@@ -23,7 +23,7 @@ interface UseDocumentTitle {
  * @returns The document title or error. See {@link UseDocumentTitle}
  */
 export function useDocumentTitle(): UseDocumentTitle {
-  const {connectionState, schemaType, title, displayed} = useDocumentPane()
+  const {connectionState, schemaType, displayed} = useDocumentPane()
   const {t} = useTranslation(structureLocaleNamespace)
   const subscribed = Boolean(displayed)
 
@@ -35,10 +35,6 @@ export function useDocumentTitle(): UseDocumentTitle {
 
   if (connectionState === 'connecting' && !subscribed) {
     return {error: undefined, title: undefined}
-  }
-
-  if (title) {
-    return {error: undefined, title}
   }
 
   if (!displayed) {

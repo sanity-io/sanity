@@ -1,18 +1,13 @@
-import {type ObjectSchemaType} from '@sanity/types'
+import {type ObjectSchemaType, type SchemaType} from '@sanity/types'
 import {useEffect} from 'react'
-import {
-  unstable_useValuePreview as useValuePreview,
-  useEditState,
-  usePerspective,
-  useSchema,
-  useTranslation,
-} from 'sanity'
+import {useEditState, usePerspective, useSchema, useTranslation} from 'sanity'
 
 import {LOADING_PANE} from '../../constants'
 import {structureLocaleNamespace} from '../../i18n'
 import {type Panes} from '../../structureResolvers'
 import {type DocumentPaneNode} from '../../types'
 import {useStructureTool} from '../../useStructureTool'
+import {useGetPreviousNonDeletedDocumentId} from './hook/useGetPreviousNonDeletedDocumentId'
 
 interface StructureTitleProps {
   resolvedPanes: Panes['resolvedPanes']
@@ -30,19 +25,20 @@ const DocumentTitle = (props: {documentId: string; documentType: string}) => {
   const documentValue = editState?.version || editState?.draft || editState?.published
   const schemaType = schema.get(documentType) as ObjectSchemaType | undefined
 
-  const {value, isLoading: previewValueIsLoading} = useValuePreview({
-    enabled: true,
-    schemaType,
-    value: documentValue,
+  const {previousPreviewDocument, previewLoading} = useGetPreviousNonDeletedDocumentId({
+    documentId,
+    documentType,
+    schemaType: schemaType as SchemaType,
+    documentValue,
   })
 
   const documentTitle = isNewDocument
     ? t('browser-document-title.new-document', {
         schemaType: schemaType?.title || schemaType?.name,
       })
-    : value?.title || t('browser-document-title.untitled-document')
+    : previousPreviewDocument?.title || t('browser-document-title.untitled-document')
 
-  const settled = editState.ready && !previewValueIsLoading
+  const settled = editState.ready && !previewLoading
   const newTitle = useConstructDocumentTitle(documentTitle)
   useEffect(() => {
     if (!settled) return
