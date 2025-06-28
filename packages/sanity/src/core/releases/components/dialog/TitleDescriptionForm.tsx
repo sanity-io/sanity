@@ -22,8 +22,8 @@ const TitleInput = styled.input(() => {
     box-sizing: border-box;
     font-family: ${vars.font.text.family};
     font-weight: ${vars.font.text.weight.bold};
-    font-size: ${vars.font.text.scale[4].fontSize}px;
-    line-height: ${vars.font.text.scale[4].lineHeight}px;
+    font-size: ${vars.font.text.scale[4].fontSize};
+    line-height: ${vars.font.text.scale[4].lineHeight};
     margin: 0;
     position: relative;
     z-index: 1;

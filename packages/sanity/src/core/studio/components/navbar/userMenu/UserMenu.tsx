@@ -32,8 +32,8 @@ const StyledMenu = styled(Menu)`
 
 const AvatarBox = styled(Box)`
   position: relative;
-  min-width: ${vars.avatar.scale[2].size}px;
-  min-height: ${vars.avatar.scale[2].size}px;
+  min-width: ${vars.avatar.scale[2].size};
+  min-height: ${vars.avatar.scale[2].size};
 `
 
 export function UserMenu() {

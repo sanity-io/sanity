@@ -90,7 +90,7 @@ export function ReleasesOverview() {
   const getRowProps = useCallback(
     (datum: TableRelease): Partial<TableRowProps> =>
       datum.isDeleted
-        ? {tone: 'transparent'}
+        ? {tone: 'neutral'}
         : {
             tone:
               isReleaseDocument(selectedPerspective) && selectedPerspective._id === datum._id

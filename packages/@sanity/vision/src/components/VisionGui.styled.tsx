@@ -1,4 +1,4 @@
-import {Box, Card, Flex, Label, Text} from '@sanity/ui'
+import {Box, Card, Flex, Label} from '@sanity/ui'
 import {vars} from '@sanity/ui/css'
 import {css, styled} from 'styled-components'
 
@@ -149,23 +149,6 @@ export const TimingsTextContainer = styled(Flex)`
     ${vars.font.text.scale[2].ascenderHeight} -
     ${vars.font.text.scale[2].descenderHeight})
   );
-`
-
-export const DownloadsCard = styled(Card)`
-  position: relative;
-`
-
-export const SaveResultLabel = styled(Text)`
-  transform: initial;
-  &:before,
-  &:after {
-    content: none;
-  }
-  > span {
-    display: flex !important;
-    gap: ${vars.space[3]};
-    align-items: center;
-  }
 `
 
 export const ControlsContainer = styled(Box)`

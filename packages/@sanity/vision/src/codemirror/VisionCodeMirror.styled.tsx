@@ -17,8 +17,9 @@ export const EditorRoot = styled.div`
   & .cm-editor {
     height: 100%;
 
-    font-size: 16px;
-    line-height: 21px;
+    font-family: ${vars.font.code.family};
+    font-size: ${vars.font.code.scale[1].fontSize};
+    line-height: ${vars.font.code.scale[1].lineHeight};
   }
 
   & .cm-line {

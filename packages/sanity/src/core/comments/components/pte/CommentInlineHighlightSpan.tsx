@@ -1,62 +1,33 @@
-import {hues} from '@sanity/color'
-import {useCard} from '@sanity/ui'
+import {vars} from '@sanity/ui/css'
 import {forwardRef} from 'react'
-import {css, styled} from 'styled-components'
+import {styled} from 'styled-components'
 
-import {COMMENTS_HIGHLIGHT_HUE_KEY} from '../../constants'
+const HighlightSpan = styled.span`
+  box-sizing: border-box;
+  transition:
+    background-color 100ms ease,
+    border-color 100ms ease;
 
-export const HighlightSpan = styled.span<{$isDark: boolean}>(({$isDark}) => {
-  // const isDark = theme.sanity.v2?.color._dark
+  &[data-inline-comment-state='added'][data-inline-comment-nested='false'] {
+    background-color: ${vars.color.tinted.caution.bg[2]};
+    border-bottom: 1px solid ${vars.color.tinted.caution.fg[3]};
+  }
 
-  // Colors used when a comment is added
-  const addedBg = hues[COMMENTS_HIGHLIGHT_HUE_KEY][$isDark ? 800 : 100].hex
-  const addedBorder = hues[COMMENTS_HIGHLIGHT_HUE_KEY][$isDark ? 700 : 300].hex
+  &[data-inline-comment-state='added'][data-inline-comment-nested='true'] {
+    background-color: ${vars.color.tinted.caution.bg[3]};
+    border-bottom: 1px solid ${vars.color.tinted.caution.fg[4]};
+  }
 
-  const addedHoverBg = hues[COMMENTS_HIGHLIGHT_HUE_KEY][$isDark ? 700 : 200].hex
-  const addedHoverBorder = hues[COMMENTS_HIGHLIGHT_HUE_KEY][$isDark ? 600 : 400].hex
+  &[data-inline-comment-state='added'][data-inline-comment-nested='false'][data-hovered='true'] {
+    background-color: ${vars.color.tinted.caution.bg[3]};
+    border-bottom: 1px solid ${vars.color.tinted.caution.fg[4]};
+  }
 
-  // Colors used when a comment is added and it is a nested comment
-  const addedNestedBg = hues[COMMENTS_HIGHLIGHT_HUE_KEY][$isDark ? 700 : 200].hex
-  const addedNesterBorder = hues[COMMENTS_HIGHLIGHT_HUE_KEY][$isDark ? 600 : 400].hex
-
-  // Colors used when a comment is being authored.
-  // For now, we use the same colors as when a comment is added.
-  const authoringBg = addedBg
-  const authoringBorder = addedBorder
-
-  return css`
-    box-sizing: border-box;
-    transition:
-      background-color 100ms ease,
-      border-color 100ms ease;
-
-    // Make sure that child elements appropriately blend with the
-    // background of the highlight span
-    * {
-      mix-blend-mode: ${$isDark ? 'screen' : 'multiply'};
-    }
-
-    &[data-inline-comment-state='added'][data-inline-comment-nested='false'] {
-      background-color: ${addedBg};
-      border-bottom: 2px solid ${addedBorder};
-    }
-
-    &[data-inline-comment-state='added'][data-inline-comment-nested='true'] {
-      background-color: ${addedNestedBg};
-      border-bottom: 2px solid ${addedNesterBorder};
-    }
-
-    &[data-inline-comment-state='added'][data-inline-comment-nested='false'][data-hovered='true'] {
-      background-color: ${addedHoverBg};
-      border-bottom: 2px solid ${addedHoverBorder};
-    }
-
-    &[data-inline-comment-state='authoring'] {
-      background-color: ${authoringBg};
-      border-bottom: 2px solid ${authoringBorder};
-    }
-  `
-})
+  &[data-inline-comment-state='authoring'] {
+    background-color: ${vars.color.tinted.caution.bg[2]};
+    border-bottom: 1px solid ${vars.color.tinted.caution.fg[3]};
+  }
+`
 
 interface CommentInlineHighlightSpanProps {
   children: React.ReactNode
@@ -75,14 +46,11 @@ export const CommentInlineHighlightSpan = forwardRef(function CommentInlineHighl
 ) {
   const {children, isAdded, isAuthoring, isHovered, isNested, ...rest} = props
 
-  const card = useCard()
-
   const state = isAdded ? 'added' : isAuthoring ? 'authoring' : undefined
 
   return (
     <HighlightSpan
       {...rest}
-      $isDark={card.scheme === 'dark'}
       data-hovered={isHovered ? 'true' : 'false'}
       data-inline-comment-nested={isNested ? 'true' : 'false'}
       data-inline-comment-state={state}

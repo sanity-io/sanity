@@ -21,7 +21,7 @@ function textBlockStyle(props: TextBlockStyleProps) {
   return css`
     --marker-bg-color: transparent;
 
-    mix-blend-mode: ${$isDark ? 'screen' : 'multiply'};
+    /* mix-blend-mode: ${$isDark ? 'screen' : 'multiply'}; */
     position: relative;
 
     & > [data-ui='TextBlock_inner'] {

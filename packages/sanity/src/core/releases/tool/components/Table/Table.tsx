@@ -290,8 +290,6 @@ const TableInner = <TableData, AdditionalRowTableData>({
     [amalgamatedColumnDefs],
   )
 
-  // const theme = useTheme()
-
   const renderLoadingRows = (
     rowRenderer: (
       datum: VirtualDatum &

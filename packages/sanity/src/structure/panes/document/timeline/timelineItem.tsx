@@ -29,8 +29,8 @@ export const IconBox = styled(Flex)<{$color: AvatarColor}>((props) => {
     box-shadow: 0 0 0 1px var(--card-bg-color);
 
     position: absolute;
-    width: ${vars.avatar.scale[0].size}px;
-    height: ${vars.avatar.scale[0].size}px;
+    width: ${vars.avatar.scale[0].size};
+    height: ${vars.avatar.scale[0].size};
     right: -3px;
     bottom: -3px;
     border-radius: 50%;

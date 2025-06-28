@@ -53,7 +53,7 @@ const TimeText = styled(Text)(() => {
 
 const HeaderFlex = styled(Flex)<{$size: AvatarSize}>((props) => {
   return css`
-    min-height: ${vars.avatar.scale[props.$size]?.size}px;
+    min-height: ${vars.avatar.scale[props.$size].size};
   `
 })
 
@@ -75,7 +75,7 @@ const InnerStack = styled(Stack)`
 
 const ErrorFlex = styled(Flex)<{$size: AvatarSize}>((props) => {
   return css`
-    min-height: ${vars.avatar.scale[props.$size]?.size}px;
+    min-height: ${vars.avatar.scale[props.$size].size};
   `
 })
 

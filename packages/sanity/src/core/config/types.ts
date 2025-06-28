@@ -22,7 +22,6 @@ import {type AuthStore} from '../store'
 import {type SearchFilterDefinition} from '../studio/components/navbar/search/definitions/filters'
 import {type SearchOperatorDefinition} from '../studio/components/navbar/search/definitions/operators'
 import {type InitialValueTemplateItem, type Template, type TemplateItem} from '../templates'
-import {type StudioTheme} from '../theme'
 import {type AuthConfig} from './auth/types'
 import {
   type DocumentActionComponent,
@@ -499,8 +498,9 @@ export interface WorkspaceOptions extends SourceOptions {
   /**
    * @hidden
    * @beta
+   * @deprecated No longer supported.
    */
-  theme?: StudioTheme
+  theme?: any
 
   /**
    * @hidden
@@ -906,7 +906,10 @@ export interface WorkspaceSummary extends DefaultPluginsWorkspaceOptions {
   auth: AuthStore
   projectId: string
   dataset: string
-  theme: StudioTheme
+  /**
+   * @deprecated No longer supported.
+   */
+  theme: any
   schema: Schema
   i18n: LocaleSource
   /**

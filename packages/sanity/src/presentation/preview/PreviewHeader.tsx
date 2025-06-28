@@ -1,4 +1,3 @@
-/* eslint-disable no-nested-ternary */
 import {DesktopIcon, MobileDeviceIcon, PanelLeftIcon, RefreshIcon} from '@sanity/icons'
 import {withoutSecretSearchParams} from '@sanity/preview-url-secret/without-secret-search-params'
 import {Box, Card, Flex, Hotkeys, Switch, Text} from '@sanity/ui'
@@ -62,7 +61,7 @@ const PreviewHeaderDefault = (props: Omit<PreviewHeaderProps, 'renderDefault'>) 
       }
       presentationRef.send({type: 'iframe reload'})
       // Funky way to reload an iframe without CORS issues
-      // eslint-disable-next-line no-self-assign
+
       // ref.current.src = ref.current.src
       Object.assign(iframeRef.current, {src: `${targetOrigin}${previewUrl || '/'}`})
     })

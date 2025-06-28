@@ -22,7 +22,7 @@ interface BannerProps {
 }
 
 export function Banner(props: BannerProps) {
-  const {action, content, icon: Icon, tone = 'transparent', paddingY = 2, ...rest} = props
+  const {action, content, icon: Icon, tone = 'neutral', paddingY = 2, ...rest} = props
 
   return (
     <Box padding={1}>

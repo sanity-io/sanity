@@ -38,7 +38,7 @@ export function BooleanInput(props: BooleanInputProps) {
 
   const LayoutSpecificInput = layout === 'checkbox' ? Checkbox : Switch
 
-  const tone: CardTone | undefined = readOnly ? 'transparent' : undefined
+  const tone: CardTone | undefined = readOnly ? 'neutral' : undefined
 
   const input = (
     <Box padding={3} style={{paddingTop: '0.85rem'}}>

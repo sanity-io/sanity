@@ -1,6 +1,5 @@
 import {AccessDeniedIcon, ImageIcon, ReadOnlyIcon} from '@sanity/icons'
-import {type CardProps} from '@sanity/ui'
-import {Box, Heading, Text} from '@sanity/ui'
+import {Box, type CardProps, Heading, Text} from '@sanity/ui'
 import {type CardTone} from '@sanity/ui/theme'
 import {type ReactNode, useCallback, useEffect, useState} from 'react'
 
@@ -35,7 +34,7 @@ export function ImagePreview(props: CardProps<'div'> & Props) {
   const {t} = useTranslation()
 
   return (
-    <RatioBox {...rest} tone="transparent">
+    <RatioBox {...rest} tone="neutral">
       {!isLoaded && <OverlayComponent cardTone="transparent" content={<LoadingBlock showText />} />}
       <img
         src={src}

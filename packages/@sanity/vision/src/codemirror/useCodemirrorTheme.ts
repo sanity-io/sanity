@@ -26,11 +26,11 @@ function createTheme() {
         caretColor: cursor,
       },
 
-      '.cm-editor': {
-        fontFamily: vars.font.code.family,
-        fontSize: vars.font.code.scale[1].fontSize,
-        lineHeight: 'inherit',
-      },
+      // '.cm-editor': {
+      //   fontFamily: vars.font.code.family,
+      //   fontSize: vars.font.code.scale[1].fontSize,
+      //   lineHeight: 'inherit',
+      // },
 
       '.cm-cursor, .cm-dropCursor': {borderLeftColor: cursor},
       '&.cm-focused .cm-selectionBackground, .cm-selectionBackground, .cm-content ::selection': {
@@ -41,6 +41,7 @@ function createTheme() {
       '.cm-panels.cm-panels-top': {borderBottom: `2px solid ${vars.color.border}`},
       '.cm-panels.cm-panels-bottom': {borderTop: `2px solid ${vars.color.border}`},
     },
+    {dark: false},
     // {dark: color.dark},
   )
 }

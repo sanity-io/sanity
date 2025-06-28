@@ -62,7 +62,7 @@ export const ReleaseNameCell: VisibleColumn<TableRelease>['cell'] = ({
   }
 
   const cardProps: CardProps = release.isDeleted
-    ? {tone: 'transparent'}
+    ? {tone: 'neutral'}
     : {
         as: 'a',
         // navigate to release detail
