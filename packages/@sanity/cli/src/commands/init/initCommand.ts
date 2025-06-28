@@ -11,7 +11,7 @@ import {type CliCommandDefinition} from '../../types'
 const helpText = `
 Options
   -y, --yes Use unattended mode, accepting defaults and using only flags for choices
-  --project <projectId> Project ID to use for the studio
+  --project, --project-id <projectId> Project ID to use for the studio
   --organization <organizationId> Organization ID to use for the project
   --dataset <dataset> Dataset name for the studio
   --dataset-default Set up a project with a public dataset named "production"
@@ -63,6 +63,7 @@ export interface InitFlags {
   'y'?: boolean
   'yes'?: boolean
   'project'?: string
+  'project-id'?: string
   'dataset'?: string
   'template'?: string
   /**

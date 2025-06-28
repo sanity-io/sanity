@@ -1235,6 +1235,11 @@ export default async function initSanity(
 
   // eslint-disable-next-line complexity
   async function prepareFlags() {
+    // Handle --project-id alias by setting it to --project
+    if (cliFlags['project-id'] && !cliFlags.project) {
+      cliFlags.project = cliFlags['project-id']
+    }
+
     const createProjectName = cliFlags['create-project']
     if (cliFlags.dataset || cliFlags.visibility || cliFlags['dataset-default'] || unattended) {
       showDefaultConfigPrompt = false
