@@ -310,7 +310,6 @@ export const CommentsListItem = memo(function CommentsListItem(props: CommentsLi
 
   return (
     <StyledThreadCard
-      $isDark={card.scheme === 'dark'}
       data-active={isSelected ? 'true' : 'false'}
       data-hovered={mouseOver ? 'true' : 'false'}
       data-testid="comments-list-item"

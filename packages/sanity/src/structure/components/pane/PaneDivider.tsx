@@ -8,6 +8,7 @@ const Root = styled(Layer)`
   position: relative;
   width: 1px;
   min-width: 1px;
+  background-color: transparent;
 
   &:before {
     content: '';
@@ -41,6 +42,7 @@ const Root = styled(Layer)`
       background-color: var(--card-border-color);
       opacity: 0;
       transition: opacity 150ms;
+      z-index: 100;
     }
 
     &[data-dragging]:after,

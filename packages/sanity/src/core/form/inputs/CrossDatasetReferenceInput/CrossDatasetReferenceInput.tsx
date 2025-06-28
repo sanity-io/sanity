@@ -320,7 +320,7 @@ export function CrossDatasetReferenceInput(props: CrossDatasetReferenceInputProp
                 radius={1}
                 tone={
                   readOnly
-                    ? 'transparent'
+                    ? 'neutral'
                     : loadableReferenceInfo.error || errors.length > 0
                       ? 'critical'
                       : 'default'

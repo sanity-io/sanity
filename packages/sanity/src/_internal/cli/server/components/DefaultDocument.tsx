@@ -104,6 +104,7 @@ const globalStyles = `
   }
   body {
     margin: 0;
+    overflow: hidden;
     -webkit-font-smoothing: antialiased;
   }
 `

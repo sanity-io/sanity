@@ -8,8 +8,8 @@ export const ResultViewWrapper = styled.div(() => {
     & .json-inspector,
     & .json-inspector .json-inspector__selection {
       font-family: ${vars.font.code.family};
-      font-size: ${vars.font.code.scale[2].fontSize}px;
-      line-height: ${vars.font.code.scale[2].lineHeight}px;
+      font-size: ${vars.font.code.scale[1].fontSize};
+      line-height: ${vars.font.code.scale[1].lineHeight};
       color: var(--card-code-fg-color);
     }
 
@@ -54,8 +54,8 @@ export const ResultViewWrapper = styled.div(() => {
     & .json-inspector .json-inspector__leaf_composite > .json-inspector__line::before {
       content: '▸ ';
       margin-left: calc(0px - ${vars.space[4]});
-      font-size: ${vars.font.code.scale[2].fontSize}px;
-      line-height: ${vars.font.code.scale[2].lineHeight}px;
+      font-size: ${vars.font.code.scale[2].fontSize};
+      line-height: ${vars.font.code.scale[2].lineHeight};
     }
 
     &
@@ -63,8 +63,8 @@ export const ResultViewWrapper = styled.div(() => {
       .json-inspector__leaf_expanded.json-inspector__leaf_composite
       > .json-inspector__line::before {
       content: '▾ ';
-      font-size: ${vars.font.code.scale[2].fontSize}px;
-      line-height: ${vars.font.code.scale[2].lineHeight}px;
+      font-size: ${vars.font.code.scale[2].fontSize};
+      line-height: ${vars.font.code.scale[2].lineHeight};
     }
 
     & .json-inspector .json-inspector__radio,

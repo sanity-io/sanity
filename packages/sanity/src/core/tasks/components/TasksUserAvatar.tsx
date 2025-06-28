@@ -12,8 +12,8 @@ import {useUser} from '../../store'
 const AvatarRoot = styled.div<{$size: AvatarSize; $border?: boolean; $removeBg?: boolean}>(
   (props) => {
     return css`
-      min-height: ${vars.avatar.scale[props.$size]?.size}px;
-      min-width: ${vars.avatar.scale[props.$size]?.size}px;
+      min-height: ${vars.avatar.scale[props.$size].size};
+      min-width: ${vars.avatar.scale[props.$size].size};
       display: flex;
       align-items: center;
       justify-content: center;

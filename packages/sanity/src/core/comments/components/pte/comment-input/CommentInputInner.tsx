@@ -25,10 +25,6 @@ const ButtonDivider = styled(MenuDivider)({
   width: 1,
 })
 
-function focusRingBorderStyle(border: {color: string; width: number}): string {
-  return `inset 0 0 0 ${border.width}px ${border.color}`
-}
-
 const RootCard = styled(Card)(({theme}) => {
   const radii = vars.radius[2]
 
@@ -77,7 +73,7 @@ const RootCard = styled(Card)(({theme}) => {
 
 const AvatarContainer = styled.div((props) => {
   return `
-    min-height: ${vars.avatar.scale[1]?.size}px;
+    min-height: ${vars.avatar.scale[1].size};
     display: flex;
     align-items: center;
   `
@@ -148,7 +144,7 @@ export function CommentInputInner(props: CommentInputInnerProps) {
         data-focused={focused ? 'true' : 'false'}
         flex={1}
         sizing="border"
-        tone={readOnly ? 'transparent' : 'default'}
+        tone={readOnly ? 'neutral' : 'default'}
       >
         <Stack>
           <EditableWrap

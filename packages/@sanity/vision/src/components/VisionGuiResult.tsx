@@ -1,5 +1,5 @@
 import {type MutationEvent} from '@sanity/client'
-import {Box, Text} from '@sanity/ui'
+import {Box, Flex, Text} from '@sanity/ui'
 import {Translate, useTranslation} from 'sanity'
 
 import {visionLocaleNamespace} from '../i18n'
@@ -9,14 +9,12 @@ import {QueryErrorDialog} from './QueryErrorDialog'
 import {ResultView} from './ResultView'
 import {SaveCsvButton, SaveJsonButton} from './SaveResultButtons'
 import {
-  DownloadsCard,
   InputBackgroundContainer,
   Result,
   ResultContainer,
   ResultFooter,
   ResultInnerContainer,
   ResultOuterContainer,
-  SaveResultLabel,
   StyledLabel,
   TimingsCard,
   TimingsTextContainer,
@@ -79,12 +77,13 @@ export function VisionGuiResult({
           </Result>
         </ResultContainer>
       </ResultInnerContainer>
+
       {/* Execution time */}
       <ResultFooter justify="space-between" direction={['column', 'column', 'row']}>
         <TimingsCard paddingX={4} paddingY={3} sizing="border">
           <TimingsTextContainer align="center">
             <Box>
-              <Text muted>
+              <Text muted size={1}>
                 {t('result.execution-time-label')}:{' '}
                 {typeof queryTime === 'number'
                   ? `${queryTime}ms`
@@ -92,7 +91,7 @@ export function VisionGuiResult({
               </Text>
             </Box>
             <Box marginLeft={4}>
-              <Text muted>
+              <Text muted size={1}>
                 {t('result.end-to-end-time-label')}:{' '}
                 {typeof e2eTime === 'number' ? `${e2eTime}ms` : t('result.timing-not-applicable')}
               </Text>
@@ -101,22 +100,15 @@ export function VisionGuiResult({
         </TimingsCard>
 
         {hasResult && (
-          <DownloadsCard paddingX={4} paddingY={3} sizing="border">
-            <SaveResultLabel muted>
-              <Translate
-                components={{
-                  SaveResultButtons: () => (
-                    <>
-                      <SaveJsonButton blobUrl={jsonUrl} />
-                      <SaveCsvButton blobUrl={csvUrl} />
-                    </>
-                  ),
-                }}
-                i18nKey="result.save-result-as-format"
-                t={t}
-              />
-            </SaveResultLabel>
-          </DownloadsCard>
+          <Flex gap={2} padding={3}>
+            <Box padding={2}>
+              <Text muted size={1}>
+                <Translate i18nKey="result.save-result-as-format" t={t} />
+              </Text>
+            </Box>
+            <SaveJsonButton blobUrl={jsonUrl} />
+            <SaveCsvButton blobUrl={csvUrl} />
+          </Flex>
         )}
       </ResultFooter>
     </ResultOuterContainer>

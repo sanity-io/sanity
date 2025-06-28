@@ -1,4 +1,4 @@
-/* eslint-disable i18next/no-literal-string, @sanity/i18n/no-attribute-template-literals */
+/* eslint-disable @sanity/i18n/no-attribute-template-literals */
 import {_raf2, Card, Flex} from '@sanity/ui'
 import {startCase} from 'lodash'
 import {lazy, Suspense, useCallback, useEffect, useMemo, useState} from 'react'
@@ -7,8 +7,8 @@ import {RouteScope, useRouter, useRouterState} from 'sanity/router'
 import {styled} from 'styled-components'
 
 import {LoadingBlock} from '../components/loadingBlock'
-import {useNetworkProtocolCheck} from './networkCheck/useNetworkProtocolCheck'
 import {useColorSchemeValue} from './colorScheme'
+import {useNetworkProtocolCheck} from './networkCheck/useNetworkProtocolCheck'
 import {NoToolsScreen} from './screens/NoToolsScreen'
 import {RedirectingScreen} from './screens/RedirectingScreen'
 import {ToolNotFoundScreen} from './screens/ToolNotFoundScreen'

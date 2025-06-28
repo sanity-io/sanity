@@ -334,7 +334,7 @@ export function GlobalDocumentReferenceInput(props: GlobalDocumentReferenceInput
             radius={1}
             tone={
               readOnly
-                ? 'transparent'
+                ? 'neutral'
                 : loadableReferenceInfo.error || errors.length > 0
                   ? 'critical'
                   : 'default'

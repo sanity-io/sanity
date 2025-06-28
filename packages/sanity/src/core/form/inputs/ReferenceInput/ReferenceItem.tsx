@@ -63,7 +63,7 @@ function getTone({
   hasWarnings: boolean
 }): CardTone {
   if (readOnly) {
-    return 'transparent'
+    return 'neutral'
   }
   if (hasErrors) {
     return 'critical'

@@ -175,7 +175,7 @@
     "@sanity/sdk": "0.0.0-alpha.25",
     "@sanity/telemetry": "^0.8.0",
     "@sanity/types": "workspace:*",
-    "@sanity/ui": "3.0.0-static.38",
+    "@sanity/ui": "^3",
     "@sanity/ui-v2": "npm:@sanity/ui@^2.16.2",
     "@sanity/util": "workspace:*",
     "@sanity/uuid": "^3.0.2",

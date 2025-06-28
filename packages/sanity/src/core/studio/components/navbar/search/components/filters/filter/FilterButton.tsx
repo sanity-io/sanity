@@ -102,12 +102,7 @@ export function FilterButton({filter, initialOpen}: FilterButtonProps) {
       ref={popoverRef}
     >
       <ContainerDiv>
-        <Card
-          __unstable_focusRing
-          display="flex"
-          radius={2}
-          tone={isValid ? 'primary' : 'transparent'}
-        >
+        <Card __unstable_focusRing display="flex" radius={2} tone={isValid ? 'primary' : 'neutral'}>
           <LabelButton
             mode="bleed"
             onClick={handleOpen}
@@ -126,7 +121,7 @@ export function FilterButton({filter, initialOpen}: FilterButtonProps) {
             __unstable_focusRing
             display="flex"
             radius={2}
-            tone={isValid ? 'primary' : 'transparent'}
+            tone={isValid ? 'primary' : 'neutral'}
           >
             <CloseButton
               aria-label={t('search.action.remove-filter-aria-label')}

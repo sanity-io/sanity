@@ -235,10 +235,12 @@ export function QueryRecall({
   return (
     <ScrollContainer>
       <FixedHeader space={3}>
-        <Flex padding={3} paddingTop={4} paddingBottom={0} justify="space-between" align="center">
-          <Text weight="semibold" style={{textTransform: 'capitalize'}} size={4}>
-            {t('label.saved-queries')}
-          </Text>
+        <Flex padding={2} paddingBottom={0} justify="space-between" align="center">
+          <Box padding={3}>
+            <Text weight="semibold" style={{textTransform: 'capitalize'}} size={1}>
+              {t('label.saved-queries')}
+            </Text>
+          </Box>
           <Button
             // @ts-expect-error - TODO: fix this
             label={t('action.save-query')}
@@ -250,14 +252,17 @@ export function QueryRecall({
         </Flex>
         <Box padding={3} paddingTop={0}>
           <TextInput
+            border={false}
+            fontSize={1}
             placeholder={t('label.search-queries')}
             icon={SearchIcon}
+            padding={2}
             value={searchQuery}
             onChange={(event) => setSearchQuery(event.currentTarget.value)}
           />
         </Box>
       </FixedHeader>
-      <Stack paddingY={3}>
+      <Stack>
         {filteredQueries?.map((q) => {
           const queryObj = getStateFromUrl(q.url)
           const isSelected = selectedUrl === q.url
@@ -269,11 +274,12 @@ export function QueryRecall({
           const isEdited = isSelected && !areQueriesEqual
           return (
             <Card
+              as="button"
               key={q._key}
               width={'fill'}
               padding={4}
-              border
-              tone={isSelected ? 'positive' : 'default'}
+              // border
+              // tone={isSelected ? 'primary' : 'default'}
               onClick={() => {
                 setSelectedUrl(q.url) // Update the selected query immediately
                 const parsedUrl = getStateFromUrl(q.url)
@@ -281,6 +287,7 @@ export function QueryRecall({
                   setStateFromParsedUrl(parsedUrl)
                 }
               }}
+              selected={isSelected}
               style={{position: 'relative'}}
             >
               <Stack gap={3}>
@@ -304,7 +311,7 @@ export function QueryRecall({
                     ) : (
                       <Text
                         weight="bold"
-                        size={3}
+                        size={1}
                         textOverflow="ellipsis"
                         style={{maxWidth: '170px', cursor: 'pointer', padding: '4px 0'}}
                         title={
@@ -356,7 +363,7 @@ export function QueryRecall({
                   />
                 </Flex>
 
-                <Code>{queryObj?.query.split('{')[0]}</Code>
+                <Code size={1}>{queryObj?.query.split('{')[0]}</Code>
 
                 <Flex align="center" gap={1}>
                   <Text size={1} muted>

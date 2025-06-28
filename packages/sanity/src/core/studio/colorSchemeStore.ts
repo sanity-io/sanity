@@ -1,6 +1,6 @@
-import {type StudioThemeColorSchemeKey} from '../theme/types'
+import {type StudioColorScheme} from '../theme/types'
 
-function getScheme(scheme: unknown): StudioThemeColorSchemeKey {
+function getScheme(scheme: unknown): StudioColorScheme {
   switch (scheme) {
     case 'dark':
     case 'light':
@@ -13,7 +13,7 @@ function getScheme(scheme: unknown): StudioThemeColorSchemeKey {
 /** @internal */
 export const LOCAL_STORAGE_KEY = 'sanityStudio:ui:colorScheme'
 
-let snapshot: StudioThemeColorSchemeKey
+let snapshot: StudioColorScheme
 const subscribers = new Set<() => void>()
 
 /** @internal */
@@ -27,11 +27,11 @@ export const subscribe = (onStoreChange: () => void) => {
   }
 }
 /** @internal */
-export function getSnapshot(): StudioThemeColorSchemeKey {
+export function getSnapshot(): StudioColorScheme {
   return snapshot
 }
 /** @internal */
-export function setSnapshot(nextScheme: StudioThemeColorSchemeKey): void {
+export function setSnapshot(nextScheme: StudioColorScheme): void {
   snapshot = getScheme(nextScheme)
   for (const subscription of subscribers) {
     subscription()

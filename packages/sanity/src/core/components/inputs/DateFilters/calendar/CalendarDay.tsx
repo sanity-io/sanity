@@ -39,8 +39,7 @@ export function CalendarDay(props: CalendarDayProps) {
   if (isToday || selected) {
     tone = 'primary'
   } else if (isWeekend(date)) {
-    // tone = 'transparent'
-    tone = 'default'
+    tone = 'neutral'
   } else {
     tone = 'default'
   }

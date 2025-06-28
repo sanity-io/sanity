@@ -9,6 +9,6 @@ import {css, styled} from 'styled-components'
 export const SpacerAvatar = styled.div<{$size?: AvatarSize}>((props) => {
   const {$size = 1} = props
   return css`
-    min-width: ${vars.avatar.scale[$size]?.size}px;
+    min-width: ${vars.avatar.scale[$size].size};
   `
 })

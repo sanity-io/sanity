@@ -4,7 +4,7 @@ import {css, styled} from 'styled-components'
 
 export const Root = styled.div((props) => {
   return css`
-    /* --input-box-shadow: ; */
+    --input-box-shadow: inset 0 0 0 ${vars.input.border.width} ${vars.color.border};
 
     position: relative;
 
@@ -13,7 +13,7 @@ export const Root = styled.div((props) => {
       overflow: clip;
       position: relative;
       z-index: 1;
-      padding: ${vars.input.border.width}px;
+      padding: ${vars.input.border.width};
     }
 
     & [data-border] {
@@ -29,6 +29,7 @@ export const Root = styled.div((props) => {
     }
 
     &:not([data-read-only])[data-focused] [data-border] {
+      --input-box-shadow: inset 0 0 0 ${vars.input.border.width} ${vars.color.border};
       /* --input-box-shadow: focusRingStyle({
         base: color,
         border,

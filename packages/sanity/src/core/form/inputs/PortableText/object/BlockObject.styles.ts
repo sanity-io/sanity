@@ -17,7 +17,7 @@ export const Root = styled(Card)<{$isDark: boolean}>(({$isDark}) => {
     left: calc(0 - ${vars.space[1]});
     right: calc(0 - ${vars.space[1]});
     border-radius: ${vars.radius[2]};
-    mix-blend-mode: ${$isDark ? 'screen' : 'multiply'};
+    /* mix-blend-mode: ${$isDark ? 'screen' : 'multiply'}; */
   `
 
   return css`

@@ -25,7 +25,6 @@ const FLEX_ALIGN: Record<string, 'flex-start' | 'center' | 'flex-end'> = {
 /** @internal */
 export const FromTo = forwardRef<HTMLDivElement, FromToProps>(function FromTo(props, ref) {
   const {align = 'top', layout = 'inline', from, to, style, ...restProps} = props
-  // const theme = useTheme()
 
   const Layout = layout === 'inline' ? Flex : Grid
   const layoutStyles = useMemo(

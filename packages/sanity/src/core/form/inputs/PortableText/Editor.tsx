@@ -202,13 +202,13 @@ export function Editor(props: EditorProps): ReactNode {
         </TooltipDelayGroupProvider>
       )}
 
-      <EditableCard flex={1} tone={readOnly ? 'transparent' : 'default'}>
+      <EditableCard flex={1} tone={readOnly ? 'neutral' : 'default'}>
         <Scroller ref={setScrollElement}>
           <div>
             <EditableWrapper
               $isFullscreen={isFullscreen}
               $isOneLine={isOneLine}
-              tone={readOnly ? 'transparent' : 'default'}
+              tone={readOnly ? 'neutral' : 'default'}
             >
               <BoundaryElementProvider element={isFullscreen ? scrollElement : boundaryElement}>
                 {editable}

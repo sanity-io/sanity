@@ -23,8 +23,8 @@ export const AvatarSkeleton = styled(Skeleton)<AvatarSkeletonProps>((props) => {
   const size = props.$size ?? 1
   return css`
     border-radius: 50%;
-    width: ${vars.avatar.scale[size].size}px;
-    height: ${vars.avatar.scale[size].size}px;
+    width: ${vars.avatar.scale[size].size};
+    height: ${vars.avatar.scale[size].size};
   `
 })
 

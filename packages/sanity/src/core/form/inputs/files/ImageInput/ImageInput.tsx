@@ -103,10 +103,10 @@ function BaseImageInputComponent(props: BaseImageInputProps): React.JSX.Element 
     }
 
     if (readOnly) {
-      return 'transparent'
+      return 'neutral'
     }
 
-    return value?._upload && value?.asset ? 'transparent' : 'default'
+    return value?._upload && value?.asset ? 'neutral' : 'default'
   }, [
     directUploads,
     hoveringFiles,

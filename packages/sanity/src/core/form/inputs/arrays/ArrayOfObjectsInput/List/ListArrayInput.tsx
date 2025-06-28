@@ -202,7 +202,7 @@ export function ListArrayInput<Item extends ObjectItem>(props: ArrayOfObjectsInp
                 // This is not memoized since it changes on scroll so it will change anyways making memo useless
                 // Account for grid gap
                 boxSizing: 'border-box',
-                height: `calc(${virtualizer.getTotalSize()} + ${items.length} * ${vars.space[listGridGap]} + ${vars.space[paddingY]})`,
+                height: `calc(${virtualizer.getTotalSize()}px + (${items.length} * ${vars.space[listGridGap]}) + ${vars.space[paddingY]})`,
                 width: '100%',
                 position: 'relative',
               }}

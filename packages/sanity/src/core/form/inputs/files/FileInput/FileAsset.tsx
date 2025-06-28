@@ -130,7 +130,7 @@ export function FileAsset(props: FileAssetProps) {
     if (!value?._upload && !readOnly && hoveringFiles.length > 0) {
       return 'primary'
     }
-    return value?._upload && value?.asset && readOnly ? 'transparent' : 'default'
+    return value?._upload && value?.asset && readOnly ? 'neutral' : 'default'
   }, [
     directUploads,
     hoveringFiles,
@@ -293,7 +293,7 @@ function FileUploadPlaceHolder(props: FileAssetProps) {
   return (
     <>
       <Card
-        tone={readOnly ? 'transparent' : 'inherit'}
+        tone={readOnly ? 'neutral' : 'inherit'}
         border
         paddingX={3}
         paddingY={2}

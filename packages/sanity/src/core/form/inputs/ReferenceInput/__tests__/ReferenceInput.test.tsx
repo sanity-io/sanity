@@ -1,6 +1,6 @@
 import {Schema} from '@sanity/schema'
 import {type Reference} from '@sanity/types'
-import {LayerProvider, studioTheme, ThemeProvider, ToastProvider} from '@sanity/ui-v2'
+import {Root} from '@sanity/ui'
 import {render} from '@testing-library/react'
 import {noop} from 'lodash'
 import {forwardRef, useImperativeHandle} from 'react'
@@ -46,26 +46,22 @@ function ReferenceInputTester(
 
   return (
     <RouterProvider router={route.intents('/intents')} state={{}} onNavigate={noop}>
-      <ThemeProvider scheme="light" theme={studioTheme}>
-        <ToastProvider>
-          <LayerProvider>
-            <ReferenceInput
-              elementProps={{onFocus, onChange, ref: {current: null}}}
-              onChange={onChange}
-              validation={[]}
-              level={0}
-              liveEdit={false}
-              focusPath={[]}
-              presence={[]}
-              onSearch={EMPTY_SEARCH}
-              createOptions={[]}
-              editReferenceLinkComponent={StubComponent}
-              onEditReference={noop}
-              {...(props as any)}
-            />
-          </LayerProvider>
-        </ToastProvider>
-      </ThemeProvider>
+      <Root as="div">
+        <ReferenceInput
+          elementProps={{onFocus, onChange, ref: {current: null}}}
+          onChange={onChange}
+          validation={[]}
+          level={0}
+          liveEdit={false}
+          focusPath={[]}
+          presence={[]}
+          onSearch={EMPTY_SEARCH}
+          createOptions={[]}
+          editReferenceLinkComponent={StubComponent}
+          onEditReference={noop}
+          {...(props as any)}
+        />
+      </Root>
     </RouterProvider>
   )
 }
@@ -114,6 +110,7 @@ describe.skip('if schema type is a strong reference', () => {
           type: 'actorReference',
           availability: AVAILABLE,
           preview: {
+            // @ts-expect-error - TODO: fix this
             published: undefined,
             draft: DRAFT_PREVIEW as any,
           },
@@ -133,6 +130,7 @@ describe.skip('if schema type is a strong reference', () => {
           type: 'actorReference',
           availability: AVAILABLE,
           preview: {
+            // @ts-expect-error - TODO: fix this
             published: undefined,
             draft: DRAFT_PREVIEW as any,
           },
@@ -155,6 +153,7 @@ describe.skip('if schema type is a weak reference', () => {
           type: 'actorReference',
           availability: UNAVAILABLE_NOT_FOUND,
           preview: {
+            // @ts-expect-error - TODO: fix this
             published: PUBLISHED_PREVIEW as any,
             draft: DRAFT_PREVIEW as any,
           },
@@ -175,6 +174,7 @@ describe.skip('if schema type is a weak reference', () => {
           type: 'actorReference',
           availability: AVAILABLE,
           preview: {
+            // @ts-expect-error - TODO: fix this
             published: PUBLISHED_PREVIEW as any,
             draft: DRAFT_PREVIEW as any,
           },

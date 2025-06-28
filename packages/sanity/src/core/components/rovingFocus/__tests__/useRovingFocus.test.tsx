@@ -1,4 +1,5 @@
-import {Card, studioTheme, ThemeProvider} from '@sanity/ui-v2'
+import {Root} from '@sanity/ui'
+import {Card} from '@sanity/ui-v2'
 import {fireEvent, render} from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import {useState} from 'react'
@@ -24,14 +25,14 @@ function RenderTestComponent(props: TestProps) {
   })
 
   return (
-    <ThemeProvider theme={studioTheme}>
+    <Root as="div">
       <Card ref={setRootElement} id="rootElement">
         <Button text="Test" disabled={withDisabledButtons} />
         <Button text="Test" />
         <Button text="Test" disabled={withDisabledButtons} />
         <Button text="Test" />
       </Card>
-    </ThemeProvider>
+    </Root>
   )
 }
 

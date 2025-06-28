@@ -188,7 +188,7 @@ export function RequestAccessScreen() {
             </Text>
             {hasTooManyRequests || hasPendingRequest || hasBeenDenied ? (
               <Card
-                tone={hasPendingRequest ? 'transparent' : 'caution'}
+                tone={hasPendingRequest ? 'neutral' : 'caution'}
                 padding={3}
                 radius={2}
                 shadow={1}
