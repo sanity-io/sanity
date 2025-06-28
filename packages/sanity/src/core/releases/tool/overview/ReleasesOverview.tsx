@@ -250,6 +250,7 @@ export function ReleasesOverview() {
           isCreateReleaseDialogOpen ||
           mode === 'disabled'
         }
+        loading={isPendingGuardResponse}
         onClick={handleOnClickCreateRelease}
         text={tCore('release.action.create-new')}
         tooltipProps={{
