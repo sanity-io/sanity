@@ -114,7 +114,7 @@ export function useLinkAssets({schemaType}: {schemaType?: ImageSchemaType | File
           throw new Error('Asset linking was aborted')
         }
 
-        if (asset.asset._type === 'sanity.videoAsset') {
+        if (asset.asset.assetType === 'sanity.videoAsset') {
           // Ensure video asset is ready before linking
           await ensureAssetIsReady(asset.asset._id, asset.assetInstanceId, signal)
         }
