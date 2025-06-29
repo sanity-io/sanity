@@ -47,5 +47,12 @@ describeCliTest('CLI: basic commands', () => {
       expect(result.stdout).toContain('CLI Developers') // name of CI user
       expect(result.code).toBe(0)
     })
+
+    testConcurrent('sanity --version', async () => {
+      const result = await runSanityCmdCommand(version, ['--version'])
+      // If the help text isn't returned, the result should only be one line with text
+      expect(result.stdout.split('\n').filter((l) => l.length > 0)).toHaveLength(1)
+      expect(result.code).toBe(0)
+    })
   })
 })
