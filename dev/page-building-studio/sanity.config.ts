@@ -1,5 +1,3 @@
-import '@sanity/ui/css/index.css'
-
 import {visionTool} from '@sanity/vision'
 import {defineConfig} from 'sanity'
 import {structureTool} from 'sanity/structure'
