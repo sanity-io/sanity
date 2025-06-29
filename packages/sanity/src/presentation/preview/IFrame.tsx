@@ -1,4 +1,5 @@
 import {Box} from '@sanity/ui'
+import {vars} from '@sanity/ui/css'
 import {motion, type VariantLabels, type Variants} from 'framer-motion'
 import {forwardRef, type ReactEventHandler, useEffect, useImperativeHandle, useRef} from 'react'
 import {createGlobalStyle, styled} from 'styled-components'
@@ -72,7 +73,7 @@ export const IFrame = forwardRef<HTMLIFrameElement, IFrameProps>(
 )
 
 const IFrameElement = motion.create(styled.iframe`
-  box-shadow: 0 0 0 1px var(--card-border-color);
+  box-shadow: 0 0 0 1px ${vars.color.border};
   border: 0;
   max-height: 100%;
   width: 100%;

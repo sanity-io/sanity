@@ -14,113 +14,98 @@ import {
   useRef,
   useState,
 } from 'react'
-import {css, type CSSObject, styled} from 'styled-components'
+import {styled} from 'styled-components'
 
 import {Button} from '../../../../ui-components'
 import {useTranslation} from '../../../i18n'
 import {studioLocaleNamespace} from '../../../i18n/localeNamespaces'
 
-const Root = styled(Card)((): CSSObject => {
-  return {
-    '& > .content': {
-      position: 'relative',
-      lineHeight: 0,
-      margin: `calc(0 - ${vars.space[1]}) 0 0 calc(0 - ${vars.space[1]})`,
-    },
+const Root = styled(Card)({
+  '& > .content': {
+    position: 'relative',
+    lineHeight: 0,
+    margin: `calc(0 - ${vars.space[1]}) 0 0 calc(0 - ${vars.space[1]})`,
+  },
 
-    '& > .content > div': {
-      display: 'inline-block',
-      verticalAlign: 'top',
-      padding: `${vars.space[1]} 0 0 ${vars.space[1]}`,
-    },
+  '& > .content > div': {
+    display: 'inline-block',
+    verticalAlign: 'top',
+    padding: `${vars.space[1]} 0 0 ${vars.space[1]}`,
+  },
 
-    // enabled
-    '&:not([data-read-only])': {
-      cursor: 'text',
-    },
+  // enabled
+  '&:not([data-read-only])': {
+    cursor: 'text',
+  },
 
-    // hovered
-    '@media(hover:hover):not([data-disabled]):not([data-read-only]):hover': {
-      borderColor: vars.color.tinted.default.border[3],
-    },
+  // hovered
+  '@media(hover:hover):not([data-disabled]):not([data-read-only]):hover': {
+    borderColor: vars.color.tinted.default.border[3],
+  },
 
-    // focused
-    '&:not([data-disabled]):not([data-read-only])[data-focused]': {
-      // TODO
-      // boxShadow: focusRingStyle({
-      //   border: {
-      //     color: vars.color.default.enabled.border,
-      //     width: input.border.width,
-      //   },
-      //   focusRing: input.text.focusRing,
-      // }),
-    },
+  // focused
+  '&:not([data-disabled]):not([data-read-only])[data-focused]': {
+    // TODO
+    // boxShadow: focusRingStyle({
+    //   border: {
+    //     color: vars.color.default.enabled.border,
+    //     width: input.border.width,
+    //   },
+    //   focusRing: input.text.focusRing,
+    // }),
+  },
 
-    // disabled
-    '*:disabled + &': {
-      color: vars.color.tinted.default.border[3],
-      backgroundColor: vars.color.tinted.default.bg[1],
-      // TODO
-      // boxShadow: focusRingBorderStyle({
-      //   color: vars.color.default.disabled.border,
-      //   width: vars.input.border.width,
-      // }),
-    },
-  }
+  // disabled
+  '*:disabled + &': {
+    color: vars.color.tinted.default.border[3],
+    backgroundColor: vars.color.tinted.default.bg[1],
+    // TODO
+    // boxShadow: focusRingBorderStyle({
+    //   color: vars.color.default.disabled.border,
+    //   width: vars.input.border.width,
+    // }),
+  },
 })
 
-const Input = styled.input((): CSSObject => {
-  // const {theme} = props
-  // const font = theme.sanity.fonts.text
-  // const color = theme.sanity.color.input
-  // const p = theme.sanity.space[2]
-  // const size = theme.sanity.fonts.text.sizes[2]
+const Input = styled.input({
+  'appearance': 'none',
+  'background': 'none',
+  'border': 0,
+  'borderRadius': 0,
+  'outline': 'none',
+  'fontSize': vars.font.text.scale[2].fontSize, // rem(size.fontSize),
+  'lineHeight': vars.font.text.scale[2].lineHeight, // size.lineHeight / size.fontSize,
+  'fontFamily': vars.font.text.family,
+  'fontWeight': vars.font.weight.regular,
+  'margin': 0,
+  'display': 'block',
+  'minWidth': '1px',
+  'maxWidth': '100%',
+  'boxSizing': 'border-box',
+  'paddingTop': `calc(${vars.space[2]} - ${vars.font.text.scale[2].ascenderHeight})`, // rem(p - size.ascenderHeight),
+  'paddingRight': vars.space[2], // rem(p),
+  'paddingBottom': `calc(${vars.space[2]} - ${vars.font.text.scale[2].descenderHeight})`, // rem(p - size.descenderHeight),
+  'paddingLeft': vars.space[2], // rem(p),
 
-  return {
-    'appearance': 'none',
-    'background': 'none',
-    'border': 0,
-    'borderRadius': 0,
-    'outline': 'none',
-    'fontSize': vars.font.text.scale[2].fontSize, // rem(size.fontSize),
-    'lineHeight': vars.font.text.scale[2].lineHeight, // size.lineHeight / size.fontSize,
-    'fontFamily': vars.font.text.family,
-    'fontWeight': vars.font.weight.regular,
-    'margin': 0,
-    'display': 'block',
-    'minWidth': '1px',
-    'maxWidth': '100%',
-    'boxSizing': 'border-box',
-    'paddingTop': `calc(${vars.space[2]} - ${vars.font.text.scale[2].ascenderHeight})`, // rem(p - size.ascenderHeight),
-    'paddingRight': vars.space[2], // rem(p),
-    'paddingBottom': `calc(${vars.space[2]} - ${vars.font.text.scale[2].descenderHeight})`, // rem(p - size.descenderHeight),
-    'paddingLeft': vars.space[2], // rem(p),
+  // enabled
+  '&:not(:invalid):not(:disabled)': {
+    color: vars.color.tinted.default.fg[0], // vars.color.default.enabled.fg,
+  },
 
-    // enabled
-    '&:not(:invalid):not(:disabled)': {
-      color: vars.color.tinted.default.fg[0], // vars.color.default.enabled.fg,
-    },
-
-    // disabled
-    '&:not(:invalid):disabled': {
-      color: vars.color.tinted.default.border[3],
-    },
-  }
+  // disabled
+  '&:not(:invalid):disabled': {
+    color: vars.color.tinted.default.border[3],
+  },
 })
 
-const Placeholder = styled(Box)(() => {
-  // const {theme} = props
-  // const color = theme.sanity.color.input
-
-  return css`
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    pointer-events: none;
-    --card-fg-color: ${vars.color.input.text.placeholder};
-  `
-})
+const Placeholder = styled(Box)`
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  pointer-events: none;
+  --card-fg-color: ${vars.color.input.text.placeholder};
+`
 
 const TagBox = styled(Box)`
   // This is needed to make textOverflow="ellipsis" work properly for the Text primitive

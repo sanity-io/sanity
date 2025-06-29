@@ -32,7 +32,7 @@ import {ToolCalendar} from './toolCalendar'
 const Column = styled(Box)`
   flex-direction: column;
   &:not(:last-child) {
-    border-right: 1px solid var(--card-border-color);
+    border-right: 1px solid ${vars.color.border};
   }
 `
 
@@ -148,7 +148,7 @@ export default function Tool() {
                 paddingLeft={4}
                 paddingRight={3}
                 style={{
-                  borderBottom: '1px solid var(--card-border-color)',
+                  borderBottom: `1px solid ${vars.color.border}`,
                   minHeight: `${TOOL_HEADER_HEIGHT}px`,
                 }}
               >

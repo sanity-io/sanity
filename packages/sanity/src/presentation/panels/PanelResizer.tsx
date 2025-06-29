@@ -1,3 +1,4 @@
+import {vars} from '@sanity/ui/css'
 import {
   type FunctionComponent,
   type MouseEvent as ReactMouseEvent,
@@ -15,6 +16,7 @@ import {usePanelId} from './usePanelId'
 const Resizer = styled.div`
   position: relative;
 `
+
 const ResizerInner = styled.div<{
   $disabled: boolean
 }>`
@@ -29,7 +31,7 @@ const ResizerInner = styled.div<{
   /* Border */
   & > span:nth-child(1) {
     display: block;
-    border-left: 1px solid var(--card-border-color);
+    border-left: 1px solid ${vars.color.border};
     position: absolute;
     top: 0;
     left: 4px;
@@ -48,7 +50,7 @@ const ResizerInner = styled.div<{
       left: 0;
       width: 9px;
       bottom: 0;
-      background-color: var(--card-border-color);
+      background-color: ${vars.color.border};
       opacity: 0;
       transition: opacity 150ms;
     }

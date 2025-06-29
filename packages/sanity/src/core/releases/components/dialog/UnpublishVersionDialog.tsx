@@ -1,5 +1,6 @@
 import {type ReleaseDocument} from '@sanity/client'
 import {Stack, Text, useToast} from '@sanity/ui'
+import {vars} from '@sanity/ui/css'
 import {type CSSProperties, useCallback, useState} from 'react'
 
 import {Dialog} from '../../../../ui-components/dialog/Dialog'
@@ -117,8 +118,8 @@ export function UnpublishVersionDialog(props: {
                   <span
                     style={
                       {
-                        color: `var(--card-badge-${tone ?? 'default'}-fg-color)`,
-                        backgroundColor: `var(--card-badge-${tone ?? 'default'}-bg-color)`,
+                        color: vars.color.solid[tone ?? 'default'].fg[0],
+                        backgroundColor: vars.color.solid[tone ?? 'default'].bg[0],
                         borderRadius: 3,
                         textDecoration: 'none',
                         padding: '0px 2px',

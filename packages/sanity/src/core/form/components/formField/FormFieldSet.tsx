@@ -1,5 +1,6 @@
 import {type DeprecatedProperty, type FormNodeValidation} from '@sanity/types'
 import {Badge, Box, type BoxProps, Flex, Stack, Text} from '@sanity/ui'
+import {vars} from '@sanity/ui/css'
 import {
   type FocusEvent,
   type ForwardedRef,
@@ -91,15 +92,15 @@ const Content = styled(Box)<{
 
   return css`
     outline: none;
-    border-left: ${$borderLeft ? '1px solid var(--card-border-color)' : undefined};
+    border-left: ${$borderLeft ? `1px solid ${vars.color.border}` : undefined};
     transition:
       border-color 0.2s ease-in-out,
       box-shadow 0.2s ease-in-out;
 
     ${$borderLeft &&
     $focused &&
-    `border-left: 1px solid var(--card-focus-ring-color);
-    box-shadow: inset 1px 0 0 var(--card-focus-ring-color);`}
+    `border-left: 1px solid ${vars.color.focusRing};
+    box-shadow: inset 1px 0 0 ${vars.color.focusRing};`}
 
     ${$borderLeft &&
     !$focused &&

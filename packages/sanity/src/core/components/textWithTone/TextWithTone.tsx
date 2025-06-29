@@ -1,4 +1,5 @@
 import {Text, type TextProps} from '@sanity/ui'
+import {vars} from '@sanity/ui/css'
 import {type ElementTone} from '@sanity/ui/theme'
 import {forwardRef, type HTMLProps, type Ref} from 'react'
 import {styled} from 'styled-components'
@@ -13,19 +14,19 @@ export interface TextWithToneProps extends TextProps<'div'> {
 const TextWithToneStyle = styled(Text)`
   &:not([data-muted]) {
     &[data-tone='default'] {
-      --card-fg-color: var(--card-badge-default-fg-color);
+      --card-fg-color: ${vars.color.solid.default.fg[0]};
     }
     &[data-tone='primary'] {
-      --card-fg-color: var(--card-badge-primary-fg-color);
+      --card-fg-color: ${vars.color.solid.primary.fg[0]};
     }
     &[data-tone='positive'] {
-      --card-fg-color: var(--card-badge-positive-fg-color);
+      --card-fg-color: ${vars.color.solid.positive.fg[0]};
     }
     &[data-tone='caution'] {
-      --card-fg-color: var(--card-badge-caution-fg-color);
+      --card-fg-color: ${vars.color.solid.caution.fg[0]};
     }
     &[data-tone='critical'] {
-      --card-fg-color: var(--card-badge-critical-fg-color);
+      --card-fg-color: ${vars.color.solid.critical.fg[0]};
     }
   }
 

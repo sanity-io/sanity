@@ -1,5 +1,17 @@
 import {CopyIcon} from '@sanity/icons'
-import {Box, Button, Card, Flex, Grid, Inline, Select, Stack, TextInput, Tooltip} from '@sanity/ui'
+import {
+  Box,
+  Button,
+  Card,
+  Flex,
+  Grid,
+  Inline,
+  Select,
+  Stack,
+  Text,
+  TextInput,
+  Tooltip,
+} from '@sanity/ui'
 import {
   type ChangeEvent,
   type ComponentType,
@@ -165,6 +177,7 @@ export function VisionGuiHeader({
                 </Box>
               </Inline>
             </Card>
+
             <Select value={perspective || 'default'} onChange={onChangePerspective}>
               {SUPPORTED_PERSPECTIVES.map((perspectiveName) => {
                 if (perspectiveName === 'pinnedRelease') {
@@ -200,7 +213,7 @@ export function VisionGuiHeader({
                 <Box flex={1}>
                   <TextInput readOnly type="url" ref={operationUrlElement} value={url} />
                 </Box>
-                <Tooltip content={t('action.copy-url-to-clipboard')}>
+                <Tooltip content={<Text size={1}>{t('action.copy-url-to-clipboard')}</Text>}>
                   <Button
                     aria-label={t('action.copy-url-to-clipboard')}
                     type="button"

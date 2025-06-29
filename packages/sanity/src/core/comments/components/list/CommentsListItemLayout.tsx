@@ -43,26 +43,18 @@ const SKELETON_INLINE_STYLE: React.CSSProperties = {width: '50%'}
 
 const EMPTY_ARRAY: [] = []
 
-const TimeText = styled(Text)(() => {
-  return css`
-    min-width: max-content;
-    --card-fg-color: ${vars.color.tinted.default.fg[2]};
-    color: var(--card-fg-color);
-  `
-})
+const TimeText = styled(Text)`
+  min-width: max-content;
+  color: ${vars.color.tinted.default.fg[2]};
+`
 
-const HeaderFlex = styled(Flex)<{$size: AvatarSize}>((props) => {
-  return css`
-    min-height: ${vars.avatar.scale[props.$size].size};
-  `
-})
+const HeaderFlex = styled(Flex)<{$size: AvatarSize}>`
+  min-height: ${({$size}) => vars.avatar.scale[$size].size};
+`
 
-const IntentText = styled(Text)(() => {
-  return css`
-    --card-fg-color: ${vars.color.tinted.default.fg[2]};
-    color: var(--card-fg-color);
-  `
-})
+const IntentText = styled(Text)`
+  color: ${vars.color.tinted.default.fg[2]};
+`
 
 const InnerStack = styled(Stack)`
   transition: opacity 200ms ease;
@@ -73,11 +65,9 @@ const InnerStack = styled(Stack)`
   }
 `
 
-const ErrorFlex = styled(Flex)<{$size: AvatarSize}>((props) => {
-  return css`
-    min-height: ${vars.avatar.scale[props.$size].size};
-  `
-})
+const ErrorFlex = styled(Flex)<{$size: AvatarSize}>`
+  min-height: ${({$size}) => vars.avatar.scale[$size].size};
+`
 
 const RetryCardButton = styled(Card)`
   // Add not on hover

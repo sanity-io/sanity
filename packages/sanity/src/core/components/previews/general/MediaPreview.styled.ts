@@ -1,4 +1,5 @@
 import {Box, Flex, Skeleton, Stack} from '@sanity/ui'
+import {vars} from '@sanity/ui/css'
 import {styled} from 'styled-components'
 
 const rem = (value: number) => `${value / 16}rem`
@@ -28,7 +29,7 @@ export const ProgressFlex = styled(Flex).attrs({align: 'center', justify: 'cente
   bottom: 0;
 
   &:before {
-    background-color: var(--card-bg-color);
+    background-color: ${vars.color.bg};
     opacity: 0.75;
     content: '';
     display: block;

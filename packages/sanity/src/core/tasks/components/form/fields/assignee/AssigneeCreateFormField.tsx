@@ -1,7 +1,7 @@
 import {Badge, Card, Flex, Text, TextSkeleton} from '@sanity/ui'
 import {vars} from '@sanity/ui/css'
 import {useCallback, useMemo} from 'react'
-import {css, styled} from 'styled-components'
+import {styled} from 'styled-components'
 
 import {set, type StringInputProps} from '../../../../../form'
 import {useTranslation} from '../../../../../i18n'
@@ -10,17 +10,15 @@ import {tasksLocaleNamespace} from '../../../../i18n'
 import {TasksUserAvatar} from '../../../TasksUserAvatar'
 import {AssigneeSelectionMenu} from './AssigneeSelectionMenu'
 
-const FocusableCard = styled(Card)(() => {
-  return css`
-    &[data-as='button'] {
-      border: 1px solid var(--card-border-color);
-      &:focus-within {
-        border: 1px solid var(--card-focus-ring-color);
-      }
-      --card-muted-fg-color: ${vars.color.tinted.default.border[4]};
+const FocusableCard = styled(Card)`
+  &[data-as='button'] {
+    border: 1px solid ${vars.color.border};
+    &:focus-within {
+      border: 1px solid ${vars.color.focusRing};
     }
-  `
-})
+    --card-muted-fg-color: ${vars.color.tinted.default.border[4]};
+  }
+`
 
 export function AssigneeCreateFormField(props: StringInputProps) {
   const {value, onChange} = props

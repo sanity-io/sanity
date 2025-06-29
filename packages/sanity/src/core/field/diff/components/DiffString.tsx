@@ -20,8 +20,8 @@ const ChangeSegment = styled(Text)`
     background-color: none !important;
     background-image: linear-gradient(
       to bottom,
-      var(--card-bg-color) 0,
-      var(--card-bg-color) 33.333%,
+      ${vars.color.bg} 0,
+      ${vars.color.bg} 33.333%,
       currentColor 33.333%,
       currentColor 100%
     );
@@ -29,7 +29,7 @@ const ChangeSegment = styled(Text)`
     background-repeat: repeat-x;
     background-position-y: bottom;
     padding-bottom: 3px;
-    box-shadow: 0 0 0 1px var(--card-bg-color);
+    box-shadow: 0 0 0 1px ${vars.color.bg};
     z-index: 1;
   }
 `

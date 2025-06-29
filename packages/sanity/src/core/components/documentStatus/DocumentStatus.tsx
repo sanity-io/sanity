@@ -1,5 +1,6 @@
 import {type PreviewValue, type SanityDocument} from '@sanity/types'
 import {Flex, Text} from '@sanity/ui'
+import {vars} from '@sanity/ui/css'
 import {type ElementTone} from '@sanity/ui/theme'
 import {useMemo} from 'react'
 
@@ -111,9 +112,7 @@ const VersionStatus = ({
       <ReleaseAvatar tone={tone} padding={0} />
       <Text size={1}>
         {title || t('release.placeholder-untitled-release')}{' '}
-        <span style={{color: 'var(--card-muted-fg-color)'}}>
-          {t(labels[mode], {date: relativeTime})}
-        </span>
+        <span style={{color: vars.color.muted.fg}}>{t(labels[mode], {date: relativeTime})}</span>
       </Text>
     </Flex>
   )

@@ -122,7 +122,6 @@ export const BlockActionsOuter = styled(Box)`
 `
 
 export const BlockActionsInner = styled(Flex)(() => {
-  // const {fonts, space} = theme.sanity
   const textSize1 = vars.font.text.scale[1]
   const textSize2 = vars.font.text.scale[2]
   const capHeight1 = `calc(${textSize1.lineHeight} - ${textSize1.ascenderHeight} - ${textSize1.descenderHeight})`

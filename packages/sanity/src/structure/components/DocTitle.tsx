@@ -1,4 +1,5 @@
 import {type SanityDocumentLike} from '@sanity/types'
+import {vars} from '@sanity/ui/css'
 import {unstable_useValuePreview as useValuePreview, useSchema, useTranslation} from 'sanity'
 
 import {structureLocaleNamespace} from '../i18n'
@@ -29,7 +30,7 @@ export function DocTitle(props: DocTitleProps) {
   return (
     <>
       {value?.title || (
-        <span style={{color: 'var(--card-muted-fg-color)'}}>{t('doc-title.fallback.text')}</span>
+        <span style={{color: vars.color.muted.fg}}>{t('doc-title.fallback.text')}</span>
       )}
     </>
   )

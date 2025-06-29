@@ -20,8 +20,11 @@ const StyledButton = styled(Button)`
   border-radius: 9999px;
   box-shadow: none;
   color: white;
+
+  /* TODO: this no longer works in @sanity/ui@3 */
   --card-fg-color: white;
   :hover {
+    /* TODO: this no longer works in @sanity/ui@3 */
     --card-fg-color: white;
   }
 `

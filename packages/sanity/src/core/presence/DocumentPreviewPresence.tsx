@@ -1,7 +1,7 @@
 import {AvatarStack} from '@sanity/ui'
 import {vars} from '@sanity/ui/css'
 import {useMemo} from 'react'
-import {css, styled} from 'styled-components'
+import {styled} from 'styled-components'
 
 import {Tooltip, type TooltipProps} from '../../ui-components'
 import {UserAvatar} from '../components'
@@ -20,11 +20,9 @@ const PRESENCE_MENU_POPOVER_PROPS: TooltipProps = {
   portal: true,
 }
 
-const AvatarStackBox = styled.div(() => {
-  return css`
-    margin: calc(0px 0 ${vars.space[1]});
-  `
-})
+const AvatarStackBox = styled.div`
+  margin: calc(0px 0 ${vars.space[1]});
+`
 
 /** @internal */
 export function DocumentPreviewPresence(props: DocumentPreviewPresenceProps) {

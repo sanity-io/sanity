@@ -1,4 +1,5 @@
 import {Box, Flex, Skeleton, Stack, Text, TextSkeleton} from '@sanity/ui'
+import {vars} from '@sanity/ui/css'
 import classNames from 'classnames'
 import {styled} from 'styled-components'
 import {getDevicePixelRatio} from 'use-device-pixel-ratio'
@@ -129,7 +130,7 @@ export function DefaultPreview(props: DefaultPreviewProps) {
           >
             {title && renderPreviewNode(title, 'default')}
             {!title && (
-              <span style={{color: 'var(--card-muted-fg-color)'}}>
+              <span style={{color: vars.color.muted.fg}}>
                 {t('preview.default.title-fallback')}
               </span>
             )}

@@ -70,7 +70,7 @@ function ConfirmDialogContent(props: {dialog: DocumentActionConfirmDialogProps})
       <Box flex={1} overflow="auto" padding={4}>
         <Text>{message}</Text>
       </Box>
-      <Box paddingX={4} paddingY={3} style={{borderTop: '1px solid var(--card-border-color)'}}>
+      <Box borderTop paddingX={4} paddingY={3}>
         <Grid gridTemplateColumns={2} gap={2}>
           <Button
             data-testid="confirm-dialog-cancel-button"

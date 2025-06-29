@@ -1,4 +1,5 @@
 import {Card, Flex, Stack, Text} from '@sanity/ui'
+import {vars} from '@sanity/ui/css'
 import {motion} from 'framer-motion'
 import {memo, type ReactNode, useMemo} from 'react'
 import {styled} from 'styled-components'
@@ -23,13 +24,14 @@ import {
 
 const StatusText = styled(Text)`
   strong {
-    font-weight: 500;
-    color: var(--card-fg-color);
+    font-weight: ${vars.font.text.weight.medium};
+    color: ${vars.color.fg};
   }
   time {
     white-space: nowrap;
   }
 `
+
 const ACTIVITY_TEXT_118N: Record<ReleaseEvent['type'], string> = {
   addDocumentToRelease: 'activity.event.add-document',
   archiveRelease: 'activity.event.archive',

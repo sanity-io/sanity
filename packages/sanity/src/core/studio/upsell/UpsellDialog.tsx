@@ -11,22 +11,24 @@ import {type InterpolationProp, UpsellDescriptionSerializer} from './upsellDescr
 /**
  * Absolute positioned button to close the dialog.
  */
-const StyledButton = styled(Button)(() => {
-  return `
-    position: absolute;
-    top: ${vars.space[3]};
-    right: ${vars.space[3]};
-    z-index: 20;
-    background: transparent;
-    border-radius: 9999px;
-    box-shadow: none;
-    color: ${white.hex};
+const StyledButton = styled(Button)`
+  position: absolute;
+  top: ${vars.space[3]};
+  right: ${vars.space[3]};
+  z-index: 20;
+  background: transparent;
+  border-radius: 9999px;
+  box-shadow: none;
+  color: ${white.hex};
+
+  /* TODO: this no longer works in @sanity/ui@3 */
+  --card-fg-color: ${white.hex};
+
+  :hover {
+    /* TODO: this no longer works in @sanity/ui@3 */
     --card-fg-color: ${white.hex};
-    :hover {
-      --card-fg-color: ${white.hex};
-    }
-  `
-})
+  }
+`
 
 const Image = styled.img`
   object-fit: cover;

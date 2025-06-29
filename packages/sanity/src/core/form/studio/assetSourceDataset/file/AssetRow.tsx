@@ -11,6 +11,7 @@ import {
   Text,
   useToast,
 } from '@sanity/ui'
+import {vars} from '@sanity/ui/css'
 import {type KeyboardEvent, type MouseEvent, useCallback, useMemo, useRef, useState} from 'react'
 import {type Subscription} from 'rxjs'
 import {css, styled} from 'styled-components'
@@ -47,8 +48,10 @@ const CustomCard = styled(Card)<RowProps>`
   ${(props) =>
     props.isSelected &&
     css`
-      --card-muted-fg-color: var(--card-bg-color);
-      --card-fg-color: var(--card-bg-color);
+      /* TODO: this no longer works in @sanity/ui@3 */
+      --card-muted-fg-color: ${vars.color.bg};
+      /* TODO: this no longer works in @sanity/ui@3 */
+      --card-fg-color: ${vars.color.bg};
     `}
 `
 
@@ -78,20 +81,20 @@ const RowButton = styled(Button)<RowProps>`
   ${(props) =>
     props.isSelected &&
     css`
-      --card-muted-fg-color: var(--card-bg-color);
-      --card-fg-color: var(--card-bg-color);
+      --card-muted-fg-color: ${vars.color.bg};
+      --card-fg-color: ${vars.color.bg};
 
       &:before {
         background-color: var(--card-focus-ring-color);
       }
 
       ${CardIconWrapper} {
-        --card-muted-fg-color: var(--card-bg-color);
+        --card-muted-fg-color: ${vars.color.bg};
       }
 
       ${CustomFlex} {
-        --card-muted-fg-color: var(--card-bg-color);
-        --card-fg-color: var(--card-bg-color);
+        --card-muted-fg-color: ${vars.color.bg};
+        --card-fg-color: ${vars.color.bg};
       }
     `}
 
@@ -99,15 +102,15 @@ const RowButton = styled(Button)<RowProps>`
     !props.isSelected &&
     css`
       &:hover:before {
-        background-color: var(--card-bg-color);
+        background-color: ${vars.color.bg};
       }
 
       &:focus:before {
-        background-color: var(--card-code-bg-color);
+        background-color: ${vars.color.code.bg};
       }
 
       &:focus-within:before {
-        background-color: var(--card-bg-color);
+        background-color: ${vars.color.bg};
       }
     `}
 `

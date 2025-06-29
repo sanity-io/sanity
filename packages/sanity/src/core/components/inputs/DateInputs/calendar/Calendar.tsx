@@ -1,5 +1,6 @@
 import {ChevronLeftIcon, ChevronRightIcon, EarthGlobeIcon} from '@sanity/icons'
 import {Box, Flex, Grid, Select, Text} from '@sanity/ui'
+import {vars} from '@sanity/ui/css'
 import {type Space} from '@sanity/ui/theme'
 import {format} from '@sanity/util/legacyDateFormat'
 import {addDays, addMonths, parse, setDate, setHours, setMinutes, setMonth, setYear} from 'date-fns'
@@ -250,7 +251,7 @@ export const Calendar = forwardRef(function Calendar(
           align="center"
           paddingLeft={4}
           style={{
-            borderBottom: '1px solid var(--card-border-color)',
+            borderBottom: `1px solid ${vars.color.border}`,
             minHeight: `55px`,
             position: 'sticky',
             top: 0,
@@ -360,7 +361,7 @@ export const Calendar = forwardRef(function Calendar(
         </Box>
       </Box>
 
-      <Box padding={2} style={{borderTop: '1px solid var(--card-border-color)'}}>
+      <Box borderTop padding={2}>
         <Flex align="center" justify="space-between">
           {/* Select time */}
           {selectTime && (

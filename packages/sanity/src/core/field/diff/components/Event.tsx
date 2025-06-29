@@ -47,7 +47,7 @@ const IconBox = styled(Flex)<{$color: AvatarColor}>((props) => {
   return css`
     --card-icon-color: ${vars.color.avatar[color].fg};
     background-color: ${vars.color.avatar[color].bg};
-    box-shadow: 0 0 0 1px var(--card-bg-color);
+    box-shadow: 0 0 0 1px ${vars.color.bg};
 
     position: absolute;
     width: ${vars.avatar.scale[0].size};
@@ -63,13 +63,11 @@ const RELATIVE_TIME_OPTIONS: RelativeTimeOptions = {
   useTemporalPhrase: true,
 }
 
-const AvatarSkeleton = styled(Skeleton)(() => {
-  return css`
-    border-radius: 50%;
-    width: ${vars.avatar.scale[1].size};
-    height: ${vars.avatar.scale[1].size};
-  `
-})
+const AvatarSkeleton = styled(Skeleton)`
+  border-radius: 50%;
+  width: ${vars.avatar.scale[1].size};
+  height: ${vars.avatar.scale[1].size};
+`
 
 const NameSkeleton = styled(Skeleton)((props) => {
   return css`

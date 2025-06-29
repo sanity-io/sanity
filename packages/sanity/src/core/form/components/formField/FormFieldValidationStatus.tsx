@@ -1,6 +1,7 @@
 import {ErrorOutlineIcon, InfoOutlineIcon, WarningOutlineIcon} from '@sanity/icons'
 import {type FormNodeValidation} from '@sanity/types'
 import {Box, Flex, type Placement, Stack, Text} from '@sanity/ui'
+import {vars} from '@sanity/ui/css'
 import {type FontTextSize} from '@sanity/ui/theme'
 import {styled} from 'styled-components'
 
@@ -46,15 +47,15 @@ const StyledStack = styled(Stack)`
 
 const StatusText = styled(Text)<{$status: 'error' | 'warning' | 'info'}>(({$status}) => {
   if ($status === 'error') {
-    return {'--card-icon-color': 'var(--card-badge-critical-icon-color)'}
+    return {'--card-icon-color': vars.color.solid.critical.bg[0]}
   }
 
   if ($status === 'warning') {
-    return {'--card-icon-color': 'var(--card-badge-caution-icon-color)'}
+    return {'--card-icon-color': vars.color.solid.caution.bg[0]}
   }
 
   if ($status === 'info') {
-    return {'--card-icon-color': 'var(--card-badge-primary-icon-color)'}
+    return {'--card-icon-color': vars.color.solid.primary.bg[0]}
   }
 
   return {}

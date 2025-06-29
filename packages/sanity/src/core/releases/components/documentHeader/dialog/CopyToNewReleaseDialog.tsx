@@ -137,11 +137,7 @@ export function CopyToNewReleaseDialog(props: {
         },
       }}
     >
-      <Box
-        paddingX={2}
-        marginBottom={2}
-        style={{borderBottom: '1px solid var(--card-border-color)'}}
-      >
+      <Box borderBottom paddingX={2} marginBottom={2}>
         <Flex align="center" padding={4} paddingTop={1} justify="space-between">
           {schemaType ? (
             <Preview value={{_id: documentId}} schemaType={schemaType} />
@@ -151,14 +147,14 @@ export function CopyToNewReleaseDialog(props: {
 
           <Flex
             align="center"
+            border
             gap={2}
             padding={1}
             paddingRight={2}
+            overflow="hidden"
+            radius="full"
             style={{
-              borderRadius: 999,
-              border: '1px solid var(--card-border-color)',
               whiteSpace: 'nowrap',
-              overflow: 'hidden',
               textOverflow: 'ellipsis',
             }}
           >

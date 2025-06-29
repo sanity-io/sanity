@@ -42,7 +42,7 @@ export const MediaWrapper = styled.span<{
 
     & svg {
       // Shared styles for SVG icons
-      color: var(--card-icon-color);
+      color: ${vars.color.muted.fg};
       display: block;
       flex: 1;
 
@@ -68,7 +68,7 @@ export const MediaWrapper = styled.span<{
       top: 0;
       right: 0;
       bottom: 0;
-      box-shadow: inset 0 0 0 1px var(--card-fg-color);
+      box-shadow: inset 0 0 0 1px ${vars.color.fg};
       opacity: 0.1;
       border-radius: inherit;
       pointer-events: none;

@@ -9,7 +9,7 @@ import {
 import {vars} from '@sanity/ui/css'
 import {uuid} from '@sanity/uuid'
 import {type MouseEvent, type ReactNode, useCallback, useMemo} from 'react'
-import {css, styled} from 'styled-components'
+import {styled} from 'styled-components'
 
 import {type UserListWithPermissionsHookValue} from '../../../hooks'
 import {useTranslation} from '../../../i18n'
@@ -29,15 +29,13 @@ const HeaderFlex = styled(Flex)`
   min-height: 25px;
 `
 
-const BreadcrumbsButton = styled(Button)(() => {
-  return css`
-    --card-fg-color: ${vars.color.fg};
+const BreadcrumbsButton = styled(Button)`
+  --card-fg-color: ${vars.color.fg};
 
-    // The width is needed to make the text ellipsis work
-    // in the breadcrumbs component
-    max-width: 100%;
-  `
-})
+  // The width is needed to make the text ellipsis work
+  // in the breadcrumbs component
+  max-width: 100%;
+`
 
 interface CommentThreadLayoutProps {
   breadcrumbs?: CommentListBreadcrumbs

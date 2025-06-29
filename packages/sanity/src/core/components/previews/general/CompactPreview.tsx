@@ -1,4 +1,5 @@
 import {Box, Flex, Skeleton, Stack, Text, TextSkeleton} from '@sanity/ui'
+import {vars} from '@sanity/ui/css'
 import {styled} from 'styled-components'
 import {getDevicePixelRatio} from 'use-device-pixel-ratio'
 
@@ -89,7 +90,7 @@ export function CompactPreview(props: CompactPreviewProps) {
           <Text size={1} style={{color: 'inherit'}} textOverflow="ellipsis" weight="medium">
             {title && renderPreviewNode(title, 'compact')}
             {!title && (
-              <span style={{color: 'var(--card-muted-fg-color)'}}>
+              <span style={{color: vars.color.muted.fg}}>
                 {t('preview.default.title-fallback')}
               </span>
             )}

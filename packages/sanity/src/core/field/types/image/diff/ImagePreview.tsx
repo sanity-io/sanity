@@ -3,6 +3,7 @@ import {hues} from '@sanity/color'
 import {ImageIcon} from '@sanity/icons'
 import imageUrlBuilder from '@sanity/image-url'
 import {Box, Card, Flex, Text} from '@sanity/ui'
+import {vars} from '@sanity/ui/css'
 import {type SyntheticEvent, useMemo, useState} from 'react'
 import {styled} from 'styled-components'
 
@@ -63,7 +64,7 @@ const ImageWrapper = styled.div`
     left: 0;
     right: 0;
     bottom: 0;
-    box-shadow: inset 0 0 0 1px var(--card-border-color);
+    box-shadow: inset 0 0 0 1px ${vars.color.border};
     pointer-events: none;
   }
 
