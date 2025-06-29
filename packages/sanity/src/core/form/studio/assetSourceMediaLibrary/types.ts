@@ -75,7 +75,7 @@ export type AssetType = 'image' | 'file' | 'video'
  * @internal
  */
 export interface AssetSelectionItem {
-  asset: {_id: string; _type: string}
+  asset: {_id: string; _type: string; assetType: string}
   assetInstanceId: string
 }
 

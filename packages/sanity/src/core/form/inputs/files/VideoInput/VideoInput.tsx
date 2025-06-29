@@ -217,8 +217,6 @@ export function BaseVideoInput(props: BaseVideoInputProps) {
                   break
                 case 'all-complete':
                   onChange(PatchEvent.from([unset([UPLOAD_STATUS_KEY])]))
-                  setSelectedAssetSource(null)
-                  setIsUploading(false)
                   break
                 default:
               }
@@ -228,7 +226,7 @@ export function BaseVideoInput(props: BaseVideoInputProps) {
           setIsUploading(true)
           onChange(PatchEvent.from(createInitialUploadPatches(files[0])))
           uploader.upload(files, {schemaType, onChange: onChange as (patch: unknown) => void})
-        } catch (err) {
+        } catch (error) {
           onChange(PatchEvent.from([unset([UPLOAD_STATUS_KEY])]))
           setIsUploading(false)
           assetSourceUploaderRef.current?.unsubscribe()
@@ -239,7 +237,7 @@ export function BaseVideoInput(props: BaseVideoInputProps) {
             description: t('asset-sources.common.uploader.upload-failed.description'),
             title: t('asset-sources.common.uploader.upload-failed.title'),
           })
-          console.error(err)
+          console.error(error)
         }
       }
     },
