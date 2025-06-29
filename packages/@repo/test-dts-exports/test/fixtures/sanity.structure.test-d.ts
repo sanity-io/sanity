@@ -363,7 +363,7 @@ describe('sanity/structure', () => {
     expectTypeOf<typeof getTypeNamesFromFilter>().toBeFunction()
   })
   test('HELP_URL', () => {
-    expectTypeOf<typeof HELP_URL>().toBeObject()
+    expectTypeOf<typeof HELP_URL>().not.toBeNever()
   })
   test('InitialValueTemplateItemBuilder', () => {
     expectTypeOf<InitialValueTemplateItemBuilder>().not.toBeNever()
