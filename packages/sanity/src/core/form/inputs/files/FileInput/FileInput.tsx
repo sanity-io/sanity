@@ -161,6 +161,9 @@ export function BaseFileInput(props: BaseFileInputProps) {
 
   const handleSelectAssets = useCallback(
     (assetsFromSource: AssetFromSource[]) => {
+      if (assetsFromSource.length === 0) {
+        return
+      }
       handleSelectAssetFromSourceShared({
         assetsFromSource,
         onChange,

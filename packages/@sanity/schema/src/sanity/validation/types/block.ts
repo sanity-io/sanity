@@ -26,6 +26,7 @@ const allowedListKeys = ['title', 'value', 'icon', 'component']
 const supportedBuiltInObjectTypes = [
   'file',
   'image',
+  'video',
   'object',
   'reference',
   'crossDatasetReference',

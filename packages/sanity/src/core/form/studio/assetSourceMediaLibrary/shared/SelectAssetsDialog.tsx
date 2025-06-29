@@ -71,6 +71,7 @@ export function SelectAssetsDialog(props: SelectAssetsDialogProps): ReactNode {
       toast.push({
         closable: true,
         status: 'error',
+        id: 'insert-asset-error',
         title: t('asset-source.dialog.insert-asset-error'),
       })
       console.error(error)
