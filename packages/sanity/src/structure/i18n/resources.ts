@@ -95,6 +95,9 @@ const structureLocaleStrings = defineLocalesResources('structure', {
   /** Description for the archived release banner, rendered when viewing the history of a version document from the publihed view */
   'banners.archived-release.description':
     'This document version belongs to the archived <VersionBadge>{{title}}</VersionBadge> release',
+  /** The explanation displayed when a user attempts to create a new draft document, but the draft model is not switched on */
+  'banners.choose-new-document-destination.cannot-create-draft-document':
+    'Cannot create a draft document.',
   /** The explanation displayed when a user attempts to create a new published document, but the schema type doesn't support live-editing */
   'banners.choose-new-document-destination.cannot-create-published-document':
     'Cannot create a published document.',
@@ -111,13 +114,22 @@ const structureLocaleStrings = defineLocalesResources('structure', {
   /** The text content for the deprecated document type banner */
   'banners.deprecated-document-type-banner.text': 'This document type has been deprecated.',
   /** The text for publish action for discarding the version */
-  'banners.live-edit-draft-banner.discard.tooltip': 'Discard draft',
+  'banners.live-edit-draft-banner.discard.tooltip': 'Discard draft to continue editing.',
   /** The text for publish action for the draft banner */
-  'banners.live-edit-draft-banner.publish.tooltip': 'Publish to continue editing',
+  'banners.live-edit-draft-banner.publish.tooltip': 'Publish draft to continue editing.',
 
   /** The text content for the live edit document when it's a draft */
   'banners.live-edit-draft-banner.text':
     'The type <strong>{{schemaType}}</strong> has <code>liveEdit</code> enabled, but a draft version of this document exists. Publish or discard the draft in order to continue live editing it.',
+  /** The label for the "compare draft" action */
+  'banners.obsolete-draft.actions.compare-draft.text': 'Compare draft',
+  /** The label for the "discard draft" action */
+  'banners.obsolete-draft.actions.discard-draft.text': 'Discard draft',
+  /** The label for the "publish draft" action */
+  'banners.obsolete-draft.actions.publish-draft.text': 'Publish draft',
+  /** The warning displayed when editing a document that has an obsolete draft because the draft model is not switched on */
+  'banners.obsolete-draft.draft-model-inactive.text':
+    'The workspace does not have drafts enabled, but a draft version of this document exists.',
   /** The text for the permission check banner if the user only has one role, and it does not allow publishing this document */
   'banners.permission-check-banner.missing-permission_create_one':
     'Your role <Roles/> does not have permission to publish this document.',

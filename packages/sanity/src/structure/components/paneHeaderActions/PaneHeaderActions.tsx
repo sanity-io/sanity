@@ -151,9 +151,7 @@ export const PaneHeaderActions = memo(function PaneHeaderActions(props: PaneHead
 
   return (
     <Flex gap={1}>
-      {combinedInitialValueTemplates.length > 0 && (
-        <PaneHeaderCreateButton templateItems={combinedInitialValueTemplates} />
-      )}
+      <PaneHeaderCreateButton templateItems={combinedInitialValueTemplates} />
 
       {actionNodes.map((node) => (
         <PaneHeaderActionButton key={node.key} node={node} />

@@ -8,7 +8,8 @@ import {type DocumentPreviewStore, getDraftId, getPublishedId} from 'sanity'
 
 import {type PaneItemPreviewState} from './types'
 
-export const isLiveEditEnabled = (schemaType: SchemaType) => schemaType.liveEdit === true
+export const isLiveEditEnabled = (schemaType: Pick<SchemaType, 'liveEdit'>) =>
+  schemaType.liveEdit === true
 
 export const getMissingDocumentFallback = (item: SanityDocument) => ({
   title: <em>{item.title ? String(item.title) : 'Missing document'}</em>,
