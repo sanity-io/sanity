@@ -18,7 +18,7 @@ import {
   useMemo,
   useState,
 } from 'react'
-import {css, styled} from 'styled-components'
+import {styled} from 'styled-components'
 
 import {SanityDefaultPreview} from '../../../../../preview/components/SanityDefaultPreview'
 import {getSchemaTypeTitle} from '../../../../../schema/helpers'
@@ -30,19 +30,17 @@ const MAX_LENGTH = 5
 const EMPTY_ARRAY: [] = []
 const SEPARATOR = '/'
 
-const StyledButton = styled(Button)(() => {
-  return css`
-    max-height: 1rem;
-    overflow: hidden;
-    min-width: 2ch;
+const StyledButton = styled(Button)`
+  max-height: 1rem;
+  overflow: hidden;
+  min-width: 2ch;
 
-    &[data-active='true'] {
-      [data-ui='Text']:first-child {
-        font-weight: ${vars.font.text.weight.bold};
-      }
+  &[data-active='true'] {
+    [data-ui='Text']:first-child {
+      font-weight: ${vars.font.text.weight.bold};
     }
-  `
-})
+  }
+`
 
 const StyledText = styled(Text)`
   overflow: hidden;

@@ -4,7 +4,7 @@ import {type PortableTextBlock} from '@sanity/types'
 import {Box, Card, Flex, Menu, MenuDivider, Stack} from '@sanity/ui'
 import {vars} from '@sanity/ui/css'
 import {useCallback} from 'react'
-import {css, styled} from 'styled-components'
+import {styled} from 'styled-components'
 
 import {MenuButton, MenuItem, TooltipDelayGroupProvider} from '../../../../../ui-components'
 import {CommentsProvider} from '../../../../comments'
@@ -29,12 +29,10 @@ import {AssigneeEditFormField, DateEditFormField, StatusSelector, Title} from '.
 import {RemoveTaskDialog} from '../RemoveTaskDialog'
 import {getMentionedUsers} from '../utils'
 
-const FirstRow = styled(Flex)(() => {
-  return css`
-    column-gap: ${vars.space[2]};
-    row-gap: ${vars.space[3]};
-  `
-})
+const FirstRow = styled(Flex)`
+  column-gap: ${vars.space[2]};
+  row-gap: ${vars.space[3]};
+`
 
 function FormActionsMenu({id, value}: {id: string; value: TaskDocument}) {
   const {setViewMode, handleCopyLinkToTask} = useTasksNavigation()

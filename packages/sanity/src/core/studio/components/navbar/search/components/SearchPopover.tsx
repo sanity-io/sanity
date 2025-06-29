@@ -51,7 +51,7 @@ const OVERLAY_VARIANTS: Variants = {
 const Y_POSITION = 12 // vh
 
 const MotionOverlay = styled(motion.create(Card))`
-  background-color: var(--card-backdrop-color);
+  background-color: ${vars.color.backdrop};
   bottom: 0;
   left: 0;
   position: absolute;

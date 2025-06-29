@@ -26,8 +26,6 @@ export const VisionCodeMirror = forwardRef<
   const theme = useCodemirrorTheme()
   const codeMirrorRef = useRef<ReactCodeMirrorRef>(null)
 
-  // console.log('theme', theme)
-
   const resetEditorContent = useCallback((newContent: string) => {
     const editorView = codeMirrorRef.current?.view
     if (!editorView) return
@@ -41,13 +39,7 @@ export const VisionCodeMirror = forwardRef<
     }
   }, [])
 
-  useImperativeHandle(
-    ref,
-    () => ({
-      resetEditorContent,
-    }),
-    [resetEditorContent],
-  )
+  useImperativeHandle(ref, () => ({resetEditorContent}), [resetEditorContent])
 
   return (
     <EditorRoot>

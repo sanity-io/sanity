@@ -35,19 +35,17 @@ const PopoverListFlex = styled(Flex)<{
   `
 })
 
-const StyledPopover = styled(Popover)(() => {
-  return css`
-    [data-ui='Popover__wrapper'] {
-      width: 250px;
-      display: flex;
-      flex-direction: column;
-      border-radius: ${vars.radius[3]};
-      position: relative;
-      overflow: hidden;
-      overflow: clip;
-    }
-  `
-})
+const StyledPopover = styled(Popover)`
+  [data-ui='Popover__wrapper'] {
+    width: 250px;
+    display: flex;
+    flex-direction: column;
+    border-radius: ${vars.radius[3]};
+    position: relative;
+    overflow: hidden;
+    overflow: clip;
+  }
+`
 
 interface TreeEditingBreadcrumbsMenuButtonProps {
   button: React.JSX.Element

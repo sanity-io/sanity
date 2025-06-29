@@ -20,6 +20,7 @@ import {
   Text,
   useToast,
 } from '@sanity/ui'
+import {vars} from '@sanity/ui/css'
 import {AnimatePresence, motion} from 'framer-motion'
 import {lazy, memo, Suspense, useCallback, useEffect, useMemo, useState} from 'react'
 import {useClient, useCurrentUser, useTranslation} from 'sanity'
@@ -282,7 +283,7 @@ export const SharePreviewMenu = memo(function SharePreviewMenuComponent(
                               title={t('share-preview-menu.qr-code.title', {url: url.toString()})}
                               value={url.toString()}
                               size={QrSize}
-                              color="var(--card-fg-color)"
+                              color={vars.color.fg}
                               logoSize={QrCodeLogoSize + QrCodeLogoPadding}
                             />
                             <MotionMonogram

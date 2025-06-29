@@ -1,5 +1,5 @@
 import {vars} from '@sanity/ui/css'
-import {css, styled} from 'styled-components'
+import {styled} from 'styled-components'
 
 const SIZE = 43
 const STROKE_WIDTH = 3
@@ -10,24 +10,18 @@ const Root = styled.svg`
   transform: rotate(-90deg);
 `
 
-const BgCircle = styled.circle(() => {
-  // const {color} = theme.sanity
+const BgCircle = styled.circle`
+  fill: none;
+  stroke: ${vars.color.tinted.default.border[0]};
+  stroke-width: ${STROKE_WIDTH}px;
+`
 
-  return css`
-    fill: none;
-    stroke: ${vars.color.tinted.default.border[0]};
-    stroke-width: ${STROKE_WIDTH}px;
-  `
-})
-
-const ProgressCircle = styled.circle(() => {
-  return css`
-    fill: none;
-    stroke: ${vars.color.solid.primary.bg[0]};
-    stroke-width: ${STROKE_WIDTH}px;
-    transition: stroke-dashoffset 75ms;
-  `
-})
+const ProgressCircle = styled.circle`
+  fill: none;
+  stroke: ${vars.color.solid.primary.bg[0]};
+  stroke-width: ${STROKE_WIDTH}px;
+  transition: stroke-dashoffset 75ms;
+`
 
 /**
  * @hidden

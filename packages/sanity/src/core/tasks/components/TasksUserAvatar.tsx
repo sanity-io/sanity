@@ -18,7 +18,9 @@ const AvatarRoot = styled.div<{$size: AvatarSize; $border?: boolean; $removeBg?:
       align-items: center;
       justify-content: center;
       border-radius: 50%;
-      ${props.$border ? 'box-shadow: inset 0 0 0 1px var(--card-border-color);' : ''};
+      ${props.$border ? `box-shadow: inset 0 0 0 1px ${vars.color.border};` : ''};
+
+      /* TODO: this no longer works in @sanity/ui@3 */
       ${props.$removeBg ? '--card-avatar-gray-bg-color: transparent;' : ''}
     `
   },

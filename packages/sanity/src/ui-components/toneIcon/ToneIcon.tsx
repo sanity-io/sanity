@@ -1,3 +1,4 @@
+import {vars} from '@sanity/ui/css'
 import {type ElementTone} from '@sanity/ui/theme'
 import {type CSSProperties} from 'react'
 
@@ -12,7 +13,7 @@ export const ToneIcon = ({
     <Icon
       style={
         {
-          '--card-icon-color': `var(--card-badge-${tone}-icon-color)`,
+          '--card-icon-color': vars.color.tinted[tone].fg[4],
         } as CSSProperties
       }
     />

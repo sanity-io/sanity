@@ -12,43 +12,10 @@ export function useCodemirrorTheme() {
 }
 
 function createTheme() {
-  const cursor = vars.color.focusRing
-  const selection = vars.color.tinted.default.bg[2]
-
-  return EditorView.theme(
-    {
-      '&': {
-        color: vars.color.code.fg,
-        backgroundColor: vars.color.bg,
-      },
-
-      '.cm-content': {
-        caretColor: cursor,
-      },
-
-      // '.cm-editor': {
-      //   fontFamily: vars.font.code.family,
-      //   fontSize: vars.font.code.scale[1].fontSize,
-      //   lineHeight: 'inherit',
-      // },
-
-      '.cm-cursor, .cm-dropCursor': {borderLeftColor: cursor},
-      '&.cm-focused .cm-selectionBackground, .cm-selectionBackground, .cm-content ::selection': {
-        backgroundColor: selection,
-      },
-
-      '.cm-panels': {backgroundColor: vars.color.bg, color: vars.color.fg},
-      '.cm-panels.cm-panels-top': {borderBottom: `2px solid ${vars.color.border}`},
-      '.cm-panels.cm-panels-bottom': {borderTop: `2px solid ${vars.color.border}`},
-    },
-    {dark: false},
-    // {dark: color.dark},
-  )
+  return EditorView.theme({})
 }
 
 function createHighlight() {
-  // const c = theme.sanity.color.base
-  // const s = theme.sanity.color.syntax
   const s = vars.color.code.token
 
   return HighlightStyle.define([

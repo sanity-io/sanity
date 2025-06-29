@@ -1,5 +1,5 @@
 import {Box, Flex, Layer, useMediaIndex} from '@sanity/ui'
-import {BREAKPOINTS} from '@sanity/ui/css'
+import {BREAKPOINTS, vars} from '@sanity/ui/css'
 import {AnimatePresence, motion, type Transition, type Variants} from 'framer-motion'
 import {css, styled} from 'styled-components'
 
@@ -17,15 +17,13 @@ const TRANSITION: Transition = {duration: 0.2}
 const FULLSCREEN_MEDIA_INDEX = 2
 const POSITION_ABSOLUTE_MEDIA_INDEX = 4
 
-const RootFlex = styled(Flex)(() => {
-  return css`
-    min-height: 100%;
+const RootFlex = styled(Flex)`
+  min-height: 100%;
 
-    @media (max-width: ${BREAKPOINTS[POSITION_ABSOLUTE_MEDIA_INDEX]}px) {
-      position: relative;
-    }
-  `
-})
+  @media (max-width: ${BREAKPOINTS[POSITION_ABSOLUTE_MEDIA_INDEX]}px) {
+    position: relative;
+  }
+`
 
 const SidebarMotionLayer = styled(motion.create(Layer))(() => {
   return css`
@@ -33,13 +31,13 @@ const SidebarMotionLayer = styled(motion.create(Layer))(() => {
     flex-direction: column;
     height: 100%;
     width: 360px;
-    border-left: 1px solid var(--card-border-color);
+    border-left: 1px solid ${vars.color.border};
     box-sizing: border-box;
     overflow: hidden;
 
     box-shadow:
-      0px 6px 8px -4px var(--card-shadow-umbra-color),
-      0px 12px 17px -1px var(--card-shadow-penumbra-color);
+      0px 6px 8px -4px ${vars.color.shadow.umbra},
+      0px 12px 17px -1px ${vars.color.shadow.penumbra};
 
     @media (max-width: ${BREAKPOINTS[POSITION_ABSOLUTE_MEDIA_INDEX]}px) {
       bottom: 0;

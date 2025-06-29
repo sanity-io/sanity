@@ -3,22 +3,20 @@ import {Box, type ContainerProps, Flex, Layer, Stack, Text} from '@sanity/ui'
 import {vars} from '@sanity/ui/css'
 import {type Dispatch, type ReactNode, type SetStateAction, useCallback} from 'react'
 import TrapFocus from 'react-focus-lock'
-import {css, styled} from 'styled-components'
+import {styled} from 'styled-components'
 
 import {Button, Popover, type PopoverProps} from '../../../ui-components'
 
 // This layer is sticky so that the header is always visible when scrolling
-const StickyLayer = styled(Layer)(() => {
-  return css`
-    position: sticky;
-    top: 0;
-    width: 100%;
-    background: var(--card-bg-color);
-    border-bottom: 1px solid var(--card-border-color);
-    border-top-left-radius: ${vars.radius[3]};
-    border-top-right-radius: ${vars.radius[3]};
-  `
-})
+const StickyLayer = styled(Layer)`
+  position: sticky;
+  top: 0;
+  width: 100%;
+  background: ${vars.color.bg};
+  border-bottom: 1px solid ${vars.color.border};
+  border-top-left-radius: ${vars.radius[3]};
+  border-top-right-radius: ${vars.radius[3]};
+`
 
 interface PopoverDialogProps {
   children: ReactNode

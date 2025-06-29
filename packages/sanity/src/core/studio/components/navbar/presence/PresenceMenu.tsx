@@ -1,5 +1,6 @@
 import {AddUserIcon, UsersIcon} from '@sanity/icons'
 import {Box, Menu, MenuDivider, Stack, Text} from '@sanity/ui'
+import {vars} from '@sanity/ui/css'
 import {useCallback, useMemo, useState} from 'react'
 import {styled} from 'styled-components'
 
@@ -18,7 +19,7 @@ const StyledMenu = styled(Menu)`
 const FooterStack = styled(Stack)`
   position: sticky;
   bottom: 0;
-  background-color: var(--card-bg-color);
+  background-color: ${vars.color.bg};
 `
 
 export function PresenceMenu() {

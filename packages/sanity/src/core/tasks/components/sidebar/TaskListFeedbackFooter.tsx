@@ -1,5 +1,6 @@
 import {LaunchIcon} from '@sanity/icons'
 import {Box, Text} from '@sanity/ui'
+import {vars} from '@sanity/ui/css'
 import {styled} from 'styled-components'
 
 import {Translate, useTranslation} from '../../../i18n'
@@ -14,7 +15,7 @@ const Span = styled.span`
 const Link = styled.a`
   white-space: nowrap;
   > [data-sanity-icon] {
-    --card-icon-color: var(--card-link-color);
+    --card-icon-color: ${vars.color.link.fg};
   }
 `
 

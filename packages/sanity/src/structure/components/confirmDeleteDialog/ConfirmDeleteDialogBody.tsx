@@ -6,6 +6,7 @@ import {
   WarningOutlineIcon,
 } from '@sanity/icons'
 import {Box, Card, Flex, Stack, Text, useToast} from '@sanity/ui'
+import {vars} from '@sanity/ui/css'
 import {useCallback} from 'react'
 import {SanityDefaultPreview, Translate, useSchema, useTranslation} from 'sanity'
 
@@ -152,7 +153,7 @@ export function ConfirmDeleteDialogBody({
                 // only add the border if needed
                 borderTop:
                   internalReferences.totalCount > 0
-                    ? '1px solid var(--card-shadow-outline-color)'
+                    ? `1px solid ${vars.color.shadow.outline}`
                     : undefined,
               }}
             >
@@ -217,7 +218,6 @@ export function ConfirmDeleteDialogBody({
                         return 'projectId' in reference
                       })
                       .map(({projectId, datasetName, documentId}, index) => (
-                        // eslint-disable-next-line react/no-array-index-key
                         <tr key={`${documentId}-${index}`}>
                           <td>
                             <Text size={1}>{projectId}</Text>

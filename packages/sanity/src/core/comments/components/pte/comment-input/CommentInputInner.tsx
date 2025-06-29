@@ -135,7 +135,7 @@ export function CommentInputInner(props: CommentInputInnerProps) {
   )
 
   return (
-    <Flex align="flex-start" gap={2}>
+    <Flex align="flex-start" gap={1}>
       {avatar}
 
       <RootCard
@@ -147,12 +147,7 @@ export function CommentInputInner(props: CommentInputInnerProps) {
         tone={readOnly ? 'neutral' : 'default'}
       >
         <Stack>
-          <EditableWrap
-            data-ui="CommentInputEditableWrap"
-            paddingX={1}
-            paddingY={2}
-            sizing="border"
-          >
+          <EditableWrap data-ui="CommentInputEditableWrap" padding={2} sizing="border">
             <Editable
               focusLock={focusLock}
               onBlur={onBlur}
@@ -180,16 +175,16 @@ export function CommentInputInner(props: CommentInputInnerProps) {
               )}
               {onSubmit && (
                 <>
-                  {!mentionOptions.disabled && <ButtonDivider />}
+                  {/* {!mentionOptions.disabled && <ButtonDivider />} */}
 
                   <Button
                     aria-label={t('compose.send-comment-aria-label')}
                     data-testid="comment-input-send-button"
                     disabled={!canSubmit || !hasChanges || readOnly}
                     icon={SendIcon}
-                    mode={hasChanges && canSubmit ? 'default' : 'bleed'}
+                    // mode={hasChanges && canSubmit ? 'default' : 'bleed'}
                     onClick={onSubmit}
-                    tone={hasChanges && canSubmit ? 'primary' : 'default'}
+                    // tone={hasChanges && canSubmit ? 'primary' : 'default'}
                     tooltipProps={{content: t('compose.send-comment-tooltip')}}
                   />
                 </>

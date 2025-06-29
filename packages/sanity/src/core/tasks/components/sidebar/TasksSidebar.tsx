@@ -1,4 +1,5 @@
 import {Card, Flex, Spinner, Stack} from '@sanity/ui'
+import {vars} from '@sanity/ui/css'
 import {useCallback, useMemo} from 'react'
 import {styled} from 'styled-components'
 
@@ -17,7 +18,7 @@ const RootCard = styled(Card)`
 `
 
 const HeaderStack = styled(Stack)`
-  border-bottom: 1px solid var(--card-border-color);
+  border-bottom: 1px solid ${vars.color.border};
 `
 
 const ContentFlex = styled(Flex)`

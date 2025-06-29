@@ -13,7 +13,7 @@ import {
   useRef,
   useState,
 } from 'react'
-import {css, styled} from 'styled-components'
+import {styled} from 'styled-components'
 
 import {Button} from '../../../../ui-components'
 import {type UserListWithPermissionsHookValue} from '../../../hooks'
@@ -49,38 +49,34 @@ const DEFAULT_AVATAR_CONFIG: CommentsListItemProps['avatarConfig'] = {
 
 // data-active = when the comment is selected
 // data-hovered = when the mouse is over the comment
-const StyledThreadCard = styled(ThreadCard)(() => {
-  return css`
-    position: relative;
+const StyledThreadCard = styled(ThreadCard)`
+  position: relative;
 
-    &:has(> [data-ui='GhostButton']:focus:focus-visible) {
-      box-shadow:
-        inset 0 0 0 1px var(--card-border-color),
-        0 0 0 1px var(--card-bg-color),
-        0 0 0 2px var(--card-focus-ring-color);
-    }
+  &:has(> [data-ui='GhostButton']:focus:focus-visible) {
+    box-shadow:
+      inset 0 0 0 1px ${vars.color.border},
+      0 0 0 1px ${vars.color.bg},
+      0 0 0 2px ${vars.color.focusRing};
+  }
 
-    // The hover styles is managed with the [data-hovered] attribute instead of the :hover pseudo class
-    // since we want to show the hover styles when hovering over the menu items in the context menu as well.
-    // The context menu is rendered using a portal, so the :hover pseudo class won't work when hovering over
-    // the menu items.
-    &:not([data-active='true']) {
-      @media (hover: hover) {
-        &[data-hovered='true'] {
-          [data-root-menu='true'] {
-            opacity: 1;
-          }
+  // The hover styles is managed with the [data-hovered] attribute instead of the :hover pseudo class
+  // since we want to show the hover styles when hovering over the menu items in the context menu as well.
+  // The context menu is rendered using a portal, so the :hover pseudo class won't work when hovering over
+  // the menu items.
+  &:not([data-active='true']) {
+    @media (hover: hover) {
+      &[data-hovered='true'] {
+        [data-root-menu='true'] {
+          opacity: 1;
         }
       }
     }
-  `
-})
+  }
+`
 
-const ExpandButton = styled(Button)(({theme}) => {
-  return css`
-    font-weight: ${vars.font.text.weight.medium};
-  `
-})
+const ExpandButton = styled(Button)`
+  font-weight: ${vars.font.text.weight.medium};
+`
 
 const GhostButton = styled.button`
   opacity: 0;

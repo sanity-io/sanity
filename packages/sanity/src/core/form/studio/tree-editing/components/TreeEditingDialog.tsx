@@ -10,7 +10,7 @@ import {toString} from '@sanity/util/paths'
 import {AnimatePresence, motion, type Transition, type Variants} from 'framer-motion'
 import {debounce, isEqual} from 'lodash'
 import {useCallback, useEffect, useMemo, useRef, useState} from 'react'
-import {css, styled} from 'styled-components'
+import {styled} from 'styled-components'
 
 import {Button} from '../../../../../ui-components'
 import {useTranslation} from '../../../../i18n/hooks/useTranslation'
@@ -39,19 +39,17 @@ function renderDefault(props: InputProps) {
   return props.renderDefault(props)
 }
 
-const StyledDialog = styled(Dialog)(() => {
-  return css`
-    [data-ui='DialogCard'] {
-      padding: ${vars.space[4]};
-      box-sizing: border-box;
+const StyledDialog = styled(Dialog)`
+  [data-ui='DialogCard'] {
+    padding: ${vars.space[4]};
+    box-sizing: border-box;
 
-      // Make the dialog full height
-      & > [data-ui='Card']:first-child {
-        flex: 1;
-      }
+    // Make the dialog full height
+    & > [data-ui='Card']:first-child {
+      flex: 1;
     }
-  `
-})
+  }
+`
 
 const MotionFlex = motion.create(Flex)
 

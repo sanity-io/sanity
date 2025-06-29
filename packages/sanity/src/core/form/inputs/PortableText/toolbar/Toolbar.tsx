@@ -40,21 +40,12 @@ const StyleSelectBox = styled(Box)`
   width: 8em;
 `
 
-const StyleSelectFlex = styled(Flex)`
-  border-right: 1px solid var(--card-border-color);
-`
-
 const ActionMenuBox = styled(Box)<{$withInsertMenu: boolean}>`
   ${({$withInsertMenu}) =>
     $withInsertMenu &&
     css`
       max-width: max-content;
-      border-right: 1px solid var(--card-border-color);
     `}
-`
-
-const FullscreenButtonBox = styled(Box)`
-  border-left: 1px solid var(--card-border-color);
 `
 
 const SLOW_INITIAL_VALUE_LIMIT = 300
@@ -100,7 +91,7 @@ const InnerToolbar = memo(function InnerToolbar({
   return (
     <RootFlex align="center" ref={setRootElement} onMouseDown={preventEditorBlurOnToolbarMouseDown}>
       {showBlockStyleSelect && (
-        <StyleSelectFlex flex={collapsed ? 1 : undefined}>
+        <Flex borderRight flex={collapsed ? 1 : undefined}>
           <StyleSelectBox padding={isFullscreen ? 2 : 1} data-testid="block-style-select">
             <BlockStyleSelect
               disabled={disabled}
@@ -109,12 +100,13 @@ const InnerToolbar = memo(function InnerToolbar({
               boundaryElement={rootElement}
             />
           </StyleSelectBox>
-        </StyleSelectFlex>
+        </Flex>
       )}
 
       <Flex flex={1}>
         {showActionMenu && (
           <ActionMenuBox
+            borderRight
             flex={collapsed ? undefined : 1}
             padding={isFullscreen ? 2 : 1}
             $withInsertMenu={showInsertMenu}
@@ -139,7 +131,7 @@ const InnerToolbar = memo(function InnerToolbar({
           </Box>
         )}
       </Flex>
-      <FullscreenButtonBox padding={isFullscreen ? 2 : 1}>
+      <Box borderLeft padding={isFullscreen ? 2 : 1}>
         <Button
           aria-label={t('inputs.portable-text.action.expand-editor')}
           icon={isFullscreen ? CollapseIcon : ExpandIcon}
@@ -156,7 +148,7 @@ const InnerToolbar = memo(function InnerToolbar({
             portal: 'default',
           }}
         />
-      </FullscreenButtonBox>
+      </Box>
     </RootFlex>
   )
 })

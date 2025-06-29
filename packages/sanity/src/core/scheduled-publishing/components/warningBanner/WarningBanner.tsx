@@ -17,7 +17,7 @@ const SmallIcon = styled(ArrowRightIcon)(() => {
 
   return css`
     &[data-sanity-icon] {
-      color: var(--card-link-color);
+      color: ${vars.color.link.fg};
       font-size: calc(${iconSize} / 16 * 1rem);
       margin: ${iconOffset};
       margin-bottom: ${iconOffset};

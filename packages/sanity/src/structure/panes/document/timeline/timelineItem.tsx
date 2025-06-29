@@ -24,9 +24,11 @@ export const IconBox = styled(Flex)<{$color: AvatarColor}>((props) => {
   const color = props.$color
 
   return css`
+    /* TODO: this no longer works in @sanity/ui@3 */
     --card-icon-color: ${vars.color.avatar[color].fg};
+
     background-color: ${vars.color.avatar[color].bg};
-    box-shadow: 0 0 0 1px var(--card-bg-color);
+    box-shadow: 0 0 0 1px ${vars.color.bg};
 
     position: absolute;
     width: ${vars.avatar.scale[0].size};
@@ -62,12 +64,10 @@ const RELATIVE_TIME_OPTIONS: RelativeTimeOptions = {
   useTemporalPhrase: true,
 }
 
-const NameSkeleton = styled(Skeleton)(() => {
-  return css`
-    width: 6ch;
-    height: ${vars.font.text.scale[0].lineHeight};
-  `
-})
+const NameSkeleton = styled(Skeleton)`
+  width: 6ch;
+  height: ${vars.font.text.scale[0].lineHeight};
+`
 
 const UserLine = ({userId}: {userId: string}) => {
   const [user, loading] = useUser(userId)

@@ -19,7 +19,7 @@ export const Root = styled(Layer)<RootProps>(({$border}) => {
       left: 0;
       right: 0;
       bottom: -1px;
-      border-bottom: 1px solid ${$border ? 'var(--card-border-color)' : 'transparent'};
+      border-bottom: 1px solid ${$border ? vars.color.border : 'transparent'};
       opacity: 1;
     }
   `
@@ -33,18 +33,15 @@ export const Layout = styled(Flex)`
   }
 `
 
-export const TitleCard = styled(Card)(() => {
-  const color = vars.color.tinted.default
+export const TitleCard = styled(Card)`
+  /* Disable color updates on hover */
 
-  // Disable color updates on hover
-  return css`
-    background-color: ${color.bg[0]};
+  background-color: ${vars.color.tinted.default.bg[0]};
 
-    [data-ui='Text'] {
-      color: ${color.fg[0]};
-    }
-  `
-})
+  [data-ui='Text'] {
+    color: ${vars.color.tinted.default.fg[0]};
+  }
+`
 
 export const TitleTextSkeleton = styled(TextSkeleton)`
   width: 66%;

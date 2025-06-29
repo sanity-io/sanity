@@ -24,7 +24,7 @@ export const DiffBorder = styled.div`
     top: 0;
     left: 0;
     bottom: 0;
-    border-left: 1px solid var(--card-border-color);
+    border-left: 1px solid ${vars.color.border};
   }
 
   &[data-error]:hover::before,

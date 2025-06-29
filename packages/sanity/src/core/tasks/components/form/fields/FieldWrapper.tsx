@@ -1,5 +1,5 @@
 import {vars} from '@sanity/ui/css'
-import {css, styled} from 'styled-components'
+import {styled} from 'styled-components'
 
 import {type StringFieldProps} from '../../../../form'
 
@@ -7,17 +7,15 @@ import {type StringFieldProps} from '../../../../form'
  * @internal
  * Updates the padding and font weight of the field header content box.
  */
-export const FieldWrapperRoot = styled.div(() => {
-  return css`
-    // Reset the padding of the field header content box
-    [data-ui='fieldHeaderContentBox'] {
-      padding: 0;
-      label {
-        font-weight: ${vars.font.text.weight.regular};
-      }
+export const FieldWrapperRoot = styled.div`
+  /* Reset the padding of the field header content box */
+  [data-ui='fieldHeaderContentBox'] {
+    padding: 0;
+    label {
+      font-weight: ${vars.font.text.weight.regular};
     }
-  `
-})
+  }
+`
 
 export function FieldWrapper(props: StringFieldProps) {
   return <FieldWrapperRoot>{props.renderDefault(props)}</FieldWrapperRoot>

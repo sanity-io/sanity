@@ -13,6 +13,7 @@ import {
   TextInput,
   useToast,
 } from '@sanity/ui'
+import {vars} from '@sanity/ui/css'
 import {isEqual} from 'lodash'
 import {type ReactElement, useCallback, useState} from 'react'
 import {ContextMenuButton, useDateTimeFormat, useTranslation} from 'sanity'
@@ -335,7 +336,7 @@ export function QueryRecall({
                           width: '6px',
                           height: '6px',
                           borderRadius: '50%',
-                          backgroundColor: 'var(--card-focus-ring-color)',
+                          backgroundColor: vars.color.focusRing,
                         }}
                       />
                     )}

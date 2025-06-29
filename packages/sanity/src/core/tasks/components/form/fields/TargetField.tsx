@@ -33,11 +33,11 @@ import {FieldWrapperRoot} from './FieldWrapper'
 const EmptyReferenceRoot = styled(Card)((props) => {
   return css`
     &:focus {
-      border: 1px solid var(--card-focus-ring-color);
+      border: 1px solid ${vars.color.focusRing};
     }
     &:focus-visible {
       outline: none;
-      border: 1px solid var(--card-focus-ring-color);
+      border: 1px solid ${vars.color.focusRing};
     }
     &:hover {
       border-color: ${vars.color.tinted.default.border[2]};
@@ -75,21 +75,19 @@ const TargetRoot = styled(Card)`
     }
   }
 `
-const StyledIntentLink = styled(IntentLink)(() => {
-  return css`
-    text-decoration: none;
-    width: 100%;
-    overflow: hidden;
-    cursor: pointer;
-    &:focus {
-      box-shadow: 0 0 0 1px var(--card-focus-ring-color);
-    }
-    &:focus-visible {
-      outline: none;
-      box-shadow: 0 0 0 1px var(--card-focus-ring-color);
-    }
-  `
-})
+const StyledIntentLink = styled(IntentLink)`
+  text-decoration: none;
+  width: 100%;
+  overflow: hidden;
+  cursor: pointer;
+  &:focus {
+    box-shadow: 0 0 0 1px ${vars.color.focusRing};
+  }
+  &:focus-visible {
+    outline: none;
+    box-shadow: 0 0 0 1px ${vars.color.focusRing};
+  }
+`
 
 function Preview(props: {value: TaskTarget; handleRemove: () => void}) {
   const {value, handleRemove} = props

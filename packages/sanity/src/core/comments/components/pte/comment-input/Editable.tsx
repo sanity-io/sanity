@@ -9,7 +9,7 @@ import {useClickOutsideEvent} from '@sanity/ui'
 import {vars} from '@sanity/ui/css'
 import {isEqual} from 'lodash'
 import {type KeyboardEvent, useCallback, useEffect, useMemo, useRef, useState} from 'react'
-import {css, styled} from 'styled-components'
+import {styled} from 'styled-components'
 
 import {Popover, type PopoverProps} from '../../../../../ui-components'
 import {useTranslation} from '../../../../i18n'
@@ -23,37 +23,33 @@ const POPOVER_FALLBACK_PLACEMENTS: PopoverProps['fallbackPlacements'] = ['bottom
 const INLINE_STYLE: React.CSSProperties = {outline: 'none'}
 const EMPTY_ARRAY: [] = []
 
-const PlaceholderWrapper = styled.span(() => {
-  return css`
-    color: ${vars.color.input.text.placeholder};
+const PlaceholderWrapper = styled.span`
+  color: ${vars.color.tinted.default.border[4]};
+  overflow: hidden;
+  text-overflow: ellipsis;
+  text-wrap: nowrap;
+  display: block;
+`
+
+export const StyledPopover = styled(Popover)`
+  &[data-placement='bottom'] {
+    transform: translateY(${vars.space[1]});
+  }
+
+  &[data-placement='top'] {
+    transform: translateY(-${vars.space[1]});
+  }
+
+  [data-ui='Popover__wrapper'] {
+    border-radius: ${vars.radius[3]};
+    display: flex;
+    flex-direction: column;
+    overflow: clip;
     overflow: hidden;
-    text-overflow: ellipsis;
-    text-wrap: nowrap;
-    display: block;
-  `
-})
-
-export const StyledPopover = styled(Popover)(() => {
-  return css`
-    &[data-placement='bottom'] {
-      transform: translateY(${vars.space[1]});
-    }
-
-    &[data-placement='top'] {
-      transform: translateY(-${vars.space[1]});
-    }
-
-    [data-ui='Popover__wrapper'] {
-      border-radius: ${vars.radius[3]};
-      display: flex;
-      flex-direction: column;
-      overflow: clip;
-      overflow: hidden;
-      position: relative;
-      width: 300px; // todo: improve
-    }
-  `
-})
+    position: relative;
+    width: 300px; // todo: improve
+  }
+`
 
 interface EditableProps {
   focusLock?: boolean

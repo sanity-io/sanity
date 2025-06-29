@@ -1,4 +1,5 @@
 import {Layer} from '@sanity/ui'
+import {vars} from '@sanity/ui/css'
 import {useCallback, useState} from 'react'
 import {styled} from 'styled-components'
 
@@ -18,7 +19,7 @@ const Root = styled(Layer)`
     left: 0;
     bottom: 0;
     width: 1px;
-    background-color: var(--card-border-color);
+    background-color: ${vars.color.border};
   }
 
   &:not([data-disabled]) {
@@ -39,7 +40,7 @@ const Root = styled(Layer)`
       left: 0;
       width: 9px;
       bottom: 0;
-      background-color: var(--card-border-color);
+      background-color: ${vars.color.border};
       opacity: 0;
       transition: opacity 150ms;
       z-index: 100;

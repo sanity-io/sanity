@@ -12,6 +12,7 @@ import {
   type ValidationMarker,
 } from '@sanity/types'
 import {Box, Card, Flex, Stack, Text} from '@sanity/ui'
+import {vars} from '@sanity/ui/css'
 import {type CardTone} from '@sanity/ui/theme'
 import {type ErrorInfo, Fragment, useCallback, useMemo, useState} from 'react'
 import {type DocumentInspectorProps, useTranslation} from 'sanity'
@@ -158,7 +159,7 @@ function DocumentNodePathBreadcrumbs(props: {
     <Text size={1}>
       {pathTitles.map((t, i) => (
         <Fragment key={i}>
-          {i > 0 && <span style={{color: 'var(--card-muted-fg-color)', opacity: 0.5}}> / </span>}
+          {i > 0 && <span style={{color: vars.color.muted.fg, opacity: 0.5}}> / </span>}
           <span style={{fontWeight: 500}}>{t.title || t.name}</span>
         </Fragment>
       ))}

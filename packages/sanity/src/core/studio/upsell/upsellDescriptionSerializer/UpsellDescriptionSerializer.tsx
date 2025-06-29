@@ -9,7 +9,7 @@ import {Box, Card, Flex, Heading, Text} from '@sanity/ui'
 import {vars} from '@sanity/ui/css'
 import {template} from 'lodash'
 import {type ReactNode, useEffect, useMemo, useState} from 'react'
-import {css, styled} from 'styled-components'
+import {styled} from 'styled-components'
 
 import {ConditionalWrapper} from '../../../../ui-components/conditionalWrapper'
 import {TEMPLATE_OPTIONS} from '../constants'
@@ -20,7 +20,7 @@ export type InterpolationProp = {[key: string]: string | number}
 
 const Divider = styled(Box)`
   height: 1px;
-  background: var(--card-border-color);
+  background: ${vars.color.border};
   width: 100%;
 `
 
@@ -38,6 +38,7 @@ const SerializerContainer = styled.div`
 const IconTextContainer = styled(Text)((props) => {
   if (props.accent) {
     return `
+    /* TODO: this no longer works in @sanity/ui@3 */
     --card-icon-color: var(--card-accent-fg-color);
     `
   }
@@ -49,11 +50,9 @@ const AccentSpan = styled.span`
   --card-icon-color: var(--card-accent-fg-color);
 `
 
-const SemiboldSpan = styled.span(() => {
-  return css`
-    font-weight: ${vars.font.text.weight.semibold};
-  `
-})
+const SemiboldSpan = styled.span`
+  font-weight: ${vars.font.text.weight.semibold};
+`
 
 interface InlineIconProps {
   $hasTextLeft: boolean
@@ -153,13 +152,11 @@ function H3Block(props: {children: ReactNode}) {
   )
 }
 
-const Image = styled.img(() => {
-  return css`
-    object-fit: cover;
-    width: 100%;
-    border-radius: ${vars.radius[3]};
-  `
-})
+const Image = styled.img`
+  object-fit: cover;
+  width: 100%;
+  border-radius: ${vars.radius[3]};
+`
 
 function ImageBlock(
   props: PortableTextTypeComponentProps<{

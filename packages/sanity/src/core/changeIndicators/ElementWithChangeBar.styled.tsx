@@ -1,4 +1,4 @@
-import {BREAKPOINTS} from '@sanity/ui/css'
+import {BREAKPOINTS, vars} from '@sanity/ui/css'
 import {css, styled} from 'styled-components'
 
 interface RootProps {
@@ -79,32 +79,30 @@ export const ChangeBar = styled.div<{$zIndex: number}>`
   z-index: ${({$zIndex}) => $zIndex};
 `
 
-export const ChangeBarMarker = styled.div((props) => {
-  return css`
+export const ChangeBarMarker = styled.div`
+  position: absolute;
+  top: -1px;
+  left: var(--change-bar-offset);
+  width: 1px;
+  bottom: -1px;
+  background-color: ${vars.color.bg};
+
+  @media (min-width: ${BREAKPOINTS[1]}px) {
+    display: unset;
+  }
+
+  &:after {
+    content: '';
+    display: block;
     position: absolute;
-    top: -1px;
-    left: var(--change-bar-offset);
+    top: 1px;
+    left: 0;
     width: 1px;
-    bottom: -1px;
-    background-color: var(--card-bg-color);
-
-    @media (min-width: ${BREAKPOINTS[1]}px) {
-      display: unset;
-    }
-
-    &:after {
-      content: '';
-      display: block;
-      position: absolute;
-      top: 1px;
-      left: 0;
-      width: 1px;
-      bottom: 1px;
-      background-color: var(--card-badge-caution-dot-color);
-      border-radius: 0.5px;
-    }
-  `
-})
+    bottom: 1px;
+    background-color: ${vars.color.solid.caution.bg[0]};
+    border-radius: 0.5px;
+  }
+`
 
 export const ChangeBarButton = styled.button<{
   $withHoverEffect?: boolean

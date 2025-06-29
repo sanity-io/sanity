@@ -6,6 +6,7 @@ import {
   useGlobalKeyDown,
   useToast,
 } from '@sanity/ui'
+import {vars} from '@sanity/ui/css'
 import {type ElementTone} from '@sanity/ui/theme'
 import {
   memo,
@@ -35,15 +36,18 @@ import {CopyToNewReleaseDialog} from './dialog/CopyToNewReleaseDialog'
 
 const ChipButtonContainer = styled.span`
   display: inline-flex;
-  --border-color: var(--card-border-color);
+  --border-color: ${vars.color.border};
 `
 
 const ChipButton = styled(Button)`
   flex: none;
   transition: none;
   cursor: pointer;
+
+  /* TODO: this no longer works in @sanity/ui@3 */
   --card-border-color: var(--border-color);
 `
+
 const useVersionIsLinked = (documentId: string, fromRelease: string) => {
   const versionId = useMemo(() => {
     if (fromRelease === 'published') return getPublishedId(documentId)

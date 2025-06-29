@@ -10,6 +10,7 @@ import {
   Stack,
   Text,
 } from '@sanity/ui'
+import {vars} from '@sanity/ui/css'
 import {type ElementTone} from '@sanity/ui/theme'
 // eslint-disable-next-line @sanity/i18n/no-i18next-import -- figure out how to have the linter be fine with importing types-only
 import {type TFunction} from 'i18next'
@@ -45,7 +46,7 @@ const VersionModeHeaderLayout = styled.header`
   display: grid;
   grid-area: header;
   grid-template-columns: 1fr min-content 1fr;
-  border-block-end: 1px solid var(--card-border-color);
+  border-block-end: 1px solid ${vars.color.border};
 `
 
 const VersionModeHeaderLayoutSection = styled.div`

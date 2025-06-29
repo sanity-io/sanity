@@ -1,5 +1,5 @@
 import {vars} from '@sanity/ui/css'
-import {css, styled} from 'styled-components'
+import {styled} from 'styled-components'
 
 import {CommentsListItem, type CommentsListItemProps} from '../../../comments/components'
 import {useTasksEnabled} from '../../context'
@@ -17,18 +17,17 @@ interface TasksActivityCommentItemProps extends Omit<CommentsListItemProps, 'mod
   // ...
 }
 
-const CommentListItemRoot = styled.div(() => {
-  return css`
-    [data-ui='CommentsListItem'] {
-      padding-right: ${vars.space[2]};
-    }
+const CommentListItemRoot = styled.div`
+  [data-ui='CommentsListItem'] {
+    padding-right: ${vars.space[2]};
+  }
 
-    // Increase the padding when the comment input is focused
-    [data-ui='CommentInputEditableWrap']:focus-within {
-      padding-bottom: ${vars.space[2]};
-    }
-  `
-})
+  // Increase the padding when the comment input is focused
+  [data-ui='CommentInputEditableWrap']:focus-within {
+    padding-bottom: ${vars.space[2]};
+  }
+`
+
 export function TasksActivityCommentItem(props: TasksActivityCommentItemProps) {
   const {parentComment} = props
   const {mode} = useTasksEnabled()
