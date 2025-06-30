@@ -9,9 +9,10 @@ import {Box, Card, Flex, Heading, Text} from '@sanity/ui'
 import {vars} from '@sanity/ui/css'
 import {template} from 'lodash'
 import {type ReactNode, useEffect, useMemo, useState} from 'react'
-import {styled} from 'styled-components'
+import {css, styled} from 'styled-components'
 
 import {ConditionalWrapper} from '../../../../ui-components/conditionalWrapper'
+import {getVarName} from '../../../css/getVarName'
 import {TEMPLATE_OPTIONS} from '../constants'
 import {transformBlocks} from './helpers'
 
@@ -37,17 +38,16 @@ const SerializerContainer = styled.div`
 
 const IconTextContainer = styled(Text)((props) => {
   if (props.accent) {
-    return `
-    /* TODO: this no longer works in @sanity/ui@3 */
-    --card-icon-color: var(--card-accent-fg-color);
+    return css`
+      ${getVarName(vars.color.muted.fg)}: var(--card-accent-fg-color);
     `
   }
-  return ``
+  return css``
 })
 
 const AccentSpan = styled.span`
   color: var(--card-accent-fg-color);
-  --card-icon-color: var(--card-accent-fg-color);
+  ${getVarName(vars.color.muted.fg)}: var(--card-accent-fg-color);
 `
 
 const SemiboldSpan = styled.span`

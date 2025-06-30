@@ -3,6 +3,8 @@ import {Box, Card} from '@sanity/ui'
 import {vars} from '@sanity/ui/css'
 import {css, styled} from 'styled-components'
 
+import {getVarName} from '../../../../css/getVarName'
+
 export const Root = styled(Card)(rootStyle)
 
 export const PreviewSpan = styled.span`
@@ -16,13 +18,11 @@ export const TooltipBox = styled(Box)`
 `
 
 export function rootStyle() {
-  // const {color, radius} = theme.sanity
-
   return css`
     line-height: 0;
     border-radius: ${vars.radius[2]};
     padding: 2px;
-    box-shadow: inset 0 0 0 1px var(--card-border-color);
+    box-shadow: inset 0 0 0 1px ${vars.color.border};
     height: calc(1em - 1px);
     margin-top: 0.0625em;
     cursor: default;
@@ -49,32 +49,32 @@ export function rootStyle() {
     &:not([data-focused]):not([data-selected]) {
       @media (hover: hover) {
         &:hover {
-          --card-border-color: ${vars.color.tinted.default.border[2]};
+          ${getVarName(vars.color.border)}: ${vars.color.tinted.default.border[2]};
         }
       }
     }
 
     &[data-markers] {
-      --card-bg-color: ${vars.color.dark ? hues.purple[950].hex : hues.purple[50].hex};
+      ${getVarName(vars.color.bg)}: ${vars.color.dark ? hues.purple[950].hex : hues.purple[50].hex};
     }
 
     &[data-warning] {
-      --card-bg-color: ${vars.color.tinted.caution.bg[2]};
+      ${getVarName(vars.color.bg)}: ${vars.color.tinted.caution.bg[2]};
 
       @media (hover: hover) {
         &:hover {
-          --card-border-color: ${vars.color.tinted.caution.border[2]};
+          ${getVarName(vars.color.border)}: ${vars.color.tinted.caution.border[2]};
         }
       }
     }
 
     &[data-invalid] {
-      --card-bg-color: ${vars.color.tinted.critical.bg[0]};
-      --card-border-color: ${vars.color.tinted.critical.border[1]};
+      ${getVarName(vars.color.bg)}: ${vars.color.tinted.critical.bg[0]};
+      ${getVarName(vars.color.border)}: ${vars.color.tinted.critical.border[1]};
 
       @media (hover: hover) {
         &:hover {
-          --card-border-color: ${vars.color.tinted.critical.border[2]};
+          ${getVarName(vars.color.border)}: ${vars.color.tinted.critical.border[2]};
         }
       }
     }

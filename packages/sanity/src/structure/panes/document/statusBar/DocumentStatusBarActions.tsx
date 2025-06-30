@@ -1,5 +1,5 @@
-/* eslint-disable no-warning-comments */
 /* eslint-disable camelcase */
+
 import {Flex, LayerProvider, Stack, Text} from '@sanity/ui'
 import {memo, useCallback, useMemo, useState} from 'react'
 import {

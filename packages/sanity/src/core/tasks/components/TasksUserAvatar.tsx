@@ -7,6 +7,7 @@ import {css, styled} from 'styled-components'
 
 import {Tooltip} from '../../../ui-components'
 import {AvatarSkeleton, UserAvatar} from '../../components'
+import {getVarName} from '../../css/getVarName'
 import {useUser} from '../../store'
 
 const AvatarRoot = styled.div<{$size: AvatarSize; $border?: boolean; $removeBg?: boolean}>(
@@ -19,9 +20,7 @@ const AvatarRoot = styled.div<{$size: AvatarSize; $border?: boolean; $removeBg?:
       justify-content: center;
       border-radius: 50%;
       ${props.$border ? `box-shadow: inset 0 0 0 1px ${vars.color.border};` : ''};
-
-      /* TODO: this no longer works in @sanity/ui@3 */
-      ${props.$removeBg ? '--card-avatar-gray-bg-color: transparent;' : ''}
+      ${props.$removeBg ? `${getVarName(vars.color.avatar.gray.bg)}: transparent;` : ''}
     `
   },
 )

@@ -6,6 +6,7 @@ import {type ElementTone} from '@sanity/ui/theme'
 import {motion} from 'framer-motion'
 import {css, styled} from 'styled-components'
 
+import {getVarName} from '../../../css/getVarName'
 import {useTranslation} from '../../../i18n/hooks/useTranslation'
 import {ReleaseAvatarIcon} from '../../../releases/components/ReleaseAvatar'
 import {getDocumentVariantType} from '../../../util/getDocumentVariantType'
@@ -14,7 +15,7 @@ import {DocumentDiff} from './DocumentDiff/DocumentDiff'
 
 const ChipCard = styled(Card)<{tone: ElementTone}>((props) => {
   return css`
-    --card-fg-color: ${vars.color.tinted[props.tone].fg[0]};
+    ${getVarName(vars.color.fg)}: ${vars.color.tinted[props.tone].fg[0]};
   `
 })
 

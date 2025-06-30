@@ -1,8 +1,10 @@
 import {CloseIcon} from '@sanity/icons'
 import {Box, Flex, Heading} from '@sanity/ui'
+import {vars} from '@sanity/ui/css'
 import {styled} from 'styled-components'
 
 import {Button, Dialog} from '../../../../../ui-components'
+import {getVarName} from '../../../../css/getVarName'
 import {useColorSchemeValue} from '../../../colorScheme'
 import {UpsellDescriptionSerializer} from '../../../upsell'
 import {type TrialDialogDismissedInfo} from './__telemetry__/trialDialogEvents.telemetry'
@@ -21,11 +23,9 @@ const StyledButton = styled(Button)`
   box-shadow: none;
   color: white;
 
-  /* TODO: this no longer works in @sanity/ui@3 */
-  --card-fg-color: white;
+  ${getVarName(vars.color.fg)}: white;
   :hover {
-    /* TODO: this no longer works in @sanity/ui@3 */
-    --card-fg-color: white;
+    ${getVarName(vars.color.fg)}: white;
   }
 `
 

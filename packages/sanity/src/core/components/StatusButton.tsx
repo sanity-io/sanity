@@ -1,5 +1,5 @@
 import {vars} from '@sanity/ui/css'
-import {type ForwardedRef, forwardRef, type HTMLProps, type ReactNode, useMemo} from 'react'
+import {type ForwardedRef, forwardRef, type HTMLProps, type ReactNode} from 'react'
 import {styled} from 'styled-components'
 
 import {Button, type ButtonProps} from '../../ui-components'
@@ -43,11 +43,10 @@ export const StatusButton = forwardRef(function StatusButton(
     'aria-label': label,
     mode = 'bleed',
     text,
-    tone = 'neutral',
+    tone,
     ...restProps
   } = props
 
-  const dotStyle = useMemo(() => ({backgroundColor: vars.color.solid[tone].bg[0]}), [tone])
   const disabled = Boolean(disabledProp)
 
   return (
@@ -61,7 +60,7 @@ export const StatusButton = forwardRef(function StatusButton(
       text={text}
       icon={icon}
     >
-      {tone && <Dot style={dotStyle} />}
+      {tone && <Dot style={{backgroundColor: vars.color.solid[tone].bg[0]}} />}
     </StyledButton>
   )
 })

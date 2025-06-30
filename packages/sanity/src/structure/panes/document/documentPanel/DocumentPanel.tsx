@@ -48,6 +48,7 @@ interface DocumentPanelProps {
   headerHeight: number | null
   isInspectOpen: boolean
   rootElement: HTMLDivElement | null
+  setDocumentFormPortalElement: (el: HTMLElement | null) => void
   setDocumentPanelPortalElement: (el: HTMLElement | null) => void
   footer: React.ReactNode
 }
@@ -76,6 +77,7 @@ export const DocumentPanel = function DocumentPanel(props: DocumentPanelProps) {
     headerHeight,
     isInspectOpen,
     rootElement,
+    setDocumentFormPortalElement,
     setDocumentPanelPortalElement,
     footer,
   } = props
@@ -100,7 +102,7 @@ export const DocumentPanel = function DocumentPanel(props: DocumentPanelProps) {
   const {collapsed} = usePane()
   const parentPortal = usePortal()
   const {features} = useStructureTool()
-  const [_portalElement, setPortalElement] = useState<HTMLDivElement | null>(null)
+  const [_formPortalElement, setFormPortalElement] = useState<HTMLDivElement | null>(null)
   const [documentScrollElement, setDocumentScrollElement] = useState<HTMLDivElement | null>(null)
   const formContainerElement = useRef<HTMLFormElement | null>(null)
 
@@ -113,7 +115,7 @@ export const DocumentPanel = function DocumentPanel(props: DocumentPanelProps) {
 
   // Use a local portal container when split panes is supported
   const portalElement: HTMLElement | null = features.splitPanes
-    ? _portalElement || parentPortal.element
+    ? _formPortalElement || parentPortal.element
     : parentPortal.element
 
   // Calculate the height of the header
@@ -158,9 +160,9 @@ export const DocumentPanel = function DocumentPanel(props: DocumentPanelProps) {
   // Pass portal element to `DocumentPane`
   useEffect(() => {
     if (portalElement) {
-      setDocumentPanelPortalElement(portalElement)
+      setDocumentFormPortalElement(portalElement)
     }
-  }, [portalElement, setDocumentPanelPortalElement])
+  }, [portalElement, setDocumentFormPortalElement])
 
   const inspectDialog = useMemo(() => {
     return isInspectOpen ? <InspectDialog value={displayed || value} /> : null
@@ -169,6 +171,7 @@ export const DocumentPanel = function DocumentPanel(props: DocumentPanelProps) {
   const showInspector = Boolean(!collapsed && inspector)
   const {selectedPerspective, selectedReleaseId} = usePerspective()
 
+  // eslint-disable-next-line complexity
   const banners = useMemo(() => {
     if (params?.historyVersion) {
       return <ArchivedReleaseDocumentBanner />
@@ -315,13 +318,15 @@ export const DocumentPanel = function DocumentPanel(props: DocumentPanelProps) {
 
                     {inspectDialog}
 
-                    <div data-testid="document-panel-portal" ref={setPortalElement} />
+                    <div data-testid="document-panel-portal" ref={setFormPortalElement} />
                   </VirtualizerScrollInstanceProvider>
                 </BoundaryElementProvider>
               </PortalProvider>
             </DocumentBox>
 
             {footer}
+
+            <div data-portal="" ref={setDocumentPanelPortalElement} />
           </Flex>
         )}
         {showInspector && (

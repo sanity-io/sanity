@@ -7,6 +7,7 @@ import {useEffect} from 'react'
 import {keyframes, styled} from 'styled-components'
 
 import {Button, Popover} from '../../../ui-components'
+import {getVarName} from '../../css/getVarName'
 import {useTranslation} from '../../i18n/hooks/useTranslation'
 import {SANITY_VERSION} from '../../version'
 import {ProductAnnouncementCardSeen} from './__telemetry__/studioAnnouncements.telemetry'
@@ -31,8 +32,7 @@ const Root = styled.div`
 
   &:hover {
     > [data-ui='whats-new-card'] {
-      /* TODO: this no longer works in @sanity/ui@3 */
-      --card-bg-color: ${vars.color.tinted.default.bg[1]};
+      ${getVarName(vars.color.bg)}: ${vars.color.tinted.default.bg[1]};
 
       box-shadow: inset 0 0 2px 1px ${vars.color.skeleton.to};
       background-image: linear-gradient(

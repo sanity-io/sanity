@@ -17,6 +17,7 @@ import {
 import {styled} from 'styled-components'
 
 import {Button} from '../../../../ui-components'
+import {getVarName} from '../../../css/getVarName'
 import {useTranslation} from '../../../i18n'
 import {studioLocaleNamespace} from '../../../i18n/localeNamespaces'
 
@@ -104,7 +105,7 @@ const Placeholder = styled(Box)`
   left: 0;
   right: 0;
   pointer-events: none;
-  --card-fg-color: ${vars.color.input.text.placeholder};
+  ${getVarName(vars.color.fg)}: ${vars.color.input.text.placeholder};
 `
 
 const TagBox = styled(Box)`

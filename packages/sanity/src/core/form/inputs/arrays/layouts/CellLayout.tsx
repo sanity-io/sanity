@@ -1,4 +1,5 @@
 import {Box, Card, Flex} from '@sanity/ui'
+import {vars} from '@sanity/ui/css'
 import {type CardTone} from '@sanity/ui/theme'
 import {type ComponentProps, type ReactNode} from 'react'
 import {styled} from 'styled-components'
@@ -54,13 +55,13 @@ const Root = styled(Card)`
   .${MOVING_ITEM_CLASS_NAME} & {
     box-shadow:
       0 0 0 0,
-      0 8px 17px 2px var(--card-shadow-umbra-color),
-      0 3px 14px 2px var(--card-shadow-penumbra-color),
-      0 5px 5px -3px var(--card-shadow-ambient-color);
+      0 8px 17px 2px ${vars.color.shadow.umbra},
+      0 3px 14px 2px ${vars.color.shadow.penumbra},
+      0 5px 5px -3px ${vars.color.shadow.ambient};
   }
 
   &[aria-selected='true'] {
-    box-shadow: 0 0 0 2px var(--card-focus-ring-color);
+    box-shadow: 0 0 0 2px ${vars.color.focusRing};
   }
 `
 

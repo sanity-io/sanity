@@ -129,7 +129,7 @@ export const EditableWrapper = styled(Card)<{$isFullscreen: boolean; $isOneLine:
 
     & .pt-drop-indicator {
       pointer-events: none;
-      border: 1px solid var(--card-focus-ring-color) !important;
+      border: 1px solid ${vars.color.focusRing} !important;
       height: 0px !important;
       border-radius: ${vars.radius[2]};
       margin-top: -3px;

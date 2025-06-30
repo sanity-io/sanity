@@ -17,6 +17,7 @@ import {type Subscription} from 'rxjs'
 import {css, styled} from 'styled-components'
 
 import {Tooltip} from '../../../../../ui-components'
+import {getVarName} from '../../../../css/getVarName'
 import {getHumanFriendlyBytes} from '../../../../field/types/file/diff/helpers'
 import {useClient, useRelativeTime, useUnitFormatter} from '../../../../hooks'
 import {useTranslation} from '../../../../i18n'
@@ -48,10 +49,8 @@ const CustomCard = styled(Card)<RowProps>`
   ${(props) =>
     props.isSelected &&
     css`
-      /* TODO: this no longer works in @sanity/ui@3 */
-      --card-muted-fg-color: ${vars.color.bg};
-      /* TODO: this no longer works in @sanity/ui@3 */
-      --card-fg-color: ${vars.color.bg};
+      ${getVarName(vars.color.muted.fg)}: ${vars.color.bg};
+      ${getVarName(vars.color.fg)}: ${vars.color.bg};
     `}
 `
 
@@ -81,20 +80,20 @@ const RowButton = styled(Button)<RowProps>`
   ${(props) =>
     props.isSelected &&
     css`
-      --card-muted-fg-color: ${vars.color.bg};
-      --card-fg-color: ${vars.color.bg};
+      ${getVarName(vars.color.muted.fg)}: ${vars.color.bg};
+      ${getVarName(vars.color.fg)}: ${vars.color.bg};
 
       &:before {
-        background-color: var(--card-focus-ring-color);
+        background-color: ${vars.color.focusRing};
       }
 
       ${CardIconWrapper} {
-        --card-muted-fg-color: ${vars.color.bg};
+        ${getVarName(vars.color.muted.fg)}: ${vars.color.bg};
       }
 
       ${CustomFlex} {
-        --card-muted-fg-color: ${vars.color.bg};
-        --card-fg-color: ${vars.color.bg};
+        ${getVarName(vars.color.muted.fg)}: ${vars.color.bg};
+        ${getVarName(vars.color.fg)}: ${vars.color.bg};
       }
     `}
 

@@ -6,6 +6,7 @@ import {type FontTextSize} from '@sanity/ui/theme'
 import {styled} from 'styled-components'
 
 import {Tooltip} from '../../../../ui-components'
+import {getVarName} from '../../../css/getVarName'
 import {useListFormat} from '../../../hooks'
 import {useTranslation} from '../../../i18n'
 
@@ -47,15 +48,15 @@ const StyledStack = styled(Stack)`
 
 const StatusText = styled(Text)<{$status: 'error' | 'warning' | 'info'}>(({$status}) => {
   if ($status === 'error') {
-    return {'--card-icon-color': vars.color.solid.critical.bg[0]}
+    return {[getVarName(vars.color.muted.fg)]: vars.color.solid.critical.bg[0]}
   }
 
   if ($status === 'warning') {
-    return {'--card-icon-color': vars.color.solid.caution.bg[0]}
+    return {[getVarName(vars.color.muted.fg)]: vars.color.solid.caution.bg[0]}
   }
 
   if ($status === 'info') {
-    return {'--card-icon-color': vars.color.solid.primary.bg[0]}
+    return {[getVarName(vars.color.muted.fg)]: vars.color.solid.primary.bg[0]}
   }
 
   return {}

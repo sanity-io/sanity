@@ -1,6 +1,7 @@
 import {vars} from '@sanity/ui/css'
 import {type ElementTone} from '@sanity/ui/theme'
-import {type CSSProperties} from 'react'
+
+import {getVarName} from '../../core/css/getVarName'
 
 export const ToneIcon = ({
   tone,
@@ -11,11 +12,9 @@ export const ToneIcon = ({
 }) => {
   return (
     <Icon
-      style={
-        {
-          '--card-icon-color': vars.color.tinted[tone].fg[4],
-        } as CSSProperties
-      }
+      style={{
+        [getVarName(vars.color.muted.fg)]: vars.color.tinted[tone].fg[4],
+      }}
     />
   )
 }

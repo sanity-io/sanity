@@ -4,6 +4,7 @@ import {type ForwardedRef, forwardRef, type HTMLProps} from 'react'
 import {styled} from 'styled-components'
 
 import {Button, type ButtonProps} from '../../../../ui-components'
+import {getVarName} from '../../../css/getVarName'
 import {useTranslation} from '../../../i18n'
 
 const Root = styled(Button)`
@@ -17,9 +18,9 @@ const Root = styled(Button)`
 
   &:not([data-disabled='true']):hover,
   &:not([data-disabled='true']):focus {
-    --card-fg-color: ${vars.color.solid.critical.bg[0]};
-    --card-bg-color: transparent;
-    --card-border-color: transparent;
+    ${getVarName(vars.color.fg)}: ${vars.color.solid.critical.bg[0]};
+    ${getVarName(vars.color.bg)}: transparent;
+    ${getVarName(vars.color.border)}: transparent;
 
     div[data-ui='Box'] {
       display: block;

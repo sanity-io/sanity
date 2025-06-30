@@ -4,6 +4,7 @@ import {vars} from '@sanity/ui/css'
 import {css, styled} from 'styled-components'
 
 import {DEBUG} from '../../../../changeIndicators/constants'
+import {getVarName} from '../../../../css/getVarName'
 import {TEXT_BULLET_MARKERS, TEXT_NUMBER_FORMATS} from './constants'
 import {createListName} from './helpers'
 
@@ -48,12 +49,12 @@ function textBlockStyle(props: TextBlockStyleProps) {
     }
 
     &[data-warning] {
-      --card-border-color: ${vars.color.tinted.caution.border[2]};
+      ${getVarName(vars.color.border)}: ${vars.color.tinted.caution.border[2]};
       --marker-bg-color: ${vars.color.tinted.caution.bg[1]};
     }
 
     &[data-error] {
-      --card-border-color: ${vars.color.tinted.critical.border[2]};
+      ${getVarName(vars.color.border)}: ${vars.color.tinted.critical.border[2]};
       --marker-bg-color: ${vars.color.tinted.critical.bg[1]};
     }
 

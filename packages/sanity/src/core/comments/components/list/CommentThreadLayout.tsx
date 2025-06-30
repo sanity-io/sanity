@@ -11,6 +11,7 @@ import {uuid} from '@sanity/uuid'
 import {type MouseEvent, type ReactNode, useCallback, useMemo} from 'react'
 import {styled} from 'styled-components'
 
+import {getVarName} from '../../../css/getVarName'
 import {type UserListWithPermissionsHookValue} from '../../../hooks'
 import {useTranslation} from '../../../i18n'
 import {type CommentsSelectedPath} from '../../context'
@@ -30,7 +31,7 @@ const HeaderFlex = styled(Flex)`
 `
 
 const BreadcrumbsButton = styled(Button)`
-  --card-fg-color: ${vars.color.fg};
+  ${getVarName(vars.color.fg)}: ${vars.color.fg};
 
   // The width is needed to make the text ellipsis work
   // in the breadcrumbs component

@@ -1,6 +1,7 @@
 import {DownloadIcon, InfoOutlineIcon} from '@sanity/icons'
 import {type Asset, type AssetFromSource, type AssetSourceComponentProps} from '@sanity/types'
 import {Card, Flex, Stack, Text} from '@sanity/ui'
+import {vars} from '@sanity/ui/css'
 import {uniqueId} from 'lodash'
 import {
   type ForwardedRef,
@@ -93,7 +94,7 @@ const buildQuery = (
 }
 
 const CardLoadMore = styled(Card)`
-  border-top: 1px solid var(--card-border-color);
+  border-top: 1px solid ${vars.color.border};
   position: sticky;
   bottom: 0;
   z-index: 200;
@@ -141,7 +142,6 @@ const SelectAssetsComponent = function SelectAssetsComponent(
 
   const handleDeleteFinished = useCallback(
     (id: string) => {
-      // eslint-disable-next-line max-nested-callbacks
       setAssets((prevState) => prevState.filter((asset) => asset._id !== id))
     },
     [setAssets],

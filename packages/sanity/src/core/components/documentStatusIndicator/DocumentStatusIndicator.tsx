@@ -3,6 +3,7 @@ import {vars} from '@sanity/ui/css'
 import {useMemo} from 'react'
 import {css, styled} from 'styled-components'
 
+import {getVarName} from '../../css/getVarName'
 import {RELEASE_TYPES_TONES, type VersionInfoDocumentStub} from '../../releases'
 import {useActiveReleases} from '../../releases/store/useActiveReleases'
 import {getReleaseIdFromReleaseDocumentId} from '../../releases/util/getReleaseIdFromReleaseDocumentId'
@@ -29,19 +30,19 @@ const Dot = styled.div<{$index: number}>((props) => {
     box-shadow: 0 0 0 1px ${vars.color.bg};
     z-index: ${$index};
     &[data-status='published'] {
-      --card-icon-color: ${vars.color.solid.positive.bg[0]};
+      ${getVarName(vars.color.muted.fg)}: ${vars.color.solid.positive.bg[0]};
     }
     &[data-status='draft'] {
-      --card-icon-color: ${vars.color.solid.caution.bg[0]};
+      ${getVarName(vars.color.muted.fg)}: ${vars.color.solid.caution.bg[0]};
     }
     &[data-status='asap'] {
-      --card-icon-color: ${vars.color.solid[tone.asap].bg[0]};
+      ${getVarName(vars.color.muted.fg)}: ${vars.color.solid[tone.asap].bg[0]};
     }
     &[data-status='undecided'] {
-      --card-icon-color: ${vars.color.solid[tone.undecided].bg[0]};
+      ${getVarName(vars.color.muted.fg)}: ${vars.color.solid[tone.undecided].bg[0]};
     }
     &[data-status='scheduled'] {
-      --card-icon-color: ${vars.color.solid[tone.scheduled].bg[0]};
+      ${getVarName(vars.color.muted.fg)}: ${vars.color.solid[tone.scheduled].bg[0]};
     }
   `
 })

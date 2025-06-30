@@ -3,6 +3,7 @@ import {Box, Text} from '@sanity/ui'
 import {vars} from '@sanity/ui/css'
 import {styled} from 'styled-components'
 
+import {getVarName} from '../../../css/getVarName'
 import {Translate, useTranslation} from '../../../i18n'
 import {tasksLocaleNamespace} from '../../i18n'
 
@@ -15,7 +16,7 @@ const Span = styled.span`
 const Link = styled.a`
   white-space: nowrap;
   > [data-sanity-icon] {
-    --card-icon-color: ${vars.color.link.fg};
+    ${getVarName(vars.color.muted.fg)}: ${vars.color.link.fg};
   }
 `
 
