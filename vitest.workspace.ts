@@ -8,6 +8,7 @@ export default defineWorkspace([
   'packages/@sanity/schema',
   'packages/@sanity/types',
   'packages/@sanity/util',
+  'packages/@sanity/vision',
   'packages/sanity',
   'packages/sanity/src/_internal/cli',
   'perf/tests',

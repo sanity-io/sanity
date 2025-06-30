@@ -67,6 +67,7 @@ export function PaneHeaderCreateButton({templateItems}: PaneHeaderCreateButtonPr
   const nothingGranted = useMemo(() => {
     return (
       !isTemplatePermissionsLoading &&
+      templatePermissions?.length !== 0 &&
       templatePermissions?.every((permission) => !permission.granted)
     )
   }, [isTemplatePermissionsLoading, templatePermissions])

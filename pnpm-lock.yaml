@@ -79,20 +79,20 @@ importers:
         specifier: ^7.11.0
         version: 7.16.0(encoding@0.1.13)
       '@lerna-lite/changed':
-        specifier: ^4.4.1
-        version: 4.4.1(@lerna-lite/publish@4.4.1)(@lerna-lite/run@4.4.1)(@lerna-lite/version@4.4.1)(@types/node@22.15.32)(babel-plugin-macros@3.1.0)(typescript@5.8.3)
+        specifier: ^4.5.1
+        version: 4.5.1(@lerna-lite/publish@4.5.1)(@lerna-lite/run@4.5.1)(@lerna-lite/version@4.5.1)(@types/node@22.15.32)(babel-plugin-macros@3.1.0)
       '@lerna-lite/cli':
-        specifier: ^4.4.1
-        version: 4.4.1(@lerna-lite/list@4.4.1(@lerna-lite/publish@4.4.1)(@lerna-lite/run@4.4.1)(@lerna-lite/version@4.4.1)(@types/node@22.15.32)(babel-plugin-macros@3.1.0)(typescript@5.8.3))(@lerna-lite/publish@4.4.1)(@lerna-lite/run@4.4.1)(@lerna-lite/version@4.4.1)(@types/node@22.15.32)(babel-plugin-macros@3.1.0)(typescript@5.8.3)
+        specifier: ^4.5.1
+        version: 4.5.1(@lerna-lite/list@4.5.1(@lerna-lite/publish@4.5.1)(@lerna-lite/run@4.5.1)(@lerna-lite/version@4.5.1)(@types/node@22.15.32)(babel-plugin-macros@3.1.0))(@lerna-lite/publish@4.5.1)(@lerna-lite/run@4.5.1)(@lerna-lite/version@4.5.1)(@types/node@22.15.32)(babel-plugin-macros@3.1.0)
       '@lerna-lite/publish':
-        specifier: ^4.4.1
-        version: 4.4.1(@lerna-lite/run@4.4.1)(@types/node@22.15.32)(babel-plugin-macros@3.1.0)(conventional-commits-filter@5.0.0)(typescript@5.8.3)
+        specifier: ^4.5.1
+        version: 4.5.1(@lerna-lite/run@4.5.1)(@types/node@22.15.32)(babel-plugin-macros@3.1.0)(conventional-commits-filter@5.0.0)
       '@lerna-lite/run':
-        specifier: ^4.4.1
-        version: 4.4.1(@lerna-lite/publish@4.4.1)(@lerna-lite/version@4.4.1)(@types/node@22.15.32)(babel-plugin-macros@3.1.0)(typescript@5.8.3)
+        specifier: ^4.5.1
+        version: 4.5.1(@lerna-lite/publish@4.5.1)(@lerna-lite/version@4.5.1)(@types/node@22.15.32)(babel-plugin-macros@3.1.0)
       '@lerna-lite/version':
-        specifier: ^4.4.1
-        version: 4.4.1(@lerna-lite/publish@4.4.1)(@lerna-lite/run@4.4.1)(@types/node@22.15.32)(babel-plugin-macros@3.1.0)(conventional-commits-filter@5.0.0)(typescript@5.8.3)
+        specifier: ^4.5.1
+        version: 4.5.1(@lerna-lite/publish@4.5.1)(@lerna-lite/run@4.5.1)(@types/node@22.15.32)(babel-plugin-macros@3.1.0)(conventional-commits-filter@5.0.0)
       '@playwright/test':
         specifier: 'catalog:'
         version: 1.53.1
@@ -182,7 +182,7 @@ importers:
         version: 1.4.7
       dotenv:
         specifier: ^16.0.3
-        version: 16.5.0
+        version: 16.6.1
       dotenv-flow:
         specifier: ^4.1.0
         version: 4.1.0
@@ -494,8 +494,8 @@ importers:
         specifier: ^1.1.33
         version: 1.1.33(@sanity/types@packages+@sanity+types)(@types/react@19.1.8)
       '@portabletext/editor':
-        specifier: ^1.55.8
-        version: 1.55.8(@sanity/schema@packages+@sanity+schema)(@sanity/types@packages+@sanity+types)(@types/react@19.1.8)(react-dom@19.1.0(react@19.1.0))(react@19.1.0)(rxjs@7.8.2)
+        specifier: ^1.55.11
+        version: 1.55.11(@sanity/schema@packages+@sanity+schema)(@sanity/types@packages+@sanity+types)(@types/react@19.1.8)(react-dom@19.1.0(react@19.1.0))(react@19.1.0)(rxjs@7.8.2)
       '@portabletext/react':
         specifier: ^3.2.1
         version: 3.2.1(react@19.1.0)
@@ -869,7 +869,7 @@ importers:
     dependencies:
       dotenv:
         specifier: ^16.0.3
-        version: 16.5.0
+        version: 16.6.1
       lodash-es:
         specifier: ^4.17.21
         version: 4.17.21
@@ -1030,7 +1030,7 @@ importers:
         version: 1.0.2
       dotenv:
         specifier: ^16.0.3
-        version: 16.5.0
+        version: 16.6.1
       dotenv-expand:
         specifier: ^9.0.0
         version: 9.0.0
@@ -1460,7 +1460,7 @@ importers:
         version: 9.0.1(react@18.3.1)
       '@rexxars/react-split-pane':
         specifier: ^1.0.0
-        version: 1.0.0(react-dom@19.1.0(react@18.3.1))(react@18.3.1)
+        version: 1.0.0(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
       '@sanity/color':
         specifier: ^3.0.6
         version: 3.0.6
@@ -1469,13 +1469,13 @@ importers:
         version: 3.7.4(react@18.3.1)
       '@sanity/ui':
         specifier: ^2.16.2
-        version: 2.16.2(@emotion/is-prop-valid@1.3.1)(react-dom@19.1.0(react@18.3.1))(react-is@18.3.1)(react@18.3.1)(styled-components@6.1.19(react-dom@19.1.0(react@18.3.1))(react@18.3.1))
+        version: 2.16.2(@emotion/is-prop-valid@1.3.1)(react-dom@18.3.1(react@18.3.1))(react-is@18.3.1)(react@18.3.1)(styled-components@6.1.19(react-dom@18.3.1(react@18.3.1))(react@18.3.1))
       '@sanity/uuid':
         specifier: ^3.0.2
         version: 3.0.2
       '@uiw/react-codemirror':
         specifier: ^4.23.8
-        version: 4.23.13(@babel/runtime@7.27.6)(@codemirror/autocomplete@6.18.6)(@codemirror/language@6.11.1)(@codemirror/lint@6.8.5)(@codemirror/search@6.5.11)(@codemirror/state@6.5.2)(@codemirror/theme-one-dark@6.1.2)(@codemirror/view@6.37.2)(codemirror@6.0.1)(react-dom@19.1.0(react@18.3.1))(react@18.3.1)
+        version: 4.23.13(@babel/runtime@7.27.6)(@codemirror/autocomplete@6.18.6)(@codemirror/language@6.11.1)(@codemirror/lint@6.8.5)(@codemirror/search@6.5.11)(@codemirror/state@6.5.2)(@codemirror/theme-one-dark@6.1.2)(@codemirror/view@6.37.2)(codemirror@6.0.1)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
       is-hotkey-esm:
         specifier: ^1.0.0
         version: 1.0.0
@@ -1497,6 +1497,9 @@ importers:
       react-fast-compare:
         specifier: ^3.2.2
         version: 3.2.2
+      react-rx:
+        specifier: ^4.1.30
+        version: 4.1.30(react@18.3.1)(rxjs@7.8.2)
       rxjs:
         specifier: ^7.8.0
         version: 7.8.2
@@ -1513,6 +1516,9 @@ importers:
       '@repo/package.config':
         specifier: workspace:*
         version: link:../../@repo/package.config
+      '@repo/test-config':
+        specifier: workspace:*
+        version: link:../../@repo/test-config
       '@sanity/cli':
         specifier: workspace:*
         version: link:../cli
@@ -1543,21 +1549,36 @@ importers:
       '@sanity/util':
         specifier: workspace:*
         version: link:../util
+      '@testing-library/react':
+        specifier: ^16.3.0
+        version: 16.3.0(@testing-library/dom@10.4.0)(@types/react-dom@19.1.6(@types/react@19.1.8))(@types/react@19.1.8)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
       '@types/lodash':
         specifier: ^4.17.7
         version: 4.17.17
+      '@vitejs/plugin-react':
+        specifier: 'catalog:'
+        version: 4.6.0(vite@6.3.5(@types/node@22.15.32)(jiti@2.4.2)(lightningcss@1.30.1)(terser@5.42.0)(tsx@4.20.3)(yaml@2.8.0))
       babel-plugin-react-compiler:
         specifier: 19.1.0-rc.2
         version: 19.1.0-rc.2
+      jsdom:
+        specifier: ^23.0.1
+        version: 23.2.0
       react:
         specifier: catalog:react18
         version: 18.3.1
+      react-dom:
+        specifier: catalog:react18
+        version: 18.3.1(react@18.3.1)
       sanity:
         specifier: workspace:*
         version: link:../../sanity
       styled-components:
         specifier: 'catalog:'
-        version: 6.1.19(react-dom@19.1.0(react@18.3.1))(react@18.3.1)
+        version: 6.1.19(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
+      vitest:
+        specifier: 3.2.3
+        version: 3.2.3(@types/debug@4.1.12)(@types/node@22.15.32)(jiti@2.4.2)(jsdom@23.2.0)(lightningcss@1.30.1)(terser@5.42.0)(tsx@4.20.3)(yaml@2.8.0)
 
   packages/create-sanity:
     dependencies:
@@ -1602,8 +1623,8 @@ importers:
         specifier: ^1.1.33
         version: 1.1.33(@sanity/types@packages+@sanity+types)(@types/react@19.1.8)
       '@portabletext/editor':
-        specifier: ^1.55.8
-        version: 1.55.8(@sanity/schema@packages+@sanity+schema)(@sanity/types@packages+@sanity+types)(@types/react@19.1.8)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(rxjs@7.8.2)
+        specifier: ^1.55.11
+        version: 1.55.11(@sanity/schema@packages+@sanity+schema)(@sanity/types@packages+@sanity+types)(@types/react@19.1.8)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(rxjs@7.8.2)
       '@portabletext/react':
         specifier: ^3.2.1
         version: 3.2.1(react@18.3.1)
@@ -2213,7 +2234,7 @@ importers:
         version: 0.6.5
       dotenv:
         specifier: ^16.0.3
-        version: 16.5.0
+        version: 16.6.1
       globby:
         specifier: ^11.1.0
         version: 11.1.0
@@ -2283,7 +2304,7 @@ importers:
         version: 3.0.2
       dotenv:
         specifier: ^16.0.3
-        version: 16.5.0
+        version: 16.6.1
       execa:
         specifier: ^2.0.0
         version: 2.1.0
@@ -3717,12 +3738,12 @@ packages:
   '@juggle/resize-observer@3.4.0':
     resolution: {integrity: sha512-dfLbk+PwWvFzSxwk3n5ySL0hfBog779o8h68wK/7/APo/7cgyWp5jcXockbxdk5kFRkbeXWm4Fbi9FrdN381sA==}
 
-  '@lerna-lite/changed@4.4.1':
-    resolution: {integrity: sha512-onT1a5kdFuPghXuHtxQBCSbOYdKOf1NkPPxMeUDUn74rPvmoLKJfmOAjhKFy6i/OatwDM7BgKJhgNDwn9HutQg==}
+  '@lerna-lite/changed@4.5.1':
+    resolution: {integrity: sha512-IdyUGXcm8CV6YYNS1pi3gLEoMQvIkCOSVa4jIK+UUG0uT5IwShO0q5EPQHbrpFnaCvKAZ/o5+9ORUW1p1r3oFg==}
     engines: {node: ^20.17.0 || >=22.9.0}
 
-  '@lerna-lite/cli@4.4.1':
-    resolution: {integrity: sha512-b1TJ9LgKAN1Pq2w8s+nyIkt4IHqHfYjRWVSkHrCm4ael6Y2qzDmILIR9Dp3yhsu3Yrzjjxim2uJNzXMwerdggA==}
+  '@lerna-lite/cli@4.5.1':
+    resolution: {integrity: sha512-yNc2c1Fc1Gwcax9zNYoDpuxnaUk8j/o8cwvVtISkbTQfElXd9OG4zsiuFnh7XVIFfeTzH47fwV+Jlri2AUH4Ug==}
     engines: {node: ^20.17.0 || >=22.9.0}
     hasBin: true
     peerDependencies:
@@ -3746,40 +3767,40 @@ packages:
       '@lerna-lite/watch':
         optional: true
 
-  '@lerna-lite/core@4.4.1':
-    resolution: {integrity: sha512-jC8ardf33jtvuyb/b2myNxR66rvAveU91WxTSwdoTAY1OuW9AGFDSwCCGDLsC6I1fN2QZKRnfiH2XqTTRLAdkQ==}
+  '@lerna-lite/core@4.5.1':
+    resolution: {integrity: sha512-d7TWTd8bH3pyLe838AYNXnq+itsoslNqs4vwTT0Tio3epr5Td3DSVyqFheoTVY7AqaiYbLTXPIoNNQ4uiK5dJg==}
     engines: {node: ^20.17.0 || >=22.9.0}
 
-  '@lerna-lite/init@4.4.1':
-    resolution: {integrity: sha512-G+IdQwtUeoUvbDWcbZC/+0OuVKpwdCttJSoqe9hEM0HcQAjx9qynbraTX3jhx/xqWDzcytYqwoBMOjWSbkhc5w==}
+  '@lerna-lite/init@4.5.1':
+    resolution: {integrity: sha512-9IoFASc5HPWMuM5mU2d0pSF1f1VXiHnO/VbAn40g7RiPRHmH/j4TJkCS8bBUXwBxw2scq0vNpJVmOw44t1NZSg==}
     engines: {node: ^20.17.0 || >=22.9.0}
 
-  '@lerna-lite/list@4.4.1':
-    resolution: {integrity: sha512-BntopoP9ve1o0ulWRXvWvWUYgavE9MH2KujVAVB6ECTTpmT1SQC3KcloNg+KlvinBcwfsOrqzvotpWYH6gUIJg==}
+  '@lerna-lite/list@4.5.1':
+    resolution: {integrity: sha512-O6Brkcwx04FGERFJGzt9lr2k5DWHRE3nnziD5NozceF+iBi6j5pvRnIWPKp2R0Gie3+RLtHQxjBiGwKhvSYjHQ==}
     engines: {node: ^20.17.0 || >=22.9.0}
 
-  '@lerna-lite/listable@4.4.1':
-    resolution: {integrity: sha512-29/8WgIZjX9wW59bY0vDtZflsZfOb6N4pcXp3ADrth+z6bhBlBmmauDPwAjbynYimgwoDn3uSzAFTRhCXHfWyQ==}
+  '@lerna-lite/listable@4.5.1':
+    resolution: {integrity: sha512-FJxDl2vVUz2z7Fn6Y7tZXhrm+eB/YY35us2wPUEe0TL9wX+w0HTvYkbNaEcO62xxs+PGHD0lssnD3oNpv8mKZA==}
     engines: {node: ^20.17.0 || >=22.9.0}
 
   '@lerna-lite/npmlog@4.1.2':
     resolution: {integrity: sha512-XAouatIhNq+Lh0g3VnX/w/ksc+69mUc2fNDONmayMjFij78iIx07EvIwTwlYTnpdRuI3MfAGboCIAT6TByTgdg==}
     engines: {node: ^20.17.0 || >=22.9.0}
 
-  '@lerna-lite/profiler@4.4.1':
-    resolution: {integrity: sha512-Nq61C0IfPxuOWityujzcEYCl1i5TRg7sS3C4WUgM4Upx55hCnLfHLAC6j4gMDkuzjxXrI6RUlabUI1bHqgAeDA==}
+  '@lerna-lite/profiler@4.5.1':
+    resolution: {integrity: sha512-/7oOawpJJTKlMdzWDld0Se7siTgPXsaZS0As8LVX1u5nNLfDn+mS9V82E2exOUfXwpjgERsg6A6cgx8R9qzdsQ==}
     engines: {node: ^20.17.0 || >=22.9.0}
 
-  '@lerna-lite/publish@4.4.1':
-    resolution: {integrity: sha512-XYTk9nSciWQ+EMbHjSyNw8hWoax+poas94iXq9Ug0uvr/1RtMn78t/VfgFacT5Kl1Pc+O4XF+E++HEdwDnwn0Q==}
+  '@lerna-lite/publish@4.5.1':
+    resolution: {integrity: sha512-kQexT8/3OTrbz6RpqsGBZIVhAuTi2x9avDcH8J44zFBL0AEC1RP3HL1KFq/rKRF5NPbG7tfCruUEfi8g7X4MRw==}
     engines: {node: ^20.17.0 || >=22.9.0}
 
-  '@lerna-lite/run@4.4.1':
-    resolution: {integrity: sha512-kLlHS/ZwOb6734ptX8IiEFuw2GesaJjkvgNp0D+Neh4PE10px5HD4+hmkpFR4KaWUJvYkAtfSJXVZKaIDw8S2g==}
+  '@lerna-lite/run@4.5.1':
+    resolution: {integrity: sha512-R8JBshuIbgaCGqqjpRIXlnOqhA0vlSqluPxHmwAe+O+pJCHI0EkwyEoYUrU9spzRJqIjg1Hd2whx6jkPIJR/2w==}
     engines: {node: ^20.17.0 || >=22.9.0}
 
-  '@lerna-lite/version@4.4.1':
-    resolution: {integrity: sha512-LLHHXaMvRlwWp/qOdX6zg7xEQw/ImZ+mKrGmSlWNycVH3aFrsRortOsfjor2QcOfTs3T2TMxD0r76SzU/1KkwQ==}
+  '@lerna-lite/version@4.5.1':
+    resolution: {integrity: sha512-gPnVBRNSOOaN1IBB6bNWWxvEeev+7HrDfyZBR2/GyJcaq9KLlwP0Qa3WyCByxLoutv3LF13xouBgniF5SlAYpw==}
     engines: {node: ^20.17.0 || >=22.9.0}
 
   '@lezer/common@1.2.3':
@@ -4241,8 +4262,8 @@ packages:
       '@sanity/types': ^3.95.0
       '@types/react': 18 || 19
 
-  '@portabletext/editor@1.55.8':
-    resolution: {integrity: sha512-mBZArqmSOnphNJ9XDY3yPBUsBLujG8du29nHG5uF3oCodIGNZiu0/jpa32iCB+2IaTQdeP2DuCm1eCQ9oIV6Nw==}
+  '@portabletext/editor@1.55.11':
+    resolution: {integrity: sha512-jH8BT1WsYr/rNrjTXGj6RHp/l3Y2gLJ9UOqE6dMks6ctuSHVz7gHgw/BgLsGysaBKnlmwG5IV36RUpS87NXpyA==}
     engines: {node: '>=18'}
     peerDependencies:
       '@sanity/schema': ^3.95.0
@@ -6520,15 +6541,6 @@ packages:
     resolution: {integrity: sha512-AdmX6xUzdNASswsFtmwSt7Vj8po9IuqXm0UXz7QKPuEUmPB4XyjGfaAr2PSuELMwkRMVH1EpIkX5bTZGRB3eCA==}
     engines: {node: '>=10'}
 
-  cosmiconfig@9.0.0:
-    resolution: {integrity: sha512-itvL5h8RETACmOTFc4UfIyB2RfEHi71Ax6E/PivVxq9NseKbOWpeyHEOIbmAw1rs8Ak0VursQNww7lf7YtUwzg==}
-    engines: {node: '>=14'}
-    peerDependencies:
-      typescript: '>=4.9.5'
-    peerDependenciesMeta:
-      typescript:
-        optional: true
-
   cpx@1.5.0:
     resolution: {integrity: sha512-jHTjZhsbg9xWgsP2vuNW2jnnzBX+p4T+vNI9Lbjzs1n4KhOfa22bQppiFYLsWQKd8TzmL5aSP/Me3yfsCwXbDA==}
     hasBin: true
@@ -6881,8 +6893,8 @@ packages:
     resolution: {integrity: sha512-7GO6HghkA5fYG9TYnNxi14/7K9f5occMlp3zXAuSxn7CKCxt9xbNWG7yF8hTCSUchlfWSe3uLmlPfigevRItzQ==}
     engines: {node: '>=12'}
 
-  dotenv@16.5.0:
-    resolution: {integrity: sha512-m/C+AwOAr9/W1UOIZUo232ejMNnJAJtYQjUbHoNTBNTJSvqzzDh7vnrei3o3r3m9blf6ZoDkvcw0VmozNRFJxg==}
+  dotenv@16.6.1:
+    resolution: {integrity: sha512-uBq4egWHTcTt33a72vpSG0z3HnPuIl6NqYcTrKEg2azoEyl2hpW0zqlxysq2pK9HlDIHyHyakeYaYnSAwd8bow==}
     engines: {node: '>=12'}
 
   dotenv@8.6.0:
@@ -7852,6 +7864,9 @@ packages:
 
   graceful-fs@4.2.11:
     resolution: {integrity: sha512-RbJ5/jmFcNNCcDV5o9eTnBLJ/HszWV0P73bc+Ff4nS/rJj+YaS6IGyiOL0VoBYX+l1Wrl3k63h/KrH+nhJ0XvQ==}
+
+  grammex@3.1.10:
+    resolution: {integrity: sha512-UCfMsV/sfqk4TN1+m5ehSOXuADyLUgSuwMI2vCVlbN/REoSmTl4eagswC9DzzVxtsKv7Yp2CmIJNn4fMk8PaQA==}
 
   graphemer@1.4.0:
     resolution: {integrity: sha512-EtKwoO6kxCL9WO5xipiHTZlSzBm7WLT627TqC/uVRd0HKmq8NXyebnNYxDoBi7wt8eTWrUrKXCOVaFq9x1kgag==}
@@ -10785,8 +10800,8 @@ packages:
     peerDependencies:
       slate: '>=0.99.0'
 
-  slate-react@0.117.2:
-    resolution: {integrity: sha512-aubV+L842mC2WxJHnks+T6Ay5SJH0Hd5SxQYWPzll6e0vmG3m92QjGxBdn9TxvR9HgGtEilOGi4aCx4jtjUnHw==}
+  slate-react@0.117.3:
+    resolution: {integrity: sha512-jn3pJ7hRcbZ8ImkXwq/Yosfm0wnVfW/ROAjb2exK2UswuEiRV5SAVVxvEKm6l4uY+qVtXoFn3A2ajfQmJxoQTQ==}
     peerDependencies:
       react: '>=18.2.0'
       react-dom: '>=18.2.0'
@@ -12092,6 +12107,9 @@ packages:
   yoctocolors@2.1.1:
     resolution: {integrity: sha512-GQHQqAopRhwU8Kt1DDM8NjibDXHC8eoh1erhGAJPEyveY9qqVeXvVikNKrDz69sHowPMorbPUrH/mx8c50eiBQ==}
     engines: {node: '>=18'}
+
+  zeptomatch@2.0.2:
+    resolution: {integrity: sha512-H33jtSKf8Ijtb5BW6wua3G5DhnFjbFML36eFu+VdOoVY4HD9e7ggjqdM6639B+L87rjnR6Y+XeRzBXZdy52B/g==}
 
   zip-stream@6.0.1:
     resolution: {integrity: sha512-zK7YHHz4ZXpW89AHXUPbQVGKI7uvkd3hzusTdotCg1UxyaVtg0zFJSTfW/Dq5f7OBBVnq6cZIaC8Ti4hb6dtCA==}
@@ -13683,12 +13701,12 @@ snapshots:
 
   '@juggle/resize-observer@3.4.0': {}
 
-  '@lerna-lite/changed@4.4.1(@lerna-lite/publish@4.4.1)(@lerna-lite/run@4.4.1)(@lerna-lite/version@4.4.1)(@types/node@22.15.32)(babel-plugin-macros@3.1.0)(typescript@5.8.3)':
+  '@lerna-lite/changed@4.5.1(@lerna-lite/publish@4.5.1)(@lerna-lite/run@4.5.1)(@lerna-lite/version@4.5.1)(@types/node@22.15.32)(babel-plugin-macros@3.1.0)':
     dependencies:
-      '@lerna-lite/cli': 4.4.1(@lerna-lite/list@4.4.1(@lerna-lite/publish@4.4.1)(@lerna-lite/run@4.4.1)(@lerna-lite/version@4.4.1)(@types/node@22.15.32)(babel-plugin-macros@3.1.0)(typescript@5.8.3))(@lerna-lite/publish@4.4.1)(@lerna-lite/run@4.4.1)(@lerna-lite/version@4.4.1)(@types/node@22.15.32)(babel-plugin-macros@3.1.0)(typescript@5.8.3)
-      '@lerna-lite/core': 4.4.1(@types/node@22.15.32)(babel-plugin-macros@3.1.0)(typescript@5.8.3)
-      '@lerna-lite/list': 4.4.1(@lerna-lite/publish@4.4.1)(@lerna-lite/run@4.4.1)(@lerna-lite/version@4.4.1)(@types/node@22.15.32)(babel-plugin-macros@3.1.0)(typescript@5.8.3)
-      '@lerna-lite/listable': 4.4.1(@types/node@22.15.32)(babel-plugin-macros@3.1.0)(typescript@5.8.3)
+      '@lerna-lite/cli': 4.5.1(@lerna-lite/list@4.5.1(@lerna-lite/publish@4.5.1)(@lerna-lite/run@4.5.1)(@lerna-lite/version@4.5.1)(@types/node@22.15.32)(babel-plugin-macros@3.1.0))(@lerna-lite/publish@4.5.1)(@lerna-lite/run@4.5.1)(@lerna-lite/version@4.5.1)(@types/node@22.15.32)(babel-plugin-macros@3.1.0)
+      '@lerna-lite/core': 4.5.1(@types/node@22.15.32)(babel-plugin-macros@3.1.0)
+      '@lerna-lite/list': 4.5.1(@lerna-lite/publish@4.5.1)(@lerna-lite/run@4.5.1)(@lerna-lite/version@4.5.1)(@types/node@22.15.32)(babel-plugin-macros@3.1.0)
+      '@lerna-lite/listable': 4.5.1(@types/node@22.15.32)(babel-plugin-macros@3.1.0)
     transitivePeerDependencies:
       - '@lerna-lite/exec'
       - '@lerna-lite/publish'
@@ -13698,30 +13716,28 @@ snapshots:
       - '@types/node'
       - babel-plugin-macros
       - supports-color
-      - typescript
 
-  '@lerna-lite/cli@4.4.1(@lerna-lite/list@4.4.1(@lerna-lite/publish@4.4.1)(@lerna-lite/run@4.4.1)(@lerna-lite/version@4.4.1)(@types/node@22.15.32)(babel-plugin-macros@3.1.0)(typescript@5.8.3))(@lerna-lite/publish@4.4.1)(@lerna-lite/run@4.4.1)(@lerna-lite/version@4.4.1)(@types/node@22.15.32)(babel-plugin-macros@3.1.0)(typescript@5.8.3)':
+  '@lerna-lite/cli@4.5.1(@lerna-lite/list@4.5.1(@lerna-lite/publish@4.5.1)(@lerna-lite/run@4.5.1)(@lerna-lite/version@4.5.1)(@types/node@22.15.32)(babel-plugin-macros@3.1.0))(@lerna-lite/publish@4.5.1)(@lerna-lite/run@4.5.1)(@lerna-lite/version@4.5.1)(@types/node@22.15.32)(babel-plugin-macros@3.1.0)':
     dependencies:
-      '@lerna-lite/core': 4.4.1(@types/node@22.15.32)(babel-plugin-macros@3.1.0)(typescript@5.8.3)
-      '@lerna-lite/init': 4.4.1(@types/node@22.15.32)(babel-plugin-macros@3.1.0)(typescript@5.8.3)
+      '@lerna-lite/core': 4.5.1(@types/node@22.15.32)(babel-plugin-macros@3.1.0)
+      '@lerna-lite/init': 4.5.1(@types/node@22.15.32)(babel-plugin-macros@3.1.0)
       '@lerna-lite/npmlog': 4.1.2
       dedent: 1.6.0(babel-plugin-macros@3.1.0)
-      dotenv: 16.5.0
+      dotenv: 16.6.1
       import-local: 3.2.0
       load-json-file: 7.0.1
       yargs: 18.0.0
     optionalDependencies:
-      '@lerna-lite/list': 4.4.1(@lerna-lite/publish@4.4.1)(@lerna-lite/run@4.4.1)(@lerna-lite/version@4.4.1)(@types/node@22.15.32)(babel-plugin-macros@3.1.0)(typescript@5.8.3)
-      '@lerna-lite/publish': 4.4.1(@lerna-lite/run@4.4.1)(@types/node@22.15.32)(babel-plugin-macros@3.1.0)(conventional-commits-filter@5.0.0)(typescript@5.8.3)
-      '@lerna-lite/run': 4.4.1(@lerna-lite/publish@4.4.1)(@lerna-lite/version@4.4.1)(@types/node@22.15.32)(babel-plugin-macros@3.1.0)(typescript@5.8.3)
-      '@lerna-lite/version': 4.4.1(@lerna-lite/publish@4.4.1)(@lerna-lite/run@4.4.1)(@types/node@22.15.32)(babel-plugin-macros@3.1.0)(conventional-commits-filter@5.0.0)(typescript@5.8.3)
+      '@lerna-lite/list': 4.5.1(@lerna-lite/publish@4.5.1)(@lerna-lite/run@4.5.1)(@lerna-lite/version@4.5.1)(@types/node@22.15.32)(babel-plugin-macros@3.1.0)
+      '@lerna-lite/publish': 4.5.1(@lerna-lite/run@4.5.1)(@types/node@22.15.32)(babel-plugin-macros@3.1.0)(conventional-commits-filter@5.0.0)
+      '@lerna-lite/run': 4.5.1(@lerna-lite/publish@4.5.1)(@lerna-lite/version@4.5.1)(@types/node@22.15.32)(babel-plugin-macros@3.1.0)
+      '@lerna-lite/version': 4.5.1(@lerna-lite/publish@4.5.1)(@lerna-lite/run@4.5.1)(@types/node@22.15.32)(babel-plugin-macros@3.1.0)(conventional-commits-filter@5.0.0)
     transitivePeerDependencies:
       - '@types/node'
       - babel-plugin-macros
       - supports-color
-      - typescript
 
-  '@lerna-lite/core@4.4.1(@types/node@22.15.32)(babel-plugin-macros@3.1.0)(typescript@5.8.3)':
+  '@lerna-lite/core@4.5.1(@types/node@22.15.32)(babel-plugin-macros@3.1.0)':
     dependencies:
       '@inquirer/expand': 4.0.15(@types/node@22.15.32)
       '@inquirer/input': 4.1.12(@types/node@22.15.32)
@@ -13731,14 +13747,13 @@ snapshots:
       ci-info: 4.2.0
       clone-deep: 4.0.1
       config-chain: 1.1.13
-      cosmiconfig: 9.0.0(typescript@5.8.3)
       dedent: 1.6.0(babel-plugin-macros@3.1.0)
       execa: 9.6.0
       fs-extra: 11.3.0
       glob-parent: 6.0.2
       json5: 2.2.3
+      lilconfig: 3.1.3
       load-json-file: 7.0.1
-      minimatch: 10.0.3
       multimatch: 7.0.0
       npm-package-arg: 12.0.2
       p-map: 7.0.3
@@ -13753,15 +13768,15 @@ snapshots:
       write-json-file: 6.0.0
       write-package: 7.1.0
       yaml: 2.8.0
+      zeptomatch: 2.0.2
     transitivePeerDependencies:
       - '@types/node'
       - babel-plugin-macros
       - supports-color
-      - typescript
 
-  '@lerna-lite/init@4.4.1(@types/node@22.15.32)(babel-plugin-macros@3.1.0)(typescript@5.8.3)':
+  '@lerna-lite/init@4.5.1(@types/node@22.15.32)(babel-plugin-macros@3.1.0)':
     dependencies:
-      '@lerna-lite/core': 4.4.1(@types/node@22.15.32)(babel-plugin-macros@3.1.0)(typescript@5.8.3)
+      '@lerna-lite/core': 4.5.1(@types/node@22.15.32)(babel-plugin-macros@3.1.0)
       fs-extra: 11.3.0
       p-map: 7.0.3
       write-json-file: 6.0.0
@@ -13769,13 +13784,12 @@ snapshots:
       - '@types/node'
       - babel-plugin-macros
       - supports-color
-      - typescript
 
-  '@lerna-lite/list@4.4.1(@lerna-lite/publish@4.4.1)(@lerna-lite/run@4.4.1)(@lerna-lite/version@4.4.1)(@types/node@22.15.32)(babel-plugin-macros@3.1.0)(typescript@5.8.3)':
+  '@lerna-lite/list@4.5.1(@lerna-lite/publish@4.5.1)(@lerna-lite/run@4.5.1)(@lerna-lite/version@4.5.1)(@types/node@22.15.32)(babel-plugin-macros@3.1.0)':
     dependencies:
-      '@lerna-lite/cli': 4.4.1(@lerna-lite/list@4.4.1(@lerna-lite/publish@4.4.1)(@lerna-lite/run@4.4.1)(@lerna-lite/version@4.4.1)(@types/node@22.15.32)(babel-plugin-macros@3.1.0)(typescript@5.8.3))(@lerna-lite/publish@4.4.1)(@lerna-lite/run@4.4.1)(@lerna-lite/version@4.4.1)(@types/node@22.15.32)(babel-plugin-macros@3.1.0)(typescript@5.8.3)
-      '@lerna-lite/core': 4.4.1(@types/node@22.15.32)(babel-plugin-macros@3.1.0)(typescript@5.8.3)
-      '@lerna-lite/listable': 4.4.1(@types/node@22.15.32)(babel-plugin-macros@3.1.0)(typescript@5.8.3)
+      '@lerna-lite/cli': 4.5.1(@lerna-lite/list@4.5.1(@lerna-lite/publish@4.5.1)(@lerna-lite/run@4.5.1)(@lerna-lite/version@4.5.1)(@types/node@22.15.32)(babel-plugin-macros@3.1.0))(@lerna-lite/publish@4.5.1)(@lerna-lite/run@4.5.1)(@lerna-lite/version@4.5.1)(@types/node@22.15.32)(babel-plugin-macros@3.1.0)
+      '@lerna-lite/core': 4.5.1(@types/node@22.15.32)(babel-plugin-macros@3.1.0)
+      '@lerna-lite/listable': 4.5.1(@types/node@22.15.32)(babel-plugin-macros@3.1.0)
     transitivePeerDependencies:
       - '@lerna-lite/exec'
       - '@lerna-lite/publish'
@@ -13785,18 +13799,16 @@ snapshots:
       - '@types/node'
       - babel-plugin-macros
       - supports-color
-      - typescript
 
-  '@lerna-lite/listable@4.4.1(@types/node@22.15.32)(babel-plugin-macros@3.1.0)(typescript@5.8.3)':
+  '@lerna-lite/listable@4.5.1(@types/node@22.15.32)(babel-plugin-macros@3.1.0)':
     dependencies:
-      '@lerna-lite/core': 4.4.1(@types/node@22.15.32)(babel-plugin-macros@3.1.0)(typescript@5.8.3)
+      '@lerna-lite/core': 4.5.1(@types/node@22.15.32)(babel-plugin-macros@3.1.0)
       columnify: 1.6.0
       tinyrainbow: 2.0.0
     transitivePeerDependencies:
       - '@types/node'
       - babel-plugin-macros
       - supports-color
-      - typescript
 
   '@lerna-lite/npmlog@4.1.2':
     dependencies:
@@ -13809,9 +13821,9 @@ snapshots:
       string-width: 7.2.0
       wide-align: 1.1.5
 
-  '@lerna-lite/profiler@4.4.1(@types/node@22.15.32)(babel-plugin-macros@3.1.0)(typescript@5.8.3)':
+  '@lerna-lite/profiler@4.5.1(@types/node@22.15.32)(babel-plugin-macros@3.1.0)':
     dependencies:
-      '@lerna-lite/core': 4.4.1(@types/node@22.15.32)(babel-plugin-macros@3.1.0)(typescript@5.8.3)
+      '@lerna-lite/core': 4.5.1(@types/node@22.15.32)(babel-plugin-macros@3.1.0)
       '@lerna-lite/npmlog': 4.1.2
       fs-extra: 11.3.0
       upath: 2.0.1
@@ -13819,14 +13831,13 @@ snapshots:
       - '@types/node'
       - babel-plugin-macros
       - supports-color
-      - typescript
 
-  '@lerna-lite/publish@4.4.1(@lerna-lite/run@4.4.1)(@types/node@22.15.32)(babel-plugin-macros@3.1.0)(conventional-commits-filter@5.0.0)(typescript@5.8.3)':
+  '@lerna-lite/publish@4.5.1(@lerna-lite/run@4.5.1)(@types/node@22.15.32)(babel-plugin-macros@3.1.0)(conventional-commits-filter@5.0.0)':
     dependencies:
-      '@lerna-lite/cli': 4.4.1(@lerna-lite/list@4.4.1(@lerna-lite/publish@4.4.1)(@lerna-lite/run@4.4.1)(@lerna-lite/version@4.4.1)(@types/node@22.15.32)(babel-plugin-macros@3.1.0)(typescript@5.8.3))(@lerna-lite/publish@4.4.1)(@lerna-lite/run@4.4.1)(@lerna-lite/version@4.4.1)(@types/node@22.15.32)(babel-plugin-macros@3.1.0)(typescript@5.8.3)
-      '@lerna-lite/core': 4.4.1(@types/node@22.15.32)(babel-plugin-macros@3.1.0)(typescript@5.8.3)
+      '@lerna-lite/cli': 4.5.1(@lerna-lite/list@4.5.1(@lerna-lite/publish@4.5.1)(@lerna-lite/run@4.5.1)(@lerna-lite/version@4.5.1)(@types/node@22.15.32)(babel-plugin-macros@3.1.0))(@lerna-lite/publish@4.5.1)(@lerna-lite/run@4.5.1)(@lerna-lite/version@4.5.1)(@types/node@22.15.32)(babel-plugin-macros@3.1.0)
+      '@lerna-lite/core': 4.5.1(@types/node@22.15.32)(babel-plugin-macros@3.1.0)
       '@lerna-lite/npmlog': 4.1.2
-      '@lerna-lite/version': 4.4.1(@lerna-lite/publish@4.4.1)(@lerna-lite/run@4.4.1)(@types/node@22.15.32)(babel-plugin-macros@3.1.0)(conventional-commits-filter@5.0.0)(typescript@5.8.3)
+      '@lerna-lite/version': 4.5.1(@lerna-lite/publish@4.5.1)(@lerna-lite/run@4.5.1)(@types/node@22.15.32)(babel-plugin-macros@3.1.0)(conventional-commits-filter@5.0.0)
       '@npmcli/arborist': 7.5.4
       '@npmcli/package-json': 6.2.0
       byte-size: 9.0.1
@@ -13858,14 +13869,13 @@ snapshots:
       - bluebird
       - conventional-commits-filter
       - supports-color
-      - typescript
 
-  '@lerna-lite/run@4.4.1(@lerna-lite/publish@4.4.1)(@lerna-lite/version@4.4.1)(@types/node@22.15.32)(babel-plugin-macros@3.1.0)(typescript@5.8.3)':
+  '@lerna-lite/run@4.5.1(@lerna-lite/publish@4.5.1)(@lerna-lite/version@4.5.1)(@types/node@22.15.32)(babel-plugin-macros@3.1.0)':
     dependencies:
-      '@lerna-lite/cli': 4.4.1(@lerna-lite/list@4.4.1(@lerna-lite/publish@4.4.1)(@lerna-lite/run@4.4.1)(@lerna-lite/version@4.4.1)(@types/node@22.15.32)(babel-plugin-macros@3.1.0)(typescript@5.8.3))(@lerna-lite/publish@4.4.1)(@lerna-lite/run@4.4.1)(@lerna-lite/version@4.4.1)(@types/node@22.15.32)(babel-plugin-macros@3.1.0)(typescript@5.8.3)
-      '@lerna-lite/core': 4.4.1(@types/node@22.15.32)(babel-plugin-macros@3.1.0)(typescript@5.8.3)
+      '@lerna-lite/cli': 4.5.1(@lerna-lite/list@4.5.1(@lerna-lite/publish@4.5.1)(@lerna-lite/run@4.5.1)(@lerna-lite/version@4.5.1)(@types/node@22.15.32)(babel-plugin-macros@3.1.0))(@lerna-lite/publish@4.5.1)(@lerna-lite/run@4.5.1)(@lerna-lite/version@4.5.1)(@types/node@22.15.32)(babel-plugin-macros@3.1.0)
+      '@lerna-lite/core': 4.5.1(@types/node@22.15.32)(babel-plugin-macros@3.1.0)
       '@lerna-lite/npmlog': 4.1.2
-      '@lerna-lite/profiler': 4.4.1(@types/node@22.15.32)(babel-plugin-macros@3.1.0)(typescript@5.8.3)
+      '@lerna-lite/profiler': 4.5.1(@types/node@22.15.32)(babel-plugin-macros@3.1.0)
       fs-extra: 11.3.0
       p-map: 7.0.3
       tinyrainbow: 2.0.0
@@ -13878,13 +13888,12 @@ snapshots:
       - '@types/node'
       - babel-plugin-macros
       - supports-color
-      - typescript
 
-  '@lerna-lite/version@4.4.1(@lerna-lite/publish@4.4.1)(@lerna-lite/run@4.4.1)(@types/node@22.15.32)(babel-plugin-macros@3.1.0)(conventional-commits-filter@5.0.0)(typescript@5.8.3)':
+  '@lerna-lite/version@4.5.1(@lerna-lite/publish@4.5.1)(@lerna-lite/run@4.5.1)(@types/node@22.15.32)(babel-plugin-macros@3.1.0)(conventional-commits-filter@5.0.0)':
     dependencies:
       '@conventional-changelog/git-client': 2.5.1(conventional-commits-filter@5.0.0)(conventional-commits-parser@6.2.0)
-      '@lerna-lite/cli': 4.4.1(@lerna-lite/list@4.4.1(@lerna-lite/publish@4.4.1)(@lerna-lite/run@4.4.1)(@lerna-lite/version@4.4.1)(@types/node@22.15.32)(babel-plugin-macros@3.1.0)(typescript@5.8.3))(@lerna-lite/publish@4.4.1)(@lerna-lite/run@4.4.1)(@lerna-lite/version@4.4.1)(@types/node@22.15.32)(babel-plugin-macros@3.1.0)(typescript@5.8.3)
-      '@lerna-lite/core': 4.4.1(@types/node@22.15.32)(babel-plugin-macros@3.1.0)(typescript@5.8.3)
+      '@lerna-lite/cli': 4.5.1(@lerna-lite/list@4.5.1(@lerna-lite/publish@4.5.1)(@lerna-lite/run@4.5.1)(@lerna-lite/version@4.5.1)(@types/node@22.15.32)(babel-plugin-macros@3.1.0))(@lerna-lite/publish@4.5.1)(@lerna-lite/run@4.5.1)(@lerna-lite/version@4.5.1)(@types/node@22.15.32)(babel-plugin-macros@3.1.0)
+      '@lerna-lite/core': 4.5.1(@types/node@22.15.32)(babel-plugin-macros@3.1.0)
       '@lerna-lite/npmlog': 4.1.2
       '@octokit/plugin-enterprise-rest': 6.0.1
       '@octokit/rest': 22.0.0
@@ -13899,7 +13908,6 @@ snapshots:
       graceful-fs: 4.2.11
       is-stream: 4.0.1
       load-json-file: 7.0.1
-      minimatch: 10.0.3
       new-github-release-url: 2.0.0
       npm-package-arg: 12.0.2
       p-limit: 6.2.0
@@ -13912,6 +13920,7 @@ snapshots:
       tinyrainbow: 2.0.0
       uuid: 11.1.0
       write-json-file: 6.0.0
+      zeptomatch: 2.0.2
     transitivePeerDependencies:
       - '@lerna-lite/exec'
       - '@lerna-lite/list'
@@ -13922,7 +13931,6 @@ snapshots:
       - babel-plugin-macros
       - conventional-commits-filter
       - supports-color
-      - typescript
 
   '@lezer/common@1.2.3': {}
 
@@ -14573,7 +14581,7 @@ snapshots:
       get-random-values-esm: 1.0.2
       lodash: 4.17.21
 
-  '@portabletext/editor@1.55.8(@sanity/schema@packages+@sanity+schema)(@sanity/types@packages+@sanity+types)(@types/react@19.1.8)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(rxjs@7.8.2)':
+  '@portabletext/editor@1.55.11(@sanity/schema@packages+@sanity+schema)(@sanity/types@packages+@sanity+types)(@types/react@19.1.8)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(rxjs@7.8.2)':
     dependencies:
       '@portabletext/block-tools': 1.1.33(@sanity/types@packages+@sanity+types)(@types/react@19.1.8)
       '@portabletext/patches': 1.1.5
@@ -14591,7 +14599,7 @@ snapshots:
       rxjs: 7.8.2
       slate: 0.117.2
       slate-dom: 0.116.0(slate@0.117.2)
-      slate-react: 0.117.2(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(slate-dom@0.116.0(slate@0.117.2))(slate@0.117.2)
+      slate-react: 0.117.3(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(slate-dom@0.116.0(slate@0.117.2))(slate@0.117.2)
       use-effect-event: 1.0.2(react@18.3.1)
       xstate: 5.20.0
     transitivePeerDependencies:
@@ -14599,7 +14607,7 @@ snapshots:
       - react-dom
       - supports-color
 
-  '@portabletext/editor@1.55.8(@sanity/schema@packages+@sanity+schema)(@sanity/types@packages+@sanity+types)(@types/react@19.1.8)(react-dom@19.1.0(react@19.1.0))(react@19.1.0)(rxjs@7.8.2)':
+  '@portabletext/editor@1.55.11(@sanity/schema@packages+@sanity+schema)(@sanity/types@packages+@sanity+types)(@types/react@19.1.8)(react-dom@19.1.0(react@19.1.0))(react@19.1.0)(rxjs@7.8.2)':
     dependencies:
       '@portabletext/block-tools': 1.1.33(@sanity/types@packages+@sanity+types)(@types/react@19.1.8)
       '@portabletext/patches': 1.1.5
@@ -14617,7 +14625,7 @@ snapshots:
       rxjs: 7.8.2
       slate: 0.117.2
       slate-dom: 0.116.0(slate@0.117.2)
-      slate-react: 0.117.2(react-dom@19.1.0(react@19.1.0))(react@19.1.0)(slate-dom@0.116.0(slate@0.117.2))(slate@0.117.2)
+      slate-react: 0.117.3(react-dom@19.1.0(react@19.1.0))(react@19.1.0)(slate-dom@0.116.0(slate@0.117.2))(slate@0.117.2)
       use-effect-event: 1.0.2(react@19.1.0)
       xstate: 5.20.0
     transitivePeerDependencies:
@@ -14675,10 +14683,10 @@ snapshots:
       md5-o-matic: 0.1.1
       react: 18.3.1
 
-  '@rexxars/react-split-pane@1.0.0(react-dom@19.1.0(react@18.3.1))(react@18.3.1)':
+  '@rexxars/react-split-pane@1.0.0(react-dom@18.3.1(react@18.3.1))(react@18.3.1)':
     dependencies:
       react: 18.3.1
-      react-dom: 19.1.0(react@18.3.1)
+      react-dom: 18.3.1(react@18.3.1)
 
   '@rolldown/pluginutils@1.0.0-beta.19': {}
 
@@ -14919,7 +14927,7 @@ snapshots:
       '@sanity/incompatible-plugin': 1.0.5(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
       '@sanity/ui': 2.16.2(@emotion/is-prop-valid@1.3.1)(react-dom@18.3.1(react@18.3.1))(react-is@18.3.1)(react@18.3.1)(styled-components@6.1.19(react-dom@18.3.1(react@18.3.1))(react@18.3.1))
       '@uiw/codemirror-themes': 4.23.13(@codemirror/language@6.11.1)(@codemirror/state@6.5.2)(@codemirror/view@6.37.2)
-      '@uiw/react-codemirror': 4.23.13(@babel/runtime@7.27.6)(@codemirror/autocomplete@6.18.6)(@codemirror/language@6.11.1)(@codemirror/search@6.5.11)(@codemirror/state@6.5.2)(@codemirror/theme-one-dark@6.1.2)(@codemirror/view@6.37.2)(codemirror@6.0.1)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
+      '@uiw/react-codemirror': 4.23.13(@babel/runtime@7.27.6)(@codemirror/autocomplete@6.18.6)(@codemirror/language@6.11.1)(@codemirror/lint@6.8.5)(@codemirror/search@6.5.11)(@codemirror/state@6.5.2)(@codemirror/theme-one-dark@6.1.2)(@codemirror/view@6.37.2)(codemirror@6.0.1)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
       react: 18.3.1
       react-dom: 18.3.1(react@18.3.1)
       sanity: link:packages/sanity
@@ -16436,24 +16444,7 @@ snapshots:
       '@codemirror/state': 6.5.2
       '@codemirror/view': 6.37.2
 
-  '@uiw/react-codemirror@4.23.13(@babel/runtime@7.27.6)(@codemirror/autocomplete@6.18.6)(@codemirror/language@6.11.1)(@codemirror/lint@6.8.5)(@codemirror/search@6.5.11)(@codemirror/state@6.5.2)(@codemirror/theme-one-dark@6.1.2)(@codemirror/view@6.37.2)(codemirror@6.0.1)(react-dom@19.1.0(react@18.3.1))(react@18.3.1)':
-    dependencies:
-      '@babel/runtime': 7.27.6
-      '@codemirror/commands': 6.8.1
-      '@codemirror/state': 6.5.2
-      '@codemirror/theme-one-dark': 6.1.2
-      '@codemirror/view': 6.37.2
-      '@uiw/codemirror-extensions-basic-setup': 4.23.13(@codemirror/autocomplete@6.18.6)(@codemirror/commands@6.8.1)(@codemirror/language@6.11.1)(@codemirror/lint@6.8.5)(@codemirror/search@6.5.11)(@codemirror/state@6.5.2)(@codemirror/view@6.37.2)
-      codemirror: 6.0.1
-      react: 18.3.1
-      react-dom: 19.1.0(react@18.3.1)
-    transitivePeerDependencies:
-      - '@codemirror/autocomplete'
-      - '@codemirror/language'
-      - '@codemirror/lint'
-      - '@codemirror/search'
-
-  '@uiw/react-codemirror@4.23.13(@babel/runtime@7.27.6)(@codemirror/autocomplete@6.18.6)(@codemirror/language@6.11.1)(@codemirror/search@6.5.11)(@codemirror/state@6.5.2)(@codemirror/theme-one-dark@6.1.2)(@codemirror/view@6.37.2)(codemirror@6.0.1)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)':
+  '@uiw/react-codemirror@4.23.13(@babel/runtime@7.27.6)(@codemirror/autocomplete@6.18.6)(@codemirror/language@6.11.1)(@codemirror/lint@6.8.5)(@codemirror/search@6.5.11)(@codemirror/state@6.5.2)(@codemirror/theme-one-dark@6.1.2)(@codemirror/view@6.37.2)(codemirror@6.0.1)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)':
     dependencies:
       '@babel/runtime': 7.27.6
       '@codemirror/commands': 6.8.1
@@ -17656,15 +17647,6 @@ snapshots:
       path-type: 4.0.0
       yaml: 1.10.2
 
-  cosmiconfig@9.0.0(typescript@5.8.3):
-    dependencies:
-      env-paths: 2.2.1
-      import-fresh: 3.3.1
-      js-yaml: 4.1.0
-      parse-json: 5.2.0
-    optionalDependencies:
-      typescript: 5.8.3
-
   cpx@1.5.0:
     dependencies:
       babel-runtime: 6.26.0
@@ -18017,11 +17999,11 @@ snapshots:
 
   dotenv-flow@4.1.0:
     dependencies:
-      dotenv: 16.5.0
+      dotenv: 16.6.1
 
   dotenv@16.0.3: {}
 
-  dotenv@16.5.0: {}
+  dotenv@16.6.1: {}
 
   dotenv@8.6.0: {}
 
@@ -19357,6 +19339,8 @@ snapshots:
   graceful-fs@4.2.10: {}
 
   graceful-fs@4.2.11: {}
+
+  grammex@3.1.10: {}
 
   graphemer@1.4.0: {}
 
@@ -22569,7 +22553,7 @@ snapshots:
       slate: 0.117.2
       tiny-invariant: 1.3.1
 
-  slate-react@0.117.2(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(slate-dom@0.116.0(slate@0.117.2))(slate@0.117.2):
+  slate-react@0.117.3(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(slate-dom@0.116.0(slate@0.117.2))(slate@0.117.2):
     dependencies:
       '@juggle/resize-observer': 3.4.0
       direction: 1.0.4
@@ -22582,7 +22566,7 @@ snapshots:
       slate-dom: 0.116.0(slate@0.117.2)
       tiny-invariant: 1.3.1
 
-  slate-react@0.117.2(react-dom@19.1.0(react@19.1.0))(react@19.1.0)(slate-dom@0.116.0(slate@0.117.2))(slate@0.117.2):
+  slate-react@0.117.3(react-dom@19.1.0(react@19.1.0))(react@19.1.0)(slate-dom@0.116.0(slate@0.117.2))(slate@0.117.2):
     dependencies:
       '@juggle/resize-observer': 3.4.0
       direction: 1.0.4
@@ -24090,6 +24074,10 @@ snapshots:
   yoctocolors-cjs@2.1.2: {}
 
   yoctocolors@2.1.1: {}
+
+  zeptomatch@2.0.2:
+    dependencies:
+      grammex: 3.1.10
 
   zip-stream@6.0.1:
     dependencies:

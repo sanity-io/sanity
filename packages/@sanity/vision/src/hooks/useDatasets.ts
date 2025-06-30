@@ -1,18 +1,33 @@
 import {type SanityClient} from '@sanity/client'
-import {useEffect, useState} from 'react'
+import {useMemo} from 'react'
+import {useObservable} from 'react-rx'
+import {type Observable} from 'rxjs'
+import {catchError, map, of} from 'rxjs'
 
-export function useDatasets(client: SanityClient): string[] | Error | undefined {
-  const projectId = client.config().projectId
-  const [datasets, setDatasets] = useState<string[] | Error | undefined>()
+import {type VisionConfig} from '../types'
 
-  useEffect(() => {
-    const datasets$ = client.observable.datasets.list().subscribe({
-      next: (result) => setDatasets(result.map((ds) => ds.name)),
-      error: (err) => setDatasets(err),
-    })
+export function useDatasets({
+  client,
+  datasets: configDatasets,
+}: {
+  client: SanityClient
+  datasets: VisionConfig['datasets']
+}): string[] | Error | null {
+  const datasets$: Observable<string[] | Error> = useMemo(() => {
+    if (Array.isArray(configDatasets)) {
+      return of(configDatasets)
+    }
+    return client.observable.datasets.list().pipe(
+      map((result) => {
+        if (typeof configDatasets == 'function') {
+          return configDatasets(result).map((d) => d.name)
+        }
+        return result.map((ds) => ds.name)
+      }),
+      catchError((err) => of(err)),
+    )
+  }, [client, configDatasets])
+  const datasets = useObservable(datasets$, null)
 
-    return () => datasets$.unsubscribe()
-  }, [client, projectId])
-
-  return datasets || undefined
+  return datasets
 }
