@@ -336,6 +336,9 @@ export default defineConfig([
     auth: {
       loginMethod: 'token',
     },
+    mediaLibrary: {
+      enabled: true,
+    },
   },
   {
     name: 'playground-staging',
