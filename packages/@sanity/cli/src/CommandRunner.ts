@@ -54,6 +54,7 @@ export class CommandRunner {
     }
   }
 
+  // eslint-disable-next-line complexity
   async runCommand(
     commandOrGroup: string,
     args: CliCommandArguments,
@@ -204,16 +205,23 @@ function getVersionedContextParams(
   cliConfig: CliConfigResult | null,
 ):
   | {sanityMajorVersion: 2; cliConfig?: SanityJson; cliConfigPath?: string}
-  | {sanityMajorVersion: 3; cliConfig?: CliConfig; cliConfigPath?: string} {
+  | {sanityMajorVersion: 3; cliConfig?: CliConfig; cliConfigPath?: string}
+  | {sanityMajorVersion: 4; cliConfig?: CliConfig; cliConfigPath?: string} {
   return cliConfig?.version === 2
     ? {
         sanityMajorVersion: 2,
         cliConfig: cliConfig?.config || undefined,
         cliConfigPath: cliConfig?.path || undefined,
       }
-    : {
-        sanityMajorVersion: 3,
-        cliConfig: cliConfig?.config || undefined,
-        cliConfigPath: cliConfig?.path || undefined,
-      }
+    : cliConfig?.version === 3
+      ? {
+          sanityMajorVersion: 3,
+          cliConfig: cliConfig?.config || undefined,
+          cliConfigPath: cliConfig?.path || undefined,
+        }
+      : {
+          sanityMajorVersion: 4,
+          cliConfig: cliConfig?.config || undefined,
+          cliConfigPath: cliConfig?.path || undefined,
+        }
 }

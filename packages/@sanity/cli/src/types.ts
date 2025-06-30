@@ -77,13 +77,13 @@ export interface CliCommandArguments<F = Record<string, unknown>> {
   extraArguments: string[]
 }
 
-export type CliCommandContext = CliV2CommandContext | CliV3CommandContext
+export type CliCommandContext = CliV2CommandContext | CliV3CommandContext | CliV4CommandContext
 
 export interface CliBaseCommandContext {
   output: CliOutputter
   prompt: CliPrompter
   apiClient: CliApiClient
-  sanityMajorVersion: 2 | 3
+  sanityMajorVersion: 2 | 3 | 4
   cliConfigPath?: string
   cliRoot: string
   workDir: string
@@ -112,6 +112,13 @@ export interface CliV2CommandContext extends CliBaseCommandContext {
 
 export interface CliV3CommandContext extends CliBaseCommandContext {
   sanityMajorVersion: 3
+  cliConfig?: CliConfig
+  cliPackageManager: CliPackageManager
+  telemetry: TelemetryLogger<TelemetryUserProperties>
+}
+
+export interface CliV4CommandContext extends CliBaseCommandContext {
+  sanityMajorVersion: 4
   cliConfig?: CliConfig
   cliPackageManager: CliPackageManager
   telemetry: TelemetryLogger<TelemetryUserProperties>

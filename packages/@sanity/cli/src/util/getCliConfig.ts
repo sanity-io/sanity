@@ -21,11 +21,12 @@ import {type CliConfig, type SanityJson} from '../types'
 import {getCliWorkerPath} from './cliWorker'
 import {dynamicRequire} from './dynamicRequire'
 
-export type CliMajorVersion = 2 | 3
+export type CliMajorVersion = 2 | 3 | 4
 
 export type CliConfigResult =
   | {config: SanityJson; path: string; version: 2}
   | {config: CliConfig; path: string; version: 3}
+  | {config: CliConfig; path: string; version: 4}
   | {config: null; path: string; version: CliMajorVersion}
 
 export async function getCliConfig(
