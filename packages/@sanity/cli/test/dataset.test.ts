@@ -38,6 +38,8 @@ describeCliTest('CLI: `sanity dataset`', () => {
         'visibility',
         'get',
         testRunArgs.aclDataset,
+        // TODO: remove once version 4 is released
+        '--hide-major-message',
       ])
       expect(result.stdout.trim()).toBe('public')
       expect(result.code).toBe(0)
@@ -49,6 +51,8 @@ describeCliTest('CLI: `sanity dataset`', () => {
         'set',
         testRunArgs.aclDataset,
         'private',
+        // TODO: remove once version 4 is released
+        '--hide-major-message',
       ])
       expect(result.stdout).toMatch(/visibility changed/i)
       expect(result.code).toBe(0)
@@ -59,6 +63,8 @@ describeCliTest('CLI: `sanity dataset`', () => {
         'visibility',
         'get',
         testRunArgs.aclDataset,
+        // TODO: remove once version 4 is released
+        '--hide-major-message',
       ])
       expect(result.stdout.trim()).toBe('private')
       expect(result.code).toBe(0)

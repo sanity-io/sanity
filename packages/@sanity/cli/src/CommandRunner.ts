@@ -114,7 +114,12 @@ export class CommandRunner {
 
     debug(`Running command "${command.name}"`)
 
-    printNewMajorVersionMessage(context)
+    // Only print the major version message if the --hide-major-message flag is not present
+    // used for the tests
+    // TODO: remove once version 4 is released
+    if (!cmdArgs.extOptions['hide-major-message']) {
+      printNewMajorVersionMessage(context)
+    }
 
     return command.action(cmdArgs, context)
   }
