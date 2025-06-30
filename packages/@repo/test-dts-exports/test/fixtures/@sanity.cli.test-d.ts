@@ -21,6 +21,7 @@ import type {
   CliUserConfig,
   CliV2CommandContext,
   CliV3CommandContext,
+  CliV4CommandContext,
   CliYarnOptions,
   CommandRunnerOptions,
   createCliConfig,
@@ -92,6 +93,9 @@ describe('@sanity/cli', () => {
   })
   test('CliV3CommandContext', () => {
     expectTypeOf<CliV3CommandContext>().toBeObject()
+  })
+  test('CliV4CommandContext', () => {
+    expectTypeOf<CliV4CommandContext>().toBeObject()
   })
   test('CliYarnOptions', () => {
     expectTypeOf<CliYarnOptions>().toBeObject()
