@@ -89,7 +89,7 @@ const BlockQuoteRoot = styled.blockquote`
     top: -4px;
     bottom: -4px;
     width: 3px;
-    background: var(--card-border-color);
+    background: ${vars.color.border};
   }
 `
 

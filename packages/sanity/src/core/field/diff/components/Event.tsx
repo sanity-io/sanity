@@ -6,6 +6,7 @@ import {css, styled} from 'styled-components'
 
 import {Tooltip} from '../../../../ui-components'
 import {UserAvatar} from '../../../components/userAvatar/UserAvatar'
+import {getVarName} from '../../../css/getVarName'
 import {useDateTimeFormat} from '../../../hooks/useDateTimeFormat'
 import {type RelativeTimeOptions, useRelativeTime} from '../../../hooks/useRelativeTime'
 import {useTranslation} from '../../../i18n/hooks/useTranslation'
@@ -45,7 +46,8 @@ const IconBox = styled(Flex)<{$color: AvatarColor}>((props) => {
   const color = props.$color
 
   return css`
-    --card-icon-color: ${vars.color.avatar[color].fg};
+    ${getVarName(vars.color.muted.fg)}: ${vars.color.avatar[color].fg};
+
     background-color: ${vars.color.avatar[color].bg};
     box-shadow: 0 0 0 1px ${vars.color.bg};
 

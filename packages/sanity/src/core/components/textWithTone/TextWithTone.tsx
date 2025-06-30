@@ -4,6 +4,8 @@ import {type ElementTone} from '@sanity/ui/theme'
 import {forwardRef, type HTMLProps, type Ref} from 'react'
 import {styled} from 'styled-components'
 
+import {getVarName} from '../../css/getVarName'
+
 /** @internal */
 export interface TextWithToneProps extends TextProps<'div'> {
   tone: ElementTone
@@ -14,19 +16,19 @@ export interface TextWithToneProps extends TextProps<'div'> {
 const TextWithToneStyle = styled(Text)`
   &:not([data-muted]) {
     &[data-tone='default'] {
-      --card-fg-color: ${vars.color.solid.default.fg[0]};
+      ${getVarName(vars.color.fg)}: ${vars.color.solid.default.fg[0]};
     }
     &[data-tone='primary'] {
-      --card-fg-color: ${vars.color.solid.primary.fg[0]};
+      ${getVarName(vars.color.fg)}: ${vars.color.solid.primary.fg[0]};
     }
     &[data-tone='positive'] {
-      --card-fg-color: ${vars.color.solid.positive.fg[0]};
+      ${getVarName(vars.color.fg)}: ${vars.color.solid.positive.fg[0]};
     }
     &[data-tone='caution'] {
-      --card-fg-color: ${vars.color.solid.caution.fg[0]};
+      ${getVarName(vars.color.fg)}: ${vars.color.solid.caution.fg[0]};
     }
     &[data-tone='critical'] {
-      --card-fg-color: ${vars.color.solid.critical.fg[0]};
+      ${getVarName(vars.color.fg)}: ${vars.color.solid.critical.fg[0]};
     }
   }
 

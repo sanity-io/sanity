@@ -5,6 +5,7 @@ import {vars} from '@sanity/ui/css'
 import {styled} from 'styled-components'
 
 import {Button, Dialog} from '../../../ui-components'
+import {getVarName} from '../../css/getVarName'
 import {type UpsellData} from './types'
 import {type InterpolationProp, UpsellDescriptionSerializer} from './upsellDescriptionSerializer'
 
@@ -21,12 +22,10 @@ const StyledButton = styled(Button)`
   box-shadow: none;
   color: ${white.hex};
 
-  /* TODO: this no longer works in @sanity/ui@3 */
-  --card-fg-color: ${white.hex};
+  ${getVarName(vars.color.fg)}: ${white.hex};
 
   :hover {
-    /* TODO: this no longer works in @sanity/ui@3 */
-    --card-fg-color: ${white.hex};
+    ${getVarName(vars.color.fg)}: ${white.hex};
   }
 `
 

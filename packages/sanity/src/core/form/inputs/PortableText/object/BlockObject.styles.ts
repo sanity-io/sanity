@@ -4,6 +4,7 @@ import {vars} from '@sanity/ui/css'
 import {css, styled} from 'styled-components'
 
 import {DEBUG} from '../../../../changeIndicators/constants'
+import {getVarName} from '../../../../css/getVarName'
 
 export const Root = styled(Card)<{$isDark: boolean}>(({$isDark}) => {
   // const {color, radius, space} = props.theme.sanity
@@ -21,19 +22,19 @@ export const Root = styled(Card)<{$isDark: boolean}>(({$isDark}) => {
   `
 
   return css`
-    box-shadow: 0 0 0 1px var(--card-border-color);
+    box-shadow: 0 0 0 1px ${vars.color.border};
     border-radius: ${vars.radius[1]};
     pointer-events: all;
     position: relative;
 
     &[data-focused] {
-      --card-border-color: var(--card-focus-ring-color);
+      ${getVarName(vars.color.border)}: ${vars.color.focusRing};
     }
 
     &:not([data-focused]):not([data-selected]) {
       @media (hover: hover) {
         &:hover {
-          --card-border-color: ${vars.color.tinted.default.border[2]};
+          ${getVarName(vars.color.border)}: ${vars.color.tinted.default.border[2]};
         }
       }
     }
@@ -53,7 +54,7 @@ export const Root = styled(Card)<{$isDark: boolean}>(({$isDark}) => {
 
       @media (hover: hover) {
         &:hover {
-          --card-border-color: ${vars.color.tinted.caution.border[2]};
+          ${getVarName(vars.color.border)}: ${vars.color.tinted.caution.border[2]};
         }
       }
     }
@@ -66,7 +67,7 @@ export const Root = styled(Card)<{$isDark: boolean}>(({$isDark}) => {
 
       @media (hover: hover) {
         &:hover {
-          --card-border-color: ${vars.color.tinted.critical.border[2]};
+          ${getVarName(vars.color.border)}: ${vars.color.tinted.critical.border[2]};
         }
       }
     }

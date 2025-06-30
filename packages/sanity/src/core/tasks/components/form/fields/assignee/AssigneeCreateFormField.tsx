@@ -3,6 +3,7 @@ import {vars} from '@sanity/ui/css'
 import {useCallback, useMemo} from 'react'
 import {styled} from 'styled-components'
 
+import {getVarName} from '../../../../../css/getVarName'
 import {set, type StringInputProps} from '../../../../../form'
 import {useTranslation} from '../../../../../i18n'
 import {useMentionUser} from '../../../../context'
@@ -16,7 +17,7 @@ const FocusableCard = styled(Card)`
     &:focus-within {
       border: 1px solid ${vars.color.focusRing};
     }
-    --card-muted-fg-color: ${vars.color.tinted.default.border[4]};
+    ${getVarName(vars.color.muted.fg)}: ${vars.color.tinted.default.border[4]};
   }
 `
 

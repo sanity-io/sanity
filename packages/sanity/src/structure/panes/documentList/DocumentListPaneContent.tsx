@@ -181,8 +181,8 @@ export function DocumentListPaneContent(props: DocumentListPaneContentProps) {
     return (
       <Flex align="center" direction="column" height="fill" justify="center">
         <Container width={1}>
-          <Box paddingX={4} paddingY={5}>
-            <Text align="center" muted>
+          <Box padding={4}>
+            <Text align="center" muted size={1}>
               {filterIsSimpleTypeConstraint
                 ? t('panes.document-list-pane.no-documents-of-type.text')
                 : t('panes.document-list-pane.no-matching-documents.text')}

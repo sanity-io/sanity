@@ -2,11 +2,13 @@ import {type ReleaseDocument} from '@sanity/client'
 import {DotIcon, ErrorOutlineIcon, EyeClosedIcon, EyeOpenIcon, LockIcon} from '@sanity/icons'
 // eslint-disable-next-line no-restricted-imports -- custom use for MenuItem & Button not supported by ui-components
 import {Box, Button, Flex, MenuItem, Stack, Text} from '@sanity/ui'
+import {vars} from '@sanity/ui/css'
 import {type CSSProperties, forwardRef, type MouseEvent, useCallback, useMemo} from 'react'
 import {css, styled} from 'styled-components'
 
 import {ToneIcon} from '../../../ui-components/toneIcon/ToneIcon'
 import {Tooltip} from '../../../ui-components/tooltip'
+import {getVarName} from '../../css/getVarName'
 import {useTranslation} from '../../i18n/hooks/useTranslation'
 import {useExcludedPerspective} from '../../perspective/useExcludedPerspective'
 import {usePerspective} from '../../perspective/usePerspective'
@@ -36,16 +38,16 @@ export interface LayerRange {
 
 const ToggleLayerButton = styled(Button)<{$visible: boolean}>(
   ({$visible}) => css`
-    --card-fg-color: inherit;
-    --card-icon-color: inherit;
+    ${getVarName(vars.color.fg)}: inherit;
+    ${getVarName(vars.color.muted.fg)}: inherit;
 
     background-color: inherit;
     opacity: ${$visible ? 0 : 1};
 
     @media (hover: hover) {
       &:not([data-disabled='true']):hover {
-        --card-fg-color: inherit;
-        --card-icon-color: inherit;
+        ${getVarName(vars.color.fg)}: inherit;
+        ${getVarName(vars.color.muted.fg)}: inherit;
       }
     }
 

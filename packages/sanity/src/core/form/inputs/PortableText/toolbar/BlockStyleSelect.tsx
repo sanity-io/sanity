@@ -6,10 +6,12 @@ import {
   MenuItem,
   Text,
 } from '@sanity/ui'
+import {vars} from '@sanity/ui/css'
 import {memo, type MouseEvent, type ReactNode, useCallback, useMemo} from 'react'
 import {styled} from 'styled-components'
 
 import {Button, MenuButton, type MenuButtonProps} from '../../../../../ui-components'
+import {getVarName} from '../../../../css/getVarName'
 import {useTranslation} from '../../../../i18n'
 import {
   BlockQuote,
@@ -37,7 +39,7 @@ const StyledMenuItem = styled(MenuItem)`
   // to make the border visible when the MenuItem is selected
   &[data-selected] {
     [data-option='blockquote'] {
-      --card-border-color: var(--card-muted-fg-color);
+      ${getVarName(vars.color.border)}: ${vars.color.muted.fg};
     }
   }
 `

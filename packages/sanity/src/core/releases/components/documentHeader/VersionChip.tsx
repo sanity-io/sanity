@@ -23,6 +23,7 @@ import {styled} from 'styled-components'
 
 import {Popover, Tooltip} from '../../../../ui-components'
 import {useCanvasCompanionDocsStore} from '../../../canvas/store/useCanvasCompanionDocsStore'
+import {getVarName} from '../../../css/getVarName'
 import {useTranslation} from '../../../i18n/hooks/useTranslation'
 import {getDraftId, getPublishedId, getVersionId} from '../../../util/draftUtils'
 import {useReleasesUpsell} from '../../contexts/upsell/useReleasesUpsell'
@@ -43,9 +44,7 @@ const ChipButton = styled(Button)`
   flex: none;
   transition: none;
   cursor: pointer;
-
-  /* TODO: this no longer works in @sanity/ui@3 */
-  --card-border-color: var(--border-color);
+  ${getVarName(vars.color.border)}: var(--border-color);
 `
 
 const useVersionIsLinked = (documentId: string, fromRelease: string) => {
