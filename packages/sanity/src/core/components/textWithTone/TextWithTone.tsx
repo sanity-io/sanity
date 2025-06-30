@@ -1,10 +1,8 @@
 import {Text, type TextProps} from '@sanity/ui'
-import {vars} from '@sanity/ui/css'
+import {getVarName, vars} from '@sanity/ui/css'
 import {type ElementTone} from '@sanity/ui/theme'
 import {forwardRef, type HTMLProps, type Ref} from 'react'
 import {styled} from 'styled-components'
-
-import {getVarName} from '../../css/getVarName'
 
 /** @internal */
 export interface TextWithToneProps extends TextProps<'div'> {

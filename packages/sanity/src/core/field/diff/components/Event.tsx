@@ -1,12 +1,11 @@
 import {AvatarStack, Box, Flex, Skeleton, Stack, Text} from '@sanity/ui'
-import {vars} from '@sanity/ui/css'
+import {getVarName, vars} from '@sanity/ui/css'
 import {type AvatarColor, type AvatarSize} from '@sanity/ui/theme'
 import {useMemo} from 'react'
 import {css, styled} from 'styled-components'
 
 import {Tooltip} from '../../../../ui-components'
 import {UserAvatar} from '../../../components/userAvatar/UserAvatar'
-import {getVarName} from '../../../css/getVarName'
 import {useDateTimeFormat} from '../../../hooks/useDateTimeFormat'
 import {type RelativeTimeOptions, useRelativeTime} from '../../../hooks/useRelativeTime'
 import {useTranslation} from '../../../i18n/hooks/useTranslation'

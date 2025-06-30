@@ -1,10 +1,9 @@
 import {hues} from '@sanity/color'
 import {Box, Flex} from '@sanity/ui'
-import {vars} from '@sanity/ui/css'
+import {getVarName, vars} from '@sanity/ui/css'
 import {css, styled} from 'styled-components'
 
 import {DEBUG} from '../../../../changeIndicators/constants'
-import {getVarName} from '../../../../css/getVarName'
 import {TEXT_BULLET_MARKERS, TEXT_NUMBER_FORMATS} from './constants'
 import {createListName} from './helpers'
 

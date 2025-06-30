@@ -1,7 +1,5 @@
-import {vars} from '@sanity/ui/css'
+import {getVarName, vars} from '@sanity/ui/css'
 import {type ElementTone} from '@sanity/ui/theme'
-
-import {getVarName} from '../../core/css/getVarName'
 
 export const ToneIcon = ({
   tone,

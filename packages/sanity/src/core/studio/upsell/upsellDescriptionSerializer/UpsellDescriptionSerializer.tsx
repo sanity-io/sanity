@@ -6,13 +6,12 @@ import {
 import {Icon, LinkIcon} from '@sanity/icons'
 import {type PortableTextBlock} from '@sanity/types'
 import {Box, Card, Flex, Heading, Text} from '@sanity/ui'
-import {vars} from '@sanity/ui/css'
+import {getVarName, vars} from '@sanity/ui/css'
 import {template} from 'lodash'
 import {type ReactNode, useEffect, useMemo, useState} from 'react'
 import {css, styled} from 'styled-components'
 
 import {ConditionalWrapper} from '../../../../ui-components/conditionalWrapper'
-import {getVarName} from '../../../css/getVarName'
 import {TEMPLATE_OPTIONS} from '../constants'
 import {transformBlocks} from './helpers'
 

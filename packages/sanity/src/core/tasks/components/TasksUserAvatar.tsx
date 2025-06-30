@@ -1,13 +1,12 @@
 import {UserIcon} from '@sanity/icons'
 import {type User} from '@sanity/types'
 import {Text} from '@sanity/ui'
-import {vars} from '@sanity/ui/css'
+import {getVarName, vars} from '@sanity/ui/css'
 import {type AvatarSize} from '@sanity/ui/theme'
 import {css, styled} from 'styled-components'
 
 import {Tooltip} from '../../../ui-components'
 import {AvatarSkeleton, UserAvatar} from '../../components'
-import {getVarName} from '../../css/getVarName'
 import {useUser} from '../../store'
 
 const AvatarRoot = styled.div<{$size: AvatarSize; $border?: boolean; $removeBg?: boolean}>(

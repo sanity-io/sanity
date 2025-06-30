@@ -1,6 +1,6 @@
 import {CloseIcon} from '@sanity/icons'
 import {Box, Card, Flex, isHTMLElement, Text} from '@sanity/ui'
-import {_input, _inputPresentation, vars} from '@sanity/ui/css'
+import {_input, _inputPresentation, getVarName, vars} from '@sanity/ui/css'
 import {
   type ChangeEvent,
   type FocusEvent,
@@ -17,7 +17,6 @@ import {
 import {styled} from 'styled-components'
 
 import {Button} from '../../../../ui-components'
-import {getVarName} from '../../../css/getVarName'
 import {useTranslation} from '../../../i18n'
 import {studioLocaleNamespace} from '../../../i18n/localeNamespaces'
 

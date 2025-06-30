@@ -1,12 +1,11 @@
 import {ErrorOutlineIcon, InfoOutlineIcon, WarningOutlineIcon} from '@sanity/icons'
 import {type FormNodeValidation} from '@sanity/types'
 import {Box, Flex, type Placement, Stack, Text} from '@sanity/ui'
-import {vars} from '@sanity/ui/css'
+import {getVarName, vars} from '@sanity/ui/css'
 import {type FontTextSize} from '@sanity/ui/theme'
 import {styled} from 'styled-components'
 
 import {Tooltip} from '../../../../ui-components'
-import {getVarName} from '../../../css/getVarName'
 import {useListFormat} from '../../../hooks'
 import {useTranslation} from '../../../i18n'
 

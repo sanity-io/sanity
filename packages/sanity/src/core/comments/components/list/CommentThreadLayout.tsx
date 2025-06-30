@@ -6,12 +6,11 @@ import {
   Stack,
   useCard,
 } from '@sanity/ui'
-import {vars} from '@sanity/ui/css'
+import {getVarName, vars} from '@sanity/ui/css'
 import {uuid} from '@sanity/uuid'
 import {type MouseEvent, type ReactNode, useCallback, useMemo} from 'react'
 import {styled} from 'styled-components'
 
-import {getVarName} from '../../../css/getVarName'
 import {type UserListWithPermissionsHookValue} from '../../../hooks'
 import {useTranslation} from '../../../i18n'
 import {type CommentsSelectedPath} from '../../context'

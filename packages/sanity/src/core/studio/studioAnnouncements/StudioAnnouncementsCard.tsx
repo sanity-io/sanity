@@ -2,12 +2,11 @@
 import {CloseIcon} from '@sanity/icons'
 import {useTelemetry} from '@sanity/telemetry/react'
 import {Box, Card, Stack, Text} from '@sanity/ui'
-import {vars} from '@sanity/ui/css'
+import {getVarName, vars} from '@sanity/ui/css'
 import {useEffect} from 'react'
 import {keyframes, styled} from 'styled-components'
 
 import {Button, Popover} from '../../../ui-components'
-import {getVarName} from '../../css/getVarName'
 import {useTranslation} from '../../i18n/hooks/useTranslation'
 import {SANITY_VERSION} from '../../version'
 import {ProductAnnouncementCardSeen} from './__telemetry__/studioAnnouncements.telemetry'

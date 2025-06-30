@@ -1,11 +1,10 @@
 import {white} from '@sanity/color'
 import {CloseIcon, LaunchIcon} from '@sanity/icons'
 import {Box, Stack} from '@sanity/ui'
-import {vars} from '@sanity/ui/css'
+import {getVarName, vars} from '@sanity/ui/css'
 import {styled} from 'styled-components'
 
 import {Button, Dialog} from '../../../ui-components'
-import {getVarName} from '../../css/getVarName'
 import {type UpsellData} from './types'
 import {type InterpolationProp, UpsellDescriptionSerializer} from './upsellDescriptionSerializer'
 

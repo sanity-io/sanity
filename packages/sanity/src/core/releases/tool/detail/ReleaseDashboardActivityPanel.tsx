@@ -3,13 +3,12 @@
 
 import {type ReleaseDocument} from '@sanity/client'
 import {Box, Card, Flex, Text} from '@sanity/ui'
-import {vars} from '@sanity/ui/css'
+import {getVarName, vars} from '@sanity/ui/css'
 import {AnimatePresence, motion} from 'framer-motion'
 import {styled} from 'styled-components'
 
 import {LoadingBlock} from '../../../components/loadingBlock/LoadingBlock'
 import {Resizable} from '../../../components/resizer/Resizable'
-import {getVarName} from '../../../css/getVarName'
 import {useTranslation} from '../../../i18n'
 import {releasesLocaleNamespace} from '../../i18n'
 import {type ReleaseEvents} from './events/useReleaseEvents'

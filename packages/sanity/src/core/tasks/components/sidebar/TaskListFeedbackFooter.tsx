@@ -1,9 +1,8 @@
 import {LaunchIcon} from '@sanity/icons'
 import {Box, Text} from '@sanity/ui'
-import {vars} from '@sanity/ui/css'
+import {getVarName, vars} from '@sanity/ui/css'
 import {styled} from 'styled-components'
 
-import {getVarName} from '../../../css/getVarName'
 import {Translate, useTranslation} from '../../../i18n'
 import {tasksLocaleNamespace} from '../../i18n'
 

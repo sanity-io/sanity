@@ -1,9 +1,8 @@
 import {Badge, Card, Flex, Text, TextSkeleton} from '@sanity/ui'
-import {vars} from '@sanity/ui/css'
+import {getVarName, vars} from '@sanity/ui/css'
 import {useCallback, useMemo} from 'react'
 import {styled} from 'styled-components'
 
-import {getVarName} from '../../../../../css/getVarName'
 import {set, type StringInputProps} from '../../../../../form'
 import {useTranslation} from '../../../../../i18n'
 import {useMentionUser} from '../../../../context'

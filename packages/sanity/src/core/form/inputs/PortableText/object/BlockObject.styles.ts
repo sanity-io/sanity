@@ -1,10 +1,9 @@
 import {hues} from '@sanity/color'
 import {Box, Card, Flex} from '@sanity/ui'
-import {vars} from '@sanity/ui/css'
+import {getVarName, vars} from '@sanity/ui/css'
 import {css, styled} from 'styled-components'
 
 import {DEBUG} from '../../../../changeIndicators/constants'
-import {getVarName} from '../../../../css/getVarName'
 
 export const Root = styled(Card)<{$isDark: boolean}>(({$isDark}) => {
   // const {color, radius, space} = props.theme.sanity

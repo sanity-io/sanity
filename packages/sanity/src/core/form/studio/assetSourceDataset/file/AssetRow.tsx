@@ -11,13 +11,12 @@ import {
   Text,
   useToast,
 } from '@sanity/ui'
-import {vars} from '@sanity/ui/css'
+import {getVarName, vars} from '@sanity/ui/css'
 import {type KeyboardEvent, type MouseEvent, useCallback, useMemo, useRef, useState} from 'react'
 import {type Subscription} from 'rxjs'
 import {css, styled} from 'styled-components'
 
 import {Tooltip} from '../../../../../ui-components'
-import {getVarName} from '../../../../css/getVarName'
 import {getHumanFriendlyBytes} from '../../../../field/types/file/diff/helpers'
 import {useClient, useRelativeTime, useUnitFormatter} from '../../../../hooks'
 import {useTranslation} from '../../../../i18n'

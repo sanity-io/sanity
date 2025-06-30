@@ -6,7 +6,7 @@ import {
   useGlobalKeyDown,
   useToast,
 } from '@sanity/ui'
-import {vars} from '@sanity/ui/css'
+import {getVarName, vars} from '@sanity/ui/css'
 import {type ElementTone} from '@sanity/ui/theme'
 import {
   memo,
@@ -23,7 +23,6 @@ import {styled} from 'styled-components'
 
 import {Popover, Tooltip} from '../../../../ui-components'
 import {useCanvasCompanionDocsStore} from '../../../canvas/store/useCanvasCompanionDocsStore'
-import {getVarName} from '../../../css/getVarName'
 import {useTranslation} from '../../../i18n/hooks/useTranslation'
 import {getDraftId, getPublishedId, getVersionId} from '../../../util/draftUtils'
 import {useReleasesUpsell} from '../../contexts/upsell/useReleasesUpsell'

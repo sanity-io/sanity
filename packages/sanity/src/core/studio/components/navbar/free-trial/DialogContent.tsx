@@ -1,10 +1,9 @@
 import {CloseIcon} from '@sanity/icons'
 import {Box, Flex, Heading} from '@sanity/ui'
-import {vars} from '@sanity/ui/css'
+import {getVarName, vars} from '@sanity/ui/css'
 import {styled} from 'styled-components'
 
 import {Button, Dialog} from '../../../../../ui-components'
-import {getVarName} from '../../../../css/getVarName'
 import {useColorSchemeValue} from '../../../colorScheme'
 import {UpsellDescriptionSerializer} from '../../../upsell'
 import {type TrialDialogDismissedInfo} from './__telemetry__/trialDialogEvents.telemetry'

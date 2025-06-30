@@ -1,12 +1,11 @@
 import {ArrowRightIcon, ComposeSparklesIcon, WarningOutlineIcon} from '@sanity/icons'
 import {type SanityDocument} from '@sanity/types'
 import {Box, Card, Flex, Stack, Text} from '@sanity/ui'
-import {vars} from '@sanity/ui/css'
+import {getVarName, vars} from '@sanity/ui/css'
 import {type ElementTone} from '@sanity/ui/theme'
 import {motion} from 'framer-motion'
 import {css, styled} from 'styled-components'
 
-import {getVarName} from '../../../css/getVarName'
 import {useTranslation} from '../../../i18n/hooks/useTranslation'
 import {ReleaseAvatarIcon} from '../../../releases/components/ReleaseAvatar'
 import {getDocumentVariantType} from '../../../util/getDocumentVariantType'

@@ -6,12 +6,11 @@ import {
   MenuItem,
   Text,
 } from '@sanity/ui'
-import {vars} from '@sanity/ui/css'
+import {getVarName, vars} from '@sanity/ui/css'
 import {memo, type MouseEvent, type ReactNode, useCallback, useMemo} from 'react'
 import {styled} from 'styled-components'
 
 import {Button, MenuButton, type MenuButtonProps} from '../../../../../ui-components'
-import {getVarName} from '../../../../css/getVarName'
 import {useTranslation} from '../../../../i18n'
 import {
   BlockQuote,

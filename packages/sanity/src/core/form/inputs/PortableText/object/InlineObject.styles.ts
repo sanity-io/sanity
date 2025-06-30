@@ -1,9 +1,7 @@
 import {hues} from '@sanity/color'
 import {Box, Card} from '@sanity/ui'
-import {vars} from '@sanity/ui/css'
+import {getVarName, vars} from '@sanity/ui/css'
 import {css, styled} from 'styled-components'
-
-import {getVarName} from '../../../../css/getVarName'
 
 export const Root = styled(Card)(rootStyle)
 

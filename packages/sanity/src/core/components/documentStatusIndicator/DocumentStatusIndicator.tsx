@@ -1,9 +1,9 @@
 import {Flex} from '@sanity/ui'
 import {vars} from '@sanity/ui/css'
+import {getVarName} from '@sanity/ui/css'
 import {useMemo} from 'react'
 import {css, styled} from 'styled-components'
 
-import {getVarName} from '../../css/getVarName'
 import {RELEASE_TYPES_TONES, type VersionInfoDocumentStub} from '../../releases'
 import {useActiveReleases} from '../../releases/store/useActiveReleases'
 import {getReleaseIdFromReleaseDocumentId} from '../../releases/util/getReleaseIdFromReleaseDocumentId'
