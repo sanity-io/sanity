@@ -1,4 +1,4 @@
-import {studioTheme, ThemeProvider} from '@sanity/ui'
+import {Root} from '@sanity/ui'
 import {render as renderRTL, screen} from '@testing-library/react'
 import {describe, expect, it} from 'vitest'
 
@@ -6,7 +6,7 @@ import {SchemaIcon, type SchemaIconProps} from '../Icon'
 
 const render = (props?: Partial<SchemaIconProps>) =>
   renderRTL(<SchemaIcon title="Studio" {...props} />, {
-    wrapper: ({children}) => <ThemeProvider theme={studioTheme}>{children}</ThemeProvider>,
+    wrapper: ({children}) => <Root as="div">{children}</Root>,
   })
 
 describe('SchemaIcon', () => {

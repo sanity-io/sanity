@@ -79,7 +79,10 @@ export function ActionMenuButton(props: ActionMenuButtonProps) {
             aria-label={t('buttons.action-menu-button.aria-label')}
             disabled={disabled}
             data-testid="action-menu-button"
-            tooltipProps={{content: t('buttons.action-menu-button.tooltip')}}
+            tooltipProps={{
+              content: t('buttons.action-menu-button.tooltip'),
+              portal: true,
+            }}
           />
         }
         menu={
@@ -89,7 +92,6 @@ export function ActionMenuButton(props: ActionMenuButtonProps) {
                 actionState={actionState}
                 disabled={disabled}
                 index={idx}
-                // eslint-disable-next-line react/no-array-index-key
                 key={idx}
                 onAction={handleAction}
               />

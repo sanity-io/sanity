@@ -1,4 +1,5 @@
 import {Box} from '@sanity/ui'
+import {type Flex as FlexValue, type ResponsiveProp} from '@sanity/ui/css'
 import {useCallback} from 'react'
 import {Resizable} from 'sanity'
 
@@ -10,7 +11,7 @@ import {useDocumentPane} from '../useDocumentPane'
 interface DocumentInspectorPanelProps {
   documentId: string
   documentType: string
-  flex?: number | number[]
+  flex?: ResponsiveProp<FlexValue>
 }
 
 export function DocumentInspectorPanel(

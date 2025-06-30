@@ -47,7 +47,7 @@ export function CreateUnlinkConfirmDialog(props: CreateUnlinkConfirmDialogProps)
       header={t('unlink-from-create-dialog.header')}
       onClose={onClose}
     >
-      <Stack space={4}>
+      <Stack gap={4}>
         <Text size={1}>
           <Translate
             t={t}

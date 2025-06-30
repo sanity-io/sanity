@@ -1,7 +1,5 @@
-/* eslint-disable camelcase */
-
-import {Card, rem} from '@sanity/ui'
-import {getTheme_v2} from '@sanity/ui/theme'
+import {Card} from '@sanity/ui'
+import {vars} from '@sanity/ui/css'
 import {css, styled} from 'styled-components'
 
 import {ScrollContainer} from '../../../components/scroll'
@@ -101,27 +99,27 @@ export const EditableWrapper = styled(Card)<{$isFullscreen: boolean; $isOneLine:
 
     & > .pt-list-item-bullet + .pt-list-item-number,
     & > .pt-list-item-number + .pt-list-item-bullet {
-      margin-top: ${({theme}) => theme.sanity.space[3]}px;
+      margin-top: ${vars.space[3]};
     }
 
     & > :not(.pt-list-item) + .pt-list-item {
-      margin-top: ${({theme}) => theme.sanity.space[2]}px;
+      margin-top: ${vars.space[2]};
     }
 
     & > .pt-list-item + :not(.pt-list-item) {
-      margin-top: ${({theme}) => theme.sanity.space[3]}px;
+      margin-top: ${vars.space[3]};
     }
 
     & > :first-child {
-      padding-top: ${({$isFullscreen, theme}) => theme.sanity.space[$isFullscreen ? 5 : 3]}px;
+      padding-top: ${({$isFullscreen}) => vars.space[$isFullscreen ? 5 : 3]};
     }
 
-    padding-bottom: ${({$isFullscreen, $isOneLine, theme}) =>
-      $isOneLine ? '0' : theme.sanity.space[$isFullscreen ? 9 : 5]}px;
+    padding-bottom: ${({$isFullscreen, $isOneLine}) =>
+      $isOneLine ? '0' : vars.space[$isFullscreen ? 9 : 5]};
 
     & > .pt-block {
       margin: 0 auto;
-      max-width: ${(props) => getTheme_v2(props.theme).container[1]}px;
+      max-width: ${vars.container[1]};
     }
 
     /* & > .pt-block {
@@ -131,25 +129,14 @@ export const EditableWrapper = styled(Card)<{$isFullscreen: boolean; $isOneLine:
 
     & .pt-drop-indicator {
       pointer-events: none;
-      border: 1px solid var(--card-focus-ring-color) !important;
+      border: 1px solid ${vars.color.focusRing} !important;
       height: 0px !important;
-      border-radius: ${(props) => getTheme_v2(props.theme).radius[2]}px;
+      border-radius: ${vars.radius[2]};
       margin-top: -3px;
-      left: calc(
-        ${({$isFullscreen, theme}) =>
-            $isFullscreen ? rem(theme.sanity.space[5]) : rem(theme.sanity.space[3])} -
-          1px
-      );
-      right: calc(
-        ${({$isFullscreen, theme}) =>
-            $isFullscreen ? rem(theme.sanity.space[5]) : rem(theme.sanity.space[3])} -
-          1px
-      );
+      left: calc(${({$isFullscreen}) => ($isFullscreen ? vars.space[5] : vars.space[3])} - 1px);
+      right: calc(${({$isFullscreen}) => ($isFullscreen ? vars.space[5] : vars.space[3])} - 1px);
       width: calc(
-        100% -
-          ${({$isFullscreen, theme}) =>
-            $isFullscreen ? rem(theme.sanity.space[5] * 2) : rem(theme.sanity.space[3] * 2)} +
-          2px
+        100% - (${({$isFullscreen}) => ($isFullscreen ? vars.space[5] : vars.space[3])} * 2) + 2px
       ) !important;
     }
   }

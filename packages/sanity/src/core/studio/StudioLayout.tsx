@@ -1,4 +1,4 @@
-/* eslint-disable i18next/no-literal-string, @sanity/i18n/no-attribute-template-literals */
+/* eslint-disable @sanity/i18n/no-attribute-template-literals */
 import {Card, Flex} from '@sanity/ui'
 import {startCase} from 'lodash'
 import {lazy, Suspense, useCallback, useEffect, useMemo, useState} from 'react'
@@ -7,6 +7,7 @@ import {RouteScope, useRouter, useRouterState} from 'sanity/router'
 import {styled} from 'styled-components'
 
 import {LoadingBlock} from '../components/loadingBlock'
+import {useColorSchemeValue} from './colorScheme'
 import {useNetworkProtocolCheck} from './networkCheck/useNetworkProtocolCheck'
 import {NoToolsScreen} from './screens/NoToolsScreen'
 import {RedirectingScreen} from './screens/RedirectingScreen'
@@ -81,6 +82,7 @@ export function StudioLayout() {
  * The default Studio Layout component
  * */
 export function StudioLayoutComponent() {
+  const scheme = useColorSchemeValue()
   const {name, title, tools} = useWorkspace()
 
   // In the background, check if the network protocol used to communicate with the

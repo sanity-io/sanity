@@ -9,6 +9,7 @@ import {
   Text,
 } from '@sanity/ui'
 import {
+  type ElementType,
   forwardRef,
   type HTMLProps,
   isValidElement,
@@ -37,9 +38,10 @@ const SubtitleText = styled(Text)`
 
 /** @internal */
 export type MenuItemProps = Pick<
-  UIMenuItemProps,
-  'as' | 'icon' | 'iconRight' | 'pressed' | 'selected' | 'tone' | 'hotkeys'
+  UIMenuItemProps<'button'>,
+  'icon' | 'iconRight' | 'pressed' | 'selected' | 'tone' | 'hotkeys'
 > & {
+  as?: ElementType
   badgeText?: string
   /**
    * Usage of `children` is not supported, import `MenuItem` from `@sanity/ui` instead.
@@ -127,7 +129,7 @@ export const MenuItem = forwardRef(function MenuItem(
         {text && (
           <Stack
             flex={1}
-            space={__unstable_subtitle ? 1 : 2}
+            gap={__unstable_subtitle ? 1 : 2}
             paddingLeft={__unstable_subtitle ? 1 : 0}
           >
             <Text size={FONT_SIZE} textOverflow="ellipsis" weight="medium">

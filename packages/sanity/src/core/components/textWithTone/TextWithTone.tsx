@@ -1,10 +1,12 @@
-import {type ButtonTone, Text} from '@sanity/ui'
-import {type ComponentProps, forwardRef, type Ref} from 'react'
+import {Text, type TextProps} from '@sanity/ui'
+import {getVarName, vars} from '@sanity/ui/css'
+import {type ElementTone} from '@sanity/ui/theme'
+import {forwardRef, type HTMLProps, type Ref} from 'react'
 import {styled} from 'styled-components'
 
 /** @internal */
-export interface TextWithToneProps extends ComponentProps<typeof Text> {
-  tone: ButtonTone
+export interface TextWithToneProps extends TextProps<'div'> {
+  tone: ElementTone
   dimmed?: boolean
 }
 
@@ -12,19 +14,19 @@ export interface TextWithToneProps extends ComponentProps<typeof Text> {
 const TextWithToneStyle = styled(Text)`
   &:not([data-muted]) {
     &[data-tone='default'] {
-      --card-fg-color: var(--card-badge-default-fg-color);
+      ${getVarName(vars.color.fg)}: ${vars.color.solid.default.fg[0]};
     }
     &[data-tone='primary'] {
-      --card-fg-color: var(--card-badge-primary-fg-color);
+      ${getVarName(vars.color.fg)}: ${vars.color.solid.primary.fg[0]};
     }
     &[data-tone='positive'] {
-      --card-fg-color: var(--card-badge-positive-fg-color);
+      ${getVarName(vars.color.fg)}: ${vars.color.solid.positive.fg[0]};
     }
     &[data-tone='caution'] {
-      --card-fg-color: var(--card-badge-caution-fg-color);
+      ${getVarName(vars.color.fg)}: ${vars.color.solid.caution.fg[0]};
     }
     &[data-tone='critical'] {
-      --card-fg-color: var(--card-badge-critical-fg-color);
+      ${getVarName(vars.color.fg)}: ${vars.color.solid.critical.fg[0]};
     }
   }
 
@@ -35,7 +37,7 @@ const TextWithToneStyle = styled(Text)`
 
 /** @internal */
 export const TextWithTone = forwardRef(function TextWithTone(
-  props: TextWithToneProps,
+  props: TextWithToneProps & HTMLProps<HTMLDivElement>,
   ref: Ref<HTMLDivElement>,
 ) {
   const {tone, dimmed, muted, ...rest} = props

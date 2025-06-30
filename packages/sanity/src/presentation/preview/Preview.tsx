@@ -1,4 +1,4 @@
-/* eslint-disable react/no-unused-prop-types,no-nested-ternary */
+/* eslint-disable react/no-unused-prop-types */
 import {createConnectionMachine, createController} from '@sanity/comlink'
 import {
   createCompatibilityActors,
@@ -22,6 +22,7 @@ import {
   usePrefersReducedMotion,
   useToast,
 } from '@sanity/ui'
+import {vars} from '@sanity/ui/css'
 import {useSelector} from '@xstate/react'
 import {AnimatePresence, motion, MotionConfig} from 'framer-motion'
 import {
@@ -204,7 +205,7 @@ export const Preview = memo(
       if (overlaysConnection === 'connecting') {
         const timeout = setTimeout(() => {
           setTimedOut(true)
-          // eslint-disable-next-line no-console
+
           console.error(
             `Unable to connect to visual editing. Make sure you've setup '@sanity/visual-editing' correctly`,
           )
@@ -488,7 +489,7 @@ export const Preview = memo(
                     style={{
                       inset: '0',
                       position: 'absolute',
-                      // boxShadow: '0 0 0 1px var(--card-shadow-outline-color)',
+                      // boxShadow: `0 0 0 1px ${vars.color.shadow.outline}`,
                     }}
                   >
                     <Flex
@@ -513,7 +514,7 @@ export const Preview = memo(
                     justify="center"
                     align="center"
                     style={{
-                      background: 'var(--card-bg-color)',
+                      background: vars.color.bg,
                       inset: '0',
                       position: 'absolute',
                     }}
@@ -528,7 +529,7 @@ export const Preview = memo(
                         <>
                           {overlaysConnection !== 'connected' && (
                             <Card padding={3} radius={2} tone="critical">
-                              <Stack space={3}>
+                              <Stack gap={3}>
                                 <Label muted size={0}>
                                   {t('preview-frame.overlay.connection-status.label')}
                                 </Label>
@@ -541,7 +542,7 @@ export const Preview = memo(
 
                           {loadersConnection !== 'connected' && (
                             <Card padding={3} radius={2} tone="critical">
-                              <Stack space={3}>
+                              <Stack gap={3}>
                                 <Label muted size={0}>
                                   {t('preview-frame.loader.connection-status.label')}
                                 </Label>
@@ -602,11 +603,11 @@ const errorVariants = {
 const iframeVariants = {
   desktop: {
     ...sizes.desktop,
-    boxShadow: '0 0 0 0px var(--card-border-color)',
+    boxShadow: `0 0 0 1px ${vars.color.border}`,
   },
   mobile: {
     ...sizes.mobile,
-    boxShadow: '0 0 0 1px var(--card-border-color)',
+    boxShadow: `0 0 0 1px ${vars.color.border}`,
   },
   background: {
     opacity: 0,

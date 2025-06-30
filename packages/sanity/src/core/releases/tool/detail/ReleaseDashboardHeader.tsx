@@ -43,7 +43,7 @@ export function ReleaseDashboardHeader(props: {
     <Flex align="flex-start">
       <Flex flex={1} gap={1}>
         <Breadcrumbs
-          space={0}
+          gap={0}
           separator={
             <Box paddingY={2}>
               <Text size={1}>
@@ -77,7 +77,7 @@ export function ReleaseDashboardHeader(props: {
           onClick={handleActivityClick}
           padding={2}
           selected={inspector === 'activity'}
-          space={2}
+          gap={2}
           text={t('dashboard.details.activity')}
         />
       </Flex>

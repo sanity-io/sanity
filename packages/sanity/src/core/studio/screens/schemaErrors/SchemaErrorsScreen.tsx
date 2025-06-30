@@ -21,7 +21,7 @@ export function SchemaErrorsScreen({schema}: SchemaErrorsScreenProps) {
   return (
     <Card height="fill" overflow="auto" paddingY={[4, 5, 6, 7]} paddingX={4} sizing="border">
       <Container width={1}>
-        <Stack space={5}>
+        <Stack gap={5}>
           <Heading as="h1">Schema errors</Heading>
           <SchemaProblemGroups problemGroups={groupsWithErrors} />
         </Stack>

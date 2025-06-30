@@ -1,7 +1,7 @@
 import {ArrowUpIcon, SearchIcon} from '@sanity/icons'
 import {Box, Card, Flex, Stack, Text, TextInput} from '@sanity/ui'
 import {motion} from 'framer-motion'
-import {useMemo} from 'react'
+import {type ChangeEvent, useMemo} from 'react'
 
 import {Button, type ButtonProps} from '../../../../../ui-components'
 import {useTranslation} from '../../../../i18n/hooks/useTranslation'
@@ -66,7 +66,9 @@ const TableHeaderSearch = ({
         radius={3}
         value={searchTerm || ''}
         disabled={searchDisabled}
-        onChange={(event) => setSearchTerm(event.currentTarget.value)}
+        onChange={(event: ChangeEvent<HTMLInputElement>) =>
+          setSearchTerm(event.currentTarget.value)
+        }
         onClear={() => setSearchTerm('')}
         clearButton={!!searchTerm}
       />
@@ -80,8 +82,13 @@ const TableHeaderSearch = ({
  */
 export const TableHeader = ({headers, searchDisabled}: TableHeaderProps) => {
   return (
-    <Card as="thead" borderBottom>
+    <Card
+      // @ts-expect-error - TODO: fix this in `@sanity/ui`
+      as="thead"
+      borderBottom
+    >
       <Flex
+        // @ts-expect-error - TODO: fix this in `@sanity/ui`
         as="tr"
         style={{
           paddingInline: `max(
@@ -96,6 +103,7 @@ export const TableHeader = ({headers, searchDisabled}: TableHeaderProps) => {
               <Header
                 key={String(id)}
                 headerProps={{
+                  // @ts-expect-error - TODO: fix this in `@sanity/ui`
                   as: 'th',
                   id: String(id),
                   style: {...style, width: width || undefined},

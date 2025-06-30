@@ -1,4 +1,5 @@
-import {Box, Card, type CardTone, Checkbox, Flex, Switch} from '@sanity/ui'
+import {Box, Card, Checkbox, Flex, Switch} from '@sanity/ui'
+import {type CardTone} from '@sanity/ui/theme'
 import {styled} from 'styled-components'
 
 import {Tooltip} from '../../../ui-components'
@@ -37,11 +38,12 @@ export function BooleanInput(props: BooleanInputProps) {
 
   const LayoutSpecificInput = layout === 'checkbox' ? Checkbox : Switch
 
-  const tone: CardTone | undefined = readOnly ? 'transparent' : undefined
+  const tone: CardTone | undefined = readOnly ? 'neutral' : undefined
 
   const input = (
     <Box padding={3} style={{paddingTop: '0.85rem'}}>
       <LayoutSpecificInput
+        // @ts-expect-error - TODO: fix this
         label={schemaType.title}
         {...elementProps}
         checked={checked}

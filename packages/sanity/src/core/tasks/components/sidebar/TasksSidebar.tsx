@@ -1,5 +1,5 @@
 import {Card, Flex, Spinner, Stack} from '@sanity/ui'
-import {motion} from 'framer-motion'
+import {vars} from '@sanity/ui/css'
 import {useCallback, useMemo} from 'react'
 import {styled} from 'styled-components'
 
@@ -12,14 +12,13 @@ import {TasksListFeedbackFooter} from './TaskListFeedbackFooter'
 import {TasksListTabs} from './TasksListTabs'
 import {TasksSidebarHeader} from './TasksSidebarHeader'
 
-const MotionCard = motion.create(Card)
-const RootCard = styled(MotionCard)`
+const RootCard = styled(Card)`
   flex: 1;
   flex-direction: column;
 `
 
 const HeaderStack = styled(Stack)`
-  border-bottom: 1px solid var(--card-border-color);
+  border-bottom: 1px solid ${vars.color.border};
 `
 
 const ContentFlex = styled(Flex)`
@@ -79,15 +78,8 @@ export function TasksStudioSidebarInner() {
   }, [filteredList, isLoading, onTaskSelect, selectedTask, viewMode, mode])
 
   return (
-    <RootCard
-      display="flex"
-      height="fill"
-      flex={1}
-      overflow="hidden"
-      initial={{opacity: 0}}
-      animate={{opacity: 1, transition: {duration: 0.2}}}
-    >
-      <HeaderStack space={3} padding={3} sizing="border">
+    <RootCard display="flex" height="fill" flex={1} overflow="hidden">
+      <HeaderStack gap={3} padding={3} sizing="border">
         <TasksSidebarHeader items={filteredList} />
         {viewMode === 'list' && !isLoading && (
           <TasksListTabs activeTabId={activeTabId} onChange={setActiveTab} />

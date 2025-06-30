@@ -99,6 +99,7 @@ function DocumentSheetListPaneInner({
   const renderRow = useCallback((row: Row<SanityDocument>) => {
     return (
       <Box
+        // @ts-expect-error - TODO: fix this in `@sanity/ui`
         as="tr"
         key={row.original._id + row.id}
         paddingY={2}
@@ -128,7 +129,11 @@ function DocumentSheetListPaneInner({
           <Table>
             <thead>
               {table.getHeaderGroups().map((headerGroup) => (
-                <Box as="tr" key={headerGroup.id}>
+                <Box
+                  // @ts-expect-error - TODO: fix this in `@sanity/ui`
+                  as="tr"
+                  key={headerGroup.id}
+                >
                   {headerGroup.headers.map((header) => (
                     <DocumentSheetListHeader
                       key={header.id}

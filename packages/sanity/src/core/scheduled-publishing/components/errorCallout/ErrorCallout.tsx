@@ -15,7 +15,7 @@ const ErrorCallout = (props: Props) => {
         <Text size={2}>
           <ErrorOutlineIcon />
         </Text>
-        <Inline space={2}>
+        <Inline gap={2}>
           <Text size={1} weight="semibold">
             {title}
           </Text>

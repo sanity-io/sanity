@@ -85,13 +85,13 @@ export function GroupChange(
     () =>
       hidden ? null : (
         <Stack
-          space={1}
+          gap={1}
           as={GroupChangeContainer}
           data-ui="group-change-content"
           data-revert-group-hover={isRevertButtonHovered ? '' : undefined}
           data-portable-text={isPortableText ? '' : undefined}
         >
-          <Stack as={ChangeListWrapper} space={5} data-ui="group-change-list">
+          <Stack as={ChangeListWrapper} gap={5} data-ui="group-change-list">
             {changes.map((change) => (
               <ChangeResolver
                 key={change.key}
@@ -107,7 +107,7 @@ export function GroupChange(
           {isComparingCurrent && !isPermissionsLoading && permissions?.granted && (
             <Popover
               content={
-                <Stack space={3}>
+                <Stack gap={3}>
                   <Box paddingY={3}>
                     <Text size={1}>
                       {t('changes.action.revert-changes-description', {count: changes.length})}
@@ -172,7 +172,7 @@ export function GroupChange(
     group.schemaType.of.some((ofType) => ofType.name === 'block')
 
   return hidden ? null : (
-    <Stack space={1} {...restProps}>
+    <Stack gap={1} {...restProps}>
       <ChangeBreadcrumb titlePath={titlePath} />
       {isNestedInDiff || isPortableTextGroupArray ? (
         content

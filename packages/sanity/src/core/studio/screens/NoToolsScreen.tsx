@@ -14,7 +14,7 @@ export function NoToolsScreen() {
                   <WarningOutlineIcon />
                 </Text>
               </Box>
-              <Stack flex={1} marginLeft={3} space={3}>
+              <Stack flex={1} marginLeft={3} gap={3}>
                 <Text as="h1" size={1} weight="medium">
                   No configured tools
                 </Text>

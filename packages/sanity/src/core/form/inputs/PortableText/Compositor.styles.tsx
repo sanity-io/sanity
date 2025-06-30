@@ -1,21 +1,10 @@
-/* eslint-disable camelcase */
-
 import {Layer} from '@sanity/ui'
-import {getTheme_v2} from '@sanity/ui/theme'
+import {vars} from '@sanity/ui/css'
 import {css, styled} from 'styled-components'
 
-import {focusRingBorderStyle, focusRingStyle} from '../../components/withFocusRing/helpers'
-
 export const Root = styled.div((props) => {
-  const {color, input, radius} = getTheme_v2(props.theme)
-
-  const border = {
-    color: color.input.default.enabled.border,
-    width: input.border.width,
-  }
-
   return css`
-    --input-box-shadow: ${focusRingBorderStyle(border)};
+    --input-box-shadow: inset 0 0 0 ${vars.input.border.width} ${vars.color.border};
 
     position: relative;
 
@@ -24,7 +13,7 @@ export const Root = styled.div((props) => {
       overflow: clip;
       position: relative;
       z-index: 1;
-      padding: ${input.border.width}px;
+      padding: ${vars.input.border.width};
     }
 
     & [data-border] {
@@ -35,16 +24,17 @@ export const Root = styled.div((props) => {
       bottom: 0;
       box-shadow: var(--input-box-shadow);
       z-index: 2;
-      border-radius: ${radius[2]}px;
+      border-radius: ${vars.radius[2]};
       pointer-events: none;
     }
 
     &:not([data-read-only])[data-focused] [data-border] {
-      --input-box-shadow: ${focusRingStyle({
+      --input-box-shadow: inset 0 0 0 ${vars.input.border.width} ${vars.color.border};
+      /* --input-box-shadow: focusRingStyle({
         base: color,
         border,
         focusRing: input.text.focusRing,
-      })};
+      }; */
     }
   `
 })

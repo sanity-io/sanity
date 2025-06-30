@@ -1,4 +1,5 @@
-import {Box, Card, Flex, Label, rem, Text} from '@sanity/ui'
+import {Box, Card, Flex, Label} from '@sanity/ui'
+import {vars} from '@sanity/ui/css'
 import {css, styled} from 'styled-components'
 
 export const Root = styled(Flex)`
@@ -8,7 +9,7 @@ export const Root = styled(Flex)`
   }
 
   & .Resizer {
-    background: var(--card-border-color);
+    background: ${vars.color.border};
     opacity: 1;
     z-index: 1;
     box-sizing: border-box;
@@ -17,7 +18,7 @@ export const Root = styled(Flex)`
   }
 
   & .Resizer:hover {
-    border-color: var(--card-shadow-ambient-color);
+    border-color: ${vars.color.shadow.ambient};
   }
 
   & .Resizer.horizontal {
@@ -49,7 +50,7 @@ export const Root = styled(Flex)`
 Root.displayName = 'Root'
 
 export const Header = styled(Card)`
-  border-bottom: 1px solid var(--card-border-color);
+  border-bottom: 1px solid ${vars.color.border};
 `
 
 export const StyledLabel = styled(Label)`
@@ -109,7 +110,7 @@ export const ResultContainer = styled(Card)<{$isInvalid: boolean}>`
     $isInvalid &&
     css`
       &:after {
-        background-color: var(--card-bg-color);
+        background-color: ${vars.color.bg};
         content: '';
         position: absolute;
         top: 0;
@@ -128,7 +129,7 @@ export const Result = styled(Box)`
 `
 
 export const ResultFooter = styled(Flex)`
-  border-top: 1px solid var(--card-border-color);
+  border-top: 1px solid ${vars.color.border};
 `
 
 export const TimingsCard = styled(Card)`
@@ -142,32 +143,14 @@ export const TimingsContainer = styled(Box)`
 
 export const TimingsTextContainer = styled(Flex)`
   height: 100%;
-  min-height: ${({theme}) =>
-    rem(
-      theme.sanity.space[3] * 2 +
-        theme.sanity.fonts.text.sizes[2].lineHeight -
-        theme.sanity.fonts.text.sizes[2].ascenderHeight -
-        theme.sanity.fonts.text.sizes[2].descenderHeight,
-    )};
-`
-
-export const DownloadsCard = styled(Card)`
-  position: relative;
-`
-
-export const SaveResultLabel = styled(Text)`
-  transform: initial;
-  &:before,
-  &:after {
-    content: none;
-  }
-  > span {
-    display: flex !important;
-    gap: ${({theme}) => rem(theme.sanity.space[3])};
-    align-items: center;
-  }
+  min-height: calc(
+    (${vars.space[3]} * 2) +
+    ${vars.font.text.scale[2].lineHeight} -
+    ${vars.font.text.scale[2].ascenderHeight} -
+    ${vars.font.text.scale[2].descenderHeight})
+  );
 `
 
 export const ControlsContainer = styled(Box)`
-  border-top: 1px solid var(--card-border-color);
+  border-top: 1px solid ${vars.color.border};
 `

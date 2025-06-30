@@ -4,7 +4,7 @@ import {
   type FileSchemaType,
   type ImageSchemaType,
 } from '@sanity/types'
-import {useTheme, useToast} from '@sanity/ui'
+import {useCard, useToast} from '@sanity/ui'
 import {createRef, type ReactNode, useCallback, useEffect, useState} from 'react'
 
 import {useTranslation} from '../../../../i18n'
@@ -31,9 +31,8 @@ export interface UploadAssetsDialogProps {
 export const UploadAssetsDialog = function UploadAssetsDialog(
   props: UploadAssetsDialogProps,
 ): ReactNode {
-  const theme = useTheme()
   const libraryId = useMediaLibraryId()
-  const {dark} = theme.sanity.color
+  const card = useCard()
   const {schemaType} = props
 
   const {onLinkAssets} = useLinkAssets({schemaType})
@@ -48,7 +47,7 @@ export const UploadAssetsDialog = function UploadAssetsDialog(
   const appHost = pluginConfig.__internal.hosts.app
   const pluginApiVersion = pluginConfig.__internal.pluginApiVersion
   const appBasePath = pluginConfig.__internal.appBasePath
-  const iframeUrl = `${appHost}${appBasePath}/plugin/${pluginApiVersion}/library/${libraryId}/upload?scheme=${dark ? 'dark' : 'light'}&auth=${authType}`
+  const iframeUrl = `${appHost}${appBasePath}/plugin/${pluginApiVersion}/library/${libraryId}/upload?scheme=${card.scheme}&auth=${authType}`
   const uploaderRef = createRef<{
     uploader: AssetSourceUploader
     unsubscribe: () => void

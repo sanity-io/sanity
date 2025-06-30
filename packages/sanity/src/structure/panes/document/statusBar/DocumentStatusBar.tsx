@@ -12,7 +12,7 @@ import {
 
 import {usePaneRouter} from '../../../components'
 import {SpacerButton} from '../../../components/spacerButton'
-import {DOCUMENT_PANEL_PORTAL_ELEMENT} from '../../../constants'
+import {DOCUMENT_FORM_PORTAL_ELEMENT} from '../../../constants'
 import {EMPTY_PARAMS} from '../constants'
 import {useDocumentPane} from '../useDocumentPane'
 import {useDocumentTitle} from '../useDocumentTitle'
@@ -68,7 +68,7 @@ export function DocumentStatusBar(props: DocumentStatusBarProps) {
     actions = (
       <CreateLinkedActions
         metadata={createLinkMetadata}
-        panelPortalElementId={DOCUMENT_PANEL_PORTAL_ELEMENT}
+        panelPortalElementId={DOCUMENT_FORM_PORTAL_ELEMENT}
         onDocumentChange={onDocumentChange}
         documentTitle={title}
       />

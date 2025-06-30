@@ -1,6 +1,7 @@
 import {CalendarIcon} from '@sanity/icons'
 // eslint-disable-next-line no-restricted-imports -- Bundle Button requires more fine-grained styling than studio button
 import {Button} from '@sanity/ui'
+import {vars} from '@sanity/ui/css'
 import {useCallback} from 'react'
 import {useObservable} from 'react-rx'
 import {useRouterState} from 'sanity/router'
@@ -17,7 +18,7 @@ const Dot = styled.div({
   width: 4,
   height: 4,
   borderRadius: 3,
-  boxShadow: '0 0 0 1px var(--card-bg-color)',
+  boxShadow: '0 0 0 1px ${vars.color.bg}',
 })
 
 const OversizedButton = styled(ToolLink)`
@@ -58,7 +59,7 @@ export function ReleasesToolLink(): React.JSX.Element {
           <Dot
             data-ui="error-status-icon"
             style={{
-              backgroundColor: `var(--card-badge-critical-dot-color)`,
+              backgroundColor: vars.color.solid.critical.bg[0],
             }}
           />
         )}
