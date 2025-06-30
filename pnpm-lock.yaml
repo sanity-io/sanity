@@ -373,9 +373,6 @@ importers:
       sanity:
         specifier: workspace:*
         version: link:../../packages/sanity
-      styled-components:
-        specifier: 'catalog:'
-        version: 6.1.19(react-dom@19.1.0(react@19.1.0))(react@19.1.0)
 
   dev/starter-studio:
     dependencies:
