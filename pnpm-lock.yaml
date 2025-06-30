@@ -923,8 +923,8 @@ importers:
         specifier: 'catalog:'
         version: 3.6.0(esbuild@0.25.5)
       get-it:
-        specifier: ^8.6.9
-        version: 8.6.9(debug@4.4.1)
+        specifier: ^8.6.10
+        version: 8.6.10(debug@4.4.1)
       groq-js:
         specifier: ^1.17.1
         version: 1.17.1
@@ -1815,8 +1815,8 @@ importers:
         specifier: ^12.19.2
         version: 12.19.2(@emotion/is-prop-valid@1.3.1)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
       get-it:
-        specifier: ^8.6.9
-        version: 8.6.9(debug@4.4.1)
+        specifier: ^8.6.10
+        version: 8.6.10(debug@4.4.1)
       get-random-values-esm:
         specifier: 1.0.2
         version: 1.0.2
@@ -7738,8 +7738,8 @@ packages:
     resolution: {integrity: sha512-9fSjSaos/fRIVIp+xSJlE6lfwhES7LNtKaCBIamHsjr2na1BiABJPo0mOjjz8GJDURarmCPGqaiVg5mfjb98CQ==}
     engines: {node: '>= 0.4'}
 
-  get-it@8.6.9:
-    resolution: {integrity: sha512-CSUbVbfTZZbRrPqiMPaV3mWw+3MDgRPANtqBxLSp94cUUUZVAZfjGDwArvu5z2bx5ABW2MNB5kdT3PTOxe3cTw==}
+  get-it@8.6.10:
+    resolution: {integrity: sha512-27StIK860ZVp2bhsG/aTWpcoA4OrFxtMqBbesa5sR23m5OxfVQYCnpm2rPQeo3gs5qsUk0FdkISLgXRJ4HynNw==}
     engines: {node: '>=14.0.0'}
 
   get-latest-version@5.1.0:
@@ -15002,7 +15002,7 @@ snapshots:
   '@sanity/client@6.29.1(debug@4.4.1)':
     dependencies:
       '@sanity/eventsource': 5.0.2
-      get-it: 8.6.9(debug@4.4.1)
+      get-it: 8.6.10(debug@4.4.1)
       rxjs: 7.8.2
     transitivePeerDependencies:
       - debug
@@ -15010,7 +15010,7 @@ snapshots:
   '@sanity/client@7.6.0(debug@4.4.1)':
     dependencies:
       '@sanity/eventsource': 5.0.2
-      get-it: 8.6.9(debug@4.4.1)
+      get-it: 8.6.10(debug@4.4.1)
       nanoid: 3.3.11
       rxjs: 7.8.2
     transitivePeerDependencies:
@@ -15127,7 +15127,7 @@ snapshots:
       '@sanity/util': 3.68.3(@types/react@19.1.8)(debug@4.4.1)
       archiver: 7.0.1
       debug: 4.4.1(supports-color@5.5.0)
-      get-it: 8.6.9(debug@4.4.1)
+      get-it: 8.6.10(debug@4.4.1)
       json-stream-stringify: 2.0.4
       lodash: 4.17.21
       mississippi: 4.0.0
@@ -15179,7 +15179,7 @@ snapshots:
       '@sanity/uuid': 3.0.2
       debug: 4.4.1(supports-color@5.5.0)
       file-url: 2.0.2
-      get-it: 8.6.9(debug@4.4.1)
+      get-it: 8.6.10(debug@4.4.1)
       get-uri: 2.0.4
       gunzip-maybe: 1.4.2
       is-tar: 1.0.0
@@ -19235,7 +19235,7 @@ snapshots:
       hasown: 2.0.2
       math-intrinsics: 1.1.0
 
-  get-it@8.6.9(debug@4.4.1):
+  get-it@8.6.10(debug@4.4.1):
     dependencies:
       '@types/follow-redirects': 1.14.4
       decompress-response: 7.0.0
@@ -19248,7 +19248,7 @@ snapshots:
 
   get-latest-version@5.1.0(debug@4.4.1):
     dependencies:
-      get-it: 8.6.9(debug@4.4.1)
+      get-it: 8.6.10(debug@4.4.1)
       registry-auth-token: 5.1.0
       registry-url: 5.1.0
       semver: 7.7.2
