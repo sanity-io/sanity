@@ -52,7 +52,7 @@ jobs:
 
       - name: Publish packages to npm
         run: |
-          npx lerna publish \
+          pnpm exec lerna publish \
           --force-publish \
           --git-tag-version \
           --exact \
