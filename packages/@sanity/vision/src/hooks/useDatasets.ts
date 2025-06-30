@@ -12,9 +12,9 @@ export function useDatasets({
 }: {
   client: SanityClient
   datasets: VisionConfig['datasets']
-}): string[] | Error | undefined {
+}): string[] | Error | null {
   const datasets$: Observable<string[] | Error> = useMemo(() => {
-    if (configDatasets && Array.isArray(configDatasets)) {
+    if (Array.isArray(configDatasets)) {
       return of(configDatasets)
     }
     return client.observable.datasets.list().pipe(
@@ -29,5 +29,5 @@ export function useDatasets({
   }, [client, configDatasets])
   const datasets = useObservable(datasets$, null)
 
-  return datasets || undefined
+  return datasets
 }
