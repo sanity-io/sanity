@@ -1,4 +1,4 @@
-import {type ReactCompilerConfig, type UserViteConfig} from '@sanity/cli'
+import {type CliOutputter, type ReactCompilerConfig, type UserViteConfig} from '@sanity/cli'
 import chalk from 'chalk'
 
 import {debug} from './debug'
@@ -14,6 +14,7 @@ export interface DevServerOptions {
   httpHost?: string
   projectName?: string
 
+  spinner: ReturnType<CliOutputter['spinner']>
   reactStrictMode: boolean
   reactCompiler: ReactCompilerConfig | undefined
   vite?: UserViteConfig
@@ -29,6 +30,7 @@ export interface DevServer {
 export async function startDevServer(options: DevServerOptions): Promise<DevServer> {
   const {
     cwd,
+    spinner,
     httpPort,
     httpHost,
     basePath,
@@ -77,6 +79,9 @@ export async function startDevServer(options: DevServerOptions): Promise<DevServ
     const startupDuration = Date.now() - startTime
     const url = `http://${httpHost || 'localhost'}:${httpPort || '3333'}${basePath}`
     const appType = isApp ? 'Sanity application' : 'Sanity Studio'
+
+    // Close the spinner before printing the message
+    spinner.succeed()
     info(
       `${appType} ` +
         `using ${chalk.cyan(`vite@${require('vite/package.json').version}`)} ` +
