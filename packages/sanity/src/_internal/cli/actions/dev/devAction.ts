@@ -228,8 +228,7 @@ export default async function startSanityDevServer(
 
   try {
     const spinner = output.spinner('Starting dev server').start()
-    await startDevServer({...config, skipStartLog: loadInDashboard})
-    spinner.succeed()
+    await startDevServer({...config, spinner, skipStartLog: loadInDashboard})
 
     if (loadInDashboard) {
       if (!organizationId) {
@@ -267,7 +266,7 @@ export function getDevServerConfig({
   workDir: string
   cliConfig?: CliConfig
   output: CliOutputter
-}): DevServerOptions {
+}): Omit<DevServerOptions, 'spinner'> {
   const configSpinner = output.spinner('Checking configuration files...')
   const baseConfig = getSharedServerConfig({
     flags: {
