@@ -1,7 +1,7 @@
 import {type SanityClient} from '@sanity/client'
 import {
-  type AssetSource,
   type AssetSourceUploader,
+  type AssetSourceUploaderClass,
   type AssetSourceUploadEvent,
   type AssetSourceUploadFile,
   type AssetSourceUploadSubscriber,
@@ -22,7 +22,7 @@ export class DatasetUploader implements AssetSourceUploader {
   private client: SanityClient
   private subscriptions: Map<string, Subscription> = new Map()
 
-  public constructor(private props: CreateDatasetAssetSourceProps) {
+  public constructor(props: CreateDatasetAssetSourceProps) {
     this.client = props.client
   }
 
@@ -167,6 +167,10 @@ export class DatasetUploader implements AssetSourceUploader {
 
 export function createDatasetUploader(
   props: CreateDatasetAssetSourceProps,
-): AssetSource['uploader'] {
-  return new DatasetUploader(props)
+): AssetSourceUploaderClass {
+  return class DatasetAssetSourceUploader extends DatasetUploader {
+    constructor() {
+      super(props)
+    }
+  }
 }

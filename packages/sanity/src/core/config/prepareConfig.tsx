@@ -35,6 +35,7 @@ import {
   documentCommentsEnabledReducer,
   documentInspectorsReducer,
   documentLanguageFilterReducer,
+  draftsEnabledReducer,
   eventsAPIReducer,
   fileAssetSourceResolver,
   imageAssetSourceResolver,
@@ -221,7 +222,7 @@ export function prepareConfig(
         types: schemaTypes,
       })
 
-      if (process.env.SANITY_STUDIO_SCHEMA_DESCRIPTOR) {
+      if (typeof process !== 'undefined' && process?.env?.SANITY_STUDIO_SCHEMA_DESCRIPTOR) {
         const before = performance.now()
         const sync = DESCRIPTOR_CONVERTER.get(schema)
         const after = performance.now()
@@ -593,6 +594,15 @@ function resolveSource({
           propertyName: 'document.badges',
           reducer: documentBadgesReducer,
         }),
+      drafts: {
+        enabled: resolveConfigProperty({
+          config,
+          context,
+          reducer: draftsEnabledReducer,
+          propertyName: 'document.drafts.enabled',
+          initialValue: true,
+        }),
+      },
       unstable_fieldActions: (partialContext) =>
         resolveConfigProperty({
           config,

@@ -8,7 +8,8 @@ describeCliTest('CLI: `sanity graphql`', () => {
   describeCliTest.each(studioVersions)('%s', (version) => {
     const testRunArgs = getTestRunArgs(version)
     const graphqlDataset = testRunArgs.graphqlDataset
-    const deployFlags = ['--force', '--dataset', graphqlDataset]
+    // TODO: remove '--hide-major-message' once version 4 is released
+    const deployFlags = ['--force', '--dataset', graphqlDataset, '--hide-major-message']
     const client = testClient.withConfig({dataset: graphqlDataset})
 
     testConcurrent('graphql deploy', async () => {
@@ -87,6 +88,8 @@ describeCliTest('CLI: `sanity graphql`', () => {
         '--dataset',
         graphqlDataset,
         '--force',
+        // TODO: remove once version 4 is released
+        '--hide-major-message',
       ])
       expect(result.code).toBe(0)
       expect(result.stdout).toMatch(/GraphQL API deleted/i)

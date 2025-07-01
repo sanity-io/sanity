@@ -5,6 +5,7 @@ import {css, styled} from 'styled-components'
 import {RELEASE_TYPES_TONES, type VersionInfoDocumentStub} from '../../releases'
 import {useActiveReleases} from '../../releases/store/useActiveReleases'
 import {getReleaseIdFromReleaseDocumentId} from '../../releases/util/getReleaseIdFromReleaseDocumentId'
+import {useWorkspace} from '../../studio/workspace'
 
 interface DocumentStatusProps {
   draft?: VersionInfoDocumentStub | undefined
@@ -54,6 +55,13 @@ type Status = 'published' | 'draft' | 'asap' | 'scheduled' | 'undecided'
  */
 export function DocumentStatusIndicator({draft, published, versions}: DocumentStatusProps) {
   const {data: releases} = useActiveReleases()
+
+  const {
+    document: {
+      drafts: {enabled: isDraftModelEnabled},
+    },
+  } = useWorkspace()
+
   const versionsList = useMemo(
     () =>
       versions
@@ -79,8 +87,8 @@ export function DocumentStatusIndicator({draft, published, versions}: DocumentSt
       show: Boolean(published),
     },
     {
-      status: 'draft',
-      show: Boolean(draft),
+      status: 'draft' as const,
+      show: isDraftModelEnabled && Boolean(draft),
     },
     {
       status: 'asap',

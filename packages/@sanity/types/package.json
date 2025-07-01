@@ -1,6 +1,6 @@
 {
   "name": "@sanity/types",
-  "version": "3.93.0",
+  "version": "3.96.0",
   "description": "Type definitions for common Sanity data structures",
   "keywords": [
     "sanity",
@@ -41,7 +41,7 @@
   ],
   "scripts": {
     "build": "pkg-utils build --strict --check --clean",
-    "check:types": "tsc --project tsconfig.lib.json",
+    "check:types": "(cd ../../.. && tsc --project packages/@sanity/types/tsconfig.lib.json --erasableSyntaxOnly)",
     "clean": "rimraf lib",
     "lint": "eslint .",
     "prepublishOnly": "turbo run build",

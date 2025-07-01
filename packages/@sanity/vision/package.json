@@ -1,6 +1,6 @@
 {
   "name": "@sanity/vision",
-  "version": "3.93.0",
+  "version": "3.96.0",
   "description": "Sanity plugin for running/debugging GROQ-queries against Sanity datasets",
   "keywords": [
     "sanity",
@@ -44,10 +44,11 @@
   "scripts": {
     "build": "pkg-utils build --strict --check --clean",
     "build:bundle": "vite build --configLoader runner --config package.bundle.ts",
-    "check:types": "tsc --project tsconfig.lib.json",
+    "check:types": "(cd ../../.. && tsc --project packages/@sanity/vision/tsconfig.lib.json --erasableSyntaxOnly)",
     "clean": "rimraf lib",
     "lint": "eslint .",
     "prepublishOnly": "turbo run build",
+    "test": "vitest",
     "watch": "pkg-utils watch"
   },
   "dependencies": {
@@ -74,13 +75,15 @@
     "quick-lru": "^5.1.1",
     "react-compiler-runtime": "19.1.0-rc.2",
     "react-fast-compare": "^3.2.2",
+    "react-rx": "^4.1.30",
     "rxjs": "^7.8.0",
-    "use-effect-event": "^2.0.1"
+    "use-effect-event": "^2.0.2"
   },
   "devDependencies": {
     "@repo/eslint-config": "workspace:*",
     "@repo/package.bundle": "workspace:*",
     "@repo/package.config": "workspace:*",
+    "@repo/test-config": "workspace:*",
     "@sanity/cli": "workspace:*",
     "@sanity/client": "^7.6.0",
     "@sanity/codegen": "workspace:*",
@@ -91,11 +94,16 @@
     "@sanity/schema": "workspace:*",
     "@sanity/types": "workspace:*",
     "@sanity/util": "workspace:*",
+    "@testing-library/react": "^16.3.0",
     "@types/lodash": "^4.17.7",
+    "@vitejs/plugin-react": "catalog:",
     "babel-plugin-react-compiler": "19.1.0-rc.2",
+    "jsdom": "^23.0.1",
     "react": "catalog:react18",
+    "react-dom": "catalog:react18",
     "sanity": "workspace:*",
-    "styled-components": "catalog:"
+    "styled-components": "catalog:",
+    "vitest": "^3.2.3"
   },
   "peerDependencies": {
     "react": "^18 || ^19.0.0",

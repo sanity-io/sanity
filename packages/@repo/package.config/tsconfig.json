@@ -1,0 +1,10 @@
+{
+  "extends": "@repo/tsconfig/build.json",
+  "include": ["./src"],
+  "compilerOptions": {
+    "rootDir": ".",
+    "module": "esnext",
+    "noEmit": true,
+    "skipLibCheck": true
+  }
+}

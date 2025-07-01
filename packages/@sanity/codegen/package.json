@@ -1,6 +1,6 @@
 {
   "name": "@sanity/codegen",
-  "version": "3.93.0",
+  "version": "3.96.0",
   "description": "Codegen toolkit for Sanity.io",
   "keywords": [
     "sanity",
@@ -41,7 +41,7 @@
   ],
   "scripts": {
     "build": "pkg-utils build --strict --check --clean",
-    "check:types": "tsc --project tsconfig.lib.json",
+    "check:types": "(cd ../../.. && tsc --project packages/@sanity/codegen/tsconfig.lib.json --erasableSyntaxOnly)",
     "clean": "rimraf lib coverage",
     "lint": "eslint .",
     "prepublishOnly": "turbo run build",
@@ -60,7 +60,7 @@
     "debug": "^4.3.4",
     "globby": "^11.1.0",
     "groq": "workspace:*",
-    "groq-js": "^1.17.0",
+    "groq-js": "^1.17.1",
     "json5": "^2.2.3",
     "tsconfig-paths": "^4.2.0",
     "zod": "^3.22.4"

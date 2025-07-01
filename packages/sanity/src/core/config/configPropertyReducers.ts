@@ -521,6 +521,21 @@ export const legacySearchEnabledReducer: ConfigPropertyReducer<boolean, ConfigCo
   return prev
 }
 
+export const draftsEnabledReducer: ConfigPropertyReducer<boolean, ConfigContext> = (
+  prev,
+  {document},
+): boolean => {
+  if (typeof document?.drafts?.enabled === 'boolean') {
+    return document?.drafts?.enabled
+  }
+
+  if (typeof document?.drafts?.enabled !== 'undefined') {
+    throw new Error(`Expected boolean, but received ${getPrintableType(document?.drafts?.enabled)}`)
+  }
+
+  return prev
+}
+
 /**
  * Some projects may already be using the `enableLegacySearch` option. In order to gracefully
  * migrate to the `strategy` option, this reducer produces a value that respects any existing

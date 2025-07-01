@@ -53,7 +53,7 @@ function UploadPlaceholderComponent(props: UploadPlaceholderProps) {
   const source = useSource()
 
   const assetSourcesWithUpload = useMemo(() => {
-    const result: AssetSource[] = assetSources.filter((s) => Boolean(s.uploader))
+    const result: AssetSource[] = assetSources.filter((s) => Boolean(s.Uploader))
     // If no asset sources are available, we create a default one to upload to the dataset
     if (result.length === 0) {
       const options = {

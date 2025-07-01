@@ -1,4 +1,4 @@
-import {type AssetFromSource, type AssetSource} from '@sanity/types'
+import {type AssetFromSource, type AssetSource, type AssetSourceUploader} from '@sanity/types'
 
 import {type FileInfo} from '../common/styles'
 import {type BaseFileInputProps} from './FileInput'
@@ -21,4 +21,5 @@ export interface FileAssetProps extends Omit<BaseFileInputProps, 'renderDefault'
   setIsBrowseMenuOpen: (isBrowseMenuOpen: boolean) => void
   setIsUploading: (isUploading: boolean) => void
   setSelectedAssetSource: (assetSource: AssetSource | null) => void
+  uploader?: AssetSourceUploader
 }

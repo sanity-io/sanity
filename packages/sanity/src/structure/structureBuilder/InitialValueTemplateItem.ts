@@ -16,13 +16,16 @@ export class InitialValueTemplateItemBuilder implements Serializable<InitialValu
   /** Initial Value template item option object. See {@link InitialValueTemplateItem} */
   protected spec: Partial<InitialValueTemplateItem>
 
+  protected _context: StructureContext
+
   constructor(
     /**
      * Structure context. See {@link StructureContext}
      */
-    protected _context: StructureContext,
+    _context: StructureContext,
     spec?: Partial<InitialValueTemplateItem>,
   ) {
+    this._context = _context
     this.spec = spec ? spec : {}
   }
 

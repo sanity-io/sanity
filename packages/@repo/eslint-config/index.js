@@ -89,7 +89,6 @@ export default [
     // Equivalent to `extends: ['sanity', 'sanity/react', 'sanity/import', 'sanity/typescript']` in ESLint 8
     plugins: {
       'simple-import-sort': simpleImportSort,
-      'import': importPlugin,
       'tsdoc': tsdocPlugin,
       'unused-imports': unusedImports,
       'react-compiler': reactCompiler,

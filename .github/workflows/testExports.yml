@@ -1,4 +1,4 @@
-name: Test exports works in native node ESM and CJS
+name: Test exports works in native node ESM and CJS and TypeScript DTS
 on:
   push:
 jobs:
@@ -55,6 +55,6 @@ jobs:
         if: steps.check_examples_only.outputs.examples_only != 'true'
         run: pnpm install
 
-      - name: Check export conditions in native node ESM and CJS
+      - name: Check export conditions in native node ESM and CJS, and TypeScript DTS
         if: steps.check_examples_only.outputs.examples_only != 'true'
         run: pnpm test:exports

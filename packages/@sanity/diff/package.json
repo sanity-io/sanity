@@ -1,6 +1,6 @@
 {
   "name": "@sanity/diff",
-  "version": "3.93.0",
+  "version": "3.96.0",
   "description": "Generates diffs between documents and primitive types",
   "keywords": [
     "sanity",
@@ -40,7 +40,7 @@
   ],
   "scripts": {
     "build": "pkg-utils build --strict --check --clean",
-    "check:types": "tsc --project tsconfig.lib.json",
+    "check:types": "(cd ../../.. && tsc --project packages/@sanity/diff/tsconfig.lib.json --erasableSyntaxOnly)",
     "clean": "rimraf lib coverage",
     "lint": "eslint .",
     "prepublishOnly": "turbo run build",

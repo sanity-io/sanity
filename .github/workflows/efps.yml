@@ -44,10 +44,10 @@ jobs:
           node-version: lts/*
 
       - name: Add PR comment placeholder
-        uses: thollander/actions-comment-pull-request@fabd468d3a1a0b97feee5f6b9e499eab0dd903f6 # v2
+        uses: thollander/actions-comment-pull-request@24bffb9b452ba05a4f3f77933840a6a841d1b32b # v3
         if: ${{ github.event_name == 'pull_request' }}
         with:
-          comment_tag: "efps-report"
+          comment-tag: "efps-report"
           message: |
             ### ⚡️ Editor Performance Report
 
@@ -59,7 +59,7 @@ jobs:
       - name: Store Playwright's Version
         id: playwright-version
         run: |
-          PLAYWRIGHT_VERSION=$(npx playwright --version | sed 's/Version //')
+          PLAYWRIGHT_VERSION=$(pnpm exec playwright --version | sed 's/Version //')
           echo "Playwright's Version: $PLAYWRIGHT_VERSION"
           echo "version=${PLAYWRIGHT_VERSION}" >> "$GITHUB_OUTPUT"
 
@@ -72,7 +72,7 @@ jobs:
 
       - name: Install Playwright Browsers
         if: steps.cache-playwright-browsers.outputs.cache-hit != 'true'
-        run: npx playwright install --with-deps
+        run: pnpm exec playwright install --with-deps
 
       - name: Run eFPS tests
         env:
@@ -117,8 +117,8 @@ jobs:
         run: pnpm efps:write:report
 
       - name: PR comment with report
-        uses: thollander/actions-comment-pull-request@fabd468d3a1a0b97feee5f6b9e499eab0dd903f6 # v2
+        uses: thollander/actions-comment-pull-request@24bffb9b452ba05a4f3f77933840a6a841d1b32b # v3
         if: ${{ github.event_name == 'pull_request' }}
         with:
-          comment_tag: "efps-report"
-          filePath: ${{ github.workspace }}/perf/efps/results/benchmark-results.md
+          comment-tag: "efps-report"
+          file-path: ${{ github.workspace }}/perf/efps/results/benchmark-results.md

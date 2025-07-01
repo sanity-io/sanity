@@ -1,6 +1,6 @@
 {
   "name": "@sanity/schema",
-  "version": "3.93.0",
+  "version": "3.96.0",
   "description": "",
   "keywords": [
     "sanity",
@@ -53,7 +53,7 @@
   ],
   "scripts": {
     "build": "pnpm clean && pkg-utils build --strict --check --clean",
-    "check:types": "tsc --project tsconfig.lib.json",
+    "check:types": "(cd ../../.. && tsc --project packages/@sanity/schema/tsconfig.lib.json --erasableSyntaxOnly)",
     "clean": "rimraf _internal.js lib",
     "lint": "eslint .",
     "prepublishOnly": "turbo run build",
@@ -66,7 +66,7 @@
     "@sanity/generate-help-url": "^3.0.0",
     "@sanity/types": "workspace:*",
     "arrify": "^2.0.1",
-    "groq-js": "^1.17.0",
+    "groq-js": "^1.17.1",
     "humanize-list": "^1.0.1",
     "leven": "^3.1.0",
     "lodash": "^4.17.21",
