@@ -58,7 +58,6 @@ export function CommentInputDiscardDialog(props: CommentInputDiscardDialogProps)
             tone: 'critical',
           },
         }}
-        // @ts-expect-error - TODO: fix this in `@sanity/ui`
         tone="default"
       >
         <Text size={1}>{t('discard.text')}</Text>

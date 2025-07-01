@@ -13,7 +13,7 @@ import {useTranslation} from 'react-i18next'
 
 /** @internal */
 export type DialogProps = Pick<
-  UIDialogProps,
+  UIDialogProps<'div'>,
   | '__unstable_autoFocus'
   | '__unstable_hideCloseButton'
   | 'contentRef'
@@ -25,6 +25,7 @@ export type DialogProps = Pick<
   | 'portal'
   | 'position'
   | 'scheme'
+  | 'tone'
   | 'width'
 > & {
   /**
