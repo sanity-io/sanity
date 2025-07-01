@@ -13,11 +13,8 @@ import {isValid} from 'date-fns'
 import {get} from 'lodash'
 import {
   type CSSProperties,
-  type ElementType,
   Fragment,
-  type HTMLProps,
   type MutableRefObject,
-  type RefAttributes,
   type RefObject,
   useMemo,
   useRef,
@@ -32,14 +29,7 @@ type RowDatum<TableData, AdditionalRowTableData> = (AdditionalRowTableData exten
   ? TableData
   : TableData & AdditionalRowTableData) & {isLoading?: boolean}
 
-export type TableRowProps = Omit<
-  // @ts-expect-error Fix this in @sanity/ui
-  CardProps<'tr'> & Omit<HTMLProps<HTMLDivElement>, 'as' | 'height'>,
-  'ref'
-> &
-  RefAttributes<HTMLDivElement> & {
-    as?: ElementType
-  }
+export type TableRowProps = CardProps<'tr'>
 
 type VirtualDatum = {
   virtualRow: VirtualItem
@@ -166,30 +156,14 @@ const TableInner = <TableData, AdditionalRowTableData>({
       sorting: false,
       width: 50,
       header: ({headerProps: {id}}) => (
-        <Flex
-          // @ts-expect-error Fix this in @sanity/ui
-          as="th"
-          id={id}
-          paddingY={3}
-          paddingX={3}
-          sizing="border"
-          style={{width: '50px'}}
-        >
+        <Flex as="th" id={id} paddingY={3} paddingX={3} sizing="border" style={{width: '50px'}}>
           <Text muted size={1} weight="medium">
             &nbsp;
           </Text>
         </Flex>
       ),
       cell: ({datum, cellProps: {id}}) => (
-        <Flex
-          // @ts-expect-error Fix this in @sanity/ui
-          as="td"
-          id={id}
-          align="center"
-          flex="none"
-          padding={3}
-          style={{width: '25px'}}
-        >
+        <Flex as="td" id={id} align="center" flex="none" padding={3} style={{width: '25px'}}>
           {(!datum.isLoading && rowActions?.({datum})) || <Box style={{width: '25px'}} />}
         </Flex>
       ),
@@ -214,11 +188,12 @@ const TableInner = <TableData, AdditionalRowTableData>({
         const cardRowProps = rowProps(datum as TableData)
         const cardKey = loading ? `skeleton-${datum.index}` : String(get(datum, rowId))
 
+        // cardRowProps.children
+
         return (
           <Card
             key={cardKey}
             data-testid="table-row"
-            // @ts-expect-error Fix this in @sanity/ui
             as="tr"
             borderBottom
             display="flex"
@@ -239,7 +214,6 @@ const TableInner = <TableData, AdditionalRowTableData>({
                     {...datum, isLoading: loading} as RowDatum<TableData, AdditionalRowTableData>
                   }
                   cellProps={{
-                    // @ts-expect-error Fix this in @sanity/ui
                     as: 'td',
                     id: String(id),
                     style: {...style, width: width || undefined},
@@ -258,7 +232,6 @@ const TableInner = <TableData, AdditionalRowTableData>({
     if (typeof emptyState === 'string') {
       return (
         <Card
-          // @ts-expect-error Fix this in @sanity/ui
           as="tr"
           borderBottom
           display="flex"
@@ -267,14 +240,11 @@ const TableInner = <TableData, AdditionalRowTableData>({
             justifyContent: 'center',
           }}
         >
-          <Text
-            // @ts-expect-error Fix this in @sanity/ui
-            as="td"
-            muted
-            size={1}
-          >
-            {emptyState}
-          </Text>
+          <td>
+            <Text muted size={1}>
+              {emptyState}
+            </Text>
+          </td>
         </Card>
       )
     }
@@ -351,20 +321,12 @@ const TableInner = <TableData, AdditionalRowTableData>({
           } as CSSProperties
         }
       >
-        <Stack
-          // @ts-expect-error Fix this in @sanity/ui
-          as="table"
-        >
+        <Stack as="table">
           <TableHeader
             headers={headers}
             searchDisabled={loading || (!searchTerm && !data.length)}
           />
-          <Stack
-            // @ts-expect-error Fix this in @sanity/ui
-            as="tbody"
-          >
-            {tableContent()}
-          </Stack>
+          <Stack as="tbody">{tableContent()}</Stack>
         </Stack>
       </div>
     </div>

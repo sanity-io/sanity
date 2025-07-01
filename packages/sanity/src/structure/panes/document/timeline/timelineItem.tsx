@@ -165,14 +165,7 @@ export function TimelineItem({
               {t(TIMELINE_ITEM_I18N_KEY_MAPPING[type]) || <code>{type}</code>}
             </Text>
 
-            <Text
-              // @ts-expect-error - TODO: fix this in `@sanity/ui`
-              as="time"
-              size={1}
-              muted
-              dateTime={timestamp}
-              title={formattedTimestamp}
-            >
+            <Text as="time" size={1} muted dateTime={timestamp} title={formattedTimestamp}>
               {updatedTimeAgo}
             </Text>
           </Stack>

@@ -104,13 +104,7 @@ function AnnotationItem({annotation}: {annotation: AnnotationDetails}) {
               </>
             )}
           </Flex>
-          <Text
-            // @ts-expect-error - TODO: fix this in `@sanity/ui`
-            as="time"
-            muted
-            size={1}
-            dateTime={timestamp}
-          >
+          <Text as="time" muted size={1} dateTime={timestamp}>
             {timeAgo}
           </Text>
         </Inline>

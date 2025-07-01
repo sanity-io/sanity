@@ -428,13 +428,7 @@ export const AssetRow = (props: RowProps): React.JSX.Element => {
           </Box>
         </CustomFlex>
         <CustomFlex align="center">
-          <Text
-            // @ts-expect-error - TODO: fix this in `@sanity/ui`
-            as="time"
-            size={1}
-            muted
-            dateTime={_createdAt}
-          >
+          <Text as="time" size={1} muted dateTime={_createdAt}>
             {formattedTime}
           </Text>
         </CustomFlex>

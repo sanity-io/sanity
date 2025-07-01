@@ -173,14 +173,7 @@ export function Event({event, showChangesBy = 'tooltip'}: TimelineItemProps) {
             )}
           </Text>
 
-          <Text
-            // @ts-expect-error - TODO: @sanity/ui should support this
-            as="time"
-            size={1}
-            muted
-            dateTime={timestamp}
-            title={formattedTimestamp}
-          >
+          <Text as="time" size={1} muted dateTime={timestamp} title={formattedTimestamp}>
             {updatedTimeAgo}
           </Text>
         </Stack>

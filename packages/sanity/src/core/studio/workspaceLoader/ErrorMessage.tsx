@@ -57,12 +57,7 @@ export function ErrorMessage({error, message, path, stack}: ErrorMessageProps) {
 
       {stack && (
         <details>
-          <Text
-            // @ts-expect-error - TODO: fix this in `@sanity/ui`
-            as="summary"
-          >
-            Stack Trace
-          </Text>
+          <Text as="summary">Stack Trace</Text>
 
           <Box overflow="auto" marginTop={4}>
             <Code>{stack}</Code>
