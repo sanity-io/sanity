@@ -295,7 +295,7 @@ Once you've tested your function locally and are satisfied with its behavior, yo
 ### Deployment best practices
 
 - **Test thoroughly first** - Always test your function locally before deploying
-- **Monitor AI usage** - AI-powered functions may have usage limits or costs
+- **Monitor AI usage** - Agent Actions have usage limits and costs.  Visit Settings in your Manage console to learn more
 - **Avoid recursion** - The filter `!defined(tags)` prevents the function from re-triggering
 - **Check permissions** - Ensure your function has access to Sanity's AI capabilities
 - **Use specific filters** - The current filter only targets posts without tags to avoid unnecessary executions
