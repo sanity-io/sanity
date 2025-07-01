@@ -165,6 +165,8 @@ export function createReleaseOperationsStore(options: {
     const versionDocument = prepareVersionReferences({
       ...document,
       ...initialValue,
+      // This will automatically be set by CL when creating the version document.
+      _updatedAt: undefined,
       _id: getVersionId(documentId, releaseId),
     }) as IdentifiedSanityDocumentStub
 
