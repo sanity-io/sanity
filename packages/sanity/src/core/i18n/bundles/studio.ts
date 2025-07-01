@@ -1320,6 +1320,8 @@ export const studioLocaleStrings = defineLocalesResources('studio', {
     'The intended release time is used to create better previews and hints about whether documents conflict.',
   /** Label for noting that a release time is not final */
   'release.dialog.tooltip.note': 'You can always change it later.',
+  /** Label for loading state of submit button in create release dialog when waiting to check release quota */
+  'release.dialog.tooltip.submit.loading': 'Checking release quota…',
   /** Title for tooltip to explain release time */
   'release.dialog.tooltip.title': 'Approximate time of release',
   /** The placeholder text when the release doesn't have a description */
