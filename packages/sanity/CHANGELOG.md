@@ -3,6 +3,45 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [3.96.0](https://github.com/sanity-io/sanity/compare/v3.95.0...v3.96.0) (2025-07-01)
+
+### Features
+
+* **sanity:** account for draft model being switched off in `isPerspectiveWriteable` ([3d68545](https://github.com/sanity-io/sanity/commit/3d68545b2d818f136155958c5289b0eaf464332c)) by Ash (ash@sanity.io)
+* **sanity:** add `document.drafts.enabled` configuration option ([a06c4a5](https://github.com/sanity-io/sanity/commit/a06c4a5d088d46ca7799d065ac1b115a7cb6ff8c)) by Ash (ash@sanity.io)
+* **sanity:** add draft model switched off message to `ChooseNewDocumentDestinationBanner` ([1337002](https://github.com/sanity-io/sanity/commit/1337002f8bca8cf78b04dbbeb2bb7bd840c78430)) by Ash (ash@sanity.io)
+* **sanity:** add option to compare draft to `ObsoleteDraftBanner` ([0f6c350](https://github.com/sanity-io/sanity/commit/0f6c350d69abecf5c7d6bcd10e41344b6cb51ae5)) by Ash (ash@sanity.io)
+* **sanity:** do not render draft status indicators if draft model is not switched on ([453e102](https://github.com/sanity-io/sanity/commit/453e102efd597e5ff9a12f5c8044efd8f5b4ed6d)) by Ash (ash@sanity.io)
+* **sanity:** enable dynamic default perspective ([508c736](https://github.com/sanity-io/sanity/commit/508c73673cd26f0a6f1b3da3fa34de821dc58f23)) by Ash (ash@sanity.io)
+* **sanity:** exclude drafts from perspective stack when draft model is not switched on ([242c878](https://github.com/sanity-io/sanity/commit/242c878cee9be6fac74462c938e414aa5b0c8be6)) by Ash (ash@sanity.io)
+* **sanity:** make global perspective picker compatible with any default perspective ([45a6712](https://github.com/sanity-io/sanity/commit/45a67126328166e05fd60d16986d01b07dce8ef3)) by Ash (ash@sanity.io)
+* **sanity:** prevent non-live-edit-document creation when the draft model is not switched on ([20c6a6f](https://github.com/sanity-io/sanity/commit/20c6a6f49aba9a0dd54d51be2b1f968d20ce7662)) by Ash (ash@sanity.io)
+* **sanity:** refine obsolete draft copy ([af4c563](https://github.com/sanity-io/sanity/commit/af4c563f36c6b899eac2885041ffbeaf3f6ff837)) by Ash (ash@sanity.io)
+* **sanity:** warn of obsolete drafts when draft model is switched off ([1fd984a](https://github.com/sanity-io/sanity/commit/1fd984afdffe2ba05968120e763e97f909138ebb)) by Ash (ash@sanity.io)
+
+### Bug Fixes
+
+* add visual indicator when text is removed ([#9832](https://github.com/sanity-io/sanity/issues/9832)) ([ae8c0c1](https://github.com/sanity-io/sanity/commit/ae8c0c19bdb7953b6da1b8e39b7760db9784e181)) by RitaDias (rita@sanity.io)
+* **cli:** fixes dev command message ([#9856](https://github.com/sanity-io/sanity/issues/9856)) ([27f0d0c](https://github.com/sanity-io/sanity/commit/27f0d0cc972c3cfe8ac0cbef6828e0cc4a11d373)) by Binoy Patel (me@binoy.io)
+* **core:** add 10th text level in PTE ([#9783](https://github.com/sanity-io/sanity/issues/9783)) ([da4dc30](https://github.com/sanity-io/sanity/commit/da4dc305cc1397d3c0ebd046c41a0ae22d0872ee)) by Christian Grøngaard (christian.groengaard@sanity.io)
+* **core:** PTE open referenced documents from annotation popup ([#9643](https://github.com/sanity-io/sanity/issues/9643)) ([d4af0c8](https://github.com/sanity-io/sanity/commit/d4af0c8c5a761661b789d34a71afc1b6ee6dc5fc)) by Pedro Bonamin (46196328+pedrobonamin@users.noreply.github.com)
+* **core:** set `_updateAt` to the creation time in version documents ([#9861](https://github.com/sanity-io/sanity/issues/9861)) ([4d354aa](https://github.com/sanity-io/sanity/commit/4d354aaa63d1e2aaa1c1549593d317bfd00448a4)) by Pedro Bonamin (46196328+pedrobonamin@users.noreply.github.com)
+* **core:** tasks active tool animation ([#9840](https://github.com/sanity-io/sanity/issues/9840)) ([27d3390](https://github.com/sanity-io/sanity/commit/27d33905a9da9b3131f57cb85dddcebf6c2201c8)) by Pedro Bonamin (46196328+pedrobonamin@users.noreply.github.com)
+* **core:** use `data-list-index` on PTE blocks to improve list counts ([#9784](https://github.com/sanity-io/sanity/issues/9784)) ([de51f45](https://github.com/sanity-io/sanity/commit/de51f4535d9b3d059a359c90f101ca6884ca2764)) by Christian Grøngaard (christian.groengaard@sanity.io)
+* **core:** version chip disables context menu when releases are disabled ([#9815](https://github.com/sanity-io/sanity/issues/9815)) ([2b39112](https://github.com/sanity-io/sanity/commit/2b39112d0c6ec9a0aff88f9d114b518a6665ab95)) by Jordan Lawrence (jordanl17@me.com)
+* **deps:** update dependency @portabletext/block-tools to ^1.1.33 ([#9835](https://github.com/sanity-io/sanity/issues/9835)) ([2349c0d](https://github.com/sanity-io/sanity/commit/2349c0dca29dd6fec0565307fb0beaff62fdbbe0)) by renovate[bot] (29139614+renovate[bot]@users.noreply.github.com)
+* **deps:** update dependency @portabletext/editor to ^1.55.10 ([#9852](https://github.com/sanity-io/sanity/issues/9852)) ([0b5b051](https://github.com/sanity-io/sanity/commit/0b5b051a625ef2520d28db6ba04a91eb1e3590eb)) by renovate[bot] (29139614+renovate[bot]@users.noreply.github.com)
+* **deps:** update dependency @portabletext/editor to ^1.55.11 ([#9855](https://github.com/sanity-io/sanity/issues/9855)) ([f1056cb](https://github.com/sanity-io/sanity/commit/f1056cb6254266ca27b92d4cfbcd1a3c37884f71)) by renovate[bot] (29139614+renovate[bot]@users.noreply.github.com)
+* **deps:** update dependency @portabletext/editor to ^1.55.6 ([#9823](https://github.com/sanity-io/sanity/issues/9823)) ([73df0cc](https://github.com/sanity-io/sanity/commit/73df0cce7ea850f93de43216571c104df6da3e4b)) by renovate[bot] (29139614+renovate[bot]@users.noreply.github.com)
+* **deps:** update dependency @portabletext/editor to ^1.55.7 ([#9836](https://github.com/sanity-io/sanity/issues/9836)) ([1f575ec](https://github.com/sanity-io/sanity/commit/1f575ec2ca39cda578c65bafabed2e11d878aa31)) by renovate[bot] (29139614+renovate[bot]@users.noreply.github.com)
+* **deps:** update dependency @portabletext/editor to ^1.55.8 ([#9845](https://github.com/sanity-io/sanity/issues/9845)) ([979723c](https://github.com/sanity-io/sanity/commit/979723c453547381cb8651d8ca7631a1dec940a6)) by renovate[bot] (29139614+renovate[bot]@users.noreply.github.com)
+* **deps:** update dependency @portabletext/editor to ^1.55.9 ([#9848](https://github.com/sanity-io/sanity/issues/9848)) ([e64a97a](https://github.com/sanity-io/sanity/commit/e64a97a66c30a8180b68fe65856aa215682a959b)) by renovate[bot] (29139614+renovate[bot]@users.noreply.github.com)
+* **deps:** update dependency @sanity/export to ^3.45.1 ([#9809](https://github.com/sanity-io/sanity/issues/9809)) ([c1d0a72](https://github.com/sanity-io/sanity/commit/c1d0a7253ca030e2dc6d6be2b61a59f38b34d2cd)) by renovate[bot] (29139614+renovate[bot]@users.noreply.github.com)
+* **deps:** update dependency @sanity/export to ^3.45.2 ([#9831](https://github.com/sanity-io/sanity/issues/9831)) ([95e7cb5](https://github.com/sanity-io/sanity/commit/95e7cb561da08e144199d6e38ee2a8c861a29b95)) by renovate[bot] (29139614+renovate[bot]@users.noreply.github.com)
+* **deps:** update dependency framer-motion to ^12.19.2 ([#9844](https://github.com/sanity-io/sanity/issues/9844)) ([f7775ed](https://github.com/sanity-io/sanity/commit/f7775ed97082192b9f84e17605bd3b3e734b1c74)) by renovate[bot] (29139614+renovate[bot]@users.noreply.github.com)
+* **deps:** update dependency get-it to ^8.6.10 ([#9859](https://github.com/sanity-io/sanity/issues/9859)) ([3185e41](https://github.com/sanity-io/sanity/commit/3185e41f4a4044e3de78a6ffae81c20e008465a4)) by renovate[bot] (29139614+renovate[bot]@users.noreply.github.com)
+* **deps:** update dependency scrollmirror to ^1.2.4 ([#9817](https://github.com/sanity-io/sanity/issues/9817)) ([d41f202](https://github.com/sanity-io/sanity/commit/d41f20209f2693eaacd999bc5966d998dedbcbc4)) by renovate[bot] (29139614+renovate[bot]@users.noreply.github.com)
+
 ## [3.95.0](https://github.com/sanity-io/sanity/compare/v3.94.2...v3.95.0) (2025-06-25)
 
 ### Features

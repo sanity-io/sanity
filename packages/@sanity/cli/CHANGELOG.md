@@ -3,6 +3,13 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [3.96.0](https://github.com/sanity-io/sanity/compare/v3.95.0...v3.96.0) (2025-07-01)
+
+### Bug Fixes
+
+* **deps:** update dependency get-it to ^8.6.10 ([#9859](https://github.com/sanity-io/sanity/issues/9859)) ([3185e41](https://github.com/sanity-io/sanity/commit/3185e41f4a4044e3de78a6ffae81c20e008465a4)) by renovate[bot] (29139614+renovate[bot]@users.noreply.github.com)
+* Update runtime-cli dependency ([#9857](https://github.com/sanity-io/sanity/issues/9857)) ([45cf8f0](https://github.com/sanity-io/sanity/commit/45cf8f05a7cd81b5be7a3fce6a23b04e4928cb2d)) by Simon MacDonald (simon.macdonald@gmail.com)
+
 ## [3.95.0](https://github.com/sanity-io/sanity/compare/v3.94.2...v3.95.0) (2025-06-25)
 
 **Note:** Version bump only for package @sanity/cli
