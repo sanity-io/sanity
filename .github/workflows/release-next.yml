@@ -4,6 +4,7 @@ on:
   push:
     branches:
       - main
+      - check-release-whoami
 
 permissions:
   contents: read # for checkout
@@ -16,6 +17,7 @@ jobs:
     env:
       TURBO_TOKEN: ${{ secrets.TURBO_TOKEN }}
       TURBO_TEAM: ${{ vars.TURBO_TEAM }}
+      EXPECTED_NPM_USER: sanity-io
     steps:
       - uses: actions/create-github-app-token@v2
         id: generate-token
@@ -44,6 +46,16 @@ jobs:
         run: pnpm config set '//registry.npmjs.org/:_authToken' "${NPM_PUBLISH_TOKEN}"
         env:
           NPM_PUBLISH_TOKEN: ${{secrets.NPM_PUBLISH_TOKEN}}
+
+      - name: Check valid token
+        run: |
+          WHOAMI_RESULT=$(npm whoami)
+          echo "npm whoami result: $WHOAMI_RESULT"
+          if [ "$WHOAMI_RESULT" != "$EXPECTED_NPM_USER" ]; then
+            echo "Error: npm whoami returned '$WHOAMI_RESULT', expected '$EXPECTED_NPM_USER'"
+            exit 1
+          fi
+          echo "✅ npm authentication validated - using $EXPECTED_NPM_USER account"
 
       - name: Publish packages to npm
         # Note: ubuntu-latest ships with lerna installed on the system
