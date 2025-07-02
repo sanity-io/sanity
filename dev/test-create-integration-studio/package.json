@@ -1,13 +1,13 @@
 {
   "name": "test-create-integration-studio",
-  "version": "3.95.0",
+  "version": "3.96.0",
   "private": true,
   "license": "MIT",
   "author": "Sanity.io <hello@sanity.io>",
   "scripts": {
     "build": "../.bin/sanity build",
     "clean": "rimraf .sanity dist",
-    "deploy": "../.bin/sanity sanity deploy",
+    "deploy": "npx sanity deploy",
     "dev": "../.bin/sanity dev",
     "lint": "eslint .",
     "start": "../.bin/sanity start"
