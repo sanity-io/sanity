@@ -4,7 +4,6 @@ on:
   push:
     branches:
       - main
-      - check-release-whoami
 
 permissions:
   contents: read # for checkout
@@ -17,7 +16,7 @@ jobs:
     env:
       TURBO_TOKEN: ${{ secrets.TURBO_TOKEN }}
       TURBO_TEAM: ${{ vars.TURBO_TEAM }}
-      EXPECTED_NPM_USER: not-sanity-io
+      EXPECTED_NPM_USER: sanity-io
     steps:
       - uses: actions/create-github-app-token@v2
         id: generate-token
