@@ -1276,12 +1276,12 @@ export const studioLocaleStrings = defineLocalesResources('studio', {
     'Please try again or check your connection. The version is still going to be unpublished upon release.',
   /** Error message title for when a version is reverted from being unpublished */
   'release.action.revert-unpublish-version.failure.title':
-    'Failed to revert from being unpublished on release.',
+    'Failed to revert from setting to unpublish on release.',
   /** Action message description for when a version is reverted from being unpublished */
   'release.action.revert-unpublish-version.success.description': 'You can now edit this version.',
   /** Action message title for when a version is reverted from being unpublished */
   'release.action.revert-unpublish-version.success.title':
-    'Successfully reverted <strong>{{title}}</strong> from being unpublished on release.',
+    'Successfully reverted from setting to unpublish on release.',
   /** Error message for when a version is set to be unpublished */
   'release.action.unpublish-version.failure': 'Failed to set version to be unpublished on release',
   /** Action message for when a version is set to be unpublished successfully */

@@ -8,9 +8,7 @@ import {
   type DocumentActionDescription,
   type DocumentActionProps,
 } from '../../../config/document/actions'
-import {useSchema} from '../../../hooks/useSchema'
-import {Translate, useTranslation} from '../../../i18n'
-import {unstable_useValuePreview as useValuePreview} from '../../../preview'
+import {useTranslation} from '../../../i18n'
 import {useDocumentPairPermissions} from '../../../store/_legacy/grants/documentPairPermissions'
 import {useCurrentUser} from '../../../store/user/hooks'
 import {UnpublishVersionDialog} from '../../components/dialog/UnpublishVersionDialog'
@@ -41,9 +39,6 @@ export const UnpublishVersionAction: DocumentActionComponent = (
   })
 
   const [dialogOpen, setDialogOpen] = useState(false)
-  const schema = useSchema()
-  const schemaType = schema.get(type)
-  const preview = useValuePreview({schemaType, value: {_id: version?._id}})
 
   const handleDialogOpen = useCallback(async () => {
     // if the document is already unpublished, revert the unpublish
@@ -53,13 +48,7 @@ export const UnpublishVersionAction: DocumentActionComponent = (
         toast.push({
           closable: true,
           status: 'success',
-          title: (
-            <Translate
-              t={coreT}
-              i18nKey={'release.action.revert-unpublish-version.success.title'}
-              values={{title: preview?.value?.title || version?._id}}
-            />
-          ),
+          title: coreT('release.action.revert-unpublish-version.success.title'),
           description: coreT('release.action.revert-unpublish-version.success.description'),
         })
       } catch (err) {
@@ -73,15 +62,7 @@ export const UnpublishVersionAction: DocumentActionComponent = (
     } else {
       setDialogOpen(true)
     }
-  }, [
-    isAlreadyUnpublished,
-    version,
-    revertUnpublishVersion,
-    toast,
-    coreT,
-    preview?.value?.title,
-    t,
-  ])
+  }, [isAlreadyUnpublished, version, revertUnpublishVersion, toast, coreT, t])
 
   if (!version) return null
 
