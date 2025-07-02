@@ -1,6 +1,6 @@
 {
   "name": "@sanity/mutator",
-  "version": "3.95.0",
+  "version": "3.96.0",
   "description": "A set of models to make it easier to utilize the powerful real time collaborative features of Sanity",
   "keywords": [
     "sanity",
@@ -40,7 +40,7 @@
   ],
   "scripts": {
     "build": "pkg-utils build --strict --check --clean",
-    "check:types": "tsc --project tsconfig.lib.json",
+    "check:types": "(cd ../../.. && tsc --project packages/@sanity/mutator/tsconfig.lib.json --erasableSyntaxOnly)",
     "clean": "rimraf lib",
     "lint": "eslint .",
     "perf": "node ./perf/run.js",

@@ -1,6 +1,6 @@
 {
   "name": "@sanity/util",
-  "version": "3.95.0",
+  "version": "3.96.0",
   "description": "Utilities shared across projects of Sanity",
   "keywords": [
     "sanity",
@@ -107,7 +107,7 @@
   ],
   "scripts": {
     "build": "pnpm clean && pkg-utils build --strict --check --clean",
-    "check:types": "tsc --project tsconfig.lib.json",
+    "check:types": "(cd ../../.. && tsc --project packages/@sanity/util/tsconfig.lib.json --erasableSyntaxOnly)",
     "clean": "rimraf client.js concurrency-limiter.js content.js createSafeJsonParser.js fs.js legacyDateFormat.js lib paths.js",
     "lint": "eslint .",
     "prepublishOnly": "turbo run build",

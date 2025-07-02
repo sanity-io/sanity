@@ -3,6 +3,10 @@
   "extends": ["//"],
   "tasks": {
     "test": {
+      "dependsOn": ["generate:dts-exports"]
+    },
+    "generate:dts-exports": {
+      "env": ["TEST_DTS_EXPORTS_DIAGNOSTICS"],
       "dependsOn": ["^build"]
     }
   }

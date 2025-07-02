@@ -832,6 +832,8 @@ describeCliTest('CLI: `sanity init v3`', () => {
         `${baseTestPath}/${outpath}`,
         '--package-manager',
         'manual',
+        // TODO: remove once version 4 is released
+        '--hide-major-message',
       ])
 
       // Check if essential files exist
@@ -873,6 +875,8 @@ describeCliTest('CLI: `sanity init v3`', () => {
         `${baseTestPath}/${outpath}`,
         '--package-manager',
         'manual',
+        // TODO: remove once version 4 is released
+        '--hide-major-message',
       ])
 
       const hasPackageJson = await fs
@@ -913,6 +917,8 @@ describeCliTest('CLI: `sanity init v3`', () => {
         `${baseTestPath}/${outpath}`,
         '--package-manager',
         'manual',
+        // TODO: remove once version 4 is released
+        '--hide-major-message',
       ])
 
       const envContent = await fs.readFile(path.join(baseTestPath, outpath, '.env.local'), 'utf-8')
@@ -944,6 +950,8 @@ describeCliTest('CLI: `sanity init v3`', () => {
           `${baseTestPath}/${outpath}`,
           '--package-manager',
           'manual',
+          // TODO: remove once version 4 is released
+          '--hide-major-message',
         ]),
       ).rejects.toThrow()
     })
@@ -969,6 +977,8 @@ describeCliTest('CLI: `sanity init v3`', () => {
           `${baseTestPath}/${outpath}`,
           '--package-manager',
           'manual',
+          // TODO: remove once version 4 is released
+          '--hide-major-message',
         ]),
       ).rejects.toThrow(
         'GitHub repository not found. For private repositories, use --template-token to provide an access token',
