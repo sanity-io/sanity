@@ -22,6 +22,7 @@
       "sanity/_createContext": ["./packages/sanity/src/_exports/_createContext.ts"],
       "sanity/cli": ["./packages/sanity/src/_exports/cli.ts"],
       "sanity/desk": ["./packages/sanity/src/_exports/desk.ts"],
+      "sanity/media-library": ["./packages/sanity/src/_exports/media-library.ts"],
       "sanity/migrate": ["./packages/sanity/src/_exports/migrate.ts"],
       "sanity/presentation": ["./packages/sanity/src/_exports/presentation.ts"],
       "sanity/router": ["./packages/sanity/src/_exports/router.ts"],

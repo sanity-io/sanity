@@ -203,7 +203,7 @@ function ObjectOrArrayField(field: ObjectFieldProps | ArrayFieldProps) {
   )
 }
 
-function ImageOrFileField(field: ObjectFieldProps) {
+function ImageOrFileOrVideoField(field: ObjectFieldProps) {
   const [fieldActionsNodes, setFieldActionNodes] = useState<DocumentFieldActionNode[]>(EMPTY_ARRAY)
   const documentId = usePublishedId()
   const focused = Boolean(field.inputProps.focused)
@@ -268,8 +268,8 @@ export function defaultResolveFieldComponent(
 
   const typeChain = getTypeChain(schemaType, new Set())
 
-  if (typeChain.some((t) => t.name === 'image' || t.name === 'file')) {
-    return ImageOrFileField as ComponentType<Omit<FieldProps, 'renderDefault'>>
+  if (typeChain.some((t) => t.name === 'image' || t.name === 'file' || t.name === 'video')) {
+    return ImageOrFileOrVideoField as ComponentType<Omit<FieldProps, 'renderDefault'>>
   }
 
   if (typeChain.some((t) => isCrossDatasetReferenceSchemaType(t))) {
