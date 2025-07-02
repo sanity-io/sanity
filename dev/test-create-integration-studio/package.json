@@ -7,7 +7,7 @@
   "scripts": {
     "build": "../.bin/sanity build",
     "clean": "rimraf .sanity dist",
-    "deploy": "../.bin/sanity sanity deploy",
+    "deploy": "npx sanity deploy",
     "dev": "../.bin/sanity dev",
     "lint": "eslint .",
     "start": "../.bin/sanity start"
