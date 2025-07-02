@@ -34,7 +34,7 @@ jobs:
 
       - id: pre-flight
         run: |
-          PACKAGES=$(pnpm exec tsx scripts/listPublishedPackages.ts)
+          PACKAGES=$(pnpx tsx scripts/listPublishedPackages.ts)
           echo "packages=${PACKAGES}" >> "$GITHUB_OUTPUT"
           VERSION="$(jq -r .version lerna.json)-pkg.pr.new@$(git rev-parse --short HEAD)"
           echo "version=${VERSION}" >> "$GITHUB_OUTPUT"
@@ -45,4 +45,4 @@ jobs:
 
       - run: |
           echo "Publishing to pkg.pr.new: ${{ steps.pre-flight.outputs.packages }}"
-          pnpm exec pkg-pr-new publish --pnpm --no-template ${{ steps.pre-flight.outputs.packages }}
+          pnpx pkg-pr-new publish --pnpm --no-template ${{ steps.pre-flight.outputs.packages }}

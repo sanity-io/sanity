@@ -53,7 +53,7 @@ jobs:
 
       - name: Update version
         run: |
-          pnpm exec lerna version \
+          npx lerna version \
           --force-publish \
           --no-push \
           --sync-workspace-lock \
@@ -63,7 +63,7 @@ jobs:
           GITHUB_TOKEN: ${{ steps.app-token.outputs.token }}
 
       - name: Get version commit message
-        # get the commit message created by pnpm exec lerna version above (determined by lerna.json)
+        # get the commit message created by npx lerna version above (determined by lerna.json)
         id: version-commit
         run: echo "message=$(git log -1 --pretty=%B)" >> $GITHUB_OUTPUT
 

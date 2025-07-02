@@ -48,11 +48,11 @@ jobs:
       - name: Publish packages to npm
         # Note: ubuntu-latest ships with lerna installed on the system
         # (see https://github.com/actions/runner-images/blob/main/images/ubuntu/Ubuntu2404-Readme.md#project-management)
-        # It's important that we call lerna using `pnpm exec` in the command below so we get the
+        # It's important that we call lerna using npx in the command below so we get the
         # locally installed lerna instead of the one installed on the system
         # Note: --no-git-reset is required for the bundle uploading step later on
         run: |
-          pnpm exec lerna publish \
+          npx lerna publish \
           --canary \
           --no-git-tag-version \
           --force-publish \
@@ -69,7 +69,7 @@ jobs:
       - name: Build bundles
         run: pnpm run build:bundle
 
-      # Note: we need to run this after publish so we get the updated version numbers from `pnpm exec lerna publish`
+      # Note: we need to run this after publish so we get the updated version numbers from npx lerna publish
       # ideally, the flow should be 1) bump packages using lerna version, 2) upload to module cdn, 3) lerna publish to npm from packages
       - name: Upload bundles to staging bucket
         env:
