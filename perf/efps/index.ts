@@ -136,7 +136,7 @@ await exec({
 
 await exec({
   text: ['Ensuring playwright is installed…', 'Playwright is installed'],
-  command: 'pnpm exec playwright install',
+  command: 'npx playwright install',
   spinner,
 })
 

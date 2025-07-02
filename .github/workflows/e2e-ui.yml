@@ -102,7 +102,7 @@ jobs:
       - name: Store Playwright's Version
         id: playwright-version
         run: |
-          PLAYWRIGHT_VERSION=$(pnpm exec playwright --version | sed 's/Version //')
+          PLAYWRIGHT_VERSION=$(npx playwright --version | sed 's/Version //')
           echo "Playwright's Version: $PLAYWRIGHT_VERSION"
           echo "version=${PLAYWRIGHT_VERSION}" >> "$GITHUB_OUTPUT"
 
@@ -115,7 +115,7 @@ jobs:
 
       - name: Install Playwright Browsers
         if: steps.cache-playwright-browsers.outputs.cache-hit != 'true'
-        run: pnpm exec playwright install --with-deps
+        run: npx playwright install --with-deps
 
       - name: Build CLI
         # This should take only a few seconds as it'll restore the remote cache that got primed in the `install` job
@@ -170,7 +170,7 @@ jobs:
       - name: Store Playwright's Version
         id: playwright-version
         run: |
-          PLAYWRIGHT_VERSION=$(pnpm exec playwright --version | sed 's/Version //')
+          PLAYWRIGHT_VERSION=$(npx playwright --version | sed 's/Version //')
           echo "Playwright's Version: $PLAYWRIGHT_VERSION"
           echo "version=${PLAYWRIGHT_VERSION}" >> "$GITHUB_OUTPUT"
 
@@ -183,7 +183,7 @@ jobs:
 
       - name: Install Playwright Browsers
         if: steps.cache-playwright-browsers.outputs.cache-hit != 'true'
-        run: pnpm exec playwright install --with-deps
+        run: npx playwright install --with-deps
 
       - name: Run E2E tests on PR
         # Always run with PRs logic, to ensure tests run by the UI repo doesn't conflict with tests run by the sanity repo
@@ -235,7 +235,7 @@ jobs:
           path: playwright-report
 
       - name: Merge into HTML Report
-        run: pnpm exec playwright merge-reports --reporter html ./playwright-report
+        run: npx playwright merge-reports --reporter html ./playwright-report
 
       - name: Upload HTML report
         uses: actions/upload-artifact@v4
