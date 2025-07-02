@@ -53,6 +53,10 @@ export interface ReleaseOperationsStore {
     opts?: BaseActionOptions,
   ) => Promise<SingleActionResult>
   unpublishVersion: (documentId: string, opts?: BaseActionOptions) => Promise<SingleActionResult>
+  revertUnpublishVersion: (
+    documentId: string,
+    opts?: BaseActionOptions,
+  ) => Promise<SingleActionResult>
 }
 
 export function createReleaseOperationsStore(options: {
@@ -243,6 +247,27 @@ export function createReleaseOperationsStore(options: {
     }
   }
 
+  const handleRevertUnpublishVersion = async (documentId: string, opts?: BaseActionOptions) => {
+    const currentDocument = await client.getDocument(documentId)
+
+    if (!currentDocument) {
+      throw new Error(`Document with id ${documentId} not found`)
+    }
+
+    const updatedDocument = {
+      ...currentDocument,
+      _system: undefined,
+    }
+
+    return client.action(
+      {
+        actionType: 'sanity.action.document.version.replace',
+        document: updatedDocument,
+      },
+      opts,
+    )
+  }
+
   return {
     archive: handleArchiveRelease,
     unarchive: handleUnarchiveRelease,
@@ -257,5 +282,6 @@ export function createReleaseOperationsStore(options: {
     createVersion: handleCreateVersion,
     discardVersion: handleDiscardVersion,
     unpublishVersion: handleUnpublishVersion,
+    revertUnpublishVersion: handleRevertUnpublishVersion,
   }
 }

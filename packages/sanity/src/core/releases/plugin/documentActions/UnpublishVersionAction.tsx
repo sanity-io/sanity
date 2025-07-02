@@ -1,4 +1,5 @@
 import {TrashIcon, UnpublishIcon} from '@sanity/icons'
+import {useToast} from '@sanity/ui'
 import {useCallback, useState} from 'react'
 
 import {InsufficientPermissionsMessage} from '../../../components/InsufficientPermissionsMessage'
@@ -7,10 +8,13 @@ import {
   type DocumentActionDescription,
   type DocumentActionProps,
 } from '../../../config/document/actions'
-import {useTranslation} from '../../../i18n'
+import {useSchema} from '../../../hooks/useSchema'
+import {Translate, useTranslation} from '../../../i18n'
+import {unstable_useValuePreview as useValuePreview} from '../../../preview'
 import {useDocumentPairPermissions} from '../../../store/_legacy/grants/documentPairPermissions'
 import {useCurrentUser} from '../../../store/user/hooks'
 import {UnpublishVersionDialog} from '../../components/dialog/UnpublishVersionDialog'
+import {useVersionOperations} from '../../hooks/useVersionOperations'
 import {releasesLocaleNamespace} from '../../i18n'
 import {isGoingToUnpublish} from '../../util/isGoingToUnpublish'
 
@@ -25,6 +29,9 @@ export const UnpublishVersionAction: DocumentActionComponent = (
   const isPublished = published !== null
   const {t} = useTranslation(releasesLocaleNamespace)
   const isAlreadyUnpublished = version ? isGoingToUnpublish(version) : false
+  const {revertUnpublishVersion} = useVersionOperations()
+  const toast = useToast()
+  const {t: coreT} = useTranslation()
 
   const [permissions, isPermissionsLoading] = useDocumentPairPermissions({
     id,
@@ -34,10 +41,47 @@ export const UnpublishVersionAction: DocumentActionComponent = (
   })
 
   const [dialogOpen, setDialogOpen] = useState(false)
+  const schema = useSchema()
+  const schemaType = schema.get(type)
+  const preview = useValuePreview({schemaType, value: {_id: version?._id}})
 
-  const handleDialogOpen = useCallback(() => {
-    setDialogOpen(true)
-  }, [])
+  const handleDialogOpen = useCallback(async () => {
+    // if the document is already unpublished, revert the unpublish
+    if (isAlreadyUnpublished && version) {
+      try {
+        await revertUnpublishVersion(version._id)
+        toast.push({
+          closable: true,
+          status: 'success',
+          title: (
+            <Translate
+              t={coreT}
+              i18nKey={'release.action.revert-unpublish-version.success.title'}
+              values={{title: preview?.value?.title || version?._id}}
+            />
+          ),
+          description: coreT('release.action.revert-unpublish-version.success.description'),
+        })
+      } catch (err) {
+        toast.push({
+          closable: true,
+          status: 'error',
+          title: t('release.action.revert-unpublish-version.failure.title'),
+          description: coreT('release.action.revert-unpublish-version.failure.description'),
+        })
+      }
+    } else {
+      setDialogOpen(true)
+    }
+  }, [
+    isAlreadyUnpublished,
+    version,
+    revertUnpublishVersion,
+    toast,
+    coreT,
+    preview?.value?.title,
+    t,
+  ])
 
   if (!version) return null
 
@@ -55,23 +99,28 @@ export const UnpublishVersionAction: DocumentActionComponent = (
   }
 
   return {
-    dialog: dialogOpen && {
-      type: 'custom',
-      component: (
-        <UnpublishVersionDialog
-          documentVersionId={version._id}
-          documentType={type}
-          onClose={() => setDialogOpen(false)}
-        />
-      ),
-    },
+    dialog: dialogOpen &&
+      !isAlreadyUnpublished && {
+        type: 'custom',
+        component: (
+          <UnpublishVersionDialog
+            documentVersionId={version._id}
+            documentType={type}
+            onClose={() => setDialogOpen(false)}
+          />
+        ),
+      },
     /** @todo should be switched once we have the document actions updated */
-    label: t('action.unpublish-doc-actions'),
+    label: isAlreadyUnpublished
+      ? t('action.revert-unpublish-actions')
+      : t('action.unpublish-doc-actions'),
     icon: UnpublishIcon,
     onHandle: handleDialogOpen,
-    disabled: !isPublished || isAlreadyUnpublished,
+    disabled: !isPublished,
     /** @todo should be switched once we have the document actions updated */
-    title: t('action.unpublish-doc-actions'),
+    title: isAlreadyUnpublished
+      ? t('action.revert-unpublish-actions')
+      : t('action.unpublish-doc-actions'),
   }
 }
 
