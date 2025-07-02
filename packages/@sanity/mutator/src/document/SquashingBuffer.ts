@@ -1,7 +1,6 @@
 import {makePatches, stringifyPatches} from '@sanity/diff-match-patch'
+import {jsonMatch, stringifyPath} from '@sanity/json-match'
 
-import {arrayToJSONMatchPath} from '../jsonpath/arrayToJSONMatchPath'
-import {extractWithPath} from '../jsonpath/extractWithPath'
 import {debug} from './debug'
 import {Mutation} from './Mutation'
 import {type Doc, type Mut} from './types'
@@ -166,15 +165,15 @@ export class SquashingBuffer {
 
     // Check the source values, if there is more than one value being assigned,
     // we won't optimise
-    const matches = extractWithPath(path, this.PRESTAGE)
+    const firstMatchResult = jsonMatch(this.PRESTAGE, path).next()
     // If we are not overwriting exactly one key, this cannot be optimised, so we bail
-    if (matches.length !== 1) {
+    if (firstMatchResult.done) {
       // console.log('Not optimisable because match count is != 1', JSON.stringify(matches))
       return false
     }
 
     // Okay, we are assigning exactly one value to exactly one existing slot, so we might optimise
-    const match = matches[0]
+    const match = firstMatchResult.value
     // If the value of the match is an array or object, we cannot safely optimise this since the meaning
     // of pre-existing operations might change (in theory, at least), so we bail
     if (typeof match.value === 'object') {
@@ -212,7 +211,7 @@ export class SquashingBuffer {
 
     // Let's make a plain, concrete path from the array-path. We use this to keep only the latest set
     // operation touching this path in the buffer.
-    const canonicalPath = arrayToJSONMatchPath(match.path)
+    const canonicalPath = stringifyPath(match.path)
 
     // Store this operation, overwriting any previous operations touching this same path
     if (op) {

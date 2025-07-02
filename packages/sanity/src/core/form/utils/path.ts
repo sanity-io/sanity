@@ -1,4 +1,4 @@
-import {arrayToJSONMatchPath} from '@sanity/mutator'
+import {stringifyPath} from '@sanity/json-match'
 import {type Path, type PathSegment} from '@sanity/types'
 
 const IS_NUMERIC = /^\d+$/
@@ -27,7 +27,7 @@ function parseGradientPath(focusPathStr: string): Path {
  * @internal
  */
 export function encodePath(formBuilderPath: Path): string {
-  return arrayToJSONMatchPath(formBuilderPath)
+  return stringifyPath(formBuilderPath)
 }
 
 /**

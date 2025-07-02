@@ -1,7 +1,39 @@
-import {Patcher} from '../patch'
+import {type PatchOperations} from '@sanity/types'
+
 import {debug} from './debug'
 import {luid} from './luid'
+import {
+  dec,
+  diffMatchPatch,
+  ifRevisionID,
+  inc,
+  insert,
+  set,
+  setIfMissing,
+  unset,
+} from './patchOperations'
 import {type Doc, type Mut} from './types'
+
+type SupportedPatchOperation = Exclude<keyof PatchOperations, 'merge'>
+
+// > If multiple patches are included, then the order of execution is as follows:
+// > - set, setIfMissing, unset, inc, dec, insert.
+// > https://www.sanity.io/docs/http-mutations#5b4db1396e56
+const patchOperations = {
+  ifRevisionID,
+  set,
+  setIfMissing,
+  unset,
+  inc,
+  dec,
+  insert,
+  diffMatchPatch,
+} satisfies {
+  [K in SupportedPatchOperation]: (
+    input: unknown,
+    pathExpressions: NonNullable<PatchOperations[K]>,
+  ) => unknown
+}
 
 /**
  * Parameters attached to the mutation
@@ -159,8 +191,21 @@ export class Mutation {
           return
         }
 
-        const patch = new Patcher(mutation.patch)
-        operations.push((doc) => patch.apply(doc) as Doc | null)
+        type Entries<T> = {[K in keyof T]: [K, T[K]]}[keyof T][]
+        const entries = Object.entries(patchOperations) as Entries<typeof patchOperations>
+
+        operations.push((doc) =>
+          entries.reduce((acc, [type, operation]) => {
+            if (mutation?.patch?.[type]) {
+              return operation(
+                acc,
+                // @ts-expect-error TS doesn't handle this union very well
+                mutation.patch[type],
+              )
+            }
+            return acc
+          }, doc),
+        )
         return
       }
 

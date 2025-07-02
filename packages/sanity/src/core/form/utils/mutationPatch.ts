@@ -1,4 +1,4 @@
-import {arrayToJSONMatchPath} from '@sanity/mutator'
+import {stringifyPath} from '@sanity/json-match'
 import {flatten} from 'lodash'
 
 import {SANITY_PATCH_TYPE} from '../patch'
@@ -87,7 +87,7 @@ function toFormBuilderPatches(origin: FormPatchOrigin, patch: MutationPatch): Fo
                 origin,
               }
             }
-            // eslint-disable-next-line no-console
+
             console.warn(new Error(`Unsupported patch type: ${type}`))
             return null
           })
@@ -107,7 +107,7 @@ function toMutationPatch(patch: FormPatch): MutationPatch {
     )
   }
 
-  const matchPath = arrayToJSONMatchPath(patch.path || [])
+  const matchPath = stringifyPath(patch.path || [])
   if (patch.type === 'insert') {
     const {position, items} = patch
     return {

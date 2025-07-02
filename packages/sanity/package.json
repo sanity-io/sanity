@@ -164,6 +164,7 @@
     "@sanity/image-url": "^1.0.2",
     "@sanity/import": "^3.38.2",
     "@sanity/insert-menu": "^1.1.12",
+    "@sanity/json-match": "^1.0.5",
     "@sanity/logos": "^2.2.1",
     "@sanity/media-library-types": "^1.0.0",
     "@sanity/message-protocol": "^0.13.0",
