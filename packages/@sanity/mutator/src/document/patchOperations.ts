@@ -1,12 +1,6 @@
 import {applyPatches, parsePatch} from '@sanity/diff-match-patch'
 import {getIndexForKey, jsonMatch, slicePath, stringifyPath} from '@sanity/json-match'
-import {
-  type IndexTuple,
-  type InsertPatch,
-  isKeyedObject,
-  isKeySegment,
-  type PathSegment,
-} from '@sanity/types'
+import {type IndexTuple, type InsertPatch, isKeySegment, type PathSegment} from '@sanity/types'
 
 type SingleValuePath = Exclude<PathSegment, IndexTuple>[]
 
@@ -143,37 +137,7 @@ function memoize<TFunction extends (input: unknown) => unknown>(fn: TFunction): 
  * each object item has a _key property. Memoized such that sub-objects that
  * have not changed aren't re-computed.
  */
-export const ensureArrayKeysDeep = memoize(<R>(input: R): R => {
-  if (!input || typeof input !== 'object') return input
-
-  if (Array.isArray(input)) {
-    // if the array is empty then just return the input
-    if (!input.length) return input
-    const first = input[0]
-    // if the first input in the array isn't an object (null is allowed) then
-    // assume that this is an array of primitives, just return the input
-    if (typeof first !== 'object') return input
-
-    // if all the items already have a key, then return the input
-    if (input.every(isKeyedObject)) return input
-
-    // otherwise return a new object item with a new key
-    return input.map((item: unknown) => {
-      if (!item || typeof item !== 'object') return item
-      if (isKeyedObject(item)) return ensureArrayKeysDeep(item)
-      const next = ensureArrayKeysDeep(item)
-      return {...next, _key: generateArrayKey()}
-    }) as R
-  }
-
-  const entries = Object.entries(input).map(([key, value]) => [key, ensureArrayKeysDeep(value)])
-
-  if (entries.every(([key, value]) => input[key as keyof typeof input] === value)) {
-    return input
-  }
-
-  return Object.fromEntries(entries) as R
-})
+export const ensureArrayKeysDeep = <R>(input: R): R => input
 
 /**
  * Given an input object and a record of path expressions to values, this
