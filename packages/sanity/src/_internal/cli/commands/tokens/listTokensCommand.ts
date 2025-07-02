@@ -6,13 +6,17 @@ import {type Token} from './types'
 const helpText = `
 Examples
   sanity tokens list
-  sanity tokens list --format=json
+  sanity tokens list --json
 
 Options
-  --format <format> Output format (table, json). Default: table
+  --json            JSON output format
 `
 
-const listTokensCommand: CliCommandDefinition = {
+type ListTokensFlags = {
+  json?: boolean
+}
+
+const listTokensCommand: CliCommandDefinition<ListTokensFlags> = {
   name: 'list',
   group: 'tokens',
   signature: '',
@@ -20,7 +24,8 @@ const listTokensCommand: CliCommandDefinition = {
   description: 'List all API tokens for this project',
   action: async (args, context) => {
     const {output, apiClient} = context
-    const {format} = args.extOptions as {format?: string}
+    const {json} = args.extOptions
+    const outputJson = json || false
     const client = apiClient({requireUser: true, requireProject: true}).config({
       apiVersion: '2021-06-07',
     })
@@ -29,7 +34,7 @@ const listTokensCommand: CliCommandDefinition = {
       const config = client.config()
       const tokens = await client.request<Token[]>({url: `/projects/${config.projectId}/tokens`})
 
-      if (format === 'json') {
+      if (outputJson) {
         output.print(JSON.stringify(tokens, null, 2))
         return
       }

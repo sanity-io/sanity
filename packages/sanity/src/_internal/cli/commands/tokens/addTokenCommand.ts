@@ -8,15 +8,22 @@ Examples
   sanity tokens add "My API Token" --role=editor
   sanity tokens add "My API Token" --role=viewer
   sanity tokens add "CI Token" --role=editor --yes
-  sanity tokens add "API Token" --format=json
+  sanity tokens add "API Token" --json
 
 Options
   --role <role>     Role to assign to the token. Default: viewer
-  --format <format> Output format (table, json). Default: table
+  --json            JSON output format
   -y, --yes         Skip prompts and use defaults (unattended mode)
 `
 
-const addTokenCommand: CliCommandDefinition = {
+type AddTokenFlags = {
+  role?: string
+  yes?: boolean
+  y?: boolean
+  json?: boolean
+}
+
+const addTokenCommand: CliCommandDefinition<AddTokenFlags> = {
   name: 'add',
   group: 'tokens',
   signature: '[LABEL]',
@@ -25,17 +32,14 @@ const addTokenCommand: CliCommandDefinition = {
   action: async (args, context) => {
     const {output} = context
     const [label] = args.argsWithoutOptions
-    const {role, yes, y, format} = args.extOptions as {
-      role?: string
-      yes?: boolean
-      y?: boolean
-      format?: string
-    }
+    const {role, yes, y, json} = args.extOptions
+
+    const outputJson = json || false
 
     try {
       const token = await addToken(label, {role, unattended: Boolean(yes || y)}, context)
 
-      if (format === 'json') {
+      if (outputJson) {
         output.print(JSON.stringify(token, null, 2))
         return
       }
