@@ -1,4 +1,4 @@
-import {TrashIcon, UnpublishIcon} from '@sanity/icons'
+import {RevertIcon, TrashIcon, UnpublishIcon} from '@sanity/icons'
 import {useToast} from '@sanity/ui'
 import {useCallback, useState} from 'react'
 
@@ -114,7 +114,7 @@ export const UnpublishVersionAction: DocumentActionComponent = (
     label: isAlreadyUnpublished
       ? t('action.revert-unpublish-actions')
       : t('action.unpublish-doc-actions'),
-    icon: UnpublishIcon,
+    icon: isAlreadyUnpublished ? RevertIcon : UnpublishIcon,
     onHandle: handleDialogOpen,
     disabled: !isPublished,
     /** @todo should be switched once we have the document actions updated */
