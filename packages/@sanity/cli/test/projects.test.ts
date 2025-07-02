@@ -2,6 +2,7 @@ import {beforeEach, describe, expect, test, vi} from 'vitest'
 
 import {createProject} from '../src/actions/project/createProject'
 import {createProjectAction} from '../src/actions/project/createProjectAction'
+import createProjectCommand from '../src/commands/projects/createProjectCommand'
 
 function createMockSanityClient(
   config: {
@@ -406,6 +407,117 @@ describe('CLI: `sanity projects`', () => {
       expect(mockContext.output.warn).toHaveBeenCalledWith(
         'Project created but dataset creation failed: Dataset creation failed',
       )
+    })
+  })
+
+  describe('JSON output flag', () => {
+    test('outputs JSON format when --json flag is used', async () => {
+      const mockOrganizations = [{id: 'org-json', name: 'JSON Org', slug: 'json-org'}]
+
+      mockCreateProject.mockResolvedValue({
+        projectId: 'test-project-json',
+        displayName: 'JSON Project',
+      })
+
+      const mockClient = createMockSanityClient({
+        requests: {
+          '/organizations': mockOrganizations,
+          'organizations/org-json/grants': {
+            'sanity.organization.projects': [{grants: [{name: 'attach'}]}],
+          },
+        },
+      })
+
+      const mockOutput = {
+        print: vi.fn(),
+        warn: vi.fn(),
+        spinner: vi.fn(() => ({
+          start: vi.fn().mockReturnThis(),
+          succeed: vi.fn(),
+          fail: vi.fn(),
+        })),
+      }
+
+      const mockContext = {
+        apiClient: vi.fn(() => ({
+          ...mockClient,
+          config: () => ({apiHost: 'https://api.sanity.io'}),
+        })),
+        prompt: {single: vi.fn().mockResolvedValue('org-json')},
+        output: mockOutput,
+      } as any
+
+      const args = {
+        argsWithoutOptions: ['JSON Project'],
+        extOptions: {
+          json: true,
+        },
+      }
+
+      await createProjectCommand.action(args, mockContext)
+
+      // Should output JSON format
+      expect(mockOutput.print).toHaveBeenCalledWith(
+        JSON.stringify(
+          {
+            projectId: 'test-project-json',
+            displayName: 'JSON Project',
+            organization: {id: 'org-json', name: 'JSON Org', slug: 'json-org'},
+          },
+          null,
+          2,
+        ),
+      )
+    })
+
+    test('outputs text format when --json flag is not used', async () => {
+      const mockOrganizations = [{id: 'org-text', name: 'Text Org', slug: 'text-org'}]
+
+      mockCreateProject.mockResolvedValue({
+        projectId: 'test-project-text',
+        displayName: 'Text Project',
+      })
+
+      const mockClient = createMockSanityClient({
+        requests: {
+          '/organizations': mockOrganizations,
+          'organizations/org-text/grants': {
+            'sanity.organization.projects': [{grants: [{name: 'attach'}]}],
+          },
+        },
+      })
+
+      const mockOutput = {
+        print: vi.fn(),
+        warn: vi.fn(),
+        spinner: vi.fn(() => ({
+          start: vi.fn().mockReturnThis(),
+          succeed: vi.fn(),
+          fail: vi.fn(),
+        })),
+      }
+
+      const mockContext = {
+        apiClient: vi.fn(() => ({
+          ...mockClient,
+          config: () => ({apiHost: 'https://api.sanity.io'}),
+        })),
+        prompt: {single: vi.fn().mockResolvedValue('org-text')},
+        output: mockOutput,
+      } as any
+
+      const args = {
+        argsWithoutOptions: ['Text Project'],
+        extOptions: {},
+      }
+
+      await createProjectCommand.action(args, mockContext)
+
+      // Should output text format
+      expect(mockOutput.print).toHaveBeenCalledWith('Project created successfully!')
+      expect(mockOutput.print).toHaveBeenCalledWith('ID: test-project-text')
+      expect(mockOutput.print).toHaveBeenCalledWith('Name: Text Project')
+      expect(mockOutput.print).toHaveBeenCalledWith('Organization: Text Org')
     })
   })
 })

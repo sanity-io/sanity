@@ -9,17 +9,26 @@ Examples
   sanity projects create "My Project" --organization=my-org
   sanity projects create "My Project" --dataset
   sanity projects create "My Project" --dataset=staging --dataset-visibility=private
-  sanity projects create "CI Project" --yes --format=json
+  sanity projects create "CI Project" --yes --json
 
 Options
   --organization <slug|id>     Organization to create the project in
   --dataset [name]             Create a dataset. Prompts for name/visibility unless specified or --yes used
   --dataset-visibility <mode>  Dataset visibility: public or private
-  --format <format>            Output format: text or json (default: text)
+  --json                       JSON output format
   -y, --yes                    Skip prompts and use defaults (project: "My Sanity Project", dataset: production, visibility: public)
 `
 
-const createProjectCommand: CliCommandDefinition = {
+type CreateProjectFlags = {
+  'organization'?: string
+  'dataset'?: boolean | string // true means prompt for dataset name
+  'dataset-visibility'?: 'public' | 'private'
+  'json'?: boolean // Output in JSON format
+  'yes'?: boolean // Skip prompts and use defaults
+  'y'?: boolean // Alias for --yes
+}
+
+const createProjectCommand: CliCommandDefinition<CreateProjectFlags> = {
   name: 'create',
   group: 'projects',
   signature: '[PROJECT_NAME]',
@@ -31,17 +40,10 @@ const createProjectCommand: CliCommandDefinition = {
       organization,
       dataset,
       'dataset-visibility': datasetVisibility,
-      format,
+      json,
       yes,
       y,
-    } = args.extOptions as {
-      'organization'?: string
-      'dataset'?: boolean | string
-      'dataset-visibility'?: 'public' | 'private'
-      'format'?: string
-      'yes'?: boolean
-      'y'?: boolean
-    }
+    } = args.extOptions
 
     // Parse dataset options
     let datasetName: string | undefined
@@ -69,7 +71,7 @@ const createProjectCommand: CliCommandDefinition = {
       context,
     )
 
-    printProjectCreationSuccess(result, format || 'text', context)
+    printProjectCreationSuccess(result, json ? 'json' : 'text', context)
   },
 }
 
