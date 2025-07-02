@@ -22,7 +22,22 @@ vi.mock('../../../store/useReleasesIds', () => ({
 
 vi.mock('../../../i18n/hooks/useTranslation', () => ({
   useTranslate: vi.fn().mockReturnValue({
-    t: vi.fn(),
+    t: vi.fn((key) => key),
+  }),
+}))
+
+vi.mock('../../../hooks/useTimeZone', () => ({
+  useTimeZone: vi.fn().mockReturnValue({
+    timeZone: {name: 'UTC'},
+    utcToCurrentZoneDate: vi.fn((date) => date),
+  }),
+}))
+
+vi.mock('../../hooks/useReleaseFormStorage', () => ({
+  useReleaseFormStorage: vi.fn().mockReturnValue({
+    getStoredReleaseData: vi.fn().mockReturnValue({}),
+    saveReleaseDataToStorage: vi.fn(),
+    clearReleaseDataFromStorage: vi.fn(),
   }),
 }))
 
@@ -40,6 +55,12 @@ describe('ReleaseForm', () => {
       description: '',
     },
   }
+
+  beforeEach(() => {
+    // Clear localStorage before each test
+    localStorage.clear()
+    vi.clearAllMocks()
+  })
 
   describe('when creating a new release', () => {
     beforeEach(async () => {
@@ -87,7 +108,6 @@ describe('ReleaseForm', () => {
     it('should render the form fields', () => {
       expect(screen.getByTestId('release-form-title')).toBeInTheDocument()
       expect(screen.getByTestId('release-form-description')).toBeInTheDocument()
-      //expect(screen.getByTestId('release-form-publish-at')).toBeInTheDocument()
     })
 
     it('should call onChange when title input value changes', () => {
@@ -108,6 +128,10 @@ describe('ReleaseForm', () => {
         ...valueMock,
         metadata: {...valueMock.metadata, description: 'New Description'},
       })
+    })
+
+    it('should render release type selection menu', () => {
+      expect(screen.getByText('ASAP')).toBeInTheDocument()
     })
   })
 
