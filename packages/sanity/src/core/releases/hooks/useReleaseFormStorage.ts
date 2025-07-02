@@ -10,6 +10,15 @@ interface ReleaseFormDraft {
   intendedPublishAt?: string
 }
 
+/**
+ * This hook is used to store the release form data in localStorage.
+ * The main use case is when a user accidentally closes the dialog for a release before it is created .
+ *
+ * @returns an object with the following methods:
+ * - getStoredReleaseData: a function that returns the stored release form data
+ * - saveReleaseDataToStorage: a function that saves the release form data to localStorage
+ * - clearReleaseDataFromStorage: a function that clears the release form data from localStorage
+ */
 export function useReleaseFormStorage() {
   const getStoredReleaseData = useCallback((): ReleaseFormDraft => {
     const stored = localStorage.getItem(RELEASE_FORM_STORAGE_KEY)
