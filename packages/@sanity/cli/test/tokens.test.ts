@@ -12,7 +12,13 @@ describeCliTest('CLI: `sanity tokens`', () => {
       const tokenLabel = `test-token-${testId}-${Date.now()}`
 
       // `tokens add` with JSON output
-      let result = await runSanityCmdCommand(version, ['tokens', 'add', tokenLabel, '--json'])
+      let result = await runSanityCmdCommand(version, [
+        'tokens',
+        'add',
+        tokenLabel,
+        '--json',
+        '--hide-major-message',
+      ])
       expect(result.code).toBe(0)
 
       const token = JSON.parse(result.stdout)
@@ -38,7 +44,12 @@ describeCliTest('CLI: `sanity tokens`', () => {
 
     testConcurrent('tokens list --json', async () => {
       const {tokenLabel, tokenId} = await addToken()
-      const result = await runSanityCmdCommand(version, ['tokens', 'list', '--json'])
+      const result = await runSanityCmdCommand(version, [
+        'tokens',
+        'list',
+        '--json',
+        '--hide-major-message',
+      ])
       expect(result.code).toBe(0)
 
       const tokens = JSON.parse(result.stdout)
@@ -58,6 +69,7 @@ describeCliTest('CLI: `sanity tokens`', () => {
         tokenLabel,
         '--role=editor',
         '--json',
+        '--hide-major-message',
       ])
       expect(result.code).toBe(0)
 
@@ -78,6 +90,7 @@ describeCliTest('CLI: `sanity tokens`', () => {
         tokenLabel,
         '--yes',
         '--json',
+        '--hide-major-message',
       ])
       expect(result.code).toBe(0)
 
