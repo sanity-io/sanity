@@ -4,6 +4,7 @@ on:
   push:
     branches:
       - main
+      - revert-dev-engine-requirement
 
 permissions:
   contents: read # for checkout
