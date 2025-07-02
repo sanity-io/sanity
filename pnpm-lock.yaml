@@ -491,8 +491,8 @@ importers:
   dev/test-studio:
     dependencies:
       '@portabletext/block-tools':
-        specifier: ^1.1.33
-        version: 1.1.33(@sanity/types@packages+@sanity+types)(@types/react@19.1.8)
+        specifier: ^1.1.34
+        version: 1.1.34(@sanity/types@packages+@sanity+types)(@types/react@19.1.8)
       '@portabletext/editor':
         specifier: ^1.55.11
         version: 1.55.11(@sanity/schema@packages+@sanity+schema)(@sanity/types@packages+@sanity+types)(@types/react@19.1.8)(react-dom@19.1.0(react@19.1.0))(react@19.1.0)(rxjs@7.8.2)
@@ -1620,8 +1620,8 @@ importers:
         specifier: ^3.4.0
         version: 3.4.0
       '@portabletext/block-tools':
-        specifier: ^1.1.33
-        version: 1.1.33(@sanity/types@packages+@sanity+types)(@types/react@19.1.8)
+        specifier: ^1.1.34
+        version: 1.1.34(@sanity/types@packages+@sanity+types)(@types/react@19.1.8)
       '@portabletext/editor':
         specifier: ^1.55.11
         version: 1.55.11(@sanity/schema@packages+@sanity+schema)(@sanity/types@packages+@sanity+types)(@types/react@19.1.8)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(rxjs@7.8.2)
@@ -4293,6 +4293,12 @@ packages:
     resolution: {integrity: sha512-6D7nq5ExziruZkPje2ZR1OlGIxAXhHM9FVVHNWtZKwBJv4gddbNhXxuTrP9ewN3ch8KZy5yW754BIQVVB6V/+w==}
     peerDependencies:
       '@sanity/types': ^3.95.0
+      '@types/react': 18 || 19
+
+  '@portabletext/block-tools@1.1.34':
+    resolution: {integrity: sha512-Km4ZbDafiOdREy+QxsEXIqVFuL+tPXqETUjlr7BJ7sYfoEeSflyeSx0A13X335QauOQTaajKdqQxwbfV1VjqUg==}
+    peerDependencies:
+      '@sanity/types': ^3.96.0
       '@types/react': 18 || 19
 
   '@portabletext/editor@1.55.11':
@@ -14689,6 +14695,13 @@ snapshots:
       config-chain: 1.1.13
 
   '@portabletext/block-tools@1.1.33(@sanity/types@packages+@sanity+types)(@types/react@19.1.8)':
+    dependencies:
+      '@sanity/types': link:packages/@sanity/types
+      '@types/react': 19.1.8
+      get-random-values-esm: 1.0.2
+      lodash: 4.17.21
+
+  '@portabletext/block-tools@1.1.34(@sanity/types@packages+@sanity+types)(@types/react@19.1.8)':
     dependencies:
       '@sanity/types': link:packages/@sanity/types
       '@types/react': 19.1.8
