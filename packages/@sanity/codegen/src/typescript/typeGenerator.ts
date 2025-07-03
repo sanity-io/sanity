@@ -102,8 +102,7 @@ export class TypeGenerator {
   }
 
   static generateKnownTypes(): string {
-    const typeOperator = t.tsTypeOperator(t.tsSymbolKeyword())
-    typeOperator.operator = 'unique'
+    const typeOperator = t.tsTypeOperator(t.tsSymbolKeyword(), 'unique')
 
     const identifier = t.identifier(REFERENCE_SYMBOL_NAME)
     identifier.typeAnnotation = t.tsTypeAnnotation(typeOperator)
