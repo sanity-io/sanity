@@ -11,6 +11,7 @@ import {
   type EditStateFor,
   EMPTY_ARRAY,
   getPublishedId,
+  isGoingToUnpublish,
   isPerspectiveWriteable,
   isVersionId,
   type PartialContext,
@@ -436,7 +437,10 @@ export const DocumentPaneProvider = memo((props: DocumentPaneProviderProps) => {
         collapsedPaths,
         compareValue,
         connectionState,
-        displayed,
+        displayed:
+          editState.version && isGoingToUnpublish(editState.version)
+            ? editState.published
+            : displayed,
         documentId,
         documentIdRaw,
         documentType,

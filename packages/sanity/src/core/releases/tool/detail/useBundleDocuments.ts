@@ -31,7 +31,7 @@ import {usePerspective} from '../../../perspective/usePerspective'
 import {type DocumentPreviewStore, prepareForPreview} from '../../../preview'
 import {useDocumentPreviewStore} from '../../../store/_legacy/datastores'
 import {useSource} from '../../../studio'
-import {getDraftId, getVersionId} from '../../../util/draftUtils'
+import {getPublishedId} from '../../../util/draftUtils'
 import {validateDocumentWithReferences, type ValidationStatus} from '../../../validation'
 import {useReleasesStore} from '../../store/useReleasesStore'
 import {getReleaseDocumentIdFromReleaseId} from '../../util/getReleaseDocumentIdFromReleaseId'
@@ -158,30 +158,14 @@ const getActiveReleaseDocumentsObservable = ({
                     return of(value)
                   }
 
-                  //If we don't receive a snapshot here, it means the document will be unpublished in the release.
-                  // In which case, to preview it we need its latest known version instead (e.g. one perspective stack level up)
-                  // To do this we need to remove the first item from the start of the array
-                  const updatedPerspectiveStack =
-                    perspectiveStack.length > 1 ? perspectiveStack.slice(1) : perspectiveStack
-
-                  const previousPerspective = updatedPerspectiveStack[0]
-
-                  // chosen drafts over published version since the drafts are how the document is most often known about
-                  // across the studio (for example, document lists previews)
-                  // if the previous perspective is drafts then it means that there is only one document
-                  // otherwise, we need to get the version id of the previous perspective
-                  const docId =
-                    previousPerspective === 'drafts'
-                      ? getDraftId(document._id)
-                      : getVersionId(document._id, previousPerspective)
-
+                  const publishedId = getPublishedId(document._id)
                   return documentPreviewStore.observeForPreview(
                     {
-                      _id: docId,
+                      _id: publishedId,
                     },
                     schemaType,
                     {
-                      perspective: updatedPerspectiveStack,
+                      perspective: [],
                     },
                   )
                 }),
