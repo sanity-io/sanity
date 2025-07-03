@@ -1,9 +1,9 @@
-import {type ObjectSchemaType} from '@sanity/types'
 import {
   type AssetSource,
   type InitialValueProperty,
   type ObjectDefinition,
   type ObjectOptions,
+  type ObjectSchemaType,
   type Reference,
   type RuleDef,
   type ValidationBuilder,
