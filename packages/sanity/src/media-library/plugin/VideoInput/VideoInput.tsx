@@ -25,8 +25,7 @@ import {
 import {createInitialUploadPatches} from '../../../core/form/studio/uploads/utils'
 import {type ObjectInputProps} from '../../../core/form/types'
 import {useTranslation} from '../../../core/i18n'
-import {type VideoSchemaType} from '../schemas/types'
-import {type VideoValue as BaseVideoValue} from '../schemas/types'
+import {type VideoSchemaType, type VideoValue as BaseVideoValue} from '../schemas/types'
 import {VideoAsset as VideoAssetComponent} from './VideoAsset'
 import {VideoInputAssetSource} from './VideoInputAssetSource'
 
