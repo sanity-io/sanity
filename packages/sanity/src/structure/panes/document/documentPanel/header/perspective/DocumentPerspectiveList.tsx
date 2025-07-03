@@ -6,6 +6,7 @@ import {
   getReleaseTone,
   getVersionFromId,
   isDraftId,
+  isGoingToUnpublish,
   isPublishedId,
   isPublishedPerspective,
   isReleaseScheduledOrScheduling,
@@ -77,6 +78,7 @@ const DATE_TIME_FORMAT: UseDateTimeFormatOptions = {
   timeStyle: 'short',
 }
 
+// eslint-disable-next-line complexity
 export const DocumentPerspectiveList = memo(function DocumentPerspectiveList() {
   const {selectedReleaseId, selectedPerspectiveName} = usePerspective()
   const {t} = useTranslation()
@@ -120,19 +122,27 @@ export const DocumentPerspectiveList = memo(function DocumentPerspectiveList() {
 
   const getReleaseChipState = useCallback(
     (release: ReleaseDocument): {selected: boolean; disabled?: boolean} => {
-      if (!params?.historyVersion)
+      if (!params?.historyVersion) {
+        const isVersionGoingToUnpublish =
+          editState?.version &&
+          isGoingToUnpublish(editState?.version) &&
+          getReleaseIdFromReleaseDocumentId(release._id) ===
+            getVersionFromId(editState?.version?._id)
+
         return {
-          selected:
+          selected: Boolean(
             getReleaseIdFromReleaseDocumentId(release._id) ===
-            getVersionFromId(displayed?._id || ''),
+              getVersionFromId(displayed?._id || '') || isVersionGoingToUnpublish,
+          ),
         }
+      }
 
       const isReleaseHistoryMatch =
         getReleaseIdFromReleaseDocumentId(release._id) === params.historyVersion
 
       return {selected: isReleaseHistoryMatch, disabled: isReleaseHistoryMatch}
     },
-    [displayed?._id, params?.historyVersion],
+    [displayed?._id, editState?.version, params?.historyVersion],
   )
 
   const isPublishSelected: boolean = useMemo(() => {

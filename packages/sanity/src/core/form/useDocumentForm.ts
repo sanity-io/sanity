@@ -205,6 +205,9 @@ export function useDocumentForm(options: DocumentFormOptions): DocumentFormValue
   const value: SanityDocumentLike = useMemo(() => {
     const baseValue = initialValue?.value || {_id: documentId, _type: documentType}
     if (releaseId) {
+      if (editState.version && isGoingToUnpublish(editState.version)) {
+        return editState.published || editState.draft || baseValue
+      }
       return editState.version || editState.draft || editState.published || baseValue
     }
     if (selectedPerspectiveName && isPublishedPerspective(selectedPerspectiveName)) {
