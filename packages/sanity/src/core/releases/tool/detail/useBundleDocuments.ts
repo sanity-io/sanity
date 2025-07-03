@@ -111,17 +111,26 @@ const getActiveReleaseDocumentsObservable = ({
               )
             }),
           )
-        const validation$ = combineLatest([
-          document$,
-          validateDocumentWithReferences(ctx, document$),
-        ]).pipe(
-          map(([document, validationStatus]) => ({
-            ...validationStatus,
-            document,
-            hasError:
-              !isGoingToUnpublish(document) &&
-              validationStatus.validation.some((marker) => isValidationErrorMarker(marker)),
-          })),
+        const validation$ = document$.pipe(
+          switchMap((document) => {
+            if (isGoingToUnpublish(document)) {
+              return of({
+                isValidating: false,
+                validation: [],
+                revision: document._rev,
+                hasError: false,
+              } satisfies DocumentValidationStatus)
+            }
+            return validateDocumentWithReferences(ctx, of(document)).pipe(
+              map((validationStatus) => ({
+                ...validationStatus,
+                // eslint-disable-next-line max-nested-callbacks
+                hasError: validationStatus.validation.some((marker) =>
+                  isValidationErrorMarker(marker),
+                ),
+              })),
+            )
+          }),
         )
 
         const previewValues$ = document$.pipe(
