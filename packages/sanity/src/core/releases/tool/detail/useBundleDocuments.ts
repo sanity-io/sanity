@@ -35,6 +35,7 @@ import {getDraftId, getVersionId} from '../../../util/draftUtils'
 import {validateDocumentWithReferences, type ValidationStatus} from '../../../validation'
 import {useReleasesStore} from '../../store/useReleasesStore'
 import {getReleaseDocumentIdFromReleaseId} from '../../util/getReleaseDocumentIdFromReleaseId'
+import {isGoingToUnpublish} from '../../util/isGoingToUnpublish'
 import {RELEASES_STUDIO_CLIENT_OPTIONS} from '../../util/releasesClient'
 
 export interface DocumentValidationStatus extends ValidationStatus {
@@ -110,10 +111,16 @@ const getActiveReleaseDocumentsObservable = ({
               )
             }),
           )
-        const validation$ = validateDocumentWithReferences(ctx, document$).pipe(
-          map((validationStatus) => ({
+        const validation$ = combineLatest([
+          document$,
+          validateDocumentWithReferences(ctx, document$),
+        ]).pipe(
+          map(([document, validationStatus]) => ({
             ...validationStatus,
-            hasError: validationStatus.validation.some((marker) => isValidationErrorMarker(marker)),
+            document,
+            hasError:
+              !isGoingToUnpublish(document) &&
+              validationStatus.validation.some((marker) => isValidationErrorMarker(marker)),
           })),
         )
 

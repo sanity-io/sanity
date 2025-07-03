@@ -126,6 +126,8 @@ export function useFormState<
     inputReadOnly,
   ])
 
+  // if a version is going to be unpublished, we don't want to show the validation errors
+  // in the form
   const isVersionGoingToUnpublish =
     documentValue && isGoingToUnpublish(documentValue as SanityDocument)
 
