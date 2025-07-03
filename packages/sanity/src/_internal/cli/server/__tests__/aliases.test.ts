@@ -43,15 +43,15 @@ describe('browserCompatibleSanityPackageSpecifiers', () => {
       'sanity/_singletons',
       'sanity/cli',
       'sanity/desk',
-      'sanity/migrate',
       'sanity/media-library',
+      'sanity/migrate',
       'sanity/package.json',
       'sanity/presentation',
       'sanity/router',
       'sanity/structure',
     ])
 
-    expect(browserCompatibleSanityPackageSpecifiers).toHaveLength(8)
+    expect(browserCompatibleSanityPackageSpecifiers).toHaveLength(9)
 
     for (const specifier of browserCompatibleSanityPackageSpecifiers) {
       expect(currentSpecifiers).toContain(specifier)
