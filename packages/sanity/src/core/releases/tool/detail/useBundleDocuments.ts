@@ -158,6 +158,9 @@ const getActiveReleaseDocumentsObservable = ({
                     return of(value)
                   }
 
+                  // if we are on this section, it means that the document is not available in the perspective
+                  // which, in turn, means that the document is going to be unpublished
+                  // so we need to show the published document instead
                   const publishedId = getPublishedId(document._id)
                   return documentPreviewStore.observeForPreview(
                     {
@@ -165,6 +168,7 @@ const getActiveReleaseDocumentsObservable = ({
                     },
                     schemaType,
                     {
+                      // we need to show the published document instead
                       perspective: [],
                     },
                   )

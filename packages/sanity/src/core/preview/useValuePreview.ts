@@ -12,7 +12,7 @@ import {catchError, map} from 'rxjs/operators'
 import {usePerspective} from '../perspective/usePerspective'
 import {isGoingToUnpublish} from '../releases/util/isGoingToUnpublish'
 import {useDocumentPreviewStore} from '../store'
-import {type Previewable} from './types'
+import {getPublishedId} from '../util'
 
 export {useDocumentPreview as unstable_useValuePreview}
 
@@ -49,17 +49,21 @@ function useDocumentPreview(props: {
     // this will render previews as "loaded" (i.e. not in loading state) – typically with "Untitled" text
     if (!enabled || !previewValue || !schemaType) return of(IDLE_STATE)
 
-    const updatedStack =
-      // when a version is slated for unpublishing then we need to remove the version from the stack
-      // and use the next one down
-      perspectiveStack.length > 1 && isGoingToUnpublish(previewValue as SanityDocument)
-        ? perspectiveStack.slice(1)
-        : perspectiveStack
+    const updatedStack = isGoingToUnpublish(previewValue as SanityDocument) ? [] : perspectiveStack
+    const updatedDocId = isGoingToUnpublish(previewValue as SanityDocument)
+      ? getPublishedId((previewValue as SanityDocument)._id)
+      : ((previewValue as SanityDocument)._id as string)
 
-    return observeForPreview(previewValue as Previewable, schemaType, {
-      perspective: updatedStack,
-      viewOptions: {ordering: ordering},
-    }).pipe(
+    return observeForPreview(
+      {
+        _id: updatedDocId,
+      },
+      schemaType,
+      {
+        perspective: updatedStack,
+        viewOptions: {ordering: ordering},
+      },
+    ).pipe(
       map((event) => ({isLoading: false, value: event.snapshot || undefined})),
       catchError((error) => of({isLoading: false, error})),
     )
