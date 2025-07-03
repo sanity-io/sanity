@@ -403,12 +403,6 @@ export interface PluginOptions {
     components?: StudioComponentsPluginOptions
   }
 
-  /**
-   * Config for the Sanity Media Library asset source integration.
-   * @beta
-   */
-  mediaLibrary?: MediaLibraryConfig
-
   /** @beta @hidden */
   i18n?: LocalePluginOptions
   search?: {
@@ -458,6 +452,12 @@ export interface PluginOptions {
   announcements?: {
     enabled: boolean
   }
+
+  /**
+   * Config for the Sanity Media Library asset source integration.
+   * @beta
+   */
+  mediaLibrary?: DefaultPluginsWorkspaceOptions['mediaLibrary']
 }
 
 /** @internal */
@@ -519,6 +519,10 @@ export interface WorkspaceOptions extends SourceOptions {
    * @internal
    */
   releases?: DefaultPluginsWorkspaceOptions['releases']
+  /**
+   * @internal
+   */
+  mediaLibrary?: DefaultPluginsWorkspaceOptions['mediaLibrary']
   apps?: AppsOptions
 
   /**
@@ -886,7 +890,7 @@ export interface Source {
    * Config for the Sanity Media Library asset source integration.
    * @beta
    */
-  mediaLibrary?: MediaLibraryConfig
+  mediaLibrary?: WorkspaceOptions['mediaLibrary']
 }
 
 /** @internal */
@@ -1033,6 +1037,7 @@ export type DefaultPluginsWorkspaceOptions = {
      */
     limit?: number
   }
+  mediaLibrary?: MediaLibraryConfig
 }
 
 /**
