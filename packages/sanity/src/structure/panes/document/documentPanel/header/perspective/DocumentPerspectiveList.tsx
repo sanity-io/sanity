@@ -123,7 +123,7 @@ export const DocumentPerspectiveList = memo(function DocumentPerspectiveList() {
   const getReleaseChipState = useCallback(
     (release: ReleaseDocument): {selected: boolean; disabled?: boolean} => {
       if (!params?.historyVersion) {
-        const isVersionGoingToUnpublish =
+        const isCurrentVersionGoingToUnpublish =
           editState?.version &&
           isGoingToUnpublish(editState?.version) &&
           getReleaseIdFromReleaseDocumentId(release._id) ===
@@ -132,7 +132,7 @@ export const DocumentPerspectiveList = memo(function DocumentPerspectiveList() {
         return {
           selected: Boolean(
             getReleaseIdFromReleaseDocumentId(release._id) ===
-              getVersionFromId(displayed?._id || '') || isVersionGoingToUnpublish,
+              getVersionFromId(displayed?._id || '') || isCurrentVersionGoingToUnpublish,
           ),
         }
       }

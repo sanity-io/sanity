@@ -16,13 +16,13 @@ import {Banner} from './Banner'
 export function UnpublishedDocumentBanner() {
   const {value, editState} = useDocumentPane()
   const {selectedPerspective} = usePerspective()
-  const willBeUnpublished =
+  const isCurrentVersionGoingToUnpublish =
     isGoingToUnpublish(value) || (editState?.version && isGoingToUnpublish(editState?.version))
 
   const {t} = useTranslation(structureLocaleNamespace)
   const {t: tCore} = useTranslation()
 
-  if (isReleaseDocument(selectedPerspective) && willBeUnpublished) {
+  if (isReleaseDocument(selectedPerspective) && isCurrentVersionGoingToUnpublish) {
     const title =
       selectedPerspective.metadata?.title || tCore('release.placeholder-untitled-release')
 

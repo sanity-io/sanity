@@ -212,7 +212,8 @@ export const DocumentPanel = function DocumentPanel(props: DocumentPanelProps) {
       return <ScheduledReleaseBanner currentRelease={selectedPerspective as ReleaseDocument} />
     }
     const isPinnedDraftOrPublish = isSystemBundle(selectedPerspective)
-    const isCurrentToDelete = editState?.version && isGoingToUnpublish(editState?.version)
+    const isCurrentVersionGoingToUnpublish =
+      editState?.version && isGoingToUnpublish(editState?.version)
 
     if (
       displayed?._id &&
@@ -220,7 +221,7 @@ export const DocumentPanel = function DocumentPanel(props: DocumentPanelProps) {
       ready &&
       !isPinnedDraftOrPublish &&
       isNewDocument(editState) === false &&
-      !isCurrentToDelete
+      !isCurrentVersionGoingToUnpublish
     ) {
       return (
         <DocumentNotInReleaseBanner
