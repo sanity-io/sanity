@@ -43,6 +43,10 @@ import {getUserConfig} from '../../util/getUserConfig'
 import {isCommandGroup} from '../../util/isCommandGroup'
 import {isInteractive} from '../../util/isInteractive'
 import {fetchJourneyConfig} from '../../util/journeyConfig'
+import {
+  type OrganizationCreateResponse,
+  type ProjectOrganization,
+} from '../../util/organizationUtils'
 import {checkIsRemoteTemplate, getGitHubRepoInfo, type RepoInfo} from '../../util/remoteTemplate'
 import {login, type LoginFlags} from '../login/login'
 import {createProject} from '../project/createProject'
@@ -100,22 +104,6 @@ export interface ProjectTemplate {
   typescriptOnly?: boolean
   entry?: string
   scripts?: Record<string, string>
-}
-
-export interface ProjectOrganization {
-  id: string
-  name: string
-  slug: string
-}
-
-interface OrganizationCreateResponse {
-  id: string
-  name: string
-  createdByUserId: string
-  slug: string | null
-  defaultRoleName: string | null
-  members: unknown[]
-  features: unknown[]
 }
 
 // eslint-disable-next-line max-statements, complexity
