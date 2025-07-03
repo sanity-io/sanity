@@ -15,5 +15,7 @@ Learn what this means for your apps at https://www.sanity.io/blog/a-major-versio
     padding: 1,
     margin: 1,
   })
-  context.output.print(boxedMessage)
+
+  // Print to stderr to prevent garbling command output
+  console.warn(boxedMessage)
 }
