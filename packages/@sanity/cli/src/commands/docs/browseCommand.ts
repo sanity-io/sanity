@@ -2,11 +2,12 @@ import open from 'open'
 
 import {type CliCommandDefinition} from '../../types'
 
-const docsCommand: CliCommandDefinition = {
-  name: 'docs',
+const browseCommand: CliCommandDefinition = {
+  name: 'browse',
+  group: 'docs',
   helpText: '',
-  signature: 'docs',
-  description: 'Opens Sanity Studio documentation in your web browser',
+  signature: '',
+  description: 'Opens Sanity documentation in your web browser',
   async action(args, context) {
     const {output} = context
     const {print} = output
@@ -17,4 +18,4 @@ const docsCommand: CliCommandDefinition = {
   },
 }
 
-export default docsCommand
+export default browseCommand
