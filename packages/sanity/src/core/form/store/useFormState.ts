@@ -1,10 +1,17 @@
 /* eslint-disable camelcase */
 
-import {type ObjectSchemaType, type Path, type ValidationMarker} from '@sanity/types'
+import {
+  type ObjectSchemaType,
+  type Path,
+  type SanityDocument,
+  type ValidationMarker,
+} from '@sanity/types'
 import {useMemo, useState} from 'react'
 
 import {type FormNodePresence} from '../../presence'
+import {isGoingToUnpublish} from '../../releases/util/isGoingToUnpublish'
 import {useCurrentUser} from '../../store'
+import {EMPTY_ARRAY} from '../../util/empty'
 import {createCallbackResolver} from './conditional-property/createCallbackResolver'
 import {createPrepareFormState} from './formState'
 import {type ObjectFormNode, type StateTree} from './types'
@@ -119,6 +126,9 @@ export function useFormState<
     inputReadOnly,
   ])
 
+  const isVersionGoingToUnpublish =
+    documentValue && isGoingToUnpublish(documentValue as SanityDocument)
+
   return useMemo(() => {
     return prepareFormState({
       schemaType,
@@ -133,7 +143,7 @@ export function useFormState<
       hidden,
       currentUser,
       presence,
-      validation,
+      validation: isVersionGoingToUnpublish ? EMPTY_ARRAY : validation,
       changesOpen,
     }) as ObjectFormNode<T, S>
   }, [
@@ -150,6 +160,7 @@ export function useFormState<
     hidden,
     currentUser,
     presence,
+    isVersionGoingToUnpublish,
     validation,
     changesOpen,
   ])
