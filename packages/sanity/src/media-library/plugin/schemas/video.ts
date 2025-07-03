@@ -19,7 +19,14 @@ export const video = defineType({
       name: 'media',
       type: 'globalDocumentReference',
       hidden: true,
-      to: [{type: 'sanity.asset'}],
+      to: [
+        {
+          type: 'sanity.asset',
+          preview: {},
+        },
+      ],
+      resourceType: 'media-library',
+      resourceId: '_',
     },
   ],
 })
