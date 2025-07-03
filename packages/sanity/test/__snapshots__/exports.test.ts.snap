@@ -213,6 +213,7 @@ exports[`exports snapshot 1`] = `
     "ValueError": "function",
     "VersionChip": "object",
     "VersionInlineBadge": "function",
+    "VideoInput": "function",
     "VirtualizerScrollInstanceProvider": "function",
     "WithReferringDocuments": "function",
     "WorkspaceLoader": "function",
@@ -780,6 +781,9 @@ exports[`exports snapshot 1`] = `
     "useDocumentPane": "function",
     "useDocumentTitle": "function",
     "usePaneRouter": "function",
+  },
+  "./media-library": {
+    "defineVideoField": "function",
   },
   "./migrate": {
     "DEFAULT_MUTATION_CONCURRENCY": "number",
