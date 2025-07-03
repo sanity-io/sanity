@@ -71,7 +71,7 @@ const validationLocaleStrings = defineLocalesResources('validation', {
   /** Title for the actual "Validation" panel/feature */
   'panel.title': 'Validation',
   /** Message shown when the validation panel is opened but the document is going to unpublish */
-  'panel.unpublish-message': "It's going to unpublish",
+  'panel.unpublish-message': 'Document is going to unpublish, no validation errors are shown',
   /** Slug is an object, but is missing a `current` string property */
   'slug.missing-current': 'Slug must have a value',
   /** Slug is not an object (eg `{current: 'some-slug'}`) */
