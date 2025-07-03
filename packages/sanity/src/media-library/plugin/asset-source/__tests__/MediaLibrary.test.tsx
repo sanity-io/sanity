@@ -4,9 +4,9 @@ import {render, screen, waitFor} from '@testing-library/react'
 import {noop} from 'lodash'
 import {describe, expect, test} from 'vitest'
 
-import {createMockSanityClient} from '../../../../../../test/mocks/mockSanityClient'
-import {createTestProvider} from '../../../../../../test/testUtils/TestProvider'
-import {defineConfig} from '../../../../config'
+import {createMockSanityClient} from '../../../../../test/mocks/mockSanityClient'
+import {createTestProvider} from '../../../../../test/testUtils/TestProvider'
+import {defineConfig} from '../../../../core/config/defineConfig'
 import {createSanityMediaLibraryFileSource} from '../createAssetSource'
 
 const fileAssetSource = createSanityMediaLibraryFileSource({
