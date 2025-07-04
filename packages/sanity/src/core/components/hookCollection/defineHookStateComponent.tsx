@@ -36,9 +36,6 @@ export function defineHookStateComponent<Args, State>({
       } else {
         handleNext(id, hookState)
       }
-      return () => {
-        handleNext(id, null)
-      }
     }, [handleNext, hookState])
 
     return null
