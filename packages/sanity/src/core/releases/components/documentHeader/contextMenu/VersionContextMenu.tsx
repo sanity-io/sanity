@@ -106,6 +106,7 @@ export const VersionContextMenu = memo(function VersionContextMenu(props: {
             disabled: hasCreatePermission === true,
             content: t('release.action.permission.error'),
           }}
+          data-testid="copy-version-to-release-button-group"
         >
           <ReleasesList key={fromRelease} space={1}>
             {optionsReleaseList.map((release) => {
