@@ -42,6 +42,7 @@ const defaultMockConfig: SingleWorkspace = {
   schema: defaultMockSchema,
   scheduledPublishing: {enabled: false},
   releases: {enabled: true},
+  mediaLibrary: {enabled: true},
 }
 
 export interface MockWorkspaceOptions {

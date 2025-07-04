@@ -1,5 +1,5 @@
 import {type ProgressEvent, type SanityAssetDocument, type SanityClient} from '@sanity/client'
-import {type FileAsset, type ImageAsset} from '@sanity/types'
+import {type FileAsset, type ImageAsset, type VideoAsset} from '@sanity/types'
 import {Observable, of as observableOf} from 'rxjs'
 import {catchError, map, mergeMap} from 'rxjs/operators'
 
@@ -99,6 +99,10 @@ function observeAssetDoc(documentPreviewStore: DocumentPreviewStore, id: string)
 
 export function observeImageAsset(documentPreviewStore: DocumentPreviewStore, id: string) {
   return observeAssetDoc(documentPreviewStore, id) as Observable<ImageAsset>
+}
+
+export function observeVideoAsset(documentPreviewStore: DocumentPreviewStore, id: string) {
+  return observeAssetDoc(documentPreviewStore, id) as Observable<VideoAsset>
 }
 
 export function observeFileAsset(documentPreviewStore: DocumentPreviewStore, id: string) {

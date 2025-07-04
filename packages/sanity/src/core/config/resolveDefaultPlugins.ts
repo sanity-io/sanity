@@ -1,3 +1,4 @@
+import {MEDIA_LIBRARY_NAME, mediaLibrary} from '../../media-library/plugin'
 import {CANVAS_INTEGRATION_NAME, canvasIntegration} from '../canvas/canvasIntegrationPlugin'
 import {comments} from '../comments/plugin'
 import {createIntegration} from '../create/createIntegrationPlugin'
@@ -20,6 +21,7 @@ const defaultPlugins = [
   createIntegration(),
   releases(),
   canvasIntegration(),
+  mediaLibrary(),
 ]
 
 type DefaultPluginsOptions = DefaultPluginsWorkspaceOptions & {
@@ -40,6 +42,9 @@ export function getDefaultPlugins(options: DefaultPluginsOptions, plugins?: Plug
     }
     if (plugin.name === CANVAS_INTEGRATION_NAME) {
       return options.apps?.canvas?.enabled ?? false
+    }
+    if (plugin.name === MEDIA_LIBRARY_NAME) {
+      return options.mediaLibrary?.enabled
     }
     return true
   })
@@ -75,5 +80,6 @@ export function getDefaultPluginsOptions(
         ...workspace.apps?.canvas,
       },
     },
+    mediaLibrary: workspace?.mediaLibrary,
   }
 }

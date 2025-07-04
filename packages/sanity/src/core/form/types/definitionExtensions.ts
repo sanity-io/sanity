@@ -5,6 +5,7 @@ import {
   type ImageValue,
   type ReferenceValue,
   type SlugValue,
+  type VideoValue,
 } from '@sanity/types'
 import {type ComponentType} from 'react'
 
@@ -133,6 +134,22 @@ declare module '@sanity/types' {
     inlineBlock?: ComponentType<BlockProps>
     input?: ComponentType<ObjectInputProps<FileValue>>
     item?: ComponentType<ObjectItemProps<FileValue & ObjectItem>>
+    preview?: ComponentType<PreviewProps>
+  }
+
+  /**
+   *
+   * @hidden
+   * @beta
+   */
+  export interface VideoComponents {
+    annotation?: ComponentType<BlockAnnotationProps>
+    block?: ComponentType<BlockProps>
+    diff?: ComponentType<any>
+    field?: ComponentType<ObjectFieldProps<VideoValue>>
+    inlineBlock?: ComponentType<BlockProps>
+    input?: ComponentType<ObjectInputProps<VideoValue>>
+    item?: ComponentType<ObjectItemProps<VideoValue & ObjectItem>>
     preview?: ComponentType<PreviewProps>
   }
 
@@ -463,6 +480,15 @@ declare module '@sanity/types' {
      * @beta
      */
     components?: FileComponents
+  }
+
+  export interface VideoDefinition {
+    /**
+     *
+     * @hidden
+     * @beta
+     */
+    components?: VideoComponents
   }
 
   export interface GeopointDefinition {

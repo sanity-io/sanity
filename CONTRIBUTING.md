@@ -28,7 +28,6 @@ pnpm dev
 - Once it's done, open a pull request targeting `main`
 - After at least two reviewers has approved the pull request, you can merge it into `main` when you feel ready (if you're on the Sanity team, obviously)
 - Pull requests should be as ready as possible for merge. Unless stated otherwise, it should be safe to assume that:
-
   - The changes/feature are reviewed and tested by you
   - You think it's production ready
   - The code is linted and the test suite is passing

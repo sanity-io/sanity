@@ -228,6 +228,7 @@ export const fileAssetSourceResolver: ConfigPropertyReducer<AssetSource[], Confi
   )
 }
 
+// @todo Update for video?
 export const directUploadsReducer = (opts: {
   config: PluginOptions
   schemaTypeName: 'file' | 'image'
