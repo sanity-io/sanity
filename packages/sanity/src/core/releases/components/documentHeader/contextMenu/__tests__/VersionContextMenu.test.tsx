@@ -79,17 +79,17 @@ describe('VersionContextMenu', () => {
 
     render(<VersionContextMenu {...defaultProps} />, {wrapper})
 
-    expect(screen.getByText('Copy version to')).toBeInTheDocument()
+    expect(screen.getByTestId('copy-version-to-release-button-group')).toBeInTheDocument()
 
     await waitFor(() => {
-      expect(screen.getByText('Copy version to')).not.toBeDisabled()
+      expect(screen.getByTestId('copy-version-to-release-button-group')).not.toBeDisabled()
     })
 
     await act(() => {
-      fireEvent.click(screen.getByText('Copy version to'))
+      fireEvent.click(screen.getByTestId('copy-version-to-release-button-group'))
     })
     await waitFor(() => {
-      expect(screen.getByText('New release')).toBeInTheDocument()
+      expect(screen.getByTestId('create-new-release-button')).toBeInTheDocument()
       expect(screen.getByText('Release 1')).toBeInTheDocument()
       expect(screen.getByText('Release 2')).toBeInTheDocument()
     })
@@ -102,18 +102,18 @@ describe('VersionContextMenu', () => {
 
     render(<VersionContextMenu {...defaultProps} />, {wrapper})
 
-    expect(screen.getByText('Copy version to')).toBeInTheDocument()
+    expect(screen.getByTestId('copy-version-to-release-button-group')).toBeInTheDocument()
 
     await waitFor(() => {
-      expect(screen.getByText('Copy version to')).not.toBeDisabled()
+      expect(screen.getByTestId('copy-version-to-release-button-group')).not.toBeDisabled()
     })
 
     await act(() => {
-      fireEvent.click(screen.getByText('Copy version to'))
+      fireEvent.click(screen.getByTestId('copy-version-to-release-button-group'))
     })
 
     await waitFor(() => {
-      fireEvent.click(screen.getByText('New release'))
+      fireEvent.click(screen.getByTestId('create-new-release-button'))
     })
     expect(defaultProps.onCreateRelease).toHaveBeenCalled()
   })
@@ -157,18 +157,18 @@ describe('VersionContextMenu', () => {
 
     render(<VersionContextMenu {...defaultProps} />, {wrapper})
 
-    expect(screen.getByText('Copy version to')).toBeInTheDocument()
+    expect(screen.getByTestId('copy-version-to-release-button-group')).toBeInTheDocument()
 
     await waitFor(() => {
-      expect(screen.getByText('Copy version to')).not.toBeDisabled()
+      expect(screen.getByTestId('copy-version-to-release-button-group')).not.toBeDisabled()
     })
 
     await act(() => {
-      fireEvent.click(screen.getByText('Copy version to'))
+      fireEvent.click(screen.getByTestId('copy-version-to-release-button-group'))
     })
 
     await waitFor(() => {
-      fireEvent.click(screen.getByText('New release'))
+      fireEvent.click(screen.getByTestId('create-new-release-button'))
     })
     expect(defaultProps.onCreateRelease).toHaveBeenCalled()
   })
@@ -180,19 +180,31 @@ describe('VersionContextMenu', () => {
 
     render(<VersionContextMenu {...defaultProps} />, {wrapper})
 
-    expect(screen.getByText('Copy version to')).toBeInTheDocument()
+    expect(screen.getByTestId('copy-version-to-release-button-group')).toBeInTheDocument()
 
     await waitFor(() => {
-      expect(screen.getByText('Copy version to')).not.toBeDisabled()
+      expect(screen.getByTestId('copy-version-to-release-button-group')).not.toBeDisabled()
     })
 
     await act(() => {
-      fireEvent.click(screen.getByText('Copy version to'))
+      fireEvent.click(screen.getByTestId('copy-version-to-release-button-group'))
     })
 
     await waitFor(() => {
       fireEvent.click(screen.getByText('Release 2'))
     })
     expect(defaultProps.onCreateRelease).toHaveBeenCalled()
+  })
+
+  it('disables the copy version to option if the document is going to be unpublished', async () => {
+    mockUseReleasePermissions.mockReturnValue(useReleasesPermissionsMockReturnTrue)
+
+    const wrapper = await createTestProvider()
+
+    render(<VersionContextMenu {...defaultProps} isGoingToUnpublish />, {wrapper})
+
+    await waitFor(() => {
+      expect(screen.getByTestId('copy-version-to-release-button-group')).toBeDisabled()
+    })
   })
 })
