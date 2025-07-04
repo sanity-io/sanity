@@ -58,7 +58,6 @@ export const CreateReleaseMenuItem: ComponentType<Props> = ({onCreateRelease}) =
             count: workspaceReleaseLimit,
           }),
         }}
-        data-testid="create-new-release-button-disabled"
         disabled
       />
     )
@@ -72,7 +71,6 @@ export const CreateReleaseMenuItem: ComponentType<Props> = ({onCreateRelease}) =
           disabled: hasCreatePermission === true,
           content: t('release.action.permission.error'),
         }}
-        data-testid="create-new-release-button-disabled"
         disabled
       />
     )
