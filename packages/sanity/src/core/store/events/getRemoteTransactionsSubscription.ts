@@ -1,6 +1,6 @@
 import {type SanityClient} from '@sanity/client'
 import {type MendozaPatch, type TransactionLogEventWithEffects} from '@sanity/types'
-import {BehaviorSubject, filter, map, type Observable} from 'rxjs'
+import {BehaviorSubject, filter, map} from 'rxjs'
 
 import {getDraftId, getPublishedId, isVersionId} from '../../util/draftUtils'
 import {getDocumentVariantType} from '../../util/getDocumentVariantType'
@@ -14,7 +14,6 @@ interface GetRemoteTransactionsSubscriptionOptions {
   documentId: string
   documentType: string
   isLiveEdit: boolean
-  serverActionsEnabled: Observable<boolean>
   onRefetch: () => void
 }
 
@@ -23,7 +22,6 @@ export function getRemoteTransactionsSubscription({
   isLiveEdit,
   documentId,
   documentType,
-  serverActionsEnabled,
   onRefetch,
 }: GetRemoteTransactionsSubscriptionOptions) {
   const remoteTransactions$ = new BehaviorSubject<TransactionLogEventWithEffects[]>([])
@@ -76,7 +74,6 @@ export function getRemoteTransactionsSubscription({
         : {}),
     },
     documentType,
-    serverActionsEnabled,
   ).pipe(filter((event) => event.type === 'remoteMutation'))
 
   return {

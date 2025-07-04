@@ -58,7 +58,6 @@ describe('patch', () => {
               _updatedAt: '2021-09-14T22:48:02.303Z',
             },
           },
-          serverActionsEnabled: true,
           ...pair,
         } as unknown as OperationArgs,
         [
@@ -141,7 +140,6 @@ describe('patch', () => {
               newValue: 'hey',
             },
           },
-          serverActionsEnabled: true,
           ...pair,
         } as unknown as OperationArgs,
         [
