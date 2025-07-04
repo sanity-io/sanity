@@ -66,6 +66,8 @@ jobs:
           npx lerna publish \
           --force-publish \
           --git-tag-version \
+          --loglevel verbose \
+          --concurrency 1 \
           --exact \
           --yes \
           from-package
