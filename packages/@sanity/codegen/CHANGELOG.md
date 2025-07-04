@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [3.97.0](https://github.com/sanity-io/sanity/compare/v3.96.0...v3.97.0) (2025-07-04)
+
+### Bug Fixes
+
+* **codegen:** fix tsTypeOperator declaration ([#9882](https://github.com/sanity-io/sanity/issues/9882)) ([37d298d](https://github.com/sanity-io/sanity/commit/37d298d90e7595649fb6deb544c7bb2d74473a02)) by Sindre Gulseth (sgulseth@gmail.com)
+
 ## [3.96.0](https://github.com/sanity-io/sanity/compare/v3.95.0...v3.96.0) (2025-07-02)
 
 **Note:** Version bump only for package @sanity/codegen
