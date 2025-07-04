@@ -1,17 +1,14 @@
-import {unstable_useValuePreview as useValuePreview, useTranslation} from 'sanity'
+import {useTranslation} from 'sanity'
 
 import {structureLocaleNamespace} from '../../../../i18n'
 import {useDocumentPane} from '../../useDocumentPane'
+import {useDocumentTitle} from '../../useDocumentTitle'
 
 export function DocumentHeaderTitle(): React.JSX.Element {
   const {connectionState, schemaType, title, value: documentValue} = useDocumentPane()
+  const {title: documentTitle, error} = useDocumentTitle()
   const subscribed = Boolean(documentValue)
 
-  const {error, value} = useValuePreview({
-    enabled: subscribed,
-    schemaType,
-    value: documentValue,
-  })
   const {t} = useTranslation(structureLocaleNamespace)
 
   if (connectionState === 'connecting' && !subscribed) {
@@ -33,12 +30,12 @@ export function DocumentHeaderTitle(): React.JSX.Element {
   }
 
   if (error) {
-    return <>{t('panes.document-header-title.error.text', {error: error.message})}</>
+    return <>{t('panes.document-header-title.error.text', {error: error})}</>
   }
 
   return (
     <>
-      {value?.title || (
+      {documentTitle || (
         <span style={{color: 'var(--card-muted-fg-color)'}}>
           {t('panes.document-header-title.untitled.text')}
         </span>

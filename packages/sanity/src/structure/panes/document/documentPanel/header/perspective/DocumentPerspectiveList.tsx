@@ -6,11 +6,13 @@ import {
   getReleaseTone,
   getVersionFromId,
   isDraftId,
+  isGoingToUnpublish,
   isPublishedId,
   isPublishedPerspective,
   isReleaseScheduledOrScheduling,
   isVersionId,
   type ReleaseDocument,
+  type SanityDocumentLike,
   Translate,
   useActiveReleases,
   useDateTimeFormat,
@@ -77,6 +79,7 @@ const DATE_TIME_FORMAT: UseDateTimeFormatOptions = {
   timeStyle: 'short',
 }
 
+// eslint-disable-next-line complexity
 export const DocumentPerspectiveList = memo(function DocumentPerspectiveList() {
   const {selectedReleaseId, selectedPerspectiveName} = usePerspective()
   const {t} = useTranslation()
@@ -120,19 +123,27 @@ export const DocumentPerspectiveList = memo(function DocumentPerspectiveList() {
 
   const getReleaseChipState = useCallback(
     (release: ReleaseDocument): {selected: boolean; disabled?: boolean} => {
-      if (!params?.historyVersion)
+      if (!params?.historyVersion) {
+        const isCurrentVersionGoingToUnpublish =
+          editState?.version &&
+          isGoingToUnpublish(editState?.version) &&
+          getReleaseIdFromReleaseDocumentId(release._id) ===
+            getVersionFromId(editState?.version?._id)
+
         return {
-          selected:
+          selected: Boolean(
             getReleaseIdFromReleaseDocumentId(release._id) ===
-            getVersionFromId(displayed?._id || ''),
+              getVersionFromId(displayed?._id || '') || isCurrentVersionGoingToUnpublish,
+          ),
         }
+      }
 
       const isReleaseHistoryMatch =
         getReleaseIdFromReleaseDocumentId(release._id) === params.historyVersion
 
       return {selected: isReleaseHistoryMatch, disabled: isReleaseHistoryMatch}
     },
-    [displayed?._id, params?.historyVersion],
+    [displayed?._id, editState?.version, params?.historyVersion],
   )
 
   const isPublishSelected: boolean = useMemo(() => {
@@ -327,6 +338,11 @@ export const DocumentPerspectiveList = memo(function DocumentPerspectiveList() {
               fromRelease: getReleaseIdFromReleaseDocumentId(release._id),
               releaseState: release.state,
               isVersion: true,
+              // displayed, in this instance is not going to be the version to compare to
+              // since it's going to be the published version
+              isGoingToUnpublish: editState?.version
+                ? isGoingToUnpublish(editState?.version as SanityDocumentLike)
+                : false,
             }}
           />
         ))}

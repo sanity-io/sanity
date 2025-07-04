@@ -195,8 +195,10 @@ const structureLocaleStrings = defineLocalesResources('structure', {
     "We couldn't find the document revision selected, please select another entry from the history list.",
   /** The text content for the unpublished document banner when is part of a release */
   'banners.unpublished-release-banner.text':
-    'This document will be unpublished as part of the <VersionBadge>{{title}}</VersionBadge> release',
-
+    'This document will be unpublished as part of the <VersionBadge>{{title}}</VersionBadge> release.',
+  /** The text content for the unpublished document banner letting the user know that the current published version is being shown */
+  'banners.unpublished-release-banner.text-with-published':
+    'Showing the current <strong>published</strong> version:',
   /** Browser/tab title when creating a new document of a given type */
   'browser-document-title.new-document': 'New {{schemaType}}',
   /** Browser/tab title when editing a document where the title cannot be resolved from preview configuration */
