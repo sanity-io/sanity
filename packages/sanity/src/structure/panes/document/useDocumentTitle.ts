@@ -9,7 +9,7 @@ import {useDocumentPane} from './useDocumentPane'
  * @beta
  * @hidden
  */
-interface UseDocumentTitle {
+export interface UseDocumentTitle {
   error?: string
   title?: string
 }

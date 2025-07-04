@@ -5,14 +5,18 @@ import {useDocumentPane} from '../../useDocumentPane'
 import {useDocumentTitle} from '../../useDocumentTitle'
 
 export function DocumentHeaderTitle(): React.JSX.Element {
-  const {connectionState, schemaType, value: documentValue} = useDocumentPane()
-  const {title} = useDocumentTitle()
+  const {connectionState, schemaType, title, value: documentValue} = useDocumentPane()
+  const {title: documentTitle, error} = useDocumentTitle()
   const subscribed = Boolean(documentValue)
 
   const {t} = useTranslation(structureLocaleNamespace)
 
   if (connectionState === 'connecting' && !subscribed) {
     return <></>
+  }
+
+  if (title) {
+    return <>{title}</>
   }
 
   if (!documentValue) {
@@ -25,9 +29,13 @@ export function DocumentHeaderTitle(): React.JSX.Element {
     )
   }
 
+  if (error) {
+    return <>{t('panes.document-header-title.error.text', {error: error})}</>
+  }
+
   return (
     <>
-      {title || (
+      {documentTitle || (
         <span style={{color: 'var(--card-muted-fg-color)'}}>
           {t('panes.document-header-title.untitled.text')}
         </span>
