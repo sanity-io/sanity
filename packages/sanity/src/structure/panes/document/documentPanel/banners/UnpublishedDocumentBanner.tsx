@@ -1,5 +1,5 @@
 import {UnpublishIcon} from '@sanity/icons'
-import {Text} from '@sanity/ui'
+import {Stack, Text} from '@sanity/ui'
 import {
   getVersionInlineBadge,
   isGoingToUnpublish,
@@ -30,18 +30,23 @@ export function UnpublishedDocumentBanner() {
       <Banner
         tone="critical"
         content={
-          <Text size={1}>
-            <Translate
-              t={t}
-              i18nKey="banners.unpublished-release-banner.text"
-              values={{
-                title,
-              }}
-              components={{
-                VersionBadge: getVersionInlineBadge(selectedPerspective),
-              }}
-            />
-          </Text>
+          <Stack space={2}>
+            <Text size={1}>
+              <Translate
+                t={t}
+                i18nKey="banners.unpublished-release-banner.text"
+                values={{
+                  title,
+                }}
+                components={{
+                  VersionBadge: getVersionInlineBadge(selectedPerspective),
+                }}
+              />
+            </Text>
+            <Text size={1}>
+              <Translate t={t} i18nKey="banners.unpublished-release-banner.text-with-published" />
+            </Text>
+          </Stack>
         }
         icon={UnpublishIcon}
       />
