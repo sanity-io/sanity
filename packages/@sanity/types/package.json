@@ -62,7 +62,7 @@
     "@vitejs/plugin-react": "catalog:",
     "react": "catalog:react18",
     "rimraf": "^5.0.10",
-    "vitest": "^3.2.3"
+    "vitest": "^3.2.4"
   },
   "peerDependencies": {
     "@types/react": "18 || 19"
