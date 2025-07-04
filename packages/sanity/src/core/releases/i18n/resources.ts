@@ -28,6 +28,8 @@ const releasesLocaleStrings = {
   'action.unpublish': 'Unpublish',
   /** Action message for scheduling an unpublished of a document  */
   'action.unpublish-doc-actions': 'Unpublish when releasing',
+  /** Action message for when document is scheduled for unpublishing a document and you want to no longer unpublish it */
+  'action.revert-unpublish-actions': 'Revert unpublish when releasing',
   /** Action text for unscheduling a release */
   'action.unschedule': 'Unschedule release',
   /** Action text for publishing all documents in a release (and the release itself) */
