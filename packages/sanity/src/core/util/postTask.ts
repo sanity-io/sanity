@@ -1,3 +1,6 @@
+// eslint-disable-next-line import/no-unassigned-import, import/no-extraneous-dependencies
+import 'scheduler-polyfill'
+
 /**
  * Schedule the provided callback using `scheduler.postTask`, if it's available.
  * Otherwise, call it immediately.
