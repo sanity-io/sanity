@@ -12,6 +12,7 @@ import {
   isReleaseScheduledOrScheduling,
   isVersionId,
   type ReleaseDocument,
+  type SanityDocumentLike,
   Translate,
   useActiveReleases,
   useDateTimeFormat,
@@ -337,6 +338,11 @@ export const DocumentPerspectiveList = memo(function DocumentPerspectiveList() {
               fromRelease: getReleaseIdFromReleaseDocumentId(release._id),
               releaseState: release.state,
               isVersion: true,
+              // displayed, in this instance is not going to be the version to compare to
+              // since it's going to be the published version
+              isGoingToUnpublish: editState?.version
+                ? isGoingToUnpublish(editState?.version as SanityDocumentLike)
+                : false,
             }}
           />
         ))}

@@ -81,6 +81,7 @@ export const VersionChip = memo(function VersionChip(props: {
     releaseState?: ReleaseState
     isVersion: boolean
     disabled?: boolean
+    isGoingToUnpublish?: boolean
   }
 }) {
   const {
@@ -101,6 +102,7 @@ export const VersionChip = memo(function VersionChip(props: {
       releaseState,
       isVersion,
       disabled: contextMenuDisabled = false,
+      isGoingToUnpublish = false,
     },
   } = props
   const releasesToolAvailable = useReleasesToolAvailable()
@@ -244,6 +246,7 @@ export const VersionChip = memo(function VersionChip(props: {
             onCreateVersion={handleAddVersion}
             locked={locked}
             type={documentType}
+            isGoingToUnpublish={isGoingToUnpublish}
           />
         }
         fallbackPlacements={[]}
