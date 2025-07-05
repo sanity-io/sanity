@@ -22,8 +22,25 @@ vi.mock('../../../store/useReleasesIds', () => ({
 
 vi.mock('../../../i18n/hooks/useTranslation', () => ({
   useTranslate: vi.fn().mockReturnValue({
-    t: vi.fn(),
+    t: vi.fn((key) => key),
   }),
+}))
+
+vi.mock('../../../hooks/useTimeZone', () => ({
+  useTimeZone: vi.fn().mockReturnValue({
+    timeZone: {name: 'UTC'},
+    utcToCurrentZoneDate: vi.fn((date) => date),
+  }),
+}))
+
+const mockUseReleaseFormStorage = vi.fn().mockReturnValue({
+  getStoredReleaseData: vi.fn().mockReturnValue({}),
+  saveReleaseDataToStorage: vi.fn(),
+  clearReleaseDataFromStorage: vi.fn(),
+})
+
+vi.mock('../../hooks/useReleaseFormStorage', () => ({
+  useReleaseFormStorage: mockUseReleaseFormStorage,
 }))
 
 const mockUseActiveReleases = useActiveReleases as Mock<typeof useActiveReleases>
@@ -40,6 +57,19 @@ describe('ReleaseForm', () => {
       description: '',
     },
   }
+
+  beforeEach(() => {
+    // Clear localStorage before each test
+    localStorage.clear()
+    vi.clearAllMocks()
+
+    // Reset the useReleaseFormStorage mock to return empty data
+    mockUseReleaseFormStorage.mockReturnValue({
+      getStoredReleaseData: vi.fn().mockReturnValue({}),
+      saveReleaseDataToStorage: vi.fn(),
+      clearReleaseDataFromStorage: vi.fn(),
+    })
+  })
 
   describe('when creating a new release', () => {
     beforeEach(async () => {
@@ -87,7 +117,6 @@ describe('ReleaseForm', () => {
     it('should render the form fields', () => {
       expect(screen.getByTestId('release-form-title')).toBeInTheDocument()
       expect(screen.getByTestId('release-form-description')).toBeInTheDocument()
-      //expect(screen.getByTestId('release-form-publish-at')).toBeInTheDocument()
     })
 
     it('should call onChange when title input value changes', () => {
@@ -108,6 +137,74 @@ describe('ReleaseForm', () => {
         ...valueMock,
         metadata: {...valueMock.metadata, description: 'New Description'},
       })
+    })
+
+    it('should render release type selection menu', () => {
+      expect(screen.getByText('ASAP')).toBeInTheDocument()
+    })
+  })
+
+  describe('when localStorage has stored values', () => {
+    const storedData = {
+      title: 'Stored Title',
+      description: 'Stored Description',
+      releaseType: 'scheduled' as const,
+      intendedPublishAt: '2024-12-25T10:00:00.000Z',
+    }
+
+    beforeEach(async () => {
+      // Set up localStorage with stored data
+      localStorage.setItem('studio.release-form.recovery', JSON.stringify(storedData))
+
+      mockUseReleaseFormStorage.mockReturnValue({
+        getStoredReleaseData: vi.fn().mockReturnValue(storedData),
+        saveReleaseDataToStorage: vi.fn(),
+        clearReleaseDataFromStorage: vi.fn(),
+      })
+
+      onChangeMock.mockClear()
+      onErrorMock.mockClear()
+
+      const mockData: ReleaseDocument[] = []
+      mockUseActiveReleases.mockReturnValue({
+        data: mockData,
+        loading: false,
+        dispatch: vi.fn(),
+        error: undefined,
+      })
+
+      mockUseReleasesIds.mockReturnValue({
+        releasesIds: [],
+      })
+
+      mockUseDateTimeFormat.mockReturnValue({format: vi.fn().mockReturnValue('Mocked date')})
+
+      const wrapper = await createTestProvider()
+      render(<ReleaseForm onChange={onChangeMock} value={valueMock} />, {
+        wrapper,
+      })
+    })
+
+    it('should load stored values from localStorage and populate the form', () => {
+      expect(screen.getByTestId('release-form-title')).toHaveValue(storedData.title)
+      expect(screen.getByTestId('release-form-description')).toHaveValue(storedData.description)
+    })
+
+    it('should call onChange with the stored values merged with the original value', () => {
+      expect(onChangeMock).toHaveBeenCalledWith({
+        ...valueMock,
+        metadata: {
+          ...valueMock.metadata,
+          title: storedData.title,
+          description: storedData.description,
+          releaseType: storedData.releaseType,
+          intendedPublishAt: storedData.intendedPublishAt,
+        },
+      })
+    })
+
+    it('should show the correct release type in the menu', () => {
+      expect(screen.getByText('At time')).toBeInTheDocument()
     })
   })
 

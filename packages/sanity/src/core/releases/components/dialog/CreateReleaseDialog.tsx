@@ -8,6 +8,7 @@ import {useTranslation} from '../../../i18n'
 import {useSetPerspective} from '../../../perspective/useSetPerspective'
 import {CreatedRelease, type OriginInfo} from '../../__telemetry__/releases.telemetry'
 import {useCreateReleaseMetadata} from '../../hooks/useCreateReleaseMetadata'
+import {useReleaseFormStorage} from '../../hooks/useReleaseFormStorage'
 import {isReleaseLimitError} from '../../store/isReleaseLimitError'
 import {useReleaseOperations} from '../../store/useReleaseOperations'
 import {getReleaseIdFromReleaseDocumentId} from '../../util/getReleaseIdFromReleaseDocumentId'
@@ -28,6 +29,7 @@ export function CreateReleaseDialog(props: CreateReleaseDialogProps): React.JSX.
   const {t} = useTranslation()
   const telemetry = useTelemetry()
   const createReleaseMetadata = useCreateReleaseMetadata()
+  const {clearReleaseDataFromStorage} = useReleaseFormStorage()
 
   const [release, setRelease] = useState(getReleaseDefaults)
   const [isSubmitting, setIsSubmitting] = useState(false)
@@ -54,6 +56,7 @@ export function CreateReleaseDialog(props: CreateReleaseDialogProps): React.JSX.
       } catch (err) {
         if (isReleaseLimitError(err)) {
           onCancel()
+          clearReleaseDataFromStorage()
         } else {
           console.error(err)
           toast.push({
@@ -64,19 +67,21 @@ export function CreateReleaseDialog(props: CreateReleaseDialogProps): React.JSX.
         }
       } finally {
         setIsSubmitting(false)
+        clearReleaseDataFromStorage()
       }
     },
     [
-      release,
-      toast,
       createReleaseMetadata,
+      release,
       createRelease,
       telemetry,
       origin,
       setPerspective,
       onSubmit,
       onCancel,
+      toast,
       t,
+      clearReleaseDataFromStorage,
     ],
   )
 
@@ -87,12 +92,17 @@ export function CreateReleaseDialog(props: CreateReleaseDialogProps): React.JSX.
   const dialogTitle = t('release.dialog.create.title')
   const dialogConfirm = t('release.dialog.create.confirm')
 
+  const handleOnClose = useCallback(() => {
+    clearReleaseDataFromStorage()
+    onCancel()
+  }, [clearReleaseDataFromStorage, onCancel])
+
   return (
     <Dialog
       onClickOutside={onCancel}
       header={dialogTitle}
       id="create-release-dialog"
-      onClose={onCancel}
+      onClose={handleOnClose}
       width={1}
       padding={false}
     >
