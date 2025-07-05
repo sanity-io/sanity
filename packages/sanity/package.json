@@ -172,7 +172,7 @@
     "@sanity/presentation-comlink": "^1.0.21",
     "@sanity/preview-url-secret": "^2.1.11",
     "@sanity/schema": "workspace:*",
-    "@sanity/sdk": "0.0.0-alpha.25",
+    "@sanity/sdk": "2.1.0",
     "@sanity/telemetry": "^0.8.0",
     "@sanity/types": "workspace:*",
     "@sanity/ui": "^2.16.2",
