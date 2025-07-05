@@ -1,14 +1,16 @@
 import {type EditableReleaseDocument} from '@sanity/client'
 import {useTelemetry} from '@sanity/telemetry/react'
 import {type BadgeTone, Box, Card, Flex, Text, useToast} from '@sanity/ui'
-import {useCallback, useState} from 'react'
+import {useCallback, useEffect, useState} from 'react'
 
+import {Button} from '../../../../../ui-components/button/Button'
 import {Dialog} from '../../../../../ui-components/dialog/Dialog'
 import {LoadingBlock} from '../../../../components/loadingBlock/LoadingBlock'
 import {useSchema} from '../../../../hooks/useSchema'
 import {useTranslation} from '../../../../i18n/hooks/useTranslation'
 import {Preview} from '../../../../preview/components/Preview'
 import {CreatedRelease} from '../../../__telemetry__/releases.telemetry'
+import {useReleasesUpsell} from '../../../contexts/upsell/useReleasesUpsell'
 import {useCreateReleaseMetadata} from '../../../hooks/useCreateReleaseMetadata'
 import {releasesLocaleNamespace} from '../../../i18n'
 import {isReleaseLimitError} from '../../../store/isReleaseLimitError'
@@ -32,6 +34,17 @@ export function CopyToNewReleaseDialog(props: {
   const {t: tRelease} = useTranslation(releasesLocaleNamespace)
   const toast = useToast()
   const createReleaseMetadata = useCreateReleaseMetadata()
+  const {guardWithReleaseLimitUpsell} = useReleasesUpsell()
+  const [isPendingGuardResponse, setIsPendingGuardResponse] = useState<boolean>(true)
+  const [disableQuota, setDisableQuota] = useState<boolean>(true)
+
+  useEffect(() => {
+    setIsPendingGuardResponse(true)
+    guardWithReleaseLimitUpsell(() => {
+      setDisableQuota(false)
+      setIsPendingGuardResponse(false)
+    })
+  }, [guardWithReleaseLimitUpsell])
 
   const schema = useSchema()
   const schemaType = schema.get(documentType)
@@ -123,18 +136,6 @@ export function CopyToNewReleaseDialog(props: {
       onClose={onClose}
       padding={false}
       width={1}
-      footer={{
-        cancelButton: {
-          disabled: isSubmitting,
-          onClick: onClose,
-        },
-        confirmButton: {
-          text: t('release.action.add-to-new-release'),
-          onClick: handleCreateRelease,
-          disabled: isSubmitting || isScheduledDateInPast,
-          tone: 'primary',
-        },
-      }}
     >
       <Box
         paddingX={2}
@@ -176,6 +177,34 @@ export function CopyToNewReleaseDialog(props: {
           </Card>
         )}
         <ReleaseForm onChange={handleOnChange} value={release} />
+
+        <Flex width="full" gap={3} justify="flex-end" paddingTop={3} align="center">
+          <Button
+            disabled={isSubmitting}
+            text={t('common.dialog.cancel-button.text')}
+            data-testid="cancel-button"
+            onClick={onClose}
+            mode="bleed"
+          />
+          <Button
+            disabled={
+              isSubmitting || isScheduledDateInPast || disableQuota || isPendingGuardResponse
+            }
+            type="submit"
+            onClick={handleCreateRelease}
+            text={t('release.action.add-to-new-release')}
+            loading={isSubmitting || isPendingGuardResponse}
+            tone="primary"
+            tooltipProps={
+              isPendingGuardResponse
+                ? {
+                    content: t('release.dialog.tooltip.submit.loading'),
+                  }
+                : null
+            }
+            data-testid="confirm-button"
+          />
+        </Flex>
       </Box>
     </Dialog>
   )
