@@ -1,4 +1,4 @@
-import {unstable_useValuePreview as useValuePreview, useTranslation} from 'sanity'
+import {useTranslation, useValuePreview} from 'sanity'
 
 import {structureLocaleNamespace} from '../../i18n'
 import {useDocumentPane} from './useDocumentPane'
