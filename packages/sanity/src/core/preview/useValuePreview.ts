@@ -13,6 +13,7 @@ import {usePerspective} from '../perspective/usePerspective'
 import {isGoingToUnpublish} from '../releases/util/isGoingToUnpublish'
 import {useDocumentPreviewStore} from '../store'
 import {getPublishedId} from '../util'
+import {type Previewable} from './types'
 
 export {useDocumentPreview as unstable_useValuePreview}
 
@@ -54,9 +55,18 @@ function useDocumentPreview(props: {
       ? getPublishedId((previewValue as SanityDocument)._id)
       : ((previewValue as SanityDocument)._id as string)
 
+    // allow for previewing the published document when a version is slated for unpublishing
+    // but if it's not for unpublishing, then we want to preview the content as was before
+    const restPreviewValue = isGoingToUnpublish(previewValue as SanityDocument)
+      ? {}
+      : {
+          ...(previewValue as Previewable),
+        }
+
     return observeForPreview(
       {
         _id: updatedDocId,
+        ...restPreviewValue,
       },
       schemaType,
       {
