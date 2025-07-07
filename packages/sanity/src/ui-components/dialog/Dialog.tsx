@@ -34,6 +34,7 @@ export type DialogProps = Pick<
    */
   bodyHeight?: BoxHeight
   children?: ReactNode
+  zOffset?: number
   footer?: {
     cancelButton?: Omit<ComponentProps<typeof UIButton>, 'fontSize' | 'padding'>
     confirmButton?: Omit<ComponentProps<typeof UIButton>, 'fontSize' | 'padding'>
@@ -59,6 +60,7 @@ export const Dialog = forwardRef(function Dialog(
     children,
     footer,
     padding = true,
+    zOffset,
     ...props
   }: DialogProps & Pick<HTMLProps<HTMLDivElement>, 'onDragEnter' | 'onDrop'>,
   ref: Ref<HTMLDivElement>,
@@ -69,6 +71,7 @@ export const Dialog = forwardRef(function Dialog(
     <UIDialog
       {...props}
       animate
+      zOffset={zOffset}
       ref={ref}
       footer={
         (footer?.confirmButton || footer?.cancelButton) && (

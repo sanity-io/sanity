@@ -116,17 +116,10 @@ export function CreateReleaseDialog(props: CreateReleaseDialogProps): React.JSX.
           <Flex justify="flex-end" paddingTop={5}>
             <Button
               size="large"
-              disabled={isSubmitting || disableQuota || isPendingGuardResponse}
+              disabled={isSubmitting || disableQuota}
               type="submit"
               text={dialogConfirm}
-              loading={isSubmitting || isPendingGuardResponse}
-              tooltipProps={
-                isPendingGuardResponse
-                  ? {
-                      content: t('release.dialog.tooltip.submit.loading'),
-                    }
-                  : null
-              }
+              loading={isSubmitting && isPendingGuardResponse}
               data-testid="submit-release-button"
             />
           </Flex>
