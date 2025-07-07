@@ -40,17 +40,11 @@ export const UnpublishVersionAction: DocumentActionComponent = (
 
   const [dialogOpen, setDialogOpen] = useState(false)
 
-  const handleDialogOpen = useCallback(async () => {
+  const handleOnClick = useCallback(async () => {
     // if the document is already unpublished, revert the unpublish
     if (isAlreadyUnpublished && version) {
       try {
         await revertUnpublishVersion(version._id)
-        toast.push({
-          closable: true,
-          status: 'success',
-          title: coreT('release.action.revert-unpublish-version.success.title'),
-          description: coreT('release.action.revert-unpublish-version.success.description'),
-        })
       } catch (err) {
         toast.push({
           closable: true,
@@ -96,7 +90,7 @@ export const UnpublishVersionAction: DocumentActionComponent = (
       ? t('action.revert-unpublish-actions')
       : t('action.unpublish-doc-actions'),
     icon: isAlreadyUnpublished ? RevertIcon : UnpublishIcon,
-    onHandle: handleDialogOpen,
+    onHandle: handleOnClick,
     disabled: !isPublished,
     /** @todo should be switched once we have the document actions updated */
     title: isAlreadyUnpublished
