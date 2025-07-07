@@ -248,24 +248,14 @@ export function createReleaseOperationsStore(options: {
   }
 
   const handleRevertUnpublishVersion = async (documentId: string, opts?: BaseActionOptions) => {
-    const currentDocument = await client.getDocument(documentId)
-
-    if (!currentDocument) {
-      throw new Error(`Document with id ${documentId} not found`)
-    }
-
-    const updatedDocument = {
-      ...currentDocument,
-      _system: {
-        ...currentDocument._system,
-        delete: undefined,
-      },
-    }
-
     return client.action(
       {
-        actionType: 'sanity.action.document.version.replace',
-        document: updatedDocument,
+        actionType: 'sanity.action.document.edit',
+        draftId: documentId,
+        publishedId: getPublishedId(documentId),
+        patch: {
+          unset: ['_system.delete'],
+        },
       },
       opts,
     )
