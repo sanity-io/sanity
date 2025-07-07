@@ -61,27 +61,17 @@ jobs:
           fi
           echo "✅ npm authentication validated - using $EXPECTED_NPM_USER account"
 
-      - name: Publish packages to npm
-        run: |
-          npx lerna publish \
-          --force-publish \
-          --git-tag-version \
-          --loglevel verbose \
-          --concurrency 1 \
-          --exact \
-          --yes \
-          from-package
-        env:
-          NPM_CONFIG_PROVENANCE: true
-          GITHUB_TOKEN: ${{ steps.app-token.outputs.token }}
-
-      - name: Push tags and create release
+      - name: Tag and push version
         run: |
           git tag v$RELEASE_AS -m v$RELEASE_AS
-          git push origin --tags
+          git push origin v$RELEASE_AS
         env:
           RELEASE_AS: ${{steps.release-as.outputs.version}}
-          GITHUB_TOKEN: ${{ steps.app-token.outputs.token }}
+
+      - name: Publish packages to pnpm
+        run: pnpm -r publish
+        env:
+          NPM_CONFIG_PROVENANCE: true
 
       - name: Build bundle
         run: pnpm run build:bundle
