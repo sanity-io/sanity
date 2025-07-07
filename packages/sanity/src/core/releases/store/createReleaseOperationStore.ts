@@ -256,7 +256,10 @@ export function createReleaseOperationsStore(options: {
 
     const updatedDocument = {
       ...currentDocument,
-      _system: undefined,
+      _system: {
+        ...currentDocument._system,
+        delete: undefined,
+      },
     }
 
     return client.action(
