@@ -1,7 +1,7 @@
 import {type EditableReleaseDocument} from '@sanity/client'
 import {useTelemetry} from '@sanity/telemetry/react'
 import {type BadgeTone, Box, Card, Flex, Text, useToast} from '@sanity/ui'
-import {useCallback, useEffect, useState} from 'react'
+import {useCallback, useState} from 'react'
 
 import {Button} from '../../../../../ui-components/button/Button'
 import {Dialog} from '../../../../../ui-components/dialog/Dialog'
@@ -10,8 +10,8 @@ import {useSchema} from '../../../../hooks/useSchema'
 import {useTranslation} from '../../../../i18n/hooks/useTranslation'
 import {Preview} from '../../../../preview/components/Preview'
 import {CreatedRelease} from '../../../__telemetry__/releases.telemetry'
-import {useReleasesUpsell} from '../../../contexts/upsell/useReleasesUpsell'
 import {useCreateReleaseMetadata} from '../../../hooks/useCreateReleaseMetadata'
+import {useGuardWithReleaseLimitUpsell} from '../../../hooks/useGuardWithReleaseLimitUpsell'
 import {releasesLocaleNamespace} from '../../../i18n'
 import {isReleaseLimitError} from '../../../store/isReleaseLimitError'
 import {useReleaseOperations} from '../../../store/useReleaseOperations'
@@ -34,17 +34,7 @@ export function CopyToNewReleaseDialog(props: {
   const {t: tRelease} = useTranslation(releasesLocaleNamespace)
   const toast = useToast()
   const createReleaseMetadata = useCreateReleaseMetadata()
-  const {guardWithReleaseLimitUpsell} = useReleasesUpsell()
-  const [isPendingGuardResponse, setIsPendingGuardResponse] = useState<boolean>(true)
-  const [disableQuota, setDisableQuota] = useState<boolean>(true)
-
-  useEffect(() => {
-    setIsPendingGuardResponse(true)
-    guardWithReleaseLimitUpsell(() => {
-      setDisableQuota(false)
-      setIsPendingGuardResponse(false)
-    })
-  }, [guardWithReleaseLimitUpsell])
+  const {isPendingGuardResponse, disableQuota} = useGuardWithReleaseLimitUpsell()
 
   const schema = useSchema()
   const schemaType = schema.get(documentType)

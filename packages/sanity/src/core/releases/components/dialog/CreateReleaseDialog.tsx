@@ -1,14 +1,14 @@
 import {type EditableReleaseDocument} from '@sanity/client'
 import {useTelemetry} from '@sanity/telemetry/react'
 import {Box, Card, Flex, useToast} from '@sanity/ui'
-import {type FormEvent, useCallback, useEffect, useState} from 'react'
+import {type FormEvent, useCallback, useState} from 'react'
 
 import {Button, Dialog} from '../../../../ui-components'
 import {useTranslation} from '../../../i18n'
 import {useSetPerspective} from '../../../perspective/useSetPerspective'
 import {CreatedRelease, type OriginInfo} from '../../__telemetry__/releases.telemetry'
-import {useReleasesUpsell} from '../../contexts/upsell/useReleasesUpsell'
 import {useCreateReleaseMetadata} from '../../hooks/useCreateReleaseMetadata'
+import {useGuardWithReleaseLimitUpsell} from '../../hooks/useGuardWithReleaseLimitUpsell'
 import {isReleaseLimitError} from '../../store/isReleaseLimitError'
 import {useReleaseOperations} from '../../store/useReleaseOperations'
 import {getReleaseIdFromReleaseDocumentId} from '../../util/getReleaseIdFromReleaseDocumentId'
@@ -29,20 +29,11 @@ export function CreateReleaseDialog(props: CreateReleaseDialogProps): React.JSX.
   const {t} = useTranslation()
   const telemetry = useTelemetry()
   const createReleaseMetadata = useCreateReleaseMetadata()
-  const {guardWithReleaseLimitUpsell} = useReleasesUpsell()
-  const [isPendingGuardResponse, setIsPendingGuardResponse] = useState<boolean>(true)
-  const [disableQuota, setDisableQuota] = useState<boolean>(true)
 
   const [release, setRelease] = useState(getReleaseDefaults)
   const [isSubmitting, setIsSubmitting] = useState(false)
 
-  useEffect(() => {
-    setIsPendingGuardResponse(true)
-    guardWithReleaseLimitUpsell(() => {
-      setDisableQuota(false)
-      setIsPendingGuardResponse(false)
-    })
-  }, [guardWithReleaseLimitUpsell])
+  const {isPendingGuardResponse, disableQuota} = useGuardWithReleaseLimitUpsell()
 
   const handleOnSubmit = useCallback(
     async (event: FormEvent<HTMLFormElement>) => {
