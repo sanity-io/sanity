@@ -49,14 +49,14 @@ export const UnpublishVersionAction: DocumentActionComponent = (
         toast.push({
           closable: true,
           status: 'error',
-          title: t('release.action.revert-unpublish-version.failure.title'),
+          title: coreT('release.action.revert-unpublish-version.failure.title'),
           description: coreT('release.action.revert-unpublish-version.failure.description'),
         })
       }
     } else {
       setDialogOpen(true)
     }
-  }, [isAlreadyUnpublished, version, revertUnpublishVersion, toast, coreT, t])
+  }, [isAlreadyUnpublished, version, revertUnpublishVersion, toast, coreT])
 
   if (!version) return null
 
