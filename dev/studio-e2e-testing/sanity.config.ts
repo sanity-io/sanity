@@ -119,6 +119,9 @@ const defaultConfig = defineConfig({
   create: {
     startInCreateEnabled: false,
   },
+  mediaLibrary: {
+    enabled: true,
+  },
 })
 
 export default defineConfig([
