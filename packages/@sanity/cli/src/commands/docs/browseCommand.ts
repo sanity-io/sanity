@@ -7,7 +7,7 @@ const browseCommand: CliCommandDefinition = {
   group: 'docs',
   helpText: '',
   signature: '',
-  description: 'Opens Sanity documentation in your web browser',
+  description: 'Open Sanity docs in a web browser',
   async action(args, context) {
     const {output} = context
     const {print} = output

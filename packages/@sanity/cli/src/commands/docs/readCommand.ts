@@ -8,7 +8,7 @@ interface ReadCommandFlags {
 
 const helpText = `
 Arguments
-  <slug> Full path of the documentation article
+  <path> Article path
 
 Options
   -w, --web               Open the article in a web browser
@@ -26,23 +26,30 @@ const readCommand: CliCommandDefinition<ReadCommandFlags> = {
   name: 'read',
   group: 'docs',
   helpText,
-  signature: '<slug> [-w, --web]',
-  description: 'Read a documentation article',
+  signature: '<path> [-w, --web]',
+  description: 'Read an article',
   async action(args, context) {
     const {output} = context
     const flags = args.extOptions as ReadCommandFlags
-    const slug = args.argsWithoutOptions[0]
+    const path = args.argsWithoutOptions[0]
 
-    if (!slug) {
-      output.error('Please provide a documentation slug')
-      output.print('Usage: sanity docs read "article-slug"')
-      output.print('Example: sanity docs read "/docs/studio/installation"')
-      return
+    if (!path) {
+      output.error('Please provide an article path')
+      output.print('')
+      output.print(helpText)
+      process.exit(1)
+    }
+
+    if (!path.startsWith('/')) {
+      output.error('Article path must start with a forward slash (/)')
+      output.print('')
+      output.print(helpText)
+      process.exit(1)
     }
 
     // Open in web browser if --web or -w flag is provided
     if (flags.web || flags.w) {
-      const url = `https://www.sanity.io${slug}`
+      const url = `https://www.sanity.io${path}`
       output.print(`Opening ${url}`)
 
       const {default: open} = await import('open')
@@ -51,9 +58,9 @@ const readCommand: CliCommandDefinition<ReadCommandFlags> = {
     }
 
     // Default behavior: read as markdown in terminal
-    output.print(`Reading documentation: ${slug}`)
+    output.print(`Reading documentation: ${path}`)
 
-    const content = await readDoc({slug}, context)
+    const content = await readDoc({path}, context)
 
     if (!content) {
       return // Error already handled in readDoc

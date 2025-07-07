@@ -1,3 +1,4 @@
+import {type SearchResult} from '../../actions/docs/searchDocs'
 import {searchDocs} from '../../actions/docs/searchDocs'
 import {type CliCommandDefinition} from '../../types'
 import {isInteractive} from '../../util/isInteractive'
@@ -30,7 +31,7 @@ const searchCommand: CliCommandDefinition<SearchCommandFlags> = {
   group: 'docs',
   helpText,
   signature: '<query> [--limit <limit>]',
-  description: 'Search the official Sanity documentation',
+  description: 'Search Sanity docs',
   async action(args, context) {
     const {output, prompt} = context
     const flags = {...defaultFlags, ...args.extOptions}
@@ -39,21 +40,29 @@ const searchCommand: CliCommandDefinition<SearchCommandFlags> = {
     if (!query) {
       output.error('Please provide a search query')
       output.print('Usage: sanity docs search "your query"')
-      return
+      process.exit(1)
     }
 
     output.print(`Searching documentation for: "${query}"`)
 
-    const results = await searchDocs(
-      {
-        query,
-        limit: flags.limit,
-      },
-      context,
-    )
+    let results: SearchResult[]
+    try {
+      results = await searchDocs(
+        {
+          query,
+          limit: flags.limit,
+        },
+        context,
+      )
 
-    if (results.length === 0) {
-      output.print('No results found. Try a different search term.')
+      if (results.length === 0) {
+        output.print('No results found. Try a different search term.')
+        return
+      }
+    } catch (error) {
+      // Graceful error handling
+      output.error('The documentation search API is currently unavailable. Please try again later.')
+      process.exit(1)
       return
     }
 
@@ -90,7 +99,7 @@ const searchCommand: CliCommandDefinition<SearchCommandFlags> = {
 
           // Read and display the article
           const {readDoc} = await import('../../actions/docs/readDoc')
-          const content = await readDoc({slug: selected.path}, context)
+          const content = await readDoc({path: selected.path}, context)
 
           if (content) {
             output.print(`\n# ${selected.title}\n`)
