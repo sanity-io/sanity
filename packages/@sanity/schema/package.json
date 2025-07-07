@@ -1,6 +1,6 @@
 {
   "name": "@sanity/schema",
-  "version": "3.96.0",
+  "version": "3.97.1",
   "description": "",
   "keywords": [
     "sanity",
@@ -62,7 +62,7 @@
     "watch": "pkg-utils watch"
   },
   "dependencies": {
-    "@sanity/descriptors": "1.0.0",
+    "@sanity/descriptors": "^1.1.1",
     "@sanity/generate-help-url": "^3.0.0",
     "@sanity/types": "workspace:*",
     "arrify": "^2.0.1",

@@ -64,6 +64,7 @@
     "example:movies-studio": "cd examples/studios/movies-studio && pnpm start",
     "generate:docs": "tsx -r dotenv-flow/config ./scripts/generate-documents/cli.ts",
     "generate:dts-exports": "turbo run generate:dts-exports",
+    "preinstall": "npx only-allow pnpm",
     "postinstall": "husky",
     "install:deps": "pnpm install",
     "lint": "turbo run check:oxlint lint --ui tui -- --quiet",
@@ -106,11 +107,6 @@
   "prettier": "@sanity/prettier-config",
   "devDependencies": {
     "@google-cloud/storage": "^7.11.0",
-    "@lerna-lite/changed": "^4.5.1",
-    "@lerna-lite/cli": "^4.5.1",
-    "@lerna-lite/publish": "^4.5.1",
-    "@lerna-lite/run": "^4.5.1",
-    "@lerna-lite/version": "^4.5.1",
     "@playwright/test": "catalog:",
     "@repo/bundle-manager": "workspace:*",
     "@repo/dev-aliases": "workspace:*",
@@ -153,6 +149,7 @@
     "husky": "^9.0.11",
     "js-yaml": "^4.1.0",
     "jsdom": "^23.0.1",
+    "lerna": "^8.2.3",
     "lint-staged": "^16.1.0",
     "lodash-es": "^4.17.21",
     "minimist": "^1.2.5",
@@ -196,12 +193,6 @@
       "jsdom": "$jsdom",
       "vite": "$vite",
       "vitest": "$vitest"
-    }
-  },
-  "devEngines": {
-    "packageManager": {
-      "name": "pnpm",
-      "onFail": "error"
     }
   },
   "isSanityMonorepo": true

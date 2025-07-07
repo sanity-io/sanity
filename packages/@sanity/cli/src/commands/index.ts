@@ -27,6 +27,7 @@ import learnCommand from './learn/learnCommand'
 import loginCommand from './login/loginCommand'
 import logoutCommand from './logout/logoutCommand'
 import manageCommand from './manage/manageCommand'
+import createProjectCommand from './projects/createProjectCommand'
 import listProjectsCommand from './projects/listProjectsCommand'
 import projectsGroup from './projects/projectsGroup'
 import disableTelemetryCommand from './telemetry/disableTelemetryCommand'
@@ -53,6 +54,7 @@ export const baseCommands: (CliCommandDefinition | CliCommandGroupDefinition)[] 
   projectsGroup,
   learnCommand,
   listProjectsCommand,
+  createProjectCommand,
   codemodCommand,
   telemetryGroup,
   disableTelemetryCommand,

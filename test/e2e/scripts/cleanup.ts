@@ -1,7 +1,7 @@
 /* eslint-disable no-console */
 /**
  * Deletes old datasets from the e2e project that was created longer than DATASET_MAX_AGE ago
- * Run this via `pnpm exec tsx --env-file=<.env file> ./scripts/e2e/cleanupOldDatasets"`
+ * Run this via `npx tsx --env-file=<.env file> ./scripts/e2e/cleanupOldDatasets"`
  * Note for the future: ideally, this should be rewritten to check against open PRs on github
  * and only delete datasets for PRs that has been closed or merged
  */

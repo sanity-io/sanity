@@ -832,8 +832,6 @@ describeCliTest('CLI: `sanity init v3`', () => {
         `${baseTestPath}/${outpath}`,
         '--package-manager',
         'manual',
-        // TODO: remove once version 4 is released
-        '--hide-major-message',
       ])
 
       // Check if essential files exist
@@ -875,8 +873,6 @@ describeCliTest('CLI: `sanity init v3`', () => {
         `${baseTestPath}/${outpath}`,
         '--package-manager',
         'manual',
-        // TODO: remove once version 4 is released
-        '--hide-major-message',
       ])
 
       const hasPackageJson = await fs
@@ -917,8 +913,6 @@ describeCliTest('CLI: `sanity init v3`', () => {
         `${baseTestPath}/${outpath}`,
         '--package-manager',
         'manual',
-        // TODO: remove once version 4 is released
-        '--hide-major-message',
       ])
 
       const envContent = await fs.readFile(path.join(baseTestPath, outpath, '.env.local'), 'utf-8')
@@ -950,8 +944,6 @@ describeCliTest('CLI: `sanity init v3`', () => {
           `${baseTestPath}/${outpath}`,
           '--package-manager',
           'manual',
-          // TODO: remove once version 4 is released
-          '--hide-major-message',
         ]),
       ).rejects.toThrow()
     })
@@ -977,12 +969,35 @@ describeCliTest('CLI: `sanity init v3`', () => {
           `${baseTestPath}/${outpath}`,
           '--package-manager',
           'manual',
-          // TODO: remove once version 4 is released
-          '--hide-major-message',
         ]),
       ).rejects.toThrow(
         'GitHub repository not found. For private repositories, use --template-token to provide an access token',
       )
     })
+  })
+
+  testConcurrent('supports --project-id as alias for --project', async () => {
+    const version = 'v3'
+    const testRunArgs = getTestRunArgs(version)
+    const outpath = 'test-project-id-alias'
+
+    await cleanOutputDirectory(outpath)
+
+    await runSanityCmdCommand(version, [
+      'init',
+      '--y',
+      '--project-id',
+      cliProjectId,
+      '--dataset',
+      testRunArgs.dataset,
+      '--output-path',
+      `${baseTestPath}/${outpath}`,
+      '--package-manager',
+      'manual',
+    ])
+
+    const cliConfig = await fs.readFile(path.join(baseTestPath, outpath, 'sanity.cli.ts'), 'utf-8')
+
+    expect(cliConfig).toContain(`projectId: '${cliProjectId}'`)
   })
 })

@@ -85,8 +85,7 @@ describeCliTest('CLI: `sanity dev`', () => {
         command: 'dev',
         port: testRunArgs.port - 3,
         basePath: '/config-base-path',
-        // TODO: remove '--hide-major-message' once version 4 is released
-        args: ['--port', `${testRunArgs.port - 3}`, '--load-in-dashboard', '--hide-major-message'],
+        args: ['--port', `${testRunArgs.port - 3}`, '--load-in-dashboard'],
         cwd: path.join(studiosPath, version),
         expectedTitle: 'Sanity Studio',
       })
@@ -104,8 +103,7 @@ describeCliTest('CLI: `sanity dev`', () => {
         command: 'dev',
         port: port,
         basePath: '/app-base-path',
-        // TODO: remove '--hide-major-message' once version 4 is released
-        args: ['--port', `${port}`, '--hide-major-message'],
+        args: ['--port', `${port}`],
         cwd: path.join(fixturesPath, 'app'),
         expectedTitle: 'Sanity Custom App',
       })
