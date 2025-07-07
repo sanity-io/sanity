@@ -213,7 +213,6 @@ exports[`exports snapshot 1`] = `
     "ValueError": "function",
     "VersionChip": "object",
     "VersionInlineBadge": "function",
-    "VideoInput": "function",
     "VirtualizerScrollInstanceProvider": "function",
     "WithReferringDocuments": "function",
     "WorkspaceLoader": "function",
