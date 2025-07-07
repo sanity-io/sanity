@@ -42,13 +42,11 @@ jobs:
       - name: Bump canary versions
         run: |
           npx lerna version \
-            --canary \
             --conventional-commits \
             --loglevel verbose \
             --concurrency 1 \
             --conventional-prerelease \
             --preid=next \
-            --no-push \
             --no-git-tag-version \
             --exact \
             --yes
@@ -82,6 +80,7 @@ jobs:
         # Note: --no-git-reset is required for the bundle uploading step later on
         run: |
           npx lerna publish from-package \
+            --canary \
             --loglevel verbose \
             --concurrency 1 \
             --dist-tag=next \
