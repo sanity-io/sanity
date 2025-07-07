@@ -1273,7 +1273,7 @@ export const studioLocaleStrings = defineLocalesResources('studio', {
   'release.action.permission.error': 'You do not have permission to perform this action',
   /** Error message description for when a version is reverted from being unpublished */
   'release.action.revert-unpublish-version.failure.description':
-    'Please try again or check your connection. The version is still going to be unpublished upon release.',
+    'Please try again or check your connection. The document is still going to be unpublished upon release.',
   /** Error message title for when a version is reverted from being unpublished */
   'release.action.revert-unpublish-version.failure.title':
     'Failed to revert from setting to unpublish on release.',
