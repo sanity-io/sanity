@@ -1,5 +1,6 @@
 import {searchDocs} from '../../actions/docs/searchDocs'
 import {type CliCommandDefinition} from '../../types'
+import {isInteractive} from '../../util/isInteractive'
 
 interface SearchCommandFlags {
   limit?: number
@@ -68,8 +69,8 @@ const searchCommand: CliCommandDefinition<SearchCommandFlags> = {
       output.print('')
     })
 
-    // Interactive selection
-    if (results.length > 1) {
+    // Interactive selection (only in interactive environments)
+    if (results.length > 1 && isInteractive) {
       const choices = results.map((result, index) => ({
         name: `${result.title} (${result.path})`,
         value: index,
