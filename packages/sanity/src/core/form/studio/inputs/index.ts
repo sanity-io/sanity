@@ -8,4 +8,3 @@ export {
 } from './reference/StudioReferenceInput'
 export {StudioFileInput as FileInput, type FileInputProps} from './StudioFileInput'
 export {StudioImageInput as ImageInput, type ImageInputProps} from './StudioImageInput'
-export {StudioVideoInput as VideoInput, type VideoInputProps} from './StudioVideoInput'

@@ -15,7 +15,6 @@ import {StudioCrossDatasetReferenceInput} from '../inputs/crossDatasetReference/
 import {StudioGlobalDocumentReferenceInput} from '../inputs/globalDocumentReference/StudioGlobalDocumentReferenceInput'
 import {StudioFileInput} from '../inputs/StudioFileInput'
 import {StudioImageInput} from '../inputs/StudioImageInput'
-import {StudioVideoInput} from '../inputs/StudioVideoInput'
 
 export const defaultInputs: Record<string, ComponentType<FIXME>> = {
   document: ObjectInput,
@@ -30,7 +29,6 @@ export const defaultInputs: Record<string, ComponentType<FIXME>> = {
   url: UrlInput,
   image: StudioImageInput,
   file: StudioFileInput,
-  video: StudioVideoInput,
   string: StringInput,
   slug: SlugInput,
   crossDatasetReference: StudioCrossDatasetReferenceInput,
