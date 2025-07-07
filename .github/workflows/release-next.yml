@@ -71,7 +71,7 @@ jobs:
           echo "✅ npm authentication validated - using $EXPECTED_NPM_USER account"
 
       - name: Publish packages to npm
-        run: pnpm -r publish --no-git-checks
+        run: pnpm -r publish --tag next --no-git-checks
         env:
           NPM_CONFIG_PROVENANCE: true
 
