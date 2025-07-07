@@ -35,8 +35,32 @@ jobs:
           cache: pnpm
           node-version: lts/*
 
-      - name: install deps & build
+      - name: Install deps
         run: pnpm install --ignore-scripts
+
+      - name: Bump canary versions
+        run: |
+          npx lerna version \
+            --conventional-commits \
+            --conventional-prerelease \
+            --preid=next \
+            --no-git-tag-version \
+            --exact \
+            --yes
+
+          COMMIT_HASH=$(git rev-parse --short HEAD)
+          TIMESTAMP=$(date -u +"%Y%m%d%H%M")
+          VERSION_SUFFIX="${COMMIT_HASH}-${TIMESTAMP}"
+
+          echo "Appending version suffix: $VERSION_SUFFIX"
+
+          for pkg in $(lerna list --json | jq -r '.[].location'); do
+            jq --arg suffix "$VERSION_SUFFIX" '.version += "-" + $suffix' "$pkg/package.json" > "$pkg/package.tmp.json"
+            mv "$pkg/package.tmp.json" "$pkg/package.json"
+          done
+
+      - name: Re-install after version bump
+        run: pnpm install --frozen-lockfile
 
       - name: Build
         run: pnpm build --output-logs=full --log-order=grouped
@@ -57,33 +81,13 @@ jobs:
           echo "✅ npm authentication validated - using $EXPECTED_NPM_USER account"
 
       - name: Publish packages to npm
-        # Note: ubuntu-latest ships with lerna installed on the system
-        # (see https://github.com/actions/runner-images/blob/main/images/ubuntu/Ubuntu2404-Readme.md#project-management)
-        # It's important that we call lerna using npx in the command below so we get the
-        # locally installed lerna instead of the one installed on the system
-        # Note: --no-git-reset is required for the bundle uploading step later on
-        run: |
-          npx lerna publish \
-          --canary \
-          --loglevel verbose \
-          --concurrency 1 \
-          --no-git-tag-version \
-          --force-publish \
-          --conventional-commits \
-          --conventional-prerelease \
-          --dist-tag=next \
-          --no-git-reset \
-          --preid=next \
-          --exact \
-          --yes
+        run: pnpm -r publish --tag next --no-git-checks
         env:
           NPM_CONFIG_PROVENANCE: true
 
       - name: Build bundles
         run: pnpm run build:bundle
 
-      # Note: we need to run this after publish so we get the updated version numbers from npx lerna publish
-      # ideally, the flow should be 1) bump packages using lerna version, 2) upload to module cdn, 3) lerna publish to npm from packages
       - name: Upload bundles to staging bucket
         env:
           GOOGLE_PROJECT_ID: ${{ secrets.GCS_STAGING_PROJECT_ID }}
