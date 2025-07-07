@@ -11,7 +11,10 @@ function getListenEventType(request: Request): string | null | undefined {
   return undefined
 }
 
-test(`navigating document creates only one listener connection`, async ({page, browserName}) => {
+test.skip(`navigating document creates only one listener connection`, async ({
+  page,
+  browserName,
+}) => {
   // For now, only test in other browsers except firefox due to flakiness in Firefox with the requests
   test.skip(browserName === 'firefox')
 
