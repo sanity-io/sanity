@@ -74,8 +74,8 @@ jobs:
           --preid=next \
           --exact \
           --yes
-        env:
-          NPM_CONFIG_PROVENANCE: true
+        # env:
+        #   NPM_CONFIG_PROVENANCE: true
 
       - name: Build bundles
         run: pnpm run build:bundle
