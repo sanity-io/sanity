@@ -1,4 +1,6 @@
 name: Create Documentation Report
+permissions:
+  pull-requests: write # for comment
 
 on:
   # Build on version tags
