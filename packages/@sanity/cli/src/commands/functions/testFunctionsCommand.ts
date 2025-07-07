@@ -48,7 +48,7 @@ const testFunctionsCommand: CliCommandDefinition<FunctionsTestFlags> = {
     '<name> [--data <json>] [--file <filename>] [--timeout <seconds>] [--api <version>] [--dataset <name>] [--project-id] <id>] [--with-user-token]',
   description: 'Invoke a local Sanity Function',
   async action(args, context) {
-    const {apiClient, output} = context
+    const {apiClient, output, chalk} = context
     const [name] = args.argsWithoutOptions
     const flags = {...defaultFlags, ...args.extOptions}
 
@@ -68,6 +68,20 @@ const testFunctionsCommand: CliCommandDefinition<FunctionsTestFlags> = {
     const {initBlueprintConfig} = await import('@sanity/runtime-cli/cores')
     const {functionTestCore} = await import('@sanity/runtime-cli/cores/functions')
 
+    // Prefer projectId in blueprint
+    const {blueprint} = await import('@sanity/runtime-cli/actions/blueprints')
+    const {projectId: bpProjectId} = await blueprint.readLocalBlueprint()
+
+    if (projectId && projectId !== bpProjectId) {
+      output.print(
+        chalk.yellow('WARNING'),
+        `Project ID ${chalk.cyan(projectId)} in ${chalk.green('sanity.cli.ts')} does not match Project ID ${chalk.cyan(bpProjectId)} in ${chalk.green('./sanity/blueprint.config.json')}.`,
+      )
+      output.print(
+        `Defaulting to Project ID ${chalk.cyan(bpProjectId)}. To override use the ${chalk.green('--project-id')} flag.\n`,
+      )
+    }
+
     const cmdConfig = await initBlueprintConfig({
       bin: 'sanity',
       log: (message: string) => output.print(message),
@@ -85,7 +99,7 @@ const testFunctionsCommand: CliCommandDefinition<FunctionsTestFlags> = {
         'timeout': flags.timeout,
         'api': flags.api,
         'dataset': flags.dataset || actualDataset,
-        'project-id': flags['project-id'] || projectId,
+        'project-id': flags['project-id'] || bpProjectId,
         'with-user-token': flags['with-user-token'],
       },
     })
