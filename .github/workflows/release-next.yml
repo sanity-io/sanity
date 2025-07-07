@@ -35,7 +35,7 @@ jobs:
           cache: pnpm
           node-version: lts/*
 
-      - name: Install deps (ignore scripts)
+      - name: Install deps
         run: pnpm install --ignore-scripts
 
       - name: Bump canary versions
