@@ -49,6 +49,19 @@ jobs:
             --exact \
             --yes
 
+          COMMIT_HASH=$(git rev-parse --short HEAD)
+
+          echo "Appending commit hash: $COMMIT_HASH"
+
+          for pkg in $(lerna list --json | jq -r '.[].location'); do
+            jq --arg hash "$COMMIT_HASH" '.version += "." + $hash' "$pkg/package.json" > "$pkg/package.tmp.json"
+            mv "$pkg/package.tmp.json" "$pkg/package.json"
+          done
+
+          # Update root package.json
+          jq --arg hash "$COMMIT_HASH" '.version += "." + $hash' package.json > package.tmp.json
+          mv package.tmp.json package.json
+
       - name: Re-install after version bump
         run: pnpm install --frozen-lockfile
 
