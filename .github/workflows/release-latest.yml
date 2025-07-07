@@ -42,9 +42,21 @@ jobs:
           git config --global user.name 'github-actions[bot]'
           git config --global user.email '41898282+github-actions[bot]@users.noreply.github.com'
 
-      - name: Get version
+      - name: Get version from lerna.json
         id: release-as
-        run: echo "version=$(cat lerna.json | jq -r .version)" >> $GITHUB_OUTPUT
+        run: |
+          version=$(jq -r .version lerna.json)
+          echo "version=$version" >> "$GITHUB_OUTPUT"
+
+      - name: Validate version
+        run: |
+          echo "Release version: $RELEASE_AS"
+          if [[ ! "$RELEASE_AS" =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
+            echo "Invalid version: $RELEASE_AS"
+            exit 1
+          fi
+        env:
+          RELEASE_AS: ${{ steps.release-as.outputs.version }}
 
       - name: Set publishing config
         run: pnpm config set '//registry.npmjs.org/:_authToken' "${NPM_PUBLISH_TOKEN}"
