@@ -905,7 +905,7 @@ importers:
         specifier: ^2.4.3
         version: 2.4.3
       '@sanity/util':
-        specifier: workspace:3.97.1
+        specifier: workspace:3.98.0
         version: link:../util
       chalk:
         specifier: ^4.1.2
