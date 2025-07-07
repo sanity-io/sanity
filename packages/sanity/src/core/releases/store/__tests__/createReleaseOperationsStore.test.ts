@@ -487,68 +487,40 @@ describe('createReleaseOperationsStore', () => {
 
   it('should revert unpublish a version of a document', async () => {
     const store = createStore()
-    const mockDocument = {
-      _id: 'versions.release-id.doc-id',
-      _type: 'document',
-      title: 'Test Document',
-      content: 'Test content',
-      _system: {someSystemData: 'value'},
-    }
-    mockClient.getDocument.mockResolvedValue(mockDocument)
-
-    await store.revertUnpublishVersion('versions.release-id.doc-id')
-
-    expect(mockClient.getDocument).toHaveBeenCalledWith('versions.release-id.doc-id')
-    expect(mockClient.action).toHaveBeenCalledWith(
-      {
-        actionType: 'sanity.action.document.version.replace',
-        document: {
-          _id: 'versions.release-id.doc-id',
-          _type: 'document',
-          title: 'Test Document',
-          content: 'Test content',
-        },
-      },
-      undefined,
-    )
-  })
-
-  it('should revert unpublish a version of a document with options', async () => {
-    const store = createStore()
-    const mockDocument = {
-      _id: 'versions.release-id.doc-id',
-      _type: 'document',
-      title: 'Test Document',
-    }
-    mockClient.getDocument.mockResolvedValue(mockDocument)
     const opts = {dryRun: true}
 
     await store.revertUnpublishVersion('versions.release-id.doc-id', opts)
 
-    expect(mockClient.getDocument).toHaveBeenCalledWith('versions.release-id.doc-id')
     expect(mockClient.action).toHaveBeenCalledWith(
       {
-        actionType: 'sanity.action.document.version.replace',
-        document: {
-          _id: 'versions.release-id.doc-id',
-          _type: 'document',
-          title: 'Test Document',
+        actionType: 'sanity.action.document.edit',
+        draftId: 'versions.release-id.doc-id',
+        publishedId: 'doc-id',
+        patch: {
+          unset: ['_system.delete'],
         },
       },
       opts,
     )
   })
 
-  it('should throw an error when reverting unpublish for a non-existent document', async () => {
+  it('should revert unpublish a version of a document with options', async () => {
     const store = createStore()
-    mockClient.getDocument.mockResolvedValue(null)
+    const opts = {dryRun: true}
 
-    await expect(store.revertUnpublishVersion('versions.release-id.doc-id')).rejects.toThrow(
-      'Document with id versions.release-id.doc-id not found',
+    await store.revertUnpublishVersion('versions.release-id.doc-id', opts)
+
+    expect(mockClient.action).toHaveBeenCalledWith(
+      {
+        actionType: 'sanity.action.document.edit',
+        draftId: 'versions.release-id.doc-id',
+        publishedId: 'doc-id',
+        patch: {
+          unset: ['_system.delete'],
+        },
+      },
+      opts,
     )
-
-    expect(mockClient.getDocument).toHaveBeenCalledWith('versions.release-id.doc-id')
-    expect(mockClient.action).not.toHaveBeenCalled()
   })
 
   it('should create a release with options', async () => {

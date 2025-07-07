@@ -248,7 +248,7 @@ export function createReleaseOperationsStore(options: {
   }
 
   const handleRevertUnpublishVersion = async (documentId: string, opts?: BaseActionOptions) => {
-    return client.action(
+    return await client.action(
       {
         actionType: 'sanity.action.document.edit',
         draftId: documentId,
