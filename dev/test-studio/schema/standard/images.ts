@@ -220,14 +220,14 @@ export default defineType({
       options: {
         mediaLibrary: {
           filters: [
-            {
-              name: 'Has colourDetails aspect',
-              query: 'defined(aspects.colourDetails)',
-            },
             // {
-            //   name: 'Wide',
-            //   query: 'currentVersion->metadata.dimensions.width > 4000',
+            //   name: 'Has colourDetails aspect',
+            //   query: 'defined(aspects.colourDetails)',
             // },
+            {
+              name: 'Greater than 4000px wide',
+              query: 'currentVersion->metadata.dimensions.width > 4000',
+            },
           ],
         },
       },
