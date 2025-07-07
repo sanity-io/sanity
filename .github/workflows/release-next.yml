@@ -43,8 +43,6 @@ jobs:
         run: |
           npx lerna version \
             --conventional-commits \
-            --loglevel verbose \
-            --concurrency 1 \
             --conventional-prerelease \
             --preid=next \
             --no-git-tag-version \
@@ -73,19 +71,7 @@ jobs:
           echo "✅ npm authentication validated - using $EXPECTED_NPM_USER account"
 
       - name: Publish packages to npm
-        # Note: ubuntu-latest ships with lerna installed on the system
-        # (see https://github.com/actions/runner-images/blob/main/images/ubuntu/Ubuntu2404-Readme.md#project-management)
-        # It's important that we call lerna using npx in the command below so we get the
-        # locally installed lerna instead of the one installed on the system
-        # Note: --no-git-reset is required for the bundle uploading step later on
-        run: |
-          npx lerna publish from-package \
-            --canary \
-            --loglevel verbose \
-            --concurrency 1 \
-            --dist-tag=next \
-            --no-git-reset \
-            --yes
+        run: pnpm -r publish
         env:
           NPM_CONFIG_PROVENANCE: true
 
