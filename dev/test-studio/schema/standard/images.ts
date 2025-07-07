@@ -212,5 +212,25 @@ export default defineType({
         },
       },
     },
+    {
+      name: 'imageWithMediaLibraryFilters',
+      title: 'Image with Media Library filter',
+      type: 'image',
+      description: 'Should have custom Media Library filters',
+      options: {
+        mediaLibrary: {
+          filters: [
+            {
+              name: 'Has colourDetails aspect',
+              query: 'defined(aspects.colourDetails)',
+            },
+            // {
+            //   name: 'Wide',
+            //   query: 'currentVersion->metadata.dimensions.width > 4000',
+            // },
+          ],
+        },
+      },
+    },
   ],
 })
