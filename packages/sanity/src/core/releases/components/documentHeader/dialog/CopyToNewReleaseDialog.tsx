@@ -195,13 +195,6 @@ export function CopyToNewReleaseDialog(props: {
             text={t('release.action.add-to-new-release')}
             loading={isSubmitting || isPendingGuardResponse}
             tone="primary"
-            tooltipProps={
-              isPendingGuardResponse
-                ? {
-                    content: t('release.dialog.tooltip.submit.loading'),
-                  }
-                : null
-            }
             data-testid="confirm-button"
           />
         </Flex>
