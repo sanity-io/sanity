@@ -5,6 +5,7 @@ import {type ReactNode, useCallback, useEffect, useMemo, useReducer} from 'react
 import {TasksNavigationContext} from 'sanity/_singletons'
 import {useRouter} from 'sanity/router'
 
+import {useStudioUrl} from '../../../hooks/useStudioUrl'
 import {TaskLinkCopied, TaskLinkOpened} from '../../__telemetry__/tasks.telemetry'
 import {type Action, type SidebarTabsIds, type State, type ViewModeOptions} from './types'
 
@@ -76,6 +77,7 @@ export const TasksNavigationProvider = ({children}: {children: ReactNode}) => {
   const router = useRouter()
   const toast = useToast()
   const telemetry = useTelemetry()
+  const {studioUrl} = useStudioUrl()
 
   const setViewMode = useCallback((viewMode: ViewModeOptions) => {
     switch (viewMode.type) {
@@ -115,7 +117,7 @@ export const TasksNavigationProvider = ({children}: {children: ReactNode}) => {
   }, [])
 
   const handleCopyLinkToTask = useCallback(() => {
-    const url = new URL(window.location.href)
+    const url = new URL(studioUrl)
     url.searchParams.set('sidebar', 'tasks')
     url.searchParams.set('viewMode', state.viewMode)
     if (state.selectedTask) {
@@ -133,7 +135,7 @@ export const TasksNavigationProvider = ({children}: {children: ReactNode}) => {
           title: 'Failed to copy link to clipboard',
         })
       })
-  }, [state.selectedTask, state.viewMode, telemetry, toast])
+  }, [state.selectedTask, state.viewMode, studioUrl, telemetry, toast])
 
   const searchParams = new URLSearchParams(router.state._searchParams)
   const sidebar = searchParams.get('sidebar')
