@@ -1,5 +1,5 @@
-import {AddIcon, SpinnerIcon} from '@sanity/icons'
-import {type ComponentProps, type ComponentType, useCallback, useMemo, useState} from 'react'
+import {AddIcon} from '@sanity/icons'
+import {type ComponentProps, type ComponentType, useMemo} from 'react'
 import {useObservable} from 'react-rx'
 import {from} from 'rxjs'
 
@@ -39,24 +39,12 @@ export const CreateReleaseMenuItem: ComponentType<Props> = ({onCreateRelease}) =
   const workspaceReleaseLimit = releases?.limit ?? Infinity
   const isWorkspaceReleaseLimitReached = activeReleaseCount >= workspaceReleaseLimit
 
-  const [isPendingGuardResponse, setIsPendingGuardResponse] = useState(false)
-
-  const handleCreateRelease = useCallback(async () => {
-    setIsPendingGuardResponse(true)
-    await onCreateRelease()
-    setIsPendingGuardResponse(false)
-  }, [onCreateRelease])
-
-  const menuItemProps: Pick<
-    ComponentProps<typeof MenuItem>,
-    'icon' | 'onClick' | 'text' | 'disabled'
-  > & {
+  const menuItemProps: Pick<ComponentProps<typeof MenuItem>, 'icon' | 'onClick' | 'text'> & {
     'data-testid': string
   } = {
-    'icon': isPendingGuardResponse ? SpinnerIcon : AddIcon,
-    'onClick': handleCreateRelease,
+    'icon': AddIcon,
+    'onClick': onCreateRelease,
     'data-testid': 'create-new-release-button',
-    'disabled': isPendingGuardResponse,
     'text': t('release.action.create-new'),
   }
 
