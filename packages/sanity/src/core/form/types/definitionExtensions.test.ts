@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
 // noinspection JSUnusedLocalSymbols
 import {
   type CrossDatasetReferenceValue,
@@ -10,7 +9,6 @@ import {
   type ImageValue,
   type ReferenceValue,
   type SlugValue,
-  type VideoValue,
 } from '@sanity/types'
 // NOTE:
 // Fix: Addressed type error caused by missing 'preview' property in
@@ -57,7 +55,6 @@ import type {
   StringComponents,
   TextComponents,
   UrlComponents,
-  VideoComponents,
 } from 'sanity'
 /* eslint-enable import/consistent-type-specifier-style,no-restricted-imports */
 import {describe, it} from 'vitest'
@@ -418,52 +415,6 @@ describe('definitionExtensions', () => {
         },
       })
       const components: FileComponents | undefined = type.components
-    })
-
-    it('should extend components for video', () => {
-      const type = defineType({
-        type: 'video',
-        name: 'test',
-        components: {
-          diff: (props) => null,
-          field: (props) => {
-            const obj: ObjectFieldProps<VideoValue> = props
-            return null
-          },
-          input: (props) => {
-            const obj: ObjectInputProps<VideoValue> = props
-            return null
-          },
-          item: (props) => {
-            const obj: ObjectItemProps<VideoValue & ObjectItem> = props
-            return null
-          },
-          preview: (props) => {
-            const obj: PreviewProps = props
-            return null
-          },
-        },
-      })
-      const components: VideoComponents | undefined = type.components
-    })
-
-    it('should allow value-type narrowing for video', () => {
-      const type = defineType({
-        type: 'video',
-        name: 'test',
-        components: {
-          field: (props: ObjectFieldProps<VideoValue & {narrow?: true}>) => {
-            return null
-          },
-          input: (props: ObjectInputProps<VideoValue & {narrow?: true}>) => {
-            return null
-          },
-          item: (props: ObjectItemProps<VideoValue & ObjectItem & {narrow?: true}>) => {
-            return null
-          },
-        },
-      })
-      const components: VideoComponents | undefined = type.components
     })
 
     it('should extend components for geopoint', () => {
