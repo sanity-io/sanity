@@ -1,5 +1,6 @@
 import {type EditableReleaseDocument, type ReleaseDocument} from '@sanity/client'
-import {fireEvent, render, screen} from '@testing-library/react'
+import {fireEvent, render, screen, waitFor} from '@testing-library/react'
+import {useCallback, useState} from 'react'
 import {beforeEach, describe, expect, it, type Mock, vi} from 'vitest'
 
 import {createTestProvider} from '../../../../../../test/testUtils/TestProvider'
@@ -179,15 +180,26 @@ describe('ReleaseForm', () => {
 
       mockUseDateTimeFormat.mockReturnValue({format: vi.fn().mockReturnValue('Mocked date')})
 
+      // Create a component that simulates the real parent component behavior
+      // this is needed for the test on changes specifically for the local storage scenario
+      const TestComponent = () => {
+        const [value, setValue] = useState(valueMock)
+
+        const handleOnChange = useCallback(
+          (newValue: EditableReleaseDocument) => {
+            onChangeMock(newValue)
+            setValue(newValue)
+          },
+          [setValue],
+        )
+
+        return <ReleaseForm onChange={handleOnChange} value={value} />
+      }
+
       const wrapper = await createTestProvider()
-      render(<ReleaseForm onChange={onChangeMock} value={valueMock} />, {
+      render(<TestComponent />, {
         wrapper,
       })
-    })
-
-    it('should load stored values from localStorage and populate the form', () => {
-      expect(screen.getByTestId('release-form-title')).toHaveValue(storedData.title)
-      expect(screen.getByTestId('release-form-description')).toHaveValue(storedData.description)
     })
 
     it('should call onChange with the stored values merged with the original value', () => {
@@ -200,6 +212,25 @@ describe('ReleaseForm', () => {
           releaseType: storedData.releaseType,
           intendedPublishAt: storedData.intendedPublishAt,
         },
+      })
+    })
+
+    it('should load stored values from localStorage and populate the form', async () => {
+      expect(onChangeMock).toHaveBeenCalledWith({
+        ...valueMock,
+        metadata: {
+          ...valueMock.metadata,
+          title: storedData.title,
+          description: storedData.description,
+          releaseType: storedData.releaseType,
+          intendedPublishAt: storedData.intendedPublishAt,
+        },
+      })
+
+      // Wait for the form fields to be updated with the stored values
+      await waitFor(() => {
+        expect(screen.getByTestId('release-form-title')).toHaveValue(storedData.title)
+        expect(screen.getByTestId('release-form-description')).toHaveValue(storedData.description)
       })
     })
 

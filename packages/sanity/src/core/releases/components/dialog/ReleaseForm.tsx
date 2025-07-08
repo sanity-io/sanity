@@ -19,7 +19,6 @@ import {
   useCallback,
   useEffect,
   useId,
-  useRef,
   useState,
 } from 'react'
 
@@ -44,60 +43,42 @@ export function ReleaseForm(props: {
   const {t} = useTranslation()
   const {timeZone, utcToCurrentZoneDate} = useTimeZone(CONTENT_RELEASES_TIME_ZONE_SCOPE)
   const [currentTimezone, setCurrentTimezone] = useState<string | null>(timeZone.name)
-  const [currentValues, setCurrentValues] = useState<EditableReleaseDocument>(value)
   const [buttonReleaseType, setButtonReleaseType] = useState<ReleaseType>(releaseType ?? 'asap')
   const {getStoredReleaseData, saveReleaseDataToStorage} = useReleaseFormStorage()
-  const lastValueRef = useRef<EditableReleaseDocument | null>(null)
 
+  const id = value._id
   const [intendedPublishAt, setIntendedPublishAt] = useState<Date | undefined>()
 
   useEffect(() => {
-    const hasValueChanged =
-      lastValueRef.current?._id !== value._id ||
-      lastValueRef.current?.metadata.title !== value.metadata?.title ||
-      lastValueRef.current?.metadata.description !== value.metadata?.description ||
-      lastValueRef.current?.metadata.releaseType !== value.metadata?.releaseType ||
-      lastValueRef.current?.metadata.intendedPublishAt !== value.metadata?.intendedPublishAt
-
-    // done to prevent infinite loop of re-rendering the form
-    if (hasValueChanged) {
-      const storedData = getStoredReleaseData()
-      if (storedData) {
-        const updatedValue = {
-          ...value,
-          metadata: {
-            ...value.metadata,
-            title: storedData.title || value.metadata?.title,
-            description: storedData.description || value.metadata?.description,
-            releaseType: storedData.releaseType || value.metadata?.releaseType,
-            intendedPublishAt: storedData.intendedPublishAt || value.metadata?.intendedPublishAt,
-          },
-        }
-        setCurrentValues(updatedValue)
-        onChange(updatedValue)
-
-        if (storedData.releaseType) {
-          setButtonReleaseType(storedData.releaseType)
-        }
-        if (storedData.intendedPublishAt) {
-          setIntendedPublishAt(new Date(storedData.intendedPublishAt))
-        }
-      } else {
-        setCurrentValues(value)
+    const storedData = getStoredReleaseData()
+    if (storedData) {
+      const updatedValue = {
+        metadata: {
+          title: storedData.title,
+          description: storedData.description,
+          releaseType: storedData.releaseType,
+          intendedPublishAt: storedData.intendedPublishAt,
+        },
       }
-      lastValueRef.current = value
+      onChange({_id: id, ...updatedValue})
+
+      if (storedData.releaseType) {
+        setButtonReleaseType(storedData.releaseType)
+      }
+      if (storedData.intendedPublishAt) {
+        setIntendedPublishAt(new Date(storedData.intendedPublishAt))
+      }
     }
-  }, [value, getStoredReleaseData, onChange])
+  }, [getStoredReleaseData, id, onChange])
 
   const handleBundlePublishAtCalendarChange = useCallback(
     (date: Date) => {
       setIntendedPublishAt(date)
       const updatedValue = {
-        ...currentValues,
-        metadata: {...currentValues.metadata, intendedPublishAt: date.toISOString()},
+        ...value,
+        metadata: {...value.metadata, intendedPublishAt: date.toISOString()},
       }
       onChange(updatedValue)
-      setCurrentValues(updatedValue)
 
       saveReleaseDataToStorage({
         title: updatedValue.metadata?.title,
@@ -106,7 +87,7 @@ export function ReleaseForm(props: {
         intendedPublishAt: date.toISOString(),
       })
     },
-    [onChange, saveReleaseDataToStorage, currentValues],
+    [value, onChange, saveReleaseDataToStorage],
   )
 
   const handleButtonReleaseTypeChange = useCallback<MouseEventHandler<HTMLDivElement>>(
@@ -127,9 +108,9 @@ export function ReleaseForm(props: {
       }
 
       const updatedValue = {
-        ...currentValues,
+        ...value,
         metadata: {
-          ...currentValues.metadata,
+          ...value.metadata,
           releaseType: pickedReleaseType,
           intendedPublishAt:
             (pickedReleaseType === 'scheduled' && nextInputValue.toISOString()) || undefined,
@@ -137,7 +118,6 @@ export function ReleaseForm(props: {
       }
 
       onChange(updatedValue)
-      setCurrentValues(updatedValue)
 
       saveReleaseDataToStorage({
         title: updatedValue.metadata?.title,
@@ -146,22 +126,21 @@ export function ReleaseForm(props: {
         intendedPublishAt: updatedValue.metadata?.intendedPublishAt,
       })
     },
-    [onChange, saveReleaseDataToStorage, currentValues],
+    [onChange, saveReleaseDataToStorage, value],
   )
 
   const handleTitleDescriptionChange = useCallback(
     (updatedRelease: EditableReleaseDocument) => {
       const updatedValue = {
-        ...currentValues,
+        ...value,
         metadata: {
-          ...currentValues.metadata,
+          ...value.metadata,
           title: updatedRelease.metadata.title,
           description: updatedRelease.metadata.description,
         },
       }
 
       onChange(updatedValue)
-      setCurrentValues(updatedValue)
 
       saveReleaseDataToStorage({
         title: updatedRelease.metadata.title,
@@ -170,7 +149,7 @@ export function ReleaseForm(props: {
         intendedPublishAt: updatedValue.metadata?.intendedPublishAt,
       })
     },
-    [onChange, saveReleaseDataToStorage, currentValues],
+    [onChange, saveReleaseDataToStorage, value],
   )
 
   useEffect(() => {
@@ -265,7 +244,7 @@ export function ReleaseForm(props: {
           </Flex>
         </Stack>
       </Stack>
-      <TitleDescriptionForm release={currentValues} onChange={handleTitleDescriptionChange} />
+      <TitleDescriptionForm release={value} onChange={handleTitleDescriptionChange} />
     </Stack>
   )
 }
