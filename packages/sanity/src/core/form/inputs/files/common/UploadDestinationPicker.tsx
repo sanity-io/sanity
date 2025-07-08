@@ -27,7 +27,7 @@ export function UploadDestinationPicker(props: UploadDestinationPickerProps) {
   const {assetSources, onSelectAssetSource, text, onClose} = props
   const {t} = useTranslation()
 
-  const assetSourcesWithUpload = assetSources.filter((s) => Boolean(s.uploader))
+  const assetSourcesWithUpload = assetSources.filter((s) => Boolean(s.Uploader))
   const [modes, setModes] = useState<Record<string, 'bleed' | 'default'>>(
     assetSourcesWithUpload.reduce(
       (acc, source) => {

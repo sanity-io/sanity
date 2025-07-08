@@ -299,6 +299,18 @@ export interface DocumentPluginOptions {
   comments?: {
     enabled: boolean | ((context: DocumentCommentsEnabledContext) => boolean)
   }
+
+  drafts?: {
+    /**
+     * Whether the workspace provides the draft model for interacting with documents.
+     *
+     * When switched off, documents may only be edited:
+     *
+     *  - Inside a release.
+     *  - Outside a release if they support live-edit.
+     */
+    enabled?: boolean
+  }
 }
 
 /**
@@ -720,6 +732,18 @@ export interface Source {
      */
     components?: DocumentComponents
 
+    drafts: {
+      /**
+       * Whether the workspace provides the draft model for interacting with documents.
+       *
+       * When switched off, documents may only be edited:
+       *
+       *  - Inside a release.
+       *  - Outside a release if they support live-edit.
+       */
+      enabled: boolean
+    }
+
     /** @internal */
     unstable_fieldActions: (
       props: PartialContext<DocumentFieldActionsResolverContext>,
@@ -858,6 +882,15 @@ export interface Source {
      * @internal
      */
     i18next: i18n
+
+    /**
+     * The schema descriptor ID.
+     *
+     * This can be `undefined` in the case where uploading the schema has been disabled.
+     *
+     * @internal
+     */
+    schemaDescriptorId: Promise<string | undefined>
   }
   /** @beta */
   tasks?: WorkspaceOptions['tasks']

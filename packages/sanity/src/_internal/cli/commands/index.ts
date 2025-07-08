@@ -59,6 +59,10 @@ import schemaGroup from './schema/schemaGroup'
 import fetchSchemaCommand from './schema/schemaListCommand'
 import validateSchemaCommand from './schema/validateSchemaCommand'
 import startCommand from './start/startCommand'
+import addTokenCommand from './tokens/addTokenCommand'
+import deleteTokenCommand from './tokens/deleteTokenCommand'
+import listTokensCommand from './tokens/listTokensCommand'
+import tokensGroup from './tokens/tokensGroup'
 import inviteUserCommand from './users/inviteUserCommand'
 import listUsersCommand from './users/listUsersCommand'
 import usersGroup from './users/usersGroup'
@@ -85,6 +89,10 @@ const commands: (CliCommandDefinition | CliCommandGroupDefinition)[] = [
   listCorsOriginsCommand,
   addCorsOriginCommand,
   deleteCorsOriginCommand,
+  tokensGroup,
+  listTokensCommand,
+  addTokenCommand,
+  deleteTokenCommand,
   usersGroup,
   inviteUserCommand,
   listUsersCommand,

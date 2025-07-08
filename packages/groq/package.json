@@ -1,6 +1,6 @@
 {
   "name": "groq",
-  "version": "3.93.0",
+  "version": "3.97.1",
   "description": "Tagged template literal for Sanity.io GROQ-queries",
   "keywords": [
     "sanity",
@@ -38,12 +38,11 @@
   "module": "./lib/groq.js",
   "types": "./lib/groq.d.ts",
   "files": [
-    "lib",
-    "src"
+    "lib"
   ],
   "scripts": {
     "build": "pkg-utils build --strict --check --clean",
-    "check:types": "tsc --project tsconfig.lib.json",
+    "check:types": "(cd ../.. && tsc --project packages/groq/tsconfig.lib.json --erasableSyntaxOnly)",
     "clean": "rimraf lib",
     "lint": "eslint .",
     "prepublishOnly": "turbo run build",

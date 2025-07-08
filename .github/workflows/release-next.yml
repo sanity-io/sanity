@@ -11,12 +11,12 @@ permissions:
 jobs:
   release-next:
     permissions:
-      contents: read # for checkout
       id-token: write # to enable use of OIDC for npm provenance
     runs-on: ubuntu-latest
     env:
       TURBO_TOKEN: ${{ secrets.TURBO_TOKEN }}
       TURBO_TEAM: ${{ vars.TURBO_TEAM }}
+      EXPECTED_NPM_USER: sanity-io
     steps:
       - uses: actions/create-github-app-token@v2
         id: generate-token
@@ -35,8 +35,32 @@ jobs:
           cache: pnpm
           node-version: lts/*
 
-      - name: install deps & build
+      - name: Install deps
         run: pnpm install --ignore-scripts
+
+      - name: Bump canary versions
+        run: |
+          npx lerna version \
+            --conventional-commits \
+            --conventional-prerelease \
+            --preid=next \
+            --no-git-tag-version \
+            --exact \
+            --yes
+
+          COMMIT_HASH=$(git rev-parse --short HEAD)
+          TIMESTAMP=$(date -u +"%Y%m%d%H%M")
+          VERSION_SUFFIX="${COMMIT_HASH}-${TIMESTAMP}"
+
+          echo "Appending version suffix: $VERSION_SUFFIX"
+
+          for pkg in $(lerna list --json | jq -r '.[].location'); do
+            jq --arg suffix "$VERSION_SUFFIX" '.version += "-" + $suffix' "$pkg/package.json" > "$pkg/package.tmp.json"
+            mv "$pkg/package.tmp.json" "$pkg/package.json"
+          done
+
+      - name: Re-install after version bump
+        run: pnpm install --frozen-lockfile
 
       - name: Build
         run: pnpm build --output-logs=full --log-order=grouped
@@ -46,21 +70,36 @@ jobs:
         env:
           NPM_PUBLISH_TOKEN: ${{secrets.NPM_PUBLISH_TOKEN}}
 
-      - name: Publish packages to npm
-        # Note: ubuntu-latest ships with lerna installed on the system
-        # (see https://github.com/actions/runner-images/blob/main/images/ubuntu/Ubuntu2404-Readme.md#project-management)
-        # It's important that we call lerna using npx in the command below so we get the
-        # locally installed lerna instead of the one installed on the system
+      - name: Check valid token
         run: |
-          npx lerna publish \
-          --canary \
-          --no-git-tag-version \
-          --force-publish \
-          --conventional-commits \
-          --conventional-prerelease \
-          --dist-tag=next \
-          --preid=next \
-          --exact \
-          --yes
+          WHOAMI_RESULT=$(npm whoami)
+          echo "npm whoami result: $WHOAMI_RESULT"
+          if [ "$WHOAMI_RESULT" != "$EXPECTED_NPM_USER" ]; then
+            echo "Error: npm whoami returned '$WHOAMI_RESULT', expected '$EXPECTED_NPM_USER'"
+            exit 1
+          fi
+          echo "✅ npm authentication validated - using $EXPECTED_NPM_USER account"
+
+      - name: Publish packages to npm
+        run: pnpm -r publish --tag next --no-git-checks
         env:
           NPM_CONFIG_PROVENANCE: true
+
+      - name: Build bundles
+        run: pnpm run build:bundle
+
+      - name: Upload bundles to staging bucket
+        env:
+          GOOGLE_PROJECT_ID: ${{ secrets.GCS_STAGING_PROJECT_ID }}
+          GCLOUD_SERVICE_KEY: ${{ secrets.GCS_STAGING_SERVICE_KEY }}
+          GCLOUD_BUCKET: ${{ secrets.GCS_STAGING_BUCKET }}
+        run: pnpm bundle-manager publish --tag=next
+
+      - name: Upload bundles to production bucket
+        # NOTE: we're not uploading prereleases to production bucket yet
+        if: ${{ false }}
+        env:
+          GOOGLE_PROJECT_ID: ${{ secrets.GCS_PRODUCTION_PROJECT_ID }}
+          GCLOUD_SERVICE_KEY: ${{ secrets.GCS_PRODUCTION_SERVICE_KEY }}
+          GCLOUD_BUCKET: ${{ secrets.GCS_PRODUCTION_BUCKET }}
+        run: pnpm bundle-manager publish --tag=next

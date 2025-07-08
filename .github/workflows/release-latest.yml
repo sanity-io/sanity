@@ -19,6 +19,7 @@ jobs:
     env:
       TURBO_TOKEN: ${{ secrets.TURBO_TOKEN }}
       TURBO_TEAM: ${{ vars.TURBO_TEAM }}
+      EXPECTED_NPM_USER: sanity-io
 
     steps:
       - uses: actions/checkout@v4
@@ -50,11 +51,23 @@ jobs:
         env:
           NPM_PUBLISH_TOKEN: ${{secrets.NPM_PUBLISH_TOKEN}}
 
+      - name: Check valid token
+        run: |
+          WHOAMI_RESULT=$(npm whoami)
+          echo "npm whoami result: $WHOAMI_RESULT"
+          if [ "$WHOAMI_RESULT" != "$EXPECTED_NPM_USER" ]; then
+            echo "Error: npm whoami returned '$WHOAMI_RESULT', expected '$EXPECTED_NPM_USER'"
+            exit 1
+          fi
+          echo "✅ npm authentication validated - using $EXPECTED_NPM_USER account"
+
       - name: Publish packages to npm
         run: |
           npx lerna publish \
           --force-publish \
           --git-tag-version \
+          --loglevel verbose \
+          --concurrency 1 \
           --exact \
           --yes \
           from-package
@@ -69,3 +82,22 @@ jobs:
         env:
           RELEASE_AS: ${{steps.release-as.outputs.version}}
           GITHUB_TOKEN: ${{ steps.app-token.outputs.token }}
+
+      - name: Build bundle
+        run: pnpm run build:bundle
+
+      - name: Upload bundles to staging bucket
+        env:
+          GOOGLE_PROJECT_ID: ${{ secrets.GCS_STAGING_PROJECT_ID }}
+          GCLOUD_SERVICE_KEY: ${{ secrets.GCS_STAGING_SERVICE_KEY }}
+          GCLOUD_BUCKET: ${{ secrets.GCS_STAGING_BUCKET }}
+        run: pnpm bundle-manager publish --tag=latest
+
+      - name: Upload bundles to production bucket
+        env:
+          GOOGLE_PROJECT_ID: ${{ secrets.GCS_PRODUCTION_PROJECT_ID }}
+          GCLOUD_SERVICE_KEY: ${{ secrets.GCS_PRODUCTION_SERVICE_KEY }}
+          GCLOUD_BUCKET: ${{ secrets.GCS_PRODUCTION_BUCKET }}
+        # Note: we have not enabled tagging in production yet, so this should just exactly the same way as the
+        # old circleci workflow
+        run: pnpm bundle-manager publish

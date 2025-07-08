@@ -326,6 +326,18 @@ export default defineConfig([
     },
   },
   {
+    name: 'media-library-playground',
+    title: 'Media Library Playground (staging)',
+    projectId: '5iedwjzw',
+    dataset: 'production',
+    plugins: [sharedSettings({projectId: '5iedwjzw'})],
+    basePath: '/media-library-playground-staging',
+    apiHost: 'https://api.sanity.work',
+    auth: {
+      loginMethod: 'token',
+    },
+  },
+  {
     name: 'playground-staging',
     title: 'playground (Staging)',
     projectId: 'exx11uqh',

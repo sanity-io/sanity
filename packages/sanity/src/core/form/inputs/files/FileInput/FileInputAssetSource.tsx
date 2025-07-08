@@ -15,6 +15,7 @@ export function FileAssetSource(props: FileAssetProps) {
     setSelectedAssetSource,
     onSelectAssets,
     value,
+    uploader,
   } = props
 
   const {t} = useTranslation()
@@ -49,6 +50,7 @@ export function FileAssetSource(props: FileAssetProps) {
             schemaType={schemaType}
             selectedAssets={[fileAsset]}
             selectionType="single"
+            uploader={uploader}
           />
         )}
       </WithReferencedAsset>
@@ -66,6 +68,7 @@ export function FileAssetSource(props: FileAssetProps) {
       schemaType={schemaType}
       selectedAssets={[]}
       selectionType="single"
+      uploader={uploader}
     />
   )
 }

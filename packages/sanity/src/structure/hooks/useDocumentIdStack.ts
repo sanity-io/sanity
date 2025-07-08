@@ -1,5 +1,5 @@
 import {useMemo} from 'react'
-import {getReleaseIdFromReleaseDocumentId, getVersionId} from 'sanity'
+import {getReleaseIdFromReleaseDocumentId, getVersionId, useWorkspace} from 'sanity'
 
 import {type DocumentPaneContextValue} from '../panes/document/DocumentPaneContext'
 import {useFilteredReleases} from './useFilteredReleases'
@@ -38,8 +38,18 @@ export function useDocumentIdStack({
   documentId,
   editState,
 }: Pick<DocumentPaneContextValue, 'displayed' | 'documentId' | 'editState'>): DocumentIdStack {
+  const {
+    document: {
+      drafts: {enabled: isDraftModelEnabled},
+    },
+  } = useWorkspace()
+
   const filteredReleases = useFilteredReleases({displayed, documentId})
-  const systemStack = [editState?.published?._id, editState?.draft?._id]
+
+  const systemStack = [
+    editState?.published?._id,
+    isDraftModelEnabled ? editState?.draft?._id : [],
+  ].flat()
 
   const releaseStack = filteredReleases.currentReleases.map(
     (release) =>

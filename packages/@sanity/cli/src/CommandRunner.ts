@@ -26,6 +26,7 @@ import {
 import {type CliConfigResult} from './util/getCliConfig'
 import {isCommandGroup} from './util/isCommandGroup'
 import {getNoSuchCommandText} from './util/noSuchCommandText'
+import {printNewMajorVersionMessage} from './util/printNewMajorMessage'
 
 interface Handlers {
   outputter: CliOutputter
@@ -54,6 +55,7 @@ export class CommandRunner {
     }
   }
 
+  // eslint-disable-next-line complexity
   async runCommand(
     commandOrGroup: string,
     args: CliCommandArguments,
@@ -111,6 +113,14 @@ export class CommandRunner {
     }
 
     debug(`Running command "${command.name}"`)
+
+    // Only print the major version message if the --hide-major-message flag is not present
+    // used for the tests
+    // TODO: remove once version 4 is released
+    if (!cmdArgs.extOptions['hide-major-message']) {
+      printNewMajorVersionMessage(context)
+    }
+
     return command.action(cmdArgs, context)
   }
 

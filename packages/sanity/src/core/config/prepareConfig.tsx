@@ -20,7 +20,7 @@ import {
 } from '../form/studio/assetSourceMediaLibrary'
 import {type LocaleSource} from '../i18n'
 import {prepareI18n} from '../i18n/i18nConfig'
-import {createSchema, DESCRIPTOR_CONVERTER} from '../schema'
+import {createSchema} from '../schema'
 import {type AuthStore, createAuthStore, isAuthStore} from '../store/_legacy'
 import {validateWorkspaces} from '../studio'
 import {filterDefinitions} from '../studio/components/navbar/search/definitions/defaultFilters'
@@ -35,6 +35,7 @@ import {
   documentCommentsEnabledReducer,
   documentInspectorsReducer,
   documentLanguageFilterReducer,
+  draftsEnabledReducer,
   eventsAPIReducer,
   fileAssetSourceResolver,
   imageAssetSourceResolver,
@@ -74,6 +75,7 @@ import {
   type WorkspaceOptions,
   type WorkspaceSummary,
 } from './types'
+import {uploadSchema} from './uploadSchema'
 
 type InternalSource = WorkspaceSummary['__internal']['sources'][number]
 
@@ -220,19 +222,6 @@ export function prepareConfig(
         name: source.name,
         types: schemaTypes,
       })
-
-      if (process.env.SANITY_STUDIO_SCHEMA_DESCRIPTOR) {
-        const before = performance.now()
-        const sync = DESCRIPTOR_CONVERTER.get(schema)
-        const after = performance.now()
-        const duration = after - before
-        debug('Built schema for synchronization', {sync, duration})
-        if (duration > 1000) {
-          console.warn(
-            `Building schema for synchronization took more than 1 second (${duration}ms)`,
-          )
-        }
-      }
 
       const schemaValidationProblemGroups = schema._validation
       const schemaErrors = schemaValidationProblemGroups?.filter((msg) =>
@@ -593,6 +582,15 @@ function resolveSource({
           propertyName: 'document.badges',
           reducer: documentBadgesReducer,
         }),
+      drafts: {
+        enabled: resolveConfigProperty({
+          config,
+          context,
+          reducer: draftsEnabledReducer,
+          propertyName: 'document.drafts.enabled',
+          initialValue: true,
+        }),
+      },
       unstable_fieldActions: (partialContext) =>
         resolveConfigProperty({
           config,
@@ -716,6 +714,12 @@ function resolveSource({
       i18next: i18n.i18next,
       staticInitialValueTemplateItems,
       options: config,
+      schemaDescriptorId: authenticated
+        ? catchTap(uploadSchema(schema, getClient({apiVersion: '2025-06-01'})), (err) => {
+            debug('Uploading schema failed', {err})
+            return undefined
+          })
+        : Promise.resolve(undefined),
     },
     onUncaughtError: (error: Error, errorInfo: ErrorInfo) => {
       return onUncaughtErrorResolver({
@@ -801,4 +805,13 @@ function joinBasePath(rootPath: string, basePath?: string) {
     .join('/')
 
   return `/${joined}`
+}
+
+/**
+ * Registers a catch to a promise (to prevent it from being caught by the
+ * "unhandled promise" handler) while returning the original promise.
+ */
+function catchTap<T>(promise: Promise<T>, cb: (reason: unknown) => void): Promise<T> {
+  promise.catch(cb)
+  return promise
 }

@@ -485,6 +485,44 @@ describe('createReleaseOperationsStore', () => {
     )
   })
 
+  it('should revert unpublish a version of a document', async () => {
+    const store = createStore()
+    const opts = {dryRun: true}
+
+    await store.revertUnpublishVersion('versions.release-id.doc-id', opts)
+
+    expect(mockClient.action).toHaveBeenCalledWith(
+      {
+        actionType: 'sanity.action.document.edit',
+        draftId: 'versions.release-id.doc-id',
+        publishedId: 'doc-id',
+        patch: {
+          unset: ['_system.delete'],
+        },
+      },
+      opts,
+    )
+  })
+
+  it('should revert unpublish a version of a document with options', async () => {
+    const store = createStore()
+    const opts = {dryRun: true}
+
+    await store.revertUnpublishVersion('versions.release-id.doc-id', opts)
+
+    expect(mockClient.action).toHaveBeenCalledWith(
+      {
+        actionType: 'sanity.action.document.edit',
+        draftId: 'versions.release-id.doc-id',
+        publishedId: 'doc-id',
+        patch: {
+          unset: ['_system.delete'],
+        },
+      },
+      opts,
+    )
+  })
+
   it('should create a release with options', async () => {
     const store = createStore()
     const release = activeASAPRelease

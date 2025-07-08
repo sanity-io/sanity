@@ -1044,5 +1044,63 @@ describe('Extract studio manifest', () => {
         type: 'document',
       })
     })
+
+    test('should use the inline type, not the global type for the array.of name-conflicting inline array object items', () => {
+      const documentType = 'basic-document'
+      const schema = createSchema({
+        name: 'test',
+        types: [
+          defineType({
+            type: 'object',
+            name: 'reusedObjectName', // this is the same as the item in conflictingInlineObjectNameArray below, but it has different fields
+            fields: [{name: 'number', type: 'number'}],
+          }),
+          defineType({
+            name: documentType,
+            type: 'document',
+            fields: [
+              defineField({
+                name: 'conflictingInlineObjectNameArray',
+                type: 'array',
+                of: [
+                  defineArrayMember({
+                    type: 'object',
+                    // this is the type name as the object type above, but it is a different type, since this is an inline array item object def
+                    name: 'reusedObjectName',
+                    fields: [{name: 'string', type: 'string'}],
+                  }),
+                ],
+              }),
+            ],
+          }),
+        ],
+      })
+
+      const extracted = extractManifestSchemaTypes(schema)
+      expect(extracted).toEqual([
+        {
+          type: 'object',
+          name: 'reusedObjectName', // this is the same as the item in conflictingInlineObjectNameArray below, but it has different fields
+          fields: [{name: 'number', type: 'number'}],
+        },
+        {
+          name: documentType,
+          type: 'document',
+          fields: [
+            {
+              name: 'conflictingInlineObjectNameArray',
+              type: 'array',
+              of: [
+                {
+                  type: 'object',
+                  name: 'reusedObjectName',
+                  fields: [{name: 'string', type: 'string'}],
+                },
+              ],
+            },
+          ],
+        },
+      ])
+    })
   })
 })

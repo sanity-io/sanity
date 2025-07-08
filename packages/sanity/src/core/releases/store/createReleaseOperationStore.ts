@@ -53,6 +53,10 @@ export interface ReleaseOperationsStore {
     opts?: BaseActionOptions,
   ) => Promise<SingleActionResult>
   unpublishVersion: (documentId: string, opts?: BaseActionOptions) => Promise<SingleActionResult>
+  revertUnpublishVersion: (
+    documentId: string,
+    opts?: BaseActionOptions,
+  ) => Promise<SingleActionResult>
 }
 
 export function createReleaseOperationsStore(options: {
@@ -165,6 +169,8 @@ export function createReleaseOperationsStore(options: {
     const versionDocument = prepareVersionReferences({
       ...document,
       ...initialValue,
+      // This will automatically be set by CL when creating the version document.
+      _updatedAt: undefined,
       _id: getVersionId(documentId, releaseId),
     }) as IdentifiedSanityDocumentStub
 
@@ -241,6 +247,20 @@ export function createReleaseOperationsStore(options: {
     }
   }
 
+  const handleRevertUnpublishVersion = async (documentId: string, opts?: BaseActionOptions) => {
+    return await client.action(
+      {
+        actionType: 'sanity.action.document.edit',
+        draftId: documentId,
+        publishedId: getPublishedId(documentId),
+        patch: {
+          unset: ['_system.delete'],
+        },
+      },
+      opts,
+    )
+  }
+
   return {
     archive: handleArchiveRelease,
     unarchive: handleUnarchiveRelease,
@@ -255,5 +275,6 @@ export function createReleaseOperationsStore(options: {
     createVersion: handleCreateVersion,
     discardVersion: handleDiscardVersion,
     unpublishVersion: handleUnpublishVersion,
+    revertUnpublishVersion: handleRevertUnpublishVersion,
   }
 }

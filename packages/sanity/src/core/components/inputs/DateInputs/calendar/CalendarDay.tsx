@@ -36,6 +36,7 @@ export function CalendarDay(props: CalendarDayProps) {
         radius={2}
         selected={selected}
         tone={isToday || selected ? 'primary' : 'default'}
+        data-testid={`calendar-day-${date.toDateString().replaceAll(' ', '-')}`}
       >
         <Text
           muted={!selected && !isCurrentMonth}

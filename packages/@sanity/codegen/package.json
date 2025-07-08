@@ -1,6 +1,6 @@
 {
   "name": "@sanity/codegen",
-  "version": "3.93.0",
+  "version": "3.97.1",
   "description": "Codegen toolkit for Sanity.io",
   "keywords": [
     "sanity",
@@ -37,13 +37,11 @@
   "types": "./lib/index.d.ts",
   "files": [
     "lib",
-    "src",
-    "!**/__tests__/**",
     "babel.config.json"
   ],
   "scripts": {
     "build": "pkg-utils build --strict --check --clean",
-    "check:types": "tsc --project tsconfig.lib.json",
+    "check:types": "(cd ../../.. && tsc --project packages/@sanity/codegen/tsconfig.lib.json --erasableSyntaxOnly)",
     "clean": "rimraf lib coverage",
     "lint": "eslint .",
     "prepublishOnly": "turbo run build",
@@ -51,18 +49,18 @@
     "watch": "pkg-utils watch"
   },
   "dependencies": {
-    "@babel/core": "^7.27.4",
-    "@babel/generator": "^7.27.5",
-    "@babel/preset-env": "^7.27.2",
+    "@babel/core": "^7.28.0",
+    "@babel/generator": "^7.28.0",
+    "@babel/preset-env": "^7.28.0",
     "@babel/preset-react": "^7.27.1",
     "@babel/preset-typescript": "^7.27.1",
     "@babel/register": "^7.27.1",
-    "@babel/traverse": "^7.27.4",
-    "@babel/types": "^7.27.6",
+    "@babel/traverse": "^7.28.0",
+    "@babel/types": "^7.28.0",
     "debug": "^4.3.4",
     "globby": "^11.1.0",
     "groq": "workspace:*",
-    "groq-js": "^1.17.0",
+    "groq-js": "^1.17.1",
     "json5": "^2.2.3",
     "tsconfig-paths": "^4.2.0",
     "zod": "^3.22.4"

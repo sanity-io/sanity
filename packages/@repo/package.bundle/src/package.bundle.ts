@@ -1,5 +1,5 @@
 import react from '@vitejs/plugin-react'
-import {escapeRegExp} from 'lodash'
+import {escapeRegExp} from 'lodash-es'
 import {type UserConfig} from 'vite'
 import tsconfigPaths from 'vite-tsconfig-paths'
 

@@ -3,6 +3,50 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [3.97.1](https://github.com/sanity-io/sanity/compare/v3.97.0...v3.97.1) (2025-07-04)
+
+**Note:** Version bump only for package @sanity/cli
+
+## [3.97.0](https://github.com/sanity-io/sanity/compare/v3.96.0...v3.97.0) (2025-07-04)
+
+### Features
+
+* **cli:** add --project-id as alias of --project to init ([#9799](https://github.com/sanity-io/sanity/issues/9799)) ([af00ad2](https://github.com/sanity-io/sanity/commit/af00ad21343f9b93da1890c8d2be6c627726fd1f)) by Rune Botten (rbotten@gmail.com)
+* **cli:** add `sanity projects create` command ([#9830](https://github.com/sanity-io/sanity/issues/9830)) ([af20bbf](https://github.com/sanity-io/sanity/commit/af20bbf4af983f60e1a57c1a8c01ba2a7a90b597)) by Rune Botten (rbotten@gmail.com)
+* **cli:** add API tokens management commands ([#9821](https://github.com/sanity-io/sanity/issues/9821)) ([6494f59](https://github.com/sanity-io/sanity/commit/6494f59c505e9bafa69a01db09c1f0ebf4c93a62)) by Rune Botten (rbotten@gmail.com)
+
+### Bug Fixes
+
+* add with user token option to functions test command ([#9881](https://github.com/sanity-io/sanity/issues/9881)) ([fd2aa4c](https://github.com/sanity-io/sanity/commit/fd2aa4c9d25018ba66ada5b13d1e51b0d6f0a0dd)) by Simon MacDonald (simon.macdonald@gmail.com)
+
+## [3.96.0](https://github.com/sanity-io/sanity/compare/v3.95.0...v3.96.0) (2025-07-02)
+
+### Bug Fixes
+
+* **deps:** update dependency get-it to ^8.6.10 ([#9859](https://github.com/sanity-io/sanity/issues/9859)) ([3185e41](https://github.com/sanity-io/sanity/commit/3185e41f4a4044e3de78a6ffae81c20e008465a4)) by renovate[bot] (29139614+renovate[bot]@users.noreply.github.com)
+* Update runtime-cli dependency ([#9857](https://github.com/sanity-io/sanity/issues/9857)) ([45cf8f0](https://github.com/sanity-io/sanity/commit/45cf8f05a7cd81b5be7a3fce6a23b04e4928cb2d)) by Simon MacDonald (simon.macdonald@gmail.com)
+
+## [3.95.0](https://github.com/sanity-io/sanity/compare/v3.94.2...v3.95.0) (2025-06-25)
+
+**Note:** Version bump only for package @sanity/cli
+
+## [3.94.2](https://github.com/sanity-io/sanity/compare/v3.94.1...v3.94.2) (2025-06-24)
+
+**Note:** Version bump only for package @sanity/cli
+
+## [3.94.1](https://github.com/sanity-io/sanity/compare/v3.94.0...v3.94.1) (2025-06-24)
+
+### Bug Fixes
+
+* **cli:** init unattended mode ([#9481](https://github.com/sanity-io/sanity/issues/9481)) ([feb8c15](https://github.com/sanity-io/sanity/commit/feb8c151ebdf4cae01e5f126936fe68238b02f41)) by Rune Botten (rbotten@gmail.com)
+
+## [3.94.0](https://github.com/sanity-io/sanity/compare/v3.93.0...v3.94.0) (2025-06-24)
+
+### Bug Fixes
+
+* **deps:** update dependency groq-js to ^1.17.1 ([#9766](https://github.com/sanity-io/sanity/issues/9766)) ([f915231](https://github.com/sanity-io/sanity/commit/f915231339443a233f4ff981dc7632dc8a0106aa)) by renovate[bot] (29139614+renovate[bot]@users.noreply.github.com)
+* stop publishing src folders to npm ([#9744](https://github.com/sanity-io/sanity/issues/9744)) ([e9296c1](https://github.com/sanity-io/sanity/commit/e9296c12d1c68ea912a309a6bfe6cb752172ba07)) by Cody Olsen (81981+stipsan@users.noreply.github.com)
+
 ## [3.93.0](https://github.com/sanity-io/sanity/compare/v3.92.0...v3.93.0) (2025-06-17)
 
 ### Features

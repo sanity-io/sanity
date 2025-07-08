@@ -17,6 +17,7 @@ import {AutocompleteContainer} from './AutocompleteContainer'
 import {CreateButton} from './CreateButton'
 import {OptionPreview} from './OptionPreview'
 import {ReferenceAutocomplete} from './ReferenceAutocomplete'
+import {ReferenceInputPreview} from './ReferenceInputPreview'
 import {
   type CreateReferenceOption,
   type ReferenceInputProps,
@@ -114,9 +115,17 @@ export function ReferenceInput(props: ReferenceInputProps) {
         template: option.template,
         version: selectedReleaseId,
       })
-      onPathFocus([])
+      onPathFocus(path)
     },
-    [onChange, onEditReference, onPathFocus, schemaType.name, schemaType.weak, selectedReleaseId],
+    [
+      onChange,
+      onEditReference,
+      onPathFocus,
+      schemaType.name,
+      schemaType.weak,
+      selectedReleaseId,
+      path,
+    ],
   )
 
   const handleChange = useCallback(
@@ -146,9 +155,9 @@ export function ReferenceInput(props: ReferenceInputProps) {
 
       onChange(patches)
       // Move focus away from _ref and one level up
-      onPathFocus([])
+      onPathFocus(path)
     },
-    [onChange, onPathFocus, schemaType.name, schemaType.weak, searchState.hits],
+    [onChange, onPathFocus, schemaType.name, schemaType.weak, searchState.hits, path],
   )
 
   const handleClear = useCallback(() => {
@@ -158,10 +167,10 @@ export function ReferenceInput(props: ReferenceInputProps) {
   const handleAutocompleteKeyDown = useCallback(
     (event: KeyboardEvent) => {
       if (event.key === 'Escape') {
-        onPathFocus([])
+        onPathFocus(path)
       }
     },
-    [onPathFocus],
+    [onPathFocus, path],
   )
 
   const loadableReferenceInfo = useReferenceInfo(value?._ref, getReferenceInfo)
@@ -211,10 +220,10 @@ export function ReferenceInput(props: ReferenceInputProps) {
   const handleCreateButtonKeyDown = useCallback(
     (e: KeyboardEvent) => {
       if (e.key === 'Escape') {
-        onPathFocus([])
+        onPathFocus(path)
       }
     },
-    [onPathFocus],
+    [onPathFocus, path],
   )
 
   const renderOption = useCallback(
@@ -310,66 +319,68 @@ export function ReferenceInput(props: ReferenceInputProps) {
   )
 
   return (
-    <Stack space={1} data-testid="reference-input" ref={clickOutsideBoundaryRef}>
-      <Stack space={2}>
-        {isWeakRefToNonexistent ? (
-          <Alert
-            data-testid="alert-nonexistent-document"
-            title={t('inputs.reference.error.nonexistent-document-title')}
-            suffix={
-              <Stack padding={2}>
-                <Button
-                  text={t('inputs.reference.error.nonexistent-document.clear-button-label')}
-                  onClick={handleClear}
+    <ReferenceInputPreview {...props}>
+      <Stack space={1} data-testid="reference-input" ref={clickOutsideBoundaryRef}>
+        <Stack space={2}>
+          {isWeakRefToNonexistent ? (
+            <Alert
+              data-testid="alert-nonexistent-document"
+              title={t('inputs.reference.error.nonexistent-document-title')}
+              suffix={
+                <Stack padding={2}>
+                  <Button
+                    text={t('inputs.reference.error.nonexistent-document.clear-button-label')}
+                    onClick={handleClear}
+                  />
+                </Stack>
+              }
+            >
+              <Text size={1}>
+                <Translate
+                  i18nKey="inputs.reference.error.nonexistent-document-description"
+                  t={t}
+                  values={{documentId: value._ref}}
                 />
-              </Stack>
-            }
-          >
-            <Text size={1}>
-              <Translate
-                i18nKey="inputs.reference.error.nonexistent-document-description"
-                t={t}
-                values={{documentId: value._ref}}
-              />
-            </Text>
-          </Alert>
-        ) : null}
-        <AutocompleteContainer ref={setAutocompletePopoverReferenceElement}>
-          <ReferenceAutocomplete
-            {...elementProps}
-            onFocus={handleFocus}
-            onBlur={handleBlur}
-            data-testid="autocomplete"
-            loading={searchState.isLoading}
-            referenceElement={autocompletePopoverReferenceElement}
-            options={hits}
-            radius={2}
-            placeholder={t('inputs.reference.search-placeholder')}
-            onKeyDown={handleAutocompleteKeyDown}
-            readOnly={loadableReferenceInfo.isLoading || readOnly}
-            onQueryChange={handleQueryChange}
-            searchString={searchState.searchString}
-            onChange={handleChange}
-            filterOption={NO_FILTER}
-            renderOption={renderOption as any}
-            renderValue={renderValue}
-            openButton={{onClick: handleAutocompleteOpenButtonClick}}
-            portalRef={autoCompletePortalRef}
-            value={value?._ref}
-          />
-
-          {createOptions.length > 0 && (
-            <CreateButton
-              id={`${id}-selectTypeMenuButton`}
-              readOnly={readOnly}
-              createOptions={createOptions}
-              onCreate={handleCreateNew}
-              onKeyDown={handleCreateButtonKeyDown}
-              menuRef={createButtonMenuPortalRef}
+              </Text>
+            </Alert>
+          ) : null}
+          <AutocompleteContainer ref={setAutocompletePopoverReferenceElement}>
+            <ReferenceAutocomplete
+              {...elementProps}
+              onFocus={handleFocus}
+              onBlur={handleBlur}
+              data-testid="autocomplete"
+              loading={searchState.isLoading}
+              referenceElement={autocompletePopoverReferenceElement}
+              options={hits}
+              radius={2}
+              placeholder={t('inputs.reference.search-placeholder')}
+              onKeyDown={handleAutocompleteKeyDown}
+              readOnly={loadableReferenceInfo.isLoading || readOnly}
+              onQueryChange={handleQueryChange}
+              searchString={searchState.searchString}
+              onChange={handleChange}
+              filterOption={NO_FILTER}
+              renderOption={renderOption as any}
+              renderValue={renderValue}
+              openButton={{onClick: handleAutocompleteOpenButtonClick}}
+              portalRef={autoCompletePortalRef}
+              value={value?._ref}
             />
-          )}
-        </AutocompleteContainer>
+
+            {createOptions.length > 0 && (
+              <CreateButton
+                id={`${id}-selectTypeMenuButton`}
+                readOnly={readOnly}
+                createOptions={createOptions}
+                onCreate={handleCreateNew}
+                onKeyDown={handleCreateButtonKeyDown}
+                menuRef={createButtonMenuPortalRef}
+              />
+            )}
+          </AutocompleteContainer>
+        </Stack>
       </Stack>
-    </Stack>
+    </ReferenceInputPreview>
   )
 }
