@@ -3,6 +3,22 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## <small>3.98.2 (2025-07-08)</small>
+
+* chore(release): publish v3.98.1 ([909b88b](https://github.com/sanity-io/sanity/commit/909b88b))
+
+
+
+
+
+## <small>3.98.1 (2025-07-08)</small>
+
+**Note:** Version bump only for package @repo/eslint-config
+
+
+
+
+
 ## [3.98.0](https://github.com/sanity-io/sanity/compare/v3.97.1...v3.98.0) (2025-07-07)
 
 **Note:** Version bump only for package @repo/eslint-config
