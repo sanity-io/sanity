@@ -5,6 +5,12 @@ on:
     branches:
       - main
   workflow_dispatch:
+    inputs:
+      publish:
+        description: Only run NPM publishing
+        required: true
+        default: false
+        type: boolean
 
 permissions:
   contents: write
@@ -77,6 +83,7 @@ jobs:
 
       - name: Tag and push version
         run: |
+        if: ${{ github.event.inputs.publish != 'true' }}
           git tag v$RELEASE_AS -m v$RELEASE_AS
           git push origin v$RELEASE_AS
         env:
