@@ -1,5 +1,1 @@
-export {
-  createSanityMediaLibraryFileSource,
-  createSanityMediaLibraryImageSource,
-  sourceName,
-} from './createAssetSource'
+export const sourceName = 'sanity-media-library'

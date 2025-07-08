@@ -61,21 +61,6 @@ export interface FileAsset extends Asset {
 }
 
 /** @public */
-export interface VideoAsset extends Asset {
-  _type: 'sanity.videoAsset'
-  metadata: VideoMetadata
-}
-
-/** @public */
-export interface VideoMetadata {
-  [key: string]: unknown
-  _type: 'sanity.videoMetadata'
-  aspectRatio?: number
-  duration?: number
-  framerate?: number
-}
-
-/** @public */
 export interface ImageMetadata {
   [key: string]: unknown
   _type: 'sanity.imageMetadata'

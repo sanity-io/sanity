@@ -4,7 +4,6 @@ import {
   type AssetSource,
   type AssetSourceUploader,
   type UploadState,
-  type VideoAsset,
 } from '@sanity/types'
 import {useToast} from '@sanity/ui'
 import {get} from 'lodash'
@@ -25,7 +24,11 @@ import {
 import {createInitialUploadPatches} from '../../../core/form/studio/uploads/utils'
 import {type ObjectInputProps} from '../../../core/form/types'
 import {useTranslation} from '../../../core/i18n'
-import {type VideoSchemaType, type VideoValue as BaseVideoValue} from '../schemas/types'
+import {
+  type VideoAsset,
+  type VideoSchemaType,
+  type VideoValue as BaseVideoValue,
+} from '../schemas/types'
 import {VideoAsset as VideoAssetComponent} from './VideoAsset'
 import {VideoInputAssetSource} from './VideoInputAssetSource'
 

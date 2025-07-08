@@ -1,3 +1,4 @@
+import {type Asset} from '@sanity/media-library-types'
 import {
   type AssetSource,
   type InitialValueProperty,
@@ -53,4 +54,19 @@ export interface VideoDefinition
 /** @public */
 export interface VideoSchemaType extends Omit<ObjectSchemaType, 'options'> {
   options?: VideoOptions
+}
+
+/** @public */
+export interface VideoMetadata {
+  [key: string]: unknown
+  _type: 'sanity.videoMetadata'
+  aspectRatio?: number
+  duration?: number
+  framerate?: number
+}
+
+/** @public */
+export type VideoAsset = Omit<Asset, '_type'> & {
+  _type: 'sanity.videoAsset'
+  metadata: VideoMetadata
 }

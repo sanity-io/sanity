@@ -9,7 +9,6 @@ import {
 
 const DEFAULT_IMAGE_FIELDS = ['asset', 'hotspot', 'crop', 'media']
 const DEFAULT_FILE_FIELDS = ['asset', 'media']
-const DEFAULT_VIDEO_FIELDS = ['asset', 'media']
 const DEFAULT_GEOPOINT_FIELDS = ['lat', 'lng', 'alt']
 const DEFAULT_SLUG_FIELDS = ['current', 'source']
 
@@ -42,9 +41,6 @@ export function getCustomFields(type: ObjectSchemaType): (ObjectField & {fieldse
   }
   if (isType(type, 'file')) {
     return fields.filter((f) => !DEFAULT_FILE_FIELDS.includes(f.name))
-  }
-  if (isType(type, 'video')) {
-    return fields.filter((f) => !DEFAULT_VIDEO_FIELDS.includes(f.name))
   }
   return fields
 }

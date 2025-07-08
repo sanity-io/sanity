@@ -8,7 +8,7 @@ import {useFormBuilder} from '../../../core/form/useFormBuilder'
 import {useClient} from '../../../core/hooks'
 import {useDocumentPreviewStore} from '../../../core/store'
 import {DEFAULT_STUDIO_CLIENT_OPTIONS} from '../../../core/studioClient'
-import {sourceName} from '../asset-source/createAssetSource'
+import {sourceName} from '../asset-source'
 import {BaseVideoInput, type BaseVideoInputProps} from './VideoInput'
 
 /**

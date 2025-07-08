@@ -1,10 +1,10 @@
-import {type VideoAsset, type VideoSchemaType} from '@sanity/types'
 import {fireEvent, waitFor} from '@testing-library/react'
 import {type Observable, of} from 'rxjs'
 import {describe, expect, it} from 'vitest'
 
 import {renderVideoInput} from '../../../../../test/form/renderVideoInput'
-import {sourceName} from '../../asset-source/createAssetSource'
+import {sourceName} from '../../asset-source'
+import {type VideoAsset, type VideoSchemaType} from '../../schemas/types'
 import {BaseVideoInput} from '../VideoInput'
 
 const ASSET_SOURCE_NAME = sourceName
@@ -17,7 +17,7 @@ const observeAssetStub = (): Observable<VideoAsset> =>
     _id: 'file-26db46ec62059d6cd491b4343afaecc92ff1b4d5-mp4',
     _rev: 'slQurnjRhOy7Fj3dkfUHei',
     _type: 'sanity.videoAsset',
-  } as VideoAsset)
+  } as unknown as VideoAsset)
 
 describe.skip('VideoInput with empty state', () => {
   it('renders an empty input as default', async () => {

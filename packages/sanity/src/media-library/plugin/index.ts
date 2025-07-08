@@ -28,12 +28,4 @@ export const mediaLibrary = definePlugin({
   schema: {
     types: mediaLibrarySchemas,
   },
-  // form: {
-  //   file: {
-  //     assetSources: [fileAssetSource],
-  //   },
-  //   image: {
-  //     assetSources: [imageAssetSource],
-  //   },
-  // }
 })

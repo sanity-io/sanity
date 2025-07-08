@@ -49,6 +49,7 @@ export function VideoInputAssetSource(props: VideoAssetProps) {
             onClose={handleAssetSourceClosed}
             onSelect={onSelectAssets}
             schemaType={schemaType}
+            // @ts-expect-error FIXME
             selectedAssets={[videoAsset]}
             selectionType="single"
             uploader={uploader}
