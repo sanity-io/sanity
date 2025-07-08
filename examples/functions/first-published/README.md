@@ -1,16 +1,14 @@
 # First Published Function
 
-[Explore all examples](https://github.com/sanity-io/sanity/tree/main/examples)
+**📖 [← Back to Functions Overview](../README.md)**
 
-## Problem
+## Overview
 
-Content teams need to track when articles were first published for analytics and editorial workflows, but manually setting timestamps is error-prone and often forgotten during publishing.
+**Problem:** Content teams need to track when articles were first published for analytics and editorial workflows, but manually setting timestamps is error-prone and often forgotten during publishing.
 
-## Solution
+**Solution:** This Sanity Function automatically sets a `firstPublished` timestamp when a post is published for the first time, using `setIfMissing` to ensure the value is only set once and never overwritten.
 
-This Sanity Function automatically sets a `firstPublished` timestamp when a post is published for the first time, using `setIfMissing` to ensure the value is only set once and never overwritten.
-
-## Benefits
+**Benefits:**
 
 - **Eliminates manual timestamp tracking** by automating first-publish detection
 - **Ensures data accuracy** with automatic timestamp creation
@@ -18,111 +16,42 @@ This Sanity Function automatically sets a `firstPublished` timestamp when a post
 - **Supports analytics workflows** with reliable publication timing data
 - **Reduces editorial overhead** for content teams
 
-## Implementation
+## Schema Requirements
 
-1. **Initialize the example**
-
-   For a new project:
-
-   ```bash
-   npx sanity blueprints init --example first-published
-   ```
-
-   For an existing project:
-
-   ```bash
-   npx sanity blueprints add function --example first-published
-   ```
-
-2. **Add configuration to your blueprint**
-
-   ```ts
-   // sanity.blueprint.ts
-   defineDocumentFunction({
-     name: 'first-published',
-     memory: 1,
-     timeout: 10,
-     on: ['publish'],
-     filter: "_type == 'post' && !defined(firstPublished)",
-     projection: '_id',
-   })
-   ```
-
-3. **Install dependencies**
-
-   ```bash
-   npm install
-   ```
-
-## Testing the function locally
-
-You can test the first-published function locally using the Sanity CLI before deploying:
-
-### 1. Basic Function Test
-
-Test with the included sample document:
-
-```bash
-npx sanity functions test first-published --file document.json
-```
-
-### 2. Interactive Development Mode
-
-Start the development server for interactive testing:
-
-```bash
-npx sanity functions dev
-```
-
-### 3. Test with Custom Data
-
-Test with your own document data:
-
-```bash
-npx sanity functions test first-published --data '{
-  "_type": "post",
-  "_id": "test-post",
-  "title": "Test Article"
-}'
-```
-
-### 4. Test with Real Document Data
-
-Capture a real document from your dataset:
-
-```bash
-# Export a real document for testing
-npx sanity documents get "your-post-id" > test-document.json
-
-# Test with the real document
-npx sanity functions test first-published --file test-document.json
-```
-
-### 5. Enable Debugging
-
-Add temporary logging to your function:
+Add a `firstPublished` field to your post schema:
 
 ```typescript
-// Add debugging logs
-console.log('Event data:', JSON.stringify(event.data, null, 2))
-console.log('Setting firstPublished for:', data._id)
+// In your post schema (e.g., studio/src/schemaTypes/documents/post.ts)
+defineField({
+  name: 'firstPublished',
+  title: 'First Published',
+  type: 'datetime',
+  readOnly: () => true, // Optional: makes field read-only
+  description: 'Timestamp will be automatically set when the post is first published',
+}),
 ```
 
-### Testing Tips
+Deploy your schema: `npx sanity schema deploy` (from studio/ folder)
 
-- **Use Node.js v22.x** locally to match production runtime
-- **Test edge cases** like documents that already have firstPublished set
-- **Check function logs** in CLI output for debugging
-- **Verify the setIfMissing behavior** by running the function multiple times
+## Function Configuration
 
-## Requirements
+```ts
+// sanity.blueprint.ts
+defineDocumentFunction({
+  type: 'sanity.function.document',
+  name: 'first-published',
+  src: './functions/first-published',
+  memory: 1,
+  timeout: 10,
+  event: {
+    on: ['publish'],
+    filter: "_type == 'post' && !defined(firstPublished)",
+    projection: '_id',
+  },
+})
+```
 
-- A Sanity project with Functions enabled
-- A schema with a `post` document type containing:
-  - A `firstPublished` field (datetime) for storing the timestamp
-- Node.js v22.x for local development
-
-## Usage Example
+## How It Works
 
 When a content editor publishes a new blog post for the first time, the function automatically:
 
@@ -133,21 +62,19 @@ When a content editor publishes a new blog post for the first time, the function
 
 **Result:** Content teams get automatic first-publish tracking without manual effort, enabling accurate analytics and editorial workflows.
 
-## Customization
+## Customization Options
 
-### Adjust Document Types
-
-Modify the blueprint filter to target different content types:
+### Target Different Document Types
 
 ```typescript
+// In blueprint configuration
 filter: "_type == 'article' && !defined(firstPublished)"
 ```
 
 ### Change Field Name
 
-Update the field name being set:
-
 ```typescript
+// In function code
 await client.patch(data._id, {
   setIfMissing: {
     initialPublishDate: new Date().toISOString(), // Different field name
@@ -168,6 +95,17 @@ await client.patch(data._id, {
   },
 })
 ```
+
+## Implementation & Testing
+
+For complete implementation, testing, and deployment instructions, see the [Functions Overview](../README.md).
+
+**Quick Start:**
+
+1. Install: `npx sanity blueprints add function --example first-published`
+2. Follow the [Implementation Guide](../README.md#implementation-guide)
+3. Test locally using the [Testing Guide](../README.md#testing-functions-locally)
+4. Deploy using the [Deployment Guide](../README.md#deployment-guide)
 
 ## Related Examples
 

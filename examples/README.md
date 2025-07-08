@@ -12,12 +12,19 @@ examples/
 
 ## 🔧 Functions
 
-The `functions/` directory contains examples of [Sanity Functions](https://www.sanity.io/docs/compute-and-ai/functions-introduction) - serverless functions that run in Sanity's cloud environment. Each function example includes:
+The `functions/` directory contains examples of [Sanity Functions](https://www.sanity.io/docs/compute-and-ai/functions-introduction) - serverless functions that run in Sanity's cloud environment.
 
-- **Implementation code** (`index.ts`) - The actual function logic
-- **Configuration** (`package.json`) - Dependencies and blueprint resource configuration
-- **Test data** (`document.json`) - Sample data for testing
-- **Documentation** (`README.md`) - Usage instructions and explanations
+**📖 [Complete Functions Documentation](./functions/README.md)** - Comprehensive guide covering implementation, testing, deployment, and troubleshooting for all functions.
+
+### Available Function Examples
+
+| Function                                                                 | Description                                             | Use Case                                 |
+| ------------------------------------------------------------------------ | ------------------------------------------------------- | ---------------------------------------- |
+| **[auto-tag](./functions/auto-tag/README.md)**                           | AI-powered automatic tagging for blog posts             | Content organization and discoverability |
+| **[brand-voice-validator](./functions/brand-voice-validator/README.md)** | AI-powered content analysis and improvement suggestions | Content quality and brand consistency    |
+| **[capture-tone-of-voice](./functions/capture-tone-of-voice/README.md)** | AI-powered tone of voice analysis and capture           | Content voice consistency                |
+| **[first-published](./functions/first-published/README.md)**             | Automatic timestamp tracking for first publication      | Analytics and editorial workflows        |
+| **[slack-notify](./functions/slack-notify/README.md)**                   | Automatic Slack notifications when content is published | Team communication and awareness         |
 
 ### Key Files
 
@@ -25,13 +32,10 @@ The `functions/` directory contains examples of [Sanity Functions](https://www.s
 - **`package.json`** - Shared dependencies for all function examples
 - **`vite.config.js`** - Build configuration for bundling functions
 
-### Available Function Examples
+### Documentation Structure
 
-- **[auto-tag](./functions/auto-tag/README.md)** - AI-powered automatic tagging for blog posts
-- **[first-published](./functions/first-published/README.md)** - Automatic timestamp tracking for first publication
-- **[slack-notify](./functions/slack-notify/README.md)** - Automatic Slack notifications when content is published
-- **[brand-voice-validator](./functions/brand-voice-validator/README.md)** - AI-powered content analysis and improvement suggestions
-- **[capture-tone-of-voice](./functions/capture-tone-of-voice/README.md)** - AI-powered tone of voice analysis and capture for content
+- **[Functions Overview](./functions/README.md)** - Central hub with implementation guides, testing instructions, and deployment procedures
+- **Individual Function READMEs** - Function-specific details, schema requirements, and customization options
 
 ## 🎨 Studios
 
