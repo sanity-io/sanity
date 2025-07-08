@@ -9,6 +9,11 @@ import initBlueprintsCommand from './blueprints/initBlueprintsCommand'
 import logsBlueprintsCommand from './blueprints/logsBlueprintsCommand'
 import planBlueprintsCommand from './blueprints/planBlueprintsCommand'
 import listBlueprintsCommand from './blueprints/stacksBlueprintsCommand'
+import allChangelogCommand from './changelog/allCommand'
+import changelogGroup from './changelog/changelogGroup'
+import getChangelogCommand from './changelog/getCommand'
+import listChangelogCommand from './changelog/listCommand'
+import recentChangelogCommand from './changelog/recentCommand'
 import codemodCommand from './codemod/codemodCommand'
 import debugCommand from './debug/debugCommand'
 import docsCommand from './docs/docsCommand'
@@ -51,6 +56,11 @@ export const baseCommands: (CliCommandDefinition | CliCommandGroupDefinition)[] 
   openapiGroup,
   listCommand,
   getCommand,
+  changelogGroup,
+  listChangelogCommand,
+  getChangelogCommand,
+  recentChangelogCommand,
+  allChangelogCommand,
   projectsGroup,
   learnCommand,
   listProjectsCommand,
