@@ -4,7 +4,7 @@ const docsGroup: CliCommandGroupDefinition = {
   name: 'docs',
   signature: '[COMMAND]',
   isGroupRoot: true,
-  description: 'Access Sanity documentation',
+  description: 'Search, read, and browse Sanity documentation',
 }
 
 export default docsGroup
