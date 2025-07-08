@@ -82,14 +82,14 @@ jobs:
           echo "✅ npm authentication validated - using $EXPECTED_NPM_USER account"
 
       - name: Tag and push version
-        run: |
         if: ${{ github.event.inputs.publish != 'true' }}
+        run: |
           git tag v$RELEASE_AS -m v$RELEASE_AS
           git push origin v$RELEASE_AS
         env:
           RELEASE_AS: ${{steps.release-as.outputs.version}}
 
-      - name: Publish packages to pnpm
+      - name: Publish packages to npm
         run: pnpm -r publish
         env:
           NPM_CONFIG_PROVENANCE: true
