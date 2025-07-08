@@ -87,6 +87,7 @@ export function CopyToNewReleaseDialog(props: {
     const inQuota = await releasePromise
 
     if (!inQuota) {
+      setIsSubmitting(false)
       return
     }
 

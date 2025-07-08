@@ -43,6 +43,7 @@ export function CreateReleaseDialog(props: CreateReleaseDialogProps): React.JSX.
       const inQuota = await releasePromise
 
       if (!inQuota) {
+        setIsSubmitting(false)
         return
       }
 
