@@ -54,13 +54,15 @@ jobs:
       - name: Update version
         run: |
           npx lerna version \
-          --force-publish \
-          --no-push \
-          --sync-workspace-lock \
-          --conventional-commits \
-          --yes
+            --force-publish \
+            --no-git-tag-version \
+            --conventional-commits \
+            --yes
         env:
           GITHUB_TOKEN: ${{ steps.app-token.outputs.token }}
+
+      - name: Sync workspace lockfile
+        run: pnpm install --lockfile-only
 
       - name: Get version commit message
         # get the commit message created by npx lerna version above (determined by lerna.json)
