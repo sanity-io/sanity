@@ -7,13 +7,16 @@ export function useGuardWithReleaseLimitUpsell() {
   const {guardWithReleaseLimitUpsell} = useReleasesUpsell()
 
   useEffect(() => {
+    let useEffectCleanup = false
     setIsPendingGuardResponse(true)
     guardWithReleaseLimitUpsell(() => {
-      setIsPendingGuardResponse(false)
+      if (!useEffectCleanup) {
+        setIsPendingGuardResponse(false)
+      }
     })
 
     return () => {
-      if (!isPendingGuardResponse) setIsPendingGuardResponse(true)
+      useEffectCleanup = true
     }
   }, [guardWithReleaseLimitUpsell, isPendingGuardResponse])
 
