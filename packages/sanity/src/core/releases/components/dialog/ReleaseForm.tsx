@@ -71,23 +71,26 @@ export function ReleaseForm(props: {
     }
   }, [getStoredReleaseData, id, onChange])
 
+  const handleOnChangeAndStorage = useCallback(
+    (updatedValue: EditableReleaseDocument) => {
+      onChange(updatedValue)
+      saveReleaseDataToStorage({
+        ...updatedValue.metadata,
+      })
+    },
+    [onChange, saveReleaseDataToStorage],
+  )
+
   const handleBundlePublishAtCalendarChange = useCallback(
     (date: Date) => {
       setIntendedPublishAt(date)
-      const updatedValue = {
+
+      handleOnChangeAndStorage({
         ...value,
         metadata: {...value.metadata, intendedPublishAt: date.toISOString()},
-      }
-      onChange(updatedValue)
-
-      saveReleaseDataToStorage({
-        title: updatedValue.metadata?.title,
-        description: updatedValue.metadata?.description,
-        releaseType: updatedValue.metadata?.releaseType,
-        intendedPublishAt: date.toISOString(),
       })
     },
-    [value, onChange, saveReleaseDataToStorage],
+    [handleOnChangeAndStorage, value],
   )
 
   const handleButtonReleaseTypeChange = useCallback<MouseEventHandler<HTMLDivElement>>(
@@ -107,7 +110,7 @@ export function ReleaseForm(props: {
         setIntendedPublishAt(nextInputValue)
       }
 
-      const updatedValue = {
+      handleOnChangeAndStorage({
         ...value,
         metadata: {
           ...value.metadata,
@@ -115,41 +118,23 @@ export function ReleaseForm(props: {
           intendedPublishAt:
             (pickedReleaseType === 'scheduled' && nextInputValue.toISOString()) || undefined,
         },
-      }
-
-      onChange(updatedValue)
-
-      saveReleaseDataToStorage({
-        title: updatedValue.metadata?.title,
-        description: updatedValue.metadata?.description,
-        releaseType: pickedReleaseType,
-        intendedPublishAt: updatedValue.metadata?.intendedPublishAt,
       })
     },
-    [onChange, saveReleaseDataToStorage, value],
+    [handleOnChangeAndStorage, value],
   )
 
   const handleTitleDescriptionChange = useCallback(
     (updatedRelease: EditableReleaseDocument) => {
-      const updatedValue = {
+      handleOnChangeAndStorage({
         ...value,
         metadata: {
           ...value.metadata,
           title: updatedRelease.metadata.title,
           description: updatedRelease.metadata.description,
         },
-      }
-
-      onChange(updatedValue)
-
-      saveReleaseDataToStorage({
-        title: updatedRelease.metadata.title,
-        description: updatedRelease.metadata.description,
-        releaseType: updatedValue.metadata?.releaseType,
-        intendedPublishAt: updatedValue.metadata?.intendedPublishAt,
       })
     },
-    [onChange, saveReleaseDataToStorage, value],
+    [handleOnChangeAndStorage, value],
   )
 
   useEffect(() => {
