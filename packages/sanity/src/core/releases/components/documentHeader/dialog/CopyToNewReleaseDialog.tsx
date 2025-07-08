@@ -34,7 +34,7 @@ export function CopyToNewReleaseDialog(props: {
   const {t: tRelease} = useTranslation(releasesLocaleNamespace)
   const toast = useToast()
   const createReleaseMetadata = useCreateReleaseMetadata()
-  const {isPendingGuardResponse} = useGuardWithReleaseLimitUpsell()
+  const {releasePromise} = useGuardWithReleaseLimitUpsell()
 
   const schema = useSchema()
   const schemaType = schema.get(documentType)
@@ -83,9 +83,14 @@ export function CopyToNewReleaseDialog(props: {
       return // do not submit if date is in past
     }
 
-    try {
-      setIsSubmitting(true)
+    setIsSubmitting(true)
+    const inQuota = await releasePromise
 
+    if (!inQuota) {
+      return
+    }
+
+    try {
       const releaseValue = createReleaseMetadata(release)
 
       await createRelease(releaseValue)
@@ -109,6 +114,7 @@ export function CopyToNewReleaseDialog(props: {
     }
   }, [
     release,
+    releasePromise,
     createReleaseMetadata,
     createRelease,
     handleAddVersion,
@@ -181,7 +187,7 @@ export function CopyToNewReleaseDialog(props: {
             type="submit"
             onClick={handleCreateRelease}
             text={t('release.action.add-to-new-release')}
-            loading={isSubmitting && isPendingGuardResponse}
+            loading={isSubmitting}
             tone="primary"
             data-testid="confirm-button"
           />

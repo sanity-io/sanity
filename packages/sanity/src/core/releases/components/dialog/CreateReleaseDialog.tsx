@@ -33,15 +33,20 @@ export function CreateReleaseDialog(props: CreateReleaseDialogProps): React.JSX.
   const [release, setRelease] = useState(getReleaseDefaults)
   const [isSubmitting, setIsSubmitting] = useState(false)
 
-  const {isPendingGuardResponse} = useGuardWithReleaseLimitUpsell()
+  const {releasePromise} = useGuardWithReleaseLimitUpsell()
 
   const handleOnSubmit = useCallback(
     async (event: FormEvent<HTMLFormElement>) => {
       event.preventDefault()
 
-      try {
-        setIsSubmitting(true)
+      setIsSubmitting(true)
+      const inQuota = await releasePromise
 
+      if (!inQuota) {
+        return
+      }
+
+      try {
         const releaseValue = createReleaseMetadata(release)
 
         await createRelease(releaseValue)
@@ -70,15 +75,16 @@ export function CreateReleaseDialog(props: CreateReleaseDialogProps): React.JSX.
       }
     },
     [
-      release,
-      toast,
+      releasePromise,
       createReleaseMetadata,
+      release,
       createRelease,
       telemetry,
       origin,
       setPerspective,
       onSubmit,
       onCancel,
+      toast,
       t,
     ],
   )
@@ -110,7 +116,7 @@ export function CreateReleaseDialog(props: CreateReleaseDialogProps): React.JSX.
               disabled={isSubmitting}
               type="submit"
               text={dialogConfirm}
-              loading={isSubmitting && isPendingGuardResponse}
+              loading={isSubmitting}
               data-testid="submit-release-button"
             />
           </Flex>
