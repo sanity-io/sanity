@@ -21,9 +21,9 @@
       "projection": "_id"
     },
     "env": {
-      "COMMENT": "ALGOLIA_APP_ID and ALOGLIA_WRITE_KEY env variables are required to sync documents to Algolia",
+      "COMMENT": "ALGOLIA_APP_ID and ALGOLIA_WRITE_KEY env variables are required to sync documents to Algolia",
       "ALGOLIA_APP_ID": "ALGOLIA_APP_ID",
-      "ALOGLIA_WRITE_KEY": "ALOGLIA_WRITE_KEY"
+      "ALGOLIA_WRITE_KEY": "ALGOLIA_WRITE_KEY"
     }
   },
   "exampleInstructions": "Add this configuration to your blueprint config's resources array. Go to README.md for more details."

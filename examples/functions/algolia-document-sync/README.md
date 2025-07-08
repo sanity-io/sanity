@@ -47,8 +47,8 @@ This function is built to be compatible with any of [the official "clean" templa
    import 'dotenv/config'
    import process from 'node:process'
 
-   const {ALGOLIA_APP_ID, ALOGLIA_WRITE_KEY} = process.env
-   if (typeof ALGOLIA_APP_ID !== 'string' || typeof ALOGLIA_WRITE_KEY !== 'string') {
+   const {ALGOLIA_APP_ID, ALGOLIA_WRITE_KEY} = process.env
+   if (typeof ALGOLIA_APP_ID !== 'string' || typeof ALGOLIA_WRITE_KEY !== 'string') {
      throw new Error('ALGOLIA_APP_ID and ALGOLIA_WRITE_KEY must be set')
    }
 
@@ -65,7 +65,7 @@ This function is built to be compatible with any of [the official "clean" templa
      },
      env: {
        ALGOLIA_APP_ID: 'YOUR_ALGOLIA_APP_ID',
-       ALOGLIA_WRITE_KEY: 'YOUR_ALGOLIA_WRITE_KEY',
+       ALGOLIA_WRITE_KEY: 'YOUR_ALGOLIA_WRITE_KEY',
      },
    })
    ```
@@ -92,7 +92,7 @@ This function is built to be compatible with any of [the official "clean" templa
    Add your Algolia credentials to your root .env file:
 
    - `ALGOLIA_APP_ID`: Your Algolia application ID
-   - `ALOGLIA_WRITE_KEY`: Your Algolia write API key
+   - `ALGOLIA_WRITE_KEY`: Your Algolia write API key
 
 ## Testing the function locally
 
@@ -105,7 +105,7 @@ This function writes directly to Algolia, so we can test locally with our doucme
 Test with the included sample document:
 
 ```bash
-npx sanity functions test algolia-document-sync --file document.json
+npx sanity functions test algolia-document-sync --file functions/algolia-document-sync/document.json
 ```
 
 ### 2. Interactive Development Mode
