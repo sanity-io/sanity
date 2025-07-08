@@ -98,15 +98,13 @@ const searchCommand: CliCommandDefinition<SearchCommandFlags> = {
 
         if (typeof selectedIndex === 'number' && selectedIndex >= 0) {
           const selected = results[selectedIndex]
-          output.print(`\nReading: ${selected.title}`)
 
           // Read and display the article
           const {readDoc} = await import('../../actions/docs/readDoc')
           const content = await readDoc({path: selected.path}, context)
 
           if (content) {
-            output.print(`\n# ${selected.title}\n`)
-            output.print('---\n')
+            output.print('\n---\n')
             output.print(content)
           }
         }
