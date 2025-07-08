@@ -4,6 +4,7 @@ on:
   push:
     branches:
       - main
+      - fix/create-release-pr-lerna-full-2
 
 permissions:
   contents: read
@@ -26,7 +27,6 @@ jobs:
     steps:
       - uses: actions/checkout@v4
         with:
-          ref: main
           fetch-depth: 0
       - uses: pnpm/action-setup@v4
       - uses: actions/setup-node@v4
@@ -61,13 +61,20 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ steps.app-token.outputs.token }}
 
+      - name: Fix lerna.json EOF formatting
+        # lerna version formats lerna.json removing EOF line
+        # this is needed to pass linter
+        run: npx prettier --write lerna.json
+
       - name: Sync workspace lockfile
         run: pnpm install --lockfile-only
 
       - name: Get version commit message
-        # get the commit message created by npx lerna version above (determined by lerna.json)
+        # generate the commit message that would be created (determined by lerna.json)
         id: version-commit
-        run: echo "message=$(git log -1 --pretty=%B)" >> $GITHUB_OUTPUT
+        run: |
+          VERSION=$(cat lerna.json | jq -r .version)
+          echo "message=chore(release): publish $VERSION" >> $GITHUB_OUTPUT
 
       - name: Get version
         id: release-as
