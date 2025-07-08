@@ -33,22 +33,74 @@ defineField({
 
 Deploy your schema: `npx sanity schema deploy` (from studio/ folder)
 
-## Function Configuration
+## Implementation
+
+### Step 1: Choose Your Installation Method
+
+For a **new project**:
+
+```bash
+npx sanity blueprints init --example brand-voice-validator
+```
+
+For an **existing project**:
+
+```bash
+npx sanity blueprints add function --example brand-voice-validator
+```
+
+### Step 2: Install Dependencies
+
+Install dependencies in the project root:
+
+```bash
+npm install @sanity/functions
+npm install
+```
+
+Install function-specific dependencies:
+
+```bash
+cd functions/brand-voice-validator
+npm install
+cd ../..
+```
+
+### Step 3: Configure Your Blueprint
+
+Add the function configuration to your `sanity.blueprint.ts` file:
 
 ```ts
 // sanity.blueprint.ts
-defineDocumentFunction({
-  type: 'sanity.function.document',
-  name: 'brand-voice-validator',
-  src: './functions/brand-voice-validator',
-  memory: 2,
-  timeout: 60,
-  event: {
-    on: ['publish'],
-    filter: "_type == 'post'",
-    projection: '_id',
-  },
+import {defineBlueprint, defineDocumentFunction} from '@sanity/blueprints'
+
+export default defineBlueprint({
+  resources: [
+    defineDocumentFunction({
+      type: 'sanity.function.document',
+      name: 'brand-voice-validator',
+      src: './functions/brand-voice-validator',
+      memory: 2,
+      timeout: 60,
+      event: {
+        on: ['publish'],
+        filter: "_type == 'post'",
+        projection: '_id',
+      },
+    }),
+  ],
 })
+```
+
+### Step 4: Deploy Your Schema
+
+Make sure your schema is deployed before testing:
+
+```bash
+# From the studio/ folder
+cd studio
+npx sanity schema deploy
+cd ..
 ```
 
 ## How It Works
@@ -114,13 +166,10 @@ target: {
 
 - **Solution:** Configure the Agent Action to access hidden & readonly fields ([docs](https://www.sanity.io/docs/agent-actions/agent-action-cheatsheet#e11a6752f9f7))
 
-## Implementation & Testing
+## Testing & Deployment
 
-For complete implementation, testing, and deployment instructions, see the [Functions Overview](../README.md).
+For complete testing and deployment instructions, see the [Functions Overview](../README.md):
 
-**Quick Start:**
-
-1. Install: `npx sanity blueprints add function --example brand-voice-validator`
-2. Follow the [Implementation Guide](../README.md#implementation-guide)
-3. Test locally using the [Testing Guide](../README.md#testing-functions-locally)
-4. Deploy using the [Deployment Guide](../README.md#deployment-guide)
+- **[Testing Guide](../README.md#testing-functions-locally)** - Local testing with sample or real data
+- **[Deployment Guide](../README.md#deployment-guide)** - Deploy to production
+- **[Troubleshooting](../README.md#troubleshooting)** - Common issues and solutions

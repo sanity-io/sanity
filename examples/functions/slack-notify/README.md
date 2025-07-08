@@ -66,22 +66,74 @@ After deploying your function, add the Slack OAuth token:
 npx sanity functions env add slack-notify SLACK_OAUTH_TOKEN "your-slack-oauth-token-here"
 ```
 
-## Function Configuration
+## Implementation
+
+### Step 1: Choose Your Installation Method
+
+For a **new project**:
+
+```bash
+npx sanity blueprints init --example slack-notify
+```
+
+For an **existing project**:
+
+```bash
+npx sanity blueprints add function --example slack-notify
+```
+
+### Step 2: Install Dependencies
+
+Install dependencies in the project root:
+
+```bash
+npm install @sanity/functions
+npm install
+```
+
+Install function-specific dependencies:
+
+```bash
+cd functions/slack-notify
+npm install
+cd ../..
+```
+
+### Step 3: Configure Your Blueprint
+
+Add the function configuration to your `sanity.blueprint.ts` file:
 
 ```ts
 // sanity.blueprint.ts
-defineDocumentFunction({
-  type: 'sanity.function.document',
-  name: 'slack-notify',
-  src: './functions/slack-notify',
-  memory: 1,
-  timeout: 10,
-  event: {
-    on: ['publish'],
-    filter: "_type == 'post'",
-    projection: '_id, title, slug, _updatedAt',
-  },
+import {defineBlueprint, defineDocumentFunction} from '@sanity/blueprints'
+
+export default defineBlueprint({
+  resources: [
+    defineDocumentFunction({
+      type: 'sanity.function.document',
+      name: 'slack-notify',
+      src: './functions/slack-notify',
+      memory: 1,
+      timeout: 10,
+      event: {
+        on: ['publish'],
+        filter: "_type == 'post'",
+        projection: '_id, title, slug, _updatedAt',
+      },
+    }),
+  ],
 })
+```
+
+### Step 4: Deploy Your Schema
+
+Make sure your schema is deployed before testing:
+
+```bash
+# From the studio/ folder
+cd studio
+npx sanity schema deploy
+cd ..
 ```
 
 ## How It Works
@@ -161,17 +213,15 @@ filter: "_type == 'article' && defined(slug)"
 
 - **Solution:** Invite the bot to your target channel and ensure it has `chat:write` permissions
 
-## Implementation & Testing
+## Testing & Deployment
 
-For complete implementation, testing, and deployment instructions, see the [Functions Overview](../README.md).
+**Important:** This function will send real messages to your Slack channel during testing. Use a test channel for development.
 
-**Quick Start:**
+For complete testing and deployment instructions, see the [Functions Overview](../README.md):
 
-1. Install: `npx sanity blueprints add function --example slack-notify`
-2. Follow the [Slack Integration Setup](#slack-integration-setup) above
-3. Follow the [Implementation Guide](../README.md#implementation-guide)
-4. Test locally using the [Testing Guide](../README.md#testing-functions-locally)
-5. Deploy using the [Deployment Guide](../README.md#deployment-guide)
-6. Add environment variables as described above
+- **[Testing Guide](../README.md#testing-functions-locally)** - Local testing with sample or real data
+- **[Deployment Guide](../README.md#deployment-guide)** - Deploy to production
+- **[Environment Variables](../README.md#environment-variables)** - Configure your SLACK_OAUTH_TOKEN
+- **[Troubleshooting](../README.md#troubleshooting)** - Common issues and solutions
 
-**Testing Note:** This function will send real messages to your Slack channel during testing. Use a test channel for development.
+**Deployment Reminder:** After deploying, don't forget to add your Slack OAuth token as described in [Step 2: Configure Environment Variables](#step-2-configure-environment-variables).
