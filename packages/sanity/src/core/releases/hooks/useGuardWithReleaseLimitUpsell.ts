@@ -15,10 +15,6 @@ export function useGuardWithReleaseLimitUpsell() {
       guardWithReleaseLimitUpsell(noop, false, (hasPassed: boolean) => {
         resolve(hasPassed)
       })
-    }).then((value) => {
-      // we're adding this so that we can actually do the "await" section in this hook
-      // instead of having to do it everything that it is called
-      return value
     })
 
     setReleasePromise(promise)
