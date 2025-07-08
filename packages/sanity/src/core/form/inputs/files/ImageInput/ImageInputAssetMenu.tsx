@@ -171,7 +171,7 @@ function ImageInputAssetMenuWithReferenceAssetComponent(
   const documentId = reference?._ref
   const observable = useMemo(() => observeAsset(documentId), [documentId, observeAsset])
   const asset = useObservable(observable)
-  const assetSourcesWithUpload = assetSources.filter((s) => Boolean(s.uploader))
+  const assetSourcesWithUpload = assetSources.filter((s) => Boolean(s.Uploader))
 
   // TODO: fix this in same style as FileInput
   const handleSelectFilesFromAssetSource = useCallback(

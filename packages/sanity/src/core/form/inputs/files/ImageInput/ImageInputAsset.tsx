@@ -69,7 +69,7 @@ function ImageInputAssetComponent(props: {
   const [assetSourceDestination, setAssetSourceDestination] = useState<AssetSource | null>(null)
   const [showDestinationSourcePicker, setShowDestinationSourcePicker] = useState<boolean>(false)
   const [filesToUploadFromPaste, setFilesToUploadFromPaste] = useState<File[]>([])
-  const hasMultipleUploadSources = assetSources.filter((s) => Boolean(s.uploader)).length > 1
+  const hasMultipleUploadSources = assetSources.filter((s) => Boolean(s.Uploader)).length > 1
 
   const handleFilesOut = useCallback(() => {
     setHoveringFiles([])
@@ -122,7 +122,7 @@ function ImageInputAssetComponent(props: {
         setShowDestinationSourcePicker(true)
         setFilesToUploadFromPaste(files)
       } else {
-        const firstAssetSourceWithUpload = assetSources.filter((s) => s.uploader)[0]
+        const firstAssetSourceWithUpload = assetSources.filter((s) => s.Uploader)[0]
         if (firstAssetSourceWithUpload) {
           onSelectFiles(firstAssetSourceWithUpload, files)
         }

@@ -23,6 +23,7 @@ const MediaLibraryAssetSourceComponent = function MediaLibraryAssetSourceCompone
     onSelect,
     selectedAssets, // TODO: allow for pre-selected assets?
     schemaType,
+    uploader,
   } = props
 
   const {t} = useTranslation()
@@ -40,7 +41,7 @@ const MediaLibraryAssetSourceComponent = function MediaLibraryAssetSourceCompone
         onClose={onClose}
         onSelect={onSelect}
         schemaType={schemaType}
-        uploader={assetSource.uploader}
+        uploader={uploader}
       />
 
       <SelectAssetsDialog

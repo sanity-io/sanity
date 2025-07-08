@@ -4,6 +4,7 @@
   "compilerOptions": {
     "rootDir": ".",
     "noEmit": true,
-    "module": "Preserve"
+    "module": "Preserve",
+    "skipLibCheck": true
   }
 }

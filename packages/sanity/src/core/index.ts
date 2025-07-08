@@ -11,6 +11,10 @@ export * from './FIXME'
 export * from './form'
 export * from './hooks'
 export * from './i18n'
+export {
+  isPerspectiveWriteable,
+  type PerspectiveNotWriteableReason,
+} from './perspective/isPerspectiveWriteable'
 export {ReleasesNav} from './perspective/navbar/ReleasesNav'
 export {PerspectiveProvider} from './perspective/PerspectiveProvider'
 export {
@@ -53,7 +57,12 @@ export {
   type VersionInfoDocumentStub,
   VersionInlineBadge,
 } from './releases'
-export * from './scheduledPublishing'
+export {
+  EditScheduleForm,
+  ScheduleAction,
+  ScheduledBadge,
+  SchedulesContext,
+} from './scheduled-publishing'
 export {createSchema, getSchemaTypeTitle} from './schema'
 export type {SearchFactoryOptions, SearchOptions, SearchSort, SearchTerms} from './search'
 export {createSearch, getSearchableTypes, isPerspectiveRaw} from './search'

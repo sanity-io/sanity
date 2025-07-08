@@ -86,7 +86,14 @@ export const EditableWrapper = styled(Card)<{$isFullscreen: boolean; $isOneLine:
 
     ${TEXT_LEVELS.map((l) => {
       return css`
-        & > .pt-list-item-number[class~='pt-list-item-level-${l}'] {
+        /* Reset the list count each time a list index of 1 is encountered
+         * for the current level.
+         */
+        & [data-level='${l}'][data-list-index='1'] {
+          counter-set: ${createListName(l)} 1;
+        }
+        /* Otherwise, increment the list count for the current level. */
+        & [data-level='${l}']:not([data-list-index='1']) {
           counter-increment: ${createListName(l)};
         }
       `
@@ -99,18 +106,6 @@ export const EditableWrapper = styled(Card)<{$isFullscreen: boolean; $isOneLine:
 
     & > :not(.pt-list-item) + .pt-list-item {
       margin-top: ${({theme}) => theme.sanity.space[2]}px;
-    }
-
-    /* Reset the list count if the element is not a numbered list item */
-    & > :not(.pt-list-item-number) {
-      counter-set: ${TEXT_LEVELS.map((l) => createListName(l)).join(' ')};
-    }
-
-    /* Reset the list count all the sub-list items */
-    & > .pt-list-item-number.pt-list-item-level-${TEXT_LEVELS[0]} {
-      counter-set: ${TEXT_LEVELS.slice(1)
-        .map((l) => createListName(l))
-        .join(' ')};
     }
 
     & > .pt-list-item + :not(.pt-list-item) {

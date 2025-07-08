@@ -1,5 +1,5 @@
 {
-  "$schema": "node_modules/@lerna-lite/cli/schemas/lerna-schema.json",
+  "$schema": "node_modules/lerna/cli/schemas/lerna-schema.json",
   "npmClient": "pnpm",
   "loglevel": "debug",
   "packages": [
@@ -13,7 +13,7 @@
     "packages/groq",
     "packages/sanity"
   ],
-  "version": "3.93.0",
+  "version": "3.98.0",
   "command": {
     "version": {
       "changelogPreset": "conventionalcommits",

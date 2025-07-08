@@ -1,3 +1,10 @@
 {
-  "ignores": ["lodash", "vite", "vite-tsconfig-paths", "@vitejs/plugin-react", "eslint"]
+  "ignores": [
+    "lodash",
+    "vite",
+    "vite-tsconfig-paths",
+    "@vitejs/plugin-react",
+    "eslint",
+    "@repo/tsconfig"
+  ]
 }

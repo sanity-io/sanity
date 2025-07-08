@@ -12,8 +12,8 @@ import ToastDescription from '../studio/timezones/toastDescription/ToastDescript
 import {type NormalizedTimeZone} from '../studio/timezones/types'
 import {debugWithName} from '../studio/timezones/utils/debug'
 
-enum TimeZoneEvents {
-  update = 'timeZoneEventUpdate',
+const TimeZoneEvents = {
+  update: 'timeZoneEventUpdate' as const,
 }
 
 export type TimeZoneScopeType = 'scheduledPublishing' | 'contentReleases' | 'input'

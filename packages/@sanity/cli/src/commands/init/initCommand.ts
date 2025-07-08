@@ -11,7 +11,7 @@ import {type CliCommandDefinition} from '../../types'
 const helpText = `
 Options
   -y, --yes Use unattended mode, accepting defaults and using only flags for choices
-  --project <projectId> Project ID to use for the studio
+  --project, --project-id <projectId> Project ID to use for the studio
   --organization <organizationId> Organization ID to use for the project
   --dataset <dataset> Dataset name for the studio
   --dataset-default Set up a project with a public dataset named "production"
@@ -26,8 +26,16 @@ Options
   --coupon <name> Optionally select a coupon for a new project (cannot be used with --project-plan)
   --no-typescript Do not use TypeScript for template files
   --package-manager <name> Specify which package manager to use [allowed: ${allowedPackageManagersString}]
-  --no-auto-updates Disable auto updates of studio versions
+  --auto-updates Enable/disable auto updates of studio versions (default: true)
+  --overwrite-files Overwrite existing files (default: false)
 
+Some flags are used when initializing a project in a specific framework.
+
+Next.js
+  --nextjs-add-config-files Add config files to Next.js project (default: true)
+  --nextjs-embed-studio Embed the Studio in Next.js application (default: true)
+  --nextjs-append-env Append project ID and dataset to .env file (default: true)
+  
 Examples
   # Initialize a new project, prompt for required information along the way
   sanity init
@@ -55,6 +63,7 @@ export interface InitFlags {
   'y'?: boolean
   'yes'?: boolean
   'project'?: string
+  'project-id'?: string
   'dataset'?: string
   'template'?: string
   /**
@@ -93,6 +102,13 @@ export interface InitFlags {
   'organization'?: string
 
   'package-manager'?: PackageManager
+
+  'overwrite-files'?: boolean
+
+  // Flags for Next.js projects
+  'nextjs-add-config-files'?: boolean
+  'nextjs-embed-studio'?: boolean
+  'nextjs-append-env'?: boolean
 }
 
 const initCommand: CliCommandDefinition<InitFlags> = {

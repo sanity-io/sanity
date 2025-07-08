@@ -130,14 +130,17 @@ export class ListBuilder extends GenericListBuilder<BuildableList, ListBuilder> 
   /** buildable list option object. See {@link BuildableList} */
   protected spec: BuildableList
 
+  protected _context: StructureContext
+
   constructor(
     /**
      * Structure context. See {@link StructureContext}
      */
-    protected _context: StructureContext,
+    _context: StructureContext,
     spec?: ListInput,
   ) {
     super()
+    this._context = _context
     this.spec = spec ? spec : {}
     this.initialValueTemplatesSpecified = Boolean(spec && spec.initialValueTemplates)
   }

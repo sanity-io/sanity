@@ -76,13 +76,16 @@ export class MenuItemBuilder implements Serializable<MenuItem> {
   /** menu item option object. See {@link PartialMenuItem} */
   protected spec: PartialMenuItem
 
+  protected _context: StructureContext
+
   constructor(
     /**
      * Structure context. See {@link StructureContext}
      */
-    protected _context: StructureContext,
+    _context: StructureContext,
     spec?: MenuItem,
   ) {
+    this._context = _context
     this.spec = spec ? spec : {}
   }
 

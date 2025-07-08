@@ -10,9 +10,9 @@ export const GlobalPerspectiveMenuItemIndicator = styled.div<{
   $inRange: boolean
   $last: boolean
   $first: boolean
-  $isDraft: boolean
+  $isDefaultPerspective: boolean
 }>(
-  ({$inRange, $last, $first, $isDraft}) => css`
+  ({$inRange, $last, $first, $isDefaultPerspective}) => css`
     position: relative;
 
     --indicator-left: ${INDICATOR_LEFT_OFFSET}px;
@@ -32,7 +32,9 @@ export const GlobalPerspectiveMenuItemIndicator = styled.div<{
         left: var(--indicator-left);
         bottom: -var(--indicator-bottom);
         width: var(--indicator-width);
-        height: ${$isDraft ? 'calc(var(--indicator-bottom) + 12px)' : 'var(--indicator-bottom)'};
+        height: ${$isDefaultPerspective
+          ? 'calc(var(--indicator-bottom) + 12px)'
+          : 'var(--indicator-bottom)'};
         background-color: var(--card-border-color);
       }
     `}

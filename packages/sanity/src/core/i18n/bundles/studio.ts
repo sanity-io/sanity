@@ -1203,10 +1203,6 @@ export const studioLocaleStrings = defineLocalesResources('studio', {
    * when there are templates/types available for creation
    */
   'new-document.create-new-document-label': 'New document…',
-  /** Tooltip message for add document button when the selected perspective is published  */
-  'new-document.disabled-published.tooltip': 'You cannot create new published documents',
-  /** Tooltip message for add document button when the selected perspective is for inactive release */
-  'new-document.disabled-release.tooltip': 'You cannot add documents to this release',
   /** Placeholder for the "filter" input within the new document menu */
   'new-document.filter-placeholder': 'Search document types',
   /** Loading indicator text within the new document menu */
@@ -1275,6 +1271,17 @@ export const studioLocaleStrings = defineLocalesResources('studio', {
     'This workspace is limited to {{count}} releases',
   /** Tooltip message for not having permissions for creating new releases */
   'release.action.permission.error': 'You do not have permission to perform this action',
+  /** Error message description for when a version is reverted from being unpublished */
+  'release.action.revert-unpublish-version.failure.description':
+    'Please try again or check your connection. The document is still going to be unpublished upon release.',
+  /** Error message title for when a version is reverted from being unpublished */
+  'release.action.revert-unpublish-version.failure.title':
+    'Failed to revert from setting to unpublish on release.',
+  /** Action message description for when a version is reverted from being unpublished */
+  'release.action.revert-unpublish-version.success.description': 'You can now edit this version.',
+  /** Action message title for when a version is reverted from being unpublished */
+  'release.action.revert-unpublish-version.success.title':
+    'Successfully reverted from setting to unpublish on release.',
   /** Error message for when a version is set to be unpublished */
   'release.action.unpublish-version.failure': 'Failed to set version to be unpublished on release',
   /** Action message for when a version is set to be unpublished successfully */
