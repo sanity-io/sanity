@@ -1,5 +1,6 @@
 import {readDoc} from '../../actions/docs/readDoc'
 import {type CliCommandDefinition} from '../../types'
+import {browse} from '../../util/browse'
 
 interface ReadCommandFlags {
   w?: boolean
@@ -27,17 +28,18 @@ const readCommand: CliCommandDefinition<ReadCommandFlags> = {
   group: 'docs',
   helpText,
   signature: '<path> [-w, --web]',
-  description: 'Read an article',
+  description: 'Read a documentation article',
   async action(args, context) {
     const {output} = context
     const flags = args.extOptions as ReadCommandFlags
     const path = args.argsWithoutOptions[0]
 
-    if (!path) {
+    if (!path || typeof path !== 'string') {
       output.error('Please provide an article path')
       output.print('')
       output.print(helpText)
       process.exit(1)
+      return
     }
 
     if (!path.startsWith('/')) {
@@ -45,15 +47,14 @@ const readCommand: CliCommandDefinition<ReadCommandFlags> = {
       output.print('')
       output.print(helpText)
       process.exit(1)
+      return
     }
 
     // Open in web browser if --web or -w flag is provided
     if (flags.web || flags.w) {
       const url = `https://www.sanity.io${path}`
       output.print(`Opening ${url}`)
-
-      const {default: open} = await import('open')
-      await open(url)
+      await browse(url)
       return
     }
 

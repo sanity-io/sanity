@@ -1,6 +1,5 @@
-import open from 'open'
-
 import {type CliCommandDefinition} from '../../types'
+import {browse} from '../../util/browse'
 
 const browseCommand: CliCommandDefinition = {
   name: 'browse',
@@ -14,7 +13,7 @@ const browseCommand: CliCommandDefinition = {
     const url = 'https://www.sanity.io/docs'
 
     print(`Opening ${url}`)
-    await open(url)
+    await browse(url)
   },
 }
 

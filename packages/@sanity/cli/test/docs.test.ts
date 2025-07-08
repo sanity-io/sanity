@@ -1,71 +1,172 @@
-import {describe, expect} from 'vitest'
+import {beforeEach, describe, expect, test, vi} from 'vitest'
 
-import {describeCliTest, testConcurrent} from './shared/describe'
-import {runSanityCmdCommand, studioVersions} from './shared/environment'
+import {readDoc} from '../src/actions/docs/readDoc'
+import {searchDocs} from '../src/actions/docs/searchDocs'
+import {browse} from '../src/util/browse'
 
-describeCliTest('CLI: `sanity docs`', () => {
-  describe.each(studioVersions)('%s', (version) => {
-    testConcurrent('docs browse', async () => {
-      const result = await runSanityCmdCommand(version, ['docs', 'browse'])
-      expect(result.stdout).toContain('Opening https://www.sanity.io/docs')
-      expect(result.code).toBe(0)
+// Mock fetch globally for the actions
+const mockFetch = vi.fn()
+global.fetch = mockFetch
+
+// Mock the browse utility
+vi.mock('../src/util/browse', () => ({
+  browse: vi.fn(),
+}))
+
+describe('CLI: `sanity docs`', () => {
+  let mockOutput: any
+  let mockContext: any
+
+  const mockBrowse = vi.mocked(browse)
+
+  beforeEach(() => {
+    mockFetch.mockClear()
+    mockBrowse.mockClear()
+
+    mockOutput = {
+      print: vi.fn(),
+      error: vi.fn(),
+    }
+
+    mockContext = {
+      output: mockOutput,
+    }
+  })
+
+  test('browse utility calls open', async () => {
+    await browse('https://www.sanity.io/docs')
+    expect(mockBrowse).toHaveBeenCalledWith('https://www.sanity.io/docs')
+  })
+
+  test('searchDocs - finding results', async () => {
+    mockFetch.mockResolvedValueOnce({
+      ok: true,
+      json: () =>
+        Promise.resolve([
+          {path: '/docs/schema', title: 'Schema', description: 'Learn about schemas'},
+          {path: '/docs/queries', title: 'Queries', description: 'Learn about queries'},
+        ]),
     })
 
-    testConcurrent('docs search - basic functionality', async () => {
-      const result = await runSanityCmdCommand(version, ['docs', 'search', 'test'])
-      expect(result.stdout).toContain('Searching documentation for: "test"')
-      // Since API endpoints are placeholders, expect "No results found" or error handling
-      expect(result.stdout).toMatch(/No results found|Unable to reach documentation|Search failed/)
-      expect(result.code).toBe(0) // Should handle errors gracefully
+    const result = await searchDocs({query: 'test', limit: 10}, mockContext)
+
+    expect(result).toEqual([
+      {path: '/docs/schema', title: 'Schema', description: 'Learn about schemas'},
+      {path: '/docs/queries', title: 'Queries', description: 'Learn about queries'},
+    ])
+    expect(mockFetch).toHaveBeenCalledWith(
+      new URL('https://www.sanity.io/docs/api/search/semantic?query=test'),
+      {signal: expect.any(AbortSignal)},
+    )
+  })
+
+  test('searchDocs - no results found', async () => {
+    mockFetch.mockResolvedValueOnce({
+      ok: true,
+      json: () => Promise.resolve([]),
     })
 
-    testConcurrent('docs search - with limit option', async () => {
-      const result = await runSanityCmdCommand(version, ['docs', 'search', 'test', '--limit=5'])
-      expect(result.stdout).toContain('Searching documentation for: "test"')
-      expect(result.code).toBe(0)
+    const result = await searchDocs({query: 'nonexistent'}, mockContext)
+
+    expect(result).toEqual([])
+  })
+
+  test('searchDocs - API error', async () => {
+    mockFetch.mockResolvedValueOnce({
+      ok: false,
+      status: 500,
+      json: () => Promise.resolve([]), // Mock json function even for errors since process.exit doesn't actually exit in tests
     })
 
-    testConcurrent('docs search - missing query', async () => {
-      const result = await runSanityCmdCommand(version, ['docs', 'search'])
-      expect(result.stderr).toContain('Please provide a search query')
-      expect(result.code).toBe(0) // CLI doesn't exit with error codes for user input errors
+    const mockExit = vi.spyOn(process, 'exit').mockImplementation(() => undefined as never)
+
+    await searchDocs({query: 'test'}, mockContext)
+
+    expect(mockOutput.error).toHaveBeenCalledWith(
+      'The documentation search API is currently unavailable. Please try again later.',
+    )
+    expect(mockExit).toHaveBeenCalledWith(1)
+
+    mockExit.mockRestore()
+  })
+
+  test('searchDocs - with custom limit', async () => {
+    mockFetch.mockResolvedValueOnce({
+      ok: true,
+      json: () =>
+        Promise.resolve([
+          {path: '/docs/schema', title: 'Schema', description: 'Learn about schemas'},
+          {path: '/docs/queries', title: 'Queries', description: 'Learn about queries'},
+          {path: '/docs/mutations', title: 'Mutations', description: 'Learn about mutations'},
+        ]),
     })
 
-    testConcurrent('docs read - basic functionality', async () => {
-      const result = await runSanityCmdCommand(version, ['docs', 'read', 'test-article'])
-      expect(result.stdout).toContain('Reading documentation: test-article')
-      // Since API endpoints are placeholders, expect error handling
-      expect(result.stderr).toMatch(
-        /Documentation article not found|Unable to reach documentation|Failed to read/,
-      )
-      expect(result.code).toBe(0) // Should handle errors gracefully
+    const result = await searchDocs({query: 'test', limit: 2}, mockContext)
+
+    expect(result).toHaveLength(2)
+    expect(result).toEqual([
+      {path: '/docs/schema', title: 'Schema', description: 'Learn about schemas'},
+      {path: '/docs/queries', title: 'Queries', description: 'Learn about queries'},
+    ])
+  })
+
+  test('readDoc - successful read', async () => {
+    mockFetch.mockResolvedValueOnce({
+      ok: true,
+      text: () => Promise.resolve('# Test Article\n\nThis is test content.'),
     })
 
-    testConcurrent('docs read - missing path', async () => {
-      const result = await runSanityCmdCommand(version, ['docs', 'read'])
-      expect(result.stderr).toContain('Please provide a documentation path')
-      expect(result.code).toBe(0) // CLI doesn't exit with error codes for user input errors
+    const result = await readDoc({path: '/docs/test-article'}, mockContext)
+
+    expect(result).toBe('# Test Article\n\nThis is test content.')
+    expect(mockFetch).toHaveBeenCalledWith('https://www.sanity.io/docs/test-article.md', {
+      signal: expect.any(AbortSignal),
+    })
+  })
+
+  test('readDoc - article not found', async () => {
+    mockFetch.mockResolvedValueOnce({
+      ok: false,
+      status: 404,
     })
 
-    testConcurrent('docs help', async () => {
-      const result = await runSanityCmdCommand(version, ['docs', '--help'])
-      expect(result.stdout).toContain('Commands:')
-      expect(result.stdout).toContain('browse')
-      expect(result.stdout).toContain('search')
-      expect(result.stdout).toContain('read')
-      expect(result.code).toBe(0)
+    const result = await readDoc({path: '/docs/nonexistent'}, mockContext)
+
+    expect(result).toBeNull()
+    expect(mockOutput.error).toHaveBeenCalledWith('Article not found: /docs/nonexistent')
+  })
+
+  test('readDoc - API error', async () => {
+    mockFetch.mockResolvedValueOnce({
+      ok: false,
+      status: 500,
+      text: () => Promise.resolve(''), // Mock text function even for errors since process.exit doesn't actually exit in tests
     })
 
-    testConcurrent('docs search help', async () => {
-      const result = await runSanityCmdCommand(version, ['docs', 'search', '--help'])
-      expect(result.stdout).toContain('Search the official Sanity documentation')
-      expect(result.code).toBe(0)
-    })
+    const mockExit = vi.spyOn(process, 'exit').mockImplementation(() => undefined as never)
 
-    testConcurrent('docs read help', async () => {
-      const result = await runSanityCmdCommand(version, ['docs', 'read', '--help'])
-      expect(result.stdout).toContain('Read a specific documentation article')
-      expect(result.code).toBe(0)
-    })
+    await readDoc({path: '/docs/test-article'}, mockContext)
+
+    expect(mockOutput.error).toHaveBeenCalledWith(
+      'The article API is currently unavailable. Please try again later.',
+    )
+    expect(mockExit).toHaveBeenCalledWith(1)
+
+    mockExit.mockRestore()
+  })
+
+  test('readDoc - network error', async () => {
+    mockFetch.mockRejectedValueOnce(new Error('Network error'))
+
+    const mockExit = vi.spyOn(process, 'exit').mockImplementation(() => undefined as never)
+
+    await readDoc({path: '/docs/test-article'}, mockContext)
+
+    expect(mockOutput.error).toHaveBeenCalledWith(
+      'The article API is currently unavailable. Please try again later.',
+    )
+    expect(mockExit).toHaveBeenCalledWith(1)
+
+    mockExit.mockRestore()
   })
 })

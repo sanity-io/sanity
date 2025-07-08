@@ -41,6 +41,7 @@ const searchCommand: CliCommandDefinition<SearchCommandFlags> = {
       output.error('Please provide a search query')
       output.print('Usage: sanity docs search "your query"')
       process.exit(1)
+      return
     }
 
     output.print(`Searching documentation for: "${query}"`)
