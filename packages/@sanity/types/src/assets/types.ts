@@ -14,12 +14,6 @@ export interface File {
 }
 
 /** @public */
-export interface Video {
-  [key: string]: unknown // We allow meta-fields on video
-  asset?: Reference
-}
-
-/** @public */
 export interface Image {
   [key: string]: unknown // We allow meta-fields on image
   asset?: Reference
