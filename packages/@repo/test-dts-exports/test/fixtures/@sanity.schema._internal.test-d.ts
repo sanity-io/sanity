@@ -16,8 +16,11 @@ import type {
   ProblemPathPropertySegment,
   ProblemPathSegment,
   ProblemPathTypeSegment,
+  processSchemaSynchronization,
   resolveSearchConfig,
   resolveSearchConfigForBaseFieldPaths,
+  SchemaSynchronizationRequest,
+  SchemaSynchronizationResult,
   TypeWithProblems,
   validateMediaLibraryAssetAspect,
   validateSchema,
@@ -61,11 +64,20 @@ describe('@sanity/schema/_internal', () => {
   test('ProblemPathTypeSegment', () => {
     expectTypeOf<ProblemPathTypeSegment>().toBeObject()
   })
+  test('processSchemaSynchronization', () => {
+    expectTypeOf<typeof processSchemaSynchronization>().toBeFunction()
+  })
   test('resolveSearchConfig', () => {
     expectTypeOf<typeof resolveSearchConfig>().toBeFunction()
   })
   test('resolveSearchConfigForBaseFieldPaths', () => {
     expectTypeOf<typeof resolveSearchConfigForBaseFieldPaths>().toBeFunction()
+  })
+  test('SchemaSynchronizationRequest', () => {
+    expectTypeOf<SchemaSynchronizationRequest>().not.toBeNever()
+  })
+  test('SchemaSynchronizationResult', () => {
+    expectTypeOf<SchemaSynchronizationResult>().not.toBeNever()
   })
   test('TypeWithProblems', () => {
     expectTypeOf<TypeWithProblems>().toBeObject()
