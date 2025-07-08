@@ -6,7 +6,6 @@ import {
 } from './queryService'
 import {isInteractive} from '../../util/isInteractive'
 import {markdownSerializer} from './markdownSerializer'
-import {colorizeMarkdown} from './terminalMarkdown'
 
 export interface GetChangelogActionOptions extends GetChangelogOptions {
   output?: string
@@ -62,8 +61,7 @@ function formatChangelogEntry(entry: ChangelogEntry, noColor: boolean): string {
 
   result += '---\n\n'
 
-  // Apply terminal colorization if in interactive mode
-  return colorizeMarkdown(result, noColor)
+  return result
 }
 
 export async function getChangelog(

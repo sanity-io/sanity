@@ -1,7 +1,6 @@
 import {type CliCommandContext} from '../../types'
 import {queryAPI, type ChangelogEntry} from './queryService'
 import {isInteractive} from '../../util/isInteractive'
-import {colorizeMarkdown} from './terminalMarkdown'
 import {markdownSerializer} from './markdownSerializer'
 
 export interface CrossplatformChangelogOptions {
@@ -141,7 +140,7 @@ function formatCrossplatformEntries(
     })
   }
 
-  return colorizeMarkdown(result, noColor)
+  return result
 }
 
 export async function getCrossplatformChangelog(
