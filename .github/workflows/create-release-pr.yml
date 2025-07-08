@@ -86,6 +86,7 @@ jobs:
           token: ${{ steps.app-token.outputs.token }}
           title: "${{steps.version-commit.outputs.message}}"
           body: "🤖 I have created a release **squib** **squob**\n\n Merging this PR will publish v${{steps.release-as.outputs.version}} to npm 🚀"
+          commit-message: "${{steps.version-commit.outputs.message}}"
           branch: ci/release-main
           sign-commits: true
           base: main
