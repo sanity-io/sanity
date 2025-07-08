@@ -16,7 +16,10 @@ Options
 
 Examples
   # Search for documentation about schemas
-  sanity docs search "schema"
+  sanity docs search schema
+
+  # Search with phrase
+  sanity docs search "groq functions"
 
   # Limit search results
   sanity docs search "deployment" --limit=5
@@ -67,7 +70,6 @@ const searchCommand: CliCommandDefinition<SearchCommandFlags> = {
       return
     }
 
-    // Table format
     output.print(`\nFound ${results.length} result(s):\n`)
 
     results.forEach((result, index) => {

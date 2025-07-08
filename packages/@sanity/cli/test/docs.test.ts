@@ -75,7 +75,7 @@ describe('CLI: `sanity docs`', () => {
     mockFetch.mockResolvedValueOnce({
       ok: false,
       status: 500,
-      json: () => Promise.resolve([]), // Mock json function even for errors since process.exit doesn't actually exit in tests
+      json: () => Promise.resolve([]),
     })
 
     const mockExit = vi.spyOn(process, 'exit').mockImplementation(() => undefined as never)
@@ -140,7 +140,7 @@ describe('CLI: `sanity docs`', () => {
     mockFetch.mockResolvedValueOnce({
       ok: false,
       status: 500,
-      text: () => Promise.resolve(''), // Mock text function even for errors since process.exit doesn't actually exit in tests
+      text: () => Promise.resolve(''),
     })
 
     const mockExit = vi.spyOn(process, 'exit').mockImplementation(() => undefined as never)

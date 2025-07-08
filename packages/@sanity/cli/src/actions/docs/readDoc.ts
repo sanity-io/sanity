@@ -15,7 +15,7 @@ export async function readDoc(
     const url = `https://www.sanity.io${options.path}.md`
 
     const response = await fetch(url, {
-      signal: AbortSignal.timeout(15000), // 15 second timeout for content
+      signal: AbortSignal.timeout(10000),
     })
 
     if (response.status === 404) {

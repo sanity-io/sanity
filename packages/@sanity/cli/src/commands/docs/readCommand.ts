@@ -9,18 +9,18 @@ interface ReadCommandFlags {
 
 const helpText = `
 Arguments
-  <path> Article path
+  <path> Path to article, found in search results and docs content as links
 
 Options
-  -w, --web               Open the article in a web browser
+  -w, --web               Open in a web browser
 
 Examples
-  # Read article as markdown in terminal
-  sanity docs read "/docs/studio/installation"
+  # Read as markdown in terminal
+  sanity docs read /docs/studio/installation
 
-  # Open article in web browser
-  sanity docs read "/docs/studio/installation" --web
-  sanity docs read "/docs/studio/installation" -w
+  # Open in web browser
+  sanity docs read /docs/studio/installation --web
+  sanity docs read /docs/studio/installation -w
 `
 
 const readCommand: CliCommandDefinition<ReadCommandFlags> = {
@@ -28,7 +28,7 @@ const readCommand: CliCommandDefinition<ReadCommandFlags> = {
   group: 'docs',
   helpText,
   signature: '<path> [-w, --web]',
-  description: 'Read a documentation article',
+  description: 'Read a specific article',
   async action(args, context) {
     const {output} = context
     const flags = args.extOptions as ReadCommandFlags
@@ -59,7 +59,7 @@ const readCommand: CliCommandDefinition<ReadCommandFlags> = {
     }
 
     // Default behavior: read as markdown in terminal
-    output.print(`Reading documentation: ${path}`)
+    output.print(`Reading article: ${path}`)
 
     const content = await readDoc({path}, context)
 

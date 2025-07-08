@@ -23,7 +23,7 @@ export async function searchDocs(
   url.searchParams.set('query', options.query)
 
   const response = await fetch(url, {
-    signal: AbortSignal.timeout(10000), // 10 second timeout
+    signal: AbortSignal.timeout(10000),
   })
 
   if (!response.ok) {
