@@ -203,14 +203,14 @@ export function ReleasesUpsellProvider(props: {children: React.ReactNode}) {
 
       // silently fail and allow pass through guard
       if (result === null) {
-        whenResolved?.(false)
+        whenResolved?.(true)
         return cb()
       }
 
       const [orgActiveReleaseCount, releaseLimits] = result
 
       if (releaseLimits === null || orgActiveReleaseCount === null) {
-        whenResolved?.(false)
+        whenResolved?.(true)
         return cb()
       }
 
@@ -219,7 +219,7 @@ export function ReleasesUpsellProvider(props: {children: React.ReactNode}) {
       // orgActiveReleaseCount might be missing due to internal server error
       // allow pass through guard in that case
       if (orgActiveReleaseCount === null) {
-        whenResolved?.(false)
+        whenResolved?.(true)
         return cb()
       }
 
