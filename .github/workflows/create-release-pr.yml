@@ -55,10 +55,9 @@ jobs:
         run: |
           npx lerna version \
             --force-publish \
+            --no-git-tag-version \
             --conventional-commits \
             --yes
-          # Remove remote to prevent any accidental pushes
-          git remote remove origin || true
         env:
           GITHUB_TOKEN: ${{ steps.app-token.outputs.token }}
 
