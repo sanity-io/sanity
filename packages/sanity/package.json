@@ -175,7 +175,7 @@
     "@sanity/sdk": "0.0.0-alpha.25",
     "@sanity/telemetry": "^0.8.0",
     "@sanity/types": "workspace:*",
-    "@sanity/ui": "^2.16.2",
+    "@sanity/ui": "^2.16.3",
     "@sanity/util": "workspace:*",
     "@sanity/uuid": "^3.0.2",
     "@sentry/react": "^8.55.0",
