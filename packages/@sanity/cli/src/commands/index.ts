@@ -23,9 +23,17 @@ import testfunctionsCommand from './functions/testFunctionsCommand'
 import helpCommand from './help/helpCommand'
 import initCommand from './init/initCommand'
 import installCommand from './install/installCommand'
+<<<<<<< HEAD
 import intentsGroup from './intents/intentsGroup'
 import detailIntentCommand from './intents/detailIntentCommand'
 import listIntentsCommand from './intents/listIntentsCommand'
+=======
+import addIntentCommand from './intents/addIntentCommand'
+import destroyIntentCommand from './intents/destroyIntentCommand'
+import intentsGroup from './intents/intentsGroup'
+import listIntentsCommand from './intents/listIntentsCommand'
+import syncIntentsCommand from './intents/syncIntentsCommand'
+>>>>>>> fd1838d93d (feat(cli): add no-op intents commands)
 import learnCommand from './learn/learnCommand'
 import loginCommand from './login/loginCommand'
 import logoutCommand from './logout/logoutCommand'
