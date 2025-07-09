@@ -80,6 +80,12 @@ jobs:
         with:
           fetch-depth: 0
 
+      - name: Get version from lerna.json
+        id: release-as
+        run: |
+          version=$(jq -r .version lerna.json)
+          echo "version=$version" >> "$GITHUB_OUTPUT"
+
       - name: Configure git
         run: |
           git config --global user.name 'github-actions[bot]'
@@ -90,7 +96,7 @@ jobs:
           git tag v$RELEASE_AS -m v$RELEASE_AS
           git push origin v$RELEASE_AS
         env:
-          RELEASE_AS: ${{ needs.build-and-validate.outputs.version }}
+          RELEASE_AS: ${{ needs.build-and-validate.outputs.version || steps.release-as.outputs.version }}
 
   npm-publish:
     needs: build-and-validate
@@ -99,6 +105,8 @@ jobs:
       contents: read
       id-token: write # to enable use of OIDC for npm provenance
     env:
+      TURBO_TOKEN: ${{ secrets.TURBO_TOKEN }}
+      TURBO_TEAM: ${{ vars.TURBO_TEAM }}
       EXPECTED_NPM_USER: sanity-io
     steps:
       - uses: actions/checkout@v4
@@ -111,6 +119,7 @@ jobs:
           node-version: lts/*
 
       - name: Restore build artifacts
+        id: cache-restore
         uses: actions/cache/restore@v4
         with:
           path: |
@@ -118,7 +127,12 @@ jobs:
             packages/*/lib
             packages/*/dist
           key: build-artifacts-${{ github.sha }}
-          fail-on-cache-miss: true
+
+      - name: Install deps & build (if cache miss)
+        if: steps.cache-restore.outputs.cache-hit != 'true'
+        run: |
+          pnpm install --ignore-scripts
+          pnpm build --output-logs=full --log-order=grouped
 
       - name: Set publishing config
         run: pnpm config set '//registry.npmjs.org/:_authToken' "${NPM_PUBLISH_TOKEN}"
@@ -159,6 +173,7 @@ jobs:
           node-version: lts/*
 
       - name: Restore build artifacts
+        id: cache-restore
         uses: actions/cache/restore@v4
         with:
           path: |
@@ -166,7 +181,12 @@ jobs:
             packages/*/lib
             packages/*/dist
           key: build-artifacts-${{ github.sha }}
-          fail-on-cache-miss: true
+
+      - name: Install deps & build (if cache miss)
+        if: steps.cache-restore.outputs.cache-hit != 'true'
+        run: |
+          pnpm install --ignore-scripts
+          pnpm build --output-logs=full --log-order=grouped
 
       - name: Build bundle
         run: pnpm run build:bundle
