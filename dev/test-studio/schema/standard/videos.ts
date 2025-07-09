@@ -1,5 +1,5 @@
 import {VideoIcon} from '@sanity/icons'
-import {defineType} from 'sanity'
+import {defineField, defineType} from 'sanity'
 import {defineVideoField} from 'sanity/media-library'
 
 export default defineType({
@@ -16,6 +16,27 @@ export default defineType({
     defineVideoField({
       title: 'A simple video',
       name: 'someVideo',
+    }),
+    defineField({
+      name: 'arrayOfVideos',
+      type: 'array',
+      of: [
+        defineVideoField({
+          name: 'video',
+        }),
+      ],
+    }),
+    defineField({
+      name: 'objectWithVideos',
+      type: 'object',
+      fields: [
+        defineVideoField({
+          name: 'video',
+        }),
+        defineVideoField({
+          name: 'video2',
+        }),
+      ],
     }),
   ],
 })
