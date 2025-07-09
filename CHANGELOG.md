@@ -3,6 +3,28 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## <small>3.98.1 (2025-07-09)</small>
+
+* fix: add commit-message field to release PR workflow (#9922) ([23b4a3a](https://github.com/sanity-io/sanity/commit/23b4a3a)), closes [#9922](https://github.com/sanity-io/sanity/issues/9922)
+* fix: correcting yaml syntax to git tag on publish (#9914) ([b9f0224](https://github.com/sanity-io/sanity/commit/b9f0224)), closes [#9914](https://github.com/sanity-io/sanity/issues/9914)
+* fix: handling where no templates available and not showing create doc button (#9933) ([d2f9810](https://github.com/sanity-io/sanity/commit/d2f9810)), closes [#9933](https://github.com/sanity-io/sanity/issues/9933)
+* fix(deps): update dependency @portabletext/block-tools to ^1.1.36 (#9918) ([46a7d9d](https://github.com/sanity-io/sanity/commit/46a7d9d)), closes [#9918](https://github.com/sanity-io/sanity/issues/9918)
+* fix(deps): update dependency @portabletext/block-tools to ^1.1.37 (#9927) ([c545a1b](https://github.com/sanity-io/sanity/commit/c545a1b)), closes [#9927](https://github.com/sanity-io/sanity/issues/9927)
+* fix(deps): update dependency @portabletext/editor to ^1.57.0 (#9913) ([e124c21](https://github.com/sanity-io/sanity/commit/e124c21)), closes [#9913](https://github.com/sanity-io/sanity/issues/9913)
+* fix(deps): update dependency @portabletext/editor to ^1.57.1 (#9919) ([32ebd0c](https://github.com/sanity-io/sanity/commit/32ebd0c)), closes [#9919](https://github.com/sanity-io/sanity/issues/9919)
+* fix(deps): update dependency @portabletext/editor to ^1.57.3 (#9928) ([ea2b66d](https://github.com/sanity-io/sanity/commit/ea2b66d)), closes [#9928](https://github.com/sanity-io/sanity/issues/9928)
+* fix(deps): update dependency @sanity/ui to ^2.16.3 (#9931) ([d2b3cf5](https://github.com/sanity-io/sanity/commit/d2b3cf5)), closes [#9931](https://github.com/sanity-io/sanity/issues/9931)
+* test: remove flag from cli token tests (#9925) ([6b4088a](https://github.com/sanity-io/sanity/commit/6b4088a)), closes [#9925](https://github.com/sanity-io/sanity/issues/9925)
+* test(cli): update to use pnpm to install instead of npm  (#9929) ([ebba8b0](https://github.com/sanity-io/sanity/commit/ebba8b0)), closes [#9929](https://github.com/sanity-io/sanity/issues/9929)
+* chore: fix vercel pnpm install issues with recast (#9930) ([c1041cd](https://github.com/sanity-io/sanity/commit/c1041cd)), closes [#9930](https://github.com/sanity-io/sanity/issues/9930)
+* chore: using lerna full for creating release PR (#9917) ([82b3fbc](https://github.com/sanity-io/sanity/commit/82b3fbc)), closes [#9917](https://github.com/sanity-io/sanity/issues/9917)
+* chore(deps): update dependency esbuild to v0.25.6 (#9908) ([90821b1](https://github.com/sanity-io/sanity/commit/90821b1)), closes [#9908](https://github.com/sanity-io/sanity/issues/9908)
+* docs: Marketing/add function examples (#9760) ([ca1d50e](https://github.com/sanity-io/sanity/commit/ca1d50e)), closes [#9760](https://github.com/sanity-io/sanity/issues/9760)
+
+
+
+
+
 ## [3.98.0](https://github.com/sanity-io/sanity/compare/v3.97.1...v3.98.0) (2025-07-07)
 
 ### Features
