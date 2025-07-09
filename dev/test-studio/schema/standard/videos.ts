@@ -38,5 +38,22 @@ export default defineType({
         }),
       ],
     }),
+    defineField({
+      name: 'portableTextWithVideos',
+      type: 'array',
+      of: [
+        {
+          type: 'block',
+          of: [
+            defineVideoField({
+              name: 'video',
+            }),
+          ],
+        },
+        defineVideoField({
+          name: 'video',
+        }),
+      ],
+    }),
   ],
 })
