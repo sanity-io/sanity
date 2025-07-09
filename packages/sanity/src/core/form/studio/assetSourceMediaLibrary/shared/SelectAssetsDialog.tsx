@@ -5,7 +5,7 @@ import {
   type SanityDocument,
   type ValidationMarker,
 } from '@sanity/types'
-import {Box, Card, Flex, Text, useTheme, useToast} from '@sanity/ui'
+import {Box, Card, Flex, useTheme, useToast} from '@sanity/ui'
 import {type ReactNode, useCallback, useMemo, useState} from 'react'
 import {encodeJsonParams} from 'sanity/router'
 
@@ -181,9 +181,10 @@ export function SelectAssetsDialog(props: SelectAssetsDialogProps): ReactNode {
 
   return (
     <AppDialog
-      // header={dialogHeaderTitle}
+      header={dialogHeaderTitle}
       id="media-library-plugin-dialog-select-assets"
-      // onClose={handleClose}
+      onClose={handleClose}
+      onClickOutside={handleClose}
       open
       ref={ref}
       data-testid="media-library-plugin-dialog-select-assets"
@@ -193,24 +194,19 @@ export function SelectAssetsDialog(props: SelectAssetsDialogProps): ReactNode {
           width="full"
           height="fill"
           padding={3}
-          radius={2}
           shadow={1}
-          style={{position: 'relative', minHeight: '2dvh'}}
-          tone="primary"
+          style={{
+            position: 'relative',
+            minHeight: '2dvh',
+          }}
         >
-          <Flex width="full" gap={3} justify="flex-start" padding={3}>
-            <Box flex={1}>
-              <Text size={1} weight="semibold">
-                {dialogHeaderTitle}
-              </Text>
-            </Box>
-
-            <Flex width="full" gap={3} justify="flex-end" align="center">
+          <Flex width="full" gap={3} justify="flex-end">
+            <Flex width="full" gap={2} justify="flex-end" align="center">
               {validation.length > 0 && (
                 <FormFieldValidationStatus fontSize={2} placement="top" validation={validation} />
               )}
               <Button
-                mode="ghost"
+                mode="bleed"
                 onClick={handleClose}
                 text={t('asset-source.dialog.button.cancel')}
                 size="large"
@@ -224,13 +220,25 @@ export function SelectAssetsDialog(props: SelectAssetsDialogProps): ReactNode {
                 }
                 text={t('asset-source.dialog.button.select')}
                 size="large"
+                tone="primary"
               />
             </Flex>
           </Flex>
         </Card>
       }
     >
-      <Iframe ref={setIframe} src={iframeUrl} />
+      <Box
+        style={{
+          position: 'absolute',
+          inset: 0,
+          borderTop: '1px solid',
+          borderColor: 'var(--card-border-color)',
+          overflow: 'hidden',
+          display: 'flex',
+        }}
+      >
+        <Iframe ref={setIframe} src={iframeUrl} />
+      </Box>
     </AppDialog>
   )
 }
