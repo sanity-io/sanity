@@ -33,7 +33,7 @@
   "dependencies": {
     "@repo/eslint-config": "workspace:*",
     "@sanity/icons": "^3.7.4",
-    "@sanity/ui": "^2.16.2",
+    "@sanity/ui": "^2.16.3",
     "react": "catalog:react18",
     "react-dom": "catalog:react18",
     "sanity": "workspace:*",
