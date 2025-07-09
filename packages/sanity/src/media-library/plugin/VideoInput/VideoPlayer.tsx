@@ -10,13 +10,7 @@ type VideoPlayerProps = {
   disabled?: boolean
 }
 
-export function VideoPlayer({playbackId, aspectRatio, muted, disabled}: VideoPlayerProps) {
-  const isPortrait = aspectRatio && aspectRatio < 1
-  const wrapperWidth = isPortrait ? 'auto' : '100%'
-  const wrapperHeight = isPortrait ? '100%' : undefined
-  const maxWidth = isPortrait ? 'fit-content' : '100%'
-  const maxHeight = isPortrait ? '100%' : 'fit-content'
-
+export function VideoPlayer({playbackId, ..._props}: VideoPlayerProps) {
   return (
     <MuxPlayer
       theme={'sutro' as const}
@@ -24,11 +18,8 @@ export function VideoPlayer({playbackId, aspectRatio, muted, disabled}: VideoPla
       autoPlay={false}
       loop={false}
       style={{
-        width: wrapperWidth,
-        height: wrapperHeight,
-        maxWidth,
-        maxHeight,
-        aspectRatio,
+        position: 'absolute',
+        inset: 0,
       }}
     />
   )

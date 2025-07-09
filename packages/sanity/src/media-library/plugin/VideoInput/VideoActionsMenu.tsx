@@ -96,15 +96,11 @@ export function VideoActionsMenu(props: Props) {
   }, [isMenuOpen, menuElement])
 
   const {t} = useTranslation()
-  const isPortrait = aspectRatio && aspectRatio < 1
-  const wrapperWidth = isPortrait ? undefined : 'auto'
-  const wrapperHeight = isPortrait ? '100%' : undefined
 
   return (
     <Box>
       <Card as={muted || disabled ? undefined : 'button'} tone="inherit" onClick={onClick} flex={1}>
         <RatioBox
-          display="flex"
           tone="transparent"
           style={
             {

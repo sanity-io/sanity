@@ -1,6 +1,7 @@
 import {defineType} from '@sanity/types'
 
 import {StudioVideoInput} from '../VideoInput/StudioVideoInput'
+import {VideoField} from '../VideoInput/VideoField'
 
 export const video = defineType({
   name: 'video',
@@ -8,6 +9,7 @@ export const video = defineType({
   type: 'object',
   components: {
     input: StudioVideoInput,
+    field: VideoField,
   },
   fields: [
     {
