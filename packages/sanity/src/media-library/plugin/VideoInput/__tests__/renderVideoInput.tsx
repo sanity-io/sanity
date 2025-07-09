@@ -1,17 +1,16 @@
-import {
-  type AssetSource,
-  type FieldDefinition,
-  type SchemaTypeDefinition,
-  type VideoSchemaType,
-} from '@sanity/types'
+// import {type AssetSource, type FieldDefinition, type SchemaTypeDefinition} from '@sanity/types'
+// import {EMPTY} from 'rxjs'
+
+import {type AssetSource, type FieldDefinition, type SchemaTypeDefinition} from '@sanity/types'
 import {EMPTY} from 'rxjs'
 
-import {type ObjectInputProps} from '../../src/core'
-import {type BaseVideoInputProps} from '../../src/core/form/inputs/files/VideoInput'
-import {sourceName} from '../../src/core/form/studio/assetSourceMediaLibrary/createAssetSource'
-import {type TestRenderInputContext} from './renderInput'
-import {renderObjectInput} from './renderObjectInput'
-import {type TestRenderProps} from './types'
+import {type TestRenderInputContext} from '../../../../../test/form/renderInput'
+import {renderObjectInput} from '../../../../../test/form/renderObjectInput'
+import {type TestRenderProps} from '../../../../../test/form/types'
+import {type ObjectInputProps} from '../../../../core/form/types/inputProps'
+import {sourceName} from '../../asset-source'
+import {type VideoSchemaType} from '../../schemas/types'
+import {type BaseVideoInputProps} from '../VideoInput'
 
 // The video input filters asset sources and only allows the media library source
 const STUB_ASSET_SOURCES: AssetSource[] = [{Uploader: {}, name: sourceName} as AssetSource] // @todo

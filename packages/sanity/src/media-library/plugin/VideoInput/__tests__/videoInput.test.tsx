@@ -2,10 +2,10 @@ import {fireEvent, waitFor} from '@testing-library/react'
 import {type Observable, of} from 'rxjs'
 import {describe, expect, it} from 'vitest'
 
-import {renderVideoInput} from '../../../../../test/form/renderVideoInput'
 import {sourceName} from '../../asset-source'
 import {type VideoAsset, type VideoSchemaType} from '../../schemas/types'
 import {BaseVideoInput} from '../VideoInput'
+import {renderVideoInput} from './renderVideoInput'
 
 const ASSET_SOURCE_NAME = sourceName
 
