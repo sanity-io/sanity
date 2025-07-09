@@ -38,7 +38,7 @@ catalogs:
       version: 1.53.1
     prettier:
       specifier: ^3.5.3
-      version: 3.6.1
+      version: 3.5.3
     react:
       specifier: ^19.1.0
       version: 19.1.0
@@ -113,7 +113,7 @@ importers:
         version: 6.13.4(@types/babel__core@7.20.5)(@types/node@22.15.32)(babel-plugin-react-compiler@19.1.0-rc.2)(debug@4.4.1)(typescript@5.8.3)
       '@sanity/prettier-config':
         specifier: ^1.0.6
-        version: 1.0.6(prettier@3.6.1)
+        version: 1.0.6(prettier@3.5.3)
       '@sanity/tsdoc':
         specifier: 1.0.169
         version: 1.0.169(@emotion/is-prop-valid@1.3.1)(@types/babel__core@7.20.5)(@types/node@22.15.32)(babel-plugin-react-compiler@19.1.0-rc.2)(jiti@2.4.2)(lightningcss@1.30.1)(react-dom@19.1.0(react@19.1.0))(react-is@18.3.1)(react@19.1.0)(sanity@packages+sanity)(styled-components@6.1.19(react-dom@19.1.0(react@19.1.0))(react@19.1.0))(terser@5.42.0)(tsx@4.20.3)(yaml@2.8.0)
@@ -227,7 +227,7 @@ importers:
         version: 0.0.41
       prettier:
         specifier: 'catalog:'
-        version: 3.6.1
+        version: 3.5.3
       read-package-up:
         specifier: ^11.0.0
         version: 11.0.0
@@ -921,7 +921,7 @@ importers:
         version: 5.0.0
       prettier:
         specifier: 'catalog:'
-        version: 3.6.1
+        version: 3.5.3
       semver:
         specifier: ^7.3.5
         version: 7.7.2
@@ -1609,7 +1609,7 @@ importers:
         version: 3.4.0
       '@mux/mux-player-react':
         specifier: ^3.4.0
-        version: 3.4.0(@types/react-dom@19.1.6(@types/react@19.1.8))(@types/react@19.1.8)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
+        version: 3.5.1(@types/react-dom@19.1.6(@types/react@19.1.8))(@types/react@19.1.8)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
       '@portabletext/block-tools':
         specifier: ^1.1.38
         version: 1.1.38(@sanity/types@packages+@sanity+types)(@types/react@19.1.8)
@@ -3826,6 +3826,9 @@ packages:
   '@microsoft/tsdoc@0.15.1':
     resolution: {integrity: sha512-4aErSrCR/On/e5G2hDP0wjooqDdauzEbIq8hIkIe5pXV0rtWJZvdCEKL0ykZxex+IxIwBp0eGeV48hQN07dXtw==}
 
+  '@mux/mux-data-google-ima@0.2.8':
+    resolution: {integrity: sha512-0ZEkHdcZ6bS8QtcjFcoJeZxJTpX7qRIledf4q1trMWPznugvtajCjCM2kieK/pzkZj1JM6liDRFs1PJSfVUs2A==}
+
   '@mux/mux-player-react@2.9.1':
     resolution: {integrity: sha512-1BpMs1J7P+d+/QCf9/mkTk/NPYR6sOskR4Ih0uFZjDAqNUN7/C9Q0FEJ6hF3sFXwAXo50RhnfCzsC5uYx3QHbA==}
     peerDependencies:
@@ -3839,8 +3842,8 @@ packages:
       '@types/react-dom':
         optional: true
 
-  '@mux/mux-player-react@3.4.0':
-    resolution: {integrity: sha512-IPzxyETJkaZTqyRew3j2+BJNePHWXnzqGWl8FRLfcVe5WHMbPk6EwsIGk2/ILUqy0HovrxO3ydXrE7VJRaYOug==}
+  '@mux/mux-player-react@3.5.1':
+    resolution: {integrity: sha512-tm32fSo9IBA/J8AD99bp64CyBkmv8jtsn4RhSHgNufvfWJUMBFJ7cfXgLsxiG/VdegpfBLRatMC5YiuZjoZ6yg==}
     peerDependencies:
       '@types/react': ^17.0.0 || ^17.0.0-0 || ^18 || ^18.0.0-0 || ^19 || ^19.0.0-0
       '@types/react-dom': '*'
@@ -3855,20 +3858,20 @@ packages:
   '@mux/mux-player@2.9.1':
     resolution: {integrity: sha512-TAyoUSPTV0IXWGMOknL6O+IeGSEJ8aS154DzyzqZgdd3zDJHM8JpkyNHgtowatMHT2lB6h+qMtWfp4u3ijpo2A==}
 
-  '@mux/mux-player@3.4.0':
-    resolution: {integrity: sha512-+EK0w+Uw9RPod7VKgMojnUpyE3uK6C37+hwAyuL297wm5aHxsIevWdQMdUOJonsJpQ0MfjnZXMzqLOTEjTgXHQ==}
+  '@mux/mux-player@3.5.1':
+    resolution: {integrity: sha512-PSi3mPb4LrEh4i3xUdodaEvMrbbpKbL2yaewRjsqBr3PFb+hd/Dp1KtyaAnXaBCHl09hDURUSrqYpg1cZvwDiQ==}
 
   '@mux/mux-video@0.20.2':
     resolution: {integrity: sha512-CqkK9EZZWdQE4U62JKlmWDskirT+D9C4suh2tSqKb2CA/0S4ybbbrVWcCKF7xfadUacfKO1yPsOKbe46F6phVQ==}
 
-  '@mux/mux-video@0.25.2':
-    resolution: {integrity: sha512-mP7WTyAcoZemf298OhaDLuTvOZq8wGCtuVMwBO34BR6Lol8JBg0nqb9O3QHfGLIAV+yaTJcODeZk76Ml/jYbDw==}
+  '@mux/mux-video@0.26.1':
+    resolution: {integrity: sha512-gkMdBAgNlB4+krANZHkQFzYWjWeNsJz69y1/hnPtmNQnpvW+O7oc71OffcZrbblyibSxWMQ6MQpYmBVjXlp6sA==}
 
   '@mux/playback-core@0.25.2':
     resolution: {integrity: sha512-vrBbCgLHwmPpVxF0QGj+sXHUVXSxgDJJhVm8pxPXEkbw0vjPNHTXgAd/Ty6JA0vZ0ZjoQuAa17AxJ+c02JYeWQ==}
 
-  '@mux/playback-core@0.29.0':
-    resolution: {integrity: sha512-Bd12B1pW/1o6+Z+FXIs0ejlS5ejzApCX4sTd/Jn/bqxmOYA2tR7HjTq856hSGd441WtJQmfm/aNT5oDK9UyTSA==}
+  '@mux/playback-core@0.30.1':
+    resolution: {integrity: sha512-rnO1NE9xHDyzbAkmE6ygJYcD7cyyMt7xXqWTykxlceaoSXLjUqgp42HDio7Lcidto4x/O4FIa7ztjV2aCBCXgQ==}
 
   '@mux/upchunk@3.5.0':
     resolution: {integrity: sha512-D+TtvlujlZQjh5I+vFzJ31h5E1uVpEaLdR8M3BNaCFbVLnFMZs8J/L/fYSUyVGnyHT/yDtPHn/IHKdo3G6oSjA==}
@@ -6189,11 +6192,6 @@ packages:
   castable-video@1.1.10:
     resolution: {integrity: sha512-/T1I0A4VG769wTEZ8gWuy1Crn9saAfRTd1UYTb8xbOPlN78+zOi/1nU2dD5koNkfE5VWvgabkIqrGKmyNXOjSQ==}
 
-  ce-la-react@0.1.3:
-    resolution: {integrity: sha512-zZwEEJv9XukeEGbswQXObaDJjYAufOIilSnDg4BWCpKNEYN84H9fpaB+wl+rYKWOIH4wBBPbLnOxKvDIwsL/JQ==}
-    peerDependencies:
-      react: '>=17.0.0'
-
   ce-la-react@0.3.0:
     resolution: {integrity: sha512-84SEDLNHaAjykzlkqgKRq95hA3qnxrsTrwh4hTgBq6tfpINqajxz4bkz9q4orhUfpqDPQRgdCzYTF3bHcvTIlQ==}
     peerDependencies:
@@ -8056,6 +8054,9 @@ packages:
   hls.js@1.5.20:
     resolution: {integrity: sha512-uu0VXUK52JhihhnN/MVVo1lvqNNuhoxkonqgO3IpjvQiGpJBdIXMGkofjQb/j9zvV7a1SW8U9g1FslWx/1HOiQ==}
 
+  hls.js@1.6.7:
+    resolution: {integrity: sha512-QW2fnwDGKGc9DwQUGLbmMOz8G48UZK7PVNJPcOUql1b8jubKx4/eMHNP5mGqr6tYlJNDG1g10Lx2U/qPzL6zwQ==}
+
   hoist-non-react-statics@3.3.2:
     resolution: {integrity: sha512-/gGivxi8JPKWNm/W0jSmzcMPpfpPLc3dY/6GxhX2hQ9iGj3aDfklV4ET7NjKpSinLpJ5vafa9iiGIEZg10SfBw==}
 
@@ -9099,9 +9100,6 @@ packages:
   media-chrome@4.11.1:
     resolution: {integrity: sha512-+2niDc4qOwlpFAjwxg1OaizK/zKV6y7QqGm4nBFEVlSaG0ZBgOmfc4IXAPiirZqAlZGaFFUaMqCl1SpGU0/naA==}
 
-  media-chrome@4.9.1:
-    resolution: {integrity: sha512-lOdYhWVCYg0Az2VnVKPoE/eUflVrNyauHg8cLa/ibsBg4CB6RhRQBTdQsq36NuiSNSQU0B3vtmaTNFTUFT12RA==}
-
   media-tracks@0.3.3:
     resolution: {integrity: sha512-9P2FuUHnZZ3iji+2RQk7Zkh5AmZTnOG5fODACnjhCVveX1McY3jmCRHofIEI+yTBqplz7LXy48c7fQ3Uigp88w==}
 
@@ -9378,6 +9376,9 @@ packages:
   mute-stream@2.0.0:
     resolution: {integrity: sha512-WWdIxpyjEn+FhQJQQv9aQAYlHoNVdzIzUySNV1gHUPDSdZJ3yZn7pAAbQcV7B56Mvu881q9FZV+0Vx2xC44VWA==}
     engines: {node: ^18.17.0 || >=20.5.0}
+
+  mux-embed@5.10.0:
+    resolution: {integrity: sha512-sjG3jCjm4y35YYk11g6qgqWHd8R8+zcgnGi1NkFgjX3Lr+r1+AeBkxhmuwDsaXFP0Q161nihudNbjq1W/t1gnA==}
 
   mux-embed@5.2.1:
     resolution: {integrity: sha512-NukHw91xeEVDBeXVDBpi2BvXNix7gSuvdtyvOph5yR/ROn1hHbTlcYWoKQyCyJX9frsF00UROEul+S8wPzU3aQ==}
@@ -10072,6 +10073,11 @@ packages:
       prettier:
         optional: true
 
+  prettier@3.5.3:
+    resolution: {integrity: sha512-QQtaxnoDJeAkDvDKWCLiwIXkTgRhwYDEQCghU9Z6q03iyek/rxRh/2lC3HB7P8sWT2xC/y5JDctPLBIGzHKbhw==}
+    engines: {node: '>=14'}
+    hasBin: true
+
   prettier@3.6.1:
     resolution: {integrity: sha512-5xGWRa90Sp2+x1dQtNpIpeOQpTDBs9cZDmA/qs2vDNN2i18PdapqY7CmBeyLlMuGqXJRIOPaCaVZTLNQRWUH/A==}
     engines: {node: '>=14'}
@@ -10655,8 +10661,8 @@ packages:
     engines: {node: 20 || >=22}
     hasBin: true
 
-  rollup-plugin-esbuild@6.2.0:
-    resolution: {integrity: sha512-LbkHaCahA6ceyWzAd6md2yajNS+HfZmZ5o58ShkZp0cQeZOnZECG2D2xWFNBq5SF6X6pfMK2udkZ+wRtvpzyVQ==}
+  rollup-plugin-esbuild@6.2.1:
+    resolution: {integrity: sha512-jTNOMGoMRhs0JuueJrJqbW8tOwxumaWYq+V5i+PD+8ecSCVkuX27tGW7BXqDgoULQ55rO7IdNxPcnsWtshz3AA==}
     engines: {node: '>=14.18.0'}
     peerDependencies:
       esbuild: '>=0.18.0'
@@ -14094,6 +14100,10 @@ snapshots:
 
   '@microsoft/tsdoc@0.15.1': {}
 
+  '@mux/mux-data-google-ima@0.2.8':
+    dependencies:
+      mux-embed: 5.9.0
+
   '@mux/mux-player-react@2.9.1(@types/react@19.1.8)(react-dom@19.1.0(react@19.1.0))(react@19.1.0)':
     dependencies:
       '@mux/mux-player': 2.9.1
@@ -14104,10 +14114,10 @@ snapshots:
     optionalDependencies:
       '@types/react': 19.1.8
 
-  '@mux/mux-player-react@3.4.0(@types/react-dom@19.1.6(@types/react@19.1.8))(@types/react@19.1.8)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)':
+  '@mux/mux-player-react@3.5.1(@types/react-dom@19.1.6(@types/react@19.1.8))(@types/react@19.1.8)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)':
     dependencies:
-      '@mux/mux-player': 3.4.0(react@18.3.1)
-      '@mux/playback-core': 0.29.0
+      '@mux/mux-player': 3.5.1(react@18.3.1)
+      '@mux/playback-core': 0.30.1
       prop-types: 15.8.1
       react: 18.3.1
       react-dom: 18.3.1(react@18.3.1)
@@ -14121,11 +14131,11 @@ snapshots:
       '@mux/playback-core': 0.25.2
       media-chrome: 3.2.5
 
-  '@mux/mux-player@3.4.0(react@18.3.1)':
+  '@mux/mux-player@3.5.1(react@18.3.1)':
     dependencies:
-      '@mux/mux-video': 0.25.2
-      '@mux/playback-core': 0.29.0
-      media-chrome: 4.9.1(react@18.3.1)
+      '@mux/mux-video': 0.26.1
+      '@mux/playback-core': 0.30.1
+      media-chrome: 4.11.1(react@18.3.1)
       player.style: 0.1.9(react@18.3.1)
     transitivePeerDependencies:
       - react
@@ -14137,9 +14147,10 @@ snapshots:
       custom-media-element: 1.3.3
       media-tracks: 0.3.3
 
-  '@mux/mux-video@0.25.2':
+  '@mux/mux-video@0.26.1':
     dependencies:
-      '@mux/playback-core': 0.29.0
+      '@mux/mux-data-google-ima': 0.2.8
+      '@mux/playback-core': 0.30.1
       castable-video: 1.1.10
       custom-media-element: 1.4.5
       media-tracks: 0.3.3
@@ -14149,10 +14160,10 @@ snapshots:
       hls.js: 1.5.20
       mux-embed: 5.2.1
 
-  '@mux/playback-core@0.29.0':
+  '@mux/playback-core@0.30.1':
     dependencies:
-      hls.js: 1.5.20
-      mux-embed: 5.9.0
+      hls.js: 1.6.7
+      mux-embed: 5.10.0
 
   '@mux/upchunk@3.5.0':
     dependencies:
@@ -15285,7 +15296,7 @@ snapshots:
       recast: 0.23.9
       rimraf: 4.4.1
       rollup: 4.43.0
-      rollup-plugin-esbuild: 6.2.0(esbuild@0.24.2)(rollup@4.43.0)
+      rollup-plugin-esbuild: 6.2.1(esbuild@0.24.2)(rollup@4.43.0)
       rxjs: 7.8.2
       treeify: 1.1.0
       typescript: 5.7.3
@@ -15337,7 +15348,7 @@ snapshots:
       recast: 0.23.9
       rimraf: 4.4.1
       rollup: 4.43.0
-      rollup-plugin-esbuild: 6.2.0(esbuild@0.24.2)(rollup@4.43.0)
+      rollup-plugin-esbuild: 6.2.1(esbuild@0.24.2)(rollup@4.43.0)
       rxjs: 7.8.2
       treeify: 1.1.0
       typescript: 5.8.3
@@ -15389,7 +15400,7 @@ snapshots:
       recast: 0.23.9
       rimraf: 4.4.1
       rollup: 4.43.0
-      rollup-plugin-esbuild: 6.2.0(esbuild@0.24.2)(rollup@4.43.0)
+      rollup-plugin-esbuild: 6.2.1(esbuild@0.24.2)(rollup@4.43.0)
       rxjs: 7.8.2
       treeify: 1.1.0
       typescript: 5.7.3
@@ -15412,10 +15423,10 @@ snapshots:
     transitivePeerDependencies:
       - '@sanity/types'
 
-  '@sanity/prettier-config@1.0.6(prettier@3.6.1)':
+  '@sanity/prettier-config@1.0.6(prettier@3.5.3)':
     dependencies:
-      prettier: 3.6.1
-      prettier-plugin-packagejson: 2.5.15(prettier@3.6.1)
+      prettier: 3.5.3
+      prettier-plugin-packagejson: 2.5.15(prettier@3.5.3)
 
   '@sanity/preview-url-secret@2.1.11(@sanity/client@7.6.0(debug@4.4.1))':
     dependencies:
@@ -17315,10 +17326,6 @@ snapshots:
   castable-video@1.1.10:
     dependencies:
       custom-media-element: 1.4.5
-
-  ce-la-react@0.1.3(react@18.3.1):
-    dependencies:
-      react: 18.3.1
 
   ce-la-react@0.3.0(react@18.3.1):
     dependencies:
@@ -19580,6 +19587,8 @@ snapshots:
 
   hls.js@1.5.20: {}
 
+  hls.js@1.6.7: {}
+
   hoist-non-react-statics@3.3.2:
     dependencies:
       react-is: 16.13.1
@@ -20693,13 +20702,6 @@ snapshots:
     transitivePeerDependencies:
       - react
 
-  media-chrome@4.9.1(react@18.3.1):
-    dependencies:
-      '@vercel/edge': 1.2.2
-      ce-la-react: 0.1.3(react@18.3.1)
-    transitivePeerDependencies:
-      - react
-
   media-tracks@0.3.3: {}
 
   media-typer@0.3.0: {}
@@ -20983,6 +20985,8 @@ snapshots:
   mute-stream@1.0.0: {}
 
   mute-stream@2.0.0: {}
+
+  mux-embed@5.10.0: {}
 
   mux-embed@5.2.1: {}
 
@@ -21775,12 +21779,14 @@ snapshots:
 
   preserve@0.2.0: {}
 
-  prettier-plugin-packagejson@2.5.15(prettier@3.6.1):
+  prettier-plugin-packagejson@2.5.15(prettier@3.5.3):
     dependencies:
       sort-package-json: 3.2.1
       synckit: 0.11.8
     optionalDependencies:
-      prettier: 3.6.1
+      prettier: 3.5.3
+
+  prettier@3.5.3: {}
 
   prettier@3.6.1: {}
 
@@ -22434,7 +22440,7 @@ snapshots:
       glob: 11.0.3
       package-json-from-dist: 1.0.1
 
-  rollup-plugin-esbuild@6.2.0(esbuild@0.24.2)(rollup@4.43.0):
+  rollup-plugin-esbuild@6.2.1(esbuild@0.24.2)(rollup@4.43.0):
     dependencies:
       debug: 4.4.1(supports-color@5.5.0)
       es-module-lexer: 1.7.0
