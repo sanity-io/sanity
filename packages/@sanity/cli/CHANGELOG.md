@@ -3,6 +3,15 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## <small>3.98.1 (2025-07-09)</small>
+
+* test: remove flag from cli token tests (#9925) ([6b4088a](https://github.com/sanity-io/sanity/commit/6b4088a)), closes [#9925](https://github.com/sanity-io/sanity/issues/9925)
+* test(cli): update to use pnpm to install instead of npm  (#9929) ([ebba8b0](https://github.com/sanity-io/sanity/commit/ebba8b0)), closes [#9929](https://github.com/sanity-io/sanity/issues/9929)
+
+
+
+
+
 ## [3.98.0](https://github.com/sanity-io/sanity/compare/v3.97.1...v3.98.0) (2025-07-07)
 
 **Note:** Version bump only for package @sanity/cli
