@@ -83,6 +83,8 @@ export function PaneHeaderCreateButton({templateItems}: PaneHeaderCreateButtonPr
     )
   }, [templatePermissions])
 
+  if (templateItems.length === 0) return null
+
   if (nothingGranted) {
     return (
       <InsufficientPermissionsMessageTooltip
