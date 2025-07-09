@@ -53,6 +53,11 @@ test(`navigating document creates only one listener connection`, async ({page, b
 
   await page.waitForSelector('[data-testid="structure-tool-list-pane"]')
 
+  // Scroll the items to click into view.
+  await page.evaluate(() => {
+    document.querySelector('[data-testid="pane-content"] > *:first-of-type')?.scrollBy(0, 250)
+  })
+
   const authorRequest = page.waitForRequest(
     (request) => request.url().includes('data/listen') && request.url().includes('author'),
   )
