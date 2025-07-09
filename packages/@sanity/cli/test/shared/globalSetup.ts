@@ -92,7 +92,7 @@ function prepareStudios() {
         // We'll want to test the actual integration with the monorepo packages,
         // instead of the versions that is available on npm, so we'll symlink them before running npm install
         await exec(nodePath, [SYMLINK_SCRIPT, destinationPath], {cwd: destinationPath})
-        await exec(npmPath, ['install', '--no-package-lock'], {cwd: destinationPath})
+        await exec(pnpmPath, ['install', '--ignore-workspace'], {cwd: destinationPath})
 
         // Make a copy of the studio and include a custom document component, in order to see
         // that it resolves. We "cannot" use the same studio as it would _always_ use the
@@ -105,7 +105,9 @@ function prepareStudios() {
         // We'll want to test the actual integration with the monorepo packages,
         // instead of the versions that is available on npm, so we'll symlink them before running npm install
         await exec(nodePath, [SYMLINK_SCRIPT, customDocStudioPath], {cwd: customDocStudioPath})
-        await exec(npmPath, ['install', '--no-package-lock'], {cwd: customDocStudioPath})
+        await exec(pnpmPath, ['install', '--ignore-workspace'], {
+          cwd: customDocStudioPath,
+        })
       }
     }),
   )
