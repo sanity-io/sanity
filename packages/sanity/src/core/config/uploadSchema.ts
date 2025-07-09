@@ -4,9 +4,32 @@ import {
   type SchemaSynchronizationResult,
 } from '@sanity/schema/_internal'
 import {type Schema} from '@sanity/types'
+import debugit from 'debug'
+import {firstValueFrom} from 'rxjs'
 
 import {isDev} from '../environment'
+import {getFeatures} from '../hooks/useFeatureEnabled'
 import {DESCRIPTOR_CONVERTER} from '../schema'
+
+const debug = debugit('sanity:config')
+
+const TOGGLE = 'toggle.schema.upload'
+
+async function isEnabled(client: SanityClient): Promise<boolean> {
+  if (typeof process !== 'undefined' && process?.env?.SANITY_STUDIO_SCHEMA_DESCRIPTOR) {
+    return true
+  }
+
+  const {projectId} = client.config()
+  if (!projectId) return false
+
+  return firstValueFrom(getFeatures({projectId, versionedClient: client}))
+    .then((features) => features.includes(TOGGLE))
+    .catch((err) => {
+      debug('Fetching features failed. NOT sending schema to server.', {err})
+      return false
+    })
+}
 
 const MAX_SYNC_ITERATIONS = 5
 
@@ -32,8 +55,7 @@ export async function uploadSchema(
   schema: Schema,
   client: SanityClient,
 ): Promise<string | undefined> {
-  const isEnabled = typeof process !== 'undefined' && process?.env?.SANITY_STUDIO_SCHEMA_DESCRIPTOR
-  if (!isEnabled) return undefined
+  if (!(await isEnabled(client))) return undefined
 
   // The process for uploading the schema is based around two concepts:
   //
