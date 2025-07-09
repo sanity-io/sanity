@@ -1,5 +1,6 @@
 import {get} from 'lodash'
 import {useCallback} from 'react'
+import {type Asset} from 'sanity'
 
 import {WithReferencedAsset} from '../../../core/form/utils/WithReferencedAsset'
 import {useTranslation} from '../../../core/i18n'
@@ -49,8 +50,7 @@ export function VideoInputAssetSource(props: VideoAssetProps) {
             onClose={handleAssetSourceClosed}
             onSelect={onSelectAssets}
             schemaType={schemaType}
-            // @ts-expect-error FIXME
-            selectedAssets={[videoAsset]}
+            selectedAssets={[videoAsset as unknown as Asset]}
             selectionType="single"
             uploader={uploader}
           />
