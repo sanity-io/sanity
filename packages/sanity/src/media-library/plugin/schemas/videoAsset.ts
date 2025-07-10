@@ -106,15 +106,6 @@ export const videoAsset = defineType({
       readOnly: true,
       fieldset: 'system',
     },
-    // @todo Getting an error: Unknown type: sanity.assetSourceData.
-
-    // {
-    //   name: 'source',
-    //   type: 'sanity.assetSourceData',
-    //   title: 'Source',
-    //   readOnly: true,
-    //   fieldset: 'system',
-    // },
   ],
   preview: {
     select: {
