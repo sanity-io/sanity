@@ -1,6 +1,6 @@
 import {type AssetFromSource, type FileSchemaType, type ImageSchemaType} from '@sanity/types'
 import {Flex, Stack, useTheme, useToast} from '@sanity/ui'
-import {type ReactNode, useCallback, useState} from 'react'
+import {type ReactNode, useCallback, useMemo, useState} from 'react'
 
 import {Button} from '../../../../../ui-components'
 import {useTranslation} from '../../../../i18n'
@@ -12,6 +12,7 @@ import {useSanityMediaLibraryConfig} from '../hooks/useSanityMediaLibraryConfig'
 import {type AssetSelectionItem, type AssetType, type PluginPostMessage} from '../types'
 import {AppDialog} from './Dialog'
 import {Iframe} from './Iframe'
+import {encodeBase64Url} from '../../../../../router/utils/base64url'
 
 export interface SelectAssetsDialogProps {
   dialogHeaderTitle?: ReactNode
@@ -53,11 +54,26 @@ export function SelectAssetsDialog(props: SelectAssetsDialogProps): ReactNode {
   const [assetSelection, setAssetSelection] = useState<AssetSelectionItem[]>(props.selection)
   const [didSelect, setDidSelect] = useState(false)
 
+  const urlFilters = useMemo(() => {
+    const filters: any[] = []
+    if (schemaType?.options?.mediaLibrary?.filters) {
+      filters.push(
+        ...schemaType.options.mediaLibrary.filters.map((filter) => ({
+          type: 'groq',
+          name: filter.name,
+          query: filter.query,
+          active: true,
+        })),
+      )
+    }
+    return `&filters=${encodeBase64Url(JSON.stringify(filters))}`
+  }, [schemaType?.options?.mediaLibrary?.filters])
+
   const pluginApiVersion = mediaLibraryConfig.__internal.pluginApiVersion
   const appBasePath = mediaLibraryConfig.__internal.appBasePath
   const iframeUrl =
     `${appHost}${appBasePath}/plugin/${pluginApiVersion}/library/${libraryId}/assets?selectionType=${selectionType}` +
-    `&selectAssetTypes=${selectAssetType}&scheme=${dark ? 'dark' : 'light'}&auth=${authType}`
+    `&selectAssetTypes=${selectAssetType}&scheme=${dark ? 'dark' : 'light'}&auth=${authType}${urlFilters}`
   const {onLinkAssets} = useLinkAssets({schemaType})
 
   const handleSelect = useCallback(async () => {

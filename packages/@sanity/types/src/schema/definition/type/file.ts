@@ -5,10 +5,22 @@ import {type InitialValueProperty} from '../../types'
 import {type ObjectDefinition, type ObjectOptions} from './object'
 
 /** @public */
+export interface MediaLibraryFilter {
+  name: string
+  query: string
+}
+
+/** @public */
+export interface MediaLibraryOptions {
+  filters?: MediaLibraryFilter[]
+}
+
+/** @public */
 export interface FileOptions extends ObjectOptions {
   storeOriginalFilename?: boolean
   accept?: string
   sources?: AssetSource[]
+  mediaLibrary?: MediaLibraryOptions
 }
 
 /** @public */
