@@ -34,13 +34,13 @@ This function is built to be compatible with any of [the official "clean" templa
    npx sanity blueprints init
    ```
 
-You'll be prompted to select your organization and Sanity studio.
+   You'll be prompted to select your organization and Sanity studio.
 
-Then run:
+   Then run:
 
-```bash
-npx sanity blueprints add function --example algolia-document-sync
-```
+   ```bash
+   npx sanity blueprints add function --example algolia-document-sync
+   ```
 
 2. **Add configuration to your blueprint**
 

@@ -74,13 +74,13 @@ Most official templates already include these fields.
    npx sanity blueprints init
    ```
 
-You'll be prompted to select your organization and Sanity studio.
+   You'll be prompted to select your organization and Sanity studio.
 
-Then run:
+   Then run:
 
-```bash
-npx sanity blueprints add function --example slack-notify
-```
+   ```bash
+   npx sanity blueprints add function --example slack-notify
+   ```
 
 3. **Add configuration to your blueprint**
 

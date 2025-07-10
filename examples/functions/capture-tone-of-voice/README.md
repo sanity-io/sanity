@@ -58,13 +58,13 @@ npx sanity schema deploy
    npx sanity blueprints init
    ```
 
-You'll be prompted to select your organization and Sanity studio.
+   You'll be prompted to select your organization and Sanity studio.
 
-Then run:
+   Then run:
 
-```bash
-npx sanity blueprints add function --example capture-tone-of-voice
-```
+   ```bash
+   npx sanity blueprints add function --example capture-tone-of-voice
+   ```
 
 2. **Add configuration to your blueprint**
 
