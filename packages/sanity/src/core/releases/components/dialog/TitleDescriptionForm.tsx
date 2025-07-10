@@ -97,14 +97,12 @@ export function TitleDescriptionForm({
   const descriptionRef = useRef<HTMLTextAreaElement | null>(null)
 
   const [scrollHeight, setScrollHeight] = useState(46)
-  const [value, setValue] = useState((): EditableReleaseDocument => {
-    return {
-      _id: release?._id,
-      metadata: {
-        title: release?.metadata.title,
-        description: release?.metadata.description,
-      },
-    } as const
+  const [value, setValue] = useState<EditableReleaseDocument>({
+    _id: release?._id,
+    metadata: {
+      title: release?.metadata.title,
+      description: release?.metadata.description,
+    },
   })
   const {t} = useTranslation()
 
@@ -114,6 +112,10 @@ export function TitleDescriptionForm({
       setScrollHeight(descriptionRef.current.scrollHeight)
     }
   }, [])
+
+  useEffect(() => {
+    setValue(release)
+  }, [release])
 
   const handleTitleChange = useCallback(
     (event: ChangeEvent<HTMLInputElement>) => {

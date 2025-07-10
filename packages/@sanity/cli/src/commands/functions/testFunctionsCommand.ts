@@ -7,6 +7,7 @@ Arguments
 Options
   --data <data> Data to send to the function
   --file <file> Read data from file and send to the function
+  --document-id <id> Document to fetch and send to function
   --timeout <timeout> Execution timeout value in seconds
   --api <version> Sanity API Version to use
   --dataset <dataset> The Sanity dataset to use
@@ -32,6 +33,7 @@ export interface FunctionsTestFlags {
   'api'?: string
   'dataset'?: string
   'project-id'?: string
+  'document-id'?: string
   'with-user-token'?: boolean
 }
 
@@ -45,7 +47,7 @@ const testFunctionsCommand: CliCommandDefinition<FunctionsTestFlags> = {
   group: 'functions',
   helpText,
   signature:
-    '<name> [--data <json>] [--file <filename>] [--timeout <seconds>] [--api <version>] [--dataset <name>] [--project-id] <id>] [--with-user-token]',
+    '<name> [--data <json>] [--file <filename>] [--document-id <id>] [--timeout <seconds>] [--api <version>] [--dataset <name>] [--project-id] <id>] [--with-user-token]',
   description: 'Invoke a local Sanity Function',
   async action(args, context) {
     const {apiClient, output, chalk} = context
@@ -96,6 +98,7 @@ const testFunctionsCommand: CliCommandDefinition<FunctionsTestFlags> = {
       flags: {
         'data': flags.data,
         'file': flags.file,
+        'document-id': flags['document-id'],
         'timeout': flags.timeout,
         'api': flags.api,
         'dataset': flags.dataset || actualDataset,

@@ -74,7 +74,7 @@ jobs:
         id: version-commit
         run: |
           VERSION=$(cat lerna.json | jq -r .version)
-          echo "message=chore(release): publish $VERSION" >> $GITHUB_OUTPUT
+          echo "message=chore(release): publish v$VERSION" >> $GITHUB_OUTPUT
 
       - name: Get version
         id: release-as

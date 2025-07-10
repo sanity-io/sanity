@@ -1,0 +1,16 @@
+{
+  "_type": "post",
+  "_id": "drafts.test-document-id",
+  "title": "Getting Started with Modern Web Development",
+  "content": [
+    {
+      "_type": "block",
+      "children": [
+        {
+          "_type": "span",
+          "text": "Web development has evolved significantly over the past decade. Today's developers need to understand multiple frameworks, libraries, and tools to build effective web applications. React has become one of the most popular choices for frontend development, while Node.js dominates backend JavaScript development. The ecosystem is complex and constantly changing, making it challenging for newcomers to know where to start."
+        }
+      ]
+    }
+  ]
+}
