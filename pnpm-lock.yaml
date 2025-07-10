@@ -2065,6 +2065,9 @@ importers:
       '@sanity/codegen':
         specifier: workspace:*
         version: link:../@sanity/codegen
+      '@sanity/descriptors':
+        specifier: ^1.1.1
+        version: 1.1.1
       '@sanity/eslint-config-i18n':
         specifier: 'catalog:'
         version: 2.0.0(eslint@9.33.0(jiti@2.5.1))
