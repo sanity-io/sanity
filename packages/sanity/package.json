@@ -144,7 +144,7 @@
     "@dnd-kit/utilities": "^3.2.2",
     "@juggle/resize-observer": "^3.4.0",
     "@portabletext/block-tools": "^1.1.38",
-    "@portabletext/editor": "^1.57.3",
+    "@portabletext/editor": "^1.57.5",
     "@portabletext/react": "^3.2.1",
     "@portabletext/toolkit": "^2.0.17",
     "@rexxars/react-json-inspector": "^9.0.1",
