@@ -2,6 +2,7 @@ import {beforeEach, describe, expect, test, vi} from 'vitest'
 
 import {readDoc} from '../src/actions/docs/readDoc'
 import {searchDocs} from '../src/actions/docs/searchDocs'
+import {normalizePath} from '../src/commands/docs/readCommand'
 import {browse} from '../src/util/browse'
 
 // Mock fetch globally for the actions
@@ -168,5 +169,35 @@ describe('CLI: `sanity docs`', () => {
     expect(mockExit).toHaveBeenCalledWith(1)
 
     mockExit.mockRestore()
+  })
+
+  test('normalizePath - handles path input unchanged', () => {
+    expect(normalizePath('/docs/studio/installation')).toBe('/docs/studio/installation')
+    expect(normalizePath('/docs')).toBe('/docs')
+    expect(normalizePath('/docs/content-modeling/schemas')).toBe('/docs/content-modeling/schemas')
+  })
+
+  test('normalizePath - converts full URLs to paths', () => {
+    expect(normalizePath('https://www.sanity.io/docs/studio/installation')).toBe(
+      '/docs/studio/installation',
+    )
+    expect(normalizePath('https://www.sanity.io/docs')).toBe('/docs')
+    expect(normalizePath('https://www.sanity.io/docs/content-modeling/schemas')).toBe(
+      '/docs/content-modeling/schemas',
+    )
+  })
+
+  test('normalizePath - handles URLs with fragments and queries', () => {
+    expect(normalizePath('https://www.sanity.io/docs/schema#lift-types')).toBe(
+      '/docs/schema#lift-types',
+    )
+    expect(normalizePath('https://www.sanity.io/docs/schema?version=v3')).toBe(
+      '/docs/schema?version=v3',
+    )
+  })
+
+  test('normalizePath - handles non-Sanity URLs unchanged', () => {
+    expect(normalizePath('https://example.com/docs/test')).toBe('https://example.com/docs/test')
+    expect(normalizePath('http://localhost:3000/docs')).toBe('http://localhost:3000/docs')
   })
 })

@@ -1,3 +1,5 @@
+import chalk from 'chalk'
+
 import {type SearchResult} from '../../actions/docs/searchDocs'
 import {searchDocs} from '../../actions/docs/searchDocs'
 import {type CliCommandDefinition} from '../../types'
@@ -74,7 +76,7 @@ const searchCommand: CliCommandDefinition<SearchCommandFlags> = {
 
     results.forEach((result, index) => {
       output.print(`${index + 1}. ${result.title}`)
-      output.print(`   ${result.path}`)
+      output.print(`   ${chalk.cyan(`URL: https://www.sanity.io${result.path}`)}`)
       if (result.description) {
         output.print(`   ${result.description}`)
       }
@@ -84,7 +86,7 @@ const searchCommand: CliCommandDefinition<SearchCommandFlags> = {
     // Interactive selection (only in interactive environments)
     if (results.length > 1 && isInteractive) {
       const choices = results.map((result, index) => ({
-        name: `${result.title} (${result.path})`,
+        name: `${index + 1}. ${result.title} (${result.path})`,
         value: index,
         short: result.title,
       }))
@@ -92,7 +94,7 @@ const searchCommand: CliCommandDefinition<SearchCommandFlags> = {
       try {
         const selectedIndex = await prompt.single({
           type: 'list',
-          message: 'Select an article to read:',
+          message: 'Select an article to read in terminal:',
           choices: [...choices, {name: 'Exit', value: -1, short: 'Exit'}],
         })
 
