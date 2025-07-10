@@ -884,8 +884,8 @@ importers:
         specifier: workspace:*
         version: link:../codegen
       '@sanity/runtime-cli':
-        specifier: ^9.1.2
-        version: 9.1.2(@types/node@22.15.32)(lightningcss@1.30.1)(terser@5.42.0)(tsx@4.20.3)(typescript@5.8.3)(yaml@2.8.0)
+        specifier: ^9.2.0
+        version: 9.2.0(@types/node@22.15.32)(debug@4.4.1)(lightningcss@1.30.1)(terser@5.42.0)(tsx@4.20.3)(typescript@5.8.3)(yaml@2.8.0)
       '@sanity/telemetry':
         specifier: ^0.8.0
         version: 0.8.1(react@19.1.0)
@@ -4719,8 +4719,8 @@ packages:
     peerDependencies:
       react: ^18.3 || >=19.0.0-rc
 
-  '@sanity/runtime-cli@9.1.2':
-    resolution: {integrity: sha512-TOsWsCXaPqlnJj/XPJkJvdQHfuey2LJLZSTqz0wR3BvCNEppyKNalNGoUUNysyUAQnq0WsYOXhx7timXvp7Zzw==}
+  '@sanity/runtime-cli@9.2.0':
+    resolution: {integrity: sha512-7EJOkiOuw3HWw/JyN4jpCOXPURquLIaisjcppReTTqp/w9cw/Cbqdw+8bgQDMzZg8uphi9vOzJk5C4jx7Zg2RA==}
     engines: {node: '>=20.11.0'}
     hasBin: true
 
@@ -15334,12 +15334,13 @@ snapshots:
       - debug
       - typescript
 
-  '@sanity/runtime-cli@9.1.2(@types/node@22.15.32)(lightningcss@1.30.1)(terser@5.42.0)(tsx@4.20.3)(typescript@5.8.3)(yaml@2.8.0)':
+  '@sanity/runtime-cli@9.2.0(@types/node@22.15.32)(debug@4.4.1)(lightningcss@1.30.1)(terser@5.42.0)(tsx@4.20.3)(typescript@5.8.3)(yaml@2.8.0)':
     dependencies:
       '@architect/hydrate': 4.0.8
       '@architect/inventory': 4.0.9
       '@oclif/core': 4.3.3
       '@oclif/plugin-help': 6.2.29
+      '@sanity/client': 7.6.0(debug@4.4.1)
       adm-zip: 0.5.16
       array-treeify: 0.1.5
       cardinal: 2.1.1
@@ -15359,6 +15360,7 @@ snapshots:
     transitivePeerDependencies:
       - '@types/node'
       - bufferutil
+      - debug
       - less
       - lightningcss
       - sass
