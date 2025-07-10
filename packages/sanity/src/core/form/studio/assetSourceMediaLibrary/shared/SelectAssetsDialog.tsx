@@ -12,6 +12,7 @@ import {useSanityMediaLibraryConfig} from '../hooks/useSanityMediaLibraryConfig'
 import {type AssetSelectionItem, type AssetType, type PluginPostMessage} from '../types'
 import {AppDialog} from './Dialog'
 import {Iframe} from './Iframe'
+import {encodeBase64Url} from '../../../../../router/utils/base64url'
 
 export interface SelectAssetsDialogProps {
   dialogHeaderTitle?: ReactNode
@@ -65,7 +66,7 @@ export function SelectAssetsDialog(props: SelectAssetsDialogProps): ReactNode {
         })),
       )
     }
-    return `&filters=${btoa(JSON.stringify(filters))}`
+    return `&filters=${encodeBase64Url(JSON.stringify(filters))}`
   }, [schemaType?.options?.mediaLibrary?.filters])
 
   const pluginApiVersion = mediaLibraryConfig.__internal.pluginApiVersion
