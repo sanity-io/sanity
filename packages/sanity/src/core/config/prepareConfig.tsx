@@ -25,6 +25,7 @@ import {type AuthStore, createAuthStore, isAuthStore} from '../store/_legacy'
 import {validateWorkspaces} from '../studio'
 import {filterDefinitions} from '../studio/components/navbar/search/definitions/defaultFilters'
 import {operatorDefinitions} from '../studio/components/navbar/search/definitions/operators/defaultOperators'
+import {DEFAULT_STUDIO_CLIENT_OPTIONS} from '../studioClient'
 import {type InitialValueTemplateItem, type Template, type TemplateItem} from '../templates'
 import {EMPTY_ARRAY, isNonNullable} from '../util'
 import {
@@ -715,7 +716,7 @@ function resolveSource({
       staticInitialValueTemplateItems,
       options: config,
       schemaDescriptorId: authenticated
-        ? catchTap(uploadSchema(schema, getClient({apiVersion: '2025-06-01'})), (err) => {
+        ? catchTap(uploadSchema(schema, getClient(DEFAULT_STUDIO_CLIENT_OPTIONS)), (err) => {
             debug('Uploading schema failed', {err})
             return undefined
           })
