@@ -11,17 +11,11 @@ import {DEFAULT_STUDIO_CLIENT_OPTIONS} from '../../../core/studioClient'
 import {sourceName} from '../asset-source'
 import {BaseVideoInput, type BaseVideoInputProps} from './VideoInput'
 
-/**
- * @hidden
- * @beta */
 export type VideoInputProps = Omit<
   BaseVideoInputProps,
   'assetSources' | 'directUploads' | 'observeAsset' | 'resolveUploader' | 'client' | 't'
 >
 
-/**
- * @hidden
- * @beta */
 export function StudioVideoInput(props: VideoInputProps) {
   const sourcesFromSchema = props.schemaType.options?.sources
   const documentPreviewStore = useDocumentPreviewStore()
