@@ -4,7 +4,7 @@ import {StudioVideoInput} from '../VideoInput/StudioVideoInput'
 import {VideoField} from '../VideoInput/VideoField'
 
 export const video = defineType({
-  name: 'video',
+  name: 'sanity.video',
   title: 'Video',
   type: 'object',
   components: {

@@ -32,7 +32,7 @@ export function validateMediaLibraryAssetAspect(
       document: unsupportedTypeValidator('document'),
       image: unsupportedTypeValidator('image'),
       file: unsupportedTypeValidator('file'),
-      video: unsupportedTypeValidator('video'),
+      video: unsupportedTypeValidator('sanity.video'),
       reference: unsupportedTypeValidator('reference'),
       crossDatasetReference: unsupportedTypeValidator('cross dataset reference'),
     }),

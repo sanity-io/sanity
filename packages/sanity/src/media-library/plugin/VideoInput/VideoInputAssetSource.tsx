@@ -18,7 +18,7 @@ export function VideoInputAssetSource(props: VideoAssetProps) {
     value,
     uploader,
   } = props
-  const assetType = 'video' as const
+  const assetType = 'sanity.video' as const
 
   const {t} = useTranslation()
 

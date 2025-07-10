@@ -28,6 +28,6 @@ export function defineVideoField(definition: Omit<VideoDefinition, 'type'>) {
   // @ts-expect-error FIXME
   return defineField({
     ...definition,
-    type: 'video',
+    type: 'sanity.video',
   })
 }

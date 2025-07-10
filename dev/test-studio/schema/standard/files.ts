@@ -20,7 +20,7 @@ export default defineType({
     {
       name: 'someVideo',
       title: 'A simple video',
-      type: 'video',
+      type: 'sanity.video',
     },
     {
       name: 'arrayOfFiles',

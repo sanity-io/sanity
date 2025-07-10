@@ -9,7 +9,7 @@ import {videoAssetMetadata} from './videoAssetMetadata'
  * @public
  * @beta
  */
-export const videoTypeName = 'video' as const
+export const videoTypeName = 'sanity.video' as const
 
 /**
  * @public
@@ -21,9 +21,9 @@ export interface VideoDefinition extends Omit<ObjectDefinition, 'type' | 'fields
 }
 
 declare module '@sanity/types' {
-  // makes type: 'code' narrow correctly when using defineType/defineField/defineArrayMember
+  // makes type: 'sanity.video' narrow correctly when using defineType/defineField/defineArrayMember
   export interface IntrinsicDefinitions {
-    video: VideoDefinition
+    'sanity.video': VideoDefinition
   }
 }
 

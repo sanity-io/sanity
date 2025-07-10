@@ -27,7 +27,7 @@ export interface VideoRule extends RuleDef<VideoRule, VideoValue> {
    * defineField({
    *  name: 'video',
    *  title: 'Video',
-   *  type: 'video',
+   *  type: 'sanity.video',
    *  validation: (Rule) => Rule.required().assetRequired(),
    * })
    * ```
@@ -44,7 +44,7 @@ export interface VideoValue {
 /** @public */
 export interface VideoDefinition
   extends Omit<ObjectDefinition, 'type' | 'fields' | 'options' | 'groups' | 'validation'> {
-  type: 'video'
+  type: 'sanity.video'
   fields?: ObjectDefinition['fields']
   options?: VideoOptions
   validation?: ValidationBuilder<VideoRule, VideoValue>
