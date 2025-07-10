@@ -68,13 +68,15 @@ Most official templates already include these fields.
 
 2. **Initialize the example**
 
-   For a new project:
+   Run this if you haven't initlized blueprints:
 
    ```bash
-   npx sanity blueprints init --example slack-notify
+   npx sanity blueprints init
    ```
 
-   For an existing project:
+   You'll be prompted to select your organization and Sanity studio.
+
+   Then run:
 
    ```bash
    npx sanity blueprints add function --example slack-notify

@@ -32,6 +32,8 @@ The `functions/` directory contains examples of [Sanity Functions](https://www.s
 - **[slack-notify](./functions/slack-notify/README.md)** - Automatic Slack notifications when content is published
 - **[brand-voice-validator](./functions/brand-voice-validator/README.md)** - AI-powered content analysis and improvement suggestions
 - **[capture-tone-of-voice](./functions/capture-tone-of-voice/README.md)** - AI-powered tone of voice analysis and capture for content
+- **[algolia-document-sync](./functions/algolia-document-sync/)** - Automatically sync documents into an Algolia search index
+- **[auto-summary](./functions/auto-summary/)** - AI-Powered summary generation for editorial content
 
 ## 🎨 Studios
 
