@@ -42,7 +42,7 @@ const readCommand: CliCommandDefinition<ReadCommandFlags> = {
   group: 'docs',
   helpText,
   signature: '<path|url> [-w, --web]',
-  description: 'Read a specific article',
+  description: 'Read an article in terminal',
   async action(args, context) {
     const {output} = context
     const flags = args.extOptions as ReadCommandFlags

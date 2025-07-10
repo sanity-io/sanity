@@ -83,6 +83,13 @@ const searchCommand: CliCommandDefinition<SearchCommandFlags> = {
       output.print('')
     })
 
+    // Show usage hint in non-interactive mode
+    if (!isInteractive) {
+      output.print('Use `sanity docs read <url>` to read an article in terminal.')
+      output.print('Use `sanity docs read <path>` to follow links found within articles.')
+      output.print('')
+    }
+
     // Interactive selection (only in interactive environments)
     if (results.length > 1 && isInteractive) {
       const choices = results.map((result, index) => ({
