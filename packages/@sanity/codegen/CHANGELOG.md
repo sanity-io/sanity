@@ -3,6 +3,14 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [3.99.0](https://github.com/sanity-io/sanity/compare/v3.98.1...v3.99.0) (2025-07-11)
+
+**Note:** Version bump only for package @sanity/codegen
+
+
+
+
+
 ## <small>3.98.1 (2025-07-09)</small>
 
 **Note:** Version bump only for package @sanity/codegen
