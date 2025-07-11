@@ -44,7 +44,9 @@ describeCliTest('CLI: basic commands', () => {
 
     testConcurrent('sanity users list', async () => {
       const result = await runSanityCmdCommand(version, ['users', 'list'])
-      expect(result.stdout).toContain('CLI Developers') // name of CI user
+      expect(result.stdout).toContain(
+        'GitHub CI CLI tests (Robot)                                                     ',
+      ) // name of CI user
       expect(result.code).toBe(0)
     })
   })
