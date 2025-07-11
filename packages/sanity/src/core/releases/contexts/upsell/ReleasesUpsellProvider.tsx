@@ -167,7 +167,11 @@ export function ReleasesUpsellProvider(props: {children: React.ReactNode}) {
   const {orgActiveReleaseCount$} = useOrgActiveReleaseCount()
 
   const guardWithReleaseLimitUpsell = useCallback(
-    async (cb: () => void, throwError: boolean = false) => {
+    async (
+      cb: () => void,
+      throwError: boolean = false,
+      whenResolved?: (hasPassed: boolean) => void,
+    ) => {
       const doUpsell: (count?: number) => false = (count) => {
         handleOpenDialog(count)
         if (throwError) {
@@ -176,7 +180,10 @@ export function ReleasesUpsellProvider(props: {children: React.ReactNode}) {
         return false
       }
 
-      if (mode === 'upsell') return doUpsell()
+      if (mode === 'upsell') {
+        whenResolved?.(false)
+        return doUpsell()
+      }
 
       const fetchLimitsCount = async () => {
         try {
@@ -195,17 +202,26 @@ export function ReleasesUpsellProvider(props: {children: React.ReactNode}) {
       const result = await fetchLimitsCount()
 
       // silently fail and allow pass through guard
-      if (result === null) return cb()
+      if (result === null) {
+        whenResolved?.(true)
+        return cb()
+      }
 
       const [orgActiveReleaseCount, releaseLimits] = result
 
-      if (releaseLimits === null || orgActiveReleaseCount === null) return cb()
+      if (releaseLimits === null || orgActiveReleaseCount === null) {
+        whenResolved?.(true)
+        return cb()
+      }
 
       const {orgActiveReleaseLimit, datasetReleaseLimit} = releaseLimits
 
       // orgActiveReleaseCount might be missing due to internal server error
       // allow pass through guard in that case
-      if (orgActiveReleaseCount === null) return cb()
+      if (orgActiveReleaseCount === null) {
+        whenResolved?.(true)
+        return cb()
+      }
 
       const activeReleasesCount = activeReleases?.length || 0
 
@@ -220,8 +236,12 @@ export function ReleasesUpsellProvider(props: {children: React.ReactNode}) {
         isCurrentDatasetAtAboveOrgLimit ||
         isOrgAtAboveOrgLimit
 
-      if (shouldShowDialog) return doUpsell(orgActiveReleaseCount)
+      if (shouldShowDialog) {
+        whenResolved?.(false)
+        return doUpsell(orgActiveReleaseCount)
+      }
 
+      whenResolved?.(true)
       return cb()
     },
     [mode, handleOpenDialog, orgActiveReleaseCount$, releaseLimits$, activeReleases?.length],

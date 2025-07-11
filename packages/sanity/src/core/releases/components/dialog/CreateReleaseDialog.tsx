@@ -8,6 +8,7 @@ import {useTranslation} from '../../../i18n'
 import {useSetPerspective} from '../../../perspective/useSetPerspective'
 import {CreatedRelease, type OriginInfo} from '../../__telemetry__/releases.telemetry'
 import {useCreateReleaseMetadata} from '../../hooks/useCreateReleaseMetadata'
+import {useGuardWithReleaseLimitUpsell} from '../../hooks/useGuardWithReleaseLimitUpsell'
 import {useReleaseFormStorage} from '../../hooks/useReleaseFormStorage'
 import {isReleaseLimitError} from '../../store/isReleaseLimitError'
 import {useReleaseOperations} from '../../store/useReleaseOperations'
@@ -34,13 +35,21 @@ export function CreateReleaseDialog(props: CreateReleaseDialogProps): React.JSX.
   const [release, setRelease] = useState(getReleaseDefaults)
   const [isSubmitting, setIsSubmitting] = useState(false)
 
+  const {releasePromise} = useGuardWithReleaseLimitUpsell()
+
   const handleOnSubmit = useCallback(
     async (event: FormEvent<HTMLFormElement>) => {
       event.preventDefault()
 
-      try {
-        setIsSubmitting(true)
+      setIsSubmitting(true)
+      const inQuota = await releasePromise
 
+      if (!inQuota) {
+        setIsSubmitting(false)
+        return
+      }
+
+      try {
         const releaseValue = createReleaseMetadata(release)
 
         await createRelease(releaseValue)
@@ -71,6 +80,7 @@ export function CreateReleaseDialog(props: CreateReleaseDialogProps): React.JSX.
       }
     },
     [
+      releasePromise,
       createReleaseMetadata,
       release,
       createRelease,
