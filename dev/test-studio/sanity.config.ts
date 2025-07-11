@@ -224,6 +224,9 @@ const defaultWorkspace = defineConfig({
   tasks: {
     enabled: true,
   },
+  mediaLibrary: {
+    enabled: true,
+  },
   document: {
     actions: (prev, ctx) => {
       if (ctx.schemaType === 'book' && ctx.releaseId) {
@@ -265,6 +268,9 @@ export default defineConfig([
     unstable_tasks: {
       enabled: false,
     },
+    mediaLibrary: {
+      enabled: true,
+    },
   },
   {
     name: 'tsdoc',
@@ -273,6 +279,9 @@ export default defineConfig([
     dataset: 'tsdoc-2',
     plugins: [sharedSettings({projectId: 'ppsg7ml5'})],
     basePath: '/tsdoc',
+    mediaLibrary: {
+      enabled: true,
+    },
   },
   {
     name: 'playground',
@@ -290,6 +299,9 @@ export default defineConfig([
     search: {
       strategy: 'groq2024',
     },
+    mediaLibrary: {
+      enabled: true,
+    },
   },
   {
     name: 'listener-events',
@@ -299,6 +311,9 @@ export default defineConfig([
     dataset: 'data-loss',
     plugins: [sharedSettings({projectId: 'ppsg7ml5'})],
     basePath: '/listener-events',
+    mediaLibrary: {
+      enabled: true,
+    },
   },
   {
     name: 'playground-partial-indexing',
@@ -308,6 +323,9 @@ export default defineConfig([
     dataset: 'playground-partial-indexing',
     plugins: [sharedSettings({projectId: 'ppsg7ml5'})],
     basePath: '/playground-partial-indexing',
+    mediaLibrary: {
+      enabled: true,
+    },
   },
   {
     name: 'staging',
@@ -324,6 +342,9 @@ export default defineConfig([
     unstable_tasks: {
       enabled: true,
     },
+    mediaLibrary: {
+      enabled: true,
+    },
   },
   {
     name: 'media-library-playground',
@@ -336,6 +357,9 @@ export default defineConfig([
     auth: {
       loginMethod: 'token',
     },
+    mediaLibrary: {
+      enabled: true,
+    },
   },
   {
     name: 'playground-staging',
@@ -347,6 +371,9 @@ export default defineConfig([
     apiHost: 'https://api.sanity.work',
     auth: {
       loginMethod: 'token',
+    },
+    mediaLibrary: {
+      enabled: true,
     },
   },
   {
@@ -384,6 +411,9 @@ export default defineConfig([
         toolMenu: CustomToolMenu,
       },
     },
+    mediaLibrary: {
+      enabled: true,
+    },
   },
   {
     name: 'google-theme',
@@ -394,6 +424,9 @@ export default defineConfig([
     basePath: '/google',
     theme: googleTheme,
     icon: GoogleLogo,
+    mediaLibrary: {
+      enabled: true,
+    },
   },
   {
     name: 'vercel-theme',
@@ -404,6 +437,9 @@ export default defineConfig([
     basePath: '/vercel',
     theme: vercelTheme,
     icon: VercelLogo,
+    mediaLibrary: {
+      enabled: true,
+    },
   },
   {
     name: 'tailwind-theme',
@@ -414,6 +450,9 @@ export default defineConfig([
     basePath: '/tailwind',
     theme: tailwindTheme,
     icon: TailwindLogo,
+    mediaLibrary: {
+      enabled: true,
+    },
   },
   {
     name: 'ai-assist',
@@ -422,6 +461,9 @@ export default defineConfig([
     dataset: 'test',
     plugins: [sharedSettings({projectId: 'ppsg7ml5'}), assist()],
     basePath: '/ai-assist',
+    mediaLibrary: {
+      enabled: true,
+    },
   },
   {
     name: 'stega',
@@ -434,6 +476,9 @@ export default defineConfig([
       components: {
         input: StegaDebugger,
       },
+    },
+    mediaLibrary: {
+      enabled: true,
     },
   },
   {
@@ -478,6 +523,9 @@ export default defineConfig([
       }),
       visionTool(),
     ],
+    mediaLibrary: {
+      enabled: true,
+    },
   },
   {
     // Based on https://github.com/sanity-io/next-sanity/blob/1d451c5aa606eb471e8dc4ddcd7ebf6253ae8eec/apps/mvp/sanity.config.ts#L5-L29
@@ -500,5 +548,8 @@ export default defineConfig([
       }),
       visionTool(),
     ],
+    mediaLibrary: {
+      enabled: true,
+    },
   },
 ]) as WorkspaceOptions[]

@@ -36,6 +36,7 @@
       "sanity/_createContext": ["./node_modules/sanity/src/_exports/_createContext.ts"],
       "sanity/cli": ["./node_modules/sanity/src/_exports/cli.ts"],
       "sanity/desk": ["./node_modules/sanity/src/_exports/desk.ts"],
+      "sanity/media-library": ["./node_modules/sanity/src/_exports/media-library.ts"],
       "sanity/migrate": ["./node_modules/sanity/src/_exports/migrate.ts"],
       "sanity/presentation": ["./node_modules/sanity/src/_exports/presentation.ts"],
       "sanity/router": ["./node_modules/sanity/src/_exports/router.ts"],

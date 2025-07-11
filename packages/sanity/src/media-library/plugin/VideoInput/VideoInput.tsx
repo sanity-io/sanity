@@ -3,9 +3,6 @@ import {
   type AssetFromSource,
   type AssetSource,
   type AssetSourceUploader,
-  type File as BaseFile,
-  type FileAsset,
-  type FileSchemaType,
   type UploadState,
 } from '@sanity/types'
 import {useToast} from '@sanity/ui'
@@ -13,28 +10,39 @@ import {get} from 'lodash'
 import {useCallback, useEffect, useRef, useState} from 'react'
 import {type Observable} from 'rxjs'
 
-import {useTranslation} from '../../../../i18n'
-import {MemberField, MemberFieldError, MemberFieldSet} from '../../../members'
-import {PatchEvent, set, setIfMissing, unset} from '../../../patch'
-import {UPLOAD_STATUS_KEY} from '../../../studio/uploads/constants'
-import {resolveUploader} from '../../../studio/uploads/resolveUploader'
+import {handleSelectAssetFromSource as handleSelectAssetFromSourceShared} from '../../../core/form/inputs/files/common/assetSource'
+import {type FileInfo} from '../../../core/form/inputs/files/common/styles'
+import {MemberField, MemberFieldError, MemberFieldSet} from '../../../core/form/members'
+import {PatchEvent, set, setIfMissing, unset} from '../../../core/form/patch'
+import {UPLOAD_STATUS_KEY} from '../../../core/form/studio/uploads/constants'
+import {resolveUploader} from '../../../core/form/studio/uploads/resolveUploader'
 import {
   type Uploader,
   type UploaderResolver,
   type UploadOptions,
-} from '../../../studio/uploads/types'
-import {createInitialUploadPatches} from '../../../studio/uploads/utils'
-import {type ObjectInputProps} from '../../../types'
-import {handleSelectAssetFromSource as handleSelectAssetFromSourceShared} from '../common/assetSource'
-import {type FileInfo} from '../common/styles'
-import {FileAsset as FileAssetComponent} from './FileAsset'
-import {FileAssetSource} from './FileInputAssetSource'
+} from '../../../core/form/studio/uploads/types'
+import {createInitialUploadPatches} from '../../../core/form/studio/uploads/utils'
+import {type ObjectInputProps} from '../../../core/form/types'
+import {useTranslation} from '../../../core/i18n'
+import {
+  type VideoAsset,
+  type VideoSchemaType,
+  type VideoValue as BaseVideoValue,
+} from '../schemas/types'
+import {VideoAsset as VideoAssetComponent} from './VideoAsset'
+import {VideoInputAssetSource} from './VideoInputAssetSource'
+
+export type VideoUploadState = UploadState & {
+  _pendingProcessing?: boolean
+  _assetId?: string
+  _assetInstanceId?: string
+}
 
 /**
  * @hidden
  * @beta */
-export interface BaseFileInputValue extends Partial<BaseFile> {
-  _upload?: UploadState
+export interface BaseVideoInputValue extends Partial<BaseVideoValue> {
+  _upload?: VideoUploadState
 }
 
 function passThrough({children}: {children?: React.ReactNode}) {
@@ -44,16 +52,17 @@ function passThrough({children}: {children?: React.ReactNode}) {
 /**
  * @hidden
  * @beta */
-export interface BaseFileInputProps extends ObjectInputProps<BaseFileInputValue, FileSchemaType> {
+export interface BaseVideoInputProps
+  extends ObjectInputProps<BaseVideoInputValue, VideoSchemaType> {
   assetSources: AssetSource[]
   directUploads?: boolean
-  observeAsset: (documentId: string) => Observable<FileAsset>
+  observeAsset: (documentId: string) => Observable<VideoAsset>
   resolveUploader: UploaderResolver
   client: SanityClient
 }
 
 /** @internal */
-export function BaseFileInput(props: BaseFileInputProps) {
+export function BaseVideoInput(props: BaseVideoInputProps) {
   const {
     client,
     members,
@@ -115,10 +124,10 @@ export function BaseFileInput(props: BaseFileInputProps) {
     }
   }, [handleClearUploadStatus])
 
-  // This function is used to upload an external file to the dataset
-  // when selecting an asset from an asset source that is of type 'file' or 'base64'.
+  // This function is used to upload an external video to the dataset
+  // when selecting an asset from an asset source that is of type 'video'
   const uploadExternalFileToDataset = useCallback(
-    (uploader: Uploader, file: globalThis.File, assetDocumentProps: UploadOptions = {}) => {
+    (uploader: Uploader, video: globalThis.File, assetDocumentProps: UploadOptions = {}) => {
       const {source} = assetDocumentProps
       const options = {
         metadata: get(schemaType, 'options.metadata'),
@@ -128,25 +137,27 @@ export function BaseFileInput(props: BaseFileInputProps) {
       cancelExternalFileToDatasetUpload()
       setIsUploading(true)
       onChange(PatchEvent.from([setIfMissing({_type: schemaType.name})]))
-      uploadSubscriptionRef.current = uploader.upload(client, file, schemaType, options).subscribe({
-        next: (uploadEvent) => {
-          if (uploadEvent.patches) {
-            onChange(PatchEvent.from(uploadEvent.patches))
-          }
-        },
-        error: (err) => {
-          console.error(err)
-          push({
-            status: 'error',
-            description: t('inputs.file.upload-failed.description'),
-            title: t('inputs.file.upload-failed.title'),
-          })
-          handleClearUploadStatus()
-        },
-        complete: () => {
-          setIsUploading(false)
-        },
-      })
+      uploadSubscriptionRef.current = uploader
+        .upload(client, video, schemaType, options)
+        .subscribe({
+          next: (uploadEvent) => {
+            if (uploadEvent.patches) {
+              onChange(PatchEvent.from(uploadEvent.patches))
+            }
+          },
+          error: (err) => {
+            console.error(err)
+            push({
+              status: 'error',
+              description: t('inputs.file.upload-failed.description'),
+              title: t('inputs.file.upload-failed.title'),
+            })
+            handleClearUploadStatus()
+          },
+          complete: () => {
+            setIsUploading(false)
+          },
+        })
     },
     [
       cancelExternalFileToDatasetUpload,
@@ -161,9 +172,6 @@ export function BaseFileInput(props: BaseFileInputProps) {
 
   const handleSelectAssets = useCallback(
     (assetsFromSource: AssetFromSource[]) => {
-      if (assetsFromSource.length === 0) {
-        return
-      }
       handleSelectAssetFromSourceShared({
         assetsFromSource,
         onChange,
@@ -200,8 +208,8 @@ export function BaseFileInput(props: BaseFileInputProps) {
                   )
                   break
                 case 'error':
-                  event.files.forEach((file) => {
-                    console.error(file.error)
+                  event.files.forEach((video) => {
+                    console.error(video.error)
                   })
                   push({
                     status: 'error',
@@ -220,17 +228,18 @@ export function BaseFileInput(props: BaseFileInputProps) {
           setIsUploading(true)
           onChange(PatchEvent.from(createInitialUploadPatches(files[0])))
           uploader.upload(files, {schemaType, onChange: onChange as (patch: unknown) => void})
-        } catch (err) {
+        } catch (error) {
           onChange(PatchEvent.from([unset([UPLOAD_STATUS_KEY])]))
           setIsUploading(false)
-          setSelectedAssetSource(null)
           assetSourceUploaderRef.current?.unsubscribe()
+          setSelectedAssetSource(null)
+          assetSourceUploaderRef.current = null
           push({
             status: 'error',
             description: t('asset-sources.common.uploader.upload-failed.description'),
             title: t('asset-sources.common.uploader.upload-failed.title'),
           })
-          console.error(err)
+          console.error(error)
         }
       }
     },
@@ -251,7 +260,7 @@ export function BaseFileInput(props: BaseFileInputProps) {
 
   const renderAsset = useCallback(() => {
     return (
-      <FileAssetComponent
+      <VideoAssetComponent
         {...props}
         browseButtonElementRef={browseButtonElementRef}
         clearField={handleClearField}
@@ -285,6 +294,7 @@ export function BaseFileInput(props: BaseFileInputProps) {
     isUploading,
     props,
     selectedAssetSource,
+    browseButtonElementRef,
     setBrowseButtonElement,
   ])
 
@@ -328,7 +338,7 @@ export function BaseFileInput(props: BaseFileInputProps) {
         return <>{t('inputs.file.error.unknown-member-kind', {kind: member.kind})}</>
       })}
       {selectedAssetSource && (
-        <FileAssetSource
+        <VideoInputAssetSource
           {...props}
           browseButtonElementRef={browseButtonElementRef}
           clearField={handleClearField}
