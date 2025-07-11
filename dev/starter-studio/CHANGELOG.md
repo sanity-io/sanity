@@ -3,6 +3,26 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## <small>3.98.1 (2025-07-09)</small>
+
+**Note:** Version bump only for package sanity-starter-studio
+
+
+
+
+
+## [3.98.0](https://github.com/sanity-io/sanity/compare/v3.97.1...v3.98.0) (2025-07-07)
+
+**Note:** Version bump only for package sanity-starter-studio
+
+## [3.97.1](https://github.com/sanity-io/sanity/compare/v3.97.0...v3.97.1) (2025-07-04)
+
+**Note:** Version bump only for package sanity-starter-studio
+
+## [3.97.0](https://github.com/sanity-io/sanity/compare/v3.96.0...v3.97.0) (2025-07-04)
+
+**Note:** Version bump only for package sanity-starter-studio
+
 ## [3.96.0](https://github.com/sanity-io/sanity/compare/v3.95.0...v3.96.0) (2025-07-02)
 
 **Note:** Version bump only for package sanity-starter-studio

@@ -12,6 +12,7 @@ import {Preview} from '../../../../preview/components/Preview'
 import {CreatedRelease} from '../../../__telemetry__/releases.telemetry'
 import {useCreateReleaseMetadata} from '../../../hooks/useCreateReleaseMetadata'
 import {useGuardWithReleaseLimitUpsell} from '../../../hooks/useGuardWithReleaseLimitUpsell'
+import {useReleaseFormStorage} from '../../../hooks/useReleaseFormStorage'
 import {releasesLocaleNamespace} from '../../../i18n'
 import {isReleaseLimitError} from '../../../store/isReleaseLimitError'
 import {useReleaseOperations} from '../../../store/useReleaseOperations'
@@ -62,6 +63,7 @@ export function CopyToNewReleaseDialog(props: {
 
   const telemetry = useTelemetry()
   const {createRelease} = useReleaseOperations()
+  const {clearReleaseDataFromStorage} = useReleaseFormStorage()
 
   const displayTitle = title || t('release.placeholder-untitled-release')
 
@@ -112,6 +114,7 @@ export function CopyToNewReleaseDialog(props: {
       }
     } finally {
       setIsSubmitting(false)
+      clearReleaseDataFromStorage()
     }
   }, [
     release,
@@ -123,14 +126,20 @@ export function CopyToNewReleaseDialog(props: {
     onClose,
     toast,
     t,
+    clearReleaseDataFromStorage,
   ])
+
+  const handleOnClose = useCallback(() => {
+    clearReleaseDataFromStorage()
+    onClose()
+  }, [clearReleaseDataFromStorage, onClose])
 
   return (
     <Dialog
       id={'create-release-dialog'}
       header={t('release.dialog.copy-to-release.title')}
       onClickOutside={onClose}
-      onClose={onClose}
+      onClose={handleOnClose}
       padding={false}
       width={1}
     >

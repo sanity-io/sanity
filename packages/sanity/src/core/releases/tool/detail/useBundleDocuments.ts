@@ -35,6 +35,7 @@ import {getDraftId, getVersionId} from '../../../util/draftUtils'
 import {validateDocumentWithReferences, type ValidationStatus} from '../../../validation'
 import {useReleasesStore} from '../../store/useReleasesStore'
 import {getReleaseDocumentIdFromReleaseId} from '../../util/getReleaseDocumentIdFromReleaseId'
+import {isGoingToUnpublish} from '../../util/isGoingToUnpublish'
 import {RELEASES_STUDIO_CLIENT_OPTIONS} from '../../util/releasesClient'
 
 export interface DocumentValidationStatus extends ValidationStatus {
@@ -110,11 +111,26 @@ const getActiveReleaseDocumentsObservable = ({
               )
             }),
           )
-        const validation$ = validateDocumentWithReferences(ctx, document$).pipe(
-          map((validationStatus) => ({
-            ...validationStatus,
-            hasError: validationStatus.validation.some((marker) => isValidationErrorMarker(marker)),
-          })),
+        const validation$ = document$.pipe(
+          switchMap((document) => {
+            if (isGoingToUnpublish(document)) {
+              return of({
+                isValidating: false,
+                validation: [],
+                revision: document._rev,
+                hasError: false,
+              } satisfies DocumentValidationStatus)
+            }
+            return validateDocumentWithReferences(ctx, of(document)).pipe(
+              map((validationStatus) => ({
+                ...validationStatus,
+                // eslint-disable-next-line max-nested-callbacks
+                hasError: validationStatus.validation.some((marker) =>
+                  isValidationErrorMarker(marker),
+                ),
+              })),
+            )
+          }),
         )
 
         const previewValues$ = document$.pipe(

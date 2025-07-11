@@ -7,10 +7,12 @@ Arguments
 Options
   --data <data> Data to send to the function
   --file <file> Read data from file and send to the function
+  --document-id <id> Document to fetch and send to function
   --timeout <timeout> Execution timeout value in seconds
   --api <version> Sanity API Version to use
   --dataset <dataset> The Sanity dataset to use
   --project-id <id> Sanity Project ID to use
+  --with-user-token Prime access token from CLI config into getCliClient()
 
 
 Examples
@@ -31,10 +33,13 @@ export interface FunctionsTestFlags {
   'api'?: string
   'dataset'?: string
   'project-id'?: string
+  'document-id'?: string
+  'with-user-token'?: boolean
 }
 
 const defaultFlags: FunctionsTestFlags = {
-  timeout: 10, // seconds
+  'timeout': 10, // seconds
+  'with-user-token': false,
 }
 
 const testFunctionsCommand: CliCommandDefinition<FunctionsTestFlags> = {
@@ -42,10 +47,10 @@ const testFunctionsCommand: CliCommandDefinition<FunctionsTestFlags> = {
   group: 'functions',
   helpText,
   signature:
-    '<name> [--data <json>] [--file <filename>] [--timeout <seconds>] [--api <version>] [--dataset <name>] [--project-id] <id>]',
+    '<name> [--data <json>] [--file <filename>] [--document-id <id>] [--timeout <seconds>] [--api <version>] [--dataset <name>] [--project-id] <id>] [--with-user-token]',
   description: 'Invoke a local Sanity Function',
   async action(args, context) {
-    const {apiClient, output} = context
+    const {apiClient, output, chalk} = context
     const [name] = args.argsWithoutOptions
     const flags = {...defaultFlags, ...args.extOptions}
 
@@ -65,6 +70,20 @@ const testFunctionsCommand: CliCommandDefinition<FunctionsTestFlags> = {
     const {initBlueprintConfig} = await import('@sanity/runtime-cli/cores')
     const {functionTestCore} = await import('@sanity/runtime-cli/cores/functions')
 
+    // Prefer projectId in blueprint
+    const {blueprint} = await import('@sanity/runtime-cli/actions/blueprints')
+    const {projectId: bpProjectId} = await blueprint.readLocalBlueprint()
+
+    if (projectId && projectId !== bpProjectId) {
+      output.print(
+        chalk.yellow('WARNING'),
+        `Project ID ${chalk.cyan(projectId)} in ${chalk.green('sanity.cli.ts')} does not match Project ID ${chalk.cyan(bpProjectId)} in ${chalk.green('./sanity/blueprint.config.json')}.`,
+      )
+      output.print(
+        `Defaulting to Project ID ${chalk.cyan(bpProjectId)}. To override use the ${chalk.green('--project-id')} flag.\n`,
+      )
+    }
+
     const cmdConfig = await initBlueprintConfig({
       bin: 'sanity',
       log: (message: string) => output.print(message),
@@ -79,10 +98,12 @@ const testFunctionsCommand: CliCommandDefinition<FunctionsTestFlags> = {
       flags: {
         'data': flags.data,
         'file': flags.file,
+        'document-id': flags['document-id'],
         'timeout': flags.timeout,
         'api': flags.api,
         'dataset': flags.dataset || actualDataset,
-        'project-id': flags['project-id'] || projectId,
+        'project-id': flags['project-id'] || bpProjectId,
+        'with-user-token': flags['with-user-token'],
       },
     })
 

@@ -1,4 +1,7 @@
 name: eFPS Test
+permissions:
+  pull-requests: write # for comment
+
 on:
   pull_request:
   workflow_dispatch:

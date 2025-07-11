@@ -26,6 +26,7 @@ import {MenuButton, Tooltip} from '../../../../ui-components'
 import {useTimeZone} from '../../../hooks/useTimeZone'
 import {useTranslation} from '../../../i18n'
 import {CONTENT_RELEASES_TIME_ZONE_SCOPE} from '../../../studio/constants'
+import {useReleaseFormStorage} from '../../hooks/useReleaseFormStorage'
 import {isReleaseType} from '../../store/types'
 import {RELEASE_TYPES_TONES} from '../../util/const'
 import {ReleaseAvatar} from '../ReleaseAvatar'
@@ -42,17 +43,54 @@ export function ReleaseForm(props: {
   const {t} = useTranslation()
   const {timeZone, utcToCurrentZoneDate} = useTimeZone(CONTENT_RELEASES_TIME_ZONE_SCOPE)
   const [currentTimezone, setCurrentTimezone] = useState<string | null>(timeZone.name)
-
   const [buttonReleaseType, setButtonReleaseType] = useState<ReleaseType>(releaseType ?? 'asap')
+  const {getStoredReleaseData, saveReleaseDataToStorage} = useReleaseFormStorage()
 
+  const id = value._id
   const [intendedPublishAt, setIntendedPublishAt] = useState<Date | undefined>()
+
+  useEffect(() => {
+    const storedData = getStoredReleaseData()
+    if (storedData) {
+      const updatedValue = {
+        metadata: {
+          title: storedData.title,
+          description: storedData.description,
+          releaseType: storedData.releaseType,
+          intendedPublishAt: storedData.intendedPublishAt,
+        },
+      }
+      onChange({_id: id, ...updatedValue})
+
+      if (storedData.releaseType) {
+        setButtonReleaseType(storedData.releaseType)
+      }
+      if (storedData.intendedPublishAt) {
+        setIntendedPublishAt(new Date(storedData.intendedPublishAt))
+      }
+    }
+  }, [getStoredReleaseData, id, onChange])
+
+  const handleOnChangeAndStorage = useCallback(
+    (updatedValue: EditableReleaseDocument) => {
+      onChange(updatedValue)
+      saveReleaseDataToStorage({
+        ...updatedValue.metadata,
+      })
+    },
+    [onChange, saveReleaseDataToStorage],
+  )
 
   const handleBundlePublishAtCalendarChange = useCallback(
     (date: Date) => {
       setIntendedPublishAt(date)
-      onChange({...value, metadata: {...value.metadata, intendedPublishAt: date.toISOString()}})
+
+      handleOnChangeAndStorage({
+        ...value,
+        metadata: {...value.metadata, intendedPublishAt: date.toISOString()},
+      })
     },
-    [onChange, value],
+    [handleOnChangeAndStorage, value],
   )
 
   const handleButtonReleaseTypeChange = useCallback<MouseEventHandler<HTMLDivElement>>(
@@ -72,7 +110,7 @@ export function ReleaseForm(props: {
         setIntendedPublishAt(nextInputValue)
       }
 
-      onChange({
+      handleOnChangeAndStorage({
         ...value,
         metadata: {
           ...value.metadata,
@@ -82,12 +120,12 @@ export function ReleaseForm(props: {
         },
       })
     },
-    [onChange, value],
+    [handleOnChangeAndStorage, value],
   )
 
   const handleTitleDescriptionChange = useCallback(
     (updatedRelease: EditableReleaseDocument) => {
-      onChange({
+      handleOnChangeAndStorage({
         ...value,
         metadata: {
           ...value.metadata,
@@ -96,7 +134,7 @@ export function ReleaseForm(props: {
         },
       })
     },
-    [onChange, value],
+    [handleOnChangeAndStorage, value],
   )
 
   useEffect(() => {

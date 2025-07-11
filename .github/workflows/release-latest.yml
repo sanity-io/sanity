@@ -4,6 +4,13 @@ on:
   push:
     branches:
       - main
+  workflow_dispatch:
+    inputs:
+      publish:
+        description: Only run NPM publishing
+        required: true
+        default: false
+        type: boolean
 
 permissions:
   contents: write
@@ -11,6 +18,7 @@ permissions:
 jobs:
   release-latest:
     if: >
+      github.event_name == 'workflow_dispatch' || 
       startsWith(github.event.head_commit.message, 'chore(release): publish ')
     runs-on: ubuntu-latest
     permissions:
@@ -19,6 +27,7 @@ jobs:
     env:
       TURBO_TOKEN: ${{ secrets.TURBO_TOKEN }}
       TURBO_TEAM: ${{ vars.TURBO_TEAM }}
+      EXPECTED_NPM_USER: sanity-io
 
     steps:
       - uses: actions/checkout@v4
@@ -41,34 +50,49 @@ jobs:
           git config --global user.name 'github-actions[bot]'
           git config --global user.email '41898282+github-actions[bot]@users.noreply.github.com'
 
-      - name: Get version
+      - name: Get version from lerna.json
         id: release-as
-        run: echo "version=$(cat lerna.json | jq -r .version)" >> $GITHUB_OUTPUT
+        run: |
+          version=$(jq -r .version lerna.json)
+          echo "version=$version" >> "$GITHUB_OUTPUT"
+
+      - name: Validate version
+        run: |
+          echo "Release version: $RELEASE_AS"
+          if [[ ! "$RELEASE_AS" =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
+            echo "Invalid version: $RELEASE_AS"
+            exit 1
+          fi
+        env:
+          RELEASE_AS: ${{ steps.release-as.outputs.version }}
 
       - name: Set publishing config
         run: pnpm config set '//registry.npmjs.org/:_authToken' "${NPM_PUBLISH_TOKEN}"
         env:
           NPM_PUBLISH_TOKEN: ${{secrets.NPM_PUBLISH_TOKEN}}
 
-      - name: Publish packages to npm
+      - name: Check valid token
         run: |
-          npx lerna publish \
-          --force-publish \
-          --git-tag-version \
-          --exact \
-          --yes \
-          from-package
-        env:
-          NPM_CONFIG_PROVENANCE: true
-          GITHUB_TOKEN: ${{ steps.app-token.outputs.token }}
+          WHOAMI_RESULT=$(npm whoami)
+          echo "npm whoami result: $WHOAMI_RESULT"
+          if [ "$WHOAMI_RESULT" != "$EXPECTED_NPM_USER" ]; then
+            echo "Error: npm whoami returned '$WHOAMI_RESULT', expected '$EXPECTED_NPM_USER'"
+            exit 1
+          fi
+          echo "✅ npm authentication validated - using $EXPECTED_NPM_USER account"
 
-      - name: Push tags and create release
+      - name: Tag and push version
+        if: ${{ github.event.inputs.publish != 'true' }}
         run: |
           git tag v$RELEASE_AS -m v$RELEASE_AS
-          git push origin --tags
+          git push origin v$RELEASE_AS
         env:
           RELEASE_AS: ${{steps.release-as.outputs.version}}
-          GITHUB_TOKEN: ${{ steps.app-token.outputs.token }}
+
+      - name: Publish packages to npm
+        run: pnpm -r publish
+        env:
+          NPM_CONFIG_PROVENANCE: true
 
       - name: Build bundle
         run: pnpm run build:bundle
