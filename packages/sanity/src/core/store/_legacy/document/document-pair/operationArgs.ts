@@ -20,30 +20,21 @@ export const operationArgs = memoize(
       client: SanityClient
       historyStore: HistoryStore
       schema: Schema
-      serverActionsEnabled: Observable<boolean>
       pairListenerOptions?: DocumentStoreExtraOptions
     },
     idPair: IdPair,
     typeName: string,
   ): Observable<OperationArgs> => {
-    return snapshotPair(
-      ctx.client,
-      idPair,
-      typeName,
-      ctx.serverActionsEnabled,
-      ctx.pairListenerOptions,
-    ).pipe(
+    return snapshotPair(ctx.client, idPair, typeName, ctx.pairListenerOptions).pipe(
       switchMap((versions) =>
         combineLatest([
           versions.draft.snapshots$,
           versions.published.snapshots$,
-          ctx.serverActionsEnabled,
           ...(typeof versions.version === 'undefined' ? [] : [versions.version.snapshots$]),
         ]).pipe(
           map(
-            ([draft, published, canUseServerActions, version]): OperationArgs => ({
+            ([draft, published, version]): OperationArgs => ({
               ...ctx,
-              serverActionsEnabled: canUseServerActions,
               idPair,
               typeName,
               snapshots: {
