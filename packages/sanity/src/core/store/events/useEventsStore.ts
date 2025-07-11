@@ -126,10 +126,17 @@ export function useEventsStore({
     if (since === '@lastPublished' || !since) {
       const revisionIndex = events.findIndex((e) => e.id === revisionId)
       // Skip the revision event and find the next published event
-      const lastPublishedId = events
-        .slice(revisionIndex + 1)
-        .find(isPublishDocumentVersionEvent)?.id
-      if (lastPublishedId) return lastPublishedId
+      // If revisionIndex is -1 (not found), fall back to the old logic
+      if (revisionIndex >= 0) {
+        const lastPublishedId = events
+          .slice(revisionIndex + 1)
+          .find(isPublishDocumentVersionEvent)?.id
+        if (lastPublishedId) return lastPublishedId
+      } else {
+        // Fallback: Skip the first published, the since and rev cannot be the same.
+        const lastPublishedId = events.slice(1).find(isPublishDocumentVersionEvent)?.id
+        if (lastPublishedId) return lastPublishedId
+      }
 
       // If it doesn't have a published event used the creation event as the since.
       const creationEvent = events.find(isCreateDocumentVersionEvent)
