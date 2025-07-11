@@ -43,7 +43,7 @@
     "@repo/tsconfig": "workspace:*",
     "@repo/utils": "workspace:*",
     "@types/lodash-es": "^4.17.12",
-    "vitest": "^3.2.3"
+    "vitest": "^3.2.4"
   },
   "engines": {
     "node": ">=18"
