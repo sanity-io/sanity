@@ -38,7 +38,7 @@ test.describe('auto-updating studio behavior', () => {
         status: 200,
         contentType: 'application/json',
         body: JSON.stringify({
-          packageVersion: '3.1000.0',
+          packageVersion: '4.1000.0',
         }),
       })
     })
@@ -52,7 +52,7 @@ test.describe('auto-updating studio behavior', () => {
         status: 200,
         contentType: 'application/json',
         body: JSON.stringify({
-          packageVersion: '3.0.0',
+          packageVersion: '4.0.0',
         }),
       })
     })
