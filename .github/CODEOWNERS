@@ -31,3 +31,6 @@
 
 # Presentation Tool, which interfaces with Visual Editing libraries
 /packages/sanity/src/presentation/ @sanity-io/ecosystem
+
+# Examples
+/examples @mmgj @markmichon @kmelve
