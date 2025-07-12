@@ -86,7 +86,10 @@ export const CopyPasteProvider: React.FC<{
       }
 
       const isDocument = schemaTypeAtPath.type?.name === 'document'
-      const valueAtPath = getValueAtPath(value, path)
+      const rawValueAtPath = getValueAtPath(value, path)
+      const valueAtPath = options.selection
+        ? select(rawValueAtPath, options.selection)
+        : rawValueAtPath
 
       // Test if the value is empty (undefined, empty object or empty array)
       if (isEmptyValue(valueAtPath)) {
@@ -106,7 +109,9 @@ export const CopyPasteProvider: React.FC<{
       const isAppend =
         options.context.source === 'arrayItem' ||
         isLastSegmentKeyOrIndex ||
-        options.patchType === 'append'
+        options.patchType === 'append' ||
+        options.selection
+
       const normalizedPath = isAppend && isLastSegmentKeyOrIndex ? path.slice(0, -1) : path
       const patchType = isAppend ? 'append' : 'replace'
 
@@ -141,6 +146,29 @@ export const CopyPasteProvider: React.FC<{
           description: t('copy-paste.on-copy.validation.clipboard-not-supported.description'),
         })
       }
+
+      const fieldName = schemaTypeAtPath.title || schemaType.name || 'unknown'
+
+      const getTitle = () => {
+        if (isDocument) {
+          return t('copy-paste.on-copy.validation.copy-document-success.title', {
+            fieldNames: fieldName,
+          })
+        }
+        if (isArrayItem) {
+          return t('copy-paste.on-copy.validation.copy-item_one-success.title', {
+            typeName: fieldName,
+          })
+        }
+        if (options.selection) {
+          return t('copy-paste.on-copy.validation.copy-field_selection-success.title', {fieldName})
+        }
+        return t('copy-paste.on-copy.validation.copy-field_one-success.title', {fieldName})
+      }
+      toast.push({
+        status: 'success',
+        title: getTitle(),
+      })
     },
     [documentMeta, telemetry, toast, t],
   )
@@ -356,4 +384,58 @@ export const useCopyPaste = () => {
     throw new Error('useCopyPaste must be used within a CopyPasteProvider')
   }
   return context
+}
+
+function selectArrayItems<T>(value: T[], selection: Path[]): T[] {
+  if (selection.every((sel) => sel.length === 0)) {
+    return value
+  }
+  const result: T[] = []
+
+  selection.forEach((sel) => {
+    if (sel.length === 0) {
+      return
+    }
+
+    const [head, ...tail] = sel
+    const item = select(PathUtils.get(value, [head]), [tail])
+    if (isKeySegment(head)) {
+      ;(item as any)._key = head._key
+    }
+    result.push(item as T)
+  })
+  return result
+}
+
+function selectObjectFields<T extends Record<string, unknown>>(
+  value: T,
+  selection: Path[],
+): Record<string, unknown> {
+  if (selection.length === 0) {
+    return value
+  }
+  const result: Record<string, unknown> = {}
+
+  selection.forEach((sel) => {
+    if (sel.length === 0) {
+      return
+    }
+    const [head, ...tail] = sel
+    if (typeof head !== 'string') {
+      throw new Error(`Invalid property access on object value: ${PathUtils.toString([head])}`)
+    }
+    result[head] = select(PathUtils.get(value, [head]), [tail])
+  })
+  return result
+}
+
+function select<T>(value: T, selection: Path[]) {
+  if (selection.every((sel) => sel.length === 0)) {
+    return value
+  }
+  if (Array.isArray(value)) {
+    return selectArrayItems(value, selection)
+  }
+
+  return selectObjectFields(value as Record<string, unknown>, selection)
 }

@@ -1,4 +1,4 @@
-import {AddDocumentIcon, CopyIcon, TrashIcon} from '@sanity/icons'
+import {AddDocumentIcon, CheckmarkCircleIcon, CircleIcon, CopyIcon, TrashIcon} from '@sanity/icons'
 import {type SchemaType, type UploadState} from '@sanity/types'
 import {Box, Card, type CardTone, Menu} from '@sanity/ui'
 import {useCallback, useImperativeHandle, useMemo, useRef, useState} from 'react'
@@ -65,6 +65,7 @@ function getTone({
   }
   return hasWarnings ? 'caution' : 'default'
 }
+
 const MENU_POPOVER_PROPS = {portal: true, tone: 'default'} as const
 const EMPTY_ARRAY: never[] = []
 export function GridItem<Item extends ObjectItem = ObjectItem>(props: GridItemProps<Item>) {
@@ -82,6 +83,10 @@ export function GridItem<Item extends ObjectItem = ObjectItem>(props: GridItemPr
     onOpen,
     onClose,
     changed,
+    selected,
+    onSelect,
+    onUnselect,
+    selectable,
     focused,
     children,
     inputProps: {renderPreview},
@@ -101,6 +106,7 @@ export function GridItem<Item extends ObjectItem = ObjectItem>(props: GridItemPr
   const openPortal = open && !shouldUseEnhancedDialog
 
   const sortable = parentSchemaType.options?.sortable !== false
+  const showDragHandle = parentSchemaType.options?.dragHandle !== false
   const insertableTypes = parentSchemaType.of
 
   const [previewCardElement, setPreviewCardElement] = useState<FIXME | null>(null)
@@ -190,6 +196,16 @@ export function GridItem<Item extends ObjectItem = ObjectItem>(props: GridItemPr
           onClick={handleCopy}
         />
       ),
+      selected ? (
+        <MenuItem key="unselect" text="Unselect" icon={CircleIcon} onClick={onUnselect} />
+      ) : (
+        <MenuItem
+          key="select"
+          text="Select"
+          icon={CheckmarkCircleIcon}
+          onClick={() => onSelect()}
+        />
+      ),
       !disableActions.includes('duplicate') && (
         <MenuItem
           key="duplicate"
@@ -212,6 +228,9 @@ export function GridItem<Item extends ObjectItem = ObjectItem>(props: GridItemPr
     insertAfter.menuItem,
     insertBefore.menuItem,
     onRemove,
+    onSelect,
+    onUnselect,
+    selected,
     t,
   ])
 
@@ -249,11 +268,15 @@ export function GridItem<Item extends ObjectItem = ObjectItem>(props: GridItemPr
       menu={menu}
       presence={presence}
       validation={validation}
+      onSelect={onSelect}
+      onUnselect={onUnselect}
       tone={tone}
       radius={2}
+      dragHandle={showDragHandle && sortable}
       border
-      dragHandle={sortable}
-      selected={openPortal}
+      selectable={selectable}
+      open={openPortal}
+      selected={selected}
       readOnly={readOnly}
     >
       <PreviewCard

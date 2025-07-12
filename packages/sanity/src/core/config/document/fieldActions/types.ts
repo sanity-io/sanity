@@ -15,7 +15,9 @@ export interface DocumentFieldAction {
  * @hidden
  * @beta */
 export interface DocumentFieldActionHook {
-  (props: DocumentFieldActionProps): DocumentFieldActionItem | DocumentFieldActionGroup
+  (
+    props: DocumentFieldActionProps,
+  ): DocumentFieldActionItem | DocumentFieldActionGroup | null | undefined
 }
 
 /**

@@ -1,11 +1,14 @@
 import {type DragStartEvent} from '@dnd-kit/core'
-import {isKeySegment} from '@sanity/types'
+import {isFileSchemaType, isImageSchemaType, isKeySegment, type KeyedSegment} from '@sanity/types'
 import {Card, Stack, Text} from '@sanity/ui'
+import * as PathUtils from '@sanity/util/paths'
 import {useCallback, useMemo, useRef, useState} from 'react'
 import shallowEquals from 'shallow-equals'
 
 import {useTranslation} from '../../../../../i18n'
+import {useChildValidation} from '../../../../studio/contexts/Validation'
 import {type ArrayOfObjectsInputProps, type ObjectItem} from '../../../../types'
+import {SelectionToolbar} from '../../common/SelectionToolbar'
 import {UploadTargetCard} from '../../common/UploadTargetCard'
 import {ArrayOfObjectsFunctions} from '../ArrayOfObjectsFunctions'
 import {createProtoArrayValue} from '../createProtoArrayValue'
@@ -21,6 +24,17 @@ export function ListArrayInput<Item extends ObjectItem>(props: ArrayOfObjectsInp
     elementProps,
     members,
     onChange,
+    id,
+    onInsert,
+    selectedItemKeys,
+    onSelectEnd,
+    selectActive,
+    onSelectBegin,
+    onSelectNone,
+    onSelectAll,
+    onItemSelect,
+    onItemUnselect,
+    onSelectedItemsRemove,
     onItemMove,
     onUpload,
     focusPath,
@@ -36,12 +50,20 @@ export function ListArrayInput<Item extends ObjectItem>(props: ArrayOfObjectsInp
     renderPreview,
     resolveUploader,
     schemaType,
+    path,
     value = EMPTY,
   } = props
   const {t} = useTranslation()
 
+  const childValidation = useChildValidation(path)
   // Stores the index of the item being dragged
   const [activeDragItemIndex, setActiveDragItemIndex] = useState<number | null>(null)
+
+  const acceptsImagesOrFiles = useMemo(() => {
+    return schemaType.of.some(
+      (itemType) => isImageSchemaType(itemType) || isFileSchemaType(itemType),
+    )
+  }, [schemaType])
 
   const memberKeys = useMemoCompare(
     useMemo(() => members.map((member) => member.key), [members]),
@@ -78,60 +100,87 @@ export function ListArrayInput<Item extends ObjectItem>(props: ArrayOfObjectsInp
   const paddingY = 1
   const radius = 2
 
+  const invalidItemKeys = childValidation.flatMap(
+    (validationItem) =>
+      (validationItem.level === 'error' &&
+        (PathUtils.trimLeft(path, validationItem.path)[0] as KeyedSegment)?._key) ||
+      [],
+  )
+
   return (
     <Stack space={2} ref={parentRef}>
-      <UploadTargetCard
-        $radius={radius}
-        types={schemaType.of}
-        resolveUploader={resolveUploader}
-        onUpload={onUpload}
-        {...elementProps}
-        tabIndex={0}
-      >
-        <Stack data-ui="ArrayInput__content" space={2}>
-          {members.length === 0 ? (
-            <Card padding={3} border radius={2}>
-              <Text align="center" muted size={1}>
-                {schemaType.placeholder || <>{t('inputs.array.no-items-label')}</>}
-              </Text>
-            </Card>
-          ) : isVisible ? (
-            <VirtualizedArrayList
-              key={mountKey}
-              members={members}
-              memberKeys={memberKeys}
-              activeDragItemIndex={activeDragItemIndex}
-              focusPathKey={focusPathKey}
-              onItemMove={onItemMove}
-              onItemMoveStart={handleItemMoveStart}
-              onItemMoveEnd={handleItemMoveEnd}
-              sortable={sortable}
+      <Card border radius={2}>
+        <Stack space={1}>
+          <SelectionToolbar
+            path={path}
+            readOnly={readOnly}
+            id={`${id}-selectionToolbar`}
+            selectedItemKeys={selectedItemKeys}
+            invalidItemKeys={invalidItemKeys}
+            allKeys={memberKeys}
+            selectActive={selectActive}
+            canUpload={acceptsImagesOrFiles}
+            onSelectedItemsRemove={onSelectedItemsRemove}
+            onSelectEnd={onSelectEnd}
+            onSelectBegin={onSelectBegin}
+            onItemSelect={onItemSelect}
+            onItemUnselect={onItemUnselect}
+          >
+            <ArrayFunctions
+              onChange={onChange}
+              onItemAppend={onItemAppend}
+              onItemPrepend={onItemPrepend}
+              onValueCreate={createProtoArrayValue}
+              path={props.path}
               readOnly={readOnly}
-              onItemRemove={(key) => props.onItemRemove(key)}
-              renderAnnotation={renderAnnotation}
-              renderBlock={renderBlock}
-              renderField={renderField}
-              renderInlineBlock={renderInlineBlock}
-              renderInput={renderInput}
-              renderItem={renderItem}
-              renderPreview={renderPreview}
-              listGridGap={listGridGap}
-              paddingY={paddingY}
-              radius={radius}
+              schemaType={schemaType}
+              value={value}
             />
-          ) : null}
+          </SelectionToolbar>
+          <UploadTargetCard
+            $radius={radius}
+            types={schemaType.of}
+            resolveUploader={resolveUploader}
+            onUpload={onUpload}
+            {...elementProps}
+            tabIndex={0}
+          >
+            <Stack data-ui="ArrayInput__content" space={2}>
+              {members.length === 0 ? (
+                <Card padding={3} border radius={2}>
+                  <Text align="center" muted size={1}>
+                    {schemaType.placeholder || <>{t('inputs.array.no-items-label')}</>}
+                  </Text>
+                </Card>
+              ) : isVisible ? (
+                <VirtualizedArrayList
+                  key={mountKey}
+                  members={members}
+                  memberKeys={memberKeys}
+                  activeDragItemIndex={activeDragItemIndex}
+                  focusPathKey={focusPathKey}
+                  onItemMove={onItemMove}
+                  onItemMoveStart={handleItemMoveStart}
+                  onItemMoveEnd={handleItemMoveEnd}
+                  sortable={sortable}
+                  readOnly={readOnly}
+                  onItemRemove={(key) => props.onItemRemove(key)}
+                  renderAnnotation={renderAnnotation}
+                  renderBlock={renderBlock}
+                  renderField={renderField}
+                  renderInlineBlock={renderInlineBlock}
+                  renderInput={renderInput}
+                  renderItem={renderItem}
+                  renderPreview={renderPreview}
+                  listGridGap={listGridGap}
+                  paddingY={paddingY}
+                  radius={radius}
+                />
+              ) : null}
+            </Stack>
+          </UploadTargetCard>
         </Stack>
-      </UploadTargetCard>
-      <ArrayFunctions
-        onChange={onChange}
-        onItemAppend={onItemAppend}
-        onItemPrepend={onItemPrepend}
-        onValueCreate={createProtoArrayValue}
-        path={props.path}
-        readOnly={readOnly}
-        schemaType={schemaType}
-        value={value}
-      />
+      </Card>
     </Stack>
   )
 }

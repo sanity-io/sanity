@@ -13,7 +13,7 @@ export const simpleArrayOfObjects = {
     },
     {
       name: 'arrayWithObjects',
-      options: {collapsible: true, collapsed: true},
+      options: {collapsible: true, collapsed: true, dragHandle: true},
       title: 'Array with named objects',
       description: 'This array contains objects of type as defined inline',
       type: 'array',
