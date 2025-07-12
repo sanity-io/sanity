@@ -1,7 +1,15 @@
-import {Box, Card, type CardTone, Flex} from '@sanity/ui'
-import {type ComponentProps, type ReactNode} from 'react'
+import {useSortable} from '@dnd-kit/sortable'
+import {Box, Card, type CardTone, Checkbox, Flex} from '@sanity/ui'
+import {
+  type ComponentProps,
+  type MouseEventHandler,
+  type ReactNode,
+  useCallback,
+  useContext,
+} from 'react'
 import {styled} from 'styled-components'
 
+import {SortableItemIdContext} from '../../../../../_singletons'
 import {DragHandle} from '../common/DragHandle'
 import {MOVING_ITEM_CLASS_NAME} from '../common/list'
 
@@ -12,7 +20,10 @@ interface RowLayoutProps {
   validation?: ReactNode
   menu?: ReactNode
   footer?: ReactNode
-  selected?: boolean
+  selectable?: boolean
+  onSelect: (options?: {metaKey?: boolean; shiftKey?: boolean}) => void
+  onUnselect?: () => void
+  open?: boolean
   children?: ReactNode
 }
 
@@ -26,24 +37,25 @@ const PresenceFlex = styled(Flex)`
   height: 33px;
 `
 
-const DragHandleCard = styled(Card)`
+const Controls = styled(Card)`
   position: absolute;
   top: 0;
   left: 0;
 `
+
 const Root = styled(Card)`
   transition: border-color 250ms;
   box-sizing: border-box;
   position: relative;
 
   @media (hover: hover) {
-    ${DragHandleCard} {
+    ${Controls} {
       opacity: 0;
     }
 
     &:hover,
     &:focus-within {
-      ${DragHandleCard} {
+      ${Controls} {
         opacity: 1;
       }
     }
@@ -65,13 +77,17 @@ const Root = styled(Card)`
 /**
  * Use this to get the layout for grid items
  */
-export function CellLayout(props: RowLayoutProps & ComponentProps<typeof Root>) {
+export function CellLayout(props: RowLayoutProps & Omit<ComponentProps<typeof Root>, 'onSelect'>) {
   const {
     validation,
     selected,
     tone,
     presence,
     children,
+    selectable,
+    open,
+    onSelect,
+    onUnselect,
     dragHandle,
     menu,
     footer,
@@ -79,30 +95,66 @@ export function CellLayout(props: RowLayoutProps & ComponentProps<typeof Root>) 
     ...rest
   } = props
 
+  const handleCheckboxChange = useCallback(
+    (event) => {
+      if (event.currentTarget.checked) {
+        onSelect?.({shiftKey: event.shiftKey, metaKey: true})
+      } else {
+        onUnselect?.()
+      }
+    },
+    [onSelect, onUnselect],
+  ) satisfies MouseEventHandler<HTMLInputElement>
+
+  const id = useContext(SortableItemIdContext)!
+  const {listeners, attributes} = useSortable({id, disabled: readOnly})
+
   return (
     <Root
       forwardedAs={Flex}
       direction="column"
       border
-      selected={selected}
-      aria-selected={selected}
+      selected={selected || open}
+      aria-selected={selected || open}
       radius={1}
       tone={tone}
       {...rest}
+      {...listeners}
+      {...attributes}
     >
-      {children}
+      <Box
+        flex={1}
+        onClickCapture={(e) => {
+          if (e.metaKey || e.shiftKey) {
+            e.preventDefault()
+            e.stopPropagation()
+            onSelect?.({metaKey: true, shiftKey: e.shiftKey})
+          }
+        }}
+      >
+        {children}
+      </Box>
 
-      {dragHandle && (
-        <DragHandleCard
-          margin={1}
-          radius={2}
-          display="flex"
-          tone="inherit"
-          data-ui="DragHandleCard"
-        >
-          <DragHandle $grid mode="ghost" readOnly={!!readOnly} />
-        </DragHandleCard>
-      )}
+      <Controls
+        display="flex"
+        margin={0}
+        padding={2}
+        radius={2}
+        tone="inherit"
+        borderRight
+        borderBottom
+      >
+        <Flex align="center" gap={3}>
+          {dragHandle && (
+            <Flex>
+              <DragHandle $grid mode="ghost" readOnly={!!readOnly} />
+            </Flex>
+          )}
+          <Flex as="label">
+            <Checkbox checked={selected} onClick={handleCheckboxChange} />
+          </Flex>
+        </Flex>
+      </Controls>
 
       {presence && (
         <PresenceFlex align="center" marginX={1}>

@@ -283,7 +283,7 @@ export interface BooleanSchemaType extends BaseSchemaType {
 export interface ArraySchemaType<V = unknown> extends BaseSchemaType {
   jsonType: 'array'
   of: (Exclude<SchemaType, ArraySchemaType> | ReferenceSchemaType)[]
-  options?: ArrayOptions<V> & {layout?: V extends string ? 'tag' : 'grid'}
+  options?: ArrayOptions<V> & {layout?: V extends string ? 'tag' : 'grid'; dragHandle?: boolean}
 }
 
 // Note: this would ideally be a type parameter in `ArraySchemaType` however

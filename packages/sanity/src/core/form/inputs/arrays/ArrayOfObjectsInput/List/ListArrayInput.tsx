@@ -2,8 +2,9 @@
 // The `use no memo` directive is due to a known issue with react-virtual and react compiler: https://github.com/TanStack/virtual/issues/736
 
 import {type DragStartEvent} from '@dnd-kit/core'
-import {isKeySegment} from '@sanity/types'
+import {isFileSchemaType, isImageSchemaType, isKeySegment, type KeyedSegment} from '@sanity/types'
 import {Card, Stack, Text, useTheme} from '@sanity/ui'
+import * as PathUtils from '@sanity/util/paths'
 import {
   defaultRangeExtractor,
   elementScroll,
@@ -16,8 +17,10 @@ import shallowEquals from 'shallow-equals'
 
 import {useTranslation} from '../../../../../i18n'
 import {ArrayOfObjectsItem} from '../../../../members'
+import {useChildValidation} from '../../../../studio/contexts/Validation'
 import {type ArrayOfObjectsInputProps, type ObjectItem} from '../../../../types'
 import {Item, List} from '../../common/list'
+import {SelectionToolbar} from '../../common/SelectionToolbar'
 import {UploadTargetCard} from '../../common/UploadTargetCard'
 import {ArrayOfObjectsFunctions} from '../ArrayOfObjectsFunctions'
 import {createProtoArrayValue} from '../createProtoArrayValue'
@@ -33,6 +36,17 @@ export function ListArrayInput<Item extends ObjectItem>(props: ArrayOfObjectsInp
     elementProps,
     members,
     onChange,
+    id,
+    onInsert,
+    selectedItemKeys,
+    onSelectEnd,
+    selectActive,
+    onSelectBegin,
+    onSelectNone,
+    onSelectAll,
+    onItemSelect,
+    onItemUnselect,
+    onSelectedItemsRemove,
     onItemMove,
     onUpload,
     focusPath,
@@ -48,13 +62,21 @@ export function ListArrayInput<Item extends ObjectItem>(props: ArrayOfObjectsInp
     renderPreview,
     resolveUploader,
     schemaType,
+    path,
     value = EMPTY,
   } = props
   const {t} = useTranslation()
 
+  const childValidation = useChildValidation(path)
   // Stores the index of the item being dragged
   const [activeDragItemIndex, setActiveDragItemIndex] = useState<number | null>(null)
   const {space} = useTheme().sanity
+
+  const acceptsImagesOrFiles = useMemo(() => {
+    return schemaType.of.some(
+      (itemType) => isImageSchemaType(itemType) || isFileSchemaType(itemType),
+    )
+  }, [schemaType])
 
   const memberKeys = useMemoCompare(
     useMemo(() => members.map((member) => member.key), [members]),
@@ -177,103 +199,130 @@ export function ListArrayInput<Item extends ObjectItem>(props: ArrayOfObjectsInp
   const paddingY = 1
   const radius = 2
 
+  const invalidItemKeys = childValidation.flatMap(
+    (validationItem) =>
+      (validationItem.level === 'error' &&
+        (PathUtils.trimLeft(path, validationItem.path)[0] as KeyedSegment)?._key) ||
+      [],
+  )
+
   return (
     <Stack space={2} ref={parentRef}>
-      <UploadTargetCard
-        $radius={radius}
-        types={schemaType.of}
-        resolveUploader={resolveUploader}
-        onUpload={onUpload}
-        {...elementProps}
-        tabIndex={0}
-      >
-        <Stack data-ui="ArrayInput__content" space={2}>
-          {members.length === 0 ? (
-            <Card padding={3} border radius={2}>
-              <Text align="center" muted size={1}>
-                {schemaType.placeholder || <>{t('inputs.array.no-items-label')}</>}
-              </Text>
-            </Card>
-          ) : (
-            <Card
-              border
-              radius={radius}
-              style={{
-                // This is not memoized since it changes on scroll so it will change anyways making memo useless
-                // Account for grid gap
-                boxSizing: 'border-box',
-                height: `${
-                  virtualizer.getTotalSize() + items.length * space[listGridGap] + space[paddingY]
-                }px`,
-                width: '100%',
-                position: 'relative',
-              }}
-            >
-              <List
-                axis="y"
-                gap={listGridGap}
-                paddingY={paddingY}
-                items={memberKeys}
-                onItemMove={onItemMove}
-                onItemMoveStart={handleItemMoveStart}
-                onItemMoveEnd={handleItemMoveEnd}
-                sortable={sortable}
-                style={{
-                  // This is not memoized since it changes on scroll so it will change anyways making memo useless
-                  position: 'absolute',
-                  top: 0,
-                  left: 0,
-                  width: '100%',
-                  transform: items.length > 0 ? `translateY(${items[0].start}px)` : undefined,
-                }}
-              >
-                {items.map((virtualRow) => {
-                  const member = members[virtualRow.index]
-                  return (
-                    <Item
-                      key={virtualRow.key}
-                      ref={virtualizer.measureElement}
-                      sortable={sortable}
-                      data-index={virtualRow.index}
-                      id={member.key}
-                    >
-                      {member.kind === 'item' && (
-                        <ArrayOfObjectsItem
-                          member={member}
-                          renderAnnotation={renderAnnotation}
-                          renderBlock={renderBlock}
-                          renderField={renderField}
-                          renderInlineBlock={renderInlineBlock}
-                          renderInput={renderInput}
-                          renderItem={renderItem}
-                          renderPreview={renderPreview}
-                        />
-                      )}
-                      {member.kind === 'error' && (
-                        <ErrorItem
-                          readOnly={readOnly}
+      <Card border radius={2}>
+        <Stack space={1}>
+          <SelectionToolbar
+            path={path}
+            readOnly={readOnly}
+            id={`${id}-selectionToolbar`}
+            selectedItemKeys={selectedItemKeys}
+            invalidItemKeys={invalidItemKeys}
+            allKeys={memberKeys}
+            selectActive={selectActive}
+            canUpload={acceptsImagesOrFiles}
+            onSelectedItemsRemove={onSelectedItemsRemove}
+            onSelectEnd={onSelectEnd}
+            onSelectBegin={onSelectBegin}
+            onItemSelect={onItemSelect}
+            onItemUnselect={onItemUnselect}
+          >
+            <ArrayFunctions
+              onChange={onChange}
+              onItemAppend={onItemAppend}
+              onItemPrepend={onItemPrepend}
+              onValueCreate={createProtoArrayValue}
+              readOnly={readOnly}
+              schemaType={schemaType}
+              value={value}
+            />
+          </SelectionToolbar>
+          <UploadTargetCard
+            $radius={radius}
+            types={schemaType.of}
+            resolveUploader={resolveUploader}
+            onUpload={onUpload}
+            {...elementProps}
+            tabIndex={0}
+          >
+            <Stack data-ui="ArrayInput__content" space={2}>
+              {members.length === 0 ? (
+                <Card padding={3}>
+                  <Text align="center" muted size={1}>
+                    {schemaType.placeholder || <>{t('inputs.array.no-items-label')}</>}
+                  </Text>
+                </Card>
+              ) : (
+                <Card
+                  style={{
+                    // This is not memoized since it changes on scroll so it will change anyways making memo useless
+                    // Account for grid gap
+                    boxSizing: 'border-box',
+                    height: `${
+                      virtualizer.getTotalSize() +
+                      items.length * space[listGridGap] +
+                      space[paddingY]
+                    }px`,
+                    width: '100%',
+                    position: 'relative',
+                  }}
+                >
+                  <List
+                    axis="y"
+                    gap={listGridGap}
+                    paddingY={paddingY}
+                    items={memberKeys}
+                    onItemMove={onItemMove}
+                    onItemMoveStart={handleItemMoveStart}
+                    onItemMoveEnd={handleItemMoveEnd}
+                    sortable={sortable}
+                    style={{
+                      // This is not memoized since it changes on scroll so it will change anyways making memo useless
+                      position: 'absolute',
+                      top: 0,
+                      left: 0,
+                      width: '100%',
+                      transform: items.length > 0 ? `translateY(${items[0].start}px)` : undefined,
+                    }}
+                  >
+                    {items.map((virtualRow) => {
+                      const member = members[virtualRow.index]
+                      return (
+                        <Item
+                          ref={virtualizer.measureElement}
+                          key={virtualRow.key}
                           sortable={sortable}
-                          member={member}
-                          onRemove={() => props.onItemRemove(member.key)}
-                        />
-                      )}
-                    </Item>
-                  )
-                })}
-              </List>
-            </Card>
-          )}
+                          data-index={virtualRow.index}
+                          id={member.key}
+                        >
+                          {member.kind === 'item' && (
+                            <ArrayOfObjectsItem
+                              member={member}
+                              renderAnnotation={renderAnnotation}
+                              renderBlock={renderBlock}
+                              renderField={renderField}
+                              renderInlineBlock={renderInlineBlock}
+                              renderInput={renderInput}
+                              renderItem={renderItem}
+                              renderPreview={renderPreview}
+                            />
+                          )}
+                          {member.kind === 'error' && (
+                            <ErrorItem
+                              readOnly={readOnly}
+                              sortable={sortable}
+                              member={member}
+                              onRemove={() => props.onItemRemove(member.key)}
+                            />
+                          )}
+                        </Item>
+                      )
+                    })}
+                  </List>
+                </Card>
+              )}
+            </Stack>
+          </UploadTargetCard>
         </Stack>
-      </UploadTargetCard>
-      <ArrayFunctions
-        onChange={onChange}
-        onItemAppend={onItemAppend}
-        onItemPrepend={onItemPrepend}
-        onValueCreate={createProtoArrayValue}
-        readOnly={readOnly}
-        schemaType={schemaType}
-        value={value}
-      />
+      </Card>
     </Stack>
   )
 }

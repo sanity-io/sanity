@@ -58,6 +58,7 @@ export default defineType({
       name: 'arrayOfReferences',
       title: 'Array of references to authors',
       type: 'array',
+      options: {dragHandle: false},
       of: [{type: 'reference', to: [{type: 'author'}]}],
     },
     predefinedStringArray,
@@ -116,7 +117,7 @@ export default defineType({
       components: {
         field: (props: any) => {
           return (
-            <div style={{border: '1px solid palegreen', borderRadius: 4}}>
+            <div style={{border: '1px solid #a95d90', borderRadius: 4}}>
               {props.renderDefault({
                 ...props,
                 title: undefined,
@@ -523,6 +524,7 @@ export default defineType({
       description: 'An array of multiple types. options: {layout: "grid"}',
       type: 'array',
       options: {
+        dragHandle: false,
         layout: 'grid',
       },
       of: [

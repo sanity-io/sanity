@@ -42,8 +42,7 @@ export function ArrayOfObjectsFunctions<
 
   const insertButtonProps: React.ComponentProps<typeof Button> = {
     icon: AddIcon,
-    mode: 'ghost',
-    size: 'large',
+    mode: 'bleed',
     text: t(addItemI18nKey),
   }
 

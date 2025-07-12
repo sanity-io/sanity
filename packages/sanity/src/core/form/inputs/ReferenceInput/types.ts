@@ -72,7 +72,7 @@ export interface ReferenceInputProps<Value = Reference>
   suffix?: ReactNode
   liveEdit?: boolean
   onSearch: ReferenceSearchFunction
-  selectedState?: 'selected' | 'pressed' | 'none'
+  activeState?: 'active' | 'pressed' | 'none'
   createOptions: CreateReferenceOption[]
   editReferenceLinkComponent: ComponentType<{
     children: ReactNode
