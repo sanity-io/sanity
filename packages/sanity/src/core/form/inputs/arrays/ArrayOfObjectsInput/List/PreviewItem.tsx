@@ -1,4 +1,11 @@
-import {AddDocumentIcon, CopyIcon, TrashIcon} from '@sanity/icons'
+import {
+  AddDocumentIcon,
+  CheckmarkCircleIcon,
+  CircleIcon,
+  CopyIcon,
+  EyeOpenIcon,
+  TrashIcon,
+} from '@sanity/icons'
 import {type SchemaType, type UploadState} from '@sanity/types'
 import {Box, Card, type CardTone, Menu} from '@sanity/ui'
 import {useCallback, useImperativeHandle, useMemo, useRef, useState} from 'react'
@@ -60,6 +67,10 @@ export function PreviewItem<Item extends ObjectItem = ObjectItem>(props: Preview
     value,
     open,
     onInsert,
+    onSelect,
+    onUnselect,
+    selected,
+    selectable,
     onCopy,
     onFocus,
     onOpen,
@@ -78,6 +89,7 @@ export function PreviewItem<Item extends ObjectItem = ObjectItem>(props: Preview
   const openPortal = open && !enhancedObjectDialogEnabled
 
   const sortable = parentSchemaType.options?.sortable !== false
+  const showDragHandle = parentSchemaType.options?.dragHandle !== false
   const insertableTypes = parentSchemaType.of
 
   const [previewCardElement, setPreviewCardElement] = useState<HTMLDivElement | null>(null)
@@ -163,6 +175,7 @@ export function PreviewItem<Item extends ObjectItem = ObjectItem>(props: Preview
 
   const menuItems = useMemo(() => {
     return [
+      selectable ? <MenuItem key="open" text="Open" icon={EyeOpenIcon} onClick={onOpen} /> : null,
       !disableActions.includes('remove') && (
         <MenuItem
           key="remove"
@@ -170,6 +183,16 @@ export function PreviewItem<Item extends ObjectItem = ObjectItem>(props: Preview
           tone="critical"
           icon={TrashIcon}
           onClick={onRemove}
+        />
+      ),
+      selected ? (
+        <MenuItem key="unselect" text="Unselect" icon={CircleIcon} onClick={onUnselect} />
+      ) : (
+        <MenuItem
+          key="select"
+          text="Select"
+          icon={CheckmarkCircleIcon}
+          onClick={() => onSelect()}
         />
       ),
       !disableActions.includes('copy') && (
@@ -201,7 +224,12 @@ export function PreviewItem<Item extends ObjectItem = ObjectItem>(props: Preview
     handleDuplicate,
     insertAfter.menuItem,
     insertBefore.menuItem,
+    onOpen,
     onRemove,
+    onSelect,
+    onUnselect,
+    selectable,
+    selected,
     t,
   ])
 
@@ -236,12 +264,16 @@ export function PreviewItem<Item extends ObjectItem = ObjectItem>(props: Preview
   const item = (
     <RowLayout
       menu={menu}
+      onSelect={onSelect}
+      onUnselect={onUnselect}
+      selected={selected}
+      selectable={selectable}
       presence={presence}
       validation={validation}
+      dragHandle={showDragHandle && sortable}
       tone={tone}
       focused={focused}
-      dragHandle={sortable}
-      selected={open}
+      open={open}
       readOnly={!!readOnly}
     >
       <Card
@@ -253,7 +285,7 @@ export function PreviewItem<Item extends ObjectItem = ObjectItem>(props: Preview
         onClick={onOpen}
         ref={setPreviewCardElement}
         onFocus={onFocus}
-        __unstable_focusRing
+        __unstable_focusRing={!selectable}
         style={BUTTON_CARD_STYLE}
       >
         {renderPreview({
