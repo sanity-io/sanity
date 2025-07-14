@@ -73,7 +73,6 @@ import {
   sanityStudioTemplate,
 } from './templates/nextjs'
 
-// eslint-disable-next-line no-process-env
 const isCI = Boolean(process.env.CI)
 
 /**
@@ -127,7 +126,17 @@ export default async function initSanity(
   const intendedCoupon = cliFlags.coupon
   const reconfigure = cliFlags.reconfigure
   const commitMessage = cliFlags.git
-  const useGit = typeof commitMessage === 'undefined' ? true : Boolean(commitMessage)
+  const disableGit = cliFlags['disable-git']
+
+  let useGit = true
+  let customMessage: string | undefined
+
+  if (disableGit) {
+    useGit = false
+  } else if (typeof commitMessage === 'string') {
+    customMessage = commitMessage
+  }
+
   const bareOutput = cliFlags.bare
   const env = cliFlags.env
   const packageManager = cliFlags['package-manager']
@@ -172,6 +181,13 @@ export default async function initSanity(
   if (intendedCoupon && cliFlags.project) {
     throw new Error(
       'Error! --project and --coupon cannot be used together; coupons can only be applied to new projects',
+    )
+  }
+
+  // Don't allow --git and --disable-git together
+  if (cliFlags.git && cliFlags['disable-git']) {
+    throw new Error(
+      'Error! --git and --disable-git cannot be used together; please select only one flag',
     )
   }
 
@@ -672,7 +688,7 @@ export default async function initSanity(
 
   // Try initializing a git repository
   if (useGit) {
-    tryGitInit(outputPath, typeof commitMessage === 'string' ? commitMessage : undefined)
+    tryGitInit(outputPath, customMessage)
   }
 
   // Prompt for dataset import (if a dataset is defined)
@@ -1179,6 +1195,7 @@ export default async function initSanity(
           variables: bootstrapVariables,
         },
         context,
+        disableGit,
       )
     }
 

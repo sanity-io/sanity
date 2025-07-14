@@ -28,6 +28,8 @@ Options
   --package-manager <name> Specify which package manager to use [allowed: ${allowedPackageManagersString}]
   --auto-updates Enable/disable auto updates of studio versions (default: true)
   --overwrite-files Overwrite existing files (default: false)
+  --git [message] Enable git initialization with optional commit message (default: true)
+  --disable-git Disable git initialization (default: false)
 
 Some flags are used when initializing a project in a specific framework.
 
@@ -86,7 +88,8 @@ export interface InitFlags {
   'quickstart'?: string
   'bare'?: boolean
   'env'?: boolean | string
-  'git'?: boolean | string
+  'git'?: string
+  'disable-git'?: true
 
   'output-path'?: string
   'project-plan'?: string

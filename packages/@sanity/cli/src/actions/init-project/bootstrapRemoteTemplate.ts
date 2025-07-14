@@ -38,6 +38,7 @@ const INITIAL_COMMIT_MESSAGE = 'Initial commit from Sanity CLI'
 export async function bootstrapRemoteTemplate(
   opts: BootstrapRemoteOptions,
   context: CliCommandContext,
+  disableGit?: boolean,
 ): Promise<void> {
   const {outputPath, repoInfo, bearerToken, variables, packageName} = opts
   const {output, apiClient} = context
@@ -103,8 +104,10 @@ export async function bootstrapRemoteTemplate(
   debug('Setting package name to %s', packageName)
   await tryApplyPackageName(outputPath, packageName)
 
-  debug('Initializing git repository')
-  tryGitInit(outputPath, INITIAL_COMMIT_MESSAGE)
+  if (!disableGit) {
+    debug('Initializing git repository')
+    tryGitInit(outputPath, INITIAL_COMMIT_MESSAGE)
+  }
 
   debug('Updating initial template metadata')
   await updateInitialTemplateMetadata(apiClient, variables.projectId, `external-${name}`)
