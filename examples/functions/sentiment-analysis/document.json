@@ -1,16 +1,7 @@
 {
   "_type": "review",
-  "_id": "1bcef8ce-b129-4f95-a30c-b958b65ead10",
+  "_id": "test-review-1",
   "title": "Product Review - Wireless Headphones",
-  "content": [
-    {
-      "_type": "block",
-      "children": [
-        {
-          "_type": "span",
-          "text": "I'm extremely disappointed with this purchase. The sound quality is terrible, they break easily, and customer service was unhelpful when I tried to return them. I would not recommend these headphones to anyone. Complete waste of money and I regret buying them. The battery life is also much shorter than advertised."
-        }
-      ]
-    }
-  ]
-} 
+  "name": "John Doe",
+  "review": "I'm extremely disappointed with this purchase. The sound quality is terrible, they break easily, and customer service was unhelpful when I tried to return them. I would not recommend these headphones to anyone. Complete waste of money and I regret buying them. The battery life is also much shorter than advertised."
+}
