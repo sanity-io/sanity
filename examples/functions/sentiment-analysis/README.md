@@ -37,7 +37,16 @@ This function is not directly compatible with our starter templates, but starter
 - Team feedback platforms
 - Customer testimonials
 
-### Adding the sentiment field to your schema
+## Requirements
+
+- A Sanity project with Functions enabled
+- A schema with user-generated content document types containing (see following step):
+  - A `review|feedback|comment` field with portable text (for content analysis)
+  - A `sentiment` field (for storing analyzed sentiment)
+- A Sanity `schemaId`.  Captured by deploying your schema or studio and then running `sanity schema list`.  (See following step for details)
+- Node.js v22.x for local development
+
+## Adding the sentiment field to your schema
 
 First you'll need a content type in which to add sentiment to. Common types are 'review', 'comment', and 'feedback'. You'll need to add a `sentiment` field to your chosen content type schema:
 
@@ -67,6 +76,9 @@ defineField({
 ```bash
 # /studio
 npx sanity schema deploy
+
+# View your schemaId with
+npx sanity schema list
 ```
 
 ## Implementation
@@ -185,42 +197,6 @@ npx sanity functions dev
 
 This opens an interactive playground where you can test functions with custom data
 
-### 3. Test with Custom Data
-
-For custom data testing, you still need to use a real document ID that exists in your dataset:
-
-```bash
-# From the studio/ folder, create or find a real document ID
-cd studio
-REAL_DOC_ID=$(npx sanity documents query "*[_type == 'review'][0]._id")
-
-# Create a temporary JSON file with custom data in project root
-cd ..
-cat > test-custom-data.json << EOF
-{
-  "_type": "review",
-  "_id": $REAL_DOC_ID,
-  "review": "This product is absolutely terrible. I hate it and want my money back!"
-}
-EOF
-
-# Test with the custom data file
-npx sanity functions test sentiment-analysis --file test-custom-data.json
-```
-
-### 4. Test with Real Document Data
-
-The most reliable approach is to test with existing documents from your dataset:
-
-```bash
-# From the studio/ folder, find and export a document that matches your function's filter
-cd studio
-npx sanity documents query "*[_type == 'review' && !defined(sentiment)][0]" > ../test-real-document.json
-
-# Back to project root for function testing
-cd ..
-npx sanity functions test sentiment-analysis --file test-real-document.json
-```
 
 ### 5. Enable Debugging
 
@@ -234,23 +210,12 @@ console.log('Analyzed sentiment:', result.sentiment)
 
 ### Testing Tips
 
-- **Use real document IDs** - Document functions require IDs that exist in your dataset
-- **Query for test documents** - Use `npx sanity documents query` to find suitable test documents
+- **Use real document IDs** - Document functions require IDs that exist in your dataset. Use `npx sanity documents query` to find suitable test documents
 - **Use Node.js v22.x** locally to match production runtime
 - **Test edge cases** like content without text or with existing sentiment
-- **Check function logs** in CLI output for debugging
+- **Check function logs** in CLI output for debugging `npx sanity functions logs sentiment-analysis --watch`
 - **Test without AI calls** first by setting `noWrite: true` in the function
-- **Create test content** - If you don't have reviews without sentiment, create some test documents first
 - **Test various sentiment levels** - Try positive, negative, and neutral content
-
-## Requirements
-
-- A Sanity project with Functions enabled
-- A schema with user-generated content document types containing:
-  - A `review|feedback|comment` field with portable text (for content analysis)
-  - A `sentiment` field (for storing analyzed sentiment)
-- Access to Sanity's AI capabilities
-- Node.js v22.x for local development
 
 ## Usage Example
 
