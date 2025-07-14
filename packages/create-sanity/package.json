@@ -36,6 +36,6 @@
     "@repo/eslint-config": "workspace:*"
   },
   "engines": {
-    "node": ">=18"
+    "node": ">=20.19"
   }
 }
