@@ -3,6 +3,8 @@ import {type DocumentEvent, documentEventHandler, type FunctionContext} from '@s
 
 export const handler = documentEventHandler(
   async ({context, event}: {context: FunctionContext; event: DocumentEvent}) => {
+    // eslint-disable-next-line no-console
+    console.log('Event data:', JSON.stringify(event.data, null, 2))
     const client = createClient({
       ...context.clientOptions,
       dataset: 'production',
@@ -16,12 +18,12 @@ export const handler = documentEventHandler(
         // Set `noWrite` to `false` to write the sentiment to the document
         noWrite: true,
         instructionParams: {
-          content: {
+          review: {
             type: 'field',
-            path: 'content',
+            path: 'review',
           },
         },
-        instruction: `Analyze the sentiment of the $content and categorize it into one of these 5 levels: very_positive, positive, neutral, negative, very_negative. Consider the emotional tone, word choice, and overall sentiment expressed in the text. Return only the sentiment level as a string.`,
+        instruction: `Analyze the sentiment of the $review and categorize it into one of these 5 levels: very_positive, positive, neutral, negative, very_negative. Consider the emotional tone, word choice, and overall sentiment expressed in the text. Return only the sentiment level as a string.`,
         target: {
           path: 'sentiment',
         },
@@ -36,4 +38,4 @@ export const handler = documentEventHandler(
       console.error('Error occurred during sentiment analysis:', error)
     }
   },
-) 
+)
