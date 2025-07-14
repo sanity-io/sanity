@@ -121,6 +121,7 @@ import slugs, {slugAlias} from './standard/slugs'
 import strings from './standard/strings'
 import texts from './standard/texts'
 import urls from './standard/urls'
+import videos from './standard/videos'
 
 // @todo temporary, until code input is v3 compatible
 const codeInputType = {
@@ -168,6 +169,7 @@ export function createSchemaTypes(projectId: string) {
     emails,
     files,
     images,
+    videos,
     numbers,
     objects,
     ptAllTheBellsAndWhistlesType,

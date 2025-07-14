@@ -3,6 +3,27 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [3.99.0](https://github.com/sanity-io/sanity/compare/v3.98.1...v3.99.0) (2025-07-11)
+
+
+### Features
+
+* **core:** keep values when clicking off create release modal ([#9871](https://github.com/sanity-io/sanity/issues/9871)) ([fe8330e](https://github.com/sanity-io/sanity/commit/fe8330eb8fe214b4ca575a7ac367171708278713))
+* **examples:** Algolia-Sync to the function recipes  ([#9731](https://github.com/sanity-io/sanity/issues/9731)) ([fed1a8d](https://github.com/sanity-io/sanity/commit/fed1a8da2e1725f39cbfae3ada53936f3bf7da70))
+* **examples:** generate a summary with ai-agents functions recipe ([#9758](https://github.com/sanity-io/sanity/issues/9758)) ([95d60fe](https://github.com/sanity-io/sanity/commit/95d60feb6d927dd57dd6a187d10fc90f5525b7b9))
+* Media Library video integration ([#9909](https://github.com/sanity-io/sanity/issues/9909)) ([5342858](https://github.com/sanity-io/sanity/commit/534285836c3f1c7a5fe9772ed732731adc16992b))
+
+
+### Bug Fixes
+
+* **cli:** add document-id flag to functions test ([#9944](https://github.com/sanity-io/sanity/issues/9944)) ([b9e7fcd](https://github.com/sanity-io/sanity/commit/b9e7fcd9c017a2051b09e299e1d21ad1cb7eb37b))
+* **deps:** update dependency @portabletext/block-tools to ^1.1.38 ([#9940](https://github.com/sanity-io/sanity/issues/9940)) ([3dd90d5](https://github.com/sanity-io/sanity/commit/3dd90d539e2287162f7d5cf98fde53b868f17285))
+* **deps:** update dependency @portabletext/editor to ^1.57.5 ([#9941](https://github.com/sanity-io/sanity/issues/9941)) ([892da2b](https://github.com/sanity-io/sanity/commit/892da2b9304ac9bbfd3842fa199bccd5f6e78f35))
+* **deps:** update dependency @sanity/ui to ^2.16.4 ([#9934](https://github.com/sanity-io/sanity/issues/9934)) ([3967361](https://github.com/sanity-io/sanity/commit/39673611a02253d2ea4c2a6cdc018431b9353130))
+* pinning conventional-commits to v7 for CJS compatibility with lerna@8 ([#9951](https://github.com/sanity-io/sanity/issues/9951)) ([97c80b8](https://github.com/sanity-io/sanity/commit/97c80b8f4430e31cbfc0ed036238a422742ce80e))
+
+
+
 ## <small>3.98.1 (2025-07-09)</small>
 
 * fix: add commit-message field to release PR workflow (#9922) ([23b4a3a](https://github.com/sanity-io/sanity/commit/23b4a3a)), closes [#9922](https://github.com/sanity-io/sanity/issues/9922)

@@ -11,7 +11,10 @@ import planBlueprintsCommand from './blueprints/planBlueprintsCommand'
 import listBlueprintsCommand from './blueprints/stacksBlueprintsCommand'
 import codemodCommand from './codemod/codemodCommand'
 import debugCommand from './debug/debugCommand'
-import docsCommand from './docs/docsCommand'
+import browseCommand from './docs/browseCommand'
+import docsGroup from './docs/docsGroup'
+import readCommand from './docs/readCommand'
+import searchCommand from './docs/searchCommand'
 import devfunctionsCommand from './functions/devFunctionsCommand'
 import envFunctionsCommand from './functions/envFunctionsCommand'
 import functionsGroup from './functions/functionsGroup'
@@ -41,7 +44,10 @@ export const baseCommands: (CliCommandDefinition | CliCommandGroupDefinition)[] 
   logoutCommand,
   installCommand,
   versionsCommand,
-  docsCommand,
+  docsGroup,
+  browseCommand,
+  searchCommand,
+  readCommand,
   manageCommand,
   debugCommand,
   helpCommand,

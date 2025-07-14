@@ -1,6 +1,6 @@
 {
   "name": "create-sanity",
-  "version": "3.98.1",
+  "version": "3.99.0",
   "description": "Initialize a new Sanity project",
   "keywords": [
     "sanity",
@@ -36,6 +36,6 @@
     "@repo/eslint-config": "workspace:*"
   },
   "engines": {
-    "node": ">=18"
+    "node": ">=20.19"
   }
 }

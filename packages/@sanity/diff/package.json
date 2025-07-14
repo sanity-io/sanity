@@ -1,6 +1,6 @@
 {
   "name": "@sanity/diff",
-  "version": "3.98.1",
+  "version": "3.99.0",
   "description": "Generates diffs between documents and primitive types",
   "keywords": [
     "sanity",
@@ -55,7 +55,7 @@
     "rimraf": "^5.0.10"
   },
   "engines": {
-    "node": ">=18"
+    "node": ">=20.19"
   },
   "publishConfig": {
     "access": "public"

@@ -56,6 +56,7 @@ export function UpsellDialog(props: UpsellDialogProps) {
       __unstable_hideCloseButton
       bodyHeight="fill"
       padding={false}
+      zOffset={800}
       footer={{
         cancelButton: data.secondaryButton?.text
           ? {
