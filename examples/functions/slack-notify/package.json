@@ -3,7 +3,7 @@
   "type": "module",
   "main": "index.ts",
   "dependencies": {
-    "@sanity/functions": "^1.0.2",
+    "@sanity/functions": "^1.0.3",
     "@slack/web-api": "^7.9.3"
   },
   "blueprintResourceItem": {

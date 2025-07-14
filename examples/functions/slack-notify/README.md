@@ -68,7 +68,7 @@ Most official templates already include these fields.
 
 2. **Initialize the example**
 
-   Run this if you haven't initlized blueprints:
+   Run this if you haven't initialized blueprints:
 
    ```bash
    npx sanity blueprints init
@@ -111,16 +111,7 @@ Most official templates already include these fields.
    Install dependencies in the project root:
 
    ```bash
-   npm install @sanity/functions
    npm install
-   ```
-
-   And install function dependencies:
-
-   ```bash
-   cd functions/slack-notify
-   npm install
-   cd ../..
    ```
 
 ## Testing the function locally
