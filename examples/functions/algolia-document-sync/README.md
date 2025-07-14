@@ -28,7 +28,7 @@ This function is built to be compatible with any of [the official "clean" templa
 
 1. **Initialize the example**
 
-   Run this if you haven't initlized blueprints:
+   Run this if you haven't initialized blueprints:
 
    ```bash
    npx sanity blueprints init
@@ -78,15 +78,6 @@ This function is built to be compatible with any of [the official "clean" templa
 
    ```bash
    npm install
-   ```
-
-   And install function dependencies:
-
-   ```bash
-   npm install @sanity/functions
-   cd functions/algolia-document-sync
-   npm install
-   cd ../..
    ```
 
 4. **Set up environment variables**

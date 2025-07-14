@@ -4,7 +4,7 @@
   "main": "index.ts",
   "dependencies": {
     "@sanity/client": "^7.6.0",
-    "@sanity/functions": "1.0.2"
+    "@sanity/functions": "^1.0.3"
   },
   "blueprintResourceItem": {
     "name": "first-published",
