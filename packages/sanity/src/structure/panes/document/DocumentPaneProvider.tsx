@@ -30,6 +30,7 @@ import {DocumentPaneContext} from 'sanity/_singletons'
 import {usePaneRouter} from '../../components'
 import {useDiffViewRouter} from '../../diffView/hooks/useDiffViewRouter'
 import {useDocumentIdStack} from '../../hooks/useDocumentIdStack'
+import {useDocumentLastRev} from '../../hooks/useDocumentLastRev'
 import {structureLocaleNamespace} from '../../i18n'
 import {type PaneMenuItem} from '../../types'
 import {DocumentURLCopied} from './__telemetry__'
@@ -136,6 +137,7 @@ export const DocumentPaneProvider = memo((props: DocumentPaneProviderProps) => {
   } = useDocumentPaneInspector({documentId, documentType, params, setParams: setPaneParams})
 
   const [isDeleting, setIsDeleting] = useState(false)
+  const {lastRevisionDocument} = useDocumentLastRev(documentId, lastNonDeletedRevId || '')
 
   /**
    * Determine if the current document is deleted.
@@ -198,9 +200,19 @@ export const DocumentPaneProvider = memo((props: DocumentPaneProviderProps) => {
       if (onOlderRevision) {
         return revisionDocument || {_id: value._id, _type: value._type}
       }
+
+      // If the document is deleted (no draft, published, or version), return the last revision
+      const isDeleted = !value._createdAt && !value._updatedAt
+      if (isDeleted && lastNonDeletedRevId) {
+        // Return the fetched last revision document if available
+        if (lastRevisionDocument) {
+          return lastRevisionDocument
+        }
+      }
+
       return value
     },
-    [onOlderRevision, revisionDocument],
+    [onOlderRevision, revisionDocument, lastNonDeletedRevId, lastRevisionDocument],
   )
 
   const {
