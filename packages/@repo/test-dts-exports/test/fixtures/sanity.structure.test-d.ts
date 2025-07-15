@@ -151,6 +151,7 @@ import type {
   UnserializedListItemChild,
   useDocumentPane,
   useDocumentTitle,
+  UseDocumentTitle,
   usePaneOptions,
   usePaneRouter,
   UserComponent,
@@ -601,6 +602,9 @@ describe('sanity/structure', () => {
   })
   test('useDocumentTitle', () => {
     expectTypeOf<typeof useDocumentTitle>().toBeFunction()
+  })
+  test('UseDocumentTitle', () => {
+    expectTypeOf<UseDocumentTitle>().toBeObject()
   })
   test('usePaneOptions', () => {
     expectTypeOf<typeof usePaneOptions>().toBeFunction()
