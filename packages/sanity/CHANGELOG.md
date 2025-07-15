@@ -3,6 +3,28 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [4.0.0](https://github.com/sanity-io/sanity/compare/v3.99.0...v4.0.0) (2025-07-14)
+
+
+### ⚠ BREAKING CHANGES
+
+* remove node 18, make base 20 (#9804)
+
+### Bug Fixes
+
+* **deps:** update dependency @portabletext/editor to ^1.58.0 ([#9954](https://github.com/sanity-io/sanity/issues/9954)) ([662eadf](https://github.com/sanity-io/sanity/commit/662eadf9f097f83ab7ef94b8b74dfed030a540ca))
+* **deps:** update dependency @sanity/comlink to ^3.0.6 ([#9943](https://github.com/sanity-io/sanity/issues/9943)) ([4c64287](https://github.com/sanity-io/sanity/commit/4c642873525212bedbf6d0866f6de78086038b07))
+* **deps:** update dependency @sanity/comlink to ^3.0.7 ([#9957](https://github.com/sanity-io/sanity/issues/9957)) ([31876da](https://github.com/sanity-io/sanity/commit/31876da2fb30fb82ac60c34cadc7362e7544287f))
+* **deps:** update dependency @sanity/import to ^3.38.3 ([#9937](https://github.com/sanity-io/sanity/issues/9937)) ([ce13bc1](https://github.com/sanity-io/sanity/commit/ce13bc16a50c87b85b58b505c850afa66048523f))
+* **deps:** update dependency @sanity/presentation-comlink to ^1.0.22 ([#9945](https://github.com/sanity-io/sanity/issues/9945)) ([19eaa1f](https://github.com/sanity-io/sanity/commit/19eaa1f0299a980b568804ec74f0c871fc765729))
+* **deps:** update dependency @sanity/presentation-comlink to ^1.0.23 ([#9958](https://github.com/sanity-io/sanity/issues/9958)) ([f8ddff1](https://github.com/sanity-io/sanity/commit/f8ddff1239bf4cc9099ef3913545e7f7b65b48d8))
+* **deps:** update dependency @sanity/preview-url-secret to ^2.1.12 ([#9946](https://github.com/sanity-io/sanity/issues/9946)) ([df90799](https://github.com/sanity-io/sanity/commit/df907993458f02fef88385b1a93b4c57c7571c35))
+* **deps:** update dependency @sanity/ui to ^2.16.7 ([#9953](https://github.com/sanity-io/sanity/issues/9953)) ([57f922a](https://github.com/sanity-io/sanity/commit/57f922a1535ed2f9629486a9d985e79ea658a311))
+* remove node 18, make base 20 ([#9804](https://github.com/sanity-io/sanity/issues/9804)) ([8fa2157](https://github.com/sanity-io/sanity/commit/8fa2157bf7d5f1390f0e1663cb32bb1ffd361188))
+* **sanity:** ensure global document reference preview configuration is present for serialized `sanity.video` schema type ([b1cfbb6](https://github.com/sanity-io/sanity/commit/b1cfbb613dd5b527d826b46dccf3f1a66f2bab2e))
+
+
+
 ## [3.99.0](https://github.com/sanity-io/sanity/compare/v3.98.1...v3.99.0) (2025-07-11)
 
 
