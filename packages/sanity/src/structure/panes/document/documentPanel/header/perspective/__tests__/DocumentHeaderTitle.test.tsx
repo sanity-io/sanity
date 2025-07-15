@@ -2,11 +2,9 @@ import {render, waitFor} from '@testing-library/react'
 import {
   defineConfig,
   type SanityClient,
-  unstable_useValuePreview as useValuePreview,
   useActiveReleases,
   useArchivedReleases,
   useDocumentVersions,
-  useReleasesIds,
 } from 'sanity'
 import {useRouter} from 'sanity/router'
 import {beforeEach, describe, expect, it, type Mock, type MockedFunction, vi} from 'vitest'
@@ -14,6 +12,10 @@ import {beforeEach, describe, expect, it, type Mock, type MockedFunction, vi} fr
 import {createMockSanityClient} from '../../../../../../../../test/mocks/mockSanityClient'
 import {createTestProvider} from '../../../../../../../../test/testUtils/TestProvider'
 import {structureUsEnglishLocaleBundle} from '../../../../../../i18n'
+import {
+  mockUseDocumentTitle,
+  useDocumentTitleMockReturn,
+} from '../../../../__mocks__/useDocumentTitle.mock'
 import {type DocumentPaneContextValue} from '../../../../DocumentPaneContext'
 import {useDocumentPane} from '../../../../useDocumentPane'
 import {DocumentHeaderTitle} from '../../DocumentHeaderTitle'
@@ -45,10 +47,13 @@ vi.mock('../../../../../../../core/releases/store/useArchivedReleases', () => ({
 
 vi.mock('../../../../useDocumentPane')
 
+vi.mock('../../../../useDocumentTitle', () => ({
+  useDocumentTitle: vi.fn(() => useDocumentTitleMockReturn),
+}))
+
 vi.mock('sanity', async (importOriginal) => {
   return {
     ...(await importOriginal()),
-    unstable_useValuePreview: vi.fn(),
     useDocumentVersions: vi.fn(),
     usePerspective: vi.fn(() => ({perspective: undefined})),
   }
@@ -58,13 +63,11 @@ vi.mock('sanity/router')
 
 const mockUseActiveReleases = useActiveReleases as Mock<typeof useActiveReleases>
 const mockUseArchivedReleases = useArchivedReleases as Mock<typeof useArchivedReleases>
-const mockUseReleasesIds = useReleasesIds as Mock<typeof useReleasesIds>
 
 const mockUseDocumentVersions = useDocumentVersions as MockedFunction<typeof useDocumentVersions>
 
 describe('DocumentHeaderTitle', () => {
   const mockUseDocumentPane = useDocumentPane as MockedFunction<typeof useDocumentPane>
-  const mockUseValuePreview = useValuePreview as MockedFunction<typeof useValuePreview>
   const mockUseRouter = useRouter as MockedFunction<typeof useRouter>
   const defaultProps = {
     connectionState: 'connected',
@@ -72,13 +75,8 @@ describe('DocumentHeaderTitle', () => {
     editState: {draft: {title: 'Test Value', _createdAt: new Date()}},
   }
 
-  const defaultValue = {
-    isLoading: false,
-  }
-
   beforeEach(() => {
     mockUseDocumentPane.mockReturnValue(defaultProps as unknown as DocumentPaneContextValue)
-    mockUseValuePreview.mockReturnValue({...defaultValue, error: undefined, value: undefined})
     // oxlint-disable-next-line ban-ts-comment
     // @ts-expect-error
     mockUseRouter.mockReturnValue({stickyParams: {}, state: {}, navigate: vi.fn()})
@@ -125,10 +123,9 @@ describe('DocumentHeaderTitle', () => {
       title: 'Test Title',
     } as unknown as DocumentPaneContextValue)
 
-    mockUseValuePreview.mockReturnValue({
-      ...defaultValue,
+    mockUseDocumentTitle.mockReturnValue({
       error: undefined,
-      value: {title: 'Test Value'},
+      title: 'Test Value',
     })
 
     const {getByText} = render(<DocumentHeaderTitle />)
@@ -162,10 +159,9 @@ describe('DocumentHeaderTitle', () => {
   })
 
   it('should return the value.title if value is provided and no error occurred', async () => {
-    mockUseValuePreview.mockReturnValue({
-      ...defaultValue,
+    mockUseDocumentTitle.mockReturnValue({
       error: undefined,
-      value: {title: 'Test Preview Value'},
+      title: 'Test Preview Value',
     })
 
     const client = createMockSanityClient()
@@ -176,7 +172,7 @@ describe('DocumentHeaderTitle', () => {
   })
 
   it('should return "New Test Schema" if value is not provided and no error occurred', async () => {
-    mockUseValuePreview.mockReturnValue({...defaultValue, error: undefined, value: undefined})
+    mockUseDocumentTitle.mockReturnValue({error: undefined, title: undefined})
 
     const client = createMockSanityClient()
     const wrapper = await createWrapperComponent(client as any)
@@ -191,9 +187,9 @@ describe('DocumentHeaderTitle', () => {
       value: {title: 'Test Preview Value'},
     } as unknown as DocumentPaneContextValue)
 
-    mockUseValuePreview.mockReturnValue({
-      ...defaultValue,
-      error: new Error('Test Error'),
+    mockUseDocumentTitle.mockReturnValue({
+      ...useDocumentTitleMockReturn,
+      error: 'Test Error',
     })
 
     const client = createMockSanityClient()
@@ -203,29 +199,10 @@ describe('DocumentHeaderTitle', () => {
     await waitFor(() => expect(getByText('Error: Test Error')).toBeInTheDocument())
   })
 
-  it('should call useValuePreview hook with the correct arguments', async () => {
-    const client = createMockSanityClient()
-    const wrapper = await createWrapperComponent(client as any)
-
-    mockUseDocumentPane.mockReturnValue({
-      ...defaultProps,
-      value: defaultProps.editState.draft,
-    } as unknown as DocumentPaneContextValue)
-
-    render(<DocumentHeaderTitle />, {wrapper})
-    await waitFor(() =>
-      expect(mockUseValuePreview).toHaveBeenCalledWith({
-        enabled: true,
-        schemaType: defaultProps.schemaType,
-        value: defaultProps.editState.draft,
-      }),
-    )
-  })
-
   it('should display the value returned by useValuePreview hook correctly when no error occurs', async () => {
-    mockUseValuePreview.mockReturnValue({
-      ...defaultValue,
+    mockUseDocumentTitle.mockReturnValue({
       error: undefined,
+      title: 'Test Title',
     })
 
     const client = createMockSanityClient()
