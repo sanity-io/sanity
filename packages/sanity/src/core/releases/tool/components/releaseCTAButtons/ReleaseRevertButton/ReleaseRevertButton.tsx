@@ -205,13 +205,13 @@ const ConfirmReleaseDialog = ({
       <Flex align="center" paddingTop={4}>
         <Checkbox
           onChange={() => setStageNewRevertRelease((current) => !current)}
-          id="stage-release"
+          id="immediate-revert-release"
           style={{display: 'block'}}
-          checked={stageNewRevertRelease}
+          checked={!stageNewRevertRelease}
         />
         <Box flex={1} paddingLeft={3}>
           <Text muted size={1}>
-            <label htmlFor="stage-release">
+            <label htmlFor="immediate-revert-release">
               {t('revert-dialog.confirm-revert.stage-revert-checkbox-label')}
             </label>
           </Text>
