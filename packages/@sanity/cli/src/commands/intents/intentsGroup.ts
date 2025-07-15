@@ -4,7 +4,8 @@ const intentsGroup: CliCommandGroupDefinition = {
   name: 'intents',
   signature: '[COMMAND]',
   isGroupRoot: true,
-  description: 'Manage and work with intents for your Sanity organization',
+  description: 'Manage intents for your Sanity organization',
+  // until the feature is ready
   hideFromHelp: true,
 }
 
