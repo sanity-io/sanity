@@ -1,7 +1,10 @@
 name: Create Release PR
 
 on:
-  push:
+  workflow_run:
+    workflows: ["Release @next"]
+    types:
+      - completed
     branches:
       - main
 
@@ -10,14 +13,16 @@ permissions:
 
 jobs:
   create-or-update-pr:
-    # this runs in main, and we want to skip running it when release PRs are merged
-    # format of the commit message is specified in lerna.json
+    # Only run when release-next workflow completes on main branch
+    # Skip if the triggering commit was a release commit
     if: >
-      !startsWith(github.event.head_commit.message, 'chore(release): publish')
+      github.event.workflow_run.conclusion != 'cancelled' &&
+      !startsWith(github.event.workflow_run.head_commit.message, 'chore(release): publish')
     runs-on: ubuntu-latest
     permissions:
       pull-requests: write
       contents: write
+      actions: read
 
     env:
       TURBO_TOKEN: ${{ secrets.TURBO_TOKEN }}
@@ -26,7 +31,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
         with:
-          ref: main
+          ref: ${{ github.event.workflow_run.head_sha }}
           fetch-depth: 0
       - uses: pnpm/action-setup@v4
       - uses: actions/setup-node@v4
@@ -39,6 +44,33 @@ jobs:
         with:
           app-id: ${{ secrets.ECOSPARK_APP_ID }}
           private-key: ${{ secrets.ECOSPARK_APP_PRIVATE_KEY }}
+
+      - name: Check release-next workflow status
+        id: check-release-next
+        env:
+          GH_TOKEN: ${{ steps.app-token.outputs.token }}
+        run: |
+          WORKFLOW_RUN_ID="${{ github.event.workflow_run.id }}"
+          WORKFLOW_CONCLUSION="${{ github.event.workflow_run.conclusion }}"
+          COMMIT_SHA="${{ github.event.workflow_run.head_sha }}"
+
+          echo "Release @next workflow run ID: $WORKFLOW_RUN_ID"
+          echo "Workflow conclusion: $WORKFLOW_CONCLUSION"
+          echo "Commit SHA: $COMMIT_SHA"
+
+          # Get the workflow run URL for reference
+          WORKFLOW_URL="https://github.com/${{ github.repository }}/actions/runs/$WORKFLOW_RUN_ID"
+          echo "workflow_url=$WORKFLOW_URL" >> $GITHUB_OUTPUT
+
+          if [ "$WORKFLOW_CONCLUSION" = "success" ]; then
+            echo "✅ Release @next workflow succeeded"
+            echo "release_failed=false" >> $GITHUB_OUTPUT
+            echo "status_message=✅ Release @next build succeeded for commit $COMMIT_SHA" >> $GITHUB_OUTPUT
+          else
+            echo "❌ Release @next workflow failed with conclusion: $WORKFLOW_CONCLUSION"
+            echo "release_failed=true" >> $GITHUB_OUTPUT
+            echo "status_message=❌ Release @next build failed with conclusion: $WORKFLOW_CONCLUSION for commit $COMMIT_SHA" >> $GITHUB_OUTPUT
+          fi
 
       - name: Install deps & build
         run: pnpm install --ignore-scripts
@@ -85,10 +117,21 @@ jobs:
         with:
           token: ${{ steps.app-token.outputs.token }}
           title: "${{steps.version-commit.outputs.message}}"
-          body: "🤖 I have created a release **squib** **squob**\n\n Merging this PR will publish v${{steps.release-as.outputs.version}} to npm 🚀"
+          body: |
+            🤖 I have created a release **squib** **squob**
+
+            Merging this PR will publish v${{steps.release-as.outputs.version}} to npm 🚀
+
+            ## Release @next Status
+
+            ${{ steps.check-release-next.outputs.status_message }}
+
+            ${{ steps.check-release-next.outputs.release_failed == 'true' && format('⚠️  **Warning**: The Release @next build failed for this commit. Please review the [failed workflow run]({0}) before merging this PR.', steps.check-release-next.outputs.workflow_url) || '' }}
+
+            ${{ steps.check-release-next.outputs.release_failed == 'true' && '**This PR has been marked as draft due to the failed @next release.**' || '' }}
           commit-message: "${{steps.version-commit.outputs.message}}"
           branch: ci/release-main
           sign-commits: true
           base: main
           team-reviewers: "@sanity-io/studio"
-          draft: false
+          draft: ${{ steps.check-release-next.outputs.release_failed == 'true' }}
