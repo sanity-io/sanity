@@ -4,6 +4,7 @@ on:
   push:
     branches:
       - main
+      - chore/latest-release-detects-next # For testing workflow integration
 
 permissions:
   contents: read # for checkout
@@ -70,11 +71,13 @@ jobs:
         run: pnpm build --output-logs=full --log-order=grouped
 
       - name: Set publishing config
+        if: github.ref == 'refs/heads/main'
         run: pnpm config set '//registry.npmjs.org/:_authToken' "${NPM_PUBLISH_TOKEN}"
         env:
           NPM_PUBLISH_TOKEN: ${{secrets.NPM_PUBLISH_TOKEN}}
 
       - name: Check valid token
+        if: github.ref == 'refs/heads/main'
         run: |
           WHOAMI_RESULT=$(npm whoami)
           echo "npm whoami result: $WHOAMI_RESULT"
@@ -85,6 +88,7 @@ jobs:
           echo "✅ npm authentication validated - using $EXPECTED_NPM_USER account"
 
       - name: Publish packages to npm
+        if: github.ref == 'refs/heads/main'
         run: pnpm -r publish --tag next --no-git-checks
         env:
           NPM_CONFIG_PROVENANCE: true
@@ -93,6 +97,7 @@ jobs:
         run: pnpm run build:bundle
 
       - name: Upload bundles to staging bucket
+        if: github.ref == 'refs/heads/main'
         env:
           GOOGLE_PROJECT_ID: ${{ secrets.GCS_STAGING_PROJECT_ID }}
           GCLOUD_SERVICE_KEY: ${{ secrets.GCS_STAGING_SERVICE_KEY }}

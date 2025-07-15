@@ -7,6 +7,7 @@ on:
       - completed
     branches:
       - main
+      - chore/latest-release-detects-next # For testing workflow integration
 
 permissions:
   contents: read
@@ -106,7 +107,10 @@ jobs:
         id: version-commit
         run: |
           VERSION=$(cat lerna.json | jq -r .version)
-          echo "message=chore(release): publish v$VERSION" >> $GITHUB_OUTPUT
+          # echo "message=chore(release): publish v$VERSION" >> $GITHUB_OUTPUT
+
+          # For testing workflow integration
+          echo "message=chore(release): I LIKE TO SQUIB SQUOB v$VERSION" >> $GITHUB_OUTPUT
 
       - name: Get version
         id: release-as
@@ -119,6 +123,8 @@ jobs:
           title: "${{steps.version-commit.outputs.message}}"
           body: |
             🤖 I have created a release **squib** **squob**
+
+            ${{ github.event.workflow_run.head_branch != 'main' && '🧪 **TESTING MODE** - This PR was created from a feature branch to test the workflow integration.' || '' }}
 
             Merging this PR will publish v${{steps.release-as.outputs.version}} to npm 🚀
 
