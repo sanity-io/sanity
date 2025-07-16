@@ -137,7 +137,7 @@ export const DocumentPaneProvider = memo((props: DocumentPaneProviderProps) => {
   } = useDocumentPaneInspector({documentId, documentType, params, setParams: setPaneParams})
 
   const [isDeleting, setIsDeleting] = useState(false)
-  const {lastRevisionDocument} = useDocumentLastRev(documentId, lastNonDeletedRevId || '')
+  const {lastRevisionDocument} = useDocumentLastRev(documentId, documentType)
 
   /**
    * Determine if the current document is deleted.
