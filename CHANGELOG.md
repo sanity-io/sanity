@@ -3,6 +3,16 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [4.0.1](https://github.com/sanity-io/sanity/compare/v4.0.0...v4.0.1) (2025-07-16)
+
+
+### Bug Fixes
+
+* do not release next when releasing latest ([#9970](https://github.com/sanity-io/sanity/issues/9970)) ([ba5d287](https://github.com/sanity-io/sanity/commit/ba5d28736bb0789bd19f47c2953fb54d14b18f55))
+* **sanity:** poll asset state after linking without failing cors ([#9965](https://github.com/sanity-io/sanity/issues/9965)) ([5bafb44](https://github.com/sanity-io/sanity/commit/5bafb44cf1702080ed5406ea1294142429f019c0))
+
+
+
 ## [4.0.0](https://github.com/sanity-io/sanity/compare/v3.99.0...v4.0.0) (2025-07-14)
 
 
