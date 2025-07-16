@@ -13,7 +13,7 @@ const releasesLocaleStrings = {
   /** Action text for showing the archived releases */
   'action.archived': 'Archived',
   /** Action text for reverting a release by creating a new release */
-  'action.create-revert-release': 'Stage in new release',
+  'action.create-revert-release': 'Create a new release',
   /** Action text for deleting a release */
   'action.delete-release': 'Delete release',
   /** Action text for duplicating a release */
@@ -278,8 +278,7 @@ const releasesLocaleStrings = {
   /** Title for the dialog confirming the revert of a release */
   'revert-dialog.confirm-revert.title': "Are you sure you want to revert the '{{title}}' release?",
   /** Checkbox label to confirm whether to create a staged release for revert or immediately revert */
-  'revert-dialog.confirm-revert.stage-revert-checkbox-label':
-    'Stage revert actions in a new release',
+  'revert-dialog.confirm-revert.stage-revert-checkbox-label': 'Immediately revert the release',
   /** Warning card text for when immediately revert a release with history */
   'revert-dialog.confirm-revert.warning-card':
     'Changes were made to documents in this release after they were published. Reverting will overwrite these changes.',
