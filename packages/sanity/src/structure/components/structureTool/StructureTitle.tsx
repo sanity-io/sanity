@@ -9,6 +9,7 @@ import {
 } from 'sanity'
 
 import {LOADING_PANE} from '../../constants'
+import {useDocumentLastRev} from '../../hooks/useDocumentLastRev'
 import {structureLocaleNamespace} from '../../i18n'
 import {type Panes} from '../../structureResolvers'
 import {type DocumentPaneNode} from '../../types'
@@ -36,13 +37,17 @@ const DocumentTitle = (props: {documentId: string; documentType: string}) => {
     value: documentValue,
   })
 
-  const documentTitle = documentValue
-    ? isNewDocument
+  const {lastRevisionDocument} = useDocumentLastRev(documentId, documentType)
+  const isDeleted = lastRevisionDocument && !documentValue
+
+  // if the document is deleted, we don't want to show the title
+  const documentTitle = isDeleted
+    ? ''
+    : isNewDocument
       ? t('browser-document-title.new-document', {
           schemaType: schemaType?.title || schemaType?.name,
         })
       : value?.title || t('browser-document-title.untitled-document')
-    : ''
 
   const settled = editState.ready && !previewValueIsLoading
   const newTitle = useConstructDocumentTitle(documentTitle)
