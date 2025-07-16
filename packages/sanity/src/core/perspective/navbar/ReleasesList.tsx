@@ -4,7 +4,6 @@ import {type RefObject, useCallback, useMemo} from 'react'
 import {css, styled} from 'styled-components'
 
 import {CreateReleaseMenuItem} from '../../releases/components/CreateReleaseMenuItem'
-import {useReleasesUpsell} from '../../releases/contexts/upsell/useReleasesUpsell'
 import {useActiveReleases} from '../../releases/store/useActiveReleases'
 import {LATEST, PUBLISHED} from '../../releases/util/const'
 import {getReleaseIdFromReleaseDocumentId} from '../../releases/util/getReleaseIdFromReleaseDocumentId'
@@ -59,8 +58,6 @@ export function ReleasesList({
   scrollElementRef: RefObject<ScrollElement>
   menuItemProps?: ReleasesNavMenuItemPropsGetter
 }): React.JSX.Element {
-  const {guardWithReleaseLimitUpsell} = useReleasesUpsell()
-
   const {loading, data: releases} = useActiveReleases()
   const {selectedPerspectiveName} = usePerspective()
 
@@ -71,8 +68,8 @@ export function ReleasesList({
   } = useWorkspace()
 
   const handleCreateBundleClick = useCallback(
-    () => guardWithReleaseLimitUpsell(() => setCreateBundleDialogOpen(true)),
-    [guardWithReleaseLimitUpsell, setCreateBundleDialogOpen],
+    () => setCreateBundleDialogOpen(true),
+    [setCreateBundleDialogOpen],
   )
 
   const sortedReleaseTypeReleases = useMemo(

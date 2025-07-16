@@ -781,6 +781,9 @@ exports[`exports snapshot 1`] = `
     "useDocumentTitle": "function",
     "usePaneRouter": "function",
   },
+  "./media-library": {
+    "defineVideoField": "function",
+  },
   "./migrate": {
     "DEFAULT_MUTATION_CONCURRENCY": "number",
     "MAX_MUTATION_CONCURRENCY": "number",

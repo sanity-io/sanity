@@ -10,6 +10,10 @@ permissions:
 
 jobs:
   release-next:
+    # this runs in main, and we want to skip running it when release PRs are merged
+    # format of the commit message is specified in lerna.json
+    if: >
+      !startsWith(github.event.head_commit.message, 'chore(release): publish')
     permissions:
       id-token: write # to enable use of OIDC for npm provenance
     runs-on: ubuntu-latest

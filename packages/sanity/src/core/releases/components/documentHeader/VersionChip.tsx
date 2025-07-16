@@ -24,7 +24,6 @@ import {Popover, Tooltip} from '../../../../ui-components'
 import {useCanvasCompanionDocsStore} from '../../../canvas/store/useCanvasCompanionDocsStore'
 import {useTranslation} from '../../../i18n/hooks/useTranslation'
 import {getDraftId, getPublishedId, getVersionId} from '../../../util/draftUtils'
-import {useReleasesUpsell} from '../../contexts/upsell/useReleasesUpsell'
 import {useReleasesToolAvailable} from '../../hooks/useReleasesToolAvailable'
 import {useVersionOperations} from '../../hooks/useVersionOperations'
 import {getReleaseIdFromReleaseDocumentId} from '../../util/getReleaseIdFromReleaseDocumentId'
@@ -81,6 +80,7 @@ export const VersionChip = memo(function VersionChip(props: {
     releaseState?: ReleaseState
     isVersion: boolean
     disabled?: boolean
+    isGoingToUnpublish?: boolean
   }
 }) {
   const {
@@ -101,6 +101,7 @@ export const VersionChip = memo(function VersionChip(props: {
       releaseState,
       isVersion,
       disabled: contextMenuDisabled = false,
+      isGoingToUnpublish = false,
     },
   } = props
   const releasesToolAvailable = useReleasesToolAvailable()
@@ -112,7 +113,6 @@ export const VersionChip = memo(function VersionChip(props: {
   const popoverRef = useRef<HTMLDivElement | null>(null)
   const [isDiscardDialogOpen, setIsDiscardDialogOpen] = useState(false)
   const [isCreateReleaseDialogOpen, setIsCreateReleaseDialogOpen] = useState(false)
-  const {guardWithReleaseLimitUpsell} = useReleasesUpsell()
 
   const chipRef = useRef<HTMLButtonElement | null>(null)
 
@@ -158,10 +158,7 @@ export const VersionChip = memo(function VersionChip(props: {
     setIsDiscardDialogOpen(true)
   }, [setIsDiscardDialogOpen])
 
-  const openCreateReleaseDialog = useCallback(
-    () => guardWithReleaseLimitUpsell(() => setIsCreateReleaseDialogOpen(true)),
-    [guardWithReleaseLimitUpsell],
-  )
+  const openCreateReleaseDialog = useCallback(() => setIsCreateReleaseDialogOpen(true), [])
 
   const handleAddVersion = useCallback(
     async (targetRelease: string) => {
@@ -244,6 +241,7 @@ export const VersionChip = memo(function VersionChip(props: {
             onCreateVersion={handleAddVersion}
             locked={locked}
             type={documentType}
+            isGoingToUnpublish={isGoingToUnpublish}
           />
         }
         fallbackPlacements={[]}

@@ -52,7 +52,7 @@ npx sanity schema deploy
 
 1. **Initialize the example**
 
-   Run this if you haven't initlized blueprints:
+   Run this if you haven't initialized blueprints:
 
    ```bash
    npx sanity blueprints init
@@ -95,17 +95,10 @@ npx sanity schema deploy
    Install dependencies in the project root:
 
    ```bash
-   npm install @sanity/functions
    npm install
    ```
 
    And install function dependencies:
-
-   ```bash
-   cd functions/brand-voice-validator
-   npm install
-   cd ../..
-   ```
 
 4. **Make sure you have a schema deployed**
 

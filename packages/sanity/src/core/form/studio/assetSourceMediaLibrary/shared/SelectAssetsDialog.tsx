@@ -57,7 +57,7 @@ export function SelectAssetsDialog(props: SelectAssetsDialogProps): ReactNode {
   const appBasePath = mediaLibraryConfig.__internal.appBasePath
   const iframeUrl =
     `${appHost}${appBasePath}/plugin/${pluginApiVersion}/library/${libraryId}/assets?selectionType=${selectionType}` +
-    `&selectAssetTypes=${selectAssetType}&scheme=${dark ? 'dark' : 'light'}&auth=${authType}`
+    `&selectAssetTypes=${selectAssetType === 'sanity.video' ? 'video' : selectAssetType}&scheme=${dark ? 'dark' : 'light'}&auth=${authType}`
   const {onLinkAssets} = useLinkAssets({schemaType})
 
   const handleSelect = useCallback(async () => {
@@ -71,6 +71,7 @@ export function SelectAssetsDialog(props: SelectAssetsDialogProps): ReactNode {
       toast.push({
         closable: true,
         status: 'error',
+        id: 'insert-asset-error',
         title: t('asset-source.dialog.insert-asset-error'),
       })
       console.error(error)

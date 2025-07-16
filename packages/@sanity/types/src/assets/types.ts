@@ -146,7 +146,7 @@ export type AssetFromSource = {
 export interface AssetSourceComponentProps {
   action?: 'select' | 'upload'
   assetSource: AssetSource
-  assetType?: 'file' | 'image'
+  assetType?: 'file' | 'image' | 'sanity.video'
   accept: string
   selectionType: 'single'
   dialogHeaderTitle?: React.ReactNode

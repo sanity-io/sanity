@@ -9,7 +9,7 @@ import {useDocumentPane} from './useDocumentPane'
  * @beta
  * @hidden
  */
-interface UseDocumentTitle {
+export interface UseDocumentTitle {
   error?: string
   title?: string
 }
@@ -23,25 +23,23 @@ interface UseDocumentTitle {
  * @returns The document title or error. See {@link UseDocumentTitle}
  */
 export function useDocumentTitle(): UseDocumentTitle {
-  const {connectionState, schemaType, title, displayed} = useDocumentPane()
+  const {connectionState, schemaType, editState} = useDocumentPane()
   const {t} = useTranslation(structureLocaleNamespace)
-  const subscribed = Boolean(displayed)
+  // follows the same logic as the StructureTitle component
+  const documentValue = editState?.version || editState?.draft || editState?.published
+  const subscribed = Boolean(documentValue)
 
   const {error, value} = useValuePreview({
     enabled: subscribed,
     schemaType,
-    value: displayed,
+    value: documentValue,
   })
 
   if (connectionState === 'connecting' && !subscribed) {
     return {error: undefined, title: undefined}
   }
 
-  if (title) {
-    return {error: undefined, title}
-  }
-
-  if (!displayed) {
+  if (!value) {
     return {
       error: undefined,
       title: t('panes.document-header-title.new.text', {

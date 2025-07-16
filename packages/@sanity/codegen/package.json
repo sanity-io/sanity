@@ -1,6 +1,6 @@
 {
   "name": "@sanity/codegen",
-  "version": "3.98.1",
+  "version": "4.0.1",
   "description": "Codegen toolkit for Sanity.io",
   "keywords": [
     "sanity",
@@ -78,7 +78,7 @@
     "vitest": "^3.2.3"
   },
   "engines": {
-    "node": ">=18"
+    "node": ">=20.19"
   },
   "publishConfig": {
     "access": "public"

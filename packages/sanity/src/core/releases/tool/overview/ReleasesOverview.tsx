@@ -59,7 +59,7 @@ const DEFAULT_ARCHIVED_RELEASES_OVERVIEW_SORT: TableSort = {
 export function ReleasesOverview() {
   const {data: releases, loading: loadingReleases} = useActiveReleases()
   const {data: archivedReleases} = useArchivedReleases()
-  const {guardWithReleaseLimitUpsell, mode} = useReleasesUpsell()
+  const {mode} = useReleasesUpsell()
 
   const router = useRouter()
   const [releaseGroupMode, setReleaseGroupMode] = useState<Mode>(getInitialReleaseGroupMode(router))
@@ -82,7 +82,6 @@ export function ReleasesOverview() {
   const {createRelease} = useReleaseOperations()
   const {checkWithPermissionGuard} = useReleasePermissions()
   const [hasCreatePermission, setHasCreatePermission] = useState<boolean | null>(null)
-  const [isPendingGuardResponse, setIsPendingGuardResponse] = useState<boolean>(false)
 
   const mediaIndex = useMediaIndex()
 
@@ -233,23 +232,14 @@ export function ReleasesOverview() {
   ])
 
   const handleOnClickCreateRelease = useCallback(async () => {
-    setIsPendingGuardResponse(true)
-    await guardWithReleaseLimitUpsell(() => {
-      setIsCreateReleaseDialogOpen(true)
-    })
-    setIsPendingGuardResponse(false)
-  }, [guardWithReleaseLimitUpsell])
+    setIsCreateReleaseDialogOpen(true)
+  }, [])
 
   const createReleaseButton = useMemo(
     () => (
       <Button
         icon={AddIcon}
-        disabled={
-          isPendingGuardResponse ||
-          !hasCreatePermission ||
-          isCreateReleaseDialogOpen ||
-          mode === 'disabled'
-        }
+        disabled={!hasCreatePermission || isCreateReleaseDialogOpen || mode === 'disabled'}
         onClick={handleOnClickCreateRelease}
         text={tCore('release.action.create-new')}
         tooltipProps={{
@@ -258,14 +248,7 @@ export function ReleasesOverview() {
         }}
       />
     ),
-    [
-      isPendingGuardResponse,
-      hasCreatePermission,
-      isCreateReleaseDialogOpen,
-      mode,
-      handleOnClickCreateRelease,
-      tCore,
-    ],
+    [hasCreatePermission, isCreateReleaseDialogOpen, mode, handleOnClickCreateRelease, tCore],
   )
 
   const handleOnCreateRelease = useCallback(

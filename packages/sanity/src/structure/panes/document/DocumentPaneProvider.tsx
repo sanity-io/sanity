@@ -11,6 +11,7 @@ import {
   type EditStateFor,
   EMPTY_ARRAY,
   getPublishedId,
+  isGoingToUnpublish,
   isPerspectiveWriteable,
   isVersionId,
   type PartialContext,
@@ -424,6 +425,13 @@ export const DocumentPaneProvider = memo((props: DocumentPaneProviderProps) => {
   const isDeleted = useMemo(() => getIsDeleted(editState), [editState, getIsDeleted])
   const revisionNotFound = onOlderRevision && !revisionDocument
 
+  const currentDisplayed = useMemo(() => {
+    if (editState.version && isGoingToUnpublish(editState.version)) {
+      return editState.published
+    }
+    return displayed
+  }, [editState.version, editState.published, displayed])
+
   const documentPane: DocumentPaneContextValue = useMemo(
     () =>
       ({
@@ -436,7 +444,7 @@ export const DocumentPaneProvider = memo((props: DocumentPaneProviderProps) => {
         collapsedPaths,
         compareValue,
         connectionState,
-        displayed,
+        displayed: currentDisplayed,
         documentId,
         documentIdRaw,
         documentType,
@@ -497,7 +505,7 @@ export const DocumentPaneProvider = memo((props: DocumentPaneProviderProps) => {
       collapsedPaths,
       compareValue,
       connectionState,
-      displayed,
+      currentDisplayed,
       documentId,
       documentIdRaw,
       documentType,
