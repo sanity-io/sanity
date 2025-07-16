@@ -506,6 +506,7 @@ export const DocumentPaneProvider = memo((props: DocumentPaneProviderProps) => {
         revisionId,
         revisionNotFound,
         lastNonDeletedRevId,
+        lastRevisionDocument,
       }) satisfies DocumentPaneContextValue,
     [
       actions,
@@ -566,6 +567,7 @@ export const DocumentPaneProvider = memo((props: DocumentPaneProviderProps) => {
       revisionId,
       revisionNotFound,
       lastNonDeletedRevId,
+      lastRevisionDocument,
     ],
   )
 

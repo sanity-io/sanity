@@ -31,16 +31,18 @@ const DocumentTitle = (props: {documentId: string; documentType: string}) => {
   const schemaType = schema.get(documentType) as ObjectSchemaType | undefined
 
   const {value, isLoading: previewValueIsLoading} = useValuePreview({
-    enabled: true,
+    enabled: !!documentValue,
     schemaType,
     value: documentValue,
   })
 
-  const documentTitle = isNewDocument
-    ? t('browser-document-title.new-document', {
-        schemaType: schemaType?.title || schemaType?.name,
-      })
-    : value?.title || t('browser-document-title.untitled-document')
+  const documentTitle = documentValue
+    ? isNewDocument
+      ? t('browser-document-title.new-document', {
+          schemaType: schemaType?.title || schemaType?.name,
+        })
+      : value?.title || t('browser-document-title.untitled-document')
+    : ''
 
   const settled = editState.ready && !previewValueIsLoading
   const newTitle = useConstructDocumentTitle(documentTitle)

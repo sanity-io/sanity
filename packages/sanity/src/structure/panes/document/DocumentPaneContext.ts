@@ -102,4 +102,5 @@ export interface DocumentPaneContextValue {
   revisionId: string | null
   revisionNotFound: boolean
   lastNonDeletedRevId: string | null
+  lastRevisionDocument: SanityDocument | null
 }

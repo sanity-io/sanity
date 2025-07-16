@@ -1,5 +1,10 @@
 import {renderHook, waitFor} from '@testing-library/react'
-import {defineConfig, type SanityClient, unstable_useValuePreview as useValuePreview} from 'sanity'
+import {
+  defineConfig,
+  prepareForPreview,
+  type SanityClient,
+  unstable_useValuePreview as useValuePreview,
+} from 'sanity'
 import {beforeEach, describe, expect, it, type MockedFunction, vi} from 'vitest'
 
 import {createMockSanityClient} from '../../../../../test/mocks/mockSanityClient'
@@ -14,14 +19,17 @@ vi.mock('../useDocumentPane')
 
 // Mock the useValuePreview and useTranslation hooks
 vi.mock('sanity', async (importOriginal) => {
+  const original = (await importOriginal()) as any
   return {
-    ...(await importOriginal()),
+    ...original,
     unstable_useValuePreview: vi.fn(),
+    prepareForPreview: vi.fn(),
   }
 })
 
 const mockUseDocumentPane = useDocumentPane as MockedFunction<typeof useDocumentPane>
 const mockUseValuePreview = useValuePreview as MockedFunction<typeof useValuePreview>
+const mockPrepareForPreview = prepareForPreview as MockedFunction<typeof prepareForPreview>
 
 function createWrapperComponent(client: SanityClient) {
   const config = defineConfig({
@@ -453,6 +461,63 @@ describe('useDocumentTitle', () => {
         error: undefined,
         title: 'New Test Schema',
       })
+    })
+  })
+
+  it('should handle deleted documents by using prepareForPreview directly', async () => {
+    const lastRevisionDocument = {
+      _id: 'test-id',
+      _type: 'testSchema',
+      _createdAt: '2023-01-01T00:00:00Z',
+      _updatedAt: '2023-01-01T00:00:00Z',
+      _rev: 'rev1',
+      title: 'Deleted Document Title',
+    }
+
+    mockUseDocumentPane.mockReturnValue({
+      ...defaultDocumentPaneValue,
+      isDeleted: true,
+      lastRevisionDocument,
+      editState: null, // No edit state for deleted documents
+    } as DocumentPaneContextValue)
+
+    // Mock prepareForPreview to return the expected title
+    mockPrepareForPreview.mockReturnValue({
+      title: 'Deleted Document Title',
+    })
+
+    // useValuePreview should not be called for deleted documents
+    mockUseValuePreview.mockReturnValue({
+      error: undefined,
+      value: undefined,
+      isLoading: false,
+    })
+
+    const client = createMockSanityClient()
+    const wrapper = await createWrapperComponent(client as any)
+
+    const {result} = renderHook(() => useDocumentTitle(), {wrapper})
+
+    await waitFor(() => {
+      expect(result.current).toEqual({
+        error: undefined,
+        title: 'Deleted Document Title',
+      })
+    })
+
+    // Verify that prepareForPreview was called with the lastRevisionDocument
+    expect(mockPrepareForPreview).toHaveBeenCalledWith(lastRevisionDocument, {
+      title: 'Test Schema',
+      name: 'testSchema',
+      jsonType: 'object',
+      fields: [],
+    })
+
+    // Verify that useValuePreview was called with enabled: false for deleted documents
+    expect(mockUseValuePreview).toHaveBeenCalledWith({
+      enabled: false,
+      schemaType: {title: 'Test Schema', name: 'testSchema', fields: [], jsonType: 'object'},
+      value: lastRevisionDocument,
     })
   })
 })
