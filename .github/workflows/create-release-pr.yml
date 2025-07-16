@@ -14,10 +14,11 @@ permissions:
 
 jobs:
   create-or-update-pr:
-    # Only run when release-next workflow completes on main branch
+    # Run when release-next workflow completes on main OR feature branch (for testing)
     # Skip if the triggering commit was a release commit
     if: >
       github.event.workflow_run.conclusion != 'cancelled' &&
+      (github.event.workflow_run.head_branch == 'main' || github.event.workflow_run.head_branch == 'chore/latest-release-detects-next') &&
       !startsWith(github.event.workflow_run.head_commit.message, 'chore(release): publish')
     runs-on: ubuntu-latest
     permissions:
@@ -136,8 +137,8 @@ jobs:
 
             ${{ steps.check-release-next.outputs.release_failed == 'true' && '**This PR has been marked as draft due to the failed @next release.**' || '' }}
           commit-message: "${{steps.version-commit.outputs.message}}"
-          branch: ci/release-main
+          branch: ${{ github.event.workflow_run.head_branch == 'main' && 'ci/release-main' || 'ci/release-test' }}
           sign-commits: true
-          base: main
+          base: ${{ github.event.workflow_run.head_branch }}
           team-reviewers: "@sanity-io/studio"
           draft: ${{ steps.check-release-next.outputs.release_failed == 'true' }}
