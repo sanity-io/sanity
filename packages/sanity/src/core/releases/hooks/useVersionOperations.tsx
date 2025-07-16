@@ -8,11 +8,7 @@ import {AddedVersion} from '../__telemetry__/releases.telemetry'
 import {useReleaseOperations} from '../store/useReleaseOperations'
 
 export interface VersionOperationsValue {
-  createVersion: (
-    releaseId: ReleaseId,
-    documentId: string,
-    initialValue?: Record<string, unknown>,
-  ) => Promise<void>
+  createVersion: (releaseId: ReleaseId, documentId: string) => Promise<void>
   discardVersion: (releaseId: string, documentId: string) => Promise<SingleActionResult>
   unpublishVersion: (documentId: string) => Promise<SingleActionResult>
   revertUnpublishVersion: (documentId: string) => Promise<SingleActionResult>
@@ -26,13 +22,9 @@ export function useVersionOperations(): VersionOperationsValue {
 
   const setPerspective = useSetPerspective()
 
-  const handleCreateVersion = async (
-    releaseId: ReleaseId,
-    documentId: string,
-    initialValue?: Record<string, unknown>,
-  ) => {
+  const handleCreateVersion = async (releaseId: ReleaseId, documentId: string) => {
     const origin = getDocumentVariantType(documentId)
-    await createVersion(releaseId, documentId, initialValue)
+    await createVersion(releaseId, documentId)
     setPerspective(releaseId)
     telemetry.log(AddedVersion, {
       documentOrigin: origin,
