@@ -2007,7 +2007,7 @@ importers:
         specifier: ^5.0.0
         version: 5.0.0
       xstate:
-        specifier: ^5.20.0
+        specifier: ^5.20.1
         version: 5.20.1
       yargs:
         specifier: ^17.3.0
