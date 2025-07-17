@@ -66,7 +66,12 @@ const filteredErrors = errors.filter((d) => {
   }
 
   // This error originates from a generated xstate machine declaration, so it's not code we can fix, it's a false negative
-  if (file.fileName.endsWith('node_modules/@portabletext/editor/lib/index.d.ts') && code === 2488) {
+  if (
+    file.fileName.endsWith(
+      'node_modules/@portabletext/editor/lib/_chunks-dts/behavior.types.action.d.ts',
+    ) &&
+    code === 2488
+  ) {
     return false
   }
 
