@@ -24,7 +24,7 @@
     "@sanity/cli": "workspace:*",
     "@sanity/client": "^7.8.0",
     "@sanity/color": "^3.0.6",
-    "@sanity/color-input": "^4.0.4",
+    "@sanity/color-input": "^4.0.5",
     "@sanity/google-maps-input": "^4.1.1",
     "@sanity/icons": "^3.7.4",
     "@sanity/image-url": "^1.1.0",
