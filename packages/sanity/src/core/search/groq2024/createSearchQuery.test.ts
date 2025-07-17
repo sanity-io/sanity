@@ -5,34 +5,36 @@ import {describe, expect, it} from 'vitest'
 import {DEFAULT_LIMIT} from '../weighted/createSearchQuery'
 import {createSearchQuery} from './createSearchQuery'
 
-const testType = Schema.compile({
-  types: [
-    defineType({
-      name: 'basic-schema-test',
-      type: 'document',
-      preview: {
-        select: {
-          title: 'title',
-        },
+const schemaTypes = [
+  defineType({
+    name: 'basic-schema-test',
+    type: 'document',
+    preview: {
+      select: {
+        title: 'title',
       },
-      fields: [
-        defineField({
-          name: 'title',
-          type: 'string',
-          options: {
-            search: {
-              weight: 10,
-            },
+    },
+    fields: [
+      defineField({
+        name: 'title',
+        type: 'string',
+        options: {
+          search: {
+            weight: 10,
           },
-        }),
-      ],
-    }),
-  ],
-}).get('basic-schema-test')
+        },
+      }),
+    ],
+  }),
+]
 
 describe('createSearchQuery', () => {
   describe('searchTerms', () => {
     it('should create query for basic type', () => {
+      const testType = Schema.compile({
+        types: schemaTypes,
+      }).get('basic-schema-test')
+
       const {query, params} = createSearchQuery(
         {
           query: 'test',
@@ -58,6 +60,10 @@ describe('createSearchQuery', () => {
 
   describe('searchOptions', () => {
     it('should include drafts by default', () => {
+      const testType = Schema.compile({
+        types: schemaTypes,
+      }).get('basic-schema-test')
+
       const {query, options} = createSearchQuery(
         {
           query: 'term0',
@@ -71,6 +77,10 @@ describe('createSearchQuery', () => {
     })
 
     it('should exclude drafts when configured', () => {
+      const testType = Schema.compile({
+        types: schemaTypes,
+      }).get('basic-schema-test')
+
       const {query, options} = createSearchQuery(
         {
           query: 'term0',
@@ -85,6 +95,10 @@ describe('createSearchQuery', () => {
     })
 
     it('should use `raw` perspective when no perspective provided', () => {
+      const testType = Schema.compile({
+        types: schemaTypes,
+      }).get('basic-schema-test')
+
       const {options} = createSearchQuery(
         {
           query: 'term0',
@@ -97,6 +111,10 @@ describe('createSearchQuery', () => {
     })
 
     it('should use `raw` perspective when empty perspective array provided', () => {
+      const testType = Schema.compile({
+        types: schemaTypes,
+      }).get('basic-schema-test')
+
       const {options} = createSearchQuery(
         {
           query: 'term0',
@@ -110,6 +128,10 @@ describe('createSearchQuery', () => {
     })
 
     it('should use provided limit (plus one to determine existence of next page)', () => {
+      const testType = Schema.compile({
+        types: schemaTypes,
+      }).get('basic-schema-test')
+
       const {params} = createSearchQuery(
         {
           query: 'term0',
@@ -125,6 +147,10 @@ describe('createSearchQuery', () => {
     })
 
     it('should add configured filter and params', () => {
+      const testType = Schema.compile({
+        types: schemaTypes,
+      }).get('basic-schema-test')
+
       const {query, params} = createSearchQuery(
         {
           query: 'term',
@@ -139,6 +165,10 @@ describe('createSearchQuery', () => {
     })
 
     it('should use configured tag', () => {
+      const testType = Schema.compile({
+        types: schemaTypes,
+      }).get('basic-schema-test')
+
       const {options} = createSearchQuery(
         {
           query: 'term',
@@ -152,6 +182,10 @@ describe('createSearchQuery', () => {
     })
 
     it('should use configured sort field and direction', () => {
+      const testType = Schema.compile({
+        types: schemaTypes,
+      }).get('basic-schema-test')
+
       const {query} = createSearchQuery(
         {
           query: 'test',
@@ -177,6 +211,10 @@ describe('createSearchQuery', () => {
     })
 
     it('should use multiple sort fields and directions', () => {
+      const testType = Schema.compile({
+        types: schemaTypes,
+      }).get('basic-schema-test')
+
       const {query} = createSearchQuery(
         {
           query: 'test',
@@ -213,6 +251,10 @@ describe('createSearchQuery', () => {
     })
 
     it('should order results by _score desc if no sort field and direction is configured', () => {
+      const testType = Schema.compile({
+        types: schemaTypes,
+      }).get('basic-schema-test')
+
       const {query} = createSearchQuery(
         {
           query: 'test',
@@ -230,6 +272,10 @@ describe('createSearchQuery', () => {
     })
 
     it('should prepend comments (with new lines) if comments is configured', () => {
+      const testType = Schema.compile({
+        types: schemaTypes,
+      }).get('basic-schema-test')
+
       const {query} = createSearchQuery(
         {
           query: 'test',
