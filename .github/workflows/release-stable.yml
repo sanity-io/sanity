@@ -1,0 +1,109 @@
+name: Release @stable
+
+on:
+  push:
+    branches:
+      - chore/stable-deployment-staging
+  workflow_dispatch:
+    inputs:
+      version:
+        description: "Semver version to tag as stable (e.g., 3.2.1 or 3.2.1-next.1.abc)"
+        required: true
+        type: string
+
+permissions:
+  contents: read
+
+jobs:
+  release-stable:
+    runs-on: ubuntu-latest
+    env:
+      TURBO_TOKEN: ${{ secrets.TURBO_TOKEN }}
+      TURBO_TEAM: ${{ vars.TURBO_TEAM }}
+      EXPECTED_NPM_USER: sanity-io
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@v4
+        with:
+          cache: pnpm
+          node-version: lts/*
+
+      - name: Get version input
+        id: get-version
+        run: |
+          if [[ "${{ github.event_name }}" == "workflow_dispatch" ]]; then
+            version="${{ github.event.inputs.version }}"
+            echo "Using manual input version: $version"
+          else
+            # For push events, use hardcoded version
+            version="3.94.0"
+            echo "Using hardcoded version for push event: $version"
+          fi
+          echo "version=$version" >> "$GITHUB_OUTPUT"
+
+      - name: Validate semver version
+        run: |
+          version="${{ steps.get-version.outputs.version }}"
+          echo "Validating version: $version"
+
+          # Validate semver format (basic check for X.Y.Z or X.Y.Z-prerelease)
+          if [[ ! "$version" =~ ^[0-9]+\.[0-9]+\.[0-9]+(-[a-zA-Z0-9\.-]+)?$ ]]; then
+            echo "Error: Invalid semver format: $version"
+            echo "Expected format: X.Y.Z or X.Y.Z-prerelease (e.g., 3.2.1 or 3.2.1-next.1.abc)"
+            exit 1
+          fi
+
+          echo "✅ Version validation passed: $version"
+
+      - name: Install deps
+        run: pnpm install --ignore-scripts
+
+      - name: Set publishing config
+        run: pnpm config set '//registry.npmjs.org/:_authToken' "${NPM_PUBLISH_TOKEN}"
+        env:
+          NPM_PUBLISH_TOKEN: ${{ secrets.NPM_PUBLISH_TOKEN }}
+
+      - name: Check valid token
+        run: |
+          WHOAMI_RESULT=$(npm whoami)
+          echo "npm whoami result: $WHOAMI_RESULT"
+          if [ "$WHOAMI_RESULT" != "$EXPECTED_NPM_USER" ]; then
+            echo "Error: npm whoami returned '$WHOAMI_RESULT', expected '$EXPECTED_NPM_USER'"
+            exit 1
+          fi
+          echo "✅ npm authentication validated - using $EXPECTED_NPM_USER account"
+
+      - name: Update npm dist-tags to stable
+        run: |
+          # Get all published (non-private) packages in the workspace
+          packages=$(pnpx tsx scripts/listPublishedPackages.ts)
+          version="${{ steps.get-version.outputs.version }}"
+
+          echo "Tagging the following packages as stable: $packages"
+
+          # Convert relative paths to package names and apply dist-tag
+          for pkg_dir in $packages; do
+            pkg_name=$(jq -r '.name' "$pkg_dir/package.json")
+            echo "Tagging $pkg_name@$version as stable"
+            npm dist-tag add "$pkg_name@$version" stable
+          done
+
+          echo "✅ All packages tagged as stable"
+
+      - name: Update manifest with stable tag (staging)
+        env:
+          GOOGLE_PROJECT_ID: ${{ secrets.GCS_STAGING_PROJECT_ID }}
+          GCLOUD_SERVICE_KEY: ${{ secrets.GCS_STAGING_SERVICE_KEY }}
+          GCLOUD_BUCKET: ${{ secrets.GCS_STAGING_BUCKET }}
+        run: pnpm bundle-manager tag --tag=stable --target-version=${{ steps.get-version.outputs.version }}
+
+      # - name: Update manifest with stable tag (production)
+      #   env:
+      #     GOOGLE_PROJECT_ID: ${{ secrets.GCS_PRODUCTION_PROJECT_ID }}
+      #     GCLOUD_SERVICE_KEY: ${{ secrets.GCS_PRODUCTION_SERVICE_KEY }}
+      #     GCLOUD_BUCKET: ${{ secrets.GCS_PRODUCTION_BUCKET }}
+      #   run: pnpm bundle-manager tag --tag=stable --target-version=${{ steps.get-version.outputs.version }}
