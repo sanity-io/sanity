@@ -1489,7 +1489,7 @@ importers:
         specifier: ^4.1.31
         version: 4.1.31(react@18.3.1)(rxjs@7.8.2)
       rxjs:
-        specifier: ^7.8.0
+        specifier: ^7.8.2
         version: 7.8.2
       use-effect-event:
         specifier: ^2.0.3
@@ -2309,7 +2309,7 @@ importers:
         specifier: ^4.17.21
         version: 4.17.21
       rxjs:
-        specifier: ^7.8.0
+        specifier: ^7.8.2
         version: 7.8.2
       sanity:
         specifier: workspace:*
