@@ -28,4 +28,23 @@ export const prerender = true
     expect(parsed.type).toBe('File')
     expect(parsed.program.body.length).toBe(5)
   })
+  test('should parse vue', () => {
+    const source = `
+<script setup lang="ts">
+import groq from 'groq'
+const query = groq('*[_type == "myType"]')
+</script>
+
+<template>
+  <MyComponent>
+    <div>{{ query }}</div>
+  </MyComponent>
+</template>
+    `
+
+    const parsed = parseSourceFile(source, 'foo.vue', {})
+
+    expect(parsed.type).toBe('File')
+    expect(parsed.program.body.length).toBe(2)
+  })
 })
