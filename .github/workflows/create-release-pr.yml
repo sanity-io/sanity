@@ -7,7 +7,6 @@ on:
       - completed
     branches:
       - main
-      - chore/latest-release-detects-next # For testing workflow integration
 
 permissions:
   contents: read
@@ -18,7 +17,7 @@ jobs:
     # Skip if the triggering commit was a release commit
     if: >
       github.event.workflow_run.conclusion != 'cancelled' &&
-      (github.event.workflow_run.head_branch == 'main' || github.event.workflow_run.head_branch == 'chore/latest-release-detects-next') &&
+      github.event.workflow_run.head_branch == 'main' &&
       !startsWith(github.event.workflow_run.head_commit.message, 'chore(release): publish')
     runs-on: ubuntu-latest
     permissions:
@@ -65,13 +64,13 @@ jobs:
           echo "workflow_url=$WORKFLOW_URL" >> $GITHUB_OUTPUT
 
           if [ "$WORKFLOW_CONCLUSION" = "success" ]; then
-            echo "✅ Release @next workflow succeeded"
+            echo "Release @next workflow succeeded"
             echo "release_failed=false" >> $GITHUB_OUTPUT
-            echo "status_message=✅ Release @next build succeeded for commit $COMMIT_SHA" >> $GITHUB_OUTPUT
+            echo "status_message=Release @next build succeeded for commit $COMMIT_SHA" >> $GITHUB_OUTPUT
           else
-            echo "❌ Release @next workflow failed with conclusion: $WORKFLOW_CONCLUSION"
+            echo "Release @next workflow failed with conclusion: $WORKFLOW_CONCLUSION"
             echo "release_failed=true" >> $GITHUB_OUTPUT
-            echo "status_message=❌ Release @next build failed with conclusion: $WORKFLOW_CONCLUSION for commit $COMMIT_SHA" >> $GITHUB_OUTPUT
+            echo "status_message=Release @next build failed with conclusion: $WORKFLOW_CONCLUSION for commit $COMMIT_SHA" >> $GITHUB_OUTPUT
           fi
 
       - name: Install deps & build
@@ -108,10 +107,7 @@ jobs:
         id: version-commit
         run: |
           VERSION=$(cat lerna.json | jq -r .version)
-          # echo "message=chore(release): publish v$VERSION" >> $GITHUB_OUTPUT
-
-          # For testing workflow integration
-          echo "message=chore(release): I LIKE TO SQUIB SQUOB v$VERSION" >> $GITHUB_OUTPUT
+          echo "message=chore(release): publish v$VERSION" >> $GITHUB_OUTPUT
 
       - name: Get version
         id: release-as
@@ -125,8 +121,6 @@ jobs:
           body: |
             🤖 I have created a release **squib** **squob**
 
-            ${{ github.event.workflow_run.head_branch != 'main' && '🧪 **TESTING MODE** - This PR was created from a feature branch to test the workflow integration.' || '' }}
-
             Merging this PR will publish v${{steps.release-as.outputs.version}} to npm 🚀
 
             ## Release @next Status
@@ -137,8 +131,8 @@ jobs:
 
             ${{ steps.check-release-next.outputs.release_failed == 'true' && '**This PR has been marked as draft due to the failed @next release.**' || '' }}
           commit-message: "${{steps.version-commit.outputs.message}}"
-          branch: ${{ github.event.workflow_run.head_branch == 'main' && 'ci/release-main' || 'ci/release-test' }}
+          branch: "ci/release-main"
           sign-commits: true
-          base: ${{ github.event.workflow_run.head_branch }}
+          base: main
           team-reviewers: "@sanity-io/studio"
           draft: ${{ steps.check-release-next.outputs.release_failed == 'true' }}
