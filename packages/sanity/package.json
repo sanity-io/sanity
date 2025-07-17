@@ -150,7 +150,7 @@
     "@dnd-kit/utilities": "^3.2.2",
     "@juggle/resize-observer": "^3.4.0",
     "@mux/mux-player-react": "^3.4.0",
-    "@portabletext/block-tools": "^1.1.38",
+    "@portabletext/block-tools": "^2.0.0",
     "@portabletext/editor": "^1.58.0",
     "@portabletext/react": "^3.2.1",
     "@portabletext/toolkit": "^2.0.17",
