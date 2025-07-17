@@ -94,11 +94,6 @@ const filteredErrors = errors.filter((d) => {
     return false
   }
 
-  // Handled in https://github.com/sanity-io/sanity/pull/9989
-  if (file.fileName.endsWith('node_modules/@portabletext/editor/lib/index.d.ts') && code === 2307) {
-    return false
-  }
-
   return true
 })
 
