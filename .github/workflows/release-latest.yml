@@ -38,7 +38,7 @@ jobs:
           cache: pnpm
           node-version: lts/*
 
-      - name: Install deps & build
+      - name: Install deps
         run: pnpm install --ignore-scripts
 
       - name: Build
@@ -59,15 +59,6 @@ jobs:
           fi
         env:
           RELEASE_AS: ${{ steps.release-as.outputs.version }}
-
-      - name: Cache build artifacts
-        uses: actions/cache/save@v4
-        with:
-          path: |
-            node_modules
-            packages/*/lib
-            packages/*/dist
-          key: build-artifacts-${{ github.sha }}
 
   git-operations:
     if: ${{ github.event.inputs.publish != 'true' }}
@@ -90,6 +81,7 @@ jobs:
         run: |
           git config --global user.name 'github-actions[bot]'
           git config --global user.email '41898282+github-actions[bot]@users.noreply.github.com'
+
       - name: Tag and push version
         run: |
           git tag v$RELEASE_AS -m v$RELEASE_AS
@@ -98,7 +90,8 @@ jobs:
           RELEASE_AS: ${{ needs.build-and-validate.outputs.version || steps.release-as.outputs.version }}
 
   npm-publish:
-    needs: build-and-validate
+    needs: [build-and-validate, git-operations]
+    if: always() && needs.build-and-validate.result == 'success' && (needs.git-operations.result == 'success' || needs.git-operations.result == 'skipped')
     runs-on: ubuntu-latest
     permissions:
       contents: read
@@ -117,21 +110,11 @@ jobs:
           cache: pnpm
           node-version: lts/*
 
-      - name: Restore build artifacts
-        id: cache-restore
-        uses: actions/cache/restore@v4
-        with:
-          path: |
-            node_modules
-            packages/*/lib
-            packages/*/dist
-          key: build-artifacts-${{ github.sha }}
+      - name: Install deps
+        run: pnpm install --ignore-scripts
 
-      - name: Install deps & build (if cache miss)
-        if: steps.cache-restore.outputs.cache-hit != 'true'
-        run: |
-          pnpm install --ignore-scripts
-          pnpm build --output-logs=full --log-order=grouped
+      - name: Build
+        run: pnpm build --output-logs=full --log-order=grouped
 
       - name: Set publishing config
         run: pnpm config set '//registry.npmjs.org/:_authToken' "${NPM_PUBLISH_TOKEN}"
@@ -171,21 +154,11 @@ jobs:
           cache: pnpm
           node-version: lts/*
 
-      - name: Restore build artifacts
-        id: cache-restore
-        uses: actions/cache/restore@v4
-        with:
-          path: |
-            node_modules
-            packages/*/lib
-            packages/*/dist
-          key: build-artifacts-${{ github.sha }}
+      - name: Install deps
+        run: pnpm install --ignore-scripts
 
-      - name: Install deps & build (if cache miss)
-        if: steps.cache-restore.outputs.cache-hit != 'true'
-        run: |
-          pnpm install --ignore-scripts
-          pnpm build --output-logs=full --log-order=grouped
+      - name: Build
+        run: pnpm build --output-logs=full --log-order=grouped
 
       - name: Build bundle
         run: pnpm run build:bundle
