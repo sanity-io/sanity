@@ -12,6 +12,7 @@ const schemaTypes = [
     preview: {
       select: {
         title: 'title',
+        media: 'coverImage',
       },
     },
     fields: [
@@ -23,6 +24,25 @@ const schemaTypes = [
             weight: 10,
           },
         },
+      }),
+      defineField({
+        name: 'coverImage',
+        type: 'string',
+      }),
+      defineField({
+        type: 'crossDatasetReference',
+        name: 'crossDatasetReference',
+        dataset: 'test',
+        to: [
+          {
+            type: 'basic-schema-test',
+            preview: {
+              select: {
+                title: 'title',
+              },
+            },
+          },
+        ],
       }),
     ],
   }),
@@ -55,6 +75,32 @@ describe('createSearchQuery', () => {
         __types: ['basic-schema-test'],
         __limit: DEFAULT_LIMIT + 1,
       })
+    })
+
+    it('should produce valid GROQ scoring expressions', () => {
+      const testType = Schema.compile({
+        types: schemaTypes,
+      }).get('basic-schema-test')
+
+      const {query} = createSearchQuery(
+        {
+          query: 'test',
+          types: [testType],
+        },
+        '',
+        {
+          isCrossDataset: true,
+        },
+      )
+
+      expect(query).not.toMatch(
+        'boost(_type in ["basic-schema-test"] && coverImage match text::query($__query), undefined)',
+      )
+
+      expect(query).toMatchInlineSnapshot(`
+        "// findability-mvi:5
+        *[_type in $__types] | score(boost(_type in ["basic-schema-test"] && title match text::query($__query), 10), [@, _id] match text::query($__query)) | order(_score desc) [_score > 0] [0...$__limit] {_score, _type, _id, _originalId}"
+      `)
     })
   })
 
