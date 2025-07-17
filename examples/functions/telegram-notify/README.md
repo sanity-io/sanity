@@ -142,15 +142,6 @@ npx sanity documents get "your-comment-id" > document.json
 npx sanity functions test telegram-notify --file document.json
 ```
 
-### 5. Enable Debugging
-
-Add temporary logging to your function:
-
-```typescript
-// Add debugging logs
-// console.log('Event data:', JSON.stringify(event.data, null, 2))
-```
-
 ### Testing Tips
 
 - **Use Node.js v22.x** locally to match production runtime
