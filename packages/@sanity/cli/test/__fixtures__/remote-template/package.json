@@ -7,7 +7,7 @@
   },
   "dependencies": {
     "next": "^15",
-    "next-sanity": "^9",
+    "next-sanity": "^10.0.0",
     "sanity": "^3"
   }
 }
