@@ -142,7 +142,7 @@
     "esbuild-register": "catalog:",
     "eslint": "^9.31.0",
     "eslint-formatter-compact": "^8.40.0",
-    "eslint-plugin-react-hooks": "0.0.0-experimental-d85ec5f5-20250716",
+    "eslint-plugin-react-hooks": "0.0.0-experimental-dffacc7b-20250717",
     "execa": "^2.0.0",
     "glob": "^11.0.0",
     "globby": "^11.1.0",
