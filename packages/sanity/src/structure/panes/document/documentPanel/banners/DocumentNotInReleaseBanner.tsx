@@ -26,12 +26,10 @@ type VersionCreateState = {
 export function DocumentNotInReleaseBanner({
   documentId,
   currentRelease,
-  value,
   isScheduledRelease,
 }: {
   documentId: string
   currentRelease: ReleaseDocument
-  value?: Record<string, unknown>
   isScheduledRelease?: boolean
 }): React.JSX.Element {
   const tone = getReleaseTone(currentRelease ?? LATEST)
@@ -46,11 +44,7 @@ export function DocumentNotInReleaseBanner({
     if (currentRelease._id) {
       setVersionCreateState({status: 'creating', lastUpdate: new Date()})
       try {
-        await createVersion(
-          getReleaseIdFromReleaseDocumentId(currentRelease._id),
-          documentId,
-          value,
-        )
+        await createVersion(getReleaseIdFromReleaseDocumentId(currentRelease._id), documentId)
         setVersionCreateState({status: 'created', lastUpdate: new Date()})
       } catch (err) {
         toast.push({
@@ -66,7 +60,7 @@ export function DocumentNotInReleaseBanner({
         setVersionCreateState(undefined)
       }
     }
-  }, [createVersion, currentRelease._id, documentId, t, toast, value])
+  }, [createVersion, currentRelease._id, documentId, t, toast])
 
   const now = useCurrentTime(200)
 
