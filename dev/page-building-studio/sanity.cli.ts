@@ -6,7 +6,7 @@ export default defineCliConfig({
     projectId: 'ppsg7ml5',
     dataset: 'page-building',
   },
-  reactCompiler: {target: '18'},
+  reactCompiler: {target: '19'},
   vite(viteConfig: UserConfig): UserConfig {
     return {
       ...viteConfig,

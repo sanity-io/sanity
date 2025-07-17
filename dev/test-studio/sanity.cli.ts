@@ -51,11 +51,11 @@ export default defineCliConfig({
       },
       optimizeDeps: {
         ...viteConfig.optimizeDeps,
-        include: ['react/jsx-runtime'],
+        // include: ['react/jsx-runtime'],
         exclude: [
           ...(viteConfig.optimizeDeps?.exclude || []),
           '@sanity/tsdoc',
-          '@sanity/assist',
+          // '@sanity/assist',
           'sanity',
           // This is needed to avoid a full page reload as vite discovers it while rendering the `./preview/index.html` iframe
           '@portabletext/toolkit',
@@ -85,9 +85,9 @@ export default defineCliConfig({
           ...viteConfig.build?.rollupOptions,
           input: {
             // NOTE: this is required to build static files for the workshop frame
-            'workshop/frame': path.resolve(__dirname, 'workshop/frame/index.html'),
+            // 'workshop/frame': path.resolve(__dirname, 'workshop/frame/index.html'),
             // NOTE: this is required to build static files for the presentation preview iframe
-            'preview': path.resolve(__dirname, 'preview/index.html'),
+            preview: path.resolve(__dirname, 'preview/index.html'),
           },
         },
       },

@@ -1,4 +1,4 @@
-import {assist} from '@sanity/assist'
+// import {assist} from '@sanity/assist'
 import {colorInput} from '@sanity/color-input'
 import {googleMapsInput} from '@sanity/google-maps-input'
 import {BookIcon} from '@sanity/icons'
@@ -16,7 +16,7 @@ import {defineDocuments, defineLocations, presentationTool} from 'sanity/present
 import {structureTool} from 'sanity/structure'
 import {imageHotspotArrayPlugin} from 'sanity-plugin-hotspot-array'
 import {markdownSchema} from 'sanity-plugin-markdown'
-import {media} from 'sanity-plugin-media'
+// import {media} from 'sanity-plugin-media'
 import {muxInput} from 'sanity-plugin-mux-input'
 
 import {imageAssetSource} from './assetSources'
@@ -38,7 +38,7 @@ import {
   CustomToolMenu,
   studioComponentsPlugin,
 } from './components/studioComponents'
-import {GoogleLogo, TailwindLogo, VercelLogo} from './components/workspaceLogos'
+// import {GoogleLogo, TailwindLogo, VercelLogo} from './components/workspaceLogos'
 import {resolveDocumentActions as documentActions} from './documentActions'
 import {TestVersionAction} from './documentActions/actions/TestVersionAction'
 import {assistFieldActionGroup} from './fieldActions/assistFieldActionGroup'
@@ -51,16 +51,16 @@ import {wave} from './plugins/input/wave-plugin'
 import {languageFilter} from './plugins/language-filter'
 import {routerDebugTool} from './plugins/router-debug'
 // eslint-disable-next-line import/extensions
-import {theme as tailwindTheme} from './sanity.theme.mjs'
+// import {theme as tailwindTheme} from './sanity.theme.mjs'
 import {createSchemaTypes} from './schema'
 import {StegaDebugger} from './schema/debug/components/DebugStega'
 import {CustomNavigator} from './schema/presentation/CustomNavigator'
 import {types as presentationNextSanitySchemaTypes} from './schema/presentation/next-sanity'
 import {types as presentationPreviewKitSchemaTypes} from './schema/presentation/preview-kit'
 import {defaultDocumentNode, newDocumentOptions, structure} from './structure'
-import {googleTheme} from './themes/google'
-import {vercelTheme} from './themes/vercel'
-import {workshopTool} from './workshop'
+// import {googleTheme} from './themes/google'
+// import {vercelTheme} from './themes/vercel'
+// import {workshopTool} from './workshop'
 
 const localePlugins = [koKRLocale(), nbNOLocale(), nnNOLocale(), ptPTLocale(), svSELocale()]
 
@@ -174,13 +174,13 @@ const sharedSettings = ({projectId}: {projectId: string}) => {
         },
       }),
       colorInput(),
-      workshopTool({
-        collections: [
-          {name: 'sanity', title: 'sanity'},
-          {name: 'structure-tool', title: 'sanity/structure'},
-          {name: 'form-builder', title: '@sanity/form-builder'},
-        ],
-      }),
+      // workshopTool({
+      //   collections: [
+      //     {name: 'sanity', title: 'sanity'},
+      //     {name: 'structure-tool', title: 'sanity/structure'},
+      //     {name: 'form-builder', title: '@sanity/form-builder'},
+      //   ],
+      // }),
       visionTool({
         // uncomment to test
         //defaultApiVersion: '2025-02-05',
@@ -191,7 +191,7 @@ const sharedSettings = ({projectId}: {projectId: string}) => {
       routerDebugTool(),
       errorReportingTestPlugin(),
       tsdoc(),
-      media(),
+      // media(),
       markdownSchema(),
       wave(),
       autoCloseBrackets(),
@@ -385,44 +385,47 @@ export default defineConfig([
       },
     },
   },
-  {
-    name: 'google-theme',
-    title: 'Google Colors',
-    projectId: 'ppsg7ml5',
-    dataset: 'test',
-    plugins: [sharedSettings({projectId: 'ppsg7ml5'})],
-    basePath: '/google',
-    theme: googleTheme,
-    icon: GoogleLogo,
-  },
-  {
-    name: 'vercel-theme',
-    title: 'Vercel Colors',
-    projectId: 'ppsg7ml5',
-    dataset: 'test',
-    plugins: [sharedSettings({projectId: 'ppsg7ml5'})],
-    basePath: '/vercel',
-    theme: vercelTheme,
-    icon: VercelLogo,
-  },
-  {
-    name: 'tailwind-theme',
-    title: 'Tailwind Colors',
-    projectId: 'ppsg7ml5',
-    dataset: 'test',
-    plugins: [sharedSettings({projectId: 'ppsg7ml5'})],
-    basePath: '/tailwind',
-    theme: tailwindTheme,
-    icon: TailwindLogo,
-  },
-  {
-    name: 'ai-assist',
-    title: 'Sanity AI Assist',
-    projectId: 'ppsg7ml5',
-    dataset: 'test',
-    plugins: [sharedSettings({projectId: 'ppsg7ml5'}), assist()],
-    basePath: '/ai-assist',
-  },
+  // {
+  //   name: 'google-theme',
+  //   title: 'Google Colors',
+  //   projectId: 'ppsg7ml5',
+  //   dataset: 'test',
+  //   plugins: [sharedSettings({projectId: 'ppsg7ml5'})],
+  //   basePath: '/google',
+  //   theme: googleTheme,
+  //   icon: GoogleLogo,
+  // },
+  // {
+  //   name: 'vercel-theme',
+  //   title: 'Vercel Colors',
+  //   projectId: 'ppsg7ml5',
+  //   dataset: 'test',
+  //   plugins: [sharedSettings({projectId: 'ppsg7ml5'})],
+  //   basePath: '/vercel',
+  //   theme: vercelTheme,
+  //   icon: VercelLogo,
+  // },
+  // {
+  //   name: 'tailwind-theme',
+  //   title: 'Tailwind Colors',
+  //   projectId: 'ppsg7ml5',
+  //   dataset: 'test',
+  //   plugins: [sharedSettings({projectId: 'ppsg7ml5'})],
+  //   basePath: '/tailwind',
+  //   theme: tailwindTheme,
+  //   icon: TailwindLogo,
+  // },
+  // {
+  //   name: 'ai-assist',
+  //   title: 'Sanity AI Assist',
+  //   projectId: 'ppsg7ml5',
+  //   dataset: 'test',
+  //   plugins: [sharedSettings({projectId: 'ppsg7ml5'}),
+
+  //     assist()
+  //   ],
+  //   basePath: '/ai-assist',
+  // },
   {
     name: 'stega',
     title: 'Debug Stega Studio',
@@ -488,7 +491,7 @@ export default defineConfig([
     dataset: 'production',
     schema: {types: presentationNextSanitySchemaTypes},
     plugins: [
-      assist(),
+      // assist(),
       structureTool(),
       presentationTool({
         allowOrigins: ['https://*.sanity.dev'],
