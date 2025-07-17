@@ -4,7 +4,6 @@ on:
   push:
     branches:
       - main
-      # - feature/test-release-workflow
   workflow_dispatch:
     inputs:
       publish:
@@ -91,14 +90,6 @@ jobs:
         run: |
           git config --global user.name 'github-actions[bot]'
           git config --global user.email '41898282+github-actions[bot]@users.noreply.github.com'
-
-      # - name: Tag and push version (dry-run)
-      #   run: |
-      #     echo "DRY-RUN: Would have tagged version v${RELEASE_AS}"
-      #     echo "DRY-RUN: git tag v$RELEASE_AS -m v$RELEASE_AS"
-      #     echo "DRY-RUN: git push origin v$RELEASE_AS"
-      #   env:
-      #     RELEASE_AS: ${{ needs.build-and-validate.outputs.version || steps.release-as.outputs.version }}
       - name: Tag and push version
         run: |
           git tag v$RELEASE_AS -m v$RELEASE_AS
@@ -159,7 +150,6 @@ jobs:
 
       - name: Publish packages to npm
         run: pnpm -r publish
-        # run: pnpm -r publish --dry-run
         env:
           NPM_CONFIG_PROVENANCE: true
 
