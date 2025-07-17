@@ -5,7 +5,8 @@ import type {CommentsIntentContextValue} from '../../core/comments/context/inten
 /**
  * @internal
  */
-export const CommentsIntentContext = createContext<CommentsIntentContextValue | undefined>(
-  'sanity/_singletons/context/comments-intent',
-  undefined,
-)
+export const CommentsIntentContext: React.Context<CommentsIntentContextValue | undefined> =
+  createContext<CommentsIntentContextValue | undefined>(
+    'sanity/_singletons/context/comments-intent',
+    undefined,
+  )
