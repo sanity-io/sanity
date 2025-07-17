@@ -89,11 +89,6 @@ const filteredErrors = errors.filter((d) => {
     return false
   }
 
-  // Handled in https://github.com/sanity-io/sanity/pull/9987
-  if (file.fileName.includes('packages/sanity/lib/index.') && code === 2307) {
-    return false
-  }
-
   // Handled in https://github.com/sanity-io/sanity/pull/9988
   if (file.fileName.includes('packages/sanity/lib/index.') && code === 2717) {
     return false
