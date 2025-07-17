@@ -29,7 +29,7 @@ jobs:
             echo "Using manual input version: $version"
           else
             # For push events, use hardcoded version
-            version="3.97.0"
+            version="3.90.0"
             echo "Using hardcoded version for push event: $version"
           fi
           echo "version=$version" >> "$GITHUB_OUTPUT"
