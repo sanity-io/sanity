@@ -1,10 +1,11 @@
 import {render} from '@testing-library/react'
 // eslint-disable-next-line no-restricted-imports
 import * as SANITY from 'sanity'
-import {beforeEach, describe, expect, it, vi} from 'vitest'
+import {beforeEach, describe, expect, it, type Mock, vi} from 'vitest'
 
 import {createMockSanityClient} from '../../../../test/mocks/mockSanityClient'
 import {createTestProvider} from '../../../../test/testUtils/TestProvider'
+import {useDocumentLastRev} from '../../hooks/useDocumentLastRev'
 import {structureUsEnglishLocaleBundle} from '../../i18n'
 import {type StructureContext} from '../../structureBuilder'
 import {type Panes} from '../../structureResolvers'
@@ -19,6 +20,10 @@ vi.mock('sanity', async (importOriginal) => ({
   usePerspective: vi.fn(() => ({perspective: undefined})),
 }))
 
+vi.mock('../../hooks/useDocumentLastRev', () => ({
+  useDocumentLastRev: vi.fn(() => ({lastRevisionDocument: null, loading: false})),
+}))
+
 function createWrapperComponent(client: SANITY.SanityClient) {
   const config = SANITY.defineConfig({
     projectId: 'test',
@@ -31,6 +36,8 @@ function createWrapperComponent(client: SANITY.SanityClient) {
     resources: [structureUsEnglishLocaleBundle],
   })
 }
+
+const mockUseDocumentLastRev = useDocumentLastRev as Mock<typeof useDocumentLastRev>
 
 describe('StructureTitle', () => {
   // @ts-expect-error  it's a minimal mock implementation of useStructureTool
@@ -155,7 +162,14 @@ describe('StructureTitle', () => {
       }) as unknown as SANITY.Schema
 
     it('should not update the when the document is still loading', async () => {
-      const useEditStateMock = () => ({...editState, ready: false})
+      const useEditStateMock = () => ({
+        ...editState,
+        ready: false,
+        version: null,
+        liveEditSchemaType: false,
+        release: undefined,
+      })
+
       const useValuePreviewMock = () => valuePreview
       vi.spyOn(SANITY, 'useSchema').mockImplementationOnce(useSchemaMock)
       vi.spyOn(SANITY, 'useEditState').mockImplementationOnce(useEditStateMock)
@@ -170,7 +184,12 @@ describe('StructureTitle', () => {
     })
 
     it('renders the correct title when the document pane has a title', async () => {
-      const useEditStateMock = () => editState
+      const useEditStateMock = () => ({
+        ...editState,
+        version: null,
+        liveEditSchemaType: false,
+        release: undefined,
+      })
       const useValuePreviewMock = () => valuePreview
       vi.spyOn(SANITY, 'useSchema').mockImplementationOnce(useSchemaMock)
       vi.spyOn(SANITY, 'useEditState').mockImplementationOnce(useEditStateMock)
@@ -184,7 +203,13 @@ describe('StructureTitle', () => {
       expect(document.title).toBe('Foo | My Structure Tool')
     })
     it('renders the correct title when the document is new', async () => {
-      const useEditStateMock = () => ({...editState, draft: null})
+      const useEditStateMock = () => ({
+        ...editState,
+        draft: null,
+        version: null,
+        liveEditSchemaType: false,
+        release: undefined,
+      })
       const useValuePreviewMock = () => valuePreview
       vi.spyOn(SANITY, 'useSchema').mockImplementationOnce(useSchemaMock)
       vi.spyOn(SANITY, 'useEditState').mockImplementationOnce(useEditStateMock)
@@ -198,7 +223,12 @@ describe('StructureTitle', () => {
       expect(document.title).toBe('New Author | My Structure Tool')
     })
     it('renders the correct title when the document is untitled', async () => {
-      const useEditStateMock = () => editState
+      const useEditStateMock = () => ({
+        ...editState,
+        version: null,
+        liveEditSchemaType: false,
+        release: undefined,
+      })
       const useValuePreviewMock = () => ({
         isLoading: false,
         value: {title: ''},
@@ -213,6 +243,41 @@ describe('StructureTitle', () => {
       document.title = 'Sanity Studio'
       render(<StructureTitle resolvedPanes={mockPanes} />, {wrapper})
       expect(document.title).toBe('Untitled | My Structure Tool')
+    })
+    it('renders the correct title when the document is deleted', async () => {
+      const useEditStateMock = () => ({
+        ...editState,
+        version: null,
+        draft: null,
+        published: null,
+        liveEditSchemaType: false,
+        release: undefined,
+      })
+
+      mockUseDocumentLastRev.mockImplementationOnce(() => ({
+        lastRevisionDocument: {
+          _id: 'fake-document',
+          _type: 'author',
+          name: 'Deleted Doc',
+          title: 'Deleted Doc',
+          _createdAt: '2021-01-01',
+          _updatedAt: '2021-01-01',
+          _rev: '123',
+        },
+        loading: false,
+      }))
+
+      const useValuePreviewMock = () => valuePreview
+      vi.spyOn(SANITY, 'useSchema').mockImplementation(useSchemaMock)
+      vi.spyOn(SANITY, 'useEditState').mockImplementation(useEditStateMock)
+      vi.spyOn(SANITY, 'unstable_useValuePreview').mockImplementation(useValuePreviewMock)
+
+      const client = createMockSanityClient()
+      const wrapper = await createWrapperComponent(client as any)
+
+      document.title = 'Sanity Studio'
+      render(<StructureTitle resolvedPanes={mockPanes} />, {wrapper})
+      expect(document.title).toBe('My Structure Tool')
     })
   })
 })
