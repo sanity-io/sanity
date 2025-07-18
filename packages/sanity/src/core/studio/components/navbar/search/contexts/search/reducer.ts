@@ -226,11 +226,11 @@ export function searchReducer(state: SearchReducerState, action: SearchAction): 
           ...state.result,
           error: null,
           hasLocal: true,
-          hits: state.result.hasLocal
-            ? removeDupes([...state.result.hits, ...action.hits].map(({hit}) => hit)).map(
-                (hit) => ({hit}),
-              )
-            : action.hits,
+          hits: removeDupes(
+            [...(state.result.hasLocal ? state.result.hits : []), ...action.hits].map(
+              ({hit}) => hit,
+            ),
+          ).map((hit) => ({hit})),
           loaded: true,
           loading: false,
         },
