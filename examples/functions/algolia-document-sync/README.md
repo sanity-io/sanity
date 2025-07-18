@@ -98,7 +98,7 @@ This function writes directly to Algolia, so we can test locally with our docume
 Test with the included sample document:
 
 ```bash
-npx sanity functions test algolia-document-sync --file functions/algolia-document-sync/document.json
+npx sanity functions test algolia-document-sync --file functions/algolia-document-sync/document.json --dataset production --with-user-token
 ```
 
 ### 2. Interactive Development Mode
@@ -118,7 +118,7 @@ npx sanity functions test algolia-document-sync --data '{
   "_type": "post",
   "_id": "test-post",
   "title": "Test Article"
-}'
+}' --dataset production --with-user-token
 ```
 
 ### 4. Test with Real Document Data
@@ -133,7 +133,7 @@ npx sanity documents get "your-post-id" > ../test-document.json
 
 # Back to project root for function testing
 cd ..
-npx sanity functions test algolia-document-sync --file test-document.json
+npx sanity functions test algolia-document-sync --file test-document.json --dataset production --with-user-token
 ```
 
 ### 5. Enable Debugging

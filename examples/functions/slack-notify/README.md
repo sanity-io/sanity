@@ -86,6 +86,8 @@ Most official templates already include these fields.
 
    ```ts
    // sanity.blueprint.ts
+   import 'dotenv/config'
+   import process from 'node:process'
    import {defineBlueprint, defineDocumentFunction} from '@sanity/blueprints'
 
    export default defineBlueprint({
@@ -101,6 +103,12 @@ Most official templates already include these fields.
            filter: "_type == 'post'",
            projection: '_id, title, slug, _updatedAt',
          },
+         env: {
+           SLACK_OAUTH_TOKEN: process.env.SLACK_OAUTH_TOKEN,
+           SLACK_CHANNEL: process.env.SLACK_CHANNEL,
+           BASE_URL: process.env.BASE_URL,
+           STUDIO_URL: process.env.STUDIO_URL,
+         },
        }),
      ],
    })
@@ -114,18 +122,46 @@ Most official templates already include these fields.
    npm install
    ```
 
+5. **Configure environment variables**
+
+   Create a `.env` file in your project root with the following variables:
+
+   ```env
+   # Required
+   SLACK_OAUTH_TOKEN=xoxb-your-slack-bot-token-here
+
+   # Optional (defaults shown)
+   SLACK_CHANNEL=general
+   BASE_URL=http://localhost:3000
+   STUDIO_URL=http://localhost:3333
+   ```
+
+   **Required:**
+
+   - `SLACK_OAUTH_TOKEN`: Your Slack bot OAuth token (starts with `xoxb-`)
+
+   **Optional:**
+
+   - `SLACK_CHANNEL`: Slack channel name (default: 'general')
+   - `BASE_URL`: Your website URL (default: 'http://localhost:3000')
+   - `STUDIO_URL`: Your Sanity Studio URL (default: 'http://localhost:3333')
+
 ## Testing the function locally
 
 You can test the slack-notify function locally using the Sanity CLI before deploying it to production.
 
-**Important:** This function requires a valid Slack OAuth token and will send real messages to your Slack channel during testing. You'll need to provide the `SLACK_OAUTH_TOKEN` environment variable directly in each command.
+**Important:** This function requires a valid Slack OAuth token and will send real messages to your Slack channel during testing. Make sure you have configured your environment variables (see step 5 above).
 
 ### 1. Basic Function Test
 
 Test the function with the created document (from project root):
 
 ```bash
-SLACK_OAUTH_TOKEN=slack-OAuth-token npx sanity functions test slack-notify --file functions/slack-notify/document.json
+# If using .env file (recommended)
+npx sanity functions test slack-notify --file functions/slack-notify/document.json --dataset production --with-user-token
+
+# Or set environment variables inline
+SLACK_OAUTH_TOKEN=xoxb-your-token SLACK_CHANNEL=test-channel npx sanity functions test slack-notify --file functions/slack-notify/document.json --dataset production --with-user-token --with-user-token
 ```
 
 **Alternative:** Test with a real document from your dataset:
@@ -137,7 +173,11 @@ npx sanity documents query "*[_type == 'post'][0]" > ../real-post.json
 
 # Back to project root for function testing
 cd ..
-SLACK_OAUTH_TOKEN=slack-OAuth-token npx sanity functions test slack-notify --file real-post.json
+# If using .env file (recommended)
+npx sanity functions test slack-notify --file real-post.json --dataset production --with-user-token
+
+# Or set environment variables inline
+SLACK_OAUTH_TOKEN=xoxb-your-token SLACK_CHANNEL=test-channel npx sanity functions test slack-notify --file real-post.json --dataset production --with-user-token --with-user-token
 ```
 
 ### 2. Test Without Sending Messages
