@@ -46,8 +46,7 @@ function parseAstro(source: string): string {
 
 function parseVue(source: string): string {
   // find all script tags, the js code is between <script> and </script>
-  const scriptRegex =
-    /<script(?:\s+setup)?(?:\s+lang=["'][^"']*["'])?(?:\s+generic=["'][^"']*["'])?[^>]*>([\s\S]*?)<\/script>/g
+  const scriptRegex = /<script(?:\s+generic=["'][^"']*["'])?[^>]*>([\s\S]*?)<\/script>/g
   // const matches = [...source.matchAll(scriptRegex)]
   // TODO: swap once this code runs in `ES2020`
   const matches = matchAllPolyfill(source, scriptRegex)
