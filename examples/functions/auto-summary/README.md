@@ -105,39 +105,17 @@ npx sanity schema deploy
 
 You can test the auto-summary function locally using the Sanity CLI before deploying it to production.
 
-**Important:** Document functions require that the document ID used in testing actually exists in your dataset. The examples below show how to work with real document IDs.
+### Simple Testing Command
 
-### 1. Basic Function Test
-
-Since document functions require the document ID to exist in your dataset, create a test document first:
+Test the function with an existing document ID from your dataset:
 
 ```bash
-# From the studio/ folder, create a test document
-cd studio
-npx sanity documents create ../functions/auto-summary/document.json --replace
+npx sanity functions test auto-summary --document-id <insert-document-id> --dataset production --with-user-token
 ```
 
-Then test the function with the created document (from project root):
+Replace `<insert-document-id>` with an actual document ID from your dataset and `production` with your dataset name.
 
-```bash
-# Back to project root for function testing
-cd ..
-npx sanity functions test auto-summary --file functions/auto-summary/document.json
-```
-
-**Alternative:** Test with a real document from your dataset:
-
-```bash
-# From the studio/ folder, find and export an existing post document
-cd studio
-npx sanity documents query "*[_type == 'post' && !defined(autoSummary)][0]" > ../real-post.json
-
-# Back to project root for function testing
-cd ..
-npx sanity functions test auto-summary --file real-post.json
-```
-
-### 2. Interactive Development Mode
+### Interactive Development Mode
 
 Start the development server for interactive testing:
 
@@ -145,74 +123,14 @@ Start the development server for interactive testing:
 npx sanity functions dev
 ```
 
-### 3. Test with Custom Data
-
-For custom data testing, you still need to use a real document ID that exists in your dataset:
-
-```bash
-# From the studio/ folder, create or find a real document ID
-cd studio
-REAL_DOC_ID=$(npx sanity documents query "*[_type == 'post'][0]._id")
-
-# Create a temporary JSON file with custom data in project root
-cd ..
-cat > test-custom-data.json << EOF
-{
-  "_type": "post",
-  "_id": $REAL_DOC_ID,
-  "content": [
-    {
-      "_type": "block",
-      "_key": "test-block",
-      "children": [
-        {
-          "_type": "span",
-          "_key": "test-span",
-          "text": "Your custom blog post content here..."
-        }
-      ]
-    }
-  ]
-}
-EOF
-
-# Test with the custom data file
-npx sanity functions test auto-summary --file test-custom-data.json
-```
-
-### 4. Test with Real Document Data
-
-The most reliable approach is to test with existing documents from your dataset:
-
-```bash
-# From the studio/ folder, find and export a document that matches your function's filter
-cd studio
-npx sanity documents query "*[_type == 'post' && !defined(autoSummary)][0]" > ../test-real-document.json
-
-# Back to project root for function testing
-cd ..
-npx sanity functions test auto-summary --file test-real-document.json
-```
-
-### 5. Enable Debugging
-
-Add temporary logging to your function:
-
-```typescript
-// Add debugging logs
-console.log('Event data:', JSON.stringify(event.data, null, 2))
-console.log('Result:', result)
-```
-
 ### Testing Tips
 
 - **Use real document IDs** - Document functions require IDs that exist in your dataset
-- **Query for test documents** - Use `npx sanity documents query` to find suitable test documents
 - **Use Node.js v22.x** locally to match production runtime
-- **Test edge cases** like posts without content or with existing tags
+- **Test edge cases** like posts without content or with existing summaries
 - **Check function logs** in CLI output for debugging
 - **Test without AI calls** first by setting `noWrite: true` in the function
-- **Create test content** - If you don't have posts without tags, create some test documents first
+- **Create test content** - If you don't have posts without summaries, create some test documents first
 
 ## Requirements
 

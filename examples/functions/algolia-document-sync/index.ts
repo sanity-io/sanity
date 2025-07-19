@@ -1,11 +1,11 @@
 import {env} from 'node:process'
 
-import {type DocumentEvent, documentEventHandler} from '@sanity/functions'
+import {documentEventHandler} from '@sanity/functions'
 import {algoliasearch} from 'algoliasearch'
 
 const {ALGOLIA_APP_ID = '', ALGOLIA_WRITE_KEY = ''} = env
 
-export const handler = documentEventHandler(async ({event}: {event: DocumentEvent}) => {
+export const handler = documentEventHandler(async ({event}) => {
   const {_id, title, hideFromSearch} = event.data
 
   const algolia = algoliasearch(ALGOLIA_APP_ID, ALGOLIA_WRITE_KEY)
@@ -22,6 +22,7 @@ export const handler = documentEventHandler(async ({event}: {event: DocumentEven
       },
     })
   } catch (error) {
+    // eslint-disable-next-line no-console
     console.error('Error syncing to Algolia:', error)
     throw error
   }
