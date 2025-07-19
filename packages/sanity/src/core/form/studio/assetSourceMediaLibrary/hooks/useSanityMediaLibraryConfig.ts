@@ -9,6 +9,7 @@ import {
   DEPLOYED_FRONTEND_HOST_STAGING,
   IS_LOCAL_DEV,
   LOCAL_DEV_FRONTEND_HOST,
+  PLUGIN_API_VERSION,
 } from '../constants'
 import {type SanityMediaLibraryConfig} from '../types'
 
@@ -26,7 +27,7 @@ export function useSanityMediaLibraryConfig(): SanityMediaLibraryConfig {
   const internalConfig = {
     apiVersion: DEFAULT_API_VERSION,
     appBasePath: '',
-    pluginApiVersion: 'v1',
+    pluginApiVersion: PLUGIN_API_VERSION,
     hosts: {
       cdn: isStaging ? CDN_HOST_STAGING : CDN_HOST_PRODUCTION,
       app: appHost,
