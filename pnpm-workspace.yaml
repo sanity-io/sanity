@@ -17,7 +17,7 @@ catalog:
   '@sanity/ui-workshop': ^2.1.4
   '@vitejs/plugin-react': ^4.6.0
   esbuild-register: ^3.6.0
-  esbuild: 0.25.6
+  esbuild: 0.25.8
   globals: ^16.2.0
   playwright: 1.53.1
   prettier: ^3.5.3
