@@ -16,19 +16,18 @@ permissions:
   contents: write
 
 jobs:
-  release-latest:
+  build-and-validate:
     if: >
       github.event_name == 'workflow_dispatch' || 
       startsWith(github.event.head_commit.message, 'chore(release): publish ')
     runs-on: ubuntu-latest
     permissions:
-      contents: write
-      id-token: write # to enable use of OIDC for npm provenance
+      contents: read
     env:
       TURBO_TOKEN: ${{ secrets.TURBO_TOKEN }}
       TURBO_TEAM: ${{ vars.TURBO_TEAM }}
-      EXPECTED_NPM_USER: sanity-io
-
+    outputs:
+      version: ${{ steps.release-as.outputs.version }}
     steps:
       - uses: actions/checkout@v4
         with:
@@ -39,16 +38,11 @@ jobs:
           cache: pnpm
           node-version: lts/*
 
-      - name: Install deps & build
+      - name: Install deps
         run: pnpm install --ignore-scripts
 
       - name: Build
         run: pnpm build --output-logs=full --log-order=grouped
-
-      - name: Configure git
-        run: |
-          git config --global user.name 'github-actions[bot]'
-          git config --global user.email '41898282+github-actions[bot]@users.noreply.github.com'
 
       - name: Get version from lerna.json
         id: release-as
@@ -66,6 +60,62 @@ jobs:
         env:
           RELEASE_AS: ${{ steps.release-as.outputs.version }}
 
+  git-operations:
+    if: ${{ github.event.inputs.publish != 'true' }}
+    needs: build-and-validate
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Get version from lerna.json
+        id: release-as
+        run: |
+          version=$(jq -r .version lerna.json)
+          echo "version=$version" >> "$GITHUB_OUTPUT"
+
+      - name: Configure git
+        run: |
+          git config --global user.name 'github-actions[bot]'
+          git config --global user.email '41898282+github-actions[bot]@users.noreply.github.com'
+
+      - name: Tag and push version
+        run: |
+          git tag v$RELEASE_AS -m v$RELEASE_AS
+          git push origin v$RELEASE_AS
+        env:
+          RELEASE_AS: ${{ needs.build-and-validate.outputs.version || steps.release-as.outputs.version }}
+
+  npm-publish:
+    needs: [build-and-validate, git-operations]
+    if: always() && needs.build-and-validate.result == 'success' && (needs.git-operations.result == 'success' || needs.git-operations.result == 'skipped')
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      id-token: write # to enable use of OIDC for npm provenance
+    env:
+      TURBO_TOKEN: ${{ secrets.TURBO_TOKEN }}
+      TURBO_TEAM: ${{ vars.TURBO_TEAM }}
+      EXPECTED_NPM_USER: sanity-io
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@v4
+        with:
+          cache: pnpm
+          node-version: lts/*
+
+      - name: Install deps
+        run: pnpm install --ignore-scripts
+
+      - name: Build
+        run: pnpm build --output-logs=full --log-order=grouped
+
       - name: Set publishing config
         run: pnpm config set '//registry.npmjs.org/:_authToken' "${NPM_PUBLISH_TOKEN}"
         env:
@@ -81,18 +131,34 @@ jobs:
           fi
           echo "✅ npm authentication validated - using $EXPECTED_NPM_USER account"
 
-      - name: Tag and push version
-        if: ${{ github.event.inputs.publish != 'true' }}
-        run: |
-          git tag v$RELEASE_AS -m v$RELEASE_AS
-          git push origin v$RELEASE_AS
-        env:
-          RELEASE_AS: ${{steps.release-as.outputs.version}}
-
       - name: Publish packages to npm
         run: pnpm -r publish
         env:
           NPM_CONFIG_PROVENANCE: true
+
+  bundle-upload:
+    needs: npm-publish
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    env:
+      TURBO_TOKEN: ${{ secrets.TURBO_TOKEN }}
+      TURBO_TEAM: ${{ vars.TURBO_TEAM }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@v4
+        with:
+          cache: pnpm
+          node-version: lts/*
+
+      - name: Install deps
+        run: pnpm install --ignore-scripts
+
+      - name: Build
+        run: pnpm build --output-logs=full --log-order=grouped
 
       - name: Build bundle
         run: pnpm run build:bundle
