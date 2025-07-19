@@ -13,6 +13,10 @@ export function parseSourceFile(
     // append .ts to the filename so babel will parse it as typescript
     filename += '.ts'
     source = parseAstro(source)
+  } else if (filename.endsWith('.vue')) {
+    // append .ts to the filename so babel will parse it as typescript
+    filename += '.ts'
+    source = parseVue(source)
   }
   const result = parse(source, {
     ...babelOptions,
@@ -38,4 +42,31 @@ function parseAstro(source: string): string {
       return codeFence.split('\n').slice(1, -1).join('\n')
     })
     .join('\n')
+}
+
+function parseVue(source: string): string {
+  // find all script tags, the js code is between <script> and </script>
+  const scriptRegex = /<script(?:\s+generic=["'][^"']*["'])?[^>]*>([\s\S]*?)<\/script>/g
+  // const matches = [...source.matchAll(scriptRegex)]
+  // TODO: swap once this code runs in `ES2020`
+  const matches = matchAllPolyfill(source, scriptRegex)
+  if (!matches.length) {
+    return ''
+  }
+
+  return matches.map((match) => match[1]).join('\n')
+}
+
+// TODO: remove once this code runs in `ES2020`
+function matchAllPolyfill(str: string, regex: RegExp): RegExpMatchArray[] {
+  if (!regex.global) {
+    throw new Error('matchAll polyfill requires a global regex (with /g flag)')
+  }
+
+  const matches = []
+  let match
+  while ((match = regex.exec(str)) !== null) {
+    matches.push(match)
+  }
+  return matches
 }
