@@ -1680,8 +1680,8 @@ importers:
         specifier: ^1.0.0
         version: 1.0.0
       '@sanity/message-protocol':
-        specifier: ^0.13.0
-        version: 0.13.3
+        specifier: ^0.15.1
+        version: 0.15.1
       '@sanity/migrate':
         specifier: workspace:*
         version: link:../@sanity/migrate
@@ -4711,8 +4711,8 @@ packages:
     resolution: {integrity: sha512-RMRWQG5yVkCZnnBHW3qxVbZGUOeXPBzFPdD9+pynQCTVZI7zYBEzjnY8lcSYjty+0unDHqeoqMPfBXhqs0rg2g==}
     engines: {node: '>=20.0.0'}
 
-  '@sanity/message-protocol@0.13.3':
-    resolution: {integrity: sha512-ODamUtLYneiagN0x3i4QrdgD9bwSAJiL5DF+lxr5yzpR4vGSlJ+HFqJoVvLZTK/KdHBdJzmr2CMebP8hQYN36Q==}
+  '@sanity/message-protocol@0.15.1':
+    resolution: {integrity: sha512-pVmNtWkedptGSUTqS/4hU2+7MtkH+p3aDx5qjf695KBtQVkNU/S92fONEyW1Nh2Qraksniu1GtNEM8ubabbawg==}
     engines: {node: '>=20.0.0'}
 
   '@sanity/mutate@0.11.0-canary.4':
@@ -15267,7 +15267,7 @@ snapshots:
     dependencies:
       '@sanity/comlink': 2.0.5
 
-  '@sanity/message-protocol@0.13.3':
+  '@sanity/message-protocol@0.15.1':
     dependencies:
       '@sanity/comlink': 3.0.7
 
