@@ -10,6 +10,8 @@ export default defineConfig([
       'simple-import-sort/imports': 'off',
       'max-statements': 'off',
       'unused-imports/no-unused-imports': 'off',
+      'import/no-named-default': 'off',
+      'no-warning-comments': 'error',
     },
   },
 ])
