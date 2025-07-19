@@ -27,6 +27,9 @@ import learnCommand from './learn/learnCommand'
 import loginCommand from './login/loginCommand'
 import logoutCommand from './logout/logoutCommand'
 import manageCommand from './manage/manageCommand'
+import getCommand from './openapi/getCommand'
+import listCommand from './openapi/listCommand'
+import openapiGroup from './openapi/openapiGroup'
 import createProjectCommand from './projects/createProjectCommand'
 import listProjectsCommand from './projects/listProjectsCommand'
 import projectsGroup from './projects/projectsGroup'
@@ -51,6 +54,9 @@ export const baseCommands: (CliCommandDefinition | CliCommandGroupDefinition)[] 
   manageCommand,
   debugCommand,
   helpCommand,
+  openapiGroup,
+  listCommand,
+  getCommand,
   projectsGroup,
   learnCommand,
   listProjectsCommand,
