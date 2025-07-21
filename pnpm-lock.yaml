@@ -1683,8 +1683,8 @@ importers:
         specifier: ^1.0.0
         version: 1.0.0
       '@sanity/message-protocol':
-        specifier: ^0.13.0
-        version: 0.13.3
+        specifier: ^0.15.1
+        version: 0.15.1
       '@sanity/migrate':
         specifier: workspace:*
         version: link:../@sanity/migrate
@@ -4714,8 +4714,8 @@ packages:
     resolution: {integrity: sha512-RMRWQG5yVkCZnnBHW3qxVbZGUOeXPBzFPdD9+pynQCTVZI7zYBEzjnY8lcSYjty+0unDHqeoqMPfBXhqs0rg2g==}
     engines: {node: '>=20.0.0'}
 
-  '@sanity/message-protocol@0.13.3':
-    resolution: {integrity: sha512-ODamUtLYneiagN0x3i4QrdgD9bwSAJiL5DF+lxr5yzpR4vGSlJ+HFqJoVvLZTK/KdHBdJzmr2CMebP8hQYN36Q==}
+  '@sanity/message-protocol@0.15.1':
+    resolution: {integrity: sha512-pVmNtWkedptGSUTqS/4hU2+7MtkH+p3aDx5qjf695KBtQVkNU/S92fONEyW1Nh2Qraksniu1GtNEM8ubabbawg==}
     engines: {node: '>=20.0.0'}
 
   '@sanity/mutate@0.11.0-canary.4':
@@ -15346,7 +15346,7 @@ snapshots:
     dependencies:
       '@sanity/comlink': 2.0.5
 
-  '@sanity/message-protocol@0.13.3':
+  '@sanity/message-protocol@0.15.1':
     dependencies:
       '@sanity/comlink': 3.0.7
 
@@ -16367,7 +16367,7 @@ snapshots:
 
   '@types/cpx@1.5.5':
     dependencies:
-      '@types/node': 22.15.32
+      '@types/node': 24.0.14
 
   '@types/debug@4.1.12':
     dependencies:
@@ -16375,7 +16375,7 @@ snapshots:
 
   '@types/decompress@4.2.7':
     dependencies:
-      '@types/node': 22.15.32
+      '@types/node': 24.0.14
 
   '@types/deep-eql@4.0.2': {}
 
@@ -16391,16 +16391,16 @@ snapshots:
 
   '@types/follow-redirects@1.14.4':
     dependencies:
-      '@types/node': 22.15.32
+      '@types/node': 24.0.14
 
   '@types/glob@7.2.0':
     dependencies:
       '@types/minimatch': 5.1.2
-      '@types/node': 22.15.32
+      '@types/node': 24.0.14
 
   '@types/gunzip-maybe@1.4.2':
     dependencies:
-      '@types/node': 22.15.32
+      '@types/node': 24.0.14
 
   '@types/hast@2.3.10':
     dependencies:
@@ -16413,7 +16413,7 @@ snapshots:
 
   '@types/jsdom@20.0.1':
     dependencies:
-      '@types/node': 22.15.32
+      '@types/node': 24.0.14
       '@types/tough-cookie': 4.0.5
       parse5: 7.3.0
 
@@ -16483,7 +16483,7 @@ snapshots:
 
   '@types/readdir-glob@1.1.5':
     dependencies:
-      '@types/node': 22.15.32
+      '@types/node': 24.0.14
 
   '@types/refractor@3.4.1':
     dependencies:
@@ -16492,7 +16492,7 @@ snapshots:
   '@types/request@2.48.12':
     dependencies:
       '@types/caseless': 0.12.5
-      '@types/node': 22.15.32
+      '@types/node': 24.0.14
       '@types/tough-cookie': 4.0.5
       form-data: 2.5.3
 
@@ -16508,7 +16508,7 @@ snapshots:
 
   '@types/serve-handler@6.1.4':
     dependencies:
-      '@types/node': 22.15.32
+      '@types/node': 24.0.14
 
   '@types/shallow-equals@1.0.3': {}
 
@@ -16518,16 +16518,16 @@ snapshots:
 
   '@types/tar-fs@2.0.4':
     dependencies:
-      '@types/node': 22.15.32
+      '@types/node': 24.0.14
       '@types/tar-stream': 3.1.4
 
   '@types/tar-stream@3.1.4':
     dependencies:
-      '@types/node': 22.15.32
+      '@types/node': 24.0.14
 
   '@types/tar@6.1.13':
     dependencies:
-      '@types/node': 22.15.32
+      '@types/node': 24.0.14
       minipass: 4.2.8
 
   '@types/tern@0.23.9':
@@ -16536,7 +16536,7 @@ snapshots:
 
   '@types/through@0.0.33':
     dependencies:
-      '@types/node': 22.15.32
+      '@types/node': 24.0.14
 
   '@types/tough-cookie@4.0.5': {}
 
