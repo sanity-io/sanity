@@ -1,5 +1,5 @@
 import {ErrorOutlineIcon} from '@sanity/icons'
-import {Card, Flex, Spinner, Stack, Text} from '@sanity/ui'
+import {Card, Flex, Stack, Text} from '@sanity/ui'
 import {useEffect} from 'react'
 
 import {useTranslation} from '../../../../i18n'
@@ -19,6 +19,21 @@ export function EnsureMediaLibrary(props: {
     }
   }, [id, onSetMediaLibraryId, status])
 
+  if (status === 'inactive') {
+    return (
+      <Card padding={4} radius={4} tone="caution" data-testid="media-library-absent-warning">
+        <Flex gap={3}>
+          <Text size={1}>
+            <ErrorOutlineIcon />
+          </Text>
+          <Text size={1} weight="semibold">
+            {t('asset-sources.media-library.error.no-media-library-provisioned')}
+          </Text>
+        </Flex>
+      </Card>
+    )
+  }
+
   if (status === 'error' && error) {
     const errorCodeTestId = error.code
     return (
@@ -37,21 +52,6 @@ export function EnsureMediaLibrary(props: {
       </Card>
     )
   }
-  if (status === 'provisioning') {
-    return (
-      <Card padding={4} radius={4} tone="caution">
-        <Flex gap={3}>
-          <Text size={1}>
-            <Spinner />
-          </Text>
-          <Stack space={4}>
-            <Text size={1} weight="semibold" data-testid="media-library-provisioning-message">
-              {t('asset-sources.media-library.info.provisioning')}
-            </Text>
-          </Stack>
-        </Flex>
-      </Card>
-    )
-  }
+
   return null
 }

@@ -172,13 +172,13 @@ export const studioLocaleStrings = defineLocalesResources('studio', {
   'asset-sources.media-library.error.library-could-not-be-resolved':
     'Something went wrong trying to resolve the Media Library for this project.',
 
+  /** Error message shown when no media library has been provisioned for the current organization */
+  'asset-sources.media-library.error.no-media-library-provisioned':
+    'No media library has been provisioned for this organization.',
+
   /** Menu Items for Media Library Asset Source */
   'asset-sources.media-library.file.title': 'Media Library',
   'asset-sources.media-library.image.title': 'Media Library',
-
-  /** Info messages for the Media Library Asset Source  */
-  'asset-sources.media-library.info.provisioning':
-    'Please wait while we prepare your Media Library',
 
   /** Label when a release has been deleted by a different user */
   'banners.deleted-bundle-banner.text':

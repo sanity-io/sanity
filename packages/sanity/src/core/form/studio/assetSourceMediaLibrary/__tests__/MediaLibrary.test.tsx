@@ -1,6 +1,6 @@
 import {type SanityClient} from '@sanity/client'
 import {type AssetSourceComponentProps} from '@sanity/types'
-import {render, screen, waitFor} from '@testing-library/react'
+import {render, waitFor} from '@testing-library/react'
 import {noop} from 'lodash'
 import {describe, expect, test} from 'vitest'
 
@@ -60,25 +60,7 @@ describe('provisioning', () => {
     })
   })
 
-  test('renders error when there are no Media Libraries result', async () => {
-    const client = createMockSanityClient({
-      requests: {
-        '/projects/mock-project-id': {
-          organizationId,
-        },
-      },
-    })
-    const TestProvider = await createWrapperComponent(client as any)
-
-    const {getByTestId} = render(<TestProvider>{assetSourceComponent}</TestProvider>)
-
-    await waitFor(() => {
-      expect(getByTestId('media-library-provision-error')).toBeInTheDocument()
-      expect(getByTestId('ERROR_NO_MEDIA_LIBRARIES_FOUND')).toBeInTheDocument()
-    })
-  })
-
-  test('renders error if creating a new Media Library fails', async () => {
+  test('renders warning when there are no Media Libraries result', async () => {
     const client = createMockSanityClient({
       requests: {
         '/projects/mock-project-id': {
@@ -90,11 +72,11 @@ describe('provisioning', () => {
       },
     })
     const TestProvider = await createWrapperComponent(client as any)
+
     const {getByTestId} = render(<TestProvider>{assetSourceComponent}</TestProvider>)
 
     await waitFor(() => {
-      expect(getByTestId('media-library-provision-error')).toBeInTheDocument()
-      expect(getByTestId('ERROR_FAILED_TO_CREATE_MEDIA_LIBRARY')).toBeInTheDocument()
+      expect(getByTestId('media-library-absent-warning')).toBeInTheDocument()
     })
   })
 
@@ -127,49 +109,6 @@ describe('provisioning', () => {
     await waitFor(() => {
       expect(getByTestId('media-library-provision-error')).toBeInTheDocument()
       expect(getByTestId('MEDIA_LIBRARY_ERROR_UNEXPECTED')).toBeInTheDocument()
-    })
-  })
-
-  test('provisions a media library successfully', async () => {
-    const client = createMockSanityClient({
-      requests: {
-        '/projects/mock-project-id': {
-          organizationId,
-        },
-        '/media-libraries?organizationId=mock-organization-id': {
-          data: [],
-        },
-        // POST request response to provision a Media Library
-        '/media-libraries': {
-          id: 'mock-library-id',
-          name: 'Mock Media Library',
-          organizationId,
-          status: 'provisioning',
-        },
-        '/media-libraries/mock-library-id': {
-          id: 'mock-library-id',
-          name: 'Mock Media Library',
-          organizationId,
-          status: 'active',
-        },
-      },
-    })
-    const TestProvider = await createWrapperComponent(client as any)
-    render(<TestProvider>{assetSourceComponent}</TestProvider>)
-
-    // Provisioning message should be shown
-    await waitFor(() => {
-      expect(screen.queryByTestId('media-library-provisioning-message')).toBeInTheDocument()
-    })
-
-    // Provisioning message should not be shown after the Media Library is provisioned
-    await waitFor(() => {
-      expect(screen.queryByTestId('media-library-provisioning-message')).not.toBeInTheDocument()
-    })
-
-    // Media Library dialog should be shown
-    await waitFor(() => {
-      expect(screen.queryByTestId('media-library-plugin-dialog-select-assets')).toBeInTheDocument()
     })
   })
 })
