@@ -161,10 +161,10 @@ describe('schema validation inference', () => {
       ).resolves.toEqual([
         {
           item: {
-            message: 'The asset could not found in the Media Library',
+            message: 'The asset could not be found in the Media Library',
           },
           level: 'error',
-          message: 'The asset could not found in the Media Library',
+          message: 'The asset could not be found in the Media Library',
           path: ['imageField'],
         },
       ])
