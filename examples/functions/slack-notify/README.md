@@ -161,7 +161,7 @@ Test the function with the created document (from project root):
 npx sanity functions test slack-notify --file functions/slack-notify/document.json --dataset production --with-user-token
 
 # Or set environment variables inline
-SLACK_OAUTH_TOKEN=xoxb-your-token SLACK_CHANNEL=test-channel npx sanity functions test slack-notify --file functions/slack-notify/document.json --dataset production --with-user-token --with-user-token
+SLACK_OAUTH_TOKEN=xoxb-your-token SLACK_CHANNEL=test-channel npx sanity functions test slack-notify --file functions/slack-notify/document.json --dataset production --with-user-token
 ```
 
 **Alternative:** Test with a real document from your dataset:
@@ -177,7 +177,7 @@ cd ..
 npx sanity functions test slack-notify --file real-post.json --dataset production --with-user-token
 
 # Or set environment variables inline
-SLACK_OAUTH_TOKEN=xoxb-your-token SLACK_CHANNEL=test-channel npx sanity functions test slack-notify --file real-post.json --dataset production --with-user-token --with-user-token
+SLACK_OAUTH_TOKEN=xoxb-your-token SLACK_CHANNEL=test-channel npx sanity functions test slack-notify --file real-post.json --dataset production --with-user-token
 ```
 
 ### 2. Test Without Sending Messages
