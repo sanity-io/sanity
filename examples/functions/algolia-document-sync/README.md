@@ -83,6 +83,7 @@ This function is built to be compatible with any of [the official "clean" templa
 4. **Set up environment variables**
 
    Add your Algolia credentials to your root .env file:
+
    - `ALGOLIA_APP_ID`: Your Algolia application ID
    - `ALGOLIA_WRITE_KEY`: Your Algolia write API key
 
