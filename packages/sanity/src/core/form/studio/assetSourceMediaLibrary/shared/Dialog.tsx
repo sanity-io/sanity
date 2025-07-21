@@ -3,6 +3,7 @@ import {Dialog} from '@sanity/ui'
 import {styled} from 'styled-components'
 
 export const AppDialog = styled(Dialog)`
+  padding: 1.5rem;
   [data-ui='Card']:first-child {
     flex: 1;
   }
