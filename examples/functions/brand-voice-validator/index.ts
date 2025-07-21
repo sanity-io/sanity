@@ -2,15 +2,14 @@ import {createClient} from '@sanity/client'
 import {documentEventHandler} from '@sanity/functions'
 
 export const handler = documentEventHandler(async ({context, event}) => {
-  // eslint-disable-next-line no-console
-  console.log('Event data:', JSON.stringify(event.data, null, 2))
+  const {data} = event
+  const {local} = context // local is true when running locally
 
   const client = createClient({
     ...context.clientOptions,
     apiVersion: 'vX',
     useCdn: false,
   })
-  const {local} = context // local is true when running locally
 
   const brandsWritingStyleGuide = `
 # Brand Style Guide
@@ -38,8 +37,7 @@ Keep the language casual, clear, and friendly. Speak directly to readers as "you
 
   try {
     const result = await client.agent.action.generate({
-      // Set `noWrite` to `false` to write the suggestions to the document
-      noWrite: local ? true : false,
+      noWrite: local ? true : false, // if local is true, we don't want to write to the document, just return the result for logging
       instructionParams: {
         content: {
           type: 'field',
@@ -57,12 +55,15 @@ Keep the language casual, clear, and friendly. Speak directly to readers as "you
       conditionalPaths: {
         defaultReadOnly: false,
       },
-      documentId: event.data._id,
+      documentId: data._id,
       schemaId: '_.schemas.default',
+      forcePublishedWrite: true,
     })
     // eslint-disable-next-line no-console
     console.log(
-      local ? 'Generated content suggestions (LOCAL TEST MODE):' : 'Generated content suggestions:',
+      local
+        ? 'Generated content suggestions (LOCAL TEST MODE - Content Lake not updated):'
+        : 'Generated content suggestions:',
       result.suggestedChanges,
     )
   } catch (error) {

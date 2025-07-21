@@ -12,8 +12,7 @@ export const handler = documentEventHandler(async ({context, event}) => {
 
   try {
     const result = await client.agent.action.generate({
-      // Set `noWrite` to `false` to write the tags to the document
-      noWrite: local ? true : false,
+      noWrite: local ? true : false, // if local is true, we don't want to write to the document, just return the result for logging
       instructionParams: {
         content: {
           type: 'field',
@@ -30,7 +29,9 @@ export const handler = documentEventHandler(async ({context, event}) => {
     })
     // eslint-disable-next-line no-console
     console.log(
-      local ? 'Generated summary (LOCAL TEST MODE):' : 'Generated summary:',
+      local
+        ? 'Generated summary (LOCAL TEST MODE - Content Lake not updated):'
+        : 'Generated summary:',
       result.autoSummary,
     )
   } catch (error) {

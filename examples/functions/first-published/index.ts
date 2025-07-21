@@ -21,8 +21,8 @@ export const handler = documentEventHandler(async ({context, event}) => {
     // eslint-disable-next-line no-console
     console.log(
       local
-        ? `Would set firstPublished timestamp (LOCAL TEST MODE): ${firstPublishedDate} for document: ${data._id}`
-        : `Set firstPublished timestamp for document: ${data._id}`,
+        ? `(LOCAL TEST MODE - Content Lake not updated) Set firstPublished timestamp for document (${data._id}): ${firstPublishedDate}  `
+        : `Set firstPublished timestamp for document (${data._id}): ${firstPublishedDate}`,
       result,
     )
   } catch (error) {

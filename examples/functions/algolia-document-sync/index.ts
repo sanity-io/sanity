@@ -21,6 +21,9 @@ export const handler = documentEventHandler(async ({event}) => {
         hideFromSearch, // This is an optional field that you can use to hide a document from search results
       },
     })
+
+    // eslint-disable-next-line no-console
+    console.log(`Successfully synced document ${_id} ("${title}") to Algolia`)
   } catch (error) {
     // eslint-disable-next-line no-console
     console.error('Error syncing to Algolia:', error)

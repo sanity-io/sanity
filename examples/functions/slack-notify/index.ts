@@ -11,9 +11,6 @@ const {
 } = env
 
 export const handler = documentEventHandler(async ({event}) => {
-  // eslint-disable-next-line no-console
-  console.log('Event data:', JSON.stringify(event.data, null, 2))
-
   // Initialize Slack client
   const slack = new WebClient(SLACK_OAUTH_TOKEN)
 
@@ -28,9 +25,12 @@ export const handler = documentEventHandler(async ({event}) => {
     })
 
     // eslint-disable-next-line no-console
-    console.log('Slack notification sent successfully to channel:', SLACK_CHANNEL)
-    // eslint-disable-next-line no-console
-    console.log('Message sent:', message)
+    console.log(
+      'Slack notification sent successfully to channel:',
+      SLACK_CHANNEL,
+      'Message sent:',
+      message,
+    )
   } catch (error) {
     // eslint-disable-next-line no-console
     console.error('Error sending Slack notification:', error)
