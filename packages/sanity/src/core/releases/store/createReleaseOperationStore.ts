@@ -12,7 +12,6 @@ import {getPublishedId, getVersionFromId, getVersionId} from '../../util'
 import {type ReleasesUpsellContextValue} from '../contexts/upsell/types'
 import {type RevertDocument} from '../tool/components/releaseCTAButtons/ReleaseRevertButton/useDocumentRevertStates'
 import {getReleaseIdFromReleaseDocumentId} from '../util/getReleaseIdFromReleaseDocumentId'
-import {prepareVersionReferences} from '../util/prepareVersionReferences'
 import {isReleaseLimitError} from './isReleaseLimitError'
 
 export interface ReleaseOperationsStore {
@@ -153,29 +152,22 @@ export function createReleaseOperationsStore(options: {
   const handleCreateVersion = async (
     releaseId: string,
     documentId: string,
-    initialValue?: Omit<EditableReleaseDocument, '_id' | '_type'>,
     opts?: BaseActionOptions,
   ) => {
-    // the documentId will show you where the document is coming from and which
-    // document should it copy from
-
-    // fetch original document
+    // fetch original document to get the revision id
     const document = await client.getDocument(documentId)
 
-    if (!document && !initialValue) {
+    if (!document) {
       throw new Error(`Document with id ${documentId} not found and no initial value provided`)
     }
 
-    const versionDocument = prepareVersionReferences({
-      ...document,
-      ...initialValue,
-      // This will automatically be set by CL when creating the version document.
-      _updatedAt: undefined,
-      _id: getVersionId(documentId, releaseId),
-    }) as IdentifiedSanityDocumentStub
-
     return client.createVersion(
-      {document: versionDocument, publishedId: getPublishedId(documentId), releaseId},
+      {
+        baseId: documentId,
+        ifBaseRevisionId: document?._rev,
+        publishedId: getPublishedId(documentId),
+        releaseId,
+      },
       opts,
     )
   }

@@ -39,3 +39,38 @@ test(`published documents can be deleted`, async ({page, createDraftDocument}) =
 
   await expect(page.getByText('The document was successfully deleted')).toBeVisible()
 })
+
+test(`deleted document shows the right name from last revision`, async ({
+  page,
+  createDraftDocument,
+}) => {
+  test.slow()
+  const documentName = 'John Doe'
+
+  await createDraftDocument('/content/author')
+  await page.getByTestId('field-name').getByTestId('string-input').fill(documentName)
+
+  // Save the current URL before deletion
+  const documentUrl = page.url()
+
+  // Verify the name is displayed correctly before deletion
+  await expect(page.getByTestId('field-name').getByTestId('string-input')).toHaveValue(documentName)
+
+  // Delete the document
+  await page.getByTestId('action-menu-button').click()
+  await page.getByTestId('action-Delete').click()
+  await page.getByRole('button', {name: 'Delete now'}).click()
+
+  // Wait for deletion to complete
+  await expect(page.getByText('The document was successfully deleted')).toBeVisible()
+
+  // Navigate back to the original document URL once it's deleted since it navigates back to the initial structure
+  await page.goto(documentUrl)
+
+  // Verify that the form still shows the correct name from the last revision
+  // The form should display the last revision document content
+  await expect(page.getByTestId('field-name').getByTestId('string-input')).toHaveValue(documentName)
+
+  // Verify the document title in the header also shows the correct name
+  await expect(page.getByTestId('document-panel-document-title')).toHaveText(documentName)
+})

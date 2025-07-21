@@ -227,7 +227,6 @@ export const DocumentPanel = function DocumentPanel(props: DocumentPanelProps) {
         <DocumentNotInReleaseBanner
           documentId={value._id}
           currentRelease={selectedPerspective as ReleaseDocument}
-          value={displayed || undefined}
           isScheduledRelease={isScheduledRelease}
         />
       )

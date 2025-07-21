@@ -16,10 +16,10 @@ import {SCHEDULED_PUBLISHING_TIME_ZONE_SCOPE} from '../../../../studio/constants
 import {tasksLocaleNamespace} from '../../../i18n'
 
 const serialize = (date: Date) => format(date, DEFAULT_DATE_FORMAT)
-const deserialize = (value: string) => parse(value, DEFAULT_DATE_FORMAT)
+const deserialize = (value: string | undefined) => parse(value || '', DEFAULT_DATE_FORMAT)
 
 export function DateEditFormField(props: {
-  value: string
+  value: string | undefined
   onChange: (patch: FormPatch | PatchEvent | FormPatch[]) => void
   path: Path
 }) {
