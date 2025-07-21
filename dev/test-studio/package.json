@@ -1,6 +1,6 @@
 {
   "name": "sanity-test-studio",
-  "version": "4.0.1",
+  "version": "4.1.0",
   "private": true,
   "license": "MIT",
   "author": "Sanity.io <hello@sanity.io>",
@@ -17,14 +17,14 @@
     "workshop:dev": "node -r esbuild-register scripts/workshop/dev.ts"
   },
   "dependencies": {
-    "@portabletext/block-tools": "^1.1.38",
-    "@portabletext/editor": "^1.58.0",
+    "@portabletext/block-tools": "^2.0.0",
+    "@portabletext/editor": "^2.0.0",
     "@portabletext/react": "^3.2.1",
     "@sanity/assist": "^4.4.7",
     "@sanity/cli": "workspace:*",
     "@sanity/client": "^7.8.0",
     "@sanity/color": "^3.0.6",
-    "@sanity/color-input": "^4.0.4",
+    "@sanity/color-input": "^4.0.5",
     "@sanity/google-maps-input": "^4.1.1",
     "@sanity/icons": "^3.7.4",
     "@sanity/image-url": "^1.1.0",

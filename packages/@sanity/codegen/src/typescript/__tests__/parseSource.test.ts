@@ -28,4 +28,67 @@ export const prerender = true
     expect(parsed.type).toBe('File')
     expect(parsed.program.body.length).toBe(5)
   })
+  test('should parse vue', () => {
+    const source = `
+<script setup lang="ts">
+import groq from 'groq'
+const query = groq('*[_type == "myType"]')
+</script>
+
+<template>
+  <MyComponent>
+    <div>{{ query }}</div>
+  </MyComponent>
+</template>
+    `
+
+    const parsed = parseSourceFile(source, 'foo.vue', {})
+
+    expect(parsed.type).toBe('File')
+    expect(parsed.program.body.length).toBe(2)
+  })
+  test('should parse vue: with complex generics', () => {
+    const source = `
+<script generic="T extends string | Record<string, unknown>" lang="ts" setup>
+import groq from 'groq'
+const query = groq('*[_type == "myType"]')
+</script>
+
+<template>
+  <MyComponent>
+    <div>{{ query }}</div>
+  </MyComponent>
+</template>
+    `
+
+    const parsed = parseSourceFile(source, 'foo.vue', {})
+
+    expect(parsed.type).toBe('File')
+    expect(parsed.program.body.length).toBe(2)
+  })
+  test('should parse vue: with multiple script tags', () => {
+    const source = `
+<script setup lang="ts">
+import groq from 'groq'
+const query = groq('*[_type == "myType"]')
+</script>
+
+<template>
+  <MyComponent>
+    <div>{{ query }}</div>
+  </MyComponent>
+</template>
+
+<script>
+export default {
+  inheritAttrs: false,
+}
+</script>
+    `
+
+    const parsed = parseSourceFile(source, 'foo.vue', {})
+
+    expect(parsed.type).toBe('File')
+    expect(parsed.program.body.length).toBe(3)
+  })
 })
