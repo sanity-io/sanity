@@ -124,22 +124,20 @@ export function extractSchema(
       return null
     }
     if (value.type === 'object') {
+      value.attributes = {
+        _type: {
+          type: 'objectAttribute',
+          value: {
+            type: 'string',
+            value: schemaType.name,
+          },
+        },
+        ...value.attributes,
+      }
       return {
         name: schemaType.name,
         type: 'type',
-        value: {
-          type: 'object',
-          attributes: {
-            _type: {
-              type: 'objectAttribute',
-              value: {
-                type: 'string',
-                value: schemaType.name,
-              },
-            },
-            ...value.attributes,
-          },
-        },
+        value,
       }
     }
 

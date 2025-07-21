@@ -717,6 +717,55 @@ describe('Extract schema test', () => {
     assert(validDocument !== undefined) // this is a workaround for TS, but leave the expect above for clarity in case of failure
     expect(extracted).toMatchSnapshot()
   })
+
+  test('inline reference types works', () => {
+    const schema = createSchema(
+      {
+        name: 'test',
+        types: [
+          defineType({
+            title: 'Valid document',
+            name: 'validDocument',
+            type: 'document',
+            fields: [
+              {
+                type: 'inlineRef',
+                name: 'link',
+              },
+            ],
+          }),
+          defineType({
+            type: 'reference',
+            title: 'InlineRef',
+            name: 'inlineRef',
+            to: [{type: 'thing'}],
+          }),
+          defineType({
+            type: 'object',
+            title: 'thing',
+            name: 'thing',
+            fields: [
+              {
+                type: 'string',
+                name: 'title',
+              },
+            ],
+          }),
+        ],
+      },
+      true,
+    )
+
+    const extracted = extractSchema(schema)
+    expect(extracted.map((v) => v.name)).toStrictEqual(['inlineRef', 'validDocument', 'thing'])
+    expect(extracted).toMatchSnapshot()
+    const inlineRef = extracted.find((type) => type.name === 'inlineRef')
+    expect(inlineRef).toBeDefined()
+    assert(inlineRef !== undefined) // this is a workaround for TS, but leave the expect above for clarity in case of failure
+    assert(inlineRef.type === 'type')
+    assert(inlineRef.value.type === 'object')
+    expect(inlineRef.value.dereferencesTo).toBe('thing')
+  })
 })
 
 const builtinAttrs = ['_id', '_createdAt', '_updatedAt', '_rev']
