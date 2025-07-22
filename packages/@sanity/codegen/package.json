@@ -63,7 +63,7 @@
     "groq-js": "^1.17.2",
     "json5": "^2.2.3",
     "tsconfig-paths": "^4.2.0",
-    "zod": "^3.22.4"
+    "zod": "^3.25.76"
   },
   "devDependencies": {
     "@repo/eslint-config": "workspace:*",
