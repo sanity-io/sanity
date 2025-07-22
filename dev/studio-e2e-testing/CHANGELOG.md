@@ -3,6 +3,15 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [4.1.0](https://github.com/sanity-io/sanity/compare/v4.0.1...v4.1.0) (2025-07-21)
+
+
+### Bug Fixes
+
+* **deps:** Update dev-non-major ([#9995](https://github.com/sanity-io/sanity/issues/9995)) ([4050e54](https://github.com/sanity-io/sanity/commit/4050e5476520085bd79318054933c01d714ee820))
+
+
+
 ## [4.0.1](https://github.com/sanity-io/sanity/compare/v4.0.0...v4.0.1) (2025-07-16)
 
 **Note:** Version bump only for package studio-e2e-testing
