@@ -12,7 +12,8 @@ export interface DocumentFieldActionsContextValue {
 /**
  * @internal
  */
-export const DocumentFieldActionsContext = createContext<DocumentFieldActionsContextValue | null>(
-  'sanity/_singletons/context/document-field-actions',
-  null,
-)
+export const DocumentFieldActionsContext: React.Context<DocumentFieldActionsContextValue | null> =
+  createContext<DocumentFieldActionsContextValue | null>(
+    'sanity/_singletons/context/document-field-actions',
+    null,
+  )

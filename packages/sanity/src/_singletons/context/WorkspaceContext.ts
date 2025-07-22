@@ -5,7 +5,7 @@ import type {Workspace} from '../../core/config/types'
 /**
  * @internal
  */
-export const WorkspaceContext = createContext<Workspace | null>(
+export const WorkspaceContext: React.Context<Workspace | null> = createContext<Workspace | null>(
   'sanity/_singletons/context/workspace',
   null,
 )

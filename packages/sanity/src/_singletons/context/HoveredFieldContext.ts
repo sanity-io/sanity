@@ -12,14 +12,12 @@ export interface HoveredFieldContextValue {
 }
 
 /** @internal */
-export const HoveredFieldContext = createContext<HoveredFieldContextValue>(
-  'sanity/_singletons/context/hovered-field',
-  {
+export const HoveredFieldContext: React.Context<HoveredFieldContextValue> =
+  createContext<HoveredFieldContextValue>('sanity/_singletons/context/hovered-field', {
     store: {
       subscribe: () => () => undefined,
       getSnapshot: () => [],
     },
     onMouseEnter: () => undefined,
     onMouseLeave: () => undefined,
-  },
-)
+  })

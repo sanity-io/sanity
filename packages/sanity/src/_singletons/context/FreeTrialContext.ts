@@ -5,7 +5,6 @@ import type {FreeTrialContextProps} from '../../core/studio/components/navbar/fr
 /**
  * @internal
  */
-export const FreeTrialContext = createContext<FreeTrialContextProps | undefined>(
-  'sanity/_singletons/context/free-trial',
-  undefined,
-)
+export const FreeTrialContext: React.Context<FreeTrialContextProps | undefined> = createContext<
+  FreeTrialContextProps | undefined
+>('sanity/_singletons/context/free-trial', undefined)
