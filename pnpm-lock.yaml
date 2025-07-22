@@ -1611,7 +1611,7 @@ importers:
         specifier: ^3.4.0
         version: 3.4.0
       '@mux/mux-player-react':
-        specifier: ^3.4.0
+        specifier: ^3.5.1
         version: 3.5.1(@types/react-dom@19.1.6(@types/react@19.1.8))(@types/react@19.1.8)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
       '@portabletext/block-tools':
         specifier: ^2.0.0
