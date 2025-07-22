@@ -266,7 +266,7 @@
     "rxjs": "^7.8.2",
     "rxjs-exhaustmap-with-trailing": "^2.1.1",
     "rxjs-mergemap-array": "^0.1.0",
-    "scroll-into-view-if-needed": "^3.0.3",
+    "scroll-into-view-if-needed": "^3.1.0",
     "scrollmirror": "^1.2.4",
     "semver": "^7.3.5",
     "shallow-equals": "^1.0.0",
