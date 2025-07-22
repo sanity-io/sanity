@@ -1,16 +1,18 @@
-// eslint-disable no-console
+import {env} from 'node:process'
+
 import {documentEventHandler} from '@sanity/functions'
 
-const {TELEGRAM_BOT_TOKEN, TELEGRAM_CHAT_ID} = process.env
-const STUDIO_URL = 'https://studio.simeongriggs.dev'
+const {TELEGRAM_BOT_TOKEN = '', TELEGRAM_CHAT_ID = '', STUDIO_URL = 'http://localhost:3333'} = env
 
 export const handler = documentEventHandler(async ({event}) => {
   const {_id, comment} = event.data
 
   if (!comment) {
+    // eslint-disable-next-line no-console
     console.log('No comment in event data')
     return
   } else if (!TELEGRAM_BOT_TOKEN || !TELEGRAM_CHAT_ID) {
+    // eslint-disable-next-line no-console
     console.log('Environment variables not set')
     return
   }
@@ -38,8 +40,10 @@ export const handler = documentEventHandler(async ({event}) => {
     }
 
     const result = await response.json()
+    // eslint-disable-next-line no-console
     console.log('Message sent successfully:', result)
   } catch (error) {
+    // eslint-disable-next-line no-console
     console.error('Failed to send Telegram notification:', error)
     throw error
   }

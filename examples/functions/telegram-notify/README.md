@@ -42,9 +42,10 @@ The response will be a JSON object containing your Chat ID.
 - Create a `.env` file in the root of your project
 - Add your bot token and chat ID to the `.env` file
 
-```
+```env
 TELEGRAM_BOT_TOKEN=<YOUR_BOT_TOKEN>
 TELEGRAM_CHAT_ID=<YOUR_CHAT_ID>
+STUDIO_URL=http://localhost:3333
 ```
 
 4. **Initialize the example**
@@ -100,7 +101,7 @@ npm install
 
 ## Testing the function locally
 
-You can test the first-published function locally using the Sanity CLI before deploying:
+You can test the telegram-notify function locally using the Sanity CLI before deploying:
 
 ### 1. Basic Function Test
 
@@ -145,9 +146,63 @@ npx sanity functions test telegram-notify --file document.json
 ### Testing Tips
 
 - **Use Node.js v22.x** locally to match production runtime
-- **Test edge cases** like documents that already have firstPublished set
+- **Test with real Telegram tokens** - The function requires valid credentials to work
 - **Check function logs** in CLI output for debugging
-- **Verify the setIfMissing behavior** by running the function multiple times
+
+## Deploying your function
+
+Once you've tested your function locally and are satisfied with its behavior, you can deploy it to production.
+
+**Important:** Make sure you have the Deploy Studio permission for your Sanity project before attempting to deploy.
+
+### Prerequisites for deployment
+
+- Sanity CLI v3.92.0 or later
+- Deploy Studio permissions for your Sanity project
+- Node.js v22.x (matches production runtime)
+- Valid Telegram bot token and chat ID
+
+### Deploy to production
+
+1. **Deploy your blueprint**
+
+From your project root, run:
+
+```bash
+npx sanity blueprints deploy
+```
+
+This command will:
+
+- Package your function code
+- Upload it to Sanity's infrastructure
+- Configure the event triggers for comment publications
+- Make your telegram-notify function live in production
+- Deploy .env file in the root directory if it exists
+
+2. **If not using an .env file, add environment variables manually**
+
+After deployment, if you're not using a .env file in your projects root, you need to add your Telegram credentials as environment variables:
+
+```bash
+npx sanity functions env add comment-telegram TELEGRAM_BOT_TOKEN "your-telegram-bot-token-here"
+npx sanity functions env add comment-telegram TELEGRAM_CHAT_ID "your-chat-id-here"
+npx sanity functions env add comment-telegram STUDIO_URL "https://your-studio.sanity.studio"
+```
+
+You can verify the environment variables were added successfully:
+
+```bash
+npx sanity functions env list comment-telegram
+```
+
+4. **Verify deployment**
+
+After deployment, you can verify your function is active by:
+
+- Checking the Sanity Studio under "Compute"
+- Publishing a new comment and confirming Telegram notifications are sent
+- Monitoring function logs in the CLI
 
 ## Requirements
 
