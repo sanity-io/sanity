@@ -39,10 +39,10 @@ The `functions/` directory contains examples of [Sanity Functions](https://www.s
 
 The `studios/` directory contains complete Sanity Studio configurations showcasing different use cases:
 
-- **[Blog Studio](https://github.com/sanity-io/sanity/tree/marketing/add-examples-folder/examples/studios/blog-studio)** - Content management for blogs and editorial sites
-- **[E-commerce Studio](https://github.com/sanity-io/sanity/tree/marketing/add-examples-folder/examples/studios/ecommerce-studio)** - Product catalogs and inventory management
-- **[Clean Studio](https://github.com/sanity-io/sanity/tree/marketing/add-examples-folder/examples/studios/clean-studio)** - Clean project with no predefined schema types
-- **[Movies Studio](https://github.com/sanity-io/sanity/tree/marketing/add-examples-folder/examples/studios/movies-studio)** - Movie database with sample content
+- **[Blog Studio](https://github.com/sanity-io/sanity/tree/main/examples/studios/blog-studio)** - Content management for blogs and editorial sites
+- **[E-commerce Studio](https://github.com/sanity-io/sanity/tree/main/examples/studios/ecommerce-studio)** - Product catalogs and inventory management
+- **[Clean Studio](https://github.com/sanity-io/sanity/tree/main/examples/studios/clean-studio)** - Clean project with no predefined schema types
+- **[Movies Studio](https://github.com/sanity-io/sanity/tree/main/examples/studios/movies-studio)** - Movie database with sample content
 
 Each studio example demonstrates schema design, custom components, and workflow configurations.
 
