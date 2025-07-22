@@ -297,7 +297,7 @@
     "@sanity/eslint-config-i18n": "catalog:",
     "@sanity/generate-help-url": "^3.0.0",
     "@sanity/pkg-utils": "6.13.4",
-    "@sanity/tsdoc": "1.0.169",
+    "@sanity/tsdoc": "3.0.0",
     "@sanity/ui-workshop": "catalog:",
     "@sanity/visual-editing-csm": "^2.0.21",
     "@sentry/types": "^8.55.0",

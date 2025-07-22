@@ -37,7 +37,7 @@
     "@sanity/migrate": "workspace:*",
     "@sanity/preview-url-secret": "^2.1.14",
     "@sanity/react-loader": "^1.11.15",
-    "@sanity/tsdoc": "1.0.169",
+    "@sanity/tsdoc": "3.0.0",
     "@sanity/types": "workspace:*",
     "@sanity/ui": "^2.16.7",
     "@sanity/ui-workshop": "catalog:",

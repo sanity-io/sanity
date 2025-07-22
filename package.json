@@ -119,7 +119,7 @@
     "@sanity/mutate": "^0.12.4",
     "@sanity/pkg-utils": "6.13.4",
     "@sanity/prettier-config": "^1.0.6",
-    "@sanity/tsdoc": "1.0.169",
+    "@sanity/tsdoc": "3.0.0",
     "@sanity/ui": "^2.16.7",
     "@sanity/uuid": "^3.0.2",
     "@types/glob": "^7.2.0",
