@@ -158,10 +158,17 @@ Test the function with the created document (from project root):
 
 ```bash
 # If using .env file (recommended)
-npx sanity functions test slack-notify --file functions/slack-notify/document.json --dataset production --with-user-token
+npx sanity functions test slack-notify \
+  --file functions/slack-notify/document.json \
+  --dataset production \
+  --with-user-token
 
 # Or set environment variables inline
-SLACK_OAUTH_TOKEN=xoxb-your-token SLACK_CHANNEL=test-channel npx sanity functions test slack-notify --file functions/slack-notify/document.json --dataset production --with-user-token
+SLACK_OAUTH_TOKEN=xoxb-your-token SLACK_CHANNEL=test-channel \
+  npx sanity functions test slack-notify \
+  --file functions/slack-notify/document.json \
+  --dataset production \
+  --with-user-token
 ```
 
 **Alternative:** Test with a real document from your dataset:
@@ -174,10 +181,17 @@ npx sanity documents query "*[_type == 'post'][0]" > ../real-post.json
 # Back to project root for function testing
 cd ..
 # If using .env file (recommended)
-npx sanity functions test slack-notify --file real-post.json --dataset production --with-user-token
+npx sanity functions test slack-notify \
+  --file real-post.json \
+  --dataset production \
+  --with-user-token
 
 # Or set environment variables inline
-SLACK_OAUTH_TOKEN=xoxb-your-token SLACK_CHANNEL=test-channel npx sanity functions test slack-notify --file real-post.json --dataset production --with-user-token
+SLACK_OAUTH_TOKEN=xoxb-your-token SLACK_CHANNEL=test-channel \
+  npx sanity functions test slack-notify \
+  --file real-post.json \
+  --dataset production \
+  --with-user-token
 ```
 
 ### 2. Test Without Sending Messages
@@ -192,14 +206,14 @@ Start the development server for interactive testing:
 SLACK_OAUTH_TOKEN=slack-OAuth-token npx sanity functions dev
 ```
 
-This opens an interactive playground where you can test functions with custom data
+This opens an interactive playground where you can test functions with custom data.
 
 ### Testing Tips
 
-- **Use a test Slack channel** - Create a dedicated test channel for development
-- **Test with real Slack tokens** - The function requires a valid OAuth token to work
-- **Monitor Slack during testing** - Watch your designated channel for test messages
-- **Test edge cases** - Try documents without titles or slugs to ensure graceful handling
+- **Use a test Slack channel** - Create a dedicated test channel for development.
+- **Test with real Slack tokens** - The function requires a valid OAuth token to work.
+- **Monitor Slack during testing** - Watch your designated channel for test messages.
+- **Test edge cases** - Try documents without titles or slugs to ensure graceful handling.
 
 ## Deploying your function
 
@@ -209,10 +223,10 @@ Once you've tested your function locally and are satisfied with its behavior, yo
 
 ### Prerequisites for deployment
 
-- Sanity CLI v3.92.0 or later
-- Deploy Studio permissions for your Sanity project
-- Node.js v22.x (matches production runtime)
-- Valid Slack OAuth token with `chat:write` permissions
+- Sanity CLI v3.92.0 or later.
+- Deploy Studio permissions for your Sanity project.
+- Node.js v22.x (matches production runtime).
+- Valid Slack OAuth token with `chat:write` permissions.
 
 ### Deploy to production
 
@@ -285,9 +299,9 @@ After deployment, you can verify your function is active by:
 
 ### Deployment best practices
 
-- **Test thoroughly first** - Always test your function locally before deploying
-- **Use specific filters** - The current filter only targets posts to avoid unnecessary executions
-- **Monitor performance** - This is a lightweight function with minimal resource requirements
+- **Test thoroughly first** - Always test your function locally before deploying.
+- **Use specific filters** - The current filter only targets posts to avoid unnecessary executions.
+- **Monitor performance** - This is a lightweight function with minimal resource requirements.
 
 ### Troubleshooting deployment
 
@@ -301,7 +315,7 @@ After deployment, you can verify your function is active by:
 - Cause: Issues with your `sanity.blueprint.ts` configuration
 - Solution: Check the configuration matches the expected schema
 
-**Function not sending Slack notifications after deployment**
+**Error: "Function not sending Slack notifications after deployment"**
 
 - Cause: Slack OAuth token may be invalid, or channel access issues
 - Solution: Verify your Slack app configuration and ensure the bot is invited to the target channel
@@ -332,7 +346,7 @@ When you publish a post document, the function automatically:
 
 Example Slack message:
 
-```
+```text
 *New Document Published!*
 Title: Getting Started with Sanity
 Webpage: <http://localhost:3000/posts/getting-started-with-sanity|Click Here>
@@ -361,11 +375,11 @@ text: `Your custom message format with ${event.data.title}`,
 
 ### Add more document fields
 
-Include additional fields in the message by accessing `event.data.fieldName`
+Include additional fields in the message by accessing `event.data.fieldName`.
 
 ### Change notification triggers
 
-Modify the `filter` in the blueprint configuration to target different document types or conditions
+Modify the `filter` in the blueprint configuration to target different document types or conditions.
 
 ## Troubleshooting
 
@@ -373,20 +387,20 @@ Modify the `filter` in the blueprint configuration to target different document 
 
 **Error: "An API error occurred: invalid_auth"**
 
-- Cause: Invalid or missing Slack OAuth token
-- Solution: Verify your token is correct and has proper permissions
+- Cause: Invalid or missing Slack OAuth token.
+- Solution: Verify your token is correct and has proper permissions.
 
 **Error: "An API error occurred: channel_not_found"**
 
-- Cause: The specified channel doesn't exist or the bot doesn't have access
-- Solution: Ensure the channel exists and invite your Slack app to the channel
+- Cause: The specified channel doesn't exist or the bot doesn't have access.
+- Solution: Ensure the channel exists and invite your Slack app to the channel.
 
 **Error: "Missing environment variable SLACK_OAUTH_TOKEN"**
 
-- Cause: The Slack token environment variable is not set
-- Solution: Set the `SLACK_OAUTH_TOKEN` environment variable with your bot token
+- Cause: The Slack token environment variable is not set.
+- Solution: Set the `SLACK_OAUTH_TOKEN` environment variable with your bot token.
 
-**Messages not appearing in Slack**
+**Error: "Messages not appearing in Slack"**
 
-- Cause: Bot doesn't have permissions or isn't in the channel
-- Solution: Invite the bot to your target channel and ensure it has `chat:write` permissions
+- Cause: Bot doesn't have permissions or isn't in the channel.
+- Solution: Invite the bot to your target channel and ensure it has `chat:write` permissions.

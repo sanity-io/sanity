@@ -130,7 +130,6 @@ Capture a real document from your dataset:
 cd studio
 npx sanity documents get "your-post-id" > ../test-document.json
 
-
 # Back to project root for function testing
 cd ..
 npx sanity functions test algolia-document-sync --file test-document.json --dataset production --with-user-token
