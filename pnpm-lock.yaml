@@ -2104,7 +2104,7 @@ importers:
         specifier: ^19.1.1
         version: 19.1.6(@types/react@19.1.8)
       '@types/refractor':
-        specifier: ^3.0.0
+        specifier: ^3.4.1
         version: 3.4.1
       '@types/resolve-from':
         specifier: ^4.0.0
