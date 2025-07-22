@@ -19,6 +19,9 @@ const OPERATIONS = {
   dec(currentValue: FIXME, nextValue: FIXME) {
     return currentValue - nextValue
   },
+  // diffMatchPatch(currentValue, nextValue) {
+  //   debugger
+  // },
 }
 
 const SUPPORTED_PATCH_TYPES = Object.keys(OPERATIONS)

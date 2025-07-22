@@ -26,12 +26,15 @@ export function TextInput(props: TextInputProps) {
   const {schemaType, validationError, value, elementProps} = props
 
   return (
-    <StyledTextArea
-      customValidity={validationError}
-      value={value || ''}
-      placeholder={schemaType.placeholder}
-      rows={typeof schemaType.rows === 'number' ? schemaType.rows : 10}
-      {...elementProps}
-    />
+    <>
+      HEY
+      <StyledTextArea
+        customValidity={validationError}
+        value={value || ''}
+        placeholder={schemaType.placeholder}
+        rows={typeof schemaType.rows === 'number' ? schemaType.rows : 10}
+        {...elementProps}
+      />
+    </>
   )
 }

@@ -1,5 +1,3 @@
-/* eslint-disable no-console */
-// eslint-disable-next-line import/no-unassigned-import
 import 'dotenv/config'
 
 import fs from 'node:fs'
@@ -172,27 +170,27 @@ async function runAbTest(test: EfpsTest) {
 
   for (let attempt = 0; attempt < TEST_ATTEMPTS; attempt++) {
     const attemptMessage = TEST_ATTEMPTS > 1 ? ` [${attempt + 1}/${TEST_ATTEMPTS}]` : ''
-    const referenceMessage = `Running test '${test.name}' on \`sanity@${REFERENCE_TAG}\`${attemptMessage}`
-    spinner.start(referenceMessage)
+    // const referenceMessage = `Running test '${test.name}' on \`sanity@${REFERENCE_TAG}\`${attemptMessage}`
+    // spinner.start(referenceMessage)
 
-    referenceResults = mergeResults(
-      referenceResults,
-      await runTest({
-        key: 'reference',
-        test,
-        resultsDir,
-        client,
-        headless: HEADLESS,
-        recordVideo: RECORD_VIDEO,
-        enableProfiler: ENABLE_PROFILER,
-        projectId,
-        sanityPkgPath: referenceSanityPkgPath,
-        log: (message) => {
-          spinner.text = `${referenceMessage}: ${message}`
-        },
-      }),
-    )
-    spinner.succeed(`Ran test '${test.name}' on \`sanity@${REFERENCE_TAG}\`${attemptMessage}`)
+    // referenceResults = mergeResults(
+    //   referenceResults,
+    //   await runTest({
+    //     key: 'reference',
+    //     test,
+    //     resultsDir,
+    //     client,
+    //     headless: HEADLESS,
+    //     recordVideo: RECORD_VIDEO,
+    //     enableProfiler: ENABLE_PROFILER,
+    //     projectId,
+    //     sanityPkgPath: referenceSanityPkgPath,
+    //     log: (message) => {
+    //       spinner.text = `${referenceMessage}: ${message}`
+    //     },
+    //   }),
+    // )
+    // spinner.succeed(`Ran test '${test.name}' on \`sanity@${REFERENCE_TAG}\`${attemptMessage}`)
 
     const experimentMessage = `Running test '${test.name}' on this branch${attemptMessage}`
     spinner.start(experimentMessage)
