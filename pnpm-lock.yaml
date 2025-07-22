@@ -1143,8 +1143,8 @@ importers:
         specifier: ^4.2.0
         version: 4.2.0
       zod:
-        specifier: ^3.22.4
-        version: 3.25.67
+        specifier: ^3.25.76
+        version: 3.25.76
     devDependencies:
       '@repo/eslint-config':
         specifier: workspace:*
@@ -12326,8 +12326,8 @@ packages:
   zod@3.24.1:
     resolution: {integrity: sha512-muH7gBL9sI1nciMZV67X5fTKKBLtwpZ5VBp1vsOQzj1MhrBZ4wlVCm3gedKZWLp0Oyel8sIGfeiz54Su+OVT+A==}
 
-  zod@3.25.67:
-    resolution: {integrity: sha512-idA2YXwpCdqUSKRCACDE6ItZD9TZzy3OZMtpfLoh6oPR47lipysRrJfjzMqFxQ3uJuUPyUeWe1r9vLH33xO/Qw==}
+  zod@3.25.76:
+    resolution: {integrity: sha512-gzUt/qt81nXsFGKIFcC3YnfEAx5NkunCfnDlvuBSSFS02bcXu4Lmea0AFIUwbLWxWPx3d9p8S5QoaujKcNQxcQ==}
 
   zustand@5.0.5:
     resolution: {integrity: sha512-mILtRfKW9xM47hqxGIxCv12gXusoY/xTSHBYApXozR0HmQv299whhBeeAcRy+KrPPybzosvJBCOmVjq6x12fCg==}
@@ -18754,8 +18754,8 @@ snapshots:
       '@babel/plugin-proposal-private-methods': 7.18.6(@babel/core@7.28.0)
       eslint: 9.31.0(jiti@2.4.2)
       hermes-parser: 0.25.1
-      zod: 3.25.67
-      zod-validation-error: 3.5.1(zod@3.25.67)
+      zod: 3.25.76
+      zod-validation-error: 3.5.1(zod@3.25.76)
     transitivePeerDependencies:
       - supports-color
 
@@ -18766,8 +18766,8 @@ snapshots:
       '@babel/plugin-transform-private-methods': 7.27.1(@babel/core@7.28.0)
       eslint: 9.31.0(jiti@2.4.2)
       hermes-parser: 0.25.1
-      zod: 3.25.67
-      zod-validation-error: 3.5.1(zod@3.25.67)
+      zod: 3.25.76
+      zod-validation-error: 3.5.1(zod@3.25.76)
     transitivePeerDependencies:
       - supports-color
 
@@ -22140,7 +22140,7 @@ snapshots:
       quick-lru: 7.0.1
       url-join: 5.0.0
       validate-npm-package-name: 5.0.1
-      zod: 3.25.67
+      zod: 3.25.76
       zod-package-json: 1.2.0
 
   query-string@9.2.1:
@@ -22866,7 +22866,7 @@ snapshots:
       rxjs: 7.8.2
       sanity: link:packages/sanity
       styled-components: 6.1.19(react-dom@19.1.0(react@19.1.0))(react@19.1.0)
-      zod: 3.25.67
+      zod: 3.25.76
     transitivePeerDependencies:
       - '@types/react'
       - debug
@@ -24741,19 +24741,19 @@ snapshots:
 
   zod-package-json@1.2.0:
     dependencies:
-      zod: 3.25.67
+      zod: 3.25.76
 
   zod-validation-error@3.4.0(zod@3.24.1):
     dependencies:
       zod: 3.24.1
 
-  zod-validation-error@3.5.1(zod@3.25.67):
+  zod-validation-error@3.5.1(zod@3.25.76):
     dependencies:
-      zod: 3.25.67
+      zod: 3.25.76
 
   zod@3.24.1: {}
 
-  zod@3.25.67: {}
+  zod@3.25.76: {}
 
   zustand@5.0.5(@types/react@19.1.8)(immer@10.1.1)(react@18.3.1)(use-sync-external-store@1.5.0(react@18.3.1)):
     optionalDependencies:
