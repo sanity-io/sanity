@@ -1983,7 +1983,7 @@ importers:
         specifier: ^3.1.7
         version: 3.1.7
       tinyglobby:
-        specifier: ^0.2.13
+        specifier: ^0.2.14
         version: 0.2.14
       urlpattern-polyfill:
         specifier: 10.1.0
