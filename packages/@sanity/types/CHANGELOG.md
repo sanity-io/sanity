@@ -3,6 +3,15 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [4.1.1](https://github.com/sanity-io/sanity/compare/v4.1.0...v4.1.1) (2025-07-22)
+
+
+### Bug Fixes
+
+* **deps:** update dependency @sanity/insert-menu to v1.1.13 ([#10035](https://github.com/sanity-io/sanity/issues/10035)) ([320b6b0](https://github.com/sanity-io/sanity/commit/320b6b03b4b842511d8fa0acef3d25dda1326652))
+
+
+
 ## [4.1.0](https://github.com/sanity-io/sanity/compare/v4.0.1...v4.1.0) (2025-07-21)
 
 

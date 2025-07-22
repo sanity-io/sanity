@@ -3,6 +3,20 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [4.1.1](https://github.com/sanity-io/sanity/compare/v4.1.0...v4.1.1) (2025-07-22)
+
+
+### Bug Fixes
+
+* **core:** typo in "asset not found" message ([#10039](https://github.com/sanity-io/sanity/issues/10039)) ([cc05b44](https://github.com/sanity-io/sanity/commit/cc05b4447bce08e702d6052848ff25613a62f23d))
+* **deps:** update dependency @sanity/comlink to ^3.0.8 ([#10034](https://github.com/sanity-io/sanity/issues/10034)) ([f007778](https://github.com/sanity-io/sanity/commit/f0077783463ea71738c34444e843242d88acb8d0))
+* **deps:** update dependency @sanity/insert-menu to v1.1.13 ([#10035](https://github.com/sanity-io/sanity/issues/10035)) ([320b6b0](https://github.com/sanity-io/sanity/commit/320b6b03b4b842511d8fa0acef3d25dda1326652))
+* **deps:** update dependency @sanity/presentation-comlink to ^1.0.25 ([#10036](https://github.com/sanity-io/sanity/issues/10036)) ([7b1dd78](https://github.com/sanity-io/sanity/commit/7b1dd7831a61bae36270e2af011eefa730cb9b39))
+* **deps:** update dependency @sanity/preview-url-secret to ^2.1.14 ([#10037](https://github.com/sanity-io/sanity/issues/10037)) ([6fdb75f](https://github.com/sanity-io/sanity/commit/6fdb75f447016f9bd2b021fb85bf4e73e1bfc11d))
+* **sanity:** do not attempt to provision media library ([524a107](https://github.com/sanity-io/sanity/commit/524a10728aca0e3062b565fa19b6dd12b690a12a))
+
+
+
 ## [4.1.0](https://github.com/sanity-io/sanity/compare/v4.0.1...v4.1.0) (2025-07-21)
 
 
