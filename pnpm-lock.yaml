@@ -1782,7 +1782,7 @@ importers:
         specifier: ^2.2.3
         version: 2.2.3
       date-fns:
-        specifier: ^2.26.1
+        specifier: ^2.30.0
         version: 2.30.0
       debug:
         specifier: ^4.3.4
