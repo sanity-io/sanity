@@ -180,7 +180,7 @@ function buildFieldMenuItemsNarrowed({
     })
     // Sort groups by title
     .sort((a, b) => a.title.localeCompare(b.title))
-    .map(({documentType, title}) => {
+    .flatMap(({documentType, title}) => {
       const groupFilters = filters.filter((filter) => {
         const fieldDefinition = getFieldFromFilter(fieldDefinitions, filter)
         return includesDocumentTypes([documentType], fieldDefinition)
@@ -193,7 +193,6 @@ function buildFieldMenuItemsNarrowed({
         headerTitle: title,
       })
     })
-    .flat()
 
   return [...sharedItems, ...groupedItems]
 }

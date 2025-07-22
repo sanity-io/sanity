@@ -74,9 +74,9 @@ export function createSearchQuery(
     .filter(({paths}) => paths.length !== 0)
 
   // Note: Computing this is unnecessary when `!isScored`.
-  const flattenedSpecs = specs
-    .map(({typeName, paths}) => paths.map((path) => ({...path, typeName})))
-    .flat()
+  const flattenedSpecs = specs.flatMap(({typeName, paths}) =>
+    paths.map((path) => ({...path, typeName})),
+  )
 
   // Note: Computing this is unnecessary when `!isScored`.
   const groupedSpecs = groupBy(flattenedSpecs, (entry) => [entry.path, entry.weight].join(':'))
