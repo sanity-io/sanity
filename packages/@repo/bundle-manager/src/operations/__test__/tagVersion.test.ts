@@ -55,7 +55,7 @@ describe('tagVersion()', () => {
     })
   })
 
-  it('removes stale entries when tagging', () => {
+  it('preserves existing entries when tagging', () => {
     const newEntry = {timestamp: currentUnixTime(), version: '1.2.4' as const}
 
     const versions = [
@@ -63,18 +63,16 @@ describe('tagVersion()', () => {
       {timestamp: currentUnixTime() - 100, version: '1.2.3'},
     ]
 
+    const existingStaleEntry = {timestamp: currentUnixTime() - 60 * 31, version: '1.2.3' as const}
     const manifest = {
       tags: {
-        stable: [
-          // stale, can and should be removed
-          {timestamp: currentUnixTime() - 60 * 31, version: '1.2.3' as const},
-        ],
+        stable: [existingStaleEntry],
       },
       versions,
     }
     expect(tagVersion(manifest, 'stable', newEntry)).toEqual({
       tags: {
-        stable: [newEntry],
+        stable: [newEntry, existingStaleEntry],
       },
       versions,
     })
@@ -88,19 +86,17 @@ describe('tagVersion()', () => {
       {timestamp: currentUnixTime() - 100, version: '1.2.3'},
     ]
 
+    const existingStaleEntry = {timestamp: currentUnixTime() - 60 * 31, version: '1.2.3' as const}
     const manifest = {
       tags: {
-        latest: [
-          // stale, can and should be removed
-          {timestamp: currentUnixTime() - 60 * 31, version: '1.2.3' as const},
-        ],
+        latest: [existingStaleEntry],
       },
       versions,
     }
     expect(tagVersion(manifest, 'latest', newEntry, {setAsDefault: true})).toEqual({
       default: newEntry.version,
       tags: {
-        latest: [newEntry],
+        latest: [newEntry, existingStaleEntry],
       },
       versions,
     })

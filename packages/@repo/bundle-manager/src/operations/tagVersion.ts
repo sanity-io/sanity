@@ -2,9 +2,8 @@ import {uniqBy} from 'lodash-es'
 import semver from 'semver'
 
 import {isValidTag} from '../assert'
-import {STALE_TAGS_EXPIRY_SECONDS, VALID_TAGS} from '../constants'
+import {VALID_TAGS} from '../constants'
 import {type DistTag, type ManifestPackage, type Semver, type TagEntry} from '../types'
-import {currentUnixTime} from '../utils'
 
 interface TagVersionOptions {
   setAsDefault?: boolean
@@ -40,14 +39,14 @@ export function tagVersion(
         ...manifestPackage,
         tags: {
           ...manifestPackage.tags,
-          [tag]: sortAndRemoveOldEntries([tagEntry, ...existingTags]),
+          [tag]: sortAndDeduplicateEntries([tagEntry, ...existingTags]),
         },
       }
 
   return options.setAsDefault ? setDefault(updatedPackage, tagEntry.version) : updatedPackage
 }
 
-function sortAndRemoveOldEntries(versions: TagEntry[]): TagEntry[] {
+function sortAndDeduplicateEntries(versions: TagEntry[]): TagEntry[] {
   return (
     uniqBy(
       versions
@@ -58,7 +57,6 @@ function sortAndRemoveOldEntries(versions: TagEntry[]): TagEntry[] {
     )
       // in the end, we want the list to be sorted by most recent version first
       .toSorted((a, b) => semver.compare(b.version, a.version))
-      .filter((entry) => currentUnixTime() - entry.timestamp < STALE_TAGS_EXPIRY_SECONDS)
   )
 }
 
