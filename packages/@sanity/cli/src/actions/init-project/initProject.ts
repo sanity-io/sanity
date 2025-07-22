@@ -543,7 +543,7 @@ export default async function initSanity(
 
     const chosen = await resolvePackageManager(workDir)
     trace.log({step: 'selectPackageManager', selectedOption: chosen})
-    const packages = ['@sanity/vision@3', 'sanity@3', '@sanity/image-url@1', 'styled-components@6']
+    const packages = ['@sanity/vision@4', 'sanity@4', '@sanity/image-url@1', 'styled-components@6']
     if (templateToUse === 'blog') {
       packages.push('@sanity/icons')
     }
@@ -567,11 +567,11 @@ export default async function initSanity(
     }
 
     if (chosen === 'npm') {
-      await execa('npm', ['install', '--legacy-peer-deps', 'next-sanity@9'], execOptions)
+      await execa('npm', ['install', '--legacy-peer-deps', 'next-sanity@10'], execOptions)
     } else if (chosen === 'yarn') {
-      await execa('npx', ['install-peerdeps', '--yarn', 'next-sanity@9'], execOptions)
+      await execa('npx', ['install-peerdeps', '--yarn', 'next-sanity@10'], execOptions)
     } else if (chosen === 'pnpm') {
-      await execa('pnpm', ['install', 'next-sanity@9'], execOptions)
+      await execa('pnpm', ['install', 'next-sanity@10'], execOptions)
     }
 
     print(
