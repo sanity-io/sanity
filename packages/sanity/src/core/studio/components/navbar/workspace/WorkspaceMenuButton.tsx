@@ -68,7 +68,6 @@ export function WorkspaceMenuButton() {
             {workspaces.map((workspace) => {
               const authState = authStates[workspace.name]
 
-              // eslint-disable-next-line no-nested-ternary
               const state = authState.authenticated
                 ? 'logged-in'
                 : workspace.auth.LoginComponent

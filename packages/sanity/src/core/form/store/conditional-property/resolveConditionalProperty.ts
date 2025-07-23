@@ -1,4 +1,3 @@
-/* eslint-disable no-nested-ternary */
 import {type ConditionalProperty, type CurrentUser} from '@sanity/types'
 
 /**

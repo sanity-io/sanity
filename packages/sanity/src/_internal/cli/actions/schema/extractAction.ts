@@ -60,7 +60,6 @@ export default async function extractAction(
       enforceRequiredFields,
       format: formatFlag,
     } satisfies ExtractSchemaWorkerData,
-    // eslint-disable-next-line no-process-env
     env: process.env,
   })
 

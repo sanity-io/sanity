@@ -21,10 +21,10 @@ export function replay(events: TraceEvent[]): Timeline {
     publishedId: fst.publishedId,
   })
 
-  /* eslint-disable no-console */
+  // oxlint-disable no-console
   console.log('Replaying')
   console.log({events})
-  /* eslint-enable no-console */
+  // oxlint-enable no-console
 
   for (let i = 1; i < events.length; i++) {
     const event = events[i]

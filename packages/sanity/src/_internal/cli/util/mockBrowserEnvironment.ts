@@ -76,11 +76,9 @@ const getFakeGlobals = (basePath: string) => ({
 const getFakeDocumentProps = () => ({
   execCommand: function execCommand(
     // Provide the right arity for the function, even if unused
-    /* eslint-disable @typescript-eslint/no-unused-vars, unused-imports/no-unused-vars */
     _commandName: string,
     _showDefaultUI: boolean,
     _valueArgument: unknown,
-    /* eslint-enable @typescript-eslint/no-unused-vars, unused-imports/no-unused-vars */
   ) {
     // Return false to indicate "unsupported"
     return false

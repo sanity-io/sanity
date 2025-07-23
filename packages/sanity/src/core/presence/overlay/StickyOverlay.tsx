@@ -1,5 +1,3 @@
-/* eslint-disable @typescript-eslint/no-use-before-define */
-
 import {flatten, groupBy, orderBy, sortBy} from 'lodash'
 import {
   type CSSProperties,
@@ -312,7 +310,6 @@ function PresenceInside(props: {
               <DebugValue value={() => `⤒${distanceTop} | ${distanceBottom}⤓`}>
                 <FieldPresenceInner
                   stack={!nearTop && !nearBottom}
-                  // eslint-disable-next-line no-nested-ternary
                   position={nearTop ? 'top' : nearBottom ? 'bottom' : 'inside'}
                   maxAvatars={maxAvatars}
                   presence={presence}

@@ -26,7 +26,6 @@ export interface DeployStudioActionFlags extends BuildSanityStudioCommandFlags {
   'verbose'?: boolean
 }
 
-// eslint-disable-next-line complexity
 export default async function deployStudioAction(
   args: CliCommandArguments<DeployStudioActionFlags>,
   context: CliCommandContext,

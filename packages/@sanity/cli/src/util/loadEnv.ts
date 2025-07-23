@@ -8,7 +8,6 @@
  * Vite is MIT licensed, copyright (c) Yuxi (Evan) You and Vite contributors.
  */
 
-/* eslint-disable no-process-env */
 import fs from 'node:fs'
 import path from 'node:path'
 
@@ -96,7 +95,6 @@ function lookupFile(
 ): string | undefined {
   for (const format of formats) {
     const fullPath = path.join(dir, format)
-    // eslint-disable-next-line no-sync
     if (fs.existsSync(fullPath) && fs.statSync(fullPath).isFile()) {
       return fullPath
     }

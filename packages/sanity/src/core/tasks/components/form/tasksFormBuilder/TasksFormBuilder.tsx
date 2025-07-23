@@ -98,7 +98,6 @@ const TasksFormBuilderInner = ({
       ) : (
         <FormBuilderRoot id="wrapper" initial="hidden" animate="visible" variants={VARIANTS}>
           <FormBuilder
-            // eslint-disable-next-line camelcase
             __internal_patchChannel={patchChannel}
             id="root"
             onChange={onChange}

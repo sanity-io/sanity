@@ -51,11 +51,11 @@ export async function getDevAction(
   // NOTE: in dev-mode we want to include from `src` so we need to use `.ts` extension
   if (__DEV__) {
     if (isApp) {
-      // eslint-disable-next-line import/extensions,@typescript-eslint/consistent-type-imports
+      // eslint-disable-next-line import/extensions
       const mod = require('../../actions/app/devAction.ts')
       return mod.default
     }
-    // eslint-disable-next-line import/extensions,@typescript-eslint/consistent-type-imports
+    // eslint-disable-next-line import/extensions
     const mod = require('../../actions/dev/devAction.ts')
     return mod.default
   }

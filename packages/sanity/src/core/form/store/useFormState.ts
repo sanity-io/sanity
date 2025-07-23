@@ -1,5 +1,3 @@
-/* eslint-disable camelcase */
-
 import {
   type ObjectSchemaType,
   type Path,

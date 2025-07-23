@@ -10,7 +10,7 @@ import {
   switchMap,
 } from 'rxjs'
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
+// oxlint-disable-next-line no-explicit-any
 type Props<K extends keyof any, T> = {
   [P in K]: T | Observable<T>
 }
@@ -19,7 +19,7 @@ function keysOf<T extends object>(value: T) {
   return Object.keys(value) as (keyof T)[]
 }
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
+// oxlint-disable-next-line no-explicit-any
 function setKey(source: Record<string, unknown>, key: any, value: unknown) {
   return {
     ...source,
@@ -27,7 +27,7 @@ function setKey(source: Record<string, unknown>, key: any, value: unknown) {
   }
 }
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
+// oxlint-disable-next-line no-explicit-any
 export function props<K extends keyof any, T>(options: {wait?: boolean} = {}) {
   return (source: Observable<Props<K, T>>): Observable<Record<string, unknown>> => {
     return new Observable<Props<K, T>>((observer) => source.subscribe(observer)).pipe(

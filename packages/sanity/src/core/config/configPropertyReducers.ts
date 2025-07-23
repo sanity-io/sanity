@@ -62,7 +62,6 @@ export const resolveProductionUrlReducer: AsyncConfigPropertyReducer<
   const resolveProductionUrl = document?.productionUrl
   // the redundant await is useful for error logging because the error is caught
   // in this stack vs somewhere down stream
-  // eslint-disable-next-line no-return-await
   if (resolveProductionUrl) return await resolveProductionUrl(prev, context)
   return prev
 }

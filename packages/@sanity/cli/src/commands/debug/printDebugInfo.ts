@@ -56,7 +56,6 @@ export const printDebugInfo: CliCommandAction = async (args, context) => {
   }
 
   // Auth info
-  // eslint-disable-next-line no-process-env
   const authToken = process.env.SANITY_AUTH_TOKEN || globalConfig.authToken
   if (authToken) {
     context.output.print('Authentication:')

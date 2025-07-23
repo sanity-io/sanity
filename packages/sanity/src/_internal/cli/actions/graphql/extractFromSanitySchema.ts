@@ -309,7 +309,6 @@ export function extractFromSanitySchema(
     return !('jsonType' in def) || !def.jsonType
   }
 
-  // eslint-disable-next-line complexity
   function getObjectDefinition(def: SchemaType | ObjectField, parent?: string): ConvertedType {
     const isInline = isField(def)
     const isDocument = def.type ? def.type.name === 'document' : false

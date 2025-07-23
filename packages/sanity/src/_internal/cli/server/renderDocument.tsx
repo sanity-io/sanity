@@ -24,7 +24,7 @@ import {getMonorepoAliases, type SanityMonorepo} from './sanityMonorepo'
 const debug = serverDebug.extend('renderDocument')
 
 // Don't use threads in the jest world
-// eslint-disable-next-line no-process-env, turbo/no-undeclared-env-vars
+// eslint-disable-next-line turbo/no-undeclared-env-vars
 const useThreads = typeof process.env.JEST_WORKER_ID === 'undefined'
 const hasWarnedAbout = new Set<string>()
 
@@ -66,7 +66,6 @@ export function renderDocument(options: RenderDocumentOptions): Promise<string> 
     const worker = new Worker(__filename, {
       execArgv: __DEV__ ? ['-r', `${__dirname}/esbuild-register.js`] : undefined,
       workerData: {...options, dev: __DEV__, shouldWarn: true},
-      // eslint-disable-next-line no-process-env
       env: process.env,
     })
 
@@ -184,7 +183,7 @@ async function renderDocumentFromWorkerData() {
 
   if (workerData?.dev) {
     // Define `__DEV__` in the worker thread as well
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    // oxlint-disable-next-line no-explicit-any
     ;(global as any).__DEV__ = true
   }
 
@@ -352,10 +351,8 @@ function tryLoadDocumentComponent(studioRootPath: string) {
     debug('Trying to load document component from %s', componentPath)
     try {
       return {
-        // eslint-disable-next-line import/no-dynamic-require
         component: importFresh<any>(componentPath),
         path: componentPath,
-        // eslint-disable-next-line no-sync
         modified: Math.floor(fs.statSync(componentPath)?.mtimeMs),
       }
     } catch (err) {

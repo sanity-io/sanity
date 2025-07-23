@@ -68,6 +68,10 @@ export default [
         ...globals.node,
       },
     },
+    linterOptions: {
+      reportUnusedDisableDirectives: 'error',
+      reportUnusedInlineConfigs: 'error',
+    },
     settings: {react: {version: '19'}},
   }),
   {

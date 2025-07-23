@@ -1,5 +1,3 @@
-/* eslint-disable react/no-unused-prop-types */
-
 import {type FormNodeValidation, type Path, type ValidationMarker} from '@sanity/types'
 import {isEqual, startsWith} from '@sanity/util/paths'
 import {type ReactNode, useContext, useMemo} from 'react'

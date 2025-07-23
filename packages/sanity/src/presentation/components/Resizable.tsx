@@ -1,4 +1,3 @@
-/* eslint-disable no-nested-ternary */
 import {Box, type BoxProps} from '@sanity/ui'
 import {type HTMLProps, useCallback, useEffect, useMemo, useRef, useState} from 'react'
 import {styled} from 'styled-components'

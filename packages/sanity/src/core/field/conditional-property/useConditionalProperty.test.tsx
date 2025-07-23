@@ -42,7 +42,6 @@ afterEach(() => {
 })
 
 describe('Conditional property resolver', () => {
-  /* eslint-disable max-nested-callbacks */
   it('calls callback function', async () => {
     const TestWrapper = await createTestProvider()
     const callbackFn = vi.fn(() => true)
@@ -209,5 +208,4 @@ describe('Conditional property resolver', () => {
     )
     expect(result.current).toBeTruthy()
   })
-  /* eslint-enable max-nested-callbacks */
 })

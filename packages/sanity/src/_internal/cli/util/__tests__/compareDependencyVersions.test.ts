@@ -7,7 +7,6 @@ import {readPackageManifest} from '../readPackageManifest'
 vi.mock('resolve-from')
 vi.mock('../readPackageManifest')
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
 const mockedFetch = vi.fn()
 const mockedResolveFrom = vi.mocked(resolveFrom)
 const mockedReadPackageManifest = vi.mocked(readPackageManifest)

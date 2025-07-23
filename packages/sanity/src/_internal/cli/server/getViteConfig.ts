@@ -141,7 +141,6 @@ export async function getViteConfig(options: ViteOptions): Promise<InlineConfig>
       dedupe: ['styled-components'],
     },
     define: {
-      // eslint-disable-next-line no-process-env
       '__SANITY_STAGING__': process.env.SANITY_INTERNAL_ENV === 'staging',
       'process.env.MODE': JSON.stringify(mode),
       /**

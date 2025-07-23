@@ -54,7 +54,6 @@ const KeyboardShortcutResponder = memo(function KeyboardShortcutResponder(
       const matchingState = matchingStates[0]
 
       if (matchingStates.length > 1) {
-        // eslint-disable-next-line no-console
         console.warn(
           `Keyboard shortcut conflict: More than one document action matches the shortcut "${matchingState.shortcut}"`,
         )

@@ -127,7 +127,6 @@ describe('deployAppAction', () => {
   it('builds and deploys the app if app ID is in config', async () => {
     const mockSpinner = mockContext.output.spinner('')
     mockContext.cliConfig = {
-      // eslint-disable-next-line camelcase
       app: {
         id: 'configured-app-id',
         organizationId: 'org-id',
@@ -320,7 +319,6 @@ describe('deployAppAction', () => {
   it('suggests adding appId to config when not configured', async () => {
     // Create a context without appId in the config
     mockContext.cliConfig = {
-      // eslint-disable-next-line camelcase
       app: {
         organizationId: 'org-id',
       },

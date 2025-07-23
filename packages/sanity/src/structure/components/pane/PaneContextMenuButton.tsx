@@ -42,7 +42,6 @@ export function PaneContextMenuButton(props: PaneContextMenuButtonProps) {
     <MenuButton
       button={
         <ContextMenuButton
-          // eslint-disable-next-line no-nested-ternary
           tone={hasCritical ? 'critical' : hasCaution ? 'caution' : undefined}
           data-testid="pane-context-menu-button"
         />

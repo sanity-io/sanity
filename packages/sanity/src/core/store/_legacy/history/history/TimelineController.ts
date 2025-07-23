@@ -297,7 +297,7 @@ export class TimelineController {
     let count = 0
 
     for (;;) {
-      // eslint-disable-next-line no-await-in-loop
+      // oxlint-disable-next-line no-await-in-loop
       const result = await reader.read()
       if (result.done) break
 

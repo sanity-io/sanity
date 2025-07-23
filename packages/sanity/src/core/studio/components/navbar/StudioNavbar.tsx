@@ -66,10 +66,7 @@ const NavGrid = styled(Grid)`
  * @hidden
  * @beta */
 export function StudioNavbar(props: Omit<NavbarProps, 'renderDefault'>) {
-  const {
-    // eslint-disable-next-line camelcase
-    __internal_actions: actions = EMPTY_ARRAY,
-  } = props
+  const {__internal_actions: actions = EMPTY_ARRAY} = props
 
   const {name, tools} = useWorkspace()
   const routerState = useRouterState()

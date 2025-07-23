@@ -1,4 +1,3 @@
-/* eslint-disable max-nested-callbacks */
 import {Schema} from '@sanity/schema'
 import {defineType, type ObjectSchemaType} from '@sanity/types'
 import {act, renderHook} from '@testing-library/react'

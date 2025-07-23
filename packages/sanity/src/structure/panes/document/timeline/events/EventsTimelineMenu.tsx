@@ -168,7 +168,6 @@ export function EventsTimelineMenu({event, events, mode, placement}: TimelineMen
       })
     : t('timeline.latest-revision')
 
-  // eslint-disable-next-line no-nested-ternary
   const sinceLabel = event
     ? t(TIMELINE_ITEM_I18N_KEY_MAPPING[event.documentVariantType][event.type], {
         context: 'timestamp',

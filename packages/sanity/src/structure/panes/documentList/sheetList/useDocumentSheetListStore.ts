@@ -66,7 +66,6 @@ function documentsReducer(
     }
 
     case 'DOCUMENT_DELETED': {
-      // eslint-disable-next-line @typescript-eslint/no-unused-vars
       const {[action.id]: _, ...restDocuments} = state.documents
 
       return {

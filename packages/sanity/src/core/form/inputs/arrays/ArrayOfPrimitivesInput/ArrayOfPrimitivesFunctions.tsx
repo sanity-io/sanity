@@ -1,4 +1,3 @@
-/* eslint-disable react/no-unused-prop-types */
 import {AddIcon} from '@sanity/icons'
 import {type ArraySchemaType, isReferenceSchemaType} from '@sanity/types'
 import {Grid, Menu} from '@sanity/ui'

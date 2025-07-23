@@ -73,7 +73,6 @@ const EMPTY_FIELDS: never[] = []
  * @internal
  * @param id - id of document to search for referring documents for
  */
-// eslint-disable-next-line camelcase
 export function useLegacyReferringDocuments(id: string): ReferringDocumentsState<SanityDocument> {
   return useReferringDocuments(id, EMPTY_FIELDS)
 }

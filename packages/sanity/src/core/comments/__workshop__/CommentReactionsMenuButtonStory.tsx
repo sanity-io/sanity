@@ -1,4 +1,3 @@
-// eslint-disable-next-line no-restricted-imports
 import {Button, Flex} from '@sanity/ui'
 import {useCallback, useState} from 'react'
 

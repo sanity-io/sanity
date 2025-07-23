@@ -82,7 +82,6 @@ export function getInitialValueStream(
       const template = initialValueTemplates.find((t) => t.id === opts.templateName)
 
       if (!template) {
-        // eslint-disable-next-line no-console
         console.warn('Template "%s" not defined, using empty initial value', opts.templateName)
         return of({isResolving: false, initialValue: undefined, type: 'success'})
       }
@@ -93,13 +92,13 @@ export function getInitialValueStream(
         .pipe(map((initialValue) => ({isResolving: false, initialValue})))
         .pipe(
           catchError((resolveError) => {
-            /* eslint-disable no-console */
+            // oxlint-disable no-console
             console.group('Failed to resolve initial value')
             console.error(resolveError)
             console.error('Template ID: %s', opts.templateName)
             console.error('Parameters: %o', opts.templateParams)
             console.groupEnd()
-            /* eslint-enable no-console */
+            // oxlint-enable no-console
 
             const msg: InitialValueErrorMsg = {type: 'error', error: resolveError}
 

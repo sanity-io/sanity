@@ -608,7 +608,7 @@ describe('validateItem', () => {
     })
 
     // ensures there are no schema formatting issues
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    // oxlint-disable-next-line no-explicit-any
     expect((schema as any)._validation).toHaveLength(0)
 
     const value = {
@@ -750,7 +750,7 @@ describe('validation behavior', () => {
     })
 
     // ensures there are no schema formatting issues
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    // oxlint-disable-next-line no-explicit-any
     expect((schema as any)._validation).toHaveLength(0)
 
     const document: SanityDocument = {

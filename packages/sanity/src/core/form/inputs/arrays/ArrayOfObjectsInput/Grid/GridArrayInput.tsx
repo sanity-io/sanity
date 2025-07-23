@@ -1,4 +1,3 @@
-/* eslint-disable react/jsx-handler-names */
 import {Card, Stack, Text} from '@sanity/ui'
 import {useCallback, useMemo} from 'react'
 

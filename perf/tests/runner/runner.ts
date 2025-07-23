@@ -1,4 +1,4 @@
-/* eslint-disable no-console */
+// oxlint-disable no-console
 import {type BrowserContext, chromium, type Page} from '@playwright/test'
 import {type SanityClient} from '@sanity/client'
 import {capitalize} from 'lodash'

@@ -1,4 +1,3 @@
-/* eslint-disable camelcase */
 import {type SanityClient} from '@sanity/client'
 import {act, waitForElementToBeRemoved, within} from '@testing-library/react'
 import userEvent from '@testing-library/user-event'

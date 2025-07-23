@@ -192,7 +192,6 @@ const exportDatasetCommand: CliCommandDefinition<ExportFlags> = {
   },
 }
 
-// eslint-disable-next-line complexity
 async function getOutputPath(
   destination: string,
   dataset: string,

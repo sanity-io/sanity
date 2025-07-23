@@ -47,7 +47,7 @@ const errorCollector = (() => {
 })()
 
 const reportErrors = debounce(() => {
-  /* eslint-disable no-console */
+  // oxlint-disable no-console
   const errorsByType = errorCollector.getAll()
   const uniqueErrors = flatten(
     Object.keys(errorsByType).map((typeName) => {
@@ -96,7 +96,7 @@ const reportErrors = debounce(() => {
   })
   console.groupEnd()
   errorCollector.clear()
-  /* eslint-enable no-console */
+  // oxlint-enable no-console
 }, 1000)
 
 const isRenderable =
