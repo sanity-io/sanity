@@ -1,5 +1,5 @@
-import {type ManifestPackage, type VersionEntry} from '../types'
 import {sortAndCleanupVersions} from '../helpers/versionUtils'
+import {type ManifestPackage, type VersionEntry} from '../types'
 
 export function addVersion(
   manifestPackage: ManifestPackage,
