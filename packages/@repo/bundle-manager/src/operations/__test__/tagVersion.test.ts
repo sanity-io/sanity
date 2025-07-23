@@ -18,7 +18,7 @@ describe('tagVersion()', () => {
 
   it('throws if version is not already in the version array', () => {
     expect(() =>
-      tagVersion({versions: [{timestamp: currentUnixTime(), version: '1.2.3'}]}, 'stable', {
+      tagVersion({versions: [{timestamp: 1749664258097, version: '1.2.3'}]}, 'stable', {
         timestamp: currentUnixTime(),
         version: '1.2.4',
       }),
@@ -28,7 +28,7 @@ describe('tagVersion()', () => {
   it('throws if tag is not valid', () => {
     expect(() =>
       // @ts-expect-error - testing error
-      tagVersion({versions: [{timestamp: currentUnixTime(), version: '1.2.3'}]}, 'florp', {
+      tagVersion({versions: [{timestamp: 1749664258097, version: '1.2.3'}]}, 'florp', {
         version: '1.2.3',
         timestamp: currentUnixTime(),
       }),
