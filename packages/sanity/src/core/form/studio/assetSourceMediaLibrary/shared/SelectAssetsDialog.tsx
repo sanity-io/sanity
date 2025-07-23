@@ -66,7 +66,6 @@ export function SelectAssetsDialog(props: SelectAssetsDialogProps): ReactNode {
         })),
       )
     }
-    // @ts-expect-error: util function is typed only for records, but we have an array
     return encodeJsonParams(filters)
   }, [schemaType?.options?.mediaLibrary?.filters])
 
