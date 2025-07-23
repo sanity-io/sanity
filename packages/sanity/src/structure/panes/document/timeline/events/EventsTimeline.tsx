@@ -180,9 +180,9 @@ export const EventsTimeline = ({
       }
       return (
         <TimelineItemWrapper
+          key={event.timestamp}
           paddingBottom={1}
           paddingRight={1}
-          key={event.timestamp}
           animate="animate"
           exit="exit"
           initial="initial"

@@ -68,7 +68,7 @@ function LoadingView(props: {layout?: GeneralPreviewLayoutKey}) {
   return (
     <Stack paddingX={3} paddingY={2} paddingTop={0} space={1}>
       {SKELETON_ITEMS.map((num) => (
-        <SanityDefaultPreview isPlaceholder layout={layout} key={num} />
+        <SanityDefaultPreview key={num} isPlaceholder layout={layout} />
       ))}
     </Stack>
   )
@@ -267,13 +267,13 @@ export function DocumentListPaneContent(props: DocumentListPaneContentProps) {
       <RootBox overflow="hidden" height="fill" $opacity={muted ? 0.8 : 1}>
         <CommandListBox>
           <CommandList
+            key={key}
             activeItemDataAttr="data-hovered"
             ariaLabel={paneTitle}
             canReceiveFocus
             inputElement={searchInputElement}
             itemHeight={51}
             items={items}
-            key={key}
             onEndReached={handleEndReached}
             onlyShowSelectionWhenActive
             overscan={10}

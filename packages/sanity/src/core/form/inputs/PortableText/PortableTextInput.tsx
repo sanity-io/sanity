@@ -319,6 +319,7 @@ export function PortableTextInput(props: PortableTextInputProps): ReactNode {
             count: rejected.length,
           }),
           description: rejected.map((task, i) => (
+            // oxlint-disable-next-line no-array-index-key
             <Flex key={i} gap={2} padding={2}>
               <Box>
                 <Text weight="medium">{task.file.name}</Text>

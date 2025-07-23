@@ -98,9 +98,10 @@ function Debug(props: {documentId: string; documentType: string}) {
               (actionItem, idx) =>
                 actionItem && (
                   <Button
+                    // oxlint-disable-next-line no-array-index-key
+                    key={idx}
                     disabled={actionItem.disabled}
                     icon={actionItem.icon}
-                    key={idx}
                     // eslint-disable-next-line react/jsx-handler-names
                     onClick={actionItem.onHandle}
                     tone={actionItem.tone}
@@ -114,10 +115,11 @@ function Debug(props: {documentId: string; documentType: string}) {
             if (actionItem?.dialog && actionItem.dialog.type === 'dialog') {
               return (
                 <Dialog
+                  // oxlint-disable-next-line no-array-index-key
+                  key={idx}
                   footer={actionItem.dialog.footer}
                   header={actionItem.dialog.header}
                   id={`document-action-modal-${idx}`}
-                  key={idx}
                   // eslint-disable-next-line react/jsx-handler-names
                   onClose={actionItem.dialog.onClose}
                 >
@@ -182,10 +184,11 @@ function DocumentActionResolver(props: {
     <>
       {actionHooks.map((actionHook, idx) => (
         <DocumentActionHook
+          // oxlint-disable-next-line no-array-index-key
+          key={idx}
           actionHook={actionHook}
           editState={editState}
           index={idx}
-          key={idx}
           onUpdate={updateDescription}
         />
       ))}

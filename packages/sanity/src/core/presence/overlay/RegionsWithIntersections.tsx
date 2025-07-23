@@ -173,10 +173,10 @@ export const RegionsWithIntersections = forwardRef(function RegionsWithIntersect
         const forceWidth = region.rect.width === 0
         return (
           <MiddleRegionWrapper
+            key={region.id}
             $debug={DEBUG}
             io={io}
             onIntersection={onIntersection}
-            key={region.id}
             id={region.id}
             style={{
               width: forceWidth ? 1 : region.rect.width,

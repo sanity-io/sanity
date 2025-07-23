@@ -122,8 +122,8 @@ export function RecentSearchItem({
             )}
             {/* Filters */}
             {value?.filters?.map((filter, i) => {
-              // eslint-disable-next-line react/no-array-index-key
-              return <FilterPill filter={filter} key={i} />
+              // oxlint-disable-next-line no-array-index-key
+              return <FilterPill key={i} filter={filter} />
             })}
           </Flex>
 

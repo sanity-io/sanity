@@ -140,9 +140,9 @@ function PaneHeaderMenuGroupActionButton(props: PaneHeaderMenuGroupActionButtonP
           {node.children.map((child, idx) => {
             return (
               <PaneMenuButtonItem
+                key={child.key}
                 disabled={Boolean(node.disabled)}
                 isAfterGroup={node.children[idx - 1]?.type === 'group'}
-                key={child.key}
                 node={child}
               />
             )

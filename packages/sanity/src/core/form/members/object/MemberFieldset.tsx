@@ -66,6 +66,7 @@ export const MemberFieldSet = memo(function MemberFieldSet(props: {
         }
         return (
           <MemberField
+            key={fieldsetMember.key}
             member={fieldsetMember}
             renderAnnotation={renderAnnotation}
             renderBlock={renderBlock}
@@ -74,7 +75,6 @@ export const MemberFieldSet = memo(function MemberFieldSet(props: {
             renderInput={renderInput}
             renderItem={renderItem}
             renderPreview={renderPreview}
-            key={fieldsetMember.key}
           />
         )
       })}

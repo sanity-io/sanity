@@ -183,11 +183,7 @@ export const DocumentPanelHeader = memo(
             <>
               {unstable_languageFilter.map((LanguageFilterComponent, idx) => {
                 return (
-                  <LanguageFilterComponent
-                    // eslint-disable-next-line react/no-array-index-key
-                    key={`language-filter-${idx}`}
-                    schemaType={schemaType}
-                  />
+                  <LanguageFilterComponent key={`language-filter-${idx}`} schemaType={schemaType} />
                 )
               })}
             </>
@@ -208,9 +204,9 @@ export const DocumentPanelHeader = memo(
 
           {showSplitPaneButton && (
             <Button
+              key="split-pane-button"
               aria-label={t('buttons.split-pane-button.aria-label')}
               icon={SplitVerticalIcon}
-              key="split-pane-button"
               mode="bleed"
               onClick={onPaneSplit}
               tooltipProps={{content: t('buttons.split-pane-button.tooltip')}}
@@ -219,8 +215,8 @@ export const DocumentPanelHeader = memo(
 
           {showSplitPaneCloseButton && (
             <Button
-              icon={CloseIcon}
               key="close-view-button"
+              icon={CloseIcon}
               mode="bleed"
               onClick={onPaneClose}
               tooltipProps={{content: t('buttons.split-pane-close-button.title')}}
@@ -229,8 +225,8 @@ export const DocumentPanelHeader = memo(
 
           {showPaneGroupCloseButton && (
             <Button
-              icon={CloseIcon}
               key="close-view-button"
+              icon={CloseIcon}
               mode="bleed"
               tooltipProps={{content: t('buttons.split-pane-close-group-button.title')}}
               as={BackLink}
@@ -333,8 +329,8 @@ const DocumentPanelHeaderActionDialog = memo(function DocumentPanelHeaderActionD
     ({handleAction}) => (
       <div ref={setReferenceElement}>
         <PaneContextMenuButton
-          nodes={contextMenuNodes}
           key="context-menu"
+          nodes={contextMenuNodes}
           actionsNodes={
             states.length > 0
               ? states.map((actionState, actionIndex) => (

@@ -132,7 +132,7 @@ export function ConfirmDeleteDialogBody({
           {internalReferences.totalCount > 0 && (
             <Stack as="ul" marginBottom={2} space={2} data-testid="internal-references">
               {internalReferences?.references.map((item) => (
-                <Box as="li" key={item._id}>
+                <Box key={item._id} as="li">
                   {renderPreviewItem(item)}
                 </Box>
               ))}
@@ -217,7 +217,6 @@ export function ConfirmDeleteDialogBody({
                         return 'projectId' in reference
                       })
                       .map(({projectId, datasetName, documentId}, index) => (
-                        // eslint-disable-next-line react/no-array-index-key
                         <tr key={`${documentId}-${index}`}>
                           <td>
                             <Text size={1}>{projectId}</Text>

@@ -195,8 +195,8 @@ export function ReleasesOverview() {
     return (
       <AnimatePresence>
         <MotionButton
-          {...groupModeButtonBaseProps}
           key="open-group"
+          {...groupModeButtonBaseProps}
           onClick={handleReleaseGroupModeChange}
           selected={releaseGroupMode === 'active'}
           text={t('action.open')}
@@ -209,8 +209,8 @@ export function ReleasesOverview() {
         >
           <div>
             <MotionButton
-              {...groupModeButtonBaseProps}
               key="archived-group"
+              {...groupModeButtonBaseProps}
               disabled={groupModeButtonBaseProps.disabled || !archivedReleases.length}
               onClick={handleReleaseGroupModeChange}
               selected={releaseGroupMode === 'archived'}

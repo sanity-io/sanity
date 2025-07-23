@@ -40,9 +40,9 @@ export function PaneMenuButtonItem(props: {
           {isAfterGroup && <MenuDivider />}
           {node.children.map((child, childIndex) => (
             <PaneMenuButtonItem
+              key={child.key}
               disabled={disabled || Boolean(node.disabled)}
               isAfterGroup={node.children[childIndex - 1]?.type === 'group'}
-              key={child.key}
               node={child}
             />
           ))}
@@ -61,9 +61,9 @@ export function PaneMenuButtonItem(props: {
         >
           {node.children.map((child, childIndex) => (
             <PaneMenuButtonItem
+              key={child.key}
               disabled={disabled || Boolean(node.disabled)}
               isAfterGroup={node.children[childIndex - 1]?.type === 'group'}
-              key={child.key}
               node={child}
             />
           ))}

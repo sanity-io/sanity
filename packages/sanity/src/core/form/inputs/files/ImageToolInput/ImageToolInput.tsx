@@ -206,7 +206,7 @@ export function ImageToolInput(props: ImageToolInputProps) {
           <Box marginTop={2}>
             <Grid columns={4} gap={1}>
               {hotspotPreviews.map(({title, aspectRatio}) => (
-                <Box marginTop={2} key={title}>
+                <Box key={title} marginTop={2}>
                   <Heading as="h4" size={0}>
                     {title}
                   </Heading>

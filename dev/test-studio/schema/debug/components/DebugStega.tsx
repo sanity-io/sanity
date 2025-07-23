@@ -129,8 +129,8 @@ function InputDebugger(props: InputProps) {
 
               return (
                 <Button
-                  as="a"
                   key={href}
+                  as="a"
                   href={href}
                   tone="primary"
                   size={0}

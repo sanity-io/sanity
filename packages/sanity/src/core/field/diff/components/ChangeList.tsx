@@ -105,8 +105,8 @@ export function ChangeList({diff, fields, schemaType}: ChangeListProps): React.J
           {changes.map((change) => (
             <div key={change.key}>
               <ChangeResolver
-                change={change}
                 key={change.key}
+                change={change}
                 data-revert-all-changes-hover={confirmRevertAllHover ? '' : undefined}
                 readOnly={isReadOnly || change?.readOnly}
                 hidden={change?.hidden}

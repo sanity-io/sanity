@@ -106,6 +106,7 @@ export const ItemRow = forwardRef(function ItemRow(
         ),
         !(disableActions.includes('add') || disableActions.includes('addBefore')) && (
           <InsertMenuGroup
+            key="add-before"
             pos="before"
             types={insertableTypes}
             onInsert={handleInsert}
@@ -115,6 +116,7 @@ export const ItemRow = forwardRef(function ItemRow(
         ),
         !disableActions.includes('add') && !disableActions.includes('addAfter') && (
           <InsertMenuGroup
+            key="add-after"
             pos="after"
             types={insertableTypes}
             onInsert={handleInsert}

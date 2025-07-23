@@ -40,6 +40,7 @@ export const InsertMenu = memo(function InsertMenu(props: InsertMenuProps) {
 
       return (
         <CollapseMenuButton
+          key={item.key}
           aria-label={t(
             item.inline
               ? 'inputs.portable-text.action.insert-inline-object-aria-label'
@@ -52,8 +53,7 @@ export const InsertMenu = memo(function InsertMenu(props: InsertMenuProps) {
           }
           data-testid={`${item.type.name}-insert-menu-button`}
           icon={item.icon}
-          key={item.key}
-          // eslint-disable-next-line react/jsx-no-bind, react/jsx-handler-names
+          // eslint-disable-next-line react/jsx-handler-names
           onClick={item.handle}
           text={title}
           tooltipText={t(

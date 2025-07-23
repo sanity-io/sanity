@@ -231,8 +231,8 @@ export function ListArrayInput<Item extends ObjectItem>(props: ArrayOfObjectsInp
                   const member = members[virtualRow.index]
                   return (
                     <Item
-                      ref={virtualizer.measureElement}
                       key={virtualRow.key}
+                      ref={virtualizer.measureElement}
                       sortable={sortable}
                       data-index={virtualRow.index}
                       id={member.key}

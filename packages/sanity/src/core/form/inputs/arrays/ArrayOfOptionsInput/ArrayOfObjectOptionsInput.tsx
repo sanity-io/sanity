@@ -119,6 +119,7 @@ export function ArrayOfObjectOptionsInput(props: ArrayOfObjectsInputProps) {
           const disabled = !optionType
 
           return (
+            // oxlint-disable-next-line no-array-index-key
             <Flex key={index} align="center" as="label" muted={disabled}>
               <Checkbox
                 disabled={disabled}

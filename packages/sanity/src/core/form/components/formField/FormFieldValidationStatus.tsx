@@ -79,8 +79,8 @@ export function FormFieldValidationStatus(props: FormFieldValidationStatusProps)
           {!showSummary && (
             <>
               {validation.map((item, itemIndex) => (
-                // eslint-disable-next-line react/no-array-index-key
-                <FormFieldValidationStatusItem validation={item} key={itemIndex} />
+                // oxlint-disable-next-line no-array-index-key
+                <FormFieldValidationStatusItem key={itemIndex} validation={item} />
               ))}
             </>
           )}

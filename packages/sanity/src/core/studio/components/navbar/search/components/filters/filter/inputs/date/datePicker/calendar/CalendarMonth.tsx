@@ -45,12 +45,7 @@ export function CalendarMonth({hidden, onSelect}: CalendarMonthProps) {
         {useWeeksOfMonth(focusedDate).map((week, weekIdx) =>
           week.days.map((weekDayDate, dayIdx) => {
             return (
-              <CalendarDay
-                date={weekDayDate}
-                // eslint-disable-next-line react/no-array-index-key
-                key={`${weekIdx}-${dayIdx}`}
-                onSelect={onSelect}
-              />
+              <CalendarDay key={`${weekIdx}-${dayIdx}`} date={weekDayDate} onSelect={onSelect} />
             )
           }),
         )}

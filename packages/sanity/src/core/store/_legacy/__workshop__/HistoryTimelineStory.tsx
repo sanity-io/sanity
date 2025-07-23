@@ -136,8 +136,8 @@ export default function HistoryTimelineStory() {
               {chunks.map((chunk) => {
                 return (
                   <Card
-                    as="button"
                     key={chunk.id}
+                    as="button"
                     onClick={handleRevClick(chunk)}
                     padding={3}
                     selected={realRevChunk === chunk}
@@ -162,8 +162,8 @@ export default function HistoryTimelineStory() {
                 {chunks.map((chunk) => {
                   return (
                     <Card
-                      as="button"
                       key={chunk.id}
+                      as="button"
                       onClick={handleSinceClick(chunk)}
                       padding={3}
                       selected={sinceTime === chunk}

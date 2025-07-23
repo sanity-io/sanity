@@ -33,7 +33,7 @@ function TestComponent(props: TestComponentProps) {
 
   const renderItem = useCallback((item: Item) => {
     return (
-      <button type="button" key={item.toString()} data-testid="button">
+      <button key={item.toString()} type="button" data-testid="button">
         Button
       </button>
     )

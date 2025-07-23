@@ -176,8 +176,8 @@ export function StudioNavbar(props: Omit<NavbarProps, 'renderDefault'>) {
 
         return (
           <Button
-            iconRight={action?.icon}
             key={action.name}
+            iconRight={action?.icon}
             mode="bleed"
             onClick={action?.onAction}
             selected={action.selected}
