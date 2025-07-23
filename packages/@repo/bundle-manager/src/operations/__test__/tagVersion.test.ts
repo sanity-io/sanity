@@ -18,7 +18,7 @@ describe('tagVersion()', () => {
 
   it('throws if version is not already in the version array', () => {
     expect(() =>
-      tagVersion({versions: [{timestamp: 1749664258097, version: '1.2.3'}]}, 'stable', {
+      tagVersion({versions: [{timestamp: currentUnixTime(), version: '1.2.3'}]}, 'stable', {
         timestamp: currentUnixTime(),
         version: '1.2.4',
       }),
@@ -28,7 +28,7 @@ describe('tagVersion()', () => {
   it('throws if tag is not valid', () => {
     expect(() =>
       // @ts-expect-error - testing error
-      tagVersion({versions: [{timestamp: 1749664258097, version: '1.2.3'}]}, 'florp', {
+      tagVersion({versions: [{timestamp: currentUnixTime(), version: '1.2.3'}]}, 'florp', {
         version: '1.2.3',
         timestamp: currentUnixTime(),
       }),
@@ -39,7 +39,6 @@ describe('tagVersion()', () => {
 
   it('keeps existing version tag if exists', () => {
     const versions = [{timestamp: currentUnixTime() - 100, version: '1.2.3'}]
-
     const existingEntry = {timestamp: currentUnixTime() - 200, version: '1.2.3' as const}
     const newEntry = {timestamp: currentUnixTime(), version: '1.2.3' as const}
 
@@ -55,24 +54,21 @@ describe('tagVersion()', () => {
     })
   })
 
-  it('applies cleanup logic when tagging (keeps highest per major)', () => {
+  it('applies cleanup logic when tagging', () => {
     const newEntry = {timestamp: currentUnixTime(), version: '1.2.4' as const}
-
     const versions = [
       {timestamp: currentUnixTime() - 100, version: '1.2.4'},
       {timestamp: currentUnixTime() - 100, version: '1.2.3'},
     ]
+    const existingStaleEntry = {timestamp: currentUnixTime() - 1000, version: '1.2.3' as const}
 
-    const existingStaleEntry = {timestamp: currentUnixTime() - 60 * 31, version: '1.2.3' as const}
     const manifest = {
-      tags: {
-        stable: [existingStaleEntry],
-      },
+      tags: {stable: [existingStaleEntry]},
       versions,
     }
+
     expect(tagVersion(manifest, 'stable', newEntry)).toEqual({
       tags: {
-        // Only keeps highest semver per major (1.2.4 > 1.2.3)
         stable: [newEntry],
       },
       versions,
@@ -81,23 +77,20 @@ describe('tagVersion()', () => {
 
   it('sets default when passed options.setAsDefault is true', () => {
     const newEntry = {timestamp: currentUnixTime(), version: '1.2.4' as const}
-
     const versions = [
       {timestamp: currentUnixTime() - 100, version: '1.2.4'},
       {timestamp: currentUnixTime() - 100, version: '1.2.3'},
     ]
+    const existingStaleEntry = {timestamp: currentUnixTime() - 1000, version: '1.2.3' as const}
 
-    const existingStaleEntry = {timestamp: currentUnixTime() - 60 * 31, version: '1.2.3' as const}
     const manifest = {
-      tags: {
-        latest: [existingStaleEntry],
-      },
+      tags: {latest: [existingStaleEntry]},
       versions,
     }
+
     expect(tagVersion(manifest, 'latest', newEntry, {setAsDefault: true})).toEqual({
       default: newEntry.version,
       tags: {
-        // Only keeps highest semver per major (1.2.4 > 1.2.3)
         latest: [newEntry],
       },
       versions,
@@ -112,23 +105,17 @@ describe('tagVersion()', () => {
     ]
 
     const manifest = {
-      tags: {
-        stable: [],
-      },
+      tags: {stable: []},
       versions,
     }
 
-    // Add tags to major 1 (will get TTL treatment since it's the "new" major)
     const tag1 = {timestamp: currentUnixTime() - 20, version: '1.2.4' as const}
-
-    // Add tag to major 2 (different major, so both majors can coexist)
     const tag2 = {timestamp: currentUnixTime() - 30, version: '2.1.0' as const}
 
     const result = tagVersion(tagVersion(manifest, 'stable', tag1), 'stable', tag2)
 
     expect(result).toEqual({
       tags: {
-        // Keeps highest per major: 2.1.0 (major 2) and 1.2.4 (major 1)
         stable: [
           {timestamp: currentUnixTime() - 30, version: '2.1.0'},
           {timestamp: currentUnixTime() - 20, version: '1.2.4'},

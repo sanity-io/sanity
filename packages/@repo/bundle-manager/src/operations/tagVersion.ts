@@ -1,7 +1,7 @@
 import {isValidTag} from '../assert'
 import {VALID_TAGS} from '../constants'
+import {cleanupVersions} from '../helpers/versionUtils'
 import {type DistTag, type ManifestPackage, type Semver} from '../types'
-import {cleanupVersions} from '../utils/versionUtils'
 
 interface TagVersionOptions {
   setAsDefault?: boolean
