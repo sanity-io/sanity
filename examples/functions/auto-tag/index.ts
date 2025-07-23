@@ -34,13 +34,11 @@ export const handler = documentEventHandler(async ({context, event}) => {
       schemaId: '_.schemas.default',
       forcePublishedWrite: true,
     })
-    // eslint-disable-next-line no-console
     console.log(
       local ? 'Generated tags (LOCAL TEST MODE - Content Lake not updated):' : 'Generated tags:',
       result.tags,
     )
   } catch (error) {
-    // eslint-disable-next-line no-console
     console.error('Error occurred during tag generation:', error)
   }
 })

@@ -59,7 +59,6 @@ Keep the language casual, clear, and friendly. Speak directly to readers as "you
       schemaId: '_.schemas.default',
       forcePublishedWrite: true,
     })
-    // eslint-disable-next-line no-console
     console.log(
       local
         ? 'Generated content suggestions (LOCAL TEST MODE - Content Lake not updated):'
@@ -67,7 +66,6 @@ Keep the language casual, clear, and friendly. Speak directly to readers as "you
       result.suggestedChanges,
     )
   } catch (error) {
-    // eslint-disable-next-line no-console
     console.error('Error occurred during content suggestions generation:', error)
   }
 })
