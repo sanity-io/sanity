@@ -3,6 +3,7 @@ import semver from 'semver'
 
 import {STALE_TAGS_EXPIRY_SECONDS} from '../constants'
 import {type VersionEntry} from '../types'
+import {currentUnixTime} from '../utils'
 
 /**
  * Cleans up and sorts version entries with mixed strategy:
@@ -28,7 +29,6 @@ export function cleanupVersions(
   }
 
   const newVersionMajor = getMajorVersion(newVersion.version)
-  const now = Math.floor(Date.now() / 1000)
 
   // Group versions by major version number
   const byMajor = groupBy(uniqueVersions, (entry) => getMajorVersion(entry.version))
@@ -39,7 +39,7 @@ export function cleanupVersions(
     if (major === newVersionMajor) {
       // For the new version's major: apply TTL cleanup
       const withinTtl = majorVersions.filter(
-        (entry) => now - entry.timestamp < STALE_TAGS_EXPIRY_SECONDS,
+        (entry) => currentUnixTime() - entry.timestamp < STALE_TAGS_EXPIRY_SECONDS,
       )
       // Always include the new version even if outside TTL
       const versionsToKeep = [
@@ -58,6 +58,22 @@ export function cleanupVersions(
 
   // Sort final list by semver, descending
   return keptVersions.filter(Boolean).toSorted(sortByVersion)
+}
+
+/**
+ * Simpler cleanup that just sorts and deduplicates versions without TTL-based removal
+ * @param versions - Array of version entries to clean up
+ * @returns Sorted and deduplicated array of version entries
+ */
+export function sortAndCleanupVersions(versions: VersionEntry[]): VersionEntry[] {
+  // First deduplicate versions, keeping most recent timestamp
+  const uniqueVersions = uniqBy(
+    versions.toSorted((a, b) => b.timestamp - a.timestamp),
+    'version',
+  )
+
+  // Sort final list by semver, descending
+  return uniqueVersions.filter(Boolean).toSorted(sortByVersion)
 }
 
 /**

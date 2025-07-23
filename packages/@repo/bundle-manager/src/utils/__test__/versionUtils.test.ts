@@ -2,7 +2,7 @@ import {describe, expect, it} from 'vitest'
 
 import {STALE_TAGS_EXPIRY_SECONDS} from '../../constants'
 import {currentUnixTime} from '../../utils'
-import {cleanupVersions} from '../versionUtils'
+import {cleanupVersions, sortAndCleanupVersions} from '../versionUtils'
 
 describe('cleanupVersions()', () => {
   it('applies cleanup logic when no new version specified', () => {
@@ -113,5 +113,74 @@ describe('cleanupVersions()', () => {
       '2.0.0-alpha.1',
       '1.0.0',
     ])
+  })
+})
+
+describe('sortAndCleanupVersions()', () => {
+  it('sorts versions by semver in descending order', () => {
+    const now = currentUnixTime()
+    const versions = [
+      {timestamp: now - 300, version: '1.0.0'},
+      {timestamp: now - 100, version: '2.1.0'},
+      {timestamp: now - 200, version: '1.5.0'},
+      {timestamp: now - 250, version: '2.0.0'},
+    ]
+
+    const result = sortAndCleanupVersions(versions)
+    expect(result).toHaveLength(4)
+    expect(result.map((v) => v.version)).toEqual(['2.1.0', '2.0.0', '1.5.0', '1.0.0'])
+  })
+
+  it('deduplicates versions keeping most recent timestamp', () => {
+    const now = currentUnixTime()
+    const versions = [
+      {timestamp: now - 100, version: '1.0.0'},
+      {timestamp: now - 200, version: '1.0.0'}, // Older duplicate
+      {timestamp: now - 50, version: '2.0.0'},
+    ]
+
+    const result = sortAndCleanupVersions(versions)
+    expect(result).toHaveLength(2)
+    expect(result).toEqual([
+      {timestamp: now - 50, version: '2.0.0'},
+      {timestamp: now - 100, version: '1.0.0'}, // Keeps newer timestamp
+    ])
+  })
+
+  it('handles pre-release versions correctly', () => {
+    const now = currentUnixTime()
+    const versions = [
+      {timestamp: now - 100, version: '2.0.0-alpha.1'},
+      {timestamp: now - 200, version: '1.0.0'},
+      {timestamp: now - 150, version: '2.0.0-beta.1'},
+      {timestamp: now - 50, version: '2.0.0'},
+    ]
+
+    const result = sortAndCleanupVersions(versions)
+    expect(result).toHaveLength(4)
+    expect(result.map((v) => v.version)).toEqual([
+      '2.0.0',
+      '2.0.0-beta.1',
+      '2.0.0-alpha.1',
+      '1.0.0',
+    ])
+  })
+
+  it('handles invalid semver versions gracefully', () => {
+    const now = currentUnixTime()
+    const versions = [
+      {timestamp: now - 100, version: 'not-semver'},
+      {timestamp: now - 200, version: '1.0.0'},
+      {timestamp: now - 50, version: '2.0.0'},
+    ]
+
+    const result = sortAndCleanupVersions(versions)
+    expect(result).toHaveLength(3)
+    // Valid semver versions sort before invalid ones
+    expect(result.map((v) => v.version)).toEqual(['2.0.0', '1.0.0', 'not-semver'])
+  })
+
+  it('handles empty version arrays', () => {
+    expect(sortAndCleanupVersions([])).toEqual([])
   })
 })
