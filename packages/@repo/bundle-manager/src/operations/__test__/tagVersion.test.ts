@@ -135,6 +135,9 @@ describe('tagVersion()', () => {
   })
 
   it('allows several tags to be added in a row', () => {
+    // in an ideal world, there should just be a single tagged version per channel
+    // but to allow for updated manifests to reach all pods, we add new versions with a timestamp,
+    // so the module server can serve tags after a period of time has passed
     const versions = [
       {timestamp: currentUnixTime() - 1000, version: '1.2.4'},
       {timestamp: currentUnixTime() - 2000, version: '1.2.3'},
