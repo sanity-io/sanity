@@ -1,6 +1,7 @@
 import {type AssetFromSource, type FileSchemaType, type ImageSchemaType} from '@sanity/types'
 import {Flex, Stack, useTheme, useToast} from '@sanity/ui'
 import {type ReactNode, useCallback, useMemo, useState} from 'react'
+import {encodeJsonParams} from 'sanity/router'
 
 import {Button} from '../../../../../ui-components'
 import {useTranslation} from '../../../../i18n'
@@ -12,7 +13,6 @@ import {useSanityMediaLibraryConfig} from '../hooks/useSanityMediaLibraryConfig'
 import {type AssetSelectionItem, type AssetType, type PluginPostMessage} from '../types'
 import {AppDialog} from './Dialog'
 import {Iframe} from './Iframe'
-import {encodeBase64Url} from '../../../../../router/utils/base64url'
 
 export interface SelectAssetsDialogProps {
   dialogHeaderTitle?: ReactNode
@@ -66,14 +66,15 @@ export function SelectAssetsDialog(props: SelectAssetsDialogProps): ReactNode {
         })),
       )
     }
-    return `&filters=${encodeBase64Url(JSON.stringify(filters))}`
+    // @ts-expect-error: util function is typed only for records, but we have an array
+    return encodeJsonParams(filters)
   }, [schemaType?.options?.mediaLibrary?.filters])
 
   const pluginApiVersion = mediaLibraryConfig.__internal.pluginApiVersion
   const appBasePath = mediaLibraryConfig.__internal.appBasePath
   const iframeUrl =
     `${appHost}${appBasePath}/plugin/${pluginApiVersion}/library/${libraryId}/assets?selectionType=${selectionType}` +
-    `&selectAssetTypes=${selectAssetType === 'sanity.video' ? 'video' : selectAssetType}&scheme=${dark ? 'dark' : 'light'}&auth=${authType}${urlFilters}`
+    `&selectAssetTypes=${selectAssetType === 'sanity.video' ? 'video' : selectAssetType}&scheme=${dark ? 'dark' : 'light'}&auth=${authType}&filters=${urlFilters}`
   const {onLinkAssets} = useLinkAssets({schemaType})
 
   const handleSelect = useCallback(async () => {
