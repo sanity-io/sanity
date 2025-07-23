@@ -4,6 +4,7 @@ import {useObservable} from 'react-rx'
 import {of} from 'rxjs'
 
 import {useSchema} from '../../hooks'
+import {usePerspective} from '../../perspective/usePerspective'
 import {getPreviewStateObservable} from '../../preview'
 import {useDocumentPreviewStore} from '../../store'
 
@@ -23,11 +24,11 @@ export function useDocumentPreviewValues(options: PreviewHookOptions): PreviewHo
   const schemaType = useSchema().get(documentType)
 
   const documentPreviewStore = useDocumentPreviewStore()
-
+  const {perspectiveStack} = usePerspective()
   const previewStateObservable = useMemo(() => {
     if (!documentId || !schemaType) return of(null)
-    return getPreviewStateObservable(documentPreviewStore, schemaType, documentId)
-  }, [documentId, documentPreviewStore, schemaType])
+    return getPreviewStateObservable(documentPreviewStore, schemaType, documentId, perspectiveStack)
+  }, [documentId, documentPreviewStore, schemaType, perspectiveStack])
   const previewState = useObservable(previewStateObservable)
 
   const isLoading = previewState?.isLoading ?? true
