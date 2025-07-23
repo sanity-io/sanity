@@ -39,6 +39,7 @@ describe('tagVersion()', () => {
 
   it('keeps existing version tag if exists', () => {
     const versions = [{timestamp: currentUnixTime() - 100, version: '1.2.3'}]
+
     const existingEntry = {timestamp: currentUnixTime() - 200, version: '1.2.3' as const}
     const newEntry = {timestamp: currentUnixTime(), version: '1.2.3' as const}
 
@@ -54,19 +55,23 @@ describe('tagVersion()', () => {
     })
   })
 
-  it('applies cleanup logic when tagging', () => {
+  it('removes stale entries when tagging', () => {
     const newEntry = {timestamp: currentUnixTime(), version: '1.2.4' as const}
+
     const versions = [
       {timestamp: currentUnixTime() - 100, version: '1.2.4'},
       {timestamp: currentUnixTime() - 100, version: '1.2.3'},
     ]
-    const existingStaleEntry = {timestamp: currentUnixTime() - 1000, version: '1.2.3' as const}
 
     const manifest = {
-      tags: {stable: [existingStaleEntry]},
+      tags: {
+        stable: [
+          // stale, can and should be removed
+          {timestamp: currentUnixTime() - 60 * 31, version: '1.2.3' as const},
+        ],
+      },
       versions,
     }
-
     expect(tagVersion(manifest, 'stable', newEntry)).toEqual({
       tags: {
         stable: [newEntry],
@@ -77,17 +82,21 @@ describe('tagVersion()', () => {
 
   it('sets default when passed options.setAsDefault is true', () => {
     const newEntry = {timestamp: currentUnixTime(), version: '1.2.4' as const}
+
     const versions = [
       {timestamp: currentUnixTime() - 100, version: '1.2.4'},
       {timestamp: currentUnixTime() - 100, version: '1.2.3'},
     ]
-    const existingStaleEntry = {timestamp: currentUnixTime() - 1000, version: '1.2.3' as const}
 
     const manifest = {
-      tags: {latest: [existingStaleEntry]},
+      tags: {
+        latest: [
+          // stale, can and should be removed
+          {timestamp: currentUnixTime() - 60 * 31, version: '1.2.3' as const},
+        ],
+      },
       versions,
     }
-
     expect(tagVersion(manifest, 'latest', newEntry, {setAsDefault: true})).toEqual({
       default: newEntry.version,
       tags: {
@@ -120,6 +129,38 @@ describe('tagVersion()', () => {
           {timestamp: currentUnixTime() - 30, version: '2.1.0'},
           {timestamp: currentUnixTime() - 20, version: '1.2.4'},
         ],
+      },
+      versions,
+    })
+  })
+
+  it('allows several tags to be added in a row', () => {
+    const versions = [
+      {timestamp: currentUnixTime() - 1000, version: '1.2.4'},
+      {timestamp: currentUnixTime() - 2000, version: '1.2.3'},
+      {timestamp: currentUnixTime() - 3009, version: '1.2.2'},
+    ]
+
+    const manifest = {
+      tags: {
+        stable: [],
+      },
+      versions,
+    }
+
+    const tag1 = {timestamp: currentUnixTime() - 20, version: '1.2.2' as const}
+    const tag2 = {timestamp: currentUnixTime() - 30, version: '1.2.3' as const}
+    const tag3 = {timestamp: currentUnixTime() - 40, version: '1.2.4' as const}
+
+    const v3 = tagVersion(
+      tagVersion(tagVersion(manifest, 'stable', tag1), 'stable', tag2),
+      'stable',
+      tag3,
+    )
+
+    expect(v3).toEqual({
+      tags: {
+        stable: [tag3, tag2, tag1],
       },
       versions,
     })
