@@ -43,7 +43,6 @@ export const handler = documentEventHandler(async ({event}) => {
     // eslint-disable-next-line no-console
     console.log('Message sent successfully:', result)
   } catch (error) {
-    // eslint-disable-next-line no-console
     console.error('Failed to send Telegram notification:', error)
     throw error
   }
