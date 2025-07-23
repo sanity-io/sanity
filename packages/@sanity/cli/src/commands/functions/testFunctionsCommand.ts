@@ -12,7 +12,7 @@ Options
   --api <version> Sanity API Version to use
   --dataset <dataset> The Sanity dataset to use
   --project-id <id> Sanity Project ID to use
-  --with-user-token Prime access token from CLI config into getCliClient()
+  --with-user-token Prime access token from CLI config into context.clientOptions
 
 
 Examples
