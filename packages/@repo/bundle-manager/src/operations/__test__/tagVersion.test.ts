@@ -55,7 +55,7 @@ describe('tagVersion()', () => {
     })
   })
 
-  it('preserves existing entries when tagging', () => {
+  it('applies cleanup logic when tagging (keeps highest per major)', () => {
     const newEntry = {timestamp: currentUnixTime(), version: '1.2.4' as const}
 
     const versions = [
@@ -72,7 +72,8 @@ describe('tagVersion()', () => {
     }
     expect(tagVersion(manifest, 'stable', newEntry)).toEqual({
       tags: {
-        stable: [newEntry, existingStaleEntry],
+        // Only keeps highest semver per major (1.2.4 > 1.2.3)
+        stable: [newEntry],
       },
       versions,
     })
@@ -96,19 +97,18 @@ describe('tagVersion()', () => {
     expect(tagVersion(manifest, 'latest', newEntry, {setAsDefault: true})).toEqual({
       default: newEntry.version,
       tags: {
-        latest: [newEntry, existingStaleEntry],
+        // Only keeps highest semver per major (1.2.4 > 1.2.3)
+        latest: [newEntry],
       },
       versions,
     })
   })
-  it('allows several tags to be added in a row', () => {
-    // in an ideal world, there should just be a single tagged version per channel
-    // but to allow for updated manifests to reach all pods, we add new versions with a timestamp,
-    // so the module server can serve tags after a period of time has passed
+
+  it('applies TTL cleanup for new tag major, keeps highest for other majors', () => {
     const versions = [
       {timestamp: currentUnixTime() - 1000, version: '1.2.4'},
-      {timestamp: currentUnixTime() - 2000, version: '1.2.3'},
-      {timestamp: currentUnixTime() - 3009, version: '1.2.2'},
+      {timestamp: currentUnixTime() - 2000, version: '2.0.0'},
+      {timestamp: currentUnixTime() - 3000, version: '2.1.0'},
     ]
 
     const manifest = {
@@ -118,19 +118,21 @@ describe('tagVersion()', () => {
       versions,
     }
 
-    const tag1 = {timestamp: currentUnixTime() - 20, version: '1.2.2' as const}
-    const tag2 = {timestamp: currentUnixTime() - 30, version: '1.2.3' as const}
-    const tag3 = {timestamp: currentUnixTime() - 40, version: '1.2.4' as const}
+    // Add tags to major 1 (will get TTL treatment since it's the "new" major)
+    const tag1 = {timestamp: currentUnixTime() - 20, version: '1.2.4' as const}
 
-    const v3 = tagVersion(
-      tagVersion(tagVersion(manifest, 'stable', tag1), 'stable', tag2),
-      'stable',
-      tag3,
-    )
+    // Add tag to major 2 (different major, so both majors can coexist)
+    const tag2 = {timestamp: currentUnixTime() - 30, version: '2.1.0' as const}
 
-    expect(v3).toEqual({
+    const result = tagVersion(tagVersion(manifest, 'stable', tag1), 'stable', tag2)
+
+    expect(result).toEqual({
       tags: {
-        stable: [tag3, tag2, tag1],
+        // Keeps highest per major: 2.1.0 (major 2) and 1.2.4 (major 1)
+        stable: [
+          {timestamp: currentUnixTime() - 30, version: '2.1.0'},
+          {timestamp: currentUnixTime() - 20, version: '1.2.4'},
+        ],
       },
       versions,
     })
