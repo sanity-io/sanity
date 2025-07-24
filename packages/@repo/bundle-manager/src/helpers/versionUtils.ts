@@ -23,9 +23,9 @@ export function cleanupVersions(
     const byMajor = groupBy(uniqueVersions, ({version}) => getMajorVersion(version))
 
     return Object.values(byMajor)
-      .map((majorVersions) => majorVersions.toSorted(sortBySemverDescending)[0])
+      .map((majorVersions) => majorVersions.toSorted(sortByVersionDesc)[0])
       .filter(Boolean)
-      .toSorted(sortByVersion)
+      .toSorted(sortByVersionDesc)
   }
 
   const currentTime = currentUnixTime()
@@ -35,12 +35,12 @@ export function cleanupVersions(
     const withinTtl = majorVersions.filter(
       (entry) => currentTime - entry.timestamp < STALE_TAGS_EXPIRY_SECONDS,
     )
-    const highest = majorVersions.toSorted(sortBySemverDescending)[0]
+    const highest = majorVersions.toSorted(sortByVersionDesc)[0]
 
     return deduplicateByVersion([...withinTtl, highest])
   })
 
-  return deduplicateByVersion(keptVersions).toSorted(sortByVersion)
+  return deduplicateByVersion(keptVersions).toSorted(sortByVersionDesc)
 }
 
 /**
@@ -52,7 +52,7 @@ export function sortAndCleanupVersions(versions: VersionEntry[]): VersionEntry[]
     'version',
   )
 
-  return uniqueVersions.filter(Boolean).toSorted(sortByVersion)
+  return uniqueVersions.filter(Boolean).toSorted(sortByVersionDesc)
 }
 
 const deduplicateByVersion = (versions: VersionEntry[]): VersionEntry[] =>
@@ -60,9 +60,6 @@ const deduplicateByVersion = (versions: VersionEntry[]): VersionEntry[] =>
     versions.toSorted((a, b) => b.timestamp - a.timestamp),
     'version',
   )
-
-const sortBySemverDescending = (a: VersionEntry, b: VersionEntry): number =>
-  semver.compare(b.version, a.version)
 
 function getMajorVersion(version: string): string {
   const parsed = semver.parse(version)
@@ -74,7 +71,7 @@ function getMajorVersion(version: string): string {
   return parsed.major.toString()
 }
 
-function sortByVersion(
+function sortByVersionDesc(
   {version: aVersion}: VersionEntry,
   {version: bVersion}: VersionEntry,
 ): number {
