@@ -9,15 +9,16 @@ import {currentUnixTime} from '../utils'
  * Cleans up and sorts version entries with mixed strategy:
  * - For the new version's major: TTL cleanup (keep multiple versions within grace period)
  * - For other majors: Keep only highest semver version
- * @param versions - Array of version entries to clean up
+ * @param existingVersions - Array of version entries to clean up
  * @param newVersion - The version being added (determines which major gets TTL treatment)
  * @returns Cleaned and sorted array of version entries
  */
 export function cleanupVersions(
-  versions: VersionEntry[],
-  newVersion?: VersionEntry,
+  existingVersions: VersionEntry[],
+  newVersion: VersionEntry,
 ): VersionEntry[] {
-  const uniqueVersions = deduplicateByVersion(versions)
+  const allNewVersions = [newVersion, ...existingVersions]
+  const uniqueVersions = deduplicateByVersion(allNewVersions)
 
   if (!newVersion) {
     // Fallback to keeping highest semver per major if no new version specified
@@ -79,7 +80,7 @@ function applyTtlCleanup(majorVersions: VersionEntry[], newVersion: VersionEntry
 function getHighestSemverVersion(majorVersions: VersionEntry[]): VersionEntry[] {
   const highest = majorVersions.toSorted(sortBySemverDescending)
 
-  return highest.length === 1 ? highest : []
+  return highest.length > 0 ? [highest[0]] : []
 }
 
 const deduplicateByVersion = (versions: VersionEntry[]): VersionEntry[] =>
@@ -94,7 +95,11 @@ const sortBySemverDescending = (a: VersionEntry, b: VersionEntry): number =>
 function getMajorVersion(version: string): string {
   const parsed = semver.parse(version)
 
-  return parsed ? parsed.major.toString() : '0'
+  if (!parsed) {
+    throw new Error(`Invalid semver version: "${version}"`)
+  }
+
+  return parsed.major.toString()
 }
 
 function sortByVersion(
