@@ -22,7 +22,7 @@ export const DEFAULT_STUDIO_CLIENT_OPTIONS: SourceClientOptions = {
  * @internal
  */
 export const DEFAULT_STUDIO_CLIENT_HEADERS: ClientConfig['headers'] = {
-  'x-sanity-studio-version': SANITY_VERSION,
+  'x-sanity-app': `studio@${SANITY_VERSION}`,
 }
 
 export const versionedClient = (client: SanityClient, apiVersion?: string): SanityClient => {
