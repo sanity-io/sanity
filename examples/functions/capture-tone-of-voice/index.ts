@@ -32,7 +32,6 @@ export const handler = documentEventHandler(async ({context, event}) => {
       schemaId: '_.schemas.default',
       forcePublishedWrite: true,
     })
-    // eslint-disable-next-line no-console
     console.log(
       local
         ? 'Generated tone analysis (LOCAL TEST MODE - Content Lake not updated):'
@@ -40,7 +39,6 @@ export const handler = documentEventHandler(async ({context, event}) => {
       result.toneOfVoice,
     )
   } catch (error) {
-    // eslint-disable-next-line no-console
     console.error('Error occurred during tone of voice generation:', error)
   }
 })

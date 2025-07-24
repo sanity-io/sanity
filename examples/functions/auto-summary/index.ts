@@ -27,7 +27,6 @@ export const handler = documentEventHandler(async ({context, event}) => {
       schemaId: '_.schemas.default',
       forcePublishedWrite: true,
     })
-    // eslint-disable-next-line no-console
     console.log(
       local
         ? 'Generated summary (LOCAL TEST MODE - Content Lake not updated):'
@@ -35,7 +34,6 @@ export const handler = documentEventHandler(async ({context, event}) => {
       result.autoSummary,
     )
   } catch (error) {
-    // eslint-disable-next-line no-console
     console.error('Error occurred during summary generation:', error)
   }
 })

@@ -154,5 +154,7 @@
     // Temporarily disabled, will be re-enabled in the near term
     "unicorn/prefer-set-has": "off"
   },
-  "overrides": [{"files": ["scripts/**/*"], "rules": {"no-console": "off"}}]
+  "overrides": [
+    {"files": ["scripts/**/*", "examples/functions/**/*"], "rules": {"no-console": "off"}}
+  ]
 }

@@ -24,7 +24,6 @@ export const handler = documentEventHandler(async ({event}) => {
       text: message,
     })
 
-    // eslint-disable-next-line no-console
     console.log(
       'Slack notification sent successfully to channel:',
       SLACK_CHANNEL,
@@ -32,7 +31,6 @@ export const handler = documentEventHandler(async ({event}) => {
       message,
     )
   } catch (error) {
-    // eslint-disable-next-line no-console
     console.error('Error sending Slack notification:', error)
     throw error
   }
