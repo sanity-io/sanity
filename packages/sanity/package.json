@@ -256,7 +256,7 @@
     "react-focus-lock": "^2.13.6",
     "react-i18next": "15.6.1",
     "react-is": "^18.2.0",
-    "react-refractor": "^3.0.0",
+    "react-refractor": "^4.0.0",
     "react-rx": "^4.1.31",
     "read-pkg-up": "^7.0.1",
     "refractor": "^5.0.0",

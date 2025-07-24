@@ -593,8 +593,8 @@ importers:
         specifier: 'catalog:'
         version: 19.1.0(react@19.1.0)
       react-refractor:
-        specifier: ^3.0.0
-        version: 3.1.1(react@19.1.0)
+        specifier: ^4.0.0
+        version: 4.0.0(react@19.1.0)
       refractor:
         specifier: ^5.0.0
         version: 5.0.0
@@ -1932,8 +1932,8 @@ importers:
         specifier: ^18.2.0
         version: 18.3.1
       react-refractor:
-        specifier: ^3.0.0
-        version: 3.1.1(react@18.3.1)
+        specifier: ^4.0.0
+        version: 4.0.0(react@18.3.1)
       react-rx:
         specifier: ^4.1.31
         version: 4.1.31(react@18.3.1)(rxjs@7.8.2)
@@ -8094,17 +8094,11 @@ packages:
   hast-util-parse-selector@2.2.5:
     resolution: {integrity: sha512-7j6mrk/qqkSehsM92wQjdIgWM2/BW61u/53G6xmC8i1OmEdKLHbk419QKQUjz6LglWsfqoiHmyMRkP1BGjecNQ==}
 
-  hast-util-parse-selector@3.1.1:
-    resolution: {integrity: sha512-jdlwBjEexy1oGz0aJ2f4GKMaVKkA9jwjr4MjAAI22E5fM/TXVZHuS5OpONtdeIkRKqAaryQ2E9xNQxijoThSZA==}
-
   hast-util-parse-selector@4.0.0:
     resolution: {integrity: sha512-wkQCkSYoOGCRKERFWcxMVMOcYE2K1AaNLU8DXS9arxnLOUEWbOXKXiJUNzEpqZ3JOKpnha3jkFrumEjVliDe7A==}
 
   hastscript@6.0.0:
     resolution: {integrity: sha512-nDM6bvd7lIqDUiYEiu5Sl/+6ReP0BMk/2f4U/Rooccxkj0P5nm+acM5PrGJ/t5I8qPGiqZSE6hVAwZEdZIvP4w==}
-
-  hastscript@7.2.0:
-    resolution: {integrity: sha512-TtYPq24IldU8iKoJQqvZOuhi5CyCQRAbvDOX0x1eW6rsHSxa/1i2CCiptNTotGHJ3VoHRGmqiv6/D3q113ikkw==}
 
   hastscript@9.0.1:
     resolution: {integrity: sha512-g7df9rMFX/SPi34tyGCyUBREQoKkapwdY/T04Qn9TDWfHhAYt4/I0gMVirzK5wEzeUqIjEB+LXC/ypb7Aqno5w==}
@@ -10235,9 +10229,6 @@ packages:
   property-information@5.6.0:
     resolution: {integrity: sha512-YUHSPk+A30YPv+0Qf8i9Mbfe/C0hdPXk1s1jPVToV8pk8BQtpw10ct89Eo7OWkutrwqvT0eicAxlOg3dOAu8JA==}
 
-  property-information@6.5.0:
-    resolution: {integrity: sha512-PgTgs/BlvHxOu8QuEN7wi5A0OmXaBcHpmCSTehcs6Uuu9IkDIEo13Hy7n898RHfrQ49vKCoGeWZSaAK01nwVig==}
-
   property-information@7.1.0:
     resolution: {integrity: sha512-TwEZ+X+yCJmYfL7TPUOcvBZ4QfoT5YenQiJuX//0th53DE6w0xxLEtfK3iyryQFddXuvkIk51EEgrJQ0WJkOmQ==}
 
@@ -10436,9 +10427,9 @@ packages:
     peerDependencies:
       react: '>=15.0.0'
 
-  react-refractor@3.1.1:
-    resolution: {integrity: sha512-BX8kHFC+APBshZFjWSkE01OlldY6VReuXSom0N45l4ALbj118tx2d7ybxhDeK8VsDSMYCMv2RD2P2vjFonMJ8w==}
-    engines: {node: '>=18.0.0'}
+  react-refractor@4.0.0:
+    resolution: {integrity: sha512-2VMRH3HA/Nu+tMFzyQwdBK0my0BIZy1pkWHhjuSrplMyf8ZLx/Gw7tUXV0t2JbEsbSNHbEc9TbHhq3sUx2seVA==}
+    engines: {node: '>=20.0.0'}
     peerDependencies:
       react: '>=18.0.0'
 
@@ -10590,9 +10581,6 @@ packages:
 
   refractor@3.6.0:
     resolution: {integrity: sha512-MY9W41IOWxxk31o+YvFCNyNzdkc9M20NoZK5vq6jkv4I/uh2zkWcfudj0Q1fovjUQJrNewS9NMzeTtqPf+n5EA==}
-
-  refractor@4.9.0:
-    resolution: {integrity: sha512-nEG1SPXFoGGx+dcjftjv8cAjEusIh6ED1xhf5DG3C0x/k+rmZ2duKnc3QLpt6qeHv5fPb8uwN3VWN2BT7fr3Og==}
 
   refractor@5.0.0:
     resolution: {integrity: sha512-QXOrHQF5jOpjjLfiNk5GFnWhRXvxjUVnlFxkeDmewR5sXkr3iM46Zo+CnRR8B+MDVqkULW4EcLVcRBNOPXHosw==}
@@ -19915,10 +19903,6 @@ snapshots:
 
   hast-util-parse-selector@2.2.5: {}
 
-  hast-util-parse-selector@3.1.1:
-    dependencies:
-      '@types/hast': 2.3.10
-
   hast-util-parse-selector@4.0.0:
     dependencies:
       '@types/hast': 3.0.4
@@ -19930,14 +19914,6 @@ snapshots:
       hast-util-parse-selector: 2.2.5
       property-information: 5.6.0
       space-separated-tokens: 1.1.5
-
-  hastscript@7.2.0:
-    dependencies:
-      '@types/hast': 2.3.10
-      comma-separated-tokens: 2.0.3
-      hast-util-parse-selector: 3.1.1
-      property-information: 6.5.0
-      space-separated-tokens: 2.0.2
 
   hastscript@9.0.1:
     dependencies:
@@ -22245,8 +22221,6 @@ snapshots:
     dependencies:
       xtend: 4.0.2
 
-  property-information@6.5.0: {}
-
   property-information@7.1.0: {}
 
   proto-list@1.2.4: {}
@@ -22469,17 +22443,17 @@ snapshots:
       unist-util-filter: 2.0.3
       unist-util-visit-parents: 3.1.1
 
-  react-refractor@3.1.1(react@18.3.1):
+  react-refractor@4.0.0(react@18.3.1):
     dependencies:
       react: 18.3.1
-      refractor: 4.9.0
+      refractor: 5.0.0
       unist-util-filter: 5.0.1
       unist-util-visit-parents: 6.0.1
 
-  react-refractor@3.1.1(react@19.1.0):
+  react-refractor@4.0.0(react@19.1.0):
     dependencies:
       react: 19.1.0
-      refractor: 4.9.0
+      refractor: 5.0.0
       unist-util-filter: 5.0.1
       unist-util-visit-parents: 6.0.1
 
@@ -22700,13 +22674,6 @@ snapshots:
       hastscript: 6.0.0
       parse-entities: 2.0.0
       prismjs: 1.27.0
-
-  refractor@4.9.0:
-    dependencies:
-      '@types/hast': 2.3.10
-      '@types/prismjs': 1.26.5
-      hastscript: 7.2.0
-      parse-entities: 4.0.2
 
   refractor@5.0.0:
     dependencies:
