@@ -22,6 +22,8 @@ export async function measureFpsForPte({
   await pteField.waitFor({state: 'visible'})
   await new Promise((resolve) => setTimeout(resolve, 500))
 
+  // console.log('[HTML]', await pteField.innerHTML())
+
   await pteField.click()
 
   const contentEditable = pteField.locator('[contenteditable="true"]')

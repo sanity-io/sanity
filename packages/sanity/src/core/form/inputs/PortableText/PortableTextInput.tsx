@@ -419,8 +419,10 @@ export function PortableTextInput(props: PortableTextInputProps): ReactNode {
 
 /**
  * Custom PTE plugin that translates `EditorEmittedEvent`s to `EditorChange`s
+ *
+ * @internal
  */
-function EditorChangePlugin(props: {onChange: (change: EditorChange) => void}) {
+export function EditorChangePlugin(props: {onChange: (change: EditorChange) => void}) {
   const handleEditorEvent = useCallback(
     (event: EditorEmittedEvent) => {
       switch (event.type) {
@@ -535,8 +537,10 @@ function UpdateValuePlugin(props: {value: Array<PortableTextBlock> | undefined})
  * `EditorProvider` doesn't have a `readOnly` prop. Instead, this custom PTE
  * plugin listens for the prop change and sends a `toggle readOnly` event to
  * the editor.
+ *
+ * @internal
  */
-function UpdateReadOnlyPlugin(props: {readOnly: boolean}) {
+export function UpdateReadOnlyPlugin(props: {readOnly: boolean}) {
   const editor = useEditor()
 
   useEffect(() => {
