@@ -143,10 +143,11 @@ const RadioSelect = forwardRef(function RadioSelect(
       <Layout space={3} role="group">
         {items.map((item, index) => (
           <RadioSelectItem
+            // oxlint-disable-next-line no-array-index-key
+            key={index}
             customValidity={customValidity}
             inputId={inputId}
             item={item}
-            key={index}
             onChange={onChange}
             onFocus={onFocus}
             readOnly={readOnly}

@@ -25,9 +25,9 @@ const DocumentBadgesInner = memo(function DocumentBadgesInner({states}: Document
     <Inline space={1}>
       {states.map((badge, index) => (
         <Tooltip
+          key={`${badge.label}-${index}`}
           content={badge.title}
           disabled={!badge.title}
-          key={`${badge.label}-${index}`}
           placement="top"
           portal
         >

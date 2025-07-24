@@ -58,7 +58,7 @@ export function PaneContextMenuButton(props: PaneContextMenuButtonProps) {
           )}
           {nodes.map((node, nodeIndex) => {
             const isAfterGroup = nodes[nodeIndex - 1]?.type === 'group'
-            return <PaneMenuButtonItem isAfterGroup={isAfterGroup} key={node.key} node={node} />
+            return <PaneMenuButtonItem key={node.key} isAfterGroup={isAfterGroup} node={node} />
           })}
         </Menu>
       }

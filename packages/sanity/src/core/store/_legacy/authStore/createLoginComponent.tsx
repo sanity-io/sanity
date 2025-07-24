@@ -147,7 +147,6 @@ export function createLoginComponent({
         <Stack space={2}>
           {providers.map((provider, index) => (
             <Button
-              // eslint-disable-next-line react/no-array-index-key
               key={`${provider.url}_${index}`}
               as="a"
               icon={providerLogos[provider.name] || <CustomLogo provider={provider} />}

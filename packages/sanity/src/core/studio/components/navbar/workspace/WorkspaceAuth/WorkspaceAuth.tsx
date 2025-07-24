@@ -57,6 +57,7 @@ export function WorkspaceAuth() {
         >
           <Stack padding={2} paddingBottom={3} paddingTop={4}>
             <LoginComponent
+              key={selectedWorkspaceName}
               projectId={selectedWorkspace.projectId}
               redirectPath={
                 window.location.pathname.startsWith(selectedWorkspace.basePath)
@@ -65,7 +66,6 @@ export function WorkspaceAuth() {
                     `${window.location.pathname}${window.location.search}`
                   : selectedWorkspace.basePath
               }
-              key={selectedWorkspaceName}
             />
           </Stack>
         </Layout>
@@ -113,9 +113,9 @@ export function WorkspaceAuth() {
 
           return (
             <Card
+              key={workspace.name}
               as="button"
               radius={2}
-              key={workspace.name}
               padding={2}
               // eslint-disable-next-line react/jsx-no-bind
               onClick={handleSelectWorkspace}

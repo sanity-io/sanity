@@ -89,6 +89,7 @@ export const ActionMenu = memo(function ActionMenu(props: ActionMenuProps) {
         const active = activeKeys.includes(action.key)
         return (
           <CollapseMenuButton
+            key={action.key}
             aria-label={t('toolbar.portable-text.action-button-aria-label', {
               action: action.title || action.key,
             })}
@@ -97,8 +98,6 @@ export const ActionMenu = memo(function ActionMenu(props: ActionMenuProps) {
             mode="bleed"
             dividerBefore={action.firstInGroup}
             icon={getActionIcon(action, active)}
-            key={action.key}
-            // eslint-disable-next-line react/jsx-no-bind
             onClick={() => action.handle(active)}
             selected={active}
             text={action.title || action.key}

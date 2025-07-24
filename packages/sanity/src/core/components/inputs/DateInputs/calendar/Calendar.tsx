@@ -440,7 +440,7 @@ function CalendarMonthSelect(props: {
       <Box flex={1}>
         <Select fontSize={1} radius={2} value={value} onChange={onChange} padding={2}>
           {monthNames.map((monthName, i) => (
-            // eslint-disable-next-line react/no-array-index-key
+            // oxlint-disable-next-line no-array-index-key
             <option key={i} value={i}>
               {monthName}
             </option>

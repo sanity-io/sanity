@@ -268,7 +268,7 @@ const PresenceDock = memo(function PresenceDock(props: {
   )
 
   return (
-    <div data-dock={position} key={`sticky-${position}`} style={style}>
+    <div key={`sticky-${position}`} data-dock={position} style={style}>
       <FieldPresenceInner
         position={position}
         maxAvatars={MAX_AVATARS_DOCK}

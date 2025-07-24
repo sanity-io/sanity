@@ -217,6 +217,7 @@ export const DocumentListPane = memo(function DocumentListPane(props: DocumentLi
         />
       </Box>
       <DocumentListPaneContent
+        key={paneKey}
         childItemId={childItemId}
         error={error}
         filterIsSimpleTypeConstraint={!!typeName}
@@ -231,7 +232,6 @@ export const DocumentListPane = memo(function DocumentListPane(props: DocumentLi
         isRetrying={isRetrying}
         isConnected={connected}
         items={items}
-        key={paneKey}
         layout={layout}
         muted={loadingVariant === 'subtle'}
         loadingVariant={loadingVariant}

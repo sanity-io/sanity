@@ -64,8 +64,8 @@ export function ReleaseTypeMenuSection({
       <Flex direction="column" gap={1}>
         {releases.map((release, index) => (
           <GlobalPerspectiveMenuItem
-            release={release}
             key={release._id}
+            release={release}
             ref={getMenuItemRef(getReleaseIdFromReleaseDocumentId(release._id))}
             rangePosition={getRangePosition(range, releaseTypeOffset + index)}
             menuItemProps={menuItemProps}

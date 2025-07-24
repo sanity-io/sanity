@@ -87,6 +87,7 @@ export function ArrayOfPrimitivesFunctions<
                 const icon = memberDef.icon || memberDef.type?.icon || referenceIcon
                 return (
                   <MenuItem
+                    // oxlint-disable-next-line no-array-index-key
                     key={i}
                     text={memberDef.title || memberDef.type?.name}
                     onClick={() => insertItem(memberDef)}

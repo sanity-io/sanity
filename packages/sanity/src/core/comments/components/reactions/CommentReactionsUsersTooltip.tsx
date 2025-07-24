@@ -126,7 +126,7 @@ function FormattedUserList({currentUserId, userIds}: {currentUserId: string; use
     // in an element that does _not_ have a leading non-whitespace literal following it.
     elements.push(
       // Key (value) is user ID, thus unique
-      <InlineText weight="medium" key={item.value}>
+      <InlineText key={item.value} weight="medium">
         <UserDisplayName currentUserId={currentUserId} isFirst={i === 0} userId={item.value} />
       </InlineText>,
     )

@@ -168,6 +168,7 @@ export function GridItem<Item extends ObjectItem = ObjectItem>(props: GridItemPr
     return [
       !disableActions.includes('remove') && (
         <MenuItem
+          key="remove"
           text={t('inputs.array.action.remove')}
           tone="critical"
           icon={TrashIcon}
@@ -175,10 +176,16 @@ export function GridItem<Item extends ObjectItem = ObjectItem>(props: GridItemPr
         />
       ),
       !disableActions.includes('copy') && (
-        <MenuItem text={t('inputs.array.action.copy')} icon={CopyIcon} onClick={handleCopy} />
+        <MenuItem
+          key="copy"
+          text={t('inputs.array.action.copy')}
+          icon={CopyIcon}
+          onClick={handleCopy}
+        />
       ),
       !disableActions.includes('duplicate') && (
         <MenuItem
+          key="duplicate"
           text={t('inputs.array.action.duplicate')}
           icon={AddDocumentIcon}
           onClick={handleDuplicate}

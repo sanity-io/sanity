@@ -120,9 +120,9 @@ function MentionsMenu({onSelect, value = ''}: {onSelect: SelectItemHandler; valu
     (user: UserWithPermission) => {
       return (
         <MentionUserMenuItem
+          key={user.id}
           user={user}
           onSelect={onSelect}
-          key={user.id}
           pressed={user.id === value}
         />
       )

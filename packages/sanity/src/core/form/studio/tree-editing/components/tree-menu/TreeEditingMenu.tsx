@@ -25,8 +25,8 @@ export const TreeEditingMenu = memo(function TreeEditingMenu(
 
         return (
           <TreeEditingMenuItem
-            item={item}
             key={toString(item.path)}
+            item={item}
             onPathSelect={onPathSelect}
             selectedPath={selectedPath}
             siblingHasChildren={siblingHasChildren}

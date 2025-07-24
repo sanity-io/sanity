@@ -61,9 +61,9 @@ export function Filters({showTypeFilter = true}: {showTypeFilter?: boolean}) {
             const key = getFilterKey(filter)
             return (
               <FilterButton
+                key={key}
                 filter={filter}
                 initialOpen={isMounted && lastAddedFilterKey === key}
-                key={key}
               />
             )
           })}

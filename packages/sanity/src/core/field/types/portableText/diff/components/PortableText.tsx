@@ -85,9 +85,9 @@ export function PortableText(props: Props): React.JSX.Element {
           if (textDiff && textDiff.action !== 'unchanged') {
             return (
               <DiffCard
+                key={`empty-block-${block._key}`}
                 annotation={textDiff.annotation}
                 as={textDiff.action === 'removed' ? 'del' : 'ins'}
-                key={`empty-block-${block._key}`}
                 tooltip={{
                   description: t('changes.portable-text.empty-text', {context: textDiff.action}),
                 }}
@@ -169,8 +169,8 @@ export function PortableText(props: Props): React.JSX.Element {
               : undefined
             const text = (
               <Text
-                diff={textDiff}
                 key={`text-${child._key}-${segIndex}`}
+                diff={textDiff}
                 path={[{_key: block._key}, 'children', {_key: child._key}]}
                 childDiff={childDiff}
                 segment={seg}
@@ -210,11 +210,11 @@ export function PortableText(props: Props): React.JSX.Element {
                   )
                 returnedChildren.push(
                   <Annotation
+                    key={key}
                     object={endedAnnotation.object}
                     diff={annotationDiff}
                     path={[{_key: block._key}, 'children', {_key: child._key}]}
                     schemaType={objectSchemaType}
-                    key={key}
                   >
                     <>{annotationSegments[endedAnnotation.mark]}</>
                   </Annotation>,
@@ -290,8 +290,7 @@ function renderTextSegment({
     activeMarks.forEach((mark) => {
       if (isDecorator(mark, spanSchemaType)) {
         children = (
-          // eslint-disable-next-line react/no-array-index-key
-          <Decorator mark={mark} key={`decorator-${mark}-${child._key}-${segIndex}`}>
+          <Decorator key={`decorator-${mark}-${child._key}-${segIndex}`} mark={mark}>
             {children}
           </Decorator>
         )
@@ -378,8 +377,8 @@ function renderDecorators({
   ) {
     returned = (
       <DiffCard
-        annotation={marksAnnotation}
         key={`diffcard-annotation-${segIndex}-${marksChanged.join('-')}`}
+        annotation={marksAnnotation}
         as={'ins'}
         tooltip={{
           description: t('changes.portable-text.changed-formatting'),

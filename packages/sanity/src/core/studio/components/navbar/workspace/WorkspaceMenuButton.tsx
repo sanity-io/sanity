@@ -82,11 +82,11 @@ export function WorkspaceMenuButton() {
               // we can remove this and use setActiveWorkspace instead
               return (
                 <MenuItem
+                  key={workspace.name}
                   as="a"
                   href={workspace.basePath}
                   badgeText={STATE_TITLES[state]}
                   iconRight={isSelected ? CheckmarkIcon : undefined}
-                  key={workspace.name}
                   pressed={isSelected}
                   preview={<WorkspacePreviewIcon icon={workspace.icon} size="small" />}
                   selected={isSelected}

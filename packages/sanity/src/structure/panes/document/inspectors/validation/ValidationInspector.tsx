@@ -78,7 +78,7 @@ export function ValidationInspector(props: DocumentInspectorProps) {
               <Stack space={2}>
                 {validation.map((marker, i) => (
                   <ValidationCard
-                    // eslint-disable-next-line react/no-array-index-key
+                    // oxlint-disable-next-line no-array-index-key
                     key={i}
                     marker={marker}
                     onOpen={handleOpen}
@@ -169,6 +169,7 @@ function DocumentNodePathBreadcrumbs(props: {
   return (
     <Text size={1}>
       {pathTitles.map((t, i) => (
+        // oxlint-disable-next-line no-array-index-key
         <Fragment key={i}>
           {i > 0 && <span style={{color: 'var(--card-muted-fg-color)', opacity: 0.5}}> / </span>}
           <span style={{fontWeight: 500}}>{t.title || t.name}</span>

@@ -82,8 +82,8 @@ export function PresenceMenu() {
           {hasPresence &&
             presence.map((item) => (
               <PresenceMenuItem
-                focused={focusedId === item.user.id}
                 key={item.user.id}
+                focused={focusedId === item.user.id}
                 onFocus={handleItemFocus}
                 locations={item.locations}
                 user={item.user}

@@ -46,8 +46,8 @@ export function NewDocumentListOption(props: NewDocumentListOptionProps) {
 
   return (
     <Tooltip
-      disabled={option.hasPermission}
       key={option.id}
+      disabled={option.hasPermission}
       portal
       content={
         <InsufficientPermissionsMessage currentUser={currentUser} context="create-document" />

@@ -41,8 +41,8 @@ export function VirtualListItem(props: Props) {
 
   return (
     <Box
-      data-index={virtualRow.index}
       key={virtualRow.key}
+      data-index={virtualRow.index}
       paddingBottom={2}
       ref={measureElement}
       style={style}

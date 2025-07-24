@@ -201,14 +201,14 @@ export const ReleaseScheduleButton = ({
 
     return (
       <Dialog
-        id="confirm-schedule-dialog"
-        data-testid="confirm-schedule-dialog"
         /**
          * rerenderDialog should force this function to rerun
          * since the selected scheduled date was in the future when selected
          * but at time of submit it is in the past
          */
         key={rerenderDialog}
+        id="confirm-schedule-dialog"
+        data-testid="confirm-schedule-dialog"
         header={t('schedule-dialog.confirm-title', {
           documentsLength: documents.length,
           count: documents.length,

@@ -180,9 +180,9 @@ export function TreeEditingMenuItem(props: TreeEditingMenuItemProps): React.JSX.
 
   return (
     <Stack
+      key={stringPath}
       aria-expanded={open}
       as="li"
-      key={stringPath}
       ref={setRootElement}
       role="treeitem"
       space={1}
@@ -240,8 +240,8 @@ export function TreeEditingMenuItem(props: TreeEditingMenuItemProps): React.JSX.
 
             return (
               <TreeEditingMenuItem
-                item={child}
                 key={toString(child.path)}
+                item={child}
                 onPathSelect={onPathSelect}
                 selectedPath={selectedPath}
                 siblingHasChildren={childSiblingHasChildren}

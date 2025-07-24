@@ -87,6 +87,7 @@
     ],
     "typescript/ban-ts-comment": "error",
     "typescript/prefer-ts-expect-error": "error",
+    "react/jsx-key": "error",
     // Not relevant as we use the modern jsx-runtime transform
     "react-in-jsx-scope": "off",
     // Not relevant due to React Compiler
@@ -144,7 +145,6 @@
     "jsx_a11y/aria-role": "warn",
     "jsx_a11y/label-has-associated-control": "warn",
     "unicorn/prefer-add-event-listener": "warn",
-    "react/jsx-key": "warn",
     "jsx_a11y/role-supports-aria-props": "warn",
     "unicorn/no-useless-length-check": "warn",
     "react/iframe-missing-sandbox": "warn",

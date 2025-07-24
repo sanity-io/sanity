@@ -76,7 +76,7 @@ export const FieldActionMenu = memo(function FieldActionMenu(props: FieldActionM
     <>
       {rootNodes.map((node, idx) => (
         <RootFieldActionMenuNode
-          // eslint-disable-next-line react/no-array-index-key
+          // oxlint-disable-next-line no-array-index-key
           key={idx}
           node={node}
           onOpen={handleOpen}
@@ -154,10 +154,10 @@ function RootFieldActionMenuGroup(props: {
           {node.children.map((action, idx) => {
             return (
               <FieldActionMenuNode
+                // oxlint-disable-next-line no-array-index-key
+                key={idx}
                 action={action}
                 isFirst={idx === 0}
-                // eslint-disable-next-line react/no-array-index-key
-                key={idx}
                 prevIsGroup={node.children[idx - 1]?.type === 'group'}
               />
             )
