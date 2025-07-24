@@ -27,7 +27,6 @@ export function usePresenceCursorDecorations(
 
     // Update the range decoration with the new selection.
     setPresenceCursorDecorations((prev) => {
-      // eslint-disable-next-line max-nested-callbacks
       const next = prev.map((p) => {
         if (p.payload?.sessionId === rangeDecoration.payload?.sessionId) {
           const nextDecoration: RangeDecoration = {

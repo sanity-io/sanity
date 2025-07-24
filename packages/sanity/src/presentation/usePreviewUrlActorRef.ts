@@ -85,7 +85,6 @@ export function usePreviewUrlActorRef(
   }, [actorRef, previewSearchParam])
 
   const error = useSelector(actorRef, (state) =>
-    // eslint-disable-next-line no-nested-ternary
     state.status === 'error' ? state.error : state.hasTag('error') ? state.context.error : null,
   )
 

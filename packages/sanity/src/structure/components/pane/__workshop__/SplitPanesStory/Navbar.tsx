@@ -26,7 +26,6 @@ export function Navbar(props: {path: string[]; setPath: Dispatch<SetStateAction<
       <Layer>
         <RootCard
           scheme={features.inverted ? 'dark' : undefined}
-          // eslint-disable-next-line no-nested-ternary
           shadow={features.inverted ? (dark ? 1 : 0) : 1}
         >
           <Flex>

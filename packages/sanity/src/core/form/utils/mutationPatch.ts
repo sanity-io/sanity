@@ -87,7 +87,6 @@ function toFormBuilderPatches(origin: FormPatchOrigin, patch: MutationPatch): Fo
                 origin,
               }
             }
-            // eslint-disable-next-line no-console
             console.warn(new Error(`Unsupported patch type: ${type}`))
             return null
           })

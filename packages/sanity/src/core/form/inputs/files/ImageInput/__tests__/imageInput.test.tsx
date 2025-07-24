@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-non-null-assertion */
 // import {SanityClient} from '@sanity/client'
 // import imageUrlBuilder from '@sanity/image-url'
 // import {EMPTY, of} from 'rxjs'

@@ -98,7 +98,6 @@ export const genericValidators: Validators = {
       // only show this warning in the studio
       if (context.environment !== 'studio') return
 
-      // eslint-disable-next-line no-console
       console.warn(
         `Custom validator at ${pathToString(
           context.path,

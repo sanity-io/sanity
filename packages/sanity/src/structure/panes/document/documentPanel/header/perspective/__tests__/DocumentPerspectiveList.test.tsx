@@ -149,7 +149,6 @@ const getPaneMock = ({
       ? displayed
       : {
           _id:
-            // eslint-disable-next-line no-nested-ternary
             displayedVersion === 'published'
               ? publishedId
               : displayedVersion === 'draft'

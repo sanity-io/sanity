@@ -1,4 +1,4 @@
-// eslint-disable-next-line import/no-unassigned-import -- style import is effectful
+// oxlint-disable-next-line no-unassigned-import -- style import is effectful
 import 'player.style/sutro'
 
 import MuxPlayer from '@mux/mux-player-react'

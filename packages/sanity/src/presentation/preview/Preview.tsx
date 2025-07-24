@@ -1,4 +1,4 @@
-/* eslint-disable react/no-unused-prop-types,no-nested-ternary */
+/* eslint-disable react/no-unused-prop-types */
 import {createConnectionMachine, createController} from '@sanity/comlink'
 import {
   createCompatibilityActors,
@@ -204,7 +204,6 @@ export const Preview = memo(
       if (overlaysConnection === 'connecting') {
         const timeout = setTimeout(() => {
           setTimedOut(true)
-          // eslint-disable-next-line no-console
           console.error(
             `Unable to connect to visual editing. Make sure you've setup '@sanity/visual-editing' correctly`,
           )

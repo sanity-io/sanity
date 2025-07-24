@@ -195,7 +195,6 @@ export interface SanityJson {
 
   api?: CliApiConfig
 
-  // eslint-disable-next-line camelcase
   __experimental_spaces?: {
     name: string
     title: string

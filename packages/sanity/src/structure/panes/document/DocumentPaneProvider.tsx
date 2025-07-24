@@ -1,4 +1,3 @@
-/* eslint-disable camelcase */
 import {useTelemetry} from '@sanity/telemetry/react'
 import {type ObjectSchemaType, type SanityDocument, type SanityDocumentLike} from '@sanity/types'
 import {useToast} from '@sanity/ui'
@@ -51,7 +50,7 @@ interface DocumentPaneProviderProps extends DocumentPaneProviderWrapperProps {
 /**
  * @internal
  */
-// eslint-disable-next-line complexity, max-statements
+// eslint-disable-next-line max-statements
 export const DocumentPaneProvider = memo((props: DocumentPaneProviderProps) => {
   const {children, index, pane, paneKey, onFocusPath, forcedVersion, historyStore} = props
   const {

@@ -1,4 +1,3 @@
-/* eslint-disable camelcase */
 import {Schema} from '@sanity/schema'
 import {defineArrayMember, defineField, defineType} from '@sanity/types'
 import {describe, expect, it, test} from 'vitest'

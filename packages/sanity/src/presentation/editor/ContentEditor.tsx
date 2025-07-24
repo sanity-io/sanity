@@ -111,7 +111,7 @@ export function ContentEditor(props: {
           {mainDocumentState.document ? (
             <PreviewCard
               __unstable_focusRing
-              // eslint-disable-next-line @typescript-eslint/no-explicit-any
+              // oxlint-disable-next-line no-explicit-any
               as={MainDocumentLink as any}
               data-as="a"
               radius={2}

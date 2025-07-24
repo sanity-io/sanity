@@ -1,4 +1,3 @@
-/* eslint-disable camelcase */
 import {type SanityClient} from '@sanity/client'
 import {type InitialValueResolverContext, type Schema} from '@sanity/types'
 import {firstValueFrom} from 'rxjs'

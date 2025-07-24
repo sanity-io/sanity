@@ -86,7 +86,6 @@ export async function getAndWriteJourneySchemaWorker(
     const worker = new Worker(workerPath, {
       workerData,
       env: {
-        // eslint-disable-next-line no-process-env
         ...process.env,
         // Dynamic HTTPS imports are currently behind a Node flag
         NODE_OPTIONS: '--experimental-network-imports',

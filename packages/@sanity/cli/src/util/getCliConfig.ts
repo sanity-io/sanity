@@ -1,5 +1,3 @@
-/* eslint-disable no-sync */
-
 /**
  * Reads the Sanity CLI config from one of the following files (in preferred order):
  *   - sanity.cli.js

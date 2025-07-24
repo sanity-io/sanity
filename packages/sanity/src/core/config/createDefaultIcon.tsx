@@ -47,7 +47,6 @@ export function createDefaultIcon(title: string, subtitle: string) {
   const lightened = lighten(color, 0.4)
 
   /* eslint-disable no-negated-condition */
-  // eslint-disable-next-line no-nested-ternary
   const textColor = !hasBadContrast(color, 'readable', darkened)
     ? darkened
     : !hasBadContrast(color, 'readable', lightened)

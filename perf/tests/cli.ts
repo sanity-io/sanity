@@ -88,7 +88,7 @@ async function main(args: {
     process.exit(0)
   }
 
-  // eslint-disable-next-line no-console
+  // oxlint-disable-next-line no-console
   console.log(
     `Running tests on ${remoteDeployments.length} deployments${
       localDeployment ? ` (including local deployment at ${localDeployment.url})` : ''
@@ -166,20 +166,19 @@ const {values: args} = parseArgs({
 })
 
 if (args.list) {
-  /* eslint-disable no-console */
+  // oxlint-disable no-console
   console.log('\n# Known test ids:\n')
   console.log(Object.keys(KNOWN_TEST_IDS).join('\n'))
   console.log()
   process.exit(0)
-  /* eslint-enable no-console */
+  // oxlint-enable no-console
 }
 main(args).then(
   () => {
-    // eslint-disable-next-line no-console
+    // oxlint-disable-next-line no-console
     console.log('Ran performance test suite')
   },
   (err) => {
-    // eslint-disable-next-line no-console
     console.error(err)
     process.exit(1)
   },

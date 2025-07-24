@@ -414,7 +414,7 @@ describe('deploySchemasAction', () => {
       const otherProject = 'otherProject'
       let lastCreateClient: SanityClient = defaultContext.apiClient()
       const clientOverrides: any = {
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        // oxlint-disable-next-line no-explicit-any
         withConfig: (newConfig: any) => {
           lastCreateClient = createMockSanityClient(
             {...testWorkspace, ...newConfig, mockStores},

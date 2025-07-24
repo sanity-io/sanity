@@ -1,5 +1,3 @@
-/* eslint-disable no-console */
-
 import {forwardRef, type PropsWithChildren, useCallback, useMemo} from 'react'
 import {getPublishedId, useUnique} from 'sanity'
 import {StateLink, useRouter} from 'sanity/router'
@@ -71,9 +69,9 @@ const ReferenceChildLink = forwardRef(function ReferenceChildLink(
   const {
     documentId,
     documentType,
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    // oxlint-disable-next-line no-unused-vars
     parentRefPath,
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    // oxlint-disable-next-line no-unused-vars
     template,
     searchParams,
     ...restProps
@@ -125,7 +123,7 @@ export function PresentationPaneRouterProvider(
       groupIndex: 0,
       siblingIndex: 0,
       payload: {},
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      // oxlint-disable-next-line no-explicit-any
       params: structureParams as any,
       hasGroupSiblings: false,
       groupLength: 1,
@@ -174,7 +172,6 @@ export function PresentationPaneRouterProvider(
         console.warn('setView', viewId)
       },
       setParams: (nextParams) => {
-        // eslint-disable-next-line no-warning-comments
         // @todo set inspect param to undefined manually as param is missing from object when closing inspector
         onStructureParams({
           ...nextParams,

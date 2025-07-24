@@ -1,5 +1,3 @@
-/* eslint-disable simple-import-sort/exports */
-
 // NOTE: exporting these here causes error (esbuild):
 //   > Cannot create styled-component for component: undefined.
 //   > Cannot use before defined.

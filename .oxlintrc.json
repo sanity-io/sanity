@@ -88,6 +88,7 @@
     "typescript/ban-ts-comment": "error",
     "typescript/prefer-ts-expect-error": "error",
     "react/jsx-key": "error",
+    "unicorn/no-abusive-eslint-disable": "error",
     // Not relevant as we use the modern jsx-runtime transform
     "react-in-jsx-scope": "off",
     // Not relevant due to React Compiler

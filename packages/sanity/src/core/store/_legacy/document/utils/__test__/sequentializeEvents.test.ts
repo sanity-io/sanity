@@ -1,4 +1,3 @@
-/* eslint-disable no-nested-ternary */
 import {from, lastValueFrom} from 'rxjs'
 import {toArray} from 'rxjs/operators'
 import {expect, test} from 'vitest'

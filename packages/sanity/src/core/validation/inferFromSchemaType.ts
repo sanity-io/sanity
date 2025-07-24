@@ -37,10 +37,8 @@ function traverse(typeDef: SchemaType, visited: Set<SchemaType>) {
     }
   }
 
-  // eslint-disable-next-line no-warning-comments
   // @ts-expect-error TODO (eventually): `annotations` does not exist on the SchemaType yet
   if (typeDef.annotations) {
-    // eslint-disable-next-line no-warning-comments
     // @ts-expect-error TODO (eventually): `annotations` does not exist on the SchemaType yet
     for (const annotation of typeDef.annotations) {
       traverse(annotation, visited)

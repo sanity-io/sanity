@@ -119,14 +119,12 @@ export const RegionsWithIntersections = forwardRef(function RegionsWithIntersect
               const belowBottom =
                 intersection.boundingClientRect.top < bottom.boundingClientRect.top
 
-              // eslint-disable-next-line no-nested-ternary
               const distanceTop = intersection.isIntersecting
                 ? boundsTop - (intersection.intersectionRect.top - INTERSECTION_ELEMENT_PADDING)
                 : aboveTop
                   ? -top.boundingClientRect.bottom
                   : bottom.boundingClientRect.top
 
-              // eslint-disable-next-line no-nested-ternary
               const distanceBottom = intersection.isIntersecting
                 ? -(
                     boundsBottom -
@@ -137,7 +135,6 @@ export const RegionsWithIntersections = forwardRef(function RegionsWithIntersect
                   : -top.boundingClientRect.bottom
 
               const position =
-                // eslint-disable-next-line no-nested-ternary
                 distanceTop <= SNAP_TO_DOCK_DISTANCE_TOP
                   ? 'top'
                   : distanceBottom <= SNAP_TO_DOCK_DISTANCE_BOTTOM

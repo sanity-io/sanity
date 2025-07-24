@@ -187,7 +187,6 @@ export function buildArrayChangeList(
     const memberTypes = getArrayDiffItemType(itemDiff.diff, schemaType)
     const memberType = memberTypes.toType || memberTypes.fromType
     if (!memberType) {
-      // eslint-disable-next-line no-console
       console.warn('Could not determine schema type for item at %s', pathToString(path))
       return acc
     }

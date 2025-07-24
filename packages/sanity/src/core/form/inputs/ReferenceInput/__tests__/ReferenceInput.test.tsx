@@ -27,7 +27,6 @@ const UNAVAILABLE_PERMISSION_DENIED = {
 } as const
 
 const infinityNoop: any = new Proxy<any>(() => infinityNoop, {get: () => infinityNoop})
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
 const StubComponent = forwardRef(
   ({documentId, documentType}: {documentId: string; documentType: string}, ref) => {
     useImperativeHandle(ref, () => infinityNoop, [])

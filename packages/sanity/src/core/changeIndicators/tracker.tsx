@@ -42,7 +42,6 @@ export function useChangeIndicatorsReportedValues(): TrackerContextGetSnapshot<C
   const snapshot = useContext(ChangeIndicatorTrackerContextGetSnapshot)
 
   if (snapshot === null) {
-    // eslint-disable-next-line no-console
     console.warn(
       new Error(
         'No context provided for reporter. Make sure that the component calling "useChangeIndicatorsReportedValues()", is wrapped inside a <ChangeIndicatorsTracker> element',
@@ -65,7 +64,6 @@ export const useChangeIndicatorsReporter: ReporterHook<ChangeIndicatorTrackerCon
   const store = useContext(ChangeIndicatorTrackerContextStore)
 
   if (store === null) {
-    // eslint-disable-next-line no-console
     console.warn(
       new Error(
         'No context provided for reporter. Make sure that the component calling "useChangeIndicatorsReporter()", is wrapped inside a <ChangeIndicatorsTracker> element',

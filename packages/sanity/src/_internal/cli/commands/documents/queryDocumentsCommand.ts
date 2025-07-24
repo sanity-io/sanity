@@ -107,7 +107,6 @@ export default {
 }
 
 function parseCliFlags(args: CliCommandArguments<CliQueryCommandFlags>) {
-  // eslint-disable-next-line no-process-env
   const fallbackApiVersion = process.env.SANITY_CLI_QUERY_API_VERSION
   return yargs(hideBin(args.argv || process.argv).slice(2))
     .option('pretty', {type: 'boolean', default: false})

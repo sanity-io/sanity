@@ -50,8 +50,7 @@ export function useActivityLog(task: TaskDocument): {
     [publishedId, client],
   )
 
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars, unused-imports/no-unused-vars
-  const handleFetchAndParse = useEffectEvent((rev: string) => fetchAndParse(task))
+  const handleFetchAndParse = useEffectEvent((_rev: string) => fetchAndParse(task))
   useEffect(() => {
     // Task is updated on every change, wait until the revision changes to update the activity log.
     handleFetchAndParse(task._rev)

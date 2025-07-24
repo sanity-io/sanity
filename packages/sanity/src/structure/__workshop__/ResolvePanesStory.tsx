@@ -1,5 +1,3 @@
-/* eslint-disable react/no-array-index-key */
-
 import {Box, Card, Code, Flex, Radio, Stack, Text} from '@sanity/ui'
 import {type ChangeEvent, useCallback, useState} from 'react'
 

@@ -1,5 +1,3 @@
-/* eslint-disable camelcase */
-
 import {useTelemetry} from '@sanity/telemetry/react'
 import {useCallback, useMemo} from 'react'
 import {useObservable} from 'react-rx'

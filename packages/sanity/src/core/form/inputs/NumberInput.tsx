@@ -66,7 +66,6 @@ export function NumberInput(props: NumberInputProps) {
   const onlyPositiveNumber = typeof minRule?.constraint === 'number' && minRule?.constraint >= 0
   const onlyIntegers = integerRule || precisionRule?.constraint === 0
 
-  // eslint-disable-next-line no-nested-ternary
   const inputMode = onlyPositiveNumber ? (onlyIntegers ? 'numeric' : 'decimal') : 'text'
 
   const inputElementRef = elementProps.ref

@@ -1,4 +1,3 @@
-/* eslint-disable no-process-env */
 import path from 'node:path'
 
 import preferredPM from 'preferred-pm'

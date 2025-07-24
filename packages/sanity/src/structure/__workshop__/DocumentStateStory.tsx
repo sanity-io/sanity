@@ -1,10 +1,4 @@
-import {
-  Box,
-  Button, // eslint-disable-line no-restricted-imports
-  Code,
-  Dialog, // eslint-disable-line no-restricted-imports
-  Stack,
-} from '@sanity/ui'
+import {Box, Button, Code, Dialog, Stack} from '@sanity/ui'
 import {useCallback, useEffect, useMemo, useState} from 'react'
 import {
   type DocumentActionComponent,

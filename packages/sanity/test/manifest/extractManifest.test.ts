@@ -172,12 +172,12 @@ describe('Extract studio manifest', () => {
     test('schema should include most userland properties', () => {
       const documentType = 'basic'
 
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      // oxlint-disable-next-line no-explicit-any
       const recursiveObject: any = {
         repeat: 'string',
       }
       recursiveObject.recurse = recursiveObject
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      // oxlint-disable-next-line no-explicit-any
       const customization: any = {
         recursiveObject, // this one will be cut off at max-depth
         serializableProp: 'dummy',

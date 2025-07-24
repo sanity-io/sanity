@@ -35,7 +35,7 @@ export function reducer(state: State, event: LiveEvent): State {
     default:
       throw Error(
         `Unknown event: ${
-          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+          // oxlint-disable-next-line no-explicit-any
           (event as any).type
         }`,
         {cause: event},

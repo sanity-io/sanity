@@ -67,10 +67,7 @@ function TaskDueDate({dueBy}: {dueBy: string}) {
       <Card tone={isDueByToday ? 'critical' : 'transparent'} padding={1} radius={2}>
         <Flex align="center" gap={2}>
           <Text as="time" size={1} dateTime={dueBy} muted>
-            {
-              // eslint-disable-next-line no-nested-ternary
-              isDueByToday ? 'Today' : isDueThisWeek ? day : monthAndDay
-            }
+            {isDueByToday ? 'Today' : isDueThisWeek ? day : monthAndDay}
           </Text>
         </Flex>
       </Card>

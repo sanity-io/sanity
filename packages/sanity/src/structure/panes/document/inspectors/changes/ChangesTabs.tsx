@@ -52,7 +52,6 @@ export function ChangesTabs(props: DocumentInspectorProps) {
       since: tab === 'history' ? undefined : params?.since,
     })
 
-  // eslint-disable-next-line no-nested-ternary
   const perspectiveName = isReleaseDocument(selectedPerspective)
     ? selectedPerspective.metadata.title
     : selectedPerspective === 'drafts'

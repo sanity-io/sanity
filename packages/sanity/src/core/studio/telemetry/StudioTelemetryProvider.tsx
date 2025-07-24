@@ -18,7 +18,7 @@ const DEBUG_TELEMETRY = !!(
   typeof process !== 'undefined' && process.env?.SANITY_STUDIO_DEBUG_TELEMETRY
 )
 
-/* eslint-disable no-console */
+// oxlint-disable no-console
 const debugLoggingStore: CreateBatchedStoreOptions = {
   // submit any pending events every <n> ms
   flushInterval: 1000,
@@ -36,7 +36,7 @@ const debugLoggingStore: CreateBatchedStoreOptions = {
     return true
   },
 }
-/* eslint-enable no-console */
+// oxlint-enable no-console
 
 // Wrap the app in a TelemetryProvider
 // This will enable usage of the `useTelemetry()` hook

@@ -7,7 +7,7 @@ interface ApiErr {
 // parseApiErr is a function that attempts with the best effort to parse
 // an error returned by the API since different API endpoint may end up
 // returning different error structures.
-// eslint-disable-next-line @typescript-eslint/no-explicit-any,@typescript-eslint/explicit-module-boundary-types
+// oxlint-disable-next-line no-explicit-any
 function parseApiErr(err: any): ApiErr {
   const apiErr = {} as ApiErr
   if (err.code) {

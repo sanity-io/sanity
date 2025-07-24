@@ -392,7 +392,7 @@ export function extractSchema(workspace: Workspace, theme: ThemeContextValue): S
                         if (!url) return acc
                         // If the URL is relative, make it absolute
                         try {
-                          // eslint-disable-next-line no-new
+                          // oxlint-disable-next-line no-new
                           new URL(url)
                           acc[name] = url
                         } catch {

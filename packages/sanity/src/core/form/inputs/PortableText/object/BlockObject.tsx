@@ -1,4 +1,3 @@
-/* eslint-disable complexity */
 import {type EditorSelection, PortableTextEditor, usePortableTextEditor} from '@portabletext/editor'
 import {isImage, type ObjectSchemaType, type Path, type PortableTextBlock} from '@sanity/types'
 import {Box, Flex, type ResponsivePaddingProps} from '@sanity/ui'

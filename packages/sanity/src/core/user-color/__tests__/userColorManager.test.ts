@@ -1,4 +1,3 @@
-/* eslint-disable max-nested-callbacks */
 import {omit} from 'lodash'
 import {BehaviorSubject, type Observable} from 'rxjs'
 import {describe, expect, test} from 'vitest'

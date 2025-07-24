@@ -60,7 +60,6 @@ const execScript: CliCommandAction<ExecFlags> = async function execScript(args, 
   const proc = spawn(process.argv[0], nodeArgs, {
     stdio: 'inherit',
     env: {
-      // eslint-disable-next-line no-process-env
       ...process.env,
       SANITY_BASE_PATH: workDir,
     },
