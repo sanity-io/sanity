@@ -27,7 +27,7 @@ const MonogramContainer = styled(Card).attrs({
 export function StudioInfoDialog(props: StudioInfoDialogProps) {
   const {t} = useTranslation()
   const {onClose} = props
-  const aboutDialogId = useId()
+  const dialogId = useId()
 
   const currentVersionParsed = props.currentVersion ? parse(props.currentVersion) : null
 
@@ -46,7 +46,7 @@ export function StudioInfoDialog(props: StudioInfoDialogProps) {
 
   const isPrerelease = preids.length > 0
   return (
-    <Dialog width={0} onClickOutside={onClose} id={aboutDialogId} padding={false}>
+    <Dialog width={0} onClickOutside={onClose} id={dialogId} padding={false}>
       <Stack space={4} paddingY={3}>
         <Flex align="center" justify="center" paddingY={4}>
           <MonogramContainer>

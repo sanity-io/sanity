@@ -19,22 +19,22 @@ export function ResourcesButton() {
   const {t} = useTranslation()
 
   const {value, error, isLoading} = useGetHelpResources()
-  const [aboutDialogOpen, setAboutDialogOpen] = useState(false)
-  const handleAboutDialogClose = useCallback(() => {
-    setAboutDialogOpen(false)
+  const [studioInfoDialogOpen, setStudioInfoDialogOpen] = useState(false)
+  const handleStudioInfoDialogClose = useCallback(() => {
+    setStudioInfoDialogOpen(false)
   }, [])
 
   const handleAboutDialogOpen = useCallback(() => {
-    setAboutDialogOpen(true)
+    setStudioInfoDialogOpen(true)
   }, [])
 
   return (
     <>
-      {aboutDialogOpen && (
+      {studioInfoDialogOpen && (
         <StudioInfoDialog
           currentVersion={SANITY_VERSION}
           latestVersion={value?.latestVersion}
-          onClose={handleAboutDialogClose}
+          onClose={handleStudioInfoDialogClose}
         />
       )}
       <MenuButton
