@@ -15,6 +15,51 @@ This Sanity Function sends a Telegram notification when a comment is posted, wit
 - **Simplifies content operations** by providing a one-click way to enter the Studio
 - **Improves content velocity** by allowing authors to respond to comments quickly
 
+## Requirements
+
+- A Sanity project with Functions enabled
+- A schema with a `comment` document type containing:
+  - A `comment` field (`string` or `text`) for storing the comment content
+- Node.js v22.x for local development
+
+### Schema Requirements
+
+This function expects your schema to include a `comment` document type with:
+
+- **`comment` field** - A `string` or `text` field containing the comment content
+- The document type must be named `comment`
+
+Example schema definition:
+
+```ts
+import {defineType} from 'sanity'
+
+export const comment = defineType({
+  name: 'comment',
+  title: 'Comment',
+  type: 'document',
+  fields: [
+    {
+      name: 'comment',
+      title: 'Comment',
+      type: 'text', // or 'string'
+      validation: (rule) => rule.required(),
+    },
+    // Add other fields as needed
+  ],
+})
+```
+
+## Usage Example
+
+When a `comment` type document is published, the function automatically:
+
+1. **Triggers** on the publish event for `comment` type documents
+2. **Checks** if the `comment` field is defined (using filter)
+3. **Sends** a Telegram notification with a link to the comment in the Sanity Studio
+
+**Result:** Content authors get a notification with a link to the comment in the Sanity Studio.
+
 ## Implementation
 
 1. **Get your Telegram bot token**
@@ -203,23 +248,6 @@ After deployment, you can verify your function is active by:
 - Checking the Sanity Studio under "Compute"
 - Publishing a new comment and confirming Telegram notifications are sent
 - Monitoring function logs in the CLI
-
-## Requirements
-
-- A Sanity project with Functions enabled
-- A schema with a `comment` document type containing:
-  - A `comment` field (`string` or `text`) for storing the comment
-- Node.js v22.x for local development
-
-## Usage Example
-
-When a `comment` type document is published, the function automatically:
-
-1. **Triggers** on the publish event for `comment` type documents
-2. **Checks** if the `comment` field is defined (using filter)
-3. **Sends** a Telegram notification with a link to the comment in the Sanity Studio
-
-**Result:** Content authors get a notification with a link to the comment in the Sanity Studio.
 
 ## Related Examples
 
