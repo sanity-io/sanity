@@ -255,6 +255,7 @@ export const structure: StructureResolver = (
                     title: 'Authors & Books',
                     options: {
                       filter: '_type == "author" || _type == "book"',
+                      apiVersion: '2023-07-28',
                     },
                   }).apiVersion('2023-07-28'),
                 ),
@@ -405,6 +406,43 @@ export const structure: StructureResolver = (
               S.divider(),
 
               S.listItem().title('All document types').child(S.defaults()),
+            ]),
+        ),
+
+      S.listItem()
+        .title('Structure pane types')
+        .id('structure-pane-types')
+        .child(
+          S.list()
+            .id('structure-pane-types')
+            .title('Structure pane types')
+            .items([
+              S.listItem()
+                .title('List')
+                .child(
+                  S.list()
+                    .title('List')
+                    .items([
+                      S.listItem().title('Static item 1').id('static-item-1'),
+                      S.listItem().title('Static item 2').id('static-item-2'),
+                    ]),
+                ),
+              S.listItem()
+                .title('Document list')
+                .child(
+                  S.documentList()
+                    .title('Document list')
+                    .filter('_type == "author"')
+                    .apiVersion('2023-07-28'),
+                ),
+              S.listItem()
+                .id('doc-item-singleton')
+                .title('Document')
+                .child(S.document().documentId('grrm').schemaType('author')),
+              S.listItem()
+                .id('grrm')
+                .title('Component')
+                .child(S.component(JsonDocumentDump).id('json-dump').title('Custom component')),
             ]),
         ),
 
