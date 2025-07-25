@@ -6,7 +6,7 @@ import {coerce, parse, prerelease} from 'semver'
 import {styled} from 'styled-components'
 
 import {Button, Dialog, Tooltip} from '../../../../../ui-components'
-import {isDev} from '../../../../environment'
+import {isProd} from '../../../../environment'
 import {hasSanityPackageInImportMap} from '../../../../environment/hasSanityPackageInImportMap'
 import {useTranslation} from '../../../../i18n'
 
@@ -96,27 +96,28 @@ export function StudioInfoDialog(props: AboutDialogProps) {
             )}
           </Flex>
         ) : null}
-        {!isAutoUpdating ||
-        // todo: in dev we currently don't know whether auto updates is enabled
-        //  so instead of showing misleading info, we just don't show anything here
-        isDev ? null : (
-          <Card tone="transparent" padding={2} radius={3} marginX={2}>
-            <Flex align="center" justify="space-evenly" gap={2}>
-              <Text size={1} muted>
-                {t('about-dialog.version-info.auto-updates.disabled')}
-              </Text>
-              <Button
-                as="a"
-                href="https://www.sanity.io/docs/auto-updating-studios"
-                target="_blank"
-                rel="noopener noreferrer"
-                mode="ghost"
-                text={t('about-dialog.version-info.auto-updates.how-to-enable')}
-                iconRight={LaunchIcon}
-              />
-            </Flex>
-          </Card>
-        )}
+        {
+          // todo: in dev we currently don't know whether auto updates is enabled
+          //  so instead of showing misleading info, we just don't show anything here
+          isProd && !isAutoUpdating ? (
+            <Card tone="transparent" padding={2} radius={3} marginX={2}>
+              <Flex align="center" justify="space-evenly" gap={2}>
+                <Text size={1} muted>
+                  {t('about-dialog.version-info.auto-updates.disabled')}
+                </Text>
+                <Button
+                  as="a"
+                  href="https://www.sanity.io/docs/auto-updating-studios"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  mode="ghost"
+                  text={t('about-dialog.version-info.auto-updates.how-to-enable')}
+                  iconRight={LaunchIcon}
+                />
+              </Flex>
+            </Card>
+          ) : null
+        }
 
         <Stack paddingX={3}>
           <Button tone="primary" text="OK" paddingY={3} onClick={onClose} />
