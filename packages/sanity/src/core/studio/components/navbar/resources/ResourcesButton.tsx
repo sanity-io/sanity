@@ -19,7 +19,7 @@ export function ResourcesButton() {
   const {t} = useTranslation()
 
   const {value, error, isLoading} = useGetHelpResources()
-  const [aboutDialogOpen, setAboutDialogOpen] = useState(true)
+  const [aboutDialogOpen, setAboutDialogOpen] = useState(false)
   const handleAboutDialogClose = useCallback(() => {
     setAboutDialogOpen(false)
   }, [])
