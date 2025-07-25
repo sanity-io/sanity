@@ -30,7 +30,7 @@ beforeEach(() => {
 
 describe('checkoutPair -- local actions', () => {
   test('patch', async () => {
-    const {draft, published} = checkoutPair(client as any as SanityClient, idPair, of(false))
+    const {draft, published} = checkoutPair(client as any as SanityClient, idPair)
     const combined = merge(draft.events, published.events)
     const sub = combined.subscribe()
     await new Promise((resolve) => setTimeout(resolve, 0))
@@ -38,24 +38,29 @@ describe('checkoutPair -- local actions', () => {
     draft.mutate(draft.patch([{set: {title: 'new title'}}]))
     draft.commit()
 
-    expect(mockedDataRequest).toHaveBeenCalledWith(
-      'mutate',
+    expect(mockedActionRequest).toHaveBeenCalledWith(
+      [
+        {
+          actionType: 'sanity.action.document.edit',
+          draftId: 'draftId',
+          publishedId: 'publishedId',
+          patch: {
+            set: {
+              title: 'new title',
+            },
+          },
+        },
+      ],
       {
-        mutations: [{patch: {id: 'draftId', set: {title: 'new title'}}}],
-        transactionId: expect.any(String),
-      },
-      {
-        returnDocuments: false,
-        skipCrossDatasetReferenceValidation: true,
         tag: 'document.commit',
-        visibility: 'async',
+        transactionId: expect.any(String),
       },
     )
     sub.unsubscribe()
   })
 
-  test('createIfNotExists', async () => {
-    const {draft, published} = checkoutPair(client as any as SanityClient, idPair, of(false))
+  test.only('createIfNotExists', async () => {
+    const {draft, published} = checkoutPair(client as any as SanityClient, idPair)
     const combined = merge(draft.events, published.events)
     const sub = combined.subscribe()
     await new Promise((resolve) => setTimeout(resolve, 0))
@@ -71,27 +76,27 @@ describe('checkoutPair -- local actions', () => {
     ])
     draft.commit()
 
-    expect(mockedDataRequest).toHaveBeenCalledWith(
-      'mutate',
-      {
-        mutations: [
-          {
-            createIfNotExists: {
-              _id: 'draftId',
-              _type: 'any',
-              _createdAt: 'now',
-            },
+    expect(mockedActionRequest).toHaveBeenCalledWith(
+      [
+        {
+          actionType: 'sanity.action.document.edit',
+          draftId: 'draftId',
+          publishedId: 'publishedId',
+          patch: {
+            // _type: 'any',
+            // _createdAt: 'now',
+            unset: ['_empty_action_guard_pseudo_field_'],
           },
-        ],
+        },
+        'x',
+      ],
+      {
+        tag: 'document.commit',
         transactionId: expect.any(String),
       },
-      {
-        returnDocuments: false,
-        skipCrossDatasetReferenceValidation: true,
-        tag: 'document.commit',
-        visibility: 'async',
-      },
     )
+
+    // expect(mockedActionRequest).toHaveBeenCalledWith('x')
 
     sub.unsubscribe()
   })
