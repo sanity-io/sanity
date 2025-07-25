@@ -36,7 +36,7 @@ jobs:
         run: |
           PACKAGES=$(pnpx tsx scripts/listPublishedPackages.ts)
           echo "packages=${PACKAGES}" >> "$GITHUB_OUTPUT"
-          VERSION="$(jq -r .version lerna.json)-pkg.pr.new@$(git rev-parse --short HEAD)"
+          VERSION="$(jq -r .version lerna.json)-pkg.pr.new+$(git rev-parse --short HEAD)"
           echo "version=${VERSION}" >> "$GITHUB_OUTPUT"
 
       - run: pnpm build
