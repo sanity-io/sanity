@@ -19,7 +19,7 @@ export function ResourcesButton() {
   const {t} = useTranslation()
 
   const {value, error, isLoading} = useGetHelpResources()
-  const [aboutDialogOpen, setAboutDialogOpen] = useState(false)
+  const [aboutDialogOpen, setAboutDialogOpen] = useState(true)
   const handleAboutDialogClose = useCallback(() => {
     setAboutDialogOpen(false)
   }, [])
@@ -33,7 +33,7 @@ export function ResourcesButton() {
       {aboutDialogOpen && (
         <StudioInfoDialog
           currentVersion={SANITY_VERSION}
-          latestVersion={value?.latestVersion || 'unknown'}
+          latestVersion={value?.latestVersion}
           onClose={handleAboutDialogClose}
         />
       )}

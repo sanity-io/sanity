@@ -26,9 +26,14 @@ export const studioLocaleStrings = defineLocalesResources('studio', {
   /** "How to upgrade" link text */
   'about-dialog.version-info.how-to-upgrade': 'Update now',
   /** "Latest version" header in about dialog */
-  'about-dialog.version-info.latest-version.text': 'Latest available',
-  /** "Up to date" status in About-dialog */
-  'about-dialog.version-info.up-to-date': 'Up to date',
+  'about-dialog.version-info.latest-version.text': 'Latest version',
+  /** "New version available" tooltip in About-dialog */
+  'about-dialog.version-info.tooltip.new-version-available': 'New version available',
+  /** "Prerelease" tooltip in About-dialog */
+  'about-dialog.version-info.tooltip.prerelease': 'Prerelease',
+  /** "Up to date" tooltip in About-dialog */
+  'about-dialog.version-info.tooltip.up-to-date': 'Up to date',
+
   /** "User agent" header in About-dialog */
   'about-dialog.version-info.user-agent.header': 'User agent',
 
