@@ -124,10 +124,7 @@ export function validateDocumentWithReferences(
         distinct(),
         mergeMap(([{versionId}, id]) =>
           listenDocumentExists(ctx.observeDocumentPairAvailability, id, versionId).pipe(
-            map(
-              // eslint-disable-next-line max-nested-callbacks
-              (result) => [id, result] as const,
-            ),
+            map((result) => [id, result] as const),
           ),
         ),
       ),

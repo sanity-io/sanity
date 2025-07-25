@@ -3,7 +3,6 @@ import path from 'node:path'
 import {pipeline} from 'node:stream/promises'
 
 import {getIt} from 'get-it'
-// eslint-disable-next-line import/extensions
 import {keepAlive, promise} from 'get-it/middleware'
 
 import debug from './debug'

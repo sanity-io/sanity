@@ -38,7 +38,6 @@ function getSlugSourceContext(
   return {parentPath, parent, ...context}
 }
 
-// eslint-disable-next-line require-await
 async function getNewFromSource(
   source: string | Path | SlugSourceFn,
   document: SanityDocument,

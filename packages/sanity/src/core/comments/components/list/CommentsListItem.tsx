@@ -266,7 +266,7 @@ export const CommentsListItem = memo(function CommentsListItem(props: CommentsLi
   const renderedReplies = useMemo(
     () =>
       splicedReplies.map((reply) => (
-        <Stack as="li" key={reply._id} {...applyCommentIdAttr(reply._id)}>
+        <Stack key={reply._id} as="li" {...applyCommentIdAttr(reply._id)}>
           <CommentsListItemLayout
             avatarSize={avatarConfig.avatarSize}
             canDelete={reply.authorId === currentUser.id}

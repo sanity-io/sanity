@@ -244,7 +244,6 @@ export function ArrayOfObjectsField(props: {
       }
 
       if (!(item as any)?._key || !(refItem as any)?._key) {
-        // eslint-disable-next-line no-console
         console.error(
           'Neither the item you are moving nor the item you are moving to have a key. Cannot continue.',
         )

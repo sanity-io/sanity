@@ -157,18 +157,18 @@ const CommentsListInner = forwardRef(function CommentsListInner(
 
               return (
                 <Stack
-                  as="li"
                   key={fieldPath}
+                  as="li"
                   paddingTop={3}
                   {...applyCommentsGroupAttr(firstThreadId)}
                 >
                   <CommentThreadLayout
+                    key={fieldPath}
                     breadcrumbs={breadcrumbs}
                     canCreateNewThread={status === 'open'}
                     currentUser={currentUser}
                     fieldPath={fieldPath}
                     isSelected={newThreadSelected}
-                    key={fieldPath}
                     mentionOptions={mentionOptions}
                     mode={mode}
                     onNewThreadCreate={onNewThreadCreate}
@@ -195,11 +195,11 @@ const CommentsListInner = forwardRef(function CommentsListInner(
 
                       return (
                         <CommentsListItem
+                          key={item.parentComment._id}
                           canReply={canReply}
                           currentUser={currentUser}
                           hasReferencedValue={item.hasReferencedValue}
                           isSelected={threadIsSelected}
-                          key={item.parentComment._id}
                           mentionOptions={mentionOptions}
                           mode={mode}
                           onCopyLink={onCopyLink}

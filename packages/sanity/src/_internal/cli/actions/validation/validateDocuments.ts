@@ -105,7 +105,6 @@ export function validateDocuments(options: ValidateDocumentsOptions): unknown {
       maxFetchConcurrency,
       studioHost: options.studioHost,
     } satisfies ValidateDocumentsWorkerData,
-    // eslint-disable-next-line no-process-env
     env: process.env,
   })
 

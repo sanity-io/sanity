@@ -33,7 +33,7 @@ export function ToolVerticalMenu(props: ToolVerticalMenuProps) {
           })
 
           return (
-            <Stack as="li" key={tool.name}>
+            <Stack key={tool.name} as="li">
               <Button
                 as={Link}
                 justify="flex-start"

@@ -151,7 +151,6 @@ export const createObservableBufferedDocument = (listenerEvent$: Observable<List
         return createInitialBufferedDocument(listenerEvent.document || null)
       }
       if (bufferedDocument === null) {
-        // eslint-disable-next-line no-console
         console.warn(
           'Ignoring event of type "%s" since buffered document has not yet been set up with snapshot',
           listenerEvent.type,

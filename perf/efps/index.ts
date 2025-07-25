@@ -1,5 +1,5 @@
-/* eslint-disable no-console */
-// eslint-disable-next-line import/no-unassigned-import
+// oxlint-disable no-console
+// oxlint-disable-next-line no-unassigned-import
 import 'dotenv/config'
 
 import fs from 'node:fs'

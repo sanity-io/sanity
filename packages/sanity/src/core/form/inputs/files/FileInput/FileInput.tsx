@@ -10,7 +10,7 @@ import {
 } from '@sanity/types'
 import {useToast} from '@sanity/ui'
 import {get} from 'lodash'
-import {useCallback, useEffect, useRef, useState} from 'react'
+import {Fragment, useCallback, useEffect, useRef, useState} from 'react'
 import {type Observable} from 'rxjs'
 
 import {useTranslation} from '../../../../i18n'
@@ -324,8 +324,20 @@ export function BaseFileInput(props: BaseFileInputProps) {
         if (member.kind === 'error') {
           return <MemberFieldError key={member.key} member={member} />
         }
-        //@ts-expect-error all possible cases should be covered
-        return <>{t('inputs.file.error.unknown-member-kind', {kind: member.kind})}</>
+
+        return (
+          <Fragment
+            key={
+              //@ts-expect-error all possible cases should be covered
+              member.key
+            }
+          >
+            {t('inputs.file.error.unknown-member-kind', {
+              //@ts-expect-error all possible cases should be covered
+              kind: member.kind,
+            })}
+          </Fragment>
+        )
       })}
       {selectedAssetSource && (
         <FileAssetSource

@@ -6,7 +6,7 @@ import {createStructureBuilder, SerializeError} from '../../structureBuilder'
 import {type SchemaPluginOptions} from 'sanity'
 
 import {getMockSource} from '../../../../test/testUtils/getMockWorkspaceFromConfig'
-/* eslint-enable import/order */
+/* eslint-enable simple-import-sort/imports */
 import {type PaneNode, type UnresolvedPaneNode} from '../../types'
 import {PaneResolutionError} from '../PaneResolutionError'
 import {resolveIntent} from '../resolveIntent'

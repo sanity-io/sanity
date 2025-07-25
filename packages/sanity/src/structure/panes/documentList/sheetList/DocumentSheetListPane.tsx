@@ -99,13 +99,13 @@ function DocumentSheetListPaneInner({
   const renderRow = useCallback((row: Row<SanityDocument>) => {
     return (
       <Box
-        as="tr"
         key={row.original._id + row.id}
+        as="tr"
         paddingY={2}
         style={{display: 'flex', width: '100%'}}
       >
         {row.getVisibleCells().map((cell) => (
-          <SheetListCell {...cell} key={row.original._id + cell.id} />
+          <SheetListCell key={row.original._id + cell.id} {...cell} />
         ))}
       </Box>
     )
@@ -128,7 +128,7 @@ function DocumentSheetListPaneInner({
           <Table>
             <thead>
               {table.getHeaderGroups().map((headerGroup) => (
-                <Box as="tr" key={headerGroup.id}>
+                <Box key={headerGroup.id} as="tr">
                   {headerGroup.headers.map((header) => (
                     <DocumentSheetListHeader
                       key={header.id}

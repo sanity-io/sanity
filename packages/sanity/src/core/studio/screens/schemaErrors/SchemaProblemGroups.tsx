@@ -1,4 +1,4 @@
-/* eslint-disable i18next/no-literal-string,@sanity/i18n/no-attribute-string-literals */
+/* eslint-disable i18next/no-literal-string */
 import {generateHelpUrl} from '@sanity/generate-help-url'
 import {ErrorOutlineIcon, WarningOutlineIcon} from '@sanity/icons'
 import {type SchemaValidationProblemGroup} from '@sanity/types'
@@ -48,7 +48,8 @@ export function SchemaProblemGroups(props: {problemGroups: SchemaValidationProbl
         const isWarning = problem.severity === 'warning'
         const schemaType = getTypeInfo(group)
         return (
-          <Card border key={i} padding={4} radius={2} tone={TONES[problem.severity]}>
+          // oxlint-disable-next-line no-array-index-key
+          <Card key={i} border padding={4} radius={2} tone={TONES[problem.severity]}>
             <Flex>
               <Box marginRight={3}>
                 <Text muted size={1}>
@@ -82,7 +83,8 @@ export function SchemaProblemGroups(props: {problemGroups: SchemaValidationProbl
                         segment.name || `<anonymous ${segment.type}>`,
                       )}:${segment.type}`
                       return (
-                        <Text title={text} key={j} size={1} textOverflow="ellipsis">
+                        // oxlint-disable-next-line no-array-index-key
+                        <Text key={j} title={text} size={1} textOverflow="ellipsis">
                           <SegmentSpan>{text}</SegmentSpan>
                         </Text>
                       )
@@ -90,7 +92,8 @@ export function SchemaProblemGroups(props: {problemGroups: SchemaValidationProbl
 
                     if (segment.kind === 'property') {
                       return (
-                        <Text title={segment.name} key={j} size={1} textOverflow="ellipsis">
+                        // oxlint-disable-next-line no-array-index-key
+                        <Text key={j} title={segment.name} size={1} textOverflow="ellipsis">
                           <SegmentSpan>{segment.name}</SegmentSpan>
                         </Text>
                       )

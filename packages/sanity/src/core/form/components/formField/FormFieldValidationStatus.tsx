@@ -66,7 +66,6 @@ export function FormFieldValidationStatus(props: FormFieldValidationStatusProps)
   const hasErrors = validation.some((v) => v.level === 'error')
   const hasWarnings = validation.some((v) => v.level === 'warning')
 
-  // eslint-disable-next-line no-nested-ternary
   const status = hasErrors ? 'error' : hasWarnings ? 'warning' : 'info'
   const StatusIcon = VALIDATION_ICONS[status]
 
@@ -79,8 +78,8 @@ export function FormFieldValidationStatus(props: FormFieldValidationStatusProps)
           {!showSummary && (
             <>
               {validation.map((item, itemIndex) => (
-                // eslint-disable-next-line react/no-array-index-key
-                <FormFieldValidationStatusItem validation={item} key={itemIndex} />
+                // oxlint-disable-next-line no-array-index-key
+                <FormFieldValidationStatusItem key={itemIndex} validation={item} />
               ))}
             </>
           )}

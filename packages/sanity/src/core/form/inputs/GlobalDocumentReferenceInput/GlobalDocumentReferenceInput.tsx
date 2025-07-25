@@ -1,4 +1,3 @@
-/* eslint-disable complexity, max-nested-callbacks, no-nested-ternary */
 import {ResetIcon as ClearIcon, SyncIcon as ReplaceIcon} from '@sanity/icons'
 import {
   type GlobalDocumentReferenceSchemaType,

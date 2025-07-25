@@ -1,4 +1,4 @@
-/* eslint-disable no-process-env, no-process-exit, max-statements */
+/* eslint-disable max-statements */
 import {type CliCommandContext, type CliOutputter, type CliPrompter} from '@sanity/cli'
 import {type SanityClient} from '@sanity/client'
 import {get} from 'lodash'

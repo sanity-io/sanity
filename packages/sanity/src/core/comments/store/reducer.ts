@@ -105,7 +105,6 @@ export function commentsReducer(
     }
 
     case 'COMMENT_DELETED': {
-      // eslint-disable-next-line @typescript-eslint/no-unused-vars
       const {[action.id]: _, ...restComments} = state.comments
 
       // Delete all replies to the deleted comment

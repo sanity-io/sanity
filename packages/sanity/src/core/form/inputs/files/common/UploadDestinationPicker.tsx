@@ -115,8 +115,8 @@ export function UploadDestinationPicker(props: UploadDestinationPickerProps) {
               const Icon = assetSource.icon
               return (
                 <TargetButton
-                  data-asset-source-name={assetSource.name}
                   key={assetSource.name}
+                  data-asset-source-name={assetSource.name}
                   mode={modes[assetSource.name]}
                   onClick={handleClick}
                   onDragEnter={handleDragEnter}

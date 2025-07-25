@@ -112,8 +112,8 @@ export const VersionContextMenu = memo(function VersionContextMenu(props: {
             {optionsReleaseList.map((release) => {
               return (
                 <MenuItem
-                  as="a"
                   key={release._id}
+                  as="a"
                   onClick={() => onCreateVersion(release._id)}
                   renderMenuItem={() => <VersionContextMenuItem release={release} />}
                   disabled={disabled}

@@ -79,7 +79,6 @@ export async function checkStudioDependencyVersions(workDir: string): Promise<vo
   const untested = installedPackages.filter((pkg) => pkg.isUntested)
 
   if (deprecated.length > 0) {
-    // eslint-disable-next-line no-console
     console.warn(`
 [WARN] The following package versions have been deprecated and should be upgraded:
 
@@ -92,7 +91,6 @@ Support for these will be removed in a future release!
   }
 
   if (untested.length > 0) {
-    // eslint-disable-next-line no-console
     console.warn(`
 [WARN] The following package versions have not yet been marked as supported:
 
@@ -105,7 +103,6 @@ You _may_ encounter bugs while using these versions.
   }
 
   if (unsupported.length > 0) {
-    // eslint-disable-next-line no-console
     console.error(`
 [ERROR] The following package versions are no longer supported and needs to be upgraded:
 

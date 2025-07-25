@@ -18,7 +18,6 @@ export const handler = documentEventHandler(async ({context, event}) => {
         firstPublished: firstPublishedDate,
       })
       .commit({dryRun: local})
-    // eslint-disable-next-line no-console
     console.log(
       local
         ? `(LOCAL TEST MODE - Content Lake not updated) Set firstPublished timestamp for document (${data._id}): ${firstPublishedDate}  `
@@ -26,7 +25,6 @@ export const handler = documentEventHandler(async ({context, event}) => {
       result,
     )
   } catch (error) {
-    // eslint-disable-next-line no-console
     console.error('Error setting firstPublished timestamp:', error)
   }
 })

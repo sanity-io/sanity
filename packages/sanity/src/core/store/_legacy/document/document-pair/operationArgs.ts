@@ -1,6 +1,3 @@
-/* eslint-disable @typescript-eslint/no-use-before-define */
-/* eslint-disable max-nested-callbacks */
-
 import {type SanityClient} from '@sanity/client'
 import {type Schema} from '@sanity/types'
 import {combineLatest, type Observable} from 'rxjs'

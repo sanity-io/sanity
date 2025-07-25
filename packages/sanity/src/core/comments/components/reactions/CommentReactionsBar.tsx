@@ -155,8 +155,8 @@ export const CommentReactionsBar = memo(function CommentReactionsBar(
 
           return (
             <CommentReactionsUsersTooltip
-              currentUser={currentUser}
               key={name}
+              currentUser={currentUser}
               reactionName={name}
               userIds={userIds}
             >

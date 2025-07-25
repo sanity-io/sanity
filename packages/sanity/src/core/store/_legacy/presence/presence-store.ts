@@ -1,5 +1,3 @@
-/* eslint-disable camelcase */
-
 import {type BifurClient} from '@sanity/bifur-client'
 import {type User} from '@sanity/types'
 import {flatten, groupBy, isEqual, omit, uniq} from 'lodash'
@@ -187,7 +185,7 @@ export function createPresenceStore(context: {
   const useMock$ = debugPresenceParam$.pipe(
     filter((args) => args.includes('fake_others')),
     tap(() => {
-      // eslint-disable-next-line no-console
+      // oxlint-disable-next-line no-console
       console.log(
         'Faking other users present in the studio. They will hang out in the document with _type: "presence" and _id: "presence-debug"',
       )

@@ -68,7 +68,6 @@ export function WorkspaceMenuButton() {
             {workspaces.map((workspace) => {
               const authState = authStates[workspace.name]
 
-              // eslint-disable-next-line no-nested-ternary
               const state = authState.authenticated
                 ? 'logged-in'
                 : workspace.auth.LoginComponent
@@ -82,11 +81,11 @@ export function WorkspaceMenuButton() {
               // we can remove this and use setActiveWorkspace instead
               return (
                 <MenuItem
+                  key={workspace.name}
                   as="a"
                   href={workspace.basePath}
                   badgeText={STATE_TITLES[state]}
                   iconRight={isSelected ? CheckmarkIcon : undefined}
-                  key={workspace.name}
                   pressed={isSelected}
                   preview={<WorkspacePreviewIcon icon={workspace.icon} size="small" />}
                   selected={isSelected}

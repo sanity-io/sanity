@@ -50,14 +50,14 @@
     "watch": "pkg-utils watch"
   },
   "dependencies": {
-    "@sanity/client": "^7.8.0",
+    "@sanity/client": "^7.8.1",
     "@sanity/media-library-types": "^1.0.0"
   },
   "devDependencies": {
     "@repo/eslint-config": "workspace:*",
     "@repo/package.config": "workspace:*",
     "@repo/test-config": "workspace:*",
-    "@sanity/insert-menu": "1.1.13",
+    "@sanity/insert-menu": "2.0.0",
     "@types/react": "^19.1.0",
     "@vitejs/plugin-react": "catalog:",
     "react": "catalog:react18",

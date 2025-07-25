@@ -1,4 +1,3 @@
-/* eslint-disable no-process-env */
 import boxen from 'boxen'
 import chalk from 'chalk'
 import latestVersion from 'get-latest-version'
@@ -107,7 +106,6 @@ export function runUpdateCheck(options: UpdateCheckOptions): {notify: () => Prom
     }
 
     // Print to stderr to prevent garbling command output
-    // eslint-disable-next-line no-console
     console.error(`\n${boxen(message, boxenOpts)}`)
 
     userConfig.set('cliLastUpdateNag', Date.now())

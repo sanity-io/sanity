@@ -22,10 +22,8 @@ export const handler = documentEventHandler(async ({event}) => {
       },
     })
 
-    // eslint-disable-next-line no-console
     console.log(`Successfully synced document ${_id} ("${title}") to Algolia`)
   } catch (error) {
-    // eslint-disable-next-line no-console
     console.error('Error syncing to Algolia:', error)
     throw error
   }

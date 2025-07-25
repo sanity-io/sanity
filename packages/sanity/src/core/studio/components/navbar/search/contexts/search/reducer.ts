@@ -588,7 +588,6 @@ export function searchReducer(state: SearchReducerState, action: SearchAction): 
 // @todo: remove this (and associated tests) once client-side instrumentation is available
 function stripRecent(terms: RecentSearch | SearchTerms) {
   if (isRecentSearchTerms(terms)) {
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const {__recent, ...rest} = terms
     return rest
   }

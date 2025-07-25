@@ -202,7 +202,6 @@ const DiffViewDocument: ComponentType<DiffViewPaneProps> = ({
       }}
     >
       <FormBuilder
-        // eslint-disable-next-line camelcase
         __internal_patchChannel={patchChannel}
         id={`diffView-pane-${role}`}
         onChange={onChange}

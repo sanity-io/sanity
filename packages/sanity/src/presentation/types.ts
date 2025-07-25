@@ -232,7 +232,7 @@ export type DocumentLocationResolvers = Record<
  */
 export type DocumentLocationResolverObject<K extends string = string> = {
   select: Record<K, string>
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  // oxlint-disable-next-line no-explicit-any
   resolve: (value: Record<K, any> | null) => DocumentLocationsState | null | undefined | void
 }
 

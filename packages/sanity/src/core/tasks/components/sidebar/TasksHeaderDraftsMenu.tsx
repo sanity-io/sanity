@@ -95,9 +95,9 @@ export function TasksHeaderDraftsMenu() {
           {draftTasks?.map((task) => {
             return (
               <TasksDraftsMenuItem
+                key={task._id}
                 isSelected={selectedTask === task._id}
                 item={task}
-                key={task._id}
                 onSelect={handleSelectTask}
               />
             )

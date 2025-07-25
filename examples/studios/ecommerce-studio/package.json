@@ -29,7 +29,7 @@
   },
   "dependencies": {
     "@sanity/cli": "workspace:*",
-    "@sanity/ui": "^2.16.7",
+    "@sanity/ui": "^3.0.1",
     "react": "catalog:react18",
     "react-barcode": "^1.4.1",
     "react-dom": "catalog:react18",

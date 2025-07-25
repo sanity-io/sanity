@@ -48,7 +48,7 @@ export function runTest(props: TestOptions): () => boolean {
   Promise.resolve().then(sampleNext)
 
   if (!handleRun) {
-    // eslint-disable-next-line no-console
+    // oxlint-disable-next-line no-console
     handleRun = console.log
   }
 
@@ -59,7 +59,6 @@ export function runTest(props: TestOptions): () => boolean {
     chars.forEach((char) => triggerInputEvent(inputElement, `Typing ${char}`))
     const duration = performance.now() - start
     total += duration
-    // eslint-disable-next-line callback-return
     handleRun(
       format(
         'Sample #{0}: {1}ms, avg: {2}ms',
@@ -71,7 +70,6 @@ export function runTest(props: TestOptions): () => boolean {
     if (remainingSamples > 0) {
       timer = setTimeout(sampleNext, gracePeriod)
     } else {
-      // eslint-disable-next-line callback-return
       handleRun(
         format('Average of {0} samples: {1}ms', sampleNo, (total / sampleNo).toPrecision(4)),
       )

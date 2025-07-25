@@ -73,7 +73,6 @@ import {
   sanityStudioTemplate,
 } from './templates/nextjs'
 
-// eslint-disable-next-line no-process-env
 const isCI = Boolean(process.env.CI)
 
 /**

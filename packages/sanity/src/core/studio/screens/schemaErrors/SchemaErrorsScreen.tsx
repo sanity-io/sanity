@@ -1,4 +1,4 @@
-/* eslint-disable i18next/no-literal-string,@sanity/i18n/no-attribute-string-literals */
+/* eslint-disable i18next/no-literal-string */
 import {type Schema} from '@sanity/types'
 import {Card, Container, Heading, Stack} from '@sanity/ui'
 import {useEffect} from 'react'

@@ -1,4 +1,4 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
+// oxlint-disable no-explicit-any
 import assert from 'node:assert'
 
 import {describe, expect, it} from 'vitest'

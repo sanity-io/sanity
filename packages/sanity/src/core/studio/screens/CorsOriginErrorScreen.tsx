@@ -1,4 +1,4 @@
-/* eslint-disable i18next/no-literal-string,@sanity/i18n/no-attribute-string-literals */
+/* eslint-disable i18next/no-literal-string */
 import {LaunchIcon} from '@sanity/icons'
 import {Card, Stack, Text, TextInput} from '@sanity/ui'
 import {useEffect, useMemo} from 'react'

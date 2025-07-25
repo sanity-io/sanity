@@ -1,5 +1,3 @@
-/* eslint-disable i18next/no-literal-string */
-/* eslint-disable @sanity/i18n/no-attribute-string-literals */
 import {useToast} from '@sanity/ui'
 import {type ReactNode, useCallback, useEffect, useState} from 'react'
 import {useHotModuleReload} from 'use-hot-module-reload'

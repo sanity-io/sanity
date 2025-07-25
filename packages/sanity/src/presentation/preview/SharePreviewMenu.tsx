@@ -1,4 +1,4 @@
-/* eslint-disable @typescript-eslint/no-shadow,no-negated-condition,no-nested-ternary */
+/* eslint-disable @typescript-eslint/no-shadow,no-negated-condition */
 import {type ClientPerspective, type SyncTag} from '@sanity/client'
 import {CopyIcon, ShareIcon} from '@sanity/icons'
 import {SanityMonogram} from '@sanity/logos'

@@ -50,7 +50,6 @@ export function ActionStateDialog(props: ActionStateDialogProps) {
   // @todo: add validation?
   const unknownModal: any = dialog
 
-  // eslint-disable-next-line no-console
   console.warn(`Unsupported modal type ${unknownModal.type}`)
 
   return (

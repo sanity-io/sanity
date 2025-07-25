@@ -75,7 +75,6 @@ export const CommentInlineHighlightSpan = forwardRef(function CommentInlineHighl
 ) {
   const {children, isAdded, isAuthoring, isHovered, isNested, ...rest} = props
 
-  // eslint-disable-next-line no-nested-ternary
   const state = isAdded ? 'added' : isAuthoring ? 'authoring' : undefined
 
   return (

@@ -1,16 +1,11 @@
 import {ToastProvider} from '@sanity/ui'
 import {type ReactNode, useMemo} from 'react'
-import Refractor from 'react-refractor'
-// eslint-disable-next-line import/extensions
-import bash from 'refractor/lang/bash.js'
-// eslint-disable-next-line import/extensions
-import javascript from 'refractor/lang/javascript.js'
-// eslint-disable-next-line import/extensions
-import json from 'refractor/lang/json.js'
-// eslint-disable-next-line import/extensions
-import jsx from 'refractor/lang/jsx.js'
-// eslint-disable-next-line import/extensions
-import typescript from 'refractor/lang/typescript.js'
+import {registerLanguage} from 'react-refractor'
+import bash from 'refractor/bash'
+import javascript from 'refractor/javascript'
+import json from 'refractor/json'
+import jsx from 'refractor/jsx'
+import typescript from 'refractor/typescript'
 
 import {LoadingBlock} from '../components/loadingBlock'
 import {AppIdCacheProvider} from '../create/studio-app/AppIdCacheProvider'
@@ -41,11 +36,11 @@ import {StudioTelemetryProvider} from './telemetry/StudioTelemetryProvider'
 import {WorkspaceLoader} from './workspaceLoader'
 import {WorkspacesProvider} from './workspaces'
 
-Refractor.registerLanguage(bash)
-Refractor.registerLanguage(javascript)
-Refractor.registerLanguage(json)
-Refractor.registerLanguage(jsx)
-Refractor.registerLanguage(typescript)
+registerLanguage(bash)
+registerLanguage(javascript)
+registerLanguage(json)
+registerLanguage(jsx)
+registerLanguage(typescript)
 
 /**
  * @hidden

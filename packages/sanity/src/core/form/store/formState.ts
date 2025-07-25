@@ -1,7 +1,7 @@
 /* eslint-disable complexity */
 /* eslint-disable max-nested-callbacks */
 /* eslint-disable max-statements */
-/* eslint-disable camelcase, no-else-return */
+/* eslint-disable no-else-return */
 
 import {
   type ArraySchemaType,

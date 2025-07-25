@@ -1,4 +1,3 @@
-/* eslint-disable import/no-duplicates */
 import type {MutableRefObject} from 'react'
 import {createContext} from 'sanity/_createContext'
 

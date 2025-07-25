@@ -43,8 +43,8 @@ export function NewDocumentList(props: NewDocumentListProps) {
     (item: NewDocumentOption) => {
       return (
         <NewDocumentListOption
-          currentUser={currentUser}
           key={item.id}
+          currentUser={currentUser}
           onClick={handleDocumentClick}
           option={item}
           preview={preview}

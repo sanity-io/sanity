@@ -49,11 +49,11 @@ const GroupTabs = ({
 
         return (
           <GroupTab
+            key={`${inputId}-${group.name}-tab`}
             aria-controls={`${inputId}-field-group-fields`}
             autoFocus={shouldAutoFocus && group.selected}
             disabled={disabled || group.disabled}
             icon={group?.icon}
-            key={`${inputId}-${group.name}-tab`}
             name={group.name}
             onClick={onClick}
             selected={Boolean(group.selected)}
@@ -100,9 +100,9 @@ const GroupSelect = ({
 
         return (
           <GroupOption
+            key={`${inputId}-${group.name}-tab`}
             aria-controls={`${inputId}-field-group-fields`}
             disabled={group.disabled}
-            key={`${inputId}-${group.name}-tab`}
             name={group.name}
             selected={Boolean(group.selected)}
             title={title}

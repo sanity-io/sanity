@@ -1,8 +1,8 @@
-// eslint-disable-next-line import/no-unassigned-import, import/no-extraneous-dependencies
+// oxlint-disable-next-line no-unassigned-import
 import 'blob-polyfill'
-// eslint-disable-next-line import/no-unassigned-import, import/no-extraneous-dependencies
+// oxlint-disable-next-line no-unassigned-import
 import './clipboardItemPolyfill'
-// eslint-disable-next-line import/no-unassigned-import
+// oxlint-disable-next-line no-unassigned-import
 import '@testing-library/jest-dom/vitest'
 
 import {cleanup} from '@testing-library/react'

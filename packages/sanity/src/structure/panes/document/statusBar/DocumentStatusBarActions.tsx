@@ -1,4 +1,3 @@
-/* eslint-disable no-warning-comments */
 /* eslint-disable camelcase */
 import {Flex, LayerProvider, Stack, Text} from '@sanity/ui'
 import {memo, useCallback, useMemo, useState} from 'react'
@@ -121,11 +120,11 @@ export const DocumentStatusBarActions = memo(function DocumentStatusBarActions()
   >(
     ({states}) => (
       <DocumentStatusBarActionsInner
+        // Use document ID as key to make sure that the actions state is reset when the document changes
+        key={documentId}
         disabled={connectionState !== 'connected'}
         showMenu={actions.length > 1}
         states={states}
-        // Use document ID as key to make sure that the actions state is reset when the document changes
-        key={documentId}
       />
     ),
     [actions.length, connectionState, documentId],

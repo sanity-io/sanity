@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-non-null-assertion */
 import {type FileAsset, type FileSchemaType} from '@sanity/types'
 import {fireEvent, waitFor} from '@testing-library/react'
 import {type Observable, of} from 'rxjs'

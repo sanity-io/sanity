@@ -85,7 +85,7 @@ const UserLine = ({userId}: {userId: string}) => {
   const [user, loading] = useUser(userId)
 
   return (
-    <Flex align="center" gap={2} key={userId} padding={1}>
+    <Flex key={userId} align="center" gap={2} padding={1}>
       <Box>{loading || !user ? <AvatarSkeleton animated /> : <UserAvatar user={user} />}</Box>
       <Box>
         {loading || !user?.displayName ? (

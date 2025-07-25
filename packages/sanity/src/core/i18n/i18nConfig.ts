@@ -194,7 +194,7 @@ function getI18NextOptions(
  * @internal
  */
 function reduceLocaleDefinition(definition: LocaleDefinition): Locale {
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  // oxlint-disable-next-line no-unused-vars
   const {bundles, ...locale} = definition
   return locale
 }

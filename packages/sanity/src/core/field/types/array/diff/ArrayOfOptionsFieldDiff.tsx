@@ -49,7 +49,7 @@ export const ArrayOfOptionsFieldDiff: DiffComponent<ArrayDiff> = ({diff, schemaT
           const color = getAnnotationColor(colorManager, annotation)
           const action = isPresent ? t('changes.added-label') : t('changes.removed-label')
           return (
-            <Flex align="center" key={getItemKey(diff, index)}>
+            <Flex key={getItemKey(diff, index)} align="center">
               <DiffTooltip annotations={annotation ? [annotation] : []} description={action}>
                 <Flex align="center">
                   <Checkbox checked={!isPresent} color={color} />

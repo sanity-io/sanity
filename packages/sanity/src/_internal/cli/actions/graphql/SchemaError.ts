@@ -4,7 +4,6 @@ import {type SchemaValidationProblemGroup} from '@sanity/types'
 import {upperFirst} from 'lodash'
 import logSymbols from 'log-symbols'
 
-// eslint-disable-next-line no-console
 const consoleOutputter = {error: (...args: unknown[]) => console.error(...args)}
 
 export class SchemaError extends Error {
