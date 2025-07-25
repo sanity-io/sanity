@@ -10,7 +10,7 @@ import {isProd} from '../../../../environment'
 import {hasSanityPackageInImportMap} from '../../../../environment/hasSanityPackageInImportMap'
 import {useTranslation} from '../../../../i18n'
 
-interface AboutDialogProps {
+interface StudioInfoDialogProps {
   latestVersion?: string
   currentVersion?: string
   onClose: () => void
@@ -24,7 +24,7 @@ const MonogramContainer = styled(Card).attrs({
   width: ${75}px;
 `
 
-export function StudioInfoDialog(props: AboutDialogProps) {
+export function StudioInfoDialog(props: StudioInfoDialogProps) {
   const {t} = useTranslation()
   const {onClose} = props
   const aboutDialogId = useId()
