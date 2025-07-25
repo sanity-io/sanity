@@ -97,7 +97,7 @@ export function StudioInfoDialog(props: AboutDialogProps) {
           </Flex>
         ) : null}
         {
-          // todo: in dev we currently don't know whether auto updates is enabled
+          // note: in dev we currently don't know whether auto updates is enabled
           //  so instead of showing misleading info, we just don't show anything here
           isProd && !isAutoUpdating ? (
             <Card tone="transparent" padding={2} radius={3} marginX={2}>
