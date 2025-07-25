@@ -14,6 +14,8 @@ export const studioLocaleStrings = defineLocalesResources('studio', {
   'about-dialog.version-info.auto-updates.disabled': 'Auto Updates not enabled',
   /** "Enabled" status for auto-updates in About-dialog */
   'about-dialog.version-info.auto-updates.enabled': 'Auto Updates Enabled',
+  /** @deprecated "Auto Updates" status header in About-dialog */
+  'about-dialog.version-info.auto-updates.header': 'Auto Updates',
   /** "How to enable" next to Disabled state for Auto updates in about dialog */
   'about-dialog.version-info.auto-updates.how-to-enable': 'Enable',
   /** Text displayed on the "Copy to clipboard"-button after clicked */
@@ -25,6 +27,8 @@ export const studioLocaleStrings = defineLocalesResources('studio', {
   'about-dialog.version-info.current-version.header': 'Current version',
   /** "How to upgrade" link text */
   'about-dialog.version-info.how-to-upgrade': 'Update now',
+  /** @deprecated "Latest version" header in about dialog */
+  'about-dialog.version-info.latest-version.header': 'Latest version',
   /** "Latest version" header in about dialog */
   'about-dialog.version-info.latest-version.text': 'Latest version',
   /** "New version available" tooltip in About-dialog */
@@ -33,6 +37,8 @@ export const studioLocaleStrings = defineLocalesResources('studio', {
   'about-dialog.version-info.tooltip.prerelease': 'Prerelease',
   /** "Up to date" tooltip in About-dialog */
   'about-dialog.version-info.tooltip.up-to-date': 'Up to date',
+  /** @deprecated "Up to date" status in About-dialog */
+  'about-dialog.version-info.up-to-date': 'Up to date',
 
   /** "User agent" header in About-dialog */
   'about-dialog.version-info.user-agent.header': 'User agent',
