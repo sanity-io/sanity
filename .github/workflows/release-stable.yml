@@ -122,12 +122,12 @@ jobs:
           echo "Using version: $version"
           pnpm bundle-manager tag --tag=stable --target-version="$version"
 
-      # - name: Update manifest with stable tag (production)
-      #   env:
-      #     GOOGLE_PROJECT_ID: ${{ secrets.GCS_PRODUCTION_PROJECT_ID }}
-      #     GCLOUD_SERVICE_KEY: ${{ secrets.GCS_PRODUCTION_SERVICE_KEY }}
-      #     GCLOUD_BUCKET: ${{ secrets.GCS_PRODUCTION_BUCKET }}
-      #   run: |
-      #     version="${{ needs.get-version.outputs.version }}"
-      #     echo "Using version: $version"
-      #     pnpm bundle-manager tag --tag=stable --target-version="$version"
+      - name: Update manifest with stable tag (production)
+        env:
+          GOOGLE_PROJECT_ID: ${{ secrets.GCS_PRODUCTION_PROJECT_ID }}
+          GCLOUD_SERVICE_KEY: ${{ secrets.GCS_PRODUCTION_SERVICE_KEY }}
+          GCLOUD_BUCKET: ${{ secrets.GCS_PRODUCTION_BUCKET }}
+        run: |
+          version="${{ needs.get-version.outputs.version }}"
+          echo "Using version: $version"
+          pnpm bundle-manager tag --tag=stable --target-version="$version"
