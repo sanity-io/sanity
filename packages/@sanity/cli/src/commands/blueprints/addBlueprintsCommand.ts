@@ -20,7 +20,7 @@ Examples:
   sanity blueprints add function
 
   # Add a Function with a specific name and install helpers with npm
-  sanity blueprints add function --name my-function -i
+  sanity blueprints add function --name my-function -i --helpers
 
   # Add a Function with a specific type
   sanity blueprints add function --fn-type document-publish
