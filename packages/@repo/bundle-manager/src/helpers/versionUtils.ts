@@ -10,23 +10,10 @@ import {currentUnixTime} from '../utils'
  * - Keep all versions within TTL window
  * - Keep highest version per major (if not already kept via TTL)
  */
-export function cleanupVersions(
-  existingVersions: VersionEntry[],
-  newVersion: VersionEntry,
-): VersionEntry[] {
-  const allVersions = [newVersion, ...existingVersions]
+export function cleanupVersions(allVersions: VersionEntry[]): VersionEntry[] {
   const uniqueVersions = deduplicateByVersion(allVersions)
 
   uniqueVersions.forEach((entry) => getMajorVersion(entry.version))
-
-  if (!newVersion) {
-    const byMajor = groupBy(uniqueVersions, ({version}) => getMajorVersion(version))
-
-    return Object.values(byMajor)
-      .map((majorVersions) => majorVersions.toSorted(sortByVersionDesc)[0])
-      .filter(Boolean)
-      .toSorted(sortByVersionDesc)
-  }
 
   const currentTime = currentUnixTime()
   const byMajor = groupBy(uniqueVersions, (entry) => getMajorVersion(entry.version))

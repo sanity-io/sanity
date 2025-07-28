@@ -37,7 +37,7 @@ export function tagVersion(
         ...manifestPackage,
         tags: {
           ...manifestPackage.tags,
-          [tag]: cleanupVersions(existingTags, tagEntry),
+          [tag]: cleanupVersions([tagEntry, ...existingTags]),
         },
       }
 
