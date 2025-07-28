@@ -1,3 +1,4 @@
+import {ALL_FIELDS_GROUP_NAME} from '@sanity/schema/_internal'
 import {type FieldGroup} from '@sanity/types'
 
 import {studioLocaleNamespace} from '../../i18n/localeNamespaces'
@@ -36,7 +37,7 @@ export const AUTO_COLLAPSE_DEPTH = 3
  * @public
  */
 export const ALL_FIELDS_GROUP: FieldGroup = {
-  name: 'all-fields',
+  name: ALL_FIELDS_GROUP_NAME,
   title: 'All fields',
   hidden: false,
   i18n: {

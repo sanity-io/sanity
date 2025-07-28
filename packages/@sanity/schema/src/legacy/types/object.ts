@@ -12,7 +12,7 @@ import guessOrderingConfig from '../ordering/guessOrderingConfig'
 import createPreviewGetter from '../preview/createPreviewGetter'
 import {normalizeSearchConfigs} from '../searchConfig/normalize'
 import {resolveSearchConfig} from '../searchConfig/resolve'
-import {DEFAULT_OVERRIDEABLE_FIELDS, OWN_PROPS_NAME} from './constants'
+import {ALL_FIELDS_GROUP_NAME, DEFAULT_OVERRIDEABLE_FIELDS, OWN_PROPS_NAME} from './constants'
 import {hiddenGetter, lazyGetter} from './utils'
 
 const OVERRIDABLE_FIELDS = [
@@ -222,7 +222,6 @@ function createFieldsGroups(typeDef: ObjectDefinition, fields: ObjectField[]): F
   return flatMap(groupsByName).filter(
     // All fields group is added by default in structure.
     // To pass the properties from the schema to the form state, we need to include it in the list of groups.
-    // TODO: Move ALL_FIELDS_GROUP to this package and export it, rather than using a string.
-    (group) => group.fields.length > 0 || group.name === 'all-fields',
+    (group) => group.fields.length > 0 || group.name === ALL_FIELDS_GROUP_NAME,
   )
 }
