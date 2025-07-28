@@ -219,5 +219,10 @@ function createFieldsGroups(typeDef: ObjectDefinition, fields: ObjectField[]): F
     })
   })
 
-  return flatMap(groupsByName).filter((group) => group.fields.length > 0)
+  return flatMap(groupsByName).filter(
+    // All fields group is added by default in structure.
+    // To pass the properties from the schema to the form state, we need to include it in the list of groups.
+    // TODO: Move ALL_FIELDS_GROUP to this package and export it, rather than using a string.
+    (group) => group.fields.length > 0 || group.name === 'all-fields',
+  )
 }
