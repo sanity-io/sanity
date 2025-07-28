@@ -15,7 +15,7 @@ import {createContext} from 'sanity/_createContext'
 /**
  * @internal
  */
-export const IsLastPaneContext = createContext<boolean>(
+export const IsLastPaneContext: React.Context<boolean> = createContext<boolean>(
   'sanity/_singletons/context/is-last-pane',
   false,
 )

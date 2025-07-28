@@ -11,10 +11,8 @@ import type {CommentsEnabledContextValue} from '../../core/comments/context/enab
 /**
  * @internal
  */
-export const CommentsEnabledContext = createContext<CommentsEnabledContextValue>(
-  'sanity/_singletons/context/comments-enabled',
-  {
+export const CommentsEnabledContext: React.Context<CommentsEnabledContextValue> =
+  createContext<CommentsEnabledContextValue>('sanity/_singletons/context/comments-enabled', {
     enabled: false,
     mode: null,
-  },
-)
+  })

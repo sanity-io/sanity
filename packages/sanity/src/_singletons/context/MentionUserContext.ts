@@ -5,7 +5,5 @@ import type {MentionUserContextValue} from '../../core/tasks/context/mentionUser
 /**
  * @internal
  */
-export const MentionUserContext = createContext<MentionUserContextValue | null>(
-  'sanity/_singletons/context/mention-user',
-  null,
-)
+export const MentionUserContext: React.Context<MentionUserContextValue | null> =
+  createContext<MentionUserContextValue | null>('sanity/_singletons/context/mention-user', null)
