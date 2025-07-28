@@ -12,6 +12,29 @@ export const MAX_FIELD_DEPTH = 20
  */
 export const AUTO_COLLAPSE_DEPTH = 3
 
+/**
+ * The "all fields" group definition
+ * Users can import this to create a custom "all fields" group.
+ * Name must be `all-fields` to be considered an "all fields" group.
+ *
+ * @example hides the all fields group.
+ * ```ts
+ *
+ * const author = defineType({
+ *   name: 'author',
+ *   title: 'Author',
+ *   type: 'document',
+ *   groups: [
+ *     {
+ *       ...ALL_FIELDS_GROUP,
+ *       hidden: true,
+ *     },
+ *   ],
+ * })
+ * ```
+ *
+ * @public
+ */
 export const ALL_FIELDS_GROUP: FieldGroup = {
   name: 'all-fields',
   title: 'All fields',
