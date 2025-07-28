@@ -1,5 +1,4 @@
 /* eslint-disable complexity */
-/* eslint-disable max-nested-callbacks */
 /* eslint-disable max-statements */
 /* eslint-disable no-else-return */
 
