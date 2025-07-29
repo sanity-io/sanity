@@ -3,6 +3,21 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [4.2.0](https://github.com/sanity-io/sanity/compare/v4.1.1...v4.2.0) (2025-07-29)
+
+
+### Features
+
+* **core:** add media library field groq filters ([#9900](https://github.com/sanity-io/sanity/issues/9900)) ([fd837ab](https://github.com/sanity-io/sanity/commit/fd837aba647ccd7757a159c000833c90001f350c))
+
+
+### Bug Fixes
+
+* **deps:** update dependency @sanity/client to ^7.8.1 ([#10066](https://github.com/sanity-io/sanity/issues/10066)) ([4e0d1c5](https://github.com/sanity-io/sanity/commit/4e0d1c53856b2e6bf6c61b3609fa8ba6fcd011dc))
+* **deps:** update dependency @sanity/insert-menu to v2 ([#10087](https://github.com/sanity-io/sanity/issues/10087)) ([7f7b821](https://github.com/sanity-io/sanity/commit/7f7b82198257202362aab024652cd0594ccab35b))
+
+
+
 ## [4.1.1](https://github.com/sanity-io/sanity/compare/v4.1.0...v4.1.1) (2025-07-22)
 
 

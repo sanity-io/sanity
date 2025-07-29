@@ -3,6 +3,16 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [4.2.0](https://github.com/sanity-io/sanity/compare/v4.1.1...v4.2.0) (2025-07-29)
+
+
+### Bug Fixes
+
+* **deps:** update dependency groq-js to ^1.17.3 ([#10069](https://github.com/sanity-io/sanity/issues/10069)) ([d74c4fb](https://github.com/sanity-io/sanity/commit/d74c4fb87eeae2bd18cd99a5df725c8469b8f8e7))
+* **schema:** preserve object for inline types ([#10030](https://github.com/sanity-io/sanity/issues/10030)) ([ba73ac0](https://github.com/sanity-io/sanity/commit/ba73ac09cbb203fd502e7ef779319978ac5a5af8))
+
+
+
 ## [4.1.1](https://github.com/sanity-io/sanity/compare/v4.1.0...v4.1.1) (2025-07-22)
 
 **Note:** Version bump only for package @sanity/schema
