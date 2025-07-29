@@ -3,6 +3,28 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [4.2.0](https://github.com/sanity-io/sanity/compare/v4.1.1...v4.2.0) (2025-07-29)
+
+
+### Features
+
+* add default headers for studio client requests ([#9473](https://github.com/sanity-io/sanity/issues/9473)) ([ee1e2f4](https://github.com/sanity-io/sanity/commit/ee1e2f41981f94d2af73256267d18ddced400ca9))
+* **core:** add media library field groq filters ([#9900](https://github.com/sanity-io/sanity/issues/9900)) ([fd837ab](https://github.com/sanity-io/sanity/commit/fd837aba647ccd7757a159c000833c90001f350c))
+
+
+### Bug Fixes
+
+* **core:** add perspectiveStack to tasks for preview title ([#10067](https://github.com/sanity-io/sanity/issues/10067)) ([d6892a7](https://github.com/sanity-io/sanity/commit/d6892a7bdfbb894cb5d8aaa9af5f7a9600da2ffe))
+* **core:** upgrade refractor to 5.0.0 and react-refractor to 4.0.0 and @sanity/ui to 3.0.0 ([#10068](https://github.com/sanity-io/sanity/issues/10068)) ([cf42627](https://github.com/sanity-io/sanity/commit/cf42627649b0ebc968eb22c588ec3abe967cc388))
+* **deps:** pin rollup to 4.45.3 ([#10099](https://github.com/sanity-io/sanity/issues/10099)) ([45dc487](https://github.com/sanity-io/sanity/commit/45dc487399534f3c575d65ae108d368330e2676c))
+* **deps:** update dependency @sanity/client to ^7.8.1 ([#10066](https://github.com/sanity-io/sanity/issues/10066)) ([4e0d1c5](https://github.com/sanity-io/sanity/commit/4e0d1c53856b2e6bf6c61b3609fa8ba6fcd011dc))
+* **deps:** update dependency @sanity/insert-menu to v2 ([#10087](https://github.com/sanity-io/sanity/issues/10087)) ([7f7b821](https://github.com/sanity-io/sanity/commit/7f7b82198257202362aab024652cd0594ccab35b))
+* **deps:** update dependency @sanity/presentation-comlink to ^1.0.26 ([#10086](https://github.com/sanity-io/sanity/issues/10086)) ([ce1c301](https://github.com/sanity-io/sanity/commit/ce1c3016a12f8937c17f14e5b2870ac67e9eeb81))
+* **deps:** update dependency @sanity/ui to ^3.0.1 ([#10079](https://github.com/sanity-io/sanity/issues/10079)) ([63e81eb](https://github.com/sanity-io/sanity/commit/63e81eba52b9014c58745776ddecc973ae5530b2))
+* **deps:** update dependency groq-js to ^1.17.3 ([#10069](https://github.com/sanity-io/sanity/issues/10069)) ([d74c4fb](https://github.com/sanity-io/sanity/commit/d74c4fb87eeae2bd18cd99a5df725c8469b8f8e7))
+
+
+
 ## [4.1.1](https://github.com/sanity-io/sanity/compare/v4.1.0...v4.1.1) (2025-07-22)
 
 
