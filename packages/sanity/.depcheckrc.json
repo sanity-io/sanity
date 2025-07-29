@@ -3,6 +3,7 @@
     "@repo/tsconfig",
     "@sanity/pkg-utils",
     "globby",
+    "rollup",
     "sanity",
     "@sanity/codegen",
     "@types/react",
