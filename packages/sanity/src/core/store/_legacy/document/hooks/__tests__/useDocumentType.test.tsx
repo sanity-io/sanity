@@ -136,7 +136,6 @@ test('should return correct document type when transitioning from specified to u
 
   client.observable.fetch = vi.fn<typeof client.observable.fetch>().mockReturnValue(responseGrrm)
 
-  // eslint-disable-next-line no-undef-init
   let documentType: string | undefined = 'author'
 
   const {result, rerender} = renderHook(() => useDocumentType('grrm', documentType), {

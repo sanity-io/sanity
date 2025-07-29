@@ -49,12 +49,12 @@ Author | Message | Commit
 ${withPrLinks(execa.commandSync(CHANGELOG_COMMAND, {shell: true}).stdout)}
 `
 
-// eslint-disable-next-line no-console
-console.log(`
--------- SANITY RELEASE NOTES TEMPLATE --------
+console.log(`<!--
+SANITY RELEASE NOTES TEMPLATE
 Use the following template as a starting point for next release:
 A draft can be created here: https://github.com/sanity-io/sanity/releases/new
+-->
 
--------- BEGIN TEMPLATE --------
 ${TEMPLATE}
--------- END TEMPLATE --------`)
+<!-- END TEMPLATE -->
+`)

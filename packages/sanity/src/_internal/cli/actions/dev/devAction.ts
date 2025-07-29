@@ -278,7 +278,7 @@ export function getDevServerConfig({
   })
   configSpinner.succeed()
 
-  const env = process.env // eslint-disable-line no-process-env
+  const env = process.env
   const reactStrictMode = env.SANITY_STUDIO_REACT_STRICT_MODE
     ? env.SANITY_STUDIO_REACT_STRICT_MODE === 'true'
     : Boolean(cliConfig?.reactStrictMode)

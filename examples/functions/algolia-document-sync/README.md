@@ -28,7 +28,7 @@ This function is built to be compatible with any of [the official "clean" templa
 
 1. **Initialize the example**
 
-   Run this if you haven't initlized blueprints:
+   Run this if you haven't initialized blueprints:
 
    ```bash
    npx sanity blueprints init
@@ -63,11 +63,11 @@ This function is built to be compatible with any of [the official "clean" templa
      event: {
        on: ['publish'],
        filter: "_type == 'post'",
-       projection: '_id',
+       projection: '_id, title, hideFromSearch',
      },
      env: {
-       ALGOLIA_APP_ID: YOUR_ALGOLIA_APP_ID || '',
-       ALGOLIA_WRITE_KEY: YOUR_ALGOLIA_WRITE_KEY || '',
+       ALGOLIA_APP_ID: ALGOLIA_APP_ID,
+       ALGOLIA_WRITE_KEY: ALGOLIA_WRITE_KEY,
      },
    })
    ```
@@ -77,22 +77,12 @@ This function is built to be compatible with any of [the official "clean" templa
    Install dependencies in the project root:
 
    ```bash
-   npm install
-   ```
-
-   And install function dependencies:
-
-   ```bash
-   npm install @sanity/functions
-   cd functions/algolia-document-sync
-   npm install
-   cd ../..
+   npm install dotenv
    ```
 
 4. **Set up environment variables**
 
    Add your Algolia credentials to your root .env file:
-
    - `ALGOLIA_APP_ID`: Your Algolia application ID
    - `ALGOLIA_WRITE_KEY`: Your Algolia write API key
 
@@ -102,12 +92,12 @@ You can test the algolia-document-sync function locally using the Sanity CLI bef
 
 ### 1. Basic Function Test
 
-This function writes directly to Algolia, so we can test locally with our doucment.json without relying on any Sanity schema.
+This function writes directly to Algolia, so we can test locally with our document.json without relying on any Sanity schema.
 
 Test with the included sample document:
 
 ```bash
-npx sanity functions test algolia-document-sync --file functions/algolia-document-sync/document.json
+npx sanity functions test algolia-document-sync --file functions/algolia-document-sync/document.json --dataset production --with-user-token
 ```
 
 ### 2. Interactive Development Mode
@@ -127,7 +117,7 @@ npx sanity functions test algolia-document-sync --data '{
   "_type": "post",
   "_id": "test-post",
   "title": "Test Article"
-}'
+}' --dataset production --with-user-token
 ```
 
 ### 4. Test with Real Document Data
@@ -139,10 +129,9 @@ Capture a real document from your dataset:
 cd studio
 npx sanity documents get "your-post-id" > ../test-document.json
 
-
 # Back to project root for function testing
 cd ..
-npx sanity functions test algolia-document-sync --file test-document.json
+npx sanity functions test algolia-document-sync --file test-document.json --dataset production --with-user-token
 ```
 
 ### 5. Enable Debugging

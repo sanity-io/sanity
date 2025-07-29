@@ -7,7 +7,7 @@ import {
 } from '../types'
 
 /** @internal */
-// eslint-disable-next-line @typescript-eslint/no-empty-function
+// eslint-disable-next-line no-empty-function
 export function noop(): void {}
 
 /** @internal */

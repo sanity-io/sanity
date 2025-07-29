@@ -57,6 +57,19 @@ describe('findQueriesInPath', () => {
     assert(res[0].type === 'queries') // workaround for TS
     expect(res[0].queries.length).toBe(1)
   })
+  test('can find and handle .vue files', async () => {
+    const stream = findQueriesInPath({
+      path: [path.join('**', 'typescript', '__tests__', 'fixtures', '*.vue')],
+    })
+    const res = []
+    for await (const result of stream) {
+      res.push(result)
+    }
+    expect(res.length).toBe(1)
+    expect(res[0].type).toBe('queries')
+    assert(res[0].type === 'queries') // workaround for TS
+    expect(res[0].queries.length).toBe(1)
+  })
 
   // This test is skipped by default because it's very slow, but it's useful to have it around for testing deterministic behavior
   suite.concurrent.skip(

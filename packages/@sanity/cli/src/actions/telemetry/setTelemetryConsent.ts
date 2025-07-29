@@ -57,7 +57,6 @@ export function createSetTelemetryConsentAction(status: SettableConsentStatus): 
       apiVersion: '2023-12-18',
       useProjectHostname: false,
     })
-    // eslint-disable-next-line no-process-env
     const currentInformation = await resolveConsent({env: process.env})
     const isChanged = currentInformation.status !== status
 

@@ -1,4 +1,4 @@
-/* eslint-disable max-statements,@typescript-eslint/no-shadow */
+/* eslint-disable @typescript-eslint/no-shadow */
 import {studioPath} from '@sanity/client/csm'
 import {
   type Controller,
@@ -262,7 +262,7 @@ export default function PresentationTool(props: {
     comlink.on('visual-editing/documents', (data) => {
       setDocumentsOnPage(
         'visual-editing',
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        // oxlint-disable-next-line no-explicit-any
         data.perspective as unknown as any,
         data.documents,
       )
@@ -310,7 +310,7 @@ export default function PresentationTool(props: {
       if (data.projectId === projectId && data.dataset === dataset) {
         setDocumentsOnPage(
           'preview-kit',
-          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+          // oxlint-disable-next-line no-explicit-any
           data.perspective as unknown as any,
           data.documents,
         )

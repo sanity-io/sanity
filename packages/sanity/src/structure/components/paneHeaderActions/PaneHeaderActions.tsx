@@ -57,7 +57,6 @@ export const PaneHeaderActions = memo(function PaneHeaderActions(props: PaneHead
       }
 
       const handler =
-        // eslint-disable-next-line no-nested-ternary
         typeof item.action === 'function'
           ? item.action
           : typeof item.action === 'string'

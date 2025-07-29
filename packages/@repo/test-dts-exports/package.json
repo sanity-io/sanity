@@ -1,6 +1,6 @@
 {
   "name": "@repo/test-dts-exports",
-  "version": "3.99.0",
+  "version": "4.2.0",
   "private": true,
   "description": "Checks that we're exporting typings correctly",
   "exports": {
@@ -8,6 +8,7 @@
   },
   "scripts": {
     "generate:dts-exports": "node generate.mjs",
+    "lint": "eslint .",
     "test": "vitest run"
   },
   "dependencies": {
@@ -26,6 +27,7 @@
   "devDependencies": {
     "@repo/eslint-config": "workspace:*",
     "@repo/tsconfig": "workspace:*",
+    "@types/node": "^24.0.14",
     "ts-morph": "^26.0.0",
     "vitest": "^3.2.3"
   }

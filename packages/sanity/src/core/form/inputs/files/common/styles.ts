@@ -1,5 +1,3 @@
-/* eslint-disable import/named */
-
 import {Card} from '@sanity/ui'
 
 import {withFocusRing} from '../../../components/withFocusRing'

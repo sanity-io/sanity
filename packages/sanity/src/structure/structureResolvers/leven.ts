@@ -1,4 +1,3 @@
-/* eslint-disable no-nested-ternary */
 /* eslint-disable no-bitwise */
 const array: number[] = []
 const characterCodeCache: number[] = []

@@ -1,8 +1,7 @@
 import {type SanityClient} from '@sanity/client'
 import {useMemo} from 'react'
 import {useObservable} from 'react-rx'
-import {type Observable} from 'rxjs'
-import {catchError, map, of} from 'rxjs'
+import {catchError, map, type Observable, of} from 'rxjs'
 
 import {type VisionConfig} from '../types'
 

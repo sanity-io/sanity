@@ -129,7 +129,6 @@ async function getWorkspaceManifests({
 
   const worker = new Worker(workerPath, {
     workerData: {workDir} satisfies ExtractManifestWorkerData,
-    // eslint-disable-next-line no-process-env
     env: process.env,
   })
 

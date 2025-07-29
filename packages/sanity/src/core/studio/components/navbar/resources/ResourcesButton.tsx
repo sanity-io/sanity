@@ -6,9 +6,9 @@ import {styled} from 'styled-components'
 import {Button, MenuButton} from '../../../../../ui-components'
 import {useTranslation} from '../../../../i18n'
 import {SANITY_VERSION} from '../../../../version'
-import {AboutDialog} from './AboutDialog'
 import {useGetHelpResources} from './helper-functions/hooks'
 import {ResourcesMenuItems} from './ResourcesMenuItems'
+import {StudioInfoDialog} from './StudioInfoDialog'
 
 const StyledMenu = styled(Menu)`
   max-width: 300px;
@@ -19,22 +19,22 @@ export function ResourcesButton() {
   const {t} = useTranslation()
 
   const {value, error, isLoading} = useGetHelpResources()
-  const [aboutDialogOpen, setAboutDialogOpen] = useState(false)
-  const handleAboutDialogClose = useCallback(() => {
-    setAboutDialogOpen(false)
+  const [studioInfoDialogOpen, setStudioInfoDialogOpen] = useState(false)
+  const handleStudioInfoDialogClose = useCallback(() => {
+    setStudioInfoDialogOpen(false)
   }, [])
 
   const handleAboutDialogOpen = useCallback(() => {
-    setAboutDialogOpen(true)
+    setStudioInfoDialogOpen(true)
   }, [])
 
   return (
     <>
-      {aboutDialogOpen && (
-        <AboutDialog
+      {studioInfoDialogOpen && (
+        <StudioInfoDialog
           currentVersion={SANITY_VERSION}
-          latestVersion={value?.latestVersion || 'unknown'}
-          onClose={handleAboutDialogClose}
+          latestVersion={value?.latestVersion}
+          onClose={handleStudioInfoDialogClose}
         />
       )}
       <MenuButton

@@ -58,7 +58,6 @@ describe('schema validation inference', () => {
       name: 'fieldValidationInferReproDoc',
       type: 'document',
       title: 'FieldValidationRepro',
-      // eslint-disable-next-line @typescript-eslint/no-shadow
       validation: (Rule: Rule) =>
         Rule.fields({
           stringField: (fieldRule) => fieldRule.required(),
@@ -161,10 +160,10 @@ describe('schema validation inference', () => {
       ).resolves.toEqual([
         {
           item: {
-            message: 'The asset could not found in the Media Library',
+            message: 'The asset could not be found in the Media Library',
           },
           level: 'error',
-          message: 'The asset could not found in the Media Library',
+          message: 'The asset could not be found in the Media Library',
           path: ['imageField'],
         },
       ])

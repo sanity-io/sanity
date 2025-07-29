@@ -1,4 +1,4 @@
-/* eslint-disable no-console, no-process-exit, no-sync */
+// oxlint-disable no-console
 import {existsSync} from 'node:fs'
 import os from 'node:os'
 import path from 'node:path'
@@ -24,7 +24,7 @@ import {resolveRootDir} from './util/resolveRootDir'
 import {telemetryDisclosure} from './util/telemetryDisclosure'
 import {runUpdateCheck} from './util/updateNotifier'
 
-const sanityEnv = process.env.SANITY_INTERNAL_ENV || 'production' // eslint-disable-line no-process-env
+const sanityEnv = process.env.SANITY_INTERNAL_ENV || 'production'
 const knownEnvs = ['development', 'staging', 'production']
 
 function wait(ms: number) {
@@ -155,12 +155,10 @@ export async function runCli(cliRoot: string, {cliVersion}: {cliVersion: string}
     .catch(async (err) => {
       await flushTelemetry()
       const error = typeof err.details === 'string' ? err.details : err
-      // eslint-disable-next-line no-console
       console.error(`\n${error.stack ? neatStack(err) : error}`)
       if (err.cause) {
         console.error(`\nCaused by:\n\n${err.cause.stack ? neatStack(err.cause) : err.cause}`)
       }
-      // eslint-disable-next-line no-process-exit
       cliCommandTrace.error(error)
       process.exit(1)
     })
@@ -292,8 +290,6 @@ function loadAndSetEnvFromDotEnvFiles({
   cmd: string
   isApp: boolean
 }) {
-  /* eslint-disable no-process-env */
-
   // Do a cheap lookup for a sanity.json file. If there is one, assume it is a v2 project,
   // and apply the old behavior for environment variables. Otherwise, use the Vite-style
   // behavior. We need to do this "cheap" lookup because when loading the v3 config, env vars
@@ -328,7 +324,6 @@ function loadAndSetEnvFromDotEnvFiles({
 
   const studioEnv = loadEnv(mode, workDir, [isApp ? 'SANITY_APP_' : 'SANITY_STUDIO_'])
   process.env = {...process.env, ...studioEnv}
-  /* eslint-disable no-process-env */
 }
 
 /**
@@ -342,9 +337,7 @@ function loadAndSetEnvFromDotEnvFiles({
  * which several commands does (`sanity login`, `sanity docs` etc)
  */
 function maybeFixMissingWindowsEnvVar() {
-  /* eslint-disable no-process-env */
   if (os.platform() === 'win32' && !('SYSTEMROOT' in process.env) && 'SystemRoot' in process.env) {
     process.env.SYSTEMROOT = process.env.SystemRoot
   }
-  /* eslint-enable no-process-env */
 }

@@ -5190,6 +5190,109 @@ exports[`Extract schema test > Extracts  schema general 1`] = `
 ]
 `;
 
+exports[`Extract schema test > inline reference types works 1`] = `
+[
+  {
+    "name": "inlineRef",
+    "type": "type",
+    "value": {
+      "attributes": {
+        "_ref": {
+          "type": "objectAttribute",
+          "value": {
+            "type": "string",
+          },
+        },
+        "_type": {
+          "type": "objectAttribute",
+          "value": {
+            "type": "string",
+            "value": "reference",
+          },
+        },
+        "_weak": {
+          "optional": true,
+          "type": "objectAttribute",
+          "value": {
+            "type": "boolean",
+          },
+        },
+      },
+      "dereferencesTo": "thing",
+      "type": "object",
+    },
+  },
+  {
+    "attributes": {
+      "_createdAt": {
+        "type": "objectAttribute",
+        "value": {
+          "type": "string",
+        },
+      },
+      "_id": {
+        "type": "objectAttribute",
+        "value": {
+          "type": "string",
+        },
+      },
+      "_rev": {
+        "type": "objectAttribute",
+        "value": {
+          "type": "string",
+        },
+      },
+      "_type": {
+        "type": "objectAttribute",
+        "value": {
+          "type": "string",
+          "value": "validDocument",
+        },
+      },
+      "_updatedAt": {
+        "type": "objectAttribute",
+        "value": {
+          "type": "string",
+        },
+      },
+      "link": {
+        "optional": true,
+        "type": "objectAttribute",
+        "value": {
+          "name": "inlineRef",
+          "type": "inline",
+        },
+      },
+    },
+    "name": "validDocument",
+    "type": "document",
+  },
+  {
+    "name": "thing",
+    "type": "type",
+    "value": {
+      "attributes": {
+        "_type": {
+          "type": "objectAttribute",
+          "value": {
+            "type": "string",
+            "value": "thing",
+          },
+        },
+        "title": {
+          "optional": true,
+          "type": "objectAttribute",
+          "value": {
+            "type": "string",
+          },
+        },
+      },
+      "type": "object",
+    },
+  },
+]
+`;
+
 exports[`Extract schema test > will ignore global document reference types at the moment 1`] = `
 [
   {

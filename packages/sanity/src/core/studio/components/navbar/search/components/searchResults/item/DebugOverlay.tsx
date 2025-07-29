@@ -1,4 +1,4 @@
-/* eslint-disable i18next/no-literal-string,@sanity/i18n/no-attribute-string-literals */
+/* eslint-disable i18next/no-literal-string */
 import {Card, type CardTone, Code, Inline, Stack} from '@sanity/ui'
 import {styled} from 'styled-components'
 

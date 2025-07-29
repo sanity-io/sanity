@@ -71,7 +71,6 @@ export default async function validateAction(
       level,
       workspace: flags.workspace,
     } satisfies ValidateSchemaWorkerData,
-    // eslint-disable-next-line no-process-env
     env: process.env,
   })
 

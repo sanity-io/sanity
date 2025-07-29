@@ -3,6 +3,101 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [4.2.0](https://github.com/sanity-io/sanity/compare/v4.1.1...v4.2.0) (2025-07-29)
+
+
+### Features
+
+* add default headers for studio client requests ([#9473](https://github.com/sanity-io/sanity/issues/9473)) ([ee1e2f4](https://github.com/sanity-io/sanity/commit/ee1e2f41981f94d2af73256267d18ddced400ca9))
+* **core:** add media library field groq filters ([#9900](https://github.com/sanity-io/sanity/issues/9900)) ([fd837ab](https://github.com/sanity-io/sanity/commit/fd837aba647ccd7757a159c000833c90001f350c))
+
+
+### Bug Fixes
+
+* **core:** add perspectiveStack to tasks for preview title ([#10067](https://github.com/sanity-io/sanity/issues/10067)) ([d6892a7](https://github.com/sanity-io/sanity/commit/d6892a7bdfbb894cb5d8aaa9af5f7a9600da2ffe))
+* **core:** upgrade refractor to 5.0.0 and react-refractor to 4.0.0 and @sanity/ui to 3.0.0 ([#10068](https://github.com/sanity-io/sanity/issues/10068)) ([cf42627](https://github.com/sanity-io/sanity/commit/cf42627649b0ebc968eb22c588ec3abe967cc388))
+* **deps:** pin rollup to 4.45.3 ([#10099](https://github.com/sanity-io/sanity/issues/10099)) ([45dc487](https://github.com/sanity-io/sanity/commit/45dc487399534f3c575d65ae108d368330e2676c))
+* **deps:** update dependency @sanity/client to ^7.8.1 ([#10066](https://github.com/sanity-io/sanity/issues/10066)) ([4e0d1c5](https://github.com/sanity-io/sanity/commit/4e0d1c53856b2e6bf6c61b3609fa8ba6fcd011dc))
+* **deps:** update dependency @sanity/insert-menu to v2 ([#10087](https://github.com/sanity-io/sanity/issues/10087)) ([7f7b821](https://github.com/sanity-io/sanity/commit/7f7b82198257202362aab024652cd0594ccab35b))
+* **deps:** update dependency @sanity/presentation-comlink to ^1.0.26 ([#10086](https://github.com/sanity-io/sanity/issues/10086)) ([ce1c301](https://github.com/sanity-io/sanity/commit/ce1c3016a12f8937c17f14e5b2870ac67e9eeb81))
+* **deps:** update dependency @sanity/ui to ^3.0.1 ([#10079](https://github.com/sanity-io/sanity/issues/10079)) ([63e81eb](https://github.com/sanity-io/sanity/commit/63e81eba52b9014c58745776ddecc973ae5530b2))
+* **deps:** update dependency groq-js to ^1.17.3 ([#10069](https://github.com/sanity-io/sanity/issues/10069)) ([d74c4fb](https://github.com/sanity-io/sanity/commit/d74c4fb87eeae2bd18cd99a5df725c8469b8f8e7))
+
+
+
+## [4.1.1](https://github.com/sanity-io/sanity/compare/v4.1.0...v4.1.1) (2025-07-22)
+
+
+### Bug Fixes
+
+* **core:** typo in "asset not found" message ([#10039](https://github.com/sanity-io/sanity/issues/10039)) ([cc05b44](https://github.com/sanity-io/sanity/commit/cc05b4447bce08e702d6052848ff25613a62f23d))
+* **deps:** update dependency @sanity/comlink to ^3.0.8 ([#10034](https://github.com/sanity-io/sanity/issues/10034)) ([f007778](https://github.com/sanity-io/sanity/commit/f0077783463ea71738c34444e843242d88acb8d0))
+* **deps:** update dependency @sanity/insert-menu to v1.1.13 ([#10035](https://github.com/sanity-io/sanity/issues/10035)) ([320b6b0](https://github.com/sanity-io/sanity/commit/320b6b03b4b842511d8fa0acef3d25dda1326652))
+* **deps:** update dependency @sanity/presentation-comlink to ^1.0.25 ([#10036](https://github.com/sanity-io/sanity/issues/10036)) ([7b1dd78](https://github.com/sanity-io/sanity/commit/7b1dd7831a61bae36270e2af011eefa730cb9b39))
+* **deps:** update dependency @sanity/preview-url-secret to ^2.1.14 ([#10037](https://github.com/sanity-io/sanity/issues/10037)) ([6fdb75f](https://github.com/sanity-io/sanity/commit/6fdb75f447016f9bd2b021fb85bf4e73e1bfc11d))
+* **sanity:** do not attempt to provision media library ([524a107](https://github.com/sanity-io/sanity/commit/524a10728aca0e3062b565fa19b6dd12b690a12a))
+
+
+
+## [4.1.0](https://github.com/sanity-io/sanity/compare/v4.0.1...v4.1.0) (2025-07-21)
+
+
+### Features
+
+* **sanity:** adopt stable GROQ API for `groq2024` search strategy ([#9980](https://github.com/sanity-io/sanity/issues/9980)) ([d37e051](https://github.com/sanity-io/sanity/commit/d37e0519829113dde81040b4f8b5b022ab053522))
+* **sanity:** allow `groq2024` search strategy to match on referenced `_id` ([#10001](https://github.com/sanity-io/sanity/issues/10001)) ([416d34a](https://github.com/sanity-io/sanity/commit/416d34a906b1fbdeb24b9913492678a11437db7b))
+* swapping to use baseId for createVersion server actions ([#9977](https://github.com/sanity-io/sanity/issues/9977)) ([5dfee31](https://github.com/sanity-io/sanity/commit/5dfee317f1166dd9342dcf319f67ccc4fddede42))
+
+
+### Bug Fixes
+
+* **core:** handle tasks with undefined dates ([#10029](https://github.com/sanity-io/sanity/issues/10029)) ([7c39903](https://github.com/sanity-io/sanity/commit/7c399031b7e46711ebce7cf0e462bf507e4610e3))
+* **deps:** update dependency @portabletext/block-tools to v2 ([#10002](https://github.com/sanity-io/sanity/issues/10002)) ([eb050e7](https://github.com/sanity-io/sanity/commit/eb050e7ed7cf3273c0431039fd386142f4066d25))
+* **deps:** update dependency @portabletext/editor to v2 ([#10003](https://github.com/sanity-io/sanity/issues/10003)) ([5dda18f](https://github.com/sanity-io/sanity/commit/5dda18f1a082122b585eae95ac5ccd5a5e67025b))
+* **deps:** update dependency @sanity/client to ^7.8.0 ([#9974](https://github.com/sanity-io/sanity/issues/9974)) ([abca37f](https://github.com/sanity-io/sanity/commit/abca37f07db11a1b97c53e6718f293542237a1ca))
+* **deps:** update dependency @sanity/presentation-comlink to ^1.0.24 ([#10018](https://github.com/sanity-io/sanity/issues/10018)) ([7c6d157](https://github.com/sanity-io/sanity/commit/7c6d157b5aa04562de36c964d25ec31046b16f47))
+* **deps:** update dependency @sanity/preview-url-secret to ^2.1.13 ([#10019](https://github.com/sanity-io/sanity/issues/10019)) ([eb04dcf](https://github.com/sanity-io/sanity/commit/eb04dcf7c771db99b0dac2eb440f947805e0995b))
+* **deps:** update dependency framer-motion to ^12.23.6 ([#10004](https://github.com/sanity-io/sanity/issues/10004)) ([06868f2](https://github.com/sanity-io/sanity/commit/06868f218d6ba58ab73225621f02db667108942d))
+* **deps:** update dependency groq-js to ^1.17.2 ([#10020](https://github.com/sanity-io/sanity/issues/10020)) ([1c2dcb0](https://github.com/sanity-io/sanity/commit/1c2dcb096a8874e72bbc35e4a9fb7e1de7526eb0))
+* **deps:** update dependency react-rx to ^4.1.31 ([#10013](https://github.com/sanity-io/sanity/issues/10013)) ([c2754de](https://github.com/sanity-io/sanity/commit/c2754de648fedb9992898495764342c24bb5196c))
+* **deps:** update dependency xstate to ^5.20.1 ([#10005](https://github.com/sanity-io/sanity/issues/10005)) ([509b554](https://github.com/sanity-io/sanity/commit/509b5543e88ee90ada059ca8086f3767e5883f11))
+* **sanity:** deduplicate global search results ([#10015](https://github.com/sanity-io/sanity/issues/10015)) ([2cb8671](https://github.com/sanity-io/sanity/commit/2cb86715bcfacc6778b4f77ec346e8737c13625e))
+* **sanity:** prevent undefined weights occurring in groq2024 search query ([416e53d](https://github.com/sanity-io/sanity/commit/416e53d44515dba7feffec12b1e272135947f2b7))
+* **structure:** show the values of the deleted documents in the document pane ([#9975](https://github.com/sanity-io/sanity/issues/9975)) ([ebde28e](https://github.com/sanity-io/sanity/commit/ebde28ec212c228377ac228c8f7065e3041a4c5f))
+
+
+
+## [4.0.1](https://github.com/sanity-io/sanity/compare/v4.0.0...v4.0.1) (2025-07-16)
+
+
+### Bug Fixes
+
+* **sanity:** poll asset state after linking without failing cors ([#9965](https://github.com/sanity-io/sanity/issues/9965)) ([5bafb44](https://github.com/sanity-io/sanity/commit/5bafb44cf1702080ed5406ea1294142429f019c0))
+
+
+
+## [4.0.0](https://github.com/sanity-io/sanity/compare/v3.99.0...v4.0.0) (2025-07-14)
+
+
+### ⚠ BREAKING CHANGES
+
+* remove node 18, make base 20 (#9804)
+
+### Bug Fixes
+
+* **deps:** update dependency @portabletext/editor to ^1.58.0 ([#9954](https://github.com/sanity-io/sanity/issues/9954)) ([662eadf](https://github.com/sanity-io/sanity/commit/662eadf9f097f83ab7ef94b8b74dfed030a540ca))
+* **deps:** update dependency @sanity/comlink to ^3.0.6 ([#9943](https://github.com/sanity-io/sanity/issues/9943)) ([4c64287](https://github.com/sanity-io/sanity/commit/4c642873525212bedbf6d0866f6de78086038b07))
+* **deps:** update dependency @sanity/comlink to ^3.0.7 ([#9957](https://github.com/sanity-io/sanity/issues/9957)) ([31876da](https://github.com/sanity-io/sanity/commit/31876da2fb30fb82ac60c34cadc7362e7544287f))
+* **deps:** update dependency @sanity/import to ^3.38.3 ([#9937](https://github.com/sanity-io/sanity/issues/9937)) ([ce13bc1](https://github.com/sanity-io/sanity/commit/ce13bc16a50c87b85b58b505c850afa66048523f))
+* **deps:** update dependency @sanity/presentation-comlink to ^1.0.22 ([#9945](https://github.com/sanity-io/sanity/issues/9945)) ([19eaa1f](https://github.com/sanity-io/sanity/commit/19eaa1f0299a980b568804ec74f0c871fc765729))
+* **deps:** update dependency @sanity/presentation-comlink to ^1.0.23 ([#9958](https://github.com/sanity-io/sanity/issues/9958)) ([f8ddff1](https://github.com/sanity-io/sanity/commit/f8ddff1239bf4cc9099ef3913545e7f7b65b48d8))
+* **deps:** update dependency @sanity/preview-url-secret to ^2.1.12 ([#9946](https://github.com/sanity-io/sanity/issues/9946)) ([df90799](https://github.com/sanity-io/sanity/commit/df907993458f02fef88385b1a93b4c57c7571c35))
+* **deps:** update dependency @sanity/ui to ^2.16.7 ([#9953](https://github.com/sanity-io/sanity/issues/9953)) ([57f922a](https://github.com/sanity-io/sanity/commit/57f922a1535ed2f9629486a9d985e79ea658a311))
+* remove node 18, make base 20 ([#9804](https://github.com/sanity-io/sanity/issues/9804)) ([8fa2157](https://github.com/sanity-io/sanity/commit/8fa2157bf7d5f1390f0e1663cb32bb1ffd361188))
+* **sanity:** ensure global document reference preview configuration is present for serialized `sanity.video` schema type ([b1cfbb6](https://github.com/sanity-io/sanity/commit/b1cfbb613dd5b527d826b46dccf3f1a66f2bab2e))
+
+
+
 ## [3.99.0](https://github.com/sanity-io/sanity/compare/v3.98.1...v3.99.0) (2025-07-11)
 
 

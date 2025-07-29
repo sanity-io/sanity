@@ -1,5 +1,3 @@
-/* eslint-disable react/no-array-index-key */
-
 import {Box, Card, Code, Flex, Radio, Stack, Text} from '@sanity/ui'
 import {type ChangeEvent, useCallback, useState} from 'react'
 
@@ -41,7 +39,7 @@ function ResolvePanesStory() {
     <Box padding={4}>
       <Stack marginBottom={5} space={3}>
         {testPaths.map((testPath, idx) => (
-          <Flex align="center" as="label" key={idx}>
+          <Flex key={idx} align="center" as="label">
             <Radio
               checked={String(idx) === testKey}
               name="path"
@@ -67,7 +65,7 @@ function ResolvePanesStory() {
 
           if (resolvedPane === LOADING_PANE) {
             return (
-              <Card border key={idx} padding={4} tone={paneData.active ? 'primary' : undefined}>
+              <Card key={idx} border padding={4} tone={paneData.active ? 'primary' : undefined}>
                 <Text>[Loading…]</Text>
               </Card>
             )
@@ -75,7 +73,7 @@ function ResolvePanesStory() {
 
           if (resolvedPane.type === 'list') {
             return (
-              <Card border key={idx} padding={4} tone={paneData.active ? 'primary' : undefined}>
+              <Card key={idx} border padding={4} tone={paneData.active ? 'primary' : undefined}>
                 <Stack space={3}>
                   <Text>[List] {resolvedPane.title}</Text>
                   <Text size={1}>
@@ -91,7 +89,7 @@ function ResolvePanesStory() {
 
           if (resolvedPane.type === 'documentList') {
             return (
-              <Card border key={idx} padding={4} tone={paneData.active ? 'primary' : undefined}>
+              <Card key={idx} border padding={4} tone={paneData.active ? 'primary' : undefined}>
                 <Stack space={3}>
                   <Text>[DocumentList] {resolvedPane.title}</Text>
                   <Text size={1}>
@@ -107,7 +105,7 @@ function ResolvePanesStory() {
 
           if (resolvedPane.type === 'document') {
             return (
-              <Card border key={idx} padding={4} tone={paneData.active ? 'primary' : undefined}>
+              <Card key={idx} border padding={4} tone={paneData.active ? 'primary' : undefined}>
                 <Stack space={3}>
                   <Text>[Document]</Text>
                   <Text size={1}>
@@ -122,7 +120,7 @@ function ResolvePanesStory() {
           }
 
           return (
-            <Card border key={idx} padding={4} tone={paneData.active ? 'primary' : undefined}>
+            <Card key={idx} border padding={4} tone={paneData.active ? 'primary' : undefined}>
               <Text>
                 [{resolvedPane.type}] {resolvedPane.title}
               </Text>

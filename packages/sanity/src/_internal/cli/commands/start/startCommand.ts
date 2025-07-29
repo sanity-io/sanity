@@ -69,7 +69,6 @@ const startCommand: CliCommandDefinition = {
         await devAction(args, context)
       } else {
         // Indicate that this isn't an expected exit
-        // eslint-disable-next-line no-process-exit
         process.exit(1)
       }
     }

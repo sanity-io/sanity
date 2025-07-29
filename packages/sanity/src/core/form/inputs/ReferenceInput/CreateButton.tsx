@@ -84,8 +84,8 @@ export function CreateButton(props: Props) {
         <Menu ref={menuRef}>
           {createOptions.map((createOption) => (
             <Tooltip
-              disabled={createOption.permission.granted}
               key={createOption.id}
+              disabled={createOption.permission.granted}
               content={
                 <InsufficientPermissionsMessage
                   currentUser={currentUser}

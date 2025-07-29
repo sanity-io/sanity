@@ -104,7 +104,6 @@ export function tasksReducer(
     }
 
     case 'TASK_DELETED': {
-      // eslint-disable-next-line @typescript-eslint/no-unused-vars
       const {[action.id]: _, ...restTasks} = state.tasks
 
       return {

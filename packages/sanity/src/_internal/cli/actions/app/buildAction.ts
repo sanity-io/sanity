@@ -200,7 +200,6 @@ export default async function buildSanityApp(
   return {didCompile: true}
 }
 
-// eslint-disable-next-line no-process-env
 function getSanityEnvVars(env: Record<string, string | undefined> = process.env): string[] {
   return Object.keys(env).filter((key) => key.toUpperCase().startsWith('SANITY_APP_'))
 }

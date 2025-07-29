@@ -97,8 +97,8 @@ export const AuthorReferenceInput = forwardRef(function AuthorReferenceInput(
       ) : (
         authors.map((author, i) => (
           <Button
-            ref={i === 0 ? inputRef : undefined}
             key={author._id}
+            ref={i === 0 ? inputRef : undefined}
             type="button"
             // className={current === author._id ? styles.activeButton : styles.button}
             onClick={readOnly ? noop : () => handleChange(author)}

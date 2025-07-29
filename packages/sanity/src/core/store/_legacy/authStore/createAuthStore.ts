@@ -8,6 +8,7 @@ import {defer} from 'rxjs'
 import {distinctUntilChanged, map, shareReplay, startWith, switchMap} from 'rxjs/operators'
 
 import {type AuthConfig} from '../../../config'
+import {DEFAULT_STUDIO_CLIENT_HEADERS} from '../../../studioClient'
 import {CorsOriginError} from '../cors'
 import {createBroadcastChannel} from './createBroadcastChannel'
 import {createLoginComponent} from './createLoginComponent'
@@ -195,6 +196,7 @@ export function _createAuthStore({
         requestTagPrefix: 'sanity.studio',
         ignoreBrowserTokenWarning: true,
         allowReconfigure: false,
+        headers: DEFAULT_STUDIO_CLIENT_HEADERS,
         ...hostOptions,
       }),
     ),
@@ -232,6 +234,7 @@ export function _createAuthStore({
       withCredentials: true,
       apiVersion: '2021-06-07',
       requestTagPrefix: 'sanity.studio',
+      headers: DEFAULT_STUDIO_CLIENT_HEADERS,
       ...hostOptions,
     })
 
@@ -276,6 +279,7 @@ export function _createAuthStore({
       ...(token ? {token} : {withCredentials: true}),
       apiVersion: '2021-06-07',
       requestTagPrefix: 'sanity.studio',
+      headers: DEFAULT_STUDIO_CLIENT_HEADERS,
       ...hostOptions,
     })
 

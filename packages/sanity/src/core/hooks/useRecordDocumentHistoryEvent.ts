@@ -101,7 +101,6 @@ export function useRecordDocumentHistoryEvent({
 
         node?.post?.(message.type, message.data)
       } catch (error) {
-        // eslint-disable-next-line no-console
         console.error('Failed to record history event:', error)
         throw error
       }

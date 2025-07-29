@@ -1,6 +1,6 @@
 {
   "name": "@sanity/vision",
-  "version": "3.99.0",
+  "version": "4.2.0",
   "description": "Sanity plugin for running/debugging GROQ-queries against Sanity datasets",
   "keywords": [
     "sanity",
@@ -65,9 +65,9 @@
     "@rexxars/react-split-pane": "^1.0.0",
     "@sanity/color": "^3.0.6",
     "@sanity/icons": "^3.7.4",
-    "@sanity/ui": "^2.16.7",
+    "@sanity/ui": "^3.0.1",
     "@sanity/uuid": "^3.0.2",
-    "@uiw/react-codemirror": "^4.23.8",
+    "@uiw/react-codemirror": "^4.24.1",
     "is-hotkey-esm": "^1.0.0",
     "json-2-csv": "^5.5.1",
     "json5": "^2.2.3",
@@ -75,9 +75,9 @@
     "quick-lru": "^5.1.1",
     "react-compiler-runtime": "19.1.0-rc.2",
     "react-fast-compare": "^3.2.2",
-    "react-rx": "^4.1.30",
-    "rxjs": "^7.8.0",
-    "use-effect-event": "^2.0.2"
+    "react-rx": "^4.1.31",
+    "rxjs": "^7.8.2",
+    "use-effect-event": "^2.0.3"
   },
   "devDependencies": {
     "@repo/eslint-config": "workspace:*",
@@ -85,7 +85,7 @@
     "@repo/package.config": "workspace:*",
     "@repo/test-config": "workspace:*",
     "@sanity/cli": "workspace:*",
-    "@sanity/client": "^7.6.0",
+    "@sanity/client": "^7.8.1",
     "@sanity/codegen": "workspace:*",
     "@sanity/diff": "workspace:*",
     "@sanity/eslint-config-i18n": "catalog:",

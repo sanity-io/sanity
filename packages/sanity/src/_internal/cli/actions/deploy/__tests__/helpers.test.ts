@@ -1,4 +1,4 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
+// oxlint-disable no-explicit-any
 import {type Dirent, type Stats} from 'node:fs'
 import fs from 'node:fs/promises'
 import {Readable} from 'node:stream'

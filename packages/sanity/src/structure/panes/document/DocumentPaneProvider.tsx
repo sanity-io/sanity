@@ -1,4 +1,3 @@
-/* eslint-disable camelcase */
 import {useTelemetry} from '@sanity/telemetry/react'
 import {type ObjectSchemaType, type SanityDocument, type SanityDocumentLike} from '@sanity/types'
 import {useToast} from '@sanity/ui'
@@ -11,6 +10,7 @@ import {
   type EditStateFor,
   EMPTY_ARRAY,
   getPublishedId,
+  isGoingToUnpublish,
   isPerspectiveWriteable,
   isVersionId,
   type PartialContext,
@@ -29,6 +29,7 @@ import {DocumentPaneContext} from 'sanity/_singletons'
 import {usePaneRouter} from '../../components'
 import {useDiffViewRouter} from '../../diffView/hooks/useDiffViewRouter'
 import {useDocumentIdStack} from '../../hooks/useDocumentIdStack'
+import {useDocumentLastRev} from '../../hooks/useDocumentLastRev'
 import {structureLocaleNamespace} from '../../i18n'
 import {type PaneMenuItem} from '../../types'
 import {DocumentURLCopied} from './__telemetry__'
@@ -49,7 +50,7 @@ interface DocumentPaneProviderProps extends DocumentPaneProviderWrapperProps {
 /**
  * @internal
  */
-// eslint-disable-next-line complexity, max-statements
+// eslint-disable-next-line max-statements
 export const DocumentPaneProvider = memo((props: DocumentPaneProviderProps) => {
   const {children, index, pane, paneKey, onFocusPath, forcedVersion, historyStore} = props
   const {
@@ -135,6 +136,7 @@ export const DocumentPaneProvider = memo((props: DocumentPaneProviderProps) => {
   } = useDocumentPaneInspector({documentId, documentType, params, setParams: setPaneParams})
 
   const [isDeleting, setIsDeleting] = useState(false)
+  const {lastRevisionDocument} = useDocumentLastRev(documentId, documentType)
 
   /**
    * Determine if the current document is deleted.
@@ -197,9 +199,19 @@ export const DocumentPaneProvider = memo((props: DocumentPaneProviderProps) => {
       if (onOlderRevision) {
         return revisionDocument || {_id: value._id, _type: value._type}
       }
+
+      // If the document is deleted (no draft, published, or version), return the last revision
+      const isDeleted = !value._createdAt && !value._updatedAt
+      if (isDeleted && lastNonDeletedRevId) {
+        // Return the fetched last revision document if available
+        if (lastRevisionDocument) {
+          return lastRevisionDocument
+        }
+      }
+
       return value
     },
-    [onOlderRevision, revisionDocument],
+    [onOlderRevision, revisionDocument, lastNonDeletedRevId, lastRevisionDocument],
   )
 
   const {
@@ -424,6 +436,13 @@ export const DocumentPaneProvider = memo((props: DocumentPaneProviderProps) => {
   const isDeleted = useMemo(() => getIsDeleted(editState), [editState, getIsDeleted])
   const revisionNotFound = onOlderRevision && !revisionDocument
 
+  const currentDisplayed = useMemo(() => {
+    if (editState.version && isGoingToUnpublish(editState.version)) {
+      return editState.published
+    }
+    return displayed
+  }, [editState.version, editState.published, displayed])
+
   const documentPane: DocumentPaneContextValue = useMemo(
     () =>
       ({
@@ -436,7 +455,7 @@ export const DocumentPaneProvider = memo((props: DocumentPaneProviderProps) => {
         collapsedPaths,
         compareValue,
         connectionState,
-        displayed,
+        displayed: currentDisplayed,
         documentId,
         documentIdRaw,
         documentType,
@@ -486,6 +505,7 @@ export const DocumentPaneProvider = memo((props: DocumentPaneProviderProps) => {
         revisionId,
         revisionNotFound,
         lastNonDeletedRevId,
+        lastRevisionDocument,
       }) satisfies DocumentPaneContextValue,
     [
       actions,
@@ -497,7 +517,7 @@ export const DocumentPaneProvider = memo((props: DocumentPaneProviderProps) => {
       collapsedPaths,
       compareValue,
       connectionState,
-      displayed,
+      currentDisplayed,
       documentId,
       documentIdRaw,
       documentType,
@@ -546,6 +566,7 @@ export const DocumentPaneProvider = memo((props: DocumentPaneProviderProps) => {
       revisionId,
       revisionNotFound,
       lastNonDeletedRevId,
+      lastRevisionDocument,
     ],
   )
 

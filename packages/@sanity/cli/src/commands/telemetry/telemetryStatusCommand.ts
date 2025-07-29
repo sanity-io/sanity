@@ -41,7 +41,6 @@ const telemetryStatusCommand: CliCommandDefinition = {
   description: 'Check telemetry consent status for your logged in user',
   action: async (_, context) => {
     const {chalk, output} = context
-    // eslint-disable-next-line no-process-env
     const {status, reason} = await resolveConsent({env: process.env})
 
     switch (true) {

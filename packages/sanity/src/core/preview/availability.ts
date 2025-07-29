@@ -1,5 +1,3 @@
-/* eslint-disable max-nested-callbacks */
-
 import {type SanityClient} from '@sanity/client'
 import {flatten, keyBy} from 'lodash'
 import {combineLatest, defer, from, type Observable, of} from 'rxjs'

@@ -103,9 +103,9 @@ function SubSection({subSection}: {subSection: Section}) {
             if (!item.url) return null
             return (
               <MenuItem
+                key={item._key}
                 as="a"
                 tone="default"
-                key={item._key}
                 text={item.title}
                 href={item.url}
                 target="_blank"

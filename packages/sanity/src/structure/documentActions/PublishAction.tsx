@@ -46,7 +46,6 @@ function AlreadyPublished({publishedAt}: {publishedAt: string}) {
 }
 
 /** @internal */
-// eslint-disable-next-line complexity
 export const PublishAction: DocumentActionComponent = (props) => {
   const {id, type, liveEdit, draft, published, release} = props
   const [publishState, setPublishState] = useState<'publishing' | 'published' | null>(null)
@@ -72,7 +71,6 @@ export const PublishAction: DocumentActionComponent = (props) => {
 
   const currentUser = useCurrentUser()
 
-  // eslint-disable-next-line no-nested-ternary
   const title = publish.disabled
     ? getDisabledReason(publish.disabled, (published || {})._updatedAt, t) || ''
     : hasValidationErrors
@@ -198,7 +196,6 @@ export const PublishAction: DocumentActionComponent = (props) => {
       disabled: disabled || isPermissionsLoading,
       tone: 'default',
       label:
-        // eslint-disable-next-line no-nested-ternary
         publishState === 'published'
           ? t('action.publish.published.label')
           : publishScheduled || publishState === 'publishing'
@@ -207,7 +204,6 @@ export const PublishAction: DocumentActionComponent = (props) => {
       // @todo: Implement loading state, to show a `<Button loading />` state
       // loading: publishScheduled || publishState === 'publishing',
       icon: PublishIcon,
-      // eslint-disable-next-line no-nested-ternary
       title: publishScheduled
         ? t('action.publish.waiting')
         : publishState === 'published' || publishState === 'publishing'

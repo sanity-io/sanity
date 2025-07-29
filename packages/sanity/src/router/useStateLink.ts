@@ -55,7 +55,6 @@ export function useStateLink(options: UseStateLinkOptions): {
   }
 
   if (!state && !toIndex) {
-    // eslint-disable-next-line no-console
     console.error(
       new Error(
         'No state passed to StateLink. If you want to link to an empty state, its better to use the the `toIndex` property',

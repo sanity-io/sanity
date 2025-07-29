@@ -20,7 +20,6 @@ export function UserComponentPane(props: UserComponentPaneProps) {
     component: UserComponent,
     menuItems,
     menuItemGroups,
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     type: _unused,
     ...restPane
   } = pane

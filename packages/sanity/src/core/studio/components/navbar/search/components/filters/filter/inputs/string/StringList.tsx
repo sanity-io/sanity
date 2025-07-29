@@ -113,7 +113,7 @@ export function SearchFilterStringListInput({
         <Menu>
           {items.map((item, index) => (
             <CustomMenuItem
-              // eslint-disable-next-line react/no-array-index-key
+              // oxlint-disable-next-line no-array-index-key
               key={index}
               onClick={handleClick}
               selected={item.value === value}

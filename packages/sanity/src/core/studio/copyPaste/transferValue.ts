@@ -163,7 +163,6 @@ function resolveReadOnlyAncestor({
   return Boolean(isReadOnly)
 }
 
-// eslint-disable-next-line complexity, max-statements
 export async function transferValue({
   sourceRootSchemaType,
   sourcePath,

@@ -34,6 +34,7 @@ export const VersionContextMenu = memo(function VersionContextMenu(props: {
   disabled?: boolean
   locked?: boolean
   type: string
+  isGoingToUnpublish?: boolean
 }) {
   const {
     documentId,
@@ -47,6 +48,7 @@ export const VersionContextMenu = memo(function VersionContextMenu(props: {
     disabled,
     locked,
     type,
+    isGoingToUnpublish = false,
   } = props
   const {t} = useTranslation()
   const isPublished = isPublishedId(documentId) && !isVersion
@@ -99,18 +101,19 @@ export const VersionContextMenu = memo(function VersionContextMenu(props: {
           icon={CopyIcon}
           popover={{placement: 'right-start'}}
           text={t('release.action.copy-to')}
-          disabled={disabled || !hasCreatePermission}
+          disabled={disabled || !hasCreatePermission || isGoingToUnpublish}
           tooltipProps={{
             disabled: hasCreatePermission === true,
             content: t('release.action.permission.error'),
           }}
+          data-testid="copy-version-to-release-button-group"
         >
           <ReleasesList key={fromRelease} space={1}>
             {optionsReleaseList.map((release) => {
               return (
                 <MenuItem
-                  as="a"
                   key={release._id}
+                  as="a"
                   onClick={() => onCreateVersion(release._id)}
                   renderMenuItem={() => <VersionContextMenuItem release={release} />}
                   disabled={disabled}

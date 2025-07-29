@@ -127,7 +127,6 @@ interface DocumentFormValue {
  *
  * Use this as a base point to create your own form.
  */
-// eslint-disable-next-line max-statements
 export function useDocumentForm(options: DocumentFormOptions): DocumentFormValue {
   const {
     documentType,
@@ -205,6 +204,11 @@ export function useDocumentForm(options: DocumentFormOptions): DocumentFormValue
   const value: SanityDocumentLike = useMemo(() => {
     const baseValue = initialValue?.value || {_id: documentId, _type: documentType}
     if (releaseId) {
+      // in cases where the current version is going to be unpublished, we need to show the published document
+      // this way, instead of showing the version that will stop existing, we show instead the published document with a fall back
+      if (editState.version && isGoingToUnpublish(editState.version)) {
+        return editState.published || baseValue
+      }
       return editState.version || editState.draft || editState.published || baseValue
     }
     if (selectedPerspectiveName && isPublishedPerspective(selectedPerspectiveName)) {
@@ -306,6 +310,7 @@ export function useDocumentForm(options: DocumentFormOptions): DocumentFormValue
   )
   const {isLinked} = useCanvasCompanionDoc(value._id)
 
+  // eslint-disable-next-line complexity
   const readOnly = useMemo(() => {
     const hasNoPermission = !isPermissionsLoading && !permissions?.granted
     const updateActionDisabled = !isActionEnabled(schemaType!, 'update')

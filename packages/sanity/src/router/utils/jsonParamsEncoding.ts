@@ -8,7 +8,7 @@ import {decodeBase64Url, encodeBase64Url} from './base64url'
  * @internal
  * @hidden
  */
-export function decodeJsonParams(pathSegment = ''): Record<string, unknown> {
+export function decodeJsonParams(pathSegment = ''): any {
   const segment = decodeURIComponent(pathSegment)
 
   if (!segment) {
@@ -46,6 +46,6 @@ export function decodeJsonParams(pathSegment = ''): Record<string, unknown> {
  * @internal
  * @hidden
  */
-export function encodeJsonParams(params?: Record<string, unknown>): string {
+export function encodeJsonParams(params?: any): string {
   return params ? encodeBase64Url(JSON.stringify(params)) : ''
 }

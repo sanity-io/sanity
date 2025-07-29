@@ -72,7 +72,6 @@ export default async function typegenGenerateAction(
       searchPath: codegenConfig.path,
       overloadClientMethods: codegenConfig.overloadClientMethods,
     } satisfies TypegenGenerateTypesWorkerData,
-    // eslint-disable-next-line no-process-env
     env: process.env,
   })
 

@@ -22,7 +22,7 @@ This Sanity Function automatically sets a `firstPublished` timestamp when a post
 
 1. **Initialize the example**
 
-   Run this if you haven't initlized blueprints:
+   Run this if you haven't initialized blueprints:
 
    ```bash
    npx sanity blueprints init
@@ -58,17 +58,19 @@ This Sanity Function automatically sets a `firstPublished` timestamp when a post
 
 ## Testing the function locally
 
-You can test the first-published function locally using the Sanity CLI before deploying:
+You can test the first-published function locally using the Sanity CLI before deploying.
 
-### 1. Basic Function Test
+### Simple Testing Command
 
-Test with the included sample document:
+Test the function with an existing document ID from your dataset:
 
 ```bash
-npx sanity functions test first-published --file document.json
+npx sanity functions test first-published --document-id <insert-document-id> --dataset production --with-user-token
 ```
 
-### 2. Interactive Development Mode
+Replace `<insert-document-id>` with an actual document ID from your dataset and `production` with your dataset name.
+
+### Interactive Development Mode
 
 Start the development server for interactive testing:
 
@@ -76,31 +78,7 @@ Start the development server for interactive testing:
 npx sanity functions dev
 ```
 
-### 3. Test with Custom Data
-
-Test with your own document data:
-
-```bash
-npx sanity functions test first-published --data '{
-  "_type": "post",
-  "_id": "test-post",
-  "title": "Test Article"
-}'
-```
-
-### 4. Test with Real Document Data
-
-Capture a real document from your dataset:
-
-```bash
-# Export a real document for testing
-npx sanity documents get "your-post-id" > test-document.json
-
-# Test with the real document
-npx sanity functions test first-published --file test-document.json
-```
-
-### 5. Enable Debugging
+#### Enable Debugging
 
 Add temporary logging to your function:
 

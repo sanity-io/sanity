@@ -72,7 +72,6 @@ function warnOnUnknownExports(mod: Record<string, unknown>) {
 
     const hint = closest ? ` - did you mean "${closest}"` : ''
 
-    // eslint-disable-next-line
     console.warn(`Unknown structure export "${key}"${hint}`)
   }
 }

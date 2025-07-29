@@ -3,7 +3,7 @@ import {CANVAS_INTEGRATION_NAME, canvasIntegration} from '../canvas/canvasIntegr
 import {comments} from '../comments/plugin'
 import {createIntegration} from '../create/createIntegrationPlugin'
 import {releases, RELEASES_NAME} from '../releases/plugin'
-// eslint-disable-next-line no-restricted-imports
+// oxlint-disable-next-line no-restricted-imports
 import {SCHEDULED_PUBLISHING_NAME, scheduledPublishing} from '../scheduled-publishing/plugin'
 import {tasks, TASKS_NAME} from '../tasks/plugin'
 import {

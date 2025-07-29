@@ -1,4 +1,3 @@
-/* eslint-disable max-nested-callbacks */
 import {renderHook, waitFor} from '@testing-library/react'
 import {describe, expect, it} from 'vitest'
 

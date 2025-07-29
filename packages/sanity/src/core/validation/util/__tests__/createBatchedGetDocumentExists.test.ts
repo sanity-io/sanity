@@ -39,7 +39,7 @@ describe('createBatchedGetDocumentExists', () => {
     const mockClient = {
       getDataUrl: (operation: string, path?: string) => `https://example.com/${operation}/${path}`,
       observable: {
-        // eslint-disable-next-line @typescript-eslint/no-unused-vars, @typescript-eslint/no-explicit-any
+        // oxlint-disable-next-line no-explicit-any
         request: vi.fn((_params: any) => of({omitted: []})),
       },
     }
@@ -68,7 +68,7 @@ describe('createBatchedGetDocumentExists', () => {
     const mockClient = {
       getDataUrl: (operation: string, path?: string) => `https://example.com/${operation}/${path}`,
       observable: {
-        // eslint-disable-next-line @typescript-eslint/no-unused-vars, @typescript-eslint/no-explicit-any
+        // oxlint-disable-next-line no-explicit-any
         request: vi.fn((_params: any) => from(promise).pipe(map(() => ({omitted: []})))),
       },
     }

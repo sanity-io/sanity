@@ -74,14 +74,14 @@ export function createSearchQuery(
     .filter(({paths}) => paths.length !== 0)
 
   // Note: Computing this is unnecessary when `!isScored`.
-  const flattenedSpecs = specs
-    .map(({typeName, paths}) => paths.map((path) => ({...path, typeName})))
-    .flat()
+  const flattenedSpecs = specs.flatMap(({typeName, paths}) =>
+    paths.map((path) => ({...path, typeName})),
+  )
 
   // Note: Computing this is unnecessary when `!isScored`.
   const groupedSpecs = groupBy(flattenedSpecs, (entry) => [entry.path, entry.weight].join(':'))
 
-  const baseMatch = '[@, _id] match text::query($__query)'
+  const baseMatch = '([@, _id] match text::query($__query) || references($__rawQuery))'
 
   // Note: Computing this is unnecessary when `!isScored`.
   const score = Object.entries(groupedSpecs)
@@ -133,11 +133,14 @@ export function createSearchQuery(
     .flat()
     .join(' ')
 
+  const rawQuery = typeof searchParams === 'string' ? searchParams : searchParams.query
+
   const params: SearchParams = {
     __types: searchTerms.types.map((type) => (isSchemaType(type) ? type.name : type.type)),
     // Overfetch by 1 to determine whether there is another page to fetch.
     __limit: (options?.limit ?? DEFAULT_LIMIT) + 1,
-    __query: prefixLast(typeof searchParams === 'string' ? searchParams : searchParams.query),
+    __query: prefixLast(rawQuery),
+    __rawQuery: rawQuery,
     ...options.params,
   }
 

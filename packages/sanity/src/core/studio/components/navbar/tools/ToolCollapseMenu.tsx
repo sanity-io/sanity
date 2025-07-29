@@ -53,10 +53,9 @@ export function ToolCollapseMenu(props: ToolCollapseMenuProps) {
 
         return (
           <Button
+            key={`${tool.name}-${index}`}
             as={Link}
             data-as="a"
-            // eslint-disable-next-line react/no-array-index-key
-            key={`${tool.name}-${index}`}
             mode="bleed"
             selected={activeToolName === tool.name}
             text={title}

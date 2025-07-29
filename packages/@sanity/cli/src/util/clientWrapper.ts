@@ -50,7 +50,6 @@ function isReqResError(err: Error): err is ClientError | ServerError {
 }
 
 export function getCliToken(): string | undefined {
-  // eslint-disable-next-line no-process-env
   const envAuthToken = process.env.SANITY_AUTH_TOKEN
   const userConfig = getUserConfig()
   return envAuthToken || userConfig.get('authToken')
@@ -78,9 +77,7 @@ export function getClientWrapper(
   return function (opts?: ClientRequirements) {
     // Read these environment variables "late" to allow `.env` files
 
-    /* eslint-disable no-process-env */
     const sanityEnv = process.env.SANITY_INTERNAL_ENV || 'production'
-    /* eslint-enable no-process-env */
 
     const {requireUser, requireProject, api} = {...defaults, ...opts}
     const token = getCliToken()

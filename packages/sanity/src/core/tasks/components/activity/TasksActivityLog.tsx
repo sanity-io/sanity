@@ -280,8 +280,8 @@ export function TasksActivityLog(props: TasksActivityLogProps) {
 
                     return (
                       <TasksActivityCommentItem
-                        currentUser={currentUser}
                         key={item.payload.parentComment._id}
+                        currentUser={currentUser}
                         mentionOptions={mentionOptions}
                         onCreateRetry={handleCommentCreateRetry}
                         onDelete={handleDeleteCommentStart}

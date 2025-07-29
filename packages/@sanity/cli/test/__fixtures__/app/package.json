@@ -13,7 +13,7 @@
     "sanity"
   ],
   "dependencies": {
-    "@sanity/sdk": "^0.0.0-rc",
+    "@sanity/sdk": "^2.1.1",
     "@sanity/sdk-react": "^0.0.0-rc",
     "react": "^19",
     "react-dom": "^19"
@@ -21,8 +21,8 @@
   "devDependencies": {
     "@sanity/eslint-config-studio": "catalog:",
     "@types/react": "^18.3.20",
-    "eslint": "^9.29.0",
-    "prettier": "^3.6.1",
+    "eslint": "^9.31.0",
+    "prettier": "^3.6.2",
     "sanity": "^3",
     "typescript": "^5.8.3"
   },

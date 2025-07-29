@@ -128,7 +128,6 @@ export function getReferenceInfo(
           return combineLatest([previewState$, publishedDocumentExists$]).pipe(
             map(([previewState, publishedDocumentExists]): ReferenceInfo => {
               const availability =
-                // eslint-disable-next-line no-nested-ternary
                 pairAvailability.version?.available ||
                 pairAvailability.draft.available ||
                 pairAvailability.published.available

@@ -1,6 +1,7 @@
 import {type AssetFromSource, type FileSchemaType, type ImageSchemaType} from '@sanity/types'
 import {Flex, Stack, useTheme, useToast} from '@sanity/ui'
-import {type ReactNode, useCallback, useState} from 'react'
+import {type ReactNode, useCallback, useMemo, useState} from 'react'
+import {encodeJsonParams} from 'sanity/router'
 
 import {Button} from '../../../../../ui-components'
 import {useTranslation} from '../../../../i18n'
@@ -53,11 +54,26 @@ export function SelectAssetsDialog(props: SelectAssetsDialogProps): ReactNode {
   const [assetSelection, setAssetSelection] = useState<AssetSelectionItem[]>(props.selection)
   const [didSelect, setDidSelect] = useState(false)
 
+  const urlFilters = useMemo(() => {
+    const filters: any[] = []
+    if (schemaType?.options?.mediaLibrary?.filters) {
+      filters.push(
+        ...schemaType.options.mediaLibrary.filters.map((filter) => ({
+          type: 'groq',
+          name: filter.name,
+          query: filter.query,
+          active: true,
+        })),
+      )
+    }
+    return encodeJsonParams(filters)
+  }, [schemaType?.options?.mediaLibrary?.filters])
+
   const pluginApiVersion = mediaLibraryConfig.__internal.pluginApiVersion
   const appBasePath = mediaLibraryConfig.__internal.appBasePath
   const iframeUrl =
     `${appHost}${appBasePath}/plugin/${pluginApiVersion}/library/${libraryId}/assets?selectionType=${selectionType}` +
-    `&selectAssetTypes=${selectAssetType === 'sanity.video' ? 'video' : selectAssetType}&scheme=${dark ? 'dark' : 'light'}&auth=${authType}`
+    `&selectAssetTypes=${selectAssetType === 'sanity.video' ? 'video' : selectAssetType}&scheme=${dark ? 'dark' : 'light'}&auth=${authType}&filters=${urlFilters}`
   const {onLinkAssets} = useLinkAssets({schemaType})
 
   const handleSelect = useCallback(async () => {

@@ -50,9 +50,7 @@ function Inner({mode}: {mode: CommentsUIMode}) {
       return (
         <CommentsUpsellPanel
           data={upsellData}
-          // eslint-disable-next-line react/jsx-handler-names
           onPrimaryClick={telemetryLogs.panelPrimaryClicked}
-          // eslint-disable-next-line react/jsx-handler-names
           onSecondaryClick={telemetryLogs.panelSecondaryClicked}
         />
       )

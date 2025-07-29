@@ -1,4 +1,3 @@
-/* eslint-disable no-nested-ternary */
 import {type ReleaseDocument} from '@sanity/client'
 import {Card, Flex} from '@sanity/ui'
 import {useMemo} from 'react'

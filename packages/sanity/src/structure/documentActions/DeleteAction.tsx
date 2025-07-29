@@ -1,5 +1,3 @@
-/* eslint-disable import/no-extraneous-dependencies */
-
 import {TrashIcon} from '@sanity/icons'
 import {useCallback, useMemo, useState} from 'react'
 import {
@@ -80,7 +78,6 @@ export const DeleteAction: DocumentActionComponent = ({id, type, draft, onComple
         type: 'custom',
         component: (
           <ConfirmDeleteDialog
-            // eslint-disable-next-line @sanity/i18n/no-attribute-string-literals
             action="delete"
             id={draft?._id || id}
             type={type}

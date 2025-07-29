@@ -1,7 +1,5 @@
 import {Observable} from 'rxjs'
 
-/* eslint-disable */
-
 /**
  * Check if we need to change dims.
  */
@@ -123,7 +121,6 @@ function _orient(img: HTMLImageElement, orientationNumber: number): HTMLCanvasEl
   return canvas
 }
 
-/* eslint-enable */
 export function orient(image: HTMLImageElement, orientationId: Orientation) {
   return new Observable((observer) => {
     // console.time('canvas to blob')

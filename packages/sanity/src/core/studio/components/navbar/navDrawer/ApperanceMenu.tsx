@@ -19,7 +19,7 @@ export function AppearanceMenu({
     <Card borderTop flex="none" padding={2} overflow="auto">
       <Stack as="ul" space={1}>
         {options.map(({icon, label, name, onSelect, selected, title}) => (
-          <Stack as="li" key={name}>
+          <Stack key={name} as="li">
             <Button
               aria-label={label}
               icon={icon}

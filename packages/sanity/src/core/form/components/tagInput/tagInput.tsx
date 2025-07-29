@@ -37,7 +37,7 @@ const Root = styled(Card)((props: {theme: Theme}): CSSObject => {
 
     '& > .content': {
       position: 'relative',
-      lineHeight: 0,
+      lineHeight: '0',
       margin: `-${space} 0 0 -${space}`,
     },
 
@@ -94,9 +94,9 @@ const Input = styled.input((props: {theme: Theme}): CSSObject => {
     'borderRadius': 0,
     'outline': 'none',
     'fontSize': rem(size.fontSize),
-    'lineHeight': size.lineHeight / size.fontSize,
+    'lineHeight': `${size.lineHeight / size.fontSize}`,
     'fontFamily': font.family,
-    'fontWeight': font.weights.regular,
+    'fontWeight': `${font.weights.regular}`,
     'margin': 0,
     'display': 'block',
     'minWidth': '1px',
@@ -267,7 +267,6 @@ export const TagInput = forwardRef(
 
         <div className="content">
           {value.map((tag, tagIndex) => (
-            // eslint-disable-next-line react/no-array-index-key
             <TagBox key={`tag-${tagIndex}`}>
               <Tag
                 enabled={enabled}

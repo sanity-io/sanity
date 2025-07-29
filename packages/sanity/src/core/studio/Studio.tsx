@@ -1,4 +1,3 @@
-/* eslint-disable simple-import-sort/imports */
 /* disabling for now because the imports trigger side effects causing test snapshots to update */
 import {type Config} from '../config'
 import {type StudioThemeColorSchemeKey} from '../theme/types'

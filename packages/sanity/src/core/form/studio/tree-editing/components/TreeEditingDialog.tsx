@@ -231,13 +231,13 @@ export function TreeEditingDialog(props: TreeEditingDialogProps): React.JSX.Elem
       >
         <AnimatePresence initial={false} mode="wait" onExitComplete={handleAnimationExitComplete}>
           <MotionFlex
+            key={toString(treeState.relativePath)}
             animate="animate"
             data-testid="tree-editing-dialog-content"
             direction="column"
             exit="exit"
             height="fill"
             initial="initial"
-            key={toString(treeState.relativePath)}
             overflow="hidden"
             padding={1}
             sizing="border"

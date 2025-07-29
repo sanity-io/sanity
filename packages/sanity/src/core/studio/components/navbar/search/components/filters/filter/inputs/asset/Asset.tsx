@@ -155,8 +155,8 @@ export function SearchFilterAssetInput(type?: AssetType) {
                       <Menu>
                         {assetSources.map((source) => (
                           <MenuItem
-                            icon={source.icon || ImageIcon}
                             key={source.name}
+                            icon={source.icon || ImageIcon}
                             // eslint-disable-next-line react/jsx-no-bind
                             onClick={() => handleSelectAssetSource(source)}
                             text={

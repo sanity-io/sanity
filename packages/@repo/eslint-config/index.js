@@ -68,6 +68,10 @@ export default [
         ...globals.node,
       },
     },
+    linterOptions: {
+      reportUnusedDisableDirectives: 'error',
+      reportUnusedInlineConfigs: 'error',
+    },
     settings: {react: {version: '19'}},
   }),
   {
@@ -138,6 +142,16 @@ export default [
       'unicorn/prefer-keyboard-event-key': 'error',
       'unicorn/custom-error-definition': 'error',
       'no-warning-comments': 'off',
+      'react/jsx-sort-props': [
+        'error',
+        {
+          // The JSX transform might use `React.createElement` instead of the jsx runtime if the order of `key` is wrong: https://github.com/facebook/react/issues/20031#issuecomment-710346866
+          reservedFirst: ['key'],
+          // While alphabetical sorting usually makes the code more readable, it's tricky to enable it while PRs are in-flight as it creates a very large diff.
+          // Thus for now it's disabled.
+          noSortAlphabetically: true,
+        },
+      ],
     },
     settings: {
       'import/extensions': extensions,

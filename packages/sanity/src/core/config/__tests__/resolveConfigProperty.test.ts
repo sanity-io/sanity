@@ -50,7 +50,6 @@ describe('resolveConfigProperty', () => {
 
     const context = {}
 
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const reducer = vi.fn<ConfigPropertyReducer<SchemaTypeDefinition[], unknown>>(
       (prev, config, _context) => {
         return [...prev, ...((config.schema?.types || []) as SchemaTypeDefinition[])]
@@ -121,7 +120,6 @@ describe('resolveConfigProperty', () => {
 
     const context = {}
 
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const asyncReducer = vi.fn<AsyncConfigPropertyReducer<SchemaTypeDefinition[], unknown>>(
       async (prev, config, _context) => {
         await new Promise((resolve) => setTimeout(resolve, 0))

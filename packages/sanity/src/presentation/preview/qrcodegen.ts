@@ -3,7 +3,7 @@
  * Copyright (c) Project Nayuki.
  * SPDX-License-Identifier: MIT
  */
-/* eslint-disable no-empty-function,no-negated-condition,unicorn/prefer-string-slice,unused-imports/no-unused-vars,no-param-reassign,no-bitwise,max-params */
+/* eslint-disable no-negated-condition,unicorn/prefer-string-slice,no-param-reassign,no-bitwise,max-params */
 
 type bit = number
 type byte = number
@@ -589,7 +589,6 @@ export class QrCode {
     data: Readonly<Array<byte>>,
     divisor: Readonly<Array<byte>>,
   ): Array<byte> {
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const result: Array<byte> = divisor.map((_) => 0)
     for (const b of data) {
       // Polynomial division

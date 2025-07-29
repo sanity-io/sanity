@@ -1,5 +1,3 @@
-/* eslint-disable camelcase */
-
 import {negate} from 'lodash'
 
 import {type _PaneMenuGroup, type _PaneMenuItem, type _PaneMenuNode} from './components/pane/types'

@@ -78,7 +78,7 @@ export default function LiveQueries(props: LiveQueriesProps): React.JSX.Element 
         if (data.projectId === projectId && data.dataset === dataset) {
           onDocumentsOnPage(
             'loaders',
-            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            // oxlint-disable-next-line no-explicit-any
             data.perspective as unknown as any,
             data.documents,
           )
@@ -278,7 +278,6 @@ function useQuerySubscription(props: UseQuerySubscriptionProps) {
       })
       .then((response) => {
         startTransition(() => {
-          // eslint-disable-next-line max-nested-callbacks
           setResult((prev: unknown) => (isEqual(prev, response.result) ? prev : response.result))
           setResultSourceMap((prev) =>
             isEqual(prev, response.resultSourceMap) ? prev : response.resultSourceMap,

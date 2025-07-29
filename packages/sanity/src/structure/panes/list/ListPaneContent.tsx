@@ -116,9 +116,9 @@ export function ListPaneContent(props: ListPaneContentProps) {
 
       return (
         <PaneItem
+          key={item.id}
           icon={shouldShowIconForItem(item) ? item.icon : false}
           id={item.id}
-          key={item.id}
           layout={layout}
           marginBottom={1}
           pressed={pressed}

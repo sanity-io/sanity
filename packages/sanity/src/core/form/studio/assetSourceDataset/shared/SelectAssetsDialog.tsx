@@ -141,7 +141,6 @@ const SelectAssetsComponent = function SelectAssetsComponent(
 
   const handleDeleteFinished = useCallback(
     (id: string) => {
-      // eslint-disable-next-line max-nested-callbacks
       setAssets((prevState) => prevState.filter((asset) => asset._id !== id))
     },
     [setAssets],

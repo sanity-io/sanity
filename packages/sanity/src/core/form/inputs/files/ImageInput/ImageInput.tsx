@@ -9,6 +9,7 @@ import {Stack, useToast} from '@sanity/ui'
 import {get} from 'lodash'
 import {
   type FocusEvent,
+  Fragment,
   memo,
   type ReactNode,
   useCallback,
@@ -592,8 +593,20 @@ function BaseImageInputComponent(props: BaseImageInputProps): React.JSX.Element 
         if (member.kind === 'error') {
           return <MemberFieldError key={member.key} member={member} />
         }
-        //@ts-expect-error all possible cases should be covered
-        return <>{t('inputs.image.error.unknown-member-kind', {kind: member.kind})}</>
+
+        return (
+          <Fragment
+            key={
+              //@ts-expect-error all possible cases should be covered
+              member.key
+            }
+          >
+            {t('inputs.image.error.unknown-member-kind', {
+              //@ts-expect-error all possible cases should be covered
+              kind: member.kind,
+            })}
+          </Fragment>
+        )
       })}
 
       {hotspotField && focusPath[0] === 'hotspot' && (

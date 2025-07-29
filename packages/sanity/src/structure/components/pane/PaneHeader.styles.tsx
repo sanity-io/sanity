@@ -1,5 +1,4 @@
 import {Card, Flex, Layer, Text, TextSkeleton, type Theme} from '@sanity/ui'
-// eslint-disable-next-line camelcase
 import {css, styled} from 'styled-components'
 
 interface RootProps {

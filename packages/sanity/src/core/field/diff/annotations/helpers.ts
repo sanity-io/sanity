@@ -52,7 +52,6 @@ function getAnnotationAt(diff: Diff, path: Path): Annotation | undefined {
   return diffAt.annotation || undefined
 }
 
-// eslint-disable-next-line complexity
 function getDiffAt(diff: Diff, path: Path, parentPath: Path = []): Diff | undefined {
   if (path.length === 0) {
     return diff
@@ -102,11 +101,9 @@ function getDiffAt(diff: Diff, path: Path, parentPath: Path = []): Diff | undefi
   return getDiffAt(fieldDiff, tail, parentPath.concat(segment))
 }
 
-/* eslint-disable no-console, @typescript-eslint/no-unused-vars */
-function warn(msg: string) {
-  //console.warn(msg)
+function warn(_msg: string) {
+  //console.warn(_msg)
 }
-/* eslint-enable no-console, @typescript-eslint/no-unused-vars */
 
 function itemMatchesKey(item: ItemDiff, key: KeyedSegment) {
   const itemDiff = item.diff
