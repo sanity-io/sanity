@@ -155,57 +155,22 @@ npx sanity schema deploy
 
 You can test the sentiment-analysis function locally using the Sanity CLI before deploying it to production.
 
-**Important:** Document functions require that the document ID used in testing actually exists in your dataset. The examples below show how to work with real document IDs.
+### Simple Testing Command
 
-### 1. Basic Function Test
-
-Since agent actions require the document ID to exist in your dataset, create a test document first:
+Test the function with an existing document ID from your dataset:
 
 ```bash
-# From the studio/ folder, create a test document
-cd studio
-npx sanity documents create ../functions/sentiment-analysis/document.json --replace
+npx sanity functions test sentiment-analysis --document-id <insert-document-id> --dataset production --with-user-token
 ```
 
-Then test the function with the created document (from project root):
+Replace `<insert-document-id>` with an actual document ID from your dataset and `production` with your dataset name.
 
-```bash
-# Back to project root for function testing
-cd ..
-npx sanity functions test sentiment-analysis --file functions/sentiment-analysis/document.json
-```
-
-**Alternative:** Test with a real document from your dataset:
-
-```bash
-# From the studio/ folder, find and export an existing review document
-cd studio
-npx sanity documents query "*[_type == 'review'][0]" > ../real-review.json
-
-# Back to project root for function testing
-cd ..
-npx sanity functions test sentiment-analysis --file real-review.json
-```
-
-### 2. Interactive Development Mode
+### Interactive Development Mode
 
 Start the development server for interactive testing:
 
 ```bash
 npx sanity functions dev
-```
-
-This opens an interactive playground where you can test functions with custom data
-
-
-### 5. Enable Debugging
-
-To see detailed logs during testing, modify the function temporarily to add logging:
-
-```typescript
-// Add this to your function for debugging
-console.log('Event data:', JSON.stringify(event.data, null, 2))
-console.log('Analyzed sentiment:', result.sentiment)
 ```
 
 ### Testing Tips
@@ -214,7 +179,7 @@ console.log('Analyzed sentiment:', result.sentiment)
 - **Use Node.js v22.x** locally to match production runtime
 - **Test edge cases** like content without text or with existing sentiment
 - **Check function logs** in CLI output for debugging `npx sanity functions logs sentiment-analysis --watch`
-- **Test without AI calls** first by setting `noWrite: true` in the function
+- **Test without AI calls** first by running locally (automatic with local context)
 - **Test various sentiment levels** - Try positive, negative, and neutral content
 
 ## Usage Example
@@ -233,7 +198,7 @@ When a user submits new feedback, review, or comment without sentiment analysis,
 
 - Change the `instruction` string in `index.ts` to adjust the sentiment categories or analysis criteria.
 - Modify the `filter` in the blueprint resource to target different document types or conditions.
-- Set `noWrite: false` in the function to automatically write the sentiment to the document in production.
+- The function automatically detects local vs production context and adjusts behavior accordingly.
 
 ## Deploying your function
 
@@ -290,7 +255,7 @@ This command will:
 - Configure the event triggers for document publications
 - Make your sentiment-analysis function live in production
 
-**Important:** Be sure to set `noWrite: false` in your Agent Action Function.
+**Important:** The function automatically handles local vs production context - no manual configuration needed.
 
 3. **Verify deployment**
 
