@@ -1,22 +1,18 @@
 import {createClient} from '@sanity/client'
-import {type DocumentEvent, documentEventHandler, type FunctionContext} from '@sanity/functions'
+import {documentEventHandler} from '@sanity/functions'
 
-export const handler = documentEventHandler(
-  async ({context, event}: {context: FunctionContext; event: DocumentEvent}) => {
-    // eslint-disable-next-line no-console
-    console.log('Event data:', JSON.stringify(event.data, null, 2))
-    const client = createClient({
-      ...context.clientOptions,
-      dataset: 'production',
-      apiVersion: 'vX',
-      useCdn: false,
-    })
-    const {data} = event
+export const handler = documentEventHandler(async ({context, event}) => {
+  const client = createClient({
+    ...context.clientOptions,
+    apiVersion: 'vX',
+    useCdn: false,
+  })
+  const {data} = event
+  const {local} = context // local is true when running locally
 
-    try {
-      const result = await client.agent.action.generate({
-        // Set `noWrite` to `false` to write the sentiment to the document
-        noWrite: true,
+  try {
+    const result = await client.agent.action.generate({
+      noWrite: local ? true : false, // if local is true, we don't want to write to the document, just return the result for logging
         instructionParams: {
           review: {
             type: 'field',
@@ -31,11 +27,13 @@ export const handler = documentEventHandler(
         schemaId: '_.schemas.default', // This is the schemaId of the schema you want to use.  See run `npx sanity schema list` in your studio directory to get the schemaId. See README.md for more details.
         forcePublishedWrite: true,
       })
-      // eslint-disable-next-line no-console
-      console.log('Analyzed sentiment:', result.sentiment)
-    } catch (error) {
-      // eslint-disable-next-line no-console
-      console.error('Error occurred during sentiment analysis:', error)
-    }
-  },
-)
+    console.log(
+      local
+        ? 'Analyzed sentiment (LOCAL TEST MODE - Content Lake not updated):'
+        : 'Analyzed sentiment:',
+      result.sentiment,
+    )
+  } catch (error) {
+    console.error('Error occurred during sentiment analysis:', error)
+  }
+})
