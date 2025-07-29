@@ -13,20 +13,20 @@ export const handler = documentEventHandler(async ({context, event}) => {
   try {
     const result = await client.agent.action.generate({
       noWrite: local ? true : false, // if local is true, we don't want to write to the document, just return the result for logging
-        instructionParams: {
-          review: {
-            type: 'field',
-            path: 'review', // This is the field you want to analyze.
-          },
+      instructionParams: {
+        review: {
+          type: 'field',
+          path: 'review', // This is the field you want to analyze.
         },
-        instruction: `Analyze the sentiment of the $review and categorize it into one of these 5 levels: very_positive, positive, neutral, negative, very_negative. Consider the emotional tone, word choice, and overall sentiment expressed in the text. Return only the sentiment level as a string.`,
-        target: {
-          path: 'sentiment', // This is the field you want to write the sentiment to.
-        },
-        documentId: data._id,
-        schemaId: '_.schemas.default', // This is the schemaId of the schema you want to use.  See run `npx sanity schema list` in your studio directory to get the schemaId. See README.md for more details.
-        forcePublishedWrite: true,
-      })
+      },
+      instruction: `Analyze the sentiment of the $review and categorize it into one of these 5 levels: very_positive, positive, neutral, negative, very_negative. Consider the emotional tone, word choice, and overall sentiment expressed in the text. Return only the sentiment level as a string.`,
+      target: {
+        path: 'sentiment', // This is the field you want to write the sentiment to.
+      },
+      documentId: data._id,
+      schemaId: '_.schemas.default', // This is the schemaId of the schema you want to use.  See run `npx sanity schema list` in your studio directory to get the schemaId. See README.md for more details.
+      forcePublishedWrite: true,
+    })
     console.log(
       local
         ? 'Analyzed sentiment (LOCAL TEST MODE - Content Lake not updated):'

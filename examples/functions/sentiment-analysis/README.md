@@ -43,7 +43,7 @@ This function is not directly compatible with our starter templates, but starter
 - A schema with user-generated content document types containing (see following step):
   - A `review|feedback|comment` field with portable text (for content analysis)
   - A `sentiment` field (for storing analyzed sentiment)
-- A Sanity `schemaId`.  Captured by deploying your schema or studio and then running `sanity schema list`.  (See following step for details)
+- A Sanity `schemaId`. Captured by deploying your schema or studio and then running `sanity schema list`. (See following step for details)
 - Node.js v22.x for local development
 
 ## Adding the sentiment field to your schema
