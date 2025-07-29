@@ -182,7 +182,7 @@
     "@sanity/sdk": "2.1.1",
     "@sanity/telemetry": "^0.8.0",
     "@sanity/types": "workspace:*",
-    "@sanity/ui": "^3.0.1",
+    "@sanity/ui": "^3.0.3",
     "@sanity/util": "workspace:*",
     "@sanity/uuid": "^3.0.2",
     "@sentry/react": "^8.55.0",
