@@ -123,6 +123,7 @@ jobs:
           pnpm bundle-manager tag --tag=latest --target-version="$version"
 
       - name: Update manifest with latest tag (production)
+        if: ${{ false }}
         env:
           GOOGLE_PROJECT_ID: ${{ secrets.GCS_PRODUCTION_PROJECT_ID }}
           GCLOUD_SERVICE_KEY: ${{ secrets.GCS_PRODUCTION_SERVICE_KEY }}
