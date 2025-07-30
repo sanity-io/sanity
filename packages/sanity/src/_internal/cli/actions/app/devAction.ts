@@ -48,7 +48,7 @@ export default async function startAppDevServer(
   try {
     const spinner = output.spinner('Starting dev server').start()
     await startDevServer({...config, spinner, skipStartLog: true, isApp: true})
-    spinner.stop()
+    spinner.succeed()
 
     output.print(`Dev server started on port ${config.httpPort}`)
     output.print(`View your app in the Sanity dashboard here:`)
