@@ -9,13 +9,13 @@ interface NotificationData {
   slug: {
     current: string
   }
-  autoSummary: string
+  mastodonPost: string
   title: string
 }
 
 export const handler = documentEventHandler<NotificationData>(async ({event}) => {
   const {data} = event
-  const {title, autoSummary, slug} = data
+  const {title, mastodonPost, slug} = data
 
   try {
     const mastodon = new MastodonStrategy({
@@ -28,7 +28,7 @@ export const handler = documentEventHandler<NotificationData>(async ({event}) =>
 
     const postContent = `${title}
 
-${autoSummary}
+${mastodonPost}
 
 ${slug.current}`
 

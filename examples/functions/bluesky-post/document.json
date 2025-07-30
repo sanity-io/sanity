@@ -1,9 +1,7 @@
 {
   "_type": "post",
-  "_id": "drafts.test-bluesky-post-id",
-  "_updatedAt": "2024-01-15T10:30:00Z",
   "title": "Getting Started with Sanity Functions",
-  "autoSummary": "Learn how to build powerful serverless functions with Sanity that automatically respond to content changes. This guide covers setup, deployment, and best practices for creating functions that enhance your content workflow.",
+  "blueskyPost": "Learn how to build powerful serverless functions with Sanity that automatically respond to content changes. This guide covers setup, deployment, and best practices for creating functions that enhance your content workflow.",
   "slug": {
     "current": "getting-started-with-sanity-functions"
   }

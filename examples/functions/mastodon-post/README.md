@@ -8,15 +8,26 @@ Content teams want to automatically share their published articles on Mastodon t
 
 ## Solution
 
-This Sanity Function automatically posts to Mastodon when content is published using the `@humanwhocodes/crosspost` library. When a post is published, the function creates a Mastodon post containing the title, summary, and slug, helping maintain consistent presence across decentralized social networks.
+This Sanity Function automatically posts to Mastodon when content is published using the `@humanwhocodes/crosspost` library. When a post is published, the function creates a Mastodon post containing the title, mastodonPost, and slug, helping maintain consistent presence across decentralized social networks.
 
 ## Benefits
 
 - **Automates fediverse sharing** by posting to Mastodon on content publish
 - **Saves time** by eliminating manual cross-posting tasks
 - **Reaches decentralized audiences** by sharing on Mastodon instances
-- **Ensures consistency** with automatic posting of title, summary, and link
+- **Ensures consistency** with automatic posting of title, mastodonPost, and link
 - **Reduces missed opportunities** by never forgetting to share published content
+
+## Requirements
+
+- A Sanity project with Functions enabled
+- A schema with a `post` document type containing:
+  - `title` field (string)
+  - `mastodonPost` field (text or string)
+  - `slug` field (slug type with `current` property)
+- A Mastodon account on any instance
+- Mastodon application with access token
+- Node.js v22.x for local testing
 
 ## Compatible Templates
 
@@ -27,10 +38,21 @@ This function is built to be compatible with any of [the official "clean" templa
 This function expects your post schema to include:
 
 - `title` field (string)
-- `autoSummary` field (text) - for the post description
+- `mastodonPost` field (text) - for the post content
 - `slug` field (slug type with `current` property)
 
-Most official templates already include these fields, but you may need to add the `autoSummary` field.
+Most official templates already include the `title` and `slug` fields, but you will need to add the `mastodonPost` field.
+
+Add the `mastodonPost` field to your post schema:
+
+```javascript
+{
+  name: 'mastodonPost',
+  title: 'Mastodon Post Content',
+  type: 'text',
+  description: 'Content to post on Mastodon when this post is published'
+}
+```
 
 ## Implementation
 
@@ -39,14 +61,12 @@ Most official templates already include these fields, but you may need to add th
 1. **Set up Mastodon API Credentials**
 
    You'll need to create a Mastodon application and get an access token. There are two methods:
-
-   ### Method 1: Web Interface (Recommended)
    1. **Log into your Mastodon instance:**
       - Go to your Mastodon instance (e.g., `mastodon.social`, `mastodon.online`, etc.)
       - Sign in with your account
 
    2. **Access Development Settings:**
-      - Click your profile picture → Preferences (or Settings)
+      - Click Preferences
       - In the sidebar, click "Development"
       - Click "New Application"
 
@@ -54,27 +74,12 @@ Most official templates already include these fields, but you may need to add th
       - **Application name:** Give it a descriptive name (e.g., "Sanity Auto-Post")
       - **Application website:** Your website URL (optional)
       - **Redirect URI:** Leave as default (`urn:ietf:wg:oauth:2.0:oob`)
-      - **Scopes:** Select `read` and `write` (required for posting)
+      - **Scopes:** Select `write:statuses` (required for posting)
 
    4. **Get Access Token:**
       - After creating the application, click on its name to view details
       - Copy the "Your access token" - this is what you'll use as `MASTODON_TOKEN`
       - Note your instance URL (e.g., `https://mastodon.social`) - this is your `MASTODON_HOST`
-
-   ### Method 2: Programmatic Registration
-
-   If you prefer to register programmatically, you can use the Mastodon API:
-
-   ```bash
-   # Register application
-   curl -X POST https://your-instance.com/api/v1/apps \
-     -F 'client_name=Sanity Auto-Post' \
-     -F 'redirect_uris=urn:ietf:wg:oauth:2.0:oob' \
-     -F 'scopes=read write'
-
-   # This returns client_id and client_secret
-   # Then get access token with these credentials
-   ```
 
 2. **Initialize the example**
 
@@ -116,7 +121,7 @@ Most official templates already include these fields, but you may need to add th
          event: {
            on: ['publish'],
            filter: "_type == 'post'",
-           projection: '_id, title, autoSummary, slug',
+           projection: '_id, title, mastodonPost, slug',
          },
          env: {
            MASTODON_TOKEN: MASTODON_TOKEN,
@@ -158,37 +163,23 @@ Most official templates already include these fields, but you may need to add th
 
 You can test the mastodon-post function locally using the Sanity CLI before deploying it to production.
 
-**Important:** This function requires valid Mastodon credentials but will NOT post to Mastodon during local testing. It will only log the content that would be posted.
+### Simple Testing Command
 
-### 1. Basic Function Test
+Test the function with an existing document ID from your dataset:
+
+```bash
+npx sanity functions test mastodon-post --document-id <insert-document-id> --dataset production --with-user-token
+```
+
+### Test with data from a JSON file
 
 Test the function with the included sample document:
 
 ```bash
-npx sanity functions test mastodon-post \
-  --file functions/mastodon-post/document.json \
-  --dataset production \
-  --with-user-token
+npx sanity functions test mastodon-post --file functions/mastodon-post/document.json
 ```
 
-### 2. Test with Real Document Data
-
-Test with a real document from your dataset:
-
-```bash
-# From the studio/ folder, export a real document for testing
-cd studio
-npx sanity documents query "*[_type == 'post'][0]" > ../real-post.json
-
-# Back to project root for function testing
-cd ..
-npx sanity functions test mastodon-post \
-  --file real-post.json \
-  --dataset production \
-  --with-user-token
-```
-
-### 3. Interactive Development Mode
+### Interactive Development Mode
 
 Start the development server for interactive testing:
 
@@ -200,7 +191,7 @@ This opens an interactive playground where you can test functions with custom da
 
 ### Testing Tips
 
-- **Local testing safety** - The function detects local testing and won't actually post to Mastodon
+- **Warning: Live posting** - The function will actually post to Mastodon when tested locally
 - **Use real credentials** - You still need valid Mastodon credentials for testing the authentication
 - **Check logs** - Monitor console output to see the post content that would be sent
 - **Test different instances** - Verify your credentials work with your specific Mastodon instance
@@ -234,14 +225,14 @@ Once you've tested your function locally and are satisfied with its behavior, yo
    ```
 
    This command will:
-   - Package your function code
+   - Package your function code and .env file
    - Upload it to Sanity's infrastructure
    - Configure the event triggers for post publications
    - Make your mastodon-post function live in production
 
-3. **Add environment variables**
+3. **If you're not using a .env file - Add environment variables**
 
-   After deployment, you need to add your Mastodon credentials as environment variables:
+   After deployment, only if you're not using an .env file, you need to add your Mastodon credentials as environment variables:
 
    ```bash
    npx sanity functions env add mastodon-post MASTODON_TOKEN "your-access-token-here"
@@ -261,51 +252,7 @@ Once you've tested your function locally and are satisfied with its behavior, yo
    - Publishing a new post and confirming it appears on Mastodon
    - Monitoring function logs in the CLI
 
-## Requirements
-
-- A Sanity project with Functions enabled
-- A schema with a `post` document type containing:
-  - `title` field (string)
-  - `autoSummary` field (text or string)
-  - `slug` field (slug type with `current` property)
-- A Mastodon account on any instance
-- Mastodon application with access token
-- Node.js v22.x for local testing
-
-## Usage Example
-
-When you publish a post document, the function automatically:
-
-1. Extracts the post title, auto-summary, and slug
-2. Formats a social media post with this content
-3. Posts to your Mastodon instance using your access token
-4. Logs the success or any errors
-
-**Example Mastodon post:**
-
-```text
-Getting Started with Sanity
-
-Learn how to build amazing content experiences with Sanity's headless CMS. This guide covers everything from setup to deployment.
-
-getting-started-with-sanity
-```
-
 ## Customization
-
-### Change post format
-
-Modify the `postContent` template in `index.ts`:
-
-```typescript
-const postContent = `🚀 ${title}
-
-${autoSummary}
-
-🔗 Read more: ${slug.current}
-
-#sanity #cms #webdev`
-```
 
 ### Add conditional posting
 
@@ -320,7 +267,7 @@ filter: "_type == 'post' && defined(publishedAt)"
 Add more fields to the projection and use them in the post:
 
 ```typescript
-projection: '_id, title, autoSummary, slug, author, tags'
+projection: '_id, title, mastodonPost, slug, author, tags'
 ```
 
 ### Add hashtags based on content
@@ -329,71 +276,12 @@ projection: '_id, title, autoSummary, slug, author, tags'
 const hashtags = data.tags?.map((tag) => `#${tag}`).join(' ') || ''
 const postContent = `${title}
 
-${autoSummary}
+${mastodonPost}
 
 ${slug.current}
 
 ${hashtags}`
 ```
-
-## Troubleshooting
-
-### Common Issues
-
-**Error: "Unauthorized" or "Invalid access token"**
-
-- Cause: Invalid or expired Mastodon access token
-- Solution: Regenerate your access token in your Mastodon application settings
-
-**Error: "Missing environment variable MASTODON_TOKEN"**
-
-- Cause: Environment variables not set properly
-- Solution: Ensure all required environment variables are configured
-
-**Error: "Host not found" or network errors**
-
-- Cause: Incorrect MASTODON_HOST or network connectivity issues
-- Solution: Verify your instance URL is correct and includes `https://`
-
-**Error: "Post content too long"**
-
-- Cause: Combined content exceeds Mastodon's character limit (usually 500 characters)
-- Solution: Truncate the auto-summary or modify the post format
-
-**Posts not appearing on Mastodon**
-
-- Cause: Authentication issues, network problems, or instance downtime
-- Solution: Check your credentials, network connectivity, and instance status
-
-**Function not triggering**
-
-- Cause: Blueprint filter or event configuration issues
-- Solution: Verify the filter matches your document structure and the event is set to 'publish'
-
-**Error: "Insufficient permissions"**
-
-- Cause: Access token doesn't have write permissions
-- Solution: Ensure your Mastodon application has `write` scope enabled
-
-## Mastodon Instance Considerations
-
-### Popular Instances
-
-- `mastodon.social` - General purpose, largest instance
-- `mastodon.online` - General purpose, well-moderated
-- `fosstodon.org` - Focus on free and open source software
-- `mas.to` - General purpose, privacy-focused
-- `hachyderm.io` - Tech and security focused
-
-### Instance-Specific Settings
-
-Some Mastodon instances may have:
-
-- Different character limits (some allow more than 500 characters)
-- Specific content policies
-- Different API rate limits
-
-Make sure your content complies with your instance's community guidelines.
 
 ## Related Examples
 
