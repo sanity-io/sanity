@@ -125,8 +125,6 @@ jobs:
         run: pnpm bundle-manager publish --tag=next
 
       - name: Upload bundles to production bucket
-        # NOTE: we're not uploading prereleases to production bucket yet
-        if: ${{ false }}
         env:
           GOOGLE_PROJECT_ID: ${{ secrets.GCS_PRODUCTION_PROJECT_ID }}
           GCLOUD_SERVICE_KEY: ${{ secrets.GCS_PRODUCTION_SERVICE_KEY }}
