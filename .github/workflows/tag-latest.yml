@@ -1,11 +1,11 @@
-name: Release @stable
-run-name: Release @stable - ${{ github.event.inputs.version }}
+name: Tag @latest
+run-name: Tag @latest - ${{ github.event.inputs.version }}
 
 on:
   workflow_dispatch:
     inputs:
       version:
-        description: "Semver version to tag as stable (e.g., 3.2.1 or 3.2.1-next.1.abc)"
+        description: "Semver version to tag as latest (e.g., 3.2.1)"
         required: true
         type: string
 
@@ -75,23 +75,23 @@ jobs:
           fi
           echo "✅ npm authentication validated - using $EXPECTED_NPM_USER account"
 
-      - name: Update npm dist-tags to stable
+      - name: Update npm dist-tags to latest
         run: |
           # Get all published (non-private) packages in the workspace
           packages=$(pnpx tsx scripts/listPublishedPackages.ts)
           version="${{ needs.get-version.outputs.version }}"
 
           echo "Using version: $version"
-          echo "Tagging the following packages as stable: $packages"
+          echo "Tagging the following packages as latest: $packages"
 
           # Convert relative paths to package names and apply dist-tag
           for pkg_dir in $packages; do
             pkg_name=$(jq -r '.name' "$pkg_dir/package.json")
-            echo "Tagging $pkg_name@$version as stable"
-            npm dist-tag add "$pkg_name@$version" stable
+            echo "Tagging $pkg_name@$version as latest"
+            npm dist-tag add "$pkg_name@$version" latest
           done
 
-          echo "✅ All packages tagged as stable"
+          echo "✅ All packages tagged as latest"
 
   update-manifest:
     name: Update bundle manifest
@@ -112,7 +112,7 @@ jobs:
       - name: Install deps
         run: pnpm install --ignore-scripts
 
-      - name: Update manifest with stable tag (staging)
+      - name: Update manifest with latest tag (staging)
         env:
           GOOGLE_PROJECT_ID: ${{ secrets.GCS_STAGING_PROJECT_ID }}
           GCLOUD_SERVICE_KEY: ${{ secrets.GCS_STAGING_SERVICE_KEY }}
@@ -120,9 +120,9 @@ jobs:
         run: |
           version="${{ needs.get-version.outputs.version }}"
           echo "Using version: $version"
-          pnpm bundle-manager tag --tag=stable --target-version="$version"
+          pnpm bundle-manager tag --tag=latest --target-version="$version"
 
-      - name: Update manifest with stable tag (production)
+      - name: Update manifest with latest tag (production)
         env:
           GOOGLE_PROJECT_ID: ${{ secrets.GCS_PRODUCTION_PROJECT_ID }}
           GCLOUD_SERVICE_KEY: ${{ secrets.GCS_PRODUCTION_SERVICE_KEY }}
@@ -130,4 +130,4 @@ jobs:
         run: |
           version="${{ needs.get-version.outputs.version }}"
           echo "Using version: $version"
-          pnpm bundle-manager tag --tag=stable --target-version="$version"
+          pnpm bundle-manager tag --tag=latest --target-version="$version"

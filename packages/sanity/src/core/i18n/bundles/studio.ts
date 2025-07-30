@@ -11,13 +11,13 @@ import {type LocaleResourceBundle} from '../types'
  */
 export const studioLocaleStrings = defineLocalesResources('studio', {
   /** "Disabled" status for auto-updates in About-dialog */
-  'about-dialog.version-info.auto-updates.disabled': 'Disabled',
+  'about-dialog.version-info.auto-updates.disabled': 'Auto Updates not enabled',
   /** "Enabled" status for auto-updates in About-dialog */
-  'about-dialog.version-info.auto-updates.enabled': 'Enabled',
-  /** "Auto Updates" status header in About-dialog */
+  'about-dialog.version-info.auto-updates.enabled': 'Auto Updates Enabled',
+  /** @deprecated "Auto Updates" status header in About-dialog */
   'about-dialog.version-info.auto-updates.header': 'Auto Updates',
   /** "How to enable" next to Disabled state for Auto updates in about dialog */
-  'about-dialog.version-info.auto-updates.how-to-enable': 'How to enable',
+  'about-dialog.version-info.auto-updates.how-to-enable': 'Enable',
   /** Text displayed on the "Copy to clipboard"-button after clicked */
   'about-dialog.version-info.copy-to-clipboard-button.copied-text':
     'Copied to Clipboard. Happy pasting!',
@@ -26,13 +26,20 @@ export const studioLocaleStrings = defineLocalesResources('studio', {
   /** "Current version" header in about dialog  */
   'about-dialog.version-info.current-version.header': 'Current version',
   /** "How to upgrade" link text */
-  'about-dialog.version-info.how-to-upgrade': 'How to upgrade',
-  /** "Latest version" header in about dialog */
+  'about-dialog.version-info.how-to-upgrade': 'Update now',
+  /** @deprecated "Latest version" header in about dialog */
   'about-dialog.version-info.latest-version.header': 'Latest version',
   /** "Latest version" header in about dialog */
-  'about-dialog.version-info.latest-version.text': 'Latest version is {{latestVersion}}',
-  /** "Up to date" status in About-dialog */
+  'about-dialog.version-info.latest-version.text': 'Latest version',
+  /** "New version available" tooltip in About-dialog */
+  'about-dialog.version-info.tooltip.new-version-available': 'New version available',
+  /** "Prerelease" tooltip in About-dialog */
+  'about-dialog.version-info.tooltip.prerelease': 'Prerelease',
+  /** "Up to date" tooltip in About-dialog */
+  'about-dialog.version-info.tooltip.up-to-date': 'Up to date',
+  /** @deprecated "Up to date" status in About-dialog */
   'about-dialog.version-info.up-to-date': 'Up to date',
+
   /** "User agent" header in About-dialog */
   'about-dialog.version-info.user-agent.header': 'User agent',
 

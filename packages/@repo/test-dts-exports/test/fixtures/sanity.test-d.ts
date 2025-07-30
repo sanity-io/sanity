@@ -918,6 +918,8 @@ import type {
   MediaLibraryAssetAspectTypeName,
   MediaLibraryAssetType,
   MediaLibraryConfig,
+  MediaLibraryFilter,
+  MediaLibraryOptions,
   MediaPreview,
   MediaPreviewProps,
   MediaValidationValue,
@@ -4385,6 +4387,12 @@ describe('sanity', () => {
   })
   test('MediaLibraryConfig', () => {
     expectTypeOf<MediaLibraryConfig>().toBeObject()
+  })
+  test('MediaLibraryFilter', () => {
+    expectTypeOf<MediaLibraryFilter>().toBeObject()
+  })
+  test('MediaLibraryOptions', () => {
+    expectTypeOf<MediaLibraryOptions>().toBeObject()
   })
   test('MediaPreview', () => {
     expectTypeOf<typeof MediaPreview>().toBeFunction()
