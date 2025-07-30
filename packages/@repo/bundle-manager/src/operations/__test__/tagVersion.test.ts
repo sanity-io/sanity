@@ -125,10 +125,7 @@ describe('tagVersion()', () => {
 
     expect(result).toEqual({
       tags: {
-        stable: [
-          {timestamp: currentUnixTime() - 30, version: '2.1.0'},
-          {timestamp: currentUnixTime() - 20, version: '1.2.4'},
-        ],
+        stable: [tag2, tag1],
       },
       versions,
     })

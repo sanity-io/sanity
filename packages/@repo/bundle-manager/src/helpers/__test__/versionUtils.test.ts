@@ -36,8 +36,8 @@ describe('cleanupVersions()', () => {
 
     expect(result).toEqual([
       newestVersion,
-      {timestamp: now - 200, version: '2.2.0'},
-      {timestamp: now - 150, version: '2.1.0'},
+      major2VersionsInTTL[1],
+      major2VersionsInTTL[0],
       major1VersionInTTL,
     ])
   })
@@ -64,8 +64,11 @@ describe('cleanupVersions()', () => {
     ]
 
     const result = cleanupVersions(allVersions)
-
-    expect(result.map((v) => v.version)).toEqual(['3.0.0', '2.1.0', '1.3.0'])
+    expect(result).toEqual([
+      major3NewVersion,
+      major2OnlyVersionOutsideTTL,
+      major1HigherVersionInTTL,
+    ])
   })
 
   it('should keep both TTL version and higher outside-TTL version for same major', () => {
@@ -96,7 +99,12 @@ describe('cleanupVersions()', () => {
 
     const result = cleanupVersions(allVersions)
 
-    expect(result.map((v) => v.version)).toEqual(['3.0.0', '2.1.0', '1.3.0', '1.2.0'])
+    expect(result).toEqual([
+      major3NewVersion,
+      major2HighestVersionOutsideTTL,
+      major1HigherVersionOutsideTTL,
+      major1VersionInTTL,
+    ])
   })
 
   it('should keep all TTL versions plus highest outside-TTL version when major has multiple of each', () => {
@@ -131,13 +139,13 @@ describe('cleanupVersions()', () => {
 
     const result = cleanupVersions(allVersions)
 
-    expect(result.map((v) => v.version)).toEqual([
-      '3.0.0',
-      '2.1.0',
-      '2.0.0',
-      '1.4.0',
-      '1.2.0',
-      '1.1.0',
+    expect(result).toEqual([
+      major3NewVersion,
+      major2HighestVersionOutsideTTL,
+      major2VersionInTTL,
+      major1HighestVersionOutsideTTL,
+      major1SecondVersionInTTL,
+      major1FirstVersionInTTL,
     ])
   })
 
@@ -186,7 +194,11 @@ describe('cleanupVersions()', () => {
 
     const result = cleanupVersions(allVersions)
 
-    expect(result.map((v) => v.version)).toEqual(['2.3.0', '2.1.0', '2.0.0'])
+    expect(result).toEqual([
+      major2HighestVersionOutsideTTL,
+      major2SecondVersionInTTL,
+      major2FirstVersionInTTL,
+    ])
   })
 
   it('should preserve highest versions across different major families', () => {
@@ -214,7 +226,12 @@ describe('cleanupVersions()', () => {
 
     const result = cleanupVersions(allVersions)
 
-    expect(result.map((v) => v.version)).toEqual(['3.0.0', '2.1.0', '1.1.0', '1.0.0'])
+    expect(result).toEqual([
+      major3NewVersion,
+      major2HighestVersionOutsideTTL,
+      major1SecondVersionInTTL,
+      major1FirstVersionInTTL,
+    ])
   })
 
   it('should preserve all pre-release and stable versions within TTL regardless of version similarity', () => {
@@ -234,11 +251,11 @@ describe('cleanupVersions()', () => {
 
     const result = cleanupVersions(allVersions)
 
-    expect(result.map((v) => v.version)).toEqual([
-      '2.0.0',
-      '2.0.0-beta.1',
-      '2.0.0-alpha.1',
-      '1.0.0',
+    expect(result).toEqual([
+      major2NewStableVersion,
+      preReleaseBetaVersionInTTL,
+      preReleaseAlphaVersionInTTL,
+      major1StableVersionInTTL,
     ])
   })
 
@@ -327,7 +344,12 @@ describe('sortAndCleanupVersions()', () => {
     ]
 
     const result = sortAndCleanupVersions(versions)
-    expect(result.map((v) => v.version)).toEqual(['2.1.0', '2.0.0', '1.5.0', '1.0.0'])
+    expect(result).toEqual([
+      major2HigherVersion,
+      major2LowerVersion,
+      major1HigherVersion,
+      major1LowerVersion,
+    ])
   })
 
   it('should sort pre-release versions correctly relative to stable versions', () => {
@@ -346,11 +368,11 @@ describe('sortAndCleanupVersions()', () => {
     ]
 
     const result = sortAndCleanupVersions(versions)
-    expect(result.map((v) => v.version)).toEqual([
-      '2.0.0',
-      '2.0.0-beta.1',
-      '2.0.0-alpha.1',
-      '1.0.0',
+    expect(result).toEqual([
+      major2StableVersion,
+      preReleaseBetaVersion,
+      preReleaseAlphaVersion,
+      major1StableVersion,
     ])
   })
 
@@ -364,7 +386,7 @@ describe('sortAndCleanupVersions()', () => {
     const versions = [invalidSemverVersion, lowerValidVersion, higherValidVersion]
 
     const result = sortAndCleanupVersions(versions)
-    expect(result.map((v) => v.version)).toEqual(['2.0.0', '1.0.0', 'not-semver'])
+    expect(result).toEqual([higherValidVersion, lowerValidVersion, invalidSemverVersion])
   })
 
   it('should deduplicate versions and keep entry with most recent timestamp', () => {
@@ -377,9 +399,7 @@ describe('sortAndCleanupVersions()', () => {
     const versions = [newerDuplicateVersion, olderDuplicateVersion, uniqueVersion]
     const result = sortAndCleanupVersions(versions)
 
-    expect(result).toHaveLength(2)
-    expect(result).toContainEqual(newerDuplicateVersion)
-    expect(result).toContainEqual(uniqueVersion)
+    expect(result).toEqual([uniqueVersion, newerDuplicateVersion])
   })
 
   it('should return empty array when given empty input', () => {
