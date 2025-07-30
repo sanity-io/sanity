@@ -40,6 +40,7 @@ export const PLUGIN_INPUT_TYPES = [
 
 export const DEBUG_INPUT_TYPES = [
   'actionsTest',
+  'allFieldsGroupHidden',
   'allNativeInputComponents',
   'collapsibleObjects',
   'commentsDebug',

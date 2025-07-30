@@ -1,5 +1,4 @@
 /* eslint-disable complexity */
-/* eslint-disable max-nested-callbacks */
 /* eslint-disable max-statements */
 /* eslint-disable no-else-return */
 
@@ -799,37 +798,57 @@ export function createPrepareFormState({
     const readOnly = props.readOnly === true || props.readOnly?.value
 
     const schemaTypeGroupConfig = props.schemaType.groups || []
-    const defaultGroupName = (schemaTypeGroupConfig.find((g) => g.default) || ALL_FIELDS_GROUP)
-      ?.name
 
-    const groups = [ALL_FIELDS_GROUP, ...schemaTypeGroupConfig].flatMap(
-      (group): FormFieldGroup[] => {
-        const groupHidden =
-          props.hidden === true ||
+    const shouldRenderAllFieldsGroup =
+      // All fields can't be hidden when review changes is open or if the all fields group is selected
+      props.changesOpen || props.fieldGroupState?.value === ALL_FIELDS_GROUP.name
+
+    const isGroupHidden = (group: FormFieldGroup) =>
+      shouldRenderAllFieldsGroup && group.name === ALL_FIELDS_GROUP.name
+        ? false
+        : props.hidden === true ||
           props.hidden?.value ||
           props.hidden?.children?.[`group:${group.name}`]?.value
-        const isSelected = group.name === (props.fieldGroupState?.value || defaultGroupName)
 
-        // Set the "all-fields" group as selected when review changes is open to enable review of all
-        // fields and changes together. When review changes is closed - switch back to the selected tab.
-        const selected = props.changesOpen ? group.name === ALL_FIELDS_GROUP.name : isSelected
-        // Also disable non-selected groups when review changes is open
-        const disabled = props.changesOpen ? !selected : false
-
-        return groupHidden
-          ? []
-          : [
-              {
-                disabled,
-                icon: group?.icon,
-                name: group.name,
-                selected,
-                title: group.title,
-                i18n: group.i18n,
-              },
-            ]
-      },
+    const hasCustomAllFieldsGroup = schemaTypeGroupConfig.some(
+      (g) => g.name === ALL_FIELDS_GROUP.name,
     )
+    const groupsConfig = hasCustomAllFieldsGroup
+      ? schemaTypeGroupConfig
+      : [ALL_FIELDS_GROUP, ...schemaTypeGroupConfig]
+
+    const defaultGroup =
+      groupsConfig.find((g) => g.default) ||
+      // Use the first non-hidden group as default, if no default group is found.
+      groupsConfig.find((g) => !isGroupHidden(g)) ||
+      groupsConfig[0]
+
+    const defaultGroupName = defaultGroup.name
+
+    const groups = groupsConfig.flatMap((group): FormFieldGroup[] => {
+      const groupHidden = isGroupHidden(group)
+
+      const isSelected = group.name === (props.fieldGroupState?.value || defaultGroupName)
+
+      // Set the "all-fields" group as selected when review changes is open to enable review of all
+      // fields and changes together. When review changes is closed - switch back to the selected tab.
+      const selected = props.changesOpen ? group.name === ALL_FIELDS_GROUP.name : isSelected
+      // Also disable non-selected groups when review changes is open
+      const disabled = props.changesOpen ? !selected : false
+
+      return groupHidden
+        ? []
+        : [
+            {
+              disabled,
+              icon: group?.icon,
+              name: group.name,
+              selected,
+              title: group.title,
+              i18n: group.i18n,
+            },
+          ]
+    })
 
     const selectedGroup = groups.find((group) => group.selected)
 
@@ -936,7 +955,7 @@ export function createPrepareFormState({
 
     const visibleGroups = hasFieldGroups
       ? groups.flatMap((group) => {
-          // The "all fields" group is always visible
+          // The "all fields" group is always visible, unless it's hidden by the user. (See above)
           if (group.name === ALL_FIELDS_GROUP.name) {
             return group
           }
