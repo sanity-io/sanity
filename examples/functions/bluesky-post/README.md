@@ -27,10 +27,21 @@ This function is built to be compatible with any of [the official "clean" templa
 This function expects your post schema to include:
 
 - `title` field (string)
-- `autoSummary` field (text) - for the post description
+- `blueskyPost` field (text) - for the post content
 - `slug` field (slug type with `current` property)
 
-Most official templates already include these fields, but you may need to add the `autoSummary` field.
+Most official templates already include the `title` and `slug` fields, but you will need to add the `blueskyPost` field.
+
+Add the `blueskyPost` field to your post schema:
+
+```javascript
+{
+  name: 'blueskyPost',
+  title: 'Bluesky Post Content',
+  type: 'text',
+  description: 'Content to post on Bluesky when this post is published'
+}
+```
 
 ## Implementation
 
@@ -96,7 +107,7 @@ Most official templates already include these fields, but you may need to add th
          event: {
            on: ['publish'],
            filter: "_type == 'post'",
-           projection: '_id, title, autoSummary, slug',
+           projection: '_id, title, blueskyPost, slug',
          },
          env: {
            BLUESKY_USERNAME: BLUESKY_USERNAME,
@@ -140,37 +151,23 @@ Most official templates already include these fields, but you may need to add th
 
 You can test the bluesky-post function locally using the Sanity CLI before deploying it to production.
 
-**Important:** This function requires valid Bluesky credentials but will NOT post to Bluesky during local testing. It will only log the content that would be posted.
+### Simple Testing Command
 
-### 1. Basic Function Test
+Test the function with an existing document ID from your dataset:
+
+```bash
+npx sanity functions test bluesky-post --document-id <insert-document-id> --dataset production --with-user-token
+```
+
+### Test with data from a JSON file
 
 Test the function with the included sample document:
 
 ```bash
-npx sanity functions test bluesky-post \
-  --file functions/bluesky-post/document.json \
-  --dataset production \
-  --with-user-token
+npx sanity functions test bluesky-post --file functions/bluesky-post/document.json
 ```
 
-### 2. Test with Real Document Data
-
-Test with a real document from your dataset:
-
-```bash
-# From the studio/ folder, export a real document for testing
-cd studio
-npx sanity documents query "*[_type == 'post'][0]" > ../real-post.json
-
-# Back to project root for function testing
-cd ..
-npx sanity functions test bluesky-post \
-  --file real-post.json \
-  --dataset production \
-  --with-user-token
-```
-
-### 3. Interactive Development Mode
+### Interactive Development Mode
 
 Start the development server for interactive testing:
 
@@ -182,9 +179,9 @@ This opens an interactive playground where you can test functions with custom da
 
 ### Testing Tips
 
-- **Local testing safety** - The function detects local testing and won't actually post to Bluesky
-- **Use real credentials** - You still need valid Bluesky credentials for testing the authentication
-- **Check logs** - Monitor console output to see the post content that would be sent
+- **Use real credentials** - You need valid Bluesky credentials for testing the authentication
+- **Warning: Live posting** - The function will actually post to Bluesky when tested locally
+- **Check logs** - Monitor console output to see the post content that was sent
 - **Test edge cases** - Try documents without summaries or slugs to ensure graceful handling
 
 ## Deploying your function
@@ -248,7 +245,7 @@ Once you've tested your function locally and are satisfied with its behavior, yo
 - A Sanity project with Functions enabled
 - A schema with a `post` document type containing:
   - `title` field (string)
-  - `autoSummary` field (text or string)
+  - `blueskyPost` field (text or string)
   - `slug` field (slug type with `current` property)
 - A Bluesky account with app password
 - Node.js v22.x for local testing
@@ -257,7 +254,7 @@ Once you've tested your function locally and are satisfied with its behavior, yo
 
 When you publish a post document, the function automatically:
 
-1. Extracts the post title, auto-summary, and slug
+1. Extracts the post title, bluesky post content, and slug
 2. Formats a social media post with this content
 3. Posts to Bluesky using your account credentials
 4. Logs the success or any errors
@@ -281,7 +278,7 @@ Modify the `postContent` template in `index.ts`:
 ```typescript
 const postContent = `🚀 ${title}
 
-${autoSummary}
+${blueskyPost}
 
 Read more: ${slug.current}`
 ```
@@ -299,7 +296,7 @@ filter: "_type == 'post' && defined(publishedAt)"
 Add more fields to the projection and use them in the post:
 
 ```typescript
-projection: '_id, title, autoSummary, slug, author'
+projection: '_id, title, blueskyPost, slug, author'
 ```
 
 ## Troubleshooting
@@ -318,8 +315,8 @@ projection: '_id, title, autoSummary, slug, author'
 
 **Error: "Post content too long"**
 
-- Cause: Combined title, summary, and slug exceed Bluesky's character limit
-- Solution: Truncate the auto-summary or modify the post format
+- Cause: Combined title, post content, and slug exceed Bluesky's character limit
+- Solution: Truncate the bluesky post content or modify the post format
 
 **Posts not appearing on Bluesky**
 

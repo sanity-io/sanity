@@ -9,13 +9,13 @@ interface NotificationData {
   slug: {
     current: string
   }
-  autoSummary: string
+  blueskyPost: string
   title: string
 }
 
 export const handler = documentEventHandler<NotificationData>(async ({event}) => {
   const {data} = event
-  const {title, autoSummary, slug} = data
+  const {title, blueskyPost, slug} = data
 
   try {
     const bluesky = new BlueskyStrategy({
@@ -29,7 +29,7 @@ export const handler = documentEventHandler<NotificationData>(async ({event}) =>
 
     const postContent = `${title}
 
-${autoSummary}
+${blueskyPost}
 
 ${slug.current}`
 
