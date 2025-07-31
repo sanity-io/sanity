@@ -2203,7 +2203,7 @@ importers:
         specifier: ^7.8.1
         version: 7.8.1(debug@4.4.1)
       '@swc-node/register':
-        specifier: ^1.10.9
+        specifier: ^1.10.10
         version: 1.10.10(@swc/core@1.12.1)(@swc/types@0.1.23)(typescript@5.8.3)
       '@types/react':
         specifier: ^19.1.0
