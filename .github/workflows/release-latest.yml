@@ -160,7 +160,10 @@ jobs:
       - name: Build
         run: pnpm build --output-logs=full --log-order=grouped
 
-      - name: Build bundle
+      - name: Build bundles for staging
+        env:
+          # sets the __SANITY_STAGING__ global variable to true in built bundles
+          SANITY_INTERNAL_ENV: "staging"
         run: pnpm run build:bundle
 
       - name: Upload bundles to staging bucket
@@ -169,6 +172,9 @@ jobs:
           GCLOUD_SERVICE_KEY: ${{ secrets.GCS_STAGING_SERVICE_KEY }}
           GCLOUD_BUCKET: ${{ secrets.GCS_STAGING_BUCKET }}
         run: pnpm bundle-manager publish --tag=latest
+
+      - name: Build bundles for production
+        run: pnpm run build:bundle
 
       - name: Upload bundles to production bucket
         env:
