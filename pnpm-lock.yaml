@@ -1429,7 +1429,7 @@ importers:
         specifier: ^6.2.4
         version: 6.2.4
       '@codemirror/language':
-        specifier: ^6.11.1
+        specifier: ^6.11.2
         version: 6.11.2
       '@codemirror/search':
         specifier: ^6.5.11
@@ -1438,7 +1438,7 @@ importers:
         specifier: ^6.5.2
         version: 6.5.2
       '@codemirror/view':
-        specifier: ^6.37.2
+        specifier: ^6.38.1
         version: 6.38.1
       '@juggle/resize-observer':
         specifier: ^3.4.0
