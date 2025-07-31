@@ -14,9 +14,8 @@
   "dependencies": {
     "@repo/eslint-config": "workspace:*",
     "babel-plugin-react-compiler": "19.1.0-rc.3",
-    "react": "catalog:react18",
-    "react-compiler-runtime": "19.1.0-rc.3",
-    "react-dom": "catalog:react18",
+    "react": "catalog:",
+    "react-dom": "catalog:",
     "sanity": "workspace:*",
     "styled-components": "catalog:"
   }
