@@ -1,4 +1,4 @@
-import {LaunchIcon} from '@sanity/icons'
+import {CogIcon, LaunchIcon} from '@sanity/icons'
 import {SanityMonogram} from '@sanity/logos'
 import {Badge, Card, Flex, Stack, Text} from '@sanity/ui'
 import {useId} from 'react'
@@ -9,6 +9,7 @@ import {Button, Dialog, Tooltip} from '../../../../../ui-components'
 import {isProd} from '../../../../environment'
 import {hasSanityPackageInImportMap} from '../../../../environment/hasSanityPackageInImportMap'
 import {useTranslation} from '../../../../i18n'
+import {useWorkspace} from '../../../workspace'
 
 interface StudioInfoDialogProps {
   latestVersion?: string
@@ -28,6 +29,7 @@ export function StudioInfoDialog(props: StudioInfoDialogProps) {
   const {t} = useTranslation()
   const {onClose} = props
   const dialogId = useId()
+  const {projectId} = useWorkspace()
 
   const currentVersionParsed = props.currentVersion ? parse(props.currentVersion) : null
 
@@ -99,23 +101,42 @@ export function StudioInfoDialog(props: StudioInfoDialogProps) {
         {
           // note: in dev we currently don't know whether auto updates is enabled
           //  so instead of showing misleading info, we just don't show anything here
-          isProd && !isAutoUpdating ? (
-            <Card tone="transparent" padding={2} radius={3} marginX={2}>
-              <Flex align="center" justify="space-evenly" gap={2}>
-                <Text size={1} muted>
-                  {t('about-dialog.version-info.auto-updates.disabled')}
-                </Text>
-                <Button
-                  as="a"
-                  href="https://www.sanity.io/docs/auto-updating-studios"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  mode="ghost"
-                  text={t('about-dialog.version-info.auto-updates.how-to-enable')}
-                  iconRight={LaunchIcon}
-                />
-              </Flex>
-            </Card>
+          isProd || window.localStorage.__debug__version__dialog ? (
+            isAutoUpdating || window.localStorage.__debug__version__dialog ? (
+              <Card tone="transparent" padding={2} radius={3} marginX={2}>
+                <Flex align="center" justify="space-evenly" gap={2}>
+                  <Text size={1} muted>
+                    {t('about-dialog.version-info.auto-updates.enabled')}
+                  </Text>
+                  <Button
+                    as="a"
+                    href={`https://sanity.io/manage/project/${projectId}/studios?manage=${'TODO'}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    mode="ghost"
+                    text={t('about-dialog.version-info.auto-updates.manage-version')}
+                    icon={CogIcon}
+                  />
+                </Flex>
+              </Card>
+            ) : (
+              <Card tone="transparent" padding={2} radius={3} marginX={2}>
+                <Flex align="center" justify="space-evenly" gap={2}>
+                  <Text size={1} muted>
+                    {t('about-dialog.version-info.auto-updates.disabled')}
+                  </Text>
+                  <Button
+                    as="a"
+                    href="https://www.sanity.io/docs/auto-updating-studios"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    mode="ghost"
+                    text={t('about-dialog.version-info.auto-updates.how-to-enable')}
+                    iconRight={LaunchIcon}
+                  />
+                </Flex>
+              </Card>
+            )
           ) : null
         }
 

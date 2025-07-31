@@ -18,6 +18,8 @@ export const studioLocaleStrings = defineLocalesResources('studio', {
   'about-dialog.version-info.auto-updates.header': 'Auto Updates',
   /** "How to enable" next to Disabled state for Auto updates in about dialog */
   'about-dialog.version-info.auto-updates.how-to-enable': 'Enable',
+  /** "Manage version" link text */
+  'about-dialog.version-info.auto-updates.manage-version': 'Manage version',
   /** Text displayed on the "Copy to clipboard"-button after clicked */
   'about-dialog.version-info.copy-to-clipboard-button.copied-text':
     'Copied to Clipboard. Happy pasting!',
