@@ -7,7 +7,6 @@ import {
 } from '@sanity/types'
 import {Box, Card, Flex, useTheme, useToast} from '@sanity/ui'
 import {type ReactNode, useCallback, useMemo, useState} from 'react'
-import {encodeJsonParams} from 'sanity/router'
 
 import {Button} from '../../../../../ui-components'
 import {useFormValue} from '../../../../form'
@@ -19,7 +18,8 @@ import {validateItem} from '../../../../validation/validateDocument'
 import {FormFieldValidationStatus} from '../../../components/formField/FormFieldValidationStatus'
 import {useAuthType} from '../hooks/useAuthType'
 import {useLinkAssets} from '../hooks/useLinkAssets'
-import {useMediaLibraryId} from '../hooks/useMediaLibraryId'
+import {useMediaLibraryIds} from '../hooks/useMediaLibraryId'
+import {usePluginFrameUrl} from '../hooks/usePluginFrameUrl'
 import {usePluginPostMessage} from '../hooks/usePluginPostMessage'
 import {useSanityMediaLibraryConfig} from '../hooks/useSanityMediaLibraryConfig'
 import {type AssetSelectionItem, type AssetType, type PluginPostMessage} from '../types'
@@ -42,7 +42,7 @@ export function SelectAssetsDialog(props: SelectAssetsDialogProps): ReactNode {
   const theme = useTheme()
   const {t} = useTranslation()
   const {dark} = theme.sanity.color
-  const libraryId = useMediaLibraryId()
+  const mediaLibraryIds = useMediaLibraryIds()
 
   const mediaLibraryConfig = useSanityMediaLibraryConfig()
 
@@ -79,7 +79,7 @@ export function SelectAssetsDialog(props: SelectAssetsDialogProps): ReactNode {
       const value = {
         _type: 'mainImage',
         media: {
-          _ref: `media-library:${libraryId}:${assetSelectionItem.asset._id}`,
+          _ref: `media-library:${mediaLibraryIds?.libraryId}:${assetSelectionItem.asset._id}`,
           _type: 'globalDocumentReference',
           _weak: true,
         },
@@ -101,10 +101,10 @@ export function SelectAssetsDialog(props: SelectAssetsDialogProps): ReactNode {
       })
       return result
     },
-    [client, document, libraryId, schema, schemaType, workspace.i18n],
+    [client, document, mediaLibraryIds?.libraryId, schema, schemaType, workspace.i18n],
   )
 
-  const urlFilters = useMemo(() => {
+  const pluginFilters = useMemo(() => {
     const filters: any[] = []
     if (schemaType?.options?.mediaLibrary?.filters) {
       filters.push(
@@ -116,14 +116,21 @@ export function SelectAssetsDialog(props: SelectAssetsDialogProps): ReactNode {
         })),
       )
     }
-    return encodeJsonParams(filters)
+    return filters
   }, [schemaType?.options?.mediaLibrary?.filters])
 
-  const pluginApiVersion = mediaLibraryConfig.__internal.pluginApiVersion
-  const appBasePath = mediaLibraryConfig.__internal.appBasePath
-  const iframeUrl =
-    `${appHost}${appBasePath}/plugin/${pluginApiVersion}/library/${libraryId}/assets?selectionType=${selectionType}` +
-    `&selectAssetTypes=${selectAssetType === 'sanity.video' ? 'video' : selectAssetType}&scheme=${dark ? 'dark' : 'light'}&auth=${authType}&filters=${urlFilters}`
+  const params = useMemo(
+    () => ({
+      selectionType,
+      selectAssetTypes: [selectAssetType === 'sanity.video' ? 'video' : selectAssetType],
+      scheme: dark ? 'dark' : 'light',
+      auth: authType,
+      pluginFilters,
+    }),
+    [selectionType, selectAssetType, dark, authType, pluginFilters],
+  )
+  const iframeUrl = usePluginFrameUrl('/assets', params)
+
   const {onLinkAssets} = useLinkAssets({schemaType})
 
   const handleSelect = useCallback(async () => {
