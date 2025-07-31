@@ -1159,7 +1159,7 @@ importers:
         specifier: ^7.20.5
         version: 7.20.5
       '@types/babel__generator':
-        specifier: ^7.6.8
+        specifier: ^7.27.0
         version: 7.27.0
       '@types/babel__register':
         specifier: ^7.17.3
