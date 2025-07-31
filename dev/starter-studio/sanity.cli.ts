@@ -5,5 +5,5 @@ export default defineCliConfig({
     projectId: 'ppsg7ml5',
     dataset: 'test',
   },
-  reactCompiler: {target: '18'},
+  reactCompiler: {target: '19'},
 })

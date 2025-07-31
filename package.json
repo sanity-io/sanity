@@ -176,8 +176,7 @@
     "peerDependencyRules": {
       "allowAny": [
         "react",
-        "react-dom",
-        "react-is"
+        "react-dom"
       ]
     },
     "overrides": {
