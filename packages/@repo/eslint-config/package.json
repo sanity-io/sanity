@@ -23,7 +23,7 @@
     "eslint-plugin-react-hooks": "experimental",
     "eslint-plugin-simple-import-sort": "^12.1.1",
     "eslint-plugin-tsdoc": "^0.4.0",
-    "eslint-plugin-unicorn": "^59.0.1",
+    "eslint-plugin-unicorn": "^60.0.0",
     "eslint-plugin-unused-imports": "^4.1.4",
     "globals": "catalog:",
     "typescript-eslint": "^8.38.0"
