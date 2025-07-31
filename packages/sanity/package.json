@@ -207,7 +207,7 @@
     "console-table-printer": "^2.11.1",
     "dataloader": "^2.2.3",
     "date-fns": "^2.30.0",
-    "debug": "^4.3.4",
+    "debug": "^4.4.1",
     "esbuild": "catalog:",
     "esbuild-register": "catalog:",
     "execa": "^2.0.0",

@@ -57,7 +57,7 @@
     "@babel/register": "^7.27.1",
     "@babel/traverse": "^7.28.0",
     "@babel/types": "^7.28.2",
-    "debug": "^4.3.4",
+    "debug": "^4.4.1",
     "globby": "^11.1.0",
     "groq": "workspace:*",
     "groq-js": "^1.17.3",
