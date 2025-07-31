@@ -112,7 +112,9 @@ jobs:
         env:
           NPM_CONFIG_PROVENANCE: true
 
-      - name: Build bundles
+      - name: Build bundles for staging
+        env:
+          SANITY_INTERNAL_ENV: "staging" # sets the __SANITY_STAGING__ global variable to true in built bundles
         run: pnpm run build:bundle
 
       # Note: we need to run this after publish so we get the updated version numbers from npx lerna publish
@@ -123,6 +125,9 @@ jobs:
           GCLOUD_SERVICE_KEY: ${{ secrets.GCS_STAGING_SERVICE_KEY }}
           GCLOUD_BUCKET: ${{ secrets.GCS_STAGING_BUCKET }}
         run: pnpm bundle-manager publish --tag=next
+
+      - name: Build bundles for production
+        run: pnpm run build:bundle
 
       - name: Upload bundles to production bucket
         env:
