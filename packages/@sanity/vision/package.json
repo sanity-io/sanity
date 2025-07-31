@@ -95,7 +95,7 @@
     "@sanity/types": "workspace:*",
     "@sanity/util": "workspace:*",
     "@testing-library/react": "^16.3.0",
-    "@types/lodash": "^4.17.7",
+    "@types/lodash": "^4.17.20",
     "@vitejs/plugin-react": "catalog:",
     "babel-plugin-react-compiler": "19.1.0-rc.2",
     "jsdom": "^23.0.1",

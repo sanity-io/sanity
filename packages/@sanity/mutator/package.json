@@ -60,7 +60,7 @@
     "@repo/package.config": "workspace:*",
     "@repo/test-config": "workspace:*",
     "@types/debug": "^4.1.12",
-    "@types/lodash": "^4.17.7",
+    "@types/lodash": "^4.17.20",
     "rimraf": "^5.0.10",
     "vitest": "^3.2.3"
   }

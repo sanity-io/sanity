@@ -90,7 +90,7 @@
     "@types/debug": "^4.1.12",
     "@types/decompress": "^4.2.4",
     "@types/inquirer": "^6.0.0",
-    "@types/lodash": "^4.17.7",
+    "@types/lodash": "^4.17.20",
     "@types/minimist": "^1.2.5",
     "@types/node": "^22.10.0",
     "@types/semver": "^7.5.6",
