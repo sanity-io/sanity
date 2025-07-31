@@ -31,7 +31,6 @@ import {useSchema} from '../hooks/useSchema'
 import {useValidationStatus} from '../hooks/useValidationStatus'
 import {getSelectedPerspective} from '../perspective/getSelectedPerspective'
 import {type ReleaseId} from '../perspective/types'
-import {usePerspective} from '../perspective/usePerspective'
 import {useDocumentVersions} from '../releases/hooks/useDocumentVersions'
 import {useDocumentVersionTypeSortedList} from '../releases/hooks/useDocumentVersionTypeSortedList'
 import {useOnlyHasVersions} from '../releases/hooks/useOnlyHasVersions'
@@ -145,7 +144,6 @@ export function useDocumentForm(options: DocumentFormOptions): DocumentFormValue
   const presenceStore = usePresenceStore()
   const {data: releases} = useActiveReleases()
   const {data: documentVersions} = useDocumentVersions({documentId})
-  const {selectedReleaseId} = usePerspective()
 
   const schemaType = schema.get(documentType) as ObjectSchemaType | undefined
   if (!schemaType) {
@@ -174,18 +172,18 @@ export function useDocumentForm(options: DocumentFormOptions): DocumentFormValue
 
   const activeDocumentReleaseId = useMemo(() => {
     // if a document version exists with the selected release id, then it should use that
-    if (documentVersions.some((id) => getVersionFromId(id) === selectedReleaseId)) {
-      return selectedReleaseId
+    if (documentVersions.some((id) => getVersionFromId(id) === releaseId)) {
+      return releaseId
     }
 
     // check if the selected version is the only version, if it isn't and it doesn't exist in the release
     // then it needs to use the documentVersions
-    if (selectedReleaseId && (!documentVersions || !onlyHasVersions)) {
-      return selectedReleaseId
+    if (releaseId && (!documentVersions || !onlyHasVersions)) {
+      return releaseId
     }
 
     return getVersionFromId(firstVersion ?? '')
-  }, [documentVersions, onlyHasVersions, selectedReleaseId, firstVersion])
+  }, [documentVersions, onlyHasVersions, releaseId, firstVersion])
 
   const editState = useEditState(documentId, documentType, 'default', activeDocumentReleaseId)
 
