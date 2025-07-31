@@ -7,8 +7,8 @@ import {ErrorBoundary} from '../../../../../ui-components/errorBoundary'
 import {useTranslation} from '../../../../i18n/hooks/useTranslation'
 import {EnsureMediaLibrary} from './EnsureMediaLibrary'
 
-// Cache for fetched Media Library ID when 'libraryId' is not specified in the config.
-const fetchedLibraryIdCache = new Map<string, string>()
+// Cache for fetched Media Library IDs.
+const cachedMediaLibraryIdsMap = new Map<string, {libraryId: string; organizationId: string}>()
 
 /** @internal */
 export function MediaLibraryProvider({
@@ -20,21 +20,27 @@ export function MediaLibraryProvider({
   libraryId?: string | null
   children: React.ReactNode
 }) {
-  const cachedLibraryId = (projectId && fetchedLibraryIdCache.get(projectId)) || undefined
-  const [mediaLibraryId, setMediaLibraryId] = useState<string | null>(
-    libraryIdProp || cachedLibraryId || null,
+  const [mediaLibraryIds, setMediaLibraryIds] = useState<{
+    libraryId: string
+    organizationId: string
+  } | null>(
+    () =>
+      (projectId && cachedMediaLibraryIdsMap.get(projectId)) ||
+      (libraryIdProp && cachedMediaLibraryIdsMap.get(projectId)) ||
+      null,
   )
 
   const [unexpectedError, setUnexpectedError] = useState<Error | null>(null)
   const {t} = useTranslation()
 
-  const handleSetMediaLibraryId = useCallback(
-    (libraryId: string) => {
-      setMediaLibraryId(libraryId)
+  const handleSetMediaLibraryIds = useCallback(
+    (fetchedMediaLibraryIds: {libraryId: string; organizationId: string}) => {
+      setMediaLibraryIds(fetchedMediaLibraryIds)
+      // Write to cache
       if (projectId) {
-        // Write to cache
-        fetchedLibraryIdCache.set(projectId, libraryId)
+        cachedMediaLibraryIdsMap.set(projectId, fetchedMediaLibraryIds)
       }
+      cachedMediaLibraryIdsMap.set(fetchedMediaLibraryIds.libraryId, fetchedMediaLibraryIds)
     },
     [projectId],
   )
@@ -66,12 +72,19 @@ export function MediaLibraryProvider({
   }
 
   return (
-    <MediaLibraryIdContext.Provider value={mediaLibraryId}>
+    <MediaLibraryIdContext.Provider value={mediaLibraryIds}>
       <ErrorBoundary onCatch={handleUnexpectedMediaLibraryError}>
-        {mediaLibraryId ? (
+        {mediaLibraryIds ? (
           children
         ) : (
-          <EnsureMediaLibrary projectId={projectId} onSetMediaLibraryId={handleSetMediaLibraryId} />
+          <EnsureMediaLibrary
+            mediaLibraryInfo={
+              libraryIdProp
+                ? {from: 'library', libraryId: libraryIdProp}
+                : {from: 'project', projectId}
+            }
+            onSetMediaLibraryIds={handleSetMediaLibraryIds}
+          />
         )}
       </ErrorBoundary>
     </MediaLibraryIdContext.Provider>

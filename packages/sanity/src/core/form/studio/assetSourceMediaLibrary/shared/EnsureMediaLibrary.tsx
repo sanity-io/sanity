@@ -3,21 +3,24 @@ import {Card, Flex, Stack, Text} from '@sanity/ui'
 import {useEffect} from 'react'
 
 import {useTranslation} from '../../../../i18n'
-import {useEnsureMediaLibrary} from '../hooks/useEnsureMediaLibrary'
+import {
+  useEnsureMediaLibrary,
+  type useEnsureMediaLibraryProps,
+} from '../hooks/useEnsureMediaLibrary'
 
 export function EnsureMediaLibrary(props: {
-  projectId: string
-  onSetMediaLibraryId: (id: string) => void
+  mediaLibraryInfo: useEnsureMediaLibraryProps
+  onSetMediaLibraryIds: (ids: {libraryId: string; organizationId: string}) => void
 }) {
-  const {onSetMediaLibraryId} = props
+  const {onSetMediaLibraryIds} = props
   const {t} = useTranslation()
-  const {id, status, error} = useEnsureMediaLibrary(props.projectId)
+  const {id, organizationId, status, error} = useEnsureMediaLibrary(props.mediaLibraryInfo)
 
   useEffect(() => {
-    if (status === 'active' && id) {
-      onSetMediaLibraryId(id)
+    if (status === 'active' && id && organizationId) {
+      onSetMediaLibraryIds({libraryId: id, organizationId})
     }
-  }, [id, onSetMediaLibraryId, status])
+  }, [id, onSetMediaLibraryIds, organizationId, status])
 
   if (status === 'inactive') {
     return (

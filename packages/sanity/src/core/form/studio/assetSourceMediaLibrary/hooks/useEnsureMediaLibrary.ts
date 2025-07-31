@@ -17,7 +17,7 @@ import {
 import {useClient} from '../../../../hooks/useClient'
 import {type MediaLibrary} from '../types'
 
-type ErrorCode = 'ERROR_NO_ORGANIZATION_FOUND'
+type ErrorCode = 'ERROR_NO_ORGANIZATION_FOUND' | 'ERROR_NO_LIBRARY_FOUND'
 
 export class ProvisionError extends Error {
   message: string
@@ -59,6 +59,29 @@ function getMediaLibrariesForOrganization(
     )
 }
 
+function getOrganizationIdFromLibraryId(
+  client: ObservableSanityClient,
+  libraryId: string,
+): Observable<string> {
+  return client
+    .request({
+      uri: `/media-libraries/${libraryId}`,
+      method: 'GET',
+    })
+    .pipe(
+      concatMap(async (data) => {
+        if (data.organizationId) {
+          return data.organizationId
+        }
+        throw new ProvisionError(
+          'Library ID not found',
+          'Library ID not found',
+          'ERROR_NO_LIBRARY_FOUND',
+        )
+      }),
+    )
+}
+
 function getOrganizationIdFromProjectId(
   client: ObservableSanityClient,
   projectId: string,
@@ -82,39 +105,72 @@ function getOrganizationIdFromProjectId(
     )
 }
 
-export function useEnsureMediaLibrary(projectId: string): EnsureMediaLibraryResponse {
-  if (!projectId) {
+export type useEnsureMediaLibraryProps =
+  | {
+      from: 'library'
+      libraryId: string
+    }
+  | {
+      from: 'project'
+      projectId: string
+    }
+
+export function useEnsureMediaLibrary(
+  props: useEnsureMediaLibraryProps,
+): EnsureMediaLibraryResponse {
+  if (props.from === 'library' && !props.libraryId) {
+    throw new Error('libraryId is required to fetch organizationId')
+  }
+  if (props.from === 'project' && !props.projectId) {
     throw new Error('projectId is required to fetch organizationId')
   }
+
   const client = useClient({apiVersion: 'v2025-02-19'}).observable
-  const observable = useMemo(
-    () =>
-      getOrganizationIdFromProjectId(client, projectId).pipe(
-        switchMap((organizationId) =>
-          getMediaLibrariesForOrganization(client, organizationId).pipe(
-            map<MediaLibrary, EnsureMediaLibraryResponse>(({id}) => ({
-              organizationId,
-              status: 'active',
-              id,
-            })),
-          ),
+  const observable = useMemo(() => {
+    const handleDefault = defaultIfEmpty<EnsureMediaLibraryResponse, EnsureMediaLibraryResponse>({
+      status: 'inactive',
+    })
+
+    const handleError = catchError<
+      EnsureMediaLibraryResponse,
+      Observable<EnsureMediaLibraryResponse>
+    >((error) => {
+      if (error instanceof ProvisionError) {
+        return of({
+          status: 'error',
+          error: error,
+        })
+      }
+      throw error
+    })
+
+    if (props.from === 'library') {
+      return getOrganizationIdFromLibraryId(client, props.libraryId).pipe(
+        map<string, EnsureMediaLibraryResponse>((organizationId) => ({
+          organizationId,
+          status: 'active',
+          id: props.libraryId,
+        })),
+        handleDefault,
+        handleError,
+      )
+    }
+
+    return getOrganizationIdFromProjectId(client, props.projectId).pipe(
+      switchMap((organizationId) =>
+        getMediaLibrariesForOrganization(client, organizationId).pipe(
+          map<MediaLibrary, EnsureMediaLibraryResponse>(({id}) => ({
+            organizationId,
+            status: 'active',
+            id,
+          })),
         ),
-        take(1),
-        defaultIfEmpty<EnsureMediaLibraryResponse, EnsureMediaLibraryResponse>({
-          status: 'inactive',
-        }),
-        catchError<EnsureMediaLibraryResponse, Observable<EnsureMediaLibraryResponse>>((error) => {
-          if (error instanceof ProvisionError) {
-            return of({
-              status: 'error',
-              error: error,
-            })
-          }
-          throw error
-        }),
       ),
-    [client, projectId],
-  )
+      take(1),
+      handleDefault,
+      handleError,
+    )
+  }, [client, props])
 
   return useObservable(observable, {status: 'loading'})
 }

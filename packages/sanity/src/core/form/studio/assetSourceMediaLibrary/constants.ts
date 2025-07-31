@@ -3,9 +3,6 @@ import {isDev} from '../../../environment'
 // TODO: change this to what the official GDR release version is
 export const DEFAULT_API_VERSION = 'vX'
 
-/* Plugin API version as served by Media Library frontend app */
-export const PLUGIN_API_VERSION = 'v2'
-
 // Staging
 export const DEPLOYED_FRONTEND_HOST_STAGING = 'https://media.sanity.work'
 export const CDN_HOST_STAGING = 'https://sanity-cdn.work'
@@ -17,5 +14,5 @@ export const CDN_HOST_PRODUCTION = 'https://sanity-cdn.com'
 export const API_HOST_PRODUCTION = 'https://api.sanity.io'
 
 // Local dev Media Library server
-export const IS_LOCAL_DEV = false && isDev // Set boolean to true to work against local Media Library dev server (but keep isDev check to avoid accidentally committing it)
+export const IS_LOCAL_DEV = true && isDev // Set boolean to true to work against local Media Library dev server (but keep isDev check to avoid accidentally committing it)
 export const LOCAL_DEV_FRONTEND_HOST = 'http://localhost:3001'
