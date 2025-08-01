@@ -3,9 +3,10 @@ import {Menu} from '@sanity/ui'
 import {useCallback, useState} from 'react'
 import {styled} from 'styled-components'
 
-import {Button, MenuButton} from '../../../../../ui-components'
+import {MenuButton} from '../../../../../ui-components'
+import {StatusButton} from '../../../../components'
 import {useTranslation} from '../../../../i18n'
-import {SANITY_VERSION} from '../../../../version'
+import {usePackageVersionStatus} from '../../../packageVersionStatus/usePackageVersionStatus'
 import {useGetHelpResources} from './helper-functions/hooks'
 import {ResourcesMenuItems} from './ResourcesMenuItems'
 import {StudioInfoDialog} from './StudioInfoDialog'
@@ -19,12 +20,17 @@ export function ResourcesButton() {
   const {t} = useTranslation()
 
   const {value, error, isLoading} = useGetHelpResources()
+
+  const {isAutoUpdating, packageVersionInfo} = usePackageVersionStatus()
+  const newAutoUpdateVersion = isAutoUpdating
+    ? packageVersionInfo.find((pkg) => pkg.canUpdate)?.available
+    : undefined
   const [studioInfoDialogOpen, setStudioInfoDialogOpen] = useState(false)
   const handleStudioInfoDialogClose = useCallback(() => {
     setStudioInfoDialogOpen(false)
   }, [])
 
-  const handleAboutDialogOpen = useCallback(() => {
+  const handleOpenVersionDialog = useCallback(() => {
     setStudioInfoDialogOpen(true)
   }, [])
 
@@ -32,14 +38,14 @@ export function ResourcesButton() {
     <>
       {studioInfoDialogOpen && (
         <StudioInfoDialog
-          currentVersion={SANITY_VERSION}
           latestVersion={value?.latestVersion}
           onClose={handleStudioInfoDialogClose}
         />
       )}
       <MenuButton
         button={
-          <Button
+          <StatusButton
+            tone={newAutoUpdateVersion ? 'primary' : undefined}
             aria-label={t('help-resources.title')}
             icon={HelpCircleIcon}
             mode="bleed"
@@ -50,10 +56,11 @@ export function ResourcesButton() {
         menu={
           <StyledMenu data-testid="menu-button-resources">
             <ResourcesMenuItems
+              newAutoUpdateVersion={newAutoUpdateVersion}
               error={error}
               isLoading={isLoading}
               value={value}
-              onAboutDialogOpen={handleAboutDialogOpen}
+              onOpenStudioVersionDialog={handleOpenVersionDialog}
             />
           </StyledMenu>
         }
