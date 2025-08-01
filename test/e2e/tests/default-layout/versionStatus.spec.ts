@@ -57,7 +57,7 @@ test.describe('auto-updating studio behavior', () => {
         }),
       })
     })
-    await page.getByTestId('resources-menu-button').click()
-    await expect(page.getByTestId('update-studio-now-menu-item')).not.toBeVisible()
+    await page.getByTestId('button-resources-menu').click()
+    await expect(page.getByTestId('menu-item-update-studio-now')).not.toBeVisible()
   })
 })
