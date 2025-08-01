@@ -90,7 +90,7 @@ function buildUnsetPatches(rootDiff: ObjectDiff, paths: Path[]): PatchOperations
     patches.push(buildUnsetPatch(rootDiff, paths[i], paths))
   }
 
-  return [{unset: Array.from(new Set(patches.map(pathToString)))}]
+  return [{unset: [...new Set(patches.map(pathToString))]}]
 }
 
 /**
