@@ -32,13 +32,13 @@ export function DeletedDocumentBanners() {
 
 function DeletedDocumentBanner() {
   const {documentId, documentType} = useDocumentPane()
-  const {restore} = useDocumentOperation(documentId, documentType)
+  const {restoreRevision} = useDocumentOperation(documentId, documentType)
   const {navigateIntent} = useRouter()
 
   const handleRestore = useCallback(() => {
-    restore.execute('lastRevision')
+    restoreRevision.execute('lastRevision')
     navigateIntent('edit', {id: documentId, type: documentType})
-  }, [documentId, documentType, navigateIntent, restore])
+  }, [documentId, documentType, navigateIntent, restoreRevision])
 
   const {t} = useTranslation(structureLocaleNamespace)
 
