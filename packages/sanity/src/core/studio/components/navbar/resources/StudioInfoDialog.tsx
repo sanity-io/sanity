@@ -114,7 +114,7 @@ export function StudioInfoDialog(props: StudioInfoDialogProps) {
             ) : null}
           </Flex>
 
-          {isAutoUpdating ? (
+          {isAutoUpdating && sanityPkgUpdateInfo.canUpdate ? (
             <>
               <Flex justify="flex-end" align="center">
                 <Text size={1} weight="semibold">
@@ -131,20 +131,18 @@ export function StudioInfoDialog(props: StudioInfoDialogProps) {
                       : sanityPkgUpdateInfo.current,
                   )}
                 </Badge>
-                {sanityPkgUpdateInfo.canUpdate ? (
-                  <Button
-                    onClick={reload}
-                    mode="bleed"
-                    tone="primary"
-                    text={t('about-dialog.version-info.update-button.text')}
-                    tooltipProps={{
-                      content: (
-                        <Text size={1}>{t('about-dialog.version-info.reload-to-update')}</Text>
-                      ),
-                    }}
-                    icon={RefreshIcon}
-                  />
-                ) : null}
+                <Button
+                  onClick={reload}
+                  mode="bleed"
+                  tone="primary"
+                  text={t('about-dialog.version-info.update-button.text')}
+                  tooltipProps={{
+                    content: (
+                      <Text size={1}>{t('about-dialog.version-info.reload-to-update')}</Text>
+                    ),
+                  }}
+                  icon={RefreshIcon}
+                />
               </Flex>
             </>
           ) : !isUpToDate || isPrerelease ? (
@@ -156,7 +154,7 @@ export function StudioInfoDialog(props: StudioInfoDialogProps) {
               </Flex>
               <Flex justify="flex-start" align="center" gap={2}>
                 <Badge tone="primary">
-                  {latestVersion ? ensureVersionPrefix(latestVersion.raw) : 'unknown'}
+                  {latestVersion ? ensureVersionPrefix(latestVersion.version) : 'unknown'}
                 </Badge>
                 {isPrerelease ? null : (
                   <Button
