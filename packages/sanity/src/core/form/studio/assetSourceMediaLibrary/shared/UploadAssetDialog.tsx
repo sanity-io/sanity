@@ -10,7 +10,7 @@ import {createRef, type ReactNode, useCallback, useEffect, useState} from 'react
 import {useTranslation} from '../../../../i18n'
 import {useAuthType} from '../hooks/useAuthType'
 import {useLinkAssets} from '../hooks/useLinkAssets'
-import {useMediaLibraryId} from '../hooks/useMediaLibraryId'
+import {useMediaLibraryIds} from '../hooks/useMediaLibraryId'
 import {usePluginPostMessage} from '../hooks/usePluginPostMessage'
 import {useSanityMediaLibraryConfig} from '../hooks/useSanityMediaLibraryConfig'
 import {type AssetSelectionItem, type PluginPostMessage} from '../types'
@@ -32,7 +32,7 @@ export const UploadAssetsDialog = function UploadAssetsDialog(
   props: UploadAssetsDialogProps,
 ): ReactNode {
   const theme = useTheme()
-  const libraryId = useMediaLibraryId()
+  const mediaLibraryIds = useMediaLibraryIds()
   const {dark} = theme.sanity.color
   const {schemaType} = props
 
@@ -46,9 +46,8 @@ export const UploadAssetsDialog = function UploadAssetsDialog(
   const {t} = useTranslation()
 
   const appHost = pluginConfig.__internal.hosts.app
-  const pluginApiVersion = pluginConfig.__internal.pluginApiVersion
   const appBasePath = pluginConfig.__internal.appBasePath
-  const iframeUrl = `${appHost}${appBasePath}/plugin/${pluginApiVersion}/library/${libraryId}/upload?scheme=${dark ? 'dark' : 'light'}&auth=${authType}`
+  const iframeUrl = `${appHost}${appBasePath}/plugin/v1/library/${mediaLibraryIds?.libraryId}/upload?auth=${authType}`
   const uploaderRef = createRef<{
     uploader: AssetSourceUploader
     unsubscribe: () => void

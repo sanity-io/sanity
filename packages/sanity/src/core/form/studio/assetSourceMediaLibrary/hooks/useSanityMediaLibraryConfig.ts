@@ -26,7 +26,6 @@ export function useSanityMediaLibraryConfig(): SanityMediaLibraryConfig {
   const internalConfig = {
     apiVersion: DEFAULT_API_VERSION,
     appBasePath: '',
-    pluginApiVersion: 'v1',
     hosts: {
       cdn: isStaging ? CDN_HOST_STAGING : CDN_HOST_PRODUCTION,
       app: appHost,
