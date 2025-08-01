@@ -48,12 +48,12 @@ export function ResourcesButton() {
             tone={newAutoUpdateVersion ? 'primary' : undefined}
             aria-label={t('help-resources.title')}
             icon={HelpCircleIcon}
+            data-testid="button-resources-menu"
             mode="bleed"
             tooltipProps={{content: t('help-resources.title')}}
           />
         }
         id="menu-button-resources"
-        data-testid="resources-menu-button"
         menu={
           <StyledMenu data-testid="menu-button-resources">
             <ResourcesMenuItems

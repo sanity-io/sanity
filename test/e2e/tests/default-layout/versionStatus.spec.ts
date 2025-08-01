@@ -42,8 +42,8 @@ test.describe('auto-updating studio behavior', () => {
         }),
       })
     })
-    await page.getByTestId('resources-menu-button').click()
-    await expect(page.getByTestId('update-studio-now-menu-item')).toBeVisible()
+    await page.getByTestId('button-resources-menu').click()
+    await expect(page.getByTestId('menu-item-update-studio-now')).toBeVisible()
   })
 
   test('should show nothing if in auto-updating studio, and version is lower', async ({page}) => {

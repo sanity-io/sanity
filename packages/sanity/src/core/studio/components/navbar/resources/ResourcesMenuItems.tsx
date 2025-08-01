@@ -90,7 +90,7 @@ export function ResourcesMenuItems({
         <MenuItem
           tone="primary"
           onClick={reload}
-          data-testid="update-studio-now-menu-item"
+          data-testid="menu-item-update-studio-now"
           text={t('help-resources.studio-auto-update-now', {
             newVersion: newAutoUpdateVersion,
           })}
