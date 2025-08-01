@@ -1,10 +1,4 @@
-import {
-  diffItem,
-  type DiffOptions,
-  type InsertAfterPatch,
-  type SetPatch,
-  type UnsetPatch,
-} from '@sanity/diff-patch'
+import {diffValue} from '@sanity/diff-patch'
 import {
   isIndexSegment,
   isKeyedObject,
@@ -31,10 +25,6 @@ import {
   type ObjectDiff,
 } from '../../types'
 import {flattenChangeNode, isAddedAction, isSubpathOf, pathSegmentOfCorrectType} from './helpers'
-
-const diffOptions: DiffOptions = {
-  diffMatchPatch: {enabled: false, lengthThresholdAbsolute: 30, lengthThresholdRelative: 1.2},
-}
 
 export function undoChange(
   change: ChangeNode,
@@ -100,7 +90,7 @@ function buildUnsetPatches(rootDiff: ObjectDiff, paths: Path[]): PatchOperations
     patches.push(buildUnsetPatch(rootDiff, paths[i], paths))
   }
 
-  return [{unset: [...new Set(patches.map(pathToString))]}]
+  return [{unset: Array.from(new Set(patches.map(pathToString)))}]
 }
 
 /**
@@ -196,28 +186,33 @@ function buildMovePatches(
 }
 
 function buildUndoPatches(diff: Diff, rootDiff: ObjectDiff, path: Path): PatchOperations[] {
-  const patches = diffItem(diff.toValue, diff.fromValue, diffOptions, path)
+  const patches = diffValue(diff.toValue, diff.fromValue, path)
 
   const inserts = patches
-    .filter((patch): patch is InsertAfterPatch => patch.op === 'insert')
-    .map(({after, items}) => ({insert: {after: pathToString(after), items}}) as any)
+    .filter((patch): patch is Pick<Required<PatchOperations>, 'insert'> => Boolean(patch.insert))
+    .map(({insert}) => ({insert}) as any)
 
   const unsets = patches
-    .filter((patch): patch is UnsetPatch => patch.op === 'unset')
-    .reduce((acc, patch) => acc.concat(pathToString(patch.path)), [] as string[])
+    .filter((patch): patch is Pick<Required<PatchOperations>, 'unset'> => Boolean(patch.unset))
+    .reduce((acc, patch) => acc.concat(patch.unset!), [] as string[])
 
   const stubbedPaths = new Set<string>()
   const stubs: PatchOperations[] = []
 
   let hasSets = false
   const sets = patches
-    .filter((patch): patch is SetPatch => patch.op === 'set')
+    .filter((patch): patch is Pick<Required<PatchOperations>, 'set'> => Boolean(patch.set))
     .reduce(
       (acc, patch) => {
         hasSets = true
-        stubs.push(...getParentStubs(patch.path, rootDiff, stubbedPaths))
-        acc[pathToString(patch.path)] = patch.value
-        return acc
+
+        Object.keys(patch.set ?? {}).forEach((pathStr) => {
+          const segments = pathStr.split('.').filter((s) => s.length > 0)
+          const patchPath = [...path, ...segments]
+          stubs.push(...getParentStubs(patchPath, rootDiff, stubbedPaths))
+        })
+
+        return Object.assign(acc, patch.set ?? {})
       },
       {} as Record<string, unknown>,
     )
