@@ -3,6 +3,29 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [4.3.0](https://github.com/sanity-io/sanity/compare/v4.2.0...v4.3.0) (2025-08-01)
+
+
+### Features
+
+* **core:** allow all fields group customizations ([#10094](https://github.com/sanity-io/sanity/issues/10094)) ([f3237e1](https://github.com/sanity-io/sanity/commit/f3237e1203bdab30b3ee86c8ce2ea29f216100de))
+
+
+### Bug Fixes
+
+* **app server:** stop spinner before printing url ([#10114](https://github.com/sanity-io/sanity/issues/10114)) ([84e7eb6](https://github.com/sanity-io/sanity/commit/84e7eb6ad07868cbbd20089add8c1e51fe3b7404))
+* **cli:** mark @sanity/ui@3 as supported ([#10154](https://github.com/sanity-io/sanity/issues/10154)) ([6030a93](https://github.com/sanity-io/sanity/commit/6030a93928bdf625746c8670fae25778bbb62f82))
+* **deps:** update dependency @sanity/ui to ^3.0.3 ([#10098](https://github.com/sanity-io/sanity/issues/10098)) ([05cd42c](https://github.com/sanity-io/sanity/commit/05cd42ccc965d41bd67c188860802f118e23f349))
+* **deps:** update dependency @sanity/ui to ^3.0.5 ([#10115](https://github.com/sanity-io/sanity/issues/10115)) ([82703e1](https://github.com/sanity-io/sanity/commit/82703e1f60df532cf8c8af37eb70ddabd303dd82))
+* **deps:** update dependency framer-motion to ^12.23.12 ([#10131](https://github.com/sanity-io/sanity/issues/10131)) ([256e334](https://github.com/sanity-io/sanity/commit/256e33493ce3f4518b7a55a65d9af56423d74309))
+* **sanity:** ensure `useDocumentForm` uses provided release id ([1abac9f](https://github.com/sanity-io/sanity/commit/1abac9f684a7158e1e3aa3c815d9772b8bb97653))
+* **sanity:** hide new version if up to date ([#10165](https://github.com/sanity-io/sanity/issues/10165)) ([acc988f](https://github.com/sanity-io/sanity/commit/acc988f7e3a7fe64ed56a8399932f874c2380a11))
+* unpin rollup ([#10113](https://github.com/sanity-io/sanity/issues/10113)) ([48400c4](https://github.com/sanity-io/sanity/commit/48400c4433b6efbe468baa0b9ee3e2f8623a9847))
+* upgrade react-is to 19 ([#10141](https://github.com/sanity-io/sanity/issues/10141)) ([d7acd6c](https://github.com/sanity-io/sanity/commit/d7acd6cf5476a08b32d0350acff6f832dabca7af))
+* workaround rollup@4.46.0 regression ([#10103](https://github.com/sanity-io/sanity/issues/10103)) ([a3c44ce](https://github.com/sanity-io/sanity/commit/a3c44cea205d28ba431c7e58628cb208e414e693))
+
+
+
 ## [4.2.0](https://github.com/sanity-io/sanity/compare/v4.1.1...v4.2.0) (2025-07-29)
 
 
