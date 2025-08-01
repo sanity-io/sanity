@@ -56,8 +56,8 @@ export function PackageVersionStatusProvider({children}: {children: ReactNode}) 
       .then((latestPackageVersions) =>
         setPackageVersionInfo(
           DEBUG
-            ? latestPackageVersions
-            : [{name: 'sanity', current: SANITY_VERSION, available: '4.2.0'}],
+            ? [{name: 'sanity', current: SANITY_VERSION, available: '4.2.0'}]
+            : latestPackageVersions,
         ),
       )
       .finally(() => setVersionCheckStatus({lastCheckedAt: new Date(), checking: false}))
