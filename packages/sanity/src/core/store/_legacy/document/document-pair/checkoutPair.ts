@@ -8,7 +8,7 @@ import {type Mutation} from '@sanity/mutator'
 import {type SanityDocument} from '@sanity/types'
 import {omit} from 'lodash'
 import {defer, EMPTY, from, merge, type Observable} from 'rxjs'
-import {filter, map, mergeMap, scan, share, take, tap, withLatestFrom} from 'rxjs/operators'
+import {filter, map, mergeMap, scan, share, tap, withLatestFrom} from 'rxjs/operators'
 
 import {type DocumentVariantType} from '../../../../util/getDocumentVariantType'
 import {
@@ -196,13 +196,8 @@ function submitCommitRequest(
   client: SanityClient,
   idPair: IdPair,
   request: CommitRequest,
-  serverActionsEnabled: boolean,
 ): Observable<MultipleActionResult | MutationResult> {
-  return from(
-    serverActionsEnabled
-      ? commitActions(client, idPair, request.mutation.params)
-      : commitMutations(client, idPair, request.mutation.params),
-  ).pipe(
+  return from(commitActions(client, idPair, request.mutation.params)).pipe(
     tap({
       error: (error) => {
         const isBadRequest =
@@ -237,7 +232,6 @@ type LatencyTrackingState = {
 export function checkoutPair(
   client: SanityClient,
   idPair: IdPair,
-  serverActionsEnabled: Observable<boolean>,
   options: DocumentStoreExtraOptions = {},
 ): Pair {
   const {publishedId, draftId, versionId} = idPair
@@ -277,16 +271,7 @@ export function checkoutPair(
     draft.commitRequest$,
     published.commitRequest$,
     version ? version.commitRequest$ : EMPTY,
-  ).pipe(
-    mergeMap((commitRequest) =>
-      serverActionsEnabled.pipe(
-        take(1),
-        mergeMap((canUseServerActions) =>
-          submitCommitRequest(client, idPair, commitRequest, canUseServerActions),
-        ),
-      ),
-    ),
-  )
+  ).pipe(mergeMap((commitRequest) => submitCommitRequest(client, idPair, commitRequest)))
 
   // Note: we're only subscribing to this for the side-effect
   const combinedEvents = defer(() =>
