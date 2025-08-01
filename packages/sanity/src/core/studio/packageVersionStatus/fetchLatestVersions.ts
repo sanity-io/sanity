@@ -1,7 +1,4 @@
 // object like {sanity: '3.40.1'}
-interface VersionMap {
-  [key: string]: string | undefined
-}
 
 // @ts-expect-error: __SANITY_STAGING__ is a global env variable set by the vite config
 const isStaging = typeof __SANITY_STAGING__ !== 'undefined' && __SANITY_STAGING__ === true
@@ -20,7 +17,7 @@ const fetchLatestVersionForPackage = async (pkg: string, version: string) => {
         accept: 'application/json',
       },
     })
-    return res.json().then((data) => data.packageVersion)
+    return res.json().then((data): string => data.packageVersion)
   } catch (err) {
     console.error('Failed to fetch latest version for package', pkg, 'Error:', err)
     return undefined
@@ -30,15 +27,13 @@ const fetchLatestVersionForPackage = async (pkg: string, version: string) => {
 /*
  *
  */
-export const checkForLatestVersions = async (
-  packages: Record<string, string>,
-): Promise<VersionMap | undefined> => {
-  const results = await Promise.all(
-    Object.entries(packages).map(async ([pkg, version]) => [
-      pkg,
-      await fetchLatestVersionForPackage(pkg, version),
-    ]),
+export const fetchLatestVersions = async (packages: {name: string; current: string}[]) => {
+  return Promise.all(
+    packages.map(async (pkg) => {
+      return {
+        ...pkg,
+        available: await fetchLatestVersionForPackage(pkg.name, pkg.current),
+      }
+    }),
   )
-  const packageVersions: VersionMap = Object.fromEntries(results)
-  return packageVersions
 }

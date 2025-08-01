@@ -1,15 +1,9 @@
-import {
-  Box,
-  MenuDivider,
-  // eslint-disable-next-line no-restricted-imports
-  MenuItem as UIMenuItem,
-  Stack,
-  Text,
-} from '@sanity/ui'
+import {DotIcon} from '@sanity/icons'
+import {MenuDivider, Text} from '@sanity/ui'
+import semver from 'semver'
 
 import {MenuItem} from '../../../../../ui-components'
 import {LoadingBlock} from '../../../../components/loadingBlock'
-import {hasSanityPackageInImportMap} from '../../../../environment/hasSanityPackageInImportMap'
 import {useTranslation} from '../../../../i18n'
 import {SANITY_VERSION} from '../../../../version'
 import {StudioAnnouncementsMenuItem} from '../../../studioAnnouncements/StudioAnnouncementsMenuItem'
@@ -18,25 +12,38 @@ import {type ResourcesResponse, type Section} from './helper-functions/types'
 interface ResourcesMenuItemProps {
   error: Error | null
   isLoading: boolean
+  newAutoUpdateVersion?: string
   value?: ResourcesResponse
-  onAboutDialogOpen: () => void
+  onOpenStudioVersionDialog: () => void
+}
+
+const UpdateDot = () => (
+  <Text size={2}>
+    <DotIcon style={{color: `var(--card-badge-primary-dot-color)`}} />
+  </Text>
+)
+
+function reload() {
+  document.location.reload()
 }
 
 export function ResourcesMenuItems({
   error,
   isLoading,
   value,
-  onAboutDialogOpen,
+  onOpenStudioVersionDialog,
+  newAutoUpdateVersion,
 }: ResourcesMenuItemProps) {
   const sections = value?.resources?.sectionArray
-  const latestVersion = value?.latestVersion
-  const isAutoUpdating = hasSanityPackageInImportMap()
   const {t} = useTranslation()
-
   if (isLoading) {
     return <LoadingBlock showText />
   }
+  const latestVersion = value?.latestVersion
 
+  const isOutdated = latestVersion
+    ? (semver.parse(SANITY_VERSION)?.compareMain?.(latestVersion) ?? 0) < 0
+    : false
   const fallbackLinks = (
     <>
       <MenuItem
@@ -73,22 +80,32 @@ export function ResourcesMenuItems({
         })}
 
       {/* Studio version information */}
-      <UIMenuItem onClick={onAboutDialogOpen}>
-        <Stack space={1}>
-          <Text size={1} weight="medium" textOverflow="ellipsis">
-            {t('help-resources.studio-version', {studioVersion: SANITY_VERSION})}
-          </Text>
-          {!error && latestVersion && !isAutoUpdating && (
-            <Box paddingTop={2}>
-              <Text size={1} textOverflow="ellipsis">
-                {t('help-resources.latest-sanity-version', {
-                  latestVersion,
-                })}
-              </Text>
-            </Box>
-          )}
-        </Stack>
-      </UIMenuItem>
+      <MenuItem
+        onClick={onOpenStudioVersionDialog}
+        text={t('help-resources.studio-version', {
+          studioVersion: semver.parse(SANITY_VERSION)?.version || SANITY_VERSION,
+        })}
+      />
+      {newAutoUpdateVersion ? (
+        <MenuItem
+          tone="primary"
+          onClick={reload}
+          data-testid="menu-item-update-studio-now"
+          text={t('help-resources.studio-auto-update-now', {
+            newVersion: newAutoUpdateVersion,
+          })}
+          iconRight={UpdateDot}
+        />
+      ) : isOutdated ? (
+        <MenuItem
+          tone="primary"
+          onClick={onOpenStudioVersionDialog}
+          text={t('help-resources.latest-sanity-version', {
+            latestVersion,
+          })}
+          iconRight={UpdateDot}
+        />
+      ) : null}
     </>
   )
 }
