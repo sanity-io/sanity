@@ -53,6 +53,7 @@ export function ResourcesButton() {
           />
         }
         id="menu-button-resources"
+        data-testid="resources-menu-button"
         menu={
           <StyledMenu data-testid="menu-button-resources">
             <ResourcesMenuItems
