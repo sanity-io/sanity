@@ -1248,9 +1248,9 @@ export const studioLocaleStrings = defineLocalesResources('studio', {
   'new-document.open-dialog-aria-label': 'Create new document',
   /** Title for "Create new document" dialog */
   'new-document.title': 'Create new document',
-  /** Label for button that will make the browser reload when users' studio version is out-of-date */
+  /** @deprecated Label for button that will make the browser reload when users' studio version is out-of-date */
   'package-version.new-package-available.reload-button': 'Push to reload',
-  /** Title of the alert for studio users when packages in their studio are out-of-date */
+  /** @deprecated Title of the alert for studio users when packages in their studio are out-of-date */
   'package-version.new-package-available.title': 'Sanity Studio is ready to update!',
   /** Label for action to invite members to the current studio project */
   'presence.action.manage-members': 'Invite members',
