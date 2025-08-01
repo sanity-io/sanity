@@ -336,7 +336,7 @@ describe('after releases have loaded', () => {
     })
 
     it('should not show the pin release button', () => {
-      expect(screen.queryByText('Navigate this release in the Studio')).not.toBeInTheDocument()
+      expect(screen.queryByText('Pin release to studio')).not.toBeInTheDocument()
     })
   })
 
@@ -375,7 +375,7 @@ describe('after releases have loaded', () => {
     })
 
     it('should not show the pin release button', () => {
-      expect(screen.queryByText('Navigate this release in the Studio')).not.toBeInTheDocument()
+      expect(screen.queryByText('Pin release to studio')).not.toBeInTheDocument()
     })
 
     it('should not show the publish button', () => {

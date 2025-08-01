@@ -105,9 +105,9 @@ const releasesLocaleStrings = {
   'dashboard.details.published-on': 'Published on {{date}}',
 
   /** Text for the releases detail screen in the pin release button. */
-  'dashboard.details.pin-release': 'Navigate this release in the Studio',
+  'dashboard.details.pin-release': 'Pin release to studio',
   /** Text for the releases detail screen in the unpin release button. */
-  'dashboard.details.unpin-release': 'Stop navigating this release in the Studio',
+  'dashboard.details.unpin-release': 'Unpin release from studio',
 
   /** Activity inspector button text */
   'dashboard.details.activity': 'Activity',
