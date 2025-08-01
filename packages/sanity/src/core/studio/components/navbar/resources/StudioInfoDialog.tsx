@@ -183,7 +183,7 @@ export function StudioInfoDialog(props: StudioInfoDialogProps) {
                 </Text>
                 <Button
                   as="a"
-                  href={`https://sanity.io/manage/project/${projectId}/studios?manage=${'TODO'}`}
+                  href={`https://sanity.io/manage/project/${projectId}/studios?host=${document.location.hostname}`}
                   target="_blank"
                   rel="noopener noreferrer"
                   mode="ghost"
