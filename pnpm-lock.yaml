@@ -491,8 +491,8 @@ importers:
   dev/test-studio:
     dependencies:
       '@portabletext/block-tools':
-        specifier: ^2.0.0
-        version: 2.0.0(@sanity/types@packages+@sanity+types)(@types/react@19.1.9)
+        specifier: ^2.0.2
+        version: 2.0.2(@sanity/types@packages+@sanity+types)(@types/react@19.1.9)
       '@portabletext/editor':
         specifier: ^2.0.0
         version: 2.0.0(@sanity/schema@packages+@sanity+schema)(@sanity/types@packages+@sanity+types)(@types/react@19.1.9)(react-dom@19.1.1(react@19.1.1))(react@19.1.1)(rxjs@7.8.2)
@@ -1626,8 +1626,8 @@ importers:
         specifier: ^3.5.1
         version: 3.5.1(@types/react-dom@19.1.7(@types/react@19.1.9))(@types/react@19.1.9)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
       '@portabletext/block-tools':
-        specifier: ^2.0.0
-        version: 2.0.0(@sanity/types@packages+@sanity+types)(@types/react@19.1.9)
+        specifier: ^2.0.2
+        version: 2.0.2(@sanity/types@packages+@sanity+types)(@types/react@19.1.9)
       '@portabletext/editor':
         specifier: ^2.0.0
         version: 2.0.0(@sanity/schema@packages+@sanity+schema)(@sanity/types@packages+@sanity+types)(@types/react@19.1.9)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(rxjs@7.8.2)
@@ -4262,6 +4262,12 @@ packages:
     resolution: {integrity: sha512-lpQWs7JXynBSJNJ5fU7COBMAKz1jpMvn4rTHwdWL7mEZgNMCvRFk667rmi9hGYmFwEsnJYfUZ07zVJbp5E30Aw==}
     peerDependencies:
       '@sanity/types': ^4.0.1
+      '@types/react': ^18.3 || ^19
+
+  '@portabletext/block-tools@2.0.2':
+    resolution: {integrity: sha512-mrV8x5ucEV6cZsYbUwvE9uJjLWCt1GhEkQEmbfWoZOmf9u00t4R/PMeKudHZcp9sthper4xhI7ZFVEDKjuqMww==}
+    peerDependencies:
+      '@sanity/types': ^4.2.0
       '@types/react': ^18.3 || ^19
 
   '@portabletext/editor@2.0.0':
@@ -14777,6 +14783,13 @@ snapshots:
       config-chain: 1.1.13
 
   '@portabletext/block-tools@2.0.0(@sanity/types@packages+@sanity+types)(@types/react@19.1.9)':
+    dependencies:
+      '@sanity/types': link:packages/@sanity/types
+      '@types/react': 19.1.9
+      get-random-values-esm: 1.0.2
+      lodash: 4.17.21
+
+  '@portabletext/block-tools@2.0.2(@sanity/types@packages+@sanity+types)(@types/react@19.1.9)':
     dependencies:
       '@sanity/types': link:packages/@sanity/types
       '@types/react': 19.1.9
