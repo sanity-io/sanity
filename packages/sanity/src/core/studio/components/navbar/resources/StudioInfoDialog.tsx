@@ -28,7 +28,7 @@ function reload() {
 }
 
 function isPrerelease(ver: SemVer) {
-  return (ver && semver.prerelease(ver)) || [].length > 0
+  return ver.prerelease.length > 0
 }
 
 const HEX_ONLY = /^[0-9a-fA-F]+$/i
