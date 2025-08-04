@@ -33,7 +33,6 @@ export const UploadAssetsDialog = function UploadAssetsDialog(
 ): ReactNode {
   const theme = useTheme()
   const mediaLibraryIds = useMediaLibraryIds()
-  const {dark} = theme.sanity.color
   const {schemaType} = props
 
   const {onLinkAssets} = useLinkAssets({schemaType})
