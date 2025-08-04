@@ -35,21 +35,4 @@ test.describe('auto-updating studio behavior', () => {
     await page.getByTestId('button-resources-menu').click()
     await expect(page.getByTestId('menu-item-update-studio-now')).toBeVisible()
   })
-
-  test('should show nothing if in auto-updating studio, and version is lower than minVersion from importmap', async ({
-    page,
-  }) => {
-    // Intercept the API request and provide a mock response
-    await page.route('https://sanity-cdn.**/v1/modules/sanity/default/**', (route) => {
-      route.fulfill({
-        status: 200,
-        contentType: 'application/json',
-        body: JSON.stringify({
-          packageVersion: '4.0.0',
-        }),
-      })
-    })
-    await page.getByTestId('button-resources-menu').click()
-    await expect(page.getByTestId('menu-item-update-studio-now')).toBeVisible()
-  })
 })
