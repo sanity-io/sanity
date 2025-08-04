@@ -31,6 +31,23 @@ function isPrerelease(ver: SemVer) {
   return (ver && semver.prerelease(ver)) || [].length > 0
 }
 
+const HEX_ONLY = /^[0-9a-fA-F]+$/i
+function resolveGithubURLFromVersion(ver: SemVer) {
+  const preids = ver.prerelease
+  if (preids.length === 0) {
+    return `https://github.com/sanity-io/sanity/releases/tag/${ver.version}`
+  }
+  const isPR = preids[0] === 'pr' && typeof preids[1] === 'number'
+  if (isPR) {
+    return `https://github.com/sanity-io/sanity/pull/${preids[1]}`
+  }
+  const isNextWithCommitHash =
+    preids[0] === 'next' && ver.build.length === 1 && HEX_ONLY.test(ver.build[0])
+  if (isNextWithCommitHash) {
+    return `https://github.com/sanity-io/sanity/tree/${ver.build[0]}`
+  }
+  return undefined
+}
 export function StudioInfoDialog(props: StudioInfoDialogProps) {
   const {t} = useTranslation()
   const {onClose} = props
@@ -63,6 +80,8 @@ export function StudioInfoDialog(props: StudioInfoDialogProps) {
     const interval = setInterval(checkForUpdates, 10_000)
     return () => clearInterval(interval)
   }, [checkForUpdates])
+
+  const githubUrl = resolveGithubURLFromVersion(currentVersion)
 
   return (
     <Dialog width={0} onClickOutside={onClose} id={dialogId} padding={false}>
@@ -98,7 +117,7 @@ export function StudioInfoDialog(props: StudioInfoDialogProps) {
               </Badge>
             </Tooltip>
 
-            {currentVersion?.build?.length === 1 ? (
+            {githubUrl && (
               <Button
                 as="a"
                 target="_blank"
@@ -106,11 +125,11 @@ export function StudioInfoDialog(props: StudioInfoDialogProps) {
                 icon={GithubIcon}
                 mode="bleed"
                 tooltipProps={{
-                  content: t('about-dialog.version-info.browse-on-github'),
+                  content: t('about-dialog.version-info.view-on-github'),
                 }}
-                href={`https://github.com/sanity-io/sanity/tree/${currentVersion.build[0]}`}
+                href={githubUrl}
               />
-            ) : null}
+            )}
           </Flex>
 
           {isAutoUpdating && newAutoUpdateVersionAvailable ? (
