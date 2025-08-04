@@ -68,9 +68,11 @@ export function SimpleBlockPortableText(): React.JSX.Element {
               </p>
             )}
             <h2>Slugs</h2>
-            {item.slugs?.map((slug) => (
-              <div key={slug._key}>
-                <p key={slug._key}>slug: {slug.current}</p>
+            {item.slugs?.map((slug, index) => (
+              <div key={slug._key} data-sanity={dataAttribute.scope(`slugs[${index}]`).toString()}>
+                <p data-sanity={dataAttribute.scope(`slugs[${index}].current`).toString()}>
+                  slug: {slug.current}
+                </p>
               </div>
             ))}
             <p>{item.bodyString}</p>
