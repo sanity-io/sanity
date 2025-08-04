@@ -31,9 +31,10 @@ export function SimpleBlockPortableText(): React.JSX.Element {
       bodyString: string
       body: PortableTextBlock[]
       notes: {_key: string; title?: string; minutes?: number; notes?: PortableTextBlock[]}[]
+      slugs: {_key: string; current?: string | null}[]
     }[]
   >(
-    /* groq */ `*[_type == "simpleBlock"] | order(_updatedAt desc)[0..10]{_id,_type,slug,title,"bodyString":pt::text(body),body,notes}`,
+    /* groq */ `*[_type == "simpleBlock"] | order(_updatedAt desc)[0..10]{_id,_type,slug,title,slugs,"bodyString":pt::text(body),body,notes}`,
   )
 
   if (error) {
@@ -66,6 +67,12 @@ export function SimpleBlockPortableText(): React.JSX.Element {
                 slug: {stegaClean(item.slug.current)}
               </p>
             )}
+            <h2>Slugs</h2>
+            {item.slugs?.map((slug) => (
+              <div key={slug._key}>
+                <p key={slug._key}>slug: {slug.current}</p>
+              </div>
+            ))}
             <p>{item.bodyString}</p>
             <PortableText components={components} value={item.body} />
             {item.notes?.map((note) => (
