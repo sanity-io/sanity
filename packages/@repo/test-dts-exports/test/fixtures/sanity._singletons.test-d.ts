@@ -48,6 +48,9 @@ import type {
   MediaLibraryIdContext,
   MentionUserContext,
   NavbarContext,
+  PackageVersionInfo,
+  PackageVersionInfoContext,
+  PackageVersionInfoContextValue,
   PaneContext,
   PaneLayoutContext,
   PaneRouterContext,
@@ -234,6 +237,15 @@ describe('sanity/_singletons', () => {
   })
   test('NavbarContext', () => {
     expectTypeOf<typeof NavbarContext>().not.toBeNever()
+  })
+  test('PackageVersionInfo', () => {
+    expectTypeOf<PackageVersionInfo>().not.toBeNever()
+  })
+  test('PackageVersionInfoContext', () => {
+    expectTypeOf<typeof PackageVersionInfoContext>().not.toBeNever()
+  })
+  test('PackageVersionInfoContextValue', () => {
+    expectTypeOf<PackageVersionInfoContextValue>().not.toBeNever()
   })
   test('PaneContext', () => {
     expectTypeOf<typeof PaneContext>().not.toBeNever()
