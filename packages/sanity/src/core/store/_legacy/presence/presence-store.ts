@@ -263,7 +263,12 @@ export function createPresenceStore(context: {
       }))
     }),
     withLatestFrom(debugIntrospect$),
-    map(([userAndSessions, debugIntrospect]) => userAndSessions),
+    map(([userAndSessions, debugIntrospect]) =>
+      userAndSessions.filter(
+        (userAndSession) =>
+          debugIntrospect || !userAndSession.sessions.some((sess) => sess.sessionId === SESSION_ID),
+      ),
+    ),
     map((userAndSessions) =>
       userAndSessions.map((userAndSession) => ({
         user: userAndSession.user,
