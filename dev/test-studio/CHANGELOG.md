@@ -3,6 +3,23 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [4.2.0](https://github.com/sanity-io/sanity/compare/v4.1.1...v4.2.0) (2025-07-29)
+
+
+### Features
+
+* **core:** add media library field groq filters ([#9900](https://github.com/sanity-io/sanity/issues/9900)) ([fd837ab](https://github.com/sanity-io/sanity/commit/fd837aba647ccd7757a159c000833c90001f350c))
+
+
+### Bug Fixes
+
+* **core:** upgrade refractor to 5.0.0 and react-refractor to 4.0.0 and @sanity/ui to 3.0.0 ([#10068](https://github.com/sanity-io/sanity/issues/10068)) ([cf42627](https://github.com/sanity-io/sanity/commit/cf42627649b0ebc968eb22c588ec3abe967cc388))
+* **deps:** update dependency @sanity/client to ^7.8.1 ([#10066](https://github.com/sanity-io/sanity/issues/10066)) ([4e0d1c5](https://github.com/sanity-io/sanity/commit/4e0d1c53856b2e6bf6c61b3609fa8ba6fcd011dc))
+* **deps:** update dependency @sanity/ui to ^3.0.1 ([#10079](https://github.com/sanity-io/sanity/issues/10079)) ([63e81eb](https://github.com/sanity-io/sanity/commit/63e81eba52b9014c58745776ddecc973ae5530b2))
+* **deps:** Update dev-non-major ([#10046](https://github.com/sanity-io/sanity/issues/10046)) ([cd7dc5c](https://github.com/sanity-io/sanity/commit/cd7dc5c04b2cf9f9dab1ebfb5e0066ca3c512fba))
+
+
+
 ## [4.1.1](https://github.com/sanity-io/sanity/compare/v4.1.0...v4.1.1) (2025-07-22)
 
 **Note:** Version bump only for package sanity-test-studio

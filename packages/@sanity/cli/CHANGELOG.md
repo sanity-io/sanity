@@ -3,6 +3,24 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [4.2.0](https://github.com/sanity-io/sanity/compare/v4.1.1...v4.2.0) (2025-07-29)
+
+
+### Features
+
+* **cli:** add openapi command group with list and get subcommands ([#9924](https://github.com/sanity-io/sanity/issues/9924)) ([9fa20e9](https://github.com/sanity-io/sanity/commit/9fa20e91afb911b5d913af08677fa87f86e6b143))
+
+
+### Bug Fixes
+
+* **deps:** Update babel monorepo ([#10045](https://github.com/sanity-io/sanity/issues/10045)) ([a47ceea](https://github.com/sanity-io/sanity/commit/a47ceea64da2afd82133a16008cdfdb7890af782))
+* **deps:** update dependency @sanity/client to ^7.8.1 ([#10066](https://github.com/sanity-io/sanity/issues/10066)) ([4e0d1c5](https://github.com/sanity-io/sanity/commit/4e0d1c53856b2e6bf6c61b3609fa8ba6fcd011dc))
+* **deps:** update dependency groq-js to ^1.17.3 ([#10069](https://github.com/sanity-io/sanity/issues/10069)) ([d74c4fb](https://github.com/sanity-io/sanity/commit/d74c4fb87eeae2bd18cd99a5df725c8469b8f8e7))
+* **deps:** update dependency next-sanity to v10 ([#9998](https://github.com/sanity-io/sanity/issues/9998)) ([226ab14](https://github.com/sanity-io/sanity/commit/226ab1460f763c89507401a38f59f005d7fbcfde))
+* **functions:** update help docs ([#10070](https://github.com/sanity-io/sanity/issues/10070)) ([02e95dd](https://github.com/sanity-io/sanity/commit/02e95dd0061fadfa312ee840e1cc715dcdd49397))
+
+
+
 ## [4.1.1](https://github.com/sanity-io/sanity/compare/v4.1.0...v4.1.1) (2025-07-22)
 
 **Note:** Version bump only for package @sanity/cli

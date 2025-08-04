@@ -17,7 +17,7 @@ const Link = styled.a`
 
 const FooterCard = styled(Card)({
   position: 'relative',
-  zIndex: 1,
+  zIndex: '1',
 })
 
 export function CommentsInspectorFeedbackFooter() {

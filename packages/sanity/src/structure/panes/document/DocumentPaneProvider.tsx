@@ -238,6 +238,7 @@ export const DocumentPaneProvider = memo((props: DocumentPaneProviderProps) => {
     onSetCollapsedFieldSet,
     openPath,
   } = useDocumentForm({
+    changesOpen,
     documentType,
     documentId,
     initialValue: initialValue,
