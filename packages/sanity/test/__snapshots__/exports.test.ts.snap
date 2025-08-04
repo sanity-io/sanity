@@ -678,6 +678,7 @@ exports[`exports snapshot 1`] = `
     "MediaLibraryIdContext": "object",
     "MentionUserContext": "object",
     "NavbarContext": "object",
+    "PackageVersionInfoContext": "object",
     "PaneContext": "object",
     "PaneLayoutContext": "object",
     "PaneRouterContext": "object",

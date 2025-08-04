@@ -14,6 +14,7 @@ import type {
   ActiveWorkspaceMatcherProps,
   AddonDatasetContextValue,
   AddonDatasetProvider,
+  ALL_FIELDS_GROUP,
   Annotation,
   AnnotationDetails,
   ApiConfig,
@@ -1648,6 +1649,9 @@ describe('sanity', () => {
   })
   test('AddonDatasetProvider', () => {
     expectTypeOf<typeof AddonDatasetProvider>().toBeFunction()
+  })
+  test('ALL_FIELDS_GROUP', () => {
+    expectTypeOf<typeof ALL_FIELDS_GROUP>().not.toBeNever()
   })
   test('Annotation', () => {
     expectTypeOf<Annotation>().not.toBeNever()

@@ -52,15 +52,15 @@
     "@sanity/diff-match-patch": "^3.2.0",
     "@sanity/types": "workspace:*",
     "@sanity/uuid": "^3.0.2",
-    "debug": "^4.3.4",
+    "debug": "^4.4.1",
     "lodash": "^4.17.21"
   },
   "devDependencies": {
     "@repo/eslint-config": "workspace:*",
     "@repo/package.config": "workspace:*",
     "@repo/test-config": "workspace:*",
-    "@types/debug": "^4.1.5",
-    "@types/lodash": "^4.17.7",
+    "@types/debug": "^4.1.12",
+    "@types/lodash": "^4.17.20",
     "rimraf": "^5.0.10",
     "vitest": "^3.2.3"
   }

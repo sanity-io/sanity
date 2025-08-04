@@ -8,6 +8,7 @@ import {version} from '../package.json'
 export const defaultConfig: UserConfig = {
   appType: 'custom',
   define: {
+    '__SANITY_STAGING__': process.env.SANITY_INTERNAL_ENV === 'staging',
     'process.env.PKG_VERSION': JSON.stringify(version),
     'process.env.NODE_ENV': '"production"',
     'process.env': {},

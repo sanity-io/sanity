@@ -42,7 +42,8 @@ test.describe('auto-updating studio behavior', () => {
         }),
       })
     })
-    await expect(page.getByText('Sanity Studio is ready to update')).toBeVisible()
+    await page.getByTestId('button-resources-menu').click()
+    await expect(page.getByTestId('menu-item-update-studio-now')).toBeVisible()
   })
 
   test('should show nothing if in auto-updating studio, and version is lower', async ({page}) => {
@@ -56,7 +57,7 @@ test.describe('auto-updating studio behavior', () => {
         }),
       })
     })
-
-    await expect(page.getByText('Sanity Studio is ready to update')).not.toBeVisible()
+    await page.getByTestId('button-resources-menu').click()
+    await expect(page.getByTestId('menu-item-update-studio-now')).not.toBeVisible()
   })
 })

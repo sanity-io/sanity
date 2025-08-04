@@ -4,6 +4,7 @@
 
 import {describe, expectTypeOf, test} from 'vitest'
 import type {
+  ALL_FIELDS_GROUP_NAME,
   builtinTypes,
   DEFAULT_MAX_FIELD_DEPTH,
   DescriptorConverter,
@@ -28,6 +29,9 @@ import type {
 } from '@sanity/schema/_internal'
 
 describe('@sanity/schema/_internal', () => {
+  test('ALL_FIELDS_GROUP_NAME', () => {
+    expectTypeOf<typeof ALL_FIELDS_GROUP_NAME>().not.toBeNever()
+  })
   test('builtinTypes', () => {
     expectTypeOf<typeof builtinTypes>().not.toBeNever()
   })

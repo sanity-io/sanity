@@ -34,13 +34,17 @@ jobs:
 
       - id: pre-flight
         run: |
+          PR_NUMBER=$(echo $GITHUB_REF | awk 'BEGIN { FS = "/" } ; { print $3 }')
           PACKAGES=$(pnpx tsx scripts/listPublishedPackages.ts)
           echo "packages=${PACKAGES}" >> "$GITHUB_OUTPUT"
-          VERSION="$(jq -r .version lerna.json)-pkg.pr.new+$(git rev-parse --short HEAD)"
+          VERSION="$(jq -r .version lerna.json)-pr.$PR_NUMBER+$(git rev-parse --short HEAD)"
+          echo "process.env.PKG_VERSION will be set to ${VERSION} when building"
           echo "version=${VERSION}" >> "$GITHUB_OUTPUT"
 
       - run: pnpm build
         env:
+          # Makes sure the right version is set in packages/sanity/src/core/version.ts
+          # Note that version fields in package.json for all packages will be unchanged
           PKG_VERSION: ${{ steps.pre-flight.outputs.version }}
 
       - run: |
