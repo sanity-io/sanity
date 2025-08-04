@@ -20,7 +20,6 @@ This Sanity Function automatically posts to Mastodon when content is published u
 
 ## Requirements
 
-- A Sanity project with Functions enabled
 - A schema with a `post` document type containing:
   - `title` field (string)
   - `mastodonPost` field (text or string)
@@ -45,13 +44,13 @@ Most official templates already include the `title` and `slug` fields, but you w
 
 Add the `mastodonPost` field to your post schema:
 
-```javascript
-{
+```ts
+defineField({
   name: 'mastodonPost',
   title: 'Mastodon Post Content',
   type: 'text',
-  description: 'Content to post on Mastodon when this post is published'
-}
+  description: 'Content to post on Mastodon when this post is published',
+})
 ```
 
 ## Implementation
@@ -121,7 +120,7 @@ Add the `mastodonPost` field to your post schema:
          event: {
            on: ['publish'],
            filter: "_type == 'post'",
-           projection: '_id, title, mastodonPost, slug',
+           projection: 'title, mastodonPost, slug',
          },
          env: {
            MASTODON_TOKEN: MASTODON_TOKEN,
@@ -248,7 +247,6 @@ Once you've tested your function locally and are satisfied with its behavior, yo
 4. **Verify deployment**
 
    After deployment, you can verify your function is active by:
-   - Checking the Sanity Studio under "Compute"
    - Publishing a new post and confirming it appears on Mastodon
    - Monitoring function logs in the CLI
 
@@ -258,7 +256,7 @@ Once you've tested your function locally and are satisfied with its behavior, yo
 
 Only post certain types of content by updating the filter:
 
-```typescript
+```ts
 filter: "_type == 'post' && defined(publishedAt)"
 ```
 
@@ -266,13 +264,13 @@ filter: "_type == 'post' && defined(publishedAt)"
 
 Add more fields to the projection and use them in the post:
 
-```typescript
-projection: '_id, title, mastodonPost, slug, author, tags'
+```ts
+projection: 'title, mastodonPost, slug, author, tags'
 ```
 
 ### Add hashtags based on content
 
-```typescript
+```ts
 const hashtags = data.tags?.map((tag) => `#${tag}`).join(' ') || ''
 const postContent = `${title}
 

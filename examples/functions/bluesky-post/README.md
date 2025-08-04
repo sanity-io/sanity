@@ -18,6 +18,15 @@ This Sanity Function automatically posts to Bluesky when content is published us
 - **Increases content reach** by maintaining active social media presence
 - **Reduces missed opportunities** by never forgetting to share published content
 
+## Requirements
+
+- A schema with a `post` document type containing:
+  - `title` field (string)
+  - `blueskyPost` field (text or string)
+  - `slug` field (slug type with `current` property)
+- A Bluesky account with app password
+- Node.js v22.x for local testing
+
 ## Compatible Templates
 
 This function is built to be compatible with any of [the official "clean" templates](https://www.sanity.io/exchange/type=templates/by=sanity). We recommend testing the function out in one of those after you have installed them locally.
@@ -34,13 +43,13 @@ Most official templates already include the `title` and `slug` fields, but you w
 
 Add the `blueskyPost` field to your post schema:
 
-```javascript
-{
+```ts
+defineField({
   name: 'blueskyPost',
   title: 'Bluesky Post Content',
   type: 'text',
-  description: 'Content to post on Bluesky when this post is published'
-}
+  description: 'Content to post on Bluesky when this post is published',
+})
 ```
 
 ## Implementation
@@ -107,7 +116,7 @@ Add the `blueskyPost` field to your post schema:
          event: {
            on: ['publish'],
            filter: "_type == 'post'",
-           projection: '_id, title, blueskyPost, slug',
+           projection: 'title, blueskyPost, slug',
          },
          env: {
            BLUESKY_USERNAME: BLUESKY_USERNAME,
@@ -236,38 +245,8 @@ Once you've tested your function locally and are satisfied with its behavior, yo
 4. **Verify deployment**
 
    After deployment, you can verify your function is active by:
-   - Checking the Sanity Studio under "Compute"
    - Publishing a new post and confirming it appears on Bluesky
    - Monitoring function logs in the CLI
-
-## Requirements
-
-- A Sanity project with Functions enabled
-- A schema with a `post` document type containing:
-  - `title` field (string)
-  - `blueskyPost` field (text or string)
-  - `slug` field (slug type with `current` property)
-- A Bluesky account with app password
-- Node.js v22.x for local testing
-
-## Usage Example
-
-When you publish a post document, the function automatically:
-
-1. Extracts the post title, bluesky post content, and slug
-2. Formats a social media post with this content
-3. Posts to Bluesky using your account credentials
-4. Logs the success or any errors
-
-**Example Bluesky post:**
-
-```text
-Getting Started with Sanity
-
-Learn how to build amazing content experiences with Sanity's headless CMS. This guide covers everything from setup to deployment.
-
-getting-started-with-sanity
-```
 
 ## Customization
 
@@ -275,7 +254,7 @@ getting-started-with-sanity
 
 Modify the `postContent` template in `index.ts`:
 
-```typescript
+```ts
 const postContent = `🚀 ${title}
 
 ${blueskyPost}
@@ -287,7 +266,7 @@ Read more: ${slug.current}`
 
 Only post certain types of content by updating the filter:
 
-```typescript
+```ts
 filter: "_type == 'post' && defined(publishedAt)"
 ```
 
@@ -295,8 +274,8 @@ filter: "_type == 'post' && defined(publishedAt)"
 
 Add more fields to the projection and use them in the post:
 
-```typescript
-projection: '_id, title, blueskyPost, slug, author'
+```ts
+projection: 'title, blueskyPost, slug, author'
 ```
 
 ## Troubleshooting

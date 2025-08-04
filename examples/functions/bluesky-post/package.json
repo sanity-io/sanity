@@ -17,7 +17,7 @@
         "publish"
       ],
       "filter": "_type == 'post'",
-      "projection": "_id, title, blueskyPost, slug"
+      "projection": "title, blueskyPost, slug"
     },
     "env": {
       "COMMENT": "BLUESKY_USERNAME and BLUESKY_PASSWORD are required. BLUESKY_HOST defaults to bsky.social",
