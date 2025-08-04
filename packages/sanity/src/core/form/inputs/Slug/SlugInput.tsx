@@ -114,6 +114,7 @@ export function SlugInput(props: SlugInputProps) {
     // Use requestAnimationFrame to defer focus to next frame, preventing race conditions
     // this is especially important for blur/focus handlers in array contexts
     requestAnimationFrame(() => {
+      // Only focus if the input is not already focused to avoid triggering unnecessary focus events
       if (document.activeElement !== inputRef.current) {
         inputRef.current?.focus()
       }
