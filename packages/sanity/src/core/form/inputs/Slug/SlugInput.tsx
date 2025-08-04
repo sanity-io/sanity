@@ -110,13 +110,20 @@ export function SlugInput(props: SlugInputProps) {
     [updateSlug],
   )
 
-  // Make sure the slug input is focused when the `focused` prop becomes true, regardless of wether the focusPath is `slug` or `slug.current` (both should work)
-  useDidUpdate(focused, (hadFocus, hasFocus) => {
-    if (!hadFocus && hasFocus) {
-      // Only focus if the input is not already focused to avoid triggering unnecessary blur events
+  const handleFocus = useCallback(() => {
+    // Use requestAnimationFrame to defer focus to next frame, preventing race conditions
+    // this is especially important for blur/focus handlers in array contexts
+    requestAnimationFrame(() => {
       if (document.activeElement !== inputRef.current) {
         inputRef.current?.focus()
       }
+    })
+  }, [])
+
+  // Make sure the slug input is focused when the `focused` prop becomes true, regardless of wether the focusPath is `slug` or `slug.current` (both should work)
+  useDidUpdate(focused, (hadFocus, hasFocus) => {
+    if (!hadFocus && hasFocus) {
+      handleFocus()
     }
   })
   // Handle stega visual editing links, which uses `slug.current` as the focus path
@@ -130,15 +137,12 @@ export function SlugInput(props: SlugInputProps) {
       currentFocusPath.length === 1 &&
       currentFocusPath[0] === 'current'
     ) {
-      // Only focus if the input is not already focused to avoid triggering unnecessary blur events
-      if (document.activeElement !== inputRef.current) {
-        inputRef.current?.focus()
-      }
+      handleFocus()
     }
   })
 
   // Merge the elementProps.ref with our local ref, so that parent callers still have access to the node after we added the local ref
-  useImperativeHandle(elementProps.ref, () => inputRef.current)
+  useImperativeHandle(elementProps.ref, () => inputRef.current, [elementProps.ref])
 
   return (
     <Stack space={3}>
@@ -151,7 +155,7 @@ export function SlugInput(props: SlugInputProps) {
             value={value?.current || ''}
             readOnly={readOnly}
             {...elementProps}
-            ref={elementProps.ref ? undefined : inputRef}
+            ref={inputRef}
           />
 
           {generateState?.status === 'error' && (
