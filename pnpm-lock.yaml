@@ -494,8 +494,8 @@ importers:
         specifier: ^2.0.5
         version: 2.0.5(@sanity/types@packages+@sanity+types)(@types/react@19.1.9)
       '@portabletext/editor':
-        specifier: ^2.1.4
-        version: 2.1.5(@sanity/schema@packages+@sanity+schema)(@sanity/types@packages+@sanity+types)(@types/react@19.1.9)(react-dom@19.1.1(react@19.1.1))(react@19.1.1)(rxjs@7.8.2)
+        specifier: ^2.1.7
+        version: 2.1.7(@sanity/schema@packages+@sanity+schema)(@sanity/types@packages+@sanity+types)(@types/react@19.1.9)(react-dom@19.1.1(react@19.1.1))(react@19.1.1)(rxjs@7.8.2)
       '@portabletext/react':
         specifier: ^3.2.1
         version: 3.2.1(react@19.1.1)
@@ -1629,8 +1629,8 @@ importers:
         specifier: ^2.0.5
         version: 2.0.5(@sanity/types@packages+@sanity+types)(@types/react@19.1.9)
       '@portabletext/editor':
-        specifier: ^2.1.4
-        version: 2.1.5(@sanity/schema@packages+@sanity+schema)(@sanity/types@packages+@sanity+types)(@types/react@19.1.9)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(rxjs@7.8.2)
+        specifier: ^2.1.7
+        version: 2.1.7(@sanity/schema@packages+@sanity+schema)(@sanity/types@packages+@sanity+types)(@types/react@19.1.9)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(rxjs@7.8.2)
       '@portabletext/react':
         specifier: ^3.2.1
         version: 3.2.1(react@18.3.1)
@@ -4264,8 +4264,8 @@ packages:
       '@sanity/types': ^4.2.0
       '@types/react': ^18.3 || ^19
 
-  '@portabletext/editor@2.1.5':
-    resolution: {integrity: sha512-ro4bcOdaK7gt193E9Oz80xbb2JF9Iq1U+PtNOP3K7mPyPhcjm8DzR0gbg67Qqji4E65oYAURlOqPt39KY0yx0Q==}
+  '@portabletext/editor@2.1.7':
+    resolution: {integrity: sha512-SS3q7+RddVMnPcpVzVPVpsiKbN1pCEB/qrfcIYQjFCHmeciM8n0sd/pYumGvcgufDBHfpZAy6u0rR9TFIPtplg==}
     engines: {node: '>=20.19'}
     peerDependencies:
       '@sanity/schema': ^4.2.0
@@ -11948,11 +11948,6 @@ packages:
     peerDependencies:
       react: '>=16.8.0'
 
-  use-effect-event@1.0.2:
-    resolution: {integrity: sha512-9c8AAmtQja4LwJXI0EQPhQCip6dmrcSe0FMcTUZBeGh/XTCOLgw3Qbt0JdUT8Rcrm/ZH+Web7MIcMdqgQKdXJg==}
-    peerDependencies:
-      react: ^18.3 || ^19.0.0-0
-
   use-effect-event@2.0.3:
     resolution: {integrity: sha512-fz1en+z3fYXCXx3nMB8hXDMuygBltifNKZq29zDx+xNJ+1vEs6oJlYd9sK31vxJ0YI534VUsHEBY0k2BATsmBQ==}
     peerDependencies:
@@ -14788,7 +14783,7 @@ snapshots:
       get-random-values-esm: 1.0.2
       lodash: 4.17.21
 
-  '@portabletext/editor@2.1.5(@sanity/schema@packages+@sanity+schema)(@sanity/types@packages+@sanity+types)(@types/react@19.1.9)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(rxjs@7.8.2)':
+  '@portabletext/editor@2.1.7(@sanity/schema@packages+@sanity+schema)(@sanity/types@packages+@sanity+types)(@types/react@19.1.9)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(rxjs@7.8.2)':
     dependencies:
       '@portabletext/block-tools': 2.0.5(@sanity/types@packages+@sanity+types)(@types/react@19.1.9)
       '@portabletext/keyboard-shortcuts': 1.1.1
@@ -14808,14 +14803,13 @@ snapshots:
       slate: 0.118.0
       slate-dom: 0.117.4(slate@0.118.0)
       slate-react: 0.117.4(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(slate-dom@0.117.4(slate@0.118.0))(slate@0.118.0)
-      use-effect-event: 1.0.2(react@18.3.1)
       xstate: 5.20.1
     transitivePeerDependencies:
       - '@types/react'
       - react-dom
       - supports-color
 
-  '@portabletext/editor@2.1.5(@sanity/schema@packages+@sanity+schema)(@sanity/types@packages+@sanity+types)(@types/react@19.1.9)(react-dom@19.1.1(react@19.1.1))(react@19.1.1)(rxjs@7.8.2)':
+  '@portabletext/editor@2.1.7(@sanity/schema@packages+@sanity+schema)(@sanity/types@packages+@sanity+types)(@types/react@19.1.9)(react-dom@19.1.1(react@19.1.1))(react@19.1.1)(rxjs@7.8.2)':
     dependencies:
       '@portabletext/block-tools': 2.0.5(@sanity/types@packages+@sanity+types)(@types/react@19.1.9)
       '@portabletext/keyboard-shortcuts': 1.1.1
@@ -14835,7 +14829,6 @@ snapshots:
       slate: 0.118.0
       slate-dom: 0.117.4(slate@0.118.0)
       slate-react: 0.117.4(react-dom@19.1.1(react@19.1.1))(react@19.1.1)(slate-dom@0.117.4(slate@0.118.0))(slate@0.118.0)
-      use-effect-event: 1.0.2(react@19.1.1)
       xstate: 5.20.1
     transitivePeerDependencies:
       - '@types/react'
@@ -24313,14 +24306,6 @@ snapshots:
   use-device-pixel-ratio@1.1.2(react@18.3.1):
     dependencies:
       react: 18.3.1
-
-  use-effect-event@1.0.2(react@18.3.1):
-    dependencies:
-      react: 18.3.1
-
-  use-effect-event@1.0.2(react@19.1.1):
-    dependencies:
-      react: 19.1.1
 
   use-effect-event@2.0.3(react@18.3.1):
     dependencies:
