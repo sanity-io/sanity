@@ -492,10 +492,10 @@ importers:
     dependencies:
       '@portabletext/block-tools':
         specifier: ^2.0.2
-        version: 2.0.2(@sanity/types@packages+@sanity+types)(@types/react@19.1.9)
+        version: 2.0.3(@sanity/types@packages+@sanity+types)(@types/react@19.1.9)
       '@portabletext/editor':
-        specifier: ^2.0.0
-        version: 2.0.0(@sanity/schema@packages+@sanity+schema)(@sanity/types@packages+@sanity+types)(@types/react@19.1.9)(react-dom@19.1.1(react@19.1.1))(react@19.1.1)(rxjs@7.8.2)
+        specifier: ^2.1.2
+        version: 2.1.2(@sanity/schema@packages+@sanity+schema)(@sanity/types@packages+@sanity+types)(@types/react@19.1.9)(react-dom@19.1.1(react@19.1.1))(react@19.1.1)(rxjs@7.8.2)
       '@portabletext/react':
         specifier: ^3.2.1
         version: 3.2.1(react@19.1.1)
@@ -1627,10 +1627,10 @@ importers:
         version: 3.5.1(@types/react-dom@19.1.7(@types/react@19.1.9))(@types/react@19.1.9)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
       '@portabletext/block-tools':
         specifier: ^2.0.2
-        version: 2.0.2(@sanity/types@packages+@sanity+types)(@types/react@19.1.9)
+        version: 2.0.3(@sanity/types@packages+@sanity+types)(@types/react@19.1.9)
       '@portabletext/editor':
-        specifier: ^2.0.0
-        version: 2.0.0(@sanity/schema@packages+@sanity+schema)(@sanity/types@packages+@sanity+types)(@types/react@19.1.9)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(rxjs@7.8.2)
+        specifier: ^2.1.2
+        version: 2.1.2(@sanity/schema@packages+@sanity+schema)(@sanity/types@packages+@sanity+types)(@types/react@19.1.9)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(rxjs@7.8.2)
       '@portabletext/react':
         specifier: ^3.2.1
         version: 3.2.1(react@18.3.1)
@@ -4258,24 +4258,18 @@ packages:
     resolution: {integrity: sha512-c83qWb22rNRuB0UaVCI0uRPNRr8Z0FWnEIvT47jiHAmOIUHbBOg5XvV7pM5x+rKn9HRpjxquDbXYSXr3fAKFcw==}
     engines: {node: '>=12'}
 
-  '@portabletext/block-tools@2.0.0':
-    resolution: {integrity: sha512-lpQWs7JXynBSJNJ5fU7COBMAKz1jpMvn4rTHwdWL7mEZgNMCvRFk667rmi9hGYmFwEsnJYfUZ07zVJbp5E30Aw==}
-    peerDependencies:
-      '@sanity/types': ^4.0.1
-      '@types/react': ^18.3 || ^19
-
-  '@portabletext/block-tools@2.0.2':
-    resolution: {integrity: sha512-mrV8x5ucEV6cZsYbUwvE9uJjLWCt1GhEkQEmbfWoZOmf9u00t4R/PMeKudHZcp9sthper4xhI7ZFVEDKjuqMww==}
+  '@portabletext/block-tools@2.0.3':
+    resolution: {integrity: sha512-Fe+r43Dftx+vIbRR/zhbSJATGqKgQ9rXyY1pY/+NpWV4FrUXl577Ja8RTknIFOrqHuuU7CjrLrTXsUTRh+g0uA==}
     peerDependencies:
       '@sanity/types': ^4.2.0
       '@types/react': ^18.3 || ^19
 
-  '@portabletext/editor@2.0.0':
-    resolution: {integrity: sha512-PotWWMElikv+oW087jYWh+V1Tx41t7r9cRb8o60oG6PFUcPPaWWV1djF8UqacTDwUh4NwO2FHJ1bXaSZS0lypQ==}
+  '@portabletext/editor@2.1.2':
+    resolution: {integrity: sha512-WMHdQ9pcFe4LGlIDEXeitDTKfIMSMZ1GyurXcMmBb7+9rWFjb5GTgHK0CJu4fDSNyGyDh5UyvWuBDIzjXe5x9Q==}
     engines: {node: '>=20.19'}
     peerDependencies:
-      '@sanity/schema': ^4.0.1
-      '@sanity/types': ^4.0.1
+      '@sanity/schema': ^4.2.0
+      '@sanity/types': ^4.2.0
       react: ^18.3 || ^19
       rxjs: ^7.8.2
 
@@ -11954,6 +11948,11 @@ packages:
     peerDependencies:
       react: '>=16.8.0'
 
+  use-effect-event@1.0.2:
+    resolution: {integrity: sha512-9c8AAmtQja4LwJXI0EQPhQCip6dmrcSe0FMcTUZBeGh/XTCOLgw3Qbt0JdUT8Rcrm/ZH+Web7MIcMdqgQKdXJg==}
+    peerDependencies:
+      react: ^18.3 || ^19.0.0-0
+
   use-effect-event@2.0.3:
     resolution: {integrity: sha512-fz1en+z3fYXCXx3nMB8hXDMuygBltifNKZq29zDx+xNJ+1vEs6oJlYd9sK31vxJ0YI534VUsHEBY0k2BATsmBQ==}
     peerDependencies:
@@ -14782,23 +14781,16 @@ snapshots:
       '@pnpm/network.ca-file': 1.0.2
       config-chain: 1.1.13
 
-  '@portabletext/block-tools@2.0.0(@sanity/types@packages+@sanity+types)(@types/react@19.1.9)':
+  '@portabletext/block-tools@2.0.3(@sanity/types@packages+@sanity+types)(@types/react@19.1.9)':
     dependencies:
       '@sanity/types': link:packages/@sanity/types
       '@types/react': 19.1.9
       get-random-values-esm: 1.0.2
       lodash: 4.17.21
 
-  '@portabletext/block-tools@2.0.2(@sanity/types@packages+@sanity+types)(@types/react@19.1.9)':
+  '@portabletext/editor@2.1.2(@sanity/schema@packages+@sanity+schema)(@sanity/types@packages+@sanity+types)(@types/react@19.1.9)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(rxjs@7.8.2)':
     dependencies:
-      '@sanity/types': link:packages/@sanity/types
-      '@types/react': 19.1.9
-      get-random-values-esm: 1.0.2
-      lodash: 4.17.21
-
-  '@portabletext/editor@2.0.0(@sanity/schema@packages+@sanity+schema)(@sanity/types@packages+@sanity+types)(@types/react@19.1.9)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(rxjs@7.8.2)':
-    dependencies:
-      '@portabletext/block-tools': 2.0.0(@sanity/types@packages+@sanity+types)(@types/react@19.1.9)
+      '@portabletext/block-tools': 2.0.3(@sanity/types@packages+@sanity+types)(@types/react@19.1.9)
       '@portabletext/keyboard-shortcuts': 1.1.1
       '@portabletext/patches': 1.1.6
       '@portabletext/to-html': 2.0.14
@@ -14816,16 +14808,16 @@ snapshots:
       slate: 0.117.2
       slate-dom: 0.117.4(slate@0.117.2)
       slate-react: 0.117.4(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(slate-dom@0.117.4(slate@0.117.2))(slate@0.117.2)
-      use-effect-event: 2.0.3(react@18.3.1)
+      use-effect-event: 1.0.2(react@18.3.1)
       xstate: 5.20.1
     transitivePeerDependencies:
       - '@types/react'
       - react-dom
       - supports-color
 
-  '@portabletext/editor@2.0.0(@sanity/schema@packages+@sanity+schema)(@sanity/types@packages+@sanity+types)(@types/react@19.1.9)(react-dom@19.1.1(react@19.1.1))(react@19.1.1)(rxjs@7.8.2)':
+  '@portabletext/editor@2.1.2(@sanity/schema@packages+@sanity+schema)(@sanity/types@packages+@sanity+types)(@types/react@19.1.9)(react-dom@19.1.1(react@19.1.1))(react@19.1.1)(rxjs@7.8.2)':
     dependencies:
-      '@portabletext/block-tools': 2.0.0(@sanity/types@packages+@sanity+types)(@types/react@19.1.9)
+      '@portabletext/block-tools': 2.0.3(@sanity/types@packages+@sanity+types)(@types/react@19.1.9)
       '@portabletext/keyboard-shortcuts': 1.1.1
       '@portabletext/patches': 1.1.6
       '@portabletext/to-html': 2.0.14
@@ -14843,7 +14835,7 @@ snapshots:
       slate: 0.117.2
       slate-dom: 0.117.4(slate@0.117.2)
       slate-react: 0.117.4(react-dom@19.1.1(react@19.1.1))(react@19.1.1)(slate-dom@0.117.4(slate@0.117.2))(slate@0.117.2)
-      use-effect-event: 2.0.3(react@19.1.1)
+      use-effect-event: 1.0.2(react@19.1.1)
       xstate: 5.20.1
     transitivePeerDependencies:
       - '@types/react'
@@ -24321,6 +24313,14 @@ snapshots:
   use-device-pixel-ratio@1.1.2(react@18.3.1):
     dependencies:
       react: 18.3.1
+
+  use-effect-event@1.0.2(react@18.3.1):
+    dependencies:
+      react: 18.3.1
+
+  use-effect-event@1.0.2(react@19.1.1):
+    dependencies:
+      react: 19.1.1
 
   use-effect-event@2.0.3(react@18.3.1):
     dependencies:
