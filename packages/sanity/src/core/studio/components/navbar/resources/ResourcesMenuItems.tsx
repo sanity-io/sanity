@@ -1,18 +1,19 @@
 import {DotIcon} from '@sanity/icons'
 import {MenuDivider, Text} from '@sanity/ui'
-import semver from 'semver'
+import {type SemVer} from 'semver'
 
 import {MenuItem} from '../../../../../ui-components'
 import {LoadingBlock} from '../../../../components/loadingBlock'
 import {useTranslation} from '../../../../i18n'
-import {SANITY_VERSION} from '../../../../version'
 import {StudioAnnouncementsMenuItem} from '../../../studioAnnouncements/StudioAnnouncementsMenuItem'
 import {type ResourcesResponse, type Section} from './helper-functions/types'
 
 interface ResourcesMenuItemProps {
   error: Error | null
   isLoading: boolean
-  newAutoUpdateVersion?: string
+  currentVersion: SemVer
+  newAutoUpdateVersion?: SemVer
+  latestTaggedVersion?: SemVer
   value?: ResourcesResponse
   onOpenStudioVersionDialog: () => void
 }
@@ -31,6 +32,8 @@ export function ResourcesMenuItems({
   error,
   isLoading,
   value,
+  latestTaggedVersion,
+  currentVersion,
   onOpenStudioVersionDialog,
   newAutoUpdateVersion,
 }: ResourcesMenuItemProps) {
@@ -39,11 +42,11 @@ export function ResourcesMenuItems({
   if (isLoading) {
     return <LoadingBlock showText />
   }
-  const latestVersion = value?.latestVersion
 
-  const isOutdated = latestVersion
-    ? (semver.parse(SANITY_VERSION)?.compareMain?.(latestVersion) ?? 0) < 0
+  const isOutdated = latestTaggedVersion
+    ? (currentVersion?.compareMain?.(latestTaggedVersion) ?? 0) < 0
     : false
+
   const fallbackLinks = (
     <>
       <MenuItem
@@ -83,7 +86,7 @@ export function ResourcesMenuItems({
       <MenuItem
         onClick={onOpenStudioVersionDialog}
         text={t('help-resources.studio-version', {
-          studioVersion: semver.parse(SANITY_VERSION)?.version || SANITY_VERSION,
+          studioVersion: currentVersion.version,
         })}
       />
       {newAutoUpdateVersion ? (
@@ -92,7 +95,7 @@ export function ResourcesMenuItems({
           onClick={reload}
           data-testid="menu-item-update-studio-now"
           text={t('help-resources.studio-auto-update-now', {
-            newVersion: newAutoUpdateVersion,
+            newVersion: newAutoUpdateVersion.version,
           })}
           iconRight={UpdateDot}
         />
@@ -101,7 +104,7 @@ export function ResourcesMenuItems({
           tone="primary"
           onClick={onOpenStudioVersionDialog}
           text={t('help-resources.latest-sanity-version', {
-            latestVersion,
+            latestVersion: latestTaggedVersion?.version,
           })}
           iconRight={UpdateDot}
         />

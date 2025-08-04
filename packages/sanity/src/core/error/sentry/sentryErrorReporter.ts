@@ -23,7 +23,7 @@ import {
 import {type Transport} from '@sentry/types'
 
 import {isDev} from '../../environment'
-import {hasSanityPackageInImportMap} from '../../environment/hasSanityPackageInImportMap'
+import {hasSanityPackageInImportMap} from '../../environment/importMap'
 import {globalScope} from '../../util/globalScope'
 import {supportsLocalStorage} from '../../util/supportsLocalStorage'
 import {SANITY_VERSION} from '../../version'

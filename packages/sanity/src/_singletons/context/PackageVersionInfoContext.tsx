@@ -1,24 +1,45 @@
 import {createContext} from 'sanity/_createContext'
+import type {SemVer} from 'semver'
 
 /**
  * @hidden
  * @internal
  */
-export type PackageVersionInfo = {
-  name: string
-  current: string
-  available?: string
-  canUpdate: boolean
-}
-/**
- * @hidden
- * @internal
- */
 export type PackageVersionInfoContextValue = {
+  /**
+   * Request a new update check
+   */
   checkForUpdates: () => void
-  isAutoUpdating: boolean
-  packageVersionInfo: PackageVersionInfo[]
+
+  /**
+   * Status of version check (i.e. are we currently checking for updates)
+   */
   versionCheckStatus: {lastCheckedAt: Date | null; checking: boolean}
+
+  /**
+   * Whether this Studio is configured to be auto-updating
+   */
+  isAutoUpdating: boolean
+
+  /**
+   * What is the base version (i.e. the version in package.json at the time the Studio was deployed)
+   */
+  baseVersion: SemVer
+
+  /**
+   * What is the version tagged as latest (periodically checked)
+   */
+  latestTaggedVersion?: SemVer
+
+  /**
+   * What version is the Studio currently running
+   */
+  currentVersion: SemVer
+
+  /**
+   * What is the current auto-updating version (as periodically resolved via module server and configured via manage)
+   */
+  autoUpdatingVersion?: SemVer
 }
 /**
  *
@@ -30,7 +51,12 @@ export const PackageVersionInfoContext = createContext<PackageVersionInfoContext
   {
     isAutoUpdating: false,
     checkForUpdates: () => {},
-    packageVersionInfo: [],
+    get baseVersion(): never {
+      throw new Error('PackageVersionInfoContext not provided')
+    },
+    get currentVersion(): never {
+      throw new Error('PackageVersionInfoContext not provided')
+    },
     versionCheckStatus: {lastCheckedAt: null, checking: false},
   },
 )
