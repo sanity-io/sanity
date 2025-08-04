@@ -15,6 +15,7 @@ import fs from 'node:fs'
 import path from 'node:path'
 import {Worker} from 'node:worker_threads'
 
+import {debug} from '../debug'
 import {type CliConfig, type SanityJson} from '../types'
 import {getCliWorkerPath} from './cliWorker'
 import {dynamicRequire} from './dynamicRequire'
@@ -30,10 +31,13 @@ export async function getCliConfig(
   cwd: string,
   {forked}: {forked?: boolean} = {},
 ): Promise<CliConfigResult | null> {
+  let clearCache = false
   if (forked) {
     try {
       return await getCliConfigForked(cwd)
-    } catch {
+    } catch (err) {
+      debug('Error in getCliConfigForked', err)
+      clearCache = true
       // Intentional noop - try unforked variant
     }
   }
@@ -44,7 +48,8 @@ export async function getCliConfig(
       require('esbuild-register/dist/node').register({supported: {'dynamic-import': true}})
 
   try {
-    const v3Config = getSanityCliConfig(cwd)
+    // If forked execution failed, we need to clear the cache to reload the env vars
+    const v3Config = getSanityCliConfig(cwd, clearCache)
     if (v3Config) {
       return v3Config
     }
@@ -101,7 +106,7 @@ function getSanityJsonConfig(cwd: string): CliConfigResult | null {
   }
 }
 
-function getSanityCliConfig(cwd: string): CliConfigResult | null {
+function getSanityCliConfig(cwd: string, clearCache = false): CliConfigResult | null {
   const jsConfigPath = path.join(cwd, 'sanity.cli.js')
   const tsConfigPath = path.join(cwd, 'sanity.cli.ts')
 
@@ -113,7 +118,7 @@ function getSanityCliConfig(cwd: string): CliConfigResult | null {
 
   if (!js && ts) {
     return {
-      config: importConfig(tsConfigPath),
+      config: importConfig(tsConfigPath, clearCache),
       path: tsConfigPath,
       version: 3,
     }
@@ -124,7 +129,7 @@ function getSanityCliConfig(cwd: string): CliConfigResult | null {
   }
 
   return {
-    config: importConfig(jsConfigPath),
+    config: importConfig(jsConfigPath, clearCache),
     path: jsConfigPath,
     version: 3,
   }
@@ -140,8 +145,14 @@ function loadJsonConfig(filePath: string): SanityJson | null {
   }
 }
 
-function importConfig(filePath: string): CliConfig | null {
+function importConfig(filePath: string, clearCache: boolean): CliConfig | null {
   try {
+    // Clear module cache if requested (needed for env var reload)
+    if (clearCache) {
+      const resolvedPath = dynamicRequire.resolve(filePath)
+      delete dynamicRequire.cache[resolvedPath]
+    }
+
     const config = dynamicRequire<CliConfig | {default: CliConfig} | null>(filePath)
     if (config === null || typeof config !== 'object') {
       throw new Error('Module export is not a configuration object')
