@@ -1,14 +1,20 @@
 import {ErrorOutlineIcon} from '@sanity/icons'
 import {Card, Flex, Stack, Text} from '@sanity/ui'
 import {useCallback, useState} from 'react'
-import {MediaLibraryIdContext} from 'sanity/_singletons'
+import {MediaLibraryIdsContext} from 'sanity/_singletons'
 
 import {ErrorBoundary} from '../../../../../ui-components/errorBoundary'
 import {useTranslation} from '../../../../i18n/hooks/useTranslation'
 import {EnsureMediaLibrary} from './EnsureMediaLibrary'
 
+/** @internal */
+export type MediaLibraryIds = {
+  libraryId: string
+  organizationId: string
+}
+
 // Cache for fetched Media Library IDs.
-const cachedMediaLibraryIdsMap = new Map<string, {libraryId: string; organizationId: string}>()
+const cachedMediaLibraryIdsMap = new Map<string, MediaLibraryIds>()
 
 /** @internal */
 export function MediaLibraryProvider({
@@ -20,10 +26,7 @@ export function MediaLibraryProvider({
   libraryId?: string | null
   children: React.ReactNode
 }) {
-  const [mediaLibraryIds, setMediaLibraryIds] = useState<{
-    libraryId: string
-    organizationId: string
-  } | null>(
+  const [mediaLibraryIds, setMediaLibraryIds] = useState<MediaLibraryIds | null>(
     () =>
       (projectId && cachedMediaLibraryIdsMap.get(projectId)) ||
       (libraryIdProp && cachedMediaLibraryIdsMap.get(projectId)) ||
@@ -34,7 +37,7 @@ export function MediaLibraryProvider({
   const {t} = useTranslation()
 
   const handleSetMediaLibraryIds = useCallback(
-    (fetchedMediaLibraryIds: {libraryId: string; organizationId: string}) => {
+    (fetchedMediaLibraryIds: MediaLibraryIds) => {
       setMediaLibraryIds(fetchedMediaLibraryIds)
       // Write to cache
       if (projectId) {
@@ -72,7 +75,7 @@ export function MediaLibraryProvider({
   }
 
   return (
-    <MediaLibraryIdContext.Provider value={mediaLibraryIds}>
+    <MediaLibraryIdsContext.Provider value={mediaLibraryIds}>
       <ErrorBoundary onCatch={handleUnexpectedMediaLibraryError}>
         {mediaLibraryIds ? (
           children
@@ -87,6 +90,6 @@ export function MediaLibraryProvider({
           />
         )}
       </ErrorBoundary>
-    </MediaLibraryIdContext.Provider>
+    </MediaLibraryIdsContext.Provider>
   )
 }

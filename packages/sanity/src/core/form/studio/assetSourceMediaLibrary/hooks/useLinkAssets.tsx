@@ -24,7 +24,7 @@ import {
 import {useClient} from '../../../../hooks'
 import {DEFAULT_API_VERSION} from '../constants'
 import {type AssetSelectionItem} from '../types'
-import {useMediaLibraryIds} from './useMediaLibraryId'
+import {useMediaLibraryIds} from './useMediaLibraryIds'
 
 export function useLinkAssets({schemaType}: {schemaType?: ImageSchemaType | FileSchemaType}) {
   const mediaLibraryIds = useMediaLibraryIds()

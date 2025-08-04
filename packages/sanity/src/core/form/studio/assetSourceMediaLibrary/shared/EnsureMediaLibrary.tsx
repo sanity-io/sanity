@@ -7,10 +7,11 @@ import {
   useEnsureMediaLibrary,
   type useEnsureMediaLibraryProps,
 } from '../hooks/useEnsureMediaLibrary'
+import {type MediaLibraryIds} from './MediaLibraryProvider'
 
 export function EnsureMediaLibrary(props: {
   mediaLibraryInfo: useEnsureMediaLibraryProps
-  onSetMediaLibraryIds: (ids: {libraryId: string; organizationId: string}) => void
+  onSetMediaLibraryIds: (ids: MediaLibraryIds) => void
 }) {
   const {onSetMediaLibraryIds} = props
   const {t} = useTranslation()

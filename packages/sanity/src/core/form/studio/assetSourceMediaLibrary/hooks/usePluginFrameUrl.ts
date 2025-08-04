@@ -1,7 +1,7 @@
 import {useMemo} from 'react'
 import {encodeJsonParams} from 'sanity/router'
 
-import {useMediaLibraryIds} from './useMediaLibraryId'
+import {useMediaLibraryIds} from './useMediaLibraryIds'
 import {useSanityMediaLibraryConfig} from './useSanityMediaLibraryConfig'
 
 export function usePluginFrameUrl(path: string, params: Record<string, any>) {

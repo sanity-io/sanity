@@ -10,7 +10,7 @@ import {createRef, type ReactNode, useCallback, useEffect, useState} from 'react
 import {useTranslation} from '../../../../i18n'
 import {useAuthType} from '../hooks/useAuthType'
 import {useLinkAssets} from '../hooks/useLinkAssets'
-import {useMediaLibraryIds} from '../hooks/useMediaLibraryId'
+import {useMediaLibraryIds} from '../hooks/useMediaLibraryIds'
 import {usePluginPostMessage} from '../hooks/usePluginPostMessage'
 import {useSanityMediaLibraryConfig} from '../hooks/useSanityMediaLibraryConfig'
 import {type AssetSelectionItem, type PluginPostMessage} from '../types'
