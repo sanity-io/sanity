@@ -36,7 +36,7 @@ export interface SanityMediaLibraryConfig {
      * @defaultValue 'v1'
      * @deprecated Plugin API now uses the latest full-app version
      */
-    pluginApiVersion: string
+    pluginApiVersion?: string
     /**
      * Base path for the Media Library app
      */
