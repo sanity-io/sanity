@@ -113,7 +113,10 @@ export function SlugInput(props: SlugInputProps) {
   // Make sure the slug input is focused when the `focused` prop becomes true, regardless of wether the focusPath is `slug` or `slug.current` (both should work)
   useDidUpdate(focused, (hadFocus, hasFocus) => {
     if (!hadFocus && hasFocus) {
-      inputRef.current?.focus()
+      // Only focus if the input is not already focused to avoid triggering unnecessary blur events
+      if (document.activeElement !== inputRef.current) {
+        inputRef.current?.focus()
+      }
     }
   })
   // Handle stega visual editing links, which uses `slug.current` as the focus path
@@ -127,7 +130,10 @@ export function SlugInput(props: SlugInputProps) {
       currentFocusPath.length === 1 &&
       currentFocusPath[0] === 'current'
     ) {
-      inputRef.current?.focus()
+      // Only focus if the input is not already focused to avoid triggering unnecessary blur events
+      if (document.activeElement !== inputRef.current) {
+        inputRef.current?.focus()
+      }
     }
   })
 
@@ -145,7 +151,7 @@ export function SlugInput(props: SlugInputProps) {
             value={value?.current || ''}
             readOnly={readOnly}
             {...elementProps}
-            ref={inputRef}
+            ref={elementProps.ref ? undefined : inputRef}
           />
 
           {generateState?.status === 'error' && (
