@@ -15,6 +15,7 @@ import {isReleaseDocument} from '../../../index'
 import {useReleaseOperations} from '../../../store/useReleaseOperations'
 import {useReleasePermissions} from '../../../store/useReleasePermissions'
 import {type DocumentInRelease} from '../../detail/useBundleDocuments'
+import {useValidationTiming} from '../../hooks/useValidationTiming'
 
 interface ReleasePublishAllButtonProps {
   release: ReleaseDocument
@@ -53,6 +54,8 @@ export const ReleasePublishAllButton = ({
 
   const isPublishButtonDisabled =
     disabled || isValidatingDocuments || hasDocumentValidationErrors || !publishPermission
+
+  const validationTiming = useValidationTiming(documents)
 
   const isMounted = useRef(false)
   useEffect(() => {
@@ -168,16 +171,29 @@ export const ReleasePublishAllButton = ({
         return t('publish-action.validation.no-documents')
       }
 
+      if (isValidatingDocuments) {
+        const totalDocuments = documents.length
+        const validatedDocuments = documents.filter((doc) => !doc.validation.isValidating).length
+        const progress =
+          totalDocuments > 0 ? Math.round((validatedDocuments / totalDocuments) * 100) : 0
+        const timingInfo = validationTiming.isTrackingValidation
+          ? ` (${validatedDocuments}/${totalDocuments} validated, ${progress}%)`
+          : ''
+        return `${t('publish-dialog.validation.loading')}${timingInfo}`
+      }
+
       if (!publishPermission) {
         return t('publish-dialog.validation.no-permission')
       }
 
-      if (isValidatingDocuments) {
-        return t('publish-dialog.validation.loading')
-      }
-
       if (hasDocumentValidationErrors) {
         return t('publish-dialog.validation.error')
+      }
+
+      // Show validation completion time if available
+      if (validationTiming.validationDuration !== null) {
+        const durationSeconds = (validationTiming.validationDuration / 1000).toFixed(1)
+        return `Validation completed in ${durationSeconds}s`
       }
 
       return null
@@ -192,7 +208,14 @@ export const ReleasePublishAllButton = ({
         </Flex>
       </Text>
     )
-  }, [documents.length, hasDocumentValidationErrors, isValidatingDocuments, publishPermission, t])
+  }, [
+    documents,
+    hasDocumentValidationErrors,
+    isValidatingDocuments,
+    publishPermission,
+    t,
+    validationTiming,
+  ])
 
   const handleInitialPublish = useCallback(() => {
     setPublishBundleStatus('confirm')

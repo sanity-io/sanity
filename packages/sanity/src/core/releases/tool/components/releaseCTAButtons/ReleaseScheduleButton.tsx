@@ -21,6 +21,7 @@ import {isReleaseScheduledOrScheduling} from '../../../index'
 import {useReleaseOperations} from '../../../store/useReleaseOperations'
 import {useReleasePermissions} from '../../../store/useReleasePermissions'
 import {type DocumentInRelease} from '../../detail/useBundleDocuments'
+import {useValidationTiming} from '../../hooks/useValidationTiming'
 
 interface ReleaseScheduleButtonProps {
   release: ReleaseDocument
@@ -66,6 +67,8 @@ export const ReleaseScheduleButton = ({
   const hasDocumentValidationErrors = documents.some(({validation}) => validation.hasError)
   const isScheduleButtonDisabled =
     disabled || isValidatingDocuments || !schedulePermission || hasDocumentValidationErrors
+
+  const validationTiming = useValidationTiming(documents)
 
   const isMounted = useRef(false)
   useEffect(() => {
@@ -298,12 +301,19 @@ export const ReleaseScheduleButton = ({
       return t('schedule-action.validation.no-documents')
     }
 
-    if (!schedulePermission) {
-      return t('schedule-button-tooltip.validation.no-permission')
+    if (isValidatingDocuments) {
+      const totalDocuments = documents.length
+      const validatedDocuments = documents.filter((doc) => !doc.validation.isValidating).length
+      const progress =
+        totalDocuments > 0 ? Math.round((validatedDocuments / totalDocuments) * 100) : 0
+      const timingInfo = validationTiming.isTrackingValidation
+        ? ` (${validatedDocuments}/${totalDocuments} validated, ${progress}%)`
+        : ''
+      return `${t('schedule-button-tooltip.validation.loading')}${timingInfo}`
     }
 
-    if (isValidatingDocuments) {
-      return t('schedule-button-tooltip.validation.loading')
+    if (!schedulePermission) {
+      return t('schedule-button-tooltip.validation.no-permission')
     }
 
     if (hasDocumentValidationErrors) {
@@ -313,14 +323,22 @@ export const ReleaseScheduleButton = ({
     if (isReleaseScheduledOrScheduling(release)) {
       return t('schedule-button-tooltip.already-scheduled')
     }
+
+    // Show validation completion time if available
+    if (validationTiming.validationDuration !== null) {
+      const durationSeconds = (validationTiming.validationDuration / 1000).toFixed(1)
+      return `Validation completed in ${durationSeconds}s`
+    }
+
     return null
   }, [
-    documents.length,
+    documents,
     hasDocumentValidationErrors,
     isValidatingDocuments,
     release,
     schedulePermission,
     t,
+    validationTiming,
   ])
 
   // TODO: this is a duplicate of logic in ReleasePublishAllButton
