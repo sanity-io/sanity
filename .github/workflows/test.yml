@@ -82,20 +82,15 @@ jobs:
         if: steps.check_examples_only.outputs.examples_only != 'true'
         run: pnpm install
 
+      - name: Build packages
+        if: steps.check_examples_only.outputs.examples_only != 'true'
+        run: pnpm build
+
       - name: Test
         if: steps.check_examples_only.outputs.examples_only != 'true'
         id: test
         run: |
-          ARGS="--test-timeout=60000 --retry 4"
-
-          # Test if sharding would work by checking if vitest accepts the shard argument
-          if pnpm vitest run --dry-run --shard=${{ matrix.shardIndex}}/${{ matrix.shardTotal }} >/dev/null 2>&1; then
-            ARGS="$ARGS --shard=${{ matrix.shardIndex}}/${{ matrix.shardTotal }}"
-            echo "Using sharding: shard ${{ matrix.shardIndex }} of ${{ matrix.shardTotal }}"
-          else
-            echo "Skipping sharding: not enough test files for shard ${{ matrix.shardIndex }} of ${{ matrix.shardTotal }}"
-          fi
-
+          ARGS="--test-timeout=60000 --retry 4 --shard=${{ matrix.shardIndex}}/${{ matrix.shardTotal }}"
           if [ "${{ matrix.node }}" == "20" ]; then
             # We only gather coverage from a single Node version.
             # We pass in `--reporter=blob` so that we can combine the results from all shards.
