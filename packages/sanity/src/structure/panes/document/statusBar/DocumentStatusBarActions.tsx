@@ -21,14 +21,13 @@ import {ActionStateDialog} from './ActionStateDialog'
 
 interface DocumentStatusBarActionsInnerProps {
   disabled: boolean
-  showMenu: boolean
   states: ResolvedAction[]
 }
 
 const DocumentStatusBarActionsInner = memo(function DocumentStatusBarActionsInner(
   props: DocumentStatusBarActionsInnerProps,
 ) {
-  const {disabled, showMenu, states} = props
+  const {disabled, states} = props
   const {__internal_tasks} = useSource()
   const {editState} = useDocumentPane()
   const {selectedReleaseId} = usePerspective()
@@ -85,7 +84,7 @@ const DocumentStatusBarActionsInner = memo(function DocumentStatusBarActionsInne
           </Tooltip>
         </LayerProvider>
       )}
-      {showMenu && menuActionStates.length > 0 && (
+      {sideMenuItems.length > 0 && (
         <ActionMenuButton actionStates={sideMenuItems} disabled={disabled} />
       )}
       {firstActionState && firstActionState.dialog && (
@@ -123,11 +122,10 @@ export const DocumentStatusBarActions = memo(function DocumentStatusBarActions()
         // Use document ID as key to make sure that the actions state is reset when the document changes
         key={documentId}
         disabled={connectionState !== 'connected'}
-        showMenu={actions.length > 1}
         states={states}
       />
     ),
-    [actions.length, connectionState, documentId],
+    [connectionState, documentId],
   )
 
   if (actions.length === 0 || !actionProps) {
@@ -172,7 +170,6 @@ export const HistoryStatusBarActions = memo(function HistoryStatusBarActions() {
     ({states}) => (
       <DocumentStatusBarActionsInner
         disabled={connectionState !== 'connected' || Boolean(disabled)}
-        showMenu={false}
         states={states}
       />
     ),

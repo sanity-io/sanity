@@ -235,6 +235,9 @@ const defaultWorkspace = defineConfig({
       if (ctx.schemaType === 'author' && ctx.releaseId) {
         return [...prev, TestVersionAction]
       }
+      if (ctx.schemaType === 'playlist') {
+        return prev.filter(({action}) => action === 'delete')
+      }
 
       return prev
     },
