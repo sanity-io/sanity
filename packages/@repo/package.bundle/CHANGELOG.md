@@ -3,6 +3,15 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [4.3.0](https://github.com/sanity-io/sanity/compare/v4.2.0...v4.3.0) (2025-08-05)
+
+
+### Bug Fixes
+
+* **ci:** set SANITY_INTERNAL_ENV=staging when building esm bundles for staging ([#10118](https://github.com/sanity-io/sanity/issues/10118)) ([b757108](https://github.com/sanity-io/sanity/commit/b75710805b8e9bc7b377ae4e181fd33a92e4e7c5))
+
+
+
 ## [4.2.0](https://github.com/sanity-io/sanity/compare/v4.1.1...v4.2.0) (2025-07-29)
 
 **Note:** Version bump only for package @repo/package.bundle

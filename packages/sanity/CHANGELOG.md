@@ -3,6 +3,41 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [4.3.0](https://github.com/sanity-io/sanity/compare/v4.2.0...v4.3.0) (2025-08-05)
+
+
+### Features
+
+* **core:** allow all fields group customizations ([#10094](https://github.com/sanity-io/sanity/issues/10094)) ([f3237e1](https://github.com/sanity-io/sanity/commit/f3237e1203bdab30b3ee86c8ce2ea29f216100de))
+* **core:** media library full app dialog and selection validation ([#10153](https://github.com/sanity-io/sanity/issues/10153)) ([57b7db1](https://github.com/sanity-io/sanity/commit/57b7db14bfab0813089f5415fb82e2b3b26f4876))
+
+
+### Bug Fixes
+
+* **app server:** stop spinner before printing url ([#10114](https://github.com/sanity-io/sanity/issues/10114)) ([84e7eb6](https://github.com/sanity-io/sanity/commit/84e7eb6ad07868cbbd20089add8c1e51fe3b7404))
+* **cli:** mark @sanity/ui@3 as supported ([#10154](https://github.com/sanity-io/sanity/issues/10154)) ([6030a93](https://github.com/sanity-io/sanity/commit/6030a93928bdf625746c8670fae25778bbb62f82))
+* **deps:** update dependency @portabletext/block-tools to ^2.0.2 ([#10167](https://github.com/sanity-io/sanity/issues/10167)) ([c75c002](https://github.com/sanity-io/sanity/commit/c75c002b594276c4e8fff070a2e7274f2dc0a576))
+* **deps:** update dependency @portabletext/block-tools to ^2.0.5 ([#10172](https://github.com/sanity-io/sanity/issues/10172)) ([7ca6103](https://github.com/sanity-io/sanity/commit/7ca610389464bf1d94e0285c92d3b27c7090e7f3))
+* **deps:** update dependency @portabletext/editor to ^2.1.2 ([#10168](https://github.com/sanity-io/sanity/issues/10168)) ([ced80f4](https://github.com/sanity-io/sanity/commit/ced80f4177b10b0c0a45885e7ddcda79d69612d7))
+* **deps:** update dependency @portabletext/editor to ^2.1.4 ([#10173](https://github.com/sanity-io/sanity/issues/10173)) ([bdff34c](https://github.com/sanity-io/sanity/commit/bdff34c72de8cd60e7dc946cfd606bd37fce8eed))
+* **deps:** update dependency @portabletext/editor to ^2.1.7 ([#10177](https://github.com/sanity-io/sanity/issues/10177)) ([d30c781](https://github.com/sanity-io/sanity/commit/d30c78120e10957fb5c8224c0e86f409b761af41))
+* **deps:** update dependency @sanity/client to ^7.8.2 ([#10181](https://github.com/sanity-io/sanity/issues/10181)) ([f63be89](https://github.com/sanity-io/sanity/commit/f63be89404282e45a64b18acc2dee7585bd3dcf1))
+* **deps:** update dependency @sanity/comlink to ^3.0.9 ([#10187](https://github.com/sanity-io/sanity/issues/10187)) ([3ab6222](https://github.com/sanity-io/sanity/commit/3ab62221fe8c65ba7c53b1e46b8463851c00559c))
+* **deps:** update dependency @sanity/insert-menu to v2.0.1 ([#10160](https://github.com/sanity-io/sanity/issues/10160)) ([42c43e3](https://github.com/sanity-io/sanity/commit/42c43e31c75ec91e13892111c822e2547c087503))
+* **deps:** update dependency @sanity/presentation-comlink to ^1.0.27 ([#10162](https://github.com/sanity-io/sanity/issues/10162)) ([842bd90](https://github.com/sanity-io/sanity/commit/842bd9066eece2696cbc1c2371da62962a0e2bcb))
+* **deps:** update dependency @sanity/ui to ^3.0.3 ([#10098](https://github.com/sanity-io/sanity/issues/10098)) ([05cd42c](https://github.com/sanity-io/sanity/commit/05cd42ccc965d41bd67c188860802f118e23f349))
+* **deps:** update dependency @sanity/ui to ^3.0.5 ([#10115](https://github.com/sanity-io/sanity/issues/10115)) ([82703e1](https://github.com/sanity-io/sanity/commit/82703e1f60df532cf8c8af37eb70ddabd303dd82))
+* **deps:** update dependency framer-motion to ^12.23.12 ([#10131](https://github.com/sanity-io/sanity/issues/10131)) ([256e334](https://github.com/sanity-io/sanity/commit/256e33493ce3f4518b7a55a65d9af56423d74309))
+* issue where a slimple slug in an array was auto closing when focusing on it ([#10175](https://github.com/sanity-io/sanity/issues/10175)) ([dfb704d](https://github.com/sanity-io/sanity/commit/dfb704dd17e233a7155e5d9d464b0d0c8d384524))
+* **sanity:** ensure `useDocumentForm` uses provided release id ([1abac9f](https://github.com/sanity-io/sanity/commit/1abac9f684a7158e1e3aa3c815d9772b8bb97653))
+* **sanity:** hide new version if up to date ([#10165](https://github.com/sanity-io/sanity/issues/10165)) ([acc988f](https://github.com/sanity-io/sanity/commit/acc988f7e3a7fe64ed56a8399932f874c2380a11))
+* **sanity:** remove own presence avatar from list of users ([#10179](https://github.com/sanity-io/sanity/issues/10179)) ([0657751](https://github.com/sanity-io/sanity/commit/06577511228e5d1d1dabf4ee4707bfd2e2f379f5))
+* unpin rollup ([#10113](https://github.com/sanity-io/sanity/issues/10113)) ([48400c4](https://github.com/sanity-io/sanity/commit/48400c4433b6efbe468baa0b9ee3e2f8623a9847))
+* upgrade react-is to 19 ([#10141](https://github.com/sanity-io/sanity/issues/10141)) ([d7acd6c](https://github.com/sanity-io/sanity/commit/d7acd6cf5476a08b32d0350acff6f832dabca7af))
+* workaround rollup@4.46.0 regression ([#10103](https://github.com/sanity-io/sanity/issues/10103)) ([a3c44ce](https://github.com/sanity-io/sanity/commit/a3c44cea205d28ba431c7e58628cb208e414e693))
+
+
+
 ## [4.2.0](https://github.com/sanity-io/sanity/compare/v4.1.1...v4.2.0) (2025-07-29)
 
 
