@@ -140,7 +140,7 @@ export function SlugInput(props: SlugInputProps) {
   })
 
   // Merge the elementProps.ref with our local ref, so that parent callers still have access to the node after we added the local ref
-  useImperativeHandle(elementProps.ref, () => inputRef.current, [elementProps.ref])
+  useImperativeHandle(elementProps.ref, () => inputRef.current)
 
   return (
     <Stack space={3}>

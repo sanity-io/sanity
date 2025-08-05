@@ -85,12 +85,6 @@ export function SimpleBlockPortableText(): React.JSX.Element {
                   // Prevent default to avoid any interference
                   e.preventDefault()
                   e.stopPropagation()
-                  // This should trigger both focus and open
-                  console.log('Slug clicked:', slugItem, 'index:', index)
-                }}
-                onFocus={(e) => {
-                  // Ensure focus is properly handled
-                  console.log('Slug focused:', slugItem, 'index:', index)
                 }}
               >
                 <p data-sanity={dataAttribute.scope(`slugs[${index}].current`).toString()}>
