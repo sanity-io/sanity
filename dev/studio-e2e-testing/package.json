@@ -26,7 +26,7 @@
     "react-dom": "catalog:",
     "sanity": "workspace:*",
     "sanity-plugin-markdown": "^6.0.0",
-    "sanity-plugin-media": "^3.0.5",
+    "sanity-plugin-media": "^4.0.0",
     "sanity-plugin-mux-input": "^2.8.1",
     "sanity-test-studio": "workspace:*",
     "styled-components": "catalog:"
