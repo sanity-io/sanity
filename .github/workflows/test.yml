@@ -86,16 +86,14 @@ jobs:
         if: steps.check_examples_only.outputs.examples_only != 'true'
         id: test
         run: |
-          # Count test files and conditionally add shard argument
-          TEST_COUNT=$(find packages -name "*.test.*" -o -name "*.spec.*" | wc -l | tr -d ' ')
-
           ARGS="--test-timeout=60000 --retry 4"
 
-          # Only add shard argument if we have at least 4 test files
-          if [ "$TEST_COUNT" -ge "4" ]; then
+          # Test if sharding would work by checking if vitest accepts the shard argument
+          if pnpm vitest run --dry-run --shard=${{ matrix.shardIndex}}/${{ matrix.shardTotal }} >/dev/null 2>&1; then
             ARGS="$ARGS --shard=${{ matrix.shardIndex}}/${{ matrix.shardTotal }}"
+            echo "Using sharding: shard ${{ matrix.shardIndex }} of ${{ matrix.shardTotal }}"
           else
-            echo "Skipping sharding: only $TEST_COUNT test files found (minimum 4 required)"
+            echo "Skipping sharding: not enough test files for shard ${{ matrix.shardIndex }} of ${{ matrix.shardTotal }}"
           fi
 
           if [ "${{ matrix.node }}" == "20" ]; then
