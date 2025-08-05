@@ -613,5 +613,31 @@ export default defineType({
         type,
       })),
     },
+    defineField({
+      name: 'slugs',
+      title: 'Slugs',
+      type: 'array',
+      of: [
+        defineArrayMember({
+          type: 'slug',
+        }),
+      ],
+    }),
+    defineField({
+      name: 'slugsWithObject',
+      title: 'Slugs with object',
+      type: 'array',
+      of: [
+        defineArrayMember({
+          type: 'object',
+          fields: [
+            defineField({
+              name: 'slug',
+              type: 'slug',
+            }),
+          ],
+        }),
+      ],
+    }),
   ],
 })

@@ -1,5 +1,5 @@
 import {toPlainText} from '@portabletext/react'
-import {defineArrayMember, defineType} from 'sanity'
+import {defineArrayMember, defineField, defineType} from 'sanity'
 
 import {CalloutPreview} from './components/CalloutPreview'
 
@@ -174,5 +174,16 @@ export default defineType({
         },
       ],
     },
+
+    defineField({
+      name: 'slugs',
+      title: 'Slugs',
+      type: 'array',
+      of: [
+        defineArrayMember({
+          type: 'slug',
+        }),
+      ],
+    }),
   ],
 })
