@@ -45,7 +45,7 @@ import type {
   IsLastPaneContext,
   LocaleContext,
   LocaleContextValue,
-  MediaLibraryIdContext,
+  MediaLibraryIdsContext,
   MentionUserContext,
   NavbarContext,
   PackageVersionInfo,
@@ -229,8 +229,8 @@ describe('sanity/_singletons', () => {
   test('LocaleContextValue', () => {
     expectTypeOf<LocaleContextValue>().toBeObject()
   })
-  test('MediaLibraryIdContext', () => {
-    expectTypeOf<typeof MediaLibraryIdContext>().not.toBeNever()
+  test('MediaLibraryIdsContext', () => {
+    expectTypeOf<typeof MediaLibraryIdsContext>().not.toBeNever()
   })
   test('MentionUserContext', () => {
     expectTypeOf<typeof MentionUserContext>().not.toBeNever()

@@ -202,6 +202,9 @@ export const studioLocaleStrings = defineLocalesResources('studio', {
   'asset-sources.media-library.file.title': 'Media Library',
   'asset-sources.media-library.image.title': 'Media Library',
 
+  /** Info messages for the Media Library Asset Source  */
+  'asset-sources.media-library.select-dialog.title': 'Selecting {{assetType}} for {{targetTitle}}',
+
   /** Label when a release has been deleted by a different user */
   'banners.deleted-bundle-banner.text':
     "The '<strong>{{title}}</strong>' release has been deleted.",

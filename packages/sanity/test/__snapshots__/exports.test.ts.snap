@@ -675,7 +675,7 @@ exports[`exports snapshot 1`] = `
     "HoveredFieldContext": "object",
     "IsLastPaneContext": "object",
     "LocaleContext": "object",
-    "MediaLibraryIdContext": "object",
+    "MediaLibraryIdsContext": "object",
     "MentionUserContext": "object",
     "NavbarContext": "object",
     "PackageVersionInfoContext": "object",

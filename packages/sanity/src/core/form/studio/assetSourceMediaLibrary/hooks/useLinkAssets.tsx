@@ -24,17 +24,17 @@ import {
 import {useClient} from '../../../../hooks'
 import {DEFAULT_API_VERSION} from '../constants'
 import {type AssetSelectionItem} from '../types'
-import {useMediaLibraryId} from './useMediaLibraryId'
+import {useMediaLibraryIds} from './useMediaLibraryIds'
 
 export function useLinkAssets({schemaType}: {schemaType?: ImageSchemaType | FileSchemaType}) {
-  const libraryId = useMediaLibraryId()
+  const mediaLibraryIds = useMediaLibraryIds()
   const client = useClient({apiVersion: DEFAULT_API_VERSION})
 
   const handleLinkAssets = useCallback<
     (assetSelection: AssetSelectionItem[]) => Promise<AssetFromSource[]>
   >(
     (assetSelection) => {
-      if (!libraryId) {
+      if (!mediaLibraryIds?.libraryId) {
         throw new Error('No libraryId found')
       }
 
@@ -45,7 +45,7 @@ export function useLinkAssets({schemaType}: {schemaType?: ImageSchemaType | File
       const assetsFromSource = from(assetSelection).pipe(
         linkAsset({
           client,
-          mediaLibraryId: libraryId,
+          mediaLibraryId: mediaLibraryIds.libraryId,
           metadataPropsFromSchema,
         }),
         toArray(),
@@ -55,7 +55,7 @@ export function useLinkAssets({schemaType}: {schemaType?: ImageSchemaType | File
         defaultValue: [],
       })
     },
-    [client, libraryId, schemaType],
+    [client, mediaLibraryIds?.libraryId, schemaType],
   )
   return {onLinkAssets: handleLinkAssets}
 }
