@@ -86,7 +86,13 @@ jobs:
         if: steps.check_examples_only.outputs.examples_only != 'true'
         id: test
         run: |
-          ARGS="--test-timeout=60000 --retry 4 --shard=${{ matrix.shardIndex}}/${{ matrix.shardTotal }}"
+          # Count test files and conditionally add shard argument
+          TEST_COUNT=$(find packages -name "*.test.*" -o -name "*.spec.*" | wc -l | tr -d ' ')
+          ARGS="--test-timeout=60000 --retry 4"
+
+          if [ "$TEST_COUNT" -ge "4" ]; then
+            ARGS="$ARGS --shard=${{ matrix.shardIndex}}/${{ matrix.shardTotal }}"
+          fi
           if [ "${{ matrix.node }}" == "20" ]; then
             # We only gather coverage from a single Node version.
             # We pass in `--reporter=blob` so that we can combine the results from all shards.
