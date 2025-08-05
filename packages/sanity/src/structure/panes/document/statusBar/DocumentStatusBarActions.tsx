@@ -24,19 +24,18 @@ interface DocumentStatusBarActionsInnerProps {
   states: ResolvedAction[]
 }
 
-const DocumentStatusBarActionsInner = memo(function DocumentStatusBarActionsInner(
-  props: DocumentStatusBarActionsInnerProps,
-) {
-  const {disabled, states} = props
-  const {__internal_tasks} = useSource()
-  const {editState} = useDocumentPane()
-  const {selectedReleaseId} = usePerspective()
-  const [firstActionState, ...menuActionStates] = states
+const FirstActionButton = ({
+  firstActionState,
+  disabled,
+}: {
+  firstActionState: ResolvedAction
+  disabled: boolean
+}) => {
   const [buttonElement, setButtonElement] = useState<HTMLButtonElement | null>(null)
 
   // TODO: This could be refactored to use the tooltip from the button if the firstAction.title was updated to a string.
   const tooltipContent = useMemo(() => {
-    if (!firstActionState || (!firstActionState.title && !firstActionState.shortcut)) return null
+    if (!firstActionState.title && !firstActionState.shortcut) return null
 
     return (
       <Flex style={{maxWidth: 300}} align="center" gap={3}>
@@ -54,41 +53,65 @@ const DocumentStatusBarActionsInner = memo(function DocumentStatusBarActionsInne
       </Flex>
     )
   }, [firstActionState])
-  const showFirstActionButton = selectedReleaseId
-    ? // If the first action is a custom action and we are in a version document show it.
-      firstActionState && !isSanityDefinedAction(firstActionState)
-    : firstActionState && !editState?.liveEdit
 
-  const sideMenuItems = useMemo(() => {
-    return showFirstActionButton ? menuActionStates : [firstActionState, ...menuActionStates]
-  }, [showFirstActionButton, firstActionState, menuActionStates])
+  return (
+    <>
+      <LayerProvider zOffset={200}>
+        <Tooltip disabled={!tooltipContent} content={tooltipContent} placement="top">
+          <Stack>
+            <Button
+              data-testid={`action-${toLowerCaseNoSpaces(firstActionState.label)}`}
+              disabled={disabled || Boolean(firstActionState.disabled)}
+              icon={firstActionState.icon}
+              // eslint-disable-next-line react/jsx-handler-names
+              onClick={firstActionState.onHandle}
+              ref={setButtonElement}
+              text={firstActionState.label}
+              tone={firstActionState.tone || 'primary'}
+            />
+          </Stack>
+        </Tooltip>
+      </LayerProvider>
+      {firstActionState.dialog && (
+        <ActionStateDialog dialog={firstActionState.dialog} referenceElement={buttonElement} />
+      )}
+    </>
+  )
+}
+
+const DocumentStatusBarActionsInner = memo(function DocumentStatusBarActionsInner(
+  props: DocumentStatusBarActionsInnerProps,
+) {
+  const {disabled, states} = props
+  const {__internal_tasks} = useSource()
+  const {editState} = useDocumentPane()
+  const {selectedReleaseId} = usePerspective()
+
+  const actions = useMemo(() => {
+    const [first, ...rest] = states
+
+    const renderActionButton = selectedReleaseId
+      ? // If the first action is a custom action and we are in a version document show it.
+        first && !isSanityDefinedAction(first)
+      : first && !editState?.liveEdit
+
+    if (renderActionButton) {
+      // If we show the first action button, we show the first action in the button and the rest in the menu.
+      return {actionButton: first, menuActions: rest}
+    }
+
+    // If we don't show the first action button, we show all actions in the menu.
+    return {actionButton: null, menuActions: states}
+  }, [states, editState?.liveEdit, selectedReleaseId])
 
   return (
     <Flex align="center" gap={1}>
       {__internal_tasks && __internal_tasks.footerAction}
-      {showFirstActionButton && (
-        <LayerProvider zOffset={200}>
-          <Tooltip disabled={!tooltipContent} content={tooltipContent} placement="top">
-            <Stack>
-              <Button
-                data-testid={`action-${toLowerCaseNoSpaces(firstActionState.label)}`}
-                disabled={disabled || Boolean(firstActionState.disabled)}
-                icon={firstActionState.icon}
-                // eslint-disable-next-line react/jsx-handler-names
-                onClick={firstActionState.onHandle}
-                ref={setButtonElement}
-                text={firstActionState.label}
-                tone={firstActionState.tone || 'primary'}
-              />
-            </Stack>
-          </Tooltip>
-        </LayerProvider>
+      {actions.actionButton && (
+        <FirstActionButton firstActionState={actions.actionButton} disabled={disabled} />
       )}
-      {sideMenuItems.length > 0 && (
-        <ActionMenuButton actionStates={sideMenuItems} disabled={disabled} />
-      )}
-      {firstActionState && firstActionState.dialog && (
-        <ActionStateDialog dialog={firstActionState.dialog} referenceElement={buttonElement} />
+      {actions.menuActions.length > 0 && (
+        <ActionMenuButton actionStates={actions.menuActions} disabled={disabled} />
       )}
     </Flex>
   )
