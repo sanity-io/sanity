@@ -1,3 +1,6 @@
+// eslint-disable-next-line import/no-extraneous-dependencies, import/no-unassigned-import
+import '@vitest/coverage-v8'
+
 import {defineConfig} from 'vitest/config'
 
 export default defineConfig({
@@ -20,7 +23,6 @@ export default defineConfig({
       reportOnFailure: true,
       clean: true,
     },
-
     typecheck: {
       enabled: true,
       // @TODO we have a lot of TS errors to fix in test files before we can remove this line
