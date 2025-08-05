@@ -68,10 +68,33 @@ export function SimpleBlockPortableText(): React.JSX.Element {
               </p>
             )}
             <h2>Slugs</h2>
-            {item.slugs?.map((slug, index) => (
-              <div key={slug._key} data-sanity={dataAttribute.scope(`slugs[${index}]`).toString()}>
+            {item.slugs?.map((slugItem, index) => (
+              <div
+                key={slugItem._key}
+                data-sanity={dataAttribute.scope(`slugs[${index}]`).toString()}
+                style={{
+                  padding: '8px',
+                  margin: '4px 0',
+                  border: '1px solid #ddd',
+                  borderRadius: '4px',
+                  cursor: 'pointer',
+                  backgroundColor: '#f9f9f9',
+                  position: 'relative',
+                }}
+                onClick={(e) => {
+                  // Prevent default to avoid any interference
+                  e.preventDefault()
+                  e.stopPropagation()
+                  // This should trigger both focus and open
+                  console.log('Slug clicked:', slugItem, 'index:', index)
+                }}
+                onFocus={(e) => {
+                  // Ensure focus is properly handled
+                  console.log('Slug focused:', slugItem, 'index:', index)
+                }}
+              >
                 <p data-sanity={dataAttribute.scope(`slugs[${index}].current`).toString()}>
-                  slug: {slug.current}
+                  slug: {slugItem.current}
                 </p>
               </div>
             ))}
