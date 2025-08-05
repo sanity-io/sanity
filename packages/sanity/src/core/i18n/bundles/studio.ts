@@ -20,8 +20,6 @@ export const studioLocaleStrings = defineLocalesResources('studio', {
   'about-dialog.version-info.auto-updates.how-to-enable': 'Enable',
   /** "Manage version" link text */
   'about-dialog.version-info.auto-updates.manage-version': 'Manage version',
-  /** "Browse on GitHub" link from version info dialog */
-  'about-dialog.version-info.browse-on-github': 'Browse on GitHub',
   /** Text displayed on the "Copy to clipboard"-button after clicked */
   'about-dialog.version-info.copy-to-clipboard-button.copied-text':
     'Copied to Clipboard. Happy pasting!',
@@ -57,7 +55,8 @@ export const studioLocaleStrings = defineLocalesResources('studio', {
 
   /** "User agent" header in About-dialog */
   'about-dialog.version-info.user-agent.header': 'User agent',
-
+  /** "View on GitHub" link from version info dialog */
+  'about-dialog.version-info.view-on-github': 'View on GitHub',
   /** The text used in the tooltip shown in the dialog close button */
   'announcement.dialog.close': 'Close',
   /** Aria label to be used in the dialog close button */
