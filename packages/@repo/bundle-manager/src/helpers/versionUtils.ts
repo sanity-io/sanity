@@ -1,4 +1,4 @@
-import {groupBy, uniqBy} from 'lodash-es'
+import {groupBy, partition, uniqBy} from 'lodash-es'
 import semver from 'semver'
 
 import {STALE_TAGS_EXPIRY_SECONDS} from '../constants'
@@ -7,27 +7,27 @@ import {currentUnixTime} from '../utils'
 
 /**
  * Cleans up version entries using TTL strategy:
- * - Keep all versions within TTL window
- * - Keep highest version per major (if not already kept via TTL)
+ * For all major versions:
+ *  - Keep all versions within TTL window
+ *  - Keep highest version outside of TTL
  */
 export function cleanupVersions(allVersions: VersionEntry[]): VersionEntry[] {
   const uniqueVersions = deduplicateByVersion(allVersions)
-
-  uniqueVersions.forEach((entry) => getMajorVersion(entry.version))
 
   const currentTime = currentUnixTime()
   const byMajor = groupBy(uniqueVersions, (entry) => getMajorVersion(entry.version))
 
   const keptVersions = Object.values(byMajor).flatMap((majorVersions) => {
-    const withinTtl = majorVersions.filter(
+    const [withinTtl, outsideTtl] = partition(
+      majorVersions,
       (entry) => currentTime - entry.timestamp < STALE_TAGS_EXPIRY_SECONDS,
     )
-    const highest = majorVersions.toSorted(sortByVersionDesc)[0]
+    const highestOutsideTtl = outsideTtl.toSorted(sortByVersionDesc)[0]
 
-    return deduplicateByVersion([...withinTtl, highest])
+    return deduplicateByVersion(highestOutsideTtl ? [...withinTtl, highestOutsideTtl] : withinTtl)
   })
 
-  return deduplicateByVersion(keptVersions).toSorted(sortByVersionDesc)
+  return keptVersions.toSorted(sortByVersionDesc)
 }
 
 /**

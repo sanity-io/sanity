@@ -5,7 +5,7 @@ import {currentUnixTime} from '../../utils'
 import {cleanupVersions, sortAndCleanupVersions} from '../versionUtils'
 
 describe('cleanupVersions()', () => {
-  it('should keep all TTL versions plus highest outside-TTL version per major', () => {
+  it('should keep all TTL versions and the most recent outside-TTL version per major', () => {
     const now = currentUnixTime()
 
     const major1VersionsOutsideTTL = [
@@ -38,17 +38,23 @@ describe('cleanupVersions()', () => {
       newestVersion,
       major2VersionsInTTL[1],
       major2VersionsInTTL[0],
+      major2VersionOutsideTTL,
       major1VersionInTTL,
+      major1VersionsOutsideTTL[1],
     ])
   })
 
-  it('should exclude lower outside-TTL version when higher TTL version exists for same major', () => {
+  it('should exclude lower outside-TTL version when higher outside TTL version exists for same major', () => {
     const now = currentUnixTime()
 
-    const major1HigherVersionInTTL = {timestamp: now - 100, version: '1.3.0'}
-    const major1LowerVersionOutsideTTL = {
+    const major1VersionInTTL = {timestamp: now - 100, version: '1.3.0'}
+    const major1VersionOutsideTTL = {
       timestamp: now - STALE_TAGS_EXPIRY_SECONDS - 100,
       version: '1.2.0',
+    }
+    const major1LowerVersionOutsideTTL = {
+      timestamp: now - STALE_TAGS_EXPIRY_SECONDS - 200,
+      version: '1.1.0',
     }
     const major2OnlyVersionOutsideTTL = {
       timestamp: now - STALE_TAGS_EXPIRY_SECONDS - 200,
@@ -57,7 +63,8 @@ describe('cleanupVersions()', () => {
     const major3NewVersion = {timestamp: now, version: '3.0.0'}
 
     const allVersions = [
-      major1HigherVersionInTTL,
+      major1VersionInTTL,
+      major1VersionOutsideTTL,
       major1LowerVersionOutsideTTL,
       major2OnlyVersionOutsideTTL,
       major3NewVersion,
@@ -67,7 +74,8 @@ describe('cleanupVersions()', () => {
     expect(result).toEqual([
       major3NewVersion,
       major2OnlyVersionOutsideTTL,
-      major1HigherVersionInTTL,
+      major1VersionInTTL,
+      major1VersionOutsideTTL,
     ])
   })
 
