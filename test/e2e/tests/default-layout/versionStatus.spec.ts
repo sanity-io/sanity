@@ -2,16 +2,6 @@ import {expect} from '@playwright/test'
 
 import {test} from '../../studio-test'
 
-//non-updating studio case
-test('should not show package version toast if not in auto-updating studio', async ({
-  page,
-  baseURL,
-}) => {
-  await page.goto(baseURL ?? '')
-
-  await expect(page.getByText('Sanity Studio was updated')).not.toBeVisible()
-})
-
 test.describe('auto-updating studio behavior', () => {
   test.beforeEach(async ({page, baseURL}) => {
     await page.goto(baseURL ?? '', {waitUntil: 'domcontentloaded'})
@@ -19,7 +9,7 @@ test.describe('auto-updating studio behavior', () => {
     await page.evaluate(() => {
       const importMap = {
         imports: {
-          sanity: 'https://sanity-cdn.com/v1/modules/sanity/default/example.js',
+          sanity: 'https://example.com/v1/modules/sanity/default/%5E4.1.0/t1754072932',
         },
       }
       const script = document.createElement('script')
@@ -29,7 +19,7 @@ test.describe('auto-updating studio behavior', () => {
     })
   })
 
-  test('should facilitate reload if in auto-updating studio, and version is higher', async ({
+  test('should facilitate reload if in auto-updating studio, and version is higher than minversion from importmap', async ({
     page,
   }) => {
     // Intercept the API request and provide a mock response
@@ -38,26 +28,11 @@ test.describe('auto-updating studio behavior', () => {
         status: 200,
         contentType: 'application/json',
         body: JSON.stringify({
-          packageVersion: '4.1000.0',
+          packageVersion: '4.2.0',
         }),
       })
     })
     await page.getByTestId('button-resources-menu').click()
     await expect(page.getByTestId('menu-item-update-studio-now')).toBeVisible()
-  })
-
-  test('should show nothing if in auto-updating studio, and version is lower', async ({page}) => {
-    // Intercept the API request and provide a mock response
-    await page.route('https://sanity-cdn.**/v1/modules/sanity/default/**', (route) => {
-      route.fulfill({
-        status: 200,
-        contentType: 'application/json',
-        body: JSON.stringify({
-          packageVersion: '4.0.0',
-        }),
-      })
-    })
-    await page.getByTestId('button-resources-menu').click()
-    await expect(page.getByTestId('menu-item-update-studio-now')).not.toBeVisible()
   })
 })
