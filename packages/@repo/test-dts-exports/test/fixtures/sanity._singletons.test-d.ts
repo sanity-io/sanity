@@ -48,7 +48,6 @@ import type {
   MediaLibraryIdsContext,
   MentionUserContext,
   NavbarContext,
-  PackageVersionInfo,
   PackageVersionInfoContext,
   PackageVersionInfoContextValue,
   PaneContext,
@@ -237,9 +236,6 @@ describe('sanity/_singletons', () => {
   })
   test('NavbarContext', () => {
     expectTypeOf<typeof NavbarContext>().not.toBeNever()
-  })
-  test('PackageVersionInfo', () => {
-    expectTypeOf<PackageVersionInfo>().not.toBeNever()
   })
   test('PackageVersionInfoContext', () => {
     expectTypeOf<typeof PackageVersionInfoContext>().not.toBeNever()
