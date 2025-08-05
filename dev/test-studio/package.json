@@ -60,7 +60,7 @@
     "rxjs": "^7.8.2",
     "sanity": "workspace:*",
     "sanity-plugin-hotspot-array": "^2.2.1",
-    "sanity-plugin-markdown": "^5.1.3",
+    "sanity-plugin-markdown": "^6.0.0",
     "sanity-plugin-media": "^3.0.5",
     "sanity-plugin-mux-input": "^2.8.1",
     "styled-components": "catalog:"
