@@ -1,10 +1,26 @@
-// eslint-disable-next-line import/no-extraneous-dependencies, import/no-unassigned-import
-import '@vitest/coverage-v8'
-
 import {defineConfig} from 'vitest/config'
 
 export default defineConfig({
   test: {
+    // Use 'forks' pool instead of 'threads' - this changes sharding strategy
+    // from file-based to process-based, avoiding the file count limitation
+    pool: 'forks',
+
+    // Use projects instead of deprecated workspace
+    projects: [
+      // All packages - this will auto-discover vitest configs in each package
+      'packages/@sanity/migrate',
+      'packages/@sanity/cli',
+      'packages/@sanity/codegen',
+      'packages/@sanity/mutator',
+      'packages/@sanity/schema',
+      'packages/@sanity/types',
+      'packages/@sanity/util',
+      'packages/@sanity/vision',
+      'packages/sanity',
+      'packages/sanity/src/_internal/cli',
+      'perf/tests',
+    ],
     coverage: {
       provider: 'v8',
       reporter: ['html', 'json', 'json-summary'],
