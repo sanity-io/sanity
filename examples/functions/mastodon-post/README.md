@@ -120,7 +120,7 @@ defineField({
          event: {
            on: ['publish'],
            filter: "_type == 'post'",
-           projection: 'title, mastodonPost, slug',
+           projection: '{title, mastodonPost, slug}',
          },
          env: {
            MASTODON_TOKEN: MASTODON_TOKEN,
@@ -265,7 +265,7 @@ filter: "_type == 'post' && defined(publishedAt)"
 Add more fields to the projection and use them in the post:
 
 ```ts
-projection: 'title, mastodonPost, slug, author, tags'
+projection: '{title, mastodonPost, slug, author, tags}'
 ```
 
 ### Add hashtags based on content
