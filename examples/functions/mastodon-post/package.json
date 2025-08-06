@@ -17,7 +17,7 @@
         "publish"
       ],
       "filter": "_type == 'post'",
-      "projection": "title, mastodonPost, slug"
+      "projection": "{title, mastodonPost, slug}"
     },
     "env": {
       "COMMENT": "MASTODON_TOKEN and MASTODON_HOST are required",
