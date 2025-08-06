@@ -14,7 +14,7 @@
       "publish"
     ],
     "filter": "_type == 'post' && !defined(firstPublished)",
-    "projection": "_id"
+    "projection": "{_id}"
   },
   "exampleInstructions": "Add this configuration to your blueprint config's resources array. Go to README.md for more details."
 }

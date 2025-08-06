@@ -83,7 +83,7 @@ npx sanity schema deploy
          event: {
            on: ['publish'],
            filter: "_type == 'post'",
-           projection: '_id',
+           projection: '{_id}',
          },
        }),
      ],
@@ -171,7 +171,7 @@ export default defineBlueprint({
       event: {
         on: ['publish'],
         filter: "_type == 'post'",
-        projection: '_id',
+        projection: '{_id}',
       },
     }),
   ],
