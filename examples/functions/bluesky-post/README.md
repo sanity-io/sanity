@@ -116,7 +116,7 @@ defineField({
          event: {
            on: ['publish'],
            filter: "_type == 'post'",
-           projection: 'title, blueskyPost, slug',
+           projection: '{title, blueskyPost, slug}',
          },
          env: {
            BLUESKY_USERNAME: BLUESKY_USERNAME,
@@ -275,7 +275,7 @@ filter: "_type == 'post' && defined(publishedAt)"
 Add more fields to the projection and use them in the post:
 
 ```ts
-projection: 'title, blueskyPost, slug, author'
+projection: '{title, blueskyPost, slug, author}'
 ```
 
 ## Troubleshooting
