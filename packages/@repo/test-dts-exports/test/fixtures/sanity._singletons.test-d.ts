@@ -45,9 +45,11 @@ import type {
   IsLastPaneContext,
   LocaleContext,
   LocaleContextValue,
-  MediaLibraryIdContext,
+  MediaLibraryIdsContext,
   MentionUserContext,
   NavbarContext,
+  PackageVersionInfoContext,
+  PackageVersionInfoContextValue,
   PaneContext,
   PaneLayoutContext,
   PaneRouterContext,
@@ -226,14 +228,20 @@ describe('sanity/_singletons', () => {
   test('LocaleContextValue', () => {
     expectTypeOf<LocaleContextValue>().toBeObject()
   })
-  test('MediaLibraryIdContext', () => {
-    expectTypeOf<typeof MediaLibraryIdContext>().not.toBeNever()
+  test('MediaLibraryIdsContext', () => {
+    expectTypeOf<typeof MediaLibraryIdsContext>().not.toBeNever()
   })
   test('MentionUserContext', () => {
     expectTypeOf<typeof MentionUserContext>().not.toBeNever()
   })
   test('NavbarContext', () => {
     expectTypeOf<typeof NavbarContext>().not.toBeNever()
+  })
+  test('PackageVersionInfoContext', () => {
+    expectTypeOf<typeof PackageVersionInfoContext>().not.toBeNever()
+  })
+  test('PackageVersionInfoContextValue', () => {
+    expectTypeOf<PackageVersionInfoContextValue>().not.toBeNever()
   })
   test('PaneContext', () => {
     expectTypeOf<typeof PaneContext>().not.toBeNever()

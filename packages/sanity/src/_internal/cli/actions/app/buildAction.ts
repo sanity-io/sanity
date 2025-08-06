@@ -56,15 +56,15 @@ export default async function buildSanityApp(
   if (!installedSdkVersion) {
     throw new Error(`Failed to find installed @sanity/sdk-react version`)
   }
-  // Get the version without any tags if any
-  const coercedSdkVersion = semver.coerce(installedSdkVersion)?.version
+  // Get the clean version without build metadata: https://semver.org/#spec-item-10
+  const cleanSDKVersion = semver.parse(installedSanityVersion)?.version
   // Sanity might not be installed, but if it is we want to auto update it.
-  const coercedSanityVersion = semver.coerce(installedSanityVersion)?.version
-  if (autoUpdatesEnabled && !coercedSdkVersion) {
+  const cleanSanityVersion = semver.parse(installedSanityVersion)?.version
+  if (autoUpdatesEnabled && !cleanSDKVersion) {
     throw new Error(`Failed to parse installed SDK version: ${installedSdkVersion}`)
   }
-  const sdkVersion = encodeURIComponent(`^${coercedSdkVersion}`)
-  const sanityVersion = coercedSanityVersion && encodeURIComponent(`^${coercedSanityVersion}`)
+  const sdkVersion = encodeURIComponent(`^${cleanSDKVersion}`)
+  const sanityVersion = cleanSanityVersion && encodeURIComponent(`^${cleanSanityVersion}`)
   const autoUpdatesImports = getAppAutoUpdateImportMap({sdkVersion, sanityVersion})
 
   if (autoUpdatesEnabled) {

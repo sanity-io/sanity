@@ -3,6 +3,7 @@
 exports[`exports snapshot 1`] = `
 {
   ".": {
+    "ALL_FIELDS_GROUP": "object",
     "ActiveWorkspaceMatcher": "function",
     "AddonDatasetProvider": "function",
     "ArrayOfObjectOptionsInput": "function",
@@ -674,9 +675,10 @@ exports[`exports snapshot 1`] = `
     "HoveredFieldContext": "object",
     "IsLastPaneContext": "object",
     "LocaleContext": "object",
-    "MediaLibraryIdContext": "object",
+    "MediaLibraryIdsContext": "object",
     "MentionUserContext": "object",
     "NavbarContext": "object",
+    "PackageVersionInfoContext": "object",
     "PaneContext": "object",
     "PaneLayoutContext": "object",
     "PaneRouterContext": "object",

@@ -1,13 +1,25 @@
-import {type AssetFromSource, type FileSchemaType, type ImageSchemaType} from '@sanity/types'
-import {Flex, Stack, useTheme, useToast} from '@sanity/ui'
+import {
+  type AssetFromSource,
+  type FileSchemaType,
+  type ImageSchemaType,
+  type SanityDocument,
+  type ValidationMarker,
+} from '@sanity/types'
+import {Box, Card, Flex, useTheme, useToast} from '@sanity/ui'
 import {type ReactNode, useCallback, useMemo, useState} from 'react'
-import {encodeJsonParams} from 'sanity/router'
 
 import {Button} from '../../../../../ui-components'
+import {useFormValue} from '../../../../form'
+import {useClient} from '../../../../hooks'
+import {useSchema} from '../../../../hooks/useSchema'
 import {useTranslation} from '../../../../i18n'
+import {useWorkspace} from '../../../../studio'
+import {validateItem} from '../../../../validation/validateDocument'
+import {FormFieldValidationStatus} from '../../../components/formField/FormFieldValidationStatus'
 import {useAuthType} from '../hooks/useAuthType'
 import {useLinkAssets} from '../hooks/useLinkAssets'
-import {useMediaLibraryId} from '../hooks/useMediaLibraryId'
+import {useMediaLibraryIds} from '../hooks/useMediaLibraryIds'
+import {usePluginFrameUrl} from '../hooks/usePluginFrameUrl'
 import {usePluginPostMessage} from '../hooks/usePluginPostMessage'
 import {useSanityMediaLibraryConfig} from '../hooks/useSanityMediaLibraryConfig'
 import {type AssetSelectionItem, type AssetType, type PluginPostMessage} from '../types'
@@ -30,7 +42,7 @@ export function SelectAssetsDialog(props: SelectAssetsDialogProps): ReactNode {
   const theme = useTheme()
   const {t} = useTranslation()
   const {dark} = theme.sanity.color
-  const libraryId = useMediaLibraryId()
+  const mediaLibraryIds = useMediaLibraryIds()
 
   const mediaLibraryConfig = useSanityMediaLibraryConfig()
 
@@ -53,8 +65,46 @@ export function SelectAssetsDialog(props: SelectAssetsDialogProps): ReactNode {
 
   const [assetSelection, setAssetSelection] = useState<AssetSelectionItem[]>(props.selection)
   const [didSelect, setDidSelect] = useState(false)
+  const [validation, setValidation] = useState([] as ValidationMarker[])
 
-  const urlFilters = useMemo(() => {
+  const client = useClient({apiVersion: mediaLibraryConfig.__internal.apiVersion})
+  const workspace = useWorkspace()
+
+  const schema = useSchema()
+
+  const document = useFormValue([])
+
+  const validateSelection = useCallback(
+    async (assetSelectionItem: AssetSelectionItem) => {
+      const value = {
+        _type: 'mainImage',
+        media: {
+          _ref: `media-library:${mediaLibraryIds?.libraryId}:${assetSelectionItem.asset._id}`,
+          _type: 'globalDocumentReference',
+          _weak: true,
+        },
+      }
+      const getClient = () => client
+      const result = await validateItem({
+        value: value,
+        getClient,
+        path: [],
+        schema: schema,
+        type: schemaType,
+        parent: document,
+        i18n: workspace.i18n,
+        environment: 'studio',
+        document: document as SanityDocument,
+        getDocumentExists: async () => {
+          return true
+        },
+      })
+      return result
+    },
+    [client, document, mediaLibraryIds?.libraryId, schema, schemaType, workspace.i18n],
+  )
+
+  const pluginFilters = useMemo(() => {
     const filters: any[] = []
     if (schemaType?.options?.mediaLibrary?.filters) {
       filters.push(
@@ -66,14 +116,21 @@ export function SelectAssetsDialog(props: SelectAssetsDialogProps): ReactNode {
         })),
       )
     }
-    return encodeJsonParams(filters)
+    return filters
   }, [schemaType?.options?.mediaLibrary?.filters])
 
-  const pluginApiVersion = mediaLibraryConfig.__internal.pluginApiVersion
-  const appBasePath = mediaLibraryConfig.__internal.appBasePath
-  const iframeUrl =
-    `${appHost}${appBasePath}/plugin/${pluginApiVersion}/library/${libraryId}/assets?selectionType=${selectionType}` +
-    `&selectAssetTypes=${selectAssetType === 'sanity.video' ? 'video' : selectAssetType}&scheme=${dark ? 'dark' : 'light'}&auth=${authType}&filters=${urlFilters}`
+  const params = useMemo(
+    () => ({
+      selectionType,
+      selectAssetTypes: [selectAssetType === 'sanity.video' ? 'video' : selectAssetType],
+      scheme: dark ? 'dark' : 'light',
+      auth: authType,
+      pluginFilters,
+    }),
+    [selectionType, selectAssetType, dark, authType, pluginFilters],
+  )
+  const iframeUrl = usePluginFrameUrl('/assets', params)
+
   const {onLinkAssets} = useLinkAssets({schemaType})
 
   const handleSelect = useCallback(async () => {
@@ -93,17 +150,36 @@ export function SelectAssetsDialog(props: SelectAssetsDialogProps): ReactNode {
       console.error(error)
       setDidSelect(false)
     }
-  }, [assetSelection, onClose, onSelect, onLinkAssets, t, toast])
+  }, [assetSelection, onLinkAssets, onSelect, onClose, toast, t])
 
   const handleClose = useCallback(() => {
     onClose()
   }, [onClose])
 
-  const handlePluginMessage = useCallback((message: PluginPostMessage) => {
-    if (message.type === 'assetSelection') {
-      setAssetSelection(message.selection)
-    }
-  }, [])
+  const handleAssetSelection = useCallback(
+    async (assetSelectionItems: AssetSelectionItem[]) => {
+      if (assetSelectionItems.length === 0) {
+        setValidation([])
+        return
+      }
+      const validationResult = await validateSelection(assetSelectionItems[0])
+      const hasErrors = validationResult.some((marker) => marker.level === 'error')
+      if (hasErrors) {
+        setValidation(validationResult)
+      }
+    },
+    [validateSelection],
+  )
+
+  const handlePluginMessage = useCallback(
+    (message: PluginPostMessage) => {
+      if (message.type === 'assetSelection') {
+        setAssetSelection(message.selection)
+        handleAssetSelection(message.selection)
+      }
+    },
+    [handleAssetSelection],
+  )
 
   const {setIframe} = usePluginPostMessage(appHost, handlePluginMessage)
   if (!open) {
@@ -112,20 +188,32 @@ export function SelectAssetsDialog(props: SelectAssetsDialogProps): ReactNode {
 
   return (
     <AppDialog
-      animate
       header={dialogHeaderTitle}
       id="media-library-plugin-dialog-select-assets"
       onClose={handleClose}
+      onClickOutside={handleClose}
       open
       ref={ref}
       data-testid="media-library-plugin-dialog-select-assets"
       width={3}
       footer={
-        <Flex width="full" gap={3} justify="flex-end" padding={2}>
-          <Stack space={3}>
-            <Flex width="full" gap={3} justify="flex-end" padding={3}>
+        <Card
+          width="full"
+          height="fill"
+          padding={3}
+          shadow={1}
+          style={{
+            position: 'relative',
+            minHeight: '2dvh',
+          }}
+        >
+          <Flex width="full" gap={3} justify="flex-end">
+            <Flex width="full" gap={2} justify="flex-end" align="center">
+              {validation.length > 0 && (
+                <FormFieldValidationStatus fontSize={2} placement="top" validation={validation} />
+              )}
               <Button
-                mode="ghost"
+                mode="bleed"
                 onClick={handleClose}
                 text={t('asset-source.dialog.button.cancel')}
                 size="large"
@@ -133,16 +221,31 @@ export function SelectAssetsDialog(props: SelectAssetsDialogProps): ReactNode {
               <Button
                 onClick={handleSelect}
                 loading={didSelect}
-                disabled={assetSelection.length === 0}
+                disabled={
+                  assetSelection.length === 0 ||
+                  validation.some((marker) => marker.level === 'error')
+                }
                 text={t('asset-source.dialog.button.select')}
                 size="large"
+                tone="primary"
               />
             </Flex>
-          </Stack>
-        </Flex>
+          </Flex>
+        </Card>
       }
     >
-      <Iframe ref={setIframe} src={iframeUrl} />
+      <Box
+        style={{
+          position: 'absolute',
+          inset: 0,
+          borderTop: '1px solid',
+          borderColor: 'var(--card-border-color)',
+          overflow: 'hidden',
+          display: 'flex',
+        }}
+      >
+        <Iframe ref={setIframe} src={iframeUrl} />
+      </Box>
     </AppDialog>
   )
 }

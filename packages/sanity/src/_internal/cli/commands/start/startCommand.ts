@@ -37,7 +37,7 @@ const startCommand: CliCommandDefinition = {
     const error = (msg: string) => output.warn(chalk.red.bgBlack(msg))
     warn('╭───────────────────────────────────────────────────────────╮')
     warn('│                                                           │')
-    warn("│  You're running Sanity Studio v3. In this version the     │")
+    warn("│  You're running Sanity Studio v4. In this version the     │")
     warn('│  [start] command is used to preview static builds.        |')
     warn('│                                                           │')
     warn('│  To run a development server, use the [npm run dev] or    |')

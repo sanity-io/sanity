@@ -105,6 +105,32 @@ describe('tagVersion()', () => {
       versions,
     })
   })
+
+  it('applies TTL cleanup for new tag major, keeps highest for other majors', () => {
+    const versions = [
+      {timestamp: currentUnixTime() - 1000, version: '1.2.4'},
+      {timestamp: currentUnixTime() - 2000, version: '2.0.0'},
+      {timestamp: currentUnixTime() - 3000, version: '2.1.0'},
+    ]
+
+    const manifest = {
+      tags: {stable: []},
+      versions,
+    }
+
+    const tag1 = {timestamp: currentUnixTime() - 20, version: '1.2.4' as const}
+    const tag2 = {timestamp: currentUnixTime() - 30, version: '2.1.0' as const}
+
+    const result = tagVersion(tagVersion(manifest, 'stable', tag1), 'stable', tag2)
+
+    expect(result).toEqual({
+      tags: {
+        stable: [tag2, tag1],
+      },
+      versions,
+    })
+  })
+
   it('allows several tags to be added in a row', () => {
     // in an ideal world, there should just be a single tagged version per channel
     // but to allow for updated manifests to reach all pods, we add new versions with a timestamp,

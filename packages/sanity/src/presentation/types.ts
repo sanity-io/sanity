@@ -175,12 +175,12 @@ export interface PreviewUrlResolverOptions {
   previewMode?: PreviewUrlPreviewModeOption
   /**
    * @defaultValue `location.origin`
-   * @deprecated - use `previewMode.initial` instead
+   * @deprecated - use `initial` instead
    */
   origin?: string
   /**
    * @defaultValue '/'
-   * @deprecated - use `previewMode.initial` instead
+   * @deprecated - use `initial` instead
    */
   preview?: string
   /**

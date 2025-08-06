@@ -16,21 +16,30 @@ export const studioLocaleStrings = defineLocalesResources('studio', {
   'about-dialog.version-info.auto-updates.enabled': 'Auto Updates Enabled',
   /** @deprecated "Auto Updates" status header in About-dialog */
   'about-dialog.version-info.auto-updates.header': 'Auto Updates',
-  /** "How to enable" next to Disabled state for Auto updates in about dialog */
+  /** "How to enable" next to Disabled state for Auto updates in version info dialog */
   'about-dialog.version-info.auto-updates.how-to-enable': 'Enable',
+  /** "Manage version" link text */
+  'about-dialog.version-info.auto-updates.manage-version': 'Manage version',
   /** Text displayed on the "Copy to clipboard"-button after clicked */
   'about-dialog.version-info.copy-to-clipboard-button.copied-text':
     'Copied to Clipboard. Happy pasting!',
   /** "Copy to Clipboard" button text for copying version details from About-dialog */
   'about-dialog.version-info.copy-to-clipboard-button.text': 'Copy to Clipboard',
-  /** "Current version" header in about dialog  */
+  /** "Current version" header in version info dialog  */
   'about-dialog.version-info.current-version.header': 'Current version',
-  /** "How to upgrade" link text */
+  /** @deprecated "How to upgrade" link text */
   'about-dialog.version-info.how-to-upgrade': 'Update now',
-  /** @deprecated "Latest version" header in about dialog */
+  /** "Latest version" header in version info dialog */
   'about-dialog.version-info.latest-version.header': 'Latest version',
-  /** "Latest version" header in about dialog */
-  'about-dialog.version-info.latest-version.text': 'Latest version',
+  /** Info text when auto updates is enabled and a new version is available */
+  'about-dialog.version-info.new-auto-update-version-available': 'New version available',
+  /** "New version" header in version info dialog - Note that this is not necessary a *higher* version compared to current:
+   *  It's a new version configured for auto updates which in some cases could even be a version below current  */
+  'about-dialog.version-info.new-version.text': 'New version',
+  /** "Reload"-button when auto updates is enabled and a new version is available */
+  'about-dialog.version-info.reload': 'Reload',
+  /** "Reload to update"-tooltip when auto updates is enabled and a new version is available */
+  'about-dialog.version-info.reload-to-update': 'Reload Studio to update',
   /** "New version available" tooltip in About-dialog */
   'about-dialog.version-info.tooltip.new-version-available': 'New version available',
   /** "Prerelease" tooltip in About-dialog */
@@ -39,10 +48,15 @@ export const studioLocaleStrings = defineLocalesResources('studio', {
   'about-dialog.version-info.tooltip.up-to-date': 'Up to date',
   /** @deprecated "Up to date" status in About-dialog */
   'about-dialog.version-info.up-to-date': 'Up to date',
+  /** "Upgrade"-button text */
+  'about-dialog.version-info.update-button.text': 'Update',
+  /** "Upgrade"-button tooltip text */
+  'about-dialog.version-info.update-button.tooltip': 'Learn how to update Sanity Studio',
 
   /** "User agent" header in About-dialog */
   'about-dialog.version-info.user-agent.header': 'User agent',
-
+  /** "View on GitHub" link from version info dialog */
+  'about-dialog.version-info.view-on-github': 'View on GitHub',
   /** The text used in the tooltip shown in the dialog close button */
   'announcement.dialog.close': 'Close',
   /** Aria label to be used in the dialog close button */
@@ -186,6 +200,9 @@ export const studioLocaleStrings = defineLocalesResources('studio', {
   /** Menu Items for Media Library Asset Source */
   'asset-sources.media-library.file.title': 'Media Library',
   'asset-sources.media-library.image.title': 'Media Library',
+
+  /** Info messages for the Media Library Asset Source  */
+  'asset-sources.media-library.select-dialog.title': 'Selecting {{assetType}} for {{targetTitle}}',
 
   /** Label when a release has been deleted by a different user */
   'banners.deleted-bundle-banner.text':
@@ -556,9 +573,13 @@ export const studioLocaleStrings = defineLocalesResources('studio', {
   'help-resources.action.join-our-community': 'Join our community',
 
   /** Information for what the latest sanity version is */
-  'help-resources.latest-sanity-version': 'Latest version is {{latestVersion}}',
+  'help-resources.latest-sanity-version': 'Latest version is v{{latestVersion}}',
+
+  /** Menu item for reloading Studio to update */
+  'help-resources.studio-auto-update-now': 'Reload to update to v{{newVersion}}',
+
   /** Information for what studio version the current studio is running */
-  'help-resources.studio-version': 'Sanity Studio version {{studioVersion}}',
+  'help-resources.studio-version': 'Sanity Studio v{{studioVersion}}',
   /** Title for help and resources menus */
   'help-resources.title': 'Help and resources',
 
@@ -1229,9 +1250,9 @@ export const studioLocaleStrings = defineLocalesResources('studio', {
   'new-document.open-dialog-aria-label': 'Create new document',
   /** Title for "Create new document" dialog */
   'new-document.title': 'Create new document',
-  /** Label for button that will make the browser reload when users' studio version is out-of-date */
+  /** @deprecated Label for button that will make the browser reload when users' studio version is out-of-date */
   'package-version.new-package-available.reload-button': 'Push to reload',
-  /** Title of the alert for studio users when packages in their studio are out-of-date */
+  /** @deprecated Title of the alert for studio users when packages in their studio are out-of-date */
   'package-version.new-package-available.title': 'Sanity Studio is ready to update!',
   /** Label for action to invite members to the current studio project */
   'presence.action.manage-members': 'Invite members',
