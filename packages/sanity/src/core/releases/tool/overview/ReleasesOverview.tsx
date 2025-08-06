@@ -29,6 +29,7 @@ import {Table, type TableRowProps} from '../components/Table/Table'
 import {type TableSort} from '../components/Table/TableProvider'
 import {ReleaseIllustration} from '../resources/ReleaseIllustration'
 import {CalendarPopover} from './CalendarPopover'
+import {TemplateMenuButton} from './components'
 import {
   DATE_SEARCH_PARAM_KEY,
   getInitialFilterDate,
@@ -39,6 +40,7 @@ import {
 import {DateFilterButton, ReleaseCalendarFilterDay} from './ReleaseCalendarFilter'
 import {ReleaseMenuButtonWrapper} from './ReleaseMenuButtonWrapper'
 import {releasesOverviewColumnDefs} from './ReleasesOverviewColumnDefs'
+import {type ReleaseTemplateDocument} from './templates/types'
 import {useTimezoneAdjustedDateTimeRange} from './useTimezoneAdjustedDateTimeRange'
 
 const MotionButton = motion.create(Button)
@@ -67,6 +69,7 @@ export function ReleasesOverview() {
     getInitialFilterDate(router),
   )
   const [isCreateReleaseDialogOpen, setIsCreateReleaseDialogOpen] = useState(false)
+  const [selectedTemplate, setSelectedTemplate] = useState<ReleaseTemplateDocument | null>(null)
   const releaseIds = useMemo(() => releases.map((release) => release._id), [releases])
   const {data: releasesMetadata, loading: loadingReleasesMetadata} = useReleasesMetadata(releaseIds)
   const loading = loadingReleases || (loadingReleasesMetadata && !releasesMetadata)
@@ -235,6 +238,11 @@ export function ReleasesOverview() {
     setIsCreateReleaseDialogOpen(true)
   }, [])
 
+  const handleUseTemplate = useCallback((template: ReleaseTemplateDocument) => {
+    setSelectedTemplate(template)
+    setIsCreateReleaseDialogOpen(true)
+  }, [])
+
   const createReleaseButton = useMemo(
     () => (
       <Button
@@ -251,9 +259,22 @@ export function ReleasesOverview() {
     [hasCreatePermission, isCreateReleaseDialogOpen, mode, handleOnClickCreateRelease, tCore],
   )
 
+  const createReleaseWithTemplateButton = useMemo(
+    () => (
+      <TemplateMenuButton
+        disabled={!hasCreatePermission || isCreateReleaseDialogOpen || mode === 'disabled'}
+        onUseTemplate={handleUseTemplate}
+      >
+        {createReleaseButton}
+      </TemplateMenuButton>
+    ),
+    [createReleaseButton, hasCreatePermission, isCreateReleaseDialogOpen, mode, handleUseTemplate],
+  )
+
   const handleOnCreateRelease = useCallback(
     (createdReleaseId: string) => {
       setIsCreateReleaseDialogOpen(false)
+      setSelectedTemplate(null)
 
       router.navigate(
         {releaseId: createdReleaseId},
@@ -268,14 +289,32 @@ export function ReleasesOverview() {
     [router],
   )
 
+  const handleCancelCreateRelease = useCallback(() => {
+    setIsCreateReleaseDialogOpen(false)
+    setSelectedTemplate(null)
+  }, [])
+
   const renderCreateReleaseDialog = () => {
     if (!isCreateReleaseDialogOpen) return null
 
     return (
       <CreateReleaseDialog
-        onCancel={() => setIsCreateReleaseDialogOpen(false)}
+        onCancel={handleCancelCreateRelease}
         onSubmit={handleOnCreateRelease}
         origin="release-plugin"
+        templateId={selectedTemplate?._id}
+        initialValues={
+          selectedTemplate
+            ? {
+                ...getReleaseDefaults(),
+                metadata: {
+                  title: `${selectedTemplate.title} Release`,
+                  description: selectedTemplate.description,
+                },
+                selectedDocumentTypes: selectedTemplate.selectedDocumentTypes,
+              }
+            : undefined
+        }
       />
     )
   }
@@ -355,7 +394,7 @@ export function ReleasesOverview() {
             {t('overview.description')}
           </Text>
           <Inline space={2}>
-            {createReleaseButton}
+            {createReleaseWithTemplateButton}
             <Button
               as="a"
               href="https://www.sanity.io/docs/content-releases"
@@ -411,7 +450,7 @@ export function ReleasesOverview() {
                       onClick={dialogTimeZoneShow}
                     />
                     {DialogTimeZone && <DialogTimeZone {...dialogProps} />}
-                    {loadingOrHasReleases && createReleaseButton}
+                    {loadingOrHasReleases && createReleaseWithTemplateButton}
                   </Flex>
                 </Flex>
               </Card>

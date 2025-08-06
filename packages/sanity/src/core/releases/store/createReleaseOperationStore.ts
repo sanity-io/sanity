@@ -7,6 +7,7 @@ import {
   type SanityClient,
   type SingleActionResult,
 } from '@sanity/client'
+import {uuid} from '@sanity/uuid'
 
 import {getPublishedId, getVersionFromId, getVersionId} from '../../util'
 import {type ReleasesUpsellContextValue} from '../contexts/upsell/types'
@@ -26,6 +27,11 @@ export interface ReleaseOperationsStore {
   ) => Promise<SingleActionResult>
   createRelease: (
     release: EditableReleaseDocument,
+    opts?: BaseActionOptions,
+  ) => Promise<SingleActionResult>
+  createReleaseFromTemplate: (
+    release: EditableReleaseDocument,
+    selectedDocumentTypes: string[],
     opts?: BaseActionOptions,
   ) => Promise<SingleActionResult>
   deleteRelease: (releaseId: string, opts?: BaseActionOptions) => Promise<SingleActionResult>
@@ -239,6 +245,43 @@ export function createReleaseOperationsStore(options: {
     }
   }
 
+  const handleCreateReleaseFromTemplate = async (
+    release: EditableReleaseDocument,
+    selectedDocumentTypes: string[],
+    opts?: BaseActionOptions,
+  ) => {
+    // First create the release
+    const releaseResult = await handleCreateRelease(release, opts)
+
+    // If no document types selected, just return the release result
+    if (!selectedDocumentTypes || selectedDocumentTypes.length === 0) {
+      return releaseResult
+    }
+
+    const versionId = getReleaseIdFromReleaseDocumentId(release._id)
+
+    // Create version actions for each selected document type
+    const createVersionActions: CreateVersionAction[] = selectedDocumentTypes.map(
+      (documentType) => {
+        const documentId = uuid()
+        return {
+          actionType: 'sanity.action.document.version.create',
+          document: {
+            _id: getVersionId(documentId, versionId),
+            _type: documentType,
+            title: `New ${documentType}`,
+          },
+          publishedId: getPublishedId(documentId),
+        }
+      },
+    )
+
+    // Execute all version creation actions at once
+    await client.action(createVersionActions, opts)
+
+    return releaseResult
+  }
+
   const handleRevertUnpublishVersion = async (documentId: string, opts?: BaseActionOptions) => {
     return await client.action(
       {
@@ -259,6 +302,7 @@ export function createReleaseOperationsStore(options: {
     schedule: handleScheduleRelease,
     unschedule: handleUnscheduleRelease,
     createRelease: handleCreateRelease,
+    createReleaseFromTemplate: handleCreateReleaseFromTemplate,
     updateRelease: handleUpdateRelease,
     publishRelease: handlePublishRelease,
     deleteRelease: handleDeleteRelease,

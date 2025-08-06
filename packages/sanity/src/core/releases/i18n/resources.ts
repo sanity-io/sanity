@@ -419,6 +419,134 @@ const releasesLocaleStrings = {
   /** Description for unpublish dialog, explaining that all changes made to this document will be lost */
   'unpublish-dialog.description.lost-changes':
     'Any changes made to this document version will be lost.',
+
+  /** Tooltip text for template menu button */
+  'template.tooltip': 'Template options',
+  /** Text for use template menu item */
+  'template.use': 'Use template',
+  /** Text for create template menu item */
+  'template.create': 'Create template',
+  /** Text for manage templates menu item */
+  'template.manage': 'Manage templates',
+
+  /** Title for create template dialog */
+  'template.dialog.create.title': 'Create release template',
+  /** Confirm button text for create template dialog */
+  'template.dialog.create.confirm': 'Create template',
+
+  /** Title for use template dialog */
+  'template.dialog.use.title': 'Use template',
+  /** Confirm button text for use template dialog */
+  'template.dialog.use.confirm': 'Use template',
+  /** Cancel button text for use template dialog */
+  'template.dialog.use.cancel': 'Cancel',
+  /** Description for use template dialog */
+  'template.dialog.use.description': 'Select a template to use for creating a new release',
+
+  /** Title for manage templates dialog */
+  'template.dialog.manage.title': 'Manage templates',
+  /** Placeholder text for template selector */
+  'template.dialog.manage.select-placeholder': 'Select a template to edit',
+  /** Save button text for manage template dialog */
+  'template.dialog.manage.save': 'Save changes',
+  /** Delete button text for manage template dialog */
+  'template.dialog.manage.delete': 'Delete template',
+  /** Confirm delete button text */
+  'template.dialog.manage.confirm-delete': 'Delete',
+  /** Cancel delete button text */
+  'template.dialog.manage.cancel-delete': 'Cancel',
+  /** Delete confirmation title */
+  'template.dialog.manage.delete-title': 'Delete template?',
+  /** Delete confirmation message */
+  'template.dialog.manage.delete-description':
+    'Are you sure you want to delete "{{templateName}}"? This action cannot be undone.',
+
+  /** Template form title */
+  'template.form.title': 'Template information',
+  /** Template form description */
+  'template.form.description':
+    'Create a template to quickly setup future releases with the same document types',
+
+  /** Document types section title */
+  'template.document-types.title': 'Document types',
+  /** Document types section description */
+  'template.document-types.description':
+    'Select which document types should be included in releases created from this template',
+
+  /** Title for documents to create section in template dialog */
+  'template.dialog.documents-to-create.title': 'Documents to be created',
+  /** Description for documents to create section */
+  'template.dialog.documents-to-create.description_one':
+    'This template will create {{count}} new document:',
+  /** Description for documents to create section (plural) */
+  'template.dialog.documents-to-create.description_other':
+    'This template will create {{count}} new documents:',
+  /** Message for unknown document type */
+  'template.dialog.documents-to-create.unknown-type': 'Unknown document type: {{typeName}}',
+  /** Search placeholder for document types */
+  'template.document-types.search-placeholder': 'Search document types',
+  /** Aria label for document types list */
+  'template.document-types.aria-label': 'Document types',
+  /** Clear all selected document types */
+  'template.document-types.clear-all': 'Clear selection',
+  /** No search results for document types */
+  'template.document-types.no-results': 'No document types found',
+  /** No document types available */
+  'template.document-types.no-types': 'No document types available',
+  /** Selected document types count */
+  'template.document-types.selected-count_one': '{{count}} document type selected',
+  /** Selected document types count (plural) */
+  'template.document-types.selected-count_other': '{{count}} document types selected',
+  /** Selected document types header */
+  'template.document-types.selected-header_one': 'Selected ({{count}})',
+  /** Selected document types header (plural) */
+  'template.document-types.selected-header_other': 'Selected ({{count}})',
+  /** Remove document type aria label */
+  'template.document-types.remove-type': 'Remove {{type}}',
+  /** Warning message for document types that are no longer available in the schema */
+  'template.document-types.type-not-available': 'This document type is no longer available',
+  /** Empty state message when no document types selected */
+  'template.document-types.empty-state': 'Select document types to include in this template',
+
+  /** Loading templates */
+  'template.loading': 'Loading templates...',
+  /** No templates available */
+  'template.no-templates': 'No templates available yet. Create your first template to get started.',
+  /** Remove template button aria label */
+  'template.remove-template': 'Remove template',
+  /** Document types count in template list */
+  'template.document-types-count_one': '{{count}} document type',
+  /** Document types count in template list (plural) */
+  'template.document-types-count_other': '{{count}} document types',
+
+  /** Validation error for missing title */
+  'template.validation.title-required': 'Template title is required',
+
+  /** Success toast for creating template */
+  'template.toast.create-success.title': 'Template created',
+  /** Success toast description for creating template */
+  'template.toast.create-success.description':
+    'Template "{{templateName}}" was created successfully',
+  /** Error toast for creating template */
+  'template.toast.create-error.title': 'Failed to create template',
+
+  /** Success toast for updating template */
+  'template.toast.update-success.title': 'Template updated',
+  /** Success toast description for updating template */
+  'template.toast.update-success.description':
+    'Template "{{templateName}}" was updated successfully',
+  /** Error toast for updating template */
+  'template.toast.update-error.title': 'Failed to update template',
+
+  /** Error toast for fetching templates */
+  'template.toast.fetch-error.title': 'Failed to load templates',
+  /** Success toast for removing template */
+  'template.toast.remove-success.title': 'Template removed',
+  /** Success toast description for removing template */
+  'template.toast.remove-success.description':
+    'Template "{{templateName}}" was deleted successfully',
+  /** Error toast for removing template */
+  'template.toast.remove-error.title': 'Failed to remove template',
 }
 
 /**

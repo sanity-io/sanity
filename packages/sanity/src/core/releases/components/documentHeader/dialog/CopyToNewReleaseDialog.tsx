@@ -5,10 +5,7 @@ import {useCallback, useState} from 'react'
 
 import {Button} from '../../../../../ui-components/button/Button'
 import {Dialog} from '../../../../../ui-components/dialog/Dialog'
-import {LoadingBlock} from '../../../../components/loadingBlock/LoadingBlock'
-import {useSchema} from '../../../../hooks/useSchema'
 import {useTranslation} from '../../../../i18n/hooks/useTranslation'
-import {Preview} from '../../../../preview/components/Preview'
 import {CreatedRelease} from '../../../__telemetry__/releases.telemetry'
 import {useCreateReleaseMetadata} from '../../../hooks/useCreateReleaseMetadata'
 import {useGuardWithReleaseLimitUpsell} from '../../../hooks/useGuardWithReleaseLimitUpsell'
@@ -19,8 +16,8 @@ import {useReleaseOperations} from '../../../store/useReleaseOperations'
 import {DEFAULT_RELEASE_TYPE} from '../../../util/const'
 import {createReleaseId} from '../../../util/createReleaseId'
 import {getIsScheduledDateInPast} from '../../../util/getIsScheduledDateInPast'
+import {ReleaseDocumentPreview} from '../../dialog/ReleaseDocumentPreview'
 import {ReleaseForm} from '../../dialog/ReleaseForm'
-import {ReleaseAvatar} from '../../ReleaseAvatar'
 
 export function CopyToNewReleaseDialog(props: {
   onClose: () => void
@@ -36,9 +33,6 @@ export function CopyToNewReleaseDialog(props: {
   const toast = useToast()
   const createReleaseMetadata = useCreateReleaseMetadata()
   const {releasePromise} = useGuardWithReleaseLimitUpsell()
-
-  const schema = useSchema()
-  const schemaType = schema.get(documentType)
 
   const [newReleaseId] = useState(createReleaseId)
 
@@ -143,38 +137,12 @@ export function CopyToNewReleaseDialog(props: {
       padding={false}
       width={1}
     >
-      <Box
-        paddingX={2}
-        marginBottom={2}
-        style={{borderBottom: '1px solid var(--card-border-color)'}}
-      >
-        <Flex align="center" padding={4} paddingTop={1} justify="space-between">
-          {schemaType ? (
-            <Preview value={{_id: documentId}} schemaType={schemaType} />
-          ) : (
-            <LoadingBlock />
-          )}
-
-          <Flex
-            align="center"
-            gap={2}
-            padding={1}
-            paddingRight={2}
-            style={{
-              borderRadius: 999,
-              border: '1px solid var(--card-border-color)',
-              whiteSpace: 'nowrap',
-              overflow: 'hidden',
-              textOverflow: 'ellipsis',
-            }}
-          >
-            <ReleaseAvatar padding={1} tone={tone} />
-            <Text size={1} title={displayTitle}>
-              {displayTitle}
-            </Text>
-          </Flex>
-        </Flex>
-      </Box>
+      <ReleaseDocumentPreview
+        documentId={documentId}
+        documentType={documentType}
+        tone={tone}
+        title={displayTitle}
+      />
 
       <Box paddingX={5} paddingY={3}>
         {isScheduledDateInPast && (

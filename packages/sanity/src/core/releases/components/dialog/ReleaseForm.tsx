@@ -37,8 +37,9 @@ import {TitleDescriptionForm} from './TitleDescriptionForm'
 export function ReleaseForm(props: {
   onChange: (params: EditableReleaseDocument) => void
   value: EditableReleaseDocument
+  hasInitialValues?: boolean
 }): React.JSX.Element {
-  const {onChange, value} = props
+  const {onChange, value, hasInitialValues} = props
   const {releaseType} = value.metadata || {}
   const {t} = useTranslation()
   const {timeZone, utcToCurrentZoneDate} = useTimeZone(CONTENT_RELEASES_TIME_ZONE_SCOPE)
@@ -50,35 +51,41 @@ export function ReleaseForm(props: {
   const [intendedPublishAt, setIntendedPublishAt] = useState<Date | undefined>()
 
   useEffect(() => {
-    const storedData = getStoredReleaseData()
-    if (storedData) {
-      const updatedValue = {
-        metadata: {
-          title: storedData.title,
-          description: storedData.description,
-          releaseType: storedData.releaseType,
-          intendedPublishAt: storedData.intendedPublishAt,
-        },
-      }
-      onChange({_id: id, ...updatedValue})
+    // Only load stored data if no initial values were provided (e.g., from a template)
+    if (!hasInitialValues) {
+      const storedData = getStoredReleaseData()
+      if (storedData) {
+        const updatedValue = {
+          metadata: {
+            title: storedData.title,
+            description: storedData.description,
+            releaseType: storedData.releaseType,
+            intendedPublishAt: storedData.intendedPublishAt,
+          },
+        }
+        onChange({_id: id, ...updatedValue})
 
-      if (storedData.releaseType) {
-        setButtonReleaseType(storedData.releaseType)
-      }
-      if (storedData.intendedPublishAt) {
-        setIntendedPublishAt(new Date(storedData.intendedPublishAt))
+        if (storedData.releaseType) {
+          setButtonReleaseType(storedData.releaseType)
+        }
+        if (storedData.intendedPublishAt) {
+          setIntendedPublishAt(new Date(storedData.intendedPublishAt))
+        }
       }
     }
-  }, [getStoredReleaseData, id, onChange])
+  }, [getStoredReleaseData, id, onChange, hasInitialValues])
 
   const handleOnChangeAndStorage = useCallback(
     (updatedValue: EditableReleaseDocument) => {
       onChange(updatedValue)
-      saveReleaseDataToStorage({
-        ...updatedValue.metadata,
-      })
+      // Only save to localStorage if not creating from template
+      if (!hasInitialValues) {
+        saveReleaseDataToStorage({
+          ...updatedValue.metadata,
+        })
+      }
     },
-    [onChange, saveReleaseDataToStorage],
+    [onChange, saveReleaseDataToStorage, hasInitialValues],
   )
 
   const handleBundlePublishAtCalendarChange = useCallback(
