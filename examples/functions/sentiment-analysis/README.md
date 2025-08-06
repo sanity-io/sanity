@@ -118,7 +118,7 @@ npx sanity schema list
          event: {
            on: ['publish'],
            filter: "_type in ['review', 'comment', 'feedback'] && !defined(sentiment)",
-           projection: '_id',
+           projection: '{_id}',
          },
        }),
      ],
@@ -233,7 +233,7 @@ export default defineBlueprint({
       event: {
         on: ['publish'],
         filter: "_type in ['review', 'comment', 'feedback'] && !defined(sentiment)",
-        projection: '_id',
+        projection: '{_id}',
       },
     }),
   ],
