@@ -1,6 +1,6 @@
 {
   "name": "@sanity/vision",
-  "version": "4.2.0",
+  "version": "4.3.0",
   "description": "Sanity plugin for running/debugging GROQ-queries against Sanity datasets",
   "keywords": [
     "sanity",
@@ -85,7 +85,7 @@
     "@repo/package.config": "workspace:*",
     "@repo/test-config": "workspace:*",
     "@sanity/cli": "workspace:*",
-    "@sanity/client": "^7.8.1",
+    "@sanity/client": "^7.8.2",
     "@sanity/codegen": "workspace:*",
     "@sanity/diff": "workspace:*",
     "@sanity/eslint-config-i18n": "catalog:",
@@ -103,7 +103,7 @@
     "react-dom": "catalog:react18",
     "sanity": "workspace:*",
     "styled-components": "catalog:",
-    "vitest": "^3.2.3"
+    "vitest": "^3.2.4"
   },
   "peerDependencies": {
     "react": "^18 || ^19.0.0",

@@ -2,19 +2,16 @@ import {CogIcon, GithubIcon, LaunchIcon, RefreshIcon} from '@sanity/icons'
 import {SanityMonogram} from '@sanity/logos'
 import {Badge, Card, Flex, Grid, Spinner, Stack, Text} from '@sanity/ui'
 import {useEffect, useId} from 'react'
-import semver from 'semver'
+import semver, {type SemVer} from 'semver'
 import {styled} from 'styled-components'
 
 import {Button, Dialog, Tooltip} from '../../../../../ui-components'
 import {isProd} from '../../../../environment'
 import {useTranslation} from '../../../../i18n'
-import {SANITY_VERSION} from '../../../../version'
 import {usePackageVersionStatus} from '../../../packageVersionStatus/usePackageVersionStatus'
 import {useWorkspace} from '../../../workspace'
 
 interface StudioInfoDialogProps {
-  // Note: this is coming from brett, and should be used for non auto-updating studios
-  latestVersion?: string
   onClose: () => void
 }
 
@@ -30,31 +27,52 @@ function reload() {
   window.location.reload()
 }
 
+function isPrerelease(ver: SemVer) {
+  return ver.prerelease.length > 0
+}
+
+const HEX_ONLY = /^[0-9a-fA-F]+$/i
+function resolveGithubURLFromVersion(ver: SemVer) {
+  const preids = ver.prerelease
+  if (preids.length === 0) {
+    return `https://github.com/sanity-io/sanity/releases/tag/${ver.version}`
+  }
+  const isPR = preids[0] === 'pr' && typeof preids[1] === 'number'
+  if (isPR) {
+    return `https://github.com/sanity-io/sanity/pull/${preids[1]}`
+  }
+  const isNextWithCommitHash =
+    preids[0] === 'next' && ver.build.length === 1 && HEX_ONLY.test(ver.build[0])
+  if (isNextWithCommitHash) {
+    return `https://github.com/sanity-io/sanity/tree/${ver.build[0]}`
+  }
+  return undefined
+}
 export function StudioInfoDialog(props: StudioInfoDialogProps) {
   const {t} = useTranslation()
   const {onClose} = props
   const dialogId = useId()
   const {projectId} = useWorkspace()
 
-  const currentVersionParsed = semver.parse(SANITY_VERSION, {includePrerelease: true})
-  const latestVersion = props.latestVersion ? semver.parse(props.latestVersion) : null
-
-  const {isAutoUpdating, packageVersionInfo, versionCheckStatus, checkForUpdates} =
-    usePackageVersionStatus()
+  const {
+    isAutoUpdating,
+    autoUpdatingVersion,
+    currentVersion,
+    latestTaggedVersion,
+    versionCheckStatus,
+    checkForUpdates,
+  } = usePackageVersionStatus()
 
   const isUpToDate =
-    latestVersion &&
-    currentVersionParsed &&
+    latestTaggedVersion &&
+    currentVersion &&
     // let prereleases that's higher than latest count as up-to-date
-    currentVersionParsed.compareMain(latestVersion) >= 0
+    currentVersion.compareMain(latestTaggedVersion) >= 0
 
-  const preids = (currentVersionParsed && semver.prerelease(currentVersionParsed)) || []
+  const currentVersionIsPrerelease = currentVersion && isPrerelease(currentVersion)
 
-  const isPrerelease = preids.length > 0
-
-  // Note: in theory, and in the future, there might be multiple auto-updateable packages
-  // but for now, we only care about the `sanity`-package
-  const sanityPkgUpdateInfo = packageVersionInfo.find((p) => p.name === 'sanity')!
+  const newAutoUpdateVersionAvailable =
+    currentVersion && autoUpdatingVersion ? semver.neq(currentVersion, autoUpdatingVersion) : false
 
   useEffect(() => {
     checkForUpdates()
@@ -62,6 +80,8 @@ export function StudioInfoDialog(props: StudioInfoDialogProps) {
     const interval = setInterval(checkForUpdates, 10_000)
     return () => clearInterval(interval)
   }, [checkForUpdates])
+
+  const githubUrl = resolveGithubURLFromVersion(currentVersion)
 
   return (
     <Dialog width={0} onClickOutside={onClose} id={dialogId} padding={false}>
@@ -87,19 +107,17 @@ export function StudioInfoDialog(props: StudioInfoDialogProps) {
           <Flex justify="flex-start" align="center" gap={2}>
             <Tooltip
               content={
-                isPrerelease
+                currentVersionIsPrerelease
                   ? t('about-dialog.version-info.tooltip.prerelease')
                   : t('about-dialog.version-info.tooltip.up-to-date')
               }
             >
-              <Badge tone={isPrerelease ? 'suggest' : 'neutral'} overflow="hidden">
-                {currentVersionParsed
-                  ? ensureVersionPrefix(currentVersionParsed.version)
-                  : 'unknown'}
+              <Badge tone={currentVersionIsPrerelease ? 'suggest' : 'neutral'} overflow="hidden">
+                {currentVersion ? ensureVersionPrefix(currentVersion.version) : 'unknown'}
               </Badge>
             </Tooltip>
 
-            {currentVersionParsed?.build?.length === 1 ? (
+            {githubUrl && (
               <Button
                 as="a"
                 target="_blank"
@@ -107,14 +125,14 @@ export function StudioInfoDialog(props: StudioInfoDialogProps) {
                 icon={GithubIcon}
                 mode="bleed"
                 tooltipProps={{
-                  content: t('about-dialog.version-info.browse-on-github'),
+                  content: t('about-dialog.version-info.view-on-github'),
                 }}
-                href={`https://github.com/sanity-io/sanity/tree/${currentVersionParsed.build[0]}`}
+                href={githubUrl}
               />
-            ) : null}
+            )}
           </Flex>
 
-          {isAutoUpdating && sanityPkgUpdateInfo.canUpdate ? (
+          {isAutoUpdating && newAutoUpdateVersionAvailable ? (
             <>
               <Flex justify="flex-end" align="center">
                 <Text size={1} weight="semibold">
@@ -124,18 +142,19 @@ export function StudioInfoDialog(props: StudioInfoDialogProps) {
                 </Text>
               </Flex>
               <Flex justify="flex-start" align="center" gap={2}>
-                <Badge tone={sanityPkgUpdateInfo.canUpdate ? 'primary' : 'neutral'}>
-                  {ensureVersionPrefix(
-                    sanityPkgUpdateInfo.canUpdate
-                      ? sanityPkgUpdateInfo.available!
-                      : sanityPkgUpdateInfo.current,
-                  )}
+                <Badge tone="primary">
+                  {autoUpdatingVersion && ensureVersionPrefix(autoUpdatingVersion?.version)}
                 </Badge>
                 <Button
                   onClick={reload}
                   mode="bleed"
                   tone="primary"
-                  text={t('about-dialog.version-info.update-button.text')}
+                  text={
+                    // save some space by not showing text on button if prerelease
+                    autoUpdatingVersion && isPrerelease(autoUpdatingVersion)
+                      ? undefined
+                      : t('about-dialog.version-info.update-button.text')
+                  }
                   tooltipProps={{
                     content: (
                       <Text size={1}>{t('about-dialog.version-info.reload-to-update')}</Text>
@@ -145,7 +164,7 @@ export function StudioInfoDialog(props: StudioInfoDialogProps) {
                 />
               </Flex>
             </>
-          ) : !isUpToDate || isPrerelease ? (
+          ) : !isUpToDate || currentVersionIsPrerelease ? (
             <>
               <Flex justify="flex-end" align="center">
                 <Text size={1} weight="semibold">
@@ -154,20 +173,26 @@ export function StudioInfoDialog(props: StudioInfoDialogProps) {
               </Flex>
               <Flex justify="flex-start" align="center" gap={2}>
                 <Badge tone="primary">
-                  {latestVersion ? ensureVersionPrefix(latestVersion.version) : 'unknown'}
+                  {latestTaggedVersion
+                    ? ensureVersionPrefix(latestTaggedVersion.version)
+                    : 'unknown'}
                 </Badge>
-                {isPrerelease ? null : (
-                  <Button
-                    as="a"
-                    href="https://www.sanity.io/docs/upgrade"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    mode="bleed"
-                    tooltipProps={{content: t('about-dialog.version-info.update-button.tooltip')}}
-                    text={t('about-dialog.version-info.update-button.text')}
-                    iconRight={LaunchIcon}
-                  />
-                )}
+
+                {
+                  // save some space by not showing "how to update"-button
+                  currentVersionIsPrerelease ? null : (
+                    <Button
+                      as="a"
+                      href="https://www.sanity.io/docs/upgrade"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      mode="bleed"
+                      tooltipProps={{content: t('about-dialog.version-info.update-button.tooltip')}}
+                      text={t('about-dialog.version-info.update-button.text')}
+                      iconRight={LaunchIcon}
+                    />
+                  )
+                }
               </Flex>
             </>
           ) : null}

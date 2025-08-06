@@ -3,6 +3,15 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [4.3.0](https://github.com/sanity-io/sanity/compare/v4.2.0...v4.3.0) (2025-08-05)
+
+
+### Features
+
+* **core:** media library full app dialog and selection validation ([#10153](https://github.com/sanity-io/sanity/issues/10153)) ([57b7db1](https://github.com/sanity-io/sanity/commit/57b7db14bfab0813089f5415fb82e2b3b26f4876))
+
+
+
 ## [4.2.0](https://github.com/sanity-io/sanity/compare/v4.1.1...v4.2.0) (2025-07-29)
 
 **Note:** Version bump only for package @repo/test-dts-exports

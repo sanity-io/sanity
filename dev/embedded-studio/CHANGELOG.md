@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [4.3.0](https://github.com/sanity-io/sanity/compare/v4.2.0...v4.3.0) (2025-08-05)
+
+
+### Bug Fixes
+
+* **deps:** update dependency @sanity/ui to ^3.0.3 ([#10098](https://github.com/sanity-io/sanity/issues/10098)) ([05cd42c](https://github.com/sanity-io/sanity/commit/05cd42ccc965d41bd67c188860802f118e23f349))
+* **deps:** update dependency @sanity/ui to ^3.0.5 ([#10115](https://github.com/sanity-io/sanity/issues/10115)) ([82703e1](https://github.com/sanity-io/sanity/commit/82703e1f60df532cf8c8af37eb70ddabd303dd82))
+* upgrade react-is to 19 ([#10141](https://github.com/sanity-io/sanity/issues/10141)) ([d7acd6c](https://github.com/sanity-io/sanity/commit/d7acd6cf5476a08b32d0350acff6f832dabca7af))
+
+
+
 ## [4.2.0](https://github.com/sanity-io/sanity/compare/v4.1.1...v4.2.0) (2025-07-29)
 
 

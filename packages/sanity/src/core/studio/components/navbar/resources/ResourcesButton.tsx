@@ -1,6 +1,7 @@
 import {HelpCircleIcon} from '@sanity/icons'
 import {Menu} from '@sanity/ui'
 import {useCallback, useState} from 'react'
+import semver from 'semver'
 import {styled} from 'styled-components'
 
 import {MenuButton} from '../../../../../ui-components'
@@ -21,10 +22,19 @@ export function ResourcesButton() {
 
   const {value, error, isLoading} = useGetHelpResources()
 
-  const {isAutoUpdating, packageVersionInfo} = usePackageVersionStatus()
-  const newAutoUpdateVersion = isAutoUpdating
-    ? packageVersionInfo.find((pkg) => pkg.canUpdate)?.available
-    : undefined
+  const {
+    autoUpdatingVersion: autoUpdatingVersionStr,
+    currentVersion: currentVersionStr,
+    latestTaggedVersion: latestTaggedVersionStr,
+  } = usePackageVersionStatus()
+
+  const currentVersion = semver.parse(currentVersionStr)!
+  const autoUpdatingVersion = semver.parse(autoUpdatingVersionStr) || undefined
+  const latestTaggedVersion = semver.parse(latestTaggedVersionStr) || undefined
+
+  const newAutoUpdateVersionAvailable =
+    currentVersion && autoUpdatingVersion ? semver.neq(currentVersion, autoUpdatingVersion) : false
+
   const [studioInfoDialogOpen, setStudioInfoDialogOpen] = useState(false)
   const handleStudioInfoDialogClose = useCallback(() => {
     setStudioInfoDialogOpen(false)
@@ -36,16 +46,11 @@ export function ResourcesButton() {
 
   return (
     <>
-      {studioInfoDialogOpen && (
-        <StudioInfoDialog
-          latestVersion={value?.latestVersion}
-          onClose={handleStudioInfoDialogClose}
-        />
-      )}
+      {studioInfoDialogOpen && <StudioInfoDialog onClose={handleStudioInfoDialogClose} />}
       <MenuButton
         button={
           <StatusButton
-            tone={newAutoUpdateVersion ? 'primary' : undefined}
+            tone={newAutoUpdateVersionAvailable ? 'primary' : undefined}
             aria-label={t('help-resources.title')}
             icon={HelpCircleIcon}
             data-testid="button-resources-menu"
@@ -57,7 +62,9 @@ export function ResourcesButton() {
         menu={
           <StyledMenu data-testid="menu-button-resources">
             <ResourcesMenuItems
-              newAutoUpdateVersion={newAutoUpdateVersion}
+              currentVersion={currentVersion}
+              latestTaggedVersion={latestTaggedVersion}
+              newAutoUpdateVersion={newAutoUpdateVersionAvailable ? autoUpdatingVersion : undefined}
               error={error}
               isLoading={isLoading}
               value={value}

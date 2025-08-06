@@ -1,6 +1,6 @@
 {
   "name": "@repo/test-dts-exports",
-  "version": "4.2.0",
+  "version": "4.3.0",
   "private": true,
   "description": "Checks that we're exporting typings correctly",
   "exports": {
@@ -29,6 +29,6 @@
     "@repo/tsconfig": "workspace:*",
     "@types/node": "^24.0.14",
     "ts-morph": "^26.0.0",
-    "vitest": "^3.2.3"
+    "vitest": "^3.2.4"
   }
 }

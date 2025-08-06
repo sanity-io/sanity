@@ -3,6 +3,29 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [4.3.0](https://github.com/sanity-io/sanity/compare/v4.2.0...v4.3.0) (2025-08-05)
+
+
+### Features
+
+* **core:** allow all fields group customizations ([#10094](https://github.com/sanity-io/sanity/issues/10094)) ([f3237e1](https://github.com/sanity-io/sanity/commit/f3237e1203bdab30b3ee86c8ce2ea29f216100de))
+
+
+### Bug Fixes
+
+* **deps:** update dependency @portabletext/block-tools to ^2.0.2 ([#10167](https://github.com/sanity-io/sanity/issues/10167)) ([c75c002](https://github.com/sanity-io/sanity/commit/c75c002b594276c4e8fff070a2e7274f2dc0a576))
+* **deps:** update dependency @portabletext/block-tools to ^2.0.5 ([#10172](https://github.com/sanity-io/sanity/issues/10172)) ([7ca6103](https://github.com/sanity-io/sanity/commit/7ca610389464bf1d94e0285c92d3b27c7090e7f3))
+* **deps:** update dependency @portabletext/editor to ^2.1.2 ([#10168](https://github.com/sanity-io/sanity/issues/10168)) ([ced80f4](https://github.com/sanity-io/sanity/commit/ced80f4177b10b0c0a45885e7ddcda79d69612d7))
+* **deps:** update dependency @portabletext/editor to ^2.1.4 ([#10173](https://github.com/sanity-io/sanity/issues/10173)) ([bdff34c](https://github.com/sanity-io/sanity/commit/bdff34c72de8cd60e7dc946cfd606bd37fce8eed))
+* **deps:** update dependency @portabletext/editor to ^2.1.7 ([#10177](https://github.com/sanity-io/sanity/issues/10177)) ([d30c781](https://github.com/sanity-io/sanity/commit/d30c78120e10957fb5c8224c0e86f409b761af41))
+* **deps:** update dependency @sanity/client to ^7.8.2 ([#10181](https://github.com/sanity-io/sanity/issues/10181)) ([f63be89](https://github.com/sanity-io/sanity/commit/f63be89404282e45a64b18acc2dee7585bd3dcf1))
+* **deps:** update dependency @sanity/ui to ^3.0.3 ([#10098](https://github.com/sanity-io/sanity/issues/10098)) ([05cd42c](https://github.com/sanity-io/sanity/commit/05cd42ccc965d41bd67c188860802f118e23f349))
+* **deps:** update dependency @sanity/ui to ^3.0.5 ([#10115](https://github.com/sanity-io/sanity/issues/10115)) ([82703e1](https://github.com/sanity-io/sanity/commit/82703e1f60df532cf8c8af37eb70ddabd303dd82))
+* **deps:** Update dev-non-major ([#10185](https://github.com/sanity-io/sanity/issues/10185)) ([7a5255e](https://github.com/sanity-io/sanity/commit/7a5255e203c7c58329e0ced7e1d6724a300f3427))
+* issue where a slimple slug in an array was auto closing when focusing on it ([#10175](https://github.com/sanity-io/sanity/issues/10175)) ([dfb704d](https://github.com/sanity-io/sanity/commit/dfb704dd17e233a7155e5d9d464b0d0c8d384524))
+
+
+
 ## [4.2.0](https://github.com/sanity-io/sanity/compare/v4.1.1...v4.2.0) (2025-07-29)
 
 

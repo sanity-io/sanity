@@ -59,5 +59,4 @@ type InternalActionType = 'show-welcome-modal' | 'studio-announcements-modal'
 export interface ResourcesResponse {
   resources?: Resource
   welcome?: WelcomeVideo
-  latestVersion?: string
 }

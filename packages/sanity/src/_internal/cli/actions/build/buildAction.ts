@@ -62,12 +62,12 @@ export default async function buildSanityStudio(
 
   const autoUpdatesEnabled = shouldAutoUpdate({flags, cliConfig, output})
 
-  // Get the version without any tags if any
-  const coercedSanityVersion = semver.coerce(installedSanityVersion)?.version
-  if (autoUpdatesEnabled && !coercedSanityVersion) {
+  // Get the clean version without build metadata: https://semver.org/#spec-item-10
+  const cleanSanityVersion = semver.parse(installedSanityVersion)?.version
+  if (autoUpdatesEnabled && !cleanSanityVersion) {
     throw new Error(`Failed to parse installed Sanity version: ${installedSanityVersion}`)
   }
-  const version = encodeURIComponent(`^${coercedSanityVersion}`)
+  const version = encodeURIComponent(`^${cleanSanityVersion}`)
   const autoUpdatesImports = getStudioAutoUpdateImportMap(version)
 
   if (autoUpdatesEnabled) {

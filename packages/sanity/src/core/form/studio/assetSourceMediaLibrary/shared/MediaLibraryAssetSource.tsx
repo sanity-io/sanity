@@ -1,5 +1,6 @@
 import {type AssetSourceComponentProps} from '@sanity/types'
-import {type ForwardedRef, forwardRef, memo} from 'react'
+import {PortalProvider} from '@sanity/ui'
+import {type ForwardedRef, forwardRef, memo, useEffect, useState} from 'react'
 
 import {useClient} from '../../../../hooks'
 import {useTranslation} from '../../../../i18n'
@@ -29,6 +30,7 @@ const MediaLibraryAssetSourceComponent = function MediaLibraryAssetSourceCompone
   const {t} = useTranslation()
   const client = useClient({apiVersion: DEFAULT_API_VERSION})
   const projectId = client.config().projectId
+  const portalElement = useRootPortalElement()
 
   if (!projectId) {
     throw new Error('No projectId found')
@@ -43,24 +45,40 @@ const MediaLibraryAssetSourceComponent = function MediaLibraryAssetSourceCompone
         schemaType={schemaType}
         uploader={uploader}
       />
-
-      <SelectAssetsDialog
-        dialogHeaderTitle={
-          dialogHeaderTitle ||
-          t('asset-source.dialog.default-title', {
-            context: assetType,
-          })
-        }
-        open={action === 'select'}
-        ref={ref}
-        onClose={onClose}
-        onSelect={onSelect}
-        selection={[]}
-        schemaType={schemaType}
-        selectAssetType={assetType}
-      />
+      <PortalProvider element={portalElement}>
+        <SelectAssetsDialog
+          dialogHeaderTitle={
+            dialogHeaderTitle ||
+            t('asset-sources.media-library.select-dialog.title', {
+              assetType: assetType,
+              targetTitle: schemaType?.title,
+            })
+          }
+          open={action === 'select'}
+          ref={ref}
+          onClose={onClose}
+          onSelect={onSelect}
+          selection={[]}
+          schemaType={schemaType}
+          selectAssetType={assetType}
+        />
+      </PortalProvider>
     </MediaLibraryProvider>
   )
 }
 
 export const MediaLibraryAssetSource = memo(forwardRef(MediaLibraryAssetSourceComponent))
+
+const useRootPortalElement = () => {
+  const [container] = useState(() => document.createElement('div'))
+
+  useEffect(() => {
+    container.classList.add('media-library-portal')
+    document.body.appendChild(container)
+    return () => {
+      document.body.removeChild(container)
+    }
+  }, [container])
+
+  return container
+}

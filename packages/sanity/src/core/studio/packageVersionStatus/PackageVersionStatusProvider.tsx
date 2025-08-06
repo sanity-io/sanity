@@ -2,20 +2,14 @@ import {type ReactNode, useCallback, useEffect, useMemo, useRef, useState} from 
 import {PackageVersionInfoContext} from 'sanity/_singletons'
 import semver from 'semver'
 
-import {hasSanityPackageInImportMap} from '../../environment/hasSanityPackageInImportMap'
+import {getSanityImportMapUrl} from '../../environment/importMap'
 import {SANITY_VERSION} from '../../version'
-import {fetchLatestVersions} from './fetchLatestVersions'
+import {fetchLatestVersionForPackage} from './fetchLatestVersions'
+import {getBaseVersionFromModuleCDNUrl} from './utils'
 
 // How often to check for new versions
-const POLL_INTERVAL_MS = 1000 * 60 * 30 // check every 30 minutes
+const POLL_INTERVAL_MS = 1000 * 60 * 15 // check every 15 minutes
 const CHECK_THROTTLE_TIME_MS = 1000 * 10 // prevent checking more often than every 10s
-
-const currentPackageVersions = [
-  {
-    name: 'sanity',
-    current: SANITY_VERSION,
-  },
-]
 
 const noop = () => {}
 
@@ -23,20 +17,55 @@ type VersionCheckState = {
   lastCheckedAt: Date | null
   checking: boolean
 }
-type PackageVersionInfo = {
-  name: string
-  current: string
-  available?: string
-}
-// flip this to debug auto-updates locally
-const DEBUG = false
+
+// Debug flags for local testing
+// Note: the debug code paths should be evaluated as const expressions and eliminated from the final bundle
+const DEBUG_IMPORT_MAP = false
+const DEBUG_CURRENT_VERSION = false
+const DEBUG_LATEST_VERSION = false
+const DEBUG_AUTO_UPDATE_VERSION = false
+
+const DEBUG_VALUES = {
+  currentVersion: '4.0.0-pr.10176',
+  importMapUrl: 'https://sanity-cdn.com/v1/modules/sanity/default/%5E3.80.1/t1754072932',
+  autoUpdateVersion: '4.2.0-next.17',
+  latestVersion: '4.5.5',
+} as const
+
+const CURRENT_VERSION = DEBUG_CURRENT_VERSION ? DEBUG_VALUES.currentVersion : SANITY_VERSION
 
 export function PackageVersionStatusProvider({children}: {children: ReactNode}) {
-  const isAutoUpdating = hasSanityPackageInImportMap() || DEBUG
+  const sanityPackageImportMapEntryValue = useMemo(
+    () => (DEBUG_IMPORT_MAP ? DEBUG_VALUES.importMapUrl : getSanityImportMapUrl()),
+    [],
+  )
+
+  const currentVersion = useMemo(() => semver.parse(CURRENT_VERSION)!, [])
+
+  const baseVersion = useMemo(
+    () =>
+      sanityPackageImportMapEntryValue
+        ? semver.coerce(getBaseVersionFromModuleCDNUrl(sanityPackageImportMapEntryValue), {
+            includePrerelease: true,
+          })!
+        : currentVersion!,
+    [currentVersion, sanityPackageImportMapEntryValue],
+  )
+
+  const isAutoUpdating = Boolean(sanityPackageImportMapEntryValue)
 
   const lastCheckRef = useRef<number>(undefined)
-  const [packageVersionInfo, setPackageVersionInfo] =
-    useState<PackageVersionInfo[]>(currentPackageVersions)
+  const [autoUpdatingVersionRaw, setAutoUpdatingVersionRaw] = useState<string>()
+  const [latestTaggedVersionRaw, setLatestTaggedVersionRaw] = useState<string>()
+
+  const autoUpdatingVersion = useMemo(
+    () => (autoUpdatingVersionRaw ? semver.parse(autoUpdatingVersionRaw)! : undefined),
+    [autoUpdatingVersionRaw],
+  )
+  const latestTaggedVersion = useMemo(
+    () => (latestTaggedVersionRaw ? semver.parse(latestTaggedVersionRaw)! : undefined),
+    [latestTaggedVersionRaw],
+  )
 
   const [versionCheckStatus, setVersionCheckStatus] = useState<VersionCheckState>({
     lastCheckedAt: null,
@@ -52,20 +81,27 @@ export function PackageVersionStatusProvider({children}: {children: ReactNode}) 
     }
     lastCheckRef.current = new Date().getTime()
     setVersionCheckStatus((current) => ({...current, checking: true}))
-    fetchLatestVersions(currentPackageVersions)
-      .then((latestPackageVersions) =>
-        setPackageVersionInfo(
-          DEBUG
-            ? [{name: 'sanity', current: SANITY_VERSION, available: '4.2.0'}]
-            : latestPackageVersions,
-        ),
-      )
+
+    // Note: in theory, and in the future, there might be multiple auto-updateable packages
+    // but for now, we only care about the `sanity`-package
+    Promise.all([
+      isAutoUpdating
+        ? DEBUG_AUTO_UPDATE_VERSION
+          ? Promise.resolve(DEBUG_VALUES.autoUpdateVersion)
+          : fetchLatestVersionForPackage('sanity', baseVersion.version)
+        : Promise.resolve(undefined),
+      DEBUG_LATEST_VERSION
+        ? Promise.resolve(DEBUG_VALUES.latestVersion)
+        : fetchLatestVersionForPackage('sanity', baseVersion.version, 'latest'),
+    ])
+      .then(([nextAutoUpdatingVersion, nextLatestTaggedVersion]) => {
+        setAutoUpdatingVersionRaw(nextAutoUpdatingVersion)
+        setLatestTaggedVersionRaw(nextLatestTaggedVersion)
+      })
       .finally(() => setVersionCheckStatus({lastCheckedAt: new Date(), checking: false}))
-  }, [])
+  }, [baseVersion, isAutoUpdating])
 
   useEffect(() => {
-    if (!isAutoUpdating) return undefined
-
     async function poll() {
       await fetchNewVersions()
     }
@@ -82,14 +118,22 @@ export function PackageVersionStatusProvider({children}: {children: ReactNode}) 
   const contextValue = useMemo(
     () => ({
       isAutoUpdating,
+      autoUpdatingVersion,
+      baseVersion,
+      latestTaggedVersion,
+      currentVersion,
       checkForUpdates: isAutoUpdating ? fetchNewVersions : noop,
-      packageVersionInfo: packageVersionInfo.map((p) => ({
-        ...p,
-        canUpdate: p.available ? semver.lt(p.current, p.available) : false,
-      })),
       versionCheckStatus,
     }),
-    [isAutoUpdating, fetchNewVersions, packageVersionInfo, versionCheckStatus],
+    [
+      isAutoUpdating,
+      autoUpdatingVersion,
+      baseVersion,
+      latestTaggedVersion,
+      currentVersion,
+      fetchNewVersions,
+      versionCheckStatus,
+    ],
   )
   return (
     <PackageVersionInfoContext.Provider value={contextValue}>

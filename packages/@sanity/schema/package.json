@@ -1,6 +1,6 @@
 {
   "name": "@sanity/schema",
-  "version": "4.2.0",
+  "version": "4.3.0",
   "description": "",
   "keywords": [
     "sanity",
@@ -81,6 +81,6 @@
     "@types/object-inspect": "^1.13.0",
     "@types/react": "catalog:",
     "rimraf": "^5.0.10",
-    "vitest": "^3.2.3"
+    "vitest": "^3.2.4"
   }
 }
