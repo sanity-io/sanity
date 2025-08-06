@@ -302,6 +302,14 @@ const TableInner = <TableData, AdditionalRowTableData>({
       return emptyContent
     }
 
+    // oxlint-disable-next-line no-console
+    console.log(
+      'Virtual items:',
+      rowVirtualizer.getVirtualItems().map((v) => v.index),
+      'Total:',
+      filteredData.length,
+    )
+
     return rowVirtualizer.getVirtualItems().map((virtualRow, index) => {
       const datum = filteredData[virtualRow.index]
       return renderRow({

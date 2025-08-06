@@ -174,7 +174,12 @@ export function ReleaseSummary(props: ReleaseSummaryProps) {
   )
 
   return (
-    <Card borderTop data-testid="document-table-card" ref={scrollContainerRef}>
+    <Card
+      borderTop
+      data-testid="document-table-card"
+      ref={scrollContainerRef}
+      style={{height: '100%', backgroundColor: 'transparent', overflow: 'scroll'}}
+    >
       <Table<DocumentWithHistory>
         loading={isLoading}
         data={tableData}
