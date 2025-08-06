@@ -174,7 +174,18 @@ export function ReleaseSummary(props: ReleaseSummaryProps) {
   )
 
   return (
-    <Card borderTop data-testid="document-table-card" ref={scrollContainerRef}>
+    <Card
+      borderTop
+      data-testid="document-table-card"
+      ref={scrollContainerRef}
+      style={{
+        height: '100%',
+        overflow: 'auto',
+        scrollbarWidth: 'none' /* Firefox */,
+        msOverflowStyle: 'none' /* IE and Edge */,
+      }}
+      className="hide-scrollbar"
+    >
       <Table<DocumentWithHistory>
         loading={isLoading}
         data={tableData}
