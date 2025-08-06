@@ -492,10 +492,10 @@ importers:
     dependencies:
       '@portabletext/block-tools':
         specifier: ^2.0.5
-        version: 2.0.7(@sanity/types@packages+@sanity+types)(@types/react@19.1.9)
+        version: 2.0.8(@sanity/types@packages+@sanity+types)(@types/react@19.1.9)
       '@portabletext/editor':
-        specifier: ^2.1.9
-        version: 2.1.9(@sanity/schema@packages+@sanity+schema)(@sanity/types@packages+@sanity+types)(@types/react@19.1.9)(react-dom@19.1.1(react@19.1.1))(react@19.1.1)(rxjs@7.8.2)
+        specifier: ^2.1.11
+        version: 2.1.11(@sanity/schema@packages+@sanity+schema)(@sanity/types@packages+@sanity+types)(@types/react@19.1.9)(react-dom@19.1.1(react@19.1.1))(react@19.1.1)(rxjs@7.8.2)
       '@portabletext/react':
         specifier: ^3.2.1
         version: 3.2.1(react@19.1.1)
@@ -1627,10 +1627,10 @@ importers:
         version: 3.5.1(@types/react-dom@19.1.7(@types/react@19.1.9))(@types/react@19.1.9)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
       '@portabletext/block-tools':
         specifier: ^2.0.5
-        version: 2.0.7(@sanity/types@packages+@sanity+types)(@types/react@19.1.9)
+        version: 2.0.8(@sanity/types@packages+@sanity+types)(@types/react@19.1.9)
       '@portabletext/editor':
-        specifier: ^2.1.9
-        version: 2.1.9(@sanity/schema@packages+@sanity+schema)(@sanity/types@packages+@sanity+types)(@types/react@19.1.9)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(rxjs@7.8.2)
+        specifier: ^2.1.11
+        version: 2.1.11(@sanity/schema@packages+@sanity+schema)(@sanity/types@packages+@sanity+types)(@types/react@19.1.9)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(rxjs@7.8.2)
       '@portabletext/react':
         specifier: ^3.2.1
         version: 3.2.1(react@18.3.1)
@@ -1762,7 +1762,7 @@ importers:
         version: 4.7.0(vite@6.3.5(@types/node@22.15.32)(jiti@2.4.2)(lightningcss@1.30.1)(terser@5.42.0)(tsx@4.20.3)(yaml@2.8.0))
       '@xstate/react':
         specifier: ^6.0.0
-        version: 6.0.0(@types/react@19.1.9)(react@18.3.1)(xstate@5.20.1)
+        version: 6.0.0(@types/react@19.1.9)(react@18.3.1)(xstate@5.20.2)
       archiver:
         specifier: ^7.0.0
         version: 7.0.1
@@ -2023,7 +2023,7 @@ importers:
         version: 5.0.0
       xstate:
         specifier: ^5.20.1
-        version: 5.20.1
+        version: 5.20.2
       yargs:
         specifier: ^17.3.0
         version: 17.3.0
@@ -4258,14 +4258,14 @@ packages:
     resolution: {integrity: sha512-c83qWb22rNRuB0UaVCI0uRPNRr8Z0FWnEIvT47jiHAmOIUHbBOg5XvV7pM5x+rKn9HRpjxquDbXYSXr3fAKFcw==}
     engines: {node: '>=12'}
 
-  '@portabletext/block-tools@2.0.7':
-    resolution: {integrity: sha512-eAfIaLALwX1TEioPC6esp1NR6Y1vV3nB6YyoxdJVGT/PCyVt1yEaJMSt+ZQnBYvisyDr023Q47AOj+PoxF7orQ==}
+  '@portabletext/block-tools@2.0.8':
+    resolution: {integrity: sha512-scqpOduDxMXZRNQIHO6g8oNy+SsndtEF1FdLuLiosdDf6LXvx3qM4ck0FOsts1Yf8v6fY8GmQ87O54DSMfnyMw==}
     peerDependencies:
       '@sanity/types': ^4.3.0
       '@types/react': ^18.3 || ^19
 
-  '@portabletext/editor@2.1.9':
-    resolution: {integrity: sha512-HTtLHSikoAZCh44DwdG+OEabDjWtYJubXd7DbH9aCNGMQQm7IcJFOwqZGhQkthsjyIm7ds8+jIKTfWOBgfA8ow==}
+  '@portabletext/editor@2.1.11':
+    resolution: {integrity: sha512-kEFMNac4o8xJGgcbfefhUYnxHFIKX0Tzfj+C6sOc1EA3pFIT1Ci+etQqyM59lhLaGm7e0EYxrdf3R8fZyXw8ew==}
     engines: {node: '>=20.19'}
     peerDependencies:
       '@sanity/schema': ^4.3.0
@@ -12310,8 +12310,8 @@ packages:
   xregexp@2.0.0:
     resolution: {integrity: sha512-xl/50/Cf32VsGq/1R8jJE5ajH1yMCQkpmoS10QbFZWl2Oor4H0Me64Pu2yxvsRWK3m6soJbmGfzSR7BYmDcWAA==}
 
-  xstate@5.20.1:
-    resolution: {integrity: sha512-i9ZpNnm/XhCOMUxae1suT8PjYNTStZWbhmuKt4xeTPaYG5TS0Fz0i+Ka5yxoNPpaHW3VW6JIowrwFgSTZONxig==}
+  xstate@5.20.2:
+    resolution: {integrity: sha512-GZmLmc+WPKfFRxuTDAxCg0cUhS/ZnWaRD86DO8MKizeK4a050jd5k7UNnIQ2jJDWRig2/r0tmVXeezUNIhoz5Q==}
 
   xtend@4.0.2:
     resolution: {integrity: sha512-LKYU1iAXJXUgAXn9URjiu+MWhyUXHsvfp7mcuYm9dSUKK0/CjtrUwFAxD82/mCWbtLsGjFIad0wIsod4zrTAEQ==}
@@ -14775,22 +14775,22 @@ snapshots:
       '@pnpm/network.ca-file': 1.0.2
       config-chain: 1.1.13
 
-  '@portabletext/block-tools@2.0.7(@sanity/types@packages+@sanity+types)(@types/react@19.1.9)':
+  '@portabletext/block-tools@2.0.8(@sanity/types@packages+@sanity+types)(@types/react@19.1.9)':
     dependencies:
       '@sanity/types': link:packages/@sanity/types
       '@types/react': 19.1.9
       get-random-values-esm: 1.0.2
       lodash: 4.17.21
 
-  '@portabletext/editor@2.1.9(@sanity/schema@packages+@sanity+schema)(@sanity/types@packages+@sanity+types)(@types/react@19.1.9)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(rxjs@7.8.2)':
+  '@portabletext/editor@2.1.11(@sanity/schema@packages+@sanity+schema)(@sanity/types@packages+@sanity+types)(@types/react@19.1.9)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(rxjs@7.8.2)':
     dependencies:
-      '@portabletext/block-tools': 2.0.7(@sanity/types@packages+@sanity+types)(@types/react@19.1.9)
+      '@portabletext/block-tools': 2.0.8(@sanity/types@packages+@sanity+types)(@types/react@19.1.9)
       '@portabletext/keyboard-shortcuts': 1.1.1
       '@portabletext/patches': 1.1.6
       '@portabletext/to-html': 2.0.14
       '@sanity/schema': link:packages/@sanity/schema
       '@sanity/types': link:packages/@sanity/types
-      '@xstate/react': 6.0.0(@types/react@19.1.9)(react@18.3.1)(xstate@5.20.1)
+      '@xstate/react': 6.0.0(@types/react@19.1.9)(react@18.3.1)(xstate@5.20.2)
       debug: 4.4.1(supports-color@5.5.0)
       get-random-values-esm: 1.0.2
       immer: 10.1.1
@@ -14802,21 +14802,21 @@ snapshots:
       slate: 0.118.0
       slate-dom: 0.117.4(slate@0.118.0)
       slate-react: 0.117.4(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(slate-dom@0.117.4(slate@0.118.0))(slate@0.118.0)
-      xstate: 5.20.1
+      xstate: 5.20.2
     transitivePeerDependencies:
       - '@types/react'
       - react-dom
       - supports-color
 
-  '@portabletext/editor@2.1.9(@sanity/schema@packages+@sanity+schema)(@sanity/types@packages+@sanity+types)(@types/react@19.1.9)(react-dom@19.1.1(react@19.1.1))(react@19.1.1)(rxjs@7.8.2)':
+  '@portabletext/editor@2.1.11(@sanity/schema@packages+@sanity+schema)(@sanity/types@packages+@sanity+types)(@types/react@19.1.9)(react-dom@19.1.1(react@19.1.1))(react@19.1.1)(rxjs@7.8.2)':
     dependencies:
-      '@portabletext/block-tools': 2.0.7(@sanity/types@packages+@sanity+types)(@types/react@19.1.9)
+      '@portabletext/block-tools': 2.0.8(@sanity/types@packages+@sanity+types)(@types/react@19.1.9)
       '@portabletext/keyboard-shortcuts': 1.1.1
       '@portabletext/patches': 1.1.6
       '@portabletext/to-html': 2.0.14
       '@sanity/schema': link:packages/@sanity/schema
       '@sanity/types': link:packages/@sanity/types
-      '@xstate/react': 6.0.0(@types/react@19.1.9)(react@19.1.1)(xstate@5.20.1)
+      '@xstate/react': 6.0.0(@types/react@19.1.9)(react@19.1.1)(xstate@5.20.2)
       debug: 4.4.1(supports-color@5.5.0)
       get-random-values-esm: 1.0.2
       immer: 10.1.1
@@ -14828,7 +14828,7 @@ snapshots:
       slate: 0.118.0
       slate-dom: 0.117.4(slate@0.118.0)
       slate-react: 0.117.4(react-dom@19.1.1(react@19.1.1))(react@19.1.1)(slate-dom@0.117.4(slate@0.118.0))(slate@0.118.0)
-      xstate: 5.20.1
+      xstate: 5.20.2
     transitivePeerDependencies:
       - '@types/react'
       - react-dom
@@ -15193,13 +15193,13 @@ snapshots:
     dependencies:
       rxjs: 7.8.2
       uuid: 11.1.0
-      xstate: 5.20.1
+      xstate: 5.20.2
 
   '@sanity/comlink@3.0.9':
     dependencies:
       rxjs: 7.8.2
       uuid: 11.1.0
-      xstate: 5.20.1
+      xstate: 5.20.2
 
   '@sanity/core-loader@1.8.17(@sanity/types@packages+@sanity+types)(typescript@5.7.3)':
     dependencies:
@@ -15423,7 +15423,7 @@ snapshots:
     dependencies:
       '@sanity/comlink': 3.0.9
 
-  '@sanity/mutate@0.11.0-canary.4(xstate@5.20.1)':
+  '@sanity/mutate@0.11.0-canary.4(xstate@5.20.2)':
     dependencies:
       '@sanity/client': 6.29.1(debug@4.4.1)
       '@sanity/diff-match-patch': 3.2.0
@@ -15433,7 +15433,7 @@ snapshots:
       mendoza: 3.0.8
       rxjs: 7.8.2
     optionalDependencies:
-      xstate: 5.20.1
+      xstate: 5.20.2
     transitivePeerDependencies:
       - debug
 
@@ -16143,7 +16143,7 @@ snapshots:
       '@sanity/comlink': 3.0.9
       '@sanity/icons': 3.7.4(react@19.1.1)
       '@sanity/insert-menu': 2.0.1(@emotion/is-prop-valid@1.3.1)(@sanity/types@packages+@sanity+types)(react-dom@19.1.1(react@19.1.1))(react-is@19.1.1)(react@19.1.1)(styled-components@6.1.19(react-dom@19.1.1(react@19.1.1))(react@19.1.1))
-      '@sanity/mutate': 0.11.0-canary.4(xstate@5.20.1)
+      '@sanity/mutate': 0.11.0-canary.4(xstate@5.20.2)
       '@sanity/presentation-comlink': 1.0.28(@sanity/client@7.8.2(debug@4.4.1))(@sanity/types@packages+@sanity+types)
       '@sanity/preview-url-secret': 2.1.14(@sanity/client@7.8.2(debug@4.4.1))
       '@sanity/ui': 3.0.5(@emotion/is-prop-valid@1.3.1)(react-dom@19.1.1(react@19.1.1))(react-is@19.1.1)(react@19.1.1)(styled-components@6.1.19(react-dom@19.1.1(react@19.1.1))(react@19.1.1))
@@ -16158,7 +16158,7 @@ snapshots:
       scroll-into-view-if-needed: 3.1.0
       styled-components: 6.1.19(react-dom@19.1.1(react@19.1.1))(react@19.1.1)
       use-effect-event: 2.0.3(react@19.1.1)
-      xstate: 5.20.1
+      xstate: 5.20.2
     optionalDependencies:
       '@sanity/client': 7.8.2(debug@4.4.1)
     transitivePeerDependencies:
@@ -17017,23 +17017,23 @@ snapshots:
 
   '@vue/shared@3.5.16': {}
 
-  '@xstate/react@6.0.0(@types/react@19.1.9)(react@18.3.1)(xstate@5.20.1)':
+  '@xstate/react@6.0.0(@types/react@19.1.9)(react@18.3.1)(xstate@5.20.2)':
     dependencies:
       react: 18.3.1
       use-isomorphic-layout-effect: 1.2.1(@types/react@19.1.9)(react@18.3.1)
       use-sync-external-store: 1.5.0(react@18.3.1)
     optionalDependencies:
-      xstate: 5.20.1
+      xstate: 5.20.2
     transitivePeerDependencies:
       - '@types/react'
 
-  '@xstate/react@6.0.0(@types/react@19.1.9)(react@19.1.1)(xstate@5.20.1)':
+  '@xstate/react@6.0.0(@types/react@19.1.9)(react@19.1.1)(xstate@5.20.2)':
     dependencies:
       react: 19.1.1
       use-isomorphic-layout-effect: 1.2.1(@types/react@19.1.9)(react@19.1.1)
       use-sync-external-store: 1.5.0(react@19.1.1)
     optionalDependencies:
-      xstate: 5.20.1
+      xstate: 5.20.2
     transitivePeerDependencies:
       - '@types/react'
 
@@ -24865,7 +24865,7 @@ snapshots:
 
   xregexp@2.0.0: {}
 
-  xstate@5.20.1: {}
+  xstate@5.20.2: {}
 
   xtend@4.0.2: {}
 
