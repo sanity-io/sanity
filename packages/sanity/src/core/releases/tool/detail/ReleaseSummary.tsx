@@ -181,8 +181,8 @@ export function ReleaseSummary(props: ReleaseSummaryProps) {
       style={{
         height: '100%',
         overflow: 'auto',
-        scrollbarWidth: 'none' /* Firefox */,
-        msOverflowStyle: 'none' /* IE and Edge */,
+        scrollbarWidth: 'none',
+        msOverflowStyle: 'none',
       }}
       className="hide-scrollbar"
     >
