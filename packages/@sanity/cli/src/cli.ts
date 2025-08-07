@@ -144,7 +144,7 @@ export async function runCli(cliRoot: string, {cliVersion}: {cliVersion: string}
     },
     ...(!args.groupOrCommand && {emptyCommand: true}), // user did not entry a command
   })
-
+  debug('Starting cli runner with options:', JSON.stringify(options, null, 2))
   cliCommandTrace.start()
   cliRunner
     .runCommand(args.groupOrCommand, args, {
