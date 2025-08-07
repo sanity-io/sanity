@@ -82,7 +82,7 @@ export interface BaseSchemaDefinition {
   /*
    * These are not the properties you are looking for.
    * To avoid cyclic dependencies on Prop-types, the components property is
-   * added to each intrinsic definition in sanity/core/schema/definitionExtensions.ts
+   * added to each intrinsic definition in sanity/src/_exports/index.ts
    */
   /*components?: {
     diff?: ComponentType<any>

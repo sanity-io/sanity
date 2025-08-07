@@ -10,7 +10,5 @@ export type GetFormValueContextValue = (path: Path) => unknown
 /**
  * @internal
  */
-export const GetFormValueContext = createContext<GetFormValueContextValue | null>(
-  'sanity/_singletons/context/get-form-value',
-  null,
-)
+export const GetFormValueContext: React.Context<GetFormValueContextValue | null> =
+  createContext<GetFormValueContextValue | null>('sanity/_singletons/context/get-form-value', null)

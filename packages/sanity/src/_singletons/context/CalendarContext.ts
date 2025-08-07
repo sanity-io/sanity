@@ -5,7 +5,7 @@ import type {CalendarContextValue} from '../../core/studio/components/navbar/sea
 /**
  * @internal
  */
-export const CalendarContext = createContext<CalendarContextValue | undefined>(
+export const CalendarContext: React.Context<CalendarContextValue | undefined> = createContext(
   'sanity/_singletons/context/calendar',
   undefined,
 )

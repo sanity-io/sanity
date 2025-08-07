@@ -6,7 +6,8 @@ import type {ReleasesMetadataContextValue} from '../../core/releases/contexts/Re
  * @internal
  * @hidden
  */
-export const ReleasesMetadataContext = createContext<ReleasesMetadataContextValue | null>(
-  'sanity/_singletons/context/releases-metadata',
-  null,
-)
+export const ReleasesMetadataContext: React.Context<ReleasesMetadataContextValue | null> =
+  createContext<ReleasesMetadataContextValue | null>(
+    'sanity/_singletons/context/releases-metadata',
+    null,
+  )

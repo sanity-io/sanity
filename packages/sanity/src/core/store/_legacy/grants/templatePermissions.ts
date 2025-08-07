@@ -11,6 +11,7 @@ import {
   getPublishedId,
   type PartialExcept,
 } from '../../../util'
+import {type LoadingTuple, type ReactHook} from '../../../util/createHookFromObservableFactory'
 import {useGrantsStore} from '../datastores'
 import {useInitialValueResolverContext} from '../document'
 import {getDocumentValuePermissions} from './documentValuePermissions'
@@ -148,8 +149,10 @@ export function getTemplatePermissions({
  *
  * @internal
  */
-export const useTemplatePermissionsFromHookFactory =
-  createHookFromObservableFactory(getTemplatePermissions)
+export const useTemplatePermissionsFromHookFactory: ReactHook<
+  TemplatePermissionsOptions,
+  LoadingTuple<TemplatePermissionsResult<Record<string, unknown>>[] | undefined>
+> = createHookFromObservableFactory(getTemplatePermissions)
 
 /** @internal */
 export function useTemplatePermissions({

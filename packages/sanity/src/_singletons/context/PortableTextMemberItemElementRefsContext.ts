@@ -7,6 +7,9 @@ export type PortableTextEditorElement = HTMLDivElement | HTMLSpanElement
 /**
  * @internal
  */
-export const PortableTextMemberItemElementRefsContext = createContext<
+export const PortableTextMemberItemElementRefsContext: React.Context<
   BehaviorSubject<Record<string, PortableTextEditorElement | null | undefined>>
->('sanity/_singletons/context/portable-text-member-item-element-refs', new BehaviorSubject({}))
+> = createContext<BehaviorSubject<Record<string, PortableTextEditorElement | null | undefined>>>(
+  'sanity/_singletons/context/portable-text-member-item-element-refs',
+  new BehaviorSubject({}),
+)

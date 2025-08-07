@@ -5,7 +5,7 @@ import type {AppIdCache} from '../../core/create/studio-app/appIdCache'
 /**
  * @internal
  */
-export const AppIdCacheContext = createContext<AppIdCache | null>(
+export const AppIdCacheContext: React.Context<AppIdCache | null> = createContext(
   'sanity/_singletons/context/app-id-cache',
   null,
 )

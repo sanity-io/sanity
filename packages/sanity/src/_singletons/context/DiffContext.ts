@@ -2,8 +2,8 @@ import type {Path} from '@sanity/types'
 import {createContext} from 'sanity/_createContext'
 
 /** @internal */
-export const DiffContext = createContext<{
+export const DiffContext: React.Context<{
   path: Path
-}>('sanity/_singletons/context/diff', {
+}> = createContext('sanity/_singletons/context/diff', {
   path: [],
 })

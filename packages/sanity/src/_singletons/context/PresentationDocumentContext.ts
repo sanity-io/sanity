@@ -5,7 +5,8 @@ import type {PresentationDocumentContextValue} from '../../presentation/document
 /**
  * @internal
  */
-export const PresentationDocumentContext = createContext<PresentationDocumentContextValue | null>(
-  'sanity/_singletons/context/presentation/document',
-  null,
-)
+export const PresentationDocumentContext: React.Context<PresentationDocumentContextValue | null> =
+  createContext<PresentationDocumentContextValue | null>(
+    'sanity/_singletons/context/presentation/document',
+    null,
+  )
