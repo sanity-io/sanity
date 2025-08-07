@@ -167,13 +167,7 @@ export function PresentationPaneRouterProvider(
       setView: (viewId) => {
         console.warn('setView', viewId)
       },
-      setParams: (nextParams) => {
-        // @todo set inspect param to undefined manually as param is missing from object when closing inspector
-        onStructureParams({
-          ...nextParams,
-          inspect: nextParams.inspect ?? undefined,
-        } as StructureDocumentPaneParams)
-      },
+      setParams: onStructureParams,
       setPayload: (payload) => {
         console.warn('setPayload', payload)
       },
