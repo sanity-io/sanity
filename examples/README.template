@@ -1,8 +1,22 @@
 # [Example Name]
-
+<!-- 
+BEST PRACTICE: Use a clear, descriptive name that explains what the example does
+- For general functions: "Auto-Tag Function" instead of "Tagging Example"
+- For external service integrations: Include the service name in the title
+  Example: "Updating Search Index with Algolia" instead of "Search Integration"
+  Example: "Syncing Products with Shopify" instead of "Product Sync"
+  Example: "Sending Notifications to Slack" instead of "Notification Function"
+-->
 [One sentence describing the problem and impact.]
 
+
 **What it does:** [One sentence describing how the function solves it.]
+<!-- 
+BEST PRACTICE: 
+- Write 1-2 clear sentences describing the specific content management challenge
+- Focus on pain points developers/content creators actually face
+- Be specific rather than generic (e.g., "manually tagging is time-consuming" not "content management is hard")
+-->
 
 ## Quick Start
 
@@ -15,6 +29,12 @@ npx sanity blueprints deploy
 [View the complete example and source code](link-to-example)
 
 ## How It Works
+<!-- 
+BEST PRACTICE:
+- Explain the approach in simple terms
+- Mention key technologies used (AI, webhooks, etc.)
+- Keep it concise - save technical details for Implementation section
+-->
 
 - Triggers on [event] for `[document-type]` matching [condition]
 - Analyzes `[field]` using [AI/logic]
@@ -23,65 +43,6 @@ npx sanity blueprints deploy
 - Applies changes directly to the published document
 
 ## Key Benefits
-
-- [Quantified time savings or impact]
-- [Improved consistency or quality]
-- [Maintains taxonomy/structure]
-- [Scales with content growth]
-- [Reduces editorial overhead]
-
-## Technical Implementation
-
-- Event-driven function (e.g. publish/update)
-- GROQ queries for data lookups
-- Direct document updates via Sanity Functions/AI
-- Configurable behavior ([count/fields/targets])
-
-## Perfect For
-
-- [Content-heavy projects]
-- [Teams improving organization]
-- [Projects needing consistent taxonomy]
-- [Editorial workflows needing automation]
-
-## Compatibility
-
-Works with Sanity’s official “clean” templates. Adjust `[document-type]`, fields, and filters to fit your project.
-
-[Explore all examples](https://github.com/sanity-io/sanity/tree/main/examples)
-
----
-
-<!-- Reference: Best-practice guidance (kept as comments) -->
-
-<!-- 
-BEST PRACTICE: Use a clear, descriptive name that explains what the example does
-- For general functions: "Auto-Tag Function" instead of "Tagging Example"
-- For external service integrations: Include the service name in the title
-  Example: "Updating Search Index with Algolia" instead of "Search Integration"
-  Example: "Syncing Products with Shopify" instead of "Product Sync"
-  Example: "Sending Notifications to Slack" instead of "Notification Function"
--->
-
-<!-- 
-BEST PRACTICE: Always include the link back to examples directory for discoverability
-Add demo link if available: [See it in action](demo-url) | 
--->
-
-<!-- 
-BEST PRACTICE: 
-- Write 1-2 clear sentences describing the specific content management challenge
-- Focus on pain points developers/content creators actually face
-- Be specific rather than generic (e.g., "manually tagging is time-consuming" not "content management is hard")
--->
-
-<!-- 
-BEST PRACTICE:
-- Explain the approach in simple terms
-- Mention key technologies used (AI, webhooks, etc.)
-- Keep it concise - save technical details for Implementation section
--->
-
 <!-- 
 BEST PRACTICE:
 - Focus on tangible outcomes for content teams or developers
@@ -90,6 +51,13 @@ BEST PRACTICE:
 - Aim for 3-5 clear bullet points
 -->
 
+- [Quantified time savings or impact]
+- [Improved consistency or quality]
+- [Maintains taxonomy/structure]
+- [Scales with content growth]
+- [Reduces editorial overhead]
+
+## Technical Implementation
 <!-- 
 BEST PRACTICE:
 - Specify which Sanity templates the example is designed to work with
@@ -99,59 +67,16 @@ BEST PRACTICE:
 - Include both general compatibility and specific tested templates
 -->
 
-<!-- 
-BEST PRACTICE:
-- Provide step-by-step instructions
-- Include all necessary code snippets
-- Use proper syntax highlighting for code blocks
-- Test instructions to ensure they work
-- Include both CLI commands and configuration examples
-- Specify correct working directories for monorepo templates
-- Include function dependency installation
--->
+- Event-driven function (e.g. publish/update)
+- GROQ queries for data lookups
+- Direct document updates via Sanity Functions/AI
+- Configurable behavior ([count/fields/targets])
 
-<!-- 
-BEST PRACTICE:
-- Always include local testing instructions
-- Provide multiple testing approaches (basic, interactive, custom data)
-- Include debugging tips
-- Mention Node.js version requirements
-- Add troubleshooting for common issues
-- Document the requirement for real document IDs in dataset
-- Include proper folder navigation for monorepo templates
--->
+## Compatibility
 
-<!-- 
-BEST PRACTICE:
-- List all prerequisites clearly
-- Include both technical and account requirements
-- Mention schema requirements specifically
-- Note any paid features or API access needed
--->
+Works with Sanity’s official “clean” templates. Adjust `[document-type]`, fields, and filters to fit your project.
 
-<!-- 
-BEST PRACTICE:
-- Show the function in action with a realistic scenario
-- Use numbered steps to show the workflow
-- Include before/after states when relevant
-- Explain the outcome clearly
--->
-
-<!-- 
-BEST PRACTICE:
-- Include this section for complex examples
-- Show common modifications developers might need
-- Provide code examples for customizations
-- Explain configuration options
--->
-
-<!-- 
-BEST PRACTICE:
-- Include this section for examples with common issues
-- Use clear problem/solution format
-- Include error messages developers might see
-- Provide debugging steps
--->
+[Explore all examples](https://github.com/sanity-io/sanity/tree/main/examples)
 
 <!-- 
 CODING GUIDELINES FOR FUNCTION EXAMPLES:
