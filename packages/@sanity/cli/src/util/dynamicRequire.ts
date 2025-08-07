@@ -15,3 +15,4 @@ export function dynamicRequire<T = any>(request: string): T {
 }
 
 dynamicRequire.resolve = requireFunc.resolve
+dynamicRequire.cache = requireFunc.cache
