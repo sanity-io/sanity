@@ -49,3 +49,179 @@ npx sanity blueprints deploy
 Works with Sanity’s official “clean” templates. Adjust `[document-type]`, fields, and filters to fit your project.
 
 [Explore all examples](https://github.com/sanity-io/sanity/tree/main/examples)
+
+---
+
+<!-- Reference: Best-practice guidance (kept as comments) -->
+
+<!-- 
+BEST PRACTICE: Use a clear, descriptive name that explains what the example does
+- For general functions: "Auto-Tag Function" instead of "Tagging Example"
+- For external service integrations: Include the service name in the title
+  Example: "Updating Search Index with Algolia" instead of "Search Integration"
+  Example: "Syncing Products with Shopify" instead of "Product Sync"
+  Example: "Sending Notifications to Slack" instead of "Notification Function"
+-->
+
+<!-- 
+BEST PRACTICE: Always include the link back to examples directory for discoverability
+Add demo link if available: [See it in action](demo-url) | 
+-->
+
+<!-- 
+BEST PRACTICE: 
+- Write 1-2 clear sentences describing the specific content management challenge
+- Focus on pain points developers/content creators actually face
+- Be specific rather than generic (e.g., "manually tagging is time-consuming" not "content management is hard")
+-->
+
+<!-- 
+BEST PRACTICE:
+- Explain the approach in simple terms
+- Mention key technologies used (AI, webhooks, etc.)
+- Keep it concise - save technical details for Implementation section
+-->
+
+<!-- 
+BEST PRACTICE:
+- Focus on tangible outcomes for content teams or developers
+- Use action-oriented language ("Saves time", "Improves consistency")
+- Include both immediate and long-term benefits
+- Aim for 3-5 clear bullet points
+-->
+
+<!-- 
+BEST PRACTICE:
+- Specify which Sanity templates the example is designed to work with
+- Include schema requirements if the example assumes specific document structures
+- Provide setup instructions for adding missing fields to existing schemas
+- Link to the specific templates for easy access
+- Include both general compatibility and specific tested templates
+-->
+
+<!-- 
+BEST PRACTICE:
+- Provide step-by-step instructions
+- Include all necessary code snippets
+- Use proper syntax highlighting for code blocks
+- Test instructions to ensure they work
+- Include both CLI commands and configuration examples
+- Specify correct working directories for monorepo templates
+- Include function dependency installation
+-->
+
+<!-- 
+BEST PRACTICE:
+- Always include local testing instructions
+- Provide multiple testing approaches (basic, interactive, custom data)
+- Include debugging tips
+- Mention Node.js version requirements
+- Add troubleshooting for common issues
+- Document the requirement for real document IDs in dataset
+- Include proper folder navigation for monorepo templates
+-->
+
+<!-- 
+BEST PRACTICE:
+- List all prerequisites clearly
+- Include both technical and account requirements
+- Mention schema requirements specifically
+- Note any paid features or API access needed
+-->
+
+<!-- 
+BEST PRACTICE:
+- Show the function in action with a realistic scenario
+- Use numbered steps to show the workflow
+- Include before/after states when relevant
+- Explain the outcome clearly
+-->
+
+<!-- 
+BEST PRACTICE:
+- Include this section for complex examples
+- Show common modifications developers might need
+- Provide code examples for customizations
+- Explain configuration options
+-->
+
+<!-- 
+BEST PRACTICE:
+- Include this section for examples with common issues
+- Use clear problem/solution format
+- Include error messages developers might see
+- Provide debugging steps
+-->
+
+<!-- 
+CODING GUIDELINES FOR FUNCTION EXAMPLES:
+
+When writing function examples, follow these best practices to ensure
+consistency and beginner-friendliness:
+
+## Code Quality Standards
+
+1. **Always use TypeScript** - But keep typing light to maintain readability
+   - Use explicit types for function parameters and return values
+   - Avoid complex generic types or advanced TypeScript features
+   - Focus on clarity over type sophistication
+
+2. **Documentation and Comments**
+   - Use light inline comments for key concepts and non-obvious logic
+   - Avoid over-commenting obvious operations
+   - Include comments explaining Sanity-specific concepts (setIfMissing, projections, etc.)
+
+3. **Beginner-Friendly Patterns**
+   - Avoid complex patterns that might confuse newcomers
+   - Use straightforward control flow (avoid deeply nested logic)
+   - Prefer explicit operations over clever one-liners
+   - Structure code in logical, easy-to-follow steps
+
+4. **Error Handling**
+   - Include error handling for common edge cases
+   - Use try-catch blocks for external API calls and database operations
+   - Provide meaningful error messages in logs
+   - Handle missing fields and unexpected data gracefully
+
+5. **Self-Contained Code**
+   - Make examples work independently without external dependencies
+   - Include all necessary imports and configuration
+   - Avoid requiring complex setup beyond basic Sanity project requirements
+   - Keep external service dependencies minimal and well-documented
+
+6. **Clear Input/Output Examples**
+   - Provide realistic sample data in document.json
+   - Include TypeScript types that show expected input structure
+   - Document what the function returns or modifies
+   - Show before/after states in documentation
+
+7. **Naming and Structure**
+   - Use descriptive variable and function names
+   - Choose names that explain purpose over implementation
+   - Structure code in logical flow from input → processing → output
+   - Group related operations together
+
+8. **Package Configuration**
+   - Include complete package.json with all necessary dependencies
+   - Use stable, well-supported package versions
+   - Include blueprintResourceItem configuration
+   - Add clear example instructions
+
+## Example Structure Checklist
+
+Every function example should include:
+- [ ] index.ts with TypeScript implementation
+- [ ] package.json with dependencies and blueprint config
+- [ ] document.json with realistic test data
+- [ ] README.md following this template
+- [ ] Error handling for common edge cases
+- [ ] Clear inline documentation
+- [ ] Self-contained, runnable code
+
+TEMPLATE MAINTENANCE NOTES:
+- Keep sections in this order for consistency
+- Always test instructions before publishing
+- Include realistic sample data in document.json
+- Ensure all code snippets use proper syntax highlighting
+- Update links when examples are moved or renamed
+-->
