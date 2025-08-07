@@ -305,16 +305,16 @@ const TableInner = <TableData, AdditionalRowTableData>({
             headers={headers}
             searchDisabled={loading || (!searchTerm && !data.length)}
           />
+          <Box
+            style={{
+              height: `${rowVirtualizer.getTotalSize()}px`,
+              position: 'relative',
+            }}
+            as="tbody"
+          >
+            {tableContent()}
+          </Box>
         </Stack>
-        <Box
-          style={{
-            height: `${rowVirtualizer.getTotalSize()}px`,
-            position: 'relative',
-          }}
-          as="tbody"
-        >
-          {tableContent()}
-        </Box>
       </div>
     </div>
   )
