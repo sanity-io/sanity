@@ -19,6 +19,6 @@
     "@types/react-dom": "catalog:",
     "@vitejs/plugin-react": "catalog:",
     "typescript": "catalog:",
-    "vite": "^6.3.5"
+    "vite": "^7.1.0"
   }
 }
