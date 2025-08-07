@@ -165,6 +165,7 @@ const TableInner = <TableData, AdditionalRowTableData>({
             borderBottom
             display="flex"
             data-index={datum.index}
+            as="tr"
             style={{
               height: `${datum.virtualRow.size}px`,
               position: 'absolute',
@@ -186,7 +187,7 @@ const TableInner = <TableData, AdditionalRowTableData>({
                     {...datum, isLoading: loading} as RowDatum<TableData, AdditionalRowTableData>
                   }
                   cellProps={{
-                    as: 'div',
+                    as: 'td',
                     id: String(id),
                     style: {...style, width: width || undefined},
                   }}
@@ -207,6 +208,7 @@ const TableInner = <TableData, AdditionalRowTableData>({
           borderBottom
           display="flex"
           padding={4}
+          as="tr"
           style={{
             justifyContent: 'center',
             position: 'absolute',
@@ -317,6 +319,7 @@ const TableInner = <TableData, AdditionalRowTableData>({
             height: `${rowVirtualizer.getTotalSize()}px`,
             position: 'relative',
           }}
+          as="tbody"
         >
           {tableContent()}
         </Box>
