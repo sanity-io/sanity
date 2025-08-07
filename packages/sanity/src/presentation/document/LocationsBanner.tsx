@@ -177,7 +177,7 @@ function LocationItem(props: {
   })
 
   const handleCurrentToolClick = useCallback(() => {
-    navigate?.({}, {preview: node.href})
+    navigate?.({params: {preview: node.href}})
   }, [node.href, navigate])
 
   return (
