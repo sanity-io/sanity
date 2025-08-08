@@ -5,7 +5,7 @@
   "keywords": [
     "sanity"
   ],
-  "license": "UNLICENSED",
+  "license": "MIT",
   "main": "package.json",
   "scripts": {
     "build": "sanity build",
