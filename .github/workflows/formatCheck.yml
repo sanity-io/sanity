@@ -2,7 +2,11 @@ name: Format check
 on:
   push:
     branches: [main]
+    paths-ignore:
+      - "examples/**"
   pull_request:
+    paths-ignore:
+      - "examples/**"
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.head_ref }}
