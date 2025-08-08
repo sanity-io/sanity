@@ -188,41 +188,19 @@ function buildMovePatches(
 function buildUndoPatches(diff: Diff, rootDiff: ObjectDiff, path: Path): PatchOperations[] {
   const patches = diffValue(diff.toValue, diff.fromValue, path)
 
-  const inserts = patches
-    .filter((patch): patch is Pick<Required<PatchOperations>, 'insert'> => Boolean(patch.insert))
-    .map(({insert}) => ({insert}) as any)
-
-  const unsets = patches
-    .filter((patch): patch is Pick<Required<PatchOperations>, 'unset'> => Boolean(patch.unset))
-    .reduce((acc, patch) => acc.concat(patch.unset!), [] as string[])
-
   const stubbedPaths = new Set<string>()
-  const stubs: PatchOperations[] = []
-
-  let hasSets = false
-  const sets = patches
-    .filter((patch): patch is Pick<Required<PatchOperations>, 'set'> => Boolean(patch.set))
-    .reduce(
-      (acc, patch) => {
-        hasSets = true
-
-        Object.keys(patch.set ?? {}).forEach((pathStr) => {
-          const segments = pathStr.split('.').filter((s) => s.length > 0)
-          const patchPath = [...path, ...segments]
-          stubs.push(...getParentStubs(patchPath, rootDiff, stubbedPaths))
-        })
-
-        return Object.assign(acc, patch.set ?? {})
-      },
-      {} as Record<string, unknown>,
+  const stubs = patches
+    .filter((patch) => patch.set)
+    .flatMap((patch) =>
+      Object.keys(patch.set!).map((pathStr) => {
+        const segments = pathStr.split('.').filter((s) => s.length > 0)
+        const patchPath = [...path, ...segments]
+        return getParentStubs(patchPath, rootDiff, stubbedPaths)
+      }),
     )
+    .flat()
 
-  return [
-    ...stubs,
-    ...inserts,
-    ...(unsets.length > 0 ? [{unset: unsets}] : []),
-    ...(hasSets ? [{set: sets}] : []),
-  ]
+  return [...stubs, ...patches]
 }
 
 function getParentStubs(path: Path, rootDiff: ObjectDiff, stubbed: Set<string>): PatchOperations[] {
