@@ -1,7 +1,7 @@
 import {type ReleaseDocument, type SanityDocument} from '@sanity/client'
 import {AddIcon} from '@sanity/icons'
 import {useTelemetry} from '@sanity/telemetry/react'
-import {Card, Container, useToast} from '@sanity/ui'
+import {Card, Container, Stack, useToast} from '@sanity/ui'
 import {type RefObject, useCallback, useEffect, useMemo, useState} from 'react'
 
 import {Button} from '../../../../ui-components'
@@ -14,6 +14,7 @@ import {useReleaseOperations} from '../../store/useReleaseOperations'
 import {getReleaseIdFromReleaseDocumentId} from '../../util/getReleaseIdFromReleaseDocumentId'
 import {Table} from '../components/Table/Table'
 import {AddDocumentSearch, type AddedDocument} from './AddDocumentSearch'
+import {ReleaseActionBadges} from './components/ReleaseActionBadges'
 import {DocumentActions} from './documentTable/DocumentActions'
 import {getDocumentTableColumnDefs} from './documentTable/DocumentTableColumnDefs'
 import {type DocumentHistory} from './documentTable/useReleaseHistory'
@@ -175,7 +176,6 @@ export function ReleaseSummary(props: ReleaseSummaryProps) {
 
   return (
     <Card
-      borderTop
       data-testid="document-table-card"
       ref={scrollContainerRef}
       style={{
@@ -186,18 +186,21 @@ export function ReleaseSummary(props: ReleaseSummaryProps) {
       }}
       className="hide-scrollbar"
     >
-      <Table<DocumentWithHistory>
-        loading={isLoading}
-        data={tableData}
-        emptyState={t('summary.no-documents')}
-        // eslint-disable-next-line @sanity/i18n/no-attribute-string-literals
-        rowId="document._id"
-        columnDefs={documentTableColumnDefs}
-        rowActions={renderRowActions}
-        searchFilter={filterRows}
-        scrollContainerRef={scrollContainerRef}
-        defaultSort={{column: 'search', direction: 'asc'}}
-      />
+      <Stack>
+        <ReleaseActionBadges documents={tableData} releaseState={release.state} />
+        <Table<DocumentWithHistory>
+          loading={isLoading}
+          data={tableData}
+          emptyState={t('summary.no-documents')}
+          // eslint-disable-next-line @sanity/i18n/no-attribute-string-literals
+          rowId="document._id"
+          columnDefs={documentTableColumnDefs}
+          rowActions={renderRowActions}
+          searchFilter={filterRows}
+          scrollContainerRef={scrollContainerRef}
+          defaultSort={{column: 'search', direction: 'asc'}}
+        />
+      </Stack>
       {release.state === 'active' && (
         <Container width={3}>
           <Card padding={3}>
