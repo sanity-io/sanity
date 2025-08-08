@@ -2,7 +2,7 @@ import {useTelemetry} from '@sanity/telemetry/react'
 import {type ObjectSchemaType, type SanityDocument, type SanityDocumentLike} from '@sanity/types'
 import {useToast} from '@sanity/ui'
 import {fromString as pathFromString, resolveKeyedPath} from '@sanity/util/paths'
-import {memo, useCallback, useEffect, useMemo, useState} from 'react'
+import {memo, useCallback, useEffect, useMemo, useRef, useState} from 'react'
 import {
   type DocumentActionsContext,
   type DocumentActionsVersionType,
@@ -571,16 +571,21 @@ export const DocumentPaneProvider = memo((props: DocumentPaneProviderProps) => {
     ],
   )
 
-  // Reset `focusPath` when `documentId` or `params.path` changes
+  const pathRef = useRef<string | undefined>(undefined)
   useEffect(() => {
     if (ready && params.path) {
       const {path, ...restParams} = params
-      const pathFromUrl = resolveKeyedPath(formStateRef.current?.value, pathFromString(path))
-      onProgrammaticFocus(pathFromUrl)
+
+      // trigger a focus when `params.path` changes
+      if (path !== pathRef.current) {
+        const pathFromUrl = resolveKeyedPath(formStateRef.current?.value, pathFromString(path))
+        onProgrammaticFocus(pathFromUrl)
+      }
 
       // remove the `path`-param from url after we have consumed it as the initial focus path
       paneRouter.setParams(restParams)
     }
+    pathRef.current = params.path
 
     return undefined
   }, [formStateRef, onProgrammaticFocus, paneRouter, params, ready])

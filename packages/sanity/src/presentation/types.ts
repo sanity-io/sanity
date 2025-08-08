@@ -339,11 +339,13 @@ export interface PresentationSearchParams {
  */
 export interface StructureDocumentPaneParams extends InspectorTab {
   inspect?: string
+  parentRefPath?: string
   path?: string
   rev?: string
   since?: string
   template?: string
   templateParams?: string
+  version?: string
   view?: string
 
   // assist
@@ -368,8 +370,7 @@ export interface InspectorTab {
  */
 export interface CombinedSearchParams
   extends StructureDocumentPaneParams,
-    PresentationSearchParams,
-    InspectorTab {}
+    PresentationSearchParams {}
 
 /**
  * All possible parameters that can be used to describe the state of the
@@ -378,15 +379,16 @@ export interface CombinedSearchParams
  */
 export interface PresentationParamsContextValue
   extends PresentationStateParams,
-    CombinedSearchParams,
-    InspectorTab {}
+    CombinedSearchParams {}
 
 /** @public */
-export type PresentationNavigate = (
-  nextState: PresentationStateParams,
-  nextSearchState?: CombinedSearchParams,
-  forceReplace?: boolean,
-) => void
+export type PresentationNavigateOptions = (
+  | {state: PresentationStateParams; params?: CombinedSearchParams}
+  | {params: CombinedSearchParams; state?: PresentationStateParams}
+) & {replace?: boolean}
+
+/** @public */
+export type PresentationNavigate = (options: PresentationNavigateOptions) => void
 
 /** @public */
 export type PresentationPerspective = Exclude<ClientPerspective, 'raw'>
