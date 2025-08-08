@@ -46,19 +46,22 @@ export default async function startAppDevServer(
   })
 
   try {
-    const spinner = output.spinner('Starting dev server').start()
-    await startDevServer({...config, spinner, skipStartLog: true, isApp: true})
-    spinner.succeed()
+    output.print('Starting dev server')
 
-    output.print(`Dev server started on port ${config.httpPort}`)
+    const {server} = await startDevServer({...config, isApp: true})
+
+    const {port} = server.config.server
+    const httpHost = config.httpHost || 'localhost'
+
+    output.print(`Dev server started on port ${port}`)
     output.print(`View your app in the Sanity dashboard here:`)
     output.print(
       chalk.blue(
         chalk.underline(
           await getCoreAppURL({
             organizationId,
-            httpHost: config.httpHost,
-            httpPort: config.httpPort,
+            httpHost,
+            httpPort: port,
           }),
         ),
       ),

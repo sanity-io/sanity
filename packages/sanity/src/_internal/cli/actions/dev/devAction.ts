@@ -227,8 +227,15 @@ export default async function startSanityDevServer(
   }
 
   try {
+    const startTime = Date.now()
     const spinner = output.spinner('Starting dev server').start()
-    await startDevServer({...config, spinner, skipStartLog: loadInDashboard})
+    const {server} = await startDevServer({...config})
+
+    const {info: loggerInfo} = server.config.logger
+    const {port} = server.config.server
+    const httpHost = config.httpHost || 'localhost'
+
+    spinner.succeed()
 
     if (loadInDashboard) {
       if (!organizationId) {
@@ -248,6 +255,17 @@ export default async function startSanityDevServer(
             }),
           ),
         ),
+      )
+    } else {
+      const startupDuration = Date.now() - startTime
+      const url = `http://${httpHost || 'localhost'}:${port}${config.basePath}`
+      const appType = 'Sanity Studio'
+
+      loggerInfo(
+        `${appType} ` +
+          `using ${chalk.cyan(`vite@${require('vite/package.json').version}`)} ` +
+          `ready in ${chalk.cyan(`${Math.ceil(startupDuration)}ms`)} ` +
+          `and running at ${chalk.cyan(url)}`,
       )
     }
   } catch (err) {
