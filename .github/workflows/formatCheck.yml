@@ -1,6 +1,8 @@
 name: Format check
 on:
   push:
+    paths-ignore:
+      - "examples/**"
     branches: [main]
   pull_request:
 
