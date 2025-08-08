@@ -33,7 +33,7 @@
     "@sanity/locale-nn-no": "^1.1.24",
     "@sanity/locale-pt-pt": "^1.1.21",
     "@sanity/locale-sv-se": "^1.2.23",
-    "@sanity/logos": "^2.2.1",
+    "@sanity/logos": "^2.2.2",
     "@sanity/migrate": "workspace:*",
     "@sanity/preview-url-secret": "^2.1.14",
     "@sanity/react-loader": "^1.11.18",
@@ -62,13 +62,13 @@
     "sanity-plugin-hotspot-array": "^2.2.1",
     "sanity-plugin-markdown": "^6.0.0",
     "sanity-plugin-media": "^4.0.0",
-    "sanity-plugin-mux-input": "^2.8.1",
+    "sanity-plugin-mux-input": "^2.9.0",
     "styled-components": "catalog:"
   },
   "devDependencies": {
     "@repo/eslint-config": "workspace:*",
     "babel-plugin-react-compiler": "19.1.0-rc.2",
     "chokidar": "^3.6.0",
-    "vite": "^7.1.0"
+    "vite": "^7.1.1"
   }
 }
