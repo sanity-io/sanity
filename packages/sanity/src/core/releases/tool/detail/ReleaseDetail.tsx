@@ -1,7 +1,7 @@
 import {ErrorOutlineIcon} from '@sanity/icons'
 import {Box, Card, Container, Flex, Heading, Stack, Text} from '@sanity/ui'
 import {motion} from 'framer-motion'
-import {useMemo, useRef, useState} from 'react'
+import {useEffect, useMemo, useRef, useState} from 'react'
 import {useRouter} from 'sanity/router'
 
 import {LoadingBlock} from '../../../components'
@@ -32,11 +32,20 @@ export const ReleaseDetail = () => {
   const {data, loading} = useActiveReleases()
   const {data: archivedReleases} = useArchivedReleases()
 
+  const [searchTerm, setSearchTerm] = useState<string>('')
+  const [debouncedSearchTerm, setDebouncedSearchTerm] = useState<string>('')
+
+  // Debounce user input to limit server requests
+  useEffect(() => {
+    const handle = setTimeout(() => setDebouncedSearchTerm(searchTerm), 300)
+    return () => clearTimeout(handle)
+  }, [searchTerm])
+
   const {
     loading: documentsLoading,
     results,
     error: bundleDocumentsError,
-  } = useBundleDocuments(releaseId)
+  } = useBundleDocuments(releaseId, {searchTerm: debouncedSearchTerm})
   const releaseEvents = useReleaseEvents(releaseId)
 
   const documentIds = results.map((result) => result.document?._id)
@@ -83,14 +92,17 @@ export const ReleaseDetail = () => {
         release={releaseInDetail}
         documentsHistory={history.documentsHistory}
         scrollContainerRef={scrollContainerRef}
+        onSearchTermChange={setSearchTerm}
+        searchTerm={searchTerm}
       />
     )
   }, [
     bundleDocumentsError,
-    documentsLoading,
     releaseInDetail,
+    documentsLoading,
     results,
     history.documentsHistory,
+    searchTerm,
     t,
   ])
 

@@ -32,6 +32,9 @@ export interface ReleaseSummaryProps {
   scrollContainerRef: RefObject<HTMLDivElement | null>
   release: ReleaseDocument
   isLoading?: boolean
+  // Lifted search props to drive server-side search
+  searchTerm?: string
+  onSearchTermChange?: (value: string) => void
 }
 
 const isBundleDocumentRow = (
@@ -46,7 +49,15 @@ const isBundleDocumentRow = (
   'history' in maybeBundleDocumentRow
 
 export function ReleaseSummary(props: ReleaseSummaryProps) {
-  const {documents, documentsHistory, isLoading = false, release, scrollContainerRef} = props
+  const {
+    documents,
+    documentsHistory,
+    isLoading = false,
+    release,
+    scrollContainerRef,
+    onSearchTermChange,
+    searchTerm,
+  } = props
   const toast = useToast()
   const {createVersion} = useReleaseOperations()
   const telemetry = useTelemetry()
@@ -83,19 +94,7 @@ export function ReleaseSummary(props: ReleaseSummaryProps) {
     [release._id, release.state, t],
   )
 
-  const filterRows = useCallback(
-    (data: DocumentWithHistory[], searchTerm: string) =>
-      data.filter(({previewValues, isPending}) => {
-        const title =
-          typeof previewValues.values?.title === 'string'
-            ? previewValues.values?.title
-            : t('release-placeholder.title')
-
-        // always show the pending rows to visualise that documents are being added
-        return isPending || title.toLowerCase().includes(searchTerm.toLowerCase())
-      }),
-    [t],
-  )
+  // Server-side search now filters results; keep pending rows visible by merging them in `tableData` above
 
   const closeAddDialog = useCallback(
     async (documentToAdd?: AddedDocument) => {
@@ -173,6 +172,7 @@ export function ReleaseSummary(props: ReleaseSummaryProps) {
     [pendingAddedDocument, aggregatedData],
   )
 
+  const handleOpenAddDialog = useCallback(() => setAddDocumentDialog(true), [])
   return (
     <Card
       borderTop
@@ -194,7 +194,9 @@ export function ReleaseSummary(props: ReleaseSummaryProps) {
         rowId="document._id"
         columnDefs={documentTableColumnDefs}
         rowActions={renderRowActions}
-        searchFilter={filterRows}
+        // Controlled search term to propagate to hook
+        searchTerm={searchTerm}
+        onSearchTermChange={onSearchTermChange}
         scrollContainerRef={scrollContainerRef}
         defaultSort={{column: 'search', direction: 'asc'}}
       />
@@ -205,7 +207,7 @@ export function ReleaseSummary(props: ReleaseSummaryProps) {
               icon={AddIcon}
               disabled={isLoading}
               mode="bleed"
-              onClick={() => setAddDocumentDialog(true)}
+              onClick={handleOpenAddDialog}
               text={t('action.add-document')}
             />
           </Card>
