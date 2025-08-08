@@ -9,6 +9,8 @@ on:
       - "v*"
 
   pull_request:
+    paths-ignore:
+      - "examples/**"
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.head_ref || github.run_id }}
