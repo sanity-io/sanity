@@ -3,6 +3,8 @@ name: Run `pnpm generate:dts-exports` if needed
 on:
   push:
     branches: [main]
+    paths-ignore:
+      - "examples/**"
   workflow_dispatch:
 
 concurrency:

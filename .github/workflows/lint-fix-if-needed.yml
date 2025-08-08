@@ -3,6 +3,8 @@ name: Prettier & Lint --fix
 on:
   push:
     branches: [main]
+    paths-ignore:
+      - "examples/**"
   workflow_dispatch:
 
 concurrency:
