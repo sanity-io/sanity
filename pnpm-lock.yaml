@@ -281,6 +281,21 @@ importers:
         specifier: ^10.0.0
         version: 10.0.1
 
+  dev/auto-updating-studio:
+    dependencies:
+      '@sanity/vision':
+        specifier: workspace:*
+        version: link:../../packages/@sanity/vision
+      react:
+        specifier: 'catalog:'
+        version: 19.1.1
+      sanity:
+        specifier: workspace:*
+        version: link:../../packages/sanity
+      styled-components:
+        specifier: 'catalog:'
+        version: 6.1.19(react-dom@19.1.1(react@19.1.1))(react@19.1.1)
+
   dev/depcheck-test: {}
 
   dev/design-studio:
