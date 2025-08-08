@@ -79,7 +79,7 @@ npx sanity schema deploy
      event: {
        on: ['publish'],
        filter: "_type == 'post' && !defined(autoSummary)",
-       projection: '_id',
+       projection: '{_id}',
      },
    })
    ```

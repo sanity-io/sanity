@@ -1,4 +1,3 @@
-import {omit} from 'lodash'
 import {useCallback, useEffect, useMemo, useRef, useState} from 'react'
 import {type DocumentInspector, useSource} from 'sanity'
 
@@ -142,7 +141,7 @@ export function useDocumentPaneInspector({
       if (toggle) {
         setParams({...params, inspect: 'on'})
       } else {
-        setParams(omit(params, 'inspect'))
+        setParams({...params, inspect: undefined})
       }
     },
     [inspectOpen, params, setParams],

@@ -110,28 +110,27 @@ export class MenuItemGroupBuilder implements Serializable<MenuItemGroup> {
    * @returns menu item group based on path provided in options. See {@link MenuItemGroup}
    */
   serialize(options: SerializeOptions = {path: []}): MenuItemGroup {
-    const {_id, _title, _i18n} = this
-    if (!_id) {
+    if (!this._id) {
       throw new SerializeError(
         '`id` is required for a menu item group',
         options.path,
         options.index,
-        _title,
+        this._title,
       ).withHelpUrl(HELP_URL.ID_REQUIRED)
     }
 
-    if (!_title) {
+    if (!this._title) {
       throw new SerializeError(
         '`title` is required for a menu item group',
         options.path,
-        _id,
+        this._id,
       ).withHelpUrl(HELP_URL.TITLE_REQUIRED)
     }
 
     return {
-      id: _id,
-      title: _title,
-      i18n: _i18n,
+      id: this._id,
+      title: this._title,
+      i18n: this._i18n,
     }
   }
 }

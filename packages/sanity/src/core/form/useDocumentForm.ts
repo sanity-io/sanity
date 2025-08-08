@@ -514,14 +514,8 @@ export function useDocumentForm(options: DocumentFormOptions): DocumentFormValue
     [onFocusPath, setFocusPath, handleSetOpenPath, updatePresenceThrottled],
   )
 
-  const disableBlurRef = useRef(false)
-
   const handleBlur = useCallback(
     (_blurredPath: Path) => {
-      if (disableBlurRef.current) {
-        return
-      }
-
       setFocusPath(EMPTY_ARRAY)
 
       if (focusPathRef.current !== EMPTY_ARRAY) {
@@ -538,8 +532,6 @@ export function useDocumentForm(options: DocumentFormOptions): DocumentFormValue
   const handleProgrammaticFocus = useCallback(
     (nextPath: Path) => {
       // Supports changing the focus path not by a user interaction, but by a programmatic change, e.g. the url path changes.
-      // to avoid the blur event to be triggered, we set a flag to disable it for a short period of time.
-      disableBlurRef.current = true
 
       if (!deepEquals(focusPathRef.current, nextPath)) {
         setFocusPath(nextPath)
@@ -548,11 +540,6 @@ export function useDocumentForm(options: DocumentFormOptions): DocumentFormValue
 
         focusPathRef.current = nextPath
       }
-
-      const timeout = setTimeout(() => {
-        disableBlurRef.current = false
-      }, 0)
-      return () => clearTimeout(timeout)
     },
     [onFocusPath, handleSetOpenPath],
   )
