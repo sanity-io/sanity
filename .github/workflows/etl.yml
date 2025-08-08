@@ -5,6 +5,8 @@ on:
   workflow_dispatch:
   # Build on pushes branches that have a PR (including drafts)
   pull_request:
+    paths-ignore:
+      - "examples/**"
   # Build on release publishes
   release:
     types: [published]
