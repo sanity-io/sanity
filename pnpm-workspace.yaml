@@ -28,7 +28,7 @@ catalog:
   react-dom: ^19.1.1
   react-is: ^19.1.1
   styled-components: ^6.1.18
-  typescript: 5.8.3
+  typescript: 5.9.2
 
 catalogs:
   react18:
