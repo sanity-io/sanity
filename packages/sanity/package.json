@@ -171,7 +171,7 @@
     "@sanity/image-url": "^1.1.0",
     "@sanity/import": "^3.38.3",
     "@sanity/insert-menu": "^2.0.1",
-    "@sanity/logos": "^2.2.1",
+    "@sanity/logos": "^2.2.2",
     "@sanity/media-library-types": "^1.0.0",
     "@sanity/message-protocol": "^0.15.1",
     "@sanity/migrate": "workspace:*",

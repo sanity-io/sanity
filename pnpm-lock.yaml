@@ -540,7 +540,7 @@ importers:
         version: 1.2.23(sanity@packages+sanity)
       '@sanity/logos':
         specifier: ^2.2.1
-        version: 2.2.1(@sanity/color@3.0.6)(react@19.1.1)
+        version: 2.2.2(react@19.1.1)
       '@sanity/migrate':
         specifier: workspace:*
         version: link:../../packages/@sanity/migrate
@@ -1689,8 +1689,8 @@ importers:
         specifier: ^2.0.1
         version: 2.0.1(@emotion/is-prop-valid@1.3.1)(@sanity/types@packages+@sanity+types)(react-dom@18.3.1(react@18.3.1))(react-is@19.1.1)(react@18.3.1)(styled-components@6.1.19(react-dom@18.3.1(react@18.3.1))(react@18.3.1))
       '@sanity/logos':
-        specifier: ^2.2.1
-        version: 2.2.1(@sanity/color@3.0.6)(react@18.3.1)
+        specifier: ^2.2.2
+        version: 2.2.2(react@18.3.1)
       '@sanity/media-library-types':
         specifier: ^1.0.0
         version: 1.0.0
@@ -4704,11 +4704,10 @@ packages:
     peerDependencies:
       sanity: ^3.22.0 || ^4.0.0-0
 
-  '@sanity/logos@2.2.1':
-    resolution: {integrity: sha512-jz7bvoSrwTAEFw4wlgGsPDquQsBG+k//XEEJIzlLK9bBp2q3Ln6xZiUAjhhScqUa+ThrUfxjfbf7UUecOeLzEQ==}
+  '@sanity/logos@2.2.2':
+    resolution: {integrity: sha512-KIWFL7nYEOINXIzaTF9aVhd481hFF/ak+SRnpgksYuJXlo2hbY/UoEJBz6KhsEP5dfO/NwqG82QrkwzLvd6izA==}
     engines: {node: '>=14.0.0'}
     peerDependencies:
-      '@sanity/color': ^2.0 || ^3.0 || ^3.0.0-beta
       react: ^18.3 || ^19.0.0-0
 
   '@sanity/media-library-types@1.0.0':
@@ -15403,12 +15402,12 @@ snapshots:
     dependencies:
       sanity: link:packages/sanity
 
-  '@sanity/logos@2.2.1(@sanity/color@3.0.6)(react@18.3.1)':
+  '@sanity/logos@2.2.2(react@18.3.1)':
     dependencies:
       '@sanity/color': 3.0.6
       react: 18.3.1
 
-  '@sanity/logos@2.2.1(@sanity/color@3.0.6)(react@19.1.1)':
+  '@sanity/logos@2.2.2(react@19.1.1)':
     dependencies:
       '@sanity/color': 3.0.6
       react: 19.1.1
