@@ -12,7 +12,7 @@ export type SetPortableTextMemberItemElementRef = ({
   elementRef,
 }: {
   key: PortableTextMemberItem['member']['key']
-  elementRef: PortableTextEditorElement | null
+  elementRef: PortableTextEditorElement | null | undefined
 }) => void
 
 export function usePortableTextMemberItemElementRefs(): Record<
