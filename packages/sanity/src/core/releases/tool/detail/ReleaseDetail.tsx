@@ -1,7 +1,8 @@
 import {ErrorOutlineIcon} from '@sanity/icons'
 import {Box, Card, Container, Flex, Heading, Stack, Text} from '@sanity/ui'
 import {motion} from 'framer-motion'
-import {useMemo, useRef, useState} from 'react'
+import {debounce} from 'lodash'
+import {useCallback, useEffect, useMemo, useRef, useState} from 'react'
 import {useRouter} from 'sanity/router'
 
 import {LoadingBlock} from '../../../components'
@@ -31,11 +32,34 @@ export const ReleaseDetail = () => {
   const {data, loading} = useActiveReleases()
   const {data: archivedReleases} = useArchivedReleases()
 
+  const [searchTerm, setSearchTerm] = useState<string>('')
+  const [debouncedSearchTerm, setDebouncedSearchTerm] = useState<string>('')
+
+  const setQueryTermDebounced = useMemo(
+    () => debounce((value: string) => setDebouncedSearchTerm(value), 333),
+    [setDebouncedSearchTerm],
+  )
+
+  useEffect(() => {
+    return () => {
+      // Cancel pending debounce on unmount or when changes happen
+      setQueryTermDebounced.cancel()
+    }
+  }, [setQueryTermDebounced])
+
+  const handleSearchTermChange = useCallback(
+    (value: string) => {
+      setSearchTerm(value)
+      setQueryTermDebounced(value)
+    },
+    [setQueryTermDebounced],
+  )
+
   const {
     loading: documentsLoading,
     results,
     error: bundleDocumentsError,
-  } = useBundleDocuments(releaseId)
+  } = useBundleDocuments(releaseId, {searchTerm: debouncedSearchTerm})
   const releaseEvents = useReleaseEvents(releaseId)
 
   const releaseInDetail = data
@@ -78,9 +102,19 @@ export const ReleaseDetail = () => {
         documents={results}
         release={releaseInDetail}
         scrollContainerRef={scrollContainerRef}
+        onSearchTermChange={handleSearchTermChange}
+        searchTerm={searchTerm}
       />
     )
-  }, [bundleDocumentsError, documentsLoading, releaseInDetail, results, t])
+  }, [
+    bundleDocumentsError,
+    releaseInDetail,
+    documentsLoading,
+    results,
+    searchTerm,
+    handleSearchTermChange,
+    t,
+  ])
 
   if (loading) {
     return (

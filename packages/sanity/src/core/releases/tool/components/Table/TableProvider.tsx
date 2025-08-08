@@ -21,11 +21,14 @@ export interface TableContextValue {
 /**
  * @internal
  */
-export const TableProvider: ComponentType<PropsWithChildren & {defaultSort?: TableSort}> = ({
-  children,
-  defaultSort,
-}) => {
-  const [searchTerm, setSearchTerm] = useState<string | null>(null)
+export const TableProvider: ComponentType<
+  PropsWithChildren & {
+    defaultSort?: TableSort
+    searchTerm?: string | null
+    onSearchTermChange?: (searchTerm: string) => void
+  }
+> = ({children, defaultSort, searchTerm: controlledSearchTerm, onSearchTermChange}) => {
+  const [searchInternalTerm, setInternalSearchTerm] = useState<string | null>(null)
   const [sort, setSort] = useState<TableSort | null>(defaultSort || null)
 
   const setSortColumn = useCallback((newColumn: string) => {
@@ -37,6 +40,15 @@ export const TableProvider: ComponentType<PropsWithChildren & {defaultSort?: Tab
       return {column: String(newColumn), direction: 'desc'}
     })
   }, [])
+
+  const searchTerm = controlledSearchTerm ?? searchInternalTerm
+  const setSearchTerm = useCallback(
+    (newTerm: string) => {
+      setInternalSearchTerm(newTerm)
+      onSearchTermChange?.(newTerm)
+    },
+    [onSearchTermChange],
+  )
 
   const contextValue = {searchTerm, setSearchTerm, sort, setSortColumn}
 

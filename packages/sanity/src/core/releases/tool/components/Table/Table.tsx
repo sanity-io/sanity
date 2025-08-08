@@ -37,7 +37,7 @@ type VirtualDatum = {
   isLast: boolean
 }
 
-export interface TableProps<TableData, AdditionalRowTableData> {
+export interface BaseTableProps<TableData, AdditionalRowTableData> {
   columnDefs: Column<RowDatum<TableData, AdditionalRowTableData>>[]
   searchFilter?: (data: TableData[], searchTerm: string) => TableData[]
   data: TableData[]
@@ -71,7 +71,7 @@ const TableInner = <TableData, AdditionalRowTableData>({
   rowProps = () => ({}),
   scrollContainerRef,
   hideTableInlinePadding = false,
-}: TableProps<TableData, AdditionalRowTableData>) => {
+}: BaseTableProps<TableData, AdditionalRowTableData>) => {
   const {searchTerm, sort} = useTableContext()
   const virtualizerContainerRef = useRef<HTMLDivElement | null>(null)
   const filteredData = useMemo(() => {
@@ -228,7 +228,7 @@ const TableInner = <TableData, AdditionalRowTableData>({
 
   const headers = useMemo(
     () =>
-      amalgamatedColumnDefs.map(({cell, sortTransform, ...header}) => ({
+      amalgamatedColumnDefs.map(({cell: _cell, sortTransform: _sortTransform, ...header}) => ({
         ...header,
         id: String(header.id),
       })),
@@ -303,7 +303,8 @@ const TableInner = <TableData, AdditionalRowTableData>({
         <Stack as="table">
           <TableHeader
             headers={headers}
-            searchDisabled={loading || (!searchTerm && !data.length)}
+            searchDisabled={!searchTerm && !data.length}
+            searchLoading={Boolean(searchTerm) && loading}
           />
           <Box
             style={{
@@ -322,11 +323,21 @@ const TableInner = <TableData, AdditionalRowTableData>({
 
 export const Table = <TableData, AdditionalRowTableData = undefined>({
   defaultSort,
+  searchTerm,
+  onSearchTermChange,
   ...props
-}: TableProps<TableData, AdditionalRowTableData> & {defaultSort?: TableSort}) => {
+}: BaseTableProps<TableData, AdditionalRowTableData> & {
+  defaultSort?: TableSort
+  searchTerm?: string | null
+  onSearchTermChange?: (value: string) => void
+}) => {
   return (
     <TooltipDelayGroupProvider>
-      <TableProvider defaultSort={defaultSort}>
+      <TableProvider
+        defaultSort={defaultSort}
+        searchTerm={searchTerm}
+        onSearchTermChange={onSearchTermChange}
+      >
         <TableInner<TableData, AdditionalRowTableData> {...props} />
       </TableProvider>
     </TooltipDelayGroupProvider>

@@ -1,7 +1,7 @@
-import {ArrowUpIcon, SearchIcon} from '@sanity/icons'
+import {ArrowUpIcon, SearchIcon, SpinnerIcon} from '@sanity/icons'
 import {Box, Card, Flex, Stack, Text, TextInput} from '@sanity/ui'
 import {motion} from 'framer-motion'
-import {useMemo} from 'react'
+import {useCallback, useMemo} from 'react'
 
 import {Button, type ButtonProps} from '../../../../../ui-components'
 import {useTranslation} from '../../../../i18n/hooks/useTranslation'
@@ -37,10 +37,15 @@ const SortHeaderButton = ({
     [sort?.direction],
   )
 
+  const handleClick = useCallback(
+    () => setSortColumn(String(header.id)),
+    [header.id, setSortColumn],
+  )
+
   return (
     <Button
       iconRight={header.sorting && sort?.column === header.id ? sortIcon : undefined}
-      onClick={() => setSortColumn(String(header.id))}
+      onClick={handleClick}
       mode="bleed"
       size="default"
       text={text}
@@ -52,23 +57,34 @@ const TableHeaderSearch = ({
   headerProps,
   searchDisabled,
   placeholder,
-}: HeaderProps & {placeholder?: string}) => {
+  searchLoading,
+}: HeaderProps & {placeholder?: string; searchLoading?: boolean}) => {
   const {t} = useTranslation()
   const {setSearchTerm, searchTerm} = useTableContext()
+
+  const handleChange: React.ChangeEventHandler<HTMLInputElement> = useCallback(
+    (event) => {
+      setSearchTerm(event.currentTarget.value)
+    },
+    [setSearchTerm],
+  )
+  const handleClear = useCallback(() => {
+    setSearchTerm('')
+  }, [setSearchTerm])
 
   return (
     <Stack {...headerProps} flex={1} paddingY={2} paddingRight={3} sizing="border">
       <TextInput
         border={false}
         fontSize={1}
-        icon={SearchIcon}
+        icon={searchLoading ? <SpinnerIcon /> : SearchIcon}
         placeholder={placeholder || t('search.placeholder')}
         radius={3}
         value={searchTerm || ''}
         disabled={searchDisabled}
-        onChange={(event) => setSearchTerm(event.currentTarget.value)}
-        onClear={() => setSearchTerm('')}
-        clearButton={!!searchTerm}
+        onChange={handleChange}
+        onClear={handleClear}
+        clearButton={Boolean(searchTerm)}
       />
     </Stack>
   )
@@ -78,7 +94,7 @@ const TableHeaderSearch = ({
  *
  * @internal
  */
-export const TableHeader = ({headers, searchDisabled}: TableHeaderProps) => {
+export const TableHeader = ({headers, searchDisabled, searchLoading}: TableHeaderProps) => {
   return (
     <Card as="thead" borderBottom>
       <Flex
@@ -90,21 +106,22 @@ export const TableHeader = ({headers, searchDisabled}: TableHeaderProps) => {
         )`,
         }}
       >
-        {headers.map(
-          ({header: Header, style, width, id, sorting}) =>
-            !!Header && (
-              <Header
-                key={String(id)}
-                headerProps={{
-                  as: 'th',
-                  id: String(id),
-                  style: {...style, width: width || undefined},
-                }}
-                header={{id, sorting}}
-                searchDisabled={searchDisabled}
-              />
-            ),
-        )}
+        {headers.map(({header: Header, style, width, id, sorting}) => {
+          if (!Header) return null
+          return (
+            <Header
+              key={String(id)}
+              headerProps={{
+                as: 'th',
+                id: String(id),
+                style: {...style, width: width || undefined},
+              }}
+              header={{id, sorting}}
+              searchDisabled={searchDisabled}
+              searchLoading={searchLoading}
+            />
+          )
+        })}
       </Flex>
     </Card>
   )

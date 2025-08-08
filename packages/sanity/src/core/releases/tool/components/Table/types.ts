@@ -37,6 +37,7 @@ export type Column<TableData = unknown> = HiddenColumn<TableData> | VisibleColum
 export interface TableHeaderProps {
   headers: Omit<Column, 'cell'>[]
   searchDisabled?: boolean
+  searchLoading?: boolean
 }
 
 export type HeaderProps = Omit<TableHeaderProps, 'headers'> & {
