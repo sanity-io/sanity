@@ -9,17 +9,52 @@ on:
       - "v*"
 
   pull_request:
+    paths-ignore:
+      - "examples/**"
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.head_ref || github.run_id }}
   cancel-in-progress: true
 
 jobs:
+  precheck:
+    runs-on: ubuntu-latest
+    outputs:
+      examples_only: ${{ steps.check.outputs.examples_only }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - id: check
+        name: Check if only examples files changed
+        run: |
+          if [ "${{ github.event_name }}" = "pull_request" ]; then
+            CHANGED_FILES=$(git diff --name-only origin/${{ github.base_ref }}...HEAD)
+          else
+            CHANGED_FILES=$(git diff --name-only HEAD~1)
+          fi
+
+          echo "Changed files:"
+          echo "$CHANGED_FILES"
+
+          EXAMPLES_ONLY="true"
+          while IFS= read -r file; do
+            if [[ ! "$file" =~ ^examples/ ]]; then
+              EXAMPLES_ONLY="false"
+              break
+            fi
+          done <<< "$CHANGED_FILES"
+
+          echo "examples_only=$EXAMPLES_ONLY" >> $GITHUB_OUTPUT
+
   report:
     runs-on: ubuntu-latest
     env:
       TURBO_TOKEN: ${{ secrets.TURBO_TOKEN }}
       TURBO_TEAM: ${{ vars.TURBO_TEAM }}
+    needs: [precheck]
+    # Skip only for PRs that change examples/** exclusively; always run on tags
+    if: github.event_name != 'pull_request' || needs.precheck.outputs.examples_only != 'true'
 
     steps:
       - uses: actions/checkout@v4

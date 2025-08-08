@@ -4,6 +4,8 @@ permissions:
 
 on:
   pull_request:
+    paths-ignore:
+      - "examples/**"
   workflow_dispatch:
     inputs:
       reference_tag:
@@ -26,12 +28,44 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
+  precheck:
+    runs-on: ubuntu-latest
+    outputs:
+      examples_only: ${{ steps.check.outputs.examples_only }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - id: check
+        name: Check if only examples files changed
+        run: |
+          if [ "${{ github.event_name }}" = "pull_request" ]; then
+            CHANGED_FILES=$(git diff --name-only origin/${{ github.base_ref }}...HEAD)
+          else
+            CHANGED_FILES=$(git diff --name-only HEAD~1)
+          fi
+
+          echo "Changed files:"
+          echo "$CHANGED_FILES"
+
+          EXAMPLES_ONLY="true"
+          while IFS= read -r file; do
+            if [[ ! "$file" =~ ^examples/ ]]; then
+              EXAMPLES_ONLY="false"
+              break
+            fi
+          done <<< "$CHANGED_FILES"
+
+          echo "examples_only=$EXAMPLES_ONLY" >> $GITHUB_OUTPUT
+
   efps-test:
     timeout-minutes: 30
     runs-on: ubuntu-latest
     env:
       TURBO_TOKEN: ${{ secrets.TURBO_TOKEN }}
       TURBO_TEAM: ${{ vars.TURBO_TEAM }}
+    needs: [precheck]
+    if: needs.precheck.outputs.examples_only != 'true'
     strategy:
       fail-fast: false
       matrix:
@@ -95,8 +129,8 @@ jobs:
           retention-days: 30
 
   merge-reports:
-    if: always()
-    needs: [efps-test]
+    if: ${{ always() && needs.precheck.outputs.examples_only != 'true' }}
+    needs: [precheck, efps-test]
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4

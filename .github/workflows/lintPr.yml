@@ -22,20 +22,53 @@ jobs:
       - uses: actions/checkout@v4
         with:
           fetch-depth: 0 # needed for the --affected flag in turbo to work correctly
+      - name: Check if only examples files changed
+        id: check_examples_only
+        run: |
+          if [ "${{ github.event_name }}" = "pull_request" ]; then
+            CHANGED_FILES=$(git diff --name-only origin/${{ github.base_ref }}...HEAD)
+          else
+            CHANGED_FILES=$(git diff --name-only HEAD~1)
+          fi
+
+          echo "Changed files:"
+          echo "$CHANGED_FILES"
+
+          EXAMPLES_ONLY="true"
+          while IFS= read -r file; do
+            if [[ ! "$file" =~ ^examples/ ]]; then
+              EXAMPLES_ONLY="false"
+              break
+            fi
+          done <<< "$CHANGED_FILES"
+
+          echo "examples_only=$EXAMPLES_ONLY" >> $GITHUB_OUTPUT
+
+      - name: Skip lint for examples-only changes
+        if: steps.check_examples_only.outputs.examples_only == 'true'
+        run: |
+          echo "Only examples files changed, skipping lint"
+          exit 0
       - uses: pnpm/action-setup@v4
+        if: steps.check_examples_only.outputs.examples_only != 'true'
       - uses: actions/setup-node@v4
+        if: steps.check_examples_only.outputs.examples_only != 'true'
         with:
           cache: pnpm
           node-version: lts/*
 
       - name: Install project dependencies
+        if: steps.check_examples_only.outputs.examples_only != 'true'
         run: pnpm install
 
       - name: Oxlint files
+        if: steps.check_examples_only.outputs.examples_only != 'true'
         run: pnpm turbo run check:oxlint -- --format github
 
       - name: Register Problem Matcher for ESLint that handles -f compact and shows warnings inline on PRs
+        if: steps.check_examples_only.outputs.examples_only != 'true'
         run: echo "::add-matcher::.github/eslint-compact.json"
 
       - name: ESLint files
+        if: steps.check_examples_only.outputs.examples_only != 'true'
         run: pnpm turbo run lint --affected --output-logs=full --continue -- -f compact
