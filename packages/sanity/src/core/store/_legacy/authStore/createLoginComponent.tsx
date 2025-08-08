@@ -15,9 +15,10 @@ interface GetProvidersOptions extends AuthConfig {
   client: SanityClient
 }
 
-async function getGlobalUserData() {
+async function getGlobalUserData(client: SanityClient) {
+  const apiHost = client.config().apiHost
   try {
-    const response = await fetch('https://api.sanity.work/vX/users/me', {
+    const response = await fetch(`${apiHost}/vX/users/me`, {
       method: 'GET',
       headers: {
         'Content-Type': 'application/json',
@@ -134,13 +135,15 @@ export function createLoginComponent({
     }, [client])
 
     useEffect(() => {
-      getGlobalUserData().then((data) => {
+      if (!client) return
+
+      getGlobalUserData(client).then((data) => {
         setUserData({
           isLoading: false,
           data,
         })
       })
-    }, [])
+    }, [client])
 
     // only create a direct URL if `redirectOnSingle` is true and there is only
     // one provider available
