@@ -100,6 +100,10 @@ function getTimeZoneAbbreviation(date: Date) {
   return tz ? tz.value : ''
 }
 
+function getLocalizedDate(date: Date, options: Intl.DateTimeFormatOptions, locale = 'en-US') {
+  return new Intl.DateTimeFormat(locale, options).format(date)
+}
+
 /**
  * Formats a Date object using many Moment-like tokens.
  */
@@ -255,19 +259,68 @@ function formatMomentLike(date: Date, formatStr: string): string {
     {key: 'zz', value: getTimeZoneAbbreviation(date)},
     {key: 'Z', value: format(date, 'xxx')},
     {key: 'ZZ', value: format(date, 'xx')},
+
+    // Time
+    {key: 'LTS', value: getLocalizedDate(date, {timeStyle: 'medium'})},
+    {key: 'LT', value: getLocalizedDate(date, {timeStyle: 'short'})},
+
+    // Date (uppercase = longer names)
+    {
+      key: 'LLLL',
+      value: getLocalizedDate(date, {
+        weekday: 'long',
+        year: 'numeric',
+        month: 'long',
+        day: 'numeric',
+        hour: 'numeric',
+        minute: 'numeric',
+      }),
+    },
+    {
+      key: 'LLL',
+      value: getLocalizedDate(date, {
+        year: 'numeric',
+        month: 'long',
+        day: 'numeric',
+        hour: 'numeric',
+        minute: 'numeric',
+      }),
+    },
+    {key: 'LL', value: getLocalizedDate(date, {year: 'numeric', month: 'long', day: 'numeric'})},
+    {key: 'L', value: getLocalizedDate(date, {year: 'numeric', month: '2-digit', day: '2-digit'})},
+
+    // Date (lowercase = shorter names)
+    {
+      key: 'llll',
+      value: getLocalizedDate(date, {
+        weekday: 'short',
+        year: 'numeric',
+        month: 'short',
+        day: 'numeric',
+        hour: 'numeric',
+        minute: 'numeric',
+      }),
+    },
+    {
+      key: 'lll',
+      value: getLocalizedDate(date, {
+        year: 'numeric',
+        month: 'short',
+        day: 'numeric',
+        hour: 'numeric',
+        minute: 'numeric',
+      }),
+    },
+    {key: 'll', value: getLocalizedDate(date, {year: 'numeric', month: 'short', day: 'numeric'})},
+    {key: 'l', value: getLocalizedDate(date, {year: 'numeric', month: 'numeric', day: 'numeric'})},
   ]
 
   // Sort tokens by descending length to avoid partial collisions
   tokens.sort((a, b) => b.key.length - a.key.length)
 
-  // 1) Fractional seconds
-  const fracSecRegex = /(S{1,4})/g
-  let output = processedFormat.replace(fracSecRegex, (match) => {
-    return getFractionalSeconds(date, match.length)
-  })
+  let output = processedFormat
 
   // Find each token and replace it, make sure not to replace overlapping tokens
-
   for (const {key, value} of tokens) {
     // Escape special characters
     const escapedKey = key.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
@@ -275,6 +328,12 @@ function formatMomentLike(date: Date, formatStr: string): string {
     const tokenRegex = new RegExp(`(^|[^A-Z0-9a-z])(${escapedKey})(?![A-Z0-9a-z])`, 'g')
     output = output.replace(tokenRegex, `$1${value}`)
   }
+
+  // 2) Fractional seconds (run after token replacement to avoid colliding with LTS)
+  const fracSecRegex = /(S{1,4})/g
+  output = output.replace(fracSecRegex, (match) => {
+    return getFractionalSeconds(date, match.length)
+  })
 
   // After all token replacements, restore escaped sequences
   output = output.replace(new RegExp(escapeToken, 'g'), () => escapeSequences.shift() || '')
