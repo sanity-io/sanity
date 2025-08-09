@@ -129,3 +129,29 @@ describe('formatMomentLike - basic tokens', () => {
     expect(formatter(date, 'ZZ')).toBe('+0200')
   })
 })
+
+describe('formatMomentLike - localized Moment tokens', () => {
+  test('date-only localized', () => {
+    expect(formatter(date, 'l')).toBe('8/8/2025')
+    expect(formatter(date, 'll')).toBe('Aug 8, 2025')
+    expect(formatter(date, 'lll')).toBe('Aug 8, 2025, 12:00 PM')
+    expect(formatter(date, 'llll')).toBe('Fri, Aug 8, 2025, 12:00 PM')
+    expect(formatter(date, 'L')).toBe('08/08/2025')
+    expect(formatter(date, 'LL')).toBe('August 8, 2025')
+    expect(formatter(date, 'LLL')).toBe('August 8, 2025 at 12:00 PM')
+    expect(formatter(date, 'LLLL')).toBe('Friday, August 8, 2025 at 12:00 PM')
+  })
+
+  test('time-only localized', () => {
+    expect(formatter(date, 'LT')).toBe('12:00 PM')
+    expect(formatter(date, 'LTS')).toBe('12:00:00 PM')
+    expect(formatter(date, 'LL LT')).toBe('August 8, 2025 12:00 PM')
+    expect(formatter(date, 'L LT')).toBe('08/08/2025 12:00 PM')
+    expect(formatter(date, 'l LT')).toBe('8/8/2025 12:00 PM')
+    expect(formatter(date, 'll LTS')).toBe('Aug 8, 2025 12:00:00 PM')
+  })
+  test('bracket escaping', () => {
+    expect(formatter(date, '[at] HH:mm')).toBe('at 12:00')
+    expect(formatter(date, '[l] LT')).toBe('l 12:00 PM')
+  })
+})
