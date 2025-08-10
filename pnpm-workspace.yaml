@@ -18,7 +18,7 @@ catalog:
   '@types/react': ^19.1.9
   '@types/react-dom': ^19.1.7
   '@types/react-is': ^19.0.0
-  '@vitejs/plugin-react': ^4.6.0
+  '@vitejs/plugin-react': ^5.0.0
   esbuild-register: ^3.6.0
   esbuild: 0.25.8
   globals: ^16.2.0
