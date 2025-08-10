@@ -1,10 +1,14 @@
 import {isEqual} from 'lodash'
-import {lazy, memo, Suspense} from 'react'
+import {memo, Suspense} from 'react'
 
 import {PaneRouterProvider} from '../components/paneRouter'
 import {type PaneNode} from '../types'
-import {LoadingPane} from './loading'
-import {UnknownPane} from './unknown'
+import {DocumentPane} from './document/DocumentPane'
+import {DocumentListPane} from './documentList/DocumentListPane'
+import {ListPane} from './list/ListPane'
+import {LoadingPane} from './loading/LoadingPane'
+import {UnknownPane} from './unknown/UnknownPaneType'
+import {UserComponentPane} from './userComponent/UserComponentPane'
 
 interface StructureToolPaneProps {
   active: boolean
@@ -21,12 +25,11 @@ interface StructureToolPaneProps {
   siblingIndex: number
 }
 
-// TODO: audit this creates separate chunks
 const paneMap = {
-  component: lazy(() => import('./userComponent')),
-  document: lazy(() => import('./document/pane')),
-  documentList: lazy(() => import('./documentList/pane')),
-  list: lazy(() => import('./list')),
+  component: UserComponentPane,
+  document: DocumentPane,
+  documentList: DocumentListPane,
+  list: ListPane,
 }
 
 /**
