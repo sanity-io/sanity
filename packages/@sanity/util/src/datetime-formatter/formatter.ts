@@ -194,10 +194,6 @@ function formatMomentLike(date: Date, formatStr: string): string {
     // ISO day of week
     {key: 'E', value: String(getISODayOfWeek(date))},
 
-    // Day of Year
-    {key: 'DDDD', value: zeroPad(getDayOfYear(date), 3)},
-    {key: 'DDD', value: String(getDayOfYear(date))},
-
     // Week of the year
     // w 1 2 ... 52 53
     {key: 'w', value: zeroPad(isoWeekNum, 2)},

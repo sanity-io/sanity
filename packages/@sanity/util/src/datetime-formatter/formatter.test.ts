@@ -4,7 +4,122 @@ import formatter from './formatter'
 
 // August 8th 2025 12:00:00.123 local time in UTC
 const date = new Date('2025-08-08T13:09:08.123Z')
+// Midnight of the same day
 const midnight = new Date('2025-08-08T00:00:00.000Z')
+const bc = new Date(-1, 0, 1, 0, 0, 0, 0) // Year -1
+
+const TESTS = [
+  // Year tokens
+  {date: date, token: 'YYYY', value: '2025'},
+  {date: date, token: 'YY', value: '25'},
+  {date: date, token: 'Y', value: '2025'},
+  {date: date, token: 'YYYYY', value: '02025'},
+  // Week-year tokens
+  {date: date, token: 'GGGG', value: '2025'},
+  {date: date, token: 'GG', value: '25'},
+  {date: date, token: 'gggg', value: '2025'},
+  {date: date, token: 'gg', value: '25'},
+  // Quarter tokens
+  {date: date, token: 'Q', value: '3'},
+  {date: date, token: 'Qo', value: '3rd'},
+  // Month tokens
+  {date: date, token: 'MMMM', value: 'August'},
+  {date: date, token: 'MMM', value: 'Aug'},
+  {date: date, token: 'MM', value: '08'},
+  {date: date, token: 'M', value: '8'},
+  {date: date, token: 'Mo', value: '8th'},
+  // Day of month tokens
+  {date: date, token: 'DD', value: '08'},
+  {date: date, token: 'D', value: '8'},
+  {date: date, token: 'Do', value: '8th'},
+  // Day of week tokens
+  {date: date, token: 'dddd', value: 'Friday'},
+  {date: date, token: 'ddd', value: 'Fri'},
+  {date: date, token: 'dd', value: 'Fr'},
+  {date: date, token: 'd', value: '5'}, // Sunday=0..Saturday=},
+  {date: date, token: 'do', value: '6th'}, // dayOfWeek+1 => 6t},
+  // Day of year tokens
+  {date: date, token: 'DDDD', value: '220'},
+  {date: date, token: 'DDD', value: '220'},
+  {date: date, token: 'DDDo', value: '220th'},
+  // ISO day of week tokens
+  {date: date, token: 'E', value: '5'}, // ISO Monday=1..Sunday=},
+  // Week of the year tokens
+  {date: date, token: 'w', value: '32'},
+  {date: date, token: 'wo', value: '32nd'},
+  {date: date, token: 'ww', value: '32'},
+  // ISO Week
+  {date: date, token: 'WW', value: '32'},
+  {date: date, token: 'W', value: '32'},
+  {date: date, token: 'Wo', value: '32nd'},
+  // 24h hour tokens
+  {date: date, token: 'HH', value: '15'},
+  {date: midnight, token: 'HH', value: '02'},
+  {date: date, token: 'H', value: '15'},
+  {date: midnight, token: 'H', value: '2'},
+  // 12h hour tokens
+  {date: date, token: 'hh', value: '03'},
+  {date: midnight, token: 'hh', value: '02'},
+  {date: date, token: 'h', value: '3'},
+  {date: midnight, token: 'h', value: '2'},
+  // 1-24 hour tokens (k, kk)
+  {date: date, token: 'kk', value: '15'},
+  {date: midnight, token: 'kk', value: '02'},
+  {date: date, token: 'k', value: '15'},
+  {date: midnight, token: 'k', value: '2'},
+  // Minutes and seconds
+  {date: date, token: 'mm', value: '09'},
+  {date: date, token: 'm', value: '9'},
+  {date: date, token: 'ss', value: '08'},
+  {date: date, token: 's', value: '8'},
+  // AM/PM
+  {date: date, token: 'A', value: 'PM'},
+  {date: date, token: 'a', value: 'pm'},
+  {date: midnight, token: 'A', value: 'AM'},
+  {date: midnight, token: 'a', value: 'am'},
+  // Epoch tokens
+  {date: date, token: 'N', value: 'AD'},
+  {date: bc, token: 'N', value: 'BC'},
+  {date: bc, token: 'NN', value: 'BC'},
+  {date: bc, token: 'NNN', value: 'BC'},
+  {date: bc, token: 'NNNN', value: 'Before Christ'},
+  {date: bc, token: 'NNNNN', value: 'BC'},
+  {date: date, token: 'N', value: 'AD'},
+  // Time zone offset tokens
+  {date: date, token: 'z', value: 'GMT+2'},
+  {date: date, token: 'zz', value: 'GMT+2'},
+  {date: date, token: 'Z', value: '+02:00'},
+  {date: date, token: 'ZZ', value: '+0200'},
+  // Time-only localized tokens
+  {date: date, token: 'LTS', value: '3:09:08 PM'},
+  {date: date, token: 'LT', value: '3:09 PM'},
+
+  // Date-only localized tokens
+  {date: date, token: 'LLLL', value: 'Friday, August 8, 2025 at 3:09 PM'},
+  {date: date, token: 'LLL', value: 'August 8, 2025 at 3:09 PM'},
+  {date: date, token: 'LL', value: 'August 8, 2025'},
+  {date: date, token: 'L', value: '08/08/2025'},
+  {date: date, token: 'llll', value: 'Fri, Aug 8, 2025, 3:09 PM'},
+  {date: date, token: 'lll', value: 'Aug 8, 2025, 3:09 PM'},
+  {date: date, token: 'll', value: 'Aug 8, 2025'},
+  {date: date, token: 'l', value: '8/8/2025'},
+
+  // Localized tokens with time
+  {date: date, token: 'LL LT', value: 'August 8, 2025 3:09 PM'},
+  {date: date, token: 'L LT', value: '08/08/2025 3:09 PM'},
+  {date: date, token: 'l LT', value: '8/8/2025 3:09 PM'},
+  {date: date, token: 'll LTS', value: 'Aug 8, 2025 3:09:08 PM'},
+
+  // Bracket escaping tokens
+  {date: date, token: '[at] HH:mm', value: 'at 15:09'},
+  {date: date, token: '[l] LT', value: 'l 3:09 PM'},
+
+  // Fractional seconds
+  {date: date, token: 'SSSS', value: '1230'},
+  {date: date, token: 'SSS', value: '123'},
+  {date: date, token: 'SS', value: '12'},
+  {date: date, token: 'S', value: '1'},
+]
 
 describe('formatter - tokens tests', () => {
   beforeAll(() => {
@@ -14,148 +129,7 @@ describe('formatter - tokens tests', () => {
   afterAll(() => {
     vi.unstubAllEnvs()
   })
-
-  test('year tokens', () => {
-    expect(formatter(date, 'Y')).toBe('2025')
-    expect(formatter(date, 'YY')).toBe('25')
-    expect(formatter(date, 'YYYY')).toBe('2025')
-    expect(formatter(date, 'YYYYY')).toBe('02025')
-  })
-
-  test('week-year tokens', () => {
-    expect(formatter(date, 'GG')).toBe('25')
-    expect(formatter(date, 'GGGG')).toBe('2025')
-    expect(formatter(date, 'gg')).toBe('25')
-    expect(formatter(date, 'gggg')).toBe('2025')
-  })
-
-  test('quarter tokens', () => {
-    expect(formatter(date, 'Q')).toBe('3')
-    expect(formatter(date, 'Qo')).toBe('3rd')
-  })
-
-  test('month tokens', () => {
-    expect(formatter(date, 'M')).toBe('8')
-    expect(formatter(date, 'MM')).toBe('08')
-    expect(formatter(date, 'Mo')).toBe('8th')
-    expect(formatter(date, 'MMM')).toBe('Aug')
-    expect(formatter(date, 'MMMM')).toBe('August')
-  })
-
-  test('day of month tokens', () => {
-    expect(formatter(date, 'D')).toBe('8')
-    expect(formatter(date, 'DD')).toBe('08')
-    expect(formatter(date, 'Do')).toBe('8th')
-  })
-
-  test('day of week tokens', () => {
-    // Friday
-    expect(formatter(date, 'ddd')).toBe('Fri')
-    expect(formatter(date, 'dddd')).toBe('Friday')
-    expect(formatter(date, 'dd')).toBe('Fr')
-    expect(formatter(date, 'd')).toBe('5') // Sunday=0..Saturday=6
-    expect(formatter(date, 'do')).toBe('6th') // dayOfWeek+1 => 6th
-  })
-
-  test('day of year tokens', () => {
-    // 2025-08-08 is the 220th day of the year
-    expect(formatter(date, 'DDD')).toBe('220')
-    expect(formatter(date, 'DDDD')).toBe('220')
-    expect(formatter(date, 'DDDo')).toBe('220th')
-  })
-
-  test('Iso day of week', () => {
-    expect(formatter(date, 'E')).toBe('5') // ISO Monday=1..Sunday=7
-  })
-
-  test('Week of the year tokens', () => {
-    // 2025-08-08 falls on ISO week 32
-    expect(formatter(date, 'w')).toBe('32')
-    expect(formatter(date, 'wo')).toBe('32nd')
-    expect(formatter(date, 'ww')).toBe('32')
-  })
-
-  test('ISO Week of the year tokens', () => {
-    expect(formatter(date, 'W')).toBe('32')
-    expect(formatter(date, 'WW')).toBe('32')
-    expect(formatter(date, 'Wo')).toBe('32nd')
-  })
-
-  test('24h hour tokens', () => {
-    expect(formatter(date, 'HH')).toBe('15')
-    expect(formatter(date, 'H')).toBe('15')
-    expect(formatter(midnight, 'H')).toBe('2')
-    expect(formatter(midnight, 'HH')).toBe('02')
-  })
-
-  test('12h hour tokens', () => {
-    expect(formatter(date, 'hh')).toBe('03')
-    expect(formatter(date, 'h')).toBe('3')
-    expect(formatter(midnight, 'hh')).toBe('02')
-    expect(formatter(midnight, 'h')).toBe('2')
-  })
-
-  test('1-24 hour tokens (k, kk)', () => {
-    expect(formatter(date, 'k')).toBe('15')
-    expect(formatter(date, 'kk')).toBe('15')
-    expect(formatter(midnight, 'k')).toBe('2')
-    expect(formatter(midnight, 'kk')).toBe('02')
-  })
-
-  test('minutes and seconds', () => {
-    expect(formatter(date, 'mm')).toBe('09')
-    expect(formatter(date, 'm')).toBe('9')
-    expect(formatter(date, 'ss')).toBe('08')
-    expect(formatter(date, 's')).toBe('8')
-  })
-
-  test('AM/PM', () => {
-    expect(formatter(date, 'A')).toBe('PM')
-    expect(formatter(date, 'a')).toBe('pm')
-    expect(formatter(midnight, 'A')).toBe('AM')
-    expect(formatter(midnight, 'a')).toBe('am')
-  })
-  test('fractional seconds', () => {
-    expect(formatter(date, 'S')).toBe('1')
-    expect(formatter(date, 'SS')).toBe('12')
-    expect(formatter(date, 'SSS')).toBe('123')
-    expect(formatter(date, 'SSSS')).toBe('1230')
-  })
-
-  test('eras (BC/AD)', () => {
-    const bc = new Date(-1, 0, 1, 0, 0, 0, 0) // Year -1
-    expect(formatter(bc, 'N')).toBe('BC')
-    expect(formatter(bc, 'NN')).toBe('BC')
-    expect(formatter(bc, 'NNN')).toBe('BC')
-    expect(formatter(bc, 'NNNN')).toBe('Before Christ')
-    expect(formatter(bc, 'NNNNN')).toBe('BC')
-    expect(formatter(date, 'N')).toBe('AD')
-  })
-  test('time zone offset tokens shape', () => {
-    expect(formatter(date, 'Z')).toBe('+02:00')
-    expect(formatter(date, 'ZZ')).toBe('+0200')
-  })
-  test('date-only localized', () => {
-    expect(formatter(date, 'l')).toBe('8/8/2025')
-    expect(formatter(date, 'll')).toBe('Aug 8, 2025')
-    expect(formatter(date, 'lll')).toBe('Aug 8, 2025, 3:09 PM')
-    expect(formatter(date, 'llll')).toBe('Fri, Aug 8, 2025, 3:09 PM')
-    expect(formatter(date, 'L')).toBe('08/08/2025')
-    expect(formatter(date, 'LL')).toBe('August 8, 2025')
-    expect(formatter(date, 'LLL')).toBe('August 8, 2025 at 3:09 PM')
-    expect(formatter(date, 'LLLL')).toBe('Friday, August 8, 2025 at 3:09 PM')
-  })
-
-  test('time-only localized', () => {
-    expect(formatter(date, 'LT')).toBe('3:09 PM')
-    expect(formatter(date, 'LTS')).toBe('3:09:08 PM')
-    expect(formatter(date, 'LL LT')).toBe('August 8, 2025 3:09 PM')
-    expect(formatter(date, 'L LT')).toBe('08/08/2025 3:09 PM')
-    expect(formatter(date, 'l LT')).toBe('8/8/2025 3:09 PM')
-    expect(formatter(date, 'll LTS')).toBe('Aug 8, 2025 3:09:08 PM')
-  })
-  test('bracket escaping', () => {
-    expect(formatter(date, '[at] HH:mm')).toBe('at 15:09')
-    expect(formatter(date, '[l] LT')).toBe('l 3:09 PM')
+  test.each(TESTS)('$token should be $value', ({date: d, token, value}) => {
+    expect(formatter(d, token)).toBe(value)
   })
 })
