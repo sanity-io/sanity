@@ -80,12 +80,16 @@ const releaseDocuments: DocumentInRelease[] = [
   },
 ]
 
+type ScrollableProps = {scrollContainerRef: {current: HTMLDivElement | null}}
+
 const ScrollContainer: FC<PropsWithChildren> = ({children}) => {
   const [ref, setRef] = useState<HTMLDivElement | null>(null)
 
   return (
     <div style={{height: '400px'}} ref={setRef}>
-      {cloneElement(children as ReactElement, {scrollContainerRef: {current: ref}})}
+      {cloneElement(children as ReactElement<ScrollableProps>, {
+        scrollContainerRef: {current: ref},
+      })}
     </div>
   )
 }
@@ -198,8 +202,11 @@ describe('ReleaseSummary', () => {
   setupVirtualListEnv()
 
   describe('for an active release', () => {
+    let onSearchTermChange: (value: string) => void
+
     beforeEach(async () => {
-      await renderTest({})
+      onSearchTermChange = vi.fn()
+      await renderTest({onSearchTermChange})
       await vi.waitFor(() => screen.getByTestId('document-table-card'), {
         timeout: 5000,
         interval: 500,
@@ -249,9 +256,7 @@ describe('ReleaseSummary', () => {
         })
       })
 
-      const [searchedFirstDocument] = screen.getAllByTestId('table-row')
-
-      within(searchedFirstDocument).getByText('Second document')
+      expect(onSearchTermChange).toHaveBeenCalledWith('Second')
     })
 
     it('Allows for adding a document to an active release', () => {
