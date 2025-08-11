@@ -20,6 +20,11 @@ function getDayName(
   return new Intl.DateTimeFormat(validLocale, {weekday: style}).format(date)
 }
 
+function getLocalizedDate(date: Date, options: Intl.DateTimeFormatOptions, locale = 'en-US') {
+  const validLocale = sanitizeLocale(locale)
+  return new Intl.DateTimeFormat(validLocale, options).format(date)
+}
+
 /**
  * Zero-pads a number to `length` digits (e.g. zeroPad(7, 2) = "07").
  */
@@ -98,10 +103,6 @@ function getTimeZoneAbbreviation(date: Date) {
   }).formatToParts(date)
   const tz = parts.find((part) => part.type === 'timeZoneName')
   return tz ? tz.value : ''
-}
-
-function getLocalizedDate(date: Date, options: Intl.DateTimeFormatOptions, locale = 'en-US') {
-  return new Intl.DateTimeFormat(locale, options).format(date)
 }
 
 /**
