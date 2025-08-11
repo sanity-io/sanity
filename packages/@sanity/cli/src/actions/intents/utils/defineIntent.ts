@@ -1,11 +1,11 @@
-/* Note: this is a backup copy of defineIntent for when it's not available in @sanity/sdk
+/* Note: this is a backup copy of defineIntent for when it's not available in \@sanity/sdk
    It's used to provide type safety and validation for intent objects.
 */
 
 /**
  * Filter criteria for intent matching
  * All properties are optional, allowing for flexible intent registration
- * @internal - This is a backup copy of defineIntent for when it's not available in @sanity/sdk
+ * @internal - This is a backup copy of defineIntent for when it's not available in \@sanity/sdk
  */
 export interface IntentFilter {
   /**
@@ -30,7 +30,7 @@ export interface IntentFilter {
 
 /**
  * Intent definition structure for registering user intents
- * @internal - This is a backup copy of defineIntent for when it's not available in @sanity/sdk
+ * @internal - This is a backup copy of defineIntent for when it's not available in \@sanity/sdk
  */
 export interface Intent {
   /**
@@ -59,13 +59,13 @@ export interface Intent {
 
   /**
    * Array of filter criteria for intent matching
-   * @remarks At least one filter is required. Use {types: ['*']} to match everything
+   * @remarks At least one filter is required. Use \{types: \['*']\} to match everything
    */
   filters: IntentFilter[]
 }
 
 /**
- * Backup implementation of defineIntent for when it's not available in @sanity/sdk
+ * Backup implementation of defineIntent for when it's not available in \@sanity/sdk
  *
  * This utility function provides TypeScript support and validation for intent objects
  * that will be saved as Sanity documents. It ensures the intent structure matches

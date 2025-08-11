@@ -18,7 +18,7 @@ export async function queryDashboardStore<T = any>(
 
   // Right now, querying the Dashboard Store is an experimental API.
   const {result} = await client
-    .withConfig({apiVersion: 'vX', ignoreWarnings: ['experimental']})
+    .withConfig({apiVersion: 'vX', ignoreWarnings: 'experimental'})
     .request<{result: T[]}>({
       uri: `/dashboards/${dashboardStoreId}/query`,
       method: 'POST',

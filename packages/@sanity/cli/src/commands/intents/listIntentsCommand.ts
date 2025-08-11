@@ -1,9 +1,9 @@
 import {size} from 'lodash'
 
 import {type CliCommandDefinition, type CliConfig} from '../../types'
+import {type Intent} from './types'
 import {getDashboardStoreId} from './utils/getDashboardStoreId'
 import {queryDashboardStore} from './utils/queryDashboardStore'
-import {type Intent} from './types'
 
 const helpText = `
 Options

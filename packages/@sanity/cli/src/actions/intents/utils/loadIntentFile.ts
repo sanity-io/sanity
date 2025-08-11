@@ -1,7 +1,8 @@
 import path from 'node:path'
-import {IntentDefinition} from '../types'
-import {defineIntentBackup} from './defineIntent'
+
 import {dynamicRequire} from '../../../util/dynamicRequire'
+import {type IntentDefinition} from '../types'
+import {defineIntentBackup} from './defineIntent'
 
 // Cache for the defineIntent function to avoid repeated imports
 let defineIntentFn: ((intent: any) => any) | null = null
@@ -13,6 +14,7 @@ async function getDefineIntent(): Promise<(intent: any) => any> {
   if (defineIntentFn === null) {
     try {
       // Try to import defineIntent from the SDK package first
+      // (note: this is currently kind of a nightmare because ES modules, never got this to work)
       // @ts-expect-error - This may not exist yet, but that's OK
       const module = await import('@sanity/sdk')
       defineIntentFn = module.defineIntent
@@ -28,8 +30,8 @@ async function getDefineIntent(): Promise<(intent: any) => any> {
  * Load an intent file and return the intent definition
  *
  * This function handles both cases:
- * 1. Raw intent objects: export default { id: 'foo', action: 'view', ... }
- * 2. Helper-wrapped objects: export default defineIntent({ ... })
+ * 1. Raw intent objects: export default \{ id: 'foo', action: 'view', ... \}
+ * 2. Helper-wrapped objects: export default defineIntent(\{ ... \})
  *
  * Simple approach using the same pattern as sanity.cli.ts loading.
  */
