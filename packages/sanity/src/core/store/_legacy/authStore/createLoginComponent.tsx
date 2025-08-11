@@ -1,7 +1,7 @@
 /* eslint-disable i18next/no-literal-string */
 import {type AuthProvider, type AuthProviderResponse, type SanityClient} from '@sanity/client'
 import {Badge, Flex, Heading, Stack, Text} from '@sanity/ui'
-import {useCallback, useEffect, useMemo, useState} from 'react'
+import {useCallback, useEffect, useState} from 'react'
 import {type Observable} from 'rxjs'
 
 import {Button, type ButtonProps} from '../../../../ui-components'
@@ -13,6 +13,17 @@ import {type LoginComponentProps} from './types'
 
 interface GetProvidersOptions extends AuthConfig {
   client: SanityClient
+}
+
+interface UserData {
+  id?: string
+  givenName?: string
+  familyName?: string
+  name?: string
+  email?: string
+  profileImage?: string
+  tosAcceptedAt?: string
+  provider?: string
 }
 
 async function getGlobalUserData(client: SanityClient) {
@@ -117,7 +128,7 @@ export function createLoginComponent({
     const redirectPath = props.redirectPath || props.basePath || '/'
 
     const [providers, setProviders] = useState<AuthProvider[] | null>(null)
-    const [userData, setUserData] = useState<any>({
+    const [userData, setUserData] = useState<{isLoading: boolean; data?: UserData}>({
       isLoading: true,
       data: undefined,
     })
@@ -166,18 +177,8 @@ export function createLoginComponent({
       }
     }, [redirectUrlForRedirectOnSingle])
 
-    const [providerList, lastUsedProvider] = useMemo(() => {
-      const userProvider = userData.data?.provider
-
-      if (!providers) return []
-      if (!userProvider) return [providers]
-
-      const index = providers.findIndex((provider) => provider.name === userProvider)
-      const lastUsed = providers[index]
-      if (index < 0 || !lastUsed) return [providers]
-
-      return [providers.toSpliced(index, 1), lastUsed]
-    }, [userData.data?.provider, providers])
+    const lastUsedProvider = providers?.find(({name}) => name === userData.data?.provider)
+    const providerList = providers?.filter(({name}) => name !== userData.data?.provider)
 
     if (loading) {
       return <LoadingBlock showText />
