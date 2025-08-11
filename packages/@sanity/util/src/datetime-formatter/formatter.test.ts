@@ -1,12 +1,20 @@
-import {describe, expect, test} from 'vitest'
+import {afterAll, beforeAll, describe, expect, test, vi} from 'vitest'
 
 import formatter from './formatter'
 
-// August 8th 2025 12:00:00.123 local time
-const date = new Date(2025, 7, 8, 12, 0, 0, 123)
-const midnight = new Date(2025, 7, 8, 0, 5, 7, 890)
+// August 8th 2025 12:00:00.123 local time in UTC
+const date = new Date('2025-08-08T13:09:08.123Z')
+const midnight = new Date('2025-08-08T00:00:00.000Z')
 
-describe('formatMomentLike - basic tokens', () => {
+describe('formatter - tokens tests', () => {
+  beforeAll(() => {
+    // Mock timezone to ensure consistent test results
+    vi.stubEnv('TZ', 'Europe/Madrid')
+  })
+  afterAll(() => {
+    vi.unstubAllEnvs()
+  })
+
   test('year tokens', () => {
     expect(formatter(date, 'Y')).toBe('2025')
     expect(formatter(date, 'YY')).toBe('25')
@@ -74,31 +82,31 @@ describe('formatMomentLike - basic tokens', () => {
   })
 
   test('24h hour tokens', () => {
-    expect(formatter(date, 'HH')).toBe('12')
-    expect(formatter(date, 'H')).toBe('12')
-    expect(formatter(midnight, 'H')).toBe('0')
-    expect(formatter(midnight, 'HH')).toBe('00')
+    expect(formatter(date, 'HH')).toBe('15')
+    expect(formatter(date, 'H')).toBe('15')
+    expect(formatter(midnight, 'H')).toBe('2')
+    expect(formatter(midnight, 'HH')).toBe('02')
   })
 
   test('12h hour tokens', () => {
-    expect(formatter(date, 'hh')).toBe('12')
-    expect(formatter(date, 'h')).toBe('12')
-    expect(formatter(midnight, 'hh')).toBe('12')
-    expect(formatter(midnight, 'h')).toBe('12')
+    expect(formatter(date, 'hh')).toBe('03')
+    expect(formatter(date, 'h')).toBe('3')
+    expect(formatter(midnight, 'hh')).toBe('02')
+    expect(formatter(midnight, 'h')).toBe('2')
   })
 
   test('1-24 hour tokens (k, kk)', () => {
-    expect(formatter(date, 'k')).toBe('12')
-    expect(formatter(date, 'kk')).toBe('12')
-    expect(formatter(midnight, 'k')).toBe('24')
-    expect(formatter(midnight, 'kk')).toBe('24')
+    expect(formatter(date, 'k')).toBe('15')
+    expect(formatter(date, 'kk')).toBe('15')
+    expect(formatter(midnight, 'k')).toBe('2')
+    expect(formatter(midnight, 'kk')).toBe('02')
   })
 
   test('minutes and seconds', () => {
-    expect(formatter(date, 'mm')).toBe('00')
-    expect(formatter(date, 'm')).toBe('0')
-    expect(formatter(date, 'ss')).toBe('00')
-    expect(formatter(date, 's')).toBe('0')
+    expect(formatter(date, 'mm')).toBe('09')
+    expect(formatter(date, 'm')).toBe('9')
+    expect(formatter(date, 'ss')).toBe('08')
+    expect(formatter(date, 's')).toBe('8')
   })
 
   test('AM/PM', () => {
@@ -124,34 +132,30 @@ describe('formatMomentLike - basic tokens', () => {
     expect(formatter(date, 'N')).toBe('AD')
   })
   test('time zone offset tokens shape', () => {
-    // These are environment dependent; ensure shape only
     expect(formatter(date, 'Z')).toBe('+02:00')
     expect(formatter(date, 'ZZ')).toBe('+0200')
   })
-})
-
-describe('formatMomentLike - localized Moment tokens', () => {
   test('date-only localized', () => {
     expect(formatter(date, 'l')).toBe('8/8/2025')
     expect(formatter(date, 'll')).toBe('Aug 8, 2025')
-    expect(formatter(date, 'lll')).toBe('Aug 8, 2025, 12:00 PM')
-    expect(formatter(date, 'llll')).toBe('Fri, Aug 8, 2025, 12:00 PM')
+    expect(formatter(date, 'lll')).toBe('Aug 8, 2025, 3:09 PM')
+    expect(formatter(date, 'llll')).toBe('Fri, Aug 8, 2025, 3:09 PM')
     expect(formatter(date, 'L')).toBe('08/08/2025')
     expect(formatter(date, 'LL')).toBe('August 8, 2025')
-    expect(formatter(date, 'LLL')).toBe('August 8, 2025 at 12:00 PM')
-    expect(formatter(date, 'LLLL')).toBe('Friday, August 8, 2025 at 12:00 PM')
+    expect(formatter(date, 'LLL')).toBe('August 8, 2025 at 3:09 PM')
+    expect(formatter(date, 'LLLL')).toBe('Friday, August 8, 2025 at 3:09 PM')
   })
 
   test('time-only localized', () => {
-    expect(formatter(date, 'LT')).toBe('12:00 PM')
-    expect(formatter(date, 'LTS')).toBe('12:00:00 PM')
-    expect(formatter(date, 'LL LT')).toBe('August 8, 2025 12:00 PM')
-    expect(formatter(date, 'L LT')).toBe('08/08/2025 12:00 PM')
-    expect(formatter(date, 'l LT')).toBe('8/8/2025 12:00 PM')
-    expect(formatter(date, 'll LTS')).toBe('Aug 8, 2025 12:00:00 PM')
+    expect(formatter(date, 'LT')).toBe('3:09 PM')
+    expect(formatter(date, 'LTS')).toBe('3:09:08 PM')
+    expect(formatter(date, 'LL LT')).toBe('August 8, 2025 3:09 PM')
+    expect(formatter(date, 'L LT')).toBe('08/08/2025 3:09 PM')
+    expect(formatter(date, 'l LT')).toBe('8/8/2025 3:09 PM')
+    expect(formatter(date, 'll LTS')).toBe('Aug 8, 2025 3:09:08 PM')
   })
   test('bracket escaping', () => {
-    expect(formatter(date, '[at] HH:mm')).toBe('at 12:00')
-    expect(formatter(date, '[l] LT')).toBe('l 12:00 PM')
+    expect(formatter(date, '[at] HH:mm')).toBe('at 15:09')
+    expect(formatter(date, '[l] LT')).toBe('l 3:09 PM')
   })
 })

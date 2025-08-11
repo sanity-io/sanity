@@ -290,6 +290,16 @@ const expected = {
   SS: '00',
   SSS: '000',
   SSSS: '0000',
+  l: '3/28/2021',
+  ll: 'Mar 28, 2021',
+  lll: 'Mar 28, 2021, 10:23 AM',
+  llll: 'Sun, Mar 28, 2021, 10:23 AM',
+  L: '03/28/2021',
+  LL: 'March 28, 2021',
+  LLL: 'March 28, 2021 at 10:23 AM',
+  LLLL: 'Sunday, March 28, 2021 at 10:23 AM 10:23',
+  LT: '10:23 AM',
+  LTS: '10:23:00 AM',
 }
 
 Object.entries(expected).forEach(([format, expectedValue]) => {

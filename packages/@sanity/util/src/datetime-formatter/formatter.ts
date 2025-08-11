@@ -318,7 +318,11 @@ function formatMomentLike(date: Date, formatStr: string): string {
   // Sort tokens by descending length to avoid partial collisions
   tokens.sort((a, b) => b.key.length - a.key.length)
 
-  let output = processedFormat
+  // 1) Fractional seconds (avoid colliding with LTS)
+  const fracSecRegex = /(?<!LT)S{1,4}/g
+  let output = processedFormat.replace(fracSecRegex, (match) => {
+    return getFractionalSeconds(date, match.length)
+  })
 
   // Find each token and replace it, make sure not to replace overlapping tokens
   for (const {key, value} of tokens) {
@@ -328,12 +332,6 @@ function formatMomentLike(date: Date, formatStr: string): string {
     const tokenRegex = new RegExp(`(^|[^A-Z0-9a-z])(${escapedKey})(?![A-Z0-9a-z])`, 'g')
     output = output.replace(tokenRegex, `$1${value}`)
   }
-
-  // 2) Fractional seconds (run after token replacement to avoid colliding with LTS)
-  const fracSecRegex = /(S{1,4})/g
-  output = output.replace(fracSecRegex, (match) => {
-    return getFractionalSeconds(date, match.length)
-  })
 
   // After all token replacements, restore escaped sequences
   output = output.replace(new RegExp(escapeToken, 'g'), () => escapeSequences.shift() || '')
