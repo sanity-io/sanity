@@ -73,7 +73,9 @@ const TableInner = <TableData, AdditionalRowTableData>({
   hideTableInlinePadding = false,
 }: TableProps<TableData, AdditionalRowTableData>) => {
   const {searchTerm, sort} = useTableContext()
+
   const virtualizerContainerRef = useRef<HTMLDivElement | null>(null)
+
   const filteredData = useMemo(() => {
     const filteredResult = searchTerm && searchFilter ? searchFilter(data, searchTerm) : data
     if (!sort) return filteredResult
@@ -119,6 +121,12 @@ const TableInner = <TableData, AdditionalRowTableData>({
     estimateSize: () => ITEM_HEIGHT,
     overscan: 5,
   })
+
+  //const documentsIds = rowVirtualizer
+  //  .getVirtualItems()
+  //  .map((virtualRow) => filteredData[virtualRow.index].document?._id)
+
+  //const history = useReleaseHistory(documentsIds, releaseId)
 
   const rowActionColumnDef: Column = useMemo(
     () => ({
@@ -277,7 +285,10 @@ const TableInner = <TableData, AdditionalRowTableData>({
     }
 
     return rowVirtualizer.getVirtualItems().map((virtualRow, index) => {
-      const datum = filteredData[virtualRow.index]
+      const datum = {
+        ...filteredData[virtualRow.index],
+      }
+
       return renderRow({
         ...datum,
         virtualRow,

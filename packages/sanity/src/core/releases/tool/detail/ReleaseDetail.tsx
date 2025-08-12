@@ -1,5 +1,6 @@
 import {ErrorOutlineIcon} from '@sanity/icons'
 import {Box, Card, Container, Flex, Heading, Stack, Text} from '@sanity/ui'
+import {useVirtualizer} from '@tanstack/react-virtual'
 import {motion} from 'framer-motion'
 import {useMemo, useRef, useState} from 'react'
 import {useRouter} from 'sanity/router'
@@ -39,8 +40,24 @@ export const ReleaseDetail = () => {
   } = useBundleDocuments(releaseId)
   const releaseEvents = useReleaseEvents(releaseId)
 
-  const documentIds = results.map((result) => result.document?._id)
-  const history = useReleaseHistory(documentIds, releaseId)
+  const ITEM_HEIGHT = 59
+
+  const rowVirtualizer = useVirtualizer({
+    count: results.length,
+    getScrollElement: () => scrollContainerRef.current,
+    estimateSize: () => ITEM_HEIGHT,
+    overscan: 5,
+  })
+
+  const documentsIds = rowVirtualizer
+    .getVirtualItems()
+    .map((virtualRow) => results[virtualRow.index].document?._id)
+
+  const history = useReleaseHistory(documentsIds, releaseId)
+
+  //const documentIds = results.map((result) => result.document?._id)
+  //const history = useReleaseHistory(documentIds, releaseId)
+  //console.log('releaseDetail', {history, documentIds, releaseId})
 
   const releaseInDetail = data
     .concat(archivedReleases)
@@ -88,9 +105,9 @@ export const ReleaseDetail = () => {
   }, [
     bundleDocumentsError,
     documentsLoading,
+    history.documentsHistory,
     releaseInDetail,
     results,
-    history.documentsHistory,
     t,
   ])
 
