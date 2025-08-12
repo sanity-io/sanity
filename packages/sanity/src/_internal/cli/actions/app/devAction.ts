@@ -48,21 +48,16 @@ export default async function startAppDevServer(
   try {
     const spinner = output.spinner('Starting dev server').start()
     await startDevServer({...config, spinner, skipStartLog: true, isApp: true})
+    const coreAppUrl = await getCoreAppURL({
+      organizationId,
+      httpHost: config.httpHost,
+      httpPort: config.httpPort,
+    })
     spinner.succeed()
 
     output.print(`Dev server started on port ${config.httpPort}`)
     output.print(`View your app in the Sanity dashboard here:`)
-    output.print(
-      chalk.blue(
-        chalk.underline(
-          await getCoreAppURL({
-            organizationId,
-            httpHost: config.httpHost,
-            httpPort: config.httpPort,
-          }),
-        ),
-      ),
-    )
+    output.print(chalk.blue(chalk.underline(coreAppUrl)))
   } catch (err) {
     gracefulServerDeath('dev', config.httpHost, config.httpPort, err)
   }

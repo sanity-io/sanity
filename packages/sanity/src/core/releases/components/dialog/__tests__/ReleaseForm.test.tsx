@@ -56,6 +56,7 @@ describe('ReleaseForm', () => {
     metadata: {
       title: '',
       description: '',
+      releaseType: 'asap',
     },
   }
 
