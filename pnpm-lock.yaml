@@ -1407,8 +1407,8 @@ importers:
   packages/@sanity/util:
     dependencies:
       '@date-fns/tz':
-        specifier: ^1.2.0
-        version: 1.2.0
+        specifier: ^1.4.1
+        version: 1.4.1
       '@date-fns/utc':
         specifier: ^2.1.1
         version: 2.1.1
@@ -3098,8 +3098,8 @@ packages:
     resolution: {integrity: sha512-Vd/9EVDiu6PPJt9yAh6roZP6El1xHrdvIVGjyBsHR0RYwNHgL7FJPyIIW4fANJNG6FtyZfvlRPpFI4ZM/lubvw==}
     engines: {node: '>=18'}
 
-  '@date-fns/tz@1.2.0':
-    resolution: {integrity: sha512-LBrd7MiJZ9McsOgxqWX7AaxrDjcFVjWH/tIKJd7pnR7McaslGYOP1QmmiBXdJH/H/yLCT+rcQ7FaPBUxRGUtrg==}
+  '@date-fns/tz@1.4.1':
+    resolution: {integrity: sha512-P5LUNhtbj6YfI3iJjw5EL9eUAG6OitD0W3fWQcpQjDRc/QIsL0tRNuO1PcDvPccWL1fSTXXdE1ds+l95DV/OFA==}
 
   '@date-fns/utc@2.1.1':
     resolution: {integrity: sha512-SlJDfG6RPeEX8wEVv6ZB3kak4MmbtyiI2qX/5zuKdordbrhB/iaJ58GVMZgJ6P1sJaM1gMgENFYYeg1JWrCFrA==}
@@ -13482,7 +13482,7 @@ snapshots:
 
   '@csstools/css-tokenizer@3.0.4': {}
 
-  '@date-fns/tz@1.2.0': {}
+  '@date-fns/tz@1.4.1': {}
 
   '@date-fns/utc@2.1.1': {}
 
@@ -16171,7 +16171,7 @@ snapshots:
 
   '@sanity/util@3.99.0(@types/react@19.1.9)':
     dependencies:
-      '@date-fns/tz': 1.2.0
+      '@date-fns/tz': 1.4.1
       '@date-fns/utc': 2.1.1
       '@sanity/client': 7.8.2(debug@4.4.1)
       '@sanity/types': 3.99.0(@types/react@19.1.9)(debug@4.4.1)
