@@ -187,7 +187,7 @@ export function ReleaseForm(props: {
                 tabIndex={-1}
               >
                 <ScheduleDatePicker
-                  initialValue={new Date(intendedPublishAt || '')}
+                  value={intendedPublishAt ? new Date(intendedPublishAt) : undefined}
                   onChange={handleBundlePublishAtCalendarChange}
                   timeZoneScope={CONTENT_RELEASES_TIME_ZONE_SCOPE}
                 />
