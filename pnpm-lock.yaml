@@ -1639,8 +1639,8 @@ importers:
         specifier: ^3.4.0
         version: 3.4.0
       '@mux/mux-player-react':
-        specifier: ^3.5.1
-        version: 3.5.1(@types/react-dom@19.1.7(@types/react@19.1.9))(@types/react@19.1.9)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
+        specifier: ^3.5.3
+        version: 3.5.3(@types/react-dom@19.1.7(@types/react@19.1.9))(@types/react@19.1.9)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
       '@portabletext/block-tools':
         specifier: ^3.0.0
         version: 3.0.0(@sanity/types@packages+@sanity+types)(@types/react@19.1.9)
@@ -3861,8 +3861,8 @@ packages:
       '@types/react-dom':
         optional: true
 
-  '@mux/mux-player-react@3.5.1':
-    resolution: {integrity: sha512-tm32fSo9IBA/J8AD99bp64CyBkmv8jtsn4RhSHgNufvfWJUMBFJ7cfXgLsxiG/VdegpfBLRatMC5YiuZjoZ6yg==}
+  '@mux/mux-player-react@3.5.3':
+    resolution: {integrity: sha512-f0McZbIXYDkzecFwhhkf0JgEInPnsOClgBqBhkdhRlLRdrAzMATib+D3Di3rPkRHNH7rc/WWORvSxgJz6m6zkA==}
     peerDependencies:
       '@types/react': ^17.0.0 || ^17.0.0-0 || ^18 || ^18.0.0-0 || ^19 || ^19.0.0-0
       '@types/react-dom': '*'
@@ -3877,8 +3877,8 @@ packages:
   '@mux/mux-player@2.9.1':
     resolution: {integrity: sha512-TAyoUSPTV0IXWGMOknL6O+IeGSEJ8aS154DzyzqZgdd3zDJHM8JpkyNHgtowatMHT2lB6h+qMtWfp4u3ijpo2A==}
 
-  '@mux/mux-player@3.5.1':
-    resolution: {integrity: sha512-PSi3mPb4LrEh4i3xUdodaEvMrbbpKbL2yaewRjsqBr3PFb+hd/Dp1KtyaAnXaBCHl09hDURUSrqYpg1cZvwDiQ==}
+  '@mux/mux-player@3.5.3':
+    resolution: {integrity: sha512-uXKFXbdtioAi+clSVfD60Rw4r7OvA62u2jV6aar9loW9qMsmKv8LU+8uaIaWQjyAORp6E0S37GOVjo72T6O2eQ==}
 
   '@mux/mux-video@0.20.2':
     resolution: {integrity: sha512-CqkK9EZZWdQE4U62JKlmWDskirT+D9C4suh2tSqKb2CA/0S4ybbbrVWcCKF7xfadUacfKO1yPsOKbe46F6phVQ==}
@@ -14305,9 +14305,9 @@ snapshots:
     optionalDependencies:
       '@types/react': 19.1.9
 
-  '@mux/mux-player-react@3.5.1(@types/react-dom@19.1.7(@types/react@19.1.9))(@types/react@19.1.9)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)':
+  '@mux/mux-player-react@3.5.3(@types/react-dom@19.1.7(@types/react@19.1.9))(@types/react@19.1.9)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)':
     dependencies:
-      '@mux/mux-player': 3.5.1(react@18.3.1)
+      '@mux/mux-player': 3.5.3(react@18.3.1)
       '@mux/playback-core': 0.30.1
       prop-types: 15.8.1
       react: 18.3.1
@@ -14322,7 +14322,7 @@ snapshots:
       '@mux/playback-core': 0.25.2
       media-chrome: 3.2.5
 
-  '@mux/mux-player@3.5.1(react@18.3.1)':
+  '@mux/mux-player@3.5.3(react@18.3.1)':
     dependencies:
       '@mux/mux-video': 0.26.1
       '@mux/playback-core': 0.30.1
