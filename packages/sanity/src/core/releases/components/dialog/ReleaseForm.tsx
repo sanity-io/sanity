@@ -1,4 +1,4 @@
-import {type EditableReleaseDocument, type ReleaseType} from '@sanity/client'
+import {type EditableReleaseDocument} from '@sanity/client'
 import {ChevronDownIcon, InfoOutlineIcon} from '@sanity/icons'
 import {
   type BadgeTone,
@@ -43,9 +43,6 @@ export function ReleaseForm(props: {
   const {t} = useTranslation()
   const {timeZone, utcToCurrentZoneDate} = useTimeZone(CONTENT_RELEASES_TIME_ZONE_SCOPE)
   const [currentTimezone, setCurrentTimezone] = useState<string | null>(timeZone.name)
-  const [buttonReleaseType, setButtonReleaseType] = useState<ReleaseType>(
-    releaseType ?? DEFAULT_RELEASE_TYPE,
-  )
   const {getStoredReleaseData, saveReleaseDataToStorage} = useReleaseFormStorage()
 
   const id = value._id
@@ -64,9 +61,6 @@ export function ReleaseForm(props: {
       }
       onChange({_id: id, ...updatedValue})
 
-      if (storedData.releaseType) {
-        setButtonReleaseType(storedData.releaseType)
-      }
       if (storedData.intendedPublishAt) {
         setIntendedPublishAt(new Date(storedData.intendedPublishAt))
       }
@@ -95,15 +89,13 @@ export function ReleaseForm(props: {
     [handleOnChangeAndStorage, value],
   )
 
-  const handleButtonReleaseTypeChange = useCallback<MouseEventHandler<HTMLDivElement>>(
+  const handleReleaseTypeChange = useCallback<MouseEventHandler<HTMLDivElement>>(
     (event) => {
       const pickedReleaseType = event.currentTarget.dataset.value
 
       if (!isReleaseType(pickedReleaseType)) {
         return
       }
-
-      setButtonReleaseType(pickedReleaseType)
 
       // select the start of the next hour
       const nextInputValue = startOfHour(addHours(new Date(), 1))
@@ -188,8 +180,8 @@ export function ReleaseForm(props: {
               <Button mode="ghost">
                 <Flex justify="space-between" align="center">
                   <ReleaseTypeOption
-                    text={t(`release.type.${buttonReleaseType}`)}
-                    tone={RELEASE_TYPES_TONES[buttonReleaseType].tone}
+                    text={t(`release.type.${releaseType}`)}
+                    tone={releaseType ? RELEASE_TYPES_TONES[releaseType].tone : 'critical'}
                   />
                   <Text size={1}>
                     <ChevronDownIcon />
@@ -205,7 +197,7 @@ export function ReleaseForm(props: {
             menu={
               <Menu>
                 {Object.entries(RELEASE_TYPES_TONES).map(([type, {tone}]) => (
-                  <MenuItem key={type} data-value={type} onClick={handleButtonReleaseTypeChange}>
+                  <MenuItem key={type} data-value={type} onClick={handleReleaseTypeChange}>
                     <ReleaseTypeOption text={t(`release.type.${type}`)} tone={tone} />
                   </MenuItem>
                 ))}
@@ -213,7 +205,7 @@ export function ReleaseForm(props: {
             }
           />
           <Flex gap={1}>
-            {buttonReleaseType === 'scheduled' && (
+            {releaseType === 'scheduled' && (
               <TabPanel
                 aria-labelledby="release-timing-at-time-tab"
                 flex={1}
