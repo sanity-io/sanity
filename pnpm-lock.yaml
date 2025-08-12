@@ -632,8 +632,8 @@ importers:
         specifier: workspace:*
         version: link:../../packages/sanity
       sanity-plugin-hotspot-array:
-        specifier: ^2.2.1
-        version: 2.2.1(@emotion/is-prop-valid@1.3.1)(@sanity/ui@3.0.6(@emotion/is-prop-valid@1.3.1)(react-dom@19.1.1(react@19.1.1))(react-is@19.1.1)(react@19.1.1)(styled-components@6.1.19(react-dom@19.1.1(react@19.1.1))(react@19.1.1)))(@types/react@19.1.9)(react-dom@19.1.1(react@19.1.1))(react@19.1.1)(sanity@packages+sanity)(styled-components@6.1.19(react-dom@19.1.1(react@19.1.1))(react@19.1.1))
+        specifier: ^3.0.0
+        version: 3.0.0(@emotion/is-prop-valid@1.3.1)(react-dom@19.1.1(react@19.1.1))(react-is@19.1.1)(react@19.1.1)(sanity@packages+sanity)(styled-components@6.1.19(react-dom@19.1.1(react@19.1.1))(react@19.1.1))
       sanity-plugin-markdown:
         specifier: ^6.0.0
         version: 6.0.0(@emotion/is-prop-valid@1.3.1)(easymde@2.20.0)(react-dom@19.1.1(react@19.1.1))(react-is@19.1.1)(react@19.1.1)(sanity@packages+sanity)(styled-components@6.1.19(react-dom@19.1.1(react@19.1.1))(react@19.1.1))
@@ -4886,10 +4886,6 @@ packages:
 
   '@sanity/util@3.68.3':
     resolution: {integrity: sha512-J4Ov75oUvMqx221VEJkKNSibzF0D8VyCzejtwftW+jP80XguYFqBz7bAcTmwJ5vnxNUoAUCeAdZBoOYVpgew4g==}
-    engines: {node: '>=18'}
-
-  '@sanity/util@3.99.0':
-    resolution: {integrity: sha512-+yuMi2nTZfyohlS4tFryYMTG9gkjw7aToMM3A3TrtfbQPGi+9ZVBPNeer2r/uaJFChPaxEC9hZV0gXZQpPiJ0w==}
     engines: {node: '>=18'}
 
   '@sanity/uuid@3.0.2':
@@ -10911,14 +10907,12 @@ packages:
   safer-buffer@2.1.2:
     resolution: {integrity: sha512-YZo3K82SD7Riyi0E1EQPojLz7kpepnSQI9IyPbHHg1XXXevb5dJI7tpyN2ADxGcQbHG7vcyRHk0cbwqcQriUtg==}
 
-  sanity-plugin-hotspot-array@2.2.1:
-    resolution: {integrity: sha512-MSTAEh2kiDG3ghtPWfAbCBSeavBnBAAr9isn/pKF9o98J8aYiAxTQWChHH3IPe6X0zOnQtstZi+5AQJpf27AMQ==}
-    engines: {node: '>=18'}
+  sanity-plugin-hotspot-array@3.0.0:
+    resolution: {integrity: sha512-WDaM/bq4c9/Ivkkd+oJgNXMU+dMlZ55GqJVfiJrtIM2IeifI6E2wumOEmPrhlyo/BBtSjV0zOiiugt97gBmIHQ==}
+    engines: {node: '>=20.19 >=22.12.0'}
     peerDependencies:
-      '@sanity/ui': ^2
       react: ^18.3 || ^19
-      sanity: ^3 || ^4.0.0-0
-      styled-components: ^6.1
+      sanity: ^4
 
   sanity-plugin-markdown@6.0.0:
     resolution: {integrity: sha512-HrfQMuEuAZOAgU5JdUWrbxAwUPbPnYPOzSvOwk65wYe2bHpC6rtkZQ1rCe9uTUsuRiFDh7KeG0NjaeD6vf/MHg==}
@@ -16164,19 +16158,6 @@ snapshots:
       '@sanity/types': 3.68.3(@types/react@19.1.9)(debug@4.4.1)
       get-random-values-esm: 1.0.2
       moment: 2.30.1
-      rxjs: 7.8.2
-    transitivePeerDependencies:
-      - '@types/react'
-      - debug
-
-  '@sanity/util@3.99.0(@types/react@19.1.9)':
-    dependencies:
-      '@date-fns/tz': 1.4.1
-      '@date-fns/utc': 2.1.1
-      '@sanity/client': 7.8.2(debug@4.4.1)
-      '@sanity/types': 3.99.0(@types/react@19.1.9)(debug@4.4.1)
-      date-fns: 4.1.0
-      get-random-values-esm: 1.0.2
       rxjs: 7.8.2
     transitivePeerDependencies:
       - '@types/react'
@@ -23074,23 +23055,22 @@ snapshots:
 
   safer-buffer@2.1.2: {}
 
-  sanity-plugin-hotspot-array@2.2.1(@emotion/is-prop-valid@1.3.1)(@sanity/ui@3.0.6(@emotion/is-prop-valid@1.3.1)(react-dom@19.1.1(react@19.1.1))(react-is@19.1.1)(react@19.1.1)(styled-components@6.1.19(react-dom@19.1.1(react@19.1.1))(react@19.1.1)))(@types/react@19.1.9)(react-dom@19.1.1(react@19.1.1))(react@19.1.1)(sanity@packages+sanity)(styled-components@6.1.19(react-dom@19.1.1(react@19.1.1))(react@19.1.1)):
+  sanity-plugin-hotspot-array@3.0.0(@emotion/is-prop-valid@1.3.1)(react-dom@19.1.1(react@19.1.1))(react-is@19.1.1)(react@19.1.1)(sanity@packages+sanity)(styled-components@6.1.19(react-dom@19.1.1(react@19.1.1))(react@19.1.1)):
     dependencies:
       '@sanity/asset-utils': 2.2.1
       '@sanity/image-url': 1.1.0
       '@sanity/incompatible-plugin': 1.0.5(react-dom@19.1.1(react@19.1.1))(react@19.1.1)
       '@sanity/ui': 3.0.6(@emotion/is-prop-valid@1.3.1)(react-dom@19.1.1(react@19.1.1))(react-is@19.1.1)(react@19.1.1)(styled-components@6.1.19(react-dom@19.1.1(react@19.1.1))(react@19.1.1))
-      '@sanity/util': 3.99.0(@types/react@19.1.9)
+      '@sanity/util': link:packages/@sanity/util
       framer-motion: 12.23.12(@emotion/is-prop-valid@1.3.1)(react-dom@19.1.1(react@19.1.1))(react@19.1.1)
       lodash-es: 4.17.21
       react: 19.1.1
       sanity: link:packages/sanity
-      styled-components: 6.1.19(react-dom@19.1.1(react@19.1.1))(react@19.1.1)
     transitivePeerDependencies:
       - '@emotion/is-prop-valid'
-      - '@types/react'
-      - debug
       - react-dom
+      - react-is
+      - styled-components
 
   sanity-plugin-markdown@6.0.0(@emotion/is-prop-valid@1.3.1)(easymde@2.20.0)(react-dom@19.1.1(react@19.1.1))(react-is@19.1.1)(react@19.1.1)(sanity@packages+sanity)(styled-components@6.1.19(react-dom@19.1.1(react@19.1.1))(react@19.1.1)):
     dependencies:
