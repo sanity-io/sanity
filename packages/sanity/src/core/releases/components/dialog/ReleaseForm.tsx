@@ -28,7 +28,7 @@ import {useTranslation} from '../../../i18n'
 import {CONTENT_RELEASES_TIME_ZONE_SCOPE} from '../../../studio/constants'
 import {useReleaseFormStorage} from '../../hooks/useReleaseFormStorage'
 import {isReleaseType} from '../../store/types'
-import {RELEASE_TYPES_TONES} from '../../util/const'
+import {DEFAULT_RELEASE_TYPE, RELEASE_TYPES_TONES} from '../../util/const'
 import {ReleaseAvatar} from '../ReleaseAvatar'
 import {ScheduleDatePicker} from '../ScheduleDatePicker'
 import {TitleDescriptionForm} from './TitleDescriptionForm'
@@ -43,7 +43,9 @@ export function ReleaseForm(props: {
   const {t} = useTranslation()
   const {timeZone, utcToCurrentZoneDate} = useTimeZone(CONTENT_RELEASES_TIME_ZONE_SCOPE)
   const [currentTimezone, setCurrentTimezone] = useState<string | null>(timeZone.name)
-  const [buttonReleaseType, setButtonReleaseType] = useState<ReleaseType>(releaseType ?? 'asap')
+  const [buttonReleaseType, setButtonReleaseType] = useState<ReleaseType>(
+    releaseType ?? DEFAULT_RELEASE_TYPE,
+  )
   const {getStoredReleaseData, saveReleaseDataToStorage} = useReleaseFormStorage()
 
   const id = value._id
@@ -56,7 +58,7 @@ export function ReleaseForm(props: {
         metadata: {
           title: storedData.title,
           description: storedData.description,
-          releaseType: storedData.releaseType,
+          releaseType: storedData.releaseType ?? DEFAULT_RELEASE_TYPE,
           intendedPublishAt: storedData.intendedPublishAt,
         },
       }
