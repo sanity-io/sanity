@@ -14,7 +14,7 @@
   },
   "dependencies": {
     "@repo/eslint-config": "workspace:*",
-    "@sanity/code-input": "^5.2.0",
+    "@sanity/code-input": "^5.2.1",
     "react": "catalog:react18",
     "react-dom": "catalog:react18",
     "sanity": "workspace:*",

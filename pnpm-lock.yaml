@@ -232,8 +232,8 @@ importers:
         specifier: ^6.2.3
         version: 6.2.6
       oxlint:
-        specifier: ^1.9.0
-        version: 1.9.0
+        specifier: ^1.11.1
+        version: 1.11.1
       pkg-pr-new:
         specifier: ^0.0.54
         version: 0.0.54
@@ -280,6 +280,21 @@ importers:
       node-notifier:
         specifier: ^10.0.0
         version: 10.0.1
+
+  dev/auto-updating-studio:
+    dependencies:
+      '@sanity/vision':
+        specifier: workspace:*
+        version: link:../../packages/@sanity/vision
+      react:
+        specifier: 'catalog:'
+        version: 19.1.1
+      sanity:
+        specifier: workspace:*
+        version: link:../../packages/sanity
+      styled-components:
+        specifier: 'catalog:'
+        version: 6.1.19(react-dom@19.1.1(react@19.1.1))(react@19.1.1)
 
   dev/depcheck-test: {}
 
@@ -458,8 +473,8 @@ importers:
         specifier: ^4.0.0
         version: 4.0.0(@emotion/is-prop-valid@1.3.1)(@types/react@19.1.9)(react-dom@19.1.1(react@19.1.1))(react-is@19.1.1)(react@19.1.1)(sanity@packages+sanity)(styled-components@6.1.19(react-dom@19.1.1(react@19.1.1))(react@19.1.1))
       sanity-plugin-mux-input:
-        specifier: ^2.8.1
-        version: 2.8.1(@emotion/is-prop-valid@1.3.1)(@types/react@19.1.9)(react-dom@19.1.1(react@19.1.1))(react-is@19.1.1)(react@19.1.1)(sanity@packages+sanity)(styled-components@6.1.19(react-dom@19.1.1(react@19.1.1))(react@19.1.1))
+        specifier: ^2.9.0
+        version: 2.9.0(@emotion/is-prop-valid@1.3.1)(@types/react@19.1.9)(react-dom@19.1.1(react@19.1.1))(react-is@19.1.1)(react@19.1.1)(sanity@packages+sanity)(styled-components@6.1.19(react-dom@19.1.1(react@19.1.1))(react@19.1.1))
       sanity-test-studio:
         specifier: workspace:*
         version: link:../test-studio
@@ -473,8 +488,8 @@ importers:
         specifier: workspace:*
         version: link:../../packages/@repo/eslint-config
       '@sanity/code-input':
-        specifier: ^5.2.0
-        version: 5.2.0(@babel/runtime@7.27.6)(@codemirror/theme-one-dark@6.1.2)(@emotion/is-prop-valid@1.3.1)(codemirror@6.0.1)(react-dom@18.3.1(react@18.3.1))(react-is@19.1.1)(react@18.3.1)(sanity@packages+sanity)(styled-components@6.1.19(react-dom@18.3.1(react@18.3.1))(react@18.3.1))
+        specifier: ^5.2.1
+        version: 5.2.1(@babel/runtime@7.27.6)(@codemirror/theme-one-dark@6.1.2)(@emotion/is-prop-valid@1.3.1)(codemirror@6.0.1)(react-dom@18.3.1(react@18.3.1))(react-is@19.1.1)(react@18.3.1)(sanity@packages+sanity)(styled-components@6.1.19(react-dom@18.3.1(react@18.3.1))(react@18.3.1))
       react:
         specifier: catalog:react18
         version: 18.3.1
@@ -539,8 +554,8 @@ importers:
         specifier: ^1.2.23
         version: 1.2.23(sanity@packages+sanity)
       '@sanity/logos':
-        specifier: ^2.2.1
-        version: 2.2.1(@sanity/color@3.0.6)(react@19.1.1)
+        specifier: ^2.2.2
+        version: 2.2.2(react@19.1.1)
       '@sanity/migrate':
         specifier: workspace:*
         version: link:../../packages/@sanity/migrate
@@ -626,8 +641,8 @@ importers:
         specifier: ^4.0.0
         version: 4.0.0(@emotion/is-prop-valid@1.3.1)(@types/react@19.1.9)(react-dom@19.1.1(react@19.1.1))(react-is@19.1.1)(react@19.1.1)(sanity@packages+sanity)(styled-components@6.1.19(react-dom@19.1.1(react@19.1.1))(react@19.1.1))
       sanity-plugin-mux-input:
-        specifier: ^2.8.1
-        version: 2.8.1(@emotion/is-prop-valid@1.3.1)(@types/react@19.1.9)(react-dom@19.1.1(react@19.1.1))(react-is@19.1.1)(react@19.1.1)(sanity@packages+sanity)(styled-components@6.1.19(react-dom@19.1.1(react@19.1.1))(react@19.1.1))
+        specifier: ^2.9.0
+        version: 2.9.0(@emotion/is-prop-valid@1.3.1)(@types/react@19.1.9)(react-dom@19.1.1(react@19.1.1))(react-is@19.1.1)(react@19.1.1)(sanity@packages+sanity)(styled-components@6.1.19(react-dom@19.1.1(react@19.1.1))(react@19.1.1))
       styled-components:
         specifier: 'catalog:'
         version: 6.1.19(react-dom@19.1.1(react@19.1.1))(react@19.1.1)
@@ -1690,7 +1705,7 @@ importers:
         version: 2.0.1(@emotion/is-prop-valid@1.3.1)(@sanity/types@packages+@sanity+types)(react-dom@18.3.1(react@18.3.1))(react-is@19.1.1)(react@18.3.1)(styled-components@6.1.19(react-dom@18.3.1(react@18.3.1))(react@18.3.1))
       '@sanity/logos':
         specifier: ^2.2.1
-        version: 2.2.1(@sanity/color@3.0.6)(react@18.3.1)
+        version: 2.2.2(react@18.3.1)
       '@sanity/media-library-types':
         specifier: ^1.0.0
         version: 1.0.0
@@ -4184,43 +4199,67 @@ packages:
     cpu: [x64]
     os: [win32]
 
-  '@oxlint/darwin-arm64@1.9.0':
-    resolution: {integrity: sha512-VRxI/T0I4bq+xoaI0qNFeGPxOOganHlfLmx8JbFFZswoxMkm5lIvVYScDKLrsbbPSe4bcZ5v1DmX5sNGQ619Uw==}
+  '@oxlint-tsgolint/darwin-arm64@0.0.1':
+    resolution: {integrity: sha512-DhPovgw2MVvQhU4uyrrgBUqRkmh6V66zItbpWu352B0f9LW0tFm2cXcTDR1QkDo1m9B6YV7qR9IPI2/q7gLDeA==}
+    os: [darwin]
+
+  '@oxlint-tsgolint/darwin-x64@0.0.1':
+    resolution: {integrity: sha512-/T+STn40ebdHM7Cz6bVITynBHNWnRGKyz8CcbUDdiehhD0CTlwwNeKCKA4beQ1t/Dvc3JG6pV8dwv/2cmd+DYg==}
+    os: [darwin]
+
+  '@oxlint-tsgolint/linux-arm64@0.0.1':
+    resolution: {integrity: sha512-xp8KdgxyqLB31ISPep0LDJgyE3ucxcLc8LdlqjO+Z9k2RR0MkFs1bgpXROn5KX1eZGO5OYRdbgVX+s43TI7Dhw==}
+    os: [linux]
+
+  '@oxlint-tsgolint/linux-x64@0.0.1':
+    resolution: {integrity: sha512-6OG1DFbg1xP5UmuWynUnVkay5WbH44aiwDhIAIR8+V50Ijzzyx87CGxKbn1k0YsfaQIji5SgZi0WMiJQ5LTR2A==}
+    os: [linux]
+
+  '@oxlint-tsgolint/win32-arm64@0.0.1':
+    resolution: {integrity: sha512-szngA1G3b9DyO6NZ7qUBl8EXBt+9F6cLQ4/kdiIUwk+5LELCjFbpg2s7eGPYZaCJjf30Vo9GlTqe5HFjddvrXg==}
+    os: [win32]
+
+  '@oxlint-tsgolint/win32-x64@0.0.1':
+    resolution: {integrity: sha512-anzDRE1w3Vl/aSBLiOwnwzz17GJaXJr+X3OTWwwV9cHg+TWEhLpUDo+d2pAoulCHoZTjN/k8A9wHg0IGuqnOfA==}
+    os: [win32]
+
+  '@oxlint/darwin-arm64@1.11.1':
+    resolution: {integrity: sha512-/9ohoWJoPHLXDBRQqPn3jIwB2QXt+Pv6dR1r6fmrcm5RiTyqf40zK10gMDl8rbw8ONmzgrevdxweV0iRuC9pcQ==}
     cpu: [arm64]
     os: [darwin]
 
-  '@oxlint/darwin-x64@1.9.0':
-    resolution: {integrity: sha512-vMBa3eNrJMSBApXvsx6FgMuWCnNE+ETJJieLPhemZKctMNWOJQX+2i09CG2kb1IkmxagLapH7dZ4i0+Lf13mqg==}
+  '@oxlint/darwin-x64@1.11.1':
+    resolution: {integrity: sha512-snwKjdJO+mGwp2xYBxdwJorad4ZVeZDq2FV3ZcgvqCmf6pg+eJdm/jtlfXb44KfEDlBCvMa0zV48bjY+tg31rA==}
     cpu: [x64]
     os: [darwin]
 
-  '@oxlint/linux-arm64-gnu@1.9.0':
-    resolution: {integrity: sha512-8wnMjloRbz7hPKvcgqd8HKNgkEgFJZvp9Los2pdE1CKh33msIxIXPGT3KKhYzyrtBaRaG2LJHshUPub02Q+x9A==}
+  '@oxlint/linux-arm64-gnu@1.11.1':
+    resolution: {integrity: sha512-WI3LcUlowzlu2wQb0XRIq1Zv1AMkQDrU7+zHVtiokFbjyioUcSOomwN+ntlZozPwFRbuLUXL+wq5qePnLhE90Q==}
     cpu: [arm64]
     os: [linux]
 
-  '@oxlint/linux-arm64-musl@1.9.0':
-    resolution: {integrity: sha512-elj9FTNXvq9oP8UedeHHq2R8lCtTmBGvUO/xLez734zVx3tvBl3avmuEfPBqR4wlUKDANExDh3Rg0pssflhw9w==}
+  '@oxlint/linux-arm64-musl@1.11.1':
+    resolution: {integrity: sha512-Fc4gW7nf8dGOvsvTqIJDCvWiDCxQtnX3KDM69G+0d23ljiXdi2/EEcWNcvobBwi0CqlpO+TdQiRYDLHEJxSRfA==}
     cpu: [arm64]
     os: [linux]
 
-  '@oxlint/linux-x64-gnu@1.9.0':
-    resolution: {integrity: sha512-d7VjQttKDgXKIYY3tm2GXTD83dyI+D8POGdPRT8GjhitHKasHQWFMBDG5iLp60FNc5Ky1cIe/2nwKW9ReQvhKw==}
+  '@oxlint/linux-x64-gnu@1.11.1':
+    resolution: {integrity: sha512-3UNP5PAE/IHWMSfrwybMbjppQXMveFzLMMZjGk8tEAm9aj4yeX6Z3O+ns6fQHStbb6PyrDMncAyNl/qxUfmp7A==}
     cpu: [x64]
     os: [linux]
 
-  '@oxlint/linux-x64-musl@1.9.0':
-    resolution: {integrity: sha512-R9vi5LGxNNi3pisp4dG7Ez00mAvCeki8VI5DUg6W1MR0GTnaejlVtMflziA2jqpdTGOK4bjLDsHKIadGC1SMVg==}
+  '@oxlint/linux-x64-musl@1.11.1':
+    resolution: {integrity: sha512-CmRm8rFT6MwKvcpcw1IM+QHtyh3iOKRewJn3VOHYlRzw+VKQuvUbUnWHgROtr6V8UOiRkrSy3Mvo/d5Fc+r/lw==}
     cpu: [x64]
     os: [linux]
 
-  '@oxlint/win32-arm64@1.9.0':
-    resolution: {integrity: sha512-TiV7xYBMhkc/r0X+c9cMwGKUWYJRlWnI61m8powqer6lMJ8VfDe1RkRF4ttO5wlPGkiBwBa3vYWAgxaXc9JAMQ==}
+  '@oxlint/win32-arm64@1.11.1':
+    resolution: {integrity: sha512-htSR1NHMnRV5qXDoZJcFxKObgLyBvA4g9eIhzDTsTyw7e2ZDR/SVOli2IZB31ghCwEYcSV7yoZgfOgjNbgvDJA==}
     cpu: [arm64]
     os: [win32]
 
-  '@oxlint/win32-x64@1.9.0':
-    resolution: {integrity: sha512-OWqqkXsLrpS1uQsxjNqiOkC9a/CszMLa3VwlRcpm/z3iPxEL/qEVjGfjZX6XZw8Q6YukFB77rgYqzotvtCvI1A==}
+  '@oxlint/win32-x64@1.11.1':
+    resolution: {integrity: sha512-yjWjx0kf6+osvXdqdkLmSwPxvN9bJ+0sr+KLEgxCAZxfqy9nNTuflIwk6x5sm6lS4+qzCY7RrMYcksQ6Ky+0CA==}
     cpu: [x64]
     os: [win32]
 
@@ -4563,8 +4602,8 @@ packages:
     resolution: {integrity: sha512-Me3/eh71VFdbSHghuea80rcDQZir/NgtwANKug/mPbbwwENYASJSEHpAy2VZwn4FyHHIR9d2pNRIyXMzGab+dQ==}
     engines: {node: '>=20'}
 
-  '@sanity/code-input@5.2.0':
-    resolution: {integrity: sha512-ncKRlXItahlTR7WVWzNUWSGjnhcbTc8IP5a53EEE9E9AVdbbePHwW9cux75/WuptotVQ8r0toZk5pcnIRqktqw==}
+  '@sanity/code-input@5.2.1':
+    resolution: {integrity: sha512-KX3nacOvW97RihlBzhMD0CRZboGqjv/lOmfrC6lO4JZmuWksaMWEnOGlFyhDodE0O/zrd6QQXnfAevn9o0HUYw==}
     engines: {node: '>=18'}
     peerDependencies:
       react: ^18 || >=19.0.0-0
@@ -4707,11 +4746,10 @@ packages:
     peerDependencies:
       sanity: ^3.22.0 || ^4.0.0-0
 
-  '@sanity/logos@2.2.1':
-    resolution: {integrity: sha512-jz7bvoSrwTAEFw4wlgGsPDquQsBG+k//XEEJIzlLK9bBp2q3Ln6xZiUAjhhScqUa+ThrUfxjfbf7UUecOeLzEQ==}
+  '@sanity/logos@2.2.2':
+    resolution: {integrity: sha512-KIWFL7nYEOINXIzaTF9aVhd481hFF/ak+SRnpgksYuJXlo2hbY/UoEJBz6KhsEP5dfO/NwqG82QrkwzLvd6izA==}
     engines: {node: '>=14.0.0'}
     peerDependencies:
-      '@sanity/color': ^2.0 || ^3.0 || ^3.0.0-beta
       react: ^18.3 || ^19.0.0-0
 
   '@sanity/media-library-types@1.0.0':
@@ -9765,8 +9803,12 @@ packages:
   oxc-resolver@5.3.0:
     resolution: {integrity: sha512-FHqtZx0idP5QRPSNcI5g2ItmADg7fhR3XIeWg5eRMGfp44xqRpfkdvo+EX4ZceqV9bxvl0Z8vaqMqY0gYaNYNA==}
 
-  oxlint@1.9.0:
-    resolution: {integrity: sha512-vvqpkRt7UA1F1DoOJGYO2+T52L6jV4RxS+9hFVCPQ0X+hcNVtbl/TxQuwjobBw8Yw2U8Rb9d8VLJxa8eRSqpQQ==}
+  oxlint-tsgolint@0.0.1:
+    resolution: {integrity: sha512-gH6EpIr2oBVperOONVzTTNYmOu6pYPipVyzWB+CfYO13vH+6O9kINUyG4rr3RXDaKdTx8UvxgRORXdSGH1iydA==}
+    hasBin: true
+
+  oxlint@1.11.1:
+    resolution: {integrity: sha512-24c8BHX2deW0H7GAjkHP28+W4P3qO+2l0R/wz8jj+D4Sq/eC+K2Zyu6uN3bVXeHfG3z4U8shWD5hE+yPMisPDA==}
     engines: {node: '>=8.*'}
     hasBin: true
 
@@ -10900,8 +10942,8 @@ packages:
       sanity: ^3.78 || ^4.0.0-0
       styled-components: ^6.1
 
-  sanity-plugin-mux-input@2.8.1:
-    resolution: {integrity: sha512-tIX7Ac+u4LmkmC2utceseSMDgYUjck269JS+2bm3xSIa33k9vIfPyMjZTUL5szrI7uPmncZotBVel/HyGGVT6w==}
+  sanity-plugin-mux-input@2.9.0:
+    resolution: {integrity: sha512-eroAyU0AtipNTzXvAuZ1ehmZYnFPiPTTv0iMMhH6To4ANSDzxIadf0PQYhsoxuJDVNWiL2x4qwYTMr5oMuL85A==}
     engines: {node: '>=18'}
     peerDependencies:
       react: ^18.3 || ^19
@@ -14702,28 +14744,46 @@ snapshots:
   '@oxc-resolver/binding-win32-x64-msvc@5.3.0':
     optional: true
 
-  '@oxlint/darwin-arm64@1.9.0':
+  '@oxlint-tsgolint/darwin-arm64@0.0.1':
     optional: true
 
-  '@oxlint/darwin-x64@1.9.0':
+  '@oxlint-tsgolint/darwin-x64@0.0.1':
     optional: true
 
-  '@oxlint/linux-arm64-gnu@1.9.0':
+  '@oxlint-tsgolint/linux-arm64@0.0.1':
     optional: true
 
-  '@oxlint/linux-arm64-musl@1.9.0':
+  '@oxlint-tsgolint/linux-x64@0.0.1':
     optional: true
 
-  '@oxlint/linux-x64-gnu@1.9.0':
+  '@oxlint-tsgolint/win32-arm64@0.0.1':
     optional: true
 
-  '@oxlint/linux-x64-musl@1.9.0':
+  '@oxlint-tsgolint/win32-x64@0.0.1':
     optional: true
 
-  '@oxlint/win32-arm64@1.9.0':
+  '@oxlint/darwin-arm64@1.11.1':
     optional: true
 
-  '@oxlint/win32-x64@1.9.0':
+  '@oxlint/darwin-x64@1.11.1':
+    optional: true
+
+  '@oxlint/linux-arm64-gnu@1.11.1':
+    optional: true
+
+  '@oxlint/linux-arm64-musl@1.11.1':
+    optional: true
+
+  '@oxlint/linux-x64-gnu@1.11.1':
+    optional: true
+
+  '@oxlint/linux-x64-musl@1.11.1':
+    optional: true
+
+  '@oxlint/win32-arm64@1.11.1':
+    optional: true
+
+  '@oxlint/win32-x64@1.11.1':
     optional: true
 
   '@pkgjs/parseargs@0.11.0':
@@ -15148,7 +15208,7 @@ snapshots:
     transitivePeerDependencies:
       - debug
 
-  '@sanity/code-input@5.2.0(@babel/runtime@7.27.6)(@codemirror/theme-one-dark@6.1.2)(@emotion/is-prop-valid@1.3.1)(codemirror@6.0.1)(react-dom@18.3.1(react@18.3.1))(react-is@19.1.1)(react@18.3.1)(sanity@packages+sanity)(styled-components@6.1.19(react-dom@18.3.1(react@18.3.1))(react@18.3.1))':
+  '@sanity/code-input@5.2.1(@babel/runtime@7.27.6)(@codemirror/theme-one-dark@6.1.2)(@emotion/is-prop-valid@1.3.1)(codemirror@6.0.1)(react-dom@18.3.1(react@18.3.1))(react-is@19.1.1)(react@18.3.1)(sanity@packages+sanity)(styled-components@6.1.19(react-dom@18.3.1(react@18.3.1))(react@18.3.1))':
     dependencies:
       '@codemirror/autocomplete': 6.18.6
       '@codemirror/commands': 6.8.1
@@ -15168,7 +15228,7 @@ snapshots:
       '@lezer/highlight': 1.2.1
       '@sanity/icons': 3.7.4(react@18.3.1)
       '@sanity/incompatible-plugin': 1.0.5(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
-      '@sanity/ui': 3.0.5(@emotion/is-prop-valid@1.3.1)(react-dom@18.3.1(react@18.3.1))(react-is@19.1.1)(react@18.3.1)(styled-components@6.1.19(react-dom@18.3.1(react@18.3.1))(react@18.3.1))
+      '@sanity/ui': 2.16.12(@emotion/is-prop-valid@1.3.1)(react-dom@18.3.1(react@18.3.1))(react-is@19.1.1)(react@18.3.1)(styled-components@6.1.19(react-dom@18.3.1(react@18.3.1))(react@18.3.1))
       '@uiw/codemirror-themes': 4.23.13(@codemirror/language@6.11.2)(@codemirror/state@6.5.2)(@codemirror/view@6.38.1)
       '@uiw/react-codemirror': 4.24.1(@babel/runtime@7.27.6)(@codemirror/autocomplete@6.18.6)(@codemirror/language@6.11.2)(@codemirror/lint@6.8.5)(@codemirror/search@6.5.11)(@codemirror/state@6.5.2)(@codemirror/theme-one-dark@6.1.2)(@codemirror/view@6.38.1)(codemirror@6.0.1)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
       react: 18.3.1
@@ -15414,12 +15474,12 @@ snapshots:
     dependencies:
       sanity: link:packages/sanity
 
-  '@sanity/logos@2.2.1(@sanity/color@3.0.6)(react@18.3.1)':
+  '@sanity/logos@2.2.2(react@18.3.1)':
     dependencies:
       '@sanity/color': 3.0.6
       react: 18.3.1
 
-  '@sanity/logos@2.2.1(@sanity/color@3.0.6)(react@19.1.1)':
+  '@sanity/logos@2.2.2(react@19.1.1)':
     dependencies:
       '@sanity/color': 3.0.6
       react: 19.1.1
@@ -21825,16 +21885,27 @@ snapshots:
       '@oxc-resolver/binding-win32-arm64-msvc': 5.3.0
       '@oxc-resolver/binding-win32-x64-msvc': 5.3.0
 
-  oxlint@1.9.0:
+  oxlint-tsgolint@0.0.1:
     optionalDependencies:
-      '@oxlint/darwin-arm64': 1.9.0
-      '@oxlint/darwin-x64': 1.9.0
-      '@oxlint/linux-arm64-gnu': 1.9.0
-      '@oxlint/linux-arm64-musl': 1.9.0
-      '@oxlint/linux-x64-gnu': 1.9.0
-      '@oxlint/linux-x64-musl': 1.9.0
-      '@oxlint/win32-arm64': 1.9.0
-      '@oxlint/win32-x64': 1.9.0
+      '@oxlint-tsgolint/darwin-arm64': 0.0.1
+      '@oxlint-tsgolint/darwin-x64': 0.0.1
+      '@oxlint-tsgolint/linux-arm64': 0.0.1
+      '@oxlint-tsgolint/linux-x64': 0.0.1
+      '@oxlint-tsgolint/win32-arm64': 0.0.1
+      '@oxlint-tsgolint/win32-x64': 0.0.1
+    optional: true
+
+  oxlint@1.11.1:
+    optionalDependencies:
+      '@oxlint/darwin-arm64': 1.11.1
+      '@oxlint/darwin-x64': 1.11.1
+      '@oxlint/linux-arm64-gnu': 1.11.1
+      '@oxlint/linux-arm64-musl': 1.11.1
+      '@oxlint/linux-x64-gnu': 1.11.1
+      '@oxlint/linux-x64-musl': 1.11.1
+      '@oxlint/win32-arm64': 1.11.1
+      '@oxlint/win32-x64': 1.11.1
+      oxlint-tsgolint: 0.0.1
 
   p-finally@1.0.0: {}
 
@@ -23096,7 +23167,7 @@ snapshots:
       - debug
       - supports-color
 
-  sanity-plugin-mux-input@2.8.1(@emotion/is-prop-valid@1.3.1)(@types/react@19.1.9)(react-dom@19.1.1(react@19.1.1))(react-is@19.1.1)(react@19.1.1)(sanity@packages+sanity)(styled-components@6.1.19(react-dom@19.1.1(react@19.1.1))(react@19.1.1)):
+  sanity-plugin-mux-input@2.9.0(@emotion/is-prop-valid@1.3.1)(@types/react@19.1.9)(react-dom@19.1.1(react@19.1.1))(react-is@19.1.1)(react@19.1.1)(sanity@packages+sanity)(styled-components@6.1.19(react-dom@19.1.1(react@19.1.1))(react@19.1.1)):
     dependencies:
       '@mux/mux-player-react': 2.9.1(@types/react@19.1.9)(react-dom@19.1.1(react@19.1.1))(react@19.1.1)
       '@mux/upchunk': 3.5.0
