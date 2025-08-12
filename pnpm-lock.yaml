@@ -1903,7 +1903,7 @@ importers:
         specifier: ^6.1.13
         version: 6.1.13
       observable-callback:
-        specifier: ^1.0.1
+        specifier: ^1.0.3
         version: 1.0.3(rxjs@7.8.2)
       oneline:
         specifier: ^1.0.3
