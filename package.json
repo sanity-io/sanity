@@ -55,7 +55,7 @@
     "e2e:start": "pnpm --filter studio-e2e-testing preview",
     "efps:test": "cd perf/efps && pnpm test",
     "efps:write:report": "cd perf/efps && pnpm write:report",
-    "etl": "tsx -r dotenv-flow/config scripts/etl.cts",
+    "etl": "node --import=tsx -r dotenv-flow/config --no-experimental-strip-types scripts/etl.cts",
     "example:blog-studio": "cd examples/studios/blog-studio && pnpm start",
     "example:clean-studio": "cd examples/studios/clean-studio && pnpm start",
     "example:ecommerce-studio": "cd examples/studios/ecommerce-studio && pnpm start",
