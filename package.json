@@ -190,6 +190,7 @@
       "@vitest/expect": "$vitest",
       "eslint-plugin-react-hooks": "$eslint-plugin-react-hooks",
       "jsdom": "$jsdom",
+      "typescript@5.9.x": "catalog:",
       "vite": "$vite",
       "vitest": "$vitest"
     }
