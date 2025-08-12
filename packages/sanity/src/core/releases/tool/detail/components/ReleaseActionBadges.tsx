@@ -30,55 +30,72 @@ export function ReleaseActionBadges({
 }: ReleaseActionBadgesProps) {
   const {t} = useTranslation(releasesLocaleNamespace)
 
-  const actionCounts = useMemo(
-    () =>
-      documents.reduce(
-        (counts, doc) => {
-          const actionType = getDocumentActionType(doc)
-          if (actionType) {
-            counts[actionType]++
-          }
-          return counts
-        },
-        {added: 0, changed: 0, unpublished: 0},
-      ),
-    [documents],
-  )
+  const {actionCounts, hasLoadingDocuments} = useMemo(() => {
+    return documents.reduce(
+      (acc, doc) => {
+        if (!acc.hasLoadingDocuments && doc.previewValues.isLoading) {
+          acc.hasLoadingDocuments = true
+
+          return acc
+        }
+
+        const actionType = getDocumentActionType(doc)
+        if (actionType) {
+          acc.actionCounts[actionType]++
+        }
+
+        return acc
+      },
+      {
+        actionCounts: {added: 0, changed: 0, unpublished: 0},
+        hasLoadingDocuments: false,
+      },
+    )
+  }, [documents])
 
   // Hide action badges for archived and published releases (same logic as table columns)
-  if (releaseState === 'archived' || releaseState === 'published') return null
-
-  if (isLoading) {
-    return (
-      <BadgesContainer>
-        {DOCUMENT_ACTION_CONFIGS.map(({key}) => (
-          <Skeleton
-            key={`skeleton-action-badge-${key}`}
-            animated
-            style={{width: '60px', height: '10px'}}
-            radius={2}
-            paddingX={3}
-            paddingY={2}
-          />
-        ))}
-      </BadgesContainer>
-    )
+  if (releaseState === 'archived' || releaseState === 'published') {
+    return null
   }
 
-  if (!documents.length) return null
+  if (!isLoading && !documents.length) {
+    return null
+  }
 
   return (
     <BadgesContainer>
       {DOCUMENT_ACTION_CONFIGS.map(({key, tone, translationKey}) => {
         const count = actionCounts[key]
-        if (count === 0) return null
 
-        return (
-          <Badge key={key} paddingX={3} paddingY={2} radius={2} tone={tone}>
-            {t(translationKey)} {count}
-          </Badge>
-        )
+        if (count > 0) {
+          return (
+            <Badge key={key} paddingX={3} paddingY={2} radius={2} tone={tone}>
+              {t(translationKey)} {count}
+            </Badge>
+          )
+        }
+        return null
       })}
+
+      {/* Show loading skeletons at the end for remaining action types */}
+      {(hasLoadingDocuments || isLoading) &&
+        DOCUMENT_ACTION_CONFIGS.map(({key}) => {
+          const count = actionCounts[key]
+
+          if (count === 0) {
+            return (
+              <Skeleton
+                key={`loading-skeleton-${key}`}
+                animated
+                style={{width: '60px', height: '10px'}}
+                radius={2}
+                paddingX={3}
+                paddingY={2}
+              />
+            )
+          }
+          return null
+        })}
     </BadgesContainer>
   )
 }
