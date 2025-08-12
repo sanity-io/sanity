@@ -153,7 +153,7 @@
     "lodash-es": "^4.17.21",
     "minimist": "^1.2.5",
     "npm-run-all2": "^6.2.3",
-    "oxlint": "^1.11.1",
+    "oxlint": "^1.11.2",
     "pkg-pr-new": "^0.0.54",
     "prettier": "catalog:",
     "read-package-up": "^11.0.0",
@@ -164,7 +164,7 @@
     "tsx": "^4.20.3",
     "turbo": "^2.5.5",
     "typescript": "catalog:",
-    "vite": "^7.1.1",
+    "vite": "^7.1.2",
     "vite-tsconfig-paths": "^5.1.4",
     "vitest": "3.2.4",
     "yargs": "^17.3.0"
