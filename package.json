@@ -161,7 +161,7 @@
     "rxjs": "^7.8.2",
     "sanity": "workspace:*",
     "semver": "^7.3.5",
-    "tsx": "^4.20.3",
+    "tsx": "^4.20.4",
     "turbo": "^2.5.5",
     "typescript": "catalog:",
     "vite": "^7.1.2",
