@@ -18,6 +18,7 @@ import {isReleaseLimitError} from '../../../store/isReleaseLimitError'
 import {useReleaseOperations} from '../../../store/useReleaseOperations'
 import {DEFAULT_RELEASE_TYPE} from '../../../util/const'
 import {createReleaseId} from '../../../util/createReleaseId'
+import {getIsReleaseInvalid} from '../../../util/getIsReleaseInvalid'
 import {getIsScheduledDateInPast} from '../../../util/getIsScheduledDateInPast'
 import {ReleaseForm} from '../../dialog/ReleaseForm'
 import {ReleaseAvatar} from '../../ReleaseAvatar'
@@ -68,6 +69,7 @@ export function CopyToNewReleaseDialog(props: {
   const displayTitle = title || t('release.placeholder-untitled-release')
 
   const isScheduledDateInPast = getIsScheduledDateInPast(release)
+  const invalid = getIsReleaseInvalid(release)
 
   const handleOnChange = useCallback((releaseMetadata: EditableReleaseDocument) => {
     setRelease(releaseMetadata)
@@ -193,7 +195,7 @@ export function CopyToNewReleaseDialog(props: {
             mode="bleed"
           />
           <Button
-            disabled={isSubmitting || isScheduledDateInPast}
+            disabled={isSubmitting || isScheduledDateInPast || invalid}
             type="submit"
             onClick={handleCreateRelease}
             text={t('release.action.add-to-new-release')}
