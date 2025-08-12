@@ -1,6 +1,5 @@
 import {ErrorOutlineIcon} from '@sanity/icons'
 import {Box, Card, Container, Flex, Heading, Stack, Text} from '@sanity/ui'
-import {useVirtualizer} from '@tanstack/react-virtual'
 import {motion} from 'framer-motion'
 import {useMemo, useRef, useState} from 'react'
 import {useRouter} from 'sanity/router'
@@ -12,7 +11,7 @@ import {useActiveReleases} from '../../store/useActiveReleases'
 import {useArchivedReleases} from '../../store/useArchivedReleases'
 import {type ReleasesRouterState} from '../../types/router'
 import {getReleaseIdFromReleaseDocumentId} from '../../util/getReleaseIdFromReleaseDocumentId'
-import {useReleaseHistory} from './documentTable/useReleaseHistory'
+// import {useReleaseHistory} from './documentTable/useReleaseHistory'
 import {useReleaseEvents} from './events/useReleaseEvents'
 import {ReleaseDashboardActivityPanel} from './ReleaseDashboardActivityPanel'
 import {ReleaseDashboardDetails} from './ReleaseDashboardDetails'
@@ -40,20 +39,9 @@ export const ReleaseDetail = () => {
   } = useBundleDocuments(releaseId)
   const releaseEvents = useReleaseEvents(releaseId)
 
-  const ITEM_HEIGHT = 59
+  // Table handles virtualization; no local virtualizer needed
 
-  const rowVirtualizer = useVirtualizer({
-    count: results.length,
-    getScrollElement: () => scrollContainerRef.current,
-    estimateSize: () => ITEM_HEIGHT,
-    overscan: 5,
-  })
-
-  const documentsIds = rowVirtualizer
-    .getVirtualItems()
-    .map((virtualRow) => results[virtualRow.index].document?._id)
-
-  const history = useReleaseHistory(documentsIds, releaseId)
+  // Move release history fetching to per-row in the table column cells
 
   //const documentIds = results.map((result) => result.document?._id)
   //const history = useReleaseHistory(documentIds, releaseId)
@@ -98,18 +86,10 @@ export const ReleaseDetail = () => {
         isLoading={documentsLoading}
         documents={results}
         release={releaseInDetail}
-        documentsHistory={history.documentsHistory}
         scrollContainerRef={scrollContainerRef}
       />
     )
-  }, [
-    bundleDocumentsError,
-    documentsLoading,
-    history.documentsHistory,
-    releaseInDetail,
-    results,
-    t,
-  ])
+  }, [bundleDocumentsError, documentsLoading, releaseInDetail, results, t])
 
   if (loading) {
     return (

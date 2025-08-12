@@ -1,5 +1,5 @@
 import {type TransactionLogEventWithEffects} from '@sanity/types'
-import {useCallback, useEffect, useMemo, useState} from 'react'
+import {useCallback, useEffect, useMemo, useRef, useState} from 'react'
 
 import {useClient} from '../../../../hooks'
 import {getJsonStream} from '../../../../store/_legacy/history/history/getJsonStream'
@@ -13,84 +13,123 @@ export type DocumentHistory = {
   editors: string[]
 }
 
-// TODO: Update this to contemplate the _revision change on any of the internal release documents, and fetch only the history of that document if changes.
+// Simple global concurrency limiter to avoid 429s when many rows mount at once
+let activeHistoryStreams = 0
+const pendingHistoryResolvers: Array<() => void> = []
+async function acquireHistorySlot(maxConcurrent = 2): Promise<void> {
+  if (activeHistoryStreams >= maxConcurrent) {
+    await new Promise<void>((resolve) => pendingHistoryResolvers.push(resolve))
+  }
+  activeHistoryStreams += 1
+}
+function releaseHistorySlot(): void {
+  activeHistoryStreams = Math.max(0, activeHistoryStreams - 1)
+  const next = pendingHistoryResolvers.shift()
+  if (next) next()
+}
+
+// Fetch history for a single document version within a release
 export function useReleaseHistory(
-  releaseDocumentsIds: string[],
+  releaseDocumentId: string | undefined,
   releaseId: string,
 ): {
-  documentsHistory: Record<string, DocumentHistory>
+  documentHistory?: DocumentHistory
   collaborators: string[]
   loading: boolean
 } {
   const client = useClient(RELEASES_STUDIO_CLIENT_OPTIONS)
   const {dataset, token} = client.config()
-  const [history, setHistory] = useState<TransactionLogEventWithEffects[]>([])
+  const [history, setHistory] = useState<TransactionLogEventWithEffects[] | null>(null)
   const queryParams = `tag=sanity.studio.tasks.history&effectFormat=mendoza&excludeContent=true&includeIdentifiedDocumentsOnly=true`
-  const versionIds = releaseDocumentsIds.map((id) => getVersionId(id, releaseId)).join(',')
-  const transactionsUrl = client.getUrl(
-    `/data/history/${dataset}/transactions/${versionIds}?${queryParams}`,
-  )
 
-  const fetchAndParseAll = useCallback(async () => {
-    if (!versionIds) return
-    if (!releaseId) return
-    const transactions: TransactionLogEventWithEffects[] = []
-    const stream = await getJsonStream(transactionsUrl, token)
-    const reader = stream.getReader()
-    let result
-    for (;;) {
-      result = await reader.read()
-      if (result.done) {
-        break
-      }
-      if ('error' in result.value) {
-        throw new Error(result.value.error.description || result.value.error.type)
-      }
-      transactions.push(result.value)
+  const versionId = useMemo(() => {
+    if (!releaseDocumentId || !releaseId) return ''
+    return getVersionId(releaseDocumentId, releaseId)
+  }, [releaseDocumentId, releaseId])
+
+  const transactionsUrl = useMemo(() => {
+    if (!versionId) return ''
+    return client.getUrl(`/data/history/${dataset}/transactions/${versionId}?${queryParams}`)
+  }, [client, dataset, queryParams, versionId])
+
+  const attemptsRef = useRef(0)
+  const cancelledRef = useRef(false)
+
+  const fetchAndParse = useCallback(async (): Promise<void> => {
+    if (!versionId || !transactionsUrl) {
+      setHistory(null)
+      return
     }
-    setHistory(transactions)
-  }, [versionIds, transactionsUrl, token, releaseId])
+    await acquireHistorySlot()
+    try {
+      const transactions: TransactionLogEventWithEffects[] = []
+      const stream = await getJsonStream(transactionsUrl, token)
+      const reader = stream.getReader()
+      let result
+      for (;;) {
+        result = await reader.read()
+        if (result.done) {
+          break
+        }
+        if ('error' in result.value) {
+          throw new Error(result.value.error.description || result.value.error.type)
+        }
+        transactions.push(result.value)
+      }
+      if (!cancelledRef.current) setHistory(transactions)
+    } catch (err) {
+      // Basic retry with exponential backoff to handle transient 429s
+      if (attemptsRef.current < 3 && !cancelledRef.current) {
+        const delayMs = Math.min(500 * 2 ** attemptsRef.current, 4000)
+        attemptsRef.current += 1
+        await new Promise((r) => setTimeout(r, delayMs))
+        await fetchAndParse()
+        return
+      }
+      if (!cancelledRef.current) setHistory([])
+    } finally {
+      releaseHistorySlot()
+    }
+  }, [transactionsUrl, token, versionId])
 
   useEffect(() => {
-    fetchAndParseAll()
-    // When revision changes, update the history.
-  }, [fetchAndParseAll])
+    cancelledRef.current = false
+    fetchAndParse()
+    return () => {
+      cancelledRef.current = true
+    }
+  }, [fetchAndParse])
 
   return useMemo(() => {
     const collaborators: string[] = []
-    const documentsHistory: Record<string, DocumentHistory> = {}
-    if (!history.length) {
-      return {documentsHistory, collaborators, loading: true}
+    if (!history || history.length === 0) {
+      return {documentHistory: undefined, collaborators, loading: true}
     }
+
+    const aggregated: DocumentHistory = {
+      history: [],
+      createdBy: '',
+      lastEditedBy: '',
+      editors: [],
+    }
+
     history.forEach((item) => {
-      const documentId = item.documentIDs[0]
-      let documentHistory = documentsHistory[documentId]
-      if (!collaborators.includes(item.author)) {
-        collaborators.push(item.author)
+      const author = item.author
+      if (!collaborators.includes(author)) collaborators.push(author)
+
+      if (aggregated.history.length === 0) {
+        aggregated.createdBy = author
       }
-      // eslint-disable-next-line no-negated-condition
-      if (!documentHistory) {
-        documentHistory = {
-          history: [item],
-          createdBy: item.author,
-          lastEditedBy: item.author,
-          editors: [item.author],
-        }
-        documentsHistory[documentId] = documentHistory
-      } else {
-        // @ts-expect-error TransactionLogEventWithEffects has no property 'mutations' but it's returned from the API
-        const isCreate = item.mutations.some((mutation) => 'create' in mutation)
-        if (isCreate) documentHistory.createdBy = item.author
-        if (!documentHistory.editors.includes(item.author)) {
-          documentHistory.editors.push(item.author)
-        }
-        // The last item in the history is the last edited by, transaction log is ordered by timestamp
-        documentHistory.lastEditedBy = item.author
-        // always add history item
-        documentHistory.history.push(item)
-      }
+
+      // @ts-expect-error TransactionLogEventWithEffects has no property 'mutations' but it's returned from the API
+      const isCreate = item.mutations?.some((mutation) => 'create' in mutation)
+      if (isCreate) aggregated.createdBy = author
+
+      if (!aggregated.editors.includes(author)) aggregated.editors.push(author)
+      aggregated.lastEditedBy = author
+      aggregated.history.push(item)
     })
 
-    return {documentsHistory, collaborators, loading: false}
+    return {documentHistory: aggregated, collaborators, loading: false}
   }, [history])
 }

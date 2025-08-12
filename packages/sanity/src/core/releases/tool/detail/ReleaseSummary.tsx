@@ -29,7 +29,6 @@ export type BundleDocumentRow = DocumentWithHistory
 
 export interface ReleaseSummaryProps {
   documents: DocumentInRelease[]
-  documentsHistory: Record<string, DocumentHistory>
   scrollContainerRef: RefObject<HTMLDivElement | null>
   release: ReleaseDocument
   isLoading?: boolean
@@ -47,7 +46,7 @@ const isBundleDocumentRow = (
   'history' in maybeBundleDocumentRow
 
 export function ReleaseSummary(props: ReleaseSummaryProps) {
-  const {documents, documentsHistory, isLoading = false, release, scrollContainerRef} = props
+  const {documents, isLoading = false, release, scrollContainerRef} = props
   const toast = useToast()
   const {createVersion} = useReleaseOperations()
   const telemetry = useTelemetry()
@@ -59,14 +58,7 @@ export function ReleaseSummary(props: ReleaseSummaryProps) {
 
   const releaseId = getReleaseIdFromReleaseDocumentId(release._id)
 
-  const aggregatedData = useMemo(
-    () =>
-      documents.map((document) => ({
-        ...document,
-        history: documentsHistory[document.document._id],
-      })),
-    [documents, documentsHistory],
-  )
+  const aggregatedData = useMemo(() => documents, [documents])
 
   const renderRowActions = useCallback(
     (rowProps: {datum: BundleDocumentRow | unknown}) => {
@@ -83,6 +75,8 @@ export function ReleaseSummary(props: ReleaseSummaryProps) {
     () => getDocumentTableColumnDefs(release._id, release.state, t),
     [release._id, release.state, t],
   )
+
+  const handleAddDocumentClick = useCallback(() => setAddDocumentDialog(true), [])
 
   const filterRows = useCallback(
     (data: DocumentWithHistory[], searchTerm: string) =>
@@ -188,14 +182,14 @@ export function ReleaseSummary(props: ReleaseSummaryProps) {
     >
       <Stack>
         <ReleaseActionBadges
-          documents={tableData}
+          documents={tableData as DocumentWithHistory[]}
           releaseState={release.state}
           isLoading={isLoading}
         />
         <Card borderTop>
           <Table<DocumentWithHistory>
             loading={isLoading}
-            data={tableData}
+            data={tableData as DocumentWithHistory[]}
             emptyState={t('summary.no-documents')}
             // eslint-disable-next-line @sanity/i18n/no-attribute-string-literals
             rowId="document._id"
@@ -214,7 +208,7 @@ export function ReleaseSummary(props: ReleaseSummaryProps) {
               icon={AddIcon}
               disabled={isLoading}
               mode="bleed"
-              onClick={() => setAddDocumentDialog(true)}
+              onClick={handleAddDocumentClick}
               text={t('action.add-document')}
             />
           </Card>
