@@ -12,7 +12,7 @@ import {
   TabPanel,
   Text,
 } from '@sanity/ui'
-import {addHours, isValid, startOfHour} from 'date-fns'
+import {addHours, startOfHour} from 'date-fns'
 import {
   type ComponentType,
   type MouseEventHandler,
@@ -23,7 +23,6 @@ import {
 } from 'react'
 
 import {MenuButton, Tooltip} from '../../../../ui-components'
-import {useTimeZone} from '../../../hooks/useTimeZone'
 import {useTranslation} from '../../../i18n'
 import {CONTENT_RELEASES_TIME_ZONE_SCOPE} from '../../../studio/constants'
 import {useReleaseFormStorage} from '../../hooks/useReleaseFormStorage'
@@ -39,14 +38,11 @@ export function ReleaseForm(props: {
   value: EditableReleaseDocument
 }): React.JSX.Element {
   const {onChange, value} = props
-  const {releaseType} = value.metadata || {}
+  const {releaseType, intendedPublishAt} = value.metadata || {}
   const {t} = useTranslation()
-  const {timeZone, utcToCurrentZoneDate} = useTimeZone(CONTENT_RELEASES_TIME_ZONE_SCOPE)
-  const [currentTimezone, setCurrentTimezone] = useState<string | null>(timeZone.name)
   const {getStoredReleaseData, saveReleaseDataToStorage} = useReleaseFormStorage()
 
   const id = value._id
-  const [intendedPublishAt, setIntendedPublishAt] = useState<Date | undefined>()
 
   useEffect(() => {
     const storedData = getStoredReleaseData()
@@ -60,10 +56,6 @@ export function ReleaseForm(props: {
         },
       }
       onChange({_id: id, ...updatedValue})
-
-      if (storedData.intendedPublishAt) {
-        setIntendedPublishAt(new Date(storedData.intendedPublishAt))
-      }
     }
   }, [getStoredReleaseData, id, onChange])
 
@@ -79,8 +71,6 @@ export function ReleaseForm(props: {
 
   const handleBundlePublishAtCalendarChange = useCallback(
     (date: Date) => {
-      setIntendedPublishAt(date)
-
       handleOnChangeAndStorage({
         ...value,
         metadata: {...value.metadata, intendedPublishAt: date.toISOString()},
@@ -99,10 +89,6 @@ export function ReleaseForm(props: {
 
       // select the start of the next hour
       const nextInputValue = startOfHour(addHours(new Date(), 1))
-
-      if (pickedReleaseType === 'scheduled') {
-        setIntendedPublishAt(nextInputValue)
-      }
 
       handleOnChangeAndStorage({
         ...value,
@@ -130,19 +116,6 @@ export function ReleaseForm(props: {
     },
     [handleOnChangeAndStorage, value],
   )
-
-  useEffect(() => {
-    /** makes sure to wait for the useTimezone has enough time to update
-     * and based on that it will update the input value to the current timezone
-     */
-    if (timeZone.name !== currentTimezone) {
-      setCurrentTimezone(timeZone.name)
-      if (intendedPublishAt && isValid(intendedPublishAt)) {
-        const currentZoneDate = utcToCurrentZoneDate(intendedPublishAt)
-        setIntendedPublishAt(currentZoneDate)
-      }
-    }
-  }, [currentTimezone, intendedPublishAt, timeZone, utcToCurrentZoneDate])
 
   const menuButtonId = useId()
   const [menuButton, setMenuButton] = useState<HTMLElement | null>(null)
@@ -214,7 +187,7 @@ export function ReleaseForm(props: {
                 tabIndex={-1}
               >
                 <ScheduleDatePicker
-                  initialValue={intendedPublishAt || new Date()}
+                  initialValue={new Date(intendedPublishAt || '')}
                   onChange={handleBundlePublishAtCalendarChange}
                   timeZoneScope={CONTENT_RELEASES_TIME_ZONE_SCOPE}
                 />
