@@ -1,6 +1,6 @@
 import {type ReleaseState} from '@sanity/client'
-import {Badge, Box, Container, Flex} from '@sanity/ui'
-import {useMemo} from 'react'
+import {Badge, Box, Container, Flex, Skeleton} from '@sanity/ui'
+import {type ReactNode, useMemo} from 'react'
 
 import {useTranslation} from '../../../../i18n'
 import {releasesLocaleNamespace} from '../../../i18n'
@@ -10,9 +10,24 @@ import {type DocumentWithHistory} from '../ReleaseSummary'
 interface ReleaseActionBadgesProps {
   documents: DocumentWithHistory[]
   releaseState: ReleaseState
+  isLoading?: boolean
 }
 
-export function ReleaseActionBadges({documents, releaseState}: ReleaseActionBadgesProps) {
+const BadgesContainer = ({children}: {children: ReactNode}) => (
+  <Container width={3}>
+    <Box padding={3}>
+      <Flex align="center" gap={4} wrap="wrap">
+        {children}
+      </Flex>
+    </Box>
+  </Container>
+)
+
+export function ReleaseActionBadges({
+  documents,
+  releaseState,
+  isLoading = false,
+}: ReleaseActionBadgesProps) {
   const {t} = useTranslation(releasesLocaleNamespace)
 
   const actionCounts = useMemo(
@@ -31,26 +46,39 @@ export function ReleaseActionBadges({documents, releaseState}: ReleaseActionBadg
   )
 
   // Hide action badges for archived and published releases (same logic as table columns)
-  if (releaseState === 'archived' || releaseState === 'published' || !documents.length) {
-    return null
+  if (releaseState === 'archived' || releaseState === 'published') return null
+
+  if (isLoading) {
+    return (
+      <BadgesContainer>
+        {DOCUMENT_ACTION_CONFIGS.map(({key}) => (
+          <Skeleton
+            key={`skeleton-action-badge-${key}`}
+            animated
+            style={{width: '60px', height: '10px'}}
+            radius={2}
+            paddingX={3}
+            paddingY={2}
+          />
+        ))}
+      </BadgesContainer>
+    )
   }
 
-  return (
-    <Container width={3}>
-      <Box padding={3}>
-        <Flex align="center" gap={4} wrap="wrap">
-          {DOCUMENT_ACTION_CONFIGS.map(({key, tone, translationKey}) => {
-            const count = actionCounts[key]
-            if (count === 0) return null
+  if (!documents.length) return null
 
-            return (
-              <Badge key={key} paddingX={3} paddingY={2} radius={2} tone={tone}>
-                {t(translationKey)} {count}
-              </Badge>
-            )
-          })}
-        </Flex>
-      </Box>
-    </Container>
+  return (
+    <BadgesContainer>
+      {DOCUMENT_ACTION_CONFIGS.map(({key, tone, translationKey}) => {
+        const count = actionCounts[key]
+        if (count === 0) return null
+
+        return (
+          <Badge key={key} paddingX={3} paddingY={2} radius={2} tone={tone}>
+            {t(translationKey)} {count}
+          </Badge>
+        )
+      })}
+    </BadgesContainer>
   )
 }

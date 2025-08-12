@@ -187,7 +187,11 @@ export function ReleaseSummary(props: ReleaseSummaryProps) {
       className="hide-scrollbar"
     >
       <Stack>
-        <ReleaseActionBadges documents={tableData} releaseState={release.state} />
+        <ReleaseActionBadges
+          documents={tableData}
+          releaseState={release.state}
+          isLoading={isLoading}
+        />
         <Card borderTop>
           <Table<DocumentWithHistory>
             loading={isLoading}
