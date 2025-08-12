@@ -188,18 +188,20 @@ export function ReleaseSummary(props: ReleaseSummaryProps) {
     >
       <Stack>
         <ReleaseActionBadges documents={tableData} releaseState={release.state} />
-        <Table<DocumentWithHistory>
-          loading={isLoading}
-          data={tableData}
-          emptyState={t('summary.no-documents')}
-          // eslint-disable-next-line @sanity/i18n/no-attribute-string-literals
-          rowId="document._id"
-          columnDefs={documentTableColumnDefs}
-          rowActions={renderRowActions}
-          searchFilter={filterRows}
-          scrollContainerRef={scrollContainerRef}
-          defaultSort={{column: 'search', direction: 'asc'}}
-        />
+        <Card borderTop>
+          <Table<DocumentWithHistory>
+            loading={isLoading}
+            data={tableData}
+            emptyState={t('summary.no-documents')}
+            // eslint-disable-next-line @sanity/i18n/no-attribute-string-literals
+            rowId="document._id"
+            columnDefs={documentTableColumnDefs}
+            rowActions={renderRowActions}
+            searchFilter={filterRows}
+            scrollContainerRef={scrollContainerRef}
+            defaultSort={{column: 'search', direction: 'asc'}}
+          />
+        </Card>
       </Stack>
       {release.state === 'active' && (
         <Container width={3}>
