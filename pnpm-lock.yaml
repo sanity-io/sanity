@@ -506,8 +506,8 @@ importers:
   dev/test-studio:
     dependencies:
       '@portabletext/block-tools':
-        specifier: ^2.0.8
-        version: 2.0.8(@sanity/types@packages+@sanity+types)(@types/react@19.1.9)
+        specifier: ^3.0.0
+        version: 3.0.0(@sanity/types@packages+@sanity+types)(@types/react@19.1.9)
       '@portabletext/editor':
         specifier: ^2.3.3
         version: 2.3.3(@sanity/schema@packages+@sanity+schema)(@sanity/types@packages+@sanity+types)(@types/react@19.1.9)(react-dom@19.1.1(react@19.1.1))(react@19.1.1)(rxjs@7.8.2)
@@ -1641,8 +1641,8 @@ importers:
         specifier: ^3.5.1
         version: 3.5.1(@types/react-dom@19.1.7(@types/react@19.1.9))(@types/react@19.1.9)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
       '@portabletext/block-tools':
-        specifier: ^2.0.8
-        version: 2.0.8(@sanity/types@packages+@sanity+types)(@types/react@19.1.9)
+        specifier: ^3.0.0
+        version: 3.0.0(@sanity/types@packages+@sanity+types)(@types/react@19.1.9)
       '@portabletext/editor':
         specifier: ^2.3.3
         version: 2.3.3(@sanity/schema@packages+@sanity+schema)(@sanity/types@packages+@sanity+types)(@types/react@19.1.9)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(rxjs@7.8.2)
@@ -4296,12 +4296,6 @@ packages:
   '@pnpm/npm-conf@2.3.1':
     resolution: {integrity: sha512-c83qWb22rNRuB0UaVCI0uRPNRr8Z0FWnEIvT47jiHAmOIUHbBOg5XvV7pM5x+rKn9HRpjxquDbXYSXr3fAKFcw==}
     engines: {node: '>=12'}
-
-  '@portabletext/block-tools@2.0.8':
-    resolution: {integrity: sha512-scqpOduDxMXZRNQIHO6g8oNy+SsndtEF1FdLuLiosdDf6LXvx3qM4ck0FOsts1Yf8v6fY8GmQ87O54DSMfnyMw==}
-    peerDependencies:
-      '@sanity/types': ^4.3.0
-      '@types/react': ^18.3 || ^19
 
   '@portabletext/block-tools@3.0.0':
     resolution: {integrity: sha512-sGIoHJ+fKXkd56f5cdgJEcRSeNChGMbWW1u1+xM07NJ06qvsdpzwYtlYDM9Kjn4BR4f6W70ur3LnP20+yk27Eg==}
@@ -14834,13 +14828,6 @@ snapshots:
       '@pnpm/config.env-replace': 1.1.0
       '@pnpm/network.ca-file': 1.0.2
       config-chain: 1.1.13
-
-  '@portabletext/block-tools@2.0.8(@sanity/types@packages+@sanity+types)(@types/react@19.1.9)':
-    dependencies:
-      '@sanity/types': link:packages/@sanity/types
-      '@types/react': 19.1.9
-      get-random-values-esm: 1.0.2
-      lodash: 4.17.21
 
   '@portabletext/block-tools@3.0.0(@sanity/types@packages+@sanity+types)(@types/react@19.1.9)':
     dependencies:
