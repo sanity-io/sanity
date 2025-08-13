@@ -12,7 +12,7 @@
     "_type": "post",
     "_updatedAt": "2025-08-08T09:55:53Z",
     "title": "bbb",
-    "slug": { "_type": "slug", "current": "/bbb" }
+    "slug": {"_type": "slug", "current": "/bbb"}
   },
   "before": {
     "_createdAt": "2025-08-07T16:12:37Z",
@@ -26,6 +26,6 @@
     "_type": "post",
     "_updatedAt": "2025-08-08T08:13:27Z",
     "title": "aaa",
-    "slug": { "_type": "slug", "current": "/aaa" }
+    "slug": {"_type": "slug", "current": "/aaa"}
   }
 }

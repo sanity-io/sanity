@@ -8,8 +8,7 @@ When a slug changes people may still try to access content from using the old sl
 
 ## Solution
 
-
-This Sanity function automatically creates a redirect document when the value of the `slug` field is updated and stores it as a permanent redirect. 
+This Sanity function automatically creates a redirect document when the value of the `slug` field is updated and stores it as a permanent redirect.
 
 ## Benefits
 
@@ -21,63 +20,49 @@ This Sanity function automatically creates a redirect document when the value of
 
 This function is built to be compatible with the schema for Next.js as described in [Managing redirects with Sanity guide](https://www.sanity.io/guides/managing-redirects-with-sanity#d012060db974). We recommend testing the function out in one of those after you have installed them locally.
 
-
 ## Implementation
-
-<!-- 
-BEST PRACTICE:
-- Provide step-by-step instructions
-- Include all necessary code snippets
-- Use proper syntax highlighting for code blocks
-- Test instructions to ensure they work
-- Include both CLI commands and configuration examples
-- Specify correct working directories for monorepo templates
-- Include function dependency installation
--->
 
 **Important:** Run these commands from the root of your project (not inside the `studio/` folder).
 
 1. **Initialize the example**
 
-  Run this if you haven't initialized blueprints:
+Run this if you haven't initialized blueprints:
 
-  ```bash
-   npx sanity blueprints init
-  ```
+```bash
+ npx sanity blueprints init
+```
 
-  You'll be prompted to select your organization and Sanity studio.
+You'll be prompted to select your organization and Sanity studio.
 
-  Then run:
+Then run:
 
-  ```bash
-   npx sanity blueprints add function --example auto-redirect
-  ```
+```bash
+ npx sanity blueprints add function --example auto-redirect
+```
 
 2. **Add configuration to your blueprint**
 
-  ```ts
-  // sanity.blueprint.ts
-  import { defineBlueprint, defineDocumentFunction } from "@sanity/blueprints";
+```ts
+// sanity.blueprint.ts
+import {defineBlueprint, defineDocumentFunction} from '@sanity/blueprints'
 
-  export default defineBlueprint({
-    resources: [
-      defineDocumentFunction({
-        type: "sanity.function.document",
-        name: "auto-redirect",
-        src: "./functions/auto-redirect",
-        memory: 2,
-        timeout: 30,
-        event: {
-          on: [
-            "publish"
-          ],
-          filter: "delta::changedAny(slug.current)",
-          projection: "{'before': before(), 'after': after()}",
-        }
-      }),
-    ],
-  });
-   ```
+export default defineBlueprint({
+  resources: [
+    defineDocumentFunction({
+      type: 'sanity.function.document',
+      name: 'auto-redirect',
+      src: './functions/auto-redirect',
+      memory: 2,
+      timeout: 30,
+      event: {
+        on: ['publish'],
+        filter: 'delta::changedAny(slug.current)',
+        projection: "{'before': before(), 'after': after()}",
+      },
+    }),
+  ],
+})
+```
 
 3. **Install dependencies**
 
@@ -122,7 +107,6 @@ npx sanity functions dev
 
 This opens an interactive playground where you can test functions with custom data
 
-
 ### 3. Enable Debugging
 
 To see detailed logs during testing, modify the function temporarily to add logging:
@@ -157,7 +141,7 @@ When a content editor publishes a document with a changed slug field, the functi
 1. **Triggers** on the publish event for a document with a changed slug field
 2. **Analyzes** the changes to get the old and new slugs
 3. **Checks** the existing redirects to see if one exists or it a loop will be created
-4. **Creates** a new redirect document 
+4. **Creates** a new redirect document
 
 This results in SEO rankings being passed on and old links still working.
 
@@ -170,7 +154,6 @@ Modify the blueprint filter to target specific content types:
 ```typescript
 filter: "_type == 'article' && delta::changedAny(slug.current)"
 ```
-
 
 ## Related Examples
 
