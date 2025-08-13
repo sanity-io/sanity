@@ -7,7 +7,7 @@ import {memo} from 'react'
 
 import {ToneIcon} from '../../../../../ui-components/toneIcon/ToneIcon'
 import {Tooltip} from '../../../../../ui-components/tooltip'
-import {UserAvatar} from '../../../../components'
+import {AvatarSkeleton, UserAvatar} from '../../../../components'
 import {RelativeTime} from '../../../../components/RelativeTime'
 import {useSchema} from '../../../../hooks'
 import {SanityDefaultPreview} from '../../../../preview/components/SanityDefaultPreview'
@@ -230,16 +230,21 @@ function UpdatedAtCell({
       style={{minWidth: 130}}
       sizing="border"
     >
-      {!isLoading && document._updatedAt && (
-        <Flex align="center" gap={2}>
-          {documentHistory?.lastEditedBy && (
-            <UserAvatar size={0} user={documentHistory.lastEditedBy} />
-          )}
-          <Text muted size={1}>
-            <RelativeTime time={document._updatedAt} useTemporalPhrase minimal />
-          </Text>
-        </Flex>
-      )}
+      <Flex align="center" gap={2}>
+        {(isLoading || !documentHistory?.lastEditedBy) && (
+          <AvatarSkeleton size={0} animated style={{height: 19, width: 19}} />
+        )}
+        {!isLoading && document._updatedAt && (
+          <>
+            {documentHistory?.lastEditedBy && (
+              <UserAvatar size={0} user={documentHistory.lastEditedBy} />
+            )}
+            <Text muted size={1}>
+              <RelativeTime time={document._updatedAt} useTemporalPhrase minimal />
+            </Text>
+          </>
+        )}
+      </Flex>
     </Flex>
   )
 }
