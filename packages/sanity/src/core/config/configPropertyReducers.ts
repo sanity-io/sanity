@@ -16,6 +16,7 @@ import {
   type DocumentInspector,
 } from './document'
 import {flattenConfig} from './flattenConfig'
+import {type ReleaseActionComponent, type ReleaseActionsContext} from './releases/actions'
 import {
   type AsyncConfigPropertyReducer,
   type ConfigContext,
@@ -188,6 +189,23 @@ export const documentActionsReducer: ConfigPropertyReducer<
   throw new Error(
     `Expected \`document.actions\` to be an array or a function, but received ${getPrintableType(
       documentActions,
+    )}`,
+  )
+}
+
+export const releaseActionsReducer: ConfigPropertyReducer<
+  ReleaseActionComponent[],
+  ReleaseActionsContext
+> = (prev, {releases}, context) => {
+  const releaseActions = releases?.actions
+  if (!releaseActions) return prev
+
+  if (typeof releaseActions === 'function') return releaseActions(prev, context)
+  if (Array.isArray(releaseActions)) return [...prev, ...releaseActions]
+
+  throw new Error(
+    `Expected \`releases.actions\` to be an array or a function, but received ${getPrintableType(
+      releaseActions,
     )}`,
   )
 }

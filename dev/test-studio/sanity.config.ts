@@ -56,6 +56,7 @@ import {autoCloseBrackets} from './plugins/input/auto-close-brackets-plugin'
 import {wave} from './plugins/input/wave-plugin'
 import {languageFilter} from './plugins/language-filter'
 import {routerDebugTool} from './plugins/router-debug'
+import {conditionalReleaseAction, logReleaseAction} from './releases/customReleaseActions'
 // eslint-disable-next-line import/extensions
 import {theme as tailwindTheme} from './sanity.theme.mjs'
 import {createSchemaTypes} from './schema'
@@ -248,6 +249,15 @@ const defaultWorkspace = defineConfig({
 
       return prev
     },
+  },
+  releases: {
+    actions: (prev, ctx) => {
+      if (ctx.release.state === 'active' && ctx.documents.length > 0) {
+        return [...prev, logReleaseAction, conditionalReleaseAction]
+      }
+      return prev
+    },
+    // actions: [logReleaseAction, conditionalReleaseAction],
   },
 })
 

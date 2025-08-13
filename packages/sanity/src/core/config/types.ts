@@ -33,6 +33,7 @@ import {
   type DocumentInspector,
 } from './document'
 import {type FormComponents} from './form'
+import {type ReleaseActionComponent, type ReleaseActionsContext} from './releases/actions'
 import {type StudioComponents, type StudioComponentsPluginOptions} from './studio'
 
 /**
@@ -366,6 +367,15 @@ export type DocumentBadgesResolver = ComposableOption<
   DocumentBadgesContext
 >
 
+/**
+ * @hidden
+ * @beta
+ */
+export type ReleaseActionsResolver = ComposableOption<
+  ReleaseActionComponent[],
+  ReleaseActionsContext
+>
+
 /** @hidden @beta */
 export type DocumentInspectorsResolver = ComposableOption<
   DocumentInspector[],
@@ -458,6 +468,9 @@ export interface PluginOptions {
 
   /** @internal */
   [QUOTA_EXCLUDED_RELEASES_ENABLED]?: WorkspaceOptions[typeof QUOTA_EXCLUDED_RELEASES_ENABLED]
+
+  /** Configuration for Content Releases */
+  releases?: DefaultPluginsWorkspaceOptions['releases']
 
   /** Configuration for studio beta features.
    * @internal
@@ -935,9 +948,18 @@ export interface Source {
   }
   /** @beta */
   tasks?: WorkspaceOptions['tasks']
-
   /** @beta */
-  releases?: WorkspaceOptions['releases']
+  releases?: {
+    enabled?: boolean
+    /**
+     * Limit the number of releases that can be created by this workspace.
+     */
+    limit?: number
+    /**
+     * Returns an array of actions for the release.
+     */
+    actions: (props: PartialContext<ReleaseActionsContext>) => ReleaseActionComponent[]
+  }
 
   /** @internal */
   __internal_serverDocumentActions?: WorkspaceOptions['__internal_serverDocumentActions']
@@ -1124,6 +1146,10 @@ export type DefaultPluginsWorkspaceOptions = {
      * Limit the number of releases that can be created by this workspace.
      */
     limit?: number
+    /**
+     * Actions for releases.
+     */
+    actions?: ReleaseActionComponent[] | ReleaseActionsResolver
   }
   mediaLibrary?: MediaLibraryConfig
 }
