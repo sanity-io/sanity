@@ -117,7 +117,11 @@ export function IncomingReferencesList() {
         <Stack key={type.type} padding={2} space={1} marginBottom={2}>
           <TypeTitle type={type.type} />
           {type.documents.map((document) => (
-            <IncomingReferenceDocument key={document._id} document={document} />
+            <IncomingReferenceDocument
+              key={document._id}
+              document={document}
+              referenceToId={documentId}
+            />
           ))}
         </Stack>
       ))}
