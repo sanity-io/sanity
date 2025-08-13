@@ -26,14 +26,18 @@ export function resolveConfig(config: Config): Observable<Workspace[]> {
   return combineLatest(
     workspaces.flatMap((workspaceSummary) =>
       combineLatest(workspaceSummary.__internal.sources.map(({source}) => source)).pipe(
-        map(
-          (sources): Workspace => ({
-            ...workspaceSummary,
-            ...sources[0],
-            unstable_sources: sources,
+        map((sources): Workspace => {
+          const rootSource = sources[0]
+          return {
+            ...rootSource,
             type: 'workspace',
-          }),
-        ),
+            basePath: workspaceSummary.basePath,
+            subtitle: workspaceSummary.subtitle,
+            icon: workspaceSummary.icon,
+            unstable_sources: sources,
+            scheduledPublishing: workspaceSummary.scheduledPublishing,
+          }
+        }),
       ),
     ),
   )
