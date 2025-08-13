@@ -18,7 +18,7 @@ vi.mock('../../hooks', () => ({
 vi.mock('../../studio/workspace', () => ({
   useWorkspace: vi.fn().mockReturnValue({tasks: {enabled: true}}),
 }))
-vi.mock('../store', () => ({useTasksStore: vi.fn()}))
+vi.mock('../store/useTasksStore', () => ({useTasksStore: vi.fn()}))
 vi.mock('../context/isLastPane/useIsLastPane', () => ({
   useIsLastPane: vi.fn().mockReturnValue(true),
 }))

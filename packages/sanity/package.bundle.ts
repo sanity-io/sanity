@@ -15,7 +15,6 @@ export default defineConfig(() => {
           'presentation': './src/_exports/presentation.ts',
           'router': './src/_exports/router.ts',
           'structure': './src/_exports/structure.ts',
-          'ui-components': './src/_exports/ui-components.ts',
         },
       },
     },

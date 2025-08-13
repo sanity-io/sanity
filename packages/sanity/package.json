@@ -34,11 +34,6 @@
       "require": "./lib/_internal.js",
       "default": "./lib/_internal.js"
     },
-    "./ui-components": {
-      "source": "./src/_exports/ui-components.ts",
-      "require": "./lib/ui-components.js",
-      "default": "./lib/ui-components.js"
-    },
     "./_singletons": {
       "source": "./src/_exports/_singletons.ts",
       "import": "./lib/_singletons.mjs",
