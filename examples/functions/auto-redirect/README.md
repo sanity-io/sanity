@@ -100,8 +100,8 @@ BEST PRACTICE:
 
 You can test the auto-redirect function locally using the Sanity CLI before deploying it to production.
 
-**As the filter and projection are using advanced GROQ functions they need to be commented out when testing locally**
-As this function uses the `before()` and `after()` functions you need to test the function with the included document.json or by using the development server:
+**As the filter and projection are using advanced GROQ functions they currently need to be commented out when testing locally**
+As this function uses the `before()` and `after()` functions you need to test the function with the included document.json or by using the development server
 
 ### 1. Basic Function Test
 

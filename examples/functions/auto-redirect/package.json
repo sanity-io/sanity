@@ -17,7 +17,7 @@
         "publish"
       ],
       "filter": "delta::changedAny(slug.current)",
-      "projection": "{'before': before(), 'after': after()}",
+      "projection": "{'before': before(), 'after': after()}"
     }
   },
   "exampleInstructions": "Add this resource to your Blueprint config's resources array. Go to README.md for more details on how to use this function."
