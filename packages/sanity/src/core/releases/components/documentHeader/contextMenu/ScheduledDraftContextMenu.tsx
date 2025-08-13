@@ -4,7 +4,7 @@ import {Menu, MenuDivider} from '@sanity/ui'
 import {memo} from 'react'
 import {IntentLink} from 'sanity/router'
 
-import {MenuItem} from '../../../../../ui-components'
+import {MenuItem} from '../../../../../ui-components/menuItem/MenuItem'
 import {useTranslation} from '../../../../i18n/hooks/useTranslation'
 import {type UseScheduledDraftMenuActionsReturn} from '../../../../singleDocRelease/hooks/useScheduledDraftMenuActions'
 import {RELEASES_SCHEDULED_DRAFTS_INTENT} from '../../../../singleDocRelease/plugin'

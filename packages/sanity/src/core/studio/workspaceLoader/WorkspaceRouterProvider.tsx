@@ -11,11 +11,12 @@ import {
 import {type Router, RouterProvider, type RouterState} from 'sanity/router'
 import {useSyncExternalStoreWithSelector} from 'use-sync-external-store/with-selector'
 
-import {ErrorBoundary} from '../../../ui-components'
-import {type Tool, type Workspace} from '../../config'
-import {createRouter, type RouterHistory, type RouterStateEvent} from '../router'
+import {ErrorBoundary} from '../../../ui-components/errorBoundary/ErrorBoundary'
+import {type Tool, type Workspace} from '../../config/types'
 import {decodeUrlState, resolveDefaultState, resolveIntentState} from '../router/helpers'
+import {createRouter} from '../router/router'
 import {useRouterHistory} from '../router/RouterHistoryContext'
+import {type RouterHistory, type RouterStateEvent} from '../router/types'
 
 interface WorkspaceRouterProviderProps {
   children: ReactNode

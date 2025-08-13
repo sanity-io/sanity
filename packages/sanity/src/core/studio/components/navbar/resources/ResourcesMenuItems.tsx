@@ -2,9 +2,9 @@ import {DotIcon} from '@sanity/icons'
 import {MenuDivider, Text} from '@sanity/ui'
 import {type SemVer} from 'semver'
 
-import {MenuItem} from '../../../../../ui-components'
-import {LoadingBlock} from '../../../../components/loadingBlock'
-import {useTranslation} from '../../../../i18n'
+import {MenuItem} from '../../../../../ui-components/menuItem/MenuItem'
+import {LoadingBlock} from '../../../../components/loadingBlock/LoadingBlock'
+import {useTranslation} from '../../../../i18n/hooks/useTranslation'
 import {StudioAnnouncementsMenuItem} from '../../../studioAnnouncements/StudioAnnouncementsMenuItem'
 import {type ResourcesResponse, type Section} from './helper-functions/types'
 

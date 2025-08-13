@@ -1,7 +1,7 @@
 import {describe, expect, test} from 'vitest'
 
 import {getFallbackLocaleSource} from '../../src/core/i18n/fallback'
-import {Rule} from '../../src/core/validation'
+import {Rule} from '../../src/core/validation/Rule'
 
 const context: any = {client: {}, i18n: getFallbackLocaleSource()}
 

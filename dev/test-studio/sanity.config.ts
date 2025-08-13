@@ -20,7 +20,7 @@ import {markdownSchema} from 'sanity-plugin-markdown'
 import {media} from 'sanity-plugin-media'
 import {muxInput} from 'sanity-plugin-mux-input'
 
-import {imageAssetSource} from './assetSources'
+import {imageAssetSource} from './assetSources/imageAssetSource'
 import {
   Annotation,
   Block,
@@ -45,18 +45,20 @@ import {assistFieldActionGroup} from './fieldActions/assistFieldActionGroup'
 import {resolveInitialValueTemplates} from './initialValueTemplates'
 import {customInspector} from './inspectors/custom'
 import {testStudioLocaleBundles} from './locales'
-import {errorReportingTestPlugin} from './plugins/error-reporting-test'
+import {errorReportingTestPlugin} from './plugins/error-reporting-test/plugin'
 import {autoCloseBrackets} from './plugins/input/auto-close-brackets-plugin'
 import {wave} from './plugins/input/wave-plugin'
-import {languageFilter} from './plugins/language-filter'
-import {routerDebugTool} from './plugins/router-debug'
+import {languageFilter} from './plugins/language-filter/plugin'
+import {routerDebugTool} from './plugins/router-debug/plugin'
 import {ArchiveAndDeleteCustomAction} from './releases/customReleaseActions'
 import {createSchemaTypes} from './schema'
 import {StegaDebugger} from './schema/debug/components/DebugStega'
 import {CustomNavigator} from './schema/presentation/CustomNavigator'
 import {types as presentationNextSanitySchemaTypes} from './schema/presentation/next-sanity'
 import {types as presentationPreviewKitSchemaTypes} from './schema/presentation/preview-kit'
-import {defaultDocumentNode, newDocumentOptions, structure} from './structure'
+import {newDocumentOptions} from './structure/resolveNewDocumentOptions'
+import {structure} from './structure/resolveStructure'
+import {defaultDocumentNode} from './structure/resolveStructureDocumentNode'
 import {workshopTool} from './workshop'
 
 // @ts-expect-error - defined by vite

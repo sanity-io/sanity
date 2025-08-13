@@ -4,15 +4,15 @@ import {partition} from 'lodash'
 import {type KeyboardEvent, useCallback, useMemo, useRef, useState} from 'react'
 import {styled} from 'styled-components'
 
-import {Button} from '../../../../../../../../ui-components'
+import {Button} from '../../../../../../../../ui-components/button/Button'
+import {CommandList} from '../../../../../../../components/commandList/CommandList'
 import {
-  CommandList,
   type CommandListGetItemSelectedCallback,
   type CommandListHandle,
   type CommandListRenderItemCallback,
-} from '../../../../../../../components'
-import {useSchema} from '../../../../../../../hooks'
-import {useTranslation} from '../../../../../../../i18n'
+} from '../../../../../../../components/commandList/types'
+import {useSchema} from '../../../../../../../hooks/useSchema'
+import {useTranslation} from '../../../../../../../i18n/hooks/useTranslation'
 import {useSearchState} from '../../../contexts/search/useSearchState'
 import {type DocumentTypeMenuItem} from '../../../types'
 import {getSelectableOmnisearchTypes} from '../../../utils/selectors'

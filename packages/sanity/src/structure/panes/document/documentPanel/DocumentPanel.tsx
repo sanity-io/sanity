@@ -21,31 +21,32 @@ import {
 } from 'sanity'
 import {css, styled} from 'styled-components'
 
-import {PaneContent, usePane, usePaneLayout, usePaneRouter} from '../../../components'
+import {PaneContent} from '../../../components/pane/PaneContent'
+import {usePane} from '../../../components/pane/usePane'
+import {usePaneLayout} from '../../../components/pane/usePaneLayout'
+import {usePaneRouter} from '../../../components/paneRouter/usePaneRouter'
 import {hasObsoleteDraft} from '../../../hasObsoleteDraft'
 import {mustChooseNewDocumentDestination} from '../../../mustChooseNewDocumentDestination'
 import {useStructureTool} from '../../../useStructureTool'
-import {DocumentInspectorPanel} from '../documentInspector'
-import {InspectDialog} from '../inspectDialog'
+import {DocumentInspectorPanel} from '../documentInspector/DocumentInspectorPanel'
+import {InspectDialog} from '../inspectDialog/InspectDialog'
 import {useDocumentPane} from '../useDocumentPane'
-import {
-  DeletedDocumentBanners,
-  DeprecatedDocumentTypeBanner,
-  InsufficientPermissionBanner,
-  ReferenceChangedBanner,
-  ScheduledDraftOverrideBanner,
-} from './banners'
 import {ArchivedReleaseDocumentBanner} from './banners/ArchivedReleaseDocumentBanner'
 import {CanvasLinkedBanner} from './banners/CanvasLinkedBanner'
 import {ChooseNewDocumentDestinationBanner} from './banners/ChooseNewDocumentDestinationBanner'
 import {CreateLinkedBanner} from './banners/CreateLinkedBanner'
+import {DeletedDocumentBanners} from './banners/DeletedDocumentBanners'
+import {DeprecatedDocumentTypeBanner} from './banners/DeprecatedDocumentTypeBanner'
 import {DocumentNotInReleaseBanner} from './banners/DocumentNotInReleaseBanner'
+import {InsufficientPermissionBanner} from './banners/InsufficientPermissionBanner'
 import {ObsoleteDraftBanner} from './banners/ObsoleteDraftBanner'
 import {OpenReleaseToEditBanner} from './banners/OpenReleaseToEditBanner'
+import {ReferenceChangedBanner} from './banners/ReferenceChangedBanner'
 import {RevisionNotFoundBanner} from './banners/RevisionNotFoundBanner'
+import {ScheduledDraftOverrideBanner} from './banners/ScheduledDraftOverrideBanner'
 import {ScheduledReleaseBanner} from './banners/ScheduledReleaseBanner'
 import {UnpublishedDocumentBanner} from './banners/UnpublishedDocumentBanner'
-import {FormView} from './documentViews'
+import {FormView} from './documentViews/FormView'
 import {DocumentPanelSubHeader} from './header/DocumentPanelSubHeader'
 
 interface DocumentPanelProps {

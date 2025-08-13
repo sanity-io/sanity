@@ -2,7 +2,7 @@ import {type EditableReleaseDocument, type ReleaseDocument} from '@sanity/client
 import {useCallback, useEffect, useRef, useState} from 'react'
 
 import {getIsReleaseOpen, TitleDescriptionForm} from '../../components/dialog/TitleDescriptionForm'
-import {useReleaseOperations} from '../../index'
+import {useReleaseOperations} from '../../store/useReleaseOperations'
 import {useReleasePermissions} from '../../store/useReleasePermissions'
 
 export function ReleaseDetailsEditor({release}: {release: ReleaseDocument}): React.JSX.Element {

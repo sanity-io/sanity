@@ -8,8 +8,9 @@ import {
   type DocumentActionDescription,
   type DocumentActionProps,
 } from '../../../config/document/actions'
-import {useValidationStatus} from '../../../hooks'
-import {Translate, useTranslation} from '../../../i18n'
+import {useValidationStatus} from '../../../hooks/useValidationStatus'
+import {useTranslation} from '../../../i18n/hooks/useTranslation'
+import {Translate} from '../../../i18n/Translate'
 import {useSetPerspective} from '../../../perspective/useSetPerspective'
 import {getReleaseIdFromReleaseDocumentId} from '../../../releases/util/getReleaseIdFromReleaseDocumentId'
 import {ScheduleDraftDialog} from '../../components/ScheduleDraftDialog'

@@ -29,7 +29,7 @@ import {
 } from 'sanity'
 
 import {MissingSchemaType} from '../MissingSchemaType'
-import {usePaneRouter} from '../paneRouter'
+import {usePaneRouter} from '../paneRouter/usePaneRouter'
 import {PaneItemPreview} from './PaneItemPreview'
 
 interface PaneItemProps {

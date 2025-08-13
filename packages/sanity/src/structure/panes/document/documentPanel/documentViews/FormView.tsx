@@ -18,7 +18,7 @@ import {
 } from 'sanity'
 import {useEffectEvent} from 'use-effect-event'
 
-import {Delay} from '../../../../components'
+import {Delay} from '../../../../components/Delay'
 import {structureLocaleNamespace} from '../../../../i18n'
 import {useDocumentPane} from '../../useDocumentPane'
 import {useDocumentTitle} from '../../useDocumentTitle'

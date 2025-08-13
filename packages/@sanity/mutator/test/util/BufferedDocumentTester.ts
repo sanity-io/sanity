@@ -3,8 +3,8 @@ import {type PatchMutationOperation} from '@sanity/types'
 import debugLogger from 'debug'
 import {expect} from 'vitest'
 
-import {BufferedDocument, Mutation} from '../../src/document'
-import {type CommitHandlerMessage} from '../../src/document/BufferedDocument'
+import {BufferedDocument, type CommitHandlerMessage} from '../../src/document/BufferedDocument'
+import {Mutation} from '../../src/document/Mutation'
 import {type Doc, type Mut} from '../../src/document/types'
 import {extract} from '../../src/jsonpath'
 

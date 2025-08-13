@@ -2,7 +2,7 @@ import {Card, Code, Grid, Stack, Text, TextArea} from '@sanity/ui'
 import {type ForwardedRef, forwardRef, useCallback, useMemo} from 'react'
 import {styled} from 'styled-components'
 
-import {Button} from '../../../../ui-components'
+import {Button} from '../../../../ui-components/button/Button'
 
 const ExampleCode = styled(Code)`
   cursor: pointer;

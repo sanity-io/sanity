@@ -1,8 +1,7 @@
 import {useMemo} from 'react'
 
-import {useFeatureEnabled} from '../../hooks'
-import {FEATURES} from '../../hooks/useFeatureEnabled'
-import {useSource} from '../../studio'
+import {FEATURES, useFeatureEnabled} from '../../hooks/useFeatureEnabled'
+import {useSource} from '../../studio/source'
 import {getPublishedId} from '../../util'
 import {type CommentsUIMode} from '../types'
 

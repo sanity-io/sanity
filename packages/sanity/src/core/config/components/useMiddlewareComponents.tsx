@@ -2,8 +2,8 @@
 import {Skeleton} from '@sanity/ui'
 import {type ComponentType, Fragment, Suspense, useMemo} from 'react'
 
-import {useSource} from '../../studio'
-import {flattenConfig} from '..'
+import {useSource} from '../../studio/source'
+import {flattenConfig} from '../flattenConfig'
 import {type PluginOptions} from '../types'
 
 const emptyRender = () => <Fragment />

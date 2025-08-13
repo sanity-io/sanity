@@ -1,8 +1,9 @@
 import {type ReferenceSchemaType} from '@sanity/types'
 import {Stack, Text} from '@sanity/ui'
 
-import {Button} from '../../../../ui-components'
-import {Translate, useTranslation} from '../../../i18n'
+import {Button} from '../../../../ui-components/button/Button'
+import {useTranslation} from '../../../i18n/hooks/useTranslation'
+import {Translate} from '../../../i18n/Translate'
 import {AlertStrip} from '../../components/AlertStrip'
 
 /**

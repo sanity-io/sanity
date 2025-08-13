@@ -4,11 +4,9 @@ import {Text} from '@sanity/ui'
 import {useMemo, useState} from 'react'
 import {Translate, useCurrentUser, useListFormat, useTranslation} from 'sanity'
 
-import {
-  RequestPermissionDialog,
-  useRoleRequestsStatus,
-} from '../../../../components/requestPermissionDialog'
 import {AskToEditDialogOpened} from '../../../../components/requestPermissionDialog/__telemetry__/RequestPermissionDialog.telemetry'
+import {RequestPermissionDialog} from '../../../../components/requestPermissionDialog/RequestPermissionDialog'
+import {useRoleRequestsStatus} from '../../../../components/requestPermissionDialog/useRoleRequestsStatus'
 import {structureLocaleNamespace} from '../../../../i18n'
 import {Banner} from './Banner'
 

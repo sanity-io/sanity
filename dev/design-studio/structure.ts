@@ -1,7 +1,7 @@
 import {CogIcon} from '@sanity/icons'
 import {type DefaultDocumentNodeResolver, type StructureResolver} from 'sanity/structure'
 
-import {CustomPane} from './components/CustomPane'
+import {CustomPane} from './components/CustomPane/CustomPane'
 import {IFrameView} from './components/IframeView'
 import {JSONPreviewDocumentView} from './components/jsonPreview'
 import {StyledTestView} from './schemaTypes/documentWithViews/view/styledTest'

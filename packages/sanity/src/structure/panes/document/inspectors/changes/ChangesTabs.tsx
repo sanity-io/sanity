@@ -11,7 +11,9 @@ import {
 } from 'sanity'
 import {styled} from 'styled-components'
 
-import {Button, Tab, Tooltip} from '../../../../../ui-components'
+import {Button} from '../../../../../ui-components/button/Button'
+import {Tab} from '../../../../../ui-components/tab/Tab'
+import {Tooltip} from '../../../../../ui-components/tooltip/Tooltip'
 import {usePaneRouter} from '../../../../components/paneRouter/usePaneRouter'
 import {structureLocaleNamespace} from '../../../../i18n'
 import {HISTORY_INSPECTOR_NAME} from '../../constants'

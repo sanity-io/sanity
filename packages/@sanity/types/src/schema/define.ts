@@ -8,7 +8,7 @@ import {
   type WidenInitialValue,
   type WidenValidation,
 } from './defineTypes'
-import {type FieldDefinitionBase, type IntrinsicTypeName} from './definition'
+import {type FieldDefinitionBase, type IntrinsicTypeName} from './definition/schemaDefinition'
 import {type AutocompleteString} from './types'
 
 /**

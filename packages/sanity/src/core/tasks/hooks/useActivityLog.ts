@@ -1,11 +1,11 @@
 import {useCallback, useEffect, useState} from 'react'
 import {useEffectEvent} from 'use-effect-event'
 
-import {useClient} from '../../hooks'
+import {useClient} from '../../hooks/useClient'
 import {getTransactionsLogs} from '../../store/translog/getTransactionsLogs'
-import {getPublishedId} from '../../util'
+import {getPublishedId} from '../../util/draftUtils'
 import {type FieldChange, trackFieldChanges} from '../components/activity/helpers/parseTransactions'
-import {API_VERSION} from '../constants'
+import {API_VERSION} from '../constants/API_VERSION'
 import {type TaskDocument} from '../types'
 
 export function useActivityLog(task: TaskDocument): {

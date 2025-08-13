@@ -3,7 +3,7 @@ import {Box, Card, Flex, Text} from '@sanity/ui'
 import {useMemo} from 'react'
 
 import {isCardinalityOneRelease, type ReleaseDocument} from '../../..'
-import {useTranslation} from '../../../i18n'
+import {useTranslation} from '../../../i18n/hooks/useTranslation'
 import {releasesLocaleNamespace} from '../../i18n'
 
 interface DraftsDisabledBannerProps {

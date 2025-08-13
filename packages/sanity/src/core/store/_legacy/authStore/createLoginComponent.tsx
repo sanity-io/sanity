@@ -4,10 +4,10 @@ import {Badge, Flex, Heading, Stack, Text} from '@sanity/ui'
 import {useCallback, useEffect, useState} from 'react'
 import {type Observable} from 'rxjs'
 
-import {Button, type ButtonProps} from '../../../../ui-components'
-import {LoadingBlock} from '../../../components/loadingBlock'
+import {Button, type ButtonProps} from '../../../../ui-components/button/Button'
+import {LoadingBlock} from '../../../components/loadingBlock/LoadingBlock'
 import {type AuthConfig} from '../../../config'
-import {createHookFromObservableFactory} from '../../../util'
+import {createHookFromObservableFactory} from '../../../util/createHookFromObservableFactory'
 import {CustomLogo, providerLogos} from './providerLogos'
 import {type LoginComponentProps} from './types'
 

@@ -5,7 +5,7 @@ import {memo} from 'react'
 import {IntentLink} from 'sanity/router'
 
 import {MenuItem} from '../../../../../ui-components/menuItem/MenuItem'
-import {useTranslation} from '../../../../i18n'
+import {useTranslation} from '../../../../i18n/hooks/useTranslation'
 import {RELEASES_INTENT} from '../../../plugin'
 import {CopyToReleaseMenuGroup} from './CopyToReleaseMenuGroup'
 

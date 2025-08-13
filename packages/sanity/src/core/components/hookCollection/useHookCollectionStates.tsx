@@ -2,8 +2,9 @@ import {type ThrottleSettings} from 'lodash'
 import {useCallback, useRef, useState} from 'react'
 import deepCompare from 'react-fast-compare'
 
-import {isNonNullable, useThrottledCallback} from '../../util'
+import {isNonNullable} from '../../util/isNonNullable'
 import {postTask} from '../../util/postTask'
+import {useThrottledCallback} from '../../util/useThrottledCallback'
 import {getHookId} from './actionId'
 import {type GetHookCollectionStateProps} from './types'
 

@@ -8,7 +8,7 @@ import {styled} from 'styled-components'
 
 import {LoadingBlock} from '../../../components/loadingBlock/LoadingBlock'
 import {Resizable} from '../../../components/resizer/Resizable'
-import {useTranslation} from '../../../i18n'
+import {useTranslation} from '../../../i18n/hooks/useTranslation'
 import {releasesLocaleNamespace} from '../../i18n'
 import {type ReleaseEvents} from './events/useReleaseEvents'
 import {ReleaseActivityList} from './ReleaseActivityList'

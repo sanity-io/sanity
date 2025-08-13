@@ -2,16 +2,16 @@ import {DEFAULT_MAX_FIELD_DEPTH} from '@sanity/schema/_internal'
 import {type CrossDatasetType, type SchemaType} from '@sanity/types'
 import {compact, flatten, flow, toLower, trim, union, uniq, words} from 'lodash'
 
+import {deriveSearchWeightsFromType} from '../common/deriveSearchWeightsFromType'
+import {isPerspectiveRaw} from '../common/isPerspectiveRaw'
 import {
-  deriveSearchWeightsFromType,
-  isPerspectiveRaw,
   type SearchFactoryOptions,
   type SearchOptions,
   type SearchPath,
   type SearchSort,
   type SearchSpec,
   type SearchTerms,
-} from '../common'
+} from '../common/types'
 import {FINDABILITY_MVI} from '../constants'
 
 export interface SearchParams {

@@ -1,7 +1,7 @@
 import {Card, Flex} from '@sanity/ui'
 import {useSelect} from '@sanity/ui-workshop'
 
-import {DocumentStatusPulse} from '../DocumentStatusPulse'
+import {DocumentStatusPulse} from '../DocumentStatusPulse/DocumentStatusPulse'
 
 const STATUS_OPTIONS: Record<string, 'saved' | 'syncing'> = {
   saved: 'saved',

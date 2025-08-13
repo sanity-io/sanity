@@ -4,7 +4,7 @@ import {fileURLToPath} from 'node:url'
 
 import {expect, type Page} from '@playwright/test'
 
-import {createFileDataTransferHandle} from '../../helpers'
+import {createFileDataTransferHandle} from '../../helpers/createFileDataTransferHandle'
 import {test} from '../../studio-test'
 
 const fileName = 'capybara.jpg'

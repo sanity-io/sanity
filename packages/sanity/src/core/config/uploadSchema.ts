@@ -9,7 +9,7 @@ import {firstValueFrom} from 'rxjs'
 
 import {isDev} from '../environment'
 import {getFeatures} from '../hooks/useFeatureEnabled'
-import {DESCRIPTOR_CONVERTER} from '../schema'
+import {DESCRIPTOR_CONVERTER} from '../schema/descriptors'
 
 const debug = debugit('sanity:config')
 

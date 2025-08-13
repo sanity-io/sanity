@@ -1,7 +1,7 @@
 import {type ReleaseDocument} from '@sanity/client'
 import {memo, type ReactNode, useEffect} from 'react'
 
-import {GetHookCollectionState} from '../../components/hookCollection'
+import {GetHookCollectionState} from '../../components/hookCollection/GetHookCollectionState'
 import {
   type ReleaseActionComponent,
   type ReleaseActionDescription,

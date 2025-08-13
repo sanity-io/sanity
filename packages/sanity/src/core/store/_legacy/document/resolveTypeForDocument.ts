@@ -1,7 +1,7 @@
 import {type SanityClient} from '@sanity/client'
 import {type Observable, of} from 'rxjs'
 
-import {getPublishedId} from '../../../util'
+import {getPublishedId} from '../../../util/draftUtils'
 
 export function resolveTypeForDocument(
   client: SanityClient,

@@ -5,7 +5,8 @@ import {LoadingBlock, useTranslation} from 'sanity'
 import {styled} from 'styled-components'
 
 import {Delay} from '../../components/Delay'
-import {Pane, PaneContent} from '../../components/pane'
+import {Pane} from '../../components/pane/Pane'
+import {PaneContent} from '../../components/pane/PaneContent'
 import {structureLocaleNamespace} from '../../i18n'
 import {getWaitMessages, type WaitMessage} from './getWaitMessages'
 

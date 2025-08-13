@@ -4,7 +4,7 @@ import {Card, Stack, Text, TextInput} from '@sanity/ui'
 import {useEffect, useMemo} from 'react'
 import {styled} from 'styled-components'
 
-import {Dialog} from '../../../ui-components'
+import {Dialog} from '../../../ui-components/dialog/Dialog'
 
 interface CorsOriginErrorScreenProps {
   projectId?: string

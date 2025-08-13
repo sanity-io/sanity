@@ -7,11 +7,11 @@ import {beforeEach, describe, expect, it, type Mock, vi} from 'vitest'
 
 import {createMockSanityClient} from '../../../../test/mocks/mockSanityClient'
 import {createTestProvider} from '../../../../test/testUtils/TestProvider'
-import {useWorkspace} from '../../studio'
-import {EMPTY_ARRAY} from '../../util'
-import {createPatchChannel} from '../patch'
+import {useWorkspace} from '../../studio/workspace'
+import {EMPTY_ARRAY} from '../../util/empty'
+import {createPatchChannel} from '../patch/PatchChannel'
 import {useFormState} from '../store/useFormState'
-import {type FormDocumentValue} from '../types'
+import {type FormDocumentValue} from '../types/formDocumentValue'
 import {FormBuilder, type FormBuilderProps} from './FormBuilder'
 import {useEnhancedObjectDialog} from './tree-editing'
 
@@ -90,6 +90,8 @@ describe('FormBuilder', () => {
         openPath,
         presence: [],
         validation: [],
+        perspective: 'published',
+        hasUpstreamVersion: false,
       })
 
       const formBuilderProps: FormBuilderProps = useMemo(
@@ -97,6 +99,7 @@ describe('FormBuilder', () => {
           __internal_patchChannel: patchChannel,
           changesOpen: false,
           changed: false,
+          hasUpstreamVersion: false,
           collapsedFieldSets: undefined,
           collapsedPaths: undefined,
           focused: formState?.focused,
@@ -187,6 +190,8 @@ describe('FormBuilder', () => {
         openPath,
         presence: [],
         validation: [],
+        perspective: 'published',
+        hasUpstreamVersion: false,
       })
 
       const formBuilderProps: FormBuilderProps = useMemo(
@@ -199,6 +204,7 @@ describe('FormBuilder', () => {
           focused: formState?.focused,
           focusPath: formState?.focusPath || EMPTY_ARRAY,
           groups: formState?.groups || EMPTY_ARRAY,
+          hasUpstreamVersion: false,
           id: formState?.id || '',
           level: formState?.level || 0,
           members: formState?.members || EMPTY_ARRAY,

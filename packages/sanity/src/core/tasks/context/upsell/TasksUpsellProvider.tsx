@@ -2,7 +2,7 @@ import {useCallback, useMemo, useState} from 'react'
 import {TasksUpsellContext} from 'sanity/_singletons'
 
 import {useUpsellData} from '../../../hooks/useUpsellData'
-import {type UpsellDialogViewedInfo} from '../../../studio'
+import {type UpsellDialogViewedInfo} from '../../../studio/upsell/__telemetry__/upsell.telemetry'
 import {UpsellDialog} from '../../../studio/upsell/UpsellDialog'
 import {type TasksUpsellContextValue} from './types'
 

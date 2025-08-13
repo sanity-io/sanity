@@ -1,5 +1,5 @@
 import {isObject} from '../helpers'
-import {isReference} from '../reference'
+import {isReference} from '../reference/asserters'
 import {type Image} from './types'
 
 /** @public */

@@ -3,7 +3,8 @@ import {Box, Inline, Text} from '@sanity/ui'
 import {noop} from 'lodash'
 import {type ReactNode} from 'react'
 
-import {Button, Tooltip} from '../../../../ui-components'
+import {Button} from '../../../../ui-components/button/Button'
+import {Tooltip} from '../../../../ui-components/tooltip/Tooltip'
 import useDialogTimeZone from '../../../hooks/useDialogTimeZone'
 import {type TimeZoneScope, useTimeZone} from '../../../hooks/useTimeZone'
 

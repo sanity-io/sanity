@@ -13,11 +13,11 @@ import {type Path, type PortableTextBlock, type PortableTextTextBlock} from '@sa
 import {Box, Portal, PortalProvider, useBoundaryElement, usePortal} from '@sanity/ui'
 import {type ReactNode, useCallback, useMemo, useState} from 'react'
 
-import {ChangeIndicator} from '../../../changeIndicators'
-import {EMPTY_ARRAY} from '../../../util'
+import {ChangeIndicator} from '../../../changeIndicators/ChangeIndicator'
+import {EMPTY_ARRAY} from '../../../util/empty'
 import {ActivateOnFocus} from '../../components/ActivateOnFocus/ActivateOnFocus'
-import {type ArrayOfObjectsInputProps, type RenderCustomMarkers} from '../../types'
-import {type RenderBlockActionsCallback} from '../../types/_transitional'
+import {type RenderBlockActionsCallback, type RenderCustomMarkers} from '../../types/_transitional'
+import {type ArrayOfObjectsInputProps} from '../../types/inputProps'
 import {UploadTargetCard} from '../arrays/common/UploadTargetCard'
 import {ExpandedLayer, Root, StringDiffContainer} from './Compositor.styles'
 import {useSetPortableTextMemberItemElementRef} from './contexts/PortableTextMemberItemElementRefsProvider'
@@ -28,7 +28,7 @@ import {Annotation} from './object/Annotation'
 import {BlockObject} from './object/BlockObject'
 import {InlineObject} from './object/InlineObject'
 import {AnnotationObjectEditModal} from './object/modals/AnnotationObjectEditModal'
-import {TextBlock} from './text'
+import {TextBlock} from './text/TextBlock'
 
 interface InputProps extends ArrayOfObjectsInputProps<PortableTextBlock> {
   elementRef: React.RefObject<HTMLDivElement | null>
