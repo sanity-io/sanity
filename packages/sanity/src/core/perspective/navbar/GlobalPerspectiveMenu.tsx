@@ -4,7 +4,7 @@ import {Button, Menu} from '@sanity/ui'
 import {useCallback, useRef, useState} from 'react'
 import {styled} from 'styled-components'
 
-import {MenuButton} from '../../../ui-components'
+import {MenuButton} from '../../../ui-components/menuButton/MenuButton'
 import {CreateReleaseDialog} from '../../releases/components/dialog/CreateReleaseDialog'
 import {oversizedButtonStyle} from '../styles'
 import {type ReleaseId, type ReleasesNavMenuItemPropsGetter} from '../types'

@@ -7,7 +7,7 @@ import {
   type SearchOptions,
   type SearchSort,
   type SearchTerms,
-} from '../../../../search'
+} from '../../../../search/common/types'
 import {type SearchFieldDefinition} from './definitions/fields'
 import {type SearchFilterDefinition} from './definitions/filters'
 

@@ -12,7 +12,7 @@ import {template} from 'lodash'
 import {type ReactNode, useEffect, useMemo, useState} from 'react'
 import {css, styled} from 'styled-components'
 
-import {ConditionalWrapper} from '../../../../ui-components/conditionalWrapper'
+import {ConditionalWrapper} from '../../../../ui-components/conditionalWrapper/ConditionalWrapper'
 import {TEMPLATE_OPTIONS} from '../constants'
 import {transformBlocks} from './helpers'
 

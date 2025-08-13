@@ -6,7 +6,7 @@ import {describe, expect, test, vi} from 'vitest'
 
 import {renderGlobalDocumentReferenceInput} from '../../../../../../test/form'
 import {createTestProvider} from '../../../../../../test/testUtils/TestProvider'
-import {set} from '../../../patch'
+import {set} from '../../../patch/patch'
 import {GlobalDocumentReferenceInput} from '../GlobalDocumentReferenceInput'
 
 const AVAILABLE = {

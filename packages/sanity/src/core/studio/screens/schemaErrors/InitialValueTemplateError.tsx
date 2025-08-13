@@ -1,7 +1,7 @@
 /* eslint-disable i18next/no-literal-string */
 import {Stack, Text} from '@sanity/ui'
 
-import {Dialog} from '../../../../ui-components'
+import {Dialog} from '../../../../ui-components/dialog/Dialog'
 
 export function InitialValueTemplateError({errors}: {errors: Error[]}) {
   return (

@@ -8,7 +8,7 @@ import {
   type SingleActionResult,
 } from '@sanity/client'
 
-import {getPublishedId, getVersionFromId, getVersionId} from '../../util'
+import {getPublishedId, getVersionFromId, getVersionId} from '../../util/draftUtils'
 import {type ReleasesUpsellContextValue} from '../contexts/upsell/types'
 import {type RevertDocument} from '../tool/components/releaseCTAButtons/ReleaseRevertButton/useDocumentRevertStates'
 import {getReleaseIdFromReleaseDocumentId} from '../util/getReleaseIdFromReleaseDocumentId'

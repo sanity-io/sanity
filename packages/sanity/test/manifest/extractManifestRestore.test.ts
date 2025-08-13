@@ -9,7 +9,7 @@ import pick from 'lodash/pick'
 import {describe, expect, test} from 'vitest'
 
 import {extractManifestSchemaTypes} from '../../src/_internal/manifest/extractWorkspaceManifest'
-import {createSchema} from '../../src/core'
+import {createSchema} from '../../src/core/schema/createSchema'
 import {mediaLibrarySchemas} from '../../src/media-library/plugin/schemas'
 
 describe('Extract studio manifest', () => {

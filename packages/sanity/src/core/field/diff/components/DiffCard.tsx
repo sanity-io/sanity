@@ -4,7 +4,8 @@ import {type ElementType, forwardRef, type HTMLProps, type ReactNode, useMemo} f
 import {styled} from 'styled-components'
 
 import {type Annotation, type Diff} from '../../types'
-import {getAnnotationAtPath, useAnnotationColor} from '../annotations'
+import {getAnnotationAtPath} from '../annotations/helpers'
+import {useAnnotationColor} from '../annotations/hooks'
 import {DiffTooltip} from './DiffTooltip'
 
 /** @internal */

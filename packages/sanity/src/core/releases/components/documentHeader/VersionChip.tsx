@@ -20,9 +20,11 @@ import {
 import {useObservable} from 'react-rx'
 import {styled} from 'styled-components'
 
-import {Popover, Tooltip} from '../../../../ui-components'
+import {Popover} from '../../../../ui-components/popover/Popover'
+import {Tooltip} from '../../../../ui-components/tooltip/Tooltip'
 import {useCanvasCompanionDocsStore} from '../../../canvas/store/useCanvasCompanionDocsStore'
-import {Translate, useTranslation} from '../../../i18n'
+import {useTranslation} from '../../../i18n/hooks/useTranslation'
+import {Translate} from '../../../i18n/Translate'
 import {getDraftId, getPublishedId, getVersionId} from '../../../util/draftUtils'
 import {getErrorMessage} from '../../../util/getErrorMessage'
 import {isCardinalityOneRelease} from '../../../util/releaseUtils'

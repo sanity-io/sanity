@@ -1,8 +1,8 @@
 import {ResetIcon, WarningOutlineIcon} from '@sanity/icons'
 import {Box, Card, Flex, Stack, Text} from '@sanity/ui'
 
-import {useTranslation} from '../../../core/i18n'
-import {Button} from '../../../ui-components/button'
+import {useTranslation} from '../../../core/i18n/hooks/useTranslation'
+import {Button} from '../../../ui-components/button/Button'
 
 type Props = {
   onClearValue?: () => void

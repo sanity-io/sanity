@@ -3,7 +3,7 @@ import {Box, Card, Flex, Stack, Text, TextInput} from '@sanity/ui'
 import {motion} from 'framer-motion'
 import {useMemo} from 'react'
 
-import {Button, type ButtonProps} from '../../../../../ui-components'
+import {Button, type ButtonProps} from '../../../../../ui-components/button/Button'
 import {useTranslation} from '../../../../i18n/hooks/useTranslation'
 import {useTableContext} from './TableProvider'
 import {type HeaderProps, type TableHeaderProps} from './types'

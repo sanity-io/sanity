@@ -3,7 +3,7 @@ import {type CurrentUser, type User} from '@sanity/types'
 import DataLoader from 'dataloader'
 import raf from 'raf'
 
-import {isRecord} from '../../../util'
+import {isRecord} from '../../../util/isRecord'
 
 /** @internal */
 export interface UserStoreOptions {

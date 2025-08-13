@@ -4,7 +4,7 @@ import {_responsive, Box, Card, Flex, type FlexDirection, Stack} from '@sanity/u
 import {getTheme_v2} from '@sanity/ui/theme'
 import {css, styled} from 'styled-components'
 
-import {Button} from '../../../ui-components'
+import {Button} from '../../../ui-components/button/Button'
 import {type UpsellData} from './types'
 import {UpsellDescriptionSerializer} from './upsellDescriptionSerializer/UpsellDescriptionSerializer'
 

@@ -1,7 +1,7 @@
 import {DescriptorConverter} from '@sanity/schema/_internal'
 import {type Rule, type SchemaValidationValue} from '@sanity/types'
 
-import {Rule as RuleClass} from '../validation'
+import {Rule as RuleClass} from '../validation/Rule'
 
 export const DESCRIPTOR_CONVERTER = new DescriptorConverter({
   ruleClass: RuleClass,

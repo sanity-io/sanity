@@ -2,7 +2,7 @@ import {PortalProvider, Text, usePortal} from '@sanity/ui'
 import {type ReactNode, useId} from 'react'
 import {type DocumentActionDialogProps} from 'sanity'
 
-import {Dialog} from '../../../../ui-components'
+import {Dialog} from '../../../../ui-components/dialog/Dialog'
 import {DOCUMENT_PANEL_PORTAL_ELEMENT} from '../../../constants'
 import {ConfirmDialog} from './dialogs/ConfirmDialog'
 import {ModalDialog} from './dialogs/ModalDialog'

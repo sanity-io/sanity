@@ -5,7 +5,7 @@ import {
 } from '@sanity/ui'
 import {useCallback, useContext} from 'react'
 
-import {SourceContext} from '../../_singletons'
+import {SourceContext} from '../../_singletons/context/SourceContext'
 
 export type ErrorBoundaryProps = UIErrorBoundaryProps
 

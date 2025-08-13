@@ -1,7 +1,7 @@
 import {type SanityDocument, type SanityDocumentLike} from '@sanity/types'
 import {omit} from 'lodash'
 
-import {getDraftId, getVersionFromId, getVersionId} from '../../../../../util'
+import {getDraftId, getVersionFromId, getVersionId} from '../../../../../util/draftUtils'
 import {isLiveEditEnabled} from '../utils/isLiveEditEnabled'
 import {operationsApiClient} from '../utils/operationsApiClient'
 import {type MapDocument, type OperationImpl} from './types'

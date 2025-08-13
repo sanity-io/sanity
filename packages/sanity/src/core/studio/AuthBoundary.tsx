@@ -1,8 +1,10 @@
 import {type ComponentType, type ReactNode, useEffect, useState} from 'react'
 
-import {LoadingBlock} from '../components/loadingBlock'
-import {useActiveWorkspace} from './activeWorkspaceMatcher'
-import {AuthenticateScreen, NotAuthenticatedScreen, RequestAccessScreen} from './screens'
+import {LoadingBlock} from '../components/loadingBlock/LoadingBlock'
+import {useActiveWorkspace} from './activeWorkspaceMatcher/useActiveWorkspace'
+import {AuthenticateScreen} from './screens/AuthenticateScreen'
+import {NotAuthenticatedScreen} from './screens/NotAuthenticatedScreen'
+import {RequestAccessScreen} from './screens/RequestAccessScreen'
 
 interface AuthBoundaryProps {
   children: ReactNode

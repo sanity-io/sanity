@@ -1,5 +1,6 @@
-import {type CookielessCompatibleLoginMethod, type LoginMethod} from '../../../../config'
-import {isRecord} from '../../../../util'
+import {type CookielessCompatibleLoginMethod} from '../../../../config'
+import {type LoginMethod} from '../../../../config/types'
+import {isRecord} from '../../../../util/isRecord'
 import {type AuthStore} from '../types'
 
 /**

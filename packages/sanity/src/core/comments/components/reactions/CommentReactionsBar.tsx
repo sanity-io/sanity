@@ -7,7 +7,8 @@ import {
 } from '@sanity/ui'
 import {memo, useCallback, useMemo, useState} from 'react'
 
-import {Tooltip, TooltipDelayGroupProvider} from '../../../../ui-components'
+import {Tooltip} from '../../../../ui-components/tooltip/Tooltip'
+import {TooltipDelayGroupProvider} from '../../../../ui-components/tooltipDelayGroupProvider/TooltipDelayGroupProvider'
 import {COMMENT_REACTION_EMOJIS, COMMENT_REACTION_OPTIONS} from '../../constants'
 import {
   type CommentReactionItem,
@@ -15,7 +16,7 @@ import {
   type CommentReactionShortNames,
   type CommentsUIMode,
 } from '../../types'
-import {ReactionIcon} from '../icons'
+import {ReactionIcon} from '../icons/ReactionIcon'
 import {CommentReactionsMenuButton} from './CommentReactionsMenuButton'
 import {CommentReactionsUsersTooltip} from './CommentReactionsUsersTooltip'
 import {EmojiText} from './EmojiText.styled'

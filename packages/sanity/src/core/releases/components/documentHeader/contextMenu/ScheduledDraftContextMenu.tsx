@@ -2,7 +2,7 @@ import {type ReleaseDocument} from '@sanity/client'
 import {Menu, MenuDivider} from '@sanity/ui'
 import {memo} from 'react'
 
-import {MenuItem} from '../../../../../ui-components'
+import {MenuItem} from '../../../../../ui-components/menuItem/MenuItem'
 import {useScheduledDraftMenuActions} from '../../../hooks/useScheduledDraftMenuActions'
 import {CopyToReleaseMenuGroup} from './CopyToReleaseMenuGroup'
 

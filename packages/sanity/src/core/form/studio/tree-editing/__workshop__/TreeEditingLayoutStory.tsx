@@ -3,8 +3,8 @@ import {type Path} from '@sanity/types'
 import {Card, Code, Stack} from '@sanity/ui'
 import {useCallback, useMemo, useState} from 'react'
 
-import {TreeEditingLayout} from '../components'
-import {buildTreeEditingState} from '../utils'
+import {TreeEditingLayout} from '../components/layout/TreeEditingLayout'
+import {buildTreeEditingState} from '../utils/build-tree-editing-state/buildTreeEditingState'
 
 const schema = Schema.compile({
   name: 'default',

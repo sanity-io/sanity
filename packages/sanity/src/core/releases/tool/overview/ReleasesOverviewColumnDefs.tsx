@@ -6,7 +6,7 @@ import {Fragment} from 'react'
 
 import {ToneIcon} from '../../../../ui-components/toneIcon/ToneIcon'
 import {Tooltip} from '../../../../ui-components/tooltip/Tooltip'
-import {RelativeTime} from '../../../components'
+import {RelativeTime} from '../../../components/RelativeTime'
 import {getPublishDateFromRelease, isReleaseScheduledOrScheduling} from '../../util/util'
 import {ReleaseTime} from '../components/ReleaseTime'
 import {Headers} from '../components/Table/TableHeader'

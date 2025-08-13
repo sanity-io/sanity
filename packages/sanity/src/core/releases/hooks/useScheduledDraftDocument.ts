@@ -1,7 +1,7 @@
 import {type SanityDocument} from '@sanity/client'
 import {type PreviewValue} from '@sanity/types'
 
-import {useSchema} from '../../hooks'
+import {useSchema} from '../../hooks/useSchema'
 import {unstable_useValuePreview as useValuePreview} from '../../preview/useValuePreview'
 import {useBundleDocuments} from '../tool/detail/useBundleDocuments'
 import {getReleaseIdFromReleaseDocumentId} from '../util/getReleaseIdFromReleaseDocumentId'

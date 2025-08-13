@@ -11,19 +11,16 @@ import {render} from '@testing-library/react'
 import {type FocusEvent, type RefObject} from 'react'
 import {type MockInstance, vi} from 'vitest'
 
-import {
-  createPatchChannel,
-  EMPTY_ARRAY,
-  type FieldMember,
-  type FormNodePresence,
-  FormProvider,
-  type FormState,
-  type PatchArg,
-  type PatchEvent,
-  useFormState,
-  useSchema,
-} from '../../src/core'
+import {createPatchChannel} from '../../src/core/form/patch/PatchChannel'
+import {type PatchEvent} from '../../src/core/form/patch/PatchEvent'
+import {type PatchArg} from '../../src/core/form/patch/types'
+import {type FieldMember} from '../../src/core/form/store/types/members'
+import {type FormState, useFormState} from '../../src/core/form/store/useFormState'
 import {DocumentFieldActionsProvider} from '../../src/core/form/studio/contexts/DocumentFieldActions'
+import {FormProvider} from '../../src/core/form/studio/FormProvider'
+import {useSchema} from '../../src/core/hooks/useSchema'
+import {type FormNodePresence} from '../../src/core/presence/types'
+import {EMPTY_ARRAY} from '../../src/core/util/empty'
 import {createMockSanityClient} from '../mocks/mockSanityClient'
 import {createTestProvider} from '../testUtils/TestProvider'
 import {type TestRenderProps} from './types'

@@ -1,6 +1,6 @@
 import {Box} from '@sanity/ui'
 
-import {NoChanges} from '../diff'
+import {NoChanges} from '../diff/components/NoChanges'
 
 export default function NoChangesStory() {
   return (

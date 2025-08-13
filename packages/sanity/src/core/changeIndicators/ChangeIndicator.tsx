@@ -14,7 +14,7 @@ import {
 import deepCompare from 'react-fast-compare'
 import {ReviewChangesContext} from 'sanity/_singletons'
 
-import {EMPTY_ARRAY} from '../util'
+import {EMPTY_ARRAY} from '../util/empty'
 import {pathToString} from '../validation/util/pathToString'
 import {DEBUG} from './constants'
 import {ElementWithChangeBar} from './ElementWithChangeBar'

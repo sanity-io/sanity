@@ -3,7 +3,7 @@ import {useObservable} from 'react-rx'
 import {type Observable} from 'rxjs'
 import {map} from 'rxjs/operators'
 
-import {useDocumentStore} from '../store'
+import {useDocumentStore} from '../store/_legacy/datastores'
 
 /** @internal */
 export interface SyncState {

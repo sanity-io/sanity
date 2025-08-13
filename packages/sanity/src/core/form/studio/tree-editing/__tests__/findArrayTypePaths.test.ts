@@ -1,7 +1,7 @@
 import {Schema} from '@sanity/schema'
 import {describe, expect, test} from 'vitest'
 
-import {findArrayTypePaths} from '../utils'
+import {findArrayTypePaths} from '../utils/findArrayTypePaths'
 
 const schema = Schema.compile({
   name: 'default',

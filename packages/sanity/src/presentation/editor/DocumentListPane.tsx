@@ -9,7 +9,7 @@ import {
 } from 'sanity/structure'
 import {styled} from 'styled-components'
 
-import {ErrorBoundary} from '../../ui-components'
+import {ErrorBoundary} from '../../ui-components/errorBoundary/ErrorBoundary'
 import {ErrorCard} from '../components/ErrorCard'
 import {presentationLocaleNamespace} from '../i18n'
 import {PresentationPaneRouterProvider} from '../paneRouter/PresentationPaneRouterProvider'

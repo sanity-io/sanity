@@ -1,7 +1,8 @@
 /* eslint-disable max-nested-callbacks */
 import {expect} from '@playwright/test'
 
-import {createUniqueDocument, withDefaultClient} from '../../helpers'
+import {createUniqueDocument} from '../../helpers'
+import {withDefaultClient} from '../../helpers/sanityClient'
 import {test} from '../../studio-test'
 
 withDefaultClient((context) => {

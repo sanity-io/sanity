@@ -2,13 +2,12 @@ import {ArrowLeftIcon} from '@sanity/icons'
 import {memo, type ReactNode, useMemo} from 'react'
 import {type GeneralPreviewLayoutKey, type InitialValueTemplateItem} from 'sanity'
 
-import {Button, TooltipDelayGroupProvider} from '../../../ui-components'
-import {
-  BackLink,
-  PaneHeader as StructurePaneHeader,
-  PaneHeaderActions,
-  usePane,
-} from '../../components'
+import {Button} from '../../../ui-components/button/Button'
+import {TooltipDelayGroupProvider} from '../../../ui-components/tooltipDelayGroupProvider/TooltipDelayGroupProvider'
+import {PaneHeader as StructurePaneHeader} from '../../components/pane/PaneHeader'
+import {usePane} from '../../components/pane/usePane'
+import {PaneHeaderActions} from '../../components/paneHeaderActions/PaneHeaderActions'
+import {BackLink} from '../../components/paneRouter/BackLink'
 import {
   type PaneMenuItem,
   type PaneMenuItemGroup,

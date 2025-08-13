@@ -1,4 +1,4 @@
-import {Patcher} from '../patch'
+import {Patcher} from '../patch/Patcher'
 import {debug} from './debug'
 import {luid} from './luid'
 import {type Doc, type Mut} from './types'

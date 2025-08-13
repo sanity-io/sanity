@@ -14,7 +14,7 @@ import {CommandList} from '../../../../../components/commandList/CommandList'
 import {useTranslation} from '../../../../../i18n/hooks/useTranslation'
 import {SanityDefaultPreview} from '../../../../../preview/components/SanityDefaultPreview'
 import {supportsTouch} from '../../../../../util/supportsTouch'
-import {useValuePreviewWithFallback} from '../../hooks'
+import {useValuePreviewWithFallback} from '../../hooks/useValuePreviewWithFallback'
 import {type TreeEditingBreadcrumb} from '../../types'
 import {ITEM_HEIGHT} from './constants'
 

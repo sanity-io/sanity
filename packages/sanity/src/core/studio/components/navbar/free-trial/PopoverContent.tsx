@@ -1,8 +1,8 @@
 import {Box, Card, Container, Flex, Heading} from '@sanity/ui'
 import {styled} from 'styled-components'
 
-import {Button} from '../../../../../ui-components'
-import {UpsellDescriptionSerializer} from '../../../upsell'
+import {Button} from '../../../../../ui-components/button/Button'
+import {UpsellDescriptionSerializer} from '../../../upsell/upsellDescriptionSerializer/UpsellDescriptionSerializer'
 import {type TrialDialogDismissedInfo} from './__telemetry__/trialDialogEvents.telemetry'
 import {type FreeTrialDialog} from './types'
 

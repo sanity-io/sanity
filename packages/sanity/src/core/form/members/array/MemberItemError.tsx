@@ -1,4 +1,4 @@
-import {useTranslation} from '../../../i18n'
+import {useTranslation} from '../../../i18n/hooks/useTranslation'
 import {type ArrayItemError} from '../../store/types/memberErrors'
 import {IncompatibleItemType} from './IncompatibleItemType'
 

@@ -1,7 +1,7 @@
 import {type NumberSchemaType, type SchemaType, type StringSchemaType} from '@sanity/types'
 import {describe, expect, it} from 'vitest'
 
-import {Rule as RuleClass} from '../../../src/core/validation'
+import {Rule as RuleClass} from '../../../src/core/validation/Rule'
 import {normalizeValidationRules} from '../../../src/core/validation/util/normalizeValidationRules'
 
 describe('normalizeValidationRules', () => {

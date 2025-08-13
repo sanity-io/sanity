@@ -3,7 +3,7 @@ import {Card, Container, Flex, Text} from '@sanity/ui'
 import {useBoolean, useSelect, useString} from '@sanity/ui-workshop'
 import {type ComponentType, useMemo} from 'react'
 
-import {ContextMenuButton} from '../../contextMenuButton'
+import {ContextMenuButton} from '../../contextMenuButton/ContextMenuButton'
 import {PREVIEW_SIZES} from '../constants'
 import {BlockImagePreview} from '../portableText/BlockImagePreview'
 import {BlockPreview} from '../portableText/BlockPreview'

@@ -1,7 +1,7 @@
 import {defineType, type ObjectSchemaType, type SanityDocumentLike} from '@sanity/types'
 import {describe, expect, it} from 'vitest'
 
-import {createSchema} from '../../schema'
+import {createSchema} from '../../schema/createSchema'
 import {isSanityCreateExcludedType, isSanityCreateStartCompatibleDoc} from '../createUtils'
 
 const basicDoc = defineType({

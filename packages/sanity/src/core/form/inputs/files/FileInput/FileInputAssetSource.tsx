@@ -1,7 +1,7 @@
 import {get} from 'lodash'
 import {useCallback} from 'react'
 
-import {useTranslation} from '../../../../i18n'
+import {useTranslation} from '../../../../i18n/hooks/useTranslation'
 import {WithReferencedAsset} from '../../../utils/WithReferencedAsset'
 import {FileSkeleton} from './FileSkeleton'
 import {type FileAssetProps} from './types'

@@ -1,4 +1,4 @@
-import {type ChunkModule, type ChunkStats} from '../server'
+import {type ChunkModule, type ChunkStats} from '../server/buildStaticFiles'
 import {formatSize} from './formatSize'
 
 export function formatModuleSizes(modules: ChunkModule[]): string {

@@ -3,7 +3,7 @@ import {Box, Card, Stack, Text} from '@sanity/ui'
 import {AnimatePresence, motion} from 'framer-motion'
 import {useId} from 'react'
 
-import {Dialog} from '../../../../ui-components'
+import {Dialog} from '../../../../ui-components/dialog/Dialog'
 import {useSchema} from '../../../hooks/useSchema'
 import {useTranslation} from '../../../i18n/hooks/useTranslation'
 import {Translate} from '../../../i18n/Translate'

@@ -5,7 +5,7 @@ import {useRef, useState} from 'react'
 import FocusLock from 'react-focus-lock'
 import {styled} from 'styled-components'
 
-import {supportsTouch} from '../../../../../util'
+import {supportsTouch} from '../../../../../util/supportsTouch'
 import {
   POPOVER_INPUT_PADDING,
   POPOVER_MAX_HEIGHT,

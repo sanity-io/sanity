@@ -23,11 +23,11 @@ import deepEquals from 'react-fast-compare'
 
 import {useCanvasCompanionDoc} from '../canvas/actions/useCanvasCompanionDoc'
 import {isSanityCreateLinkedDocument} from '../create/createUtils'
-import {useReconnectingToast} from '../hooks'
 import {type ConnectionState, useConnectionState} from '../hooks/useConnectionState'
 import {useDocumentIdStack} from '../hooks/useDocumentIdStack'
 import {useDocumentOperation} from '../hooks/useDocumentOperation'
 import {useEditState} from '../hooks/useEditState'
+import {useReconnectingToast} from '../hooks/useReconnectingToast'
 import {useSchema} from '../hooks/useSchema'
 import {useValidationStatus} from '../hooks/useValidationStatus'
 import {getSelectedPerspective} from '../perspective/getSelectedPerspective'
@@ -40,37 +40,27 @@ import {useActiveReleases} from '../releases/store/useActiveReleases'
 import {getReleaseIdFromReleaseDocumentId} from '../releases/util/getReleaseIdFromReleaseDocumentId'
 import {isGoingToUnpublish} from '../releases/util/isGoingToUnpublish'
 import {isPublishedPerspective, isReleaseScheduledOrScheduling} from '../releases/util/util'
-import {
-  type DocumentPresence,
-  type EditStateFor,
-  type InitialValueState,
-  type PermissionCheckResult,
-  selectUpstreamVersion,
-  useDocumentValuePermissions,
-  usePresenceStore,
-} from '../store'
+import {usePresenceStore} from '../store/_legacy/datastores'
+import {type EditStateFor} from '../store/_legacy/document/document-pair/editState'
+import {type InitialValueState} from '../store/_legacy/document/initialValue/types'
 import {isNewDocument} from '../store/_legacy/document/isNewDocument'
-import {
-  EMPTY_ARRAY,
-  getDraftId,
-  getPublishedId,
-  getVersionFromId,
-  getVersionId,
-  useUnique,
-} from '../util'
-import {
-  type FormState,
-  getExpandOperations,
-  type NodeChronologyProps,
-  type OnPathFocusPayload,
-  type PatchEvent,
-  setAtPath,
-  type StateTree,
-  toMutationPatches,
-  useFormState,
-} from '.'
+import {selectUpstreamVersion} from '../store/_legacy/document/selectUpstreamVersion'
+import {useDocumentValuePermissions} from '../store/_legacy/grants/documentValuePermissions'
+import {type PermissionCheckResult} from '../store/_legacy/grants/types'
+import {type DocumentPresence} from '../store/_legacy/presence/types'
+import {getDraftId, getPublishedId, getVersionFromId, getVersionId} from '../util'
+import {EMPTY_ARRAY} from '../util/empty'
+import {useUnique} from '../util/useUnique'
 import {CreatedDraft} from './__telemetry__/form.telemetry'
+import {type PatchEvent} from './patch/PatchEvent'
+import {setAtPath} from './store/stateTreeHelper'
+import {type NodeChronologyProps} from './store/types/nodes'
+import {type StateTree} from './store/types/state'
+import {type FormState, useFormState} from './store/useFormState'
+import {getExpandOperations} from './store/utils/getExpandOperations'
+import {type OnPathFocusPayload} from './types/inputProps'
 import {useComlinkViewHistory} from './useComlinkViewHistory'
+import {toMutationPatches} from './utils/mutationPatch'
 
 interface DocumentFormOptions {
   documentType: string

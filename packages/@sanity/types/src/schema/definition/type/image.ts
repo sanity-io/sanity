@@ -1,4 +1,4 @@
-import {type ImageCrop, type ImageHotspot} from '../../../assets'
+import {type ImageCrop, type ImageHotspot} from '../../../assets/types'
 import {type RuleDef, type ValidationBuilder} from '../../ruleBuilder'
 import {type InitialValueProperty} from '../../types'
 import {type FieldDefinition} from '../schemaDefinition'

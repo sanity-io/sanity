@@ -3,7 +3,7 @@ import {useCallback} from 'react'
 import {type Asset} from 'sanity'
 
 import {WithReferencedAsset} from '../../../core/form/utils/WithReferencedAsset'
-import {useTranslation} from '../../../core/i18n'
+import {useTranslation} from '../../../core/i18n/hooks/useTranslation'
 import {type VideoAssetProps} from './types'
 import {VideoSkeleton} from './VideoSkeleton'
 

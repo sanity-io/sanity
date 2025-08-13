@@ -2,7 +2,7 @@ import {type PropsWithChildren, useCallback, useContext, useMemo, useState} from
 import {DocumentLimitUpsellContext, type DocumentLimitUpsellContextValue} from 'sanity/_singletons'
 
 import {useUpsellData} from '../../../hooks/useUpsellData'
-import {type UpsellDialogViewedInfo} from '../../../studio'
+import {type UpsellDialogViewedInfo} from '../../../studio/upsell/__telemetry__/upsell.telemetry'
 import {UpsellDialog} from '../../../studio/upsell/UpsellDialog'
 
 export function DocumentLimitUpsellProvider({children}: PropsWithChildren) {

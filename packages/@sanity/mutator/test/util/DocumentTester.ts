@@ -2,8 +2,8 @@
 import {type PatchMutationOperation} from '@sanity/types'
 import {expect} from 'vitest'
 
-import {Document, Mutation} from '../../src/document'
-import {type SubmissionResponder} from '../../src/document/Document'
+import {Document, type SubmissionResponder} from '../../src/document/Document'
+import {Mutation} from '../../src/document/Mutation'
 import {type Doc} from '../../src/document/types'
 import {extract} from '../../src/jsonpath'
 

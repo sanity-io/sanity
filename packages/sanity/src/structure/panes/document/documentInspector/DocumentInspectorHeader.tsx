@@ -4,7 +4,7 @@ import {type HTMLProps, type ReactNode} from 'react'
 import {useTranslation} from 'sanity'
 import {styled} from 'styled-components'
 
-import {Button} from '../../../../ui-components'
+import {Button} from '../../../../ui-components/button/Button'
 import {structureLocaleNamespace} from '../../../i18n'
 
 export interface DocumentInspectorHeaderProps {

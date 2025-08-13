@@ -1,8 +1,8 @@
 import {TabList} from '@sanity/ui'
 import {type ComponentType, type ReactNode, useCallback} from 'react'
 
-import {Tab} from '../../../../../ui-components'
-import {usePaneRouter} from '../../../../components'
+import {Tab} from '../../../../../ui-components/tab/Tab'
+import {usePaneRouter} from '../../../../components/paneRouter/usePaneRouter'
 import {useDocumentPane} from '../../useDocumentPane'
 
 /**

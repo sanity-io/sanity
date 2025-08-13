@@ -1,6 +1,6 @@
 import {Box} from '@sanity/ui'
 
-import {DiffFromTo} from '../diff'
+import {DiffFromTo} from '../diff/components/DiffFromTo'
 
 /**
  * TODO

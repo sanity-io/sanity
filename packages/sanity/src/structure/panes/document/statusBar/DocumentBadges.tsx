@@ -2,8 +2,8 @@ import {Badge, type BadgeTone, Inline} from '@sanity/ui'
 import {memo, useCallback, useDeferredValue} from 'react'
 import {type DocumentBadgeDescription} from 'sanity'
 
-import {Tooltip} from '../../../../ui-components'
-import {RenderBadgeCollectionState} from '../../../components'
+import {Tooltip} from '../../../../ui-components/tooltip/Tooltip'
+import {RenderBadgeCollectionState} from '../../../components/RenderBadgeCollectionState'
 import {useDocumentPane} from '../useDocumentPane'
 
 interface DocumentBadgesInnerProps {

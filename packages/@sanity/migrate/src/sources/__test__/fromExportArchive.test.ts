@@ -1,6 +1,7 @@
 import {expect, test} from 'vitest'
 
-import {decodeText, parse, toArray} from '../../it-utils'
+import {decodeText, toArray} from '../../it-utils'
+import {parse} from '../../it-utils/ndjson'
 import {fromExportArchive} from '../fromExportArchive'
 
 test('untar movies dataset export, but not reading assets', async () => {

@@ -6,7 +6,7 @@ import {styled} from 'styled-components'
 
 import {MenuGroup} from '../../../../../ui-components/menuGroup/MenuGroup'
 import {MenuItem} from '../../../../../ui-components/menuItem/MenuItem'
-import {useTranslation} from '../../../../i18n'
+import {useTranslation} from '../../../../i18n/hooks/useTranslation'
 import {isReleaseScheduledOrScheduling} from '../../../util/util'
 import {CreateReleaseMenuItem} from '../../CreateReleaseMenuItem'
 import {VersionContextMenuItem} from './VersionContextMenuItem'

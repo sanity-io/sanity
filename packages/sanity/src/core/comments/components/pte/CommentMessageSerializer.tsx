@@ -4,8 +4,9 @@ import {Fragment, type PropsWithChildren, useMemo} from 'react'
 import {css, styled} from 'styled-components'
 
 import {type CommentMessage} from '../../types'
-import {transformChildren} from '../../utils'
-import {MentionInlineBlock, NormalBlock} from './blocks'
+import {transformChildren} from '../../utils/transform-children'
+import {MentionInlineBlock} from './blocks/MentionInlineBlock'
+import {NormalBlock} from './blocks/NormalBlock'
 
 const PortableTextWrap = styled(Stack)(() => {
   return css`
