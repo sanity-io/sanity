@@ -168,15 +168,24 @@ export default async function startSanityDevServer(
 
   if (autoUpdatesEnabled) {
     output.print(`${info} Running with auto-updates enabled`)
-    // Check the versions
-    const result = await compareDependencyVersions(autoUpdatesImports, workDir)
-    const message =
-      `The following local package versions are different from the versions currently served at runtime.\n` +
-      `When using auto updates, we recommend that you run with the same versions locally as will be used when deploying. \n\n` +
-      `${result.map((mod) => ` - ${mod.pkg} (local version: ${mod.installed}, runtime version: ${mod.remote})`).join('\n')} \n\n`
-
-    // mismatch between local and auto-updating dependencies
+    // Check local versions against deployed versions
+    let result: Awaited<ReturnType<typeof compareDependencyVersions>> | undefined
+    try {
+      result = await compareDependencyVersions(autoUpdatesImports, workDir)
+    } catch (err) {
+      console.warn(
+        new Error('Failed to compare local versions against auto-updating versions', {
+          cause: err,
+        }),
+      )
+    }
     if (result?.length) {
+      const message =
+        `The following local package versions are different from the versions currently served at runtime.\n` +
+        `When using auto updates, we recommend that you run with the same versions locally as will be used when deploying. \n\n` +
+        `${result.map((mod) => ` - ${mod.pkg} (local version: ${mod.installed}, runtime version: ${mod.remote})`).join('\n')} \n\n`
+
+      // mismatch between local and auto-updating dependencies
       if (isInteractive) {
         const shouldUpgrade = await prompt.single({
           type: 'confirm',

@@ -9,13 +9,26 @@ import {
 } from './getAutoUpdatesImportMap'
 import {readPackageManifest} from './readPackageManifest'
 
-async function getRemoteResolvedVersion(fetchFn: typeof fetch, url: string) {
-  try {
-    const res = await fetchFn(url, {method: 'HEAD', redirect: 'manual'})
-    return res.headers.get('x-resolved-version')
-  } catch (err) {
-    throw new Error(`Failed to fetch remote version for ${url}: ${err.message}`)
-  }
+function getRemoteResolvedVersion(fetchFn: typeof fetch, url: string) {
+  return fetchFn(url, {
+    method: 'HEAD',
+    redirect: 'manual',
+  }).then(
+    (res) => {
+      // 302 is expected, but lets also handle 2xx
+      if (res.ok || res.status < 400) {
+        const resolved = res.headers.get('x-resolved-version')
+        if (!resolved) {
+          throw new Error(`Missing 'x-resolved-version' header on response from HEAD ${url}`)
+        }
+        return resolved
+      }
+      throw new Error(`Unexpected HTTP response: ${res.status} ${res.statusText}`)
+    },
+    (err) => {
+      throw new Error(`Failed to fetch remote version for ${url}: ${err.message}`, {cause: err})
+    },
+  )
 }
 
 interface CompareDependencyVersions {
@@ -61,10 +74,6 @@ export async function compareDependencyVersions(
 
   for (const [pkg, value] of filteredAutoUpdatesImports) {
     const resolvedVersion = await getRemoteResolvedVersion(fetchFn, value)
-
-    if (!resolvedVersion) {
-      throw new Error(`Failed to fetch remote version for ${value}`)
-    }
 
     const dependency = dependencies[pkg]
     const manifestPath = resolveFrom.silent(workDir, path.join(pkg, 'package.json'))
