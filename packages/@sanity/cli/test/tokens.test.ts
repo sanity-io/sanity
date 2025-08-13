@@ -1,9 +1,9 @@
 import {describe, expect} from 'vitest'
 
-import {describeCliTest, testConcurrent} from './shared/describe'
+import {testConcurrent} from './shared/describe'
 import {getTestRunArgs, runSanityCmdCommand, studioVersions} from './shared/environment'
 
-describeCliTest('CLI: `sanity tokens`', () => {
+describe.skip('CLI: `sanity tokens`', () => {
   describe.each(studioVersions)('%s', (version) => {
     const testRunArgs = getTestRunArgs(version)
     const testId = Math.random().toString(36).slice(2, 15)

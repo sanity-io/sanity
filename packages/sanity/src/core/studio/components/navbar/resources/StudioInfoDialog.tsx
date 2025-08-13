@@ -35,7 +35,7 @@ const HEX_ONLY = /^[0-9a-fA-F]+$/i
 function resolveGithubURLFromVersion(ver: SemVer) {
   const preids = ver.prerelease
   if (preids.length === 0) {
-    return `https://github.com/sanity-io/sanity/releases/tag/${ver.version}`
+    return `https://github.com/sanity-io/sanity/releases/tag/v${ver.version}`
   }
   const isPR = preids[0] === 'pr' && typeof preids[1] === 'number'
   if (isPR) {
