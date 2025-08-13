@@ -1,3 +1,4 @@
+/* eslint-disable complexity */
 import {LaunchIcon as OpenInNewTabIcon, SyncIcon as ReplaceIcon, TrashIcon} from '@sanity/icons'
 import {type Reference} from '@sanity/types'
 import {Box, Card, type CardTone, Flex, Menu, MenuDivider, Stack} from '@sanity/ui'
@@ -7,8 +8,10 @@ import {
   type ForwardedRef,
   forwardRef,
   useCallback,
+  useEffect,
   useMemo,
   useRef,
+  useState,
 } from 'react'
 import {IntentLink} from 'sanity/router'
 
@@ -17,6 +20,7 @@ import {ContextMenuButton} from '../../../components/contextMenuButton'
 import {useTranslation} from '../../../i18n'
 import {usePerspective} from '../../../perspective/usePerspective'
 import {EMPTY_ARRAY} from '../../../util/empty'
+import {withFocusRing} from '../../components/withFocusRing/withFocusRing'
 import {useDidUpdate} from '../../hooks/useDidUpdate'
 import {set, unset} from '../../patch'
 import {PreviewReferenceValue} from './PreviewReferenceValue'
@@ -27,6 +31,8 @@ import {ReferenceStrengthMismatchAlertStrip} from './ReferenceStrengthMismatchAl
 import {type ReferenceInfo, type ReferenceInputProps} from './types'
 import {type Loadable, useReferenceInfo} from './useReferenceInfo'
 import {useReferenceInput} from './useReferenceInput'
+
+const WithFocusRingCard = withFocusRing(Card)
 
 function getTone({
   readOnly,
@@ -222,12 +228,19 @@ export function ReferenceInputPreview(props: ReferenceInputProps & {children: Re
     [onPathFocus],
   )
 
+  const [cardRef, setCardRef] = useState<HTMLDivElement | null>(null)
+  useEffect(() => {
+    if (focused && cardRef) {
+      cardRef.focus()
+    }
+  }, [focused, cardRef])
+
   if (isEditing) {
     return <Box>{children}</Box>
   }
 
   return (
-    <Card border radius={2} padding={1} tone={tone}>
+    <WithFocusRingCard border $radius={2} padding={1} tone={tone} ref={setCardRef} tabIndex={-1}>
       <Stack space={1}>
         <Flex gap={1} align="center" style={{lineHeight: 0}}>
           <TooltipDelayGroupProvider>
@@ -258,6 +271,6 @@ export function ReferenceInputPreview(props: ReferenceInputProps & {children: Re
         </Flex>
         {footer}
       </Stack>
-    </Card>
+    </WithFocusRingCard>
   )
 }
