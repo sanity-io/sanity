@@ -122,12 +122,6 @@ const TableInner = <TableData, AdditionalRowTableData>({
     overscan: 5,
   })
 
-  //const documentsIds = rowVirtualizer
-  //  .getVirtualItems()
-  //  .map((virtualRow) => filteredData[virtualRow.index].document?._id)
-
-  //const history = useReleaseHistory(documentsIds, releaseId)
-
   const rowActionColumnDef: Column = useMemo(
     () => ({
       id: 'actions',
@@ -285,9 +279,7 @@ const TableInner = <TableData, AdditionalRowTableData>({
     }
 
     return rowVirtualizer.getVirtualItems().map((virtualRow, index) => {
-      const datum = {
-        ...filteredData[virtualRow.index],
-      }
+      const datum = filteredData[virtualRow.index]
 
       return renderRow({
         ...datum,

@@ -5,10 +5,10 @@ import {type ReactNode, useMemo} from 'react'
 import {useTranslation} from '../../../../i18n'
 import {releasesLocaleNamespace} from '../../../i18n'
 import {DOCUMENT_ACTION_CONFIGS, getDocumentActionType} from '../releaseDocumentActions'
-import {type DocumentWithHistory} from '../ReleaseSummary'
+import {type DocumentInRelease} from '../useBundleDocuments'
 
 interface ReleaseActionBadgesProps {
-  documents: DocumentWithHistory[]
+  documents: DocumentInRelease[]
   releaseState: ReleaseState
   isLoading?: boolean
 }

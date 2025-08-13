@@ -39,14 +39,6 @@ export const ReleaseDetail = () => {
   } = useBundleDocuments(releaseId)
   const releaseEvents = useReleaseEvents(releaseId)
 
-  // Table handles virtualization; no local virtualizer needed
-
-  // Move release history fetching to per-row in the table column cells
-
-  //const documentIds = results.map((result) => result.document?._id)
-  //const history = useReleaseHistory(documentIds, releaseId)
-  //console.log('releaseDetail', {history, documentIds, releaseId})
-
   const releaseInDetail = data
     .concat(archivedReleases)
     .find((candidate) => getReleaseIdFromReleaseDocumentId(candidate._id) === releaseId)
