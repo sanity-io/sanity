@@ -433,6 +433,11 @@ describe('Extract schema test', () => {
               validation: (Rule) => Rule.required(),
             }),
             {
+              title: 'Image',
+              name: 'image',
+              type: 'image',
+            },
+            {
               title: 'Another Title',
               name: 'anotherTitle',
               type: 'string',
@@ -459,6 +464,15 @@ describe('Extract schema test', () => {
     expect(book.attributes.subtitle.optional).toBe(false)
     expect(book.attributes.anotherTitle.optional).toBe(false)
     expect(book.attributes.optionalTitle.optional).toBe(true)
+    expect(book.attributes.image.optional).toBe(true)
+    assert(book.attributes.image.value.type === 'object') // this is a workaround for TS, but leave the expect above for clarity in case of failure
+
+    const hotspot = extracted.find((type) => type.name === 'sanity.imageHotspot')
+    assert(hotspot !== undefined)
+    assert(hotspot.type === 'type')
+    assert(hotspot.value.type === 'object')
+    expect(hotspot.value.attributes.x.optional).toBe(false)
+    expect(hotspot.value.attributes.y.optional).toBe(false)
   })
 
   test('enforceRequiredFields handles `assetRequired`', () => {
