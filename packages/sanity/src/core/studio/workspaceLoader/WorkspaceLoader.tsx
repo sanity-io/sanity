@@ -58,9 +58,12 @@ export function useWorkspaceLoader(activeWorkspace: WorkspaceSummary) {
         }),
         map(
           ([rootSource, ...restOfSources]): Workspace => ({
-            ...activeWorkspace,
             ...rootSource,
+            basePath: activeWorkspace.basePath,
+            subtitle: activeWorkspace.subtitle,
+            icon: activeWorkspace.icon,
             unstable_sources: [rootSource, ...restOfSources],
+            scheduledPublishing: activeWorkspace.scheduledPublishing,
             type: 'workspace',
           }),
         ),
