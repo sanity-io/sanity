@@ -64,6 +64,12 @@ const exportAssetsAction: CliCommandAction<ExportAssetsFlags> = async (args, con
         if (typeof doc !== 'object' || doc === null || !('aspects' in doc)) {
           return false
         }
+
+        // Filter out video assets (we dont have access to the raw video file for now)
+        if ('assetType' in doc && doc.assetType === 'sanity.videoAsset') {
+          return false
+        }
+
         return (
           typeof doc.aspects === 'object' &&
           doc.aspects !== null &&
