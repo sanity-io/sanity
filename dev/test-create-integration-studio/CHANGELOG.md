@@ -3,6 +3,15 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [4.4.0](https://github.com/sanity-io/sanity/compare/v4.3.0...v4.4.0) (2025-08-13)
+
+
+### Bug Fixes
+
+* **cli:** env vars not loading in sanity.cli when using vite callback ([#10186](https://github.com/sanity-io/sanity/issues/10186)) ([42122dc](https://github.com/sanity-io/sanity/commit/42122dc31534e8057a42cfc3c16cea46752346ac))
+
+
+
 ## [4.3.0](https://github.com/sanity-io/sanity/compare/v4.2.0...v4.3.0) (2025-08-05)
 
 
