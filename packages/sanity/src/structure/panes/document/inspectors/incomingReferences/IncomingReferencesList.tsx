@@ -1,6 +1,6 @@
 // TODO: Remove this eslint-disable
 /* eslint-disable i18next/no-literal-string */
-import {Box, Card, Stack, Text} from '@sanity/ui'
+import {Box, Card, Flex, Stack, Text} from '@sanity/ui'
 import {useMemo} from 'react'
 import {useObservable} from 'react-rx'
 import {filter, map, type Observable, startWith} from 'rxjs'
@@ -16,6 +16,7 @@ import {
 } from 'sanity'
 
 import {useDocumentPane} from '../../useDocumentPane'
+import {CreateNewIncomingReference} from './CreateNewIncomingReference'
 import {IncomingReferenceDocument} from './IncomingReferenceDocument'
 
 const TypeTitle = ({type}: {type: string}) => {
@@ -84,7 +85,7 @@ function getIncomingReferences({
 }
 
 export function IncomingReferencesList() {
-  const {documentId} = useDocumentPane()
+  const {documentId, documentType} = useDocumentPane()
   const documentPreviewStore = useDocumentPreviewStore()
   const publishedId = getPublishedId(documentId)
   const references$ = useMemo(
@@ -115,7 +116,14 @@ export function IncomingReferencesList() {
     <>
       {references.list.map((type) => (
         <Stack key={type.type} padding={2} space={1} marginBottom={2}>
-          <TypeTitle type={type.type} />
+          <Flex align="center" justify="space-between" paddingBottom={2} gap={2}>
+            <TypeTitle type={type.type} />
+            <CreateNewIncomingReference
+              type={type.type}
+              referenceToType={documentType}
+              referenceToId={documentId}
+            />
+          </Flex>
           {type.documents.map((document) => (
             <IncomingReferenceDocument
               key={document._id}
