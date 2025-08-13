@@ -5,37 +5,12 @@ import {type DocumentSchemaType} from 'groq-js'
 import {describe, expect, test} from 'vitest'
 
 import {Schema} from '../../src/legacy/Schema'
+import {builtinTypes} from '../../src/sanity/builtinTypes'
 import {extractSchema} from '../../src/sanity/extractSchema'
 import {groupProblems} from '../../src/sanity/groupProblems'
 import {validateSchema} from '../../src/sanity/validateSchema'
 import schemaFixtures from '../legacy/fixtures/schemas'
-// built-in types
-import assetSourceData from './fixtures/assetSourceData'
 import Block from './fixtures/block'
-import fileAsset from './fixtures/fileAsset'
-import geopoint from './fixtures/geopoint'
-import imageAsset from './fixtures/imageAsset'
-import imageCrop from './fixtures/imageCrop'
-import imageDimensions from './fixtures/imageDimensions'
-import imageHotspot from './fixtures/imageHotspot'
-import imageMetadata from './fixtures/imageMetadata'
-import imagePalette from './fixtures/imagePalette'
-import imagePaletteSwatch from './fixtures/imagePaletteSwatch'
-import slug from './fixtures/slug'
-
-const builtinTypes = [
-  assetSourceData,
-  slug,
-  geopoint,
-  imageAsset,
-  fileAsset,
-  imageCrop,
-  imageHotspot,
-  imageMetadata,
-  imageDimensions,
-  imagePalette,
-  imagePaletteSwatch,
-]
 
 // taken from sanity/src/core/schema/createSchema.ts
 function createSchema(schemaDef: {name: string; types: any[]}, skipBuiltins = false) {
