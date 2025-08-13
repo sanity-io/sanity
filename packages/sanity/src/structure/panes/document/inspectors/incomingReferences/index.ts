@@ -1,4 +1,4 @@
-import {RestoreIcon} from '@sanity/icons'
+import {SyncIcon} from '@sanity/icons'
 import {type DocumentInspector, useTranslation} from 'sanity'
 
 import {INCOMING_REFERENCES_INSPECTOR_NAME} from '../../constants'
@@ -10,7 +10,7 @@ export const incomingReferencesInspector: DocumentInspector = {
     const {t} = useTranslation()
 
     return {
-      icon: RestoreIcon,
+      icon: SyncIcon,
       title: t('incoming-references.title'),
     }
   },
