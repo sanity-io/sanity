@@ -3,7 +3,7 @@ import {useCallback, useEffect, useMemo, useReducer, useRef, useState} from 'rea
 import {catchError, of} from 'rxjs'
 
 import {type ReleaseId} from '../../perspective/types'
-import {getPublishedId} from '../../util'
+import {getPublishedId} from '../../util/draftUtils'
 import {type CommentDocument, type Loadable} from '../types'
 import {commentsReducer, type CommentsReducerAction, type CommentsReducerState} from './reducer'
 

@@ -3,7 +3,7 @@ import userEvent from '@testing-library/user-event'
 import {describe, expect, it} from 'vitest'
 
 import {renderObjectInput} from '../../../../../../test/form'
-import {type FieldProps} from '../../../types'
+import type {FieldProps} from '../../../types/fieldProps'
 import {ObjectInput} from '../ObjectInput'
 
 const fieldsetsTestType = defineField({

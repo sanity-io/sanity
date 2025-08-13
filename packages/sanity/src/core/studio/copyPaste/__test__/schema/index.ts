@@ -1,6 +1,6 @@
 import {type Schema} from '@sanity/types'
 
-import {createSchema} from '../../../../schema'
+import {createSchema} from '../../../../schema/createSchema'
 import {authorDocument} from './author'
 import {bookDocument} from './documents/book'
 import {objectsDocument} from './documents/objects'

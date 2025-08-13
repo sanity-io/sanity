@@ -6,7 +6,7 @@ import {expect, test, vi} from 'vitest'
 import {renderStringInput} from '../../../../../../test/form'
 import * as useTimeZoneModule from '../../../../hooks/useTimeZone'
 import {FormValueProvider} from '../../../contexts/FormValue'
-import {type StringInputProps} from '../../../types'
+import type {StringInputProps} from '../../../types/inputProps'
 import {DateTimeInput} from '../DateTimeInput'
 import {
   mockUseTimeZoneDefault,

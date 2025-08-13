@@ -4,9 +4,11 @@ import {keyBy} from 'lodash'
 import {combineLatest, EMPTY, type Observable, of} from 'rxjs'
 import {map, switchMap} from 'rxjs/operators'
 
-import {type DocumentAvailability, getPreviewPaths, prepareForPreview} from '../../../../../preview'
+import type {DocumentAvailability} from '../../../../../preview/types'
+import {getPreviewPaths} from '../../../../../preview/utils/getPreviewPaths'
+import {prepareForPreview} from '../../../../../preview/utils/prepareForPreview'
 import {createPathObserver} from '../../../../../preview/createPathObserver'
-import {isRecord} from '../../../../../util'
+import {isRecord} from '../../../../../util/isRecord'
 import {type GlobalDocumentReferenceInfo} from '../../../../inputs/GlobalDocumentReferenceInput/types'
 
 const REQUEST_TAG_BASE = 'gdr'

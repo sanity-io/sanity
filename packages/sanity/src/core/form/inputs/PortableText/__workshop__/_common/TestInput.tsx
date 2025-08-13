@@ -6,10 +6,10 @@ import {
 } from '@sanity/types'
 import {useCallback, useEffect, useMemo, useState} from 'react'
 
-import {useSource} from '../../../../../studio'
+import {useSource} from '../../../../../studio/source'
 import {createPatchChannel} from '../../../../patch/PatchChannel'
 import {applyAll} from '../../../../patch/simplePatch'
-import {type PortableTextMarker, type RenderCustomMarkers} from '../../../../types'
+import {type PortableTextMarker, type RenderCustomMarkers} from '../../../../types/_transitional'
 import {type RenderBlockActionsCallback} from '../../../../types/_transitional'
 
 interface TestInputProps {

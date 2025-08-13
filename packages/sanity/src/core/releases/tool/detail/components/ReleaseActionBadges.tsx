@@ -2,7 +2,7 @@ import {type ReleaseState} from '@sanity/client'
 import {Badge, Box, Container, Flex, Skeleton} from '@sanity/ui'
 import {type ReactNode, useMemo} from 'react'
 
-import {useTranslation} from '../../../../i18n'
+import {useTranslation} from '../../../../i18n/hooks/useTranslation'
 import {releasesLocaleNamespace} from '../../../i18n'
 import {DOCUMENT_ACTION_CONFIGS, getDocumentActionType} from '../releaseDocumentActions'
 import {type DocumentWithHistory} from '../ReleaseSummary'

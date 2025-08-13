@@ -1,6 +1,6 @@
 import {useMemo} from 'react'
 
-import {type ObjectMember} from '../../store'
+import type {ObjectMember} from '../../store/types/members'
 import {
   type RenderAnnotationCallback,
   type RenderArrayOfObjectsItemCallback,
@@ -8,7 +8,7 @@ import {
   type RenderFieldCallback,
   type RenderInputCallback,
   type RenderPreviewCallback,
-} from '../../types'
+} from '../../types/renderCallback'
 import {ObjectInputMember} from './ObjectInputMember'
 
 /** @internal */

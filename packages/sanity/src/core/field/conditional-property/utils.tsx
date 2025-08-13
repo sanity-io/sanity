@@ -6,7 +6,7 @@ import {
 import {omit} from 'lodash'
 import {useMemo} from 'react'
 
-import {isRecord} from '../../util'
+import {isRecord} from '../../util/isRecord'
 
 export function isThenable(value: unknown): value is Promise<unknown> {
   return isRecord(value) && typeof value?.then === 'function'

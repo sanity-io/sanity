@@ -23,7 +23,7 @@ import deepEquals from 'react-fast-compare'
 
 import {useCanvasCompanionDoc} from '../canvas/actions/useCanvasCompanionDoc'
 import {isSanityCreateLinkedDocument} from '../create/createUtils'
-import {useReconnectingToast} from '../hooks'
+import {useReconnectingToast} from '../hooks/useReconnectingToast'
 import {type ConnectionState, useConnectionState} from '../hooks/useConnectionState'
 import {useDocumentOperation} from '../hooks/useDocumentOperation'
 import {useEditState} from '../hooks/useEditState'
@@ -39,33 +39,23 @@ import {useActiveReleases} from '../releases/store/useActiveReleases'
 import {getReleaseIdFromReleaseDocumentId} from '../releases/util/getReleaseIdFromReleaseDocumentId'
 import {isGoingToUnpublish} from '../releases/util/isGoingToUnpublish'
 import {isPublishedPerspective, isReleaseScheduledOrScheduling} from '../releases/util/util'
-import {
-  type DocumentPresence,
-  type EditStateFor,
-  type InitialValueState,
-  type PermissionCheckResult,
-  useDocumentValuePermissions,
-  usePresenceStore,
-} from '../store'
+import type {DocumentPresence} from '../store/_legacy/presence/types'
+import type {EditStateFor} from '../store/_legacy/document/document-pair/editState'
+import type {InitialValueState} from '../store/_legacy/document/initialValue/types'
+import type {PermissionCheckResult} from '../store/_legacy/grants/types'
+import {useDocumentValuePermissions} from '../store/_legacy/grants/documentValuePermissions'
+import {usePresenceStore} from '../store/_legacy/datastores'
 import {isNewDocument} from '../store/_legacy/document/isNewDocument'
-import {
-  EMPTY_ARRAY,
-  getDraftId,
-  getPublishedId,
-  getVersionFromId,
-  getVersionId,
-  useUnique,
-} from '../util'
-import {
-  type FormState,
-  getExpandOperations,
-  type OnPathFocusPayload,
-  type PatchEvent,
-  setAtPath,
-  type StateTree,
-  toMutationPatches,
-  useFormState,
-} from '.'
+import {EMPTY_ARRAY} from '../util/empty'
+import {getDraftId, getPublishedId, getVersionFromId, getVersionId} from '../util/draftUtils'
+import {useUnique} from '../util/useUnique'
+import {type FormState, useFormState} from './store/useFormState'
+import {getExpandOperations} from './store/utils/getExpandOperations'
+import type {OnPathFocusPayload} from './types/inputProps'
+import type {PatchEvent} from './patch/PatchEvent'
+import {setAtPath} from './store/stateTreeHelper'
+import type {StateTree} from './store/types/state'
+import {toMutationPatches} from './utils/mutationPatch'
 import {CreatedDraft} from './__telemetry__/form.telemetry'
 import {useComlinkViewHistory} from './useComlinkViewHistory'
 

@@ -1,12 +1,17 @@
 import {type CurrentUser, type PortableTextBlock} from '@sanity/types'
 import {useCallback, useMemo, useRef, useState} from 'react'
 
-import {type UserListWithPermissionsHookValue} from '../../../hooks'
-import {Translate, useTranslation} from '../../../i18n'
+import type {UserListWithPermissionsHookValue} from '../../../hooks/useUserListWithPermissions'
+import {Translate} from '../../../i18n/Translate'
+import {useTranslation} from '../../../i18n/hooks/useTranslation'
 import {hasCommentMessageValue} from '../../helpers'
 import {commentsLocaleNamespace} from '../../i18n'
 import {type CommentMessage, type CommentsUIMode} from '../../types'
-import {CommentInput, type CommentInputHandle, type CommentInputProps} from '../pte'
+import {
+  CommentInput,
+  type CommentInputHandle,
+  type CommentInputProps,
+} from '../pte/comment-input/CommentInput'
 
 const EMPTY_PT_ARRAY: PortableTextBlock[] = []
 

@@ -1,4 +1,4 @@
-import {type Reported} from '../../components/react-track-elements'
+import type {Reported} from '../../components/react-track-elements/types'
 import {type TrackedArea, type TrackedChange} from '../tracker'
 
 export function isChangeBar(

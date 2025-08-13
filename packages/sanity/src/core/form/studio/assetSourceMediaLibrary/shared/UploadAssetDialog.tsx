@@ -7,7 +7,7 @@ import {
 import {useTheme, useToast} from '@sanity/ui'
 import {createRef, type ReactNode, useCallback, useEffect, useState} from 'react'
 
-import {useTranslation} from '../../../../i18n'
+import {useTranslation} from '../../../../i18n/hooks/useTranslation'
 import {useAuthType} from '../hooks/useAuthType'
 import {useLinkAssets} from '../hooks/useLinkAssets'
 import {useMediaLibraryIds} from '../hooks/useMediaLibraryIds'

@@ -1,4 +1,4 @@
-import {type Mutation} from '../mutations'
+import type {Mutation} from '../mutations/types'
 
 /**
  * An entry in the transaction log

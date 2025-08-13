@@ -4,9 +4,11 @@ import {type ArraySchemaType} from '@sanity/types'
 import {Grid} from '@sanity/ui'
 import {useCallback, useState} from 'react'
 
-import {Button, Tooltip} from '../../../../../ui-components'
-import {useTranslation} from '../../../../i18n'
-import {type ArrayInputFunctionsProps, type ObjectItem} from '../../../types'
+import {Button} from '../../../../../ui-components/button/Button'
+import {Tooltip} from '../../../../../ui-components/tooltip/Tooltip'
+import {useTranslation} from '../../../../i18n/hooks/useTranslation'
+import type {ArrayInputFunctionsProps} from '../../../types/_transitional'
+import type {ObjectItem} from '../../../types/itemProps'
 import {useInsertMenuPopover} from './InsertMenuPopover'
 
 /**

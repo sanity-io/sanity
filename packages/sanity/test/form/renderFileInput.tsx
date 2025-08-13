@@ -6,8 +6,8 @@ import {
 } from '@sanity/types'
 import {EMPTY} from 'rxjs'
 
-import {type ObjectInputProps} from '../../src/core'
-import {type BaseFileInputProps} from '../../src/core/form/inputs/files/FileInput'
+import type {ObjectInputProps} from '../../src/core/form/types/inputProps'
+import type {BaseFileInputProps} from '../../src/core/form/inputs/files/FileInput/FileInput'
 import {type TestRenderInputContext} from './renderInput'
 import {renderObjectInput} from './renderObjectInput'
 import {type TestRenderProps} from './types'

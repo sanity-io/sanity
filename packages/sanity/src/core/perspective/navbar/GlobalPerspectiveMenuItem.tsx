@@ -6,7 +6,7 @@ import {type CSSProperties, forwardRef, type MouseEvent, useCallback, useMemo} f
 import {css, styled} from 'styled-components'
 
 import {ToneIcon} from '../../../ui-components/toneIcon/ToneIcon'
-import {Tooltip} from '../../../ui-components/tooltip'
+import {Tooltip} from '../../../ui-components/tooltip/Tooltip'
 import {useTranslation} from '../../i18n/hooks/useTranslation'
 import {useExcludedPerspective} from '../../perspective/useExcludedPerspective'
 import {usePerspective} from '../../perspective/usePerspective'

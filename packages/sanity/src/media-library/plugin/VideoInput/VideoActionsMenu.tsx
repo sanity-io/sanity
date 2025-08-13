@@ -11,7 +11,7 @@ import {
 import {styled} from 'styled-components'
 
 import {ContextMenuButton} from '../../../core/components/contextMenuButton/ContextMenuButton'
-import {useTranslation} from '../../../core/i18n'
+import {useTranslation} from '../../../core/i18n/hooks/useTranslation'
 import {Popover} from '../../../ui-components/popover/Popover'
 import {RatioBox} from './styles'
 

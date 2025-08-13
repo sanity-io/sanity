@@ -7,8 +7,8 @@ import {TelemetryProvider} from '@sanity/telemetry/react'
 import arrify from 'arrify'
 import {type ReactNode, useEffect, useMemo} from 'react'
 
-import {type Config} from '../../config'
-import {useClient} from '../../hooks'
+import type {Config} from '../../config/types'
+import {useClient} from '../../hooks/useClient'
 import {SANITY_VERSION} from '../../version'
 import {PerformanceTelemetryTracker} from './PerformanceTelemetry'
 

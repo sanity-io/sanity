@@ -4,16 +4,16 @@ import {
   type AssetInstanceDocument,
 } from '@sanity/media-library-types'
 
-import {type SanityDocument} from '../documents'
-import {type ValidationMarker} from '../markers'
-import {type Path} from '../paths'
+import type {SanityDocument} from '../documents/types'
+import type {ValidationMarker} from '../markers/types'
+import type {Path} from '../paths/types'
 import {
   type Schema,
   type SchemaType,
   type SchemaValidationValue,
   type SlugSchemaType,
-} from '../schema'
-import {type SlugParent} from '../slug'
+} from '../schema/types'
+import type {SlugParent} from '../slug/types'
 
 /** @public */
 export type RuleTypeConstraint = 'Array' | 'Boolean' | 'Date' | 'Number' | 'Object' | 'String'

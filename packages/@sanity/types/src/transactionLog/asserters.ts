@@ -1,4 +1,4 @@
-import {type Mutation} from '../mutations'
+import type {Mutation} from '../mutations/types'
 import {type CreateSquashedMutation, type TransactionLogMutation} from './types'
 
 /** @internal */

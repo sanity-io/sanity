@@ -5,9 +5,11 @@ import {useEffect, useId} from 'react'
 import semver, {type SemVer} from 'semver'
 import {styled} from 'styled-components'
 
-import {Button, Dialog, Tooltip} from '../../../../../ui-components'
+import {Button} from '../../../../../ui-components/button/Button'
+import {Dialog} from '../../../../../ui-components/dialog/Dialog'
+import {Tooltip} from '../../../../../ui-components/tooltip/Tooltip'
 import {isProd} from '../../../../environment'
-import {useTranslation} from '../../../../i18n'
+import {useTranslation} from '../../../../i18n/hooks/useTranslation'
 import {usePackageVersionStatus} from '../../../packageVersionStatus/usePackageVersionStatus'
 import {useWorkspace} from '../../../workspace'
 

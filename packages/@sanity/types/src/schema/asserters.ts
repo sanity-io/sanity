@@ -1,5 +1,5 @@
-import {type CrossDatasetReferenceSchemaType} from '../crossDatasetReference'
-import {type TitledListValue} from './definition'
+import type {CrossDatasetReferenceSchemaType} from '../crossDatasetReference/types'
+import type {TitledListValue} from './definition/type/common'
 import {
   type ArraySchemaType,
   type BaseSchemaType,

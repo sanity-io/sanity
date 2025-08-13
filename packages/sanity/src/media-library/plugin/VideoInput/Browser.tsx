@@ -5,9 +5,9 @@ import {startCase} from 'lodash'
 import {useCallback} from 'react'
 
 import {useTranslation} from '../../../core/i18n/hooks/useTranslation'
-import {Button} from '../../../ui-components/button'
-import {MenuButton} from '../../../ui-components/menuButton'
-import {MenuItem} from '../../../ui-components/menuItem'
+import {Button} from '../../../ui-components/button/Button'
+import {MenuButton} from '../../../ui-components/menuButton/MenuButton'
+import {MenuItem} from '../../../ui-components/menuItem/MenuItem'
 import {type VideoAssetProps} from './types'
 
 export function Browser(props: VideoAssetProps) {

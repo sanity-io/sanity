@@ -6,7 +6,7 @@ import {describe, expect, test} from 'vitest'
 
 import {createMockSanityClient} from '../../../../../../test/mocks/mockSanityClient'
 import {createTestProvider} from '../../../../../../test/testUtils/TestProvider'
-import {defineConfig} from '../../../../config'
+import {defineConfig} from '../../../../config/defineConfig'
 import {createSanityMediaLibraryFileSource} from '../createAssetSource'
 
 const fileAssetSource = createSanityMediaLibraryFileSource({

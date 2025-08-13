@@ -1,7 +1,8 @@
 import {type SanityClient} from '@sanity/client'
 import {type Diff, type ObjectDiff} from '@sanity/diff'
 
-import {type Annotation, type Chunk} from '../../../../field'
+import type {Annotation} from '../../../../field/types'
+import type {Chunk} from '../../../../field'
 import {type RemoteSnapshotVersionEvent} from '../../document/document-pair/checkoutPair'
 import {Aligner} from './Aligner'
 import {getJsonStream} from './getJsonStream'

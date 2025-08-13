@@ -12,8 +12,11 @@ import {type Observable} from 'rxjs'
 
 import {handleSelectAssetFromSource as handleSelectAssetFromSourceShared} from '../../../core/form/inputs/files/common/assetSource'
 import {type FileInfo} from '../../../core/form/inputs/files/common/styles'
-import {MemberField, MemberFieldError, MemberFieldSet} from '../../../core/form/members'
-import {PatchEvent, set, setIfMissing, unset} from '../../../core/form/patch'
+import {MemberField} from '../../../core/form/members/object/MemberField'
+import {MemberFieldError} from '../../../core/form/members/object/MemberFieldError'
+import {MemberFieldSet} from '../../../core/form/members/object/MemberFieldset'
+import {PatchEvent} from '../../../core/form/patch/PatchEvent'
+import {set, setIfMissing, unset} from '../../../core/form/patch/patch'
 import {UPLOAD_STATUS_KEY} from '../../../core/form/studio/uploads/constants'
 import {resolveUploader} from '../../../core/form/studio/uploads/resolveUploader'
 import {
@@ -22,8 +25,8 @@ import {
   type UploadOptions,
 } from '../../../core/form/studio/uploads/types'
 import {createInitialUploadPatches} from '../../../core/form/studio/uploads/utils'
-import {type ObjectInputProps} from '../../../core/form/types'
-import {useTranslation} from '../../../core/i18n'
+import type {ObjectInputProps} from '../../../core/form/types/inputProps'
+import {useTranslation} from '../../../core/i18n/hooks/useTranslation'
 import {
   type VideoAsset,
   type VideoSchemaType,

@@ -16,7 +16,7 @@ import {
 } from '@sanity/types'
 import {type FocusEvent, type ReactNode} from 'react'
 
-import {type FormNodePresence} from '../../presence'
+import type {FormNodePresence} from '../../presence/types'
 import {type ArrayInputCopyEvent, type ArrayInputInsertEvent} from './event'
 import {type ObjectInputProps} from './inputProps'
 

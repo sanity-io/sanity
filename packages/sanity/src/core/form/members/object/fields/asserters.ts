@@ -3,9 +3,9 @@ import {isArraySchemaType, isObjectSchemaType, isPrimitiveSchemaType} from '@san
 import {
   type ArrayOfObjectsFormNode,
   type ArrayOfPrimitivesFormNode,
-  type FieldMember,
   type ObjectFormNode,
-} from '../../../store'
+} from '../../../store/types/nodes'
+import type {FieldMember} from '../../../store/types/members'
 
 export function isMemberObject(member: FieldMember): member is FieldMember<ObjectFormNode> {
   return isObjectSchemaType(member.field.schemaType)

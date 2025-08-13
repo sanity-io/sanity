@@ -1,6 +1,6 @@
 import {map} from 'rxjs/operators'
 
-import {debugRolesParam$} from '../../debugParams'
+import {debugRolesParam$} from '../../debugParams/debugParams'
 import {type Grant} from '../types'
 import * as grants from './exampleGrants'
 import {type ExampleRoleName} from './exampleRoles'

@@ -3,7 +3,7 @@ import {type CurrentUser} from '@sanity/types'
 import {combineLatest, firstValueFrom, type Observable} from 'rxjs'
 import {map} from 'rxjs/operators'
 
-import {createMockAuthStore} from '../store'
+import {createMockAuthStore} from '../store/_legacy/authStore/createMockAuthStore'
 import {prepareConfig} from './prepareConfig'
 import {
   type Config,

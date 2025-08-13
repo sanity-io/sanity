@@ -2,14 +2,16 @@ import {type Path} from '@sanity/types'
 import {Card, Flex, Inline, Stack, Text} from '@sanity/ui'
 import {type ReactNode} from 'react'
 
-import {Tooltip, type TooltipProps} from '../../../../ui-components'
-import {LegacyLayerProvider, UserAvatar} from '../../../components'
-import {useRelativeTime} from '../../../hooks'
-import {useTranslation} from '../../../i18n'
-import {useUser} from '../../../store'
+import {Tooltip, type TooltipProps} from '../../../../ui-components/tooltip/Tooltip'
+import {LegacyLayerProvider} from '../../../components/transitional/LegacyLayerProvider'
+import {UserAvatar} from '../../../components/userAvatar/UserAvatar'
+import {useRelativeTime} from '../../../hooks/useRelativeTime'
+import {useTranslation} from '../../../i18n/hooks/useTranslation'
+import {useUser} from '../../../store/user/hooks'
 import {type AnnotationDetails, type Diff} from '../../types'
-import {getAnnotationAtPath, useAnnotationColor} from '../annotations'
-import {Event} from '../components/Event'
+import {getAnnotationAtPath} from '../annotations/helpers'
+import {useAnnotationColor} from '../annotations/hooks'
+import {TimelineEvent} from './TimelineEvent'
 
 /** @internal */
 export interface DiffTooltipProps extends TooltipProps {
@@ -81,7 +83,7 @@ function AnnotationItem({annotation}: {annotation: AnnotationDetails}) {
       {annotation.event ? (
         <>
           <Card borderBottom marginBottom={2} />
-          <Event event={annotation.event} showChangesBy="inline" />
+          <TimelineEvent event={annotation.event} showChangesBy="inline" />
         </>
       ) : (
         <Inline space={2}>

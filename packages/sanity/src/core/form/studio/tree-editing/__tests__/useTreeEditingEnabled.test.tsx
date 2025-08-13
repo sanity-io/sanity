@@ -3,7 +3,8 @@ import {type PropsWithChildren} from 'react'
 import {describe, expect, type Mock, test, vi} from 'vitest'
 
 import {useSource} from '../../../../studio/source'
-import {TreeEditingEnabledProvider, useTreeEditingEnabled} from '../context'
+import {TreeEditingEnabledProvider} from '../context/enabled/TreeEditingEnabledProvider'
+import {useTreeEditingEnabled} from '../context/enabled/useTreeEditingEnabled'
 
 // Mock the entire module
 vi.mock('../../../../studio/source')

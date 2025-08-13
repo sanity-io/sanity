@@ -912,5 +912,19 @@ exports[`exports snapshot 1`] = `
     "usePaneRouter": "function",
     "useStructureTool": "function",
   },
+  "./ui-components": {
+    "Button": "object",
+    "ConditionalWrapper": "function",
+    "Dialog": "object",
+    "ErrorBoundary": "function",
+    "MenuButton": "object",
+    "MenuGroup": "function",
+    "MenuItem": "object",
+    "Popover": "object",
+    "TOOLTIP_DELAY_PROPS": "object",
+    "Tab": "object",
+    "Tooltip": "object",
+    "TooltipDelayGroupProvider": "function",
+  },
 }
 `;

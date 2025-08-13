@@ -1,8 +1,8 @@
 import {type ClientPerspective, type SanityClient} from '@sanity/client'
 
-import {type SanityDocument} from '../documents'
-import {type Path} from '../paths'
-import {type BaseSchemaTypeOptions} from '../schema'
+import type {SanityDocument} from '../documents/types'
+import type {Path} from '../paths/types'
+import type {BaseSchemaTypeOptions} from '../schema/definition/type/common'
 import {type SearchStrategy} from '../search/types'
 
 /** @public */

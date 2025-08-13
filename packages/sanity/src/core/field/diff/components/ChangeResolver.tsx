@@ -4,7 +4,7 @@ import {Fragment} from 'react'
 
 import {unstable_useConditionalProperty as useConditionalProperty} from '../../conditional-property'
 import {type ChangeNode} from '../../types'
-import {useDocumentChange} from '../hooks'
+import {useDocumentChange} from '../hooks/useDocumentChange'
 import {FieldChange} from './FieldChange'
 import {GroupChange} from './GroupChange'
 

@@ -1,7 +1,7 @@
 import {escapeRegExp} from 'lodash'
 import {useMemo} from 'react'
 
-import {type WorkspacesContextValue} from '../workspaces'
+import type {WorkspacesContextValue} from '../workspaces/WorkspacesContext'
 import {type NormalizedWorkspace} from './types'
 
 /** @internal */

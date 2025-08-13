@@ -3,29 +3,29 @@ import {useToast} from '@sanity/ui'
 import {useCallback, useMemo, useRef} from 'react'
 import {tap} from 'rxjs/operators'
 
-import {useTranslation} from '../../../../i18n'
-import {useResolveInitialValueForType} from '../../../../store'
-import {useCopyPaste} from '../../../../studio'
+import {useTranslation} from '../../../../i18n/hooks/useTranslation'
+import {useResolveInitialValueForType} from '../../../../store/_legacy/document/useResolveInitialValueForType'
+import {useCopyPaste} from '../../../../studio/copyPaste/CopyPasteProvider'
 import {useGetFormValue} from '../../../contexts/GetFormValue'
 import {useDidUpdate} from '../../../hooks/useDidUpdate'
-import {insert, type PatchArg, PatchEvent, setIfMissing, unset} from '../../../patch'
-import {type ArrayOfObjectsItemMember} from '../../../store'
+import {insert, setIfMissing, unset} from '../../../patch/patch'
+import type {PatchArg} from '../../../patch/types'
+import {PatchEvent} from '../../../patch/PatchEvent'
+import type {ArrayOfObjectsItemMember} from '../../../store/types/members'
 import {isEmptyItem} from '../../../store/utils/isEmptyItem'
 import {FormCallbacksProvider, useFormCallbacks} from '../../../studio/contexts/FormCallbacks'
+import {type ArrayInputCopyEvent, type ArrayInputInsertEvent} from '../../../types/event'
+import type {FormDocumentValue} from '../../../types/formDocumentValue'
+import type {ObjectInputProps} from '../../../types/inputProps'
+import {type ObjectItem, type ObjectItemProps} from '../../../types/itemProps'
 import {
-  type ArrayInputCopyEvent,
-  type ArrayInputInsertEvent,
-  type FormDocumentValue,
-  type ObjectInputProps,
-  type ObjectItem,
-  type ObjectItemProps,
   type RenderAnnotationCallback,
   type RenderArrayOfObjectsItemCallback,
   type RenderBlockCallback,
   type RenderFieldCallback,
   type RenderInputCallback,
   type RenderPreviewCallback,
-} from '../../../types'
+} from '../../../types/renderCallback'
 import {createProtoValue} from '../../../utils/createProtoValue'
 import {ensureKey} from '../../../utils/ensureKey'
 import {createDescriptionId} from '../../common/createDescriptionId'

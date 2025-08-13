@@ -1,4 +1,4 @@
-import {type OperationImpl} from '../operations/index'
+import type {OperationImpl} from '../operations/types'
 import {actionsApiClient} from '../utils/actionsApiClient'
 import {isLiveEditEnabled} from '../utils/isLiveEditEnabled'
 

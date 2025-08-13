@@ -13,21 +13,24 @@ import {map, shareReplay} from 'rxjs/operators'
 import {
   createDatasetFileAssetSource,
   createDatasetImageAssetSource,
-} from '../form/studio/assetSourceDataset'
+} from '../form/studio/assetSourceDataset/createAssetSource'
 import {
   createSanityMediaLibraryFileSource,
   createSanityMediaLibraryImageSource,
-} from '../form/studio/assetSourceMediaLibrary'
-import {type LocaleSource} from '../i18n'
+} from '../form/studio/assetSourceMediaLibrary/createAssetSource'
+import type {LocaleSource} from '../i18n/types'
 import {prepareI18n} from '../i18n/i18nConfig'
-import {createSchema} from '../schema'
-import {type AuthStore, createAuthStore, isAuthStore} from '../store/_legacy'
-import {validateWorkspaces} from '../studio'
+import {createSchema} from '../schema/createSchema'
+import type {AuthStore} from '../store/_legacy/authStore/types'
+import {createAuthStore} from '../store/_legacy/authStore/createAuthStore'
+import {isAuthStore} from '../store/_legacy/authStore/utils/asserters'
+import {validateWorkspaces} from '../studio/workspaces/validateWorkspaces'
 import {filterDefinitions} from '../studio/components/navbar/search/definitions/defaultFilters'
 import {operatorDefinitions} from '../studio/components/navbar/search/definitions/operators/defaultOperators'
 import {DEFAULT_STUDIO_CLIENT_OPTIONS} from '../studioClient'
-import {type InitialValueTemplateItem, type Template, type TemplateItem} from '../templates'
-import {EMPTY_ARRAY, isNonNullable} from '../util'
+import {type InitialValueTemplateItem, type Template, type TemplateItem} from '../templates/types'
+import {EMPTY_ARRAY} from '../util/empty'
+import {isNonNullable} from '../util/isNonNullable'
 import {
   announcementsEnabledReducer,
   directUploadsReducer,
@@ -58,7 +61,8 @@ import {
 } from './configPropertyReducers'
 import {ConfigResolutionError} from './ConfigResolutionError'
 import {createDefaultIcon} from './createDefaultIcon'
-import {documentFieldActionsReducer, initialDocumentFieldActions} from './document'
+import {documentFieldActionsReducer} from './document/fieldActions/reducer'
+import {initialDocumentFieldActions} from './document'
 import {resolveConfigProperty} from './resolveConfigProperty'
 import {getDefaultPlugins, getDefaultPluginsOptions} from './resolveDefaultPlugins'
 import {resolveSchemaTypes} from './resolveSchemaTypes'

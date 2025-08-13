@@ -15,7 +15,7 @@ import {
   useRef,
 } from 'react'
 
-import {TooltipDelayGroupProvider} from '../../../../../ui-components'
+import {TooltipDelayGroupProvider} from '../../../../../ui-components/tooltipDelayGroupProvider/TooltipDelayGroupProvider'
 import {TableHeader} from './TableHeader'
 import {TableProvider, type TableSort, useTableContext} from './TableProvider'
 import {type Column} from './types'

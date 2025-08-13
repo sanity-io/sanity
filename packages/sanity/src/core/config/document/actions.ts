@@ -4,7 +4,8 @@ import {
 } from '@sanity/ui'
 import {type ComponentType, type ReactNode} from 'react'
 
-import {type EditStateFor, type MapDocument} from '../../store/_legacy'
+import type {EditStateFor} from '../../store/_legacy/document/document-pair/editState'
+import type {MapDocument} from '../../store/_legacy/document/document-pair/operations/types'
 
 /**
  * @hidden

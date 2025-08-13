@@ -4,16 +4,15 @@ import {Box, type ResponsiveMarginProps, type ResponsivePaddingProps} from '@san
 import {type MouseEvent, useCallback, useEffect, useMemo, useState} from 'react'
 import {useIntentLink} from 'sanity/router'
 
-import {Tooltip} from '../../../../../../../../ui-components'
-import {type GeneralPreviewLayoutKey, PreviewCard} from '../../../../../../../components'
-import {useSchema} from '../../../../../../../hooks'
+import {Tooltip} from '../../../../../../../../ui-components/tooltip/Tooltip'
+import type {GeneralPreviewLayoutKey} from '../../../../../../../components/previews/types'
+import {PreviewCard} from '../../../../../../../components/previewCard/PreviewCard'
+import {useSchema} from '../../../../../../../hooks/useSchema'
 import {useTranslation} from '../../../../../../../i18n/hooks/useTranslation'
 import {unstable_useValuePreview as useValuePreview} from '../../../../../../../preview/useValuePreview'
-import {
-  type PermissionCheckResult,
-  useDocumentPresence,
-  useGrantsStore,
-} from '../../../../../../../store'
+import type {PermissionCheckResult} from '../../../../../../../store/_legacy/grants/types'
+import {useDocumentPresence} from '../../../../../../../store'
+import {useGrantsStore} from '../../../../../../../store/_legacy/datastores'
 import {getPublishedId} from '../../../../../../../util/draftUtils'
 import {useSearchState} from '../../../contexts/search/useSearchState'
 import {SearchResultItemPreview} from './SearchResultItemPreview'

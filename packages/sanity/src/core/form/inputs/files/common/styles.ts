@@ -1,7 +1,7 @@
 import {Card} from '@sanity/ui'
 
-import {withFocusRing} from '../../../components/withFocusRing'
-import {fileTarget} from '../../common/fileTarget'
+import {withFocusRing} from '../../../components/withFocusRing/withFocusRing'
+import {fileTarget} from '../../common/fileTarget/fileTarget'
 
 export type {FileInfo} from '../../common/fileTarget'
 

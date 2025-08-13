@@ -5,7 +5,8 @@ import {afterEach, describe, expect, it, vitest} from 'vitest'
 
 import {SanityEncoder} from '@sanity/mutate'
 
-import {type Mutation, type Transaction} from '../../../mutations'
+import type {Mutation} from '../../../mutations/types'
+import type {Transaction} from '../../../mutations/transaction'
 import {toSanityMutations, type TransactionPayload} from '../toSanityMutations'
 
 vitest.mock('@sanity/mutate', async () => {

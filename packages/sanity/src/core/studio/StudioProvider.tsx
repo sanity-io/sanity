@@ -7,26 +7,24 @@ import json from 'refractor/json'
 import jsx from 'refractor/jsx'
 import typescript from 'refractor/typescript'
 
-import {LoadingBlock} from '../components/loadingBlock'
+import {LoadingBlock} from '../components/loadingBlock/LoadingBlock'
 import {AppIdCacheProvider} from '../create/studio-app/AppIdCacheProvider'
 import {errorReporter} from '../error/errorReporter'
-import {LocaleProvider} from '../i18n'
+import {LocaleProvider} from '../i18n/components/LocaleProvider'
 import {GlobalPerspectiveProvider} from '../perspective/GlobalPerspectiveProvider'
-import {ResourceCacheProvider} from '../store'
-import {UserColorManagerProvider} from '../user-color'
-import {ActiveWorkspaceMatcher} from './activeWorkspaceMatcher'
+import {ResourceCacheProvider} from '../store/_legacy/ResourceCacheProvider'
+import {UserColorManagerProvider} from '../user-color/provider'
+import {ActiveWorkspaceMatcher} from './activeWorkspaceMatcher/ActiveWorkspaceMatcher'
 import {AuthBoundary} from './AuthBoundary'
 import {ColorSchemeProvider} from './colorScheme'
 import {ComlinkRouteHandler} from './components/ComlinkRouteHandler'
 import {Z_OFFSET} from './constants'
 import {MaybeEnableErrorReporting} from './MaybeEnableErrorReporting'
 import {PackageVersionStatusProvider} from './packageVersionStatus/PackageVersionStatusProvider'
-import {
-  AuthenticateScreen,
-  ConfigErrorsScreen,
-  NotAuthenticatedScreen,
-  NotFoundScreen,
-} from './screens'
+import {AuthenticateScreen} from './screens/AuthenticateScreen'
+import {ConfigErrorsScreen} from './screens/ConfigErrorsScreen'
+import {NotAuthenticatedScreen} from './screens/NotAuthenticatedScreen'
+import {NotFoundScreen} from './screens/NotFoundScreen'
 import {type StudioProps} from './Studio'
 import {StudioAnnouncementsProvider} from './studioAnnouncements/StudioAnnouncementsProvider'
 import {StudioErrorBoundary} from './StudioErrorBoundary'
@@ -34,7 +32,7 @@ import {StudioRootErrorHandler} from './StudioRootErrorHandler'
 import {StudioThemeProvider} from './StudioThemeProvider'
 import {StudioTelemetryProvider} from './telemetry/StudioTelemetryProvider'
 import {WorkspaceLoader} from './workspaceLoader'
-import {WorkspacesProvider} from './workspaces'
+import {WorkspacesProvider} from './workspaces/WorkspacesProvider'
 
 registerLanguage(bash)
 registerLanguage(javascript)

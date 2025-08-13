@@ -1,4 +1,4 @@
-import {type TransactionLogMutation} from '../transactionLog'
+import type {TransactionLogMutation} from '../transactionLog/types'
 import {
   type CreateIfNotExistsMutation,
   type CreateMutation,

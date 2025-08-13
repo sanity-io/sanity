@@ -141,9 +141,9 @@ export interface StructureToolOptions {
    * A workspace can have different "sources". These sources were meant to allow using multiple datasets within the same workspace, for instance.
    * This is not supported yet, but the API is still here.
    *
-    @hidden
-    @alpha
-  */
+   @hidden
+   @alpha
+   */
   source?: string
   /**
    * A structure resolver function. See {@link StructureResolver}

@@ -5,7 +5,8 @@ import {beforeAll, describe, expect, it, vi} from 'vitest'
 
 import {createMockSanityClient} from '../../../../test/mocks/mockSanityClient'
 import {createTestProvider} from '../../../../test/testUtils/TestProvider'
-import {LocaleProviderBase, usEnglishLocale} from '../../../core/i18n'
+import {LocaleProviderBase} from '../../../core/i18n/components/LocaleProvider'
+import {usEnglishLocale} from '../../../core/i18n/locales'
 import {prepareI18n} from '../../../core/i18n/i18nConfig'
 import {ErrorBoundary} from '../ErrorBoundary'
 

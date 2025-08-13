@@ -25,7 +25,7 @@ import {
 } from '@sanity/types'
 import {type ComponentType} from 'react'
 
-import {type DocumentGroupEvent} from '../store/events'
+import type {DocumentGroupEvent} from '../store/events/types'
 import {type FieldValueError} from './validation'
 
 /**

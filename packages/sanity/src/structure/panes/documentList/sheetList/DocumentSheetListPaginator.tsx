@@ -13,7 +13,8 @@ import {Flex, Text} from '@sanity/ui'
 import {type Table} from '@tanstack/react-table'
 import {type SanityDocument} from 'sanity'
 
-import {Button, TooltipDelayGroupProvider} from '../../../../ui-components'
+import {Button} from '../../../../ui-components/button/Button'
+import {TooltipDelayGroupProvider} from '../../../../ui-components/tooltipDelayGroupProvider/TooltipDelayGroupProvider'
 
 export function DocumentSheetListPaginator({table}: {table: Table<SanityDocument>}) {
   return (

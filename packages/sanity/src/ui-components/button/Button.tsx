@@ -4,11 +4,11 @@ import {Button as UIButton, type ButtonProps as UIButtonProps} from '@sanity/ui'
 import {type ForwardedRef, forwardRef, type HTMLProps, useCallback} from 'react'
 import {styled} from 'styled-components'
 
-import {Tooltip, type TooltipProps} from '..'
+import {Tooltip, type TooltipProps} from '../tooltip/Tooltip'
 import {
   ConditionalWrapper,
   type ConditionalWrapperRenderWrapperCallback,
-} from '../conditionalWrapper'
+} from '../conditionalWrapper/ConditionalWrapper'
 
 type BaseButtonProps = Pick<
   UIButtonProps,

@@ -8,8 +8,9 @@ import {
 import {uniq, xor} from 'lodash'
 import {type ReactNode, useCallback, useMemo} from 'react'
 
-import {type TFunction, useTranslation} from '../../../../../i18n'
-import {DiffCard} from '../../../../diff'
+import type {TFunction} from '../../../../../i18n'
+import {useTranslation} from '../../../../../i18n/hooks/useTranslation'
+import {DiffCard} from '../../../../diff/components/DiffCard'
 import {
   type ArrayDiff,
   type ObjectDiff,

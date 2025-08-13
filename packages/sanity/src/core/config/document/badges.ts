@@ -1,7 +1,7 @@
 import {type ComponentType, type ReactNode} from 'react'
 
-import {type HookCollectionActionHook} from '../../components/hookCollection'
-import {type EditStateFor} from '../../store'
+import type {HookCollectionActionHook} from '../../components/hookCollection/types'
+import type {EditStateFor} from '../../store/_legacy/document/document-pair/editState'
 
 /**
  * @hidden

@@ -3,7 +3,7 @@ import {type ComponentType, type HTMLProps, type ReactNode, useContext, useMemo}
 import {ReferenceInputOptionsContext} from 'sanity/_singletons'
 
 import {type ReleaseId} from '../../../perspective/types'
-import {type TemplatePermissionsResult} from '../../../store'
+import type {TemplatePermissionsResult} from '../../../store/_legacy/grants/templatePermissions'
 
 /** @internal */
 export interface TemplateOption {

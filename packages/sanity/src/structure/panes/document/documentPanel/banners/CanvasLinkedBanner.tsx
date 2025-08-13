@@ -9,7 +9,7 @@ import {
 } from 'sanity'
 import {styled} from 'styled-components'
 
-import {Popover} from '../../../../../ui-components'
+import {Popover} from '../../../../../ui-components/popover/Popover'
 import {Button} from '../../../../../ui-components/button/Button'
 import {structureLocaleNamespace} from '../../../../i18n'
 import {useDocumentPane} from '../../useDocumentPane'

@@ -1,4 +1,4 @@
-import {useTranslation} from '../../../i18n'
+import {useTranslation} from '../../../i18n/hooks/useTranslation'
 import {PreviewArray} from './PreviewArray'
 import {PreviewObject} from './PreviewObject'
 import {PreviewPrimitive} from './PreviewPrimitive'

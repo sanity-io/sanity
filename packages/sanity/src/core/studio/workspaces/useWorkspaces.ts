@@ -1,7 +1,7 @@
 import {useContext} from 'react'
 import {WorkspacesContext} from 'sanity/_singletons'
 
-import {type WorkspaceSummary} from '../../config'
+import type {WorkspaceSummary} from '../../config/types'
 
 /** @internal */
 export function useWorkspaces(): WorkspaceSummary[] {

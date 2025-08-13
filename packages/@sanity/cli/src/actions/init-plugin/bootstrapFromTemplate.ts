@@ -9,7 +9,7 @@ import resolveFrom from 'resolve-from'
 import semver from 'semver'
 import validateNpmPackageName from 'validate-npm-package-name'
 
-import {type CliCommandContext} from '../..'
+import type {CliCommandContext} from '../../types'
 import {debug} from '../../debug'
 import {type SanityJson} from '../../types'
 import {dynamicRequire} from '../../util/dynamicRequire'

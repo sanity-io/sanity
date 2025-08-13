@@ -22,7 +22,7 @@ import {
   type StructureResolver,
 } from 'sanity/structure'
 
-import {DebugPane} from '../components/panes/debug'
+import {DebugPane} from '../components/panes/debug/DebugPane'
 import {JsonDocumentDump} from '../components/panes/JsonDocumentDump'
 import {PerspectiveExample} from '../components/PerspectiveExample'
 import {TranslateExample} from '../components/TranslateExample'

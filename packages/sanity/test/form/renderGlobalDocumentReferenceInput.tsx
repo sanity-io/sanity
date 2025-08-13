@@ -6,8 +6,8 @@ import {
 import {type ReactElement} from 'react'
 import {of} from 'rxjs'
 
-import {type ObjectInputProps} from '../../src/core'
-import {type GlobalDocumentReferenceInputProps} from '../../src/core/form/inputs/GlobalDocumentReferenceInput'
+import type {ObjectInputProps} from '../../src/core/form/types/inputProps'
+import type {GlobalDocumentReferenceInputProps} from '../../src/core/form/inputs/GlobalDocumentReferenceInput/GlobalDocumentReferenceInput'
 import {type TestRenderInputContext} from './renderInput'
 import {renderObjectInput} from './renderObjectInput'
 import {type TestRenderProps} from './types'

@@ -4,8 +4,10 @@ import {Menu} from '@sanity/ui'
 import {startCase} from 'lodash'
 import {useCallback} from 'react'
 
-import {Button, MenuButton, MenuItem} from '../../../../../ui-components'
-import {useTranslation} from '../../../../i18n'
+import {Button} from '../../../../../ui-components/button/Button'
+import {MenuButton} from '../../../../../ui-components/menuButton/MenuButton'
+import {MenuItem} from '../../../../../ui-components/menuItem/MenuItem'
+import {useTranslation} from '../../../../i18n/hooks/useTranslation'
 import {type FileAssetProps} from './types'
 
 export function Browser(props: FileAssetProps) {

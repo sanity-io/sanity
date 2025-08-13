@@ -11,17 +11,18 @@ import {
   tap,
 } from 'rxjs'
 
+import type {Annotation} from '../../../field/types'
+import type {Chunk} from '../../..'
 import {
-  type Annotation,
-  type Chunk,
   type SelectionState,
   type TimelineController,
-  useHistoryStore,
-  useWorkspace,
-} from '../../..'
-import {useClient} from '../../../hooks'
+} from '../../../store/_legacy/history/history/TimelineController'
+import {useHistoryStore} from '../../../store/_legacy/datastores'
+import {useWorkspace} from '../../../studio/workspace'
+import {useClient} from '../../../hooks/useClient'
 import {DEFAULT_STUDIO_CLIENT_OPTIONS} from '../../../studioClient'
-import {remoteSnapshots, type RemoteSnapshotVersionEvent} from '../document'
+import {remoteSnapshots} from '../document/document-pair/remoteSnapshots'
+import type {RemoteSnapshotVersionEvent} from '../document/document-pair/checkoutPair'
 
 interface UseTimelineControllerOpts {
   documentId: string

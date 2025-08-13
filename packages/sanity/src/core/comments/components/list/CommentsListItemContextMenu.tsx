@@ -2,20 +2,18 @@ import {CheckmarkCircleIcon, EditIcon, LinkIcon, TrashIcon, UndoIcon} from '@san
 import {Card, Flex, Menu, MenuDivider} from '@sanity/ui'
 import {styled} from 'styled-components'
 
-import {
-  Button,
-  MenuButton,
-  type MenuButtonProps,
-  MenuItem,
-  TooltipDelayGroupProvider,
-} from '../../../../ui-components'
-import {ContextMenuButton} from '../../../components'
-import {type TFunction, useTranslation} from '../../../i18n'
+import {Button} from '../../../../ui-components/button/Button'
+import {MenuButton, type MenuButtonProps} from '../../../../ui-components/menuButton/MenuButton'
+import {MenuItem} from '../../../../ui-components/menuItem/MenuItem'
+import {TooltipDelayGroupProvider} from '../../../../ui-components/tooltipDelayGroupProvider/TooltipDelayGroupProvider'
+import {ContextMenuButton} from '../../../components/contextMenuButton/ContextMenuButton'
+import type {TFunction} from '../../../i18n'
+import {useTranslation} from '../../../i18n/hooks/useTranslation'
 import {COMMENT_REACTION_OPTIONS} from '../../constants'
 import {commentsLocaleNamespace} from '../../i18n'
 import {type CommentReactionOption, type CommentStatus, type CommentsUIMode} from '../../types'
-import {ReactionIcon} from '../icons'
-import {CommentReactionsMenuButton} from '../reactions'
+import {ReactionIcon} from '../icons/ReactionIcon'
+import {CommentReactionsMenuButton} from '../reactions/CommentReactionsMenuButton'
 
 const renderMenuButton = ({
   open,

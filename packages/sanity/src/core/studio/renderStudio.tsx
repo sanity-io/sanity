@@ -1,7 +1,7 @@
 import {StrictMode} from 'react'
 import {createRoot} from 'react-dom/client'
 
-import {type Config} from '../config'
+import type {Config} from '../config/types'
 import {Studio} from './Studio'
 
 interface RenderStudioOptions {

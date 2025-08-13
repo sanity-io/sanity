@@ -1,7 +1,7 @@
 import {useContext} from 'react'
 import {CommentsSelectedPathContext} from 'sanity/_singletons'
 
-import {type CommentsSelectedPathContextValue} from '../context'
+import type {CommentsSelectedPathContextValue} from '../context/selected-path/types'
 
 /**
  * @internal

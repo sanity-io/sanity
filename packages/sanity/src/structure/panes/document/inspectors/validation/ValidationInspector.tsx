@@ -15,8 +15,8 @@ import {Box, Card, type CardTone, Flex, Stack, Text} from '@sanity/ui'
 import {type ErrorInfo, Fragment, useCallback, useMemo, useState} from 'react'
 import {type DocumentInspectorProps, isGoingToUnpublish, useTranslation} from 'sanity'
 
-import {ErrorBoundary} from '../../../../../ui-components'
-import {DocumentInspectorHeader} from '../../documentInspector'
+import {ErrorBoundary} from '../../../../../ui-components/errorBoundary/ErrorBoundary'
+import {DocumentInspectorHeader} from '../../documentInspector/DocumentInspectorHeader'
 import {useDocumentPane} from '../../useDocumentPane'
 import {getPathTitles} from './getPathTitles'
 

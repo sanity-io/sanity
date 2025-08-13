@@ -1,8 +1,8 @@
 import {capitalize} from 'lodash'
 import {memo, useCallback} from 'react'
 
-import {FormFieldSet} from '../../components/formField'
-import {type FieldSetMember} from '../../store'
+import {FormFieldSet} from '../../components/formField/FormFieldSet'
+import type {FieldSetMember} from '../../store/types/members'
 import {useFormCallbacks} from '../../studio/contexts/FormCallbacks'
 import {
   type RenderAnnotationCallback,
@@ -11,7 +11,7 @@ import {
   type RenderFieldCallback,
   type RenderInputCallback,
   type RenderPreviewCallback,
-} from '../../types'
+} from '../../types/renderCallback'
 import {MemberField} from './MemberField'
 import {MemberFieldError} from './MemberFieldError'
 

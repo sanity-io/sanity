@@ -10,7 +10,7 @@ import {
 } from 'react'
 import {ColorSchemeSetValueContext, ColorSchemeValueContext} from 'sanity/_singletons'
 
-import {type TFunction} from '../i18n'
+import type {TFunction} from '../i18n'
 import {type StudioThemeColorSchemeKey} from '../theme/types'
 import {getSnapshot, setSnapshot, subscribe} from './colorSchemeStore'
 

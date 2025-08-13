@@ -7,20 +7,16 @@ import {flatten, isEqual, last} from 'lodash'
 import {type ReactNode, useCallback, useContext, useMemo, useState} from 'react'
 import {CopyPasteContext} from 'sanity/_singletons'
 
-import {
-  type FormDocumentValue,
-  type FormPatch,
-  getPublishedId,
-  getValueAtPath,
-  insert,
-  PatchEvent,
-  set,
-  setIfMissing,
-  useClient,
-  useCurrentUser,
-  useSchema,
-  useTranslation,
-} from '../..'
+import type {FormDocumentValue} from '../../form/types/formDocumentValue'
+import type {FormPatch} from '../../form/patch/types'
+import {getPublishedId} from '../../util/draftUtils'
+import {getValueAtPath} from '../../field/paths/helpers'
+import {insert, set, setIfMissing} from '../../form/patch/patch'
+import {PatchEvent} from '../../form/patch/PatchEvent'
+import {useClient} from '../../hooks/useClient'
+import {useCurrentUser} from '../../store/user/hooks'
+import {useSchema} from '../../hooks/useSchema'
+import {useTranslation} from '../../i18n/hooks/useTranslation'
 import {DEFAULT_STUDIO_CLIENT_OPTIONS} from '../../studioClient'
 import {FieldCopied, FieldPasted} from './__telemetry__/copyPaste.telemetry'
 import {resolveSchemaTypeForPath} from './resolveSchemaTypeForPath'

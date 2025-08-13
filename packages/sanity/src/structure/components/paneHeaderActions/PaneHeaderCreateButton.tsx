@@ -14,7 +14,10 @@ import {
 } from 'sanity'
 import {IntentLink} from 'sanity/router'
 
-import {Button, MenuButton, MenuItem, type PopoverProps} from '../../../ui-components'
+import {Button} from '../../../ui-components/button/Button'
+import {MenuButton} from '../../../ui-components/menuButton/MenuButton'
+import {MenuItem} from '../../../ui-components/menuItem/MenuItem'
+import type {PopoverProps} from '../../../ui-components/popover/Popover'
 import {structureLocaleNamespace} from '../../i18n'
 import {IntentButton} from '../IntentButton'
 import {InsufficientPermissionsMessageTooltip} from './InsufficientPermissionsMessageTooltip'

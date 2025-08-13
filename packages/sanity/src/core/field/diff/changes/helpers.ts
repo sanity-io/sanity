@@ -1,6 +1,6 @@
 import {type Path, type PathSegment} from '@sanity/types'
 
-import {getItemKey} from '../../paths'
+import {getItemKey} from '../../paths/helpers'
 import {type ChangeNode, type FieldChangeNode} from '../../types'
 
 const isAddedAction = (change: ChangeNode): boolean => {

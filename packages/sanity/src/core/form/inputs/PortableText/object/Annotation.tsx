@@ -3,22 +3,22 @@ import {type ObjectSchemaType, type Path, type PortableTextObject} from '@sanity
 import {isEqual} from '@sanity/util/paths'
 import {type ComponentType, useCallback, useMemo, useState} from 'react'
 
-import {Tooltip} from '../../../../../ui-components'
-import {pathToString} from '../../../../field'
-import {useTranslation} from '../../../../i18n'
-import {EMPTY_ARRAY} from '../../../../util'
+import {Tooltip} from '../../../../../ui-components/tooltip/Tooltip'
+import {pathToString} from '../../../../field/paths/helpers'
+import {useTranslation} from '../../../../i18n/hooks/useTranslation'
+import {EMPTY_ARRAY} from '../../../../util/empty'
 import {isEmptyItem} from '../../../store/utils/isEmptyItem'
 import {useChildPresence} from '../../../studio/contexts/Presence'
+import type {BlockAnnotationProps} from '../../../types/blockProps'
 import {
-  type BlockAnnotationProps,
   type RenderAnnotationCallback,
   type RenderArrayOfObjectsItemCallback,
   type RenderBlockCallback,
-  type RenderCustomMarkers,
   type RenderFieldCallback,
   type RenderInputCallback,
   type RenderPreviewCallback,
-} from '../../../types'
+} from '../../../types/renderCallback'
+import type {RenderCustomMarkers} from '../../../types/_transitional'
 import {useFormBuilder} from '../../../useFormBuilder'
 import {DefaultMarkers} from '../_legacyDefaultParts/Markers'
 import {type SetPortableTextMemberItemElementRef} from '../contexts/PortableTextMemberItemElementRefsProvider'

@@ -2,7 +2,7 @@ import {useToast} from '@sanity/ui'
 import {memo, useEffect, useMemo, useRef} from 'react'
 import {Translate, useDocumentOperationEvent, useTranslation} from 'sanity'
 
-import {usePaneRouter} from '../../components'
+import {usePaneRouter} from '../../components/paneRouter/usePaneRouter'
 import {structureLocaleNamespace} from '../../i18n'
 import {useDocumentPane} from './useDocumentPane'
 import {useDocumentTitle} from './useDocumentTitle'

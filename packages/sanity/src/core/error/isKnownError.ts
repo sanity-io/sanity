@@ -1,7 +1,8 @@
 import {isObject} from 'lodash'
 
-import {ConfigResolutionError, SchemaError} from '../config'
-import {CorsOriginError} from '../store'
+import {ConfigResolutionError} from '../config/ConfigResolutionError'
+import {SchemaError} from '../config/SchemaError'
+import {CorsOriginError} from '../store/_legacy/cors/CorsOriginError'
 
 export function isKnownError(err: unknown): boolean {
   if (err instanceof SchemaError) {

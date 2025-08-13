@@ -21,7 +21,7 @@ import {
   toArray,
 } from 'rxjs'
 
-import {useClient} from '../../../../hooks'
+import {useClient} from '../../../../hooks/useClient'
 import {DEFAULT_API_VERSION} from '../constants'
 import {type AssetSelectionItem} from '../types'
 import {useMediaLibraryIds} from './useMediaLibraryIds'

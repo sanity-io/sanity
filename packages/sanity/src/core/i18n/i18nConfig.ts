@@ -2,7 +2,7 @@
 import {createInstance as createI18nInstance, type i18n, type InitOptions} from 'i18next'
 import {initReactI18next} from 'react-i18next'
 
-import {type SourceOptions} from '../config'
+import type {SourceOptions} from '../config/types'
 import {localeBundlesReducer, localeDefReducer} from '../config/configPropertyReducers'
 import {resolveConfigProperty} from '../config/resolveConfigProperty'
 import {createSanityI18nBackend} from './backend'

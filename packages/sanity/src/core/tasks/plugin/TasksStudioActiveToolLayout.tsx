@@ -2,9 +2,10 @@ import {Box, Flex, Layer, useMediaIndex} from '@sanity/ui'
 import {AnimatePresence} from 'framer-motion'
 import {css, styled} from 'styled-components'
 
-import {type ActiveToolLayoutProps} from '../../config'
-import {TasksStudioSidebar} from '../components'
-import {useTasksEnabled, useTasksNavigation} from '../context'
+import type {ActiveToolLayoutProps} from '../../config/studio/types'
+import {TasksStudioSidebar} from '../components/sidebar/TasksSidebar'
+import {useTasksEnabled} from '../context/enabled/useTasksEnabled'
+import {useTasksNavigation} from '../context/navigation/useTasksNavigation'
 
 const FULLSCREEN_MEDIA_INDEX = 1
 const POSITION_ABSOLUTE_MEDIA_INDEX = 3

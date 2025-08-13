@@ -12,13 +12,11 @@ import {uuid} from '@sanity/uuid'
 import {isEqual} from 'lodash'
 import {useCallback, useEffect, useMemo, useRef, useState} from 'react'
 
-import {useCurrentUser} from '../../store'
+import {useCurrentUser} from '../../store/user/hooks'
 import {type CommentDocument} from '../types'
-import {
-  buildCommentRangeDecorations,
-  buildCommentThreadItems,
-  buildTextSelectionFromFragment,
-} from '../utils'
+import {buildCommentRangeDecorations} from '../utils/inline-comments/buildCommentRangeDecorations'
+import {buildCommentThreadItems} from '../utils/buildCommentThreadItems'
+import {buildTextSelectionFromFragment} from '../utils/inline-comments/buildTextSelectionFromFragment'
 
 const INLINE_STYLE: React.CSSProperties = {outline: 'none'}
 
