@@ -3,6 +3,19 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [4.4.1](https://github.com/sanity-io/sanity/compare/v4.4.0...v4.4.1) (2025-08-14)
+
+
+### Bug Fixes
+
+* allow v20 in node engines ([#10290](https://github.com/sanity-io/sanity/issues/10290)) ([73150e9](https://github.com/sanity-io/sanity/commit/73150e9befde5cb531279c9b206a08682df3ff38))
+* **deps:** update dependency @sanity/export to ^4.0.1 ([#10291](https://github.com/sanity-io/sanity/issues/10291)) ([6827c96](https://github.com/sanity-io/sanity/commit/6827c96dab297cf35ca0130427be226906e64519))
+* **deps:** update dependency @sanity/export to v4 ([#10264](https://github.com/sanity-io/sanity/issues/10264)) ([335b8e5](https://github.com/sanity-io/sanity/commit/335b8e54283221dfe21400f7639ab7ca6a5d209b))
+* **deps:** update dependency @sanity/ui to ^3.0.7 ([#10293](https://github.com/sanity-io/sanity/issues/10293)) ([e671ffc](https://github.com/sanity-io/sanity/commit/e671ffc1bef570811838235630d2717590f65d15))
+* long release titles in open release to edit banner correctly flexed ([#10283](https://github.com/sanity-io/sanity/issues/10283)) ([3ba5079](https://github.com/sanity-io/sanity/commit/3ba50796a92a853c945e88106107199a7185e908))
+
+
+
 ## [4.4.0](https://github.com/sanity-io/sanity/compare/v4.3.0...v4.4.0) (2025-08-13)
 
 
