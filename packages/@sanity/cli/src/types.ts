@@ -77,22 +77,6 @@ export interface CliCommandArguments<F = Record<string, unknown>> {
   extraArguments: string[]
 }
 
-export type CliCommandContext = CliV2CommandContext | CliV3CommandContext
-
-export interface CliBaseCommandContext {
-  output: CliOutputter
-  prompt: CliPrompter
-  apiClient: CliApiClient
-  sanityMajorVersion: 2 | 3
-  cliConfigPath?: string
-  cliRoot: string
-  workDir: string
-  corePath?: string
-  chalk: typeof chalk
-  commandRunner: CliCommandRunner
-  fromInitCommand?: boolean
-}
-
 export interface TelemetryUserProperties {
   runtime: string
   runtimeVersion: string
@@ -103,15 +87,17 @@ export interface TelemetryUserProperties {
   dataset?: string
 }
 
-export interface CliV2CommandContext extends CliBaseCommandContext {
-  sanityMajorVersion: 2
-  cliConfig?: SanityJson
-  cliPackageManager?: CliPackageManager
-  telemetry: TelemetryLogger<TelemetryUserProperties>
-}
-
-export interface CliV3CommandContext extends CliBaseCommandContext {
-  sanityMajorVersion: 3
+export interface CliCommandContext {
+  output: CliOutputter
+  prompt: CliPrompter
+  apiClient: CliApiClient
+  cliConfigPath?: string
+  cliRoot: string
+  workDir: string
+  corePath?: string
+  chalk: typeof chalk
+  commandRunner: CliCommandRunner
+  fromInitCommand?: boolean
   cliConfig?: CliConfig
   cliPackageManager: CliPackageManager
   telemetry: TelemetryLogger<TelemetryUserProperties>

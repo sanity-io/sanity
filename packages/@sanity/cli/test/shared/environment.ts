@@ -12,8 +12,9 @@ export const cliApiHost = 'https://api.sanity.work'
 
 export const hasBuiltCli = existsSync(path.join(__dirname, '..', '..', 'lib', 'cli.js'))
 export const fixturesPath = path.join(__dirname, '..', '__fixtures__')
-export const studioVersions = ['v3'] as const
-export const doCleanup = false
+
+// note: this requires a matching folder in test/__fixtures__
+export const studioNames = ['cli-test-studio'] as const
 export const baseTestPath = path.join(tmpdir(), 'sanity-cli-test')
 export const testIdPath = path.join(baseTestPath, 'test-id.txt')
 export const studiosPath = path.join(baseTestPath, 'studios')
@@ -82,7 +83,7 @@ const getTestId = () => {
  * The port is selected based on the assumption that the tests will be run once for node LTS and
  * once for node current.
  */
-function getPort(version: string): number {
+function getPort(): number {
   if (process.release.lts) {
     return 4333
   }
@@ -102,26 +103,26 @@ export const testClient = createClient({
 export const getCliUserEmail = (): Promise<string> =>
   testClient.users.getById('me').then((user) => user.email)
 
-export const getTestRunArgs = (version: string) => {
+export const getTestRunArgs = () => {
   const testId = getTestId()
   return {
-    corsOrigin: `https://${testId}-${version}.sanity.build`,
+    corsOrigin: `https://${testId}.sanity.build`,
     sourceDataset: 'production',
-    dataset: `${testId}-${version}`,
-    aclDataset: `${testId}-${version}-acl`,
-    datasetCopy: `${testId}-copy-${version}`,
-    documentsDataset: `${testId}-docs-${version}`,
-    graphqlDataset: `${testId}-graphql-${version}`.replace(/-/g, '_'),
-    alias: `${testId}-${version}-a`,
+    dataset: `${testId}`,
+    aclDataset: `${testId}-acl`,
+    datasetCopy: `${testId}-copy`,
+    documentsDataset: `${testId}-docs`,
+    graphqlDataset: `${testId}-graphql`.replace(/-/g, '_'),
+    alias: `${testId}-a`,
     graphqlTag: testId,
     exportTarball: 'production.tar.gz',
     importTarballPath: path.join(__dirname, '..', '__fixtures__', 'production.tar.gz'),
-    port: getPort(version),
+    port: getPort(),
   }
 }
 
 export function runSanityCmdCommand(
-  version: string,
+  name: (typeof studioNames)[number] | 'cli-test-studio-custom-document',
   args: string[],
   options: {env?: Record<string, string | undefined>; cwd?: (cwd: string) => string} = {},
 ): Promise<{
@@ -132,7 +133,7 @@ export function runSanityCmdCommand(
   const cwd = options.cwd ?? ((currentCwd) => currentCwd)
 
   return exec(process.argv[0], [cliBinPath, ...args], {
-    cwd: cwd(path.join(studiosPath, version)),
+    cwd: cwd(path.join(studiosPath, name)),
     env: {...sanityEnv, ...options.env},
   })
 }

@@ -1,16 +1,16 @@
 import {describe, expect} from 'vitest'
 
 import {describeCliTest, testConcurrent} from './shared/describe'
-import {getTestRunArgs, runSanityCmdCommand, studioVersions, testClient} from './shared/environment'
+import {getTestRunArgs, runSanityCmdCommand, studioNames, testClient} from './shared/environment'
 
 describeCliTest('CLI: `sanity cors`', () => {
-  describe.each(studioVersions)('%s', (version) => {
+  describe.each(studioNames)('%s', (studioName) => {
     let originPort = 3334
-    const testRunArgs = getTestRunArgs(version)
+    const testRunArgs = getTestRunArgs()
 
     testConcurrent('cors add/list', async () => {
       // `cors add`
-      let result = await runSanityCmdCommand(version, [
+      let result = await runSanityCmdCommand(studioName, [
         'cors',
         'add',
         testRunArgs.corsOrigin,
@@ -20,26 +20,26 @@ describeCliTest('CLI: `sanity cors`', () => {
       expect(result.code).toBe(0)
 
       // `cors list`
-      result = await runSanityCmdCommand(version, ['cors', 'list'])
+      result = await runSanityCmdCommand(studioName, ['cors', 'list'])
       expect(result.stdout).toContain(testRunArgs.corsOrigin)
       expect(result.code).toBe(0)
     })
 
     testConcurrent('cors list', async () => {
       const origin = await addCorsOrigin()
-      const result = await runSanityCmdCommand(version, ['cors', 'list'])
+      const result = await runSanityCmdCommand(studioName, ['cors', 'list'])
       expect(result.stdout).toContain(origin)
       expect(result.code).toBe(0)
     })
 
     testConcurrent('cors delete', async () => {
       const origin = await addCorsOrigin()
-      let result = await runSanityCmdCommand(version, ['cors', 'delete', origin])
+      let result = await runSanityCmdCommand(studioName, ['cors', 'delete', origin])
       expect(result.stdout).toMatch(/deleted/i)
       expect(result.code).toBe(0)
 
       // `cors list`
-      result = await runSanityCmdCommand(version, ['cors', 'list'])
+      result = await runSanityCmdCommand(studioName, ['cors', 'list'])
       expect(result.stdout).not.toContain(origin)
       expect(result.code).toBe(0)
     })
