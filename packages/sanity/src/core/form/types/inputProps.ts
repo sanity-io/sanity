@@ -32,11 +32,12 @@ import {
 } from 'react'
 
 import {type FormPatch, type PatchEvent} from '../patch'
-import {type FormFieldGroup} from '../store'
+import {type FormFieldGroup, type ProvenanceDiffAnnotation} from '../store'
 import {
   type ArrayOfObjectsFormNode,
   type ArrayOfPrimitivesFormNode,
   type BooleanFormNode,
+  type NodeDiffProps,
   type NumberFormNode,
   type ObjectFormNode,
   type StringFormNode,
@@ -69,7 +70,7 @@ export interface OnPathFocusPayload {
 /**
  * @hidden
  * @public */
-export interface BaseInputProps {
+export interface BaseInputProps extends NodeDiffProps<ProvenanceDiffAnnotation> {
   renderDefault: (props: InputProps) => React.JSX.Element
 }
 

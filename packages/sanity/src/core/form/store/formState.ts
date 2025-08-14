@@ -2,6 +2,7 @@
 /* eslint-disable max-statements */
 /* eslint-disable no-else-return */
 
+import {diffInput, wrap} from '@sanity/diff'
 import {
   type ArraySchemaType,
   type BooleanSchemaType,
@@ -14,6 +15,7 @@ import {
   type ObjectField,
   type ObjectSchemaType,
   type Path,
+  type SchemaType,
   type StringSchemaType,
   type ValidationMarker,
 } from '@sanity/types'
@@ -22,6 +24,7 @@ import {isEqual, pathFor, startsWith, toString, trimChildPath} from '@sanity/uti
 import {castArray, isEqual as _isEqual} from 'lodash'
 
 import {type FIXME} from '../../FIXME'
+import {type TargetPerspective} from '../../perspective/types'
 import {type FormNodePresence} from '../../presence'
 import {EMPTY_ARRAY, EMPTY_OBJECT, isRecord} from '../../util'
 import {getFieldLevel} from '../studio/inputResolver/helpers'
@@ -31,6 +34,7 @@ import {
   type HiddenField,
   type ObjectArrayFormNode,
   type PrimitiveFormNode,
+  type ProvenanceDiffAnnotation,
   type StateTree,
 } from './types'
 import {type FormFieldGroup} from './types/fieldGroup'
@@ -44,6 +48,8 @@ import {
 import {
   type ArrayOfObjectsFormNode,
   type ArrayOfPrimitivesFormNode,
+  type ComputeDiff,
+  type NodeDiffProps,
   type ObjectFormNode,
 } from './types/nodes'
 import {createMemoizer, type FunctionDecorator} from './utils/createMemoizer'
@@ -64,6 +70,7 @@ interface FormStateOptions<TSchemaType, T> {
   readOnly?: true | StateTree<boolean> | undefined
   openPath: Path
   focusPath: Path
+  perspective?: TargetPerspective
   presence: FormNodePresence[]
   validation: ValidationMarker[]
   fieldGroupState?: StateTree<string>
@@ -221,6 +228,7 @@ export interface RootFormStateOptions {
   collapsedPaths: StateTree<boolean> | undefined
   collapsedFieldSets: StateTree<boolean> | undefined
   changesOpen?: boolean
+  perspective: TargetPerspective
 }
 
 export interface PrepareFormState {
@@ -293,6 +301,7 @@ export function createPrepareFormState({
       hidden: state.hidden === true || state.hidden?.value || getId(state.hidden),
       readOnly: state.readOnly === true || state.readOnly?.value || getId(state.readOnly),
       schemaType: getId(state.schemaType),
+      perspective: getId(state.perspective),
     }),
   })
 
@@ -315,6 +324,7 @@ export function createPrepareFormState({
         hidden: state.hidden === true || state.hidden?.value || getId(state.hidden),
         readOnly: state.readOnly === true || state.readOnly?.value || getId(state.readOnly),
         schemaType: getId(state.schemaType),
+        perspective: getId(state.perspective),
       }),
     })
 
@@ -336,6 +346,7 @@ export function createPrepareFormState({
       hidden: state.hidden === true || state.hidden?.value || getId(state.hidden),
       readOnly: state.readOnly === true || state.readOnly?.value || getId(state.readOnly),
       schemaType: getId(state.schemaType),
+      perspective: getId(state.perspective),
     }),
   })
 
@@ -369,6 +380,7 @@ export function createPrepareFormState({
           parent.readOnly?.value ||
           getId(parent.readOnly?.children?.[key]),
         schemaType: getId(parent.schemaType),
+        perspective: getId(parent.perspective),
       }
     },
   })
@@ -402,6 +414,7 @@ export function createPrepareFormState({
         schemaType: getId(parent.schemaType),
         value: `${arrayItem}`,
         comparisonValue: `${comparisonValue}`,
+        perspective: getId(parent.perspective),
       }
     },
   })
@@ -424,6 +437,7 @@ export function createPrepareFormState({
       hidden: state.hidden === true || state.hidden?.value || getId(state.hidden),
       readOnly: state.readOnly === true || state.readOnly?.value || getId(state.readOnly),
       schemaType: getId(state.schemaType),
+      perspective: getId(state.perspective),
     }),
   })
 
@@ -513,6 +527,7 @@ export function createPrepareFormState({
         value: fieldValue,
         changed: isChangedValue(fieldValue, fieldComparisonValue),
         comparisonValue: fieldComparisonValue,
+        perspective: parent.perspective,
         presence: parent.presence,
         validation: parent.validation,
         fieldGroupState,
@@ -633,6 +648,7 @@ export function createPrepareFormState({
           fieldGroupState,
           focusPath: parent.focusPath,
           openPath: parent.openPath,
+          perspective: parent.perspective,
           presence: parent.presence,
           validation: parent.validation,
           collapsedPaths: scopedCollapsedPaths,
@@ -693,7 +709,6 @@ export function createPrepareFormState({
           parent.readOnly?.children?.[field.name]
 
         const fieldState = prepareArrayOfPrimitivesInputState({
-          changed: isChangedValue(fieldValue, fieldComparisonValue),
           comparisonValue: fieldComparisonValue as FIXME,
           schemaType: field.type,
           currentUser: parent.currentUser,
@@ -701,6 +716,7 @@ export function createPrepareFormState({
           fieldGroupState,
           focusPath: parent.focusPath,
           openPath: parent.openPath,
+          perspective: parent.perspective,
           presence: parent.presence,
           validation: parent.validation,
           collapsedPaths: scopedCollapsedPaths,
@@ -1004,7 +1020,6 @@ export function createPrepareFormState({
 
     const node = {
       value: props.value as Record<string, unknown> | undefined,
-      changed: isChangedValue(props.value, props.comparisonValue),
       schemaType: props.schemaType,
       readOnly,
       path: props.path,
@@ -1018,6 +1033,7 @@ export function createPrepareFormState({
       // (e.g. members not matching current group filter) in order to determine what to expand
       members: filtereredMembers,
       groups: visibleGroups,
+      ...prepareDiffProps(props),
     }
     Object.defineProperty(node, '_allMembers', {
       value: members,
@@ -1048,19 +1064,19 @@ export function createPrepareFormState({
         prepareArrayOfPrimitivesMember({arrayItem: item, parent: props, index}),
       )
       return {
-        // checks for changes not only on the array itself, but also on any of its items
-        changed: props.changed || members.some((m) => m.kind === 'item' && m.item.changed),
         value: props.value,
         readOnly: props.readOnly === true || props.readOnly?.value,
         schemaType: props.schemaType,
         focused: isEqual(props.path, props.focusPath),
         focusPath: trimChildPath(props.path, props.focusPath),
         path: props.path,
+        perspective: props.perspective,
         id: toString(props.path),
         level: props.level,
         validation,
         presence,
         members,
+        ...prepareDiffProps(props),
       }
     },
   )
@@ -1093,9 +1109,8 @@ export function createPrepareFormState({
       )
 
       return {
-        // checks for changes not only on the array itself, but also on any of its items
-        changed: props.changed || members.some((m) => m.kind === 'item' && m.item.changed),
         value: props.value,
+        perspective: props.perspective,
         readOnly: props.readOnly === true || props.readOnly?.value,
         schemaType: props.schemaType,
         focused: isEqual(props.path, props.focusPath),
@@ -1106,6 +1121,7 @@ export function createPrepareFormState({
         validation,
         presence,
         members,
+        ...prepareDiffProps(props),
       }
     },
   )
@@ -1161,6 +1177,7 @@ export function createPrepareFormState({
           comparisonValue,
           changed: isChangedValue(arrayItem, comparisonValue),
           path: itemPath,
+          perspective: parent.perspective,
           focusPath: parent.focusPath,
           openPath: parent.openPath,
           currentUser: parent.currentUser,
@@ -1263,17 +1280,19 @@ export function createPrepareFormState({
       const validation = props.validation
         .filter((item) => isEqual(item.path, props.path))
         .map((v) => ({level: v.level, message: v.message, path: v.path}))
+
       return {
         schemaType: props.schemaType,
-        changed: isChangedValue(props.value, props.comparisonValue),
         value: props.value,
         level: props.level,
         id: toString(props.path),
         readOnly: props.readOnly === true || props.readOnly?.value,
         focused: isEqual(props.path, props.focusPath),
         path: props.path,
+        perspective: props.perspective,
         presence,
         validation,
+        ...prepareDiffProps(props),
       } as PrimitiveFormNode
     },
   )
@@ -1288,6 +1307,7 @@ export function createPrepareFormState({
     focusPath,
     hidden,
     openPath,
+    perspective,
     presence,
     readOnly,
     schemaType,
@@ -1304,6 +1324,7 @@ export function createPrepareFormState({
       focusPath,
       hidden: hidden === false ? EMPTY_OBJECT : hidden,
       openPath,
+      perspective,
       presence,
       readOnly: readOnly === false ? EMPTY_OBJECT : readOnly,
       schemaType,
@@ -1324,4 +1345,78 @@ export function createPrepareFormState({
   prepareFormState._preparePrimitiveInputState = preparePrimitiveInputState
 
   return prepareFormState
+}
+
+/**
+ * A map of supported JSON types to valid empty values that may be used for diffing purposes when
+ * the node has no underlying value to be compared with.
+ */
+const emptyValuesByType = {
+  string: '',
+  number: 0,
+  boolean: false,
+  array: [],
+  object: {},
+} satisfies Record<SchemaType['jsonType'], unknown>
+
+/**
+ * This utility creates the diff-related properties that are assigned to each node.
+ *
+ * @internal
+ */
+export function prepareDiffProps({
+  comparisonValue,
+  value: definitiveValue,
+  schemaType,
+  perspective,
+}: Pick<
+  FormStateOptions<unknown, unknown>,
+  'comparisonValue' | 'value' | 'schemaType' | 'perspective'
+>): NodeDiffProps<ProvenanceDiffAnnotation> & {compareValue: unknown} {
+  const jsonType =
+    typeof schemaType === 'object' &&
+    schemaType !== null &&
+    'jsonType' in schemaType &&
+    typeof schemaType.jsonType === 'string' &&
+    schemaType.jsonType in emptyValuesByType
+      ? (schemaType.jsonType as keyof typeof emptyValuesByType)
+      : undefined
+
+  if (typeof jsonType === 'undefined') {
+    throw new Error('Expected `jsonType`')
+  }
+
+  const emptyValue = emptyValuesByType[jsonType]
+
+  const provenanceAnnotation: ProvenanceDiffAnnotation = {
+    provenance: {
+      bundle: perspective,
+    },
+  }
+
+  const diff = diffInput<ProvenanceDiffAnnotation>(
+    wrap(comparisonValue ?? emptyValue, provenanceAnnotation),
+    wrap(definitiveValue ?? emptyValue, provenanceAnnotation),
+    {},
+  )
+
+  const computeDiff: ComputeDiff<ProvenanceDiffAnnotation> = (value) => {
+    if (value === definitiveValue) {
+      return diff
+    }
+
+    return diffInput<ProvenanceDiffAnnotation>(
+      wrap(comparisonValue ?? emptyValue, provenanceAnnotation),
+      wrap(value ?? emptyValue, provenanceAnnotation),
+      {},
+    )
+  }
+
+  return {
+    __unstable_diff: diff,
+    __unstable_computeDiff: computeDiff,
+    changed: diff.isChanged,
+    // TODO: Establish consistent naming.
+    compareValue: comparisonValue,
+  }
 }
