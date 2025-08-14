@@ -78,7 +78,7 @@
     "vitest": "^3.2.4"
   },
   "engines": {
-    "node": ">=20.19 >=22.12.0"
+    "node": ">=20.19 <22 || >=22.12"
   },
   "publishConfig": {
     "access": "public"
