@@ -44,7 +44,7 @@ import {
   initialDocumentActions,
   initialDocumentBadges,
   initialLanguageFilter,
-  internalReleasesEnabledReducer,
+  internalQuotaExcludedReleasesEnabledReducer,
   internalTasksReducer,
   legacySearchEnabledReducer,
   mediaLibraryEnabledReducer,
@@ -71,6 +71,7 @@ import {
   type MissingConfigFile,
   type PluginOptions,
   type PreparedConfig,
+  QUOTA_EXCLUDED_RELEASES_ENABLED,
   type SingleWorkspace,
   type Source,
   type SourceClientOptions,
@@ -356,8 +357,7 @@ function resolveSource({
     projectId,
     schema,
     i18n: i18n.source,
-    // eslint-disable-next-line camelcase
-    __internal_releasesEnabled: internalReleasesEnabledReducer({
+    [QUOTA_EXCLUDED_RELEASES_ENABLED]: internalQuotaExcludedReleasesEnabledReducer({
       config,
       initialValue: false,
     }),

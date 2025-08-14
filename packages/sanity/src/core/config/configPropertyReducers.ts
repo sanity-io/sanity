@@ -28,6 +28,7 @@ import {
   type DocumentLanguageFilterContext,
   type NewDocumentOptionsContext,
   type PluginOptions,
+  QUOTA_EXCLUDED_RELEASES_ENABLED,
   type ResolveProductionUrlContext,
   type Tool,
 } from './types'
@@ -486,7 +487,7 @@ export const serverDocumentActionsReducer = (opts: {
   return result
 }
 
-export const internalReleasesEnabledReducer = (opts: {
+export const internalQuotaExcludedReleasesEnabledReducer = (opts: {
   config: PluginOptions
   initialValue: boolean | undefined
 }): boolean | undefined => {
@@ -494,16 +495,12 @@ export const internalReleasesEnabledReducer = (opts: {
   const flattenedConfig = flattenConfig(config, [])
 
   const result = flattenedConfig.reduce((acc: boolean | undefined, {config: innerConfig}) => {
-    const enabled = innerConfig.__internal_releasesEnabled
+    const enabled = innerConfig[QUOTA_EXCLUDED_RELEASES_ENABLED]
 
     if (typeof enabled === 'undefined') return acc
     if (typeof enabled === 'boolean') return enabled
 
-    throw new Error(
-      `Expected \`__internal_releasesEnabled\` to be a boolean, but received ${getPrintableType(
-        enabled,
-      )}`,
-    )
+    throw new Error(`Expected a boolean, but received ${getPrintableType(enabled)}`)
   }, initialValue)
 
   return result

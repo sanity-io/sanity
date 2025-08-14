@@ -36,6 +36,12 @@ import {type FormComponents} from './form'
 import {type StudioComponents, type StudioComponentsPluginOptions} from './studio'
 
 /**
+ * Symbol for enabling releases outside of quota restrictions for single docs
+ * @internal
+ */
+export const QUOTA_EXCLUDED_RELEASES_ENABLED = Symbol('__internal_releasesEnabled')
+
+/**
  * @hidden
  * @beta
  */
@@ -214,7 +220,7 @@ export interface ConfigContext {
    */
   i18n: LocaleSource
   /** @internal */
-  __internal_releasesEnabled?: boolean
+  [QUOTA_EXCLUDED_RELEASES_ENABLED]?: boolean
 }
 
 /** @public */
@@ -451,7 +457,7 @@ export interface PluginOptions {
   __internal_serverDocumentActions?: WorkspaceOptions['__internal_serverDocumentActions']
 
   /** @internal */
-  __internal_releasesEnabled?: WorkspaceOptions['__internal_releasesEnabled']
+  [QUOTA_EXCLUDED_RELEASES_ENABLED]?: WorkspaceOptions[typeof QUOTA_EXCLUDED_RELEASES_ENABLED]
 
   /** Configuration for studio beta features.
    * @internal
@@ -575,7 +581,7 @@ export interface WorkspaceOptions extends SourceOptions {
    * @hidden
    * @internal
    */
-  __internal_releasesEnabled?: boolean
+  [QUOTA_EXCLUDED_RELEASES_ENABLED]?: boolean
 
   scheduledPublishing?: DefaultPluginsWorkspaceOptions['scheduledPublishing']
 }
@@ -647,7 +653,7 @@ export interface DocumentActionsContext extends ConfigContext {
   /** the type of the currently active document. */
   versionType: DocumentActionsVersionType
   /** @internal */
-  __internal_releasesEnabled?: boolean
+  [QUOTA_EXCLUDED_RELEASES_ENABLED]?: boolean
 }
 
 /**
