@@ -39,8 +39,7 @@ const isBundleDocumentRow = (
   typeof maybeBundleDocumentRow === 'object' &&
   'memoKey' in maybeBundleDocumentRow &&
   'document' in maybeBundleDocumentRow &&
-  'validation' in maybeBundleDocumentRow &&
-  'previewValues' in maybeBundleDocumentRow
+  'validation' in maybeBundleDocumentRow
 
 export function ReleaseSummary(props: ReleaseSummaryProps) {
   const {documents, isLoading = false, release, scrollContainerRef} = props
@@ -75,10 +74,10 @@ export function ReleaseSummary(props: ReleaseSummaryProps) {
 
   const filterRows = useCallback(
     (data: DocumentInRelease[], searchTerm: string) =>
-      data.filter(({previewValues, isPending}) => {
+      data.filter(({document, isPending}) => {
         const title =
-          typeof previewValues.values?.title === 'string'
-            ? previewValues.values?.title
+          typeof document.title === 'string'
+            ? (document.title ?? document.name)
             : t('release-placeholder.title')
 
         // always show the pending rows to visualise that documents are being added
@@ -97,7 +96,6 @@ export function ReleaseSummary(props: ReleaseSummaryProps) {
 
       const pendingDocumentRow: DocumentInReleaseDetail = {
         memoKey: versionDocumentId,
-        previewValues: {isLoading: true, values: {}},
         validation: {
           isValidating: false,
           validation: [],
