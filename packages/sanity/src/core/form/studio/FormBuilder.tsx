@@ -1,7 +1,13 @@
-import {type ObjectSchemaType, type Path, type ValidationMarker} from '@sanity/types'
+import {
+  type ObjectSchemaType,
+  type Path,
+  type SanityDocument,
+  type ValidationMarker,
+} from '@sanity/types'
 import {useCallback, useMemo, useRef} from 'react'
 
 import {type DocumentFieldAction} from '../../config'
+import {type TargetPerspective} from '../../perspective/types'
 import {type FormNodePresence} from '../../presence'
 import {PreviewLoader} from '../../preview'
 import {EMPTY_ARRAY} from '../../util'
@@ -18,6 +24,7 @@ import {
 } from '../form-components-hooks'
 import {type FormPatch, type PatchChannel, PatchEvent} from '../patch'
 import {type StateTree} from '../store'
+import {prepareDiffProps} from '../store/formState'
 import {type ObjectFormNode} from '../store/types/nodes'
 import {
   type BlockAnnotationProps,
@@ -38,7 +45,16 @@ import {TreeEditingDialog, TreeEditingEnabledProvider, useTreeEditingEnabled} fr
  * @alpha
  */
 export interface FormBuilderProps
-  extends Omit<ObjectFormNode, 'level' | 'path' | 'presence' | 'validation' | '_allMembers'> {
+  extends Omit<
+    ObjectFormNode,
+    | 'level'
+    | 'path'
+    | 'presence'
+    | 'validation'
+    | '_allMembers'
+    | '__unstable_diff'
+    | '__unstable_computeDiff'
+  > {
   /** @internal */
   __internal_fieldActions?: DocumentFieldAction[]
   /** @internal Considered internal – do not use. */
@@ -59,11 +75,13 @@ export interface FormBuilderProps
   onSetFieldSetCollapsed: (path: Path, collapsed: boolean) => void
   onSetPathCollapsed: (path: Path, collapsed: boolean) => void
   openPath?: Path
+  perspective?: TargetPerspective
   presence: FormNodePresence[]
   readOnly?: boolean
   schemaType: ObjectSchemaType
   validation: ValidationMarker[]
   value: FormDocumentValue | undefined
+  compareValue?: Partial<SanityDocument>
 }
 
 /**
@@ -90,11 +108,13 @@ export function FormBuilder(props: FormBuilderProps) {
     onSetFieldSetCollapsed,
     onSetPathCollapsed,
     openPath = EMPTY_ARRAY,
+    perspective,
     presence,
     readOnly,
     schemaType,
     validation,
     value,
+    compareValue,
   } = props
 
   const handleCollapseField = useCallback(
@@ -192,7 +212,6 @@ export function FormBuilder(props: FormBuilderProps) {
         'onFocus': handleFocus,
         'aria-describedby': undefined, // Root input should not have any aria-describedby
       },
-      changed: members.some((m) => m.kind === 'field' && m.field.changed),
       focused,
       groups,
       id,
@@ -220,6 +239,12 @@ export function FormBuilder(props: FormBuilderProps) {
       schemaType,
       validation: EMPTY_ARRAY,
       value,
+      ...prepareDiffProps({
+        comparisonValue: compareValue,
+        value,
+        schemaType,
+        perspective,
+      }),
     }
   }, [
     focusPath,
@@ -238,6 +263,7 @@ export function FormBuilder(props: FormBuilderProps) {
     id,
     members,
     onPathFocus,
+    perspective,
     readOnly,
     renderAnnotation,
     renderBlock,
@@ -248,6 +274,7 @@ export function FormBuilder(props: FormBuilderProps) {
     renderPreview,
     schemaType,
     value,
+    compareValue,
   ])
 
   return (

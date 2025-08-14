@@ -11,7 +11,7 @@ import {
  * document. Otherwise, return a string literal signifying whether the document id represents a
  * published or draft document.
  *
- * TODO: Return a type compatible with `SelectedPerspective` (`"draft"` must be `"drafts"`).
+ * TODO: Return a type compatible with `TargetPerspective` (`"draft"` must be `"drafts"`).
  *
  * @internal
  */

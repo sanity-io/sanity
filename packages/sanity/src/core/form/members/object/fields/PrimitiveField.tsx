@@ -126,6 +126,8 @@ export function PrimitiveField(props: {
   const inputProps = useMemo((): Omit<PrimitiveInputProps, 'renderDefault'> => {
     return {
       value: member.field.value as any,
+      __unstable_computeDiff: member.field.__unstable_computeDiff,
+      __unstable_diff: member.field.__unstable_diff,
       readOnly: member.field.readOnly,
       schemaType: member.field.schemaType as any,
       changed: member.field.changed,
@@ -141,6 +143,8 @@ export function PrimitiveField(props: {
     }
   }, [
     member.field.value,
+    member.field.__unstable_computeDiff,
+    member.field.__unstable_diff,
     member.field.readOnly,
     member.field.schemaType,
     member.field.changed,
