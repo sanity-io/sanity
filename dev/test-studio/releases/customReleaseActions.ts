@@ -1,7 +1,6 @@
 import {BookIcon} from '@sanity/icons'
 import {getReleaseIdFromReleaseDocumentId, type ReleaseActionComponent} from 'sanity'
 
-// Example custom release action
 export const logReleaseAction: ReleaseActionComponent = (props) => {
   const {release, documents} = props
   const releaseId = getReleaseIdFromReleaseDocumentId(release._id)
@@ -11,11 +10,10 @@ export const logReleaseAction: ReleaseActionComponent = (props) => {
   return {
     label: 'Log Release Info',
     icon: BookIcon,
-    tone: 'primary',
     disabled: false,
     title: 'Log information about this release to the console',
     onHandle: () => {
-      console.group(`📋 Release: ${release.metadata.title}`)
+      console.group(`Release: ${release.metadata.title}`)
       console.log('Release ID:', releaseId)
       console.log('Release State:', release.state)
       console.log('Release Type:', release.metadata.releaseType)
@@ -29,38 +27,26 @@ export const logReleaseAction: ReleaseActionComponent = (props) => {
   }
 }
 
-// Example custom release action that's conditionally disabled
 export const conditionalReleaseAction: ReleaseActionComponent = (props) => {
   const {release, documents} = props
+
+  function getConditionalActionTitle(state: string, documentsLength: number): string {
+    if (documentsLength === 0) {
+      return 'No documents in release'
+    }
+    if (state === 'active') {
+      return 'This action is available'
+    }
+    return 'Only available for active releases'
+  }
 
   return {
     label: 'Conditional Action',
     icon: BookIcon,
-    tone: 'caution',
     disabled: documents.length === 0 || release.state !== 'active',
-    title:
-      documents.length === 0
-        ? 'No documents in release'
-        : release.state === 'active'
-          ? 'This action is available'
-          : 'Only available for active releases',
+    title: getConditionalActionTitle(release.state, documents.length),
     onHandle: () => {
       console.log('Conditional action executed!')
     },
   }
 }
-
-// The context function now receives both release and documents, allowing
-// conditional logic based on document content. For example:
-//
-// releases: {
-//   actions: (prev, ctx) => {
-//     // Now ctx has both ctx.release and ctx.documents
-//     // You can derive releaseId if needed: getReleaseIdFromReleaseDocumentId(ctx.release._id)
-//
-//     if (ctx.release.state === 'active' && ctx.documents.length > 5) {
-//       return [...prev, logReleaseAction, conditionalReleaseAction]
-//     }
-//     return prev
-//   },
-// }
