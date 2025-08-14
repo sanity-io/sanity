@@ -58,6 +58,7 @@ const releaseDocuments = [
   {
     ...documentsInRelease,
     memoKey: '123',
+    history: undefined,
     document: {
       ...documentsInRelease.document,
       title: 'First document',
@@ -72,6 +73,7 @@ const releaseDocuments = [
   {
     ...documentsInRelease,
     memoKey: '456',
+    history: undefined,
     document: {
       ...documentsInRelease.document,
       _updatedAt: new Date().toISOString(),
