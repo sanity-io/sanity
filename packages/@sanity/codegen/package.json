@@ -49,13 +49,13 @@
     "watch": "pkg-utils watch"
   },
   "dependencies": {
-    "@babel/core": "^7.28.0",
-    "@babel/generator": "^7.28.0",
-    "@babel/preset-env": "^7.28.0",
+    "@babel/core": "^7.28.3",
+    "@babel/generator": "^7.28.3",
+    "@babel/preset-env": "^7.28.3",
     "@babel/preset-react": "^7.27.1",
     "@babel/preset-typescript": "^7.27.1",
-    "@babel/register": "^7.27.1",
-    "@babel/traverse": "^7.28.0",
+    "@babel/register": "^7.28.3",
+    "@babel/traverse": "^7.28.3",
     "@babel/types": "^7.28.2",
     "debug": "^4.4.1",
     "globby": "^11.1.0",
