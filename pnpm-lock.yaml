@@ -4608,7 +4608,7 @@ packages:
 
   '@sanity/code-input@6.0.0':
     resolution: {integrity: sha512-5VLZSPKz6RDMFRK7HWDSiSljtlFKbx2cGSkXF6sYleqbvaUrzygLK+Y7S2bWuhYidpej4lWeNJ9CMHDjRtLp1w==}
-    engines: {node: '>=20.19 <22 || >=22.12'}
+    engines: {node: '>=20.19 >=22.12.0'}
     peerDependencies:
       react: ^18 || >=19.0.0-0
       react-dom: ^18 || >=19.0.0-0
@@ -4674,7 +4674,7 @@ packages:
 
   '@sanity/export@4.0.0':
     resolution: {integrity: sha512-prGgjevkzi/L5sL+G+/3JfEJCDGEfzO5sl7lpwTf455ZkbhTVXiBkOhr2xxZ+4h45aHxbHUSm98eHRE5RRAgvw==}
-    engines: {node: '>=20.19 <22 || >=22.12'}
+    engines: {node: '>=20.19 >=22.12.0'}
 
   '@sanity/generate-help-url@3.0.0':
     resolution: {integrity: sha512-wtMYcV5GIDIhVyF/jjmdwq1GdlK07dRL40XMns73VbrFI7FteRltxv48bhYVZPcLkRXb0SHjpDS/icj9/yzbVA==}
@@ -4873,7 +4873,7 @@ packages:
 
   '@sanity/ui@3.0.6':
     resolution: {integrity: sha512-v2lr8FO40hGR/03dyMdKazMHuqs8uGTXra92I0CJcmoIIFlI3XPZbLaz8Lpb+lKWDFipkvZLnnB2Muf1e9vR+A==}
-    engines: {node: '>=20.19 <22 || >=22.12'}
+    engines: {node: '>=20.19 >=22.12.0'}
     peerDependencies:
       react: ^18 || >=19.0.0-0
       react-dom: ^18 || >=19.0.0-0
@@ -10838,7 +10838,7 @@ packages:
 
   sanity-plugin-hotspot-array@3.0.0:
     resolution: {integrity: sha512-WDaM/bq4c9/Ivkkd+oJgNXMU+dMlZ55GqJVfiJrtIM2IeifI6E2wumOEmPrhlyo/BBtSjV0zOiiugt97gBmIHQ==}
-    engines: {node: '>=20.19 <22 || >=22.12'}
+    engines: {node: '>=20.19 >=22.12.0'}
     peerDependencies:
       react: ^18.3 || ^19
       sanity: ^4
