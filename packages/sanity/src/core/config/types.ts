@@ -39,7 +39,7 @@ import {type StudioComponents, type StudioComponentsPluginOptions} from './studi
  * Symbol for enabling releases outside of quota restrictions for single docs
  * @internal
  */
-export const QUOTA_EXCLUDED_RELEASES_ENABLED = Symbol('__internal_releasesEnabled')
+export const QUOTA_EXCLUDED_RELEASES_ENABLED = Symbol('__internal_quotaExcludedReleasesEnabled')
 
 /**
  * @hidden
