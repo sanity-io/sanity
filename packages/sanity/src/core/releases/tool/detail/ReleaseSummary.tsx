@@ -40,8 +40,7 @@ const isBundleDocumentRow = (
   'memoKey' in maybeBundleDocumentRow &&
   'document' in maybeBundleDocumentRow &&
   'validation' in maybeBundleDocumentRow &&
-  'previewValues' in maybeBundleDocumentRow &&
-  'history' in maybeBundleDocumentRow
+  'previewValues' in maybeBundleDocumentRow
 
 export function ReleaseSummary(props: ReleaseSummaryProps) {
   const {documents, isLoading = false, release, scrollContainerRef} = props

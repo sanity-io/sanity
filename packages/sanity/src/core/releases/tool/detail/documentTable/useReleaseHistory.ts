@@ -13,10 +13,12 @@ export type DocumentHistory = {
   editors: string[]
 }
 
-// Simple global concurrency limiter to avoid 429s when many rows mount at once
+// Add as a concurrency limiter to avoid 429s when many rows mount at once
+// This happens in incredibly large releases with many documents
+// 10 was the highest number I was able to run before getting consistent 429s
 let activeHistoryStreams = 0
 const pendingHistoryResolvers: Array<() => void> = []
-async function acquireHistorySlot(maxConcurrent = 2): Promise<void> {
+async function acquireHistorySlot(maxConcurrent = 10): Promise<void> {
   if (activeHistoryStreams >= maxConcurrent) {
     await new Promise<void>((resolve) => pendingHistoryResolvers.push(resolve))
   }
@@ -52,7 +54,6 @@ export function useReleaseHistory(
     return client.getUrl(`/data/history/${dataset}/transactions/${versionId}?${queryParams}`)
   }, [client, dataset, queryParams, versionId])
 
-  const attemptsRef = useRef(0)
   const cancelledRef = useRef(false)
 
   const fetchAndParse = useCallback(async (): Promise<void> => {
@@ -65,27 +66,21 @@ export function useReleaseHistory(
       const transactions: TransactionLogEventWithEffects[] = []
       const stream = await getJsonStream(transactionsUrl, token)
       const reader = stream.getReader()
-      let result
-      for (;;) {
-        result = await reader.read()
-        if (result.done) {
-          break
-        }
+
+      const readAll = async (): Promise<void> => {
+        const result = await reader.read()
+        if (result.done) return
         if ('error' in result.value) {
           throw new Error(result.value.error.description || result.value.error.type)
         }
         transactions.push(result.value)
+        await readAll()
       }
+
+      await readAll()
       if (!cancelledRef.current) setHistory(transactions)
-    } catch (err) {
-      // Basic retry with exponential backoff to handle transient 429s
-      if (attemptsRef.current < 3 && !cancelledRef.current) {
-        const delayMs = Math.min(500 * 2 ** attemptsRef.current, 4000)
-        attemptsRef.current += 1
-        await new Promise((r) => setTimeout(r, delayMs))
-        await fetchAndParse()
-        return
-      }
+    } catch (error) {
+      console.error('Failed to fetch or parse document history:', error)
       if (!cancelledRef.current) setHistory([])
     } finally {
       releaseHistorySlot()
