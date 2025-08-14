@@ -217,7 +217,7 @@ describe(TypeGenerator.name, () => {
     `)
   })
 
-  test('does not generate the query type map if generates types and reports progress via a worker channel reporter', async () => {
+  test('does not generate the query type map if `overloadClientMethods` is false', async () => {
     const typeGenerator = new TypeGenerator()
 
     const schema: SchemaType = [
@@ -307,6 +307,56 @@ describe(TypeGenerator.name, () => {
         _type: "bar";
         bar?: string;
       }>;
+
+      "
+    `)
+  })
+
+  test('does not generate the query type map if no extracted queries are provided', async () => {
+    const typeGenerator = new TypeGenerator()
+
+    const schema: SchemaType = [
+      {
+        type: 'document',
+        name: 'foo',
+        attributes: {
+          _id: {type: 'objectAttribute', value: {type: 'string'}},
+          _type: {type: 'objectAttribute', value: {type: 'string', value: 'foo'}},
+          foo: {type: 'objectAttribute', value: {type: 'string'}, optional: true},
+        },
+      },
+      {
+        type: 'document',
+        name: 'bar',
+        attributes: {
+          _id: {type: 'objectAttribute', value: {type: 'string'}},
+          _type: {type: 'objectAttribute', value: {type: 'string', value: 'bar'}},
+          bar: {type: 'objectAttribute', value: {type: 'string'}, optional: true},
+        },
+      },
+    ]
+
+    const {code} = await typeGenerator.generateTypes({
+      root: '/src',
+      schema,
+    })
+
+    expect(code).toMatchInlineSnapshot(`
+      "export type Foo = {
+        _id: string;
+        _type: "foo";
+        foo?: string;
+      };
+
+      export type Bar = {
+        _id: string;
+        _type: "bar";
+        bar?: string;
+      };
+
+      export type AllSanitySchemaTypes = Foo | Bar;
+
+      export declare const internalGroqTypeReferenceTo: unique symbol;
 
       "
     `)
