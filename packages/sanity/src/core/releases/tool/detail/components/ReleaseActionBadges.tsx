@@ -30,26 +30,16 @@ export function ReleaseActionBadges({
 }: ReleaseActionBadgesProps) {
   const {t} = useTranslation(releasesLocaleNamespace)
 
-  const {actionCounts, hasLoadingDocuments} = useMemo(() => {
+  const actionCounts = useMemo(() => {
     return documents.reduce(
       (acc, doc) => {
-        if (!acc.hasLoadingDocuments && doc.previewValues.isLoading) {
-          acc.hasLoadingDocuments = true
-
-          return acc
-        }
-
         const actionType = getDocumentActionType(doc)
         if (actionType) {
-          acc.actionCounts[actionType]++
+          acc[actionType]++
         }
-
         return acc
       },
-      {
-        actionCounts: {added: 0, changed: 0, unpublished: 0},
-        hasLoadingDocuments: false,
-      },
+      {added: 0, changed: 0, unpublished: 0},
     )
   }, [documents])
 
@@ -78,7 +68,7 @@ export function ReleaseActionBadges({
       })}
 
       {/* Show loading skeletons at the end for remaining action types */}
-      {(hasLoadingDocuments || isLoading) &&
+      {isLoading &&
         DOCUMENT_ACTION_CONFIGS.map(({key}) => {
           const count = actionCounts[key]
 
