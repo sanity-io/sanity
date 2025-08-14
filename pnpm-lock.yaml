@@ -1687,8 +1687,8 @@ importers:
         specifier: ^5.0.2
         version: 5.0.2
       '@sanity/export':
-        specifier: ^3.45.3
-        version: 3.45.3(@types/react@19.1.10)
+        specifier: ^4.0.0
+        version: 4.0.0
       '@sanity/icons':
         specifier: ^3.7.4
         version: 3.7.4(react@18.3.1)
@@ -4672,9 +4672,9 @@ packages:
   '@sanity/eventsource@5.0.2':
     resolution: {integrity: sha512-/B9PMkUvAlUrpRq0y+NzXgRv5lYCLxZNsBJD2WXVnqZYOfByL9oQBV7KiTaARuObp5hcQYuPfOAVjgXe3hrixA==}
 
-  '@sanity/export@3.45.3':
-    resolution: {integrity: sha512-NmN7nfilwza7ztdA8/SPnX1V4RjKVUL8epbcIvIymYRwfjclbjOLP4DgZlvhVS1mtgZAo9kB4pC49HjuGi/Cng==}
-    engines: {node: '>=18'}
+  '@sanity/export@4.0.0':
+    resolution: {integrity: sha512-prGgjevkzi/L5sL+G+/3JfEJCDGEfzO5sl7lpwTf455ZkbhTVXiBkOhr2xxZ+4h45aHxbHUSm98eHRE5RRAgvw==}
+    engines: {node: '>=20.19 >=22.12.0'}
 
   '@sanity/generate-help-url@3.0.0':
     resolution: {integrity: sha512-wtMYcV5GIDIhVyF/jjmdwq1GdlK07dRL40XMns73VbrFI7FteRltxv48bhYVZPcLkRXb0SHjpDS/icj9/yzbVA==}
@@ -4847,11 +4847,6 @@ packages:
       sanity: ^3
       styled-components: ^5.2 || ^6
 
-  '@sanity/types@3.68.3':
-    resolution: {integrity: sha512-JemibQXC08rHIXgjUH/p2TCiiD9wq6+dDkCvVHOooCvaYZNhAe2S9FAEkaA6qwWtPzyY2r6/tj1eDgNeLgXN1Q==}
-    peerDependencies:
-      '@types/react': 18 || 19
-
   '@sanity/types@3.99.0':
     resolution: {integrity: sha512-a766U9VSoyOSWq+RZz9wsEo/Nnn+inDkEcdGu+rHFuygdepullB/RZpF2MxNsfUMCSPnajgG1Tm9lhwbSmlySA==}
     peerDependencies:
@@ -4884,10 +4879,6 @@ packages:
       react-dom: ^18 || >=19.0.0-0
       react-is: ^18 || >=19.0.0-0
       styled-components: ^5.2 || ^6
-
-  '@sanity/util@3.68.3':
-    resolution: {integrity: sha512-J4Ov75oUvMqx221VEJkKNSibzF0D8VyCzejtwftW+jP80XguYFqBz7bAcTmwJ5vnxNUoAUCeAdZBoOYVpgew4g==}
-    engines: {node: '>=18'}
 
   '@sanity/uuid@3.0.2':
     resolution: {integrity: sha512-vzdhqOrX7JGbMyK40KuIwwyXHm7GMLOGuYgn3xlC09e4ZVNofUO5mgezQqnRv0JAMthIRhofqs9f6ufUjMKOvw==}
@@ -9410,9 +9401,6 @@ packages:
 
   module-alias@2.2.3:
     resolution: {integrity: sha512-23g5BFj4zdQL/b6tor7Ji+QY4pEfNH784BMslY9Qb0UnJWRAt+lQGLYmRaM0KDBwIG23ffEBELhZDP2rhi9f/Q==}
-
-  moment@2.30.1:
-    resolution: {integrity: sha512-uEmtNhbDOrWPFS+hdjFCBfy9f2YoyzRpwcl+DqpC6taX21FzsTLQVbMV/W7PzNSX6x/bhC1zA3c2UQ5NzH6how==}
 
   motion-dom@12.23.12:
     resolution: {integrity: sha512-RcR4fvMCTESQBD/uKQe49D5RUeDOokkGRmz4ceaJKDBgHYtZtntC/s2vLvY38gqGaytinij/yi3hMcWVcEF5Kw==}
@@ -15255,10 +15243,10 @@ snapshots:
       event-source-polyfill: 1.0.31
       eventsource: 2.0.2
 
-  '@sanity/export@3.45.3(@types/react@19.1.10)':
+  '@sanity/export@4.0.0':
     dependencies:
-      '@sanity/client': 6.29.1(debug@4.4.1)
-      '@sanity/util': 3.68.3(@types/react@19.1.10)(debug@4.4.1)
+      '@sanity/client': 7.8.2(debug@4.4.1)
+      '@sanity/util': link:packages/@sanity/util
       archiver: 7.0.1
       debug: 4.4.1(supports-color@5.5.0)
       get-it: 8.6.10(debug@4.4.1)
@@ -15271,7 +15259,6 @@ snapshots:
       tar: 7.4.3
       yaml: 2.8.1
     transitivePeerDependencies:
-      - '@types/react'
       - supports-color
 
   '@sanity/generate-help-url@3.0.0': {}
@@ -15907,13 +15894,6 @@ snapshots:
       - tsx
       - yaml
 
-  '@sanity/types@3.68.3(@types/react@19.1.10)(debug@4.4.1)':
-    dependencies:
-      '@sanity/client': 6.29.1(debug@4.4.1)
-      '@types/react': 19.1.10
-    transitivePeerDependencies:
-      - debug
-
   '@sanity/types@3.99.0(@types/react@19.1.10)(debug@4.4.1)':
     dependencies:
       '@sanity/client': 7.8.2(debug@4.4.1)
@@ -16087,17 +16067,6 @@ snapshots:
       use-effect-event: 2.0.3(react@19.1.1)
     transitivePeerDependencies:
       - '@emotion/is-prop-valid'
-
-  '@sanity/util@3.68.3(@types/react@19.1.10)(debug@4.4.1)':
-    dependencies:
-      '@sanity/client': 6.29.1(debug@4.4.1)
-      '@sanity/types': 3.68.3(@types/react@19.1.10)(debug@4.4.1)
-      get-random-values-esm: 1.0.2
-      moment: 2.30.1
-      rxjs: 7.8.2
-    transitivePeerDependencies:
-      - '@types/react'
-      - debug
 
   '@sanity/uuid@3.0.2':
     dependencies:
@@ -21300,8 +21269,6 @@ snapshots:
   modify-values@1.0.1: {}
 
   module-alias@2.2.3: {}
-
-  moment@2.30.1: {}
 
   motion-dom@12.23.12:
     dependencies:
