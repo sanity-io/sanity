@@ -168,15 +168,24 @@ export default async function startSanityDevServer(
 
   if (autoUpdatesEnabled) {
     output.print(`${info} Running with auto-updates enabled`)
-    // Check the versions
-    const result = await compareDependencyVersions(autoUpdatesImports, workDir)
-    const message =
-      `The following local package versions are different from the versions currently served at runtime.\n` +
-      `When using auto updates, we recommend that you run with the same versions locally as will be used when deploying. \n\n` +
-      `${result.map((mod) => ` - ${mod.pkg} (local version: ${mod.installed}, runtime version: ${mod.remote})`).join('\n')} \n\n`
-
-    // mismatch between local and auto-updating dependencies
+    // Check local versions against deployed versions
+    let result: Awaited<ReturnType<typeof compareDependencyVersions>> | undefined
+    try {
+      result = await compareDependencyVersions(autoUpdatesImports, workDir)
+    } catch (err) {
+      console.warn(
+        new Error('Failed to compare local versions against auto-updating versions', {
+          cause: err,
+        }),
+      )
+    }
     if (result?.length) {
+      const message =
+        `The following local package versions are different from the versions currently served at runtime.\n` +
+        `When using auto updates, we recommend that you run with the same versions locally as will be used when deploying. \n\n` +
+        `${result.map((mod) => ` - ${mod.pkg} (local version: ${mod.installed}, runtime version: ${mod.remote})`).join('\n')} \n\n`
+
+      // mismatch between local and auto-updating dependencies
       if (isInteractive) {
         const shouldUpgrade = await prompt.single({
           type: 'confirm',
@@ -227,8 +236,15 @@ export default async function startSanityDevServer(
   }
 
   try {
+    const startTime = Date.now()
     const spinner = output.spinner('Starting dev server').start()
-    await startDevServer({...config, spinner, skipStartLog: loadInDashboard})
+    const {server} = await startDevServer({...config})
+
+    const {info: loggerInfo} = server.config.logger
+    const {port} = server.config.server
+    const httpHost = config.httpHost || 'localhost'
+
+    spinner.succeed()
 
     if (loadInDashboard) {
       if (!organizationId) {
@@ -248,6 +264,17 @@ export default async function startSanityDevServer(
             }),
           ),
         ),
+      )
+    } else {
+      const startupDuration = Date.now() - startTime
+      const url = `http://${httpHost || 'localhost'}:${port}${config.basePath}`
+      const appType = 'Sanity Studio'
+
+      loggerInfo(
+        `${appType} ` +
+          `using ${chalk.cyan(`vite@${require('vite/package.json').version}`)} ` +
+          `ready in ${chalk.cyan(`${Math.ceil(startupDuration)}ms`)} ` +
+          `and running at ${chalk.cyan(url)}`,
       )
     }
   } catch (err) {

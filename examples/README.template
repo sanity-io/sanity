@@ -135,7 +135,7 @@ BEST PRACTICE:
          event: {
            on: ["publish"],
            filter: "_type == 'document-type' && condition",
-           projection: "_id",
+           projection: "{_id}",
          },
        }),
      ],

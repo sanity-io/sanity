@@ -83,7 +83,7 @@ npx sanity schema deploy
          event: {
            on: ['publish'],
            filter: "_type == 'post' && !defined(tags)",
-           projection: '_id',
+           projection: '{_id}',
          },
        }),
      ],

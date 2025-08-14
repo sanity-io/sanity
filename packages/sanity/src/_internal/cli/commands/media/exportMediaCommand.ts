@@ -5,7 +5,7 @@ Options
   --media-library-id The id of the target media library.
 
 Examples
-  # Export all assets and aspects.
+  # Export all file and image assets including their aspects.
   sanity media export
 `
 
@@ -17,7 +17,8 @@ const exportMediaCommand: CliCommandDefinition<MediaFlags> = {
   name: 'export',
   group: 'media',
   signature: '[FILE]',
-  description: 'Export an archive of all assets and aspect data from the target media library.',
+  description:
+    'Export an archive of all file and image assets including their aspect data from the target media library.',
   helpText,
   action: async (args, context) => {
     const mod = await import('../../actions/media/exportAssetsAction')

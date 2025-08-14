@@ -4,13 +4,16 @@ import {Suspense, useEffect, useState} from 'react'
 import {createRoot} from 'react-dom/client'
 
 import {FieldGroups} from './FieldGroups'
+import {InitialValues} from './InitialValues'
 import {useLiveMode} from './loader'
 import {LongList} from './LongList'
 import {Markdown} from './Markdown'
 import {SimpleBlockPortableText} from './SimpleBlockPortableText'
 
 function Main() {
-  const [id, setId] = useState<'simple' | 'nested' | 'markdown' | 'longlist'>('simple')
+  const [id, setId] = useState<'simple' | 'nested' | 'markdown' | 'longlist' | 'initialvalues'>(
+    'simple',
+  )
   return (
     <>
       <ThemeProvider theme={studioTheme}>
@@ -45,6 +48,13 @@ function Main() {
                 onClick={() => setId('longlist')}
                 selected={id === 'longlist'}
               />
+              <Tab
+                aria-controls="initialvalues-panel"
+                id="initialvalues-tab"
+                label="Initial Values"
+                onClick={() => setId('initialvalues')}
+                selected={id === 'initialvalues'}
+              />
             </TabList>
           </Box>
 
@@ -68,6 +78,11 @@ function Main() {
           {id === 'longlist' && (
             <TabPanel aria-labelledby="longlist-tab" id="longlist-panel">
               <LongList />
+            </TabPanel>
+          )}
+          {id === 'initialvalues' && (
+            <TabPanel aria-labelledby="initialvalues-tab" id="initialvalues-panel">
+              <InitialValues />
             </TabPanel>
           )}
         </Flex>

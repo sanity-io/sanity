@@ -18,7 +18,7 @@ jobs:
       TURBO_TOKEN: ${{ secrets.TURBO_TOKEN }}
       TURBO_TEAM: ${{ vars.TURBO_TEAM }}
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
       - uses: pnpm/action-setup@v4
       - uses: actions/setup-node@v4
         with:
@@ -47,7 +47,7 @@ jobs:
         shardIndex: [1, 2]
         shardTotal: [2]
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
       - uses: pnpm/action-setup@v4
       - uses: actions/setup-node@v4
         with:
@@ -97,7 +97,7 @@ jobs:
     needs: [playwright-ct-test]
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
       - uses: pnpm/action-setup@v4
       - uses: actions/setup-node@v4
         with:

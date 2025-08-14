@@ -18,7 +18,7 @@
         "publish"
       ],
       "filter": "_type == 'post'",
-      "projection": "_id, title, hideFromSearch"
+      "projection": "{_id, title, hideFromSearch}"
     },
     "env": {
       "COMMENT": "ALGOLIA_APP_ID and ALGOLIA_WRITE_KEY env variables are required to sync documents to Algolia",

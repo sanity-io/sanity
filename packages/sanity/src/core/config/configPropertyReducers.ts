@@ -612,3 +612,25 @@ export const announcementsEnabledReducer = (opts: {
 
   return result
 }
+
+export const advancedVersionControlEnabledReducer: ConfigPropertyReducer<boolean, ConfigContext> = (
+  prev,
+  {advancedVersionControl},
+  context,
+): boolean => {
+  const resolver = advancedVersionControl?.enabled
+
+  if (typeof resolver === 'boolean') {
+    return resolver
+  }
+
+  if (typeof resolver === 'function') {
+    return resolver(prev, context)
+  }
+
+  if (typeof resolver !== 'undefined') {
+    throw new Error(`Expected boolean, but received ${getPrintableType(resolver)}`)
+  }
+
+  return prev
+}
