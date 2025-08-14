@@ -90,6 +90,10 @@ overrides:
 importers:
 
   .:
+    optionalDependencies:
+      node-notifier:
+        specifier: ^10.0.0
+        version: 10.0.1
     devDependencies:
       '@google-cloud/storage':
         specifier: ^7.16.0
@@ -219,7 +223,7 @@ importers:
         version: 23.2.0
       lerna:
         specifier: ^8.2.3
-        version: 8.2.3(@swc-node/register@1.11.1(@swc/core@1.13.3)(@swc/types@0.1.24)(typescript@5.9.2))(@swc/core@1.13.3)(@types/node@24.3.0)(babel-plugin-macros@3.1.0)(encoding@0.1.13)
+        version: 8.2.3(@swc-node/register@1.11.1(@swc/core@1.13.3)(typescript@5.9.2))(@swc/core@1.13.3)(@types/node@24.3.0)(babel-plugin-macros@3.1.0)(encoding@0.1.13)
       lint-staged:
         specifier: ^16.1.0
         version: 16.1.5
@@ -277,10 +281,6 @@ importers:
       yargs:
         specifier: ^17.7.2
         version: 17.7.2
-    optionalDependencies:
-      node-notifier:
-        specifier: ^10.0.0
-        version: 10.0.1
 
   dev/auto-updating-studio:
     dependencies:
@@ -704,7 +704,7 @@ importers:
         version: 10.1.8(eslint@9.35.0(jiti@2.5.1))
       eslint-config-sanity:
         specifier: ^7.1.4
-        version: 7.1.4(@typescript-eslint/eslint-plugin@8.43.0(@typescript-eslint/parser@8.43.0(eslint@9.35.0(jiti@2.5.1))(typescript@5.9.2))(eslint@9.35.0(jiti@2.5.1))(typescript@5.9.2))(@typescript-eslint/parser@8.43.0(eslint@9.35.0(jiti@2.5.1))(typescript@5.9.2))(eslint-plugin-import@2.32.0)(eslint-plugin-react-hooks@6.0.0-rc.2(eslint@9.35.0(jiti@2.5.1)))(eslint-plugin-react@7.37.5(eslint@9.35.0(jiti@2.5.1)))(eslint@9.35.0(jiti@2.5.1))
+        version: 7.1.4(@typescript-eslint/eslint-plugin@8.43.0(@typescript-eslint/parser@8.43.0(eslint@9.35.0(jiti@2.5.1))(typescript@5.9.2))(eslint@9.35.0(jiti@2.5.1))(typescript@5.9.2))(@typescript-eslint/parser@8.43.0(eslint@9.35.0(jiti@2.5.1))(typescript@5.9.2))(eslint-plugin-import@2.32.0(@typescript-eslint/parser@8.43.0(eslint@9.35.0(jiti@2.5.1))(typescript@5.9.2))(eslint-import-resolver-typescript@4.4.4)(eslint@9.35.0(jiti@2.5.1)))(eslint-plugin-react-hooks@6.0.0-rc.2(eslint@9.35.0(jiti@2.5.1)))(eslint-plugin-react@7.37.5(eslint@9.35.0(jiti@2.5.1)))(eslint@9.35.0(jiti@2.5.1))
       eslint-config-turbo:
         specifier: ^2.5.6
         version: 2.5.6(eslint@9.35.0(jiti@2.5.1))(turbo@2.5.6)
@@ -920,6 +920,9 @@ importers:
       '@sanity/template-validator':
         specifier: ^2.4.3
         version: 2.4.3
+      '@sanity/worker-channels':
+        specifier: ^1.1.0
+        version: 1.1.0
       chalk:
         specifier: ^4.1.2
         version: 4.1.2
@@ -935,9 +938,6 @@ importers:
       get-it:
         specifier: ^8.6.10
         version: 8.6.10(debug@4.4.1)
-      groq-js:
-        specifier: ^1.18.0
-        version: 1.18.0
       pkg-dir:
         specifier: ^5.0.0
         version: 5.0.0
@@ -1134,6 +1134,9 @@ importers:
       '@babel/types':
         specifier: ^7.28.4
         version: 7.28.4
+      '@sanity/worker-channels':
+        specifier: ^1.1.0
+        version: 1.1.0
       debug:
         specifier: ^4.4.1
         version: 4.4.1(supports-color@5.5.0)
@@ -1149,6 +1152,9 @@ importers:
       json5:
         specifier: ^2.2.3
         version: 2.2.3
+      reselect:
+        specifier: ^5.1.1
+        version: 5.1.1
       tsconfig-paths:
         specifier: ^4.2.0
         version: 4.2.0
@@ -4985,6 +4991,10 @@ packages:
         optional: true
       svelte:
         optional: true
+
+  '@sanity/worker-channels@1.1.0':
+    resolution: {integrity: sha512-25SS2RuQFRLZ8STlW7fdxb7vvxMWhryh3tY2ADQaZiaQt1r57GZgeMma85AG0mSesaMvFL1ndO+XiBOFHBHSmg==}
+    engines: {node: '>=18.2'}
 
   '@sentry-internal/browser-utils@8.55.0':
     resolution: {integrity: sha512-ROgqtQfpH/82AQIpESPqPQe0UyWywKJsmVIqi3c5Fh+zkds5LUxnssTj3yNd1x+kxaPDVB023jAP+3ibNgeNDw==}
@@ -14006,12 +14016,12 @@ snapshots:
 
   '@juggle/resize-observer@3.4.0': {}
 
-  '@lerna/create@8.2.3(@swc-node/register@1.11.1(@swc/core@1.13.3)(@swc/types@0.1.24)(typescript@5.9.2))(@swc/core@1.13.3)(@types/node@24.3.0)(babel-plugin-macros@3.1.0)(encoding@0.1.13)(typescript@5.9.2)':
+  '@lerna/create@8.2.3(@swc-node/register@1.11.1(@swc/core@1.13.3)(typescript@5.9.2))(@swc/core@1.13.3)(@types/node@24.3.0)(babel-plugin-macros@3.1.0)(encoding@0.1.13)(typescript@5.9.2)':
     dependencies:
       '@npmcli/arborist': 7.5.4
       '@npmcli/package-json': 5.2.0
       '@npmcli/run-script': 8.1.0
-      '@nx/devkit': 20.8.2(nx@20.8.2(@swc-node/register@1.11.1(@swc/core@1.13.3)(@swc/types@0.1.24)(typescript@5.9.2))(@swc/core@1.13.3))
+      '@nx/devkit': 20.8.2(nx@20.8.2(@swc-node/register@1.11.1(@swc/core@1.13.3)(typescript@5.9.2))(@swc/core@1.13.3))
       '@octokit/plugin-enterprise-rest': 6.0.1
       '@octokit/rest': 20.1.2
       aproba: 2.0.0
@@ -14049,7 +14059,7 @@ snapshots:
       npm-package-arg: 11.0.2
       npm-packlist: 8.0.2
       npm-registry-fetch: 17.1.0
-      nx: 20.8.2(@swc-node/register@1.11.1(@swc/core@1.13.3)(@swc/types@0.1.24)(typescript@5.9.2))(@swc/core@1.13.3)
+      nx: 20.8.2(@swc-node/register@1.11.1(@swc/core@1.13.3)(typescript@5.9.2))(@swc/core@1.13.3)
       p-map: 4.0.0
       p-map-series: 2.1.0
       p-queue: 6.6.2
@@ -14427,13 +14437,13 @@ snapshots:
       - bluebird
       - supports-color
 
-  '@nx/devkit@20.8.2(nx@20.8.2(@swc-node/register@1.11.1(@swc/core@1.13.3)(@swc/types@0.1.24)(typescript@5.9.2))(@swc/core@1.13.3))':
+  '@nx/devkit@20.8.2(nx@20.8.2(@swc-node/register@1.11.1(@swc/core@1.13.3)(typescript@5.9.2))(@swc/core@1.13.3))':
     dependencies:
       ejs: 3.1.10
       enquirer: 2.3.6
       ignore: 5.3.2
       minimatch: 9.0.3
-      nx: 20.8.2(@swc-node/register@1.11.1(@swc/core@1.13.3)(@swc/types@0.1.24)(typescript@5.9.2))(@swc/core@1.13.3)
+      nx: 20.8.2(@swc-node/register@1.11.1(@swc/core@1.13.3)(typescript@5.9.2))(@swc/core@1.13.3)
       semver: 7.7.2
       tmp: 0.2.5
       tslib: 2.8.1
@@ -15903,6 +15913,8 @@ snapshots:
       - debug
       - sanity
       - typescript
+
+  '@sanity/worker-channels@1.1.0': {}
 
   '@sentry-internal/browser-utils@8.55.0':
     dependencies:
@@ -18463,7 +18475,7 @@ snapshots:
     dependencies:
       eslint: 9.35.0(jiti@2.5.1)
 
-  eslint-config-sanity@7.1.4(@typescript-eslint/eslint-plugin@8.43.0(@typescript-eslint/parser@8.43.0(eslint@9.35.0(jiti@2.5.1))(typescript@5.9.2))(eslint@9.35.0(jiti@2.5.1))(typescript@5.9.2))(@typescript-eslint/parser@8.43.0(eslint@9.35.0(jiti@2.5.1))(typescript@5.9.2))(eslint-plugin-import@2.32.0)(eslint-plugin-react-hooks@6.0.0-rc.2(eslint@9.35.0(jiti@2.5.1)))(eslint-plugin-react@7.37.5(eslint@9.35.0(jiti@2.5.1)))(eslint@9.35.0(jiti@2.5.1)):
+  eslint-config-sanity@7.1.4(@typescript-eslint/eslint-plugin@8.43.0(@typescript-eslint/parser@8.43.0(eslint@9.35.0(jiti@2.5.1))(typescript@5.9.2))(eslint@9.35.0(jiti@2.5.1))(typescript@5.9.2))(@typescript-eslint/parser@8.43.0(eslint@9.35.0(jiti@2.5.1))(typescript@5.9.2))(eslint-plugin-import@2.32.0(@typescript-eslint/parser@8.43.0(eslint@9.35.0(jiti@2.5.1))(typescript@5.9.2))(eslint-import-resolver-typescript@4.4.4)(eslint@9.35.0(jiti@2.5.1)))(eslint-plugin-react-hooks@6.0.0-rc.2(eslint@9.35.0(jiti@2.5.1)))(eslint-plugin-react@7.37.5(eslint@9.35.0(jiti@2.5.1)))(eslint@9.35.0(jiti@2.5.1)):
     dependencies:
       eslint: 9.35.0(jiti@2.5.1)
       eslint-plugin-simple-import-sort: 12.1.1(eslint@9.35.0(jiti@2.5.1))
@@ -18533,7 +18545,7 @@ snapshots:
     transitivePeerDependencies:
       - supports-color
 
-  eslint-module-utils@2.12.1(@typescript-eslint/parser@8.43.0(eslint@9.35.0(jiti@2.5.1))(typescript@5.9.2))(eslint-import-resolver-node@0.3.9)(eslint-import-resolver-typescript@4.4.4)(eslint@9.35.0(jiti@2.5.1)):
+  eslint-module-utils@2.12.1(@typescript-eslint/parser@8.43.0(eslint@9.35.0(jiti@2.5.1))(typescript@5.9.2))(eslint-import-resolver-node@0.3.9)(eslint-import-resolver-typescript@4.4.4(eslint-plugin-import@2.32.0)(eslint@9.35.0(jiti@2.5.1)))(eslint@9.35.0(jiti@2.5.1)):
     dependencies:
       debug: 3.2.7
     optionalDependencies:
@@ -18573,7 +18585,7 @@ snapshots:
       doctrine: 2.1.0
       eslint: 9.35.0(jiti@2.5.1)
       eslint-import-resolver-node: 0.3.9
-      eslint-module-utils: 2.12.1(@typescript-eslint/parser@8.43.0(eslint@9.35.0(jiti@2.5.1))(typescript@5.9.2))(eslint-import-resolver-node@0.3.9)(eslint-import-resolver-typescript@4.4.4)(eslint@9.35.0(jiti@2.5.1))
+      eslint-module-utils: 2.12.1(@typescript-eslint/parser@8.43.0(eslint@9.35.0(jiti@2.5.1))(typescript@5.9.2))(eslint-import-resolver-node@0.3.9)(eslint-import-resolver-typescript@4.4.4(eslint-plugin-import@2.32.0)(eslint@9.35.0(jiti@2.5.1)))(eslint@9.35.0(jiti@2.5.1))
       hasown: 2.0.2
       is-core-module: 2.16.1
       is-glob: 4.0.3
@@ -20431,13 +20443,13 @@ snapshots:
     dependencies:
       readable-stream: 2.3.8
 
-  lerna@8.2.3(@swc-node/register@1.11.1(@swc/core@1.13.3)(@swc/types@0.1.24)(typescript@5.9.2))(@swc/core@1.13.3)(@types/node@24.3.0)(babel-plugin-macros@3.1.0)(encoding@0.1.13):
+  lerna@8.2.3(@swc-node/register@1.11.1(@swc/core@1.13.3)(typescript@5.9.2))(@swc/core@1.13.3)(@types/node@24.3.0)(babel-plugin-macros@3.1.0)(encoding@0.1.13):
     dependencies:
-      '@lerna/create': 8.2.3(@swc-node/register@1.11.1(@swc/core@1.13.3)(@swc/types@0.1.24)(typescript@5.9.2))(@swc/core@1.13.3)(@types/node@24.3.0)(babel-plugin-macros@3.1.0)(encoding@0.1.13)(typescript@5.9.2)
+      '@lerna/create': 8.2.3(@swc-node/register@1.11.1(@swc/core@1.13.3)(typescript@5.9.2))(@swc/core@1.13.3)(@types/node@24.3.0)(babel-plugin-macros@3.1.0)(encoding@0.1.13)(typescript@5.9.2)
       '@npmcli/arborist': 7.5.4
       '@npmcli/package-json': 5.2.0
       '@npmcli/run-script': 8.1.0
-      '@nx/devkit': 20.8.2(nx@20.8.2(@swc-node/register@1.11.1(@swc/core@1.13.3)(@swc/types@0.1.24)(typescript@5.9.2))(@swc/core@1.13.3))
+      '@nx/devkit': 20.8.2(nx@20.8.2(@swc-node/register@1.11.1(@swc/core@1.13.3)(typescript@5.9.2))(@swc/core@1.13.3))
       '@octokit/plugin-enterprise-rest': 6.0.1
       '@octokit/rest': 20.1.2
       aproba: 2.0.0
@@ -20481,7 +20493,7 @@ snapshots:
       npm-package-arg: 11.0.2
       npm-packlist: 8.0.2
       npm-registry-fetch: 17.1.0
-      nx: 20.8.2(@swc-node/register@1.11.1(@swc/core@1.13.3)(@swc/types@0.1.24)(typescript@5.9.2))(@swc/core@1.13.3)
+      nx: 20.8.2(@swc-node/register@1.11.1(@swc/core@1.13.3)(typescript@5.9.2))(@swc/core@1.13.3)
       p-map: 4.0.0
       p-map-series: 2.1.0
       p-pipe: 3.1.0
@@ -21240,7 +21252,7 @@ snapshots:
     dependencies:
       boolbase: 1.0.0
 
-  nx@20.8.2(@swc-node/register@1.11.1(@swc/core@1.13.3)(@swc/types@0.1.24)(typescript@5.9.2))(@swc/core@1.13.3):
+  nx@20.8.2(@swc-node/register@1.11.1(@swc/core@1.13.3)(typescript@5.9.2))(@swc/core@1.13.3):
     dependencies:
       '@napi-rs/wasm-runtime': 0.2.4
       '@yarnpkg/lockfile': 1.1.0
