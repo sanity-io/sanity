@@ -70,7 +70,7 @@ export function ReleaseActionBadges({
         if (count > 0) {
           return (
             <Badge key={key} paddingX={3} paddingY={2} radius={2} tone={tone}>
-              {t(translationKey)} {count}
+              {t(translationKey)}: {count}
             </Badge>
           )
         }

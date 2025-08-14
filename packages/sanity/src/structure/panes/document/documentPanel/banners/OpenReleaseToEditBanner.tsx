@@ -14,7 +14,6 @@ import {
   VersionInlineBadge,
 } from 'sanity'
 
-import {Button} from '../../../../../ui-components'
 import {structureLocaleNamespace} from '../../../../i18n'
 import {Banner} from './Banner'
 
@@ -82,44 +81,41 @@ export function OpenReleaseToEditBannerInner({
   return (
     <Banner
       tone={tone}
-      paddingY={0}
       data-testid="open-release-to-edit-banner"
       content={
-        <Flex direction={'row'} align="center" justify="space-between" flex={1}>
-          <Text size={1}>
-            <Flex direction={'row'} gap={1}>
-              {documentVersionsTitleList.length > 1 ? (
-                <Translate
-                  t={t}
-                  i18nKey="banners.release.navigate-to-edit-description-multiple"
-                  components={{
-                    VersionBadge: () => (
-                      <VersionInlineBadge> {documentVersionsTitleList[0]}</VersionInlineBadge>
-                    ),
-                  }}
-                  values={{count: documentVersionsTitleList.length - 1}}
-                />
-              ) : (
-                <Translate
-                  t={t}
-                  i18nKey="banners.release.navigate-to-edit-description-single"
-                  components={{
-                    VersionBadge: () => (
-                      <VersionInlineBadge> {documentVersionsTitleList[0]}</VersionInlineBadge>
-                    ),
-                  }}
-                />
-              )}
-            </Flex>
-          </Text>
-
-          <Button
-            text={t('banners.release.action.open-to-edit')}
-            tone={tone}
-            onClick={handleGoToEdit}
-          />
-        </Flex>
+        <Text size={1}>
+          <Flex direction={'row'} gap={1} wrap="wrap">
+            {documentVersionsTitleList.length > 1 ? (
+              <Translate
+                t={t}
+                i18nKey="banners.release.navigate-to-edit-description-multiple"
+                components={{
+                  VersionBadge: () => (
+                    <VersionInlineBadge> {documentVersionsTitleList[0]}</VersionInlineBadge>
+                  ),
+                }}
+                values={{count: documentVersionsTitleList.length - 1}}
+              />
+            ) : (
+              <Translate
+                t={t}
+                i18nKey="banners.release.navigate-to-edit-description-single"
+                components={{
+                  VersionBadge: () => (
+                    <VersionInlineBadge> {documentVersionsTitleList[0]}</VersionInlineBadge>
+                  ),
+                }}
+              />
+            )}
+          </Flex>
+        </Text>
       }
+      action={{
+        text: t('banners.release.action.open-to-edit'),
+        tone: tone,
+        onClick: handleGoToEdit,
+        mode: 'default',
+      }}
     />
   )
 }

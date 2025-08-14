@@ -1,6 +1,6 @@
 {
   "name": "groq",
-  "version": "4.3.0",
+  "version": "4.4.1",
   "description": "Tagged template literal for Sanity.io GROQ-queries",
   "keywords": [
     "sanity",
@@ -55,6 +55,6 @@
     "@repo/package.config": "workspace:*"
   },
   "engines": {
-    "node": ">=20.19 >=22.12.0"
+    "node": ">=20.19 <22 || >=22.12"
   }
 }
