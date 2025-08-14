@@ -29,6 +29,7 @@ import {DEFAULT_STUDIO_CLIENT_OPTIONS} from '../studioClient'
 import {type InitialValueTemplateItem, type Template, type TemplateItem} from '../templates'
 import {EMPTY_ARRAY, isNonNullable} from '../util'
 import {
+  advancedVersionControlEnabledReducer,
   announcementsEnabledReducer,
   directUploadsReducer,
   documentActionsReducer,
@@ -758,6 +759,16 @@ function resolveSource({
     mediaLibrary: {
       enabled: mediaLibraryEnabledReducer({config, initialValue: false}),
       libraryId: mediaLibraryLibraryIdReducer({config, initialValue: undefined}),
+    },
+
+    advancedVersionControl: {
+      enabled: resolveConfigProperty({
+        config,
+        context,
+        reducer: advancedVersionControlEnabledReducer,
+        propertyName: 'advancedVersionControl.enabled',
+        initialValue: false,
+      }),
     },
   }
 
