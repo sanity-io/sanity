@@ -39,7 +39,7 @@ export type TypegenWorkerChannel = WorkerChannel.Definition<{
 export interface GenerateTypesOptions {
   schema: SchemaType
   schemaPath?: string
-  queries: AsyncIterable<ExtractedModule>
+  queries?: AsyncIterable<ExtractedModule>
   root?: string
   overloadClientMethods?: boolean
   reporter?: WorkerChannelReporter<TypegenWorkerChannel>
@@ -123,6 +123,11 @@ export class TypeGenerator {
     schemaTypeDeclarations,
     queries: extractedModules,
   }: GetEvaluatedModulesOptions) {
+    if (!extractedModules) {
+      report?.stream.evaluatedModules.end()
+      return []
+    }
+
     const currentIdentifiers = new Set<string>(schemaTypeDeclarations.map(({id}) => id.name))
     const evaluatedModuleResults: EvaluatedModule[] = []
 
@@ -179,9 +184,12 @@ export class TypeGenerator {
     evaluatedModules,
   }: GetQueryMapDeclarationOptions) {
     if (!overloadClientMethods) return {code: '', ast: t.program([])}
-    const typesByQuerystring: {[query: string]: string[]} = {}
 
-    for (const {id, query} of evaluatedModules.flatMap((module) => module.results)) {
+    const queries = evaluatedModules.flatMap((module) => module.results)
+    if (!queries.length) return {code: '', ast: t.program([])}
+
+    const typesByQuerystring: {[query: string]: string[]} = {}
+    for (const {id, query} of queries) {
       typesByQuerystring[query] ??= []
       typesByQuerystring[query].push(id.name)
     }
