@@ -213,6 +213,8 @@ export interface ConfigContext {
    * Localization resources
    */
   i18n: LocaleSource
+  /** @internal */
+  __internal_releasesEnabled?: boolean
 }
 
 /** @public */
@@ -448,6 +450,9 @@ export interface PluginOptions {
   /** @internal */
   __internal_serverDocumentActions?: WorkspaceOptions['__internal_serverDocumentActions']
 
+  /** @internal */
+  __internal_releasesEnabled?: WorkspaceOptions['__internal_releasesEnabled']
+
   /** Configuration for studio beta features.
    * @internal
    */
@@ -566,6 +571,12 @@ export interface WorkspaceOptions extends SourceOptions {
     enabled?: boolean
   }
 
+  /**
+   * @hidden
+   * @internal
+   */
+  __internal_releasesEnabled?: boolean
+
   scheduledPublishing?: DefaultPluginsWorkspaceOptions['scheduledPublishing']
 }
 
@@ -635,6 +646,8 @@ export interface DocumentActionsContext extends ConfigContext {
   releaseId: string | undefined
   /** the type of the currently active document. */
   versionType: DocumentActionsVersionType
+  /** @internal */
+  __internal_releasesEnabled?: boolean
 }
 
 /**

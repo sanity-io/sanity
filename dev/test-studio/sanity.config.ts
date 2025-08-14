@@ -227,6 +227,8 @@ const defaultWorkspace = defineConfig({
   mediaLibrary: {
     enabled: true,
   },
+  // eslint-disable-next-line camelcase
+  __internal_releasesEnabled: true,
   document: {
     actions: (prev, ctx) => {
       if (ctx.schemaType === 'book' && ctx.releaseId) {

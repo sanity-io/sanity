@@ -44,6 +44,7 @@ import {
   initialDocumentActions,
   initialDocumentBadges,
   initialLanguageFilter,
+  internalReleasesEnabledReducer,
   internalTasksReducer,
   legacySearchEnabledReducer,
   mediaLibraryEnabledReducer,
@@ -355,6 +356,11 @@ function resolveSource({
     projectId,
     schema,
     i18n: i18n.source,
+    // eslint-disable-next-line camelcase
+    __internal_releasesEnabled: internalReleasesEnabledReducer({
+      config,
+      initialValue: false,
+    }),
   }
 
   // <TEMPORARY UGLY HACK TO PRINT DEPRECATION WARNINGS ON USE>
