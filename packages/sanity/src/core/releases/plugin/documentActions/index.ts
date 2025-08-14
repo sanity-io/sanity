@@ -18,7 +18,7 @@ export default function resolveDocumentActions(
   }
 
   // Add SchedulePublishAction and ScheduleUnpublishAction only for draft documents
-  if (context.versionType === 'draft') {
+  if (context.__internal_releasesEnabled && context.versionType === 'draft') {
     const actionsExcludingOriginalSchedule = existingActions.filter(
       ({action}) => action !== 'schedule',
     )
