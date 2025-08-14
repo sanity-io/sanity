@@ -1,4 +1,14 @@
-import type * as t from '@babel/types'
+import {type ExportNamedDeclaration, type TSType} from '@babel/types'
+import {type Scope} from 'eslint-scope'
+import {
+  type Expression,
+  type Identifier,
+  type Literal,
+  type Node,
+  type VariableDeclarator,
+} from 'estree'
+
+import {getVariableScope} from './scope'
 
 const isRecord = (value: unknown): value is Record<string, unknown> =>
   (typeof value === 'object' || typeof value === 'function') && !!value
@@ -14,7 +24,7 @@ export interface TypeEvaluationStats {
 }
 
 interface QueryVariable {
-  id: t.Identifier
+  id: Identifier
   start?: number
   end?: number
 }
@@ -25,6 +35,87 @@ interface QueryVariable {
  */
 export interface ExtractedQuery {
   variable: QueryVariable
+  query: string
+  filename: string
+}
+
+type PrefixIs<K extends string> = `is${K}`
+type UnwrapIs<K extends `is${string}`> = K extends `is${infer U}` ? U : K
+
+type X = {
+  [TType in PrefixIs<Node['type']>]: (
+    node: unknown,
+  ) => node is Extract<Node, {type: UnwrapIs<TType>}>
+}
+
+export const t = new Proxy({} as X, {
+  get: (...args) => {
+    const [, property] = args
+    if (typeof property !== 'string' || !property.startsWith('is')) return Reflect.get(...args)
+
+    return (node: unknown) => isObject(node) && 'type' in node && node.type === property.slice(2)
+  },
+})
+
+export const isObject = (node: unknown): node is object => !!node && typeof node === 'object'
+
+export type QueryVariableDeclarator = {
+  id: Identifier
+  init: Expression
+} & VariableDeclarator
+
+export function isQueryVariableDeclarator(node: Node): node is QueryVariableDeclarator {
+  if (!t.isVariableDeclarator(node)) return false
+  if (!t.isIdentifier(node.id)) return false
+  if (!node.init) return false
+  return isGroqTagged(node.init) || isDefineQueryCall(node.init, getVariableScope(node))
+}
+
+// TODO: de-dupe
+const groqTagName = 'groq'
+
+function isGroqTagged(node: Node | null | undefined) {
+  return (
+    t.isTaggedTemplateExpression(node) && t.isIdentifier(node.tag) && node.tag.name === groqTagName
+  )
+}
+
+const defineQueryFunctionName = 'defineQuery'
+const defineQueryAllowedSources = new Set<unknown>(['groq', 'next-sanity'])
+
+export function isDefineQueryCall(node: Node | null | undefined, scope: Scope) {
+  if (!scope) return false
+  if (!t.isCallExpression(node)) return false
+  if (!t.isIdentifier(node.callee)) return false
+
+  const {callee} = node
+  const resolved = scope.references.find((ref) => ref.identifier.name === callee.name)?.resolved
+  if (!resolved) return false
+
+  const def = resolved.defs.at(0)
+  if (!def) return false
+
+  if (def.type !== 'ImportBinding') return false
+  if (!t.isImportSpecifier(def.node)) return false
+  if (!t.isIdentifier(def.node.imported)) return false
+  if (def.node.imported.name !== defineQueryFunctionName) return false
+
+  const {source} = def.parent
+  return defineQueryAllowedSources.has(source.value)
+}
+
+export function isSpecifierValuesEqual(a: Identifier | Literal, b: Identifier | Literal): boolean {
+  if (a === b) return true
+  if (t.isIdentifier(a)) return isSpecifierValuesEqual({type: 'Literal', value: a.name}, b)
+  if (t.isIdentifier(b)) return isSpecifierValuesEqual(a, {type: 'Literal', value: b.name})
+  return a.value === b.value
+}
+
+export interface QueryExtractionResult {
+  type: 'query'
+  /** name is the name of the query */
+  variable: QueryVariable
+  /** result is a groq query */
   query: string
   filename: string
 }
@@ -52,18 +143,18 @@ export interface ExtractedModule {
  * @public
  */
 export interface EvaluatedQuery extends ExtractedQuery {
-  id: t.Identifier
+  id: Identifier
   code: string
-  tsType: t.TSType
-  ast: t.ExportNamedDeclaration
+  tsType: TSType
+  ast: ExportNamedDeclaration
   stats: TypeEvaluationStats
 }
 
 export interface EvaluatedDocumentProjection extends ExtractedDocumentProjection {
-  id: t.Identifier
+  id: Identifier
   code: string
-  tsType: t.TSType
-  ast: t.ExportNamedDeclaration
+  tsType: TSType
+  ast: ExportNamedDeclaration
   stats: TypeEvaluationStats
 }
 
@@ -90,6 +181,7 @@ interface QueryExtractionErrorOptions {
  * @public
  */
 export class QueryExtractionError extends Error {
+  type = 'error' as const
   variable?: QueryVariable
   filename: string
   constructor({type, variable, cause, filename}: QueryExtractionErrorOptions) {
@@ -107,6 +199,7 @@ export class QueryExtractionError extends Error {
 }
 
 export class QueryEvaluationError extends Error {
+  type = 'error' as const
   variable?: QueryVariable
   filename: string
   constructor({type, variable, cause, filename}: QueryExtractionErrorOptions) {
