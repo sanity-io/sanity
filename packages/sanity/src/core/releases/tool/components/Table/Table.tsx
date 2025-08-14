@@ -73,9 +73,7 @@ const TableInner = <TableData, AdditionalRowTableData>({
   hideTableInlinePadding = false,
 }: TableProps<TableData, AdditionalRowTableData>) => {
   const {searchTerm, sort} = useTableContext()
-
   const virtualizerContainerRef = useRef<HTMLDivElement | null>(null)
-
   const filteredData = useMemo(() => {
     const filteredResult = searchTerm && searchFilter ? searchFilter(data, searchTerm) : data
     if (!sort) return filteredResult
@@ -280,7 +278,6 @@ const TableInner = <TableData, AdditionalRowTableData>({
 
     return rowVirtualizer.getVirtualItems().map((virtualRow, index) => {
       const datum = filteredData[virtualRow.index]
-
       return renderRow({
         ...datum,
         virtualRow,
