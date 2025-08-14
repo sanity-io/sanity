@@ -8,7 +8,7 @@ dotenv.config({
 
 export default defineConfig({
   test: {
-    includeSource: ['./test/**/*.ts'],
+    includeSource: ['./test/**/*.ts', './src/**/__tests__/**/*.ts'],
     globalSetup: ['./test/shared/globalSetup.ts'],
     testTimeout: 30000, // 30s
   },
