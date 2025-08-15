@@ -23,6 +23,10 @@ export default defineConfig({
         './node_modules/@portabletext/block-tools/src',
       ),
       '@portabletext/editor': path.join(__dirname, './node_modules/@portabletext/editor/src'),
+      '@portabletext/sanity-bridge': path.join(
+        __dirname,
+        './node_modules/@portabletext/sanity-bridge/src',
+      ),
     },
     typecheck: {
       enabled: true,
