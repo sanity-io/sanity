@@ -13,7 +13,7 @@
   "dependencies": {
     "dotenv": "^16.6.1",
     "lodash-es": "^4.17.21",
-    "ora": "^8.0.1"
+    "ora": "^8.2.0"
   },
   "devDependencies": {
     "@repo/eslint-config": "workspace:*",
