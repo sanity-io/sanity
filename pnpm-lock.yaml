@@ -1499,7 +1499,7 @@ importers:
         specifier: ^1.0.0
         version: 1.0.0
       json-2-csv:
-        specifier: ^5.5.1
+        specifier: ^5.5.9
         version: 5.5.9
       json5:
         specifier: ^2.2.3
