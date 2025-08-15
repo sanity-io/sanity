@@ -11,7 +11,6 @@ import {useActiveReleases} from '../../store/useActiveReleases'
 import {useArchivedReleases} from '../../store/useArchivedReleases'
 import {type ReleasesRouterState} from '../../types/router'
 import {getReleaseIdFromReleaseDocumentId} from '../../util/getReleaseIdFromReleaseDocumentId'
-import {useReleaseHistory} from './documentTable/useReleaseHistory'
 import {useReleaseEvents} from './events/useReleaseEvents'
 import {ReleaseDashboardActivityPanel} from './ReleaseDashboardActivityPanel'
 import {ReleaseDashboardDetails} from './ReleaseDashboardDetails'
@@ -38,9 +37,6 @@ export const ReleaseDetail = () => {
     error: bundleDocumentsError,
   } = useBundleDocuments(releaseId)
   const releaseEvents = useReleaseEvents(releaseId)
-
-  const documentIds = results.map((result) => result.document?._id)
-  const history = useReleaseHistory(documentIds, releaseId)
 
   const releaseInDetail = data
     .concat(archivedReleases)
@@ -81,18 +77,10 @@ export const ReleaseDetail = () => {
         isLoading={documentsLoading}
         documents={results}
         release={releaseInDetail}
-        documentsHistory={history.documentsHistory}
         scrollContainerRef={scrollContainerRef}
       />
     )
-  }, [
-    bundleDocumentsError,
-    documentsLoading,
-    releaseInDetail,
-    results,
-    history.documentsHistory,
-    t,
-  ])
+  }, [bundleDocumentsError, documentsLoading, releaseInDetail, results, t])
 
   if (loading) {
     return (

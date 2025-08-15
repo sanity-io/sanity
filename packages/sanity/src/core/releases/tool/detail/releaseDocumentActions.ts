@@ -1,5 +1,6 @@
 import {isGoingToUnpublish} from '../../util/isGoingToUnpublish'
-import {type BundleDocumentRow, type DocumentWithHistory} from './ReleaseSummary'
+import {type BundleDocumentRow} from './ReleaseSummary'
+import {type DocumentInRelease} from './useBundleDocuments'
 
 export interface DocumentActionConfig {
   key: 'added' | 'changed' | 'unpublished'
@@ -29,7 +30,7 @@ export const DOCUMENT_ACTION_CONFIGS: DocumentActionConfig[] = [
  * Determines the action type for a document based on its state
  */
 export function getDocumentActionType(
-  document: DocumentWithHistory | BundleDocumentRow,
+  document: DocumentInRelease | BundleDocumentRow,
 ): DocumentActionConfig['key'] | null {
   if (!document.document || document.isPending || document.previewValues?.isLoading) {
     return null

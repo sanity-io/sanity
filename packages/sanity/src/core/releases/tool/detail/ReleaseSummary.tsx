@@ -17,19 +17,16 @@ import {AddDocumentSearch, type AddedDocument} from './AddDocumentSearch'
 import {ReleaseActionBadges} from './components/ReleaseActionBadges'
 import {DocumentActions} from './documentTable/DocumentActions'
 import {getDocumentTableColumnDefs} from './documentTable/DocumentTableColumnDefs'
-import {type DocumentHistory} from './documentTable/useReleaseHistory'
 import {type DocumentInRelease} from './useBundleDocuments'
 
-export type DocumentWithHistory = DocumentInRelease & {
-  history: DocumentHistory | undefined
+export type DocumentInReleaseDetail = DocumentInRelease & {
   // TODO: Get this value from the document, it can be calculated by checking if there is a corresponding document with no version attached
   isAdded?: boolean
 }
-export type BundleDocumentRow = DocumentWithHistory
+export type BundleDocumentRow = DocumentInReleaseDetail
 
 export interface ReleaseSummaryProps {
   documents: DocumentInRelease[]
-  documentsHistory: Record<string, DocumentHistory>
   scrollContainerRef: RefObject<HTMLDivElement | null>
   release: ReleaseDocument
   isLoading?: boolean
@@ -43,11 +40,10 @@ const isBundleDocumentRow = (
   'memoKey' in maybeBundleDocumentRow &&
   'document' in maybeBundleDocumentRow &&
   'validation' in maybeBundleDocumentRow &&
-  'previewValues' in maybeBundleDocumentRow &&
-  'history' in maybeBundleDocumentRow
+  'previewValues' in maybeBundleDocumentRow
 
 export function ReleaseSummary(props: ReleaseSummaryProps) {
-  const {documents, documentsHistory, isLoading = false, release, scrollContainerRef} = props
+  const {documents, isLoading = false, release, scrollContainerRef} = props
   const toast = useToast()
   const {createVersion} = useReleaseOperations()
   const telemetry = useTelemetry()
@@ -58,15 +54,6 @@ export function ReleaseSummary(props: ReleaseSummaryProps) {
   const {t} = useTranslation(releasesLocaleNamespace)
 
   const releaseId = getReleaseIdFromReleaseDocumentId(release._id)
-
-  const aggregatedData = useMemo(
-    () =>
-      documents.map((document) => ({
-        ...document,
-        history: documentsHistory[document.document._id],
-      })),
-    [documents, documentsHistory],
-  )
 
   const renderRowActions = useCallback(
     (rowProps: {datum: BundleDocumentRow | unknown}) => {
@@ -84,8 +71,10 @@ export function ReleaseSummary(props: ReleaseSummaryProps) {
     [release._id, release.state, t],
   )
 
+  const handleAddDocumentClick = useCallback(() => setAddDocumentDialog(true), [])
+
   const filterRows = useCallback(
-    (data: DocumentWithHistory[], searchTerm: string) =>
+    (data: DocumentInRelease[], searchTerm: string) =>
       data.filter(({previewValues, isPending}) => {
         const title =
           typeof previewValues.values?.title === 'string'
@@ -106,7 +95,7 @@ export function ReleaseSummary(props: ReleaseSummaryProps) {
       const versionDocumentId = getVersionId(documentToAdd._id, releaseId)
       const pendingAddedDocumentId = `${versionDocumentId}-pending`
 
-      const pendingDocumentRow: DocumentWithHistory = {
+      const pendingDocumentRow: DocumentInReleaseDetail = {
         memoKey: versionDocumentId,
         previewValues: {isLoading: true, values: {}},
         validation: {
@@ -114,7 +103,6 @@ export function ReleaseSummary(props: ReleaseSummaryProps) {
           validation: [],
           hasError: false,
         },
-        history: undefined,
         document: {
           ...(documentToAdd as SanityDocument),
           _id: pendingAddedDocumentId,
@@ -169,9 +157,8 @@ export function ReleaseSummary(props: ReleaseSummaryProps) {
   }, [documents, pendingAddedDocument, t, toast])
 
   const tableData = useMemo(
-    () =>
-      pendingAddedDocument.length ? [...aggregatedData, ...pendingAddedDocument] : aggregatedData,
-    [pendingAddedDocument, aggregatedData],
+    () => (pendingAddedDocument.length ? [...documents, ...pendingAddedDocument] : documents),
+    [documents, pendingAddedDocument],
   )
 
   return (
@@ -193,7 +180,7 @@ export function ReleaseSummary(props: ReleaseSummaryProps) {
           isLoading={isLoading}
         />
         <Card borderTop>
-          <Table<DocumentWithHistory>
+          <Table<DocumentInReleaseDetail>
             loading={isLoading}
             data={tableData}
             emptyState={t('summary.no-documents')}
@@ -214,7 +201,7 @@ export function ReleaseSummary(props: ReleaseSummaryProps) {
               icon={AddIcon}
               disabled={isLoading}
               mode="bleed"
-              onClick={() => setAddDocumentDialog(true)}
+              onClick={handleAddDocumentClick}
               text={t('action.add-document')}
             />
           </Card>
@@ -224,7 +211,7 @@ export function ReleaseSummary(props: ReleaseSummaryProps) {
         open={openAddDocumentDialog}
         onClose={closeAddDialog}
         releaseId={releaseId}
-        idsInRelease={aggregatedData.map(({document}) => document._id)}
+        idsInRelease={documents.map(({document}) => document._id)}
       />
     </Card>
   )
