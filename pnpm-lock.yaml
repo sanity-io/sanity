@@ -136,9 +136,6 @@ importers:
       '@sanity/uuid':
         specifier: ^3.0.2
         version: 3.0.2
-      '@types/glob':
-        specifier: ^7.2.0
-        version: 7.2.0
       '@types/lodash-es':
         specifier: ^4.17.12
         version: 4.17.12
@@ -2131,12 +2128,6 @@ importers:
       '@types/react-dom':
         specifier: 'catalog:'
         version: 19.1.7(@types/react@19.1.10)
-      '@types/refractor':
-        specifier: ^3.4.1
-        version: 3.4.1
-      '@types/resolve-from':
-        specifier: ^4.0.0
-        version: 4.0.0
       '@types/semver':
         specifier: ^7.7.0
         version: 7.7.0
@@ -5257,9 +5248,6 @@ packages:
   '@types/follow-redirects@1.14.4':
     resolution: {integrity: sha512-GWXfsD0Jc1RWiFmMuMFCpXMzi9L7oPDVwxUnZdg89kDNnqsRfUKXEtUYtA98A6lig1WXH/CYY/fvPW9HuN5fTA==}
 
-  '@types/glob@7.2.0':
-    resolution: {integrity: sha512-ZUxbzKl0IfJILTS6t7ip5fQQM/J3TJYubDm3nMbgubNNYS62eXeUpoLUC8/7fJNiFYHTrGPQn7hspDUzIHX3UA==}
-
   '@types/gunzip-maybe@1.4.2':
     resolution: {integrity: sha512-2uqXZg1jTCKE1Pjbab8qb74+f2+i9h/jz8rQ+jRR+zaNJF75zWwrpbX8/TjF4m56m3KFOg9umHdCJ074KwiVxg==}
 
@@ -5295,10 +5283,6 @@ packages:
 
   '@types/minimatch@3.0.5':
     resolution: {integrity: sha512-Klz949h02Gz2uZCMGwDUSDS1YBlTdDDgbWHi+81l29tQALUtvz4rAYi5uoVhE5Lagoq6DeqAUlbrHvW/mXDgdQ==}
-
-  '@types/minimatch@6.0.0':
-    resolution: {integrity: sha512-zmPitbQ8+6zNutpwgcQuLcsEpn/Cj54Kbn7L5pX0Os5kdWplB7xPgEh/g+SWOB/qmows2gpuCaPyduq8ZZRnxA==}
-    deprecated: This is a stub types definition. minimatch provides its own type definitions, so you do not need this installed.
 
   '@types/minimist@1.2.5':
     resolution: {integrity: sha512-hov8bUuiLiyFPGyFPE1lwWhmzYbirOXQNNo40+y3zow8aFVTeyn3VWL0VFFfdNddA8S4Vf0Tc062rzyNr7Paag==}
@@ -5350,14 +5334,8 @@ packages:
   '@types/readdir-glob@1.1.5':
     resolution: {integrity: sha512-raiuEPUYqXu+nvtY2Pe8s8FEmZ3x5yAH4VkLdihcPdalvsHltomrRC9BzuStrJ9yk06470hS0Crw0f1pXqD+Hg==}
 
-  '@types/refractor@3.4.1':
-    resolution: {integrity: sha512-wYuorIiCTSuvRT9srwt+taF6mH/ww+SyN2psM0sjef2qW+sS8GmshgDGTEDgWB1sTVGgYVE6EK7dBA2MxQxibg==}
-
   '@types/request@2.48.13':
     resolution: {integrity: sha512-FGJ6udDNUCjd19pp0Q3iTiDkwhYup7J8hpMW9c4k53NrccQFFWKRho6hvtPPEhnXWKvukfwAlB6DbDz4yhH5Gg==}
-
-  '@types/resolve-from@4.0.0':
-    resolution: {integrity: sha512-LjkxahYnTBr75YRCEI/FQnQVfP4fP69koNW+3bmSkZuiSCkXkTJpfl7SPcZ4biXfmZHduoVLElP4VWBhex+0zQ==}
 
   '@types/resolve@1.20.2':
     resolution: {integrity: sha512-60BCwRFOZCQhDncwQdxxeOEEkbc5dIMccYLwbxsS4TUNeVECQ/pBJ0j09mrHOl/JJvpRPGwO9SvE4nR2Nb/a4Q==}
@@ -16456,11 +16434,6 @@ snapshots:
     dependencies:
       '@types/node': 24.3.0
 
-  '@types/glob@7.2.0':
-    dependencies:
-      '@types/minimatch': 6.0.0
-      '@types/node': 24.3.0
-
   '@types/gunzip-maybe@1.4.2':
     dependencies:
       '@types/node': 24.3.0
@@ -16499,10 +16472,6 @@ snapshots:
   '@types/marked@4.3.2': {}
 
   '@types/minimatch@3.0.5': {}
-
-  '@types/minimatch@6.0.0':
-    dependencies:
-      minimatch: 10.0.3
 
   '@types/minimist@1.2.5': {}
 
@@ -16550,18 +16519,12 @@ snapshots:
     dependencies:
       '@types/node': 24.3.0
 
-  '@types/refractor@3.4.1':
-    dependencies:
-      '@types/prismjs': 1.26.5
-
   '@types/request@2.48.13':
     dependencies:
       '@types/caseless': 0.12.5
       '@types/node': 24.3.0
       '@types/tough-cookie': 4.0.5
       form-data: 2.5.5
-
-  '@types/resolve-from@4.0.0': {}
 
   '@types/resolve@1.20.2': {}
 
