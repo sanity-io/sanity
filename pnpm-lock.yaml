@@ -1762,7 +1762,7 @@ importers:
         specifier: ^1.0.3
         version: 1.0.3
       '@types/speakingurl':
-        specifier: ^13.0.3
+        specifier: ^13.0.6
         version: 13.0.6
       '@types/tar-stream':
         specifier: ^3.1.4
