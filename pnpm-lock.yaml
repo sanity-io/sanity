@@ -1759,7 +1759,7 @@ importers:
         specifier: 'catalog:'
         version: 19.0.0
       '@types/shallow-equals':
-        specifier: ^1.0.0
+        specifier: ^1.0.3
         version: 1.0.3
       '@types/speakingurl':
         specifier: ^13.0.3
