@@ -29,7 +29,7 @@
     "@repo/eslint-config": "workspace:*",
     "@repo/test-config": "workspace:*",
     "@types/lodash": "^4.17.20",
-    "@types/node": "^20.19.11",
+    "@types/node": "^22.17.2",
     "esbuild": "catalog:",
     "ts-node": "^10.9.2",
     "typescript": "catalog:",
