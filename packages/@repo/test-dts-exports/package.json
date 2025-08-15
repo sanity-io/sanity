@@ -27,7 +27,7 @@
   "devDependencies": {
     "@repo/eslint-config": "workspace:*",
     "@repo/tsconfig": "workspace:*",
-    "@types/node": "^24.0.14",
+    "@types/node": "^24.3.0",
     "ts-morph": "^26.0.0",
     "vitest": "^3.2.4"
   }
