@@ -933,7 +933,7 @@ importers:
         specifier: ^4.4.1
         version: 4.4.1(supports-color@5.5.0)
       decompress:
-        specifier: ^4.2.0
+        specifier: ^4.2.1
         version: 4.2.1
       esbuild:
         specifier: 'catalog:'
@@ -997,7 +997,7 @@ importers:
         specifier: ^4.1.12
         version: 4.1.12
       '@types/decompress':
-        specifier: ^4.2.4
+        specifier: ^4.2.7
         version: 4.2.7
       '@types/inquirer':
         specifier: ^6.0.0
