@@ -167,7 +167,7 @@ importers:
         specifier: 3.2.4
         version: 3.2.4(vitest@3.2.4(@types/debug@4.1.12)(@types/node@22.17.1)(jiti@2.5.1)(jsdom@23.2.0)(terser@5.43.1)(tsx@4.20.4)(yaml@2.8.1))
       cac:
-        specifier: ^6.7.12
+        specifier: ^6.7.14
         version: 6.7.14
       chalk:
         specifier: ^4.1.2
