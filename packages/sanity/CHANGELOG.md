@@ -3,6 +3,57 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [4.4.1](https://github.com/sanity-io/sanity/compare/v4.4.0...v4.4.1) (2025-08-14)
+
+
+### Bug Fixes
+
+* allow v20 in node engines ([#10290](https://github.com/sanity-io/sanity/issues/10290)) ([73150e9](https://github.com/sanity-io/sanity/commit/73150e9befde5cb531279c9b206a08682df3ff38))
+* **deps:** update dependency @sanity/export to ^4.0.1 ([#10291](https://github.com/sanity-io/sanity/issues/10291)) ([6827c96](https://github.com/sanity-io/sanity/commit/6827c96dab297cf35ca0130427be226906e64519))
+* **deps:** update dependency @sanity/export to v4 ([#10264](https://github.com/sanity-io/sanity/issues/10264)) ([335b8e5](https://github.com/sanity-io/sanity/commit/335b8e54283221dfe21400f7639ab7ca6a5d209b))
+* **deps:** update dependency @sanity/ui to ^3.0.7 ([#10293](https://github.com/sanity-io/sanity/issues/10293)) ([e671ffc](https://github.com/sanity-io/sanity/commit/e671ffc1bef570811838235630d2717590f65d15))
+* long release titles in open release to edit banner correctly flexed ([#10283](https://github.com/sanity-io/sanity/issues/10283)) ([3ba5079](https://github.com/sanity-io/sanity/commit/3ba50796a92a853c945e88106107199a7185e908))
+
+
+
+## [4.4.0](https://github.com/sanity-io/sanity/compare/v4.3.0...v4.4.0) (2025-08-13)
+
+
+### Features
+
+* adding chips to release summary to show count of release actions ([#10237](https://github.com/sanity-io/sanity/issues/10237)) ([62af6fc](https://github.com/sanity-io/sanity/commit/62af6fc731b5a1b0c59466b104c5a110f2379826))
+* **cli:** choses a new port if dev server is conflicted for apps ([#10212](https://github.com/sanity-io/sanity/issues/10212)) ([00369ec](https://github.com/sanity-io/sanity/commit/00369ec4dbd9662eae6e719821e310273c06c8eb))
+* **util:** add support for localized moment tokens ([#10240](https://github.com/sanity-io/sanity/issues/10240)) ([caf47b6](https://github.com/sanity-io/sanity/commit/caf47b656f7ea94c0c871dcac62f3aae1d6ef6f6))
+* virtualising release documents table ([#10203](https://github.com/sanity-io/sanity/issues/10203)) ([1ff9a38](https://github.com/sanity-io/sanity/commit/1ff9a386962035f7b2fef8f4a7567352339f0e4c))
+
+
+### Bug Fixes
+
+* **cli:** don't coerce sanity version during build/dev ([#10190](https://github.com/sanity-io/sanity/issues/10190)) ([7330842](https://github.com/sanity-io/sanity/commit/7330842c38ca99af9129f4bf80d0d830c77fd22c))
+* **cli:** gracefully handle version check errors in sanity dev ([#10279](https://github.com/sanity-io/sanity/issues/10279)) ([d223320](https://github.com/sanity-io/sanity/commit/d2233208e3c32d18e58e1053ea1caa4ea24376ed))
+* **cli:** updates dev action to trigger async work while showing spinner ([#10268](https://github.com/sanity-io/sanity/issues/10268)) ([3b29438](https://github.com/sanity-io/sanity/commit/3b2943838ac473a0832b62cd79b777c52e1cc268))
+* **core:** allow losing focus inside popover modals, fix scroll in popover issue ([#10213](https://github.com/sanity-io/sanity/issues/10213)) ([d49b527](https://github.com/sanity-io/sanity/commit/d49b5274d5bcc378233837eab79152e2651e6c6c))
+* **core:** issue with releases default values ([#10251](https://github.com/sanity-io/sanity/issues/10251)) ([7b8fa2f](https://github.com/sanity-io/sanity/commit/7b8fa2fed0d8219ff79507e022088caeec3d8b63))
+* **deps:** update dependency @portabletext/block-tools to ^2.0.8 ([#10200](https://github.com/sanity-io/sanity/issues/10200)) ([498a56d](https://github.com/sanity-io/sanity/commit/498a56ddda6297fa00a1b3faa0571cea353bab63))
+* **deps:** update dependency @portabletext/block-tools to v3 ([#10256](https://github.com/sanity-io/sanity/issues/10256)) ([4672c48](https://github.com/sanity-io/sanity/commit/4672c48f1360b590844c659e29aba53abd025d15))
+* **deps:** update dependency @portabletext/editor to ^2.1.11 ([#10204](https://github.com/sanity-io/sanity/issues/10204)) ([30a9a70](https://github.com/sanity-io/sanity/commit/30a9a705bdffe9c3152588f98e597f04f9d1f4c5))
+* **deps:** update dependency @portabletext/editor to ^2.1.9 ([#10202](https://github.com/sanity-io/sanity/issues/10202)) ([4aabd89](https://github.com/sanity-io/sanity/commit/4aabd89a0f4df5f95829e9e955a1ce6bd68107f4))
+* **deps:** update dependency @portabletext/editor to ^2.3.0 ([#10226](https://github.com/sanity-io/sanity/issues/10226)) ([4681b77](https://github.com/sanity-io/sanity/commit/4681b77dd05d9bd60ac2890824953c0f1259f049))
+* **deps:** update dependency @portabletext/editor to ^2.3.3 ([#10242](https://github.com/sanity-io/sanity/issues/10242)) ([322ab52](https://github.com/sanity-io/sanity/commit/322ab524baf85e1a73a6827444ba01c58c6ae479))
+* **deps:** update dependency @sanity/export to ^3.45.3 ([#10244](https://github.com/sanity-io/sanity/issues/10244)) ([084a599](https://github.com/sanity-io/sanity/commit/084a599763fd240ee601a6d02cb668fbbfdc1b5d))
+* **deps:** update dependency @sanity/presentation-comlink to ^1.0.28 ([#10188](https://github.com/sanity-io/sanity/issues/10188)) ([ec0c5bf](https://github.com/sanity-io/sanity/commit/ec0c5bff5bc4c5bf4571e0918c472df1e550b837))
+* **deps:** update dependency @sanity/ui to ^3.0.6 ([#10245](https://github.com/sanity-io/sanity/issues/10245)) ([5a9f4cf](https://github.com/sanity-io/sanity/commit/5a9f4cf59ad64ab5e5afb2659e2b7b7e84e5fa8f))
+* **deps:** update dependency xstate to ^5.20.2 ([#10222](https://github.com/sanity-io/sanity/issues/10222)) ([b82b0a6](https://github.com/sanity-io/sanity/commit/b82b0a6ad1df77e64d7062524c2ae038cf863123))
+* **presentation:** send presentation/refresh events for version documents changes ([#10255](https://github.com/sanity-io/sanity/issues/10255)) ([0e0b8de](https://github.com/sanity-io/sanity/commit/0e0b8deda3b6907d6a70b8ebcb2ecce0ec453b10))
+* **sanity:** add missing v-prefix in link to release tag ([#10241](https://github.com/sanity-io/sanity/issues/10241)) ([f5e4de7](https://github.com/sanity-io/sanity/commit/f5e4de78e4b6e34a0ad840b40f2f33663eb2512a))
+* **sanity:** explicitly unset legacy inspect parameter ([#10208](https://github.com/sanity-io/sanity/issues/10208)) ([6f636d0](https://github.com/sanity-io/sanity/commit/6f636d0bce0b8c0340cbb9e4d3cb80eb21fcd3ed))
+* **sanity:** presentation navigation issues and initial value handling ([#10207](https://github.com/sanity-io/sanity/issues/10207)) ([34fba7d](https://github.com/sanity-io/sanity/commit/34fba7d6c4d821e31acc4f898c0b6b282311783c))
+* **sanity:** unexpected type narrowing when array passed to `defineConfig` ([#10275](https://github.com/sanity-io/sanity/issues/10275)) ([93fed00](https://github.com/sanity-io/sanity/commit/93fed00da027cf73412eacfc9e09fc7633a999d0))
+* **structure:** render actions menu if sideMenuItems has actions ([#10196](https://github.com/sanity-io/sanity/issues/10196)) ([62272a8](https://github.com/sanity-io/sanity/commit/62272a81a6d06d3e960699719621a15b6078292f))
+* update engines to require node >=22.12.0 ([#10227](https://github.com/sanity-io/sanity/issues/10227)) ([c1b9fe2](https://github.com/sanity-io/sanity/commit/c1b9fe2b70ccbb9ff4bce0845dfaad25cafcd35a))
+
+
+
 ## [4.3.0](https://github.com/sanity-io/sanity/compare/v4.2.0...v4.3.0) (2025-08-05)
 
 

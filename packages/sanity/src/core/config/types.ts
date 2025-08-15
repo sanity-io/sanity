@@ -470,6 +470,24 @@ export interface PluginOptions {
    * @beta
    */
   mediaLibrary?: DefaultPluginsWorkspaceOptions['mediaLibrary']
+
+  /**
+   * Advanced version control provides features such as inline content diffs in Studio to make
+   * resolving conflicts across document versions easier.
+   *
+   * @beta
+   */
+  advancedVersionControl?: {
+    /**
+     * Control whether advanced version control functionality is enabled.
+     *
+     * Advanced version control provides features such as inline content diffs in Studio to make
+     * resolving conflicts across document versions easier.
+     *
+     * @beta
+     */
+    enabled?: boolean | ComposableOption<boolean, ConfigContext>
+  }
 }
 
 /** @internal */
@@ -924,6 +942,24 @@ export interface Source {
    * @beta
    */
   mediaLibrary?: WorkspaceOptions['mediaLibrary']
+
+  /**
+   * Advanced version control provides features such as inline content diffs in Studio to make
+   * resolving conflicts across document versions easier.
+   *
+   * @beta
+   */
+  advancedVersionControl: {
+    /**
+     * Control whether advanced version control functionality is enabled.
+     *
+     * Advanced version control provides features such as inline content diffs in Studio to make
+     * resolving conflicts across document versions easier.
+     *
+     * @beta
+     */
+    enabled: boolean
+  }
 }
 
 /** @internal */

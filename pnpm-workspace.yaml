@@ -20,7 +20,7 @@ catalog:
   '@types/react-is': ^19.0.0
   '@vitejs/plugin-react': ^4.6.0
   esbuild-register: ^3.6.0
-  esbuild: 0.25.8
+  esbuild: 0.25.9
   globals: ^16.2.0
   playwright: 1.54.2
   prettier: ^3.5.3
