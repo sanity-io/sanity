@@ -98,7 +98,7 @@
     "@types/lodash": "^4.17.20",
     "@vitejs/plugin-react": "catalog:",
     "babel-plugin-react-compiler": "19.1.0-rc.2",
-    "jsdom": "^23.0.1",
+    "jsdom": "^23.2.0",
     "react": "catalog:react18",
     "react-dom": "catalog:react18",
     "sanity": "workspace:*",

@@ -79,7 +79,7 @@ overrides:
   '@vitest/coverage-v8': 3.2.4
   '@vitest/expect': 3.2.4
   eslint-plugin-react-hooks: 0.0.0-experimental-e9638c33-20250721
-  jsdom: ^23.0.1
+  jsdom: ^23.2.0
   typescript@5.9.x: 5.8.3
   vite: ^7.1.2
   vitest: 3.2.4
@@ -215,7 +215,7 @@ importers:
         specifier: ^4.1.0
         version: 4.1.0
       jsdom:
-        specifier: ^23.0.1
+        specifier: ^23.2.0
         version: 23.2.0
       lerna:
         specifier: ^8.2.3
@@ -1581,7 +1581,7 @@ importers:
         specifier: 19.1.0-rc.2
         version: 19.1.0-rc.2
       jsdom:
-        specifier: ^23.0.1
+        specifier: ^23.2.0
         version: 23.2.0
       react:
         specifier: catalog:react18
@@ -1867,7 +1867,7 @@ importers:
         specifier: ^2.26.0
         version: 2.26.0
       jsdom:
-        specifier: ^23.0.1
+        specifier: ^23.2.0
         version: 23.2.0
       jsdom-global:
         specifier: ^3.0.2
@@ -8805,7 +8805,7 @@ packages:
   jsdom-global@3.0.2:
     resolution: {integrity: sha512-t1KMcBkz/pT5JrvcJbpUR2u/w1kO9jXctaaGJ0vZDzwFnIvGWw9IDSRciT83kIs8Bnw4qpOl8bQK08V01YgMPg==}
     peerDependencies:
-      jsdom: ^23.0.1
+      jsdom: ^23.2.0
 
   jsdom@23.2.0:
     resolution: {integrity: sha512-L88oL7D/8ufIES+Zjz7v0aes+oBMh2Xnh3ygWvL0OaICOomKEPKuPnIfBJekiXr+BHbbMjrWn/xqrDQuxFTeyA==}
@@ -12086,7 +12086,7 @@ packages:
       '@vitest/browser': 3.2.4
       '@vitest/ui': 3.2.4
       happy-dom: '*'
-      jsdom: ^23.0.1
+      jsdom: ^23.2.0
     peerDependenciesMeta:
       '@edge-runtime/vm':
         optional: true
