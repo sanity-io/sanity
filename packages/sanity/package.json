@@ -308,7 +308,7 @@
     "@types/configstore": "^5.0.1",
     "@types/debug": "^4.1.12",
     "@types/gunzip-maybe": "^1.4.2",
-    "@types/jsdom": "^20.0.0",
+    "@types/jsdom": "^20.0.1",
     "@types/lodash": "^4.17.20",
     "@types/log-symbols": "^2.0.0",
     "@types/node": "^22.10.0",
