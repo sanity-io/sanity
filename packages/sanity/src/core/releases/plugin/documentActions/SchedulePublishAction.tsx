@@ -19,7 +19,8 @@ export const SchedulePublishAction: DocumentActionComponent = (
   const {t} = useTranslation(releasesLocaleNamespace)
 
   const handleSchedulePublish = useCallback(() => {
-    console.log('Schedule publish action triggered for document ID:', id)
+    // eslint-disable-next-line no-alert
+    alert(`Schedule publish action triggered for document ID: ${id}`)
   }, [id])
 
   return {

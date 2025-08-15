@@ -20,7 +20,8 @@ export const ScheduleUnpublishAction: DocumentActionComponent = (
   const isPublished = published !== null
 
   const handleScheduleUnpublish = useCallback(() => {
-    console.warn('Schedule unpublish action triggered for document ID:', id)
+    // eslint-disable-next-line no-alert
+    alert(`Schedule unpublish action triggered for document ID: ${id}`)
   }, [id])
 
   return {
