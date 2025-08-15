@@ -225,7 +225,7 @@
     "is-hotkey-esm": "^1.0.0",
     "is-tar": "^1.0.0",
     "isomorphic-dompurify": "^2.26.0",
-    "jsdom": "^23.0.1",
+    "jsdom": "^23.2.0",
     "jsdom-global": "^3.0.2",
     "json-lexer": "^1.2.0",
     "json-reduce": "^3.0.0",
