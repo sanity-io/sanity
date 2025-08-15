@@ -1,10 +1,10 @@
 /* eslint-disable i18next/no-literal-string */
 import {type AuthProvider, type AuthProviderResponse, type SanityClient} from '@sanity/client'
-import {Heading, Stack} from '@sanity/ui'
-import {useEffect, useState} from 'react'
+import {Badge, Flex, Heading, Stack, Text} from '@sanity/ui'
+import {useCallback, useEffect, useState} from 'react'
 import {type Observable} from 'rxjs'
 
-import {Button} from '../../../../ui-components'
+import {Button, type ButtonProps} from '../../../../ui-components'
 import {LoadingBlock} from '../../../components/loadingBlock'
 import {type AuthConfig} from '../../../config'
 import {createHookFromObservableFactory} from '../../../util'
@@ -13,6 +13,34 @@ import {type LoginComponentProps} from './types'
 
 interface GetProvidersOptions extends AuthConfig {
   client: SanityClient
+}
+
+interface UserData {
+  id?: string
+  givenName?: string
+  familyName?: string
+  name?: string
+  email?: string
+  profileImage?: string
+  tosAcceptedAt?: string
+  provider?: string
+}
+
+async function getGlobalUserData(client: SanityClient) {
+  const apiHost = client.config().apiHost
+  try {
+    const response = await fetch(`${apiHost}/vX/users/me`, {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      credentials: 'include',
+    })
+
+    return response.json()
+  } catch (error) {
+    return undefined
+  }
 }
 
 async function getProviders({
@@ -100,6 +128,10 @@ export function createLoginComponent({
     const redirectPath = props.redirectPath || props.basePath || '/'
 
     const [providers, setProviders] = useState<AuthProvider[] | null>(null)
+    const [userData, setUserData] = useState<{isLoading: boolean; data?: UserData}>({
+      isLoading: true,
+      data: undefined,
+    })
     const [error, setError] = useState<unknown>(null)
     if (error) throw error
 
@@ -111,6 +143,17 @@ export function createLoginComponent({
       getProviders({client, ...providerOptions})
         .then(setProviders)
         .catch(setError)
+    }, [client])
+
+    useEffect(() => {
+      if (!client) return
+
+      getGlobalUserData(client).then((data) => {
+        setUserData({
+          isLoading: false,
+          data,
+        })
+      })
     }, [client])
 
     // only create a direct URL if `redirectOnSingle` is true and there is only
@@ -126,13 +169,16 @@ export function createLoginComponent({
         redirectPath,
       })
 
-    const loading = !providers || redirectUrlForRedirectOnSingle
+    const loading = userData.isLoading || !providers || redirectUrlForRedirectOnSingle
 
     useEffect(() => {
       if (redirectUrlForRedirectOnSingle) {
         window.location.href = redirectUrlForRedirectOnSingle
       }
     }, [redirectUrlForRedirectOnSingle])
+
+    const lastUsedProvider = providers?.find(({name}) => name === userData.data?.provider)
+    const providerList = providers?.filter(({name}) => name !== userData.data?.provider)
 
     if (loading) {
       return <LoadingBlock showText />
@@ -144,27 +190,87 @@ export function createLoginComponent({
           Choose login provider
         </Heading>
 
-        <Stack space={2}>
-          {providers.map((provider, index) => (
-            <Button
-              key={`${provider.url}_${index}`}
-              as="a"
-              icon={providerLogos[provider.name] || <CustomLogo provider={provider} />}
+        <Stack>
+          {lastUsedProvider && (
+            <LastUsedProviderButton
+              provider={lastUsedProvider}
               href={createHrefForProvider({
                 loginMethod,
                 projectId,
-                url: provider.url,
+                url: lastUsedProvider.url,
                 redirectPath,
               })}
-              mode="ghost"
-              size="large"
-              text={provider.title}
             />
-          ))}
+          )}
+
+          <Stack space={2}>
+            {providerList?.map((provider, index) => (
+              <ProviderButton
+                key={`${provider.url}_${index}`}
+                provider={provider}
+                href={createHrefForProvider({
+                  loginMethod,
+                  projectId,
+                  url: provider.url,
+                  redirectPath,
+                })}
+              />
+            ))}
+          </Stack>
         </Stack>
       </Stack>
     )
   }
 
   return LoginComponent
+}
+
+function LastUsedProviderButton(props: {href: string; provider: AuthProvider}) {
+  return (
+    <Flex direction="column" style={{width: '100%'}}>
+      <Badge radius={2} tone="primary" style={{alignSelf: 'start', marginBottom: '8px'}}>
+        Last used
+      </Badge>
+      <ProviderButton autoFocus tone="primary" {...props} />
+      <Text size={0} style={{alignSelf: 'center', margin: '13px 0 13px 0'}}>
+        OR
+      </Text>
+    </Flex>
+  )
+}
+
+function ProviderButton({
+  href,
+  provider,
+  tone = 'default',
+  autoFocus = false,
+}: {
+  href: string
+  provider: AuthProvider
+  tone?: ButtonProps['tone']
+  autoFocus?: boolean
+}) {
+  const focusRef = useCallback(
+    (node: HTMLButtonElement) => {
+      if (autoFocus) node?.focus()
+    },
+    [autoFocus],
+  )
+
+  const ProviderLogo = providerLogos[provider.name] || CustomLogo
+
+  return (
+    <Button
+      ref={focusRef}
+      as="a"
+      href={href}
+      mode="ghost"
+      size="large"
+      tone={tone}
+      style={{width: '100%'}}
+      tooltipProps={{}}
+      text={provider.title}
+      icon={<ProviderLogo provider={provider} />}
+    />
+  )
 }
