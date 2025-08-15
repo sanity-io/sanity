@@ -227,7 +227,7 @@ importers:
         specifier: ^4.17.21
         version: 4.17.21
       minimist:
-        specifier: ^1.2.5
+        specifier: ^1.2.8
         version: 1.2.8
       npm-run-all2:
         specifier: ^6.2.3
@@ -1078,7 +1078,7 @@ importers:
         specifier: ^4.17.21
         version: 4.17.21
       minimist:
-        specifier: ^1.2.5
+        specifier: ^1.2.8
         version: 1.2.8
       open:
         specifier: ^8.4.0
