@@ -985,7 +985,7 @@ importers:
         specifier: workspace:*
         version: link:../types
       '@types/babel__traverse':
-        specifier: ^7.20.7
+        specifier: ^7.28.0
         version: 7.28.0
       '@types/configstore':
         specifier: ^5.0.1
@@ -1193,7 +1193,7 @@ importers:
         specifier: ^7.17.3
         version: 7.17.3
       '@types/babel__traverse':
-        specifier: ^7.20.7
+        specifier: ^7.28.0
         version: 7.28.0
       '@types/debug':
         specifier: ^4.1.12
