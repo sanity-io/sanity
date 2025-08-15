@@ -57,12 +57,21 @@ export interface VideoSchemaType extends Omit<ObjectSchemaType, 'options'> {
 }
 
 /** @public */
+export interface VideoMetadataPlayback {
+  _type: 'sanity.videoMetadata.playback'
+  _id: string
+  _key: string
+  policy: 'public' | 'secured'
+}
+
+/** @public */
 export interface VideoMetadata {
   [key: string]: unknown
   _type: 'sanity.videoMetadata'
   aspectRatio?: number
   duration?: number
   framerate?: number
+  playbacks?: VideoMetadataPlayback[]
 }
 
 /** @public */
