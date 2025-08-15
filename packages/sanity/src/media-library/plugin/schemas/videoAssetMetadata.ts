@@ -1,5 +1,12 @@
 import {defineType} from '@sanity/types'
 
+export const videoAssetMetadataPlayback = defineType({
+  name: 'sanity.videoMetadata.playback',
+  title: 'Playback',
+  type: 'object',
+  fields: [{name: 'policy', type: 'string'}],
+})
+
 export const videoAssetMetadata = defineType({
   name: 'sanity.videoMetadata',
   title: 'Video metadata',
@@ -51,6 +58,13 @@ export const videoAssetMetadata = defineType({
       type: 'number',
       readOnly: true,
       fieldset: 'extra',
+    },
+    {
+      name: 'playbacks',
+      title: 'Playbacks',
+      type: 'array',
+      of: [{type: videoAssetMetadataPlayback.name}],
+      readOnly: true,
     },
   ],
 })

@@ -157,8 +157,9 @@ export function VideoPreview(props: VideoAssetProps) {
       waitPlaceholder={<VideoSkeleton />}
     >
       {({metadata}) => {
-        // @ts-expect-error - TODO: fix this
-        const playbackId = metadata?.playbacks?.[0]?._id
+        const playbackId = metadata?.playbacks?.find(
+          (playback) => playback.policy === 'public',
+        )?._id
         const aspectRatio = metadata?.aspectRatio
 
         return (
