@@ -2282,7 +2282,7 @@ importers:
         specifier: workspace:*
         version: link:../../packages/sanity
       serve-handler:
-        specifier: ^6.1.5
+        specifier: ^6.1.6
         version: 6.1.6
       source-map:
         specifier: ^0.7.4
