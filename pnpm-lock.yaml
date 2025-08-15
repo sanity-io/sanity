@@ -179,7 +179,7 @@ importers:
         specifier: ^1.4.7
         version: 1.4.7
       dotenv:
-        specifier: ^16.0.3
+        specifier: ^16.6.1
         version: 16.6.1
       dotenv-flow:
         specifier: ^4.1.0
@@ -887,7 +887,7 @@ importers:
   packages/@repo/utils:
     dependencies:
       dotenv:
-        specifier: ^16.0.3
+        specifier: ^16.6.1
         version: 16.6.1
       lodash-es:
         specifier: ^4.17.21
@@ -1048,7 +1048,7 @@ importers:
         specifier: ^1.0.2
         version: 1.0.2
       dotenv:
-        specifier: ^16.0.3
+        specifier: ^16.6.1
         version: 16.6.1
       dotenv-expand:
         specifier: ^9.0.0
@@ -2258,7 +2258,7 @@ importers:
         specifier: ^0.6.5
         version: 0.6.5
       dotenv:
-        specifier: ^16.0.3
+        specifier: ^16.6.1
         version: 16.6.1
       globby:
         specifier: ^11.1.0
@@ -2328,7 +2328,7 @@ importers:
         specifier: ^3.0.2
         version: 3.0.2
       dotenv:
-        specifier: ^16.0.3
+        specifier: ^16.6.1
         version: 16.6.1
       execa:
         specifier: ^2.0.0
