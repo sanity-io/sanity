@@ -1864,7 +1864,7 @@ importers:
         specifier: ^1.0.0
         version: 1.0.0
       isomorphic-dompurify:
-        specifier: ^2.19.0
+        specifier: ^2.26.0
         version: 2.26.0
       jsdom:
         specifier: ^23.0.1
