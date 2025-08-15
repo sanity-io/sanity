@@ -120,7 +120,7 @@
     "ora": "^8.0.1",
     "p-map": "^4.0.0",
     "p-timeout": "^4.1.0",
-    "preferred-pm": "^3.0.3",
+    "preferred-pm": "^3.1.4",
     "promise-props-recursive": "^2.0.2",
     "recast": "^0.23.11",
     "resolve-from": "^5.0.0",
