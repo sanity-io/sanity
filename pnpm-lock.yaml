@@ -1792,7 +1792,7 @@ importers:
         specifier: ^4.1.2
         version: 4.1.2
       chokidar:
-        specifier: ^3.5.3
+        specifier: ^3.6.0
         version: 3.6.0
       classnames:
         specifier: ^2.2.5
