@@ -283,7 +283,7 @@
     "vite": "^7.1.2",
     "which": "^5.0.0",
     "xstate": "^5.20.2",
-    "yargs": "^17.3.0"
+    "yargs": "^17.7.2"
   },
   "devDependencies": {
     "@playwright/experimental-ct-react": "catalog:",

@@ -152,7 +152,7 @@ importers:
         specifier: ^7.5.6
         version: 7.7.0
       '@types/yargs':
-        specifier: ^17.0.7
+        specifier: ^17.0.33
         version: 17.0.33
       '@typescript-eslint/eslint-plugin':
         specifier: ^8.39.1
@@ -275,8 +275,8 @@ importers:
         specifier: 3.2.4
         version: 3.2.4(@types/debug@4.1.12)(@types/node@22.17.1)(jiti@2.5.1)(jsdom@23.2.0)(terser@5.43.1)(tsx@4.20.4)(yaml@2.8.1)
       yargs:
-        specifier: ^17.3.0
-        version: 17.3.0
+        specifier: ^17.7.2
+        version: 17.7.2
     optionalDependencies:
       node-notifier:
         specifier: ^10.0.0
@@ -2041,8 +2041,8 @@ importers:
         specifier: ^5.20.2
         version: 5.20.2
       yargs:
-        specifier: ^17.3.0
-        version: 17.3.0
+        specifier: ^17.7.2
+        version: 17.7.2
     devDependencies:
       '@playwright/experimental-ct-react':
         specifier: 'catalog:'
@@ -2243,7 +2243,7 @@ importers:
         specifier: ^6.1.4
         version: 6.1.4
       '@types/yargs':
-        specifier: ^17.0.7
+        specifier: ^17.0.33
         version: 17.0.33
       '@vitejs/plugin-react':
         specifier: 'catalog:'
@@ -2291,8 +2291,8 @@ importers:
         specifier: ^7.1.2
         version: 7.1.2(@types/node@24.2.1)(jiti@2.5.1)(terser@5.43.1)(tsx@4.20.4)(yaml@2.8.1)
       yargs:
-        specifier: 17.3.0
-        version: 17.3.0
+        specifier: 17.7.2
+        version: 17.7.2
 
   perf/studio:
     dependencies:
@@ -12324,10 +12324,6 @@ packages:
   yargs@16.2.0:
     resolution: {integrity: sha512-D1mvvtDG0L5ft/jGWkLpG1+m0eQxOfaBvTNELraWj22wSVUMWxZUvYgJYcKh6jGGIkJFhH4IZPQhR4TKpc8mBw==}
     engines: {node: '>=10'}
-
-  yargs@17.3.0:
-    resolution: {integrity: sha512-GQl1pWyDoGptFPJx9b9L6kmR33TGusZvXIZUT+BOz9f7X2L94oeAskFYLEg/FkhV06zZPBYLvLZRWeYId29lew==}
-    engines: {node: '>=12'}
 
   yargs@17.7.2:
     resolution: {integrity: sha512-7dSzzRQ++CKnNI/krKnYRV7JKKPUXMEh61soaHKg9mrWEhzFWhFnxPxGl+69cD1Ou63C13NUPCnmIcrvqCuM6w==}
@@ -24824,16 +24820,6 @@ snapshots:
       string-width: 4.2.3
       y18n: 5.0.8
       yargs-parser: 20.2.9
-
-  yargs@17.3.0:
-    dependencies:
-      cliui: 7.0.4
-      escalade: 3.2.0
-      get-caller-file: 2.0.5
-      require-directory: 2.1.1
-      string-width: 4.2.3
-      y18n: 5.0.8
-      yargs-parser: 21.1.1
 
   yargs@17.7.2:
     dependencies:

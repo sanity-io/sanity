@@ -23,7 +23,7 @@
     "@types/react": "catalog:",
     "@types/react-dom": "catalog:",
     "@types/serve-handler": "^6.1.4",
-    "@types/yargs": "^17.0.7",
+    "@types/yargs": "^17.0.33",
     "@vitejs/plugin-react": "catalog:",
     "babel-plugin-react-compiler": "19.1.0-rc.2",
     "chalk": "^4.1.2",
@@ -39,6 +39,6 @@
     "serve-handler": "^6.1.5",
     "source-map": "^0.7.4",
     "vite": "^7.1.2",
-    "yargs": "17.3.0"
+    "yargs": "17.7.2"
   }
 }
