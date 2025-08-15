@@ -1798,7 +1798,7 @@ importers:
         specifier: ^2.2.5
         version: 2.5.1
       color2k:
-        specifier: ^2.0.0
+        specifier: ^2.0.3
         version: 2.0.3
       configstore:
         specifier: ^5.0.1

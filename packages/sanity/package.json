@@ -202,7 +202,7 @@
     "chalk": "^4.1.2",
     "chokidar": "^3.5.3",
     "classnames": "^2.2.5",
-    "color2k": "^2.0.0",
+    "color2k": "^2.0.3",
     "configstore": "^5.0.1",
     "console-table-printer": "^2.11.1",
     "dataloader": "^2.2.3",
