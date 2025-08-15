@@ -36,7 +36,7 @@
     "react-dom": "catalog:",
     "rollup-plugin-sourcemaps": "^0.6.3",
     "sanity": "workspace:*",
-    "serve-handler": "^6.1.5",
+    "serve-handler": "^6.1.6",
     "source-map": "^0.7.4",
     "vite": "^7.1.2",
     "yargs": "^17.7.2"
