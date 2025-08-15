@@ -312,7 +312,7 @@
     "@types/jsdom": "^20.0.1",
     "@types/lodash": "^4.17.20",
     "@types/log-symbols": "^2.0.0",
-    "@types/node": "^22.17.2",
+    "@types/node": "catalog:",
     "@types/raf": "^3.4.3",
     "@types/react": "catalog:",
     "@types/react-dom": "catalog:",
