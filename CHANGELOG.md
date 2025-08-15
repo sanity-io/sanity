@@ -3,6 +3,28 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [4.5.0](https://github.com/sanity-io/sanity/compare/v4.4.1...v4.5.0) (2025-08-15)
+
+
+### Features
+
+* add schedule publish and unpublish noop actions for draft documents ([#10287](https://github.com/sanity-io/sanity/issues/10287)) ([c1220b3](https://github.com/sanity-io/sanity/commit/c1220b3f2ff5cf3a3f1741943c8ca322395081b0))
+* draft perspective chip copies from published when  no draft exists ([#10305](https://github.com/sanity-io/sanity/issues/10305)) ([2d9c836](https://github.com/sanity-io/sanity/commit/2d9c8365cae543492ffbe93167fdcafc2e552e2d))
+* **sanity:** add `advancedVersionControl.enabled` configuration option ([#10277](https://github.com/sanity-io/sanity/issues/10277)) ([81bc5b1](https://github.com/sanity-io/sanity/commit/81bc5b1e735571647dd2a553b256a8b32783e79e))
+
+
+### Bug Fixes
+
+* **ci:** add concurrency for release-next job ([#10373](https://github.com/sanity-io/sanity/issues/10373)) ([87ef760](https://github.com/sanity-io/sanity/commit/87ef7603dbb4563efa779631393d918e995544b8))
+* **deps:** Update babel monorepo to ^7.28.3 ([#10301](https://github.com/sanity-io/sanity/issues/10301)) ([cb6718b](https://github.com/sanity-io/sanity/commit/cb6718b8ef05a003336aa0ac7bf42d092d8205ae))
+* **deps:** update dependency @portabletext/block-tools to ^3.2.0 ([#10297](https://github.com/sanity-io/sanity/issues/10297)) ([b50678b](https://github.com/sanity-io/sanity/commit/b50678bd519d80a083b9f01efd8ac846a5502b4a))
+* **deps:** update dependency @portabletext/editor to ^2.3.7 ([#10284](https://github.com/sanity-io/sanity/issues/10284)) ([213dc36](https://github.com/sanity-io/sanity/commit/213dc369b728db58327fa3c1f9c5792e5dcbe1d3))
+* **deps:** Update dev-non-major ([#10302](https://github.com/sanity-io/sanity/issues/10302)) ([3f1c7d1](https://github.com/sanity-io/sanity/commit/3f1c7d147e691083eec47e108591b93619ac19c6))
+* release chips don't need to handle scheduled case ([#10374](https://github.com/sanity-io/sanity/issues/10374)) ([eaf6359](https://github.com/sanity-io/sanity/commit/eaf6359e708d1f936a22fc26a9531bf999a6dce5))
+* **schema:** mark image data as required, for typegen ([#10285](https://github.com/sanity-io/sanity/issues/10285)) ([af2ce7b](https://github.com/sanity-io/sanity/commit/af2ce7be07dd3d5795ca8a5c66422295b41c8712))
+
+
+
 ## [4.4.1](https://github.com/sanity-io/sanity/compare/v4.4.0...v4.4.1) (2025-08-14)
 
 
