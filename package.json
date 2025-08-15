@@ -133,7 +133,7 @@
     "@vitest/coverage-v8": "^3.2.4",
     "cac": "^6.7.14",
     "chalk": "^4.1.2",
-    "conventional-changelog-conventionalcommits": "^7.0.0",
+    "conventional-changelog-conventionalcommits": "^7.0.2",
     "depcheck": "^1.4.7",
     "dotenv": "^16.0.3",
     "dotenv-flow": "^4.1.0",
