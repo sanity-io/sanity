@@ -546,14 +546,14 @@ importers:
         specifier: ^1.1.25
         version: 1.1.25(sanity@packages+sanity)
       '@sanity/locale-nn-no':
-        specifier: ^1.1.24
-        version: 1.1.24(sanity@packages+sanity)
+        specifier: ^1.1.25
+        version: 1.1.25(sanity@packages+sanity)
       '@sanity/locale-pt-pt':
-        specifier: ^1.1.21
-        version: 1.1.21(sanity@packages+sanity)
+        specifier: ^1.1.22
+        version: 1.1.22(sanity@packages+sanity)
       '@sanity/locale-sv-se':
-        specifier: ^1.2.23
-        version: 1.2.23(sanity@packages+sanity)
+        specifier: ^1.2.24
+        version: 1.2.24(sanity@packages+sanity)
       '@sanity/logos':
         specifier: ^2.2.2
         version: 2.2.2(react@19.1.1)
@@ -4738,18 +4738,18 @@ packages:
     peerDependencies:
       sanity: ^3.22.0 || ^4.0.0-0
 
-  '@sanity/locale-nn-no@1.1.24':
-    resolution: {integrity: sha512-Q9DweHBHpSaS1j/b0Gksa4S+aS1my9vJZ6e7EiI+sPn53pV3bUv8VIsVrgKIb/ONCWBim8x/1HrcPUlG4+iYjQ==}
+  '@sanity/locale-nn-no@1.1.25':
+    resolution: {integrity: sha512-IA4YfGi0/9GG9L276iRj8Zm5IowSPj2An2B3ey7SHEXfdA2Wy8rzYIJP2ZYzpN0DI4p8jgS2qtaf4Uyi6h0Ibw==}
     peerDependencies:
       sanity: ^3.22.0 || ^4.0.0-0
 
-  '@sanity/locale-pt-pt@1.1.21':
-    resolution: {integrity: sha512-K0hzTAcrgzEgXEt3NFHo6wCx+KJPM4u4lAvj5y2fUT0lbetY12pqObk4DQfPhogvQoe34VPFpSCvCoxsypjs2w==}
+  '@sanity/locale-pt-pt@1.1.22':
+    resolution: {integrity: sha512-pUUKGE1rWE9fvhHdhNo2ZTpFZ9PpJjKCibdLCKuNL3r1XIEfbH0asCyW+Mmd5gpnvbT4SMqrUDp39VHLB6koog==}
     peerDependencies:
       sanity: ^3.22.0 || ^4.0.0-0
 
-  '@sanity/locale-sv-se@1.2.23':
-    resolution: {integrity: sha512-tpy5trOy5Z0xXsjj2tWM5rWpYCINoY4DRJW1d8CVJtcUh8uEg7BEZrZWC4Qvs1wVYX8p8Wypql9IDw1igjUh8A==}
+  '@sanity/locale-sv-se@1.2.24':
+    resolution: {integrity: sha512-/TFqjSFf4+wXcCkzV7mS+eph+RiK6gSFZJxJo7YhAS8i6FFmsGHH8nxcEDzHx57G0Q99pEJVEH9OeXSjBhTV4g==}
     peerDependencies:
       sanity: ^3.22.0 || ^4.0.0-0
 
@@ -15385,15 +15385,15 @@ snapshots:
     dependencies:
       sanity: link:packages/sanity
 
-  '@sanity/locale-nn-no@1.1.24(sanity@packages+sanity)':
+  '@sanity/locale-nn-no@1.1.25(sanity@packages+sanity)':
     dependencies:
       sanity: link:packages/sanity
 
-  '@sanity/locale-pt-pt@1.1.21(sanity@packages+sanity)':
+  '@sanity/locale-pt-pt@1.1.22(sanity@packages+sanity)':
     dependencies:
       sanity: link:packages/sanity
 
-  '@sanity/locale-sv-se@1.2.23(sanity@packages+sanity)':
+  '@sanity/locale-sv-se@1.2.24(sanity@packages+sanity)':
     dependencies:
       sanity: link:packages/sanity
 
