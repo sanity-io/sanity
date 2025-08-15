@@ -1472,7 +1472,7 @@ importers:
         specifier: ^3.4.0
         version: 3.4.0
       '@lezer/highlight':
-        specifier: ^1.0.0
+        specifier: ^1.2.1
         version: 1.2.1
       '@rexxars/react-json-inspector':
         specifier: ^9.0.1
