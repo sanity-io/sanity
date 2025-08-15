@@ -1324,6 +1324,7 @@ import type {
   systemBundles,
   TagsArrayInput,
   TagsArrayInputProps,
+  TargetPerspective,
   TelephoneInput,
   TelephoneInputProps,
   Template,
@@ -5621,6 +5622,9 @@ describe('sanity', () => {
   })
   test('TagsArrayInputProps', () => {
     expectTypeOf<TagsArrayInputProps>().not.toBeNever()
+  })
+  test('TargetPerspective', () => {
+    expectTypeOf<TargetPerspective>().not.toBeNever()
   })
   test('TelephoneInput', () => {
     expectTypeOf<typeof TelephoneInput>().toBeFunction()

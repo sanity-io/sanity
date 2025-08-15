@@ -7,7 +7,7 @@ import {useWorkspace} from '../studio/workspace'
 import {isSystemBundleName} from '../util/draftUtils'
 import {EMPTY_ARRAY} from '../util/empty'
 import {getSelectedPerspective} from './getSelectedPerspective'
-import {type PerspectiveContextValue, type ReleaseId, type SelectedPerspective} from './types'
+import {type PerspectiveContextValue, type ReleaseId, type TargetPerspective} from './types'
 
 /**
  * @internal
@@ -29,7 +29,7 @@ export function PerspectiveProvider({
     },
   } = useWorkspace()
 
-  const selectedPerspective: SelectedPerspective = useMemo(
+  const selectedPerspective: TargetPerspective = useMemo(
     () => getSelectedPerspective(selectedPerspectiveName, releases),
     [selectedPerspectiveName, releases],
   )
