@@ -507,8 +507,8 @@ importers:
   dev/test-studio:
     dependencies:
       '@portabletext/block-tools':
-        specifier: ^3.0.0
-        version: 3.0.0(@sanity/types@packages+@sanity+types)(@types/react@19.1.10)
+        specifier: ^3.2.0
+        version: 3.2.0(@sanity/schema@packages+@sanity+schema)(@sanity/types@packages+@sanity+types)(@types/react@19.1.10)
       '@portabletext/editor':
         specifier: ^2.3.3
         version: 2.3.3(@sanity/schema@packages+@sanity+schema)(@sanity/types@packages+@sanity+types)(@types/react@19.1.10)(react-dom@19.1.1(react@19.1.1))(react@19.1.1)(rxjs@7.8.2)
@@ -1642,8 +1642,8 @@ importers:
         specifier: ^3.5.3
         version: 3.5.3(@types/react-dom@19.1.7(@types/react@19.1.10))(@types/react@19.1.10)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
       '@portabletext/block-tools':
-        specifier: ^3.0.0
-        version: 3.0.0(@sanity/types@packages+@sanity+types)(@types/react@19.1.10)
+        specifier: ^3.2.0
+        version: 3.2.0(@sanity/schema@packages+@sanity+schema)(@sanity/types@packages+@sanity+types)(@types/react@19.1.10)
       '@portabletext/editor':
         specifier: ^2.3.3
         version: 2.3.3(@sanity/schema@packages+@sanity+schema)(@sanity/types@packages+@sanity+types)(@types/react@19.1.10)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(rxjs@7.8.2)
@@ -4313,6 +4313,12 @@ packages:
       '@sanity/types': ^4.3.0
       '@types/react': ^18.3 || ^19
 
+  '@portabletext/block-tools@3.2.0':
+    resolution: {integrity: sha512-6J8hxbgz3Xk5M2RTzjtAtfHHgSvTg7zcD+dnyGkxi2NZDXvRq9b5Yz7G6psV34KCr94EUoTSKAsQCiFsiYQF/Q==}
+    peerDependencies:
+      '@sanity/types': ^4.4.1
+      '@types/react': ^18.3 || ^19
+
   '@portabletext/editor@2.3.3':
     resolution: {integrity: sha512-5iSEJ1PnSXkyUpOuzzLtYDd2rqGpBUNKG7FsXmIS9F5rfDjfI/OSrHAWqGjRQpw+4uZUe47EX3Eh9U0cbIWydw==}
     engines: {node: '>=20.19'}
@@ -4333,6 +4339,16 @@ packages:
     engines: {node: ^14.13.1 || >=16.0.0}
     peerDependencies:
       react: ^17 || ^18 || >=19.0.0-0
+
+  '@portabletext/sanity-bridge@1.1.1':
+    resolution: {integrity: sha512-3zP7uP6ezWuf1JK54YGCbudJobx+Wmt7EfKNjfqkLDIsO+UF6QidI5E/OHzFcV7qdyMqOv38bLVX81hJjx+fxA==}
+    engines: {node: '>=20.19'}
+    peerDependencies:
+      '@sanity/schema': ^4.4.1
+      '@sanity/types': ^4.4.1
+
+  '@portabletext/schema@1.0.0':
+    resolution: {integrity: sha512-kV39CshZKViJMu0sCuIk4XoyHC0n4XGunCWX+aqbe2kKYDsAA8l/FY8mLUr+LgFOCIEyUpWHWsyFDTsPe04jVg==}
 
   '@portabletext/to-html@2.0.14':
     resolution: {integrity: sha512-wW2et59PoOT/mc56C4U3z+DKAx1yjieN/gp2q9szTfTwusMpb6mclR9+EPIfGrcQWdwGn6PEN7nxVFXnqlZ/0A==}
@@ -14764,6 +14780,17 @@ snapshots:
       get-random-values-esm: 1.0.2
       lodash: 4.17.21
 
+  '@portabletext/block-tools@3.2.0(@sanity/schema@packages+@sanity+schema)(@sanity/types@packages+@sanity+types)(@types/react@19.1.10)':
+    dependencies:
+      '@portabletext/sanity-bridge': 1.1.1(@sanity/schema@packages+@sanity+schema)(@sanity/types@packages+@sanity+types)
+      '@portabletext/schema': 1.0.0
+      '@sanity/types': link:packages/@sanity/types
+      '@types/react': 19.1.10
+      get-random-values-esm: 1.0.2
+      lodash: 4.17.21
+    transitivePeerDependencies:
+      - '@sanity/schema'
+
   '@portabletext/editor@2.3.3(@sanity/schema@packages+@sanity+schema)(@sanity/types@packages+@sanity+types)(@types/react@19.1.10)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(rxjs@7.8.2)':
     dependencies:
       '@portabletext/block-tools': 3.0.0(@sanity/types@packages+@sanity+types)(@types/react@19.1.10)
@@ -14834,6 +14861,16 @@ snapshots:
       '@portabletext/toolkit': 2.0.17
       '@portabletext/types': 2.0.13
       react: 19.1.1
+
+  '@portabletext/sanity-bridge@1.1.1(@sanity/schema@packages+@sanity+schema)(@sanity/types@packages+@sanity+types)':
+    dependencies:
+      '@portabletext/schema': 1.0.0
+      '@sanity/schema': link:packages/@sanity/schema
+      '@sanity/types': link:packages/@sanity/types
+      get-random-values-esm: 1.0.2
+      lodash.startcase: 4.4.0
+
+  '@portabletext/schema@1.0.0': {}
 
   '@portabletext/to-html@2.0.14':
     dependencies:
