@@ -629,6 +629,9 @@ importers:
       sanity:
         specifier: workspace:*
         version: link:../../packages/sanity
+      sanity-plugin-asset-source-unsplash:
+        specifier: ^4.0.1
+        version: 4.0.1(@emotion/is-prop-valid@1.3.1)(react-dom@19.1.1(react@19.1.1))(react-is@19.1.1)(react@19.1.1)(sanity@packages+sanity)(styled-components@6.1.19(react-dom@19.1.1(react@19.1.1))(react@19.1.1))
       sanity-plugin-hotspot-array:
         specifier: ^3.0.1
         version: 3.0.1(@emotion/is-prop-valid@1.3.1)(react-dom@19.1.1(react@19.1.1))(react-is@19.1.1)(react@19.1.1)(sanity@packages+sanity)(styled-components@6.1.19(react-dom@19.1.1(react@19.1.1))(react@19.1.1))
@@ -10373,6 +10376,11 @@ packages:
     peerDependencies:
       react: '*'
 
+  react-infinite-scroll-component@6.1.0:
+    resolution: {integrity: sha512-SQu5nCqy8DxQWpnUVLx7V7b7LcA37aM7tvoWjTLZp1dk6EJibM5/4EJKzOnl07/BsM1Y40sKLuqjCwwH/xV0TQ==}
+    peerDependencies:
+      react: '>=16.0.0'
+
   react-is@16.13.1:
     resolution: {integrity: sha512-24e6ynE2H+OKt4kqsOvNd8kBpV65zoxbA4BVsEOB3ARVWQki/DHzaUoC5KuON/BiccDaCCTZBuOcfZs70kR8bQ==}
 
@@ -10384,6 +10392,12 @@ packages:
 
   react-is@19.1.1:
     resolution: {integrity: sha512-tr41fA15Vn8p4X9ntI+yCyeGSf1TlYaY5vlTZfQmeLBrFo3psOPX6HhTDnFNL9uj3EhP0KAQ80cugCl4b4BERA==}
+
+  react-photo-album@2.4.1:
+    resolution: {integrity: sha512-dzqP5QbYAugA0uZTl3qsVldckzDXYDkDOvA8CpACl51hSEfhJmCfwhbnI4WBHnETQHv48nnNQ1jhrulst8njLA==}
+    engines: {node: '>=12'}
+    peerDependencies:
+      react: '>=16.8.0'
 
   react-redux@9.2.0:
     resolution: {integrity: sha512-ROY9fvHhwOD9ySfrF0wmvu//bKCQ6AeZZq1nJNtbDC+kk5DuSuNX/n6YWYF/SYy7bSba4D4FSz8DJeKY/S/r+g==}
@@ -10821,6 +10835,15 @@ packages:
 
   safer-buffer@2.1.2:
     resolution: {integrity: sha512-YZo3K82SD7Riyi0E1EQPojLz7kpepnSQI9IyPbHHg1XXXevb5dJI7tpyN2ADxGcQbHG7vcyRHk0cbwqcQriUtg==}
+
+  sanity-plugin-asset-source-unsplash@4.0.1:
+    resolution: {integrity: sha512-JIZt4d/g5/yj8NmbEau7Lcvsiow9OvSgrEk+184gGwgzgn4rQsNL2GoOgjIrt1XfMMlIrQszWJxkwulMeTKEYw==}
+    engines: {node: '>=20.19 <22 || >=22.12'}
+    peerDependencies:
+      react: ^18.3 || ^19
+      react-dom: ^18.3 || ^19
+      sanity: ^4
+      styled-components: ^6.1
 
   sanity-plugin-hotspot-array@3.0.1:
     resolution: {integrity: sha512-AxDkBVSYdmVBVOp0SywX3FfX8yIPzztyITbmbHGiZG51PotSAubyfHvgj12oqb8est1x9yA5jPNv/glnqdAUXA==}
@@ -11435,6 +11458,10 @@ packages:
   text-extensions@1.9.0:
     resolution: {integrity: sha512-wiBrwC1EhBelW12Zy26JeOUkQ5mRu+5o8rpsJk5+2t+Y5vE7e842qtZDQ2g1NpX/29HdyFeJ4nSIhI47ENSxlQ==}
     engines: {node: '>=0.10'}
+
+  throttle-debounce@2.3.0:
+    resolution: {integrity: sha512-H7oLPV0P7+jgvrk+6mwwwBDmxTaxnu9HMXmloNLXwnNO0ZxZ31Orah2n8lU1eMPvsaowP2CX+USCgyovXfdOFQ==}
+    engines: {node: '>=8'}
 
   through2@2.0.5:
     resolution: {integrity: sha512-/mrRod8xqpA+IHSLyGCQ2s8SPHiCDEeQJSep1jqLYeEUClOFG2Qsh+4FU6G9VeqpZnGW/Su8LQGc4YKni5rYSQ==}
@@ -22353,6 +22380,11 @@ snapshots:
     dependencies:
       react: 18.3.1
 
+  react-infinite-scroll-component@6.1.0(react@19.1.1):
+    dependencies:
+      react: 19.1.1
+      throttle-debounce: 2.3.0
+
   react-is@16.13.1: {}
 
   react-is@17.0.2: {}
@@ -22360,6 +22392,10 @@ snapshots:
   react-is@18.3.1: {}
 
   react-is@19.1.1: {}
+
+  react-photo-album@2.4.1(react@19.1.1):
+    dependencies:
+      react: 19.1.1
 
   react-redux@9.2.0(@types/react@19.1.10)(react@19.1.1)(redux@5.0.1):
     dependencies:
@@ -22894,6 +22930,21 @@ snapshots:
       ret: 0.1.15
 
   safer-buffer@2.1.2: {}
+
+  sanity-plugin-asset-source-unsplash@4.0.1(@emotion/is-prop-valid@1.3.1)(react-dom@19.1.1(react@19.1.1))(react-is@19.1.1)(react@19.1.1)(sanity@packages+sanity)(styled-components@6.1.19(react-dom@19.1.1(react@19.1.1))(react@19.1.1)):
+    dependencies:
+      '@sanity/icons': 3.7.4(react@19.1.1)
+      '@sanity/ui': 3.0.7(@emotion/is-prop-valid@1.3.1)(react-dom@19.1.1(react@19.1.1))(react-is@19.1.1)(react@19.1.1)(styled-components@6.1.19(react-dom@19.1.1(react@19.1.1))(react@19.1.1))
+      react: 19.1.1
+      react-dom: 19.1.1(react@19.1.1)
+      react-infinite-scroll-component: 6.1.0(react@19.1.1)
+      react-photo-album: 2.4.1(react@19.1.1)
+      rxjs: 7.8.2
+      sanity: link:packages/sanity
+      styled-components: 6.1.19(react-dom@19.1.1(react@19.1.1))(react@19.1.1)
+    transitivePeerDependencies:
+      - '@emotion/is-prop-valid'
+      - react-is
 
   sanity-plugin-hotspot-array@3.0.1(@emotion/is-prop-valid@1.3.1)(react-dom@19.1.1(react@19.1.1))(react-is@19.1.1)(react@19.1.1)(sanity@packages+sanity)(styled-components@6.1.19(react-dom@19.1.1(react@19.1.1))(react@19.1.1)):
     dependencies:
@@ -23751,6 +23802,8 @@ snapshots:
       b4a: 1.6.7
 
   text-extensions@1.9.0: {}
+
+  throttle-debounce@2.3.0: {}
 
   through2@2.0.5:
     dependencies:
