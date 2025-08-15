@@ -143,7 +143,7 @@
     "eslint-formatter-compact": "^8.40.0",
     "eslint-plugin-react-hooks": "0.0.0-experimental-e9638c33-20250721",
     "execa": "^2.1.0",
-    "glob": "^11.0.0",
+    "glob": "^11.0.3",
     "globby": "^11.1.0",
     "husky": "^9.1.7",
     "js-yaml": "^4.1.0",

@@ -203,7 +203,7 @@ importers:
         specifier: ^2.1.0
         version: 2.1.0
       glob:
-        specifier: ^11.0.0
+        specifier: ^11.0.3
         version: 11.0.3
       globby:
         specifier: ^11.1.0
