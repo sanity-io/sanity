@@ -23,7 +23,7 @@
     "@types/react": "^18.3.23",
     "eslint": "^9.33.0",
     "prettier": "^3.6.2",
-    "sanity": "^3",
+    "sanity": "^3.99.0",
     "typescript": "^5.8.3"
   },
   "prettier": {
