@@ -330,7 +330,7 @@
     "react-dom": "catalog:react18",
     "rxjs-etc": "^10.6.2",
     "styled-components": "catalog:",
-    "swr": "2.2.5",
+    "swr": "2.3.6",
     "vitest": "^3.2.4",
     "vitest-package-exports": "^0.1.1"
   },
