@@ -1036,7 +1036,7 @@ importers:
         specifier: ^4.2.0
         version: 4.2.0
       clean-stack:
-        specifier: ^3.0.0
+        specifier: ^3.0.1
         version: 3.0.1
       configstore:
         specifier: ^5.0.1
