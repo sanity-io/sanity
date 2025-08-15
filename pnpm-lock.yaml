@@ -1090,7 +1090,7 @@ importers:
         specifier: ^4.0.0
         version: 4.0.0
       p-timeout:
-        specifier: ^4.0.0
+        specifier: ^4.1.0
         version: 4.1.0
       preferred-pm:
         specifier: ^3.0.3
