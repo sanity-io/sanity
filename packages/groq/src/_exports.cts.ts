@@ -1,4 +1,14 @@
-import {defineQuery} from './define'
+import {
+  defineQuery,
+  type PickSchema,
+  type SanityDocument,
+  type SanityQueries,
+  type SanityQueryResult,
+  type SanitySchema,
+  type SanitySchemas,
+  type SanitySchemaType,
+  type SchemaOrigin,
+} from './define'
 import {groq} from './groq'
 
 module.exports = groq
@@ -8,4 +18,15 @@ Object.assign(module.exports, {defineQuery})
 /**
  * This is just to fix the typegen for the CJS export, as TS won't pick up on `module.exports` syntax when the package.json has `type: "module"`
  */
-export type {groq as default, defineQuery}
+export type {
+  groq as default,
+  defineQuery,
+  PickSchema,
+  SanityDocument,
+  SanityQueries,
+  SanityQueryResult,
+  SanitySchema,
+  SanitySchemas,
+  SanitySchemaType,
+  SchemaOrigin,
+}

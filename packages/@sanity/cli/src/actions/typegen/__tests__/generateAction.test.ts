@@ -73,6 +73,7 @@ test(generateAction.name, async () => {
   const workDir = '/work-dir'
   const schemaPath = './schema.json'
   const overloadClientMethods = true
+  const augmentGroqModule = true
   const configPath = './custom-sanity-typegen.json'
   const generates = './custom-output-folder/sanity.types.ts'
 
@@ -80,6 +81,7 @@ test(generateAction.name, async () => {
     generates,
     schema: schemaPath,
     overloadClientMethods,
+    augmentGroqModule,
     formatGeneratedCode: true,
     path: './src/**/*.{ts,js}',
   })
@@ -174,6 +176,7 @@ test(generateAction.name, async () => {
     schema,
     queries: getQueries(),
     overloadClientMethods,
+    augmentGroqModule,
     schemaPath,
   })
   report.event.typegenComplete(result)
@@ -223,7 +226,6 @@ test(generateAction.name, async () => {
      * ---------------------------------------------------------------------------------
      */
 
-    // Source: schema.json
     export type Post = {
       _type: "post";
       title: string;
@@ -236,6 +238,16 @@ test(generateAction.name, async () => {
     };
 
     export type AllSanitySchemaTypes = Post | Author;
+
+    // Source: schema.json
+    export type DefaultSchema = Post | Author;
+
+    // Schema TypeMap
+    declare module "groq" {
+      interface SanitySchemas {
+        "default": DefaultSchema;
+      }
+    }
 
     export declare const internalGroqTypeReferenceTo: unique symbol;
 
@@ -255,8 +267,13 @@ test(generateAction.name, async () => {
     } | null;
 
     // Query TypeMap
-    import "@sanity/client";
     declare module "@sanity/client" {
+      interface SanityQueries {
+        "*[_type == \\"post\\"]{title}": PostTitlesResult;
+        "*[_type == \\"post\\"][0]{title, views}": FirstPostResult;
+      }
+    }
+    declare module "groq" {
       interface SanityQueries {
         "*[_type == \\"post\\"]{title}": PostTitlesResult;
         "*[_type == \\"post\\"][0]{title, views}": FirstPostResult;
@@ -284,7 +301,6 @@ test(generateAction.name, async () => {
      * ---------------------------------------------------------------------------------
      */
 
-    // Source: schema.json
     export type Post = {
       _type: "post";
       title: string;
@@ -297,6 +313,16 @@ test(generateAction.name, async () => {
     };
 
     export type AllSanitySchemaTypes = Post | Author;
+
+    // Source: schema.json
+    export type DefaultSchema = Post | Author;
+
+    // Schema TypeMap
+    declare module "groq" {
+      interface SanitySchemas {
+        default: DefaultSchema;
+      }
+    }
 
     export declare const internalGroqTypeReferenceTo: unique symbol;
 
@@ -316,8 +342,13 @@ test(generateAction.name, async () => {
     } | null;
 
     // Query TypeMap
-    import "@sanity/client";
     declare module "@sanity/client" {
+      interface SanityQueries {
+        '*[_type == "post"]{title}': PostTitlesResult;
+        '*[_type == "post"][0]{title, views}': FirstPostResult;
+      }
+    }
+    declare module "groq" {
       interface SanityQueries {
         '*[_type == "post"]{title}': PostTitlesResult;
         '*[_type == "post"][0]{title, views}': FirstPostResult;
@@ -334,10 +365,11 @@ test(generateAction.name, async () => {
   expect(trace.log.mock.lastCall).toMatchInlineSnapshot(`
     [
       {
+        "configAugmentGroqModule": true,
         "configOverloadClientMethods": true,
         "emptyUnionTypeNodesGenerated": 0,
         "filesWithErrors": 1,
-        "outputSize": 823,
+        "outputSize": 1122,
         "queriesCount": 2,
         "queryFilesCount": 1,
         "schemaTypesCount": 2,
