@@ -204,7 +204,7 @@
     "classnames": "^2.2.5",
     "color2k": "^2.0.3",
     "configstore": "^5.0.1",
-    "console-table-printer": "^2.11.1",
+    "console-table-printer": "^2.14.6",
     "dataloader": "^2.2.3",
     "date-fns": "^2.30.0",
     "debug": "^4.4.1",
