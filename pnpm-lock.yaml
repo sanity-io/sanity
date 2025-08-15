@@ -1081,7 +1081,7 @@ importers:
         specifier: ^1.2.8
         version: 1.2.8
       open:
-        specifier: ^8.4.0
+        specifier: ^8.4.2
         version: 8.4.2
       ora:
         specifier: ^8.0.1
@@ -1909,7 +1909,7 @@ importers:
         specifier: ^1.0.4
         version: 1.0.4
       open:
-        specifier: ^8.4.0
+        specifier: ^8.4.2
         version: 8.4.2
       p-map:
         specifier: ^7.0.0

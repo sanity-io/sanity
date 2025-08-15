@@ -239,7 +239,7 @@
     "node-html-parser": "^6.1.13",
     "observable-callback": "^1.0.3",
     "oneline": "^1.0.4",
-    "open": "^8.4.0",
+    "open": "^8.4.2",
     "p-map": "^7.0.0",
     "path-to-regexp": "^6.3.0",
     "peek-stream": "^1.1.3",
