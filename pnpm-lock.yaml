@@ -2005,7 +2005,7 @@ importers:
         specifier: ^14.0.1
         version: 14.0.1
       tar-fs:
-        specifier: ^2.1.1
+        specifier: ^2.1.3
         version: 2.1.3
       tar-stream:
         specifier: ^3.1.7
@@ -2141,7 +2141,7 @@ importers:
         specifier: ^6.2.3
         version: 6.2.7
       '@types/tar-fs':
-        specifier: ^2.0.1
+        specifier: ^2.0.4
         version: 2.0.4
       '@types/wicg-task-scheduling':
         specifier: ^2024.1.0
