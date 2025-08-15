@@ -5,7 +5,7 @@
     "github>sanity-io/renovate-config:studio-v3",
     ":dependencyDashboardApproval"
   ],
-  "ignorePresets": ["github>sanity-io/renovate-config:group-non-major"],
+  "ignorePresets": ["github>sanity-io/renovate-config:group-non-major", "github>sanity-io/renovate-config:workarounds-esm"],
   "packageRules": [
     {
       "description": "Enable automerge with GitHub merge queues (note that this doesn't bypass required checks and code reviews)",
