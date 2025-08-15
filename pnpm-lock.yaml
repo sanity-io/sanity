@@ -89,7 +89,7 @@ importers:
   .:
     devDependencies:
       '@google-cloud/storage':
-        specifier: ^7.11.0
+        specifier: ^7.16.0
         version: 7.16.0(encoding@0.1.13)
       '@playwright/test':
         specifier: 'catalog:'
@@ -661,7 +661,7 @@ importers:
   packages/@repo/bundle-manager:
     dependencies:
       '@google-cloud/storage':
-        specifier: ^7.11.0
+        specifier: ^7.16.0
         version: 7.16.0(encoding@0.1.13)
       '@repo/utils':
         specifier: workspace:*
