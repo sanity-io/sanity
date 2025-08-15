@@ -31,7 +31,7 @@
     "@sanity/cli": "workspace:*",
     "@sanity/ui": "^3.0.7",
     "react": "catalog:react18",
-    "react-barcode": "^1.4.1",
+    "react-barcode": "^1.6.1",
     "react-dom": "catalog:react18",
     "sanity": "workspace:*",
     "styled-components": "catalog:"
