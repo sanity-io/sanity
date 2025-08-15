@@ -149,7 +149,7 @@ importers:
         specifier: 'catalog:'
         version: 19.1.10
       '@types/semver':
-        specifier: ^7.5.6
+        specifier: ^7.7.0
         version: 7.7.0
       '@types/yargs':
         specifier: ^17.0.33
@@ -254,7 +254,7 @@ importers:
         specifier: workspace:*
         version: link:packages/sanity
       semver:
-        specifier: ^7.3.5
+        specifier: ^7.7.2
         version: 7.7.2
       tsx:
         specifier: ^4.20.4
@@ -673,7 +673,7 @@ importers:
         specifier: ^11.0.0
         version: 11.0.0
       semver:
-        specifier: ^7.3.5
+        specifier: ^7.7.2
         version: 7.7.2
       yargs:
         specifier: ^18.0.0
@@ -954,7 +954,7 @@ importers:
         specifier: 'catalog:'
         version: 3.6.2
       semver:
-        specifier: ^7.3.5
+        specifier: ^7.7.2
         version: 7.7.2
       validate-npm-package-name:
         specifier: ^3.0.0
@@ -1012,7 +1012,7 @@ importers:
         specifier: ^22.10.0
         version: 22.17.1
       '@types/semver':
-        specifier: ^7.5.6
+        specifier: ^7.7.0
         version: 7.7.0
       '@types/semver-compare':
         specifier: ^1.0.3
@@ -1996,7 +1996,7 @@ importers:
         specifier: ^1.2.4
         version: 1.2.4
       semver:
-        specifier: ^7.3.5
+        specifier: ^7.7.2
         version: 7.7.2
       shallow-equals:
         specifier: ^1.0.0
@@ -2138,8 +2138,8 @@ importers:
         specifier: ^4.0.0
         version: 4.0.0
       '@types/semver':
-        specifier: ^6.2.3
-        version: 6.2.7
+        specifier: ^7.7.0
+        version: 7.7.0
       '@types/tar-fs':
         specifier: ^2.0.4
         version: 2.0.4
@@ -5367,9 +5367,6 @@ packages:
 
   '@types/semver-compare@1.0.3':
     resolution: {integrity: sha512-mVZkB2QjXmZhh+MrtwMlJ8BqUnmbiSkpd88uOWskfwB8yitBT0tBRAKt+41VRgZD9zr9Sc+Xs02qGgvzd1Rq/Q==}
-
-  '@types/semver@6.2.7':
-    resolution: {integrity: sha512-blctEWbzUFzQx799RZjzzIdBJOXmE37YYEyDtKkx5Dg+V7o/zyyAxLPiI98A2jdTtDgxZleMdfV+7p8WbRJ1OQ==}
 
   '@types/semver@7.7.0':
     resolution: {integrity: sha512-k107IF4+Xr7UHjwDc7Cfd6PRQfbdkiRabXGRjo07b4WyPahFBZCZ1sE+BNxYIJPPg73UkfOsVOLwqVc/6ETrIA==}
@@ -16576,8 +16573,6 @@ snapshots:
   '@types/resolve@1.20.2': {}
 
   '@types/semver-compare@1.0.3': {}
-
-  '@types/semver@6.2.7': {}
 
   '@types/semver@7.7.0': {}
 
