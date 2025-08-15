@@ -82,6 +82,10 @@ jobs:
         if: steps.check_examples_only.outputs.examples_only != 'true'
         run: pnpm install
 
+      - name: Build packages
+        if: steps.check_examples_only.outputs.examples_only != 'true'
+        run: pnpm build --output-logs=full --log-order=grouped
+
       - name: Test
         if: steps.check_examples_only.outputs.examples_only != 'true'
         id: test
