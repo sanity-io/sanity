@@ -3,7 +3,7 @@
   "type": "module",
   "main": "index.ts",
   "dependencies": {
-    "@humanwhocodes/crosspost": "^0.1.1",
+    "@humanwhocodes/crosspost": "^0.15.1",
     "@sanity/functions": "^1.0.3"
   },
   "blueprintResourceItem": {
