@@ -1,10 +1,7 @@
 // oxlint-disable no-console
-import {existsSync} from 'node:fs'
 import os from 'node:os'
-import path from 'node:path'
 
 import chalk from 'chalk'
-import dotenv from 'dotenv'
 import resolveFrom from 'resolve-from'
 
 import {CliCommand} from './__telemetry__/cli.telemetry'
@@ -168,47 +165,13 @@ async function getCoreModulePath(
   workDir: string,
   cliConfig: CliConfigResult | null,
 ): Promise<string | undefined> {
-  const corePath = resolveFrom.silent(workDir, '@sanity/core')
   const sanityPath = resolveFrom.silent(workDir, 'sanity/_internal')
-
-  if (corePath && sanityPath) {
-    const closest = corePath.startsWith(workDir) ? corePath : sanityPath
-    const assumedVersion = closest === corePath ? 'v2' : 'v3'
-
-    console.warn(
-      chalk.yellow(
-        `Both \`@sanity/core\` AND \`sanity\` installed - assuming Sanity ${assumedVersion} project.`,
-      ),
-    )
-
-    return closest
-  }
-
   if (sanityPath) {
-    // On v3 and everything installed
+    // Everything is installed
     return sanityPath
   }
 
-  if (corePath && cliConfig && cliConfig?.version < 3) {
-    // On v2 and everything installed
-    return corePath
-  }
-
-  const isInstallCommand = process.argv.indexOf('install') === -1
-
-  if (cliConfig && cliConfig?.version < 3 && !corePath && !isInstallCommand) {
-    const installCmd = await getInstallCommand({workDir})
-    console.warn(
-      chalk.yellow(
-        [
-          'The `@sanity/core` module is not installed in current project',
-          `Project-specific commands not available until you run \`${installCmd}\``,
-        ].join('\n'),
-      ),
-    )
-  }
-
-  if (cliConfig && cliConfig.version >= 3 && !sanityPath) {
+  if (cliConfig && !sanityPath) {
     const installCmd = await getInstallCommand({workDir})
     console.warn(
       chalk.yellow(
@@ -290,22 +253,6 @@ function loadAndSetEnvFromDotEnvFiles({
   cmd: string
   isApp: boolean
 }) {
-  // Do a cheap lookup for a sanity.json file. If there is one, assume it is a v2 project,
-  // and apply the old behavior for environment variables. Otherwise, use the Vite-style
-  // behavior. We need to do this "cheap" lookup because when loading the v3 config, env vars
-  // may be used in the configuration file, meaning we'd have to load the config twice.
-  if (existsSync(path.join(workDir, 'sanity.json'))) {
-    // v2
-    debug('sanity.json exists, assuming v2 project and loading .env files using old behavior')
-    const env = process.env.SANITY_ACTIVE_ENV || process.env.NODE_ENV || 'development'
-    debug('Loading environment files using %s mode', env)
-    dotenv.config({path: path.join(workDir, `.env.${env}`)})
-    return
-  }
-
-  // v3+
-  debug('No sanity.json exists, assuming v3 project and loading .env files using new behavior')
-
   // Use `production` for `sanity build` / `sanity deploy`,
   // but default to `development` for everything else unless `SANITY_ACTIVE_ENV` is set
   const isProdCmd = ['build', 'deploy'].includes(cmd)
