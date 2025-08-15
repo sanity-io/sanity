@@ -1337,7 +1337,7 @@ importers:
         specifier: ^4.17.21
         version: 4.17.21
       object-inspect:
-        specifier: ^1.13.1
+        specifier: ^1.13.4
         version: 1.13.4
     devDependencies:
       '@repo/eslint-config':
