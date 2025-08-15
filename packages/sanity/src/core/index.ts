@@ -18,11 +18,11 @@ export {
 export {ReleasesNav} from './perspective/navbar/ReleasesNav'
 export {PerspectiveProvider} from './perspective/PerspectiveProvider'
 export {
+  type HydratedPerspective,
   type PerspectiveContextValue,
   type PerspectiveStack,
   type ReleaseId,
   type ReleasesNavMenuItemPropsGetter,
-  type SelectedPerspective,
 } from './perspective/types'
 export {useExcludedPerspective} from './perspective/useExcludedPerspective'
 export {usePerspective} from './perspective/usePerspective'

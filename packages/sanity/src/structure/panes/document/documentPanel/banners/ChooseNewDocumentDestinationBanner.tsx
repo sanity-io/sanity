@@ -4,12 +4,12 @@ import {Flex, Text} from '@sanity/ui'
 import {type ComponentType, useCallback} from 'react'
 import {
   getVersionInlineBadge,
+  type HydratedPerspective,
   isPerspectiveWriteable,
   isReleaseDocument,
   type PerspectiveNotWriteableReason,
   ReleasesNav,
   type ReleasesNavMenuItemPropsGetter,
-  type SelectedPerspective,
   Translate,
   useTranslation,
   useWorkspace,
@@ -20,7 +20,7 @@ import {Banner} from './Banner'
 
 interface Props {
   schemaType: ObjectSchemaType
-  selectedPerspective: SelectedPerspective
+  selectedPerspective: HydratedPerspective
   reason: PerspectiveNotWriteableReason
 }
 
