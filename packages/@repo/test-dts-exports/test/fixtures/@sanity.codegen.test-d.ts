@@ -5,19 +5,38 @@
 import {describe, expectTypeOf, test} from 'vitest'
 import type {
   CodegenConfig,
+  EvaluatedModule,
+  EvaluatedQuery,
+  ExtractedModule,
+  ExtractedQuery,
   findQueriesInPath,
   findQueriesInSource,
+  GenerateTypesOptions,
   getResolver,
+  QueryExtractionError,
   readConfig,
   readSchema,
   registerBabel,
   safeParseQuery,
   TypeGenerator,
+  TypegenWorkerChannel,
 } from '@sanity/codegen'
 
 describe('@sanity/codegen', () => {
   test('CodegenConfig', () => {
     expectTypeOf<CodegenConfig>().not.toBeNever()
+  })
+  test('EvaluatedModule', () => {
+    expectTypeOf<EvaluatedModule>().toBeObject()
+  })
+  test('EvaluatedQuery', () => {
+    expectTypeOf<EvaluatedQuery>().toBeObject()
+  })
+  test('ExtractedModule', () => {
+    expectTypeOf<ExtractedModule>().toBeObject()
+  })
+  test('ExtractedQuery', () => {
+    expectTypeOf<ExtractedQuery>().toBeObject()
   })
   test('findQueriesInPath', () => {
     expectTypeOf<typeof findQueriesInPath>().toBeFunction()
@@ -25,8 +44,14 @@ describe('@sanity/codegen', () => {
   test('findQueriesInSource', () => {
     expectTypeOf<typeof findQueriesInSource>().toBeFunction()
   })
+  test('GenerateTypesOptions', () => {
+    expectTypeOf<GenerateTypesOptions>().toBeObject()
+  })
   test('getResolver', () => {
     expectTypeOf<typeof getResolver>().toBeFunction()
+  })
+  test('QueryExtractionError', () => {
+    expectTypeOf<QueryExtractionError>().not.toBeNever()
   })
   test('readConfig', () => {
     expectTypeOf<typeof readConfig>().toBeFunction()
@@ -42,5 +67,8 @@ describe('@sanity/codegen', () => {
   })
   test('TypeGenerator', () => {
     expectTypeOf<TypeGenerator>().not.toBeNever()
+  })
+  test('TypegenWorkerChannel', () => {
+    expectTypeOf<TypegenWorkerChannel>().not.toBeNever()
   })
 })
