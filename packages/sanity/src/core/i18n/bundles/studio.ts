@@ -1389,7 +1389,7 @@ export const studioLocaleStrings = defineLocalesResources('studio', {
   'release.tooltip.already-added': 'A version of this document has already been added',
   /** Label for when a release is scheduled / scheduling and a user can't add a document version to it */
   'release.tooltip.locked':
-    'This release has been scheduled. Unsechedule it to add more documents.',
+    'This release has been scheduled. Unschedule it to add more documents.',
   /** Label for the release type 'as soon as possible' */
   'release.type.asap': 'ASAP',
   /** Label for the release type 'at time', meaning it's a release with a scheduled date */
