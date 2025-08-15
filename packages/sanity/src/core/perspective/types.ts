@@ -10,7 +10,7 @@ import {type ComponentProps} from 'react'
 export type ReleaseId = string
 
 /**
- * @beta
+ * @public
  */
 export type SelectedPerspective = ReleaseDocument | 'published' | 'drafts'
 
