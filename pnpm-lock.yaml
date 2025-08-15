@@ -2123,7 +2123,7 @@ importers:
         specifier: ^22.10.0
         version: 22.17.1
       '@types/raf':
-        specifier: ^3.4.0
+        specifier: ^3.4.3
         version: 3.4.3
       '@types/react':
         specifier: 'catalog:'
