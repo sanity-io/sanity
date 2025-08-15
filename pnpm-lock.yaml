@@ -2111,7 +2111,7 @@ importers:
         specifier: ^1.4.2
         version: 1.4.2
       '@types/jsdom':
-        specifier: ^20.0.0
+        specifier: ^20.0.1
         version: 20.0.1
       '@types/lodash':
         specifier: ^4.17.20
