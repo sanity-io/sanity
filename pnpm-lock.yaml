@@ -1855,7 +1855,7 @@ importers:
         specifier: ^23.16.8
         version: 23.16.8
       import-fresh:
-        specifier: ^3.3.0
+        specifier: ^3.3.1
         version: 3.3.1
       is-hotkey-esm:
         specifier: ^1.0.0
