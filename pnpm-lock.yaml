@@ -991,7 +991,7 @@ importers:
         specifier: ^5.0.1
         version: 5.0.1
       '@types/cpx':
-        specifier: ^1.5.2
+        specifier: ^1.5.5
         version: 1.5.5
       '@types/debug':
         specifier: ^4.1.12
