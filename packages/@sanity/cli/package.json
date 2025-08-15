@@ -86,7 +86,7 @@
     "@sanity/types": "workspace:*",
     "@types/babel__traverse": "^7.28.0",
     "@types/configstore": "^5.0.1",
-    "@types/cpx": "^1.5.2",
+    "@types/cpx": "^1.5.5",
     "@types/debug": "^4.1.12",
     "@types/decompress": "^4.2.4",
     "@types/inquirer": "^6.0.0",
