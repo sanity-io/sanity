@@ -57,7 +57,7 @@ jobs:
           cache: pnpm
           node-version: lts/*
 
-      - uses: actions/download-artifact@v4
+      - uses: actions/download-artifact@v5
         with:
           name: pack-sanity-ui
           path: artifacts
@@ -90,7 +90,7 @@ jobs:
         with:
           cache: pnpm
           node-version: lts/*
-      - uses: actions/download-artifact@v4
+      - uses: actions/download-artifact@v5
         with:
           name: pack-sanity-ui
           path: artifacts
@@ -159,7 +159,7 @@ jobs:
         with:
           cache: pnpm
           node-version: lts/*
-      - uses: actions/download-artifact@v4
+      - uses: actions/download-artifact@v5
         with:
           name: pack-sanity-ui
           path: artifacts
@@ -228,7 +228,7 @@ jobs:
         run: pnpm install
 
       - name: Download blob reports from Github Actions Artifacts
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v5
         with:
           pattern: playwright-report-*
           merge-multiple: true

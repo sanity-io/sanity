@@ -164,7 +164,7 @@ jobs:
 
       - name: "Download coverage artifacts"
         if: steps.check_examples_only.outputs.examples_only != 'true'
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v5
         with:
           path: .vitest-reports
           pattern: blob-report-${{ github.run_id }}-*
