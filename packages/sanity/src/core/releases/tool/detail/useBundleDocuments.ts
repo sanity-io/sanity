@@ -8,7 +8,17 @@ import {
 import {uuid} from '@sanity/uuid'
 import {useMemo} from 'react'
 import {useObservable} from 'react-rx'
-import {combineLatest, type Observable, of} from 'rxjs'
+import {
+  asyncScheduler,
+  combineLatest,
+  defer,
+  merge,
+  type Observable,
+  of,
+  partition,
+  throttleTime,
+  timer,
+} from 'rxjs'
 import {
   catchError,
   distinctUntilChanged,
@@ -29,6 +39,7 @@ import {type LocaleSource} from '../../../i18n/types'
 import {type PerspectiveStack} from '../../../perspective/types'
 import {usePerspective} from '../../../perspective/usePerspective'
 import {type DocumentPreviewStore, prepareForPreview} from '../../../preview'
+import {createSearch, getSearchableTypes} from '../../../search'
 import {useDocumentPreviewStore} from '../../../store/_legacy/datastores'
 import {useSource} from '../../../studio'
 import {getPublishedId} from '../../../util/draftUtils'
@@ -199,6 +210,188 @@ const getActiveReleaseDocumentsObservable = ({
     )
 }
 
+const getActiveReleaseDocumentsSearchObservable = ({
+  schema,
+  documentPreviewStore,
+  i18n,
+  getClient,
+  releaseId,
+  searchTerm,
+}: {
+  schema: Schema
+  documentPreviewStore: DocumentPreviewStore
+  i18n: LocaleSource
+  getClient: ReturnType<typeof useSource>['getClient']
+  releaseId: string
+  searchTerm: string
+}): ReleaseDocumentsObservableResult => {
+  const client = getClient(RELEASES_STUDIO_CLIENT_OPTIONS)
+  const groqFilter = `sanity::partOfRelease($releaseId)`
+
+  // Set up a listener to re-run searches when the release contents change
+  const events$ = defer(() =>
+    client.listen(
+      `*[${groqFilter}]`,
+      {releaseId},
+      {
+        events: ['welcome', 'mutation', 'reconnect'],
+        includeAllVersions: true,
+        includeResult: false,
+        visibility: 'query',
+        tag: 'listen-release-search',
+      },
+    ),
+  )
+
+  const [welcome$, mutationOrReconnect$] = partition(events$, (ev) => ev.type === 'welcome')
+
+  const types = getSearchableTypes(schema)
+  const search = createSearch(types, client, {
+    filter: groqFilter,
+    params: {releaseId},
+    perspective: [releaseId],
+  })
+
+  const doSearch$ = () =>
+    search({query: searchTerm, types}, {limit: 2000, skipSortByScore: true}).pipe(
+      map((res) =>
+        res.hits.map(({hit}) => hit as {_id: string; _type: string; _originalId?: string}),
+      ),
+    )
+
+  const observeDocumentInReleaseFromId = (baseId: string) => {
+    const id = baseId
+    const document$ = documentPreviewStore
+      .unstable_observeDocument(id, {
+        apiVersion: RELEASES_STUDIO_CLIENT_OPTIONS.apiVersion,
+      })
+      .pipe(
+        filter(Boolean),
+        switchMap((doc) =>
+          documentPreviewStore.unstable_observeDocumentPairAvailability(id).pipe(
+            map((availability) => ({
+              ...doc,
+              publishedDocumentExists: availability.published.available,
+            })),
+          ),
+        ),
+      )
+
+    const ctx = {
+      observeDocument: documentPreviewStore.unstable_observeDocument,
+      observeDocumentPairAvailability:
+        documentPreviewStore.unstable_observeDocumentPairAvailability,
+      i18n,
+      getClient,
+      schema,
+    }
+
+    const validation$ = document$.pipe(
+      switchMap((document) => {
+        if (isGoingToUnpublish(document)) {
+          return of({
+            isValidating: false,
+            validation: [],
+            revision: document._rev,
+            hasError: false,
+          } satisfies DocumentValidationStatus)
+        }
+        return validateDocumentWithReferences(ctx, of(document)).pipe(
+          map((validationStatus) => ({
+            ...validationStatus,
+            hasError: validationStatus.validation.some((marker) => isValidationErrorMarker(marker)),
+          })),
+        )
+      }),
+    )
+
+    const previewValues$ = document$.pipe(
+      map((document) => {
+        const schemaType = schema.get(document._type)
+        if (!schemaType) {
+          console.error(
+            `Schema type not found for document type ${document._type} (document ID: ${document._id})`,
+          )
+          return of({
+            isLoading: false,
+            values: {
+              _id: document._id,
+              title: `Document type "${document._type}" not found`,
+              _createdAt: document._createdAt,
+              _updatedAt: document._updatedAt,
+            } satisfies PreviewValue,
+          })
+        }
+        return documentPreviewStore
+          .observeForPreview(document, schemaType, {perspective: [releaseId]})
+          .pipe(
+            switchMap((value) => {
+              if (value.snapshot) {
+                return of(value)
+              }
+              const publishedId = getPublishedId(document._id)
+              return documentPreviewStore.observeForPreview(
+                {
+                  _id: publishedId,
+                },
+                schemaType,
+                {
+                  perspective: [],
+                },
+              )
+            }),
+            map(({snapshot}) => ({
+              isLoading: false,
+              values: snapshot,
+            })),
+            startWith({isLoading: true, values: {}}),
+          )
+      }),
+      switchAll(),
+    )
+
+    return combineLatest([document$, validation$, previewValues$]).pipe(
+      map(([document, validation, previewValues]) => ({
+        document,
+        validation,
+        previewValues,
+        memoKey: uuid(),
+      })),
+    )
+  }
+
+  return merge(
+    welcome$,
+    mutationOrReconnect$.pipe(throttleTime(1000, asyncScheduler, {leading: true, trailing: true})),
+  ).pipe(
+    switchMap((event) => {
+      if (event.type === 'mutation' && event.visibility !== 'query') {
+        return timer(1200).pipe(switchMap(() => doSearch$()))
+      }
+      // 'welcome' or other events - run search
+      return doSearch$()
+    }),
+    // Map the hits to the same structure as the non-search path
+    switchMap((hits: Array<{_id: string; _type: string; _originalId?: string}>) => {
+      if (!Array.isArray(hits) || hits.length === 0) {
+        return of({loading: false, results: [], error: null})
+      }
+
+      const observables = hits.map((hit) => {
+        const baseId = hit._originalId || hit._id
+        return observeDocumentInReleaseFromId(baseId)
+      })
+      return combineLatest(observables).pipe(
+        map((results) => ({loading: false, results, error: null})),
+      )
+    }),
+    startWith({loading: true, results: [], error: null}),
+    catchError((error) => {
+      return of({loading: false, results: [], error})
+    }),
+  )
+}
+
 const getPublishedArchivedReleaseDocumentsObservable = ({
   getClient,
   schema,
@@ -292,6 +485,7 @@ const getReleaseDocumentsObservable = ({
   i18n,
   releasesState$,
   perspectiveStack,
+  searchTerm,
 }: {
   schema: Schema
   documentPreviewStore: DocumentPreviewStore
@@ -300,6 +494,7 @@ const getReleaseDocumentsObservable = ({
   i18n: LocaleSource
   releasesState$: ReturnType<typeof useReleasesStore>['state$']
   perspectiveStack: PerspectiveStack
+  searchTerm?: string | null
 }): ReleaseDocumentsObservableResult =>
   releasesState$.pipe(
     map((releasesState) =>
@@ -317,6 +512,17 @@ const getReleaseDocumentsObservable = ({
         })
       }
 
+      if (searchTerm && searchTerm.trim().length > 0) {
+        return getActiveReleaseDocumentsSearchObservable({
+          schema,
+          documentPreviewStore,
+          i18n,
+          getClient,
+          releaseId,
+          searchTerm,
+        })
+      }
+
       return getActiveReleaseDocumentsObservable({
         schema,
         documentPreviewStore,
@@ -329,7 +535,10 @@ const getReleaseDocumentsObservable = ({
     startWith({loading: true, results: [], error: null}),
   )
 
-export function useBundleDocuments(releaseId: string): {
+export function useBundleDocuments(
+  releaseId: string,
+  options?: {searchTerm?: string | null},
+): {
   loading: boolean
   results: DocumentInRelease[]
   error: null | Error
@@ -339,6 +548,7 @@ export function useBundleDocuments(releaseId: string): {
   const schema = useSchema()
   const {state$: releasesState$} = useReleasesStore()
   const {perspectiveStack} = usePerspective()
+  const searchTerm = options?.searchTerm
 
   const releaseDocumentsObservable = useMemo(
     () =>
@@ -350,8 +560,18 @@ export function useBundleDocuments(releaseId: string): {
         i18n,
         releasesState$,
         perspectiveStack,
+        searchTerm,
       }),
-    [schema, documentPreviewStore, getClient, releaseId, i18n, releasesState$, perspectiveStack],
+    [
+      schema,
+      documentPreviewStore,
+      getClient,
+      releaseId,
+      i18n,
+      releasesState$,
+      perspectiveStack,
+      searchTerm,
+    ],
   )
 
   return useObservable(releaseDocumentsObservable, {loading: true, results: [], error: null})

@@ -33,6 +33,8 @@ export interface ReleaseSummaryProps {
   scrollContainerRef: RefObject<HTMLDivElement | null>
   release: ReleaseDocument
   isLoading?: boolean
+  searchTerm?: string
+  onSearchTermChange?: (value: string) => void
 }
 
 const isBundleDocumentRow = (
@@ -47,7 +49,15 @@ const isBundleDocumentRow = (
   'history' in maybeBundleDocumentRow
 
 export function ReleaseSummary(props: ReleaseSummaryProps) {
-  const {documents, documentsHistory, isLoading = false, release, scrollContainerRef} = props
+  const {
+    documents,
+    documentsHistory,
+    isLoading = false,
+    release,
+    scrollContainerRef,
+    onSearchTermChange,
+    searchTerm,
+  } = props
   const toast = useToast()
   const {createVersion} = useReleaseOperations()
   const telemetry = useTelemetry()
@@ -82,20 +92,6 @@ export function ReleaseSummary(props: ReleaseSummaryProps) {
   const documentTableColumnDefs = useMemo(
     () => getDocumentTableColumnDefs(release._id, release.state, t),
     [release._id, release.state, t],
-  )
-
-  const filterRows = useCallback(
-    (data: DocumentWithHistory[], searchTerm: string) =>
-      data.filter(({previewValues, isPending}) => {
-        const title =
-          typeof previewValues.values?.title === 'string'
-            ? previewValues.values?.title
-            : t('release-placeholder.title')
-
-        // always show the pending rows to visualise that documents are being added
-        return isPending || title.toLowerCase().includes(searchTerm.toLowerCase())
-      }),
-    [t],
   )
 
   const closeAddDialog = useCallback(
@@ -174,6 +170,7 @@ export function ReleaseSummary(props: ReleaseSummaryProps) {
     [pendingAddedDocument, aggregatedData],
   )
 
+  const handleOpenAddDialog = useCallback(() => setAddDocumentDialog(true), [])
   return (
     <Card
       data-testid="document-table-card"
@@ -201,7 +198,8 @@ export function ReleaseSummary(props: ReleaseSummaryProps) {
             rowId="document._id"
             columnDefs={documentTableColumnDefs}
             rowActions={renderRowActions}
-            searchFilter={filterRows}
+            searchTerm={searchTerm}
+            onSearchTermChange={onSearchTermChange}
             scrollContainerRef={scrollContainerRef}
             defaultSort={{column: 'search', direction: 'asc'}}
           />
@@ -214,7 +212,7 @@ export function ReleaseSummary(props: ReleaseSummaryProps) {
               icon={AddIcon}
               disabled={isLoading}
               mode="bleed"
-              onClick={() => setAddDocumentDialog(true)}
+              onClick={handleOpenAddDialog}
               text={t('action.add-document')}
             />
           </Card>
