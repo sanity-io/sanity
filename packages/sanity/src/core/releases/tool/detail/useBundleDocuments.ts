@@ -1,10 +1,5 @@
 import {type ReleaseDocument} from '@sanity/client'
-import {
-  isValidationErrorMarker,
-  type PreviewValue,
-  type SanityDocument,
-  type Schema,
-} from '@sanity/types'
+import {isValidationErrorMarker, type SanityDocument, type Schema} from '@sanity/types'
 import {uuid} from '@sanity/uuid'
 import {useMemo} from 'react'
 import {useObservable} from 'react-rx'
@@ -15,12 +10,9 @@ import {
   expand,
   filter,
   map,
-  mergeMap,
   reduce,
   startWith,
-  switchAll,
   switchMap,
-  take,
 } from 'rxjs/operators'
 import {mergeMapArray} from 'rxjs-mergemap-array'
 
@@ -28,10 +20,9 @@ import {useSchema} from '../../../hooks'
 import {type LocaleSource} from '../../../i18n/types'
 import {type PerspectiveStack} from '../../../perspective/types'
 import {usePerspective} from '../../../perspective/usePerspective'
-import {type DocumentPreviewStore, prepareForPreview} from '../../../preview'
+import {type DocumentPreviewStore} from '../../../preview'
 import {useDocumentPreviewStore} from '../../../store/_legacy/datastores'
 import {useSource} from '../../../studio'
-import {getPublishedId} from '../../../util/draftUtils'
 import {validateDocumentWithReferences, type ValidationStatus} from '../../../validation'
 import {useReleasesStore} from '../../store/useReleasesStore'
 import {getReleaseDocumentIdFromReleaseId} from '../../util/getReleaseDocumentIdFromReleaseId'
@@ -47,10 +38,6 @@ export interface DocumentInRelease {
   isPending?: boolean
   document: SanityDocument & {publishedDocumentExists: boolean}
   validation: DocumentValidationStatus
-  previewValues: {
-    isLoading: boolean
-    values: PreviewValue | undefined | null
-  }
 }
 
 type ReleaseDocumentsObservableResult = Observable<{
@@ -65,7 +52,7 @@ const getActiveReleaseDocumentsObservable = ({
   i18n,
   getClient,
   releaseId,
-  perspectiveStack,
+  perspectiveStack: _perspectiveStack,
 }: {
   schema: Schema
   documentPreviewStore: DocumentPreviewStore
@@ -111,6 +98,7 @@ const getActiveReleaseDocumentsObservable = ({
               )
             }),
           )
+
         const validation$ = document$.pipe(
           switchMap((document) => {
             if (isGoingToUnpublish(document)) {
@@ -133,61 +121,11 @@ const getActiveReleaseDocumentsObservable = ({
           }),
         )
 
-        const previewValues$ = document$.pipe(
-          map((document) => {
-            const schemaType = schema.get(document._type)
-            if (!schemaType) {
-              console.error(
-                `Schema type not found for document type ${document._type} (document ID: ${document._id})`,
-              )
-              return of({
-                isLoading: false,
-                values: {
-                  _id: document._id,
-                  title: `Document type "${document._type}" not found`,
-                  _createdAt: document._createdAt,
-                  _updatedAt: document._updatedAt,
-                } satisfies PreviewValue,
-              })
-            }
-            return documentPreviewStore
-              .observeForPreview(document, schemaType, {perspective: [releaseId]})
-              .pipe(
-                switchMap((value) => {
-                  if (value.snapshot) {
-                    return of(value)
-                  }
-
-                  // if we are on this section, it means that the document is not available in the perspective
-                  // which, in turn, means that the document is going to be unpublished
-                  // so we need to show the published document instead
-                  const publishedId = getPublishedId(document._id)
-                  return documentPreviewStore.observeForPreview(
-                    {
-                      _id: publishedId,
-                    },
-                    schemaType,
-                    {
-                      // we need to show the published document instead
-                      perspective: [],
-                    },
-                  )
-                }),
-                map(({snapshot}) => ({
-                  isLoading: false,
-                  values: snapshot,
-                })),
-                startWith({isLoading: true, values: {}}),
-              )
-          }),
-          switchAll(),
-        )
-
-        return combineLatest([document$, validation$, previewValues$]).pipe(
-          map(([document, validation, previewValues]) => ({
+        // Do not subscribe to preview streams here. Previews will be fetched lazily per rendered row.
+        return combineLatest([document$, validation$]).pipe(
+          map(([document, validation]) => ({
             document,
             validation,
-            previewValues,
             memoKey: uuid(),
           })),
         )
@@ -201,8 +139,8 @@ const getActiveReleaseDocumentsObservable = ({
 
 const getPublishedArchivedReleaseDocumentsObservable = ({
   getClient,
-  schema,
-  documentPreviewStore,
+  schema: _schema,
+  documentPreviewStore: _documentPreviewStore,
   release,
 }: {
   getClient: ReturnType<typeof useSource>['getClient']
@@ -244,40 +182,15 @@ const getPublishedArchivedReleaseDocumentsObservable = ({
   )
 
   return documents$.pipe(
-    mergeMap((documents) => {
-      return combineLatest(
-        documents.map((document) => {
-          const schemaType = schema.get(document._type)
-          if (!schemaType) {
-            throw new Error(`Schema type not found for document type ${document._type}`)
-          }
-          const previewValues$ = documentPreviewStore.observeForPreview(document, schemaType).pipe(
-            take(1),
-            map(({snapshot}) => ({
-              isLoading: false,
-              values: prepareForPreview(snapshot || document, schemaType),
-            })),
-            startWith({isLoading: true, values: {}}),
-            filter(({isLoading}) => !isLoading),
-          )
-
-          return previewValues$.pipe(
-            map((previewValues) => ({
-              document,
-              previewValues,
-              memoKey: uuid(),
-              validation: {validation: [], hasError: false, isValidating: false},
-            })),
-          )
-        }),
-      ).pipe(
-        map((results) => ({
-          loading: false,
-          results,
-          error: null,
-        })),
-      )
-    }),
+    map((documents) => ({
+      loading: false,
+      results: documents.map((document) => ({
+        document,
+        memoKey: uuid(),
+        validation: {validation: [], hasError: false, isValidating: false},
+      })),
+      error: null,
+    })),
     catchError((error) => {
       return of({loading: false, results: [], error})
     }),

@@ -108,7 +108,6 @@ export function ReleaseSummary(props: ReleaseSummaryProps) {
 
       const pendingDocumentRow: DocumentWithHistory = {
         memoKey: versionDocumentId,
-        previewValues: {isLoading: true, values: {}},
         validation: {
           isValidating: false,
           validation: [],
@@ -201,7 +200,6 @@ export function ReleaseSummary(props: ReleaseSummaryProps) {
             rowId="document._id"
             columnDefs={documentTableColumnDefs}
             rowActions={renderRowActions}
-            searchFilter={filterRows}
             scrollContainerRef={scrollContainerRef}
             defaultSort={{column: 'search', direction: 'asc'}}
           />
