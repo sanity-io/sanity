@@ -129,28 +129,28 @@ describe(TypeGenerator.name, () => {
 
     // Assert foo module
     expect(foo.filename).toBe('/src/foo.ts')
-    expect(foo.results).toHaveLength(1)
+    expect(foo.queries).toHaveLength(1)
     expect(foo.errors).toHaveLength(0)
-    expect(foo.results[0].variable.id.name).toBe('queryFoo')
-    expect(foo.results[0].query).toBe('*[_type == "foo"]')
+    expect(foo.queries[0].variable.id.name).toBe('queryFoo')
+    expect(foo.queries[0].query).toBe('*[_type == "foo"]')
 
     // Assert noQueries module
     expect(noQueries.filename).toBe('/src/no-queries')
-    expect(noQueries.results).toHaveLength(0)
+    expect(noQueries.queries).toHaveLength(0)
     expect(noQueries.errors).toHaveLength(0)
 
     // Assert hasAnError module
     expect(hasAnError.filename).toBe('/src/has-an-error')
-    expect(hasAnError.results).toHaveLength(0)
+    expect(hasAnError.queries).toHaveLength(0)
     expect(hasAnError.errors).toHaveLength(1)
     expect(hasAnError.errors[0]).toBeInstanceOf(QueryExtractionError)
 
     // Assert bar module
     expect(bar.filename).toBe('/src/bar.ts')
-    expect(bar.results).toHaveLength(1)
+    expect(bar.queries).toHaveLength(1)
     expect(bar.errors).toHaveLength(0)
-    expect(bar.results[0].variable.id.name).toBe('queryBar')
-    expect(bar.results[0].query).toBe('*[_type == "bar"]')
+    expect(bar.queries[0].variable.id.name).toBe('queryBar')
+    expect(bar.queries[0].query).toBe('*[_type == "bar"]')
 
     const {queryMapDeclaration} = await receiver.event.generatedQueryTypes()
 
@@ -526,18 +526,9 @@ describe(TypeGenerator.name, () => {
 
     // however, since all of them have been yielded the same query, the
     // resulting TS type should be the same for all of them
-    const t1 = m1
-      .flatMap((m) => m.results)
-      .map((r) => r.tsType)
-      .at(0)
-    const t2 = m2
-      .flatMap((m) => m.results)
-      .map((r) => r.tsType)
-      .at(0)
-    const t3 = m3
-      .flatMap((m) => m.results)
-      .map((r) => r.tsType)
-      .at(0)
+    const t1 = m1.flatMap((m) => m.queries).map((r) => r.tsType)[0]
+    const t2 = m2.flatMap((m) => m.queries).map((r) => r.tsType)[0]
+    const t3 = m3.flatMap((m) => m.queries).map((r) => r.tsType)[0]
 
     expect(t1).toBe(t2)
     // the schema is different which means the schema type generator interface
