@@ -132,7 +132,7 @@ export class TypeGenerator {
     const evaluatedModuleResults: EvaluatedModule[] = []
 
     for await (const {filename, ...extractedModule} of extractedModules) {
-      const results: EvaluatedQuery[] = []
+      const queries: EvaluatedQuery[] = []
       const errors: unknown[] = [...extractedModule.errors]
 
       for (const extractedQuery of extractedModule.queries) {
@@ -160,7 +160,7 @@ export class TypeGenerator {
           }
 
           currentIdentifiers.add(id.name)
-          results.push(evaluatedQueryResult)
+          queries.push(evaluatedQueryResult)
         } catch (error) {
           errors.push(error)
         }
@@ -168,7 +168,7 @@ export class TypeGenerator {
 
       const evaluatedModule: EvaluatedModule = {
         filename,
-        results,
+        queries,
         errors,
       }
       report?.stream.evaluatedModules.emit(evaluatedModule)
@@ -185,7 +185,7 @@ export class TypeGenerator {
   }: GetQueryMapDeclarationOptions) {
     if (!overloadClientMethods) return {code: '', ast: t.program([])}
 
-    const queries = evaluatedModules.flatMap((module) => module.results)
+    const queries = evaluatedModules.flatMap((module) => module.queries)
     if (!queries.length) return {code: '', ast: t.program([])}
 
     const typesByQuerystring: {[query: string]: string[]} = {}
@@ -259,10 +259,10 @@ export class TypeGenerator {
       schemaTypeDeclarations,
       schemaTypeGenerator: this.getSchemaTypeGenerator(options),
     })
-    for (const {results} of evaluatedModules) {
-      for (const result of results) {
-        program.body.push(result.ast)
-        code += result.code
+    for (const {queries} of evaluatedModules) {
+      for (const query of queries) {
+        program.body.push(query.ast)
+        code += query.code
       }
     }
 

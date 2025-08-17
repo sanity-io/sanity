@@ -180,13 +180,13 @@ export default async function typegenGenerateAction(
     let unknownTypeNodesGenerated = 0
     let emptyUnionTypeNodesGenerated = 0
 
-    for await (const {results, errors} of receiver.stream.evaluatedModules()) {
+    for await (const {queries, errors} of receiver.stream.evaluatedModules()) {
       evaluatedFiles++
-      queriesCount += results.length
-      queryFilesCount += results.length ? 1 : 0
+      queriesCount += queries.length
+      queryFilesCount += queries.length ? 1 : 0
       filesWithErrors += errors.length ? 1 : 0
 
-      for (const {stats} of results) {
+      for (const {stats} of queries) {
         typeNodesGenerated += stats.allTypes
         unknownTypeNodesGenerated += stats.unknownTypes
         emptyUnionTypeNodesGenerated += stats.emptyUnions
