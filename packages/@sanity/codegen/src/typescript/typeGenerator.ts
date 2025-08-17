@@ -5,10 +5,16 @@ import {type WorkerChannel, type WorkerChannelReporter} from '@sanity/worker-cha
 import {type SchemaType} from 'groq-js'
 import {createSelector} from 'reselect'
 
-import {ALL_SANITY_SCHEMA_TYPES, INTERNAL_REFERENCE_SYMBOL} from './constants'
+import {ALL_SANITY_SCHEMA_TYPES, INTERNAL_REFERENCE_SYMBOL, SANITY_QUERIES} from './constants'
 import {computeOnce, generateCode, getUniqueIdentifierForName, normalizePath} from './helpers'
 import {SchemaTypeGenerator} from './schemaTypeGenerator'
-import {type EvaluatedModule, type EvaluatedQuery, type ExtractedModule} from './types'
+import {
+  type EvaluatedModule,
+  type EvaluatedQuery,
+  type ExtractedModule,
+  QueryEvaluationError,
+  type QueryExtractionError,
+} from './types'
 
 export type TypegenWorkerChannel = WorkerChannel.Definition<{
   generatedSchemaTypes: WorkerChannel.Event<{
@@ -133,20 +139,18 @@ export class TypeGenerator {
 
     for await (const {filename, ...extractedModule} of extractedModules) {
       const queries: EvaluatedQuery[] = []
-      const errors: unknown[] = [...extractedModule.errors]
+      const errors: (QueryExtractionError | QueryEvaluationError)[] = [...extractedModule.errors]
 
       for (const extractedQuery of extractedModule.queries) {
+        const {variable} = extractedQuery
         try {
           const {tsType, stats} = schemaTypeGenerator.evaluateQuery(extractedQuery)
-          const id = getUniqueIdentifierForName(
-            `${extractedQuery.variable.id.name}Result`,
-            currentIdentifiers,
-          )
+          const id = getUniqueIdentifierForName(`${variable.id.name}Result`, currentIdentifiers)
           const typeAlias = t.tsTypeAliasDeclaration(id, null, tsType)
           const trimmedQuery = extractedQuery.query.replace(/(\r\n|\n|\r)/gm, '').trim()
           const ast = t.addComments(t.exportNamedDeclaration(typeAlias), 'leading', [
             {type: 'CommentLine', value: ` Source: ${normalizePath(root, filename)}`},
-            {type: 'CommentLine', value: ` Variable: ${extractedQuery.variable.id.name}`},
+            {type: 'CommentLine', value: ` Variable: ${variable.id.name}`},
             {type: 'CommentLine', value: ` Query: ${trimmedQuery}`},
           ])
 
@@ -161,8 +165,8 @@ export class TypeGenerator {
 
           currentIdentifiers.add(id.name)
           queries.push(evaluatedQueryResult)
-        } catch (error) {
-          errors.push(error)
+        } catch (cause) {
+          errors.push(new QueryEvaluationError({variable, cause, filename}))
         }
       }
 
@@ -195,7 +199,7 @@ export class TypeGenerator {
     }
 
     const queryReturnInterface = t.tsInterfaceDeclaration(
-      t.identifier('SanityQueries'),
+      SANITY_QUERIES,
       null,
       [],
       t.tsInterfaceBody(
