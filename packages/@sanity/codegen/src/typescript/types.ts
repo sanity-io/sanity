@@ -57,7 +57,7 @@ export interface EvaluatedQuery extends ExtractedQuery {
  */
 export interface EvaluatedModule {
   filename: string
-  results: EvaluatedQuery[]
+  queries: EvaluatedQuery[]
   errors: unknown[]
 }
 
