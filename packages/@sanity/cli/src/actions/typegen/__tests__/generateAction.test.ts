@@ -113,8 +113,8 @@ test(generateAction.name, async () => {
       name: 'post',
       attributes: {
         _type: {type: 'objectAttribute', value: {type: 'string', value: 'post'}},
-        title: {type: 'objectAttribute', value: {type: 'string'}},
-        views: {type: 'objectAttribute', value: {type: 'number'}},
+        title: {type: 'objectAttribute', value: {type: 'string'}, optional: true},
+        views: {type: 'objectAttribute', value: {type: 'number'}, optional: true},
       },
     },
     {
@@ -132,7 +132,12 @@ test(generateAction.name, async () => {
   report.event.loadedSchema()
 
   const extractedModules: ExtractedModule[] = [
-    {filename: '/work-dir/src/no-queries-in-file.ts', queries: [], errors: []},
+    {
+      filename: '/work-dir/src/no-queries-in-file.ts',
+      queries: [],
+      documentProjections: [],
+      errors: [],
+    },
     {
       filename: '/work-dir/src/queries.ts',
       queries: [
@@ -147,11 +152,20 @@ test(generateAction.name, async () => {
           filename: '/work-dir/src/queries.ts',
         },
       ],
+      documentProjections: [
+        {
+          filename: '/work-dir/src/queries.ts',
+          documentTypes: ['post'],
+          projection: '{_type,title}',
+          variable: {id: {type: 'Identifier', name: 'postProjection'}},
+        },
+      ],
       errors: [],
     },
     {
       filename: '/work-dir/src/has-errors.ts',
       queries: [],
+      documentProjections: [],
       errors: [
         new QueryExtractionError({
           cause: new Error('Test error'),
@@ -194,11 +208,11 @@ test(generateAction.name, async () => {
       Generating query types… (33.3%)
       └─ Processed 1 of 3 files. Found 0 queries from 0 files.
       Generating query types… (66.7%)
-      └─ Processed 2 of 3 files. Found 2 queries from 1 file.
+      └─ Processed 2 of 3 files. Found 2 queries and 1 document projection from 1 file.
     × Error while extracting query in /work-dir/src/has-errors.ts: Test error
       Generating query types… (100.0%)
-      └─ Processed 3 of 3 files. Found 2 queries from 1 file.
-    ✓ Generated 2 query types from 1 file out of 3 scanned files
+      └─ Processed 3 of 3 files. Found 2 queries and 1 document projection from 1 file.
+    ✓ Generated types for 2 queries and 1 document projection from 1 file out of 3 scanned files
       Formatting generated types with prettier…
     ✓ Formatted generated types with prettier
     ⚠ Encountered errors in 1 file while generating types
@@ -226,10 +240,12 @@ test(generateAction.name, async () => {
      * ---------------------------------------------------------------------------------
      */
 
+    import type { DocumentProjectionBase } from "groq";
+
     export type Post = {
       _type: "post";
-      title: string;
-      views: number;
+      title?: string;
+      views?: number;
     };
 
     export type Author = {
@@ -255,16 +271,24 @@ test(generateAction.name, async () => {
     // Variable: postTitles
     // Query: *[_type == "post"]{title}
     export type PostTitlesResult = Array<{
-      title: string;
+      title: string | null;
     }>;
 
     // Source: src/queries.ts
     // Variable: firstPost
     // Query: *[_type == "post"][0]{title, views}
     export type FirstPostResult = {
-      title: string;
-      views: number;
+      title: string | null;
+      views: number | null;
     } | null;
+
+    // Source: src/queries.ts
+    // Variable: postProjection
+    // Projection: {_type,title}
+    export type PostProjectionResult = DocumentProjectionBase<{
+      _type: "post";
+      title: string | null;
+    }, "post">;
 
     // Query TypeMap
     declare module "@sanity/client" {
@@ -277,6 +301,13 @@ test(generateAction.name, async () => {
       interface SanityQueries {
         "*[_type == \\"post\\"]{title}": PostTitlesResult;
         "*[_type == \\"post\\"][0]{title, views}": FirstPostResult;
+      }
+    }
+
+    // Document Projection TypeMap
+    declare module "groq" {
+      interface SanityDocumentProjections {
+        "{_type,title}": PostProjectionResult;
       }
     }
 
@@ -301,10 +332,12 @@ test(generateAction.name, async () => {
      * ---------------------------------------------------------------------------------
      */
 
+    import type { DocumentProjectionBase } from "groq";
+
     export type Post = {
       _type: "post";
-      title: string;
-      views: number;
+      title?: string;
+      views?: number;
     };
 
     export type Author = {
@@ -330,16 +363,27 @@ test(generateAction.name, async () => {
     // Variable: postTitles
     // Query: *[_type == "post"]{title}
     export type PostTitlesResult = Array<{
-      title: string;
+      title: string | null;
     }>;
 
     // Source: src/queries.ts
     // Variable: firstPost
     // Query: *[_type == "post"][0]{title, views}
     export type FirstPostResult = {
-      title: string;
-      views: number;
+      title: string | null;
+      views: number | null;
     } | null;
+
+    // Source: src/queries.ts
+    // Variable: postProjection
+    // Projection: {_type,title}
+    export type PostProjectionResult = DocumentProjectionBase<
+      {
+        _type: "post";
+        title: string | null;
+      },
+      "post"
+    >;
 
     // Query TypeMap
     declare module "@sanity/client" {
@@ -352,6 +396,13 @@ test(generateAction.name, async () => {
       interface SanityQueries {
         '*[_type == "post"]{title}': PostTitlesResult;
         '*[_type == "post"][0]{title, views}': FirstPostResult;
+      }
+    }
+
+    // Document Projection TypeMap
+    declare module "groq" {
+      interface SanityDocumentProjections {
+        "{_type,title}": PostProjectionResult;
       }
     }
     ",
@@ -367,13 +418,15 @@ test(generateAction.name, async () => {
       {
         "configAugmentGroqModule": true,
         "configOverloadClientMethods": true,
+        "documentProjectionFilesCount": 1,
+        "documentProjectionsCount": 1,
         "emptyUnionTypeNodesGenerated": 0,
         "filesWithErrors": 1,
-        "outputSize": 1122,
+        "outputSize": 1540,
         "queriesCount": 2,
         "queryFilesCount": 1,
         "schemaTypesCount": 2,
-        "typeNodesGenerated": 8,
+        "typeNodesGenerated": 19,
         "unknownTypeNodesGenerated": 0,
         "unknownTypeNodesRatio": 0,
       },

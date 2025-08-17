@@ -1,6 +1,10 @@
 export {
+  defineDocumentProjection,
   defineQuery,
+  type DocumentProjectionBase,
   type SanityDocument,
+  type SanityDocumentProjectionResult,
+  type SanityDocumentProjections,
   type SanityQueries,
   type SanityQueryResult,
   type SanitySchema,

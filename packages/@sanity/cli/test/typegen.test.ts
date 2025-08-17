@@ -49,7 +49,9 @@ describeCliTest('CLI: `sanity typegen`', () => {
 
       expect(result.code).toBe(0)
       expect(result.stderr).toContain('Generated 2 schema types')
-      expect(result.stderr).toContain('Generated 1 query type from 1 file out of 1 scanned file')
+      expect(result.stderr).toContain(
+        'Generated types for 1 query from 1 file out of 1 scanned file',
+      )
       expect(result.stderr).toContain('Successfully generated types')
     })
 
@@ -68,7 +70,9 @@ describeCliTest('CLI: `sanity typegen`', () => {
 
       expect(result.code).toBe(0)
       expect(result.stderr).toContain('Generated 2 schema types')
-      expect(result.stderr).toContain('Generated 1 query type from 1 file out of 1 scanned file')
+      expect(result.stderr).toContain(
+        'Generated types for 1 query from 1 file out of 1 scanned file',
+      )
       expect(result.stderr).toContain('Successfully generated types')
       expect(result.stderr).toContain('Formatted generated types with prettier')
 
@@ -88,7 +92,9 @@ describeCliTest('CLI: `sanity typegen`', () => {
 
       expect(result.code).toBe(0)
       expect(result.stderr).toContain('Generated 2 schema types')
-      expect(result.stderr).toContain('Generated 1 query type from 1 file out of 1 scanned file')
+      expect(result.stderr).toContain(
+        'Generated types for 1 query from 1 file out of 1 scanned file',
+      )
       expect(result.stderr).toContain('Successfully generated types')
 
       const types = await readFile(`${studiosPath}/cli-test-studio/out/types.ts`)
@@ -111,7 +117,9 @@ describeCliTest('CLI: `sanity typegen`', () => {
 
       expect(result.code).toBe(0)
       expect(result.stderr).toContain('Generated 2 schema types')
-      expect(result.stderr).toContain('Generated 1 query type from 1 file out of 1 scanned file')
+      expect(result.stderr).toContain(
+        'Generated types for 1 query from 1 file out of 1 scanned file',
+      )
       expect(result.stderr).toContain('Successfully generated types')
 
       const types = await readFile(`${studiosPath}/cli-test-studio/out/types.ts`)

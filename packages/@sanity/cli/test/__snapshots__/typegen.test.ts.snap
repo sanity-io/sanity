@@ -15,6 +15,8 @@ exports[`CLI: \`sanity typegen\` > cli-test-studio > sanity typegen generate: fo
  * ---------------------------------------------------------------------------------
  */
 
+export declare const internalGroqTypeReferenceTo: unique symbol;
+
 export type Person = {
   _id: string;
   _type: 'person';
@@ -36,19 +38,17 @@ export type AllSanitySchemaTypes = Person | Slug;
 // Source: working-schema.json
 export type DefaultSchema = Person | Slug;
 
+// Source: src/queries.ts
+// Variable: PAGE_QUERY
+// Query: *[_type == "page" && slug.current == $slug][0]
+export type PAGE_QUERYResult = null;
+
 // Schema TypeMap
 declare module 'groq' {
   interface SanitySchemas {
     default: DefaultSchema;
   }
 }
-
-export declare const internalGroqTypeReferenceTo: unique symbol;
-
-// Source: src/queries.ts
-// Variable: PAGE_QUERY
-// Query: *[_type == "page" && slug.current == $slug][0]
-export type PAGE_QUERYResult = null;
 
 // Query TypeMap
 declare module '@sanity/client' {
@@ -79,6 +79,8 @@ exports[`CLI: \`sanity typegen\` > cli-test-studio > sanity typegen generate: wi
  * ---------------------------------------------------------------------------------
  */
 
+export declare const internalGroqTypeReferenceTo: unique symbol;
+
 export type Person = {
   _id: string;
   _type: 'person';
@@ -99,8 +101,6 @@ export type AllSanitySchemaTypes = Person | Slug;
 
 // Source: working-schema.json
 export type DefaultSchema = Person | Slug;
-
-export declare const internalGroqTypeReferenceTo: unique symbol;
 
 // Source: src/queries.ts
 // Variable: PAGE_QUERY

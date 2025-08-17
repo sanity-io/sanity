@@ -60,14 +60,17 @@ describe(TypeGenerator.name, () => {
             variable: {id: {type: 'Identifier', name: 'queryFoo'}},
           },
         ],
+        documentProjections: [],
         errors: [],
       }
-      yield {filename: '/src/no-queries', queries: [], errors: []}
+      yield {filename: '/src/no-queries', queries: [], documentProjections: [], errors: []}
       yield {
         filename: '/src/has-an-error',
         queries: [],
+        documentProjections: [],
         errors: [
           new QueryExtractionError({
+            type: 'query',
             filename: '/src/has-an-error',
             cause: new Error('Test Error'),
             variable: {id: {type: 'Identifier', name: 'hadAnError'}},
@@ -83,6 +86,7 @@ describe(TypeGenerator.name, () => {
             variable: {id: {type: 'Identifier', name: 'queryBar'}},
           },
         ],
+        documentProjections: [],
         errors: [],
       }
     }
@@ -203,7 +207,9 @@ describe(TypeGenerator.name, () => {
 
     const {code} = await complete
     expect(code).toMatchInlineSnapshot(`
-      "export type Foo = {
+      "export declare const internalGroqTypeReferenceTo: unique symbol;
+
+      export type Foo = {
         _id: string;
         _type: "foo";
         foo?: string;
@@ -219,15 +225,6 @@ describe(TypeGenerator.name, () => {
 
       // Source: changed-path/my-schema-path.json
       export type DefaultSchema = Foo | Bar;
-
-      // Schema TypeMap
-      declare module "groq" {
-        interface SanitySchemas {
-          "default": DefaultSchema;
-        }
-      }
-
-      export declare const internalGroqTypeReferenceTo: unique symbol;
 
       // Source: foo.ts
       // Variable: queryFoo
@@ -246,6 +243,13 @@ describe(TypeGenerator.name, () => {
         _type: "bar";
         bar?: string;
       }>;
+
+      // Schema TypeMap
+      declare module "groq" {
+        interface SanitySchemas {
+          "default": DefaultSchema;
+        }
+      }
 
       // Query TypeMap
       declare module "@sanity/client" {
@@ -299,6 +303,7 @@ describe(TypeGenerator.name, () => {
             variable: {id: {type: 'Identifier', name: 'queryFoo'}},
           },
         ],
+        documentProjections: [],
         errors: [],
       }
       yield {
@@ -310,6 +315,7 @@ describe(TypeGenerator.name, () => {
             variable: {id: {type: 'Identifier', name: 'queryBar'}},
           },
         ],
+        documentProjections: [],
         errors: [],
       }
     }
@@ -322,7 +328,9 @@ describe(TypeGenerator.name, () => {
     })
 
     expect(code).toMatchInlineSnapshot(`
-      "export type Foo = {
+      "export declare const internalGroqTypeReferenceTo: unique symbol;
+
+      export type Foo = {
         _id: string;
         _type: "foo";
         foo?: string;
@@ -337,15 +345,6 @@ describe(TypeGenerator.name, () => {
       export type AllSanitySchemaTypes = Foo | Bar;
 
       export type DefaultSchema = Foo | Bar;
-
-      // Schema TypeMap
-      declare module "groq" {
-        interface SanitySchemas {
-          "default": DefaultSchema;
-        }
-      }
-
-      export declare const internalGroqTypeReferenceTo: unique symbol;
 
       // Source: foo.ts
       // Variable: queryFoo
@@ -364,6 +363,13 @@ describe(TypeGenerator.name, () => {
         _type: "bar";
         bar?: string;
       }>;
+
+      // Schema TypeMap
+      declare module "groq" {
+        interface SanitySchemas {
+          "default": DefaultSchema;
+        }
+      }
 
       // Query TypeMap
       declare module "groq" {
@@ -407,7 +413,9 @@ describe(TypeGenerator.name, () => {
     })
 
     expect(code).toMatchInlineSnapshot(`
-      "export type Foo = {
+      "export declare const internalGroqTypeReferenceTo: unique symbol;
+
+      export type Foo = {
         _id: string;
         _type: "foo";
         foo?: string;
@@ -429,8 +437,6 @@ describe(TypeGenerator.name, () => {
           "default": DefaultSchema;
         }
       }
-
-      export declare const internalGroqTypeReferenceTo: unique symbol;
 
       "
     `)
@@ -536,6 +542,7 @@ describe(TypeGenerator.name, () => {
             variable: {id: {type: 'Identifier', name: 'queryFoo'}},
           },
         ],
+        documentProjections: [],
         errors: [],
       }
     }
@@ -548,7 +555,9 @@ describe(TypeGenerator.name, () => {
     })
 
     expect(code).toMatchInlineSnapshot(`
-      "export type Foo = {
+      "export declare const internalGroqTypeReferenceTo: unique symbol;
+
+      export type Foo = {
         _id: string;
         _type: "foo";
         foo?: string;
@@ -557,8 +566,6 @@ describe(TypeGenerator.name, () => {
       export type AllSanitySchemaTypes = Foo;
 
       export type DefaultSchema = Foo;
-
-      export declare const internalGroqTypeReferenceTo: unique symbol;
 
       // Source: foo.ts
       // Variable: queryFoo
@@ -607,6 +614,7 @@ describe(TypeGenerator.name, () => {
             variable: {id: {type: 'Identifier', name: 'queryFoo'}},
           },
         ],
+        documentProjections: [],
         errors: [],
       }
     }
@@ -680,6 +688,7 @@ describe(TypeGenerator.name, () => {
             variable: {id: {type: 'Identifier', name: 'queryFoo'}},
           },
         ],
+        documentProjections: [],
         errors: [],
       }
     }
@@ -693,7 +702,9 @@ describe(TypeGenerator.name, () => {
     })
 
     expect(code).toMatchInlineSnapshot(`
-      "export type Foo = {
+      "export declare const internalGroqTypeReferenceTo: unique symbol;
+
+      export type Foo = {
         _id: string;
         _type: "foo";
         foo?: string;
@@ -702,8 +713,6 @@ describe(TypeGenerator.name, () => {
       export type AllSanitySchemaTypes = Foo;
 
       export type DefaultSchema = Foo;
-
-      export declare const internalGroqTypeReferenceTo: unique symbol;
 
       // Source: foo.ts
       // Variable: queryFoo
@@ -741,6 +750,7 @@ describe(TypeGenerator.name, () => {
           variable: {id: t.identifier('testQuery')},
         },
       ],
+      documentProjections: [],
       errors: [],
     }
 
@@ -831,5 +841,531 @@ describe(TypeGenerator.name, () => {
 
     expect(q1.queryMapDeclaration).not.toBe(q2.queryMapDeclaration)
     expect(q2.queryMapDeclaration).not.toBe(q3.queryMapDeclaration)
+  })
+
+  test('generates document projection types and imports', async () => {
+    const emitter = new EventEmitter()
+    const receiver = WorkerChannelReceiver.from<TypegenWorkerChannel>(emitter)
+    const typeGenerator = new TypeGenerator()
+
+    const schema: SchemaType = [
+      {
+        type: 'document',
+        name: 'post',
+        attributes: {
+          _id: {type: 'objectAttribute', value: {type: 'string'}},
+          _type: {type: 'objectAttribute', value: {type: 'string', value: 'post'}},
+          title: {type: 'objectAttribute', value: {type: 'string'}, optional: true},
+          content: {type: 'objectAttribute', value: {type: 'string'}, optional: true},
+        },
+      },
+    ]
+
+    async function* getModules(): AsyncGenerator<ExtractedModule> {
+      yield {
+        filename: '/src/projections.ts',
+        queries: [],
+        documentProjections: [
+          {
+            filename: '/src/projections.ts',
+            variable: {id: {type: 'Identifier', name: 'postSummary'}},
+            documentTypes: ['post'],
+            projection: '{_id, title}',
+          },
+        ],
+        errors: [],
+      }
+    }
+
+    const complete = typeGenerator.generateTypes({
+      root: '/src',
+      schema,
+      queries: getModules(),
+      reporter: WorkerChannelReporter.from<TypegenWorkerChannel>(emitter),
+    })
+
+    const evaluatedModules = await ArrayFromAsync(receiver.stream.evaluatedModules())
+    expect(evaluatedModules).toHaveLength(1)
+
+    const [module] = evaluatedModules
+    expect(module.documentProjections).toHaveLength(1)
+    expect(module.documentProjections[0].variable.id.name).toBe('postSummary')
+    expect(module.documentProjections[0].projection).toBe('{_id, title}')
+
+    const {documentProjectionMapDeclaration, importDeclarations} =
+      await receiver.event.generatedQueryTypes()
+
+    expect(importDeclarations.code).toMatchInlineSnapshot(`
+      "import type { DocumentProjectionBase } from "groq";
+
+      "
+    `)
+
+    expect(documentProjectionMapDeclaration.code).toMatchInlineSnapshot(`
+      "// Document Projection TypeMap
+      declare module "groq" {
+        interface SanityDocumentProjections {
+          "{_id, title}": PostSummaryResult;
+        }
+      }
+
+      "
+    `)
+
+    const {code} = await complete
+    expect(code).toMatchInlineSnapshot(`
+      "import type { DocumentProjectionBase } from "groq";
+
+      export declare const internalGroqTypeReferenceTo: unique symbol;
+
+      export type Post = {
+        _id: string;
+        _type: "post";
+        title?: string;
+        content?: string;
+      };
+
+      export type AllSanitySchemaTypes = Post;
+
+      export type DefaultSchema = Post;
+
+      // Source: projections.ts
+      // Variable: postSummary
+      // Projection: {_id, title}
+      export type PostSummaryResult = DocumentProjectionBase<{
+        _id: string;
+        title: string | null;
+      }, "post">;
+
+      // Schema TypeMap
+      declare module "groq" {
+        interface SanitySchemas {
+          "default": DefaultSchema;
+        }
+      }
+
+      // Document Projection TypeMap
+      declare module "groq" {
+        interface SanityDocumentProjections {
+          "{_id, title}": PostSummaryResult;
+        }
+      }
+
+      "
+    `)
+  })
+
+  test('does not generate document projection imports when no projections exist', async () => {
+    const emitter = new EventEmitter()
+    const receiver = WorkerChannelReceiver.from<TypegenWorkerChannel>(emitter)
+    const typeGenerator = new TypeGenerator()
+
+    const schema: SchemaType = [
+      {
+        type: 'document',
+        name: 'post',
+        attributes: {
+          _id: {type: 'objectAttribute', value: {type: 'string'}},
+          _type: {type: 'objectAttribute', value: {type: 'string', value: 'post'}},
+        },
+      },
+    ]
+
+    async function* getModules(): AsyncGenerator<ExtractedModule> {
+      yield {
+        filename: '/src/queries.ts',
+        queries: [
+          {
+            filename: '/src/queries.ts',
+            query: '*[_type == "post"]',
+            variable: {id: {type: 'Identifier', name: 'allPosts'}},
+          },
+        ],
+        documentProjections: [],
+        errors: [],
+      }
+    }
+
+    const complete = typeGenerator.generateTypes({
+      root: '/src',
+      schema,
+      queries: getModules(),
+      reporter: WorkerChannelReporter.from<TypegenWorkerChannel>(emitter),
+    })
+
+    const {importDeclarations, documentProjectionMapDeclaration} =
+      await receiver.event.generatedQueryTypes()
+
+    expect(importDeclarations.code).toBe('')
+    expect(documentProjectionMapDeclaration.code).toBe('')
+
+    const {code} = await complete
+    expect(code).not.toContain('DocumentProjectionBase')
+    expect(code).not.toContain('SanityDocumentProjections')
+  })
+
+  test('generates document projections for multiple document types', async () => {
+    const emitter = new EventEmitter()
+    const receiver = WorkerChannelReceiver.from<TypegenWorkerChannel>(emitter)
+    const typeGenerator = new TypeGenerator()
+
+    const schema: SchemaType = [
+      {
+        type: 'document',
+        name: 'post',
+        attributes: {
+          _id: {type: 'objectAttribute', value: {type: 'string'}},
+          _type: {type: 'objectAttribute', value: {type: 'string', value: 'post'}},
+          title: {type: 'objectAttribute', value: {type: 'string'}, optional: true},
+          content: {
+            type: 'objectAttribute',
+            value: {
+              type: 'array',
+              of: {
+                type: 'object',
+                attributes: {
+                  _type: {type: 'objectAttribute', value: {type: 'string', value: 'block'}},
+                },
+              },
+            },
+            optional: true,
+          },
+        },
+      },
+      {
+        type: 'document',
+        name: 'article',
+        attributes: {
+          _id: {type: 'objectAttribute', value: {type: 'string'}},
+          _type: {type: 'objectAttribute', value: {type: 'string', value: 'article'}},
+          title: {type: 'objectAttribute', value: {type: 'string'}, optional: true},
+          content: {type: 'objectAttribute', value: {type: 'string'}, optional: true},
+        },
+      },
+    ]
+
+    async function* getModules(): AsyncGenerator<ExtractedModule> {
+      yield {
+        filename: '/src/shared.ts',
+        queries: [],
+        documentProjections: [
+          {
+            filename: '/src/shared.ts',
+            variable: {id: {type: 'Identifier', name: 'contentProjection'}},
+            documentTypes: ['post', 'article'],
+            projection: '{_type, title, content}',
+          },
+        ],
+        errors: [],
+      }
+    }
+
+    const complete = typeGenerator.generateTypes({
+      root: '/src',
+      schema,
+      queries: getModules(),
+      reporter: WorkerChannelReporter.from<TypegenWorkerChannel>(emitter),
+    })
+
+    const {documentProjectionMapDeclaration} = await receiver.event.generatedQueryTypes()
+
+    expect(documentProjectionMapDeclaration.code).toMatchInlineSnapshot(`
+      "// Document Projection TypeMap
+      declare module "groq" {
+        interface SanityDocumentProjections {
+          "{_type, title, content}": ContentProjectionResult;
+        }
+      }
+
+      "
+    `)
+
+    const {code} = await complete
+    expect(code).toMatchInlineSnapshot(`
+      "import type { DocumentProjectionBase } from "groq";
+
+      export declare const internalGroqTypeReferenceTo: unique symbol;
+
+      export type Post = {
+        _id: string;
+        _type: "post";
+        title?: string;
+        content?: Array<{
+          _type: "block";
+        }>;
+      };
+
+      export type Article = {
+        _id: string;
+        _type: "article";
+        title?: string;
+        content?: string;
+      };
+
+      export type AllSanitySchemaTypes = Post | Article;
+
+      export type DefaultSchema = Post | Article;
+
+      // Source: shared.ts
+      // Variable: contentProjection
+      // Projection: {_type, title, content}
+      export type ContentProjectionResult = DocumentProjectionBase<{
+        _type: "post";
+        title: string | null;
+        content: Array<{
+          _type: "block";
+        }> | null;
+      }, "post"> | DocumentProjectionBase<{
+        _type: "article";
+        title: string | null;
+        content: string | null;
+      }, "article">;
+
+      // Schema TypeMap
+      declare module "groq" {
+        interface SanitySchemas {
+          "default": DefaultSchema;
+        }
+      }
+
+      // Document Projection TypeMap
+      declare module "groq" {
+        interface SanityDocumentProjections {
+          "{_type, title, content}": ContentProjectionResult;
+        }
+      }
+
+      "
+    `)
+  })
+
+  test('does not generate document projection map when augmentGroqModule is false', async () => {
+    const emitter = new EventEmitter()
+    const receiver = WorkerChannelReceiver.from<TypegenWorkerChannel>(emitter)
+    const typeGenerator = new TypeGenerator()
+
+    const schema: SchemaType = [
+      {
+        type: 'document',
+        name: 'post',
+        attributes: {
+          _id: {type: 'objectAttribute', value: {type: 'string'}},
+          _type: {type: 'objectAttribute', value: {type: 'string', value: 'post'}},
+          title: {type: 'objectAttribute', value: {type: 'string'}, optional: true},
+        },
+      },
+    ]
+
+    async function* getModules(): AsyncGenerator<ExtractedModule> {
+      yield {
+        filename: '/src/projections.ts',
+        queries: [],
+        documentProjections: [
+          {
+            filename: '/src/projections.ts',
+            variable: {id: {type: 'Identifier', name: 'postProjection'}},
+            documentTypes: ['post'],
+            projection: '{_id, title}',
+          },
+        ],
+        errors: [],
+      }
+    }
+
+    const complete = typeGenerator.generateTypes({
+      root: '/src',
+      schema,
+      augmentGroqModule: false,
+      queries: getModules(),
+      reporter: WorkerChannelReporter.from<TypegenWorkerChannel>(emitter),
+    })
+
+    const {importDeclarations, documentProjectionMapDeclaration} =
+      await receiver.event.generatedQueryTypes()
+
+    expect(importDeclarations.code).toBe('')
+    expect(documentProjectionMapDeclaration.code).toBe('')
+
+    const {code} = await complete
+    expect(code).toContain('export type PostProjectionResult = DocumentProjectionBase<')
+    expect(code).not.toContain('interface SanityDocumentProjections')
+    expect(code).toMatchInlineSnapshot(`
+      "export declare const internalGroqTypeReferenceTo: unique symbol;
+
+      export type Post = {
+        _id: string;
+        _type: "post";
+        title?: string;
+      };
+
+      export type AllSanitySchemaTypes = Post;
+
+      export type DefaultSchema = Post;
+
+      // Source: projections.ts
+      // Variable: postProjection
+      // Projection: {_id, title}
+      export type PostProjectionResult = DocumentProjectionBase<{
+        _id: string;
+        title: string | null;
+      }, "post">;
+
+      "
+    `)
+  })
+
+  test('handles document projection evaluation errors', async () => {
+    const emitter = new EventEmitter()
+    const receiver = WorkerChannelReceiver.from<TypegenWorkerChannel>(emitter)
+    const typeGenerator = new TypeGenerator()
+
+    const schema: SchemaType = [
+      {
+        type: 'document',
+        name: 'post',
+        attributes: {
+          _id: {type: 'objectAttribute', value: {type: 'string'}},
+          _type: {type: 'objectAttribute', value: {type: 'string', value: 'post'}},
+        },
+      },
+    ]
+
+    async function* getModules(): AsyncGenerator<ExtractedModule> {
+      yield {
+        filename: '/src/projections.ts',
+        queries: [],
+        documentProjections: [
+          {
+            filename: '/src/projections.ts',
+            variable: {id: {type: 'Identifier', name: 'invalidProjection'}},
+            documentTypes: ['nonExistentType'],
+            projection: '{_id, title}',
+          },
+        ],
+        errors: [],
+      }
+    }
+
+    await typeGenerator.generateTypes({
+      root: '/src',
+      schema,
+      queries: getModules(),
+      reporter: WorkerChannelReporter.from<TypegenWorkerChannel>(emitter),
+    })
+
+    const evaluatedModules = await ArrayFromAsync(receiver.stream.evaluatedModules())
+    expect(evaluatedModules).toHaveLength(1)
+
+    const [module] = evaluatedModules
+    expect(module.documentProjections).toHaveLength(0)
+    expect(module.errors).toHaveLength(1)
+    expect(module.errors[0]).toBeInstanceOf(Error)
+    expect(module.errors[0].message).toContain(
+      "Unexpected result while evaluating projection for document type 'nonExistentType'",
+    )
+  })
+
+  test('generates unique type names for duplicate projection variable names', async () => {
+    const emitter = new EventEmitter()
+    const receiver = WorkerChannelReceiver.from<TypegenWorkerChannel>(emitter)
+    const typeGenerator = new TypeGenerator()
+
+    const schema: SchemaType = [
+      {
+        type: 'document',
+        name: 'post',
+        attributes: {
+          _id: {type: 'objectAttribute', value: {type: 'string'}},
+          _type: {type: 'objectAttribute', value: {type: 'string', value: 'post'}},
+          title: {type: 'objectAttribute', value: {type: 'string'}, optional: true},
+        },
+      },
+    ]
+
+    async function* getModules(): AsyncGenerator<ExtractedModule> {
+      yield {
+        filename: '/src/projections.ts',
+        queries: [],
+        documentProjections: [
+          {
+            filename: '/src/projections.ts',
+            variable: {id: {type: 'Identifier', name: 'projection'}},
+            documentTypes: ['post'],
+            projection: '{_id}',
+          },
+          {
+            filename: '/src/projections.ts',
+            variable: {id: {type: 'Identifier', name: 'projection'}},
+            documentTypes: ['post'],
+            projection: '{title}',
+          },
+        ],
+        errors: [],
+      }
+    }
+
+    const complete = typeGenerator.generateTypes({
+      root: '/src',
+      schema,
+      queries: getModules(),
+      reporter: WorkerChannelReporter.from<TypegenWorkerChannel>(emitter),
+    })
+
+    const evaluatedModules = await ArrayFromAsync(receiver.stream.evaluatedModules())
+    const [module] = evaluatedModules
+
+    expect(module.documentProjections).toHaveLength(2)
+    expect(module.documentProjections[0].id.name).toBe('ProjectionResult')
+    expect(module.documentProjections[1].id.name).toBe('ProjectionResult_2')
+
+    const {code} = await complete
+    expect(code).toContain('export type ProjectionResult =')
+    expect(code).toContain('export type ProjectionResult_2 =')
+    expect(code).toMatchInlineSnapshot(`
+      "import type { DocumentProjectionBase } from "groq";
+
+      export declare const internalGroqTypeReferenceTo: unique symbol;
+
+      export type Post = {
+        _id: string;
+        _type: "post";
+        title?: string;
+      };
+
+      export type AllSanitySchemaTypes = Post;
+
+      export type DefaultSchema = Post;
+
+      // Source: projections.ts
+      // Variable: projection
+      // Projection: {_id}
+      export type ProjectionResult = DocumentProjectionBase<{
+        _id: string;
+      }, "post">;
+
+      // Source: projections.ts
+      // Variable: projection
+      // Projection: {title}
+      export type ProjectionResult_2 = DocumentProjectionBase<{
+        title: string | null;
+      }, "post">;
+
+      // Schema TypeMap
+      declare module "groq" {
+        interface SanitySchemas {
+          "default": DefaultSchema;
+        }
+      }
+
+      // Document Projection TypeMap
+      declare module "groq" {
+        interface SanityDocumentProjections {
+          "{_id}": ProjectionResult;
+          "{title}": ProjectionResult_2;
+        }
+      }
+
+      "
+    `)
   })
 })

@@ -29,6 +29,13 @@ export interface ExtractedQuery {
   filename: string
 }
 
+export interface ExtractedDocumentProjection {
+  variable: QueryVariable
+  projection: string
+  documentTypes: string[]
+  filename: string
+}
+
 /**
  * A module (file) containing extracted GROQ queries.
  * @public
@@ -36,6 +43,7 @@ export interface ExtractedQuery {
 export interface ExtractedModule {
   filename: string
   queries: ExtractedQuery[]
+  documentProjections: ExtractedDocumentProjection[]
   errors: QueryExtractionError[]
 }
 
@@ -51,6 +59,14 @@ export interface EvaluatedQuery extends ExtractedQuery {
   stats: TypeEvaluationStats
 }
 
+export interface EvaluatedDocumentProjection extends ExtractedDocumentProjection {
+  id: t.Identifier
+  code: string
+  tsType: t.TSType
+  ast: t.ExportNamedDeclaration
+  stats: TypeEvaluationStats
+}
+
 /**
  * A module containing queries that have been evaluated.
  * @public
@@ -58,10 +74,12 @@ export interface EvaluatedQuery extends ExtractedQuery {
 export interface EvaluatedModule {
   filename: string
   queries: EvaluatedQuery[]
+  documentProjections: EvaluatedDocumentProjection[]
   errors: (QueryExtractionError | QueryEvaluationError)[]
 }
 
 interface QueryExtractionErrorOptions {
+  type?: 'query' | 'documentProjection'
   variable?: QueryVariable
   cause: unknown
   filename: string
@@ -74,11 +92,12 @@ interface QueryExtractionErrorOptions {
 export class QueryExtractionError extends Error {
   variable?: QueryVariable
   filename: string
-  constructor({variable, cause, filename}: QueryExtractionErrorOptions) {
+  constructor({type, variable, cause, filename}: QueryExtractionErrorOptions) {
     super(
-      `Error while extracting query ${variable ? `from variable '${variable.id.name}' ` : ''}in ${filename}: ${
-        isRecord(cause) && typeof cause.message === 'string' ? cause.message : 'Unknown error'
-      }`,
+      `Error while extracting ${type === 'documentProjection' ? 'document projection' : 'query'} ` +
+        `${variable ? `from variable '${variable.id.name}' ` : ''}in ${filename}: ${
+          isRecord(cause) && typeof cause.message === 'string' ? cause.message : 'Unknown error'
+        }`,
     )
     this.name = 'QueryExtractionError'
     this.cause = cause
@@ -87,24 +106,15 @@ export class QueryExtractionError extends Error {
   }
 }
 
-interface QueryEvaluationErrorOptions {
-  variable?: QueryVariable
-  cause: unknown
-  filename: string
-}
-
-/**
- * An error that occurred during query evaluation.
- * @public
- */
 export class QueryEvaluationError extends Error {
   variable?: QueryVariable
   filename: string
-  constructor({variable, cause, filename}: QueryEvaluationErrorOptions) {
+  constructor({type, variable, cause, filename}: QueryExtractionErrorOptions) {
     super(
-      `Error while evaluating query ${variable ? `from variable '${variable.id.name}' ` : ''}in ${filename}: ${
-        isRecord(cause) && typeof cause.message === 'string' ? cause.message : 'Unknown error'
-      }`,
+      `Error while evaluating ${type === 'documentProjection' ? 'document projection' : 'query'} ` +
+        `${variable ? `from variable '${variable.id.name}' ` : ''}in ${filename}: ${
+          isRecord(cause) && typeof cause.message === 'string' ? cause.message : 'Unknown error'
+        }`,
     )
     this.name = 'QueryEvaluationError'
     this.cause = cause

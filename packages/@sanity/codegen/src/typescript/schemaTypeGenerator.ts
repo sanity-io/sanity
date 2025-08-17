@@ -13,9 +13,13 @@ import {
 } from 'groq-js'
 
 import {safeParseQuery} from '../safeParseQuery'
-import {INTERNAL_REFERENCE_SYMBOL} from './constants'
+import {DOCUMENT_PROJECTION_BASE, INTERNAL_REFERENCE_SYMBOL} from './constants'
 import {getUniqueIdentifierForName, sanitizeIdentifier, weakMapMemo} from './helpers'
-import {type ExtractedQuery, type TypeEvaluationStats} from './types'
+import {
+  type ExtractedDocumentProjection,
+  type ExtractedQuery,
+  type TypeEvaluationStats,
+} from './types'
 
 export class SchemaTypeGenerator {
   public readonly schema: SchemaType
@@ -223,6 +227,76 @@ export class SchemaTypeGenerator {
       const tsType = this.generateTsType(typeNode)
       const stats = walkAndCountQueryTypeNodeStats(typeNode)
       return {tsType, stats}
+    },
+  )
+
+  evaluateDocumentProjection = weakMapMemo(
+    ({
+      documentTypes,
+      projection,
+    }: Pick<ExtractedDocumentProjection, 'documentTypes' | 'projection'>): {
+      tsType: t.TSType
+      stats: TypeEvaluationStats
+    } => {
+      const projectionAst = safeParseQuery(projection)
+      if (projectionAst.type !== 'Object') {
+        throw new Error(
+          `Invalid projection syntax: Projections must be enclosed in curly braces, (e.g., "{_id, title}"). Received: "${projection}"`,
+        )
+      }
+
+      if (!documentTypes.length) {
+        throw new Error(
+          'Document projection requires at least one document type. Please specify one or more document types in the first parameter of defineDocumentProjection().',
+        )
+      }
+
+      const results = documentTypes.map((documentType) => {
+        const query = `*[_type == ${JSON.stringify(documentType)}][0]${projection}`
+        const ast = safeParseQuery(query)
+        const result = typeEvaluate(ast, this.schema)
+
+        // Skip results that aren't a union of exactly 2 types (the actual type and null)
+        if (result.type !== 'union' || result.of.length !== 2) {
+          throw new Error(
+            `Unexpected result while evaluating projection for document type '${documentType}'.`,
+          )
+        }
+
+        // Find the non-null member of the union (the actual type)
+        const projectionResult = result.of.find((node) => node.type !== 'null')
+        // Skip members that aren't objects (projections should always be objects)
+        if (projectionResult?.type !== 'object') {
+          throw new Error(`Unexpected projection result type for document type '${documentType}'.`)
+        }
+
+        const stats = walkAndCountQueryTypeNodeStats(projectionResult)
+        const tsType = t.tsTypeReference(
+          DOCUMENT_PROJECTION_BASE,
+          t.tsTypeParameterInstantiation([
+            this.generateTsType(projectionResult),
+            t.tsLiteralType(t.stringLiteral(documentType)),
+          ]),
+        )
+
+        return {stats, tsType}
+      })
+
+      if (results.length === 1) return results[0]
+
+      const combinedTsType = t.tsUnionType(results.map((i) => i.tsType))
+      const accumulatedStats = results.reduce(
+        (acc, {stats}) => ({
+          allTypes: acc.allTypes + stats.allTypes,
+          emptyUnions: acc.emptyUnions + stats.emptyUnions,
+          unknownTypes: acc.unknownTypes + stats.unknownTypes,
+        }),
+        {allTypes: 0, unknownTypes: 0, emptyUnions: 0},
+      )
+      // Add 1 for the final union type since multiple results were combined
+      accumulatedStats.allTypes += 1
+
+      return {tsType: combinedTsType, stats: accumulatedStats}
     },
   );
 

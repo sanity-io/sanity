@@ -7,12 +7,18 @@ import * as babelTypes from '@babel/types'
 import {getBabelConfig} from '../getBabelConfig'
 import {resolveExpression} from './expressionResolvers'
 import {parseSourceFile} from './parseSource'
-import {type ExtractedModule, type ExtractedQuery, QueryExtractionError} from './types'
+import {
+  type ExtractedDocumentProjection,
+  type ExtractedModule,
+  type ExtractedQuery,
+  QueryExtractionError,
+} from './types'
 
 const require = createRequire(__filename)
 
 const groqTagName = 'groq'
 const defineQueryFunctionName = 'defineQuery'
+const defineDocumentProjectionFunctionName = 'defineDocumentProjection'
 const groqModuleName = 'groq'
 const nextSanityModuleName = 'next-sanity'
 
@@ -35,6 +41,7 @@ export function findQueriesInSource(
   resolver: NodeJS.RequireResolve = require.resolve,
 ): ExtractedModule {
   const queries: ExtractedQuery[] = []
+  const documentProjections: ExtractedDocumentProjection[] = []
   const errors: QueryExtractionError[] = []
   const file = parseSourceFile(source, filename, babelConfig)
 
@@ -52,22 +59,15 @@ export function findQueriesInSource(
         babelTypes.isIdentifier(init.tag) &&
         init.tag.name === groqTagName
 
-      // Look for strings wrapped in a defineQuery function call
-      const isDefineQueryCall =
-        babelTypes.isCallExpression(init) &&
-        (isImportFrom(groqModuleName, defineQueryFunctionName, scope, init.callee) ||
-          isImportFrom(nextSanityModuleName, defineQueryFunctionName, scope, init.callee))
+      if (!babelTypes.isIdentifier(node.id)) return
+      // If we find a comment leading the declaration which matches with
+      // ignoreValue we don't add the query
+      if (declarationLeadingCommentContains(path, ignoreValue)) return
 
-      if (babelTypes.isIdentifier(node.id) && (isGroqTemplateTag || isDefineQueryCall)) {
-        // If we find a comment leading the decleration which macthes with ignoreValue we don't add
-        // the query
-        if (declarationLeadingCommentContains(path, ignoreValue)) {
-          return
-        }
+      const {id, start, end} = node
+      const variable = {id, ...(start && {start}), ...(end && {end})}
 
-        const {id, start, end} = node
-        const variable = {id, ...(start && {start}), ...(end && {end})}
-
+      if (isGroqTemplateTag || isDefineQueryCall(init, scope)) {
         try {
           const query = resolveExpression({
             node: init,
@@ -79,13 +79,74 @@ export function findQueriesInSource(
           })
           queries.push({variable, query, filename})
         } catch (cause) {
-          errors.push(new QueryExtractionError({filename, variable, cause}))
+          errors.push(new QueryExtractionError({type: 'query', filename, variable, cause}))
+        }
+      }
+
+      if (isDefineDocumentProjectionCall(init, scope)) {
+        const [documentTypeArgument, projectionExpression] = init.arguments
+
+        const documentTypeExpressions = babelTypes.isArrayExpression(documentTypeArgument)
+          ? documentTypeArgument.elements
+          : [documentTypeArgument]
+
+        try {
+          const documentTypes = documentTypeExpressions
+            .filter((expression) => !!expression)
+            .map((expression) =>
+              resolveExpression({
+                node: expression,
+                file,
+                scope,
+                babelConfig,
+                filename,
+                resolver,
+              }),
+            )
+
+          const projection = resolveExpression({
+            node: projectionExpression,
+            file,
+            scope,
+            babelConfig,
+            filename,
+            resolver,
+          })
+
+          documentProjections.push({variable, documentTypes, projection, filename})
+        } catch (cause) {
+          errors.push(
+            new QueryExtractionError({type: 'documentProjection', filename, variable, cause}),
+          )
         }
       }
     },
   })
 
-  return {filename, queries, errors}
+  return {filename, queries, documentProjections, errors}
+}
+
+function isDefineQueryCall(
+  init: babelTypes.Expression | null | undefined,
+  scope: Scope,
+): init is babelTypes.CallExpression {
+  if (!init) return false
+  if (!babelTypes.isCallExpression(init)) return false
+  return !!(
+    isImportFrom(groqModuleName, defineQueryFunctionName, scope, init.callee) ||
+    isImportFrom(nextSanityModuleName, defineQueryFunctionName, scope, init.callee)
+  )
+}
+
+function isDefineDocumentProjectionCall(
+  init: babelTypes.Expression | null | undefined,
+  scope: Scope,
+): init is babelTypes.CallExpression {
+  if (!init) return false
+  if (!babelTypes.isCallExpression(init)) return false
+  if (!isImportFrom(groqModuleName, defineDocumentProjectionFunctionName, scope, init.callee))
+    return false
+  return init.arguments.length === 2
 }
 
 function declarationLeadingCommentContains(path: NodePath, comment: string): boolean {
