@@ -58,7 +58,7 @@ export interface EvaluatedQuery extends ExtractedQuery {
 export interface EvaluatedModule {
   filename: string
   queries: EvaluatedQuery[]
-  errors: unknown[]
+  errors: (QueryExtractionError | QueryEvaluationError)[]
 }
 
 interface QueryExtractionErrorOptions {
@@ -72,7 +72,6 @@ interface QueryExtractionErrorOptions {
  * @public
  */
 export class QueryExtractionError extends Error {
-  type = 'error' as const
   variable?: QueryVariable
   filename: string
   constructor({variable, cause, filename}: QueryExtractionErrorOptions) {
@@ -82,6 +81,32 @@ export class QueryExtractionError extends Error {
       }`,
     )
     this.name = 'QueryExtractionError'
+    this.cause = cause
+    this.variable = variable
+    this.filename = filename
+  }
+}
+
+interface QueryEvaluationErrorOptions {
+  variable?: QueryVariable
+  cause: unknown
+  filename: string
+}
+
+/**
+ * An error that occurred during query evaluation.
+ * @public
+ */
+export class QueryEvaluationError extends Error {
+  variable?: QueryVariable
+  filename: string
+  constructor({variable, cause, filename}: QueryEvaluationErrorOptions) {
+    super(
+      `Error while evaluating query ${variable ? `from variable '${variable.id.name}' ` : ''}in ${filename}: ${
+        isRecord(cause) && typeof cause.message === 'string' ? cause.message : 'Unknown error'
+      }`,
+    )
+    this.name = 'QueryEvaluationError'
     this.cause = cause
     this.variable = variable
     this.filename = filename
