@@ -45,7 +45,14 @@ const isBundleDocumentRow = (
   'previewValues' in maybeBundleDocumentRow
 
 export function ReleaseSummary(props: ReleaseSummaryProps) {
-  const {documents, isLoading = false, release, scrollContainerRef} = props
+  const {
+    documents,
+    isLoading = false,
+    release,
+    scrollContainerRef,
+    searchTerm,
+    onSearchTermChange,
+  } = props
   const toast = useToast()
   const {createVersion} = useReleaseOperations()
   const telemetry = useTelemetry()
@@ -149,7 +156,6 @@ export function ReleaseSummary(props: ReleaseSummaryProps) {
     [documents, pendingAddedDocument],
   )
 
-  const handleOpenAddDialog = useCallback(() => setAddDocumentDialog(true), [])
   return (
     <Card
       data-testid="document-table-card"
