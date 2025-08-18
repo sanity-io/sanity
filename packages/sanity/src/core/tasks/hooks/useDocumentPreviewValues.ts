@@ -11,6 +11,8 @@ import {useDocumentPreviewStore} from '../../store'
 interface PreviewHookOptions {
   documentId: string
   documentType: string
+  // to make sure that you can get the preview values for a document in a specific perspective stack
+  perspectiveStack?: string[]
 }
 
 interface PreviewHookValue {
@@ -20,15 +22,20 @@ interface PreviewHookValue {
 
 /** @internal */
 export function useDocumentPreviewValues(options: PreviewHookOptions): PreviewHookValue {
-  const {documentId, documentType} = options || {}
+  const {documentId, documentType, perspectiveStack: perspectiveStackFromOptions} = options || {}
   const schemaType = useSchema().get(documentType)
 
   const documentPreviewStore = useDocumentPreviewStore()
   const {perspectiveStack} = usePerspective()
   const previewStateObservable = useMemo(() => {
     if (!documentId || !schemaType) return of(null)
-    return getPreviewStateObservable(documentPreviewStore, schemaType, documentId, perspectiveStack)
-  }, [documentId, documentPreviewStore, schemaType, perspectiveStack])
+    return getPreviewStateObservable(
+      documentPreviewStore,
+      schemaType,
+      documentId,
+      perspectiveStackFromOptions ?? perspectiveStack,
+    )
+  }, [documentId, documentPreviewStore, schemaType, perspectiveStackFromOptions, perspectiveStack])
   const previewState = useObservable(previewStateObservable)
 
   const isLoading = previewState?.isLoading ?? true

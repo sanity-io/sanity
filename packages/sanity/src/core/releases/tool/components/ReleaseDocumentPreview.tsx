@@ -1,16 +1,13 @@
 import {type ReleaseState} from '@sanity/client'
-import {type PreviewValue} from '@sanity/types'
 import {Card} from '@sanity/ui'
-import {type ForwardedRef, forwardRef, useEffect, useMemo, useRef, useState} from 'react'
+import {type ForwardedRef, forwardRef, useMemo} from 'react'
 import {IntentLink} from 'sanity/router'
 
 import {type PreviewLayoutKey} from '../../../components/previews/types'
-import {useSchema} from '../../../hooks'
 import {DocumentPreviewPresence} from '../../../presence'
 import {SanityDefaultPreview} from '../../../preview/components/SanityDefaultPreview'
-import {type PreviewableType} from '../../../preview/types'
-import {useDocumentPreviewStore} from '../../../store/_legacy/datastores'
 import {useDocumentPresence} from '../../../store/_legacy/presence/useDocumentPresence'
+import {useDocumentPreviewValues} from '../../../tasks/hooks/useDocumentPreviewValues'
 import {getPublishedId} from '../../../util/draftUtils'
 import {getReleaseIdFromReleaseDocumentId} from '../../util/getReleaseIdFromReleaseDocumentId'
 
@@ -36,13 +33,6 @@ export function ReleaseDocumentPreview({
   layout,
 }: ReleaseDocumentPreviewProps) {
   const documentPresence = useDocumentPresence(documentId)
-  const documentPreviewStore = useDocumentPreviewStore()
-  const schema = useSchema()
-
-  // Local preview state to support lazy fetching when `previewValues` are not provided
-  const [resolvedPreview, setResolvedPreview] = useState<PreviewValue | undefined | null>(undefined)
-  const [previewLoading, setPreviewLoading] = useState<boolean>(true)
-  const subscriptionRef = useRef<(() => void) | null>(null)
 
   const intentParams = useMemo(() => {
     if (releaseState === 'published') {
@@ -104,72 +94,11 @@ export function ReleaseDocumentPreview({
     [documentPresence],
   )
 
-  // Keep a ref of resolved preview to avoid re-subscribing when it changes
-  const resolvedPreviewRef = useRef<PreviewValue | undefined | null>(resolvedPreview)
-  useEffect(() => {
-    resolvedPreviewRef.current = resolvedPreview
-  }, [resolvedPreview])
-
-  // Lazily fetch preview for the specific row on mount/visibility
-  useEffect(() => {
-    const schemaType = schema.get(documentTypeName)
-    if (!schemaType) {
-      // Fallback: schema type missing
-      setResolvedPreview({
-        _id: documentId,
-        title: `Document type "${documentTypeName}" not found`,
-      })
-      setPreviewLoading(false)
-    }
-
-    const subscribe = (id: string, perspective: string[] | undefined) => {
-      const sub = documentPreviewStore
-        .observeForPreview(
-          {
-            _id: id,
-            _type: documentTypeName,
-          },
-          schemaType as PreviewableType,
-          {perspective},
-        )
-        .subscribe((value) => {
-          // If snapshot available, use it
-          if (value?.snapshot) {
-            setResolvedPreview(value.snapshot)
-            setPreviewLoading(false)
-          }
-        })
-      return () => sub.unsubscribe()
-    }
-
-    // Active releases: try release perspective first, then published fallback
-    if (releaseState !== 'archived' && releaseState !== 'published') {
-      const unsubscribeRelease = subscribe(documentId, [
-        getReleaseIdFromReleaseDocumentId(releaseId),
-      ])
-
-      // Also set a short-lived fallback listener to published if the first emission has no snapshot
-      // We simulate the previous behavior by scheduling a microtask to check state
-      const fallbackTimeout = setTimeout(() => {
-        if (resolvedPreviewRef.current === null || resolvedPreviewRef.current === undefined) {
-          const unsubscribePublished = subscribe(getPublishedId(documentId), [])
-          subscriptionRef.current = () => {
-            unsubscribeRelease()
-            unsubscribePublished()
-          }
-        }
-      }, 0)
-
-      subscriptionRef.current = () => {
-        unsubscribeRelease()
-        clearTimeout(fallbackTimeout)
-      }
-    } else {
-      // Published/archived: just fetch once from published view (no perspective)
-      const unsubscribe = subscribe(documentId, undefined)
-      subscriptionRef.current = unsubscribe
-    }
-  }, [documentId, documentTypeName, documentPreviewStore, releaseId, releaseState, schema])
+  const {isLoading: previewLoading, value: resolvedPreview} = useDocumentPreviewValues({
+    documentId,
+    documentType: documentTypeName,
+    perspectiveStack: [getReleaseIdFromReleaseDocumentId(releaseId)],
+  })
 
   return (
     <Card tone="inherit" as={LinkComponent} radius={2} data-as="a">
