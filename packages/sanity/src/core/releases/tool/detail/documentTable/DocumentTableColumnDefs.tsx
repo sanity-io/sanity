@@ -231,9 +231,7 @@ function UpdatedAtCell({
       sizing="border"
     >
       <Flex align="center" gap={2}>
-        {(isLoading || !documentHistory?.lastEditedBy) && (
-          <AvatarSkeleton size={0} animated style={{height: 19, width: 19}} />
-        )}
+        {(isLoading || !documentHistory?.lastEditedBy) && <AvatarSkeleton $size={0} animated />}
         {!isLoading && document._updatedAt && (
           <>
             {documentHistory?.lastEditedBy && (
