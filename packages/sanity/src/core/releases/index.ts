@@ -1,6 +1,5 @@
 export * from './__telemetry__/releases.telemetry'
 export * from './components'
-export * from './contexts'
 export * from './hooks'
 export {RELEASES_INTENT} from './plugin'
 export * from './store'

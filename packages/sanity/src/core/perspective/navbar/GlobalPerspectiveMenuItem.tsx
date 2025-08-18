@@ -103,7 +103,7 @@ export const GlobalPerspectiveMenuItem = forwardRef<
   const {selectedPerspective, selectedPerspectiveName} = usePerspective()
   const setPerspective = useSetPerspective()
   const {toggleExcludedPerspective, isPerspectiveExcluded} = useExcludedPerspective()
-  const releaseId: string = isReleaseDocument(release)
+  const releaseId = isReleaseDocument(release)
     ? getReleaseIdFromReleaseDocumentId(release._id)
     : release
 
