@@ -57,6 +57,7 @@ export {
   type VersionInfoDocumentStub,
   VersionInlineBadge,
 } from './releases'
+export {type EditableStudioReleaseDocument, type StudioReleaseDocument} from './releases/types'
 export {
   EditScheduleForm,
   ScheduleAction,
@@ -80,7 +81,6 @@ export {
   type ValidateDocumentOptions,
 } from './validation'
 export * from './version'
-export {type ReleaseDocument} from '@sanity/client'
 
 // If moved at the top it creates a circular dependency issue where `useClient` is not found when running tests
 export {useCanvasCompanionDoc} from './canvas/actions/useCanvasCompanionDoc'

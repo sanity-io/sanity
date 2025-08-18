@@ -1,9 +1,7 @@
 import {
   type BaseActionOptions,
   type CreateVersionAction,
-  type EditableReleaseDocument,
   type IdentifiedSanityDocumentStub,
-  type ReleaseDocument,
   type SanityClient,
   type SingleActionResult,
 } from '@sanity/client'
@@ -11,6 +9,7 @@ import {
 import {getPublishedId, getVersionFromId, getVersionId} from '../../util'
 import {type ReleasesUpsellContextValue} from '../contexts/upsell/types'
 import {type RevertDocument} from '../tool/components/releaseCTAButtons/ReleaseRevertButton/useDocumentRevertStates'
+import {type EditableStudioReleaseDocument, type StudioReleaseDocument} from '../types'
 import {getReleaseIdFromReleaseDocumentId} from '../util/getReleaseIdFromReleaseDocumentId'
 import {isReleaseLimitError} from './isReleaseLimitError'
 
@@ -21,23 +20,23 @@ export interface ReleaseOperationsStore {
   archive: (releaseId: string, opts?: BaseActionOptions) => Promise<SingleActionResult>
   unarchive: (releaseId: string, opts?: BaseActionOptions) => Promise<SingleActionResult>
   updateRelease: (
-    release: EditableReleaseDocument,
+    release: EditableStudioReleaseDocument,
     opts?: BaseActionOptions,
   ) => Promise<SingleActionResult>
   createRelease: (
-    release: EditableReleaseDocument,
+    release: EditableStudioReleaseDocument,
     opts?: BaseActionOptions,
   ) => Promise<SingleActionResult>
   deleteRelease: (releaseId: string, opts?: BaseActionOptions) => Promise<SingleActionResult>
   revertRelease: (
     revertReleaseId: string,
     documents: RevertDocument[],
-    releaseMetadata: ReleaseDocument['metadata'],
+    releaseMetadata: StudioReleaseDocument['metadata'],
     revertType: 'staged' | 'immediate',
   ) => Promise<void>
   duplicateRelease: (
     releaseDocumentId: string,
-    releaseMetadata: ReleaseDocument['metadata'],
+    releaseMetadata: StudioReleaseDocument['metadata'],
     releaseDocuments?: IdentifiedSanityDocumentStub[],
   ) => Promise<void>
   createVersion: (
@@ -78,7 +77,7 @@ export function createReleaseOperationsStore(options: {
       throw error
     })
 
-  const handleCreateRelease = (release: EditableReleaseDocument, opts?: BaseActionOptions) =>
+  const handleCreateRelease = (release: EditableStudioReleaseDocument, opts?: BaseActionOptions) =>
     handleReleaseLimitError(
       client.releases.create(
         {releaseId: getReleaseIdFromReleaseDocumentId(release._id), metadata: release.metadata},
@@ -88,7 +87,7 @@ export function createReleaseOperationsStore(options: {
     )
 
   const handleUpdateRelease = async (
-    release: EditableReleaseDocument,
+    release: EditableStudioReleaseDocument,
     opts?: BaseActionOptions,
   ) => {
     const releaseId = getReleaseIdFromReleaseDocumentId(release._id)
@@ -189,7 +188,7 @@ export function createReleaseOperationsStore(options: {
   const handleRevertRelease = async (
     revertReleaseId: string,
     releaseDocuments: RevertDocument[],
-    releaseMetadata: ReleaseDocument['metadata'],
+    releaseMetadata: StudioReleaseDocument['metadata'],
     revertType: 'staged' | 'immediate',
   ) => {
     await handleCreateRelease({
@@ -218,7 +217,7 @@ export function createReleaseOperationsStore(options: {
 
   const handleDuplicateRelease = async (
     releaseDocumentId: string,
-    releaseMetadata: ReleaseDocument['metadata'],
+    releaseMetadata: StudioReleaseDocument['metadata'],
     releaseDocuments?: IdentifiedSanityDocumentStub[],
   ) => {
     await handleCreateRelease({

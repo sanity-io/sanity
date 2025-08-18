@@ -1,4 +1,4 @@
-import {type ReleaseDocument, type SanityDocument} from '@sanity/client'
+import {type SanityDocument} from '@sanity/client'
 import {AddIcon} from '@sanity/icons'
 import {useTelemetry} from '@sanity/telemetry/react'
 import {Card, Container, Stack, useToast} from '@sanity/ui'
@@ -11,6 +11,7 @@ import {getDocumentVariantType} from '../../../util/getDocumentVariantType'
 import {AddedVersion} from '../../__telemetry__/releases.telemetry'
 import {releasesLocaleNamespace} from '../../i18n'
 import {useReleaseOperations} from '../../store/useReleaseOperations'
+import {type StudioReleaseDocument} from '../../types'
 import {getReleaseIdFromReleaseDocumentId} from '../../util/getReleaseIdFromReleaseDocumentId'
 import {Table} from '../components/Table/Table'
 import {AddDocumentSearch, type AddedDocument} from './AddDocumentSearch'
@@ -28,7 +29,7 @@ export type BundleDocumentRow = DocumentInReleaseDetail
 export interface ReleaseSummaryProps {
   documents: DocumentInRelease[]
   scrollContainerRef: RefObject<HTMLDivElement | null>
-  release: ReleaseDocument
+  release: StudioReleaseDocument
   isLoading?: boolean
 }
 
