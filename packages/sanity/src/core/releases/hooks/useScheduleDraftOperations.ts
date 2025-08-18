@@ -1,20 +1,14 @@
 import {type BaseActionOptions} from '@sanity/client'
 import {useCallback} from 'react'
 
-import {getDraftId, getPublishedId} from '../../util'
+import {getDraftId} from '../../util'
 import {useReleaseOperations} from '../store/useReleaseOperations'
-import {type EditableStudioReleaseDocument} from '../types'
 import {createReleaseId} from '../util/createReleaseId'
 
 export interface ScheduleDraftOperationsValue {
   schedulePublish: (
     documentId: string,
     publishAt: Date,
-    opts?: BaseActionOptions,
-  ) => Promise<string>
-  scheduleUnpublish: (
-    documentId: string,
-    unpublishAt: Date,
     opts?: BaseActionOptions,
   ) => Promise<string>
 }
@@ -71,29 +65,7 @@ export function useScheduleDraftOperations(): ScheduleDraftOperationsValue {
     [releaseOperations, createScheduledRelease],
   )
 
-  const handleScheduleUnpublish = useCallback(
-    async (documentId: string, unpublishAt: Date, opts?: BaseActionOptions): Promise<string> => {
-      // Create and schedule the release
-      const releaseDocumentId = await createScheduledRelease(
-        'Schedule unpublish',
-        unpublishAt,
-        opts,
-      )
-
-      // For unpublishing, we need to create a version that marks the document for deletion
-      // This follows the pattern seen in revertUnpublishVersion but in reverse
-      const publishedId = getPublishedId(documentId)
-
-      // Create a version that marks the document for unpublishing
-      await releaseOperations.createVersion(releaseDocumentId, publishedId, opts)
-
-      return releaseDocumentId
-    },
-    [releaseOperations, createScheduledRelease],
-  )
-
   return {
     schedulePublish: handleSchedulePublish,
-    scheduleUnpublish: handleScheduleUnpublish,
   }
 }
