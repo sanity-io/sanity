@@ -74,14 +74,38 @@ export function ReleaseSummary(props: ReleaseSummaryProps) {
 
   const filterRows = useCallback(
     (data: DocumentInRelease[], searchTerm: string) =>
-      data.filter(({document, isPending}) => {
+      data.filter(({document}) => {
+        // this is a temporary way of doing the search without the previews
+        // until we have it moved to the server side
         const title =
-          typeof document.title === 'string'
-            ? (document.title ?? document.name)
-            : t('release-placeholder.title')
+          typeof document.title === 'string' ? document.title : t('release-placeholder.title')
+        const name =
+          typeof document.name === 'string' ? document.name : t('release-placeholder.title')
 
-        // always show the pending rows to visualise that documents are being added
-        return isPending || title.toLowerCase().includes(searchTerm.toLowerCase())
+        const normalizedSearchTerm = searchTerm.toLowerCase().trim()
+        const normalizedTitle = title.toLowerCase()
+        const normalizedName = name.toLowerCase()
+
+        // Create a combined searchable text from both title and name
+        const combinedText = `${normalizedTitle} ${normalizedName}`
+
+        // Split search term into words for more flexible matching
+        const searchWords = normalizedSearchTerm.split(/\s+/).filter((word) => word.length > 0)
+
+        // Check if all search words are found in either title, name, or combined text
+        const allWordsMatch = searchWords.every(
+          (word) =>
+            normalizedTitle.includes(word) ||
+            normalizedName.includes(word) ||
+            combinedText.includes(word),
+        )
+
+        // Also check if the document name/title is contained within the search term
+        const documentInSearchTerm =
+          normalizedSearchTerm.includes(normalizedName) ||
+          normalizedSearchTerm.includes(normalizedTitle)
+
+        return allWordsMatch || documentInSearchTerm
       }),
     [t],
   )
