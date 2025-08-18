@@ -1,4 +1,4 @@
-import {type EditableReleaseDocument} from '@sanity/client'
+import {type EditableStudioReleaseDocument} from '../../../types'
 import {useTelemetry} from '@sanity/telemetry/react'
 import {type BadgeTone, Box, Card, Flex, Text, useToast} from '@sanity/ui'
 import {useCallback, useState} from 'react'
@@ -43,7 +43,7 @@ export function CopyToNewReleaseDialog(props: {
 
   const [newReleaseId] = useState(createReleaseId)
 
-  const [release, setRelease] = useState((): EditableReleaseDocument => {
+  const [release, setRelease] = useState((): EditableStudioReleaseDocument => {
     return {
       _id: newReleaseId,
       metadata: {
@@ -71,7 +71,7 @@ export function CopyToNewReleaseDialog(props: {
   const isScheduledDateInPast = getIsScheduledDateInPast(release)
   const invalid = getIsReleaseInvalid(release)
 
-  const handleOnChange = useCallback((releaseMetadata: EditableReleaseDocument) => {
+  const handleOnChange = useCallback((releaseMetadata: EditableStudioReleaseDocument) => {
     setRelease(releaseMetadata)
   }, [])
 

@@ -1,4 +1,4 @@
-import {type EditableReleaseDocument} from '@sanity/client'
+import {type EditableStudioReleaseDocument} from '../../types'
 import {ChevronDownIcon, InfoOutlineIcon} from '@sanity/icons'
 import {
   type BadgeTone,
@@ -34,8 +34,8 @@ import {TitleDescriptionForm} from './TitleDescriptionForm'
 
 /** @internal */
 export function ReleaseForm(props: {
-  onChange: (params: EditableReleaseDocument) => void
-  value: EditableReleaseDocument
+  onChange: (params: EditableStudioReleaseDocument) => void
+  value: EditableStudioReleaseDocument
 }): React.JSX.Element {
   const {onChange, value} = props
   const {releaseType, intendedPublishAt} = value.metadata || {}
@@ -60,7 +60,7 @@ export function ReleaseForm(props: {
   }, [getStoredReleaseData, id, onChange])
 
   const handleOnChangeAndStorage = useCallback(
-    (updatedValue: EditableReleaseDocument) => {
+    (updatedValue: EditableStudioReleaseDocument) => {
       onChange(updatedValue)
       saveReleaseDataToStorage({
         ...updatedValue.metadata,
@@ -104,7 +104,7 @@ export function ReleaseForm(props: {
   )
 
   const handleTitleDescriptionChange = useCallback(
-    (updatedRelease: EditableReleaseDocument) => {
+    (updatedRelease: EditableStudioReleaseDocument) => {
       handleOnChangeAndStorage({
         ...value,
         metadata: {
