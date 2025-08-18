@@ -1,7 +1,7 @@
-import {type ReleaseDocument} from '../types'
+import {type StudioReleaseDocument} from '../types'
 
-type ReleaseDocumentWithTitle = ReleaseDocument & {
-  metadata: ReleaseDocument['metadata'] & {
+type ReleaseDocumentWithTitle = StudioReleaseDocument & {
+  metadata: StudioReleaseDocument['metadata'] & {
     title: string
   }
 }

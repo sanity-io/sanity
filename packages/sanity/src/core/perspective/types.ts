@@ -1,7 +1,9 @@
-import {type ClientPerspective, type ReleaseDocument} from '@sanity/client'
+import {type ClientPerspective} from '@sanity/client'
 // eslint-disable-next-line no-restricted-imports -- fine-grained control needed
 import {type MenuItem} from '@sanity/ui'
 import {type ComponentProps} from 'react'
+
+import {type StudioReleaseDocument} from '../releases/types'
 
 /**
  * @beta
@@ -12,7 +14,7 @@ export type ReleaseId = string
 /**
  * @beta
  */
-export type SelectedPerspective = ReleaseDocument | 'published' | 'drafts'
+export type SelectedPerspective = StudioReleaseDocument | 'published' | 'drafts'
 
 /**
  * @beta
