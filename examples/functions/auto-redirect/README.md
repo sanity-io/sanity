@@ -18,7 +18,49 @@ This Sanity function automatically creates a redirect document when the value of
 
 ## Compatible Templates
 
-This function is built to be compatible with the schema for Next.js as described in [Managing redirects with Sanity guide](https://www.sanity.io/guides/managing-redirects-with-sanity#d012060db974). We recommend testing the function out in one of those after you have installed them locally.
+This function is built to be compatible with the schema for Next.js as described in [Managing redirects with Sanity guide](https://www.sanity.io/guides/managing-redirects-with-sanity#d012060db974).
+
+```ts
+// schemas/redirect.ts
+import {defineType, defineField, type Rule, type Slug} from 'sanity'
+
+// Shared validation for our redirect slugs
+const slugValidator = (rule: Rule) =>
+  rule.required().custom((value: Slug) => {
+    if (!value || !value.current) return "Can't be blank"
+    if (!value.current.startsWith('/')) {
+      return 'The path must start with a /'
+    }
+    return true
+  })
+
+export const redirectType = defineType({
+  name: 'redirect',
+  title: 'Redirect',
+  type: 'document',
+  description: 'Redirect for next.config.js',
+  fields: [
+    defineField({
+      name: 'source',
+      type: 'slug',
+      validation: (rule: Rule) => slugValidator(rule),
+    }),
+    defineField({
+      name: 'destination',
+      type: 'slug',
+      validation: (rule: Rule) => slugValidator(rule),
+    }),
+    defineField({
+      name: 'permanent',
+      type: 'boolean',
+    }),
+  ],
+  // null / false makes it temporary (307)
+  initialValue: {
+    permanent: true,
+  },
+})
+```
 
 ## Implementation
 
@@ -56,8 +98,9 @@ export default defineBlueprint({
       timeout: 30,
       event: {
         on: ['publish'],
-        filter: 'delta::changedAny(slug.current)',
-        projection: "{'before': before(), 'after': after()}",
+        filter: "delta::changedAny(slug.current)",
+        projection:
+          '{"beforeSlug": before().slug.current, "slug": after().slug.current}',
       },
     }),
   ],
