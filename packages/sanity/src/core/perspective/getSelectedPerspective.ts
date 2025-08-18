@@ -1,5 +1,5 @@
-import {getReleaseIdFromReleaseDocumentId} from '../releases/util/getReleaseIdFromReleaseDocumentId'
 import {type StudioReleaseDocument} from '../releases/types'
+import {getReleaseIdFromReleaseDocumentId} from '../releases/util/getReleaseIdFromReleaseDocumentId'
 import {type ReleaseId, type SelectedPerspective} from './types'
 
 export function getSelectedPerspective(
