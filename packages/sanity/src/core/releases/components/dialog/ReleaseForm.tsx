@@ -1,4 +1,3 @@
-import {type EditableStudioReleaseDocument} from '../../types'
 import {ChevronDownIcon, InfoOutlineIcon} from '@sanity/icons'
 import {
   type BadgeTone,
@@ -27,6 +26,7 @@ import {useTranslation} from '../../../i18n'
 import {CONTENT_RELEASES_TIME_ZONE_SCOPE} from '../../../studio/constants'
 import {useReleaseFormStorage} from '../../hooks/useReleaseFormStorage'
 import {isReleaseType} from '../../store/types'
+import {type EditableStudioReleaseDocument} from '../../types'
 import {DEFAULT_RELEASE_TYPE, RELEASE_TYPES_TONES} from '../../util/const'
 import {ReleaseAvatar} from '../ReleaseAvatar'
 import {ScheduleDatePicker} from '../ScheduleDatePicker'
