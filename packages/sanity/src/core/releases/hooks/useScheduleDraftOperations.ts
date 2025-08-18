@@ -3,6 +3,7 @@ import {useCallback} from 'react'
 
 import {getDraftId, getPublishedId} from '../../util'
 import {useReleaseOperations} from '../store/useReleaseOperations'
+import {type EditableStudioReleaseDocument} from '../types'
 import {createReleaseId} from '../util/createReleaseId'
 
 export interface ScheduleDraftOperationsValue {
@@ -43,8 +44,8 @@ export function useScheduleDraftOperations(): ScheduleDraftOperationsValue {
             description: '',
             releaseType: 'scheduled',
             cardinality: 'one',
-          } as any, // Extended metadata with cardinality property
-        },
+          },
+        } as EditableStudioReleaseDocument,
         opts,
       )
 
