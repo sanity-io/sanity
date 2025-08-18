@@ -34,7 +34,7 @@
     "@repo/utils": "workspace:*",
     "lodash-es": "^4.17.21",
     "read-package-up": "^11.0.0",
-    "semver": "^7.3.5",
+    "semver": "^7.7.2",
     "yargs": "^18.0.0"
   },
   "devDependencies": {

@@ -16,16 +16,11 @@ import path from 'node:path'
 import {Worker} from 'node:worker_threads'
 
 import {debug} from '../debug'
-import {type CliConfig, type SanityJson} from '../types'
+import {type CliConfig} from '../types'
 import {getCliWorkerPath} from './cliWorker'
 import {dynamicRequire} from './dynamicRequire'
 
-export type CliMajorVersion = 2 | 3
-
-export type CliConfigResult =
-  | {config: SanityJson; path: string; version: 2}
-  | {config: CliConfig; path: string; version: 3}
-  | {config: null; path: string; version: CliMajorVersion}
+export type CliConfigResult = {config: CliConfig; path: string} | {config: null; path: string}
 
 export async function getCliConfig(
   cwd: string,
@@ -49,22 +44,12 @@ export async function getCliConfig(
 
   try {
     // If forked execution failed, we need to clear the cache to reload the env vars
-    const v3Config = getSanityCliConfig(cwd, clearCache)
-    if (v3Config) {
-      return v3Config
-    }
-
-    return getSanityJsonConfig(cwd)
+    return getSanityCliConfig(cwd, clearCache)
   } catch (err) {
     throw err
   } finally {
     unregister()
   }
-}
-
-export function getCliConfigSync(cwd: string): CliConfigResult | null {
-  const v3Config = getSanityCliConfig(cwd)
-  return v3Config ? v3Config : getSanityJsonConfig(cwd)
 }
 
 async function getCliConfigForked(cwd: string): Promise<CliConfigResult | null> {
@@ -92,21 +77,7 @@ async function getCliConfigForked(cwd: string): Promise<CliConfigResult | null> 
   })
 }
 
-function getSanityJsonConfig(cwd: string): CliConfigResult | null {
-  const configPath = path.join(cwd, 'sanity.json')
-
-  if (!fs.existsSync(configPath)) {
-    return null
-  }
-
-  return {
-    config: loadJsonConfig(configPath),
-    path: configPath,
-    version: 2,
-  }
-}
-
-function getSanityCliConfig(cwd: string, clearCache = false): CliConfigResult | null {
+export function getSanityCliConfig(cwd: string, clearCache = false): CliConfigResult | null {
   const jsConfigPath = path.join(cwd, 'sanity.cli.js')
   const tsConfigPath = path.join(cwd, 'sanity.cli.ts')
 
@@ -120,7 +91,6 @@ function getSanityCliConfig(cwd: string, clearCache = false): CliConfigResult | 
     return {
       config: importConfig(tsConfigPath, clearCache),
       path: tsConfigPath,
-      version: 3,
     }
   }
 
@@ -131,17 +101,6 @@ function getSanityCliConfig(cwd: string, clearCache = false): CliConfigResult | 
   return {
     config: importConfig(jsConfigPath, clearCache),
     path: jsConfigPath,
-    version: 3,
-  }
-}
-
-function loadJsonConfig(filePath: string): SanityJson | null {
-  try {
-    const content = fs.readFileSync(filePath, 'utf8')
-    return JSON.parse(content)
-  } catch (err) {
-    console.error(`Error reading "${filePath}": ${err.message}`)
-    return null
   }
 }
 

@@ -11,7 +11,12 @@ import {SanityMonogram} from '@sanity/logos'
 import {debugSecrets} from '@sanity/preview-url-secret/sanity-plugin-debug-secrets'
 import {tsdoc} from '@sanity/tsdoc/studio'
 import {visionTool} from '@sanity/vision'
-import {defineConfig, definePlugin, type WorkspaceOptions} from 'sanity'
+import {
+  defineConfig,
+  definePlugin,
+  QUOTA_EXCLUDED_RELEASES_ENABLED,
+  type WorkspaceOptions,
+} from 'sanity'
 import {defineDocuments, defineLocations, presentationTool} from 'sanity/presentation'
 import {structureTool} from 'sanity/structure'
 import {imageHotspotArrayPlugin} from 'sanity-plugin-hotspot-array'
@@ -227,6 +232,7 @@ const defaultWorkspace = defineConfig({
   mediaLibrary: {
     enabled: true,
   },
+  [QUOTA_EXCLUDED_RELEASES_ENABLED]: true,
   document: {
     actions: (prev, ctx) => {
       if (ctx.schemaType === 'book' && ctx.releaseId) {

@@ -24,6 +24,13 @@ const releasesLocaleStrings = {
   'action.open': 'Active',
   /** Action text for scheduling a release */
   'action.schedule': 'Schedule release...',
+  /** Action text for scheduling publish of a draft document */
+  'action.schedule-publish': 'Schedule Publish',
+  /** Action text for scheduling unpublish of a draft document */
+  'action.schedule-unpublish': 'Schedule Unpublish',
+  /** Tooltip text for when schedule unpublish is disabled because document is not published */
+  'action.schedule-unpublish.disabled.not-published':
+    'Document must be published to schedule unpublish',
   /** Action text for unpublishing a document in a release in the context menu */
   'action.unpublish': 'Unpublish',
   /** Action message for scheduling an unpublished of a document  */
