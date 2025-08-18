@@ -5,7 +5,7 @@ import {
   getReleaseTone,
   getVersionInlineBadge,
   LATEST,
-  type ReleaseDocument,
+  type StudioReleaseDocument,
   Translate,
   useConditionalToast,
   useTranslation,
@@ -29,7 +29,7 @@ export function DocumentNotInReleaseBanner({
   isScheduledRelease,
 }: {
   documentId: string
-  currentRelease: ReleaseDocument
+  currentRelease: StudioReleaseDocument
   isScheduledRelease?: boolean
 }): React.JSX.Element {
   const tone = getReleaseTone(currentRelease ?? LATEST)

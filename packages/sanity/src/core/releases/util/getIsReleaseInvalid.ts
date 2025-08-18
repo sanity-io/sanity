@@ -1,5 +1,5 @@
-import {type EditableReleaseDocument} from '@sanity/client'
+import {type EditableStudioReleaseDocument} from '../types'
 
-export function getIsReleaseInvalid(release: EditableReleaseDocument) {
+export function getIsReleaseInvalid(release: EditableStudioReleaseDocument) {
   return release.metadata?.releaseType === 'scheduled' && !release.metadata?.intendedPublishAt
 }

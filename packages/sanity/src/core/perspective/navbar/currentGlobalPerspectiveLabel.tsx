@@ -1,4 +1,4 @@
-import {type ReleaseDocument} from '@sanity/client'
+import {type StudioReleaseDocument} from '../../releases/types'
 // eslint-disable-next-line no-restricted-imports -- Bundle Button requires more fine-grained styling than studio button
 import {Box, Button, Text} from '@sanity/ui'
 import {motion} from 'framer-motion'
@@ -71,7 +71,7 @@ function AnimatedTextWidth({children, text}: {children: ReactNode; text: string}
   )
 }
 
-const ReleasesLink = ({selectedPerspective}: {selectedPerspective: ReleaseDocument}) => {
+const ReleasesLink = ({selectedPerspective}: {selectedPerspective: StudioReleaseDocument}) => {
   const {t} = useTranslation()
 
   const ReleasesIntentLink = useMemo(
@@ -118,7 +118,11 @@ export function CurrentGlobalPerspectiveLabel({
 
   return (
     <AnimatedTextWidth
-      text={isReleaseDocument(selectedPerspective) ? selectedPerspective._id : selectedPerspective}
+      text={
+        isReleaseDocument(selectedPerspective)
+          ? selectedPerspective._id
+          : (selectedPerspective as string)
+      }
     >
       {isPublishedPerspective(selectedPerspective) || isDraftPerspective(selectedPerspective) ? (
         <Box padding={2} style={{userSelect: 'none', overflow: 'hidden'}}>

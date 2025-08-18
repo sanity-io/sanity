@@ -1,4 +1,4 @@
-import {type EditableReleaseDocument} from '@sanity/client'
+import {type EditableStudioReleaseDocument} from '../../types'
 import {useTelemetry} from '@sanity/telemetry/react'
 import {Box, Card, Flex, useToast} from '@sanity/ui'
 import {type FormEvent, useCallback, useState} from 'react'
@@ -97,7 +97,7 @@ export function CreateReleaseDialog(props: CreateReleaseDialogProps): React.JSX.
     ],
   )
 
-  const handleOnChange = useCallback((releaseMetadata: EditableReleaseDocument) => {
+  const handleOnChange = useCallback((releaseMetadata: EditableStudioReleaseDocument) => {
     setRelease(releaseMetadata)
   }, [])
 
