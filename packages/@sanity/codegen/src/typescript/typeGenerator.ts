@@ -5,7 +5,13 @@ import {type WorkerChannel, type WorkerChannelReporter} from '@sanity/worker-cha
 import {type SchemaType} from 'groq-js'
 import {createSelector} from 'reselect'
 
-import {ALL_SANITY_SCHEMA_TYPES, INTERNAL_REFERENCE_SYMBOL, SANITY_QUERIES} from './constants'
+import {
+  ALL_SANITY_SCHEMA_TYPES,
+  DEFAULT_SCHEMA,
+  INTERNAL_REFERENCE_SYMBOL,
+  SANITY_QUERIES,
+  SANITY_SCHEMAS,
+} from './constants'
 import {computeOnce, generateCode, getUniqueIdentifierForName, normalizePath} from './helpers'
 import {SchemaTypeGenerator} from './schemaTypeGenerator'
 import {
@@ -35,6 +41,16 @@ export type TypegenWorkerChannel = WorkerChannel.Definition<{
       id: t.Identifier
       ast: t.ExportNamedDeclaration
     }
+    schemaDeclarations: {
+      schemaId: string
+      code: string
+      id: t.Identifier
+      ast: t.ExportNamedDeclaration
+    }[]
+    sanitySchemasDeclaration: {
+      code: string
+      ast: t.Program
+    }
   }>
   evaluatedModules: WorkerChannel.Stream<EvaluatedModule>
   generatedQueryTypes: WorkerChannel.Event<{
@@ -48,6 +64,7 @@ export interface GenerateTypesOptions {
   queries?: AsyncIterable<ExtractedModule>
   root?: string
   overloadClientMethods?: boolean
+  augmentGroqModule?: boolean
   reporter?: WorkerChannelReporter<TypegenWorkerChannel>
 }
 
@@ -83,42 +100,81 @@ export class TypeGenerator {
     (schema) => new SchemaTypeGenerator(schema),
   )
 
-  private getSchemaTypeDeclarations = createSelector(
-    [
-      (options: GenerateTypesOptions) => options.root,
-      (options: GenerateTypesOptions) => options.schemaPath,
-      this.getSchemaTypeGenerator,
-    ],
-    (root = process.cwd(), schemaPath, schema) =>
-      Array.from(schema).map(({id, name, tsType}, index) => {
-        const typeAlias = t.tsTypeAliasDeclaration(id, null, tsType)
-        let ast = t.exportNamedDeclaration(typeAlias)
+  private getSchemaTypeDeclarations = createSelector([this.getSchemaTypeGenerator], (schema) =>
+    Array.from(schema).map(({id, name, tsType}) => {
+      const typeAlias = t.tsTypeAliasDeclaration(id, null, tsType)
+      const ast = t.exportNamedDeclaration(typeAlias)
 
-        if (index === 0 && schemaPath) {
-          ast = t.addComments(ast, 'leading', [
-            {type: 'CommentLine', value: ` Source: ${normalizePath(root, schemaPath)}`},
-          ])
-        }
-        const code = generateCode(ast)
-        return {id, code, name, tsType, ast}
-      }),
+      const code = generateCode(ast)
+      return {id, code, name, tsType, ast}
+    }),
   )
 
   private getAllSanitySchemaTypesDeclaration = createSelector(
     [this.getSchemaTypeDeclarations],
     (schemaTypes) => {
+      const tsType = schemaTypes.length
+        ? t.tsUnionType(schemaTypes.map(({id}) => t.tsTypeReference(id)))
+        : t.tsNeverKeyword()
       const ast = t.exportNamedDeclaration(
-        t.tsTypeAliasDeclaration(
-          ALL_SANITY_SCHEMA_TYPES,
-          null,
-          schemaTypes.length
-            ? t.tsUnionType(schemaTypes.map(({id}) => t.tsTypeReference(id)))
-            : t.tsNeverKeyword(),
-        ),
+        t.tsTypeAliasDeclaration(ALL_SANITY_SCHEMA_TYPES, null, tsType),
       )
       const code = generateCode(ast)
+      return {id: ALL_SANITY_SCHEMA_TYPES, code, ast, tsType}
+    },
+  )
 
-      return {id: ALL_SANITY_SCHEMA_TYPES, code, ast}
+  private getDefaultSchemaDeclaration = createSelector(
+    [
+      (options: GenerateTypesOptions) => options.root,
+      (options: GenerateTypesOptions) => options.schemaPath,
+      this.getAllSanitySchemaTypesDeclaration,
+    ],
+    (root = process.cwd(), schemaPath, {tsType}) => {
+      let ast
+      ast = t.exportNamedDeclaration(t.tsTypeAliasDeclaration(DEFAULT_SCHEMA, null, tsType))
+
+      if (schemaPath) {
+        ast = t.addComments(ast, 'leading', [
+          {type: 'CommentLine', value: ` Source: ${normalizePath(root, schemaPath)}`},
+        ])
+      }
+
+      return {id: DEFAULT_SCHEMA, code: generateCode(ast), ast, tsType}
+    },
+  )
+
+  private getSanitySchemasDeclaration = createSelector(
+    [
+      (options: GenerateTypesOptions) => options.augmentGroqModule,
+      this.getDefaultSchemaDeclaration,
+    ],
+    (augmentGroqModule = true, defaultSchemaDeclaration) => {
+      if (!augmentGroqModule) return {code: '', ast: t.program([])}
+
+      const sanitySchemasInterface = t.tsInterfaceDeclaration(
+        SANITY_SCHEMAS,
+        null,
+        [],
+        t.tsInterfaceBody([
+          t.tsPropertySignature(
+            t.stringLiteral('default'),
+            t.tsTypeAnnotation(t.tsTypeReference(defaultSchemaDeclaration.id)),
+          ),
+        ]),
+      )
+
+      let declareModule
+      declareModule = t.declareModule(
+        t.stringLiteral('groq'),
+        t.blockStatement([sanitySchemasInterface]),
+      )
+      declareModule = t.addComments(declareModule, 'leading', [
+        {type: 'CommentLine', value: ' Schema TypeMap'},
+      ])
+      const ast = t.program([declareModule])
+
+      return {code: generateCode(ast), ast}
     },
   )
 
@@ -185,9 +241,10 @@ export class TypeGenerator {
 
   private static async getQueryMapDeclaration({
     overloadClientMethods = true,
+    augmentGroqModule = true,
     evaluatedModules,
   }: GetQueryMapDeclarationOptions) {
-    if (!overloadClientMethods) return {code: '', ast: t.program([])}
+    if (!overloadClientMethods && !augmentGroqModule) return {code: '', ast: t.program([])}
 
     const queries = evaluatedModules.flatMap((module) => module.queries)
     if (!queries.length) return {code: '', ast: t.program([])}
@@ -198,7 +255,7 @@ export class TypeGenerator {
       typesByQuerystring[query].push(id.name)
     }
 
-    const queryReturnInterface = t.tsInterfaceDeclaration(
+    const sanityQueriesInterface = t.tsInterfaceDeclaration(
       SANITY_QUERIES,
       null,
       [],
@@ -216,20 +273,29 @@ export class TypeGenerator {
       ),
     )
 
-    const declareModule = t.declareModule(
-      t.stringLiteral('@sanity/client'),
-      t.blockStatement([queryReturnInterface]),
-    )
+    const program = t.program([])
 
-    const clientImport = t.addComments(
-      t.importDeclaration([], t.stringLiteral('@sanity/client')),
-      'leading',
-      [{type: 'CommentLine', value: ' Query TypeMap'}],
-    )
+    if (overloadClientMethods) {
+      program.body.push(
+        t.declareModule(
+          t.stringLiteral('@sanity/client'),
+          t.blockStatement([sanityQueriesInterface]),
+        ),
+      )
+    }
 
-    const ast = t.program([clientImport, declareModule])
-    const code = generateCode(ast)
-    return {code, ast}
+    if (augmentGroqModule) {
+      program.body.push(
+        t.declareModule(t.stringLiteral('groq'), t.blockStatement([sanityQueriesInterface])),
+      )
+    }
+
+    program.body[0] = t.addComments(program.body[0], 'leading', [
+      {type: 'CommentLine', value: ' Query TypeMap'},
+    ])
+
+    const code = generateCode(program)
+    return {code, ast: program}
   }
 
   async generateTypes(options: GenerateTypesOptions) {
@@ -237,11 +303,15 @@ export class TypeGenerator {
     const internalReferenceSymbol = this.getInternalReferenceSymbolDeclaration()
     const schemaTypeDeclarations = this.getSchemaTypeDeclarations(options)
     const allSanitySchemaTypesDeclaration = this.getAllSanitySchemaTypesDeclaration(options)
+    const defaultSchemaDeclaration = this.getDefaultSchemaDeclaration(options)
+    const sanitySchemasDeclaration = this.getSanitySchemasDeclaration(options)
 
     report?.event.generatedSchemaTypes({
       internalReferenceSymbol,
       schemaTypeDeclarations,
       allSanitySchemaTypesDeclaration,
+      schemaDeclarations: [{...defaultSchemaDeclaration, schemaId: 'default'}],
+      sanitySchemasDeclaration,
     })
 
     const program = t.program([])
@@ -254,6 +324,12 @@ export class TypeGenerator {
 
     program.body.push(allSanitySchemaTypesDeclaration.ast)
     code += allSanitySchemaTypesDeclaration.code
+
+    program.body.push(defaultSchemaDeclaration.ast)
+    code += defaultSchemaDeclaration.code
+
+    program.body.push(...sanitySchemasDeclaration.ast.body)
+    code += sanitySchemasDeclaration.code
 
     program.body.push(internalReferenceSymbol.ast)
     code += internalReferenceSymbol.code

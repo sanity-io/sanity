@@ -15,6 +15,7 @@ export interface TypegenGenerateTypesWorkerData {
   schemaPath: string
   searchPath: string | string[]
   overloadClientMethods?: boolean
+  augmentGroqModule?: boolean
 }
 
 if (isMainThread || !parentPort) {
@@ -41,6 +42,7 @@ async function main({
   searchPath,
   workDir,
   overloadClientMethods,
+  augmentGroqModule,
 }: TypegenGenerateTypesWorkerData) {
   const report = WorkerChannelReporter.from<TypegenWorkerChannel>(parentPort)
 
@@ -76,6 +78,7 @@ async function main({
     schemaPath,
     root: workDir,
     overloadClientMethods,
+    augmentGroqModule,
   })
   report.event.typegenComplete(result)
 }

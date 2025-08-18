@@ -11,6 +11,7 @@ interface TypesGeneratedTraceAttributes {
   unknownTypeNodesRatio: number
   emptyUnionTypeNodesGenerated: number
   configOverloadClientMethods: boolean
+  configAugmentGroqModule: boolean
 }
 
 export const TypesGeneratedTrace = defineTrace<TypesGeneratedTraceAttributes>({

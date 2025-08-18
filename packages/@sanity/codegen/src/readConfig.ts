@@ -16,6 +16,7 @@ export const configDefintion = z.object({
   generates: z.string().default('./sanity.types.ts'),
   formatGeneratedCode: z.boolean().default(true),
   overloadClientMethods: z.boolean().default(true),
+  augmentGroqModule: z.boolean().default(true),
 })
 
 export type CodegenConfig = z.infer<typeof configDefintion>
