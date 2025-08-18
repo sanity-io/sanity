@@ -65,6 +65,7 @@ export default async function typegenGenerateAction(
     schema: schemaPath,
     formatGeneratedCode,
     overloadClientMethods,
+    augmentGroqModule,
   } = await readConfig(flags['config-path'] || 'sanity-typegen.json')
 
   const outputPath = join(workDir, generates)
@@ -77,6 +78,7 @@ export default async function typegenGenerateAction(
     schemaPath,
     searchPath,
     overloadClientMethods,
+    augmentGroqModule,
   }
   const worker = new Worker(workerPath, {workerData, env})
   const receiver = WorkerChannelReceiver.from<TypegenWorkerChannel>(worker)
@@ -152,6 +154,7 @@ export default async function typegenGenerateAction(
 
     trace.log({
       configOverloadClientMethods: overloadClientMethods,
+      configAugmentGroqModule: augmentGroqModule,
       outputSize: Buffer.byteLength(result.code),
       queriesCount,
       schemaTypesCount,

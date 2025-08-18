@@ -95,8 +95,13 @@ describe(TypeGenerator.name, () => {
       reporter: WorkerChannelReporter.from<TypegenWorkerChannel>(emitter),
     })
 
-    const {allSanitySchemaTypesDeclaration, internalReferenceSymbol, schemaTypeDeclarations} =
-      await receiver.event.generatedSchemaTypes()
+    const {
+      allSanitySchemaTypesDeclaration,
+      internalReferenceSymbol,
+      schemaTypeDeclarations,
+      schemaDeclarations,
+      sanitySchemasDeclaration,
+    } = await receiver.event.generatedSchemaTypes()
 
     expect(allSanitySchemaTypesDeclaration.code).toMatchInlineSnapshot(`
       "export type AllSanitySchemaTypes = Foo | Bar;
@@ -109,6 +114,30 @@ describe(TypeGenerator.name, () => {
       "
     `)
     expect(schemaTypeDeclarations.length).toBe(2)
+
+    // Test the new DefaultSchema declaration
+    expect(schemaDeclarations.length).toBe(1)
+    const defaultSchemaDeclaration = schemaDeclarations[0]
+    expect(defaultSchemaDeclaration.schemaId).toBe('default')
+    expect(defaultSchemaDeclaration.code).toMatchInlineSnapshot(`
+      "// Source: changed-path/my-schema-path.json
+      export type DefaultSchema = Foo | Bar;
+
+      "
+    `)
+
+    // Test the SanitySchemas declaration (should be empty since augmentGroqModule is not explicitly set to true)
+    expect(sanitySchemasDeclaration.code).toMatchInlineSnapshot(`
+      "// Schema TypeMap
+      declare module "groq" {
+        interface SanitySchemas {
+          "default": DefaultSchema;
+        }
+      }
+
+      "
+    `)
+    expect(sanitySchemasDeclaration.ast.body).toHaveLength(1)
     const [fooDeclaration, barDeclaration] = schemaTypeDeclarations
 
     expect(fooDeclaration).toMatchObject({
@@ -156,8 +185,13 @@ describe(TypeGenerator.name, () => {
 
     expect(queryMapDeclaration.code).toMatchInlineSnapshot(`
       "// Query TypeMap
-      import "@sanity/client";
       declare module "@sanity/client" {
+        interface SanityQueries {
+          "*[_type == \\"foo\\"]": QueryFooResult;
+          "*[_type == \\"bar\\"]": QueryBarResult;
+        }
+      }
+      declare module "groq" {
         interface SanityQueries {
           "*[_type == \\"foo\\"]": QueryFooResult;
           "*[_type == \\"bar\\"]": QueryBarResult;
@@ -169,8 +203,7 @@ describe(TypeGenerator.name, () => {
 
     const {code} = await complete
     expect(code).toMatchInlineSnapshot(`
-      "// Source: changed-path/my-schema-path.json
-      export type Foo = {
+      "export type Foo = {
         _id: string;
         _type: "foo";
         foo?: string;
@@ -183,6 +216,16 @@ describe(TypeGenerator.name, () => {
       };
 
       export type AllSanitySchemaTypes = Foo | Bar;
+
+      // Source: changed-path/my-schema-path.json
+      export type DefaultSchema = Foo | Bar;
+
+      // Schema TypeMap
+      declare module "groq" {
+        interface SanitySchemas {
+          "default": DefaultSchema;
+        }
+      }
 
       export declare const internalGroqTypeReferenceTo: unique symbol;
 
@@ -205,8 +248,13 @@ describe(TypeGenerator.name, () => {
       }>;
 
       // Query TypeMap
-      import "@sanity/client";
       declare module "@sanity/client" {
+        interface SanityQueries {
+          "*[_type == \\"foo\\"]": QueryFooResult;
+          "*[_type == \\"bar\\"]": QueryBarResult;
+        }
+      }
+      declare module "groq" {
         interface SanityQueries {
           "*[_type == \\"foo\\"]": QueryFooResult;
           "*[_type == \\"bar\\"]": QueryBarResult;
@@ -288,6 +336,15 @@ describe(TypeGenerator.name, () => {
 
       export type AllSanitySchemaTypes = Foo | Bar;
 
+      export type DefaultSchema = Foo | Bar;
+
+      // Schema TypeMap
+      declare module "groq" {
+        interface SanitySchemas {
+          "default": DefaultSchema;
+        }
+      }
+
       export declare const internalGroqTypeReferenceTo: unique symbol;
 
       // Source: foo.ts
@@ -307,6 +364,14 @@ describe(TypeGenerator.name, () => {
         _type: "bar";
         bar?: string;
       }>;
+
+      // Query TypeMap
+      declare module "groq" {
+        interface SanityQueries {
+          "*[_type == \\"foo\\"]": QueryFooResult;
+          "*[_type == \\"bar\\"]": QueryBarResult;
+        }
+      }
 
       "
     `)
@@ -355,6 +420,15 @@ describe(TypeGenerator.name, () => {
       };
 
       export type AllSanitySchemaTypes = Foo | Bar;
+
+      export type DefaultSchema = Foo | Bar;
+
+      // Schema TypeMap
+      declare module "groq" {
+        interface SanitySchemas {
+          "default": DefaultSchema;
+        }
+      }
 
       export declare const internalGroqTypeReferenceTo: unique symbol;
 
@@ -435,6 +509,213 @@ describe(TypeGenerator.name, () => {
     expect(schemaTypeDeclarations1).not.toBe(schemaTypeDeclarations2)
     expect(schemaTypeDeclarations1[0].name).toBe('doc1')
     expect(schemaTypeDeclarations2[0].name).toBe('doc2')
+  })
+
+  test('does not generate groq module augmentation when `augmentGroqModule` is false', async () => {
+    const typeGenerator = new TypeGenerator()
+
+    const schema: SchemaType = [
+      {
+        type: 'document',
+        name: 'foo',
+        attributes: {
+          _id: {type: 'objectAttribute', value: {type: 'string'}},
+          _type: {type: 'objectAttribute', value: {type: 'string', value: 'foo'}},
+          foo: {type: 'objectAttribute', value: {type: 'string'}, optional: true},
+        },
+      },
+    ]
+
+    async function* getQueries(): AsyncGenerator<ExtractedModule> {
+      yield {
+        filename: '/src/foo.ts',
+        queries: [
+          {
+            filename: '/src/foo.ts',
+            query: '*[_type == "foo"]',
+            variable: {id: {type: 'Identifier', name: 'queryFoo'}},
+          },
+        ],
+        errors: [],
+      }
+    }
+
+    const {code} = await typeGenerator.generateTypes({
+      root: '/src',
+      schema,
+      augmentGroqModule: false,
+      queries: getQueries(),
+    })
+
+    expect(code).toMatchInlineSnapshot(`
+      "export type Foo = {
+        _id: string;
+        _type: "foo";
+        foo?: string;
+      };
+
+      export type AllSanitySchemaTypes = Foo;
+
+      export type DefaultSchema = Foo;
+
+      export declare const internalGroqTypeReferenceTo: unique symbol;
+
+      // Source: foo.ts
+      // Variable: queryFoo
+      // Query: *[_type == "foo"]
+      export type QueryFooResult = Array<{
+        _id: string;
+        _type: "foo";
+        foo?: string;
+      }>;
+
+      // Query TypeMap
+      declare module "@sanity/client" {
+        interface SanityQueries {
+          "*[_type == \\"foo\\"]": QueryFooResult;
+        }
+      }
+
+      "
+    `)
+  })
+
+  test('generates both client and groq module augmentations when both options are true', async () => {
+    const emitter = new EventEmitter()
+    const receiver = WorkerChannelReceiver.from<TypegenWorkerChannel>(emitter)
+    const typeGenerator = new TypeGenerator()
+
+    const schema: SchemaType = [
+      {
+        type: 'document',
+        name: 'foo',
+        attributes: {
+          _id: {type: 'objectAttribute', value: {type: 'string'}},
+          _type: {type: 'objectAttribute', value: {type: 'string', value: 'foo'}},
+          foo: {type: 'objectAttribute', value: {type: 'string'}, optional: true},
+        },
+      },
+    ]
+
+    async function* getQueries(): AsyncGenerator<ExtractedModule> {
+      yield {
+        filename: '/src/foo.ts',
+        queries: [
+          {
+            filename: '/src/foo.ts',
+            query: '*[_type == "foo"]',
+            variable: {id: {type: 'Identifier', name: 'queryFoo'}},
+          },
+        ],
+        errors: [],
+      }
+    }
+
+    const complete = typeGenerator.generateTypes({
+      root: '/src',
+      schema,
+      overloadClientMethods: true,
+      augmentGroqModule: true,
+      queries: getQueries(),
+      reporter: WorkerChannelReporter.from<TypegenWorkerChannel>(emitter),
+    })
+
+    const {sanitySchemasDeclaration} = await receiver.event.generatedSchemaTypes()
+    const {queryMapDeclaration} = await receiver.event.generatedQueryTypes()
+
+    // Should generate SanitySchemas interface for @sanity/client
+    expect(sanitySchemasDeclaration.code).toMatchInlineSnapshot(`
+      "// Schema TypeMap
+      declare module "groq" {
+        interface SanitySchemas {
+          "default": DefaultSchema;
+        }
+      }
+
+      "
+    `)
+
+    // Should generate SanityQueries interface for both modules
+    expect(queryMapDeclaration.code).toMatchInlineSnapshot(`
+      "// Query TypeMap
+      declare module "@sanity/client" {
+        interface SanityQueries {
+          "*[_type == \\"foo\\"]": QueryFooResult;
+        }
+      }
+      declare module "groq" {
+        interface SanityQueries {
+          "*[_type == \\"foo\\"]": QueryFooResult;
+        }
+      }
+
+      "
+    `)
+
+    await complete
+  })
+
+  test('does not generate module augmentations when both options are false', async () => {
+    const typeGenerator = new TypeGenerator()
+
+    const schema: SchemaType = [
+      {
+        type: 'document',
+        name: 'foo',
+        attributes: {
+          _id: {type: 'objectAttribute', value: {type: 'string'}},
+          _type: {type: 'objectAttribute', value: {type: 'string', value: 'foo'}},
+          foo: {type: 'objectAttribute', value: {type: 'string'}, optional: true},
+        },
+      },
+    ]
+
+    async function* getQueries(): AsyncGenerator<ExtractedModule> {
+      yield {
+        filename: '/src/foo.ts',
+        queries: [
+          {
+            filename: '/src/foo.ts',
+            query: '*[_type == "foo"]',
+            variable: {id: {type: 'Identifier', name: 'queryFoo'}},
+          },
+        ],
+        errors: [],
+      }
+    }
+
+    const {code} = await typeGenerator.generateTypes({
+      root: '/src',
+      schema,
+      overloadClientMethods: false,
+      augmentGroqModule: false,
+      queries: getQueries(),
+    })
+
+    expect(code).toMatchInlineSnapshot(`
+      "export type Foo = {
+        _id: string;
+        _type: "foo";
+        foo?: string;
+      };
+
+      export type AllSanitySchemaTypes = Foo;
+
+      export type DefaultSchema = Foo;
+
+      export declare const internalGroqTypeReferenceTo: unique symbol;
+
+      // Source: foo.ts
+      // Variable: queryFoo
+      // Query: *[_type == "foo"]
+      export type QueryFooResult = Array<{
+        _id: string;
+        _type: "foo";
+        foo?: string;
+      }>;
+
+      "
+    `)
   })
 
   test('memoization works correctly with multiple generateTypes calls', async () => {

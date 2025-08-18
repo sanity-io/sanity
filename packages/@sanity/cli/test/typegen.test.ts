@@ -97,7 +97,7 @@ describeCliTest('CLI: `sanity typegen`', () => {
       )
     })
 
-    test('sanity typegen generate: with overloadClientMethods false', async () => {
+    test('sanity typegen generate: with overloadClientMethods and augmentGroqModule false', async () => {
       await writeFile(
         `${studiosPath}/cli-test-studio/out/.prettierrc`,
         '{\n  "singleQuote": true\n}\n',

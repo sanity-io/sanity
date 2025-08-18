@@ -7,6 +7,12 @@ import rootJson from '@repo/test-dts-exports/package.json' with {type: 'json'}
 import {format as prettierFormat, resolveConfig as resolvePrettierConfig} from 'prettier'
 import {Project} from 'ts-morph'
 
+// Configuration for packages with intentionally never types
+// These types are designed to be `never` by default until augmented via module declaration merging
+const INTENTIONALLY_NEVER_TYPES = {
+  groq: ['SanityQueryResult', 'SanitySchema', 'SanitySchemaType'],
+}
+
 const diagnosticsEnvFlag = process.env.TEST_DTS_EXPORTS_DIAGNOSTICS || 'none'
 const diagnostics =
   diagnosticsEnvFlag === 'full'
@@ -95,7 +101,12 @@ describe(${JSON.stringify(bareIdentifier)}, () => {
       const genericParamsCount = decl.getTypeParameters?.().length ?? 0
       const genericParams =
         genericParamsCount > 0 ? `<${Array(genericParamsCount).fill('any').join(', ')}>` : ''
-      const testContentDecl = getTestContent(syntaxKindName, exportName, genericParams)
+      const testContentDecl = getTestContent(
+        syntaxKindName,
+        exportName,
+        genericParams,
+        bareIdentifier,
+      )
       if (!dedupeTestContent.has(testContentDecl)) {
         testContent += testContentDecl
         dedupeTestContent.add(testContentDecl)
@@ -128,13 +139,21 @@ describe(${JSON.stringify(bareIdentifier)}, () => {
   )
 }
 
-function getTestContent(syntaxKindName, exportName, genericParams) {
+function getTestContent(syntaxKindName, exportName, genericParams, bareIdentifier) {
+  // Check if this export is configured as intentionally never
+  const intentionallyNeverTypes = INTENTIONALLY_NEVER_TYPES[bareIdentifier]
+  const isIntentionallyNever = intentionallyNeverTypes?.includes(exportName) ?? false
+
   switch (syntaxKindName) {
     case 'InterfaceDeclaration':
       return `expectTypeOf<${exportName}${genericParams}>().toBeObject();
 `
     case 'ClassDeclaration':
     case 'TypeAliasDeclaration':
+      if (isIntentionallyNever) {
+        return `expectTypeOf<${exportName}${genericParams}>().toBeNever();
+`
+      }
       return `expectTypeOf<${exportName}${genericParams}>().not.toBeNever();
 `
     case 'VariableDeclaration':
