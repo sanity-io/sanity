@@ -98,9 +98,8 @@ export default defineBlueprint({
       timeout: 30,
       event: {
         on: ['publish'],
-        filter: "delta::changedAny(slug.current)",
-        projection:
-          '{"beforeSlug": before().slug.current, "slug": after().slug.current}',
+        filter: 'delta::changedAny(slug.current)',
+        projection: '{"beforeSlug": before().slug.current, "slug": after().slug.current}',
       },
     }),
   ],
