@@ -333,6 +333,20 @@ const releasesLocaleStrings = {
   'schedule-dialog.publish-date-in-past-warning':
     'Schedule this release for a future time and date.',
 
+  /** Header for the schedule publish dialog */
+  'schedule-publish-dialog.header': 'Schedule draft for Publish',
+  /** Description for the schedule publish dialog */
+  'schedule-publish-dialog.description': 'Select when this document should be published.',
+  /** Confirm button text for the schedule publish dialog */
+  'schedule-publish-dialog.confirm': 'Schedule',
+
+  /** Header for the schedule unpublish dialog */
+  'schedule-unpublish-dialog.header': 'Schedule draft for Unpublish',
+  /** Description for the schedule unpublish dialog */
+  'schedule-unpublish-dialog.description': 'Select when this document should be unpublished.',
+  /** Confirm button text for the schedule unpublish dialog */
+  'schedule-unpublish-dialog.confirm': 'Schedule Unpublish',
+
   /** Placeholder for search of documents in a release */
   'search-documents-placeholder': 'Search documents',
   /** Text for when the release was created */
