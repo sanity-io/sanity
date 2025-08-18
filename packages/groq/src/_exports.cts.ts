@@ -1,13 +1,11 @@
 import {
   defineQuery,
-  type PickSchema,
   type SanityDocument,
   type SanityQueries,
   type SanityQueryResult,
   type SanitySchema,
   type SanitySchemas,
   type SanitySchemaType,
-  type SchemaOrigin,
 } from './define'
 import {groq} from './groq'
 
@@ -21,12 +19,10 @@ Object.assign(module.exports, {defineQuery})
 export type {
   groq as default,
   defineQuery,
-  PickSchema,
   SanityDocument,
   SanityQueries,
   SanityQueryResult,
   SanitySchema,
   SanitySchemas,
   SanitySchemaType,
-  SchemaOrigin,
 }

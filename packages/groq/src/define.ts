@@ -170,9 +170,9 @@ export type SanityQueryResult<
  *
  * @typeParam TBase - The base type to tag.
  * @typeParam TSchemaId - The schema ID to associate with the type.
- * @public
+ * @internal
  */
-export type SchemaOrigin<TBase, TSchemaId extends string> = TBase & {
+type SchemaOrigin<TBase, TSchemaId extends string> = TBase & {
   /**
    * @internal
    * @deprecated typescript helper only
@@ -199,9 +199,6 @@ export type SchemaOrigin<TBase, TSchemaId extends string> = TBase & {
  * type ProductionAuthor = PickSchema<Author, 'yourProjectId.production'>
  * // Returns: {_type: 'author'; foo: number}
  * ```
- * @public
+ * @internal
  */
-export type PickSchema<T, TSchemaId extends string = string> = Extract<
-  T,
-  SchemaOrigin<T, TSchemaId>
->
+type PickSchema<T, TSchemaId extends string = string> = Extract<T, SchemaOrigin<T, TSchemaId>>
