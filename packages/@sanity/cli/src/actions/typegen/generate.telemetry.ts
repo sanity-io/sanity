@@ -3,8 +3,10 @@ import {defineTrace} from '@sanity/telemetry'
 interface TypesGeneratedTraceAttributes {
   outputSize: number
   queriesCount: number
+  documentProjectionsCount: number
   schemaTypesCount: number
   queryFilesCount: number
+  documentProjectionFilesCount: number
   filesWithErrors: number
   typeNodesGenerated: number
   unknownTypeNodesGenerated: number

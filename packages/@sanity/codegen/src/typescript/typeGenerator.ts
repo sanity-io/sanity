@@ -8,13 +8,16 @@ import {createSelector} from 'reselect'
 import {
   ALL_SANITY_SCHEMA_TYPES,
   DEFAULT_SCHEMA,
+  DOCUMENT_PROJECTION_BASE,
   INTERNAL_REFERENCE_SYMBOL,
+  SANITY_DOCUMENT_PROJECTIONS,
   SANITY_QUERIES,
   SANITY_SCHEMAS,
 } from './constants'
 import {computeOnce, generateCode, getUniqueIdentifierForName, normalizePath} from './helpers'
 import {SchemaTypeGenerator} from './schemaTypeGenerator'
 import {
+  type EvaluatedDocumentProjection,
   type EvaluatedModule,
   type EvaluatedQuery,
   type ExtractedModule,
@@ -55,6 +58,8 @@ export type TypegenWorkerChannel = WorkerChannel.Definition<{
   evaluatedModules: WorkerChannel.Stream<EvaluatedModule>
   generatedQueryTypes: WorkerChannel.Event<{
     queryMapDeclaration: {code: string; ast: t.Program}
+    documentProjectionMapDeclaration: {code: string; ast: t.Program}
+    importDeclarations: {code: string; ast: t.Program}
   }>
 }>
 
@@ -73,6 +78,9 @@ type GetEvaluatedModulesOptions = GenerateTypesOptions & {
   schemaTypeGenerator: SchemaTypeGenerator
 }
 type GetQueryMapDeclarationOptions = GenerateTypesOptions & {
+  evaluatedModules: EvaluatedModule[]
+}
+type GetDocumentProjectionMapDeclarationOptions = GenerateTypesOptions & {
   evaluatedModules: EvaluatedModule[]
 }
 
@@ -195,6 +203,7 @@ export class TypeGenerator {
 
     for await (const {filename, ...extractedModule} of extractedModules) {
       const queries: EvaluatedQuery[] = []
+      const documentProjections: EvaluatedDocumentProjection[] = []
       const errors: (QueryExtractionError | QueryEvaluationError)[] = [...extractedModule.errors]
 
       for (const extractedQuery of extractedModule.queries) {
@@ -226,9 +235,49 @@ export class TypeGenerator {
         }
       }
 
+      for (const extractedDocumentProjection of extractedModule.documentProjections) {
+        const {variable} = extractedDocumentProjection
+        try {
+          const {tsType, stats} = schemaTypeGenerator.evaluateDocumentProjection(
+            extractedDocumentProjection,
+          )
+          const id = getUniqueIdentifierForName(
+            `${extractedDocumentProjection.variable.id.name}Result`,
+            currentIdentifiers,
+          )
+          const typeAlias = t.tsTypeAliasDeclaration(id, null, tsType)
+          const trimmedQuery = extractedDocumentProjection.projection
+            .replace(/(\r\n|\n|\r)/gm, '')
+            .trim()
+          const ast = t.addComments(t.exportNamedDeclaration(typeAlias), 'leading', [
+            {type: 'CommentLine', value: ` Source: ${normalizePath(root, filename)}`},
+            {
+              type: 'CommentLine',
+              value: ` Variable: ${variable.id.name}`,
+            },
+            {type: 'CommentLine', value: ` Projection: ${trimmedQuery}`},
+          ])
+
+          const evaluatedDocumentProjection: EvaluatedDocumentProjection = {
+            id,
+            code: generateCode(ast),
+            ast,
+            stats,
+            tsType,
+            ...extractedDocumentProjection,
+          }
+
+          currentIdentifiers.add(id.name)
+          documentProjections.push(evaluatedDocumentProjection)
+        } catch (cause) {
+          errors.push(new QueryEvaluationError({variable, cause, filename}))
+        }
+      }
+
       const evaluatedModule: EvaluatedModule = {
         filename,
         queries,
+        documentProjections,
         errors,
       }
       report?.stream.evaluatedModules.emit(evaluatedModule)
@@ -239,11 +288,11 @@ export class TypeGenerator {
     return evaluatedModuleResults
   }
 
-  private static async getQueryMapDeclaration({
+  private static getQueryMapDeclaration({
     overloadClientMethods = true,
     augmentGroqModule = true,
     evaluatedModules,
-  }: GetQueryMapDeclarationOptions) {
+  }: GenerateTypesOptions & {evaluatedModules: EvaluatedModule[]}) {
     if (!overloadClientMethods && !augmentGroqModule) return {code: '', ast: t.program([])}
 
     const queries = evaluatedModules.flatMap((module) => module.queries)
@@ -298,6 +347,71 @@ export class TypeGenerator {
     return {code, ast: program}
   }
 
+  private static getDocumentProjectionMapDeclaration({
+    augmentGroqModule = true,
+    evaluatedModules,
+  }: GenerateTypesOptions & {evaluatedModules: EvaluatedModule[]}) {
+    if (!augmentGroqModule) return {code: '', ast: t.program([])}
+
+    const documentProjections = evaluatedModules.flatMap((module) => module.documentProjections)
+    if (!documentProjections.length) return {code: '', ast: t.program([])}
+
+    const typesByProjectionString: {[query: string]: string[]} = {}
+    for (const {id, projection} of documentProjections) {
+      typesByProjectionString[projection] ??= []
+      typesByProjectionString[projection].push(id.name)
+    }
+
+    const sanityQueriesInterface = t.tsInterfaceDeclaration(
+      SANITY_DOCUMENT_PROJECTIONS,
+      null,
+      [],
+      t.tsInterfaceBody(
+        Object.entries(typesByProjectionString).map(([query, types]) => {
+          return t.tsPropertySignature(
+            t.stringLiteral(query),
+            t.tsTypeAnnotation(
+              types.length
+                ? t.tsUnionType(types.map((type) => t.tsTypeReference(t.identifier(type))))
+                : t.tsNeverKeyword(),
+            ),
+          )
+        }),
+      ),
+    )
+
+    const program = t.program([
+      t.declareModule(t.stringLiteral('groq'), t.blockStatement([sanityQueriesInterface])),
+    ])
+    program.body[0] = t.addComments(program.body[0], 'leading', [
+      {type: 'CommentLine', value: ' Document Projection TypeMap'},
+    ])
+
+    const code = generateCode(program)
+    return {code, ast: program}
+  }
+
+  private static getImportDeclarations({
+    augmentGroqModule = true,
+    evaluatedModules,
+  }: GenerateTypesOptions & {evaluatedModules: EvaluatedModule[]}) {
+    if (!augmentGroqModule) return {code: '', ast: t.program([])}
+    if (!evaluatedModules.some((module) => !!module.documentProjections.length)) {
+      return {code: '', ast: t.program([])}
+    }
+
+    const importDeclaration = Object.assign(
+      t.importDeclaration(
+        [t.importSpecifier(DOCUMENT_PROJECTION_BASE, DOCUMENT_PROJECTION_BASE)],
+        t.stringLiteral('groq'),
+      ),
+      {importKind: 'type'},
+    )
+
+    const program = t.program([importDeclaration])
+    return {code: generateCode(program), ast: program}
+  }
+
   async generateTypes(options: GenerateTypesOptions) {
     const {reporter: report} = options
     const internalReferenceSymbol = this.getInternalReferenceSymbolDeclaration()
@@ -314,8 +428,32 @@ export class TypeGenerator {
       sanitySchemasDeclaration,
     })
 
+    const evaluatedModules = await TypeGenerator.getEvaluatedModules({
+      ...options,
+      schemaTypeDeclarations,
+      schemaTypeGenerator: this.getSchemaTypeGenerator(options),
+    })
+
+    const queryMapDeclaration = TypeGenerator.getQueryMapDeclaration({
+      ...options,
+      evaluatedModules,
+    })
+
+    const documentProjectionMapDeclaration = TypeGenerator.getDocumentProjectionMapDeclaration({
+      ...options,
+      evaluatedModules,
+    })
+
     const program = t.program([])
     let code = ''
+
+    const importDeclarations = TypeGenerator.getImportDeclarations({...options, evaluatedModules})
+
+    program.body.push(...importDeclarations.ast.body)
+    code += importDeclarations.code
+
+    program.body.push(internalReferenceSymbol.ast)
+    code += internalReferenceSymbol.code
 
     for (const declaration of schemaTypeDeclarations) {
       program.body.push(declaration.ast)
@@ -328,32 +466,32 @@ export class TypeGenerator {
     program.body.push(defaultSchemaDeclaration.ast)
     code += defaultSchemaDeclaration.code
 
-    program.body.push(...sanitySchemasDeclaration.ast.body)
-    code += sanitySchemasDeclaration.code
+    for (const {queries, documentProjections} of evaluatedModules) {
+      for (const result of queries) {
+        program.body.push(result.ast)
+        code += result.code
+      }
 
-    program.body.push(internalReferenceSymbol.ast)
-    code += internalReferenceSymbol.code
-
-    const evaluatedModules = await TypeGenerator.getEvaluatedModules({
-      ...options,
-      schemaTypeDeclarations,
-      schemaTypeGenerator: this.getSchemaTypeGenerator(options),
-    })
-    for (const {queries} of evaluatedModules) {
-      for (const query of queries) {
-        program.body.push(query.ast)
-        code += query.code
+      for (const result of documentProjections) {
+        program.body.push(result.ast)
+        code += result.code
       }
     }
 
-    const queryMapDeclaration = await TypeGenerator.getQueryMapDeclaration({
-      ...options,
-      evaluatedModules,
-    })
+    program.body.push(...sanitySchemasDeclaration.ast.body)
+    code += sanitySchemasDeclaration.code
+
     program.body.push(...queryMapDeclaration.ast.body)
     code += queryMapDeclaration.code
 
-    report?.event.generatedQueryTypes({queryMapDeclaration})
+    program.body.push(...documentProjectionMapDeclaration.ast.body)
+    code += documentProjectionMapDeclaration.code
+
+    report?.event.generatedQueryTypes({
+      queryMapDeclaration,
+      documentProjectionMapDeclaration,
+      importDeclarations,
+    })
 
     return {code, ast: program}
   }

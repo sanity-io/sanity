@@ -1,3 +1,4 @@
+/* eslint-disable max-nested-callbacks */
 import {CodeGenerator} from '@babel/generator'
 import * as t from '@babel/types'
 import {type TypeNode} from 'groq-js'
@@ -519,6 +520,327 @@ describe(SchemaTypeGenerator.name, () => {
       expect(stats).toMatchInlineSnapshot(`
         {
           "allTypes": 6,
+          "emptyUnions": 0,
+          "unknownTypes": 0,
+        }
+      `)
+    })
+  })
+
+  describe('evaluateDocumentProjection', () => {
+    test('evaluates a projection for a single document type', () => {
+      const schema = new SchemaTypeGenerator([
+        {
+          type: 'document',
+          name: 'post',
+          attributes: {
+            _id: {type: 'objectAttribute', value: {type: 'string'}},
+            _type: {type: 'objectAttribute', value: {type: 'string', value: 'post'}},
+            _createdAt: {type: 'objectAttribute', value: {type: 'string'}},
+            _updatedAt: {type: 'objectAttribute', value: {type: 'string'}},
+            title: {type: 'objectAttribute', value: {type: 'string'}, optional: true},
+            content: {type: 'objectAttribute', value: {type: 'string'}, optional: true},
+          },
+        },
+      ])
+
+      const {tsType, stats} = schema.evaluateDocumentProjection({
+        documentTypes: ['post'],
+        projection: '{_id, _type, title}',
+      })
+
+      expect(generateCode(tsType)).toMatchInlineSnapshot(`
+        "DocumentProjectionBase<{
+          _id: string;
+          _type: "post";
+          title: string | null;
+        }, "post">"
+      `)
+
+      expect(stats).toMatchInlineSnapshot(`
+        {
+          "allTypes": 6,
+          "emptyUnions": 0,
+          "unknownTypes": 0,
+        }
+      `)
+    })
+
+    test('evaluates a projection for multiple document types creating a union', () => {
+      const schema = new SchemaTypeGenerator([
+        {
+          type: 'document',
+          name: 'post',
+          attributes: {
+            _id: {type: 'objectAttribute', value: {type: 'string'}},
+            _type: {type: 'objectAttribute', value: {type: 'string', value: 'post'}},
+            title: {type: 'objectAttribute', value: {type: 'string'}, optional: true},
+            content: {
+              type: 'objectAttribute',
+              value: {
+                type: 'array',
+                of: {
+                  type: 'object',
+                  attributes: {
+                    _type: {type: 'objectAttribute', value: {type: 'string', value: '_block'}},
+                  },
+                },
+              }, // PTE block
+              optional: true,
+            },
+          },
+        },
+        {
+          type: 'document',
+          name: 'article',
+          attributes: {
+            _id: {type: 'objectAttribute', value: {type: 'string'}},
+            _type: {type: 'objectAttribute', value: {type: 'string', value: 'article'}},
+            title: {type: 'objectAttribute', value: {type: 'string'}, optional: true},
+            content: {type: 'objectAttribute', value: {type: 'string'}, optional: true}, // Plain string
+          },
+        },
+      ])
+
+      const {tsType, stats} = schema.evaluateDocumentProjection({
+        documentTypes: ['post', 'article'],
+        projection: '{_type, _id, content}',
+      })
+
+      expect(generateCode(tsType)).toMatchInlineSnapshot(`
+        "DocumentProjectionBase<{
+          _type: "post";
+          _id: string;
+          content: Array<{
+            _type: "_block";
+          }> | null;
+        }, "post"> | DocumentProjectionBase<{
+          _type: "article";
+          _id: string;
+          content: string | null;
+        }, "article">"
+      `)
+
+      expect(stats).toMatchInlineSnapshot(`
+        {
+          "allTypes": 15,
+          "emptyUnions": 0,
+          "unknownTypes": 0,
+        }
+      `)
+    })
+
+    test('throws error for invalid projection syntax', () => {
+      const schema = new SchemaTypeGenerator([
+        {
+          type: 'document',
+          name: 'post',
+          attributes: {
+            _id: {type: 'objectAttribute', value: {type: 'string'}},
+            _type: {type: 'objectAttribute', value: {type: 'string', value: 'post'}},
+          },
+        },
+      ])
+
+      expect(() =>
+        schema.evaluateDocumentProjection({
+          documentTypes: ['post'],
+          projection: '*[_type == "post"]', // Invalid: not a projection
+        }),
+      ).toThrowErrorMatchingInlineSnapshot(
+        `[Error: Invalid projection syntax: Projections must be enclosed in curly braces, (e.g., "{_id, title}"). Received: "*[_type == "post"]"]`,
+      )
+    })
+
+    test('throws error when no document types are provided', () => {
+      const schema = new SchemaTypeGenerator([
+        {
+          type: 'document',
+          name: 'post',
+          attributes: {
+            _id: {type: 'objectAttribute', value: {type: 'string'}},
+            _type: {type: 'objectAttribute', value: {type: 'string', value: 'post'}},
+          },
+        },
+      ])
+
+      expect(() =>
+        schema.evaluateDocumentProjection({
+          documentTypes: [],
+          projection: '{_id, _type}',
+        }),
+      ).toThrowErrorMatchingInlineSnapshot(
+        `[Error: Document projection requires at least one document type. Please specify one or more document types in the first parameter of defineDocumentProjection().]`,
+      )
+    })
+
+    test('throws error for non-existent document type', () => {
+      const schema = new SchemaTypeGenerator([
+        {
+          type: 'document',
+          name: 'post',
+          attributes: {
+            _id: {type: 'objectAttribute', value: {type: 'string'}},
+            _type: {type: 'objectAttribute', value: {type: 'string', value: 'post'}},
+          },
+        },
+      ])
+
+      expect(() =>
+        schema.evaluateDocumentProjection({
+          documentTypes: ['nonExistentType'],
+          projection: '{_id, _type}',
+        }),
+      ).toThrowErrorMatchingInlineSnapshot(
+        `[Error: Unexpected result while evaluating projection for document type 'nonExistentType'.]`,
+      )
+    })
+
+    test('evaluates projection with nested fields and references', () => {
+      const schema = new SchemaTypeGenerator([
+        {
+          type: 'document',
+          name: 'post',
+          attributes: {
+            _id: {type: 'objectAttribute', value: {type: 'string'}},
+            _type: {type: 'objectAttribute', value: {type: 'string', value: 'post'}},
+            title: {type: 'objectAttribute', value: {type: 'string'}, optional: true},
+            author: {
+              type: 'objectAttribute',
+              value: {
+                type: 'object',
+                attributes: {
+                  _ref: {type: 'objectAttribute', value: {type: 'string'}},
+                  _type: {type: 'objectAttribute', value: {type: 'string', value: 'reference'}},
+                },
+                dereferencesTo: 'author',
+              },
+              optional: true,
+            },
+          },
+        },
+        {
+          type: 'document',
+          name: 'author',
+          attributes: {
+            _id: {type: 'objectAttribute', value: {type: 'string'}},
+            _type: {type: 'objectAttribute', value: {type: 'string', value: 'author'}},
+            name: {type: 'objectAttribute', value: {type: 'string'}},
+          },
+        },
+      ])
+
+      const {tsType, stats} = schema.evaluateDocumentProjection({
+        documentTypes: ['post'],
+        projection: '{_id, title, author->{name}}',
+      })
+
+      expect(generateCode(tsType)).toMatchInlineSnapshot(`
+        "DocumentProjectionBase<{
+          _id: string;
+          title: string | null;
+          author: {
+            name: string;
+          } | null;
+        }, "post">"
+      `)
+
+      expect(stats).toMatchInlineSnapshot(`
+        {
+          "allTypes": 9,
+          "emptyUnions": 0,
+          "unknownTypes": 0,
+        }
+      `)
+    })
+
+    test('evaluates projection with optional fields', () => {
+      const schema = new SchemaTypeGenerator([
+        {
+          type: 'document',
+          name: 'post',
+          attributes: {
+            _id: {type: 'objectAttribute', value: {type: 'string'}},
+            _type: {type: 'objectAttribute', value: {type: 'string', value: 'post'}},
+            title: {type: 'objectAttribute', value: {type: 'string'}, optional: true},
+            description: {type: 'objectAttribute', value: {type: 'string'}, optional: true},
+            publishedAt: {type: 'objectAttribute', value: {type: 'string'}, optional: true},
+          },
+        },
+      ])
+
+      const {tsType, stats} = schema.evaluateDocumentProjection({
+        documentTypes: ['post'],
+        projection: '{_type, title, description}',
+      })
+
+      expect(generateCode(tsType)).toMatchInlineSnapshot(`
+        "DocumentProjectionBase<{
+          _type: "post";
+          title: string | null;
+          description: string | null;
+        }, "post">"
+      `)
+
+      expect(stats).toMatchInlineSnapshot(`
+        {
+          "allTypes": 8,
+          "emptyUnions": 0,
+          "unknownTypes": 0,
+        }
+      `)
+    })
+
+    test('evaluates projection with array fields', () => {
+      const schema = new SchemaTypeGenerator([
+        {
+          type: 'document',
+          name: 'post',
+          attributes: {
+            _id: {type: 'objectAttribute', value: {type: 'string'}},
+            _type: {type: 'objectAttribute', value: {type: 'string', value: 'post'}},
+            tags: {
+              type: 'objectAttribute',
+              value: {type: 'array', of: {type: 'string'}},
+              optional: true,
+            },
+            categories: {
+              type: 'objectAttribute',
+              value: {
+                type: 'array',
+                of: {
+                  type: 'object',
+                  attributes: {
+                    name: {type: 'objectAttribute', value: {type: 'string'}},
+                    slug: {type: 'objectAttribute', value: {type: 'string'}},
+                  },
+                },
+              },
+              optional: true,
+            },
+          },
+        },
+      ])
+
+      const {tsType, stats} = schema.evaluateDocumentProjection({
+        documentTypes: ['post'],
+        projection: '{_type, tags, categories}',
+      })
+
+      expect(generateCode(tsType)).toMatchInlineSnapshot(`
+        "DocumentProjectionBase<{
+          _type: "post";
+          tags: Array<string> | null;
+          categories: Array<{
+            name: string;
+            slug: string;
+          }> | null;
+        }, "post">"
+      `)
+
+      expect(stats).toMatchInlineSnapshot(`
+        {
+          "allTypes": 12,
           "emptyUnions": 0,
           "unknownTypes": 0,
         }

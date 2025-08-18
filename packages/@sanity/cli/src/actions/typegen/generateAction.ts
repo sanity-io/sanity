@@ -97,20 +97,29 @@ export default async function typegenGenerateAction(
 
     spinner.start('Generating query types…')
     let queriesCount = 0
+    let documentProjectionsCount = 0
     let evaluatedFiles = 0
     let filesWithErrors = 0
     let queryFilesCount = 0
+    let documentProjectionFilesCount = 0
     let typeNodesGenerated = 0
     let unknownTypeNodesGenerated = 0
     let emptyUnionTypeNodesGenerated = 0
 
-    for await (const {queries, errors} of receiver.stream.evaluatedModules()) {
+    for await (const {queries, documentProjections, errors} of receiver.stream.evaluatedModules()) {
       evaluatedFiles++
       queriesCount += queries.length
+      documentProjectionsCount += documentProjections.length
       queryFilesCount += queries.length ? 1 : 0
+      documentProjectionFilesCount += documentProjections.length ? 1 : 0
       filesWithErrors += errors.length ? 1 : 0
 
       for (const {stats} of queries) {
+        typeNodesGenerated += stats.allTypes
+        unknownTypeNodesGenerated += stats.unknownTypes
+        emptyUnionTypeNodesGenerated += stats.emptyUnions
+      }
+      for (const {stats} of documentProjections) {
         typeNodesGenerated += stats.allTypes
         unknownTypeNodesGenerated += stats.unknownTypes
         emptyUnionTypeNodesGenerated += stats.emptyUnions
@@ -123,7 +132,12 @@ export default async function typegenGenerateAction(
       spinner.text =
         `Generating query types… (${percent(evaluatedFiles / expectedFileCount)})\n` +
         `  └─ Processed ${count(evaluatedFiles)} of ${count(expectedFileCount, 'files')}. ` +
-        `Found ${count(queriesCount, 'queries', 'query')} from ${count(queryFilesCount, 'files')}.`
+        `Found ${count(queriesCount, 'queries', 'query')} ${
+          documentProjectionsCount
+            ? `and ${count(documentProjectionsCount, 'document projections')} `
+            : ''
+        }` +
+        `from ${count(queryFilesCount, 'files')}.`
     }
 
     const result = await receiver.event.typegenComplete()
@@ -131,7 +145,11 @@ export default async function typegenGenerateAction(
     await writeFile(outputPath, code)
 
     spinner.succeed(
-      `Generated ${count(queriesCount, 'query types')} from ${count(queryFilesCount, 'files')} out of ${count(evaluatedFiles, 'scanned files')}`,
+      `Generated types for ${count(queriesCount, 'queries', 'query')} ${
+        documentProjectionsCount
+          ? `and ${count(documentProjectionsCount, 'document projections')} `
+          : ''
+      }from ${count(queryFilesCount, 'files')} out of ${count(evaluatedFiles, 'scanned files')}`,
     )
 
     if (formatGeneratedCode) {
@@ -157,8 +175,10 @@ export default async function typegenGenerateAction(
       configAugmentGroqModule: augmentGroqModule,
       outputSize: Buffer.byteLength(result.code),
       queriesCount,
+      documentProjectionsCount,
       schemaTypesCount,
       queryFilesCount,
+      documentProjectionFilesCount,
       filesWithErrors,
       typeNodesGenerated,
       unknownTypeNodesGenerated,
