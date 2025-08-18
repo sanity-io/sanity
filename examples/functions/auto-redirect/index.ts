@@ -8,9 +8,7 @@ export const handler = documentEventHandler(async ({context, event}) => {
     apiVersion: '2025-05-08',
   })
 
-  const {before, after} = event.data
-  const slug = after?.slug?.current
-  const beforeSlug = before?.slug?.current
+  const {beforeSlug, slug} = event.data
 
   if (!slug || !beforeSlug) {
     console.log('No slug or beforeSlug')

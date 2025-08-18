@@ -1,31 +1,4 @@
 {
-  "after": {
-    "_createdAt": "2025-08-07T16:12:37Z",
-    "_id": "212b8c2d-6a13-4902-8369-9c05f706b380",
-    "_rev": "UD7oQfse5XvbJkcfLLqX0x",
-    "_system": {
-      "base": {
-        "id": "212b8c2d-6a13-4902-8369-9c05f706b380",
-        "rev": "J92pDNj2lXfnhQV8dtzc68"
-      }
-    },
-    "_type": "post",
-    "_updatedAt": "2025-08-08T09:55:53Z",
-    "title": "bbb",
-    "slug": {"_type": "slug", "current": "/bbb"}
-  },
-  "before": {
-    "_createdAt": "2025-08-07T16:12:37Z",
-    "_id": "212b8c2d-6a13-4902-8369-9c05f706b380",
-    "_system": {
-      "base": {
-        "id": "212b8c2d-6a13-4902-8369-9c05f706b380",
-        "rev": "J92pDNj2lXfnhQV8dsvz3p"
-      }
-    },
-    "_type": "post",
-    "_updatedAt": "2025-08-08T08:13:27Z",
-    "title": "aaa",
-    "slug": {"_type": "slug", "current": "/aaa"}
-  }
+  "slug": "/bbbbb",
+  "beforeSlug": "/aaaaa"
 }
