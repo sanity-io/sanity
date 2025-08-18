@@ -118,11 +118,7 @@ export function CurrentGlobalPerspectiveLabel({
 
   return (
     <AnimatedTextWidth
-      text={
-        isReleaseDocument(selectedPerspective)
-          ? selectedPerspective._id
-          : (selectedPerspective as string)
-      }
+      text={isReleaseDocument(selectedPerspective) ? selectedPerspective._id : selectedPerspective}
     >
       {isPublishedPerspective(selectedPerspective) || isDraftPerspective(selectedPerspective) ? (
         <Box padding={2} style={{userSelect: 'none', overflow: 'hidden'}}>
