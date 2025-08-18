@@ -123,8 +123,11 @@ export const getDocumentTableColumnDefs: (
     width: null,
     style: {minWidth: '50%', maxWidth: '50%'},
     sortTransform(value) {
-      // Without preview values, sort by document id to provide a stable sort
-      return String(value.document._id).toLowerCase()
+      return (
+        String(
+          value.document?.title || value.document?.name || value.document?._id,
+        ).toLowerCase() || 0
+      )
     },
     header: (props) => (
       <Headers.TableHeaderSearch {...props} placeholder={t('search-documents-placeholder')} />
