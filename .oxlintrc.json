@@ -31,9 +31,7 @@
     "*.css",
     "*.snap",
     "*.md",
-    "dev/test-studio/sanity.theme.mjs",
-    "dev/test-studio/workshop/scopes.js",
-    "packages/@sanity/cli/templates/*"
+    "packages/@sanity/cli/templates/**/*"
   ],
   "categories": {
     "correctness": "error",

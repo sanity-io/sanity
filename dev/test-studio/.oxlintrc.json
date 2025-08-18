@@ -1,6 +1,7 @@
 {
   "$schema": "../../node_modules/oxlint/configuration_schema.json",
   "extends": ["../../.oxlintrc.json"],
+  "ignorePatterns": ["sanity.theme.mjs", "workshop/scopes.js"],
   "rules": {
     "eslint/no-console": "off",
     "no-explicit-any": "off",
