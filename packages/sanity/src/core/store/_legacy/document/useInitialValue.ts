@@ -41,30 +41,25 @@ export function useInitialValue(props: {
     const initialValueOptions = {documentId, documentType, templateName, templateParams}
     const initialValueMsg$ = documentStore.initialValue(initialValueOptions, context)
     // Values that can be set by outer actions, not as part of the templates. But for when creating a new document with a default value.
-    const additionalValues = templateParams?.additionalValues || {}
     const sub = initialValueMsg$.subscribe((msg) => {
       if (msg.type === 'loading') {
-        setState({
-          loading: true,
-          error: null,
-          value: {...defaultValue, ...additionalValues},
-        })
+        setState({loading: true, error: null, value: defaultValue})
       }
 
       if (msg.type === 'success') {
         setState({
           loading: false,
           error: null,
-          value: msg.value ? {...defaultValue, ...msg.value, ...additionalValues} : defaultValue,
+          value: msg.value ? {...defaultValue, ...msg.value} : defaultValue,
         })
       }
 
       if (msg.type === 'error') {
-        setState({loading: false, error: msg.error, value: {...defaultValue, ...additionalValues}})
+        setState({loading: false, error: msg.error, value: defaultValue})
       }
     })
 
-    setState({loading: true, error: null, value: {...defaultValue, ...additionalValues}})
+    setState({loading: true, error: null, value: defaultValue})
 
     return () => sub.unsubscribe()
   }, [defaultValue, documentId, documentStore, documentType, templateName, templateParams, context])
