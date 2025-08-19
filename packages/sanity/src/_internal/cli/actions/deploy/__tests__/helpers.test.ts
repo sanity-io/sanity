@@ -116,7 +116,7 @@ describe('getOrCreateStudio', () => {
     mockClientRequest.mockResolvedValueOnce([existingApp]) // Simulate no list of deployments
     ;(mockPrompt.single as Mock<any>).mockImplementationOnce(async ({choices}: any) => {
       // Simulate user input
-      return Promise.resolve(choices[2].value)
+      return Promise.resolve(choices[0].value)
     })
 
     const result = await getOrCreateStudio({
@@ -432,7 +432,7 @@ describe('getOrCreateApplication', () => {
     mockClientRequest.mockResolvedValueOnce([existingApp]) // getUserApplications response
     ;(mockPrompt.single as Mock<any>).mockImplementationOnce(async ({choices}: any) => {
       // Simulate selecting the existing app
-      return Promise.resolve(choices[2].value)
+      return Promise.resolve(choices[0].value)
     })
 
     const result = await getOrCreateApplication({
