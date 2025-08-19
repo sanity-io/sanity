@@ -75,20 +75,6 @@ const filteredErrors = errors.filter((d) => {
     return false
   }
 
-  // Handled in https://github.com/sanity-io/sanity/pull/9986
-  if (
-    (file.fileName.includes('packages/sanity/lib/_singletons.') ||
-      file.fileName.includes('packages/sanity/lib/desk.')) &&
-    (code === 2552 || code === 2304)
-  ) {
-    return false
-  }
-
-  // Handled in https://github.com/sanity-io/sanity/pull/9988
-  if (file.fileName.includes('packages/sanity/lib/index.') && code === 2717) {
-    return false
-  }
-
   return true
 })
 
