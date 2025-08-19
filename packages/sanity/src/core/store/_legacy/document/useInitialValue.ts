@@ -40,7 +40,6 @@ export function useInitialValue(props: {
   useEffect(() => {
     const initialValueOptions = {documentId, documentType, templateName, templateParams}
     const initialValueMsg$ = documentStore.initialValue(initialValueOptions, context)
-    // Values that can be set by outer actions, not as part of the templates. But for when creating a new document with a default value.
     const sub = initialValueMsg$.subscribe((msg) => {
       if (msg.type === 'loading') {
         setState({loading: true, error: null, value: defaultValue})
