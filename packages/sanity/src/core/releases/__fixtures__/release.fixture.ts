@@ -37,7 +37,7 @@ export const scheduledRelease: ReleaseDocumentWithTitle = {
     releaseType: 'scheduled',
     intendedPublishAt: '2023-10-10T10:00:00Z',
     description: 'scheduled Release description',
-    // No cardinality field - testing undefined case
+    cardinality: undefined,
   },
 }
 
@@ -69,7 +69,7 @@ export const activeASAPErrorRelease: ReleaseDocumentWithTitle = {
     title: 'active asap Error Release',
     releaseType: 'asap',
     description: 'active Error Release description',
-    // No cardinality field - testing undefined case
+    cardinality: undefined,
   },
   error: {
     message: 'An unexpected error occurred during publication.',
@@ -106,7 +106,7 @@ export const publishedASAPRelease: ReleaseDocumentWithTitle = {
     title: 'published Release',
     releaseType: 'asap',
     description: 'archived Release description',
-    // No cardinality field - testing undefined case
+    cardinality: undefined,
   },
 }
 
@@ -138,7 +138,7 @@ export const activeUndecidedErrorRelease: ReleaseDocumentWithTitle = {
     title: 'undecided Error Release',
     releaseType: 'undecided',
     description: 'undecided Error Release description',
-    // No cardinality field - testing undefined case
+    cardinality: undefined,
   },
   error: {
     message: 'An unexpected error occurred during publication.',
