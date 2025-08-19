@@ -19,7 +19,7 @@ import {releasesLocaleNamespace} from '../../i18n'
 export const SchedulePublishAction: DocumentActionComponent = (
   props: DocumentActionProps,
 ): DocumentActionDescription | null => {
-  const {id, type} = props
+  const {id, type, draft} = props
   const {t} = useTranslation(releasesLocaleNamespace)
   const {schedulePublish} = useScheduleDraftOperations()
   const toast = useToast()
@@ -78,7 +78,7 @@ export const SchedulePublishAction: DocumentActionComponent = (
   )
 
   return {
-    disabled: false,
+    disabled: !!draft,
     icon: CalendarIcon,
     label: t('action.schedule-publish'),
     title: t('action.schedule-publish'),
