@@ -257,7 +257,6 @@ const defaultWorkspace = defineConfig({
       }
       return prev
     },
-    // actions: [logReleaseAction, conditionalReleaseAction],
   },
 })
 
