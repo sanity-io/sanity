@@ -100,3 +100,18 @@ export function isNotArchivedRelease(
 ): release is NotArchivedRelease {
   return release.state !== 'archived'
 }
+
+/**
+ * Check if the release is a cardinality one release
+ *
+ * @internal
+ */
+export function isCardinalityOneRelease(
+  release: StudioReleaseDocument,
+): release is StudioReleaseDocument & {
+  metadata: StudioReleaseDocument['metadata'] & {
+    cardinality: 'one'
+  }
+} {
+  return release.metadata.cardinality === 'one'
+}

@@ -1,6 +1,6 @@
-import {type ReleaseDocument} from '@sanity/client'
 import {useMemo} from 'react'
 
+import {type StudioReleaseDocument} from '../types'
 import {ARCHIVED_RELEASE_STATES} from '../util/const'
 import {useAllReleases} from './useAllReleases'
 
@@ -8,7 +8,7 @@ import {useAllReleases} from './useAllReleases'
  * @internal
  */
 export function useArchivedReleases(): {
-  data: ReleaseDocument[]
+  data: StudioReleaseDocument[]
   error?: Error
   loading: boolean
 } {

@@ -19,6 +19,7 @@ interface ReleasesState {
 
 const initialState: ReleasesState = {
   releases: new Map(),
+  error: undefined,
   state: 'initialising',
 }
 
