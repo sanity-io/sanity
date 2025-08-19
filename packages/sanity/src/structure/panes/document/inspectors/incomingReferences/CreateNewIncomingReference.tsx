@@ -16,9 +16,11 @@ import {usePaneRouter} from '../../../../components/paneRouter/usePaneRouter'
 export function CreateNewIncomingReference({
   type,
   referenceToId,
+  referenceToType,
 }: {
   type: string
   referenceToId: string
+  referenceToType: string
 }) {
   const schema = useSchema()
   const {resolveNewDocumentOptions} = useSource().document
@@ -56,12 +58,18 @@ export function CreateNewIncomingReference({
             params: {type, template: templateItems[0].templateId},
             payload: {
               referencedBy: referenceToId,
+              reference: {
+                _type: 'reference',
+                _ref: referenceToId,
+                _weak: true,
+                _strengthenOnPublish: {type: referenceToType},
+              },
             },
           },
         ],
       ],
     })
-  }, [type, navigate, routerPanesState, groupIndex, templateItems, referenceToId])
+  }, [type, navigate, routerPanesState, groupIndex, templateItems, referenceToId, referenceToType])
 
   if (!schemaType) {
     return null

@@ -155,10 +155,9 @@ export default defineType({
     },
   },
   initialValue: (params) => {
-    const referencedBy = params?.referencedBy
     return {
       title: 'Foo',
-      author: {_type: 'reference', _ref: referencedBy},
+      author: params?.reference,
     }
   },
 })
