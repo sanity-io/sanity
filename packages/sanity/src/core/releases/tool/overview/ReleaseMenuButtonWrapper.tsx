@@ -14,6 +14,11 @@ export const ReleaseMenuButtonWrapper = ({
   const {results: documents} = useBundleDocuments(getReleaseIdFromReleaseDocumentId(release._id))
 
   return (
-    <ReleaseMenuButton release={release} documentsCount={documentsCount} documents={documents} />
+    <ReleaseMenuButton
+      release={release}
+      documentsCount={documentsCount}
+      documents={documents}
+      group="list"
+    />
   )
 }

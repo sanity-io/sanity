@@ -31,6 +31,11 @@ export interface ReleaseActionComponent extends ActionComponent<ReleaseActionPro
 
 /**
  * @hidden
+ */
+export type ReleaseActionGroup = 'default' | 'list' | 'detail'
+
+/**
+ * @hidden
  * @beta
  */
 export interface ReleaseActionDescription {
@@ -39,6 +44,7 @@ export interface ReleaseActionDescription {
   label: string
   onHandle?: () => void
   title?: ReactNode
+  group?: ReleaseActionGroup[]
 }
 
 /**

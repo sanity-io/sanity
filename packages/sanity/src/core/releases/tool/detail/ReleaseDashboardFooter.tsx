@@ -79,6 +79,7 @@ export function ReleaseDashboardFooter(props: {
             documentsCount={documents.length}
             documents={documents}
             ignoreCTA={release.metadata.releaseType !== 'undecided'}
+            group="detail"
           />
         </Flex>
       </Flex>

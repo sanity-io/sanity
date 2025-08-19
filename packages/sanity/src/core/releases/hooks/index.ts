@@ -1,3 +1,4 @@
+export {useReleaseActionContext} from '../contexts/ReleaseActionContext'
 export * from './useDocumentVersions'
 export * from './useDocumentVersionTypeSortedList'
 export * from './useIsReleaseActive'

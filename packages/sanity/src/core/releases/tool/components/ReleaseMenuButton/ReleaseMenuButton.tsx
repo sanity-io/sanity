@@ -6,7 +6,10 @@ import {type SetStateAction, useCallback, useEffect, useMemo, useRef, useState} 
 import {RouterContext, useRouter} from 'sanity/router'
 
 import {Button, Dialog, MenuItem, Popover} from '../../../../../ui-components'
-import {type ReleaseActionDescription} from '../../../../config/releases/actions'
+import {
+  type ReleaseActionDescription,
+  type ReleaseActionGroup,
+} from '../../../../config/releases/actions'
 import {Translate, type TranslateComponentMap, useTranslation} from '../../../../i18n'
 import {usePerspective} from '../../../../perspective/usePerspective'
 import {useSetPerspective} from '../../../../perspective/useSetPerspective'
@@ -49,6 +52,7 @@ export type ReleaseMenuButtonProps = {
   release: ReleaseDocument
   documentsCount: number
   documents?: DocumentInRelease[]
+  group?: ReleaseActionGroup
 }
 
 export const ReleaseMenuButton = ({
@@ -56,6 +60,7 @@ export const ReleaseMenuButton = ({
   release,
   documentsCount,
   documents,
+  group,
 }: ReleaseMenuButtonProps) => {
   const toast = useToast()
   const router = useRouter()
@@ -325,6 +330,7 @@ export const ReleaseMenuButton = ({
           release={release}
           documents={documents ?? []}
           onActions={handleCustomActionsUpdate}
+          group={group}
         />
       )}
       <Popover

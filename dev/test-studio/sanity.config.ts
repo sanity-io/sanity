@@ -55,7 +55,13 @@ import {autoCloseBrackets} from './plugins/input/auto-close-brackets-plugin'
 import {wave} from './plugins/input/wave-plugin'
 import {languageFilter} from './plugins/language-filter'
 import {routerDebugTool} from './plugins/router-debug'
-import {ArchiveAndDeleteCustomAction} from './releases/customReleaseActions'
+import {
+  ArchiveAndDeleteCustomAction,
+  ContextAwareViewAction,
+  DefaultBehaviorAction,
+  DetailedReportAction,
+  QuickViewAction,
+} from './releases/customReleaseActions'
 // eslint-disable-next-line import/extensions
 import {theme as tailwindTheme} from './sanity.theme.mjs'
 import {createSchemaTypes} from './schema'
@@ -251,10 +257,25 @@ const defaultWorkspace = defineConfig({
   },
   releases: {
     actions: (prev, ctx) => {
+      const actions = [...prev]
+
       if (ctx.release.state === 'active' && ctx.documents.length > 0) {
-        return [...prev, ArchiveAndDeleteCustomAction]
+        actions.push(ArchiveAndDeleteCustomAction)
       }
-      return prev
+
+      // Always show quick view action (list only)
+      actions.push(QuickViewAction)
+
+      // Always show detailed report action (detail only)
+      actions.push(DetailedReportAction)
+
+      // Always show context-aware action (changes behavior based on context)
+      actions.push(ContextAwareViewAction)
+
+      // Always show default behavior action (no group - appears everywhere)
+      actions.push(DefaultBehaviorAction)
+
+      return actions
     },
   },
 })
