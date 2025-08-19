@@ -11,108 +11,124 @@ import {
   skipIfBrowser,
 } from '../utils/methods'
 
-const createCustomActionTests = (
-  contextName: string,
-  setupPath: string,
-  isOverview: boolean,
-  releaseId: string,
-) => {
-  const openReleaseMenu = async (page: any) => {
-    if (isOverview) {
-      // On overview page, find the release by title, then click its menu button
-      const releaseRow = page.getByRole('row').filter({hasText: 'ASAP Release A'})
-      await releaseRow.getByTestId('release-menu-button').click()
-    } else {
-      // On individual release page, click the menu button directly
-      await page.getByTestId('release-menu-button').click()
-    }
-  }
-
-  test.describe(contextName, () => {
-    test.beforeEach(async ({page}) => {
-      await page.goto(setupPath)
-    })
-
-    test('should display custom release actions in menu', async ({page}) => {
-      await openReleaseMenu(page)
-      await expect(
-        page.getByRole('menuitem', {name: 'E2E Test Action: ASAP Release A'}),
-      ).toBeVisible()
-    })
-
-    test('should show action as enabled', async ({page}) => {
-      await openReleaseMenu(page)
-      await expect(
-        page.getByRole('menuitem', {name: 'E2E Test Action: ASAP Release A'}),
-      ).toBeEnabled()
-    })
-
-    test('should verify context data', async ({page}) => {
-      const consoleMessages: string[] = []
-      page.on('console', (msg) => {
-        consoleMessages.push(msg.text())
-      })
-
-      await openReleaseMenu(page)
-      await page.getByRole('menuitem', {name: 'E2E Test Action: ASAP Release A'}).click()
-      await page.waitForTimeout(1000)
-
-      const allConsoleOutput = consoleMessages.join(' ')
-      expect(allConsoleOutput).toContain('E2E Test Release Action executed!')
-      expect(allConsoleOutput).toContain('releaseTitle: ASAP Release A')
-      expect(allConsoleOutput).toContain('documentCount: 8')
-      expect(allConsoleOutput).toContain('releaseState: active')
-      expect(allConsoleOutput).toContain(`releaseId: _.releases.${releaseId}`)
-    })
-
-    test('should show tooltip with dynamic content', async ({page}) => {
-      await openReleaseMenu(page)
-      await page.getByRole('menuitem', {name: 'E2E Test Action: ASAP Release A'}).hover()
-      await page.waitForTimeout(300)
-      await expect(
-        page.getByText('Test action for release "ASAP Release A" with 8 documents'),
-      ).toBeVisible()
-    })
-  })
-}
-
 test.describe('Custom Release Actions', () => {
-  const asapReleaseIdTestOne: string = getRandomReleaseId()
+  // Initialize IDs at module level to avoid linting issues
+  const asapReleaseId: string = getRandomReleaseId()
+  const uniqueReleaseTitle = `ASAP Release E2E Test ${asapReleaseId}`
 
-  test.beforeEach(async ({sanityClient, browserName, _testContext}) => {
+  test.beforeAll(async ({sanityClient, browserName, _testContext}) => {
     skipIfBrowser(browserName)
-    test.slow()
     const dataset = sanityClient.config().dataset
 
+    // Create the release
     await createRelease({
       sanityClient,
       dataset,
-      releaseId: asapReleaseIdTestOne,
-      metadata: partialASAPReleaseMetadata,
+      releaseId: asapReleaseId,
+      metadata: {
+        ...partialASAPReleaseMetadata,
+        title: uniqueReleaseTitle,
+      },
     })
 
-    // Create multiple documents to test context passing
-    for (let i = 0; i < 8; i++) {
+    // Create documents for testing context passing
+    for (let i = 0; i < 3; i++) {
       const versionDocumentId = _testContext.getUniqueDocumentId()
+      const documentId = `versions.${asapReleaseId}.${versionDocumentId}`
+
       await createDocument(sanityClient, {
         ...speciesDocumentNameASAP,
         name: `Test Document ${i + 1}`,
-        _id: `versions.${asapReleaseIdTestOne}.${versionDocumentId}`,
+        _id: documentId,
       })
     }
   })
 
-  test.afterEach(async ({sanityClient, browserName}) => {
+  test.afterAll(async ({sanityClient, browserName}) => {
     skipIfBrowser(browserName)
     const dataset = sanityClient.config().dataset
-    await archiveAndDeleteRelease({sanityClient, dataset, releaseId: asapReleaseIdTestOne})
+    await archiveAndDeleteRelease({sanityClient, dataset, releaseId: asapReleaseId})
   })
 
-  createCustomActionTests('Release Overview', '/releases', true, asapReleaseIdTestOne)
-  createCustomActionTests(
-    'Release Detail',
-    `/releases/${asapReleaseIdTestOne}`,
-    false,
-    asapReleaseIdTestOne,
-  )
+  const openReleaseMenu = async (page: any, isOverview: boolean) => {
+    if (isOverview) {
+      // On overview page, wait for the release to appear and then click its menu button
+      const releaseRow = page.getByRole('row').filter({hasText: uniqueReleaseTitle}).first()
+      await expect(releaseRow).toBeVisible()
+
+      const menuButton = releaseRow.getByTestId('release-menu-button')
+      await expect(menuButton).toBeVisible()
+      await menuButton.click()
+    } else {
+      // On individual release page, wait for the menu button and click it
+      const menuButton = page.getByTestId('release-menu-button')
+      await expect(menuButton).toBeVisible()
+      await menuButton.click()
+    }
+  }
+
+  const expectCustomActionInMenu = async (page: any) => {
+    const menuItem = page.getByRole('menuitem', {name: `E2E Test Action: ${uniqueReleaseTitle}`})
+    await expect(menuItem).toBeVisible()
+    return menuItem
+  }
+
+  // Shared test suite function
+  const createCustomActionTests = (contextName: string, setupPath: string, isOverview: boolean) => {
+    test.describe(contextName, () => {
+      test.beforeEach(async ({page}) => {
+        test.slow()
+        await page.goto(setupPath)
+        await page.waitForLoadState('networkidle')
+      })
+
+      test('should display custom release actions in menu', async ({page}) => {
+        await openReleaseMenu(page, isOverview)
+        await expectCustomActionInMenu(page)
+      })
+
+      test('should show action as enabled', async ({page}) => {
+        await openReleaseMenu(page, isOverview)
+        const menuItem = await expectCustomActionInMenu(page)
+        await expect(menuItem).toBeEnabled()
+      })
+
+      test('should verify context data', async ({page}) => {
+        const consoleMessages: string[] = []
+        page.on('console', (msg) => {
+          consoleMessages.push(msg.text())
+        })
+
+        await openReleaseMenu(page, isOverview)
+        const menuItem = await expectCustomActionInMenu(page)
+        await menuItem.click()
+
+        // Wait for the action to execute
+        await page.waitForTimeout(1000)
+
+        const allConsoleOutput = consoleMessages.join(' ')
+        expect(allConsoleOutput).toContain('E2E Test Release Action executed!')
+        expect(allConsoleOutput).toContain(`releaseTitle: ${uniqueReleaseTitle}`)
+        expect(allConsoleOutput).toContain('documentCount:')
+        expect(allConsoleOutput).toContain('releaseState: active')
+        expect(allConsoleOutput).toContain('releaseId: _.releases.')
+      })
+
+      test('should show tooltip with dynamic content', async ({page}) => {
+        await openReleaseMenu(page, isOverview)
+        const menuItem = await expectCustomActionInMenu(page)
+        await menuItem.hover()
+
+        // Wait for tooltip to appear
+        await page.waitForTimeout(300)
+        await expect(
+          page.getByText(`Test action for release "${uniqueReleaseTitle}" with 3 documents`),
+        ).toBeVisible()
+      })
+    })
+  }
+
+  // Create test suites for both contexts
+  createCustomActionTests('Release Overview', '/releases', true)
+  createCustomActionTests('Release Detail', `/releases/${asapReleaseId}`, false)
 })
