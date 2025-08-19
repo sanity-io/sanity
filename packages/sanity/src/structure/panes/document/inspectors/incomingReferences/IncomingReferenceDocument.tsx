@@ -80,7 +80,7 @@ export const IncomingReferenceDocument = (props: {
             path={referencePaths[0]}
           />
         </Box>
-        <Box>
+        {/* <Box>
           <MenuButton
             button={<ContextMenuButton />}
             id={`${document._id}-menuButton`}
@@ -91,7 +91,7 @@ export const IncomingReferenceDocument = (props: {
             }
             popover={{portal: true, tone: 'default'}}
           />
-        </Box>
+        </Box> */}
       </FadeInFlex>
     </Card>
   )
