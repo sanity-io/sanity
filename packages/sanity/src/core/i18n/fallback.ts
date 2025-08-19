@@ -1,11 +1,11 @@
 /* eslint-disable @sanity/i18n/no-i18next-import */
+import {type LocaleSource} from '@sanity/types'
 import {createInstance, type Resource} from 'i18next'
 import {memoize} from 'lodash'
 
 import {isStaticResourceBundle} from './helpers'
 import {studioLocaleNamespace} from './localeNamespaces'
 import {defaultLocale, usEnglishLocale} from './locales'
-import {type LocaleSource} from './types'
 
 const shouldEscape = typeof window === 'undefined' || typeof document === 'undefined'
 const fallbackLocales: LocaleSource['locales'] = [defaultLocale]

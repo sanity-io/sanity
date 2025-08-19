@@ -6,7 +6,25 @@ import {describe, expectTypeOf, test} from 'vitest'
 import type {
   ArrayActionName,
   ArrayDefinition,
+  ArrayFieldProps,
+  ArrayInputCopyEvent,
+  ArrayInputFunctionsProps,
+  ArrayInputInsertEvent,
+  ArrayInputMoveItemEvent,
+  ArrayItemError,
   ArrayOfEntry,
+  ArrayOfObjectsComponents,
+  ArrayOfObjectsFormNode,
+  ArrayOfObjectsInputProps,
+  ArrayOfObjectsItemMember,
+  ArrayOfObjectsMember,
+  ArrayOfPrimitivesComponents,
+  ArrayOfPrimitivesElementType,
+  ArrayOfPrimitivesFieldProps,
+  ArrayOfPrimitivesFormNode,
+  ArrayOfPrimitivesInputProps,
+  ArrayOfPrimitivesItemMember,
+  ArrayOfPrimitivesMember,
   ArrayOfType,
   ArrayOptions,
   ArrayRule,
@@ -30,27 +48,41 @@ import type {
   AssetSourceUploadFile,
   AssetSourceUploadSubscriber,
   AutocompleteString,
+  BaseFieldProps,
+  BaseFormNode,
+  BaseInputProps,
+  BaseItemProps,
   BaseSchemaDefinition,
   BaseSchemaType,
   BaseSchemaTypeOptions,
   BlockAnnotationDefinition,
+  BlockAnnotationProps,
   BlockChildrenObjectField,
   BlockDecoratorDefinition,
+  BlockDecoratorProps,
   BlockDefinition,
   BlockListDefinition,
+  BlockListItemProps,
   BlockListObjectField,
   BlockMarksDefinition,
   BlockOptions,
+  BlockProps,
   BlockRule,
   BlockSchemaType,
   BlockStyleDefinition,
   BlockStyleObjectField,
+  BlockStyleProps,
+  BooleanComponents,
   BooleanDefinition,
+  BooleanFieldProps,
+  BooleanFormNode,
+  BooleanInputProps,
   BooleanOptions,
   BooleanRule,
   BooleanSchemaType,
   CanvasAppOptions,
   CollapseOptions,
+  ComplexElementProps,
   ConditionalIndexAccess,
   ConditionalProperty,
   ConditionalPropertyCallback,
@@ -59,6 +91,7 @@ import type {
   CreateMutation,
   CreateOrReplaceMutation,
   CreateSquashedMutation,
+  CrossDatasetReferenceComponents,
   CrossDatasetReferenceDefinition,
   CrossDatasetReferenceFilterResolver,
   CrossDatasetReferenceFilterSearchOptions,
@@ -68,9 +101,11 @@ import type {
   CurrentUser,
   CustomValidator,
   CustomValidatorResult,
+  DateComponents,
   DateDefinition,
   DateOptions,
   DateRule,
+  DatetimeComponents,
   DatetimeDefinition,
   DatetimeOptions,
   DatetimeRule,
@@ -86,30 +121,65 @@ import type {
   DeprecatedProperty,
   DeprecatedSchemaType,
   DeprecationConfiguration,
+  DocumentComponents,
   DocumentDefinition,
+  DocumentFieldAction,
+  DocumentFieldActionDivider,
+  DocumentFieldActionGroup,
+  DocumentFieldActionHook,
+  DocumentFieldActionItem,
+  DocumentFieldActionNode,
+  DocumentFieldActionProps,
+  DocumentFieldActionStatus,
+  DocumentFieldActionTone,
   DocumentOptions,
   DocumentRule,
+  DuplicateKeysError,
+  EmailComponents,
   EmailDefinition,
   EmailOptions,
   EmailRule,
   EmptyProps,
   EnumListProps,
+  FieldCommentsProps,
   FieldDefinition,
   FieldDefinitionBase,
+  FieldError,
   FieldGroup,
   FieldGroupDefinition,
+  FieldMember,
+  FieldProps,
   FieldReference,
   FieldRules,
   Fieldset,
   FieldsetDefinition,
+  FieldSetMember,
+  FieldsetState,
   File,
   FileAsset,
+  FileComponents,
   FileDefinition,
+  FileLike,
   FileOptions,
   FileRule,
   FileSchemaType,
   FileValue,
+  FormDiffMatchPatch,
+  FormFieldGroup,
+  FormInsertPatch,
+  FormInsertPatchPosition,
+  FormNodePresence,
   FormNodeValidation,
+  FormPatch,
+  FormPatchBase,
+  FormPatchJSONValue,
+  FormPatchOrigin,
+  FormSetIfMissingPatch,
+  FormSetPatch,
+  FormUnsetPatch,
+  GeneralDocumentListLayoutKey,
+  GeneralPreviewLayoutKey,
+  GeopointComponents,
   GeopointDefinition,
   GeopointOptions,
   GeopointRule,
@@ -126,6 +196,7 @@ import type {
   I18nTitledListValue,
   Image,
   ImageAsset,
+  ImageComponents,
   ImageCrop,
   ImageDefinition,
   ImageDimensions,
@@ -144,11 +215,13 @@ import type {
   ImageUrlOrientation,
   ImageUrlParams,
   ImageValue,
+  IncompatibleTypeError,
   IndexTuple,
   InitialValueProperty,
   InitialValueResolver,
   InitialValueResolverContext,
   InlineFieldDefinition,
+  InputProps,
   InsertMenuOptions,
   InsertPatch,
   IntrinsicArrayOfBase,
@@ -156,6 +229,7 @@ import type {
   IntrinsicBase,
   IntrinsicDefinitions,
   IntrinsicTypeName,
+  InvalidItemTypeError,
   isArrayOfBlocksSchemaType,
   isArrayOfObjectsSchemaType,
   isArrayOfPrimitivesSchemaType,
@@ -207,8 +281,12 @@ import type {
   isValidationInfoMarker,
   isValidationWarning,
   isValidationWarningMarker,
+  ItemProps,
   KeyedObject,
   KeyedSegment,
+  Locale,
+  LocaleSource,
+  LocaleWeekInfo,
   LocalizedValidationMessages,
   MaybeAllowUnknownProps,
   MaybePreview,
@@ -225,23 +303,40 @@ import type {
   MediaValidator,
   MendozaEffectPair,
   MendozaPatch,
+  MissingKeysError,
+  MixedArrayError,
   MultiFieldSet,
   MultipleMutationResult,
   Mutation,
   MutationOperationName,
   MutationSelection,
   NarrowPreview,
+  NumberComponents,
   NumberDefinition,
+  NumberFieldProps,
+  NumberFormNode,
+  NumberInputProps,
   NumberOptions,
   NumberRule,
   NumberSchemaType,
+  ObjectArrayFormNode,
+  ObjectComponents,
   ObjectDefinition,
   ObjectField,
+  ObjectFieldProps,
   ObjectFieldType,
+  ObjectFormNode,
+  ObjectInputProps,
+  ObjectItem,
+  ObjectItemProps,
+  ObjectMember,
   ObjectOptions,
   ObjectRule,
   ObjectSchemaType,
   ObjectSchemaTypeWithOptions,
+  OnPathFocusPayload,
+  PatchArg,
+  PatchEventInterface,
   PatchMutation,
   PatchMutationOperation,
   PatchOperations,
@@ -249,15 +344,27 @@ import type {
   PathSegment,
   PortableTextBlock,
   PortableTextChild,
+  PortableTextInputProps,
   PortableTextListBlock,
+  PortableTextMarker,
   PortableTextObject,
+  PortableTextPluginsProps,
+  PortableTextPreviewLayoutKey,
   PortableTextSpan,
   PortableTextTextBlock,
   PrepareViewOptions,
   PreviewConfig,
+  PreviewLayoutKey,
+  PreviewMediaDimensions,
+  PreviewProps,
   PreviewValue,
+  PrimitiveFieldProps,
+  PrimitiveFormNode,
+  PrimitiveInputElementProps,
+  PrimitiveItemProps,
   Reference,
   ReferenceBaseOptions,
+  ReferenceComponents,
   ReferenceDefinition,
   ReferenceFilterOptions,
   ReferenceFilterQueryOptions,
@@ -265,11 +372,23 @@ import type {
   ReferenceFilterResolverContext,
   ReferenceFilterResolverOptions,
   ReferenceFilterSearchOptions,
+  ReferenceInputProps,
   ReferenceOptions,
   ReferenceRule,
   ReferenceSchemaType,
   ReferenceTo,
   ReferenceValue,
+  RenderAnnotationCallback,
+  RenderArrayOfObjectsItemCallback,
+  RenderArrayOfPrimitivesItemCallback,
+  RenderBlockActionsCallback,
+  RenderBlockActionsProps,
+  RenderBlockCallback,
+  RenderCustomMarkers,
+  RenderFieldCallback,
+  RenderInputCallback,
+  RenderPreviewCallback,
+  RenderPreviewCallbackProps,
   Role,
   Rule,
   RuleBuilder,
@@ -296,6 +415,7 @@ import type {
   SingleFieldSet,
   SingleMutationResult,
   Slug,
+  SlugComponents,
   SlugDefinition,
   SlugifierFn,
   SlugIsUniqueValidator,
@@ -313,26 +433,40 @@ import type {
   SpanSchemaType,
   SpanTextObjectField,
   StrictDefinition,
+  StringComponents,
   StringDefinition,
+  StringFieldProps,
+  StringFormNode,
+  StringInputProps,
   StringOptions,
   StringRule,
   StringSchemaType,
   SwatchName,
+  TextComponents,
   TextDefinition,
   TextOptions,
   TextRule,
   TextSchemaType,
+  TFunction,
   TitledListValue,
   TransactionLogEvent,
   TransactionLogEventWithEffects,
   TransactionLogEventWithMutations,
   TransactionLogMutation,
   TypeAliasDefinition,
+  TypeAnnotationMismatchError,
   typed,
   TypedObject,
   TypeReference,
+  UndeclaredMembersError,
+  Uploader,
+  UploaderResolver,
+  UploadEvent,
+  UploadOptions,
+  UploadProgressEvent,
   UploadState,
   UriValidationOptions,
+  UrlComponents,
   UrlDefinition,
   UrlOptions,
   UrlRule,
@@ -359,8 +493,62 @@ describe('@sanity/types', () => {
   test('ArrayDefinition', () => {
     expectTypeOf<ArrayDefinition>().toBeObject()
   })
+  test('ArrayFieldProps', () => {
+    expectTypeOf<ArrayFieldProps>().toBeObject()
+  })
+  test('ArrayInputCopyEvent', () => {
+    expectTypeOf<ArrayInputCopyEvent<any>>().toBeObject()
+  })
+  test('ArrayInputFunctionsProps', () => {
+    expectTypeOf<ArrayInputFunctionsProps<any, any>>().toBeObject()
+  })
+  test('ArrayInputInsertEvent', () => {
+    expectTypeOf<ArrayInputInsertEvent<any>>().toBeObject()
+  })
+  test('ArrayInputMoveItemEvent', () => {
+    expectTypeOf<ArrayInputMoveItemEvent>().toBeObject()
+  })
+  test('ArrayItemError', () => {
+    expectTypeOf<ArrayItemError>().toBeObject()
+  })
   test('ArrayOfEntry', () => {
     expectTypeOf<ArrayOfEntry<any>>().not.toBeNever()
+  })
+  test('ArrayOfObjectsComponents', () => {
+    expectTypeOf<ArrayOfObjectsComponents>().toBeObject()
+  })
+  test('ArrayOfObjectsFormNode', () => {
+    expectTypeOf<ArrayOfObjectsFormNode<any, any>>().toBeObject()
+  })
+  test('ArrayOfObjectsInputProps', () => {
+    expectTypeOf<ArrayOfObjectsInputProps<any, any>>().toBeObject()
+  })
+  test('ArrayOfObjectsItemMember', () => {
+    expectTypeOf<ArrayOfObjectsItemMember<any>>().toBeObject()
+  })
+  test('ArrayOfObjectsMember', () => {
+    expectTypeOf<ArrayOfObjectsMember>().not.toBeNever()
+  })
+  test('ArrayOfPrimitivesComponents', () => {
+    expectTypeOf<ArrayOfPrimitivesComponents>().toBeObject()
+  })
+  test('ArrayOfPrimitivesElementType', () => {
+    expectTypeOf<ArrayOfPrimitivesElementType<any>>().not.toBeNever()
+  })
+  test('ArrayOfPrimitivesFieldProps', () => {
+    expectTypeOf<ArrayOfPrimitivesFieldProps>().toBeObject()
+  })
+  test('ArrayOfPrimitivesFormNode', () => {
+    expectTypeOf<ArrayOfPrimitivesFormNode<any, any>>().toBeObject()
+  })
+  test('ArrayOfPrimitivesInputProps', () => {
+    expectTypeOf<ArrayOfPrimitivesInputProps<any, any>>().toBeObject()
+  })
+  test('ArrayOfPrimitivesItemMember', () => {
+    expectTypeOf<ArrayOfPrimitivesItemMember<any>>().toBeObject()
+  })
+  test('ArrayOfPrimitivesMember', () => {
+    expectTypeOf<ArrayOfPrimitivesMember>().not.toBeNever()
   })
   test('ArrayOfType', () => {
     expectTypeOf<ArrayOfType<any, any>>().not.toBeNever()
@@ -431,6 +619,18 @@ describe('@sanity/types', () => {
   test('AutocompleteString', () => {
     expectTypeOf<AutocompleteString>().not.toBeNever()
   })
+  test('BaseFieldProps', () => {
+    expectTypeOf<BaseFieldProps>().toBeObject()
+  })
+  test('BaseFormNode', () => {
+    expectTypeOf<BaseFormNode<any, any>>().toBeObject()
+  })
+  test('BaseInputProps', () => {
+    expectTypeOf<BaseInputProps>().toBeObject()
+  })
+  test('BaseItemProps', () => {
+    expectTypeOf<BaseItemProps<any>>().toBeObject()
+  })
   test('BaseSchemaDefinition', () => {
     expectTypeOf<BaseSchemaDefinition>().toBeObject()
   })
@@ -443,17 +643,26 @@ describe('@sanity/types', () => {
   test('BlockAnnotationDefinition', () => {
     expectTypeOf<BlockAnnotationDefinition>().toBeObject()
   })
+  test('BlockAnnotationProps', () => {
+    expectTypeOf<BlockAnnotationProps>().toBeObject()
+  })
   test('BlockChildrenObjectField', () => {
     expectTypeOf<BlockChildrenObjectField>().not.toBeNever()
   })
   test('BlockDecoratorDefinition', () => {
     expectTypeOf<BlockDecoratorDefinition>().toBeObject()
   })
+  test('BlockDecoratorProps', () => {
+    expectTypeOf<BlockDecoratorProps>().toBeObject()
+  })
   test('BlockDefinition', () => {
     expectTypeOf<BlockDefinition>().toBeObject()
   })
   test('BlockListDefinition', () => {
     expectTypeOf<BlockListDefinition>().toBeObject()
+  })
+  test('BlockListItemProps', () => {
+    expectTypeOf<BlockListItemProps>().toBeObject()
   })
   test('BlockListObjectField', () => {
     expectTypeOf<BlockListObjectField>().not.toBeNever()
@@ -463,6 +672,9 @@ describe('@sanity/types', () => {
   })
   test('BlockOptions', () => {
     expectTypeOf<BlockOptions>().toBeObject()
+  })
+  test('BlockProps', () => {
+    expectTypeOf<BlockProps>().toBeObject()
   })
   test('BlockRule', () => {
     expectTypeOf<BlockRule>().toBeObject()
@@ -476,8 +688,23 @@ describe('@sanity/types', () => {
   test('BlockStyleObjectField', () => {
     expectTypeOf<BlockStyleObjectField>().not.toBeNever()
   })
+  test('BlockStyleProps', () => {
+    expectTypeOf<BlockStyleProps>().toBeObject()
+  })
+  test('BooleanComponents', () => {
+    expectTypeOf<BooleanComponents>().toBeObject()
+  })
   test('BooleanDefinition', () => {
     expectTypeOf<BooleanDefinition>().toBeObject()
+  })
+  test('BooleanFieldProps', () => {
+    expectTypeOf<BooleanFieldProps>().toBeObject()
+  })
+  test('BooleanFormNode', () => {
+    expectTypeOf<BooleanFormNode<any>>().not.toBeNever()
+  })
+  test('BooleanInputProps', () => {
+    expectTypeOf<BooleanInputProps<any>>().toBeObject()
   })
   test('BooleanOptions', () => {
     expectTypeOf<BooleanOptions>().toBeObject()
@@ -493,6 +720,9 @@ describe('@sanity/types', () => {
   })
   test('CollapseOptions', () => {
     expectTypeOf<CollapseOptions>().toBeObject()
+  })
+  test('ComplexElementProps', () => {
+    expectTypeOf<ComplexElementProps>().toBeObject()
   })
   test('ConditionalIndexAccess', () => {
     expectTypeOf<ConditionalIndexAccess<any, any>>().not.toBeNever()
@@ -517,6 +747,9 @@ describe('@sanity/types', () => {
   })
   test('CreateSquashedMutation', () => {
     expectTypeOf<CreateSquashedMutation>().toBeObject()
+  })
+  test('CrossDatasetReferenceComponents', () => {
+    expectTypeOf<CrossDatasetReferenceComponents>().toBeObject()
   })
   test('CrossDatasetReferenceDefinition', () => {
     expectTypeOf<CrossDatasetReferenceDefinition>().toBeObject()
@@ -545,6 +778,9 @@ describe('@sanity/types', () => {
   test('CustomValidatorResult', () => {
     expectTypeOf<CustomValidatorResult>().not.toBeNever()
   })
+  test('DateComponents', () => {
+    expectTypeOf<DateComponents>().toBeObject()
+  })
   test('DateDefinition', () => {
     expectTypeOf<DateDefinition>().toBeObject()
   })
@@ -553,6 +789,9 @@ describe('@sanity/types', () => {
   })
   test('DateRule', () => {
     expectTypeOf<DateRule>().toBeObject()
+  })
+  test('DatetimeComponents', () => {
+    expectTypeOf<DatetimeComponents>().toBeObject()
   })
   test('DatetimeDefinition', () => {
     expectTypeOf<DatetimeDefinition>().toBeObject()
@@ -599,14 +838,50 @@ describe('@sanity/types', () => {
   test('DeprecationConfiguration', () => {
     expectTypeOf<DeprecationConfiguration>().toBeObject()
   })
+  test('DocumentComponents', () => {
+    expectTypeOf<DocumentComponents>().toBeObject()
+  })
   test('DocumentDefinition', () => {
     expectTypeOf<DocumentDefinition>().toBeObject()
+  })
+  test('DocumentFieldAction', () => {
+    expectTypeOf<DocumentFieldAction>().toBeObject()
+  })
+  test('DocumentFieldActionDivider', () => {
+    expectTypeOf<DocumentFieldActionDivider>().toBeObject()
+  })
+  test('DocumentFieldActionGroup', () => {
+    expectTypeOf<DocumentFieldActionGroup>().toBeObject()
+  })
+  test('DocumentFieldActionHook', () => {
+    expectTypeOf<DocumentFieldActionHook>().toBeObject()
+  })
+  test('DocumentFieldActionItem', () => {
+    expectTypeOf<DocumentFieldActionItem>().toBeObject()
+  })
+  test('DocumentFieldActionNode', () => {
+    expectTypeOf<DocumentFieldActionNode>().not.toBeNever()
+  })
+  test('DocumentFieldActionProps', () => {
+    expectTypeOf<DocumentFieldActionProps>().toBeObject()
+  })
+  test('DocumentFieldActionStatus', () => {
+    expectTypeOf<DocumentFieldActionStatus>().not.toBeNever()
+  })
+  test('DocumentFieldActionTone', () => {
+    expectTypeOf<DocumentFieldActionTone>().not.toBeNever()
   })
   test('DocumentOptions', () => {
     expectTypeOf<DocumentOptions>().toBeObject()
   })
   test('DocumentRule', () => {
     expectTypeOf<DocumentRule>().toBeObject()
+  })
+  test('DuplicateKeysError', () => {
+    expectTypeOf<DuplicateKeysError>().not.toBeNever()
+  })
+  test('EmailComponents', () => {
+    expectTypeOf<EmailComponents>().toBeObject()
   })
   test('EmailDefinition', () => {
     expectTypeOf<EmailDefinition>().toBeObject()
@@ -623,17 +898,29 @@ describe('@sanity/types', () => {
   test('EnumListProps', () => {
     expectTypeOf<EnumListProps<any>>().toBeObject()
   })
+  test('FieldCommentsProps', () => {
+    expectTypeOf<FieldCommentsProps>().toBeObject()
+  })
   test('FieldDefinition', () => {
     expectTypeOf<FieldDefinition<any, any>>().not.toBeNever()
   })
   test('FieldDefinitionBase', () => {
     expectTypeOf<FieldDefinitionBase>().toBeObject()
   })
+  test('FieldError', () => {
+    expectTypeOf<FieldError>().toBeObject()
+  })
   test('FieldGroup', () => {
     expectTypeOf<FieldGroup>().toBeObject()
   })
   test('FieldGroupDefinition', () => {
     expectTypeOf<FieldGroupDefinition>().not.toBeNever()
+  })
+  test('FieldMember', () => {
+    expectTypeOf<FieldMember<any>>().toBeObject()
+  })
+  test('FieldProps', () => {
+    expectTypeOf<FieldProps>().not.toBeNever()
   })
   test('FieldReference', () => {
     expectTypeOf<FieldReference>().toBeObject()
@@ -647,14 +934,26 @@ describe('@sanity/types', () => {
   test('FieldsetDefinition', () => {
     expectTypeOf<FieldsetDefinition>().not.toBeNever()
   })
+  test('FieldSetMember', () => {
+    expectTypeOf<FieldSetMember>().toBeObject()
+  })
+  test('FieldsetState', () => {
+    expectTypeOf<FieldsetState>().toBeObject()
+  })
   test('File', () => {
     expectTypeOf<File>().toBeObject()
   })
   test('FileAsset', () => {
     expectTypeOf<FileAsset>().toBeObject()
   })
+  test('FileComponents', () => {
+    expectTypeOf<FileComponents>().toBeObject()
+  })
   test('FileDefinition', () => {
     expectTypeOf<FileDefinition>().toBeObject()
+  })
+  test('FileLike', () => {
+    expectTypeOf<FileLike>().toBeObject()
   })
   test('FileOptions', () => {
     expectTypeOf<FileOptions>().toBeObject()
@@ -668,8 +967,53 @@ describe('@sanity/types', () => {
   test('FileValue', () => {
     expectTypeOf<FileValue>().toBeObject()
   })
+  test('FormDiffMatchPatch', () => {
+    expectTypeOf<FormDiffMatchPatch>().toBeObject()
+  })
+  test('FormFieldGroup', () => {
+    expectTypeOf<FormFieldGroup>().toBeObject()
+  })
+  test('FormInsertPatch', () => {
+    expectTypeOf<FormInsertPatch>().toBeObject()
+  })
+  test('FormInsertPatchPosition', () => {
+    expectTypeOf<FormInsertPatchPosition>().not.toBeNever()
+  })
+  test('FormNodePresence', () => {
+    expectTypeOf<FormNodePresence>().toBeObject()
+  })
   test('FormNodeValidation', () => {
     expectTypeOf<FormNodeValidation>().toBeObject()
+  })
+  test('FormPatch', () => {
+    expectTypeOf<FormPatch>().not.toBeNever()
+  })
+  test('FormPatchBase', () => {
+    expectTypeOf<FormPatchBase>().toBeObject()
+  })
+  test('FormPatchJSONValue', () => {
+    expectTypeOf<FormPatchJSONValue>().not.toBeNever()
+  })
+  test('FormPatchOrigin', () => {
+    expectTypeOf<FormPatchOrigin>().not.toBeNever()
+  })
+  test('FormSetIfMissingPatch', () => {
+    expectTypeOf<FormSetIfMissingPatch>().toBeObject()
+  })
+  test('FormSetPatch', () => {
+    expectTypeOf<FormSetPatch>().toBeObject()
+  })
+  test('FormUnsetPatch', () => {
+    expectTypeOf<FormUnsetPatch>().toBeObject()
+  })
+  test('GeneralDocumentListLayoutKey', () => {
+    expectTypeOf<GeneralDocumentListLayoutKey>().not.toBeNever()
+  })
+  test('GeneralPreviewLayoutKey', () => {
+    expectTypeOf<GeneralPreviewLayoutKey>().not.toBeNever()
+  })
+  test('GeopointComponents', () => {
+    expectTypeOf<GeopointComponents>().toBeObject()
   })
   test('GeopointDefinition', () => {
     expectTypeOf<GeopointDefinition>().toBeObject()
@@ -718,6 +1062,9 @@ describe('@sanity/types', () => {
   })
   test('ImageAsset', () => {
     expectTypeOf<ImageAsset>().toBeObject()
+  })
+  test('ImageComponents', () => {
+    expectTypeOf<ImageComponents>().toBeObject()
   })
   test('ImageCrop', () => {
     expectTypeOf<ImageCrop>().toBeObject()
@@ -773,6 +1120,9 @@ describe('@sanity/types', () => {
   test('ImageValue', () => {
     expectTypeOf<ImageValue>().toBeObject()
   })
+  test('IncompatibleTypeError', () => {
+    expectTypeOf<IncompatibleTypeError>().not.toBeNever()
+  })
   test('IndexTuple', () => {
     expectTypeOf<IndexTuple>().not.toBeNever()
   })
@@ -787,6 +1137,9 @@ describe('@sanity/types', () => {
   })
   test('InlineFieldDefinition', () => {
     expectTypeOf<InlineFieldDefinition>().not.toBeNever()
+  })
+  test('InputProps', () => {
+    expectTypeOf<InputProps>().not.toBeNever()
   })
   test('InsertMenuOptions', () => {
     expectTypeOf<InsertMenuOptions>().toBeObject()
@@ -808,6 +1161,9 @@ describe('@sanity/types', () => {
   })
   test('IntrinsicTypeName', () => {
     expectTypeOf<IntrinsicTypeName>().not.toBeNever()
+  })
+  test('InvalidItemTypeError', () => {
+    expectTypeOf<InvalidItemTypeError>().not.toBeNever()
   })
   test('isArrayOfBlocksSchemaType', () => {
     expectTypeOf<typeof isArrayOfBlocksSchemaType>().toBeFunction()
@@ -962,11 +1318,23 @@ describe('@sanity/types', () => {
   test('isValidationWarningMarker', () => {
     expectTypeOf<typeof isValidationWarningMarker>().toBeFunction()
   })
+  test('ItemProps', () => {
+    expectTypeOf<ItemProps>().not.toBeNever()
+  })
   test('KeyedObject', () => {
     expectTypeOf<KeyedObject>().toBeObject()
   })
   test('KeyedSegment', () => {
     expectTypeOf<KeyedSegment>().not.toBeNever()
+  })
+  test('Locale', () => {
+    expectTypeOf<Locale>().toBeObject()
+  })
+  test('LocaleSource', () => {
+    expectTypeOf<LocaleSource>().toBeObject()
+  })
+  test('LocaleWeekInfo', () => {
+    expectTypeOf<LocaleWeekInfo>().toBeObject()
   })
   test('LocalizedValidationMessages', () => {
     expectTypeOf<LocalizedValidationMessages>().toBeObject()
@@ -1016,6 +1384,12 @@ describe('@sanity/types', () => {
   test('MendozaPatch', () => {
     expectTypeOf<MendozaPatch>().not.toBeNever()
   })
+  test('MissingKeysError', () => {
+    expectTypeOf<MissingKeysError>().not.toBeNever()
+  })
+  test('MixedArrayError', () => {
+    expectTypeOf<MixedArrayError>().not.toBeNever()
+  })
   test('MultiFieldSet', () => {
     expectTypeOf<MultiFieldSet>().toBeObject()
   })
@@ -1034,8 +1408,20 @@ describe('@sanity/types', () => {
   test('NarrowPreview', () => {
     expectTypeOf<NarrowPreview<any, any, any, any>>().not.toBeNever()
   })
+  test('NumberComponents', () => {
+    expectTypeOf<NumberComponents>().toBeObject()
+  })
   test('NumberDefinition', () => {
     expectTypeOf<NumberDefinition>().toBeObject()
+  })
+  test('NumberFieldProps', () => {
+    expectTypeOf<NumberFieldProps>().toBeObject()
+  })
+  test('NumberFormNode', () => {
+    expectTypeOf<NumberFormNode<any>>().not.toBeNever()
+  })
+  test('NumberInputProps', () => {
+    expectTypeOf<NumberInputProps<any>>().toBeObject()
   })
   test('NumberOptions', () => {
     expectTypeOf<NumberOptions>().toBeObject()
@@ -1046,14 +1432,38 @@ describe('@sanity/types', () => {
   test('NumberSchemaType', () => {
     expectTypeOf<NumberSchemaType>().toBeObject()
   })
+  test('ObjectArrayFormNode', () => {
+    expectTypeOf<ObjectArrayFormNode<any, any>>().toBeObject()
+  })
+  test('ObjectComponents', () => {
+    expectTypeOf<ObjectComponents>().toBeObject()
+  })
   test('ObjectDefinition', () => {
     expectTypeOf<ObjectDefinition>().toBeObject()
   })
   test('ObjectField', () => {
     expectTypeOf<ObjectField<any>>().toBeObject()
   })
+  test('ObjectFieldProps', () => {
+    expectTypeOf<ObjectFieldProps<any>>().toBeObject()
+  })
   test('ObjectFieldType', () => {
     expectTypeOf<ObjectFieldType<any>>().not.toBeNever()
+  })
+  test('ObjectFormNode', () => {
+    expectTypeOf<ObjectFormNode<any, any>>().toBeObject()
+  })
+  test('ObjectInputProps', () => {
+    expectTypeOf<ObjectInputProps<any, any>>().toBeObject()
+  })
+  test('ObjectItem', () => {
+    expectTypeOf<ObjectItem>().not.toBeNever()
+  })
+  test('ObjectItemProps', () => {
+    expectTypeOf<ObjectItemProps<any>>().toBeObject()
+  })
+  test('ObjectMember', () => {
+    expectTypeOf<ObjectMember>().not.toBeNever()
   })
   test('ObjectOptions', () => {
     expectTypeOf<ObjectOptions>().toBeObject()
@@ -1066,6 +1476,15 @@ describe('@sanity/types', () => {
   })
   test('ObjectSchemaTypeWithOptions', () => {
     expectTypeOf<ObjectSchemaTypeWithOptions>().toBeObject()
+  })
+  test('OnPathFocusPayload', () => {
+    expectTypeOf<OnPathFocusPayload>().toBeObject()
+  })
+  test('PatchArg', () => {
+    expectTypeOf<PatchArg>().not.toBeNever()
+  })
+  test('PatchEventInterface', () => {
+    expectTypeOf<PatchEventInterface>().toBeObject()
   })
   test('PatchMutation', () => {
     expectTypeOf<PatchMutation>().toBeObject()
@@ -1088,11 +1507,23 @@ describe('@sanity/types', () => {
   test('PortableTextChild', () => {
     expectTypeOf<PortableTextChild>().not.toBeNever()
   })
+  test('PortableTextInputProps', () => {
+    expectTypeOf<PortableTextInputProps>().toBeObject()
+  })
   test('PortableTextListBlock', () => {
     expectTypeOf<PortableTextListBlock>().toBeObject()
   })
+  test('PortableTextMarker', () => {
+    expectTypeOf<PortableTextMarker>().toBeObject()
+  })
   test('PortableTextObject', () => {
     expectTypeOf<PortableTextObject>().toBeObject()
+  })
+  test('PortableTextPluginsProps', () => {
+    expectTypeOf<PortableTextPluginsProps>().toBeObject()
+  })
+  test('PortableTextPreviewLayoutKey', () => {
+    expectTypeOf<PortableTextPreviewLayoutKey>().not.toBeNever()
   })
   test('PortableTextSpan', () => {
     expectTypeOf<PortableTextSpan>().toBeObject()
@@ -1106,14 +1537,38 @@ describe('@sanity/types', () => {
   test('PreviewConfig', () => {
     expectTypeOf<PreviewConfig<any, any>>().toBeObject()
   })
+  test('PreviewLayoutKey', () => {
+    expectTypeOf<PreviewLayoutKey>().not.toBeNever()
+  })
+  test('PreviewMediaDimensions', () => {
+    expectTypeOf<PreviewMediaDimensions>().toBeObject()
+  })
+  test('PreviewProps', () => {
+    expectTypeOf<PreviewProps<any>>().toBeObject()
+  })
   test('PreviewValue', () => {
     expectTypeOf<PreviewValue>().toBeObject()
+  })
+  test('PrimitiveFieldProps', () => {
+    expectTypeOf<PrimitiveFieldProps>().not.toBeNever()
+  })
+  test('PrimitiveFormNode', () => {
+    expectTypeOf<PrimitiveFormNode>().not.toBeNever()
+  })
+  test('PrimitiveInputElementProps', () => {
+    expectTypeOf<PrimitiveInputElementProps>().toBeObject()
+  })
+  test('PrimitiveItemProps', () => {
+    expectTypeOf<PrimitiveItemProps>().toBeObject()
   })
   test('Reference', () => {
     expectTypeOf<Reference>().toBeObject()
   })
   test('ReferenceBaseOptions', () => {
     expectTypeOf<ReferenceBaseOptions>().toBeObject()
+  })
+  test('ReferenceComponents', () => {
+    expectTypeOf<ReferenceComponents>().toBeObject()
   })
   test('ReferenceDefinition', () => {
     expectTypeOf<ReferenceDefinition>().toBeObject()
@@ -1136,6 +1591,9 @@ describe('@sanity/types', () => {
   test('ReferenceFilterSearchOptions', () => {
     expectTypeOf<ReferenceFilterSearchOptions>().not.toBeNever()
   })
+  test('ReferenceInputProps', () => {
+    expectTypeOf<ReferenceInputProps>().not.toBeNever()
+  })
   test('ReferenceOptions', () => {
     expectTypeOf<ReferenceOptions>().not.toBeNever()
   })
@@ -1150,6 +1608,39 @@ describe('@sanity/types', () => {
   })
   test('ReferenceValue', () => {
     expectTypeOf<ReferenceValue>().not.toBeNever()
+  })
+  test('RenderAnnotationCallback', () => {
+    expectTypeOf<RenderAnnotationCallback<any>>().not.toBeNever()
+  })
+  test('RenderArrayOfObjectsItemCallback', () => {
+    expectTypeOf<RenderArrayOfObjectsItemCallback>().not.toBeNever()
+  })
+  test('RenderArrayOfPrimitivesItemCallback', () => {
+    expectTypeOf<RenderArrayOfPrimitivesItemCallback>().not.toBeNever()
+  })
+  test('RenderBlockActionsCallback', () => {
+    expectTypeOf<RenderBlockActionsCallback>().not.toBeNever()
+  })
+  test('RenderBlockActionsProps', () => {
+    expectTypeOf<RenderBlockActionsProps>().toBeObject()
+  })
+  test('RenderBlockCallback', () => {
+    expectTypeOf<RenderBlockCallback<any>>().not.toBeNever()
+  })
+  test('RenderCustomMarkers', () => {
+    expectTypeOf<RenderCustomMarkers>().not.toBeNever()
+  })
+  test('RenderFieldCallback', () => {
+    expectTypeOf<RenderFieldCallback<any>>().not.toBeNever()
+  })
+  test('RenderInputCallback', () => {
+    expectTypeOf<RenderInputCallback<any>>().not.toBeNever()
+  })
+  test('RenderPreviewCallback', () => {
+    expectTypeOf<RenderPreviewCallback>().not.toBeNever()
+  })
+  test('RenderPreviewCallbackProps', () => {
+    expectTypeOf<RenderPreviewCallbackProps<any>>().toBeObject()
   })
   test('Role', () => {
     expectTypeOf<Role>().toBeObject()
@@ -1229,6 +1720,9 @@ describe('@sanity/types', () => {
   test('Slug', () => {
     expectTypeOf<Slug>().toBeObject()
   })
+  test('SlugComponents', () => {
+    expectTypeOf<SlugComponents>().toBeObject()
+  })
   test('SlugDefinition', () => {
     expectTypeOf<SlugDefinition>().toBeObject()
   })
@@ -1280,8 +1774,20 @@ describe('@sanity/types', () => {
   test('StrictDefinition', () => {
     expectTypeOf<StrictDefinition>().not.toBeNever()
   })
+  test('StringComponents', () => {
+    expectTypeOf<StringComponents>().toBeObject()
+  })
   test('StringDefinition', () => {
     expectTypeOf<StringDefinition>().toBeObject()
+  })
+  test('StringFieldProps', () => {
+    expectTypeOf<StringFieldProps>().toBeObject()
+  })
+  test('StringFormNode', () => {
+    expectTypeOf<StringFormNode<any>>().not.toBeNever()
+  })
+  test('StringInputProps', () => {
+    expectTypeOf<StringInputProps<any>>().toBeObject()
   })
   test('StringOptions', () => {
     expectTypeOf<StringOptions>().toBeObject()
@@ -1295,6 +1801,9 @@ describe('@sanity/types', () => {
   test('SwatchName', () => {
     expectTypeOf<SwatchName>().not.toBeNever()
   })
+  test('TextComponents', () => {
+    expectTypeOf<TextComponents>().toBeObject()
+  })
   test('TextDefinition', () => {
     expectTypeOf<TextDefinition>().toBeObject()
   })
@@ -1306,6 +1815,9 @@ describe('@sanity/types', () => {
   })
   test('TextSchemaType', () => {
     expectTypeOf<TextSchemaType>().toBeObject()
+  })
+  test('TFunction', () => {
+    expectTypeOf<TFunction<any, any>>().toBeObject()
   })
   test('TitledListValue', () => {
     expectTypeOf<TitledListValue<any>>().toBeObject()
@@ -1325,6 +1837,9 @@ describe('@sanity/types', () => {
   test('TypeAliasDefinition', () => {
     expectTypeOf<TypeAliasDefinition<any, any>>().toBeObject()
   })
+  test('TypeAnnotationMismatchError', () => {
+    expectTypeOf<TypeAnnotationMismatchError>().not.toBeNever()
+  })
   test('typed', () => {
     expectTypeOf<typeof typed>().toBeFunction()
   })
@@ -1334,11 +1849,32 @@ describe('@sanity/types', () => {
   test('TypeReference', () => {
     expectTypeOf<TypeReference>().toBeObject()
   })
+  test('UndeclaredMembersError', () => {
+    expectTypeOf<UndeclaredMembersError>().not.toBeNever()
+  })
+  test('Uploader', () => {
+    expectTypeOf<Uploader<any>>().not.toBeNever()
+  })
+  test('UploaderResolver', () => {
+    expectTypeOf<UploaderResolver<any>>().not.toBeNever()
+  })
+  test('UploadEvent', () => {
+    expectTypeOf<UploadEvent>().toBeObject()
+  })
+  test('UploadOptions', () => {
+    expectTypeOf<UploadOptions>().not.toBeNever()
+  })
+  test('UploadProgressEvent', () => {
+    expectTypeOf<UploadProgressEvent>().not.toBeNever()
+  })
   test('UploadState', () => {
     expectTypeOf<UploadState>().toBeObject()
   })
   test('UriValidationOptions', () => {
     expectTypeOf<UriValidationOptions>().toBeObject()
+  })
+  test('UrlComponents', () => {
+    expectTypeOf<UrlComponents>().toBeObject()
   })
   test('UrlDefinition', () => {
     expectTypeOf<UrlDefinition>().toBeObject()

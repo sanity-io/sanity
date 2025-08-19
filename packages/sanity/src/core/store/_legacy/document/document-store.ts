@@ -1,10 +1,9 @@
 import {type SanityClient} from '@sanity/client'
-import {type InitialValueResolverContext, type Schema} from '@sanity/types'
+import {type InitialValueResolverContext, type LocaleSource, type Schema} from '@sanity/types'
 import {type Observable} from 'rxjs'
 import {filter, map} from 'rxjs/operators'
 
 import {type SourceClientOptions} from '../../../config'
-import {type LocaleSource} from '../../../i18n'
 import {type DocumentPreviewStore} from '../../../preview'
 import {DEFAULT_STUDIO_CLIENT_OPTIONS} from '../../../studioClient'
 import {type Template} from '../../../templates'

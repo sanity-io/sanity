@@ -1,6 +1,17 @@
+import {type ComponentType} from 'react'
+
 import {type ImageCrop, type ImageHotspot} from '../../../assets'
 import {type RuleDef, type ValidationBuilder} from '../../ruleBuilder'
 import {type InitialValueProperty} from '../../types'
+import {
+  type BlockAnnotationProps,
+  type BlockProps,
+  type ObjectFieldProps,
+  type ObjectInputProps,
+  type ObjectItem,
+  type ObjectItemProps,
+  type PreviewProps,
+} from '../props'
 import {type FieldDefinition} from '../schemaDefinition'
 import {type FileOptions, type FileValue} from './file'
 import {type ObjectDefinition} from './object'
@@ -50,6 +61,22 @@ export interface ImageRule extends RuleDef<ImageRule, ImageValue> {
   assetRequired(): ImageRule
 }
 
+/**
+ *
+ * @hidden
+ * @beta
+ */
+export interface ImageComponents {
+  annotation?: ComponentType<BlockAnnotationProps>
+  block?: ComponentType<BlockProps>
+  diff?: ComponentType<any>
+  field?: ComponentType<ObjectFieldProps<ImageValue>>
+  inlineBlock?: ComponentType<BlockProps>
+  input?: ComponentType<ObjectInputProps<ImageValue>>
+  item?: ComponentType<ObjectItemProps<ImageValue & ObjectItem>>
+  preview?: ComponentType<PreviewProps>
+}
+
 /** @public */
 export interface ImageDefinition
   extends Omit<ObjectDefinition, 'type' | 'fields' | 'options' | 'groups' | 'validation'> {
@@ -58,4 +85,10 @@ export interface ImageDefinition
   options?: ImageOptions
   validation?: ValidationBuilder<ImageRule, ImageValue>
   initialValue?: InitialValueProperty<any, ImageValue>
+  /**
+   *
+   * @hidden
+   * @beta
+   */
+  components?: ImageComponents
 }

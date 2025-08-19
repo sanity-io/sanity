@@ -1,6 +1,5 @@
-import {type ValidationMarker, type Validators} from '@sanity/types'
+import {type LocaleSource, type ValidationMarker, type Validators} from '@sanity/types'
 
-import {type LocaleSource} from '../../i18n'
 import {deepEqualsIgnoreKey} from '../util/deepEqualsIgnoreKey'
 import {isLocalizedMessages, localizeMessage} from '../util/localizeMessage'
 import {pathToString} from '../util/pathToString'

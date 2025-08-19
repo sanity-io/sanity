@@ -1,5 +1,6 @@
 import {type ElementType, type ReactNode} from 'react'
 
+import {type ImageUrlFitMode} from '../images/types'
 import {type SortOrdering} from './types'
 
 /** @public */
@@ -27,4 +28,45 @@ export interface PreviewConfig<
 > {
   select?: Select
   prepare?: (value: PrepareValue, viewOptions?: PrepareViewOptions) => PreviewValue
+}
+
+/**
+ * Portable text preview layout key
+ *
+ * @public
+ */
+export type PortableTextPreviewLayoutKey = 'block' | 'blockImage' | 'inline'
+
+/**
+ * General preview layout key
+ *
+ * @public
+ */
+export type GeneralPreviewLayoutKey = 'compact' | 'default' | 'media' | 'detail'
+
+/**
+ * General Document list layout key
+ *
+ * @hidden
+ * @beta
+ */
+export type GeneralDocumentListLayoutKey = GeneralPreviewLayoutKey | 'sheetList'
+
+/**
+ * Preview layout key. See also {@link GeneralPreviewLayoutKey} and {@link PortableTextPreviewLayoutKey}
+ *
+ * @public
+ */
+export type PreviewLayoutKey = GeneralPreviewLayoutKey | PortableTextPreviewLayoutKey
+
+/**
+ * @hidden
+ * @public
+ */
+export interface PreviewMediaDimensions {
+  aspect?: number
+  dpr?: number
+  fit?: ImageUrlFitMode
+  height?: number
+  width?: number
 }

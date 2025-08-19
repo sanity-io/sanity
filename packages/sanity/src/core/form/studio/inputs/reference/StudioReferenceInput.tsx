@@ -1,4 +1,7 @@
-import {type Reference, type ReferenceSchemaType} from '@sanity/types'
+import {
+  type ReferenceInputProps as StudioReferenceInputProps,
+  type ReferenceSchemaType,
+} from '@sanity/types'
 import * as PathUtils from '@sanity/util/paths'
 import {
   type ComponentProps,
@@ -26,17 +29,11 @@ import {
   type CreateReferenceOption,
   type EditReferenceEvent,
 } from '../../../inputs/ReferenceInput/types'
-import {type ObjectInputProps} from '../../../types'
 import {useReferenceInputOptions} from '../../contexts'
 import * as adapter from '../client-adapters/reference'
 import {resolveUserDefinedFilter} from './resolveUserDefinedFilter'
 
-/**
- *
- * @hidden
- * @beta
- */
-export type StudioReferenceInputProps = ObjectInputProps<Reference, ReferenceSchemaType>
+export type {StudioReferenceInputProps}
 
 function useValueRef<T>(value: T): {current: T} {
   const ref = useRef(value)

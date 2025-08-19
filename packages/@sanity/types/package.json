@@ -54,17 +54,30 @@
     "@sanity/media-library-types": "^1.0.0"
   },
   "devDependencies": {
+    "@portabletext/editor": "catalog:",
     "@repo/eslint-config": "workspace:*",
     "@repo/package.config": "workspace:*",
     "@repo/test-config": "workspace:*",
     "@sanity/insert-menu": "2.0.1",
     "@types/react": "catalog:",
     "@vitejs/plugin-react": "catalog:",
+    "i18next": "catalog:",
     "react": "catalog:react18",
     "rimraf": "^5.0.10",
+    "rxjs": "catalog:",
     "vitest": "^3.2.4"
   },
   "peerDependencies": {
-    "@types/react": "18 || 19"
+    "@portabletext/editor": "*",
+    "@types/react": "18 || 19",
+    "rxjs": "*"
+  },
+  "peerDependenciesMeta": {
+    "@portabletext/editor": {
+      "optional": true
+    },
+    "rxjs": {
+      "optional": true
+    }
   }
 }

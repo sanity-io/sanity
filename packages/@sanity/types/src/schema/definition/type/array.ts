@@ -1,8 +1,21 @@
 import {type InsertMenuOptions} from '@sanity/insert-menu'
+import {type ComponentType} from 'react'
 
 import {type FieldReference} from '../../../validation'
 import {type RuleDef, type ValidationBuilder} from '../../ruleBuilder'
 import {type InitialValueProperty, type SchemaValidationValue} from '../../types'
+import {
+  type ArrayFieldProps,
+  type ArrayOfObjectsInputProps,
+  type ArrayOfPrimitivesFieldProps,
+  type ArrayOfPrimitivesInputProps,
+  type BlockAnnotationProps,
+  type BlockProps,
+  type ObjectItemProps,
+  type PortableTextPluginsProps,
+  type PreviewProps,
+  type PrimitiveItemProps,
+} from '../props'
 import {
   type IntrinsicDefinitions,
   type IntrinsicTypeName,
@@ -102,6 +115,36 @@ export type ArrayOfType<
   TAlias extends IntrinsicTypeName | undefined = undefined,
 > = IntrinsicArrayOfDefinition[TType] | ArrayOfEntry<TypeAliasDefinition<string, TAlias>>
 
+/**
+ *
+ * @hidden
+ * @beta
+ */
+export interface ArrayOfObjectsComponents {
+  annotation?: ComponentType<BlockAnnotationProps>
+  block?: ComponentType<BlockProps>
+  diff?: ComponentType<any>
+  field?: ComponentType<ArrayFieldProps>
+  inlineBlock?: ComponentType<BlockProps>
+  input?: ComponentType<ArrayOfObjectsInputProps>
+  item?: ComponentType<ObjectItemProps>
+  preview?: ComponentType<PreviewProps>
+  portableText?: {plugins: ComponentType<PortableTextPluginsProps>}
+}
+
+/**
+ *
+ * @hidden
+ * @beta
+ */
+export interface ArrayOfPrimitivesComponents {
+  diff?: ComponentType<any>
+  field?: ComponentType<ArrayOfPrimitivesFieldProps>
+  input?: ComponentType<ArrayOfPrimitivesInputProps>
+  item?: ComponentType<PrimitiveItemProps>
+  preview?: ComponentType<PreviewProps>
+}
+
 /** @public */
 export interface ArrayDefinition extends BaseSchemaDefinition {
   type: 'array'
@@ -109,4 +152,10 @@ export interface ArrayDefinition extends BaseSchemaDefinition {
   initialValue?: InitialValueProperty<any, unknown[]>
   validation?: ValidationBuilder<ArrayRule<unknown[]>, unknown[]>
   options?: ArrayOptions
+  /**
+   *
+   * @hidden
+   * @beta
+   */
+  components?: ArrayOfObjectsComponents | ArrayOfPrimitivesComponents
 }

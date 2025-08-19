@@ -57,7 +57,7 @@
     "react-dom": "catalog:",
     "react-refractor": "^4.0.0",
     "refractor": "^5.0.0",
-    "rxjs": "^7.8.2",
+    "rxjs": "catalog:",
     "sanity": "workspace:*",
     "sanity-plugin-hotspot-array": "^3.0.1",
     "sanity-plugin-markdown": "^6.0.0",

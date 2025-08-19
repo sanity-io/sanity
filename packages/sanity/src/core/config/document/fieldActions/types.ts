@@ -1,92 +1,18 @@
-import {type I18nTextRecord, type Path, type SchemaType} from '@sanity/types'
-import {type ComponentType, type ReactNode} from 'react'
+import {type DocumentFieldAction, type SchemaType} from '@sanity/types'
 
 import {type ComposableOption, type ConfigContext} from '../../types'
 
-/**
- * @hidden
- * @beta */
-export interface DocumentFieldAction {
-  name: string
-  useAction: DocumentFieldActionHook
-}
-
-/**
- * @hidden
- * @beta */
-export interface DocumentFieldActionHook {
-  (props: DocumentFieldActionProps): DocumentFieldActionItem | DocumentFieldActionGroup
-}
-
-/**
- * @hidden
- * @beta */
-export interface DocumentFieldActionProps {
-  documentId: string
-  documentType: string
-  path: Path
-  schemaType: SchemaType
-}
-
-/**
- * @hidden
- * @beta */
-export type DocumentFieldActionStatus = 'info' | 'success' | 'warning' | 'error'
-
-/**
- * @hidden
- * @beta */
-export type DocumentFieldActionTone = 'primary' | 'positive' | 'caution' | 'critical'
-
-/**
- * @hidden
- * @beta */
-export interface DocumentFieldActionItem {
-  type: 'action'
-  disabled?: boolean | {reason: ReactNode}
-  hidden?: boolean
-  icon?: ComponentType
-  iconRight?: ComponentType
-  onAction: () => void
-  renderAsButton?: boolean
-  selected?: boolean
-  status?: DocumentFieldActionStatus
-  title: string
-  i18n?: I18nTextRecord<'title'>
-  tone?: DocumentFieldActionTone
-}
-
-/**
- * @hidden
- * @beta */
-export interface DocumentFieldActionDivider {
-  type: 'divider'
-}
-
-/**
- * @hidden
- * @beta */
-export interface DocumentFieldActionGroup {
-  type: 'group'
-  children: DocumentFieldActionNode[]
-  disabled?: boolean | {reason: ReactNode}
-  expanded?: boolean
-  hidden?: boolean
-  icon?: ComponentType
-  renderAsButton?: boolean
-  status?: DocumentFieldActionStatus
-  title: string
-  i18n?: I18nTextRecord<'title'>
-  tone?: DocumentFieldActionTone
-}
-
-/**
- * @hidden
- * @beta */
-export type DocumentFieldActionNode =
-  | DocumentFieldActionItem
-  | DocumentFieldActionGroup
-  | DocumentFieldActionDivider
+export type {
+  DocumentFieldAction,
+  DocumentFieldActionDivider,
+  DocumentFieldActionGroup,
+  DocumentFieldActionHook,
+  DocumentFieldActionItem,
+  DocumentFieldActionNode,
+  DocumentFieldActionProps,
+  DocumentFieldActionStatus,
+  DocumentFieldActionTone,
+} from '@sanity/types'
 
 /**
  * @hidden

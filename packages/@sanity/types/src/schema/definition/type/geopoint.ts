@@ -1,5 +1,16 @@
+import {type ComponentType} from 'react'
+
 import {type RuleDef, type ValidationBuilder} from '../../ruleBuilder'
 import {type InitialValueProperty} from '../../types'
+import {
+  type BlockAnnotationProps,
+  type BlockProps,
+  type ObjectFieldProps,
+  type ObjectInputProps,
+  type ObjectItem,
+  type ObjectItemProps,
+  type PreviewProps,
+} from '../props'
 import {type BaseSchemaDefinition, type BaseSchemaTypeOptions} from './common'
 
 /**
@@ -37,10 +48,32 @@ export interface GeopointRule extends RuleDef<GeopointRule, GeopointValue> {}
 /** @public */
 export interface GeopointOptions extends BaseSchemaTypeOptions {}
 
+/**
+ *
+ * @hidden
+ * @beta
+ */
+export interface GeopointComponents {
+  annotation?: ComponentType<BlockAnnotationProps>
+  block?: ComponentType<BlockProps>
+  diff?: ComponentType<any>
+  field?: ComponentType<ObjectFieldProps<GeopointValue>>
+  inlineBlock?: ComponentType<BlockProps>
+  input?: ComponentType<ObjectInputProps<GeopointValue>>
+  item?: ComponentType<ObjectItemProps<GeopointValue & ObjectItem>>
+  preview?: ComponentType<PreviewProps>
+}
+
 /** @public */
 export interface GeopointDefinition extends BaseSchemaDefinition {
   type: 'geopoint'
   options?: GeopointOptions
   validation?: ValidationBuilder<GeopointRule, GeopointValue>
   initialValue?: InitialValueProperty<any, Omit<GeopointValue, '_type'>>
+  /**
+   *
+   * @hidden
+   * @beta
+   */
+  components?: GeopointComponents
 }

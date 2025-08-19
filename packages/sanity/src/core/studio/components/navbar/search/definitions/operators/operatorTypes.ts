@@ -1,6 +1,6 @@
+import {type LocaleSource} from '@sanity/types'
 import {type ComponentType} from 'react'
 
-import {type LocaleSource} from '../../../../../../i18n'
 import {type SearchFieldDefinition} from '../fields'
 
 /**

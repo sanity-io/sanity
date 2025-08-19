@@ -1,7 +1,6 @@
 import {ErrorOutlineIcon, LockIcon} from '@sanity/icons'
+import {type TFunction} from '@sanity/types'
 import {Flex, Text} from '@sanity/ui'
-// eslint-disable-next-line @sanity/i18n/no-i18next-import -- figure out how to have the linter be fine with importing types-only
-import {type TFunction} from 'i18next'
 import {Fragment} from 'react'
 
 import {ToneIcon} from '../../../../ui-components/toneIcon/ToneIcon'

@@ -1,7 +1,18 @@
+import {type ComponentType} from 'react'
+
 import {type AssetSource} from '../../../assets'
 import {type Reference} from '../../../reference'
 import {type RuleDef, type ValidationBuilder} from '../../ruleBuilder'
 import {type InitialValueProperty} from '../../types'
+import {
+  type BlockAnnotationProps,
+  type BlockProps,
+  type ObjectFieldProps,
+  type ObjectInputProps,
+  type ObjectItem,
+  type ObjectItemProps,
+  type PreviewProps,
+} from '../props'
 import {type ObjectDefinition, type ObjectOptions} from './object'
 
 /** @public */
@@ -47,6 +58,22 @@ export interface FileValue {
   [index: string]: unknown
 }
 
+/**
+ *
+ * @hidden
+ * @beta
+ */
+export interface FileComponents {
+  annotation?: ComponentType<BlockAnnotationProps>
+  block?: ComponentType<BlockProps>
+  diff?: ComponentType<any>
+  field?: ComponentType<ObjectFieldProps<FileValue>>
+  inlineBlock?: ComponentType<BlockProps>
+  input?: ComponentType<ObjectInputProps<FileValue>>
+  item?: ComponentType<ObjectItemProps<FileValue & ObjectItem>>
+  preview?: ComponentType<PreviewProps>
+}
+
 /** @public */
 export interface FileDefinition
   extends Omit<ObjectDefinition, 'type' | 'fields' | 'options' | 'groups' | 'validation'> {
@@ -55,4 +82,10 @@ export interface FileDefinition
   options?: FileOptions
   validation?: ValidationBuilder<FileRule, FileValue>
   initialValue?: InitialValueProperty<any, FileValue>
+  /**
+   *
+   * @hidden
+   * @beta
+   */
+  components?: FileComponents
 }

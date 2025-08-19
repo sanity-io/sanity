@@ -1,6 +1,14 @@
+import {type ComponentType} from 'react'
+
 import {type FieldReference} from '../../../validation'
 import {type RuleDef, type ValidationBuilder} from '../../ruleBuilder'
 import {type InitialValueProperty} from '../../types'
+import {
+  type PreviewProps,
+  type PrimitiveItemProps,
+  type StringFieldProps,
+  type StringInputProps,
+} from '../props'
 import {
   type BaseSchemaDefinition,
   type BaseSchemaTypeOptions,
@@ -28,6 +36,19 @@ export interface StringRule extends RuleDef<StringRule, string> {
   email(): StringRule
 }
 
+/**
+ *
+ * @hidden
+ * @beta
+ */
+export interface StringComponents {
+  diff?: ComponentType<any>
+  field?: ComponentType<StringFieldProps>
+  input?: ComponentType<StringInputProps>
+  item?: ComponentType<PrimitiveItemProps>
+  preview?: ComponentType<PreviewProps>
+}
+
 /** @public */
 export interface StringDefinition extends BaseSchemaDefinition {
   type: 'string'
@@ -35,4 +56,10 @@ export interface StringDefinition extends BaseSchemaDefinition {
   placeholder?: string
   validation?: ValidationBuilder<StringRule, string>
   initialValue?: InitialValueProperty<any, string>
+  /**
+   *
+   * @hidden
+   * @beta
+   */
+  components?: StringComponents
 }

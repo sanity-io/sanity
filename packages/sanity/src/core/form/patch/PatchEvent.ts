@@ -1,4 +1,4 @@
-import {type PathSegment} from '@sanity/types'
+import {type PatchEventInterface, type PathSegment} from '@sanity/types'
 import {flatten} from 'lodash'
 
 import {prefixPath} from './patch'
@@ -9,7 +9,7 @@ import {type FormPatch, type PatchArg} from './types'
  * @hidden
  * @beta
  */
-export class PatchEvent {
+export class PatchEvent implements PatchEventInterface {
   static from(input: PatchArg | PatchEvent): PatchEvent {
     if (input instanceof PatchEvent) {
       return input

@@ -1,6 +1,14 @@
+import {type ComponentType} from 'react'
+
 import {type SanityDocument} from '../../../documents/types'
 import {type RuleDef, type ValidationBuilder} from '../../ruleBuilder'
 import {type InitialValueProperty, type SortOrdering} from '../../types'
+import {
+  type ObjectFieldProps,
+  type ObjectInputProps,
+  type ObjectItemProps,
+  type PreviewProps,
+} from '../props'
 import {type BaseSchemaTypeOptions} from './common'
 import {type ObjectDefinition} from './object'
 
@@ -13,6 +21,19 @@ export interface DocumentOptions extends BaseSchemaTypeOptions {}
 
 /** @public */
 export interface DocumentRule extends RuleDef<DocumentRule, SanityDocument> {}
+
+/**
+ *
+ * @hidden
+ * @beta
+ */
+export interface DocumentComponents {
+  diff?: ComponentType<any>
+  field?: ComponentType<ObjectFieldProps>
+  input?: ComponentType<ObjectInputProps>
+  item?: ComponentType<ObjectItemProps>
+  preview?: ComponentType<PreviewProps>
+}
 
 /** @public */
 export interface DocumentDefinition extends Omit<ObjectDefinition, 'type'> {
@@ -32,4 +53,10 @@ export interface DocumentDefinition extends Omit<ObjectDefinition, 'type'> {
    * @alpha
    * */
   __experimental_formPreviewTitle?: boolean
+  /**
+   *
+   * @hidden
+   * @beta
+   */
+  components?: DocumentComponents
 }

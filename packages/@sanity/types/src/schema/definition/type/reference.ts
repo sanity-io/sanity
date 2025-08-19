@@ -1,3 +1,5 @@
+import {type ComponentType} from 'react'
+
 import {
   type Reference,
   type ReferenceBaseOptions,
@@ -5,6 +7,15 @@ import {
 } from '../../../reference'
 import {type RuleDef, type ValidationBuilder} from '../../ruleBuilder'
 import {type InitialValueProperty} from '../../types'
+import {
+  type BlockAnnotationProps,
+  type BlockProps,
+  type ObjectFieldProps,
+  type ObjectItem,
+  type ObjectItemProps,
+  type PreviewProps,
+  type ReferenceInputProps,
+} from '../props'
 import {type SchemaTypeDefinition, type TypeReference} from '../schemaDefinition'
 import {type BaseSchemaDefinition} from './common'
 
@@ -32,6 +43,22 @@ export type ReferenceTo =
  */
 export type ReferenceOptions = ReferenceBaseOptions & ReferenceFilterOptions
 
+/**
+ *
+ * @hidden
+ * @beta
+ */
+export interface ReferenceComponents {
+  annotation?: ComponentType<BlockAnnotationProps>
+  block?: ComponentType<BlockProps>
+  diff?: ComponentType<any>
+  field?: ComponentType<ObjectFieldProps<ReferenceValue>>
+  inlineBlock?: ComponentType<BlockProps>
+  input?: ComponentType<ReferenceInputProps>
+  item?: ComponentType<ObjectItemProps<ReferenceValue & ObjectItem>>
+  preview?: ComponentType<PreviewProps>
+}
+
 /** @public */
 export interface ReferenceDefinition extends BaseSchemaDefinition {
   type: 'reference'
@@ -40,4 +67,10 @@ export interface ReferenceDefinition extends BaseSchemaDefinition {
   options?: ReferenceOptions
   validation?: ValidationBuilder<ReferenceRule, ReferenceValue>
   initialValue?: InitialValueProperty<any, Omit<ReferenceValue, '_type'>>
+  /**
+   *
+   * @hidden
+   * @beta
+   */
+  components?: ReferenceComponents
 }

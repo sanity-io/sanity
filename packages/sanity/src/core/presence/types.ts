@@ -1,5 +1,4 @@
-import {type EditorSelection} from '@portabletext/editor'
-import {type Path, type User} from '@sanity/types'
+import {type FormNodePresence, type Path, type User} from '@sanity/types'
 
 import {type Session, type Status} from '../store/_legacy'
 
@@ -40,16 +39,7 @@ export interface Location {
   path: Path
 }
 
-/**
- * @hidden
- * @public */
-export interface FormNodePresence {
-  user: User
-  path: Path
-  sessionId: string
-  lastActiveAt: string
-  selection?: EditorSelection
-}
+export type {FormNodePresence} from '@sanity/types'
 
 /** @internal */
 export interface Rect {
