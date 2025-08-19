@@ -19,6 +19,7 @@ interface ScheduleDraftDialogProps {
   description: string
   confirmButtonText: string
   confirmButtonTone?: 'primary' | 'critical'
+  loading?: boolean
 }
 
 export function ScheduleDraftDialog(props: ScheduleDraftDialogProps): React.JSX.Element {
@@ -29,12 +30,12 @@ export function ScheduleDraftDialog(props: ScheduleDraftDialogProps): React.JSX.
     description,
     confirmButtonText,
     confirmButtonTone = 'primary',
+    loading = false,
   } = props
   const {t} = useTranslation(releasesLocaleNamespace)
   const {t: tCore} = useTranslation()
 
   const [publishAt, setPublishAt] = useState<Date | undefined>(new Date())
-  const [isScheduling, setIsScheduling] = useState(false)
 
   const {utcToCurrentZoneDate, zoneDateToUtc} = useTimeZone(CONTENT_RELEASES_TIME_ZONE_SCOPE)
 
@@ -69,16 +70,7 @@ export function ScheduleDraftDialog(props: ScheduleDraftDialogProps): React.JSX.
 
   const handleConfirmSchedule = useCallback(async () => {
     if (!publishAt || isScheduledDateInPast()) return
-
-    try {
-      setIsScheduling(true)
-      onSchedule(publishAt)
-      // Note: onClose is now handled by the parent action component
-    } catch (error) {
-      console.error('Failed to schedule:', error)
-    } finally {
-      setIsScheduling(false)
-    }
+    onSchedule(publishAt)
   }, [publishAt, isScheduledDateInPast, onSchedule])
 
   const _isScheduledDateInPast = isScheduledDateInPast()
@@ -87,7 +79,7 @@ export function ScheduleDraftDialog(props: ScheduleDraftDialogProps): React.JSX.
     <Dialog
       id="schedule-draft-dialog"
       header={header}
-      onClose={onClose}
+      onClose={loading ? undefined : onClose}
       width={0}
       padding={false}
       footer={{
@@ -95,11 +87,11 @@ export function ScheduleDraftDialog(props: ScheduleDraftDialogProps): React.JSX.
           text: confirmButtonText,
           tone: confirmButtonTone,
           onClick: handleConfirmSchedule,
-          loading: isScheduling,
-          disabled: _isScheduledDateInPast || isScheduling || !publishAt,
+          loading: loading,
+          disabled: _isScheduledDateInPast || loading || !publishAt,
         },
         cancelButton: {
-          disabled: isScheduling,
+          disabled: loading,
         },
       }}
     >
