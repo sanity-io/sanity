@@ -4,10 +4,10 @@ import nodePath from 'node:path'
 import createDebug from 'debug'
 import {type Program} from 'estree'
 import glob from 'globby'
-import {parseSync} from 'oxc-parser'
 
 import {findQueriesInSource} from './findQueriesInSource'
 import {getResolver} from './moduleResolver'
+import {parseComments} from './parseComments'
 import {type ExtractedModule, QueryExtractionError} from './types'
 
 const debug = createDebug('sanity:codegen:findQueries:debug')
@@ -33,7 +33,6 @@ export function findQueriesInPath({
   path: pathPattern,
   resolver = getResolver(),
 }: FindQueriesInPathOptions): {files: string[]; queries: AsyncIterable<ExtractedModule>} {
-  const queryNames = new Set()
   const moduleCache: ModuleCache = {}
 
   // Holds all query names found in the source files
@@ -48,7 +47,7 @@ export function findQueriesInPath({
     .sort()
 
   async function parseModule(filename: string): Promise<Program> {
-    const {transformWithEsbuild} = await import('vite')
+    const {transformWithEsbuild, parseAst} = await import('vite')
     const absolutePath = nodePath.resolve(filename)
 
     // Return cached module if already loaded
@@ -61,27 +60,14 @@ export function findQueriesInPath({
 
     // Load and transform the file
     const source = await fs.readFile(filename, 'utf8')
-
-    // Transform with esbuild to handle TypeScript/JSX
-    const loader = filename.endsWith('.tsx')
-      ? 'tsx'
-      : filename.endsWith('.ts')
-        ? 'ts'
-        : filename.endsWith('.jsx')
-          ? 'jsx'
-          : 'js'
-    const transformed = await transformWithEsbuild(source, filename, {
-      target: 'esnext',
-      format: 'esm',
-      loader,
-    })
+    const comments = parseComments(source)
+    const {code, map} = await transformWithEsbuild(source, filename, {})
 
     // Parse with espree to get ESTree AST
-    const result = parseSync(filename, transformed.code, {
-      astType: 'js',
-      lang: loader,
-    })
-    const program = result.program as Program
+    const program = parseAst(code, {allowReturnOutsideFunction: true})
+
+    console.log(map)
+    console.log(comments)
 
     // Cache the parsed module
     moduleCache[absolutePath] = program
@@ -108,15 +94,12 @@ export function findQueriesInPath({
 
   async function* getQueries(): AsyncGenerator<ExtractedModule> {
     for (const filename of files) {
-      if (typeof filename !== 'string') {
-        continue
-      }
-
       debug(`Found file "${filename}"`)
       try {
         const program = await parseModule(filename)
         const result = await findQueriesInSource({
           program,
+          comments: [],
           filename,
           context: {
             load: loadModule,

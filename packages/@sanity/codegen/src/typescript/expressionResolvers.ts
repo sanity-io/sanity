@@ -8,7 +8,9 @@ import {
   type FunctionExpression,
   type Identifier,
   type Literal,
+  type MemberExpression,
   type Node,
+  type ObjectExpression,
   type Program,
   type ReturnStatement,
   type Statement,
@@ -161,10 +163,164 @@ export async function resolveExpression({
     )
   }
 
+  if (t.isMemberExpression(node)) {
+    return resolveExpression(
+      await resolveMemberExpression({
+        node,
+        scope,
+        filename,
+        context,
+      }),
+    )
+  }
+
   throw new ExpressionResolutionError(
     `Cannot statically evaluate ${node.type} expression. ` +
-      'Only template literals, identifiers, function calls, ' +
+      'Only template literals, identifiers, function calls, member expressions, ' +
       'and simple literals are supported for query extraction.',
+  )
+}
+
+async function resolveMemberExpression({
+  node,
+  scope,
+  filename,
+  context,
+}: ResolveExpressionOptions<MemberExpression>): Promise<ResolveExpressionOptions> {
+  // First, resolve the object part of the member expression to an object literal
+  const objectResult = await resolveMemberExpressionObject({
+    node: node.object,
+    scope,
+    filename,
+    context,
+  })
+
+  // Get the property name
+  let propertyName: string
+  if (node.computed) {
+    // For computed access like obj[prop], resolve the property expression
+    propertyName = await resolveExpression({
+      node: node.property,
+      scope,
+      filename,
+      context,
+    })
+  } else {
+    // For static access like obj.prop
+    if (!t.isIdentifier(node.property)) {
+      throw new ExpressionResolutionError(
+        `Unsupported property type ${node.property.type}. ` +
+          'Only identifier properties are supported for static member access.',
+      )
+    }
+    propertyName = node.property.name
+  }
+
+  // Check if this is a namespace object
+  // @ts-expect-error - Checking for custom property
+  if (objectResult.node.__namespace) {
+    // Handle namespace member access (e.g., ns.exportedName)
+    const namespaceInfo = (objectResult.node as any).__namespace
+
+    return await resolveImportedIdentifier({
+      node: {type: 'Identifier', name: propertyName},
+      scope: namespaceInfo.moduleScope,
+      filename: namespaceInfo.moduleId,
+      context,
+    })
+  }
+
+  // Find the property in regular object literals
+  const property = objectResult.node.properties.find((prop) => {
+    if (!t.isProperty(prop)) return false
+
+    // For identifier keys (e.g., {prop: value} or {[prop]: value})
+    if (t.isIdentifier(prop.key)) {
+      return prop.key.name === propertyName
+    }
+
+    // For literal keys (e.g., {'prop': value} or {["prop"]: value})
+    if (t.isLiteral(prop.key)) {
+      return prop.key.value === propertyName
+    }
+
+    return false
+  })
+
+  if (!property || !t.isProperty(property)) {
+    throw new ExpressionResolutionError(
+      `Property '${propertyName}' not found in object literal. ` +
+        'Ensure the property exists and is statically defined.',
+    )
+  }
+
+  return {
+    node: property.value,
+    scope: objectResult.scope,
+    filename: objectResult.filename,
+    context,
+  }
+}
+
+async function resolveMemberExpressionObject({
+  node,
+  scope,
+  filename,
+  context,
+}: ResolveExpressionOptions): Promise<ResolveExpressionOptions<ObjectExpression>> {
+  if (t.isObjectExpression(node)) {
+    // Check if this is a namespace object (has special __namespace property)
+    // @ts-expect-error - Checking for custom property
+    if (node.__namespace) {
+      return {
+        node,
+        scope,
+        filename,
+        context,
+      }
+    }
+
+    return {
+      node,
+      scope,
+      filename,
+      context,
+    }
+  }
+
+  if (t.isIdentifier(node)) {
+    return resolveMemberExpressionObject(
+      await resolveIdentifier({
+        node,
+        scope,
+        filename,
+        context: {
+          ...context,
+          visited: {
+            identifiers: new Set(),
+            modules: new Set(),
+          },
+        },
+      }),
+    )
+  }
+
+  if (t.isCallExpression(node)) {
+    return resolveMemberExpressionObject(
+      await resolveCallExpression({node, scope, filename, context}),
+    )
+  }
+
+  if (t.isMemberExpression(node)) {
+    return resolveMemberExpressionObject(
+      await resolveMemberExpression({node, scope, filename, context}),
+    )
+  }
+
+  throw new ExpressionResolutionError(
+    `Cannot statically evaluate ${node.type} expression. ` +
+      'Object member access requires expressions that resolve to object literals, ' +
+      `but ${node.type} is not supported.`,
   )
 }
 
@@ -252,10 +408,33 @@ async function resolveIdentifier({
       })
     }
 
+    // Handle namespace imports (import * as name from 'module')
+    if (t.isImportNamespaceSpecifier(definition.node)) {
+      // Create a synthetic object expression representing the namespace
+      // We'll mark it with a special property to identify it as a namespace
+      const namespaceObject: ObjectExpression = {
+        type: 'ObjectExpression',
+        properties: [],
+        // Add metadata to identify this as a namespace object
+        // @ts-expect-error - Adding custom property for namespace identification
+        __namespace: {
+          moduleId: importedModuleId,
+          module: importedModule,
+          moduleScope,
+        },
+      }
+
+      return {
+        node: namespaceObject,
+        scope: moduleScope,
+        filename: importedModuleId,
+        context,
+      }
+    }
+
     throw new ExpressionResolutionError(
-      'Namespace imports are not supported. ' +
-        `Could not resolve '${node.name}' as it was imported as a namespace. ` +
-        'Please use a named or default import instead.',
+      'Unsupported import type. ' +
+        `Import type for '${node.name}' is not supported for static query resolution.`,
     )
   }
 
@@ -421,6 +600,17 @@ async function resolveFunctionExpression({
 
   if (t.isCallExpression(node)) {
     return resolveFunctionExpression(await resolveCallExpression({node, scope, filename, context}))
+  }
+
+  if (t.isMemberExpression(node)) {
+    return resolveFunctionExpression(
+      await resolveMemberExpression({
+        node,
+        scope,
+        filename,
+        context,
+      }),
+    )
   }
 
   throw new ExpressionResolutionError(

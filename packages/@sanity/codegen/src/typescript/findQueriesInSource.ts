@@ -1,8 +1,9 @@
-import {simple as walk} from 'acorn-walk'
-import {type Program, type VariableDeclarator} from 'estree'
+import {ancestor as walk} from 'acorn-walk'
+import {type Program} from 'estree'
 
 import {resolveExpression, type ResolveExpressionContext} from './expressionResolvers'
 import {proxyRollupRangeToEstree} from './helpers'
+import {type Comment} from './parseComments'
 import {getModuleScope, getVariableScope} from './scope'
 import {
   type ExtractedModule,
@@ -11,6 +12,7 @@ import {
   QueryExtractionError,
   type QueryExtractionResult,
   type QueryVariableDeclarator,
+  t,
 } from './types'
 
 const ignoreValue = '@sanity-typegen-ignore'
@@ -18,6 +20,7 @@ type AcornNode = Parameters<typeof walk>[0]
 
 export interface FindQueriesInSourceOptions {
   program: Program
+  comments: Comment[]
   filename: string
   context: ResolveExpressionContext
 }
@@ -33,8 +36,16 @@ export async function findQueriesInSource({
   const queryVariables: QueryVariableDeclarator[] = []
 
   walk(program as Extract<AcornNode, {type: 'Program'}>, {
-    VariableDeclarator(n) {
-      const node = n as VariableDeclarator
+    VariableDeclarator(...args) {
+      const [, , ancestors] = args
+      const variableDeclarator = ancestors.at(-1)
+      const variableDeclaration = ancestors.at(-2)
+      const declarationParent = ancestors.at(-3)
+
+      if (!t.isVariableDeclarator(variableDeclarator)) return
+      if (!t.isVariableDeclaration(variableDeclaration)) return
+      if (!declarationParent) return
+
       if (isQueryVariableDeclarator(node)) {
         queryVariables.push(node)
       }

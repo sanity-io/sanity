@@ -18,6 +18,7 @@ function defineSource(
   return {
     filename: '/src/main',
     program,
+    comments: [],
     context: {
       resolve: (source, importer) => Promise.resolve(path.resolve(path.dirname(importer), source)),
       load: (id) => Promise.resolve(parsedFiles[id]),
@@ -405,7 +406,7 @@ describe('findQueriesInSource', () => {
     ])
   })
 
-  test('errors when resolving namespace import', async () => {
+  test('errors when using namespace object directly', async () => {
     const {queries, errors} = await findQueriesInSource(
       defineSource({
         '/src/main': `
@@ -423,9 +424,9 @@ describe('findQueriesInSource', () => {
       {
         message:
           "Error while extracting query from variable 'query' in /src/main: " +
-          'Namespace imports are not supported. ' +
-          "Could not resolve 'ns' as it was imported as a namespace. " +
-          'Please use a named or default import instead.',
+          'Cannot statically evaluate ObjectExpression expression. ' +
+          'Only template literals, identifiers, function calls, member expressions, ' +
+          'and simple literals are supported for query extraction.',
       },
     ])
     expect(queries).toEqual([])
@@ -1182,9 +1183,9 @@ describe('findQueriesInSource', () => {
       {
         message:
           "Error while extracting query from variable 'query' in /src/main: " +
-          'Cannot statically evaluate MemberExpression expression. ' +
-          'Only template literals, identifiers, function calls, and simple ' +
-          'literals are supported for query extraction.',
+          'Cannot statically evaluate ArrowFunctionExpression expression. ' +
+          'Only template literals, identifiers, function calls, member expressions, ' +
+          'and simple literals are supported for query extraction.',
       },
     ])
     expect(queries).toEqual([])
@@ -1386,5 +1387,381 @@ describe('findQueriesInSource', () => {
         query: '*[_type == "post" && published == true][0..5]',
       },
     ])
+  })
+
+  test('resolves basic member expressions', async () => {
+    const {queries, errors} = await findQueriesInSource(
+      defineSource({
+        '/src/main': `
+          import {defineQuery} from 'groq'
+
+          const some = {member: 'test'}
+          const query = defineQuery(some.member)
+        `,
+      }),
+    )
+
+    expect(errors).toEqual([])
+    expect(queries).toMatchObject([
+      {
+        variable: {id: {name: 'query'}},
+        query: 'test',
+      },
+    ])
+  })
+
+  test('resolves nested member expressions', async () => {
+    const {queries, errors} = await findQueriesInSource(
+      defineSource({
+        '/src/main': `
+          import {defineQuery} from 'groq'
+
+          const some = {member: {expression: '*[_type == "author"]'}}
+          const query = defineQuery(some.member.expression)
+        `,
+      }),
+    )
+
+    expect(errors).toEqual([])
+    expect(queries).toMatchObject([
+      {
+        variable: {id: {name: 'query'}},
+        query: '*[_type == "author"]',
+      },
+    ])
+  })
+
+  test('resolves computed member expressions with string literals', async () => {
+    const {queries, errors} = await findQueriesInSource(
+      defineSource({
+        '/src/main': `
+          import {defineQuery} from 'groq'
+
+          const queries = {
+            'author-query': '*[_type == "author"]',
+            'post-query': '*[_type == "post"]'
+          }
+          const query = defineQuery(queries['author-query'])
+        `,
+      }),
+    )
+
+    expect(errors).toEqual([])
+    expect(queries).toMatchObject([
+      {
+        variable: {id: {name: 'query'}},
+        query: '*[_type == "author"]',
+      },
+    ])
+  })
+
+  test('resolves member expressions on imported objects', async () => {
+    const {queries, errors} = await findQueriesInSource(
+      defineSource({
+        '/src/main': `
+          import {defineQuery} from 'groq'
+          import {queryConfig} from './config'
+
+          const query = defineQuery(queryConfig.author)
+        `,
+        '/src/config': `
+          export const queryConfig = {
+            author: '*[_type == "author"]',
+            post: '*[_type == "post"]'
+          }
+        `,
+      }),
+    )
+
+    expect(errors).toEqual([])
+    expect(queries).toMatchObject([
+      {
+        variable: {id: {name: 'query'}},
+        query: '*[_type == "author"]',
+      },
+    ])
+  })
+
+  test('resolves member expressions on function call results', async () => {
+    const {queries, errors} = await findQueriesInSource(
+      defineSource({
+        '/src/main': `
+          import {defineQuery} from 'groq'
+
+          const getConfig = (filter = 'true') => ({
+            queries: {
+              author: \`*[_type == "author" && \${filter}"]\`,
+              book: \`*[_type == "book" && \${filter}]\`
+            }
+          })
+
+          const authorQuery = defineQuery(getConfig("!(_id in path('drafts.**'))").queries.author)
+          const bookQuery = defineQuery(getConfig().queries.book)
+        `,
+      }),
+    )
+
+    expect(errors).toEqual([])
+    expect(queries).toMatchObject([
+      {
+        variable: {id: {name: 'authorQuery'}},
+        query: `*[_type == "author" && !(_id in path('drafts.**'))"]`,
+      },
+      {
+        variable: {id: {name: 'bookQuery'}},
+        query: `*[_type == "book" && true]`,
+      },
+    ])
+  })
+
+  test('errors when property does not exist in object literal', async () => {
+    const {queries, errors} = await findQueriesInSource(
+      defineSource({
+        '/src/main': `
+          import {defineQuery} from 'groq'
+
+          const some = {member: 'test'}
+          const query = defineQuery(some.nonexistent)
+        `,
+      }),
+    )
+
+    expect(errors).toMatchObject([
+      {
+        message:
+          "Error while extracting query from variable 'query' in /src/main: " +
+          "Property 'nonexistent' not found in object literal. " +
+          'Ensure the property exists and is statically defined.',
+      },
+    ])
+    expect(queries).toEqual([])
+  })
+
+  test('errors when trying to access member on non-object expression', async () => {
+    const {queries, errors} = await findQueriesInSource(
+      defineSource({
+        '/src/main': `
+          import {defineQuery} from 'groq'
+
+          const notAnObject = 'just a string'
+          const query = defineQuery(notAnObject.member)
+        `,
+      }),
+    )
+
+    expect(errors).toMatchObject([
+      {
+        message:
+          "Error while extracting query from variable 'query' in /src/main: " +
+          'Cannot statically evaluate Literal expression. ' +
+          'Object member access requires expressions that resolve to object literals, ' +
+          'but Literal is not supported.',
+      },
+    ])
+    expect(queries).toEqual([])
+  })
+
+  test('resolves computed property access with resolvable expressions', async () => {
+    const {queries, errors} = await findQueriesInSource(
+      defineSource({
+        '/src/main': `
+          import {defineQuery} from 'groq'
+
+          const some = {member: 'test'}
+          const prop = 'member'
+          const query = defineQuery(some[prop])
+        `,
+      }),
+    )
+
+    expect(errors).toEqual([])
+    expect(queries).toMatchObject([
+      {
+        variable: {id: {name: 'query'}},
+        query: 'test',
+      },
+    ])
+  })
+
+  test('errors when computed property expression cannot be resolved', async () => {
+    const {queries, errors} = await findQueriesInSource(
+      defineSource({
+        '/src/main': `
+          import {defineQuery} from 'groq'
+
+          const some = {member: 'test'}
+          const query = defineQuery(some[Math.random()])
+        `,
+      }),
+    )
+
+    expect(errors).toMatchObject([
+      {
+        message: expect.stringContaining(
+          "Error while extracting query from variable 'query' in /src/main: " +
+            "Could not resolve identifier 'Math'.",
+        ),
+      },
+    ])
+    expect(queries).toEqual([])
+  })
+
+  test('resolves member expressions with template literals', async () => {
+    const {queries, errors} = await findQueriesInSource(
+      defineSource({
+        '/src/main': `
+          import {defineQuery} from 'groq'
+
+          const config = {
+            baseQuery: '*[_type == "author"]',
+            filter: ' && published == true'
+          }
+
+          const query = defineQuery(\`\${config.baseQuery}\${config.filter}\`)
+        `,
+      }),
+    )
+
+    expect(errors).toEqual([])
+    expect(queries).toMatchObject([
+      {
+        variable: {id: {name: 'query'}},
+        query: '*[_type == "author"] && published == true',
+      },
+    ])
+  })
+
+  test('resolves namespace imports with member access', async () => {
+    const {queries, errors} = await findQueriesInSource(
+      defineSource({
+        '/src/main': `
+          import {defineQuery} from 'groq'
+          import * as queries from './queries'
+
+          const authorQuery = defineQuery(queries.author)
+          const postQuery = defineQuery(queries.post)
+        `,
+        '/src/queries': `
+          export const author = '*[_type == "author"]'
+          export const post = '*[_type == "post"]'
+        `,
+      }),
+    )
+
+    expect(errors).toEqual([])
+    expect(queries).toMatchObject([
+      {
+        variable: {id: {name: 'authorQuery'}},
+        query: '*[_type == "author"]',
+      },
+      {
+        variable: {id: {name: 'postQuery'}},
+        query: '*[_type == "post"]',
+      },
+    ])
+  })
+
+  test('resolves namespace imports with nested member access', async () => {
+    const {queries, errors} = await findQueriesInSource(
+      defineSource({
+        '/src/main': `
+          import {defineQuery} from 'groq'
+          import * as utils from './utils'
+
+          const query = defineQuery(utils.queries.author)
+        `,
+        '/src/utils': `
+          export const queries = {
+            author: '*[_type == "author"]',
+            post: '*[_type == "post"]'
+          }
+        `,
+      }),
+    )
+
+    expect(errors).toEqual([])
+    expect(queries).toMatchObject([
+      {
+        variable: {id: {name: 'query'}},
+        query: '*[_type == "author"]',
+      },
+    ])
+  })
+
+  test('resolves namespace imports with function exports', async () => {
+    const {queries, errors} = await findQueriesInSource(
+      defineSource({
+        '/src/main': `
+          import {defineQuery} from 'groq'
+          import * as builders from './builders'
+
+          const query = defineQuery(builders.createQuery('author'))
+        `,
+        '/src/builders': `
+          export const createQuery = (type) => \`*[_type == "\${type}"]\`
+        `,
+      }),
+    )
+
+    expect(errors).toEqual([])
+    expect(queries).toMatchObject([
+      {
+        variable: {id: {name: 'query'}},
+        query: '*[_type == "author"]',
+      },
+    ])
+  })
+
+  test('resolves namespace imports with re-exported members', async () => {
+    const {queries, errors} = await findQueriesInSource(
+      defineSource({
+        '/src/main': `
+          import {defineQuery} from 'groq'
+          import * as utils from './utils'
+
+          const query = defineQuery(utils.authorQuery)
+        `,
+        '/src/utils': `
+          export {author as authorQuery} from './queries'
+        `,
+        '/src/queries': `
+          export const author = '*[_type == "author"]'
+        `,
+      }),
+    )
+
+    expect(errors).toEqual([])
+    expect(queries).toMatchObject([
+      {
+        variable: {id: {name: 'query'}},
+        query: '*[_type == "author"]',
+      },
+    ])
+  })
+
+  test('errors when namespace member does not exist', async () => {
+    const {queries, errors} = await findQueriesInSource(
+      defineSource({
+        '/src/main': `
+          import {defineQuery} from 'groq'
+          import * as queries from './queries'
+
+          const query = defineQuery(queries.nonexistent)
+        `,
+        '/src/queries': `
+          export const author = '*[_type == "author"]'
+        `,
+      }),
+    )
+
+    expect(errors).toMatchObject([
+      {
+        message: expect.stringContaining(
+          "Error while extracting query from variable 'query' in /src/main: " +
+            "Could not find exported name 'nonexistent'",
+        ),
+      },
+    ])
+    expect(queries).toEqual([])
   })
 })

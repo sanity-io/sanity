@@ -559,10 +559,10 @@ importers:
         version: link:../../packages/@sanity/migrate
       '@sanity/preview-url-secret':
         specifier: ^2.1.14
-        version: 2.1.14(@sanity/client@7.8.2(debug@4.4.1))
+        version: 2.1.14(@sanity/client@7.8.2)
       '@sanity/react-loader':
         specifier: ^1.11.18
-        version: 1.11.18(@sanity/types@packages+@sanity+types)(react@19.1.1)(typescript@5.7.3)
+        version: 1.11.18(@sanity/types@packages+@sanity+types)(react@19.1.1)(typescript@5.8.3)
       '@sanity/tsdoc':
         specifier: 1.0.169
         version: 1.0.169(@emotion/is-prop-valid@1.3.1)(@types/babel__core@7.20.5)(@types/node@24.3.0)(babel-plugin-react-compiler@19.1.0-rc.2)(jiti@2.5.1)(react-dom@19.1.1(react@19.1.1))(react-is@19.1.1)(react@19.1.1)(sanity@packages+sanity)(styled-components@6.1.19(react-dom@19.1.1(react@19.1.1))(react@19.1.1))(terser@5.43.1)(tsx@4.20.4)(yaml@2.8.1)
@@ -586,7 +586,7 @@ importers:
         version: link:../../packages/@sanity/vision
       '@sanity/visual-editing':
         specifier: 3.0.2
-        version: 3.0.2(@emotion/is-prop-valid@1.3.1)(@sanity/client@7.8.2)(@sanity/types@packages+@sanity+types)(react-dom@19.1.1(react@19.1.1))(react-is@19.1.1)(react@19.1.1)(styled-components@6.1.19(react-dom@19.1.1(react@19.1.1))(react@19.1.1))(typescript@5.7.3)
+        version: 3.0.2(@emotion/is-prop-valid@1.3.1)(@sanity/client@7.8.2)(@sanity/types@packages+@sanity+types)(react-dom@19.1.1(react@19.1.1))(react-is@19.1.1)(react@19.1.1)(styled-components@6.1.19(react-dom@19.1.1(react@19.1.1))(react@19.1.1))(typescript@5.8.3)
       '@turf/helpers':
         specifier: ^6.5.0
         version: 6.5.0
@@ -904,7 +904,7 @@ importers:
     dependencies:
       '@babel/traverse':
         specifier: ^7.28.3
-        version: 7.28.3(supports-color@5.5.0)
+        version: 7.28.3
       '@sanity/client':
         specifier: ^7.8.2
         version: 7.8.2(debug@4.4.1)
@@ -931,7 +931,7 @@ importers:
         version: 4.1.2
       debug:
         specifier: ^4.4.1
-        version: 4.4.1(supports-color@5.5.0)
+        version: 4.4.1(supports-color@8.1.1)
       decompress:
         specifier: ^4.2.1
         version: 4.2.1
@@ -1145,7 +1145,7 @@ importers:
         version: 7.28.3(@babel/core@7.28.3)
       '@babel/traverse':
         specifier: ^7.28.3
-        version: 7.28.3(supports-color@5.5.0)
+        version: 7.28.3
       '@babel/types':
         specifier: ^7.28.2
         version: 7.28.2
@@ -1158,12 +1158,15 @@ importers:
       '@types/estree':
         specifier: ^1.0.8
         version: 1.0.8
+      acorn:
+        specifier: ^8.15.0
+        version: 8.15.0
       acorn-walk:
         specifier: ^8.3.4
         version: 8.3.4
       debug:
         specifier: ^4.4.1
-        version: 4.4.1(supports-color@5.5.0)
+        version: 4.4.1(supports-color@8.1.1)
       eslint-scope:
         specifier: ^8.4.0
         version: 8.4.0
@@ -1182,6 +1185,9 @@ importers:
       oxc-parser:
         specifier: ^0.81.0
         version: 0.81.0
+      oxc-transform:
+        specifier: ^0.82.2
+        version: 0.82.2
       reselect:
         specifier: ^5.1.1
         version: 5.1.1
@@ -1261,7 +1267,7 @@ importers:
         version: 2.0.1
       debug:
         specifier: ^4.4.1
-        version: 4.4.1(supports-color@5.5.0)
+        version: 4.4.1(supports-color@8.1.1)
       fast-fifo:
         specifier: ^1.3.2
         version: 1.3.2
@@ -1304,7 +1310,7 @@ importers:
         version: 3.0.2
       debug:
         specifier: ^4.4.1
-        version: 4.4.1(supports-color@5.5.0)
+        version: 4.4.1(supports-color@8.1.1)
       lodash:
         specifier: ^4.17.21
         version: 4.17.21
@@ -1742,10 +1748,10 @@ importers:
         version: link:../@sanity/mutator
       '@sanity/presentation-comlink':
         specifier: ^1.0.28
-        version: 1.0.28(@sanity/client@7.8.2(debug@4.4.1))(@sanity/types@packages+@sanity+types)
+        version: 1.0.28(@sanity/client@7.8.2)(@sanity/types@packages+@sanity+types)
       '@sanity/preview-url-secret':
         specifier: ^2.1.14
-        version: 2.1.14(@sanity/client@7.8.2(debug@4.4.1))
+        version: 2.1.14(@sanity/client@7.8.2)
       '@sanity/schema':
         specifier: workspace:*
         version: link:../@sanity/schema
@@ -1835,7 +1841,7 @@ importers:
         version: 2.30.0
       debug:
         specifier: ^4.4.1
-        version: 4.4.1(supports-color@5.5.0)
+        version: 4.4.1(supports-color@8.1.1)
       esbuild:
         specifier: 'catalog:'
         version: 0.25.9
@@ -2106,7 +2112,7 @@ importers:
         version: 2.1.6(@sanity/icons@3.7.4(react@18.3.1))(@sanity/ui@3.0.7(@emotion/is-prop-valid@1.3.1)(react-dom@18.3.1(react@18.3.1))(react-is@19.1.1)(react@18.3.1)(styled-components@6.1.19(react-dom@18.3.1(react@18.3.1))(react@18.3.1)))(@types/node@22.17.2)(jiti@2.5.1)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(styled-components@6.1.19(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(terser@5.43.1)(tsx@4.20.4)(yaml@2.8.1)
       '@sanity/visual-editing-csm':
         specifier: ^2.0.23
-        version: 2.0.23(@sanity/client@7.8.2(debug@4.4.1))(@sanity/types@packages+@sanity+types)(typescript@5.8.3)
+        version: 2.0.23(@sanity/client@7.8.2)(@sanity/types@packages+@sanity+types)(typescript@5.8.3)
       '@sentry/types':
         specifier: ^8.55.0
         version: 8.55.0
@@ -4316,6 +4322,95 @@ packages:
 
   '@oxc-resolver/binding-win32-x64-msvc@5.3.0':
     resolution: {integrity: sha512-LT9eOPPUqfZscQRd5mc08RBeDWOQf+dnOrKnanMallTGPe6g7+rcAlFTA8SWoJbcD45PV8yArFtCmSQSpzHZmg==}
+    cpu: [x64]
+    os: [win32]
+
+  '@oxc-transform/binding-android-arm64@0.82.2':
+    resolution: {integrity: sha512-B7VCbH9qai15KoS2ndwX3rLblKqccSnJ0Pn7ChU8X8r2niaXoL/nJELQYK3jIYqiXt8jhMhPR1oQjaDkIUtt/g==}
+    engines: {node: '>=14.0.0'}
+    cpu: [arm64]
+    os: [android]
+
+  '@oxc-transform/binding-darwin-arm64@0.82.2':
+    resolution: {integrity: sha512-NsB8Oh8pl3WZabl5GlS07K/TVdkfSw96cP0+oiIcMWfL4gZyOHDaG3kdGfG0kmn9eQ5HrAUugrrCq6z+2a2Bvg==}
+    engines: {node: '>=14.0.0'}
+    cpu: [arm64]
+    os: [darwin]
+
+  '@oxc-transform/binding-darwin-x64@0.82.2':
+    resolution: {integrity: sha512-MnbkvCCriwmRunAiilISGhT/JAnecTIaVE4ulz74hVeZWJrDqCelQacP6nvv5BrYkKxJcB7yPElEylEvANbGBA==}
+    engines: {node: '>=14.0.0'}
+    cpu: [x64]
+    os: [darwin]
+
+  '@oxc-transform/binding-freebsd-x64@0.82.2':
+    resolution: {integrity: sha512-KbZ6Mu955pwGMUbphPRp0iSvQ5RsIqDyB0z8EEcED7iCMDzWTqMpDbCyBsiRaF8fv8zaf6UrkUKV4n5xhuc0/g==}
+    engines: {node: '>=14.0.0'}
+    cpu: [x64]
+    os: [freebsd]
+
+  '@oxc-transform/binding-linux-arm-gnueabihf@0.82.2':
+    resolution: {integrity: sha512-JtIJpIeqLet4G29vM7OFIoa4rP0nEM9R/VxaNdTjwk5btfUlP/XS6u6Yxlvt+Wu9tqcFNzycIdnidn3MAXcndQ==}
+    engines: {node: '>=14.0.0'}
+    cpu: [arm]
+    os: [linux]
+
+  '@oxc-transform/binding-linux-arm-musleabihf@0.82.2':
+    resolution: {integrity: sha512-mGon69p2uXDbNxa0r9YJLwtlhHS1dgQk/+yCzF/A16YbhmLX8rBNlEJVvvbJzyDqI3oW2vr9+WD7buOORvZmyA==}
+    engines: {node: '>=14.0.0'}
+    cpu: [arm]
+    os: [linux]
+
+  '@oxc-transform/binding-linux-arm64-gnu@0.82.2':
+    resolution: {integrity: sha512-yBFQiABVVIcIa+IOTD3tEERaDiWWEZJxZ5X7gZAv6TVWitaXWA6ccXJvAUg5zEifLesQBRcVRRAiarx8INGl3w==}
+    engines: {node: '>=14.0.0'}
+    cpu: [arm64]
+    os: [linux]
+
+  '@oxc-transform/binding-linux-arm64-musl@0.82.2':
+    resolution: {integrity: sha512-M770H/yUqAdTsBbCCv28TYXGj/6XQf7/MIcyQ4hWHQUJPWRyPUuWmB/Y0VuFpYypAAjQmOPQ4eXw0TvolptxFA==}
+    engines: {node: '>=14.0.0'}
+    cpu: [arm64]
+    os: [linux]
+
+  '@oxc-transform/binding-linux-riscv64-gnu@0.82.2':
+    resolution: {integrity: sha512-lOR3eBXtdEZxq7ZPQT3SVa3vE1RMMCUe2QXCCBBtqoVmribbbqBBCiRqNJhUqALOZ1ZIexYuMn3gratuLdodeA==}
+    engines: {node: '>=14.0.0'}
+    cpu: [riscv64]
+    os: [linux]
+
+  '@oxc-transform/binding-linux-s390x-gnu@0.82.2':
+    resolution: {integrity: sha512-h/Ua0dcF2o93wwyf4sZIvQv7DQpd1I8qsHPi9zWbaLfURjiH8H6MKdjzlbN0VpSWCxbFuZedDiuNCYq6jaYDZg==}
+    engines: {node: '>=14.0.0'}
+    cpu: [s390x]
+    os: [linux]
+
+  '@oxc-transform/binding-linux-x64-gnu@0.82.2':
+    resolution: {integrity: sha512-1BKdJ3moHf2FI16x/N4iubqwKuum71ao3IrZ0c/KQF978zUyaX0JRu+1Qm+IPPNCCBfmQHrJlrM53pqQfIuWbg==}
+    engines: {node: '>=14.0.0'}
+    cpu: [x64]
+    os: [linux]
+
+  '@oxc-transform/binding-linux-x64-musl@0.82.2':
+    resolution: {integrity: sha512-cfxpY4b0BMwgZpuqsrbmi/qCmNpe+FQEMSWm07Evix+sMwTIXLSWLvsH4rEMnnz255i2ZVraIdLthcD3ufHlfA==}
+    engines: {node: '>=14.0.0'}
+    cpu: [x64]
+    os: [linux]
+
+  '@oxc-transform/binding-wasm32-wasi@0.82.2':
+    resolution: {integrity: sha512-ra7SgdhRfNMm9HdoeK26woROvI6LP4OETctS9EtqnGzBKcAU+c+vZA/o5H+J7DdQKoKdfTFys8UZyO8CBHuGuQ==}
+    engines: {node: '>=14.0.0'}
+    cpu: [wasm32]
+
+  '@oxc-transform/binding-win32-arm64-msvc@0.82.2':
+    resolution: {integrity: sha512-qYj6aB7NAjVIT4Yxzs1v5Z041ZrBaBn3PV6yolaaZp4koBK2Wx5kVTPpCwDyikm1YWk+5vFVNtfoktVvy1K1hQ==}
+    engines: {node: '>=14.0.0'}
+    cpu: [arm64]
+    os: [win32]
+
+  '@oxc-transform/binding-win32-x64-msvc@0.82.2':
+    resolution: {integrity: sha512-+2MCDKSrkhi8baVlQji5vA/2lHvNoW4FNaW3rFyVGsPw1DeJIqUr4XL5Jl/na/9KOj8egf6auZEqEo12Dje2bA==}
+    engines: {node: '>=14.0.0'}
     cpu: [x64]
     os: [win32]
 
@@ -9847,6 +9942,10 @@ packages:
   oxc-resolver@5.3.0:
     resolution: {integrity: sha512-FHqtZx0idP5QRPSNcI5g2ItmADg7fhR3XIeWg5eRMGfp44xqRpfkdvo+EX4ZceqV9bxvl0Z8vaqMqY0gYaNYNA==}
 
+  oxc-transform@0.82.2:
+    resolution: {integrity: sha512-X3c8MY1wiQ9OF1bnY+1BY12tAC4mB7lr6lC/hHzmQciGhp/yEHS3kilQsZZcjdWKWj+x1Ku9BMDA7Fm9tfa0Uw==}
+    engines: {node: '>=14.0.0'}
+
   oxlint-tsgolint@0.0.1:
     resolution: {integrity: sha512-gH6EpIr2oBVperOONVzTTNYmOu6pYPipVyzWB+CfYO13vH+6O9kINUyG4rr3RXDaKdTx8UvxgRORXdSGH1iydA==}
     hasBin: true
@@ -12626,10 +12725,10 @@ snapshots:
       '@babel/helpers': 7.28.3
       '@babel/parser': 7.28.3
       '@babel/template': 7.27.2
-      '@babel/traverse': 7.28.3(supports-color@5.5.0)
+      '@babel/traverse': 7.28.3
       '@babel/types': 7.28.2
       convert-source-map: 2.0.0
-      debug: 4.4.1(supports-color@5.5.0)
+      debug: 4.4.1(supports-color@8.1.1)
       gensync: 1.0.0-beta.2
       json5: 2.2.3
       semver: 6.3.1
@@ -12664,7 +12763,7 @@ snapshots:
       '@babel/helper-optimise-call-expression': 7.27.1
       '@babel/helper-replace-supers': 7.27.1(@babel/core@7.28.3)
       '@babel/helper-skip-transparent-expression-wrappers': 7.27.1
-      '@babel/traverse': 7.28.3(supports-color@5.5.0)
+      '@babel/traverse': 7.28.3
       semver: 6.3.1
     transitivePeerDependencies:
       - supports-color
@@ -12681,7 +12780,7 @@ snapshots:
       '@babel/core': 7.28.3
       '@babel/helper-compilation-targets': 7.27.2
       '@babel/helper-plugin-utils': 7.27.1
-      debug: 4.4.1(supports-color@5.5.0)
+      debug: 4.4.1(supports-color@8.1.1)
       lodash.debounce: 4.0.8
       resolve: 1.22.10
     transitivePeerDependencies:
@@ -12691,7 +12790,14 @@ snapshots:
 
   '@babel/helper-member-expression-to-functions@7.27.1':
     dependencies:
-      '@babel/traverse': 7.28.3(supports-color@5.5.0)
+      '@babel/traverse': 7.28.3
+      '@babel/types': 7.28.2
+    transitivePeerDependencies:
+      - supports-color
+
+  '@babel/helper-module-imports@7.27.1':
+    dependencies:
+      '@babel/traverse': 7.28.3
       '@babel/types': 7.28.2
     transitivePeerDependencies:
       - supports-color
@@ -12706,9 +12812,9 @@ snapshots:
   '@babel/helper-module-transforms@7.28.3(@babel/core@7.28.3)':
     dependencies:
       '@babel/core': 7.28.3
-      '@babel/helper-module-imports': 7.27.1(supports-color@5.5.0)
+      '@babel/helper-module-imports': 7.27.1
       '@babel/helper-validator-identifier': 7.27.1
-      '@babel/traverse': 7.28.3(supports-color@5.5.0)
+      '@babel/traverse': 7.28.3
     transitivePeerDependencies:
       - supports-color
 
@@ -12723,7 +12829,7 @@ snapshots:
       '@babel/core': 7.28.3
       '@babel/helper-annotate-as-pure': 7.27.3
       '@babel/helper-wrap-function': 7.27.1
-      '@babel/traverse': 7.28.3(supports-color@5.5.0)
+      '@babel/traverse': 7.28.3
     transitivePeerDependencies:
       - supports-color
 
@@ -12732,13 +12838,13 @@ snapshots:
       '@babel/core': 7.28.3
       '@babel/helper-member-expression-to-functions': 7.27.1
       '@babel/helper-optimise-call-expression': 7.27.1
-      '@babel/traverse': 7.28.3(supports-color@5.5.0)
+      '@babel/traverse': 7.28.3
     transitivePeerDependencies:
       - supports-color
 
   '@babel/helper-skip-transparent-expression-wrappers@7.27.1':
     dependencies:
-      '@babel/traverse': 7.28.3(supports-color@5.5.0)
+      '@babel/traverse': 7.28.3
       '@babel/types': 7.28.2
     transitivePeerDependencies:
       - supports-color
@@ -12752,7 +12858,7 @@ snapshots:
   '@babel/helper-wrap-function@7.27.1':
     dependencies:
       '@babel/template': 7.27.2
-      '@babel/traverse': 7.28.3(supports-color@5.5.0)
+      '@babel/traverse': 7.28.3
       '@babel/types': 7.28.2
     transitivePeerDependencies:
       - supports-color
@@ -12770,7 +12876,7 @@ snapshots:
     dependencies:
       '@babel/core': 7.28.3
       '@babel/helper-plugin-utils': 7.27.1
-      '@babel/traverse': 7.28.3(supports-color@5.5.0)
+      '@babel/traverse': 7.28.3
     transitivePeerDependencies:
       - supports-color
 
@@ -12797,7 +12903,7 @@ snapshots:
     dependencies:
       '@babel/core': 7.28.3
       '@babel/helper-plugin-utils': 7.27.1
-      '@babel/traverse': 7.28.3(supports-color@5.5.0)
+      '@babel/traverse': 7.28.3
     transitivePeerDependencies:
       - supports-color
 
@@ -12849,14 +12955,14 @@ snapshots:
       '@babel/core': 7.28.3
       '@babel/helper-plugin-utils': 7.27.1
       '@babel/helper-remap-async-to-generator': 7.27.1(@babel/core@7.28.3)
-      '@babel/traverse': 7.28.3(supports-color@5.5.0)
+      '@babel/traverse': 7.28.3
     transitivePeerDependencies:
       - supports-color
 
   '@babel/plugin-transform-async-to-generator@7.27.1(@babel/core@7.28.3)':
     dependencies:
       '@babel/core': 7.28.3
-      '@babel/helper-module-imports': 7.27.1(supports-color@5.5.0)
+      '@babel/helper-module-imports': 7.27.1
       '@babel/helper-plugin-utils': 7.27.1
       '@babel/helper-remap-async-to-generator': 7.27.1(@babel/core@7.28.3)
     transitivePeerDependencies:
@@ -12896,7 +13002,7 @@ snapshots:
       '@babel/helper-globals': 7.28.0
       '@babel/helper-plugin-utils': 7.27.1
       '@babel/helper-replace-supers': 7.27.1(@babel/core@7.28.3)
-      '@babel/traverse': 7.28.3(supports-color@5.5.0)
+      '@babel/traverse': 7.28.3
     transitivePeerDependencies:
       - supports-color
 
@@ -12910,7 +13016,7 @@ snapshots:
     dependencies:
       '@babel/core': 7.28.3
       '@babel/helper-plugin-utils': 7.27.1
-      '@babel/traverse': 7.28.3(supports-color@5.5.0)
+      '@babel/traverse': 7.28.3
     transitivePeerDependencies:
       - supports-color
 
@@ -12967,7 +13073,7 @@ snapshots:
       '@babel/core': 7.28.3
       '@babel/helper-compilation-targets': 7.27.2
       '@babel/helper-plugin-utils': 7.27.1
-      '@babel/traverse': 7.28.3(supports-color@5.5.0)
+      '@babel/traverse': 7.28.3
     transitivePeerDependencies:
       - supports-color
 
@@ -13013,7 +13119,7 @@ snapshots:
       '@babel/helper-module-transforms': 7.28.3(@babel/core@7.28.3)
       '@babel/helper-plugin-utils': 7.27.1
       '@babel/helper-validator-identifier': 7.27.1
-      '@babel/traverse': 7.28.3(supports-color@5.5.0)
+      '@babel/traverse': 7.28.3
     transitivePeerDependencies:
       - supports-color
 
@@ -13053,7 +13159,7 @@ snapshots:
       '@babel/helper-plugin-utils': 7.27.1
       '@babel/plugin-transform-destructuring': 7.28.0(@babel/core@7.28.3)
       '@babel/plugin-transform-parameters': 7.27.7(@babel/core@7.28.3)
-      '@babel/traverse': 7.28.3(supports-color@5.5.0)
+      '@babel/traverse': 7.28.3
     transitivePeerDependencies:
       - supports-color
 
@@ -13131,7 +13237,7 @@ snapshots:
     dependencies:
       '@babel/core': 7.28.3
       '@babel/helper-annotate-as-pure': 7.27.3
-      '@babel/helper-module-imports': 7.27.1(supports-color@5.5.0)
+      '@babel/helper-module-imports': 7.27.1
       '@babel/helper-plugin-utils': 7.27.1
       '@babel/plugin-syntax-jsx': 7.27.1(@babel/core@7.28.3)
       '@babel/types': 7.28.2
@@ -13344,6 +13450,18 @@ snapshots:
       '@babel/code-frame': 7.27.1
       '@babel/parser': 7.28.3
       '@babel/types': 7.28.2
+
+  '@babel/traverse@7.28.3':
+    dependencies:
+      '@babel/code-frame': 7.27.1
+      '@babel/generator': 7.28.3
+      '@babel/helper-globals': 7.28.0
+      '@babel/parser': 7.28.3
+      '@babel/template': 7.27.2
+      '@babel/types': 7.28.2
+      debug: 4.4.1(supports-color@8.1.1)
+    transitivePeerDependencies:
+      - supports-color
 
   '@babel/traverse@7.28.3(supports-color@5.5.0)':
     dependencies:
@@ -13566,7 +13684,7 @@ snapshots:
 
   '@emotion/babel-plugin@11.13.5':
     dependencies:
-      '@babel/helper-module-imports': 7.27.1(supports-color@5.5.0)
+      '@babel/helper-module-imports': 7.27.1
       '@babel/runtime': 7.28.2
       '@emotion/hash': 0.9.2
       '@emotion/memoize': 0.9.0
@@ -13807,7 +13925,7 @@ snapshots:
   '@eslint/config-array@0.21.0':
     dependencies:
       '@eslint/object-schema': 2.1.6
-      debug: 4.4.1(supports-color@5.5.0)
+      debug: 4.4.1(supports-color@8.1.1)
       minimatch: 3.1.2
     transitivePeerDependencies:
       - supports-color
@@ -13821,7 +13939,7 @@ snapshots:
   '@eslint/eslintrc@3.3.1':
     dependencies:
       ajv: 6.12.6
-      debug: 4.4.1(supports-color@5.5.0)
+      debug: 4.4.1(supports-color@8.1.1)
       espree: 10.4.0
       globals: 14.0.0
       ignore: 5.3.2
@@ -14838,6 +14956,53 @@ snapshots:
   '@oxc-resolver/binding-win32-x64-msvc@5.3.0':
     optional: true
 
+  '@oxc-transform/binding-android-arm64@0.82.2':
+    optional: true
+
+  '@oxc-transform/binding-darwin-arm64@0.82.2':
+    optional: true
+
+  '@oxc-transform/binding-darwin-x64@0.82.2':
+    optional: true
+
+  '@oxc-transform/binding-freebsd-x64@0.82.2':
+    optional: true
+
+  '@oxc-transform/binding-linux-arm-gnueabihf@0.82.2':
+    optional: true
+
+  '@oxc-transform/binding-linux-arm-musleabihf@0.82.2':
+    optional: true
+
+  '@oxc-transform/binding-linux-arm64-gnu@0.82.2':
+    optional: true
+
+  '@oxc-transform/binding-linux-arm64-musl@0.82.2':
+    optional: true
+
+  '@oxc-transform/binding-linux-riscv64-gnu@0.82.2':
+    optional: true
+
+  '@oxc-transform/binding-linux-s390x-gnu@0.82.2':
+    optional: true
+
+  '@oxc-transform/binding-linux-x64-gnu@0.82.2':
+    optional: true
+
+  '@oxc-transform/binding-linux-x64-musl@0.82.2':
+    optional: true
+
+  '@oxc-transform/binding-wasm32-wasi@0.82.2':
+    dependencies:
+      '@napi-rs/wasm-runtime': 1.0.3
+    optional: true
+
+  '@oxc-transform/binding-win32-arm64-msvc@0.82.2':
+    optional: true
+
+  '@oxc-transform/binding-win32-x64-msvc@0.82.2':
+    optional: true
+
   '@oxlint-tsgolint/darwin-arm64@0.0.1':
     optional: true
 
@@ -14960,7 +15125,7 @@ snapshots:
       '@sanity/schema': link:packages/@sanity/schema
       '@sanity/types': link:packages/@sanity/types
       '@xstate/react': 6.0.0(@types/react@19.1.10)(react@18.3.1)(xstate@5.20.2)
-      debug: 4.4.1(supports-color@5.5.0)
+      debug: 4.4.1(supports-color@8.1.1)
       get-random-values-esm: 1.0.2
       immer: 10.1.1
       lodash: 4.17.21
@@ -14988,7 +15153,7 @@ snapshots:
       '@sanity/schema': link:packages/@sanity/schema
       '@sanity/types': link:packages/@sanity/types
       '@xstate/react': 6.0.0(@types/react@19.1.10)(react@19.1.1)(xstate@5.20.2)
-      debug: 4.4.1(supports-color@5.5.0)
+      debug: 4.4.1(supports-color@8.1.1)
       get-random-values-esm: 1.0.2
       immer: 10.1.1
       lodash: 4.17.21
@@ -15081,7 +15246,7 @@ snapshots:
   '@rollup/plugin-babel@6.0.4(@babel/core@7.28.3)(@types/babel__core@7.20.5)(rollup@4.46.2)':
     dependencies:
       '@babel/core': 7.28.3
-      '@babel/helper-module-imports': 7.27.1(supports-color@5.5.0)
+      '@babel/helper-module-imports': 7.27.1
       '@rollup/pluginutils': 5.2.0(rollup@4.46.2)
     optionalDependencies:
       '@types/babel__core': 7.20.5
@@ -15382,12 +15547,12 @@ snapshots:
       uuid: 11.1.0
       xstate: 5.20.2
 
-  '@sanity/core-loader@1.8.17(@sanity/types@packages+@sanity+types)(typescript@5.7.3)':
+  '@sanity/core-loader@1.8.17(@sanity/types@packages+@sanity+types)(typescript@5.8.3)':
     dependencies:
       '@sanity/client': 7.8.2(debug@4.4.1)
       '@sanity/comlink': 3.0.9
-      '@sanity/presentation-comlink': 1.0.28(@sanity/client@7.8.2(debug@4.4.1))(@sanity/types@packages+@sanity+types)
-      '@sanity/visual-editing-csm': 2.0.23(@sanity/client@7.8.2)(@sanity/types@packages+@sanity+types)(typescript@5.7.3)
+      '@sanity/presentation-comlink': 1.0.28(@sanity/client@7.8.2)(@sanity/types@packages+@sanity+types)
+      '@sanity/visual-editing-csm': 2.0.23(@sanity/client@7.8.2)(@sanity/types@packages+@sanity+types)(typescript@5.8.3)
     transitivePeerDependencies:
       - '@sanity/types'
       - debug
@@ -15438,7 +15603,7 @@ snapshots:
       '@sanity/client': 7.8.2(debug@4.4.1)
       '@sanity/util': link:packages/@sanity/util
       archiver: 7.0.1
-      debug: 4.4.1(supports-color@5.5.0)
+      debug: 4.4.1(supports-color@8.1.1)
       get-it: 8.6.10(debug@4.4.1)
       json-stream-stringify: 2.0.4
       lodash: 4.17.21
@@ -15488,7 +15653,7 @@ snapshots:
       '@sanity/generate-help-url': 3.0.0
       '@sanity/mutator': 3.99.0(@types/react@19.1.10)
       '@sanity/uuid': 3.0.2
-      debug: 4.4.1(supports-color@5.5.0)
+      debug: 4.4.1(supports-color@8.1.1)
       file-url: 2.0.2
       get-it: 8.6.10(debug@4.4.1)
       get-uri: 2.0.4
@@ -15635,7 +15800,7 @@ snapshots:
       '@sanity/diff-match-patch': 3.2.0
       '@sanity/types': 3.99.0(@types/react@19.1.10)(debug@4.4.1)
       '@sanity/uuid': 3.0.2
-      debug: 4.4.1(supports-color@5.5.0)
+      debug: 4.4.1(supports-color@8.1.1)
       lodash: 4.17.21
     transitivePeerDependencies:
       - '@types/react'
@@ -15797,11 +15962,11 @@ snapshots:
       - debug
       - supports-color
 
-  '@sanity/presentation-comlink@1.0.28(@sanity/client@7.8.2(debug@4.4.1))(@sanity/types@packages+@sanity+types)':
+  '@sanity/presentation-comlink@1.0.28(@sanity/client@7.8.2)(@sanity/types@packages+@sanity+types)':
     dependencies:
       '@sanity/client': 7.8.2(debug@4.4.1)
       '@sanity/comlink': 3.0.9
-      '@sanity/visual-editing-types': 1.1.5(@sanity/client@7.8.2(debug@4.4.1))(@sanity/types@packages+@sanity+types)
+      '@sanity/visual-editing-types': 1.1.5(@sanity/client@7.8.2)(@sanity/types@packages+@sanity+types)
     transitivePeerDependencies:
       - '@sanity/types'
 
@@ -15810,16 +15975,16 @@ snapshots:
       prettier: 3.6.2
       prettier-plugin-packagejson: 2.5.19(prettier@3.6.2)
 
-  '@sanity/preview-url-secret@2.1.14(@sanity/client@7.8.2(debug@4.4.1))':
+  '@sanity/preview-url-secret@2.1.14(@sanity/client@7.8.2)':
     dependencies:
       '@sanity/client': 7.8.2(debug@4.4.1)
       '@sanity/uuid': 3.0.2
 
-  '@sanity/react-loader@1.11.18(@sanity/types@packages+@sanity+types)(react@19.1.1)(typescript@5.7.3)':
+  '@sanity/react-loader@1.11.18(@sanity/types@packages+@sanity+types)(react@19.1.1)(typescript@5.8.3)':
     dependencies:
       '@sanity/client': 7.8.2(debug@4.4.1)
-      '@sanity/core-loader': 1.8.17(@sanity/types@packages+@sanity+types)(typescript@5.7.3)
-      '@sanity/visual-editing-csm': 2.0.23(@sanity/client@7.8.2)(@sanity/types@packages+@sanity+types)(typescript@5.7.3)
+      '@sanity/core-loader': 1.8.17(@sanity/types@packages+@sanity+types)(typescript@5.8.3)
+      '@sanity/visual-editing-csm': 2.0.23(@sanity/client@7.8.2)(@sanity/types@packages+@sanity+types)(typescript@5.8.3)
       react: 19.1.1
     transitivePeerDependencies:
       - '@sanity/types'
@@ -16263,40 +16428,31 @@ snapshots:
       '@types/uuid': 8.3.4
       uuid: 8.3.2
 
-  '@sanity/visual-editing-csm@2.0.23(@sanity/client@7.8.2(debug@4.4.1))(@sanity/types@packages+@sanity+types)(typescript@5.8.3)':
+  '@sanity/visual-editing-csm@2.0.23(@sanity/client@7.8.2)(@sanity/types@packages+@sanity+types)(typescript@5.8.3)':
     dependencies:
       '@sanity/client': 7.8.2(debug@4.4.1)
-      '@sanity/visual-editing-types': 1.1.5(@sanity/client@7.8.2(debug@4.4.1))(@sanity/types@packages+@sanity+types)
+      '@sanity/visual-editing-types': 1.1.5(@sanity/client@7.8.2)(@sanity/types@packages+@sanity+types)
       valibot: 1.1.0(typescript@5.8.3)
     transitivePeerDependencies:
       - '@sanity/types'
       - typescript
 
-  '@sanity/visual-editing-csm@2.0.23(@sanity/client@7.8.2)(@sanity/types@packages+@sanity+types)(typescript@5.7.3)':
-    dependencies:
-      '@sanity/client': 7.8.2(debug@4.4.1)
-      '@sanity/visual-editing-types': 1.1.5(@sanity/client@7.8.2(debug@4.4.1))(@sanity/types@packages+@sanity+types)
-      valibot: 1.1.0(typescript@5.7.3)
-    transitivePeerDependencies:
-      - '@sanity/types'
-      - typescript
-
-  '@sanity/visual-editing-types@1.1.5(@sanity/client@7.8.2(debug@4.4.1))(@sanity/types@packages+@sanity+types)':
+  '@sanity/visual-editing-types@1.1.5(@sanity/client@7.8.2)(@sanity/types@packages+@sanity+types)':
     dependencies:
       '@sanity/client': 7.8.2(debug@4.4.1)
     optionalDependencies:
       '@sanity/types': link:packages/@sanity/types
 
-  '@sanity/visual-editing@3.0.2(@emotion/is-prop-valid@1.3.1)(@sanity/client@7.8.2)(@sanity/types@packages+@sanity+types)(react-dom@19.1.1(react@19.1.1))(react-is@19.1.1)(react@19.1.1)(styled-components@6.1.19(react-dom@19.1.1(react@19.1.1))(react@19.1.1))(typescript@5.7.3)':
+  '@sanity/visual-editing@3.0.2(@emotion/is-prop-valid@1.3.1)(@sanity/client@7.8.2)(@sanity/types@packages+@sanity+types)(react-dom@19.1.1(react@19.1.1))(react-is@19.1.1)(react@19.1.1)(styled-components@6.1.19(react-dom@19.1.1(react@19.1.1))(react@19.1.1))(typescript@5.8.3)':
     dependencies:
       '@sanity/comlink': 3.0.9
       '@sanity/icons': 3.7.4(react@19.1.1)
       '@sanity/insert-menu': 2.0.1(@emotion/is-prop-valid@1.3.1)(@sanity/types@packages+@sanity+types)(react-dom@19.1.1(react@19.1.1))(react-is@19.1.1)(react@19.1.1)(styled-components@6.1.19(react-dom@19.1.1(react@19.1.1))(react@19.1.1))
       '@sanity/mutate': 0.11.0-canary.4(xstate@5.20.2)
-      '@sanity/presentation-comlink': 1.0.28(@sanity/client@7.8.2(debug@4.4.1))(@sanity/types@packages+@sanity+types)
-      '@sanity/preview-url-secret': 2.1.14(@sanity/client@7.8.2(debug@4.4.1))
+      '@sanity/presentation-comlink': 1.0.28(@sanity/client@7.8.2)(@sanity/types@packages+@sanity+types)
+      '@sanity/preview-url-secret': 2.1.14(@sanity/client@7.8.2)
       '@sanity/ui': 3.0.7(@emotion/is-prop-valid@1.3.1)(react-dom@19.1.1(react@19.1.1))(react-is@19.1.1)(react@19.1.1)(styled-components@6.1.19(react-dom@19.1.1(react@19.1.1))(react@19.1.1))
-      '@sanity/visual-editing-csm': 2.0.23(@sanity/client@7.8.2)(@sanity/types@packages+@sanity+types)(typescript@5.7.3)
+      '@sanity/visual-editing-csm': 2.0.23(@sanity/client@7.8.2)(@sanity/types@packages+@sanity+types)(typescript@5.8.3)
       '@vercel/stega': 0.1.2
       get-random-values-esm: 1.0.2
       react: 19.1.1
@@ -16406,7 +16562,7 @@ snapshots:
       '@swc-node/sourcemap-support': 0.5.1
       '@swc/core': 1.13.3
       colorette: 2.0.20
-      debug: 4.4.1(supports-color@5.5.0)
+      debug: 4.4.1(supports-color@8.1.1)
       oxc-resolver: 5.3.0
       pirates: 4.0.7
       tslib: 2.8.1
@@ -16853,7 +17009,7 @@ snapshots:
       '@typescript-eslint/types': 8.39.1
       '@typescript-eslint/typescript-estree': 8.39.1(typescript@5.8.3)
       '@typescript-eslint/visitor-keys': 8.39.1
-      debug: 4.4.1(supports-color@5.5.0)
+      debug: 4.4.1(supports-color@8.1.1)
       eslint: 9.33.0(jiti@2.5.1)
       typescript: 5.8.3
     transitivePeerDependencies:
@@ -16863,7 +17019,7 @@ snapshots:
     dependencies:
       '@typescript-eslint/tsconfig-utils': 8.39.1(typescript@5.8.3)
       '@typescript-eslint/types': 8.39.1
-      debug: 4.4.1(supports-color@5.5.0)
+      debug: 4.4.1(supports-color@8.1.1)
       typescript: 5.8.3
     transitivePeerDependencies:
       - supports-color
@@ -16882,7 +17038,7 @@ snapshots:
       '@typescript-eslint/types': 8.39.1
       '@typescript-eslint/typescript-estree': 8.39.1(typescript@5.8.3)
       '@typescript-eslint/utils': 8.39.1(eslint@9.33.0(jiti@2.5.1))(typescript@5.8.3)
-      debug: 4.4.1(supports-color@5.5.0)
+      debug: 4.4.1(supports-color@8.1.1)
       eslint: 9.33.0(jiti@2.5.1)
       ts-api-utils: 2.1.0(typescript@5.8.3)
       typescript: 5.8.3
@@ -16897,7 +17053,7 @@ snapshots:
       '@typescript-eslint/tsconfig-utils': 8.39.1(typescript@5.8.3)
       '@typescript-eslint/types': 8.39.1
       '@typescript-eslint/visitor-keys': 8.39.1
-      debug: 4.4.1(supports-color@5.5.0)
+      debug: 4.4.1(supports-color@8.1.1)
       fast-glob: 3.3.3
       is-glob: 4.0.3
       minimatch: 9.0.5
@@ -17072,7 +17228,7 @@ snapshots:
       '@ampproject/remapping': 2.3.0
       '@bcoe/v8-coverage': 1.0.2
       ast-v8-to-istanbul: 0.3.4
-      debug: 4.4.1(supports-color@5.5.0)
+      debug: 4.4.1(supports-color@8.1.1)
       istanbul-lib-coverage: 3.2.2
       istanbul-lib-report: 3.0.1
       istanbul-lib-source-maps: 5.0.6
@@ -17240,7 +17396,7 @@ snapshots:
 
   agent-base@6.0.2:
     dependencies:
-      debug: 4.4.1(supports-color@5.5.0)
+      debug: 4.4.1(supports-color@8.1.1)
     transitivePeerDependencies:
       - supports-color
 
@@ -17643,7 +17799,7 @@ snapshots:
     dependencies:
       bytes: 3.1.2
       content-type: 1.0.5
-      debug: 4.4.1(supports-color@5.5.0)
+      debug: 4.4.1(supports-color@8.1.1)
       http-errors: 2.0.0
       iconv-lite: 0.6.3
       on-finished: 2.4.1
@@ -18490,12 +18646,12 @@ snapshots:
   depcheck@1.4.7:
     dependencies:
       '@babel/parser': 7.28.3
-      '@babel/traverse': 7.28.3(supports-color@5.5.0)
+      '@babel/traverse': 7.28.3
       '@vue/compiler-sfc': 3.5.18
       callsite: 1.0.0
       camelcase: 6.3.0
       cosmiconfig: 7.1.0
-      debug: 4.4.1(supports-color@5.5.0)
+      debug: 4.4.1(supports-color@8.1.1)
       deps-regex: 0.2.0
       findup-sync: 5.0.0
       ignore: 5.3.2
@@ -18802,14 +18958,14 @@ snapshots:
 
   esbuild-register@3.6.0(esbuild@0.24.2):
     dependencies:
-      debug: 4.4.1(supports-color@5.5.0)
+      debug: 4.4.1(supports-color@8.1.1)
       esbuild: 0.24.2
     transitivePeerDependencies:
       - supports-color
 
   esbuild-register@3.6.0(esbuild@0.25.9):
     dependencies:
-      debug: 4.4.1(supports-color@5.5.0)
+      debug: 4.4.1(supports-color@8.1.1)
       esbuild: 0.25.9
     transitivePeerDependencies:
       - supports-color
@@ -18921,7 +19077,7 @@ snapshots:
 
   eslint-import-resolver-typescript@4.4.4(eslint-plugin-import@2.32.0)(eslint@9.33.0(jiti@2.5.1)):
     dependencies:
-      debug: 4.4.1(supports-color@5.5.0)
+      debug: 4.4.1(supports-color@8.1.1)
       eslint: 9.33.0(jiti@2.5.1)
       eslint-import-context: 0.1.9(unrs-resolver@1.11.1)
       get-tsconfig: 4.10.1
@@ -19141,7 +19297,7 @@ snapshots:
       ajv: 6.12.6
       chalk: 4.1.2
       cross-spawn: 7.0.6
-      debug: 4.4.1(supports-color@5.5.0)
+      debug: 4.4.1(supports-color@8.1.1)
       escape-string-regexp: 4.0.0
       eslint-scope: 8.4.0
       eslint-visitor-keys: 4.2.1
@@ -19313,7 +19469,7 @@ snapshots:
       content-type: 1.0.5
       cookie: 0.7.2
       cookie-signature: 1.2.2
-      debug: 4.4.1(supports-color@5.5.0)
+      debug: 4.4.1(supports-color@8.1.1)
       encodeurl: 2.0.0
       escape-html: 1.0.3
       etag: 1.8.1
@@ -19472,7 +19628,7 @@ snapshots:
 
   finalhandler@2.1.0:
     dependencies:
-      debug: 4.4.1(supports-color@5.5.0)
+      debug: 4.4.1(supports-color@8.1.1)
       encodeurl: 2.0.0
       escape-html: 1.0.3
       on-finished: 2.4.1
@@ -19553,7 +19709,7 @@ snapshots:
 
   follow-redirects@1.15.11(debug@4.4.1):
     optionalDependencies:
-      debug: 4.4.1(supports-color@5.5.0)
+      debug: 4.4.1(supports-color@8.1.1)
 
   for-each@0.3.5:
     dependencies:
@@ -20002,7 +20158,7 @@ snapshots:
 
   groq-js@1.17.3:
     dependencies:
-      debug: 4.4.1(supports-color@5.5.0)
+      debug: 4.4.1(supports-color@8.1.1)
     transitivePeerDependencies:
       - supports-color
 
@@ -20170,28 +20326,28 @@ snapshots:
     dependencies:
       '@tootallnate/once': 2.0.0
       agent-base: 6.0.2
-      debug: 4.4.1(supports-color@5.5.0)
+      debug: 4.4.1(supports-color@8.1.1)
     transitivePeerDependencies:
       - supports-color
 
   http-proxy-agent@7.0.2:
     dependencies:
       agent-base: 7.1.4
-      debug: 4.4.1(supports-color@5.5.0)
+      debug: 4.4.1(supports-color@8.1.1)
     transitivePeerDependencies:
       - supports-color
 
   https-proxy-agent@5.0.1:
     dependencies:
       agent-base: 6.0.2
-      debug: 4.4.1(supports-color@5.5.0)
+      debug: 4.4.1(supports-color@8.1.1)
     transitivePeerDependencies:
       - supports-color
 
   https-proxy-agent@7.0.6:
     dependencies:
       agent-base: 7.1.4
-      debug: 4.4.1(supports-color@5.5.0)
+      debug: 4.4.1(supports-color@8.1.1)
     transitivePeerDependencies:
       - supports-color
 
@@ -20663,7 +20819,7 @@ snapshots:
   istanbul-lib-source-maps@5.0.6:
     dependencies:
       '@jridgewell/trace-mapping': 0.3.30
-      debug: 4.4.1(supports-color@5.5.0)
+      debug: 4.4.1(supports-color@8.1.1)
       istanbul-lib-coverage: 3.2.2
     transitivePeerDependencies:
       - supports-color
@@ -21003,7 +21159,7 @@ snapshots:
     dependencies:
       chalk: 5.5.0
       commander: 14.0.0
-      debug: 4.4.1(supports-color@5.5.0)
+      debug: 4.4.1(supports-color@8.1.1)
       lilconfig: 3.1.3
       listr2: 9.0.1
       micromatch: 4.0.8
@@ -21911,6 +22067,24 @@ snapshots:
       '@oxc-resolver/binding-wasm32-wasi': 5.3.0
       '@oxc-resolver/binding-win32-arm64-msvc': 5.3.0
       '@oxc-resolver/binding-win32-x64-msvc': 5.3.0
+
+  oxc-transform@0.82.2:
+    optionalDependencies:
+      '@oxc-transform/binding-android-arm64': 0.82.2
+      '@oxc-transform/binding-darwin-arm64': 0.82.2
+      '@oxc-transform/binding-darwin-x64': 0.82.2
+      '@oxc-transform/binding-freebsd-x64': 0.82.2
+      '@oxc-transform/binding-linux-arm-gnueabihf': 0.82.2
+      '@oxc-transform/binding-linux-arm-musleabihf': 0.82.2
+      '@oxc-transform/binding-linux-arm64-gnu': 0.82.2
+      '@oxc-transform/binding-linux-arm64-musl': 0.82.2
+      '@oxc-transform/binding-linux-riscv64-gnu': 0.82.2
+      '@oxc-transform/binding-linux-s390x-gnu': 0.82.2
+      '@oxc-transform/binding-linux-x64-gnu': 0.82.2
+      '@oxc-transform/binding-linux-x64-musl': 0.82.2
+      '@oxc-transform/binding-wasm32-wasi': 0.82.2
+      '@oxc-transform/binding-win32-arm64-msvc': 0.82.2
+      '@oxc-transform/binding-win32-x64-msvc': 0.82.2
 
   oxlint-tsgolint@0.0.1:
     optionalDependencies:
@@ -23004,7 +23178,7 @@ snapshots:
 
   rollup-plugin-esbuild@6.2.1(esbuild@0.24.2)(rollup@4.46.2):
     dependencies:
-      debug: 4.4.1(supports-color@5.5.0)
+      debug: 4.4.1(supports-color@8.1.1)
       es-module-lexer: 1.7.0
       esbuild: 0.24.2
       get-tsconfig: 4.10.1
@@ -23049,7 +23223,7 @@ snapshots:
 
   router@2.2.0:
     dependencies:
-      debug: 4.4.1(supports-color@5.5.0)
+      debug: 4.4.1(supports-color@8.1.1)
       depd: 2.0.0
       is-promise: 4.0.0
       parseurl: 1.3.3
@@ -23277,7 +23451,7 @@ snapshots:
 
   send@1.2.0:
     dependencies:
-      debug: 4.4.1(supports-color@5.5.0)
+      debug: 4.4.1(supports-color@8.1.1)
       encodeurl: 2.0.0
       escape-html: 1.0.3
       etag: 1.8.1
@@ -23516,7 +23690,7 @@ snapshots:
   socks-proxy-agent@8.0.5:
     dependencies:
       agent-base: 7.1.4
-      debug: 4.4.1(supports-color@5.5.0)
+      debug: 4.4.1(supports-color@8.1.1)
       socks: 2.8.7
     transitivePeerDependencies:
       - supports-color
@@ -24143,7 +24317,7 @@ snapshots:
   tuf-js@2.2.1:
     dependencies:
       '@tufjs/models': 2.0.1
-      debug: 4.4.1(supports-color@5.5.0)
+      debug: 4.4.1(supports-color@8.1.1)
       make-fetch-happen: 13.0.1
     transitivePeerDependencies:
       - supports-color
@@ -24505,10 +24679,6 @@ snapshots:
 
   v8-compile-cache-lib@3.0.1: {}
 
-  valibot@1.1.0(typescript@5.7.3):
-    optionalDependencies:
-      typescript: 5.7.3
-
   valibot@1.1.0(typescript@5.8.3):
     optionalDependencies:
       typescript: 5.8.3
@@ -24529,7 +24699,7 @@ snapshots:
   vite-node@3.2.4(@types/node@22.17.2)(jiti@2.5.1)(terser@5.43.1)(tsx@4.20.4)(yaml@2.8.1):
     dependencies:
       cac: 6.7.14
-      debug: 4.4.1(supports-color@5.5.0)
+      debug: 4.4.1(supports-color@8.1.1)
       es-module-lexer: 1.7.0
       pathe: 2.0.3
       vite: 7.1.2(@types/node@22.17.2)(jiti@2.5.1)(terser@5.43.1)(tsx@4.20.4)(yaml@2.8.1)
@@ -24550,7 +24720,7 @@ snapshots:
   vite-node@3.2.4(@types/node@24.3.0)(jiti@2.5.1)(terser@5.43.1)(tsx@4.20.4)(yaml@2.8.1):
     dependencies:
       cac: 6.7.14
-      debug: 4.4.1(supports-color@5.5.0)
+      debug: 4.4.1(supports-color@8.1.1)
       es-module-lexer: 1.7.0
       pathe: 2.0.3
       vite: 7.1.2(@types/node@24.3.0)(jiti@2.5.1)(terser@5.43.1)(tsx@4.20.4)(yaml@2.8.1)
@@ -24570,7 +24740,7 @@ snapshots:
 
   vite-tsconfig-paths@5.1.4(typescript@5.8.3)(vite@7.1.2(@types/node@22.17.2)(jiti@2.5.1)(terser@5.43.1)(tsx@4.20.4)(yaml@2.8.1)):
     dependencies:
-      debug: 4.4.1(supports-color@5.5.0)
+      debug: 4.4.1(supports-color@8.1.1)
       globrex: 0.1.2
       tsconfck: 3.1.6(typescript@5.8.3)
     optionalDependencies:
@@ -24581,7 +24751,7 @@ snapshots:
 
   vite-tsconfig-paths@5.1.4(typescript@5.8.3)(vite@7.1.2(@types/node@24.3.0)(jiti@2.5.1)(terser@5.43.1)(tsx@4.20.4)(yaml@2.8.1)):
     dependencies:
-      debug: 4.4.1(supports-color@5.5.0)
+      debug: 4.4.1(supports-color@8.1.1)
       globrex: 0.1.2
       tsconfck: 3.1.6(typescript@5.8.3)
     optionalDependencies:
@@ -24638,7 +24808,7 @@ snapshots:
       '@vitest/spy': 3.2.4
       '@vitest/utils': 3.2.4
       chai: 5.2.1
-      debug: 4.4.1(supports-color@5.5.0)
+      debug: 4.4.1(supports-color@8.1.1)
       expect-type: 1.2.2
       magic-string: 0.30.17
       pathe: 2.0.3
@@ -24681,7 +24851,7 @@ snapshots:
       '@vitest/spy': 3.2.4
       '@vitest/utils': 3.2.4
       chai: 5.2.1
-      debug: 4.4.1(supports-color@5.5.0)
+      debug: 4.4.1(supports-color@8.1.1)
       expect-type: 1.2.2
       magic-string: 0.30.17
       pathe: 2.0.3
