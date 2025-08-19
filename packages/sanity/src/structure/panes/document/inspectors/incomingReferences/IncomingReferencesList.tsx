@@ -86,6 +86,10 @@ function getIncomingReferences({
 
 export function IncomingReferencesList() {
   const {documentId, documentType} = useDocumentPane()
+  const schema = useSchema()
+  const schemaType = schema.get(documentType)
+  const referencedBy = schemaType?.options?.referencedBy as string[] | undefined
+
   const documentPreviewStore = useDocumentPreviewStore()
   const publishedId = getPublishedId(documentId)
   const references$ = useMemo(
@@ -94,45 +98,59 @@ export function IncomingReferencesList() {
   )
   const references = useObservable(references$, INITIAL_STATE)
 
-  if (references.loading) {
-    return <LoadingBlock showText title={'Loading documents'} />
-  }
-
-  if (references.list.length === 0) {
+  if (!referencedBy || referencedBy?.length === 0) {
     return (
       <Box padding={2}>
-        <Card border radius={2} padding={1} tone="default">
+        <Card border radius={3} padding={1} tone="default">
           <Box paddingY={3} paddingX={2}>
             <Text size={1} muted>
-              No incoming references found
+              No incoming references defined for this type, see the docs for more information.
             </Text>
           </Box>
         </Card>
       </Box>
     )
   }
-
+  if (references.loading) {
+    return <LoadingBlock showText title={'Loading documents'} />
+  }
   return (
     <>
-      {references.list.map((type) => (
-        <Stack key={type.type} padding={2} space={1} marginBottom={2}>
-          <Flex align="center" justify="space-between" paddingBottom={2} gap={2}>
-            <TypeTitle type={type.type} />
-            <CreateNewIncomingReference
-              type={type.type}
-              referenceToType={documentType}
-              referenceToId={documentId}
-            />
-          </Flex>
-          {type.documents.map((document) => (
-            <IncomingReferenceDocument
-              key={document._id}
-              document={document}
-              referenceToId={documentId}
-            />
-          ))}
-        </Stack>
-      ))}
+      {referencedBy.map((type) => {
+        const documents = references.list.find((list) => list.type === type)?.documents
+
+        return (
+          <Stack key={type} padding={2} space={1} marginBottom={2}>
+            <Flex align="center" justify="space-between" paddingBottom={2} gap={2}>
+              <TypeTitle type={type} />
+              <CreateNewIncomingReference
+                type={type.type}
+                referenceToType={documentType}
+                referenceToId={documentId}
+              />
+            </Flex>
+            {documents && documents.length > 0 ? (
+              documents.map((document) => (
+                <IncomingReferenceDocument
+                  key={document._id}
+                  document={document}
+                  referenceToId={documentId}
+                />
+              ))
+            ) : (
+              <Box padding={0}>
+                <Card border radius={3} padding={1} tone="default">
+                  <Box paddingY={3} paddingX={2}>
+                    <Text size={1} muted>
+                      No references of this type found.
+                    </Text>
+                  </Box>
+                </Card>
+              </Box>
+            )}
+          </Stack>
+        )
+      })}
     </>
   )
 }

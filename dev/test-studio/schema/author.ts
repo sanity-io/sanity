@@ -12,7 +12,9 @@ export default defineType({
   type: 'document',
   title: 'Author',
   icon,
-  description: 'This represents an author',
+  options: {
+    referencedBy: ['author', 'book'],
+  },
   preview: {
     select: {
       title: 'name',
