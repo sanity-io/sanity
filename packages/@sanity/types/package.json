@@ -60,6 +60,7 @@
     "@sanity/insert-menu": "2.0.1",
     "@types/react": "catalog:",
     "@vitejs/plugin-react": "catalog:",
+    "i18next": "catalog:",
     "react": "catalog:react18",
     "rimraf": "^5.0.10",
     "vitest": "^3.2.4"

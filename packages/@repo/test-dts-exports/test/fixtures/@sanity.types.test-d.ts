@@ -209,6 +209,9 @@ import type {
   isValidationWarningMarker,
   KeyedObject,
   KeyedSegment,
+  Locale,
+  LocaleSource,
+  LocaleWeekInfo,
   LocalizedValidationMessages,
   MaybeAllowUnknownProps,
   MaybePreview,
@@ -322,6 +325,7 @@ import type {
   TextOptions,
   TextRule,
   TextSchemaType,
+  TFunction,
   TitledListValue,
   TransactionLogEvent,
   TransactionLogEventWithEffects,
@@ -968,6 +972,15 @@ describe('@sanity/types', () => {
   test('KeyedSegment', () => {
     expectTypeOf<KeyedSegment>().not.toBeNever()
   })
+  test('Locale', () => {
+    expectTypeOf<Locale>().toBeObject()
+  })
+  test('LocaleSource', () => {
+    expectTypeOf<LocaleSource>().toBeObject()
+  })
+  test('LocaleWeekInfo', () => {
+    expectTypeOf<LocaleWeekInfo>().toBeObject()
+  })
   test('LocalizedValidationMessages', () => {
     expectTypeOf<LocalizedValidationMessages>().toBeObject()
   })
@@ -1306,6 +1319,9 @@ describe('@sanity/types', () => {
   })
   test('TextSchemaType', () => {
     expectTypeOf<TextSchemaType>().toBeObject()
+  })
+  test('TFunction', () => {
+    expectTypeOf<TFunction<any, any>>().toBeObject()
   })
   test('TitledListValue', () => {
     expectTypeOf<TitledListValue<any>>().toBeObject()

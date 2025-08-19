@@ -5,6 +5,7 @@ import {
 } from '@sanity/media-library-types'
 
 import {type SanityDocument} from '../documents'
+import {type LocaleSource} from '../i18n'
 import {type ValidationMarker} from '../markers'
 import {type Path} from '../paths'
 import {
@@ -281,6 +282,12 @@ export interface ValidationContext {
   path?: Path
   getDocumentExists?: (options: {id: string}) => Promise<boolean>
   environment: 'cli' | 'studio'
+  /**
+   * Internationalization utilities, for translation of validation messages
+   *
+   * See {@link LocaleSource} for details.
+   */
+  i18n: LocaleSource
 }
 
 /**

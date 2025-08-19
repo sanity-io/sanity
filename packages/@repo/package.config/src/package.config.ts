@@ -17,6 +17,11 @@ export default defineConfig({
         allowMultiple: true,
         syntaxKind: 'block',
       },
+      {
+        name: 'default',
+        allowMultiple: true,
+        syntaxKind: 'block',
+      },
     ],
     rules: {
       // Disable rules for now

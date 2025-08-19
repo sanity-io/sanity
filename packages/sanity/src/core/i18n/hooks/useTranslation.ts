@@ -1,5 +1,6 @@
 /* eslint-disable @sanity/i18n/no-i18next-import */
-import {type FlatNamespace, type KeyPrefix, type Namespace, type TFunction} from 'i18next'
+import {type TFunction} from '@sanity/types'
+import {type FlatNamespace, type KeyPrefix, type Namespace} from 'i18next'
 import {type FallbackNs, useTranslation as useOriginalTranslation} from 'react-i18next'
 
 import {maybeWrapT} from '../debug'

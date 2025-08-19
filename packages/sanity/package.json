@@ -220,7 +220,7 @@
     "groq-js": "^1.17.3",
     "gunzip-maybe": "^1.4.2",
     "history": "^5.3.0",
-    "i18next": "^23.16.8",
+    "i18next": "catalog:",
     "import-fresh": "^3.3.1",
     "is-hotkey-esm": "^1.0.0",
     "is-tar": "^1.0.0",
