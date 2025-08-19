@@ -9,7 +9,9 @@ import {type ObjectDefinition} from './object'
  *
  * @public
  */
-export interface DocumentOptions extends BaseSchemaTypeOptions {}
+export interface DocumentOptions extends BaseSchemaTypeOptions {
+  referencedBy?: string[]
+}
 
 /** @public */
 export interface DocumentRule extends RuleDef<DocumentRule, SanityDocument> {}
@@ -22,7 +24,13 @@ export interface DocumentDefinition extends Omit<ObjectDefinition, 'type'> {
   orderings?: SortOrdering[]
   options?: DocumentOptions
   validation?: ValidationBuilder<DocumentRule, SanityDocument>
-  initialValue?: InitialValueProperty<any, Record<string, unknown>>
+  initialValue?: InitialValueProperty<
+    {
+      referencedBy?: string
+      [key: string]: unknown
+    },
+    Record<string, unknown>
+  >
   /** @deprecated Unused. Use the new field-level search config. */
   __experimental_search?: {path: string; weight: number; mapWith?: string}[]
   /** @alpha */

@@ -195,15 +195,18 @@ export default defineType({
     },
   ],
 
-  initialValue: () => ({
-    name: 'Foo',
-    bestFriend: {_type: 'reference', _ref: 'foo-bar'},
-    image: {
-      _type: 'image',
-      asset: {
-        _ref: 'image-8dcc1391e06e4b4acbdc6bbf2e8c8588d537cbb8-4896x3264-jpg',
-        _type: 'reference',
+  initialValue: (params) => {
+    const referencedBy = params?.referencedBy
+    return {
+      name: 'Foo',
+      bestFriend: {_type: 'reference', _ref: referencedBy ?? 'foo-bar'},
+      image: {
+        _type: 'image',
+        asset: {
+          _ref: 'image-8dcc1391e06e4b4acbdc6bbf2e8c8588d537cbb8-4896x3264-jpg',
+          _type: 'reference',
+        },
       },
-    },
-  }),
+    }
+  },
 })

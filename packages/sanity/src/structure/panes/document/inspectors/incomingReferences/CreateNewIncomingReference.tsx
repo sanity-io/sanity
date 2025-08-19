@@ -12,15 +12,12 @@ import {useRouter} from 'sanity/router'
 
 import {Button} from '../../../../../ui-components'
 import {usePaneRouter} from '../../../../components/paneRouter/usePaneRouter'
-import {getReferenceToPath} from './getReferenceToPath'
 
 export function CreateNewIncomingReference({
   type,
-  referenceToType,
   referenceToId,
 }: {
   type: string
-  referenceToType: string
   referenceToId: string
 }) {
   const schema = useSchema()
@@ -49,11 +46,6 @@ export function CreateNewIncomingReference({
   const {routerPanesState, groupIndex} = usePaneRouter()
 
   const handleClick = useCallback(() => {
-    const referenceToPath = getReferenceToPath({schemaType: schemaType!, referenceToType})
-    if (!referenceToPath) {
-      // TODO: Add an error message, this should not happen.
-      return
-    }
     const id = uuid()
     navigate({
       panes: [
@@ -63,24 +55,13 @@ export function CreateNewIncomingReference({
             id: getPublishedId(id),
             params: {type, template: templateItems[0].templateId},
             payload: {
-              additionalValues: {
-                [referenceToPath.path]: {_type: referenceToPath.typeName, _ref: referenceToId},
-              },
+              referencedBy: referenceToId,
             },
           },
         ],
       ],
     })
-  }, [
-    type,
-    navigate,
-    routerPanesState,
-    groupIndex,
-    templateItems,
-    referenceToId,
-    referenceToType,
-    schemaType,
-  ])
+  }, [type, navigate, routerPanesState, groupIndex, templateItems, referenceToId])
 
   if (!schemaType) {
     return null

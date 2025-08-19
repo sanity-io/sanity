@@ -123,11 +123,7 @@ export function IncomingReferencesList() {
           <Stack key={type} padding={2} space={1} marginBottom={2}>
             <Flex align="center" justify="space-between" paddingBottom={2} gap={2}>
               <TypeTitle type={type} />
-              <CreateNewIncomingReference
-                type={type.type}
-                referenceToType={documentType}
-                referenceToId={documentId}
-              />
+              <CreateNewIncomingReference type={type} referenceToId={documentId} />
             </Flex>
             {documents && documents.length > 0 ? (
               documents.map((document) => (
