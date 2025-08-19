@@ -18,11 +18,14 @@ async function ArrayFromAsync<T>(asyncIterable: AsyncIterable<T>) {
 }
 
 describe('findQueriesInPath', () => {
-  test('Can find queries in path', async () => {
+  test.only('Can find queries in path', async () => {
     const {queries} = findQueriesInPath({
       path: path.join('**', 'typescript', '__tests__', 'fixtures', 'source1.ts'),
     })
     const res = await ArrayFromAsync(queries)
+
+    console.log(res.at(0)?.errors.at(0))
+
     expect(res.length).toBe(1)
     expect(res[0].queries.length).toBe(1)
     // filename can be either of these two
@@ -31,6 +34,7 @@ describe('findQueriesInPath', () => {
     expect(res[0].queries[0].variable.id.name).toBe('postQuery')
     expect(res[0].queries[0].query).toBe('*[_type == "author"]')
   })
+
   test('should return an error if the query name already exists', async () => {
     const {queries} = findQueriesInPath({
       path: path.join('**', 'fixtures', '{source1,source2}.ts'),
