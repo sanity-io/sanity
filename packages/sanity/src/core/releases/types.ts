@@ -11,12 +11,12 @@ export type ExtendedReleaseMetadata = BaseReleaseDocument['metadata'] & {
   cardinality?: CardinalityType
 }
 
-/** @internal */
+/** @beta */
 export type StudioReleaseDocument = BaseReleaseDocument & {
   metadata: ExtendedReleaseMetadata
 }
 
-/** @internal */
+/** @beta */
 export type EditableStudioReleaseDocument = BaseEditableReleaseDocument & {
   metadata: ExtendedReleaseMetadata
 }
