@@ -118,10 +118,9 @@ export default defineType({
   ],
 
   initialValue: (params) => {
-    const referencedBy = params?.referencedBy
     return {
       name: 'Foo',
-      bestFriend: {_type: 'reference', _ref: referencedBy ?? 'foo-bar'},
+      bestFriend: params?.reference || {_type: 'reference', _ref: 'foo-bar'},
       image: {
         _type: 'image',
         asset: {
