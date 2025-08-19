@@ -30,7 +30,6 @@ interface PopoverEditDialogProps {
 const NoopContainer = ({children, ...props}: PropsWithChildren) => (
   <div
     {...props}
-    style={{maxHeight: '60vh'}}
     // Makes the div focusable so clicking on the popover will move the focus away from the input once focus lock is active
     // Solves an issue when scrolling the popover and then clicking outside of the input will scroll back the popover to the input.
     tabIndex={-1}
