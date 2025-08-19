@@ -1,5 +1,4 @@
-/* eslint-disable @sanity/i18n/no-i18next-import */
-import {type TFunction} from 'i18next'
+import {type TFunction} from '@sanity/types'
 import {type ComponentType, type ReactNode, useMemo} from 'react'
 
 import {useListFormat} from '../hooks/useListFormat'

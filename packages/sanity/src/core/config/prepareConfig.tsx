@@ -1,6 +1,11 @@
 import {fromUrl} from '@sanity/bifur-client'
 import {createClient, type SanityClient} from '@sanity/client'
-import {type CurrentUser, type Schema, type SchemaValidationProblem} from '@sanity/types'
+import {
+  type CurrentUser,
+  type LocaleSource,
+  type Schema,
+  type SchemaValidationProblem,
+} from '@sanity/types'
 import {studioTheme} from '@sanity/ui'
 import debugit from 'debug'
 // eslint-disable-next-line @sanity/i18n/no-i18next-import -- figure out how to have the linter be fine with importing types-only
@@ -18,7 +23,6 @@ import {
   createSanityMediaLibraryFileSource,
   createSanityMediaLibraryImageSource,
 } from '../form/studio/assetSourceMediaLibrary'
-import {type LocaleSource} from '../i18n'
 import {prepareI18n} from '../i18n/i18nConfig'
 import {createSchema} from '../schema'
 import {type AuthStore, createAuthStore, isAuthStore} from '../store/_legacy'

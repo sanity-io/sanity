@@ -1,4 +1,5 @@
 /* eslint-disable @sanity/i18n/no-i18next-import */
+import {type LocaleSource, type Locale} from '@sanity/types'
 import {createInstance as createI18nInstance, type i18n, type InitOptions} from 'i18next'
 import {initReactI18next} from 'react-i18next'
 
@@ -10,12 +11,7 @@ import {DEBUG_I18N, maybeWrapT} from './debug'
 import {studioLocaleNamespace} from './localeNamespaces'
 import {defaultLocale} from './locales'
 import {getPreferredLocale} from './localeStore'
-import {
-  type Locale,
-  type LocaleDefinition,
-  type LocaleResourceBundle,
-  type LocaleSource,
-} from './types'
+import {type LocaleDefinition, type LocaleResourceBundle} from './types'
 
 /**
  * @internal

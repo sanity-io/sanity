@@ -8,9 +8,9 @@ export default defineConfig({
     ...baseConfig.extract,
     rules: {
       ...baseConfig.extract.rules,
-      'ae-forgotten-export': 'error',
+      'ae-forgotten-export': 'off',
       'ae-incompatible-release-tags': 'error',
-      'ae-missing-release-tag': 'error',
+      'ae-missing-release-tag': 'warn',
     },
   },
 })

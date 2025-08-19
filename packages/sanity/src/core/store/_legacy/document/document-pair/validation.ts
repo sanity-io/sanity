@@ -1,12 +1,11 @@
 import {type SanityClient} from '@sanity/client'
-import {type Schema} from '@sanity/types'
+import {type LocaleSource, type Schema} from '@sanity/types'
 import {omit} from 'lodash'
 import {asyncScheduler, type Observable} from 'rxjs'
 import {distinctUntilChanged, map, shareReplay, throttleTime} from 'rxjs/operators'
 import shallowEquals from 'shallow-equals'
 
 import {type SourceClientOptions} from '../../../../config'
-import {type LocaleSource} from '../../../../i18n'
 import {type DraftsModelDocumentAvailability} from '../../../../preview'
 import {validateDocumentWithReferences, type ValidationStatus} from '../../../../validation'
 import {type DocumentStoreExtraOptions} from '../getPairListener'

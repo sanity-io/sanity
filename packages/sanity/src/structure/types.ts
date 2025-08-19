@@ -1,4 +1,4 @@
-import {type SchemaType} from '@sanity/types'
+import {type LocaleSource, type SchemaType} from '@sanity/types'
 import {type Observable} from 'rxjs'
 import {
   type ConfigContext,
@@ -7,7 +7,6 @@ import {
   type GeneralPreviewLayoutKey,
   type I18nTextRecord,
   type InitialValueTemplateItem,
-  type LocaleSource,
   type PerspectiveStack,
 } from 'sanity'
 

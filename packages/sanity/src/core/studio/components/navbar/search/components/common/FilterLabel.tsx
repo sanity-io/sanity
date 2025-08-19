@@ -1,9 +1,10 @@
+import {type TFunction} from '@sanity/types'
 import {Box, Flex} from '@sanity/ui'
 import {useMemo} from 'react'
 import {styled} from 'styled-components'
 
 import {TextWithTone} from '../../../../../../components'
-import {type TFunction, useTranslation} from '../../../../../../i18n'
+import {useTranslation} from '../../../../../../i18n'
 import {Translate, type TranslateComponentMap} from '../../../../../../i18n/Translate'
 import {isRecord} from '../../../../../../util'
 import {useSearchState} from '../../contexts/search/useSearchState'

@@ -11,8 +11,6 @@ import {
   Stack,
   Text,
 } from '@sanity/ui'
-// eslint-disable-next-line @sanity/i18n/no-i18next-import -- figure out how to have the linter be fine with importing types-only
-import {type TFunction} from 'i18next'
 import {type ComponentProps, type ComponentType, useCallback, useMemo} from 'react'
 import {
   type DocumentLayoutProps,
@@ -29,6 +27,7 @@ import {
   isReleaseScheduledOrScheduling,
   ReleaseAvatar,
   type ReleaseDocument,
+  type TFunction,
   useActiveReleases,
   useDocumentVersions,
   useEditState,

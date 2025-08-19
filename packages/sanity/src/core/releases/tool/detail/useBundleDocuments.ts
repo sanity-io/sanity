@@ -1,6 +1,7 @@
 import {type ReleaseDocument} from '@sanity/client'
 import {
   isValidationErrorMarker,
+  type LocaleSource,
   type PreviewValue,
   type SanityDocument,
   type Schema,
@@ -25,7 +26,6 @@ import {
 import {mergeMapArray} from 'rxjs-mergemap-array'
 
 import {useSchema} from '../../../hooks'
-import {type LocaleSource} from '../../../i18n/types'
 import {type PerspectiveStack} from '../../../perspective/types'
 import {usePerspective} from '../../../perspective/usePerspective'
 import {type DocumentPreviewStore, prepareForPreview} from '../../../preview'

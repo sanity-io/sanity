@@ -1,7 +1,7 @@
-import {type Image} from '@sanity/types'
+import {type Image, type TFunction} from '@sanity/types'
 import {Box, Card, Text} from '@sanity/ui'
 
-import {type TFunction, useTranslation} from '../../../../i18n'
+import {useTranslation} from '../../../../i18n'
 import {
   ChangeList,
   DiffCard,
