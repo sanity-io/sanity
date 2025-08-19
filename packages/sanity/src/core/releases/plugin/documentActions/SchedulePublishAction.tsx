@@ -8,6 +8,7 @@ import {
   type DocumentActionProps,
 } from '../../../config/document/actions'
 import {useTranslation} from '../../../i18n'
+import {useDocumentPreviewValues} from '../../../tasks/hooks/useDocumentPreviewValues'
 import {ScheduleDraftDialog} from '../../components/dialog/ScheduleDraftDialog'
 import {useScheduleDraftOperations} from '../../hooks/useScheduleDraftOperations'
 import {releasesLocaleNamespace} from '../../i18n'
@@ -18,10 +19,16 @@ import {releasesLocaleNamespace} from '../../i18n'
 export const SchedulePublishAction: DocumentActionComponent = (
   props: DocumentActionProps,
 ): DocumentActionDescription | null => {
-  const {id} = props
+  const {id, type} = props
   const {t} = useTranslation(releasesLocaleNamespace)
   const {schedulePublish} = useScheduleDraftOperations()
   const toast = useToast()
+
+  // Get document preview values to extract the title
+  const {value: previewValues} = useDocumentPreviewValues({
+    documentId: id,
+    documentType: type,
+  })
 
   const [dialogOpen, setDialogOpen] = useState(false)
   const [isScheduling, setIsScheduling] = useState(false)
@@ -39,7 +46,9 @@ export const SchedulePublishAction: DocumentActionComponent = (
       setIsScheduling(true)
 
       try {
-        await schedulePublish(id, publishAt)
+        // Pass the document title from preview values
+        const documentTitle = previewValues?.title || undefined
+        await schedulePublish(id, publishAt, documentTitle)
 
         toast.push({
           closable: true,
@@ -65,7 +74,7 @@ export const SchedulePublishAction: DocumentActionComponent = (
         setIsScheduling(false)
       }
     },
-    [id, schedulePublish, toast, t],
+    [id, schedulePublish, previewValues?.title, toast, t],
   )
 
   return {
@@ -84,6 +93,7 @@ export const SchedulePublishAction: DocumentActionComponent = (
           description={t('schedule-publish-dialog.description')}
           confirmButtonText={t('schedule-publish-dialog.confirm')}
           confirmButtonTone="primary"
+          loading={isScheduling}
         />
       ),
     },
