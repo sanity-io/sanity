@@ -1,10 +1,10 @@
-import {type ReleaseDocument} from '@sanity/client'
 import {type Mock, vi} from 'vitest'
 
+import {type StudioReleaseDocument} from '../../../types'
 import {useActiveReleases} from '../../useActiveReleases'
 
 export const useActiveReleasesMockReturn = {
-  data: [] as ReleaseDocument[],
+  data: [] as StudioReleaseDocument[],
   error: undefined as Error | undefined,
   loading: false,
   dispatch: vi.fn(),

@@ -1,8 +1,8 @@
-import {type ReleaseDocument} from '@sanity/client'
 import {useMemo} from 'react'
 import {useObservable} from 'react-rx'
 
 import {sortReleases} from '../hooks/utils'
+import {type StudioReleaseDocument} from '../types'
 import {useReleasesStore} from './useReleasesStore'
 
 /**
@@ -10,7 +10,7 @@ import {useReleasesStore} from './useReleasesStore'
  * @internal
  */
 export function useAllReleases(): {
-  data: ReleaseDocument[]
+  data: StudioReleaseDocument[]
   error?: Error
   loading: boolean
 } {
