@@ -26,7 +26,14 @@ export interface DocumentDefinition extends Omit<ObjectDefinition, 'type'> {
   validation?: ValidationBuilder<DocumentRule, SanityDocument>
   initialValue?: InitialValueProperty<
     {
-      referencedBy?: string
+      reference?: {
+        _type: 'reference'
+        _ref: string
+        _weak: true
+        _strengthenOnPublish?: {
+          type: string
+        }
+      }
       [key: string]: unknown
     },
     Record<string, unknown>
