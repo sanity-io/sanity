@@ -505,10 +505,10 @@ importers:
     dependencies:
       '@portabletext/block-tools':
         specifier: ^3.2.1
-        version: 3.2.1(@sanity/schema@packages+@sanity+schema)(@sanity/types@packages+@sanity+types)(@types/react@19.1.10)
+        version: 3.3.0(@sanity/schema@packages+@sanity+schema)(@sanity/types@packages+@sanity+types)(@types/react@19.1.10)
       '@portabletext/editor':
-        specifier: ^2.3.8
-        version: 2.3.8(@portabletext/sanity-bridge@1.1.2(@sanity/schema@packages+@sanity+schema)(@sanity/types@packages+@sanity+types))(@sanity/schema@packages+@sanity+schema)(@sanity/types@packages+@sanity+types)(@types/react@19.1.10)(react-dom@19.1.1(react@19.1.1))(react@19.1.1)(rxjs@7.8.2)
+        specifier: ^2.4.0
+        version: 2.4.0(@portabletext/sanity-bridge@1.1.2(@sanity/schema@packages+@sanity+schema)(@sanity/types@packages+@sanity+types))(@sanity/schema@packages+@sanity+schema)(@sanity/types@packages+@sanity+types)(@types/react@19.1.10)(react-dom@19.1.1(react@19.1.1))(react@19.1.1)(rxjs@7.8.2)
       '@portabletext/react':
         specifier: ^3.2.1
         version: 3.2.1(react@19.1.1)
@@ -1640,10 +1640,10 @@ importers:
         version: 3.5.3(@types/react-dom@19.1.7(@types/react@19.1.10))(@types/react@19.1.10)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
       '@portabletext/block-tools':
         specifier: ^3.2.1
-        version: 3.2.1(@sanity/schema@packages+@sanity+schema)(@sanity/types@packages+@sanity+types)(@types/react@19.1.10)
+        version: 3.3.0(@sanity/schema@packages+@sanity+schema)(@sanity/types@packages+@sanity+types)(@types/react@19.1.10)
       '@portabletext/editor':
-        specifier: ^2.3.8
-        version: 2.3.8(@portabletext/sanity-bridge@1.1.2(@sanity/schema@packages+@sanity+schema)(@sanity/types@packages+@sanity+types))(@sanity/schema@packages+@sanity+schema)(@sanity/types@packages+@sanity+types)(@types/react@19.1.10)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(rxjs@7.8.2)
+        specifier: ^2.4.0
+        version: 2.4.0(@portabletext/sanity-bridge@1.1.2(@sanity/schema@packages+@sanity+schema)(@sanity/types@packages+@sanity+types))(@sanity/schema@packages+@sanity+schema)(@sanity/types@packages+@sanity+types)(@types/react@19.1.10)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(rxjs@7.8.2)
       '@portabletext/react':
         specifier: ^3.2.1
         version: 3.2.1(react@18.3.1)
@@ -4334,19 +4334,19 @@ packages:
     resolution: {integrity: sha512-c83qWb22rNRuB0UaVCI0uRPNRr8Z0FWnEIvT47jiHAmOIUHbBOg5XvV7pM5x+rKn9HRpjxquDbXYSXr3fAKFcw==}
     engines: {node: '>=12'}
 
-  '@portabletext/block-tools@3.2.1':
-    resolution: {integrity: sha512-ExtvQC5Z63QevruxS9GDidqP1whUTgWDlx314TNu5pYNcF986r2IatoVuB9y6MrXw8XzQvCnjIFgSlGWnCS/XQ==}
+  '@portabletext/block-tools@3.3.0':
+    resolution: {integrity: sha512-FL3v8fOnOhGvpCkS3IQK4jWV9XGgrmbWOV4eaDH6I4vC5HTqz9J3dZRuL2KJ+ebSydnC2d0F6iijUVySLcKbvA==}
     peerDependencies:
-      '@sanity/types': ^4.4.1
+      '@sanity/types': ^4.5.0
       '@types/react': ^18.3 || ^19
 
-  '@portabletext/editor@2.3.8':
-    resolution: {integrity: sha512-T2cx2sHekiV700Su2dyxOyYuxv2E9hjIlPYz2PhHjDHWvCjSlYK00tI5pXmUZN5MgsIXXZzr2CP6tw27Af4yFw==}
+  '@portabletext/editor@2.4.0':
+    resolution: {integrity: sha512-WfzSQKqopqZAjosuzJNz6p6JbqKszjvyVGRij5G0naYWBMpYWZGP5a8QyFHLCkF+lKDlqjA0/VoeUrhIiawF9w==}
     engines: {node: '>=20.19 <22 || >=22.12'}
     peerDependencies:
       '@portabletext/sanity-bridge': ^1.1.2
-      '@sanity/schema': ^4.4.1
-      '@sanity/types': ^4.4.1
+      '@sanity/schema': ^4.5.0
+      '@sanity/types': ^4.5.0
       react: ^18.3 || ^19
       rxjs: ^7.8.2
 
@@ -14807,7 +14807,7 @@ snapshots:
       '@pnpm/network.ca-file': 1.0.2
       config-chain: 1.1.13
 
-  '@portabletext/block-tools@3.2.1(@sanity/schema@packages+@sanity+schema)(@sanity/types@packages+@sanity+types)(@types/react@19.1.10)':
+  '@portabletext/block-tools@3.3.0(@sanity/schema@packages+@sanity+schema)(@sanity/types@packages+@sanity+types)(@types/react@19.1.10)':
     dependencies:
       '@portabletext/sanity-bridge': 1.1.2(@sanity/schema@packages+@sanity+schema)(@sanity/types@packages+@sanity+types)
       '@portabletext/schema': 1.0.0
@@ -14818,9 +14818,9 @@ snapshots:
     transitivePeerDependencies:
       - '@sanity/schema'
 
-  '@portabletext/editor@2.3.8(@portabletext/sanity-bridge@1.1.2(@sanity/schema@packages+@sanity+schema)(@sanity/types@packages+@sanity+types))(@sanity/schema@packages+@sanity+schema)(@sanity/types@packages+@sanity+types)(@types/react@19.1.10)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(rxjs@7.8.2)':
+  '@portabletext/editor@2.4.0(@portabletext/sanity-bridge@1.1.2(@sanity/schema@packages+@sanity+schema)(@sanity/types@packages+@sanity+types))(@sanity/schema@packages+@sanity+schema)(@sanity/types@packages+@sanity+types)(@types/react@19.1.10)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(rxjs@7.8.2)':
     dependencies:
-      '@portabletext/block-tools': 3.2.1(@sanity/schema@packages+@sanity+schema)(@sanity/types@packages+@sanity+types)(@types/react@19.1.10)
+      '@portabletext/block-tools': 3.3.0(@sanity/schema@packages+@sanity+schema)(@sanity/types@packages+@sanity+types)(@types/react@19.1.10)
       '@portabletext/keyboard-shortcuts': 1.1.1
       '@portabletext/patches': 1.1.6
       '@portabletext/sanity-bridge': 1.1.2(@sanity/schema@packages+@sanity+schema)(@sanity/types@packages+@sanity+types)
@@ -14846,9 +14846,9 @@ snapshots:
       - react-dom
       - supports-color
 
-  '@portabletext/editor@2.3.8(@portabletext/sanity-bridge@1.1.2(@sanity/schema@packages+@sanity+schema)(@sanity/types@packages+@sanity+types))(@sanity/schema@packages+@sanity+schema)(@sanity/types@packages+@sanity+types)(@types/react@19.1.10)(react-dom@19.1.1(react@19.1.1))(react@19.1.1)(rxjs@7.8.2)':
+  '@portabletext/editor@2.4.0(@portabletext/sanity-bridge@1.1.2(@sanity/schema@packages+@sanity+schema)(@sanity/types@packages+@sanity+types))(@sanity/schema@packages+@sanity+schema)(@sanity/types@packages+@sanity+types)(@types/react@19.1.10)(react-dom@19.1.1(react@19.1.1))(react@19.1.1)(rxjs@7.8.2)':
     dependencies:
-      '@portabletext/block-tools': 3.2.1(@sanity/schema@packages+@sanity+schema)(@sanity/types@packages+@sanity+types)(@types/react@19.1.10)
+      '@portabletext/block-tools': 3.3.0(@sanity/schema@packages+@sanity+schema)(@sanity/types@packages+@sanity+types)(@types/react@19.1.10)
       '@portabletext/keyboard-shortcuts': 1.1.1
       '@portabletext/patches': 1.1.6
       '@portabletext/sanity-bridge': 1.1.2(@sanity/schema@packages+@sanity+schema)(@sanity/types@packages+@sanity+types)
