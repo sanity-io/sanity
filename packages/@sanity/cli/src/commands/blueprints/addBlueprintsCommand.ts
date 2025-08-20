@@ -6,7 +6,7 @@ Arguments
 
 Options
   --name, -n <name>              Name of the Resource
-  --fn-type <type>               Type of Function to add (e.g. document-publish)
+  --fn-type <type>               Type of Function to add. Available options: "document-create", "document-delete", "document-update", "document-publish". Default: "document-publish"
   --fn-language, --lang <ts|js>  Language of the Function. Default: "ts"
   --js, --javascript             Shortcut for --fn-language=js
   --fn-helpers, --helpers        Add helpers to the Function
@@ -23,7 +23,7 @@ Examples:
   sanity blueprints add function --name my-function -i --helpers
 
   # Add a Function with a specific type
-  sanity blueprints add function --fn-type document-publish
+  sanity blueprints add function --fn-type document-create
 
   # Add a Function using an example
   sanity blueprints add function --example example-name
@@ -73,7 +73,7 @@ const addBlueprintsCommand: CliCommandDefinition<BlueprintsAddFlags> = {
   group: 'blueprints',
   helpText,
   signature:
-    '<type> [--name <name>] [--fn-type <document-publish>] [--fn-lang <ts|js>] [--javascript]',
+    '<type> [--name <name>] [--fn-type <document-create|document-delete|document-update|document-publish>] [--fn-lang <ts|js>] [--javascript]',
   description: 'Add a Resource to a Blueprint',
 
   async action(args, context) {
