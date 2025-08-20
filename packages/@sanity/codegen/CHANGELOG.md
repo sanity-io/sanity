@@ -3,6 +3,16 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [4.5.0](https://github.com/sanity-io/sanity/compare/v4.4.1...v4.5.0) (2025-08-19)
+
+
+### Bug Fixes
+
+* **codegen:** import json5 via default to match ESM entry ([#10388](https://github.com/sanity-io/sanity/issues/10388)) ([35861c6](https://github.com/sanity-io/sanity/commit/35861c68d7eeb7bbb2719cda6828576423796255))
+* **deps:** Update babel monorepo to ^7.28.3 ([#10301](https://github.com/sanity-io/sanity/issues/10301)) ([cb6718b](https://github.com/sanity-io/sanity/commit/cb6718b8ef05a003336aa0ac7bf42d092d8205ae))
+
+
+
 ## [4.4.1](https://github.com/sanity-io/sanity/compare/v4.4.0...v4.4.1) (2025-08-14)
 
 

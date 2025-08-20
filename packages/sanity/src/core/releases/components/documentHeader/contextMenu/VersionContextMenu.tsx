@@ -116,10 +116,6 @@ export const VersionContextMenu = memo(function VersionContextMenu(props: {
                   as="a"
                   onClick={() => onCreateVersion(release._id)}
                   renderMenuItem={() => <VersionContextMenuItem release={release} />}
-                  disabled={disabled}
-                  tooltipProps={{
-                    content: t('release.tooltip.locked'),
-                  }}
                 />
               )
             })}

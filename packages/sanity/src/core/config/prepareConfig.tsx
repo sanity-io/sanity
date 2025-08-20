@@ -44,6 +44,7 @@ import {
   initialDocumentActions,
   initialDocumentBadges,
   initialLanguageFilter,
+  internalQuotaExcludedReleasesEnabledReducer,
   internalTasksReducer,
   legacySearchEnabledReducer,
   mediaLibraryEnabledReducer,
@@ -70,6 +71,7 @@ import {
   type MissingConfigFile,
   type PluginOptions,
   type PreparedConfig,
+  QUOTA_EXCLUDED_RELEASES_ENABLED,
   type SingleWorkspace,
   type Source,
   type SourceClientOptions,
@@ -355,6 +357,10 @@ function resolveSource({
     projectId,
     schema,
     i18n: i18n.source,
+    [QUOTA_EXCLUDED_RELEASES_ENABLED]: internalQuotaExcludedReleasesEnabledReducer({
+      config,
+      initialValue: false,
+    }),
   }
 
   // <TEMPORARY UGLY HACK TO PRINT DEPRECATION WARNINGS ON USE>

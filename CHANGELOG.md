@@ -3,6 +3,34 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [4.5.0](https://github.com/sanity-io/sanity/compare/v4.4.1...v4.5.0) (2025-08-19)
+
+
+### Features
+
+* add schedule publish and unpublish noop actions for draft documents ([#10287](https://github.com/sanity-io/sanity/issues/10287)) ([c1220b3](https://github.com/sanity-io/sanity/commit/c1220b3f2ff5cf3a3f1741943c8ca322395081b0))
+* draft perspective chip copies from published when  no draft exists ([#10305](https://github.com/sanity-io/sanity/issues/10305)) ([2d9c836](https://github.com/sanity-io/sanity/commit/2d9c8365cae543492ffbe93167fdcafc2e552e2d))
+* **sanity:** add `advancedVersionControl.enabled` configuration option ([#10277](https://github.com/sanity-io/sanity/issues/10277)) ([81bc5b1](https://github.com/sanity-io/sanity/commit/81bc5b1e735571647dd2a553b256a8b32783e79e))
+
+
+### Bug Fixes
+
+* **ci:** add concurrency for release-next job ([#10373](https://github.com/sanity-io/sanity/issues/10373)) ([87ef760](https://github.com/sanity-io/sanity/commit/87ef7603dbb4563efa779631393d918e995544b8))
+* **codegen:** import json5 via default to match ESM entry ([#10388](https://github.com/sanity-io/sanity/issues/10388)) ([35861c6](https://github.com/sanity-io/sanity/commit/35861c68d7eeb7bbb2719cda6828576423796255))
+* **core:** use intent link for comments notification url ([#10299](https://github.com/sanity-io/sanity/issues/10299)) ([4866d59](https://github.com/sanity-io/sanity/commit/4866d59fd537c5d1edfc7a9186340da9a6d005fd))
+* **deps:** Update babel monorepo to ^7.28.3 ([#10301](https://github.com/sanity-io/sanity/issues/10301)) ([cb6718b](https://github.com/sanity-io/sanity/commit/cb6718b8ef05a003336aa0ac7bf42d092d8205ae))
+* **deps:** update dependency @portabletext/block-tools to ^3.2.0 ([#10297](https://github.com/sanity-io/sanity/issues/10297)) ([b50678b](https://github.com/sanity-io/sanity/commit/b50678bd519d80a083b9f01efd8ac846a5502b4a))
+* **deps:** update dependency @portabletext/block-tools to ^3.2.1 ([#10384](https://github.com/sanity-io/sanity/issues/10384)) ([6a1f726](https://github.com/sanity-io/sanity/commit/6a1f72614fb2cbb6851fd5951a7ea57c0177a32f))
+* **deps:** update dependency @portabletext/editor to ^2.3.7 ([#10284](https://github.com/sanity-io/sanity/issues/10284)) ([213dc36](https://github.com/sanity-io/sanity/commit/213dc369b728db58327fa3c1f9c5792e5dcbe1d3))
+* **deps:** update dependency @portabletext/editor to ^2.3.8 ([#10389](https://github.com/sanity-io/sanity/issues/10389)) ([60e179c](https://github.com/sanity-io/sanity/commit/60e179c22b152059bab11bd006d58af1b2e6ef1f))
+* **deps:** Update dev-non-major ([#10302](https://github.com/sanity-io/sanity/issues/10302)) ([3f1c7d1](https://github.com/sanity-io/sanity/commit/3f1c7d147e691083eec47e108591b93619ac19c6))
+* **deps:** Update linters ([#10395](https://github.com/sanity-io/sanity/issues/10395)) ([763a98d](https://github.com/sanity-io/sanity/commit/763a98d8e703436760f166566b9e5f8510b1ded4))
+* release chips don't need to handle scheduled case ([#10374](https://github.com/sanity-io/sanity/issues/10374)) ([eaf6359](https://github.com/sanity-io/sanity/commit/eaf6359e708d1f936a22fc26a9531bf999a6dce5))
+* remove unused initialValue parameter from createVersion method ([#10391](https://github.com/sanity-io/sanity/issues/10391)) ([4278419](https://github.com/sanity-io/sanity/commit/427841940267b4450f3064b4c77c2c2bbd6114e8))
+* **schema:** mark image data as required, for typegen ([#10285](https://github.com/sanity-io/sanity/issues/10285)) ([af2ce7b](https://github.com/sanity-io/sanity/commit/af2ce7be07dd3d5795ca8a5c66422295b41c8712))
+
+
+
 ## [4.4.1](https://github.com/sanity-io/sanity/compare/v4.4.0...v4.4.1) (2025-08-14)
 
 
