@@ -52,14 +52,12 @@ const getActiveReleaseDocumentsObservable = ({
   i18n,
   getClient,
   releaseId,
-  perspectiveStack: _perspectiveStack,
 }: {
   schema: Schema
   documentPreviewStore: DocumentPreviewStore
   i18n: LocaleSource
   getClient: ReturnType<typeof useSource>['getClient']
   releaseId: string
-  perspectiveStack: PerspectiveStack
 }): ReleaseDocumentsObservableResult => {
   const groqFilter = `sanity::partOfRelease($releaseId)`
 
@@ -236,7 +234,6 @@ const getReleaseDocumentsObservable = ({
         i18n,
         getClient,
         releaseId,
-        perspectiveStack,
       })
     }),
     startWith({loading: true, results: [], error: null}),
