@@ -11,36 +11,10 @@ import {createHookFromObservableFactory} from '../../../util'
 import {CustomLogo, providerLogos} from './providerLogos'
 import {type LoginComponentProps} from './types'
 
+const SANITY_LAST_USED_PROVIDER_KEY = 'sanity:last_used_provider'
+
 interface GetProvidersOptions extends AuthConfig {
   client: SanityClient
-}
-
-interface UserData {
-  id?: string
-  givenName?: string
-  familyName?: string
-  name?: string
-  email?: string
-  profileImage?: string
-  tosAcceptedAt?: string
-  provider?: string
-}
-
-async function getGlobalUserData(client: SanityClient) {
-  const apiHost = client.config().apiHost
-  try {
-    const response = await fetch(`${apiHost}/vX/users/me`, {
-      method: 'GET',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      credentials: 'include',
-    })
-
-    return response.json()
-  } catch (error) {
-    return undefined
-  }
 }
 
 async function getProviders({
@@ -128,10 +102,7 @@ export function createLoginComponent({
     const redirectPath = props.redirectPath || props.basePath || '/'
 
     const [providers, setProviders] = useState<AuthProvider[] | null>(null)
-    const [userData, setUserData] = useState<{isLoading: boolean; data?: UserData}>({
-      isLoading: true,
-      data: undefined,
-    })
+    const [lastUsedProvider, setLastUsedProvider] = useState<AuthProvider>()
     const [error, setError] = useState<unknown>(null)
     if (error) throw error
 
@@ -146,15 +117,10 @@ export function createLoginComponent({
     }, [client])
 
     useEffect(() => {
-      if (!client) return
-
-      getGlobalUserData(client).then((data) => {
-        setUserData({
-          isLoading: false,
-          data,
-        })
-      })
-    }, [client])
+      const providerName = localStorage.getItem(SANITY_LAST_USED_PROVIDER_KEY)
+      const provider = providers?.find(({name}) => name === providerName)
+      if (provider) setLastUsedProvider(provider)
+    }, [providers])
 
     // only create a direct URL if `redirectOnSingle` is true and there is only
     // one provider available
@@ -169,7 +135,7 @@ export function createLoginComponent({
         redirectPath,
       })
 
-    const loading = userData.isLoading || !providers || redirectUrlForRedirectOnSingle
+    const loading = !providers || redirectUrlForRedirectOnSingle
 
     useEffect(() => {
       if (redirectUrlForRedirectOnSingle) {
@@ -177,8 +143,7 @@ export function createLoginComponent({
       }
     }, [redirectUrlForRedirectOnSingle])
 
-    const lastUsedProvider = providers?.find(({name}) => name === userData.data?.provider)
-    const providerList = providers?.filter(({name}) => name !== userData.data?.provider)
+    const providerList = providers?.filter(({name}) => name !== lastUsedProvider?.name)
 
     if (loading) {
       return <LoadingBlock showText />
@@ -257,6 +222,10 @@ function ProviderButton({
     [autoFocus],
   )
 
+  const handleProviderSelect = useCallback(() => {
+    localStorage.setItem(SANITY_LAST_USED_PROVIDER_KEY, provider.name)
+  }, [provider])
+
   const ProviderLogo = providerLogos[provider.name] || CustomLogo
 
   return (
@@ -268,9 +237,9 @@ function ProviderButton({
       size="large"
       tone={tone}
       style={{width: '100%'}}
-      tooltipProps={{}}
       text={provider.title}
       icon={<ProviderLogo provider={provider} />}
+      onClick={handleProviderSelect}
     />
   )
 }
