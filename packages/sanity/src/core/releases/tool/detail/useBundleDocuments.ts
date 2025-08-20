@@ -18,8 +18,6 @@ import {mergeMapArray} from 'rxjs-mergemap-array'
 
 import {useSchema} from '../../../hooks'
 import {type LocaleSource} from '../../../i18n/types'
-import {type PerspectiveStack} from '../../../perspective/types'
-import {usePerspective} from '../../../perspective/usePerspective'
 import {type DocumentPreviewStore} from '../../../preview'
 import {useDocumentPreviewStore} from '../../../store/_legacy/datastores'
 import {useSource} from '../../../studio'
@@ -137,13 +135,9 @@ const getActiveReleaseDocumentsObservable = ({
 
 const getPublishedArchivedReleaseDocumentsObservable = ({
   getClient,
-  schema: _schema,
-  documentPreviewStore: _documentPreviewStore,
   release,
 }: {
   getClient: ReturnType<typeof useSource>['getClient']
-  schema: Schema
-  documentPreviewStore: DocumentPreviewStore
   release: ReleaseDocument
 }): ReleaseDocumentsObservableResult => {
   const client = getClient(RELEASES_STUDIO_CLIENT_OPTIONS)
@@ -202,7 +196,6 @@ const getReleaseDocumentsObservable = ({
   releaseId,
   i18n,
   releasesState$,
-  perspectiveStack,
 }: {
   schema: Schema
   documentPreviewStore: DocumentPreviewStore
@@ -210,7 +203,6 @@ const getReleaseDocumentsObservable = ({
   releaseId: string
   i18n: LocaleSource
   releasesState$: ReturnType<typeof useReleasesStore>['state$']
-  perspectiveStack: PerspectiveStack
 }): ReleaseDocumentsObservableResult =>
   releasesState$.pipe(
     map((releasesState) =>
@@ -221,8 +213,6 @@ const getReleaseDocumentsObservable = ({
     switchMap((release) => {
       if (release.state === 'published' || release.state === 'archived') {
         return getPublishedArchivedReleaseDocumentsObservable({
-          schema,
-          documentPreviewStore,
           getClient,
           release,
         })
@@ -248,7 +238,6 @@ export function useBundleDocuments(releaseId: string): {
   const {getClient, i18n} = useSource()
   const schema = useSchema()
   const {state$: releasesState$} = useReleasesStore()
-  const {perspectiveStack} = usePerspective()
 
   const releaseDocumentsObservable = useMemo(
     () =>
@@ -259,9 +248,8 @@ export function useBundleDocuments(releaseId: string): {
         releaseId,
         i18n,
         releasesState$,
-        perspectiveStack,
       }),
-    [schema, documentPreviewStore, getClient, releaseId, i18n, releasesState$, perspectiveStack],
+    [schema, documentPreviewStore, getClient, releaseId, i18n, releasesState$],
   )
 
   return useObservable(releaseDocumentsObservable, {loading: true, results: [], error: null})
