@@ -101,26 +101,54 @@ export function createLoginComponent({
   function LoginComponent({projectId, ...props}: LoginComponentProps) {
     const redirectPath = props.redirectPath || props.basePath || '/'
 
-    const [providers, setProviders] = useState<AuthProvider[] | null>(null)
-    const [lastUsedProvider, setLastUsedProvider] = useState<AuthProvider>()
+    const [providerData, setProviderData] = useState<{
+      providers: AuthProvider[]
+      lastUsedProvider?: AuthProvider
+      isLoading: boolean
+    }>({
+      providers: [],
+      isLoading: true,
+    })
+
     const [error, setError] = useState<unknown>(null)
     if (error) throw error
 
     const [client] = useClient()
 
+    const getProviderData = useCallback(async () => {
+      let providers = [] as AuthProvider[]
+
+      if (!client) return []
+
+      try {
+        providers = await getProviders({client, ...providerOptions})
+      } catch (err) {
+        setError(err)
+      }
+
+      return providers
+    }, [client])
+
+    const getLastUsedProvider = useCallback((providerList: AuthProvider[]) => {
+      // only set last used provider if there are mutiple providers
+      if (!providerList || providerList.length <= 1) return undefined
+      const providerName = localStorage.getItem(SANITY_LAST_USED_PROVIDER_KEY)
+      return providerList?.find(({name}) => name === providerName)
+    }, [])
+
     useEffect(() => {
       if (!client) return
 
-      getProviders({client, ...providerOptions})
-        .then(setProviders)
-        .catch(setError)
-    }, [client])
+      const setup = async () => {
+        const providers = await getProviderData()
+        const lastUsedProvider = getLastUsedProvider(providers)
+        setProviderData({providers, lastUsedProvider, isLoading: false})
+      }
 
-    useEffect(() => {
-      const providerName = localStorage.getItem(SANITY_LAST_USED_PROVIDER_KEY)
-      const provider = providers?.find(({name}) => name === providerName)
-      if (provider) setLastUsedProvider(provider)
-    }, [providers])
+      setup()
+    }, [client, getLastUsedProvider, getProviderData])
+
+    const {providers, lastUsedProvider, isLoading} = providerData
 
     // only create a direct URL if `redirectOnSingle` is true and there is only
     // one provider available
@@ -135,15 +163,15 @@ export function createLoginComponent({
         redirectPath,
       })
 
-    const loading = !providers || redirectUrlForRedirectOnSingle
+    const loading = isLoading || redirectUrlForRedirectOnSingle
+
+    const providerList = providers.filter(({name}) => name !== lastUsedProvider?.name)
 
     useEffect(() => {
       if (redirectUrlForRedirectOnSingle) {
         window.location.href = redirectUrlForRedirectOnSingle
       }
     }, [redirectUrlForRedirectOnSingle])
-
-    const providerList = providers?.filter(({name}) => name !== lastUsedProvider?.name)
 
     if (loading) {
       return <LoadingBlock showText />
@@ -197,7 +225,7 @@ function LastUsedProviderButton(props: {href: string; provider: AuthProvider}) {
         Last used
       </Badge>
       <ProviderButton autoFocus tone="primary" {...props} />
-      <Text size={0} style={{alignSelf: 'center', margin: '13px 0 13px 0'}}>
+      <Text size={0} align="center" style={{margin: '13px 0 13px 0'}}>
         OR
       </Text>
     </Flex>
