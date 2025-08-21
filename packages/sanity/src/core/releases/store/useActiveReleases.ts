@@ -1,8 +1,8 @@
+import {type ReleaseDocument} from '@sanity/client'
 import {useMemo} from 'react'
 import {useObservable} from 'react-rx'
 
 import {sortReleases} from '../hooks/utils'
-import {type StudioReleaseDocument} from '../types'
 import {ARCHIVED_RELEASE_STATES} from '../util/const'
 import {type ReleasesReducerAction} from './reducer'
 import {useReleasesStore} from './useReleasesStore'
@@ -11,7 +11,7 @@ interface ReleasesState {
   /**
    * Sorted array of releases, excluding archived releases
    */
-  data: StudioReleaseDocument[]
+  data: ReleaseDocument[]
   error?: Error
   loading: boolean
   dispatch: (event: ReleasesReducerAction) => void

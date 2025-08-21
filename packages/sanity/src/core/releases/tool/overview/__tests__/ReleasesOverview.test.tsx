@@ -45,7 +45,6 @@ import {
   useReleasesMetadataMockReturn,
 } from '../../../store/__tests__/__mocks/useReleasesMetadata.mock'
 import {type ReleasesMetadata} from '../../../store/useReleasesMetadata'
-import {type StudioReleaseDocument} from '../../../types'
 import {useBundleDocumentsMockReturnWithResults} from '../../detail/__tests__/__mocks__/useBundleDocuments.mock'
 import {ReleasesOverview} from '../ReleasesOverview'
 
@@ -288,7 +287,7 @@ describe('ReleasesOverview', () => {
     })
 
     it('filters out releases with cardinality "one"', async () => {
-      const releaseWithCardinalityOne: StudioReleaseDocument = {
+      const releaseWithCardinalityOne: ReleaseDocument = {
         ...activeASAPRelease,
         _id: '_.releases.rCardinalityOne',
         metadata: {
@@ -327,7 +326,7 @@ describe('ReleasesOverview', () => {
     })
 
     it('filters out archived releases with cardinality "one"', async () => {
-      const archivedReleaseWithCardinalityOne: StudioReleaseDocument = {
+      const archivedReleaseWithCardinalityOne: ReleaseDocument = {
         ...archivedScheduledRelease,
         _id: '_.releases.rArchivedCardinalityOne',
         metadata: {

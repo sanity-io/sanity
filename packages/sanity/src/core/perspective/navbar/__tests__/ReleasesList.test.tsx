@@ -1,3 +1,4 @@
+import {type ReleaseDocument} from '@sanity/client'
 import {Menu} from '@sanity/ui'
 import {fireEvent, render, screen, waitFor} from '@testing-library/react'
 import {beforeEach, describe, expect, it, vi} from 'vitest'
@@ -19,7 +20,6 @@ import {
   useReleasesPermissionsMockReturnFalse,
   useReleasesPermissionsMockReturnTrue,
 } from '../../../releases/store/__tests__/__mocks/useReleasePermissions.mock'
-import {type StudioReleaseDocument} from '../../../releases/types'
 import {ReleasesList} from '../ReleasesList'
 
 vi.mock('../../../releases/contexts/upsell/useReleasesUpsell', () => ({
@@ -79,7 +79,7 @@ describe('ReleasesList', () => {
 
   describe('when releases with cardinality filtering are enabled', () => {
     beforeEach(async () => {
-      const releaseWithCardinalityOne: StudioReleaseDocument = {
+      const releaseWithCardinalityOne: ReleaseDocument = {
         ...activeASAPRelease,
         _id: '_.releases.rCardinalityOne',
         metadata: {
