@@ -11,8 +11,8 @@ import {
   isPublishedPerspective,
   isReleaseScheduledOrScheduling,
   isVersionId,
+  type ReleaseDocument,
   type SanityDocumentLike,
-  type StudioReleaseDocument,
   Translate,
   useActiveReleases,
   useDateTimeFormat,
@@ -31,7 +31,7 @@ import {usePaneRouter} from '../../../../../components/paneRouter/usePaneRouter'
 import {useFilteredReleases} from '../../../../../hooks/useFilteredReleases'
 import {useDocumentPane} from '../../../useDocumentPane'
 
-const TooltipContent = ({release}: {release: StudioReleaseDocument}) => {
+const TooltipContent = ({release}: {release: ReleaseDocument}) => {
   const {t} = useTranslation()
 
   if (release.state === 'archived') {
@@ -122,7 +122,7 @@ export const DocumentPerspectiveList = memo(function DocumentPerspectiveList() {
   }, [isLiveEdit, selectedReleaseId, editState?.published])
 
   const getReleaseChipState = useCallback(
-    (release: StudioReleaseDocument): {selected: boolean; disabled?: boolean} => {
+    (release: ReleaseDocument): {selected: boolean; disabled?: boolean} => {
       if (!params?.historyVersion) {
         const isCurrentVersionGoingToUnpublish =
           editState?.version &&

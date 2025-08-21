@@ -4,7 +4,7 @@ import {
   formatRelativeLocalePublishDate,
   getReleaseTone,
   LATEST,
-  type StudioReleaseDocument,
+  type ReleaseDocument,
   Translate,
   useTranslation,
 } from 'sanity'
@@ -14,7 +14,7 @@ import {Banner} from './Banner'
 export function ScheduledReleaseBanner({
   currentRelease,
 }: {
-  currentRelease: StudioReleaseDocument
+  currentRelease: ReleaseDocument
 }): React.JSX.Element {
   const tone = getReleaseTone(currentRelease ?? LATEST)
 

@@ -11,8 +11,8 @@ import {
   isSanityCreateLinked,
   isSystemBundle,
   LegacyLayerProvider,
+  type ReleaseDocument,
   ScrollContainer,
-  type StudioReleaseDocument,
   usePerspective,
   useWorkspace,
   VirtualizerScrollInstanceProvider,
@@ -209,9 +209,7 @@ export const DocumentPanel = function DocumentPanel(props: DocumentPanelProps) {
     }
 
     if (documentInScheduledRelease) {
-      return (
-        <ScheduledReleaseBanner currentRelease={selectedPerspective as StudioReleaseDocument} />
-      )
+      return <ScheduledReleaseBanner currentRelease={selectedPerspective as ReleaseDocument} />
     }
     const isPinnedDraftOrPublish = isSystemBundle(selectedPerspective)
     const isCurrentVersionGoingToUnpublish =
@@ -228,7 +226,7 @@ export const DocumentPanel = function DocumentPanel(props: DocumentPanelProps) {
       return (
         <DocumentNotInReleaseBanner
           documentId={value._id}
-          currentRelease={selectedPerspective as StudioReleaseDocument}
+          currentRelease={selectedPerspective as ReleaseDocument}
           isScheduledRelease={isScheduledRelease}
         />
       )

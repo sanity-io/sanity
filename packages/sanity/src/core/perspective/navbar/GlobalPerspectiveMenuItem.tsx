@@ -1,3 +1,4 @@
+import {type ReleaseDocument} from '@sanity/client'
 import {DotIcon, ErrorOutlineIcon, EyeClosedIcon, EyeOpenIcon, LockIcon} from '@sanity/icons'
 // eslint-disable-next-line no-restricted-imports -- custom use for MenuItem & Button not supported by ui-components
 import {Box, Button, Flex, MenuItem, Stack, Text} from '@sanity/ui'
@@ -12,7 +13,6 @@ import {usePerspective} from '../../perspective/usePerspective'
 import {useSetPerspective} from '../../perspective/useSetPerspective'
 import {ReleaseAvatar} from '../../releases/components/ReleaseAvatar'
 import {isReleaseDocument} from '../../releases/store/types'
-import {type StudioReleaseDocument} from '../../releases/types'
 import {LATEST, PUBLISHED} from '../../releases/util/const'
 import {getReleaseIdFromReleaseDocumentId} from '../../releases/util/getReleaseIdFromReleaseDocumentId'
 import {getReleaseTone} from '../../releases/util/getReleaseTone'
@@ -86,7 +86,7 @@ export function getRangePosition(range: LayerRange, index: number): rangePositio
 export const GlobalPerspectiveMenuItem = forwardRef<
   HTMLDivElement,
   {
-    release: StudioReleaseDocument | 'published' | typeof LATEST
+    release: ReleaseDocument | 'published' | typeof LATEST
     rangePosition: rangePosition
     menuItemProps?: ReleasesNavMenuItemPropsGetter
   }

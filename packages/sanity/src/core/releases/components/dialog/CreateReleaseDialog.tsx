@@ -1,3 +1,4 @@
+import {type EditableReleaseDocument} from '@sanity/client'
 import {useTelemetry} from '@sanity/telemetry/react'
 import {Box, Card, Flex, useToast} from '@sanity/ui'
 import {type FormEvent, useCallback, useState} from 'react'
@@ -11,7 +12,6 @@ import {useGuardWithReleaseLimitUpsell} from '../../hooks/useGuardWithReleaseLim
 import {useReleaseFormStorage} from '../../hooks/useReleaseFormStorage'
 import {isReleaseLimitError} from '../../store/isReleaseLimitError'
 import {useReleaseOperations} from '../../store/useReleaseOperations'
-import {type EditableStudioReleaseDocument} from '../../types'
 import {getIsReleaseInvalid} from '../../util/getIsReleaseInvalid'
 import {getReleaseIdFromReleaseDocumentId} from '../../util/getReleaseIdFromReleaseDocumentId'
 import {getReleaseDefaults} from '../../util/util'
@@ -97,7 +97,7 @@ export function CreateReleaseDialog(props: CreateReleaseDialogProps): React.JSX.
     ],
   )
 
-  const handleOnChange = useCallback((releaseMetadata: EditableStudioReleaseDocument) => {
+  const handleOnChange = useCallback((releaseMetadata: EditableReleaseDocument) => {
     setRelease(releaseMetadata)
   }, [])
 
