@@ -1,4 +1,4 @@
-// eslint-disable-next-line no-restricted-imports -- Bundle Button requires more fine-grained styling than studio button
+import {type ReleaseDocument} from '@sanity/client'
 import {Box, Button, Text} from '@sanity/ui'
 import {motion} from 'framer-motion'
 import {
@@ -17,7 +17,6 @@ import {styled} from 'styled-components'
 import {useTranslation} from '../../i18n/hooks/useTranslation'
 import {RELEASES_INTENT} from '../../releases/plugin'
 import {isReleaseDocument} from '../../releases/store/types'
-import {type StudioReleaseDocument} from '../../releases/types'
 import {getReleaseIdFromReleaseDocumentId} from '../../releases/util/getReleaseIdFromReleaseDocumentId'
 import {isDraftPerspective, isPublishedPerspective} from '../../releases/util/util'
 import {oversizedButtonStyle} from '../styles'
@@ -71,7 +70,7 @@ function AnimatedTextWidth({children, text}: {children: ReactNode; text: string}
   )
 }
 
-const ReleasesLink = ({selectedPerspective}: {selectedPerspective: StudioReleaseDocument}) => {
+const ReleasesLink = ({selectedPerspective}: {selectedPerspective: ReleaseDocument}) => {
   const {t} = useTranslation()
 
   const ReleasesIntentLink = useMemo(

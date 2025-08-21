@@ -1,7 +1,7 @@
-import {type StudioReleaseDocument} from '../types'
+import {type ReleaseDocument} from '@sanity/client'
 
-type ReleaseDocumentWithTitle = StudioReleaseDocument & {
-  metadata: StudioReleaseDocument['metadata'] & {
+type ReleaseDocumentWithTitle = ReleaseDocument & {
+  metadata: ReleaseDocument['metadata'] & {
     title: string
   }
 }
