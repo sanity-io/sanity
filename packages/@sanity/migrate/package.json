@@ -49,7 +49,7 @@
     "watch": "pkg-utils watch"
   },
   "dependencies": {
-    "@sanity/client": "^7.8.2",
+    "@sanity/client": "^7.9.0",
     "@sanity/mutate": "^0.12.4",
     "@sanity/types": "workspace:*",
     "@sanity/util": "workspace:*",
