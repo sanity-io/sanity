@@ -28,7 +28,7 @@ import {
   isReleaseDocument,
   isReleaseScheduledOrScheduling,
   ReleaseAvatar,
-  ReleaseDocument,
+  type ReleaseDocument,
   useActiveReleases,
   useDocumentVersions,
   useEditState,

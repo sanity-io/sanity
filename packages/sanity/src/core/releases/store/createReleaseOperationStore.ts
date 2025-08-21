@@ -189,7 +189,7 @@ export function createReleaseOperationsStore(options: {
   const handleRevertRelease = async (
     revertReleaseId: string,
     releaseDocuments: RevertDocument[],
-    releaseMetadata: StudioReleaseDocument['metadata'],
+    releaseMetadata: ReleaseDocument['metadata'],
     revertType: 'staged' | 'immediate',
   ) => {
     await handleCreateRelease({
@@ -218,7 +218,7 @@ export function createReleaseOperationsStore(options: {
 
   const handleDuplicateRelease = async (
     releaseDocumentId: string,
-    releaseMetadata: StudioReleaseDocument['metadata'],
+    releaseMetadata: ReleaseDocument['metadata'],
     releaseDocuments?: IdentifiedSanityDocumentStub[],
   ) => {
     await handleCreateRelease({
