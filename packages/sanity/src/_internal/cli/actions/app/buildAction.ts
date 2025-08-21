@@ -11,7 +11,7 @@ import semver from 'semver'
 import {buildStaticFiles} from '../../server'
 import {buildVendorDependencies} from '../../server/buildVendorDependencies'
 import {compareDependencyVersions} from '../../util/compareDependencyVersions'
-import {getAppAutoUpdateImportMap} from '../../util/getAutoUpdatesImportMap'
+import {getAutoUpdatesImportMap} from '../../util/getAutoUpdatesImportMap'
 import {formatModuleSizes, sortModulesBySize} from '../../util/moduleFormatUtils'
 import {readModuleVersion} from '../../util/readModuleVersion'
 import {shouldAutoUpdate} from '../../util/shouldAutoUpdate'
@@ -56,22 +56,29 @@ export default async function buildSanityApp(
   if (!installedSdkVersion) {
     throw new Error(`Failed to find installed @sanity/sdk-react version`)
   }
-  // Get the clean version without build metadata: https://semver.org/#spec-item-10
-  const cleanSDKVersion = semver.parse(installedSanityVersion)?.version
-  // Sanity might not be installed, but if it is we want to auto update it.
-  const cleanSanityVersion = semver.parse(installedSanityVersion)?.version
-  if (autoUpdatesEnabled && !cleanSDKVersion) {
-    throw new Error(`Failed to parse installed SDK version: ${installedSdkVersion}`)
-  }
-  const sdkVersion = encodeURIComponent(`^${cleanSDKVersion}`)
-  const sanityVersion = cleanSanityVersion && encodeURIComponent(`^${cleanSanityVersion}`)
-  const autoUpdatesImports = getAppAutoUpdateImportMap({sdkVersion, sanityVersion})
+
+  let autoUpdatesImports = {}
 
   if (autoUpdatesEnabled) {
+    // Get the clean version without build metadata: https://semver.org/#spec-item-10
+    const cleanSDKVersion = semver.parse(installedSanityVersion)?.version
+    if (!cleanSDKVersion) {
+      throw new Error(`Failed to parse installed SDK version: ${installedSdkVersion}`)
+    }
+
+    // Sanity might not be installed, but if it is, we want to auto update it.
+    const cleanSanityVersion = semver.parse(installedSanityVersion)?.version
+
+    const autoUpdatedPackages = [
+      {name: '@sanity/sdk', version: cleanSDKVersion},
+      {name: '@sanity/sdk-react', version: cleanSDKVersion},
+      ...(cleanSanityVersion ? [{name: 'sanity' as const, version: cleanSanityVersion}] : []),
+    ]
+    autoUpdatesImports = getAutoUpdatesImportMap(autoUpdatedPackages)
     output.print(`${info} Building with auto-updates enabled`)
 
     // Check the versions
-    const result = await compareDependencyVersions(autoUpdatesImports, workDir)
+    const result = await compareDependencyVersions(autoUpdatedPackages, workDir)
 
     // If it is in unattended mode, we don't want to prompt
     if (result?.length && !unattendedMode) {

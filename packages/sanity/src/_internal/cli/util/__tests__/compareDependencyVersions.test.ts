@@ -11,19 +11,15 @@ const mockedFetch = vi.fn()
 const mockedResolveFrom = vi.mocked(resolveFrom)
 const mockedReadPackageManifest = vi.mocked(readPackageManifest)
 
-const autoUpdatesImports = {
-  'sanity': 'v1/modules/sanity',
-  'sanity/': 'v1/modules/sanity/',
-  '@sanity/vision': 'v1/modules/@sanity__vision',
-  '@sanity/vision/': 'v1/modules/@sanity__vision/',
-}
+const autoUpdatePackages = [
+  {name: 'sanity', version: '1.0.0'},
+  {name: '@sanity/vision', version: '1.0.0'},
+]
 
-const appAutoUpdatesImports = {
-  '@sanity/sdk-react': 'v1/modules/@sanity__sdk-react',
-  '@sanity/sdk-react/': 'v1/modules/@sanity__sdk-react/',
-  '@sanity/sdk': 'v1/modules/@sanity__sdk',
-  '@sanity/sdk/': 'v1/modules/@sanity__sdk/',
-}
+const appAutoUpdatePackages = [
+  {name: '@sanity/sdk-react', version: '1.0.0'},
+  {name: '@sanity/sdk', version: '1.0.0'},
+]
 
 describe('compareDependencyVersions', () => {
   beforeEach(() => {
@@ -64,11 +60,9 @@ describe('compareDependencyVersions', () => {
           version: '3.40.0',
         })
 
-      const result = await compareDependencyVersions(
-        autoUpdatesImports,
-        '/test/workdir',
-        mockedFetch,
-      )
+      const result = await compareDependencyVersions(autoUpdatePackages, '/test/workdir', {
+        fetchFn: mockedFetch,
+      })
 
       expect(result).toEqual([])
     })
@@ -107,11 +101,9 @@ describe('compareDependencyVersions', () => {
           version: '3.40.0',
         })
 
-      const result = await compareDependencyVersions(
-        autoUpdatesImports,
-        '/test/workdir',
-        mockedFetch,
-      )
+      const result = await compareDependencyVersions(autoUpdatePackages, '/test/workdir', {
+        fetchFn: mockedFetch,
+      })
 
       expect(result).toEqual([
         {
@@ -155,11 +147,9 @@ describe('compareDependencyVersions', () => {
           version: '3.30.0',
         })
 
-      const result = await compareDependencyVersions(
-        autoUpdatesImports,
-        '/test/workdir',
-        mockedFetch,
-      )
+      const result = await compareDependencyVersions(autoUpdatePackages, '/test/workdir', {
+        fetchFn: mockedFetch,
+      })
 
       expect(result).toEqual([
         {
@@ -209,11 +199,9 @@ describe('compareDependencyVersions', () => {
           version: '3.40.0',
         })
 
-      const result = await compareDependencyVersions(
-        autoUpdatesImports,
-        '/test/workdir',
-        mockedFetch,
-      )
+      const result = await compareDependencyVersions(autoUpdatePackages, '/test/workdir', {
+        fetchFn: mockedFetch,
+      })
 
       expect(result).toEqual([
         {
@@ -243,11 +231,9 @@ describe('compareDependencyVersions', () => {
         version: '0.0.0',
       })
 
-      const result = await compareDependencyVersions(
-        autoUpdatesImports,
-        '/test/workdir',
-        mockedFetch,
-      )
+      const result = await compareDependencyVersions(autoUpdatePackages, '/test/workdir', {
+        fetchFn: mockedFetch,
+      })
 
       expect(mockedReadPackageManifest).toHaveBeenCalledTimes(1)
 
@@ -305,11 +291,9 @@ describe('compareDependencyVersions', () => {
           version: '0.1.0',
         })
 
-      const result = await compareDependencyVersions(
-        appAutoUpdatesImports,
-        '/test/workdir',
-        mockedFetch,
-      )
+      const result = await compareDependencyVersions(appAutoUpdatePackages, '/test/workdir', {
+        fetchFn: mockedFetch,
+      })
 
       expect(result).toEqual([])
     })
@@ -348,11 +332,9 @@ describe('compareDependencyVersions', () => {
           version: '0.1.0',
         })
 
-      const result = await compareDependencyVersions(
-        appAutoUpdatesImports,
-        '/test/workdir',
-        mockedFetch,
-      )
+      const result = await compareDependencyVersions(appAutoUpdatePackages, '/test/workdir', {
+        fetchFn: mockedFetch,
+      })
 
       expect(result).toEqual([
         {
@@ -396,11 +378,9 @@ describe('compareDependencyVersions', () => {
           version: '0.1.0',
         })
 
-      const result = await compareDependencyVersions(
-        appAutoUpdatesImports,
-        '/test/workdir',
-        mockedFetch,
-      )
+      const result = await compareDependencyVersions(appAutoUpdatePackages, '/test/workdir', {
+        fetchFn: mockedFetch,
+      })
 
       expect(result).toEqual([
         {
@@ -450,11 +430,9 @@ describe('compareDependencyVersions', () => {
           version: '0.2.0',
         })
 
-      const result = await compareDependencyVersions(
-        appAutoUpdatesImports,
-        '/test/workdir',
-        mockedFetch,
-      )
+      const result = await compareDependencyVersions(appAutoUpdatePackages, '/test/workdir', {
+        fetchFn: mockedFetch,
+      })
 
       expect(result).toEqual([
         {
@@ -488,11 +466,9 @@ describe('compareDependencyVersions', () => {
         version: '0.0.0',
       })
 
-      const result = await compareDependencyVersions(
-        appAutoUpdatesImports,
-        '/test/workdir',
-        mockedFetch,
-      )
+      const result = await compareDependencyVersions(appAutoUpdatePackages, '/test/workdir', {
+        fetchFn: mockedFetch,
+      })
 
       expect(mockedReadPackageManifest).toHaveBeenCalledTimes(1)
 
