@@ -1,4 +1,4 @@
-import {type StudioReleaseDocument} from '../types'
+import {type ReleaseDocument} from '@sanity/client'
 
 interface BundleDeletedAction {
   id: string
@@ -8,7 +8,7 @@ interface BundleDeletedAction {
 }
 
 interface ReleasesSetAction {
-  payload: StudioReleaseDocument[] | null
+  payload: ReleaseDocument[] | null
   type: 'RELEASES_SET'
 }
 
@@ -26,16 +26,16 @@ export type ReleasesReducerAction =
   | LoadingStateChangedAction
 
 export interface ReleasesReducerState {
-  releases: Map<string, StudioReleaseDocument>
+  releases: Map<string, ReleaseDocument>
   state: 'initialising' | 'loading' | 'loaded' | 'error'
   error?: Error
 }
 
-function createReleasesSet(releases: StudioReleaseDocument[] | null) {
+function createReleasesSet(releases: ReleaseDocument[] | null) {
   return (releases ?? []).reduce((acc, bundle) => {
     acc.set(bundle._id, bundle)
     return acc
-  }, new Map<string, StudioReleaseDocument>())
+  }, new Map<string, ReleaseDocument>())
 }
 
 export function releasesReducer(

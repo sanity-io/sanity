@@ -1,9 +1,8 @@
+import {type EditableReleaseDocument} from '@sanity/client'
 import {isPast} from 'date-fns'
 
-import {type EditableStudioReleaseDocument} from '../types'
-
 /** @internal */
-export const getIsScheduledDateInPast = (value: EditableStudioReleaseDocument) =>
+export const getIsScheduledDateInPast = (value: EditableReleaseDocument) =>
   Boolean(
     value.metadata.releaseType === 'scheduled' &&
       value.metadata.intendedPublishAt &&

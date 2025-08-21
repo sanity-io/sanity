@@ -1,7 +1,7 @@
-import {type StudioReleaseDocument} from '../types'
+import {type ReleaseDocument} from '@sanity/client'
 
-type ReleaseDocumentWithTitle = StudioReleaseDocument & {
-  metadata: StudioReleaseDocument['metadata'] & {
+type ReleaseDocumentWithTitle = ReleaseDocument & {
+  metadata: ReleaseDocument['metadata'] & {
     title: string
   }
 }
@@ -19,7 +19,6 @@ export const activeScheduledRelease: ReleaseDocumentWithTitle = {
     releaseType: 'scheduled',
     intendedPublishAt: '2023-10-10T10:00:00.000Z',
     description: 'active Release description',
-    cardinality: 'many',
   },
 }
 
@@ -37,7 +36,6 @@ export const scheduledRelease: ReleaseDocumentWithTitle = {
     releaseType: 'scheduled',
     intendedPublishAt: '2023-10-10T10:00:00Z',
     description: 'scheduled Release description',
-    cardinality: undefined,
   },
 }
 
@@ -53,7 +51,6 @@ export const activeASAPRelease: ReleaseDocumentWithTitle = {
     title: 'active asap Release',
     releaseType: 'asap',
     description: 'active Release description',
-    cardinality: 'many',
   },
 }
 
@@ -69,7 +66,6 @@ export const activeASAPErrorRelease: ReleaseDocumentWithTitle = {
     title: 'active asap Error Release',
     releaseType: 'asap',
     description: 'active Error Release description',
-    cardinality: undefined,
   },
   error: {
     message: 'An unexpected error occurred during publication.',
@@ -89,7 +85,6 @@ export const archivedScheduledRelease: ReleaseDocumentWithTitle = {
     releaseType: 'scheduled',
     intendedPublishAt: '2023-10-10T10:00:00Z',
     description: 'archived Release description',
-    cardinality: 'many',
   },
 }
 
@@ -106,7 +101,6 @@ export const publishedASAPRelease: ReleaseDocumentWithTitle = {
     title: 'published Release',
     releaseType: 'asap',
     description: 'archived Release description',
-    cardinality: undefined,
   },
 }
 
@@ -122,7 +116,6 @@ export const activeUndecidedRelease: ReleaseDocumentWithTitle = {
     title: 'undecided Release',
     releaseType: 'undecided',
     description: 'undecided Release description',
-    cardinality: 'many',
   },
 }
 
@@ -138,7 +131,6 @@ export const activeUndecidedErrorRelease: ReleaseDocumentWithTitle = {
     title: 'undecided Error Release',
     releaseType: 'undecided',
     description: 'undecided Error Release description',
-    cardinality: undefined,
   },
   error: {
     message: 'An unexpected error occurred during publication.',

@@ -1,3 +1,4 @@
+import {type EditableReleaseDocument} from '@sanity/client'
 import {Stack} from '@sanity/ui'
 // eslint-disable-next-line camelcase
 import {getTheme_v2} from '@sanity/ui/theme'
@@ -5,7 +6,6 @@ import {type ChangeEvent, useCallback, useEffect, useRef, useState} from 'react'
 import {css, styled} from 'styled-components'
 
 import {useTranslation} from '../../../i18n/hooks/useTranslation'
-import {type EditableStudioReleaseDocument} from '../../types'
 
 const MAX_DESCRIPTION_HEIGHT = 200
 
@@ -81,7 +81,7 @@ const DescriptionTextArea = styled.textarea((props) => {
   `
 })
 
-export const getIsReleaseOpen = (release: EditableStudioReleaseDocument): boolean =>
+export const getIsReleaseOpen = (release: EditableReleaseDocument): boolean =>
   release.state !== 'archived' && release.state !== 'published'
 
 export function TitleDescriptionForm({
@@ -89,21 +89,19 @@ export function TitleDescriptionForm({
   onChange,
   disabled,
 }: {
-  release: EditableStudioReleaseDocument
-  onChange: (changedValue: EditableStudioReleaseDocument) => void
+  release: EditableReleaseDocument
+  onChange: (changedValue: EditableReleaseDocument) => void
   disabled?: boolean
 }): React.JSX.Element {
   const isReleaseOpen = getIsReleaseOpen(release)
   const descriptionRef = useRef<HTMLTextAreaElement | null>(null)
 
   const [scrollHeight, setScrollHeight] = useState(46)
-  const [value, setValue] = useState<EditableStudioReleaseDocument>({
+  const [value, setValue] = useState<EditableReleaseDocument>({
     _id: release?._id,
     metadata: {
       title: release?.metadata.title,
       description: release?.metadata.description,
-      releaseType: release?.metadata.releaseType,
-      cardinality: release?.metadata.cardinality,
     },
   })
   const {t} = useTranslation()

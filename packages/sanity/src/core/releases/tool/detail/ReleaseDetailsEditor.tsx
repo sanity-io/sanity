@@ -1,15 +1,11 @@
+import {type EditableReleaseDocument, type ReleaseDocument} from '@sanity/client'
 import {useCallback, useEffect, useRef, useState} from 'react'
 
 import {getIsReleaseOpen, TitleDescriptionForm} from '../../components/dialog/TitleDescriptionForm'
 import {useReleaseOperations} from '../../index'
 import {useReleasePermissions} from '../../store/useReleasePermissions'
-import {type EditableStudioReleaseDocument, type StudioReleaseDocument} from '../../types'
 
-export function ReleaseDetailsEditor({
-  release,
-}: {
-  release: StudioReleaseDocument
-}): React.JSX.Element {
+export function ReleaseDetailsEditor({release}: {release: ReleaseDocument}): React.JSX.Element {
   const {updateRelease} = useReleaseOperations()
   const [timer, setTimer] = useState<NodeJS.Timeout | undefined>(undefined)
 
@@ -17,7 +13,7 @@ export function ReleaseDetailsEditor({
   const [hasUpdatePermission, setHasUpdatePermission] = useState<boolean | null>(null)
 
   const handleOnChange = useCallback(
-    (changedValue: EditableStudioReleaseDocument) => {
+    (changedValue: EditableReleaseDocument) => {
       clearTimeout(timer)
 
       /** @todo I wasn't able to get this working with the debouncer that we use in other parts */

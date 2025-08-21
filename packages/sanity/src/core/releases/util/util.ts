@@ -1,13 +1,12 @@
-import {type ReleaseState} from '@sanity/client'
+import {type EditableReleaseDocument, type ReleaseDocument, type ReleaseState} from '@sanity/client'
 
 import {type SelectedPerspective} from '../../perspective/types'
 import {formatRelativeLocale, getVersionFromId, isVersionId} from '../../util'
-import {type EditableStudioReleaseDocument, type StudioReleaseDocument} from '../types'
 import {DEFAULT_RELEASE_TYPE, LATEST} from './const'
 import {createReleaseId} from './createReleaseId'
 
 /** @internal */
-export type NotArchivedRelease = StudioReleaseDocument & {state: Exclude<ReleaseState, 'archived'>}
+export type NotArchivedRelease = ReleaseDocument & {state: Exclude<ReleaseState, 'archived'>}
 
 /**
  * @beta
@@ -42,7 +41,7 @@ export function isDraftOrPublished(versionName: string): boolean {
 }
 
 /** @internal */
-export function getPublishDateFromRelease(release: StudioReleaseDocument): Date | null {
+export function getPublishDateFromRelease(release: ReleaseDocument): Date | null {
   const dateString = release.publishedAt || release.publishAt || release.metadata.intendedPublishAt
 
   if (!dateString) return null
@@ -51,7 +50,7 @@ export function getPublishDateFromRelease(release: StudioReleaseDocument): Date 
 }
 
 /** @internal */
-export function formatRelativeLocalePublishDate(release: StudioReleaseDocument): string {
+export function formatRelativeLocalePublishDate(release: ReleaseDocument): string {
   const publishDate = getPublishDateFromRelease(release)
 
   if (!publishDate) return ''
@@ -73,7 +72,7 @@ export function isDraftPerspective(
 }
 
 /** @internal */
-export function isReleaseScheduledOrScheduling(release: StudioReleaseDocument): boolean {
+export function isReleaseScheduledOrScheduling(release: ReleaseDocument): boolean {
   return (
     release.metadata.releaseType === 'scheduled' &&
     (release.state === 'scheduled' || release.state === 'scheduling')
@@ -81,13 +80,12 @@ export function isReleaseScheduledOrScheduling(release: StudioReleaseDocument): 
 }
 
 /** @internal */
-export const getReleaseDefaults: () => EditableStudioReleaseDocument = () => ({
+export const getReleaseDefaults: () => EditableReleaseDocument = () => ({
   _id: createReleaseId(),
   metadata: {
     title: '',
     description: '',
     releaseType: DEFAULT_RELEASE_TYPE,
-    cardinality: 'many',
   },
 })
 
@@ -95,9 +93,7 @@ export const getReleaseDefaults: () => EditableStudioReleaseDocument = () => ({
  * Check if the release is archived
  *
  * @internal */
-export function isNotArchivedRelease(
-  release: StudioReleaseDocument,
-): release is NotArchivedRelease {
+export function isNotArchivedRelease(release: ReleaseDocument): release is NotArchivedRelease {
   return release.state !== 'archived'
 }
 

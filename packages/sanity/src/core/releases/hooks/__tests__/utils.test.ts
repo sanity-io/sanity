@@ -1,19 +1,19 @@
+import {type ReleaseDocument} from '@sanity/client'
 import {describe, expect, it} from 'vitest'
 
 import {type ReleaseId} from '../../../perspective/types'
 import {RELEASE_DOCUMENT_TYPE} from '../../store/constants'
-import {type StudioReleaseDocument} from '../../types'
 import {createReleaseId} from '../../util/createReleaseId'
 import {getReleaseIdFromReleaseDocumentId} from '../../util/getReleaseIdFromReleaseDocumentId'
 import {getReleasesPerspectiveStack, sortReleases} from '../utils'
 
 function createReleaseMock(
   value: Partial<
-    Omit<StudioReleaseDocument, 'metadata'> & {
-      metadata: Partial<StudioReleaseDocument['metadata']>
+    Omit<ReleaseDocument, 'metadata'> & {
+      metadata: Partial<ReleaseDocument['metadata']>
     }
   >,
-): StudioReleaseDocument {
+): ReleaseDocument {
   const id = value._id || createReleaseId()
   const name = getReleaseIdFromReleaseDocumentId(id)
   return {
@@ -28,14 +28,13 @@ function createReleaseMock(
     metadata: {
       title: `Release ${name}`,
       releaseType: 'asap',
-      cardinality: 'many',
       ...value.metadata,
     },
   }
 }
 describe('sortReleases()', () => {
   it('should return the asap releases ordered by createdAt', () => {
-    const releases: StudioReleaseDocument[] = [
+    const releases: ReleaseDocument[] = [
       createReleaseMock({
         _id: '_.releases.rasap1',
         _createdAt: '2024-10-24T00:00:00Z',
@@ -58,7 +57,7 @@ describe('sortReleases()', () => {
     })
   })
   it('should return the scheduled releases ordered by intendedPublishAt or publishAt', () => {
-    const releases: StudioReleaseDocument[] = [
+    const releases: ReleaseDocument[] = [
       createReleaseMock({
         _id: '_.releases.rfuture2',
         metadata: {
@@ -99,7 +98,7 @@ describe('sortReleases()', () => {
     })
   })
   it('should return the undecided releases ordered by createdAt', () => {
-    const releases: StudioReleaseDocument[] = [
+    const releases: ReleaseDocument[] = [
       createReleaseMock({
         _id: '_.releases.rundecided1',
         _createdAt: '2024-10-25T00:00:00Z',

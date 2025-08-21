@@ -1,8 +1,7 @@
-import {type ReleaseType} from '@sanity/client'
+import {type ReleaseDocument, type ReleaseType} from '@sanity/client'
 import {type Dispatch} from 'react'
 import {type Observable} from 'rxjs'
 
-import {type StudioReleaseDocument} from '../types'
 import {RELEASE_DOCUMENT_TYPE} from './constants'
 import {type MetadataWrapper} from './createReleaseMetadataAggregator'
 import {type ReleasesReducerAction, type ReleasesReducerState} from './reducer'
@@ -24,7 +23,7 @@ export function isReleaseType(maybeReleaseType: unknown): maybeReleaseType is Re
 /**
  * @internal
  */
-export function isReleaseDocument(doc: unknown): doc is StudioReleaseDocument {
+export function isReleaseDocument(doc: unknown): doc is ReleaseDocument {
   return (
     typeof doc === 'object' && doc !== null && '_type' in doc && doc._type === RELEASE_DOCUMENT_TYPE
   )

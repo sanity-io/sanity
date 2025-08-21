@@ -1,4 +1,4 @@
-import {type ReleaseType, type SanityClient} from '@sanity/client'
+import {type ReleaseDocument, type ReleaseType, type SanityClient} from '@sanity/client'
 import {
   BehaviorSubject,
   catchError,
@@ -22,14 +22,13 @@ import {distinctUntilChanged, map, startWith} from 'rxjs/operators'
 
 import {type DocumentPreviewStore} from '../../preview'
 import {listenQuery} from '../../store/_legacy'
-import {type StudioReleaseDocument} from '../types'
 import {RELEASE_DOCUMENT_TYPE, RELEASE_DOCUMENTS_PATH} from './constants'
 import {createReleaseMetadataAggregator} from './createReleaseMetadataAggregator'
 import {releasesReducer, type ReleasesReducerAction, type ReleasesReducerState} from './reducer'
 import {type ReleaseStore} from './types'
 
 type ActionWrapper = {action: ReleasesReducerAction}
-type ResponseWrapper = {response: StudioReleaseDocument[]}
+type ResponseWrapper = {response: ReleaseDocument[]}
 
 export const SORT_FIELD = '_createdAt'
 export const SORT_ORDER = 'desc'

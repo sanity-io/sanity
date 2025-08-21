@@ -1,3 +1,4 @@
+import {type EditableReleaseDocument} from '@sanity/client'
 import {useTelemetry} from '@sanity/telemetry/react'
 import {type BadgeTone, Box, Card, Flex, Text, useToast} from '@sanity/ui'
 import {useCallback, useState} from 'react'
@@ -15,7 +16,6 @@ import {useReleaseFormStorage} from '../../../hooks/useReleaseFormStorage'
 import {releasesLocaleNamespace} from '../../../i18n'
 import {isReleaseLimitError} from '../../../store/isReleaseLimitError'
 import {useReleaseOperations} from '../../../store/useReleaseOperations'
-import {type EditableStudioReleaseDocument} from '../../../types'
 import {DEFAULT_RELEASE_TYPE} from '../../../util/const'
 import {createReleaseId} from '../../../util/createReleaseId'
 import {getIsReleaseInvalid} from '../../../util/getIsReleaseInvalid'
@@ -43,7 +43,7 @@ export function CopyToNewReleaseDialog(props: {
 
   const [newReleaseId] = useState(createReleaseId)
 
-  const [release, setRelease] = useState((): EditableStudioReleaseDocument => {
+  const [release, setRelease] = useState((): EditableReleaseDocument => {
     return {
       _id: newReleaseId,
       metadata: {
@@ -71,7 +71,7 @@ export function CopyToNewReleaseDialog(props: {
   const isScheduledDateInPast = getIsScheduledDateInPast(release)
   const invalid = getIsReleaseInvalid(release)
 
-  const handleOnChange = useCallback((releaseMetadata: EditableStudioReleaseDocument) => {
+  const handleOnChange = useCallback((releaseMetadata: EditableReleaseDocument) => {
     setRelease(releaseMetadata)
   }, [])
 
