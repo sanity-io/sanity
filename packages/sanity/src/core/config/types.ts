@@ -369,7 +369,7 @@ export type DocumentBadgesResolver = ComposableOption<
 
 /**
  * @hidden
- * @beta
+ * @public
  */
 export type ReleaseActionsResolver = ComposableOption<
   ReleaseActionComponent[],
@@ -948,6 +948,7 @@ export interface Source {
   }
   /** @beta */
   tasks?: WorkspaceOptions['tasks']
+
   /** @beta */
   releases?: {
     enabled?: boolean
