@@ -102,8 +102,6 @@ export function TitleDescriptionForm({
     metadata: {
       title: release?.metadata.title,
       description: release?.metadata.description,
-      releaseType: release?.metadata.releaseType,
-      cardinality: release?.metadata.cardinality,
     },
   })
   const {t} = useTranslation()

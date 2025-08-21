@@ -2,7 +2,7 @@ import {useMemo} from 'react'
 import {
   getReleaseIdFromReleaseDocumentId,
   getVersionFromId,
-  type StudioReleaseDocument,
+  type ReleaseDocument,
   useActiveReleases,
   useArchivedReleases,
   useDocumentVersions,
@@ -13,9 +13,9 @@ import {usePaneRouter} from '../components/paneRouter/usePaneRouter'
 import {type DocumentPaneContextValue} from '../panes/document/DocumentPaneContext'
 
 type FilterReleases = {
-  notCurrentReleases: StudioReleaseDocument[]
-  currentReleases: StudioReleaseDocument[]
-  inCreation: StudioReleaseDocument | null
+  notCurrentReleases: ReleaseDocument[]
+  currentReleases: ReleaseDocument[]
+  inCreation: ReleaseDocument | null
 }
 
 /**

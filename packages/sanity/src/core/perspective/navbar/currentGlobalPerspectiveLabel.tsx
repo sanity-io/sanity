@@ -1,4 +1,5 @@
 import {type ReleaseDocument} from '@sanity/client'
+// eslint-disable-next-line no-restricted-imports -- Bundle Button requires more fine-grained styling than studio button
 import {Box, Button, Text} from '@sanity/ui'
 import {motion} from 'framer-motion'
 import {

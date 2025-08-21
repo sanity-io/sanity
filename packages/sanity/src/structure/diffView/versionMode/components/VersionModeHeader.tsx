@@ -28,7 +28,7 @@ import {
   isReleaseDocument,
   isReleaseScheduledOrScheduling,
   ReleaseAvatar,
-  type StudioReleaseDocument,
+  ReleaseDocument,
   useActiveReleases,
   useDocumentVersions,
   useEditState,
@@ -156,7 +156,7 @@ export const VersionModeHeader: ComponentType<
 
 interface VersionMenuProps {
   state: 'pending' | 'ready' | 'error'
-  releases: StudioReleaseDocument[]
+  releases: ReleaseDocument[]
   role: 'previous' | 'next'
   onSelectRelease: (releaseId: string) => void
   documentId: string
@@ -237,7 +237,7 @@ type VersionMenuItemProps = {
   documentId: string
 } & (
   | {
-      release: StudioReleaseDocument
+      release: ReleaseDocument
       type?: never
     }
   | {
@@ -329,7 +329,7 @@ function getMenuButtonProps({
   tCore,
   tStructure,
 }: {
-  selected?: StudioReleaseDocument | 'published' | 'draft'
+  selected?: ReleaseDocument | 'published' | 'draft'
   tCore: TFunction
   tStructure: TFunction
 }): Pick<ComponentProps<typeof Button>, 'text' | 'tone' | 'icon' | 'iconRight' | 'disabled'> {
@@ -368,8 +368,8 @@ function getMenuButtonProps({
  */
 function findRelease(
   documentId: string,
-  releases: StudioReleaseDocument[],
-): StudioReleaseDocument | 'published' | 'draft' | undefined {
+  releases: ReleaseDocument[],
+): ReleaseDocument | 'published' | 'draft' | undefined {
   if (isPublishedId(documentId)) {
     return 'published'
   }
