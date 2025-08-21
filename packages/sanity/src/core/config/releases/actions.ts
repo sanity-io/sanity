@@ -6,6 +6,7 @@ import {type ConfigContext} from '../types'
 
 /**
  * @internal
+ * @internal
  */
 interface ActionComponent<ActionProps> {
   (props: ActionProps): ReleaseActionDescription | null
@@ -13,7 +14,7 @@ interface ActionComponent<ActionProps> {
 
 /**
  * @hidden
- * @beta
+ * @public
  */
 export interface ReleaseActionProps {
   release: ReleaseDocument
@@ -23,7 +24,7 @@ export interface ReleaseActionProps {
 
 /**
  * @hidden
- * @beta
+ * @public
  */
 export interface ReleaseActionComponent extends ActionComponent<ReleaseActionProps> {
   displayName?: string
@@ -31,7 +32,7 @@ export interface ReleaseActionComponent extends ActionComponent<ReleaseActionPro
 
 /**
  * @hidden
- * @beta
+ * @internal
  */
 export interface ReleaseActionDescription {
   disabled?: boolean
@@ -43,6 +44,6 @@ export interface ReleaseActionDescription {
 
 /**
  * @hidden
- * @beta
+ * @public
  */
 export type ReleaseActionsContext = ConfigContext & ReleaseActionProps
