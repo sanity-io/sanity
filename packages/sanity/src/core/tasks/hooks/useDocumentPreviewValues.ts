@@ -12,7 +12,7 @@ interface PreviewHookOptions {
   documentId: string
   documentType: string
   // to make sure that you can get the preview values for a document in a specific perspective stack
-  perspectiveStack?: string[]
+  perspectiveStack: string[]
 }
 
 interface PreviewHookValue {
@@ -26,6 +26,10 @@ export function useDocumentPreviewValues(options: PreviewHookOptions): PreviewHo
   const schemaType = useSchema().get(documentType)
 
   const documentPreviewStore = useDocumentPreviewStore()
+  // keeping it for now as to make sure that we can safely remove it later
+  // the reason to not remove it now is that it would cause a breaking change
+  // during run time and we want to avoid that for now (so we left the perspectiveStack in the props as mandatory)
+  // @TODO remove
   const {perspectiveStack} = usePerspective()
   const previewStateObservable = useMemo(() => {
     if (!documentId || !schemaType) return of(null)
