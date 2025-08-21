@@ -20,8 +20,7 @@ import {customComponents} from './components-api'
 import {e2eI18nBundles} from './i18n/bundles'
 import {schemaTypes} from './schemaTypes'
 
-// E2E Test Custom Release Action
-const e2eTestReleaseAction: ReleaseActionComponent = (props) => {
+const TestReleaseAction: ReleaseActionComponent = (props) => {
   const {release, documents} = props
 
   return {
@@ -132,7 +131,7 @@ const defaultConfig = defineConfig({
   },
   releases: {
     enabled: true,
-    actions: [e2eTestReleaseAction],
+    actions: [TestReleaseAction],
   },
   create: {
     startInCreateEnabled: false,
