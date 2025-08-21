@@ -18,11 +18,11 @@
   },
   "dependencies": {
     "@portabletext/block-tools": "^3.3.1",
-    "@portabletext/editor": "^2.4.0",
+    "@portabletext/editor": "^2.4.3",
     "@portabletext/react": "^3.2.1",
     "@sanity/assist": "^5.0.0",
     "@sanity/cli": "workspace:*",
-    "@sanity/client": "^7.8.2",
+    "@sanity/client": "^7.9.0",
     "@sanity/color": "^3.0.6",
     "@sanity/color-input": "^4.0.6",
     "@sanity/google-maps-input": "^4.2.0",
