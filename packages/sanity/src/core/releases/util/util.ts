@@ -102,10 +102,8 @@ export function isNotArchivedRelease(release: ReleaseDocument): release is NotAr
  *
  * @internal
  */
-export function isCardinalityOneRelease(
-  release: StudioReleaseDocument,
-): release is StudioReleaseDocument & {
-  metadata: StudioReleaseDocument['metadata'] & {
+export function isCardinalityOneRelease(release: ReleaseDocument): release is ReleaseDocument & {
+  metadata: ReleaseDocument['metadata'] & {
     cardinality: 'one'
   }
 } {
