@@ -168,7 +168,7 @@ describe('createReleaseOperationsStore', () => {
       expect(mockClient.releases.create).toHaveBeenCalledWith(
         {
           releaseId: revertReleaseId,
-          metadata: {...releaseMetadata, releaseType: 'asap'},
+          metadata: {...releaseMetadata, releaseType: 'asap', cardinality: 'many'},
         },
         undefined,
       )
@@ -211,7 +211,7 @@ describe('createReleaseOperationsStore', () => {
       expect(mockClient.releases.create).toHaveBeenCalledWith(
         {
           releaseId: revertReleaseId,
-          metadata: {...releaseMetadata, releaseType: 'asap'},
+          metadata: {...releaseMetadata, releaseType: 'asap', cardinality: 'many'},
         },
         undefined,
       )

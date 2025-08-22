@@ -86,6 +86,7 @@ export const getReleaseDefaults: () => EditableReleaseDocument = () => ({
     title: '',
     description: '',
     releaseType: DEFAULT_RELEASE_TYPE,
+    cardinality: 'many',
   },
 })
 

@@ -198,6 +198,7 @@ export function createReleaseOperationsStore(options: {
         title: releaseMetadata.title,
         description: releaseMetadata.description,
         releaseType: 'asap',
+        cardinality: 'many',
       },
     })
     const versionId = getReleaseIdFromReleaseDocumentId(revertReleaseId)
