@@ -36,7 +36,9 @@ Most official templates already include these fields.
 1. **Set up Slack Integration**
 
    First, create a Slack app and get an OAuth token:
+
    1. **Create a new Slack app:**
+
       - Go to [https://api.slack.com/apps](https://api.slack.com/apps)
       - Click "Create New App"
       - Choose "From scratch"
@@ -44,17 +46,20 @@ Most official templates already include these fields.
       - Select your workspace from the dropdown
 
    2. **Configure permissions:**
+
       - Once your app is created, go to "OAuth & Permissions" in the sidebar
       - Scroll down to the "Scopes" section
       - Under "Bot Token Scopes", click "Add an OAuth Scope"
       - Add the `chat:write` permission (this allows your bot to send messages).
 
    3. **Install the app:**
+
       - Click "Install to Workspace" at the top of the OAuth & Permissions page
       - Review the permissions and click "Allow"
       - Copy the "Bot User OAuth Token" that starts with `xoxb-` (you'll need this for the next step)
 
    4. **Invite the app to your channel:**
+
       - Go to the Slack channel where you want notifications (e.g., `#test-channel`)
       - Type `/invite @your-app-name` or click the channel name → Settings → Integrations → Add apps
       - Select your newly created app to add it to the channel
@@ -132,9 +137,11 @@ Most official templates already include these fields.
    ```
 
    **Required:**
+
    - `SLACK_OAUTH_TOKEN`: Your Slack bot OAuth token (starts with `xoxb-`)
 
    **Optional:**
+
    - `SLACK_CHANNEL`: Slack channel name (default: 'general')
    - `BASE_URL`: Your website URL (default: 'http://localhost:3000')
    - `STUDIO_URL`: Your Sanity Studio URL (default: 'http://localhost:3333')
@@ -286,9 +293,12 @@ Learn more about working with environment variables in Functions here: [https://
 
 After deployment, you can verify your function is active by:
 
-- Checking the Sanity Studio under "Compute"
 - Publishing a new post and confirming Slack notifications are sent
 - Monitoring function logs in the CLI
+
+```bash
+npx sanity functions logs slack-notify
+```
 
 ### Deployment best practices
 
