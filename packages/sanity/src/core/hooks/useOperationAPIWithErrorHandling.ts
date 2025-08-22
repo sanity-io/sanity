@@ -1,6 +1,6 @@
 import {useCallback} from 'react'
 
-import {type OperationsAPI} from '../../../lib'
+import {type OperationsAPI} from '../store'
 
 type ExecuteParameters<OperationName extends keyof OperationsAPI> = Parameters<
   OperationsAPI[OperationName]['execute']
