@@ -1,10 +1,9 @@
 import {defineCliConfig} from 'sanity/cli'
 
+import {dataset, projectId} from './apiConfig'
+
 export default defineCliConfig({
-  api: {
-    projectId: 'ppsg7ml5',
-    dataset: 'autoupdates',
-  },
+  api: {dataset, projectId},
   deployment: {
     appId: 'iwyfhbjad8dipooo6r1r28vs',
 
