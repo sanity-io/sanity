@@ -306,8 +306,9 @@ interface AppConfig {
    * The entrypoint for your Sanity app. Defaults to './src/App'.
    */
   entry?: string
+
   /**
-   * The ID of your Sanity app. Generated when deploying your app for the first time; check the output of `sanity deploy` for this.
+   * @deprecated - Moved to `deployment.appId`
    */
   id?: string
 }
@@ -343,8 +344,14 @@ export interface CliConfig {
 
   vite?: UserViteConfig
 
+  /**
+   * @deprecated - Moved to deployment.autoUpdates
+   */
   autoUpdates?: boolean
 
+  /**
+   * @deprecated - Moved to deployment.studioHost
+   */
   studioHost?: string
 
   /**
@@ -353,6 +360,24 @@ export interface CliConfig {
    */
   app?: AppConfig
 
+  /**
+   * Deployment configuration
+   */
+  deployment?: {
+    /**
+     * The ID of your Sanity studio or app. Generated when deploying your studio or app for the first time.
+     * Get the appId either by
+     * - Checking the output of `sanity deploy`.
+     * - Get it from your project's Studio tab in https://sanity.io/manage
+     */
+    appId?: string
+
+    /**
+     * Enable auto-updates for studios.
+     * {@link https://www.sanity.io/docs/cli#auto-updates}
+     */
+    autoUpdates?: boolean
+  }
   /**
    * Configuration for Sanity media libraries.
    */
