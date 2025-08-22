@@ -302,6 +302,10 @@ interface AppConfig {
    * Defaults to './src/App'
    */
   entry?: string
+
+  /**
+   * @deprecated - Moved to `deployment.appId`
+   */
   id?: string
 }
 
@@ -336,8 +340,14 @@ export interface CliConfig {
 
   vite?: UserViteConfig
 
+  /**
+   * @deprecated - Moved to deployment.autoUpdates
+   */
   autoUpdates?: boolean
 
+  /**
+   * @deprecated - Moved to deployment.studioHost
+   */
   studioHost?: string
 
   /**
@@ -346,6 +356,26 @@ export interface CliConfig {
    */
   app?: AppConfig
 
+  /**
+   * Deployment configuration
+   */
+  deployment?: {
+    /**
+     * Get the ID from your project's Studio tab in https://sanity.io/manage
+     */
+    appId?: string
+
+    /**
+     * Enable auto-updates for studios.
+     * {@link https://www.sanity.io/docs/cli#auto-updates}
+     */
+    autoUpdates?: boolean
+    /**
+     * The NAME part of `NAME.sanity.studio` if the Studio is hosted by Sanity (
+     * {@link https://www.sanity.io/docs/studio/deployment}
+     */
+    studioHost?: string
+  }
   /**
    * Configuration for Sanity media libraries.
    */

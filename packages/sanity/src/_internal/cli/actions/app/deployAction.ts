@@ -5,6 +5,7 @@ import zlib from 'node:zlib'
 import {type CliCommandArguments, type CliCommandContext} from '@sanity/cli'
 import tar from 'tar-fs'
 
+import {getAppId} from '../../util/getAppId'
 import {shouldAutoUpdate} from '../../util/shouldAutoUpdate'
 import {
   checkDir,
@@ -34,7 +35,7 @@ export default async function deployAppAction(
   const isAutoUpdating = shouldAutoUpdate({flags, cliConfig})
 
   const installedSanityVersion = await getInstalledSanityVersion()
-  const appId = cliConfig && 'app' in cliConfig && cliConfig.app?.id
+  const appId = getAppId({cliConfig, output})
 
   const client = apiClient({
     requireUser: true,
