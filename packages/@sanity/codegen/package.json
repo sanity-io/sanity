@@ -57,11 +57,13 @@
     "@babel/register": "^7.28.3",
     "@babel/traverse": "^7.28.3",
     "@babel/types": "^7.28.2",
+    "@sanity/worker-channels": "^1.1.0",
     "debug": "^4.4.1",
     "globby": "^11.1.0",
     "groq": "workspace:*",
     "groq-js": "^1.17.3",
     "json5": "^2.2.3",
+    "reselect": "^5.1.1",
     "tsconfig-paths": "^4.2.0",
     "zod": "^3.25.76"
   },

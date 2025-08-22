@@ -926,6 +926,9 @@ importers:
       '@sanity/util':
         specifier: workspace:*
         version: link:../util
+      '@sanity/worker-channels':
+        specifier: ^1.1.0
+        version: 1.1.0
       chalk:
         specifier: ^4.1.2
         version: 4.1.2
@@ -944,9 +947,6 @@ importers:
       get-it:
         specifier: ^8.6.10
         version: 8.6.10(debug@4.4.1)
-      groq-js:
-        specifier: ^1.17.3
-        version: 1.17.3
       pkg-dir:
         specifier: ^5.0.0
         version: 5.0.0
@@ -1152,6 +1152,9 @@ importers:
       '@babel/types':
         specifier: ^7.28.2
         version: 7.28.2
+      '@sanity/worker-channels':
+        specifier: ^1.1.0
+        version: 1.1.0
       debug:
         specifier: ^4.4.1
         version: 4.4.1(supports-color@5.5.0)
@@ -1167,6 +1170,9 @@ importers:
       json5:
         specifier: ^2.2.3
         version: 2.2.3
+      reselect:
+        specifier: ^5.1.1
+        version: 5.1.1
       tsconfig-paths:
         specifier: ^4.2.0
         version: 4.2.0
@@ -4970,6 +4976,10 @@ packages:
         optional: true
       svelte:
         optional: true
+
+  '@sanity/worker-channels@1.1.0':
+    resolution: {integrity: sha512-25SS2RuQFRLZ8STlW7fdxb7vvxMWhryh3tY2ADQaZiaQt1r57GZgeMma85AG0mSesaMvFL1ndO+XiBOFHBHSmg==}
+    engines: {node: '>=18.2'}
 
   '@sentry-internal/browser-utils@8.55.0':
     resolution: {integrity: sha512-ROgqtQfpH/82AQIpESPqPQe0UyWywKJsmVIqi3c5Fh+zkds5LUxnssTj3yNd1x+kxaPDVB023jAP+3ibNgeNDw==}
@@ -16211,6 +16221,8 @@ snapshots:
       - '@sanity/types'
       - debug
       - typescript
+
+  '@sanity/worker-channels@1.1.0': {}
 
   '@sentry-internal/browser-utils@8.55.0':
     dependencies:
