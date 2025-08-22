@@ -168,12 +168,13 @@ export default async function startSanityDevServer(
       {name: 'sanity', version: cleanSanityVersion},
       {name: '@sanity/vision', version: cleanSanityVersion},
     ]
+    const appId = cliConfig?.deployment?.appId
 
     output.print(`${info} Running with auto-updates enabled`)
     // Check local versions against deployed versions
     let result: Awaited<ReturnType<typeof compareDependencyVersions>> | undefined
     try {
-      result = await compareDependencyVersions(sanityDependencies, workDir)
+      result = await compareDependencyVersions(sanityDependencies, workDir, {appId})
     } catch (err) {
       console.warn(
         new Error('Failed to compare local versions against auto-updating versions', {
