@@ -1,5 +1,5 @@
 import {template} from 'lodash'
-import {type PropsWithChildren, useCallback, useEffect, useMemo, useState} from 'react'
+import {type PropsWithChildren, useCallback, useContext, useEffect, useMemo, useState} from 'react'
 import {DocumentLimitUpsellContext} from 'sanity/_singletons'
 
 import {useClient, useProjectId} from '../../../hooks'
@@ -9,21 +9,22 @@ import {UpsellDialog} from '../../../studio/upsell/UpsellDialog'
 import {DEFAULT_STUDIO_CLIENT_OPTIONS} from '../../../studioClient'
 import {type DocumentLimitUpsellContextValue} from './types'
 
-const BASE_URL = 'www.sanity.io'
+const BASE_URL = 'www.sanity.work'
 
 export function DocumentLimitUpsellProvider({children}: PropsWithChildren) {
-  const [upsellDialogOpen, setUpsellDialogOpen] = useState(true)
+  const [upsellDialogOpen, setUpsellDialogOpen] = useState(false)
   const [upsellData, setUpsellData] = useState<UpsellData | null>(null)
   const projectId = useProjectId()
   const client = useClient(DEFAULT_STUDIO_CLIENT_OPTIONS)
 
+  // TODO: Add telemetry
   const telemetryLogs = useMemo<DocumentLimitUpsellContextValue['telemetryLogs']>(
     () => ({
       dialogPrimaryClicked: () => {
-        // console.log("Primary Clicked")
+        // console.log('Primary Clicked')
       },
       dialogSecondaryClicked: () => {
-        // console.log("Secondary Clicked")
+        // console.log('Secondary Clicked')
       },
     }),
     [],
@@ -47,9 +48,10 @@ export function DocumentLimitUpsellProvider({children}: PropsWithChildren) {
     telemetryLogs.dialogSecondaryClicked()
   }, [telemetryLogs])
 
+  // This could probably be in a hook for all upsell dialogs
   useEffect(() => {
     const data$ = client.observable.request<UpsellData | null>({
-      uri: '/journey/comments',
+      uri: '/journey/document-limit',
     })
 
     const sub = data$.subscribe({
@@ -99,4 +101,21 @@ export function DocumentLimitUpsellProvider({children}: PropsWithChildren) {
       )}
     </DocumentLimitUpsellContext.Provider>
   )
+}
+
+export const useDocumentLimitsUpsellContext = () => {
+  const value = useContext(DocumentLimitUpsellContext)
+
+  if (!value) {
+    return {
+      upsellData: null,
+      handleOpenDialog: () => null,
+      upsellDialogOpen: false,
+      telemetryLogs: {
+        dialogSecondaryClicked: () => null,
+      },
+    }
+  }
+
+  return value
 }

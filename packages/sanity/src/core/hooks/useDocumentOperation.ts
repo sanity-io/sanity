@@ -3,6 +3,7 @@ import {useObservable} from 'react-rx'
 
 import {type OperationsAPI, useDocumentStore} from '../store'
 import {useDocumentOperationWithComlinkHistory} from './useDocumentOperationWithComlinkHistory'
+import {useOperationAPIWithErrorHandling} from './useOperationAPIWithErrorHandling'
 
 /** @internal */
 export function useDocumentOperation(
@@ -23,9 +24,11 @@ export function useDocumentOperation(
    */
   const api = useObservable(observable)!
 
-  return useDocumentOperationWithComlinkHistory({
+  const operationsAPI = useDocumentOperationWithComlinkHistory({
     api,
     docTypeName,
     publishedDocId,
   })
+
+  return useOperationAPIWithErrorHandling(operationsAPI)
 }
