@@ -49,7 +49,7 @@ export interface BlockRule extends RuleDef<BlockRule, any[]> {}
  *           {title: 'Strong', value: 'strong'},
  *           {title: 'Emphasis', value: 'em'},
  *           {title: 'Underline', value: 'underline'},
- *           {title: 'Strike', value: 'strike'},
+ *           {title: 'Strike', value: 'strike-through'},
  *           {title: 'Code', value: 'code'},
  *         ]
  *       }
@@ -218,7 +218,7 @@ export interface BlockMarksDefinition {
  *           {title: 'Strong', value: 'strong'},
  *           {title: 'Emphasis', value: 'em'},
  *           {title: 'Underline', value: 'underline'},
- *           {title: 'Strike', value: 'strike'},
+ *           {title: 'Strike', value: 'strike-through'},
  *           {title: 'Code', value: 'code'},
  *         ],
  *         annotations: [
