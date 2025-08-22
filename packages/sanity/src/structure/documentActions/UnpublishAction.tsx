@@ -8,6 +8,7 @@ import {
   useCurrentUser,
   useDocumentOperation,
   useDocumentPairPermissions,
+  usePerspective,
   useTranslation,
 } from 'sanity'
 
@@ -38,10 +39,12 @@ export const UnpublishAction: DocumentActionComponent = ({
     permission: 'unpublish',
   })
   const currentUser = useCurrentUser()
-  const {displayed} = useDocumentPane()
+  const {displayed, editState} = useDocumentPane()
   const {t} = useTranslation(structureLocaleNamespace)
+  const {selectedPerspective} = usePerspective()
 
-  const isDraft = displayed?._id && isDraftId(displayed?._id)
+  const isDraftExists = selectedPerspective === 'drafts' && !editState?.draft
+  const isDraft = (displayed?._id && isDraftId(displayed?._id)) || isDraftExists
 
   const handleCancel = useCallback(() => {
     setConfirmDialogOpen(false)
