@@ -17,6 +17,7 @@ import {
 import {type FocusEvent, type ReactNode} from 'react'
 
 import {type FormNodePresence} from '../../presence'
+import {type NodeDiffProps, type ProvenanceDiffAnnotation} from '../store'
 import {type ArrayInputCopyEvent, type ArrayInputInsertEvent} from './event'
 import {type ObjectInputProps} from './inputProps'
 
@@ -31,7 +32,7 @@ export type ObjectItem = {
  *
  * @public
  */
-export interface BaseItemProps<T> {
+export interface BaseItemProps<T> extends NodeDiffProps<ProvenanceDiffAnnotation> {
   /** The schema type of the item. */
   schemaType: SchemaType
   /** The key of the item. */
