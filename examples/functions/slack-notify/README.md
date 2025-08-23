@@ -408,6 +408,6 @@ Modify the `filter` in the blueprint configuration to target different document 
 - Cause: Bot doesn't have permissions or isn't in the channel
 - Solution: Invite the bot to your target channel and ensure it has `chat:write` permissions
 
-## Related Examples
+## Related Examples:
 
 - [Telegram Notify](../telegram-notify/README.md) - Send a Telegram notification when a document is published
