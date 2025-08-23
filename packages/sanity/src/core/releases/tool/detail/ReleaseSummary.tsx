@@ -30,6 +30,8 @@ export interface ReleaseSummaryProps {
   scrollContainerRef: RefObject<HTMLDivElement | null>
   release: ReleaseDocument
   isLoading?: boolean
+  searchTerm?: string
+  onSearchTermChange?: (value: string) => void
 }
 
 const isBundleDocumentRow = (
@@ -43,7 +45,14 @@ const isBundleDocumentRow = (
   'previewValues' in maybeBundleDocumentRow
 
 export function ReleaseSummary(props: ReleaseSummaryProps) {
-  const {documents, isLoading = false, release, scrollContainerRef} = props
+  const {
+    documents,
+    isLoading = false,
+    release,
+    scrollContainerRef,
+    searchTerm,
+    onSearchTermChange,
+  } = props
   const toast = useToast()
   const {createVersion} = useReleaseOperations()
   const telemetry = useTelemetry()
@@ -72,20 +81,6 @@ export function ReleaseSummary(props: ReleaseSummaryProps) {
   )
 
   const handleAddDocumentClick = useCallback(() => setAddDocumentDialog(true), [])
-
-  const filterRows = useCallback(
-    (data: DocumentInRelease[], searchTerm: string) =>
-      data.filter(({previewValues, isPending}) => {
-        const title =
-          typeof previewValues.values?.title === 'string'
-            ? previewValues.values?.title
-            : t('release-placeholder.title')
-
-        // always show the pending rows to visualise that documents are being added
-        return isPending || title.toLowerCase().includes(searchTerm.toLowerCase())
-      }),
-    [t],
-  )
 
   const closeAddDialog = useCallback(
     async (documentToAdd?: AddedDocument) => {
@@ -188,7 +183,8 @@ export function ReleaseSummary(props: ReleaseSummaryProps) {
             rowId="document._id"
             columnDefs={documentTableColumnDefs}
             rowActions={renderRowActions}
-            searchFilter={filterRows}
+            searchTerm={searchTerm}
+            onSearchTermChange={onSearchTermChange}
             scrollContainerRef={scrollContainerRef}
             defaultSort={{column: 'search', direction: 'asc'}}
           />
