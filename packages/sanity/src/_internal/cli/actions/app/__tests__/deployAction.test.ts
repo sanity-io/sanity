@@ -58,6 +58,7 @@ describe('deployAppAction', () => {
       chalk: {cyan: vi.fn((str) => str), red: vi.fn((str) => str)},
       output: {
         error: vi.fn((str) => str),
+        warn: vi.fn((str) => str),
         print: vi.fn(),
         spinner: vi.fn().mockReturnValue(spinnerInstance),
       },
