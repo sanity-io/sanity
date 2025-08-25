@@ -59,7 +59,27 @@ describe('shouldAutoUpdate', () => {
       ),
     )
   })
+  it('should show show a deprecation warning if cli config has root level `autoUpdates` configured', () => {
+    const mockOutput = {warn: vi.fn()}
 
+    shouldAutoUpdate({flags: {}, cliConfig: {autoUpdates: true}, output: mockOutput})
+    expect(mockOutput.warn).toHaveBeenCalledWith(
+      expect.stringContaining('The `autoUpdates` config has moved to `deployment.autoUpdates`'),
+    )
+    mockOutput.warn.mockClear()
+    shouldAutoUpdate({flags: {}, cliConfig: {autoUpdates: false}, output: mockOutput})
+    expect(mockOutput.warn).toHaveBeenCalledWith(
+      expect.stringContaining('The `autoUpdates` config has moved to `deployment.autoUpdates'),
+    )
+  })
+  it('should not show a deprecation warning if cli config has `deployment.autoUpdates` configured', () => {
+    const mockOutput = {warn: vi.fn()}
+
+    shouldAutoUpdate({flags: {}, cliConfig: {deployment: {autoUpdates: true}}, output: mockOutput})
+    expect(mockOutput.warn).not.toHaveBeenCalledWith(
+      expect.stringContaining('The `autoUpdates` config has moved to `deployment.autoUpdates`'),
+    )
+  })
   it('should not show a deprecation warning when the flag is not used', () => {
     const mockOutput = {warn: vi.fn()}
 
