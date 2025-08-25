@@ -510,8 +510,8 @@ importers:
         specifier: ^2.6.3
         version: 2.6.3(@portabletext/sanity-bridge@1.1.5(@sanity/schema@packages+@sanity+schema)(@sanity/types@packages+@sanity+types))(@sanity/schema@packages+@sanity+schema)(@sanity/types@packages+@sanity+types)(@types/react@19.1.10)(react-dom@19.1.1(react@19.1.1))(react@19.1.1)(rxjs@7.8.2)
       '@portabletext/react':
-        specifier: ^3.2.4
-        version: 3.2.4(react@19.1.1)
+        specifier: ^4.0.1
+        version: 4.0.1(react@19.1.1)
       '@sanity/assist':
         specifier: ^5.0.0
         version: 5.0.0(@emotion/is-prop-valid@1.3.1)(@sanity/mutator@packages+@sanity+mutator)(react-dom@19.1.1(react@19.1.1))(react-is@19.1.1)(react@19.1.1)(sanity@packages+sanity)(styled-components@6.1.19(react-dom@19.1.1(react@19.1.1))(react@19.1.1))
@@ -1648,8 +1648,8 @@ importers:
         specifier: ^2.6.3
         version: 2.6.3(@portabletext/sanity-bridge@1.1.5(@sanity/schema@packages+@sanity+schema)(@sanity/types@packages+@sanity+types))(@sanity/schema@packages+@sanity+schema)(@sanity/types@packages+@sanity+types)(@types/react@19.1.10)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(rxjs@7.8.2)
       '@portabletext/react':
-        specifier: ^3.2.1
-        version: 3.2.4(react@18.3.1)
+        specifier: ^4.0.1
+        version: 4.0.1(react@18.3.1)
       '@portabletext/toolkit':
         specifier: ^2.0.17
         version: 2.0.18
@@ -4364,6 +4364,12 @@ packages:
     engines: {node: ^14.13.1 || >=16.0.0}
     peerDependencies:
       react: ^17 || ^18 || >=19.0.0-0
+
+  '@portabletext/react@4.0.1':
+    resolution: {integrity: sha512-S1MNyGQERpdU5bVUYGDWyyHkTiedwnuOHSMPgLr96yJmLKGcyHTcwPktqcgPuaCxsRUrqPVR89IYFsGW2JKn3w==}
+    engines: {node: ^14.13.1 || >=16.0.0}
+    peerDependencies:
+      react: ^18.2 || ^19
 
   '@portabletext/sanity-bridge@1.1.5':
     resolution: {integrity: sha512-rUsWW9ZrcPdSJD/mEiPykhrFVC/rhifKpaRuvyVVyQJDfFgX74ZyuO2pt/UlJezbm/NrozRENtAG4WaSLkSpvg==}
@@ -14921,6 +14927,18 @@ snapshots:
   '@portabletext/react@3.2.4(react@19.1.1)':
     dependencies:
       '@portabletext/toolkit': 2.0.18
+      '@portabletext/types': 2.0.15
+      react: 19.1.1
+
+  '@portabletext/react@4.0.1(react@18.3.1)':
+    dependencies:
+      '@portabletext/toolkit': 3.0.0
+      '@portabletext/types': 2.0.15
+      react: 18.3.1
+
+  '@portabletext/react@4.0.1(react@19.1.1)':
+    dependencies:
+      '@portabletext/toolkit': 3.0.0
       '@portabletext/types': 2.0.15
       react: 19.1.1
 
