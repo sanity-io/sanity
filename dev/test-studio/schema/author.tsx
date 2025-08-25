@@ -1,5 +1,14 @@
 import {UserIcon as icon} from '@sanity/icons'
-import {defineField, defineType, type Rule} from 'sanity'
+import {
+  type ArrayOfPrimitivesInputProps,
+  defineField,
+  defineType,
+  getDraftId,
+  isPublishedId,
+  type Rule,
+} from 'sanity'
+
+import {IncomingReferencesInput} from '../components/incomingReferences/IncomingReferencesInput'
 
 const AUTHOR_ROLES = [
   {value: 'developer', title: 'Developer'},
@@ -45,6 +54,68 @@ export default defineType({
       },
       validation: (rule: Rule) => rule.required(),
     }),
+    // defineField({
+    //   name: 'incomingReferences',
+    //   type: 'array',
+    //   components: {
+    //     field: IncomingReferencesField,
+    //   },
+    //   of: [{type: 'author'}, {type: 'book'}],
+    // }),
+    defineField({
+      name: 'incomingReferences',
+      title: 'Incoming references',
+      type: 'array',
+      components: {
+        input: (props: ArrayOfPrimitivesInputProps) => (
+          <IncomingReferencesInput
+            {...props}
+            onLinkDocument={(document, reference) => {
+              if (document._type === 'author') {
+                return {
+                  ...document,
+                  bestFriend: reference,
+                }
+              }
+              return false
+            }}
+            onUnlinkDocument={(document) => {
+              if (document._type === 'author') {
+                return {
+                  ...document,
+                  _id: isPublishedId(document._id) ? getDraftId(document._id) : document._id,
+                  bestFriend: undefined,
+                }
+              }
+              return false
+            }}
+            // @ts-expect-error - filterQuery is not implemented yet
+            filterQuery={`_type == "author"`}
+          />
+        ),
+      },
+      of: [{type: 'author'}],
+    }),
+    defineField({
+      name: 'incomingReferencesBooks',
+      title: 'Incoming references books',
+      type: 'array',
+      components: {
+        input: (props: ArrayOfPrimitivesInputProps) => <IncomingReferencesInput {...props} />,
+      },
+      of: [{type: 'book'}],
+    }),
+    {
+      name: 'favoriteBooks',
+      title: 'Favorite books',
+      type: 'array',
+      of: [
+        {
+          type: 'reference',
+          to: {type: 'book'},
+        },
+      ],
+    },
     {
       name: 'bestFriend',
       title: 'Best friend',
@@ -75,17 +146,7 @@ export default defineType({
         },
       ],
     },
-    {
-      name: 'favoriteBooks',
-      title: 'Favorite books',
-      type: 'array',
-      of: [
-        {
-          type: 'reference',
-          to: {type: 'book'},
-        },
-      ],
-    },
+
     {
       name: 'minimalBlock',
       title: 'Reset all options',
