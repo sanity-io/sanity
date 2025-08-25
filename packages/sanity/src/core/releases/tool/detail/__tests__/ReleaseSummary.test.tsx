@@ -13,7 +13,6 @@ import {beforeEach, describe, expect, it, vi} from 'vitest'
 import {getByDataUi} from '../../../../../../test/setup/customQueries'
 import {setupVirtualListEnv} from '../../../../../../test/testUtils/setupVirtualListEnv'
 import {createTestProvider} from '../../../../../../test/testUtils/TestProvider'
-import {DefaultPreview} from '../../../../components/previews/general/DefaultPreview'
 import {
   activeASAPRelease,
   archivedScheduledRelease,
@@ -44,15 +43,31 @@ vi.mock('../useBundleDocuments', () => ({
   useBundleDocuments: vi.fn(() => useBundleDocumentsMockReturnWithResults),
 }))
 
-vi.mock('../../../../studio/components/navbar/search/components/SearchPopover')
+vi.mock('../../../../preview/components/SanityDefaultPreview', () => ({
+  SanityDefaultPreview: vi.fn(({isPlaceholder, title, subtitle, status}) => (
+    <div data-ui={isPlaceholder ? 'Placeholder' : 'Preview'}>
+      {!isPlaceholder && title && <div>{title}</div>}
+      {!isPlaceholder && subtitle && <div>{subtitle}</div>}
+      {status}
+    </div>
+  )),
+}))
 
-vi.mock('../../../../preview/components/_previewComponents', async () => {
-  return {
-    _previewComponents: {
-      default: vi.fn((arg) => <DefaultPreview {...arg} />),
-    },
-  }
-})
+vi.mock('../../components/ReleaseDocumentPreview', () => ({
+  ReleaseDocumentPreview: vi.fn(({documentId}) => {
+    let title = 'Untitled'
+
+    if (documentId === '123') {
+      title = 'First document'
+    } else if (documentId === '456') {
+      title = 'Second document'
+    }
+
+    return <div data-testid={`document-preview-${documentId}`}>{title}</div>
+  }),
+}))
+
+vi.mock('../../../../studio/components/navbar/search/components/SearchPopover')
 
 const releaseDocuments = [
   {
@@ -64,10 +79,7 @@ const releaseDocuments = [
       title: 'First document',
       _id: '123',
       _rev: 'abc',
-    },
-    previewValues: {
-      ...documentsInRelease.previewValues,
-      values: {title: 'First document'},
+      _type: 'document',
     },
   },
   {
@@ -80,10 +92,7 @@ const releaseDocuments = [
       _id: '456',
       _rev: 'abc',
       title: 'Second document',
-    },
-    previewValues: {
-      ...documentsInRelease.previewValues,
-      values: {title: 'Second document'},
+      _type: 'document',
     },
   },
 ]

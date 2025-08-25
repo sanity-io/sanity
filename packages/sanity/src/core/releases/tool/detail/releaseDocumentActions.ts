@@ -32,7 +32,7 @@ export const DOCUMENT_ACTION_CONFIGS: DocumentActionConfig[] = [
 export function getDocumentActionType(
   document: DocumentInRelease | BundleDocumentRow,
 ): DocumentActionConfig['key'] | null {
-  if (!document.document || document.isPending || document.previewValues?.isLoading) {
+  if (!document.document || document.isPending) {
     return null
   }
 

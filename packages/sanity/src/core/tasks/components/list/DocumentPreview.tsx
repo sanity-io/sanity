@@ -7,6 +7,7 @@ import {IntentLink} from 'sanity/router'
 import {styled} from 'styled-components'
 
 import {useSchema} from '../../../hooks'
+import {usePerspective} from '../../../perspective/usePerspective'
 import {useDocumentPreviewValues} from '../../hooks'
 
 const StyledIntentLink = styled(IntentLink)((props) => {
@@ -27,9 +28,11 @@ export function DocumentPreview({
 }) {
   const schema = useSchema()
   const documentSchema = schema.get(documentType)
+  const {perspectiveStack} = usePerspective()
   const {isLoading, value} = useDocumentPreviewValues({
     documentId,
     documentType,
+    perspectiveStack,
   })
 
   const Link = useMemo(

@@ -17,15 +17,12 @@ export const documentsInRelease: DocumentInRelease = {
     validation: [],
     isValidating: false,
   },
-  previewValues: {
-    isLoading: false,
-    values: {},
-  },
 }
 
 export const useBundleDocumentsMockReturn: Mocked<ReturnType<typeof useBundleDocuments>> = {
   loading: false,
   results: [],
+  error: null,
 }
 
 export const useBundleDocumentsMockReturnWithResults: Mocked<
@@ -33,6 +30,7 @@ export const useBundleDocumentsMockReturnWithResults: Mocked<
 > = {
   loading: false,
   results: [documentsInRelease],
+  error: null,
 }
 
 export const mockUseBundleDocuments = useBundleDocuments as Mock<typeof useBundleDocuments>
