@@ -2,7 +2,7 @@ import {describe, expect, it, vi} from 'vitest'
 
 import {getBaseVersionFromModuleCDNUrl} from './utils'
 
-describe('getBaseVersionFromModuleCDNUrl', () => {
+describe('getBaseVersionFromModuleCDNUrl for legacy urls', () => {
   it('returns undefined but warns if an invalid module url is given', () => {
     const logSpy = vi.spyOn(console, 'warn').mockImplementation(() => {
       // don't pollute tests
@@ -39,6 +39,41 @@ describe('getBaseVersionFromModuleCDNUrl', () => {
   it('returns undefined if semver is invalid', () => {
     expect(
       getBaseVersionFromModuleCDNUrl('/v1/modules/sanity/next/4.0.0.0/t1754072932'),
+    ).toMatchInlineSnapshot('undefined')
+  })
+})
+describe('getBaseVersionFromModuleCDNUrl for app-id urls', () => {
+  it('returns undefined but warns if an invalid module url is given', () => {
+    const logSpy = vi.spyOn(console, 'warn').mockImplementation(() => {
+      // don't pollute tests
+    })
+    expect(getBaseVersionFromModuleCDNUrl('invalid url')).toMatchInlineSnapshot(`undefined`)
+    expect(logSpy).toHaveBeenCalled()
+    expect(logSpy.mock.calls).toMatchInlineSnapshot(`
+      [
+        [
+          [Error: Unable to extract base version from import map, auto updates may not work as expected],
+        ],
+      ]
+    `)
+
+    logSpy.mockRestore()
+  })
+  it('works with valid module cdn url', () => {
+    expect(
+      getBaseVersionFromModuleCDNUrl(
+        'https://example.com/v1/modules/by-app/appid123/t1755874170/%5E4.1.1/sanity',
+      ),
+    ).toMatchInlineSnapshot(`"^4.1.1"`)
+  })
+  it('works with module cdn path', () => {
+    expect(
+      getBaseVersionFromModuleCDNUrl('/v1/modules/by-app/appid123/t1755874170/%5E4.1.1/sanity'),
+    ).toMatchInlineSnapshot(`"^4.1.1"`)
+  })
+  it('returns undefined if semver is invalid', () => {
+    expect(
+      getBaseVersionFromModuleCDNUrl('/v1/modules/by-app/appid123/t1755874170/%5E4.1.1.1/sanity'),
     ).toMatchInlineSnapshot('undefined')
   })
 })

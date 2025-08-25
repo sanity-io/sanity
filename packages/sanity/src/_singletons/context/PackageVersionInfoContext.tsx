@@ -24,7 +24,7 @@ export type PackageVersionInfoContextValue = {
   /**
    * What is the base version (i.e. the version in package.json at the time the Studio was deployed)
    */
-  baseVersion: SemVer
+  baseVersion: SemVer | undefined
 
   /**
    * What is the version tagged as latest (periodically checked)
