@@ -151,6 +151,7 @@ describe('getOrCreateUserApplicationFromConfig', () => {
       spinner: mockSpinner,
       context,
       appHost: 'example',
+      appId: undefined,
     })
 
     expect(mockClientRequest).toHaveBeenCalledWith({

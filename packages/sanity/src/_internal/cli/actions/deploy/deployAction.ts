@@ -75,15 +75,17 @@ export default async function deployStudioAction(
   let spinner = output.spinner('Checking project info').start()
 
   const appId = getAppId({cliConfig, output})
+  const configStudioHost = cliConfig && 'studioHost' in cliConfig ? cliConfig.studioHost : undefined
+
   let userApplication: UserApplication
   try {
     // If the user has provided an appId in the config, use that
-    if (appId) {
+    if (appId || configStudioHost) {
       userApplication = await getOrCreateUserApplicationFromConfig({
         client,
         context,
         spinner,
-        appId,
+        ...(appId ? {appId, appHost: undefined} : {appId: undefined, appHost: configStudioHost}),
       })
     } else {
       userApplication = await getOrCreateStudio({client, context, spinner})
@@ -155,7 +157,8 @@ export default async function deployStudioAction(
     output.print(`\nSuccess! Studio deployed to ${chalk.cyan(location)}`)
 
     if (!appId) {
-      const example = `export default defineCliConfig({
+      const example = `Example:
+export default defineCliConfig({
   //…
   deployment: {
     ${chalk.cyan`appId: '${userApplication.id}'`},
@@ -165,7 +168,7 @@ export default async function deployStudioAction(
       output.print(`\nAdd ${chalk.cyan(`appId: '${userApplication.id}'`)}`)
       output.print(`to the \`deployment\` section in sanity.cli.js or sanity.cli.ts`)
       output.print(`to avoid prompting for application id on next deploy.`)
-      output.print(example)
+      output.print(`\n${example}`)
     }
   } catch (err) {
     spinner.fail()
