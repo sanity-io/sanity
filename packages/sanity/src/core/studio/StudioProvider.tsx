@@ -11,6 +11,7 @@ import {LoadingBlock} from '../components/loadingBlock'
 import {AppIdCacheProvider} from '../create/studio-app/AppIdCacheProvider'
 import {errorReporter} from '../error/errorReporter'
 import {LocaleProvider} from '../i18n'
+import {DocumentLimitUpsellProvider} from '../limits/context/documents/DocumentLimitUpsellProvider'
 import {GlobalPerspectiveProvider} from '../perspective/GlobalPerspectiveProvider'
 import {ResourceCacheProvider} from '../store'
 import {UserColorManagerProvider} from '../user-color'
@@ -77,7 +78,9 @@ export function StudioProvider({
                 <AppIdCacheProvider>
                   <ComlinkRouteHandler />
                   <StudioAnnouncementsProvider>
-                    <GlobalPerspectiveProvider>{children}</GlobalPerspectiveProvider>
+                    <GlobalPerspectiveProvider>
+                      <DocumentLimitUpsellProvider>{children}</DocumentLimitUpsellProvider>
+                    </GlobalPerspectiveProvider>
                   </StudioAnnouncementsProvider>
                 </AppIdCacheProvider>
               </ResourceCacheProvider>
