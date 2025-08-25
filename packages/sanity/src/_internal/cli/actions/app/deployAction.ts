@@ -79,7 +79,11 @@ export default async function deployAppAction(
 
     // If the user has provided an appId in the config, use that
     if (appId) {
-      userApplication = await getOrCreateUserApplicationFromConfig({...configParams, appId})
+      userApplication = await getOrCreateUserApplicationFromConfig({
+        ...configParams,
+        appId,
+        appHost: undefined,
+      })
     } else {
       userApplication = await getOrCreateApplication(configParams)
     }

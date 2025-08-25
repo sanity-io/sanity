@@ -350,7 +350,7 @@ export interface CliConfig {
   autoUpdates?: boolean
 
   /**
-   * @deprecated - Moved to deployment.studioHost
+   * @deprecated - Replaced by deployment.appId
    */
   studioHost?: string
 

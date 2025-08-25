@@ -67,7 +67,6 @@ export async function getUserApplication({
   let uri = '/user-applications'
   if (appId) {
     uri = `/user-applications/${appId}`
-    query = {appType: 'coreApp'}
   } else if (appHost) {
     query = {appHost}
   } else {
@@ -355,29 +354,44 @@ export interface BaseConfigOptions {
   spinner: ReturnType<CliOutputter['spinner']>
 }
 
-interface StudioConfigOptions extends BaseConfigOptions {
-  appHost: string
-}
-
-interface AppConfigOptions extends BaseConfigOptions {
-  appId?: string
-}
+type UserApplicationConfigOptions = BaseConfigOptions &
+  (
+    | {
+        /**
+         * @deprecated – appHost is replaced by appId, but kept for backwards compat
+         */
+        appHost: string | undefined
+        appId: undefined
+      }
+    | {
+        appId: string | undefined
+        /**
+         * @deprecated – appHost is replaced by appId, but kept for backwards compat
+         */
+        appHost: undefined
+      }
+  )
 
 async function getOrCreateStudioFromConfig({
   client,
   context,
   spinner,
   appHost,
-}: StudioConfigOptions): Promise<UserApplication> {
+  appId,
+}: UserApplicationConfigOptions): Promise<UserApplication> {
   const {output} = context
   // if there is already an existing user-app, then just return it
-  const existingUserApplication = await getUserApplication({client, appHost})
+  const existingUserApplication = await getUserApplication({client, appId, appHost})
 
   // Complete the spinner so prompt can properly work
   spinner.succeed()
 
   if (existingUserApplication) {
     return existingUserApplication
+  }
+
+  if (!appHost) {
+    throw new Error(`Application not found. Application with id ${appId} does not exist`)
   }
 
   output.print('Your project has not been assigned a studio hostname.')
@@ -409,14 +423,16 @@ async function getOrCreateAppFromConfig({
   client,
   context,
   spinner,
+  appHost,
   appId,
-}: AppConfigOptions): Promise<UserApplication> {
+}: UserApplicationConfigOptions): Promise<UserApplication> {
   const {output, cliConfig} = context
   const organizationId = cliConfig && 'app' in cliConfig && cliConfig.app?.organizationId
   if (appId) {
     const existingUserApplication = await getUserApplication({
       client,
       appId,
+      appHost,
       organizationId: organizationId || undefined,
     })
     spinner.succeed()
@@ -439,23 +455,22 @@ async function getOrCreateAppFromConfig({
  * @internal
  */
 export async function getOrCreateUserApplicationFromConfig(
-  options: BaseConfigOptions & {
-    appHost?: string
-    appId?: string
-  },
+  options: UserApplicationConfigOptions,
 ): Promise<UserApplication> {
-  const {context} = options
+  const {context, appId, appHost} = options
   const isApp = determineIsApp(context.cliConfig)
 
   if (isApp) {
     return getOrCreateAppFromConfig(options)
   }
 
-  if (!options.appHost) {
-    throw new Error('Studio host was detected, but is invalid')
+  if (!appId && !appHost) {
+    throw new Error(
+      'Studio was detected, but neither appId or appHost (deprecated) found in CLI config',
+    )
   }
 
-  return getOrCreateStudioFromConfig({...options, appHost: options.appHost})
+  return getOrCreateStudioFromConfig(options)
 }
 
 export interface CreateDeploymentOptions {
