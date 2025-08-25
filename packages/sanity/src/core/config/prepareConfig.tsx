@@ -52,6 +52,7 @@ import {
   newDocumentOptionsResolver,
   onUncaughtErrorResolver,
   partialIndexingEnabledReducer,
+  releaseActionsReducer,
   resolveProductionUrlReducer,
   schemaTemplatesReducer,
   searchStrategyReducer,
@@ -775,6 +776,19 @@ function resolveSource({
         propertyName: 'advancedVersionControl.enabled',
         initialValue: false,
       }),
+    },
+
+    releases: {
+      enabled: config.releases?.enabled,
+      limit: config.releases?.limit,
+      actions: (partialContext) =>
+        resolveConfigProperty({
+          config,
+          context: {...context, ...partialContext},
+          initialValue: [],
+          propertyName: 'releases.actions',
+          reducer: releaseActionsReducer,
+        }),
     },
   }
 
