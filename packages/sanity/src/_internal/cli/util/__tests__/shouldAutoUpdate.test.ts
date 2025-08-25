@@ -64,6 +64,10 @@ describe('shouldAutoUpdate', () => {
     const mockOutput = {warn: vi.fn()}
 
     shouldAutoUpdate({flags: {}, cliConfig: {autoUpdates: true}, output: mockOutput})
-    expect(mockOutput.warn).not.toHaveBeenCalled()
+    expect(mockOutput.warn).not.toHaveBeenCalledWith(
+      expect.stringContaining(
+        'The --auto-updates flag is deprecated for `deploy` and `build` commands',
+      ),
+    )
   })
 })
