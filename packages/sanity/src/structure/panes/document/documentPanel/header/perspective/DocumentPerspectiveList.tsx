@@ -291,7 +291,6 @@ export const DocumentPerspectiveList = memo(function DocumentPerspectiveList() {
             documentType: documentType,
             fromRelease: 'draft',
             isVersion: false,
-            disabled: !editState?.draft,
           }}
         />
       )}

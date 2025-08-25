@@ -32,6 +32,8 @@ describe('compareDependencyVersions', () => {
   describe('for studio', () => {
     it('should return empty array if versions match', async () => {
       mockedFetch.mockResolvedValue({
+        status: 302,
+        ok: false,
         headers: {
           get: vi.fn<(name: string) => string | null>().mockReturnValue('3.40.0'),
         },
@@ -73,6 +75,8 @@ describe('compareDependencyVersions', () => {
 
     it('should return one item in array if versions mismatches for one pkg', async () => {
       mockedFetch.mockResolvedValue({
+        status: 302,
+        ok: false,
         headers: {
           get: vi.fn<(name: string) => string | null>().mockReturnValue('3.40.0'),
         },
@@ -119,6 +123,8 @@ describe('compareDependencyVersions', () => {
     })
     it('should return multiple items in array if versions mismatches for more pkg', async () => {
       mockedFetch.mockResolvedValue({
+        status: 302,
+        ok: false,
         headers: {
           get: vi.fn<(name: string) => string | null>().mockReturnValue('3.40.0'),
         },
@@ -171,6 +177,8 @@ describe('compareDependencyVersions', () => {
 
     it("should warn if the user's package.json version is greater then remote", async () => {
       mockedFetch.mockResolvedValue({
+        status: 302,
+        ok: false,
         headers: {
           get: vi.fn<(name: string) => string | null>().mockReturnValue('3.40.0'),
         },
@@ -218,6 +226,9 @@ describe('compareDependencyVersions', () => {
 
     it("should read from user's package.json if resolveFrom fails to find package.json in node_modules", async () => {
       mockedFetch.mockResolvedValue({
+        status: 302,
+        ok: false,
+
         headers: {
           get: vi.fn<(name: string) => string | null>().mockReturnValue('3.40.0'),
         },
@@ -262,6 +273,8 @@ describe('compareDependencyVersions', () => {
 
     it('should return empty array if versions match', async () => {
       mockedFetch.mockResolvedValue({
+        status: 302,
+        ok: false,
         headers: {
           get: vi.fn<(name: string) => string | null>().mockReturnValue('0.1.0'),
         },
@@ -303,6 +316,8 @@ describe('compareDependencyVersions', () => {
 
     it('should return one item in array if versions mismatches for one pkg', async () => {
       mockedFetch.mockResolvedValue({
+        status: 302,
+        ok: false,
         headers: {
           get: vi.fn<(name: string) => string | null>().mockReturnValue('0.1.0'),
         },
@@ -349,6 +364,8 @@ describe('compareDependencyVersions', () => {
     })
     it('should return multiple items in array if versions mismatches for more pkg', async () => {
       mockedFetch.mockResolvedValue({
+        status: 302,
+        ok: false,
         headers: {
           get: vi.fn<(name: string) => string | null>().mockReturnValue('0.2.0'),
         },
@@ -401,6 +418,8 @@ describe('compareDependencyVersions', () => {
 
     it("should warn if the user's package.json version is greater then remote", async () => {
       mockedFetch.mockResolvedValue({
+        status: 302,
+        ok: false,
         headers: {
           get: vi.fn<(name: string) => string | null>().mockReturnValue('0.1.0'),
         },
@@ -453,6 +472,8 @@ describe('compareDependencyVersions', () => {
 
     it("should read from user's package.json if resolveFrom fails to find package.json in node_modules", async () => {
       mockedFetch.mockResolvedValue({
+        status: 302,
+        ok: false,
         headers: {
           get: vi.fn<(name: string) => string | null>().mockReturnValue('0.1.0'),
         },

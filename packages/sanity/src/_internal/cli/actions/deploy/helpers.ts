@@ -152,7 +152,7 @@ async function selectExistingApplication({
   const selected = await prompt.single({
     message,
     type: 'list',
-    choices: [{value: 'new', name: createNewLabel}, new prompt.Separator(), ...choices],
+    choices: [...choices, new prompt.Separator(), {value: 'new', name: createNewLabel}],
   })
 
   if (selected === 'new') {

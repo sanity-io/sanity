@@ -1,6 +1,6 @@
 import {readFile} from 'node:fs/promises'
 
-import * as json5 from 'json5'
+import json5 from 'json5'
 import * as z from 'zod'
 
 export const configDefintion = z.object({

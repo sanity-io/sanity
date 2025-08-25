@@ -36,7 +36,7 @@ jobs:
         #     experimental: true
 
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
         with:
           fetch-depth: 0
 
@@ -82,6 +82,10 @@ jobs:
         if: steps.check_examples_only.outputs.examples_only != 'true'
         run: pnpm install
 
+      - name: Build packages
+        if: steps.check_examples_only.outputs.examples_only != 'true'
+        run: pnpm build --output-logs=full --log-order=grouped
+
       - name: Test
         if: steps.check_examples_only.outputs.examples_only != 'true'
         id: test
@@ -109,9 +113,12 @@ jobs:
     if: ${{ !cancelled() }}
     needs: test
     runs-on: ubuntu-latest
+    permissions:
+      # Required to put a comment into the pull-request
+      pull-requests: write
 
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
         with:
           fetch-depth: 0
 
@@ -160,7 +167,7 @@ jobs:
 
       - name: "Download coverage artifacts"
         if: steps.check_examples_only.outputs.examples_only != 'true'
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v5
         with:
           path: .vitest-reports
           pattern: blob-report-${{ github.run_id }}-*

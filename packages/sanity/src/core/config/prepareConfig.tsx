@@ -29,6 +29,7 @@ import {DEFAULT_STUDIO_CLIENT_OPTIONS} from '../studioClient'
 import {type InitialValueTemplateItem, type Template, type TemplateItem} from '../templates'
 import {EMPTY_ARRAY, isNonNullable} from '../util'
 import {
+  advancedVersionControlEnabledReducer,
   announcementsEnabledReducer,
   directUploadsReducer,
   documentActionsReducer,
@@ -43,6 +44,7 @@ import {
   initialDocumentActions,
   initialDocumentBadges,
   initialLanguageFilter,
+  internalQuotaExcludedReleasesEnabledReducer,
   internalTasksReducer,
   legacySearchEnabledReducer,
   mediaLibraryEnabledReducer,
@@ -69,6 +71,7 @@ import {
   type MissingConfigFile,
   type PluginOptions,
   type PreparedConfig,
+  QUOTA_EXCLUDED_RELEASES_ENABLED,
   type SingleWorkspace,
   type Source,
   type SourceClientOptions,
@@ -354,6 +357,10 @@ function resolveSource({
     projectId,
     schema,
     i18n: i18n.source,
+    [QUOTA_EXCLUDED_RELEASES_ENABLED]: internalQuotaExcludedReleasesEnabledReducer({
+      config,
+      initialValue: false,
+    }),
   }
 
   // <TEMPORARY UGLY HACK TO PRINT DEPRECATION WARNINGS ON USE>
@@ -758,6 +765,16 @@ function resolveSource({
     mediaLibrary: {
       enabled: mediaLibraryEnabledReducer({config, initialValue: false}),
       libraryId: mediaLibraryLibraryIdReducer({config, initialValue: undefined}),
+    },
+
+    advancedVersionControl: {
+      enabled: resolveConfigProperty({
+        config,
+        context,
+        reducer: advancedVersionControlEnabledReducer,
+        propertyName: 'advancedVersionControl.enabled',
+        initialValue: false,
+      }),
     },
   }
 

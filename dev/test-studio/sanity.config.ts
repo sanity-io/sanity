@@ -11,9 +11,15 @@ import {SanityMonogram} from '@sanity/logos'
 import {debugSecrets} from '@sanity/preview-url-secret/sanity-plugin-debug-secrets'
 import {tsdoc} from '@sanity/tsdoc/studio'
 import {visionTool} from '@sanity/vision'
-import {defineConfig, definePlugin, type WorkspaceOptions} from 'sanity'
+import {
+  defineConfig,
+  definePlugin,
+  QUOTA_EXCLUDED_RELEASES_ENABLED,
+  type WorkspaceOptions,
+} from 'sanity'
 import {defineDocuments, defineLocations, presentationTool} from 'sanity/presentation'
 import {structureTool} from 'sanity/structure'
+import {unsplashAssetSource, UnsplashIcon} from 'sanity-plugin-asset-source-unsplash'
 import {imageHotspotArrayPlugin} from 'sanity-plugin-hotspot-array'
 import {markdownSchema} from 'sanity-plugin-markdown'
 import {media} from 'sanity-plugin-media'
@@ -73,7 +79,7 @@ const sharedSettings = ({projectId}: {projectId: string}) => {
     },
     form: {
       image: {
-        assetSources: [imageAssetSource],
+        assetSources: [imageAssetSource, unsplashAssetSource],
       },
       file: {
         assetSources: [imageAssetSource],
@@ -227,6 +233,7 @@ const defaultWorkspace = defineConfig({
   mediaLibrary: {
     enabled: true,
   },
+  [QUOTA_EXCLUDED_RELEASES_ENABLED]: true,
   document: {
     actions: (prev, ctx) => {
       if (ctx.schemaType === 'book' && ctx.releaseId) {
@@ -252,6 +259,20 @@ export default defineConfig([
     title: 'Test Studio (US)',
     dataset: 'test-us',
     basePath: '/us',
+  },
+  {
+    ...defaultWorkspace,
+    name: 'unsplash',
+    title: 'Only Unsplash Asset Source',
+    basePath: '/unsplash',
+    icon: UnsplashIcon,
+    // Testing the docs case that only allow Unsplash image uploads
+    form: {
+      image: {
+        assetSources: () => [unsplashAssetSource],
+        directUploads: false,
+      },
+    },
   },
   {
     name: 'partialIndexing',

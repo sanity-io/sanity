@@ -10,6 +10,9 @@ permissions:
 
 jobs:
   release-next:
+    concurrency:
+      group: release_next
+
     # this runs in main, and we want to skip running it when release PRs are merged
     # format of the commit message is specified in lerna.json
     if: >
@@ -29,7 +32,7 @@ jobs:
           private-key: ${{ secrets.ECOSPARK_APP_PRIVATE_KEY }}
 
       # Publish packages to npm under the `next` tag on new commits to main.
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
         with:
           fetch-depth: 0
 
@@ -142,7 +145,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Send Slack notification
-        uses: slackapi/slack-github-action@v1.24.0
+        uses: slackapi/slack-github-action@91efab103c0de0a537f72a35f6b8cda0ee76bf0a # v2.1.1
         with:
           payload: |
             {

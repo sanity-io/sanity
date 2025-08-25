@@ -127,8 +127,10 @@ export function useMainDocument(props: {
       // resultant navigation states.
       if (navigationHistory.at(-1)?.id === navigationHistory.at(-2)?.id) {
         navigate?.({
-          id: doc?._id,
-          type: doc?._type,
+          state: {
+            id: doc?._id,
+            type: doc?._type,
+          },
         })
       }
     }

@@ -10,8 +10,8 @@ packages:
   - packages/sanity/fixtures/examples/*
 
 catalog:
-  '@playwright/experimental-ct-react': 1.54.2
-  '@playwright/test': 1.54.2
+  '@playwright/experimental-ct-react': 1.55.0
+  '@playwright/test': 1.55.0
   '@sanity/eslint-config-i18n': ^2.0.0
   '@sanity/eslint-config-studio': ^5.0.2
   '@sanity/ui-workshop': ^2.1.4
@@ -20,9 +20,9 @@ catalog:
   '@types/react-is': ^19.0.0
   '@vitejs/plugin-react': ^4.6.0
   esbuild-register: ^3.6.0
-  esbuild: 0.25.8
+  esbuild: 0.25.9
   globals: ^16.2.0
-  playwright: 1.54.2
+  playwright: 1.55.0
   prettier: ^3.5.3
   react: ^19.1.1
   react-dom: ^19.1.1

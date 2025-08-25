@@ -96,7 +96,7 @@ Most official templates already include these fields.
          event: {
            on: ['publish'],
            filter: "_type == 'post'",
-           projection: '_id, title, slug, _updatedAt',
+           projection: '{_id, title, slug, _updatedAt}',
          },
          env: {
            SLACK_OAUTH_TOKEN: process.env.SLACK_OAUTH_TOKEN,
@@ -242,7 +242,7 @@ export default defineBlueprint({
       event: {
         on: ['publish'],
         filter: "_type == 'post'",
-        projection: '_id, title, slug, _updatedAt',
+        projection: '{_id, title, slug, _updatedAt}',
       },
     }),
   ],

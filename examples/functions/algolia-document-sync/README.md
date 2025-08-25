@@ -63,7 +63,7 @@ This function is built to be compatible with any of [the official "clean" templa
      event: {
        on: ['publish'],
        filter: "_type == 'post'",
-       projection: '_id, title, hideFromSearch',
+       projection: '{_id, title, hideFromSearch}',
      },
      env: {
        ALGOLIA_APP_ID: ALGOLIA_APP_ID,

@@ -13,23 +13,19 @@ import {type TimeZoneScope, useTimeZone} from '../../hooks/useTimeZone'
 import {useTranslation} from '../../i18n/hooks/useTranslation'
 
 interface ScheduleDatePickerProps {
-  initialValue: Date
+  value: Date | undefined
   onChange: (date: Date) => void
   timeZoneScope: TimeZoneScope
 }
 
 const inputDateFormat = 'PP HH:mm'
 
-export const ScheduleDatePicker = ({
-  initialValue: inputValue,
-  onChange,
-  timeZoneScope,
-}: ScheduleDatePickerProps) => {
+export const ScheduleDatePicker = ({value, onChange, timeZoneScope}: ScheduleDatePickerProps) => {
   const {t} = useTranslation()
   const {timeZone, utcToCurrentZoneDate, zoneDateToUtc} = useTimeZone(timeZoneScope)
   const {dialogTimeZoneShow, DialogTimeZone, dialogProps} = useDialogTimeZone(timeZoneScope)
 
-  const timeZoneAdjustedValue = utcToCurrentZoneDate(inputValue)
+  const timeZoneAdjustedValue = value ? utcToCurrentZoneDate(value) : undefined
 
   const handlePublishAtCalendarChange = (date: Date | null) => {
     if (!date) return
@@ -58,7 +54,7 @@ export const ScheduleDatePicker = ({
         onInputChange={handlePublishAtInputChange}
         calendarLabels={calendarLabels}
         value={timeZoneAdjustedValue}
-        inputValue={format(timeZoneAdjustedValue, inputDateFormat)}
+        inputValue={timeZoneAdjustedValue ? format(timeZoneAdjustedValue, inputDateFormat) : ''}
         constrainSize={false}
         padding={0}
         isPastDisabled

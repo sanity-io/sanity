@@ -43,7 +43,6 @@ export interface ReleaseOperationsStore {
   createVersion: (
     releaseId: string,
     documentId: string,
-    initialValue?: Omit<EditableReleaseDocument, '_id' | '_type'>,
     opts?: BaseActionOptions,
   ) => Promise<SingleActionResult>
   discardVersion: (
@@ -158,7 +157,7 @@ export function createReleaseOperationsStore(options: {
     const document = await client.getDocument(documentId)
 
     if (!document) {
-      throw new Error(`Document with id ${documentId} not found and no initial value provided`)
+      throw new Error(`Document with id ${documentId} not found`)
     }
 
     return client.createVersion(
@@ -199,6 +198,7 @@ export function createReleaseOperationsStore(options: {
         title: releaseMetadata.title,
         description: releaseMetadata.description,
         releaseType: 'asap',
+        cardinality: 'many',
       },
     })
     const versionId = getReleaseIdFromReleaseDocumentId(revertReleaseId)

@@ -130,7 +130,7 @@ export default defineBlueprint({
       event: {
         on: ['publish'],
         filter: '_type == "comment" && defined(comment)',
-        projection: '_id, comment',
+        projection: '{_id, comment}',
       },
       env: {TELEGRAM_BOT_TOKEN, TELEGRAM_CHAT_ID},
     }),

@@ -28,6 +28,7 @@ function createReleaseMock(
     metadata: {
       title: `Release ${name}`,
       releaseType: 'asap',
+      cardinality: 'many',
       ...value.metadata,
     },
   }

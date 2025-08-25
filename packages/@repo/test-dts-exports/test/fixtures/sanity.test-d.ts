@@ -1093,6 +1093,7 @@ import type {
   PublishDocumentVersionEvent,
   PublishedId,
   QueryParams,
+  QUOTA_EXCLUDED_RELEASES_ENABLED,
   ReactHook,
   RebasePatchMsg,
   ReconnectEvent,
@@ -4917,6 +4918,9 @@ describe('sanity', () => {
   })
   test('QueryParams', () => {
     expectTypeOf<QueryParams>().not.toBeNever()
+  })
+  test('QUOTA_EXCLUDED_RELEASES_ENABLED', () => {
+    expectTypeOf<typeof QUOTA_EXCLUDED_RELEASES_ENABLED>().not.toBeNever()
   })
   test('ReactHook', () => {
     expectTypeOf<ReactHook<any, any>>().not.toBeNever()

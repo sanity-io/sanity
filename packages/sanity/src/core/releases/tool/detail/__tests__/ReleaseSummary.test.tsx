@@ -1,5 +1,12 @@
 import {act, fireEvent, render, screen, within} from '@testing-library/react'
-import {cloneElement, type FC, type PropsWithChildren, type ReactElement, useState} from 'react'
+import {
+  cloneElement,
+  type FC,
+  type PropsWithChildren,
+  type ReactElement,
+  type RefObject,
+  useState,
+} from 'react'
 import {route, RouterProvider} from 'sanity/router'
 import {beforeEach, describe, expect, it, vi} from 'vitest'
 
@@ -14,7 +21,6 @@ import {
 } from '../../../__fixtures__/release.fixture'
 import {releasesUsEnglishLocaleBundle} from '../../../i18n'
 import {ReleaseSummary, type ReleaseSummaryProps} from '../ReleaseSummary'
-import {type DocumentInRelease} from '../useBundleDocuments'
 import {
   documentsInRelease,
   useBundleDocumentsMockReturnWithResults,
@@ -48,10 +54,11 @@ vi.mock('../../../../preview/components/_previewComponents', async () => {
   }
 })
 
-const releaseDocuments: DocumentInRelease[] = [
+const releaseDocuments = [
   {
     ...documentsInRelease,
     memoKey: '123',
+    history: undefined,
     document: {
       ...documentsInRelease.document,
       title: 'First document',
@@ -66,6 +73,7 @@ const releaseDocuments: DocumentInRelease[] = [
   {
     ...documentsInRelease,
     memoKey: '456',
+    history: undefined,
     document: {
       ...documentsInRelease.document,
       _updatedAt: new Date().toISOString(),
@@ -85,7 +93,10 @@ const ScrollContainer: FC<PropsWithChildren> = ({children}) => {
 
   return (
     <div style={{height: '400px'}} ref={setRef}>
-      {cloneElement(children as ReactElement, {scrollContainerRef: {current: ref}})}
+      {cloneElement(
+        children as ReactElement<{scrollContainerRef: RefObject<HTMLDivElement | null>}>,
+        {scrollContainerRef: {current: ref}},
+      )}
     </div>
   )
 }
@@ -107,82 +118,6 @@ const renderTest = async (props: Partial<ReleaseSummaryProps>) => {
         <ReleaseSummary
           scrollContainerRef={{current: null}}
           documents={releaseDocuments}
-          documentsHistory={{
-            '123': {
-              createdBy: 'created-author-id-1',
-              lastEditedBy: 'edited-author-id-1',
-              editors: ['edited-author-id-1'],
-              history: [
-                {
-                  id: '123',
-                  timestamp: '2024-11-04T07:53:25Z',
-                  author: 'pJ61yWhkD',
-                  documentIDs: ['versions.abc.123'],
-                  effects: {
-                    'versions.abc.123': {
-                      apply: [
-                        0,
-                        {
-                          _createdAt: '2024-11-04T07:53:25Z',
-                          _id: 'versions.abc.123',
-                          _type: 'book',
-                          _updatedAt: '2024-11-04T07:53:25Z',
-                          address: {
-                            city: 'Stockholm',
-                            country: 'Sweden',
-                          },
-                          publishedAt: '2020-02-03T21:36:34.980Z',
-                          title: 'sdfsadfadsf sdf',
-                          translations: {
-                            no: '0',
-                            se: '0',
-                          },
-                        },
-                      ],
-                      revert: [0, null],
-                    },
-                  },
-                },
-              ],
-            },
-            '456': {
-              createdBy: 'created-author-id-2',
-              lastEditedBy: 'edited-author-id-2',
-              editors: ['edited-author-id-1', 'edited-author-id-2'],
-              history: [
-                {
-                  id: '456',
-                  timestamp: '2024-11-04T07:53:25Z',
-                  author: 'pJ61yWhkD',
-                  documentIDs: ['versions.abc.456'],
-                  effects: {
-                    'versions.abc.456': {
-                      apply: [
-                        0,
-                        {
-                          _createdAt: '2024-11-04T07:53:25Z',
-                          _id: 'versions.abc.456',
-                          _type: 'book',
-                          _updatedAt: '2024-11-04T07:53:25Z',
-                          address: {
-                            city: 'Stockholm',
-                            country: 'Sweden',
-                          },
-                          publishedAt: '2020-02-03T21:36:34.980Z',
-                          title: 'sdfsadfadsf sdf',
-                          translations: {
-                            no: '0',
-                            se: '0',
-                          },
-                        },
-                      ],
-                      revert: [0, null],
-                    },
-                  },
-                },
-              ],
-            },
-          }}
           release={activeASAPRelease}
           {...props}
         />
@@ -316,7 +251,7 @@ describe('ReleaseSummary', () => {
 
       const [firstDocumentRow] = screen.getAllByTestId('table-row')
 
-      expect(within(firstDocumentRow).getByTestId('change-badge-123')).toBeInTheDocument()
+      expect(within(firstDocumentRow).getByTestId('changed-badge-123')).toBeInTheDocument()
     })
 
     it('should show `add` if a document is not published and is not scheduled for unpublishing', async () => {
@@ -337,7 +272,7 @@ describe('ReleaseSummary', () => {
 
       const [firstDocumentRow] = screen.getAllByTestId('table-row')
 
-      expect(within(firstDocumentRow).getByTestId('add-badge-123')).toBeInTheDocument()
+      expect(within(firstDocumentRow).getByTestId('added-badge-123')).toBeInTheDocument()
     })
   })
 })

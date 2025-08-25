@@ -36,6 +36,12 @@ import {type FormComponents} from './form'
 import {type StudioComponents, type StudioComponentsPluginOptions} from './studio'
 
 /**
+ * Symbol for enabling releases outside of quota restrictions for single docs
+ * @internal
+ */
+export const QUOTA_EXCLUDED_RELEASES_ENABLED = Symbol('__internal_quotaExcludedReleasesEnabled')
+
+/**
  * @hidden
  * @beta
  */
@@ -213,6 +219,8 @@ export interface ConfigContext {
    * Localization resources
    */
   i18n: LocaleSource
+  /** @internal */
+  [QUOTA_EXCLUDED_RELEASES_ENABLED]?: boolean
 }
 
 /** @public */
@@ -448,6 +456,9 @@ export interface PluginOptions {
   /** @internal */
   __internal_serverDocumentActions?: WorkspaceOptions['__internal_serverDocumentActions']
 
+  /** @internal */
+  [QUOTA_EXCLUDED_RELEASES_ENABLED]?: WorkspaceOptions[typeof QUOTA_EXCLUDED_RELEASES_ENABLED]
+
   /** Configuration for studio beta features.
    * @internal
    */
@@ -470,6 +481,24 @@ export interface PluginOptions {
    * @beta
    */
   mediaLibrary?: DefaultPluginsWorkspaceOptions['mediaLibrary']
+
+  /**
+   * Advanced version control provides features such as inline content diffs in Studio to make
+   * resolving conflicts across document versions easier.
+   *
+   * @beta
+   */
+  advancedVersionControl?: {
+    /**
+     * Control whether advanced version control functionality is enabled.
+     *
+     * Advanced version control provides features such as inline content diffs in Studio to make
+     * resolving conflicts across document versions easier.
+     *
+     * @beta
+     */
+    enabled?: boolean | ComposableOption<boolean, ConfigContext>
+  }
 }
 
 /** @internal */
@@ -548,6 +577,12 @@ export interface WorkspaceOptions extends SourceOptions {
     enabled?: boolean
   }
 
+  /**
+   * @hidden
+   * @internal
+   */
+  [QUOTA_EXCLUDED_RELEASES_ENABLED]?: boolean
+
   scheduledPublishing?: DefaultPluginsWorkspaceOptions['scheduledPublishing']
 }
 
@@ -617,6 +652,8 @@ export interface DocumentActionsContext extends ConfigContext {
   releaseId: string | undefined
   /** the type of the currently active document. */
   versionType: DocumentActionsVersionType
+  /** @internal */
+  [QUOTA_EXCLUDED_RELEASES_ENABLED]?: boolean
 }
 
 /**
@@ -924,6 +961,24 @@ export interface Source {
    * @beta
    */
   mediaLibrary?: WorkspaceOptions['mediaLibrary']
+
+  /**
+   * Advanced version control provides features such as inline content diffs in Studio to make
+   * resolving conflicts across document versions easier.
+   *
+   * @beta
+   */
+  advancedVersionControl: {
+    /**
+     * Control whether advanced version control functionality is enabled.
+     *
+     * Advanced version control provides features such as inline content diffs in Studio to make
+     * resolving conflicts across document versions easier.
+     *
+     * @beta
+     */
+    enabled: boolean
+  }
 }
 
 /** @internal */

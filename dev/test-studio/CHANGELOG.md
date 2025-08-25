@@ -3,6 +3,52 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [4.5.0](https://github.com/sanity-io/sanity/compare/v4.4.1...v4.5.0) (2025-08-19)
+
+
+### Bug Fixes
+
+* **deps:** update dependency @portabletext/block-tools to ^3.2.0 ([#10297](https://github.com/sanity-io/sanity/issues/10297)) ([b50678b](https://github.com/sanity-io/sanity/commit/b50678bd519d80a083b9f01efd8ac846a5502b4a))
+* **deps:** update dependency @portabletext/block-tools to ^3.2.1 ([#10384](https://github.com/sanity-io/sanity/issues/10384)) ([6a1f726](https://github.com/sanity-io/sanity/commit/6a1f72614fb2cbb6851fd5951a7ea57c0177a32f))
+* **deps:** update dependency @portabletext/editor to ^2.3.7 ([#10284](https://github.com/sanity-io/sanity/issues/10284)) ([213dc36](https://github.com/sanity-io/sanity/commit/213dc369b728db58327fa3c1f9c5792e5dcbe1d3))
+* **deps:** update dependency @portabletext/editor to ^2.3.8 ([#10389](https://github.com/sanity-io/sanity/issues/10389)) ([60e179c](https://github.com/sanity-io/sanity/commit/60e179c22b152059bab11bd006d58af1b2e6ef1f))
+* **deps:** Update dev-non-major ([#10302](https://github.com/sanity-io/sanity/issues/10302)) ([3f1c7d1](https://github.com/sanity-io/sanity/commit/3f1c7d147e691083eec47e108591b93619ac19c6))
+
+
+
+## [4.4.1](https://github.com/sanity-io/sanity/compare/v4.4.0...v4.4.1) (2025-08-14)
+
+
+### Bug Fixes
+
+* **deps:** update dependency @sanity/ui to ^3.0.7 ([#10293](https://github.com/sanity-io/sanity/issues/10293)) ([e671ffc](https://github.com/sanity-io/sanity/commit/e671ffc1bef570811838235630d2717590f65d15))
+
+
+
+## [4.4.0](https://github.com/sanity-io/sanity/compare/v4.3.0...v4.4.0) (2025-08-13)
+
+
+### Features
+
+* **util:** add support for localized moment tokens ([#10240](https://github.com/sanity-io/sanity/issues/10240)) ([caf47b6](https://github.com/sanity-io/sanity/commit/caf47b656f7ea94c0c871dcac62f3aae1d6ef6f6))
+
+
+### Bug Fixes
+
+* **core:** allow losing focus inside popover modals, fix scroll in popover issue ([#10213](https://github.com/sanity-io/sanity/issues/10213)) ([d49b527](https://github.com/sanity-io/sanity/commit/d49b5274d5bcc378233837eab79152e2651e6c6c))
+* **deps:** update dependency @portabletext/block-tools to ^2.0.8 ([#10200](https://github.com/sanity-io/sanity/issues/10200)) ([498a56d](https://github.com/sanity-io/sanity/commit/498a56ddda6297fa00a1b3faa0571cea353bab63))
+* **deps:** update dependency @portabletext/block-tools to v3 ([#10256](https://github.com/sanity-io/sanity/issues/10256)) ([4672c48](https://github.com/sanity-io/sanity/commit/4672c48f1360b590844c659e29aba53abd025d15))
+* **deps:** update dependency @portabletext/editor to ^2.1.11 ([#10204](https://github.com/sanity-io/sanity/issues/10204)) ([30a9a70](https://github.com/sanity-io/sanity/commit/30a9a705bdffe9c3152588f98e597f04f9d1f4c5))
+* **deps:** update dependency @portabletext/editor to ^2.1.9 ([#10202](https://github.com/sanity-io/sanity/issues/10202)) ([4aabd89](https://github.com/sanity-io/sanity/commit/4aabd89a0f4df5f95829e9e955a1ce6bd68107f4))
+* **deps:** update dependency @portabletext/editor to ^2.3.0 ([#10226](https://github.com/sanity-io/sanity/issues/10226)) ([4681b77](https://github.com/sanity-io/sanity/commit/4681b77dd05d9bd60ac2890824953c0f1259f049))
+* **deps:** update dependency @portabletext/editor to ^2.3.3 ([#10242](https://github.com/sanity-io/sanity/issues/10242)) ([322ab52](https://github.com/sanity-io/sanity/commit/322ab524baf85e1a73a6827444ba01c58c6ae479))
+* **deps:** update dependency @sanity/ui to ^3.0.6 ([#10245](https://github.com/sanity-io/sanity/issues/10245)) ([5a9f4cf](https://github.com/sanity-io/sanity/commit/5a9f4cf59ad64ab5e5afb2659e2b7b7e84e5fa8f))
+* **deps:** Update dev-non-major ([#10192](https://github.com/sanity-io/sanity/issues/10192)) ([6ba5be6](https://github.com/sanity-io/sanity/commit/6ba5be68a262fba63410658b59c7725b86c494fa))
+* **sanity:** presentation navigation issues and initial value handling ([#10207](https://github.com/sanity-io/sanity/issues/10207)) ([34fba7d](https://github.com/sanity-io/sanity/commit/34fba7d6c4d821e31acc4f898c0b6b282311783c))
+* **structure:** render actions menu if sideMenuItems has actions ([#10196](https://github.com/sanity-io/sanity/issues/10196)) ([62272a8](https://github.com/sanity-io/sanity/commit/62272a81a6d06d3e960699719621a15b6078292f))
+
+
+
 ## [4.3.0](https://github.com/sanity-io/sanity/compare/v4.2.0...v4.3.0) (2025-08-05)
 
 

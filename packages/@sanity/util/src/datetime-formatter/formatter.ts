@@ -20,6 +20,11 @@ function getDayName(
   return new Intl.DateTimeFormat(validLocale, {weekday: style}).format(date)
 }
 
+function getLocalizedDate(date: Date, options: Intl.DateTimeFormatOptions, locale = 'en-US') {
+  const validLocale = sanitizeLocale(locale)
+  return new Intl.DateTimeFormat(validLocale, options).format(date)
+}
+
 /**
  * Zero-pads a number to `length` digits (e.g. zeroPad(7, 2) = "07").
  */
@@ -136,144 +141,214 @@ function formatMomentLike(date: Date, formatStr: string): string {
   const tokens = [
     // Year
     // 1970 1971 ... 2029 2030
-    {key: 'YYYY', value: String(year)},
+    {key: 'YYYY', getValue: () => String(year)},
     // 70 71 ... 29 30
-    {key: 'YY', value: String(year).slice(-2)},
+    {key: 'YY', getValue: () => String(year).slice(-2)},
     // 1970 1971 ... 9999 +10000 +10001
-    {key: 'Y', value: String(year)},
+    {key: 'Y', getValue: () => String(year)},
     // Expanded years, -001970 -001971 ... +001907 +001971
-    {key: 'YYYYY', value: zeroPad(year, 5)},
+    {key: 'YYYYY', getValue: () => zeroPad(year, 5)},
 
     // ISO week-year
     // 1970 1971 ... 2029 2030
-    {key: 'GGGG', value: String(isoWeekYear)},
+    {key: 'GGGG', getValue: () => String(isoWeekYear)},
     // 70 71 ... 29 30
-    {key: 'GG', value: String(isoWeekYear).slice(-2)},
+    {key: 'GG', getValue: () => String(isoWeekYear).slice(-2)},
 
     // "locale" week-year
-    {key: 'gggg', value: String(localeWeekYear)},
-    {key: 'gg', value: String(localeWeekYear).slice(-2)},
+    {key: 'gggg', getValue: () => String(localeWeekYear)},
+    {key: 'gg', getValue: () => String(localeWeekYear).slice(-2)},
 
     // Quarter
-    {key: 'Q', value: String(Math.floor(monthIndex / 3) + 1)},
-    {key: 'Qo', value: getOrdinal(Math.floor(monthIndex / 3) + 1)},
+    {key: 'Q', getValue: () => String(Math.floor(monthIndex / 3) + 1)},
+    {key: 'Qo', getValue: () => getOrdinal(Math.floor(monthIndex / 3) + 1)},
 
     // --- Month (using Intl) ---
-    {key: 'MMMM', value: getMonthName(date, 'long')}, // e.g. "January"
-    {key: 'MMM', value: getMonthName(date, 'short')}, // e.g. "Jan"
+    {key: 'MMMM', getValue: () => getMonthName(date, 'long')}, // e.g. "January"
+    {key: 'MMM', getValue: () => getMonthName(date, 'short')}, // e.g. "Jan"
     // For numeric months, we still do a manual approach:
-    {key: 'MM', value: zeroPad(monthIndex + 1, 2)},
-    {key: 'M', value: String(monthIndex + 1)},
-    {key: 'Mo', value: getOrdinal(monthIndex + 1)},
+    {key: 'MM', getValue: () => zeroPad(monthIndex + 1, 2)},
+    {key: 'M', getValue: () => String(monthIndex + 1)},
+    {key: 'Mo', getValue: () => getOrdinal(monthIndex + 1)},
 
     // Day of Month
-    {key: 'DD', value: zeroPad(dayOfMonth, 2)},
-    {key: 'D', value: String(dayOfMonth)},
-    {key: 'Do', value: getOrdinal(dayOfMonth)},
+    {key: 'DD', getValue: () => zeroPad(dayOfMonth, 2)},
+    {key: 'D', getValue: () => String(dayOfMonth)},
+    {key: 'Do', getValue: () => getOrdinal(dayOfMonth)},
 
     // --- Day of Week (using Intl) ---
-    {key: 'dddd', value: getDayName(date, 'long')}, // e.g. "Monday"
-    {key: 'ddd', value: getDayName(date, 'short')}, // e.g. "Mon"
+    {key: 'dddd', getValue: () => getDayName(date, 'long')}, // e.g. "Monday"
+    {key: 'ddd', getValue: () => getDayName(date, 'short')}, // e.g. "Mon"
     {
       key: 'dd',
       // e.g. "Mo" => first 2 chars of short day name
-      value: getDayName(date, 'short').slice(0, 2),
+      getValue: () => getDayName(date, 'short').slice(0, 2),
     },
-    {key: 'd', value: String(dayOfWeek)},
-    {key: 'do', value: getOrdinal(dayOfWeek + 1)},
+    {key: 'd', getValue: () => String(dayOfWeek)},
+    {key: 'do', getValue: () => getOrdinal(dayOfWeek + 1)},
 
     // Day of the year
-    {key: 'DDDD', value: zeroPad(getDayOfYear(date), 3)},
-    {key: 'DDD', value: String(getDayOfYear(date))},
-    {key: 'DDDo', value: getOrdinal(getDayOfYear(date))},
+    {key: 'DDDD', getValue: () => zeroPad(getDayOfYear(date), 3)},
+    {key: 'DDD', getValue: () => String(getDayOfYear(date))},
+    {key: 'DDDo', getValue: () => getOrdinal(getDayOfYear(date))},
 
     // ISO day of week
-    {key: 'E', value: String(getISODayOfWeek(date))},
-
-    // Day of Year
-    {key: 'DDDD', value: zeroPad(getDayOfYear(date), 3)},
-    {key: 'DDD', value: String(getDayOfYear(date))},
+    {key: 'E', getValue: () => String(getISODayOfWeek(date))},
 
     // Week of the year
     // w 1 2 ... 52 53
-    {key: 'w', value: zeroPad(isoWeekNum, 2)},
+    {key: 'w', getValue: () => zeroPad(isoWeekNum, 2)},
     // week 1st 2nd ... 52nd 53rd
-    {key: 'wo', value: getOrdinal(isoWeekNum)},
+    {key: 'wo', getValue: () => getOrdinal(isoWeekNum)},
     // 01 02 ... 52 53
-    {key: 'ww', value: zeroPad(isoWeekNum, 2)},
+    {key: 'ww', getValue: () => zeroPad(isoWeekNum, 2)},
 
     // ISO Week
-    {key: 'WW', value: zeroPad(isoWeekNum, 2)},
-    {key: 'W', value: String(isoWeekNum)},
-    {key: 'Wo', value: getOrdinal(isoWeekNum)},
+    {key: 'WW', getValue: () => zeroPad(isoWeekNum, 2)},
+    {key: 'W', getValue: () => String(isoWeekNum)},
+    {key: 'Wo', getValue: () => getOrdinal(isoWeekNum)},
 
     // or "locale" week => replace isoWeekNum
 
     // 24h hours
-    {key: 'HH', value: zeroPad(hours, 2)},
-    {key: 'H', value: String(hours)},
+    {key: 'HH', getValue: () => zeroPad(hours, 2)},
+    {key: 'H', getValue: () => String(hours)},
 
     // 12h hours
-    {key: 'hh', value: zeroPad(((hours + 11) % 12) + 1, 2)},
-    {key: 'h', value: String(((hours + 11) % 12) + 1)},
+    {key: 'hh', getValue: () => zeroPad(((hours + 11) % 12) + 1, 2)},
+    {key: 'h', getValue: () => String(((hours + 11) % 12) + 1)},
 
     // 1 2 ... 23 24
-    {key: 'k', value: String(hours || 24)},
+    {key: 'k', getValue: () => String(hours || 24)},
     // 01 02 ... 23 24
-    {key: 'kk', value: zeroPad(hours || 24, 2)},
+    {key: 'kk', getValue: () => zeroPad(hours || 24, 2)},
 
     // Minutes
-    {key: 'mm', value: zeroPad(minutes, 2)},
-    {key: 'm', value: String(minutes)},
+    {key: 'mm', getValue: () => zeroPad(minutes, 2)},
+    {key: 'm', getValue: () => String(minutes)},
 
     // Seconds
-    {key: 'ss', value: zeroPad(seconds, 2)},
-    {key: 's', value: String(seconds)},
+    {key: 'ss', getValue: () => zeroPad(seconds, 2)},
+    {key: 's', getValue: () => String(seconds)},
 
     // Fractional seconds (S..SSSS) => handled separately
     // Timezone offset (Z, ZZ) => handled separately
 
     // AM/PM
-    {key: 'A', value: hours < 12 ? 'AM' : 'PM'},
-    {key: 'a', value: hours < 12 ? 'am' : 'pm'},
+    {key: 'A', getValue: () => (hours < 12 ? 'AM' : 'PM')},
+    {key: 'a', getValue: () => (hours < 12 ? 'am' : 'pm')},
 
     // Unix timestamps
-    {key: 'X', value: String(unixSec)},
-    {key: 'x', value: String(unixMs)},
+    {key: 'X', getValue: () => String(unixSec)},
+    {key: 'x', getValue: () => String(unixMs)},
 
     // Eras BC AD
-    {key: 'N', value: year < 0 ? 'BC' : 'AD'},
-    {key: 'NN', value: year < 0 ? 'BC' : 'AD'},
-    {key: 'NNN', value: year < 0 ? 'BC' : 'AD'},
+    {key: 'N', getValue: () => (year < 0 ? 'BC' : 'AD')},
+    {key: 'NN', getValue: () => (year < 0 ? 'BC' : 'AD')},
+    {key: 'NNN', getValue: () => (year < 0 ? 'BC' : 'AD')},
 
     // Before Christ, Anno Domini
-    {key: 'NNNN', value: year < 0 ? 'Before Christ' : 'Anno Domini'},
-    {key: 'NNNNN', value: year < 0 ? 'BC' : 'AD'},
+    {key: 'NNNN', getValue: () => (year < 0 ? 'Before Christ' : 'Anno Domini')},
+    {key: 'NNNNN', getValue: () => (year < 0 ? 'BC' : 'AD')},
 
     // Time zone offset
-    {key: 'z', value: getTimeZoneAbbreviation(date)},
-    {key: 'zz', value: getTimeZoneAbbreviation(date)},
-    {key: 'Z', value: format(date, 'xxx')},
-    {key: 'ZZ', value: format(date, 'xx')},
+    {key: 'z', getValue: () => getTimeZoneAbbreviation(date)},
+    {key: 'zz', getValue: () => getTimeZoneAbbreviation(date)},
+    {key: 'Z', getValue: () => format(date, 'xxx')},
+    {key: 'ZZ', getValue: () => format(date, 'xx')},
+
+    // Time
+    {key: 'LTS', getValue: () => getLocalizedDate(date, {timeStyle: 'medium'})},
+    {key: 'LT', getValue: () => getLocalizedDate(date, {timeStyle: 'short'})},
+
+    // Date (uppercase = longer names)
+    {
+      key: 'LLLL',
+      getValue: () =>
+        getLocalizedDate(date, {
+          weekday: 'long',
+          year: 'numeric',
+          month: 'long',
+          day: 'numeric',
+          hour: 'numeric',
+          minute: 'numeric',
+        }),
+    },
+    {
+      key: 'LLL',
+      getValue: () =>
+        getLocalizedDate(date, {
+          year: 'numeric',
+          month: 'long',
+          day: 'numeric',
+          hour: 'numeric',
+          minute: 'numeric',
+        }),
+    },
+    {
+      key: 'LL',
+      getValue: () => getLocalizedDate(date, {year: 'numeric', month: 'long', day: 'numeric'}),
+    },
+    {
+      key: 'L',
+      getValue: () => getLocalizedDate(date, {year: 'numeric', month: '2-digit', day: '2-digit'}),
+    },
+
+    // Date (lowercase = shorter names)
+    {
+      key: 'llll',
+      getValue: () =>
+        getLocalizedDate(date, {
+          weekday: 'short',
+          year: 'numeric',
+          month: 'short',
+          day: 'numeric',
+          hour: 'numeric',
+          minute: 'numeric',
+        }),
+    },
+    {
+      key: 'lll',
+      getValue: () =>
+        getLocalizedDate(date, {
+          year: 'numeric',
+          month: 'short',
+          day: 'numeric',
+          hour: 'numeric',
+          minute: 'numeric',
+        }),
+    },
+    {
+      key: 'll',
+      getValue: () => getLocalizedDate(date, {year: 'numeric', month: 'short', day: 'numeric'}),
+    },
+    {
+      key: 'l',
+      getValue: () => getLocalizedDate(date, {year: 'numeric', month: 'numeric', day: 'numeric'}),
+    },
   ]
 
   // Sort tokens by descending length to avoid partial collisions
   tokens.sort((a, b) => b.key.length - a.key.length)
 
-  // 1) Fractional seconds
-  const fracSecRegex = /(S{1,4})/g
+  // 1) Fractional seconds (avoid colliding with LTS)
+  const fracSecRegex = /(?<!LT)S{1,4}/g
   let output = processedFormat.replace(fracSecRegex, (match) => {
     return getFractionalSeconds(date, match.length)
   })
 
   // Find each token and replace it, make sure not to replace overlapping tokens
-
-  for (const {key, value} of tokens) {
+  for (const {key, getValue} of tokens) {
     // Escape special characters
     const escapedKey = key.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
     // Match the token, but only if it's not part of a larger word
     const tokenRegex = new RegExp(`(^|[^A-Z0-9a-z])(${escapedKey})(?![A-Z0-9a-z])`, 'g')
-    output = output.replace(tokenRegex, `$1${value}`)
+
+    // Only compute the value if the token exists in the output
+    if (output.match(tokenRegex)) {
+      const value = getValue()
+      output = output.replace(tokenRegex, `$1${value}`)
+    }
   }
 
   // After all token replacements, restore escaped sequences

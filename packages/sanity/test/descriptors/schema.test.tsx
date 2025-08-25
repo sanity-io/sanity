@@ -12,6 +12,7 @@ import {
   type ObjectField,
 } from '../../../@sanity/schema/src/descriptors/types'
 import {builtinSchema, createSchema, DESCRIPTOR_CONVERTER} from '../../src/core/schema'
+import {expectManifestSchemaConversion} from './utils'
 
 const findTypeInDesc = (
   name: string,
@@ -30,6 +31,9 @@ const convertType = (...types: SchemaTypeDefinition[]): EncodedNamedType => {
   }
 
   const desc = DESCRIPTOR_CONVERTER.get(schema)
+
+  expectManifestSchemaConversion(schema, desc)
+
   return findTypeInDesc(types[0].name, desc)!
 }
 

@@ -1,6 +1,6 @@
 import {isMainThread, type MessagePort, parentPort, workerData} from 'node:worker_threads'
 
-import {type CliV3CommandContext, type GraphQLAPIConfig} from '@sanity/cli'
+import {type CliCommandContext, type GraphQLAPIConfig} from '@sanity/cli'
 import {type Schema} from '@sanity/types'
 import {isPlainObject} from 'lodash'
 import oneline from 'oneline'
@@ -29,7 +29,7 @@ async function resolveGraphQLApis({
   cliConfig,
   cliConfigPath,
   workDir,
-}: Pick<CliV3CommandContext, 'cliConfig' | 'cliConfigPath' | 'workDir'>): Promise<
+}: Pick<CliCommandContext, 'cliConfig' | 'cliConfigPath' | 'workDir'>): Promise<
   TypeResolvedGraphQLAPI[]
 > {
   const workspaces = await getStudioWorkspaces({basePath: workDir})

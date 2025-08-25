@@ -85,6 +85,7 @@ import {virtualizationInObject} from './debug/virtualizationInObject'
 import {v3docs} from './docs/v3'
 import markdown from './externalPlugins/markdown'
 import mux from './externalPlugins/mux'
+import house from './house'
 import playlist from './playlist'
 import playlistTrack from './playlistTrack'
 import code from './plugins/code'
@@ -292,6 +293,7 @@ export function createSchemaTypes(projectId: string) {
     author,
     book,
     species,
+    house,
     playlist,
     playlistTrack,
 

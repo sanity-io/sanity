@@ -16,7 +16,7 @@ jobs:
       TURBO_TOKEN: ${{ secrets.TURBO_TOKEN }}
       TURBO_TEAM: ${{ vars.TURBO_TEAM }}
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
       - uses: pnpm/action-setup@v4
       - uses: actions/setup-node@v4
         with:
@@ -48,7 +48,7 @@ jobs:
       TURBO_TEAM: ${{ vars.TURBO_TEAM }}
 
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
         with:
           repository: sanity-io/sanity
       - uses: pnpm/action-setup@v4
@@ -57,7 +57,7 @@ jobs:
           cache: pnpm
           node-version: lts/*
 
-      - uses: actions/download-artifact@v4
+      - uses: actions/download-artifact@v5
         with:
           name: pack-sanity-ui
           path: artifacts
@@ -82,7 +82,7 @@ jobs:
         # Be sure to update all instances in this file and `pr-cleanup.yml` if updated, as well as github required checks
         project: [chromium, firefox]
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
         with:
           repository: sanity-io/sanity
       - uses: pnpm/action-setup@v4
@@ -90,7 +90,7 @@ jobs:
         with:
           cache: pnpm
           node-version: lts/*
-      - uses: actions/download-artifact@v4
+      - uses: actions/download-artifact@v5
         with:
           name: pack-sanity-ui
           path: artifacts
@@ -151,7 +151,7 @@ jobs:
         shardIndex: [1, 2, 3, 4]
         shardTotal: [4]
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
         with:
           repository: sanity-io/sanity
       - uses: pnpm/action-setup@v4
@@ -159,7 +159,7 @@ jobs:
         with:
           cache: pnpm
           node-version: lts/*
-      - uses: actions/download-artifact@v4
+      - uses: actions/download-artifact@v5
         with:
           name: pack-sanity-ui
           path: artifacts
@@ -215,7 +215,7 @@ jobs:
     needs: [playwright-test]
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
         with:
           repository: sanity-io/sanity
       - uses: pnpm/action-setup@v4
@@ -228,7 +228,7 @@ jobs:
         run: pnpm install
 
       - name: Download blob reports from Github Actions Artifacts
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v5
         with:
           pattern: playwright-report-*
           merge-multiple: true

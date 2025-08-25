@@ -113,5 +113,15 @@ export default defineType({
         },
       ],
     },
+    {
+      name: 'dateWithCustomLocale',
+      type: 'datetime',
+      title: 'A datetime field with custom locale',
+      options: {
+        dateFormat: 'LL',
+        timeFormat: 'LT',
+        timeStep: 15,
+      },
+    },
   ],
 })

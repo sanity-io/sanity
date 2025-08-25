@@ -5,37 +5,12 @@ import {type DocumentSchemaType} from 'groq-js'
 import {describe, expect, test} from 'vitest'
 
 import {Schema} from '../../src/legacy/Schema'
+import {builtinTypes} from '../../src/sanity/builtinTypes'
 import {extractSchema} from '../../src/sanity/extractSchema'
 import {groupProblems} from '../../src/sanity/groupProblems'
 import {validateSchema} from '../../src/sanity/validateSchema'
 import schemaFixtures from '../legacy/fixtures/schemas'
-// built-in types
-import assetSourceData from './fixtures/assetSourceData'
 import Block from './fixtures/block'
-import fileAsset from './fixtures/fileAsset'
-import geopoint from './fixtures/geopoint'
-import imageAsset from './fixtures/imageAsset'
-import imageCrop from './fixtures/imageCrop'
-import imageDimensions from './fixtures/imageDimensions'
-import imageHotspot from './fixtures/imageHotspot'
-import imageMetadata from './fixtures/imageMetadata'
-import imagePalette from './fixtures/imagePalette'
-import imagePaletteSwatch from './fixtures/imagePaletteSwatch'
-import slug from './fixtures/slug'
-
-const builtinTypes = [
-  assetSourceData,
-  slug,
-  geopoint,
-  imageAsset,
-  fileAsset,
-  imageCrop,
-  imageHotspot,
-  imageMetadata,
-  imageDimensions,
-  imagePalette,
-  imagePaletteSwatch,
-]
 
 // taken from sanity/src/core/schema/createSchema.ts
 function createSchema(schemaDef: {name: string; types: any[]}, skipBuiltins = false) {
@@ -433,6 +408,11 @@ describe('Extract schema test', () => {
               validation: (Rule) => Rule.required(),
             }),
             {
+              title: 'Image',
+              name: 'image',
+              type: 'image',
+            },
+            {
               title: 'Another Title',
               name: 'anotherTitle',
               type: 'string',
@@ -459,6 +439,15 @@ describe('Extract schema test', () => {
     expect(book.attributes.subtitle.optional).toBe(false)
     expect(book.attributes.anotherTitle.optional).toBe(false)
     expect(book.attributes.optionalTitle.optional).toBe(true)
+    expect(book.attributes.image.optional).toBe(true)
+    assert(book.attributes.image.value.type === 'object') // this is a workaround for TS, but leave the expect above for clarity in case of failure
+
+    const hotspot = extracted.find((type) => type.name === 'sanity.imageHotspot')
+    assert(hotspot !== undefined)
+    assert(hotspot.type === 'type')
+    assert(hotspot.value.type === 'object')
+    expect(hotspot.value.attributes.x.optional).toBe(false)
+    expect(hotspot.value.attributes.y.optional).toBe(false)
   })
 
   test('enforceRequiredFields handles `assetRequired`', () => {
