@@ -19,7 +19,7 @@
   "dependencies": {
     "@portabletext/block-tools": "^3.3.3",
     "@portabletext/editor": "^2.6.3",
-    "@portabletext/react": "^3.2.1",
+    "@portabletext/react": "^3.2.4",
     "@sanity/assist": "^5.0.0",
     "@sanity/cli": "workspace:*",
     "@sanity/client": "^7.9.0",
@@ -70,6 +70,6 @@
     "@repo/eslint-config": "workspace:*",
     "babel-plugin-react-compiler": "19.1.0-rc.2",
     "chokidar": "^3.6.0",
-    "vite": "^7.1.2"
+    "vite": "^7.1.3"
   }
 }
