@@ -97,3 +97,16 @@ export const getReleaseDefaults: () => EditableReleaseDocument = () => ({
 export function isNotArchivedRelease(release: ReleaseDocument): release is NotArchivedRelease {
   return release.state !== 'archived'
 }
+
+/**
+ * Check if the release is a cardinality one release
+ *
+ * @internal
+ */
+export function isCardinalityOneRelease(release: ReleaseDocument): release is ReleaseDocument & {
+  metadata: ReleaseDocument['metadata'] & {
+    cardinality: 'one'
+  }
+} {
+  return release.metadata.cardinality === 'one'
+}

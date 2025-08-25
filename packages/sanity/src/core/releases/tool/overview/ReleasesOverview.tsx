@@ -1,3 +1,4 @@
+/* eslint-disable max-statements */
 import {type ReleaseDocument} from '@sanity/client'
 import {AddIcon, ChevronDownIcon, EarthGlobeIcon} from '@sanity/icons'
 import {Box, type ButtonMode, Card, Flex, Inline, Stack, Text, useMediaIndex} from '@sanity/ui'
@@ -24,7 +25,7 @@ import {useReleaseOperations} from '../../store/useReleaseOperations'
 import {useReleasePermissions} from '../../store/useReleasePermissions'
 import {type ReleasesMetadata, useReleasesMetadata} from '../../store/useReleasesMetadata'
 import {getReleaseTone} from '../../util/getReleaseTone'
-import {getReleaseDefaults} from '../../util/util'
+import {getReleaseDefaults, isCardinalityOneRelease} from '../../util/util'
 import {Table, type TableRowProps} from '../components/Table/Table'
 import {type TableSort} from '../components/Table/TableProvider'
 import {ReleaseIllustration} from '../resources/ReleaseIllustration'
@@ -57,9 +58,18 @@ const DEFAULT_ARCHIVED_RELEASES_OVERVIEW_SORT: TableSort = {
 }
 
 export function ReleasesOverview() {
-  const {data: releases, loading: loadingReleases} = useActiveReleases()
-  const {data: archivedReleases} = useArchivedReleases()
+  const {data: allReleases, loading: loadingReleases} = useActiveReleases()
+  const {data: allArchivedReleases} = useArchivedReleases()
   const {mode} = useReleasesUpsell()
+
+  const releases = useMemo(
+    () => allReleases.filter((release) => !isCardinalityOneRelease(release)),
+    [allReleases],
+  )
+  const archivedReleases = useMemo(
+    () => allArchivedReleases.filter((release) => !isCardinalityOneRelease(release)),
+    [allArchivedReleases],
+  )
 
   const router = useRouter()
   const [releaseGroupMode, setReleaseGroupMode] = useState<Mode>(getInitialReleaseGroupMode(router))
