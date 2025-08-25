@@ -5,6 +5,7 @@ import zlib from 'node:zlib'
 import {type CliCommandArguments, type CliCommandContext} from '@sanity/cli'
 import tar from 'tar-fs'
 
+import {getAppId} from '../../util/getAppId'
 import {shouldAutoUpdate} from '../../util/shouldAutoUpdate'
 import {
   checkDir,
@@ -34,7 +35,8 @@ export default async function deployAppAction(
   const isAutoUpdating = shouldAutoUpdate({flags, cliConfig})
 
   const installedSanityVersion = await getInstalledSanityVersion()
-  const appId = cliConfig && 'app' in cliConfig && cliConfig.app?.id
+  const appId = getAppId({cliConfig, output})
+  const appHost = getAppId({cliConfig, output})
 
   const client = apiClient({
     requireUser: true,
@@ -77,8 +79,11 @@ export default async function deployAppAction(
     }
 
     // If the user has provided an appId in the config, use that
-    if (appId) {
-      userApplication = await getOrCreateUserApplicationFromConfig({...configParams, appId})
+    if (appId || appHost) {
+      userApplication = await getOrCreateUserApplicationFromConfig({
+        ...configParams,
+        ...(appId ? {appId, appHost: undefined} : {appId: undefined, appHost}),
+      })
     } else {
       userApplication = await getOrCreateApplication(configParams)
     }

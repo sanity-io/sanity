@@ -19,6 +19,7 @@ import {type DevServerOptions, startDevServer} from '../../server/devServer'
 import {checkRequiredDependencies} from '../../util/checkRequiredDependencies'
 import {checkStudioDependencyVersions} from '../../util/checkStudioDependencyVersions'
 import {compareDependencyVersions} from '../../util/compareDependencyVersions'
+import {getAppId} from '../../util/getAppId'
 import {isInteractive} from '../../util/isInteractive'
 import {getPackageManagerChoice} from '../../util/packageManager/packageManagerChoice'
 import {upgradePackages} from '../../util/packageManager/upgradePackages'
@@ -168,12 +169,13 @@ export default async function startSanityDevServer(
       {name: 'sanity', version: cleanSanityVersion},
       {name: '@sanity/vision', version: cleanSanityVersion},
     ]
+    const appId = getAppId({cliConfig, output})
 
     output.print(`${info} Running with auto-updates enabled`)
     // Check local versions against deployed versions
     let result: Awaited<ReturnType<typeof compareDependencyVersions>> | undefined
     try {
-      result = await compareDependencyVersions(sanityDependencies, workDir)
+      result = await compareDependencyVersions(sanityDependencies, workDir, {appId})
     } catch (err) {
       console.warn(
         new Error('Failed to compare local versions against auto-updating versions', {
