@@ -12,7 +12,7 @@ export const handler = documentEventHandler(async ({context, event}) => {
 
   try {
     const result = await client.agent.action.generate({
-      noWrite: local ? true : false, // if local is true, we don't want to write to the document, just return the result for logging
+      noWrite: Boolean(local), // if local is true, we don't want to write to the document, just return the result for logging
       instructionParams: {
         review: {
           type: 'field',
