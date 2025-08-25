@@ -1,7 +1,8 @@
 const MODULES_HOST =
-  process.env.SANITY_INTERNAL_ENV === 'staging'
+  process.env.SANITY_MODULES_HOST ||
+  (process.env.SANITY_INTERNAL_ENV === 'staging'
     ? 'https://sanity-cdn.work'
-    : 'https://sanity-cdn.com'
+    : 'https://sanity-cdn.com')
 
 function currentUnixTime(): number {
   return Math.floor(Date.now() / 1000)
