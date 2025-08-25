@@ -19,7 +19,6 @@ import {type DevServerOptions, startDevServer} from '../../server/devServer'
 import {checkRequiredDependencies} from '../../util/checkRequiredDependencies'
 import {checkStudioDependencyVersions} from '../../util/checkStudioDependencyVersions'
 import {compareDependencyVersions} from '../../util/compareDependencyVersions'
-import {getStudioAutoUpdateImportMap} from '../../util/getAutoUpdatesImportMap'
 import {isInteractive} from '../../util/isInteractive'
 import {getPackageManagerChoice} from '../../util/packageManager/packageManagerChoice'
 import {upgradePackages} from '../../util/packageManager/upgradePackages'
@@ -157,21 +156,24 @@ export default async function startSanityDevServer(
   }
 
   const autoUpdatesEnabled = shouldAutoUpdate({flags, cliConfig})
-
-  // Get the clean version without build metadata: https://semver.org/#spec-item-10
-  const cleanSanityVersion = semver.parse(installedSanityVersion)?.version
-  if (autoUpdatesEnabled && !cleanSanityVersion) {
-    throw new Error(`Failed to parse installed Sanity version: ${installedSanityVersion}`)
-  }
-  const version = encodeURIComponent(`^${cleanSanityVersion}`)
-  const autoUpdatesImports = getStudioAutoUpdateImportMap(version)
-
+  const autoUpdatesImports = {}
   if (autoUpdatesEnabled) {
+    // Get the clean version without build metadata: https://semver.org/#spec-item-10
+    const cleanSanityVersion = semver.parse(installedSanityVersion)?.version
+    if (!cleanSanityVersion) {
+      throw new Error(`Failed to parse installed Sanity version: ${installedSanityVersion}`)
+    }
+
+    const sanityDependencies = [
+      {name: 'sanity', version: cleanSanityVersion},
+      {name: '@sanity/vision', version: cleanSanityVersion},
+    ]
+
     output.print(`${info} Running with auto-updates enabled`)
     // Check local versions against deployed versions
     let result: Awaited<ReturnType<typeof compareDependencyVersions>> | undefined
     try {
-      result = await compareDependencyVersions(autoUpdatesImports, workDir)
+      result = await compareDependencyVersions(sanityDependencies, workDir)
     } catch (err) {
       console.warn(
         new Error('Failed to compare local versions against auto-updating versions', {
