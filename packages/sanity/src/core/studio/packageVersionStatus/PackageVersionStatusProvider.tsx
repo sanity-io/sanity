@@ -27,7 +27,7 @@ const DEBUG_AUTO_UPDATE_VERSION = false
 
 const DEBUG_VALUES = {
   currentVersion: '4.0.0-pr.10176',
-  importMapUrl: 'https://sanity-cdn.com/v1/modules/sanity/default/%5E3.80.1/t1754072932',
+  importMapUrl: 'https://sanity-cdn.com/v1/modules/by-app/appid123/t1755876954/%5E4.5.0/sanity',
   autoUpdateVersion: '4.2.0-next.17',
   latestVersion: '4.5.5',
 } as const
@@ -42,15 +42,16 @@ export function PackageVersionStatusProvider({children}: {children: ReactNode}) 
 
   const currentVersion = useMemo(() => semver.parse(CURRENT_VERSION)!, [])
 
-  const baseVersion = useMemo(
-    () =>
-      sanityPackageImportMapEntryValue
-        ? semver.coerce(getBaseVersionFromModuleCDNUrl(sanityPackageImportMapEntryValue), {
-            includePrerelease: true,
-          })!
-        : currentVersion!,
-    [currentVersion, sanityPackageImportMapEntryValue],
-  )
+  const baseVersion =
+    useMemo(
+      () =>
+        sanityPackageImportMapEntryValue
+          ? semver.coerce(getBaseVersionFromModuleCDNUrl(sanityPackageImportMapEntryValue), {
+              includePrerelease: true,
+            })
+          : currentVersion!,
+      [currentVersion, sanityPackageImportMapEntryValue],
+    ) || undefined
 
   const isAutoUpdating = Boolean(sanityPackageImportMapEntryValue)
 
@@ -85,14 +86,16 @@ export function PackageVersionStatusProvider({children}: {children: ReactNode}) 
     // Note: in theory, and in the future, there might be multiple auto-updateable packages
     // but for now, we only care about the `sanity`-package
     Promise.all([
-      isAutoUpdating
-        ? DEBUG_AUTO_UPDATE_VERSION
-          ? Promise.resolve(DEBUG_VALUES.autoUpdateVersion)
-          : fetchLatestVersionForPackage('sanity', baseVersion.version)
-        : Promise.resolve(undefined),
+      DEBUG_AUTO_UPDATE_VERSION
+        ? Promise.resolve(DEBUG_VALUES.autoUpdateVersion)
+        : isAutoUpdating && baseVersion
+          ? fetchLatestVersionForPackage('sanity', baseVersion.version)
+          : Promise.resolve(undefined),
       DEBUG_LATEST_VERSION
         ? Promise.resolve(DEBUG_VALUES.latestVersion)
-        : fetchLatestVersionForPackage('sanity', baseVersion.version, 'latest'),
+        : baseVersion
+          ? fetchLatestVersionForPackage('sanity', baseVersion.version, 'latest')
+          : Promise.resolve(undefined),
     ])
       .then(([nextAutoUpdatingVersion, nextLatestTaggedVersion]) => {
         setAutoUpdatingVersionRaw(nextAutoUpdatingVersion)
