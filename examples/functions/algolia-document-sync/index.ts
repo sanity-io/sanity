@@ -5,6 +5,9 @@ import {algoliasearch} from 'algoliasearch'
 
 const {ALGOLIA_APP_ID = '', ALGOLIA_WRITE_KEY = ''} = env
 
+// TODO: Allow this function to run on multiple indexes/post types (e.g. 'posts', 'products', 'events', etc.)
+const ALGOLIA_INDEX_NAME = 'posts'
+
 export const handler = documentEventHandler(async ({event}) => {
   const {_id, title, hideFromSearch, operation} = event.data
 
@@ -14,7 +17,7 @@ export const handler = documentEventHandler(async ({event}) => {
       // We are assuming you already have an algolia instance setup with an index called 'posts'
       // addOrUpdateObject documentation: https://www.algolia.com/doc/libraries/javascript/v5/methods/search/delete-object/?client=javascript
       await algolia.deleteObject({
-        indexName: 'posts',
+        indexName: ALGOLIA_INDEX_NAME,
         objectID: _id,
       })
 
@@ -28,7 +31,7 @@ export const handler = documentEventHandler(async ({event}) => {
       // We are assuming you already have an algolia instance setup with an index called 'posts'
       // addOrUpdateObject documentation: https://www.algolia.com/doc/libraries/javascript/v5/methods/search/add-or-update-object/?client=javascript
       await algolia.addOrUpdateObject({
-        indexName: 'posts',
+        indexName: ALGOLIA_INDEX_NAME,
         objectID: _id,
         body: {
           title,

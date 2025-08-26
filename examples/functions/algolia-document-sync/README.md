@@ -216,7 +216,7 @@ await algolia.addOrUpdateObject({
 
 ### Change Target Index
 
-Modify the index name to sync to a different Algolia index:
+Modify the index name to sync to a different Algolia index, alternatively pass \_type into the projection so you can sync to indexes based on the post type, allowing one function to update many indexes:
 
 ```typescript
 await algolia.addOrUpdateObject({
