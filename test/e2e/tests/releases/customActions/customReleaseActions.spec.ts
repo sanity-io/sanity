@@ -1,4 +1,4 @@
-import {expect} from '@playwright/test'
+import {expect, type Page} from '@playwright/test'
 
 import {test} from '../../../studio-test'
 import {speciesDocumentNameASAP} from '../utils/__fixtures__/documents'
@@ -50,7 +50,7 @@ test.describe('Custom Release Actions', () => {
     await archiveAndDeleteRelease({sanityClient, dataset, releaseId: asapReleaseId})
   })
 
-  const openReleaseMenu = async (page: any, isOverview: boolean) => {
+  const openReleaseMenu = async (page: Page, isOverview: boolean) => {
     if (isOverview) {
       // On overview page, wait for the release to appear and then click its menu button
       const releaseRow = page.getByRole('row').filter({hasText: uniqueReleaseTitle}).first()
@@ -67,7 +67,7 @@ test.describe('Custom Release Actions', () => {
     }
   }
 
-  const expectCustomActionInMenu = async (page: any) => {
+  const expectCustomActionInMenu = async (page: Page) => {
     const menuItem = page.getByRole('menuitem', {name: `E2E Test Action: ${uniqueReleaseTitle}`})
     await expect(menuItem).toBeVisible()
     return menuItem
