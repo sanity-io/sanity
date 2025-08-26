@@ -266,7 +266,6 @@ export const Preview = memo(
           typeof document.startViewTransition === 'function'
         ) {
           document.startViewTransition({
-            // @ts-expect-error - fix typings
             update: () => flushSync(() => update()),
             types: ['sanity-iframe-viewport'],
           })
