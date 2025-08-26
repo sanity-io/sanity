@@ -9,6 +9,7 @@ import {UpsellDialog} from '../../../studio/upsell/UpsellDialog'
 import {DEFAULT_STUDIO_CLIENT_OPTIONS} from '../../../studioClient'
 import {type DocumentLimitUpsellContextValue} from './types'
 
+// TODO: use www.sanity.io once personalization-forge is updated
 const BASE_URL = 'www.sanity.work'
 
 export function DocumentLimitUpsellProvider({children}: PropsWithChildren) {
