@@ -39,6 +39,15 @@ export interface LatencyReportEvent {
   transactionId: string
 }
 
+export enum DocumentMutationCommitErrorType {
+  DocumentLimitExceeded = 'documentLimitExceededError',
+}
+
+export interface DocumentMutationCommitError {
+  type: DocumentMutationCommitErrorType
+  statusCode: number
+}
+
 /** @internal */
 export interface DocumentStoreExtraOptions {
   tag?: string
@@ -50,7 +59,7 @@ export interface DocumentStoreExtraOptions {
    */
   onSyncErrorRecovery?(error: OutOfSyncError): void
   onReportLatency?: (event: LatencyReportEvent) => void
-  onDocumentMutationCommitErrorRecovery?: (event: any) => void
+  onDocumentMutationCommitErrorRecovery?: (error: DocumentMutationCommitError) => void
 }
 
 /** @internal */

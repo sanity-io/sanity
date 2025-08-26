@@ -129,7 +129,6 @@ export function createDocumentStore({
   // for things like validations
   const client = getClient(DEFAULT_STUDIO_CLIENT_OPTIONS)
 
-  const {onReportLatency, onSyncErrorRecovery, onDocumentMutationCommitErrorRecovery} = extraOptions
   const ctx = {
     client,
     getClient,

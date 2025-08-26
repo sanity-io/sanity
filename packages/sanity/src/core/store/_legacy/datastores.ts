@@ -18,7 +18,13 @@ import {
   type ConnectionStatusStore,
   createConnectionStatusStore,
 } from './connection-status/connection-status-store'
-import {createDocumentStore, type DocumentStore, type LatencyReportEvent} from './document'
+import {
+  createDocumentStore,
+  type DocumentMutationCommitError,
+  DocumentMutationCommitErrorType,
+  type DocumentStore,
+  type LatencyReportEvent,
+} from './document'
 import {DocumentDesynced} from './document/__telemetry__/documentOutOfSyncEvents.telemetry'
 import {HighListenerLatencyOccurred} from './document/__telemetry__/listenerLatency.telemetry'
 import {type OutOfSyncError} from './document/utils/sequentializeListenerEvents'
@@ -143,7 +149,7 @@ export function useDocumentStore(): DocumentStore {
   const resourceCache = useResourceCache()
   const historyStore = useHistoryStore()
   const documentPreviewStore = useDocumentPreviewStore()
-  const {handleOpenDialog} = useDocumentLimitsUpsellContext()
+  const {handleOpenDialog: handleOpenDocumentLimitsUpsellDialog} = useDocumentLimitsUpsellContext()
   const workspace = useWorkspace()
 
   const serverActionsEnabled = useMemo(() => {
@@ -154,11 +160,19 @@ export function useDocumentStore(): DocumentStore {
   const telemetry = useTelemetry()
 
   const handleDocumentMutationCommitErrorRecovery = useCallback(
-    (error: any) => {
-      // TODO: add telemetry and check error 'type' to decide what to do with the error
-      handleOpenDialog('document_action')
+    (error: DocumentMutationCommitError) => {
+      // TODO: add telemetry
+
+      switch (error.type) {
+        case DocumentMutationCommitErrorType.DocumentLimitExceeded:
+          handleOpenDocumentLimitsUpsellDialog('document_action')
+          break
+        default:
+          // allow error to bubble up
+          throw new Error(error)
+      }
     },
-    [handleOpenDialog],
+    [handleOpenDocumentLimitsUpsellDialog],
   )
 
   const handleSyncErrorRecovery = useCallback(
