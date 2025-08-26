@@ -126,8 +126,8 @@
     "@types/react": "catalog:",
     "@types/semver": "^7.7.0",
     "@types/yargs": "^17.0.33",
-    "@typescript-eslint/eslint-plugin": "^8.39.1",
-    "@typescript-eslint/parser": "^8.39.1",
+    "@typescript-eslint/eslint-plugin": "^8.40.0",
+    "@typescript-eslint/parser": "^8.40.0",
     "@vitejs/plugin-react": "catalog:",
     "@vitest/coverage-v8": "^3.2.4",
     "cac": "^6.7.14",
@@ -138,7 +138,7 @@
     "dotenv-flow": "^4.1.0",
     "esbuild": "catalog:",
     "esbuild-register": "catalog:",
-    "eslint": "^9.33.0",
+    "eslint": "^9.34.0",
     "eslint-formatter-compact": "^8.40.0",
     "eslint-plugin-react-hooks": "0.0.0-experimental-e9638c33-20250721",
     "execa": "^2.1.0",
@@ -160,10 +160,10 @@
     "rxjs": "^7.8.2",
     "sanity": "workspace:*",
     "semver": "^7.7.2",
-    "tsx": "^4.20.4",
+    "tsx": "^4.20.5",
     "turbo": "^2.5.6",
     "typescript": "catalog:",
-    "vite": "^7.1.2",
+    "vite": "^7.1.3",
     "vite-tsconfig-paths": "^5.1.4",
     "vitest": "3.2.4",
     "yargs": "^17.7.2"
@@ -171,7 +171,7 @@
   "optionalDependencies": {
     "node-notifier": "^10.0.0"
   },
-  "packageManager": "pnpm@10.14.0",
+  "packageManager": "pnpm@10.15.0",
   "pnpm": {
     "peerDependencyRules": {
       "allowAny": [
