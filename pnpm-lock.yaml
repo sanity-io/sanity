@@ -505,10 +505,10 @@ importers:
     dependencies:
       '@portabletext/block-tools':
         specifier: ^3.3.3
-        version: 3.3.3(@sanity/schema@packages+@sanity+schema)(@sanity/types@packages+@sanity+types)(@types/react@19.1.11)
+        version: 3.4.0(@sanity/schema@packages+@sanity+schema)(@sanity/types@packages+@sanity+types)(@types/react@19.1.11)
       '@portabletext/editor':
-        specifier: ^2.6.3
-        version: 2.6.3(@portabletext/sanity-bridge@1.1.5(@sanity/schema@packages+@sanity+schema)(@sanity/types@packages+@sanity+types))(@sanity/schema@packages+@sanity+schema)(@sanity/types@packages+@sanity+types)(@types/react@19.1.11)(react-dom@19.1.1(react@19.1.1))(react@19.1.1)(rxjs@7.8.2)
+        specifier: ^2.6.4
+        version: 2.6.4(@portabletext/sanity-bridge@1.1.6(@sanity/schema@packages+@sanity+schema)(@sanity/types@packages+@sanity+types))(@sanity/schema@packages+@sanity+schema)(@sanity/types@packages+@sanity+types)(@types/react@19.1.11)(react-dom@19.1.1(react@19.1.1))(react@19.1.1)(rxjs@7.8.2)
       '@portabletext/react':
         specifier: ^4.0.1
         version: 4.0.1(react@19.1.1)
@@ -1643,10 +1643,10 @@ importers:
         version: 3.5.3(@types/react-dom@19.1.7(@types/react@19.1.11))(@types/react@19.1.11)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
       '@portabletext/block-tools':
         specifier: ^3.3.3
-        version: 3.3.3(@sanity/schema@packages+@sanity+schema)(@sanity/types@packages+@sanity+types)(@types/react@19.1.11)
+        version: 3.4.0(@sanity/schema@packages+@sanity+schema)(@sanity/types@packages+@sanity+types)(@types/react@19.1.11)
       '@portabletext/editor':
-        specifier: ^2.6.3
-        version: 2.6.3(@portabletext/sanity-bridge@1.1.5(@sanity/schema@packages+@sanity+schema)(@sanity/types@packages+@sanity+types))(@sanity/schema@packages+@sanity+schema)(@sanity/types@packages+@sanity+types)(@types/react@19.1.11)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(rxjs@7.8.2)
+        specifier: ^2.6.4
+        version: 2.6.4(@portabletext/sanity-bridge@1.1.6(@sanity/schema@packages+@sanity+schema)(@sanity/types@packages+@sanity+types))(@sanity/schema@packages+@sanity+schema)(@sanity/types@packages+@sanity+types)(@types/react@19.1.11)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(rxjs@7.8.2)
       '@portabletext/react':
         specifier: ^4.0.1
         version: 4.0.1(react@18.3.1)
@@ -4337,17 +4337,17 @@ packages:
     resolution: {integrity: sha512-c83qWb22rNRuB0UaVCI0uRPNRr8Z0FWnEIvT47jiHAmOIUHbBOg5XvV7pM5x+rKn9HRpjxquDbXYSXr3fAKFcw==}
     engines: {node: '>=12'}
 
-  '@portabletext/block-tools@3.3.3':
-    resolution: {integrity: sha512-YrHNleCHPJsAyUcA1qEuSmhKq/+TNsBYrFQ88BCIG8Q0ZeMO5koCAiCTEGzkVD4IW/jx+KDcioSsaH4Ioo0FrA==}
+  '@portabletext/block-tools@3.4.0':
+    resolution: {integrity: sha512-/Su6BUttkP3NwCNbOVrM7NeQSIgnqltEiMs6B1YbGDxxU1ykMeMkn29kj3KpHmDnOGbgAGViARzxXpNQ9Pxs5A==}
     peerDependencies:
       '@sanity/types': ^4.5.0
       '@types/react': ^18.3 || ^19
 
-  '@portabletext/editor@2.6.3':
-    resolution: {integrity: sha512-HsUwRmMVJYSLaU8xQY8YsW1Scb1e1SFwQW7MfdjVkxUCXEZ8/0V3ZLvUcm5vaGErdSeyA7mLGPXlE+1jyIIsIQ==}
+  '@portabletext/editor@2.6.4':
+    resolution: {integrity: sha512-C0B+GJWdGfT/FKNyg9XECt87sYmERAf9wD2Y+Zmp6ZwTLAvLuvCHRZ8wjRmUkxuHGOqj/7FD3nnEfPo0wEkMXA==}
     engines: {node: '>=20.19 <22 || >=22.12'}
     peerDependencies:
-      '@portabletext/sanity-bridge': ^1.1.5
+      '@portabletext/sanity-bridge': ^1.1.6
       '@sanity/schema': ^4.5.0
       '@sanity/types': ^4.5.0
       react: ^18.3 || ^19
@@ -4371,15 +4371,15 @@ packages:
     peerDependencies:
       react: ^18.2 || ^19
 
-  '@portabletext/sanity-bridge@1.1.5':
-    resolution: {integrity: sha512-rUsWW9ZrcPdSJD/mEiPykhrFVC/rhifKpaRuvyVVyQJDfFgX74ZyuO2pt/UlJezbm/NrozRENtAG4WaSLkSpvg==}
+  '@portabletext/sanity-bridge@1.1.6':
+    resolution: {integrity: sha512-i3itF2h43EWQbRmzW+6NDoo9pMG7GCEkdljhcG7K9W5IKKSNi6Jo9g4iFMU08NkDl04T9AbMtSrSvfwoBfl6Fw==}
     engines: {node: '>=20.19 <22 || >=22.12'}
     peerDependencies:
       '@sanity/schema': ^4.5.0
       '@sanity/types': ^4.5.0
 
-  '@portabletext/schema@1.1.0':
-    resolution: {integrity: sha512-ohSLgpCjiHqJAHOhwxKpnZDq9lmK0TrGWoxk+Nh7yoroqC8m8c0NyHoZN6yIC9jOYlka0J63CIuXTscN7GHpRw==}
+  '@portabletext/schema@1.2.0':
+    resolution: {integrity: sha512-LGu5KSJkOZvj1mggjj6vYURRUOMgXDXFwpl7rsFQks7vVuemJ1xJldUXSatfcloNTrpgu/ye5Iz+kOrFe7XDFQ==}
 
   '@portabletext/to-html@3.0.0':
     resolution: {integrity: sha512-MlU5Og1HqYnU9riXjtydJQcrG/kWmtgo8q2pGEDmLMbKD0Agel4umYLhVoHhRAwC7AEApu9U4BweO8HkY0SIow==}
@@ -11091,8 +11091,8 @@ packages:
     resolution: {integrity: sha512-g9Q1haeby36OSStwb4ntCGGGaKsaVSjQ68fBxoQcutl5fS1vuY18H3wSt3jFyFtrkx+Kz0V1G85A4MyAdDMi2Q==}
     engines: {node: '>=8'}
 
-  slate-dom@0.117.4:
-    resolution: {integrity: sha512-eu5MMpphkCnr22R6hgFoQt/tEaHBjSdSy7uJjPOm++hCxstoLefp04EY50A4rXBovjkYoAncb9j8QoijZd0ENA==}
+  slate-dom@0.118.1:
+    resolution: {integrity: sha512-D6J0DF9qdJrXnRDVhYZfHzzpVxzqKRKFfS0Wcin2q0UC+OnQZ0lbCGJobatVbisOlbSe7dYFHBp9OZ6v1lEcbQ==}
     peerDependencies:
       slate: '>=0.99.0'
 
@@ -11104,8 +11104,8 @@ packages:
       slate: '>=0.114.0'
       slate-dom: '>=0.116.0'
 
-  slate@0.118.0:
-    resolution: {integrity: sha512-XAHgaoN3IikTz83DlJWZWR7e4SjuRn1Ps6I717fL7yaITF7zhZm5z8zbU+TaPlHu4APCV6TCMIF33EZdW3GqfQ==}
+  slate@0.118.1:
+    resolution: {integrity: sha512-6H1DNgnSwAFhq/pIgf+tLvjNzH912M5XrKKhP9Frmbds2zFXdSJ6L/uFNyVKxQIkPzGWPD0m+wdDfmEuGFH5Tg==}
 
   slice-ansi@5.0.0:
     resolution: {integrity: sha512-FC+lgizVPfie0kkhqUScwRu1O/lF6NOgJmlCgK+/LYxDCTk8sGelYaHDhFcDN+Sn3Cv+3VSa4Byeo+IMCzpMgQ==}
@@ -14845,10 +14845,10 @@ snapshots:
       '@pnpm/network.ca-file': 1.0.2
       config-chain: 1.1.13
 
-  '@portabletext/block-tools@3.3.3(@sanity/schema@packages+@sanity+schema)(@sanity/types@packages+@sanity+types)(@types/react@19.1.11)':
+  '@portabletext/block-tools@3.4.0(@sanity/schema@packages+@sanity+schema)(@sanity/types@packages+@sanity+types)(@types/react@19.1.11)':
     dependencies:
-      '@portabletext/sanity-bridge': 1.1.5(@sanity/schema@packages+@sanity+schema)(@sanity/types@packages+@sanity+types)
-      '@portabletext/schema': 1.1.0
+      '@portabletext/sanity-bridge': 1.1.6(@sanity/schema@packages+@sanity+schema)(@sanity/types@packages+@sanity+types)
+      '@portabletext/schema': 1.2.0
       '@sanity/types': link:packages/@sanity/types
       '@types/react': 19.1.11
       get-random-values-esm: 1.0.2
@@ -14856,13 +14856,13 @@ snapshots:
     transitivePeerDependencies:
       - '@sanity/schema'
 
-  '@portabletext/editor@2.6.3(@portabletext/sanity-bridge@1.1.5(@sanity/schema@packages+@sanity+schema)(@sanity/types@packages+@sanity+types))(@sanity/schema@packages+@sanity+schema)(@sanity/types@packages+@sanity+types)(@types/react@19.1.11)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(rxjs@7.8.2)':
+  '@portabletext/editor@2.6.4(@portabletext/sanity-bridge@1.1.6(@sanity/schema@packages+@sanity+schema)(@sanity/types@packages+@sanity+types))(@sanity/schema@packages+@sanity+schema)(@sanity/types@packages+@sanity+types)(@types/react@19.1.11)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(rxjs@7.8.2)':
     dependencies:
-      '@portabletext/block-tools': 3.3.3(@sanity/schema@packages+@sanity+schema)(@sanity/types@packages+@sanity+types)(@types/react@19.1.11)
+      '@portabletext/block-tools': 3.4.0(@sanity/schema@packages+@sanity+schema)(@sanity/types@packages+@sanity+types)(@types/react@19.1.11)
       '@portabletext/keyboard-shortcuts': 1.1.1
       '@portabletext/patches': 1.1.8
-      '@portabletext/sanity-bridge': 1.1.5(@sanity/schema@packages+@sanity+schema)(@sanity/types@packages+@sanity+types)
-      '@portabletext/schema': 1.1.0
+      '@portabletext/sanity-bridge': 1.1.6(@sanity/schema@packages+@sanity+schema)(@sanity/types@packages+@sanity+types)
+      '@portabletext/schema': 1.2.0
       '@portabletext/to-html': 3.0.0
       '@sanity/schema': link:packages/@sanity/schema
       '@sanity/types': link:packages/@sanity/types
@@ -14875,22 +14875,22 @@ snapshots:
       react: 18.3.1
       react-compiler-runtime: 19.1.0-rc.2(react@18.3.1)
       rxjs: 7.8.2
-      slate: 0.118.0
-      slate-dom: 0.117.4(slate@0.118.0)
-      slate-react: 0.117.4(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(slate-dom@0.117.4(slate@0.118.0))(slate@0.118.0)
+      slate: 0.118.1
+      slate-dom: 0.118.1(slate@0.118.1)
+      slate-react: 0.117.4(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(slate-dom@0.118.1(slate@0.118.1))(slate@0.118.1)
       xstate: 5.20.2
     transitivePeerDependencies:
       - '@types/react'
       - react-dom
       - supports-color
 
-  '@portabletext/editor@2.6.3(@portabletext/sanity-bridge@1.1.5(@sanity/schema@packages+@sanity+schema)(@sanity/types@packages+@sanity+types))(@sanity/schema@packages+@sanity+schema)(@sanity/types@packages+@sanity+types)(@types/react@19.1.11)(react-dom@19.1.1(react@19.1.1))(react@19.1.1)(rxjs@7.8.2)':
+  '@portabletext/editor@2.6.4(@portabletext/sanity-bridge@1.1.6(@sanity/schema@packages+@sanity+schema)(@sanity/types@packages+@sanity+types))(@sanity/schema@packages+@sanity+schema)(@sanity/types@packages+@sanity+types)(@types/react@19.1.11)(react-dom@19.1.1(react@19.1.1))(react@19.1.1)(rxjs@7.8.2)':
     dependencies:
-      '@portabletext/block-tools': 3.3.3(@sanity/schema@packages+@sanity+schema)(@sanity/types@packages+@sanity+types)(@types/react@19.1.11)
+      '@portabletext/block-tools': 3.4.0(@sanity/schema@packages+@sanity+schema)(@sanity/types@packages+@sanity+types)(@types/react@19.1.11)
       '@portabletext/keyboard-shortcuts': 1.1.1
       '@portabletext/patches': 1.1.8
-      '@portabletext/sanity-bridge': 1.1.5(@sanity/schema@packages+@sanity+schema)(@sanity/types@packages+@sanity+types)
-      '@portabletext/schema': 1.1.0
+      '@portabletext/sanity-bridge': 1.1.6(@sanity/schema@packages+@sanity+schema)(@sanity/types@packages+@sanity+types)
+      '@portabletext/schema': 1.2.0
       '@portabletext/to-html': 3.0.0
       '@sanity/schema': link:packages/@sanity/schema
       '@sanity/types': link:packages/@sanity/types
@@ -14903,9 +14903,9 @@ snapshots:
       react: 19.1.1
       react-compiler-runtime: 19.1.0-rc.2(react@19.1.1)
       rxjs: 7.8.2
-      slate: 0.118.0
-      slate-dom: 0.117.4(slate@0.118.0)
-      slate-react: 0.117.4(react-dom@19.1.1(react@19.1.1))(react@19.1.1)(slate-dom@0.117.4(slate@0.118.0))(slate@0.118.0)
+      slate: 0.118.1
+      slate-dom: 0.118.1(slate@0.118.1)
+      slate-react: 0.117.4(react-dom@19.1.1(react@19.1.1))(react@19.1.1)(slate-dom@0.118.1(slate@0.118.1))(slate@0.118.1)
       xstate: 5.20.2
     transitivePeerDependencies:
       - '@types/react'
@@ -14943,15 +14943,15 @@ snapshots:
       '@portabletext/types': 2.0.15
       react: 19.1.1
 
-  '@portabletext/sanity-bridge@1.1.5(@sanity/schema@packages+@sanity+schema)(@sanity/types@packages+@sanity+types)':
+  '@portabletext/sanity-bridge@1.1.6(@sanity/schema@packages+@sanity+schema)(@sanity/types@packages+@sanity+types)':
     dependencies:
-      '@portabletext/schema': 1.1.0
+      '@portabletext/schema': 1.2.0
       '@sanity/schema': link:packages/@sanity/schema
       '@sanity/types': link:packages/@sanity/types
       get-random-values-esm: 1.0.2
       lodash.startcase: 4.4.0
 
-  '@portabletext/schema@1.1.0': {}
+  '@portabletext/schema@1.2.0': {}
 
   '@portabletext/to-html@3.0.0':
     dependencies:
@@ -23351,7 +23351,7 @@ snapshots:
 
   slash@3.0.0: {}
 
-  slate-dom@0.117.4(slate@0.118.0):
+  slate-dom@0.118.1(slate@0.118.1):
     dependencies:
       '@juggle/resize-observer': 3.4.0
       direction: 1.0.4
@@ -23359,10 +23359,10 @@ snapshots:
       is-plain-object: 5.0.0
       lodash: 4.17.21
       scroll-into-view-if-needed: 3.1.0
-      slate: 0.118.0
+      slate: 0.118.1
       tiny-invariant: 1.3.1
 
-  slate-react@0.117.4(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(slate-dom@0.117.4(slate@0.118.0))(slate@0.118.0):
+  slate-react@0.117.4(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(slate-dom@0.118.1(slate@0.118.1))(slate@0.118.1):
     dependencies:
       '@juggle/resize-observer': 3.4.0
       direction: 1.0.4
@@ -23371,11 +23371,11 @@ snapshots:
       react: 18.3.1
       react-dom: 18.3.1(react@18.3.1)
       scroll-into-view-if-needed: 3.1.0
-      slate: 0.118.0
-      slate-dom: 0.117.4(slate@0.118.0)
+      slate: 0.118.1
+      slate-dom: 0.118.1(slate@0.118.1)
       tiny-invariant: 1.3.1
 
-  slate-react@0.117.4(react-dom@19.1.1(react@19.1.1))(react@19.1.1)(slate-dom@0.117.4(slate@0.118.0))(slate@0.118.0):
+  slate-react@0.117.4(react-dom@19.1.1(react@19.1.1))(react@19.1.1)(slate-dom@0.118.1(slate@0.118.1))(slate@0.118.1):
     dependencies:
       '@juggle/resize-observer': 3.4.0
       direction: 1.0.4
@@ -23384,11 +23384,11 @@ snapshots:
       react: 19.1.1
       react-dom: 19.1.1(react@19.1.1)
       scroll-into-view-if-needed: 3.1.0
-      slate: 0.118.0
-      slate-dom: 0.117.4(slate@0.118.0)
+      slate: 0.118.1
+      slate-dom: 0.118.1(slate@0.118.1)
       tiny-invariant: 1.3.1
 
-  slate@0.118.0:
+  slate@0.118.1:
     dependencies:
       immer: 10.1.1
       tiny-warning: 1.0.3
