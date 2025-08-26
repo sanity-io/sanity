@@ -1,4 +1,6 @@
-export function detectRuntime() {
+export type KnownRuntime = 'deno' | 'bun' | 'node'
+
+export function detectRuntime(): KnownRuntime {
   if ('Deno' in globalThis) {
     return 'deno'
   }

@@ -36,6 +36,7 @@ export interface PackageJson {
   peerDependencies?: Record<string, string>
 
   repository?: {type: string; url: string}
+  engines?: Record<string, string>
 }
 
 export interface CliCommandGroupDefinition {
