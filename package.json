@@ -160,10 +160,10 @@
     "rxjs": "^7.8.2",
     "sanity": "workspace:*",
     "semver": "^7.7.2",
-    "tsx": "^4.20.4",
+    "tsx": "^4.20.5",
     "turbo": "^2.5.6",
     "typescript": "catalog:",
-    "vite": "^7.1.2",
+    "vite": "^7.1.3",
     "vite-tsconfig-paths": "^5.1.4",
     "vitest": "3.2.4",
     "yargs": "^17.7.2"

@@ -286,9 +286,12 @@ Learn more about working with environment variables in Functions here: [https://
 
 After deployment, you can verify your function is active by:
 
-- Checking the Sanity Studio under "Compute"
 - Publishing a new post and confirming Slack notifications are sent
 - Monitoring function logs in the CLI
+
+```bash
+npx sanity functions logs slack-notify
+```
 
 ### Deployment best practices
 
@@ -398,6 +401,6 @@ Modify the `filter` in the blueprint configuration to target different document 
 - Cause: Bot doesn't have permissions or isn't in the channel
 - Solution: Invite the bot to your target channel and ensure it has `chat:write` permissions
 
-## Related Examples
+## Related Examples:
 
 - [Telegram Notify](../telegram-notify/README.md) - Send a Telegram notification when a document is published
