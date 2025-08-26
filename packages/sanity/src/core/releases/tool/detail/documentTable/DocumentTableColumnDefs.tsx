@@ -39,8 +39,6 @@ const MemoReleaseDocumentPreview = memo(
         releaseId={releaseId}
         releaseState={releaseState}
         documentRevision={documentRevision}
-        previewValues={item.previewValues.values}
-        isLoading={item.previewValues.isLoading}
       />
     )
   },
@@ -125,9 +123,11 @@ export const getDocumentTableColumnDefs: (
     width: null,
     style: {minWidth: '50%', maxWidth: '50%'},
     sortTransform(value) {
-      if (!value.previewValues) return 0
-
-      return value.previewValues.values?.title?.toLowerCase() || 0
+      return (
+        String(
+          value.document?.title || value.document?.name || value.document?._id,
+        ).toLowerCase() || 0
+      )
     },
     header: (props) => (
       <Headers.TableHeaderSearch {...props} placeholder={t('search-documents-placeholder')} />
