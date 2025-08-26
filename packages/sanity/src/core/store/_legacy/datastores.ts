@@ -4,6 +4,7 @@ import {useObservable} from 'react-rx'
 import {of} from 'rxjs'
 
 import {useClient, useSchema, useTemplates} from '../../hooks'
+import {useDocumentLimitsUpsellContext} from '../../limits/context/documents/DocumentLimitUpsellProvider'
 import {createDocumentPreviewStore, type DocumentPreviewStore} from '../../preview'
 import {useSource, useWorkspace} from '../../studio'
 import {DEFAULT_STUDIO_CLIENT_OPTIONS} from '../../studioClient'
@@ -142,6 +143,7 @@ export function useDocumentStore(): DocumentStore {
   const resourceCache = useResourceCache()
   const historyStore = useHistoryStore()
   const documentPreviewStore = useDocumentPreviewStore()
+  const {handleOpenDialog} = useDocumentLimitsUpsellContext()
   const workspace = useWorkspace()
 
   const serverActionsEnabled = useMemo(() => {
@@ -150,6 +152,14 @@ export function useDocumentStore(): DocumentStore {
   }, [workspace.__internal_serverDocumentActions?.enabled])
 
   const telemetry = useTelemetry()
+
+  const handleDocumentMutationCommitErrorRecovery = useCallback(
+    (error: any) => {
+      // TODO: add telemetry and check error 'type' to decide what to do with the error
+      handleOpenDialog('document_action')
+    },
+    [handleOpenDialog],
+  )
 
   const handleSyncErrorRecovery = useCallback(
     (error: OutOfSyncError) => {
@@ -188,6 +198,7 @@ export function useDocumentStore(): DocumentStore {
         extraOptions: {
           onReportLatency: handleReportLatency,
           onSyncErrorRecovery: handleSyncErrorRecovery,
+          onDocumentMutationCommitErrorRecovery: handleDocumentMutationCommitErrorRecovery,
         },
       })
 
@@ -210,6 +221,7 @@ export function useDocumentStore(): DocumentStore {
     serverActionsEnabled,
     handleReportLatency,
     handleSyncErrorRecovery,
+    handleDocumentMutationCommitErrorRecovery,
   ])
 }
 

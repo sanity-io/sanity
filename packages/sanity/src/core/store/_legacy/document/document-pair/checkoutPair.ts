@@ -7,8 +7,18 @@ import {
 import {type Mutation} from '@sanity/mutator'
 import {type SanityDocument} from '@sanity/types'
 import {omit} from 'lodash'
-import {defer, EMPTY, from, merge, type Observable} from 'rxjs'
-import {filter, map, mergeMap, scan, share, take, tap, withLatestFrom} from 'rxjs/operators'
+import {defer, EMPTY, from, merge, type Observable, throwError} from 'rxjs'
+import {
+  catchError,
+  filter,
+  map,
+  mergeMap,
+  scan,
+  share,
+  take,
+  tap,
+  withLatestFrom,
+} from 'rxjs/operators'
 
 import {type DocumentVariantType} from '../../../../util/getDocumentVariantType'
 import {
@@ -242,7 +252,7 @@ export function checkoutPair(
 ): Pair {
   const {publishedId, draftId, versionId} = idPair
 
-  const {onReportLatency, onSyncErrorRecovery, tag} = options
+  const {onReportLatency, onSyncErrorRecovery, onDocumentMutationCommitErrorRecovery, tag} = options
 
   const listenerEvents$ = getPairListener(client, idPair, {onSyncErrorRecovery, tag}).pipe(share())
 
@@ -284,6 +294,10 @@ export function checkoutPair(
         mergeMap((canUseServerActions) =>
           submitCommitRequest(client, idPair, commitRequest, canUseServerActions),
         ),
+        catchError((error) => {
+          onDocumentMutationCommitErrorRecovery?.(error)
+          return throwError(() => new Error(error))
+        }),
       ),
     ),
   )
