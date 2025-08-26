@@ -1,7 +1,7 @@
 import {useCallback, useMemo, useState} from 'react'
 import {CommentsUpsellContext} from 'sanity/_singletons'
 
-import useUpsellData from '../../../hooks/useUpsellData'
+import {useUpsellData} from '../../../hooks/useUpsellData'
 import {type UpsellDialogViewedInfo} from '../../../studio'
 import {UpsellDialog} from '../../../studio/upsell/UpsellDialog'
 import {type CommentsUpsellContextValue} from './types'

@@ -3,7 +3,7 @@ import {firstValueFrom} from 'rxjs'
 import {ReleasesUpsellContext} from 'sanity/_singletons'
 
 import {useFeatureEnabled} from '../../../hooks'
-import useUpsellData from '../../../hooks/useUpsellData'
+import {useUpsellData} from '../../../hooks/useUpsellData'
 import {UpsellDialog} from '../../../studio/upsell/UpsellDialog'
 import {useActiveReleases} from '../../store/useActiveReleases'
 import {useOrgActiveReleaseCount} from '../../store/useOrgActiveReleaseCount'

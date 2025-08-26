@@ -4,7 +4,7 @@ import {
   type SchedulePublishUpsellContextValue,
 } from 'sanity/_singletons'
 
-import useUpsellData from '../../../hooks/useUpsellData'
+import {useUpsellData} from '../../../hooks/useUpsellData'
 import {type UpsellDialogViewedInfo} from '../../../studio/upsell/__telemetry__/upsell.telemetry'
 import {UpsellDialog} from '../../../studio/upsell/UpsellDialog'
 

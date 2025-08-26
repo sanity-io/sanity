@@ -1,10 +1,9 @@
 import {type PropsWithChildren, useCallback, useContext, useMemo, useState} from 'react'
-import {DocumentLimitUpsellContext} from 'sanity/_singletons'
+import {DocumentLimitUpsellContext, type DocumentLimitUpsellContextValue} from 'sanity/_singletons'
 
-import useUpsellData from '../../../hooks/useUpsellData'
+import {useUpsellData} from '../../../hooks/useUpsellData'
 import {type UpsellDialogViewedInfo} from '../../../studio'
 import {UpsellDialog} from '../../../studio/upsell/UpsellDialog'
-import {type DocumentLimitUpsellContextValue} from './types'
 
 export function DocumentLimitUpsellProvider({children}: PropsWithChildren) {
   const [upsellDialogOpen, setUpsellDialogOpen] = useState(false)

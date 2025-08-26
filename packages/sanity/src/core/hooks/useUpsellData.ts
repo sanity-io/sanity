@@ -24,7 +24,7 @@ export interface UpsellDataProps {
 
 const BASE_URL = 'www.sanity.io'
 
-const useUpsellData = ({
+export const useUpsellData = ({
   ctaBaseUrl = BASE_URL,
   clientOptions,
   dataUri,
@@ -118,5 +118,3 @@ const useUpsellData = ({
 
   return {upsellData, telemetryLogs}
 }
-
-export default useUpsellData
