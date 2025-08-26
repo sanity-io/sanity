@@ -62,9 +62,18 @@ export function extractSearchableText(
     }
 
     // Handle objects with specific properties (like {title: "value"})
-    if ('title' in value && typeof value.title === 'string') return value.title
-    if ('name' in value && typeof value.name === 'string') return value.name
-    if ('text' in value && typeof value.text === 'string') return value.text
+    const title =
+      'title' in value && typeof value.title === 'string'
+        ? value.title.toString().trim()
+        : undefined
+    const name =
+      'name' in value && typeof value.name === 'string' ? value.name.toString().trim() : undefined
+    const text =
+      'text' in value && typeof value.text === 'string' ? value.text.toString().trim() : undefined
+
+    if (title || name || text) {
+      return [title, name, text].filter(Boolean).join(' ')
+    }
 
     // Generic object handling - extract all string/number values
     return entries

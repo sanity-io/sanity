@@ -123,6 +123,13 @@ describe('extractSearchableText', () => {
       expect(extractSearchableText({text: 'Text', other: 'ignored'})).toBe('Text ignored')
     })
 
+    it('should handle objects with text, name and title properties', () => {
+      expect(extractSearchableText({text: 'Text', name: 'a name', title: 'a title'})).toBe(
+        'Text a name a title',
+      )
+      expect(extractSearchableText({text: 'Text', name: 'a name'})).toBe('Text a name')
+    })
+
     it('should handle localized objects', () => {
       expect(extractSearchableText({en: 'Hello', no: 'Hallo', sv: 'Hej'})).toBe('Hello Hallo Hej')
       expect(extractSearchableText({en: 'Title'})).toBe('Title')
