@@ -1,4 +1,15 @@
 import {type CliCommandDefinition} from '../../types'
+import {defineEvent} from '@sanity/telemetry'
+
+// create a telemetry event for when the user uses the --example flag with the blueprints add command
+export const BlueprintsAddExampleUsed = defineEvent<{
+  example: string // name of the example
+  resourceType: string // always 'function'
+}>({
+  version: 1,
+  name: 'Blueprints Add Example Used',
+  description: 'User used --example flag with blueprints add command',
+})
 
 const helpText = `
 Arguments
@@ -77,8 +88,9 @@ const addBlueprintsCommand: CliCommandDefinition<BlueprintsAddFlags> = {
   description: 'Add a Resource to a Blueprint',
 
   async action(args, context) {
-    const {output, apiClient} = context
+    const {output, apiClient, telemetry} = context
     const {extOptions} = args
+    const [resourceType] = args.argsWithoutOptions
 
     if (extOptions.example) {
       // example is exclusive to 'name', 'fn-type', 'fn-language', 'javascript', 'fn-helpers', 'fn-installer'
@@ -100,6 +112,12 @@ const addBlueprintsCommand: CliCommandDefinition<BlueprintsAddFlags> = {
       if (foundConflict) {
         throw new Error(`--example can't be used with --${foundConflict}`)
       }
+
+      // send telemetry event
+      telemetry.log(BlueprintsAddExampleUsed, {
+        resourceType,
+        example: extOptions.example,
+      })
     }
 
     const flags = {...defaultFlags, ...extOptions}
@@ -111,8 +129,6 @@ const addBlueprintsCommand: CliCommandDefinition<BlueprintsAddFlags> = {
     const {token} = client.config()
 
     if (!token) throw new Error('No API token found. Please run `sanity login`.')
-
-    const [resourceType] = args.argsWithoutOptions
 
     if (!resourceType) {
       output.error('Resource type is required. Available types: function')
