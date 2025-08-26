@@ -6,7 +6,7 @@ import {useTranslation} from '../..'
 
 type ContextMenuButtonProps = Pick<
   ButtonProps,
-  'mode' | 'selected' | 'size' | 'tone' | 'tooltipProps'
+  'mode' | 'selected' | 'size' | 'tone' | 'tooltipProps' | 'loading'
 >
 
 /**

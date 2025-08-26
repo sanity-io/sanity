@@ -8,6 +8,7 @@ import {get} from '@sanity/util/paths'
 
 import {type Source} from '../../../../config'
 
+// TODO: Use thsi
 export async function resolveUserDefinedFilter(
   options: ReferenceOptions | undefined,
   document: SanityDocument,

@@ -676,6 +676,9 @@ importers:
       chokidar:
         specifier: ^3.6.0
         version: 3.6.0
+      framer-motion:
+        specifier: ^12.23.12
+        version: 12.23.18(@emotion/is-prop-valid@1.4.0)(react-dom@19.1.1(react@19.1.1))(react@19.1.1)
       globby:
         specifier: ^11.1.0
         version: 11.1.0
@@ -703,6 +706,9 @@ importers:
       rxjs:
         specifier: ^7.8.2
         version: 7.8.2
+      rxjs-mergemap-array:
+        specifier: ^0.1.0
+        version: 0.1.0(rxjs@7.8.2)
       sanity:
         specifier: workspace:*
         version: link:../../packages/sanity

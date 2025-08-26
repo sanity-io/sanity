@@ -29,7 +29,7 @@ export interface DocumentDefinition extends Omit<ObjectDefinition, 'type'> {
       reference?: {
         _type: 'reference'
         _ref: string
-        _weak: true
+        _weak?: boolean
         _strengthenOnPublish?: {
           type: string
         }
