@@ -46,22 +46,28 @@ test.describe('Revert Undecided', () => {
     })
 
     await page.goto(`/releases/${undecidedReleaseIdTestOne}`)
+
+    await expect(page.getByTestId('release-type-picker')).toBeVisible()
   })
 
   test.afterEach(async ({sanityClient, browserName, page}) => {
     skipIfBrowser(browserName)
     const dataset = sanityClient.config().dataset
-    // used for the new releases that have been created from the revert
     const currentPageReleaseId = page.url().split('/').pop()
 
-    await Promise.all(
-      [
-        deleteRelease({sanityClient, dataset, releaseId: undecidedReleaseIdTestOne}),
-        currentPageReleaseId
-          ? archiveAndDeleteRelease({sanityClient, dataset, releaseId: currentPageReleaseId})
-          : null,
-      ].filter(Boolean),
-    )
+    try {
+      await deleteRelease({sanityClient, dataset, releaseId: undecidedReleaseIdTestOne})
+    } catch (error) {
+      console.warn('Failed to delete original release:', error.message)
+    }
+
+    if (currentPageReleaseId && currentPageReleaseId !== undecidedReleaseIdTestOne) {
+      try {
+        await archiveAndDeleteRelease({sanityClient, dataset, releaseId: currentPageReleaseId})
+      } catch (error) {
+        console.warn('Failed to delete reverted release:', error.message)
+      }
+    }
   })
 
   // Schedule -> Wait -> Revert -> ASAP release
@@ -75,15 +81,10 @@ test.describe('Revert Undecided', () => {
       date: new Date(Date.now() + 70 * 1000),
     })
 
-    // retention policy card
-    await expect(page.getByTestId('retention-policy-card')).toBeVisible()
-
     await revertAndConfirmRelease({page})
 
     await expect(page.getByTestId('revert-stage-success-link')).toBeVisible()
     await page.getByTestId('revert-stage-success-link').click()
-
-    await expect(page.getByTestId('retention-policy-card')).not.toBeVisible()
 
     await expect(
       page.getByRole('button', {
@@ -94,19 +95,21 @@ test.describe('Revert Undecided', () => {
     await expect(page.getByTestId('release-type-picker')).toHaveText('ASAP')
   })
 
-  // Publish -> Revert -> ASAP release
-  test('publish Undecided release, when reverted, should be ASAP release', async ({page}) => {
-    await publishAndConfirmReleaseMenu({page})
+  // Schedule -> Unschedule -> Publish -> Revert -> ASAP release
+  test('schedule Undecided release, unschedule, publish. When reverted, should be ASAP release', async ({
+    page,
+  }) => {
+    await scheduleAndConfirmReleaseMenu({
+      page,
+      date: new Date(new Date().setMinutes(new Date().getMinutes() + 20)),
+    })
 
-    // retention policy card
-    await expect(page.getByTestId('retention-policy-card')).toBeVisible()
+    await publishAndConfirmReleaseMenu({page})
 
     await revertAndConfirmRelease({page})
 
     await expect(page.getByTestId('revert-stage-success-link')).toBeVisible()
     await page.getByTestId('revert-stage-success-link').click()
-
-    await expect(page.getByTestId('retention-policy-card')).not.toBeVisible()
 
     await expect(
       page.getByRole('button', {

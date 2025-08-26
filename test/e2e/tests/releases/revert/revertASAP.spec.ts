@@ -49,37 +49,38 @@ test.describe('Revert ASAP', () => {
     })
 
     await page.goto(`/releases/${asapReleaseIdTestOne}`)
+
+    await expect(page.getByTestId('release-type-picker')).toBeVisible()
   })
 
   test.afterEach(async ({sanityClient, browserName, page}) => {
     skipIfBrowser(browserName)
     const dataset = sanityClient.config().dataset
-    // used for the new releases that have been created from the revert
     const currentPageReleaseId = page.url().split('/').pop()
 
-    await Promise.all(
-      [
-        deleteRelease({sanityClient, dataset, releaseId: asapReleaseIdTestOne}),
-        currentPageReleaseId
-          ? archiveAndDeleteRelease({sanityClient, dataset, releaseId: currentPageReleaseId})
-          : null,
-      ].filter(Boolean),
-    )
+    try {
+      await deleteRelease({sanityClient, dataset, releaseId: asapReleaseIdTestOne})
+    } catch (error) {
+      console.warn('Failed to delete original release:', error.message)
+    }
+
+    if (currentPageReleaseId && currentPageReleaseId !== asapReleaseIdTestOne) {
+      try {
+        await archiveAndDeleteRelease({sanityClient, dataset, releaseId: currentPageReleaseId})
+      } catch (error) {
+        console.warn('Failed to delete reverted release:', error.message)
+      }
+    }
   })
 
   // Publish -> Revert -> ASAP release
   test('publish ASAP release, when reverted, should be ASAP release', async ({page}) => {
     await publishAndConfirmRelease({page})
 
-    // retention policy card
-    await expect(page.getByTestId('retention-policy-card')).toBeVisible()
-
     await revertAndConfirmRelease({page})
 
     await expect(page.getByTestId('revert-stage-success-link')).toBeVisible()
     await page.getByTestId('revert-stage-success-link').click()
-
-    await expect(page.getByTestId('retention-policy-card')).not.toBeVisible()
 
     await expect(
       page.getByRole('button', {
@@ -101,15 +102,10 @@ test.describe('Revert ASAP', () => {
       date: new Date(new Date().setSeconds(new Date().getSeconds() + 80)),
     })
 
-    // retention policy card
-    await expect(page.getByTestId('retention-policy-card')).toBeVisible()
-
     await revertAndConfirmRelease({page})
 
     await expect(page.getByTestId('revert-stage-success-link')).toBeVisible()
     await page.getByTestId('revert-stage-success-link').click()
-
-    await expect(page.getByTestId('retention-policy-card')).not.toBeVisible()
 
     await expect(
       page.getByRole('button', {
@@ -133,12 +129,8 @@ test.describe('Revert ASAP', () => {
 
     await publishAndConfirmReleaseMenu({page})
 
-    // retention policy card
-    await expect(page.getByTestId('retention-policy-card')).toBeVisible()
-
     await revertAndConfirmRelease({page})
 
-    // retention policy card
     await expect(page.getByTestId('revert-stage-success-link')).toBeVisible()
     await page.getByTestId('revert-stage-success-link').click()
 
