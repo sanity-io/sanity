@@ -151,7 +151,7 @@ describe('extractSearchableText', () => {
             text: 'Some content',
           },
         }),
-      ).toBe('Main Title')
+      ).toBe('Main Title English Subtitle Norwegian Subtitle Some content')
     })
 
     it('should handle objects with mixed value types', () => {
@@ -185,18 +185,18 @@ describe('extractSearchableText', () => {
       const deepNested = {
         level1: {
           level2: {
-            level3: {
-              title: 'Deep Title',
-              content: ['Item 1', 'Item 2'],
-            },
+            title: 'Deep Title',
+            content: ['Item 1', 'Item 2'],
           },
         },
       }
 
       expect(extractSearchableText(deepNested)).toBe('Deep Title')
+      // too deep into the object, so it should not be included
+      expect(extractSearchableText(deepNested)).not.toBe('Deep Title Item 1 Item 2')
     })
 
-    it('should handle circular references gracefully', () => {
+    it('should handle circular references gracefully by only going down one level', () => {
       const obj: any = {title: 'Circular'}
       obj.self = obj
 

@@ -4,10 +4,19 @@ import {isPortableTextBlock} from '@portabletext/toolkit'
 /**
  * Extracts a searchable string from a field value, handling various data types
  * @param value - The field value to extract text from
+ * @param depth - Current recursion depth
+ * @param visited - Array of visited objects thath ave been proceeded so far
  * @returns A string representation suitable for search
  */
-export function extractSearchableText(value: unknown): string {
+export function extractSearchableText(
+  value: unknown,
+  depth: number = 0,
+  visited: Array<unknown> = [],
+): string {
   if (typeof value === 'undefined' || value === null) return ''
+
+  // Limit recursion depth to avoid going too deeply into a nested structure
+  if (depth > 3) return ''
 
   // Handle primitive types
   if (typeof value === 'string') return value
@@ -20,19 +29,30 @@ export function extractSearchableText(value: unknown): string {
       return toPlainText(value)
     }
     // Handle regular arrays (join with space)
-    return value.map(extractSearchableText).filter(Boolean).join(' ')
+    return value
+      .map((item) => extractSearchableText(item, depth + 1, visited))
+      .filter(Boolean)
+      .join(' ')
   }
 
   // Handle objects
   if (typeof value === 'object' && value !== null) {
+    // Limit the number of items proceeded through the search as to avoid too deep recursion
+    // that impacts performance. If the object has already been visited, then there is no need to proceed further.
+    if (visited.includes(value)) return ''
+    visited.push(value)
+
     // Handle localized objects (common pattern: {en: "title", no: "tittel"})
+    // However, make sure that the values are not internal Sanity keys (starting with _)
     const entries = Object.entries(value)
     if (
       entries.length > 0 &&
-      entries.every(([key, val]) => typeof val === 'string' && !key.startsWith('_'))
+      entries.every(([key, val]) => typeof val !== 'boolean' && !key.startsWith('_'))
     ) {
-      // This looks like a localized object, extract all values (excluding metadata keys)
-      return entries.map(([, val]) => val).join(' ')
+      return entries
+        .map(([, val]) => extractSearchableText(val, depth + 1, visited))
+        .filter(Boolean)
+        .join(' ')
     }
 
     // Handle objects with specific properties (like {title: "value"})
@@ -41,9 +61,9 @@ export function extractSearchableText(value: unknown): string {
     if ('text' in value && typeof value.text === 'string') return value.text
 
     // Generic object handling - extract all string/number values
-    return Object.entries(value)
+    return entries
       .filter(([key]) => !key.startsWith('_')) // Skip metadata keys
-      .map(([, val]) => extractSearchableText(val))
+      .map(([, val]) => extractSearchableText(val, depth + 1, visited))
       .filter(Boolean)
       .join(' ')
   }
