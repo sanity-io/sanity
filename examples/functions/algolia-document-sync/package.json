@@ -15,10 +15,12 @@
     "timeout": 10,
     "event": {
       "on": [
-        "publish"
+        "create",
+        "update",
+        "delete"
       ],
       "filter": "_type == 'post'",
-      "projection": "{_id, title, hideFromSearch}"
+      "projection": "{_id, title, hideFromSearch, 'operation': delta::operation()}"
     },
     "env": {
       "COMMENT": "ALGOLIA_APP_ID and ALGOLIA_WRITE_KEY env variables are required to sync documents to Algolia",

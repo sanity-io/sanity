@@ -8,7 +8,7 @@ Content teams need to keep their search functionality up-to-date with their late
 
 ## Solution
 
-This Sanity Function automatically syncs published documents to Algolia's search index, ensuring your search functionality always reflects your latest content. When a post is published, the function sends the document data to Algolia, either creating a new search record or updating an existing one.
+This Sanity Function automatically syncs documents to Algolia's search index, ensuring your search functionality always reflects your latest content. When a post is published, the function sends the document data to Algolia, either creating a new search record or updating an existing one. When a document us updated or deleted, we also post additional information, as a result we can remove, hide posts/products etc as they're updated in Sanity.
 
 ## Benefits
 
@@ -61,9 +61,9 @@ This function is built to be compatible with any of [the official "clean" templa
      timeout: 10,
      src: './functions/algolia-document-sync',
      event: {
-       on: ['publish'],
+       on: ['create', 'update', 'delete'],
        filter: "_type == 'post'",
-       projection: '{_id, title, hideFromSearch}',
+       projection: '{_id, title, hideFromSearch, "operation": delta::operation()}',
      },
      env: {
        ALGOLIA_APP_ID: ALGOLIA_APP_ID,
@@ -83,6 +83,7 @@ This function is built to be compatible with any of [the official "clean" templa
 4. **Set up environment variables**
 
    Add your Algolia credentials to your root .env file:
+
    - `ALGOLIA_APP_ID`: Your Algolia application ID
    - `ALGOLIA_WRITE_KEY`: Your Algolia write API key
 
