@@ -17,6 +17,7 @@ import {AddDocumentSearch, type AddedDocument} from './AddDocumentSearch'
 import {ReleaseActionBadges} from './components/ReleaseActionBadges'
 import {DocumentActions} from './documentTable/DocumentActions'
 import {getDocumentTableColumnDefs} from './documentTable/DocumentTableColumnDefs'
+import {searchDocumentRelease} from './documentTable/searchDocumentRelease'
 import {type DocumentInRelease} from './useBundleDocuments'
 
 export type DocumentInReleaseDetail = DocumentInRelease & {
@@ -39,8 +40,7 @@ const isBundleDocumentRow = (
   typeof maybeBundleDocumentRow === 'object' &&
   'memoKey' in maybeBundleDocumentRow &&
   'document' in maybeBundleDocumentRow &&
-  'validation' in maybeBundleDocumentRow &&
-  'previewValues' in maybeBundleDocumentRow
+  'validation' in maybeBundleDocumentRow
 
 export function ReleaseSummary(props: ReleaseSummaryProps) {
   const {documents, isLoading = false, release, scrollContainerRef} = props
@@ -75,16 +75,12 @@ export function ReleaseSummary(props: ReleaseSummaryProps) {
 
   const filterRows = useCallback(
     (data: DocumentInRelease[], searchTerm: string) =>
-      data.filter(({previewValues, isPending}) => {
-        const title =
-          typeof previewValues.values?.title === 'string'
-            ? previewValues.values?.title
-            : t('release-placeholder.title')
-
-        // always show the pending rows to visualise that documents are being added
-        return isPending || title.toLowerCase().includes(searchTerm.toLowerCase())
+      data.filter(({document}) => {
+        // this is a temporary way of doing the search without the previews
+        // until we have it moved to the server side
+        return searchDocumentRelease(document, searchTerm)
       }),
-    [t],
+    [],
   )
 
   const closeAddDialog = useCallback(
@@ -97,7 +93,6 @@ export function ReleaseSummary(props: ReleaseSummaryProps) {
 
       const pendingDocumentRow: DocumentInReleaseDetail = {
         memoKey: versionDocumentId,
-        previewValues: {isLoading: true, values: {}},
         validation: {
           isValidating: false,
           validation: [],

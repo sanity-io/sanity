@@ -14,12 +14,12 @@ import {getTimer} from '../../util/timing'
 import {BuildTrace} from './build.telemetry'
 import {buildVendorDependencies} from '../../server/buildVendorDependencies'
 import {compareDependencyVersions} from '../../util/compareDependencyVersions'
-import {getStudioAutoUpdateImportMap} from '../../util/getAutoUpdatesImportMap'
 import {shouldAutoUpdate} from '../../util/shouldAutoUpdate'
 import {formatModuleSizes, sortModulesBySize} from '../../util/moduleFormatUtils'
 import {upgradePackages} from '../../util/packageManager/upgradePackages'
 import {getPackageManagerChoice} from '../../util/packageManager/packageManagerChoice'
 import {isInteractive} from '../../util/isInteractive'
+import {getAutoUpdatesImportMap} from '../../util/getAutoUpdatesImportMap'
 
 export interface BuildSanityStudioCommandFlags {
   'yes'?: boolean
@@ -62,19 +62,24 @@ export default async function buildSanityStudio(
 
   const autoUpdatesEnabled = shouldAutoUpdate({flags, cliConfig, output})
 
-  // Get the clean version without build metadata: https://semver.org/#spec-item-10
-  const cleanSanityVersion = semver.parse(installedSanityVersion)?.version
-  if (autoUpdatesEnabled && !cleanSanityVersion) {
-    throw new Error(`Failed to parse installed Sanity version: ${installedSanityVersion}`)
-  }
-  const version = encodeURIComponent(`^${cleanSanityVersion}`)
-  const autoUpdatesImports = getStudioAutoUpdateImportMap(version)
-
+  let autoUpdatesImports = {}
   if (autoUpdatesEnabled) {
+    // Get the clean version without build metadata: https://semver.org/#spec-item-10
+    const cleanSanityVersion = semver.parse(installedSanityVersion)?.version
+    if (!cleanSanityVersion) {
+      throw new Error(`Failed to parse installed Sanity version: ${installedSanityVersion}`)
+    }
+
+    const sanityDependencies = [
+      {name: 'sanity', version: cleanSanityVersion},
+      {name: '@sanity/vision', version: cleanSanityVersion},
+    ]
+    autoUpdatesImports = getAutoUpdatesImportMap(sanityDependencies)
+
     output.print(`${info} Building with auto-updates enabled`)
 
     // Check the versions
-    const result = await compareDependencyVersions(autoUpdatesImports, workDir)
+    const result = await compareDependencyVersions(sanityDependencies, workDir)
 
     if (result?.length) {
       const warning =
