@@ -1,4 +1,4 @@
-import {tz, tzOffset} from '@date-fns/tz'
+import {tz as dfnsTz, tzOffset} from '@date-fns/tz'
 import {type ClientError} from '@sanity/client'
 import {useToast} from '@sanity/ui'
 import {sanitizeLocale} from '@sanity/util/legacyDateFormat'
@@ -80,7 +80,7 @@ function getCachedTimeZoneInfo(
   const dateToUse = relativeDateForZones ?? new Date()
   const parts = formatter.formatToParts(dateToUse)
   const shortParts = shortFormatter.formatToParts(dateToUse)
-  const rawOffset = dfFormat(dateToUse, 'xxx', {in: tz(canonicalIdentifier)})
+  const rawOffset = dfFormat(dateToUse, 'xxx', {in: dfnsTz(canonicalIdentifier)})
   // If the offset is +02:00 then we can just show +2, if it has +13:45 then we should show +13:45, remove the leading +0 and just leave a + if a number under 10, remove the :00 at the end
   const offset = rawOffset
     .replace(/([+-])0(\d)/, '$1$2')
@@ -273,7 +273,7 @@ export const useTimeZone = (scope: TimeZoneScope) => {
       if (includeTimeZone) {
         dateFormat = `${format} (zzzz)`
       }
-      const zone = tz(timeZone?.name || getLocalTimeZone()?.name || 'UTC')
+      const zone = dfnsTz(timeZone?.name || getLocalTimeZone()?.name || 'UTC')
       return dfFormat(date, dateFormat, {in: zone})
     },
     [timeZone, getLocalTimeZone],
