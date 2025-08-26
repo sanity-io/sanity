@@ -144,6 +144,8 @@
     "watch": "pkg-utils watch"
   },
   "dependencies": {
+    "@date-fns/tz": "^1.4.1",
+    "@date-fns/utc": "^2.1.1",
     "@dnd-kit/core": "^6.3.1",
     "@dnd-kit/modifiers": "^6.0.1",
     "@dnd-kit/sortable": "^7.0.2",
@@ -206,7 +208,7 @@
     "configstore": "^5.0.1",
     "console-table-printer": "^2.14.6",
     "dataloader": "^2.2.3",
-    "date-fns": "^2.30.0",
+    "date-fns": "^4.1.0",
     "debug": "^4.4.1",
     "esbuild": "catalog:",
     "esbuild-register": "catalog:",
@@ -322,7 +324,6 @@
     "@vitest/expect": "^3.2.4",
     "babel-plugin-react-compiler": "19.1.0-rc.2",
     "blob-polyfill": "^9.0.20240710",
-    "date-fns-tz": "2.0.1",
     "eslint-plugin-boundaries": "^5.0.1",
     "globals": "catalog:",
     "react": "catalog:react18",

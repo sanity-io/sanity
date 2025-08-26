@@ -34,7 +34,7 @@ Some changes have been made to make both `<DateTimeInput>` and its calendar comp
 
 ## DateTimeInput calendar
 
-- Ingested dates (e.g. `focusedDate` and `selectedDate` are now in 'wall time' – or time zone formatted dates). This is accomplished with extensive use of `date-fns-tz` helper functions.
+- Ingested dates (e.g. `focusedDate` and `selectedDate` are now in 'wall time' – or time zone formatted dates). This is accomplished with extensive use of `date-fns` helper functions combined with the companion package `@date-fns/tz`.
 - All dates returned in callbacks (e.g. `onSelect` and `onFocusedDateChange`) **always return values in UTC** (for the corresponding `<DateInput>` to ingest).
 
 These changes ensure correct days / hours etc are highlighted in various calendar UI elements when switching between time zones.

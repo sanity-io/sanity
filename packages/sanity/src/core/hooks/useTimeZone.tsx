@@ -1,7 +1,8 @@
 import {type ClientError} from '@sanity/client'
 import {useToast} from '@sanity/ui'
 import {sanitizeLocale} from '@sanity/util/legacyDateFormat'
-import {formatInTimeZone, utcToZonedTime, zonedTimeToUtc} from 'date-fns-tz'
+import {format as dfFormat} from 'date-fns'
+import {tz, tzOffset} from '@date-fns/tz'
 import {useCallback, useEffect, useMemo, useState} from 'react'
 import {useObservable} from 'react-rx'
 import {startWith} from 'rxjs/operators'
@@ -79,7 +80,7 @@ function getCachedTimeZoneInfo(
   const dateToUse = relativeDateForZones ?? new Date()
   const parts = formatter.formatToParts(dateToUse)
   const shortParts = shortFormatter.formatToParts(dateToUse)
-  const rawOffset = formatInTimeZone(dateToUse, canonicalIdentifier, 'xxx')
+  const rawOffset = dfFormat(dateToUse, 'xxx', {in: tz(canonicalIdentifier)})
   // If the offset is +02:00 then we can just show +2, if it has +13:45 then we should show +13:45, remove the leading +0 and just leave a + if a number under 10, remove the :00 at the end
   const offset = rawOffset
     .replace(/([+-])0(\d)/, '$1$2')
@@ -272,14 +273,16 @@ export const useTimeZone = (scope: TimeZoneScope) => {
       if (includeTimeZone) {
         dateFormat = `${format} (zzzz)`
       }
-      return formatInTimeZone(date, timeZone?.name || getLocalTimeZone()?.name || 'UTC', dateFormat)
+      const zone = tz(timeZone?.name || getLocalTimeZone()?.name || 'UTC')
+      return dfFormat(date, dateFormat, {in: zone})
     },
     [timeZone, getLocalTimeZone],
   )
 
   const getCurrentZoneDate = useCallback(() => {
     if (!timeZone) return new Date()
-    return utcToZonedTime(new Date(), timeZone.name)
+    const now = new Date()
+    return new Date(now.getTime() + tzOffset(timeZone.name, now) * 60 * 1000)
   }, [timeZone])
 
   const getTimeZone = useCallback(
@@ -331,7 +334,7 @@ export const useTimeZone = (scope: TimeZoneScope) => {
   const utcToCurrentZoneDate = useCallback(
     (date: Date) => {
       if (!timeZone) return date
-      return utcToZonedTime(date, timeZone.name)
+      return new Date(date.getTime() + tzOffset(timeZone.name, date) * 60 * 1000)
     },
     [timeZone],
   )
@@ -339,7 +342,7 @@ export const useTimeZone = (scope: TimeZoneScope) => {
   const zoneDateToUtc = useCallback(
     (date: Date) => {
       if (!timeZone) return date
-      return zonedTimeToUtc(date, timeZone.name)
+      return new Date(date.getTime() - tzOffset(timeZone.name, date) * 60 * 1000)
     },
     [timeZone],
   )

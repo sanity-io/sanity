@@ -2,7 +2,7 @@ import {ChevronLeftIcon, ChevronRightIcon, EarthGlobeIcon} from '@sanity/icons'
 import {Box, Flex, Grid, Select, Text} from '@sanity/ui'
 import {format} from '@sanity/util/legacyDateFormat'
 import {addDays, addMonths, parse, setDate, setHours, setMinutes, setMonth, setYear} from 'date-fns'
-import {utcToZonedTime, zonedTimeToUtc} from 'date-fns-tz'
+import {TZDateMini} from '@date-fns/tz'
 import {
   type ComponentProps,
   type FormEvent,
@@ -105,8 +105,7 @@ export const Calendar = forwardRef(function Calendar(
 
   useEffect(() => {
     if (timeZone) {
-      const utcDate = zonedTimeToUtc(selectedDate, timeZone.name)
-      const zonedDate = utcToZonedTime(utcDate, timeZone.name)
+      const zonedDate = new TZDateMini(selectedDate, timeZone.name)
       setSavedSelectedDate(zonedDate)
     }
   }, [selectedDate, timeZone])
@@ -147,8 +146,18 @@ export const Calendar = forwardRef(function Calendar(
         return
       }
 
-      const utcDate = zonedTimeToUtc(newDate, timeZone.name)
-      const zonedDate = utcToZonedTime(utcDate, timeZone.name)
+      const wall = new TZDateMini(
+        newDate.getFullYear(),
+        newDate.getMonth(),
+        newDate.getDate(),
+        newDate.getHours(),
+        newDate.getMinutes(),
+        newDate.getSeconds(),
+        newDate.getMilliseconds(),
+        timeZone.name,
+      )
+      const utcDate = new Date(+wall)
+      const zonedDate = new TZDateMini(utcDate, timeZone.name)
 
       onSelect(zonedDate)
     },
@@ -161,9 +170,19 @@ export const Calendar = forwardRef(function Calendar(
         onSelect(setHours(setMinutes(savedSelectedDate, mins), hours))
         return
       }
-      const zonedDate = utcToZonedTime(savedSelectedDate, timeZone.name)
-      const newZonedDate = setHours(setMinutes(zonedDate, mins), hours)
-      const utcDate = zonedTimeToUtc(newZonedDate, timeZone.name)
+      const zonedDate = new TZDateMini(savedSelectedDate, timeZone.name)
+      const newZonedDate = setHours(setMinutes(zonedDate as unknown as Date, mins), hours)
+      const wall = new TZDateMini(
+        newZonedDate.getFullYear(),
+        newZonedDate.getMonth(),
+        newZonedDate.getDate(),
+        newZonedDate.getHours(),
+        newZonedDate.getMinutes(),
+        newZonedDate.getSeconds(),
+        newZonedDate.getMilliseconds(),
+        timeZone.name,
+      )
+      const utcDate = new Date(+wall)
       onSelect(utcDate)
     },
     [onSelect, savedSelectedDate, timeZone],
