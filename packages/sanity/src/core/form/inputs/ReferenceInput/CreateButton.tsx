@@ -61,6 +61,7 @@ export function CreateButton(props: Props) {
             disabled
             icon={AddIcon}
             style={FULL_WIDTH}
+            size="large"
           />
         </div>
       </Tooltip>
@@ -112,7 +113,7 @@ export function CreateButton(props: Props) {
   ) : (
     <Button
       {...rest}
-      text={t('inputs.reference.action.create-new-document-select')}
+      text={t('inputs.reference.action.create-new-document')}
       mode="ghost"
       disabled={!createOptions[0].permission.granted || props.readOnly}
       onClick={() => onCreate(createOptions[0])}

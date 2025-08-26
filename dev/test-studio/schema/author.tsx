@@ -1,8 +1,15 @@
-import {UserIcon as icon} from '@sanity/icons'
+import {TrashIcon, UserIcon as icon} from '@sanity/icons'
 import {type StringRule} from '@sanity/types'
-import {defineField, defineType} from 'sanity'
+import {
+  type ArrayOfPrimitivesInputProps,
+  defineField,
+  defineType,
+  getDraftId,
+  isPublishedId,
+} from 'sanity'
 
 import {AudienceSelectInput} from '../components/AudienceSelectInput'
+import {IncomingReferencesInput} from '../components/incomingReferences/IncomingReferencesInput'
 
 // Generic decide field implementation that works for all types
 const defineLocalDecideField = (config: any) => {
@@ -105,6 +112,68 @@ export default defineType({
       },
       validation: (rule: StringRule) => rule.required(),
     }),
+    defineField({
+      name: 'incomingReferences',
+      title: 'Incoming references',
+      type: 'array',
+      components: {
+        input: (props: ArrayOfPrimitivesInputProps) => (
+          <IncomingReferencesInput
+            {...props}
+            onLinkDocument={(document, reference) => {
+              return {
+                ...document,
+                bestFriend: reference,
+              }
+            }}
+            actions={({linkedDocument, client}) => {
+              if (linkedDocument._type === 'author') {
+                return [
+                  {
+                    label: 'Unlink document',
+                    icon: TrashIcon,
+                    tone: 'critical',
+                    onClick: async () => {
+                      await client.createOrReplace({
+                        ...linkedDocument,
+                        _id: isPublishedId(linkedDocument._id)
+                          ? getDraftId(linkedDocument._id)
+                          : linkedDocument._id,
+                        bestFriend: undefined,
+                      })
+                    },
+                  },
+                ]
+              }
+              return []
+            }}
+            // @ts-expect-error - filterQuery is not implemented yet
+            filterQuery={`_type == "author"`}
+          />
+        ),
+      },
+      of: [{type: 'author'}],
+    }),
+    defineField({
+      name: 'incomingReferencesBooks',
+      title: 'Incoming references books',
+      type: 'array',
+      components: {
+        input: (props: ArrayOfPrimitivesInputProps) => <IncomingReferencesInput {...props} />,
+      },
+      of: [{type: 'book'}],
+    }),
+    {
+      name: 'favoriteBooks',
+      title: 'Favorite books',
+      type: 'array',
+      of: [
+        {
+          type: 'reference',
+          to: {type: 'book'},
+        },
+      ],
+    },
     {
       name: 'bestFriend',
       title: 'Best friend',
@@ -153,17 +222,7 @@ export default defineType({
         },
       ],
     },
-    {
-      name: 'favoriteBooks',
-      title: 'Favorite books',
-      type: 'array',
-      of: [
-        {
-          type: 'reference',
-          to: {type: 'book'},
-        },
-      ],
-    },
+
     {
       name: 'minimalBlock',
       title: 'Reset all options',
