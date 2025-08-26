@@ -76,7 +76,7 @@ describe('extractSearchableText', () => {
         },
       ]
 
-      expect(extractSearchableText(portableText)).toBe('Hello\n\nWorld')
+      expect(extractSearchableText(portableText)).toBe('Hello World')
     })
 
     it('should handle arrays with portable text and other content', () => {
@@ -99,7 +99,7 @@ describe('extractSearchableText', () => {
         'More text',
       ]
 
-      expect(extractSearchableText(mixedArray)).toBe('Regular text Portable text normal More text')
+      expect(extractSearchableText(mixedArray)).toBe('Regular text Portable text More text')
     })
   })
 
@@ -191,9 +191,7 @@ describe('extractSearchableText', () => {
         },
       }
 
-      expect(extractSearchableText(deepNested)).toBe('Deep Title')
-      // too deep into the object, so it should not be included
-      expect(extractSearchableText(deepNested)).not.toBe('Deep Title Item 1 Item 2')
+      expect(extractSearchableText(deepNested)).toBe('Deep Title Item 1 Item 2')
     })
 
     it('should handle circular references gracefully by only going down one level', () => {

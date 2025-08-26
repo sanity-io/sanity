@@ -1,6 +1,3 @@
-import {toPlainText} from '@portabletext/react'
-import {isPortableTextBlock} from '@portabletext/toolkit'
-
 /**
  * Extracts a searchable string from a field value, handling various data types
  * @param value - The field value to extract text from
@@ -22,15 +19,24 @@ export function extractSearchableText(
   if (typeof value === 'string') return value
   if (typeof value === 'number') return value.toString()
 
-  // Handle arrays
+  // Handle Portable Text
   if (Array.isArray(value)) {
-    // Check if it's portable text
-    if (value.length > 0 && isPortableTextBlock(value[0])) {
-      return toPlainText(value)
-    }
-    // Handle regular arrays (join with space)
     return value
-      .map((item) => extractSearchableText(item, depth + 1, visited))
+      .map((item) => {
+        if (typeof item === 'object' && item.children && item._type === 'block') {
+          return item.children
+            .map((child: {text: string}) => child.text)
+            .join(' ')
+            .trim()
+        }
+        // If there are nested arrays, then we need to extract the text from the nested arrays
+        if (Array.isArray(item)) {
+          return extractSearchableText(item, depth + 1, visited)
+        }
+
+        // Handle other types (numbers, string)
+        return item.toString().trim()
+      })
       .filter(Boolean)
       .join(' ')
   }
