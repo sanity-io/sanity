@@ -8,7 +8,7 @@ Content teams need to keep their search functionality up-to-date with their late
 
 ## Solution
 
-This Sanity Function automatically syncs documents to Algolia's search index, ensuring your search functionality always reflects your latest content. When a post is published, the function sends the document data to Algolia, either creating a new search record or updating an existing one. When a document us updated or deleted, we also post additional information, as a result we can remove, hide posts/products etc as they're updated in Sanity.
+This Sanity Function automatically syncs documents to Algolia's search index, ensuring your search functionality always reflects your latest content. When a post is published, the function sends the document data to Algolia, either creating a new search record or updating an existing one. We also track when documents are updated and deleted, using the delta operation our function can remove an item from Algolia under the delete operation. We could selectively update for create vs update but for now we pass the same addOrUpdate to Algolia.
 
 ## Benefits
 
