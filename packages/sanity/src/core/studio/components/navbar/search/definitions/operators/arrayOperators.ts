@@ -26,7 +26,7 @@ export const arrayOperators = {
     groqFilter: ({fieldPath, value}) =>
       Number.isFinite(value) && fieldPath ? `count(${fieldPath}) == ${toJSON(value)}` : null,
     initialValue: null,
-    inputComponent: SearchFilterNumberInput as SearchOperatorInput<number>,
+    inputComponent: SearchFilterNumberInput,
     type: 'arrayCountEqual',
   }),
   arrayCountGt: defineSearchOperator({
@@ -36,7 +36,7 @@ export const arrayOperators = {
       Number.isFinite(value) && fieldPath ? `count(${fieldPath}) > ${toJSON(value)}` : null,
     icon: GtIcon,
     initialValue: null,
-    inputComponent: SearchFilterNumberInput as SearchOperatorInput<number>,
+    inputComponent: SearchFilterNumberInput,
     type: 'arrayCountGt',
   }),
   arrayCountGte: defineSearchOperator({
@@ -46,7 +46,7 @@ export const arrayOperators = {
       Number.isFinite(value) && fieldPath ? `count(${fieldPath}) >= ${toJSON(value)}` : null,
     icon: GteIcon,
     initialValue: null,
-    inputComponent: SearchFilterNumberInput as SearchOperatorInput<number>,
+    inputComponent: SearchFilterNumberInput,
     type: 'arrayCountGte',
   }),
   arrayCountLt: defineSearchOperator({
@@ -56,7 +56,7 @@ export const arrayOperators = {
       Number.isFinite(value) && fieldPath ? `count(${fieldPath}) < ${toJSON(value)}` : null,
     icon: LtIcon,
     initialValue: null,
-    inputComponent: SearchFilterNumberInput as SearchOperatorInput<number>,
+    inputComponent: SearchFilterNumberInput,
     type: 'arrayCountLt',
   }),
   arrayCountLte: defineSearchOperator({
@@ -66,7 +66,7 @@ export const arrayOperators = {
       Number.isFinite(value) && fieldPath ? `count(${fieldPath}) <= ${toJSON(value)}` : null,
     icon: LteIcon,
     initialValue: null,
-    inputComponent: SearchFilterNumberInput as SearchOperatorInput<number>,
+    inputComponent: SearchFilterNumberInput,
     type: 'arrayCountLte',
   }),
   arrayCountNotEqual: defineSearchOperator({
@@ -75,7 +75,7 @@ export const arrayOperators = {
     groqFilter: ({fieldPath, value}) =>
       Number.isFinite(value) && fieldPath ? `count(${fieldPath}) != ${toJSON(value)}` : null,
     initialValue: null,
-    inputComponent: SearchFilterNumberInput as SearchOperatorInput<number>,
+    inputComponent: SearchFilterNumberInput,
     type: 'arrayCountNotEqual',
   }),
   arrayCountRange: defineSearchOperator({
