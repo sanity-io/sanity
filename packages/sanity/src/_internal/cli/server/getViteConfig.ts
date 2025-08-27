@@ -144,7 +144,6 @@ export async function getViteConfig(options: ViteOptions): Promise<InlineConfig>
       dedupe: ['styled-components'],
     },
     define: {
-      '__SANITY_STAGING__': process.env.SANITY_INTERNAL_ENV === 'staging',
       'process.env.MODE': JSON.stringify(mode),
       'process.env.SANITY_INTERNAL_ENV': JSON.stringify(process.env.SANITY_INTERNAL_ENV),
       /**

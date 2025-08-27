@@ -18,7 +18,7 @@ permissions:
 jobs:
   build-and-validate:
     if: >
-      github.event_name == 'workflow_dispatch' || 
+      github.event_name == 'workflow_dispatch' ||
       startsWith(github.event.head_commit.message, 'chore(release): publish ')
     runs-on: ubuntu-latest
     permissions:
@@ -162,7 +162,7 @@ jobs:
 
       - name: Build bundles for staging
         env:
-          # sets the __SANITY_STAGING__ global variable to true in built bundles
+          # sets the SANITY_INTERNAL_ENV to staging in built bundles
           SANITY_INTERNAL_ENV: "staging"
         run: pnpm run build:bundle
 

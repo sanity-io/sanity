@@ -26,8 +26,7 @@ export interface CompatibleStudioAppId {
   studioApps: StudioApp[]
 }
 
-// @ts-expect-error: __SANITY_STAGING__ is a global env variable set by the vite config
-const isStaging = typeof __SANITY_STAGING__ !== 'undefined' && __SANITY_STAGING__ === true
+const isStaging = process.env.SANITY_INTERNAL_ENV === 'staging'
 const internalUrlSuffix = isStaging ? 'studio.sanity.work' : 'sanity.studio'
 
 async function fetchStudiosWithUrl(

@@ -176,9 +176,7 @@ export function _createAuthStore({
   const hostOptions: {apiHost?: string} = {}
   if (apiHost) {
     hostOptions.apiHost = apiHost
-    // @ts-expect-error: __SANITY_STAGING__ is a global env variable set by the vite config
-  } else if (typeof __SANITY_STAGING__ !== 'undefined' && __SANITY_STAGING__ === true) {
-    /* __SANITY_STAGING__ is a global variable set by the vite config */
+  } else if (process.env.SANITY_INTERNAL_ENV === 'staging') {
     hostOptions.apiHost = 'https://api.sanity.work'
   }
 

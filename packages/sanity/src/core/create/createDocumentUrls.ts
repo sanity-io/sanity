@@ -1,7 +1,6 @@
 import {type CreateLinkMetadata} from './types'
 
-// @ts-expect-error: __SANITY_STAGING__ is a global env variable set by the vite config
-const isStaging = typeof __SANITY_STAGING__ !== 'undefined' && __SANITY_STAGING__ === true
+const isStaging = process.env.SANITY_INTERNAL_ENV === 'staging'
 
 function getCreateBaseUrl(customHost?: string) {
   const host = (customHost ?? isStaging) ? 'create-staging.sanity.build' : 'www.sanity.io'
