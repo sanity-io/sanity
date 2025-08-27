@@ -18,8 +18,8 @@ export const VersionContextMenuItem = memo(function VersionContextMenuItem(props
   return (
     <Flex gap={3} justify="center" align="center">
       <ReleaseAvatar padding={2} tone={getReleaseTone(release)} />
-      <Stack flex={1} space={2}>
-        <Text size={1} weight="medium">
+      <Stack flex={1} space={2} style={{maxWidth: '180px'}}>
+        <Text size={1} weight="medium" textOverflow="ellipsis">
           {release.metadata?.title || t('release.placeholder-untitled-release')}
         </Text>
         <Text muted size={1}>

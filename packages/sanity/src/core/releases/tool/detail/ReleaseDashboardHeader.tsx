@@ -65,7 +65,13 @@ export function ReleaseDashboardHeader(props: {
             text={title || tCore('release.placeholder-untitled-release')}
             textWeight="semibold"
             padding={2}
-            style={title ? undefined : {opacity: 0.5}}
+            style={{
+              ...(title ? undefined : {opacity: 0.5}),
+              maxWidth: '300px',
+              textOverflow: 'ellipsis',
+              overflow: 'hidden',
+              whiteSpace: 'nowrap',
+            }}
           />
         </Breadcrumbs>
       </Flex>

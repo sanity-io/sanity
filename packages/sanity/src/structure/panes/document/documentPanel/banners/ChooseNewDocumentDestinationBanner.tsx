@@ -11,6 +11,7 @@ import {
   type ReleasesNavMenuItemPropsGetter,
   type TargetPerspective,
   Translate,
+  truncateReleaseTitle,
   useTranslation,
   useWorkspace,
 } from 'sanity'
@@ -37,6 +38,7 @@ export const ChooseNewDocumentDestinationBanner: ComponentType<Props> = ({
   reason,
 }) => {
   const {t} = useTranslation(structureLocaleNamespace)
+  const {t: tCore} = useTranslation()
 
   const {
     document: {
@@ -71,7 +73,9 @@ export const ChooseNewDocumentDestinationBanner: ComponentType<Props> = ({
                 t={t}
                 i18nKey="banners.choose-new-document-destination.release-inactive"
                 values={{
-                  title: selectedPerspective.metadata.title,
+                  title:
+                    truncateReleaseTitle(selectedPerspective.metadata.title) ||
+                    tCore('release.placeholder-untitled-release'),
                 }}
                 components={{
                   VersionBadge: getVersionInlineBadge(selectedPerspective),

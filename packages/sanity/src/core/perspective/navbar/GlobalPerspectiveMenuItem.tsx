@@ -182,10 +182,12 @@ export const GlobalPerspectiveMenuItem = forwardRef<
             space={2}
             style={{
               opacity: isReleasePerspectiveExcluded ? 0.5 : undefined,
+              maxWidth: '200px',
+              minWidth: 0,
             }}
           >
-            <Flex gap={3} align="center">
-              <Text size={1} weight="medium">
+            <Flex gap={3} align="center" style={{minWidth: 0, overflow: 'hidden'}}>
+              <Text size={1} weight="medium" textOverflow="ellipsis" style={{minWidth: 0}}>
                 {displayTitle}
               </Text>
               {isReleaseDocument(release) &&

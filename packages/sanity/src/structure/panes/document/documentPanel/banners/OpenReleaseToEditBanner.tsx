@@ -7,6 +7,7 @@ import {
   isCardinalityOneRelease,
   isVersionId,
   Translate,
+  truncateReleaseTitle,
   useActiveReleases,
   useDocumentVersions,
   useOnlyHasVersions,
@@ -66,7 +67,11 @@ export function OpenReleaseToEditBannerInner({documentId}: {documentId: string})
           })
           return hasDocumentVersion && !isCardinalityOneRelease(version)
         })
-        .map((version) => version.metadata.title || tCore('release.placeholder-untitled-release')),
+        .map(
+          (version) =>
+            truncateReleaseTitle(version.metadata.title) ||
+            tCore('release.placeholder-untitled-release'),
+        ),
     [activeReleases, documentVersions, tCore],
   )
   const tone = currentVersion && getReleaseTone(currentVersion)

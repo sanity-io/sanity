@@ -8,6 +8,7 @@ import {
   getReleaseIdFromReleaseDocumentId,
   getReleaseTone,
   ReleaseAvatar,
+  truncateReleaseTitle,
   useActiveReleases,
   type VersionInfoDocumentStub,
 } from '../../releases'
@@ -116,7 +117,7 @@ const VersionStatus = ({
     <Flex align="center" gap={2}>
       <ReleaseAvatar tone={tone} padding={0} />
       <Text size={1}>
-        {title || t('release.placeholder-untitled-release')} -{' '}
+        {truncateReleaseTitle(title) || t('release.placeholder-untitled-release')} -{' '}
         <span style={{color: 'var(--card-muted-fg-color)'}}>
           {t(labels[mode], {date: relativeTime})}
         </span>

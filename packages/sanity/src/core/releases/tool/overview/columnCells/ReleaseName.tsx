@@ -105,8 +105,8 @@ export const ReleaseNameCell: VisibleColumn<TableRelease>['cell'] = ({
                 <ReleaseAvatar tone={getReleaseTone(release)} />
               </Box>
               <Stack flex={1} space={2}>
-                <Flex align="center" gap={2}>
-                  <Text size={1} weight="medium">
+                <Flex align="center" gap={2} style={{minWidth: 0}}>
+                  <Text size={1} weight="medium" textOverflow="ellipsis" style={{minWidth: 0}}>
                     {displayTitle}
                   </Text>
                 </Flex>

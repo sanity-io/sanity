@@ -10,7 +10,7 @@ import {useReleaseFormOptimisticUpdating} from '../../hooks/useReleaseFormOptimi
 
 const MAX_DESCRIPTION_HEIGHT = 200
 
-const TitleInput = styled.input((props) => {
+const TitleTextArea = styled.textarea((props) => {
   const {color, font} = getTheme_v2(props.theme)
   return css`
     resize: none;
@@ -27,12 +27,12 @@ const TitleInput = styled.input((props) => {
     font-weight: ${font.text.weights.bold};
     font-size: ${font.text.sizes[4].fontSize}px;
     line-height: ${font.text.sizes[4].lineHeight}px;
+    min-height: ${font.text.sizes[4].lineHeight}px;
     margin: 0;
     position: relative;
     z-index: 1;
     display: block;
-    transition: height 500ms;
-    /* NOTE: This is a hack to disable Chrome’s autofill styles */
+    /* NOTE: This is a hack to disable Chrome's autofill styles */
     &:-webkit-autofill,
     &:-webkit-autofill:hover,
     &:-webkit-autofill:focus,
@@ -95,6 +95,7 @@ export function TitleDescriptionForm({
   disabled?: boolean
 }): React.JSX.Element {
   const isReleaseOpen = getIsReleaseOpen(release)
+  const titleRef = useRef<HTMLTextAreaElement | null>(null)
   const descriptionRef = useRef<HTMLTextAreaElement | null>(null)
   const [scrollHeight, setScrollHeight] = useState(46)
   const {t} = useTranslation()
@@ -117,15 +118,34 @@ export function TitleDescriptionForm({
     if (descriptionRef.current) {
       setScrollHeight(descriptionRef.current.scrollHeight)
     }
+    // Auto-resize title textarea
+    if (titleRef.current) {
+      titleRef.current.style.height = 'auto'
+      titleRef.current.style.height = `${titleRef.current.scrollHeight}px`
+    }
   }, [])
 
+  useEffect(() => {
+    // Auto-resize title textarea when value changes
+    if (titleRef.current) {
+      titleRef.current.style.height = 'auto'
+      titleRef.current.style.height = `${titleRef.current.scrollHeight}px`
+    }
+  }, [release])
+
   const handleTitleChange = useCallback(
-    (event: ChangeEvent<HTMLInputElement>) => {
+    (event: ChangeEvent<HTMLTextAreaElement>) => {
       event.preventDefault()
       const title = event.target.value
       // save the values to make input snappier while requests happen in the background
       updateLocalData({title})
       onChange({...release, metadata: {...release.metadata, title}})
+
+      // Auto-resize the textarea
+      if (titleRef.current) {
+        titleRef.current.style.height = 'auto'
+        titleRef.current.style.height = `${titleRef.current.scrollHeight}px`
+      }
     },
     [onChange, release, updateLocalData],
   )
@@ -161,7 +181,8 @@ export function TitleDescriptionForm({
 
   return (
     <Stack space={3}>
-      <TitleInput
+      <TitleTextArea
+        ref={titleRef}
         onChange={handleTitleChange}
         onFocus={createFocusHandler('title')}
         onBlur={handleBlur}

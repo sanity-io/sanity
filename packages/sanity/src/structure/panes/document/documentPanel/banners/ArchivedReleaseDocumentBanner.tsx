@@ -5,6 +5,7 @@ import {
   getVersionInlineBadge,
   isCardinalityOneRelease,
   Translate,
+  truncateReleaseTitle,
   useArchivedReleases,
   useTranslation,
 } from 'sanity'
@@ -46,7 +47,8 @@ export function ArchivedReleaseDocumentBanner(): React.JSX.Element {
     return 'banners.archived-release.description'
   }, [release])
 
-  const title = release?.metadata.title || tCore('release.placeholder-untitled-release')
+  const title =
+    truncateReleaseTitle(release?.metadata.title) || tCore('release.placeholder-untitled-release')
 
   return (
     <Banner

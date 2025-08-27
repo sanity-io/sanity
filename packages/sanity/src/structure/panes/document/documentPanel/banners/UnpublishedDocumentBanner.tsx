@@ -5,6 +5,7 @@ import {
   isGoingToUnpublish,
   isReleaseDocument,
   Translate,
+  truncateReleaseTitle,
   usePerspective,
   useTranslation,
 } from 'sanity'
@@ -24,7 +25,8 @@ export function UnpublishedDocumentBanner() {
 
   if (isReleaseDocument(selectedPerspective) && isCurrentVersionGoingToUnpublish) {
     const title =
-      selectedPerspective.metadata?.title || tCore('release.placeholder-untitled-release')
+      truncateReleaseTitle(selectedPerspective.metadata?.title) ||
+      tCore('release.placeholder-untitled-release')
 
     return (
       <Banner
