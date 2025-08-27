@@ -84,10 +84,7 @@ export function NewDocumentButton(props: NewDocumentButtonProps) {
     setSearchQuery(event.currentTarget.value)
   }, [])
 
-  const handleToggleOpen = useCallback(() => {
-    // TODO: Show document limit modal
-    setOpen((v) => !v)
-  }, [])
+  const handleToggleOpen = useCallback(() => setOpen((v) => !v), [])
 
   const handleClose = useCallback(() => {
     setOpen(false)
