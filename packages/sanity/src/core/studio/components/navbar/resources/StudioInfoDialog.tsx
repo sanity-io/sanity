@@ -31,6 +31,11 @@ function isPrerelease(ver: SemVer) {
   return ver.prerelease.length > 0
 }
 
+const SANITY_BASE_URL =
+  process.env.SANITY_INTERNAL_ENV === 'staging'
+    ? 'https://www.sanity.work'
+    : 'https://www.sanity.io'
+
 const HEX_ONLY = /^[0-9a-fA-F]+$/i
 function resolveGithubURLFromVersion(ver: SemVer) {
   const preids = ver.prerelease
@@ -183,7 +188,7 @@ export function StudioInfoDialog(props: StudioInfoDialogProps) {
                   currentVersionIsPrerelease ? null : (
                     <Button
                       as="a"
-                      href="https://www.sanity.io/docs/upgrade"
+                      href={`${SANITY_BASE_URL}/docs/upgrade`}
                       target="_blank"
                       rel="noopener noreferrer"
                       mode="bleed"
@@ -206,7 +211,7 @@ export function StudioInfoDialog(props: StudioInfoDialogProps) {
                 </Text>
                 <Button
                   as="a"
-                  href={`https://sanity.io/manage/project/${projectId}/studios?host=${document.location.hostname}`}
+                  href={`${SANITY_BASE_URL}/manage/project/${projectId}/studios?host=${document.location.hostname}`}
                   target="_blank"
                   rel="noopener noreferrer"
                   mode="ghost"
@@ -225,7 +230,7 @@ export function StudioInfoDialog(props: StudioInfoDialogProps) {
                 </Text>
                 <Button
                   as="a"
-                  href="https://www.sanity.io/docs/auto-updating-studios"
+                  href={`${SANITY_BASE_URL}/docs/auto-updating-studios`}
                   target="_blank"
                   rel="noopener noreferrer"
                   mode="ghost"
