@@ -22,6 +22,7 @@ export function ValidationProgressIndicator({documents}: {documents: DocumentInR
 
   // Add delay when validation is finished
   // so that we can show that it's finished but then show the checkmark
+  // without the text
   useEffect(() => {
     if (isFinished) {
       const timer = setTimeout(() => {
@@ -47,27 +48,32 @@ export function ValidationProgressIndicator({documents}: {documents: DocumentInR
     return null
   }
 
-  return isFinished && showCheckmark ? (
-    <Text muted size={1}>
-      <Tooltip content={t('summary.all-documents-validated')}>
-        <CheckmarkCircleIcon />
-      </Tooltip>
-    </Text>
-  ) : (
-    <Card padding={2} radius="full" tone={isValidating ? 'neutral' : 'positive'}>
+  return (
+    <Card
+      padding={2}
+      radius="full"
+      tone={isValidating ? 'neutral' : isFinished && showCheckmark ? 'transparent' : 'positive'}
+      style={{
+        background: isFinished && showCheckmark ? 'transparent' : undefined,
+      }}
+    >
       <Flex gap={2}>
         <Text size={1}>
           {isValidating ? (
             <ProgressIcon progress={validatedCount / totalCount} />
           ) : (
-            <CheckmarkCircleIcon />
+            <Tooltip content={t('summary.all-documents-validated')}>
+              <CheckmarkCircleIcon />
+            </Tooltip>
           )}
         </Text>
-        <Text muted size={1}>
-          {isValidating
-            ? t('summary.validating-documents', {validatedCount, totalCount})
-            : t('summary.all-documents-validated')}
-        </Text>
+        {!showCheckmark && (
+          <Text muted size={1}>
+            {isValidating
+              ? t('summary.validating-documents', {validatedCount, totalCount})
+              : t('summary.all-documents-validated')}
+          </Text>
+        )}
       </Flex>
     </Card>
   )
