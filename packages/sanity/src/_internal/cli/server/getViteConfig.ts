@@ -146,6 +146,7 @@ export async function getViteConfig(options: ViteOptions): Promise<InlineConfig>
     define: {
       '__SANITY_STAGING__': process.env.SANITY_INTERNAL_ENV === 'staging',
       'process.env.MODE': JSON.stringify(mode),
+      'process.env.SANITY_INTERNAL_ENV': JSON.stringify(process.env.SANITY_INTERNAL_ENV),
       /**
        * Yes, double negatives are confusing.
        * The default value of `SC_DISABLE_SPEEDY` is `process.env.NODE_ENV === 'production'`: https://github.com/styled-components/styled-components/blob/99c02f52d69e8e509c0bf012cadee7f8e819a6dd/packages/styled-components/src/constants.ts#L34
