@@ -20,8 +20,7 @@ import {
 } from './connection-status/connection-status-store'
 import {
   createDocumentStore,
-  type DocumentMutationCommitError,
-  DocumentMutationCommitErrorType,
+  type DocumentMutationCommitErrorType,
   type DocumentStore,
   type LatencyReportEvent,
 } from './document'
@@ -160,16 +159,15 @@ export function useDocumentStore(): DocumentStore {
   const telemetry = useTelemetry()
 
   const handleDocumentMutationCommitErrorRecovery = useCallback(
-    (error: DocumentMutationCommitError) => {
-      // TODO: add telemetry
-
-      switch (error.type) {
-        case DocumentMutationCommitErrorType.DocumentLimitExceeded:
+    (error: any) => {
+      const errorType = error?.response?.body?.error?.type as DocumentMutationCommitErrorType
+      switch (errorType) {
+        case 'documentLimitExceededError':
           handleOpenDocumentLimitsUpsellDialog('document_action')
           break
         default:
           // allow error to bubble up
-          throw new Error(error)
+          throw error
       }
     },
     [handleOpenDocumentLimitsUpsellDialog],

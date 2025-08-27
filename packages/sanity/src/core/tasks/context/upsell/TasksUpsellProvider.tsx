@@ -1,13 +1,10 @@
 import {useCallback, useMemo, useState} from 'react'
 import {TasksUpsellContext} from 'sanity/_singletons'
 
-import {useUpsellData} from '../../../hooks'
+import {useUpsellData} from '../../../hooks/useUpsellData'
 import {type UpsellDialogViewedInfo} from '../../../studio'
 import {UpsellDialog} from '../../../studio/upsell/UpsellDialog'
 import {type TasksUpsellContextValue} from './types'
-
-// Date when the change from array to object in the data returned was introduced.
-const API_VERSION = '2024-04-19'
 
 /**
  * @beta
@@ -18,7 +15,6 @@ export function TasksUpsellProvider(props: {children: React.ReactNode}) {
   const {upsellData, telemetryLogs} = useUpsellData({
     dataUri: '/journey/tasks',
     feature: 'tasks',
-    clientOptions: {apiVersion: API_VERSION},
   })
 
   const handlePrimaryButtonClick = useCallback(() => {

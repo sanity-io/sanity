@@ -1,17 +1,7 @@
 /* eslint-disable max-nested-callbacks */
 import {type SanityClient} from '@sanity/client'
 import {type Schema} from '@sanity/types'
-import {
-  asyncScheduler,
-  defer,
-  EMPTY,
-  merge,
-  type Observable,
-  of,
-  Subject,
-  throwError,
-  timer,
-} from 'rxjs'
+import {asyncScheduler, defer, EMPTY, merge, type Observable, of, Subject, timer} from 'rxjs'
 import {
   catchError,
   concatMap,
@@ -101,14 +91,8 @@ const execute = (
   ).pipe(
     last(),
     catchError((error) => {
-      if (typeof error?.statusCode === 'number' && error?.response?.body?.error?.type) {
-        onDocumentMutationCommitErrorRecovery?.({
-          type: error.response.body.error.type,
-          statusCode: error.statusCode,
-        })
-        return of()
-      }
-      return throwError(() => new Error(error))
+      onDocumentMutationCommitErrorRecovery?.(error)
+      return of()
     }),
   )
 }

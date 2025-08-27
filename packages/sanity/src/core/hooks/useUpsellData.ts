@@ -2,7 +2,6 @@ import {useTelemetry} from '@sanity/telemetry/react'
 import {template} from 'lodash'
 import {useEffect, useMemo, useState} from 'react'
 
-import {type SourceClientOptions} from '../../core/config/types'
 import {
   UpsellDialogDismissed,
   UpsellDialogLearnMoreCtaClicked,
@@ -15,28 +14,22 @@ import {type UpsellData} from '../studio/upsell/types'
 import {DEFAULT_STUDIO_CLIENT_OPTIONS} from '../studioClient'
 import {useClient, useProjectId} from './'
 
-export interface UpsellDataProps {
+interface UpsellDataProps {
   dataUri: string
   feature: string
-  ctaBaseUrl?: string
-  clientOptions?: SourceClientOptions
 }
 
 const BASE_URL = 'www.sanity.io'
 
-export const useUpsellData = ({
-  ctaBaseUrl = BASE_URL,
-  clientOptions,
-  dataUri,
-  feature,
-}: UpsellDataProps) => {
+/** @internal */
+export const useUpsellData = ({dataUri, feature}: UpsellDataProps) => {
   const [upsellData, setUpsellData] = useState<UpsellData | null>(null)
   const telemetry = useTelemetry()
   const projectId = useProjectId()
-  const client = useClient({
-    ...DEFAULT_STUDIO_CLIENT_OPTIONS,
-    ...clientOptions,
-  })
+  const client = useClient(DEFAULT_STUDIO_CLIENT_OPTIONS)
+
+  const isStaging = client.config().apiHost.endsWith('.sanity.work')
+  const baseUrl = `https://www.sanity.${isStaging ? 'work' : 'io'}`
 
   const telemetryLogs = useMemo(
     () => ({
@@ -97,10 +90,10 @@ export const useUpsellData = ({
         if (!data) return
         try {
           const ctaUrl = template(data.ctaButton.url, TEMPLATE_OPTIONS)
-          data.ctaButton.url = ctaUrl({baseUrl: ctaBaseUrl, projectId})
+          data.ctaButton.url = ctaUrl({baseUrl, projectId})
 
           const secondaryUrl = template(data.secondaryButton.url, TEMPLATE_OPTIONS)
-          data.secondaryButton.url = secondaryUrl({baseUrl: ctaBaseUrl, projectId})
+          data.secondaryButton.url = secondaryUrl({baseUrl, projectId})
           setUpsellData(data)
         } catch (e) {
           // silently fail
@@ -114,7 +107,7 @@ export const useUpsellData = ({
     return () => {
       sub.unsubscribe()
     }
-  }, [client, projectId, ctaBaseUrl, dataUri])
+  }, [client, projectId, baseUrl, dataUri])
 
   return {upsellData, telemetryLogs}
 }

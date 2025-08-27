@@ -17,8 +17,7 @@ export function FallbackErrorScreen(props: {
 }) {
   const {error, eventId, heading = 'An error occurred', onReset} = props
   const message = error?.message
-
-  const stack = error?.stack === 'string' && error?.stack
+  const stack = typeof error?.stack === 'string' && error?.stack
 
   return (
     <Card height="fill" overflow="auto" paddingY={[4, 5, 6, 7]} paddingX={4} sizing="border">

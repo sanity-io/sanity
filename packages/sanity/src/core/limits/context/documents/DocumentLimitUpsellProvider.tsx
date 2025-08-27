@@ -1,15 +1,13 @@
 import {type PropsWithChildren, useCallback, useContext, useMemo, useState} from 'react'
 import {DocumentLimitUpsellContext, type DocumentLimitUpsellContextValue} from 'sanity/_singletons'
 
-import {useUpsellData} from '../../../hooks'
+import {useUpsellData} from '../../../hooks/useUpsellData'
 import {type UpsellDialogViewedInfo} from '../../../studio'
 import {UpsellDialog} from '../../../studio/upsell/UpsellDialog'
 
 export function DocumentLimitUpsellProvider({children}: PropsWithChildren) {
   const [upsellDialogOpen, setUpsellDialogOpen] = useState(false)
   const {upsellData, telemetryLogs} = useUpsellData({
-    // TODO: remove once personalization-forge is updated to include dataUri endpoint
-    ctaBaseUrl: 'www.sanity.work',
     dataUri: '/journey/document-limit',
     feature: 'document-limits',
   })

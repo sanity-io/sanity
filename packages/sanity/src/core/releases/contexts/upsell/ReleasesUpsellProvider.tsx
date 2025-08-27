@@ -2,7 +2,8 @@ import {useCallback, useMemo, useState} from 'react'
 import {firstValueFrom} from 'rxjs'
 import {ReleasesUpsellContext} from 'sanity/_singletons'
 
-import {useFeatureEnabled, useUpsellData} from '../../../hooks'
+import {useFeatureEnabled} from '../../../hooks'
+import {useUpsellData} from '../../../hooks/useUpsellData'
 import {UpsellDialog} from '../../../studio/upsell/UpsellDialog'
 import {useActiveReleases} from '../../store/useActiveReleases'
 import {useOrgActiveReleaseCount} from '../../store/useOrgActiveReleaseCount'
@@ -21,9 +22,6 @@ class StudioReleaseLimitExceededError extends Error {
   }
 }
 
-// Date when the change from array to object in the data returned was introduced.
-const API_VERSION = '2024-04-19'
-
 /**
  * @beta
  * @hidden
@@ -35,7 +33,6 @@ export function ReleasesUpsellProvider(props: {children: React.ReactNode}) {
   const {upsellData, telemetryLogs} = useUpsellData({
     dataUri: '/journey/content-releases',
     feature: 'content-releases',
-    clientOptions: {apiVersion: API_VERSION},
   })
 
   const mode = useMemo(() => {
