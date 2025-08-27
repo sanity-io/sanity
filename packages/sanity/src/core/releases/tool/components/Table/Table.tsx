@@ -161,7 +161,7 @@ const TableInner = <TableData, AdditionalRowTableData>({
         return (
           <Card
             key={cardKey}
-            data-testid="table-row"
+            data-testid={loading ? 'table-row-skeleton' : 'table-row'}
             borderBottom
             display="flex"
             data-index={datum.index}

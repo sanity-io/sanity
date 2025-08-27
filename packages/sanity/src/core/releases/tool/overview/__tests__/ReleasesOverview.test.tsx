@@ -5,7 +5,7 @@ import {useState} from 'react'
 import {useRouter} from 'sanity/router'
 import {beforeEach, describe, expect, it, vi} from 'vitest'
 
-import {getByDataUi, queryByDataUi} from '../../../../../../test/setup/customQueries'
+import {getByDataUi} from '../../../../../../test/setup/customQueries'
 import {setupVirtualListEnv} from '../../../../../../test/testUtils/setupVirtualListEnv'
 import {createTestProvider} from '../../../../../../test/testUtils/TestProvider'
 import {mockUseTimeZone, useTimeZoneMockReturn} from '../../../../hooks/__mocks__/useTimeZone.mock'
@@ -61,7 +61,7 @@ vi.mock('sanity', () => ({
   useTranslation: vi.fn().mockReturnValue({t: vi.fn()}),
 }))
 
-vi.mock('@sanity/ui', async (importOriginal) => {
+vi.mock('@sanity/ui', async (importOriginal: any) => {
   return {
     ...(await importOriginal()),
     useMediaIndex: vi.fn().mockReturnValue(3),
@@ -92,7 +92,8 @@ vi.mock('../../../store/useReleasePermissions', () => ({
   useReleasePermissions: vi.fn(() => useReleasePermissionsMockReturn),
 }))
 
-vi.mock('sanity/router', async (importOriginal) => ({
+// oxlint-disable-next-line no-explicit-any
+vi.mock('sanity/router', async (importOriginal: any) => ({
   ...(await importOriginal()),
   useRouter: vi.fn().mockReturnValue({state: {}, navigate: vi.fn()}),
 }))
@@ -151,9 +152,22 @@ describe('ReleasesOverview', () => {
       return render(<TestComponent />, {wrapper})
     })
 
-    it('does not show releases table but shows loader', () => {
-      expect(screen.queryByRole('table')).toBeNull()
-      queryByDataUi(document.body, 'Spinner')
+    it('shows loading state when releases are loading', async () => {
+      await waitFor(
+        () => {
+          const table = screen.queryByRole('table')
+          expect(table).toBeInTheDocument()
+        },
+        // This is necessary to avoid flakiness
+        {timeout: 5000},
+      )
+
+      // Make sure that the temporary skeletons rows are shown which means it's loading
+      const table = screen.queryByRole('table')
+      if (table) {
+        const skeletonRows = screen.getAllByTestId('table-row-skeleton')
+        expect(skeletonRows).toHaveLength(3)
+      }
     })
 
     it('does not allow for switching between history modes', async () => {
