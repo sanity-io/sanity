@@ -90,9 +90,9 @@ const execute = (
     merge(of(null), maybeObservable(operation.execute(operationArguments, ...extraArgs))),
   ).pipe(
     last(),
-    catchError((error) => {
-      onDocumentMutationCommitErrorRecovery?.(error)
-      return of()
+    catchError((err) => {
+      onDocumentMutationCommitErrorRecovery?.(err)
+      return EMPTY
     }),
   )
 }

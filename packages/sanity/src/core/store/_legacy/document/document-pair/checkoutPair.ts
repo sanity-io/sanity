@@ -7,7 +7,7 @@ import {
 import {type Mutation} from '@sanity/mutator'
 import {type SanityDocument} from '@sanity/types'
 import {omit} from 'lodash'
-import {defer, EMPTY, from, merge, type Observable, of} from 'rxjs'
+import {defer, EMPTY, from, merge, type Observable} from 'rxjs'
 import {
   catchError,
   filter,
@@ -294,9 +294,9 @@ export function checkoutPair(
         mergeMap((canUseServerActions) =>
           submitCommitRequest(client, idPair, commitRequest, canUseServerActions),
         ),
-        catchError((error) => {
-          onDocumentMutationCommitErrorRecovery?.(error)
-          return of()
+        catchError((err) => {
+          onDocumentMutationCommitErrorRecovery?.(err)
+          return EMPTY
         }),
       ),
     ),
