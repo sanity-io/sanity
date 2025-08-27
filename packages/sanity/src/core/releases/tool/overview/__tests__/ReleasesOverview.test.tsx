@@ -1,7 +1,7 @@
 import {type ReleaseDocument} from '@sanity/client'
 import {act, fireEvent, render, screen, waitFor, within} from '@testing-library/react'
 import {format, set} from 'date-fns'
-import {useState} from 'react'
+import {useEffect, useRef, useState} from 'react'
 import {useRouter} from 'sanity/router'
 import {beforeEach, describe, expect, it, vi} from 'vitest'
 
@@ -122,12 +122,18 @@ const getWrapper = () =>
  * ReleasesOverview once the exact height wrapper has mounted
  */
 const TestComponent = () => {
-  const [hasWrapperRendered, setHasWrapperRendered] = useState<boolean>(false)
-  const updateWrapperRendered = () => setHasWrapperRendered(true)
+  const [hasWrapperRendered, setHasWrapperRendered] = useState(false)
+  const wrapperRef = useRef<HTMLDivElement | null>(null)
+
+  useEffect(() => {
+    if (wrapperRef.current) {
+      setHasWrapperRendered(true)
+    }
+  }, [])
 
   return (
-    <div style={{height: '400px'}} ref={updateWrapperRendered}>
-      <ReleasesOverview data-wrapperRendered={hasWrapperRendered?.toString()} />
+    <div style={{height: '400px'}} ref={wrapperRef}>
+      <ReleasesOverview data-wrapperRendered={hasWrapperRendered.toString()} />
     </div>
   )
 }
