@@ -185,7 +185,7 @@ export function StudioInfoDialog(props: StudioInfoDialogProps) {
 
                 {
                   // save some space by not showing "how to update"-button
-                  currentVersionIsPrerelease ? null : (
+                  !isAutoUpdating || currentVersionIsPrerelease ? null : (
                     <Button
                       as="a"
                       href={`${SANITY_BASE_URL}/docs/upgrade`}
