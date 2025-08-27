@@ -19,8 +19,6 @@ interface UpsellDataProps {
   feature: string
 }
 
-const BASE_URL = 'www.sanity.io'
-
 /** @internal */
 export const useUpsellData = ({dataUri, feature}: UpsellDataProps) => {
   const [upsellData, setUpsellData] = useState<UpsellData | null>(null)
