@@ -11,12 +11,7 @@ import {SanityMonogram} from '@sanity/logos'
 import {debugSecrets} from '@sanity/preview-url-secret/sanity-plugin-debug-secrets'
 import {tsdoc} from '@sanity/tsdoc/studio'
 import {visionTool} from '@sanity/vision'
-import {
-  defineConfig,
-  definePlugin,
-  QUOTA_EXCLUDED_RELEASES_ENABLED,
-  type WorkspaceOptions,
-} from 'sanity'
+import {defineConfig, definePlugin, QUOTA_EXCLUDED_RELEASES_ENABLED} from 'sanity'
 import {defineDocuments, defineLocations, presentationTool} from 'sanity/presentation'
 import {structureTool} from 'sanity/structure'
 import {unsplashAssetSource, UnsplashIcon} from 'sanity-plugin-asset-source-unsplash'
@@ -251,7 +246,56 @@ const defaultWorkspace = defineConfig({
   },
 })
 
-export default defineConfig([
+const STAGING_CONFIG = defineConfig([
+  {
+    name: 'staging',
+    title: 'Staging',
+    subtitle: 'Staging dataset',
+    projectId: 'exx11uqh',
+    dataset: 'playground',
+    plugins: [sharedSettings({projectId: 'exx11uqh'})],
+    basePath: '/staging',
+    auth: {
+      loginMethod: 'token',
+    },
+    unstable_tasks: {
+      enabled: true,
+    },
+    mediaLibrary: {
+      enabled: true,
+    },
+  },
+  {
+    name: 'media-library-playground',
+    title: 'Media Library Playground (staging)',
+    projectId: '5iedwjzw',
+    dataset: 'production',
+    plugins: [sharedSettings({projectId: '5iedwjzw'})],
+    basePath: '/media-library-playground-staging',
+    auth: {
+      loginMethod: 'token',
+    },
+    mediaLibrary: {
+      enabled: true,
+    },
+  },
+  {
+    name: 'playground-staging',
+    title: 'playground (Staging)',
+    projectId: 'exx11uqh',
+    dataset: 'playground',
+    plugins: [sharedSettings({projectId: 'exx11uqh'})],
+    basePath: '/playground-staging',
+    auth: {
+      loginMethod: 'token',
+    },
+    mediaLibrary: {
+      enabled: true,
+    },
+  },
+])
+
+const PRODUCTION_CONFIG = defineConfig([
   defaultWorkspace,
   {
     ...defaultWorkspace,
@@ -307,6 +351,10 @@ export default defineConfig([
       enabled: true,
     },
   },
+  ...STAGING_CONFIG.map((conf) => ({
+    ...conf,
+    apiHost: 'https://api.sanity.work',
+  })),
   {
     name: 'playground',
     title: 'Test Studio (playground)',
@@ -347,55 +395,6 @@ export default defineConfig([
     dataset: 'playground-partial-indexing',
     plugins: [sharedSettings({projectId: 'ppsg7ml5'})],
     basePath: '/playground-partial-indexing',
-    mediaLibrary: {
-      enabled: true,
-    },
-  },
-  {
-    name: 'staging',
-    title: 'Staging',
-    subtitle: 'Staging dataset',
-    projectId: 'exx11uqh',
-    dataset: 'playground',
-    plugins: [sharedSettings({projectId: 'exx11uqh'})],
-    basePath: '/staging',
-    apiHost: 'https://api.sanity.work',
-    auth: {
-      loginMethod: 'token',
-    },
-    unstable_tasks: {
-      enabled: true,
-    },
-    mediaLibrary: {
-      enabled: true,
-    },
-  },
-  {
-    name: 'media-library-playground',
-    title: 'Media Library Playground (staging)',
-    projectId: '5iedwjzw',
-    dataset: 'production',
-    plugins: [sharedSettings({projectId: '5iedwjzw'})],
-    basePath: '/media-library-playground-staging',
-    apiHost: 'https://api.sanity.work',
-    auth: {
-      loginMethod: 'token',
-    },
-    mediaLibrary: {
-      enabled: true,
-    },
-  },
-  {
-    name: 'playground-staging',
-    title: 'playground (Staging)',
-    projectId: 'exx11uqh',
-    dataset: 'playground',
-    plugins: [sharedSettings({projectId: 'exx11uqh'})],
-    basePath: '/playground-staging',
-    apiHost: 'https://api.sanity.work',
-    auth: {
-      loginMethod: 'token',
-    },
     mediaLibrary: {
       enabled: true,
     },
@@ -535,7 +534,10 @@ export default defineConfig([
             page: defineLocations({
               locations: [
                 {title: 'App Router', href: 'https://preview-kit-next-app-router.sanity.dev/'},
-                {title: 'Pages Router', href: 'https://preview-kit-next-pages-router.sanity.dev/'},
+                {
+                  title: 'Pages Router',
+                  href: 'https://preview-kit-next-pages-router.sanity.dev/',
+                },
                 {title: 'Remix', href: 'https://preview-kit-remix.sanity.dev/'},
               ],
             }),
@@ -576,4 +578,6 @@ export default defineConfig([
       enabled: true,
     },
   },
-]) as WorkspaceOptions[]
+])
+
+export default process.env.SANITY_INTERNAL_ENV === 'staging' ? STAGING_CONFIG : PRODUCTION_CONFIG
