@@ -155,7 +155,7 @@ describe('ReleasesOverview', () => {
         resources: [releasesUsEnglishLocaleBundle],
       })
 
-      return render(<TestComponent />, {wrapper})
+      return await act(async () => render(<TestComponent />, {wrapper}))
     })
 
     it('shows loading state when releases are loading', async () => {
@@ -202,7 +202,7 @@ describe('ReleasesOverview', () => {
         resources: [releasesUsEnglishLocaleBundle],
       })
 
-      return render(<TestComponent />, {wrapper})
+      return await act(async () => render(<TestComponent />, {wrapper}))
     })
 
     it('shows a message about releases', () => {
@@ -249,7 +249,7 @@ describe('ReleasesOverview', () => {
 
       const wrapper = await getWrapper()
 
-      return render(<TestComponent />, {wrapper})
+      return await act(async () => render(<TestComponent />, {wrapper}))
     }
 
     beforeEach(async () => {
@@ -281,7 +281,7 @@ describe('ReleasesOverview', () => {
 
       const wrapper = await getWrapper()
 
-      return act(() => {
+      return await act(async () => {
         activeRender = render(<TestComponent />, {wrapper})
       })
     })
