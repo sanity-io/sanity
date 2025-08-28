@@ -1,13 +1,16 @@
+import {type CreateVersionAction} from '@sanity/client'
+
 import {type OperationImpl} from '../operations/types'
+import {actionsApiClient} from '../utils/actionsApiClient'
 import {isLiveEditEnabled} from '../utils/isLiveEditEnabled'
 
 export const patch: OperationImpl<[patches: any[], initialDocument?: Record<string, any>]> = {
   disabled: (): false => false,
   execute: (
-    {schema, snapshots, idPair, draft, published, version, typeName},
+    {schema, snapshots, idPair, draft, published, version, typeName, client},
     patches = [],
     initialDocument,
-  ): void => {
+  ) => {
     if (version) {
       // No drafting, so patch and commit the version document.
       const patchMutation = version.patch(patches)
@@ -54,6 +57,39 @@ export const patch: OperationImpl<[patches: any[], initialDocument?: Record<stri
     const patchMutation = draft.patch(patches)
 
     if (snapshots.published) {
+      // This could be "create draft from published" OR "update existing draft"
+      // Only use version.create when we're actually creating a new draft from published
+      if (!snapshots.draft) {
+        // True "create draft from published" scenario - no draft exists yet
+        // Instead of going through the mutation pipeline, call actions directly
+        const publishedRev = snapshots.published._rev
+
+        const versionCreateAction: CreateVersionAction = {
+          actionType: 'sanity.action.document.version.create',
+          publishedId: idPair.publishedId,
+          versionId: idPair.draftId,
+          baseId: idPair.publishedId,
+          ifBaseRevisionId: publishedRev,
+        }
+
+        const editActions = patchMutation.map((mutation) => ({
+          actionType: 'sanity.action.document.edit' as const,
+          draftId: idPair.draftId,
+          publishedId: idPair.publishedId,
+          patch: {
+            ...mutation.patch,
+            id: undefined, // Remove id to match toActions behavior
+          },
+        }))
+
+        const actions = [versionCreateAction, ...editActions]
+
+        // Call actions directly and return the observable so it gets executed
+        return actionsApiClient(client, idPair).observable.action(actions, {
+          tag: 'document.commit',
+        })
+      }
+      // Draft already exists, use normal mutation pipeline
       draft.mutate([
         // If there's no draft, the user's edits will be based on the published document in the form in front of them
         // so before patching it we need to make sure it's created based on the current published version first.

@@ -173,3 +173,72 @@ describe('patch', () => {
     })
   })
 })
+
+describe('server patch version.create', () => {
+  it('calls version.create for create draft from published scenario', () => {
+    const mockActionRequest = vi.fn().mockReturnValue({
+      subscribe: vi.fn(),
+      pipe: vi.fn().mockReturnThis(),
+    })
+    const mockClient = {
+      observable: {
+        action: mockActionRequest,
+      },
+      withConfig: vi.fn().mockReturnThis(),
+    }
+
+    const mockDraft = {
+      patch: vi.fn().mockReturnValue([{patch: {id: 'draftId', set: {title: 'Updated Title'}}}]),
+    }
+
+    const operationArgs = {
+      client: mockClient,
+      schema: {},
+      snapshots: {
+        published: {
+          _id: 'publishedId',
+          _type: 'testType',
+          _rev: 'published-rev-123',
+          title: 'Original Title',
+        },
+        draft: null, // Key: no draft exists yet - this is the "create draft from published" scenario
+      },
+      idPair: {
+        publishedId: 'publishedId',
+        draftId: 'drafts.publishedId',
+      },
+      draft: mockDraft,
+      published: {},
+      typeName: 'testType',
+    }
+
+    const result = patch.execute(operationArgs, [{set: {title: 'Updated Title'}}], {})
+
+    // Should return an observable when using version.create
+    expect(result).toBeDefined()
+
+    expect(mockActionRequest).toHaveBeenCalledWith(
+      [
+        {
+          actionType: 'sanity.action.document.version.create',
+          publishedId: 'publishedId',
+          versionId: 'drafts.publishedId',
+          baseId: 'publishedId',
+          ifBaseRevisionId: 'published-rev-123',
+        },
+        {
+          actionType: 'sanity.action.document.edit',
+          draftId: 'drafts.publishedId',
+          publishedId: 'publishedId',
+          patch: {
+            id: undefined, // This gets set to undefined by the patch processing
+            set: {title: 'Updated Title'},
+          },
+        },
+      ],
+      {
+        tag: 'document.commit',
+      },
+    )
+  })
+})

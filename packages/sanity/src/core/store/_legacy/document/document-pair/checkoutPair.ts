@@ -118,6 +118,9 @@ function isLiveEditMutation(mutationParams: Mutation['params'], publishedId: str
 }
 
 function toActions(idPair: IdPair, mutationParams: Mutation['params']): Action[] {
+  const mutationList = mutationParams.mutations
+
+  // Fallback to original logic for all cases
   const actions = mutationParams.mutations.flatMap<Action>((mutations) => {
     // This action is not always interoperable with the equivalent mutation. It will fail if the
     // published version of the document already exists.
