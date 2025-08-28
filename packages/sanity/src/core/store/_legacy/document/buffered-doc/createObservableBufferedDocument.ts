@@ -141,6 +141,14 @@ export const createObservableBufferedDocument = (listenerEvent$: Observable<List
 
   const currentBufferedDocument$ = listenerEvent$.pipe(
     scan((bufferedDocument: BufferedDocument | null, listenerEvent) => {
+      if (
+        listenerEvent.type === 'snapshot' &&
+        bufferedDocument?.document.HEAD?._rev &&
+        bufferedDocument?.document.HEAD?._rev === listenerEvent.document?._rev
+      ) {
+        console.log('Remote snapshot is identical to local')
+        return bufferedDocument
+      }
       // consider renaming 'snapshot' to initial/welcome
       if (listenerEvent.type === 'snapshot') {
         if (bufferedDocument) {

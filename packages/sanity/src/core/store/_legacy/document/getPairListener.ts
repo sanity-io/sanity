@@ -118,7 +118,7 @@ export function getPairListener(
   ) as Observable<WelcomeEvent | MutationEvent | ReconnectEvent>
 
   const pairEvents$ = sharedEvents.pipe(
-    concatMap((event) => {
+    concatMap((event, i) => {
       return event.type === 'welcome'
         ? fetchInitialDocumentSnapshots().pipe(
             mergeMap(({draft, published, version}) => [
