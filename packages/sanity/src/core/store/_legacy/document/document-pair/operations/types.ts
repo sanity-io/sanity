@@ -1,6 +1,5 @@
 import {type SanityClient} from '@sanity/client'
 import {type SanityDocument, type SanityDocumentLike, type Schema} from '@sanity/types'
-import {type Observable} from 'rxjs'
 
 import {type DocumentRevision, type HistoryStore} from '../../../history'
 import {type IdPair} from '../../types'
@@ -15,7 +14,7 @@ export interface OperationImpl<
   DisabledReason extends string = string,
 > {
   disabled: (args: OperationArgs) => DisabledReason | 'NOT_READY' | false
-  execute(args: OperationArgs, ...extra: ExtraArgs): void | Observable<any>
+  execute(args: OperationArgs, ...extra: ExtraArgs): void
 }
 
 /** @internal */

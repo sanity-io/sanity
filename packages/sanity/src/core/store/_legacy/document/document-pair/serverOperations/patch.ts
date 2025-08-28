@@ -1,5 +1,4 @@
 import {type CreateVersionAction} from '@sanity/client'
-import {EMPTY} from 'rxjs'
 
 import {type OperationImpl} from '../operations/types'
 import {actionsApiClient} from '../utils/actionsApiClient'
@@ -11,7 +10,7 @@ export const patch: OperationImpl<[patches: any[], initialDocument?: Record<stri
     {schema, snapshots, idPair, draft, published, version, typeName, client},
     patches = [],
     initialDocument,
-  ) => {
+  ): void => {
     if (version) {
       // No drafting, so patch and commit the version document.
       const patchMutation = version.patch(patches)
@@ -33,7 +32,7 @@ export const patch: OperationImpl<[patches: any[], initialDocument?: Record<stri
       // No drafting, so patch and commit the published document
       version.mutate([...ensureVersion, ...patchMutation])
 
-      return EMPTY
+      return
     }
 
     if (isLiveEditEnabled(schema, typeName)) {
@@ -52,44 +51,46 @@ export const patch: OperationImpl<[patches: any[], initialDocument?: Record<stri
       // No drafting, so patch and commit the published document
       published.mutate(mutations)
 
-      return EMPTY
+      return
     }
 
     const patchMutation = draft.patch(patches)
 
-    if (snapshots.published) {
-      // This could be "create draft from published" OR "update existing draft"
-      // Only use version.create when we're actually creating a new draft from published
-      if (!snapshots.draft) {
-        // True "create draft from published" scenario - no draft exists yet
-        // Instead of going through the mutation pipeline, call actions directly
-        const publishedRev = snapshots.published._rev
+    // Handle special "create draft from published" scenario with version.create
+    if (snapshots.published && !snapshots.draft) {
+      const publishedRev = snapshots.published._rev
 
-        const versionCreateAction: CreateVersionAction = {
-          actionType: 'sanity.action.document.version.create',
-          publishedId: idPair.publishedId,
-          versionId: idPair.draftId,
-          baseId: idPair.publishedId,
-          ifBaseRevisionId: publishedRev,
-        }
+      const versionCreateAction: CreateVersionAction = {
+        actionType: 'sanity.action.document.version.create',
+        publishedId: idPair.publishedId,
+        versionId: idPair.draftId,
+        baseId: idPair.publishedId,
+        ifBaseRevisionId: publishedRev,
+      }
 
-        const editActions = patchMutation.map((mutation) => ({
-          actionType: 'sanity.action.document.edit' as const,
-          draftId: idPair.draftId,
-          publishedId: idPair.publishedId,
-          patch: {
-            ...mutation.patch,
-            id: undefined, // Remove id to match toActions behavior
-          },
-        }))
+      const editActions = patchMutation.map((mutation) => ({
+        actionType: 'sanity.action.document.edit' as const,
+        draftId: idPair.draftId,
+        publishedId: idPair.publishedId,
+        patch: {
+          ...mutation.patch,
+          id: undefined, // Remove id to match toActions behavior
+        },
+      }))
 
-        const actions = [versionCreateAction, ...editActions]
+      const actions = [versionCreateAction, ...editActions]
 
-        // Call actions directly and return the observable so it gets executed
-        return actionsApiClient(client, idPair).observable.action(actions, {
+      // Fire the action asynchronously but don't wait for it (like other mutations)
+      actionsApiClient(client, idPair)
+        .observable.action(actions, {
           tag: 'document.commit',
         })
-      }
+        .subscribe()
+
+      return
+    }
+
+    if (snapshots.published) {
       // Draft already exists, use normal mutation pipeline
       draft.mutate([
         // If there's no draft, the user's edits will be based on the published document in the form in front of them
@@ -102,7 +103,7 @@ export const patch: OperationImpl<[patches: any[], initialDocument?: Record<stri
         }),
         ...patchMutation,
       ])
-      return EMPTY
+      return
     }
     const ensureDraft = snapshots.draft
       ? draft.patch([
@@ -118,6 +119,5 @@ export const patch: OperationImpl<[patches: any[], initialDocument?: Record<stri
           }),
         ]
     draft.mutate([...ensureDraft, ...patchMutation])
-    return EMPTY
   },
 }

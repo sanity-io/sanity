@@ -176,8 +176,9 @@ describe('patch', () => {
 
 describe('server patch version.create', () => {
   it('calls version.create for create draft from published scenario', () => {
+    const mockSubscribe = vi.fn()
     const mockActionRequest = vi.fn().mockReturnValue({
-      subscribe: vi.fn(),
+      subscribe: mockSubscribe,
       pipe: vi.fn().mockReturnThis(),
     })
     const mockClient = {
@@ -214,8 +215,8 @@ describe('server patch version.create', () => {
 
     const result = patch.execute(operationArgs, [{set: {title: 'Updated Title'}}], {})
 
-    // Should return an observable when using version.create
-    expect(result).toBeDefined()
+    // Fire-and-forget approach - should return void but fire the action
+    expect(result).toBeUndefined()
 
     expect(mockActionRequest).toHaveBeenCalledWith(
       [
@@ -240,5 +241,8 @@ describe('server patch version.create', () => {
         tag: 'document.commit',
       },
     )
+
+    // Verify the action was actually fired (subscribed to)
+    expect(mockSubscribe).toHaveBeenCalled()
   })
 })
