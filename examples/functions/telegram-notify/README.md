@@ -245,9 +245,12 @@ npx sanity functions env list comment-telegram
 
 After deployment, you can verify your function is active by:
 
-- Checking the Sanity Studio under "Compute"
 - Publishing a new comment and confirming Telegram notifications are sent
 - Monitoring function logs in the CLI
+
+```bash
+npx sanity functions logs comment-telegram
+```
 
 ## Related Examples
 

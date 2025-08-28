@@ -10,6 +10,7 @@ import {
   useRelativeTime,
   useSchema,
 } from '../../../../hooks'
+import {usePerspective} from '../../../../perspective/usePerspective'
 import {useUser} from '../../../../store'
 import {TASK_STATUS} from '../../../constants'
 import {useDocumentPreviewValues} from '../../../hooks'
@@ -81,9 +82,11 @@ function TargetContentChange({target}: {target: TaskTarget}) {
   const documentId = target.document._ref
   const documentType = target.documentType
   const documentSchema = schema.get(documentType)
+  const {perspectiveStack} = usePerspective()
   const {isLoading, value} = useDocumentPreviewValues({
     documentId,
     documentType,
+    perspectiveStack,
   })
 
   if (isLoading) {

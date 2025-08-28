@@ -1,6 +1,6 @@
 {
   "name": "sanity-test-studio",
-  "version": "4.5.0",
+  "version": "4.6.0",
   "private": true,
   "license": "MIT",
   "author": "Sanity.io <hello@sanity.io>",
@@ -18,7 +18,7 @@
   },
   "dependencies": {
     "@portabletext/block-tools": "^3.3.3",
-    "@portabletext/editor": "^2.6.3",
+    "@portabletext/editor": "^2.6.5",
     "@portabletext/react": "^4.0.1",
     "@sanity/assist": "^5.0.0",
     "@sanity/cli": "workspace:*",
@@ -39,7 +39,7 @@
     "@sanity/react-loader": "^1.11.18",
     "@sanity/tsdoc": "1.0.169",
     "@sanity/types": "workspace:*",
-    "@sanity/ui": "^3.0.7",
+    "@sanity/ui": "^3.0.8",
     "@sanity/ui-workshop": "catalog:",
     "@sanity/util": "workspace:*",
     "@sanity/uuid": "^3.0.2",

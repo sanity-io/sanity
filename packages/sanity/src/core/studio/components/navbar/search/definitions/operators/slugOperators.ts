@@ -21,7 +21,6 @@ export const slugOperators = {
       value && fieldPath ? `${fieldPath}.current match ${toJSON(value)}` : null,
     initialValue: null,
     inputComponent: SearchFilterStringInput as SearchOperatorInput<string | number>,
-    label: 'contains',
     type: 'slugMatches',
   }),
   slugNotEqual: defineSearchOperator({

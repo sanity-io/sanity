@@ -1,6 +1,6 @@
 {
   "name": "design-studio",
-  "version": "4.5.0",
+  "version": "4.6.0",
   "private": true,
   "description": "Sanity Design Studio",
   "keywords": [
@@ -33,7 +33,7 @@
   "dependencies": {
     "@repo/eslint-config": "workspace:*",
     "@sanity/icons": "^3.7.4",
-    "@sanity/ui": "^3.0.7",
+    "@sanity/ui": "^3.0.8",
     "react": "catalog:react18",
     "react-dom": "catalog:react18",
     "sanity": "workspace:*",
