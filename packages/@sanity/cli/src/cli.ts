@@ -3,13 +3,14 @@ import os from 'node:os'
 
 import chalk from 'chalk'
 import resolveFrom from 'resolve-from'
+import semver from 'semver'
 
 import {CliCommand} from './__telemetry__/cli.telemetry'
 import {getCliRunner} from './CommandRunner'
 import {baseCommands} from './commands'
 import {debug} from './debug'
 import {getInstallCommand} from './packageManager'
-import {type CommandRunnerOptions, type TelemetryUserProperties} from './types'
+import {type CommandRunnerOptions, type PackageJson, type TelemetryUserProperties} from './types'
 import {createTelemetryStore} from './util/createTelemetryStore'
 import {detectRuntime} from './util/detectRuntime'
 import {type CliConfigResult, getCliConfig} from './util/getCliConfig'
@@ -37,10 +38,8 @@ function installProcessExitHack(finalTask: () => Promise<unknown>) {
   }
 }
 
-export async function runCli(cliRoot: string, {cliVersion}: {cliVersion: string}): Promise<void> {
+export async function runCli(cliRoot: string, {cliPkg}: {cliPkg: PackageJson}): Promise<void> {
   installUnhandledRejectionsHandler()
-
-  const pkg = {name: '@sanity/cli', version: cliVersion}
 
   const args = parseArguments()
   const isInit = args.groupOrCommand === 'init' && args.argsWithoutOptions[0] !== 'plugin'
@@ -54,7 +53,7 @@ export async function runCli(cliRoot: string, {cliVersion}: {cliVersion: string}
   }
 
   // Check if there are updates available for the CLI, and notify if there is
-  await runUpdateCheck({pkg, cwd, workDir}).notify()
+  await runUpdateCheck({pkg: {name: cliPkg.name, version: cliPkg.version}, cwd, workDir}).notify()
 
   // If the telemetry disclosure message has not yet been shown, show it.
   telemetryDisclosure()
@@ -89,7 +88,7 @@ export async function runCli(cliRoot: string, {cliVersion}: {cliVersion: string}
   telemetry.updateUserProperties({
     runtimeVersion: process.version,
     runtime: detectRuntime(),
-    cliVersion: pkg.version,
+    cliVersion: cliPkg.version,
     machinePlatform: process.platform,
     cpuArchitecture: process.arch,
     projectId: cliConfig?.config?.api?.projectId,
@@ -104,14 +103,19 @@ export async function runCli(cliRoot: string, {cliVersion}: {cliVersion: string}
     telemetry,
   }
 
+  warnOnNUnsupportedRuntime(cliPkg)
   warnOnNonProductionEnvironment()
   warnOnInferredProjectDir(isInit, cwd, workDir)
 
   const core = args.coreOptions
-  const commands = await mergeCommands(baseCommands, options.corePath, {cliVersion, cwd, workDir})
+  const commands = await mergeCommands(baseCommands, options.corePath, {
+    cliVersion: cliPkg.version,
+    cwd,
+    workDir,
+  })
 
   if (core.v || core.version) {
-    console.log(`${pkg.name} version ${pkg.version}`)
+    console.log(`${cliPkg.name} version ${cliPkg.version}`)
     process.exit()
   }
 
@@ -228,6 +232,20 @@ function warnOnInferredProjectDir(isInit: boolean, cwd: string, workDir: string)
   }
 
   console.log(`Not in project directory, assuming context of project at ${workDir}`)
+}
+
+function warnOnNUnsupportedRuntime(cliPkg: PackageJson): void {
+  const engines = cliPkg.engines
+  if (!engines) {
+    return
+  }
+
+  const currentNodeVersion = process.versions.node
+  if (!semver.satisfies(currentNodeVersion, engines.node))
+    console.warn(
+      chalk.red(`\n[WARN] The current Node.js version (${`v${currentNodeVersion}`}) is not supported
+Please upgrade to a version that satisfies the range ${chalk.green.bold(engines.node)}\n`),
+    )
 }
 
 function warnOnNonProductionEnvironment(): void {
