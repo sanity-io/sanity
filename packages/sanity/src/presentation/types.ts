@@ -240,7 +240,7 @@ export type DocumentLocationResolverObject<K extends string = string> = {
  * @public
  */
 export interface DocumentResolverContext {
-  origin: string | undefined
+  origin: string
   params: Record<string, string>
   path: string
 }
