@@ -126,7 +126,7 @@ const DocumentActionsInner = memo(
       </>
     )
   },
-  (prev, next) => prev.document.memoKey === next.document.memoKey,
+  (prev, next) => prev.document.document._id === next.document.document._id,
 )
 
 export const DocumentActions = memo(function GuardedDocumentActions(props: {

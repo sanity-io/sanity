@@ -42,7 +42,8 @@ const MemoReleaseDocumentPreview = memo(
       />
     )
   },
-  (prev, next) => prev.item.memoKey === next.item.memoKey && prev.releaseId === next.releaseId,
+  (prev, next) =>
+    prev.item.document._id === next.item.document._id && prev.releaseId === next.releaseId,
 )
 
 const MemoDocumentType = memo(

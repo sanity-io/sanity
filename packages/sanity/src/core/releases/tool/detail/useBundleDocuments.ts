@@ -1,6 +1,5 @@
 import {type ReleaseDocument} from '@sanity/client'
 import {isValidationErrorMarker, type SanityDocument, type Schema} from '@sanity/types'
-import {uuid} from '@sanity/uuid'
 import {useMemo} from 'react'
 import {useObservable} from 'react-rx'
 import {combineLatest, type Observable, of} from 'rxjs'
@@ -32,7 +31,6 @@ export interface DocumentValidationStatus extends ValidationStatus {
 }
 
 export interface DocumentInRelease {
-  memoKey: string
   isPending?: boolean
   document: SanityDocument & {publishedDocumentExists: boolean}
   validation: DocumentValidationStatus
@@ -122,7 +120,6 @@ const getActiveReleaseDocumentsObservable = ({
           map(([document, validation]) => ({
             document,
             validation,
-            memoKey: uuid(),
           })),
         )
       }),
@@ -178,7 +175,6 @@ const getPublishedArchivedReleaseDocumentsObservable = ({
       loading: false,
       results: documents.map((document) => ({
         document,
-        memoKey: uuid(),
         validation: {validation: [], hasError: false, isValidating: false},
       })),
       error: null,

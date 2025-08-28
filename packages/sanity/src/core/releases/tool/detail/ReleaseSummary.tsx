@@ -38,7 +38,6 @@ const isBundleDocumentRow = (
 ): maybeBundleDocumentRow is BundleDocumentRow =>
   !!maybeBundleDocumentRow &&
   typeof maybeBundleDocumentRow === 'object' &&
-  'memoKey' in maybeBundleDocumentRow &&
   'document' in maybeBundleDocumentRow &&
   'validation' in maybeBundleDocumentRow
 
@@ -92,7 +91,6 @@ export function ReleaseSummary(props: ReleaseSummaryProps) {
       const pendingAddedDocumentId = `${versionDocumentId}-pending`
 
       const pendingDocumentRow: DocumentInReleaseDetail = {
-        memoKey: versionDocumentId,
         validation: {
           isValidating: false,
           validation: [],
