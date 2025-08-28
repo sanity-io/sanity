@@ -324,22 +324,19 @@ describe('checkoutPair -- server actions', () => {
       draft.createIfNotExists({
         _id: 'draftId',
         _type: 'any',
+        _createdAt: 'now',
+        _updatedAt: 'now',
         _rev: 'any',
-        _createdAt: '2023-01-01T00:00:00Z',
-        _updatedAt: '2023-01-01T00:00:00Z',
-        title: 'new title',
       }),
     ])
     draft.commit()
 
-    // createIfNotExists mutations are ignored by the actions API,
-    // but when there are no other actions, an empty action guard is generated
     expect(mockedActionRequest).toHaveBeenCalledWith(
       [
         {
           actionType: 'sanity.action.document.edit',
-          draftId: 'draftId',
-          publishedId: 'publishedId',
+          draftId: idPair.draftId,
+          publishedId: idPair.publishedId,
           patch: {
             unset: ['_empty_action_guard_pseudo_field_'],
           },
