@@ -33,6 +33,8 @@ import {
   type ObjectI18n,
   type ObjectI18nValue,
   type ObjectMessage,
+  type ObjectOrdering,
+  type ObjectOrderingBy,
   type ReferenceTypeDef,
   type RegistryType,
   type Rule as RuleType,
@@ -134,6 +136,13 @@ function convertCommonTypeDef(schemaType: SchemaType, opts: Options): CommonType
 
   const reason = ownProps.deprecated?.reason
 
+  let orderings: ObjectOrdering[] | undefined
+  if (Array.isArray(ownProps.orderings)) {
+    orderings = ownProps.orderings
+      .map(maybeOrdering)
+      .filter((o: ObjectOrdering | undefined) => o !== undefined)
+  }
+
   return {
     title: maybeString(ownProps.title),
     description: maybeStringOrJSX(ownProps.description),
@@ -149,6 +158,7 @@ function convertCommonTypeDef(schemaType: SchemaType, opts: Options): CommonType
     fieldsets,
     groups,
     validation: maybeValidations(ownProps),
+    orderings,
   }
 }
 
@@ -675,4 +685,50 @@ function isI18nEntry(entry: [unknown, unknown]): entry is [string, ObjectI18nVal
     typeof value.key === 'string' &&
     typeof value.ns === 'string'
   )
+}
+
+function maybeOrdering(val: unknown): ObjectOrdering | undefined {
+  if (!isObject(val) || Array.isArray(val)) return undefined
+
+  const name = 'name' in val && typeof val.name === 'string' ? val.name : undefined
+  // A valid ordering _must_ have a name
+  if (name === undefined) return undefined
+
+  // If no title is specified, default to the name
+  const title = 'title' in val && typeof val.title === 'string' ? val.title : name
+  const by = 'by' in val && Array.isArray(val.by) ? val.by : []
+
+  const orderingBy: ObjectOrderingBy[] = []
+  for (const item of by) {
+    const orderingItem = maybeOrderingBy(item)
+    if (orderingItem) {
+      orderingBy.push(orderingItem)
+    }
+  }
+
+  // A valid ordering _must_ have items (by)
+  if (orderingBy.length === 0) return undefined
+
+  const i18n = 'i18n' in val ? maybeI18n(val.i18n) : undefined
+
+  return {
+    name,
+    title,
+    by: orderingBy,
+    ...(i18n && {i18n}),
+  }
+}
+
+function maybeOrderingBy(val: unknown): ObjectOrderingBy | undefined {
+  if (!isObject(val) || Array.isArray(val)) return undefined
+
+  const field = 'field' in val && typeof val.field === 'string' ? val.field : undefined
+  const direction =
+    'direction' in val && (val.direction === 'asc' || val.direction === 'desc')
+      ? val.direction
+      : undefined
+
+  if (!field || !direction) return undefined
+
+  return {field, direction}
 }
