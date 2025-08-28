@@ -34,6 +34,8 @@ export interface CommonTypeDef extends EncodableObject {
 
   /** Number of rows which should be used by the `text` type. */
   rows?: string
+
+  orderings?: ObjectOrdering[]
 }
 
 /** In some scenarios we need to encode special information. */
@@ -117,6 +119,18 @@ export type ObjectGroup = {
   hidden?: true | FunctionMarker
   default?: true
   i18n?: ObjectI18n
+}
+
+export type ObjectOrdering = {
+  title: string
+  i18n?: ObjectI18n
+  name: string
+  by: ObjectOrderingBy[]
+}
+
+export type ObjectOrderingBy = {
+  field: string
+  direction: 'asc' | 'desc'
 }
 
 export interface ReferenceTypeDef extends SubtypeDef {
