@@ -1,4 +1,5 @@
 import {type CreateVersionAction} from '@sanity/client'
+import {EMPTY} from 'rxjs'
 
 import {type OperationImpl} from '../operations/types'
 import {actionsApiClient} from '../utils/actionsApiClient'
@@ -32,7 +33,7 @@ export const patch: OperationImpl<[patches: any[], initialDocument?: Record<stri
       // No drafting, so patch and commit the published document
       version.mutate([...ensureVersion, ...patchMutation])
 
-      return
+      return EMPTY
     }
 
     if (isLiveEditEnabled(schema, typeName)) {
@@ -51,7 +52,7 @@ export const patch: OperationImpl<[patches: any[], initialDocument?: Record<stri
       // No drafting, so patch and commit the published document
       published.mutate(mutations)
 
-      return
+      return EMPTY
     }
 
     const patchMutation = draft.patch(patches)
@@ -101,7 +102,7 @@ export const patch: OperationImpl<[patches: any[], initialDocument?: Record<stri
         }),
         ...patchMutation,
       ])
-      return
+      return EMPTY
     }
     const ensureDraft = snapshots.draft
       ? draft.patch([
@@ -117,5 +118,6 @@ export const patch: OperationImpl<[patches: any[], initialDocument?: Record<stri
           }),
         ]
     draft.mutate([...ensureDraft, ...patchMutation])
+    return EMPTY
   },
 }
