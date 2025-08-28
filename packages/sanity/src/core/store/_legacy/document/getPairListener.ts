@@ -118,7 +118,13 @@ export function getPairListener(
   ) as Observable<WelcomeEvent | MutationEvent | ReconnectEvent>
 
   const pairEvents$ = sharedEvents.pipe(
-    concatMap((event) => {
+    concatMap((event, i) => {
+      if (event.type === 'welcome' && i > 0) {
+        // ignore subsequent welcome events – these are emitted after reconnects
+        // we might have missed events while being disconnected, but leave it gap detection to
+        // deal with it
+        return []
+      }
       return event.type === 'welcome'
         ? fetchInitialDocumentSnapshots().pipe(
             mergeMap(({draft, published, version}) => [
