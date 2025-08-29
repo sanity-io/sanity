@@ -48,7 +48,7 @@ describe('createSearchQuery', () => {
           '*[_type in $__types && (_id match $t0 || _type match $t0 || title match $t0) && !(_id in path("versions.**"))]' +
           '| order(_id asc)' +
           '[0...$__limit]' +
-          '{_type, _id, _originalId, ...select(_type == "basic-schema-test" => { "w0": _id,"w1": _type,"w2": title })}',
+          '{_type, _id, _originalId, _updatedAt, _rev, ...select(_type == "basic-schema-test" => { "w0": _id,"w1": _type,"w2": title })}',
       )
 
       expect(params).toEqual({
@@ -146,9 +146,9 @@ describe('createSearchQuery', () => {
 
       const result = [
         `// findability-mvi:${FINDABILITY_MVI}\n` +
-          '*[_type in $__types && (_id match $t0 || _type match $t0 || title match $t0) && !(_id in path("versions.**"))]{_type, _id, _originalId, object{field}}',
+          '*[_type in $__types && (_id match $t0 || _type match $t0 || title match $t0) && !(_id in path("versions.**"))]{_type, _id, _originalId, _updatedAt, _rev, object{field}}',
         '|order(_id asc)[0...$__limit]',
-        '{_type, _id, _originalId, ...select(_type == "basic-schema-test" => { "w0": _id,"w1": _type,"w2": title })}',
+        '{_type, _id, _originalId, _updatedAt, _rev, ...select(_type == "basic-schema-test" => { "w0": _id,"w1": _type,"w2": title })}',
       ].join('')
 
       expect(query).toBe(result)
@@ -243,7 +243,7 @@ describe('createSearchQuery', () => {
           '*[_type in $__types && (_id match $t0 || _type match $t0 || title match $t0) && !(_id in path("versions.**"))]' +
           '| order(exampleField desc)' +
           '[0...$__limit]' +
-          '{_type, _id, _originalId, ...select(_type == "basic-schema-test" => { "w0": _id,"w1": _type,"w2": title })}',
+          '{_type, _id, _originalId, _updatedAt, _rev, ...select(_type == "basic-schema-test" => { "w0": _id,"w1": _type,"w2": title })}',
       )
     })
 
@@ -276,7 +276,7 @@ describe('createSearchQuery', () => {
         `// findability-mvi:${FINDABILITY_MVI}\n`,
         '*[_type in $__types && (_id match $t0 || _type match $t0 || title match $t0) && !(_id in path("versions.**"))]| ',
         'order(exampleField desc,anotherExampleField asc,lower(mapWithField) asc)',
-        '[0...$__limit]{_type, _id, _originalId, ...select(_type == "basic-schema-test" => { "w0": _id,"w1": _type,"w2": title })}',
+        '[0...$__limit]{_type, _id, _originalId, _updatedAt, _rev, ...select(_type == "basic-schema-test" => { "w0": _id,"w1": _type,"w2": title })}',
       ].join('')
 
       expect(query).toEqual(result)
@@ -293,7 +293,7 @@ describe('createSearchQuery', () => {
           '*[_type in $__types && (_id match $t0 || _type match $t0 || title match $t0) && !(_id in path("versions.**"))]' +
           '| order(_id asc)' +
           '[0...$__limit]' +
-          '{_type, _id, _originalId, ...select(_type == "basic-schema-test" => { "w0": _id,"w1": _type,"w2": title })}',
+          '{_type, _id, _originalId, _updatedAt, _rev, ...select(_type == "basic-schema-test" => { "w0": _id,"w1": _type,"w2": title })}',
       )
     })
 
@@ -409,7 +409,7 @@ describe('createSearchQuery', () => {
           // This solution was discarded at it would increase the size of the query payload by up to 50%
 
           // we still map out the path with number
-          '{_type, _id, _originalId, ...select(_type == "numbers-in-path" => { "w0": _id,"w1": _type,"w2": cover[].cards[].title })}',
+          '{_type, _id, _originalId, _updatedAt, _rev, ...select(_type == "numbers-in-path" => { "w0": _id,"w1": _type,"w2": cover[].cards[].title })}',
       )
     })
   })

@@ -142,6 +142,7 @@ export function listenSearchQuery(options: ListenQueryOptions): Observable<Searc
             params,
             strategy: searchStrategy,
             maxDepth: maxFieldDepth,
+            perspective,
           })
 
           const doFetch = () => {

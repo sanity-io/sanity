@@ -2,10 +2,12 @@ import {type ReleaseDocument, type SanityDocument} from '@sanity/client'
 import {AddIcon} from '@sanity/icons'
 import {useTelemetry} from '@sanity/telemetry/react'
 import {Card, Container, Stack, useToast} from '@sanity/ui'
-import {type RefObject, useCallback, useEffect, useMemo, useState} from 'react'
+import {type RefObject, useCallback, useEffect, useMemo, useRef, useState} from 'react'
 
 import {Button} from '../../../../ui-components'
 import {useTranslation} from '../../../i18n'
+import {DEFAULT_ORDERING} from '../../../search/search-document-list/constants'
+import {useDocumentList} from '../../../search/search-document-list/useDocumentList'
 import {getVersionId} from '../../../util/draftUtils'
 import {getDocumentVariantType} from '../../../util/getDocumentVariantType'
 import {AddedVersion} from '../../__telemetry__/releases.telemetry'
@@ -17,7 +19,6 @@ import {AddDocumentSearch, type AddedDocument} from './AddDocumentSearch'
 import {ReleaseActionBadges} from './components/ReleaseActionBadges'
 import {DocumentActions} from './documentTable/DocumentActions'
 import {getDocumentTableColumnDefs} from './documentTable/DocumentTableColumnDefs'
-import {searchDocumentRelease} from './documentTable/searchDocumentRelease'
 import {type DocumentInRelease} from './useBundleDocuments'
 
 export type DocumentInReleaseDetail = DocumentInRelease & {
@@ -54,6 +55,23 @@ export function ReleaseSummary(props: ReleaseSummaryProps) {
 
   const releaseId = getReleaseIdFromReleaseDocumentId(release._id)
 
+  const [searchTerm, setSearchTerm] = useState('')
+  const searchTermRef = useRef(searchTerm)
+
+  // Update ref when searchTerm changes
+  useEffect(() => {
+    searchTermRef.current = searchTerm
+  }, [searchTerm])
+
+  const {items} = useDocumentList({
+    apiVersion: '2025-08-28',
+    filter: 'sanity::partOfRelease($releaseId)',
+    perspective: [releaseId],
+    searchQuery: searchTerm,
+    sortOrder: DEFAULT_ORDERING,
+    params: {releaseId},
+  })
+
   const renderRowActions = useCallback(
     (rowProps: {datum: BundleDocumentRow | unknown}) => {
       if (release.state !== 'active') return null
@@ -73,13 +91,35 @@ export function ReleaseSummary(props: ReleaseSummaryProps) {
   const handleAddDocumentClick = useCallback(() => setAddDocumentDialog(true), [])
 
   const filterRows = useCallback(
-    (data: DocumentInRelease[], searchTerm: string) =>
-      data.filter(({document}) => {
-        // this is a temporary way of doing the search without the previews
-        // until we have it moved to the server side
-        return searchDocumentRelease(document, searchTerm)
-      }),
-    [],
+    (data: DocumentInRelease[], st: string) => {
+      console.warn('in search')
+
+      // Update search term without causing infinite loop
+      if (searchTermRef.current !== st) {
+        setSearchTerm(st)
+      }
+
+      return items.map((item) => ({
+        ...item,
+        document: {
+          ...item,
+          _id: item._id,
+          _type: item._type,
+          _updatedAt: item._updatedAt,
+          _rev: item._rev,
+          _system: item._system,
+          publishedDocumentExists: item.publishedDocumentExists,
+        },
+        validation: {
+          isValidating: false,
+          validation: [],
+          hasError: false,
+        },
+        isPending: false,
+        isAdded: false,
+      })) as DocumentInReleaseDetail[]
+    },
+    [items],
   )
 
   const closeAddDialog = useCallback(
