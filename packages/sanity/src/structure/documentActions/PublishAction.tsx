@@ -28,6 +28,8 @@ const DISABLED_REASON_TITLE_KEY: Record<string, StructureLocaleResourceKeys> = {
   NOT_READY: 'action.publish.disabled.not-ready',
 } as const
 
+const PUBLISHED_STATE = {status: 'published'} as const
+
 function getDisabledReason(
   reason: keyof typeof DISABLED_REASON_TITLE_KEY,
   publishedAt: string | undefined,
@@ -48,7 +50,9 @@ function AlreadyPublished({publishedAt}: {publishedAt: string}) {
 /** @internal */
 export const PublishAction: DocumentActionComponent = (props) => {
   const {id, type, liveEdit, draft, published, release} = props
-  const [publishState, setPublishState] = useState<'publishing' | 'published' | null>(null)
+  const [publishState, setPublishState] = useState<
+    {status: 'publishing'; draftRev: string | undefined} | {status: 'published'} | null
+  >(null)
   const {publish} = useDocumentOperation(id, type)
   const validationStatus = useValidationStatus(id, type)
   const syncState = useSyncState(id, type)
@@ -77,12 +81,12 @@ export const PublishAction: DocumentActionComponent = (props) => {
       ? t('action.publish.validation-issues.tooltip')
       : ''
 
-  const hasDraft = Boolean(draft)
+  const currentDraftRev = draft?._rev
 
   const doPublish = useCallback(() => {
     publish.execute()
-    setPublishState('publishing')
-  }, [publish])
+    setPublishState({status: 'publishing', draftRev: currentDraftRev})
+  }, [publish, currentDraftRev])
 
   useEffect(() => {
     // make sure the validation status is about the current revision and not an earlier one
@@ -109,15 +113,18 @@ export const PublishAction: DocumentActionComponent = (props) => {
   ])
 
   useEffect(() => {
-    const didPublish = publishState === 'publishing' && !hasDraft
+    const didPublish =
+      // All we need to check here is for the current draft rev to be different from what it was at the time of publish
+      // We can't check for draft being `null`, as it might have been recreated already
+      publishState?.status === 'publishing' && currentDraftRev !== publishState.draftRev
 
-    const nextState = didPublish ? 'published' : null
+    const nextState = didPublish ? PUBLISHED_STATE : null
     const delay = didPublish ? 200 : 4000
     const timer = setTimeout(() => {
       setPublishState(nextState)
     }, delay)
     return () => clearTimeout(timer)
-  }, [changesOpen, publishState, hasDraft])
+  }, [changesOpen, publishState, currentDraftRev])
 
   const telemetry = useTelemetry()
 
@@ -186,8 +193,8 @@ export const PublishAction: DocumentActionComponent = (props) => {
     const disabled = Boolean(
       publishScheduled ||
         editState?.transactionSyncLock?.enabled ||
-        publishState === 'publishing' ||
-        publishState === 'published' ||
+        publishState?.status === 'publishing' ||
+        publishState?.status === 'published' ||
         hasValidationErrors ||
         publish.disabled,
     )
@@ -196,9 +203,9 @@ export const PublishAction: DocumentActionComponent = (props) => {
       disabled: disabled || isPermissionsLoading,
       tone: 'default',
       label:
-        publishState === 'published'
+        publishState?.status === 'published'
           ? t('action.publish.published.label')
-          : publishScheduled || publishState === 'publishing'
+          : publishScheduled || publishState?.status === 'publishing'
             ? t('action.publish.running.label')
             : t('action.publish.draft.label'),
       // @todo: Implement loading state, to show a `<Button loading />` state
@@ -206,7 +213,7 @@ export const PublishAction: DocumentActionComponent = (props) => {
       icon: PublishIcon,
       title: publishScheduled
         ? t('action.publish.waiting')
-        : publishState === 'published' || publishState === 'publishing'
+        : publishState?.status === 'published' || publishState?.status === 'publishing'
           ? null
           : title,
       shortcut: disabled || publishScheduled ? null : 'Ctrl+Alt+P',
