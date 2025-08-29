@@ -1,5 +1,10 @@
 import {type ReleaseDocument} from '@sanity/client'
-import {isValidationErrorMarker, type SanityDocument, type Schema} from '@sanity/types'
+import {
+  isValidationErrorMarker,
+  type PreviewValue,
+  type SanityDocument,
+  type Schema,
+} from '@sanity/types'
 import {uuid} from '@sanity/uuid'
 import {useMemo} from 'react'
 import {useObservable} from 'react-rx'
@@ -22,6 +27,7 @@ import {
   map,
   reduce,
   startWith,
+  switchAll,
   switchMap,
 } from 'rxjs/operators'
 import {mergeMapArray} from 'rxjs-mergemap-array'
@@ -30,10 +36,11 @@ import {useSchema} from '../../../hooks'
 import {type LocaleSource} from '../../../i18n/types'
 import {type PerspectiveStack} from '../../../perspective/types'
 import {usePerspective} from '../../../perspective/usePerspective'
-import {type DocumentPreviewStore, prepareForPreview} from '../../../preview'
+import {type DocumentPreviewStore} from '../../../preview'
 import {createSearch, getSearchableTypes} from '../../../search'
 import {useDocumentPreviewStore} from '../../../store/_legacy/datastores'
 import {useSource} from '../../../studio'
+import {getPublishedId} from '../../../util/draftUtils'
 import {validateDocumentWithReferences, type ValidationStatus} from '../../../validation'
 import {useReleasesStore} from '../../store/useReleasesStore'
 import {getReleaseDocumentIdFromReleaseId} from '../../util/getReleaseDocumentIdFromReleaseId'
