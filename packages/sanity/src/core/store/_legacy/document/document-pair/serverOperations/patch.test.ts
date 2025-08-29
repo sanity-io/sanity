@@ -72,12 +72,6 @@ describe('patch', () => {
 
       expect(draftMutate).toHaveBeenCalledWith([
         {
-          createIfNotExists: {
-            _createdAt: '2021-09-14T22:48:02.303Z',
-            _id: 'drafts.my-id',
-          },
-        },
-        {
           patch: {
             id: 'drafts.my-id',
             unset: ['newValue'],

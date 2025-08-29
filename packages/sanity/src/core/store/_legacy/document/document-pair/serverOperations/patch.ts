@@ -1,4 +1,4 @@
-import {type CreateVersionAction} from '@sanity/client'
+import {type CreateVersionAction, type EditAction} from '@sanity/client'
 
 import {type OperationImpl} from '../operations/types'
 import {actionsApiClient} from '../utils/actionsApiClient'
@@ -56,53 +56,45 @@ export const patch: OperationImpl<[patches: any[], initialDocument?: Record<stri
 
     const patchMutation = draft.patch(patches)
 
-    // Handle special "create draft from published" scenario with version.create
-    if (snapshots.published && !snapshots.draft) {
-      const publishedRev = snapshots.published._rev
+    if (snapshots.published) {
+      // Handle special "create draft from published" scenario with version.create
+      if (!snapshots.draft) {
+        const publishedRev = snapshots.published._rev
 
-      const versionCreateAction: CreateVersionAction = {
-        actionType: 'sanity.action.document.version.create',
-        publishedId: idPair.publishedId,
-        versionId: idPair.draftId,
-        baseId: idPair.publishedId,
-        ifBaseRevisionId: publishedRev,
+        const versionCreateAction: CreateVersionAction = {
+          actionType: 'sanity.action.document.version.create',
+          publishedId: idPair.publishedId,
+          versionId: idPair.draftId,
+          baseId: idPair.publishedId,
+          ifBaseRevisionId: publishedRev,
+        }
+
+        const editActions = patchMutation.map(
+          (mutation): EditAction => ({
+            actionType: 'sanity.action.document.edit',
+            draftId: idPair.draftId,
+            publishedId: idPair.publishedId,
+            patch: {
+              ...mutation.patch,
+              id: undefined, // Remove id to match toActions behavior
+            },
+          }),
+        )
+
+        const actions = [versionCreateAction, ...editActions]
+
+        // Fire the action asynchronously but don't wait for it (like other mutations)
+        actionsApiClient(client, idPair)
+          .observable.action(actions, {
+            tag: 'document.commit',
+          })
+          .subscribe()
+
+        return
       }
 
-      const editActions = patchMutation.map((mutation) => ({
-        actionType: 'sanity.action.document.edit' as const,
-        draftId: idPair.draftId,
-        publishedId: idPair.publishedId,
-        patch: {
-          ...mutation.patch,
-          id: undefined, // Remove id to match toActions behavior
-        },
-      }))
-
-      const actions = [versionCreateAction, ...editActions]
-
-      // Fire the action asynchronously but don't wait for it (like other mutations)
-      actionsApiClient(client, idPair)
-        .observable.action(actions, {
-          tag: 'document.commit',
-        })
-        .subscribe()
-
-      return
-    }
-
-    if (snapshots.published) {
-      // Draft already exists, use normal mutation pipeline
-      draft.mutate([
-        // If there's no draft, the user's edits will be based on the published document in the form in front of them
-        // so before patching it we need to make sure it's created based on the current published version first.
-        draft.createIfNotExists({
-          ...initialDocument,
-          ...snapshots.published,
-          _id: idPair.draftId,
-          _type: typeName,
-        }),
-        ...patchMutation,
-      ])
+      //the draft already exists so we can directly apply the patch mutations
+      draft.mutate(patchMutation)
       return
     }
     const ensureDraft = snapshots.draft
