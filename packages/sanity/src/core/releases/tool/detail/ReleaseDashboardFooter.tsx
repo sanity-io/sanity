@@ -10,14 +10,11 @@ import {ReleaseUnscheduleButton} from '../components/releaseCTAButtons/ReleaseUn
 import {ReleaseMenuButton} from '../components/ReleaseMenuButton/ReleaseMenuButton'
 import {type ReleaseEvent} from './events/types'
 import {ReleaseStatusItems} from './ReleaseStatusItems'
-import {type DocumentInRelease} from './useBundleDocuments'
+import {useBundleDocuments} from './useBundleDocuments'
 
-export function ReleaseDashboardFooter(props: {
-  documents: DocumentInRelease[]
-  release: ReleaseDocument
-  events: ReleaseEvent[]
-}) {
-  const {documents, release, events} = props
+export function ReleaseDashboardFooter(props: {release: ReleaseDocument; events: ReleaseEvent[]}) {
+  const {release, events} = props
+  const {results: documents} = useBundleDocuments(release._id)
 
   const releaseActionButton = useMemo(() => {
     if (release.state === 'archived') return null

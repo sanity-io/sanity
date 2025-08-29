@@ -47,7 +47,6 @@ export const ReleasePublishAllButton = ({
   )
 
   const [publishPermission, setPublishPermission] = useState<boolean>(false)
-
   const isValidatingDocuments = documents.some(({validation}) => validation.isValidating)
   const hasDocumentValidationErrors = documents.some(({validation}) => validation.hasError)
 

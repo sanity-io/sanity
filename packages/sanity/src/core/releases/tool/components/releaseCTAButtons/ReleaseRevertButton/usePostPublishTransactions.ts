@@ -1,3 +1,4 @@
+import {type SanityDocument} from '@sanity/client'
 import {useMemo} from 'react'
 import {useObservable} from 'react-rx'
 import {catchError, from, map, of} from 'rxjs'
@@ -6,11 +7,10 @@ import {useClient} from '../../../../../hooks/useClient'
 import {getTransactionsLogs} from '../../../../../store/translog/getTransactionsLogs'
 import {getPublishedId} from '../../../../../util/draftUtils'
 import {RELEASES_STUDIO_CLIENT_OPTIONS} from '../../../../util/releasesClient'
-import {type DocumentInRelease} from '../../../detail/useBundleDocuments'
 
-export const usePostPublishTransactions = (documents: DocumentInRelease[]) => {
+export const usePostPublishTransactions = (documents: Partial<SanityDocument>[]) => {
   const client = useClient(RELEASES_STUDIO_CLIENT_OPTIONS)
-  const transactionId = documents[0]?.document._rev
+  const transactionId = documents[0]?._rev
 
   const memoHasPostPublishTransactions = useMemo(() => {
     if (!documents.length) return of(false)

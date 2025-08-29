@@ -1,4 +1,4 @@
-import {type ReleaseDocument} from '@sanity/client'
+import {type ReleaseDocument, type SanityDocument} from '@sanity/client'
 import {CloseCircleIcon} from '@sanity/icons'
 import {useTelemetry} from '@sanity/telemetry/react'
 import {Text, useToast} from '@sanity/ui'
@@ -9,11 +9,10 @@ import {Translate, useTranslation} from '../../../../i18n'
 import {UnscheduledRelease} from '../../../__telemetry__/releases.telemetry'
 import {releasesLocaleNamespace} from '../../../i18n'
 import {useReleaseOperations} from '../../../store/useReleaseOperations'
-import {type DocumentInRelease} from '../../detail/useBundleDocuments'
 
 interface ReleaseScheduleButtonProps {
   release: ReleaseDocument
-  documents: DocumentInRelease[]
+  documents: Partial<SanityDocument>[]
   disabled?: boolean
 }
 

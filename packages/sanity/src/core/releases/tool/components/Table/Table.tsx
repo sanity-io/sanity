@@ -75,7 +75,7 @@ const TableInner = <TableData, AdditionalRowTableData>({
   const {searchTerm, sort} = useTableContext()
   const virtualizerContainerRef = useRef<HTMLDivElement | null>(null)
   const filteredData = useMemo(() => {
-    const filteredResult = searchTerm && searchFilter ? searchFilter(data, searchTerm) : data
+    const filteredResult = data
     if (!sort) return filteredResult
 
     const sortColumn = columnDefs.find((column) => column.id === sort.column)

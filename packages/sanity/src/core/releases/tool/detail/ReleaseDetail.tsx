@@ -6,6 +6,8 @@ import {useRouter} from 'sanity/router'
 
 import {LoadingBlock} from '../../../components'
 import {useTranslation} from '../../../i18n'
+import {DEFAULT_ORDERING} from '../../../search/search-document-list/constants'
+import {useDocumentList} from '../../../search/search-document-list/useDocumentList'
 import {releasesLocaleNamespace} from '../../i18n'
 import {useActiveReleases} from '../../store/useActiveReleases'
 import {useArchivedReleases} from '../../store/useArchivedReleases'
@@ -33,9 +35,28 @@ export const ReleaseDetail = () => {
 
   const {
     loading: documentsLoading,
-    results,
+    //results,
     error: bundleDocumentsError,
   } = useBundleDocuments(releaseId)
+
+  const {items} = useDocumentList({
+    apiVersion: '2025-08-28',
+    filter: 'sanity::partOfRelease($releaseId)',
+    perspective: [releaseId],
+    searchQuery: '',
+    sortOrder: DEFAULT_ORDERING,
+    params: {releaseId},
+  })
+
+  const results = items.map((item) => ({
+    _id: item._id,
+    _type: item._type,
+    _system: item._system,
+    hasPublished: item.hasPublished,
+    _rev: item._rev,
+    _updatedAt: item._updatedAt,
+  }))
+
   const releaseEvents = useReleaseEvents(releaseId)
 
   const releaseInDetail = data
@@ -110,11 +131,7 @@ export const ReleaseDetail = () => {
               {detailContent}
             </Card>
 
-            <ReleaseDashboardFooter
-              documents={results}
-              release={releaseInDetail}
-              events={releaseEvents.events}
-            />
+            <ReleaseDashboardFooter release={releaseInDetail} events={releaseEvents.events} />
           </Flex>
 
           <ReleaseDashboardActivityPanel

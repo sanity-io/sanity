@@ -18,12 +18,7 @@ const renderTest = async (props?: Partial<React.ComponentProps<typeof ReleaseDas
   })
 
   const rendered = render(
-    <ReleaseDashboardFooter
-      release={activeASAPRelease}
-      events={[]}
-      documents={[]}
-      {...(props || {})}
-    />,
+    <ReleaseDashboardFooter release={activeASAPRelease} events={[]} {...(props || {})} />,
     {
       wrapper,
     },

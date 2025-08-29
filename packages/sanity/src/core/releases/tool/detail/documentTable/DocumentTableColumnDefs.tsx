@@ -1,4 +1,4 @@
-import {type ReleaseState} from '@sanity/client'
+import {type ReleaseState, type SanityDocument} from '@sanity/client'
 import {ErrorOutlineIcon} from '@sanity/icons'
 import {Badge, Box, Flex, Text} from '@sanity/ui'
 // eslint-disable-next-line @sanity/i18n/no-i18next-import -- figure out how to have the linter be fine with importing types-only
@@ -17,7 +17,6 @@ import {Headers} from '../../components/Table/TableHeader'
 import {type Column, type InjectedTableProps} from '../../components/Table/types'
 import {getDocumentActionType, getReleaseDocumentActionConfig} from '../releaseDocumentActions'
 import {type BundleDocumentRow} from '../ReleaseSummary'
-import {type DocumentInRelease} from '../useBundleDocuments'
 import {useReleaseHistory} from './useReleaseHistory'
 
 const MemoReleaseDocumentPreview = memo(
@@ -27,23 +26,22 @@ const MemoReleaseDocumentPreview = memo(
     releaseState,
     documentRevision,
   }: {
-    item: DocumentInRelease
+    item: Partial<SanityDocument>
     releaseId: string
     releaseState?: ReleaseState
     documentRevision?: string
   }) {
     return (
       <ReleaseDocumentPreview
-        documentId={item.document._id}
-        documentTypeName={item.document._type}
+        documentId={item._id || ''}
+        documentTypeName={item._type || ''}
         releaseId={releaseId}
         releaseState={releaseState}
         documentRevision={documentRevision}
       />
     )
   },
-  (prev, next) =>
-    prev.item.document._id === next.item.document._id && prev.releaseId === next.releaseId,
+  (prev, next) => prev.item._id === next.item._id && prev.releaseId === next.releaseId,
 )
 
 const MemoDocumentType = memo(
@@ -77,7 +75,7 @@ const documentActionColumn: (t: TFunction<'releases', undefined>) => Column<Bund
         <Badge
           radius={2}
           tone={documentActionConfig.tone}
-          data-testid={`${actionType}-badge-${datum.document._id}`}
+          data-testid={`${actionType}-badge-${datum._id}`}
         >
           {t(documentActionConfig.translationKey)}
         </Badge>
@@ -113,9 +111,7 @@ export const getDocumentTableColumnDefs: (
     ),
     cell: ({cellProps, datum}) => (
       <Flex align="center" {...cellProps}>
-        <Box paddingX={2}>
-          {!datum.isLoading && <MemoDocumentType type={datum.document._type} />}
-        </Box>
+        <Box paddingX={2}>{!datum.isLoading && <MemoDocumentType type={datum._type || ''} />}</Box>
       </Flex>
     ),
   },
@@ -142,7 +138,7 @@ export const getDocumentTableColumnDefs: (
             item={datum}
             releaseId={releaseId}
             releaseState={releaseState}
-            documentRevision={datum.document._rev}
+            documentRevision={datum._rev}
           />
         )}
       </Box>
@@ -172,13 +168,13 @@ export const getDocumentTableColumnDefs: (
     cell: ({cellProps, datum}) => {
       if (datum.isLoading) return null
 
-      const validationErrorCount = datum.validation.validation.filter(
+      const validationErrorCount = 0 /*datum.validation.validation.filter(
         (validation) => validation.level === 'error',
-      ).length
+      ).length*/
 
       return (
         <Flex {...cellProps} flex={1} padding={1} justify="center" align="center" sizing="border">
-          {datum.validation.hasError && (
+          {false && (
             <Tooltip
               portal
               placement="bottom-end"
@@ -216,10 +212,9 @@ function UpdatedAtCell({
   datum: BundleDocumentRow & {isLoading?: boolean}
   releaseDocumentId: string
 }) {
-  const {document, isLoading} = datum
+  const {_id, _updatedAt, isLoading} = datum
   const bundleId = getReleaseIdFromReleaseDocumentId(releaseDocumentId)
-  const historyDocumentId =
-    datum.isPending || document?._id?.endsWith('-pending') ? undefined : document?._id
+  const historyDocumentId = _id
   const {documentHistory} = useReleaseHistory(historyDocumentId, bundleId)
 
   return (
@@ -233,13 +228,13 @@ function UpdatedAtCell({
     >
       <Flex align="center" gap={2}>
         {(isLoading || !documentHistory?.lastEditedBy) && <AvatarSkeleton $size={0} animated />}
-        {!isLoading && document._updatedAt && (
+        {!isLoading && _updatedAt && (
           <>
             {documentHistory?.lastEditedBy && (
               <UserAvatar size={0} user={documentHistory.lastEditedBy} />
             )}
             <Text muted size={1}>
-              <RelativeTime time={document._updatedAt} useTemporalPhrase minimal />
+              <RelativeTime time={_updatedAt} useTemporalPhrase minimal />
             </Text>
           </>
         )}

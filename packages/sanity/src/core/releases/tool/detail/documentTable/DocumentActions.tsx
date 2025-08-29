@@ -26,7 +26,7 @@ const DocumentActionsInner = memo(
     const [showUnpublishDialog, setShowUnpublishDialog] = useState(false)
     const {t: coreT} = useTranslation()
     const {t} = useTranslation(releasesLocaleNamespace)
-    const isAlreadyUnpublished = isGoingToUnpublish(document.document)
+    const isAlreadyUnpublished = isGoingToUnpublish(document)
 
     const publishedId = getPublishedId(document.document._id)
     const type = document.document._type

@@ -19,16 +19,16 @@ import {AddDocumentSearch, type AddedDocument} from './AddDocumentSearch'
 import {ReleaseActionBadges} from './components/ReleaseActionBadges'
 import {DocumentActions} from './documentTable/DocumentActions'
 import {getDocumentTableColumnDefs} from './documentTable/DocumentTableColumnDefs'
-import {type DocumentInRelease} from './useBundleDocuments'
+import {type DocumentInRelease, useBundleDocuments} from './useBundleDocuments'
 
 export type DocumentInReleaseDetail = DocumentInRelease & {
   // TODO: Get this value from the document, it can be calculated by checking if there is a corresponding document with no version attached
   isAdded?: boolean
 }
-export type BundleDocumentRow = DocumentInReleaseDetail
+export type BundleDocumentRow = Partial<SanityDocument>
 
 export interface ReleaseSummaryProps {
-  documents: DocumentInRelease[]
+  documents: Partial<SanityDocument>[]
   scrollContainerRef: RefObject<HTMLDivElement | null>
   release: ReleaseDocument
   isLoading?: boolean
@@ -50,6 +50,11 @@ export function ReleaseSummary(props: ReleaseSummaryProps) {
 
   const [openAddDocumentDialog, setAddDocumentDialog] = useState(false)
   const [pendingAddedDocument, setPendingAddedDocument] = useState<BundleDocumentRow[]>([])
+
+  const {results: allDocuments} = useBundleDocuments(release._id)
+
+  //console.log(documents)
+  //console.log(allDocuments)
 
   const {t} = useTranslation(releasesLocaleNamespace)
 
@@ -194,6 +199,7 @@ export function ReleaseSummary(props: ReleaseSummaryProps) {
     [documents, pendingAddedDocument],
   )
 
+  //console.log(documents)
   return (
     <Card
       data-testid="document-table-card"
@@ -213,7 +219,7 @@ export function ReleaseSummary(props: ReleaseSummaryProps) {
           isLoading={isLoading}
         />
         <Card borderTop>
-          <Table<DocumentInReleaseDetail>
+          <Table<Partial<SanityDocument>>
             loading={isLoading}
             data={tableData}
             emptyState={t('summary.no-documents')}
@@ -221,7 +227,6 @@ export function ReleaseSummary(props: ReleaseSummaryProps) {
             rowId="document._id"
             columnDefs={documentTableColumnDefs}
             rowActions={renderRowActions}
-            searchFilter={filterRows}
             scrollContainerRef={scrollContainerRef}
             defaultSort={{column: 'search', direction: 'asc'}}
           />
@@ -244,8 +249,9 @@ export function ReleaseSummary(props: ReleaseSummaryProps) {
         open={openAddDocumentDialog}
         onClose={closeAddDialog}
         releaseId={releaseId}
-        idsInRelease={documents.map(({document}) => document._id)}
+        idsInRelease={documents.map(({_id}) => _id as string)}
       />
+      )
     </Card>
   )
 }

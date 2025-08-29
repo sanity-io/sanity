@@ -1,6 +1,6 @@
+import {type SanityDocument} from '@sanity/client'
+
 import {isGoingToUnpublish} from '../../util/isGoingToUnpublish'
-import {type BundleDocumentRow} from './ReleaseSummary'
-import {type DocumentInRelease} from './useBundleDocuments'
 
 export interface DocumentActionConfig {
   key: 'added' | 'changed' | 'unpublished'
@@ -30,18 +30,14 @@ export const DOCUMENT_ACTION_CONFIGS: DocumentActionConfig[] = [
  * Determines the action type for a document based on its state
  */
 export function getDocumentActionType(
-  document: DocumentInRelease | BundleDocumentRow,
+  document: Partial<SanityDocument>,
 ): DocumentActionConfig['key'] | null {
-  if (!document.document || document.isPending) {
-    return null
-  }
-
-  const willBeUnpublished = isGoingToUnpublish(document.document)
+  const willBeUnpublished = isGoingToUnpublish(document)
   if (willBeUnpublished) {
     return 'unpublished'
   }
 
-  if (document.document.publishedDocumentExists) {
+  if (document.hasPublished) {
     return 'changed'
   }
 

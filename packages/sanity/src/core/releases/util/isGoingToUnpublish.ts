@@ -1,5 +1,4 @@
 import {type SanityDocument} from '@sanity/client'
-import {type SanityDocumentLike} from '@sanity/types'
 
 /**
  * checks if the document has been set for unpublishing
@@ -8,6 +7,6 @@ import {type SanityDocumentLike} from '@sanity/types'
  * @param document - sanity document
  * @returns boolean if the system delete is set
  */
-export function isGoingToUnpublish(document: SanityDocument | SanityDocumentLike): boolean {
+export function isGoingToUnpublish(document: Partial<SanityDocument>): boolean {
   return Boolean(document._system?.delete === true)
 }
