@@ -51,7 +51,7 @@ function AlreadyPublished({publishedAt}: {publishedAt: string}) {
 export const PublishAction: DocumentActionComponent = (props) => {
   const {id, type, liveEdit, draft, published, release} = props
   const [publishState, setPublishState] = useState<
-    {status: 'publishing'; draftRev: string | undefined} | {status: 'published'} | null
+    {status: 'publishing'; publishRevision: string | undefined} | {status: 'published'} | null
   >(null)
   const {publish} = useDocumentOperation(id, type)
   const validationStatus = useValidationStatus(id, type)
@@ -81,12 +81,12 @@ export const PublishAction: DocumentActionComponent = (props) => {
       ? t('action.publish.validation-issues.tooltip')
       : ''
 
-  const currentDraftRev = draft?._rev
+  const currentPublishRevision = published?._rev
 
   const doPublish = useCallback(() => {
     publish.execute()
-    setPublishState({status: 'publishing', draftRev: currentDraftRev})
-  }, [publish, currentDraftRev])
+    setPublishState({status: 'publishing', publishRevision: currentPublishRevision})
+  }, [publish, currentPublishRevision])
 
   useEffect(() => {
     // make sure the validation status is about the current revision and not an earlier one
@@ -114,9 +114,11 @@ export const PublishAction: DocumentActionComponent = (props) => {
 
   useEffect(() => {
     const didPublish =
-      // All we need to check here is for the current draft rev to be different from what it was at the time of publish
-      // We can't check for draft being `null`, as it might have been recreated already
-      publishState?.status === 'publishing' && currentDraftRev !== publishState.draftRev
+      // All we need to check here is for the revision of the current published document
+      // to be different from what it was at the time of publish
+      // a successful publish will always lead to a new published revision
+      publishState?.status === 'publishing' &&
+      currentPublishRevision !== publishState.publishRevision
 
     const nextState = didPublish ? PUBLISHED_STATE : null
     const delay = didPublish ? 200 : 4000
@@ -124,7 +126,7 @@ export const PublishAction: DocumentActionComponent = (props) => {
       setPublishState(nextState)
     }, delay)
     return () => clearTimeout(timer)
-  }, [changesOpen, publishState, currentDraftRev])
+  }, [changesOpen, publishState, currentPublishRevision])
 
   const telemetry = useTelemetry()
 
