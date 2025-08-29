@@ -3,6 +3,63 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [4.6.0](https://github.com/sanity-io/sanity/compare/v4.5.0...v4.6.0) (2025-08-26)
+
+
+### Features
+
+* add 'format code' function recipe ([#10417](https://github.com/sanity-io/sanity/issues/10417)) ([bc95db9](https://github.com/sanity-io/sanity/commit/bc95db955cecd06290efa6876eb0c395369bdb6f))
+* Add Last Used Provider Badge ([#10238](https://github.com/sanity-io/sanity/issues/10238)) ([f2db433](https://github.com/sanity-io/sanity/commit/f2db433617fd2ba82f38ef9a421d2efa1ca73c6e))
+* support new Function document change events (`create`, `delete`, `update`) and filters (`includeDrafts` and `includeAllVersions`) ([#10413](https://github.com/sanity-io/sanity/issues/10413)) ([1835683](https://github.com/sanity-io/sanity/commit/1835683189abcfa49ffb06a4144ee59cf3ea16a1))
+
+
+### Bug Fixes
+
+* add env var for setting modules host ([#10423](https://github.com/sanity-io/sanity/issues/10423)) ([14eeabb](https://github.com/sanity-io/sanity/commit/14eeabb9da07bb5d5c6e5c14d13a1199f6e6b55a))
+* **deps:** update dependency @portabletext/block-tools to ^3.3.0 ([#10405](https://github.com/sanity-io/sanity/issues/10405)) ([0b9a8ce](https://github.com/sanity-io/sanity/commit/0b9a8cedf450d1fc6373ba8575ee5e02c898549a))
+* **deps:** update dependency @portabletext/block-tools to ^3.3.1 ([#10410](https://github.com/sanity-io/sanity/issues/10410)) ([f7affe2](https://github.com/sanity-io/sanity/commit/f7affe2a11d01febc48304b865adf5690b1760e6))
+* **deps:** update dependency @portabletext/block-tools to ^3.3.2 ([#10419](https://github.com/sanity-io/sanity/issues/10419)) ([0df3a57](https://github.com/sanity-io/sanity/commit/0df3a575b47824c354dd34d736361f24e12c963a))
+* **deps:** update dependency @portabletext/block-tools to ^3.3.3 ([#10421](https://github.com/sanity-io/sanity/issues/10421)) ([f49cf61](https://github.com/sanity-io/sanity/commit/f49cf61e71b732596960ea1f36db0b681947f69c))
+* **deps:** update dependency @portabletext/editor to ^2.4.0 ([#10406](https://github.com/sanity-io/sanity/issues/10406)) ([294a907](https://github.com/sanity-io/sanity/commit/294a907efc2ceccf95534542f905c10da132b0c4))
+* **deps:** update dependency @portabletext/editor to ^2.4.3 ([#10411](https://github.com/sanity-io/sanity/issues/10411)) ([a739244](https://github.com/sanity-io/sanity/commit/a739244e2b7d31f187ec8f8e98299ac052c93954))
+* **deps:** update dependency @portabletext/editor to ^2.6.3 ([#10418](https://github.com/sanity-io/sanity/issues/10418)) ([2f2f2ee](https://github.com/sanity-io/sanity/commit/2f2f2eed8ea4fc493b8c88268d6e2e5c60cc60cd))
+* **deps:** update dependency @sanity/client to ^7.9.0 ([#10412](https://github.com/sanity-io/sanity/issues/10412)) ([392f5dc](https://github.com/sanity-io/sanity/commit/392f5dc710fd1184709b268a4cc40b6af2e37162))
+* fix scrolling issue inside of popover modals in PTE ([#10401](https://github.com/sanity-io/sanity/issues/10401)) ([c5a7d02](https://github.com/sanity-io/sanity/commit/c5a7d02ffc525417b049e12b78ea591d133b0974))
+* move 'create new' studio host option to the end ([#10403](https://github.com/sanity-io/sanity/issues/10403)) ([851e7db](https://github.com/sanity-io/sanity/commit/851e7db866c04279fbc8fbf22f24e0c831eda29b))
+* **sanity:** support new appid module url in version check ([#10432](https://github.com/sanity-io/sanity/issues/10432)) ([8e83fa1](https://github.com/sanity-io/sanity/commit/8e83fa18981df91fb59495552696d290e8672411))
+* stop throwing error when removing array item when validation pane is open ([#10420](https://github.com/sanity-io/sanity/issues/10420)) ([9cc4337](https://github.com/sanity-io/sanity/commit/9cc433791506602c82e8a8beebad47ff94c7be89))
+* **types:** remove `'strike'`/`'strike-through'` decorator confusion ([#10416](https://github.com/sanity-io/sanity/issues/10416)) ([f5340c8](https://github.com/sanity-io/sanity/commit/f5340c84db2d557ad54bcfdda74e00df12d7b1bb))
+
+
+
+## [4.5.0](https://github.com/sanity-io/sanity/compare/v4.4.1...v4.5.0) (2025-08-19)
+
+
+### Features
+
+* add schedule publish and unpublish noop actions for draft documents ([#10287](https://github.com/sanity-io/sanity/issues/10287)) ([c1220b3](https://github.com/sanity-io/sanity/commit/c1220b3f2ff5cf3a3f1741943c8ca322395081b0))
+* draft perspective chip copies from published when  no draft exists ([#10305](https://github.com/sanity-io/sanity/issues/10305)) ([2d9c836](https://github.com/sanity-io/sanity/commit/2d9c8365cae543492ffbe93167fdcafc2e552e2d))
+* **sanity:** add `advancedVersionControl.enabled` configuration option ([#10277](https://github.com/sanity-io/sanity/issues/10277)) ([81bc5b1](https://github.com/sanity-io/sanity/commit/81bc5b1e735571647dd2a553b256a8b32783e79e))
+
+
+### Bug Fixes
+
+* **ci:** add concurrency for release-next job ([#10373](https://github.com/sanity-io/sanity/issues/10373)) ([87ef760](https://github.com/sanity-io/sanity/commit/87ef7603dbb4563efa779631393d918e995544b8))
+* **codegen:** import json5 via default to match ESM entry ([#10388](https://github.com/sanity-io/sanity/issues/10388)) ([35861c6](https://github.com/sanity-io/sanity/commit/35861c68d7eeb7bbb2719cda6828576423796255))
+* **core:** use intent link for comments notification url ([#10299](https://github.com/sanity-io/sanity/issues/10299)) ([4866d59](https://github.com/sanity-io/sanity/commit/4866d59fd537c5d1edfc7a9186340da9a6d005fd))
+* **deps:** Update babel monorepo to ^7.28.3 ([#10301](https://github.com/sanity-io/sanity/issues/10301)) ([cb6718b](https://github.com/sanity-io/sanity/commit/cb6718b8ef05a003336aa0ac7bf42d092d8205ae))
+* **deps:** update dependency @portabletext/block-tools to ^3.2.0 ([#10297](https://github.com/sanity-io/sanity/issues/10297)) ([b50678b](https://github.com/sanity-io/sanity/commit/b50678bd519d80a083b9f01efd8ac846a5502b4a))
+* **deps:** update dependency @portabletext/block-tools to ^3.2.1 ([#10384](https://github.com/sanity-io/sanity/issues/10384)) ([6a1f726](https://github.com/sanity-io/sanity/commit/6a1f72614fb2cbb6851fd5951a7ea57c0177a32f))
+* **deps:** update dependency @portabletext/editor to ^2.3.7 ([#10284](https://github.com/sanity-io/sanity/issues/10284)) ([213dc36](https://github.com/sanity-io/sanity/commit/213dc369b728db58327fa3c1f9c5792e5dcbe1d3))
+* **deps:** update dependency @portabletext/editor to ^2.3.8 ([#10389](https://github.com/sanity-io/sanity/issues/10389)) ([60e179c](https://github.com/sanity-io/sanity/commit/60e179c22b152059bab11bd006d58af1b2e6ef1f))
+* **deps:** Update dev-non-major ([#10302](https://github.com/sanity-io/sanity/issues/10302)) ([3f1c7d1](https://github.com/sanity-io/sanity/commit/3f1c7d147e691083eec47e108591b93619ac19c6))
+* **deps:** Update linters ([#10395](https://github.com/sanity-io/sanity/issues/10395)) ([763a98d](https://github.com/sanity-io/sanity/commit/763a98d8e703436760f166566b9e5f8510b1ded4))
+* release chips don't need to handle scheduled case ([#10374](https://github.com/sanity-io/sanity/issues/10374)) ([eaf6359](https://github.com/sanity-io/sanity/commit/eaf6359e708d1f936a22fc26a9531bf999a6dce5))
+* remove unused initialValue parameter from createVersion method ([#10391](https://github.com/sanity-io/sanity/issues/10391)) ([4278419](https://github.com/sanity-io/sanity/commit/427841940267b4450f3064b4c77c2c2bbd6114e8))
+* **schema:** mark image data as required, for typegen ([#10285](https://github.com/sanity-io/sanity/issues/10285)) ([af2ce7b](https://github.com/sanity-io/sanity/commit/af2ce7be07dd3d5795ca8a5c66422295b41c8712))
+
+
+
 ## [4.4.1](https://github.com/sanity-io/sanity/compare/v4.4.0...v4.4.1) (2025-08-14)
 
 

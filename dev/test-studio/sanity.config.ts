@@ -19,6 +19,7 @@ import {
 } from 'sanity'
 import {defineDocuments, defineLocations, presentationTool} from 'sanity/presentation'
 import {structureTool} from 'sanity/structure'
+import {unsplashAssetSource, UnsplashIcon} from 'sanity-plugin-asset-source-unsplash'
 import {imageHotspotArrayPlugin} from 'sanity-plugin-hotspot-array'
 import {markdownSchema} from 'sanity-plugin-markdown'
 import {media} from 'sanity-plugin-media'
@@ -78,7 +79,7 @@ const sharedSettings = ({projectId}: {projectId: string}) => {
     },
     form: {
       image: {
-        assetSources: [imageAssetSource],
+        assetSources: [imageAssetSource, unsplashAssetSource],
       },
       file: {
         assetSources: [imageAssetSource],
@@ -258,6 +259,20 @@ export default defineConfig([
     title: 'Test Studio (US)',
     dataset: 'test-us',
     basePath: '/us',
+  },
+  {
+    ...defaultWorkspace,
+    name: 'unsplash',
+    title: 'Only Unsplash Asset Source',
+    basePath: '/unsplash',
+    icon: UnsplashIcon,
+    // Testing the docs case that only allow Unsplash image uploads
+    form: {
+      image: {
+        assetSources: () => [unsplashAssetSource],
+        directUploads: false,
+      },
+    },
   },
   {
     name: 'partialIndexing',

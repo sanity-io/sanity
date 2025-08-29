@@ -4,16 +4,15 @@ import {styled} from 'styled-components'
 import {Popover} from '../../../../../../ui-components'
 
 export const RootPopover = styled(Popover)`
-  & > div {
-    overflow: hidden;
-    overflow: clip;
+  [data-ui='Popover__wrapper'] {
+    overflow: auto;
+    max-height: 60vh;
   }
 `
 
 export const ContentScrollerBox = styled(Box)`
   /* Prevent overflow caused by change indicator */
   overflow-x: hidden;
-  overflow-y: auto;
 `
 
 export const ContentHeaderBox = styled(Box)`

@@ -60,22 +60,23 @@ export function getRouteContext(route: Path, url: URL): DocumentResolverContext 
   const routes = Array.isArray(route) ? route : [route]
 
   for (route of routes) {
-    let origin: DocumentResolverContext['origin']
+    let {origin} = url
     let path = route
 
     // Handle absolute URLs
     if (typeof route === 'string') {
       try {
         const absolute = new URL(route)
+
+        // If we are dealing with an absolute URL, ensure the origins match
+        if (absolute.origin !== origin) continue
+
         origin = absolute.origin
         path = absolute.pathname
       } catch {
         // Ignore, as we assume a relative path
       }
     }
-
-    // If an origin has been explicitly provided, check that it matches
-    if (origin && url.origin !== origin) continue
 
     try {
       const matcher = match<Record<string, string>>(path, {decode: decodeURIComponent})

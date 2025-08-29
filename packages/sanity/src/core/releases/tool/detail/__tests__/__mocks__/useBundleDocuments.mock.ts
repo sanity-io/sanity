@@ -17,10 +17,6 @@ export const documentsInRelease: DocumentInRelease = {
     validation: [],
     isValidating: false,
   },
-  previewValues: {
-    isLoading: false,
-    values: {},
-  },
 }
 
 export const useBundleDocumentsMockReturn: Mocked<ReturnType<typeof useBundleDocuments>> = {

@@ -1,6 +1,6 @@
 {
   "name": "@sanity/util",
-  "version": "4.4.1",
+  "version": "4.6.0",
   "description": "Utilities shared across projects of Sanity",
   "keywords": [
     "sanity",
@@ -117,7 +117,7 @@
   "dependencies": {
     "@date-fns/tz": "^1.4.1",
     "@date-fns/utc": "^2.1.1",
-    "@sanity/client": "^7.8.2",
+    "@sanity/client": "^7.9.0",
     "@sanity/types": "workspace:*",
     "date-fns": "^4.1.0",
     "get-random-values-esm": "1.0.2",

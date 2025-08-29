@@ -1,4 +1,5 @@
 import {type ReleaseDocument} from '@sanity/client'
+import {getVersionNameFromId, type VersionId} from '@sanity/id-utils'
 import {Box, Stack, Text, useToast} from '@sanity/ui'
 import {useCallback, useState} from 'react'
 
@@ -34,6 +35,7 @@ export function DiscardVersionDialog(props: {
   const discardType = isDraftId(documentId) ? 'draft' : 'release'
   const releaseName =
     typeof fromPerspective === 'string' ? fromPerspective : fromPerspective.metadata.title
+  const currentRelease = getVersionNameFromId(documentId as VersionId)
 
   const schemaType = schema.get(documentType)
 
@@ -92,7 +94,11 @@ export function DiscardVersionDialog(props: {
     >
       <Stack space={3} paddingX={3} marginBottom={2}>
         {schemaType ? (
-          <Preview value={{_id: documentId}} schemaType={schemaType} />
+          <Preview
+            value={{_id: documentId}}
+            schemaType={schemaType}
+            perspectiveStack={[currentRelease]}
+          />
         ) : (
           <LoadingBlock />
         )}

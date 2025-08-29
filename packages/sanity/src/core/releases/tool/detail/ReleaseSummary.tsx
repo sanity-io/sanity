@@ -17,6 +17,7 @@ import {AddDocumentSearch, type AddedDocument} from './AddDocumentSearch'
 import {ReleaseActionBadges} from './components/ReleaseActionBadges'
 import {DocumentActions} from './documentTable/DocumentActions'
 import {getDocumentTableColumnDefs} from './documentTable/DocumentTableColumnDefs'
+import {searchDocumentRelease} from './documentTable/searchDocumentRelease'
 import {type DocumentInRelease} from './useBundleDocuments'
 
 export type DocumentInReleaseDetail = DocumentInRelease & {
@@ -41,8 +42,7 @@ const isBundleDocumentRow = (
   typeof maybeBundleDocumentRow === 'object' &&
   'memoKey' in maybeBundleDocumentRow &&
   'document' in maybeBundleDocumentRow &&
-  'validation' in maybeBundleDocumentRow &&
-  'previewValues' in maybeBundleDocumentRow
+  'validation' in maybeBundleDocumentRow
 
 export function ReleaseSummary(props: ReleaseSummaryProps) {
   const {
@@ -92,7 +92,6 @@ export function ReleaseSummary(props: ReleaseSummaryProps) {
 
       const pendingDocumentRow: DocumentInReleaseDetail = {
         memoKey: versionDocumentId,
-        previewValues: {isLoading: true, values: {}},
         validation: {
           isValidating: false,
           validation: [],

@@ -7,6 +7,7 @@ import {useRouterState} from 'sanity/router'
 import {isDev} from '../../../../environment'
 import {type ObjectFieldProps, set, useFormValue} from '../../../../form'
 import {useClient} from '../../../../hooks'
+import {usePerspective} from '../../../../perspective/usePerspective'
 import {useWorkspace} from '../../../../studio'
 import {DEFAULT_STUDIO_CLIENT_OPTIONS} from '../../../../studioClient'
 import {useDocumentPreviewValues} from '../../../hooks'
@@ -42,9 +43,11 @@ function TasksNotificationTargetInner(props: ObjectFieldProps<TaskDocument>) {
   const documentId = target?.document?._ref ?? ''
   const documentType = target?.documentType ?? ''
 
+  const {perspectiveStack} = usePerspective()
   const {isLoading: previewValuesLoading, value} = useDocumentPreviewValues({
     documentId,
     documentType,
+    perspectiveStack,
   })
   const targetContentTitle = value?.title || null
   const imageUrl = isImageSource(value?.media)

@@ -57,6 +57,26 @@ export default defineType({
                         `This is not an external link. Consider using internal links instead.`,
                       ),
                   },
+                  {
+                    name: 'url2',
+                    type: 'string',
+                  },
+                  {
+                    name: 'url3',
+                    type: 'string',
+                  },
+                  {
+                    name: 'url4',
+                    type: 'string',
+                  },
+                  {
+                    name: 'url5',
+                    type: 'string',
+                  },
+                  {
+                    name: 'url6',
+                    type: 'string',
+                  },
                 ],
               },
               {
