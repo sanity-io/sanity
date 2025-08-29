@@ -1,4 +1,4 @@
-import {Box, Flex, Stack, Text, useClickOutsideEvent} from '@sanity/ui'
+import {Box, Stack, useClickOutsideEvent} from '@sanity/ui'
 import {
   Fragment,
   type HTMLAttributes,
@@ -10,7 +10,6 @@ import {
 } from 'react'
 import {DiffContext} from 'sanity/_singletons'
 
-import {Button, Popover} from '../../../../ui-components'
 import {useDocumentOperation} from '../../../hooks'
 import {useTranslation} from '../../../i18n'
 import {useDocumentPairPermissions} from '../../../store'
@@ -25,6 +24,7 @@ import {ChangeBreadcrumb} from './ChangeBreadcrumb'
 import {ChangeResolver} from './ChangeResolver'
 import {ChangeListWrapper, GroupChangeContainer} from './GroupChange.styled'
 import {RevertChangesButton} from './RevertChangesButton'
+import {RevertChangesConfirmationPopover} from './RevertChangesConfirmationPopover'
 
 /** @internal */
 export function GroupChange(
@@ -63,10 +63,10 @@ export function GroupChange(
     permission: 'update',
   })
 
-  const handleRevertChanges = useCallback(
-    () => undoChange(group, rootDiff, docOperations),
-    [group, rootDiff, docOperations],
-  )
+  const handleRevertChanges = useCallback(() => {
+    undoChange(group, rootDiff, docOperations)
+    setConfirmRevertOpen(false)
+  }, [group, rootDiff, docOperations])
 
   const handleRevertChangesConfirm = useCallback(() => {
     setConfirmRevertOpen(true)
@@ -105,33 +105,11 @@ export function GroupChange(
             ))}
           </Stack>
           {isComparingCurrent && !isPermissionsLoading && permissions?.granted && (
-            <Popover
-              content={
-                <Stack space={3}>
-                  <Box paddingY={3}>
-                    <Text size={1}>
-                      {t('changes.action.revert-changes-description', {count: changes.length})}
-                    </Text>
-                  </Box>
-                  <Flex gap={3} justify="flex-end">
-                    <Button
-                      mode="ghost"
-                      onClick={closeRevertChangesConfirmDialog}
-                      text={t('changes.action.revert-all-cancel')}
-                    />
-                    <Button
-                      tone="critical"
-                      onClick={handleRevertChanges}
-                      text={t('changes.action.revert-changes-confirm-change', {count: 1})}
-                    />
-                  </Flex>
-                </Stack>
-              }
-              padding={3}
-              portal
-              placement="left"
+            <RevertChangesConfirmationPopover
               open={confirmRevertOpen}
-              ref={popoverRef}
+              onConfirm={handleRevertChanges}
+              onCancel={closeRevertChangesConfirmDialog}
+              changeCount={changes.length}
             >
               <Box>
                 <RevertChangesButton
@@ -143,7 +121,7 @@ export function GroupChange(
                   data-testid={`group-change-revert-button-${group.fieldsetName}`}
                 />
               </Box>
-            </Popover>
+            </RevertChangesConfirmationPopover>
           )}
         </Stack>
       ),
@@ -163,7 +141,6 @@ export function GroupChange(
       permissions?.granted,
       readOnly,
       revertButtonRef,
-      t,
     ],
   )
 
