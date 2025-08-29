@@ -1,8 +1,12 @@
 import {type CreateVersionAction, type EditAction} from '@sanity/client'
+import {finalize, type Observable, share} from 'rxjs'
 
 import {type OperationImpl} from '../operations/types'
 import {actionsApiClient} from '../utils/actionsApiClient'
 import {isLiveEditEnabled} from '../utils/isLiveEditEnabled'
+
+// Track pending draft creation observables to prevent duplicate requests
+const pendingDraftCreations = new Map<string, Observable<any>>()
 
 export const patch: OperationImpl<[patches: any[], initialDocument?: Record<string, any>]> = {
   disabled: (): false => false,
@@ -59,6 +63,16 @@ export const patch: OperationImpl<[patches: any[], initialDocument?: Record<stri
     if (snapshots.published) {
       // Handle special "create draft from published" scenario with version.create
       if (!snapshots.draft) {
+        const draftCreationKey = idPair.draftId
+
+        // Check if a draft creation is already pending for this document
+        const pendingCreation = pendingDraftCreations.get(draftCreationKey)
+        if (pendingCreation) {
+          // Reuse the existing observable - it will emit when the creation completes
+          pendingCreation.subscribe()
+          return
+        }
+
         const publishedRev = snapshots.published._rev
 
         const versionCreateAction: CreateVersionAction = {
@@ -83,12 +97,23 @@ export const patch: OperationImpl<[patches: any[], initialDocument?: Record<stri
 
         const actions = [versionCreateAction, ...editActions]
 
-        // Fire the action asynchronously but don't wait for it (like other mutations)
-        actionsApiClient(client, idPair)
+        // Create the observable and share it so multiple subscribers get the same result
+        const creation$ = actionsApiClient(client, idPair)
           .observable.action(actions, {
             tag: 'document.commit',
           })
-          .subscribe()
+          .pipe(
+            // Clean up the pending creation when the observable completes (success or error)
+            finalize(() => pendingDraftCreations.delete(draftCreationKey)),
+            // Share the observable among multiple subscribers
+            share(),
+          )
+
+        // Store the shared observable
+        pendingDraftCreations.set(draftCreationKey, creation$)
+
+        // Subscribe to trigger the action
+        creation$.subscribe()
 
         return
       }
