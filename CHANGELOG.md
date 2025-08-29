@@ -3,6 +3,26 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [4.6.1](https://github.com/sanity-io/sanity/compare/v4.6.0...v4.6.1) (2025-08-29)
+
+
+### Bug Fixes
+
+* **core:** resolve uploader should work even if direct uploads is not allowed ([#10407](https://github.com/sanity-io/sanity/issues/10407)) ([1f5791f](https://github.com/sanity-io/sanity/commit/1f5791f4bb50fb940efb5dc98108a291007745c0))
+* corrects tense in auto-generated comment ([#10409](https://github.com/sanity-io/sanity/issues/10409)) ([2ec1d82](https://github.com/sanity-io/sanity/commit/2ec1d8212a4a24f6e6da74313e186fdac1eaf9ae))
+* **deps:** update dependency @portabletext/editor to ^2.6.4 ([#10459](https://github.com/sanity-io/sanity/issues/10459)) ([706124e](https://github.com/sanity-io/sanity/commit/706124e85210e62784341171d07b3f007276a70b))
+* **deps:** update dependency @portabletext/editor to ^2.6.5 ([#10474](https://github.com/sanity-io/sanity/issues/10474)) ([39a9b88](https://github.com/sanity-io/sanity/commit/39a9b8832158d2540efd2a4f987126fabbcc0110))
+* **deps:** update dependency @portabletext/editor to ^2.6.7 ([#10479](https://github.com/sanity-io/sanity/issues/10479)) ([7ee3be7](https://github.com/sanity-io/sanity/commit/7ee3be77757c0c56c15f9652d51018b513ed5912))
+* **deps:** update dependency @sanity/mutate to ^0.12.5 ([#10433](https://github.com/sanity-io/sanity/issues/10433)) ([d916a84](https://github.com/sanity-io/sanity/commit/d916a843c9e75fe5819f77a87a8c936dbc531223))
+* **deps:** update dependency @sanity/ui to ^3.0.8 ([#10472](https://github.com/sanity-io/sanity/issues/10472)) ([62e01d1](https://github.com/sanity-io/sanity/commit/62e01d10e2cb496ce93e0d0a374ca1352c1f168c))
+* issue where the discard dialog preview was chosing a broken preview ([#10475](https://github.com/sanity-io/sanity/issues/10475)) ([26db2f5](https://github.com/sanity-io/sanity/commit/26db2f506ef2516002f781f5860616d063fb2cb0))
+* **presentation:** always include origin in document resolver context ([#10477](https://github.com/sanity-io/sanity/issues/10477)) ([0b0710d](https://github.com/sanity-io/sanity/commit/0b0710d370c3066a83caafd35d9518326fac3f24))
+* revert "fix(deps): update dependency @sanity/mutate to ^0.12.5" ([#10467](https://github.com/sanity-io/sanity/issues/10467)) ([3f67302](https://github.com/sanity-io/sanity/commit/3f67302dfe3a807c3b907722cf94cc8861d8d74c))
+* **sanity:** mark document as consistent when refetching from server ([#10485](https://github.com/sanity-io/sanity/issues/10485)) ([6a79916](https://github.com/sanity-io/sanity/commit/6a799165c8b4fcc6f21e70df0a259fa6bcd74e52))
+* **telemetry:** include react version ([#10480](https://github.com/sanity-io/sanity/issues/10480)) ([a80689b](https://github.com/sanity-io/sanity/commit/a80689b2dd096c4be27ae72fe85f9f1e26f50fa4))
+
+
+
 ## [4.6.0](https://github.com/sanity-io/sanity/compare/v4.5.0...v4.6.0) (2025-08-26)
 
 
