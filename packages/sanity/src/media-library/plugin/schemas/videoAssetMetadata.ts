@@ -59,12 +59,5 @@ export const videoAssetMetadata = defineType({
       readOnly: true,
       fieldset: 'extra',
     },
-    {
-      name: 'playbacks',
-      title: 'Playbacks',
-      type: 'array',
-      of: [{type: videoAssetMetadataPlayback.name}],
-      readOnly: true,
-    },
   ],
 })

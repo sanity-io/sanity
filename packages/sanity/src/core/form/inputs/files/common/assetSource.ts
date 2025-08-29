@@ -1,5 +1,9 @@
-import {type AssetFromSource, type FileSchemaType} from '@sanity/types'
+import {type AssetFromSource, type FileSchemaType, type ImageSchemaType} from '@sanity/types'
 
+import {
+  isVideoSchemaType,
+  type VideoSchemaType,
+} from '../../../../../media-library/plugin/schemas/types'
 import {type FIXME} from '../../../../FIXME'
 import {type FormPatch, type PatchEvent, set, setIfMissing, unset} from '../../../patch'
 import {
@@ -15,7 +19,7 @@ type DOMFile = globalThis.File
 interface Props {
   assetsFromSource: AssetFromSource[]
   onChange: (patch: FormPatch | FormPatch[] | PatchEvent) => void
-  type: FileSchemaType
+  type: FileSchemaType | ImageSchemaType | VideoSchemaType
   resolveUploader: UploaderResolver
   uploadWith: (uploader: Uploader, file: DOMFile, assetDocumentProps?: UploadOptions) => void
   isImage?: boolean
@@ -58,6 +62,25 @@ export function handleSelectAssetFromSource({
       _weak: true,
     }
     assetPatches.push(set(assetContainerRef, ['media']))
+
+    // If video we patch the asset reference to the video asset instance instead of linking the asset document
+    if (isVideoSchemaType(type)) {
+      const assetInstanceRef = {
+        _type: 'globalDocumentReference',
+        _ref: `media-library:${mediaLibraryProps.mediaLibraryId}:${mediaLibraryProps.assetInstanceId}`,
+        _weak: true,
+      }
+      assetPatches.push(set(assetInstanceRef, ['asset']))
+
+      onChange([
+        setIfMissing({
+          _type: type.name,
+        }),
+        ...assetPatches,
+      ])
+
+      return
+    }
   }
 
   switch (firstAsset.kind) {
