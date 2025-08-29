@@ -39,6 +39,7 @@ export interface VideoRule extends RuleDef<VideoRule, VideoValue> {
 /** @public */
 export interface VideoValue {
   asset?: Reference
+  media?: Reference
   [index: string]: unknown
 }
 
