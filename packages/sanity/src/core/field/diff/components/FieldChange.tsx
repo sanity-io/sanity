@@ -1,9 +1,8 @@
 import {type ObjectSchemaType, type Path} from '@sanity/types'
-import {Box, Flex, Stack, Text, useClickOutsideEvent} from '@sanity/ui'
+import {Stack, useClickOutsideEvent} from '@sanity/ui'
 import {Fragment, type HTMLAttributes, useCallback, useMemo, useRef, useState} from 'react'
 import {DiffContext} from 'sanity/_singletons'
 
-import {Button, Popover} from '../../../../ui-components'
 import {useDocumentOperation} from '../../../hooks'
 import {useTranslation} from '../../../i18n'
 import {useDocumentPairPermissions} from '../../../store'
@@ -16,6 +15,7 @@ import {DiffInspectWrapper} from './DiffInspectWrapper'
 import {FallbackDiff} from './FallbackDiff'
 import {DiffBorder, FieldChangeContainer} from './FieldChange.styled'
 import {RevertChangesButton} from './RevertChangesButton'
+import {RevertChangesConfirmationPopover} from './RevertChangesConfirmationPopover'
 import {ValueError} from './ValueError'
 
 const ParentWrapper = ({
@@ -80,6 +80,7 @@ export function FieldChange(
 
   const handleRevertChanges = useCallback(() => {
     undoChange(change, rootDiff, ops)
+    setConfirmRevertOpen(false)
   }, [change, rootDiff, ops])
 
   const handleRevertChangesConfirm = useCallback(() => {
@@ -150,33 +151,11 @@ export function FieldChange(
                 )}
 
                 {isComparingCurrent && !isPermissionsLoading && permissions?.granted && (
-                  <Popover
-                    content={
-                      <Stack space={3}>
-                        <Box paddingY={3}>
-                          <Text size={1}>
-                            {t('changes.action.revert-changes-description', {count: 1})}
-                          </Text>
-                        </Box>
-                        <Flex gap={3} justify="flex-end">
-                          <Button
-                            mode="ghost"
-                            onClick={closeRevertChangesConfirmDialog}
-                            text={t('changes.action.revert-all-cancel')}
-                          />
-                          <Button
-                            tone="critical"
-                            onClick={handleRevertChanges}
-                            text={t('changes.action.revert-changes-confirm-change', {count: 1})}
-                          />
-                        </Flex>
-                      </Stack>
-                    }
+                  <RevertChangesConfirmationPopover
                     open={confirmRevertOpen}
-                    padding={3}
-                    portal
-                    placement="left"
-                    ref={popoverRef}
+                    onConfirm={handleRevertChanges}
+                    onCancel={closeRevertChangesConfirmDialog}
+                    changeCount={1}
                   >
                     <RevertChangesButton
                       changeCount={1}
@@ -187,7 +166,7 @@ export function FieldChange(
                       disabled={readOnly}
                       data-testid={`single-change-revert-button-${change?.key}`}
                     />
-                  </Popover>
+                  </RevertChangesConfirmationPopover>
                 )}
               </DiffInspectWrapper>
             </FieldWrapper>
