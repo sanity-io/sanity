@@ -17,7 +17,6 @@ import {AddDocumentSearch, type AddedDocument} from './AddDocumentSearch'
 import {ReleaseActionBadges} from './components/ReleaseActionBadges'
 import {DocumentActions} from './documentTable/DocumentActions'
 import {getDocumentTableColumnDefs} from './documentTable/DocumentTableColumnDefs'
-import {searchDocumentRelease} from './documentTable/searchDocumentRelease'
 import {type DocumentInRelease} from './useBundleDocuments'
 
 export type DocumentInReleaseDetail = DocumentInRelease & {
