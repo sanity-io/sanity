@@ -1,5 +1,5 @@
 import {type ObjectSchemaType, type Path} from '@sanity/types'
-import {Stack, useClickOutsideEvent} from '@sanity/ui'
+import {Stack} from '@sanity/ui'
 import {Fragment, type HTMLAttributes, useCallback, useMemo, useRef, useState} from 'react'
 import {DiffContext} from 'sanity/_singletons'
 
@@ -15,7 +15,7 @@ import {DiffInspectWrapper} from './DiffInspectWrapper'
 import {FallbackDiff} from './FallbackDiff'
 import {DiffBorder, FieldChangeContainer} from './FieldChange.styled'
 import {RevertChangesButton} from './RevertChangesButton'
-import {RevertChangesConfirmationPopover} from './RevertChangesConfirmationPopover'
+import {RevertChangesConfirmDialog} from './RevertChangesConfirmDialog'
 import {ValueError} from './ValueError'
 
 const ParentWrapper = ({
@@ -57,7 +57,7 @@ export function FieldChange(
     addParentWrapper?: boolean
   } & HTMLAttributes<HTMLDivElement>,
 ) {
-  const {change, hidden, readOnly, addParentWrapper} = props
+  const {change, hidden, readOnly, addParentWrapper, ...restProps} = props
   const DiffComponent = change.diffComponent || FallbackDiff
   const {
     documentId,
@@ -69,7 +69,7 @@ export function FieldChange(
   const ops = useDocumentOperation(documentId, schemaType.name) as FieldOperationsAPI
   const [confirmRevertOpen, setConfirmRevertOpen] = useState(false)
   const [revertHovered, setRevertHovered] = useState(false)
-  const popoverRef = useRef<HTMLDivElement | null>(null)
+  const buttonRef = useRef<HTMLButtonElement | null>(null)
   const {t} = useTranslation()
 
   const [permissions, isPermissionsLoading] = useDocumentPairPermissions({
@@ -99,11 +99,6 @@ export function FieldChange(
     setRevertHovered(false)
   }, [])
 
-  useClickOutsideEvent(
-    () => setConfirmRevertOpen(false),
-    () => [popoverRef.current],
-  )
-
   const isArray =
     change.parentSchema?.jsonType === 'array' &&
     // And it's not a PortableText array
@@ -121,42 +116,37 @@ export function FieldChange(
   const content = useMemo(
     () =>
       hidden ? null : (
-        <Stack space={1} as={FieldChangeContainer}>
-          {change.showHeader && <ChangeBreadcrumb change={change} titlePath={change.titlePath} />}
-          <ParentWrapper
-            path={fieldPath}
-            hasRevertHover={revertHovered}
-            wrap={Boolean(addParentWrapper)}
-          >
-            <FieldWrapper path={fieldPath} hasRevertHover={revertHovered}>
-              <DiffInspectWrapper
-                change={change}
-                as={DiffBorder}
-                data-revert-field-hover={revertHovered ? '' : undefined}
-                data-error={change.error ? '' : undefined}
-                data-revert-all-hover
-                data-ui="field-diff-inspect-wrapper"
-              >
-                {change.error ? (
-                  <ValueError error={change.error} />
-                ) : (
-                  <DiffErrorBoundary t={t}>
-                    <DiffContext.Provider value={value}>
-                      <DiffComponent
-                        diff={change.diff}
-                        schemaType={change.schemaType as ObjectSchemaType}
-                      />
-                    </DiffContext.Provider>
-                  </DiffErrorBoundary>
-                )}
+        <>
+          <Stack space={1} as={FieldChangeContainer} {...restProps}>
+            {change.showHeader && <ChangeBreadcrumb change={change} titlePath={change.titlePath} />}
+            <ParentWrapper
+              path={fieldPath}
+              hasRevertHover={revertHovered}
+              wrap={Boolean(addParentWrapper)}
+            >
+              <FieldWrapper path={fieldPath} hasRevertHover={revertHovered}>
+                <DiffInspectWrapper
+                  change={change}
+                  as={DiffBorder}
+                  data-revert-field-hover={revertHovered ? '' : undefined}
+                  data-error={change.error ? '' : undefined}
+                  data-revert-all-hover
+                  data-ui="field-diff-inspect-wrapper"
+                >
+                  {change.error ? (
+                    <ValueError error={change.error} />
+                  ) : (
+                    <DiffErrorBoundary t={t}>
+                      <DiffContext.Provider value={value}>
+                        <DiffComponent
+                          diff={change.diff}
+                          schemaType={change.schemaType as ObjectSchemaType}
+                        />
+                      </DiffContext.Provider>
+                    </DiffErrorBoundary>
+                  )}
 
-                {isComparingCurrent && !isPermissionsLoading && permissions?.granted && (
-                  <RevertChangesConfirmationPopover
-                    open={confirmRevertOpen}
-                    onConfirm={handleRevertChanges}
-                    onCancel={closeRevertChangesConfirmDialog}
-                    changeCount={1}
-                  >
+                  {isComparingCurrent && !isPermissionsLoading && permissions?.granted && (
                     <RevertChangesButton
                       changeCount={1}
                       onClick={handleRevertChangesConfirm}
@@ -164,14 +154,23 @@ export function FieldChange(
                       onMouseLeave={handleRevertButtonMouseLeave}
                       selected={confirmRevertOpen}
                       disabled={readOnly}
+                      ref={buttonRef}
                       data-testid={`single-change-revert-button-${change?.key}`}
                     />
-                  </RevertChangesConfirmationPopover>
-                )}
-              </DiffInspectWrapper>
-            </FieldWrapper>
-          </ParentWrapper>
-        </Stack>
+                  )}
+                </DiffInspectWrapper>
+              </FieldWrapper>
+            </ParentWrapper>
+          </Stack>
+
+          <RevertChangesConfirmDialog
+            open={confirmRevertOpen}
+            onConfirm={handleRevertChanges}
+            onCancel={closeRevertChangesConfirmDialog}
+            changeCount={1}
+            referenceElement={buttonRef.current}
+          />
+        </>
       ),
     [
       hidden,
@@ -180,19 +179,20 @@ export function FieldChange(
       revertHovered,
       addParentWrapper,
       FieldWrapper,
+      restProps,
       t,
       value,
       DiffComponent,
       isComparingCurrent,
       isPermissionsLoading,
       permissions?.granted,
-      closeRevertChangesConfirmDialog,
-      handleRevertChanges,
-      confirmRevertOpen,
       handleRevertChangesConfirm,
       handleRevertButtonMouseEnter,
       handleRevertButtonMouseLeave,
       readOnly,
+      confirmRevertOpen,
+      handleRevertChanges,
+      closeRevertChangesConfirmDialog,
     ],
   )
 

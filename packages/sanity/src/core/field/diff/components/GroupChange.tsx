@@ -1,13 +1,5 @@
-import {Box, Stack, useClickOutsideEvent} from '@sanity/ui'
-import {
-  Fragment,
-  type HTMLAttributes,
-  useCallback,
-  useContext,
-  useMemo,
-  useRef,
-  useState,
-} from 'react'
+import {Box, Stack} from '@sanity/ui'
+import {Fragment, type HTMLAttributes, useCallback, useContext, useMemo, useState} from 'react'
 import {DiffContext} from 'sanity/_singletons'
 
 import {useDocumentOperation} from '../../../hooks'
@@ -24,7 +16,6 @@ import {ChangeBreadcrumb} from './ChangeBreadcrumb'
 import {ChangeResolver} from './ChangeResolver'
 import {ChangeListWrapper, GroupChangeContainer} from './GroupChange.styled'
 import {RevertChangesButton} from './RevertChangesButton'
-import {RevertChangesConfirmationPopover} from './RevertChangesConfirmationPopover'
 
 /** @internal */
 export function GroupChange(
@@ -55,7 +46,6 @@ export function GroupChange(
 
   const docOperations = useDocumentOperation(documentId, schemaType.name) as FieldOperationsAPI
   const [confirmRevertOpen, setConfirmRevertOpen] = useState(false)
-  const popoverRef = useRef<HTMLDivElement | null>(null)
 
   const [permissions, isPermissionsLoading] = useDocumentPairPermissions({
     id: documentId,
@@ -76,41 +66,31 @@ export function GroupChange(
     setConfirmRevertOpen(false)
   }, [])
 
-  useClickOutsideEvent(
-    () => setConfirmRevertOpen(false),
-    () => [popoverRef.current],
-  )
-
   const content = useMemo(
     () =>
       hidden ? null : (
-        <Stack
-          space={1}
-          as={GroupChangeContainer}
-          data-ui="group-change-content"
-          data-revert-group-hover={isRevertButtonHovered ? '' : undefined}
-          data-portable-text={isPortableText ? '' : undefined}
-        >
-          <Stack as={ChangeListWrapper} space={5} data-ui="group-change-list">
-            {changes.map((change) => (
-              <ChangeResolver
-                key={change.key}
-                change={change}
-                readOnly={readOnly}
-                hidden={hidden}
-                // If the path of the nested change is more than two levels deep, we want to add a wrapper
-                // with the parent path, for the change indicator to be shown.
-                addParentWrapper={change.path.length - group.path.length > 1}
-              />
-            ))}
-          </Stack>
-          {isComparingCurrent && !isPermissionsLoading && permissions?.granted && (
-            <RevertChangesConfirmationPopover
-              open={confirmRevertOpen}
-              onConfirm={handleRevertChanges}
-              onCancel={closeRevertChangesConfirmDialog}
-              changeCount={changes.length}
-            >
+        <>
+          <Stack
+            space={1}
+            as={GroupChangeContainer}
+            data-ui="group-change-content"
+            data-revert-group-hover={isRevertButtonHovered ? '' : undefined}
+            data-portable-text={isPortableText ? '' : undefined}
+          >
+            <Stack as={ChangeListWrapper} space={5} data-ui="group-change-list">
+              {changes.map((change) => (
+                <ChangeResolver
+                  key={change.key}
+                  change={change}
+                  readOnly={readOnly}
+                  hidden={hidden}
+                  // If the path of the nested change is more than two levels deep, we want to add a wrapper
+                  // with the parent path, for the change indicator to be shown.
+                  addParentWrapper={change.path.length - group.path.length > 1}
+                />
+              ))}
+            </Stack>
+            {isComparingCurrent && !isPermissionsLoading && permissions?.granted && (
               <Box>
                 <RevertChangesButton
                   changeCount={changes.length}
@@ -121,17 +101,23 @@ export function GroupChange(
                   data-testid={`group-change-revert-button-${group.fieldsetName}`}
                 />
               </Box>
-            </RevertChangesConfirmationPopover>
-          )}
-        </Stack>
+            )}
+          </Stack>
+
+          <RevertChangesConfirmDialog
+            open={confirmRevertOpen}
+            onConfirm={handleRevertChanges}
+            onCancel={closeRevertChangesConfirmDialog}
+            changeCount={changes.length}
+            referenceElement={revertButtonRef.current}
+          />
+        </>
       ),
     [
       changes,
-      closeRevertChangesConfirmDialog,
       confirmRevertOpen,
       group.fieldsetName,
       group.path.length,
-      handleRevertChanges,
       handleRevertChangesConfirm,
       hidden,
       isComparingCurrent,
@@ -141,6 +127,8 @@ export function GroupChange(
       permissions?.granted,
       readOnly,
       revertButtonRef,
+      handleRevertChanges,
+      closeRevertChangesConfirmDialog,
     ],
   )
 
