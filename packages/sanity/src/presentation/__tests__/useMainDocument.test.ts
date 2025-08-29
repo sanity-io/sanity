@@ -7,7 +7,7 @@ describe('getRouteContext', () => {
     const path = '/type-slug/page-slug'
     const url = new URL(path, location.origin)
     expect(getRouteContext('/:type/:page', url)).toEqual({
-      origin: undefined,
+      origin: location.origin,
       path,
       params: {
         type: 'type-slug',
@@ -53,7 +53,7 @@ describe('getRouteContext', () => {
     const path = '/caf%C3%A9'
     const url = new URL(path, location.origin)
     expect(getRouteContext('/:slug', url)).toEqual({
-      origin: undefined,
+      origin: location.origin,
       path,
       params: {
         slug: 'café',

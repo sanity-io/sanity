@@ -161,7 +161,7 @@ const TableInner = <TableData, AdditionalRowTableData>({
         return (
           <Card
             key={cardKey}
-            data-testid="table-row"
+            data-testid={loading ? 'table-row-skeleton' : 'table-row'}
             borderBottom
             display="flex"
             data-index={datum.index}
@@ -217,14 +217,16 @@ const TableInner = <TableData, AdditionalRowTableData>({
             right: 0,
           }}
         >
-          <Text muted size={1}>
-            {emptyState}
-          </Text>
+          <td colSpan={amalgamatedColumnDefs.length}>
+            <Text muted size={1}>
+              {emptyState}
+            </Text>
+          </td>
         </Card>
       )
     }
     return emptyState()
-  }, [emptyState])
+  }, [amalgamatedColumnDefs.length, emptyState])
 
   const headers = useMemo(
     () =>
