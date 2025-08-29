@@ -1,7 +1,11 @@
 import {expect} from '@playwright/test'
 
 import {withDefaultClient} from '../../helpers'
-import {expectEditedStatus, expectPublishedStatus} from '../../helpers/documentStatusAssertions'
+import {
+  expectCreatedStatus,
+  expectEditedStatus,
+  expectPublishedStatus,
+} from '../../helpers/documentStatusAssertions'
 import {test} from '../../studio-test'
 
 withDefaultClient((context) => {
@@ -64,10 +68,10 @@ withDefaultClient((context) => {
     // Select the next document in the list.
     await page.keyboard.press('ArrowDown')
     await page.keyboard.press('Enter')
-    await expect(paneFooter).toContainText('Saved', {timeout: 30_000})
+    // await expect(paneFooter).toContainText('Draft created', {timeout: 30_000})
 
     // wait for the edit to finish
-    await expectEditedStatus(paneFooter)
+    await expectCreatedStatus(paneFooter)
 
     // Wait for the document to be published.
     publishButton.click()
