@@ -58,4 +58,15 @@ export function DocumentLimitUpsellProvider({children}: PropsWithChildren) {
   )
 }
 
-export const useDocumentLimitsUpsellContext = () => useContext(DocumentLimitUpsellContext)
+/**
+ * @internal
+ */
+export const useDocumentLimitsUpsellContext = (): DocumentLimitUpsellContextValue => {
+  const context = useContext(DocumentLimitUpsellContext)
+  if (!context) {
+    throw new Error(
+      'useDocumentLimitsUpsellContext must be used within a DocumentLimitUpsellProvider',
+    )
+  }
+  return context
+}

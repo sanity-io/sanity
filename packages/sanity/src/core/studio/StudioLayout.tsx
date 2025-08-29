@@ -7,6 +7,8 @@ import {RouteScope, useRouter, useRouterState} from 'sanity/router'
 import {styled} from 'styled-components'
 
 import {LoadingBlock} from '../components/loadingBlock'
+import {DocumentLimitsUpsellPanel} from '../limits/context/documents/DocumentLimitsUpsellPanel'
+import {isDocumentLimitError} from '../limits/context/documents/isDocumentLimitError'
 import {useNetworkProtocolCheck} from './networkCheck/useNetworkProtocolCheck'
 import {NoToolsScreen} from './screens/NoToolsScreen'
 import {RedirectingScreen} from './screens/RedirectingScreen'
@@ -82,7 +84,6 @@ export function StudioLayout() {
  * */
 export function StudioLayoutComponent() {
   const {name, title, tools} = useWorkspace()
-
   // In the background, check if the network protocol used to communicate with the
   // Sanity API is modern (HTTP/2 or newer). Shows a toast if it's not.
   useNetworkProtocolCheck()
@@ -171,6 +172,13 @@ export function StudioLayoutComponent() {
     })
   }, [isLegacyDeskRedirect, router])
 
+  const getErrorScreen = useCallback((error: Error) => {
+    if (isDocumentLimitError(error)) {
+      return <DocumentLimitsUpsellPanel />
+    }
+    return null
+  }, [])
+
   return (
     <Flex data-ui="ToolScreen" direction="column" height="fill" data-testid="studio-layout">
       <NavbarContext.Provider value={navbarContextValue}>
@@ -186,7 +194,11 @@ export function StudioLayoutComponent() {
       )}
       {/* By using the tool name as the key on the error boundary, we force it to re-render
           when switching tools, which ensures we don't show the wrong tool having crashed */}
-      <StudioErrorBoundary key={activeTool?.name} heading={`The ${activeTool?.name} tool crashed`}>
+      <StudioErrorBoundary
+        key={activeTool?.name}
+        heading={`The ${activeTool?.name} tool crashed`}
+        getErrorScreen={getErrorScreen}
+      >
         {detectViteDevServerStopped && <DetectViteDevServerStopped />}
         <Card flex={1} hidden={searchFullscreenOpen}>
           {activeTool && activeToolName && (

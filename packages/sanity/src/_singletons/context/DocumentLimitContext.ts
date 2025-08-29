@@ -13,21 +13,15 @@ export interface DocumentLimitUpsellContextValue {
   telemetryLogs: {
     dialogSecondaryClicked: () => void
     dialogPrimaryClicked: () => void
+    panelPrimaryClicked: () => void
+    panelSecondaryClicked: () => void
   }
 }
 
 /**
  * @internal
  */
-export const DocumentLimitUpsellContext = createContext<DocumentLimitUpsellContextValue>(
+export const DocumentLimitUpsellContext = createContext<DocumentLimitUpsellContextValue | null>(
   'sanity/_singletons/context/document-limit-upsell',
-  {
-    upsellData: null,
-    handleOpenDialog: () => null,
-    upsellDialogOpen: false,
-    telemetryLogs: {
-      dialogPrimaryClicked: () => null,
-      dialogSecondaryClicked: () => null,
-    },
-  },
+  null,
 )

@@ -6,6 +6,7 @@ import {SchemaError} from '../config'
 import {errorReporter} from '../error/errorReporter'
 import {isImportError} from '../error/isImportError'
 import {isKnownError} from '../error/isKnownError'
+import {isDocumentLimitError} from '../limits/context/documents/isDocumentLimitError'
 import {CorsOriginError} from '../store'
 import {globalScope} from '../util'
 import {CorsOriginErrorScreen, SchemaErrorsScreen} from './screens'
@@ -43,6 +44,9 @@ export function StudioRootErrorHandler(props: {children: ReactNode}) {
     // errorChannel.subscribe() returns a unsubscriber function.
     // By returning it from this `useEffect`, it'll unsubscribe on unmount.
     return errorChannel.subscribe((event) => {
+      if (isDocumentLimitError(event.error)) {
+        return
+      }
       // NOTE: Certain errors (such as the `ResizeObserver loop limit exceeded` error) is thrown
       // by the browser, and does not include an `error` property. We ignore these errors.
       if (!event.error) {
