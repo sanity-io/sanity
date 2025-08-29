@@ -10,9 +10,10 @@ import {
   type ValidationBuilder,
 } from '@sanity/types'
 
+import {isRecord} from '../../../core/util'
+
 /** @public */
 export interface VideoOptions extends ObjectOptions {
-  storeOriginalFilename?: boolean
   accept?: string
   sources?: AssetSource[]
 }
@@ -78,4 +79,9 @@ export interface VideoMetadata {
 export type VideoAsset = Omit<Asset, '_type'> & {
   _type: 'sanity.videoAsset'
   metadata: VideoMetadata
+}
+
+/** @internal */
+export function isVideoSchemaType(type: unknown): type is VideoSchemaType {
+  return isRecord(type) && (type.name === 'sanity.video' || isVideoSchemaType(type.type))
 }
