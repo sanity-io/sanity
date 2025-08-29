@@ -4,7 +4,6 @@ import {useObservable} from 'react-rx'
 import {of} from 'rxjs'
 
 import {useClient, useSchema, useTemplates} from '../../hooks'
-import {useDocumentLimitsUpsellContext} from '../../limits/context/documents/DocumentLimitUpsellProvider'
 import {createDocumentPreviewStore, type DocumentPreviewStore} from '../../preview'
 import {useSource, useWorkspace} from '../../studio'
 import {DEFAULT_STUDIO_CLIENT_OPTIONS} from '../../studioClient'
@@ -18,12 +17,7 @@ import {
   type ConnectionStatusStore,
   createConnectionStatusStore,
 } from './connection-status/connection-status-store'
-import {
-  createDocumentStore,
-  type DocumentMutationCommitErrorType,
-  type DocumentStore,
-  type LatencyReportEvent,
-} from './document'
+import {createDocumentStore, type DocumentStore, type LatencyReportEvent} from './document'
 import {DocumentDesynced} from './document/__telemetry__/documentOutOfSyncEvents.telemetry'
 import {HighListenerLatencyOccurred} from './document/__telemetry__/listenerLatency.telemetry'
 import {type OutOfSyncError} from './document/utils/sequentializeListenerEvents'
@@ -148,30 +142,13 @@ export function useDocumentStore(): DocumentStore {
   const resourceCache = useResourceCache()
   const historyStore = useHistoryStore()
   const documentPreviewStore = useDocumentPreviewStore()
-  const {handleOpenDialog: handleOpenDocumentLimitsUpsellDialog} = useDocumentLimitsUpsellContext()
   const workspace = useWorkspace()
-
   const serverActionsEnabled = useMemo(() => {
     const configFlag = workspace.__internal_serverDocumentActions?.enabled
     return typeof configFlag === 'boolean' ? of(configFlag) : of(true)
   }, [workspace.__internal_serverDocumentActions?.enabled])
 
   const telemetry = useTelemetry()
-
-  const handleDocumentMutationCommitErrorRecovery = useCallback(
-    (error: any) => {
-      const errorType = error?.response?.body?.error?.type as DocumentMutationCommitErrorType
-      switch (errorType) {
-        case 'documentLimitExceededError':
-          handleOpenDocumentLimitsUpsellDialog('document_action')
-          break
-        default:
-          // allow error to bubble up
-          throw error
-      }
-    },
-    [handleOpenDocumentLimitsUpsellDialog],
-  )
 
   const handleSyncErrorRecovery = useCallback(
     (error: OutOfSyncError) => {
@@ -210,7 +187,6 @@ export function useDocumentStore(): DocumentStore {
         extraOptions: {
           onReportLatency: handleReportLatency,
           onSyncErrorRecovery: handleSyncErrorRecovery,
-          onDocumentMutationCommitErrorRecovery: handleDocumentMutationCommitErrorRecovery,
         },
       })
 
@@ -233,7 +209,6 @@ export function useDocumentStore(): DocumentStore {
     serverActionsEnabled,
     handleReportLatency,
     handleSyncErrorRecovery,
-    handleDocumentMutationCommitErrorRecovery,
   ])
 }
 
