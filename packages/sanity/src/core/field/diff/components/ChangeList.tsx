@@ -1,11 +1,11 @@
 import {type SanityDocument} from '@sanity/client'
 import {RevertIcon} from '@sanity/icons'
 import {type ObjectSchemaType} from '@sanity/types'
-import {Box, Card, Flex, Stack, Text, useClickOutsideEvent} from '@sanity/ui'
+import {Card, Stack, useClickOutsideEvent} from '@sanity/ui'
 import {useCallback, useContext, useMemo, useRef, useState} from 'react'
 import {DiffContext} from 'sanity/_singletons'
 
-import {Button, Popover} from '../../../../ui-components'
+import {Button} from '../../../../ui-components'
 import {useDocumentOperation} from '../../../hooks'
 import {useTranslation} from '../../../i18n'
 import {useDocumentPairPermissions} from '../../../store'
@@ -17,6 +17,7 @@ import {useDocumentChange} from '../hooks/useDocumentChange'
 import {ChangeListWrapper} from './ChangeList.styled'
 import {ChangeResolver} from './ChangeResolver'
 import {NoChanges} from './NoChanges'
+import {RevertChangesConfirmationPopover} from './RevertChangesConfirmationPopover'
 
 /** @internal */
 export interface ChangeListProps {
@@ -119,35 +120,11 @@ export function ChangeList({diff, fields, schemaType}: ChangeListProps): React.J
         </Stack>
 
         {showFooter && isComparingCurrent && !isPermissionsLoading && permissions?.granted && (
-          <Popover
-            content={
-              <Stack space={3}>
-                <Box paddingY={3}>
-                  <Text size={1}>
-                    {t('changes.action.revert-all-description', {
-                      count: changes.length,
-                    })}
-                  </Text>
-                </Box>
-                <Flex gap={3} justify="flex-end">
-                  <Button
-                    mode="ghost"
-                    text={t('changes.action.revert-all-cancel')}
-                    onClick={closeRevertAllChangesConfirmDialog}
-                  />
-                  <Button
-                    tone="critical"
-                    text={t('changes.action.revert-all-confirm')}
-                    onClick={revertAllChanges}
-                  />
-                </Flex>
-              </Stack>
-            }
+          <RevertChangesConfirmationPopover
             open={confirmRevertAllOpen}
-            padding={3}
-            placement={'left'}
-            portal
-            ref={revertAllContainerElementRef}
+            onConfirm={revertAllChanges}
+            onCancel={closeRevertAllChangesConfirmDialog}
+            changeCount={changes.length}
           >
             <Stack>
               <Button
@@ -162,7 +139,7 @@ export function ChangeList({diff, fields, schemaType}: ChangeListProps): React.J
                 size="large"
               />
             </Stack>
-          </Popover>
+          </RevertChangesConfirmationPopover>
         )}
       </Stack>
     </Card>
