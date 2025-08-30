@@ -1,10 +1,17 @@
+import {type CreateVersionAction, type EditAction} from '@sanity/client'
+import {finalize, type Observable, share} from 'rxjs'
+
 import {type OperationImpl} from '../operations/types'
+import {actionsApiClient} from '../utils/actionsApiClient'
 import {isLiveEditEnabled} from '../utils/isLiveEditEnabled'
+
+// Track pending draft creation observables to prevent duplicate requests
+const pendingDraftCreations = new Map<string, Observable<any>>()
 
 export const patch: OperationImpl<[patches: any[], initialDocument?: Record<string, any>]> = {
   disabled: (): false => false,
   execute: (
-    {schema, snapshots, idPair, draft, published, version, typeName},
+    {schema, snapshots, idPair, draft, published, version, typeName, client},
     patches = [],
     initialDocument,
   ): void => {
@@ -54,17 +61,65 @@ export const patch: OperationImpl<[patches: any[], initialDocument?: Record<stri
     const patchMutation = draft.patch(patches)
 
     if (snapshots.published) {
-      draft.mutate([
-        // If there's no draft, the user's edits will be based on the published document in the form in front of them
-        // so before patching it we need to make sure it's created based on the current published version first.
-        draft.createIfNotExists({
-          ...initialDocument,
-          ...snapshots.published,
-          _id: idPair.draftId,
-          _type: typeName,
-        }),
-        ...patchMutation,
-      ])
+      // Handle special "create draft from published" scenario with version.create
+      if (!snapshots.draft) {
+        const draftCreationKey = idPair.draftId
+
+        // Check if a draft creation is already pending for this document
+        const pendingCreation = pendingDraftCreations.get(draftCreationKey)
+        if (pendingCreation) {
+          // Reuse the existing observable - it will emit when the creation completes
+          pendingCreation.subscribe()
+          return
+        }
+
+        const publishedRev = snapshots.published._rev
+
+        const versionCreateAction: CreateVersionAction = {
+          actionType: 'sanity.action.document.version.create',
+          publishedId: idPair.publishedId,
+          versionId: idPair.draftId,
+          baseId: idPair.publishedId,
+          ifBaseRevisionId: publishedRev,
+        }
+
+        const editActions = patchMutation.map(
+          (mutation): EditAction => ({
+            actionType: 'sanity.action.document.edit',
+            draftId: idPair.draftId,
+            publishedId: idPair.publishedId,
+            patch: {
+              ...mutation.patch,
+              id: undefined, // Remove id to match toActions behavior
+            },
+          }),
+        )
+
+        const actions = [versionCreateAction, ...editActions]
+
+        // Create the observable and share it so multiple subscribers get the same result
+        const creation$ = actionsApiClient(client, idPair)
+          .observable.action(actions, {
+            tag: 'document.commit',
+          })
+          .pipe(
+            // Clean up the pending creation when the observable completes (success or error)
+            finalize(() => pendingDraftCreations.delete(draftCreationKey)),
+            // Share the observable among multiple subscribers
+            share(),
+          )
+
+        // Store the shared observable
+        pendingDraftCreations.set(draftCreationKey, creation$)
+
+        // Subscribe to trigger the action
+        creation$.subscribe()
+
+        return
+      }
+
+      //the draft already exists so we can directly apply the patch mutations
+      draft.mutate(patchMutation)
       return
     }
     const ensureDraft = snapshots.draft
