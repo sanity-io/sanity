@@ -40,6 +40,9 @@ export interface LatencyReportEvent {
 }
 
 /** @internal */
+export type DocumentMutationCommitErrorType = 'documentLimitExceededError' | (string & {})
+
+/** @internal */
 export interface DocumentStoreExtraOptions {
   tag?: string
 
@@ -50,6 +53,7 @@ export interface DocumentStoreExtraOptions {
    */
   onSyncErrorRecovery?(error: OutOfSyncError): void
   onReportLatency?: (event: LatencyReportEvent) => void
+  onDocumentMutationCommitErrorRecovery?: (error: any) => void
 }
 
 /** @internal */

@@ -129,7 +129,6 @@ export function createDocumentStore({
   // for things like validations
   const client = getClient(DEFAULT_STUDIO_CLIENT_OPTIONS)
 
-  const {onReportLatency, onSyncErrorRecovery} = extraOptions
   const ctx = {
     client,
     getClient,
@@ -144,10 +143,7 @@ export function createDocumentStore({
   return {
     // Public API
     checkoutPair(idPair) {
-      return checkoutPair(client, idPair, serverActionsEnabled, {
-        onSyncErrorRecovery,
-        onReportLatency,
-      })
+      return checkoutPair(client, idPair, serverActionsEnabled, extraOptions)
     },
     initialValue(opts, context) {
       return getInitialValueStream(
