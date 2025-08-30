@@ -1,7 +1,8 @@
 packages:
   - dev/*
   - perf/*
-  - examples/*
+  - examples/studios/*
+  - examples/functions/*
   - packages/@repo/*
   - packages/@sanity/*
   - packages/create-sanity
