@@ -628,6 +628,13 @@ describe('ManifestSchemaTypes[] converts to Schema', () => {
             defineField({title: 'Basic file field', name: 'file', type: 'file'}),
             defineField({title: 'Slug field', name: 'slug', type: 'slug'}),
             defineField({title: 'URL field', name: 'url', type: 'url'}),
+            defineField({
+              title: 'Reference field',
+              name: 'reference',
+              type: 'reference',
+              to: {type: 'string'},
+            }),
+            defineField({title: 'Email field', name: 'email', type: 'email'}),
           ],
         }),
       ],

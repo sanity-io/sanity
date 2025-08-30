@@ -1,3 +1,4 @@
+import {createSchemaFromManifestTypes} from '@sanity/schema/_internal'
 import {
   defineField,
   type FieldGroupDefinition,
@@ -11,7 +12,9 @@ import {
   type EncodedNamedType,
   type ObjectField,
 } from '../../../@sanity/schema/src/descriptors/types'
+import {ValidationError} from '../../../@sanity/schema/src/sanity/validation/ValidationError'
 import {builtinSchema, createSchema, DESCRIPTOR_CONVERTER} from '../../src/core/schema'
+import {Rule} from '../../src/core/validation'
 import {expectManifestSchemaConversion} from './utils'
 
 const findTypeInDesc = (
@@ -400,7 +403,938 @@ describe('Base features', () => {
     })
   })
 
-  test.todo('validation')
+  describe('validation', () => {
+    test('undefined', () => {
+      expect(convertType({name: 'foo', type: 'string'}).typeDef).toMatchObject({
+        validation: undefined,
+      })
+    })
+
+    test('simple required validation', () => {
+      expect(
+        convertType({
+          name: 'foo',
+          type: 'string',
+          validation: (rule: any) => rule.required(),
+        }).typeDef,
+      ).toMatchObject({
+        validation: [
+          {
+            level: 'error',
+            rules: [{type: 'required'}],
+          },
+        ],
+      })
+    })
+
+    test('required with custom message', () => {
+      expect(
+        convertType({
+          name: 'foo',
+          type: 'string',
+          validation: (rule: any) => rule.required().error('This field is required'),
+        }).typeDef,
+      ).toMatchObject({
+        validation: [
+          {
+            level: 'error',
+            message: 'This field is required',
+            rules: [{type: 'required'}],
+          },
+        ],
+      })
+    })
+
+    test('required with warning level', () => {
+      expect(
+        convertType({
+          name: 'foo',
+          type: 'string',
+          validation: (rule: any) => rule.required().warning(),
+        }).typeDef,
+      ).toMatchObject({
+        validation: [
+          {
+            level: 'warning',
+            rules: [{type: 'required'}],
+          },
+        ],
+      })
+    })
+
+    test('required with info level', () => {
+      expect(
+        convertType({
+          name: 'foo',
+          type: 'string',
+          validation: (rule: any) => rule.required().info(),
+        }).typeDef,
+      ).toMatchObject({
+        validation: [
+          {
+            level: 'info',
+            rules: [{type: 'required'}],
+          },
+        ],
+      })
+    })
+
+    test('multiple rules in chain', () => {
+      expect(
+        convertType({
+          name: 'foo',
+          type: 'string',
+          validation: (rule: any) => rule.required().min(5).max(10),
+        }).typeDef,
+      ).toMatchObject({
+        validation: [
+          {
+            level: 'error',
+            rules: [
+              {type: 'required'},
+              {type: 'minimum', value: '5'},
+              {type: 'maximum', value: '10'},
+            ],
+          },
+        ],
+      })
+    })
+
+    test('array of validations', () => {
+      expect(
+        convertType({
+          name: 'foo',
+          type: 'string',
+          validation: [
+            (rule: any) => rule.required(),
+            (rule: any) => rule.min(5).warning('Should be at least 5 characters'),
+          ],
+        }).typeDef,
+      ).toMatchObject({
+        validation: [
+          {
+            level: 'error',
+            rules: [{type: 'required'}],
+          },
+          {
+            level: 'warning',
+            message: 'Should be at least 5 characters',
+            rules: [{type: 'minimum', value: '5'}],
+          },
+        ],
+      })
+    })
+
+    // We expect this test to fail as extractWorkspaceManifest excludes validation rules
+    // which do not have a constraint property. Email validation is currently defined as:
+    //    {flag: 'email'}
+    // See packages/@sanity/types/src/validation/types.ts (RuleSpec) for more details
+    test.fails('email validation', () => {
+      expect(
+        convertType({
+          name: 'foo',
+          type: 'string',
+          validation: new Rule().email(),
+        }).typeDef,
+      ).toMatchObject({
+        validation: [
+          {
+            level: 'error',
+            rules: [{type: 'email'}],
+          },
+        ],
+      })
+    })
+
+    test.fails('email validation as function', () => {
+      expect(
+        convertType({
+          name: 'foo',
+          type: 'string',
+          validation: (rule: any) => rule.email(),
+        }).typeDef,
+      ).toMatchObject({
+        validation: [
+          {
+            level: 'error',
+            rules: [{type: 'email'}],
+          },
+        ],
+      })
+    })
+
+    // This succeeds because transformValidation is not applied to the child validations
+    // See packages/sanity/src/_internal/manifest/extractWorkspaceManifest.tsx (transformValidation) for more details.
+    test('email validation in nested all', () => {
+      expect(
+        convertType({
+          name: 'foo',
+          type: 'string',
+          validation: new Rule().all([new Rule().email()]),
+        }).typeDef,
+      ).toMatchObject({
+        validation: [
+          {
+            level: 'error',
+            rules: [
+              {
+                type: 'allOf',
+                children: [
+                  {
+                    level: 'error',
+                    rules: [
+                      {
+                        type: 'email',
+                      },
+                    ],
+                  },
+                ],
+              },
+            ],
+          },
+        ],
+      })
+    })
+
+    test('email validation in nested all as function', () => {
+      expect(
+        convertType({
+          name: 'foo',
+          type: 'string',
+          validation: (rule: any) => rule.all([rule.email()]),
+        }).typeDef,
+      ).toMatchObject({
+        validation: [
+          {
+            level: 'error',
+            rules: [
+              {
+                type: 'allOf',
+                children: [
+                  {
+                    level: 'error',
+                    rules: [
+                      {
+                        type: 'email',
+                      },
+                    ],
+                  },
+                ],
+              },
+            ],
+          },
+        ],
+      })
+    })
+
+    // We expect this test to fail as extractWorkspaceManifest excludes validation rules
+    // which do not have a constraint property. Integer validation is currently defined as:
+    //    {flag: 'integer'}
+    // See packages/@sanity/types/src/validation/types.ts (RuleSpec) for more details
+    test.fails('integer validation', () => {
+      expect(
+        convertType({
+          name: 'foo',
+          type: 'number',
+          validation: new Rule().integer(),
+        }).typeDef,
+      ).toMatchObject({
+        validation: [
+          {
+            level: 'error',
+            rules: [{type: 'integer'}],
+          },
+        ],
+      })
+    })
+
+    // We expect this test to fail as extractWorkspaceManifest excludes validation rules
+    // which do not have a constraint property. Unique validation is currently defined as:
+    //    {flag: 'unique'}
+    // See packages/@sanity/types/src/validation/types.ts (RuleSpec) for more details
+    test.fails('unique validation', () => {
+      expect(
+        convertType({
+          name: 'foo',
+          type: 'array',
+          of: [{type: 'string'}],
+          validation: new Rule().unique(),
+        }).typeDef,
+      ).toMatchObject({
+        validation: [
+          {
+            level: 'error',
+            rules: [{type: 'uniqueItems'}],
+          },
+        ],
+      })
+    })
+
+    // We expect this test to fail as extractWorkspaceManifest excludes validation rules
+    // which do not have a constraint property. Reference validation is currently defined as:
+    //    {flag: 'reference'}
+    // See packages/@sanity/types/src/validation/types.ts (RuleSpec) for more details
+    test.fails('reference validation', () => {
+      expect(
+        convertType({
+          name: 'foo',
+          type: 'reference',
+          to: [{type: 'foo'}],
+          validation: new Rule().reference(),
+        }).typeDef,
+      ).toMatchObject({
+        validation: [
+          {
+            level: 'error',
+            rules: [{type: 'reference'}],
+          },
+        ],
+      })
+    })
+
+    test('string casing validations', () => {
+      expect(
+        convertType({
+          name: 'foo',
+          type: 'string',
+          validation: (rule: any) => rule.uppercase(),
+        }).typeDef,
+      ).toMatchObject({
+        validation: [
+          {
+            level: 'error',
+            rules: [{type: 'uppercase'}],
+          },
+        ],
+      })
+
+      expect(
+        convertType({
+          name: 'bar',
+          type: 'string',
+          validation: (rule: any) => rule.lowercase(),
+        }).typeDef,
+      ).toMatchObject({
+        validation: [
+          {
+            level: 'error',
+            rules: [{type: 'lowercase'}],
+          },
+        ],
+      })
+    })
+
+    test('length validation', () => {
+      expect(
+        convertType({
+          name: 'foo',
+          type: 'string',
+          validation: (rule: any) => rule.length(10),
+        }).typeDef,
+      ).toMatchObject({
+        validation: [
+          {
+            level: 'error',
+            rules: [{type: 'length', value: '10'}],
+          },
+        ],
+      })
+    })
+
+    test('precision validation', () => {
+      expect(
+        convertType({
+          name: 'foo',
+          type: 'number',
+          validation: (rule: any) => rule.precision(2),
+        }).typeDef,
+      ).toMatchObject({
+        validation: [
+          {
+            level: 'error',
+            rules: [{type: 'precision', value: '2'}],
+          },
+        ],
+      })
+    })
+
+    test('regex validation', () => {
+      expect(
+        convertType({
+          name: 'foo',
+          type: 'string',
+          validation: (rule: any) => rule.regex(/^[A-Z]+$/),
+        }).typeDef,
+      ).toMatchObject({
+        validation: [
+          {
+            level: 'error',
+            rules: [{type: 'regex', pattern: '^[A-Z]+$'}],
+          },
+        ],
+      })
+    })
+
+    test('regex validation with flags', () => {
+      expect(
+        convertType({
+          name: 'foo',
+          type: 'string',
+          validation: (rule: any) => rule.regex(/^[a-z]+$/i),
+        }).typeDef,
+      ).toMatchObject({
+        validation: [
+          {
+            level: 'error',
+            rules: [{type: 'regex', pattern: '^[a-z]+$'}],
+          },
+        ],
+      })
+    })
+
+    test('regex with invert', () => {
+      expect(
+        convertType({
+          name: 'foo',
+          type: 'string',
+          validation: (rule: any) => rule.regex(/^[0-9]+$/, {invert: true}),
+        }).typeDef,
+      ).toMatchObject({
+        validation: [
+          {
+            level: 'error',
+            rules: [{type: 'regex', pattern: '^[0-9]+$', invert: true}],
+          },
+        ],
+      })
+    })
+
+    test('uri validation', () => {
+      expect(
+        convertType({
+          name: 'foo',
+          type: 'string',
+          validation: (rule: any) => rule.uri(),
+        }).typeDef,
+      ).toMatchObject({
+        validation: [
+          {
+            level: 'error',
+            rules: [{type: 'uri'}],
+          },
+        ],
+      })
+    })
+
+    test('uri validation with options', () => {
+      expect(
+        convertType({
+          name: 'foo',
+          type: 'string',
+          validation: (rule: any) => rule.uri({allowRelative: true}),
+        }).typeDef,
+      ).toMatchObject({
+        validation: [
+          {
+            level: 'error',
+            rules: [{type: 'uri', allowRelative: true}],
+          },
+        ],
+      })
+    })
+
+    test('enum validation (valid)', () => {
+      expect(
+        convertType({
+          name: 'foo',
+          type: 'string',
+          validation: (rule: any) => rule.valid(['draft', 'published', 'archived']),
+        }).typeDef,
+      ).toMatchObject({
+        validation: [
+          {
+            level: 'error',
+            rules: [{type: 'enum', values: ['draft', 'published', 'archived']}],
+          },
+        ],
+      })
+    })
+
+    test.fails('enum validation with null', () => {
+      expect(
+        convertType({
+          name: 'foo',
+          type: 'string',
+          validation: (rule: any) => rule.valid([null]),
+        }).typeDef,
+      ).toMatchObject({
+        validation: [
+          {
+            level: 'error',
+            rules: [
+              {
+                type: 'enum',
+                values: [null],
+              },
+            ],
+          },
+        ],
+      })
+    })
+
+    test('enum validation with mixed types', () => {
+      expect(
+        convertType({
+          name: 'foo',
+          type: 'string',
+          validation: (rule: any) => rule.valid(['active', 42, true]),
+        }).typeDef,
+      ).toMatchObject({
+        validation: [
+          {
+            level: 'error',
+            rules: [
+              {
+                type: 'enum',
+                values: ['active', {__type: 'number', value: '42'}, true],
+              },
+            ],
+          },
+        ],
+      })
+    })
+
+    test('assetRequired validation for images', () => {
+      expect(
+        convertType({
+          name: 'foo',
+          type: 'image',
+          validation: (rule: any) => rule.assetRequired(),
+        }).typeDef,
+      ).toMatchObject({
+        validation: [
+          {
+            level: 'error',
+            rules: [{type: 'assetRequired'}],
+          },
+        ],
+      })
+    })
+
+    // We expect this test to fail as extractWorkspaceManifest excludes validation rules
+    // which refer to other fields.
+    // See packages/sanity/src/_internal/manifest/extractWorkspaceManifest.tsx (disallowedConstraintTypes)
+    // for more details.
+    test.fails('min/max with field references', () => {
+      expect(
+        convertType({
+          name: 'endDate',
+          type: 'datetime',
+          validation: (rule: any) => rule.min(rule.valueOfField('startDate')),
+        }).typeDef,
+      ).toMatchObject({
+        validation: [
+          {
+            level: 'error',
+            rules: [
+              {
+                type: 'minimum',
+                value: {
+                  type: 'fieldReference',
+                  path: ['startDate'],
+                },
+              },
+            ],
+          },
+        ],
+      })
+    })
+
+    test('custom validation', () => {
+      expect(
+        convertType({
+          name: 'foo',
+          type: 'string',
+          validation: (rule: any) =>
+            rule.custom((value: string) => {
+              return value.startsWith('prefix_')
+            }),
+        }).typeDef,
+      ).toMatchObject({
+        validation: [
+          {
+            level: 'error',
+            rules: [{type: 'custom'}],
+          },
+        ],
+      })
+    })
+
+    test('custom validation with optional', () => {
+      expect(
+        convertType({
+          name: 'foo',
+          type: 'string',
+          validation: (rule: any) =>
+            rule
+              .custom((value: string) => {
+                return value.startsWith('prefix_')
+              })
+              .optional(),
+        }).typeDef,
+      ).toMatchObject({
+        validation: [
+          {
+            level: 'error',
+            rules: [{type: 'custom', optional: true}],
+          },
+        ],
+      })
+    })
+
+    test('all validation', () => {
+      expect(
+        convertType({
+          name: 'foo',
+          type: 'string',
+          validation: (rule: any) =>
+            rule.all([rule.required(), rule.min(5), rule.max(10).warning('soft limit')]),
+        }).typeDef,
+      ).toMatchObject({
+        validation: [
+          {
+            level: 'error',
+            rules: [
+              {
+                type: 'allOf',
+                children: [
+                  {rules: [{type: 'required'}]},
+                  {rules: [{type: 'minimum', value: '5'}]},
+                  {rules: [{type: 'maximum', value: '10'}]},
+                ],
+              },
+            ],
+          },
+        ],
+      })
+    })
+
+    test('either validation', () => {
+      expect(
+        convertType({
+          name: 'foo',
+          type: 'string',
+          validation: (rule: any) =>
+            rule.either([rule.required(), rule.min(5), rule.max(10).warning('soft limit')]),
+        }).typeDef,
+      ).toMatchObject({
+        validation: [
+          {
+            level: 'error',
+            rules: [
+              {
+                type: 'anyOf',
+                children: [
+                  {rules: [{type: 'required'}]},
+                  {rules: [{type: 'minimum', value: '5'}]},
+                  {rules: [{type: 'maximum', value: '10'}]},
+                ],
+              },
+            ],
+          },
+        ],
+      })
+    })
+
+    test('nested validation with messages', () => {
+      expect(
+        convertType({
+          name: 'foo',
+          type: 'string',
+          validation: (rule: any) =>
+            rule
+              .either([
+                rule.email().error('Must be a valid email'),
+                rule.uppercase().error('Must be uppercase'),
+              ])
+              .error('Must be either email or uppercase'),
+        }).typeDef,
+      ).toMatchObject({
+        validation: [
+          {
+            level: 'error',
+            message: 'Must be either email or uppercase',
+            rules: [
+              {
+                type: 'anyOf',
+                children: [
+                  {message: 'Must be a valid email', rules: [{type: 'email'}]},
+                  {
+                    message: 'Must be uppercase',
+                    rules: [{type: 'uppercase'}],
+                  },
+                ],
+              },
+            ],
+          },
+        ],
+      })
+    })
+
+    test('exclusive min/max', () => {
+      expect(
+        convertType({
+          name: 'foo',
+          type: 'number',
+          validation: (rule: any) => rule.positive().lessThan(100),
+        }).typeDef,
+      ).toMatchObject({
+        validation: [
+          {
+            level: 'error',
+            rules: [
+              {type: 'minimum', value: '0'},
+              {type: 'exclusiveMaximum', value: '100'},
+            ],
+          },
+        ],
+      })
+    })
+
+    test('optional validation (no rules)', () => {
+      expect(
+        convertType({
+          name: 'foo',
+          type: 'string',
+          validation: (rule: any) => rule.optional(),
+        }).typeDef,
+      ).toMatchObject({
+        validation: undefined,
+      })
+    })
+
+    test('complex field validation for objects', () => {
+      const objectType = convertType({
+        name: 'person',
+        type: 'object',
+        fields: [
+          {
+            name: 'name',
+            type: 'string',
+            validation: (rule: any) => rule.required(),
+          },
+          {
+            name: 'age',
+            type: 'number',
+            validation: (rule: any) => rule.required().min(0).max(150),
+          },
+          {
+            name: 'handle',
+            type: 'string',
+            validation: (rule: any) => rule.uppercase().warning(),
+          },
+        ],
+      })
+      expect(objectType.typeDef).toMatchObject({
+        fields: [
+          {
+            name: 'name',
+            typeDef: {
+              validation: [
+                {
+                  level: 'error',
+                  rules: [{type: 'required'}],
+                },
+              ],
+            },
+          },
+          {
+            name: 'age',
+            typeDef: {
+              validation: [
+                {
+                  level: 'error',
+                  rules: [
+                    {type: 'required'},
+                    {type: 'minimum', value: '0'},
+                    {type: 'maximum', value: '150'},
+                  ],
+                },
+              ],
+            },
+          },
+          {
+            name: 'handle',
+            typeDef: {
+              validation: [
+                {
+                  level: 'warning',
+                  rules: [{type: 'uppercase'}],
+                },
+              ],
+            },
+          },
+        ],
+      })
+    })
+
+    test('array item validation', () => {
+      const arrayType = convertType({
+        name: 'tags',
+        type: 'array',
+        of: [
+          {
+            type: 'string',
+            validation: (rule: any) => rule.required().min(2).max(20),
+          },
+        ],
+        validation: (rule: any) => rule.min(1).max(10),
+      })
+
+      expect(arrayType.typeDef).toMatchObject({
+        validation: [
+          {
+            level: 'error',
+            rules: [
+              {type: 'minimum', value: '1'},
+              {type: 'maximum', value: '10'},
+            ],
+          },
+        ],
+        of: [
+          {
+            name: 'string',
+            typeDef: {
+              validation: [
+                {
+                  level: 'error',
+                  rules: [
+                    {type: 'required'},
+                    {type: 'minimum', value: '2'},
+                    {type: 'maximum', value: '20'},
+                  ],
+                },
+              ],
+            },
+          },
+        ],
+      })
+    })
+
+    // We expect this test to fail as extractWorkspaceManifest excludes messages which are not strings.
+    // See packages/sanity/src/_internal/manifest/extractWorkspaceManifest.tsx (transformValidation)
+    // for more details
+    test.fails('localized validation messages', () => {
+      expect(
+        convertType({
+          name: 'foo',
+          type: 'string',
+          validation: (rule: any) =>
+            rule.required().error({
+              'en': 'This field is required',
+              'nb': 'Dette feltet er påkrevd',
+              'nb-NO': 'Dette feltet er påkrevd',
+            }),
+        }).typeDef,
+      ).toMatchObject({
+        validation: [
+          {
+            level: 'error',
+            message: {
+              'en': 'This field is required',
+              'nb': 'Dette feltet er påkrevd',
+              'nb-NO': 'Dette feltet er påkrevd',
+            },
+            rules: [{type: 'required'}],
+          },
+        ],
+      })
+    })
+
+    test('options', () => {
+      const objectType = convertType({
+        name: 'person',
+        type: 'object',
+        fields: [
+          {
+            title: 'List',
+            name: 'list',
+            type: 'string',
+            options: {
+              list: ['a', 'b', 'c'],
+            },
+            validation: [(rule: any) => rule.uri(), (rule: any) => rule.required()],
+          },
+        ],
+      })
+
+      assert(objectType?.typeDef?.fields)
+      expect(objectType.typeDef.fields[0].typeDef.validation).toMatchObject([
+        {
+          level: 'error',
+          rules: [
+            {type: 'enum', values: ['a', 'b', 'c']},
+            {type: 'uri', allowRelative: false},
+          ],
+        },
+        {
+          level: 'error',
+          rules: [{type: 'enum', values: ['a', 'b', 'c']}, {type: 'required'}],
+        },
+      ])
+    })
+
+    test('options without validation', () => {
+      const objectType = convertType({
+        name: 'person',
+        type: 'object',
+        fields: [
+          {
+            title: 'List',
+            name: 'list',
+            type: 'string',
+            options: {
+              list: ['a', 'b', 'c'],
+            },
+          },
+        ],
+      })
+
+      assert(objectType?.typeDef?.fields)
+      expect(objectType.typeDef.fields[0].typeDef.validation).toMatchObject([
+        {
+          level: 'error',
+          rules: [{type: 'enum', values: ['a', 'b', 'c']}],
+        },
+      ])
+    })
+
+    test('options with explict valid rule', () => {
+      const objectType = convertType({
+        name: 'person',
+        type: 'object',
+        fields: [
+          {
+            title: 'List',
+            name: 'list',
+            type: 'string',
+            options: {
+              list: ['a', 'b', 'c'],
+            },
+            validation: (rule: any) => rule.valid(['a', 'b', 'c']),
+          },
+        ],
+      })
+
+      assert(objectType?.typeDef?.fields)
+      expect(objectType.typeDef.fields[0].typeDef.validation).toMatchObject([
+        {
+          level: 'error',
+          rules: [{type: 'enum', values: ['a', 'b', 'c']}],
+        },
+      ])
+    })
+  })
 })
 
 describe('Document', () => {
@@ -929,5 +1863,36 @@ describe('Block', () => {
     const level = type.typeDef.fields.find(({name}) => name === 'level')
     assert(level)
     expect(level.typeDef.extends).toBe('number')
+  })
+})
+
+describe('createSchemaFromManifestTypes', () => {
+  test('Ensures schema is valid', () => {
+    expect(() => createSchemaFromManifestTypes({name: 'invalid', types: [{foo: 'bar'}]})).toThrow(
+      new ValidationError([
+        {
+          path: [
+            {
+              kind: 'type',
+              name: '<unnamed_type_@_index_0>',
+              // type should be a string, but it is undefined.
+              type: undefined as unknown as string,
+            },
+          ],
+          problems: [
+            {
+              helpId: 'schema-type-missing-name-or-type',
+              message: 'Missing type name',
+              severity: 'error',
+            },
+            {
+              helpId: 'schema-type-missing-name-or-type',
+              message: 'Type is missing a type.',
+              severity: 'error',
+            },
+          ],
+        },
+      ]),
+    )
   })
 })
