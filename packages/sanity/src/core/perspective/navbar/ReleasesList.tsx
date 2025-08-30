@@ -7,6 +7,7 @@ import {CreateReleaseMenuItem} from '../../releases/components/CreateReleaseMenu
 import {useActiveReleases} from '../../releases/store/useActiveReleases'
 import {LATEST, PUBLISHED} from '../../releases/util/const'
 import {getReleaseIdFromReleaseDocumentId} from '../../releases/util/getReleaseIdFromReleaseDocumentId'
+import {isCardinalityOneRelease} from '../../releases/util/util'
 import {useWorkspace} from '../../studio/workspace'
 import {type ReleasesNavMenuItemPropsGetter} from '../types'
 import {usePerspective} from '../usePerspective'
@@ -58,8 +59,13 @@ export function ReleasesList({
   scrollElementRef: RefObject<ScrollElement>
   menuItemProps?: ReleasesNavMenuItemPropsGetter
 }): React.JSX.Element {
-  const {loading, data: releases} = useActiveReleases()
+  const {loading, data: allReleases} = useActiveReleases()
   const {selectedPerspectiveName} = usePerspective()
+
+  const releases = useMemo(
+    () => allReleases.filter((release) => !isCardinalityOneRelease(release)),
+    [allReleases],
+  )
 
   const {
     document: {

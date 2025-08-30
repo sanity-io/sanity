@@ -1,3 +1,4 @@
+import {type ReleaseDocument} from '@sanity/client'
 import {Menu} from '@sanity/ui'
 import {fireEvent, render, screen, waitFor} from '@testing-library/react'
 import {beforeEach, describe, expect, it, vi} from 'vitest'
@@ -76,29 +77,76 @@ describe('ReleasesList', () => {
     })
   })
 
-  describe('when releases are disabled', () => {
-    beforeEach(() => {
-      beforeEach(async () => {
-        mockUseActiveReleases.mockReturnValue({
-          ...useActiveReleasesMockReturn,
-          data: [activeASAPRelease, activeScheduledRelease, activeUndecidedRelease],
-        })
-        const wrapper = await createTestProvider()
-        render(
-          <Menu>
-            <ReleasesList
-              setScrollContainer={vi.fn()}
-              onScroll={vi.fn()}
-              isRangeVisible={false}
-              selectedReleaseId={undefined}
-              setCreateBundleDialogOpen={setCreateBundleDialogOpen}
-              scrollElementRef={{current: null}}
-              areReleasesEnabled={false}
-            />
-          </Menu>,
-          {wrapper},
-        )
+  describe('when releases with cardinality filtering are enabled', () => {
+    beforeEach(async () => {
+      const releaseWithCardinalityOne: ReleaseDocument = {
+        ...activeASAPRelease,
+        _id: '_.releases.rCardinalityOne',
+        metadata: {
+          ...activeASAPRelease.metadata,
+          title: 'Cardinality One Release',
+          cardinality: 'one',
+        },
+      }
+
+      mockUseActiveReleases.mockReturnValue({
+        ...useActiveReleasesMockReturn,
+        data: [
+          activeASAPRelease,
+          activeScheduledRelease,
+          activeUndecidedRelease,
+          releaseWithCardinalityOne,
+        ],
       })
+
+      mockUseReleasePermissions.mockReturnValue(useReleasesPermissionsMockReturnTrue)
+      const wrapper = await createTestProvider()
+      render(
+        <Menu>
+          <ReleasesList
+            setScrollContainer={vi.fn()}
+            onScroll={vi.fn()}
+            isRangeVisible={false}
+            selectedReleaseId={undefined}
+            setCreateBundleDialogOpen={setCreateBundleDialogOpen}
+            scrollElementRef={{current: null}}
+            areReleasesEnabled
+          />
+        </Menu>,
+        {wrapper},
+      )
+    })
+
+    it('filters out releases with cardinality "one"', async () => {
+      expect(screen.getByText('active asap Release')).toBeInTheDocument()
+      expect(screen.getByText('active Release')).toBeInTheDocument()
+      expect(screen.getByText('undecided Release')).toBeInTheDocument()
+
+      expect(screen.queryByText('Cardinality One Release')).not.toBeInTheDocument()
+    })
+  })
+
+  describe('when releases are disabled', () => {
+    beforeEach(async () => {
+      mockUseActiveReleases.mockReturnValue({
+        ...useActiveReleasesMockReturn,
+        data: [activeASAPRelease, activeScheduledRelease, activeUndecidedRelease],
+      })
+      const wrapper = await createTestProvider()
+      render(
+        <Menu>
+          <ReleasesList
+            setScrollContainer={vi.fn()}
+            onScroll={vi.fn()}
+            isRangeVisible={false}
+            selectedReleaseId={undefined}
+            setCreateBundleDialogOpen={setCreateBundleDialogOpen}
+            scrollElementRef={{current: null}}
+            areReleasesEnabled={false}
+          />
+        </Menu>,
+        {wrapper},
+      )
     })
 
     it('should hide the releases list, but show publish and draft', async () => {

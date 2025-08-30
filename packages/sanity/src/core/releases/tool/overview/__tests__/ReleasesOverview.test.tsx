@@ -286,6 +286,74 @@ describe('ReleasesOverview', () => {
       })
     })
 
+    it('filters out releases with cardinality "one"', async () => {
+      const releaseWithCardinalityOne: ReleaseDocument = {
+        ...activeASAPRelease,
+        _id: '_.releases.rCardinalityOne',
+        metadata: {
+          ...activeASAPRelease.metadata,
+          title: 'Cardinality One Release',
+          cardinality: 'one',
+        },
+      }
+
+      mockUseActiveReleases.mockReturnValue({
+        ...useActiveReleasesMockReturn,
+        data: [...releases, releaseWithCardinalityOne],
+      })
+
+      mockUseReleasesMetadata.mockReturnValue({
+        ...useReleasesMetadataMockReturn,
+        data: Object.fromEntries(
+          [...releases, releaseWithCardinalityOne].map((release, index) => [
+            release._id,
+            {
+              documentCount: index + 1,
+            } as ReleasesMetadata,
+          ]),
+        ),
+      })
+
+      await rerender()
+
+      const releaseRows = screen.getAllByTestId('table-row')
+      expect(releaseRows).toHaveLength(5)
+
+      expect(screen.queryByText('Cardinality One Release')).not.toBeInTheDocument()
+
+      expect(screen.getByText(activeASAPRelease.metadata.title)).toBeInTheDocument()
+      expect(screen.getByText(activeScheduledRelease.metadata.title)).toBeInTheDocument()
+    })
+
+    it('filters out archived releases with cardinality "one"', async () => {
+      const archivedReleaseWithCardinalityOne: ReleaseDocument = {
+        ...archivedScheduledRelease,
+        _id: '_.releases.rArchivedCardinalityOne',
+        metadata: {
+          ...archivedScheduledRelease.metadata,
+          title: 'Archived Cardinality One Release',
+          cardinality: 'one',
+        },
+      }
+
+      mockUseArchivedReleases.mockReturnValue({
+        ...useArchivedReleasesMockReturn,
+        data: [archivedScheduledRelease, publishedASAPRelease, archivedReleaseWithCardinalityOne],
+      })
+
+      fireEvent.click(screen.getByText('Archived'))
+
+      await waitFor(() => {
+        const archivedReleaseRows = screen.getAllByTestId('table-row')
+        expect(archivedReleaseRows).toHaveLength(2)
+
+        expect(screen.queryByText('Archived Cardinality One Release')).not.toBeInTheDocument()
+
+        expect(screen.getByText('published Release')).toBeInTheDocument()
+        expect(screen.getByText('archived Release')).toBeInTheDocument()
+      })
+    })
+
     it('shows each open release', () => {
       const releaseRows = screen.getAllByTestId('table-row')
       expect(releaseRows).toHaveLength(5)
