@@ -1,8 +1,8 @@
 import {colorInput} from '@sanity/color-input'
 import {googleMapsInput} from '@sanity/google-maps-input'
-import {BookIcon} from '@sanity/icons'
+import {BookIcon, PlayIcon} from '@sanity/icons'
 import {visionTool} from '@sanity/vision'
-import {defineConfig} from 'sanity'
+import {defineConfig, type ReleaseActionComponent} from 'sanity'
 import {presentationTool} from 'sanity/presentation'
 import {structureTool} from 'sanity/structure'
 import {markdownSchema} from 'sanity-plugin-markdown'
@@ -19,6 +19,22 @@ import {defaultDocumentNode, newDocumentOptions, structure} from 'sanity-test-st
 import {customComponents} from './components-api'
 import {e2eI18nBundles} from './i18n/bundles'
 import {schemaTypes} from './schemaTypes'
+
+const TestReleaseAction: ReleaseActionComponent = (props) => {
+  const {release, documents} = props
+
+  return {
+    label: `E2E Test Action: ${release.metadata.title}`,
+    icon: PlayIcon,
+    disabled: false,
+    title: `Test action for release "${release.metadata.title}" with ${documents.length} documents`,
+    onHandle: () => {
+      console.warn(
+        `E2E Test Release Action executed! releaseTitle: ${release.metadata.title}, releaseId: ${release._id}, documentCount: ${documents.length}, releaseState: ${release.state}`,
+      )
+    },
+  }
+}
 
 const defaultConfig = defineConfig({
   name: 'default',
@@ -115,6 +131,7 @@ const defaultConfig = defineConfig({
   },
   releases: {
     enabled: true,
+    actions: [TestReleaseAction],
   },
   create: {
     startInCreateEnabled: false,
