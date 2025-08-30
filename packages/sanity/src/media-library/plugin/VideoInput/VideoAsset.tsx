@@ -20,7 +20,9 @@ import {VideoPreview} from './VideoPreview'
 const ASSET_FIELD_PATH = ['asset']
 
 function isVideoSource(source: any) {
-  return source?.asset?._ref?.startsWith('video-')
+  return (
+    source?.asset?._ref?.startsWith('media-library:') && source?.asset?._ref?.includes('video-')
+  )
 }
 
 export function VideoAsset(props: VideoAssetProps) {
