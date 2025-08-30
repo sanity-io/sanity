@@ -32,6 +32,14 @@ test(`should be able to unpublish a published document`, async ({page, createDra
   await publishButton.click()
   await expectPublishedStatus(documentStatus)
 
+  const documentPerspectiveList = page.getByTestId('document-perspective-list')
+  const publishedButton = documentPerspectiveList.getByRole('button', {
+    name: 'Published',
+    exact: true,
+  })
+
+  await expect(publishedButton).toBeEnabled()
+  await publishedButton.click()
   await contextFooterMenu.click()
   await expect(unpublishButton).toBeVisible()
   await unpublishButton.click()
@@ -39,10 +47,15 @@ test(`should be able to unpublish a published document`, async ({page, createDra
   await expect(unpublishModal).toBeVisible({timeout: 4_000})
   await page.getByTestId('confirm-button').click()
 
-  const documentPerspectiveList = page.getByTestId('document-perspective-list')
-  const button = documentPerspectiveList.getByRole('button', {name: 'Published', exact: true})
-
   // Check the published button is disabled that is the reference to determine the published document doesn't exist.
-  await expect(button).toBeDisabled()
+  await expect(publishedButton).toBeDisabled()
+
+  const draftButton = documentPerspectiveList.getByRole('button', {
+    name: 'Draft',
+    exact: true,
+  })
+  await expect(draftButton).toBeEnabled()
+  await draftButton.click()
+
   await expectUnpublishedStatus(documentStatus)
 })
