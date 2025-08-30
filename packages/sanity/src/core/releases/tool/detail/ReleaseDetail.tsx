@@ -106,7 +106,7 @@ export const ReleaseDetail = () => {
         <Flex flex={1}>
           <Flex direction="column" flex={1} height="fill">
             <Card flex={1} overflow="auto">
-              <ReleaseDashboardDetails release={releaseInDetail} />
+              <ReleaseDashboardDetails release={releaseInDetail} documents={results} />
               {detailContent}
             </Card>
 

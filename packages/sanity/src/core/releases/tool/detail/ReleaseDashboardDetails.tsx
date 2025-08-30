@@ -24,8 +24,16 @@ import {getReleaseIdFromReleaseDocumentId} from '../../util/getReleaseIdFromRele
 import {isNotArchivedRelease} from '../../util/util'
 import {ReleaseDetailsEditor} from './ReleaseDetailsEditor'
 import {ReleaseTypePicker} from './ReleaseTypePicker'
+import {type DocumentInRelease} from './useBundleDocuments'
+import {ValidationProgressIndicator} from './ValidationProgressIndicator'
 
-export function ReleaseDashboardDetails({release}: {release: ReleaseDocument}) {
+export function ReleaseDashboardDetails({
+  release,
+  documents,
+}: {
+  release: ReleaseDocument
+  documents: DocumentInRelease[]
+}) {
   const {state} = release
   const releaseId = getReleaseIdFromReleaseDocumentId(release._id)
   const {checkWithPermissionGuard} = useReleasePermissions()
@@ -53,12 +61,14 @@ export function ReleaseDashboardDetails({release}: {release: ReleaseDocument}) {
     if (isActive) {
       checkWithPermissionGuard(publishRelease, release._id).then((hasPermission) => {
         if (isMounted.current) setShouldDisplayPermissionWarning(!hasPermission)
+        return null
       })
 
       // if it's a release that can be scheduled, check if it can be scheduled
       if (release.metadata.intendedPublishAt && isAtTimeRelease) {
         checkWithPermissionGuard(schedule, release._id, new Date()).then((hasPermission) => {
           if (isMounted.current) setShouldDisplayPermissionWarning(!hasPermission)
+          return null
         })
       }
     }
@@ -109,6 +119,7 @@ export function ReleaseDashboardDetails({release}: {release: ReleaseDocument}) {
             />
           )}
           {isNotArchivedRelease(release) && <ReleaseTypePicker release={release} />}
+          <ValidationProgressIndicator documents={documents} />
           {shouldDisplayError && (
             <Flex gap={2} padding={2} data-testid="release-error-details">
               <Text size={1}>
