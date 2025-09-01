@@ -86,18 +86,16 @@ export const patch: OperationImpl<[patches: any[], initialDocument?: Record<stri
           return
         }
 
-        const publishedRev = snapshots.published._rev
-
         const versionCreateAction: CreateVersionAction = {
           actionType: 'sanity.action.document.version.create',
           publishedId: idPair.publishedId,
           versionId: idPair.draftId,
           baseId: idPair.publishedId,
-          ifBaseRevisionId: publishedRev,
+          ifBaseRevisionId: snapshots.published._rev,
         }
 
         // Don't include the initial patches in the version.create action
-        // We'll apply them optimistically instead, and pass them in the subsequent mutation
+        // these will be applied optimistically and then passed in a subsequent mutation
         const actions = [versionCreateAction]
 
         // Apply the initial patches optimistically to ensure immediate UI update
@@ -113,7 +111,7 @@ export const patch: OperationImpl<[patches: any[], initialDocument?: Record<stri
           ])
         }
 
-        // Create the observable for the version.create action
+        // Create observable for the version.create action
         const creation$ = actionsApiClient(client, idPair)
           .observable.action(actions, {
             tag: 'document.commit',
@@ -141,13 +139,12 @@ export const patch: OperationImpl<[patches: any[], initialDocument?: Record<stri
           bufferedPatches: [],
         })
 
-        // Subscribe to trigger the action
         creation$.subscribe()
 
         return
       }
 
-      //the draft already exists so we can directly apply the patch mutations
+      // draft already exists so directly apply the patch mutations
       draft.mutate(patchMutation)
       return
     }

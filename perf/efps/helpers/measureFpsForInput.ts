@@ -3,7 +3,6 @@ import {type Page} from 'playwright'
 import {type EfpsResult} from '../types'
 import {aggregateLatencies} from './aggregateLatencies'
 import {measureBlockingTime} from './measureBlockingTime'
-import {waitForFormReady} from './waitForFormReady'
 
 interface MeasureFpsForInputOptions {
   label?: string
@@ -28,9 +27,7 @@ export async function measureFpsForInput({
   const characters = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ'
 
   await input.click()
-  await new Promise((resolve) => setTimeout(resolve, 750))
-
-  await waitForFormReady(page)
+  await new Promise((resolve) => setTimeout(resolve, 500))
 
   const rendersPromise = input.evaluate(async (el: HTMLInputElement | HTMLTextAreaElement) => {
     const updates: {value: string; timestamp: number}[] = []
@@ -56,7 +53,7 @@ export async function measureFpsForInput({
 
     return updates
   })
-  await new Promise((resolve) => setTimeout(resolve, 750))
+  await new Promise((resolve) => setTimeout(resolve, 500))
 
   const inputEvents: {character: string; timestamp: number}[] = []
 
@@ -64,19 +61,19 @@ export async function measureFpsForInput({
   const endingMarker = '__END__'
 
   await input.pressSequentially(endingMarker)
-  await new Promise((resolve) => setTimeout(resolve, 750))
+  await new Promise((resolve) => setTimeout(resolve, 500))
   for (let i = 0; i < endingMarker.length; i++) {
     await input.press('ArrowLeft')
   }
   await input.pressSequentially(startingMarker)
-  await new Promise((resolve) => setTimeout(resolve, 750))
+  await new Promise((resolve) => setTimeout(resolve, 500))
 
   const getBlockingTime = measureBlockingTime(page)
 
   for (const character of characters) {
     inputEvents.push({character, timestamp: Date.now()})
     await input.press(character)
-    await new Promise((resolve) => setTimeout(resolve, 10))
+    await new Promise((resolve) => setTimeout(resolve, 0))
   }
 
   await input.blur()
@@ -86,7 +83,7 @@ export async function measureFpsForInput({
   const blockingTime = await getBlockingTime()
   const renderEvents = await rendersPromise
 
-  await new Promise((resolve) => setTimeout(resolve, 1000))
+  await new Promise((resolve) => setTimeout(resolve, 500))
 
   const latencies = inputEvents.map((inputEvent) => {
     const matchingEvent = renderEvents.find(({value}) => {

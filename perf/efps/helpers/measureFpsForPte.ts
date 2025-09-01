@@ -3,7 +3,6 @@ import {type Page} from 'playwright'
 import {type EfpsResult} from '../types'
 import {aggregateLatencies} from './aggregateLatencies'
 import {measureBlockingTime} from './measureBlockingTime'
-import {waitForFormReady} from './waitForFormReady'
 
 interface MeasureFpsForPteOptions {
   fieldName: string
@@ -21,14 +20,12 @@ export async function measureFpsForPte({
   const characters = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ'
 
   await pteField.waitFor({state: 'visible'})
-  await new Promise((resolve) => setTimeout(resolve, 750))
+  await new Promise((resolve) => setTimeout(resolve, 500))
 
   await pteField.click()
 
   const contentEditable = pteField.locator('[contenteditable="true"]')
   await contentEditable.waitFor({state: 'visible'})
-
-  await waitForFormReady(page)
 
   const rendersPromise = contentEditable.evaluate(async (el: HTMLElement) => {
     const updates: {
@@ -64,7 +61,7 @@ export async function measureFpsForPte({
 
     return updates
   })
-  await new Promise((resolve) => setTimeout(resolve, 750))
+  await new Promise((resolve) => setTimeout(resolve, 500))
 
   const inputEvents: {character: string; timestamp: number}[] = []
 
@@ -72,23 +69,21 @@ export async function measureFpsForPte({
   const endingMarker = '___END___'
 
   await contentEditable.pressSequentially(endingMarker)
-  await new Promise((resolve) => setTimeout(resolve, 750))
+  await new Promise((resolve) => setTimeout(resolve, 500))
   for (let i = 0; i < endingMarker.length; i++) {
     await contentEditable.press('ArrowLeft')
   }
   await contentEditable.pressSequentially(startingMarker)
-  await new Promise((resolve) => setTimeout(resolve, 750))
+  await new Promise((resolve) => setTimeout(resolve, 500))
 
   const getBlockingTime = measureBlockingTime(page)
   for (const character of characters) {
     inputEvents.push({character, timestamp: Date.now()})
     await contentEditable.press(character)
-    await new Promise((resolve) => setTimeout(resolve, 10))
+    await new Promise((resolve) => setTimeout(resolve, 0))
   }
 
   await contentEditable.blur()
-
-  await new Promise((resolve) => setTimeout(resolve, 500))
 
   const blockingTime = await getBlockingTime()
   const renderEvents = await rendersPromise
