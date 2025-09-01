@@ -16,6 +16,7 @@ import {ChangeBreadcrumb} from './ChangeBreadcrumb'
 import {ChangeResolver} from './ChangeResolver'
 import {ChangeListWrapper, GroupChangeContainer} from './GroupChange.styled'
 import {RevertChangesButton} from './RevertChangesButton'
+import {RevertChangesConfirmDialog} from './RevertChangesConfirmDialog'
 
 /** @internal */
 export function GroupChange(

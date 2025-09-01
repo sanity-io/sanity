@@ -1,6 +1,4 @@
-import {type DocumentActionConfirmDialogProps} from 'sanity'
-
-import {ConfirmDialog} from '../../../../structure/panes/document/statusBar/dialogs/ConfirmDialog'
+import {ConfirmPopover} from '../../../../ui-components'
 import {useTranslation} from '../../../i18n'
 
 interface RevertChangesConfirmDialogProps {
@@ -20,23 +18,26 @@ export function RevertChangesConfirmDialog({
 }: RevertChangesConfirmDialogProps) {
   const {t} = useTranslation()
 
-  if (!open) return null
-
-  const dialog: DocumentActionConfirmDialogProps = {
-    type: 'confirm',
-    tone: 'critical',
-    message:
-      changeCount > 1
-        ? t('changes.action.revert-all-description', {count: changeCount})
-        : t('changes.action.revert-changes-description', {count: changeCount}),
-    confirmButtonText:
-      changeCount > 1
-        ? t('changes.action.revert-all-confirm')
-        : t('changes.action.revert-changes-confirm-change', {count: 1}),
-    cancelButtonText: t('changes.action.revert-all-cancel'),
-    onConfirm,
-    onCancel,
-  }
-
-  return <ConfirmDialog dialog={dialog} referenceElement={referenceElement} />
+  return (
+    <ConfirmPopover
+      cancelButtonText={t('changes.action.revert-all-cancel')}
+      confirmButtonText={
+        changeCount > 1
+          ? t('changes.action.revert-all-confirm')
+          : t('changes.action.revert-changes-confirm-change', {count: 1})
+      }
+      message={
+        changeCount > 1
+          ? t('changes.action.revert-all-description', {count: changeCount})
+          : t('changes.action.revert-changes-description', {count: changeCount})
+      }
+      onCancel={onCancel}
+      onConfirm={onConfirm}
+      open={open}
+      referenceElement={referenceElement}
+      tone="critical"
+      placement="left"
+      fallbackPlacements={['left', 'left-start', 'left-end']}
+    />
+  )
 }
