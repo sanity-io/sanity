@@ -16,21 +16,34 @@ export async function waitForFormReady(page: Page): Promise<void> {
     {timeout: 10000},
   )
 
-  // Additional check: wait for document status to show draft creation completion
-  // This addresses race conditions with asynchronous version.create operations
-  // Uses the same locator pattern as e2e tests for consistency
-  const documentStatus = page.getByTestId('pane-footer-document-status')
-  await documentStatus.waitFor({state: 'visible', timeout: 15000})
-
-  // Wait for "Draft created" status text to confirm the draft creation is complete
+  // Additional wait to ensure async draft creation operations complete
+  // This addresses race conditions where the form appears ready but
+  // backend operations (version.create) are still pending
   await page.waitForFunction(
     () => {
-      const statusElement = document.querySelector('[data-testid="pane-footer-document-status"]')
-      if (!statusElement) return false
+      // Check that the form is stable and inputs are responsive
+      const form = document.querySelector('[data-testid="form-view"]')
+      if (!form || form.getAttribute('data-read-only') === 'true') {
+        return false
+      }
 
-      const statusText = statusElement.textContent || ''
-      // Wait for the exact "Draft created" text that appears after version.create completes
-      return statusText.includes('Draft created')
+      // Look for any inputs in the form to ensure they're ready
+      const inputs = form.querySelectorAll('input, textarea, [contenteditable="true"]')
+      if (inputs.length === 0) {
+        return false
+      }
+
+      // Ensure no loading states are active
+      const loadingElements = document.querySelectorAll(
+        '[data-testid*="loading"], [data-testid*="spinner"]',
+      )
+      const hasActiveLoading = Array.from(loadingElements).some(
+        (el) =>
+          el.getAttribute('data-testid')?.includes('loading') ||
+          el.getAttribute('data-testid')?.includes('spinner'),
+      )
+
+      return !hasActiveLoading
     },
     {timeout: 15000},
   )

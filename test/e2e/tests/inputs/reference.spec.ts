@@ -53,9 +53,6 @@ withDefaultClient((context) => {
     publishButton.click()
     await expectPublishedStatus(paneFooter)
 
-    // Small delay to ensure draft deletion is fully processed
-    // await page.waitForTimeout(1000)
-
     // Open the Author reference input.
     await page.locator('#author-menuButton').click()
     await page.getByRole('menuitem').getByText('Replace').click()
