@@ -60,7 +60,7 @@ test(`displays the published document state after discarding changes`, async ({
   const publishButton = page.getByTestId('action-publish')
   const actionMenuButton = page.getByTestId('action-menu-button')
   const discardChangesButton = page.getByTestId('action-Discardchanges')
-  const confirmButton = page.getByTestId('confirm-dialog-confirm-button')
+  const confirmButton = page.getByTestId('confirm-popover-confirm-button')
   const paneFooterDocumentStatusPulse = page.getByTestId('pane-footer-document-status-pulse')
   const paneFooterDocumentStatus = page.getByTestId('pane-footer-document-status')
 

@@ -10,8 +10,8 @@ test(`documents can be restored to an earlier revision`, async ({page, createDra
 
   const documentStatus = page.getByTestId('pane-footer-document-status')
   const publishButton = page.getByTestId('action-publish')
-  const restoreButton = page.getByTestId('action-reverttorevision')
-  const confirmButton = page.getByTestId('confirm-dialog-confirm-button')
+  const restoreButton = page.getByTestId('action-Reverttorevision')
+  const confirmButton = page.getByTestId('confirm-popover-confirm-button')
   const contextMenuButton = page
     .getByTestId('document-pane')
     .getByTestId('pane-context-menu-button')
@@ -64,9 +64,9 @@ test(`respects overridden restore action`, async ({page, createDraftDocument}) =
 
   const publishKeypress = () => page.locator('body').press('Control+Alt+p')
   const documentStatus = page.getByTestId('pane-footer-document-status')
-  const restoreButton = page.getByTestId('action-reverttorevision')
+  const restoreButton = page.getByTestId('action-Reverttorevision')
   const customRestoreButton = page.getByRole('button').getByText('Custom restore')
-  const confirmButton = page.getByTestId('confirm-dialog-confirm-button')
+  const confirmButton = page.getByTestId('confirm-popover-confirm-button')
   const contextMenuButton = page
     .getByTestId('document-pane')
     .getByTestId('pane-context-menu-button')
@@ -140,7 +140,7 @@ test(`respects removed restore action`, async ({page, createDraftDocument}) => {
 
   const documentStatus = page.getByTestId('pane-footer-document-status')
   const publishButton = page.getByTestId('action-publish')
-  const restoreButton = page.getByTestId('action-reverttorevision')
+  const restoreButton = page.getByTestId('action-Reverttorevision')
   const contextMenuButton = page
     .getByTestId('document-pane')
     .getByTestId('pane-context-menu-button')
