@@ -204,6 +204,12 @@ export const studioLocaleStrings = defineLocalesResources('studio', {
   /** Info messages for the Media Library Asset Source  */
   'asset-sources.media-library.select-dialog.title': 'Selecting {{assetType}} for {{targetTitle}}',
 
+  /** Warning message shown when uploading already existing files to the Media Library Asset Source */
+  'asset-sources.media-library.warning.file-already-exist.description':
+    'Using the existing file found in the library.',
+  'asset-sources.media-library.warning.file-already-exist.title':
+    "File: '{{filename}}' already exists",
+
   /** Label when a release has been deleted by a different user */
   'banners.deleted-bundle-banner.text':
     "The '<strong>{{title}}</strong>' release has been deleted.",
