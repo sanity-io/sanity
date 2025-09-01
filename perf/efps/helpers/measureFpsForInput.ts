@@ -29,6 +29,14 @@ export async function measureFpsForInput({
   await input.click()
   await new Promise((resolve) => setTimeout(resolve, 500))
 
+  await page.waitForFunction(
+    () => {
+      const form = document.querySelector('[data-testid="form-view"]')
+      return form && form.getAttribute('data-read-only') !== 'true'
+    },
+    {timeout: 10000},
+  )
+
   const rendersPromise = input.evaluate(async (el: HTMLInputElement | HTMLTextAreaElement) => {
     const updates: {value: string; timestamp: number}[] = []
 

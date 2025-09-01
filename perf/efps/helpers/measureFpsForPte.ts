@@ -27,6 +27,14 @@ export async function measureFpsForPte({
   const contentEditable = pteField.locator('[contenteditable="true"]')
   await contentEditable.waitFor({state: 'visible'})
 
+  await page.waitForFunction(
+    () => {
+      const form = document.querySelector('[data-testid="form-view"]')
+      return form && form.getAttribute('data-read-only') !== 'true'
+    },
+    {timeout: 10000},
+  )
+
   const rendersPromise = contentEditable.evaluate(async (el: HTMLElement) => {
     const updates: {
       value: string
