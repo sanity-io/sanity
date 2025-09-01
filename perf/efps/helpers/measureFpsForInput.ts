@@ -3,6 +3,7 @@ import {type Page} from 'playwright'
 import {type EfpsResult} from '../types'
 import {aggregateLatencies} from './aggregateLatencies'
 import {measureBlockingTime} from './measureBlockingTime'
+import {waitForFormReady} from './waitForFormReady'
 
 interface MeasureFpsForInputOptions {
   label?: string
@@ -29,13 +30,7 @@ export async function measureFpsForInput({
   await input.click()
   await new Promise((resolve) => setTimeout(resolve, 500))
 
-  await page.waitForFunction(
-    () => {
-      const form = document.querySelector('[data-testid="form-view"]')
-      return form && form.getAttribute('data-read-only') !== 'true'
-    },
-    {timeout: 10000},
-  )
+  await waitForFormReady(page)
 
   const rendersPromise = input.evaluate(async (el: HTMLInputElement | HTMLTextAreaElement) => {
     const updates: {value: string; timestamp: number}[] = []

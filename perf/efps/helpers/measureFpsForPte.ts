@@ -3,6 +3,7 @@ import {type Page} from 'playwright'
 import {type EfpsResult} from '../types'
 import {aggregateLatencies} from './aggregateLatencies'
 import {measureBlockingTime} from './measureBlockingTime'
+import {waitForFormReady} from './waitForFormReady'
 
 interface MeasureFpsForPteOptions {
   fieldName: string
@@ -27,13 +28,7 @@ export async function measureFpsForPte({
   const contentEditable = pteField.locator('[contenteditable="true"]')
   await contentEditable.waitFor({state: 'visible'})
 
-  await page.waitForFunction(
-    () => {
-      const form = document.querySelector('[data-testid="form-view"]')
-      return form && form.getAttribute('data-read-only') !== 'true'
-    },
-    {timeout: 10000},
-  )
+  await waitForFormReady(page)
 
   const rendersPromise = contentEditable.evaluate(async (el: HTMLElement) => {
     const updates: {
