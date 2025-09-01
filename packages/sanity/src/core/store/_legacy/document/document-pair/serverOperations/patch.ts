@@ -1,14 +1,17 @@
-import {type CreateVersionAction, type EditAction} from '@sanity/client'
+import {type CreateVersionAction} from '@sanity/client'
 import {type Observable, tap} from 'rxjs'
 
 import {type OperationImpl} from '../operations/types'
 import {actionsApiClient} from '../utils/actionsApiClient'
 import {isLiveEditEnabled} from '../utils/isLiveEditEnabled'
 
-// Track pending draft creation observables to prevent duplicate requests
-const pendingDraftCreations = new Map<string, Observable<any>>()
-// Buffer patches that arrive while draft creation is pending
-const pendingPatchBuffers = new Map<string, any[][]>()
+interface PendingDraftCreation {
+  observable: Observable<any>
+  bufferedPatches: any[][]
+}
+
+// Track pending draft creations and their associated patch buffers
+const pendingDraftCreations = new Map<string, PendingDraftCreation>()
 
 export const patch: OperationImpl<[patches: any[], initialDocument?: Record<string, any>]> = {
   disabled: (): false => false,
@@ -66,11 +69,11 @@ export const patch: OperationImpl<[patches: any[], initialDocument?: Record<stri
       // Handle special "create draft from published" scenario with version.create
       if (!snapshots.draft) {
         const draftCreationKey = idPair.draftId
-
-        // Check if a draft creation is already pending
         const pendingCreation = pendingDraftCreations.get(draftCreationKey)
         if (pendingCreation) {
-          // Apply patches optimistically to local state while version.create is pending
+          // Buffer patches to be applied after version.create completes
+          pendingCreation.bufferedPatches.push(patches)
+          // Use createIfNotExists to ensure we have a local draft to patch
           draft.mutate([
             draft.createIfNotExists({
               ...initialDocument,
@@ -93,22 +96,9 @@ export const patch: OperationImpl<[patches: any[], initialDocument?: Record<stri
           ifBaseRevisionId: publishedRev,
         }
 
-        const editActions = patchMutation.map(
-          (mutation): EditAction => ({
-            actionType: 'sanity.action.document.edit',
-            draftId: idPair.draftId,
-            publishedId: idPair.publishedId,
-            patch: {
-              ...mutation.patch,
-              id: undefined, // Remove id to match toActions behavior
-            },
-          }),
-        )
-
-        const actions = [versionCreateAction, ...editActions]
-
-        // Initialize the patch buffer for this draft
-        pendingPatchBuffers.set(draftCreationKey, [])
+        // Don't include the initial patches in the version.create action
+        // We'll apply them optimistically instead, and pass them in the subsequent mutation
+        const actions = [versionCreateAction]
 
         // Apply the initial patches optimistically to ensure immediate UI update
         if (patches.length > 0) {
@@ -131,28 +121,25 @@ export const patch: OperationImpl<[patches: any[], initialDocument?: Record<stri
           .pipe(
             tap({
               complete: () => {
-                // When version.create completes, apply all buffered patches
-                const bufferedPatches = pendingPatchBuffers.get(draftCreationKey)
-                if (bufferedPatches && bufferedPatches.length > 0) {
-                  // Flatten all buffered patches into a single array
-                  const allPatches = bufferedPatches.flat()
-                  // Apply all patches as a single mutation
+                const hasPendingDraftCreation = pendingDraftCreations.get(draftCreationKey)
+                if (hasPendingDraftCreation && hasPendingDraftCreation.bufferedPatches.length > 0) {
+                  // Apply all buffered patches that arrived while version.create was in flight
+                  const allPatches = hasPendingDraftCreation.bufferedPatches.flat()
                   draft.mutate(draft.patch(allPatches))
                 }
-                // Clean up
                 pendingDraftCreations.delete(draftCreationKey)
-                pendingPatchBuffers.delete(draftCreationKey)
               },
               error: () => {
-                // Clean up on error
                 pendingDraftCreations.delete(draftCreationKey)
-                pendingPatchBuffers.delete(draftCreationKey)
               },
             }),
           )
 
-        // Store the shared observable
-        pendingDraftCreations.set(draftCreationKey, creation$)
+        // Store the pending creation with an empty buffer
+        pendingDraftCreations.set(draftCreationKey, {
+          observable: creation$,
+          bufferedPatches: [],
+        })
 
         // Subscribe to trigger the action
         creation$.subscribe()
