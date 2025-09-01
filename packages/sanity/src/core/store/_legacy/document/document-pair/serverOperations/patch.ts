@@ -65,11 +65,19 @@ export const patch: OperationImpl<[patches: any[], initialDocument?: Record<stri
       if (!snapshots.draft) {
         const draftCreationKey = idPair.draftId
 
-        // Check if a draft creation is already pending for this document
+        // Check if a draft creation is already pending
         const pendingCreation = pendingDraftCreations.get(draftCreationKey)
         if (pendingCreation) {
-          // Reuse the existing observable - it will emit when the creation completes
-          pendingCreation.subscribe()
+          // Apply patches optimistically to local state while version.create is pending
+          draft.mutate([
+            draft.createIfNotExists({
+              ...initialDocument,
+              ...snapshots.published,
+              _id: idPair.draftId,
+              _type: typeName,
+            }),
+            ...patchMutation,
+          ])
           return
         }
 
@@ -103,7 +111,7 @@ export const patch: OperationImpl<[patches: any[], initialDocument?: Record<stri
             tag: 'document.commit',
           })
           .pipe(
-            // Clean up the pending creation when the observable completes (success or error)
+            // Clean up pending creation when observable terminates (complete, error, or unsubscribe)
             finalize(() => pendingDraftCreations.delete(draftCreationKey)),
             // Share the observable among multiple subscribers
             share(),
