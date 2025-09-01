@@ -1,11 +1,7 @@
 import {expect} from '@playwright/test'
 
 import {withDefaultClient} from '../../helpers'
-import {
-  expectCreatedStatus,
-  expectEditedStatus,
-  expectPublishedStatus,
-} from '../../helpers/documentStatusAssertions'
+import {expectEditedStatus, expectPublishedStatus} from '../../helpers/documentStatusAssertions'
 import {test} from '../../studio-test'
 
 withDefaultClient((context) => {
@@ -57,6 +53,9 @@ withDefaultClient((context) => {
     publishButton.click()
     await expectPublishedStatus(paneFooter)
 
+    // Small delay to ensure draft deletion is fully processed
+    // await page.waitForTimeout(1000)
+
     // Open the Author reference input.
     await page.locator('#author-menuButton').click()
     await page.getByRole('menuitem').getByText('Replace').click()
@@ -71,7 +70,7 @@ withDefaultClient((context) => {
     // await expect(paneFooter).toContainText('Draft created', {timeout: 30_000})
 
     // wait for the edit to finish
-    await expectCreatedStatus(paneFooter)
+    await expectEditedStatus(paneFooter)
 
     // Wait for the document to be published.
     publishButton.click()
