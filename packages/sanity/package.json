@@ -257,7 +257,7 @@
     "react-i18next": "15.6.1",
     "react-is": "catalog:",
     "react-refractor": "^4.0.0",
-    "react-rx": "^4.1.31",
+    "react-rx": "^4.1.32",
     "read-pkg-up": "^7.0.1",
     "refractor": "^5.0.0",
     "resolve-from": "^5.0.0",
