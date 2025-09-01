@@ -9,6 +9,9 @@ interface RevertChangesConfirmDialogProps {
   referenceElement: HTMLElement | null
 }
 
+/**
+ * @internal
+ */
 export function RevertChangesConfirmDialog({
   open,
   onConfirm,
