@@ -1,5 +1,5 @@
 import {type CreateVersionAction, type EditAction} from '@sanity/client'
-import {finalize, type Observable, share} from 'rxjs'
+import {type Observable, tap} from 'rxjs'
 
 import {type OperationImpl} from '../operations/types'
 import {actionsApiClient} from '../utils/actionsApiClient'
@@ -7,6 +7,8 @@ import {isLiveEditEnabled} from '../utils/isLiveEditEnabled'
 
 // Track pending draft creation observables to prevent duplicate requests
 const pendingDraftCreations = new Map<string, Observable<any>>()
+// Buffer patches that arrive while draft creation is pending
+const pendingPatchBuffers = new Map<string, any[][]>()
 
 export const patch: OperationImpl<[patches: any[], initialDocument?: Record<string, any>]> = {
   disabled: (): false => false,
@@ -105,16 +107,48 @@ export const patch: OperationImpl<[patches: any[], initialDocument?: Record<stri
 
         const actions = [versionCreateAction, ...editActions]
 
-        // Create the observable and share it so multiple subscribers get the same result
+        // Initialize the patch buffer for this draft
+        pendingPatchBuffers.set(draftCreationKey, [])
+
+        // Apply the initial patches optimistically to ensure immediate UI update
+        if (patches.length > 0) {
+          draft.mutate([
+            draft.createIfNotExists({
+              ...initialDocument,
+              ...snapshots.published,
+              _id: idPair.draftId,
+              _type: typeName,
+            }),
+            ...patchMutation,
+          ])
+        }
+
+        // Create the observable for the version.create action
         const creation$ = actionsApiClient(client, idPair)
           .observable.action(actions, {
             tag: 'document.commit',
           })
           .pipe(
-            // Clean up pending creation when observable terminates (complete, error, or unsubscribe)
-            finalize(() => pendingDraftCreations.delete(draftCreationKey)),
-            // Share the observable among multiple subscribers
-            share(),
+            tap({
+              complete: () => {
+                // When version.create completes, apply all buffered patches
+                const bufferedPatches = pendingPatchBuffers.get(draftCreationKey)
+                if (bufferedPatches && bufferedPatches.length > 0) {
+                  // Flatten all buffered patches into a single array
+                  const allPatches = bufferedPatches.flat()
+                  // Apply all patches as a single mutation
+                  draft.mutate(draft.patch(allPatches))
+                }
+                // Clean up
+                pendingDraftCreations.delete(draftCreationKey)
+                pendingPatchBuffers.delete(draftCreationKey)
+              },
+              error: () => {
+                // Clean up on error
+                pendingDraftCreations.delete(draftCreationKey)
+                pendingPatchBuffers.delete(draftCreationKey)
+              },
+            }),
           )
 
         // Store the shared observable
