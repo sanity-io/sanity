@@ -1,5 +1,5 @@
-import {from, lastValueFrom} from 'rxjs'
-import {toArray} from 'rxjs/operators'
+import {from, lastValueFrom, map, merge, throwError, timer} from 'rxjs'
+import {concatMap, mergeMap, toArray} from 'rxjs/operators'
 import {expect, test} from 'vitest'
 
 import {type MutationPayload} from '../../buffered-doc'
@@ -236,4 +236,90 @@ test('it throws an OutOfSyncError if the buffer exceeds `maxBuffer`', async () =
   await expect(
     lastValueFrom(events.pipe(sequentializeListenerEvents({resolveChainDeadline: 100}), toArray())),
   ).rejects.toThrowError(DeadlineExceededError)
+})
+
+test('it throws an OutOfSyncError after `resolveChainDeadline` ms has passed', async () => {
+  const events = from([
+    {
+      type: 'snapshot',
+      documentId: 'test',
+      document: {
+        _rev: 'one',
+        _id: 'test',
+        _type: 'test',
+        name: 'initial',
+        _createdAt: '2024-10-02T06:40:16.414Z',
+        _updatedAt: '2024-10-02T06:40:16.414Z',
+      },
+    },
+    // this has the snapshot revision as it's previous and should be passed on as-is
+    mutationEvent({
+      previousRev: 'one',
+      resultRev: 'two',
+      mutations: [{patch: {set: {name: 'OK'}}}],
+    }),
+    // this breaks the chain (three is missing)
+    mutationEvent({
+      previousRev: 'three',
+      resultRev: 'four',
+      mutations: [{patch: {set: {name: 'four'}}}],
+    }),
+    mutationEvent({
+      previousRev: 'four',
+      resultRev: 'five',
+      mutations: [{patch: {set: {name: 'five'}}}],
+    }),
+    mutationEvent({
+      previousRev: 'five',
+      resultRev: 'six',
+      mutations: [{patch: {set: {name: 'six'}}}],
+    }),
+    mutationEvent({
+      previousRev: 'seven',
+      resultRev: 'eight',
+      mutations: [{patch: {set: {name: 'eight'}}}],
+    }),
+    mutationEvent({
+      previousRev: 'eight',
+      resultRev: 'nine',
+      mutations: [{patch: {set: {name: 'nine'}}}],
+    }),
+    mutationEvent({
+      previousRev: 'nine',
+      resultRev: 'ten',
+      mutations: [{patch: {set: {name: 'ten'}}}],
+    }),
+    mutationEvent({
+      previousRev: 'ten',
+      resultRev: 'eleven',
+      mutations: [{patch: {set: {name: 'eleven'}}}],
+    }),
+    mutationEvent({
+      previousRev: 'eleven',
+      resultRev: 'twelve',
+      mutations: [{patch: {set: {name: 'twelve'}}}],
+    }),
+  ] satisfies ListenerEvent[])
+
+  const start = new Date()
+  await expect(
+    lastValueFrom(
+      merge(
+        timer(400).pipe(
+          mergeMap(() => throwError(() => new Error('Expected deadline to bee exceeded'))),
+        ),
+        events,
+      ).pipe(
+        concatMap((ev) => timer(50).pipe(map(() => ev))),
+        sequentializeListenerEvents({resolveChainDeadline: 200}),
+        toArray(),
+      ),
+    ),
+  ).rejects.toThrowError(DeadlineExceededError)
+
+  // Make sure the error is thrown within 50ms of when the first gap is detected and `resolveChainDeadline` ms
+  // has passed without chain resolution
+  // the first gap is emitted by the third event and there's 50ms between each event emitting
+  // so with a deadline of 200, the DeadlineExceededError should be thrown around the 350ms mark.
+  expect(350 - new Date().getTime() - start.getTime()).toBeLessThan(50)
 })
