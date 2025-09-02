@@ -79,15 +79,15 @@ test.describe('Custom Release Actions', () => {
       test.beforeEach(async ({page}) => {
         test.slow()
         await page.goto(setupPath)
-        await page.waitForLoadState('load', WAIT_OPTIONS)
+        await page.waitForLoadState('load', {timeout: 30000})
 
         // Wait for page-specific elements to be ready
         if (isOverview) {
           // On overview page, wait for the releases table
-          await expect(page.getByRole('table')).toBeVisible(WAIT_OPTIONS)
+          await expect(page.getByRole('table')).toBeVisible()
         } else {
           // On individual release page, wait for the menu button
-          await expect(page.getByTestId('release-menu-button')).toBeVisible(WAIT_OPTIONS)
+          await expect(page.getByTestId('release-menu-button')).toBeVisible()
         }
       })
 
