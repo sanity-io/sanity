@@ -81,20 +81,13 @@ const execute = (
   operationArguments: OperationArgs,
   extraArgs: any[],
   serverActionsEnabled: boolean,
-  onDocumentMutationCommitErrorRecovery?: DocumentStoreExtraOptions['onDocumentMutationCommitErrorRecovery'],
 ): Observable<any> => {
   const operation = serverActionsEnabled
     ? serverOperationImpls[operationName]
     : operationImpls[operationName]
   return defer(() =>
     merge(of(null), maybeObservable(operation.execute(operationArguments, ...extraArgs))),
-  ).pipe(
-    last(),
-    catchError((err) => {
-      onDocumentMutationCommitErrorRecovery?.(err)
-      return EMPTY
-    }),
-  )
+  ).pipe(last())
 }
 
 const operationCalls$ = new Subject<ExecuteArgs>()
@@ -184,7 +177,6 @@ export const operationEvents = memoize(
                       operationArguments,
                       args.extraArgs,
                       operationArguments.serverActionsEnabled,
-                      ctx.extraOptions?.onDocumentMutationCommitErrorRecovery,
                     ),
                   ),
                 )

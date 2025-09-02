@@ -1,6 +1,12 @@
 import {useToast} from '@sanity/ui'
 import {memo, useEffect, useMemo, useRef} from 'react'
-import {Translate, useDocumentOperationEvent, useTranslation} from 'sanity'
+import {
+  isDocumentLimitError,
+  Translate,
+  useDocumentLimitsUpsellContext,
+  useDocumentOperationEvent,
+  useTranslation,
+} from 'sanity'
 
 import {usePaneRouter} from '../../components'
 import {structureLocaleNamespace} from '../../i18n'
@@ -18,6 +24,7 @@ export const DocumentOperationResults = memo(function DocumentOperationResults()
   const prevEvent = useRef(event)
   const paneRouter = usePaneRouter()
   const {t} = useTranslation(structureLocaleNamespace)
+  const {handleOpenDialog} = useDocumentLimitsUpsellContext()
 
   const title = useMemo(() => {
     // If title isn't set from document preview, use the title from the document pane value
@@ -43,6 +50,10 @@ export const DocumentOperationResults = memo(function DocumentOperationResults()
     let cleanupId: number | undefined
 
     if (event.type === 'error') {
+      if (isDocumentLimitError(event.error)) {
+        handleOpenDialog('document_action')
+        return
+      }
       pushToast({
         closable: true,
         duration: 30000, // 30s
@@ -90,7 +101,7 @@ export const DocumentOperationResults = memo(function DocumentOperationResults()
 
     // eslint-disable-next-line consistent-return
     return () => clearTimeout(cleanupId)
-  }, [event, paneRouter, pushToast, t, documentTitle])
+  }, [event, paneRouter, pushToast, t, documentTitle, handleOpenDialog])
 
   return null
 })
