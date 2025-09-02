@@ -3,7 +3,7 @@ import {isValidationErrorMarker, type SanityDocument, type Schema} from '@sanity
 import {uuid} from '@sanity/uuid'
 import {useMemo} from 'react'
 import {useObservable} from 'react-rx'
-import {combineLatest, type Observable, of} from 'rxjs'
+import {combineLatest, from, type Observable, of} from 'rxjs'
 import {
   catchError,
   distinctUntilChanged,
@@ -21,6 +21,7 @@ import {type LocaleSource} from '../../../i18n/types'
 import {type DocumentPreviewStore} from '../../../preview'
 import {useDocumentPreviewStore} from '../../../store/_legacy/datastores'
 import {useSource} from '../../../studio'
+import {scheduledYield} from '../../../util/postYield'
 import {validateDocumentWithReferences, type ValidationStatus} from '../../../validation'
 import {useReleasesStore} from '../../store/useReleasesStore'
 import {getReleaseDocumentIdFromReleaseId} from '../../util/getReleaseDocumentIdFromReleaseId'
@@ -59,6 +60,30 @@ const getActiveReleaseDocumentsObservable = ({
 }): ReleaseDocumentsObservableResult => {
   const groqFilter = `sanity::partOfRelease($releaseId)`
 
+  // Helper function to create validation observable with scheduler.yield()
+  const createValidationObservable = (ctx: any, document: SanityDocument) => {
+    if (isGoingToUnpublish(document)) {
+      return of({
+        isValidating: false,
+        validation: [],
+        revision: document._rev,
+        hasError: false,
+      } satisfies DocumentValidationStatus)
+    }
+
+    // Add scheduler.yield() before each document validation
+    return from(scheduledYield(() => Promise.resolve())).pipe(
+      switchMap(() =>
+        validateDocumentWithReferences(ctx, of(document)).pipe(
+          map((validationStatus) => ({
+            ...validationStatus,
+            hasError: validationStatus.validation.some((marker) => isValidationErrorMarker(marker)),
+          })),
+        ),
+      ),
+    )
+  }
+
   return documentPreviewStore
     .unstable_observeDocumentIdSet(
       groqFilter,
@@ -96,25 +121,7 @@ const getActiveReleaseDocumentsObservable = ({
           )
 
         const validation$ = document$.pipe(
-          switchMap((document) => {
-            if (isGoingToUnpublish(document)) {
-              return of({
-                isValidating: false,
-                validation: [],
-                revision: document._rev,
-                hasError: false,
-              } satisfies DocumentValidationStatus)
-            }
-            return validateDocumentWithReferences(ctx, of(document)).pipe(
-              map((validationStatus) => ({
-                ...validationStatus,
-                // eslint-disable-next-line max-nested-callbacks
-                hasError: validationStatus.validation.some((marker) =>
-                  isValidationErrorMarker(marker),
-                ),
-              })),
-            )
-          }),
+          switchMap((document) => createValidationObservable(ctx, document)),
         )
 
         // Do not subscribe to preview streams here. Previews will be fetched lazily per rendered row.
