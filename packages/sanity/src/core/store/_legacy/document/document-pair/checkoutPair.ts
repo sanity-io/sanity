@@ -246,7 +246,7 @@ export function checkoutPair(
 
   const listenerEvents$ = getPairListener(client, idPair, {onSyncErrorRecovery, tag}).pipe(share())
 
-  const reconnect$ = listenerEvents$.pipe(
+  const connectionChangeEvents$ = listenerEvents$.pipe(
     filter((ev) => ev.type === 'reconnect'),
   ) as Observable<ReconnectEvent>
 
@@ -307,7 +307,9 @@ export function checkoutPair(
     transactionsPendingEvents$,
     draft: {
       ...draft,
-      events: merge(combinedEvents, reconnect$, draft.events).pipe(map(setVersion('draft'))),
+      events: merge(combinedEvents, connectionChangeEvents$, draft.events).pipe(
+        map(setVersion('draft')),
+      ),
       remoteSnapshot$: draft.remoteSnapshot$.pipe(map(setVersion('draft'))),
     },
     ...(typeof version === 'undefined'
@@ -315,7 +317,7 @@ export function checkoutPair(
       : {
           version: {
             ...version,
-            events: merge(combinedEvents, reconnect$, version.events).pipe(
+            events: merge(combinedEvents, connectionChangeEvents$, version.events).pipe(
               map(setVersion('version')),
             ),
             remoteSnapshot$: version.remoteSnapshot$.pipe(map(setVersion('version'))),
@@ -323,7 +325,7 @@ export function checkoutPair(
         }),
     published: {
       ...published,
-      events: merge(combinedEvents, reconnect$, published.events).pipe(
+      events: merge(combinedEvents, connectionChangeEvents$, published.events).pipe(
         map(setVersion('published')),
       ),
       remoteSnapshot$: published.remoteSnapshot$.pipe(map(setVersion('published'))),
