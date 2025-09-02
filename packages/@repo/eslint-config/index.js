@@ -182,20 +182,6 @@ export default [
     name: 'react/jsx-runtime',
     ...pluginReact.configs.flat['jsx-runtime'],
   },
-  // Don't lint React Compiler rules on test code
-  {
-    name: 'sanity/no-react-compiler-on-test-code',
-    files: [
-      `**/*/test/**/*`,
-      `**/*/__workshop__/**/*`,
-      '**/*/__tests__/**/*',
-      '**/*.test.{js,ts,tsx}',
-      'packages/sanity/playwright-ct/**',
-    ],
-    // rules: {
-    //   'react-compiler/react-compiler': 'off',
-    // },
-  },
   ...turboConfig,
   // Disables rules that are handled by prettier, we run prettier separately as running it within ESLint is too slow
   eslintConfigPrettier,
@@ -213,6 +199,23 @@ export default [
     rules: {
       'react-hooks/exhaustive-deps': 'off',
       'react-hooks-with-use-effect-event/exhaustive-deps': 'error',
+    },
+  },
+  {
+    // Don't fail React Compiler rules on test code, warn instead (as it might be an opportunity to delete manual useMemo and such from tests)
+    name: 'sanity/no-react-compiler-on-test-code',
+    files: [
+      `**/*/test/**/*`,
+      `**/*/__workshop__/**/*`,
+      '**/*/__tests__/**/*',
+      '**/*.test.{js,ts,tsx}',
+      '**/playwright-ct/**',
+    ],
+    rules: {
+      'react-hooks/set-state-in-effect': 'warn',
+      'react-hooks/preserve-manual-memoization': 'warn',
+      'react-hooks/refs': 'warn',
+      'react-hooks/static-components': 'warn',
     },
   },
   // Since we also use no-restricted-imports in oxlint, we need to add this after `buildFromOxlintConfigFile` or the rule is disabled
