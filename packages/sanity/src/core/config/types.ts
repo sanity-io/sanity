@@ -959,7 +959,7 @@ export interface Source {
     /**
      * Returns an array of actions for the release.
      */
-    actions: (props: PartialContext<ReleaseActionsContext>) => ReleaseActionComponent[]
+    actions?: (props: PartialContext<ReleaseActionsContext>) => ReleaseActionComponent[]
   }
 
   /** @internal */

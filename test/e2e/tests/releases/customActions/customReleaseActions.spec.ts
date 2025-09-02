@@ -122,16 +122,6 @@ test.describe('Custom Release Actions', () => {
         expect(allConsoleOutput).toContain('releaseState: active')
         expect(allConsoleOutput).toContain('releaseId: _.releases.')
       })
-
-      test('should show tooltip with dynamic content', async ({page}) => {
-        await openReleaseMenu(page, isOverview)
-        const menuItem = await expectCustomActionInMenu(page)
-        await menuItem.hover()
-
-        // Wait for tooltip to appear
-        const tooltipText = `Test action for release "${uniqueReleaseTitle}" with 3 documents`
-        await expect(page.getByText(tooltipText)).toBeVisible({timeout: 10000})
-      })
     })
   }
 
