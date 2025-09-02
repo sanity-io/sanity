@@ -76,20 +76,7 @@ export function useFormattedDuration(
   const listFormat = useListFormat({type: 'unit', style})
   const isNegative = durationMs < 0
   const duration = parseMilliseconds(Math.abs(durationMs))
-  const formatters: Record<DurationUnit, Intl.NumberFormat> = useMemo(
-    () => ({
-      days: intlCache.numberFormat(locale, {style: 'unit', unit: 'day', unitDisplay}),
-      hours: intlCache.numberFormat(locale, {style: 'unit', unit: 'hour', unitDisplay}),
-      minutes: intlCache.numberFormat(locale, {style: 'unit', unit: 'minute', unitDisplay}),
-      seconds: intlCache.numberFormat(locale, {style: 'unit', unit: 'second', unitDisplay}),
-      milliseconds: intlCache.numberFormat(locale, {
-        style: 'unit',
-        unit: 'millisecond',
-        unitDisplay,
-      }),
-    }),
-    [locale, unitDisplay],
-  )
+  const formatters = useFormatters(locale, unitDisplay)
 
   const parts: string[] = []
   for (const period of PERIODS) {
@@ -112,6 +99,26 @@ export function useFormattedDuration(
   const iso8601 = durationToISO8601(duration, isNegative)
 
   return {formatted, iso8601}
+}
+
+function useFormatters(
+  locale: string,
+  unitDisplay: NonNullable<UseFormattedDurationOptions['style']>,
+): Record<DurationUnit, Intl.NumberFormat> {
+  return useMemo(
+    () => ({
+      days: intlCache.numberFormat(locale, {style: 'unit', unit: 'day', unitDisplay}),
+      hours: intlCache.numberFormat(locale, {style: 'unit', unit: 'hour', unitDisplay}),
+      minutes: intlCache.numberFormat(locale, {style: 'unit', unit: 'minute', unitDisplay}),
+      seconds: intlCache.numberFormat(locale, {style: 'unit', unit: 'second', unitDisplay}),
+      milliseconds: intlCache.numberFormat(locale, {
+        style: 'unit',
+        unit: 'millisecond',
+        unitDisplay,
+      }),
+    }),
+    [locale, unitDisplay],
+  )
 }
 
 /**

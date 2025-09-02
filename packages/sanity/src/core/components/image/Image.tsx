@@ -1,6 +1,7 @@
 import createImageUrlBuilder from '@sanity/image-url'
 import {type ImageUrlFitMode} from '@sanity/types'
 import {type ForwardedRef, forwardRef, type HTMLAttributes, useMemo} from 'react'
+import {type SanityClient} from 'sanity'
 
 import {useClient} from '../../hooks'
 import {DEFAULT_STUDIO_CLIENT_OPTIONS} from '../../studioClient'
@@ -44,9 +45,7 @@ export const Image = forwardRef(function Image(
   ref: ForwardedRef<HTMLImageElement>,
 ) {
   const {dpr, fit, height, source, width, ...restProps} = props
-  const client = useClient(DEFAULT_STUDIO_CLIENT_OPTIONS)
-  const imageUrlBuilder = useMemo(() => createImageUrlBuilder(client), [client])
-  const image = useMemo(() => imageUrlBuilder.image(source), [imageUrlBuilder, source])
+  const image = useImage(source)
 
   const url = useMemo(() => {
     let b = image
@@ -61,3 +60,12 @@ export const Image = forwardRef(function Image(
 
   return <img {...restProps} ref={ref} src={url} />
 })
+
+function useImageUrlBuilder(client: SanityClient) {
+  return useMemo(() => createImageUrlBuilder(client), [client])
+}
+function useImage(source: ImageSource) {
+  const client = useClient(DEFAULT_STUDIO_CLIENT_OPTIONS)
+  const imageUrlBuilder = useImageUrlBuilder(client)
+  return useMemo(() => imageUrlBuilder.image(source), [imageUrlBuilder, source])
+}
