@@ -52,6 +52,7 @@ function useResolveDefaultComponent<T extends {schemaType?: SchemaType}>(props: 
     [componentResolver],
   )
 
+  // eslint-disable-next-line react-hooks/static-components -- this is fine
   return <DefaultResolvedComponent {...componentProps} renderDefault={renderDefault} />
 }
 

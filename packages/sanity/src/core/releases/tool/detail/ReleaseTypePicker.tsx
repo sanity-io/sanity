@@ -178,65 +178,63 @@ export function ReleaseTypePicker(props: {release: NotArchivedRelease}): React.J
     else setOpen(true)
   }
 
-  const PopoverContent = () => {
-    return (
-      <Stack space={1}>
-        <TabList space={0.5}>
-          <Tab
-            aria-controls="release-timing-asap"
-            id="release-timing-asap-tab"
-            onClick={() => handleButtonReleaseTypeChange('asap')}
-            label={t('release.type.asap')}
-            selected={releaseType === 'asap'}
+  const popoverContent = (
+    <Stack space={1}>
+      <TabList space={0.5}>
+        <Tab
+          aria-controls="release-timing-asap"
+          id="release-timing-asap-tab"
+          onClick={() => handleButtonReleaseTypeChange('asap')}
+          label={t('release.type.asap')}
+          selected={releaseType === 'asap'}
+        />
+        <Tab
+          aria-controls="release-timing-at-time"
+          id="release-timing-at-time-tab"
+          onClick={() => handleButtonReleaseTypeChange('scheduled')}
+          selected={releaseType === 'scheduled'}
+          label={t('release.type.scheduled')}
+        />
+        <Tab
+          aria-controls="release-timing-undecided"
+          id="release-timing-undecided-tab"
+          onClick={() => handleButtonReleaseTypeChange('undecided')}
+          selected={releaseType === 'undecided'}
+          label={t('release.type.undecided')}
+        />
+      </TabList>
+      {releaseType === 'scheduled' && (
+        <>
+          {isIntendedScheduleDateInPast && (
+            <Card margin={1} padding={2} radius={2} shadow={1} tone="critical">
+              <Text size={1}>{tRelease('schedule-dialog.publish-date-in-past-warning')}</Text>
+            </Card>
+          )}
+          <LazyTextInput
+            data-testid="date-input"
+            value={
+              intendedPublishAtTimezoneAdjusted
+                ? format(intendedPublishAtTimezoneAdjusted, dateInputFormat)
+                : undefined
+            }
+            onChange={handlePublishAtInputChange}
           />
-          <Tab
-            aria-controls="release-timing-at-time"
-            id="release-timing-at-time-tab"
-            onClick={() => handleButtonReleaseTypeChange('scheduled')}
-            selected={releaseType === 'scheduled'}
-            label={t('release.type.scheduled')}
+          <DatePicker
+            ref={datePickerRef}
+            monthPickerVariant={MONTH_PICKER_VARIANT.carousel}
+            calendarLabels={calendarLabels}
+            selectTime
+            padding={0}
+            value={intendedPublishAtTimezoneAdjusted}
+            onChange={handlePublishAtCalendarChange}
+            isPastDisabled
+            showTimeZone
+            timeZoneScope={CONTENT_RELEASES_TIME_ZONE_SCOPE}
           />
-          <Tab
-            aria-controls="release-timing-undecided"
-            id="release-timing-undecided-tab"
-            onClick={() => handleButtonReleaseTypeChange('undecided')}
-            selected={releaseType === 'undecided'}
-            label={t('release.type.undecided')}
-          />
-        </TabList>
-        {releaseType === 'scheduled' && (
-          <>
-            {isIntendedScheduleDateInPast && (
-              <Card margin={1} padding={2} radius={2} shadow={1} tone="critical">
-                <Text size={1}>{tRelease('schedule-dialog.publish-date-in-past-warning')}</Text>
-              </Card>
-            )}
-            <LazyTextInput
-              data-testid="date-input"
-              value={
-                intendedPublishAtTimezoneAdjusted
-                  ? format(intendedPublishAtTimezoneAdjusted, dateInputFormat)
-                  : undefined
-              }
-              onChange={handlePublishAtInputChange}
-            />
-            <DatePicker
-              ref={datePickerRef}
-              monthPickerVariant={MONTH_PICKER_VARIANT.carousel}
-              calendarLabels={calendarLabels}
-              selectTime
-              padding={0}
-              value={intendedPublishAtTimezoneAdjusted}
-              onChange={handlePublishAtCalendarChange}
-              isPastDisabled
-              showTimeZone
-              timeZoneScope={CONTENT_RELEASES_TIME_ZONE_SCOPE}
-            />
-          </>
-        )}
-      </Stack>
-    )
-  }
+        </>
+      )}
+    </Stack>
+  )
 
   const tone = release.state === 'published' ? 'positive' : getReleaseTone(release)
 
@@ -267,7 +265,7 @@ export function ReleaseTypePicker(props: {release: NotArchivedRelease}): React.J
 
   return (
     <Popover
-      content={<PopoverContent />}
+      content={popoverContent}
       open={open}
       padding={1}
       placement="bottom-start"

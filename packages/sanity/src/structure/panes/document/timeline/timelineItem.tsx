@@ -15,7 +15,7 @@ import {
 import {css, styled} from 'styled-components'
 
 import {Tooltip} from '../../../../ui-components'
-import {getTimelineEventIconComponent} from './helpers'
+import {getTimelineEventIcon} from './helpers'
 import {TIMELINE_ITEM_I18N_KEY_MAPPING} from './timelineI18n'
 import {UserAvatarStack} from './userAvatarStack'
 import {type ChunksWithCollapsedDrafts} from './utils'
@@ -115,7 +115,7 @@ export function TimelineItem({
 }: TimelineItemProps) {
   const {t} = useTranslation('studio')
   const {type, endTimestamp: timestamp} = chunk
-  const IconComponent = getTimelineEventIconComponent(type)
+  const icon = getTimelineEventIcon(type)
   const authorUserIds = Array.from(chunk.authors)
   const collaboratorsUsersIds = collaborators ? Array.from(collaborators) : []
   const isSelectable = type !== 'delete'
@@ -159,7 +159,7 @@ export function TimelineItem({
           <div style={{position: 'relative'}}>
             <UserAvatarStack maxLength={3} userIds={authorUserIds} size={2} />
             <IconBox align="center" justify="center" $color={TIMELINE_ITEM_EVENT_TONE[type]}>
-              <Text size={0}>{IconComponent && <IconComponent />}</Text>
+              <Text size={0}>{icon}</Text>
             </IconBox>
           </div>
           <Stack space={2}>

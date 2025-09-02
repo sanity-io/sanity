@@ -44,6 +44,7 @@ export function Decorator(props: BlockDecoratorRenderProps) {
     return CustomComponent ? (
       <CustomComponent {...componentProps}>{children}</CustomComponent>
     ) : (
+      // eslint-disable-next-line react-hooks/static-components -- this is fine
       <DefaultComponent {...componentProps}>{children}</DefaultComponent>
     )
   }, [CustomComponent, DefaultComponent, children, focused, schemaType, selected, value])
