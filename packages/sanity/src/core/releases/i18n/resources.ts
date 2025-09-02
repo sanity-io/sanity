@@ -356,6 +356,10 @@ const releasesLocaleStrings = {
 
   /** Text for when the release has validated all documents */
   'summary.all-documents-validated': 'All documents validated, no conflicts found',
+
+  /** Text for when the release has no errors found */
+  'summary.all-documents-errors-found': 'All documents validated, conflicts found',
+
   /** Text for when the release has some errors found */
   'summary.errors-found':
     'In order to publish or schedule the release, please resolve the conflicts found in the documents',

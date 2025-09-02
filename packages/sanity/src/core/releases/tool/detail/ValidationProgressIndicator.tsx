@@ -83,7 +83,9 @@ export function ValidationProgressIndicator({documents}: {documents: DocumentInR
           <Text muted size={1}>
             {isValidating
               ? t('summary.validating-documents', {validatedCount, totalCount})
-              : t('summary.all-documents-validated')}
+              : hasError
+                ? t('summary.all-documents-errors-found')
+                : t('summary.all-documents-validated')}
           </Text>
         )}
       </Flex>
