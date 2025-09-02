@@ -1,8 +1,8 @@
 import {TextInput} from '@sanity/ui'
 import {useEffect} from 'react'
 
-import {type NumberInputProps} from '../types'
-import {getValidationRule} from '../utils/getValidationRule'
+import {type NumberInputProps} from '../../types'
+import {getValidationRule} from '../../utils/getValidationRule'
 
 function getScrollableParent(node: EventTarget) {
   if (!node || !(node instanceof Element)) return null
