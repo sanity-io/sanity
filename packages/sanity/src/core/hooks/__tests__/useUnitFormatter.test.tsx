@@ -43,6 +43,11 @@ describe('useUnitFormatter', () => {
     expect(result.current).toBe('1 meter')
   })
 
+  it('temporary failing test to verify auto-retry workflow', () => {
+    // This test is intentionally failing to test the auto-retry GitHub workflow
+    expect(true).toBe(false)
+  })
+
   it('formats singular/plural correctly', () => {
     const {result} = renderHook(() => useUnitFormatter()(2, 'meter'), {wrapper})
     expect(result.current).toBe('2 meters')
