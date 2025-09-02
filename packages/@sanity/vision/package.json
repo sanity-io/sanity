@@ -75,7 +75,7 @@
     "quick-lru": "^5.1.1",
     "react-compiler-runtime": "19.1.0-rc.3",
     "react-fast-compare": "^3.2.2",
-    "react-rx": "^4.1.31",
+    "react-rx": "^4.1.32",
     "rxjs": "^7.8.2",
     "use-effect-event": "^2.0.3"
   },
