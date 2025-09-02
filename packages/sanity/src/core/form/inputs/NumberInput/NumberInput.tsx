@@ -1,5 +1,5 @@
 import {TextInput} from '@sanity/ui'
-import {useEffect} from 'react'
+import {useEffect, useImperativeHandle, useRef} from 'react'
 
 import {type NumberInputProps} from '../../types'
 import {getValidationRule} from '../../utils/getValidationRule'
@@ -57,7 +57,8 @@ function preventWheel(event: WheelEvent) {
  * @beta
  */
 export function NumberInput(props: NumberInputProps) {
-  const {schemaType, validationError, elementProps} = props
+  const {schemaType, validationError} = props
+  const {ref: inputElementRef, ...elementProps} = props.elementProps
 
   // Show numpad on mobile if only positive numbers is preferred
   const minRule = getValidationRule(schemaType, 'min')
@@ -68,19 +69,21 @@ export function NumberInput(props: NumberInputProps) {
 
   const inputMode = onlyPositiveNumber ? (onlyIntegers ? 'numeric' : 'decimal') : 'text'
 
-  const inputElementRef = elementProps.ref
+  const ref = useRef<HTMLInputElement | null>(null)
+  useImperativeHandle(inputElementRef, () => ref.current)
 
   useEffect(() => {
-    const element = inputElementRef.current
-    element.addEventListener('wheel', preventWheel)
+    const element = ref.current
+    element?.addEventListener('wheel', preventWheel)
     return () => {
-      element.removeEventListener('wheel', preventWheel)
+      element?.removeEventListener('wheel', preventWheel)
     }
-  }, [inputElementRef])
+  }, [])
 
   return (
     <TextInput
       {...elementProps}
+      ref={ref}
       type="number"
       step="any"
       inputMode={inputMode}
