@@ -67,9 +67,9 @@ export function ArrayOfObjectsField(props: {
     member,
     renderAnnotation,
     renderBlock,
-    renderField,
+    renderField: RenderField,
     renderInlineBlock,
-    renderInput,
+    renderInput: RenderInput,
     renderItem,
     renderPreview,
   } = props
@@ -398,8 +398,8 @@ export function ArrayOfObjectsField(props: {
       renderAnnotation,
       renderBlock,
       renderInlineBlock,
-      renderInput,
-      renderField,
+      renderInput: RenderInput,
+      renderField: RenderField,
       renderItem,
       renderPreview,
       elementProps,
@@ -434,55 +434,11 @@ export function ArrayOfObjectsField(props: {
     renderAnnotation,
     renderBlock,
     renderInlineBlock,
-    renderInput,
-    renderField,
+    RenderInput,
+    RenderField,
     renderItem,
     renderPreview,
     elementProps,
-  ])
-
-  const renderedInput = useMemo(() => renderInput(inputProps), [inputProps, renderInput])
-
-  const fieldProps = useMemo((): Omit<ArrayFieldProps, 'renderDefault'> => {
-    return {
-      actions: fieldActions,
-      name: member.name,
-      index: member.index,
-      level: member.field.level,
-      value: member.field.value,
-      title: member.field.schemaType.title,
-      description: member.field.schemaType.description,
-      collapsible: member.collapsible,
-      collapsed: member.collapsed,
-      changed: member.field.changed,
-      onCollapse: handleCollapse,
-      onExpand: handleExpand,
-      schemaType: member.field.schemaType,
-      inputId: member.field.id,
-      path: member.field.path,
-      presence: member.field.presence,
-      validation: member.field.validation,
-      children: renderedInput,
-      inputProps: inputProps as ArrayOfObjectsInputProps,
-    }
-  }, [
-    fieldActions,
-    member.name,
-    member.index,
-    member.field.level,
-    member.field.value,
-    member.field.schemaType,
-    member.field.changed,
-    member.field.id,
-    member.field.path,
-    member.field.presence,
-    member.field.validation,
-    member.collapsible,
-    member.collapsed,
-    handleCollapse,
-    handleExpand,
-    renderedInput,
-    inputProps,
   ])
 
   return (
@@ -495,7 +451,29 @@ export function ArrayOfObjectsField(props: {
       onPathBlur={onPathBlur}
       onPathFocus={onPathFocus}
     >
-      {useMemo(() => renderField(fieldProps), [fieldProps, renderField])}
+      <RenderField
+        actions={fieldActions}
+        name={member.name}
+        index={member.index}
+        level={member.field.level}
+        value={member.field.value}
+        title={member.field.schemaType.title}
+        description={member.field.schemaType.description}
+        // @ts-expect-error -- TODO: fix this
+        collapsible={member.collapsible}
+        collapsed={member.collapsed}
+        changed={member.field.changed}
+        onCollapse={handleCollapse}
+        onExpand={handleExpand}
+        schemaType={member.field.schemaType}
+        inputId={member.field.id}
+        path={member.field.path}
+        presence={member.field.presence}
+        validation={member.field.validation}
+        inputProps={inputProps as ArrayOfObjectsInputProps}
+      >
+        <RenderInput {...inputProps} />
+      </RenderField>
     </FormCallbacksProvider>
   )
 }
