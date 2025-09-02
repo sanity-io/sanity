@@ -2023,7 +2023,7 @@ importers:
         specifier: ^5.0.0
         version: 5.0.0
       xstate:
-        specifier: ^5.20.2
+        specifier: ^5.21.0
         version: 5.21.0
       yargs:
         specifier: ^17.7.2
