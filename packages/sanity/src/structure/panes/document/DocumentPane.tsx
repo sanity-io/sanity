@@ -146,6 +146,7 @@ function DocumentPaneInner(props: DocumentPaneProviderProps) {
       >
         <DiffViewDocumentLayout documentId={options.id} documentType={options.type}>
           <CommentsWrapper documentId={options.id} documentType={options.type}>
+            {/* eslint-disable-next-line react-hooks/static-components -- useDocumentLayoutComponent() is stable */}
             <DocumentLayout documentId={options.id} documentType={options.type} />
           </CommentsWrapper>
         </DiffViewDocumentLayout>

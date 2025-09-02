@@ -14,7 +14,7 @@ import {releasesLocaleNamespace} from '../../../i18n'
 import {getReleaseIdFromReleaseDocumentId} from '../../../util/getReleaseIdFromReleaseDocumentId'
 import {getReleaseTone} from '../../../util/getReleaseTone'
 import {type TableRowProps} from '../../components/Table/Table'
-import {type VisibleColumn} from '../../components/Table/types'
+import {type InjectedTableProps, type VisibleColumn} from '../../components/Table/types'
 import {type TableRelease} from '../ReleasesOverview'
 
 export const ReleaseNameCell: VisibleColumn<TableRelease>['cell'] = ({
@@ -39,20 +39,9 @@ export const ReleaseNameCell: VisibleColumn<TableRelease>['cell'] = ({
     }
   }, [isReleasePinned, releaseId, setPerspective])
 
-  const WrapperBox = useCallback(
-    ({children}: {children: React.ReactNode}) => {
-      return (
-        <Box {...cellProps} paddingLeft={3} flex={1} paddingY={1} paddingRight={2} sizing="border">
-          {children}
-        </Box>
-      )
-    },
-    [cellProps],
-  )
-
   if (release.isLoading) {
     return (
-      <WrapperBox>
+      <WrapperBox cellProps={cellProps}>
         <Flex align="center" gap={2}>
           <Skeleton animated radius={1} style={PREVIEW_SIZES.default.media} />
           <TitleSkeleton />
@@ -74,7 +63,7 @@ export const ReleaseNameCell: VisibleColumn<TableRelease>['cell'] = ({
   const displayTitle = release.metadata.title || tCore('release.placeholder-untitled-release')
 
   return (
-    <WrapperBox>
+    <WrapperBox cellProps={cellProps}>
       <Tooltip
         disabled={!release.isDeleted}
         content={
@@ -122,5 +111,19 @@ export const ReleaseNameCell: VisibleColumn<TableRelease>['cell'] = ({
         </Flex>
       </Tooltip>
     </WrapperBox>
+  )
+}
+
+function WrapperBox({
+  children,
+  cellProps,
+}: {
+  children: React.ReactNode
+  cellProps: InjectedTableProps
+}) {
+  return (
+    <Box {...cellProps} paddingLeft={3} flex={1} paddingY={1} paddingRight={2} sizing="border">
+      {children}
+    </Box>
   )
 }

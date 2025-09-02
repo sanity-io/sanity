@@ -73,6 +73,7 @@ export function StudioLayout() {
   // The default component is the `StudioLayoutComponent` defined below.
   const Layout = useLayoutComponent()
 
+  // eslint-disable-next-line react-hooks/static-components -- this is fine, the useLayoutComponent() hook is stable
   return <Layout />
 }
 
@@ -174,6 +175,7 @@ export function StudioLayoutComponent() {
   return (
     <Flex data-ui="ToolScreen" direction="column" height="fill" data-testid="studio-layout">
       <NavbarContext.Provider value={navbarContextValue}>
+        {/* eslint-disable-next-line react-hooks/static-components -- this is fine, useNavbarComponent() is stable */}
         <Navbar />
       </NavbarContext.Provider>
       {isLegacyDeskRedirect && <RedirectingScreen />}
@@ -197,6 +199,7 @@ export function StudioLayoutComponent() {
               }
             >
               <Suspense fallback={<LoadingBlock showText />}>
+                {/* eslint-disable-next-line react-hooks/static-components -- this is fine, useActiveToolLayoutComponent() is stable */}
                 <ActiveToolLayout activeTool={activeTool} />
               </Suspense>
             </RouteScope>

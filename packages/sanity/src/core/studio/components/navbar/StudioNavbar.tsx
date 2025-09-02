@@ -232,6 +232,7 @@ export function StudioNavbar(props: Omit<NavbarProps, 'renderDefault'>) {
             {/** Center flex */}
             <Flex align="center" justify="center">
               {shouldRender.tools && (
+                // eslint-disable-next-line react-hooks/static-components -- this is fine, useToolMenuComponent() is stable
                 <ToolMenu
                   activeToolName={activeToolName}
                   closeSidebar={handleCloseDrawer}

@@ -337,38 +337,36 @@ export function ReleasesOverview() {
     [releaseGroupMode, t],
   )
 
-  const NoRelease = () => {
-    return (
-      <Flex
-        direction="column"
-        flex={1}
-        justify={hasNoReleases ? 'center' : 'flex-start'}
-        align={hasNoReleases ? 'center' : 'flex-start'}
-        style={{position: 'relative'}}
-      >
-        <Flex gap={3} direction="column" style={{maxWidth: '300px'}}>
-          <ReleaseIllustration />
-          <Text as="h1" size={1} weight="semibold" data-testid="no-releases-info-text">
-            {t('overview.title')}
-          </Text>
-          <Text size={1} muted>
-            {t('overview.description')}
-          </Text>
-          <Inline space={2}>
-            {createReleaseButton}
-            <Button
-              as="a"
-              href="https://www.sanity.io/docs/content-releases"
-              target="_blank"
-              mode="ghost"
-              onClick={handleOnClickCreateRelease}
-              text={t('overview.action.documentation')}
-            />
-          </Inline>
-        </Flex>
+  const noRelease = (
+    <Flex
+      direction="column"
+      flex={1}
+      justify={hasNoReleases ? 'center' : 'flex-start'}
+      align={hasNoReleases ? 'center' : 'flex-start'}
+      style={{position: 'relative'}}
+    >
+      <Flex gap={3} direction="column" style={{maxWidth: '300px'}}>
+        <ReleaseIllustration />
+        <Text as="h1" size={1} weight="semibold" data-testid="no-releases-info-text">
+          {t('overview.title')}
+        </Text>
+        <Text size={1} muted>
+          {t('overview.description')}
+        </Text>
+        <Inline space={2}>
+          {createReleaseButton}
+          <Button
+            as="a"
+            href="https://www.sanity.io/docs/content-releases"
+            target="_blank"
+            mode="ghost"
+            onClick={handleOnClickCreateRelease}
+            text={t('overview.action.documentation')}
+          />
+        </Inline>
       </Flex>
-    )
-  }
+    </Flex>
+  )
 
   return (
     <Flex direction="row" flex={1} style={{height: '100%'}}>
@@ -376,7 +374,7 @@ export function ReleasesOverview() {
         {showCalendar && renderCalendarFilter}
 
         {hasNoReleases ? (
-          <NoRelease />
+          noRelease
         ) : (
           <>
             <Flex direction="column" flex={1} style={{position: 'relative'}}>
