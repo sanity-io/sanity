@@ -1,11 +1,7 @@
 import {expect} from '@playwright/test'
 
 import {withDefaultClient} from '../../helpers'
-import {
-  expectCreatedStatus,
-  expectEditedStatus,
-  expectPublishedStatus,
-} from '../../helpers/documentStatusAssertions'
+import {expectEditedStatus, expectPublishedStatus} from '../../helpers/documentStatusAssertions'
 import {test} from '../../studio-test'
 
 withDefaultClient((context) => {
