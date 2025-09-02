@@ -7,6 +7,8 @@ import {Button} from '../../../../ui-components'
 import {CalendarDay} from '../../../components/inputs/DateFilters/calendar/CalendarDay'
 import {type CalendarProps} from '../../../components/inputs/DateFilters/calendar/CalendarFilter'
 import {useActiveReleases} from '../../store/useActiveReleases'
+import {shouldShowReleaseInView} from '../../util/util'
+import {type CardinalityView} from './queryParamUtils'
 import {useTimezoneAdjustedDateTimeRange} from './useTimezoneAdjustedDateTimeRange'
 
 export const ReleaseCalendarFilterDay: CalendarProps['renderCalendarDay'] = (props) => {
@@ -31,6 +33,37 @@ export const ReleaseCalendarFilterDay: CalendarProps['renderCalendarDay'] = (pro
   })
 
   return <CalendarDay {...props} dateStyles={dayHasReleases ? {fontWeight: 700} : {}} />
+}
+
+export const createReleaseCalendarFilterDay = (
+  cardinalityView: CardinalityView,
+): CalendarProps['renderCalendarDay'] => {
+  // eslint-disable-next-line react/display-name
+  return (props) => {
+    const {data: allReleases} = useActiveReleases()
+    const getTimezoneAdjustedDateTimeRange = useTimezoneAdjustedDateTimeRange()
+
+    const {date} = props
+
+    const [startOfDayForTimeZone, endOfDayForTimeZone] = getTimezoneAdjustedDateTimeRange(date)
+
+    const releases = allReleases?.filter(shouldShowReleaseInView(cardinalityView))
+
+    const dayHasReleases = releases?.some((release) => {
+      const releasePublishAt = release.publishAt || release.metadata.intendedPublishAt
+      if (!releasePublishAt) return false
+
+      const publishDateUTC = new Date(releasePublishAt)
+
+      return (
+        release.metadata.releaseType === 'scheduled' &&
+        publishDateUTC >= startOfDayForTimeZone &&
+        publishDateUTC <= endOfDayForTimeZone
+      )
+    })
+
+    return <CalendarDay {...props} dateStyles={dayHasReleases ? {fontWeight: 700} : {}} />
+  }
 }
 
 const MotionButton = motion.create(Button)

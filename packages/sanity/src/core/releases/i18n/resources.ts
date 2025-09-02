@@ -12,16 +12,20 @@ const releasesLocaleStrings = {
   'action.archive.tooltip': 'Unschedule this release to archive it',
   /** Action text for showing the archived releases */
   'action.archived': 'Archived',
-  /** Action text for reverting a release by creating a new release */
+  /** Action text for creating a revert release by creating a new release */
   'action.create-revert-release': 'Create a new release',
   /** Action text for deleting a release */
   'action.delete-release': 'Delete release',
+  /** Action text for showing drafts (scheduled single-document releases) */
+  'action.drafts': 'Drafts',
   /** Action text for duplicating a release */
   'action.duplicate-release': 'Duplicate release',
   /** Action text for editing a release */
   'action.edit': 'Edit release',
   /** Action text for opening a release */
   'action.open': 'Active',
+  /** Action text for showing releases (multi-document releases) */
+  'action.releases': 'Releases',
   /** Action text for scheduling a release */
   'action.schedule': 'Schedule release...',
   /** Action text for scheduling publish of a draft document */

@@ -2,6 +2,7 @@ import {type EditableReleaseDocument, type ReleaseDocument, type ReleaseState} f
 
 import {type SelectedPerspective} from '../../perspective/types'
 import {formatRelativeLocale, getVersionFromId, isVersionId} from '../../util'
+import {type CardinalityView} from '../tool/overview/queryParamUtils'
 import {DEFAULT_RELEASE_TYPE, LATEST} from './const'
 import {createReleaseId} from './createReleaseId'
 
@@ -109,4 +110,20 @@ export function isCardinalityOneRelease(release: ReleaseDocument): release is Re
   }
 } {
   return release.metadata.cardinality === 'one'
+}
+
+/**
+ * Helper function to determine if a release should be shown based on the cardinality view
+ * @param cardinalityView - The current cardinality view ('releases' or 'drafts')
+ * @returns A function that takes a release and returns true if it should be shown in the current view
+ * @internal
+ */
+export function shouldShowReleaseInView(
+  cardinalityView: CardinalityView,
+): (release: ReleaseDocument) => boolean {
+  return (release: ReleaseDocument): boolean => {
+    const isCardinalityOne = isCardinalityOneRelease(release)
+    // Show cardinality 'one' releases in 'drafts' view, and cardinality 'many'/undefined in 'releases' view
+    return cardinalityView === 'drafts' ? isCardinalityOne : !isCardinalityOne
+  }
 }
