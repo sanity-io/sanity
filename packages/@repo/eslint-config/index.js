@@ -144,6 +144,8 @@ export default [
           noSortAlphabetically: true,
         },
       ],
+      // Since we use React Compiler we don't need to warn about arrow functions
+      'react/jsx-no-bind': 'off',
     },
     settings: {
       'import/extensions': extensions,
@@ -202,6 +204,18 @@ export default [
     },
   },
   {
+    // React Compiler RC3 added a lot of new checks, it'll take a while to fix all of them so we'll change them from error to warn in the mean time
+    name: 'react-hooks/react-compiler/temp-disable',
+    rules: {
+      'react-hooks/immutability': 'warn',
+      'react-hooks/preserve-manual-memoization': 'warn',
+      'react-hooks/purity': 'warn',
+      'react-hooks/refs': 'warn',
+      'react-hooks/set-state-in-effect': 'warn',
+      'react-hooks/static-components': 'warn',
+    },
+  },
+  {
     // Don't fail React Compiler rules on test code, warn instead (as it might be an opportunity to delete manual useMemo and such from tests)
     name: 'sanity/no-react-compiler-on-test-code',
     files: [
@@ -212,9 +226,9 @@ export default [
       '**/playwright-ct/**',
     ],
     rules: {
-      'react-hooks/set-state-in-effect': 'warn',
       'react-hooks/preserve-manual-memoization': 'warn',
       'react-hooks/refs': 'warn',
+      'react-hooks/set-state-in-effect': 'warn',
       'react-hooks/static-components': 'warn',
     },
   },
