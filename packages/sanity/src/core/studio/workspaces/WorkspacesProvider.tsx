@@ -1,8 +1,7 @@
-import {type ComponentType, type ReactNode, useEffect, useState} from 'react'
+import {type ComponentType, type ReactNode, useDeferredValue, useMemo} from 'react'
 import {WorkspacesContext} from 'sanity/_singletons'
 
 import {type Config, prepareConfig} from '../../config'
-import {type WorkspacesContextValue} from './WorkspacesContext'
 
 /** @internal */
 export interface WorkspacesProviderProps {
@@ -14,16 +13,17 @@ export interface WorkspacesProviderProps {
 
 /** @internal */
 export function WorkspacesProvider({
-  config,
+  config: _config,
   children,
   basePath,
   LoadingComponent,
 }: WorkspacesProviderProps) {
-  const [workspaces, setWorkspaces] = useState<WorkspacesContextValue | null>(null)
-
-  useEffect(() => {
-    setWorkspaces(prepareConfig(config, {basePath}).workspaces)
-  }, [basePath, config])
+  // Wait with resolving the config, as prepareConfig is expensive, until the first render is done, this is accomplished by using the second arg of `useDeferredValue`
+  const config = useDeferredValue(_config, null)
+  const workspaces = useMemo(
+    () => (config ? prepareConfig(config, {basePath}).workspaces : null),
+    [config, basePath],
+  )
 
   if (workspaces === null) {
     return <LoadingComponent />
