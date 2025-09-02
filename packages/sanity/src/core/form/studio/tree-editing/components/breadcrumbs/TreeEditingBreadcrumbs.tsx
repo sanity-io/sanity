@@ -81,7 +81,6 @@ const MenuButton = forwardRef(function MenuButton(
     <StyledButton
       data-active={isSelected ? 'true' : 'false'}
       mode="bleed"
-      // eslint-disable-next-line react/jsx-no-bind
       onClick={() => onPathSelect(item.path)}
       padding={1}
       ref={ref}

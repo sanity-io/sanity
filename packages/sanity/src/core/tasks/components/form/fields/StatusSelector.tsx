@@ -67,7 +67,6 @@ export function StatusSelector(props: StatusSelectorProps) {
                 text={option.title || option.value}
                 pressed={isSelected}
                 iconRight={isSelected && <CheckmarkIcon />}
-                // eslint-disable-next-line react/jsx-no-bind
                 onClick={() => handleStatusChange(option.value)}
               />
             )
