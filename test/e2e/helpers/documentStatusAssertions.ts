@@ -9,7 +9,6 @@ const documentStatusPatterns = {
   created: /Created (just now|\d+ sec\. ago)/i,
   unpublished: /Unpublished (just now|\d+ sec\. ago)/i,
   edited: /Edited (just now|\d+ sec\. ago)/i,
-  draftCreated: /Draft created/i,
 } as const
 
 /**
@@ -46,19 +45,6 @@ export async function expectCreatedStatus(
   options: DocumentStatusOptions = DEFAULT_OPTIONS,
 ) {
   await expect(statusElement).toContainText(documentStatusPatterns.created, {
-    useInnerText: options.useInnerText,
-    timeout: options.timeout,
-  })
-}
-
-/**
- * Assert that a document status element shows a draft created state
- */
-export async function expectDraftCreatedStatus(
-  statusElement: Locator,
-  options: DocumentStatusOptions = DEFAULT_OPTIONS,
-) {
-  await expect(statusElement).toContainText(documentStatusPatterns.draftCreated, {
     useInnerText: options.useInnerText,
     timeout: options.timeout,
   })
