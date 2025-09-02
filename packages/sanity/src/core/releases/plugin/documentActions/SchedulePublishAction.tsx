@@ -8,6 +8,7 @@ import {
   type DocumentActionProps,
 } from '../../../config/document/actions'
 import {useTranslation} from '../../../i18n'
+import {usePerspective} from '../../../perspective/usePerspective'
 import {useDocumentPreviewValues} from '../../../tasks/hooks/useDocumentPreviewValues'
 import {ScheduleDraftDialog} from '../../components/dialog/ScheduleDraftDialog'
 import {useScheduleDraftOperations} from '../../hooks/useScheduleDraftOperations'
@@ -23,11 +24,13 @@ export const SchedulePublishAction: DocumentActionComponent = (
   const {t} = useTranslation(releasesLocaleNamespace)
   const {schedulePublish} = useScheduleDraftOperations()
   const toast = useToast()
+  const {perspectiveStack} = usePerspective()
 
   // Get document preview values to extract the title
   const {value: previewValues} = useDocumentPreviewValues({
     documentId: id,
     documentType: type,
+    perspectiveStack,
   })
 
   const [dialogOpen, setDialogOpen] = useState(false)
@@ -78,7 +81,7 @@ export const SchedulePublishAction: DocumentActionComponent = (
   )
 
   return {
-    disabled: !!draft,
+    disabled: !draft,
     icon: CalendarIcon,
     label: t('action.schedule-publish'),
     title: t('action.schedule-publish'),
