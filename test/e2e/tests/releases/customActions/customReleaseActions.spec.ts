@@ -79,7 +79,16 @@ test.describe('Custom Release Actions', () => {
       test.beforeEach(async ({page}) => {
         test.slow()
         await page.goto(setupPath)
-        await page.waitForLoadState('networkidle')
+        await page.waitForLoadState('load', WAIT_OPTIONS)
+
+        // Wait for page-specific elements to be ready
+        if (isOverview) {
+          // On overview page, wait for the releases table
+          await expect(page.getByRole('table')).toBeVisible(WAIT_OPTIONS)
+        } else {
+          // On individual release page, wait for the menu button
+          await expect(page.getByTestId('release-menu-button')).toBeVisible(WAIT_OPTIONS)
+        }
       })
 
       test('should display custom release actions in menu', async ({page}) => {
@@ -120,10 +129,8 @@ test.describe('Custom Release Actions', () => {
         await menuItem.hover()
 
         // Wait for tooltip to appear
-        await page.waitForTimeout(300)
-        await expect(
-          page.getByText(`Test action for release "${uniqueReleaseTitle}" with 3 documents`),
-        ).toBeVisible()
+        const tooltipText = `Test action for release "${uniqueReleaseTitle}" with 3 documents`
+        await expect(page.getByText(tooltipText)).toBeVisible({timeout: 10000})
       })
     })
   }
