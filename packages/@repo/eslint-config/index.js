@@ -207,7 +207,6 @@ export default [
     // React Compiler RC3 added a lot of new checks, it'll take a while to fix all of them so we'll change them from error to warn in the mean time
     name: 'react-hooks/react-compiler/temp-disable',
     rules: {
-      'react-hooks/immutability': 'warn',
       'react-hooks/preserve-manual-memoization': 'warn',
       'react-hooks/refs': 'warn',
       'react-hooks/set-state-in-effect': 'warn',

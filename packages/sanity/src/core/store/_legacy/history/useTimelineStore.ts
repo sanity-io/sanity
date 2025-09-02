@@ -138,7 +138,7 @@ export function useTimelineStore({
     controller.setRange(since || null, rev || null)
     timelineController$.next(controller)
 
-    controller.handler = (err, innerController) => {
+    controller.setHandler((err, innerController) => {
       if (err) {
         timelineController$.error(err)
       } else {
@@ -153,7 +153,7 @@ export function useTimelineStore({
           timelineController$.next(innerController)
         }, 0)
       }
-    }
+    })
     controller.resume()
     return () => controller.suspend()
   }, [rev, since, controller, timelineController$])
