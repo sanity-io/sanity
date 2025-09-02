@@ -1,6 +1,6 @@
 import {Card, Flex, useGlobalKeyDown, useLayer} from '@sanity/ui'
 import {isHotkey} from 'is-hotkey-esm'
-import {type ReactNode, useCallback, useEffect, useState} from 'react'
+import {type ReactNode, useCallback, useLayoutEffect, useState} from 'react'
 import FocusLock from 'react-focus-lock'
 import {styled} from 'styled-components'
 
@@ -75,22 +75,16 @@ function calcPopoverOffset(element: HTMLElement) {
 function usePopoverOffset(element: HTMLElement | null) {
   const [offset, setOffset] = useState<number | null>(element && calcPopoverOffset(element))
 
-  const handleWindowResize = useCallback(() => {
-    if (element) {
+  useLayoutEffect(() => {
+    if (!element) return undefined
+    // eslint-disable-next-line react-hooks/set-state-in-effect -- measuring dimensions in a useLayoutEffect is ok
+    setOffset(calcPopoverOffset(element))
+    const handleWindowResize = () => {
       setOffset(calcPopoverOffset(element))
     }
-  }, [element])
-
-  useEffect(() => {
-    if (element) {
-      setOffset(calcPopoverOffset(element))
-    }
-  }, [element])
-
-  useEffect(() => {
     window.addEventListener('resize', handleWindowResize)
     return () => window.removeEventListener('resize', handleWindowResize)
-  }, [handleWindowResize])
+  }, [element])
 
   return offset
 }
