@@ -1,3 +1,4 @@
+import {ConditionalWrapper} from '../../../ui-components/conditionalWrapper/ConditionalWrapper'
 import {type LayoutProps} from '../../config/studio/types'
 import {
   ScheduledPublishingEnabledProvider,
@@ -11,11 +12,16 @@ function SchedulePublishingStudioLayoutInner(props: LayoutProps) {
     return props.renderDefault(props)
   }
 
-  const children = props.renderDefault(props)
-  if (mode === 'upsell') {
-    return <SchedulePublishingUpsellProvider>{children}</SchedulePublishingUpsellProvider>
-  }
-  return children
+  return (
+    <ConditionalWrapper
+      condition={mode === 'upsell'}
+      wrapper={(children) => (
+        <SchedulePublishingUpsellProvider>{children}</SchedulePublishingUpsellProvider>
+      )}
+    >
+      {props.renderDefault(props)}
+    </ConditionalWrapper>
+  )
 }
 
 export function SchedulePublishingStudioLayout(props: LayoutProps) {

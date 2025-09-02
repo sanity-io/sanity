@@ -1,4 +1,4 @@
-import {createImageUrlBuilder} from '@sanity/image-url'
+import imageUrlBuilder from '@sanity/image-url'
 import {type Reference, type ReferenceSchemaType} from '@sanity/types'
 import {Button, Spinner} from '@sanity/ui'
 import {
@@ -30,7 +30,7 @@ export const AuthorReferenceInput = forwardRef(function AuthorReferenceInput(
   const {readOnly} = inputProps
   const client = useClient({apiVersion: '2022-09-09'})
   const current = value && value._ref
-  const imageBuilder = createImageUrlBuilder(client)
+  const imageBuilder = imageUrlBuilder(client)
 
   const inputRef = useRef<HTMLButtonElement | null>(null)
 

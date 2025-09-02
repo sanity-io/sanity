@@ -15,13 +15,20 @@ function addScope(
   routerState: Record<string, any>,
   scope: string,
   scopedState: Record<string, any>,
+  _searchParams?: Record<string, any>,
+  __unsafe_disableScopedSearchParams?: boolean,
 ) {
-  return (
-    scopedState && {
-      ...routerState,
-      [scope]: scopedState,
-    }
-  )
+  const nextParentState = scopedState && {
+    ...routerState,
+    [scope]: scopedState,
+  }
+  if (__unsafe_disableScopedSearchParams) {
+    // Move search params to parent scope
+    nextParentState._searchParams = _searchParams
+  } else {
+    nextParentState[scope]._searchParams = _searchParams
+  }
+  return nextParentState
 }
 
 /**
@@ -85,14 +92,13 @@ export const RouteScope = function RouteScope(props: RouteScopeProps): React.JSX
       if (_nextState === null) return null
 
       const {_searchParams, ...nextState} = _nextState || {}
-      const nextParentState = addScope(parentStateRef.current, scope, nextState)
-      if (__unsafe_disableScopedSearchParams) {
-        // Move search params to parent scope
-        nextParentState._searchParams = _searchParams
-      } else {
-        nextParentState[scope]._searchParams = _searchParams
-      }
-      return nextParentState
+      return addScope(
+        parentStateRef.current,
+        scope,
+        nextState,
+        _searchParams,
+        __unsafe_disableScopedSearchParams,
+      )
     },
     [scope, __unsafe_disableScopedSearchParams],
   )

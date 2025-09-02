@@ -37,7 +37,7 @@ export type SelectionState = 'inactive' | 'rev' | 'range' | 'loading' | 'invalid
 export class TimelineController {
   timeline: Timeline
   client: SanityClient
-  handler: TimelineControllerOptions['handler']
+  #handler: TimelineControllerOptions['handler']
 
   version = 0
 
@@ -54,7 +54,7 @@ export class TimelineController {
   constructor(options: TimelineControllerOptions) {
     this.timeline = options.timeline
     this.client = options.client
-    this.handler = options.handler
+    this.#handler = options.handler
     this._aligner = new Aligner(this.timeline)
 
     this.markChange()
@@ -76,7 +76,7 @@ export class TimelineController {
   private _reconstruction?: Reconstruction
 
   setHandler(handler: TimelineControllerOptions['handler']): void {
-    this.handler = handler
+    this.#handler = handler
   }
 
   clearRange(): void {
@@ -242,7 +242,7 @@ export class TimelineController {
     if (!this._isRunning) {
       this._isRunning = true
 
-      void this.tick().then(() => {
+      this.tick().then(() => {
         this._isRunning = false
       })
     }
@@ -274,7 +274,7 @@ export class TimelineController {
       await this.fetchMoreTransactions()
     } catch (err) {
       this._didErr = true
-      this.handler?.(err, this)
+      this.#handler?.(err, this)
       return
     }
 
@@ -346,6 +346,6 @@ export class TimelineController {
     this.setSinceTime(this._rev)
 
     this.version++
-    this.handler?.(null, this)
+    this.#handler?.(null, this)
   }
 }
