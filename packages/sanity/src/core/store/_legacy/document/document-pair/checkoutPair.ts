@@ -21,10 +21,17 @@ import {
 import {
   type DocumentStoreExtraOptions,
   getPairListener,
+  type InitialSnapshotEvent,
   type LatencyReportEvent,
   type ListenerEvent,
 } from '../getPairListener'
-import {type IdPair, type PendingMutationsEvent, type ReconnectEvent} from '../types'
+import {
+  type IdPair,
+  type MutationEvent,
+  type PendingMutationsEvent,
+  type ReconnectEvent,
+  type WelcomeEvent,
+} from '../types'
 import {actionsApiClient} from './utils/actionsApiClient'
 import {operationsApiClient} from './utils/operationsApiClient'
 
@@ -33,10 +40,8 @@ const FETCH_SHARD_TIMEOUT = 20_000
 
 const isMutationEventForDocId =
   (id: string) =>
-  (
-    event: ListenerEvent,
-  ): event is Exclude<ListenerEvent, ReconnectEvent | PendingMutationsEvent> => {
-    return event.type !== 'reconnect' && event.type !== 'pending' && event.documentId === id
+  (event: ListenerEvent): event is MutationEvent | InitialSnapshotEvent => {
+    return (event.type === 'snapshot' || event.type === 'mutation') && event.documentId === id
   }
 
 /**
@@ -47,7 +52,9 @@ export type WithVersion<T> = T & {version: DocumentVariantType}
 /**
  * @hidden
  * @beta */
-export type DocumentVersionEvent = WithVersion<ReconnectEvent | BufferedDocumentEvent>
+export type DocumentVersionEvent = WithVersion<
+  ReconnectEvent | BufferedDocumentEvent | WelcomeEvent
+>
 
 /**
  * @hidden
@@ -247,8 +254,8 @@ export function checkoutPair(
   const listenerEvents$ = getPairListener(client, idPair, {onSyncErrorRecovery, tag}).pipe(share())
 
   const connectionChangeEvents$ = listenerEvents$.pipe(
-    filter((ev) => ev.type === 'reconnect'),
-  ) as Observable<ReconnectEvent>
+    filter((ev) => ev.type === 'reconnect' || ev.type === 'welcome'),
+  ) as Observable<ReconnectEvent | WelcomeEvent>
 
   const draft = createBufferedDocument(
     draftId,
