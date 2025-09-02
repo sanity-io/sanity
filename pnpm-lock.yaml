@@ -1633,7 +1633,7 @@ importers:
         specifier: ^2.6.9
         version: 2.6.9(@portabletext/sanity-bridge@1.1.7(@sanity/schema@packages+@sanity+schema)(@sanity/types@packages+@sanity+types))(@sanity/schema@packages+@sanity+schema)(@sanity/types@packages+@sanity+types)(@types/react@19.1.11)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(rxjs@7.8.2)
       '@portabletext/react':
-        specifier: ^4.0.1
+        specifier: ^4.0.3
         version: 4.0.3(react@18.3.1)
       '@portabletext/toolkit':
         specifier: ^3.0.0
