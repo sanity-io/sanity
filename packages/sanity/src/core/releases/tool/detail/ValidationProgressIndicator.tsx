@@ -1,5 +1,5 @@
-import {CheckmarkCircleIcon} from '@sanity/icons'
-import {Card, Flex, Text} from '@sanity/ui'
+import {CheckmarkCircleIcon, ErrorOutlineIcon} from '@sanity/icons'
+import {Card, type CardTone, Flex, Text} from '@sanity/ui'
 import {useEffect, useMemo, useState} from 'react'
 
 import {ProgressIcon} from '../../../../ui-components/progressIcon'
@@ -11,7 +11,7 @@ import {type DocumentInRelease} from './useBundleDocuments'
 
 export function ValidationProgressIndicator({documents}: {documents: DocumentInRelease[]}) {
   const totalCount = documents.length
-  const {validatedCount, isValidating} = useDocumentValidationLoading(documents)
+  const {validatedCount, isValidating, hasError} = useDocumentValidationLoading(documents)
   const [showCheckmark, setShowCheckmark] = useState(false)
   const {t} = useTranslation(releasesLocaleNamespace)
 
@@ -48,13 +48,23 @@ export function ValidationProgressIndicator({documents}: {documents: DocumentInR
     return null
   }
 
+  const tone: CardTone = isValidating
+    ? 'neutral'
+    : isFinished && showCheckmark && !hasError
+      ? 'transparent'
+      : hasError
+        ? 'critical'
+        : 'positive'
+
+  const cardBackground = isFinished && showCheckmark && !hasError ? 'transparent' : undefined
+
   return (
     <Card
       padding={2}
       radius="full"
-      tone={isValidating ? 'neutral' : isFinished && showCheckmark ? 'transparent' : 'positive'}
+      tone={tone}
       style={{
-        background: isFinished && showCheckmark ? 'transparent' : undefined,
+        background: cardBackground,
       }}
     >
       <Flex gap={2}>
@@ -62,8 +72,10 @@ export function ValidationProgressIndicator({documents}: {documents: DocumentInR
           {isValidating ? (
             <ProgressIcon progress={validatedCount / totalCount} />
           ) : (
-            <Tooltip content={t('summary.all-documents-validated')}>
-              <CheckmarkCircleIcon />
+            <Tooltip
+              content={hasError ? t('summary.errors-found') : t('summary.all-documents-validated')}
+            >
+              {hasError ? <ErrorOutlineIcon /> : <CheckmarkCircleIcon />}
             </Tooltip>
           )}
         </Text>
