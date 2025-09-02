@@ -3,7 +3,7 @@ import {dirname, resolve} from 'node:path'
 import {fileURLToPath} from 'node:url'
 
 import js from '@eslint/js'
-import {defineConfig} from 'eslint/config'
+import {defineConfig, globalIgnores} from 'eslint/config'
 import eslintConfigPrettier from 'eslint-config-prettier/flat'
 import sanityImport from 'eslint-config-sanity/import.js'
 import sanityRecommended from 'eslint-config-sanity/index.js'
@@ -14,8 +14,8 @@ import {createTypeScriptImportResolver} from 'eslint-import-resolver-typescript'
 import * as importPlugin from 'eslint-plugin-import'
 import oxlint from 'eslint-plugin-oxlint'
 import pluginReact from 'eslint-plugin-react'
-import reactCompiler from 'eslint-plugin-react-compiler'
-import * as reactHooks from 'eslint-plugin-react-hooks'
+import reactHooks from 'eslint-plugin-react-hooks'
+import reactHooksWithUseEffectEvent from 'eslint-plugin-react-hooks-with-use-effect-event'
 import simpleImportSort from 'eslint-plugin-simple-import-sort'
 import tsdocPlugin from 'eslint-plugin-tsdoc'
 import unicorn from 'eslint-plugin-unicorn'
@@ -41,21 +41,16 @@ const ignores = [
   '**/report/trace/*',
   '**/playwright-ct/report/*',
   '**/dist/*',
-  '*.json',
-  '*.css',
-  '*.snap',
-  '*.md',
+  '**/*.json',
+  '**/*.css',
+  '**/*.snap',
+  '**/*.md',
 ]
 
 const extensions = ['.cjs', '.mjs', '.js', '.jsx', '.ts', '.tsx', '.mts']
 
 export default [
-  defineConfig({
-    name: 'global-ignores',
-    ignores,
-    // ^  DO NOT REMOVE THIS LINE
-    //  - this is necessary for the ignores pattern to be treated as a "global ignores"
-  }),
+  globalIgnores(ignores),
   defineConfig({
     name: 'language-options+globals+react-settings',
     languageOptions: {
@@ -87,7 +82,8 @@ export default [
     name: 'react/recommended',
     ...pluginReact.configs.flat.recommended,
   },
-  reactHooks.configs.recommended,
+  // @ts-expect-error - configs is not typed but exists, and it enables React Compiler linter checks
+  ...reactHooks.configs['flat/recommended'],
   {
     name: 'sanity/recommended',
     // Equivalent to `extends: ['sanity', 'sanity/react', 'sanity/import', 'sanity/typescript']` in ESLint 8
@@ -95,7 +91,6 @@ export default [
       'simple-import-sort': simpleImportSort,
       'tsdoc': tsdocPlugin,
       'unused-imports': unusedImports,
-      'react-compiler': reactCompiler,
       'unicorn': unicorn,
     },
     rules: {
@@ -111,9 +106,6 @@ export default [
       'import/no-unresolved': 'off',
       'import/default': 'off',
       'tsdoc/syntax': 'error',
-      'react-hooks/rules-of-hooks': 'error',
-      'react-hooks/exhaustive-deps': 'error',
-      'react-compiler/react-compiler': 'error',
       'react/no-unescaped-entities': 'off',
       '@typescript-eslint/no-explicit-any': ['warn'],
       '@typescript-eslint/no-dupe-class-members': ['error'],
@@ -200,20 +192,27 @@ export default [
       '**/*.test.{js,ts,tsx}',
       'packages/sanity/playwright-ct/**',
     ],
-    rules: {
-      'react-compiler/react-compiler': 'off',
-    },
+    // rules: {
+    //   'react-compiler/react-compiler': 'off',
+    // },
   },
   ...turboConfig,
   // Disables rules that are handled by prettier, we run prettier separately as running it within ESLint is too slow
   eslintConfigPrettier,
   // oxlint should be the last one so it is able to turn off rules that it's handling
   ...oxlint.buildFromOxlintConfigFile(rootOxlintrc),
-  // Since we use useEffectEvent, we can't use the oxlint checker for this rule, we must use the ESLint variant
   {
+    // Since we use useEffectEvent, we can't use the oxlint checker for this rule, we must use the ESLint variant.
+    // We're using eslint-plugin-react-hooks@rc, which runs React Compiler checks which matches our babel-plugin-react-compiler@rc setup.
+    // However, we're also using the experimental useEffectEvent API using the use-effect-event package, which requires eslint-plugin-react-hooks@experimental (https://react.dev/reference/react/experimental_useEffectEvent).
+    // To make all this work we disable the exhaustive-deps rule from the rc react-hooks plugin and enable it with the experimental react-hooks plugin.
     name: 'react-hooks/exhaustive-deps/useEffectEvent',
+    plugins: {
+      'react-hooks-with-use-effect-event': reactHooksWithUseEffectEvent,
+    },
     rules: {
-      'react-hooks/exhaustive-deps': 'error',
+      'react-hooks/exhaustive-deps': 'off',
+      'react-hooks-with-use-effect-event/exhaustive-deps': 'error',
     },
   },
   // Since we also use no-restricted-imports in oxlint, we need to add this after `buildFromOxlintConfigFile` or the rule is disabled
