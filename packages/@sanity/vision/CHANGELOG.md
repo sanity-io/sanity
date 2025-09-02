@@ -3,6 +3,18 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [4.6.1](https://github.com/sanity-io/sanity/compare/v4.6.0...v4.6.1) (2025-09-02)
+
+
+### Bug Fixes
+
+* **deps:** update dependency @sanity/client to ^7.10.0 ([#10465](https://github.com/sanity-io/sanity/issues/10465)) ([62103ca](https://github.com/sanity-io/sanity/commit/62103ca0e384f49317a8c25cdb578ca5895fbb1a))
+* **deps:** update dependency @sanity/ui to ^3.0.8 ([#10472](https://github.com/sanity-io/sanity/issues/10472)) ([62e01d1](https://github.com/sanity-io/sanity/commit/62e01d10e2cb496ce93e0d0a374ca1352c1f168c))
+* **deps:** update dependency react-rx to ^4.1.32 ([#10493](https://github.com/sanity-io/sanity/issues/10493)) ([af9eadd](https://github.com/sanity-io/sanity/commit/af9eadd87341df6338ce05059aa0aa11a45b76a1))
+* **deps:** update React Compiler dependencies 🤖 ✨ ([#10492](https://github.com/sanity-io/sanity/issues/10492)) ([dd22e7d](https://github.com/sanity-io/sanity/commit/dd22e7dbc96dda4c6a954910730f6043bb29c4a4))
+
+
+
 ## [4.6.0](https://github.com/sanity-io/sanity/compare/v4.5.0...v4.6.0) (2025-08-26)
 
 
