@@ -64,6 +64,7 @@ withDefaultClient((context) => {
     // Select the next document in the list.
     await page.keyboard.press('ArrowDown')
     await page.keyboard.press('Enter')
+    await expect(paneFooter).toContainText('Saved', {timeout: 30_000})
 
     // wait for the edit to finish
     await expectEditedStatus(paneFooter)
