@@ -208,7 +208,6 @@ export default [
     name: 'react-hooks/react-compiler/temp-disable',
     rules: {
       'react-hooks/immutability': 'warn',
-      'react-hooks/preserve-manual-memoization': 'warn',
       'react-hooks/refs': 'warn',
       'react-hooks/set-state-in-effect': 'warn',
       'react-hooks/static-components': 'warn',

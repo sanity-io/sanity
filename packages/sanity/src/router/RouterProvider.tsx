@@ -1,5 +1,5 @@
 import {fromPairs, partition, toPairs} from 'lodash'
-import {type ReactNode, useCallback, useMemo} from 'react'
+import {type ReactNode} from 'react'
 import {RouterContext} from 'sanity/_singletons'
 
 import {STICKY_PARAMS} from './stickyParams'
@@ -85,121 +85,115 @@ export interface RouterProviderProps {
 export function RouterProvider(props: RouterProviderProps): React.JSX.Element {
   const {onNavigate, router: routerProp, state} = props
 
-  const resolveIntentLink = useCallback(
-    (intentName: string, parameters?: IntentParameters, _searchParams?: SearchParam[]): string => {
-      const [params, payload] = Array.isArray(parameters) ? parameters : [parameters]
-      return routerProp.encode({
-        intent: intentName,
-        params,
-        payload,
-        _searchParams: toPairs({
-          ...fromPairs((state._searchParams ?? []).filter(([key]) => STICKY_PARAMS.includes(key))),
-          ...fromPairs(_searchParams ?? []),
-        }),
-      })
-    },
-    [routerProp, state._searchParams],
+  const resolveIntentLink = (
+    intentName: string,
+    parameters?: IntentParameters,
+    _searchParams?: SearchParam[],
+  ): string => {
+    const [params, payload] = Array.isArray(parameters) ? parameters : [parameters]
+    return routerProp.encode({
+      intent: intentName,
+      params,
+      payload,
+      _searchParams: toPairs({
+        ...fromPairs((state._searchParams ?? []).filter(([key]) => STICKY_PARAMS.includes(key))),
+        ...fromPairs(_searchParams ?? []),
+      }),
+    })
+  }
+
+  const resolvePathFromState = (nextState: RouterState | null): string => {
+    const currentStateParams = state._searchParams || []
+    const nextStateParams = nextState?._searchParams || []
+    const nextParams = STICKY_PARAMS.reduce((acc, param) => {
+      return replaceStickyParam(
+        acc,
+        param,
+        findParam(nextStateParams, param) ?? findParam(currentStateParams, param),
+      )
+    }, nextStateParams || [])
+
+    return routerProp.encode({
+      ...nextState,
+      _searchParams: nextParams,
+    })
+  }
+
+  const navigate: RouterContextValue['navigate'] = (
+    nextStateOrOptions: NextStateOrOptions,
+    maybeOptions?: NavigateOptions,
+  ) => {
+    // Determine options and state based on input pattern
+    const isOptionsOnlyPattern = isNavigateOptions(nextStateOrOptions) && !maybeOptions
+    const options = isOptionsOnlyPattern ? nextStateOrOptions : maybeOptions || {}
+
+    const baseState = isNavigateOptions(nextStateOrOptions)
+      ? (getStateFromOptions(nextStateOrOptions, state) ?? state)
+      : nextStateOrOptions
+
+    const currentParams = state._searchParams || []
+    const nextStickyParams =
+      options.stickyParams ??
+      Object.fromEntries(currentParams.filter(([key]) => STICKY_PARAMS.includes(key)))
+
+    validateStickyParams(nextStickyParams)
+
+    const nextParams = baseState._searchParams || []
+    const mergedParams = mergeStickyParams(nextParams, nextStickyParams)
+
+    onNavigate({
+      path: resolvePathFromState({...baseState, _searchParams: mergedParams}),
+      replace: options.replace,
+    })
+  }
+
+  const handleNavigateStickyParams = (
+    params: NavigateOptions['stickyParams'],
+    options: NavigateBaseOptions = {},
+  ) => navigate({stickyParams: params, ...options, state: undefined})
+
+  const navigateIntent = (
+    intentName: string,
+    params?: IntentParameters,
+    options: NavigateBaseOptions = {},
+  ) => {
+    onNavigate({path: resolveIntentLink(intentName, params), replace: options.replace})
+  }
+
+  const [routerState, stickyParams] = useRouterStateAndStickyParams(state)
+
+  const stickyParamsByName = Object.fromEntries(stickyParams || [])
+
+  return (
+    <RouterContext.Provider
+      value={{
+        navigate,
+        navigateIntent,
+        navigateStickyParams: handleNavigateStickyParams,
+        navigateUrl: onNavigate,
+        resolveIntentLink,
+        resolvePathFromState,
+        state: routerState,
+        stickyParams: stickyParamsByName,
+      }}
+    >
+      {props.children}
+    </RouterContext.Provider>
   )
+}
 
-  const resolvePathFromState = useCallback(
-    (nextState: RouterState | null): string => {
-      const currentStateParams = state._searchParams || []
-      const nextStateParams = nextState?._searchParams || []
-      const nextParams = STICKY_PARAMS.reduce((acc, param) => {
-        return replaceStickyParam(
-          acc,
-          param,
-          findParam(nextStateParams, param) ?? findParam(currentStateParams, param),
-        )
-      }, nextStateParams || [])
-
-      return routerProp.encode({
-        ...nextState,
-        _searchParams: nextParams,
-      })
-    },
-    [routerProp, state],
-  )
-
-  const navigate: RouterContextValue['navigate'] = useCallback(
-    (nextStateOrOptions: NextStateOrOptions, maybeOptions?: NavigateOptions) => {
-      // Determine options and state based on input pattern
-      const isOptionsOnlyPattern = isNavigateOptions(nextStateOrOptions) && !maybeOptions
-      const options = isOptionsOnlyPattern ? nextStateOrOptions : maybeOptions || {}
-
-      const baseState = isNavigateOptions(nextStateOrOptions)
-        ? (getStateFromOptions(nextStateOrOptions, state) ?? state)
-        : nextStateOrOptions
-
-      const currentParams = state._searchParams || []
-      const nextStickyParams =
-        options.stickyParams ??
-        Object.fromEntries(currentParams.filter(([key]) => STICKY_PARAMS.includes(key)))
-
-      validateStickyParams(nextStickyParams)
-
-      const nextParams = baseState._searchParams || []
-      const mergedParams = mergeStickyParams(nextParams, nextStickyParams)
-
-      onNavigate({
-        path: resolvePathFromState({...baseState, _searchParams: mergedParams}),
-        replace: options.replace,
-      })
-    },
-    [onNavigate, resolvePathFromState, state],
-  )
-
-  const handleNavigateStickyParams = useCallback(
-    (params: NavigateOptions['stickyParams'], options: NavigateBaseOptions = {}) =>
-      navigate({stickyParams: params, ...options, state: undefined}),
-    [navigate],
-  )
-
-  const navigateIntent = useCallback(
-    (intentName: string, params?: IntentParameters, options: NavigateBaseOptions = {}) => {
-      onNavigate({path: resolveIntentLink(intentName, params), replace: options.replace})
-    },
-    [onNavigate, resolveIntentLink],
-  )
-
-  const [routerState, stickyParams] = useMemo(() => {
-    if (!state._searchParams) {
-      return [state, null]
-    }
-    const {_searchParams, ...rest} = state
-    const [sticky, restParams] = partition(_searchParams, ([key]) => STICKY_PARAMS.includes(key))
-    if (sticky.length === 0) {
-      return [state, null]
-    }
-    return [{...rest, _searchParams: restParams}, sticky]
-  }, [state])
-
-  const stickyParamsByName = useMemo(() => Object.fromEntries(stickyParams || []), [stickyParams])
-
-  const router: RouterContextValue = useMemo(
-    () => ({
-      navigate,
-      navigateIntent,
-      navigateStickyParams: handleNavigateStickyParams,
-      navigateUrl: onNavigate,
-      resolveIntentLink,
-      resolvePathFromState,
-      state: routerState,
-      stickyParams: stickyParamsByName,
-    }),
-    [
-      handleNavigateStickyParams,
-      navigate,
-      navigateIntent,
-      onNavigate,
-      resolveIntentLink,
-      resolvePathFromState,
-      routerState,
-      stickyParamsByName,
-    ],
-  )
-
-  return <RouterContext.Provider value={router}>{props.children}</RouterContext.Provider>
+function useRouterStateAndStickyParams(
+  state: RouterProviderProps['state'],
+): [RouterState, SearchParam[] | null] {
+  if (!state._searchParams) {
+    return [state, null]
+  }
+  const {_searchParams, ...rest} = state
+  const [sticky, restParams] = partition(_searchParams, ([key]) => STICKY_PARAMS.includes(key))
+  if (sticky.length === 0) {
+    return [state, null]
+  }
+  return [{...rest, _searchParams: restParams}, sticky]
 }
 
 function replaceStickyParam(

@@ -71,13 +71,7 @@ export function ArrayOfObjectOptionsInput(props: ArrayOfObjectsInputProps) {
     changed,
   } = props
 
-  const options = useMemo(
-    () =>
-      ((schemaType.options?.list || EMPTY_ARRAY) as ObjectOption[]).map((option, index) =>
-        isKeyedObject(option) ? option : {...option, _key: `auto-generated-${index}`},
-      ),
-    [schemaType.options?.list],
-  )
+  const options = useOptions(schemaType)
 
   const handleChange = useCallback(
     (isChecked: boolean, changedOption: ObjectOption) => {
@@ -146,5 +140,15 @@ export function ArrayOfObjectOptionsInput(props: ArrayOfObjectsInputProps) {
         })}
       </Grid>
     </ChangeIndicator>
+  )
+}
+
+function useOptions(schemaType: ArraySchemaType) {
+  return useMemo(
+    () =>
+      ((schemaType.options?.list || EMPTY_ARRAY) as ObjectOption[]).map((option, index) =>
+        isKeyedObject(option) ? option : {...option, _key: `auto-generated-${index}`},
+      ),
+    [schemaType.options?.list],
   )
 }

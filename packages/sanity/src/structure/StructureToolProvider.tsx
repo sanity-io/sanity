@@ -29,25 +29,20 @@ export function StructureToolProvider({
 
   const {perspectiveStack} = usePerspective()
 
-  const S = useMemo(() => {
-    return createStructureBuilder({
-      defaultDocumentNode,
-      source,
-      perspectiveStack,
-    })
-  }, [defaultDocumentNode, source, perspectiveStack])
+  const S = createStructureBuilder({
+    defaultDocumentNode,
+    source,
+    perspectiveStack,
+  })
 
-  const rootPaneNode = useMemo(() => {
-    // TODO: unify types and remove cast
-    if (resolveStructure)
-      return resolveStructure(S, {
+  const rootPaneNode = resolveStructure
+    ? (resolveStructure(S, {
         ...configContext,
         documentStore,
 
         perspectiveStack,
-      }) as UnresolvedPaneNode
-    return S.defaults() as UnresolvedPaneNode
-  }, [resolveStructure, S, configContext, documentStore, perspectiveStack])
+      }) as UnresolvedPaneNode)
+    : (S.defaults() as UnresolvedPaneNode)
 
   const features: StructureToolContextValue['features'] = useMemo(
     () => ({

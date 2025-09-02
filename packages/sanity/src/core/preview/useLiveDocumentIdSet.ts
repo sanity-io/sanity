@@ -4,6 +4,7 @@ import {useObservable} from 'react-rx'
 import {scan} from 'rxjs/operators'
 
 import {useDocumentPreviewStore} from '../store/_legacy/datastores'
+import {type DocumentPreviewStore} from './documentPreviewStore'
 import {type DocumentIdSetObserverState} from './liveDocumentIdSet'
 
 const INITIAL_STATE = {status: 'loading' as const, documentIds: []}
@@ -11,6 +12,12 @@ const INITIAL_STATE = {status: 'loading' as const, documentIds: []}
 export type LiveDocumentSetState =
   | {status: 'loading'; documentIds: string[]}
   | DocumentIdSetObserverState
+
+type Options = {
+  // how to insert new document ids. Defaults to `sorted`
+  insert?: 'sorted' | 'prepend' | 'append'
+  apiVersion?: string
+}
 
 /**
  * @internal
@@ -21,17 +28,19 @@ export type LiveDocumentSetState =
  * This provides a lightweight way of subscribing to a list of ids for simple cases where you just want the documents ids
  * that matches a particular filter.
  */
-export function useLiveDocumentIdSet(
+export function useLiveDocumentIdSet(filter: string, params?: QueryParams, options: Options = {}) {
+  const documentPreviewStore = useDocumentPreviewStore()
+  const observable = useMemoObservable(documentPreviewStore, options, filter, params)
+  return useObservable(observable, INITIAL_STATE)
+}
+
+function useMemoObservable(
+  documentPreviewStore: DocumentPreviewStore,
+  options: Options,
   filter: string,
   params?: QueryParams,
-  options: {
-    // how to insert new document ids. Defaults to `sorted`
-    insert?: 'sorted' | 'prepend' | 'append'
-    apiVersion?: string
-  } = {},
 ) {
-  const documentPreviewStore = useDocumentPreviewStore()
-  const observable = useMemo(
+  return useMemo(
     () =>
       documentPreviewStore.unstable_observeDocumentIdSet(filter, params, options).pipe(
         scan(
@@ -44,5 +53,4 @@ export function useLiveDocumentIdSet(
       ),
     [documentPreviewStore, filter, params, options],
   )
-  return useObservable(observable, INITIAL_STATE)
 }
