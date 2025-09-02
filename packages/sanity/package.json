@@ -150,7 +150,7 @@
     "@dnd-kit/utilities": "^3.2.2",
     "@juggle/resize-observer": "^3.4.0",
     "@mux/mux-player-react": "^3.5.3",
-    "@portabletext/block-tools": "^3.5.1",
+    "@portabletext/block-tools": "^3.5.2",
     "@portabletext/editor": "^2.7.1",
     "@portabletext/react": "^4.0.3",
     "@portabletext/toolkit": "^3.0.1",
@@ -280,7 +280,7 @@
     "use-hot-module-reload": "^2.0.0",
     "use-sync-external-store": "^1.5.0",
     "uuid": "^11.1.0",
-    "vite": "^7.1.3",
+    "vite": "^7.1.4",
     "which": "^5.0.0",
     "xstate": "^5.21.0",
     "yargs": "^17.7.2"

@@ -160,6 +160,7 @@ exports[`exports snapshot 1`] = `
     "Resizable": "function",
     "ResourceCacheProvider": "function",
     "RevertChangesButton": "object",
+    "RevertChangesConfirmDialog": "function",
     "SANITY_PATCH_TYPE": "symbol",
     "SANITY_VERSION": "string",
     "SESSION_ID": "string",

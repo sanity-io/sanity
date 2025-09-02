@@ -1168,6 +1168,7 @@ import type {
   ResourceCacheProviderProps,
   RetryingStatus,
   RevertChangesButton,
+  RevertChangesConfirmDialog,
   Role,
   RovingFocusNavigationType,
   RovingFocusProps,
@@ -5146,6 +5147,9 @@ describe('sanity', () => {
   })
   test('RevertChangesButton', () => {
     expectTypeOf<typeof RevertChangesButton>().not.toBeNever()
+  })
+  test('RevertChangesConfirmDialog', () => {
+    expectTypeOf<typeof RevertChangesConfirmDialog>().toBeFunction()
   })
   test('Role', () => {
     expectTypeOf<Role>().toBeObject()
