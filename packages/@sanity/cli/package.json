@@ -57,7 +57,7 @@
   },
   "dependencies": {
     "@babel/traverse": "^7.28.3",
-    "@sanity/client": "^7.10.0",
+    "@sanity/client": "^7.11.0",
     "@sanity/codegen": "workspace:*",
     "@sanity/runtime-cli": "^10.3.1",
     "@sanity/telemetry": "^0.8.0",
@@ -88,7 +88,7 @@
     "@types/inquirer": "^6.5.0",
     "@types/lodash": "^4.17.20",
     "@types/minimist": "^1.2.5",
-    "@types/node": "^22.17.2",
+    "@types/node": "catalog:",
     "@types/semver": "^7.7.0",
     "@types/semver-compare": "^1.0.3",
     "@types/tar": "^6.1.13",

@@ -1,4 +1,3 @@
-/* eslint-disable react/jsx-no-bind */
 import {Box, Card, Container, Stack, Text} from '@sanity/ui'
 import {useState} from 'react'
 

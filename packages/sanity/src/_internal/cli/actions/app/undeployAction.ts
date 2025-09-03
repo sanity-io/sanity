@@ -50,9 +50,13 @@ export default async function undeployAppAction(
   const shouldUndeploy = await prompt.single({
     type: 'confirm',
     default: false,
-    message:
-      `This will undeploy ${chalk.yellow(userApplication.id)} and make it unavailable for your users.
-  The hostname will be available for anyone to claim.
+    message: `This will undeploy the following application:
+
+    Title: ${chalk.yellow(userApplication.title)}
+    ID:    ${chalk.yellow(userApplication.id)}
+
+  The application will no longer be available for any of your users if you proceed.
+
   Are you ${chalk.red('sure')} you want to undeploy?`.trim(),
   })
 
@@ -75,6 +79,6 @@ export default async function undeployAppAction(
   }
 
   output.print(
-    `Application undeploy scheduled. It might take a few minutes before ${chalk.yellow(userApplication.id)} is unavailable.`,
+    `Application undeploy scheduled. It might take a few minutes before ${chalk.yellow(userApplication.title)} is unavailable.`,
   )
 }

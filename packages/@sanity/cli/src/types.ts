@@ -297,11 +297,17 @@ export interface ReactCompilerConfig {
 }
 
 interface AppConfig {
+  /**
+   * The ID of your Sanity organization
+   */
   organizationId: string
   /**
-   * Defaults to './src/App'
+   * The entrypoint for your Sanity app. Defaults to './src/App'.
    */
   entry?: string
+  /**
+   * The ID of your Sanity app. Generated when deploying your app for the first time; check the output of `sanity deploy` for this.
+   */
   id?: string
 }
 

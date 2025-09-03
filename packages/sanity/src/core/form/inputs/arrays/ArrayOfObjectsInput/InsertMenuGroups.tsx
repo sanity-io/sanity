@@ -1,4 +1,3 @@
-/* eslint-disable react/jsx-no-bind */
 import {InsertAboveIcon, InsertBelowIcon} from '@sanity/icons'
 import {type SchemaType} from '@sanity/types'
 import {type ComponentProps, memo} from 'react'

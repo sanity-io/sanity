@@ -98,7 +98,6 @@ export function VisionGui(props: VisionGuiProps) {
   const {t} = useTranslation(visionLocaleNamespace)
   const {perspectiveStack} = usePerspective()
 
-  const defaultApiVersion = prefixApiVersion(`${config.defaultApiVersion}`)
   const editorQueryRef = useRef<VisionCodeMirrorHandle>(null)
   const editorParamsRef = useRef<VisionCodeMirrorHandle>(null)
   const visionRootRef = useRef<HTMLDivElement | null>(null)
@@ -108,19 +107,17 @@ export function VisionGui(props: VisionGuiProps) {
 
   const [localStorage] = useState(() => getLocalStorage(projectId || 'default'))
 
-  const {storedDataset, storedApiVersion, storedQuery, storedParams, storedPerspective} =
-    useMemo(() => {
-      return {
-        storedDataset: localStorage.get('dataset', defaultDataset),
-        storedApiVersion: localStorage.get('apiVersion', defaultApiVersion),
-        storedQuery: localStorage.get('query', ''),
-        storedParams: localStorage.get('params', '{\n  \n}'),
-        storedPerspective: localStorage.get<SupportedPerspective | undefined>(
-          'perspective',
-          undefined,
-        ),
-      }
-    }, [defaultDataset, defaultApiVersion, localStorage])
+  const storedDataset = localStorage.get('dataset', defaultDataset)
+  const storedApiVersion = localStorage.get(
+    'apiVersion',
+    prefixApiVersion(`${config.defaultApiVersion}`),
+  )
+  const storedQuery = localStorage.get('query', '')
+  const storedParams = localStorage.get('params', '{\n  \n}')
+  const storedPerspective = localStorage.get<SupportedPerspective | undefined>(
+    'perspective',
+    undefined,
+  )
 
   const [dataset, setDataset] = useState<string>(() => {
     if (datasets.includes(storedDataset)) {
@@ -146,7 +143,8 @@ export function VisionGui(props: VisionGuiProps) {
   const [query, setQuery] = useState<string>(() =>
     typeof storedQuery === 'string' ? storedQuery : '',
   )
-  const [params, setParams] = useState<Params>(() => parseParams(storedParams, t))
+  const [rawParams, setRawParams] = useState<string>(storedParams)
+  const params = useMemo(() => parseParams(rawParams, t), [rawParams, t])
   const [queryResult, setQueryResult] = useState<unknown | undefined>(undefined)
   const [listenMutations, setListenMutations] = useState<MutationEvent[]>([])
   const [error, setError] = useState<Error | undefined>(undefined)
@@ -415,9 +413,9 @@ export function VisionGui(props: VisionGuiProps) {
   ])
 
   const handleParamsChange = useCallback(
-    (value: Params) => {
-      setParams(value)
-      localStorage.set('params', value.raw)
+    (value: string) => {
+      setRawParams(value)
+      localStorage.set('params', value)
     },
     [localStorage],
   )
@@ -486,12 +484,7 @@ export function VisionGui(props: VisionGuiProps) {
       // Update state with pasted values
       setDataset(parsedUrlObj.dataset)
       setQuery(parsedUrlObj.query)
-      setParams({
-        parsed: parsedUrlObj.params,
-        raw: parsedUrlObj.rawParams,
-        valid: true,
-        error: undefined,
-      })
+      setRawParams(parsedUrlObj.rawParams)
       setApiVersion(parsedUrlObj.apiVersion)
       if (parsedUrlObj.customApiVersion) {
         setCustomApiVersion(parsedUrlObj.customApiVersion)
