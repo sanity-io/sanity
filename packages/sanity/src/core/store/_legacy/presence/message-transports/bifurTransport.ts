@@ -26,9 +26,20 @@ type RollCallEvent = {
   session: string
 }
 
-type IncomingBifurEvent<T> = RollCallEvent | BifurStateMessage | BifurDisconnectMessage
+type ExpireEvent = {
+  type: 'expires'
+  event: 'expires'
+  at: string
+}
+
+type IncomingBifurEvent<T> =
+  | RollCallEvent
+  | BifurStateMessage
+  | BifurDisconnectMessage
+  | ExpireEvent
 
 const handleIncomingMessage = (event: IncomingBifurEvent<Location[]>): TransportEvent => {
+  // console.log('ws incoming  event', event)
   if (event.type === 'rollCall') {
     return {
       type: 'rollCall',
@@ -56,13 +67,33 @@ const handleIncomingMessage = (event: IncomingBifurEvent<Location[]>): Transport
     }
   }
 
+  if (event.event === 'expires') {
+    return {
+      type: 'authorizationExpire',
+      expiresAt: event.at,
+      timestamp: new Date().toISOString(),
+    }
+  }
+
   throw new Error(`Got unknown presence event: ${JSON.stringify(event)}`)
 }
 
 export const createBifurTransport = (bifur: BifurClient, sessionId: string): Transport => {
-  const incomingEvents$: Observable<TransportEvent> = bifur
+  const incomingPresenceEvents$: Observable<TransportEvent> = bifur
     .listen<IncomingBifurEvent<Location[]>>('presence')
     .pipe(map(handleIncomingMessage))
+
+  const incomingAuthorizationEvents$: Observable<TransportEvent> = bifur
+    .listen<IncomingBifurEvent<Location[]>>('authorization')
+    .pipe(map(handleIncomingMessage))
+
+  // const testIncomingAuthorizationEvents$: Observable<TransportEvent> = bifur
+  //   .listen<IncomingBifurEvent<Location[]>>('authorization')
+  //   .pipe(map(handleIncomingMessage))
+  //   .subscribe((event) => {
+  //     // eslint-disable-next-line no-console
+  //     console.log('[++++++]Authorization event', event)
+  //   })
 
   const dispatchMessage = (message: TransportMessage): Observable<undefined> => {
     if (message.type === 'rollCall') {
@@ -82,5 +113,9 @@ export const createBifurTransport = (bifur: BifurClient, sessionId: string): Tra
     return EMPTY
   }
 
-  return [incomingEvents$.pipe(share()), dispatchMessage]
+  return [
+    incomingPresenceEvents$.pipe(share()),
+    incomingAuthorizationEvents$.pipe(share()),
+    dispatchMessage,
+  ]
 }
