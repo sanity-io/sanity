@@ -1,4 +1,4 @@
-import {type InsertMenuOptions} from '@sanity/insert-menu'
+// import {type InsertMenuOptions} from '@sanity/insert-menu'
 import {type ResponsiveProp} from '@sanity/ui/css'
 import {type ContainerWidth} from '@sanity/ui/theme'
 
@@ -16,6 +16,9 @@ import {
   type SearchConfiguration,
   type TitledListValue,
 } from './common'
+
+/** @beta */
+type InsertMenuOptions = any
 
 export type {InsertMenuOptions}
 

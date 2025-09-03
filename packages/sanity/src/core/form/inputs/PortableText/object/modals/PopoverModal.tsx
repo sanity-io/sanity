@@ -85,6 +85,7 @@ function Content(props: PopoverEditDialogProps) {
       },
       [handleClose],
     ),
+    // @ts-expect-error - TODO: fix this by moving recent changes to v3 to v4
     {
       /**
        * We need to capture the event to prevent it from being propagated to the parent
