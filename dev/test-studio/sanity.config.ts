@@ -252,7 +252,7 @@ const defaultWorkspace = defineConfig({
   },
   releases: {
     actions: (prev, ctx) => {
-      if (ctx.release.state === 'active' && ctx.documents.length > 0) {
+      if (ctx.release.state === 'active') {
         return [...prev, ArchiveAndDeleteCustomAction]
       }
       return prev

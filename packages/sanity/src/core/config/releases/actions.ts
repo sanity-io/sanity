@@ -6,7 +6,6 @@ import {type ConfigContext} from '../types'
 
 /**
  * @internal
- * @internal
  */
 interface ActionComponent<ActionProps> {
   (props: ActionProps): ReleaseActionDescription | null
@@ -18,7 +17,6 @@ interface ActionComponent<ActionProps> {
  */
 export interface ReleaseActionProps {
   release: ReleaseDocument
-  // documents in the release
   documents: DocumentInRelease[]
 }
 
