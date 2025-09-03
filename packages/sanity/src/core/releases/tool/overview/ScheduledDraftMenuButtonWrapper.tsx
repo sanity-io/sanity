@@ -1,9 +1,9 @@
 import {type ReleaseDocument} from '@sanity/client'
 import {CloseCircleIcon, EllipsisHorizontalIcon} from '@sanity/icons'
-import {Menu, Popover, Spinner, Text, useClickOutsideEvent} from '@sanity/ui'
+import {Menu, Spinner, Text, useClickOutsideEvent} from '@sanity/ui'
 import {useCallback, useRef, useState} from 'react'
 
-import {Button, Dialog, MenuItem} from '../../../../ui-components'
+import {Button, Dialog, MenuItem, Popover} from '../../../../ui-components'
 import {useTranslation} from '../../../i18n'
 import {releasesLocaleNamespace} from '../../i18n'
 import {useReleaseOperations} from '../../store'
