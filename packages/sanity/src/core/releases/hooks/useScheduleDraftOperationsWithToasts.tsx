@@ -1,5 +1,5 @@
 import {useToast} from '@sanity/ui'
-import {useCallback, type ReactNode} from 'react'
+import {type ReactNode, useCallback} from 'react'
 
 import {Translate, useTranslation} from '../../i18n'
 import {
@@ -25,6 +25,12 @@ export function useScheduleDraftOperationsWithToasts(
   const toast = useToast()
   const {t} = useTranslation()
 
+  // Reusable Strong component for all Translate components
+  const Strong = useCallback(
+    ({children}: {children?: ReactNode}) => <strong>{children}</strong>,
+    [],
+  )
+
   const runNowWithToast = useCallback(
     async (
       releaseDocumentId: string,
@@ -32,7 +38,6 @@ export function useScheduleDraftOperationsWithToasts(
     ) => {
       try {
         await operations.runNow(releaseDocumentId, opts)
-        // Show success toast for run-now
         toast.push({
           closable: true,
           status: 'success',
@@ -41,15 +46,12 @@ export function useScheduleDraftOperationsWithToasts(
               t={t}
               i18nKey="release.toast.run-now.success"
               values={{title: releaseTitle || 'scheduled draft'}}
-              components={{
-                Strong: ({children}: {children?: ReactNode}) => <strong>{children}</strong>,
-              }}
+              components={{Strong}}
             />
           ),
         })
       } catch (error) {
         console.error('Failed to run scheduled draft:', error)
-        // Show error toast for run-now
         toast.push({
           closable: true,
           status: 'error',
@@ -61,16 +63,14 @@ export function useScheduleDraftOperationsWithToasts(
                 title: releaseTitle || 'scheduled draft',
                 error: (error as Error).message,
               }}
-              components={{
-                Strong: ({children}: {children?: ReactNode}) => <strong>{children}</strong>,
-              }}
+              components={{Strong}}
             />
           ),
         })
         throw error // Re-throw for caller to handle UI state
       }
     },
-    [operations, toast, t, releaseTitle],
+    [operations, toast, t, releaseTitle, Strong],
   )
 
   const deleteScheduleWithToast = useCallback(
@@ -80,7 +80,6 @@ export function useScheduleDraftOperationsWithToasts(
     ) => {
       try {
         await operations.deleteSchedule(releaseDocumentId, opts)
-        // Show success toast for delete-schedule
         toast.push({
           closable: true,
           status: 'success',
@@ -89,15 +88,12 @@ export function useScheduleDraftOperationsWithToasts(
               t={t}
               i18nKey="release.toast.delete-schedule.success"
               values={{title: releaseTitle || 'scheduled draft'}}
-              components={{
-                Strong: ({children}: {children?: ReactNode}) => <strong>{children}</strong>,
-              }}
+              components={{Strong}}
             />
           ),
         })
       } catch (error) {
         console.error('Failed to delete scheduled draft:', error)
-        // Show error toast for delete-schedule
         toast.push({
           closable: true,
           status: 'error',
@@ -109,16 +105,14 @@ export function useScheduleDraftOperationsWithToasts(
                 title: releaseTitle || 'scheduled draft',
                 error: (error as Error).message,
               }}
-              components={{
-                Strong: ({children}: {children?: ReactNode}) => <strong>{children}</strong>,
-              }}
+              components={{Strong}}
             />
           ),
         })
         throw error // Re-throw for caller to handle UI state
       }
     },
-    [operations, toast, t, releaseTitle],
+    [operations, toast, t, releaseTitle, Strong],
   )
 
   const rescheduleWithToast = useCallback(
@@ -129,10 +123,9 @@ export function useScheduleDraftOperationsWithToasts(
     ) => {
       try {
         await operations.reschedule(releaseDocumentId, newPublishAt, opts)
-        // No success toast for reschedule - per requirements
+        // No success toast for reschedule per requirements
       } catch (error) {
         console.error('Failed to reschedule draft:', error)
-        // Show error toast for reschedule
         toast.push({
           closable: true,
           status: 'error',
@@ -144,21 +137,18 @@ export function useScheduleDraftOperationsWithToasts(
                 title: releaseTitle || 'scheduled draft',
                 error: (error as Error).message,
               }}
-              components={{
-                Strong: ({children}: {children?: ReactNode}) => <strong>{children}</strong>,
-              }}
+              components={{Strong}}
             />
           ),
         })
         throw error // Re-throw for caller to handle UI state
       }
     },
-    [operations, toast, t, releaseTitle],
+    [operations, toast, t, releaseTitle, Strong],
   )
 
-  // Return the same interface as useScheduleDraftOperations but with toast-enabled methods
   return {
-    schedulePublish: operations.schedulePublish, // This one doesn't need toasts
+    schedulePublish: operations.schedulePublish, // No toasts needed
     runNow: runNowWithToast,
     deleteSchedule: deleteScheduleWithToast,
     reschedule: rescheduleWithToast,

@@ -1,10 +1,13 @@
 import {type ReleaseDocument} from '@sanity/client'
 import {ClockIcon, EllipsisHorizontalIcon, PlayIcon, TrashIcon} from '@sanity/icons'
-import {Menu, Spinner, Text, useClickOutsideEvent, useToast} from '@sanity/ui'
-import {type ReactNode, useCallback, useMemo, useRef, useState} from 'react'
+import {Menu, Spinner, useClickOutsideEvent, useToast} from '@sanity/ui'
+import {useCallback, useMemo, useRef, useState} from 'react'
 
-import {Button, Dialog, MenuItem, Popover} from '../../../../ui-components'
-import {Translate, useTranslation} from '../../../i18n'
+import {Button, MenuItem, Popover} from '../../../../ui-components'
+import {useSchema} from '../../../hooks'
+import {useTranslation} from '../../../i18n'
+import {DeleteScheduledDraftDialog} from '../../components/dialog/DeleteScheduledDraftDialog'
+import {PublishScheduledDraftDialog} from '../../components/dialog/PublishScheduledDraftDialog'
 import {ScheduleDraftDialog} from '../../components/dialog/ScheduleDraftDialog'
 import {useScheduleDraftOperationsWithToasts} from '../../hooks/useScheduleDraftOperationsWithToasts'
 import {releasesLocaleNamespace} from '../../i18n'
@@ -25,18 +28,15 @@ interface ActionConfig {
 const SCHEDULED_DRAFT_ACTION_MAP: Record<ScheduledDraftAction, ActionConfig> = {
   'run-now': {
     icon: PlayIcon,
-    dialogHeaderI18nKey: 'dialog.run-now.header',
-    dialogBodyI18nKey: 'dialog.run-now.body',
-    dialogConfirmButtonI18nKey: 'dialog.run-now.confirm',
+    dialogHeaderI18nKey: 'release.dialog.publish-scheduled-draft.header',
+    dialogBodyI18nKey: 'release.dialog.publish-scheduled-draft.body',
+    dialogConfirmButtonI18nKey: 'release.dialog.publish-scheduled-draft.confirm',
     confirmButtonTone: 'primary',
   },
   'delete-schedule': {
     icon: TrashIcon,
     tone: 'critical',
-    dialogHeaderI18nKey: 'dialog.delete-schedule.header',
-    dialogBodyI18nKey: 'dialog.delete-schedule.body',
-    dialogConfirmButtonI18nKey: 'dialog.delete-schedule.confirm',
-    confirmButtonTone: 'critical',
+    // Uses shared DeleteScheduledDraftDialog component
   },
   'change-schedule': {
     icon: ClockIcon,
@@ -48,6 +48,7 @@ export const ScheduledDraftMenuButtonWrapper = ({release}: {release: ReleaseDocu
   const {t} = useTranslation(releasesLocaleNamespace)
   const {t: tCore} = useTranslation()
   const toast = useToast()
+  const schema = useSchema()
 
   const [isPerformingOperation, setIsPerformingOperation] = useState(false)
   const [selectedAction, setSelectedAction] = useState<ScheduledDraftAction | undefined>()
@@ -56,18 +57,17 @@ export const ScheduledDraftMenuButtonWrapper = ({release}: {release: ReleaseDocu
   const popoverRef = useRef<HTMLDivElement | null>(null)
   const scheduledDraftMenuRef = useRef<HTMLDivElement | null>(null)
 
-  // Get the documents in this release to show the document title
   const releaseId = getReleaseIdFromReleaseDocumentId(release._id)
   const {results: documents} = useBundleDocuments(releaseId)
   const firstDocument = documents?.[0]?.document
+  const documentType = firstDocument?._type
+  const schemaType = documentType ? schema.get(documentType) : null
 
   const scheduledDraftTitle =
     release.metadata.title || tCore('release.placeholder-untitled-release')
 
-  const {runNow, deleteSchedule, reschedule} =
-    useScheduleDraftOperationsWithToasts(scheduledDraftTitle)
+  const {runNow, reschedule} = useScheduleDraftOperationsWithToasts(scheduledDraftTitle)
 
-  // For scheduled drafts, check if it's actually scheduled based on state or metadata
   const canPerformActions =
     release.state === 'scheduled' ||
     release.state === 'scheduling' ||
@@ -94,14 +94,9 @@ export const ScheduledDraftMenuButtonWrapper = ({release}: {release: ReleaseDocu
     [t],
   )
 
-  // Individual action handlers using toast-enabled hook methods
   const handleRunNow = useCallback(async () => {
     return runNow(release._id)
   }, [release._id, runNow])
-
-  const handleDeleteSchedule = useCallback(async () => {
-    return deleteSchedule(release._id)
-  }, [release._id, deleteSchedule])
 
   const handleReschedule = useCallback(
     async (newPublishAt: Date) => {
@@ -112,7 +107,7 @@ export const ScheduledDraftMenuButtonWrapper = ({release}: {release: ReleaseDocu
         setSelectedAction(undefined)
         setOpenPopover(false)
       } catch (error) {
-        // Error toast already handled by handleScheduledDraftOperation
+        // Error toast handled by useScheduleDraftOperationsWithToasts
       } finally {
         setIsPerformingOperation(false)
       }
@@ -122,36 +117,31 @@ export const ScheduledDraftMenuButtonWrapper = ({release}: {release: ReleaseDocu
 
   const handleAction = useCallback(
     async (action: ScheduledDraftAction) => {
-      // Special handling for change-schedule which has its own flow
-      if (action === 'change-schedule') return
+      // Special handling for delete-schedule and change-schedule which have their own flows
+      if (action === 'change-schedule' || action === 'delete-schedule') return
       if (!canPerformActions) return
 
-      const actionLookup = {
-        'run-now': handleRunNow,
-        'delete-schedule': handleDeleteSchedule,
-      }
+      if (action === 'run-now') {
+        setIsPerformingOperation(true)
 
-      setIsPerformingOperation(true)
-
-      try {
-        await actionLookup[action as 'run-now' | 'delete-schedule']()
-        setSelectedAction(undefined)
-        setOpenPopover(false)
-      } catch (error) {
-        console.error(`Failed to ${action} scheduled draft:`, error)
-      } finally {
-        setIsPerformingOperation(false)
-        setSelectedAction(undefined)
+        try {
+          await handleRunNow()
+          setSelectedAction(undefined)
+          setOpenPopover(false)
+        } catch (error) {
+          console.error(`Failed to ${action} scheduled draft:`, error)
+        } finally {
+          setIsPerformingOperation(false)
+          setSelectedAction(undefined)
+        }
       }
     },
-    [canPerformActions, handleRunNow, handleDeleteSchedule],
+    [canPerformActions, handleRunNow],
   )
 
-  // Render confirmation dialog based on selected action
   const confirmActionDialog = useMemo(() => {
     if (!selectedAction) return null
 
-    // Special handling for change-schedule which uses a custom dialog
     if (selectedAction === 'change-schedule') {
       return (
         <ScheduleDraftDialog
@@ -167,74 +157,28 @@ export const ScheduledDraftMenuButtonWrapper = ({release}: {release: ReleaseDocu
       )
     }
 
-    const actionConfig = SCHEDULED_DRAFT_ACTION_MAP[selectedAction]
-    if (!actionConfig.dialogHeaderI18nKey) return null
-
-    // Get document title for better confirmation messages
-    const documentTitle = firstDocument?.title || firstDocument?.name || 'this document'
-
-    // Custom confirmation messages based on action using translation keys
-    let confirmationMessage: ReactNode
-    if (selectedAction === 'run-now') {
-      confirmationMessage = (
-        <Translate
-          t={tCore}
-          i18nKey="release.dialog.run-now.confirm-message"
-          values={{title: String(documentTitle)}}
-          components={{
-            Strong: ({children}: {children?: ReactNode}) => <strong>{children}</strong>,
-          }}
+    if (selectedAction === 'delete-schedule') {
+      return (
+        <DeleteScheduledDraftDialog
+          release={release}
+          documentType={documentType}
+          onClose={() => setSelectedAction(undefined)}
         />
       )
-    } else if (selectedAction === 'delete-schedule') {
-      confirmationMessage = (
-        <Translate
-          t={tCore}
-          i18nKey="release.dialog.delete-schedule.confirm-message"
-          values={{title: String(documentTitle)}}
-          components={{
-            Strong: ({children}: {children?: ReactNode}) => <strong>{children}</strong>,
-          }}
-        />
-      )
-    } else {
-      confirmationMessage = t(actionConfig.dialogBodyI18nKey!, {title: scheduledDraftTitle})
     }
 
-    return (
-      <Dialog
-        id={`confirm-${selectedAction}-dialog`}
-        data-testid={`confirm-${selectedAction}-dialog`}
-        header={t(actionConfig.dialogHeaderI18nKey)}
-        onClose={() => !isPerformingOperation && setSelectedAction(undefined)}
-        width={1}
-        footer={{
-          confirmButton: {
-            text: t(actionConfig.dialogConfirmButtonI18nKey!),
-            tone: actionConfig.confirmButtonTone,
-            onClick: () => handleAction(selectedAction),
-            loading: isPerformingOperation,
-            disabled: isPerformingOperation,
-          },
-          cancelButton: {
-            disabled: isPerformingOperation,
-          },
-        }}
-      >
-        <Text>{confirmationMessage}</Text>
-      </Dialog>
-    )
-  }, [
-    selectedAction,
-    isPerformingOperation,
-    t,
-    tCore,
-    scheduledDraftTitle,
-    release.publishAt,
-    handleAction,
-    handleReschedule,
-    firstDocument,
-  ])
+    if (selectedAction === 'run-now') {
+      return (
+        <PublishScheduledDraftDialog
+          release={release}
+          documentType={documentType}
+          onClose={() => setSelectedAction(undefined)}
+        />
+      )
+    }
+
+    return null
+  }, [selectedAction, isPerformingOperation, t, release, documentType, handleReschedule])
 
   const handleMenuItemClick = useCallback((action: ScheduledDraftAction) => {
     setSelectedAction(action)

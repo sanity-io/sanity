@@ -1,0 +1,87 @@
+import {type ReleaseDocument} from '@sanity/client'
+import {CalendarIcon, TrashIcon} from '@sanity/icons'
+import {Menu, MenuDivider, Spinner} from '@sanity/ui'
+import {memo} from 'react'
+import {IntentLink} from 'sanity/router'
+
+import {MenuItem} from '../../../../../ui-components/menuItem/MenuItem'
+import {useTranslation} from '../../../../i18n'
+import {CopyToReleaseMenuGroup} from './CopyToReleaseMenuGroup'
+
+interface CanonicalReleaseContextMenuProps {
+  releases: ReleaseDocument[]
+  releasesLoading: boolean
+  fromRelease: string
+  isVersion: boolean
+  onDiscard: () => void
+  onCreateRelease: () => void
+  onCreateVersion: (targetId: string) => void
+  disabled?: boolean
+  locked?: boolean
+  isGoingToUnpublish?: boolean
+  hasCreatePermission: boolean | null
+  hasDiscardPermission: boolean
+  isPublished: boolean
+}
+
+export const CanonicalReleaseContextMenu = memo(function CanonicalReleaseContextMenu(
+  props: CanonicalReleaseContextMenuProps,
+) {
+  const {
+    releases,
+    releasesLoading,
+    fromRelease,
+    isVersion,
+    onDiscard,
+    onCreateRelease,
+    onCreateVersion,
+    disabled,
+    locked,
+    isGoingToUnpublish = false,
+    hasCreatePermission,
+    hasDiscardPermission,
+    isPublished,
+  } = props
+  const {t} = useTranslation()
+
+  return (
+    <Menu>
+      {isVersion && (
+        <IntentLink
+          intent="release"
+          params={{id: fromRelease}}
+          rel="noopener noreferrer"
+          style={{textDecoration: 'none'}}
+          disabled={disabled}
+        >
+          <MenuItem icon={CalendarIcon} text={t('release.action.view-release')} />
+        </IntentLink>
+      )}
+      {releasesLoading && <Spinner />}
+      <CopyToReleaseMenuGroup
+        releases={releases}
+        fromRelease={fromRelease}
+        onCreateRelease={onCreateRelease}
+        onCreateVersion={onCreateVersion}
+        disabled={disabled || !hasCreatePermission || isGoingToUnpublish}
+        hasCreatePermission={hasCreatePermission}
+      />
+      {!isPublished && (
+        <>
+          <MenuDivider />
+          <MenuItem
+            icon={TrashIcon}
+            onClick={onDiscard}
+            text={t('release.action.discard-version')}
+            tone="critical"
+            disabled={disabled || locked || !hasDiscardPermission}
+            tooltipProps={{
+              disabled: hasDiscardPermission === true,
+              content: t('release.action.permission.error'),
+            }}
+          />
+        </>
+      )}
+    </Menu>
+  )
+})
