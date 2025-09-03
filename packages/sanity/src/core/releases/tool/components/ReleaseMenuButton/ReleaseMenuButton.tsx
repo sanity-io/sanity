@@ -294,8 +294,6 @@ export const ReleaseMenuButton = ({
 
   // Create menu items for custom actions
   const customActionMenuItems = useMemo(() => {
-    if (customActionDescriptions.length === 0) return []
-
     const handleOnActionClick = (action: ReleaseActionDescription) => () => {
       if (action.onHandle) {
         action.onHandle()

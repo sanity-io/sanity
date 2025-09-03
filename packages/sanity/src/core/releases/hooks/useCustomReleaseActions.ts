@@ -6,7 +6,7 @@ import {useSource} from '../../studio'
 import {type DocumentInRelease} from '../tool/detail/useBundleDocuments'
 
 /**
- * custom/configured release actions for releases
+ * Hook to get custom/configured release actions for a release
  *
  * @internal
  */

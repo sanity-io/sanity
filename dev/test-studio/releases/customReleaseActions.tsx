@@ -11,6 +11,8 @@ export const ArchiveAndDeleteCustomAction: ReleaseActionComponent = ({release}) 
     await sanityClient.releases.archive({releaseId})
     await sanityClient.releases.delete({releaseId})
 
+    // If action was on the release detail, navigate back to release's tool root
+    // as once deleted, the release detail page will not exist anymore
     router.navigate({})
   }
 
