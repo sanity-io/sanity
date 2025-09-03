@@ -1,5 +1,5 @@
 import {InsertAboveIcon, InsertBelowIcon} from '@sanity/icons'
-import {type InsertMenuOptions} from '@sanity/insert-menu'
+// import {type InsertMenuOptions} from '@sanity/insert-menu'
 import {type SchemaType} from '@sanity/types'
 import {useCallback, useMemo} from 'react'
 
@@ -11,7 +11,7 @@ import {useInsertMenuPopover} from './InsertMenuPopover'
  * @internal
  */
 type InsertMenuItemsProps = {
-  insertMenuOptions?: InsertMenuOptions
+  insertMenuOptions?: any // InsertMenuOptions
   onInsert: (pos: 'before' | 'after', type: SchemaType) => void
   referenceElement: HTMLElement | null
   schemaTypes?: SchemaType[]
@@ -27,7 +27,7 @@ export function useInsertMenuMenuItems(props: InsertMenuItemsProps) {
     insertMenuProps: {
       ...props.insertMenuOptions,
       schemaTypes: props.schemaTypes ?? [],
-      onSelect: (insertType) => {
+      onSelect: (insertType: any) => {
         props.onInsert('before', insertType)
       },
     },
@@ -41,7 +41,7 @@ export function useInsertMenuMenuItems(props: InsertMenuItemsProps) {
     insertMenuProps: {
       ...props.insertMenuOptions,
       schemaTypes: props.schemaTypes ?? [],
-      onSelect: (insertType) => {
+      onSelect: (insertType: any) => {
         props.onInsert('after', insertType)
       },
     },
