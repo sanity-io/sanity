@@ -27,8 +27,9 @@ This function is built to be compatible with any of [the official "clean" templa
 
 - A Sanity project with Functions enabled
 - A schema with a `post` document type containing:
-- A `content` field (rich text/portable text) for content analysis
-- A `changelog` field (array of strings) for storing generated entries
+  - A `content` field (rich text/portable text) for content analysis
+  - A `changelog` field (array of strings) for storing generated entries
+- Block content configuration with code block support (using [code-input plugin](https://www.sanity.io/plugins/code-input))
 - Access to Sanity's AI capabilities
 - Production deployment for testing (local testing not supported)
 
@@ -44,12 +45,12 @@ When a content editor updates a blog post with meaningful changes, the function 
 
 **Result:** Readers see clear change tracking like "Fixed syntax for the API call to use await; Added more context about the implementation process" without noise from minor formatting tweaks.
 
-### Adding the changelog field to your schema
+### Adding required fields to your schema
 
-You'll need to add a `changelog` field to your post schema:
+You'll need to add both a `changelog` field and properly configured block content to your post schema:
 
 1. Open your post schema file (e.g., `studio/src/schemaTypes/documents/post.ts`)
-2. Add this field to the `fields` array:
+2. Add the changelog field to the `fields` array:
 
 ```typescript
 defineField({
@@ -65,7 +66,27 @@ defineField({
 }),
 ```
 
-3. Deploy your updated schema:
+3. Configure your `content` field to support code blocks using the [code-input plugin](https://www.sanity.io/plugins/code-input):
+
+```typescript
+defineField({
+  name: 'content',
+  title: 'Content',
+  type: 'array',
+  of: [
+    defineArrayMember({
+      type: 'block',
+    }),
+    defineField({
+      type: 'code',
+      name: 'code',
+      title: 'Code',
+    }),
+  ],
+}),
+```
+
+4. Deploy your updated schema:
 
 ```bash
 # From the studio/ folder
