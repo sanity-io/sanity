@@ -32,7 +32,6 @@ export default function CollapseMenuStory() {
               icon={IceCreamIcon}
               mode="bleed"
               selected={selected === num}
-              // eslint-disable-next-line react/jsx-no-bind
               onClick={() => setSelected(num)}
             />
           ))}

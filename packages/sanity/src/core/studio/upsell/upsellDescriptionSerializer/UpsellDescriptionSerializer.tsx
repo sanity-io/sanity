@@ -252,7 +252,6 @@ const createComponents = ({
           rel="noopener noreferrer"
           target="_blank"
           $useTextColor={props.value.useTextColor}
-          // eslint-disable-next-line react/jsx-no-bind
           onClick={
             onLinkClick
               ? () =>

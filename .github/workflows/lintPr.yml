@@ -34,8 +34,5 @@ jobs:
       - name: Oxlint files
         run: pnpm turbo run check:oxlint -- --format github
 
-      - name: Register Problem Matcher for ESLint that handles -f compact and shows warnings inline on PRs
-        run: echo "::add-matcher::.github/eslint-compact.json"
-
       - name: ESLint files
-        run: pnpm turbo run lint --affected --output-logs=full --continue -- -f compact
+        run: pnpm turbo run lint --affected --output-logs=full --continue -- -f gha

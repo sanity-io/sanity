@@ -36,11 +36,7 @@ function ResultItem(props: ResultItemProps): React.JSX.Element {
 
   return (
     <Stack marginTop={isFirst ? undefined : 1}>
-      <Button
-        mode="bleed"
-        // eslint-disable-next-line react/jsx-no-bind
-        onClick={() => onPathSelect(item.path)}
-      >
+      <Button mode="bleed" onClick={() => onPathSelect(item.path)}>
         <Stack space={2} flex={1}>
           <SanityDefaultPreview title={title} media={value.media} layout="inline" />
 
