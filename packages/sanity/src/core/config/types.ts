@@ -10,6 +10,7 @@ import {
   type SchemaTypeDefinition,
   type SearchStrategy,
 } from '@sanity/types'
+import {type ButtonTone} from '@sanity/ui'
 // eslint-disable-next-line @sanity/i18n/no-i18next-import -- figure out how to have the linter be fine with importing types-only
 import {type i18n} from 'i18next'
 import {type ComponentType, type ErrorInfo, type ReactNode} from 'react'
@@ -35,6 +36,37 @@ import {
 import {type FormComponents} from './form'
 import {type ReleaseActionComponent, type ReleaseActionsContext} from './releases/actions'
 import {type StudioComponents, type StudioComponentsPluginOptions} from './studio'
+
+/**
+ * @hidden
+ * @beta
+ */
+export interface ActionComponent<ActionProps, ActionDescription> {
+  (props: ActionProps): ActionDescription | null
+}
+
+/**
+ * @hidden
+ * @beta
+ */
+export interface BaseActionDescription {
+  disabled?: boolean
+  icon?: ReactNode | ComponentType
+  label: string
+  onHandle?: () => void
+  title?: ReactNode
+  tone?: ButtonTone
+  shortcut?: string | null
+  dialog?: unknown
+}
+
+/**
+ * @hidden
+ * @beta
+ */
+export interface GroupableActionDescription<GroupType = unknown> extends BaseActionDescription {
+  group?: GroupType[]
+}
 
 /**
  * Symbol for enabling releases outside of quota restrictions for single docs

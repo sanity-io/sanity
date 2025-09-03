@@ -5,14 +5,6 @@ import {type DocumentInRelease} from '../../releases/tool/detail/useBundleDocume
 import {type ConfigContext} from '../types'
 
 /**
- * @internal
- */
-interface ActionComponent<ActionProps> {
-  (props: ActionProps): ReleaseActionDescription | null
-}
-
-/**
- * @hidden
  * @public
  */
 export interface ReleaseActionProps {
@@ -24,13 +16,14 @@ export interface ReleaseActionProps {
  * @hidden
  * @public
  */
-export interface ReleaseActionComponent extends ActionComponent<ReleaseActionProps> {
+export interface ReleaseActionComponent {
+  (props: ReleaseActionProps): ReleaseActionDescription
   displayName?: string
 }
 
 /**
  * @hidden
- * @internal
+ * @public
  */
 export interface ReleaseActionDescription {
   disabled?: boolean
