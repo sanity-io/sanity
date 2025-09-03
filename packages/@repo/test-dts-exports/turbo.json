@@ -3,7 +3,7 @@
   "extends": ["//"],
   "tasks": {
     "test": {
-      "dependsOn": ["generate:dts-exports"],
+      "dependsOn": ["^build"],
       "cache": false
     },
     "generate:dts-exports": {
