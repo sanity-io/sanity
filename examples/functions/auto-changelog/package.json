@@ -27,7 +27,7 @@
         "update"
       ],
       "filter": "_type == 'post' && (delta::changedAny(content) || delta::changedAny(content[_type == 'code']))",
-      "projection": "{_id, 'oldContent': pt::text(before().content), 'newContent': pt::text(after().content), changelog, 'oldCodeBlocks': before().content[_type == 'code'], 'newCodeBlocks': after().content[_type == 'code'], changelog}"
+      "projection": "{_id, 'oldContent': pt::text(before().content), 'newContent': pt::text(after().content), changelog, 'oldCodeBlocks': before().content[_type == 'code'], 'newCodeBlocks': after().content[_type == 'code']}"
     }
   }
 }

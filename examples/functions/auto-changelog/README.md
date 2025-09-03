@@ -4,7 +4,7 @@
 
 ## Problem
 
-Content teams need to track meaningful changes to documents for returning editors, but manually documenting every update is time-consuming and often forgotten during the editing process. Teams want to show content evolution while avoiding noise from minor formatting tweaks.
+Returning readers can see when an article was last updated, but not _what_ was changed. Meanwhile, content editors need to manually document meaningful changes for these readers, but this process is time-consuming and often forgotten during busy editing workflows. Teams want to show content evolution to readers while avoiding noise from minor formatting tweaks.
 
 ## Solution
 
@@ -12,12 +12,18 @@ This Sanity Function automatically generates changelog entries when documents ar
 
 ## Benefits
 
-- **Saves editorial time** by eliminating manual changelog maintenance
-- **Improves reader experience** with clear change tracking for returning visitors
-- **Reduces noise** by filtering out minor and formatting-only changes
-- **Scales automatically** as content volume grows
-- **Provides detailed code tracking** for technical posts with code examples
-- **Maintains content history** for better editorial workflows
+**For readers:**
+
+- **Clear change visibility** - Readers can see exactly what changed, not just when
+- **Reduced noise** - Only meaningful updates are shown, filtering out minor formatting tweaks
+- **Better return experience** - Returning visitors can quickly catch up on content evolution
+
+**For content editors:**
+
+- **Saves editorial time** - Eliminates manual changelog maintenance
+- **Scales automatically** - No extra work as content volume grows
+- **Detailed code tracking** - Automatically captures technical changes in code examples
+- **Improved workflows** - Focus on creating content rather than documenting changes
 
 ## Compatible Templates
 
@@ -30,12 +36,13 @@ This function is built to be compatible with any of [the official "clean" templa
   - A `content` field (rich text/portable text) for content analysis
   - A `changelog` field (array of strings) for storing generated entries
 - Block content configuration with code block support (using [code-input plugin](https://www.sanity.io/plugins/code-input))
-- Access to Sanity's AI capabilities
 - Production deployment for testing (local testing not supported)
 
 ## Usage Example
 
-When a content editor updates a blog post with meaningful changes, the function automatically:
+**Editor workflow:** When a content editor updates a blog post with meaningful changes, they simply publish their changes as usual - no extra changelog work required.
+
+**Behind the scenes,** the function automatically:
 
 1. **Triggers** on update events for post documents with content or code block changes
 2. **Filters** out formatting-only changes using intelligent comparison
@@ -43,7 +50,7 @@ When a content editor updates a blog post with meaningful changes, the function 
 4. **Generates** a concise, reader-friendly description of what changed
 5. **Appends** the changelog entry to the document's changelog array
 
-**Result:** Readers see clear change tracking like "Fixed syntax for the API call to use await; Added more context about the implementation process" without noise from minor formatting tweaks.
+**Reader outcome:** Visitors see clear change tracking like "Fixed syntax for the API call to use await; Added more context about the implementation process" without noise from minor formatting tweaks, helping them understand exactly what's new since their last visit.
 
 ### Adding required fields to your schema
 
@@ -129,7 +136,7 @@ npx sanity schema deploy
        filter:
          "_type == 'post' && (delta::changedAny(content) || delta::changedAny(content[_type == 'code']))",
        projection:
-         "{_id, 'oldContent': pt::text(before().content), 'newContent': pt::text(after().content), changelog, 'oldCodeBlocks': before().content[_type == 'code'], 'newCodeBlocks': after().content[_type == 'code'], changelog}",
+         "{_id, 'oldContent': pt::text(before().content), 'newContent': pt::text(after().content), changelog, 'oldCodeBlocks': before().content[_type == 'code'], 'newCodeBlocks': after().content[_type == 'code']}",
      },
    })
    ```
