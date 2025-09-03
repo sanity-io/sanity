@@ -15,10 +15,12 @@ function mutationEvent({
   previousRev,
   resultRev,
   mutations,
+  messageReceivedAt,
 }: {
   previousRev: string
   resultRev: string
   mutations: MutationPayload[]
+  messageReceivedAt: string
 }): MutationEvent {
   return {
     type: 'mutation',
@@ -32,8 +34,11 @@ function mutationEvent({
     transactionCurrentEvent: 1,
     transactionTotalEvents: 1,
     visibility: 'transaction',
+    messageReceivedAt,
   }
 }
+
+const now = () => new Date().toString()
 
 test("it accumulates events that doesn't apply in a chain starting at the current head revision", async () => {
   const events = from([
@@ -53,24 +58,28 @@ test("it accumulates events that doesn't apply in a chain starting at the curren
     mutationEvent({
       previousRev: 'one',
       resultRev: 'two',
+      messageReceivedAt: now(),
       mutations: [{patch: {set: {name: 'OK'}}}],
     }),
     // this is part of an unbroken chain, but received out of order
     mutationEvent({
       previousRev: 'four',
       resultRev: 'five',
+      messageReceivedAt: now(),
       mutations: [{patch: {set: {name: 'Out of order'}}}],
     }),
     // this is part of an unbroken chain, but received out of order
     mutationEvent({
       previousRev: 'three',
       resultRev: 'four',
+      messageReceivedAt: now(),
       mutations: [{patch: {set: {name: 'Out of order'}}}],
     }),
     // we have a complete unbroken chain when receiving this
     mutationEvent({
       previousRev: 'two',
       resultRev: 'three',
+      messageReceivedAt: now(),
       mutations: [{patch: {set: {name: 'Out of order'}}}],
     }),
   ] satisfies ListenerEvent[])
@@ -114,18 +123,21 @@ test('it ignores events already applied to the current head revision', async () 
       previousRev: 'minus-one',
       resultRev: 'zero',
       mutations: [{patch: {set: {name: 'SHOULD BE IGNORED'}}}],
+      messageReceivedAt: now(),
     }),
     // this is already applied to the snapshot emitted above and should be ignored
     mutationEvent({
       previousRev: 'zero',
       resultRev: 'one',
       mutations: [{patch: {set: {name: 'SHOULD ALSO BE IGNORED'}}}],
+      messageReceivedAt: now(),
     }),
     // this has the snapshot revision as it's previous and should be applied
     mutationEvent({
       previousRev: 'one',
       resultRev: 'two',
       mutations: [{patch: {set: {name: 'SHOULD BE APPLIED'}}}],
+      messageReceivedAt: now(),
     }),
   ] satisfies ListenerEvent[])
 
@@ -141,6 +153,7 @@ test('it throws an MaxBufferExceededError if the buffer exceeds `maxBuffer`', as
     {
       type: 'snapshot',
       documentId: 'test',
+
       document: {
         _rev: 'one',
         _id: 'test',
@@ -155,30 +168,35 @@ test('it throws an MaxBufferExceededError if the buffer exceeds `maxBuffer`', as
       previousRev: 'one',
       resultRev: 'two',
       mutations: [{patch: {set: {name: 'OK'}}}],
+      messageReceivedAt: now(),
     }),
     // this is part of an unbroken chain, but received out of order
     mutationEvent({
       previousRev: 'four',
       resultRev: 'five',
       mutations: [{patch: {set: {name: 'Out of order'}}}],
+      messageReceivedAt: now(),
     }),
     // this breaks the chain
     mutationEvent({
       previousRev: 'six',
       resultRev: 'seven',
       mutations: [{patch: {set: {name: 'Out of order'}}}],
+      messageReceivedAt: now(),
     }),
     // this is part of an unbroken chain, but received out of order
     mutationEvent({
       previousRev: 'three',
       resultRev: 'four',
       mutations: [{patch: {set: {name: 'Out of order'}}}],
+      messageReceivedAt: now(),
     }),
     // we have a complete unbroken chain when receiving this
     mutationEvent({
       previousRev: 'two',
       resultRev: 'three',
       mutations: [{patch: {set: {name: 'Out of order'}}}],
+      messageReceivedAt: now(),
     }),
   ] satisfies ListenerEvent[])
 
@@ -206,30 +224,35 @@ test('it throws an OutOfSyncError if the buffer exceeds `maxBuffer`', async () =
       previousRev: 'one',
       resultRev: 'two',
       mutations: [{patch: {set: {name: 'OK'}}}],
+      messageReceivedAt: now(),
     }),
     // this is part of an unbroken chain, but received out of order
     mutationEvent({
       previousRev: 'four',
       resultRev: 'five',
       mutations: [{patch: {set: {name: 'Out of order'}}}],
+      messageReceivedAt: now(),
     }),
     // this breaks the chain
     mutationEvent({
       previousRev: 'six',
       resultRev: 'seven',
       mutations: [{patch: {set: {name: 'Out of order'}}}],
+      messageReceivedAt: now(),
     }),
     // this is part of an unbroken chain, but received out of order
     mutationEvent({
       previousRev: 'three',
       resultRev: 'four',
       mutations: [{patch: {set: {name: 'Out of order'}}}],
+      messageReceivedAt: now(),
     }),
     // we have a complete unbroken chain when receiving this
     mutationEvent({
       previousRev: 'two',
       resultRev: 'three',
       mutations: [{patch: {set: {name: 'Out of order'}}}],
+      messageReceivedAt: now(),
     }),
   ] satisfies ListenerEvent[])
 
@@ -257,47 +280,56 @@ test('it throws an OutOfSyncError after `resolveChainDeadline` ms has passed', a
       previousRev: 'one',
       resultRev: 'two',
       mutations: [{patch: {set: {name: 'OK'}}}],
+      messageReceivedAt: now(),
     }),
     // this breaks the chain (three is missing)
     mutationEvent({
       previousRev: 'three',
       resultRev: 'four',
       mutations: [{patch: {set: {name: 'four'}}}],
+      messageReceivedAt: now(),
     }),
     mutationEvent({
       previousRev: 'four',
       resultRev: 'five',
       mutations: [{patch: {set: {name: 'five'}}}],
+      messageReceivedAt: now(),
     }),
     mutationEvent({
       previousRev: 'five',
       resultRev: 'six',
       mutations: [{patch: {set: {name: 'six'}}}],
+      messageReceivedAt: now(),
     }),
     mutationEvent({
       previousRev: 'seven',
       resultRev: 'eight',
       mutations: [{patch: {set: {name: 'eight'}}}],
+      messageReceivedAt: now(),
     }),
     mutationEvent({
       previousRev: 'eight',
       resultRev: 'nine',
       mutations: [{patch: {set: {name: 'nine'}}}],
+      messageReceivedAt: now(),
     }),
     mutationEvent({
       previousRev: 'nine',
       resultRev: 'ten',
       mutations: [{patch: {set: {name: 'ten'}}}],
+      messageReceivedAt: now(),
     }),
     mutationEvent({
       previousRev: 'ten',
       resultRev: 'eleven',
       mutations: [{patch: {set: {name: 'eleven'}}}],
+      messageReceivedAt: now(),
     }),
     mutationEvent({
       previousRev: 'eleven',
       resultRev: 'twelve',
       mutations: [{patch: {set: {name: 'twelve'}}}],
+      messageReceivedAt: now(),
     }),
   ] satisfies ListenerEvent[])
 
@@ -306,7 +338,7 @@ test('it throws an OutOfSyncError after `resolveChainDeadline` ms has passed', a
     lastValueFrom(
       merge(
         timer(400).pipe(
-          mergeMap(() => throwError(() => new Error('Expected deadline to bee exceeded'))),
+          mergeMap(() => throwError(() => new Error('Expected deadline to be exceeded'))),
         ),
         events,
       ).pipe(
