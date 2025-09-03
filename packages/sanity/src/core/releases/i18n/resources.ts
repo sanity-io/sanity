@@ -43,6 +43,8 @@ const releasesLocaleStrings = {
   'action.revert-unpublish-actions': 'Revert unpublish when releasing',
   /** Action text for unscheduling a release */
   'action.unschedule': 'Unschedule release',
+  /** Action text for unscheduling a draft (single-document scheduled release) */
+  'action.unschedule-draft': 'Unschedule draft',
   /** Action text for publishing all documents in a release (and the release itself) */
   'action.publish-all-documents': 'Run release',
   /** Text for the review changes button in release tool */
@@ -377,20 +379,26 @@ const releasesLocaleStrings = {
   'table-header.archivedAt': 'Archived',
   /** Header for the document table in the release tool - contributors */
   'table-header.contributors': 'Contributors',
-  /** Header for the document table in the release tool - type */
-  'table-header.type': 'Type',
-  /** Header for the document table in the release tool - release title */
-  'table-header.title': 'Release',
-  /** Header for the document table in the release tool - action */
-  'table-header.action': 'Action',
+  /** Header for the document table in the release tool - created by */
+  'table-header.created-by': 'Created by',
+  /** Header for the document table in the release tool - document preview */
+  'table-header.document': 'Document',
   /** Header for the document table in the release tool - title */
   'table-header.documents': 'Documents',
   /** Header for the document table in the release tool - edited */
   'table-header.edited': 'Edited',
   /** Header for the document table in the release tool - Published */
   'table-header.publishedAt': 'Published',
+  /** Header for the scheduled drafts document table in the release tool - scheduled for */
+  'table-header.scheduled-for': 'Scheduled for',
   /** Header for the document table in the release tool - time */
   'table-header.time': 'Time',
+  /** Header for the  document table in the release tool - release title */
+  'table-header.title': 'Release',
+  /** Header for the document table in the release tool - type */
+  'table-header.type': 'Type',
+  /** Header for the document table in the release tool - action */
+  'table-header.action': 'Action',
 
   /** Text for toast when release failed to archive */
   'toast.archive.error': "Failed to archive '<strong>{{title}}</strong>': {{error}}",

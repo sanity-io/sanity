@@ -1,6 +1,8 @@
+import {type ReleaseDocument} from '@sanity/client'
 import {describe, expect, it} from 'vitest'
 
-import {getDocumentIsInPerspective} from './util'
+import {activeScheduledRelease} from '../__fixtures__/release.fixture'
+import {getDocumentIsInPerspective, shouldShowReleaseInView} from './util'
 
 // * - document: `summer.my-document-id`, perspective: `rsummer` : **true**
 // * - document: `my-document-id`, perspective: `rsummer` : **false**
@@ -37,5 +39,67 @@ describe('getDocumentIsInPerspective', () => {
     expect(
       getDocumentIsInPerspective('versions.rcomplex-summer.my-document-id', 'rcomplex-summer'),
     ).toBe(true)
+  })
+})
+
+describe('shouldShowReleaseInView', () => {
+  it('should show cardinality "many" releases in "releases" view', () => {
+    const release: ReleaseDocument = {
+      ...activeScheduledRelease,
+      metadata: {
+        ...activeScheduledRelease.metadata,
+        cardinality: 'many',
+      },
+    }
+    const filterFn = shouldShowReleaseInView('releases')
+    expect(filterFn(release)).toBe(true)
+  })
+
+  it('should show undefined cardinality releases in "releases" view', () => {
+    const release: ReleaseDocument = {
+      ...activeScheduledRelease,
+      metadata: {
+        ...activeScheduledRelease.metadata,
+        cardinality: undefined,
+      },
+    }
+    const filterFn = shouldShowReleaseInView('releases')
+    expect(filterFn(release)).toBe(true)
+  })
+
+  it('should show cardinality "one" releases in "drafts" view', () => {
+    const release: ReleaseDocument = {
+      ...activeScheduledRelease,
+      metadata: {
+        ...activeScheduledRelease.metadata,
+        cardinality: 'one',
+      },
+    }
+    const filterFn = shouldShowReleaseInView('drafts')
+    expect(filterFn(release)).toBe(true)
+  })
+
+  it('should not show cardinality "one" releases in "releases" view', () => {
+    const release: ReleaseDocument = {
+      ...activeScheduledRelease,
+      metadata: {
+        ...activeScheduledRelease.metadata,
+        cardinality: 'one',
+      },
+    }
+    const filterFn = shouldShowReleaseInView('releases')
+    expect(filterFn(release)).toBe(false)
+  })
+
+  it('should not show cardinality "many" releases in "drafts" view', () => {
+    const release: ReleaseDocument = {
+      ...activeScheduledRelease,
+      metadata: {
+        ...activeScheduledRelease.metadata,
+        cardinality: 'many',
+      },
+    }
+    const filterFn = shouldShowReleaseInView('drafts')
+    expect(filterFn(release)).toBe(false)
   })
 })
