@@ -6,6 +6,7 @@ import {useObservable} from 'react-rx'
 import {combineLatest, from, type Observable, of} from 'rxjs'
 import {
   catchError,
+  delay,
   distinctUntilChanged,
   expand,
   filter,
@@ -84,6 +85,57 @@ const getActiveReleaseDocumentsObservable = ({
     )
   }
 
+  // Helper function to process a single document
+  const processDocument = (id: string) => {
+    const ctx = {
+      observeDocument: documentPreviewStore.unstable_observeDocument,
+      observeDocumentPairAvailability:
+        documentPreviewStore.unstable_observeDocumentPairAvailability,
+      i18n,
+      getClient,
+      schema,
+    }
+
+    const document$ = documentPreviewStore
+      .unstable_observeDocument(id, {
+        apiVersion: RELEASES_STUDIO_CLIENT_OPTIONS.apiVersion,
+      })
+      .pipe(
+        filter(Boolean),
+        switchMap((doc) => {
+          return documentPreviewStore.unstable_observeDocumentPairAvailability(id).pipe(
+            map((availability) => ({
+              ...doc,
+              publishedDocumentExists: availability.published.available,
+            })),
+          )
+        }),
+      )
+
+    const validation$ = document$.pipe(
+      switchMap((document) => createValidationObservable(ctx, document)),
+    )
+
+    // Do not subscribe to preview streams here. Previews will be fetched lazily per rendered row.
+    return combineLatest([document$, validation$]).pipe(
+      map(([document, validation]) => ({
+        document,
+        validation,
+        memoKey: uuid(),
+      })),
+    )
+  }
+
+  // Helper function to process a batch of documents
+  const processBatch = (batch: string[], batchIndex: number) => {
+    const batchDelay = batchIndex === 0 ? 0 : 100
+
+    return of(batch).pipe(
+      delay(batchDelay),
+      mergeMapArray((id: string) => processDocument(id)),
+    )
+  }
+
   return documentPreviewStore
     .unstable_observeDocumentIdSet(
       groqFilter,
@@ -94,43 +146,28 @@ const getActiveReleaseDocumentsObservable = ({
     )
     .pipe(
       map((state) => (state.documentIds || []) as string[]),
-      mergeMapArray((id: string) => {
-        const ctx = {
-          observeDocument: documentPreviewStore.unstable_observeDocument,
-          observeDocumentPairAvailability:
-            documentPreviewStore.unstable_observeDocumentPairAvailability,
-          i18n,
-          getClient,
-          schema,
+      // Process documents in priority order: small batches first, then larger ones
+      switchMap((documentIds) => {
+        // If no documents, return empty results immediately
+        if (documentIds.length === 0) {
+          return of([])
         }
 
-        const document$ = documentPreviewStore
-          .unstable_observeDocument(id, {
-            apiVersion: RELEASES_STUDIO_CLIENT_OPTIONS.apiVersion,
-          })
-          .pipe(
-            filter(Boolean),
-            switchMap((doc) => {
-              return documentPreviewStore.unstable_observeDocumentPairAvailability(id).pipe(
-                map((availability) => ({
-                  ...doc,
-                  publishedDocumentExists: availability.published.available,
-                })),
-              )
-            }),
-          )
+        // Process in smaller batches for better responsiveness
+        const batchSize = 5
+        const batches = []
+        for (let i = 0; i < documentIds.length; i += batchSize) {
+          batches.push(documentIds.slice(i, i + batchSize))
+        }
 
-        const validation$ = document$.pipe(
-          switchMap((document) => createValidationObservable(ctx, document)),
-        )
-
-        // Do not subscribe to preview streams here. Previews will be fetched lazily per rendered row.
-        return combineLatest([document$, validation$]).pipe(
-          map(([document, validation]) => ({
-            document,
-            validation,
-            memoKey: uuid(),
-          })),
+        // Process all batches and collect all results
+        return combineLatest(
+          batches.map((batch, batchIndex) =>
+            processBatch(batch, batchIndex).pipe(delay(batchIndex * 100)),
+          ),
+        ).pipe(
+          // Flatten all batch results into a single array
+          map((batchResults) => batchResults.flat()),
         )
       }),
       map((results) => ({loading: false, results, error: null})),
