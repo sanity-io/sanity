@@ -58,6 +58,7 @@ export type ListenerEvent =
   | ReconnectEvent
   | InitialSnapshotEvent
   | PendingMutationsEvent
+  | WelcomeEvent
 
 const PENDING_START: PendingMutationsEvent = {type: 'pending', phase: 'begin'}
 const PENDING_END: PendingMutationsEvent = {type: 'pending', phase: 'end'}
@@ -118,8 +119,8 @@ export function getPairListener(
   ) as Observable<WelcomeEvent | MutationEvent | ReconnectEvent>
 
   const pairEvents$ = sharedEvents.pipe(
-    concatMap((event) => {
-      return event.type === 'welcome'
+    concatMap((event, i) => {
+      return event.type === 'welcome' && i === 0
         ? fetchInitialDocumentSnapshots().pipe(
             mergeMap(({draft, published, version}) => [
               createSnapshotEvent(draftId, draft),
@@ -132,8 +133,8 @@ export function getPairListener(
     scan(
       (
         acc: {
-          next: (InitialSnapshotEvent | ListenerEvent)[]
-          buffer: (InitialSnapshotEvent | ListenerEvent)[]
+          next: (InitialSnapshotEvent | ListenerEvent | WelcomeEvent)[]
+          buffer: (InitialSnapshotEvent | ListenerEvent | WelcomeEvent)[]
         },
         msg,
       ) => {
@@ -196,7 +197,12 @@ export function getPairListener(
     sequentializeListenerEvents(),
   )
 
-  return merge(draftEvents$, publishedEvents$, versionEvents$).pipe(
+  return merge(
+    draftEvents$,
+    publishedEvents$,
+    versionEvents$,
+    pairEvents$.pipe(filter((e) => e.type === 'welcome')),
+  ).pipe(
     catchError((err, caught$) => {
       if (err instanceof OutOfSyncError) {
         debug('Recovering from OutOfSyncError: %s', OutOfSyncError.name)
