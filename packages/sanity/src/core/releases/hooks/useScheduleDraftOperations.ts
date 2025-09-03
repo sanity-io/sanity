@@ -13,13 +13,29 @@ export interface ScheduleDraftOperationsValue {
     title?: string,
     opts?: BaseActionOptions,
   ) => Promise<string>
+  /**
+   * Immediately publishes a scheduled draft by unscheduling and then publishing
+   */
+  runNow: (releaseDocumentId: string, opts?: BaseActionOptions) => Promise<void>
+  /**
+   * Deletes a scheduled draft by unscheduling, archiving, and then deleting
+   */
+  deleteSchedule: (releaseDocumentId: string, opts?: BaseActionOptions) => Promise<void>
+  /**
+   * Reschedules a draft to a new publish time
+   */
+  reschedule: (
+    releaseDocumentId: string,
+    newPublishAt: Date,
+    opts?: BaseActionOptions,
+  ) => Promise<void>
 }
 
 /**
  * Hook for scheduling draft operations.
  *
- * Provides operations for scheduling document publishing and unpublishing.
- * Follows the same pattern as useVersionOperations.
+ * Provides operations for scheduling document publishing and unpublishing,
+ * as well as combined operations for managing scheduled drafts.
  *
  * @internal
  */
@@ -73,7 +89,50 @@ export function useScheduleDraftOperations(): ScheduleDraftOperationsValue {
     [releaseOperations, createScheduledRelease],
   )
 
+  const handleRunNow = useCallback(
+    async (releaseDocumentId: string, opts?: BaseActionOptions): Promise<void> => {
+      // First unschedule the release
+      await releaseOperations.unschedule(releaseDocumentId, opts)
+
+      // Then immediately publish it
+      await releaseOperations.publishRelease(releaseDocumentId, opts)
+    },
+    [releaseOperations],
+  )
+
+  const handleDeleteSchedule = useCallback(
+    async (releaseDocumentId: string, opts?: BaseActionOptions): Promise<void> => {
+      // First unschedule the release
+      await releaseOperations.unschedule(releaseDocumentId, opts)
+
+      // Then archive it
+      await releaseOperations.archive(releaseDocumentId, opts)
+
+      // Finally delete it
+      await releaseOperations.deleteRelease(releaseDocumentId, opts)
+    },
+    [releaseOperations],
+  )
+
+  const handleReschedule = useCallback(
+    async (
+      releaseDocumentId: string,
+      newPublishAt: Date,
+      opts?: BaseActionOptions,
+    ): Promise<void> => {
+      // First unschedule the release
+      await releaseOperations.unschedule(releaseDocumentId, opts)
+
+      // Then schedule it with the new date
+      await releaseOperations.schedule(releaseDocumentId, newPublishAt, opts)
+    },
+    [releaseOperations],
+  )
+
   return {
     schedulePublish: handleSchedulePublish,
+    runNow: handleRunNow,
+    deleteSchedule: handleDeleteSchedule,
+    reschedule: handleReschedule,
   }
 }

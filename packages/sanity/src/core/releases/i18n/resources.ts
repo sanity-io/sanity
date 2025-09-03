@@ -45,6 +45,12 @@ const releasesLocaleStrings = {
   'action.unschedule': 'Unschedule release',
   /** Action text for unscheduling a draft (single-document scheduled release) */
   'action.unschedule-draft': 'Unschedule draft',
+  /** Action text for running a scheduled draft immediately */
+  'action.run-now': 'Run now',
+  /** Action text for deleting a scheduled draft */
+  'action.delete-schedule': 'Delete schedule',
+  /** Action text for changing the schedule of a draft */
+  'action.change-schedule': 'Change schedule',
   /** Action text for publishing all documents in a release (and the release itself) */
   'action.publish-all-documents': 'Run release',
   /** Text for the review changes button in release tool */
@@ -98,6 +104,28 @@ const releasesLocaleStrings = {
     'This will archive {{count}} document versions.',
   /** Label for the button to proceed with archiving a release */
   'archive-dialog.confirm-archive-button': 'Yes, archive release',
+
+  /** Header for the dialog confirming running a scheduled draft immediately */
+  'dialog.run-now.header': 'Run draft now',
+  /** Body text for the dialog confirming running a scheduled draft immediately */
+  'dialog.run-now.body': 'Are you sure you want to publish "{{title}}" immediately?',
+  /** Confirm button text for running a scheduled draft immediately */
+  'dialog.run-now.confirm': 'Yes, run now',
+
+  /** Header for the dialog confirming deletion of a scheduled draft */
+  'dialog.delete-schedule.header': 'Delete scheduled draft',
+  /** Body text for the dialog confirming deletion of a scheduled draft */
+  'dialog.delete-schedule.body':
+    'Are you sure you want to delete the scheduled draft "{{title}}"? This action cannot be undone.',
+  /** Confirm button text for deleting a scheduled draft */
+  'dialog.delete-schedule.confirm': 'Yes, delete schedule',
+
+  /** Header for the dialog to change schedule of a draft */
+  'dialog.change-schedule.header': 'Change schedule',
+  /** Body text for the dialog to change schedule of a draft */
+  'dialog.change-schedule.body': 'Select a new date and time to publish this draft.',
+  /** Confirm button text for changing schedule of a draft */
+  'dialog.change-schedule.confirm': 'Update schedule',
 
   /** Title for information card on a archived release */
   'archive-info.title': 'This release is archived',
@@ -420,11 +448,11 @@ const releasesLocaleStrings = {
   'toast.schedule.error': "Failed to schedule '<strong>{{title}}</strong>': {{error}}",
   /** Text for toast when release has been scheduled */
   'toast.schedule.success': "The '<strong>{{title}}</strong>' release was scheduled.",
+
   /** Text for toast when release failed to unschedule */
   'toast.unschedule.error': "Failed to unscheduled '<strong>{{title}}</strong>': {{error}}",
   /** Text for toast when release failed to unarchive */
   'toast.unarchive.error': "Failed to unarchive '<strong>{{title}}</strong>': {{error}}",
-  /** Description for toast when release deletion failed */
   /** Text for tooltip when a release has been scheduled */
   'type-picker.tooltip.scheduled': 'The release is scheduled, unschedule it to change type',
   /** Text for toast when release failed to revert */

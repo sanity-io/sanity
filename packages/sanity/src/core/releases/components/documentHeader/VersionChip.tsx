@@ -25,9 +25,11 @@ import {useCanvasCompanionDocsStore} from '../../../canvas/store/useCanvasCompan
 import {useTranslation} from '../../../i18n/hooks/useTranslation'
 import {getDraftId, getPublishedId, getVersionId} from '../../../util/draftUtils'
 import {useReleasesToolAvailable} from '../../hooks/useReleasesToolAvailable'
+import {useScheduleDraftOperations} from '../../hooks/useScheduleDraftOperations'
 import {useVersionOperations} from '../../hooks/useVersionOperations'
 import {getReleaseIdFromReleaseDocumentId} from '../../util/getReleaseIdFromReleaseDocumentId'
 import {DiscardVersionDialog} from '../dialog/DiscardVersionDialog'
+import {ScheduleDraftDialog} from '../dialog/ScheduleDraftDialog'
 import {ReleaseAvatarIcon} from '../ReleaseAvatar'
 import {VersionContextMenu} from './contextMenu/VersionContextMenu'
 import {CopyToNewReleaseDialog} from './dialog/CopyToNewReleaseDialog'
@@ -81,6 +83,7 @@ export const VersionChip = memo(function VersionChip(props: {
     isVersion: boolean
     disabled?: boolean
     isGoingToUnpublish?: boolean
+    release?: ReleaseDocument
   }
 }) {
   const {
@@ -102,6 +105,7 @@ export const VersionChip = memo(function VersionChip(props: {
       isVersion,
       disabled: contextMenuDisabled = false,
       isGoingToUnpublish = false,
+      release,
     },
   } = props
   const releasesToolAvailable = useReleasesToolAvailable()
@@ -113,6 +117,8 @@ export const VersionChip = memo(function VersionChip(props: {
   const popoverRef = useRef<HTMLDivElement | null>(null)
   const [isDiscardDialogOpen, setIsDiscardDialogOpen] = useState(false)
   const [isCreateReleaseDialogOpen, setIsCreateReleaseDialogOpen] = useState(false)
+  const [isChangeScheduleDialogOpen, setIsChangeScheduleDialogOpen] = useState(false)
+  const [isPerformingScheduleOperation, setIsPerformingScheduleOperation] = useState(false)
 
   const chipRef = useRef<HTMLButtonElement | null>(null)
 
@@ -123,6 +129,7 @@ export const VersionChip = memo(function VersionChip(props: {
   const docId = isVersion ? getVersionId(documentId, fromRelease) : documentId // operations recognises publish and draft as empty
 
   const {createVersion} = useVersionOperations()
+  const {reschedule} = useScheduleDraftOperations()
   const toast = useToast()
   const {t} = useTranslation()
 
@@ -159,6 +166,48 @@ export const VersionChip = memo(function VersionChip(props: {
   }, [setIsDiscardDialogOpen])
 
   const openCreateReleaseDialog = useCallback(() => setIsCreateReleaseDialogOpen(true), [])
+
+  const openChangeScheduleDialog = useCallback(() => {
+    setIsChangeScheduleDialogOpen(true)
+  }, [])
+
+  const handleReschedule = useCallback(
+    async (newPublishAt: Date) => {
+      if (!release) return
+
+      setIsPerformingScheduleOperation(true)
+
+      try {
+        await reschedule(release._id, newPublishAt)
+
+        // Show success toast
+        toast.push({
+          closable: true,
+          status: 'success',
+          title: t('release.toast.reschedule.success', {
+            title: release.metadata.title || t('release.placeholder-untitled-release'),
+          }),
+        })
+
+        setIsChangeScheduleDialogOpen(false)
+      } catch (error) {
+        console.error('Failed to reschedule draft:', error)
+
+        // Show error toast
+        toast.push({
+          closable: true,
+          status: 'error',
+          title: t('release.toast.reschedule.error', {
+            title: release.metadata.title || t('release.placeholder-untitled-release'),
+            error: error.message,
+          }),
+        })
+      } finally {
+        setIsPerformingScheduleOperation(false)
+      }
+    },
+    [release, reschedule, toast, t],
+  )
 
   const handleAddVersion = useCallback(
     async (targetRelease: string) => {
@@ -242,6 +291,8 @@ export const VersionChip = memo(function VersionChip(props: {
             locked={locked}
             type={documentType}
             isGoingToUnpublish={isGoingToUnpublish}
+            release={release}
+            onChangeSchedule={openChangeScheduleDialog}
           />
         }
         fallbackPlacements={[]}
@@ -278,6 +329,19 @@ export const VersionChip = memo(function VersionChip(props: {
           documentType={documentType}
           tone={tone}
           title={text}
+        />
+      )}
+
+      {isChangeScheduleDialogOpen && release && release.metadata.cardinality === 'one' && (
+        <ScheduleDraftDialog
+          onClose={() => !isPerformingScheduleOperation && setIsChangeScheduleDialogOpen(false)}
+          onSchedule={handleReschedule}
+          header={t('release.dialog.change-schedule.header')}
+          description={t('release.dialog.change-schedule.body')}
+          confirmButtonText={t('release.dialog.change-schedule.confirm')}
+          confirmButtonTone="primary"
+          loading={isPerformingScheduleOperation}
+          initialDate={release.publishAt || release.metadata.intendedPublishAt}
         />
       )}
     </>
