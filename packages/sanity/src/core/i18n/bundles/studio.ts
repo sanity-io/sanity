@@ -1368,10 +1368,10 @@ export const studioLocaleStrings = defineLocalesResources('studio', {
   'release.dialog.create.title': 'New release',
   /** Confirmation message for deleting a scheduled publish */
   'release.dialog.delete-schedule.confirm-message':
-    'Are you sure you want to delete the schedule for "<strong>{{title}}</strong>"?',
+    'Are you sure you want to delete the schedule for "<Strong>{{title}}</Strong>"?',
   /** Confirmation message for running a scheduled publish immediately */
   'release.dialog.run-now.confirm-message':
-    'Are you sure you want to run the publish of this scheduled document "<strong>{{title}}</strong>"?',
+    'Are you sure you want to run the publish of this scheduled document "<Strong>{{title}}</Strong>"?',
   /** Label for description in tooltip to explain release types */
   'release.dialog.tooltip.description':
     'The intended release time is used to create better previews and hints about whether documents conflict.',
@@ -1398,9 +1398,9 @@ export const studioLocaleStrings = defineLocalesResources('studio', {
   /** The toast title that will be shown the creating a release fails */
   'release.toast.create-release-error.title': 'Failed to create release',
   /** Error toast for deleting a scheduled draft */
-  'release.toast.delete-schedule.error': "Failed to delete '<strong>{{title}}</strong>': {{error}}",
+  'release.toast.delete-schedule.error': "Failed to delete '<Strong>{{title}}</Strong>': {{error}}",
   /** Success toast for deleting a scheduled draft */
-  'release.toast.delete-schedule.success': '<strong>{{title}}</strong> has been deleted.',
+  'release.toast.delete-schedule.success': '<Strong>{{title}}</Strong> has been deleted.',
   /** The toast title that will be shown when the user has a release perspective which is now deleted */
   'release.toast.not-found-release.title': "The '{{title}}' release could not be found",
   /** The toast description that will be shown when the user has a release perspective which is now published */
@@ -1408,13 +1408,13 @@ export const studioLocaleStrings = defineLocalesResources('studio', {
   /** The toast title that will be shown when the user has a release perspective which is now deleted */
   'release.toast.published-release.title': "The '{{title}}' release was published",
   /** Error toast for rescheduling a draft */
-  'release.toast.reschedule.error': "Failed to reschedule '<strong>{{title}}</strong>': {{error}}",
+  'release.toast.reschedule.error': "Failed to reschedule '<Strong>{{title}}</Strong>': {{error}}",
   /** Success toast for rescheduling a draft */
-  'release.toast.reschedule.success': '<strong>{{title}}</strong> has been rescheduled.',
+  'release.toast.reschedule.success': '<Strong>{{title}}</Strong> has been rescheduled.',
   /** Error toast for running a scheduled publish immediately */
-  'release.toast.run-now.error': "Failed to run '<strong>{{title}}</strong>': {{error}}",
+  'release.toast.run-now.error': "Failed to run '<Strong>{{title}}</Strong>': {{error}}",
   /** Success toast for running a scheduled publish immediately */
-  'release.toast.run-now.success': '<strong>{{title}}</strong> has been published.',
+  'release.toast.run-now.success': '<Strong>{{title}}</Strong> has been published.',
   /** Label for when a version of a document has already been added to the release */
   'release.tooltip.already-added': 'A version of this document has already been added',
   /** Label for when a release is scheduled / scheduling and a user can't add a document version to it */

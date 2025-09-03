@@ -1,12 +1,6 @@
 import {type ReleaseDocument, type ReleaseState} from '@sanity/client'
 import {ComposeSparklesIcon, LockIcon} from '@sanity/icons'
-import {
-  type BadgeTone,
-  Button, // eslint-disable-line no-restricted-imports
-  useClickOutsideEvent,
-  useGlobalKeyDown,
-  useToast,
-} from '@sanity/ui'
+import {type BadgeTone, Button, useClickOutsideEvent, useGlobalKeyDown, useToast} from '@sanity/ui'
 import {
   memo,
   type MouseEvent,
@@ -25,7 +19,7 @@ import {useCanvasCompanionDocsStore} from '../../../canvas/store/useCanvasCompan
 import {useTranslation} from '../../../i18n/hooks/useTranslation'
 import {getDraftId, getPublishedId, getVersionId} from '../../../util/draftUtils'
 import {useReleasesToolAvailable} from '../../hooks/useReleasesToolAvailable'
-import {useScheduleDraftOperations} from '../../hooks/useScheduleDraftOperations'
+import {useScheduleDraftOperationsWithToasts} from '../../hooks/useScheduleDraftOperationsWithToasts'
 import {useVersionOperations} from '../../hooks/useVersionOperations'
 import {getReleaseIdFromReleaseDocumentId} from '../../util/getReleaseIdFromReleaseDocumentId'
 import {DiscardVersionDialog} from '../dialog/DiscardVersionDialog'
@@ -129,9 +123,10 @@ export const VersionChip = memo(function VersionChip(props: {
   const docId = isVersion ? getVersionId(documentId, fromRelease) : documentId // operations recognises publish and draft as empty
 
   const {createVersion} = useVersionOperations()
-  const {reschedule} = useScheduleDraftOperations()
   const toast = useToast()
   const {t} = useTranslation()
+  const releaseTitle = release?.metadata.title || t('release.placeholder-untitled-release')
+  const {reschedule} = useScheduleDraftOperationsWithToasts(releaseTitle)
 
   const close = useCallback(() => setContextMenuPoint(undefined), [])
 
@@ -179,34 +174,14 @@ export const VersionChip = memo(function VersionChip(props: {
 
       try {
         await reschedule(release._id, newPublishAt)
-
-        // Show success toast
-        toast.push({
-          closable: true,
-          status: 'success',
-          title: t('release.toast.reschedule.success', {
-            title: release.metadata.title || t('release.placeholder-untitled-release'),
-          }),
-        })
-
         setIsChangeScheduleDialogOpen(false)
       } catch (error) {
-        console.error('Failed to reschedule draft:', error)
-
-        // Show error toast
-        toast.push({
-          closable: true,
-          status: 'error',
-          title: t('release.toast.reschedule.error', {
-            title: release.metadata.title || t('release.placeholder-untitled-release'),
-            error: error.message,
-          }),
-        })
+        // Error toast already handled by the hook
       } finally {
         setIsPerformingScheduleOperation(false)
       }
     },
-    [release, reschedule, toast, t],
+    [release, reschedule],
   )
 
   const handleAddVersion = useCallback(
