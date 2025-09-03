@@ -138,9 +138,16 @@ export async function getViteConfig(options: ViteOptions): Promise<InlineConfig>
     envPrefix: isApp ? 'SANITY_APP_' : 'SANITY_STUDIO_',
     logLevel: mode === 'production' ? 'silent' : 'info',
     resolve: {
-      alias: monorepo?.path
-        ? await getMonorepoAliases(monorepo.path)
-        : getSanityPkgExportAliases(sanityPkgPath),
+      alias: {
+        ...(monorepo?.path
+          ? await getMonorepoAliases(monorepo.path)
+          : getSanityPkgExportAliases(sanityPkgPath)),
+        'styled-components': path.resolve(
+          require.resolve('@sanity/styled-components/package.json'),
+          '..',
+          'dist/styled-components.browser.esm.js',
+        ),
+      },
       dedupe: ['styled-components'],
     },
     define: {
