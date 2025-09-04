@@ -122,8 +122,8 @@ importers:
         specifier: ^7.11.0
         version: 7.11.0(debug@4.4.1)
       '@sanity/mutate':
-        specifier: ^0.12.4
-        version: 0.12.4(debug@4.4.1)
+        specifier: ^0.13.0
+        version: 0.13.0(debug@4.4.1)
       '@sanity/pkg-utils':
         specifier: 6.13.4
         version: 6.13.4(@types/babel__core@7.20.5)(@types/node@24.3.0)(babel-plugin-react-compiler@19.1.0-rc.3)(debug@4.4.1)(typescript@5.9.2)
@@ -1215,8 +1215,8 @@ importers:
         specifier: ^7.11.0
         version: 7.11.0(debug@4.4.1)
       '@sanity/mutate':
-        specifier: ^0.12.4
-        version: 0.12.4(debug@4.4.1)
+        specifier: ^0.13.0
+        version: 0.13.0(debug@4.4.1)
       '@sanity/types':
         specifier: workspace:*
         version: link:../types
@@ -4827,6 +4827,10 @@ packages:
 
   '@sanity/mutate@0.12.4':
     resolution: {integrity: sha512-CBPOOTCTyHFyhBL+seWpkGKJIE6lpaFd9yIeTIDt6miluBz6W8OKTNbaU6gPzOztqrr8KbrTaROiQAaMQDndQA==}
+    engines: {node: '>=18'}
+
+  '@sanity/mutate@0.13.0':
+    resolution: {integrity: sha512-UR+JTkH3z+0cV/PI3p9YXT4IaVl5qGDPn+E33B6A42HpOGwbI92XAKu1m1V7DVQ3iB9VtX1khgStAy9sAS9rsA==}
     engines: {node: '>=18'}
 
   '@sanity/mutator@3.99.0':
@@ -15367,6 +15371,19 @@ snapshots:
   '@sanity/mutate@0.12.4(debug@4.4.1)':
     dependencies:
       '@sanity/client': 6.29.1(debug@4.4.1)
+      '@sanity/diff-match-patch': 3.2.0
+      '@sanity/uuid': 3.0.2
+      hotscript: 1.0.13
+      lodash: 4.17.21
+      mendoza: 3.0.8
+      nanoid: 5.1.5
+      rxjs: 7.8.2
+    transitivePeerDependencies:
+      - debug
+
+  '@sanity/mutate@0.13.0(debug@4.4.1)':
+    dependencies:
+      '@sanity/client': 7.11.0(debug@4.4.1)
       '@sanity/diff-match-patch': 3.2.0
       '@sanity/uuid': 3.0.2
       hotscript: 1.0.13
