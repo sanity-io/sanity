@@ -6,12 +6,20 @@ import {type ReactNode, useCallback, useMemo, useState} from 'react'
 import {ActionsMenu} from '../../../core/form/inputs/files/common/ActionsMenu'
 import {FileInputMenuItem} from '../../../core/form/inputs/files/common/FileInputMenuItem/FileInputMenuItem'
 import {UploadDropDownMenu} from '../../../core/form/inputs/files/common/UploadDropDownMenu'
-import {WithReferencedAsset} from '../../../core/form/utils/WithReferencedAsset'
 import {useTranslation} from '../../../core/i18n'
 import {MenuItem} from '../../../ui-components/menuItem/MenuItem'
-import {type VideoAssetProps} from './types'
+import {getPlaybackTokens, type VideoAssetProps} from './types'
+import {useVideoPlaybackInfo} from './useVideoPlaybackInfo'
 import {VideoActionsMenu} from './VideoActionsMenu'
 import {VideoSkeleton} from './VideoSkeleton'
+
+function getMediaLibraryId(assetRef: string) {
+  const id = assetRef.split(':')?.[1]
+  if (!id || !id.startsWith('ml')) {
+    throw new Error('Invalid asset reference')
+  }
+  return id
+}
 
 export function VideoPreview(props: VideoAssetProps) {
   const {
@@ -30,8 +38,41 @@ export function VideoPreview(props: VideoAssetProps) {
   const [isMenuOpen, setIsMenuOpen] = useState(false)
   const asset = value?.asset
   const sourcesFromSchema = schemaType.options?.sources
-
   const accept = get(schemaType, 'options.accept', '')
+
+  const videoPlaybackParams = useMemo(() => {
+    if (!asset?._ref) {
+      return null
+    }
+    try {
+      const mediaLibraryId = getMediaLibraryId(asset._ref)
+      return {
+        mediaLibraryId,
+        assetRef: asset,
+      }
+    } catch (error) {
+      console.error('Failed to parse asset reference:', error)
+      return null
+    }
+  }, [asset])
+
+  const playbackInfoState = useVideoPlaybackInfo(videoPlaybackParams)
+
+  const tokens = useMemo(() => {
+    return playbackInfoState.result ? getPlaybackTokens(playbackInfoState.result) : undefined
+  }, [playbackInfoState.result])
+
+  const videoActionsMenuProps = useMemo(() => {
+    const baseProps = {
+      aspectRatio: playbackInfoState.result?.aspectRatio,
+      playbackId: playbackInfoState.result?.id,
+      onMenuOpen: setIsMenuOpen,
+      isMenuOpen: isMenuOpen,
+      setMenuButtonElement: setBrowseButtonElement,
+    }
+
+    return tokens ? {...baseProps, tokens} : baseProps
+  }, [playbackInfoState.result, tokens, isMenuOpen, setBrowseButtonElement])
 
   const assetSourcesWithUpload = assetSources.filter((s) => Boolean(s.Uploader))
 
@@ -150,35 +191,18 @@ export function VideoPreview(props: VideoAssetProps) {
     return null
   }
 
-  return (
-    <WithReferencedAsset
-      reference={asset}
-      observeAsset={observeAsset}
-      waitPlaceholder={<VideoSkeleton />}
-    >
-      {({metadata}) => {
-        // @ts-expect-error - TODO: fix this
-        const playbackId = metadata?.playbacks?.[0]?._id
-        const aspectRatio = metadata?.aspectRatio
+  if (playbackInfoState.isLoading || !playbackInfoState.result) {
+    return <VideoSkeleton />
+  }
 
-        return (
-          <VideoActionsMenu
-            aspectRatio={aspectRatio}
-            playbackId={playbackId}
-            muted={!readOnly}
-            onMenuOpen={setIsMenuOpen}
-            isMenuOpen={isMenuOpen}
-            setMenuButtonElement={setBrowseButtonElement}
-          >
-            <ActionsMenu
-              browse={browseMenuItem}
-              upload={uploadMenuItem}
-              onReset={clearField}
-              readOnly={readOnly}
-            />
-          </VideoActionsMenu>
-        )
-      }}
-    </WithReferencedAsset>
+  return (
+    <VideoActionsMenu {...videoActionsMenuProps}>
+      <ActionsMenu
+        browse={browseMenuItem}
+        upload={uploadMenuItem}
+        onReset={clearField}
+        readOnly={readOnly}
+      />
+    </VideoActionsMenu>
   )
 }
