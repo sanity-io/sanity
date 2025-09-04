@@ -33,9 +33,8 @@ jobs:
     steps:
       - uses: actions/checkout@v5
       - uses: pnpm/action-setup@v4
-      - uses: actions/setup-node@v4
+      - uses: actions/setup-node@v5
         with:
-          cache: pnpm
           node-version: lts/*
 
       - name: Add PR Comment placeholder for e2e Preview Environment
@@ -89,9 +88,8 @@ jobs:
     steps:
       - uses: actions/checkout@v5
       - uses: pnpm/action-setup@v4
-      - uses: actions/setup-node@v4
+      - uses: actions/setup-node@v5
         with:
-          cache: pnpm
           node-version: lts/*
 
       - name: Echo Vercel preview URL
@@ -136,9 +134,8 @@ jobs:
     steps:
       - uses: actions/checkout@v5
       - uses: pnpm/action-setup@v4
-      - uses: actions/setup-node@v4
+      - uses: actions/setup-node@v5
         with:
-          cache: pnpm
           node-version: lts/*
 
       - name: Install project dependencies
@@ -250,9 +247,8 @@ jobs:
     steps:
       - uses: actions/checkout@v5
       - uses: pnpm/action-setup@v4
-      - uses: actions/setup-node@v4
+      - uses: actions/setup-node@v5
         with:
-          cache: pnpm
           node-version: lts/*
       - name: Echo the base URL
         run: echo "$SANITY_E2E_BASE_URL"
@@ -322,9 +318,8 @@ jobs:
     steps:
       - uses: actions/checkout@v5
       - uses: pnpm/action-setup@v4
-      - uses: actions/setup-node@v4
+      - uses: actions/setup-node@v5
         with:
-          cache: pnpm
           node-version: lts/*
 
       - name: Install project dependencies
