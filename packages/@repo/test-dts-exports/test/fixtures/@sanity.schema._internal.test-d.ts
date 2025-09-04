@@ -26,6 +26,7 @@ import type {
   TypeWithProblems,
   validateMediaLibraryAssetAspect,
   validateSchema,
+  ValidationError,
   ValidationResult,
 } from '@sanity/schema/_internal'
 
@@ -95,6 +96,9 @@ describe('@sanity/schema/_internal', () => {
   })
   test('validateSchema', () => {
     expectTypeOf<typeof validateSchema>().toBeFunction()
+  })
+  test('ValidationError', () => {
+    expectTypeOf<ValidationError>().not.toBeNever()
   })
   test('ValidationResult', () => {
     expectTypeOf<ValidationResult>().toBeObject()

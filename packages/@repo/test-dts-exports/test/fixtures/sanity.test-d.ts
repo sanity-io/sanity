@@ -788,6 +788,7 @@ import type {
   isDeprecatedSchemaType,
   isDeprecationConfiguration,
   isDev,
+  isDocumentLimitError,
   isDocumentSchemaType,
   isDraft,
   isDraftId,
@@ -1457,6 +1458,7 @@ import type {
   useDiffAnnotationColor,
   useDocumentChange,
   useDocumentForm,
+  useDocumentLimitsUpsellContext,
   useDocumentOperation,
   useDocumentOperationEvent,
   useDocumentPairPermissions,
@@ -4009,6 +4011,9 @@ describe('sanity', () => {
   test('isDev', () => {
     expectTypeOf<typeof isDev>().not.toBeNever()
   })
+  test('isDocumentLimitError', () => {
+    expectTypeOf<typeof isDocumentLimitError>().not.toBeNever()
+  })
   test('isDocumentSchemaType', () => {
     expectTypeOf<typeof isDocumentSchemaType>().toBeFunction()
   })
@@ -6033,6 +6038,9 @@ describe('sanity', () => {
   })
   test('useDocumentForm', () => {
     expectTypeOf<typeof useDocumentForm>().toBeFunction()
+  })
+  test('useDocumentLimitsUpsellContext', () => {
+    expectTypeOf<typeof useDocumentLimitsUpsellContext>().not.toBeNever()
   })
   test('useDocumentOperation', () => {
     expectTypeOf<typeof useDocumentOperation>().toBeFunction()
