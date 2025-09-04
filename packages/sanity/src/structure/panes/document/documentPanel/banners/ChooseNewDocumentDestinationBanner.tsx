@@ -9,7 +9,7 @@ import {
   type PerspectiveNotWriteableReason,
   ReleasesNav,
   type ReleasesNavMenuItemPropsGetter,
-  type SelectedPerspective,
+  type TargetPerspective,
   Translate,
   useTranslation,
   useWorkspace,
@@ -20,7 +20,7 @@ import {Banner} from './Banner'
 
 interface Props {
   schemaType: ObjectSchemaType
-  selectedPerspective: SelectedPerspective
+  selectedPerspective: TargetPerspective
   reason: PerspectiveNotWriteableReason
 }
 
