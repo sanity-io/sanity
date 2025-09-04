@@ -108,6 +108,7 @@ export function VideoActionsMenu(props: Props) {
       <Card as={muted || disabled ? undefined : 'button'} tone="inherit" onClick={onClick} flex={1}>
         <RatioBox
           tone="transparent"
+          $isPortrait={aspectRatio !== undefined && aspectRatio < 0.75}
           style={
             {
               '--aspect-ratio': aspectRatio,
