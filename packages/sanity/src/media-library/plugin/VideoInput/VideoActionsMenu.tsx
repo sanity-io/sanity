@@ -22,6 +22,7 @@ const VideoPlayer = lazy(() =>
 )
 
 type Props = {
+  customDomain: string
   children: ReactNode
   aspectRatio?: number
   playbackId?: string
@@ -42,6 +43,7 @@ export const MenuActionsWrapper = styled(Inline)`
 
 export function VideoActionsMenu(props: Props) {
   const {
+    customDomain,
     playbackId,
     tokens,
     children,
@@ -114,7 +116,12 @@ export function VideoActionsMenu(props: Props) {
         >
           {playbackId && (
             <Suspense fallback={<VideoSkeleton />}>
-              <VideoPlayer playbackId={playbackId} tokens={tokens} aspectRatio={aspectRatio} />
+              <VideoPlayer
+                customDomain={customDomain}
+                playbackId={playbackId}
+                tokens={tokens}
+                aspectRatio={aspectRatio}
+              />
             </Suspense>
           )}
         </RatioBox>
