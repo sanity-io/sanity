@@ -75,7 +75,6 @@ jobs:
       - uses: actions/setup-node@v5
         if: steps.check_examples_only.outputs.examples_only != 'true'
         with:
-          cache: pnpm
           node-version: ${{ matrix.node }}
 
       - name: Install project dependencies
@@ -158,7 +157,6 @@ jobs:
       - uses: actions/setup-node@v5
         if: steps.check_examples_only.outputs.examples_only != 'true'
         with:
-          cache: pnpm
           node-version: lts/*
 
       - name: Install project dependencies

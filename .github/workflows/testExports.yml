@@ -48,7 +48,6 @@ jobs:
       - uses: actions/setup-node@v5
         if: steps.check_examples_only.outputs.examples_only != 'true'
         with:
-          cache: pnpm
           node-version: lts/*
 
       - name: Install project dependencies

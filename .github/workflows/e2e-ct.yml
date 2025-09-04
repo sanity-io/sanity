@@ -22,7 +22,6 @@ jobs:
       - uses: pnpm/action-setup@v4
       - uses: actions/setup-node@v5
         with:
-          cache: pnpm
           node-version: lts/*
 
       - name: Install project dependencies
@@ -51,7 +50,6 @@ jobs:
       - uses: pnpm/action-setup@v4
       - uses: actions/setup-node@v5
         with:
-          cache: pnpm
           node-version: lts/*
 
       - name: Install project dependencies
@@ -101,7 +99,6 @@ jobs:
       - uses: pnpm/action-setup@v4
       - uses: actions/setup-node@v5
         with:
-          cache: pnpm
           node-version: lts/*
 
       - name: Install project dependencies

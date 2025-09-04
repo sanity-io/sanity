@@ -21,7 +21,6 @@ jobs:
       - uses: pnpm/action-setup@v4
       - uses: actions/setup-node@v5
         with:
-          cache: pnpm
           node-version: lts/*
       - run: pnpm -r up --ignore-scripts react-compiler-runtime@rc babel-plugin-react-compiler@rc eslint-plugin-react-hooks@rc eslint-plugin-react-hooks-with-use-effect-event@npm:eslint-plugin-react-hooks@experimental
       - uses: actions/create-github-app-token@v2
