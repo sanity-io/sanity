@@ -24,7 +24,6 @@ export function VideoPlayer({customDomain, playbackId, tokens, aspectRatio}: Vid
       style={{
         position: 'absolute',
         inset: 0,
-        aspectRatio,
       }}
     />
   )
