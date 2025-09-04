@@ -11,6 +11,6 @@ export function ReleaseColumnValidationLoading({releaseId}: {releaseId: string})
   return loading ? (
     <Spinner size={1} muted />
   ) : (
-    <ValidationProgressIndicator isMinimal documents={documents} />
+    <ValidationProgressIndicator layout="minimal" documents={documents} />
   )
 }

@@ -11,15 +11,16 @@ import {type DocumentInRelease} from './useBundleDocuments'
 
 export function ValidationProgressIndicator({
   documents,
-  isMinimal = false,
+  layout = 'default',
 }: {
   documents: DocumentInRelease[]
-  isMinimal?: boolean
+  layout?: 'default' | 'minimal'
 }) {
   const totalCount = documents.length
   const {validatedCount, isValidating, hasError} = getDocumentValidationLoading(documents)
   const [showCheckmark, setShowCheckmark] = useState(false)
   const {t} = useTranslation(releasesLocaleNamespace)
+  const isMinimal = layout === 'minimal'
 
   const isFinished = useMemo(
     () => validatedCount === totalCount && validatedCount !== 0,
