@@ -15,6 +15,7 @@ import {
   type ReconnectEvent,
   type WelcomeEvent,
 } from './types'
+import {dedupeListenerEvents} from './utils/dedupeListenerEvents'
 import {OutOfSyncError, sequentializeListenerEvents} from './utils/sequentializeListenerEvents'
 
 interface Snapshots {
@@ -99,8 +100,8 @@ export function getPairListener(
     throw new Error('VersionId cannot be "published" or "drafts"')
   }
   const sharedEvents = defer(() =>
-    client.observable
-      .listen(
+    (
+      client.observable.listen(
         `*[_id in $ids]`,
         {
           ids: [publishedId, draftId, versionId].filter((id) => typeof id !== 'undefined'),
@@ -112,14 +113,14 @@ export function getPairListener(
           effectFormat: 'mendoza',
           tag: options.tag || 'document.pair-listener',
         },
-      )
-      .pipe(
-        //filter((event) => Math.random() < 0.99 || event.type !== 'mutation'),
-        shareReplayLatest({
-          predicate: (event) => event.type === 'welcome' || event.type === 'reconnect',
-        }),
-      ),
-  ) as Observable<WelcomeEvent | MutationEvent | ReconnectEvent>
+      ) as Observable<WelcomeEvent | MutationEvent | ReconnectEvent>
+    ).pipe(
+      dedupeListenerEvents(),
+      shareReplayLatest({
+        predicate: (event) => event.type === 'welcome' || event.type === 'reconnect',
+      }),
+    ),
+  )
 
   const pairEvents$ = sharedEvents.pipe(
     scan(

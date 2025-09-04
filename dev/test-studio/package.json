@@ -17,8 +17,8 @@
     "workshop:dev": "node -r esbuild-register scripts/workshop/dev.ts"
   },
   "dependencies": {
-    "@portabletext/block-tools": "^3.5.2",
-    "@portabletext/editor": "^2.7.2",
+    "@portabletext/block-tools": "^3.5.3",
+    "@portabletext/editor": "^2.8.0",
     "@portabletext/react": "^4.0.3",
     "@sanity/assist": "^5.0.0",
     "@sanity/cli": "workspace:*",

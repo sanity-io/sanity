@@ -10,10 +10,13 @@ import {
   type FieldsetDefinition,
   type ObjectSchemaType,
   type ReferenceSchemaType,
+  type Rule as IRule,
   type Schema,
   type SchemaType,
 } from '@sanity/types'
+import {isEqual, isObject} from 'lodash'
 
+import {Rule} from '../legacy/Rule'
 import {OWN_PROPS_NAME} from '../legacy/types/constants'
 import {
   type ArrayTypeDef,
@@ -21,17 +24,21 @@ import {
   type CoreTypeDef,
   type CyclicMarker,
   type DepthMarker,
+  type FieldReference,
   type FunctionMarker,
   type JSXMarker,
+  type LocalizedMessage,
   type ObjectField,
   type ObjectFieldset,
   type ObjectGroup,
   type ReferenceTypeDef,
   type RegistryType,
+  type Rule as RuleType,
   type SubtypeDef,
   type TypeDef,
   type UndefinedMarker,
   type UnknownMarker,
+  type Validation,
 } from './types'
 
 const MAX_DEPTH_UKNOWN = 5
@@ -137,6 +144,7 @@ function convertCommonTypeDef(schemaType: SchemaType, opts: Options): CommonType
     fields,
     fieldsets,
     groups,
+    validation: maybeValidations(ownProps),
   }
 }
 
@@ -254,7 +262,7 @@ function convertUnknown(
 
   seen.add(val)
 
-  if (typeof val === 'object') {
+  if (isObject(val)) {
     if (Array.isArray(val)) {
       return val.map((elem) => {
         const res = convertUnknown(elem, seen, maxDepth - 1)
@@ -289,11 +297,338 @@ function convertUnknown(
 
 function maybeStringOrJSX(val: unknown): string | undefined | JSXMarker {
   if (typeof val === 'string') return val
-  if (val && typeof val === 'object' && '$$typeof' in val && 'type' in val && 'props' in val) {
+  if (isObject(val) && '$$typeof' in val && 'type' in val && 'props' in val) {
     const {type, props} = val
     const strType = typeof type === 'function' ? type.name : type
     if (typeof strType !== 'string') return undefined
     return {__type: 'jsx', type: strType, props: convertUnknown(props) as EncodableObject}
+  }
+  return undefined
+}
+
+// maybeValidations attempts to serialize the validations of a type. Note: we need the whole type object and not
+// just the validation property as we need to recreate implied validations of various properties. This are technically
+// inherited and thus lost since we operate on the ownProps.
+function maybeValidations(obj: unknown): Validation[] | undefined {
+  if (!isObject(obj) || !('type' in obj)) return undefined
+
+  // Implied rules are rules which are inherited by the types. Since the descriptor operates on the ownProps
+  // it is necessary to add these rule back to ensure we have the default validations for the types.
+  const impliedRules: RuleType[] = []
+
+  if (
+    'options' in obj &&
+    isObject(obj.options) &&
+    'list' in obj.options &&
+    Array.isArray(obj.options.list)
+  ) {
+    impliedRules.push({
+      type: 'enum',
+      values: obj.options.list
+        .map((o) => convertUnknown(extractValueFromListOption(o, obj)))
+        .filter((v: EncodableValue | undefined) => v !== undefined),
+    })
+  }
+
+  switch (obj.type) {
+    case 'url':
+      impliedRules.push({
+        type: 'uri',
+        allowRelative: false,
+      })
+      break
+    case 'slug':
+      impliedRules.push({
+        type: 'custom',
+      })
+      break
+    case 'reference':
+      impliedRules.push({
+        type: 'reference',
+      })
+      break
+    case 'email':
+      impliedRules.push({
+        type: 'email',
+      })
+      break
+    default:
+    // Do nothing
+  }
+
+  // Shortcut
+  if (!('validation' in obj) || !obj.validation) {
+    if (impliedRules.length > 0) {
+      return [
+        {
+          level: 'error',
+          rules: impliedRules,
+        },
+      ]
+    }
+    return undefined
+  }
+
+  const validations: Validation[] = []
+  const rules = Array.isArray(obj.validation) ? obj.validation : [obj.validation]
+  for (const rule of rules) {
+    const validation = maybeValidation(rule)
+    if (validation === undefined) {
+      continue
+    }
+
+    // Add implied rules that aren't already defined in the validation
+    const rulesToAdd = impliedRules.filter((ir) => !validation.rules.some((r) => isEqual(r, ir)))
+    if (rulesToAdd.length > 0) {
+      validation.rules.unshift(...rulesToAdd)
+    }
+
+    // If the validation is already present, skip adding it
+    if (validations.some((v) => isEqual(v, validation))) {
+      continue
+    }
+
+    validations.push(validation)
+  }
+
+  return validations.length > 0 ? validations : undefined
+}
+
+function hasValueField(typeDef: unknown): boolean {
+  if (!typeDef || typeof typeDef !== 'object') return false
+  if (!('fields' in typeDef)) {
+    if ('type' in typeDef && typeDef.type) return hasValueField(typeDef.type)
+    return false
+  }
+  if (!Array.isArray(typeDef.fields)) return false
+  return typeDef.fields.some((field) => field.name === 'value')
+}
+
+// This logic is pulled from extractValueFromListOption in packages/sanity/src/core/validation/util/normalizeValidationRules.ts.
+// It has been slightly tweaked to be safer in accessing the value attribute of the option variable
+function extractValueFromListOption(option: unknown, typeDef: Record<string, unknown>): unknown {
+  // If you define a `list` option with object items, where the item has a `value` field,
+  // we don't want to treat that as the value but rather the surrounding object
+  // This differs from the case where you have a title/value pair setup for a string/number, for instance
+  if (typeDef.jsonType === 'object' && hasValueField(typeDef)) return option
+
+  if (isObject(option) && 'value' in option && option.value) {
+    return option.value
+  }
+
+  return option
+}
+
+function maybeValidation(val: unknown): Validation | undefined {
+  // Handle undefined, false
+  if (!val) {
+    return undefined
+  }
+
+  // Handle function rules - these are functions that return a Rule
+  if (isIRuleFunction(val)) {
+    try {
+      const result = val(new Rule())
+
+      // If the result is a Rule object, attempt to convert it
+      if (isIRule(result)) {
+        // Recursively convert the returned Rule object
+        return maybeValidation(result)
+      }
+
+      throw new Error('failed to convert to plain rule')
+    } catch (error) {
+      // If the function could not convert into a plain rule, mark it as custom
+      return {
+        level: 'error',
+        rules: [{type: 'custom', name: 'function'}],
+      }
+    }
+  }
+
+  // Handle Rule object
+  if (isIRule(val)) {
+    // Determine validation level
+    const level: Validation['level'] = val._level || 'error'
+
+    // Convert message
+    const message = maybeIRuleMessage(val._message)
+
+    // Convert RuleSpec array to Rule array
+    const rules: RuleType[] = []
+
+    for (const spec of val._rules || []) {
+      // For custom rule spec, the optional property is determined by the rule.
+      // This is used to determine the behaviour the rule when the value is undefined or null
+      const optional = val._required === 'optional' || undefined
+      const convertedRule = convertRuleSpec(spec, optional)
+      if (convertedRule === undefined) {
+        continue
+      }
+
+      // If the converted spec is a duplicate, skip adding it
+      if (rules.some((r) => isEqual(r, convertedRule))) {
+        continue
+      }
+
+      rules.push(convertedRule)
+    }
+
+    if (rules.length === 0) {
+      return undefined
+    }
+
+    return {
+      level,
+      rules,
+      ...(message && {message}),
+    }
+  }
+
+  return undefined
+}
+
+function isIRule(val: unknown): val is IRule {
+  return isObject(val) && '_rules' in val
+}
+
+function maybeIRuleMessage(val: unknown): IRule['_message'] {
+  if (typeof val === 'string') return val
+  if (isObject(val) && !Array.isArray(val)) return val as LocalizedMessage
+  return undefined
+}
+
+function isIRuleFunction(val: unknown): val is (rule: IRule) => IRule | undefined {
+  return typeof val === 'function'
+}
+
+// eslint-disable-next-line complexity
+function convertRuleSpec(spec: unknown, optional?: true | undefined): RuleType | undefined {
+  if (!isObject(spec) || !('flag' in spec)) {
+    return undefined
+  }
+
+  const constraint = 'constraint' in spec ? spec.constraint : undefined
+
+  switch (spec.flag) {
+    case 'integer':
+      return {type: 'integer'}
+    case 'email':
+      return {type: 'email'}
+    case 'unique':
+      return {type: 'uniqueItems'}
+    case 'reference':
+      return {type: 'reference'}
+    case 'assetRequired':
+      return {type: 'assetRequired'}
+    case 'stringCasing':
+      if (constraint === 'uppercase') return {type: 'uppercase'}
+      if (constraint === 'lowercase') return {type: 'lowercase'}
+      return undefined
+    case 'all':
+      if (Array.isArray(constraint)) {
+        const children = constraint
+          .map((childRule) => maybeValidation(childRule))
+          .filter((c) => c !== undefined)
+        if (children.length > 0) {
+          return {type: 'allOf', children}
+        }
+      }
+      return undefined
+    case 'either':
+      if (Array.isArray(constraint)) {
+        const children = constraint
+          .map((childRule) => maybeValidation(childRule))
+          .filter((c) => c !== undefined)
+        if (children.length > 0) {
+          return {type: 'anyOf', children}
+        }
+      }
+      return undefined
+    case 'valid':
+      if (Array.isArray(constraint)) {
+        return {
+          type: 'enum',
+          values: constraint.map((c) => convertUnknown(c)).filter((v) => v !== undefined),
+        }
+      }
+      return undefined
+    case 'min':
+      return {type: 'minimum', value: convertConstraintValue(constraint)}
+    case 'max':
+      return {type: 'maximum', value: convertConstraintValue(constraint)}
+    case 'length':
+      return {type: 'length', value: convertConstraintValue(constraint)}
+    case 'precision':
+      return {type: 'precision', value: convertConstraintValue(constraint)}
+    case 'lessThan':
+      return {type: 'exclusiveMaximum', value: convertConstraintValue(constraint)}
+    case 'greaterThan':
+      return {type: 'exclusiveMinimum', value: convertConstraintValue(constraint)}
+    case 'regex':
+      if (isObject(constraint) && 'pattern' in constraint) {
+        const {pattern} = constraint
+        const invert = 'invert' in constraint ? maybeBoolean(constraint.invert) : undefined
+
+        if (pattern instanceof RegExp) {
+          return {
+            type: 'regex',
+            pattern: pattern.source,
+            ...(invert && {invert: true}),
+          }
+        }
+      }
+      return undefined
+    case 'uri': {
+      const allowRelative =
+        isObject(constraint) &&
+        'options' in constraint &&
+        isObject(constraint.options) &&
+        'allowRelative' in constraint.options
+          ? maybeBoolean(constraint.options.allowRelative)
+          : undefined
+
+      return {
+        type: 'uri',
+        ...(allowRelative !== undefined && {allowRelative}),
+      }
+    }
+    case 'custom':
+      return {type: 'custom', ...(optional && {optional})}
+    case 'media':
+      return {type: 'custom', name: 'media'}
+    case 'type':
+      return undefined
+    case 'presence':
+      if (constraint === 'required') return {type: 'required'}
+      if (constraint === 'optional') return undefined
+      return undefined
+    default:
+      return undefined
+  }
+}
+
+function convertConstraintValue(constraint: unknown): string | FieldReference {
+  if (
+    isObject(constraint) &&
+    'type' in constraint &&
+    'path' in constraint &&
+    constraint.type &&
+    constraint.path
+  ) {
+    // This is a FieldReference
+    return {
+      type: 'fieldReference',
+      path: Array.isArray(constraint.path) ? constraint.path : [constraint.path],
+    }
+  }
+  // Convert to string
+  return String(constraint)
+}
+
+function maybeBoolean(val: unknown): boolean | undefined {
+  if (typeof val === 'boolean') {
+    return val
   }
   return undefined
 }

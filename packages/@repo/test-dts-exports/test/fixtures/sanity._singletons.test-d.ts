@@ -28,6 +28,8 @@ import type {
   DocumentFieldActionsContextValue,
   DocumentIdContext,
   DocumentIdContextValue,
+  DocumentLimitUpsellContext,
+  DocumentLimitUpsellContextValue,
   DocumentPaneContext,
   DocumentSheetListContext,
   EventsContext,
@@ -176,6 +178,12 @@ describe('sanity/_singletons', () => {
   })
   test('DocumentIdContextValue', () => {
     expectTypeOf<DocumentIdContextValue>().toBeObject()
+  })
+  test('DocumentLimitUpsellContext', () => {
+    expectTypeOf<typeof DocumentLimitUpsellContext>().not.toBeNever()
+  })
+  test('DocumentLimitUpsellContextValue', () => {
+    expectTypeOf<DocumentLimitUpsellContextValue>().toBeObject()
   })
   test('DocumentPaneContext', () => {
     expectTypeOf<typeof DocumentPaneContext>().not.toBeNever()
