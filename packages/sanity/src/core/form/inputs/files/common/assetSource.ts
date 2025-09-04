@@ -1,4 +1,5 @@
 import {type AssetFromSource, type FileSchemaType, type ImageSchemaType} from '@sanity/types'
+import {pickBy} from 'lodash'
 
 import {
   isVideoSchemaType,
@@ -49,6 +50,12 @@ export function handleSelectAssetFromSource({
   const description = assetProps?.description
   const creditLine = assetProps?.creditLine
   const source = assetProps?.source
+
+  const assetOptions = pickBy(
+    {label, title, description, creditLine, source},
+    (value) => value !== null && value !== undefined && value !== '',
+  )
+
   const assetPatches: FormPatch[] = isImage
     ? [unset(['hotspot']), unset(['crop']), unset(['media'])]
     : [unset(['media'])]
@@ -104,13 +111,7 @@ export function handleSelectAssetFromSource({
     case 'file': {
       const uploader = resolveUploader(type, firstAsset.value as FIXME)
       if (uploader) {
-        uploadWith(uploader, firstAsset.value as FIXME, {
-          label,
-          title,
-          description,
-          creditLine,
-          source,
-        })
+        uploadWith(uploader, firstAsset.value as FIXME, assetOptions)
       }
       break
     }
@@ -118,7 +119,7 @@ export function handleSelectAssetFromSource({
       base64ToFile(firstAsset.value as FIXME, originalFilename).then((file) => {
         const uploader = resolveUploader(type, file)
         if (uploader) {
-          uploadWith(uploader, file, {label, title, description, creditLine, source})
+          uploadWith(uploader, file, assetOptions)
         }
       })
       break
@@ -126,7 +127,7 @@ export function handleSelectAssetFromSource({
       urlToFile(firstAsset.value as FIXME, originalFilename).then((file) => {
         const uploader = resolveUploader(type, file)
         if (uploader) {
-          uploadWith(uploader, file, {label, title, description, creditLine, source})
+          uploadWith(uploader, file, assetOptions)
         }
       })
       break
