@@ -22,7 +22,7 @@ import {type LocaleSource} from '../../../i18n/types'
 import {type DocumentPreviewStore} from '../../../preview'
 import {useDocumentPreviewStore} from '../../../store/_legacy/datastores'
 import {useSource} from '../../../studio'
-import {scheduledYield} from '../../../util/postYield'
+import {schedulerYield} from '../../../util/schedulerYield'
 import {validateDocumentWithReferences, type ValidationStatus} from '../../../validation'
 import {useReleasesStore} from '../../store/useReleasesStore'
 import {getReleaseDocumentIdFromReleaseId} from '../../util/getReleaseDocumentIdFromReleaseId'
@@ -72,8 +72,8 @@ const getActiveReleaseDocumentsObservable = ({
       } satisfies DocumentValidationStatus)
     }
 
-    // Add scheduler.yield() before each document validation
-    return from(scheduledYield(() => Promise.resolve())).pipe(
+    // scheduledYield is used to provide some control over the main thread
+    return from(schedulerYield(() => Promise.resolve())).pipe(
       switchMap(() =>
         validateDocumentWithReferences(ctx, of(document)).pipe(
           map((validationStatus) => ({
