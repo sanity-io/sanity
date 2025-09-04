@@ -131,7 +131,7 @@ export const systemBundles = ['drafts', 'published'] as const
  *
  * @public
  */
-export type SystemBundle = (typeof systemBundles)[number]
+export type SystemBundle = 'drafts' | 'published'
 
 /** @internal */
 export function isSystemBundle(maybeSystemBundle: unknown): maybeSystemBundle is SystemBundle {
@@ -142,7 +142,7 @@ export function isSystemBundle(maybeSystemBundle: unknown): maybeSystemBundle is
 const systemBundleNames = ['draft', 'published'] as const
 
 /** @internal */
-type SystemBundleName = (typeof systemBundleNames)[number]
+type SystemBundleName = 'draft' | 'published'
 
 /**
  * `isSystemBundle` should be preferred, but some parts of the codebase currently use the singular
