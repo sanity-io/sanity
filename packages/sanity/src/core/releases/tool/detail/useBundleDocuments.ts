@@ -12,6 +12,7 @@ import {
   filter,
   map,
   reduce,
+  shareReplay,
   startWith,
   switchMap,
 } from 'rxjs/operators'
@@ -28,6 +29,8 @@ import {useReleasesStore} from '../../store/useReleasesStore'
 import {getReleaseDocumentIdFromReleaseId} from '../../util/getReleaseDocumentIdFromReleaseId'
 import {isGoingToUnpublish} from '../../util/isGoingToUnpublish'
 import {RELEASES_STUDIO_CLIENT_OPTIONS} from '../../util/releasesClient'
+
+const bundleDocumentsCache: Record<string, ReleaseDocumentsObservableResult> = Object.create(null)
 
 export interface DocumentValidationStatus extends ValidationStatus {
   hasError: boolean
@@ -166,7 +169,7 @@ const getActiveReleaseDocumentsObservable = ({
         return combineLatest(
           documentIdsGroups.map((batch, batchIndex) =>
             // The delay is used to control the rate of the requests
-            // Tt increases as it goes on as to allow for some space (in the miliseconds scale)
+            // It increases as it goes on as to allow for some space (in the miliseconds scale)
             // This means that technically one might expect it to take longer to get all the results, but
             // It makes the user experience better as it is not overwhelming the main thread
             // And it allows for the browser to more easily handle the requests
@@ -255,31 +258,47 @@ const getReleaseDocumentsObservable = ({
   releaseId: string
   i18n: LocaleSource
   releasesState$: ReturnType<typeof useReleasesStore>['state$']
-}): ReleaseDocumentsObservableResult =>
-  releasesState$.pipe(
-    map((releasesState) =>
-      releasesState.releases.get(getReleaseDocumentIdFromReleaseId(releaseId)),
-    ),
-    filter(Boolean),
-    distinctUntilChanged((prev, next) => prev._rev === next._rev),
-    switchMap((release) => {
-      if (release.state === 'published' || release.state === 'archived') {
-        return getPublishedArchivedReleaseDocumentsObservable({
-          getClient,
-          release,
-        })
-      }
+}): ReleaseDocumentsObservableResult => {
+  if (!bundleDocumentsCache[releaseId]) {
+    bundleDocumentsCache[releaseId] = releasesState$.pipe(
+      map((releasesState) =>
+        releasesState.releases.get(getReleaseDocumentIdFromReleaseId(releaseId)),
+      ),
+      filter(Boolean), // Removes falsey values
+      distinctUntilChanged((prev, next) => prev._rev === next._rev),
+      switchMap((release) => {
+        const cacheKey = `${releaseId}-${release._rev}`
 
-      return getActiveReleaseDocumentsObservable({
-        schema,
-        documentPreviewStore,
-        i18n,
-        getClient,
-        releaseId,
-      })
-    }),
-    startWith({loading: true, results: [], error: null}),
-  )
+        if (!bundleDocumentsCache[cacheKey]) {
+          let observable: ReleaseDocumentsObservableResult
+
+          if (release.state === 'published' || release.state === 'archived') {
+            observable = getPublishedArchivedReleaseDocumentsObservable({
+              getClient,
+              release,
+            })
+          } else {
+            observable = getActiveReleaseDocumentsObservable({
+              schema,
+              documentPreviewStore,
+              i18n,
+              getClient,
+              releaseId,
+            })
+          }
+
+          bundleDocumentsCache[cacheKey] = observable
+        }
+
+        return bundleDocumentsCache[cacheKey]
+      }),
+      startWith({loading: true, results: [], error: null}),
+      shareReplay(1),
+    )
+  }
+
+  return bundleDocumentsCache[releaseId]
+}
 
 export function useBundleDocuments(releaseId: string): {
   loading: boolean
@@ -304,5 +323,9 @@ export function useBundleDocuments(releaseId: string): {
     [schema, documentPreviewStore, getClient, releaseId, i18n, releasesState$],
   )
 
-  return useObservable(releaseDocumentsObservable, {loading: true, results: [], error: null})
+  return useObservable(releaseDocumentsObservable, {
+    loading: true,
+    results: [],
+    error: null,
+  })
 }
