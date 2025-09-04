@@ -37,12 +37,9 @@ export function ScheduleDraftDialog(props: ScheduleDraftDialogProps): React.JSX.
   const {t} = useTranslation(releasesLocaleNamespace)
   const {t: tCore} = useTranslation()
 
-  const [publishAt, setPublishAt] = useState<Date | undefined>(() => {
-    if (initialDate) {
-      return typeof initialDate === 'string' ? new Date(initialDate) : initialDate
-    }
-    return new Date()
-  })
+  const [publishAt, setPublishAt] = useState<Date | undefined>(
+    () => new Date(initialDate || new Date()),
+  )
 
   const {utcToCurrentZoneDate, zoneDateToUtc} = useTimeZone(CONTENT_RELEASES_TIME_ZONE_SCOPE)
 
