@@ -5,13 +5,13 @@ import {useEffect, useMemo, useState} from 'react'
 import {ProgressIcon} from '../../../../ui-components/progressIcon'
 import {Tooltip} from '../../../../ui-components/tooltip/Tooltip'
 import {useTranslation} from '../../../i18n/hooks/useTranslation'
-import {useDocumentValidationLoading} from '../../hooks/useDocumentValidationLoading'
 import {releasesLocaleNamespace} from '../../i18n'
+import {getDocumentValidationLoading} from '../../util/getDocumentValidationLoading'
 import {type DocumentInRelease} from './useBundleDocuments'
 
 export function ValidationProgressIndicator({documents}: {documents: DocumentInRelease[]}) {
   const totalCount = documents.length
-  const {validatedCount, isValidating, hasError} = useDocumentValidationLoading(documents)
+  const {validatedCount, isValidating, hasError} = getDocumentValidationLoading(documents)
   const [showCheckmark, setShowCheckmark] = useState(false)
   const {t} = useTranslation(releasesLocaleNamespace)
 
