@@ -1,3 +1,5 @@
+import {createRequire} from 'node:module'
+
 // Prevent webpack from bundling in webpack context,
 // use regular node require for unbundled context
 
@@ -5,8 +7,14 @@
 declare const __webpack_require__: boolean
 declare const __non_webpack_require__: typeof require
 
-const requireFunc: typeof require =
-  typeof __webpack_require__ === 'function' ? __non_webpack_require__ : require
+let requireFunc: typeof require
+if (typeof __webpack_require__ === 'function') {
+  requireFunc = __non_webpack_require__
+} else if (typeof require === 'function') {
+  requireFunc = require
+} else {
+  requireFunc = createRequire(import.meta.url)
+}
 /* eslint-enable camelcase */
 
 export function dynamicRequire<T = any>(request: string): T {
