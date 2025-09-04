@@ -35,19 +35,19 @@ export function PublishScheduledDraftDialog(
   const firstDocument = documents?.[0]?.document
   const schemaType = documentType ? schema.get(documentType) : null
 
-  const {runNow} = useScheduleDraftOperationsWithToasts(scheduledDraftTitle)
+  const {publishScheduledDraft} = useScheduleDraftOperationsWithToasts(scheduledDraftTitle)
 
   const handlePublishScheduledDraft = useCallback(async () => {
     setIsPublishing(true)
     try {
-      await runNow(release._id)
+      await publishScheduledDraft(release._id)
     } catch (error) {
       // Error toast handled by useScheduleDraftOperationsWithToasts
     } finally {
       setIsPublishing(false)
       onClose()
     }
-  }, [release._id, runNow, onClose])
+  }, [release._id, publishScheduledDraft, onClose])
 
   return (
     <Dialog

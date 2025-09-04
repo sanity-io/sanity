@@ -126,7 +126,7 @@ export const VersionChip = memo(function VersionChip(props: {
   const toast = useToast()
   const {t} = useTranslation()
   const releaseTitle = release?.metadata.title || t('release.placeholder-untitled-release')
-  const {reschedule} = useScheduleDraftOperationsWithToasts(releaseTitle)
+  const {rescheduleScheduledDraft} = useScheduleDraftOperationsWithToasts(releaseTitle)
 
   const close = useCallback(() => setContextMenuPoint(undefined), [])
 
@@ -173,7 +173,7 @@ export const VersionChip = memo(function VersionChip(props: {
       setIsPerformingScheduleOperation(true)
 
       try {
-        await reschedule(release._id, newPublishAt)
+        await rescheduleScheduledDraft(release._id, newPublishAt)
         setIsChangeScheduleDialogOpen(false)
       } catch (error) {
         // Error toast already handled by the hook
@@ -181,7 +181,7 @@ export const VersionChip = memo(function VersionChip(props: {
         setIsPerformingScheduleOperation(false)
       }
     },
-    [release, reschedule],
+    [release, rescheduleScheduledDraft],
   )
 
   const handleAddVersion = useCallback(

@@ -35,24 +35,24 @@ export function DeleteScheduledDraftDialog(
   const firstDocument = documents?.[0]?.document
   const schemaType = documentType ? schema.get(documentType) : null
 
-  const {deleteSchedule} = useScheduleDraftOperationsWithToasts(scheduledDraftTitle)
+  const {deleteScheduledDraft} = useScheduleDraftOperationsWithToasts(scheduledDraftTitle)
 
   const handleDeleteSchedule = useCallback(async () => {
     setIsDeleting(true)
     try {
-      await deleteSchedule(release._id)
+      await deleteScheduledDraft(release._id)
     } catch (error) {
       // Error toast handled by useScheduleDraftOperationsWithToasts
     } finally {
       setIsDeleting(false)
       onClose()
     }
-  }, [release._id, deleteSchedule, onClose])
+  }, [release._id, deleteScheduledDraft, onClose])
 
   return (
     <Dialog
       id="delete-schedule-dialog"
-      header={t('release.dialog.delete-schedule.header')}
+      header={t('release.dialog.delete-schedule-draft.header')}
       onClose={onClose}
       width={0}
       padding={false}
@@ -62,7 +62,7 @@ export function DeleteScheduledDraftDialog(
           onClick: onClose,
         },
         confirmButton: {
-          text: t('release.dialog.delete-schedule.confirm'),
+          text: t('release.dialog.delete-schedule-draft.confirm'),
           tone: 'critical',
           onClick: handleDeleteSchedule,
           disabled: isDeleting,
@@ -78,7 +78,7 @@ export function DeleteScheduledDraftDialog(
         )}
         <Box paddingX={2}>
           <Text size={1} muted>
-            {t('release.dialog.delete-schedule.body')}
+            {t('release.dialog.delete-schedule-draft.body')}
           </Text>
         </Box>
       </Stack>

@@ -34,17 +34,17 @@ export function useScheduleDraftOperationsWithToasts(
   const runNowWithToast = useCallback(
     async (
       releaseDocumentId: string,
-      opts?: Parameters<ScheduleDraftOperationsValue['runNow']>[1],
+      opts?: Parameters<ScheduleDraftOperationsValue['publishScheduledDraft']>[1],
     ) => {
       try {
-        await operations.runNow(releaseDocumentId, opts)
+        await operations.publishScheduledDraft(releaseDocumentId, opts)
         toast.push({
           closable: true,
           status: 'success',
           description: (
             <Translate
               t={t}
-              i18nKey="release.toast.run-now.success"
+              i18nKey="release.toast.publish-scheduled-draft.success"
               values={{title: releaseTitle || 'scheduled draft'}}
               components={{Strong}}
             />
@@ -58,7 +58,7 @@ export function useScheduleDraftOperationsWithToasts(
           description: (
             <Translate
               t={t}
-              i18nKey="release.toast.run-now.error"
+              i18nKey="release.toast.publish-scheduled-draft.error"
               values={{
                 title: releaseTitle || 'scheduled draft',
                 error: (error as Error).message,
@@ -76,17 +76,17 @@ export function useScheduleDraftOperationsWithToasts(
   const deleteScheduleWithToast = useCallback(
     async (
       releaseDocumentId: string,
-      opts?: Parameters<ScheduleDraftOperationsValue['deleteSchedule']>[1],
+      opts?: Parameters<ScheduleDraftOperationsValue['deleteScheduledDraft']>[1],
     ) => {
       try {
-        await operations.deleteSchedule(releaseDocumentId, opts)
+        await operations.deleteScheduledDraft(releaseDocumentId, opts)
         toast.push({
           closable: true,
           status: 'success',
           description: (
             <Translate
               t={t}
-              i18nKey="release.toast.delete-schedule.success"
+              i18nKey="release.toast.delete-schedule-draft.success"
               values={{title: releaseTitle || 'scheduled draft'}}
               components={{Strong}}
             />
@@ -100,7 +100,7 @@ export function useScheduleDraftOperationsWithToasts(
           description: (
             <Translate
               t={t}
-              i18nKey="release.toast.delete-schedule.error"
+              i18nKey="release.toast.delete-schedule-draft.error"
               values={{
                 title: releaseTitle || 'scheduled draft',
                 error: (error as Error).message,
@@ -119,10 +119,10 @@ export function useScheduleDraftOperationsWithToasts(
     async (
       releaseDocumentId: string,
       newPublishAt: Date,
-      opts?: Parameters<ScheduleDraftOperationsValue['reschedule']>[2],
+      opts?: Parameters<ScheduleDraftOperationsValue['rescheduleScheduledDraft']>[2],
     ) => {
       try {
-        await operations.reschedule(releaseDocumentId, newPublishAt, opts)
+        await operations.rescheduleScheduledDraft(releaseDocumentId, newPublishAt, opts)
         // No success toast for reschedule per requirements
       } catch (error) {
         console.error('Failed to reschedule draft:', error)
@@ -132,7 +132,7 @@ export function useScheduleDraftOperationsWithToasts(
           description: (
             <Translate
               t={t}
-              i18nKey="release.toast.reschedule.error"
+              i18nKey="release.toast.reschedule-scheduled-draft.error"
               values={{
                 title: releaseTitle || 'scheduled draft',
                 error: (error as Error).message,
@@ -148,9 +148,9 @@ export function useScheduleDraftOperationsWithToasts(
   )
 
   return {
-    schedulePublish: operations.schedulePublish, // No toasts needed
-    runNow: runNowWithToast,
-    deleteSchedule: deleteScheduleWithToast,
-    reschedule: rescheduleWithToast,
+    crateScheduledDraft: operations.crateScheduledDraft, // No toasts needed
+    publishScheduledDraft: runNowWithToast,
+    deleteScheduledDraft: deleteScheduleWithToast,
+    rescheduleScheduledDraft: rescheduleWithToast,
   }
 }

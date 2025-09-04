@@ -66,7 +66,8 @@ export const ScheduledDraftMenuButtonWrapper = ({release}: {release: ReleaseDocu
   const scheduledDraftTitle =
     release.metadata.title || tCore('release.placeholder-untitled-release')
 
-  const {runNow, reschedule} = useScheduleDraftOperationsWithToasts(scheduledDraftTitle)
+  const {publishScheduledDraft: runNow, rescheduleScheduledDraft: reschedule} =
+    useScheduleDraftOperationsWithToasts(scheduledDraftTitle)
 
   const canPerformActions =
     release.state === 'scheduled' ||

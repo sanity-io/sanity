@@ -7,24 +7,27 @@ import {createReleaseId} from '../util/createReleaseId'
 import {getReleaseIdFromReleaseDocumentId} from '../util/getReleaseIdFromReleaseDocumentId'
 
 export interface ScheduleDraftOperationsValue {
-  schedulePublish: (
+  /**
+   * Create a scheduled draft release
+   */
+  crateScheduledDraft: (
     documentId: string,
     publishAt: Date,
     title?: string,
     opts?: BaseActionOptions,
   ) => Promise<string>
   /**
-   * Immediately publishes a scheduled draft by unscheduling and then publishing
+   * Immediately publishes a scheduled draft
    */
-  runNow: (releaseDocumentId: string, opts?: BaseActionOptions) => Promise<void>
+  publishScheduledDraft: (releaseDocumentId: string, opts?: BaseActionOptions) => Promise<void>
   /**
-   * Deletes a scheduled draft by unscheduling, archiving, and then deleting
+   * Deletes a scheduled draft
    */
-  deleteSchedule: (releaseDocumentId: string, opts?: BaseActionOptions) => Promise<void>
+  deleteScheduledDraft: (releaseDocumentId: string, opts?: BaseActionOptions) => Promise<void>
   /**
    * Reschedules a draft to a new publish time
    */
-  reschedule: (
+  rescheduleScheduledDraft: (
     releaseDocumentId: string,
     newPublishAt: Date,
     opts?: BaseActionOptions,
@@ -32,17 +35,12 @@ export interface ScheduleDraftOperationsValue {
 }
 
 /**
- * Hook for scheduling draft operations.
- *
- * Provides operations for scheduling document publishing and unpublishing,
- * as well as combined operations for managing scheduled drafts.
- *
  * @internal
  */
 export function useScheduleDraftOperations(): ScheduleDraftOperationsValue {
   const releaseOperations = useReleaseOperations()
 
-  const createScheduledRelease = useCallback(
+  const createScheduledDraftRelease = useCallback(
     async (title: string, scheduleAt: Date, opts?: BaseActionOptions): Promise<string> => {
       const releaseDocumentId = createReleaseId()
 
@@ -65,7 +63,7 @@ export function useScheduleDraftOperations(): ScheduleDraftOperationsValue {
     [releaseOperations],
   )
 
-  const handleSchedulePublish = useCallback(
+  const handleCreateScheduledDraft = useCallback(
     async (
       documentId: string,
       publishAt: Date,
@@ -74,7 +72,7 @@ export function useScheduleDraftOperations(): ScheduleDraftOperationsValue {
     ): Promise<string> => {
       // Create the release (but don't schedule it yet)
       const releaseTitle = title ? `Scheduled publish of '${title}'` : 'Schedule Publish'
-      const releaseDocumentId = await createScheduledRelease(releaseTitle, publishAt, opts)
+      const releaseDocumentId = await createScheduledDraftRelease(releaseTitle, publishAt, opts)
 
       // Create a version of the document in the release (using draft as base)
       const draftId = getDraftId(documentId)
@@ -86,10 +84,10 @@ export function useScheduleDraftOperations(): ScheduleDraftOperationsValue {
 
       return releaseDocumentId
     },
-    [releaseOperations, createScheduledRelease],
+    [releaseOperations, createScheduledDraftRelease],
   )
 
-  const handleRunNow = useCallback(
+  const handlePublishScheduledDraft = useCallback(
     async (releaseDocumentId: string, opts?: BaseActionOptions): Promise<void> => {
       // First unschedule the release
       await releaseOperations.unschedule(releaseDocumentId, opts)
@@ -100,7 +98,7 @@ export function useScheduleDraftOperations(): ScheduleDraftOperationsValue {
     [releaseOperations],
   )
 
-  const handleDeleteSchedule = useCallback(
+  const handleDeleteScheduledDraft = useCallback(
     async (releaseDocumentId: string, opts?: BaseActionOptions): Promise<void> => {
       // First unschedule the release
       await releaseOperations.unschedule(releaseDocumentId, opts)
@@ -114,7 +112,7 @@ export function useScheduleDraftOperations(): ScheduleDraftOperationsValue {
     [releaseOperations],
   )
 
-  const handleReschedule = useCallback(
+  const handleRescheduleScheduledDraft = useCallback(
     async (
       releaseDocumentId: string,
       newPublishAt: Date,
@@ -130,9 +128,9 @@ export function useScheduleDraftOperations(): ScheduleDraftOperationsValue {
   )
 
   return {
-    schedulePublish: handleSchedulePublish,
-    runNow: handleRunNow,
-    deleteSchedule: handleDeleteSchedule,
-    reschedule: handleReschedule,
+    crateScheduledDraft: handleCreateScheduledDraft,
+    publishScheduledDraft: handlePublishScheduledDraft,
+    deleteScheduledDraft: handleDeleteScheduledDraft,
+    rescheduleScheduledDraft: handleRescheduleScheduledDraft,
   }
 }
