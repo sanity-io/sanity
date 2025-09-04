@@ -66,7 +66,7 @@ export function ValidationProgressIndicator({
 
   return (
     <Card
-      padding={2}
+      padding={isMinimal ? 0 : 2}
       radius="full"
       tone={tone}
       style={{
