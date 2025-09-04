@@ -89,7 +89,6 @@ function UploadPlaceholderComponent(props: UploadPlaceholderProps) {
             disabled={readOnly || directUploads === false}
             icon={UploadIcon}
             mode="bleed"
-            // eslint-disable-next-line react/jsx-no-bind
             onSelect={(files) => {
               if (onUpload) {
                 onUpload(assetSourcesWithUpload[0], files)

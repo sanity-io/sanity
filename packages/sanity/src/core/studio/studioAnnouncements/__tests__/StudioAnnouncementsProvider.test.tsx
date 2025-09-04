@@ -346,7 +346,6 @@ describe('StudioAnnouncementsProvider', () => {
       const Component = () => {
         const {onDialogOpen} = useStudioAnnouncements()
         return (
-          // eslint-disable-next-line react/jsx-no-bind
           <button onClick={() => onDialogOpen('help_menu')} type="button">
             Open dialog
           </button>

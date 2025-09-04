@@ -1,4 +1,3 @@
-/* eslint-disable react/jsx-no-bind */
 import {AddIcon} from '@sanity/icons'
 import {type ArraySchemaType} from '@sanity/types'
 import {Grid} from '@sanity/ui'

@@ -1,11 +1,11 @@
 import {type ReleaseDocument} from '@sanity/client'
 import {act, fireEvent, render, screen, waitFor, within} from '@testing-library/react'
 import {format, set} from 'date-fns'
-import {useState} from 'react'
+import {useEffect, useRef, useState} from 'react'
 import {useRouter} from 'sanity/router'
 import {beforeEach, describe, expect, it, vi} from 'vitest'
 
-import {getByDataUi, queryByDataUi} from '../../../../../../test/setup/customQueries'
+import {getByDataUi} from '../../../../../../test/setup/customQueries'
 import {setupVirtualListEnv} from '../../../../../../test/testUtils/setupVirtualListEnv'
 import {createTestProvider} from '../../../../../../test/testUtils/TestProvider'
 import {mockUseTimeZone, useTimeZoneMockReturn} from '../../../../hooks/__mocks__/useTimeZone.mock'
@@ -61,7 +61,7 @@ vi.mock('sanity', () => ({
   useTranslation: vi.fn().mockReturnValue({t: vi.fn()}),
 }))
 
-vi.mock('@sanity/ui', async (importOriginal) => {
+vi.mock('@sanity/ui', async (importOriginal: any) => {
   return {
     ...(await importOriginal()),
     useMediaIndex: vi.fn().mockReturnValue(3),
@@ -92,7 +92,8 @@ vi.mock('../../../store/useReleasePermissions', () => ({
   useReleasePermissions: vi.fn(() => useReleasePermissionsMockReturn),
 }))
 
-vi.mock('sanity/router', async (importOriginal) => ({
+// oxlint-disable-next-line no-explicit-any
+vi.mock('sanity/router', async (importOriginal: any) => ({
   ...(await importOriginal()),
   useRouter: vi.fn().mockReturnValue({state: {}, navigate: vi.fn()}),
 }))
@@ -121,12 +122,18 @@ const getWrapper = () =>
  * ReleasesOverview once the exact height wrapper has mounted
  */
 const TestComponent = () => {
-  const [hasWrapperRendered, setHasWrapperRendered] = useState<boolean>(false)
-  const updateWrapperRendered = () => setHasWrapperRendered(true)
+  const [hasWrapperRendered, setHasWrapperRendered] = useState(false)
+  const wrapperRef = useRef<HTMLDivElement | null>(null)
+
+  useEffect(() => {
+    if (wrapperRef.current) {
+      setHasWrapperRendered(true)
+    }
+  }, [])
 
   return (
-    <div style={{height: '400px'}} ref={updateWrapperRendered}>
-      <ReleasesOverview data-wrapperRendered={hasWrapperRendered?.toString()} />
+    <div style={{height: '400px'}} ref={wrapperRef}>
+      <ReleasesOverview data-wrapperRendered={hasWrapperRendered.toString()} />
     </div>
   )
 }
@@ -148,12 +155,25 @@ describe('ReleasesOverview', () => {
         resources: [releasesUsEnglishLocaleBundle],
       })
 
-      return render(<TestComponent />, {wrapper})
+      return await act(async () => render(<TestComponent />, {wrapper}))
     })
 
-    it('does not show releases table but shows loader', () => {
-      expect(screen.queryByRole('table')).toBeNull()
-      queryByDataUi(document.body, 'Spinner')
+    it('shows loading state when releases are loading', async () => {
+      await waitFor(
+        () => {
+          const table = screen.queryByRole('table')
+          expect(table).toBeInTheDocument()
+        },
+        // This is necessary to avoid flakiness
+        {timeout: 5000},
+      )
+
+      // Make sure that the temporary skeletons rows are shown which means it's loading
+      const table = screen.queryByRole('table')
+      if (table) {
+        const skeletonRows = screen.getAllByTestId('table-row-skeleton')
+        expect(skeletonRows).toHaveLength(3)
+      }
     })
 
     it('does not allow for switching between history modes', async () => {
@@ -182,7 +202,7 @@ describe('ReleasesOverview', () => {
         resources: [releasesUsEnglishLocaleBundle],
       })
 
-      return render(<TestComponent />, {wrapper})
+      return await act(async () => render(<TestComponent />, {wrapper}))
     })
 
     it('shows a message about releases', () => {
@@ -229,7 +249,7 @@ describe('ReleasesOverview', () => {
 
       const wrapper = await getWrapper()
 
-      return render(<TestComponent />, {wrapper})
+      return await act(async () => render(<TestComponent />, {wrapper}))
     }
 
     beforeEach(async () => {
@@ -261,8 +281,76 @@ describe('ReleasesOverview', () => {
 
       const wrapper = await getWrapper()
 
-      return act(() => {
+      return await act(async () => {
         activeRender = render(<TestComponent />, {wrapper})
+      })
+    })
+
+    it('filters out releases with cardinality "one"', async () => {
+      const releaseWithCardinalityOne: ReleaseDocument = {
+        ...activeASAPRelease,
+        _id: '_.releases.rCardinalityOne',
+        metadata: {
+          ...activeASAPRelease.metadata,
+          title: 'Cardinality One Release',
+          cardinality: 'one',
+        },
+      }
+
+      mockUseActiveReleases.mockReturnValue({
+        ...useActiveReleasesMockReturn,
+        data: [...releases, releaseWithCardinalityOne],
+      })
+
+      mockUseReleasesMetadata.mockReturnValue({
+        ...useReleasesMetadataMockReturn,
+        data: Object.fromEntries(
+          [...releases, releaseWithCardinalityOne].map((release, index) => [
+            release._id,
+            {
+              documentCount: index + 1,
+            } as ReleasesMetadata,
+          ]),
+        ),
+      })
+
+      await rerender()
+
+      const releaseRows = screen.getAllByTestId('table-row')
+      expect(releaseRows).toHaveLength(5)
+
+      expect(screen.queryByText('Cardinality One Release')).not.toBeInTheDocument()
+
+      expect(screen.getByText(activeASAPRelease.metadata.title)).toBeInTheDocument()
+      expect(screen.getByText(activeScheduledRelease.metadata.title)).toBeInTheDocument()
+    })
+
+    it('filters out archived releases with cardinality "one"', async () => {
+      const archivedReleaseWithCardinalityOne: ReleaseDocument = {
+        ...archivedScheduledRelease,
+        _id: '_.releases.rArchivedCardinalityOne',
+        metadata: {
+          ...archivedScheduledRelease.metadata,
+          title: 'Archived Cardinality One Release',
+          cardinality: 'one',
+        },
+      }
+
+      mockUseArchivedReleases.mockReturnValue({
+        ...useArchivedReleasesMockReturn,
+        data: [archivedScheduledRelease, publishedASAPRelease, archivedReleaseWithCardinalityOne],
+      })
+
+      fireEvent.click(screen.getByText('Archived'))
+
+      await waitFor(() => {
+        const archivedReleaseRows = screen.getAllByTestId('table-row')
+        expect(archivedReleaseRows).toHaveLength(2)
+
+        expect(screen.queryByText('Archived Cardinality One Release')).not.toBeInTheDocument()
+
+        expect(screen.getByText('published Release')).toBeInTheDocument()
+        expect(screen.getByText('archived Release')).toBeInTheDocument()
       })
     })
 

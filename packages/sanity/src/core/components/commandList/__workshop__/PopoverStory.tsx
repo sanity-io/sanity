@@ -60,7 +60,6 @@ export default function PopoverStory() {
       return (
         <Button
           mode="bleed"
-          // eslint-disable-next-line react/jsx-no-bind
           onClick={() => handleChildClick(item)}
           style={{borderRadius: 0, width: '100%'}}
           text={`Button ${item.toString()}`}

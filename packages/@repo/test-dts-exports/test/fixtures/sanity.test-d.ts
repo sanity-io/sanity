@@ -91,6 +91,7 @@ import type {
   AvailabilityReason,
   AvailabilityResponse,
   AvatarSkeleton,
+  BaseActionDescription,
   BaseEvent,
   BaseFieldProps,
   BaseFormNode,
@@ -671,6 +672,7 @@ import type {
   grantsPermissionOn,
   GrantsStore,
   GrantsStoreOptions,
+  GroupableActionDescription,
   GroupChange,
   GroupChangeNode,
   hasCommentMessageValue,
@@ -1123,6 +1125,11 @@ import type {
   RelativeTime,
   RelativeTimeOptions,
   RelativeTimeProps,
+  ReleaseActionComponent,
+  ReleaseActionDescription,
+  ReleaseActionProps,
+  ReleaseActionsContext,
+  ReleaseActionsResolver,
   ReleaseAvatar,
   ReleaseDocument,
   ReleaseId,
@@ -1168,6 +1175,7 @@ import type {
   ResourceCacheProviderProps,
   RetryingStatus,
   RevertChangesButton,
+  RevertChangesConfirmDialog,
   Role,
   RovingFocusNavigationType,
   RovingFocusProps,
@@ -1323,6 +1331,7 @@ import type {
   systemBundles,
   TagsArrayInput,
   TagsArrayInputProps,
+  TargetPerspective,
   TelephoneInput,
   TelephoneInputProps,
   Template,
@@ -1631,7 +1640,7 @@ describe('sanity', () => {
     expectTypeOf<typeof _isSanityDocumentTypeDefinition>().toBeFunction()
   })
   test('ActionComponent', () => {
-    expectTypeOf<ActionComponent<any>>().toBeObject()
+    expectTypeOf<ActionComponent<any, any>>().toBeObject()
   })
   test('ActiveToolLayoutProps', () => {
     expectTypeOf<ActiveToolLayoutProps>().toBeObject()
@@ -1884,6 +1893,9 @@ describe('sanity', () => {
   })
   test('AvatarSkeleton', () => {
     expectTypeOf<typeof AvatarSkeleton>().not.toBeNever()
+  })
+  test('BaseActionDescription', () => {
+    expectTypeOf<BaseActionDescription>().toBeObject()
   })
   test('BaseEvent', () => {
     expectTypeOf<BaseEvent>().toBeObject()
@@ -3647,6 +3659,9 @@ describe('sanity', () => {
   test('GrantsStoreOptions', () => {
     expectTypeOf<GrantsStoreOptions>().not.toBeNever()
   })
+  test('GroupableActionDescription', () => {
+    expectTypeOf<GroupableActionDescription<any>>().toBeObject()
+  })
   test('GroupChange', () => {
     expectTypeOf<typeof GroupChange>().toBeFunction()
   })
@@ -5011,6 +5026,21 @@ describe('sanity', () => {
   test('RelativeTimeProps', () => {
     expectTypeOf<RelativeTimeProps>().toBeObject()
   })
+  test('ReleaseActionComponent', () => {
+    expectTypeOf<ReleaseActionComponent>().toBeObject()
+  })
+  test('ReleaseActionDescription', () => {
+    expectTypeOf<ReleaseActionDescription>().toBeObject()
+  })
+  test('ReleaseActionProps', () => {
+    expectTypeOf<ReleaseActionProps>().toBeObject()
+  })
+  test('ReleaseActionsContext', () => {
+    expectTypeOf<ReleaseActionsContext>().not.toBeNever()
+  })
+  test('ReleaseActionsResolver', () => {
+    expectTypeOf<ReleaseActionsResolver>().not.toBeNever()
+  })
   test('ReleaseAvatar', () => {
     expectTypeOf<typeof ReleaseAvatar>().toBeFunction()
   })
@@ -5146,6 +5176,9 @@ describe('sanity', () => {
   })
   test('RevertChangesButton', () => {
     expectTypeOf<typeof RevertChangesButton>().not.toBeNever()
+  })
+  test('RevertChangesConfirmDialog', () => {
+    expectTypeOf<typeof RevertChangesConfirmDialog>().toBeFunction()
   })
   test('Role', () => {
     expectTypeOf<Role>().toBeObject()
@@ -5617,6 +5650,9 @@ describe('sanity', () => {
   })
   test('TagsArrayInputProps', () => {
     expectTypeOf<TagsArrayInputProps>().not.toBeNever()
+  })
+  test('TargetPerspective', () => {
+    expectTypeOf<TargetPerspective>().not.toBeNever()
   })
   test('TelephoneInput', () => {
     expectTypeOf<typeof TelephoneInput>().toBeFunction()

@@ -1,6 +1,6 @@
 {
   "name": "perf-studio",
-  "version": "4.6.0",
+  "version": "4.6.1",
   "private": true,
   "description": "Sanity Studio with various test cases for tracking performance",
   "license": "MIT",
@@ -14,7 +14,7 @@
     "start": "sanity start --port 3300"
   },
   "dependencies": {
-    "babel-plugin-react-compiler": "19.1.0-rc.2",
+    "babel-plugin-react-compiler": "19.1.0-rc.3",
     "react": "catalog:",
     "react-dom": "catalog:",
     "sanity": "workspace:*",

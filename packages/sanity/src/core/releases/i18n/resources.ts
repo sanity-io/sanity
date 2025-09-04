@@ -333,6 +333,20 @@ const releasesLocaleStrings = {
   'schedule-dialog.publish-date-in-past-warning':
     'Schedule this release for a future time and date.',
 
+  /** Header for the schedule publish dialog */
+  'schedule-publish-dialog.header': 'Schedule draft for Publish',
+  /** Description for the schedule publish dialog */
+  'schedule-publish-dialog.description': 'Select when this document should be published.',
+  /** Confirm button text for the schedule publish dialog */
+  'schedule-publish-dialog.confirm': 'Schedule',
+
+  /** Header for the schedule unpublish dialog */
+  'schedule-unpublish-dialog.header': 'Schedule draft for Unpublish',
+  /** Description for the schedule unpublish dialog */
+  'schedule-unpublish-dialog.description': 'Select when this document should be unpublished.',
+  /** Confirm button text for the schedule unpublish dialog */
+  'schedule-unpublish-dialog.confirm': 'Schedule Unpublish',
+
   /** Placeholder for search of documents in a release */
   'search-documents-placeholder': 'Search documents',
   /** Text for when the release was created */
@@ -347,6 +361,22 @@ const releasesLocaleStrings = {
   'summary.document-count_one': '{{count}} document',
   /** Text for when the release is composed of multiple documents */
   'summary.document-count_other': '{{count}} documents',
+
+  /** Text for validation loading indicator */
+  'summary.validating-documents': 'Validating documents: {{validatedCount}} of {{totalCount}}',
+
+  /** Text for when the release has validated documents */
+  'summary.validated-documents': '{{validatedCount}} of {{totalCount}} documents validated',
+
+  /** Text for when the release has validated all documents */
+  'summary.all-documents-validated': 'All documents validated, no conflicts found',
+
+  /** Text for when the release has no errors found */
+  'summary.all-documents-errors-found': 'All documents validated, conflicts found',
+
+  /** Text for when the release has some errors found */
+  'summary.errors-found':
+    'In order to publish or schedule the release, please resolve the conflicts found in the documents',
 
   /** add action type that will be shown in the table*/
   'table-body.action.add': 'Add',
