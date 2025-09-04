@@ -9,6 +9,7 @@ vi.mock('sanity', async (importOriginal) => {
   return {
     ...(await importOriginal()),
     useTranslation: vi.fn(() => ({t: (key: string) => key})),
+    defineLocaleResourceBundle: vi.fn((bundle) => bundle),
   }
 })
 describe('FormHeader', () => {

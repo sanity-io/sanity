@@ -107,11 +107,31 @@ export function getDraftId(id: string): DraftId {
   return isDraftId(id) ? id : ((DRAFTS_PREFIX + id) as DraftId)
 }
 
-/** @internal */
+/**
+ * System bundles are sets of documents owned by the system.
+ *
+ * - Draft documents contain data that has not yet been published. These documents all exist in the "drafts" path.
+ * - Published documents contain data that has been published. These documents all exist in the root path.
+ *
+ * These differ to user bundles, which are created when a user establishes a custom set of documents
+ * (e.g. by creating a release).
+ *
+ * @public
+ */
 export const systemBundles = ['drafts', 'published'] as const
 
-/** @internal */
-export type SystemBundle = (typeof systemBundles)[number]
+/**
+ * System bundles are sets of documents owned by the system.
+ *
+ * - Draft documents contain data that has not yet been published. These documents all exist in the "drafts" path.
+ * - Published documents contain data that has been published. These documents all exist in the root path.
+ *
+ * These differ to user bundles, which are created when a user establishes a custom set of documents
+ * (e.g. by creating a release).
+ *
+ * @public
+ */
+export type SystemBundle = 'drafts' | 'published'
 
 /** @internal */
 export function isSystemBundle(maybeSystemBundle: unknown): maybeSystemBundle is SystemBundle {
@@ -122,7 +142,7 @@ export function isSystemBundle(maybeSystemBundle: unknown): maybeSystemBundle is
 const systemBundleNames = ['draft', 'published'] as const
 
 /** @internal */
-type SystemBundleName = (typeof systemBundleNames)[number]
+type SystemBundleName = 'draft' | 'published'
 
 /**
  * `isSystemBundle` should be preferred, but some parts of the codebase currently use the singular

@@ -128,7 +128,6 @@ export default function PresenceInputStory() {
           <PresenceProvider presence={presenceA}>
             <Input
               onChange={setValue}
-              // eslint-disable-next-line react/jsx-no-bind
               onSelectionChange={(v) => handleSelectionChange(v, 'user-1')}
               value={value}
             />
@@ -148,7 +147,6 @@ export default function PresenceInputStory() {
           <PresenceProvider presence={presenceB}>
             <Input
               onChange={setValue}
-              // eslint-disable-next-line react/jsx-no-bind
               onSelectionChange={(v) => handleSelectionChange(v, 'user-2')}
               value={value}
             />

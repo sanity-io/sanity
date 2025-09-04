@@ -29,7 +29,6 @@ export default function CommentsProviderStory() {
         <CommentsProvider documentType={_type} documentId={_id} type="field" sortOrder="desc">
           <ConditionalWrapper
             condition={_mode === 'upsell'}
-            // eslint-disable-next-line react/jsx-no-bind
             wrapper={(children) => <CommentsUpsellProvider>{children}</CommentsUpsellProvider>}
           >
             <Inner mode={_mode} />
@@ -73,12 +72,10 @@ function Inner({mode}: {mode: CommentsUIMode}) {
       onCreateRetry={noop}
       onDelete={operation.remove}
       onEdit={operation.update}
-      // eslint-disable-next-line react/jsx-no-bind
       onNewThreadCreate={(c) =>
         operation.create({type: 'field', fieldPath: c.payload?.fieldPath || '', ...c})
       }
       onReactionSelect={operation.react}
-      // eslint-disable-next-line react/jsx-no-bind
       onReply={(c) =>
         operation.create({type: 'field', fieldPath: c.payload?.fieldPath || '', ...c})
       }

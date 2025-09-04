@@ -33,9 +33,8 @@ jobs:
         with:
           fetch-depth: 0
       - uses: pnpm/action-setup@v4
-      - uses: actions/setup-node@v4
+      - uses: actions/setup-node@v5
         with:
-          cache: pnpm
           node-version: lts/*
 
       - name: Install deps
@@ -105,9 +104,8 @@ jobs:
         with:
           fetch-depth: 0
       - uses: pnpm/action-setup@v4
-      - uses: actions/setup-node@v4
+      - uses: actions/setup-node@v5
         with:
-          cache: pnpm
           node-version: lts/*
 
       - name: Install deps
@@ -149,9 +147,8 @@ jobs:
         with:
           fetch-depth: 0
       - uses: pnpm/action-setup@v4
-      - uses: actions/setup-node@v4
+      - uses: actions/setup-node@v5
         with:
-          cache: pnpm
           node-version: lts/*
 
       - name: Install deps

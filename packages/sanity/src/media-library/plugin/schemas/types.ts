@@ -10,9 +10,10 @@ import {
   type ValidationBuilder,
 } from '@sanity/types'
 
+import {isRecord} from '../../../core/util'
+
 /** @public */
 export interface VideoOptions extends ObjectOptions {
-  storeOriginalFilename?: boolean
   accept?: string
   sources?: AssetSource[]
 }
@@ -38,6 +39,7 @@ export interface VideoRule extends RuleDef<VideoRule, VideoValue> {
 /** @public */
 export interface VideoValue {
   asset?: Reference
+  media?: Reference
   [index: string]: unknown
 }
 
@@ -57,16 +59,30 @@ export interface VideoSchemaType extends Omit<ObjectSchemaType, 'options'> {
 }
 
 /** @public */
+export interface VideoMetadataPlayback {
+  _type: 'sanity.videoMetadata.playback'
+  _id: string
+  _key: string
+  policy: 'public' | 'secured'
+}
+
+/** @public */
 export interface VideoMetadata {
   [key: string]: unknown
   _type: 'sanity.videoMetadata'
   aspectRatio?: number
   duration?: number
   framerate?: number
+  playbacks?: VideoMetadataPlayback[]
 }
 
 /** @public */
 export type VideoAsset = Omit<Asset, '_type'> & {
   _type: 'sanity.videoAsset'
   metadata: VideoMetadata
+}
+
+/** @internal */
+export function isVideoSchemaType(type: unknown): type is VideoSchemaType {
+  return isRecord(type) && (type.name === 'sanity.video' || isVideoSchemaType(type.type))
 }

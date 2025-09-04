@@ -115,8 +115,11 @@
     },
     {
       "description": "Due to our usage of useEffectEvent we need to use the experimental version of the plugin. Otherwise the exhaustive-deps rule will have false negatives",
-      "matchPackageNames": ["eslint-plugin-react-hooks"],
-      "followTag": "experimental"
+      "matchPackageNames": [
+        "eslint-plugin-react-hooks-with-use-effect-event",
+        "eslint-plugin-react-hooks"
+      ],
+      "enabled": false
     }
   ],
   "ignorePaths": [

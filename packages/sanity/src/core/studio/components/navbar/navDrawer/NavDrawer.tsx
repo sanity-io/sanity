@@ -122,7 +122,6 @@ export const NavDrawer = memo(function NavDrawer(props: NavDrawerProps) {
             icon={action?.icon}
             justify="flex-start"
             mode="bleed"
-            // eslint-disable-next-line react/jsx-no-bind
             onClick={() => handleActionClick(action.onAction)}
             selected={action.selected}
             size="large"

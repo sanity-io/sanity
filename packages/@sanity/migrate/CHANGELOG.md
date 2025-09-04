@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [4.6.1](https://github.com/sanity-io/sanity/compare/v4.6.0...v4.6.1) (2025-09-02)
+
+
+### Bug Fixes
+
+* **deps:** update dependency @sanity/client to ^7.10.0 ([#10465](https://github.com/sanity-io/sanity/issues/10465)) ([62103ca](https://github.com/sanity-io/sanity/commit/62103ca0e384f49317a8c25cdb578ca5895fbb1a))
+* **deps:** update dependency @sanity/mutate to ^0.12.5 ([#10433](https://github.com/sanity-io/sanity/issues/10433)) ([d916a84](https://github.com/sanity-io/sanity/commit/d916a843c9e75fe5819f77a87a8c936dbc531223))
+* revert "fix(deps): update dependency @sanity/mutate to ^0.12.5" ([#10467](https://github.com/sanity-io/sanity/issues/10467)) ([3f67302](https://github.com/sanity-io/sanity/commit/3f67302dfe3a807c3b907722cf94cc8861d8d74c))
+
+
+
 ## [4.6.0](https://github.com/sanity-io/sanity/compare/v4.5.0...v4.6.0) (2025-08-26)
 
 

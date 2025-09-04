@@ -19,7 +19,6 @@ const TasksStudioLayoutInner = (props: LayoutProps) => {
     <AddonDatasetProvider>
       <ConditionalWrapper
         condition={mode === 'upsell'}
-        // eslint-disable-next-line react/jsx-no-bind
         wrapper={(children) => <TasksUpsellProvider>{children}</TasksUpsellProvider>}
       >
         <TasksProvider>

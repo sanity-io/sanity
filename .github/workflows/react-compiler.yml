@@ -19,11 +19,10 @@ jobs:
     steps:
       - uses: actions/checkout@v5
       - uses: pnpm/action-setup@v4
-      - uses: actions/setup-node@v4
+      - uses: actions/setup-node@v5
         with:
-          cache: pnpm
           node-version: lts/*
-      - run: pnpm -r up --ignore-scripts react-compiler-runtime@rc babel-plugin-react-compiler@rc eslint-plugin-react-compiler@rc
+      - run: pnpm -r up --ignore-scripts react-compiler-runtime@rc babel-plugin-react-compiler@rc eslint-plugin-react-hooks@rc eslint-plugin-react-hooks-with-use-effect-event@npm:eslint-plugin-react-hooks@experimental
       - uses: actions/create-github-app-token@v2
         id: generate-token
         with:
@@ -40,7 +39,7 @@ jobs:
         uses: peter-evans/create-pull-request@271a8d0340265f705b14b6d32b9829c1cb33d45e # v7
         id: create-pull-request
         with:
-          body: I ran `pnpm -r up react-compiler-runtime@rc babel-plugin-react-compiler@rc eslint-plugin-react-compiler@rc` 🧑‍💻
+          body: I ran `pnpm -r up --ignore-scripts react-compiler-runtime@rc babel-plugin-react-compiler@rc eslint-plugin-react-hooks@rc eslint-plugin-react-hooks-with-use-effect-event@npm:eslint-plugin-react-hooks@experimental` 🧑‍💻
           branch: actions/react-compiler
           commit-message: "fix(deps): update react compiler dependencies 🤖 ✨"
           labels: 🤖 bot

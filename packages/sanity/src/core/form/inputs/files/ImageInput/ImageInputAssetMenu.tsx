@@ -70,7 +70,6 @@ function ImageInputAssetMenuComponent(
       <MenuItem
         icon={SearchIcon}
         text={t('inputs.image.browse-menu.text')}
-        // eslint-disable-next-line react/jsx-no-bind
         onClick={() => {
           setMenuOpen(false)
           handleSelectImageFromAssetSource(assetSources[0])
@@ -88,7 +87,6 @@ function ImageInputAssetMenuComponent(
             (assetSource.i18nKey ? t(assetSource.i18nKey) : assetSource.title) ||
             startCase(assetSource.name)
           }
-          // eslint-disable-next-line react/jsx-no-bind
           onClick={() => {
             setMenuOpen(false)
             handleSelectImageFromAssetSource(assetSource)
