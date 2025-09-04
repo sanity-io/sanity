@@ -18,9 +18,8 @@ jobs:
     steps:
       - uses: actions/checkout@v5
       - uses: pnpm/action-setup@v4
-      - uses: actions/setup-node@v4
+      - uses: actions/setup-node@v5
         with:
-          cache: pnpm
           node-version: lts/*
 
       - run: pnpm install
@@ -52,9 +51,8 @@ jobs:
         with:
           repository: sanity-io/sanity
       - uses: pnpm/action-setup@v4
-      - uses: actions/setup-node@v4
+      - uses: actions/setup-node@v5
         with:
-          cache: pnpm
           node-version: lts/*
 
       - uses: actions/download-artifact@v5
@@ -86,9 +84,8 @@ jobs:
         with:
           repository: sanity-io/sanity
       - uses: pnpm/action-setup@v4
-      - uses: actions/setup-node@v4
+      - uses: actions/setup-node@v5
         with:
-          cache: pnpm
           node-version: lts/*
       - uses: actions/download-artifact@v5
         with:
@@ -155,9 +152,8 @@ jobs:
         with:
           repository: sanity-io/sanity
       - uses: pnpm/action-setup@v4
-      - uses: actions/setup-node@v4
+      - uses: actions/setup-node@v5
         with:
-          cache: pnpm
           node-version: lts/*
       - uses: actions/download-artifact@v5
         with:
@@ -219,9 +215,8 @@ jobs:
         with:
           repository: sanity-io/sanity
       - uses: pnpm/action-setup@v4
-      - uses: actions/setup-node@v4
+      - uses: actions/setup-node@v5
         with:
-          cache: pnpm
           node-version: lts/*
 
       - name: Install project dependencies

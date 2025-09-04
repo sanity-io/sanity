@@ -4,9 +4,10 @@ import {DiffContext} from 'sanity/_singletons'
 
 import {useDocumentOperation} from '../../../hooks'
 import {useTranslation} from '../../../i18n'
+import {usePerspective} from '../../../perspective/usePerspective'
 import {useDocumentPairPermissions} from '../../../store'
 import {pathsAreEqual} from '../../paths'
-import {type FieldOperationsAPI, type GroupChangeNode} from '../../types'
+import {type GroupChangeNode} from '../../types'
 import {isPTSchemaType} from '../../types/portableText/diff'
 import {useHover} from '../../utils/useHover'
 import {undoChange} from '../changes/undoChange'
@@ -45,7 +46,8 @@ export function GroupChange(
   const isNestedInDiff = pathsAreEqual(diffPath, groupPath)
   const [revertButtonRef, isRevertButtonHovered] = useHover<HTMLButtonElement>()
 
-  const docOperations = useDocumentOperation(documentId, schemaType.name) as FieldOperationsAPI
+  const {selectedReleaseId} = usePerspective()
+  const docOperations = useDocumentOperation(documentId, schemaType.name, selectedReleaseId)
   const [confirmRevertOpen, setConfirmRevertOpen] = useState(false)
 
   const [permissions, isPermissionsLoading] = useDocumentPairPermissions({

@@ -1,6 +1,6 @@
 import {type EditableReleaseDocument, type ReleaseDocument, type ReleaseState} from '@sanity/client'
 
-import {type SelectedPerspective} from '../../perspective/types'
+import {type TargetPerspective} from '../../perspective/types'
 import {formatRelativeLocale, getVersionFromId, isVersionId} from '../../util'
 import {DEFAULT_RELEASE_TYPE, LATEST} from './const'
 import {createReleaseId} from './createReleaseId'
@@ -59,14 +59,14 @@ export function formatRelativeLocalePublishDate(release: ReleaseDocument): strin
 
 /** @internal */
 export function isPublishedPerspective(
-  perspective: SelectedPerspective | string,
+  perspective: TargetPerspective | string,
 ): perspective is 'published' {
   return perspective === 'published'
 }
 
 /** @internal */
 export function isDraftPerspective(
-  perspective: SelectedPerspective | string,
+  perspective: TargetPerspective | string,
 ): perspective is 'drafts' {
   return perspective === LATEST
 }
@@ -96,4 +96,17 @@ export const getReleaseDefaults: () => EditableReleaseDocument = () => ({
  * @internal */
 export function isNotArchivedRelease(release: ReleaseDocument): release is NotArchivedRelease {
   return release.state !== 'archived'
+}
+
+/**
+ * Check if the release is a cardinality one release
+ *
+ * @internal
+ */
+export function isCardinalityOneRelease(release: ReleaseDocument): release is ReleaseDocument & {
+  metadata: ReleaseDocument['metadata'] & {
+    cardinality: 'one'
+  }
+} {
+  return release.metadata.cardinality === 'one'
 }

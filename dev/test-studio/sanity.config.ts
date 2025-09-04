@@ -56,6 +56,7 @@ import {autoCloseBrackets} from './plugins/input/auto-close-brackets-plugin'
 import {wave} from './plugins/input/wave-plugin'
 import {languageFilter} from './plugins/language-filter'
 import {routerDebugTool} from './plugins/router-debug'
+import {ArchiveAndDeleteCustomAction} from './releases/customReleaseActions'
 // eslint-disable-next-line import/extensions
 import {theme as tailwindTheme} from './sanity.theme.mjs'
 import {createSchemaTypes} from './schema'
@@ -246,6 +247,14 @@ const defaultWorkspace = defineConfig({
         return prev.filter(({action}) => action === 'delete')
       }
 
+      return prev
+    },
+  },
+  releases: {
+    actions: (prev, ctx) => {
+      if (ctx.release.state === 'active') {
+        return [...prev, ArchiveAndDeleteCustomAction]
+      }
       return prev
     },
   },

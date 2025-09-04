@@ -19,8 +19,13 @@ import {VideoPreview} from './VideoPreview'
 
 const ASSET_FIELD_PATH = ['asset']
 
+/**
+ * Checks whether or not the given source is a video source
+ * @param source - Source to check
+ * @returns Whether or not the given source is a video source
+ */
 function isVideoSource(source: any) {
-  return source?.asset?._ref?.startsWith('video-')
+  return source?.asset?._ref?.startsWith('media-library:')
 }
 
 export function VideoAsset(props: VideoAssetProps) {

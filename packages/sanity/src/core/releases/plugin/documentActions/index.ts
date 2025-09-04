@@ -2,7 +2,6 @@ import {type DocumentActionComponent} from '../../../config/document/actions'
 import {type DocumentActionsContext, QUOTA_EXCLUDED_RELEASES_ENABLED} from '../../../config/types'
 import {DiscardVersionAction} from './DiscardVersionAction'
 import {SchedulePublishAction} from './SchedulePublishAction'
-import {ScheduleUnpublishAction} from './ScheduleUnpublishAction'
 import {UnpublishVersionAction} from './UnpublishVersionAction'
 
 type Action = DocumentActionComponent
@@ -19,7 +18,7 @@ export default function resolveDocumentActions(
 
   const isQuotaExcludedReleaseEnabled = context[QUOTA_EXCLUDED_RELEASES_ENABLED]
 
-  // Add SchedulePublishAction and ScheduleUnpublishAction only for draft documents
+  // Add SchedulePublishAction only for draft documents
   if (isQuotaExcludedReleaseEnabled && context.versionType === 'draft') {
     const actionsExcludingOriginalSchedule = existingActions.filter(
       ({action}) => action !== 'schedule',
@@ -37,12 +36,7 @@ export default function resolveDocumentActions(
       ? actionsExcludingOriginalSchedule.slice(nextAfterPublishIndex)
       : actionsExcludingOriginalSchedule
 
-    return [
-      ...actionsBeforePublish,
-      SchedulePublishAction,
-      ScheduleUnpublishAction,
-      ...actionsAfterPublish,
-    ]
+    return [...actionsBeforePublish, SchedulePublishAction, ...actionsAfterPublish]
   }
   return existingActions
 }

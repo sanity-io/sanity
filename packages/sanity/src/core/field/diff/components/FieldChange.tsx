@@ -5,8 +5,9 @@ import {DiffContext} from 'sanity/_singletons'
 
 import {useDocumentOperation} from '../../../hooks'
 import {useTranslation} from '../../../i18n'
+import {usePerspective} from '../../../perspective/usePerspective'
 import {useDocumentPairPermissions} from '../../../store'
-import {type FieldChangeNode, type FieldOperationsAPI} from '../../types'
+import {type FieldChangeNode} from '../../types'
 import {undoChange} from '../changes/undoChange'
 import {useDocumentChange} from '../hooks'
 import {ChangeBreadcrumb} from './ChangeBreadcrumb'
@@ -66,7 +67,8 @@ export function FieldChange(
     isComparingCurrent,
     FieldWrapper = Fragment,
   } = useDocumentChange()
-  const ops = useDocumentOperation(documentId, schemaType.name) as FieldOperationsAPI
+  const {selectedReleaseId} = usePerspective()
+  const ops = useDocumentOperation(documentId, schemaType.name, selectedReleaseId)
   const [confirmRevertOpen, setConfirmRevertOpen] = useState(false)
   const [revertHovered, setRevertHovered] = useState(false)
   const buttonRef = useRef<HTMLButtonElement | null>(null)

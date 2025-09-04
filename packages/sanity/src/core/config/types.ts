@@ -10,6 +10,7 @@ import {
   type SchemaTypeDefinition,
   type SearchStrategy,
 } from '@sanity/types'
+import {type ButtonTone} from '@sanity/ui'
 // eslint-disable-next-line @sanity/i18n/no-i18next-import -- figure out how to have the linter be fine with importing types-only
 import {type i18n} from 'i18next'
 import {type ComponentType, type ErrorInfo, type ReactNode} from 'react'
@@ -33,7 +34,39 @@ import {
   type DocumentInspector,
 } from './document'
 import {type FormComponents} from './form'
+import {type ReleaseActionComponent, type ReleaseActionsContext} from './releases/actions'
 import {type StudioComponents, type StudioComponentsPluginOptions} from './studio'
+
+/**
+ * @hidden
+ * @beta
+ */
+export interface ActionComponent<ActionProps, ActionDescription> {
+  (props: ActionProps): ActionDescription | null
+}
+
+/**
+ * @hidden
+ * @beta
+ */
+export interface BaseActionDescription {
+  disabled?: boolean
+  icon?: ReactNode | ComponentType
+  label: string
+  onHandle?: () => void
+  title?: ReactNode
+  tone?: ButtonTone
+  shortcut?: string | null
+  dialog?: unknown
+}
+
+/**
+ * @hidden
+ * @beta
+ */
+export interface GroupableActionDescription<GroupType = unknown> extends BaseActionDescription {
+  group?: GroupType[]
+}
 
 /**
  * Symbol for enabling releases outside of quota restrictions for single docs
@@ -366,6 +399,15 @@ export type DocumentBadgesResolver = ComposableOption<
   DocumentBadgesContext
 >
 
+/**
+ * @hidden
+ * @public
+ */
+export type ReleaseActionsResolver = ComposableOption<
+  ReleaseActionComponent[],
+  ReleaseActionsContext
+>
+
 /** @hidden @beta */
 export type DocumentInspectorsResolver = ComposableOption<
   DocumentInspector[],
@@ -458,6 +500,9 @@ export interface PluginOptions {
 
   /** @internal */
   [QUOTA_EXCLUDED_RELEASES_ENABLED]?: WorkspaceOptions[typeof QUOTA_EXCLUDED_RELEASES_ENABLED]
+
+  /** Configuration for Content Releases */
+  releases?: DefaultPluginsWorkspaceOptions['releases']
 
   /** Configuration for studio beta features.
    * @internal
@@ -937,7 +982,17 @@ export interface Source {
   tasks?: WorkspaceOptions['tasks']
 
   /** @beta */
-  releases?: WorkspaceOptions['releases']
+  releases?: {
+    enabled?: boolean
+    /**
+     * Limit the number of releases that can be created by this workspace.
+     */
+    limit?: number
+    /**
+     * Returns an array of actions for the release.
+     */
+    actions?: (props: PartialContext<ReleaseActionsContext>) => ReleaseActionComponent[]
+  }
 
   /** @internal */
   __internal_serverDocumentActions?: WorkspaceOptions['__internal_serverDocumentActions']
@@ -1124,6 +1179,10 @@ export type DefaultPluginsWorkspaceOptions = {
      * Limit the number of releases that can be created by this workspace.
      */
     limit?: number
+    /**
+     * Actions for releases.
+     */
+    actions?: ReleaseActionComponent[] | ReleaseActionsResolver
   }
   mediaLibrary?: MediaLibraryConfig
 }

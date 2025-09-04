@@ -23,6 +23,7 @@ export {
   type ReleaseId,
   type ReleasesNavMenuItemPropsGetter,
   type SelectedPerspective,
+  type TargetPerspective,
 } from './perspective/types'
 export {useExcludedPerspective} from './perspective/useExcludedPerspective'
 export {usePerspective} from './perspective/usePerspective'

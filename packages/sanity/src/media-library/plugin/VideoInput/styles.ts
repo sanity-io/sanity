@@ -20,6 +20,5 @@ export const RatioBox = styled(Card)`
   align-items: center;
   width: 100%;
   min-height: 3.75rem;
-  max-height: 30dvh;
   aspect-ratio: var(--aspect-ratio);
 `

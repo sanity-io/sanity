@@ -1,6 +1,6 @@
 import {type MutationPayload} from './buffered-doc/types'
 
-/** @internal */
+/** @beta */
 export interface WelcomeEvent {
   type: 'welcome'
   listenerName: string
