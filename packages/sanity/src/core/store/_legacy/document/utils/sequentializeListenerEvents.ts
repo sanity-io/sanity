@@ -83,26 +83,31 @@ export function sequentializeListenerEvents(options?: {
               return rest
             })
 
-            const [applicableChains, _nextBuffer] = partition(orderedChains, (chain) => {
+            const [resolvedChains, _nextBuffer] = partition(orderedChains, (chain) => {
               // note: there can be at most one applicable chain
               return state.base!.revision === chain[0]?.previousRev
             })
 
             const nextBuffer = _nextBuffer.flat()
-            if (applicableChains.length > 1) {
-              throw new Error('Expected at most one applicable chain')
+            if (resolvedChains.length > 1) {
+              throw new Error('Expected at most one resolved chain')
             }
-            if (applicableChains.length > 0 && applicableChains[0].length > 0) {
+            if (resolvedChains.length > 0 && resolvedChains[0].length > 0) {
               // we now have a continuous chain that can apply on the base revision
               // Move current base revision to the last mutation event in the applicable chain
-              const lastMutation = applicableChains[0].at(-1)!
+              const lastMutation = resolvedChains[0].at(-1)!
               const nextBaseRevision =
                 // special case: if the mutation deletes the document it technically has  no revision, despite
                 // resultRev pointing at a transaction id.
                 lastMutation.transition === 'disappear' ? undefined : lastMutation?.resultRev
+
+              debug(
+                `Chain from ${resolvedChains[0][0].previousRev} => ${resolvedChains[0].at(-1)?.resultRev} resolved!`,
+              )
+
               return {
                 base: {revision: nextBaseRevision},
-                emitEvents: applicableChains[0],
+                emitEvents: resolvedChains[0],
                 buffer: nextBuffer,
                 unresolvedChainDetectedAt:
                   state.buffer.length === 0 && nextBuffer.length > 0
