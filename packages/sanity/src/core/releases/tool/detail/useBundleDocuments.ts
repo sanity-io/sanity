@@ -61,7 +61,7 @@ const getActiveReleaseDocumentsObservable = ({
 }): ReleaseDocumentsObservableResult => {
   const groqFilter = `sanity::partOfRelease($releaseId)`
 
-  // Helper function to create validation observable with scheduler.yield()
+  // Helper function to create validation observable
   const createValidationObservable = (ctx: any, document: SanityDocument) => {
     if (isGoingToUnpublish(document)) {
       return of({
@@ -85,7 +85,7 @@ const getActiveReleaseDocumentsObservable = ({
     )
   }
 
-  // Helper function to process a single document
+  // Helper function to process a single document and set up the associated validation observable
   const processDocument = (id: string) => {
     const ctx = {
       observeDocument: documentPreviewStore.unstable_observeDocument,
@@ -116,7 +116,6 @@ const getActiveReleaseDocumentsObservable = ({
       switchMap((document) => createValidationObservable(ctx, document)),
     )
 
-    // Do not subscribe to preview streams here. Previews will be fetched lazily per rendered row.
     return combineLatest([document$, validation$]).pipe(
       map(([document, validation]) => ({
         document,
@@ -126,11 +125,13 @@ const getActiveReleaseDocumentsObservable = ({
     )
   }
 
-  // Helper function to process a batch of documents
-  const processBatch = (batch: string[], batchIndex: number) => {
-    const batchDelay = batchIndex === 0 ? 0 : 100
+  // Helper function to process a group of document Ids
+  // Used to process documents as to not overwhelm the main thread
+  const processDocumentIdsGroup = (documentIdsGroup: string[], groupIndex: number) => {
+    // On the first batch there is no delay
+    const batchDelay = groupIndex === 0 ? 0 : 100
 
-    return of(batch).pipe(
+    return of(documentIdsGroup).pipe(
       delay(batchDelay),
       mergeMapArray((id: string) => processDocument(id)),
     )
@@ -146,28 +147,35 @@ const getActiveReleaseDocumentsObservable = ({
     )
     .pipe(
       map((state) => (state.documentIds || []) as string[]),
-      // Process documents in priority order: small batches first, then larger ones
       switchMap((documentIds) => {
         // If no documents, return empty results immediately
         if (documentIds.length === 0) {
           return of([])
         }
 
-        // Process in smaller batches for better responsiveness
+        // Process in smaller groups as to not overwhelm the main thread
+        // depending on the browser it can handle a different number of calls at once, this felt like a good balance
+        // given the tests done
         const batchSize = 5
-        const batches = []
+        const documentIdsGroups = []
         for (let i = 0; i < documentIds.length; i += batchSize) {
-          batches.push(documentIds.slice(i, i + batchSize))
+          documentIdsGroups.push(documentIds.slice(i, i + batchSize))
         }
 
         // Process all batches and collect all results
         return combineLatest(
-          batches.map((batch, batchIndex) =>
-            processBatch(batch, batchIndex).pipe(delay(batchIndex * 100)),
+          documentIdsGroups.map((batch, batchIndex) =>
+            // The delay is used to control the rate of the requests
+            // Tt increases as it goes on as to allow for some space (in the miliseconds scale)
+            // This means that technically one might expect it to take longer to get all the results, but
+            // It makes the user experience better as it is not overwhelming the main thread
+            // And it allows for the browser to more easily handle the requests
+            processDocumentIdsGroup(batch, batchIndex).pipe(delay(batchIndex * 100)),
           ),
         ).pipe(
           // Flatten all batch results into a single array
-          map((batchResults) => batchResults.flat()),
+          // This is done to avoid having to nest the results and keep the strutcture as it was before
+          map((groupResults) => groupResults.flat()),
         )
       }),
       map((results) => ({loading: false, results, error: null})),
