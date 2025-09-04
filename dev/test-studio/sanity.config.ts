@@ -13,9 +13,7 @@ import {tsdoc} from '@sanity/tsdoc/studio'
 import {visionTool} from '@sanity/vision'
 import {
   defineConfig,
-  defineField,
   definePlugin,
-  defineType,
   QUOTA_EXCLUDED_RELEASES_ENABLED,
   type WorkspaceOptions,
 } from 'sanity'
@@ -370,32 +368,6 @@ export default defineConfig([
     },
     mediaLibrary: {
       enabled: true,
-    },
-  },
-  // TODO: Remove this test studio code
-  {
-    name: 'document-limits',
-    title: 'Document Limits',
-    projectId: '0e8c26k1',
-    dataset: 'production',
-    plugins: [structureTool()],
-    basePath: '/dl',
-    apiHost: 'https://api.sanity.work',
-    schema: {
-      types: [
-        defineType({
-          name: 'post',
-          title: 'Posts',
-          type: 'document',
-          fields: [
-            defineField({
-              name: 'title',
-              title: 'Title',
-              type: 'string',
-            }),
-          ],
-        }),
-      ],
     },
   },
   {
