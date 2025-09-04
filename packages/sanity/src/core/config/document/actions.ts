@@ -5,13 +5,7 @@ import {
 import {type ComponentType, type ReactNode} from 'react'
 
 import {type EditStateFor, type MapDocument} from '../../store/_legacy'
-
-/**
- * @hidden
- * @beta */
-export interface ActionComponent<ActionProps> {
-  (props: ActionProps): DocumentActionDescription | null
-}
+import {type ActionComponent, type GroupableActionDescription} from '../types'
 
 /**
  * @hidden
@@ -71,7 +65,8 @@ export const isSanityDefinedAction = (
 /**
  * @hidden
  * @beta */
-export interface DocumentActionComponent extends ActionComponent<DocumentActionProps> {
+export interface DocumentActionComponent
+  extends ActionComponent<DocumentActionProps, DocumentActionDescription> {
   /**
    * An optional meta property that can used to replace this document action
    * with another. E.g.:
@@ -110,7 +105,7 @@ export interface DuplicateActionProps extends DocumentActionProps {
  * @beta
  */
 export interface DuplicateDocumentActionComponent
-  extends ActionComponent<DuplicateActionProps>,
+  extends ActionComponent<DuplicateActionProps, DocumentActionDescription>,
     Pick<DocumentActionComponent, 'action' | 'displayName'> {}
 
 /**
@@ -189,18 +184,8 @@ export type DocumentActionGroup = 'default' | 'paneActions'
 
 /**
  * @hidden
- * @beta */
-export interface DocumentActionDescription {
-  tone?: ButtonTone
+ * @beta
+ */
+export interface DocumentActionDescription extends GroupableActionDescription<DocumentActionGroup> {
   dialog?: DocumentActionDialogProps | false | null
-  disabled?: boolean
-  icon?: ReactNode | ComponentType
-  label: string
-  onHandle?: () => void
-  shortcut?: string | null
-  title?: ReactNode
-  /**
-   * @beta
-   */
-  group?: DocumentActionGroup[]
 }

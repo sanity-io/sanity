@@ -1,6 +1,6 @@
 import {type EditableReleaseDocument, type ReleaseDocument, type ReleaseState} from '@sanity/client'
 
-import {type SelectedPerspective} from '../../perspective/types'
+import {type TargetPerspective} from '../../perspective/types'
 import {formatRelativeLocale, getVersionFromId, isVersionId} from '../../util'
 import {type CardinalityView} from '../tool/overview/queryParamUtils'
 import {DEFAULT_RELEASE_TYPE, LATEST} from './const'
@@ -60,14 +60,14 @@ export function formatRelativeLocalePublishDate(release: ReleaseDocument): strin
 
 /** @internal */
 export function isPublishedPerspective(
-  perspective: SelectedPerspective | string,
+  perspective: TargetPerspective | string,
 ): perspective is 'published' {
   return perspective === 'published'
 }
 
 /** @internal */
 export function isDraftPerspective(
-  perspective: SelectedPerspective | string,
+  perspective: TargetPerspective | string,
 ): perspective is 'drafts' {
   return perspective === LATEST
 }
@@ -113,7 +113,7 @@ export function isCardinalityOneRelease(release: ReleaseDocument): release is Re
 }
 
 /**
- * Helper function to determine if a release should be shown based on the cardinality view
+ * Determine if a release should be shown based on the cardinality view
  * @param cardinalityView - The current cardinality view ('releases' or 'drafts')
  * @returns A function that takes a release and returns true if it should be shown in the current view
  * @internal

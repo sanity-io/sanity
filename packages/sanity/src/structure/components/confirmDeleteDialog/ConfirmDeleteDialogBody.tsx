@@ -238,7 +238,6 @@ export function ConfirmDeleteDialogBody({
                                       'confirm-delete-dialog.cdr-table.copy-id-button.tooltip',
                                     ),
                                   }}
-                                  // eslint-disable-next-line react/jsx-no-bind
                                   onClick={() => {
                                     navigator.clipboard.writeText(documentId).catch(() => {
                                       toast.push({

@@ -15,7 +15,6 @@ function SchedulePublishingStudioLayoutInner(props: LayoutProps) {
   return (
     <ConditionalWrapper
       condition={mode === 'upsell'}
-      // eslint-disable-next-line react/jsx-no-bind
       wrapper={(children) => (
         <SchedulePublishingUpsellProvider>{children}</SchedulePublishingUpsellProvider>
       )}

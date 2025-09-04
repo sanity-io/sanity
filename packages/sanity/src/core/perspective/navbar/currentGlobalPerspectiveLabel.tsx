@@ -21,7 +21,7 @@ import {isReleaseDocument} from '../../releases/store/types'
 import {getReleaseIdFromReleaseDocumentId} from '../../releases/util/getReleaseIdFromReleaseDocumentId'
 import {isDraftPerspective, isPublishedPerspective} from '../../releases/util/util'
 import {oversizedButtonStyle} from '../styles'
-import {type SelectedPerspective} from '../types'
+import {type TargetPerspective} from '../types'
 
 const OversizedButton = styled(IntentLink)`
   ${oversizedButtonStyle}
@@ -112,7 +112,7 @@ const ReleasesLink = ({selectedPerspective}: {selectedPerspective: ReleaseDocume
 export function CurrentGlobalPerspectiveLabel({
   selectedPerspective,
 }: {
-  selectedPerspective: SelectedPerspective
+  selectedPerspective: TargetPerspective
 }): React.JSX.Element | null {
   const {t} = useTranslation()
 

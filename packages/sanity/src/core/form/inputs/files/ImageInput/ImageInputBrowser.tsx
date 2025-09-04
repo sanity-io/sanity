@@ -52,7 +52,6 @@ function ImageInputBrowserComponent(
                     (assetSource.i18nKey ? t(assetSource.i18nKey) : assetSource.title) ||
                     startCase(assetSource.name)
                   }
-                  // eslint-disable-next-line react/jsx-no-bind
                   onClick={() => {
                     setMenuOpen(false)
                     handleSelectImageFromAssetSource(assetSource)
@@ -75,7 +74,6 @@ function ImageInputBrowserComponent(
       text={t('inputs.image.browse-menu.text')}
       icon={SearchIcon}
       mode="bleed"
-      // eslint-disable-next-line react/jsx-no-bind
       onClick={() => {
         setMenuOpen(false)
         handleSelectImageFromAssetSource(assetSources[0])

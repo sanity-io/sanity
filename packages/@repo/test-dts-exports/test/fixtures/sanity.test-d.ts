@@ -1168,6 +1168,7 @@ import type {
   ResourceCacheProviderProps,
   RetryingStatus,
   RevertChangesButton,
+  RevertChangesConfirmDialog,
   Role,
   RovingFocusNavigationType,
   RovingFocusProps,
@@ -1323,6 +1324,7 @@ import type {
   systemBundles,
   TagsArrayInput,
   TagsArrayInputProps,
+  TargetPerspective,
   TelephoneInput,
   TelephoneInputProps,
   Template,
@@ -5147,6 +5149,9 @@ describe('sanity', () => {
   test('RevertChangesButton', () => {
     expectTypeOf<typeof RevertChangesButton>().not.toBeNever()
   })
+  test('RevertChangesConfirmDialog', () => {
+    expectTypeOf<typeof RevertChangesConfirmDialog>().toBeFunction()
+  })
   test('Role', () => {
     expectTypeOf<Role>().toBeObject()
   })
@@ -5617,6 +5622,9 @@ describe('sanity', () => {
   })
   test('TagsArrayInputProps', () => {
     expectTypeOf<TagsArrayInputProps>().not.toBeNever()
+  })
+  test('TargetPerspective', () => {
+    expectTypeOf<TargetPerspective>().not.toBeNever()
   })
   test('TelephoneInput', () => {
     expectTypeOf<typeof TelephoneInput>().toBeFunction()

@@ -1,7 +1,7 @@
 import userEvent from '@testing-library/user-event'
 import {describe, expect, it} from 'vitest'
 
-import {renderStringInput} from '../../../../test/form/renderStringInput'
+import {renderStringInput} from '../../../../../test/form/renderStringInput'
 import {StringInput} from './StringInput'
 
 describe('StringInput', () => {
