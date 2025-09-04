@@ -58,9 +58,13 @@ export type ListenerEvent =
   | ReconnectEvent
   | InitialSnapshotEvent
   | PendingMutationsEvent
+  | WelcomeEvent
 
 const PENDING_START: PendingMutationsEvent = {type: 'pending', phase: 'begin'}
 const PENDING_END: PendingMutationsEvent = {type: 'pending', phase: 'end'}
+
+// refetch and reset local document to server snapshot if listener connection has been disconnected for longer than this
+const REFETCH_IF_DISCONNECTED_LONGER_THAN_MS = 20_000
 
 function isMutationEvent(msg: ListenerEvent): msg is MutationEvent {
   return msg.type === 'mutation'
@@ -118,8 +122,43 @@ export function getPairListener(
   ) as Observable<WelcomeEvent | MutationEvent | ReconnectEvent>
 
   const pairEvents$ = sharedEvents.pipe(
-    concatMap((event) => {
-      return event.type === 'welcome'
+    scan(
+      (
+        acc:
+          | {
+              event: WelcomeEvent | MutationEvent | ReconnectEvent
+              disconnectedAt?: Date
+              disconnectedTime?: number
+            }
+          | undefined,
+        event,
+      ) => ({
+        event,
+        disconnectedAt: event.type === 'reconnect' ? acc?.disconnectedAt || new Date() : undefined,
+        disconnectedTime:
+          event.type === 'welcome' && acc?.disconnectedAt
+            ? acc.disconnectedAt && Date.now() - acc.disconnectedAt.getTime()
+            : undefined,
+      }),
+      undefined,
+    ),
+    filter(Boolean),
+    concatMap(({event, disconnectedTime}, i) => {
+      const shouldSyncDocument =
+        (event.type === 'welcome' && i === 0) ||
+        (disconnectedTime && disconnectedTime > REFETCH_IF_DISCONNECTED_LONGER_THAN_MS)
+      if ((disconnectedTime || 0) > 0) {
+        debug('Reconnected after being disconnected for: %dms', disconnectedTime)
+      }
+      // Note: during disconnect, we might have lost mutation events that are required for the local buffered
+      // documents consistency.
+      // If mutation events keep arriving, the gap detection (see sequentializeListenerEvents.ts) will eventually kick
+      // in and reset/resync the document back to current server state.
+      // However, if no mutation events arrive after reconnect, there is a chance for the document to get stuck in a
+      // forever inconsistent state (which usually manifests itself by the "Saving…"-state getting stuck).
+      // However, as long as the document is actively being edited, either by the local user, or other collaborators,
+      // the gap detection and recovery will eventually activate and the document will be consistent again.
+      return shouldSyncDocument
         ? fetchInitialDocumentSnapshots().pipe(
             mergeMap(({draft, published, version}) => [
               createSnapshotEvent(draftId, draft),
@@ -132,8 +171,8 @@ export function getPairListener(
     scan(
       (
         acc: {
-          next: (InitialSnapshotEvent | ListenerEvent)[]
-          buffer: (InitialSnapshotEvent | ListenerEvent)[]
+          next: (InitialSnapshotEvent | ListenerEvent | WelcomeEvent)[]
+          buffer: (InitialSnapshotEvent | ListenerEvent | WelcomeEvent)[]
         },
         msg,
       ) => {
