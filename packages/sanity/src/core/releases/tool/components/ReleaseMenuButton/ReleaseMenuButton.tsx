@@ -1,15 +1,18 @@
 import {type ReleaseDocument, type SingleActionResult} from '@sanity/client'
 import {EllipsisHorizontalIcon} from '@sanity/icons'
 import {useTelemetry} from '@sanity/telemetry/react'
-import {Menu, Spinner, Stack, Text, useClickOutsideEvent, useToast} from '@sanity/ui'
+import {Menu, MenuDivider, Spinner, Stack, Text, useClickOutsideEvent, useToast} from '@sanity/ui'
 import {type SetStateAction, useCallback, useEffect, useMemo, useRef, useState} from 'react'
 import {RouterContext, useRouter} from 'sanity/router'
 
-import {Button, Dialog, Popover} from '../../../../../ui-components'
+import {Button, Dialog, MenuItem, Popover} from '../../../../../ui-components'
+import {type ReleaseActionDescription} from '../../../../config/releases/actions'
 import {Translate, type TranslateComponentMap, useTranslation} from '../../../../i18n'
 import {usePerspective} from '../../../../perspective/usePerspective'
 import {useSetPerspective} from '../../../../perspective/useSetPerspective'
+import {ReleaseActionsResolver} from '../../../components/ReleaseActionsResolver'
 import {useReleasesUpsell} from '../../../contexts/upsell/useReleasesUpsell'
+import {useCustomReleaseActions} from '../../../hooks/useCustomReleaseActions'
 import {releasesLocaleNamespace} from '../../../i18n'
 import {isReleaseLimitError} from '../../../store/isReleaseLimitError'
 import {useReleaseOperations} from '../../../store/useReleaseOperations'
@@ -66,6 +69,18 @@ export const ReleaseMenuButton = ({
   const popoverRef = useRef<HTMLDivElement | null>(null)
   const releaseMenuRef = useRef<HTMLDivElement | null>(null)
   const [openPopover, setOpenPopover] = useState(false)
+
+  const customActions = useCustomReleaseActions(release, documents ?? [])
+  const [customActionDescriptions, setCustomActionDescriptions] = useState<
+    ReleaseActionDescription[]
+  >([])
+
+  const handleCustomActionsUpdate = useCallback(
+    (actions: Array<ReleaseActionDescription | null>) => {
+      setCustomActionDescriptions(actions.filter(Boolean) as ReleaseActionDescription[])
+    },
+    [],
+  )
 
   const releaseMenuDisabled = !release
   const {t} = useTranslation(releasesLocaleNamespace)
@@ -277,8 +292,39 @@ export const ReleaseMenuButton = ({
     [],
   )
 
+  // Create menu items for custom actions
+  const customActionMenuItems = useMemo(() => {
+    const handleOnActionClick = (action: ReleaseActionDescription) => () => {
+      if (action.onHandle) {
+        action.onHandle()
+        closePopover()
+      }
+    }
+
+    return customActionDescriptions.map((action, index) => (
+      <MenuItem
+        key={`custom-action-${index}`}
+        icon={action.icon}
+        text={action.label}
+        disabled={action.disabled || isPerformingOperation}
+        onClick={handleOnActionClick(action)}
+        tooltipProps={action.title ? {content: action.title} : undefined}
+      />
+    ))
+  }, [customActionDescriptions, isPerformingOperation])
+
+  const hasCustomActions = customActions.length > 0
+
   return (
     <>
+      {hasCustomActions && (
+        <ReleaseActionsResolver
+          actions={customActions}
+          release={release}
+          documents={documents ?? []}
+          onActions={handleCustomActionsUpdate}
+        />
+      )}
       <Popover
         content={
           <Menu ref={releaseMenuRef}>
@@ -289,6 +335,12 @@ export const ReleaseMenuButton = ({
               disabled={isPerformingOperation}
               documents={documents ?? []}
             />
+            {hasCustomActions && (
+              <>
+                <MenuDivider />
+                {customActionMenuItems}
+              </>
+            )}
           </Menu>
         }
         open={openPopover}
