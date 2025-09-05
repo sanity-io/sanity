@@ -57,7 +57,7 @@
     "@repo/eslint-config": "workspace:*",
     "@repo/package.config": "workspace:*",
     "@repo/test-config": "workspace:*",
-    "@sanity/insert-menu": "2.0.1",
+    "@sanity/insert-menu": "2.0.2",
     "@types/react": "catalog:",
     "@vitejs/plugin-react": "catalog:",
     "react": "catalog:react18",
