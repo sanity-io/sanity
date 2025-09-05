@@ -203,6 +203,13 @@ export function FormBuilder(props: FormBuilderProps) {
   )
 
   const rootInputProps: Omit<ObjectInputProps, 'renderDefault'> = useMemo(() => {
+    const diffProps = prepareDiffProps({
+      comparisonValue: compareValue,
+      value,
+      schemaType,
+      perspective,
+    })
+
     return {
       focusPath,
       elementProps: {
@@ -239,12 +246,9 @@ export function FormBuilder(props: FormBuilderProps) {
       schemaType,
       validation: EMPTY_ARRAY,
       value,
-      ...prepareDiffProps({
-        comparisonValue: compareValue,
-        value,
-        schemaType,
-        perspective,
-      }),
+      __unstable_computeDiff: diffProps.__unstable_computeDiff,
+      __unstable_diff: diffProps.__unstable_diff,
+      changed: diffProps.changed,
     }
   }, [
     focusPath,
