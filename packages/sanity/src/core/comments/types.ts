@@ -100,6 +100,7 @@ export interface CommentContext {
     documentTitle: string
     url?: string
     workspaceTitle: string
+    workspaceName: string
     currentThreadLength?: number
     // Used in task comments, list of users that are subscribed to the task.
     subscribers?: string[]
