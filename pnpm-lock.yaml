@@ -540,20 +540,20 @@ importers:
         specifier: ^1.2.0
         version: 1.2.0
       '@sanity/locale-ko-kr':
-        specifier: ^1.1.22
-        version: 1.1.22(sanity@packages+sanity)
+        specifier: ^1.1.23
+        version: 1.1.23(sanity@packages+sanity)
       '@sanity/locale-nb-no':
-        specifier: ^1.1.25
-        version: 1.1.25(sanity@packages+sanity)
+        specifier: ^1.1.26
+        version: 1.1.26(sanity@packages+sanity)
       '@sanity/locale-nn-no':
-        specifier: ^1.1.25
-        version: 1.1.25(sanity@packages+sanity)
+        specifier: ^1.1.26
+        version: 1.1.26(sanity@packages+sanity)
       '@sanity/locale-pt-pt':
-        specifier: ^1.1.22
-        version: 1.1.22(sanity@packages+sanity)
+        specifier: ^1.1.23
+        version: 1.1.23(sanity@packages+sanity)
       '@sanity/locale-sv-se':
-        specifier: ^1.2.24
-        version: 1.2.24(sanity@packages+sanity)
+        specifier: ^1.2.25
+        version: 1.2.25(sanity@packages+sanity)
       '@sanity/logos':
         specifier: ^2.2.2
         version: 2.2.2(react@19.1.1)
@@ -4750,28 +4750,28 @@ packages:
     resolution: {integrity: sha512-skhIX8gT/hLritEBkjfc7+TBlJNu/NLisyA8noKceCk28OatFK0wX7dIuFawkt3pfhTYVomVPykAYFcIm2OqJg==}
     engines: {node: '>=18.2'}
 
-  '@sanity/locale-ko-kr@1.1.22':
-    resolution: {integrity: sha512-Vqn4PZYgUxsRCeUHuz6iCOQ93QA4SbCCH+Z1MpfbjnKHDpovAP5p67jUHhUoofzQMOSDqqjWx5qwCBI11sUCUg==}
+  '@sanity/locale-ko-kr@1.1.23':
+    resolution: {integrity: sha512-mCTo6zJU1zXswj3yDq5Hy2I8PpBPKDhv3SCU7VQbgzew923COcWhtnbSNfBZZK0VRAxTqOyhZPDl2Sckmpx1CQ==}
     peerDependencies:
       sanity: ^3.22.0 || ^4.0.0-0
 
-  '@sanity/locale-nb-no@1.1.25':
-    resolution: {integrity: sha512-i6JGJMHR2VTMXqciXq//QLpXvyTrV07SDYlPznX69HEq8NZAkZ4sYdOboXNkoBKStstFF5pWZPhcBDSu5GL2qQ==}
+  '@sanity/locale-nb-no@1.1.26':
+    resolution: {integrity: sha512-DiYVwU7S81YAz4C+MC9mXENZmBtrmAxEavbY8yjP8Qq5hTUD7hLrpUYgT7Q0UcCE1VoQxVWnTOze8rowYeFaUQ==}
     peerDependencies:
       sanity: ^3.22.0 || ^4.0.0-0
 
-  '@sanity/locale-nn-no@1.1.25':
-    resolution: {integrity: sha512-IA4YfGi0/9GG9L276iRj8Zm5IowSPj2An2B3ey7SHEXfdA2Wy8rzYIJP2ZYzpN0DI4p8jgS2qtaf4Uyi6h0Ibw==}
+  '@sanity/locale-nn-no@1.1.26':
+    resolution: {integrity: sha512-AeHRCTd9/CCjlZkq9oatWYaAkA+SWRE28RvOhTZ9P8Fvj66xECoi1AKkLCZC2meoVb8T72QAFbRssB2qm2/meQ==}
     peerDependencies:
       sanity: ^3.22.0 || ^4.0.0-0
 
-  '@sanity/locale-pt-pt@1.1.22':
-    resolution: {integrity: sha512-pUUKGE1rWE9fvhHdhNo2ZTpFZ9PpJjKCibdLCKuNL3r1XIEfbH0asCyW+Mmd5gpnvbT4SMqrUDp39VHLB6koog==}
+  '@sanity/locale-pt-pt@1.1.23':
+    resolution: {integrity: sha512-lrZcMdF57OBg2WMbXrevcTUy7oDgiSpz3duID1tgsKnvciEclHLsGKoDITn92AL7rmxTsLzEE5SICf2WFmbPFg==}
     peerDependencies:
       sanity: ^3.22.0 || ^4.0.0-0
 
-  '@sanity/locale-sv-se@1.2.24':
-    resolution: {integrity: sha512-/TFqjSFf4+wXcCkzV7mS+eph+RiK6gSFZJxJo7YhAS8i6FFmsGHH8nxcEDzHx57G0Q99pEJVEH9OeXSjBhTV4g==}
+  '@sanity/locale-sv-se@1.2.25':
+    resolution: {integrity: sha512-ov3LpLQb7OwoikqYqsA/ca3QZ2e/p9CPTkzPeElQhLFmoJOnmFDqCucOSjUjImJy5Yw2Fk5J8Z5b1yFMjzdvdA==}
     peerDependencies:
       sanity: ^3.22.0 || ^4.0.0-0
 
@@ -15273,23 +15273,23 @@ snapshots:
 
   '@sanity/json-match@1.0.5': {}
 
-  '@sanity/locale-ko-kr@1.1.22(sanity@packages+sanity)':
+  '@sanity/locale-ko-kr@1.1.23(sanity@packages+sanity)':
     dependencies:
       sanity: link:packages/sanity
 
-  '@sanity/locale-nb-no@1.1.25(sanity@packages+sanity)':
+  '@sanity/locale-nb-no@1.1.26(sanity@packages+sanity)':
     dependencies:
       sanity: link:packages/sanity
 
-  '@sanity/locale-nn-no@1.1.25(sanity@packages+sanity)':
+  '@sanity/locale-nn-no@1.1.26(sanity@packages+sanity)':
     dependencies:
       sanity: link:packages/sanity
 
-  '@sanity/locale-pt-pt@1.1.22(sanity@packages+sanity)':
+  '@sanity/locale-pt-pt@1.1.23(sanity@packages+sanity)':
     dependencies:
       sanity: link:packages/sanity
 
-  '@sanity/locale-sv-se@1.2.24(sanity@packages+sanity)':
+  '@sanity/locale-sv-se@1.2.25(sanity@packages+sanity)':
     dependencies:
       sanity: link:packages/sanity
 
