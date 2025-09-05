@@ -19,7 +19,7 @@
     "@sanity/color-input": "^4.0.6",
     "@sanity/google-maps-input": "^4.2.0",
     "@sanity/icons": "^3.7.4",
-    "@sanity/ui": "^3.0.11",
+    "@sanity/ui": "^3.0.14",
     "@sanity/vision": "workspace:*",
     "babel-plugin-react-compiler": "19.1.0-rc.3",
     "react": "catalog:",
