@@ -87,7 +87,7 @@ const DocumentStatusBarActionsInner = memo(function DocumentStatusBarActionsInne
       {sideMenuItems.length > 0 && (
         <ActionMenuButton actionStates={sideMenuItems} disabled={disabled} />
       )}
-      {firstActionState && firstActionState.dialog && (
+      {showFirstActionButton && firstActionState && firstActionState.dialog && (
         <ActionStateDialog dialog={firstActionState.dialog} referenceElement={buttonElement} />
       )}
     </Flex>
