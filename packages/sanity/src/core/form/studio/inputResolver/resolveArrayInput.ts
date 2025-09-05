@@ -33,6 +33,7 @@ function hasListOptions(type: ArraySchemaType): boolean {
 
 export function resolveArrayInput(type: ArraySchemaType): ComponentType<any> {
   if (isStringArray(type) && isTagsArray(type)) {
+    // xxx diff tags?
     return TagsArrayInput
   }
 
