@@ -18,6 +18,7 @@ export interface MutationEvent {
   resultRev: string
   transactionTotalEvents: number
   transactionCurrentEvent: number
+  messageReceivedAt: string
   visibility: 'transaction' | 'query'
 
   transition: 'update' | 'appear' | 'disappear'
