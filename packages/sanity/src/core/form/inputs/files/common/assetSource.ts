@@ -34,7 +34,6 @@ export function handleSelectAssetFromSource({
   uploadWith,
   isImage,
 }: Props): void {
-  // const {onChange, type, resolveUploader} = this.props
   if (!assetsFromSource) {
     throw new Error('No asset given')
   }
