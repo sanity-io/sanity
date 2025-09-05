@@ -88,12 +88,8 @@ export function useVideoPlaybackInfo(
       return null
     }
     return client.withConfig({
-      'apiVersion': DEFAULT_API_VERSION,
-      'requestTagPrefix': 'sanity.mediaLibrary.videoPlaybackInfo',
-      '~experimental_resource': {
-        type: 'media-library',
-        id: params.mediaLibraryId,
-      },
+      apiVersion: DEFAULT_API_VERSION,
+      requestTagPrefix: 'sanity.studio.mediaLibrary.videoPlaybackInfo',
     })
   }, [client, params])
 
