@@ -1,4 +1,4 @@
-import {Box, Card, Inline, Menu, Spinner, useClickOutsideEvent, useGlobalKeyDown} from '@sanity/ui'
+import {Box, Card, Inline, Menu, useClickOutsideEvent, useGlobalKeyDown} from '@sanity/ui'
 import {
   type CSSProperties,
   lazy,
@@ -14,6 +14,8 @@ import {ContextMenuButton} from '../../../core/components/contextMenuButton/Cont
 import {useTranslation} from '../../../core/i18n'
 import {Popover} from '../../../ui-components/popover/Popover'
 import {RatioBox} from './styles'
+import {type VideoPlaybackTokens} from './types'
+import {VideoSkeleton} from './VideoSkeleton'
 
 const VideoPlayer = lazy(() =>
   import('./VideoPlayer').then((module) => ({default: module.VideoPlayer})),
@@ -23,6 +25,7 @@ type Props = {
   children: ReactNode
   aspectRatio?: number
   playbackId?: string
+  tokens?: VideoPlaybackTokens
   onClick?: () => void
   muted?: boolean
   disabled?: boolean
@@ -40,6 +43,7 @@ export const MenuActionsWrapper = styled(Inline)`
 export function VideoActionsMenu(props: Props) {
   const {
     playbackId,
+    tokens,
     children,
     aspectRatio,
     muted,
@@ -109,13 +113,8 @@ export function VideoActionsMenu(props: Props) {
           }
         >
           {playbackId && (
-            <Suspense fallback={<Spinner />}>
-              <VideoPlayer
-                playbackId={playbackId}
-                aspectRatio={aspectRatio}
-                muted={muted}
-                disabled={disabled}
-              />
+            <Suspense fallback={<VideoSkeleton />}>
+              <VideoPlayer playbackId={playbackId} tokens={tokens} aspectRatio={aspectRatio} />
             </Suspense>
           )}
         </RatioBox>

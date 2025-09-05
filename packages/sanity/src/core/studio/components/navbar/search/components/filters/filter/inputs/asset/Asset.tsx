@@ -157,7 +157,6 @@ export function SearchFilterAssetInput(type?: AssetType) {
                           <MenuItem
                             key={source.name}
                             icon={source.icon || ImageIcon}
-                            // eslint-disable-next-line react/jsx-no-bind
                             onClick={() => handleSelectAssetSource(source)}
                             text={
                               (source.i18nKey ? t(source.i18nKey) : source.title) ||
@@ -177,7 +176,6 @@ export function SearchFilterAssetInput(type?: AssetType) {
                   <Button
                     icon={value ? UndoIcon : SearchIcon}
                     mode="ghost"
-                    // eslint-disable-next-line react/jsx-no-bind
                     onClick={() => handleSelectAssetSource(assetSources[0])}
                     width={value ? 'fill' : undefined}
                     text={buttonText}

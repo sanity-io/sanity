@@ -1,22 +1,24 @@
 import {type SanityDocument} from '@sanity/client'
 import {RevertIcon} from '@sanity/icons'
 import {type ObjectSchemaType} from '@sanity/types'
-import {Box, Card, Flex, Stack, Text, useClickOutsideEvent} from '@sanity/ui'
+import {Card, Stack} from '@sanity/ui'
 import {useCallback, useContext, useMemo, useRef, useState} from 'react'
 import {DiffContext} from 'sanity/_singletons'
 
-import {Button, Popover} from '../../../../ui-components'
+import {Button} from '../../../../ui-components'
 import {useDocumentOperation} from '../../../hooks'
 import {useTranslation} from '../../../i18n'
+import {usePerspective} from '../../../perspective/usePerspective'
 import {useDocumentPairPermissions} from '../../../store'
 import {unstable_useConditionalProperty as useConditionalProperty} from '../../conditional-property'
-import {type ChangeNode, type FieldOperationsAPI, type ObjectDiff} from '../../types'
+import {type ChangeNode, type ObjectDiff} from '../../types'
 import {buildObjectChangeList} from '../changes/buildChangeList'
 import {undoChange} from '../changes/undoChange'
 import {useDocumentChange} from '../hooks/useDocumentChange'
 import {ChangeListWrapper} from './ChangeList.styled'
 import {ChangeResolver} from './ChangeResolver'
 import {NoChanges} from './NoChanges'
+import {RevertChangesConfirmDialog} from './RevertChangesConfirmDialog'
 
 /** @internal */
 export interface ChangeListProps {
@@ -28,11 +30,13 @@ export interface ChangeListProps {
 /** @internal */
 export function ChangeList({diff, fields, schemaType}: ChangeListProps): React.JSX.Element | null {
   const {documentId, isComparingCurrent, value} = useDocumentChange()
-  const docOperations = useDocumentOperation(documentId, schemaType.name) as FieldOperationsAPI
+  const {selectedReleaseId} = usePerspective()
+  const docOperations = useDocumentOperation(documentId, schemaType.name, selectedReleaseId)
   const {path} = useContext(DiffContext)
   const isRoot = path.length === 0
   const [confirmRevertAllOpen, setConfirmRevertAllOpen] = useState(false)
   const [confirmRevertAllHover, setConfirmRevertAllHover] = useState(false)
+  const buttonRef = useRef<HTMLButtonElement | null>(null)
   const {t} = useTranslation()
 
   const isReadOnly = useConditionalProperty({
@@ -85,13 +89,6 @@ export function ChangeList({diff, fields, schemaType}: ChangeListProps): React.J
     setConfirmRevertAllOpen(false)
   }, [])
 
-  const revertAllContainerElementRef = useRef<HTMLDivElement | null>(null)
-
-  useClickOutsideEvent(
-    () => setConfirmRevertAllOpen(false),
-    () => [revertAllContainerElementRef.current],
-  )
-
   if (changes.length === 0) {
     return isRoot ? <NoChanges /> : null
   }
@@ -119,52 +116,30 @@ export function ChangeList({diff, fields, schemaType}: ChangeListProps): React.J
         </Stack>
 
         {showFooter && isComparingCurrent && !isPermissionsLoading && permissions?.granted && (
-          <Popover
-            content={
-              <Stack space={3}>
-                <Box paddingY={3}>
-                  <Text size={1}>
-                    {t('changes.action.revert-all-description', {
-                      count: changes.length,
-                    })}
-                  </Text>
-                </Box>
-                <Flex gap={3} justify="flex-end">
-                  <Button
-                    mode="ghost"
-                    text={t('changes.action.revert-all-cancel')}
-                    onClick={closeRevertAllChangesConfirmDialog}
-                  />
-                  <Button
-                    tone="critical"
-                    text={t('changes.action.revert-all-confirm')}
-                    onClick={revertAllChanges}
-                  />
-                </Flex>
-              </Stack>
-            }
-            open={confirmRevertAllOpen}
-            padding={3}
-            placement={'left'}
-            portal
-            ref={revertAllContainerElementRef}
-          >
-            <Stack>
-              <Button
-                tone="critical"
-                mode="ghost"
-                text={t('changes.action.revert-all-confirm')}
-                icon={RevertIcon}
-                onClick={handleRevertAllChangesClick}
-                onMouseEnter={handleRevertAllChangesMouseEnter}
-                onMouseLeave={handleRevertAllChangesMouseLeave}
-                disabled={isReadOnly}
-                size="large"
-              />
-            </Stack>
-          </Popover>
+          <Stack>
+            <Button
+              tone="critical"
+              mode="ghost"
+              text={t('changes.action.revert-all-confirm')}
+              icon={RevertIcon}
+              onClick={handleRevertAllChangesClick}
+              onMouseEnter={handleRevertAllChangesMouseEnter}
+              onMouseLeave={handleRevertAllChangesMouseLeave}
+              disabled={isReadOnly}
+              size="large"
+              ref={buttonRef}
+            />
+          </Stack>
         )}
       </Stack>
+
+      <RevertChangesConfirmDialog
+        open={confirmRevertAllOpen}
+        onConfirm={revertAllChanges}
+        onCancel={closeRevertAllChangesConfirmDialog}
+        changeCount={changes.length}
+        referenceElement={buttonRef.current}
+      />
     </Card>
   )
 }

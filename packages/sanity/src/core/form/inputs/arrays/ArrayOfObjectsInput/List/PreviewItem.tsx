@@ -1,4 +1,3 @@
-/* eslint-disable react/jsx-no-bind */
 import {AddDocumentIcon, CopyIcon, TrashIcon} from '@sanity/icons'
 import {type SchemaType} from '@sanity/types'
 import {Box, Card, type CardTone, Menu} from '@sanity/ui'

@@ -23,6 +23,7 @@ export {
   type ReleaseId,
   type ReleasesNavMenuItemPropsGetter,
   type SelectedPerspective,
+  type TargetPerspective,
 } from './perspective/types'
 export {useExcludedPerspective} from './perspective/useExcludedPerspective'
 export {usePerspective} from './perspective/usePerspective'
@@ -85,3 +86,5 @@ export {type ReleaseDocument} from '@sanity/client'
 // If moved at the top it creates a circular dependency issue where `useClient` is not found when running tests
 export {useCanvasCompanionDoc} from './canvas/actions/useCanvasCompanionDoc'
 export {useNavigateToCanvasDoc} from './canvas/useNavigateToCanvasDoc'
+export {useDocumentLimitsUpsellContext} from './limits/context/documents/DocumentLimitUpsellProvider'
+export {isDocumentLimitError} from './limits/context/documents/isDocumentLimitError'

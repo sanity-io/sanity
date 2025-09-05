@@ -215,7 +215,6 @@ const PreviewHeaderDefault = (props: Omit<PreviewHeaderProps, 'renderDefault'>) 
       <Flex align="center" flex="none" gap={1}>
         <Tooltip
           animate
-          // eslint-disable-next-line react/jsx-no-bind
           ref={(node) => {
             node?.style.setProperty('view-transition-name', perspectiveToggleTooltipId)
           }}

@@ -1,4 +1,4 @@
-/* eslint-disable max-nested-callbacks,react/jsx-no-bind */
+/* eslint-disable max-nested-callbacks */
 import {
   type EditorChange,
   PortableTextEditable,

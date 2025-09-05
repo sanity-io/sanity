@@ -40,7 +40,6 @@ function BreadcrumbsItem(props: BreadcrumbsItemProps): React.JSX.Element {
     <Stack marginTop={isFirst ? undefined : 1}>
       <Button
         mode="bleed"
-        // eslint-disable-next-line react/jsx-no-bind
         onClick={() => onPathSelect(item.path)}
         selected={selected}
         title={title}

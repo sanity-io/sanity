@@ -25,6 +25,8 @@ interface ListenerSequenceState {
    * This can happen if events arrive out of order, or if an event in the middle for some reason gets lost
    */
   buffer: MutationEvent[]
+
+  unresolvedChainDetectedAt?: Date
 }
 
 const DEFAULT_MAX_BUFFER_SIZE = 20
@@ -62,6 +64,7 @@ export function sequentializeListenerEvents(options?: {
               base: {revision: event.document?._rev},
               buffer: EMPTY_ARRAY,
               emitEvents: [event],
+              unresolvedChainDetectedAt: undefined,
             }
           }
 
@@ -80,27 +83,36 @@ export function sequentializeListenerEvents(options?: {
               return rest
             })
 
-            const [applicableChains, _nextBuffer] = partition(orderedChains, (chain) => {
+            const [resolvedChains, _nextBuffer] = partition(orderedChains, (chain) => {
               // note: there can be at most one applicable chain
               return state.base!.revision === chain[0]?.previousRev
             })
 
             const nextBuffer = _nextBuffer.flat()
-            if (applicableChains.length > 1) {
-              throw new Error('Expected at most one applicable chain')
+            if (resolvedChains.length > 1) {
+              throw new Error('Expected at most one resolved chain')
             }
-            if (applicableChains.length > 0 && applicableChains[0].length > 0) {
+            if (resolvedChains.length > 0 && resolvedChains[0].length > 0) {
               // we now have a continuous chain that can apply on the base revision
               // Move current base revision to the last mutation event in the applicable chain
-              const lastMutation = applicableChains[0].at(-1)!
+              const lastMutation = resolvedChains[0].at(-1)!
               const nextBaseRevision =
                 // special case: if the mutation deletes the document it technically has  no revision, despite
                 // resultRev pointing at a transaction id.
                 lastMutation.transition === 'disappear' ? undefined : lastMutation?.resultRev
+
+              debug(
+                `Chain from ${resolvedChains[0][0].previousRev} => ${resolvedChains[0].at(-1)?.resultRev} resolved!`,
+              )
+
               return {
                 base: {revision: nextBaseRevision},
-                emitEvents: applicableChains[0],
+                emitEvents: resolvedChains[0],
                 buffer: nextBuffer,
+                unresolvedChainDetectedAt:
+                  state.buffer.length === 0 && nextBuffer.length > 0
+                    ? new Date()
+                    : state.unresolvedChainDetectedAt,
               }
             }
 
@@ -117,6 +129,10 @@ export function sequentializeListenerEvents(options?: {
               ...state,
               buffer: nextBuffer,
               emitEvents: EMPTY_ARRAY,
+              unresolvedChainDetectedAt:
+                state.buffer.length === 0 && nextBuffer.length > 0
+                  ? new Date()
+                  : state.unresolvedChainDetectedAt,
             }
           }
           // Any other event (e.g. 'reconnect' is passed on verbatim)
@@ -129,18 +145,22 @@ export function sequentializeListenerEvents(options?: {
         },
       ),
       switchMap((state) => {
-        const deadline =
-          (globalThis as any).__sanity_debug_resolveChainDeadline ?? resolveChainDeadline
-
         if (state.buffer.length > 0) {
+          if (!state.unresolvedChainDetectedAt) {
+            throw new Error('Can not have a buffer without unresolvedChainDetectedAt')
+          }
+          const nextDeadline =
+            resolveChainDeadline -
+            (new Date().getTime() - state.unresolvedChainDetectedAt.getTime())
           debug(
             "Detected %d listener event(s) that can't be applied in sequence. This could be due to events arriving out of order. Will throw an error if chain can't be resolved within %dms",
             state.buffer.length,
-            deadline,
+            nextDeadline,
           )
+          debug('Buffered events: %O', state.buffer)
           return concat(
             of(state),
-            timer(deadline).pipe(
+            timer(nextDeadline).pipe(
               mergeMap(() =>
                 throwError(() => {
                   return new DeadlineExceededError(

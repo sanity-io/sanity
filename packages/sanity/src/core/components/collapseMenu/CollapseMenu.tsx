@@ -350,7 +350,6 @@ const RenderHidden = memo(function RenderHidden(props: {
 
             <OptionObserveElement
               options={intersectionOptions}
-              // eslint-disable-next-line react/jsx-no-bind
               onIntersectionChange={(e) => onIntersectionChange(e[0], element)}
             >
               <Flex>

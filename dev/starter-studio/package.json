@@ -1,6 +1,6 @@
 {
   "name": "sanity-starter-studio",
-  "version": "4.6.0",
+  "version": "4.6.1",
   "private": true,
   "license": "MIT",
   "author": "Sanity.io <hello@sanity.io>",
@@ -13,9 +13,9 @@
   },
   "dependencies": {
     "@repo/eslint-config": "workspace:*",
-    "babel-plugin-react-compiler": "19.1.0-rc.2",
+    "babel-plugin-react-compiler": "19.1.0-rc.3",
     "react": "catalog:react18",
-    "react-compiler-runtime": "19.1.0-rc.2",
+    "react-compiler-runtime": "19.1.0-rc.3",
     "react-dom": "catalog:react18",
     "sanity": "workspace:*",
     "styled-components": "catalog:"

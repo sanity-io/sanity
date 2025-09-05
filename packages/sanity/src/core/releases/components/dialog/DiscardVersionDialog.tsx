@@ -7,7 +7,7 @@ import {Dialog} from '../../../../ui-components'
 import {LoadingBlock} from '../../../components'
 import {useDocumentOperation, useSchema} from '../../../hooks'
 import {Translate, useTranslation} from '../../../i18n'
-import {type SelectedPerspective} from '../../../perspective/types'
+import {type TargetPerspective} from '../../../perspective/types'
 import {usePerspective} from '../../../perspective/usePerspective'
 import {Preview} from '../../../preview'
 import {getPublishedId, getVersionFromId, isDraftId, isVersionId} from '../../../util/draftUtils'
@@ -21,7 +21,7 @@ export function DiscardVersionDialog(props: {
   onClose: () => void
   documentId: string
   documentType: string
-  fromPerspective: string | SelectedPerspective
+  fromPerspective: string | TargetPerspective
 }): React.JSX.Element {
   const {onClose, documentId, documentType, fromPerspective} = props
   const {t} = useTranslation(releasesLocaleNamespace)
