@@ -1018,6 +1018,8 @@ export function createPrepareFormState({
       },
     )
 
+    const diffProps = prepareDiffProps(props)
+
     const node = {
       value: props.value as Record<string, unknown> | undefined,
       schemaType: props.schemaType,
@@ -1033,7 +1035,9 @@ export function createPrepareFormState({
       // (e.g. members not matching current group filter) in order to determine what to expand
       members: filtereredMembers,
       groups: visibleGroups,
-      ...prepareDiffProps(props),
+      __unstable_computeDiff: diffProps.__unstable_computeDiff,
+      __unstable_diff: diffProps.__unstable_diff,
+      changed: diffProps.changed,
     }
     Object.defineProperty(node, '_allMembers', {
       value: members,
@@ -1063,6 +1067,9 @@ export function createPrepareFormState({
       const members = items.flatMap((item, index) =>
         prepareArrayOfPrimitivesMember({arrayItem: item, parent: props, index}),
       )
+
+      const diffProps = prepareDiffProps(props)
+
       return {
         value: props.value,
         readOnly: props.readOnly === true || props.readOnly?.value,
@@ -1076,7 +1083,9 @@ export function createPrepareFormState({
         validation,
         presence,
         members,
-        ...prepareDiffProps(props),
+        __unstable_computeDiff: diffProps.__unstable_computeDiff,
+        __unstable_diff: diffProps.__unstable_diff,
+        changed: diffProps.changed,
       }
     },
   )
@@ -1108,6 +1117,8 @@ export function createPrepareFormState({
         }),
       )
 
+      const diffProps = prepareDiffProps(props)
+
       return {
         value: props.value,
         perspective: props.perspective,
@@ -1121,7 +1132,9 @@ export function createPrepareFormState({
         validation,
         presence,
         members,
-        ...prepareDiffProps(props),
+        __unstable_computeDiff: diffProps.__unstable_computeDiff,
+        __unstable_diff: diffProps.__unstable_diff,
+        changed: diffProps.changed,
       }
     },
   )
@@ -1281,6 +1294,8 @@ export function createPrepareFormState({
         .filter((item) => isEqual(item.path, props.path))
         .map((v) => ({level: v.level, message: v.message, path: v.path}))
 
+      const diffProps = prepareDiffProps(props)
+
       return {
         schemaType: props.schemaType,
         value: props.value,
@@ -1292,7 +1307,9 @@ export function createPrepareFormState({
         perspective: props.perspective,
         presence,
         validation,
-        ...prepareDiffProps(props),
+        __unstable_computeDiff: diffProps.__unstable_computeDiff,
+        __unstable_diff: diffProps.__unstable_diff,
+        changed: diffProps.changed,
       } as PrimitiveFormNode
     },
   )
