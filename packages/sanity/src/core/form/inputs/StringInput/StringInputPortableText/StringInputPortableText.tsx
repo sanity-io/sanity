@@ -2,39 +2,24 @@ import {
   type EditorConfig,
   type EditorEmittedEvent,
   EditorProvider,
-  type EditorSelection,
   PortableTextEditable,
   type PortableTextObject,
-  type RangeDecoration,
   useEditor,
 } from '@portabletext/editor'
 import {EventListenerPlugin, OneLinePlugin} from '@portabletext/editor/plugins'
 import {type PortableTextBlock} from '@portabletext/react'
 import {isPortableTextBlock} from '@portabletext/toolkit'
-import {type Diff, type StringDiffSegment} from '@sanity/diff'
-import {applyPatches, parsePatch} from '@sanity/diff-match-patch'
 import {type Path} from '@sanity/types'
-import {type BadgeTone, type ButtonTone, Card, useArrayProp, useRootTheme} from '@sanity/ui'
-// eslint-disable-next-line camelcase
-import {getTheme_v2} from '@sanity/ui/theme'
-import {
-  type ComponentType,
-  type PropsWithChildren,
-  useCallback,
-  useEffect,
-  useMemo,
-  useRef,
-  useState,
-} from 'react'
+import {Card, useArrayProp, useRootTheme} from '@sanity/ui'
+import {useCallback, useEffect, useRef} from 'react'
 import {styled} from 'styled-components'
 
-import {getReleaseTone} from '../../../../releases/util/getReleaseTone'
 import {useWorkspace} from '../../../../studio/workspace'
 import {set, unset} from '../../../patch/patch'
-import {type ProvenanceDiffAnnotation} from '../../../store/types/diff'
-import {type ComputeDiff} from '../../../store/types/nodes'
 import {type StringInputProps} from '../../../types'
 import {UpdateReadOnlyPlugin} from '../../PortableText/PortableTextInput'
+import {DeletedSegment} from './diff/segments'
+import {useOptimisticDiff} from './diff/useOptimisticDiff'
 import {
   inputStyles,
   responsiveInputPaddingStyle,
@@ -47,6 +32,7 @@ import {
   textInputRootStyle,
 } from './styles'
 
+export const ROOT_PATH: Path = [{_key: 'root'}, 'children', {_key: 'root'}]
 const INVALID_CLASS_NAME = 'invalid'
 
 const StyledRoot = styled.div`
@@ -70,30 +56,9 @@ const StyledEditorRepresentation = styled(Card)<TextInputRepresentationStyleProp
   textInputRepresentationStyle,
 )
 
-interface StyledSegmentProps {
-  $tone?: ButtonTone
-}
-
-const StyledSegment = styled.span<StyledSegmentProps>`
-  ${({theme, $tone}) => {
-    if (typeof $tone === 'undefined') {
-      return undefined
-    }
-
-    const {color} = getTheme_v2(theme)
-
-    return {
-      backgroundColor: color.button.bleed[$tone]?.pressed?.bg,
-      color: color.button.bleed[$tone]?.pressed?.fg,
-    }
-  }}
-`
-
 const StyledPlaceholder = styled.span<TextInputResponsivePaddingStyleProps>`
   ${responsiveInputPaddingStyle}
 `
-
-type InputOrigin = 'optimistic' | 'definitive'
 
 /**
  * This string input implementation is powered by the Portable Text Editor. It's used when inline
@@ -246,8 +211,6 @@ export function StringInputPortableText(props: StringInputProps) {
   )
 }
 
-const ROOT_PATH: Path = [{_key: 'root'}, 'children', {_key: 'root'}]
-
 function packageValue(value: string | undefined) {
   return [
     {
@@ -273,19 +236,6 @@ function unpackageValue(value: (PortableTextBlock | PortableTextObject)[] = []):
   )
 }
 
-function rangeDecorationSelection(anchorOffset: number, focusOffset: number): EditorSelection {
-  return {
-    anchor: {
-      path: ROOT_PATH,
-      offset: anchorOffset,
-    },
-    focus: {
-      path: ROOT_PATH,
-      offset: focusOffset,
-    },
-  }
-}
-
 /**
  * `EditorProvider` doesn't have a `value` prop. Instead, this custom PTE
  * plugin listens for the prop change and sends an `update value` event to the
@@ -302,215 +252,4 @@ function UpdateValuePlugin(props: {value: string | undefined}) {
   }, [editor, props.value])
 
   return null
-}
-
-interface SegmentProps {
-  segment: StringDiffSegment<ProvenanceDiffAnnotation>
-}
-
-const DeletedSegment: ComponentType<SegmentProps> = ({segment}) => (
-  <StyledSegment
-    as="del"
-    data-text={segment.text}
-    contentEditable={false}
-    aria-hidden
-    inert
-    $tone="critical"
-  />
-)
-
-// const InsertedSegment: RangeDecoration['component'] = ({children}) => (
-
-const InsertedSegment: ComponentType<PropsWithChildren<SegmentProps>> = ({children, segment}) => {
-  return (
-    <StyledSegment as="ins" $tone={segmentTone(segment)}>
-      {children}
-    </StyledSegment>
-  )
-}
-
-interface ComputeRangeDecorationsOptions {
-  diff: Diff<ProvenanceDiffAnnotation>
-  mapPayload?: (payload: Record<string, unknown>) => Record<string, unknown>
-}
-
-function computeRangeDecorations({
-  diff,
-  mapPayload = (payload) => payload,
-}: ComputeRangeDecorationsOptions): RangeDecoration[] {
-  if (diff.type !== 'string') {
-    return []
-  }
-
-  const segments = diff?.segments ?? []
-
-  const {rangeDecorations} = segments.reduce<{
-    rangeDecorations: RangeDecoration[]
-    position: number
-  }>(
-    (state, segment, index) => {
-      const previousSegment = segments.at(index - 1)
-      const previousDecoration = state.rangeDecorations.at(-1)
-
-      // Overlapping ranges cannot be given separate decorations. String diffs are calculated
-      // such that this is only a concern if an added segment immediately proceeds a removed
-      // segment; in this scenario, the removed segment decorates the starting position of the
-      // added segment. To solve this problem, the removed and added decorations are merged.
-      if (
-        segment.action === 'added' &&
-        previousDecoration?.payload?.action === 'removed' &&
-        typeof previousSegment !== 'undefined'
-      ) {
-        const isOverlapping = previousDecoration?.selection?.anchor?.offset === state.position
-
-        if (isOverlapping) {
-          state.rangeDecorations.splice(state.rangeDecorations.length - 1, 1, {
-            selection: rangeDecorationSelection(
-              state.position,
-              state.position + segment.text.length,
-            ),
-            component: ({children}) => {
-              return (
-                <span>
-                  <previousDecoration.component />
-                  <InsertedSegment segment={segment}>{children}</InsertedSegment>
-                </span>
-              )
-            },
-            payload: mapPayload({
-              id: segmentId(
-                previousDecoration?.payload?.action,
-                previousSegment.text,
-                'added',
-                segment.text,
-              ),
-              action: 'merged',
-            }),
-          })
-
-          state.position += segment.text.length
-          return state
-        }
-      }
-
-      if (segment.action === 'added') {
-        state.rangeDecorations.push({
-          selection: rangeDecorationSelection(state.position, state.position + segment.text.length),
-          component: (props) => <InsertedSegment segment={segment} {...props} />,
-          payload: mapPayload({
-            id: segmentId('added', segment.text),
-            action: segment.action,
-          }),
-        })
-
-        state.position += segment.text.length
-        return state
-      }
-
-      if (segment.action === 'removed') {
-        state.rangeDecorations.push({
-          selection: rangeDecorationSelection(state.position, state.position),
-          component: () => <DeletedSegment segment={segment} />,
-          payload: mapPayload({
-            id: segmentId('removed', segment.text),
-            action: segment.action,
-          }),
-        })
-
-        return state
-      }
-
-      if (segment.action === 'unchanged') {
-        state.position += segment.text.length
-        return state
-      }
-
-      return state
-    },
-    {
-      position: 0,
-      rangeDecorations: [],
-    },
-  )
-
-  return rangeDecorations
-}
-
-function segmentTone(segment: StringDiffSegment<ProvenanceDiffAnnotation>): BadgeTone | undefined {
-  if (
-    segment.action !== 'unchanged' &&
-    typeof segment.annotation.provenance.bundle !== 'undefined'
-  ) {
-    return getReleaseTone(segment.annotation.provenance.bundle)
-  }
-
-  return undefined
-}
-
-interface OptimisticDiffOptions {
-  definitiveValue: string | undefined
-  definitiveDiff: Diff<ProvenanceDiffAnnotation>
-  computeDiff: ComputeDiff<ProvenanceDiffAnnotation>
-}
-
-interface OptimisticDiffApi {
-  diff: Diff<ProvenanceDiffAnnotation>
-  rangeDecorations: RangeDecoration[]
-  onOptimisticChange: (value: string) => void
-}
-
-function useOptimisticDiff({
-  definitiveValue,
-  definitiveDiff,
-  computeDiff,
-}: OptimisticDiffOptions): OptimisticDiffApi {
-  const [optimisticValue, setOptimisticValue] = useState(definitiveValue)
-  const [currentSignal, setCurrentSignal] = useState<InputOrigin>('definitive')
-  const optimisticDiff = useMemo(() => computeDiff(optimisticValue), [computeDiff, optimisticValue])
-
-  const diffsBySignal: Record<InputOrigin, Diff<ProvenanceDiffAnnotation>> = {
-    optimistic: optimisticDiff,
-    definitive: definitiveDiff,
-  }
-
-  const diff = diffsBySignal[currentSignal]
-
-  const onOptimisticChange = useCallback(
-    (value: string) => {
-      const [nextOptimisticValue] = applyPatches(parsePatch(value), optimisticValue ?? '')
-      setOptimisticValue(nextOptimisticValue)
-      setCurrentSignal('optimistic')
-    },
-    [optimisticValue],
-  )
-
-  useEffect(() => {
-    setCurrentSignal('definitive')
-    // Ensure the optimistic value is synced with the definitive value.
-    setOptimisticValue(definitiveValue)
-  }, [definitiveValue])
-
-  const rangeDecorations = useMemo(
-    () =>
-      computeRangeDecorations({
-        diff,
-        mapPayload: (payload) => ({
-          ...payload,
-          // Including the current signal in the payload ensures that the range decorations are
-          // rerendered when the signal changes.
-          currentSignal,
-        }),
-      }),
-    [diff, currentSignal],
-  )
-
-  return {
-    diff,
-    rangeDecorations,
-    onOptimisticChange,
-  }
-}
-
-function segmentId(...path: string[]): string {
-  return path.join('.')
 }
