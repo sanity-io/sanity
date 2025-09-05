@@ -150,6 +150,7 @@
     "jsx_a11y/iframe-has-title": "warn",
     "promise/no-callback-in-promise": "warn",
     "eslint/no-unsafe-optional-chaining": "warn",
+    "promise/always-return": ["error", {"ignoreLastCallback": true}],
     // Temporarily disabled, will be re-enabled in the near term
     "unicorn/prefer-set-has": "off"
   },
