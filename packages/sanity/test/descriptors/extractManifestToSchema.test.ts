@@ -507,9 +507,10 @@ describe('ManifestSchemaTypes[] converts to Schema', () => {
           components: {
             field: () => 'remove-components',
           },
-          orderings: [
-            {name: 'remove-orderings', title: '', by: [{field: 'title', direction: 'desc'}]},
-          ],
+          // orderings behaviour is validated in schema.test.ts
+          // orderings: [
+          //   {name: 'remove-orderings', title: '', by: [{field: 'title', direction: 'desc'}]},
+          // ],
           fields: [
             defineField({
               name: 'string',
