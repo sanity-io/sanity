@@ -103,6 +103,7 @@ export async function createOperation(props: CreateOperationProps): Promise<void
       documentTitle = '',
       url = '',
       workspaceTitle = '',
+      workspaceName = '',
     } = getNotificationValue({commentId}) || {}
 
     const notification: CommentContext['notification'] = {
@@ -110,6 +111,7 @@ export async function createOperation(props: CreateOperationProps): Promise<void
       documentTitle,
       url,
       workspaceTitle,
+      workspaceName,
     }
 
     const intent = getIntent?.({id: documentId, type: documentType, path: comment.fieldPath})
