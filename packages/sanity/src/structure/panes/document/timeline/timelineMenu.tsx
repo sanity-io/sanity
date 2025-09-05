@@ -166,9 +166,10 @@ export function TimelineMenu({chunk, mode, placement}: TimelineMenuProps) {
     : t('timeline.since-version-missing')
 
   const buttonLabel = mode === 'rev' ? revLabel : sinceLabel
+  const portalElements = useMemo(() => ({[TIMELINE_MENU_PORTAL]: popoverRef}), [popoverRef])
 
   return (
-    <PortalProvider __unstable_elements={{[TIMELINE_MENU_PORTAL]: popoverRef}}>
+    <PortalProvider __unstable_elements={portalElements}>
       <Root
         data-testid="timeline-menu"
         constrainSize
