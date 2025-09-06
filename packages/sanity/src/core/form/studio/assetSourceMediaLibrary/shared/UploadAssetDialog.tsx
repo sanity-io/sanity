@@ -120,6 +120,22 @@ export const UploadAssetsDialog = function UploadAssetsDialog(
       }
       const subscribe = () => {
         return uploader.subscribe((event) => {
+          if (event.type === 'all-complete') {
+            const existingFiles = event.files.filter((file) => file.status === 'alreadyExists')
+            existingFiles.forEach((file) => {
+              toast.push({
+                status: 'warning',
+                title: t('asset-sources.media-library.warning.file-already-exist.title', {
+                  filename: file.file.name,
+                }),
+                description: t(
+                  'asset-sources.media-library.warning.file-already-exist.description',
+                ),
+                closable: true,
+                duration: 10000,
+              })
+            })
+          }
           if (event.type === 'status' && event.status === 'aborted') {
             postMessage({
               type: 'abortUploadRequest',
@@ -139,7 +155,7 @@ export const UploadAssetsDialog = function UploadAssetsDialog(
       return uploaderRef.current.unsubscribe
     }
     return uploaderRef.current?.unsubscribe()
-  }, [open, pageReadyForUploads, postMessage, uploader, uploaderRef])
+  }, [open, pageReadyForUploads, postMessage, t, toast, uploader, uploaderRef])
 
   if (!open) {
     return null
