@@ -1283,10 +1283,14 @@ export const studioLocaleStrings = defineLocalesResources('studio', {
   'release.action.add-to-release': 'Add to {{title}}',
   /** Action message for when document is already in release  */
   'release.action.already-in-release': 'Already in release {{title}}',
+  /** Action message for changing the schedule of a scheduled publish */
+  'release.action.change-schedule': 'Change schedule',
   /** Action message for when you click to view all versions you can copy the current document to */
   'release.action.copy-to': 'Copy version to',
   /** Action message for creating new releases */
   'release.action.create-new': 'New release',
+  /** Action message for deleting a scheduled publish */
+  'release.action.delete-schedule': 'Delete schedule',
   /** Action message for when document is already in release  */
   'release.action.discard-version': 'Discard version',
   /** Description for toast when version discarding failed */
@@ -1310,6 +1314,8 @@ export const studioLocaleStrings = defineLocalesResources('studio', {
   /** Action message title for when a version is reverted from being unpublished */
   'release.action.revert-unpublish-version.success.title':
     'Successfully reverted from setting to unpublish on release.',
+  /** Action message for running a scheduled publish immediately */
+  'release.action.run-now': 'Run publish',
   /** Error message for when a version is set to be unpublished */
   'release.action.unpublish-version.failure': 'Failed to set version to be unpublished on release',
   /** Action message for when a version is set to be unpublished successfully */
@@ -1348,12 +1354,35 @@ export const studioLocaleStrings = defineLocalesResources('studio', {
   'release.chip.tooltip.unknown-date': 'Unknown date',
   /** Label for tooltip on deleted release */
   'release.deleted-tooltip': 'This release has been deleted',
+  /** Body text for change schedule dialog */
+  'release.dialog.change-schedule.body': 'Select a new date and time for the scheduled publish.',
+  /** Confirm button text for change schedule dialog */
+  'release.dialog.change-schedule.confirm': 'Update schedule',
+  /** Header for change schedule dialog */
+  'release.dialog.change-schedule.header': 'Change schedule',
   /** Title for copying version to a new release dialog */
   'release.dialog.copy-to-release.title': 'Copy version to new release',
   /** Title for action create a release */
   'release.dialog.create.confirm': 'Create release',
   /** Title for creating releases dialog */
   'release.dialog.create.title': 'New release',
+  /** Body text for the dialog confirming deletion of a scheduled draft */
+  'release.dialog.delete-schedule-draft.body':
+    'Are you sure you want to delete this scheduled draft? This action cannot be undone.',
+  /** Confirm button text for deleting a scheduled draft */
+  'release.dialog.delete-schedule-draft.confirm': 'Yes, delete schedule',
+  /** Confirmation message for deleting a scheduled publish */
+  'release.dialog.delete-schedule-draft.confirm-message':
+    'Are you sure you want to delete the schedule for <Strong>{{title}}</Strong>?',
+  /** Header for the dialog confirming deletion of a scheduled draft */
+  'release.dialog.delete-schedule-draft.header': 'Delete scheduled draft',
+  /** Body text for the dialog confirming running a scheduled draft immediately */
+  'release.dialog.publish-scheduled-draft.body':
+    'Are you sure you want to publish this scheduled draft immediately?',
+  /** Confirm button text for running a scheduled draft immediately */
+  'release.dialog.publish-scheduled-draft.confirm': 'Yes, run now',
+  /** Header for the dialog confirming running a scheduled draft immediately */
+  'release.dialog.publish-scheduled-draft.header': 'Run draft now',
   /** Label for description in tooltip to explain release types */
   'release.dialog.tooltip.description':
     'The intended release time is used to create better previews and hints about whether documents conflict.',
@@ -1379,12 +1408,24 @@ export const studioLocaleStrings = defineLocalesResources('studio', {
   'release.toast.archived-release.title': "The '{{title}}' release was archived",
   /** The toast title that will be shown the creating a release fails */
   'release.toast.create-release-error.title': 'Failed to create release',
-  /**The toast title that will be shown when the user has a release perspective which is now deleted */
+  /** Error toast for deleting a scheduled draft */
+  'release.toast.delete-schedule-draft.error': 'Failed to delete <Strong>{{title}}</Strong>: {{error}}',
+  /** Success toast for deleting a scheduled draft */
+  'release.toast.delete-schedule-draft.success': '<Strong>{{title}}</Strong> has been deleted.',
+  /** The toast title that will be shown when the user has a release perspective which is now deleted */
   'release.toast.not-found-release.title': "The '{{title}}' release could not be found",
   /** The toast description that will be shown when the user has a release perspective which is now published */
   'release.toast.published-release.description': 'This release has been unpinned',
   /** The toast title that will be shown when the user has a release perspective which is now deleted */
   'release.toast.published-release.title': "The '{{title}}' release was published",
+  /** Error toast for rescheduling a draft */
+  'release.toast.reschedule-scheduled-draft.error': 'Failed to reschedule <Strong>{{title}}</Strong>: {{error}}',
+  /** Success toast for rescheduling a draft */
+  'release.toast.reschedule-scheduled-draft.success': '<Strong>{{title}}</Strong> has been rescheduled.',
+  /** Error toast for running a scheduled publish immediately */
+  'release.toast.publish-scheduled-draft.error': 'Failed to publish <Strong>{{title}}</Strong>: {{error}}',
+  /** Success toast for running a scheduled publish immediately */
+  'release.toast.publish-scheduled-draft.success': '<Strong>{{title}}</Strong> has been published.',
   /** Label for when a version of a document has already been added to the release */
   'release.tooltip.already-added': 'A version of this document has already been added',
   /** Label for when a release is scheduled / scheduling and a user can't add a document version to it */

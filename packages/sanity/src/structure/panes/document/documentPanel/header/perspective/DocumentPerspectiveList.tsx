@@ -314,6 +314,7 @@ export const DocumentPerspectiveList = memo(function DocumentPerspectiveList() {
             fromRelease: getReleaseIdFromReleaseDocumentId(filteredReleases.inCreation._id),
             releaseState: filteredReleases.inCreation.state,
             isVersion: true,
+            release: filteredReleases.inCreation,
           }}
         />
       )}
@@ -342,6 +343,7 @@ export const DocumentPerspectiveList = memo(function DocumentPerspectiveList() {
               isGoingToUnpublish: editState?.version
                 ? isGoingToUnpublish(editState?.version as SanityDocumentLike)
                 : false,
+              release,
             }}
           />
         ))}

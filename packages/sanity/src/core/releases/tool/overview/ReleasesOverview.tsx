@@ -1,14 +1,16 @@
 /* eslint-disable max-statements */
 import {type ReleaseDocument} from '@sanity/client'
-import {AddIcon, ChevronDownIcon, EarthGlobeIcon} from '@sanity/icons'
-import {Box, type ButtonMode, Card, Flex, Inline, Stack, Text, useMediaIndex} from '@sanity/ui'
-import {format, isSameDay} from 'date-fns'
+import {AddIcon, CalendarIcon, ChevronDownIcon, EarthGlobeIcon} from '@sanity/icons'
+import {Box, type ButtonMode, Card, Flex, Inline, Menu, Text, useMediaIndex} from '@sanity/ui'
+import {isSameDay} from 'date-fns'
 import {AnimatePresence, motion} from 'framer-motion'
 import {type MouseEventHandler, useCallback, useEffect, useMemo, useRef, useState} from 'react'
-import {type SearchParam, useRouter} from 'sanity/router'
+import {useRouter} from 'sanity/router'
 
 import {Tooltip} from '../../../../ui-components'
 import {Button} from '../../../../ui-components/button/Button'
+import {MenuButton} from '../../../../ui-components/menuButton'
+import {MenuItem} from '../../../../ui-components/menuItem'
 import {CalendarFilter} from '../../../components/inputs/DateFilters/calendar/CalendarFilter'
 import useDialogTimeZone from '../../../hooks/useDialogTimeZone'
 import {useTimeZone} from '../../../hooks/useTimeZone'
@@ -17,6 +19,7 @@ import {usePerspective} from '../../../perspective/usePerspective'
 import {CONTENT_RELEASES_TIME_ZONE_SCOPE} from '../../../studio/constants'
 import {CreateReleaseDialog} from '../../components/dialog/CreateReleaseDialog'
 import {useReleasesUpsell} from '../../contexts/upsell/useReleasesUpsell'
+import {useScheduledDraftsEnabled} from '../../hooks/useScheduledDraftsEnabled'
 import {releasesLocaleNamespace} from '../../i18n'
 import {isReleaseDocument} from '../../store/types'
 import {useActiveReleases} from '../../store/useActiveReleases'
@@ -25,31 +28,27 @@ import {useReleaseOperations} from '../../store/useReleaseOperations'
 import {useReleasePermissions} from '../../store/useReleasePermissions'
 import {type ReleasesMetadata, useReleasesMetadata} from '../../store/useReleasesMetadata'
 import {getReleaseTone} from '../../util/getReleaseTone'
-import {getReleaseDefaults, isCardinalityOneRelease} from '../../util/util'
+import {getReleaseDefaults, isCardinalityOneRelease, shouldShowReleaseInView} from '../../util/util'
 import {Table, type TableRowProps} from '../components/Table/Table'
 import {type TableSort} from '../components/Table/TableProvider'
 import {ReleaseIllustration} from '../resources/ReleaseIllustration'
 import {CalendarPopover} from './CalendarPopover'
 import {
-  DATE_SEARCH_PARAM_KEY,
+  buildReleasesSearchParams,
+  type CardinalityView,
+  getInitialCardinalityView,
   getInitialFilterDate,
   getInitialReleaseGroupMode,
-  GROUP_SEARCH_PARAM_KEY,
   type Mode,
 } from './queryParamUtils'
-import {DateFilterButton, ReleaseCalendarFilterDay} from './ReleaseCalendarFilter'
+import {createReleaseCalendarFilterDay, DateFilterButton} from './ReleaseCalendarFilter'
 import {ReleaseMenuButtonWrapper} from './ReleaseMenuButtonWrapper'
 import {releasesOverviewColumnDefs} from './ReleasesOverviewColumnDefs'
+import {ScheduledDraftMenuButtonWrapper} from './ScheduledDraftMenuButtonWrapper'
+import {scheduledDraftsOverviewColumnDefs} from './ScheduledDraftsOverviewColumnDefs'
 import {useTimezoneAdjustedDateTimeRange} from './useTimezoneAdjustedDateTimeRange'
 
 const MotionButton = motion.create(Button)
-
-const DATE_SEARCH_PARAM_VALUE_FORMAT = 'yyyy-MM-dd'
-
-export interface TableRelease extends ReleaseDocument {
-  documentsMetadata?: ReleasesMetadata
-  isDeleted?: boolean
-}
 
 const DEFAULT_RELEASES_OVERVIEW_SORT: TableSort = {column: 'publishAt', direction: 'asc'}
 const DEFAULT_ARCHIVED_RELEASES_OVERVIEW_SORT: TableSort = {
@@ -57,26 +56,41 @@ const DEFAULT_ARCHIVED_RELEASES_OVERVIEW_SORT: TableSort = {
   direction: 'desc',
 }
 
+export interface TableRelease extends ReleaseDocument {
+  documentsMetadata?: ReleasesMetadata
+  isDeleted?: boolean
+}
+
 export function ReleasesOverview() {
   const {data: allReleases, loading: loadingReleases} = useActiveReleases()
   const {data: allArchivedReleases} = useArchivedReleases()
   const {mode} = useReleasesUpsell()
-
-  const releases = useMemo(
-    () => allReleases.filter((release) => !isCardinalityOneRelease(release)),
-    [allReleases],
-  )
-  const archivedReleases = useMemo(
-    () => allArchivedReleases.filter((release) => !isCardinalityOneRelease(release)),
-    [allArchivedReleases],
-  )
+  const isScheduledDraftsEnabled = useScheduledDraftsEnabled()
 
   const router = useRouter()
   const [releaseGroupMode, setReleaseGroupMode] = useState<Mode>(getInitialReleaseGroupMode(router))
+
+  const [cardinalityView, setCardinalityView] = useState<CardinalityView>(
+    isScheduledDraftsEnabled ? getInitialCardinalityView(router) : 'releases',
+  )
   const [releaseFilterDate, setReleaseFilterDate] = useState<Date | undefined>(
     getInitialFilterDate(router),
   )
   const [isCreateReleaseDialogOpen, setIsCreateReleaseDialogOpen] = useState(false)
+
+  // Filter releases based on cardinality view
+  // 'releases' view shows releases with cardinality 'many' or undefined
+  // 'drafts' view shows releases with cardinality 'one'
+  const releases = useMemo(
+    () => allReleases.filter(shouldShowReleaseInView(cardinalityView)),
+    [allReleases, cardinalityView],
+  )
+
+  const archivedReleases = useMemo(
+    () => allArchivedReleases.filter(shouldShowReleaseInView(cardinalityView)),
+    [allArchivedReleases, cardinalityView],
+  )
+
   const releaseIds = useMemo(() => releases.map((release) => release._id), [releases])
   const {data: releasesMetadata, loading: loadingReleasesMetadata} = useReleasesMetadata(releaseIds)
   const loading = loadingReleases || (loadingReleasesMetadata && !releasesMetadata)
@@ -107,8 +121,6 @@ export function ReleasesOverview() {
           },
     [selectedPerspective],
   )
-
-  const scrollContainerRef = useRef<HTMLDivElement | null>(null)
 
   const hasReleases = releases.length > 0 || archivedReleases.length > 0
   const loadingOrHasReleases = loading || hasReleases
@@ -149,6 +161,11 @@ export function ReleasesOverview() {
     [],
   )
 
+  const handleCardinalityViewChange = useCallback(
+    (view: CardinalityView) => () => setCardinalityView(view),
+    [],
+  )
+
   const handleSelectFilterDate = useCallback(
     (date?: Date) =>
       setReleaseFilterDate((prevFilterDate) => {
@@ -169,17 +186,14 @@ export function ReleasesOverview() {
   }, [])
 
   useEffect(() => {
-    const getSearchParams: () => SearchParam[] = () => {
-      if (releaseFilterDate)
-        return [[DATE_SEARCH_PARAM_KEY, format(releaseFilterDate, DATE_SEARCH_PARAM_VALUE_FORMAT)]]
-      if (releaseGroupMode) return [[GROUP_SEARCH_PARAM_KEY, releaseGroupMode]]
-      return []
-    }
-
     router.navigate({
-      _searchParams: getSearchParams(),
+      _searchParams: buildReleasesSearchParams(
+        releaseFilterDate,
+        releaseGroupMode,
+        isScheduledDraftsEnabled ? cardinalityView : 'releases',
+      ),
     })
-  }, [releaseFilterDate, releaseGroupMode, router])
+  }, [releaseFilterDate, releaseGroupMode, cardinalityView, router, isScheduledDraftsEnabled])
 
   const [hasMounted, setHasMounted] = useState(false)
 
@@ -188,6 +202,53 @@ export function ReleasesOverview() {
   }, [])
 
   const showCalendar = mediaIndex > 2
+
+  const cardinalityViewPicker = useMemo(() => {
+    if (!isScheduledDraftsEnabled) {
+      return (
+        <Flex align="center" gap={2}>
+          <CalendarIcon />
+          <Text size={1} weight="semibold">
+            {t('action.releases')}
+          </Text>
+        </Flex>
+      )
+    }
+
+    const currentViewText =
+      cardinalityView === 'releases' ? t('action.releases') : t('action.drafts')
+
+    return (
+      <MenuButton
+        id="cardinality-view-menu"
+        button={
+          <Button
+            mode="bleed"
+            paddingY={2}
+            text={currentViewText}
+            icon={CalendarIcon}
+            iconRight={ChevronDownIcon}
+            disabled={loading}
+            style={{fontWeight: 600}}
+          />
+        }
+        menu={
+          <Menu>
+            <MenuItem
+              text={t('action.releases')}
+              selected={cardinalityView === 'releases'}
+              onClick={handleCardinalityViewChange('releases')}
+            />
+            <MenuItem
+              text={t('action.drafts')}
+              selected={cardinalityView === 'drafts'}
+              onClick={handleCardinalityViewChange('drafts')}
+            />
+          </Menu>
+        }
+      />
+    )
+  }, [loading, cardinalityView, t, handleCardinalityViewChange, isScheduledDraftsEnabled])
 
   const currentArchivedPicker = useMemo(() => {
     const groupModeButtonBaseProps = {
@@ -245,8 +306,10 @@ export function ReleasesOverview() {
     setIsCreateReleaseDialogOpen(true)
   }, [])
 
-  const createReleaseButton = useMemo(
-    () => (
+  const createReleaseButton = useMemo(() => {
+    if (isScheduledDraftsEnabled && cardinalityView === 'drafts') return null
+
+    return (
       <Button
         icon={AddIcon}
         disabled={!hasCreatePermission || isCreateReleaseDialogOpen || mode === 'disabled'}
@@ -257,9 +320,16 @@ export function ReleasesOverview() {
           content: tCore('release.action.permission.error'),
         }}
       />
-    ),
-    [hasCreatePermission, isCreateReleaseDialogOpen, mode, handleOnClickCreateRelease, tCore],
-  )
+    )
+  }, [
+    cardinalityView,
+    hasCreatePermission,
+    isCreateReleaseDialogOpen,
+    mode,
+    handleOnClickCreateRelease,
+    tCore,
+    isScheduledDraftsEnabled,
+  ])
 
   const handleOnCreateRelease = useCallback(
     (createdReleaseId: string) => {
@@ -296,6 +366,10 @@ export function ReleasesOverview() {
 
       if (release.isDeleted || release.isLoading) return null
 
+      if (cardinalityView === 'drafts') {
+        return <ScheduledDraftMenuButtonWrapper release={release} />
+      }
+
       const documentsCount =
         (releaseGroupMode === 'active'
           ? release.documentsMetadata?.documentCount
@@ -303,7 +377,7 @@ export function ReleasesOverview() {
 
       return <ReleaseMenuButtonWrapper release={release} documentsCount={documentsCount} />
     },
-    [releaseGroupMode],
+    [releaseGroupMode, cardinalityView],
   )
 
   const filteredReleases = useMemo(() => {
@@ -326,6 +400,11 @@ export function ReleasesOverview() {
     getTimezoneAdjustedDateTimeRange,
   ])
 
+  const ReleaseCalendarFilterDay = useMemo(
+    () => createReleaseCalendarFilterDay(cardinalityView),
+    [cardinalityView],
+  )
+
   const renderCalendarFilter = useMemo(() => {
     return (
       <Flex flex="none">
@@ -340,12 +419,16 @@ export function ReleasesOverview() {
         </Card>
       </Flex>
     )
-  }, [loading, releases, releaseFilterDate, handleSelectFilterDate])
+  }, [loading, releases, releaseFilterDate, handleSelectFilterDate, ReleaseCalendarFilterDay])
 
-  const tableColumns = useMemo(
-    () => releasesOverviewColumnDefs(t, releaseGroupMode),
-    [releaseGroupMode, t],
-  )
+  const tableColumns = useMemo(() => {
+    if (cardinalityView === 'drafts') {
+      return scheduledDraftsOverviewColumnDefs(t)
+    }
+    return releasesOverviewColumnDefs(t, releaseGroupMode)
+  }, [cardinalityView, releaseGroupMode, t])
+
+  const scrollContainerRef = useRef<HTMLDivElement | null>(null)
 
   const NoRelease = () => {
     return (
@@ -394,11 +477,7 @@ export function ReleasesOverview() {
                 <Flex align="center" flex={1} gap={3}>
                   <Inline>
                     {!showCalendar && <CalendarPopover content={renderCalendarFilter} />}
-                    <Stack padding={2} space={4}>
-                      <Text as="h1" size={1} weight="semibold">
-                        {t('overview.title')}
-                      </Text>
-                    </Stack>
+                    {cardinalityViewPicker}
                   </Inline>
 
                   <Flex flex={1} gap={1}>

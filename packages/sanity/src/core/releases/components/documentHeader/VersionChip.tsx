@@ -1,12 +1,6 @@
 import {type ReleaseDocument, type ReleaseState} from '@sanity/client'
 import {ComposeSparklesIcon, LockIcon} from '@sanity/icons'
-import {
-  type BadgeTone,
-  Button, // eslint-disable-line no-restricted-imports
-  useClickOutsideEvent,
-  useGlobalKeyDown,
-  useToast,
-} from '@sanity/ui'
+import {type BadgeTone, Button, useClickOutsideEvent, useGlobalKeyDown, useToast} from '@sanity/ui'
 import {
   memo,
   type MouseEvent,
@@ -25,9 +19,11 @@ import {useCanvasCompanionDocsStore} from '../../../canvas/store/useCanvasCompan
 import {useTranslation} from '../../../i18n/hooks/useTranslation'
 import {getDraftId, getPublishedId, getVersionId} from '../../../util/draftUtils'
 import {useReleasesToolAvailable} from '../../hooks/useReleasesToolAvailable'
+import {useScheduleDraftOperationsWithToasts} from '../../hooks/useScheduleDraftOperationsWithToasts'
 import {useVersionOperations} from '../../hooks/useVersionOperations'
 import {getReleaseIdFromReleaseDocumentId} from '../../util/getReleaseIdFromReleaseDocumentId'
 import {DiscardVersionDialog} from '../dialog/DiscardVersionDialog'
+import {ScheduleDraftDialog} from '../dialog/ScheduleDraftDialog'
 import {ReleaseAvatarIcon} from '../ReleaseAvatar'
 import {VersionContextMenu} from './contextMenu/VersionContextMenu'
 import {CopyToNewReleaseDialog} from './dialog/CopyToNewReleaseDialog'
@@ -81,6 +77,7 @@ export const VersionChip = memo(function VersionChip(props: {
     isVersion: boolean
     disabled?: boolean
     isGoingToUnpublish?: boolean
+    release?: ReleaseDocument
   }
 }) {
   const {
@@ -102,6 +99,7 @@ export const VersionChip = memo(function VersionChip(props: {
       isVersion,
       disabled: contextMenuDisabled = false,
       isGoingToUnpublish = false,
+      release,
     },
   } = props
   const releasesToolAvailable = useReleasesToolAvailable()
@@ -113,6 +111,8 @@ export const VersionChip = memo(function VersionChip(props: {
   const popoverRef = useRef<HTMLDivElement | null>(null)
   const [isDiscardDialogOpen, setIsDiscardDialogOpen] = useState(false)
   const [isCreateReleaseDialogOpen, setIsCreateReleaseDialogOpen] = useState(false)
+  const [isChangeScheduleDialogOpen, setIsChangeScheduleDialogOpen] = useState(false)
+  const [isPerformingScheduleOperation, setIsPerformingScheduleOperation] = useState(false)
 
   const chipRef = useRef<HTMLButtonElement | null>(null)
 
@@ -125,6 +125,8 @@ export const VersionChip = memo(function VersionChip(props: {
   const {createVersion} = useVersionOperations()
   const toast = useToast()
   const {t} = useTranslation()
+  const releaseTitle = release?.metadata.title || t('release.placeholder-untitled-release')
+  const {rescheduleScheduledDraft} = useScheduleDraftOperationsWithToasts(releaseTitle)
 
   const close = useCallback(() => setContextMenuPoint(undefined), [])
 
@@ -159,6 +161,28 @@ export const VersionChip = memo(function VersionChip(props: {
   }, [setIsDiscardDialogOpen])
 
   const openCreateReleaseDialog = useCallback(() => setIsCreateReleaseDialogOpen(true), [])
+
+  const openChangeScheduleDialog = useCallback(() => {
+    setIsChangeScheduleDialogOpen(true)
+  }, [])
+
+  const handleReschedule = useCallback(
+    async (newPublishAt: Date) => {
+      if (!release) return
+
+      setIsPerformingScheduleOperation(true)
+
+      try {
+        await rescheduleScheduledDraft(release._id, newPublishAt)
+        setIsChangeScheduleDialogOpen(false)
+      } catch (error) {
+        // Error toast already handled by the hook
+      } finally {
+        setIsPerformingScheduleOperation(false)
+      }
+    },
+    [release, rescheduleScheduledDraft],
+  )
 
   const handleAddVersion = useCallback(
     async (targetRelease: string) => {
@@ -242,6 +266,8 @@ export const VersionChip = memo(function VersionChip(props: {
             locked={locked}
             type={documentType}
             isGoingToUnpublish={isGoingToUnpublish}
+            release={release}
+            onChangeSchedule={openChangeScheduleDialog}
           />
         }
         fallbackPlacements={[]}
@@ -278,6 +304,19 @@ export const VersionChip = memo(function VersionChip(props: {
           documentType={documentType}
           tone={tone}
           title={text}
+        />
+      )}
+
+      {isChangeScheduleDialogOpen && release && release.metadata.cardinality === 'one' && (
+        <ScheduleDraftDialog
+          onClose={() => !isPerformingScheduleOperation && setIsChangeScheduleDialogOpen(false)}
+          onSchedule={handleReschedule}
+          header={t('release.dialog.change-schedule.header')}
+          description={t('release.dialog.change-schedule.body')}
+          confirmButtonText={t('release.dialog.change-schedule.confirm')}
+          confirmButtonTone="primary"
+          loading={isPerformingScheduleOperation}
+          initialDate={release.publishAt || release.metadata.intendedPublishAt}
         />
       )}
     </>
