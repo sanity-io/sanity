@@ -259,7 +259,7 @@
     "react-is": "catalog:",
     "react-refractor": "^4.0.0",
     "react-rx": "^4.1.32",
-    "read-pkg-up": "^7.0.1",
+    "read-package-up": "^11.0.0",
     "refractor": "^5.0.0",
     "resolve-from": "^5.0.0",
     "resolve.exports": "^2.0.3",
