@@ -1460,7 +1460,163 @@ describe('Object', () => {
       ).toMatchObject([expected])
     })
 
-    test.todo('i18n')
+    describe('i18n', () => {
+      test('basic i18n support', () => {
+        expect(
+          convertType({
+            name: 'person',
+            type: 'object',
+            groups: [
+              {
+                name: 'settings',
+                title: 'Settings',
+                i18n: {
+                  title: {key: 'groups.settings.title', ns: 'studio'},
+                },
+              },
+            ],
+            fields: [{name: 'title', type: 'string'}],
+          }).typeDef.groups,
+        ).toMatchObject([
+          {
+            name: 'settings',
+            title: 'Settings',
+            i18n: {
+              title: {key: 'groups.settings.title', ns: 'studio'},
+            },
+          },
+        ])
+      })
+
+      test('i18n with multiple fields', () => {
+        expect(
+          convertType({
+            name: 'person',
+            type: 'object',
+            groups: [
+              {
+                name: 'advanced',
+                title: 'Advanced Settings',
+                i18n: {
+                  title: {key: 'groups.advanced.title', ns: 'studio'},
+                },
+              },
+            ],
+            fields: [{name: 'title', type: 'string'}],
+          }).typeDef.groups,
+        ).toMatchObject([
+          {
+            name: 'advanced',
+            title: 'Advanced Settings',
+            i18n: {
+              title: {key: 'groups.advanced.title', ns: 'studio'},
+            },
+          },
+        ])
+      })
+
+      test('invalid i18n format is ignored', () => {
+        expect(
+          convertType({
+            name: 'person',
+            type: 'object',
+            groups: [
+              {
+                name: 'settings',
+                title: 'Settings',
+                i18n: 'invalid',
+              } as any,
+            ],
+            fields: [{name: 'title', type: 'string'}],
+          }).typeDef.groups,
+        ).toMatchObject([
+          {
+            name: 'settings',
+            title: 'Settings',
+            i18n: undefined,
+          },
+        ])
+      })
+
+      test('i18n with missing properties is ignored', () => {
+        expect(
+          convertType({
+            name: 'person',
+            type: 'object',
+            groups: [
+              {
+                name: 'settings',
+                title: 'Settings',
+                i18n: {
+                  title: {key: 'groups.settings.title'},
+                },
+              } as any,
+            ],
+            fields: [{name: 'title', type: 'string'}],
+          }).typeDef.groups,
+        ).toMatchObject([
+          {
+            name: 'settings',
+            title: 'Settings',
+            i18n: undefined,
+          },
+        ])
+      })
+
+      test('empty i18n object is ignored', () => {
+        expect(
+          convertType({
+            name: 'person',
+            type: 'object',
+            groups: [
+              {
+                name: 'settings',
+                title: 'Settings',
+                i18n: {},
+              },
+            ],
+            fields: [{name: 'title', type: 'string'}],
+          }).typeDef.groups,
+        ).toMatchObject([
+          {
+            name: 'settings',
+            title: 'Settings',
+            i18n: undefined,
+          },
+        ])
+      })
+
+      test('i18n combined with other properties', () => {
+        expect(
+          convertType({
+            name: 'person',
+            type: 'object',
+            groups: [
+              {
+                name: 'settings',
+                title: 'Settings',
+                hidden: true,
+                default: true,
+                i18n: {
+                  title: {key: 'groups.settings.title', ns: 'studio'},
+                },
+              },
+            ],
+            fields: [{name: 'title', type: 'string'}],
+          }).typeDef.groups,
+        ).toMatchObject([
+          {
+            name: 'settings',
+            title: 'Settings',
+            hidden: true,
+            default: true,
+            i18n: {
+              title: {key: 'groups.settings.title', ns: 'studio'},
+            },
+          },
+        ])
+      })
+    })
   })
 
   test.todo('orderings')

@@ -27,10 +27,12 @@ import {
   type FieldReference,
   type FunctionMarker,
   type JSXMarker,
-  type LocalizedMessage,
   type ObjectField,
   type ObjectFieldset,
   type ObjectGroup,
+  type ObjectI18n,
+  type ObjectI18nValue,
+  type ObjectMessage,
   type ReferenceTypeDef,
   type RegistryType,
   type Rule as RuleType,
@@ -39,6 +41,7 @@ import {
   type UndefinedMarker,
   type UnknownMarker,
   type Validation,
+  type ValidationMessage,
 } from './types'
 
 const MAX_DEPTH_UKNOWN = 5
@@ -118,11 +121,12 @@ function convertCommonTypeDef(schemaType: SchemaType, opts: Options): CommonType
     groups = filterStringKey(
       'name',
       (ownProps.groups as Array<UnknownRecord<FieldGroupDefinition>>).map(
-        ({name, title, hidden, default: def}) => ({
+        ({name, title, hidden, default: def, i18n}) => ({
           name,
           title: maybeString(title),
           hidden: conditionalTrue(hidden),
           default: maybeTrue(def),
+          i18n: maybeI18n(i18n),
         }),
       ),
     )
@@ -452,7 +456,7 @@ function maybeValidation(val: unknown): Validation | undefined {
     const level: Validation['level'] = val._level || 'error'
 
     // Convert message
-    const message = maybeIRuleMessage(val._message)
+    const message = maybeValidationMessage(val._message)
 
     // Convert RuleSpec array to Rule array
     const rules: RuleType[] = []
@@ -492,10 +496,19 @@ function isIRule(val: unknown): val is IRule {
   return isObject(val) && '_rules' in val
 }
 
-function maybeIRuleMessage(val: unknown): IRule['_message'] {
+function maybeValidationMessage(val: unknown): ValidationMessage | undefined {
   if (typeof val === 'string') return val
-  if (isObject(val) && !Array.isArray(val)) return val as LocalizedMessage
-  return undefined
+  if (!isObject(val) || Array.isArray(val)) return undefined
+
+  const objectMessage: ObjectMessage = {}
+  for (const [field, value] of Object.entries(val)) {
+    if (typeof field !== 'string' || typeof value !== 'string') {
+      continue
+    }
+    objectMessage[field] = value
+  }
+
+  return Object.keys(objectMessage).length > 0 ? objectMessage : undefined
 }
 
 function isIRuleFunction(val: unknown): val is (rule: IRule) => IRule | undefined {
@@ -631,4 +644,35 @@ function maybeBoolean(val: unknown): boolean | undefined {
     return val
   }
   return undefined
+}
+
+function maybeI18n(val: unknown): ObjectI18n | undefined {
+  if (!isObject(val) || Array.isArray(val)) return undefined
+
+  // Convert I18nTextRecord to LocalizedMessage format
+  const localizedMessage: ObjectI18n = {}
+  for (const entry of Object.entries(val)) {
+    if (isI18nEntry(entry)) {
+      const [field, value] = entry
+      localizedMessage[field] = {
+        ns: value.ns,
+        key: value.key,
+      }
+    }
+  }
+
+  return Object.keys(localizedMessage).length > 0 ? localizedMessage : undefined
+}
+
+function isI18nEntry(entry: [unknown, unknown]): entry is [string, ObjectI18nValue] {
+  const [key, value] = entry
+  return (
+    typeof key === 'string' &&
+    !!value &&
+    typeof value === 'object' &&
+    'key' in value &&
+    'ns' in value &&
+    typeof value.key === 'string' &&
+    typeof value.ns === 'string'
+  )
 }

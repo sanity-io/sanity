@@ -116,7 +116,7 @@ export type ObjectGroup = {
   title?: string
   hidden?: true | FunctionMarker
   default?: true
-  i18n?: LocalizedMessage
+  i18n?: ObjectI18n
 }
 
 export interface ReferenceTypeDef extends SubtypeDef {
@@ -140,9 +140,16 @@ export type Validation = {
   message?: ValidationMessage
 }
 
-export type ValidationMessage = string | LocalizedMessage
+export type ValidationMessage = string | ObjectMessage
 
-export type LocalizedMessage = Record<string, string>
+export type ObjectMessage = Record<string, string>
+
+export type ObjectI18nValue = {
+  key: string
+  ns: string
+}
+
+export type ObjectI18n = Record<string, ObjectI18nValue>
 
 /** Field reference makes it possible for a rule to refer to another field in the same object. */
 export type FieldReference = {
