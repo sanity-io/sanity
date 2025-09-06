@@ -11,6 +11,7 @@ import semver from 'semver'
 import {buildStaticFiles} from '../../server'
 import {buildVendorDependencies} from '../../server/buildVendorDependencies'
 import {compareDependencyVersions} from '../../util/compareDependencyVersions'
+import {getAppId} from '../../util/getAppId'
 import {getAutoUpdatesImportMap} from '../../util/getAutoUpdatesImportMap'
 import {formatModuleSizes, sortModulesBySize} from '../../util/moduleFormatUtils'
 import {readModuleVersion} from '../../util/readModuleVersion'
@@ -49,6 +50,7 @@ export default async function buildSanityApp(
   const outputDir = path.resolve(args.argsWithoutOptions[0] || defaultOutputDir)
 
   const autoUpdatesEnabled = shouldAutoUpdate({flags, cliConfig})
+  const appId = getAppId({cliConfig, output})
 
   const installedSdkVersion = await readModuleVersion(context.workDir, '@sanity/sdk-react')
   const installedSanityVersion = await readModuleVersion(context.workDir, 'sanity')
@@ -74,11 +76,11 @@ export default async function buildSanityApp(
       {name: '@sanity/sdk-react', version: cleanSDKVersion},
       ...(cleanSanityVersion ? [{name: 'sanity' as const, version: cleanSanityVersion}] : []),
     ]
-    autoUpdatesImports = getAutoUpdatesImportMap(autoUpdatedPackages)
+    autoUpdatesImports = getAutoUpdatesImportMap(autoUpdatedPackages, {appId})
     output.print(`${info} Building with auto-updates enabled`)
 
     // Check the versions
-    const result = await compareDependencyVersions(autoUpdatedPackages, workDir)
+    const result = await compareDependencyVersions(autoUpdatedPackages, workDir, {appId})
 
     // If it is in unattended mode, we don't want to prompt
     if (result?.length && !unattendedMode) {
