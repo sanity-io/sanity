@@ -320,7 +320,41 @@ const rootFormNodeOptions: Partial<{
   },
   comparisonValue: {
     deriveInput: (path) => updateDocumentAtPath(path, documentValue),
-    assertOutput: ([node]) => expect(node.changed).toBe(true),
+    assertOutput: ([node]) => {
+      expect(node.changed).toBe(true)
+
+      if (node.schemaType.jsonType === 'string') {
+        expect(node.__unstable_diff).toMatchObject({
+          isChanged: true,
+          fromValue: 'CHANGED',
+          toValue: node.value,
+          annotation: {
+            provenance: {
+              bundle: 'published',
+            },
+          },
+        })
+      }
+
+      if (node.__unstable_diff.type === 'string') {
+        expect(node.__unstable_diff.segments.length).toBeGreaterThan(0)
+      }
+
+      if (node.schemaType.jsonType === 'string') {
+        const computedDiff = node.__unstable_computeDiff([node.value, 'xyz'].join(' '))
+
+        expect(computedDiff).toMatchObject({
+          isChanged: true,
+          fromValue: 'CHANGED',
+          toValue: [node.value, 'xyz'].join(' '),
+          annotation: {
+            provenance: {
+              bundle: 'published',
+            },
+          },
+        })
+      }
+    },
   },
   readOnly: {
     deriveInput: (path) => setAtPath(path),
@@ -433,6 +467,7 @@ const defaultOptions: RootFormStateOptions = {
   fieldGroupState: {},
   hidden: undefined,
   readOnly: undefined,
+  perspective: 'published',
 }
 
 describe.each(
