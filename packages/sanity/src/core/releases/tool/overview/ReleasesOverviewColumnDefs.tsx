@@ -11,6 +11,7 @@ import {getPublishDateFromRelease, isReleaseScheduledOrScheduling} from '../../u
 import {ReleaseTime} from '../components/ReleaseTime'
 import {Headers} from '../components/Table/TableHeader'
 import {type Column} from '../components/Table/types'
+import {ReleaseColumnValidationLoading} from './columnCells/ReleaseColumnValidationLoading'
 import {ReleaseDocumentsCounter} from './columnCells/ReleaseDocumentsCounter'
 import {ReleaseNameCell} from './columnCells/ReleaseName'
 import {type Mode} from './queryParamUtils'
@@ -242,19 +243,28 @@ export const releasesOverviewColumnDefs: (
             <Headers.BasicHeader text={t('table-header.documents')} />
           </Flex>
         ),
-        cell: ({datum: {isDeleted, state, finalDocumentStates, documentsMetadata}, cellProps}) => (
-          <Flex {...cellProps} align="center" paddingX={2} paddingY={3} sizing="border">
-            {!isDeleted && (
-              <ReleaseDocumentsCounter
-                documentCount={
-                  state === 'archived' || state === 'published'
-                    ? finalDocumentStates?.length
-                    : documentsMetadata?.documentCount
-                }
-              />
-            )}
-          </Flex>
-        ),
+        cell: ({
+          datum: {isDeleted, state, finalDocumentStates, documentsMetadata, _id},
+          cellProps,
+        }) => {
+          return (
+            <Flex {...cellProps} align="center" paddingX={2} paddingY={3} sizing="border" gap={2}>
+              {state === 'active' && <ReleaseColumnValidationLoading releaseId={_id} />}
+
+              {!isDeleted && (
+                <>
+                  <ReleaseDocumentsCounter
+                    documentCount={
+                      state === 'archived' || state === 'published'
+                        ? finalDocumentStates?.length
+                        : documentsMetadata?.documentCount
+                    }
+                  />
+                </>
+              )}
+            </Flex>
+          )
+        },
       },
       'all',
     ),

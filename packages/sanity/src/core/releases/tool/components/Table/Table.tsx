@@ -11,6 +11,7 @@ import {
   type HTMLProps,
   type RefAttributes,
   type RefObject,
+  useEffect,
   useMemo,
   useRef,
 } from 'react'
@@ -119,6 +120,15 @@ const TableInner = <TableData, AdditionalRowTableData>({
     estimateSize: () => ITEM_HEIGHT,
     overscan: 5,
   })
+
+  useEffect(() => {
+    // Sometimes the scrollCotaninerRef is not initially available
+    // This makes it that the table woudl then be blank when the data already exists
+    // This is a workaround to force the virtualizer to re-measure when the scroll container becomes available
+    if (scrollContainerRef.current) {
+      rowVirtualizer.measure()
+    }
+  }, [rowVirtualizer, scrollContainerRef])
 
   const rowActionColumnDef: Column = useMemo(
     () => ({
