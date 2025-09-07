@@ -20,7 +20,7 @@ import {DiffViewDocumentLayout} from '../../diffView/plugin/DiffViewDocumentLayo
 import {structureLocaleNamespace} from '../../i18n'
 import {type DocumentPaneNode} from '../../types'
 import {ErrorPane} from '../error'
-import {LoadingPane} from '../loading'
+import {LoadingPane} from '../loading/LoadingPane'
 import {CommentsWrapper} from './comments'
 import {useDocumentLayoutComponent} from './document-layout'
 import {DocumentPaneProviderWrapper} from './DocumentPaneProviderWrapper'
