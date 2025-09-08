@@ -311,9 +311,9 @@ export const VersionChip = memo(function VersionChip(props: {
         <ScheduleDraftDialog
           onClose={() => !isPerformingScheduleOperation && setIsChangeScheduleDialogOpen(false)}
           onSchedule={handleReschedule}
-          header={t('release.dialog.change-schedule.header')}
-          description={t('release.dialog.change-schedule.body')}
-          confirmButtonText={t('release.dialog.change-schedule.confirm')}
+          header={t('release.dialog.edit-schedule.header')}
+          description={t('release.dialog.edit-schedule.body')}
+          confirmButtonText={t('release.dialog.edit-schedule.confirm')}
           confirmButtonTone="primary"
           loading={isPerformingScheduleOperation}
           initialDate={release.publishAt || release.metadata.intendedPublishAt}

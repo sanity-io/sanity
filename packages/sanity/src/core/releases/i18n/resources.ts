@@ -45,12 +45,6 @@ const releasesLocaleStrings = {
   'action.unschedule': 'Unschedule release',
   /** Action text for unscheduling a draft (single-document scheduled release) */
   'action.unschedule-draft': 'Unschedule draft',
-  /** Action text for running a scheduled draft immediately */
-  'action.run-now': 'Run now',
-  /** Action text for deleting a scheduled draft */
-  'action.delete-schedule': 'Delete schedule',
-  /** Action text for changing the schedule of a draft */
-  'action.change-schedule': 'Change schedule',
   /** Action text for publishing all documents in a release (and the release itself) */
   'action.publish-all-documents': 'Run release',
   /** Text for the review changes button in release tool */
@@ -104,13 +98,6 @@ const releasesLocaleStrings = {
     'This will archive {{count}} document versions.',
   /** Label for the button to proceed with archiving a release */
   'archive-dialog.confirm-archive-button': 'Yes, archive release',
-
-  /** Header for the dialog to change schedule of a draft */
-  'dialog.change-schedule.header': 'Change schedule',
-  /** Body text for the dialog to change schedule of a draft */
-  'dialog.change-schedule.body': 'Select a new date and time to publish this draft.',
-  /** Confirm button text for changing schedule of a draft */
-  'dialog.change-schedule.confirm': 'Update schedule',
 
   /** Title for information card on a archived release */
   'archive-info.title': 'This release is archived',
@@ -340,17 +327,11 @@ const releasesLocaleStrings = {
   /** Description for the confirm button for scheduling a release */
   'schedule-dialog.confirm-button': 'Yes, schedule',
 
-  /** Label for date picker when scheduling a release */
-  'schedule-dialog.select-publish-date-label': 'Schedule on',
-
   /** Title for unschedule release dialog */
   'unschedule-dialog.confirm-title': 'Are you sure you want to unschedule the release?',
   /** Description shown in unschedule relaease dialog */
   'unschedule-dialog.confirm-description':
     'The release will no longer be published on the scheduled date',
-  /** Description for warning that the published schedule time is in the past */
-  'schedule-dialog.publish-date-in-past-warning':
-    'Schedule this release for a future time and date.',
 
   /** Header for the schedule publish dialog */
   'schedule-publish-dialog.header': 'Schedule draft for Publish',
@@ -417,7 +398,9 @@ const releasesLocaleStrings = {
   /** Header for the document table in the release tool - edited */
   'table-header.edited': 'Edited',
   /** Header for the document table in the release tool - Published */
-  'table-header.publishedAt': 'Published',
+  'table-header.published-at': 'Published',
+  /** Header for the scheduled drafts document table in the release tool - published at */
+  'table-header.scheduled-draft.published-at': 'Published at',
   /** Header for the scheduled drafts document table in the release tool - scheduled for */
   'table-header.scheduled-for': 'Scheduled for',
   /** Header for the document table in the release tool - time */

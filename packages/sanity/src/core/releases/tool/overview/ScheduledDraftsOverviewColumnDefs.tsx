@@ -6,11 +6,13 @@ import {Headers} from '../components/Table/TableHeader'
 import {type Column} from '../components/Table/types'
 import {ScheduledDraftDocumentPreview} from './columnCells/ScheduledDraftDocumentPreview'
 import {ScheduledDraftMetadataCell} from './columnCells/ScheduledDraftMetadataCell'
+import {type Mode} from './queryParamUtils'
 import {type TableRelease} from './ReleasesOverview'
 
 export const scheduledDraftsOverviewColumnDefs: (
   t: TFunction<'releases', undefined>,
-) => Column<TableRelease>[] = (t) => {
+  releaseGroupMode: Mode,
+) => Column<TableRelease>[] = (t, releaseGroupMode) => {
   return [
     {
       id: 'documentPreview',
@@ -30,7 +32,14 @@ export const scheduledDraftsOverviewColumnDefs: (
       width: 300,
       header: (props) => (
         <Flex {...props.headerProps} paddingY={3} paddingX={2} sizing="border">
-          <Headers.SortHeaderButton {...props} text={t('table-header.scheduled-for')} />
+          <Headers.SortHeaderButton
+            {...props}
+            text={
+              releaseGroupMode === 'archived'
+                ? t('table-header.scheduled-draft.published-at')
+                : t('table-header.scheduled-for')
+            }
+          />
         </Flex>
       ),
       cell: ScheduledDraftMetadataCell,

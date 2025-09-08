@@ -123,7 +123,7 @@ export const releasesOverviewColumnDefs: (
         width: 250,
         header: (props) => (
           <Flex {...props.headerProps} paddingY={3} sizing="border">
-            <Headers.SortHeaderButton text={t('table-header.publishedAt')} {...props} />
+            <Headers.SortHeaderButton text={t('table-header.published-at')} {...props} />
           </Flex>
         ),
         cell: ({cellProps, datum: release}) => (

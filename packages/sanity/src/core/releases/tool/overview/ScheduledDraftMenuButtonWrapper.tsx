@@ -1,5 +1,5 @@
 import {type ReleaseDocument} from '@sanity/client'
-import {ClockIcon, EllipsisHorizontalIcon, PlayIcon, TrashIcon} from '@sanity/icons'
+import {CalendarIcon, EllipsisHorizontalIcon, PublishIcon, TrashIcon} from '@sanity/icons'
 import {Menu, Spinner, useClickOutsideEvent, useToast} from '@sanity/ui'
 import {useCallback, useMemo, useRef, useState} from 'react'
 
@@ -10,11 +10,11 @@ import {DeleteScheduledDraftDialog} from '../../components/dialog/DeleteSchedule
 import {PublishScheduledDraftDialog} from '../../components/dialog/PublishScheduledDraftDialog'
 import {ScheduleDraftDialog} from '../../components/dialog/ScheduleDraftDialog'
 import {useScheduleDraftOperationsWithToasts} from '../../hooks/useScheduleDraftOperationsWithToasts'
-import {releasesLocaleNamespace} from '../../i18n'
 import {getReleaseIdFromReleaseDocumentId} from '../../util/getReleaseIdFromReleaseDocumentId'
 import {useBundleDocuments} from '../detail/useBundleDocuments'
+import {type Mode} from './queryParamUtils'
 
-type ScheduledDraftAction = 'run-now' | 'delete-schedule' | 'change-schedule'
+type ScheduledDraftAction = 'publish-now' | 'delete-schedule' | 'edit-schedule'
 
 interface ActionConfig {
   icon: React.ComponentType
@@ -26,8 +26,8 @@ interface ActionConfig {
 }
 
 const SCHEDULED_DRAFT_ACTION_MAP: Record<ScheduledDraftAction, ActionConfig> = {
-  'run-now': {
-    icon: PlayIcon,
+  'publish-now': {
+    icon: PublishIcon,
     dialogHeaderI18nKey: 'release.dialog.publish-scheduled-draft.header',
     dialogBodyI18nKey: 'release.dialog.publish-scheduled-draft.body',
     dialogConfirmButtonI18nKey: 'release.dialog.publish-scheduled-draft.confirm',
@@ -38,14 +38,20 @@ const SCHEDULED_DRAFT_ACTION_MAP: Record<ScheduledDraftAction, ActionConfig> = {
     tone: 'critical',
     // Uses shared DeleteScheduledDraftDialog component
   },
-  'change-schedule': {
-    icon: ClockIcon,
+  'edit-schedule': {
+    icon: CalendarIcon,
     // Uses custom dialog component
   },
 }
 
-export const ScheduledDraftMenuButtonWrapper = ({release}: {release: ReleaseDocument}) => {
-  const {t} = useTranslation(releasesLocaleNamespace)
+export const ScheduledDraftMenuButtonWrapper = ({
+  release,
+  releaseGroupMode,
+}: {
+  release: ReleaseDocument
+  releaseGroupMode: Mode
+}) => {
+  const {t} = useTranslation()
   const {t: tCore} = useTranslation()
   const toast = useToast()
   const schema = useSchema()
@@ -74,26 +80,33 @@ export const ScheduledDraftMenuButtonWrapper = ({release}: {release: ReleaseDocu
     release.state === 'scheduling' ||
     (release.metadata.releaseType === 'scheduled' && release.metadata.cardinality === 'one')
 
-  const menuItems = useMemo(
-    () => [
+  const menuItems = useMemo(() => {
+    const allItems = [
       {
-        key: 'run-now' as const,
-        text: t('action.run-now'),
-        testId: 'run-now-menu-item',
+        key: 'publish-now' as const,
+        text: t('release.action.publish-now'),
+        testId: 'publish-now-menu-item',
       },
       {
-        key: 'change-schedule' as const,
-        text: t('action.change-schedule'),
-        testId: 'change-schedule-menu-item',
+        key: 'edit-schedule' as const,
+        text: t('release.action.edit-schedule'),
+        testId: 'edit-schedule-menu-item',
       },
       {
         key: 'delete-schedule' as const,
-        text: t('action.delete-schedule'),
+        text: t('release.action.delete-schedule'),
         testId: 'delete-schedule-menu-item',
       },
-    ],
-    [t],
-  )
+    ]
+
+    // When in archived mode, only show delete-schedule option
+    if (releaseGroupMode === 'archived') {
+      return allItems.filter((item) => item.key === 'delete-schedule')
+    }
+
+    // When in active mode, show all options
+    return allItems
+  }, [t, releaseGroupMode])
 
   const handleRunNow = useCallback(async () => {
     return runNow(release._id)
@@ -118,11 +131,11 @@ export const ScheduledDraftMenuButtonWrapper = ({release}: {release: ReleaseDocu
 
   const handleAction = useCallback(
     async (action: ScheduledDraftAction) => {
-      // Special handling for delete-schedule and change-schedule which have their own flows
-      if (action === 'change-schedule' || action === 'delete-schedule') return
+      // Special handling for delete-schedule and edit-schedule which have their own flows
+      if (action === 'edit-schedule' || action === 'delete-schedule') return
       if (!canPerformActions) return
 
-      if (action === 'run-now') {
+      if (action === 'publish-now') {
         setIsPerformingOperation(true)
 
         try {
@@ -143,14 +156,14 @@ export const ScheduledDraftMenuButtonWrapper = ({release}: {release: ReleaseDocu
   const confirmActionDialog = useMemo(() => {
     if (!selectedAction) return null
 
-    if (selectedAction === 'change-schedule') {
+    if (selectedAction === 'edit-schedule') {
       return (
         <ScheduleDraftDialog
           onClose={() => !isPerformingOperation && setSelectedAction(undefined)}
           onSchedule={handleReschedule}
-          header={t('dialog.change-schedule.header')}
-          description={t('dialog.change-schedule.body')}
-          confirmButtonText={t('dialog.change-schedule.confirm')}
+          header={t('release.dialog.edit-schedule.header')}
+          description={t('release.dialog.edit-schedule.body')}
+          confirmButtonText={t('release.dialog.edit-schedule.confirm')}
           confirmButtonTone="primary"
           loading={isPerformingOperation}
           initialDate={release.publishAt}
@@ -168,7 +181,7 @@ export const ScheduledDraftMenuButtonWrapper = ({release}: {release: ReleaseDocu
       )
     }
 
-    if (selectedAction === 'run-now') {
+    if (selectedAction === 'publish-now') {
       return (
         <PublishScheduledDraftDialog
           release={release}

@@ -367,7 +367,9 @@ export function ReleasesOverview() {
       if (release.isDeleted || release.isLoading) return null
 
       if (cardinalityView === 'drafts') {
-        return <ScheduledDraftMenuButtonWrapper release={release} />
+        return (
+          <ScheduledDraftMenuButtonWrapper release={release} releaseGroupMode={releaseGroupMode} />
+        )
       }
 
       const documentsCount =
@@ -423,7 +425,7 @@ export function ReleasesOverview() {
 
   const tableColumns = useMemo(() => {
     if (cardinalityView === 'drafts') {
-      return scheduledDraftsOverviewColumnDefs(t)
+      return scheduledDraftsOverviewColumnDefs(t, releaseGroupMode)
     }
     return releasesOverviewColumnDefs(t, releaseGroupMode)
   }, [cardinalityView, releaseGroupMode, t])
@@ -510,7 +512,7 @@ export function ReleasesOverview() {
                     // for resetting filter and sort on table when filer changed
                     key={releaseFilterDate ? 'by_date' : releaseGroupMode}
                     defaultSort={
-                      releaseGroupMode === 'archived'
+                      releaseGroupMode === 'archived' && cardinalityView === 'releases'
                         ? DEFAULT_ARCHIVED_RELEASES_OVERVIEW_SORT
                         : DEFAULT_RELEASES_OVERVIEW_SORT
                     }

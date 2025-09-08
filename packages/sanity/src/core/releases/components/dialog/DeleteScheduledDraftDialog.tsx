@@ -40,14 +40,14 @@ export function DeleteScheduledDraftDialog(
   const handleDeleteSchedule = useCallback(async () => {
     setIsDeleting(true)
     try {
-      await deleteScheduledDraft(release._id)
+      await deleteScheduledDraft(release._id, release.state)
     } catch (error) {
       // Error toast handled by useScheduleDraftOperationsWithToasts
     } finally {
       setIsDeleting(false)
       onClose()
     }
-  }, [release._id, deleteScheduledDraft, onClose])
+  }, [release._id, release.state, deleteScheduledDraft, onClose])
 
   return (
     <Dialog

@@ -38,23 +38,23 @@ export const ScheduledDraftContextMenu = memo(function ScheduledDraftContextMenu
     onChangeSchedule,
     hasCreatePermission,
   } = props
-  const {t} = useTranslation(releasesLocaleNamespace)
+  const {t} = useTranslation()
 
   const [isRunningNow, setIsRunningNow] = useState(false)
-  const [confirmAction, setConfirmAction] = useState<'run-now' | 'delete-schedule' | null>(null)
+  const [confirmAction, setConfirmAction] = useState<'publish-now' | 'delete-schedule' | null>(null)
 
   return (
     <>
       <Menu>
         <MenuItem
           icon={isRunningNow ? Spinner : PlayIcon}
-          onClick={() => setConfirmAction('run-now')}
-          text={t('action.run-now')}
+          onClick={() => setConfirmAction('publish-now')}
+          text={t('release.action.publish-now')}
           disabled={disabled || isRunningNow}
         />
         <MenuItem
           icon={ClockIcon}
-          text={t('action.change-schedule')}
+          text={t('release.action.edit-schedule')}
           disabled={disabled || isRunningNow}
           onClick={onChangeSchedule}
         />
@@ -71,13 +71,13 @@ export const ScheduledDraftContextMenu = memo(function ScheduledDraftContextMenu
         <MenuItem
           icon={TrashIcon}
           onClick={() => setConfirmAction('delete-schedule')}
-          text={t('action.delete-schedule')}
+          text={t('release.action.delete-schedule')}
           tone="critical"
           disabled={disabled || isRunningNow}
         />
       </Menu>
 
-      {confirmAction === 'run-now' && (
+      {confirmAction === 'publish-now' && (
         <PublishScheduledDraftDialog
           release={release}
           documentType={type}

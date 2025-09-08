@@ -1,4 +1,4 @@
-import {type BaseActionOptions} from '@sanity/client'
+import {type BaseActionOptions, type ReleaseState} from '@sanity/client'
 import {useCallback} from 'react'
 
 import {getDraftId} from '../../util'
@@ -23,7 +23,11 @@ export interface ScheduleDraftOperationsValue {
   /**
    * Deletes a scheduled draft
    */
-  deleteScheduledDraft: (releaseDocumentId: string, opts?: BaseActionOptions) => Promise<void>
+  deleteScheduledDraft: (
+    releaseDocumentId: string,
+    releaseState: ReleaseState,
+    opts?: BaseActionOptions,
+  ) => Promise<void>
   /**
    * Reschedules a draft to a new publish time
    */
@@ -99,14 +103,19 @@ export function useScheduleDraftOperations(): ScheduleDraftOperationsValue {
   )
 
   const handleDeleteScheduledDraft = useCallback(
-    async (releaseDocumentId: string, opts?: BaseActionOptions): Promise<void> => {
-      // First unschedule the release
-      await releaseOperations.unschedule(releaseDocumentId, opts)
+    async (
+      releaseDocumentId: string,
+      releaseState: ReleaseState,
+      opts?: BaseActionOptions,
+    ): Promise<void> => {
+      if (releaseState === 'scheduled' || releaseState === 'scheduling') {
+        await releaseOperations.unschedule(releaseDocumentId, opts)
+      }
 
-      // Then archive it
-      await releaseOperations.archive(releaseDocumentId, opts)
+      if (releaseState !== 'archived' && releaseState !== 'published') {
+        await releaseOperations.archive(releaseDocumentId, opts)
+      }
 
-      // Finally delete it
       await releaseOperations.deleteRelease(releaseDocumentId, opts)
     },
     [releaseOperations],

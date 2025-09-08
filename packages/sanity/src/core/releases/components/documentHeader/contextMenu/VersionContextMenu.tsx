@@ -77,7 +77,7 @@ export const VersionContextMenu = memo(function VersionContextMenu(props: Versio
 
   const isScheduledDraft = release && release.metadata.cardinality === 'one'
 
-  // Scheduled drafts use different menu with run-now, reschedule, and delete actions
+  // Scheduled drafts use different menu with publish-now, reschedule, and delete actions
   if (isScheduledDraft && isVersion && release) {
     return (
       <ScheduledDraftContextMenu

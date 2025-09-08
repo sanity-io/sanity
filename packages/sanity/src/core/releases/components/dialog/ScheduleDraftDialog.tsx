@@ -34,7 +34,7 @@ export function ScheduleDraftDialog(props: ScheduleDraftDialogProps): React.JSX.
     loading = false,
     initialDate,
   } = props
-  const {t} = useTranslation(releasesLocaleNamespace)
+  const {t} = useTranslation()
   const {t: tCore} = useTranslation()
 
   const [publishAt, setPublishAt] = useState<Date | undefined>(
@@ -107,7 +107,7 @@ export function ScheduleDraftDialog(props: ScheduleDraftDialogProps): React.JSX.
         <label>
           <Stack space={3}>
             <Text size={1} weight="semibold">
-              {t('schedule-dialog.select-publish-date-label')}
+              {tCore('release.schedule-dialog.select-publish-date-label')}
             </Text>
             <DateTimeInput
               selectTime
@@ -128,7 +128,7 @@ export function ScheduleDraftDialog(props: ScheduleDraftDialogProps): React.JSX.
 
         {_isScheduledDateInPast && (
           <Card marginBottom={1} padding={2} radius={2} shadow={1} tone="critical">
-            <Text size={1}>{t('schedule-dialog.publish-date-in-past-warning')}</Text>
+            <Text size={1}>{tCore('release.schedule-dialog.publish-date-in-past-warning')}</Text>
           </Card>
         )}
       </Stack>

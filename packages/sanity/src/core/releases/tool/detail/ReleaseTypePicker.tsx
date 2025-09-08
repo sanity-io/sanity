@@ -97,7 +97,7 @@ export function ReleaseTypePicker(props: {release: NotArchivedRelease}): React.J
           toast.push({
             closable: true,
             status: 'warning',
-            title: tRelease('schedule-dialog.publish-date-in-past-warning'),
+            title: t('release.schedule-dialog.publish-date-in-past-warning'),
           })
         } else {
           setIsUpdating(true)
@@ -208,7 +208,7 @@ export function ReleaseTypePicker(props: {release: NotArchivedRelease}): React.J
           <>
             {isIntendedScheduleDateInPast && (
               <Card margin={1} padding={2} radius={2} shadow={1} tone="critical">
-                <Text size={1}>{tRelease('schedule-dialog.publish-date-in-past-warning')}</Text>
+                <Text size={1}>{t('release.schedule-dialog.publish-date-in-past-warning')}</Text>
               </Card>
             )}
             <LazyTextInput

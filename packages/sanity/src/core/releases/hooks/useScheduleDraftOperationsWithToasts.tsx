@@ -1,3 +1,4 @@
+import {type ReleaseState} from '@sanity/client'
 import {useToast} from '@sanity/ui'
 import {type ReactNode, useCallback} from 'react'
 
@@ -76,10 +77,11 @@ export function useScheduleDraftOperationsWithToasts(
   const deleteScheduleWithToast = useCallback(
     async (
       releaseDocumentId: string,
-      opts?: Parameters<ScheduleDraftOperationsValue['deleteScheduledDraft']>[1],
+      releaseState: ReleaseState,
+      opts?: Parameters<ScheduleDraftOperationsValue['deleteScheduledDraft']>[2],
     ) => {
       try {
-        await operations.deleteScheduledDraft(releaseDocumentId, opts)
+        await operations.deleteScheduledDraft(releaseDocumentId, releaseState, opts)
         toast.push({
           closable: true,
           status: 'success',
