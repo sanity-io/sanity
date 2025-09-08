@@ -34,7 +34,7 @@ export function useNotificationTarget(
 ): NotificationTargetHookValue {
   const {documentId, documentType, getCommentLink, documentVersionId} = opts || {}
   const schemaType = useSchema().get(documentType)
-  const {title: workspaceTitle} = useWorkspace()
+  const {title: workspaceTitle, name: workspaceName} = useWorkspace()
 
   const documentPreviewStore = useDocumentPreviewStore()
 
@@ -53,8 +53,9 @@ export function useNotificationTarget(
       documentTitle,
       url: getCommentLink?.(commentId),
       workspaceTitle,
+      workspaceName,
     }),
-    [documentTitle, getCommentLink, workspaceTitle],
+    [documentTitle, getCommentLink, workspaceTitle, workspaceName],
   )
 
   return {

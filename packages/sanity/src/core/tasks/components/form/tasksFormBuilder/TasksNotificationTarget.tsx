@@ -37,7 +37,7 @@ function TasksNotificationTargetInner(props: ObjectFieldProps<TaskDocument>) {
     ),
   )
   const {target, _id, context, _rev} = useFormValue([]) as TaskDocument
-  const {title: workspaceTitle, basePath} = useWorkspace()
+  const {title: workspaceTitle, basePath, name: workspaceName} = useWorkspace()
   const client = useClient(DEFAULT_STUDIO_CLIENT_OPTIONS)
   const imageBuilder = useMemo(() => imageUrlBuilder(client), [client])
   const documentId = target?.document?._ref ?? ''
@@ -65,6 +65,7 @@ function TasksNotificationTargetInner(props: ObjectFieldProps<TaskDocument>) {
       workspaceTitle,
       targetContentImageUrl: imageUrl,
       targetContentTitle: targetContentTitle,
+      workspaceName,
     }
   }, [
     context?.notification?.url,
@@ -72,6 +73,7 @@ function TasksNotificationTargetInner(props: ObjectFieldProps<TaskDocument>) {
     basePath,
     activeToolName,
     workspaceTitle,
+    workspaceName,
     imageUrl,
     targetContentTitle,
   ])

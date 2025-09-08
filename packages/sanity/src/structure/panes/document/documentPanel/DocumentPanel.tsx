@@ -300,6 +300,10 @@ export const DocumentPanel = function DocumentPanel(props: DocumentPanelProps) {
     schemaType,
     workspace,
   ])
+  const portalElements = useMemo(
+    () => ({documentScrollElement: documentScrollElement}),
+    [documentScrollElement],
+  )
   const showFormView = features.resizablePanes || !showInspector
   return (
     <PaneContent>
@@ -311,10 +315,7 @@ export const DocumentPanel = function DocumentPanel(props: DocumentPanelProps) {
               <DocumentPanelSubHeader />
             </LegacyLayerProvider>
             <DocumentBox flex={2} overflow="hidden">
-              <PortalProvider
-                element={portalElement}
-                __unstable_elements={{documentScrollElement: documentScrollElement}}
-              >
+              <PortalProvider element={portalElement} __unstable_elements={portalElements}>
                 <BoundaryElementProvider element={documentScrollElement}>
                   <VirtualizerScrollInstanceProvider
                     scrollElement={documentScrollElement}
