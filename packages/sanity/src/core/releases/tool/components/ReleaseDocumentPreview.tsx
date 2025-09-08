@@ -19,6 +19,7 @@ interface ReleaseDocumentPreviewProps {
   documentRevision?: string
   hasValidationError?: boolean
   layout?: PreviewLayoutKey
+  isGoingToBePublished?: boolean
 }
 
 const isArchivedRelease = (releaseState: ReleaseState | undefined) =>
@@ -31,6 +32,7 @@ export function ReleaseDocumentPreview({
   releaseState,
   documentRevision,
   layout,
+  isGoingToBePublished = false,
 }: ReleaseDocumentPreviewProps) {
   const documentPresence = useDocumentPresence(documentId)
 
@@ -95,9 +97,9 @@ export function ReleaseDocumentPreview({
   )
 
   const {isLoading: previewLoading, value: resolvedPreview} = useDocumentPreviewValues({
-    documentId,
+    documentId: isGoingToBePublished ? getPublishedId(documentId) : documentId,
     documentType: documentTypeName,
-    perspectiveStack: [getReleaseIdFromReleaseDocumentId(releaseId)],
+    perspectiveStack: isGoingToBePublished ? [] : [getReleaseIdFromReleaseDocumentId(releaseId)],
   })
 
   return (
