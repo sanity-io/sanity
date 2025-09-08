@@ -146,9 +146,6 @@ const structureLocaleStrings = defineLocalesResources('structure', {
   'banners.permission-check-banner.request-permission-button.sent': 'Editor request sent',
   /** The text for the request permission button that appears for viewer roles */
   'banners.permission-check-banner.request-permission-button.text': 'Ask to edit',
-  /** The text content for the scheduled draft override banner */
-  'banners.scheduled-draft-override-banner.text':
-    "This document's draft is already scheduled for publish. Changes you make here may be overridden by that version.",
   /** Description for the archived release banner, rendered when viewing the history of a version document from the published view */
   'banners.published-release.description':
     "You are viewing a read-only document that was published as part of <VersionBadge>{{title}}</VersionBadge>. It can't be edited",
@@ -196,6 +193,9 @@ const structureLocaleStrings = defineLocalesResources('structure', {
   /** The text for the revision not found banner */
   'banners.revision-not-found.description':
     "We couldn't find the document revision selected, please select another entry from the history list.",
+  /** The text content for the scheduled draft override banner */
+  'banners.scheduled-draft-override-banner.text':
+    "This document's draft is already scheduled for publish. Changes you make here may be overridden by that version.",
   /** The text content for the unpublished document banner when is part of a release */
   'banners.unpublished-release-banner.text':
     'This document will be unpublished as part of the <VersionBadge>{{title}}</VersionBadge> release.',
