@@ -204,6 +204,7 @@ exports[`exports snapshot 1`] = `
     "TransformPatches": "object",
     "Translate": "function",
     "UniversalArrayInput": "function",
+    "UpdateReadOnlyPlugin": "function",
     "UpsellDescriptionSerializer": "function",
     "UpsellDialogDismissed": "object",
     "UpsellDialogLearnMoreCtaClicked": "object",
