@@ -20,6 +20,8 @@ const releasesLocaleStrings = {
   'action.duplicate-release': 'Duplicate release',
   /** Action text for editing a release */
   'action.edit': 'Edit release',
+  /** Action text for merging a release */
+  'action.merge-release': 'Merge release',
   /** Action text for opening a release */
   'action.open': 'Active',
   /** Action text for scheduling a release */
@@ -224,6 +226,27 @@ const releasesLocaleStrings = {
   /** Title for the release tool */
   'overview.title': 'Releases',
 
+  /** Header for the merge release dialog */
+  'merge-dialog.header': 'Merge release',
+  /** Text for the "into" label in merge dialog */
+  'merge-dialog.into': 'into',
+  /** Placeholder text for selecting a release in merge dialog */
+  'merge-dialog.select-release': 'Select a release',
+  /** Tooltip for scheduled releases in merge dialog */
+  'merge-dialog.unschedule-tooltip': 'Unschedule this release to merge into it',
+  /** Tooltip for swap button in merge dialog */
+  'merge-dialog.swap-tooltip': 'Swap merge direction',
+  /** Loading text when checking for document conflicts */
+  'merge-dialog.checking-documents': 'Checking version documents',
+  /** Warning text when merging will replace documents */
+  'merge-dialog.conflict-warning':
+    'Merging this release will replace {{count}} documents with the versions from <VersionBadge/>',
+  /** Confirm button text for merge dialog */
+  'merge-dialog.confirm-button': 'Merge releases',
+  /** Description text explaining what happens during merge */
+  'merge-dialog.description':
+    'The <FromBadge/> will be archived and all its versions moved into <ToBadge/>',
+
   /** Tooltip label when the user doesn't have permission for discarding a version */
   'permissions.error.discard-version': 'You do not have permission to discard this version',
   /** Tooltip label when the user doesn't have permission for unpublishing a document */
@@ -239,6 +262,8 @@ const releasesLocaleStrings = {
   'permissions.error.delete': 'You do not have permission to delete this release',
   /** Tooltip label when the user doesn't have permission to duplicate release */
   'permissions.error.duplicate': 'You do not have permission to duplicate this release',
+  /** Tooltip label when the user doesn't have permission to merge release */
+  'permissions.error.merge': 'You do not have permission to merge this release',
   /** Tooltip label when the user doesn't have permission to unarchive release */
   'permissions.error.unarchive': 'You do not have permission to unarchive this release',
 
@@ -418,6 +443,8 @@ const releasesLocaleStrings = {
   'toast.duplicate.success': "The '<strong>{{title}}</strong>' release was duplicated. <Link/>",
   /** Link text for toast link to the duplicated release */
   'toast.duplicate.success-link': 'View duplicated release',
+  /** Text for toast when release merge failed */
+  'toast.merge.error': 'Failed to merge releases: {{error}}',
   /** Text for toast when release failed to publish */
   'toast.publish.error': "Failed to publish '<strong>{{title}}</strong>': {{error}}",
   /** Text for toast when release failed to schedule */

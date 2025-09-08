@@ -17,6 +17,7 @@ export type ReleaseAction =
   | 'publish'
   | 'schedule'
   | 'duplicate'
+  | 'merge'
 
 interface BaseReleaseActionsMap {
   toastSuccessI18nKey?: string
@@ -81,6 +82,11 @@ export const RELEASE_ACTION_MAP: Record<
     },
     toastSuccessI18nKey: 'toast.duplicate.success',
     toastFailureI18nKey: 'toast.duplicate.error',
+    telemetry: DuplicatedRelease,
+  },
+  merge: {
+    confirmDialog: false,
+    toastFailureI18nKey: 'toast.merge.error',
     telemetry: DuplicatedRelease,
   },
 }
