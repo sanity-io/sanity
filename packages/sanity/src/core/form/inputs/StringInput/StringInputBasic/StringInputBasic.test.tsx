@@ -1,14 +1,14 @@
 import userEvent from '@testing-library/user-event'
 import {describe, expect, it} from 'vitest'
 
-import {renderStringInput} from '../../../../../test/form/renderStringInput'
-import {StringInput} from './StringInput'
+import {renderStringInput} from '../../../../../../test/form/renderStringInput'
+import {StringInputBasic} from './StringInputBasic'
 
-describe('StringInput', () => {
+describe('StringInputBasic', () => {
   it('renders input value', async () => {
     const {result} = await renderStringInput({
       render: (inputProps) => (
-        <StringInput
+        <StringInputBasic
           {...inputProps}
           elementProps={{...inputProps.elementProps, value: 'test'}}
           value="test"
@@ -29,7 +29,7 @@ describe('StringInput', () => {
   it('emits onFocus', async () => {
     const {onFocus, result} = await renderStringInput({
       render: (inputProps) => (
-        <StringInput
+        <StringInputBasic
           {...inputProps}
           value="test"
           elementProps={{...inputProps.elementProps, value: 'test'}}
@@ -52,7 +52,7 @@ describe('StringInput', () => {
   it('emits `set` patch', async () => {
     const {onNativeChange, result} = await renderStringInput({
       render: (inputProps) => (
-        <StringInput
+        <StringInputBasic
           {...inputProps}
           value="tes"
           elementProps={{...inputProps.elementProps, value: 'tes'}}
@@ -75,7 +75,7 @@ describe('StringInput', () => {
   it('emits `unset` patch', async () => {
     const {onNativeChange, result} = await renderStringInput({
       render: (inputProps) => (
-        <StringInput
+        <StringInputBasic
           {...inputProps}
           value="t"
           elementProps={{...inputProps.elementProps, value: 't'}}
