@@ -62,7 +62,7 @@ export function TasksActivityLog(props: TasksActivityLogProps) {
   const {value, onChange, path, activityData = []} = props
   const currentUser = useCurrentUser()
 
-  const {title: workspaceTitle, basePath} = useWorkspace()
+  const {title: workspaceTitle, basePath, name: workspaceName} = useWorkspace()
   const {comments, mentionOptions, operation, getComment} = useComments()
   const [commentToDeleteId, setCommentToDeleteId] = useState<string | null>(null)
   const [commentDeleteError, setCommentDeleteError] = useState<Error | null>(null)
@@ -85,11 +85,12 @@ export function TasksActivityLog(props: TasksActivityLogProps) {
       return {
         documentTitle: value.title || 'Sanity task',
         url: studioUrl.toString(),
-        workspaceTitle: workspaceTitle,
-        subscribers: subscribers,
+        workspaceTitle,
+        workspaceName,
+        subscribers,
       }
     },
-    [basePath, value?._id, value.title, workspaceTitle, value.subscribers],
+    [basePath, value?._id, value.title, workspaceTitle, value.subscribers, workspaceName],
   )
 
   const handleCommentCreate = useCallback(

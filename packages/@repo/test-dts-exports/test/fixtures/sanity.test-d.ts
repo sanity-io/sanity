@@ -91,6 +91,7 @@ import type {
   AvailabilityReason,
   AvailabilityResponse,
   AvatarSkeleton,
+  BaseActionDescription,
   BaseEvent,
   BaseFieldProps,
   BaseFormNode,
@@ -671,6 +672,7 @@ import type {
   grantsPermissionOn,
   GrantsStore,
   GrantsStoreOptions,
+  GroupableActionDescription,
   GroupChange,
   GroupChangeNode,
   hasCommentMessageValue,
@@ -786,6 +788,7 @@ import type {
   isDeprecatedSchemaType,
   isDeprecationConfiguration,
   isDev,
+  isDocumentLimitError,
   isDocumentSchemaType,
   isDraft,
   isDraftId,
@@ -1123,6 +1126,11 @@ import type {
   RelativeTime,
   RelativeTimeOptions,
   RelativeTimeProps,
+  ReleaseActionComponent,
+  ReleaseActionDescription,
+  ReleaseActionProps,
+  ReleaseActionsContext,
+  ReleaseActionsResolver,
   ReleaseAvatar,
   ReleaseDocument,
   ReleaseId,
@@ -1450,6 +1458,7 @@ import type {
   useDiffAnnotationColor,
   useDocumentChange,
   useDocumentForm,
+  useDocumentLimitsUpsellContext,
   useDocumentOperation,
   useDocumentOperationEvent,
   useDocumentPairPermissions,
@@ -1633,7 +1642,7 @@ describe('sanity', () => {
     expectTypeOf<typeof _isSanityDocumentTypeDefinition>().toBeFunction()
   })
   test('ActionComponent', () => {
-    expectTypeOf<ActionComponent<any>>().toBeObject()
+    expectTypeOf<ActionComponent<any, any>>().toBeObject()
   })
   test('ActiveToolLayoutProps', () => {
     expectTypeOf<ActiveToolLayoutProps>().toBeObject()
@@ -1886,6 +1895,9 @@ describe('sanity', () => {
   })
   test('AvatarSkeleton', () => {
     expectTypeOf<typeof AvatarSkeleton>().not.toBeNever()
+  })
+  test('BaseActionDescription', () => {
+    expectTypeOf<BaseActionDescription>().toBeObject()
   })
   test('BaseEvent', () => {
     expectTypeOf<BaseEvent>().toBeObject()
@@ -3649,6 +3661,9 @@ describe('sanity', () => {
   test('GrantsStoreOptions', () => {
     expectTypeOf<GrantsStoreOptions>().not.toBeNever()
   })
+  test('GroupableActionDescription', () => {
+    expectTypeOf<GroupableActionDescription<any>>().toBeObject()
+  })
   test('GroupChange', () => {
     expectTypeOf<typeof GroupChange>().toBeFunction()
   })
@@ -3995,6 +4010,9 @@ describe('sanity', () => {
   })
   test('isDev', () => {
     expectTypeOf<typeof isDev>().not.toBeNever()
+  })
+  test('isDocumentLimitError', () => {
+    expectTypeOf<typeof isDocumentLimitError>().not.toBeNever()
   })
   test('isDocumentSchemaType', () => {
     expectTypeOf<typeof isDocumentSchemaType>().toBeFunction()
@@ -5013,6 +5031,21 @@ describe('sanity', () => {
   test('RelativeTimeProps', () => {
     expectTypeOf<RelativeTimeProps>().toBeObject()
   })
+  test('ReleaseActionComponent', () => {
+    expectTypeOf<ReleaseActionComponent>().toBeObject()
+  })
+  test('ReleaseActionDescription', () => {
+    expectTypeOf<ReleaseActionDescription>().toBeObject()
+  })
+  test('ReleaseActionProps', () => {
+    expectTypeOf<ReleaseActionProps>().toBeObject()
+  })
+  test('ReleaseActionsContext', () => {
+    expectTypeOf<ReleaseActionsContext>().not.toBeNever()
+  })
+  test('ReleaseActionsResolver', () => {
+    expectTypeOf<ReleaseActionsResolver>().not.toBeNever()
+  })
   test('ReleaseAvatar', () => {
     expectTypeOf<typeof ReleaseAvatar>().toBeFunction()
   })
@@ -6005,6 +6038,9 @@ describe('sanity', () => {
   })
   test('useDocumentForm', () => {
     expectTypeOf<typeof useDocumentForm>().toBeFunction()
+  })
+  test('useDocumentLimitsUpsellContext', () => {
+    expectTypeOf<typeof useDocumentLimitsUpsellContext>().not.toBeNever()
   })
   test('useDocumentOperation', () => {
     expectTypeOf<typeof useDocumentOperation>().toBeFunction()

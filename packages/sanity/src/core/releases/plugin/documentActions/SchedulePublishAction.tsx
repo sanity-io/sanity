@@ -22,7 +22,7 @@ export const SchedulePublishAction: DocumentActionComponent = (
 ): DocumentActionDescription | null => {
   const {id, type, draft} = props
   const {t} = useTranslation(releasesLocaleNamespace)
-  const {crateScheduledDraft: schedulePublish} = useScheduleDraftOperations()
+  const {createScheduledDraft: schedulePublish} = useScheduleDraftOperations()
   const toast = useToast()
   const {perspectiveStack} = usePerspective()
 

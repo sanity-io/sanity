@@ -148,7 +148,7 @@ export function useScheduleDraftOperationsWithToasts(
   )
 
   return {
-    crateScheduledDraft: operations.crateScheduledDraft, // No toasts needed
+    createScheduledDraft: operations.createScheduledDraft, // No toasts needed
     publishScheduledDraft: runNowWithToast,
     deleteScheduledDraft: deleteScheduleWithToast,
     rescheduleScheduledDraft: rescheduleWithToast,

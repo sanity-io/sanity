@@ -1,5 +1,10 @@
-import {type AssetFromSource, type FileSchemaType} from '@sanity/types'
+import {type AssetFromSource, type FileSchemaType, type ImageSchemaType} from '@sanity/types'
+import {pickBy} from 'lodash'
 
+import {
+  isVideoSchemaType,
+  type VideoSchemaType,
+} from '../../../../../media-library/plugin/schemas/types'
 import {type FIXME} from '../../../../FIXME'
 import {type FormPatch, type PatchEvent, set, setIfMissing, unset} from '../../../patch'
 import {
@@ -15,7 +20,7 @@ type DOMFile = globalThis.File
 interface Props {
   assetsFromSource: AssetFromSource[]
   onChange: (patch: FormPatch | FormPatch[] | PatchEvent) => void
-  type: FileSchemaType
+  type: FileSchemaType | ImageSchemaType | VideoSchemaType
   resolveUploader: UploaderResolver
   uploadWith: (uploader: Uploader, file: DOMFile, assetDocumentProps?: UploadOptions) => void
   isImage?: boolean
@@ -29,7 +34,6 @@ export function handleSelectAssetFromSource({
   uploadWith,
   isImage,
 }: Props): void {
-  // const {onChange, type, resolveUploader} = this.props
   if (!assetsFromSource) {
     throw new Error('No asset given')
   }
@@ -45,6 +49,12 @@ export function handleSelectAssetFromSource({
   const description = assetProps?.description
   const creditLine = assetProps?.creditLine
   const source = assetProps?.source
+
+  const assetOptions = pickBy(
+    {label, title, description, creditLine, source},
+    (value) => value !== null && value !== undefined && value !== '',
+  )
+
   const assetPatches: FormPatch[] = isImage
     ? [unset(['hotspot']), unset(['crop']), unset(['media'])]
     : [unset(['media'])]
@@ -58,6 +68,25 @@ export function handleSelectAssetFromSource({
       _weak: true,
     }
     assetPatches.push(set(assetContainerRef, ['media']))
+
+    // If video we patch the asset reference to the video asset instance instead of linking the asset document
+    if (isVideoSchemaType(type)) {
+      const assetInstanceRef = {
+        _type: 'globalDocumentReference',
+        _ref: `media-library:${mediaLibraryProps.mediaLibraryId}:${mediaLibraryProps.assetInstanceId}`,
+        _weak: true,
+      }
+      assetPatches.push(set(assetInstanceRef, ['asset']))
+
+      onChange([
+        setIfMissing({
+          _type: type.name,
+        }),
+        ...assetPatches,
+      ])
+
+      return
+    }
   }
 
   switch (firstAsset.kind) {
@@ -81,13 +110,7 @@ export function handleSelectAssetFromSource({
     case 'file': {
       const uploader = resolveUploader(type, firstAsset.value as FIXME)
       if (uploader) {
-        uploadWith(uploader, firstAsset.value as FIXME, {
-          label,
-          title,
-          description,
-          creditLine,
-          source,
-        })
+        uploadWith(uploader, firstAsset.value as FIXME, assetOptions)
       }
       break
     }
@@ -95,7 +118,7 @@ export function handleSelectAssetFromSource({
       base64ToFile(firstAsset.value as FIXME, originalFilename).then((file) => {
         const uploader = resolveUploader(type, file)
         if (uploader) {
-          uploadWith(uploader, file, {label, title, description, creditLine, source})
+          uploadWith(uploader, file, assetOptions)
         }
       })
       break
@@ -103,7 +126,7 @@ export function handleSelectAssetFromSource({
       urlToFile(firstAsset.value as FIXME, originalFilename).then((file) => {
         const uploader = resolveUploader(type, file)
         if (uploader) {
-          uploadWith(uploader, file, {label, title, description, creditLine, source})
+          uploadWith(uploader, file, assetOptions)
         }
       })
       break

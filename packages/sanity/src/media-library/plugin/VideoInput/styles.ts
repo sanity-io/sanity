@@ -13,13 +13,15 @@ export const FlexContainer = styled(Flex)`
   height: 100%;
 `
 
-export const RatioBox = styled(Card)`
+export const RatioBox = styled(Card)<{$isPortrait?: boolean}>`
   position: relative;
   display: flex;
   justify-content: center;
   align-items: center;
   width: 100%;
   min-height: 3.75rem;
-  max-height: 30dvh;
   aspect-ratio: var(--aspect-ratio);
+
+  /* Apply max-height constraint only for portrait videos (aspect ratio < 0.75) */
+  ${(props) => (props.$isPortrait ? 'max-height: 30dvh;' : '')}
 `

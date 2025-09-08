@@ -10,7 +10,7 @@ export interface ScheduleDraftOperationsValue {
   /**
    * Create a scheduled draft release
    */
-  crateScheduledDraft: (
+  createScheduledDraft: (
     documentId: string,
     publishAt: Date,
     title?: string,
@@ -128,7 +128,7 @@ export function useScheduleDraftOperations(): ScheduleDraftOperationsValue {
   )
 
   return {
-    crateScheduledDraft: handleCreateScheduledDraft,
+    createScheduledDraft: handleCreateScheduledDraft,
     publishScheduledDraft: handlePublishScheduledDraft,
     deleteScheduledDraft: handleDeleteScheduledDraft,
     rescheduleScheduledDraft: handleRescheduleScheduledDraft,

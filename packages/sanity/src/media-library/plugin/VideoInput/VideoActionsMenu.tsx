@@ -1,4 +1,4 @@
-import {Box, Card, Inline, Menu, Spinner, useClickOutsideEvent, useGlobalKeyDown} from '@sanity/ui'
+import {Box, Card, Inline, Menu, useClickOutsideEvent, useGlobalKeyDown} from '@sanity/ui'
 import {
   type CSSProperties,
   lazy,
@@ -14,15 +14,19 @@ import {ContextMenuButton} from '../../../core/components/contextMenuButton/Cont
 import {useTranslation} from '../../../core/i18n'
 import {Popover} from '../../../ui-components/popover/Popover'
 import {RatioBox} from './styles'
+import {type VideoPlaybackTokens} from './types'
+import {VideoSkeleton} from './VideoSkeleton'
 
 const VideoPlayer = lazy(() =>
   import('./VideoPlayer').then((module) => ({default: module.VideoPlayer})),
 )
 
 type Props = {
+  customDomain: string
   children: ReactNode
   aspectRatio?: number
   playbackId?: string
+  tokens?: VideoPlaybackTokens
   onClick?: () => void
   muted?: boolean
   disabled?: boolean
@@ -39,7 +43,9 @@ export const MenuActionsWrapper = styled(Inline)`
 
 export function VideoActionsMenu(props: Props) {
   const {
+    customDomain,
     playbackId,
+    tokens,
     children,
     aspectRatio,
     muted,
@@ -102,6 +108,7 @@ export function VideoActionsMenu(props: Props) {
       <Card as={muted || disabled ? undefined : 'button'} tone="inherit" onClick={onClick} flex={1}>
         <RatioBox
           tone="transparent"
+          $isPortrait={aspectRatio !== undefined && aspectRatio < 0.75}
           style={
             {
               '--aspect-ratio': aspectRatio,
@@ -109,12 +116,12 @@ export function VideoActionsMenu(props: Props) {
           }
         >
           {playbackId && (
-            <Suspense fallback={<Spinner />}>
+            <Suspense fallback={<VideoSkeleton />}>
               <VideoPlayer
+                customDomain={customDomain}
                 playbackId={playbackId}
+                tokens={tokens}
                 aspectRatio={aspectRatio}
-                muted={muted}
-                disabled={disabled}
               />
             </Suspense>
           )}

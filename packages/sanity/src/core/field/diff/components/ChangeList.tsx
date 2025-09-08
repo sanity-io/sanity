@@ -8,9 +8,10 @@ import {DiffContext} from 'sanity/_singletons'
 import {Button} from '../../../../ui-components'
 import {useDocumentOperation} from '../../../hooks'
 import {useTranslation} from '../../../i18n'
+import {usePerspective} from '../../../perspective/usePerspective'
 import {useDocumentPairPermissions} from '../../../store'
 import {unstable_useConditionalProperty as useConditionalProperty} from '../../conditional-property'
-import {type ChangeNode, type FieldOperationsAPI, type ObjectDiff} from '../../types'
+import {type ChangeNode, type ObjectDiff} from '../../types'
 import {buildObjectChangeList} from '../changes/buildChangeList'
 import {undoChange} from '../changes/undoChange'
 import {useDocumentChange} from '../hooks/useDocumentChange'
@@ -29,7 +30,8 @@ export interface ChangeListProps {
 /** @internal */
 export function ChangeList({diff, fields, schemaType}: ChangeListProps): React.JSX.Element | null {
   const {documentId, isComparingCurrent, value} = useDocumentChange()
-  const docOperations = useDocumentOperation(documentId, schemaType.name) as FieldOperationsAPI
+  const {selectedReleaseId} = usePerspective()
+  const docOperations = useDocumentOperation(documentId, schemaType.name, selectedReleaseId)
   const {path} = useContext(DiffContext)
   const isRoot = path.length === 0
   const [confirmRevertAllOpen, setConfirmRevertAllOpen] = useState(false)
