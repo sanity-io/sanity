@@ -2,7 +2,7 @@ import {generateHelpUrl} from '@sanity/generate-help-url'
 import {type SchemaValidationProblemGroup} from '@sanity/types'
 import {capitalize} from 'lodash'
 
-import {getTypeInfo} from './SchemaProblemGroups'
+import {getTypeInfo} from './getTypeInfo'
 
 export function formatSchemaErrorsToMarkdown(groups: SchemaValidationProblemGroup[]): string {
   let text = '# Schema errors\n\n'
@@ -19,15 +19,15 @@ export function formatSchemaErrorsToMarkdown(groups: SchemaValidationProblemGrou
       text += `## Unknown type\n\n`
     }
 
+    const parts: string[] = []
     for (const segment of group.path) {
-      text += `Path: `
       if (segment.kind === 'type') {
-        text += `${segment.name || `<anonymous ${segment.type}>`}:${segment.type}`
+        parts.push(`${segment.name || `<anonymous ${segment.type}>`}:${segment.type}`)
       } else if (segment.kind === 'property') {
-        text += `${segment.name}`
+        parts.push(`${segment.name}`)
       }
     }
-    text += '\n'
+    text += `Path: ${parts.join(' → ')}\n`
 
     for (const problem of group.problems) {
       text += `${capitalize(problem.severity)}: ${problem.message}\n`

@@ -29,14 +29,24 @@ export function SchemaErrorsScreen({schema}: SchemaErrorsScreenProps) {
     const errorsText = formatSchemaErrorsToMarkdown(groupsWithErrors)
 
     try {
-      await copy(errorsText)
-      toast.push({
-        status: 'success',
-        title: t(
-          'about-dialog.version-info.copy-to-clipboard-button.copied-text',
-          'Copied to clipboard',
-        ),
-      })
+      const ok = await copy(errorsText)
+      if (ok) {
+        toast.push({
+          status: 'success',
+          title: t(
+            'about-dialog.version-info.copy-to-clipboard-button.copied-text',
+            'Copied to clipboard',
+          ),
+        })
+      } else {
+        toast.push({
+          status: 'error',
+          title: tCopyPaste(
+            'copy-paste.on-copy.validation.clipboard-not-supported.title',
+            'Clipboard not supported',
+          ),
+        })
+      }
     } catch {
       toast.push({
         status: 'error',
