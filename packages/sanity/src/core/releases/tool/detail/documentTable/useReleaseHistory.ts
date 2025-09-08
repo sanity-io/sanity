@@ -6,6 +6,9 @@ import {getJsonStream} from '../../../../store/_legacy/history/history/getJsonSt
 import {getVersionId} from '../../../../util'
 import {RELEASES_STUDIO_CLIENT_OPTIONS} from '../../../util/releasesClient'
 
+const historyCache: Record<string, {transactions: TransactionLogEventWithEffects[]}> =
+  Object.create(null)
+
 export type DocumentHistory = {
   history: TransactionLogEventWithEffects[]
   createdBy: string
@@ -34,6 +37,7 @@ function releaseHistorySlot(): void {
 export function useReleaseHistory(
   releaseDocumentId: string | undefined,
   releaseId: string,
+  documentRevision?: string,
 ): {
   documentHistory?: DocumentHistory
   collaborators: string[]
@@ -61,6 +65,15 @@ export function useReleaseHistory(
       setHistory(null)
       return
     }
+
+    const cacheKey = `${releaseDocumentId}-${documentRevision}`
+
+    const cached = historyCache[cacheKey]
+    if (cached) {
+      setHistory(cached.transactions)
+      return
+    }
+
     await acquireHistorySlot()
     try {
       const transactions: TransactionLogEventWithEffects[] = []
@@ -73,19 +86,26 @@ export function useReleaseHistory(
         if ('error' in result.value) {
           throw new Error(result.value.error.description || result.value.error.type)
         }
+
         transactions.push(result.value)
         await readAll()
       }
 
       await readAll()
-      if (!cancelledRef.current) setHistory(transactions)
+      if (!cancelledRef.current) {
+        setHistory(transactions)
+
+        historyCache[cacheKey] = {
+          transactions,
+        }
+      }
     } catch (error) {
       console.error('Failed to fetch or parse document history:', error)
       if (!cancelledRef.current) setHistory([])
     } finally {
       releaseHistorySlot()
     }
-  }, [transactionsUrl, token, versionId])
+  }, [versionId, transactionsUrl, releaseDocumentId, documentRevision, token])
 
   useEffect(() => {
     cancelledRef.current = false

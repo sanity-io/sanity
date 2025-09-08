@@ -219,7 +219,7 @@ function UpdatedAtCell({
   const bundleId = getReleaseIdFromReleaseDocumentId(releaseDocumentId)
   const historyDocumentId =
     datum.isPending || document?._id?.endsWith('-pending') ? undefined : document?._id
-  const {documentHistory} = useReleaseHistory(historyDocumentId, bundleId)
+  const {documentHistory} = useReleaseHistory(historyDocumentId, bundleId, document?._rev)
 
   return (
     <Flex
