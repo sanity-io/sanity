@@ -4,7 +4,7 @@ import {documentEventHandler} from '@sanity/functions'
 export const handler = documentEventHandler(async ({context, event}) => {
   const client = createClient({
     ...context.clientOptions,
-    apiVersion: 'vX',
+    apiVersion: 'vX', // vX currently required for Agent Actions
     useCdn: false,
   })
   const {data} = event
@@ -18,7 +18,7 @@ export const handler = documentEventHandler(async ({context, event}) => {
       instructionParams: {
         review: {
           type: 'field',
-          path: 'review', // This is the field you want to analyze.
+          path: 'review',
         },
       },
 
