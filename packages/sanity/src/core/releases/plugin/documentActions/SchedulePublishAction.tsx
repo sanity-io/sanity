@@ -80,8 +80,11 @@ export const SchedulePublishAction: DocumentActionComponent = (
     [id, schedulePublish, previewValues?.title, toast, t],
   )
 
+  if (!draft) {
+    return null
+  }
+
   return {
-    disabled: !draft,
     icon: CalendarIcon,
     label: t('action.schedule-publish'),
     title: t('action.schedule-publish'),

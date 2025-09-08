@@ -3,6 +3,7 @@ import {useEffect, useMemo, useRef, useState} from 'react'
 import {
   getSanityCreateLinkMetadata,
   getVersionFromId,
+  isDraftId,
   isGoingToUnpublish,
   isNewDocument,
   isPerspectiveWriteable,
@@ -21,6 +22,7 @@ import {css, styled} from 'styled-components'
 
 import {PaneContent, usePane, usePaneLayout, usePaneRouter} from '../../../components'
 import {hasObsoleteDraft} from '../../../hasObsoleteDraft'
+import {useFilteredReleases} from '../../../hooks/useFilteredReleases'
 import {mustChooseNewDocumentDestination} from '../../../mustChooseNewDocumentDestination'
 import {useStructureTool} from '../../../useStructureTool'
 import {DocumentInspectorPanel} from '../documentInspector'
@@ -31,6 +33,7 @@ import {
   DeprecatedDocumentTypeBanner,
   InsufficientPermissionBanner,
   ReferenceChangedBanner,
+  ScheduledDraftOverrideBanner,
 } from './banners'
 import {ArchivedReleaseDocumentBanner} from './banners/ArchivedReleaseDocumentBanner'
 import {CanvasLinkedBanner} from './banners/CanvasLinkedBanner'
@@ -44,6 +47,7 @@ import {ScheduledReleaseBanner} from './banners/ScheduledReleaseBanner'
 import {UnpublishedDocumentBanner} from './banners/UnpublishedDocumentBanner'
 import {FormView} from './documentViews'
 import {DocumentPanelSubHeader} from './header/DocumentPanelSubHeader'
+import {isCardinalityOneRelease} from '../../../../core/releases/util/util'
 
 interface DocumentPanelProps {
   footerHeight: number | null
@@ -169,6 +173,7 @@ export const DocumentPanel = function DocumentPanel(props: DocumentPanelProps) {
 
   const showInspector = Boolean(!collapsed && inspector)
   const {selectedPerspective, selectedReleaseId} = usePerspective()
+  const filteredReleases = useFilteredReleases({displayed, documentId})
 
   // eslint-disable-next-line complexity
   const banners = useMemo(() => {
@@ -211,6 +216,16 @@ export const DocumentPanel = function DocumentPanel(props: DocumentPanelProps) {
     if (documentInScheduledRelease) {
       return <ScheduledReleaseBanner currentRelease={selectedPerspective as ReleaseDocument} />
     }
+
+    // Check if current document is a draft and has cardinality one releases
+    const isDraftDocument = displayed?._id && isDraftId(displayed._id)
+    console.log({isDraftDocument, displayed: displayed?._id})
+    const hasCardinalityOneReleases = filteredReleases.currentReleases.some(isCardinalityOneRelease)
+
+    if (selectedPerspective === 'drafts' && hasCardinalityOneReleases) {
+      return <ScheduledDraftOverrideBanner />
+    }
+
     const isPinnedDraftOrPublish = isSystemBundle(selectedPerspective)
     const isCurrentVersionGoingToUnpublish =
       editState?.version && isGoingToUnpublish(editState?.version)
@@ -298,6 +313,7 @@ export const DocumentPanel = function DocumentPanel(props: DocumentPanelProps) {
     documentId,
     value._id,
     schemaType,
+    filteredReleases,
     workspace,
   ])
   const portalElements = useMemo(
