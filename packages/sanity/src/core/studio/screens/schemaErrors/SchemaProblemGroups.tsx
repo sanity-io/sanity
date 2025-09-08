@@ -133,7 +133,9 @@ export function SchemaProblemGroups(props: {problemGroups: SchemaValidationProbl
   )
 }
 
-function getTypeInfo(problem: SchemaValidationProblemGroup): {name: string; type: string} | null {
+export function getTypeInfo(
+  problem: SchemaValidationProblemGroup,
+): {name: string; type: string} | null {
   // note: unsure if the first segment here can ever be anything else than a type
   // a possible API improvement is to add schemaType info to the problem group interface itself
   const first = problem.path[0]
