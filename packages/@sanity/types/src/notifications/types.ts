@@ -1,4 +1,5 @@
 import {type PortableTextBlock} from '../portableText'
+import {type User} from '../user'
 
 /**
  * @internal
@@ -37,11 +38,7 @@ export interface DashboardNotificationPayload {
   /**
    * The user who took the action which triggered the notification.
    */
-  actor: {
-    name: string
-    avatar: string | undefined // url for the avatar image.
-    id: string // Sanity global user id for this actor.
-  }
+  actor: User
   title: PortableTextBlock[]
   body: PortableTextBlock[] | undefined
   organizationId: string
