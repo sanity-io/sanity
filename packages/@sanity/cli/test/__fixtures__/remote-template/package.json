@@ -8,6 +8,6 @@
   "dependencies": {
     "next": "^15",
     "next-sanity": "^10.0.6",
-    "sanity": "^4"
+    "sanity": "^4.6.1"
   }
 }
