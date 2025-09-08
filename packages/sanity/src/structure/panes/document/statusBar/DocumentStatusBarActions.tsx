@@ -12,7 +12,7 @@ import {
 } from 'sanity'
 
 import {Button, Tooltip} from '../../../../ui-components'
-import {RenderActionCollectionState, type ResolvedAction} from '../../../components'
+import {RenderActionCollectionState, type ResolvedAction, usePaneRouter} from '../../../components'
 import {HistoryRestoreAction} from '../../../documentActions'
 import {toLowerCaseNoSpaces} from '../../../util/toLowerCaseNoSpaces'
 import {useDocumentPane} from '../useDocumentPane'
@@ -30,6 +30,9 @@ const DocumentStatusBarActionsInner = memo(function DocumentStatusBarActionsInne
   const {disabled, states} = props
   const {__internal_tasks} = useSource()
   const {editState} = useDocumentPane()
+  const {params} = usePaneRouter()
+  const showingRevision = Boolean(params?.rev)
+
   const {selectedReleaseId} = usePerspective()
   const [firstActionState, ...menuActionStates] = states
   const [buttonElement, setButtonElement] = useState<HTMLButtonElement | null>(null)
@@ -54,10 +57,13 @@ const DocumentStatusBarActionsInner = memo(function DocumentStatusBarActionsInne
       </Flex>
     )
   }, [firstActionState])
-  const showFirstActionButton = selectedReleaseId
-    ? // If the first action is a custom action and we are in a version document show it.
-      firstActionState && !isSanityDefinedAction(firstActionState)
-    : firstActionState && !editState?.liveEdit
+
+  const showFirstActionButton = showingRevision
+    ? Boolean(firstActionState)
+    : selectedReleaseId
+      ? // If the first action is a custom action and we are in a version document show it.
+        firstActionState && !isSanityDefinedAction(firstActionState)
+      : firstActionState && !editState?.liveEdit
 
   const sideMenuItems = useMemo(() => {
     return showFirstActionButton ? menuActionStates : [firstActionState, ...menuActionStates]
@@ -87,7 +93,7 @@ const DocumentStatusBarActionsInner = memo(function DocumentStatusBarActionsInne
       {sideMenuItems.length > 0 && (
         <ActionMenuButton actionStates={sideMenuItems} disabled={disabled} />
       )}
-      {firstActionState && firstActionState.dialog && (
+      {showFirstActionButton && firstActionState && firstActionState.dialog && (
         <ActionStateDialog dialog={firstActionState.dialog} referenceElement={buttonElement} />
       )}
     </Flex>

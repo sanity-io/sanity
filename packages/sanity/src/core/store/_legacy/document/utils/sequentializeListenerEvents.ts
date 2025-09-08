@@ -25,8 +25,6 @@ interface ListenerSequenceState {
    * This can happen if events arrive out of order, or if an event in the middle for some reason gets lost
    */
   buffer: MutationEvent[]
-
-  unresolvedChainDetectedAt?: Date
 }
 
 const DEFAULT_MAX_BUFFER_SIZE = 20
@@ -64,7 +62,6 @@ export function sequentializeListenerEvents(options?: {
               base: {revision: event.document?._rev},
               buffer: EMPTY_ARRAY,
               emitEvents: [event],
-              unresolvedChainDetectedAt: undefined,
             }
           }
 
@@ -88,7 +85,10 @@ export function sequentializeListenerEvents(options?: {
               return state.base!.revision === chain[0]?.previousRev
             })
 
-            const nextBuffer = _nextBuffer.flat()
+            const nextBuffer = _nextBuffer
+              .flat()
+              .toSorted((a, b) => a.messageReceivedAt.localeCompare(b.messageReceivedAt))
+
             if (resolvedChains.length > 1) {
               throw new Error('Expected at most one resolved chain')
             }
@@ -101,25 +101,27 @@ export function sequentializeListenerEvents(options?: {
                 // resultRev pointing at a transaction id.
                 lastMutation.transition === 'disappear' ? undefined : lastMutation?.resultRev
 
-              debug(
-                `Chain from ${resolvedChains[0][0].previousRev} => ${resolvedChains[0].at(-1)?.resultRev} resolved!`,
-              )
-
+              if (state.buffer.length > 0) {
+                // we went from having unresolved chains to resolved
+                debug(
+                  `Resolved chain: %s => %s`,
+                  resolvedChains[0][0].previousRev,
+                  resolvedChains[0].at(-1)?.resultRev,
+                )
+                if (nextBuffer.length > 0) {
+                  debug(`There are still %d unchainable mutations`, nextBuffer.length)
+                } else {
+                  debug(`All chains were resolved`)
+                }
+              }
               return {
                 base: {revision: nextBaseRevision},
                 emitEvents: resolvedChains[0],
                 buffer: nextBuffer,
-                unresolvedChainDetectedAt:
-                  state.buffer.length === 0 && nextBuffer.length > 0
-                    ? new Date()
-                    : state.unresolvedChainDetectedAt,
               }
             }
 
-            if (
-              nextBuffer.length >=
-              ((globalThis as any).__sanity_debug_maxBufferSize ?? maxBufferSize)
-            ) {
+            if (nextBuffer.length >= maxBufferSize) {
               throw new MaxBufferExceededError(
                 `Too many unchainable mutation events: ${state.buffer.length}`,
                 state,
@@ -129,10 +131,6 @@ export function sequentializeListenerEvents(options?: {
               ...state,
               buffer: nextBuffer,
               emitEvents: EMPTY_ARRAY,
-              unresolvedChainDetectedAt:
-                state.buffer.length === 0 && nextBuffer.length > 0
-                  ? new Date()
-                  : state.unresolvedChainDetectedAt,
             }
           }
           // Any other event (e.g. 'reconnect' is passed on verbatim)
@@ -146,14 +144,11 @@ export function sequentializeListenerEvents(options?: {
       ),
       switchMap((state) => {
         if (state.buffer.length > 0) {
-          if (!state.unresolvedChainDetectedAt) {
-            throw new Error('Can not have a buffer without unresolvedChainDetectedAt')
-          }
-          const nextDeadline =
-            resolveChainDeadline -
-            (new Date().getTime() - state.unresolvedChainDetectedAt.getTime())
+          // note: buffer is sorted by messageReceivedAt – oldest first
+          const brokenChainStartsAt = new Date(state.buffer[0].messageReceivedAt)
+          const nextDeadline = resolveChainDeadline - (Date.now() - brokenChainStartsAt.getTime())
           debug(
-            "Detected %d listener event(s) that can't be applied in sequence. This could be due to events arriving out of order. Will throw an error if chain can't be resolved within %dms",
+            "There are %d listener event(s) that can't be applied in sequence. This could be due to events arriving out of order. Will throw an error if chain can't be resolved within %dms",
             state.buffer.length,
             nextDeadline,
           )

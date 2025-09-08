@@ -116,6 +116,16 @@ export function getPairListener(
       ) as Observable<WelcomeEvent | MutationEvent | ReconnectEvent>
     ).pipe(
       dedupeListenerEvents(),
+      map((event): WelcomeEvent | MutationEvent | ReconnectEvent =>
+        event.type === 'mutation'
+          ? {
+              ...event,
+              // client equivalent of `event.messageDispatchedAt`
+              // note: consider moving this to client.listen()
+              messageReceivedAt: new Date().toString(),
+            }
+          : event,
+      ),
       shareReplayLatest({
         predicate: (event) => event.type === 'welcome' || event.type === 'reconnect',
       }),
@@ -239,7 +249,7 @@ export function getPairListener(
   return merge(draftEvents$, publishedEvents$, versionEvents$).pipe(
     catchError((err, caught$) => {
       if (err instanceof OutOfSyncError) {
-        debug('Recovering from OutOfSyncError: %s', OutOfSyncError.name)
+        debug('Recovering from OutOfSyncError: %s', err.name)
         if (typeof options?.onSyncErrorRecovery === 'function') {
           options?.onSyncErrorRecovery(err)
         } else {

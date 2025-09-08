@@ -6,8 +6,11 @@ import {type ReactNode, useCallback, useMemo, useState} from 'react'
 import {ActionsMenu} from '../../../core/form/inputs/files/common/ActionsMenu'
 import {FileInputMenuItem} from '../../../core/form/inputs/files/common/FileInputMenuItem/FileInputMenuItem'
 import {UploadDropDownMenu} from '../../../core/form/inputs/files/common/UploadDropDownMenu'
+import {DEFAULT_API_VERSION} from '../../../core/form/studio/assetSourceMediaLibrary/constants'
+import {useClient} from '../../../core/hooks'
 import {useTranslation} from '../../../core/i18n'
 import {MenuItem} from '../../../ui-components/menuItem/MenuItem'
+import {CUSTOM_DOMAIN_PRODUCTION, CUSTOM_DOMAIN_STAGING} from './constants'
 import {getPlaybackTokens, type VideoAssetProps} from './types'
 import {useVideoPlaybackInfo} from './useVideoPlaybackInfo'
 import {VideoActionsMenu} from './VideoActionsMenu'
@@ -27,7 +30,6 @@ export function VideoPreview(props: VideoAssetProps) {
     clearField,
     directUploads,
     onSelectFiles,
-    observeAsset,
     readOnly,
     schemaType,
     setBrowseButtonElement,
@@ -39,6 +41,9 @@ export function VideoPreview(props: VideoAssetProps) {
   const asset = value?.asset
   const sourcesFromSchema = schemaType.options?.sources
   const accept = get(schemaType, 'options.accept', '')
+  const isStaging = useClient({apiVersion: DEFAULT_API_VERSION})
+    .config()
+    .apiHost.endsWith('.sanity.work')
 
   const videoPlaybackParams = useMemo(() => {
     if (!asset?._ref) {
@@ -63,8 +68,10 @@ export function VideoPreview(props: VideoAssetProps) {
   }, [playbackInfoState.result])
 
   const videoActionsMenuProps = useMemo(() => {
+    const customDomain = isStaging ? CUSTOM_DOMAIN_STAGING : CUSTOM_DOMAIN_PRODUCTION
     const baseProps = {
       aspectRatio: playbackInfoState.result?.aspectRatio,
+      customDomain,
       playbackId: playbackInfoState.result?.id,
       onMenuOpen: setIsMenuOpen,
       isMenuOpen: isMenuOpen,
@@ -72,7 +79,14 @@ export function VideoPreview(props: VideoAssetProps) {
     }
 
     return tokens ? {...baseProps, tokens} : baseProps
-  }, [playbackInfoState.result, tokens, isMenuOpen, setBrowseButtonElement])
+  }, [
+    isStaging,
+    playbackInfoState.result?.aspectRatio,
+    playbackInfoState.result?.id,
+    isMenuOpen,
+    setBrowseButtonElement,
+    tokens,
+  ])
 
   const assetSourcesWithUpload = assetSources.filter((s) => Boolean(s.Uploader))
 
