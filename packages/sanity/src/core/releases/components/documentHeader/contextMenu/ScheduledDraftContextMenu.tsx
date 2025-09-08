@@ -1,5 +1,5 @@
 import {type ReleaseDocument} from '@sanity/client'
-import {ClockIcon, PlayIcon, TrashIcon} from '@sanity/icons'
+import {CalendarIcon, ClockIcon, PlayIcon, TrashIcon, UploadIcon} from '@sanity/icons'
 import {Menu, MenuDivider, Spinner} from '@sanity/ui'
 import {memo, useState} from 'react'
 
@@ -47,13 +47,13 @@ export const ScheduledDraftContextMenu = memo(function ScheduledDraftContextMenu
     <>
       <Menu>
         <MenuItem
-          icon={isRunningNow ? Spinner : PlayIcon}
+          icon={isRunningNow ? Spinner : UploadIcon}
           onClick={() => setConfirmAction('publish-now')}
           text={t('release.action.publish-now')}
           disabled={disabled || isRunningNow}
         />
         <MenuItem
-          icon={ClockIcon}
+          icon={CalendarIcon}
           text={t('release.action.edit-schedule')}
           disabled={disabled || isRunningNow}
           onClick={onChangeSchedule}
