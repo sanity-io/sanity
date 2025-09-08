@@ -1,11 +1,10 @@
 import {type ReleaseDocument} from '@sanity/client'
-import {CalendarIcon, ClockIcon, PlayIcon, TrashIcon, UploadIcon} from '@sanity/icons'
+import {CalendarIcon, TrashIcon, UploadIcon} from '@sanity/icons'
 import {Menu, MenuDivider, Spinner} from '@sanity/ui'
 import {memo, useState} from 'react'
 
 import {MenuItem} from '../../../../../ui-components/menuItem/MenuItem'
 import {useTranslation} from '../../../../i18n'
-import {releasesLocaleNamespace} from '../../../i18n'
 import {DeleteScheduledDraftDialog} from '../../dialog/DeleteScheduledDraftDialog'
 import {PublishScheduledDraftDialog} from '../../dialog/PublishScheduledDraftDialog'
 import {CopyToReleaseMenuGroup} from './CopyToReleaseMenuGroup'

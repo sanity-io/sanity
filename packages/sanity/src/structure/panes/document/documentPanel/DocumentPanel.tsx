@@ -3,7 +3,6 @@ import {useEffect, useMemo, useRef, useState} from 'react'
 import {
   getSanityCreateLinkMetadata,
   getVersionFromId,
-  isDraftId,
   isGoingToUnpublish,
   isNewDocument,
   isPerspectiveWriteable,
@@ -20,6 +19,7 @@ import {
 } from 'sanity'
 import {css, styled} from 'styled-components'
 
+import {isCardinalityOneRelease} from '../../../../core/releases/util/util'
 import {PaneContent, usePane, usePaneLayout, usePaneRouter} from '../../../components'
 import {hasObsoleteDraft} from '../../../hasObsoleteDraft'
 import {useFilteredReleases} from '../../../hooks/useFilteredReleases'
@@ -47,7 +47,6 @@ import {ScheduledReleaseBanner} from './banners/ScheduledReleaseBanner'
 import {UnpublishedDocumentBanner} from './banners/UnpublishedDocumentBanner'
 import {FormView} from './documentViews'
 import {DocumentPanelSubHeader} from './header/DocumentPanelSubHeader'
-import {isCardinalityOneRelease} from '../../../../core/releases/util/util'
 
 interface DocumentPanelProps {
   footerHeight: number | null
@@ -217,11 +216,7 @@ export const DocumentPanel = function DocumentPanel(props: DocumentPanelProps) {
       return <ScheduledReleaseBanner currentRelease={selectedPerspective as ReleaseDocument} />
     }
 
-    // Check if current document is a draft and has cardinality one releases
-    const isDraftDocument = displayed?._id && isDraftId(displayed._id)
-    console.log({isDraftDocument, displayed: displayed?._id})
     const hasCardinalityOneReleases = filteredReleases.currentReleases.some(isCardinalityOneRelease)
-
     if (selectedPerspective === 'drafts' && hasCardinalityOneReleases) {
       return <ScheduledDraftOverrideBanner />
     }

@@ -10,7 +10,6 @@ import {getCalendarLabels} from '../../../form/inputs/DateInputs/utils'
 import {useTimeZone} from '../../../hooks/useTimeZone'
 import {useTranslation} from '../../../i18n'
 import {CONTENT_RELEASES_TIME_ZONE_SCOPE} from '../../../studio/constants'
-import {releasesLocaleNamespace} from '../../i18n'
 
 interface ScheduleDraftDialogProps {
   onClose: () => void
