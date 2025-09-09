@@ -33,7 +33,6 @@ export function ScheduleDraftDialog(props: ScheduleDraftDialogProps): React.JSX.
     loading = false,
     initialDate,
   } = props
-  const {t} = useTranslation()
   const {t: tCore} = useTranslation()
 
   const [publishAt, setPublishAt] = useState<Date | undefined>(
