@@ -7,7 +7,7 @@ import {useSource} from '../../studio/source'
  */
 export function useScheduledDraftsEnabled(): boolean {
   const source = useSource()
-  const sourceInternal = (source as any).__internal
+  const sourceInternal = source.__internal
   const isEnabled = Boolean(sourceInternal?.options?.[QUOTA_EXCLUDED_RELEASES_ENABLED])
 
   return isEnabled

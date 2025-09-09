@@ -10,5 +10,5 @@ export function isCardinalityOneRelease(release: ReleaseDocument): release is Re
     cardinality: 'one'
   }
 } {
-  return release.metadata.cardinality === 'one'
+  return release.metadata?.cardinality === 'one'
 }
