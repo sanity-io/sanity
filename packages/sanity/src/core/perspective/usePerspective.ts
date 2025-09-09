@@ -32,7 +32,7 @@ export function usePerspective(): PerspectiveContextValue {
   // (navbar, perspective menu, etc.) while preserving the actual release data for
   // document-level logic that needs to access the original release information.
   return useMemo(() => {
-    const {selectedPerspective, selectedPerspectiveName, selectedReleaseId} = context
+    const {selectedPerspective} = context
 
     // Check if this is a cardinality one release
     const isCardinalityOne =
@@ -43,11 +43,14 @@ export function usePerspective(): PerspectiveContextValue {
 
     if (isCardinalityOne) {
       // Map cardinality one releases to drafts for global UI
+      // IMPORTANT: Keep the original perspectiveStack for cardinality one releases
+      // The perspectiveStack is used for API queries and should contain the actual cardinality one release ID
       return {
         ...context,
         selectedPerspective: 'drafts',
         selectedPerspectiveName: undefined, // drafts
         selectedReleaseId: undefined, // drafts
+        // perspectiveStack remains unchanged - it contains the cardinality one release for API queries
       }
     }
 

@@ -208,6 +208,24 @@ describe('getReleasesPerspectiveStack()', () => {
         intendedPublishAt: '2024-11-23T00:00:00Z',
       },
     }),
+    // Add cardinality one releases for testing
+    createReleaseMock({
+      _id: '_.releases.rcardinality1',
+      _createdAt: '2024-10-27T00:00:00Z',
+      metadata: {
+        releaseType: 'asap',
+        cardinality: 'one',
+      },
+    }),
+    createReleaseMock({
+      _id: '_.releases.rcardinality2',
+      _createdAt: '2024-10-28T00:00:00Z',
+      metadata: {
+        releaseType: 'scheduled',
+        cardinality: 'one',
+        intendedPublishAt: '2024-11-30T00:00:00Z',
+      },
+    }),
   ]
   // Define your test cases with the expected outcomes
   const testCases: {
@@ -244,25 +262,43 @@ describe('getReleasesPerspectiveStack()', () => {
       selectedPerspectiveName: 'rundecided2',
       isDraftModelEnabled: true,
       excludedPerspectives: [],
-      expected: ['rundecided2', 'rfuture4', 'rfuture1', 'rasap2', 'rasap1', 'drafts'],
+      expected: [
+        'rundecided2',
+        'rfuture4',
+        'rcardinality2',
+        'rfuture1',
+        'rcardinality1',
+        'rasap2',
+        'rasap1',
+        'drafts',
+      ],
     },
     {
       selectedPerspectiveName: 'rundecided2',
       isDraftModelEnabled: false,
       excludedPerspectives: [],
-      expected: ['rundecided2', 'rfuture4', 'rfuture1', 'rasap2', 'rasap1', 'published'],
+      expected: [
+        'rundecided2',
+        'rfuture4',
+        'rcardinality2',
+        'rfuture1',
+        'rcardinality1',
+        'rasap2',
+        'rasap1',
+        'published',
+      ],
     },
     {
       selectedPerspectiveName: 'rundecided2',
       isDraftModelEnabled: true,
       excludedPerspectives: ['rfuture1', 'drafts'],
-      expected: ['rundecided2', 'rfuture4', 'rasap2', 'rasap1'],
+      expected: ['rundecided2', 'rfuture4', 'rcardinality2', 'rcardinality1', 'rasap2', 'rasap1'],
     },
     {
       selectedPerspectiveName: 'rundecided2',
       isDraftModelEnabled: false,
       excludedPerspectives: ['rfuture1', 'published'],
-      expected: ['rundecided2', 'rfuture4', 'rasap2', 'rasap1'],
+      expected: ['rundecided2', 'rfuture4', 'rcardinality2', 'rcardinality1', 'rasap2', 'rasap1'],
     },
     {
       selectedPerspectiveName: 'published',
@@ -287,6 +323,57 @@ describe('getReleasesPerspectiveStack()', () => {
       isDraftModelEnabled: false,
       excludedPerspectives: [],
       expected: ['published'],
+    },
+    // CARDINALITY ONE RELEASE TEST CASES:
+    // For cardinality one releases, the perspective stack should contain only that release + default perspective
+    {
+      selectedPerspectiveName: 'rcardinality1',
+      isDraftModelEnabled: true,
+      excludedPerspectives: [],
+      expected: ['rcardinality1', 'drafts'],
+    },
+    {
+      selectedPerspectiveName: 'rcardinality1',
+      isDraftModelEnabled: false,
+      excludedPerspectives: [],
+      expected: ['rcardinality1', 'published'],
+    },
+    {
+      selectedPerspectiveName: 'rcardinality2',
+      isDraftModelEnabled: true,
+      excludedPerspectives: [],
+      expected: ['rcardinality2', 'drafts'],
+    },
+    {
+      selectedPerspectiveName: 'rcardinality2',
+      isDraftModelEnabled: false,
+      excludedPerspectives: [],
+      expected: ['rcardinality2', 'published'],
+    },
+    // Test cardinality one with excluded perspectives
+    {
+      selectedPerspectiveName: 'rcardinality1',
+      isDraftModelEnabled: true,
+      excludedPerspectives: ['rcardinality1'],
+      expected: ['drafts'],
+    },
+    {
+      selectedPerspectiveName: 'rcardinality2',
+      isDraftModelEnabled: false,
+      excludedPerspectives: ['rcardinality2'],
+      expected: ['published'],
+    },
+    {
+      selectedPerspectiveName: 'rcardinality1',
+      isDraftModelEnabled: true,
+      excludedPerspectives: ['drafts'],
+      expected: ['rcardinality1'],
+    },
+    {
+      selectedPerspectiveName: 'rcardinality2',
+      isDraftModelEnabled: false,
+      excludedPerspectives: ['published'],
+      expected: ['rcardinality2'],
     },
   ]
   it.each(testCases)(
