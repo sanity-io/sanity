@@ -325,11 +325,17 @@ const releasesLocaleStrings = {
   /** Description for the confirm button for scheduling a release */
   'schedule-dialog.confirm-button': 'Yes, schedule',
 
+  /** Label for date picker when scheduling a release */
+  'schedule-dialog.select-publish-date-label': 'Schedule on',
+
   /** Title for unschedule release dialog */
   'unschedule-dialog.confirm-title': 'Are you sure you want to unschedule the release?',
   /** Description shown in unschedule relaease dialog */
   'unschedule-dialog.confirm-description':
     'The release will no longer be published on the scheduled date',
+  /** Description for warning that the published schedule time is in the past */
+  'schedule-dialog.publish-date-in-past-warning':
+    'Schedule this release for a future time and date.',
 
   /** Header for the schedule publish dialog */
   'schedule-publish-dialog.header': 'Schedule draft for Publish',
@@ -397,6 +403,8 @@ const releasesLocaleStrings = {
   'table-header.edited': 'Edited',
   /** Header for the document table in the release tool - Published */
   'table-header.published-at': 'Published',
+  /** Header for the document table in the release tool - Published */
+  'table-header.publishedAt': 'Published',
   /** Header for the scheduled drafts document table in the release tool - published at */
   'table-header.scheduled-draft.published-at': 'Published at',
   /** Header for the scheduled drafts document table in the release tool - scheduled for */

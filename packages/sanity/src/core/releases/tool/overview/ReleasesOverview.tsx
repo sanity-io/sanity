@@ -432,6 +432,11 @@ export function ReleasesOverview() {
     return releasesOverviewColumnDefs(t, releaseGroupMode)
   }, [cardinalityView, releaseGroupMode, t])
 
+  const isArchivedReleasesView = releaseGroupMode === 'archived' && cardinalityView === 'releases'
+  const defaultTableSort = isArchivedReleasesView
+    ? DEFAULT_ARCHIVED_RELEASES_OVERVIEW_SORT
+    : DEFAULT_RELEASES_OVERVIEW_SORT
+
   const NoRelease = () => {
     return (
       <Flex
@@ -511,11 +516,7 @@ export function ReleasesOverview() {
                   <Table<TableRelease>
                     // for resetting filter and sort on table when filer changed
                     key={releaseFilterDate ? 'by_date' : releaseGroupMode}
-                    defaultSort={
-                      releaseGroupMode === 'archived' && cardinalityView === 'releases'
-                        ? DEFAULT_ARCHIVED_RELEASES_OVERVIEW_SORT
-                        : DEFAULT_RELEASES_OVERVIEW_SORT
-                    }
+                    defaultSort={defaultTableSort}
                     loading={loadingTableData}
                     data={filteredReleases}
                     columnDefs={tableColumns}

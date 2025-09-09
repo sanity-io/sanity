@@ -43,12 +43,10 @@ export const VersionContextMenu = memo(function VersionContextMenu(props: Versio
     release,
     onChangeSchedule,
   } = props
-
   const isPublished = isPublishedId(documentId) && !isVersion
 
   const {checkWithPermissionGuard} = useReleasePermissions()
   const {createRelease} = useReleaseOperations()
-
   const [hasCreatePermission, setHasCreatePermission] = useState<boolean | null>(null)
 
   const [permissions, isPermissionsLoading] = useDocumentPairPermissions({

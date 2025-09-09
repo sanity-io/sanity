@@ -44,6 +44,8 @@ export const CanonicalReleaseContextMenu = memo(function CanonicalReleaseContext
   } = props
   const {t} = useTranslation()
 
+  const isCopyToReleaseDisabled = disabled || !hasCreatePermission || isGoingToUnpublish
+
   return (
     <Menu>
       {isVersion && (
@@ -63,7 +65,7 @@ export const CanonicalReleaseContextMenu = memo(function CanonicalReleaseContext
         fromRelease={fromRelease}
         onCreateRelease={onCreateRelease}
         onCreateVersion={onCreateVersion}
-        disabled={disabled || !hasCreatePermission || isGoingToUnpublish}
+        disabled={isCopyToReleaseDisabled}
         hasCreatePermission={hasCreatePermission}
       />
       {!isPublished && (
