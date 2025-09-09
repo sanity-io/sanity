@@ -1,5 +1,5 @@
 /* eslint-disable max-statements */
-import path, {basename} from 'node:path'
+import path from 'node:path'
 import zlib from 'node:zlib'
 
 import {type CliCommandArguments, type CliCommandContext} from '@sanity/cli'
@@ -145,11 +145,18 @@ export default async function deployAppAction(
     output.print(`\nSuccess! Application deployed`)
 
     if (!appId) {
+      const example = `Example:
+export default defineCliConfig({
+  //…
+  deployment: {
+    ${chalk.cyan`appId: '${userApplication.id}'`},
+  },
+  //…
+})`
       output.print(`\nAdd ${chalk.cyan(`appId: '${userApplication.id}'`)}`)
-      output.print(
-        `to \`deployment\` in ${cliConfigPath ? basename(cliConfigPath) : 'sanity.cli.js or sanity.cli.ts'}`,
-      )
-      output.print(`to avoid prompting on next deploy.`)
+      output.print(`to the \`deployment\` section in sanity.cli.js or sanity.cli.ts`)
+      output.print(`to avoid prompting for appId on next deploy.`)
+      output.print(`\n${example}`)
     }
   } catch (err) {
     spinner.fail()

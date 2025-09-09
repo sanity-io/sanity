@@ -83,7 +83,11 @@ export default async function buildSanityStudio(
     autoUpdatesImports = getAutoUpdatesImportMap(sanityDependencies, {appId})
 
     output.print(`${info} Building with auto-updates enabled`)
-    if (!appId) {
+
+    // note: we want to show this warning only if running `sanity build`
+    // since `sanity deploy` will prompt for appId if it's missing and tell the user to add it to sanity.cli.ts when done
+    // see deployAction.ts
+    if (args.groupOrCommand !== 'deploy' && !appId) {
       warnAboutMissingAppId({
         appType: 'studio',
         cliConfigPath,
