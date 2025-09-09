@@ -10,7 +10,7 @@ import {getVersionFromId} from '../../core/util/draftUtils'
 /**
  * Check if the given perspective is a cardinality one release
  */
-function isCardinalityOnePerspective(perspective: unknown): perspective is ReleaseDocument {
+export function isCardinalityOnePerspective(perspective: unknown): perspective is ReleaseDocument {
   return (
     perspective !== 'drafts' &&
     perspective !== 'published' &&

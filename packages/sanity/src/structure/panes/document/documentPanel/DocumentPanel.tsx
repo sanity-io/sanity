@@ -19,9 +19,9 @@ import {
 } from 'sanity'
 import {css, styled} from 'styled-components'
 
-import {isCardinalityOneRelease} from '../../../../core/releases/util/util'
 import {PaneContent, usePane, usePaneLayout, usePaneRouter} from '../../../components'
 import {hasObsoleteDraft} from '../../../hasObsoleteDraft'
+import {useDocumentPerspective} from '../../../hooks/useDocumentPerspective'
 import {useFilteredReleases} from '../../../hooks/useFilteredReleases'
 import {mustChooseNewDocumentDestination} from '../../../mustChooseNewDocumentDestination'
 import {useStructureTool} from '../../../useStructureTool'
@@ -172,6 +172,7 @@ export const DocumentPanel = function DocumentPanel(props: DocumentPanelProps) {
 
   const showInspector = Boolean(!collapsed && inspector)
   const {selectedPerspective, selectedReleaseId} = usePerspective()
+  const {selectedPerspectiveName} = useDocumentPerspective({documentId})
   const filteredReleases = useFilteredReleases({displayed, documentId})
 
   // eslint-disable-next-line complexity
@@ -216,8 +217,18 @@ export const DocumentPanel = function DocumentPanel(props: DocumentPanelProps) {
       return <ScheduledReleaseBanner currentRelease={selectedPerspective as ReleaseDocument} />
     }
 
-    const hasCardinalityOneReleases = filteredReleases.currentReleases.some(isCardinalityOneRelease)
-    if (selectedPerspective === 'drafts' && hasCardinalityOneReleases) {
+    const hasCardinalityOneReleases = filteredReleases.currentReleases.some(
+      (release) => isReleaseDocument(release) && release.metadata.cardinality === 'one',
+    )
+    // Show the banner when:
+    // - Global perspective appears as 'drafts' (mapped perspective)
+    // - There are cardinality one releases available for this document
+    // - BUT we're not actually viewing a cardinality one release (check document perspective)
+    if (
+      selectedPerspective === 'drafts' &&
+      hasCardinalityOneReleases &&
+      selectedPerspectiveName === undefined
+    ) {
       return <ScheduledDraftOverrideBanner />
     }
 
@@ -310,6 +321,7 @@ export const DocumentPanel = function DocumentPanel(props: DocumentPanelProps) {
     schemaType,
     filteredReleases,
     workspace,
+    selectedPerspectiveName,
   ])
   const portalElements = useMemo(
     () => ({documentScrollElement: documentScrollElement}),
