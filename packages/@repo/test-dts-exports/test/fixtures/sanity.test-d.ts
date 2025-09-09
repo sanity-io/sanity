@@ -142,6 +142,7 @@ import type {
   buildRangeDecorationSelectionsFromComments,
   buildTextSelectionFromFragment,
   CanvasAppOptions,
+  CanvasNotificationPayload,
   CapabilityGate,
   catchWithCount,
   ChangeBreadcrumb,
@@ -232,6 +233,7 @@ import type {
   CompactPreviewProps,
   ComplexElementProps,
   ComposableOption,
+  ComputeDiff,
   ConcreteRuleClass,
   ConditionalIndexAccess,
   ConditionalProperty,
@@ -311,6 +313,7 @@ import type {
   CurrentUser,
   CustomValidator,
   CustomValidatorResult,
+  DashboardNotificationPayload,
   DateComponents,
   DateDefinition,
   DateInput,
@@ -961,6 +964,7 @@ import type {
   NewDocumentOptionsResolver,
   newDraftFrom,
   NoChanges,
+  NodeDiffProps,
   noop,
   normalizeIndexSegment,
   normalizeIndexTupleSegment,
@@ -1093,6 +1097,7 @@ import type {
   ProjectData,
   ProjectDatasetData,
   ProjectStore,
+  ProvenanceDiffAnnotation,
   PublishDocumentVersionEvent,
   PublishedId,
   QueryParams,
@@ -1319,6 +1324,7 @@ import type {
   StudioLocaleResourceKeys,
   StudioLogo,
   StudioNavbar,
+  StudioNotificationPayload,
   StudioProps,
   StudioProvider,
   StudioProviderProps,
@@ -2056,6 +2062,9 @@ describe('sanity', () => {
   test('CanvasAppOptions', () => {
     expectTypeOf<CanvasAppOptions>().toBeObject()
   })
+  test('CanvasNotificationPayload', () => {
+    expectTypeOf<CanvasNotificationPayload>().toBeObject()
+  })
   test('CapabilityGate', () => {
     expectTypeOf<typeof CapabilityGate>().not.toBeNever()
   })
@@ -2326,6 +2335,9 @@ describe('sanity', () => {
   test('ComposableOption', () => {
     expectTypeOf<ComposableOption<any, any>>().not.toBeNever()
   })
+  test('ComputeDiff', () => {
+    expectTypeOf<ComputeDiff<any>>().not.toBeNever()
+  })
   test('ConcreteRuleClass', () => {
     expectTypeOf<typeof ConcreteRuleClass>().not.toBeNever()
   })
@@ -2565,6 +2577,9 @@ describe('sanity', () => {
   })
   test('CustomValidatorResult', () => {
     expectTypeOf<CustomValidatorResult>().not.toBeNever()
+  })
+  test('DashboardNotificationPayload', () => {
+    expectTypeOf<DashboardNotificationPayload>().toBeObject()
   })
   test('DateComponents', () => {
     // This export has 2 declarations, run `TEST_DTS_EXPORTS_DIAGNOSTICS=duplicates pnpm generate:dts-exports` to see where each declaration is coming from
@@ -4530,6 +4545,9 @@ describe('sanity', () => {
   test('NoChanges', () => {
     expectTypeOf<typeof NoChanges>().toBeFunction()
   })
+  test('NodeDiffProps', () => {
+    expectTypeOf<NodeDiffProps<any>>().toBeObject()
+  })
   test('noop', () => {
     expectTypeOf<typeof noop>().toBeFunction()
   })
@@ -4929,6 +4947,9 @@ describe('sanity', () => {
   })
   test('ProjectStore', () => {
     expectTypeOf<ProjectStore>().toBeObject()
+  })
+  test('ProvenanceDiffAnnotation', () => {
+    expectTypeOf<ProvenanceDiffAnnotation>().toBeObject()
   })
   test('PublishDocumentVersionEvent', () => {
     expectTypeOf<PublishDocumentVersionEvent>().toBeObject()
@@ -5616,6 +5637,9 @@ describe('sanity', () => {
   })
   test('StudioNavbar', () => {
     expectTypeOf<typeof StudioNavbar>().toBeFunction()
+  })
+  test('StudioNotificationPayload', () => {
+    expectTypeOf<StudioNotificationPayload>().toBeObject()
   })
   test('StudioProps', () => {
     expectTypeOf<StudioProps>().toBeObject()
