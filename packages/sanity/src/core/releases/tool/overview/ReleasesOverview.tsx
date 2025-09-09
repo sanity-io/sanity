@@ -50,15 +50,15 @@ import {useTimezoneAdjustedDateTimeRange} from './useTimezoneAdjustedDateTimeRan
 
 const MotionButton = motion.create(Button)
 
+export interface TableRelease extends ReleaseDocument {
+  documentsMetadata?: ReleasesMetadata
+  isDeleted?: boolean
+}
+
 const DEFAULT_RELEASES_OVERVIEW_SORT: TableSort = {column: 'publishAt', direction: 'asc'}
 const DEFAULT_ARCHIVED_RELEASES_OVERVIEW_SORT: TableSort = {
   column: 'lastActivity',
   direction: 'desc',
-}
-
-export interface TableRelease extends ReleaseDocument {
-  documentsMetadata?: ReleasesMetadata
-  isDeleted?: boolean
 }
 
 export function ReleasesOverview() {

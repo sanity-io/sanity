@@ -23,26 +23,6 @@ interface ActionConfig {
   confirmButtonTone?: 'primary' | 'critical'
 }
 
-interface MenuItemConfig {
-  key: ScheduledDraftAction
-  testId: string
-}
-
-const MENU_ITEMS: MenuItemConfig[] = [
-  {
-    key: 'publish-now',
-    testId: 'publish-now-menu-item',
-  },
-  {
-    key: 'edit-schedule',
-    testId: 'edit-schedule-menu-item',
-  },
-  {
-    key: 'delete-schedule',
-    testId: 'delete-schedule-menu-item',
-  },
-]
-
 const SCHEDULED_DRAFT_ACTION_MAP: Record<ScheduledDraftAction, ActionConfig> = {
   'publish-now': {
     icon: PublishIcon,
@@ -51,16 +31,17 @@ const SCHEDULED_DRAFT_ACTION_MAP: Record<ScheduledDraftAction, ActionConfig> = {
     dialogConfirmButtonI18nKey: 'release.dialog.publish-scheduled-draft.confirm',
     confirmButtonTone: 'primary',
   },
+  'edit-schedule': {
+    icon: CalendarIcon,
+    // Uses custom dialog component
+  },
   'delete-schedule': {
     icon: TrashIcon,
     tone: 'critical',
     // Uses shared DeleteScheduledDraftDialog component
   },
-  'edit-schedule': {
-    icon: CalendarIcon,
-    // Uses custom dialog component
-  },
 }
+const MENU_ITEMS: ScheduledDraftAction[] = ['publish-now', 'edit-schedule', 'delete-schedule']
 
 export const ScheduledDraftMenuButtonWrapper = ({
   release,
@@ -94,7 +75,7 @@ export const ScheduledDraftMenuButtonWrapper = ({
   const menuItems = useMemo(() => {
     // When in archived mode, only show delete-schedule option
     if (releaseGroupMode === 'archived') {
-      return MENU_ITEMS.filter((item) => item.key === 'delete-schedule')
+      return MENU_ITEMS.filter((action) => action === 'delete-schedule')
     }
 
     // When in active mode, show all options
@@ -134,7 +115,7 @@ export const ScheduledDraftMenuButtonWrapper = ({
           setSelectedAction(undefined)
           setOpenPopover(false)
         } catch (error) {
-          console.error(`Failed to ${action} scheduled draft:`, error)
+          console.error('Failed to run scheduled draft:', error)
         } finally {
           setIsPerformingOperation(false)
           setSelectedAction(undefined)
@@ -205,17 +186,17 @@ export const ScheduledDraftMenuButtonWrapper = ({
       <Popover
         content={
           <Menu ref={scheduledDraftMenuRef}>
-            {menuItems.map((item) => {
-              const actionConfig = SCHEDULED_DRAFT_ACTION_MAP[item.key]
+            {menuItems.map((action) => {
+              const actionConfig = SCHEDULED_DRAFT_ACTION_MAP[action]
               return (
                 <MenuItem
-                  key={item.key}
-                  onClick={() => handleMenuItemClick(item.key)}
+                  key={action}
+                  onClick={() => handleMenuItemClick(action)}
                   disabled={isPerformingOperation}
                   icon={actionConfig.icon}
-                  text={t(`release.action.${item.key}`)}
+                  text={t(`release.action.${action}`)}
                   tone={actionConfig.tone}
-                  data-testid={item.testId}
+                  data-testid={`${action}-menu-item`}
                 />
               )
             })}

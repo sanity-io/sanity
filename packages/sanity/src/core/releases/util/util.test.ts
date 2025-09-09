@@ -102,4 +102,60 @@ describe('shouldShowReleaseInView', () => {
     const filterFn = shouldShowReleaseInView('drafts')
     expect(filterFn(release)).toBe(false)
   })
+
+  it('should not show undefined cardinality releases in "drafts" view', () => {
+    const release: ReleaseDocument = {
+      ...activeScheduledRelease,
+      metadata: {
+        ...activeScheduledRelease.metadata,
+        cardinality: undefined,
+      },
+    }
+    const filterFn = shouldShowReleaseInView('drafts')
+    expect(filterFn(release)).toBe(false)
+  })
+
+  it('should return a function that can be used for array filtering', () => {
+    const releases: ReleaseDocument[] = [
+      {
+        ...activeScheduledRelease,
+        _id: 'release1',
+        metadata: {...activeScheduledRelease.metadata, cardinality: 'one'},
+      },
+      {
+        ...activeScheduledRelease,
+        _id: 'release2',
+        metadata: {...activeScheduledRelease.metadata, cardinality: 'many'},
+      },
+      {
+        ...activeScheduledRelease,
+        _id: 'release3',
+        metadata: {...activeScheduledRelease.metadata, cardinality: undefined},
+      },
+    ]
+
+    const draftsFilterFn = shouldShowReleaseInView('drafts')
+    const releasesFilterFn = shouldShowReleaseInView('releases')
+
+    const draftsResult = releases.filter(draftsFilterFn)
+    const releasesResult = releases.filter(releasesFilterFn)
+
+    expect(draftsResult).toHaveLength(1)
+    expect(draftsResult[0]._id).toBe('release1')
+
+    expect(releasesResult).toHaveLength(2)
+    expect(releasesResult.map((r) => r._id)).toEqual(['release2', 'release3'])
+  })
+
+  it('should handle releases with missing metadata gracefully', () => {
+    const releaseWithoutMetadata = {
+      ...activeScheduledRelease,
+      metadata: undefined,
+    } as unknown as ReleaseDocument
+
+    const filterFn = shouldShowReleaseInView('releases')
+
+    // Should not throw and should return false for drafts view
+    expect(() => filterFn(releaseWithoutMetadata)).not.toThrow()
+  })
 })

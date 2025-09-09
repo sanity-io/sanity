@@ -362,6 +362,7 @@ exports[`exports snapshot 1`] = `
     "isBooleanInputProps": "function",
     "isBooleanSchemaType": "function",
     "isBuilder": "function",
+    "isCardinalityOneRelease": "function",
     "isCookielessCompatibleLoginMethod": "function",
     "isCreateDocumentVersionEvent": "function",
     "isCreateIfNotExistsMutation": "function",

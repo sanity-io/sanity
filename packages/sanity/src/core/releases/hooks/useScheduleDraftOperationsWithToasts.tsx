@@ -13,12 +13,10 @@ const Strong = ({children}: PropsWithChildren) => <strong>{children}</strong>
 /**
  * Hook for scheduled draft operations with built-in toast notifications.
  *
- * Wraps useScheduleDraftOperations and provides the same API but with consistent toast handling:
  * - Run now: Shows error toasts only (no success toast)
  * - Delete schedule: Shows both success and error toasts
  * - Reschedule: Shows error toasts only (no success toast)
  *
- * @param releaseTitle - The title to use in toast messages
  * @internal
  */
 export function useScheduleDraftOperationsWithToasts(

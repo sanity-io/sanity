@@ -5,10 +5,7 @@ import {getReleaseIdFromReleaseDocumentId} from '../util/getReleaseIdFromRelease
 
 /**
  * Hook to get the first document from a scheduled draft release bundle.
- * This abstracts the common pattern of accessing `documents?.[0]?.document`.
  *
- * @param releaseDocumentId - The release document ID (e.g., "releases.abc123")
- * @returns Object containing the first document, document count, loading state, and error
  * @internal
  */
 export function useScheduledDraftDocument(releaseDocumentId: string | undefined): {
