@@ -11,6 +11,7 @@ import {PublishScheduledDraftDialog} from '../../components/dialog/PublishSchedu
 import {ScheduleDraftDialog} from '../../components/dialog/ScheduleDraftDialog'
 import {useScheduleDraftOperationsWithToasts} from '../../hooks/useScheduleDraftOperationsWithToasts'
 import {getReleaseIdFromReleaseDocumentId} from '../../util/getReleaseIdFromReleaseDocumentId'
+import {isCardinalityOneRelease} from '../../util/util'
 import {useBundleDocuments} from '../detail/useBundleDocuments'
 import {type Mode} from './queryParamUtils'
 
@@ -78,7 +79,7 @@ export const ScheduledDraftMenuButtonWrapper = ({
   const canPerformActions =
     release.state === 'scheduled' ||
     release.state === 'scheduling' ||
-    (release.metadata.releaseType === 'scheduled' && release.metadata.cardinality === 'one')
+    (release.metadata.releaseType === 'scheduled' && isCardinalityOneRelease(release))
 
   const menuItems = useMemo(() => {
     const allItems = [

@@ -22,6 +22,7 @@ import {useReleasesToolAvailable} from '../../hooks/useReleasesToolAvailable'
 import {useScheduleDraftOperationsWithToasts} from '../../hooks/useScheduleDraftOperationsWithToasts'
 import {useVersionOperations} from '../../hooks/useVersionOperations'
 import {getReleaseIdFromReleaseDocumentId} from '../../util/getReleaseIdFromReleaseDocumentId'
+import {isCardinalityOneRelease} from '../../util/util'
 import {DiscardVersionDialog} from '../dialog/DiscardVersionDialog'
 import {ScheduleDraftDialog} from '../dialog/ScheduleDraftDialog'
 import {ReleaseAvatarIcon} from '../ReleaseAvatar'
@@ -307,7 +308,7 @@ export const VersionChip = memo(function VersionChip(props: {
         />
       )}
 
-      {isChangeScheduleDialogOpen && release && release.metadata.cardinality === 'one' && (
+      {isChangeScheduleDialogOpen && release && isCardinalityOneRelease(release) && (
         <ScheduleDraftDialog
           onClose={() => !isPerformingScheduleOperation && setIsChangeScheduleDialogOpen(false)}
           onSchedule={handleReschedule}

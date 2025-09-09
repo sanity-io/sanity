@@ -12,6 +12,10 @@ import {getReleaseIdFromReleaseDocumentId} from '../releases/util/getReleaseIdFr
 import {isPublishedPerspective} from '../releases/util/util'
 import {useWorkspace} from '../studio/workspace'
 import {EMPTY_ARRAY} from '../util/empty'
+import {
+  CardinalityOnePerspectiveProvider,
+  useCardinalityOnePerspective,
+} from './CardinalityOnePerspectiveContext'
 import {PerspectiveProvider} from './PerspectiveProvider'
 import {type ReleaseId} from './types'
 import {usePerspective} from './usePerspective'
@@ -100,8 +104,10 @@ const ResetPerspectiveHandler = () => {
  * If you need to add the PerspectiveProvider you should use that component directly.
  * It's up to you to define how the selectedPerspectiveName and excludedPerspectives should worl.
  */
-export function GlobalPerspectiveProvider({children}: {children: ReactNode}) {
+
+function GlobalPerspectiveProviderInner({children}: {children: ReactNode}) {
   const router = useRouter()
+  const {cardinalityOneReleaseId} = useCardinalityOnePerspective()
 
   const {
     document: {
@@ -113,6 +119,12 @@ export function GlobalPerspectiveProvider({children}: {children: ReactNode}) {
     | 'published'
     | ReleaseId
     | undefined
+
+  // Check for cardinality one release in React state
+  // If URL has no perspective but we have a cardinality one release selected, use that
+  if (!selectedPerspectiveName && cardinalityOneReleaseId) {
+    selectedPerspectiveName = cardinalityOneReleaseId
+  }
 
   if (!isDraftModelEnabled && typeof selectedPerspectiveName === 'undefined') {
     selectedPerspectiveName = PUBLISHED
@@ -130,5 +142,13 @@ export function GlobalPerspectiveProvider({children}: {children: ReactNode}) {
       {children}
       <ResetPerspectiveHandler />
     </PerspectiveProvider>
+  )
+}
+
+export function GlobalPerspectiveProvider({children}: {children: ReactNode}) {
+  return (
+    <CardinalityOnePerspectiveProvider>
+      <GlobalPerspectiveProviderInner>{children}</GlobalPerspectiveProviderInner>
+    </CardinalityOnePerspectiveProvider>
   )
 }

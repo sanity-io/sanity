@@ -17,6 +17,7 @@ import {
   useCopyPaste,
   useDocumentForm,
   usePerspective,
+  useRawPerspective,
   useSchema,
   useSource,
   useStudioUrl,
@@ -30,6 +31,8 @@ import {usePaneRouter} from '../../components'
 import {useDiffViewRouter} from '../../diffView/hooks/useDiffViewRouter'
 import {useDocumentIdStack} from '../../hooks/useDocumentIdStack'
 import {useDocumentLastRev} from '../../hooks/useDocumentLastRev'
+import {useDocumentPerspective} from '../../hooks/useDocumentPerspective'
+
 import {structureLocaleNamespace} from '../../i18n'
 import {type PaneMenuItem} from '../../types'
 import {DocumentURLCopied} from './__telemetry__'
@@ -94,6 +97,7 @@ export const DocumentPaneProvider = memo((props: DocumentPaneProviderProps) => {
   const {buildStudioUrl} = useStudioUrl()
 
   const perspective = usePerspective()
+  const rawPerspective = useRawPerspective()
 
   const {
     document: {
@@ -101,16 +105,35 @@ export const DocumentPaneProvider = memo((props: DocumentPaneProviderProps) => {
     },
   } = useWorkspace()
 
+  // Detect if we're creating a new document
+  const isCreatingNewDocument = params.template !== undefined
+
+  // Get document-level perspective (handles cardinality one releases)
+  const documentPerspective = useDocumentPerspective({
+    documentId,
+    isCreatingNewDocument,
+  })
+
+  // NOTE: Cardinality one release handling is now done automatically in useDocumentPerspective
+  // No manual reset logic needed here - the document perspective hook handles clearing
+  // cardinality one state when documents don't exist in the selected cardinality one release
+
   const {selectedReleaseId, selectedPerspectiveName} = useMemo(() => {
     // TODO: COREL - Remove this after updating sanity-assist to use <PerspectiveProvider>
     if (forcedVersion) {
       return forcedVersion
     }
+
+    // Use document-level perspective for cardinality one releases and new document creation
     return {
-      selectedPerspectiveName: perspective.selectedPerspectiveName,
-      selectedReleaseId: perspective.selectedReleaseId,
+      selectedPerspectiveName: documentPerspective.selectedPerspectiveName,
+      selectedReleaseId: documentPerspective.selectedReleaseId,
     }
-  }, [forcedVersion, perspective.selectedPerspectiveName, perspective.selectedReleaseId])
+  }, [
+    forcedVersion,
+    documentPerspective.selectedPerspectiveName,
+    documentPerspective.selectedReleaseId,
+  ])
 
   const diffViewRouter = useDiffViewRouter()
 
@@ -500,6 +523,7 @@ export const DocumentPaneProvider = memo((props: DocumentPaneProviderProps) => {
         title,
         value,
         selectedReleaseId,
+        selectedPerspectiveName,
         views,
         formState,
         unstable_languageFilter: languageFilter,
@@ -561,6 +585,7 @@ export const DocumentPaneProvider = memo((props: DocumentPaneProviderProps) => {
       title,
       value,
       selectedReleaseId,
+      selectedPerspectiveName,
       views,
       formState,
       languageFilter,
