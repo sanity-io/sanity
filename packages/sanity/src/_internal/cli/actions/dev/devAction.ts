@@ -9,7 +9,7 @@ import {
 } from '@sanity/cli'
 import {type SanityProject} from '@sanity/client'
 import chalk from 'chalk'
-import {info} from 'log-symbols'
+import {info, warning} from 'log-symbols'
 import semver from 'semver'
 import {hideBin} from 'yargs/helpers'
 import yargs from 'yargs/yargs'
@@ -130,7 +130,7 @@ export default async function startSanityDevServer(
 ): Promise<void> {
   const timers = getTimer()
   const flags = await parseCliFlags(args)
-  const {output, apiClient, workDir, cliConfig, prompt, cliPackageManager} = context
+  const {output, apiClient, workDir, cliConfig, prompt, cliConfigPath} = context
 
   const {loadInDashboard} = flags
 
@@ -152,7 +152,7 @@ export default async function startSanityDevServer(
   }
 
   const autoUpdatesEnabled = shouldAutoUpdate({flags, cliConfig})
-  const autoUpdatesImports = {}
+
   if (autoUpdatesEnabled) {
     // Get the clean version without build metadata: https://semver.org/#spec-item-10
     const cleanSanityVersion = semver.parse(installedSanityVersion)?.version
@@ -167,6 +167,15 @@ export default async function startSanityDevServer(
     const appId = getAppId({cliConfig, output})
 
     output.print(`${info} Running with auto-updates enabled`)
+    if (!appId) {
+      const projectId = cliConfig?.api?.projectId
+      const manageUrl = `${baseUrl}/manage${projectId ? `/project/${cliConfig?.api?.projectId}/studios` : ''}`
+      const cliConfigFile = cliConfigPath ? path.basename(cliConfigPath) : 'sanity.cli.js'
+      output.print(
+        `${warning} No ${chalk.bold('appId')} configured. This studio will auto-update to the ${chalk.bold.italic('latest')} channel. To enable fine grained version selection, head over to ${chalk.cyan(manageUrl)} and add the appId to the ${chalk.bold('deployment')} section in ${chalk.bold(cliConfigFile)}.
+        `,
+      )
+    }
     // Check local versions against deployed versions
     let result: Awaited<ReturnType<typeof compareDependencyVersions>> | undefined
     try {
