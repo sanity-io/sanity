@@ -1,12 +1,8 @@
 import {type ReleaseDocument} from '@sanity/client'
-import {CalendarIcon, TrashIcon, UploadIcon} from '@sanity/icons'
 import {Menu, MenuDivider} from '@sanity/ui'
-import {memo, useState} from 'react'
+import {memo} from 'react'
 
-import {MenuItem} from '../../../../../ui-components/menuItem/MenuItem'
-import {useTranslation} from '../../../../i18n'
-import {DeleteScheduledDraftDialog} from '../../dialog/DeleteScheduledDraftDialog'
-import {PublishScheduledDraftDialog} from '../../dialog/PublishScheduledDraftDialog'
+import {useScheduledDraftMenuActions} from '../../../hooks/useScheduledDraftMenuActions'
 import {CopyToReleaseMenuGroup} from './CopyToReleaseMenuGroup'
 
 interface ScheduledDraftContextMenuProps {
@@ -37,27 +33,21 @@ export const ScheduledDraftContextMenu = memo(function ScheduledDraftContextMenu
     onChangeSchedule,
     hasCreatePermission,
   } = props
-  const {t} = useTranslation()
-
-  const [dialogType, setDialogType] = useState<'publish-now' | 'delete-schedule' | null>(null)
 
   const isCopyToReleaseDisabled = disabled || !hasCreatePermission || isGoingToUnpublish
+
+  const {menuItems, dialogs} = useScheduledDraftMenuActions({
+    release,
+    documentType: type,
+    disabled,
+    onEditSchedule: onChangeSchedule,
+  })
 
   return (
     <>
       <Menu>
-        <MenuItem
-          icon={UploadIcon}
-          onClick={() => setDialogType('publish-now')}
-          text={t('release.action.publish-now')}
-          disabled={disabled}
-        />
-        <MenuItem
-          icon={CalendarIcon}
-          text={t('release.action.edit-schedule')}
-          disabled={disabled}
-          onClick={onChangeSchedule}
-        />
+        {menuItems.publishNow}
+        {menuItems.editSchedule}
         <MenuDivider />
         <CopyToReleaseMenuGroup
           releases={releases}
@@ -68,30 +58,10 @@ export const ScheduledDraftContextMenu = memo(function ScheduledDraftContextMenu
           hasCreatePermission={hasCreatePermission}
         />
         <MenuDivider />
-        <MenuItem
-          icon={TrashIcon}
-          onClick={() => setDialogType('delete-schedule')}
-          text={t('release.action.delete-schedule')}
-          tone="critical"
-          disabled={disabled}
-        />
+        {menuItems.deleteSchedule}
       </Menu>
 
-      {dialogType === 'publish-now' && (
-        <PublishScheduledDraftDialog
-          release={release}
-          documentType={type}
-          onClose={() => setDialogType(null)}
-        />
-      )}
-
-      {dialogType === 'delete-schedule' && (
-        <DeleteScheduledDraftDialog
-          release={release}
-          documentType={type}
-          onClose={() => setDialogType(null)}
-        />
-      )}
+      {dialogs}
     </>
   )
 })
