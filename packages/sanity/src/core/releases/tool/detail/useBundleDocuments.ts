@@ -10,6 +10,7 @@ import {
   distinctUntilChanged,
   expand,
   filter,
+  finalize,
   map,
   reduce,
   shareReplay,
@@ -287,7 +288,12 @@ const getReleaseDocumentsObservable = ({
             })
           }
 
-          bundleDocumentsCache[cacheKey] = observable
+          bundleDocumentsCache[cacheKey] = observable.pipe(
+            finalize(() => {
+              delete bundleDocumentsCache[cacheKey]
+            }),
+            shareReplay(1),
+          )
         }
 
         return bundleDocumentsCache[cacheKey]
