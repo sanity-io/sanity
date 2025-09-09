@@ -6,6 +6,7 @@ import {
 } from '@sanity/types'
 import {useMemo, useState} from 'react'
 
+import {type TargetPerspective} from '../../perspective/types'
 import {type FormNodePresence} from '../../presence'
 import {isGoingToUnpublish} from '../../releases/util/isGoingToUnpublish'
 import {useCurrentUser} from '../../store'
@@ -28,6 +29,7 @@ export interface UseFormStateOptions {
   comparisonValue: unknown
   openPath: Path
   focusPath: Path
+  perspective: TargetPerspective
   presence: FormNodePresence[]
   validation: ValidationMarker[]
   fieldGroupState?: StateTree<string> | undefined
@@ -54,6 +56,7 @@ export function useFormState<
   readOnly: inputReadOnly,
   changesOpen,
   schemaType,
+  perspective,
 }: UseFormStateOptions): FormState<T, S> | null {
   // note: feel free to move these state pieces out of this hook
   const currentUser = useCurrentUser()
@@ -145,6 +148,7 @@ export function useFormState<
       presence,
       validation: isVersionGoingToUnpublish ? EMPTY_ARRAY : validation,
       changesOpen,
+      perspective,
     }) as ObjectFormNode<T, S>
   }, [
     prepareFormState,
@@ -156,6 +160,7 @@ export function useFormState<
     comparisonValue,
     focusPath,
     openPath,
+    perspective,
     readOnly,
     hidden,
     currentUser,

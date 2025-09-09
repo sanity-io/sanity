@@ -3,6 +3,61 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [4.7.0](https://github.com/sanity-io/sanity/compare/v4.6.1...v4.7.0) (2025-09-09)
+
+
+### Features
+
+* add validation per release on the release overview + add caching ([#10496](https://github.com/sanity-io/sanity/issues/10496)) ([7e8da03](https://github.com/sanity-io/sanity/commit/7e8da0308a067d0b5dfa12a68342903845da4903))
+* **cli:** Improve undeploy output for apps ([#10516](https://github.com/sanity-io/sanity/issues/10516)) ([f6809b4](https://github.com/sanity-io/sanity/commit/f6809b4b33566656972ac998d2fad5142921fd03))
+* **cli:** Prevent GlobalErrorHandler from growing beyond viewport height ([#10510](https://github.com/sanity-io/sanity/issues/10510)) ([172d9a9](https://github.com/sanity-io/sanity/commit/172d9a9501d3df936d2ffeab290076cf98a8c4fb))
+* **core:** custom release actions ([#10286](https://github.com/sanity-io/sanity/issues/10286)) ([28a774b](https://github.com/sanity-io/sanity/commit/28a774b271558ae288b7d7d3a00c9ec8659bd68a))
+* **core:** sapp 2967 schedule publish drafts ([#10392](https://github.com/sanity-io/sanity/issues/10392)) ([e438808](https://github.com/sanity-io/sanity/commit/e438808cb0812c85ec06d284c40a222327d686a6))
+* **descriptors:** handle validations ([#10457](https://github.com/sanity-io/sanity/issues/10457)) ([bb7e750](https://github.com/sanity-io/sanity/commit/bb7e750f3600592e8e8b7928a5b64efef0dd32d0))
+* **descriptors:** serialize i18n properties ([#10540](https://github.com/sanity-io/sanity/issues/10540)) ([d71f9d3](https://github.com/sanity-io/sanity/commit/d71f9d349f0ab42d61aee1a2a82a99dfe75ed1fe))
+* **descriptors:** serialize orderings properties ([#10550](https://github.com/sanity-io/sanity/issues/10550)) ([e6442a9](https://github.com/sanity-io/sanity/commit/e6442a96f06d3c156c314d81639d7192bc0c4c65))
+* **limits:** Document Limits Upsell ([#10428](https://github.com/sanity-io/sanity/issues/10428)) ([4ff929d](https://github.com/sanity-io/sanity/commit/4ff929d9aa8b1d1ffee40f82f5465a2e053a86a1))
+* **sanity:** add `StringInputPortableText` with inline diff support ([c8b4569](https://github.com/sanity-io/sanity/commit/c8b4569ed8c6d555340a1e75785e638d42f65f46))
+* **sanity:** add diff props to input props ([e8733fb](https://github.com/sanity-io/sanity/commit/e8733fb7cbe6faf94566804de2a8f112d1102f6b))
+* **sanity:** export `focusRingBorderStyle` ([f499eee](https://github.com/sanity-io/sanity/commit/f499eee7f89cf86fce3d7ec52381779a61d1e236))
+* **sanity:** export `UpdateReadOnlyPlugin` ([fb5d670](https://github.com/sanity-io/sanity/commit/fb5d670ed43eecf228ac20ffa3fdc07e7ba9d872))
+* **sanity:** graduate `SelectedPerspective` to public type `TargetPerspective` ([#10300](https://github.com/sanity-io/sanity/issues/10300)) ([d13666c](https://github.com/sanity-io/sanity/commit/d13666ce9e997f31e19edfceb9244729850ca026))
+
+
+### Bug Fixes
+
+* add caching to the useHistory in the releases + fix lastEditedByIssue ([#10564](https://github.com/sanity-io/sanity/issues/10564)) ([0e49e4c](https://github.com/sanity-io/sanity/commit/0e49e4c834a99ab3bee64ac6b4ed5ad7aaaef36f))
+* **core:** make sure empty strings aren't passed to the upload API ([#10558](https://github.com/sanity-io/sanity/issues/10558)) ([31fc081](https://github.com/sanity-io/sanity/commit/31fc081c5fe08eba2ca1719286c870bb499c9981))
+* **core:** preserve local document state during intermittent disconnects ([#10528](https://github.com/sanity-io/sanity/issues/10528)) ([89954ae](https://github.com/sanity-io/sanity/commit/89954ae04d42236ef8855c43fc35d0cc2d1f4521))
+* dedupe listener events ([#10529](https://github.com/sanity-io/sanity/issues/10529)) ([b552234](https://github.com/sanity-io/sanity/commit/b55223456cef737358d278cadff357982dd9ac53))
+* **deps:** update dependency @portabletext/block-tools to ^3.5.2 ([#10505](https://github.com/sanity-io/sanity/issues/10505)) ([b20a49e](https://github.com/sanity-io/sanity/commit/b20a49ef0614b566d3e2f6166c0805823e0bcfe5))
+* **deps:** update dependency @portabletext/block-tools to ^3.5.3 ([#10535](https://github.com/sanity-io/sanity/issues/10535)) ([a52feb1](https://github.com/sanity-io/sanity/commit/a52feb11d59e082615dd6d2e3c3b3eba12dda89c))
+* **deps:** update dependency @portabletext/block-tools to ^3.5.4 ([#10569](https://github.com/sanity-io/sanity/issues/10569)) ([f80859b](https://github.com/sanity-io/sanity/commit/f80859bc1760c67774e130dce58e0e90f70693a2))
+* **deps:** update dependency @portabletext/editor to ^2.7.2 ([#10506](https://github.com/sanity-io/sanity/issues/10506)) ([7c4a145](https://github.com/sanity-io/sanity/commit/7c4a1451cdc943853c4015ffad3fbd2922a1cfb4))
+* **deps:** update dependency @portabletext/editor to ^2.8.0 ([#10536](https://github.com/sanity-io/sanity/issues/10536)) ([e08eee0](https://github.com/sanity-io/sanity/commit/e08eee00e2de0e5c742d7689c0f9735829ff4b1a))
+* **deps:** update dependency @portabletext/editor to ^2.8.1 ([#10555](https://github.com/sanity-io/sanity/issues/10555)) ([3c9eb4a](https://github.com/sanity-io/sanity/commit/3c9eb4aa4b59304fd88bd92e8298197131c63849))
+* **deps:** update dependency @portabletext/editor to ^2.8.2 ([#10563](https://github.com/sanity-io/sanity/issues/10563)) ([d7be4ac](https://github.com/sanity-io/sanity/commit/d7be4ac250e7f8cb939e8d702db4b509c12d99c1))
+* **deps:** update dependency @sanity/client to ^7.11.0 ([#10518](https://github.com/sanity-io/sanity/issues/10518)) ([5cfeba6](https://github.com/sanity-io/sanity/commit/5cfeba6b5d7f03c566740298ca4661c1066cc6aa))
+* **deps:** update dependency @sanity/insert-menu to v2.0.2 ([#10554](https://github.com/sanity-io/sanity/issues/10554)) ([3fd0a59](https://github.com/sanity-io/sanity/commit/3fd0a59fb25fc9b6453b00bb9386446701fc49db))
+* **deps:** update dependency @sanity/presentation-comlink to ^1.0.29 ([#10556](https://github.com/sanity-io/sanity/issues/10556)) ([fd5105c](https://github.com/sanity-io/sanity/commit/fd5105c448bf2ae96fa750ba7da855ca04942fc4))
+* **deps:** update dependency @sanity/ui to ^3.0.11 ([#10538](https://github.com/sanity-io/sanity/issues/10538)) ([aa025d4](https://github.com/sanity-io/sanity/commit/aa025d4d98aa4c5c732196fdb36fa99e0c0e4694))
+* **deps:** update dependency @sanity/ui to ^3.0.14 ([#10557](https://github.com/sanity-io/sanity/issues/10557)) ([8a1f41f](https://github.com/sanity-io/sanity/commit/8a1f41fad56b6c655d34701c955eda04567a4763))
+* **deps:** update dependency groq-js to ^1.18.0 ([#10576](https://github.com/sanity-io/sanity/issues/10576)) ([176527f](https://github.com/sanity-io/sanity/commit/176527ff1aa281cb7a890e9abe00185a60263f2a))
+* improve PortalProvider and PopoverContainer perf ([#10549](https://github.com/sanity-io/sanity/issues/10549)) ([04b209b](https://github.com/sanity-io/sanity/commit/04b209bbbf123d117e2035909b84774ff97b1e35))
+* issue where an unpublished documentwas howing up as undefined in the document list in a release detail ([#10568](https://github.com/sanity-io/sanity/issues/10568)) ([f58b8bb](https://github.com/sanity-io/sanity/commit/f58b8bbe4a16c581aa6f1f51650af32e6110cc09))
+* issue where trying to revert revision would open two dialogs  ([#10559](https://github.com/sanity-io/sanity/issues/10559)) ([efc6b14](https://github.com/sanity-io/sanity/commit/efc6b14692f204c5945be02a9f356966879d66cd))
+* log the correct error name ([#10532](https://github.com/sanity-io/sanity/issues/10532)) ([d22f8b3](https://github.com/sanity-io/sanity/commit/d22f8b30169e584deb92daf9d6f4636d56fc8d03))
+* pass `react-hooks/purity` checks ([#10517](https://github.com/sanity-io/sanity/issues/10517)) ([9a53dd0](https://github.com/sanity-io/sanity/commit/9a53dd0677f7a910551b5371464578ac5cc2d3a6))
+* popover issue when closing and clicking different panes ([#10577](https://github.com/sanity-io/sanity/issues/10577)) ([b30dbb1](https://github.com/sanity-io/sanity/commit/b30dbb17c0b2e41afb868759a62301eebad14a90))
+* resolves revert change popover sometimes closing without bubbling click events ([#10486](https://github.com/sanity-io/sanity/issues/10486)) ([d3c3a94](https://github.com/sanity-io/sanity/commit/d3c3a941ab411b1faa4b03a7d7984f65a2708946))
+* **sanity:** ETL errors caused by inferring union types from constant arrays ([#10509](https://github.com/sanity-io/sanity/issues/10509)) ([2d499ca](https://github.com/sanity-io/sanity/commit/2d499ca86688b9a0eee01ec6c458ff481a1ce186))
+* **sanity:** use custom domain for video player ([#10541](https://github.com/sanity-io/sanity/issues/10541)) ([f404e21](https://github.com/sanity-io/sanity/commit/f404e2192bd98c3e9a01545ab70a1d0df594f692))
+* **sanity:** use project host when fetching video playback info ([#10560](https://github.com/sanity-io/sanity/issues/10560)) ([9c12c97](https://github.com/sanity-io/sanity/commit/9c12c971328935eecdb442ca5ae6d77d6ed36a12))
+* **structure:** always render history restore action if seeing revision ([#10562](https://github.com/sanity-io/sanity/issues/10562)) ([525e198](https://github.com/sanity-io/sanity/commit/525e198b39b47a07fd85c4d2d8cb3fdf53e3f44b))
+* version document restore revision and revert changes actions ([#10537](https://github.com/sanity-io/sanity/issues/10537)) ([80a14f6](https://github.com/sanity-io/sanity/commit/80a14f60e463b304f019b550bb56d27959ef2aae))
+
+
+
 ## [4.6.1](https://github.com/sanity-io/sanity/compare/v4.6.0...v4.6.1) (2025-09-02)
 
 

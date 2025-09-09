@@ -38,7 +38,9 @@ describe('ReleaseActionsResolver', () => {
 
   const mockReleaseAction1: ReleaseActionComponent = vi.fn(() => mockReleaseActionDescription1)
   const mockReleaseAction2: ReleaseActionComponent = vi.fn(() => mockReleaseActionDescription2)
-  const mockReleaseAction3: ReleaseActionComponent = vi.fn(() => null)
+  const mockReleaseAction3: ReleaseActionComponent = vi.fn(
+    () => null as unknown as ReleaseActionDescription,
+  )
 
   const mockOnActions = vi.fn()
 
@@ -65,7 +67,7 @@ describe('ReleaseActionsResolver', () => {
           documents: mockDocuments,
         },
       }),
-      expect.any(Object),
+      undefined,
     )
   })
 
@@ -135,7 +137,7 @@ describe('ReleaseActionsResolver', () => {
           documents: mockDocuments,
         },
       }),
-      expect.any(Object),
+      undefined,
     )
   })
 
@@ -173,8 +175,12 @@ describe('ReleaseActionsResolver', () => {
   })
 
   it('should handle all actions returning null', () => {
-    const nullAction1: ReleaseActionComponent = vi.fn(() => null)
-    const nullAction2: ReleaseActionComponent = vi.fn(() => null)
+    const nullAction1: ReleaseActionComponent = vi.fn(
+      () => null as unknown as ReleaseActionDescription,
+    )
+    const nullAction2: ReleaseActionComponent = vi.fn(
+      () => null as unknown as ReleaseActionDescription,
+    )
 
     render(
       <ReleaseActionsResolver

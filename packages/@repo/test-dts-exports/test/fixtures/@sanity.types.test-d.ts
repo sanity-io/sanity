@@ -50,6 +50,7 @@ import type {
   BooleanRule,
   BooleanSchemaType,
   CanvasAppOptions,
+  CanvasNotificationPayload,
   CollapseOptions,
   ConditionalIndexAccess,
   ConditionalProperty,
@@ -68,6 +69,7 @@ import type {
   CurrentUser,
   CustomValidator,
   CustomValidatorResult,
+  DashboardNotificationPayload,
   DateDefinition,
   DateOptions,
   DateRule,
@@ -317,6 +319,7 @@ import type {
   StringOptions,
   StringRule,
   StringSchemaType,
+  StudioNotificationPayload,
   SwatchName,
   TextDefinition,
   TextOptions,
@@ -491,6 +494,9 @@ describe('@sanity/types', () => {
   test('CanvasAppOptions', () => {
     expectTypeOf<CanvasAppOptions>().toBeObject()
   })
+  test('CanvasNotificationPayload', () => {
+    expectTypeOf<CanvasNotificationPayload>().toBeObject()
+  })
   test('CollapseOptions', () => {
     expectTypeOf<CollapseOptions>().toBeObject()
   })
@@ -544,6 +550,9 @@ describe('@sanity/types', () => {
   })
   test('CustomValidatorResult', () => {
     expectTypeOf<CustomValidatorResult>().not.toBeNever()
+  })
+  test('DashboardNotificationPayload', () => {
+    expectTypeOf<DashboardNotificationPayload>().toBeObject()
   })
   test('DateDefinition', () => {
     expectTypeOf<DateDefinition>().toBeObject()
@@ -1291,6 +1300,9 @@ describe('@sanity/types', () => {
   })
   test('StringSchemaType', () => {
     expectTypeOf<StringSchemaType>().toBeObject()
+  })
+  test('StudioNotificationPayload', () => {
+    expectTypeOf<StudioNotificationPayload>().toBeObject()
   })
   test('SwatchName', () => {
     expectTypeOf<SwatchName>().not.toBeNever()

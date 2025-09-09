@@ -9,11 +9,18 @@ import {releasesLocaleNamespace} from '../../i18n'
 import {getDocumentValidationLoading} from '../../util/getDocumentValidationLoading'
 import {type DocumentInRelease} from './useBundleDocuments'
 
-export function ValidationProgressIndicator({documents}: {documents: DocumentInRelease[]}) {
+export function ValidationProgressIndicator({
+  documents,
+  layout = 'default',
+}: {
+  documents: DocumentInRelease[]
+  layout?: 'default' | 'minimal'
+}) {
   const totalCount = documents.length
   const {validatedCount, isValidating, hasError} = getDocumentValidationLoading(documents)
   const [showCheckmark, setShowCheckmark] = useState(false)
   const {t} = useTranslation(releasesLocaleNamespace)
+  const isMinimal = layout === 'minimal'
 
   const isFinished = useMemo(
     () => validatedCount === totalCount && validatedCount !== 0,
@@ -60,7 +67,7 @@ export function ValidationProgressIndicator({documents}: {documents: DocumentInR
 
   return (
     <Card
-      padding={2}
+      padding={isMinimal ? 0 : 2}
       radius="full"
       tone={tone}
       style={{
@@ -79,7 +86,7 @@ export function ValidationProgressIndicator({documents}: {documents: DocumentInR
             </Tooltip>
           )}
         </Text>
-        {!showCheckmark && (
+        {!showCheckmark && !isMinimal && (
           <Text muted size={1}>
             {isValidating
               ? t('summary.validating-documents', {validatedCount, totalCount})

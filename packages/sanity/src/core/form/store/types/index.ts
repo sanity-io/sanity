@@ -1,3 +1,4 @@
+export * from './diff'
 export * from './fieldGroup'
 export * from './fieldsetState'
 export * from './memberErrors'

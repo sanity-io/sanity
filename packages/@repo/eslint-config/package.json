@@ -1,6 +1,6 @@
 {
   "name": "@repo/eslint-config",
-  "version": "4.6.1",
+  "version": "4.7.0",
   "private": true,
   "type": "module",
   "exports": {
@@ -20,7 +20,7 @@
     "eslint-plugin-oxlint": "^1.14.0",
     "eslint-plugin-react": "^7.37.5",
     "eslint-plugin-react-hooks": "6.0.0-rc.2",
-    "eslint-plugin-react-hooks-with-use-effect-event": "npm:eslint-plugin-react-hooks@0.0.0-experimental-b1b0955f-20250901",
+    "eslint-plugin-react-hooks-with-use-effect-event": "npm:eslint-plugin-react-hooks@0.0.0-experimental-de5a1b20-20250905",
     "eslint-plugin-simple-import-sort": "^12.1.1",
     "eslint-plugin-tsdoc": "^0.4.0",
     "eslint-plugin-unicorn": "^60.0.0",
