@@ -1410,6 +1410,7 @@ import type {
   unstable_useObserveDocument,
   unstable_useValuePreview,
   UpdateLiveDocumentEvent,
+  UpdateReadOnlyPlugin,
   Uploader,
   UploaderDef,
   UploaderResolver,
@@ -5897,6 +5898,9 @@ describe('sanity', () => {
   })
   test('UpdateLiveDocumentEvent', () => {
     expectTypeOf<UpdateLiveDocumentEvent>().toBeObject()
+  })
+  test('UpdateReadOnlyPlugin', () => {
+    expectTypeOf<typeof UpdateReadOnlyPlugin>().toBeFunction()
   })
   test('Uploader', () => {
     expectTypeOf<Uploader<any>>().not.toBeNever()
