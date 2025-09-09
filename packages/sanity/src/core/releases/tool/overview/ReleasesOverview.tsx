@@ -108,7 +108,7 @@ export function ReleasesOverview() {
     [selectedPerspective],
   )
 
-  const scrollContainerRef = useRef<HTMLDivElement | null>(null)
+  const [scrollContainerRef, setScrollContainerRef] = useState<HTMLDivElement | null>(null)
 
   const hasReleases = releases.length > 0 || archivedReleases.length > 0
   const loadingOrHasReleases = loading || hasReleases
@@ -425,7 +425,7 @@ export function ReleasesOverview() {
                   </Flex>
                 </Flex>
               </Card>
-              <Box ref={scrollContainerRef} marginTop={3} overflow={'auto'}>
+              <Box ref={setScrollContainerRef} marginTop={3} overflow={'auto'}>
                 {(loading || hasReleases) && (
                   <Table<TableRelease>
                     // for resetting filter and sort on table when filer changed

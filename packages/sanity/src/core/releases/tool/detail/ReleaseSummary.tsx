@@ -2,7 +2,7 @@ import {type ReleaseDocument, type SanityDocument} from '@sanity/client'
 import {AddIcon} from '@sanity/icons'
 import {useTelemetry} from '@sanity/telemetry/react'
 import {Card, Container, Stack, useToast} from '@sanity/ui'
-import {type RefObject, useCallback, useEffect, useMemo, useState} from 'react'
+import {useCallback, useEffect, useMemo, useState} from 'react'
 
 import {Button} from '../../../../ui-components'
 import {useTranslation} from '../../../i18n'
@@ -28,7 +28,6 @@ export type BundleDocumentRow = DocumentInReleaseDetail
 
 export interface ReleaseSummaryProps {
   documents: DocumentInRelease[]
-  scrollContainerRef: RefObject<HTMLDivElement | null>
   release: ReleaseDocument
   isLoading?: boolean
 }
@@ -43,7 +42,8 @@ const isBundleDocumentRow = (
   'validation' in maybeBundleDocumentRow
 
 export function ReleaseSummary(props: ReleaseSummaryProps) {
-  const {documents, isLoading = false, release, scrollContainerRef} = props
+  const {documents, isLoading = false, release} = props
+  const [scrollContainerRef, setScrollContainerRef] = useState<HTMLDivElement | null>(null)
   const toast = useToast()
   const {createVersion} = useReleaseOperations()
   const telemetry = useTelemetry()
@@ -158,8 +158,8 @@ export function ReleaseSummary(props: ReleaseSummaryProps) {
 
   return (
     <Card
+      ref={setScrollContainerRef}
       data-testid="document-table-card"
-      ref={scrollContainerRef}
       style={{
         height: '100%',
         overflow: 'auto',

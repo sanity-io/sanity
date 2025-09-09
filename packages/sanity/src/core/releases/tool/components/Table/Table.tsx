@@ -10,8 +10,6 @@ import {
   Fragment,
   type HTMLProps,
   type RefAttributes,
-  type RefObject,
-  useEffect,
   useMemo,
   useRef,
 } from 'react'
@@ -54,7 +52,7 @@ export interface TableProps<TableData, AdditionalRowTableData> {
     datum: RowDatum<TableData, AdditionalRowTableData> | unknown
   }) => React.ReactNode
   rowProps?: (datum: TableData) => Partial<TableRowProps>
-  scrollContainerRef: RefObject<HTMLDivElement | null>
+  scrollContainerRef: HTMLDivElement | null
   hideTableInlinePadding?: boolean
 }
 
@@ -116,19 +114,10 @@ const TableInner = <TableData, AdditionalRowTableData>({
 
   const rowVirtualizer = useVirtualizer({
     count: filteredData.length,
-    getScrollElement: () => scrollContainerRef.current,
+    getScrollElement: () => scrollContainerRef,
     estimateSize: () => ITEM_HEIGHT,
     overscan: 5,
   })
-
-  useEffect(() => {
-    // Sometimes the scrollCotaninerRef is not initially available
-    // This makes it that the table woudl then be blank when the data already exists
-    // This is a workaround to force the virtualizer to re-measure when the scroll container becomes available
-    if (scrollContainerRef.current) {
-      rowVirtualizer.measure()
-    }
-  }, [rowVirtualizer, scrollContainerRef])
 
   const rowActionColumnDef: Column = useMemo(
     () => ({
