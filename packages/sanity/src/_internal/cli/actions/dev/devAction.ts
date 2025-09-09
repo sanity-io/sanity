@@ -37,27 +37,22 @@ export interface StartDevServerCommandFlags {
 
 const debug = debugIt.extend('dev')
 
-const getDefaultCoreURL = ({
+const baseUrl =
+  process.env.SANITY_INTERNAL_ENV === 'staging' ? 'https://sanity.work' : 'https://sanity.io'
+
+const getDefaultDashboardURL = ({
   organizationId,
   url,
 }: {
   organizationId: string
   url: string
 }): string => {
-  const params = new URLSearchParams({
+  return `${baseUrl}/@${organizationId}?${new URLSearchParams({
     url,
-  })
-
-  return process.env.SANITY_INTERNAL_ENV === 'staging'
-    ? `https://sanity.work/@${organizationId}?${params.toString()}`
-    : `https://sanity.io/@${organizationId}?${params.toString()}`
+  }).toString()}`
 }
 
-const getCoreApiURL = (): string => {
-  return process.env.SANITY_INTERNAL_ENV === 'staging' ? 'https://sanity.work' : 'https://sanity.io'
-}
-
-export const getCoreURL = async ({
+export const getDashboardURL = async ({
   fetchFn = globalThis.fetch,
   timeout = 5000,
   organizationId,
@@ -78,31 +73,31 @@ export const getCoreURL = async ({
     })
 
     const res = await fetchFn(
-      `${getCoreApiURL()}/api/dashboard/mode/development/resolve-url?${queryParams.toString()}`,
+      `${baseUrl}/api/dashboard/mode/development/resolve-url?${queryParams.toString()}`,
       {
         signal: abortController.signal,
       },
     )
 
     if (!res.ok) {
-      debug(`Failed to fetch core URL: ${res.statusText}`)
-      return getDefaultCoreURL({organizationId, url})
+      debug(`Failed to fetch dashboard URL: ${res.statusText}`)
+      return getDefaultDashboardURL({organizationId, url})
     }
 
     const body = await res.json()
     return body.url
   } catch (err) {
-    debug(`Failed to fetch core URL: ${err.message}`)
-    return getDefaultCoreURL({organizationId, url})
+    debug(`Failed to fetch dashboard URL: ${err.message}`)
+    return getDefaultDashboardURL({organizationId, url})
   } finally {
     clearTimeout(timer)
   }
 }
 
 /**
- * Gets the core URL from API or uses the default core URL
+ * Gets the dashboard URL from API or uses the default dashboard URL
  */
-export const getCoreAppURL = async ({
+export const getDashboardAppURL = async ({
   organizationId,
   httpHost = 'localhost',
   httpPort = 3333,
@@ -111,12 +106,12 @@ export const getCoreAppURL = async ({
   httpHost?: string
   httpPort?: number
 }): Promise<string> => {
-  const url = await getCoreURL({
+  const url = await getDashboardURL({
     organizationId,
     url: `http://${httpHost}:${httpPort}`,
   })
 
-  // <core-app-url>/<orgniazationId>?dev=<dev-server-url>
+  // <dashboard-app-url>/<orgniazationId>?dev=<dev-server-url>
   return url
 }
 
@@ -261,7 +256,7 @@ export default async function startSanityDevServer(
       output.print(
         chalk.blue(
           chalk.underline(
-            await getCoreAppURL({
+            await getDashboardAppURL({
               organizationId,
               httpHost: config.httpHost,
               httpPort: config.httpPort,
