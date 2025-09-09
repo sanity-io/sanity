@@ -1460,10 +1460,414 @@ describe('Object', () => {
       ).toMatchObject([expected])
     })
 
-    test.todo('i18n')
+    describe('i18n', () => {
+      test('basic i18n support', () => {
+        expect(
+          convertType({
+            name: 'person',
+            type: 'object',
+            groups: [
+              {
+                name: 'settings',
+                title: 'Settings',
+                i18n: {
+                  title: {key: 'groups.settings.title', ns: 'studio'},
+                },
+              },
+            ],
+            fields: [{name: 'title', type: 'string'}],
+          }).typeDef.groups,
+        ).toMatchObject([
+          {
+            name: 'settings',
+            title: 'Settings',
+            i18n: {
+              title: {key: 'groups.settings.title', ns: 'studio'},
+            },
+          },
+        ])
+      })
+
+      test('i18n with multiple fields', () => {
+        expect(
+          convertType({
+            name: 'person',
+            type: 'object',
+            groups: [
+              {
+                name: 'advanced',
+                title: 'Advanced Settings',
+                i18n: {
+                  title: {key: 'groups.advanced.title', ns: 'studio'},
+                },
+              },
+            ],
+            fields: [{name: 'title', type: 'string'}],
+          }).typeDef.groups,
+        ).toMatchObject([
+          {
+            name: 'advanced',
+            title: 'Advanced Settings',
+            i18n: {
+              title: {key: 'groups.advanced.title', ns: 'studio'},
+            },
+          },
+        ])
+      })
+
+      test('invalid i18n format is ignored', () => {
+        expect(
+          convertType({
+            name: 'person',
+            type: 'object',
+            groups: [
+              {
+                name: 'settings',
+                title: 'Settings',
+                i18n: 'invalid',
+              } as any,
+            ],
+            fields: [{name: 'title', type: 'string'}],
+          }).typeDef.groups,
+        ).toMatchObject([
+          {
+            name: 'settings',
+            title: 'Settings',
+            i18n: undefined,
+          },
+        ])
+      })
+
+      test('i18n with missing properties is ignored', () => {
+        expect(
+          convertType({
+            name: 'person',
+            type: 'object',
+            groups: [
+              {
+                name: 'settings',
+                title: 'Settings',
+                i18n: {
+                  title: {key: 'groups.settings.title'},
+                },
+              } as any,
+            ],
+            fields: [{name: 'title', type: 'string'}],
+          }).typeDef.groups,
+        ).toMatchObject([
+          {
+            name: 'settings',
+            title: 'Settings',
+            i18n: undefined,
+          },
+        ])
+      })
+
+      test('empty i18n object is ignored', () => {
+        expect(
+          convertType({
+            name: 'person',
+            type: 'object',
+            groups: [
+              {
+                name: 'settings',
+                title: 'Settings',
+                i18n: {},
+              },
+            ],
+            fields: [{name: 'title', type: 'string'}],
+          }).typeDef.groups,
+        ).toMatchObject([
+          {
+            name: 'settings',
+            title: 'Settings',
+            i18n: undefined,
+          },
+        ])
+      })
+
+      test('i18n combined with other properties', () => {
+        expect(
+          convertType({
+            name: 'person',
+            type: 'object',
+            groups: [
+              {
+                name: 'settings',
+                title: 'Settings',
+                hidden: true,
+                default: true,
+                i18n: {
+                  title: {key: 'groups.settings.title', ns: 'studio'},
+                },
+              },
+            ],
+            fields: [{name: 'title', type: 'string'}],
+          }).typeDef.groups,
+        ).toMatchObject([
+          {
+            name: 'settings',
+            title: 'Settings',
+            hidden: true,
+            default: true,
+            i18n: {
+              title: {key: 'groups.settings.title', ns: 'studio'},
+            },
+          },
+        ])
+      })
+    })
   })
 
-  test.todo('orderings')
+  describe('orderings', () => {
+    // Note: These tests use justConvertType because the manifest conversion
+    // process currently doesn't preserve custom orderings properly when default
+    // orderings are generated. This is a known limitation.
+    test('basic orderings', () => {
+      // When orderings are specified on document types, they should be preserved
+      // Note: The schema system may add default orderings when none are specified
+      const result = justConvertType({
+        name: 'article',
+        type: 'document',
+        orderings: [
+          {
+            name: 'publishedAt',
+            title: 'Published Date',
+            by: [
+              {field: 'publishedAt', direction: 'desc'},
+              {field: 'title', direction: 'asc'},
+            ],
+          },
+        ],
+        fields: [
+          {name: 'title', type: 'string'},
+          {name: 'publishedAt', type: 'datetime'},
+        ],
+      })
+
+      // Check that we have the specified ordering
+      const publishedAtOrdering = result.typeDef.orderings?.find((o) => o.name === 'publishedAt')
+      expect(publishedAtOrdering).toBeDefined()
+      expect(publishedAtOrdering).toMatchObject({
+        name: 'publishedAt',
+        title: 'Published Date',
+        by: [
+          {field: 'publishedAt', direction: 'desc'},
+          {field: 'title', direction: 'asc'},
+        ],
+      })
+    })
+
+    test('multiple orderings', () => {
+      expect(
+        justConvertType({
+          name: 'article',
+          type: 'document',
+          orderings: [
+            {
+              name: 'publishedAt',
+              title: 'Published Date',
+              by: [{field: 'publishedAt', direction: 'desc'}],
+            },
+            {
+              name: 'title',
+              title: 'Title',
+              by: [{field: 'title', direction: 'asc'}],
+            },
+          ],
+          fields: [{name: 'title', type: 'string'}],
+        }).typeDef.orderings,
+      ).toMatchObject([
+        {
+          name: 'publishedAt',
+          title: 'Published Date',
+          by: [{field: 'publishedAt', direction: 'desc'}],
+        },
+        {
+          name: 'title',
+          title: 'Title',
+          by: [{field: 'title', direction: 'asc'}],
+        },
+      ])
+    })
+
+    test('orderings with i18n', () => {
+      expect(
+        justConvertType({
+          name: 'article',
+          type: 'document',
+          orderings: [
+            {
+              name: 'publishedAt',
+              title: 'Published Date',
+              by: [{field: 'publishedAt', direction: 'desc'}],
+              i18n: {
+                title: {key: 'orderings.publishedAt.title', ns: 'studio'},
+              },
+            },
+          ],
+          fields: [{name: 'title', type: 'string'}],
+        }).typeDef.orderings,
+      ).toMatchObject([
+        {
+          name: 'publishedAt',
+          title: 'Published Date',
+          by: [{field: 'publishedAt', direction: 'desc'}],
+          i18n: {
+            title: {ns: 'studio', key: 'orderings.publishedAt.title'},
+          },
+        },
+      ])
+    })
+
+    test('invalid orderings are handled', () => {
+      expect(
+        justConvertType({
+          name: 'article',
+          type: 'document',
+          orderings: [
+            // Missing name
+            {
+              title: 'Published Date',
+              by: [{field: 'publishedAt', direction: 'desc'}],
+            } as any,
+            // Missing by
+            {
+              name: 'empty',
+              title: 'Empty',
+            } as any,
+            // Empty by array
+            {
+              name: 'emptyBy',
+              title: 'Empty By',
+              by: [],
+            },
+            // Missing title
+            {
+              name: 'title',
+              by: [{field: 'title', direction: 'asc'}],
+            } as any,
+            // Valid ordering
+            {
+              name: 'valid',
+              title: 'Valid Ordering',
+              by: [{field: 'title', direction: 'asc'}],
+            },
+          ],
+          fields: [{name: 'title', type: 'string'}],
+        }).typeDef.orderings,
+      ).toMatchObject([
+        // Missing name is omitted
+        // Missing by is omitted
+        // Empty by is omitted
+        // Missing title falls back to name
+        {
+          by: [
+            {
+              direction: 'asc',
+              field: 'title',
+            },
+          ],
+          name: 'title',
+          title: 'title',
+        },
+        {
+          by: [
+            {
+              direction: 'asc',
+              field: 'title',
+            },
+          ],
+          name: 'valid',
+          title: 'Valid Ordering',
+        },
+      ])
+    })
+
+    test('invalid ordering items are filtered out', () => {
+      expect(
+        justConvertType({
+          name: 'article',
+          type: 'document',
+          orderings: [
+            {
+              name: 'mixed',
+              title: 'Mixed Ordering',
+              by: [
+                {field: 'publishedAt', direction: 'desc'},
+                {field: 'title'} as any, // Missing direction
+                {direction: 'asc'} as any, // Missing field
+                {field: 'author', direction: 'invalid'} as any, // Invalid direction
+                {field: 'category', direction: 'asc'}, // Valid
+              ],
+            },
+          ],
+          fields: [{name: 'title', type: 'string'}],
+        }).typeDef.orderings,
+      ).toMatchObject([
+        {
+          name: 'mixed',
+          title: 'Mixed Ordering',
+          by: [
+            {field: 'publishedAt', direction: 'desc'},
+            {field: 'category', direction: 'asc'},
+          ],
+        },
+      ])
+    })
+
+    test('empty orderings array', () => {
+      // Empty orderings array is preserved as empty
+      expect(
+        justConvertType({
+          name: 'article',
+          type: 'document',
+          orderings: [],
+          fields: [{name: 'title', type: 'string'}],
+        }).typeDef.orderings,
+      ).toEqual([])
+    })
+
+    test('undefined orderings (gets default)', () => {
+      // Document types get default orderings based on their fields
+      expect(
+        convertType({
+          name: 'article',
+          type: 'document',
+          fields: [{name: 'title', type: 'string'}],
+        }).typeDef.orderings,
+      ).toMatchObject([
+        {
+          name: 'title',
+          title: 'Title',
+          by: [{field: 'title', direction: 'asc'}],
+          i18n: {
+            title: {ns: 'studio', key: 'default-orderings.title'},
+          },
+        },
+      ])
+    })
+
+    test('orderings on non-document type', () => {
+      // Object types also get default orderings based on their fields when none specified
+      expect(
+        convertType({
+          name: 'person',
+          type: 'object',
+          fields: [{name: 'name', type: 'string'}],
+        }).typeDef.orderings,
+      ).toMatchObject([
+        {
+          name: 'name',
+          title: 'Name',
+          by: [{field: 'name', direction: 'asc'}],
+          i18n: {
+            title: {ns: 'studio', key: 'default-orderings.name'},
+          },
+        },
+      ])
+    })
+  })
 })
 
 describe('Array', () => {

@@ -61,7 +61,7 @@ export default async function buildSanityApp(
 
   if (autoUpdatesEnabled) {
     // Get the clean version without build metadata: https://semver.org/#spec-item-10
-    const cleanSDKVersion = semver.parse(installedSanityVersion)?.version
+    const cleanSDKVersion = semver.parse(installedSdkVersion)?.version
     if (!cleanSDKVersion) {
       throw new Error(`Failed to parse installed SDK version: ${installedSdkVersion}`)
     }

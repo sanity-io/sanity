@@ -89,17 +89,19 @@ const renderTest = async () => {
   const wrapper = await createTestProvider({
     resources: [releasesUsEnglishLocaleBundle],
   })
-  return render(
-    <RouterProvider
-      state={{
-        releaseId: activeASAPRelease._id,
-      }}
-      onNavigate={mockRouterNavigate}
-      router={route.create('/', [route.create('/:releaseId')])}
-    >
-      <ReleaseDetail />
-    </RouterProvider>,
-    {wrapper},
+  return act(() =>
+    render(
+      <RouterProvider
+        state={{
+          releaseId: activeASAPRelease._id,
+        }}
+        onNavigate={mockRouterNavigate}
+        router={route.create('/', [route.create('/:releaseId')])}
+      >
+        <ReleaseDetail />
+      </RouterProvider>,
+      {wrapper},
+    ),
   )
 }
 

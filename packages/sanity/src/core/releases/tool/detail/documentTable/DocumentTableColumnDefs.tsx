@@ -12,6 +12,7 @@ import {RelativeTime} from '../../../../components/RelativeTime'
 import {useSchema} from '../../../../hooks'
 import {SanityDefaultPreview} from '../../../../preview/components/SanityDefaultPreview'
 import {getReleaseIdFromReleaseDocumentId} from '../../../util/getReleaseIdFromReleaseDocumentId'
+import {isGoingToUnpublish} from '../../../util/isGoingToUnpublish'
 import {ReleaseDocumentPreview} from '../../components/ReleaseDocumentPreview'
 import {Headers} from '../../components/Table/TableHeader'
 import {type Column, type InjectedTableProps} from '../../components/Table/types'
@@ -32,6 +33,8 @@ const MemoReleaseDocumentPreview = memo(
     releaseState?: ReleaseState
     documentRevision?: string
   }) {
+    const isGoingToBePublished = isGoingToUnpublish(item.document)
+
     return (
       <ReleaseDocumentPreview
         documentId={item.document._id}
@@ -39,6 +42,7 @@ const MemoReleaseDocumentPreview = memo(
         releaseId={releaseId}
         releaseState={releaseState}
         documentRevision={documentRevision}
+        isGoingToBePublished={isGoingToBePublished}
       />
     )
   },
@@ -219,7 +223,7 @@ function UpdatedAtCell({
   const bundleId = getReleaseIdFromReleaseDocumentId(releaseDocumentId)
   const historyDocumentId =
     datum.isPending || document?._id?.endsWith('-pending') ? undefined : document?._id
-  const {documentHistory} = useReleaseHistory(historyDocumentId, bundleId)
+  const {documentHistory} = useReleaseHistory(historyDocumentId, bundleId, document?._rev)
 
   return (
     <Flex

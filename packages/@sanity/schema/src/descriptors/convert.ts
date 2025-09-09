@@ -27,10 +27,14 @@ import {
   type FieldReference,
   type FunctionMarker,
   type JSXMarker,
-  type LocalizedMessage,
   type ObjectField,
   type ObjectFieldset,
   type ObjectGroup,
+  type ObjectI18n,
+  type ObjectI18nValue,
+  type ObjectMessage,
+  type ObjectOrdering,
+  type ObjectOrderingBy,
   type ReferenceTypeDef,
   type RegistryType,
   type Rule as RuleType,
@@ -39,6 +43,7 @@ import {
   type UndefinedMarker,
   type UnknownMarker,
   type Validation,
+  type ValidationMessage,
 } from './types'
 
 const MAX_DEPTH_UKNOWN = 5
@@ -118,17 +123,25 @@ function convertCommonTypeDef(schemaType: SchemaType, opts: Options): CommonType
     groups = filterStringKey(
       'name',
       (ownProps.groups as Array<UnknownRecord<FieldGroupDefinition>>).map(
-        ({name, title, hidden, default: def}) => ({
+        ({name, title, hidden, default: def, i18n}) => ({
           name,
           title: maybeString(title),
           hidden: conditionalTrue(hidden),
           default: maybeTrue(def),
+          i18n: maybeI18n(i18n),
         }),
       ),
     )
   }
 
   const reason = ownProps.deprecated?.reason
+
+  let orderings: ObjectOrdering[] | undefined
+  if (Array.isArray(ownProps.orderings)) {
+    orderings = ownProps.orderings
+      .map(maybeOrdering)
+      .filter((o: ObjectOrdering | undefined) => o !== undefined)
+  }
 
   return {
     title: maybeString(ownProps.title),
@@ -145,6 +158,7 @@ function convertCommonTypeDef(schemaType: SchemaType, opts: Options): CommonType
     fieldsets,
     groups,
     validation: maybeValidations(ownProps),
+    orderings,
   }
 }
 
@@ -452,7 +466,7 @@ function maybeValidation(val: unknown): Validation | undefined {
     const level: Validation['level'] = val._level || 'error'
 
     // Convert message
-    const message = maybeIRuleMessage(val._message)
+    const message = maybeValidationMessage(val._message)
 
     // Convert RuleSpec array to Rule array
     const rules: RuleType[] = []
@@ -492,10 +506,19 @@ function isIRule(val: unknown): val is IRule {
   return isObject(val) && '_rules' in val
 }
 
-function maybeIRuleMessage(val: unknown): IRule['_message'] {
+function maybeValidationMessage(val: unknown): ValidationMessage | undefined {
   if (typeof val === 'string') return val
-  if (isObject(val) && !Array.isArray(val)) return val as LocalizedMessage
-  return undefined
+  if (!isObject(val) || Array.isArray(val)) return undefined
+
+  const objectMessage: ObjectMessage = {}
+  for (const [field, value] of Object.entries(val)) {
+    if (typeof field !== 'string' || typeof value !== 'string') {
+      continue
+    }
+    objectMessage[field] = value
+  }
+
+  return Object.keys(objectMessage).length > 0 ? objectMessage : undefined
 }
 
 function isIRuleFunction(val: unknown): val is (rule: IRule) => IRule | undefined {
@@ -631,4 +654,81 @@ function maybeBoolean(val: unknown): boolean | undefined {
     return val
   }
   return undefined
+}
+
+function maybeI18n(val: unknown): ObjectI18n | undefined {
+  if (!isObject(val) || Array.isArray(val)) return undefined
+
+  // Convert I18nTextRecord to LocalizedMessage format
+  const localizedMessage: ObjectI18n = {}
+  for (const entry of Object.entries(val)) {
+    if (isI18nEntry(entry)) {
+      const [field, value] = entry
+      localizedMessage[field] = {
+        ns: value.ns,
+        key: value.key,
+      }
+    }
+  }
+
+  return Object.keys(localizedMessage).length > 0 ? localizedMessage : undefined
+}
+
+function isI18nEntry(entry: [unknown, unknown]): entry is [string, ObjectI18nValue] {
+  const [key, value] = entry
+  return (
+    typeof key === 'string' &&
+    !!value &&
+    typeof value === 'object' &&
+    'key' in value &&
+    'ns' in value &&
+    typeof value.key === 'string' &&
+    typeof value.ns === 'string'
+  )
+}
+
+function maybeOrdering(val: unknown): ObjectOrdering | undefined {
+  if (!isObject(val) || Array.isArray(val)) return undefined
+
+  const name = 'name' in val && typeof val.name === 'string' ? val.name : undefined
+  // A valid ordering _must_ have a name
+  if (name === undefined) return undefined
+
+  // If no title is specified, default to the name
+  const title = 'title' in val && typeof val.title === 'string' ? val.title : name
+  const by = 'by' in val && Array.isArray(val.by) ? val.by : []
+
+  const orderingBy: ObjectOrderingBy[] = []
+  for (const item of by) {
+    const orderingItem = maybeOrderingBy(item)
+    if (orderingItem) {
+      orderingBy.push(orderingItem)
+    }
+  }
+
+  // A valid ordering _must_ have items (by)
+  if (orderingBy.length === 0) return undefined
+
+  const i18n = 'i18n' in val ? maybeI18n(val.i18n) : undefined
+
+  return {
+    name,
+    title,
+    by: orderingBy,
+    ...(i18n && {i18n}),
+  }
+}
+
+function maybeOrderingBy(val: unknown): ObjectOrderingBy | undefined {
+  if (!isObject(val) || Array.isArray(val)) return undefined
+
+  const field = 'field' in val && typeof val.field === 'string' ? val.field : undefined
+  const direction =
+    'direction' in val && (val.direction === 'asc' || val.direction === 'desc')
+      ? val.direction
+      : undefined
+
+  if (!field || !direction) return undefined
+
+  return {field, direction}
 }

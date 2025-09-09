@@ -3,6 +3,15 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [4.7.0](https://github.com/sanity-io/sanity/compare/v4.6.1...v4.7.0) (2025-09-09)
+
+
+### Bug Fixes
+
+* **diff:** exclude undefined entries when wrapping object for diff ([36fb066](https://github.com/sanity-io/sanity/commit/36fb0661a4507e362f666bfc39f2b4343ed2e7c5))
+
+
+
 ## [4.6.1](https://github.com/sanity-io/sanity/compare/v4.6.0...v4.6.1) (2025-09-02)
 
 **Note:** Version bump only for package @sanity/diff

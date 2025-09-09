@@ -20,10 +20,10 @@
   },
   "devDependencies": {
     "@sanity/eslint-config-studio": "catalog:",
-    "@types/react": "^18.3.24",
+    "@types/react": "^19.1.10",
     "eslint": "^9.34.0",
     "prettier": "^3.6.2",
-    "sanity": "^3",
+    "sanity": "^3.99.0",
     "typescript": "^5.9.2"
   },
   "prettier": {
