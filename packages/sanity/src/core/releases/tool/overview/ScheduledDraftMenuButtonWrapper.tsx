@@ -69,8 +69,8 @@ export const ScheduledDraftMenuButtonWrapper = ({
           disabled={!canPerformActions || isPerformingOperation}
           icon={isPerformingOperation ? Spinner : EllipsisHorizontalIcon}
           mode="bleed"
-          tooltipProps={{content: t('menu.tooltip')}}
-          aria-label={t('menu.label')}
+          tooltipProps={{content: t('release.menu.tooltip')}}
+          aria-label={t('release.menu.label')}
           data-testid="scheduled-draft-menu-button"
           onClick={handleOnButtonClick}
         />
