@@ -1,13 +1,16 @@
 import {type ReleaseDocument} from '@sanity/client'
 import {CalendarIcon, PublishIcon, TrashIcon} from '@sanity/icons'
-import {useCallback, useMemo, useState} from 'react'
+import {useToast} from '@sanity/ui'
+import {type PropsWithChildren, useCallback, useMemo, useState} from 'react'
 
 import {MenuItem} from '../../../ui-components'
-import {useTranslation} from '../../i18n'
+import {Translate, useTranslation} from '../../i18n'
 import {DeleteScheduledDraftDialog} from '../components/dialog/DeleteScheduledDraftDialog'
 import {PublishScheduledDraftDialog} from '../components/dialog/PublishScheduledDraftDialog'
 import {ScheduleDraftDialog} from '../components/dialog/ScheduleDraftDialog'
-import {useScheduleDraftOperationsWithToasts} from './useScheduleDraftOperationsWithToasts'
+import {useScheduleDraftOperations} from './useScheduleDraftOperations'
+
+const Strong = ({children}: PropsWithChildren) => <strong>{children}</strong>
 
 export type ScheduledDraftAction = 'publish-now' | 'edit-schedule' | 'delete-schedule'
 
@@ -41,53 +44,88 @@ export function useScheduledDraftMenuActions(
   const {release, documentType, disabled = false, onActionComplete, onEditSchedule} = options
 
   const {t} = useTranslation()
+  const toast = useToast()
+  const operations = useScheduleDraftOperations()
   const [selectedAction, setSelectedAction] = useState<ScheduledDraftAction | null>(null)
   const [isPerformingOperation, setIsPerformingOperation] = useState(false)
 
   const scheduledDraftTitle = release.metadata.title || t('release.placeholder-untitled-release')
 
-  const {publishScheduledDraft, rescheduleScheduledDraft} =
-    useScheduleDraftOperationsWithToasts(scheduledDraftTitle)
-
   const handlePublishNow = useCallback(async () => {
     setIsPerformingOperation(true)
     try {
-      await publishScheduledDraft(release)
+      await operations.publishScheduledDraft(release)
+      toast.push({
+        closable: true,
+        status: 'success',
+        description: (
+          <Translate
+            t={t}
+            i18nKey="release.toast.publish-scheduled-draft.success"
+            values={{title: scheduledDraftTitle}}
+            components={{Strong}}
+          />
+        ),
+      })
       onActionComplete?.()
     } catch (error) {
-      // Error handled by useScheduleDraftOperationsWithToasts
+      console.error('Failed to run scheduled draft:', error)
+      toast.push({
+        closable: true,
+        status: 'error',
+        description: (
+          <Translate
+            t={t}
+            i18nKey="release.toast.publish-scheduled-draft.error"
+            values={{
+              title: scheduledDraftTitle,
+              error: (error as Error).message,
+            }}
+            components={{Strong}}
+          />
+        ),
+      })
     } finally {
       setIsPerformingOperation(false)
       setSelectedAction(null)
     }
-  }, [release, publishScheduledDraft, onActionComplete])
+  }, [release, operations, toast, t, scheduledDraftTitle, onActionComplete])
 
   const handleReschedule = useCallback(
     async (newPublishAt: Date) => {
       setIsPerformingOperation(true)
       try {
-        await rescheduleScheduledDraft(release._id, newPublishAt)
+        await operations.rescheduleScheduledDraft(release._id, newPublishAt)
         onActionComplete?.()
       } catch (error) {
-        // Error handled by useScheduleDraftOperationsWithToasts
+        console.error('Failed to reschedule draft:', error)
+        toast.push({
+          closable: true,
+          status: 'error',
+          description: (
+            <Translate
+              t={t}
+              i18nKey="release.toast.reschedule-scheduled-draft.error"
+              values={{
+                title: scheduledDraftTitle,
+                error: (error as Error).message,
+              }}
+              components={{Strong}}
+            />
+          ),
+        })
       } finally {
         setIsPerformingOperation(false)
         setSelectedAction(null)
       }
     },
-    [release._id, rescheduleScheduledDraft, onActionComplete],
+    [release._id, operations, toast, t, scheduledDraftTitle, onActionComplete],
   )
 
-  const handleMenuItemClick = useCallback((action: ScheduledDraftAction) => {
-    if (action === 'publish-now') {
-      // For publish-now, we can execute immediately or show dialog based on preference
-      // Currently showing dialog for consistency
-      setSelectedAction(action)
-    } else {
-      // For edit-schedule and delete-schedule, always show dialog
-      setSelectedAction(action)
-    }
-  }, [])
+  const handleMenuItemClick = useCallback(
+    (action: ScheduledDraftAction) => setSelectedAction(action),
+    [],
+  )
 
   const handleDialogClose = useCallback(() => {
     if (!isPerformingOperation) {

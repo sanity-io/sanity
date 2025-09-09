@@ -1,14 +1,16 @@
 import {type ReleaseDocument} from '@sanity/client'
-import {Box, Stack, Text} from '@sanity/ui'
-import {useCallback, useState} from 'react'
+import {Box, Stack, Text, useToast} from '@sanity/ui'
+import {useCallback, useState, type PropsWithChildren} from 'react'
 
 import {Dialog} from '../../../../ui-components'
 import {LoadingBlock} from '../../../components'
 import {useSchema} from '../../../hooks'
-import {useTranslation} from '../../../i18n'
+import {Translate, useTranslation} from '../../../i18n'
 import {Preview} from '../../../preview'
+import {useScheduleDraftOperations} from '../../hooks/useScheduleDraftOperations'
 import {useScheduledDraftDocument} from '../../hooks/useScheduledDraftDocument'
-import {useScheduleDraftOperationsWithToasts} from '../../hooks/useScheduleDraftOperationsWithToasts'
+
+const Strong = ({children}: PropsWithChildren) => <strong>{children}</strong>
 
 interface PublishScheduledDraftDialogProps {
   onClose: () => void
@@ -24,7 +26,9 @@ export function PublishScheduledDraftDialog(
 ): React.JSX.Element {
   const {onClose, release, documentType} = props
   const {t} = useTranslation()
+  const toast = useToast()
   const schema = useSchema()
+  const operations = useScheduleDraftOperations()
   const [isPublishing, setIsPublishing] = useState(false)
 
   const scheduledDraftTitle = release.metadata.title || 'Untitled release'
@@ -32,19 +36,44 @@ export function PublishScheduledDraftDialog(
   const {firstDocument} = useScheduledDraftDocument(release._id)
   const schemaType = documentType ? schema.get(documentType) : null
 
-  const {publishScheduledDraft} = useScheduleDraftOperationsWithToasts(scheduledDraftTitle)
-
   const handlePublishScheduledDraft = useCallback(async () => {
     setIsPublishing(true)
     try {
-      await publishScheduledDraft(release)
+      await operations.publishScheduledDraft(release)
+      toast.push({
+        closable: true,
+        status: 'success',
+        description: (
+          <Translate
+            t={t}
+            i18nKey="release.toast.publish-scheduled-draft.success"
+            values={{title: scheduledDraftTitle}}
+            components={{Strong}}
+          />
+        ),
+      })
     } catch (error) {
-      // Error toast handled by useScheduleDraftOperationsWithToasts
+      console.error('Failed to run scheduled draft:', error)
+      toast.push({
+        closable: true,
+        status: 'error',
+        description: (
+          <Translate
+            t={t}
+            i18nKey="release.toast.publish-scheduled-draft.error"
+            values={{
+              title: scheduledDraftTitle,
+              error: (error as Error).message,
+            }}
+            components={{Strong}}
+          />
+        ),
+      })
     } finally {
       setIsPublishing(false)
       onClose()
     }
-  }, [release, publishScheduledDraft, onClose])
+  }, [release, operations, toast, t, scheduledDraftTitle, onClose])
 
   return (
     <Dialog

@@ -43,7 +43,7 @@ interface ScheduleDraftDialogProps {
 
 export function ScheduleDraftDialog(props: ScheduleDraftDialogProps): React.JSX.Element {
   const {onClose, onSchedule, variant, loading = false, initialDate} = props
-  const {t: tCore} = useTranslation()
+  const {t} = useTranslation()
 
   const [publishAt, setPublishAt] = useState<Date | undefined>(
     () => new Date(initialDate || new Date()),
@@ -53,7 +53,7 @@ export function ScheduleDraftDialog(props: ScheduleDraftDialogProps): React.JSX.
 
   const timeZoneAdjustedPublishAt = publishAt ? utcToCurrentZoneDate(publishAt) : undefined
 
-  const calendarLabels: CalendarLabels = useMemo(() => getCalendarLabels(tCore), [tCore])
+  const calendarLabels: CalendarLabels = useMemo(() => getCalendarLabels(t), [t])
 
   // Get dialog configuration based on variant
   const dialogConfig = SCHEDULE_DRAFT_DIALOG_CONFIG[variant]
@@ -93,13 +93,13 @@ export function ScheduleDraftDialog(props: ScheduleDraftDialogProps): React.JSX.
   return (
     <Dialog
       id="schedule-draft-dialog"
-      header={tCore(dialogConfig.headerI18nKey)}
+      header={t(dialogConfig.headerI18nKey)}
       onClose={loading ? undefined : onClose}
       width={0}
       padding={false}
       footer={{
         confirmButton: {
-          text: tCore(dialogConfig.confirmButtonTextI18nKey),
+          text: t(dialogConfig.confirmButtonTextI18nKey),
           tone: 'primary',
           onClick: handleConfirmSchedule,
           loading: loading,
@@ -112,13 +112,13 @@ export function ScheduleDraftDialog(props: ScheduleDraftDialogProps): React.JSX.
     >
       <Stack space={4} paddingX={4} paddingBottom={4}>
         <Text size={1} muted>
-          {tCore(dialogConfig.descriptionI18nKey)}
+          {t(dialogConfig.descriptionI18nKey)}
         </Text>
 
         <label>
           <Stack space={3}>
             <Text size={1} weight="semibold">
-              {tCore('release.schedule-dialog.select-publish-date-label')}
+              {t('release.schedule-dialog.select-publish-date-label')}
             </Text>
             <DateTimeInput
               selectTime
@@ -139,7 +139,7 @@ export function ScheduleDraftDialog(props: ScheduleDraftDialogProps): React.JSX.
 
         {_isScheduledDateInPast && (
           <Card marginBottom={1} padding={2} radius={2} shadow={1} tone="critical">
-            <Text size={1}>{tCore('release.schedule-dialog.publish-date-in-past-warning')}</Text>
+            <Text size={1}>{t('release.schedule-dialog.publish-date-in-past-warning')}</Text>
           </Card>
         )}
       </Stack>
