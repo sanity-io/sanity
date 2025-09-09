@@ -99,8 +99,8 @@
     "@vitejs/plugin-react": "catalog:",
     "babel-plugin-react-compiler": "19.1.0-rc.3",
     "jsdom": "^23.2.0",
-    "react": "catalog:react18",
-    "react-dom": "catalog:react18",
+    "react": "catalog:",
+    "react-dom": "catalog:",
     "sanity": "workspace:*",
     "styled-components": "catalog:",
     "vitest": "^3.2.4"
