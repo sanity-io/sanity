@@ -1407,12 +1407,6 @@ export const studioLocaleStrings = defineLocalesResources('studio', {
     'Schedule this release for a future time and date.',
   /** Label for date picker when scheduling a release */
   'release.schedule-dialog.select-publish-date-label': 'Schedule on',
-  /** Header for the schedule publish dialog */
-  'schedule-publish-dialog.header': 'Schedule draft for Publish',
-  /** Description for the schedule publish dialog */
-  'schedule-publish-dialog.description': 'Select when this document should be published.',
-  /** Confirm button text for the schedule publish dialog */
-  'schedule-publish-dialog.confirm': 'Schedule',
   /** The toast description that will be shown when the user has a release perspective which is now archived */
   'release.toast.archived-release.description': 'This release has been unpinned',
   /** The toast title that will be shown when the user has a release perspective which is now archived */
@@ -1453,6 +1447,13 @@ export const studioLocaleStrings = defineLocalesResources('studio', {
   'release.type.undecided': 'Undecided',
   /** Tooltip for the dropdown to show all versions of document */
   'release.version-list.tooltip': 'See all document versions',
+
+  /** Confirm button text for the schedule publish dialog */
+  'schedule-publish-dialog.confirm': 'Schedule',
+  /** Description for the schedule publish dialog */
+  'schedule-publish-dialog.description': 'Select when this document should be published.',
+  /** Header for the schedule publish dialog */
+  'schedule-publish-dialog.header': 'Schedule draft for Publish',
 
   /** Accessibility label to open search action when the search would go fullscreen (eg on narrower screens) */
   'search.action-open-aria-label': 'Open search',
