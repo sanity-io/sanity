@@ -160,13 +160,25 @@ describe('useScheduledDraftMenuActions', () => {
     TestProvider = await createTestProvider()
   })
 
-  it('should render all three menu items', () => {
+  it('should render all three menu items in the correct order', () => {
     render(
       <TestProvider>
         <TestComponent options={{release: scheduledRelease}} />
       </TestProvider>,
     )
 
+    const menuContainer = screen.getByTestId('menu-items')
+    const menuItems = menuContainer.children
+
+    // Should have exactly 3 menu items
+    expect(menuItems).toHaveLength(3)
+
+    // Check the order: Publish Now -> Edit Schedule -> Delete Schedule
+    expect(menuItems[0]).toHaveAttribute('data-testid', 'publish-now-menu-item')
+    expect(menuItems[1]).toHaveAttribute('data-testid', 'edit-schedule-menu-item')
+    expect(menuItems[2]).toHaveAttribute('data-testid', 'delete-schedule-menu-item')
+
+    // Verify all items are present
     expect(screen.getByTestId('publish-now-menu-item')).toBeInTheDocument()
     expect(screen.getByTestId('edit-schedule-menu-item')).toBeInTheDocument()
     expect(screen.getByTestId('delete-schedule-menu-item')).toBeInTheDocument()
