@@ -151,7 +151,7 @@
     "@isaacs/ttlcache": "^1.4.1",
     "@juggle/resize-observer": "^3.4.0",
     "@mux/mux-player-react": "^3.5.3",
-    "@portabletext/block-tools": "^3.5.3",
+    "@portabletext/block-tools": "^3.5.4",
     "@portabletext/editor": "^2.8.2",
     "@portabletext/react": "^4.0.3",
     "@portabletext/toolkit": "^3.0.1",
