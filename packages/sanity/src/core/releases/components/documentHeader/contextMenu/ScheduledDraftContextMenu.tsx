@@ -1,6 +1,6 @@
 import {type ReleaseDocument} from '@sanity/client'
 import {CalendarIcon, TrashIcon, UploadIcon} from '@sanity/icons'
-import {Menu, MenuDivider, Spinner} from '@sanity/ui'
+import {Menu, MenuDivider} from '@sanity/ui'
 import {memo, useState} from 'react'
 
 import {MenuItem} from '../../../../../ui-components/menuItem/MenuItem'
@@ -39,22 +39,21 @@ export const ScheduledDraftContextMenu = memo(function ScheduledDraftContextMenu
   } = props
   const {t} = useTranslation()
 
-  const [isRunningNow, setIsRunningNow] = useState(false)
   const [confirmAction, setConfirmAction] = useState<'publish-now' | 'delete-schedule' | null>(null)
 
   return (
     <>
       <Menu>
         <MenuItem
-          icon={isRunningNow ? Spinner : UploadIcon}
+          icon={UploadIcon}
           onClick={() => setConfirmAction('publish-now')}
           text={t('release.action.publish-now')}
-          disabled={disabled || isRunningNow}
+          disabled={disabled}
         />
         <MenuItem
           icon={CalendarIcon}
           text={t('release.action.edit-schedule')}
-          disabled={disabled || isRunningNow}
+          disabled={disabled}
           onClick={onChangeSchedule}
         />
         <MenuDivider />
@@ -63,7 +62,7 @@ export const ScheduledDraftContextMenu = memo(function ScheduledDraftContextMenu
           fromRelease={fromRelease}
           onCreateRelease={onCreateRelease}
           onCreateVersion={onCreateVersion}
-          disabled={disabled || !hasCreatePermission || isGoingToUnpublish || isRunningNow}
+          disabled={disabled || !hasCreatePermission || isGoingToUnpublish}
           hasCreatePermission={hasCreatePermission}
         />
         <MenuDivider />
@@ -72,7 +71,7 @@ export const ScheduledDraftContextMenu = memo(function ScheduledDraftContextMenu
           onClick={() => setConfirmAction('delete-schedule')}
           text={t('release.action.delete-schedule')}
           tone="critical"
-          disabled={disabled || isRunningNow}
+          disabled={disabled}
         />
       </Menu>
 
