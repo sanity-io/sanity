@@ -60,7 +60,7 @@
     "debug": "^4.4.1",
     "globby": "^11.1.0",
     "groq": "workspace:*",
-    "groq-js": "^1.17.3",
+    "groq-js": "^1.18.0",
     "json5": "^2.2.3",
     "tsconfig-paths": "^4.2.0",
     "zod": "^3.25.76"
