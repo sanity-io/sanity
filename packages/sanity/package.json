@@ -134,7 +134,7 @@
   "scripts": {
     "build": "pnpm clean && pkg-utils build --strict --check --clean",
     "build:bundle": "vite build --configLoader runner --config package.bundle.ts",
-    "check:types": "(cd ../.. && tsc --project packages/sanity/tsconfig.lib.json --erasableSyntaxOnly)",
+    "check:types": "(cd ../.. && tsc --project packages/sanity/tsconfig.tsdoc.json --erasableSyntaxOnly)",
     "clean": "rimraf _internal.js _singletons.js _createContext.js cli.js desk.js migrate.js presentation.js router.js structure.js lib",
     "coverage": "vitest --coverage",
     "lint": "eslint .",
@@ -281,7 +281,7 @@
     "use-hot-module-reload": "^2.0.0",
     "use-sync-external-store": "^1.5.0",
     "uuid": "^11.1.0",
-    "vite": "^7.1.4",
+    "vite": "^7.1.5",
     "which": "^5.0.0",
     "xstate": "^5.21.0",
     "yargs": "^17.7.2"
@@ -298,8 +298,8 @@
     "@sanity/descriptors": "^1.1.1",
     "@sanity/eslint-config-i18n": "catalog:",
     "@sanity/generate-help-url": "^3.0.0",
-    "@sanity/pkg-utils": "6.13.4",
-    "@sanity/tsdoc": "1.0.169",
+    "@sanity/pkg-utils": "catalog:",
+    "@sanity/tsdoc": "catalog:",
     "@sanity/ui-workshop": "catalog:",
     "@sanity/visual-editing-csm": "^2.0.24",
     "@sentry/types": "^8.55.0",
