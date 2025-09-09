@@ -1708,7 +1708,7 @@ importers:
         specifier: ^1.0.29
         version: 1.0.29(@sanity/client@7.11.0(debug@4.4.1))(@sanity/types@packages+@sanity+types)
       '@sanity/preview-url-secret':
-        specifier: ^2.1.14
+        specifier: ^2.1.15
         version: 2.1.15(@sanity/client@7.11.0(debug@4.4.1))(@sanity/icons@3.7.4(react@19.1.1))(sanity@packages+sanity)
       '@sanity/schema':
         specifier: workspace:*
