@@ -1,6 +1,12 @@
 import {type ReleaseDocument, type ReleaseState} from '@sanity/client'
 import {ComposeSparklesIcon, LockIcon} from '@sanity/icons'
-import {type BadgeTone, Button, useClickOutsideEvent, useGlobalKeyDown, useToast} from '@sanity/ui'
+import {
+  type BadgeTone,
+  Button, // eslint-disable-line no-restricted-imports
+  useClickOutsideEvent,
+  useGlobalKeyDown,
+  useToast,
+} from '@sanity/ui'
 import {
   memo,
   type MouseEvent,
@@ -311,10 +317,7 @@ export const VersionChip = memo(function VersionChip(props: {
         <ScheduleDraftDialog
           onClose={() => !isPerformingScheduleOperation && setIsChangeScheduleDialogOpen(false)}
           onSchedule={handleReschedule}
-          header={t('release.dialog.edit-schedule.header')}
-          description={t('release.dialog.edit-schedule.body')}
-          confirmButtonText={t('release.dialog.edit-schedule.confirm')}
-          confirmButtonTone="primary"
+          variant="edit-schedule"
           loading={isPerformingScheduleOperation}
           initialDate={release.publishAt || release.metadata.intendedPublishAt}
         />

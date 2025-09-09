@@ -1,12 +1,14 @@
-import {type ReleaseState} from '@sanity/client'
+import {type ReleaseDocument, type ReleaseState} from '@sanity/client'
 import {useToast} from '@sanity/ui'
-import {type ReactNode, useCallback} from 'react'
+import {type PropsWithChildren, useCallback} from 'react'
 
 import {Translate, useTranslation} from '../../i18n'
 import {
   type ScheduleDraftOperationsValue,
   useScheduleDraftOperations,
 } from './useScheduleDraftOperations'
+
+const Strong = ({children}: PropsWithChildren) => <strong>{children}</strong>
 
 /**
  * Hook for scheduled draft operations with built-in toast notifications.
@@ -26,19 +28,13 @@ export function useScheduleDraftOperationsWithToasts(
   const toast = useToast()
   const {t} = useTranslation()
 
-  // Reusable Strong component for all Translate components
-  const Strong = useCallback(
-    ({children}: {children?: ReactNode}) => <strong>{children}</strong>,
-    [],
-  )
-
   const runNowWithToast = useCallback(
     async (
-      releaseDocumentId: string,
+      release: ReleaseDocument,
       opts?: Parameters<ScheduleDraftOperationsValue['publishScheduledDraft']>[1],
     ) => {
       try {
-        await operations.publishScheduledDraft(releaseDocumentId, opts)
+        await operations.publishScheduledDraft(release, opts)
         toast.push({
           closable: true,
           status: 'success',
@@ -71,7 +67,7 @@ export function useScheduleDraftOperationsWithToasts(
         throw error // Re-throw for caller to handle UI state
       }
     },
-    [operations, toast, t, releaseTitle, Strong],
+    [operations, toast, t, releaseTitle],
   )
 
   const deleteScheduleWithToast = useCallback(
@@ -114,7 +110,7 @@ export function useScheduleDraftOperationsWithToasts(
         throw error // Re-throw for caller to handle UI state
       }
     },
-    [operations, toast, t, releaseTitle, Strong],
+    [operations, toast, t, releaseTitle],
   )
 
   const rescheduleWithToast = useCallback(
@@ -146,7 +142,7 @@ export function useScheduleDraftOperationsWithToasts(
         throw error // Re-throw for caller to handle UI state
       }
     },
-    [operations, toast, t, releaseTitle, Strong],
+    [operations, toast, t, releaseTitle],
   )
 
   return {

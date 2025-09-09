@@ -16,7 +16,7 @@ const releasesLocaleStrings = {
   'action.create-revert-release': 'Create a new release',
   /** Action text for deleting a release */
   'action.delete-release': 'Delete release',
-  /** Action text for showing drafts (scheduled single-document releases) */
+  /** Menu item label for showing scheduled drafts */
   'action.drafts': 'Drafts',
   /** Action text for duplicating a release */
   'action.duplicate-release': 'Duplicate release',
@@ -24,7 +24,7 @@ const releasesLocaleStrings = {
   'action.edit': 'Edit release',
   /** Action text for opening a release */
   'action.open': 'Active',
-  /** Action text for showing releases (multi-document releases) */
+  /** Menu item label for showing releases (multi-document releases) */
   'action.releases': 'Releases',
   /** Action text for scheduling a release */
   'action.schedule': 'Schedule release...',
@@ -43,8 +43,6 @@ const releasesLocaleStrings = {
   'action.revert-unpublish-actions': 'Revert unpublish when releasing',
   /** Action text for unscheduling a release */
   'action.unschedule': 'Unschedule release',
-  /** Action text for unscheduling a draft (single-document scheduled release) */
-  'action.unschedule-draft': 'Unschedule draft',
   /** Action text for publishing all documents in a release (and the release itself) */
   'action.publish-all-documents': 'Run release',
   /** Text for the review changes button in release tool */
@@ -432,7 +430,6 @@ const releasesLocaleStrings = {
   'toast.schedule.error': "Failed to schedule '<strong>{{title}}</strong>': {{error}}",
   /** Text for toast when release has been scheduled */
   'toast.schedule.success': "The '<strong>{{title}}</strong>' release was scheduled.",
-
   /** Text for toast when release failed to unschedule */
   'toast.unschedule.error': "Failed to unscheduled '<strong>{{title}}</strong>': {{error}}",
   /** Text for toast when release failed to unarchive */

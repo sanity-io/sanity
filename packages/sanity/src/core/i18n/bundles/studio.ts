@@ -1360,12 +1360,6 @@ export const studioLocaleStrings = defineLocalesResources('studio', {
   'release.dialog.create.confirm': 'Create release',
   /** Title for creating releases dialog */
   'release.dialog.create.title': 'New release',
-  /** Body text for change schedule dialog */
-  'release.dialog.edit-schedule.body': 'Select a new date and time for the scheduled publish.',
-  /** Confirm button text for change schedule dialog */
-  'release.dialog.edit-schedule.confirm': 'Update schedule',
-  /** Header for change schedule dialog */
-  'release.dialog.edit-schedule.header': 'Change schedule',
   /** Body text for the dialog confirming deletion of a scheduled draft */
   'release.dialog.delete-schedule-draft.body':
     'Are you sure you want to delete this scheduled draft? This action cannot be undone.',
@@ -1376,6 +1370,12 @@ export const studioLocaleStrings = defineLocalesResources('studio', {
     'Are you sure you want to delete the schedule for <Strong>{{title}}</Strong>?',
   /** Header for the dialog confirming deletion of a scheduled draft */
   'release.dialog.delete-schedule-draft.header': 'Delete scheduled draft',
+  /** Body text for change schedule dialog */
+  'release.dialog.edit-schedule.body': 'Select a new date and time for the scheduled publish.',
+  /** Confirm button text for change schedule dialog */
+  'release.dialog.edit-schedule.confirm': 'Update schedule',
+  /** Header for change schedule dialog */
+  'release.dialog.edit-schedule.header': 'Change schedule',
   /** Body text for the dialog confirming running a scheduled draft immediately */
   'release.dialog.publish-scheduled-draft.body':
     'Are you sure you want to publish this scheduled draft immediately?',
@@ -1420,6 +1420,11 @@ export const studioLocaleStrings = defineLocalesResources('studio', {
   'release.toast.delete-schedule-draft.success': '<Strong>{{title}}</Strong> has been deleted.',
   /** The toast title that will be shown when the user has a release perspective which is now deleted */
   'release.toast.not-found-release.title': "The '{{title}}' release could not be found",
+  /** Error toast for running a scheduled publish immediately */
+  'release.toast.publish-scheduled-draft.error':
+    'Failed to publish <Strong>{{title}}</Strong>: {{error}}',
+  /** Success toast for running a scheduled publish immediately */
+  'release.toast.publish-scheduled-draft.success': '<Strong>{{title}}</Strong> has been published.',
   /** The toast description that will be shown when the user has a release perspective which is now published */
   'release.toast.published-release.description': 'This release has been unpinned',
   /** The toast title that will be shown when the user has a release perspective which is now deleted */
@@ -1427,11 +1432,6 @@ export const studioLocaleStrings = defineLocalesResources('studio', {
   /** Error toast for rescheduling a draft */
   'release.toast.reschedule-scheduled-draft.error':
     'Failed to reschedule <Strong>{{title}}</Strong>: {{error}}',
-  /** Error toast for running a scheduled publish immediately */
-  'release.toast.publish-scheduled-draft.error':
-    'Failed to publish <Strong>{{title}}</Strong>: {{error}}',
-  /** Success toast for running a scheduled publish immediately */
-  'release.toast.publish-scheduled-draft.success': '<Strong>{{title}}</Strong> has been published.',
   /** Success toast for rescheduling a draft */
   'release.toast.reschedule-scheduled-draft.success':
     '<Strong>{{title}}</Strong> has been rescheduled.',

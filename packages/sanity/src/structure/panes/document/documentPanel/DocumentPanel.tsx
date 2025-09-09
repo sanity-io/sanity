@@ -3,6 +3,7 @@ import {useEffect, useMemo, useRef, useState} from 'react'
 import {
   getSanityCreateLinkMetadata,
   getVersionFromId,
+  isCardinalityOneRelease,
   isGoingToUnpublish,
   isNewDocument,
   isPerspectiveWriteable,
@@ -19,7 +20,6 @@ import {
 } from 'sanity'
 import {css, styled} from 'styled-components'
 
-import {isCardinalityOneRelease} from '../../../../core/releases/util/util'
 import {PaneContent, usePane, usePaneLayout, usePaneRouter} from '../../../components'
 import {hasObsoleteDraft} from '../../../hasObsoleteDraft'
 import {useFilteredReleases} from '../../../hooks/useFilteredReleases'

@@ -39,14 +39,16 @@ export const ScheduledDraftContextMenu = memo(function ScheduledDraftContextMenu
   } = props
   const {t} = useTranslation()
 
-  const [confirmAction, setConfirmAction] = useState<'publish-now' | 'delete-schedule' | null>(null)
+  const [dialogType, setDialogType] = useState<'publish-now' | 'delete-schedule' | null>(null)
+
+  const isCopyToReleaseDisabled = disabled || !hasCreatePermission || isGoingToUnpublish
 
   return (
     <>
       <Menu>
         <MenuItem
           icon={UploadIcon}
-          onClick={() => setConfirmAction('publish-now')}
+          onClick={() => setDialogType('publish-now')}
           text={t('release.action.publish-now')}
           disabled={disabled}
         />
@@ -62,32 +64,32 @@ export const ScheduledDraftContextMenu = memo(function ScheduledDraftContextMenu
           fromRelease={fromRelease}
           onCreateRelease={onCreateRelease}
           onCreateVersion={onCreateVersion}
-          disabled={disabled || !hasCreatePermission || isGoingToUnpublish}
+          disabled={isCopyToReleaseDisabled}
           hasCreatePermission={hasCreatePermission}
         />
         <MenuDivider />
         <MenuItem
           icon={TrashIcon}
-          onClick={() => setConfirmAction('delete-schedule')}
+          onClick={() => setDialogType('delete-schedule')}
           text={t('release.action.delete-schedule')}
           tone="critical"
           disabled={disabled}
         />
       </Menu>
 
-      {confirmAction === 'publish-now' && (
+      {dialogType === 'publish-now' && (
         <PublishScheduledDraftDialog
           release={release}
           documentType={type}
-          onClose={() => setConfirmAction(null)}
+          onClose={() => setDialogType(null)}
         />
       )}
 
-      {confirmAction === 'delete-schedule' && (
+      {dialogType === 'delete-schedule' && (
         <DeleteScheduledDraftDialog
           release={release}
           documentType={type}
-          onClose={() => setConfirmAction(null)}
+          onClose={() => setDialogType(null)}
         />
       )}
     </>

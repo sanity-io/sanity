@@ -37,14 +37,14 @@ export function PublishScheduledDraftDialog(
   const handlePublishScheduledDraft = useCallback(async () => {
     setIsPublishing(true)
     try {
-      await publishScheduledDraft(release._id)
+      await publishScheduledDraft(release)
     } catch (error) {
       // Error toast handled by useScheduleDraftOperationsWithToasts
     } finally {
       setIsPublishing(false)
       onClose()
     }
-  }, [release._id, publishScheduledDraft, onClose])
+  }, [release, publishScheduledDraft, onClose])
 
   return (
     <Dialog

@@ -1,10 +1,9 @@
 import {type ReleaseDocument} from '@sanity/client'
 import {CalendarIcon, EllipsisHorizontalIcon, PublishIcon, TrashIcon} from '@sanity/icons'
-import {Menu, Spinner, useClickOutsideEvent, useToast} from '@sanity/ui'
+import {Menu, Spinner, useClickOutsideEvent} from '@sanity/ui'
 import {useCallback, useMemo, useRef, useState} from 'react'
 
 import {Button, MenuItem, Popover} from '../../../../ui-components'
-import {useSchema} from '../../../hooks'
 import {useTranslation} from '../../../i18n'
 import {DeleteScheduledDraftDialog} from '../../components/dialog/DeleteScheduledDraftDialog'
 import {PublishScheduledDraftDialog} from '../../components/dialog/PublishScheduledDraftDialog'
@@ -23,6 +22,26 @@ interface ActionConfig {
   dialogConfirmButtonI18nKey?: string
   confirmButtonTone?: 'primary' | 'critical'
 }
+
+interface MenuItemConfig {
+  key: ScheduledDraftAction
+  testId: string
+}
+
+const MENU_ITEMS: MenuItemConfig[] = [
+  {
+    key: 'publish-now',
+    testId: 'publish-now-menu-item',
+  },
+  {
+    key: 'edit-schedule',
+    testId: 'edit-schedule-menu-item',
+  },
+  {
+    key: 'delete-schedule',
+    testId: 'delete-schedule-menu-item',
+  },
+]
 
 const SCHEDULED_DRAFT_ACTION_MAP: Record<ScheduledDraftAction, ActionConfig> = {
   'publish-now': {
@@ -51,9 +70,6 @@ export const ScheduledDraftMenuButtonWrapper = ({
   releaseGroupMode: Mode
 }) => {
   const {t} = useTranslation()
-  const {t: tCore} = useTranslation()
-  const toast = useToast()
-  const schema = useSchema()
 
   const [isPerformingOperation, setIsPerformingOperation] = useState(false)
   const [selectedAction, setSelectedAction] = useState<ScheduledDraftAction | undefined>()
@@ -64,10 +80,8 @@ export const ScheduledDraftMenuButtonWrapper = ({
 
   const {firstDocument} = useScheduledDraftDocument(release._id)
   const documentType = firstDocument?._type
-  const schemaType = documentType ? schema.get(documentType) : null
 
-  const scheduledDraftTitle =
-    release.metadata.title || tCore('release.placeholder-untitled-release')
+  const scheduledDraftTitle = release.metadata.title || t('release.placeholder-untitled-release')
 
   const {publishScheduledDraft: runNow, rescheduleScheduledDraft: reschedule} =
     useScheduleDraftOperationsWithToasts(scheduledDraftTitle)
@@ -78,36 +92,16 @@ export const ScheduledDraftMenuButtonWrapper = ({
     (release.metadata.releaseType === 'scheduled' && release.metadata.cardinality === 'one')
 
   const menuItems = useMemo(() => {
-    const allItems = [
-      {
-        key: 'publish-now' as const,
-        text: t('release.action.publish-now'),
-        testId: 'publish-now-menu-item',
-      },
-      {
-        key: 'edit-schedule' as const,
-        text: t('release.action.edit-schedule'),
-        testId: 'edit-schedule-menu-item',
-      },
-      {
-        key: 'delete-schedule' as const,
-        text: t('release.action.delete-schedule'),
-        testId: 'delete-schedule-menu-item',
-      },
-    ]
-
     // When in archived mode, only show delete-schedule option
     if (releaseGroupMode === 'archived') {
-      return allItems.filter((item) => item.key === 'delete-schedule')
+      return MENU_ITEMS.filter((item) => item.key === 'delete-schedule')
     }
 
     // When in active mode, show all options
-    return allItems
-  }, [t, releaseGroupMode])
+    return MENU_ITEMS
+  }, [releaseGroupMode])
 
-  const handleRunNow = useCallback(async () => {
-    return runNow(release._id)
-  }, [release._id, runNow])
+  const handleRunNow = useCallback(() => runNow(release), [release, runNow])
 
   const handleReschedule = useCallback(
     async (newPublishAt: Date) => {
@@ -158,10 +152,7 @@ export const ScheduledDraftMenuButtonWrapper = ({
         <ScheduleDraftDialog
           onClose={() => !isPerformingOperation && setSelectedAction(undefined)}
           onSchedule={handleReschedule}
-          header={t('release.dialog.edit-schedule.header')}
-          description={t('release.dialog.edit-schedule.body')}
-          confirmButtonText={t('release.dialog.edit-schedule.confirm')}
-          confirmButtonTone="primary"
+          variant="edit-schedule"
           loading={isPerformingOperation}
           initialDate={release.publishAt}
         />
@@ -189,7 +180,7 @@ export const ScheduledDraftMenuButtonWrapper = ({
     }
 
     return null
-  }, [selectedAction, isPerformingOperation, t, release, documentType, handleReschedule])
+  }, [selectedAction, isPerformingOperation, release, documentType, handleReschedule])
 
   const handleMenuItemClick = useCallback((action: ScheduledDraftAction) => {
     setSelectedAction(action)
@@ -222,7 +213,7 @@ export const ScheduledDraftMenuButtonWrapper = ({
                   onClick={() => handleMenuItemClick(item.key)}
                   disabled={isPerformingOperation}
                   icon={actionConfig.icon}
-                  text={item.text}
+                  text={t(`release.action.${item.key}`)}
                   tone={actionConfig.tone}
                   data-testid={item.testId}
                 />
