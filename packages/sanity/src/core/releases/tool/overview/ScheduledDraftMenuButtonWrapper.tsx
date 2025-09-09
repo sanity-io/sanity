@@ -9,9 +9,8 @@ import {useTranslation} from '../../../i18n'
 import {DeleteScheduledDraftDialog} from '../../components/dialog/DeleteScheduledDraftDialog'
 import {PublishScheduledDraftDialog} from '../../components/dialog/PublishScheduledDraftDialog'
 import {ScheduleDraftDialog} from '../../components/dialog/ScheduleDraftDialog'
+import {useScheduledDraftDocument} from '../../hooks/useScheduledDraftDocument'
 import {useScheduleDraftOperationsWithToasts} from '../../hooks/useScheduleDraftOperationsWithToasts'
-import {getReleaseIdFromReleaseDocumentId} from '../../util/getReleaseIdFromReleaseDocumentId'
-import {useBundleDocuments} from '../detail/useBundleDocuments'
 import {type Mode} from './queryParamUtils'
 
 type ScheduledDraftAction = 'publish-now' | 'delete-schedule' | 'edit-schedule'
@@ -63,9 +62,7 @@ export const ScheduledDraftMenuButtonWrapper = ({
   const popoverRef = useRef<HTMLDivElement | null>(null)
   const scheduledDraftMenuRef = useRef<HTMLDivElement | null>(null)
 
-  const releaseId = getReleaseIdFromReleaseDocumentId(release._id)
-  const {results: documents} = useBundleDocuments(releaseId)
-  const firstDocument = documents?.[0]?.document
+  const {firstDocument} = useScheduledDraftDocument(release._id)
   const documentType = firstDocument?._type
   const schemaType = documentType ? schema.get(documentType) : null
 
