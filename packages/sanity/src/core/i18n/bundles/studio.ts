@@ -1283,8 +1283,6 @@ export const studioLocaleStrings = defineLocalesResources('studio', {
   'release.action.add-to-release': 'Add to {{title}}',
   /** Action message for when document is already in release  */
   'release.action.already-in-release': 'Already in release {{title}}',
-  /** Action message for editing the schedule of a scheduled publish */
-  'release.action.edit-schedule': 'Edit schedule',
   /** Action message for when you click to view all versions you can copy the current document to */
   'release.action.copy-to': 'Copy version to',
   /** Action message for creating new releases */
@@ -1295,6 +1293,8 @@ export const studioLocaleStrings = defineLocalesResources('studio', {
   'release.action.discard-version': 'Discard version',
   /** Description for toast when version discarding failed */
   'release.action.discard-version.failure': 'Failed to discard version',
+  /** Action message for editing the schedule of a scheduled publish */
+  'release.action.edit-schedule': 'Edit schedule',
   /** Action message for when a new release is created off an existing version, draft or published document */
   'release.action.new-release': 'New release',
   /** Explanation provided when releases can't be created because the workspace release limit has been reached */
@@ -1303,6 +1303,8 @@ export const studioLocaleStrings = defineLocalesResources('studio', {
     'This workspace is limited to {{count}} releases',
   /** Tooltip message for not having permissions for creating new releases */
   'release.action.permission.error': 'You do not have permission to perform this action',
+  /** Action message for running a scheduled draft immediately */
+  'release.action.publish-now': 'Publish now',
   /** Error message description for when a version is reverted from being unpublished */
   'release.action.revert-unpublish-version.failure.description':
     'Please try again or check your connection. The document is still going to be unpublished upon release.',
@@ -1314,8 +1316,6 @@ export const studioLocaleStrings = defineLocalesResources('studio', {
   /** Action message title for when a version is reverted from being unpublished */
   'release.action.revert-unpublish-version.success.title':
     'Successfully reverted from setting to unpublish on release.',
-  /** Action message for running a scheduled draft immediately */
-  'release.action.publish-now': 'Publish now',
   /** Error message for when a version is set to be unpublished */
   'release.action.unpublish-version.failure': 'Failed to set version to be unpublished on release',
   /** Action message for when a version is set to be unpublished successfully */
@@ -1354,18 +1354,18 @@ export const studioLocaleStrings = defineLocalesResources('studio', {
   'release.chip.tooltip.unknown-date': 'Unknown date',
   /** Label for tooltip on deleted release */
   'release.deleted-tooltip': 'This release has been deleted',
-  /** Body text for change schedule dialog */
-  'release.dialog.edit-schedule.body': 'Select a new date and time for the scheduled publish.',
-  /** Confirm button text for change schedule dialog */
-  'release.dialog.edit-schedule.confirm': 'Update schedule',
-  /** Header for change schedule dialog */
-  'release.dialog.edit-schedule.header': 'Change schedule',
   /** Title for copying version to a new release dialog */
   'release.dialog.copy-to-release.title': 'Copy version to new release',
   /** Title for action create a release */
   'release.dialog.create.confirm': 'Create release',
   /** Title for creating releases dialog */
   'release.dialog.create.title': 'New release',
+  /** Body text for change schedule dialog */
+  'release.dialog.edit-schedule.body': 'Select a new date and time for the scheduled publish.',
+  /** Confirm button text for change schedule dialog */
+  'release.dialog.edit-schedule.confirm': 'Update schedule',
+  /** Header for change schedule dialog */
+  'release.dialog.edit-schedule.header': 'Change schedule',
   /** Body text for the dialog confirming deletion of a scheduled draft */
   'release.dialog.delete-schedule-draft.body':
     'Are you sure you want to delete this scheduled draft? This action cannot be undone.',
@@ -1427,14 +1427,14 @@ export const studioLocaleStrings = defineLocalesResources('studio', {
   /** Error toast for rescheduling a draft */
   'release.toast.reschedule-scheduled-draft.error':
     'Failed to reschedule <Strong>{{title}}</Strong>: {{error}}',
-  /** Success toast for rescheduling a draft */
-  'release.toast.reschedule-scheduled-draft.success':
-    '<Strong>{{title}}</Strong> has been rescheduled.',
   /** Error toast for running a scheduled publish immediately */
   'release.toast.publish-scheduled-draft.error':
     'Failed to publish <Strong>{{title}}</Strong>: {{error}}',
   /** Success toast for running a scheduled publish immediately */
   'release.toast.publish-scheduled-draft.success': '<Strong>{{title}}</Strong> has been published.',
+  /** Success toast for rescheduling a draft */
+  'release.toast.reschedule-scheduled-draft.success':
+    '<Strong>{{title}}</Strong> has been rescheduled.',
   /** Label for when a version of a document has already been added to the release */
   'release.tooltip.already-added': 'A version of this document has already been added',
   /** Label for when a release is scheduled / scheduling and a user can't add a document version to it */
