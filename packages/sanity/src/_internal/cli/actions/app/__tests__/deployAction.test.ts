@@ -349,11 +349,13 @@ describe('deployAppAction', () => {
 
     // Verify the hint to add appId to config is shown
     expect(mockContext.output.print).toHaveBeenCalledWith(
-      expect.stringContaining("Add id: 'app-id'"),
+      expect.stringContaining("Add appId: 'app-id'"),
     )
-    expect(mockContext.output.print).toHaveBeenCalledWith(expect.stringContaining('to `app`'))
     expect(mockContext.output.print).toHaveBeenCalledWith(
-      expect.stringContaining('to avoid prompting on next deploy'),
+      expect.stringContaining('to the `deployment` section'),
+    )
+    expect(mockContext.output.print).toHaveBeenCalledWith(
+      expect.stringContaining('to avoid prompting for appId on next deploy'),
     )
   })
 })

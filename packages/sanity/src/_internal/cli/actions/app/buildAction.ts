@@ -17,6 +17,7 @@ import {formatModuleSizes, sortModulesBySize} from '../../util/moduleFormatUtils
 import {readModuleVersion} from '../../util/readModuleVersion'
 import {shouldAutoUpdate} from '../../util/shouldAutoUpdate'
 import {getTimer} from '../../util/timing'
+import {warnAboutMissingAppId} from '../../util/warnAboutMissingAppId'
 import {BuildTrace} from './build.telemetry'
 
 export interface BuildSanityAppCommandFlags {
@@ -34,7 +35,7 @@ export default async function buildSanityApp(
   overrides?: {basePath?: string},
 ): Promise<{didCompile: boolean}> {
   const timer = getTimer()
-  const {output, prompt, workDir, cliConfig, telemetry = noopLogger} = context
+  const {output, prompt, workDir, cliConfig, telemetry = noopLogger, cliConfigPath} = context
   const flags: BuildSanityAppCommandFlags = {
     'minify': true,
     'stats': false,
@@ -78,6 +79,14 @@ export default async function buildSanityApp(
     ]
     autoUpdatesImports = getAutoUpdatesImportMap(autoUpdatedPackages, {appId})
     output.print(`${info} Building with auto-updates enabled`)
+    if (!appId) {
+      warnAboutMissingAppId({
+        appType: 'app',
+        cliConfigPath,
+        output,
+        projectId: cliConfig?.api?.projectId,
+      })
+    }
 
     // Check the versions
     const result = await compareDependencyVersions(autoUpdatedPackages, workDir, {appId})

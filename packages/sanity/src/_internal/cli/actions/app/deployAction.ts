@@ -1,5 +1,5 @@
 /* eslint-disable max-statements */
-import path from 'node:path'
+import path, {basename} from 'node:path'
 import zlib from 'node:zlib'
 
 import {type CliCommandArguments, type CliCommandContext} from '@sanity/cli'
@@ -27,7 +27,7 @@ export default async function deployAppAction(
   args: CliCommandArguments<DeployAppActionFlags>,
   context: CliCommandContext,
 ): Promise<void> {
-  const {apiClient, workDir, chalk, output, prompt, cliConfig} = context
+  const {apiClient, workDir, chalk, output, prompt, cliConfig, cliConfigPath} = context
   const flags = {build: true, ...args.extOptions}
   const customSourceDir = args.argsWithoutOptions[0]
   const sourceDir = path.resolve(process.cwd(), customSourceDir || path.join(workDir, 'dist'))
@@ -145,8 +145,10 @@ export default async function deployAppAction(
     output.print(`\nSuccess! Application deployed`)
 
     if (!appId) {
-      output.print(`\nAdd ${chalk.cyan(`id: '${userApplication.id}'`)}`)
-      output.print('to `app` in sanity.cli.js or sanity.cli.ts')
+      output.print(`\nAdd ${chalk.cyan(`appId: '${userApplication.id}'`)}`)
+      output.print(
+        `to \`deployment\` in ${cliConfigPath ? basename(cliConfigPath) : 'sanity.cli.js or sanity.cli.ts'}`,
+      )
       output.print(`to avoid prompting on next deploy.`)
     }
   } catch (err) {

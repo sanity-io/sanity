@@ -9,7 +9,7 @@ import {
 } from '@sanity/cli'
 import {type SanityProject} from '@sanity/client'
 import chalk from 'chalk'
-import {info, warning} from 'log-symbols'
+import {info} from 'log-symbols'
 import semver from 'semver'
 import {hideBin} from 'yargs/helpers'
 import yargs from 'yargs/yargs'
@@ -26,6 +26,7 @@ import {upgradePackages} from '../../util/packageManager/upgradePackages'
 import {getSharedServerConfig, gracefulServerDeath} from '../../util/servers'
 import {shouldAutoUpdate} from '../../util/shouldAutoUpdate'
 import {getTimer} from '../../util/timing'
+import {warnAboutMissingAppId} from '../../util/warnAboutMissingAppId'
 
 export interface StartDevServerCommandFlags {
   'host'?: string
@@ -168,13 +169,12 @@ export default async function startSanityDevServer(
 
     output.print(`${info} Running with auto-updates enabled`)
     if (!appId) {
-      const projectId = cliConfig?.api?.projectId
-      const manageUrl = `${baseUrl}/manage${projectId ? `/project/${cliConfig?.api?.projectId}/studios` : ''}`
-      const cliConfigFile = cliConfigPath ? path.basename(cliConfigPath) : 'sanity.cli.js'
-      output.print(
-        `${warning} No ${chalk.bold('appId')} configured. This studio will auto-update to the ${chalk.bold.italic('latest')} channel. To enable fine grained version selection, head over to ${chalk.cyan(manageUrl)} and add the appId to the ${chalk.bold('deployment')} section in ${chalk.bold(cliConfigFile)}.
-        `,
-      )
+      warnAboutMissingAppId({
+        appType: 'studio',
+        cliConfigPath,
+        output,
+        projectId: cliConfig?.api?.projectId,
+      })
     }
     // Check local versions against deployed versions
     let result: Awaited<ReturnType<typeof compareDependencyVersions>> | undefined

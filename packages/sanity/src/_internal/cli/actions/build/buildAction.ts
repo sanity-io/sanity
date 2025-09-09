@@ -1,7 +1,7 @@
 import path from 'node:path'
 
 import chalk from 'chalk'
-import {info} from 'log-symbols'
+import {info, warning} from 'log-symbols'
 import semver from 'semver'
 import {noopLogger} from '@sanity/telemetry'
 import {rimraf} from 'rimraf'
@@ -20,6 +20,9 @@ import {upgradePackages} from '../../util/packageManager/upgradePackages'
 import {getPackageManagerChoice} from '../../util/packageManager/packageManagerChoice'
 import {isInteractive} from '../../util/isInteractive'
 import {getAutoUpdatesImportMap} from '../../util/getAutoUpdatesImportMap'
+import {getAppId} from '../../util/getAppId'
+import {baseUrl} from '../../util/baseUrl'
+import {warnAboutMissingAppId} from '../../util/warnAboutMissingAppId'
 
 export interface BuildSanityStudioCommandFlags {
   'yes'?: boolean
@@ -36,7 +39,7 @@ export default async function buildSanityStudio(
   overrides?: {basePath?: string},
 ): Promise<{didCompile: boolean}> {
   const timer = getTimer()
-  const {output, prompt, workDir, cliConfig, telemetry = noopLogger} = context
+  const {output, prompt, workDir, cliConfig, telemetry = noopLogger, cliConfigPath} = context
   const flags: BuildSanityStudioCommandFlags = {
     'minify': true,
     'stats': false,
@@ -74,9 +77,20 @@ export default async function buildSanityStudio(
       {name: 'sanity', version: cleanSanityVersion},
       {name: '@sanity/vision', version: cleanSanityVersion},
     ]
-    autoUpdatesImports = getAutoUpdatesImportMap(sanityDependencies)
+
+    const appId = getAppId({cliConfig, output})
+
+    autoUpdatesImports = getAutoUpdatesImportMap(sanityDependencies, {appId})
 
     output.print(`${info} Building with auto-updates enabled`)
+    if (!appId) {
+      warnAboutMissingAppId({
+        appType: 'studio',
+        cliConfigPath,
+        output,
+        projectId: cliConfig?.api?.projectId,
+      })
+    }
 
     // Check the versions
     const result = await compareDependencyVersions(sanityDependencies, workDir)
