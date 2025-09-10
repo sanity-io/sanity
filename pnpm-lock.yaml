@@ -912,8 +912,8 @@ importers:
         specifier: workspace:*
         version: link:../codegen
       '@sanity/runtime-cli':
-        specifier: ^10.5.1
-        version: 10.5.1(@types/node@24.3.0)(debug@4.4.1)(terser@5.43.1)(tsx@4.20.5)(typescript@5.9.2)(yaml@2.8.1)
+        specifier: ^10.6.1
+        version: 10.6.1(@types/node@24.3.0)(debug@4.4.1)(terser@5.43.1)(tsx@4.20.5)(typescript@5.9.2)(yaml@2.8.1)
       '@sanity/telemetry':
         specifier: ^0.8.0
         version: 0.8.1(react@19.1.1)
@@ -4878,8 +4878,8 @@ packages:
     peerDependencies:
       react: ^18.3 || ^19
 
-  '@sanity/runtime-cli@10.5.1':
-    resolution: {integrity: sha512-3TGl9TikdmqQ05vNbHykYDF90olmmR+ypq55D/WEMDj2fg/RsXtGPxs5tWLDt4wDKsUVFmot1i+F/zjBSfKphQ==}
+  '@sanity/runtime-cli@10.6.1':
+    resolution: {integrity: sha512-UyIUueygUANnDVYSCX/NYz0CsFbadBhPceVdvJuunwfKDDBVzKUmGfzMeKlT8M9f3zqqDg9chmcCXJu7ROCZLQ==}
     engines: {node: '>=20.19'}
     hasBin: true
 
@@ -15566,7 +15566,7 @@ snapshots:
       - debug
       - typescript
 
-  '@sanity/runtime-cli@10.5.1(@types/node@24.3.0)(debug@4.4.1)(terser@5.43.1)(tsx@4.20.5)(typescript@5.9.2)(yaml@2.8.1)':
+  '@sanity/runtime-cli@10.6.1(@types/node@24.3.0)(debug@4.4.1)(terser@5.43.1)(tsx@4.20.5)(typescript@5.9.2)(yaml@2.8.1)':
     dependencies:
       '@architect/hydrate': 4.0.8
       '@architect/inventory': 4.0.9
