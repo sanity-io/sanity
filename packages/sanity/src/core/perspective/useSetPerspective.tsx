@@ -21,12 +21,9 @@ export function useSetPerspective() {
 
   const setPerspective = useCallback(
     (releaseId: 'published' | 'drafts' | ReleaseId | undefined) => {
-      // All releases (including cardinality one) now use URL parameters
-      // Use null to remove the parameter, or the releaseId to set it
+      // Remove perspective parameter for default states, otherwise use the specific release ID
       const newPerspective =
-        releaseId === undefined || releaseId === 'drafts' || releaseId === defaultPerspective
-          ? null // Remove the perspective parameter
-          : releaseId // Set to the specific release ID
+        !releaseId || releaseId === 'drafts' || releaseId === defaultPerspective ? null : releaseId
 
       router.navigate({
         stickyParams: {

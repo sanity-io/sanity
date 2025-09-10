@@ -45,26 +45,17 @@ export function PerspectiveProvider({
     [releases, selectedPerspectiveName, excludedPerspectives, isDraftModelEnabled],
   )
 
-  // Keep all values raw - let the hooks handle the mapping logic
-  const selectedReleaseId = isSystemBundleName(selectedPerspectiveName)
-    ? undefined
-    : selectedPerspectiveName
-
   const value: PerspectiveContextValue = useMemo(
     () => ({
       selectedPerspective,
       selectedPerspectiveName,
-      selectedReleaseId,
+      selectedReleaseId: isSystemBundleName(selectedPerspectiveName)
+        ? undefined
+        : selectedPerspectiveName,
       perspectiveStack,
       excludedPerspectives,
     }),
-    [
-      selectedPerspective,
-      selectedPerspectiveName,
-      selectedReleaseId,
-      perspectiveStack,
-      excludedPerspectives,
-    ],
+    [selectedPerspective, selectedPerspectiveName, perspectiveStack, excludedPerspectives],
   )
   return <PerspectiveContext.Provider value={value}>{children}</PerspectiveContext.Provider>
 }

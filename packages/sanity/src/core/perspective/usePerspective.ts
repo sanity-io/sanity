@@ -1,3 +1,4 @@
+import {type ReleaseDocument} from '@sanity/client'
 import {useContext, useMemo} from 'react'
 import {PerspectiveContext} from 'sanity/_singletons'
 
@@ -7,13 +8,26 @@ import {isCardinalityOneRelease} from '../util/releaseUtils'
 import {type PerspectiveContextValue} from './types'
 
 /**
+ * Find cardinality one release by perspective name
+ */
+function findCardinalityOneRelease(
+  perspectiveName: string | undefined,
+  releases: ReleaseDocument[],
+) {
+  if (!perspectiveName || perspectiveName === 'published') return null
+
+  const release = releases.find((r) => getReleaseIdFromReleaseDocumentId(r._id) === perspectiveName)
+
+  return release && isCardinalityOneRelease(release) ? release : null
+}
+
+/**
  * @beta
  *
  * React hook that returns the current studio perspective and perspective stack.
  *
- * For cardinality one releases, this hook maps them to "drafts" for global UI consistency
- * while they are still tracked in URL parameters for deep-linking support.
- * Use `useTruePerspective()` if you need the unmodified perspective values.
+ * Maps cardinality one releases to "drafts" for global UI consistency while preserving
+ * URL parameters for deep-linking. Use `useTruePerspective()` for unmodified values.
  *
  * @returns See {@link PerspectiveContextValue}
  * @example Reading the current perspective stack
@@ -32,30 +46,17 @@ export function usePerspective(): PerspectiveContextValue {
     throw new Error('usePerspective must be used within a PerspectiveProvider')
   }
 
-  // CARDINALITY ONE MAPPING FOR GLOBAL UI:
-  // Transform cardinality one releases to appear as "drafts" in global UI components
-  // (navbar, perspective menu, etc.) while preserving the actual release data for
-  // document-level logic that needs to access the original release information.
   return useMemo(() => {
-    const {selectedPerspective, selectedPerspectiveName} = context
+    const {selectedPerspectiveName} = context
 
-    // Check if this is a cardinality one release by looking up the release from the perspective name
-    if (selectedPerspectiveName && selectedPerspectiveName !== 'published') {
-      const release = releases.find(
-        (r) => getReleaseIdFromReleaseDocumentId(r._id) === selectedPerspectiveName,
-      )
+    const cardinalityOneRelease = findCardinalityOneRelease(selectedPerspectiveName, releases)
 
-      if (release && isCardinalityOneRelease(release)) {
-        // Map cardinality one releases to drafts for global UI
-        // IMPORTANT: Keep the original perspectiveStack for cardinality one releases
-        // The perspectiveStack is used for API queries and should contain the actual cardinality one release ID
-        return {
-          ...context,
-          selectedPerspective: 'drafts',
-          selectedPerspectiveName: undefined, // drafts
-          selectedReleaseId: undefined, // drafts
-          // perspectiveStack remains unchanged - it contains the cardinality one release for API queries
-        }
+    if (cardinalityOneRelease) {
+      return {
+        ...context,
+        selectedPerspective: 'drafts',
+        selectedPerspectiveName: undefined, // drafts
+        selectedReleaseId: undefined, // drafts
       }
     }
 
@@ -66,8 +67,8 @@ export function usePerspective(): PerspectiveContextValue {
 /**
  * @internal
  *
- * True perspective is unmapped. In most cases it IS the actual perspective.
- * But in cases where the perspective represents a cardinality one release, it is mapped to "drafts" for global UI consistency.
+ * Returns unmapped perspective values. Cardinality one releases appear as their actual
+ * release ID rather than being mapped to "drafts".
  */
 export function useTruePerspective(): PerspectiveContextValue {
   const context = useContext(PerspectiveContext)

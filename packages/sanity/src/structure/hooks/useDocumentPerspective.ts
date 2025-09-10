@@ -1,26 +1,12 @@
-import {type ReleaseDocument} from '@sanity/client'
 import {useEffect, useMemo} from 'react'
 import {
   getReleaseIdFromReleaseDocumentId,
   getVersionFromId,
-  isCardinalityOneRelease,
+  isCardinalityOnePerspective,
   useDocumentVersions,
   useSetPerspective,
   useTruePerspective,
 } from 'sanity'
-
-/**
- * Check if the given perspective is a cardinality one release
- */
-function isCardinalityOnePerspective(perspective: unknown): perspective is ReleaseDocument {
-  return (
-    perspective !== 'drafts' &&
-    perspective !== 'published' &&
-    typeof perspective === 'object' &&
-    perspective !== null &&
-    isCardinalityOneRelease(perspective as ReleaseDocument)
-  )
-}
 
 /**
  * Provides document-level perspective logic for cardinality one releases.
