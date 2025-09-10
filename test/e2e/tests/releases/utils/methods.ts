@@ -1,5 +1,6 @@
-import test from '@playwright/test'
 import {type SanityClient, type SanityDocument} from '@sanity/client'
+
+import {test} from '../../../studio-test'
 
 export const CLIENT_OPTIONS = {
   apiVersion: 'v2025-02-19',
@@ -94,7 +95,7 @@ export const unarchiveRelease = async ({
   }
 }
 
-export const deleteRelease = ({
+export const deleteRelease = async ({
   sanityClient,
   dataset,
   releaseId,
@@ -103,19 +104,23 @@ export const deleteRelease = ({
   dataset: string | undefined
   releaseId: string
 }) => {
-  // delete release
-  sanityClient.withConfig(CLIENT_OPTIONS).request({
-    uri: `/data/actions/${dataset}`,
-    method: 'POST',
-    body: {
-      actions: [
-        {
-          actionType: 'sanity.action.release.delete',
-          releaseId: releaseId,
-        },
-      ],
-    },
-  })
+  try {
+    return await sanityClient.withConfig(CLIENT_OPTIONS).request({
+      uri: `/data/actions/${dataset}`,
+      method: 'POST',
+      body: {
+        actions: [
+          {
+            actionType: 'sanity.action.release.delete',
+            releaseId: releaseId,
+          },
+        ],
+      },
+    })
+  } catch (error) {
+    console.warn(`Failed to delete release ${releaseId}:`, error.message)
+    throw error
+  }
 }
 
 export const archiveAndDeleteRelease = async ({
@@ -127,9 +132,55 @@ export const archiveAndDeleteRelease = async ({
   dataset: string | undefined
   releaseId: string
 }) => {
-  await archiveRelease({sanityClient, dataset, releaseId})
-  await waitForReleaseToBeArchived({sanityClient, releaseId})
-  await deleteRelease({sanityClient, dataset, releaseId})
+  try {
+    // Check current release state first
+    const query = `*[_type == "system.release" && _id == "_.releases.${releaseId}"][0] {state}`
+    const release = await sanityClient.fetch(query)
+    
+    if (!release) {
+      // Release doesn't exist, nothing to delete
+      return
+    }
+
+    // Published releases are already considered archived, can be deleted directly
+    if (release.state === 'published') {
+      await deleteRelease({sanityClient, dataset, releaseId})
+      return
+    }
+
+    // Scheduled releases need to be unscheduled first
+    if (release.state === 'scheduled' || release.state === 'scheduling') {
+      try {
+        await sanityClient.withConfig(CLIENT_OPTIONS).request({
+          uri: `/data/actions/${dataset}`,
+          method: 'POST',
+          body: {
+            actions: [
+              {
+                actionType: 'sanity.action.release.unschedule',
+                releaseId: releaseId,
+              },
+            ],
+          },
+        })
+        // Wait a bit for unschedule to complete
+        await new Promise((resolve) => setTimeout(resolve, 2000))
+      } catch (error) {
+        console.warn(`Failed to unschedule release ${releaseId}:`, error.message)
+      }
+    }
+
+    // For non-published releases, follow the archive->delete flow
+    if (release.state !== 'archived') {
+      await archiveRelease({sanityClient, dataset, releaseId})
+      await waitForReleaseToBeArchived({sanityClient, releaseId})
+    }
+    
+    await deleteRelease({sanityClient, dataset, releaseId})
+  } catch (error) {
+    // Ignore deletion errors - release might already be deleted or in invalid state
+    console.warn(`Failed to delete release ${releaseId}:`, error.message)
+  }
 }
 
 export const discardVersion = ({
