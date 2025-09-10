@@ -123,7 +123,7 @@
     "semver": "^7.7.2",
     "semver-compare": "^1.0.0",
     "tar": "^6.2.1",
-    "vite": "^7.1.4",
+    "vite": "^7.1.5",
     "vitest": "^3.2.4",
     "which": "^2.0.2",
     "xdg-basedir": "^4.0.0"
