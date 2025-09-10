@@ -14,7 +14,7 @@
     "@repo/tsconfig": "workspace:*",
     "@vitejs/plugin-react": "catalog:",
     "lodash-es": "^4.17.21",
-    "vite": "^7.1.4",
+    "vite": "^7.1.5",
     "vite-tsconfig-paths": "^5.1.4"
   }
 }

@@ -4,7 +4,6 @@ import packageConfig from './package.config'
 
 export default defineConfig({
   extract: packageConfig.extract,
-  legacyExports: packageConfig.legacyExports,
   output: {
     sanity: {
       projectId: process.env.EXTRACT_SANITY_PROJECT_ID,

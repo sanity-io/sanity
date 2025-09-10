@@ -19,6 +19,7 @@
     "sanity-plugin-hotspot-array",
     "react-icons",
     "react-barcode",
-    "eslint"
+    "eslint",
+    "@babel/parser"
   ]
 }

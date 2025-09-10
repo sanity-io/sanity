@@ -11,5 +11,9 @@
     "./src/**/*.test-d.ts",
     "./src/**/*.test-d.tsx",
     "./src/**/vitest.config.mts"
-  ]
+  ],
+  "compilerOptions": {
+    "moduleResolution": "node10", // necessary until `@microsoft/api-extractor` supports `module: "Preserve"` and `moduleResolution: "Bundler"`
+    "noCheck": true
+  }
 }

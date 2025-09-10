@@ -59,4 +59,5 @@ export default defineConfig({
 
   babel: {reactCompiler: true},
   reactCompilerOptions: {target: '18'},
+  dts: 'api-extractor', // due to `@sanity/tsdoc`, and how we use declaration merging with `@sanity/types`, we need to use `api-extractor` for now and can't opt-in to `rolldown` yet
 })
