@@ -1,7 +1,8 @@
-import {type BaseActionOptions, type ReleaseDocument, type ReleaseState} from '@sanity/client'
+import {type BaseActionOptions, type ReleaseDocument} from '@sanity/client'
 import {useCallback} from 'react'
 
 import {getDraftId} from '../../util'
+import {useAllReleases} from '../store/useAllReleases'
 import {useReleaseOperations} from '../store/useReleaseOperations'
 import {createReleaseId} from '../util/createReleaseId'
 import {getReleaseIdFromReleaseDocumentId} from '../util/getReleaseIdFromReleaseDocumentId'
@@ -24,11 +25,7 @@ export interface ScheduleDraftOperationsValue {
   /**
    * Deletes a scheduled draft
    */
-  deleteScheduledDraft: (
-    releaseDocumentId: string,
-    releaseState: ReleaseState,
-    opts?: BaseActionOptions,
-  ) => Promise<void>
+  deleteScheduledDraft: (releaseDocumentId: string, opts?: BaseActionOptions) => Promise<void>
   /**
    * Reschedules a draft to a new publish time
    */
@@ -44,6 +41,7 @@ export interface ScheduleDraftOperationsValue {
  */
 export function useScheduleDraftOperations(): ScheduleDraftOperationsValue {
   const releaseOperations = useReleaseOperations()
+  const {data: allReleases} = useAllReleases()
 
   const createScheduledDraftRelease = useCallback(
     async (title: string, scheduleAt: Date, opts?: BaseActionOptions): Promise<string> => {
@@ -109,22 +107,25 @@ export function useScheduleDraftOperations(): ScheduleDraftOperationsValue {
   // This handles scheduled draft releases in a few different states.
   // The end state is we want it deleted so go through the state machine to get there
   const handleDeleteScheduledDraft = useCallback(
-    async (
-      releaseDocumentId: string,
-      releaseState: ReleaseState,
-      opts?: BaseActionOptions,
-    ): Promise<void> => {
-      if (releaseState === 'scheduled' || releaseState === 'scheduling') {
+    async (releaseDocumentId: string, opts?: BaseActionOptions): Promise<void> => {
+      // Look up the release to get its current state
+      const release = allReleases.find((r) => r._id === releaseDocumentId)
+
+      if (!release) {
+        throw new Error(`Release with ID ${releaseDocumentId} not found`)
+      }
+
+      if (release.state === 'scheduled' || release.state === 'scheduling') {
         await releaseOperations.unschedule(releaseDocumentId, opts)
       }
 
-      if (releaseState !== 'archived' && releaseState !== 'published') {
+      if (release.state !== 'archived' && release.state !== 'published') {
         await releaseOperations.archive(releaseDocumentId, opts)
       }
 
       await releaseOperations.deleteRelease(releaseDocumentId, opts)
     },
-    [releaseOperations],
+    [releaseOperations, allReleases],
   )
 
   const handleRescheduleScheduledDraft = useCallback(

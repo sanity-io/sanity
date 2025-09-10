@@ -1,17 +1,16 @@
 import {type ReleaseDocument} from '@sanity/client'
 import {CalendarIcon, PublishIcon, TrashIcon} from '@sanity/icons'
 import {useToast} from '@sanity/ui'
-import {type PropsWithChildren, useCallback, useMemo, useState} from 'react'
+import {useCallback, useMemo, useState} from 'react'
 
 import {MenuItem} from '../../../ui-components'
 import {Translate, useTranslation} from '../../i18n'
+import {getErrorMessage} from '../../util'
 import {DeleteScheduledDraftDialog} from '../components/dialog/DeleteScheduledDraftDialog'
 import {PublishScheduledDraftDialog} from '../components/dialog/PublishScheduledDraftDialog'
 import {ScheduleDraftDialog} from '../components/dialog/ScheduleDraftDialog'
 import {useScheduledDraftDocument} from './useScheduledDraftDocument'
 import {useScheduleDraftOperations} from './useScheduleDraftOperations'
-
-const Strong = ({children}: PropsWithChildren) => <strong>{children}</strong>
 
 export type ScheduledDraftAction = 'publish-now' | 'edit-schedule' | 'delete-schedule'
 
@@ -71,9 +70,8 @@ export function useScheduledDraftMenuActions(
               i18nKey="release.toast.reschedule-scheduled-draft.error"
               values={{
                 title: firstDocumentPreview?.title || t('preview.default.title-fallback'),
-                error: (error as Error).message,
+                error: getErrorMessage(error),
               }}
-              components={{Strong}}
             />
           ),
         })

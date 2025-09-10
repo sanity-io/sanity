@@ -7,6 +7,7 @@ import {LoadingBlock} from '../../../components'
 import {useSchema} from '../../../hooks'
 import {Translate, useTranslation} from '../../../i18n'
 import {Preview} from '../../../preview'
+import {getErrorMessage} from '../../../util'
 import {useScheduledDraftDocument} from '../../hooks/useScheduledDraftDocument'
 import {useScheduleDraftOperations} from '../../hooks/useScheduleDraftOperations'
 
@@ -37,7 +38,7 @@ export function DeleteScheduledDraftDialog(
   const handleDeleteSchedule = useCallback(async () => {
     setIsDeleting(true)
     try {
-      await operations.deleteScheduledDraft(release._id, release.state)
+      await operations.deleteScheduledDraft(release._id)
       toast.push({
         closable: true,
         status: 'success',
@@ -60,7 +61,7 @@ export function DeleteScheduledDraftDialog(
             i18nKey="release.toast.delete-schedule-draft.error"
             values={{
               title: firstDocumentPreview?.title || t('preview.default.title-fallback'),
-              error: (error as Error).message,
+              error: getErrorMessage(error),
             }}
           />
         ),
@@ -69,7 +70,7 @@ export function DeleteScheduledDraftDialog(
       setIsDeleting(false)
       onClose()
     }
-  }, [release._id, release.state, operations, toast, t, firstDocumentPreview?.title, onClose])
+  }, [release._id, operations, toast, t, firstDocumentPreview?.title, onClose])
 
   return (
     <Dialog

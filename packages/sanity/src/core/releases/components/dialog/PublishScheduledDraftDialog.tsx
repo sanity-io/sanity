@@ -1,16 +1,15 @@
 import {type ReleaseDocument} from '@sanity/client'
 import {Box, Stack, Text, useToast} from '@sanity/ui'
-import {type PropsWithChildren, useCallback, useState} from 'react'
+import {useCallback, useState} from 'react'
 
 import {Dialog} from '../../../../ui-components'
 import {LoadingBlock} from '../../../components'
 import {useSchema} from '../../../hooks'
 import {Translate, useTranslation} from '../../../i18n'
 import {Preview} from '../../../preview'
+import {getErrorMessage} from '../../../util'
 import {useScheduledDraftDocument} from '../../hooks/useScheduledDraftDocument'
 import {useScheduleDraftOperations} from '../../hooks/useScheduleDraftOperations'
-
-const Strong = ({children}: PropsWithChildren) => <strong>{children}</strong>
 
 interface PublishScheduledDraftDialogProps {
   onClose: () => void
@@ -63,9 +62,8 @@ export function PublishScheduledDraftDialog(
             i18nKey="release.toast.publish-scheduled-draft.error"
             values={{
               title: firstDocumentPreview?.title || t('preview.default.title-fallback'),
-              error: (error as Error).message,
+              error: getErrorMessage(error),
             }}
-            components={{Strong}}
           />
         ),
       })
