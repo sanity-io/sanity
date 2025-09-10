@@ -118,7 +118,7 @@
     "@sanity/mutate": "^0.13.0",
     "@sanity/pkg-utils": "6.13.5",
     "@sanity/prettier-config": "^1.0.6",
-    "@sanity/tsdoc": "1.0.169",
+    "@sanity/tsdoc": "4.0.0",
     "@sanity/ui": "^3.0.14",
     "@sanity/uuid": "^3.0.2",
     "@types/lodash-es": "^4.17.12",
