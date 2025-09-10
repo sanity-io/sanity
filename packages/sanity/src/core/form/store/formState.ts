@@ -709,6 +709,7 @@ export function createPrepareFormState({
           parent.readOnly?.children?.[field.name]
 
         const fieldState = prepareArrayOfPrimitivesInputState({
+          changed: isChangedValue(fieldValue, fieldComparisonValue),
           comparisonValue: fieldComparisonValue as FIXME,
           schemaType: field.type,
           currentUser: parent.currentUser,
@@ -1036,8 +1037,7 @@ export function createPrepareFormState({
       members: filtereredMembers,
       groups: visibleGroups,
       __unstable_computeDiff: diffProps.__unstable_computeDiff,
-      __unstable_diff: diffProps.__unstable_diff,
-      changed: diffProps.changed,
+      changed: isChangedValue(props.value, props.comparisonValue),
     }
     Object.defineProperty(node, '_allMembers', {
       value: members,
@@ -1084,8 +1084,8 @@ export function createPrepareFormState({
         presence,
         members,
         __unstable_computeDiff: diffProps.__unstable_computeDiff,
-        __unstable_diff: diffProps.__unstable_diff,
-        changed: diffProps.changed,
+        // checks for changes not only on the array itself, but also on any of its items
+        changed: props.changed || members.some((m) => m.kind === 'item' && m.item.changed),
       }
     },
   )
@@ -1133,8 +1133,8 @@ export function createPrepareFormState({
         presence,
         members,
         __unstable_computeDiff: diffProps.__unstable_computeDiff,
-        __unstable_diff: diffProps.__unstable_diff,
-        changed: diffProps.changed,
+        // checks for changes not only on the array itself, but also on any of its items
+        changed: props.changed || members.some((m) => m.kind === 'item' && m.item.changed),
       }
     },
   )
@@ -1308,8 +1308,7 @@ export function createPrepareFormState({
         presence,
         validation,
         __unstable_computeDiff: diffProps.__unstable_computeDiff,
-        __unstable_diff: diffProps.__unstable_diff,
-        changed: diffProps.changed,
+        changed: isChangedValue(props.value, props.comparisonValue),
       } as PrimitiveFormNode
     },
   )
@@ -1389,7 +1388,7 @@ export function prepareDiffProps({
 }: Pick<
   FormStateOptions<unknown, unknown>,
   'comparisonValue' | 'value' | 'schemaType' | 'perspective'
->): NodeDiffProps<ProvenanceDiffAnnotation> & {compareValue: unknown} {
+>): Omit<NodeDiffProps<ProvenanceDiffAnnotation>, 'changed'> & {compareValue: unknown} {
   const jsonType =
     typeof schemaType === 'object' &&
     schemaType !== null &&
@@ -1411,28 +1410,15 @@ export function prepareDiffProps({
     },
   }
 
-  const diff = diffInput<ProvenanceDiffAnnotation>(
-    wrap(comparisonValue ?? emptyValue, provenanceAnnotation),
-    wrap(definitiveValue ?? emptyValue, provenanceAnnotation),
-    {},
-  )
-
-  const computeDiff: ComputeDiff<ProvenanceDiffAnnotation> = (value) => {
-    if (value === definitiveValue) {
-      return diff
-    }
-
-    return diffInput<ProvenanceDiffAnnotation>(
+  const computeDiff: ComputeDiff<ProvenanceDiffAnnotation> = (value) =>
+    diffInput<ProvenanceDiffAnnotation>(
       wrap(comparisonValue ?? emptyValue, provenanceAnnotation),
       wrap(value ?? emptyValue, provenanceAnnotation),
       {},
     )
-  }
 
   return {
-    __unstable_diff: diff,
     __unstable_computeDiff: computeDiff,
-    changed: diff.isChanged,
     // TODO: Establish consistent naming.
     compareValue: comparisonValue,
   }
