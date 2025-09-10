@@ -903,7 +903,7 @@ importers:
   packages/@sanity/cli:
     dependencies:
       '@babel/traverse':
-        specifier: ^7.28.3
+        specifier: ^7.28.4
         version: 7.28.4(supports-color@5.5.0)
       '@sanity/client':
         specifier: ^7.11.0
@@ -1111,7 +1111,7 @@ importers:
   packages/@sanity/codegen:
     dependencies:
       '@babel/core':
-        specifier: ^7.28.3
+        specifier: ^7.28.4
         version: 7.28.4
       '@babel/generator':
         specifier: ^7.28.3
@@ -1129,10 +1129,10 @@ importers:
         specifier: ^7.28.3
         version: 7.28.3(@babel/core@7.28.4)
       '@babel/traverse':
-        specifier: ^7.28.3
+        specifier: ^7.28.4
         version: 7.28.4(supports-color@5.5.0)
       '@babel/types':
-        specifier: ^7.28.2
+        specifier: ^7.28.4
         version: 7.28.4
       debug:
         specifier: ^4.4.1
