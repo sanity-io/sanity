@@ -298,7 +298,7 @@
     "@sanity/descriptors": "^1.1.1",
     "@sanity/eslint-config-i18n": "catalog:",
     "@sanity/generate-help-url": "^3.0.0",
-    "@sanity/pkg-utils": "6.13.4",
+    "@sanity/pkg-utils": "6.13.5",
     "@sanity/tsdoc": "1.0.169",
     "@sanity/ui-workshop": "catalog:",
     "@sanity/visual-editing-csm": "^2.0.24",
