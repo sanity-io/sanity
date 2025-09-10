@@ -114,7 +114,7 @@
     "@repo/test-config": "workspace:*",
     "@repo/tsconfig": "workspace:*",
     "@repo/utils": "workspace:*",
-    "@sanity/client": "^7.11.0",
+    "@sanity/client": "^7.11.1",
     "@sanity/mutate": "^0.13.0",
     "@sanity/pkg-utils": "6.13.5",
     "@sanity/prettier-config": "^1.0.6",
