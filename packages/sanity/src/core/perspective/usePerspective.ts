@@ -13,7 +13,7 @@ import {type PerspectiveContextValue} from './types'
  *
  * For cardinality one releases, this hook maps them to "drafts" for global UI consistency
  * while they are still tracked in URL parameters for deep-linking support.
- * Use `useRawPerspective()` if you need the unmodified perspective values.
+ * Use `useTruePerspective()` if you need the unmodified perspective values.
  *
  * @returns See {@link PerspectiveContextValue}
  * @example Reading the current perspective stack
@@ -66,13 +66,13 @@ export function usePerspective(): PerspectiveContextValue {
 /**
  * @internal
  *
- * React hook that returns the raw perspective values without cardinality one mapping.
- * This is used by document-level logic that needs the original perspective values.
+ * True perspective is unmapped. In most cases it IS the actual perspective.
+ * But in cases where the perspective represents a cardinality one release, it is mapped to "drafts" for global UI consistency.
  */
-export function useRawPerspective(): PerspectiveContextValue {
+export function useTruePerspective(): PerspectiveContextValue {
   const context = useContext(PerspectiveContext)
   if (!context) {
-    throw new Error('useRawPerspective must be used within a PerspectiveProvider')
+    throw new Error('useTruePerspective must be used within a PerspectiveProvider')
   }
   return context
 }

@@ -3,6 +3,7 @@ import {useEffect, useMemo, useRef, useState} from 'react'
 import {
   getSanityCreateLinkMetadata,
   getVersionFromId,
+  isCardinalityOneRelease,
   isGoingToUnpublish,
   isNewDocument,
   isPerspectiveWriteable,
@@ -218,7 +219,7 @@ export const DocumentPanel = function DocumentPanel(props: DocumentPanelProps) {
     }
 
     const hasCardinalityOneReleases = filteredReleases.currentReleases.some(
-      (release) => isReleaseDocument(release) && release.metadata.cardinality === 'one',
+      (release) => isReleaseDocument(release) && isCardinalityOneRelease(release),
     )
     // Show the banner when:
     // - Global perspective appears as 'drafts' (mapped perspective)

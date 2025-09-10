@@ -6,7 +6,7 @@ import {useWorkspace} from '../studio/workspace'
 import {type ReleaseId} from './types'
 
 /**
- * @beta
+ * @internal
  */
 export function useSetPerspective() {
   const router = useRouter()

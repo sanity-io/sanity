@@ -3,23 +3,22 @@ import {useEffect, useMemo} from 'react'
 import {
   getReleaseIdFromReleaseDocumentId,
   getVersionFromId,
-  useActiveReleases,
+  isCardinalityOneRelease,
   useDocumentVersions,
-  useRawPerspective,
   useSetPerspective,
+  useTruePerspective,
 } from 'sanity'
-import {useRouter} from 'sanity/router'
 
 /**
  * Check if the given perspective is a cardinality one release
  */
-export function isCardinalityOnePerspective(perspective: unknown): perspective is ReleaseDocument {
+function isCardinalityOnePerspective(perspective: unknown): perspective is ReleaseDocument {
   return (
     perspective !== 'drafts' &&
     perspective !== 'published' &&
     typeof perspective === 'object' &&
     perspective !== null &&
-    (perspective as ReleaseDocument)?.metadata?.cardinality === 'one'
+    isCardinalityOneRelease(perspective as ReleaseDocument)
   )
 }
 
@@ -44,34 +43,20 @@ export function isCardinalityOnePerspective(perspective: unknown): perspective i
  *
  * @internal
  */
-export function useDocumentPerspective({
-  documentId,
-  isCreatingNewDocument = false,
-}: {
-  documentId: string
-  isCreatingNewDocument?: boolean
-}): {
+export function useDocumentPerspective({documentId}: {documentId: string}): {
   selectedReleaseId: string | undefined
   selectedPerspectiveName: 'published' | string | undefined
 } {
-  const {selectedPerspective, selectedReleaseId, selectedPerspectiveName} = useRawPerspective()
+  const {selectedPerspective, selectedReleaseId, selectedPerspectiveName} = useTruePerspective()
   const {data: documentVersions, loading: documentVersionsLoading} = useDocumentVersions({
     documentId,
   })
-  const {data: releases} = useActiveReleases()
   const setPerspective = useSetPerspective()
-  const router = useRouter()
 
   // Use useEffect for side effects like clearing perspective from URL
   useEffect(() => {
     // Don't make decisions while document versions are still loading
     if (documentVersionsLoading) {
-      return
-    }
-
-    // Clear perspective for new document creation
-    if (isCreatingNewDocument && selectedPerspectiveName) {
-      setPerspective(undefined)
       return
     }
 
@@ -99,7 +84,6 @@ export function useDocumentPerspective({
     }
   }, [
     documentId,
-    isCreatingNewDocument,
     selectedPerspective,
     selectedPerspectiveName,
     documentVersions,
@@ -109,14 +93,6 @@ export function useDocumentPerspective({
 
   // Return the appropriate perspective values (this is just for reading, not side effects)
   return useMemo(() => {
-    // For new document creation, always use drafts
-    if (isCreatingNewDocument) {
-      return {
-        selectedReleaseId: undefined,
-        selectedPerspectiveName: undefined, // drafts
-      }
-    }
-
     // Check if we have a cardinality one release selected
     const isCardinalityOne = isCardinalityOnePerspective(selectedPerspective)
 
@@ -163,7 +139,6 @@ export function useDocumentPerspective({
       selectedPerspectiveName,
     }
   }, [
-    isCreatingNewDocument,
     selectedPerspective,
     selectedReleaseId,
     selectedPerspectiveName,

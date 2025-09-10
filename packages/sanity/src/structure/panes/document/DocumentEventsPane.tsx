@@ -36,10 +36,8 @@ export const DocumentEventsPane = (props: DocumentPaneProviderProps) => {
   const {selectedPerspective} = usePerspective()
 
   // Get document-level perspective for data operations (handles cardinality one releases)
-  const isCreatingNewDocument = params.template !== undefined
   const documentPerspective = useDocumentPerspective({
     documentId: getPublishedId(options.id),
-    isCreatingNewDocument,
   })
 
   const {data: archivedReleases} = useArchivedReleases()

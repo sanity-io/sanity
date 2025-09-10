@@ -17,7 +17,6 @@ import {
   useCopyPaste,
   useDocumentForm,
   usePerspective,
-  useRawPerspective,
   useSchema,
   useSource,
   useStudioUrl,
@@ -96,7 +95,6 @@ export const DocumentPaneProvider = memo((props: DocumentPaneProviderProps) => {
   const {buildStudioUrl} = useStudioUrl()
 
   const perspective = usePerspective()
-  const rawPerspective = useRawPerspective()
 
   const {
     document: {
@@ -105,12 +103,10 @@ export const DocumentPaneProvider = memo((props: DocumentPaneProviderProps) => {
   } = useWorkspace()
 
   // Detect if we're creating a new document
-  const isCreatingNewDocument = params.template !== undefined
 
   // Get document-level perspective (handles cardinality one releases)
   const documentPerspective = useDocumentPerspective({
     documentId,
-    isCreatingNewDocument,
   })
 
   // NOTE: Cardinality one release handling is now done automatically in useDocumentPerspective

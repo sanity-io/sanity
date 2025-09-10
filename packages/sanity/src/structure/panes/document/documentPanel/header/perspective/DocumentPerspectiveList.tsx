@@ -98,7 +98,6 @@ export const DocumentPerspectiveList = memo(function DocumentPerspectiveList() {
   const schema = useSchema()
   const isCreatingDocument = displayed && !displayed._createdAt
   const filteredReleases = useFilteredReleases({displayed, documentId})
-
   const onlyHasVersions = useOnlyHasVersions({documentId})
   const workspace = useWorkspace()
 

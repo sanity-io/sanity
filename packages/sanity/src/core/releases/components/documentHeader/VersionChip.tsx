@@ -249,7 +249,7 @@ export const VersionChip = memo(function VersionChip(props: {
 
   const contextMenuHandler = disabled || !releasesToolAvailable ? undefined : handleContextMenu
   const canShowScheduleDialog =
-    isChangeScheduleDialogOpen && release && release.metadata.cardinality === 'one'
+    isChangeScheduleDialogOpen && release && isCardinalityOneRelease(release)
 
   return (
     <>
@@ -333,7 +333,7 @@ export const VersionChip = memo(function VersionChip(props: {
         />
       )}
 
-      {isChangeScheduleDialogOpen && release && isCardinalityOneRelease(release) && (
+      {canShowScheduleDialog && (
         <ScheduleDraftDialog
           onClose={() => !isPerformingScheduleOperation && setIsChangeScheduleDialogOpen(false)}
           onSchedule={handleReschedule}
