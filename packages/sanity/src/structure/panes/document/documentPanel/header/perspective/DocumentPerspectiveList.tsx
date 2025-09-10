@@ -18,7 +18,6 @@ import {
   useDateTimeFormat,
   type UseDateTimeFormatOptions,
   useOnlyHasVersions,
-  usePerspective,
   useSchema,
   useSetPerspective,
   useTranslation,
@@ -100,15 +99,6 @@ export const DocumentPerspectiveList = memo(function DocumentPerspectiveList() {
   const isCreatingDocument = displayed && !displayed._createdAt
   const filteredReleases = useFilteredReleases({displayed, documentId})
 
-  // Debug logging for perspective selection
-  if (selectedReleaseId) {
-    console.warn('DocumentPerspectiveList perspective debug:', {
-      documentId,
-      selectedReleaseId,
-      selectedPerspectiveName,
-      displayedId: displayed?._id,
-    })
-  }
   const onlyHasVersions = useOnlyHasVersions({documentId})
   const workspace = useWorkspace()
 

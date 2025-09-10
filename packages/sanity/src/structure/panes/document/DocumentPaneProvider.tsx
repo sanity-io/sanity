@@ -32,7 +32,6 @@ import {useDiffViewRouter} from '../../diffView/hooks/useDiffViewRouter'
 import {useDocumentIdStack} from '../../hooks/useDocumentIdStack'
 import {useDocumentLastRev} from '../../hooks/useDocumentLastRev'
 import {useDocumentPerspective} from '../../hooks/useDocumentPerspective'
-
 import {structureLocaleNamespace} from '../../i18n'
 import {type PaneMenuItem} from '../../types'
 import {DocumentURLCopied} from './__telemetry__'

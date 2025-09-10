@@ -1,11 +1,14 @@
 import {type ReleaseDocument} from '@sanity/client'
-import {useMemo} from 'react'
-
-import {useCardinalityOnePerspective} from '../../core/perspective/CardinalityOnePerspectiveContext'
-import {useRawPerspective} from '../../core/perspective/usePerspective'
-import {useDocumentVersions} from '../../core/releases/hooks/useDocumentVersions'
-import {getReleaseIdFromReleaseDocumentId} from '../../core/releases/util/getReleaseIdFromReleaseDocumentId'
-import {getVersionFromId} from '../../core/util/draftUtils'
+import {useEffect, useMemo} from 'react'
+import {
+  getReleaseIdFromReleaseDocumentId,
+  getVersionFromId,
+  useActiveReleases,
+  useDocumentVersions,
+  useRawPerspective,
+  useSetPerspective,
+} from 'sanity'
+import {useRouter} from 'sanity/router'
 
 /**
  * Check if the given perspective is a cardinality one release
@@ -24,20 +27,20 @@ export function isCardinalityOnePerspective(perspective: unknown): perspective i
  * Provides document-level perspective logic for cardinality one releases.
  *
  * CARDINALITY ONE RELEASES OVERVIEW:
- * Cardinality one releases have special behavior where they should NOT appear in URLs
- * but should be stored in React state only. This creates a complex interaction between
- * global perspective state and document-specific behavior.
+ * Cardinality one releases now appear in URLs like regular releases, but have special
+ * document-contextual clearing behavior. When viewing documents that don't exist in
+ * a cardinality one release, or when creating new documents, the perspective is
+ * automatically cleared from the URL.
  *
  * LOGIC FLOW:
  * 1. For regular releases (non-cardinality-one): Use global perspective as-is
- * 2. For new document creation: Always use drafts AND clear cardinality one state
+ * 2. For new document creation: Always use drafts AND clear URL perspective
  * 3. For cardinality one releases:
- *    a. If document EXISTS in the release → load the release version
- *    b. If document DOESN'T exist in release → load drafts AND clear cardinality one state
+ *    a. If document EXISTS in the release → use the release version
+ *    b. If document DOESN'T exist in release → clear URL perspective and use drafts
  *
- * The key insight: Cardinality one releases should be document-contextual, not globally persistent.
- * Cardinality one state should be cleared reactively when creating new documents or when documents
- * don't exist in the selected release.
+ * The key insight: Cardinality one releases should be document-contextual, automatically
+ * clearing from URLs when not applicable to the current document.
  *
  * @internal
  */
@@ -51,22 +54,62 @@ export function useDocumentPerspective({
   selectedReleaseId: string | undefined
   selectedPerspectiveName: 'published' | string | undefined
 } {
-  // IMPORTANT: Use RAW perspective to get unmodified cardinality one release data
-  // (usePerspective() would map cardinality one releases to "drafts" for global UI)
   const {selectedPerspective, selectedReleaseId, selectedPerspectiveName} = useRawPerspective()
-  const {data: documentVersions} = useDocumentVersions({documentId})
-  const {setCardinalityOneReleaseId, cardinalityOneReleaseId} = useCardinalityOnePerspective()
+  const {data: documentVersions, loading: documentVersionsLoading} = useDocumentVersions({
+    documentId,
+  })
+  const {data: releases} = useActiveReleases()
+  const setPerspective = useSetPerspective()
+  const router = useRouter()
 
-  return useMemo(() => {
-    // CRITICAL: Clear cardinality one state when creating new documents
-    // New documents should always be created in drafts, never in cardinality one releases
-    // This is purely reactive - when isCreatingNewDocument becomes true, we clear the state
-    if (isCreatingNewDocument && cardinalityOneReleaseId) {
-      // Clear immediately and synchronously - this will trigger a re-render
-      setCardinalityOneReleaseId(null)
+  // Use useEffect for side effects like clearing perspective from URL
+  useEffect(() => {
+    // Don't make decisions while document versions are still loading
+    if (documentVersionsLoading) {
+      return
     }
 
-    // For new document creation, always use drafts regardless of global perspective
+    // Clear perspective for new document creation
+    if (isCreatingNewDocument && selectedPerspectiveName) {
+      setPerspective(undefined)
+      return
+    }
+
+    // Check if we have a cardinality one release selected
+    const isCardinalityOne = isCardinalityOnePerspective(selectedPerspective)
+
+    // Only handle cardinality one releases
+    if (!isCardinalityOne) {
+      return
+    }
+
+    // If document has no versions, clear the cardinality one perspective
+    if (!documentVersions?.length) {
+      setPerspective(undefined)
+      return
+    }
+
+    const releasesIds = documentVersions.map((id) => getVersionFromId(id))
+    const currentReleaseId = getReleaseIdFromReleaseDocumentId(selectedPerspective._id)
+    const documentExistsInRelease = releasesIds.includes(currentReleaseId)
+
+    // If document doesn't exist in the cardinality one release, clear the perspective
+    if (!documentExistsInRelease) {
+      setPerspective(undefined)
+    }
+  }, [
+    documentId,
+    isCreatingNewDocument,
+    selectedPerspective,
+    selectedPerspectiveName,
+    documentVersions,
+    documentVersionsLoading,
+    setPerspective,
+  ])
+
+  // Return the appropriate perspective values (this is just for reading, not side effects)
+  return useMemo(() => {
+    // For new document creation, always use drafts
     if (isCreatingNewDocument) {
       return {
         selectedReleaseId: undefined,
@@ -86,9 +129,18 @@ export function useDocumentPerspective({
     }
 
     // For cardinality one releases, check if document exists in the release
+    // If we're still loading document versions, default to drafts
+    if (documentVersionsLoading) {
+      return {
+        selectedReleaseId: undefined, // Default to drafts while loading
+        selectedPerspectiveName: undefined, // drafts
+      }
+    }
+
+    // If document has no versions, use drafts
     if (!documentVersions?.length) {
       return {
-        selectedReleaseId: undefined, // Default to drafts if we don't have version data yet
+        selectedReleaseId: undefined,
         selectedPerspectiveName: undefined, // drafts
       }
     }
@@ -97,18 +149,18 @@ export function useDocumentPerspective({
     const currentReleaseId = getReleaseIdFromReleaseDocumentId(selectedPerspective._id)
     const documentExistsInRelease = releasesIds.includes(currentReleaseId)
 
-    // CRITICAL: If document doesn't exist in the cardinality one release, clear the cardinality one state
-    // This prevents getting "stuck" in a cardinality one release when viewing documents that don't exist in it
+    // If document doesn't exist in the cardinality one release, use drafts
     if (documentExistsInRelease === false) {
-      // Clear immediately and synchronously - this will trigger a re-render
-      setCardinalityOneReleaseId(null)
+      return {
+        selectedReleaseId: undefined,
+        selectedPerspectiveName: undefined, // drafts
+      }
     }
 
     // If document exists in the cardinality one release, use the release ID
-    // Otherwise, use undefined (which will load drafts)
     return {
-      selectedReleaseId: documentExistsInRelease ? selectedReleaseId : undefined,
-      selectedPerspectiveName: documentExistsInRelease ? selectedReleaseId : undefined,
+      selectedReleaseId,
+      selectedPerspectiveName,
     }
   }, [
     isCreatingNewDocument,
@@ -116,7 +168,6 @@ export function useDocumentPerspective({
     selectedReleaseId,
     selectedPerspectiveName,
     documentVersions,
-    setCardinalityOneReleaseId,
-    cardinalityOneReleaseId,
+    documentVersionsLoading,
   ])
 }
