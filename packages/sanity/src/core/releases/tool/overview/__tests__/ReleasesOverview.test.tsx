@@ -797,5 +797,129 @@ describe('ReleasesOverview', () => {
         expect(releasesButton).toBeInTheDocument()
       })
     })
+
+    describe('when scheduled drafts are enabled but drafts is disabled', () => {
+      const releaseWithScheduledCardinalityOne: ReleaseDocument = {
+        ...activeScheduledRelease,
+        _id: '_.releases.rScheduledCardinalityOne',
+        metadata: {
+          ...activeScheduledRelease.metadata,
+          title: 'Scheduled Draft Release',
+          cardinality: 'one',
+        },
+      }
+
+      const releaseWithASAPCardinalityOne: ReleaseDocument = {
+        ...activeASAPRelease,
+        _id: '_.releases.rASAPCardinalityOne',
+        metadata: {
+          ...activeASAPRelease.metadata,
+          title: 'ASAP Draft Release',
+          cardinality: 'one',
+        },
+      }
+
+      const releaseWithUndecidedCardinalityOne: ReleaseDocument = {
+        ...activeUndecidedRelease,
+        _id: '_.releases.rUndecidedCardinalityOne',
+        metadata: {
+          ...activeUndecidedRelease.metadata,
+          title: 'Undecided Draft Release',
+          cardinality: 'one',
+        },
+      }
+
+      beforeEach(() => {
+        vi.mocked(useScheduledDraftsEnabled).mockReturnValue(true)
+      })
+
+      it('should show menu button when there are scheduled cardinality one releases', async () => {
+        mockUseActiveReleases.mockReturnValue({
+          ...useActiveReleasesMockReturn,
+          data: [releaseWithScheduledCardinalityOne, activeASAPRelease],
+        })
+        mockUseReleasesMetadata.mockReturnValue({
+          ...useReleasesMetadataMockReturn,
+          data: {
+            [releaseWithScheduledCardinalityOne._id]: {documentCount: 1, updatedAt: null},
+            [activeASAPRelease._id]: {documentCount: 2, updatedAt: null},
+          },
+        })
+
+        const wrapper = await createTestProvider({
+          resources: [releasesUsEnglishLocaleBundle],
+          config: {
+            document: {
+              drafts: {enabled: false},
+            },
+          },
+        })
+
+        await act(async () => render(<TestComponent />, {wrapper}))
+
+        const releasesButton = screen.getByRole('button', {name: 'Releases'})
+        expect(releasesButton).toBeInTheDocument()
+      })
+
+      it('should show text only when there are no scheduled cardinality one releases', async () => {
+        mockUseActiveReleases.mockReturnValue({
+          ...useActiveReleasesMockReturn,
+          data: [releaseWithASAPCardinalityOne, activeASAPRelease],
+        })
+        mockUseReleasesMetadata.mockReturnValue({
+          ...useReleasesMetadataMockReturn,
+          data: {
+            [releaseWithASAPCardinalityOne._id]: {documentCount: 1, updatedAt: null},
+            [activeASAPRelease._id]: {documentCount: 2, updatedAt: null},
+          },
+        })
+
+        const wrapper = await createTestProvider({
+          resources: [releasesUsEnglishLocaleBundle],
+          config: {
+            document: {
+              drafts: {enabled: false},
+            },
+          },
+        })
+
+        await act(async () => render(<TestComponent />, {wrapper}))
+
+        // text is there, but menu button is not
+        expect(screen.getByText('Releases')).toBeInTheDocument()
+        const dropdownButton = screen.queryByRole('button', {name: 'Releases'})
+        expect(dropdownButton).not.toBeInTheDocument()
+      })
+
+      it('should show text only when there are only non-scheduled cardinality one releases', async () => {
+        mockUseActiveReleases.mockReturnValue({
+          ...useActiveReleasesMockReturn,
+          data: [releaseWithUndecidedCardinalityOne, releaseWithASAPCardinalityOne],
+        })
+        mockUseReleasesMetadata.mockReturnValue({
+          ...useReleasesMetadataMockReturn,
+          data: {
+            [releaseWithUndecidedCardinalityOne._id]: {documentCount: 1, updatedAt: null},
+            [releaseWithASAPCardinalityOne._id]: {documentCount: 1, updatedAt: null},
+          },
+        })
+
+        const wrapper = await createTestProvider({
+          resources: [releasesUsEnglishLocaleBundle],
+          config: {
+            document: {
+              drafts: {enabled: false},
+            },
+          },
+        })
+
+        await act(async () => render(<TestComponent />, {wrapper}))
+
+        // text is there, but menu button is not
+        expect(screen.getByText('Releases')).toBeInTheDocument()
+        const dropdownButton = screen.queryByRole('button', {name: 'Releases'})
+        expect(dropdownButton).not.toBeInTheDocument()
+      })
+    })
   })
 })

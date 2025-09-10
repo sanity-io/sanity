@@ -17,6 +17,8 @@ import {useTimeZone} from '../../../hooks/useTimeZone'
 import {useTranslation} from '../../../i18n'
 import {usePerspective} from '../../../perspective/usePerspective'
 import {CONTENT_RELEASES_TIME_ZONE_SCOPE} from '../../../studio/constants'
+import {useWorkspace} from '../../../studio/workspace'
+import {isCardinalityOneRelease} from '../../../util/releaseUtils'
 import {CreateReleaseDialog} from '../../components/dialog/CreateReleaseDialog'
 import {useReleasesUpsell} from '../../contexts/upsell/useReleasesUpsell'
 import {useScheduledDraftsEnabled} from '../../hooks/useScheduledDraftsEnabled'
@@ -66,6 +68,11 @@ export function ReleasesOverview() {
   const {data: allArchivedReleases} = useArchivedReleases()
   const {mode} = useReleasesUpsell()
   const isScheduledDraftsEnabled = useScheduledDraftsEnabled()
+  const {
+    document: {
+      drafts: {enabled: isDraftModelEnabled},
+    },
+  } = useWorkspace()
 
   const router = useRouter()
   const [releaseGroupMode, setReleaseGroupMode] = useState<Mode>(getInitialReleaseGroupMode(router))
@@ -217,6 +224,27 @@ export function ReleasesOverview() {
       )
     }
 
+    // If scheduled drafts are enabled but drafts mode is disabled:
+    // only show releases and drafts menu items if there are scheduled drafts already existing
+    // otherwise, show only the releases label
+    if (!isDraftModelEnabled) {
+      const hasScheduledCardinalityOneReleases = allReleases.some(
+        (release) =>
+          isCardinalityOneRelease(release) && release.metadata.releaseType === 'scheduled',
+      )
+
+      if (!hasScheduledCardinalityOneReleases) {
+        return (
+          <Flex align="center" gap={2}>
+            <CalendarIcon />
+            <Text size={1} weight="semibold">
+              {t('action.releases')}
+            </Text>
+          </Flex>
+        )
+      }
+    }
+
     const currentViewText =
       cardinalityView === 'releases' ? t('action.releases') : t('action.drafts')
 
@@ -250,7 +278,15 @@ export function ReleasesOverview() {
         }
       />
     )
-  }, [loading, cardinalityView, t, handleCardinalityViewChange, isScheduledDraftsEnabled])
+  }, [
+    loading,
+    cardinalityView,
+    t,
+    handleCardinalityViewChange,
+    isScheduledDraftsEnabled,
+    isDraftModelEnabled,
+    allReleases,
+  ])
 
   const currentArchivedPicker = useMemo(() => {
     const groupModeButtonBaseProps = {
