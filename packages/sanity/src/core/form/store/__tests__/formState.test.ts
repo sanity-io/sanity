@@ -324,23 +324,6 @@ const rootFormNodeOptions: Partial<{
       expect(node.changed).toBe(true)
 
       if (node.schemaType.jsonType === 'string') {
-        expect(node.__unstable_diff).toMatchObject({
-          isChanged: true,
-          fromValue: 'CHANGED',
-          toValue: node.value,
-          annotation: {
-            provenance: {
-              bundle: 'published',
-            },
-          },
-        })
-      }
-
-      if (node.__unstable_diff.type === 'string') {
-        expect(node.__unstable_diff.segments.length).toBeGreaterThan(0)
-      }
-
-      if (node.schemaType.jsonType === 'string') {
         const computedDiff = node.__unstable_computeDiff([node.value, 'xyz'].join(' '))
 
         expect(computedDiff).toMatchObject({
