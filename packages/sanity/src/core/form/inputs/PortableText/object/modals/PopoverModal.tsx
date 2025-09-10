@@ -76,11 +76,22 @@ function Content(props: PopoverEditDialogProps) {
     useCallback(
       (event: KeyboardEvent) => {
         if (event.key === 'Escape') {
+          event.preventDefault()
+          event.stopPropagation()
+          event.stopImmediatePropagation()
           handleClose()
         }
       },
       [handleClose],
     ),
+    {
+      /**
+       * We need to capture the event to prevent it from being propagated to the parent
+       * This is needed when, for example, in order for the fullscreen mode to be closed
+       * Last over existing popovers
+       */
+      capture: true,
+    },
   )
 
   useClickOutsideEvent(
