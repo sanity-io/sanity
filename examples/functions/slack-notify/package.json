@@ -14,8 +14,7 @@
     "timeout": 10,
     "event": {
       "on": [
-        "create",
-        "update"
+        "create"
       ],
       "filter": "_type == 'post'",
       "projection": "{_id, title, slug, _updatedAt}"
