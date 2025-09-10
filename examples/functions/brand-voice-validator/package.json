@@ -14,7 +14,8 @@
     "timeout": 60,
     "event": {
       "on": [
-        "publish"
+        "create",
+        "update"
       ],
       "filter": "_type == 'post'",
       "projection": "{_id}"

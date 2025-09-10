@@ -77,7 +77,7 @@ npx sanity schema deploy
      timeout: 30,
      name: 'auto-summary',
      event: {
-       on: ['publish'],
+       on: ['create', 'update'],
        filter: "_type == 'post' && !defined(autoSummary)",
        projection: '{_id}',
      },

@@ -81,7 +81,7 @@ npx sanity schema deploy
          memory: 2,
          timeout: 30,
          event: {
-           on: ['publish'],
+           on: ['create', 'update'],
            filter: "_type == 'post' && !defined(tags)",
            projection: '{_id}',
          },

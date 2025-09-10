@@ -81,7 +81,7 @@ npx sanity schema deploy
          memory: 2,
          timeout: 60,
          event: {
-           on: ['publish'],
+           on: ['create', 'update'],
            filter: "_type == 'post'",
            projection: '{_id}',
          },
@@ -171,7 +171,7 @@ export default defineBlueprint({
       memory: 2,
       timeout: 60,
       event: {
-        on: ['publish'],
+        on: ['create', 'update'],
         filter: "_type == 'post'",
         projection: '{_id}',
       },

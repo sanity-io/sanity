@@ -128,7 +128,7 @@ export default defineBlueprint({
     defineDocumentFunction({
       name: 'comment-telegram',
       event: {
-        on: ['publish'],
+        on: ['create', 'update'],
         filter: '_type == "comment" && defined(comment)',
         projection: '{_id, comment}',
       },

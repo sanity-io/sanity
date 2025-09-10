@@ -97,7 +97,7 @@ export default defineBlueprint({
     defineDocumentFunction({
       name: 'prettier-format-code',
       event: {
-        on: ['publish'],
+        on: ['create', 'update'],
         filter: '_type == "article" && delta::changedAny(content[_type == "code"])',
         projection: '{_id, content}',
       },

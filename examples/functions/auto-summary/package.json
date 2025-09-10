@@ -4,7 +4,8 @@
   "main": "index.ts",
   "dependencies": {
     "@sanity/client": "^7.11.1",
-    "@sanity/functions": "^1.0.3"
+    "@sanity/functions": "^1.0.3",
+    "sanity": "^4.8.1"
   },
   "blueprintResourceItem": {
     "type": "sanity.function.document",
@@ -14,7 +15,8 @@
     "timeout": 30,
     "event": {
       "on": [
-        "publish"
+        "create",
+        "update"
       ],
       "filter": "_type == 'post' && !defined(autoSummary)",
       "projection": "{_id}"

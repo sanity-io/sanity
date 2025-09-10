@@ -94,7 +94,7 @@ Most official templates already include these fields.
          memory: 1,
          timeout: 10,
          event: {
-           on: ['publish'],
+           on: ['create', 'update'],
            filter: "_type == 'post'",
            projection: '{_id, title, slug, _updatedAt}',
          },
@@ -240,7 +240,7 @@ export default defineBlueprint({
       memory: 1,
       timeout: 10,
       event: {
-        on: ['publish'],
+        on: ['create', 'update'],
         filter: "_type == 'post'",
         projection: '{_id, title, slug, _updatedAt}',
       },
