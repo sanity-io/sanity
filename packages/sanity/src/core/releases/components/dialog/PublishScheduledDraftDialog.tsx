@@ -31,9 +31,9 @@ export function PublishScheduledDraftDialog(
   const operations = useScheduleDraftOperations()
   const [isPublishing, setIsPublishing] = useState(false)
 
-  const scheduledDraftTitle = release.metadata.title || 'Untitled release'
-
-  const {firstDocument} = useScheduledDraftDocument(release._id)
+  const {firstDocument, firstDocumentPreview} = useScheduledDraftDocument(release._id, {
+    includePreview: true,
+  })
   const schemaType = documentType ? schema.get(documentType) : null
 
   const handlePublishScheduledDraft = useCallback(async () => {
@@ -47,7 +47,7 @@ export function PublishScheduledDraftDialog(
           <Translate
             t={t}
             i18nKey="release.toast.publish-scheduled-draft.success"
-            values={{title: scheduledDraftTitle}}
+            values={{title: firstDocumentPreview?.title || t('preview.default.title-fallback')}}
             components={{Strong}}
           />
         ),
@@ -62,7 +62,7 @@ export function PublishScheduledDraftDialog(
             t={t}
             i18nKey="release.toast.publish-scheduled-draft.error"
             values={{
-              title: scheduledDraftTitle,
+              title: firstDocumentPreview?.title || t('preview.default.title-fallback'),
               error: (error as Error).message,
             }}
             components={{Strong}}
@@ -73,7 +73,7 @@ export function PublishScheduledDraftDialog(
       setIsPublishing(false)
       onClose()
     }
-  }, [release, operations, toast, t, scheduledDraftTitle, onClose])
+  }, [operations, release, toast, t, firstDocumentPreview?.title, onClose])
 
   return (
     <Dialog

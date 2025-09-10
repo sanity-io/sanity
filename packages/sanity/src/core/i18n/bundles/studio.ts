@@ -1371,9 +1371,6 @@ export const studioLocaleStrings = defineLocalesResources('studio', {
     'Are you sure you want to delete this scheduled draft? This action cannot be undone.',
   /** Confirm button text for deleting a scheduled draft */
   'release.dialog.delete-schedule-draft.confirm': 'Yes, delete schedule',
-  /** Confirmation message for deleting a scheduled publish */
-  'release.dialog.delete-schedule-draft.confirm-message':
-    'Are you sure you want to delete the schedule for <Strong>{{title}}</Strong>?',
   /** Header for the dialog confirming deletion of a scheduled draft */
   'release.dialog.delete-schedule-draft.header': 'Delete scheduled draft',
   /** Body text for change schedule dialog */
@@ -1425,26 +1422,28 @@ export const studioLocaleStrings = defineLocalesResources('studio', {
   'release.toast.create-release-error.title': 'Failed to create release',
   /** Error toast for deleting a scheduled draft */
   'release.toast.delete-schedule-draft.error':
-    'Failed to delete <Strong>{{title}}</Strong>: {{error}}',
+    'Failed to delete the scheduled draft document <strong>{{title}}</strong>: {{error}}',
   /** Success toast for deleting a scheduled draft */
-  'release.toast.delete-schedule-draft.success': '<Strong>{{title}}</Strong> has been deleted.',
+  'release.toast.delete-schedule-draft.success':
+    'The scheduled draft document <strong>{{title}}</strong> has been deleted.',
   /** The toast title that will be shown when the user has a release perspective which is now deleted */
   'release.toast.not-found-release.title': "The '{{title}}' release could not be found",
   /** Error toast for running a scheduled publish immediately */
   'release.toast.publish-scheduled-draft.error':
-    'Failed to publish <Strong>{{title}}</Strong>: {{error}}',
+    'Failed to publish the scheduled draft document <strong>{{title}}</strong>: {{error}}',
   /** Success toast for running a scheduled publish immediately */
-  'release.toast.publish-scheduled-draft.success': '<Strong>{{title}}</Strong> has been published.',
+  'release.toast.publish-scheduled-draft.success':
+    'The scheduled draft document <strong>{{title}}</strong> has been published.',
   /** The toast description that will be shown when the user has a release perspective which is now published */
   'release.toast.published-release.description': 'This release has been unpinned',
   /** The toast title that will be shown when the user has a release perspective which is now deleted */
   'release.toast.published-release.title': "The '{{title}}' release was published",
   /** Error toast for rescheduling a draft */
   'release.toast.reschedule-scheduled-draft.error':
-    'Failed to reschedule <Strong>{{title}}</Strong>: {{error}}',
+    'Failed to reschedule the scheduled draft document <strong>{{title}}</strong>: {{error}}',
   /** Success toast for rescheduling a draft */
   'release.toast.reschedule-scheduled-draft.success':
-    '<Strong>{{title}}</Strong> has been rescheduled.',
+    'The scheduled draft document <strong>{{title}}</strong> has been rescheduled.',
   /** Label for when a version of a document has already been added to the release */
   'release.tooltip.already-added': 'A version of this document has already been added',
   /** Label for when a release is scheduled / scheduling and a user can't add a document version to it */

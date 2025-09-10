@@ -8,6 +8,7 @@ import {Translate, useTranslation} from '../../i18n'
 import {DeleteScheduledDraftDialog} from '../components/dialog/DeleteScheduledDraftDialog'
 import {PublishScheduledDraftDialog} from '../components/dialog/PublishScheduledDraftDialog'
 import {ScheduleDraftDialog} from '../components/dialog/ScheduleDraftDialog'
+import {useScheduledDraftDocument} from './useScheduledDraftDocument'
 import {useScheduleDraftOperations} from './useScheduleDraftOperations'
 
 const Strong = ({children}: PropsWithChildren) => <strong>{children}</strong>
@@ -49,47 +50,9 @@ export function useScheduledDraftMenuActions(
   const [selectedAction, setSelectedAction] = useState<ScheduledDraftAction | null>(null)
   const [isPerformingOperation, setIsPerformingOperation] = useState(false)
 
-  const scheduledDraftTitle = release.metadata.title || t('release.placeholder-untitled-release')
-
-  const handlePublishNow = useCallback(async () => {
-    setIsPerformingOperation(true)
-    try {
-      await operations.publishScheduledDraft(release)
-      toast.push({
-        closable: true,
-        status: 'success',
-        description: (
-          <Translate
-            t={t}
-            i18nKey="release.toast.publish-scheduled-draft.success"
-            values={{title: scheduledDraftTitle}}
-            components={{Strong}}
-          />
-        ),
-      })
-      onActionComplete?.()
-    } catch (error) {
-      console.error('Failed to run scheduled draft:', error)
-      toast.push({
-        closable: true,
-        status: 'error',
-        description: (
-          <Translate
-            t={t}
-            i18nKey="release.toast.publish-scheduled-draft.error"
-            values={{
-              title: scheduledDraftTitle,
-              error: (error as Error).message,
-            }}
-            components={{Strong}}
-          />
-        ),
-      })
-    } finally {
-      setIsPerformingOperation(false)
-      setSelectedAction(null)
-    }
-  }, [release, operations, toast, t, scheduledDraftTitle, onActionComplete])
+  const {firstDocumentPreview} = useScheduledDraftDocument(release._id, {
+    includePreview: true,
+  })
 
   const handleReschedule = useCallback(
     async (newPublishAt: Date) => {
@@ -107,7 +70,7 @@ export function useScheduledDraftMenuActions(
               t={t}
               i18nKey="release.toast.reschedule-scheduled-draft.error"
               values={{
-                title: scheduledDraftTitle,
+                title: firstDocumentPreview?.title || t('preview.default.title-fallback'),
                 error: (error as Error).message,
               }}
               components={{Strong}}
@@ -119,7 +82,7 @@ export function useScheduledDraftMenuActions(
         setSelectedAction(null)
       }
     },
-    [release._id, operations, toast, t, scheduledDraftTitle, onActionComplete],
+    [release._id, operations, toast, t, firstDocumentPreview?.title, onActionComplete],
   )
 
   const handleMenuItemClick = useCallback(
