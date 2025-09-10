@@ -3,9 +3,10 @@ import {memo, useEffect, useRef, useState} from 'react'
 
 import {useDocumentPairPermissions} from '../../../../store/_legacy/grants/documentPairPermissions'
 import {getPublishedId, isPublishedId} from '../../../../util/draftUtils'
+import {isCardinalityOneRelease} from '../../../../util/releaseUtils'
 import {useReleaseOperations} from '../../../store/useReleaseOperations'
 import {useReleasePermissions} from '../../../store/useReleasePermissions'
-import {getReleaseDefaults, isCardinalityOneRelease} from '../../../util/util'
+import {getReleaseDefaults} from '../../../util/util'
 import {CanonicalReleaseContextMenu} from './CanonicalReleaseContextMenu'
 import {ScheduledDraftContextMenu} from './ScheduledDraftContextMenu'
 

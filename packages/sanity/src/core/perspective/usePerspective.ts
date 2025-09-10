@@ -1,7 +1,7 @@
 import {useContext, useMemo} from 'react'
 import {PerspectiveContext} from 'sanity/_singletons'
 
-import {isCardinalityOneRelease} from '../releases/util/util'
+import {isCardinalityOneRelease} from '../util/releaseUtils'
 import {type PerspectiveContextValue} from './types'
 
 /**

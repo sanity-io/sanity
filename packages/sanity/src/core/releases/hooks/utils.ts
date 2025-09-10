@@ -1,8 +1,8 @@
 import {type ClientPerspective, type ReleaseDocument} from '@sanity/client'
 
 import {type PerspectiveStack, type ReleaseId} from '../../perspective/types'
+import {isCardinalityOneRelease} from '../../util/releaseUtils'
 import {getReleaseIdFromReleaseDocumentId} from '../util/getReleaseIdFromReleaseDocumentId'
-import {isCardinalityOneRelease} from '../util/util'
 
 export function sortReleases(releases: ReleaseDocument[] = []): ReleaseDocument[] {
   // The order should always be:

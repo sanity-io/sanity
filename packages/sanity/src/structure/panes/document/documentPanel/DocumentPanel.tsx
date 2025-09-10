@@ -3,7 +3,6 @@ import {useEffect, useMemo, useRef, useState} from 'react'
 import {
   getSanityCreateLinkMetadata,
   getVersionFromId,
-  isCardinalityOneRelease,
   isGoingToUnpublish,
   isNewDocument,
   isPerspectiveWriteable,
