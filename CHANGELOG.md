@@ -3,6 +3,15 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [4.8.1](https://github.com/sanity-io/sanity/compare/v4.8.0...v4.8.1) (2025-09-10)
+
+
+### Bug Fixes
+
+* revert fix: popover issue when closing and clicking different panes ([#10608](https://github.com/sanity-io/sanity/issues/10608)) ([d0dba63](https://github.com/sanity-io/sanity/commit/d0dba63e7b254457ea8ff6992acff66f571603ab))
+
+
+
 ## [4.8.0](https://github.com/sanity-io/sanity/compare/v4.7.0...v4.8.0) (2025-09-10)
 
 
