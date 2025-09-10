@@ -10,9 +10,13 @@ export const ScheduledDraftMetadataCell: VisibleColumn<TableRelease>['cell'] = (
   datum,
   cellProps,
 }) => {
-  const {createdBy, loading: creatorLoading} = useReleaseCreator(datum._id, datum.isLoading)
+  // Skeleton IDs don't start with _.releases
+  // so pass undefined in loading cases
+  const {createdBy, loading: creatorLoading} = useReleaseCreator(
+    datum.isLoading ? undefined : datum._id,
+    datum.isLoading,
+  )
 
-  // Handle skeleton/loading scheduled drafts (when the scheduled draft itself is not loaded)
   if (datum.isLoading || !datum.metadata) {
     return (
       <Flex {...cellProps} align="center" paddingX={2} paddingY={3} sizing="border">

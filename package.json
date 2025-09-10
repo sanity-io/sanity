@@ -114,9 +114,9 @@
     "@repo/test-config": "workspace:*",
     "@repo/tsconfig": "workspace:*",
     "@repo/utils": "workspace:*",
-    "@sanity/client": "^7.11.0",
+    "@sanity/client": "^7.11.1",
     "@sanity/mutate": "^0.13.0",
-    "@sanity/pkg-utils": "6.13.4",
+    "@sanity/pkg-utils": "6.13.5",
     "@sanity/prettier-config": "^1.0.6",
     "@sanity/tsdoc": "1.0.169",
     "@sanity/ui": "^3.0.14",
@@ -126,8 +126,8 @@
     "@types/react": "catalog:",
     "@types/semver": "^7.7.0",
     "@types/yargs": "^17.0.33",
-    "@typescript-eslint/eslint-plugin": "^8.42.0",
-    "@typescript-eslint/parser": "^8.42.0",
+    "@typescript-eslint/eslint-plugin": "^8.43.0",
+    "@typescript-eslint/parser": "^8.43.0",
     "@vitejs/plugin-react": "catalog:",
     "@vitest/coverage-v8": "^3.2.4",
     "cac": "^6.7.14",
@@ -138,7 +138,7 @@
     "dotenv-flow": "^4.1.0",
     "esbuild": "catalog:",
     "esbuild-register": "catalog:",
-    "eslint": "^9.34.0",
+    "eslint": "^9.35.0",
     "eslint-formatter-gha": "^1.6.0",
     "eslint-plugin-react-hooks": "6.0.0-rc.2",
     "execa": "^2.1.0",
@@ -163,7 +163,7 @@
     "tsx": "^4.20.5",
     "turbo": "^2.5.6",
     "typescript": "catalog:",
-    "vite": "^7.1.4",
+    "vite": "^7.1.5",
     "vite-tsconfig-paths": "^5.1.4",
     "vitest": "3.2.4",
     "yargs": "^17.7.2"
@@ -176,8 +176,7 @@
     "peerDependencyRules": {
       "allowAny": [
         "react",
-        "react-dom",
-        "react-is"
+        "react-dom"
       ]
     },
     "overrides": {

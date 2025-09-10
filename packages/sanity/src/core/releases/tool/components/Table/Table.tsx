@@ -10,7 +10,6 @@ import {
   Fragment,
   type HTMLProps,
   type RefAttributes,
-  type RefObject,
   useMemo,
   useRef,
 } from 'react'
@@ -53,7 +52,7 @@ export interface TableProps<TableData, AdditionalRowTableData> {
     datum: RowDatum<TableData, AdditionalRowTableData> | unknown
   }) => React.ReactNode
   rowProps?: (datum: TableData) => Partial<TableRowProps>
-  scrollContainerRef: RefObject<HTMLDivElement | null>
+  scrollContainerRef: HTMLDivElement | null
   hideTableInlinePadding?: boolean
 }
 
@@ -115,7 +114,7 @@ const TableInner = <TableData, AdditionalRowTableData>({
 
   const rowVirtualizer = useVirtualizer({
     count: filteredData.length,
-    getScrollElement: () => scrollContainerRef.current,
+    getScrollElement: () => scrollContainerRef,
     estimateSize: () => ITEM_HEIGHT,
     overscan: 5,
   })

@@ -1,10 +1,11 @@
-import {type BaseActionOptions, type ReleaseState} from '@sanity/client'
+import {type BaseActionOptions, type ReleaseDocument, type ReleaseState} from '@sanity/client'
 import {useCallback} from 'react'
 
 import {getDraftId} from '../../util'
 import {useReleaseOperations} from '../store/useReleaseOperations'
 import {createReleaseId} from '../util/createReleaseId'
 import {getReleaseIdFromReleaseDocumentId} from '../util/getReleaseIdFromReleaseDocumentId'
+import {isReleaseScheduledOrScheduling} from '../util/util'
 
 export interface ScheduleDraftOperationsValue {
   /**
@@ -19,7 +20,7 @@ export interface ScheduleDraftOperationsValue {
   /**
    * Immediately publishes a scheduled draft
    */
-  publishScheduledDraft: (releaseDocumentId: string, opts?: BaseActionOptions) => Promise<void>
+  publishScheduledDraft: (release: ReleaseDocument, opts?: BaseActionOptions) => Promise<void>
   /**
    * Deletes a scheduled draft
    */
@@ -91,17 +92,22 @@ export function useScheduleDraftOperations(): ScheduleDraftOperationsValue {
     [releaseOperations, createScheduledDraftRelease],
   )
 
+  // used to immediately publish a scheduled draft
   const handlePublishScheduledDraft = useCallback(
-    async (releaseDocumentId: string, opts?: BaseActionOptions): Promise<void> => {
-      // First unschedule the release
-      await releaseOperations.unschedule(releaseDocumentId, opts)
+    async (release: ReleaseDocument, opts?: BaseActionOptions): Promise<void> => {
+      // Only unschedule if the release is currently in a scheduled state
+      if (isReleaseScheduledOrScheduling(release)) {
+        await releaseOperations.unschedule(release._id, opts)
+      }
 
       // Then immediately publish it
-      await releaseOperations.publishRelease(releaseDocumentId, opts)
+      await releaseOperations.publishRelease(release._id, opts)
     },
     [releaseOperations],
   )
 
+  // This handles scheduled draft releases in a few different states.
+  // The end state is we want it deleted so go through the state machine to get there
   const handleDeleteScheduledDraft = useCallback(
     async (
       releaseDocumentId: string,
@@ -127,10 +133,10 @@ export function useScheduleDraftOperations(): ScheduleDraftOperationsValue {
       newPublishAt: Date,
       opts?: BaseActionOptions,
     ): Promise<void> => {
-      // First unschedule the release
+      // need to unschedule to bring release to `active` state
+      // so that it can be rescheduled with the new date
       await releaseOperations.unschedule(releaseDocumentId, opts)
 
-      // Then schedule it with the new date
       await releaseOperations.schedule(releaseDocumentId, newPublishAt, opts)
     },
     [releaseOperations],

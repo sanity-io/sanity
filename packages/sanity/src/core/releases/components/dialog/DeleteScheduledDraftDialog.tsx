@@ -1,15 +1,16 @@
 import {type ReleaseDocument} from '@sanity/client'
-import {Box, Stack, Text} from '@sanity/ui'
-import {useCallback, useState} from 'react'
+import {Box, Stack, Text, useToast} from '@sanity/ui'
+import {type PropsWithChildren, useCallback, useState} from 'react'
 
 import {Dialog} from '../../../../ui-components'
 import {LoadingBlock} from '../../../components'
 import {useSchema} from '../../../hooks'
-import {useTranslation} from '../../../i18n'
+import {Translate, useTranslation} from '../../../i18n'
 import {Preview} from '../../../preview'
-import {useScheduleDraftOperationsWithToasts} from '../../hooks/useScheduleDraftOperationsWithToasts'
-import {useBundleDocuments} from '../../tool/detail/useBundleDocuments'
-import {getReleaseIdFromReleaseDocumentId} from '../../util/getReleaseIdFromReleaseDocumentId'
+import {useScheduledDraftDocument} from '../../hooks/useScheduledDraftDocument'
+import {useScheduleDraftOperations} from '../../hooks/useScheduleDraftOperations'
+
+const Strong = ({children}: PropsWithChildren) => <strong>{children}</strong>
 
 interface DeleteScheduledDraftDialogProps {
   onClose: () => void
@@ -25,29 +26,54 @@ export function DeleteScheduledDraftDialog(
 ): React.JSX.Element {
   const {onClose, release, documentType} = props
   const {t} = useTranslation()
+  const toast = useToast()
   const schema = useSchema()
+  const operations = useScheduleDraftOperations()
   const [isDeleting, setIsDeleting] = useState(false)
 
   const scheduledDraftTitle = release.metadata.title || 'Untitled release'
 
-  const releaseId = getReleaseIdFromReleaseDocumentId(release._id)
-  const {results: documents} = useBundleDocuments(releaseId || '')
-  const firstDocument = documents?.[0]?.document
+  const {firstDocument} = useScheduledDraftDocument(release._id)
   const schemaType = documentType ? schema.get(documentType) : null
-
-  const {deleteScheduledDraft} = useScheduleDraftOperationsWithToasts(scheduledDraftTitle)
 
   const handleDeleteSchedule = useCallback(async () => {
     setIsDeleting(true)
     try {
-      await deleteScheduledDraft(release._id, release.state)
+      await operations.deleteScheduledDraft(release._id, release.state)
+      toast.push({
+        closable: true,
+        status: 'success',
+        description: (
+          <Translate
+            t={t}
+            i18nKey="release.toast.delete-schedule-draft.success"
+            values={{title: scheduledDraftTitle}}
+            components={{Strong}}
+          />
+        ),
+      })
     } catch (error) {
-      // Error toast handled by useScheduleDraftOperationsWithToasts
+      console.error('Failed to delete scheduled draft:', error)
+      toast.push({
+        closable: true,
+        status: 'error',
+        description: (
+          <Translate
+            t={t}
+            i18nKey="release.toast.delete-schedule-draft.error"
+            values={{
+              title: scheduledDraftTitle,
+              error: (error as Error).message,
+            }}
+            components={{Strong}}
+          />
+        ),
+      })
     } finally {
       setIsDeleting(false)
       onClose()
     }
-  }, [release._id, release.state, deleteScheduledDraft, onClose])
+  }, [release._id, release.state, operations, toast, t, scheduledDraftTitle, onClose])
 
   return (
     <Dialog

@@ -16,7 +16,7 @@ const releasesLocaleStrings = {
   'action.create-revert-release': 'Create a new release',
   /** Action text for deleting a release */
   'action.delete-release': 'Delete release',
-  /** Action text for showing drafts (scheduled single-document releases) */
+  /** Menu item label for showing scheduled drafts */
   'action.drafts': 'Drafts',
   /** Action text for duplicating a release */
   'action.duplicate-release': 'Duplicate release',
@@ -24,7 +24,7 @@ const releasesLocaleStrings = {
   'action.edit': 'Edit release',
   /** Action text for opening a release */
   'action.open': 'Active',
-  /** Action text for showing releases (multi-document releases) */
+  /** Menu item label for showing releases (multi-document releases) */
   'action.releases': 'Releases',
   /** Action text for scheduling a release */
   'action.schedule': 'Schedule release...',
@@ -43,8 +43,6 @@ const releasesLocaleStrings = {
   'action.revert-unpublish-actions': 'Revert unpublish when releasing',
   /** Action text for unscheduling a release */
   'action.unschedule': 'Unschedule release',
-  /** Action text for unscheduling a draft (single-document scheduled release) */
-  'action.unschedule-draft': 'Unschedule draft',
   /** Action text for publishing all documents in a release (and the release itself) */
   'action.publish-all-documents': 'Run release',
   /** Text for the review changes button in release tool */
@@ -327,18 +325,17 @@ const releasesLocaleStrings = {
   /** Description for the confirm button for scheduling a release */
   'schedule-dialog.confirm-button': 'Yes, schedule',
 
+  /** Label for date picker when scheduling a release */
+  'schedule-dialog.select-publish-date-label': 'Schedule on',
+
   /** Title for unschedule release dialog */
   'unschedule-dialog.confirm-title': 'Are you sure you want to unschedule the release?',
   /** Description shown in unschedule relaease dialog */
   'unschedule-dialog.confirm-description':
     'The release will no longer be published on the scheduled date',
-
-  /** Header for the schedule publish dialog */
-  'schedule-publish-dialog.header': 'Schedule draft for Publish',
-  /** Description for the schedule publish dialog */
-  'schedule-publish-dialog.description': 'Select when this document should be published.',
-  /** Confirm button text for the schedule publish dialog */
-  'schedule-publish-dialog.confirm': 'Schedule',
+  /** Description for warning that the published schedule time is in the past */
+  'schedule-dialog.publish-date-in-past-warning':
+    'Schedule this release for a future time and date.',
 
   /** Header for the schedule unpublish dialog */
   'schedule-unpublish-dialog.header': 'Schedule draft for Unpublish',
@@ -399,6 +396,8 @@ const releasesLocaleStrings = {
   'table-header.edited': 'Edited',
   /** Header for the document table in the release tool - Published */
   'table-header.published-at': 'Published',
+  /** Header for the document table in the release tool - Published */
+  'table-header.publishedAt': 'Published',
   /** Header for the scheduled drafts document table in the release tool - published at */
   'table-header.scheduled-draft.published-at': 'Published at',
   /** Header for the scheduled drafts document table in the release tool - scheduled for */
@@ -432,7 +431,6 @@ const releasesLocaleStrings = {
   'toast.schedule.error': "Failed to schedule '<strong>{{title}}</strong>': {{error}}",
   /** Text for toast when release has been scheduled */
   'toast.schedule.success': "The '<strong>{{title}}</strong>' release was scheduled.",
-
   /** Text for toast when release failed to unschedule */
   'toast.unschedule.error': "Failed to unscheduled '<strong>{{title}}</strong>': {{error}}",
   /** Text for toast when release failed to unarchive */

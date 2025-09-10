@@ -3,6 +3,21 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [4.7.0](https://github.com/sanity-io/sanity/compare/v4.6.1...v4.7.0) (2025-09-09)
+
+
+### Features
+
+* **core:** custom release actions ([#10286](https://github.com/sanity-io/sanity/issues/10286)) ([28a774b](https://github.com/sanity-io/sanity/commit/28a774b271558ae288b7d7d3a00c9ec8659bd68a))
+
+
+### Bug Fixes
+
+* **deps:** update dependency @sanity/ui to ^3.0.11 ([#10538](https://github.com/sanity-io/sanity/issues/10538)) ([aa025d4](https://github.com/sanity-io/sanity/commit/aa025d4d98aa4c5c732196fdb36fa99e0c0e4694))
+* **deps:** update dependency @sanity/ui to ^3.0.14 ([#10557](https://github.com/sanity-io/sanity/issues/10557)) ([8a1f41f](https://github.com/sanity-io/sanity/commit/8a1f41fad56b6c655d34701c955eda04567a4763))
+
+
+
 ## [4.6.1](https://github.com/sanity-io/sanity/compare/v4.6.0...v4.6.1) (2025-09-02)
 
 

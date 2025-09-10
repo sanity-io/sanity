@@ -109,7 +109,7 @@ export function ReleaseTypePicker(props: {release: NotArchivedRelease}): React.J
 
       setOpen(false)
     }
-  }, [open, release, updatedDate, releaseType, toast, tRelease, updateRelease])
+  }, [open, release, updatedDate, releaseType, toast, t, updateRelease])
 
   useClickOutsideEvent(close, () => [
     popoverRef.current,

@@ -2,6 +2,7 @@ import {type EditableReleaseDocument, type ReleaseDocument, type ReleaseState} f
 
 import {type TargetPerspective} from '../../perspective/types'
 import {formatRelativeLocale, getVersionFromId, isVersionId} from '../../util'
+import {isCardinalityOneRelease} from '../../util/releaseUtils'
 import {type CardinalityView} from '../tool/overview/queryParamUtils'
 import {DEFAULT_RELEASE_TYPE, LATEST} from './const'
 import {createReleaseId} from './createReleaseId'
@@ -100,22 +101,6 @@ export function isNotArchivedRelease(release: ReleaseDocument): release is NotAr
 }
 
 /**
- * Check if the release is a cardinality one release
- *
- * @internal
- */
-export function isCardinalityOneRelease(release: ReleaseDocument): release is ReleaseDocument & {
-  metadata: ReleaseDocument['metadata'] & {
-    cardinality: 'one'
-  }
-} {
-  return release.metadata.cardinality === 'one'
-}
-
-/**
- * Determine if a release should be shown based on the cardinality view
- * @param cardinalityView - The current cardinality view ('releases' or 'drafts')
- * @returns A function that takes a release and returns true if it should be shown in the current view
  * @internal
  */
 export function shouldShowReleaseInView(

@@ -50,15 +50,15 @@ import {useTimezoneAdjustedDateTimeRange} from './useTimezoneAdjustedDateTimeRan
 
 const MotionButton = motion.create(Button)
 
+export interface TableRelease extends ReleaseDocument {
+  documentsMetadata?: ReleasesMetadata
+  isDeleted?: boolean
+}
+
 const DEFAULT_RELEASES_OVERVIEW_SORT: TableSort = {column: 'publishAt', direction: 'asc'}
 const DEFAULT_ARCHIVED_RELEASES_OVERVIEW_SORT: TableSort = {
   column: 'lastActivity',
   direction: 'desc',
-}
-
-export interface TableRelease extends ReleaseDocument {
-  documentsMetadata?: ReleasesMetadata
-  isDeleted?: boolean
 }
 
 export function ReleasesOverview() {
@@ -121,6 +121,8 @@ export function ReleasesOverview() {
           },
     [selectedPerspective],
   )
+
+  const [scrollContainerRef, setScrollContainerRef] = useState<HTMLDivElement | null>(null)
 
   const hasReleases = releases.length > 0 || archivedReleases.length > 0
   const loadingOrHasReleases = loading || hasReleases
@@ -430,7 +432,10 @@ export function ReleasesOverview() {
     return releasesOverviewColumnDefs(t, releaseGroupMode)
   }, [cardinalityView, releaseGroupMode, t])
 
-  const scrollContainerRef = useRef<HTMLDivElement | null>(null)
+  const isArchivedReleasesView = releaseGroupMode === 'archived' && cardinalityView === 'releases'
+  const defaultTableSort = isArchivedReleasesView
+    ? DEFAULT_ARCHIVED_RELEASES_OVERVIEW_SORT
+    : DEFAULT_RELEASES_OVERVIEW_SORT
 
   const NoRelease = () => {
     return (
@@ -506,16 +511,12 @@ export function ReleasesOverview() {
                   </Flex>
                 </Flex>
               </Card>
-              <Box ref={scrollContainerRef} marginTop={3} overflow={'auto'}>
+              <Box ref={setScrollContainerRef} marginTop={3} overflow={'auto'}>
                 {(loading || hasReleases) && (
                   <Table<TableRelease>
                     // for resetting filter and sort on table when filer changed
                     key={releaseFilterDate ? 'by_date' : releaseGroupMode}
-                    defaultSort={
-                      releaseGroupMode === 'archived' && cardinalityView === 'releases'
-                        ? DEFAULT_ARCHIVED_RELEASES_OVERVIEW_SORT
-                        : DEFAULT_RELEASES_OVERVIEW_SORT
-                    }
+                    defaultSort={defaultTableSort}
                     loading={loadingTableData}
                     data={filteredReleases}
                     columnDefs={tableColumns}

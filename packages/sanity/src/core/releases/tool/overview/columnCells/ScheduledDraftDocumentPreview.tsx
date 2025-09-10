@@ -1,21 +1,17 @@
 import {Box, Flex, Skeleton} from '@sanity/ui'
 
-import {getReleaseIdFromReleaseDocumentId} from '../../../util/getReleaseIdFromReleaseDocumentId'
+import {useScheduledDraftDocument} from '../../../hooks/useScheduledDraftDocument'
 import {ReleaseDocumentPreview} from '../../components/ReleaseDocumentPreview'
 import {type VisibleColumn} from '../../components/Table/types'
-import {useBundleDocuments} from '../../detail/useBundleDocuments'
 import {type TableRelease} from '../ReleasesOverview'
 
 export const ScheduledDraftDocumentPreview: VisibleColumn<TableRelease>['cell'] = ({
   datum: release,
   cellProps,
 }) => {
-  const releaseId =
-    release._id && !release.isLoading ? getReleaseIdFromReleaseDocumentId(release._id) : ''
-  const {results: documents, loading: documentsLoading} = useBundleDocuments(releaseId)
-
-  // TODO: Handle cases where there might be multiple documents WRONGLY in the release
-  const firstDocument = documents?.[0]?.document
+  const {firstDocument, loading: documentsLoading} = useScheduledDraftDocument(
+    release._id && !release.isLoading ? release._id : undefined,
+  )
 
   const isLoading = release.isLoading || documentsLoading || !firstDocument
 

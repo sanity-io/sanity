@@ -1,5 +1,5 @@
-import {ErrorOutlineIcon, LockIcon} from '@sanity/icons'
-import {Flex, Text} from '@sanity/ui'
+import {CheckmarkCircleIcon, ErrorOutlineIcon, LockIcon} from '@sanity/icons'
+import {Card, Flex, Text} from '@sanity/ui'
 // eslint-disable-next-line @sanity/i18n/no-i18next-import -- figure out how to have the linter be fine with importing types-only
 import {type TFunction} from 'i18next'
 import {Fragment} from 'react'
@@ -11,6 +11,7 @@ import {getPublishDateFromRelease, isReleaseScheduledOrScheduling} from '../../u
 import {ReleaseTime} from '../components/ReleaseTime'
 import {Headers} from '../components/Table/TableHeader'
 import {type Column} from '../components/Table/types'
+import {ReleaseColumnValidationLoading} from './columnCells/ReleaseColumnValidationLoading'
 import {ReleaseDocumentsCounter} from './columnCells/ReleaseDocumentsCounter'
 import {ReleaseNameCell} from './columnCells/ReleaseName'
 import {type Mode} from './queryParamUtils'
@@ -242,19 +243,53 @@ export const releasesOverviewColumnDefs: (
             <Headers.BasicHeader text={t('table-header.documents')} />
           </Flex>
         ),
-        cell: ({datum: {isDeleted, state, finalDocumentStates, documentsMetadata}, cellProps}) => (
-          <Flex {...cellProps} align="center" paddingX={2} paddingY={3} sizing="border">
-            {!isDeleted && (
-              <ReleaseDocumentsCounter
-                documentCount={
-                  state === 'archived' || state === 'published'
-                    ? finalDocumentStates?.length
-                    : documentsMetadata?.documentCount
-                }
-              />
-            )}
-          </Flex>
-        ),
+        cell: ({
+          datum: {isDeleted, state, finalDocumentStates, documentsMetadata, _id},
+          cellProps,
+        }) => {
+          return (
+            <Flex {...cellProps} align="center" paddingX={2} paddingY={3} sizing="border" gap={2}>
+              {state === 'active' && <ReleaseColumnValidationLoading releaseId={_id} />}
+
+              {/**
+               * Show a checkmark for scheduled releases
+               * A scheduled release can't be anything other than valid
+               * Since it can't be edited via the API or the UI
+               * However we should still gives a visual indicator of that instead of showing nothing
+               */}
+              {state === 'scheduled' && (
+                <Card
+                  padding={0}
+                  radius="full"
+                  tone="neutral"
+                  style={{
+                    background: 'transparent',
+                  }}
+                >
+                  <Flex gap={2}>
+                    <Text size={1}>
+                      <Tooltip content={t('summary.all-documents-validated')}>
+                        <CheckmarkCircleIcon />
+                      </Tooltip>
+                    </Text>
+                  </Flex>
+                </Card>
+              )}
+
+              {!isDeleted && (
+                <>
+                  <ReleaseDocumentsCounter
+                    documentCount={
+                      state === 'archived' || state === 'published'
+                        ? finalDocumentStates?.length
+                        : documentsMetadata?.documentCount
+                    }
+                  />
+                </>
+              )}
+            </Flex>
+          )
+        },
       },
       'all',
     ),

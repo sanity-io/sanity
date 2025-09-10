@@ -1,6 +1,12 @@
 import {type ReleaseDocument, type ReleaseState} from '@sanity/client'
 import {ComposeSparklesIcon, LockIcon} from '@sanity/icons'
-import {type BadgeTone, Button, useClickOutsideEvent, useGlobalKeyDown, useToast} from '@sanity/ui'
+import {
+  type BadgeTone,
+  Button, // eslint-disable-line no-restricted-imports
+  useClickOutsideEvent,
+  useGlobalKeyDown,
+  useToast,
+} from '@sanity/ui'
 import {
   memo,
   type MouseEvent,
@@ -16,18 +22,20 @@ import {styled} from 'styled-components'
 
 import {Popover, Tooltip} from '../../../../ui-components'
 import {useCanvasCompanionDocsStore} from '../../../canvas/store/useCanvasCompanionDocsStore'
-import {useTranslation} from '../../../i18n/hooks/useTranslation'
+import {Translate, useTranslation} from '../../../i18n'
 import {getDraftId, getPublishedId, getVersionId} from '../../../util/draftUtils'
+import {isCardinalityOneRelease} from '../../../util/releaseUtils'
 import {useReleasesToolAvailable} from '../../hooks/useReleasesToolAvailable'
-import {useScheduleDraftOperationsWithToasts} from '../../hooks/useScheduleDraftOperationsWithToasts'
+import {useScheduleDraftOperations} from '../../hooks/useScheduleDraftOperations'
 import {useVersionOperations} from '../../hooks/useVersionOperations'
 import {getReleaseIdFromReleaseDocumentId} from '../../util/getReleaseIdFromReleaseDocumentId'
-import {isCardinalityOneRelease} from '../../util/util'
 import {DiscardVersionDialog} from '../dialog/DiscardVersionDialog'
 import {ScheduleDraftDialog} from '../dialog/ScheduleDraftDialog'
 import {ReleaseAvatarIcon} from '../ReleaseAvatar'
 import {VersionContextMenu} from './contextMenu/VersionContextMenu'
 import {CopyToNewReleaseDialog} from './dialog/CopyToNewReleaseDialog'
+
+const Strong = ({children}: {children?: React.ReactNode}) => <strong>{children}</strong>
 
 const ChipButtonContainer = styled.span`
   display: inline-flex;
@@ -127,7 +135,7 @@ export const VersionChip = memo(function VersionChip(props: {
   const toast = useToast()
   const {t} = useTranslation()
   const releaseTitle = release?.metadata.title || t('release.placeholder-untitled-release')
-  const {rescheduleScheduledDraft} = useScheduleDraftOperationsWithToasts(releaseTitle)
+  const operations = useScheduleDraftOperations()
 
   const close = useCallback(() => setContextMenuPoint(undefined), [])
 
@@ -174,15 +182,30 @@ export const VersionChip = memo(function VersionChip(props: {
       setIsPerformingScheduleOperation(true)
 
       try {
-        await rescheduleScheduledDraft(release._id, newPublishAt)
+        await operations.rescheduleScheduledDraft(release._id, newPublishAt)
         setIsChangeScheduleDialogOpen(false)
       } catch (error) {
-        // Error toast already handled by the hook
+        console.error('Failed to reschedule draft:', error)
+        toast.push({
+          closable: true,
+          status: 'error',
+          description: (
+            <Translate
+              t={t}
+              i18nKey="release.toast.reschedule-scheduled-draft.error"
+              values={{
+                title: releaseTitle,
+                error: (error as Error).message,
+              }}
+              components={{Strong}}
+            />
+          ),
+        })
       } finally {
         setIsPerformingScheduleOperation(false)
       }
     },
-    [release, rescheduleScheduledDraft],
+    [release, operations, toast, t, releaseTitle],
   )
 
   const handleAddVersion = useCallback(
@@ -225,6 +248,8 @@ export const VersionChip = memo(function VersionChip(props: {
   }, [contextMenuPoint])
 
   const contextMenuHandler = disabled || !releasesToolAvailable ? undefined : handleContextMenu
+  const canShowScheduleDialog =
+    isChangeScheduleDialogOpen && release && release.metadata.cardinality === 'one'
 
   return (
     <>
@@ -312,10 +337,7 @@ export const VersionChip = memo(function VersionChip(props: {
         <ScheduleDraftDialog
           onClose={() => !isPerformingScheduleOperation && setIsChangeScheduleDialogOpen(false)}
           onSchedule={handleReschedule}
-          header={t('release.dialog.edit-schedule.header')}
-          description={t('release.dialog.edit-schedule.body')}
-          confirmButtonText={t('release.dialog.edit-schedule.confirm')}
-          confirmButtonTone="primary"
+          variant="edit-schedule"
           loading={isPerformingScheduleOperation}
           initialDate={release.publishAt || release.metadata.intendedPublishAt}
         />

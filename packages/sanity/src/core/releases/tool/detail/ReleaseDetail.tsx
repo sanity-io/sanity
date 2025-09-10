@@ -1,7 +1,7 @@
 import {ErrorOutlineIcon} from '@sanity/icons'
 import {Box, Card, Container, Flex, Heading, Stack, Text} from '@sanity/ui'
 import {motion} from 'framer-motion'
-import {useMemo, useRef, useState} from 'react'
+import {useMemo, useState} from 'react'
 import {useRouter} from 'sanity/router'
 
 import {LoadingBlock} from '../../../components'
@@ -42,8 +42,6 @@ export const ReleaseDetail = () => {
     .concat(archivedReleases)
     .find((candidate) => getReleaseIdFromReleaseDocumentId(candidate._id) === releaseId)
 
-  const scrollContainerRef = useRef<HTMLDivElement | null>(null)
-
   const detailContent = useMemo(() => {
     if (bundleDocumentsError) {
       return (
@@ -73,12 +71,7 @@ export const ReleaseDetail = () => {
     if (!releaseInDetail) return null
 
     return (
-      <ReleaseSummary
-        isLoading={documentsLoading}
-        documents={results}
-        release={releaseInDetail}
-        scrollContainerRef={scrollContainerRef}
-      />
+      <ReleaseSummary isLoading={documentsLoading} documents={results} release={releaseInDetail} />
     )
   }, [bundleDocumentsError, documentsLoading, releaseInDetail, results, t])
 

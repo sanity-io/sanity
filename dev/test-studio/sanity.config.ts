@@ -335,6 +335,9 @@ export default defineConfig([
     mediaLibrary: {
       enabled: true,
     },
+    advancedVersionControl: {
+      enabled: true,
+    },
   },
   {
     name: 'listener-events',

@@ -83,15 +83,10 @@ function Content(props: PopoverEditDialogProps) {
     ),
   )
 
-  useClickOutsideEvent(
-    handleClose,
-    () => [referenceElement],
-    () => referenceBoundary,
-  )
-
   // This seems to work with regular refs as well, but it might be safer to use state.
   const [contentElement, setContentElement] = useState<HTMLDivElement | null>(null)
   const containerElement = useRef<HTMLDivElement | null>(null)
+  const [parentElement, setParentElement] = useState<HTMLDivElement | null>(null)
 
   const handleFocusLockWhiteList = useCallback((element: HTMLElement) => {
     // This is needed in order for focusLock not to trap focus in the
@@ -100,37 +95,43 @@ function Content(props: PopoverEditDialogProps) {
     return Boolean(element.contentEditable) || Boolean(containerElement.current?.contains(element))
   }, [])
 
-  return (
-    <VirtualizerScrollInstanceProvider
-      scrollElement={contentElement}
-      containerElement={containerElement}
-    >
-      <FocusLock autoFocus whiteList={handleFocusLockWhiteList}>
-        <Flex as={NoopContainer} ref={containerElement} direction="column" height="fill">
-          <ContentHeaderBox flex="none" padding={1}>
-            <Flex align="center">
-              <Box flex={1} padding={2}>
-                <Text weight="medium">{title}</Text>
-              </Box>
+  useClickOutsideEvent(handleClose, () => [referenceElement, referenceBoundary, parentElement])
 
-              <Button
-                autoFocus
-                icon={CloseIcon}
-                mode="bleed"
-                onClick={handleClose}
-                tooltipProps={{content: 'Close'}}
-              />
-            </Flex>
-          </ContentHeaderBox>
-          <ContentScrollerBox flex={1}>
-            <PresenceOverlay margins={[0, 0, 1, 0]}>
-              <Box padding={3} ref={setContentElement}>
-                {props.children}
-              </Box>
-            </PresenceOverlay>
-          </ContentScrollerBox>
-        </Flex>
-      </FocusLock>
-    </VirtualizerScrollInstanceProvider>
+  return (
+    // The style will make the parent element not take up space in the DOM
+    // Mimicking a fragment
+    <div ref={setParentElement} style={{display: 'contents'}}>
+      <VirtualizerScrollInstanceProvider
+        scrollElement={contentElement}
+        containerElement={containerElement}
+      >
+        <FocusLock autoFocus whiteList={handleFocusLockWhiteList}>
+          <Flex as={NoopContainer} ref={containerElement} direction="column" height="fill">
+            <ContentHeaderBox flex="none" padding={1}>
+              <Flex align="center">
+                <Box flex={1} padding={2}>
+                  <Text weight="medium">{title}</Text>
+                </Box>
+
+                <Button
+                  autoFocus
+                  icon={CloseIcon}
+                  mode="bleed"
+                  onClick={handleClose}
+                  tooltipProps={{content: 'Close'}}
+                />
+              </Flex>
+            </ContentHeaderBox>
+            <ContentScrollerBox flex={1}>
+              <PresenceOverlay margins={[0, 0, 1, 0]}>
+                <Box padding={3} ref={setContentElement}>
+                  {props.children}
+                </Box>
+              </PresenceOverlay>
+            </ContentScrollerBox>
+          </Flex>
+        </FocusLock>
+      </VirtualizerScrollInstanceProvider>
+    </div>
   )
 }
