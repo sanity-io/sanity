@@ -1,7 +1,7 @@
 import {type EncodableObject, type EncodableValue} from '@sanity/descriptors'
 import {createSchemaFromManifestTypes} from '@sanity/schema/_internal'
 import {type Schema} from '@sanity/types'
-import {cloneDeep, startCase} from 'lodash'
+import {capitalize, cloneDeep, startCase} from 'lodash'
 import {expect} from 'vitest'
 
 import {extractManifestSchemaTypes} from '../../src/_internal/manifest/extractWorkspaceManifest'
@@ -35,6 +35,7 @@ export function expectManifestSchemaConversion(schema: Schema, schemaDescriptor:
 
     const titles = extractTitleMap(convertedObjectValue.typeDef)
     const stype = cloneDeep(schemaObjectValue?.typeDef)
+
     normalizeSchemaDescriptorTypeDef(stype, titles)
     expect(convertedObjectValue.typeDef).toStrictEqual(stype)
   }
@@ -112,6 +113,13 @@ function normalizeSchemaDescriptorTypeDef(
   // Remove any instance of i18nTitleKey, we only need to do this once since we
   // need to remove all instances of the property
   deleteKeyDeep(obj, 'i18nTitleKey')
+
+  // The manifest extraction excludes orderings from serialization,
+  // so after manifest conversion, orderings will always be undefined.
+  // Since we're normalizing the original schema to match what comes out of
+  // manifest conversion, we need to remove any custom orderings and replace
+  // them with the default orderings that would be generated.
+  normalizeOrderings(obj)
 
   // If options are effictively empty (i.e. it is just comprised of empty objects)
   // the field is unset. This happens unless the object started out as empty before
@@ -283,4 +291,72 @@ function normalizeOptions(obj: unknown) {
   if (isEmptyObject(obj.options)) {
     obj.options = undefined
   }
+}
+
+function normalizeOrderings(obj: unknown) {
+  if (!isRecord(obj)) return
+
+  // Check the type's jsonType or extends property to determine if it can have orderings
+  const jsonType = obj.jsonType || obj.extends
+
+  // Only object-based types can have orderings
+  if (jsonType !== 'object') {
+    // Non-object types don't have orderings
+    // Leave orderings as undefined
+    return
+  }
+
+  // For object-like types, check if they have fields
+  if (!Array.isArray(obj.fields) || obj.fields.length === 0) {
+    // Object types without fields get empty array
+    obj.orderings = []
+    return
+  }
+
+  // Replace any existing orderings with the default guessed ones
+  // This simulates what happens after manifest conversion where custom orderings are lost
+  const guessed = guessOrderingConfig(obj)
+
+  if (guessed === undefined) {
+    // Types without primitive fields get empty array
+    obj.orderings = []
+  } else {
+    // Types with primitive fields get the guessed orderings
+    obj.orderings = guessed
+  }
+}
+
+// This is a local reimplementation of guessOrderingConfig defined in '@sanity/schema/src/legacy/ordering/guessOrderingConfig'.
+// It has been modified slightly to work with the descriptor schema types.
+const CANDIDATES = ['title', 'name', 'label', 'heading', 'header', 'caption', 'description']
+const PRIMITIVES = ['string', 'boolean', 'number']
+const isPrimitive = (field: any) => PRIMITIVES.includes(field?.typeDef?.extends || '')
+function guessOrderingConfig(obj: unknown): any[] | undefined {
+  if (!isRecord(obj)) return undefined
+
+  const fields = 'fields' in obj && Array.isArray(obj.fields) ? obj.fields : undefined
+  if (!fields) return undefined
+
+  let candidates = CANDIDATES.filter((candidate) =>
+    fields.some((field: any) => isPrimitive(field) && field.name === candidate),
+  )
+
+  // None of the candidates were found, fallback to all fields
+  if (candidates.length === 0) {
+    candidates = fields.filter(isPrimitive).map((field: any) => field.name)
+  }
+
+  // If still no candidates (no primitive fields), return undefined
+  if (candidates.length === 0) {
+    return undefined
+  }
+
+  return candidates.map((name) => ({
+    name: name,
+    i18n: {
+      title: {key: `default-orderings.${name}`, ns: 'studio'},
+    },
+    title: capitalize(startCase(name)),
+    by: [{field: name, direction: 'asc'}],
+  }))
 }

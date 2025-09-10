@@ -445,6 +445,7 @@ export function useDocumentForm(options: DocumentFormOptions): DocumentFormValue
     comparisonValue: comparisonValue || value,
     focusPath,
     openPath,
+    perspective: selectedPerspective,
     collapsedPaths,
     presence,
     validation,

@@ -1,6 +1,6 @@
 {
   "name": "@sanity/cli",
-  "version": "4.6.1",
+  "version": "4.8.0",
   "description": "Sanity CLI tool for managing Sanity installations, managing plugins, schemas and datasets",
   "keywords": [
     "sanity",
@@ -56,8 +56,8 @@
     "watch": "pkg-utils watch"
   },
   "dependencies": {
-    "@babel/traverse": "^7.28.3",
-    "@sanity/client": "^7.11.0",
+    "@babel/traverse": "^7.28.4",
+    "@sanity/client": "^7.11.1",
     "@sanity/codegen": "workspace:*",
     "@sanity/runtime-cli": "^10.5.1",
     "@sanity/telemetry": "^0.8.0",
@@ -67,7 +67,7 @@
     "esbuild": "catalog:",
     "esbuild-register": "catalog:",
     "get-it": "^8.6.10",
-    "groq-js": "^1.17.3",
+    "groq-js": "^1.18.0",
     "pkg-dir": "^5.0.0",
     "prettier": "catalog:",
     "semver": "^7.7.2"
@@ -123,7 +123,7 @@
     "semver": "^7.7.2",
     "semver-compare": "^1.0.0",
     "tar": "^6.2.1",
-    "vite": "^7.1.4",
+    "vite": "^7.1.5",
     "vitest": "^3.2.4",
     "which": "^2.0.2",
     "xdg-basedir": "^4.0.0"

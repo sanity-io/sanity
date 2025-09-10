@@ -1,6 +1,6 @@
 {
   "name": "sanity-strict-studio",
-  "version": "4.6.1",
+  "version": "4.8.0",
   "private": true,
   "license": "MIT",
   "author": "Sanity.io <hello@sanity.io>",
@@ -13,8 +13,8 @@
   },
   "dependencies": {
     "@repo/eslint-config": "workspace:*",
-    "react": "catalog:react18",
-    "react-dom": "catalog:react18",
+    "react": "catalog:",
+    "react-dom": "catalog:",
     "sanity": "workspace:*",
     "styled-components": "catalog:"
   }

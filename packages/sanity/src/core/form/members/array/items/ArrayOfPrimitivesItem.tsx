@@ -137,6 +137,7 @@ export function ArrayOfPrimitivesItem(props: PrimitiveMemberItemProps) {
       changed: member.item.changed,
       level: member.item.level,
       value: member.item.value as FIXME,
+      __unstable_computeDiff: member.item.__unstable_computeDiff,
       readOnly: member.item.readOnly,
       schemaType: member.item.schemaType as FIXME,
       id: member.item.id,
@@ -149,6 +150,7 @@ export function ArrayOfPrimitivesItem(props: PrimitiveMemberItemProps) {
     }
   }, [
     member.item.changed,
+    member.item.__unstable_computeDiff,
     member.item.level,
     member.item.value,
     member.item.readOnly,
@@ -192,6 +194,8 @@ export function ArrayOfPrimitivesItem(props: PrimitiveMemberItemProps) {
       index: member.index,
       level: member.item.level,
       value: member.item.value as FIXME,
+      changed: member.item.changed,
+      __unstable_computeDiff: member.item.__unstable_computeDiff,
       title: member.item.schemaType.title,
       description: member.item.schemaType.description,
       schemaType: member.item.schemaType as FIXME,
@@ -214,6 +218,8 @@ export function ArrayOfPrimitivesItem(props: PrimitiveMemberItemProps) {
     member.index,
     member.item.level,
     member.item.value,
+    member.item.changed,
+    member.item.__unstable_computeDiff,
     member.item.schemaType,
     member.item.presence,
     member.item.validation,
