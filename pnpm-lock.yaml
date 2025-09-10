@@ -1950,9 +1950,9 @@ importers:
       react-rx:
         specifier: ^4.1.32
         version: 4.1.32(react@19.1.1)(rxjs@7.8.2)
-      read-pkg-up:
-        specifier: ^7.0.1
-        version: 7.0.1
+      read-package-up:
+        specifier: ^11.0.0
+        version: 11.0.0
       refractor:
         specifier: ^5.0.0
         version: 5.0.0
