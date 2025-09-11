@@ -22,7 +22,6 @@ import {css, styled} from 'styled-components'
 
 import {PaneContent, usePane, usePaneLayout, usePaneRouter} from '../../../components'
 import {hasObsoleteDraft} from '../../../hasObsoleteDraft'
-import {useDocumentPerspective} from '../../../hooks/useDocumentPerspective'
 import {useFilteredReleases} from '../../../hooks/useFilteredReleases'
 import {mustChooseNewDocumentDestination} from '../../../mustChooseNewDocumentDestination'
 import {useStructureTool} from '../../../useStructureTool'
@@ -172,8 +171,7 @@ export const DocumentPanel = function DocumentPanel(props: DocumentPanelProps) {
   }, [isInspectOpen, displayed, value])
 
   const showInspector = Boolean(!collapsed && inspector)
-  const {selectedPerspective, selectedReleaseId} = usePerspective()
-  const {selectedPerspectiveName} = useDocumentPerspective({documentId})
+  const {selectedPerspective, selectedReleaseId, selectedPerspectiveName} = usePerspective()
   const filteredReleases = useFilteredReleases({displayed, documentId})
 
   // eslint-disable-next-line complexity

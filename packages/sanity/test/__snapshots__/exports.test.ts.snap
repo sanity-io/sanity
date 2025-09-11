@@ -706,6 +706,7 @@ exports[`exports snapshot 1`] = `
     "PresentationParamsContext": "object",
     "PresentationSharedStateContext": "object",
     "PreviewCardContext": "object",
+    "RawPerspectiveContext": "object",
     "ReferenceInputOptionsContext": "object",
     "ReferenceItemRefContext": "object",
     "ReleasesMetadataContext": "object",

@@ -1,13 +1,30 @@
+import {type ReleaseDocument} from '@sanity/client'
 import {useMemo} from 'react'
 import {PerspectiveContext} from 'sanity/_singletons'
 
 import {getReleasesPerspectiveStack} from '../releases/hooks/utils'
 import {useActiveReleases} from '../releases/store/useActiveReleases'
+import {getReleaseIdFromReleaseDocumentId} from '../releases/util/getReleaseIdFromReleaseDocumentId'
 import {useWorkspace} from '../studio/workspace'
 import {isSystemBundleName} from '../util/draftUtils'
 import {EMPTY_ARRAY} from '../util/empty'
+import {isCardinalityOneRelease} from '../util/releaseUtils'
 import {getSelectedPerspective} from './getSelectedPerspective'
 import {type PerspectiveContextValue, type ReleaseId, type TargetPerspective} from './types'
+
+/**
+ * Find cardinality one release by perspective name
+ */
+function findCardinalityOneRelease(
+  perspectiveName: string | undefined,
+  releases: ReleaseDocument[],
+) {
+  if (!perspectiveName || perspectiveName === 'published') return null
+
+  const release = releases.find((r) => getReleaseIdFromReleaseDocumentId(r._id) === perspectiveName)
+
+  return release && isCardinalityOneRelease(release) ? release : null
+}
 
 /**
  * @internal
@@ -45,8 +62,23 @@ export function PerspectiveProvider({
     [releases, selectedPerspectiveName, excludedPerspectives, isDraftModelEnabled],
   )
 
-  const value: PerspectiveContextValue = useMemo(
-    () => ({
+  const value: PerspectiveContextValue = useMemo(() => {
+    // Check if we're dealing with a cardinality one release
+    const cardinalityOneRelease = findCardinalityOneRelease(selectedPerspectiveName, releases)
+
+    if (cardinalityOneRelease) {
+      // Map cardinality one releases to drafts for UI consistency
+      return {
+        selectedPerspective: 'drafts',
+        selectedPerspectiveName: undefined, // drafts
+        selectedReleaseId: undefined, // drafts
+        perspectiveStack,
+        excludedPerspectives,
+      }
+    }
+
+    // For regular releases and published, use as-is
+    return {
       selectedPerspective,
       selectedPerspectiveName,
       selectedReleaseId: isSystemBundleName(selectedPerspectiveName)
@@ -54,8 +86,14 @@ export function PerspectiveProvider({
         : selectedPerspectiveName,
       perspectiveStack,
       excludedPerspectives,
-    }),
-    [selectedPerspective, selectedPerspectiveName, perspectiveStack, excludedPerspectives],
-  )
+    }
+  }, [
+    selectedPerspective,
+    selectedPerspectiveName,
+    perspectiveStack,
+    excludedPerspectives,
+    releases,
+  ])
+
   return <PerspectiveContext.Provider value={value}>{children}</PerspectiveContext.Provider>
 }

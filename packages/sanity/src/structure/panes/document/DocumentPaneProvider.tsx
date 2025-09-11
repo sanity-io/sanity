@@ -30,7 +30,6 @@ import {usePaneRouter} from '../../components'
 import {useDiffViewRouter} from '../../diffView/hooks/useDiffViewRouter'
 import {useDocumentIdStack} from '../../hooks/useDocumentIdStack'
 import {useDocumentLastRev} from '../../hooks/useDocumentLastRev'
-import {useDocumentPerspective} from '../../hooks/useDocumentPerspective'
 import {structureLocaleNamespace} from '../../i18n'
 import {type PaneMenuItem} from '../../types'
 import {DocumentURLCopied} from './__telemetry__'
@@ -94,7 +93,7 @@ export const DocumentPaneProvider = memo((props: DocumentPaneProviderProps) => {
   const params = useUnique(paneRouter.params) || EMPTY_PARAMS
   const {buildStudioUrl} = useStudioUrl()
 
-  const perspective = usePerspective()
+  const perspectiveFromHook = usePerspective()
 
   const {
     document: {
@@ -105,10 +104,6 @@ export const DocumentPaneProvider = memo((props: DocumentPaneProviderProps) => {
   // Detect if we're creating a new document
 
   // Get document-level perspective (handles cardinality one releases)
-  const documentPerspective = useDocumentPerspective({
-    documentId,
-  })
-
   // NOTE: Cardinality one release handling is now done automatically in useDocumentPerspective
   // No manual reset logic needed here - the document perspective hook handles clearing
   // cardinality one state when documents don't exist in the selected cardinality one release
@@ -119,15 +114,15 @@ export const DocumentPaneProvider = memo((props: DocumentPaneProviderProps) => {
       return forcedVersion
     }
 
-    // Use document-level perspective for cardinality one releases and new document creation
+    // Use perspective from context (will be document-aware when wrapped in DocumentPerspectiveProvider)
     return {
-      selectedPerspectiveName: documentPerspective.selectedPerspectiveName,
-      selectedReleaseId: documentPerspective.selectedReleaseId,
+      selectedPerspectiveName: perspectiveFromHook.selectedPerspectiveName,
+      selectedReleaseId: perspectiveFromHook.selectedReleaseId,
     }
   }, [
     forcedVersion,
-    documentPerspective.selectedPerspectiveName,
-    documentPerspective.selectedReleaseId,
+    perspectiveFromHook.selectedPerspectiveName,
+    perspectiveFromHook.selectedReleaseId,
   ])
 
   const diffViewRouter = useDiffViewRouter()
@@ -196,7 +191,7 @@ export const DocumentPaneProvider = memo((props: DocumentPaneProviderProps) => {
         isDeleting ||
         isDeleted ||
         !isPerspectiveWriteable({
-          selectedPerspective: perspective.selectedPerspective,
+          selectedPerspective: perspectiveFromHook.selectedPerspective,
           isDraftModelEnabled,
           schemaType,
         }).result
@@ -207,7 +202,7 @@ export const DocumentPaneProvider = memo((props: DocumentPaneProviderProps) => {
       isDeleting,
       isDraftModelEnabled,
       params.rev,
-      perspective.selectedPerspective,
+      perspectiveFromHook.selectedPerspective,
       schemaType,
     ],
   )
@@ -462,7 +457,7 @@ export const DocumentPaneProvider = memo((props: DocumentPaneProviderProps) => {
     return displayed
   }, [editState.version, editState.published, displayed])
 
-  const documentPane: DocumentPaneContextValue = useMemo(
+  const documentPaneContextValue = useMemo(
     () =>
       ({
         actions,
@@ -611,7 +606,9 @@ export const DocumentPaneProvider = memo((props: DocumentPaneProviderProps) => {
   }, [formStateRef, onProgrammaticFocus, paneRouter, params, ready])
 
   return (
-    <DocumentPaneContext.Provider value={documentPane}>{children}</DocumentPaneContext.Provider>
+    <DocumentPaneContext.Provider value={documentPaneContextValue}>
+      {children}
+    </DocumentPaneContext.Provider>
   )
 })
 
