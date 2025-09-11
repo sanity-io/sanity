@@ -1,4 +1,3 @@
-/* eslint-disable max-statements */
 import {type ReleaseDocument} from '@sanity/client'
 import {AddIcon, ChevronDownIcon, EarthGlobeIcon} from '@sanity/icons'
 import {Box, type ButtonMode, Card, Flex, Inline, Stack, Text, useMediaIndex} from '@sanity/ui'
@@ -62,10 +61,7 @@ export function ReleasesOverview() {
   const {data: allArchivedReleases} = useArchivedReleases()
   const {mode} = useReleasesUpsell()
 
-  const releases = useMemo(
-    () => allReleases.filter((release) => !isCardinalityOneRelease(release)),
-    [allReleases],
-  )
+  const releases = useReleasesExcludingCardinalityOneRelease(allReleases)
   const archivedReleases = useMemo(
     () => allArchivedReleases.filter((release) => !isCardinalityOneRelease(release)),
     [allArchivedReleases],
@@ -87,7 +83,6 @@ export function ReleasesOverview() {
   const {timeZone, utcToCurrentZoneDate} = useTimeZone(timeZoneScope)
   const {selectedPerspective} = usePerspective()
   const {DialogTimeZone, dialogProps, dialogTimeZoneShow} = useDialogTimeZone(timeZoneScope)
-  const getTimezoneAdjustedDateTimeRange = useTimezoneAdjustedDateTimeRange()
 
   const {createRelease} = useReleaseOperations()
   const {checkWithPermissionGuard} = useReleasePermissions()
@@ -114,14 +109,7 @@ export function ReleasesOverview() {
   const loadingOrHasReleases = loading || hasReleases
   const hasNoReleases = !loading && !hasReleases
 
-  const tableReleases = useMemo<TableRelease[]>(() => {
-    if (!hasReleases || !releasesMetadata) return []
-    return releases.map((release) => ({
-      ...release,
-      publishAt: release.publishAt || release.metadata.intendedPublishAt,
-      documentsMetadata: releasesMetadata[release._id] || {},
-    }))
-  }, [hasReleases, releasesMetadata, releases])
+  const tableReleases = useTableReleases(hasReleases, releasesMetadata, releases)
 
   const isMounted = useRef(false)
   useEffect(() => {
@@ -136,11 +124,9 @@ export function ReleasesOverview() {
   }, [checkWithPermissionGuard, createRelease])
 
   // switch to open mode if on archived mode and there are no archived releases
-  useEffect(() => {
-    if (releaseGroupMode === 'archived' && !loadingReleases && !archivedReleases.length) {
-      setReleaseGroupMode('active')
-    }
-  }, [releaseGroupMode, archivedReleases.length, loadingReleases])
+  if (releaseGroupMode === 'archived' && !loadingReleases && !archivedReleases.length) {
+    setReleaseGroupMode('active')
+  }
 
   const handleReleaseGroupModeChange = useCallback<MouseEventHandler<HTMLButtonElement>>(
     ({currentTarget: {value: groupMode}}) => {
@@ -184,7 +170,8 @@ export function ReleasesOverview() {
   const [hasMounted, setHasMounted] = useState(false)
 
   useEffect(() => {
-    setHasMounted(true)
+    const raf = requestAnimationFrame(() => setHasMounted(true))
+    return () => cancelAnimationFrame(raf)
   }, [])
 
   const showCalendar = mediaIndex > 2
@@ -306,25 +293,12 @@ export function ReleasesOverview() {
     [releaseGroupMode],
   )
 
-  const filteredReleases = useMemo(() => {
-    if (!releaseFilterDate) return releaseGroupMode === 'active' ? tableReleases : archivedReleases
-
-    const [startOfDayForTimeZone, endOfDayForTimeZone] =
-      getTimezoneAdjustedDateTimeRange(releaseFilterDate)
-
-    return tableReleases.filter((release) => {
-      if (!release.publishAt || release.metadata.releaseType !== 'scheduled') return false
-
-      const publishDateUTC = new Date(release.publishAt)
-      return publishDateUTC >= startOfDayForTimeZone && publishDateUTC <= endOfDayForTimeZone
-    })
-  }, [
+  const filteredReleases = useFilteredReleases(
     releaseFilterDate,
     releaseGroupMode,
     tableReleases,
     archivedReleases,
-    getTimezoneAdjustedDateTimeRange,
-  ])
+  )
 
   const renderCalendarFilter = useMemo(() => {
     return (
@@ -347,46 +321,40 @@ export function ReleasesOverview() {
     [releaseGroupMode, t],
   )
 
-  const NoRelease = () => {
-    return (
-      <Flex
-        direction="column"
-        flex={1}
-        justify={hasNoReleases ? 'center' : 'flex-start'}
-        align={hasNoReleases ? 'center' : 'flex-start'}
-        style={{position: 'relative'}}
-      >
-        <Flex gap={3} direction="column" style={{maxWidth: '300px'}}>
-          <ReleaseIllustration />
-          <Text as="h1" size={1} weight="semibold" data-testid="no-releases-info-text">
-            {t('overview.title')}
-          </Text>
-          <Text size={1} muted>
-            {t('overview.description')}
-          </Text>
-          <Inline space={2}>
-            {createReleaseButton}
-            <Button
-              as="a"
-              href="https://www.sanity.io/docs/content-releases"
-              target="_blank"
-              mode="ghost"
-              onClick={handleOnClickCreateRelease}
-              text={t('overview.action.documentation')}
-            />
-          </Inline>
-        </Flex>
-      </Flex>
-    )
-  }
-
   return (
     <Flex direction="row" flex={1} style={{height: '100%'}}>
       <Flex flex={1}>
         {showCalendar && renderCalendarFilter}
 
         {hasNoReleases ? (
-          <NoRelease />
+          <Flex
+            direction="column"
+            flex={1}
+            justify={hasNoReleases ? 'center' : 'flex-start'}
+            align={hasNoReleases ? 'center' : 'flex-start'}
+            style={{position: 'relative'}}
+          >
+            <Flex gap={3} direction="column" style={{maxWidth: '300px'}}>
+              <ReleaseIllustration />
+              <Text as="h1" size={1} weight="semibold" data-testid="no-releases-info-text">
+                {t('overview.title')}
+              </Text>
+              <Text size={1} muted>
+                {t('overview.description')}
+              </Text>
+              <Inline space={2}>
+                {createReleaseButton}
+                <Button
+                  as="a"
+                  href="https://www.sanity.io/docs/content-releases"
+                  target="_blank"
+                  mode="ghost"
+                  onClick={handleOnClickCreateRelease}
+                  text={t('overview.action.documentation')}
+                />
+              </Inline>
+            </Flex>
+          </Flex>
         ) : (
           <>
             <Flex direction="column" flex={1} style={{position: 'relative'}}>
@@ -455,4 +423,48 @@ export function ReleasesOverview() {
       {renderCreateReleaseDialog()}
     </Flex>
   )
+}
+
+function useReleasesExcludingCardinalityOneRelease(
+  allReleases: ReleaseDocument[],
+): ReleaseDocument[] {
+  return useMemo(
+    () => allReleases.filter((release) => !isCardinalityOneRelease(release)),
+    [allReleases],
+  )
+}
+
+function useTableReleases(
+  hasReleases: boolean,
+  releasesMetadata: Record<string, ReleasesMetadata> | null,
+  releases: ReleaseDocument[],
+): TableRelease[] {
+  return useMemo<TableRelease[]>(() => {
+    if (!hasReleases || !releasesMetadata) return []
+    return releases.map((release) => ({
+      ...release,
+      publishAt: release.publishAt || release.metadata.intendedPublishAt,
+      documentsMetadata: releasesMetadata[release._id] || {},
+    }))
+  }, [hasReleases, releasesMetadata, releases])
+}
+
+function useFilteredReleases(
+  releaseFilterDate: Date | undefined,
+  releaseGroupMode: Mode,
+  tableReleases: TableRelease[],
+  archivedReleases: ReleaseDocument[],
+): TableRelease[] {
+  const getTimezoneAdjustedDateTimeRange = useTimezoneAdjustedDateTimeRange()
+  if (!releaseFilterDate) return releaseGroupMode === 'active' ? tableReleases : archivedReleases
+
+  const [startOfDayForTimeZone, endOfDayForTimeZone] =
+    getTimezoneAdjustedDateTimeRange(releaseFilterDate)
+
+  return tableReleases.filter((release) => {
+    if (!release.publishAt || release.metadata.releaseType !== 'scheduled') return false
+
+    const publishDateUTC = new Date(release.publishAt)
+    return publishDateUTC >= startOfDayForTimeZone && publishDateUTC <= endOfDayForTimeZone
+  })
 }
