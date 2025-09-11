@@ -38,9 +38,9 @@ import {CalendarPopover} from './CalendarPopover'
 import {
   buildReleasesSearchParams,
   type CardinalityView,
-  getCardinalityViewFromUrl,
+  getInitialCardinalityView,
   getInitialFilterDate,
-  getReleaseGroupModeFromUrl,
+  getInitialReleaseGroupMode,
   type Mode,
 } from './queryParamUtils'
 import {createReleaseCalendarFilterDay, DateFilterButton} from './ReleaseCalendarFilter'
@@ -75,19 +75,11 @@ export function ReleasesOverview() {
   } = useWorkspace()
 
   const router = useRouter()
+  const [releaseGroupMode, setReleaseGroupMode] = useState<Mode>(getInitialReleaseGroupMode(router))
 
-  // Read releaseGroupMode directly from URL using helper function
-  const releaseGroupMode = useMemo<Mode>(
-    () => getReleaseGroupModeFromUrl(router.state._searchParams || []),
-    [router.state._searchParams],
+  const [cardinalityView, setCardinalityView] = useState<CardinalityView>(
+    isScheduledDraftsEnabled ? getInitialCardinalityView(router) : 'releases',
   )
-
-  // Read cardinalityView directly from URL using helper function
-  const cardinalityView = useMemo<CardinalityView>(
-    () => getCardinalityViewFromUrl(router.state._searchParams || [], isScheduledDraftsEnabled),
-    [router.state._searchParams, isScheduledDraftsEnabled],
-  )
-
   const [releaseFilterDate, setReleaseFilterDate] = useState<Date | undefined>(
     getInitialFilterDate(router),
   )
@@ -167,39 +159,20 @@ export function ReleasesOverview() {
   // switch to open mode if on archived mode and there are no archived releases
   useEffect(() => {
     if (releaseGroupMode === 'archived' && !loadingReleases && !archivedReleases.length) {
-      router.navigate({
-        _searchParams: buildReleasesSearchParams(releaseFilterDate, 'active', cardinalityView),
-      })
+      setReleaseGroupMode('active')
     }
-  }, [
-    releaseGroupMode,
-    archivedReleases.length,
-    loadingReleases,
-    router,
-    releaseFilterDate,
-    cardinalityView,
-  ])
+  }, [releaseGroupMode, archivedReleases.length, loadingReleases])
 
   const handleReleaseGroupModeChange = useCallback<MouseEventHandler<HTMLButtonElement>>(
     ({currentTarget: {value: groupMode}}) => {
-      router.navigate({
-        _searchParams: buildReleasesSearchParams(
-          releaseFilterDate,
-          groupMode as Mode,
-          cardinalityView,
-        ),
-      })
+      setReleaseGroupMode(groupMode as Mode)
     },
-    [router, releaseFilterDate, cardinalityView],
+    [],
   )
 
   const handleCardinalityViewChange = useCallback(
-    (view: CardinalityView) => () => {
-      router.navigate({
-        _searchParams: buildReleasesSearchParams(releaseFilterDate, releaseGroupMode, view),
-      })
-    },
-    [router, releaseFilterDate, releaseGroupMode],
+    (view: CardinalityView) => () => setCardinalityView(view),
+    [],
   )
 
   const handleSelectFilterDate = useCallback(
@@ -218,10 +191,8 @@ export function ReleasesOverview() {
 
   const clearFilterDate = useCallback(() => {
     setReleaseFilterDate(undefined)
-    router.navigate({
-      _searchParams: buildReleasesSearchParams(undefined, 'active', cardinalityView),
-    })
-  }, [router, cardinalityView])
+    setReleaseGroupMode('active')
+  }, [])
 
   useEffect(() => {
     router.navigate({
@@ -231,7 +202,7 @@ export function ReleasesOverview() {
         isScheduledDraftsEnabled ? cardinalityView : 'releases',
       ),
     })
-  }, [releaseFilterDate, router, releaseGroupMode, cardinalityView, isScheduledDraftsEnabled])
+  }, [releaseFilterDate, releaseGroupMode, cardinalityView, router, isScheduledDraftsEnabled])
 
   const [hasMounted, setHasMounted] = useState(false)
 
