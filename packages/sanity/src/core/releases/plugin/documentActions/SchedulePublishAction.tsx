@@ -22,7 +22,7 @@ export const SchedulePublishAction: DocumentActionComponent = (
 ): DocumentActionDescription | null => {
   const {id, type, draft} = props
   const {t} = useTranslation(releasesLocaleNamespace)
-  const {schedulePublish} = useScheduleDraftOperations()
+  const {createScheduledDraft} = useScheduleDraftOperations()
   const toast = useToast()
   const {perspectiveStack} = usePerspective()
 
@@ -51,7 +51,7 @@ export const SchedulePublishAction: DocumentActionComponent = (
       try {
         // Pass the document title from preview values
         const documentTitle = previewValues?.title || undefined
-        await schedulePublish(id, publishAt, documentTitle)
+        await createScheduledDraft(id, publishAt, documentTitle)
 
         toast.push({
           closable: true,
@@ -77,11 +77,14 @@ export const SchedulePublishAction: DocumentActionComponent = (
         setIsScheduling(false)
       }
     },
-    [id, schedulePublish, previewValues?.title, toast, t],
+    [id, createScheduledDraft, previewValues?.title, toast, t],
   )
 
+  if (!draft) {
+    return null
+  }
+
   return {
-    disabled: !draft,
     icon: CalendarIcon,
     label: t('action.schedule-publish'),
     title: t('action.schedule-publish'),
@@ -92,10 +95,7 @@ export const SchedulePublishAction: DocumentActionComponent = (
         <ScheduleDraftDialog
           onClose={handleCloseDialog}
           onSchedule={handleSchedule}
-          header={t('schedule-publish-dialog.header')}
-          description={t('schedule-publish-dialog.description')}
-          confirmButtonText={t('schedule-publish-dialog.confirm')}
-          confirmButtonTone="primary"
+          variant="schedule"
           loading={isScheduling}
         />
       ),
