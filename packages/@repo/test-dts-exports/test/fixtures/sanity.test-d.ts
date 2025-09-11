@@ -1009,7 +1009,6 @@ import type {
   ObservePathsFn,
   OnPathFocusPayload,
   onRetry,
-  Opaque,
   Operation,
   OperationArgs,
   OperationError,
@@ -4684,9 +4683,6 @@ describe('sanity', () => {
   })
   test('onRetry', () => {
     expectTypeOf<typeof onRetry>().not.toBeNever()
-  })
-  test('Opaque', () => {
-    expectTypeOf<Opaque<any, any>>().not.toBeNever()
   })
   test('Operation', () => {
     expectTypeOf<Operation<any, any>>().toBeObject()
