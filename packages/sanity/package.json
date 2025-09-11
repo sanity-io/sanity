@@ -156,7 +156,7 @@
     "@portabletext/react": "^4.0.3",
     "@portabletext/toolkit": "^3.0.1",
     "@rexxars/react-json-inspector": "^9.0.1",
-    "@sanity/asset-utils": "^2.2.1",
+    "@sanity/asset-utils": "^2.3.0",
     "@sanity/bifur-client": "^0.4.1",
     "@sanity/cli": "workspace:*",
     "@sanity/client": "^7.11.1",
