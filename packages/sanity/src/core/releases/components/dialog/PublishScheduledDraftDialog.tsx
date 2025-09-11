@@ -47,7 +47,6 @@ export function PublishScheduledDraftDialog(
             t={t}
             i18nKey="release.toast.publish-scheduled-draft.success"
             values={{title: firstDocumentPreview?.title || t('preview.default.title-fallback')}}
-            components={{Strong}}
           />
         ),
       })

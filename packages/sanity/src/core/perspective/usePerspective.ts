@@ -27,7 +27,8 @@ function findCardinalityOneRelease(
  * React hook that returns the current studio perspective and perspective stack.
  *
  * Maps cardinality one releases to "drafts" for global UI consistency while preserving
- * URL parameters for deep-linking. Use `useTruePerspective()` for unmodified values.
+ * URL parameters for deep-linking. For document-contextual unmapped perspective values,
+ * use the useDocumentPerspective hook.
  *
  * @returns See {@link PerspectiveContextValue}
  * @example Reading the current perspective stack
@@ -62,18 +63,4 @@ export function usePerspective(): PerspectiveContextValue {
 
     return context
   }, [context, releases])
-}
-
-/**
- * @internal
- *
- * Returns unmapped perspective values. Cardinality one releases appear as their actual
- * release ID rather than being mapped to "drafts".
- */
-export function useTruePerspective(): PerspectiveContextValue {
-  const context = useContext(PerspectiveContext)
-  if (!context) {
-    throw new Error('useTruePerspective must be used within a PerspectiveProvider')
-  }
-  return context
 }

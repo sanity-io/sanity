@@ -1,12 +1,12 @@
-import {useEffect, useMemo} from 'react'
+import {useContext, useEffect, useMemo} from 'react'
 import {
   getReleaseIdFromReleaseDocumentId,
   getVersionFromId,
   isCardinalityOnePerspective,
   useDocumentVersions,
   useSetPerspective,
-  useTruePerspective,
 } from 'sanity'
+import {PerspectiveContext} from 'sanity/_singletons'
 
 /**
  * Provides document-level perspective logic for cardinality one releases.
@@ -27,13 +27,23 @@ import {
  * The key insight: Cardinality one releases should be document-contextual, automatically
  * clearing from URLs when not applicable to the current document.
  *
+ * This hook provides the unmapped perspective values (cardinality one releases appear
+ * as their actual release ID rather than being mapped to "drafts"), with document-aware
+ * contextual logic applied.
+ *
  * @internal
  */
 export function useDocumentPerspective({documentId}: {documentId: string}): {
   selectedReleaseId: string | undefined
   selectedPerspectiveName: 'published' | string | undefined
 } {
-  const {selectedPerspective, selectedReleaseId, selectedPerspectiveName} = useTruePerspective()
+  // Get the raw perspective context directly (unmapped values)
+  const context = useContext(PerspectiveContext)
+  if (!context) {
+    throw new Error('useDocumentPerspective must be used within a PerspectiveProvider')
+  }
+
+  const {selectedPerspective, selectedReleaseId, selectedPerspectiveName} = context
   const {data: documentVersions, loading: documentVersionsLoading} = useDocumentVersions({
     documentId,
   })
