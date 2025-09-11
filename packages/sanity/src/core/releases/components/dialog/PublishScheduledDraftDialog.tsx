@@ -1,16 +1,15 @@
 import {type ReleaseDocument} from '@sanity/client'
 import {Box, Stack, Text, useToast} from '@sanity/ui'
-import {type PropsWithChildren, useCallback, useState} from 'react'
+import {useCallback, useState} from 'react'
 
 import {Dialog} from '../../../../ui-components'
 import {LoadingBlock} from '../../../components'
 import {useSchema} from '../../../hooks'
 import {Translate, useTranslation} from '../../../i18n'
 import {Preview} from '../../../preview'
+import {getErrorMessage} from '../../../util'
 import {useScheduledDraftDocument} from '../../hooks/useScheduledDraftDocument'
 import {useScheduleDraftOperations} from '../../hooks/useScheduleDraftOperations'
-
-const Strong = ({children}: PropsWithChildren) => <strong>{children}</strong>
 
 interface PublishScheduledDraftDialogProps {
   onClose: () => void
@@ -31,9 +30,9 @@ export function PublishScheduledDraftDialog(
   const operations = useScheduleDraftOperations()
   const [isPublishing, setIsPublishing] = useState(false)
 
-  const scheduledDraftTitle = release.metadata.title || 'Untitled release'
-
-  const {firstDocument} = useScheduledDraftDocument(release._id)
+  const {firstDocument, firstDocumentPreview} = useScheduledDraftDocument(release._id, {
+    includePreview: true,
+  })
   const schemaType = documentType ? schema.get(documentType) : null
 
   const handlePublishScheduledDraft = useCallback(async () => {
@@ -47,7 +46,7 @@ export function PublishScheduledDraftDialog(
           <Translate
             t={t}
             i18nKey="release.toast.publish-scheduled-draft.success"
-            values={{title: scheduledDraftTitle}}
+            values={{title: firstDocumentPreview?.title || t('preview.default.title-fallback')}}
             components={{Strong}}
           />
         ),
@@ -62,10 +61,9 @@ export function PublishScheduledDraftDialog(
             t={t}
             i18nKey="release.toast.publish-scheduled-draft.error"
             values={{
-              title: scheduledDraftTitle,
-              error: (error as Error).message,
+              title: firstDocumentPreview?.title || t('preview.default.title-fallback'),
+              error: getErrorMessage(error),
             }}
-            components={{Strong}}
           />
         ),
       })
@@ -73,7 +71,7 @@ export function PublishScheduledDraftDialog(
       setIsPublishing(false)
       onClose()
     }
-  }, [release, operations, toast, t, scheduledDraftTitle, onClose])
+  }, [operations, release, toast, t, firstDocumentPreview?.title, onClose])
 
   return (
     <Dialog

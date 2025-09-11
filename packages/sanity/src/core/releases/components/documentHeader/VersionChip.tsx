@@ -24,6 +24,7 @@ import {Popover, Tooltip} from '../../../../ui-components'
 import {useCanvasCompanionDocsStore} from '../../../canvas/store/useCanvasCompanionDocsStore'
 import {Translate, useTranslation} from '../../../i18n'
 import {getDraftId, getPublishedId, getVersionId} from '../../../util/draftUtils'
+import {getErrorMessage} from '../../../util/getErrorMessage'
 import {isCardinalityOneRelease} from '../../../util/releaseUtils'
 import {useReleasesToolAvailable} from '../../hooks/useReleasesToolAvailable'
 import {useScheduleDraftOperations} from '../../hooks/useScheduleDraftOperations'
@@ -34,8 +35,6 @@ import {ScheduleDraftDialog} from '../dialog/ScheduleDraftDialog'
 import {ReleaseAvatarIcon} from '../ReleaseAvatar'
 import {VersionContextMenu} from './contextMenu/VersionContextMenu'
 import {CopyToNewReleaseDialog} from './dialog/CopyToNewReleaseDialog'
-
-const Strong = ({children}: {children?: React.ReactNode}) => <strong>{children}</strong>
 
 const ChipButtonContainer = styled.span`
   display: inline-flex;
@@ -195,9 +194,8 @@ export const VersionChip = memo(function VersionChip(props: {
               i18nKey="release.toast.reschedule-scheduled-draft.error"
               values={{
                 title: releaseTitle,
-                error: (error as Error).message,
+                error: getErrorMessage(error),
               }}
-              components={{Strong}}
             />
           ),
         })

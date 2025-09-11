@@ -12,7 +12,7 @@ const releasesLocaleStrings = {
   'action.archive.tooltip': 'Unschedule this release to archive it',
   /** Action text for showing the archived releases */
   'action.archived': 'Archived',
-  /** Action text for creating a revert release by creating a new release */
+  /** Action text for staging a new revert release */
   'action.create-revert-release': 'Create a new release',
   /** Action text for deleting a release */
   'action.delete-release': 'Delete release',

@@ -1,16 +1,15 @@
 import {type ReleaseDocument} from '@sanity/client'
 import {Box, Stack, Text, useToast} from '@sanity/ui'
-import {type PropsWithChildren, useCallback, useState} from 'react'
+import {useCallback, useState} from 'react'
 
 import {Dialog} from '../../../../ui-components'
 import {LoadingBlock} from '../../../components'
 import {useSchema} from '../../../hooks'
 import {Translate, useTranslation} from '../../../i18n'
 import {Preview} from '../../../preview'
+import {getErrorMessage} from '../../../util'
 import {useScheduledDraftDocument} from '../../hooks/useScheduledDraftDocument'
 import {useScheduleDraftOperations} from '../../hooks/useScheduleDraftOperations'
-
-const Strong = ({children}: PropsWithChildren) => <strong>{children}</strong>
 
 interface DeleteScheduledDraftDialogProps {
   onClose: () => void
@@ -31,15 +30,15 @@ export function DeleteScheduledDraftDialog(
   const operations = useScheduleDraftOperations()
   const [isDeleting, setIsDeleting] = useState(false)
 
-  const scheduledDraftTitle = release.metadata.title || 'Untitled release'
-
-  const {firstDocument} = useScheduledDraftDocument(release._id)
+  const {firstDocument, firstDocumentPreview} = useScheduledDraftDocument(release._id, {
+    includePreview: true,
+  })
   const schemaType = documentType ? schema.get(documentType) : null
 
   const handleDeleteSchedule = useCallback(async () => {
     setIsDeleting(true)
     try {
-      await operations.deleteScheduledDraft(release._id, release.state)
+      await operations.deleteScheduledDraft(release._id)
       toast.push({
         closable: true,
         status: 'success',
@@ -47,8 +46,7 @@ export function DeleteScheduledDraftDialog(
           <Translate
             t={t}
             i18nKey="release.toast.delete-schedule-draft.success"
-            values={{title: scheduledDraftTitle}}
-            components={{Strong}}
+            values={{title: firstDocumentPreview?.title || t('preview.default.title-fallback')}}
           />
         ),
       })
@@ -62,10 +60,9 @@ export function DeleteScheduledDraftDialog(
             t={t}
             i18nKey="release.toast.delete-schedule-draft.error"
             values={{
-              title: scheduledDraftTitle,
-              error: (error as Error).message,
+              title: firstDocumentPreview?.title || t('preview.default.title-fallback'),
+              error: getErrorMessage(error),
             }}
-            components={{Strong}}
           />
         ),
       })
@@ -73,7 +70,7 @@ export function DeleteScheduledDraftDialog(
       setIsDeleting(false)
       onClose()
     }
-  }, [release._id, release.state, operations, toast, t, scheduledDraftTitle, onClose])
+  }, [release._id, operations, toast, t, firstDocumentPreview?.title, onClose])
 
   return (
     <Dialog

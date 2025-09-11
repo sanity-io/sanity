@@ -17,6 +17,8 @@ import {useTimeZone} from '../../../hooks/useTimeZone'
 import {useTranslation} from '../../../i18n'
 import {usePerspective} from '../../../perspective/usePerspective'
 import {CONTENT_RELEASES_TIME_ZONE_SCOPE} from '../../../studio/constants'
+import {useWorkspace} from '../../../studio/workspace'
+import {isCardinalityOneRelease} from '../../../util/releaseUtils'
 import {CreateReleaseDialog} from '../../components/dialog/CreateReleaseDialog'
 import {useReleasesUpsell} from '../../contexts/upsell/useReleasesUpsell'
 import {useScheduledDraftsEnabled} from '../../hooks/useScheduledDraftsEnabled'
@@ -36,9 +38,9 @@ import {CalendarPopover} from './CalendarPopover'
 import {
   buildReleasesSearchParams,
   type CardinalityView,
-  getInitialCardinalityView,
+  getCardinalityViewFromUrl,
   getInitialFilterDate,
-  getInitialReleaseGroupMode,
+  getReleaseGroupModeFromUrl,
   type Mode,
 } from './queryParamUtils'
 import {createReleaseCalendarFilterDay, DateFilterButton} from './ReleaseCalendarFilter'
@@ -66,13 +68,26 @@ export function ReleasesOverview() {
   const {data: allArchivedReleases} = useArchivedReleases()
   const {mode} = useReleasesUpsell()
   const isScheduledDraftsEnabled = useScheduledDraftsEnabled()
+  const {
+    document: {
+      drafts: {enabled: isDraftModelEnabled},
+    },
+  } = useWorkspace()
 
   const router = useRouter()
-  const [releaseGroupMode, setReleaseGroupMode] = useState<Mode>(getInitialReleaseGroupMode(router))
 
-  const [cardinalityView, setCardinalityView] = useState<CardinalityView>(
-    isScheduledDraftsEnabled ? getInitialCardinalityView(router) : 'releases',
+  // Read releaseGroupMode directly from URL using helper function
+  const releaseGroupMode = useMemo<Mode>(
+    () => getReleaseGroupModeFromUrl(router.state._searchParams || []),
+    [router.state._searchParams],
   )
+
+  // Read cardinalityView directly from URL using helper function
+  const cardinalityView = useMemo<CardinalityView>(
+    () => getCardinalityViewFromUrl(router.state._searchParams || [], isScheduledDraftsEnabled),
+    [router.state._searchParams, isScheduledDraftsEnabled],
+  )
+
   const [releaseFilterDate, setReleaseFilterDate] = useState<Date | undefined>(
     getInitialFilterDate(router),
   )
@@ -152,20 +167,39 @@ export function ReleasesOverview() {
   // switch to open mode if on archived mode and there are no archived releases
   useEffect(() => {
     if (releaseGroupMode === 'archived' && !loadingReleases && !archivedReleases.length) {
-      setReleaseGroupMode('active')
+      router.navigate({
+        _searchParams: buildReleasesSearchParams(releaseFilterDate, 'active', cardinalityView),
+      })
     }
-  }, [releaseGroupMode, archivedReleases.length, loadingReleases])
+  }, [
+    releaseGroupMode,
+    archivedReleases.length,
+    loadingReleases,
+    router,
+    releaseFilterDate,
+    cardinalityView,
+  ])
 
   const handleReleaseGroupModeChange = useCallback<MouseEventHandler<HTMLButtonElement>>(
     ({currentTarget: {value: groupMode}}) => {
-      setReleaseGroupMode(groupMode as Mode)
+      router.navigate({
+        _searchParams: buildReleasesSearchParams(
+          releaseFilterDate,
+          groupMode as Mode,
+          cardinalityView,
+        ),
+      })
     },
-    [],
+    [router, releaseFilterDate, cardinalityView],
   )
 
   const handleCardinalityViewChange = useCallback(
-    (view: CardinalityView) => () => setCardinalityView(view),
-    [],
+    (view: CardinalityView) => () => {
+      router.navigate({
+        _searchParams: buildReleasesSearchParams(releaseFilterDate, releaseGroupMode, view),
+      })
+    },
+    [router, releaseFilterDate, releaseGroupMode],
   )
 
   const handleSelectFilterDate = useCallback(
@@ -184,8 +218,10 @@ export function ReleasesOverview() {
 
   const clearFilterDate = useCallback(() => {
     setReleaseFilterDate(undefined)
-    setReleaseGroupMode('active')
-  }, [])
+    router.navigate({
+      _searchParams: buildReleasesSearchParams(undefined, 'active', cardinalityView),
+    })
+  }, [router, cardinalityView])
 
   useEffect(() => {
     router.navigate({
@@ -195,7 +231,7 @@ export function ReleasesOverview() {
         isScheduledDraftsEnabled ? cardinalityView : 'releases',
       ),
     })
-  }, [releaseFilterDate, releaseGroupMode, cardinalityView, router, isScheduledDraftsEnabled])
+  }, [releaseFilterDate, router, releaseGroupMode, cardinalityView, isScheduledDraftsEnabled])
 
   const [hasMounted, setHasMounted] = useState(false)
 
@@ -215,6 +251,27 @@ export function ReleasesOverview() {
           </Text>
         </Flex>
       )
+    }
+
+    // If scheduled drafts are enabled but drafts mode is disabled:
+    // only show releases and drafts menu items if there are scheduled drafts already existing
+    // otherwise, show only the releases label
+    if (!isDraftModelEnabled) {
+      const hasScheduledCardinalityOneReleases = allReleases.some(
+        (release) =>
+          isCardinalityOneRelease(release) && release.metadata.releaseType === 'scheduled',
+      )
+
+      if (!hasScheduledCardinalityOneReleases) {
+        return (
+          <Flex align="center" gap={2}>
+            <CalendarIcon />
+            <Text size={1} weight="semibold">
+              {t('action.releases')}
+            </Text>
+          </Flex>
+        )
+      }
     }
 
     const currentViewText =
@@ -250,7 +307,15 @@ export function ReleasesOverview() {
         }
       />
     )
-  }, [loading, cardinalityView, t, handleCardinalityViewChange, isScheduledDraftsEnabled])
+  }, [
+    loading,
+    cardinalityView,
+    t,
+    handleCardinalityViewChange,
+    isScheduledDraftsEnabled,
+    isDraftModelEnabled,
+    allReleases,
+  ])
 
   const currentArchivedPicker = useMemo(() => {
     const groupModeButtonBaseProps = {
