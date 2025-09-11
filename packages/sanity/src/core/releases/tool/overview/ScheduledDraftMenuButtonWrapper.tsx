@@ -3,7 +3,7 @@ import {EllipsisHorizontalIcon} from '@sanity/icons'
 import {Menu, Spinner, useClickOutsideEvent} from '@sanity/ui'
 import {useCallback, useMemo, useRef, useState} from 'react'
 
-import {Button, Popover} from '../../../../ui-components'
+import {Button, MenuItem, Popover} from '../../../../ui-components'
 import {useTranslation} from '../../../i18n'
 import {useScheduledDraftDocument} from '../../hooks/useScheduledDraftDocument'
 import {useScheduledDraftMenuActions} from '../../hooks/useScheduledDraftMenuActions'
@@ -23,7 +23,7 @@ export const ScheduledDraftMenuButtonWrapper = ({
 
   const {firstDocument: scheduledDraftDocument} = useScheduledDraftDocument(release._id)
 
-  const {menuItems, dialogs, isPerformingOperation} = useScheduledDraftMenuActions({
+  const {actions, dialogs, isPerformingOperation} = useScheduledDraftMenuActions({
     release,
     documentType: scheduledDraftDocument?._type,
     disabled: !scheduledDraftDocument,
@@ -32,12 +32,16 @@ export const ScheduledDraftMenuButtonWrapper = ({
   const displayedMenuItems = useMemo(() => {
     // When in archived mode, only show delete-schedule option
     if (releaseGroupMode === 'archived') {
-      return [menuItems.deleteSchedule]
+      return [<MenuItem {...actions.deleteSchedule} />]
     }
 
     // When in active mode, show all options
-    return [menuItems.publishNow, menuItems.editSchedule, menuItems.deleteSchedule]
-  }, [releaseGroupMode, menuItems])
+    return [
+      <MenuItem {...actions.publishNow} />,
+      <MenuItem {...actions.editSchedule} />,
+      <MenuItem {...actions.deleteSchedule} />,
+    ]
+  }, [releaseGroupMode, actions])
 
   const canPerformActions = Boolean(scheduledDraftDocument)
 
