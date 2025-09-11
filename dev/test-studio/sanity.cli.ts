@@ -3,12 +3,18 @@ import path from 'node:path'
 import {defineCliConfig} from 'sanity/cli'
 import {type UserConfig} from 'vite'
 
-export default defineCliConfig({
-  api: {
-    projectId: 'ppsg7ml5',
-    dataset: 'test',
-  },
+const isStaging = process.env.SANITY_INTERNAL_ENV == 'staging'
 
+export default defineCliConfig({
+  api: isStaging
+    ? {
+        projectId: 'exx11uqh',
+        dataset: 'playground',
+      }
+    : {
+        projectId: 'ppsg7ml5',
+        dataset: 'test',
+      },
   // Can be overriden by:
   // A) `SANITY_STUDIO_REACT_STRICT_MODE=false pnpm dev`
   // B) creating a `.env` file locally that sets the same env variable as above
