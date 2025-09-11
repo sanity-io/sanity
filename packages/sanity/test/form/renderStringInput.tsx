@@ -37,6 +37,7 @@ export async function renderStringInput(options: {
         schemaType,
         comparisonValue: value,
       }),
+      changed: false,
     }
   }
 

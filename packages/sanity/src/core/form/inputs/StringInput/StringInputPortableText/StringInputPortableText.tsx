@@ -73,14 +73,12 @@ export function StringInputPortableText(props: StringInputProps) {
     elementProps,
     onChange,
     value: definitiveValue,
-    __unstable_diff: definitiveDiff,
     __unstable_computeDiff: computeDiff,
   } = props
   const {onFocus, onBlur} = elementProps
 
   const {diff, rangeDecorations, onOptimisticChange} = useOptimisticDiff({
     definitiveValue,
-    definitiveDiff,
     computeDiff,
   })
 

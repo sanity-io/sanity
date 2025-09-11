@@ -28,13 +28,6 @@ export type ComputeDiff<Annotation> = (value: unknown) => Diff<Annotation>
  */
 export interface NodeDiffProps<Annotation> {
   /**
-   * The diff between the current value and the value the node is being compared to.
-   *
-   * This is marked as unstable because the API may need to evolve as we iterate on the advanced
-   * version control functionality. It will be stabilised when that project has matured.
-   */
-  __unstable_diff: Diff<Annotation>
-  /**
    * A function that takes any value and produces a diff between that value and the value the node
    * is being compared to.
    *

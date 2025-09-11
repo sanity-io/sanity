@@ -216,9 +216,7 @@ export const DocumentPanel = function DocumentPanel(props: DocumentPanelProps) {
       return <ScheduledReleaseBanner currentRelease={selectedPerspective as ReleaseDocument} />
     }
 
-    const hasCardinalityOneReleases = filteredReleases.currentReleases.some(
-      (release) => isReleaseDocument(release) && isCardinalityOneRelease(release),
-    )
+    const hasCardinalityOneReleases = filteredReleases.currentReleases.some(isCardinalityOneRelease)
     // Show the banner when:
     // - Global perspective appears as 'drafts' (mapped perspective)
     // - There are cardinality one releases available for this document

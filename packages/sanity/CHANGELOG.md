@@ -3,6 +3,33 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [4.8.1](https://github.com/sanity-io/sanity/compare/v4.8.0...v4.8.1) (2025-09-10)
+
+
+### Bug Fixes
+
+* revert fix: popover issue when closing and clicking different panes ([#10608](https://github.com/sanity-io/sanity/issues/10608)) ([d0dba63](https://github.com/sanity-io/sanity/commit/d0dba63e7b254457ea8ff6992acff66f571603ab))
+
+
+
+## [4.8.0](https://github.com/sanity-io/sanity/compare/v4.7.0...v4.8.0) (2025-09-10)
+
+
+### Features
+
+* **sanity:** compute node diffs lazily ([#10600](https://github.com/sanity-io/sanity/issues/10600)) ([6e048f2](https://github.com/sanity-io/sanity/commit/6e048f2ac007090dc2be688f7d84c09b3a5833a6))
+
+
+### Bug Fixes
+
+* **cli:** fix build error when using auto-updates with sdk apps ([#10581](https://github.com/sanity-io/sanity/issues/10581)) ([49bff69](https://github.com/sanity-io/sanity/commit/49bff6900df55b3e5925b741e94f303828769f0b))
+* **deps:** update dependency @portabletext/editor to ^2.8.3 ([#10570](https://github.com/sanity-io/sanity/issues/10570)) ([63acb06](https://github.com/sanity-io/sanity/commit/63acb0664682d92432a5b4a4336a82a290f064a0))
+* **deps:** update dependency @sanity/client to ^7.11.1 ([#10593](https://github.com/sanity-io/sanity/issues/10593)) ([96d3546](https://github.com/sanity-io/sanity/commit/96d35461db9de547e7ddd3d8987501ae41f9423d))
+* **deps:** update dependency @sanity/preview-url-secret to ^2.1.15 ([#10588](https://github.com/sanity-io/sanity/issues/10588)) ([8269e81](https://github.com/sanity-io/sanity/commit/8269e81683afcf18eb68fc0446417288387a2276))
+* handle uploading assets already existing in the ML ([#10495](https://github.com/sanity-io/sanity/issues/10495)) ([e4d8e43](https://github.com/sanity-io/sanity/commit/e4d8e4342510882c401682387148365c4be6e6f1))
+
+
+
 ## [4.7.0](https://github.com/sanity-io/sanity/compare/v4.6.1...v4.7.0) (2025-09-09)
 
 
