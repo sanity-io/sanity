@@ -11,6 +11,7 @@ import {useTranslation} from '../../../i18n'
 import {usePerspective} from '../../../perspective/usePerspective'
 import {useDocumentPreviewValues} from '../../../tasks/hooks/useDocumentPreviewValues'
 import {ScheduleDraftDialog} from '../../components/dialog/ScheduleDraftDialog'
+import {useHasCardinalityOneReleaseVersions} from '../../hooks/useHasCardinalityOneReleaseVersions'
 import {useScheduleDraftOperations} from '../../hooks/useScheduleDraftOperations'
 import {releasesLocaleNamespace} from '../../i18n'
 
@@ -32,6 +33,9 @@ export const SchedulePublishAction: DocumentActionComponent = (
     documentType: type,
     perspectiveStack,
   })
+
+  // Check if document has versions in cardinality one releases
+  const hasCardinalityOneReleaseVersions = useHasCardinalityOneReleaseVersions(id)
 
   const [dialogOpen, setDialogOpen] = useState(false)
   const [isScheduling, setIsScheduling] = useState(false)
@@ -86,6 +90,7 @@ export const SchedulePublishAction: DocumentActionComponent = (
 
   return {
     icon: CalendarIcon,
+    disabled: hasCardinalityOneReleaseVersions,
     label: t('action.schedule-publish'),
     title: t('action.schedule-publish'),
     onHandle: handleOpenDialog,
