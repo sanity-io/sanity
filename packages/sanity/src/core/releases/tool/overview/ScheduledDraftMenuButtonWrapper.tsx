@@ -25,6 +25,7 @@ export const ScheduledDraftMenuButtonWrapper = ({
 
   const {menuItems, dialogs, isPerformingOperation} = useScheduledDraftMenuActions({
     release,
+    documentType: scheduledDraftDocument?._type,
     disabled: !scheduledDraftDocument,
   })
 
