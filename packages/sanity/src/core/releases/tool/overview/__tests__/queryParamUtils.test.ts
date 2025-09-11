@@ -2,11 +2,7 @@ import {format} from 'date-fns'
 import {type RouterContextValue} from 'sanity/router'
 import {describe, expect, it} from 'vitest'
 
-import {
-  buildReleasesSearchParams,
-  getCardinalityViewFromUrl,
-  getReleaseGroupModeFromUrl,
-} from '../queryParamUtils'
+import {buildReleasesSearchParams, getInitialCardinalityView} from '../queryParamUtils'
 
 const createMockRouter = (searchParams: string): RouterContextValue =>
   ({
@@ -16,49 +12,17 @@ const createMockRouter = (searchParams: string): RouterContextValue =>
   }) as unknown as RouterContextValue
 
 describe('queryParamUtils', () => {
-  describe('getCardinalityViewFromUrl', () => {
-    it('should return "releases" when scheduled drafts are disabled', () => {
-      const searchParams: [string, string][] = [['view', 'drafts']]
-      const result = getCardinalityViewFromUrl(searchParams, false)
+  describe('getInitialCardinalityView', () => {
+    it('should return "releases" by default', () => {
+      const router = createMockRouter('')
+      const result = getInitialCardinalityView(router)()
       expect(result).toBe('releases')
     })
 
-    it('should return "releases" by default when scheduled drafts are enabled', () => {
-      const searchParams: [string, string][] = []
-      const result = getCardinalityViewFromUrl(searchParams, true)
-      expect(result).toBe('releases')
-    })
-
-    it('should return "drafts" when view param is "drafts" and scheduled drafts are enabled', () => {
-      const searchParams: [string, string][] = [['view', 'drafts']]
-      const result = getCardinalityViewFromUrl(searchParams, true)
+    it('should return "drafts" when view param is "drafts"', () => {
+      const router = createMockRouter('view=drafts')
+      const result = getInitialCardinalityView(router)()
       expect(result).toBe('drafts')
-    })
-
-    it('should return "releases" when view param is something else', () => {
-      const searchParams: [string, string][] = [['view', 'something-else']]
-      const result = getCardinalityViewFromUrl(searchParams, true)
-      expect(result).toBe('releases')
-    })
-  })
-
-  describe('getReleaseGroupModeFromUrl', () => {
-    it('should return "active" by default', () => {
-      const searchParams: [string, string][] = []
-      const result = getReleaseGroupModeFromUrl(searchParams)
-      expect(result).toBe('active')
-    })
-
-    it('should return "archived" when group param is "archived"', () => {
-      const searchParams: [string, string][] = [['group', 'archived']]
-      const result = getReleaseGroupModeFromUrl(searchParams)
-      expect(result).toBe('archived')
-    })
-
-    it('should return "active" when group param is something else', () => {
-      const searchParams: [string, string][] = [['group', 'something-else']]
-      const result = getReleaseGroupModeFromUrl(searchParams)
-      expect(result).toBe('active')
     })
   })
 
