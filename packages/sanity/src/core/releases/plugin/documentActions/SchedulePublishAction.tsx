@@ -11,6 +11,7 @@ import {useTranslation} from '../../../i18n'
 import {usePerspective} from '../../../perspective/usePerspective'
 import {useDocumentPreviewValues} from '../../../tasks/hooks/useDocumentPreviewValues'
 import {ScheduleDraftDialog} from '../../components/dialog/ScheduleDraftDialog'
+import {useScheduledDraftsEnabled} from '../../hooks/useScheduledDraftsEnabled'
 import {useScheduleDraftOperations} from '../../hooks/useScheduleDraftOperations'
 import {releasesLocaleNamespace} from '../../i18n'
 
@@ -21,6 +22,7 @@ export const SchedulePublishAction: DocumentActionComponent = (
   props: DocumentActionProps,
 ): DocumentActionDescription | null => {
   const {id, type, draft} = props
+  const scheduledDraftsEnabled = useScheduledDraftsEnabled()
   const {t} = useTranslation(releasesLocaleNamespace)
   const {createScheduledDraft} = useScheduleDraftOperations()
   const toast = useToast()
@@ -80,7 +82,8 @@ export const SchedulePublishAction: DocumentActionComponent = (
     [id, createScheduledDraft, previewValues?.title, toast, t],
   )
 
-  if (!draft) {
+  // Return null if scheduled drafts are disabled or if there's no draft
+  if (!scheduledDraftsEnabled || !draft) {
     return null
   }
 
