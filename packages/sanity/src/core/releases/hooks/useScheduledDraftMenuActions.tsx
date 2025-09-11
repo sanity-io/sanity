@@ -1,9 +1,9 @@
 import {type ReleaseDocument} from '@sanity/client'
 import {CalendarIcon, PublishIcon, TrashIcon} from '@sanity/icons'
 import {useToast} from '@sanity/ui'
-import {useCallback, useMemo, useState} from 'react'
+import {type ComponentProps, useCallback, useMemo, useState} from 'react'
 
-import {MenuItem} from '../../../ui-components'
+import {type MenuItem} from '../../../ui-components/menuItem'
 import {Translate, useTranslation} from '../../i18n'
 import {getErrorMessage} from '../../util'
 import {DeleteScheduledDraftDialog} from '../components/dialog/DeleteScheduledDraftDialog'
@@ -12,7 +12,7 @@ import {ScheduleDraftDialog} from '../components/dialog/ScheduleDraftDialog'
 import {useScheduledDraftDocument} from './useScheduledDraftDocument'
 import {useScheduleDraftOperations} from './useScheduleDraftOperations'
 
-export type ScheduledDraftAction = 'publish-now' | 'edit-schedule' | 'delete-schedule'
+type ScheduledDraftAction = 'publish-now' | 'edit-schedule' | 'delete-schedule'
 
 export interface UseScheduledDraftMenuActionsOptions {
   release: ReleaseDocument
@@ -22,19 +22,23 @@ export interface UseScheduledDraftMenuActionsOptions {
   onEditSchedule?: () => void
 }
 
+interface ScheduledDraftActionProps {
+  icon: ComponentProps<typeof MenuItem>['icon']
+  text: Exclude<ComponentProps<typeof MenuItem>['text'], undefined>
+  tone: ComponentProps<typeof MenuItem>['tone']
+  onClick: () => void
+  disabled: ComponentProps<typeof MenuItem>['disabled']
+  key: string
+}
+
 export interface UseScheduledDraftMenuActionsReturn {
-  menuItems: {
-    publishNow: React.ReactNode
-    editSchedule: React.ReactNode
-    deleteSchedule: React.ReactNode
-  }
+  actions: Record<'publishNow' | 'editSchedule' | 'deleteSchedule', ScheduledDraftActionProps>
   dialogs: React.ReactNode
   isPerformingOperation: boolean
 }
 
 /**
- * Hook that provides reusable scheduled draft menu actions as ready-to-render MenuItem components.
- * Returns menu items as JSX components so consumers can directly render them.
+ * Hook that provides reusable scheduled draft menu action props that can be used to create MenuItem components.
  *
  * @internal
  */
@@ -94,43 +98,37 @@ export function useScheduledDraftMenuActions(
     }
   }, [isPerformingOperation])
 
-  const menuItems = useMemo(() => {
+  const actions = useMemo(() => {
     const baseDisabled = disabled || isPerformingOperation
 
     return {
-      publishNow: (
-        <MenuItem
-          key="publish-now"
-          icon={PublishIcon}
-          text={t('release.action.publish-now')}
-          tone="default"
-          onClick={() => handleMenuItemClick('publish-now')}
-          disabled={baseDisabled}
-          data-testid="publish-now-menu-item"
-        />
-      ),
-      editSchedule: (
-        <MenuItem
-          key="edit-schedule"
-          icon={CalendarIcon}
-          text={t('release.action.edit-schedule')}
-          tone="default"
-          onClick={onEditSchedule || (() => handleMenuItemClick('edit-schedule'))}
-          disabled={baseDisabled}
-          data-testid="edit-schedule-menu-item"
-        />
-      ),
-      deleteSchedule: (
-        <MenuItem
-          key="delete-schedule"
-          icon={TrashIcon}
-          text={t('release.action.delete-schedule')}
-          tone="critical"
-          onClick={() => handleMenuItemClick('delete-schedule')}
-          disabled={baseDisabled}
-          data-testid="delete-schedule-menu-item"
-        />
-      ),
+      publishNow: {
+        'icon': PublishIcon,
+        'text': t('release.action.publish-now'),
+        'tone': 'default' as const,
+        'onClick': () => handleMenuItemClick('publish-now'),
+        'disabled': baseDisabled,
+        'data-testid': 'publish-now-menu-item',
+        'key': 'publish-now',
+      },
+      editSchedule: {
+        'icon': CalendarIcon,
+        'text': t('release.action.edit-schedule'),
+        'tone': 'default' as const,
+        'onClick': onEditSchedule || (() => handleMenuItemClick('edit-schedule')),
+        'disabled': baseDisabled,
+        'data-testid': 'edit-schedule-menu-item',
+        'key': 'edit-schedule',
+      },
+      deleteSchedule: {
+        'icon': TrashIcon,
+        'text': t('release.action.delete-schedule'),
+        'tone': 'critical' as const,
+        'onClick': () => handleMenuItemClick('delete-schedule'),
+        'disabled': baseDisabled,
+        'data-testid': 'delete-schedule-menu-item',
+        'key': 'delete-schedule',
+      },
     }
   }, [t, handleMenuItemClick, disabled, isPerformingOperation, onEditSchedule])
 
@@ -180,7 +178,7 @@ export function useScheduledDraftMenuActions(
   ])
 
   return {
-    menuItems,
+    actions,
     dialogs,
     isPerformingOperation,
   }
