@@ -10,13 +10,7 @@ import {svSELocale} from '@sanity/locale-sv-se'
 import {SanityMonogram} from '@sanity/logos'
 import {debugSecrets} from '@sanity/preview-url-secret/sanity-plugin-debug-secrets'
 import {visionTool} from '@sanity/vision'
-import {
-  DECISION_PARAMETERS_SCHEMA,
-  defineConfig,
-  definePlugin,
-  QUOTA_EXCLUDED_RELEASES_ENABLED,
-  type WorkspaceOptions,
-} from 'sanity'
+import {DECISION_PARAMETERS_SCHEMA, defineConfig, definePlugin, type WorkspaceOptions} from 'sanity'
 import {defineDocuments, defineLocations, presentationTool} from 'sanity/presentation'
 import {structureTool} from 'sanity/structure'
 import {unsplashAssetSource, UnsplashIcon} from 'sanity-plugin-asset-source-unsplash'
@@ -244,7 +238,6 @@ const defaultWorkspace = defineConfig({
   mediaLibrary: {
     enabled: true,
   },
-  [QUOTA_EXCLUDED_RELEASES_ENABLED]: true,
   [DECISION_PARAMETERS_SCHEMA]: {
     audiences: ['aud-a', 'aud-b', 'aud-c'],
     locales: ['en-GB', 'en-US'],

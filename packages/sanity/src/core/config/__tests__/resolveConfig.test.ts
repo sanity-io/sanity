@@ -453,6 +453,84 @@ describe('search strategy selection', () => {
   })
 })
 
+describe('releases.scheduledDrafts.enabled configuration', () => {
+  const projectId = 'ppsg7ml5'
+  const dataset = 'production'
+
+  it('defaults to true when not specified', async () => {
+    const workspace = await createWorkspaceFromConfig({
+      projectId,
+      dataset,
+      releases: {},
+    })
+
+    expect(workspace.releases?.scheduledDrafts?.enabled).toBe(true)
+  })
+
+  it('respects explicit true value', async () => {
+    const workspace = await createWorkspaceFromConfig({
+      projectId,
+      dataset,
+      releases: {
+        scheduledDrafts: {
+          enabled: true,
+        },
+      },
+    })
+
+    expect(workspace.releases?.scheduledDrafts?.enabled).toBe(true)
+  })
+
+  it('respects explicit false value', async () => {
+    const workspace = await createWorkspaceFromConfig({
+      projectId,
+      dataset,
+      releases: {
+        scheduledDrafts: {
+          enabled: false,
+        },
+      },
+    })
+
+    expect(workspace.releases?.scheduledDrafts?.enabled).toBe(false)
+  })
+
+  it('defaults to true when releases is undefined', async () => {
+    const workspace = await createWorkspaceFromConfig({
+      projectId,
+      dataset,
+    })
+
+    // When releases is undefined, the source should not have releases configuration
+    expect(workspace.releases).toBeUndefined()
+  })
+
+  it('can be composed with plugins', async () => {
+    const scheduledDraftsPlugin = definePlugin({
+      name: 'sanity/scheduled-drafts-test',
+      releases: {
+        scheduledDrafts: {
+          enabled: false,
+        },
+      },
+    })
+
+    const workspace = await createWorkspaceFromConfig({
+      projectId,
+      dataset,
+      plugins: [scheduledDraftsPlugin()],
+      releases: {
+        scheduledDrafts: {
+          enabled: true,
+        },
+      },
+    })
+
+    // Workspace config should take precedence over plugin config
+    expect(workspace.releases?.scheduledDrafts?.enabled).toBe(true)
+  })
+})
+
 function getSearchOptionsPlugin(options: PluginOptions['search']): PluginOptions {
   return definePlugin({
     name: 'sanity/search-options',
