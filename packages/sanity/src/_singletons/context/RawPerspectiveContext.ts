@@ -1,4 +1,4 @@
-import {createContext} from 'react'
+import {createContext} from 'sanity/_createContext'
 
 import type {PerspectiveContextValue} from '../../core/perspective/types'
 
