@@ -106,7 +106,7 @@ jobs:
             ${{steps.release-notes.outputs.notes}}
           commit-message: "${{steps.version-commit.outputs.message}}"
           branch: ci/release-main
-          labels: "autorelease:pending"
+          labels: "release:latest"
           sign-commits: true
           base: main
           team-reviewers: "@sanity-io/studio"
