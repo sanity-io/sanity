@@ -24,8 +24,6 @@ possible/practical for writing an automated test
 ### Notes for release
 
 <!--
-Leave this section empty or start with "N/A" if you don't want to include release notes with this PR. For example, "N/A: Internal only"
-
 Engineers do not need to worry about the final copy,
 but they must provide the docs team with enough context on:
 
@@ -36,5 +34,5 @@ but they must provide the docs team with enough context on:
 
 If this is PR is a partial implementation of a feature and is not enabled by default or if
 this PR does not contain changes that needs mention in the release notes (tooling chores etc),
-please call this out explicitly by writing "N/A – Part of feature X" in this section.
+please call this out explicitly by writing "Part of feature X" or "Not required" in this section.
 -->
