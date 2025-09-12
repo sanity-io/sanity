@@ -1,6 +1,11 @@
 import {type DocumentActionComponent} from '../../../config/document/actions'
 import {type DocumentActionsContext, QUOTA_EXCLUDED_RELEASES_ENABLED} from '../../../config/types'
 import {DiscardVersionAction} from './DiscardVersionAction'
+import {
+  DeleteScheduledDraftAction,
+  EditScheduledDraftAction,
+  PublishScheduledDraftAction,
+} from './ScheduledDraftDocumentActions'
 import {SchedulePublishAction} from './SchedulePublishAction'
 import {UnpublishVersionAction} from './UnpublishVersionAction'
 
@@ -12,7 +17,13 @@ export default function resolveDocumentActions(
 ): Action[] {
   const duplicateAction = existingActions.filter(({action}) => action === 'duplicate')
 
+  if (context.versionType === 'scheduled-draft') {
+    // For scheduled draft documents, show only the scheduled draft actions
+    return [PublishScheduledDraftAction, EditScheduledDraftAction, DeleteScheduledDraftAction]
+  }
+
   if (context.versionType === 'version') {
+    // For regular version documents, show traditional version actions
     return duplicateAction.concat(DiscardVersionAction, UnpublishVersionAction)
   }
 
