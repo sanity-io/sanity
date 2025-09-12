@@ -18,6 +18,7 @@ import {
   useDateTimeFormat,
   type UseDateTimeFormatOptions,
   useOnlyHasVersions,
+  usePerspective,
   useSchema,
   useSetPerspective,
   useTranslation,
@@ -82,14 +83,8 @@ const DATE_TIME_FORMAT: UseDateTimeFormatOptions = {
 export const DocumentPerspectiveList = memo(function DocumentPerspectiveList() {
   // Use document-level perspective instead of global perspective
   // This ensures cardinality one releases show as selected in the document header
-  const {
-    editState,
-    displayed,
-    documentType,
-    documentId,
-    selectedReleaseId,
-    selectedPerspectiveName,
-  } = useDocumentPane()
+  const {editState, displayed, documentType, documentId, selectedReleaseId} = useDocumentPane()
+  const {selectedPerspectiveName} = usePerspective()
   const {t} = useTranslation()
   const setPerspective = useSetPerspective()
   const {params, setParams} = usePaneRouter()
