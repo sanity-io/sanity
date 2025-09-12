@@ -32,14 +32,14 @@ export const ScheduledDraftMenuButtonWrapper = ({
   const displayedMenuItems = useMemo(() => {
     // When in archived mode, only show delete-schedule option
     if (releaseGroupMode === 'archived') {
-      return [<MenuItem key={actions.deleteSchedule.key} {...actions.deleteSchedule} />]
+      return [<MenuItem key={'delete-schedule'} {...actions.deleteSchedule} />]
     }
 
     // When in active mode, show all options
     return [
-      <MenuItem key={actions.publishNow.key} {...actions.publishNow} />,
-      <MenuItem key={actions.editSchedule.key} {...actions.editSchedule} />,
-      <MenuItem key={actions.deleteSchedule.key} {...actions.deleteSchedule} />,
+      <MenuItem key={'publish-now'} {...actions.publishNow} />,
+      <MenuItem key={'edit-schedule'} {...actions.editSchedule} />,
+      <MenuItem key={'delete-schedule'} {...actions.deleteSchedule} />,
     ]
   }, [releaseGroupMode, actions])
 

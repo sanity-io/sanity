@@ -15,7 +15,7 @@ import {useScheduleDraftOperations} from './useScheduleDraftOperations'
 type ScheduledDraftAction = 'publish-now' | 'edit-schedule' | 'delete-schedule'
 
 export interface UseScheduledDraftMenuActionsOptions {
-  release: ReleaseDocument
+  release: ReleaseDocument | undefined
   documentType?: string
   disabled?: boolean
   onActionComplete?: () => void
@@ -28,7 +28,6 @@ interface ScheduledDraftActionProps {
   tone: ComponentProps<typeof MenuItem>['tone']
   onClick: () => void
   disabled: ComponentProps<typeof MenuItem>['disabled']
-  key: string
 }
 
 export interface UseScheduledDraftMenuActionsReturn {
@@ -53,12 +52,14 @@ export function useScheduledDraftMenuActions(
   const [selectedAction, setSelectedAction] = useState<ScheduledDraftAction | null>(null)
   const [isPerformingOperation, setIsPerformingOperation] = useState(false)
 
-  const {firstDocumentPreview} = useScheduledDraftDocument(release._id, {
+  const {firstDocumentPreview} = useScheduledDraftDocument(release?._id, {
     includePreview: true,
   })
 
   const handleReschedule = useCallback(
     async (newPublishAt: Date) => {
+      if (!release?._id) return
+
       setIsPerformingOperation(true)
       try {
         await operations.rescheduleScheduledDraft(release._id, newPublishAt)
@@ -84,7 +85,7 @@ export function useScheduledDraftMenuActions(
         setSelectedAction(null)
       }
     },
-    [release._id, operations, toast, t, firstDocumentPreview?.title, onActionComplete],
+    [release?._id, operations, onActionComplete, toast, t, firstDocumentPreview?.title],
   )
 
   const handleMenuItemClick = useCallback(
@@ -109,7 +110,6 @@ export function useScheduledDraftMenuActions(
         'onClick': () => handleMenuItemClick('publish-now'),
         'disabled': baseDisabled,
         'data-testid': 'publish-now-menu-item',
-        'key': 'publish-now',
       },
       editSchedule: {
         'icon': CalendarIcon,
@@ -118,7 +118,6 @@ export function useScheduledDraftMenuActions(
         'onClick': onEditSchedule || (() => handleMenuItemClick('edit-schedule')),
         'disabled': baseDisabled,
         'data-testid': 'edit-schedule-menu-item',
-        'key': 'edit-schedule',
       },
       deleteSchedule: {
         'icon': TrashIcon,
@@ -127,13 +126,12 @@ export function useScheduledDraftMenuActions(
         'onClick': () => handleMenuItemClick('delete-schedule'),
         'disabled': baseDisabled,
         'data-testid': 'delete-schedule-menu-item',
-        'key': 'delete-schedule',
       },
     }
   }, [t, handleMenuItemClick, disabled, isPerformingOperation, onEditSchedule])
 
   const dialogs = useMemo(() => {
-    if (!selectedAction) return null
+    if (!selectedAction || !release) return null
 
     switch (selectedAction) {
       case 'publish-now':
