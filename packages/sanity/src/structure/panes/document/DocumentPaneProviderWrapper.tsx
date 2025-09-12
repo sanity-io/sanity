@@ -1,8 +1,9 @@
 import {memo} from 'react'
-import {useSource} from 'sanity'
+import {getPublishedId, useSource} from 'sanity'
 
 import {DocumentEventsPane} from './DocumentEventsPane'
 import {DocumentPaneWithLegacyTimelineStore} from './DocumentPaneLegacyTimeline'
+import {DocumentPerspectiveProvider} from './DocumentPerspectiveProvider'
 import {type DocumentPaneProviderProps} from './types'
 
 /**
@@ -10,9 +11,16 @@ import {type DocumentPaneProviderProps} from './types'
  */
 export const DocumentPaneProviderWrapper = memo((props: DocumentPaneProviderProps) => {
   const source = useSource()
-  if (source.beta?.eventsAPI?.documents) {
-    return <DocumentEventsPane {...props} />
-  }
-  return <DocumentPaneWithLegacyTimelineStore {...props} />
+  const documentId = getPublishedId(props.itemId)
+
+  return (
+    <DocumentPerspectiveProvider documentId={documentId}>
+      {source.beta?.eventsAPI?.documents ? (
+        <DocumentEventsPane {...props} />
+      ) : (
+        <DocumentPaneWithLegacyTimelineStore {...props} />
+      )}
+    </DocumentPerspectiveProvider>
+  )
 })
 DocumentPaneProviderWrapper.displayName = 'Memo(DocumentPaneProviderWrapper)'

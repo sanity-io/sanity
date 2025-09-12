@@ -109,6 +109,7 @@ export const DocumentPaneProvider = memo((props: DocumentPaneProviderProps) => {
     if (forcedVersion) {
       return forcedVersion
     }
+
     return {
       selectedPerspectiveName: perspective.selectedPerspectiveName,
       selectedReleaseId: perspective.selectedReleaseId,
