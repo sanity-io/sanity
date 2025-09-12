@@ -2,42 +2,44 @@ import {type ReleaseDocument} from '@sanity/client'
 import {renderHook} from '@testing-library/react'
 import {beforeEach, describe, expect, it, vi} from 'vitest'
 
+import {activeASAPRelease, activeScheduledRelease} from '../../__fixtures__/release.fixture'
 import {useHasCardinalityOneReleaseVersions} from '../useHasCardinalityOneReleaseVersions'
 
-// Mock the dependencies
-vi.mock('../useDocumentVersions', () => ({
-  useDocumentVersions: vi.fn(),
-}))
+vi.mock('../useDocumentVersions')
+vi.mock('../../store/useActiveReleases')
+vi.mock('../../../util/draftUtils')
+vi.mock('../../../util/releaseUtils')
+vi.mock('../../util/getReleaseIdFromReleaseDocumentId')
 
-vi.mock('../../store/useActiveReleases', () => ({
-  useActiveReleases: vi.fn(),
-}))
-
-vi.mock('../../../util/draftUtils', () => ({
-  getVersionFromId: vi.fn(),
-}))
-
-vi.mock('../../../util/releaseUtils', () => ({
-  isCardinalityOneRelease: vi.fn(),
-}))
-
-vi.mock('../../util/getReleaseIdFromReleaseDocumentId', () => ({
-  getReleaseIdFromReleaseDocumentId: vi.fn(),
-}))
-
-const mockUseDocumentVersions = vi.mocked(
-  await import('../useDocumentVersions'),
-).useDocumentVersions
-const mockUseActiveReleases = vi.mocked(
-  await import('../../store/useActiveReleases'),
-).useActiveReleases
-const mockGetVersionFromId = vi.mocked(await import('../../../util/draftUtils')).getVersionFromId
-const mockIsCardinalityOneRelease = vi.mocked(
-  await import('../../../util/releaseUtils'),
-).isCardinalityOneRelease
-const mockGetReleaseIdFromReleaseDocumentId = vi.mocked(
+const {useDocumentVersions} = vi.mocked(await import('../useDocumentVersions'))
+const {useActiveReleases} = vi.mocked(await import('../../store/useActiveReleases'))
+const {getVersionFromId} = vi.mocked(await import('../../../util/draftUtils'))
+const {isCardinalityOneRelease} = vi.mocked(await import('../../../util/releaseUtils'))
+const {getReleaseIdFromReleaseDocumentId} = vi.mocked(
   await import('../../util/getReleaseIdFromReleaseDocumentId'),
-).getReleaseIdFromReleaseDocumentId
+)
+
+const cardinalityOneRelease: ReleaseDocument = {
+  ...activeScheduledRelease,
+  _id: '_.releases.scheduled-draft',
+  name: 'scheduled-draft',
+  metadata: {
+    ...activeScheduledRelease.metadata,
+    title: 'Scheduled Draft',
+    cardinality: 'one',
+  },
+}
+
+const mockActiveReleasesReturn = {
+  loading: false,
+  error: undefined,
+  dispatch: vi.fn(),
+}
+
+const mockDocumentVersionsReturn = {
+  loading: false,
+  error: null,
+}
 
 describe('useHasCardinalityOneReleaseVersions', () => {
   const mockDocumentId = 'test-document'
@@ -47,15 +49,13 @@ describe('useHasCardinalityOneReleaseVersions', () => {
   })
 
   it('should return false when no releases or document versions are available', () => {
-    mockUseActiveReleases.mockReturnValue({
+    useActiveReleases.mockReturnValue({
+      ...mockActiveReleasesReturn,
       data: [],
-      loading: false,
-      error: undefined,
-      dispatch: vi.fn(),
     })
-    mockUseDocumentVersions.mockReturnValue({
+    useDocumentVersions.mockReturnValue({
+      ...mockDocumentVersionsReturn,
       data: [],
-      loading: false,
     })
 
     const {result} = renderHook(() => useHasCardinalityOneReleaseVersions(mockDocumentId))
@@ -64,34 +64,17 @@ describe('useHasCardinalityOneReleaseVersions', () => {
   })
 
   it('should return false when document has no versions in cardinality one releases', () => {
-    const mockRelease: ReleaseDocument = {
-      _id: '_.releases.test-release',
-      _type: 'release',
-      _createdAt: '2023-01-01T00:00:00Z',
-      _updatedAt: '2023-01-01T00:00:00Z',
-      _rev: '1',
-      state: 'active',
-      metadata: {
-        title: 'Test Release',
-        description: '',
-        releaseType: 'scheduled',
-        cardinality: 'many', // Not cardinality one
-      },
-    }
-
-    mockUseActiveReleases.mockReturnValue({
-      data: [mockRelease],
-      loading: false,
-      error: undefined,
-      dispatch: vi.fn(),
+    useActiveReleases.mockReturnValue({
+      ...mockActiveReleasesReturn,
+      data: [activeASAPRelease], // This has cardinality 'many'
     })
-    mockUseDocumentVersions.mockReturnValue({
-      data: ['versions.test-release.test-document'],
-      loading: false,
+    useDocumentVersions.mockReturnValue({
+      ...mockDocumentVersionsReturn,
+      data: ['versions.rASAP.test-document'],
     })
-    mockGetVersionFromId.mockReturnValue('test-release')
-    mockGetReleaseIdFromReleaseDocumentId.mockReturnValue('test-release')
-    mockIsCardinalityOneRelease.mockReturnValue(false)
+    getVersionFromId.mockReturnValue('rASAP')
+    getReleaseIdFromReleaseDocumentId.mockReturnValue('rASAP')
+    isCardinalityOneRelease.mockReturnValue(false)
 
     const {result} = renderHook(() => useHasCardinalityOneReleaseVersions(mockDocumentId))
 
@@ -99,34 +82,17 @@ describe('useHasCardinalityOneReleaseVersions', () => {
   })
 
   it('should return true when document has versions in cardinality one releases', () => {
-    const mockRelease: ReleaseDocument = {
-      _id: '_.releases.scheduled-draft',
-      _type: 'release',
-      _createdAt: '2023-01-01T00:00:00Z',
-      _updatedAt: '2023-01-01T00:00:00Z',
-      _rev: '1',
-      state: 'active',
-      metadata: {
-        title: 'Scheduled Draft',
-        description: '',
-        releaseType: 'scheduled',
-        cardinality: 'one', // Cardinality one release
-      },
-    }
-
-    mockUseActiveReleases.mockReturnValue({
-      data: [mockRelease],
-      loading: false,
-      error: undefined,
-      dispatch: vi.fn(),
+    useActiveReleases.mockReturnValue({
+      ...mockActiveReleasesReturn,
+      data: [cardinalityOneRelease],
     })
-    mockUseDocumentVersions.mockReturnValue({
+    useDocumentVersions.mockReturnValue({
+      ...mockDocumentVersionsReturn,
       data: ['versions.scheduled-draft.test-document'],
-      loading: false,
     })
-    mockGetVersionFromId.mockReturnValue('scheduled-draft')
-    mockGetReleaseIdFromReleaseDocumentId.mockReturnValue('scheduled-draft')
-    mockIsCardinalityOneRelease.mockReturnValue(true)
+    getVersionFromId.mockReturnValue('scheduled-draft')
+    getReleaseIdFromReleaseDocumentId.mockReturnValue('scheduled-draft')
+    isCardinalityOneRelease.mockReturnValue(true)
 
     const {result} = renderHook(() => useHasCardinalityOneReleaseVersions(mockDocumentId))
 
@@ -134,46 +100,29 @@ describe('useHasCardinalityOneReleaseVersions', () => {
   })
 
   it('should filter out non-version documents correctly', () => {
-    const mockRelease: ReleaseDocument = {
-      _id: '_.releases.test-release',
-      _type: 'release',
-      _createdAt: '2023-01-01T00:00:00Z',
-      _updatedAt: '2023-01-01T00:00:00Z',
-      _rev: '1',
-      state: 'active',
-      metadata: {
-        title: 'Test Release',
-        description: '',
-        releaseType: 'scheduled',
-        cardinality: 'one',
-      },
-    }
-
-    mockUseActiveReleases.mockReturnValue({
-      data: [mockRelease],
-      loading: false,
-      error: undefined,
-      dispatch: vi.fn(),
+    useActiveReleases.mockReturnValue({
+      ...mockActiveReleasesReturn,
+      data: [cardinalityOneRelease],
     })
-    mockUseDocumentVersions.mockReturnValue({
-      data: ['versions.test-release.test-document', 'drafts.test-document', 'test-document'],
-      loading: false,
+    useDocumentVersions.mockReturnValue({
+      ...mockDocumentVersionsReturn,
+      data: ['versions.scheduled-draft.test-document', 'drafts.test-document', 'test-document'],
     })
 
     // Mock getVersionFromId to return release ID only for version documents
-    mockGetVersionFromId.mockImplementation((id: string) => {
+    getVersionFromId.mockImplementation((id: string) => {
       if (id.startsWith('versions.')) {
-        return 'test-release'
+        return 'scheduled-draft'
       }
       return undefined
     })
 
-    mockGetReleaseIdFromReleaseDocumentId.mockReturnValue('test-release')
-    mockIsCardinalityOneRelease.mockReturnValue(true)
+    getReleaseIdFromReleaseDocumentId.mockReturnValue('scheduled-draft')
+    isCardinalityOneRelease.mockReturnValue(true)
 
     const {result} = renderHook(() => useHasCardinalityOneReleaseVersions(mockDocumentId))
 
     expect(result.current).toBe(true)
-    expect(mockGetVersionFromId).toHaveBeenCalledTimes(3)
+    expect(getVersionFromId).toHaveBeenCalledTimes(3)
   })
 })
