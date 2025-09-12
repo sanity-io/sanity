@@ -93,7 +93,7 @@ export const DocumentPaneProvider = memo((props: DocumentPaneProviderProps) => {
   const params = useUnique(paneRouter.params) || EMPTY_PARAMS
   const {buildStudioUrl} = useStudioUrl()
 
-  const perspectiveFromHook = usePerspective()
+  const perspective = usePerspective()
 
   const {
     document: {
@@ -116,14 +116,10 @@ export const DocumentPaneProvider = memo((props: DocumentPaneProviderProps) => {
 
     // Use perspective from context (will be document-aware when wrapped in DocumentPerspectiveProvider)
     return {
-      selectedPerspectiveName: perspectiveFromHook.selectedPerspectiveName,
-      selectedReleaseId: perspectiveFromHook.selectedReleaseId,
+      selectedPerspectiveName: perspective.selectedPerspectiveName,
+      selectedReleaseId: perspective.selectedReleaseId,
     }
-  }, [
-    forcedVersion,
-    perspectiveFromHook.selectedPerspectiveName,
-    perspectiveFromHook.selectedReleaseId,
-  ])
+  }, [forcedVersion, perspective.selectedPerspectiveName, perspective.selectedReleaseId])
 
   const diffViewRouter = useDiffViewRouter()
 
@@ -191,7 +187,7 @@ export const DocumentPaneProvider = memo((props: DocumentPaneProviderProps) => {
         isDeleting ||
         isDeleted ||
         !isPerspectiveWriteable({
-          selectedPerspective: perspectiveFromHook.selectedPerspective,
+          selectedPerspective: perspective.selectedPerspective,
           isDraftModelEnabled,
           schemaType,
         }).result
@@ -202,7 +198,7 @@ export const DocumentPaneProvider = memo((props: DocumentPaneProviderProps) => {
       isDeleting,
       isDraftModelEnabled,
       params.rev,
-      perspectiveFromHook.selectedPerspective,
+      perspective.selectedPerspective,
       schemaType,
     ],
   )
@@ -457,7 +453,7 @@ export const DocumentPaneProvider = memo((props: DocumentPaneProviderProps) => {
     return displayed
   }, [editState.version, editState.published, displayed])
 
-  const documentPaneContextValue = useMemo(
+  const documentPane: DocumentPaneContextValue = useMemo(
     () =>
       ({
         actions,
@@ -513,7 +509,6 @@ export const DocumentPaneProvider = memo((props: DocumentPaneProviderProps) => {
         title,
         value,
         selectedReleaseId,
-        selectedPerspectiveName,
         views,
         formState,
         unstable_languageFilter: languageFilter,
@@ -575,7 +570,6 @@ export const DocumentPaneProvider = memo((props: DocumentPaneProviderProps) => {
       title,
       value,
       selectedReleaseId,
-      selectedPerspectiveName,
       views,
       formState,
       languageFilter,
@@ -606,9 +600,7 @@ export const DocumentPaneProvider = memo((props: DocumentPaneProviderProps) => {
   }, [formStateRef, onProgrammaticFocus, paneRouter, params, ready])
 
   return (
-    <DocumentPaneContext.Provider value={documentPaneContextValue}>
-      {children}
-    </DocumentPaneContext.Provider>
+    <DocumentPaneContext.Provider value={documentPane}>{children}</DocumentPaneContext.Provider>
   )
 })
 

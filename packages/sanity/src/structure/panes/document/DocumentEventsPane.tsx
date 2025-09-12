@@ -31,9 +31,7 @@ export const DocumentEventsPane = (props: DocumentPaneProviderProps) => {
   const schemaType = schema.get(options.type) as ObjectSchemaType | undefined
   const liveEdit = Boolean(schemaType?.liveEdit)
 
-  // Get perspective (will be document-aware when wrapped in DocumentPerspectiveProvider)
-  const {selectedPerspective, selectedReleaseId} = usePerspective()
-
+  const {selectedPerspectiveName, selectedReleaseId, selectedPerspective} = usePerspective()
   const {data: archivedReleases} = useArchivedReleases()
   const editState = useEditState(
     getPublishedId(options.id),
@@ -59,20 +57,20 @@ export const DocumentEventsPane = (props: DocumentPaneProviderProps) => {
       // Check if we have a release that matches with this historyVersion
       return getVersionId(options.id, historyVersion)
     }
-    if (typeof selectedPerspective === 'undefined') {
+    if (typeof selectedPerspectiveName === 'undefined') {
       return getDraftId(options.id)
     }
-    if (selectedPerspective === 'published') {
+    if (selectedPerspectiveName === 'published') {
       return getPublishedId(options.id)
     }
     if (selectedReleaseId) {
-      return getVersionId(options.id, selectedReleaseId)
+      return getVersionId(options.id, selectedPerspectiveName)
     }
     return options.id
   }, [
     archivedReleases,
     historyVersion,
-    selectedPerspective,
+    selectedPerspectiveName,
     options.id,
     showingPublishedOnDraft,
     selectedReleaseId,

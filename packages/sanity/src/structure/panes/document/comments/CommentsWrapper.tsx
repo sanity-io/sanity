@@ -4,6 +4,7 @@ import {
   CommentsEnabledProvider,
   CommentsProvider,
   useCommentsEnabled,
+  usePerspective,
   useStudioUrl,
 } from 'sanity'
 import {useRouter} from 'sanity/router'
@@ -38,8 +39,8 @@ function CommentsProviderWrapper(props: CommentsWrapperProps) {
   const {children, documentId, documentType} = props
 
   const {enabled} = useCommentsEnabled()
-  const {connectionState, onPathOpen, inspector, openInspector, selectedReleaseId} =
-    useDocumentPane()
+  const {connectionState, onPathOpen, inspector, openInspector} = useDocumentPane()
+  const {selectedReleaseId} = usePerspective()
   const {params, setParams} = usePaneRouter()
   const {studioUrl} = useStudioUrl(window.location.origin)
   const {resolveIntentLink} = useRouter()

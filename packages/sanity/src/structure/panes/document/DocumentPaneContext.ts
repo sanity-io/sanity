@@ -91,11 +91,6 @@ export interface DocumentPaneContextValue {
    * @deprecated use `usePerspective()` instead
    */
   selectedReleaseId: ReleaseId | undefined
-  /**
-   * Document-level selected perspective name (handles cardinality one releases)
-   * @internal
-   */
-  selectedPerspectiveName: 'published' | ReleaseId | undefined
   permissions?: PermissionCheckResult | null
   isDeleting: boolean
   isDeleted: boolean
