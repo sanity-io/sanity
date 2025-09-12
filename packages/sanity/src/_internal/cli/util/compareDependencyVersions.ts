@@ -83,7 +83,7 @@ export async function compareDependencyVersions(
 
     if (!semver.eq(resolvedVersion, installed.version)) {
       failedDependencies.push({
-        pkg: pkg.name,
+        pkgInfo: pkg.name,
         installed: installed.version,
         remote: resolvedVersion,
       })

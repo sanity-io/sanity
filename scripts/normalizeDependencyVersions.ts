@@ -1,4 +1,3 @@
-/* eslint-disable no-sync, no-console, id-length */
 import fs from 'node:fs'
 import path, {dirname} from 'node:path'
 import {fileURLToPath} from 'node:url'
@@ -50,7 +49,7 @@ const pkgs = patterns
   .concat([
     {
       file: path.join(rootPath, 'package.json'),
-      pkg: corePkg,
+      pkgInfo: corePkg,
     },
   ])
   .map(({file, pkg}) => ({
@@ -147,7 +146,6 @@ fixablePackages.forEach((pkg) => {
 
   let manifest: {dependencies: Record<string, string>; devDependencies: Record<string, string>}
   try {
-    // eslint-disable-next-line import/no-dynamic-require
     manifest = require(manifestPath)
   } catch (err) {
     return

@@ -1,14 +1,13 @@
-/* eslint-disable no-sync */
 import fs from 'node:fs'
 
-import {type PackageManifest} from '../types'
-import readPackages from './readPackages'
+import {readPackages} from './readPackages'
+import {type PackageJSON} from './types'
 
 /**
  * @internal
  */
-export default function transformPkgs(
-  mapFn: (pkg: PackageManifest, options: {relativeDir: string}) => PackageManifest,
+export function transformPkgs(
+  mapFn: (pkg: PackageJSON, options: {relativeDir: string}) => PackageJSON,
 ): void {
   readPackages().forEach((pkg) => {
     const {manifest, relativeDir} = pkg

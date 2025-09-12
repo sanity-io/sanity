@@ -1,7 +1,14 @@
 import fs from 'node:fs'
 import path from 'node:path'
 
-import {readEnv, sanityIdify, startTimer} from '@repo/utils'
+import {
+  type PackageInfo,
+  type PackageJSON,
+  readEnv,
+  readPackages,
+  sanityIdify,
+  startTimer,
+} from '@repo/utils'
 import {
   at,
   createIfNotExists,
@@ -15,15 +22,13 @@ import {
 import {filter, map, mergeMap, of, tap} from 'rxjs'
 import ts, {type JSDoc, type JSDocComment, SyntaxKind} from 'typescript'
 
-import {type PackageManifest} from '../types'
-import readPackages from '../utils/readPackages'
 import {createDocClient, type KnownEnvVar} from './docClient'
 
 const ALLOWED_TAGS = ['public', 'alpha', 'beta', 'internal', 'experimental', 'deprecated']
 interface Package {
   path: string
   dirname: string
-  manifest: PackageManifest
+  package: PackageJSON
 }
 function getTags(node: ts.Node) {
   const tags = ts.getJSDocTags(node).map((tag) => tag.tagName.getText())
@@ -33,7 +38,6 @@ function getTags(node: ts.Node) {
 type SyntaxType = 'function' | 'class' | 'interface' | 'variable' | 'typeAlias' | 'enum' | 'module'
 
 function getComment(comment: string | ts.NodeArray<JSDocComment>) {
-  // eslint-disable-next-line no-nested-ternary
   return typeof comment === 'string' ? [comment] : comment.flatMap((c) => c.text)
 }
 
@@ -129,7 +133,7 @@ function getExportedSymbols(exp: ResolvedExport): ExportedSymbol[] {
 }
 
 function getResolvedExports(pkg: Package): ResolvedExport[] {
-  const manifest = pkg.manifest
+  const manifest = pkg.package
   return Object.entries(manifest.exports || {}).flatMap(([exportName, exportDefinition]) => {
     return exportDefinition.types
       ? {
@@ -142,7 +146,7 @@ function getResolvedExports(pkg: Package): ResolvedExport[] {
   })
 }
 
-function getPackageMutations(pkg: Package): Mutation[] {
+function getPackageMutations(pkg: PackageInfo): Mutation[] {
   const exports = getResolvedExports(pkg)
   return exports.flatMap((exp) => {
     const exportsDocId = `package-exports-${sanityIdify(exp.normalized)}`
@@ -155,7 +159,7 @@ function getPackageMutations(pkg: Package): Mutation[] {
       patch(exportsDocId, [
         at('name', set(exp.exportName)),
         at('normalized', set(exp.normalized)),
-        at('package', set(pkg.manifest.name)),
+        at('package', set(pkg.package.name)),
       ]),
       ...symbols.flatMap((symbol) => {
         const symbolDocumentId = `symbol-${sanityIdify(symbol.name)}`
@@ -175,8 +179,8 @@ function getPackageMutations(pkg: Package): Mutation[] {
               upsert(
                 [
                   {
-                    _key: pkg.manifest.version,
-                    version: pkg.manifest.version,
+                    _key: pkg.package.version,
+                    version: pkg.package.version,
                     type: symbol.type,
                     comment: symbol.comment,
                     tags: symbol.tags,
@@ -212,12 +216,12 @@ studioMetricsClient.datasets.list().then(async (datasets) => {
     .pipe(
       tap((packages) => console.log(`Updating docs for ${packages.length} packages`)),
       mergeMap((packages) => packages),
-      map((pkg) => {
-        return {pkg, mutations: getPackageMutations(pkg)}
+      map((pkgInfo) => {
+        return {pkgInfo, mutations: getPackageMutations(pkgInfo)}
       }),
       filter(({mutations}) => mutations.length > 0),
-      mergeMap(({pkg, mutations}) => {
-        console.log(`Submitting ${mutations.length} mutations for ${pkg.manifest.name}`)
+      mergeMap(({pkgInfo, mutations}) => {
+        console.log(`Submitting ${mutations.length} mutations for ${pkgInfo.package.name}`)
         return studioMetricsClient.observable
           .transaction(SanityEncoder.encodeAll(mutations))
           .commit()

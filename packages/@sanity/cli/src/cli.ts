@@ -53,7 +53,11 @@ export async function runCli(cliRoot: string, {cliPkg}: {cliPkg: PackageJson}): 
   }
 
   // Check if there are updates available for the CLI, and notify if there is
-  await runUpdateCheck({pkg: {name: cliPkg.name, version: cliPkg.version}, cwd, workDir}).notify()
+  await runUpdateCheck({
+    pkgInfo: {name: cliPkg.name, version: cliPkg.version},
+    cwd,
+    workDir,
+  }).notify()
 
   // If the telemetry disclosure message has not yet been shown, show it.
   telemetryDisclosure()

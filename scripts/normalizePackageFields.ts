@@ -1,12 +1,12 @@
+import {transformPkgs} from '@repo/utils'
 import {uniq} from 'lodash-es'
 
-import {type PackageManifest} from './types'
-import transformPkgs from './utils/transformPkgs'
+import {type PackageJSON} from '../packages/@repo/utils/src/types'
 
 const COMMON_KEYWORDS = ['sanity', 'cms', 'headless', 'realtime', 'content']
 const supportedNodeVersionRange = '>=14.18.0'
 
-transformPkgs((pkgManifest: PackageManifest, {relativeDir}) => {
+transformPkgs((pkgManifest: PackageJSON, {relativeDir}) => {
   const name = pkgManifest.name.split('/').slice(-1)[0]
 
   const engines = pkgManifest.engines

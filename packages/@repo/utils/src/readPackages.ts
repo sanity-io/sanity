@@ -1,14 +1,13 @@
-/* eslint-disable no-sync */
 import fs from 'node:fs'
 import path from 'node:path'
 import {fileURLToPath} from 'node:url'
 
-import {type Package} from '../types'
 import {getManifestPaths} from './getPackagePaths'
+import {type PackageInfo} from './types'
 
 const rootPath = path.join(path.dirname(fileURLToPath(import.meta.url)), '..', '..')
 
-export default function readPackages(): Package[] {
+export function readPackages(): PackageInfo[] {
   return getManifestPaths().map((file) => {
     const filePath = path.join(rootPath, file)
     const dirname = path.join(rootPath, path.dirname(file))
@@ -16,7 +15,7 @@ export default function readPackages(): Package[] {
       path: filePath,
       dirname: dirname,
       relativeDir: path.relative(rootPath, dirname),
-      manifest: JSON.parse(fs.readFileSync(filePath, 'utf8')),
+      package: JSON.parse(fs.readFileSync(filePath, 'utf8')),
     }
   })
 }
