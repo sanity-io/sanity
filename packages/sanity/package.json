@@ -152,7 +152,7 @@
     "@juggle/resize-observer": "^3.4.0",
     "@mux/mux-player-react": "^3.6.0",
     "@portabletext/block-tools": "^3.5.4",
-    "@portabletext/editor": "^2.9.0",
+    "@portabletext/editor": "^2.9.1",
     "@portabletext/react": "^4.0.3",
     "@portabletext/toolkit": "^3.0.1",
     "@rexxars/react-json-inspector": "^9.0.1",
