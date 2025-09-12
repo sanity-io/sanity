@@ -128,9 +128,8 @@ export async function getViteConfig(options: ViteOptions): Promise<InlineConfig>
     configFile: false,
     mode,
     plugins: [
-      viteReact(
-        reactCompiler ? {babel: {plugins: [['babel-plugin-react-compiler', reactCompiler]]}} : {},
-      ),
+      viteReact(),
+      // reactCompiler ? {babel: {plugins: [['babel-plugin-react-compiler', reactCompiler]]}} : {},
       sanityFaviconsPlugin({defaultFaviconsPath, customFaviconsPath, staticUrlPath: staticPath}),
       sanityRuntimeRewritePlugin(),
       sanityBuildEntries({basePath, cwd, monorepo, importMap, isApp}),

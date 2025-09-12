@@ -57,6 +57,6 @@ export default defineConfig({
     },
   },
 
-  babel: {reactCompiler: true},
+  babel: {reactCompiler: false},
   reactCompilerOptions: {target: '18'},
 })
