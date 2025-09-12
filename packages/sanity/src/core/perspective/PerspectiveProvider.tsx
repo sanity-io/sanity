@@ -1,10 +1,11 @@
 import {type ReleaseDocument} from '@sanity/client'
-import {useMemo} from 'react'
+import {type ComponentProps, useMemo} from 'react'
 import {PerspectiveContext} from 'sanity/_singletons'
 
 import {getReleasesPerspectiveStack} from '../releases/hooks/utils'
 import {useActiveReleases} from '../releases/store/useActiveReleases'
 import {getReleaseIdFromReleaseDocumentId} from '../releases/util/getReleaseIdFromReleaseDocumentId'
+import {isPublishedPerspective} from '../releases/util/util'
 import {useWorkspace} from '../studio/workspace'
 import {isSystemBundleName} from '../util/draftUtils'
 import {EMPTY_ARRAY} from '../util/empty'
@@ -12,14 +13,11 @@ import {isCardinalityOneRelease} from '../util/releaseUtils'
 import {getSelectedPerspective} from './getSelectedPerspective'
 import {type PerspectiveContextValue, type ReleaseId, type TargetPerspective} from './types'
 
-/**
- * Find cardinality one release by perspective name
- */
-function findCardinalityOneRelease(
-  perspectiveName: string | undefined,
+function findCardinalityOneReleaseFromPerspective(
+  perspectiveName: ComponentProps<typeof PerspectiveProvider>['selectedPerspectiveName'],
   releases: ReleaseDocument[],
 ) {
-  if (!perspectiveName || perspectiveName === 'published') return null
+  if (!perspectiveName || isPublishedPerspective(perspectiveName)) return null
 
   const release = releases.find((r) => getReleaseIdFromReleaseDocumentId(r._id) === perspectiveName)
 
@@ -64,7 +62,10 @@ export function PerspectiveProvider({
 
   const value: PerspectiveContextValue = useMemo(() => {
     // Check if we're dealing with a cardinality one release
-    const cardinalityOneRelease = findCardinalityOneRelease(selectedPerspectiveName, releases)
+    const cardinalityOneRelease = findCardinalityOneReleaseFromPerspective(
+      selectedPerspectiveName,
+      releases,
+    )
 
     if (cardinalityOneRelease) {
       // Map cardinality one releases to drafts for UI consistency

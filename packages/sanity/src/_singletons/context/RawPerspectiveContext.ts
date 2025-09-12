@@ -1,6 +1,6 @@
 import {createContext} from 'sanity/_createContext'
 
-import type {PerspectiveContextValue} from '../../core/perspective/types'
+import type {RawPerspectiveContextValue} from '../../core/perspective/types'
 
 /**
  * @internal
@@ -8,7 +8,7 @@ import type {PerspectiveContextValue} from '../../core/perspective/types'
  * This is used internally by DocumentPerspectiveProvider to access
  * the original perspective values before cardinality one mapping.
  */
-export const RawPerspectiveContext = createContext<PerspectiveContextValue | null>(
+export const RawPerspectiveContext = createContext<RawPerspectiveContextValue | null>(
   'sanity/_singletons/context/RawPerspectiveContext',
   null,
 )

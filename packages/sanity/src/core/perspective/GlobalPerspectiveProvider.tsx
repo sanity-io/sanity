@@ -16,7 +16,7 @@ import {isSystemBundleName} from '../util/draftUtils'
 import {EMPTY_ARRAY} from '../util/empty'
 import {getSelectedPerspective} from './getSelectedPerspective'
 import {PerspectiveProvider} from './PerspectiveProvider'
-import {type PerspectiveContextValue, type ReleaseId, type TargetPerspective} from './types'
+import {type RawPerspectiveContextValue, type ReleaseId, type TargetPerspective} from './types'
 import {usePerspective} from './usePerspective'
 import {useSetPerspective} from './useSetPerspective'
 
@@ -133,17 +133,15 @@ export function GlobalPerspectiveProvider({children}: {children: ReactNode}) {
     [selectedPerspectiveName, releases],
   )
 
-  const rawValue: PerspectiveContextValue = useMemo(
+  const rawValue: RawPerspectiveContextValue = useMemo(
     () => ({
       selectedPerspective,
       selectedPerspectiveName,
       selectedReleaseId: isSystemBundleName(selectedPerspectiveName)
         ? undefined
         : selectedPerspectiveName,
-      perspectiveStack: [], // Will be calculated in PerspectiveProvider
-      excludedPerspectives,
     }),
-    [selectedPerspective, selectedPerspectiveName, excludedPerspectives],
+    [selectedPerspective, selectedPerspectiveName],
   )
 
   return (
