@@ -113,6 +113,9 @@ importers:
       '@repo/package.config':
         specifier: workspace:*
         version: link:packages/@repo/package.config
+      '@repo/release-notes':
+        specifier: workspace:*
+        version: link:packages/@repo/release-notes
       '@repo/test-config':
         specifier: workspace:*
         version: link:packages/@repo/test-config
@@ -894,6 +897,97 @@ importers:
       eslint:
         specifier: 'catalog:'
         version: 9.39.2(jiti@2.6.1)
+
+  packages/@repo/release-notes:
+    dependencies:
+      '@conventional-changelog/git-client':
+        specifier: ^2.5.1
+        version: 2.5.1(conventional-commits-filter@5.0.0)(conventional-commits-parser@6.2.1)
+      '@octokit/rest':
+        specifier: ^22.0.0
+        version: 22.0.1
+      '@sanity/client':
+        specifier: 'catalog:'
+        version: 7.14.1(debug@4.4.3)
+      '@sanity/id-utils':
+        specifier: ^1.0.0
+        version: 1.0.0
+      '@sanity/mutate':
+        specifier: ^0.16.1
+        version: 0.16.1(xstate@5.25.1)
+      '@sanity/types':
+        specifier: ^5.0.0
+        version: link:../../@sanity/types
+      '@sanity/util':
+        specifier: workspace:*
+        version: link:../../@sanity/util
+      compare-func:
+        specifier: ^2.0.0
+        version: 2.0.0
+      conventional-changelog:
+        specifier: ^7.1.1
+        version: 7.1.1(conventional-commits-filter@5.0.0)
+      conventional-changelog-conventionalcommits:
+        specifier: ^9.1.0
+        version: 9.1.0
+      conventional-changelog-writer:
+        specifier: ^8.2.0
+        version: 8.2.0
+      conventional-commits-parser:
+        specifier: ^6.2.1
+        version: 6.2.1
+      date-fns:
+        specifier: ^4.1.0
+        version: 4.1.0
+      lodash-es:
+        specifier: ^4.17.21
+        version: 4.17.22
+      markdown-it:
+        specifier: ^14.1.0
+        version: 14.1.0
+      p-map:
+        specifier: ^7.0.3
+        version: 7.0.4
+      read-package-up:
+        specifier: ^11.0.0
+        version: 11.0.0
+      semver:
+        specifier: ^7.7.2
+        version: 7.7.3
+      yargs:
+        specifier: ^17.7.2
+        version: 17.7.2
+    devDependencies:
+      '@portabletext/markdown':
+        specifier: ^1.1.2
+        version: 1.1.2
+      '@repo/eslint-config':
+        specifier: workspace:*
+        version: link:../eslint-config
+      '@repo/test-config':
+        specifier: workspace:*
+        version: link:../test-config
+      '@repo/tsconfig':
+        specifier: workspace:*
+        version: link:../tsconfig
+      '@repo/utils':
+        specifier: workspace:*
+        version: link:../utils
+      '@types/compare-func':
+        specifier: ^1.3.3
+        version: 1.3.3
+      '@types/lodash-es':
+        specifier: ^4.17.12
+        version: 4.17.12
+      '@types/markdown-it':
+        specifier: ^14.1.2
+        version: 14.1.2
+      '@types/yargs':
+        specifier: ^17.0.33
+        version: 17.0.35
+      vitest:
+        specifier: ^4.0.16
+        version: 4.0.16(@edge-runtime/vm@3.2.0)(@types/node@24.10.4)(jiti@2.6.1)(jsdom@26.1.0)(lightningcss@1.30.2)(terser@5.44.1)(tsx@4.21.0)(yaml@2.8.2)
 
   packages/@repo/test-config:
     devDependencies:
@@ -5293,6 +5387,15 @@ packages:
     resolution: {integrity: sha512-q91tzqOoGguLm0BSoCCKAbVSQNtQE/agGHWD31v1e2uh3E2fEZ1cPcAUsQVlTXc1nvuP86QX5A8/P6QR9Gpt6g==}
     engines: {node: '>=18'}
 
+  '@sanity/mutate@0.16.1':
+    resolution: {integrity: sha512-400OooNtiafgJEOCzj0E5atuWlaKp1z6LU/LB/xZUVVywNj3WuT52U6qeVOfGlZeWKhYMCdGFX2ZnMbIrME95w==}
+    engines: {node: '>=18'}
+    peerDependencies:
+      xstate: ^5.19.0
+    peerDependenciesMeta:
+      xstate:
+        optional: true
+
   '@sanity/parse-package-json@2.1.2':
     resolution: {integrity: sha512-TOO5NpSWZJM2LoL5Tdri+wACbs6CJu6LvZR964PE4BX4paUZD4YRvHJthykxZk/e8rycH58fpfSop1iFJoPtKw==}
     engines: {node: '>=20.19 <22 || >=22.12'}
@@ -5679,6 +5782,9 @@ packages:
   '@types/codemirror@5.60.17':
     resolution: {integrity: sha512-AZq2FIsUHVMlp7VSe2hTfl5w4pcUkoFkM3zVsRKsn1ca8CXRDYvnin04+HP2REkwsxemuHqvDofdlhUWNpbwfw==}
 
+  '@types/compare-func@1.3.3':
+    resolution: {integrity: sha512-0KAEbThRBChmTU1Y45VfKHxnk/ZMzWhEt+r2+Mvge5bwXD+EV94NFyzQdf8RUZX9HyMlltOxaCm1GWh2bb6SAw==}
+
   '@types/configstore@5.0.1':
     resolution: {integrity: sha512-c/QCznvk7bLKGhHETj29rqKufui3jaAxjBhK4R2zUrMG5UG0qTwfWYxBoUbH8JCyDjdCWMIxPJ7/Fdz1UcAnWg==}
 
@@ -5724,6 +5830,9 @@ packages:
   '@types/json5@0.0.29':
     resolution: {integrity: sha512-dRLjCWHYg4oaA77cxO64oO+7JwCwnIzkZPdrrC71jQmQtlhM556pwKo5bUzqvZndkVbeFLIIi+9TC40JNF5hNQ==}
 
+  '@types/linkify-it@5.0.0':
+    resolution: {integrity: sha512-sVDA58zAw4eWAffKOaQH5/5j3XeayukzDk+ewSsnv3p4yJEZHCCzMDiZM8e0OUrRvmpGZ85jf4yDHkHsgBNr9Q==}
+
   '@types/lodash-es@4.17.12':
     resolution: {integrity: sha512-0NgftHUcV4v34VhXm8QBSftKVXtbkBG3ViCjs6+eJ5a6y6Mi/jiFGPc1sC7QK+9BFhWrURE3EOggmWaSxL9OzQ==}
 
@@ -5733,8 +5842,14 @@ packages:
   '@types/log-symbols@2.0.0':
     resolution: {integrity: sha512-YJhbp0sz3egFFKl3BcCNPQKzuGFOP4PACcsifhK6ROGnJUW9ViYLuLybQ9GQZm7Zejy3tkGuiXYMq3GiyGkU4g==}
 
+  '@types/markdown-it@14.1.2':
+    resolution: {integrity: sha512-promo4eFwuiW+TfGxhi+0x3czqTYJkG8qB17ZUJiVF10Xm7NLVRSLUsfRTU/6h1e24VvRnXCx+hG7li58lkzog==}
+
   '@types/marked@4.3.2':
     resolution: {integrity: sha512-a79Yc3TOk6dGdituy8hmTTJXjOkZ7zsFYV10L337ttq/rec8lRMDBpV7fL3uLx6TgbFCa5DU/h8FmIBQPSbU0w==}
+
+  '@types/mdurl@2.0.0':
+    resolution: {integrity: sha512-RGdgjQUZba5p6QEFAVx2OGb8rQDL/cPRG7GiedRzMcJ1tYnUANBncjbSB1NRGwbvjcPeikRABz2nshyPk1bhWg==}
 
   '@types/minimatch@3.0.5':
     resolution: {integrity: sha512-Klz949h02Gz2uZCMGwDUSDS1YBlTdDDgbWHi+81l29tQALUtvz4rAYi5uoVhE5Lagoq6DeqAUlbrHvW/mXDgdQ==}
@@ -16373,6 +16488,21 @@ snapshots:
     transitivePeerDependencies:
       - debug
 
+  '@sanity/mutate@0.16.1(xstate@5.25.1)':
+    dependencies:
+      '@sanity/client': 7.14.1(debug@4.4.3)
+      '@sanity/diff-match-patch': 3.2.0
+      '@sanity/uuid': 3.0.2
+      hotscript: 1.0.13
+      lodash: 4.17.21
+      mendoza: 3.0.8
+      nanoid: 5.1.6
+      rxjs: 7.8.2
+    optionalDependencies:
+      xstate: 5.25.1
+    transitivePeerDependencies:
+      - debug
+
   '@sanity/parse-package-json@2.1.2':
     dependencies:
       zod: 4.3.5
@@ -17028,6 +17158,8 @@ snapshots:
     dependencies:
       '@types/tern': 0.23.9
 
+  '@types/compare-func@1.3.3': {}
+
   '@types/configstore@5.0.1': {}
 
   '@types/cpx@1.5.6':
@@ -17077,6 +17209,8 @@ snapshots:
 
   '@types/json5@0.0.29': {}
 
+  '@types/linkify-it@5.0.0': {}
+
   '@types/lodash-es@4.17.12':
     dependencies:
       '@types/lodash': 4.17.21
@@ -17085,7 +17219,14 @@ snapshots:
 
   '@types/log-symbols@2.0.0': {}
 
+  '@types/markdown-it@14.1.2':
+    dependencies:
+      '@types/linkify-it': 5.0.0
+      '@types/mdurl': 2.0.0
+
   '@types/marked@4.3.2': {}
+
+  '@types/mdurl@2.0.0': {}
 
   '@types/minimatch@3.0.5': {}
 

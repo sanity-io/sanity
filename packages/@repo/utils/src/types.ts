@@ -12,6 +12,7 @@ export interface PackageJSON {
 export interface PackageInfo {
   path: string
   dirname: string
-  relativeDir: string
+  repoDir: string
+  repoPath: string
   contents: PackageJSON
 }

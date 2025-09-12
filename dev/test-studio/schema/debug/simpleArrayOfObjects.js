@@ -26,5 +26,22 @@ export const simpleArrayOfObjects = {
         },
       ],
     },
+    {
+      name: 'arrayOfObjects',
+      type: 'array',
+      of: [
+        {
+          title: 'item',
+          name: 'item', // <-- this is required
+          type: 'object',
+          fields: [{name: 'title', title: 'Title', type: 'string'}],
+        },
+        {
+          title: 'item2',
+          type: 'object',
+          fields: [{name: 'title', title: 'Title', type: 'string'}],
+        },
+      ],
+    },
   ],
 }

@@ -1,0 +1,7 @@
+{
+  "extends": "@repo/tsconfig/base.json",
+  "compilerOptions": {
+    "rootDir": "src",
+    "lib": ["dom", "es2024"]
+  }
+}

@@ -1,7 +1,7 @@
 export {MONOREPO_ROOT} from './constants'
 export {readEnv} from './envVars'
-export {getPackagePaths} from './getPackagePaths'
 export {loadEnvFiles} from './loadEnvFiles'
+export {getPackageDirectories, getPackageJsonPaths} from './monorepoPackages'
 export {readPackages} from './readPackages'
 export {sanityIdify} from './sanityIdify'
 export {startTimer} from './startTimer'

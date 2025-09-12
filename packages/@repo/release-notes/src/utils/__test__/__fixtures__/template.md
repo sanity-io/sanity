@@ -22,9 +22,8 @@ possible/practical for writing an automated test
 -->
 
 ### Notes for release
-<!--
-Leave this section empty or start "N/A" if you don't want to include release notes with this PR.
 
+<!--
 Engineers do not need to worry about the final copy,
 but they must provide the docs team with enough context on:
 
