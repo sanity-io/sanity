@@ -635,6 +635,7 @@ import type {
   getDocumentValuePermissions,
   getDocumentVariantType,
   getDraftId,
+  getErrorMessage,
   getExpandOperations,
   GetFormValueProvider,
   GetHookCollectionState,
@@ -775,6 +776,7 @@ import type {
   isBooleanInputProps,
   isBooleanSchemaType,
   isBuilder,
+  isCardinalityOneRelease,
   isCookielessCompatibleLoginMethod,
   isCreateDocumentVersionEvent,
   isCreateIfNotExistsMutation,
@@ -3556,6 +3558,9 @@ describe('sanity', () => {
   test('getDraftId', () => {
     expectTypeOf<typeof getDraftId>().toBeFunction()
   })
+  test('getErrorMessage', () => {
+    expectTypeOf<typeof getErrorMessage>().toBeFunction()
+  })
   test('getExpandOperations', () => {
     expectTypeOf<typeof getExpandOperations>().toBeFunction()
   })
@@ -3977,6 +3982,9 @@ describe('sanity', () => {
   })
   test('isBuilder', () => {
     expectTypeOf<typeof isBuilder>().toBeFunction()
+  })
+  test('isCardinalityOneRelease', () => {
+    expectTypeOf<typeof isCardinalityOneRelease>().toBeFunction()
   })
   test('isCookielessCompatibleLoginMethod', () => {
     expectTypeOf<typeof isCookielessCompatibleLoginMethod>().toBeFunction()
