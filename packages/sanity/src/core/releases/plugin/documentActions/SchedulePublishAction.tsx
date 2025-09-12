@@ -1,4 +1,5 @@
 import {CalendarIcon} from '@sanity/icons'
+import {isValidationErrorMarker} from '@sanity/types'
 import {useToast} from '@sanity/ui'
 import {useCallback, useState} from 'react'
 
@@ -7,6 +8,7 @@ import {
   type DocumentActionDescription,
   type DocumentActionProps,
 } from '../../../config/document/actions'
+import {useValidationStatus} from '../../../hooks'
 import {useTranslation} from '../../../i18n'
 import {usePerspective} from '../../../perspective/usePerspective'
 import {useDocumentPreviewValues} from '../../../tasks/hooks/useDocumentPreviewValues'
@@ -33,6 +35,10 @@ export const SchedulePublishAction: DocumentActionComponent = (
     documentType: type,
     perspectiveStack,
   })
+
+  // Check validation status
+  const validationStatus = useValidationStatus(id, type)
+  const hasValidationErrors = validationStatus.validation.some(isValidationErrorMarker)
 
   // Check if document has versions in cardinality one releases
   const hasCardinalityOneReleaseVersions = useHasCardinalityOneReleaseVersions(id)
@@ -88,11 +94,18 @@ export const SchedulePublishAction: DocumentActionComponent = (
     return null
   }
 
+  const disabled = hasCardinalityOneReleaseVersions || hasValidationErrors
+  const title = hasCardinalityOneReleaseVersions
+    ? t('action.schedule-publish.disabled.cardinality-one')
+    : hasValidationErrors
+      ? t('action.schedule-publish.disabled.validation-issues')
+      : t('action.schedule-publish')
+
   return {
     icon: CalendarIcon,
-    disabled: hasCardinalityOneReleaseVersions,
+    disabled,
     label: t('action.schedule-publish'),
-    title: t('action.schedule-publish'),
+    title,
     onHandle: handleOpenDialog,
     dialog: dialogOpen && {
       type: 'custom',
