@@ -63,7 +63,7 @@ describe('useHasCardinalityOneReleaseVersions', () => {
     expect(result.current).toBe(false)
   })
 
-  it('should return false when document has no versions in cardinality one releases', () => {
+  it('should return false when document only has cardinality many releases', () => {
     useActiveReleases.mockReturnValue({
       ...mockActiveReleasesReturn,
       data: [activeASAPRelease], // This has cardinality 'many'

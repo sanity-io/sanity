@@ -7,7 +7,7 @@ import {getReleaseIdFromReleaseDocumentId} from '../util/getReleaseIdFromRelease
 import {useDocumentVersions} from './useDocumentVersions'
 
 /**
- * Checks if a document has any versions in scheduled draft (cardinality one) releases.
+ * Checks if a document has any versions in scheduled draft (`metadata.cardinality: 'one'`) releases.
  *
  * @param documentId - The ID of the document to check
  * @returns boolean - true if the document has versions in any cardinality one releases
@@ -20,7 +20,7 @@ export function useHasCardinalityOneReleaseVersions(documentId: string): boolean
   return useMemo(() => {
     if (!allReleases || !documentVersions) return false
 
-    const documentReleaseIds = documentVersions.map(getVersionFromId)
+    const documentReleaseIds = documentVersions.map(getVersionFromId).filter(Boolean)
 
     return allReleases.some((release) => {
       const releaseId = getReleaseIdFromReleaseDocumentId(release._id)
