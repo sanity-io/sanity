@@ -1,6 +1,6 @@
 import {type VALID_TAGS} from './constants'
 
-export type KnownEnvVar = 'GOOGLE_PROJECT_ID' | 'GCLOUD_SERVICE_KEY' | 'GCLOUD_BUCKET'
+export type KnownEnvVar = 'SANITY_DATASET' | 'SANITY_PROJECT_ID' | 'SANITY_TOKEN'
 
 // eg 3.90.0 (without `v`-prefix)
 export type Semver = string

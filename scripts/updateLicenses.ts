@@ -4,7 +4,7 @@
 import {promises as fs} from 'node:fs'
 import path from 'node:path'
 
-import readPackages from './utils/readPackages'
+import {readPackages} from '@repo/utils'
 
 const readLicense = fs.readFile(path.join(process.cwd(), 'LICENSE'), 'utf-8')
 
