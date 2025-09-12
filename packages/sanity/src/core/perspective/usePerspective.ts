@@ -8,10 +8,8 @@ import {type PerspectiveContextValue} from './types'
  *
  * React hook that returns the current studio perspective and perspective stack.
  *
- * This hook will return the perspective from the nearest PerspectiveContext provider.
- * When used within a DocumentPerspectiveProvider, it will return document-contextual
- * perspective values. Otherwise, it returns the global perspective where cardinality
- * one releases are mapped to "drafts" for UI consistency.
+ * This will use the closest PerspectiveContext provider, which is either the global
+ * PerspectiveContext or the DocumentPerspectiveProvider.
  *
  * @returns See {@link PerspectiveContextValue}
  * @example Reading the current perspective stack
@@ -24,10 +22,8 @@ import {type PerspectiveContextValue} from './types'
  */
 export function usePerspective(): PerspectiveContextValue {
   const context = useContext(PerspectiveContext)
-
   if (!context) {
     throw new Error('usePerspective must be used within a PerspectiveProvider')
   }
-
   return context
 }

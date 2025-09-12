@@ -101,20 +101,12 @@ export const DocumentPaneProvider = memo((props: DocumentPaneProviderProps) => {
     },
   } = useWorkspace()
 
-  // Detect if we're creating a new document
-
-  // Get document-level perspective (handles cardinality one releases)
-  // NOTE: Cardinality one release handling is now done automatically in useDocumentPerspective
-  // No manual reset logic needed here - the document perspective hook handles clearing
-  // cardinality one state when documents don't exist in the selected cardinality one release
-
   const {selectedReleaseId, selectedPerspectiveName} = useMemo(() => {
     // TODO: COREL - Remove this after updating sanity-assist to use <PerspectiveProvider>
     if (forcedVersion) {
       return forcedVersion
     }
 
-    // Use perspective from context (will be document-aware when wrapped in DocumentPerspectiveProvider)
     return {
       selectedPerspectiveName: perspective.selectedPerspectiveName,
       selectedReleaseId: perspective.selectedReleaseId,

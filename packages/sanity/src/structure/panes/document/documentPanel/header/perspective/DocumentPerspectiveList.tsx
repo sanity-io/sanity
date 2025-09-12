@@ -81,16 +81,14 @@ const DATE_TIME_FORMAT: UseDateTimeFormatOptions = {
 
 // eslint-disable-next-line complexity
 export const DocumentPerspectiveList = memo(function DocumentPerspectiveList() {
-  // Use document-level perspective instead of global perspective
-  // This ensures cardinality one releases show as selected in the document header
-  const {editState, displayed, documentType, documentId, selectedReleaseId} = useDocumentPane()
-  const {selectedPerspectiveName} = usePerspective()
+  const {selectedReleaseId, selectedPerspectiveName} = usePerspective()
   const {t} = useTranslation()
   const setPerspective = useSetPerspective()
   const {params, setParams} = usePaneRouter()
   const dateTimeFormat = useDateTimeFormat(DATE_TIME_FORMAT)
   const {loading} = useActiveReleases()
   const schema = useSchema()
+  const {editState, displayed, documentType, documentId} = useDocumentPane()
   const isCreatingDocument = displayed && !displayed._createdAt
   const filteredReleases = useFilteredReleases({displayed, documentId})
   const onlyHasVersions = useOnlyHasVersions({documentId})

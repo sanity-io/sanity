@@ -171,7 +171,7 @@ export const DocumentPanel = function DocumentPanel(props: DocumentPanelProps) {
   }, [isInspectOpen, displayed, value])
 
   const showInspector = Boolean(!collapsed && inspector)
-  const {selectedPerspective, selectedReleaseId, selectedPerspectiveName} = usePerspective()
+  const {selectedPerspective, selectedReleaseId} = usePerspective()
   const filteredReleases = useFilteredReleases({displayed, documentId})
 
   // eslint-disable-next-line complexity
@@ -217,15 +217,7 @@ export const DocumentPanel = function DocumentPanel(props: DocumentPanelProps) {
     }
 
     const hasCardinalityOneReleases = filteredReleases.currentReleases.some(isCardinalityOneRelease)
-    // Show the banner when:
-    // - Global perspective appears as 'drafts' (mapped perspective)
-    // - There are cardinality one releases available for this document
-    // - BUT we're not actually viewing a cardinality one release (check document perspective)
-    if (
-      selectedPerspective === 'drafts' &&
-      hasCardinalityOneReleases &&
-      selectedPerspectiveName === undefined
-    ) {
+    if (selectedPerspective === 'drafts' && hasCardinalityOneReleases) {
       return <ScheduledDraftOverrideBanner />
     }
 
@@ -318,7 +310,6 @@ export const DocumentPanel = function DocumentPanel(props: DocumentPanelProps) {
     schemaType,
     filteredReleases,
     workspace,
-    selectedPerspectiveName,
   ])
   const portalElements = useMemo(
     () => ({documentScrollElement: documentScrollElement}),

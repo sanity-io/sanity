@@ -23,7 +23,7 @@ export function useSetPerspective() {
     (releaseId: 'published' | 'drafts' | ReleaseId | undefined) => {
       // Remove perspective parameter for default states, otherwise use the specific release ID
       const newPerspective =
-        !releaseId || releaseId === 'drafts' || releaseId === defaultPerspective ? null : releaseId
+        !releaseId || releaseId === 'drafts' || releaseId === defaultPerspective ? '' : releaseId
 
       router.navigate({
         stickyParams: {

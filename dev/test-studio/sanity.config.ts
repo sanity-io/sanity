@@ -217,6 +217,13 @@ const sharedSettings = ({projectId}: {projectId: string}) => {
 }
 
 const defaultWorkspace = defineConfig({
+  // name: 'default',
+  // title: 'Test Studio',
+  // projectId: 'd1ls7k8v',
+  // dataset: 'production',
+  // ...envConfig.production,
+  // plugins: [sharedSettings({projectId: 'd1ls7k8v'})],
+
   name: 'default',
   title: 'Test Studio',
   projectId: 'ppsg7ml5',

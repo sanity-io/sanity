@@ -71,24 +71,19 @@ export function getReleasesPerspectiveStack({
     return PUBLISHED
   }
 
-  // CARDINALITY ONE RELEASE HANDLING:
-  // For cardinality one releases, we only want that specific release in the perspective stack,
-  // not the full chronological stack of releases that come before it
   const selectedRelease = releases.find(
     (release) => getReleaseIdFromReleaseDocumentId(release._id) === selectedPerspectiveName,
   )
-
+  // For cardinality one releases, we only want that specific release in the perspective stack,
+  // not the full chronological stack of releases that come before it
   if (selectedRelease && isCardinalityOneRelease(selectedRelease)) {
     // Return the cardinality one release + default perspective (drafts/published)
-    // This ensures we query the cardinality one release and then fall back to drafts/published,
-    // but we don't include other releases that come chronologically before it
+    // cardinality one releases are scheduled drafts, so are considered layers atop default perspective
     return [selectedPerspectiveName]
       .concat(defaultPerspective)
       .filter((name) => !excludedPerspectives.includes(name))
   }
 
-  // REGULAR RELEASE HANDLING:
-  // For regular releases, build the full chronological perspective stack
   const sorted: ClientPerspective = sortReleases(releases).map((release) =>
     getReleaseIdFromReleaseDocumentId(release._id),
   )
