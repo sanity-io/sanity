@@ -4,6 +4,7 @@ import {PerspectiveContext} from 'sanity/_singletons'
 
 import {getReleasesPerspectiveStack} from '../releases/hooks/utils'
 import {useActiveReleases} from '../releases/store/useActiveReleases'
+import {LATEST, PUBLISHED} from '../releases/util/const'
 import {getReleaseIdFromReleaseDocumentId} from '../releases/util/getReleaseIdFromReleaseDocumentId'
 import {isPublishedPerspective} from '../releases/util/util'
 import {useWorkspace} from '../studio/workspace'
@@ -43,6 +44,10 @@ export function PerspectiveProvider({
       drafts: {enabled: isDraftModelEnabled},
     },
   } = useWorkspace()
+  const defaultPerspective = useMemo(
+    () => (isDraftModelEnabled ? LATEST : PUBLISHED),
+    [isDraftModelEnabled],
+  )
 
   const selectedPerspective: TargetPerspective = useMemo(
     () => getSelectedPerspective(selectedPerspectiveName, releases),
@@ -68,11 +73,11 @@ export function PerspectiveProvider({
     )
 
     if (cardinalityOneRelease) {
-      // Map cardinality one releases to drafts for UI consistency
+      // Map cardinality one releases to defaultPerspective (drafts or published in the case of draft model disabled) for UI consistency
       return {
-        selectedPerspective: 'drafts',
-        selectedPerspectiveName: undefined, // drafts
-        selectedReleaseId: undefined, // drafts
+        selectedPerspective: defaultPerspective,
+        selectedPerspectiveName: undefined,
+        selectedReleaseId: undefined,
         perspectiveStack,
         excludedPerspectives,
       }
@@ -89,11 +94,12 @@ export function PerspectiveProvider({
       excludedPerspectives,
     }
   }, [
-    selectedPerspective,
     selectedPerspectiveName,
+    releases,
+    selectedPerspective,
     perspectiveStack,
     excludedPerspectives,
-    releases,
+    defaultPerspective,
   ])
 
   return <PerspectiveContext.Provider value={value}>{children}</PerspectiveContext.Provider>

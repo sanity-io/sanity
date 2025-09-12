@@ -2,9 +2,12 @@ import {type ReactNode, useContext, useEffect, useMemo} from 'react'
 import {
   getVersionFromId,
   isCardinalityOnePerspective,
+  LATEST,
   type PerspectiveContextValue,
+  PUBLISHED,
   useDocumentVersions,
   useSetPerspective,
+  useWorkspace,
 } from 'sanity'
 import {PerspectiveContext, RawPerspectiveContext} from 'sanity/_singletons'
 
@@ -58,6 +61,13 @@ export function DocumentPerspectiveProvider({
     documentId,
   })
 
+  const {
+    document: {
+      drafts: {enabled: isDraftModelEnabled},
+    },
+  } = useWorkspace()
+  const defaultPerspective = isDraftModelEnabled ? LATEST : PUBLISHED
+
   const value = useMemo<PerspectiveContextValue | null>(() => {
     if (!rawContext || !mappedContext) return mappedContext
 
@@ -69,7 +79,7 @@ export function DocumentPerspectiveProvider({
     if (documentVersionsLoading || !documentVersions?.length) {
       return {
         ...mappedContext,
-        selectedPerspective: 'drafts',
+        selectedPerspective: defaultPerspective,
         selectedPerspectiveName: undefined,
         selectedReleaseId: undefined,
       }
@@ -82,7 +92,7 @@ export function DocumentPerspectiveProvider({
     if (!documentExistsInRelease) {
       return {
         ...mappedContext,
-        selectedPerspective: 'drafts',
+        selectedPerspective: defaultPerspective,
         selectedPerspectiveName: undefined,
         selectedReleaseId: undefined,
       }
@@ -95,7 +105,7 @@ export function DocumentPerspectiveProvider({
       selectedPerspectiveName: rawContext.selectedPerspectiveName,
       selectedReleaseId: rawContext.selectedReleaseId,
     }
-  }, [rawContext, mappedContext, documentVersions, documentVersionsLoading])
+  }, [rawContext, mappedContext, documentVersionsLoading, documentVersions, defaultPerspective])
 
   if (!value) {
     return <>{children}</>
