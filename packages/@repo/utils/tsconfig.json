@@ -1,10 +1,7 @@
 {
-  "extends": "@repo/tsconfig/build.json",
-  "include": ["./src"],
+  "extends": "@repo/tsconfig/base.json",
+  "include": ["./src", "./bin"],
   "compilerOptions": {
-    "rootDir": ".",
-    "noEmit": true,
-    "module": "Preserve",
-    "skipLibCheck": true
+    "rootDir": "."
   }
 }
