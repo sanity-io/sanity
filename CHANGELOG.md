@@ -3,6 +3,29 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [4.9.0](https://github.com/sanity-io/sanity/compare/v4.8.1...v4.9.0) (2025-09-12)
+
+
+### Features
+
+* add "copy to clipboard" button to schema errors ([#10575](https://github.com/sanity-io/sanity/issues/10575)) ([635547b](https://github.com/sanity-io/sanity/commit/635547bad3252978f4a391a4902ec6ee8dd76ab6))
+* **cli:** Add delta flags to functions test command ([#10607](https://github.com/sanity-io/sanity/issues/10607)) ([166f7af](https://github.com/sanity-io/sanity/commit/166f7afc022c20a0e773256f238ab26d9e85d050))
+* **core:** sapp 3054 scheduled draft doc actions ([#10622](https://github.com/sanity-io/sanity/issues/10622)) ([879a92e](https://github.com/sanity-io/sanity/commit/879a92eca99a0b71aa97383fe63f3a26b4fa871c))
+* **init:** update next.js init template to next-sanity v11 ([#10610](https://github.com/sanity-io/sanity/issues/10610)) ([bd3d363](https://github.com/sanity-io/sanity/commit/bd3d3638612c4c605173390df495036a2a01fab6))
+* schedule draft actions and releases tool ([#10534](https://github.com/sanity-io/sanity/issues/10534)) ([f8ec27a](https://github.com/sanity-io/sanity/commit/f8ec27adcd2f758ff55fac2c7b99855b69d671c7))
+* specific banner for archived (or published) scheduled drafts ([#10630](https://github.com/sanity-io/sanity/issues/10630)) ([f581e9b](https://github.com/sanity-io/sanity/commit/f581e9b5c8537b031a94e413e66fe3835031d598))
+
+
+### Bug Fixes
+
+* **deps:** update dependency @portabletext/editor to ^2.8.4 ([#10615](https://github.com/sanity-io/sanity/issues/10615)) ([9c51cc5](https://github.com/sanity-io/sanity/commit/9c51cc588261b5c89f8f1575cab59e4c287de6be))
+* **deps:** update dependency @portabletext/editor to ^2.9.0 ([#10621](https://github.com/sanity-io/sanity/issues/10621)) ([63d13b8](https://github.com/sanity-io/sanity/commit/63d13b8187027de1dbfc26a31228f65d5874d49c))
+* **deps:** update dependency @portabletext/editor to ^2.9.1 ([#10626](https://github.com/sanity-io/sanity/issues/10626)) ([c62a30a](https://github.com/sanity-io/sanity/commit/c62a30a6aa95227f4ca1906541d230cd87299bf5))
+* **deps:** update dependency @sanity/ui to ^3.1.0 ([#10627](https://github.com/sanity-io/sanity/issues/10627)) ([1a708b5](https://github.com/sanity-io/sanity/commit/1a708b5f58107ab9dc4dbcda67755e90e3b16596))
+* **deps:** upgrade "@sanity/ui" to "^3.1.0" ([#10628](https://github.com/sanity-io/sanity/issues/10628)) ([acd73f4](https://github.com/sanity-io/sanity/commit/acd73f447ba8188f09d0106d5f726aa863852c97))
+
+
+
 ## [4.8.1](https://github.com/sanity-io/sanity/compare/v4.8.0...v4.8.1) (2025-09-10)
 
 

@@ -13,7 +13,7 @@
     "packages/groq",
     "packages/sanity"
   ],
-  "version": "4.8.1",
+  "version": "4.9.0",
   "command": {
     "version": {
       "changelogPreset": "conventionalcommits",
