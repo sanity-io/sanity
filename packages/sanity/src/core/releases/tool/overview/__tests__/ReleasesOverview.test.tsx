@@ -639,45 +639,129 @@ describe('ReleasesOverview', () => {
 
   describe('cardinality view dropdown', () => {
     describe('when scheduled drafts are disabled', () => {
-      beforeEach(async () => {
-        vi.mocked(useScheduledDraftsEnabled).mockReturnValue(false)
-        mockUseActiveReleases.mockReturnValue({
-          ...useActiveReleasesMockReturn,
-          data: [activeScheduledRelease, activeASAPRelease],
+      describe('and there are no active cardinality one releases', () => {
+        beforeEach(async () => {
+          vi.mocked(useScheduledDraftsEnabled).mockReturnValue(false)
+          mockUseActiveReleases.mockReturnValue({
+            ...useActiveReleasesMockReturn,
+            data: [activeScheduledRelease, activeASAPRelease],
+          })
+          mockUseArchivedReleases.mockReturnValue({
+            ...useArchivedReleasesMockReturn,
+            data: [],
+          })
+          mockUseReleasesMetadata.mockReturnValue({
+            ...useReleasesMetadataMockReturn,
+            data: {
+              [activeScheduledRelease._id]: {documentCount: 2, updatedAt: null},
+              [activeASAPRelease._id]: {documentCount: 1, updatedAt: null},
+            },
+          })
+
+          const wrapper = await createTestProvider({
+            resources: [releasesUsEnglishLocaleBundle],
+          })
+
+          return await act(async () => render(<TestComponent />, {wrapper}))
         })
-        mockUseArchivedReleases.mockReturnValue({
-          ...useArchivedReleasesMockReturn,
-          data: [],
+
+        it('should not show the cardinality view dropdown', () => {
+          // Should show "Releases" as plain text, not a button
+          expect(screen.getByText('Releases')).toBeInTheDocument()
+
+          // Should not find the dropdown menu button
+          const dropdownButton = screen.queryByTestId('cardinality-view-menu')
+          expect(dropdownButton).not.toBeInTheDocument()
+
+          const releasesText = screen.getByText('Releases')
+          expect(releasesText.closest('button')).toBeNull()
         })
-        mockUseReleasesMetadata.mockReturnValue({
-          ...useReleasesMetadataMockReturn,
-          data: {
-            [activeScheduledRelease._id]: {documentCount: 2, updatedAt: null},
-            [activeASAPRelease._id]: {documentCount: 1, updatedAt: null},
+
+        it('should show the create release button', () => {
+          expect(screen.getByText('New release')).toBeInTheDocument()
+        })
+      })
+
+      describe('and there are active cardinality one releases', () => {
+        const cardinalityOneRelease: ReleaseDocument = {
+          ...activeScheduledRelease,
+          _id: '_.releases.rCardinalityOne',
+          metadata: {
+            ...activeScheduledRelease.metadata,
+            title: 'Cardinality One Release',
+            cardinality: 'one',
+            releaseType: 'scheduled',
           },
+        }
+
+        const cardinalityOneASAPRelease: ReleaseDocument = {
+          ...activeASAPRelease,
+          _id: '_.releases.rCardinalityOneASAP',
+          metadata: {
+            ...activeASAPRelease.metadata,
+            title: 'Cardinality One ASAP Release',
+            cardinality: 'one',
+            releaseType: 'asap',
+          },
+        }
+
+        beforeEach(async () => {
+          vi.mocked(useScheduledDraftsEnabled).mockReturnValue(false)
+          mockUseActiveReleases.mockReturnValue({
+            ...useActiveReleasesMockReturn,
+            data: [
+              activeScheduledRelease,
+              activeASAPRelease,
+              cardinalityOneRelease,
+              cardinalityOneASAPRelease,
+            ],
+          })
+          mockUseArchivedReleases.mockReturnValue({
+            ...useArchivedReleasesMockReturn,
+            data: [],
+          })
+          mockUseReleasesMetadata.mockReturnValue({
+            ...useReleasesMetadataMockReturn,
+            data: {
+              [activeScheduledRelease._id]: {documentCount: 2, updatedAt: null},
+              [activeASAPRelease._id]: {documentCount: 1, updatedAt: null},
+              [cardinalityOneRelease._id]: {documentCount: 1, updatedAt: null},
+              [cardinalityOneASAPRelease._id]: {documentCount: 1, updatedAt: null},
+            },
+          })
+
+          const wrapper = await createTestProvider({
+            resources: [releasesUsEnglishLocaleBundle],
+          })
+
+          return await act(async () => render(<TestComponent />, {wrapper}))
         })
 
-        const wrapper = await createTestProvider({
-          resources: [releasesUsEnglishLocaleBundle],
+        it('should show the cardinality view dropdown', () => {
+          const releasesButton = screen.getByRole('button', {name: /Releases/i})
+          expect(releasesButton).toBeInTheDocument()
+
+          // Should find the dropdown menu button by id
+          const dropdownButton = document.getElementById('cardinality-view-menu')
+          expect(dropdownButton).toBeInTheDocument()
         })
 
-        return await act(async () => render(<TestComponent />, {wrapper}))
-      })
+        it('should show the create release button', () => {
+          expect(screen.getByText('New release')).toBeInTheDocument()
+        })
 
-      it('should not show the cardinality view dropdown', () => {
-        // Should show "Releases" as plain text, not a button
-        expect(screen.getByText('Releases')).toBeInTheDocument()
+        it('should default to releases view and show cardinality many releases', () => {
+          // Should show the cardinality many releases by default
+          const releaseRows = screen.getAllByTestId('table-row')
+          expect(releaseRows).toHaveLength(2) // Only cardinality many releases
 
-        // Should not find the dropdown menu button
-        const dropdownButton = screen.queryByTestId('cardinality-view-menu')
-        expect(dropdownButton).not.toBeInTheDocument()
+          expect(screen.getByText('active Release')).toBeInTheDocument()
+          expect(screen.getByText('active asap Release')).toBeInTheDocument()
 
-        const releasesText = screen.getByText('Releases')
-        expect(releasesText.closest('button')).toBeNull()
-      })
-
-      it('should not show the create release button in any view', () => {
-        expect(screen.getByText('New release')).toBeInTheDocument()
+          // Should not show cardinality one releases in releases view
+          expect(screen.queryByText('Cardinality One Release')).not.toBeInTheDocument()
+          expect(screen.queryByText('Cardinality One ASAP Release')).not.toBeInTheDocument()
+        })
       })
     })
 
@@ -798,6 +882,46 @@ describe('ReleasesOverview', () => {
       })
     })
 
+    describe('when scheduled drafts are enabled and there are no cardinality one releases', () => {
+      beforeEach(async () => {
+        vi.mocked(useScheduledDraftsEnabled).mockReturnValue(true)
+        mockUseActiveReleases.mockReturnValue({
+          ...useActiveReleasesMockReturn,
+          data: [activeScheduledRelease, activeASAPRelease], // Only cardinality 'many' releases
+        })
+        mockUseArchivedReleases.mockReturnValue({
+          ...useArchivedReleasesMockReturn,
+          data: [],
+        })
+        mockUseReleasesMetadata.mockReturnValue({
+          ...useReleasesMetadataMockReturn,
+          data: {
+            [activeScheduledRelease._id]: {documentCount: 2, updatedAt: null},
+            [activeASAPRelease._id]: {documentCount: 1, updatedAt: null},
+          },
+        })
+
+        const wrapper = await createTestProvider({
+          resources: [releasesUsEnglishLocaleBundle],
+        })
+
+        return await act(async () => render(<TestComponent />, {wrapper}))
+      })
+
+      it('should still show the cardinality view dropdown', () => {
+        const releasesButton = screen.getByRole('button', {name: /Releases/i})
+        expect(releasesButton).toBeInTheDocument()
+
+        // Should find the dropdown menu button by id
+        const dropdownButton = document.getElementById('cardinality-view-menu')
+        expect(dropdownButton).toBeInTheDocument()
+      })
+
+      it('should show the create release button', () => {
+        expect(screen.getByText('New release')).toBeInTheDocument()
+      })
+    })
+
     describe('when scheduled drafts are enabled but drafts is disabled', () => {
       const releaseWithScheduledCardinalityOne: ReleaseDocument = {
         ...activeScheduledRelease,
@@ -833,7 +957,7 @@ describe('ReleasesOverview', () => {
         vi.mocked(useScheduledDraftsEnabled).mockReturnValue(true)
       })
 
-      it('should show menu button when there are scheduled cardinality one releases', async () => {
+      it('should show menu button when there are any cardinality one releases', async () => {
         mockUseActiveReleases.mockReturnValue({
           ...useActiveReleasesMockReturn,
           data: [releaseWithScheduledCardinalityOne, activeASAPRelease],
@@ -861,15 +985,14 @@ describe('ReleasesOverview', () => {
         expect(releasesButton).toBeInTheDocument()
       })
 
-      it('should show text only when there are no scheduled cardinality one releases', async () => {
+      it('should show text only when there are no cardinality one releases', async () => {
         mockUseActiveReleases.mockReturnValue({
           ...useActiveReleasesMockReturn,
-          data: [releaseWithASAPCardinalityOne, activeASAPRelease],
+          data: [activeASAPRelease], // Only cardinality 'many' releases
         })
         mockUseReleasesMetadata.mockReturnValue({
           ...useReleasesMetadataMockReturn,
           data: {
-            [releaseWithASAPCardinalityOne._id]: {documentCount: 1, updatedAt: null},
             [activeASAPRelease._id]: {documentCount: 2, updatedAt: null},
           },
         })
@@ -891,7 +1014,7 @@ describe('ReleasesOverview', () => {
         expect(dropdownButton).not.toBeInTheDocument()
       })
 
-      it('should show text only when there are only non-scheduled cardinality one releases', async () => {
+      it('should show menu button when there are non-scheduled cardinality one releases', async () => {
         mockUseActiveReleases.mockReturnValue({
           ...useActiveReleasesMockReturn,
           data: [releaseWithUndecidedCardinalityOne, releaseWithASAPCardinalityOne],
@@ -915,10 +1038,9 @@ describe('ReleasesOverview', () => {
 
         await act(async () => render(<TestComponent />, {wrapper}))
 
-        // text is there, but menu button is not
-        expect(screen.getByText('Releases')).toBeInTheDocument()
-        const dropdownButton = screen.queryByRole('button', {name: 'Releases'})
-        expect(dropdownButton).not.toBeInTheDocument()
+        // menu button should be there now since we have cardinality one releases
+        const releasesButton = screen.getByRole('button', {name: 'Releases'})
+        expect(releasesButton).toBeInTheDocument()
       })
     })
   })

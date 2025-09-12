@@ -462,6 +462,15 @@ const releasesLocaleStrings = {
   /** Description for unpublish dialog, explaining that all changes made to this document will be lost */
   'unpublish-dialog.description.lost-changes':
     'Any changes made to this document version will be lost.',
+
+  /** Banner text shown when scheduled drafts feature is disabled but there are still scheduled drafts */
+  'banner.scheduled-drafts-disabled':
+    'Scheduled drafts has been disabled but there are still scheduled drafts to be published.',
+  /** Banner text shown when drafts mode is disabled but there are still scheduled drafts */
+  'banner.drafts-mode-disabled':
+    'Drafts mode has been disabled but there are still scheduled drafts to be published.',
+  /** Text for when no scheduled drafts are found */
+  'no-scheduled-drafts': 'No Scheduled Drafts',
 }
 
 /**
