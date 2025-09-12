@@ -95,6 +95,8 @@ const structureLocaleStrings = defineLocalesResources('structure', {
   /** Description for the archived release banner, rendered when viewing the history of a version document from the publihed view */
   'banners.archived-release.description':
     'This document version belongs to the archived <VersionBadge>{{title}}</VersionBadge> release',
+  /** Description for the archived scheduled draft banner, rendered when viewing the history of a cardinality one release document */
+  'banners.archived-scheduled-draft.description': 'This scheduled draft is archived',
   /** The explanation displayed when a user attempts to create a new draft document, but the draft model is not switched on */
   'banners.choose-new-document-destination.cannot-create-draft-document':
     'Cannot create a draft document.',
