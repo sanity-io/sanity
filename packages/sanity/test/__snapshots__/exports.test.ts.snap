@@ -139,6 +139,7 @@ exports[`exports snapshot 1`] = `
     "ObjectInputMember": "object",
     "ObjectInputMembers": "function",
     "ObjectMembers": "function",
+    "PUBLISHED": "string",
     "PatchEvent": "function",
     "PerspectiveProvider": "function",
     "PopoverDialog": "function",
