@@ -25,15 +25,15 @@ const createScheduledDraftAction = (
       (r) => getReleaseIdFromReleaseDocumentId(r._id) === release,
     )
 
-    // This action is only shown for scheduled-draft version type
-    if (!releaseDocument) {
-      return null
-    }
-
     const {actions, dialogs} = useScheduledDraftMenuActions({
       release: releaseDocument,
       documentType: type,
     })
+
+    // This action is only shown for scheduled-draft version type
+    if (!releaseDocument) {
+      return null
+    }
 
     const actionProps = actions[actionKey]
 
