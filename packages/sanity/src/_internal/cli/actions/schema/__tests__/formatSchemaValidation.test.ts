@@ -97,19 +97,26 @@ describe('formatSchemaValidation', () => {
 [ERROR] [arraysTest]
   imageArray[<anonymous_image>].<unnamed_type_@_index_1>
     ✖ Missing field name
+      See https://docs.sanity.io/help/schema-object-fields-invalid
 
 [ERROR] [blocksTest]
   <unnamed_type_@_index_1>
     ✖ Missing field name
+      See https://docs.sanity.io/help/schema-object-fields-invalid
     ✖ Type is missing a type.
+      See https://docs.sanity.io/help/schema-type-missing-name-or-type
   defaults
     ⚠ Found array member declaration with the same name as the global schema type "objectWithNestedArray". It's recommended to use a unique name to avoid possibly incompatible data types that shares the same name.
+      See https://docs.sanity.io/help/schema-array-of-type-global-type-conflict
 
 [WARN] [pt_customMarkersTest]
   content[block]
     ⚠ Decorator "boost" has deprecated key "blockEditor", please refer to the documentation on how to configure the block type for version 3.
+      See https://docs.sanity.io/help/schema-deprecated-blockeditor-key
     ⚠ Annotation has deprecated key "blockEditor", please refer to the documentation on how to configure the block type for version 3.
+      See https://docs.sanity.io/help/schema-deprecated-blockeditor-key
     ⚠ Style has deprecated key "blockEditor", please refer to the documentation on how to configure the block type for version 3.
+      See https://docs.sanity.io/help/schema-deprecated-blockeditor-key
 `.trim(),
     )
   })
