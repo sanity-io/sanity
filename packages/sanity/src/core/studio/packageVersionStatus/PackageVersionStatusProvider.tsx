@@ -99,7 +99,7 @@ export function PackageVersionStatusProvider({children}: {children: ReactNode}) 
         : isAutoUpdating && importMapInfo.valid
           ? fetchLatestAutoUpdatingVersion({
               packageName: 'sanity',
-              minVersion: importMapInfo.minVersion,
+              minVersion: semver.coerce(importMapInfo.minVersion, {includePrerelease: true})!,
               appId: importMapInfo.appId,
             })
           : Promise.resolve(undefined),
@@ -107,7 +107,9 @@ export function PackageVersionStatusProvider({children}: {children: ReactNode}) 
         ? Promise.resolve(DEBUG_VALUES.latestVersion)
         : fetchLatestAvailableVersionForPackage({
             packageName: 'sanity',
-            minVersion: importMapInfo.valid ? importMapInfo.minVersion : currentVersion,
+            minVersion: importMapInfo.valid
+              ? semver.coerce(importMapInfo.minVersion, {includePrerelease: true})!
+              : currentVersion,
             tag: 'latest',
           }),
     ])
@@ -140,7 +142,7 @@ export function PackageVersionStatusProvider({children}: {children: ReactNode}) 
         ? semver.coerce(importMapInfo.minVersion, {includePrerelease: true})!
         : undefined,
       latestTaggedVersion,
-      currentVersion: getCurrentVersion(),
+      currentVersion,
       checkForUpdates: isAutoUpdating ? fetchNewVersions : noop,
       versionCheckStatus,
     }),
@@ -149,6 +151,7 @@ export function PackageVersionStatusProvider({children}: {children: ReactNode}) 
       autoUpdatingVersion,
       importMapInfo,
       latestTaggedVersion,
+      currentVersion,
       fetchNewVersions,
       versionCheckStatus,
     ],

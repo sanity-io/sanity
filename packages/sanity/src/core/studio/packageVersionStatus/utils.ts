@@ -1,4 +1,4 @@
-import semver, {type SemVer} from 'semver'
+import semver from 'semver'
 
 const MODULE_PATH_REGEX = /^\/v1\/modules\/sanity\/[^/]+\/[^/]+\/[^/]+\/?$/
 // /v1/modules/by-app/some-appid-123/t1755876954/%5E4.5.0/sanity
@@ -10,7 +10,7 @@ const MODULE_PATH_REGEX_BY_APP = /^\/v1\/modules\/by-app\/[^/]+\/[^/]+\/[^/]+\/[
  */
 export function parseImportMapModuleCdnUrl(
   moduleCdnUrl: string,
-): {valid: true; appId?: string; minVersion: SemVer} | {valid: false; error: Error} {
+): {valid: true; appId?: string; minVersion: string} | {valid: false; error: Error} {
   const url = new URL(moduleCdnUrl, 'https://example.com')
   const rawParseResult = rawParseModuleCDNUrl(url)
 
@@ -31,7 +31,7 @@ export function parseImportMapModuleCdnUrl(
   return {
     valid: true,
     appId,
-    minVersion: semver.coerce(minVersion, {includePrerelease: true})!,
+    minVersion,
   }
 }
 
