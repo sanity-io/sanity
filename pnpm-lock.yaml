@@ -218,8 +218,8 @@ importers:
         specifier: ^23.2.0
         version: 23.2.0
       lerna:
-        specifier: ^8.2.3
-        version: 8.2.3(@swc-node/register@1.11.1(@swc/core@1.13.3)(@swc/types@0.1.24)(typescript@5.9.2))(@swc/core@1.13.3)(@types/node@24.3.0)(babel-plugin-macros@3.1.0)(encoding@0.1.13)
+        specifier: ^8.2.4
+        version: 8.2.4(@swc-node/register@1.11.1(@swc/core@1.13.3)(@swc/types@0.1.24)(typescript@5.9.2))(@swc/core@1.13.3)(@types/node@24.3.0)(babel-plugin-macros@3.1.0)(encoding@0.1.13)
       lint-staged:
         specifier: ^16.1.0
         version: 16.1.5
@@ -3789,8 +3789,8 @@ packages:
   '@juggle/resize-observer@3.4.0':
     resolution: {integrity: sha512-dfLbk+PwWvFzSxwk3n5ySL0hfBog779o8h68wK/7/APo/7cgyWp5jcXockbxdk5kFRkbeXWm4Fbi9FrdN381sA==}
 
-  '@lerna/create@8.2.3':
-    resolution: {integrity: sha512-f+68+iojcQ0tZRMfCgQyJdsdz+YPu3/d+0Zo1RJz92bgBxTCiEU+dHACVq1n3sEjm/YWPnFGdag8U5EYYmP3WA==}
+  '@lerna/create@8.2.4':
+    resolution: {integrity: sha512-A8AlzetnS2WIuhijdAzKUyFpR5YbLLfV3luQ4lzBgIBgRfuoBDZeF+RSZPhra+7A6/zTUlrbhKZIOi/MNhqgvQ==}
     engines: {node: '>=18.0.0'}
 
   '@lezer/common@1.2.3':
@@ -8968,8 +8968,8 @@ packages:
     resolution: {integrity: sha512-b94GiNHQNy6JNTrt5w6zNyffMrNkXZb3KTkCZJb2V1xaEGCk093vkZ2jk3tpaeP33/OiXC+WvK9AxUebnf5nbw==}
     engines: {node: '>= 0.6.3'}
 
-  lerna@8.2.3:
-    resolution: {integrity: sha512-rmuDU+92eWUnnyaPg3Ise339pTxF+r2hu8ky/soCfbGpUoW4kCwsDza3P/LtQJWrKwZWHcosEitfYvxGUWZ16A==}
+  lerna@8.2.4:
+    resolution: {integrity: sha512-0gaVWDIVT7fLfprfwpYcQajb7dBJv3EGavjG7zvJ+TmGx3/wovl5GklnSwM2/WeE0Z2wrIz7ndWhBcDUHVjOcQ==}
     engines: {node: '>=18.0.0'}
     hasBin: true
 
@@ -14001,7 +14001,7 @@ snapshots:
 
   '@juggle/resize-observer@3.4.0': {}
 
-  '@lerna/create@8.2.3(@swc-node/register@1.11.1(@swc/core@1.13.3)(@swc/types@0.1.24)(typescript@5.9.2))(@swc/core@1.13.3)(@types/node@24.3.0)(babel-plugin-macros@3.1.0)(encoding@0.1.13)(typescript@5.9.2)':
+  '@lerna/create@8.2.4(@swc-node/register@1.11.1(@swc/core@1.13.3)(@swc/types@0.1.24)(typescript@5.9.2))(@swc/core@1.13.3)(@types/node@24.3.0)(babel-plugin-macros@3.1.0)(encoding@0.1.13)(typescript@5.9.2)':
     dependencies:
       '@npmcli/arborist': 7.5.4
       '@npmcli/package-json': 5.2.0
@@ -14036,7 +14036,6 @@ snapshots:
       js-yaml: 4.1.0
       libnpmpublish: 9.0.9
       load-json-file: 6.2.0
-      lodash: 4.17.21
       make-dir: 4.0.0
       minimatch: 3.0.5
       multimatch: 5.0.0
@@ -20426,9 +20425,9 @@ snapshots:
     dependencies:
       readable-stream: 2.3.8
 
-  lerna@8.2.3(@swc-node/register@1.11.1(@swc/core@1.13.3)(@swc/types@0.1.24)(typescript@5.9.2))(@swc/core@1.13.3)(@types/node@24.3.0)(babel-plugin-macros@3.1.0)(encoding@0.1.13):
+  lerna@8.2.4(@swc-node/register@1.11.1(@swc/core@1.13.3)(@swc/types@0.1.24)(typescript@5.9.2))(@swc/core@1.13.3)(@types/node@24.3.0)(babel-plugin-macros@3.1.0)(encoding@0.1.13):
     dependencies:
-      '@lerna/create': 8.2.3(@swc-node/register@1.11.1(@swc/core@1.13.3)(@swc/types@0.1.24)(typescript@5.9.2))(@swc/core@1.13.3)(@types/node@24.3.0)(babel-plugin-macros@3.1.0)(encoding@0.1.13)(typescript@5.9.2)
+      '@lerna/create': 8.2.4(@swc-node/register@1.11.1(@swc/core@1.13.3)(@swc/types@0.1.24)(typescript@5.9.2))(@swc/core@1.13.3)(@types/node@24.3.0)(babel-plugin-macros@3.1.0)(encoding@0.1.13)(typescript@5.9.2)
       '@npmcli/arborist': 7.5.4
       '@npmcli/package-json': 5.2.0
       '@npmcli/run-script': 8.1.0
@@ -20468,7 +20467,6 @@ snapshots:
       libnpmaccess: 8.0.6
       libnpmpublish: 9.0.9
       load-json-file: 6.2.0
-      lodash: 4.17.21
       make-dir: 4.0.0
       minimatch: 3.0.5
       multimatch: 5.0.0
