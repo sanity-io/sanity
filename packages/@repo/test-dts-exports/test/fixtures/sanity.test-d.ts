@@ -144,6 +144,7 @@ import type {
   CanvasAppOptions,
   CanvasNotificationPayload,
   CapabilityGate,
+  CardinalityOneRelease,
   catchWithCount,
   ChangeBreadcrumb,
   ChangeConnectorRoot,
@@ -776,6 +777,7 @@ import type {
   isBooleanInputProps,
   isBooleanSchemaType,
   isBuilder,
+  isCardinalityOnePerspective,
   isCardinalityOneRelease,
   isCookielessCompatibleLoginMethod,
   isCreateDocumentVersionEvent,
@@ -1100,6 +1102,7 @@ import type {
   ProjectStore,
   ProvenanceDiffAnnotation,
   PublishDocumentVersionEvent,
+  PUBLISHED,
   PublishedId,
   QueryParams,
   QUOTA_EXCLUDED_RELEASES_ENABLED,
@@ -2069,6 +2072,9 @@ describe('sanity', () => {
   })
   test('CapabilityGate', () => {
     expectTypeOf<typeof CapabilityGate>().not.toBeNever()
+  })
+  test('CardinalityOneRelease', () => {
+    expectTypeOf<CardinalityOneRelease>().not.toBeNever()
   })
   test('catchWithCount', () => {
     expectTypeOf<typeof catchWithCount>().toBeFunction()
@@ -3983,6 +3989,9 @@ describe('sanity', () => {
   test('isBuilder', () => {
     expectTypeOf<typeof isBuilder>().toBeFunction()
   })
+  test('isCardinalityOnePerspective', () => {
+    expectTypeOf<typeof isCardinalityOnePerspective>().toBeFunction()
+  })
   test('isCardinalityOneRelease', () => {
     expectTypeOf<typeof isCardinalityOneRelease>().toBeFunction()
   })
@@ -4958,6 +4967,9 @@ describe('sanity', () => {
   })
   test('PublishDocumentVersionEvent', () => {
     expectTypeOf<PublishDocumentVersionEvent>().toBeObject()
+  })
+  test('PUBLISHED', () => {
+    expectTypeOf<typeof PUBLISHED>().not.toBeNever()
   })
   test('PublishedId', () => {
     expectTypeOf<PublishedId>().not.toBeNever()
