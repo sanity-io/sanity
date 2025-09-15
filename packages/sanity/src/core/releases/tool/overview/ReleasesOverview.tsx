@@ -33,8 +33,8 @@ import {getReleaseTone} from '../../util/getReleaseTone'
 import {getReleaseDefaults, shouldShowReleaseInView} from '../../util/util'
 import {Table, type TableRowProps} from '../components/Table/Table'
 import {type TableSort} from '../components/Table/TableProvider'
-import {ReleaseIllustration} from '../resources/ReleaseIllustration'
 import {CalendarPopover} from './CalendarPopover'
+import {DraftsDisabledBanner} from './DraftsDisabledBanner'
 import {
   buildReleasesSearchParams,
   type CardinalityView,
@@ -45,6 +45,7 @@ import {
 } from './queryParamUtils'
 import {createReleaseCalendarFilterDay, DateFilterButton} from './ReleaseCalendarFilter'
 import {ReleaseMenuButtonWrapper} from './ReleaseMenuButtonWrapper'
+import {ReleasesEmptyState} from './ReleasesEmptyState'
 import {releasesOverviewColumnDefs} from './ReleasesOverviewColumnDefs'
 import {ScheduledDraftMenuButtonWrapper} from './ScheduledDraftMenuButtonWrapper'
 import {scheduledDraftsOverviewColumnDefs} from './ScheduledDraftsOverviewColumnDefs'
@@ -131,7 +132,11 @@ export function ReleasesOverview() {
 
   const [scrollContainerRef, setScrollContainerRef] = useState<HTMLDivElement | null>(null)
 
-  const hasReleases = releases.length > 0 || archivedReleases.length > 0
+  const hasReleases = allReleases.length > 0 || allArchivedReleases.length > 0
+  // banner that shows when drafts mode is disabled, or scheduled drafts are disabled
+  // but there are still scheduled drafts
+  const showDraftsDisabledBanner =
+    cardinalityView === 'drafts' && (!isDraftModelEnabled || !isScheduledDraftsEnabled)
   const loadingOrHasReleases = loading || hasReleases
   const hasNoReleases = !loading && !hasReleases
 
@@ -214,26 +219,63 @@ export function ReleasesOverview() {
 
   const cardinalityViewPicker = useMemo(() => {
     if (!isScheduledDraftsEnabled) {
+      const hasActiveCardinalityOneReleases = allReleases.some(isCardinalityOneRelease)
+
+      if (!hasActiveCardinalityOneReleases) {
+        return (
+          <Flex align="center" gap={2}>
+            <CalendarIcon />
+            <Text size={1} weight="semibold">
+              {t('action.releases')}
+            </Text>
+          </Flex>
+        )
+      }
+
+      const currentViewText =
+        cardinalityView === 'releases' ? t('action.releases') : t('action.drafts')
+
       return (
-        <Flex align="center" gap={2}>
-          <CalendarIcon />
-          <Text size={1} weight="semibold">
-            {t('action.releases')}
-          </Text>
-        </Flex>
+        <MenuButton
+          id="cardinality-view-menu"
+          button={
+            <Button
+              mode="bleed"
+              paddingY={2}
+              text={currentViewText}
+              icon={CalendarIcon}
+              iconRight={ChevronDownIcon}
+              disabled={loading}
+              style={{fontWeight: 600}}
+            />
+          }
+          menu={
+            <Menu>
+              <MenuItem
+                text={t('action.releases')}
+                selected={cardinalityView === 'releases'}
+                onClick={handleCardinalityViewChange('releases')}
+              />
+              <MenuItem
+                text={t('action.drafts')}
+                selected={cardinalityView === 'drafts'}
+                onClick={handleCardinalityViewChange('drafts')}
+              />
+            </Menu>
+          }
+        />
       )
     }
 
-    // If scheduled drafts are enabled but drafts mode is disabled:
-    // only show releases and drafts menu items if there are scheduled drafts already existing
+    // When scheduled drafts are enabled, we need to check if drafts mode is also enabled
+    // If drafts mode is disabled, only show releases and drafts menu items if there are any cardinality one releases
     // otherwise, show only the releases label
     if (!isDraftModelEnabled) {
-      const hasScheduledCardinalityOneReleases = allReleases.some(
-        (release) =>
-          isCardinalityOneRelease(release) && release.metadata.releaseType === 'scheduled',
+      const hasActiveCardinalityOneReleases = allReleases.some((release) =>
+        isCardinalityOneRelease(release),
       )
 
-      if (!hasScheduledCardinalityOneReleases) {
+      if (!hasActiveCardinalityOneReleases) {
         return (
           <Flex align="center" gap={2}>
             <CalendarIcon />
@@ -473,7 +515,7 @@ export function ReleasesOverview() {
     ? DEFAULT_ARCHIVED_RELEASES_OVERVIEW_SORT
     : DEFAULT_RELEASES_OVERVIEW_SORT
 
-  const NoRelease = () => {
+  const NoRelease = useCallback(() => {
     return (
       <Flex
         direction="column"
@@ -482,29 +524,35 @@ export function ReleasesOverview() {
         align={hasNoReleases ? 'center' : 'flex-start'}
         style={{position: 'relative'}}
       >
-        <Flex gap={3} direction="column" style={{maxWidth: '300px'}}>
-          <ReleaseIllustration />
-          <Text as="h1" size={1} weight="semibold" data-testid="no-releases-info-text">
-            {t('overview.title')}
-          </Text>
-          <Text size={1} muted>
-            {t('overview.description')}
-          </Text>
-          <Inline space={2}>
-            {createReleaseButton}
-            <Button
-              as="a"
-              href="https://www.sanity.io/docs/content-releases"
-              target="_blank"
-              mode="ghost"
-              onClick={handleOnClickCreateRelease}
-              text={t('overview.action.documentation')}
-            />
-          </Inline>
-        </Flex>
+        <ReleasesEmptyState
+          createReleaseButton={createReleaseButton}
+          onClickCreateRelease={handleOnClickCreateRelease}
+        />
       </Flex>
     )
-  }
+  }, [hasNoReleases, createReleaseButton, handleOnClickCreateRelease])
+
+  const releasesEmptyStateComponent = useCallback(
+    () => (
+      <ReleasesEmptyState
+        createReleaseButton={createReleaseButton}
+        onClickCreateRelease={handleOnClickCreateRelease}
+      />
+    ),
+    [createReleaseButton, handleOnClickCreateRelease],
+  )
+
+  const tableEmptyState = useMemo(() => {
+    if (cardinalityView === 'releases' && releaseGroupMode === 'active') {
+      return releasesEmptyStateComponent
+    }
+    // Use specific text for drafts view
+    if (cardinalityView === 'drafts') {
+      return t('no-scheduled-drafts')
+    }
+    // Use default text empty state for other cases (archived, etc.)
+    return t('no-releases')
+  }, [cardinalityView, releaseGroupMode, releasesEmptyStateComponent, t])
 
   return (
     <Flex direction="row" flex={1} style={{height: '100%'}}>
@@ -547,7 +595,17 @@ export function ReleasesOverview() {
                   </Flex>
                 </Flex>
               </Card>
-              <Box ref={setScrollContainerRef} marginTop={3} overflow={'auto'}>
+              {showDraftsDisabledBanner && (
+                <DraftsDisabledBanner
+                  isDraftModelEnabled={isDraftModelEnabled}
+                  isScheduledDraftsEnabled={isScheduledDraftsEnabled}
+                />
+              )}
+              <Box
+                ref={setScrollContainerRef}
+                marginTop={showDraftsDisabledBanner ? 0 : 3}
+                overflow={'auto'}
+              >
                 {(loading || hasReleases) && (
                   <Table<TableRelease>
                     // for resetting filter and sort on table when filer changed
@@ -556,7 +614,7 @@ export function ReleasesOverview() {
                     loading={loadingTableData}
                     data={filteredReleases}
                     columnDefs={tableColumns}
-                    emptyState={t('no-releases')}
+                    emptyState={tableEmptyState}
                     // eslint-disable-next-line @sanity/i18n/no-attribute-string-literals
                     rowId="_id"
                     rowActions={renderRowActions}
