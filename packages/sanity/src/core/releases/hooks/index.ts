@@ -1,5 +1,6 @@
 export * from './useDocumentVersions'
 export * from './useDocumentVersionTypeSortedList'
+export * from './useHasCardinalityOneReleaseVersions'
 export * from './useIsReleaseActive'
 export * from './useOnlyHasVersions'
 export * from './useScheduledDraftDocument'
