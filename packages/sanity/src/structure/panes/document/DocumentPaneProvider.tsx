@@ -353,7 +353,12 @@ export const DocumentPaneProvider = memo((props: DocumentPaneProviderProps) => {
     [getDisplayed, value],
   )
 
-  const {previousId} = useDocumentIdStack({displayed, documentId, editState})
+  const {previousId} = useDocumentIdStack({
+    strict: true,
+    displayed,
+    documentId,
+    editState,
+  })
 
   const setTimelineRange = useCallback(
     (newSince: string, newRev: string | null) => {
