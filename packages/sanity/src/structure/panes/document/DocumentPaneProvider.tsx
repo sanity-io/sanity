@@ -19,6 +19,7 @@ import {
   useActiveReleases,
   useCopyPaste,
   useDocumentForm,
+  useDocumentIdStack,
   usePerspective,
   useSchema,
   useSource,
@@ -31,7 +32,6 @@ import {DocumentPaneContext} from 'sanity/_singletons'
 
 import {usePaneRouter} from '../../components'
 import {useDiffViewRouter} from '../../diffView/hooks/useDiffViewRouter'
-import {useDocumentIdStack} from '../../hooks/useDocumentIdStack'
 import {useDocumentLastRev} from '../../hooks/useDocumentLastRev'
 import {structureLocaleNamespace} from '../../i18n'
 import {type PaneMenuItem} from '../../types'

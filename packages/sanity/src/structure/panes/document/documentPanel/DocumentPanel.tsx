@@ -14,6 +14,7 @@ import {
   LegacyLayerProvider,
   type ReleaseDocument,
   ScrollContainer,
+  useFilteredReleases,
   usePerspective,
   useWorkspace,
   VirtualizerScrollInstanceProvider,
@@ -22,7 +23,6 @@ import {css, styled} from 'styled-components'
 
 import {PaneContent, usePane, usePaneLayout, usePaneRouter} from '../../../components'
 import {hasObsoleteDraft} from '../../../hasObsoleteDraft'
-import {useFilteredReleases} from '../../../hooks/useFilteredReleases'
 import {mustChooseNewDocumentDestination} from '../../../mustChooseNewDocumentDestination'
 import {useStructureTool} from '../../../useStructureTool'
 import {DocumentInspectorPanel} from '../documentInspector'
@@ -172,7 +172,12 @@ export const DocumentPanel = function DocumentPanel(props: DocumentPanelProps) {
 
   const showInspector = Boolean(!collapsed && inspector)
   const {selectedPerspective, selectedReleaseId} = usePerspective()
-  const filteredReleases = useFilteredReleases({displayed, documentId})
+
+  const filteredReleases = useFilteredReleases({
+    historyVersion: params?.historyVersion,
+    displayed,
+    documentId,
+  })
 
   // eslint-disable-next-line complexity
   const banners = useMemo(() => {

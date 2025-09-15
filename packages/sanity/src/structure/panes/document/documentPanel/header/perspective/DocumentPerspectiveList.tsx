@@ -17,6 +17,7 @@ import {
   useActiveReleases,
   useDateTimeFormat,
   type UseDateTimeFormatOptions,
+  useFilteredReleases,
   useOnlyHasVersions,
   usePerspective,
   useSchema,
@@ -28,7 +29,6 @@ import {
 
 import {isLiveEditEnabled} from '../../../../../components/paneItem/helpers'
 import {usePaneRouter} from '../../../../../components/paneRouter/usePaneRouter'
-import {useFilteredReleases} from '../../../../../hooks/useFilteredReleases'
 import {useDocumentPane} from '../../../useDocumentPane'
 
 const TooltipContent = ({release}: {release: ReleaseDocument}) => {
@@ -90,7 +90,13 @@ export const DocumentPerspectiveList = memo(function DocumentPerspectiveList() {
   const schema = useSchema()
   const {editState, displayed, documentType, documentId} = useDocumentPane()
   const isCreatingDocument = displayed && !displayed._createdAt
-  const filteredReleases = useFilteredReleases({displayed, documentId})
+
+  const filteredReleases = useFilteredReleases({
+    historyVersion: params?.historyVersion,
+    displayed,
+    documentId,
+  })
+
   const onlyHasVersions = useOnlyHasVersions({documentId})
   const workspace = useWorkspace()
 
