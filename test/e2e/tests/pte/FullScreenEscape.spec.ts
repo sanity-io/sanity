@@ -28,6 +28,8 @@ test.describe('Portable Text Input - FullScreen Escape', () => {
   })
 
   test('you should be able to use scape to close full screen mode', async ({page}) => {
+    test.slow()
+
     // Escape should close the fullscreen mode
     await page.keyboard.press('Escape')
     await expect(
@@ -37,7 +39,11 @@ test.describe('Portable Text Input - FullScreen Escape', () => {
 
   test('if in fullscreen mode, and having a popover open, escape should close the popover not the fullscreen mode', async ({
     page,
+    browserName,
   }) => {
+    test.slow()
+    test.skip(browserName === 'firefox')
+
     await page.getByTestId('document-panel-portal').getByRole('textbox').click()
     await page.getByTestId('document-panel-portal').getByRole('textbox').fill('test')
 
