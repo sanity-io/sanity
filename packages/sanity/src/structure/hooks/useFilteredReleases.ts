@@ -4,6 +4,7 @@ import {
   getReleaseIdFromReleaseDocumentId,
   getVersionFromId,
   type ReleaseDocument,
+  type StrictVersionLayeringOptions,
   useActiveReleases,
   useArchivedReleases,
   useDocumentVersions,
