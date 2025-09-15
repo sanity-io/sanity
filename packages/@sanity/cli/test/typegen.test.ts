@@ -48,9 +48,9 @@ describeCliTest('CLI: `sanity typegen`', () => {
       ])
 
       expect(result.code).toBe(0)
-      expect(result.stderr).toContain(
-        'Generated TypeScript types for 2 schema types and 1 GROQ queries in 1 file',
-      )
+      expect(result.stderr).toContain('Generated 2 schema types')
+      expect(result.stderr).toContain('Generated 1 query type from 1 file out of 1 scanned file')
+      expect(result.stderr).toContain('Successfully generated types')
     })
 
     test('sanity typegen generate: formats code', async () => {
@@ -67,9 +67,10 @@ describeCliTest('CLI: `sanity typegen`', () => {
       ])
 
       expect(result.code).toBe(0)
-      expect(result.stderr).toContain(
-        'Generated TypeScript types for 2 schema types and 1 GROQ queries in 1 file',
-      )
+      expect(result.stderr).toContain('Generated 2 schema types')
+      expect(result.stderr).toContain('Generated 1 query type from 1 file out of 1 scanned file')
+      expect(result.stderr).toContain('Successfully generated types')
+      expect(result.stderr).toContain('Formatted generated types with prettier')
 
       const types = await readFile(`${studiosPath}/cli-test-studio/out/types.ts`)
       expect(types.toString()).toContain(`'person'`)
@@ -86,9 +87,9 @@ describeCliTest('CLI: `sanity typegen`', () => {
       ])
 
       expect(result.code).toBe(0)
-      expect(result.stderr).toContain(
-        'Generated TypeScript types for 2 schema types and 1 GROQ queries in 1 file',
-      )
+      expect(result.stderr).toContain('Generated 2 schema types')
+      expect(result.stderr).toContain('Generated 1 query type from 1 file out of 1 scanned file')
+      expect(result.stderr).toContain('Successfully generated types')
 
       const types = await readFile(`${studiosPath}/cli-test-studio/out/types.ts`)
       expect(types.toString()).toContain(
@@ -109,9 +110,9 @@ describeCliTest('CLI: `sanity typegen`', () => {
       ])
 
       expect(result.code).toBe(0)
-      expect(result.stderr).toContain(
-        'Generated TypeScript types for 2 schema types and 1 GROQ queries in 1 file',
-      )
+      expect(result.stderr).toContain('Generated 2 schema types')
+      expect(result.stderr).toContain('Generated 1 query type from 1 file out of 1 scanned file')
+      expect(result.stderr).toContain('Successfully generated types')
 
       const types = await readFile(`${studiosPath}/cli-test-studio/out/types.ts`)
       expect(types.toString()).not.toContain(`Query TypeMap`)
