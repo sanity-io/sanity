@@ -130,7 +130,10 @@ const getCurrentUser = async (
 
     if (invalidCorsConfig) {
       // Throw a specific error on CORS-errors, to allow us to show a customized dialog
-      throw new CorsOriginError({projectId: client.config()?.projectId})
+      throw new CorsOriginError({
+        isStaging: client.config().apiHost.endsWith('.work'),
+        projectId: client.config()?.projectId,
+      })
     }
 
     // Some non-CORS error - is it one of those undefinable network errors?
