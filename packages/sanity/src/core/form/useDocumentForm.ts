@@ -25,6 +25,7 @@ import {useCanvasCompanionDoc} from '../canvas/actions/useCanvasCompanionDoc'
 import {isSanityCreateLinkedDocument} from '../create/createUtils'
 import {useReconnectingToast} from '../hooks'
 import {type ConnectionState, useConnectionState} from '../hooks/useConnectionState'
+import {useDocumentIdStack} from '../hooks/useDocumentIdStack'
 import {useDocumentOperation} from '../hooks/useDocumentOperation'
 import {useEditState} from '../hooks/useEditState'
 import {useSchema} from '../hooks/useSchema'
@@ -94,7 +95,14 @@ interface DocumentFormOptions {
   getFormDocumentValue?: (value: SanityDocumentLike) => SanityDocumentLike
 }
 interface DocumentFormValue {
+  /**
+   * `EditStateFor` for the displayed document.
+   * */
   editState: EditStateFor
+  /**
+   *  `EditStateFor` for the displayed document's upstream version.
+   */
+  upstreamEditState: EditStateFor
   connectionState: ConnectionState
   collapsedFieldSets: StateTree<boolean> | undefined
   collapsedPaths: StateTree<boolean> | undefined
@@ -192,13 +200,6 @@ export function useDocumentForm(options: DocumentFormOptions): DocumentFormValue
 
   const [focusPath, setFocusPath] = useState<Path>(initialFocusPath || EMPTY_ARRAY)
 
-  const comparisonValue = useMemo(() => {
-    if (typeof comparisonValueRaw === 'function') {
-      return comparisonValueRaw(editState)
-    }
-    return comparisonValueRaw
-  }, [comparisonValueRaw, editState])
-
   const value: SanityDocumentLike = useMemo(() => {
     const baseValue = initialValue?.value || {_id: documentId, _type: documentType}
     if (releaseId) {
@@ -236,6 +237,27 @@ export function useDocumentForm(options: DocumentFormOptions): DocumentFormValue
     selectedPerspectiveName,
     onlyHasVersions,
   ])
+
+  const {previousId: upstreamId} = useDocumentIdStack({
+    strict: true,
+    displayed: value,
+    documentId,
+    editState,
+  })
+
+  const upstreamEditState = useEditState(
+    documentId,
+    documentType,
+    'low',
+    getVersionFromId(upstreamId ?? ''),
+  )
+
+  const comparisonValue = useMemo(() => {
+    if (typeof comparisonValueRaw === 'function') {
+      return comparisonValueRaw(upstreamEditState)
+    }
+    return comparisonValueRaw
+  }, [comparisonValueRaw, upstreamEditState])
 
   const [presence, setPresence] = useState<DocumentPresence[]>([])
   useEffect(() => {
@@ -546,6 +568,7 @@ export function useDocumentForm(options: DocumentFormOptions): DocumentFormValue
   )
   return {
     editState,
+    upstreamEditState,
     connectionState,
     focusPath,
     validation,

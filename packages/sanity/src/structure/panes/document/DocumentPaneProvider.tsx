@@ -165,8 +165,12 @@ export const DocumentPaneProvider = memo((props: DocumentPaneProviderProps) => {
   )
 
   const getComparisonValue = useCallback(
-    (editState: EditStateFor) => {
-      return changesOpen ? sinceDocument || editState?.published : editState?.published || null
+    (upstreamEditState: EditStateFor) => {
+      const upstream = upstreamEditState.version ?? upstreamEditState.published
+      if (changesOpen) {
+        return sinceDocument || upstream
+      }
+      return upstream || null
     },
     [changesOpen, sinceDocument],
   )
@@ -220,6 +224,7 @@ export const DocumentPaneProvider = memo((props: DocumentPaneProviderProps) => {
 
   const {
     editState,
+    upstreamEditState,
     connectionState,
     focusPath,
     onChange,
@@ -454,7 +459,11 @@ export const DocumentPaneProvider = memo((props: DocumentPaneProviderProps) => {
     })
   }, [documentId, documentType, schemaType, onChange, setDocumentMeta])
 
-  const compareValue = useMemo(() => getComparisonValue(editState), [editState, getComparisonValue])
+  const compareValue = useMemo(
+    () => getComparisonValue(upstreamEditState),
+    [upstreamEditState, getComparisonValue],
+  )
+
   const isDeleted = useMemo(() => getIsDeleted(editState), [editState, getIsDeleted])
   const revisionNotFound = onOlderRevision && !revisionDocument
 
