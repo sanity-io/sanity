@@ -310,6 +310,7 @@ exports[`exports snapshot 1`] = `
     "getCalendarLabels": "function",
     "getConfigContextFromSource": "function",
     "getDiffAtPath": "function",
+    "getDocumentIsInPerspective": "function",
     "getDocumentPairPermissions": "function",
     "getDocumentValuePermissions": "function",
     "getDocumentVariantType": "function",
