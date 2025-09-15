@@ -2,6 +2,7 @@ import {type ReleaseDocument} from '@sanity/client'
 import {Menu, MenuDivider} from '@sanity/ui'
 import {memo} from 'react'
 
+import {MenuItem} from '../../../../../ui-components'
 import {useScheduledDraftMenuActions} from '../../../hooks/useScheduledDraftMenuActions'
 import {CopyToReleaseMenuGroup} from './CopyToReleaseMenuGroup'
 
@@ -36,7 +37,7 @@ export const ScheduledDraftContextMenu = memo(function ScheduledDraftContextMenu
 
   const isCopyToReleaseDisabled = disabled || !hasCreatePermission || isGoingToUnpublish
 
-  const {menuItems, dialogs} = useScheduledDraftMenuActions({
+  const {actions, dialogs} = useScheduledDraftMenuActions({
     release,
     documentType: type,
     disabled,
@@ -46,8 +47,8 @@ export const ScheduledDraftContextMenu = memo(function ScheduledDraftContextMenu
   return (
     <>
       <Menu>
-        {menuItems.publishNow}
-        {menuItems.editSchedule}
+        <MenuItem {...actions.publishNow} />
+        <MenuItem {...actions.editSchedule} />
         <MenuDivider />
         <CopyToReleaseMenuGroup
           releases={releases}
@@ -58,7 +59,7 @@ export const ScheduledDraftContextMenu = memo(function ScheduledDraftContextMenu
           hasCreatePermission={hasCreatePermission}
         />
         <MenuDivider />
-        {menuItems.deleteSchedule}
+        <MenuItem {...actions.deleteSchedule} />
       </Menu>
 
       {dialogs}

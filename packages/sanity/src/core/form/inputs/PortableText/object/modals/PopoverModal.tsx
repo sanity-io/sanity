@@ -97,6 +97,17 @@ function Content(props: PopoverEditDialogProps) {
     // This is needed in order for focusLock not to trap focus in the
     // popover when closing the popover and focus is to be returned to the editor
     if (isClosedRef.current) return false
+
+    const target = element as Node
+    const portalElements = document.querySelectorAll('[data-portal]')
+    const isWithinPortal = Array.from(portalElements).some((portal) => portal.contains(target))
+
+    // We want to have an exception to the clicking when the target is outside of the portal
+    // And the popover is not closed.
+    // This is needed in order for focusLock not to trap focus in the modal
+    // Because then, if we are trying to change matters in an opened pane, focusLock will trap focus in the modal
+    if (!isWithinPortal && !isClosedRef.current) return false
+
     return Boolean(element.contentEditable) || Boolean(containerElement.current?.contains(element))
   }, [])
 

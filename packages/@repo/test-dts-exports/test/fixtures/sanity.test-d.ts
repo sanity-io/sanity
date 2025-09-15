@@ -144,6 +144,7 @@ import type {
   CanvasAppOptions,
   CanvasNotificationPayload,
   CapabilityGate,
+  CardinalityOneRelease,
   catchWithCount,
   ChangeBreadcrumb,
   ChangeConnectorRoot,
@@ -635,6 +636,7 @@ import type {
   getDocumentValuePermissions,
   getDocumentVariantType,
   getDraftId,
+  getErrorMessage,
   getExpandOperations,
   GetFormValueProvider,
   GetHookCollectionState,
@@ -775,6 +777,8 @@ import type {
   isBooleanInputProps,
   isBooleanSchemaType,
   isBuilder,
+  isCardinalityOnePerspective,
+  isCardinalityOneRelease,
   isCookielessCompatibleLoginMethod,
   isCreateDocumentVersionEvent,
   isCreateIfNotExistsMutation,
@@ -1098,6 +1102,7 @@ import type {
   ProjectStore,
   ProvenanceDiffAnnotation,
   PublishDocumentVersionEvent,
+  PUBLISHED,
   PublishedId,
   QueryParams,
   ReactHook,
@@ -2066,6 +2071,9 @@ describe('sanity', () => {
   })
   test('CapabilityGate', () => {
     expectTypeOf<typeof CapabilityGate>().not.toBeNever()
+  })
+  test('CardinalityOneRelease', () => {
+    expectTypeOf<CardinalityOneRelease>().not.toBeNever()
   })
   test('catchWithCount', () => {
     expectTypeOf<typeof catchWithCount>().toBeFunction()
@@ -3555,6 +3563,9 @@ describe('sanity', () => {
   test('getDraftId', () => {
     expectTypeOf<typeof getDraftId>().toBeFunction()
   })
+  test('getErrorMessage', () => {
+    expectTypeOf<typeof getErrorMessage>().toBeFunction()
+  })
   test('getExpandOperations', () => {
     expectTypeOf<typeof getExpandOperations>().toBeFunction()
   })
@@ -3976,6 +3987,12 @@ describe('sanity', () => {
   })
   test('isBuilder', () => {
     expectTypeOf<typeof isBuilder>().toBeFunction()
+  })
+  test('isCardinalityOnePerspective', () => {
+    expectTypeOf<typeof isCardinalityOnePerspective>().toBeFunction()
+  })
+  test('isCardinalityOneRelease', () => {
+    expectTypeOf<typeof isCardinalityOneRelease>().toBeFunction()
   })
   test('isCookielessCompatibleLoginMethod', () => {
     expectTypeOf<typeof isCookielessCompatibleLoginMethod>().toBeFunction()
@@ -4949,6 +4966,9 @@ describe('sanity', () => {
   })
   test('PublishDocumentVersionEvent', () => {
     expectTypeOf<PublishDocumentVersionEvent>().toBeObject()
+  })
+  test('PUBLISHED', () => {
+    expectTypeOf<typeof PUBLISHED>().not.toBeNever()
   })
   test('PublishedId', () => {
     expectTypeOf<PublishedId>().not.toBeNever()

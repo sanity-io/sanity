@@ -666,7 +666,12 @@ export interface ResolveProductionUrlContext extends ConfigContext {
  * @beta
  */
 
-export type DocumentActionsVersionType = 'published' | 'draft' | 'revision' | 'version'
+export type DocumentActionsVersionType =
+  | 'published'
+  | 'draft'
+  | 'revision'
+  | 'version'
+  | 'scheduled-draft'
 
 /**
  * @hidden

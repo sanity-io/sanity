@@ -4,6 +4,7 @@ import {beforeEach, describe, expect, it, type MockedFunction, vi} from 'vitest'
 
 // Now we can safely import the hook and other dependencies
 import {createTestProvider} from '../../../../../test/testUtils/TestProvider'
+import {MenuItem} from '../../../../ui-components'
 import {scheduledRelease} from '../../__fixtures__/release.fixture'
 import {DeleteScheduledDraftDialog} from '../../components/dialog/DeleteScheduledDraftDialog'
 import {PublishScheduledDraftDialog} from '../../components/dialog/PublishScheduledDraftDialog'
@@ -76,17 +77,33 @@ interface TestComponentProps {
 }
 
 function TestComponent({options}: TestComponentProps) {
-  const {menuItems, dialogs} = useScheduledDraftMenuActions(options)
+  const {actions, dialogs} = useScheduledDraftMenuActions(options)
 
   return (
     <>
       <Menu>
         <div data-testid="menu-items">
-          {menuItems.publishNow}
-          {menuItems.editSchedule}
-          {menuItems.deleteSchedule}
+          <MenuItem {...actions.publishNow} />
+          <MenuItem {...actions.editSchedule} />
+          <MenuItem {...actions.deleteSchedule} />
         </div>
       </Menu>
+      <div data-testid="menu-item-props">
+        <div data-testid="publish-now-props">
+          <span data-testid="publish-now-text">{actions.publishNow.text}</span>
+          <span data-testid="publish-now-disabled">{String(actions.publishNow.disabled)}</span>
+        </div>
+        <div data-testid="edit-schedule-props">
+          <span data-testid="edit-schedule-text">{actions.editSchedule.text}</span>
+          <span data-testid="edit-schedule-disabled">{String(actions.editSchedule.disabled)}</span>
+        </div>
+        <div data-testid="delete-schedule-props">
+          <span data-testid="delete-schedule-text">{actions.deleteSchedule.text}</span>
+          <span data-testid="delete-schedule-disabled">
+            {String(actions.deleteSchedule.disabled)}
+          </span>
+        </div>
+      </div>
       <div data-testid="dialogs">{dialogs}</div>
     </>
   )
@@ -182,6 +199,18 @@ describe('useScheduledDraftMenuActions', () => {
     expect(screen.getByTestId('publish-now-menu-item')).toBeInTheDocument()
     expect(screen.getByTestId('edit-schedule-menu-item')).toBeInTheDocument()
     expect(screen.getByTestId('delete-schedule-menu-item')).toBeInTheDocument()
+  })
+
+  it('should provide menu item props with correct values', () => {
+    render(
+      <TestProvider>
+        <TestComponent options={{release: scheduledRelease}} />
+      </TestProvider>,
+    )
+
+    expect(screen.getByTestId('publish-now-text')).toHaveTextContent('Publish now')
+    expect(screen.getByTestId('edit-schedule-text')).toHaveTextContent('Edit schedule')
+    expect(screen.getByTestId('delete-schedule-text')).toHaveTextContent('Delete schedule')
   })
 
   describe('publish now action', () => {

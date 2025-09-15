@@ -53,6 +53,14 @@ export interface PerspectiveContextValue {
   excludedPerspectives: string[]
 }
 
+/**
+ * @internal
+ */
+export type RawPerspectiveContextValue = Pick<
+  PerspectiveContextValue,
+  'selectedPerspective' | 'selectedPerspectiveName' | 'selectedReleaseId'
+>
+
 type ExtractArray<Union> = Union extends unknown[] ? Union : never
 
 /**

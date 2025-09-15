@@ -42,6 +42,7 @@ export {
   isReleasePerspective,
   isReleaseScheduledOrScheduling,
   LATEST,
+  PUBLISHED,
   ReleaseAvatar,
   RELEASES_INTENT,
   RELEASES_STUDIO_CLIENT_OPTIONS,
