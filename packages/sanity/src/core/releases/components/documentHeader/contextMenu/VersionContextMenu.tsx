@@ -3,6 +3,7 @@ import {memo, useEffect, useRef, useState} from 'react'
 
 import {useDocumentPairPermissions} from '../../../../store/_legacy/grants/documentPairPermissions'
 import {getPublishedId, isPublishedId} from '../../../../util/draftUtils'
+import {isCardinalityOneRelease} from '../../../../util/releaseUtils'
 import {useReleaseOperations} from '../../../store/useReleaseOperations'
 import {useReleasePermissions} from '../../../store/useReleasePermissions'
 import {getReleaseDefaults} from '../../../util/util'
@@ -73,7 +74,7 @@ export const VersionContextMenu = memo(function VersionContextMenu(props: Versio
     }
   }, [checkWithPermissionGuard, createRelease])
 
-  const isScheduledDraft = release && release.metadata.cardinality === 'one'
+  const isScheduledDraft = release && isCardinalityOneRelease(release)
 
   // Scheduled drafts use different menu with publish-now, reschedule, and delete actions
   if (isScheduledDraft && isVersion && release) {

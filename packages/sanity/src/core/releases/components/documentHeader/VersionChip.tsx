@@ -23,7 +23,9 @@ import {styled} from 'styled-components'
 import {Popover, Tooltip} from '../../../../ui-components'
 import {useCanvasCompanionDocsStore} from '../../../canvas/store/useCanvasCompanionDocsStore'
 import {Translate, useTranslation} from '../../../i18n'
-import {getDraftId, getErrorMessage, getPublishedId, getVersionId} from '../../../util'
+import {getDraftId, getPublishedId, getVersionId} from '../../../util/draftUtils'
+import {getErrorMessage} from '../../../util/getErrorMessage'
+import {isCardinalityOneRelease} from '../../../util/releaseUtils'
 import {useReleasesToolAvailable} from '../../hooks/useReleasesToolAvailable'
 import {useScheduleDraftOperations} from '../../hooks/useScheduleDraftOperations'
 import {useVersionOperations} from '../../hooks/useVersionOperations'
@@ -245,7 +247,7 @@ export const VersionChip = memo(function VersionChip(props: {
 
   const contextMenuHandler = disabled || !releasesToolAvailable ? undefined : handleContextMenu
   const canShowScheduleDialog =
-    isChangeScheduleDialogOpen && release && release.metadata.cardinality === 'one'
+    isChangeScheduleDialogOpen && release && isCardinalityOneRelease(release)
 
   return (
     <>

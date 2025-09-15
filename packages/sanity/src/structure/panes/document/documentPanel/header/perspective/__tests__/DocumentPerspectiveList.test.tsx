@@ -71,6 +71,7 @@ const mockUsePerspective = usePerspective as Mock<typeof usePerspective>
 const mockCurrent: ReleaseDocument = {
   _updatedAt: '2024-07-12T10:39:32Z',
   _id: '_.releases.rSpringDrop',
+  name: 'rSpringDrop',
   _type: 'system.release',
   _rev: 'r123',
   metadata: {
@@ -113,11 +114,15 @@ const getPaneMock = ({
   displayedVersion = 'draft',
   editStateDocuments,
   displayed,
+  selectedReleaseId,
+  selectedPerspectiveName,
 }: {
   isCreatingDocument?: boolean
   displayedVersion?: ReleaseId | 'published' | 'draft'
   editStateDocuments?: Array<'draft' | 'published' | 'version'>
   displayed?: Record<string, unknown>
+  selectedReleaseId?: ReleaseId
+  selectedPerspectiveName?: 'published' | ReleaseId
 } = {}) => {
   const publishedId = 'foo'
   const editStateDocument = {
@@ -131,6 +136,8 @@ const getPaneMock = ({
   return {
     documentType: 'testAuthor',
     documentId: publishedId,
+    selectedReleaseId,
+    selectedPerspectiveName,
     editState: {
       id: publishedId,
       type: 'testAuthor',
@@ -384,6 +391,8 @@ describe('DocumentPerspectiveList', () => {
             editStateDocuments: [],
             displayedVersion: 'rSpringDrop',
             isCreatingDocument: true,
+            selectedReleaseId: 'rSpringDrop',
+            selectedPerspectiveName: 'rSpringDrop',
           }),
         )
         mockUsePerspective.mockReturnValue({
@@ -471,6 +480,8 @@ describe('DocumentPerspectiveList', () => {
             editStateDocuments: [],
             displayedVersion: 'rSpringDrop',
             isCreatingDocument: true,
+            selectedReleaseId: 'rSpringDrop',
+            selectedPerspectiveName: 'rSpringDrop',
           }),
         )
         mockUsePerspective.mockReturnValue({
@@ -522,6 +533,8 @@ describe('DocumentPerspectiveList', () => {
             editStateDocuments: ['published'],
             displayedVersion: 'rSpringDrop',
             isCreatingDocument: true,
+            selectedReleaseId: 'rSpringDrop',
+            selectedPerspectiveName: 'rSpringDrop',
           }),
         )
         mockUsePerspective.mockReturnValue({
