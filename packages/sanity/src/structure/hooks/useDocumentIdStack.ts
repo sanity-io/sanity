@@ -1,8 +1,13 @@
 import {useMemo} from 'react'
-import {getReleaseIdFromReleaseDocumentId, getVersionId, useWorkspace} from 'sanity'
+import {getReleaseIdFromReleaseDocumentId, getVersionId, isDraftId, useWorkspace} from 'sanity'
 
 import {type DocumentPaneContextValue} from '../panes/document/DocumentPaneContext'
+import {type StrictVersionLayeringOptions} from '../types'
 import {useFilteredReleases} from './useFilteredReleases'
+
+interface Options
+  extends Pick<DocumentPaneContextValue, 'displayed' | 'documentId' | 'editState'>,
+    StrictVersionLayeringOptions {}
 
 /**
  * @internal
@@ -37,18 +42,31 @@ export function useDocumentIdStack({
   displayed,
   documentId,
   editState,
-}: Pick<DocumentPaneContextValue, 'displayed' | 'documentId' | 'editState'>): DocumentIdStack {
+  strict,
+}: Options): DocumentIdStack {
   const {
     document: {
       drafts: {enabled: isDraftModelEnabled},
     },
   } = useWorkspace()
 
-  const filteredReleases = useFilteredReleases({displayed, documentId})
+  const filteredReleases = useFilteredReleases({
+    displayed,
+    documentId,
+    strict,
+  })
+
+  // In strict mode, only include the draft if it's the displayed version. This
+  // ensures layering reflects only the known chronology of versions.
+  //
+  // For example, when viewing an ASAP version, it's impossible to know whether
+  // the draft will be published first.
+  const shouldIncludeDraft =
+    isDraftModelEnabled && (strict ? isDraftId(displayed?._id ?? '') : true)
 
   const systemStack = [
     editState?.published?._id,
-    isDraftModelEnabled ? editState?.draft?._id : [],
+    shouldIncludeDraft ? editState?.draft?._id : [],
   ].flat()
 
   const releaseStack = filteredReleases.currentReleases.map(
