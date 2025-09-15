@@ -2120,6 +2120,8 @@ export const studioLocaleStrings = defineLocalesResources('studio', {
    * workspace to authenticate in.
    */
   'workspaces.action.choose-another-workspace': 'Choose another workspace',
+  /** Label for title to switch workspace before workspaces are listed */
+  'workspaces.action.switch-workspace': 'Switch workspace',
   /** Label for heading that indicates that you can choose your workspace */
   'workspaces.choose-your-workspace-label': 'Choose your workspace',
   /** Label for the workspace menu */
