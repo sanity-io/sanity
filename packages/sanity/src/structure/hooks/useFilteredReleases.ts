@@ -1,5 +1,6 @@
 import {useMemo} from 'react'
 import {
+  getDocumentIsInPerspective,
   getReleaseIdFromReleaseDocumentId,
   getVersionFromId,
   type ReleaseDocument,
@@ -11,6 +12,7 @@ import {
 
 import {usePaneRouter} from '../components/paneRouter/usePaneRouter'
 import {type DocumentPaneContextValue} from '../panes/document/DocumentPaneContext'
+import {type StrictVersionLayeringOptions} from '../types'
 
 type FilterReleases = {
   notCurrentReleases: ReleaseDocument[]
@@ -18,13 +20,14 @@ type FilterReleases = {
   inCreation: ReleaseDocument | null
 }
 
+interface Options
+  extends Pick<DocumentPaneContextValue, 'displayed' | 'documentId'>,
+    StrictVersionLayeringOptions {}
+
 /**
  * @internal
  */
-export function useFilteredReleases({
-  displayed,
-  documentId,
-}: Pick<DocumentPaneContextValue, 'displayed' | 'documentId'>): FilterReleases {
+export function useFilteredReleases({displayed, documentId, strict}: Options): FilterReleases {
   const {selectedReleaseId} = usePerspective()
   const {data: releases} = useActiveReleases()
   const {data: archivedReleases} = useArchivedReleases()
@@ -50,7 +53,25 @@ export function useFilteredReleases({
         if (isCreatingThisVersion) {
           acc.inCreation = release
         } else if (versionDocExists) {
-          acc.currentReleases.push(release)
+          if (strict) {
+            // In strict mode, only include the release if it contains the displayed version, or
+            // if it's a scheduled release. This ensures layering reflects only the known
+            // chronology of releases.
+            //
+            // For example, when viewing an ASAP version, it's impossible to know whether
+            // some other ASAP version will be published first.
+            if (
+              getDocumentIsInPerspective(
+                displayed?._id ?? '',
+                getReleaseIdFromReleaseDocumentId(release._id),
+              ) ||
+              release.metadata.releaseType === 'scheduled'
+            ) {
+              acc.currentReleases.push(release)
+            }
+          } else {
+            acc.currentReleases.push(release)
+          }
         } else {
           acc.notCurrentReleases.push(release)
         }
@@ -80,5 +101,6 @@ export function useFilteredReleases({
     params?.historyVersion,
     releases,
     selectedReleaseId,
+    strict,
   ])
 }
