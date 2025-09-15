@@ -32,7 +32,7 @@ const DEBUG_AUTO_UPDATE_VERSION = false
 const DEBUG_VALUES = {
   currentVersion: '4.0.0-pr.10176',
   // alternative, non-appid based url: 'https://sanity-cdn.com/v1/modules/sanity/default/%5E3.80.1/t1754072932',
-  importMapUrl: 'sanity',
+  importMapUrl: `https://sanity-cdn.com/v1/modules/by-app/appid123/t${Math.floor(Date.now() / 1000)}/%5E4.5.0/sanity`,
   autoUpdateVersion: '4.2.0-next.17',
   latestVersion: '4.5.5',
 } as const
