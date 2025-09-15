@@ -4,6 +4,7 @@ import {Card, Stack} from '@sanity/ui'
 import {Button} from '../../../../../ui-components'
 import {useTranslation} from '../../../../i18n'
 import {userHasRole} from '../../../../util'
+import {useEnvAwareSanityWebsiteUrl} from '../../../hooks/useEnvAwareSanityWebsiteUrl'
 import {useWorkspace} from '../../../workspace'
 import {FreeTrial} from '../free-trial'
 
@@ -12,6 +13,7 @@ export function ManageMenu() {
   const isAdmin = Boolean(currentUser && userHasRole(currentUser, 'administrator'))
 
   const {t} = useTranslation()
+  const envAwareWebsiteUrl = useEnvAwareSanityWebsiteUrl()
 
   return (
     <Card borderTop flex="none" padding={2}>
@@ -24,7 +26,7 @@ export function ManageMenu() {
           <Button
             aria-label={t('user-menu.action.manage-project-aria-label')}
             as="a"
-            href={`https://sanity.io/manage/project/${projectId}`}
+            href={`${envAwareWebsiteUrl}/manage/project/${projectId}`}
             icon={CogIcon}
             justify="flex-start"
             mode="bleed"
@@ -39,7 +41,7 @@ export function ManageMenu() {
             <Button
               aria-label={t('user-menu.action.invite-members-aria-label')}
               as="a"
-              href={`https://www.sanity.io/manage/project/${projectId}/members?invite=true`}
+              href={`${envAwareWebsiteUrl}/manage/project/${projectId}/members?invite=true`}
               icon={AddUserIcon}
               justify="flex-start"
               mode="bleed"

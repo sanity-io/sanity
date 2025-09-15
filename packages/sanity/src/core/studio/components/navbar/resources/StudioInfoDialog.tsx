@@ -8,6 +8,7 @@ import {styled} from 'styled-components'
 import {Button, Dialog, Tooltip} from '../../../../../ui-components'
 import {isProd} from '../../../../environment'
 import {useTranslation} from '../../../../i18n'
+import {useEnvAwareSanityWebsiteUrl} from '../../../hooks/useEnvAwareSanityWebsiteUrl'
 import {usePackageVersionStatus} from '../../../packageVersionStatus/usePackageVersionStatus'
 import {useWorkspace} from '../../../workspace'
 
@@ -82,6 +83,7 @@ export function StudioInfoDialog(props: StudioInfoDialogProps) {
   }, [checkForUpdates])
 
   const githubUrl = resolveGithubURLFromVersion(currentVersion)
+  const sanityWebsiteUrl = useEnvAwareSanityWebsiteUrl()
 
   return (
     <Dialog width={0} onClickOutside={onClose} id={dialogId} padding={false}>
@@ -206,7 +208,7 @@ export function StudioInfoDialog(props: StudioInfoDialogProps) {
                 </Text>
                 <Button
                   as="a"
-                  href={`https://sanity.io/manage/project/${projectId}/studios?host=${document.location.hostname}`}
+                  href={`${sanityWebsiteUrl}/manage/project/${projectId}/studios?host=${document.location.hostname}`}
                   target="_blank"
                   rel="noopener noreferrer"
                   mode="ghost"

@@ -8,6 +8,7 @@ import {Dialog} from '../../../ui-components'
 
 interface CorsOriginErrorScreenProps {
   projectId?: string
+  isStaging: boolean
 }
 
 export const ScreenReaderLabel = styled.label`
@@ -22,17 +23,20 @@ export const ScreenReaderLabel = styled.label`
 `
 
 export function CorsOriginErrorScreen(props: CorsOriginErrorScreenProps) {
-  const {projectId} = props
+  const {projectId, isStaging} = props
 
   const origin = window.location.origin
   const corsUrl = useMemo(() => {
-    const url = new URL(`https://sanity.io/manage/project/${projectId}/api`)
+    const url = new URL(
+      `/manage/project/${projectId}/api`,
+      isStaging ? 'https://sanity.work' : 'https://sanity.io',
+    )
     url.searchParams.set('cors', 'add')
     url.searchParams.set('origin', origin)
     url.searchParams.set('credentials', '')
 
     return url.toString()
-  }, [origin, projectId])
+  }, [isStaging, origin, projectId])
 
   useEffect(() => {
     const handleFocus = () => {
