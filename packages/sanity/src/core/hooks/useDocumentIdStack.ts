@@ -1,18 +1,17 @@
+import {type SanityDocument, type StrictVersionLayeringOptions} from '@sanity/types'
 import {useMemo} from 'react'
-import {
-  getReleaseIdFromReleaseDocumentId,
-  getVersionId,
-  isDraftId,
-  type StrictVersionLayeringOptions,
-  useWorkspace,
-} from 'sanity'
 
-import {type DocumentPaneContextValue} from '../panes/document/DocumentPaneContext'
+import {getReleaseIdFromReleaseDocumentId} from '../releases/util/getReleaseIdFromReleaseDocumentId'
+import {type EditStateFor} from '../store/_legacy/document/document-pair/editState'
+import {useWorkspace} from '../studio/workspace'
+import {getVersionId, isDraftId} from '../util/draftUtils'
 import {useFilteredReleases} from './useFilteredReleases'
 
-interface Options
-  extends Pick<DocumentPaneContextValue, 'displayed' | 'documentId' | 'editState'>,
-    StrictVersionLayeringOptions {}
+interface Options extends StrictVersionLayeringOptions {
+  displayed: Partial<SanityDocument> | null
+  documentId: string
+  editState: EditStateFor | null
+}
 
 /**
  * @internal
