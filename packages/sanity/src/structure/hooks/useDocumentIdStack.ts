@@ -1,8 +1,13 @@
 import {useMemo} from 'react'
-import {getReleaseIdFromReleaseDocumentId, getVersionId, isDraftId, useWorkspace} from 'sanity'
+import {
+  getReleaseIdFromReleaseDocumentId,
+  getVersionId,
+  isDraftId,
+  type StrictVersionLayeringOptions,
+  useWorkspace,
+} from 'sanity'
 
 import {type DocumentPaneContextValue} from '../panes/document/DocumentPaneContext'
-import {type StrictVersionLayeringOptions} from '../types'
 import {useFilteredReleases} from './useFilteredReleases'
 
 interface Options
