@@ -31,8 +31,8 @@ const DEBUG_AUTO_UPDATE_VERSION = false
 
 const DEBUG_VALUES = {
   currentVersion: '4.0.0-pr.10176',
-  // alternative legacy (non-appid) url: 'https://sanity-cdn.com/v1/modules/sanity/default/%5E3.80.1/t1754072932',
-  importMapUrl: 'https://sanity-cdn.com/v1/modules/by-app/appid123/t1755876954/%5E4.5.0/sanity',
+  // alternative, non-appid based url: 'https://sanity-cdn.com/v1/modules/sanity/default/%5E3.80.1/t1754072932',
+  importMapUrl: 'sanity',
   autoUpdateVersion: '4.2.0-next.17',
   latestVersion: '4.5.5',
 } as const
@@ -58,7 +58,18 @@ const getImportMapInfo = memoize(() => {
 })
 
 export function PackageVersionStatusProvider({children}: {children: ReactNode}) {
-  const importMapInfo = useMemo(() => getImportMapInfo(), [])
+  const importMapInfo = useMemo(() => {
+    const result = getImportMapInfo()
+    if (!result.valid) {
+      console.warn(
+        new Error(
+          'Unable to extract version from import map, auto updates may not work as expected',
+          {cause: result.error},
+        ),
+      )
+    }
+    return result
+  }, [])
   const currentVersion = useMemo(() => getCurrentVersion(), [])
 
   const isAutoUpdating = Boolean(importMapInfo.valid)
