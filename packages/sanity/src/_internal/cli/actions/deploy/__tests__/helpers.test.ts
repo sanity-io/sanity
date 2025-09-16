@@ -151,11 +151,37 @@ describe('getOrCreateUserApplicationFromConfig', () => {
       spinner: mockSpinner,
       context,
       appHost: 'example',
+      appId: undefined,
     })
 
     expect(mockClientRequest).toHaveBeenCalledWith({
       uri: '/user-applications',
       query: {appHost: 'example'},
+    })
+    expect(result).toEqual({
+      id: 'existing-app',
+      urlType: 'internal',
+      appHost: 'example.sanity.studio',
+    })
+  })
+
+  it('gets an existing user application if `deployment.appId` is provided in the config', async () => {
+    mockClientRequest.mockResolvedValueOnce({
+      id: 'existing-app',
+      appHost: 'example.sanity.studio',
+      urlType: 'internal',
+    })
+
+    const result = await getOrCreateUserApplicationFromConfig({
+      client: mockClient,
+      spinner: mockSpinner,
+      context,
+      appHost: undefined,
+      appId: 'existing-app',
+    })
+
+    expect(mockClientRequest).toHaveBeenCalledWith({
+      uri: '/user-applications/existing-app',
     })
     expect(result).toEqual({
       id: 'existing-app',
@@ -177,6 +203,7 @@ describe('getOrCreateUserApplicationFromConfig', () => {
       client: mockClient,
       spinner: mockSpinner,
       context,
+      appId: undefined,
       appHost: 'newhost',
     })
 

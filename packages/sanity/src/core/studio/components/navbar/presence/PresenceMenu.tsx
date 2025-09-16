@@ -8,6 +8,7 @@ import {StatusButton} from '../../../../components'
 import {useTranslation} from '../../../../i18n'
 import {useGlobalPresence} from '../../../../store'
 import {useColorSchemeValue} from '../../../colorScheme'
+import {useEnvAwareSanityWebsiteUrl} from '../../../hooks/useEnvAwareSanityWebsiteUrl'
 import {useWorkspace} from '../../../workspace'
 import {PresenceMenuItem} from './PresenceMenuItem'
 
@@ -72,6 +73,7 @@ export function PresenceMenu() {
     [scheme],
   )
 
+  const envAwareWebsiteUrl = useEnvAwareSanityWebsiteUrl()
   return (
     <MenuButton
       button={button}
@@ -109,7 +111,7 @@ export function PresenceMenu() {
 
             <MenuItem
               as="a"
-              href={`https://www.sanity.io/manage/project/${projectId}/members?invite=true`}
+              href={`${envAwareWebsiteUrl}/manage/project/${projectId}/members?invite=true`}
               icon={AddUserIcon}
               onFocus={handleClearFocusedItem}
               rel="noopener noreferrer"

@@ -10,10 +10,13 @@ import {
   type EditStateFor,
   EMPTY_ARRAY,
   getPublishedId,
+  getReleaseIdFromReleaseDocumentId,
+  isCardinalityOneRelease,
   isGoingToUnpublish,
   isPerspectiveWriteable,
   isVersionId,
   type PartialContext,
+  useActiveReleases,
   useCopyPaste,
   useDocumentForm,
   usePerspective,
@@ -106,6 +109,7 @@ export const DocumentPaneProvider = memo((props: DocumentPaneProviderProps) => {
     if (forcedVersion) {
       return forcedVersion
     }
+
     return {
       selectedPerspectiveName: perspective.selectedPerspectiveName,
       selectedReleaseId: perspective.selectedReleaseId,
@@ -251,15 +255,27 @@ export const DocumentPaneProvider = memo((props: DocumentPaneProviderProps) => {
     getFormDocumentValue: getDisplayed,
   })
 
+  const {data: releases = []} = useActiveReleases()
+
   const getDocumentVersionType = useCallback(() => {
     let version: DocumentActionsVersionType
     switch (true) {
       case Boolean(params.rev):
         version = 'revision'
         break
-      case selectedReleaseId && isVersionId(value._id):
-        version = 'version'
+      case selectedReleaseId && isVersionId(value._id): {
+        // Check if this is a scheduled draft (cardinality one release)
+        const releaseDocument = releases.find(
+          (r) => getReleaseIdFromReleaseDocumentId(r._id) === selectedReleaseId,
+        )
+
+        if (releaseDocument && isCardinalityOneRelease(releaseDocument)) {
+          version = 'scheduled-draft'
+        } else {
+          version = 'version'
+        }
         break
+      }
       case selectedPerspectiveName === 'published':
         version = 'published'
         break
@@ -271,7 +287,7 @@ export const DocumentPaneProvider = memo((props: DocumentPaneProviderProps) => {
     }
 
     return version
-  }, [params.rev, selectedReleaseId, value._id, selectedPerspectiveName, draftsEnabled])
+  }, [params.rev, selectedReleaseId, value._id, selectedPerspectiveName, draftsEnabled, releases])
 
   const actionsPerspective = useMemo(() => getDocumentVersionType(), [getDocumentVersionType])
 

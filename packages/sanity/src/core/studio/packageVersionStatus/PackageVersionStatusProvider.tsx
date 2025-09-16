@@ -1,11 +1,15 @@
+import {memoize} from 'lodash'
 import {type ReactNode, useCallback, useEffect, useMemo, useRef, useState} from 'react'
 import {PackageVersionInfoContext} from 'sanity/_singletons'
 import semver from 'semver'
 
 import {getSanityImportMapUrl} from '../../environment/importMap'
 import {SANITY_VERSION} from '../../version'
-import {fetchLatestVersionForPackage} from './fetchLatestVersions'
-import {getBaseVersionFromModuleCDNUrl} from './utils'
+import {
+  fetchLatestAutoUpdatingVersion,
+  fetchLatestAvailableVersionForPackage,
+} from './fetchLatestVersions'
+import {parseImportMapModuleCdnUrl} from './utils'
 
 // How often to check for new versions
 const POLL_INTERVAL_MS = 1000 * 60 * 15 // check every 15 minutes
@@ -27,33 +31,48 @@ const DEBUG_AUTO_UPDATE_VERSION = false
 
 const DEBUG_VALUES = {
   currentVersion: '4.0.0-pr.10176',
-  importMapUrl: 'https://sanity-cdn.com/v1/modules/by-app/appid123/t1755876954/%5E4.5.0/sanity',
+  // alternative, non-appid based url: 'https://sanity-cdn.com/v1/modules/sanity/default/%5E3.80.1/t1754072932',
+  importMapUrl: `https://sanity-cdn.com/v1/modules/by-app/appid123/t${Math.floor(Date.now() / 1000)}/%5E4.5.0/sanity`,
   autoUpdateVersion: '4.2.0-next.17',
   latestVersion: '4.5.5',
 } as const
 
-const CURRENT_VERSION = DEBUG_CURRENT_VERSION ? DEBUG_VALUES.currentVersion : SANITY_VERSION
+const getCurrentVersion = memoize(
+  () => semver.parse(DEBUG_CURRENT_VERSION ? DEBUG_VALUES.currentVersion : SANITY_VERSION)!,
+)
+
+const getSanityImportMapEntryValue = memoize(() =>
+  DEBUG_IMPORT_MAP ? DEBUG_VALUES.importMapUrl : getSanityImportMapUrl(),
+)
+
+const getImportMapInfo = memoize(() => {
+  const sanityPackageImportMapEntryValue = getSanityImportMapEntryValue()
+
+  if (!sanityPackageImportMapEntryValue) {
+    return {
+      valid: false as const,
+      error: new Error('No import map entry for module "sanity" found in DOM'),
+    }
+  }
+  return parseImportMapModuleCdnUrl(sanityPackageImportMapEntryValue)
+})
 
 export function PackageVersionStatusProvider({children}: {children: ReactNode}) {
-  const sanityPackageImportMapEntryValue = useMemo(
-    () => (DEBUG_IMPORT_MAP ? DEBUG_VALUES.importMapUrl : getSanityImportMapUrl()),
-    [],
-  )
+  const importMapInfo = useMemo(() => {
+    const result = getImportMapInfo()
+    if (!result.valid) {
+      console.warn(
+        new Error(
+          'Unable to extract version from import map, auto updates may not work as expected',
+          {cause: result.error},
+        ),
+      )
+    }
+    return result
+  }, [])
+  const currentVersion = useMemo(() => getCurrentVersion(), [])
 
-  const currentVersion = useMemo(() => semver.parse(CURRENT_VERSION)!, [])
-
-  const baseVersion =
-    useMemo(
-      () =>
-        sanityPackageImportMapEntryValue
-          ? semver.coerce(getBaseVersionFromModuleCDNUrl(sanityPackageImportMapEntryValue), {
-              includePrerelease: true,
-            })
-          : currentVersion!,
-      [currentVersion, sanityPackageImportMapEntryValue],
-    ) || undefined
-
-  const isAutoUpdating = Boolean(sanityPackageImportMapEntryValue)
+  const isAutoUpdating = Boolean(importMapInfo.valid)
 
   const lastCheckRef = useRef<number>(undefined)
   const [autoUpdatingVersionRaw, setAutoUpdatingVersionRaw] = useState<string>()
@@ -88,21 +107,29 @@ export function PackageVersionStatusProvider({children}: {children: ReactNode}) 
     Promise.all([
       DEBUG_AUTO_UPDATE_VERSION
         ? Promise.resolve(DEBUG_VALUES.autoUpdateVersion)
-        : isAutoUpdating && baseVersion
-          ? fetchLatestVersionForPackage('sanity', baseVersion.version)
+        : isAutoUpdating && importMapInfo.valid
+          ? fetchLatestAutoUpdatingVersion({
+              packageName: 'sanity',
+              minVersion: semver.coerce(importMapInfo.minVersion, {includePrerelease: true})!,
+              appId: importMapInfo.appId,
+            })
           : Promise.resolve(undefined),
       DEBUG_LATEST_VERSION
         ? Promise.resolve(DEBUG_VALUES.latestVersion)
-        : baseVersion
-          ? fetchLatestVersionForPackage('sanity', baseVersion.version, 'latest')
-          : Promise.resolve(undefined),
+        : fetchLatestAvailableVersionForPackage({
+            packageName: 'sanity',
+            minVersion: importMapInfo.valid
+              ? semver.coerce(importMapInfo.minVersion, {includePrerelease: true})!
+              : currentVersion,
+            tag: 'latest',
+          }),
     ])
       .then(([nextAutoUpdatingVersion, nextLatestTaggedVersion]) => {
         setAutoUpdatingVersionRaw(nextAutoUpdatingVersion)
         setLatestTaggedVersionRaw(nextLatestTaggedVersion)
       })
       .finally(() => setVersionCheckStatus({lastCheckedAt: new Date(), checking: false}))
-  }, [baseVersion, isAutoUpdating])
+  }, [currentVersion, importMapInfo, isAutoUpdating])
 
   useEffect(() => {
     async function poll() {
@@ -116,13 +143,15 @@ export function PackageVersionStatusProvider({children}: {children: ReactNode}) 
     const intervalId = setInterval(poll, POLL_INTERVAL_MS)
 
     return () => clearInterval(intervalId)
-  }, [fetchNewVersions, isAutoUpdating])
+  }, [fetchNewVersions])
 
   const contextValue = useMemo(
     () => ({
       isAutoUpdating,
       autoUpdatingVersion,
-      baseVersion,
+      baseVersion: importMapInfo.valid
+        ? semver.coerce(importMapInfo.minVersion, {includePrerelease: true})!
+        : undefined,
       latestTaggedVersion,
       currentVersion,
       checkForUpdates: isAutoUpdating ? fetchNewVersions : noop,
@@ -131,7 +160,7 @@ export function PackageVersionStatusProvider({children}: {children: ReactNode}) 
     [
       isAutoUpdating,
       autoUpdatingVersion,
-      baseVersion,
+      importMapInfo,
       latestTaggedVersion,
       currentVersion,
       fetchNewVersions,

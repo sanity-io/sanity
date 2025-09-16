@@ -1,4 +1,5 @@
 import {CalendarIcon} from '@sanity/icons'
+import {isValidationErrorMarker} from '@sanity/types'
 import {useToast} from '@sanity/ui'
 import {useCallback, useState} from 'react'
 
@@ -7,10 +8,12 @@ import {
   type DocumentActionDescription,
   type DocumentActionProps,
 } from '../../../config/document/actions'
+import {useValidationStatus} from '../../../hooks'
 import {useTranslation} from '../../../i18n'
 import {usePerspective} from '../../../perspective/usePerspective'
 import {useDocumentPreviewValues} from '../../../tasks/hooks/useDocumentPreviewValues'
 import {ScheduleDraftDialog} from '../../components/dialog/ScheduleDraftDialog'
+import {useHasCardinalityOneReleaseVersions} from '../../hooks/useHasCardinalityOneReleaseVersions'
 import {useScheduleDraftOperations} from '../../hooks/useScheduleDraftOperations'
 import {releasesLocaleNamespace} from '../../i18n'
 
@@ -22,7 +25,7 @@ export const SchedulePublishAction: DocumentActionComponent = (
 ): DocumentActionDescription | null => {
   const {id, type, draft} = props
   const {t} = useTranslation(releasesLocaleNamespace)
-  const {schedulePublish} = useScheduleDraftOperations()
+  const {createScheduledDraft} = useScheduleDraftOperations()
   const toast = useToast()
   const {perspectiveStack} = usePerspective()
 
@@ -32,6 +35,13 @@ export const SchedulePublishAction: DocumentActionComponent = (
     documentType: type,
     perspectiveStack,
   })
+
+  // Check validation status
+  const validationStatus = useValidationStatus(id, type)
+  const hasValidationErrors = validationStatus.validation.some(isValidationErrorMarker)
+
+  // Check if document has versions in cardinality one releases
+  const hasCardinalityOneReleaseVersions = useHasCardinalityOneReleaseVersions(id)
 
   const [dialogOpen, setDialogOpen] = useState(false)
   const [isScheduling, setIsScheduling] = useState(false)
@@ -51,7 +61,7 @@ export const SchedulePublishAction: DocumentActionComponent = (
       try {
         // Pass the document title from preview values
         const documentTitle = previewValues?.title || undefined
-        await schedulePublish(id, publishAt, documentTitle)
+        await createScheduledDraft(id, publishAt, documentTitle)
 
         toast.push({
           closable: true,
@@ -77,14 +87,25 @@ export const SchedulePublishAction: DocumentActionComponent = (
         setIsScheduling(false)
       }
     },
-    [id, schedulePublish, previewValues?.title, toast, t],
+    [id, createScheduledDraft, previewValues?.title, toast, t],
   )
 
+  if (!draft) {
+    return null
+  }
+
+  const disabled = hasCardinalityOneReleaseVersions || hasValidationErrors
+  const title = hasCardinalityOneReleaseVersions
+    ? t('action.schedule-publish.disabled.cardinality-one')
+    : hasValidationErrors
+      ? t('action.schedule-publish.disabled.validation-issues')
+      : t('action.schedule-publish')
+
   return {
-    disabled: !draft,
     icon: CalendarIcon,
+    disabled,
     label: t('action.schedule-publish'),
-    title: t('action.schedule-publish'),
+    title,
     onHandle: handleOpenDialog,
     dialog: dialogOpen && {
       type: 'custom',
@@ -92,10 +113,7 @@ export const SchedulePublishAction: DocumentActionComponent = (
         <ScheduleDraftDialog
           onClose={handleCloseDialog}
           onSchedule={handleSchedule}
-          header={t('schedule-publish-dialog.header')}
-          description={t('schedule-publish-dialog.description')}
-          confirmButtonText={t('schedule-publish-dialog.confirm')}
-          confirmButtonTone="primary"
+          variant="schedule"
           loading={isScheduling}
         />
       ),

@@ -3,6 +3,7 @@ import {useMemo} from 'react'
 import {
   getReleaseIdFromReleaseDocumentId,
   getVersionInlineBadge,
+  isCardinalityOneRelease,
   Translate,
   useArchivedReleases,
   useTranslation,
@@ -33,10 +34,17 @@ export function ArchivedReleaseDocumentBanner(): React.JSX.Element {
     )
   }, [archivedReleases, params?.historyVersion])
 
-  const description =
-    release?.state === 'published'
-      ? 'banners.published-release.description'
-      : 'banners.archived-release.description'
+  const description = useMemo(() => {
+    if (release?.state === 'published') {
+      return 'banners.published-release.description'
+    }
+
+    if (release && isCardinalityOneRelease(release)) {
+      return 'banners.archived-scheduled-draft.description'
+    }
+
+    return 'banners.archived-release.description'
+  }, [release])
 
   const title = release?.metadata.title || tCore('release.placeholder-untitled-release')
 

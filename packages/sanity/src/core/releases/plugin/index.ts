@@ -24,6 +24,11 @@ export const RELEASES_INTENT = 'release'
 /**
  * @internal
  */
+export const RELEASES_SCHEDULED_DRAFTS_INTENT = 'releases-scheduled-drafts'
+
+/**
+ * @internal
+ */
 export const releases = definePlugin({
   name: RELEASES_NAME,
   studio: {
@@ -37,13 +42,21 @@ export const releases = definePlugin({
       title: 'Releases',
       component: ReleasesTool,
       router: route.create('/', [route.create('/:releaseId')]),
-      canHandleIntent: (intent) => {
-        // If intent is release, open the releases tool.
-        return Boolean(intent === RELEASES_INTENT)
-      },
+      canHandleIntent: (intent) =>
+        Boolean(intent === RELEASES_INTENT || intent === RELEASES_SCHEDULED_DRAFTS_INTENT),
       getIntentState(intent, params) {
         if (intent === RELEASES_INTENT) {
           return {releaseId: params.id}
+        }
+        if (intent === RELEASES_SCHEDULED_DRAFTS_INTENT) {
+          // Handle view parameter and convert to search params
+          const searchParams = []
+          if (params.view) {
+            searchParams.push(['view', params.view])
+          }
+          return {
+            _searchParams: searchParams,
+          }
         }
         return null
       },

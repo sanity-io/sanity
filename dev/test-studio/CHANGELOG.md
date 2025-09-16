@@ -3,6 +3,20 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [4.9.0](https://github.com/sanity-io/sanity/compare/v4.8.1...v4.9.0) (2025-09-16)
+
+
+### Bug Fixes
+
+* **deps:** update dependency @portabletext/block-tools to ^3.5.5 ([#10614](https://github.com/sanity-io/sanity/issues/10614)) ([7a64fdf](https://github.com/sanity-io/sanity/commit/7a64fdf0a1b61fbdba0ab2642278d2fdceb06b35))
+* **deps:** update dependency @portabletext/editor to ^2.8.4 ([#10615](https://github.com/sanity-io/sanity/issues/10615)) ([9c51cc5](https://github.com/sanity-io/sanity/commit/9c51cc588261b5c89f8f1575cab59e4c287de6be))
+* **deps:** update dependency @portabletext/editor to ^2.9.0 ([#10621](https://github.com/sanity-io/sanity/issues/10621)) ([63d13b8](https://github.com/sanity-io/sanity/commit/63d13b8187027de1dbfc26a31228f65d5874d49c))
+* **deps:** update dependency @portabletext/editor to ^2.9.1 ([#10626](https://github.com/sanity-io/sanity/issues/10626)) ([c62a30a](https://github.com/sanity-io/sanity/commit/c62a30a6aa95227f4ca1906541d230cd87299bf5))
+* **deps:** update dependency @portabletext/editor to ^2.9.2 ([#10641](https://github.com/sanity-io/sanity/issues/10641)) ([38d7116](https://github.com/sanity-io/sanity/commit/38d7116afb1e9d34160007427cb4ea6f203aaa73))
+* **deps:** update dependency @sanity/ui to ^3.1.0 ([#10627](https://github.com/sanity-io/sanity/issues/10627)) ([1a708b5](https://github.com/sanity-io/sanity/commit/1a708b5f58107ab9dc4dbcda67755e90e3b16596))
+
+
+
 ## [4.8.1](https://github.com/sanity-io/sanity/compare/v4.8.0...v4.8.1) (2025-09-10)
 
 **Note:** Version bump only for package sanity-test-studio

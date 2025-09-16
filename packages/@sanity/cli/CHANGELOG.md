@@ -3,6 +3,16 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [4.9.0](https://github.com/sanity-io/sanity/compare/v4.8.1...v4.9.0) (2025-09-16)
+
+
+### Features
+
+* **cli:** Add delta flags to functions test command ([#10607](https://github.com/sanity-io/sanity/issues/10607)) ([166f7af](https://github.com/sanity-io/sanity/commit/166f7afc022c20a0e773256f238ab26d9e85d050))
+* **init:** update next.js init template to next-sanity v11 ([#10610](https://github.com/sanity-io/sanity/issues/10610)) ([bd3d363](https://github.com/sanity-io/sanity/commit/bd3d3638612c4c605173390df495036a2a01fab6))
+
+
+
 ## [4.8.1](https://github.com/sanity-io/sanity/compare/v4.8.0...v4.8.1) (2025-09-10)
 
 **Note:** Version bump only for package @sanity/cli
