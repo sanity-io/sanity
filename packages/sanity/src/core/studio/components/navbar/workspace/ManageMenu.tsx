@@ -16,8 +16,8 @@ export function ManageMenu() {
   const {t} = useTranslation()
 
   return (
-    <Stack paddingX={5} paddingTop={4}>
-      <Flex paddingBottom={2} align="center">
+    <Stack paddingX={5} paddingTop={4} paddingBottom={3}>
+      <Flex align="center">
         <WorkspacePreviewIcon icon={activeWorkspace.icon} size="large" />
         <Stack marginLeft={2} space={2}>
           <Text size={0}>{activeWorkspace.name}</Text>
@@ -27,27 +27,25 @@ export function ManageMenu() {
         </Stack>
       </Flex>
 
-      <Flex justify="space-between" align="center" gap={2} paddingBottom={2}>
+      <Flex justify="space-between" align="center" gap={2} paddingTop={4}>
         <Button
-          mode="bleed"
+          mode="ghost"
           as="a"
           href={`https://sanity.io/manage/project/${projectId}`}
           target="_blank"
           icon={CogIcon}
           tooltipProps={{content: t('user-menu.action.manage-project-aria-label')}}
           text={t('user-menu.action.manage-project-aria-label')}
-          style={{border: '1px solid #ECECEF'}}
         />
         {isAdmin && (
           <Button
-            mode="bleed"
+            mode="ghost"
             as="a"
             href={`https://www.sanity.io/manage/project/${projectId}/members?invite=true`}
             target="_blank"
             icon={AddUserIcon}
             tooltipProps={{content: t('user-menu.action.invite-members')}}
             text={t('user-menu.action.invite-members')}
-            style={{border: '1px solid #ECECEF'}}
           />
         )}
       </Flex>

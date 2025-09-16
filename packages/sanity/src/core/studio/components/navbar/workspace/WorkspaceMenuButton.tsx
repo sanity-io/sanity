@@ -72,7 +72,7 @@ export function WorkspaceMenuButton() {
             {workspaces.length > 1 && (
               <>
                 <MenuDivider />
-                <Box paddingX={5} paddingTop={2}>
+                <Box paddingX={5} paddingTop={3}>
                   <Box paddingBottom={2}>
                     <Text size={0}>{t('workspaces.action.switch-workspace')}</Text>
                   </Box>
