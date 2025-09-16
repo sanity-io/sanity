@@ -22,6 +22,7 @@ import recipe from './tests/recipe/recipe'
 import synthetic from './tests/synthetic/synthetic'
 import {type EfpsAbResult, type EfpsResult, type EfpsTest} from './types'
 import {formatPercentageChange, isSignificantlyDifferent} from './utils'
+import {API_HOST, API_VERSION} from './utils/const'
 
 const TEST_ATTEMPTS = process.env.CI ? 3 : 1
 
@@ -44,8 +45,8 @@ const client = createClient({
   dataset,
   token,
   useCdn: false,
-  apiVersion: 'v2024-08-08',
-  apiHost: 'https://api.sanity.work',
+  apiVersion: API_VERSION,
+  apiHost: API_HOST,
 })
 
 const workspaceDir = path.dirname(fileURLToPath(import.meta.url))
