@@ -125,7 +125,6 @@ const formatEfps = (latencyMs: number) => {
 
 const spinner = Ora()
 
-console.log(projectId, dataset)
 spinner.info(
   `Running ${selectedTests.length} tests: ${selectedTests.map((t) => `'${t.name}'`).join(', ')}`,
 )
