@@ -2,7 +2,7 @@ import {useMemo} from 'react'
 import {useObservable} from 'react-rx'
 import {of} from 'rxjs'
 
-import {useFeatureEnabled} from '../../hooks/useFeatureEnabled'
+import {FEATURES, useFeatureEnabled} from '../../hooks/useFeatureEnabled'
 import {useReleaseLimits} from '../store/useReleaseLimits'
 
 /**
@@ -11,7 +11,7 @@ import {useReleaseLimits} from '../store/useReleaseLimits'
  */
 export const useIsReleasesPlus = (): boolean => {
   const {releaseLimits$} = useReleaseLimits()
-  const {enabled: isReleasesFeatureEnabled} = useFeatureEnabled('contentReleases')
+  const {enabled: isReleasesFeatureEnabled} = useFeatureEnabled(FEATURES.contentReleases)
 
   /**
    * Only provide observable to cache store if releases is feature enabled

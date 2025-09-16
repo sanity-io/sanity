@@ -1,7 +1,7 @@
 import {useMemo} from 'react'
 import {TasksEnabledContext} from 'sanity/_singletons'
 
-import {useFeatureEnabled} from '../../../hooks/useFeatureEnabled'
+import {FEATURES, useFeatureEnabled} from '../../../hooks/useFeatureEnabled'
 import {useWorkspace} from '../../../studio/workspace'
 import {type TasksEnabledContextValue} from './types'
 
@@ -13,7 +13,7 @@ interface TaksEnabledProviderProps {
  * @internal
  */
 export function TasksEnabledProvider({children}: TaksEnabledProviderProps) {
-  const {enabled, isLoading, error} = useFeatureEnabled('sanityTasks')
+  const {enabled, isLoading, error} = useFeatureEnabled(FEATURES.sanityTasks)
 
   const isWorkspaceEnabled = useWorkspace().tasks?.enabled
 

@@ -3,6 +3,7 @@ import {firstValueFrom} from 'rxjs'
 import {ReleasesUpsellContext} from 'sanity/_singletons'
 
 import {useFeatureEnabled} from '../../../hooks'
+import {FEATURES} from '../../../hooks/useFeatureEnabled'
 import {useUpsellData} from '../../../hooks/useUpsellData'
 import {UpsellDialog} from '../../../studio/upsell/UpsellDialog'
 import {useActiveReleases} from '../../store/useActiveReleases'
@@ -29,7 +30,7 @@ class StudioReleaseLimitExceededError extends Error {
 export function ReleasesUpsellProvider(props: {children: React.ReactNode}) {
   const [upsellDialogOpen, setUpsellDialogOpen] = useState(false)
   const {data: activeReleases} = useActiveReleases()
-  const {enabled: isReleasesFeatureEnabled} = useFeatureEnabled('contentReleases')
+  const {enabled: isReleasesFeatureEnabled} = useFeatureEnabled(FEATURES.contentReleases)
   const {upsellData, telemetryLogs} = useUpsellData({
     dataUri: '/journey/content-releases',
     feature: 'content-releases',

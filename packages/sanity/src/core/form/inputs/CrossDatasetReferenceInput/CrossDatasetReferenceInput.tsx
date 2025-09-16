@@ -21,6 +21,7 @@ import {PreviewCard} from '../../../components'
 import {ContextMenuButton} from '../../../components/contextMenuButton'
 import {type FIXME} from '../../../FIXME'
 import {useFeatureEnabled} from '../../../hooks'
+import {FEATURES} from '../../../hooks/useFeatureEnabled'
 import {useTranslation} from '../../../i18n'
 import {getPublishedId, isNonNullable} from '../../../util'
 import {useDidUpdate} from '../../hooks/useDidUpdate'
@@ -140,7 +141,7 @@ export function CrossDatasetReferenceInput(props: CrossDatasetReferenceInputProp
   const refDoc = useMemo(() => ({_id: value?._ref}), [value?._ref])
 
   const loadableReferenceInfo = useReferenceInfo(refDoc as FIXME, getReferenceInfoMemo)
-  const featureInfo = useFeatureEnabled(CROSS_DATASET_FEATUREKEY)
+  const featureInfo = useFeatureEnabled(FEATURES.crossDatasetReferences)
 
   const [autocompletePopoverReferenceElement, setAutocompletePopoverReferenceElement] =
     useState<HTMLDivElement | null>(null)
