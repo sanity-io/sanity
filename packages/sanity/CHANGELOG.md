@@ -3,6 +3,36 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [4.9.0](https://github.com/sanity-io/sanity/compare/v4.8.1...v4.9.0) (2025-09-16)
+
+
+### Features
+
+* add "copy to clipboard" button to schema errors ([#10575](https://github.com/sanity-io/sanity/issues/10575)) ([635547b](https://github.com/sanity-io/sanity/commit/635547bad3252978f4a391a4902ec6ee8dd76ab6))
+* adding in support for empty state releases when there are scheduled drafts ([#10625](https://github.com/sanity-io/sanity/issues/10625)) ([3d1c2dd](https://github.com/sanity-io/sanity/commit/3d1c2dd76464757019e0bdb8ed60fd683d0a4285))
+* can only create a single concurrent scheduled draft per document ([#10624](https://github.com/sanity-io/sanity/issues/10624)) ([7ca2749](https://github.com/sanity-io/sanity/commit/7ca2749b7ceadb92da865f290fd5cfd668c61d9e))
+* **core:** sapp 3054 scheduled draft doc actions ([#10622](https://github.com/sanity-io/sanity/issues/10622)) ([879a92e](https://github.com/sanity-io/sanity/commit/879a92eca99a0b71aa97383fe63f3a26b4fa871c))
+* document perspective context ([#10578](https://github.com/sanity-io/sanity/issues/10578)) ([dce13e3](https://github.com/sanity-io/sanity/commit/dce13e3b58fc6c83c921869708349099601bc0c3))
+* schedule draft actions and releases tool ([#10534](https://github.com/sanity-io/sanity/issues/10534)) ([f8ec27a](https://github.com/sanity-io/sanity/commit/f8ec27adcd2f758ff55fac2c7b99855b69d671c7))
+* specific banner for archived (or published) scheduled drafts ([#10630](https://github.com/sanity-io/sanity/issues/10630)) ([f581e9b](https://github.com/sanity-io/sanity/commit/f581e9b5c8537b031a94e413e66fe3835031d598))
+* when scheduled drafts is enabled, showing banner in scheduled pub plugin ([#10642](https://github.com/sanity-io/sanity/issues/10642)) ([0014883](https://github.com/sanity-io/sanity/commit/0014883238de3d427e4691ae4a3c72c9c4aca57d))
+
+
+### Bug Fixes
+
+* **core:** make auto updating version check use appId ([#10637](https://github.com/sanity-io/sanity/issues/10637)) ([aab3811](https://github.com/sanity-io/sanity/commit/aab38114f34d6676df97f058a6e30b89f0959b76))
+* **deps:** update dependency @portabletext/block-tools to ^3.5.5 ([#10614](https://github.com/sanity-io/sanity/issues/10614)) ([7a64fdf](https://github.com/sanity-io/sanity/commit/7a64fdf0a1b61fbdba0ab2642278d2fdceb06b35))
+* **deps:** update dependency @portabletext/editor to ^2.8.4 ([#10615](https://github.com/sanity-io/sanity/issues/10615)) ([9c51cc5](https://github.com/sanity-io/sanity/commit/9c51cc588261b5c89f8f1575cab59e4c287de6be))
+* **deps:** update dependency @portabletext/editor to ^2.9.0 ([#10621](https://github.com/sanity-io/sanity/issues/10621)) ([63d13b8](https://github.com/sanity-io/sanity/commit/63d13b8187027de1dbfc26a31228f65d5874d49c))
+* **deps:** update dependency @portabletext/editor to ^2.9.1 ([#10626](https://github.com/sanity-io/sanity/issues/10626)) ([c62a30a](https://github.com/sanity-io/sanity/commit/c62a30a6aa95227f4ca1906541d230cd87299bf5))
+* **deps:** update dependency @portabletext/editor to ^2.9.2 ([#10641](https://github.com/sanity-io/sanity/issues/10641)) ([38d7116](https://github.com/sanity-io/sanity/commit/38d7116afb1e9d34160007427cb4ea6f203aaa73))
+* **deps:** update dependency @sanity/ui to ^3.1.0 ([#10627](https://github.com/sanity-io/sanity/issues/10627)) ([1a708b5](https://github.com/sanity-io/sanity/commit/1a708b5f58107ab9dc4dbcda67755e90e3b16596))
+* issue where escaping form link popover over in fullscreen would escape the fullscreen first ([#10606](https://github.com/sanity-io/sanity/issues/10606)) ([ff66b1e](https://github.com/sanity-io/sanity/commit/ff66b1e8f04bb09b72e63cacbcf9743eadfbe20f))
+* make links to manage staging aware ([#10638](https://github.com/sanity-io/sanity/issues/10638)) ([74a4895](https://github.com/sanity-io/sanity/commit/74a48956eac5c0b0b7738e042707a421d1bd8df1))
+* popover issue when clicking different panes / references  ([#10618](https://github.com/sanity-io/sanity/issues/10618)) ([c41a2b1](https://github.com/sanity-io/sanity/commit/c41a2b172ca2f275985f8f6b2cfd4648f13b0ebc))
+
+
+
 ## [4.8.1](https://github.com/sanity-io/sanity/compare/v4.8.0...v4.8.1) (2025-09-10)
 
 
