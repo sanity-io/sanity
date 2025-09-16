@@ -9,7 +9,6 @@ import {
   Stack,
   Text,
 } from '@sanity/ui'
-import {styled} from 'styled-components'
 
 import {MenuButton, type MenuButtonProps, MenuItem, Tooltip} from '../../../../../ui-components'
 import {useTranslation} from '../../../../i18n'
@@ -19,10 +18,6 @@ import {useWorkspaceAuthStates} from './hooks'
 import {ManageMenu} from './ManageMenu'
 import {STATE_TITLES, WorkspacePreviewIcon} from './WorkspacePreview'
 
-const StyledMenu = styled(Menu)`
-  max-width: 350px;
-  min-width: 250px;
-`
 const POPOVER_PROPS: MenuButtonProps['popover'] = {
   constrainSize: true,
   fallbackPlacements: ['bottom-end', 'bottom'],
@@ -67,17 +62,17 @@ export function WorkspaceMenuButton() {
       id="workspace-menu"
       menu={
         !disabled && authStates ? (
-          <StyledMenu padding={0}>
+          <Menu padding={0} style={{maxWidth: '350px', minWidth: '250px', overflowY: 'hidden'}}>
             <ManageMenu />
             {workspaces.length > 1 && (
               <>
                 <MenuDivider />
-                <Box paddingX={5} paddingTop={3}>
-                  <Box paddingBottom={2}>
+                <Box paddingTop={3}>
+                  <Box paddingX={5} paddingBottom={2}>
                     <Text size={0}>{t('workspaces.action.switch-workspace')}</Text>
                   </Box>
 
-                  <Stack space={1}>
+                  <Stack space={1} style={{overflowY: 'auto', maxHeight: '40vh'}}>
                     {workspaces.map((workspace) => {
                       const authState = authStates[workspace.name]
 
@@ -105,6 +100,7 @@ export function WorkspaceMenuButton() {
                           __unstable_subtitle={workspace.subtitle}
                           __unstable_space={1}
                           text={workspace?.title || workspace.name}
+                          style={{paddingLeft: '2rem', paddingRight: '2rem'}}
                         />
                       )
                     })}
@@ -112,7 +108,7 @@ export function WorkspaceMenuButton() {
                 </Box>
               </>
             )}
-          </StyledMenu>
+          </Menu>
         ) : undefined
       }
       popover={POPOVER_PROPS}
