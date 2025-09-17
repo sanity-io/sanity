@@ -20,7 +20,7 @@ import {TreeEditingEnabledProvider} from '../../studio/tree-editing'
 import {type ArrayOfObjectsInputProps, type RenderCustomMarkers} from '../../types'
 import {type RenderBlockActionsCallback} from '../../types/_transitional'
 import {UploadTargetCard} from '../arrays/common/UploadTargetCard'
-import {ExpandedLayer, Root} from './Compositor.styles'
+import {ExpandedLayer, Root, StringDiffContainer} from './Compositor.styles'
 import {useSetPortableTextMemberItemElementRef} from './contexts/PortableTextMemberItemElementRefsProvider'
 import {Editor} from './Editor'
 import {useHotkeys} from './hooks/useHotKeys'
@@ -410,29 +410,31 @@ export function Compositor(props: Omit<InputProps, 'schemaType' | 'arrayFunction
         onUpload={onUpload}
         tabIndex={-1}
       >
-        <Editor
-          ariaDescribedBy={ariaDescribedBy}
-          elementRef={elementRef}
-          initialSelection={initialSelection}
-          hideToolbar={hideToolbar}
-          hotkeys={editorHotkeys}
-          isActive={isActive}
-          isFullscreen={isFullscreen}
-          isOneLine={isOneLineEditor}
-          onItemOpen={onItemOpen}
-          onCopy={onCopy}
-          onPaste={onPaste}
-          onToggleFullscreen={handleToggleFullscreen}
-          path={path}
-          rangeDecorations={rangeDecorations}
-          readOnly={readOnly}
-          renderAnnotation={editorRenderAnnotation}
-          renderBlock={editorRenderBlock}
-          renderChild={editorRenderChild}
-          setPortalElement={setPortalElement}
-          scrollElement={scrollElement}
-          setScrollElement={setScrollElement}
-        />
+        <StringDiffContainer>
+          <Editor
+            ariaDescribedBy={ariaDescribedBy}
+            elementRef={elementRef}
+            initialSelection={initialSelection}
+            hideToolbar={hideToolbar}
+            hotkeys={editorHotkeys}
+            isActive={isActive}
+            isFullscreen={isFullscreen}
+            isOneLine={isOneLineEditor}
+            onItemOpen={onItemOpen}
+            onCopy={onCopy}
+            onPaste={onPaste}
+            onToggleFullscreen={handleToggleFullscreen}
+            path={path}
+            rangeDecorations={rangeDecorations}
+            readOnly={readOnly}
+            renderAnnotation={editorRenderAnnotation}
+            renderBlock={editorRenderBlock}
+            renderChild={editorRenderChild}
+            setPortalElement={setPortalElement}
+            scrollElement={scrollElement}
+            setScrollElement={setScrollElement}
+          />
+        </StringDiffContainer>
       </UploadTargetCard>
     ),
 
