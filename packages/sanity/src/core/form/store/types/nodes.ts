@@ -11,6 +11,7 @@ import {
   type StringSchemaType,
 } from '@sanity/types'
 
+import {type TargetPerspective} from '../../../perspective/types'
 import {type FormNodePresence} from '../../../presence'
 import {type ObjectItem} from '../../types'
 import {type ProvenanceDiffAnnotation} from './diff'
@@ -94,6 +95,7 @@ export interface BaseFormNode<T = unknown, S extends SchemaType = SchemaType>
   /** Whether the node is focused. */
   focused?: boolean
   displayInlineChanges?: boolean
+  perspective?: TargetPerspective
 }
 
 /** @internal */

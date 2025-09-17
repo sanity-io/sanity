@@ -236,6 +236,7 @@ export function FormBuilder(props: FormBuilderProps) {
       onFieldOpen: handleOpenField,
       onFieldGroupSelect: handleSelectFieldGroup,
       path: EMPTY_ARRAY,
+      perspective,
       presence: EMPTY_ARRAY,
       readOnly,
       renderAnnotation,

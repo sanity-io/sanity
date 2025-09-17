@@ -381,6 +381,7 @@ export function ArrayOfObjectsField(props: {
       onItemClose: handleCloseItem,
       onItemOpen: handleOpenItem,
       displayInlineChanges: member.field.displayInlineChanges ?? false,
+      perspective: member.field.perspective,
 
       focusPath: member.field.focusPath,
       focused: member.field.focused,
@@ -418,6 +419,7 @@ export function ArrayOfObjectsField(props: {
     member.field.__unstable_computeDiff,
     member.field.compareValue,
     member.field.id,
+    member.field.perspective,
     member.field.focusPath,
     member.field.focused,
     member.field.path,
