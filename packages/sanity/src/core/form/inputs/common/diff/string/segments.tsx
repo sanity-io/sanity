@@ -13,7 +13,7 @@ interface StyledSegmentProps {
   $tone?: ButtonTone
 }
 
-const Segment = styled.span<StyledSegmentProps>`
+export const Segment = styled.span<StyledSegmentProps>`
   ${({theme, $tone}) => {
     if (typeof $tone === 'undefined') {
       return undefined
