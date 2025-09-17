@@ -226,6 +226,7 @@ const DiffViewDocument: ComponentType<DiffViewPaneProps> = ({
         validation={formState.validation}
         members={formState.members}
         perspective={sanitizeBundleName(perspective)}
+        hasUpstreamVersion={formState.hasUpstreamVersion}
         presence={formState.presence}
         schemaType={schemaType}
         value={value}

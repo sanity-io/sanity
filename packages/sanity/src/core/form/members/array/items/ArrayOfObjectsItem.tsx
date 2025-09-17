@@ -276,6 +276,7 @@ export function ArrayOfObjectsItem(props: MemberItemProps) {
     return {
       changed: member.item.changed,
       __unstable_computeDiff: member.item.__unstable_computeDiff,
+      hasUpstreamVersion: member.item.hasUpstreamVersion,
       focusPath: member.item.focusPath,
       focused: member.item.focused,
       groups: member.item.groups,
@@ -309,6 +310,7 @@ export function ArrayOfObjectsItem(props: MemberItemProps) {
     }
   }, [
     elementProps,
+    member.item.hasUpstreamVersion,
     handleChange,
     handleCloseField,
     handleCollapseField,
@@ -351,6 +353,7 @@ export function ArrayOfObjectsItem(props: MemberItemProps) {
       level: member.item.level,
       value: member.item.value,
       __unstable_computeDiff: member.item.__unstable_computeDiff,
+      hasUpstreamVersion: member.item.hasUpstreamVersion,
       title: member.item.schemaType.title,
       description: member.item.schemaType.description,
       collapsible: member.collapsible,
@@ -383,6 +386,7 @@ export function ArrayOfObjectsItem(props: MemberItemProps) {
     member.item.level,
     member.item.value,
     member.item.__unstable_computeDiff,
+    member.item.hasUpstreamVersion,
     member.item.schemaType,
     member.item.presence,
     member.item.validation,
