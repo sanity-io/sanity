@@ -3,22 +3,22 @@ import {type Diff} from '@sanity/diff'
 import {type Path} from '@sanity/types'
 
 import {type ProvenanceDiffAnnotation} from '../../../../store/types/diff'
-import {DeletedSegment, InsertedSegment} from '../../../common/diff/string/segments'
-import {ROOT_PATH} from '../StringInputPortableText'
+import {ROOT_PATH} from '../../../StringInput/StringInputPortableText/StringInputPortableText'
+import {DeletedSegment, InsertedSegment} from './segments'
 
-interface ComputeRangeDecorationsOptions {
+interface ComputeStringDiffRangeDecorationsOptions {
   diff: Diff<ProvenanceDiffAnnotation>
   mapPayload?: (payload: Record<string, unknown>) => Record<string, unknown>
   anchorPath?: Path
   focusPath?: Path
 }
 
-export function computeRangeDecorations({
+export function computeStringDiffRangeDecorations({
   diff,
   mapPayload = (payload) => payload,
   anchorPath = ROOT_PATH,
   focusPath = ROOT_PATH,
-}: ComputeRangeDecorationsOptions): RangeDecoration[] {
+}: ComputeStringDiffRangeDecorationsOptions): RangeDecoration[] {
   if (diff.type !== 'string') {
     return []
   }
