@@ -5,6 +5,7 @@ import {getTheme_v2} from '@sanity/ui/theme'
 import {type ComponentType, type PropsWithChildren} from 'react'
 import {styled} from 'styled-components'
 
+import {RELEASE_TYPES_TONES} from '../../../../../releases/util/const'
 import {getReleaseTone} from '../../../../../releases/util/getReleaseTone'
 import {type ProvenanceDiffAnnotation} from '../../../../store/types/diff'
 
@@ -23,6 +24,7 @@ const Segment = styled.span<StyledSegmentProps>`
     return {
       backgroundColor: color.button.bleed[$tone]?.pressed?.bg,
       color: color.button.bleed[$tone]?.pressed?.fg,
+      textDecoration: 'none',
     }
   }}
 `
@@ -58,6 +60,10 @@ function segmentTone(segment: StringDiffSegment<ProvenanceDiffAnnotation>): Badg
     segment.action !== 'unchanged' &&
     typeof segment.annotation.provenance.bundle !== 'undefined'
   ) {
+    if (segment.annotation.provenance.bundle === 'drafts') {
+      return RELEASE_TYPES_TONES.asap.tone
+    }
+
     return getReleaseTone(segment.annotation.provenance.bundle)
   }
 
