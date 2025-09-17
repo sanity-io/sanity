@@ -10,11 +10,6 @@ const defineLocalDecideField = (config: any) => {
 
   const valueFieldConfig = {
     type,
-    // ...(to && {to}),
-    // ...(validation && {validation}),
-    // ...(description && {description}),
-    // ...(readOnly && {readOnly}),
-    // ...(hidden && {hidden}),
     ...otherConfig,
   }
 
@@ -66,6 +61,44 @@ const AUTHOR_ROLES = [
   {value: 'designer', title: 'Designer'},
   {value: 'ops', title: 'Operations'},
 ]
+
+export const defineDecideField = (config: {name: string; title: string; type: 'string'}) => {
+  return defineField({
+    name: config.name,
+    title: config.title,
+    type: 'object',
+    fields: [
+      defineField({
+        name: 'defaultValue',
+        title: config.title,
+        type: 'string',
+      }),
+      defineField({
+        name: 'options',
+        title: 'Options',
+        type: 'array',
+        of: [
+          defineField({
+            type: 'object',
+            name: 'option',
+            fields: [
+              defineField({
+                name: 'condition',
+                title: 'Condition',
+                type: 'string',
+              }),
+              defineField({
+                name: 'value',
+                title: 'Value',
+                type: 'string',
+              }),
+            ],
+          }),
+        ],
+      }),
+    ],
+  })
+}
 
 export default defineType({
   name: 'author',
