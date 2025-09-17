@@ -1,4 +1,4 @@
-import {CogIcon} from '@sanity/icons'
+import {CogIcon, TagIcon, PackageIcon, IceCreamIcon, CopyIcon} from '@sanity/icons'
 import type {StructureBuilder, StructureResolver} from 'sanity/structure'
 import pluralize from 'pluralize-esm'
 
@@ -9,19 +9,32 @@ import pluralize from 'pluralize-esm'
  */
 
 const DISABLED_TYPES = ['settings', 'assist.instruction.context']
+const COMMERCE_TYPES = ['product', 'productVariant', 'collection', 'colorTheme']
 
 export const structure: StructureResolver = (S: StructureBuilder) =>
   S.list()
     .title('Website Content')
     .items([
+      // Regular content types (excluding commerce types)
       ...S.documentTypeListItems()
-        // Remove the "assist.instruction.context" and "settings" content  from the list of content types
-        .filter((listItem: any) => !DISABLED_TYPES.includes(listItem.getId()))
-        // Pluralize the title of each document type.  This is not required but just an option to consider.
+        .filter(
+          (listItem: any) =>
+            !DISABLED_TYPES.includes(listItem.getId()) &&
+            !COMMERCE_TYPES.includes(listItem.getId()),
+        )
         .map((listItem) => {
           return listItem.title(pluralize(listItem.getTitle() as string))
         }),
-      // Settings Singleton in order to view/edit the one particular document for Settings.  Learn more about Singletons: https://www.sanity.io/docs/create-a-link-to-a-single-edit-page-in-your-main-document-type-list
+
+      // Commerce section with dividers
+      S.divider().title('Commerce'),
+      S.documentTypeListItem('product').title('Products').icon(TagIcon),
+      S.documentTypeListItem('productVariant').title('Product Variants').icon(CopyIcon),
+      S.documentTypeListItem('collection').title('Collections').icon(PackageIcon),
+      S.documentTypeListItem('colorTheme').title('Color Themes').icon(IceCreamIcon),
+      S.divider(),
+
+      // Settings
       S.listItem()
         .title('Site Settings')
         .child(S.document().schemaType('settings').documentId('siteSettings'))

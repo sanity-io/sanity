@@ -17,7 +17,7 @@ export const post = defineType({
       name: 'title',
       title: 'Title',
       type: 'string',
-      validation: (rule) => rule.required(),
+      // validation: (rule) => rule.required(),
     }),
     defineField({
       name: 'slug',
@@ -29,7 +29,7 @@ export const post = defineType({
         maxLength: 96,
         isUnique: (value, context) => context.defaultIsUnique(value, context),
       },
-      validation: (rule) => rule.required(),
+      // validation: (rule) => rule.required(),
     }),
     defineField({
       name: 'content',
@@ -68,13 +68,18 @@ export const post = defineType({
           },
         },
       ],
-      validation: (rule) => rule.required(),
+      // validation: (rule) => rule.required(),
     }),
     defineField({
       name: 'date',
       title: 'Date',
       type: 'datetime',
       initialValue: () => new Date().toISOString(),
+    }),
+    defineField({
+      name: 'firstPublished',
+      title: 'First Published',
+      type: 'datetime',
     }),
     defineField({
       name: 'author',

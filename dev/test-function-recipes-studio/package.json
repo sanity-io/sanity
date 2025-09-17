@@ -17,7 +17,10 @@
     "type-check": "tsc --noEmit"
   },
   "dependencies": {
+    "@sanity/asset-utils": "^2.3.0",
     "@sanity/assist": "^5.0.0",
+    "@sanity/color-input": "^4.0.6",
+    "@sanity/functions": "^1.0.3",
     "@sanity/icons": "^3.7.4",
     "@sanity/vision": "^4.9.0",
     "date-fns": "^4.1.0",
@@ -29,6 +32,7 @@
     "styled-components": "^6.1.19"
   },
   "devDependencies": {
+    "@sanity/blueprints": "0.2.0",
     "@sanity/eslint-config-studio": "^5.0.2",
     "@types/react": "^19.1.11",
     "typescript": "^5.9.2"
