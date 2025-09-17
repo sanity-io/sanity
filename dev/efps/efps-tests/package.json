@@ -12,9 +12,13 @@
   },
   "scripts": {
     "lint": "eslint .",
-    "start": "node --import @swc-node/register/esm-register ./index.ts",
-    "test": "npm start",
-    "write:report": "node --import @swc-node/register/esm-register ./formatefpsResult.ts"
+    "start": "tsx ./index.ts",
+    "test": "pnpm start",
+    "write:report": "tsx ./formatefpsResult.ts"
+  },
+  "dependencies": {
+    "@swc/types": "^0.1.25",
+    "tsx": "^4.20.5"
   },
   "devDependencies": {
     "@repo/eslint-config": "workspace:*",
