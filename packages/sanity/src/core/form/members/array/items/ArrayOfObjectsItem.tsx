@@ -305,6 +305,7 @@ export function ArrayOfObjectsItem(props: MemberItemProps) {
       validation: member.item.validation,
       value: member.item.value,
       elementProps: elementProps,
+      displayInlineChanges: member.item.displayInlineChanges ?? false,
     }
   }, [
     elementProps,
@@ -331,6 +332,7 @@ export function ArrayOfObjectsItem(props: MemberItemProps) {
     member.item.schemaType,
     member.item.validation,
     member.item.value,
+    member.item.displayInlineChanges,
     renderAnnotation,
     renderBlock,
     renderField,
