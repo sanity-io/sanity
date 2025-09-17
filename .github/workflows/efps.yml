@@ -58,8 +58,8 @@ jobs:
           VERCEL_ORG_ID: ${{ secrets.VERCEL_EFPS_STUDIO_ORG_ID }}
           VERCEL_PROJECT_ID: ${{ secrets.VERCEL_EFPS_STUDIO_PROJECT_ID }}
           VERCEL_SANITY_API_DEPLOY_TOKEN: ${{ secrets.VERCEL_SANITY_API_DEPLOY_TOKEN }}
-          SANITY_EFPS_PROJECT_ID: ${{ vars.PERF_EFPS_PROJECT_ID_TEST }}
-          SANITY_EFPS_DATASET: ${{ vars.PERF_EFPS_DATASET_TEST }}
+          VITE_PERF_EFPS_PROJECT_ID: ${{ vars.PERF_EFPS_PROJECT_ID_TEST }}
+          VITE_PERF_EFPS_DATASET: ${{ vars.PERF_EFPS_DATASET_TEST }}
         run: vercel build --token=${{ secrets.VERCEL_E2E_STUDIO_TOKEN }}
 
       - name: Build Project Artifacts on main
@@ -68,8 +68,8 @@ jobs:
           VERCEL_ORG_ID: ${{ secrets.VERCEL_EFPS_STUDIO_ORG_ID }}
           VERCEL_PROJECT_ID: ${{ secrets.VERCEL_EFPS_STUDIO_PROJECT_ID }}
           VERCEL_SANITY_API_DEPLOY_TOKEN: ${{ secrets.VERCEL_SANITY_API_DEPLOY_TOKEN }}
-          SANITY_EFPS_PROJECT_ID: ${{ vars.SANITY_EFPS_PROJECT_ID_STAGING }}
-          SANITY_EFPS_DATASET: ${{ vars.SANITY_EFPS_DATASET }}
+          VITE_PERF_EFPS_PROJECT_ID: ${{ vars.SANITY_EFPS_PROJECT_ID_STAGING }}
+          VITE_PERF_EFPS_DATASET: ${{ vars.SANITY_EFPS_DATASET }}
         run: vercel build --token=${{ secrets.VERCEL_E2E_STUDIO_TOKEN }}
 
       - name: Deploy Project Artifacts to Vercel
