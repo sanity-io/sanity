@@ -1,11 +1,59 @@
 import {UserIcon as icon} from '@sanity/icons'
-import {defineField, defineType, type Rule} from 'sanity'
+import {type StringRule} from '@sanity/types'
+import {defineField, defineType} from 'sanity'
+
+// Example of how decision parameters can be accessed in a config context:
+// In sanity.config.ts, you can define:
+// [DECISION_PARAMETERS_SCHEMA]: {
+//   audiences: ['aud-a', 'aud-b', 'aud-c'],
+//   locales: ['en-GB', 'en-US'],
+//   ages: ['20-29', '30-39']
+// }
+// Then access them via the ConfigContext in plugins, components, etc.
 
 const AUTHOR_ROLES = [
   {value: 'developer', title: 'Developer'},
   {value: 'designer', title: 'Designer'},
   {value: 'ops', title: 'Operations'},
 ]
+
+export const defineDecideField = (config: {name: string; title: string; type: 'string'}) => {
+  return defineField({
+    name: config.name,
+    title: config.title,
+    type: 'object',
+    fields: [
+      defineField({
+        name: 'defaultValue',
+        title: config.title,
+        type: 'string',
+      }),
+      defineField({
+        name: 'options',
+        title: 'Options',
+        type: 'array',
+        of: [
+          defineField({
+            type: 'object',
+            name: 'option',
+            fields: [
+              defineField({
+                name: 'condition',
+                title: 'Condition',
+                type: 'string',
+              }),
+              defineField({
+                name: 'value',
+                title: 'Value',
+                type: 'string',
+              }),
+            ],
+          }),
+        ],
+      }),
+    ],
+  })
+}
 
 export default defineType({
   name: 'author',
@@ -41,7 +89,12 @@ export default defineType({
       options: {
         search: {weight: 100},
       },
-      validation: (rule: Rule) => rule.required(),
+      validation: (rule: StringRule) => rule.required(),
+    }),
+    defineDecideField({
+      name: 'decideName',
+      title: 'Decide Name',
+      type: 'string',
     }),
     {
       name: 'bestFriend',

@@ -45,6 +45,7 @@ import {
   initialDocumentBadges,
   initialLanguageFilter,
   internalQuotaExcludedReleasesEnabledReducer,
+  decisionParametersSchemaReducer,
   internalTasksReducer,
   legacySearchEnabledReducer,
   mediaLibraryEnabledReducer,
@@ -73,6 +74,7 @@ import {
   type PluginOptions,
   type PreparedConfig,
   QUOTA_EXCLUDED_RELEASES_ENABLED,
+  DECISION_PARAMETERS_SCHEMA,
   type SingleWorkspace,
   type Source,
   type SourceClientOptions,
@@ -361,6 +363,10 @@ function resolveSource({
     [QUOTA_EXCLUDED_RELEASES_ENABLED]: internalQuotaExcludedReleasesEnabledReducer({
       config,
       initialValue: false,
+    }),
+    [DECISION_PARAMETERS_SCHEMA]: decisionParametersSchemaReducer({
+      config,
+      initialValue: undefined,
     }),
   }
 
