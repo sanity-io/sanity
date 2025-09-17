@@ -33,6 +33,8 @@ const ENABLE_PROFILER = process.env.ENABLE_PROFILER === 'true'
 const REFERENCE_TAG = process.env.REFERENCE_TAG || 'latest'
 // eslint-disable-next-line turbo/no-undeclared-env-vars
 const RECORD_VIDEO = process.env.RECORD_VIDEO === 'true'
+// eslint-disable-next-line turbo/no-undeclared-env-vars
+const DEPLOY_URL = process.env.DEPLOY_URL
 const TESTS = [article, recipe, synthetic]
 
 const projectId = process.env.VITE_PERF_EFPS_PROJECT_ID!
@@ -127,12 +129,16 @@ spinner.info(
   `Running ${selectedTests.length} tests: ${selectedTests.map((t) => `'${t.name}'`).join(', ')}`,
 )
 
-await exec({
-  text: ['Building the monorepo…', 'Built monorepo'],
-  command: 'pnpm run build',
-  spinner,
-  cwd: monorepoRoot,
-})
+if (DEPLOY_URL) {
+  spinner.info(`Using Vercel deployment: ${DEPLOY_URL}`)
+} else {
+  await exec({
+    text: ['Building the monorepo…', 'Built monorepo'],
+    command: 'pnpm run build',
+    spinner,
+    cwd: monorepoRoot,
+  })
+}
 
 await exec({
   text: ['Ensuring playwright is installed…', 'Playwright is installed'],
@@ -178,6 +184,7 @@ async function runAbTest(test: EfpsTest) {
     referenceResults = mergeResults(
       referenceResults,
       await runTest({
+        baseUrl: DEPLOY_URL,
         key: 'reference',
         test,
         resultsDir,
@@ -199,6 +206,7 @@ async function runAbTest(test: EfpsTest) {
     experimentResults = mergeResults(
       experimentResults,
       await runTest({
+        baseUrl: DEPLOY_URL,
         key: 'experiment',
         test,
         resultsDir,

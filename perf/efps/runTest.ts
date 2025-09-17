@@ -16,6 +16,7 @@ import {type EfpsResult, type EfpsTest, type EfpsTestRunnerContext} from './type
 const workspaceDir = path.dirname(fileURLToPath(import.meta.url))
 
 interface RunTestOptions {
+  baseUrl?: string
   client: SanityClient
   enableProfiler: boolean
   headless: boolean
@@ -24,11 +25,12 @@ interface RunTestOptions {
   projectId: string
   recordVideo: boolean
   resultsDir: string
-  sanityPkgPath: string
+  sanityPkgPath?: string
   test: EfpsTest
 }
 
 export async function runTest({
+  baseUrl,
   client,
   enableProfiler,
   headless,
@@ -43,36 +45,42 @@ export async function runTest({
   const outDir = path.join(workspaceDir, 'builds', test.name, key)
   const testResultsDir = path.join(resultsDir, test.name, key)
 
-  await fs.promises.mkdir(outDir, {recursive: true})
-  log('Building…')
+  let server: ReturnType<typeof createServer> | undefined
 
-  const alias: Record<string, string> = {
-    '#config': fileURLToPath(test.configPath!),
-    'sanity': `${sanityPkgPath}/lib`,
-  }
+  if (baseUrl) {
+    log('Using provided base URL…')
+  } else {
+    await fs.promises.mkdir(outDir, {recursive: true})
+    log('Building…')
 
-  await vite.build({
-    appType: 'spa',
-    build: {outDir, sourcemap: true},
-    plugins: [
-      {...sourcemaps(), enforce: 'pre'},
-      react({
-        babel: {plugins: [['babel-plugin-react-compiler', {target: '18'}]]},
-      }),
-    ],
-    resolve: {alias},
-    logLevel: 'silent',
-  })
+    const alias: Record<string, string> = {
+      '#config': fileURLToPath(test.configPath!),
+      'sanity': `${sanityPkgPath}/lib`,
+    }
 
-  log('Starting server…')
-  const server = createServer((req, res) => {
-    handler(req, res, {
-      rewrites: [{source: '**', destination: '/index.html'}],
-      public: outDir,
+    await vite.build({
+      appType: 'spa',
+      build: {outDir, sourcemap: true},
+      plugins: [
+        {...sourcemaps(), enforce: 'pre'},
+        react({
+          babel: {plugins: [['babel-plugin-react-compiler', {target: '18'}]]},
+        }),
+      ],
+      resolve: {alias},
+      logLevel: 'silent',
     })
-  })
 
-  await new Promise<void>((resolve) => server.listen(3300, resolve))
+    log('Starting server…')
+    server = createServer((req, res) => {
+      handler(req, res, {
+        rewrites: [{source: '**', destination: '/index.html'}],
+        public: outDir,
+      })
+    })
+
+    await new Promise<void>((resolve) => server!.listen(3300, resolve))
+  }
 
   let browser
   let document
@@ -84,6 +92,7 @@ export async function runTest({
       headless,
       args: ['--disable-gpu', '--disable-software-rasterizer'],
     })
+    const targetOrigin = baseUrl || 'http://localhost:3300'
     context = await browser.newContext({
       recordVideo: recordVideo ? {dir: testResultsDir} : undefined,
       reducedMotion: 'reduce',
@@ -91,7 +100,7 @@ export async function runTest({
         cookies: [],
         origins: [
           {
-            origin: 'http://localhost:3300',
+            origin: targetOrigin,
             localStorage: [
               {
                 name: `__studio_auth_token_${projectId}`,
@@ -119,7 +128,7 @@ export async function runTest({
 
     log('Loading editor…')
     await page.goto(
-      `http://localhost:3300/intent/edit/id=${encodeURIComponent(
+      `${targetOrigin}/intent/edit/id=${encodeURIComponent(
         document._id,
       )};type=${encodeURIComponent(documentToCreate._type)}`,
     )
@@ -156,9 +165,11 @@ export async function runTest({
 
     return results
   } finally {
-    await new Promise<void>((resolve, reject) =>
-      server.close((err) => (err ? reject(err) : resolve())),
-    )
+    if (server) {
+      await new Promise<void>((resolve, reject) =>
+        server.close((err) => (err ? reject(err) : resolve())),
+      )
+    }
 
     await context?.close()
     await browser?.close()
