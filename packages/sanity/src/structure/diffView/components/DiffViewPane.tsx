@@ -175,6 +175,7 @@ const DiffViewDocument: ComponentType<DiffViewPaneProps> = ({
     selectedPerspectiveName: perspectiveName(documentId),
     releaseId: getVersionFromId(documentId),
     comparisonValue: compareValue,
+    displayInlineChanges: true,
   })
 
   const isLoading = formState === null || !ready

@@ -93,6 +93,7 @@ interface DocumentFormOptions {
    * used by the <DocumentPaneProvider > to display the history values.
    */
   getFormDocumentValue?: (value: SanityDocumentLike) => SanityDocumentLike
+  displayInlineChanges?: boolean
 }
 interface DocumentFormValue {
   /**
@@ -147,6 +148,7 @@ export function useDocumentForm(options: DocumentFormOptions): DocumentFormValue
     selectedPerspectiveName,
     readOnly: readOnlyProp,
     onFocusPath,
+    displayInlineChanges,
   } = options
   const schema = useSchema()
   const presenceStore = usePresenceStore()
@@ -474,6 +476,7 @@ export function useDocumentForm(options: DocumentFormOptions): DocumentFormValue
     collapsedFieldSets,
     fieldGroupState,
     changesOpen,
+    displayInlineChanges,
   })!
 
   const formStateRef = useRef(formState)

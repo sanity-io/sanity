@@ -79,6 +79,7 @@ interface FormStateOptions<TSchemaType, T> {
   // nesting level
   level: number
   changesOpen?: boolean
+  displayInlineChanges?: boolean
 }
 
 type PrepareFieldMember = <T>(props: {
@@ -229,6 +230,7 @@ export interface RootFormStateOptions {
   collapsedFieldSets: StateTree<boolean> | undefined
   changesOpen?: boolean
   perspective: TargetPerspective
+  displayInlineChanges?: boolean
 }
 
 export interface PrepareFormState {
@@ -279,6 +281,7 @@ export function createPrepareFormState({
           parent.readOnly?.value ||
           getId(parent.readOnly?.children?.[field.name]),
         schemaType: getId(parent.schemaType),
+        displayInlineChanges: parent.displayInlineChanges,
       }
     },
   })
@@ -302,6 +305,7 @@ export function createPrepareFormState({
       readOnly: state.readOnly === true || state.readOnly?.value || getId(state.readOnly),
       schemaType: getId(state.schemaType),
       perspective: getId(state.perspective),
+      displayInlineChanges: state.displayInlineChanges,
     }),
   })
 
@@ -325,6 +329,7 @@ export function createPrepareFormState({
         readOnly: state.readOnly === true || state.readOnly?.value || getId(state.readOnly),
         schemaType: getId(state.schemaType),
         perspective: getId(state.perspective),
+        displayInlineChanges: state.displayInlineChanges,
       }),
     })
 
@@ -347,6 +352,7 @@ export function createPrepareFormState({
       readOnly: state.readOnly === true || state.readOnly?.value || getId(state.readOnly),
       schemaType: getId(state.schemaType),
       perspective: getId(state.perspective),
+      displayInlineChanges: state.displayInlineChanges,
     }),
   })
 
@@ -381,6 +387,7 @@ export function createPrepareFormState({
           getId(parent.readOnly?.children?.[key]),
         schemaType: getId(parent.schemaType),
         perspective: getId(parent.perspective),
+        displayInlineChanges: parent.displayInlineChanges,
       }
     },
   })
@@ -415,6 +422,7 @@ export function createPrepareFormState({
         value: `${arrayItem}`,
         comparisonValue: `${comparisonValue}`,
         perspective: getId(parent.perspective),
+        displayInlineChanges: parent.displayInlineChanges,
       }
     },
   })
@@ -438,6 +446,7 @@ export function createPrepareFormState({
       readOnly: state.readOnly === true || state.readOnly?.value || getId(state.readOnly),
       schemaType: getId(state.schemaType),
       perspective: getId(state.perspective),
+      displayInlineChanges: state.displayInlineChanges,
     }),
   })
 
@@ -540,6 +549,7 @@ export function createPrepareFormState({
         hidden: scopedHidden,
         readOnly: scopedReadOnly,
         changesOpen: parent.changesOpen,
+        displayInlineChanges: parent.displayInlineChanges,
       })
 
       if (inputState === null) {
@@ -658,6 +668,7 @@ export function createPrepareFormState({
           readOnly: scopedReadOnly,
           hidden: scopedHidden,
           changesOpen: parent.changesOpen,
+          displayInlineChanges: parent.displayInlineChanges,
         })
 
         if (fieldState === null) {
@@ -727,6 +738,7 @@ export function createPrepareFormState({
           readOnly: scopedReadOnly,
           hidden: scopedHidden,
           changesOpen: parent.changesOpen,
+          displayInlineChanges: parent.displayInlineChanges,
         })
 
         if (fieldState === null) {
@@ -1038,6 +1050,7 @@ export function createPrepareFormState({
       groups: visibleGroups,
       __unstable_computeDiff: diffProps.__unstable_computeDiff,
       changed: isChangedValue(props.value, props.comparisonValue),
+      displayInlineChanges: props.displayInlineChanges,
     }
     Object.defineProperty(node, '_allMembers', {
       value: members,
@@ -1086,6 +1099,7 @@ export function createPrepareFormState({
         __unstable_computeDiff: diffProps.__unstable_computeDiff,
         // checks for changes not only on the array itself, but also on any of its items
         changed: props.changed || members.some((m) => m.kind === 'item' && m.item.changed),
+        displayInlineChanges: props.displayInlineChanges,
       }
     },
   )
@@ -1135,6 +1149,7 @@ export function createPrepareFormState({
         __unstable_computeDiff: diffProps.__unstable_computeDiff,
         // checks for changes not only on the array itself, but also on any of its items
         changed: props.changed || members.some((m) => m.kind === 'item' && m.item.changed),
+        displayInlineChanges: props.displayInlineChanges,
       }
     },
   )
@@ -1201,6 +1216,7 @@ export function createPrepareFormState({
           fieldGroupState,
           readOnly: scopedReadOnly,
           hidden: scopedHidden,
+          displayInlineChanges: parent.displayInlineChanges,
         },
         false,
       ) as ObjectArrayFormNode
@@ -1309,6 +1325,7 @@ export function createPrepareFormState({
         validation,
         __unstable_computeDiff: diffProps.__unstable_computeDiff,
         changed: isChangedValue(props.value, props.comparisonValue),
+        displayInlineChanges: props.displayInlineChanges,
       } as PrimitiveFormNode
     },
   )
@@ -1329,6 +1346,7 @@ export function createPrepareFormState({
     schemaType,
     validation,
     changesOpen,
+    displayInlineChanges,
   }: RootFormStateOptions): ObjectFormNode | null {
     return prepareObjectInputState({
       collapsedFieldSets,
@@ -1348,6 +1366,7 @@ export function createPrepareFormState({
       changesOpen,
       level: 0,
       path: [],
+      displayInlineChanges,
     })
   }
 
