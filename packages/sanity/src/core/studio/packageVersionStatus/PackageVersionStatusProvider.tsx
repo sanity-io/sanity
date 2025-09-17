@@ -53,10 +53,7 @@ export function PackageVersionStatusProvider({children}: {children: ReactNode}) 
   const importMapInfo = useMemo(() => {
     const importMapUrl = getSanityImportMapEntryValue()
     if (!importMapUrl) {
-      return {
-        valid: false as const,
-        error: new Error('No import map entry for module "sanity" found in DOM'),
-      }
+      return undefined
     }
     const result = parseImportMapModuleCdnUrl(importMapUrl)
     if (!result.valid) {
@@ -67,11 +64,13 @@ export function PackageVersionStatusProvider({children}: {children: ReactNode}) 
         ),
       )
     }
-    return result
+    return result.valid
+      ? {...result, minVersion: semver.coerce(result.minVersion, {includePrerelease: true})!}
+      : result
   }, [])
   const currentVersion = useMemo(() => getCurrentVersion(), [])
 
-  const isAutoUpdating = Boolean(importMapInfo.valid)
+  const isAutoUpdating = Boolean(importMapInfo)
 
   const lastCheckRef = useRef<number>(undefined)
   const [autoUpdatingVersionRaw, setAutoUpdatingVersionRaw] = useState<string>()
@@ -101,27 +100,23 @@ export function PackageVersionStatusProvider({children}: {children: ReactNode}) 
     lastCheckRef.current = new Date().getTime()
     setVersionCheckStatus((current) => ({...current, checking: true}))
 
-    const minVersion = importMapInfo.valid
-      ? semver.coerce(importMapInfo.minVersion, {includePrerelease: true})!
-      : currentVersion
-
     // fetch the current version of the sanity package on the 'latest' tag
     const resolveLatestTaggedVersion = DEBUG_LATEST_VERSION
       ? Promise.resolve(DEBUG_VALUES.latestVersion)
       : fetchLatestAvailableVersionForPackage({
           packageName: REFERENCE_PACKAGE,
-          minVersion,
+          minVersion: importMapInfo?.valid ? importMapInfo.minVersion : currentVersion,
           tag: 'latest',
         })
 
     // fetch the current version based on manage/brett configuration for appid
     const resolveAutoUpdatingVersion = DEBUG_AUTO_UPDATE_VERSION
       ? Promise.resolve(DEBUG_VALUES.autoUpdateVersion)
-      : importMapInfo.valid
+      : importMapInfo?.valid
         ? importMapInfo.appId
           ? fetchLatestAutoUpdatingVersion({
               packageName: REFERENCE_PACKAGE,
-              minVersion,
+              minVersion: importMapInfo?.valid ? importMapInfo.minVersion : currentVersion,
               appId: importMapInfo.appId,
             })
           : // if studio is auto-updating but has no appId, the auto-updating version will be from `latest`
@@ -154,9 +149,7 @@ export function PackageVersionStatusProvider({children}: {children: ReactNode}) 
     () => ({
       isAutoUpdating,
       autoUpdatingVersion,
-      baseVersion: importMapInfo.valid
-        ? semver.coerce(importMapInfo.minVersion, {includePrerelease: true})!
-        : undefined,
+      importMapInfo,
       latestTaggedVersion,
       currentVersion,
       checkForUpdates: isAutoUpdating ? fetchNewVersions : noop,
