@@ -21,6 +21,8 @@ import {
   type AsyncConfigPropertyReducer,
   type ConfigContext,
   type ConfigPropertyReducer,
+  DECISION_PARAMETERS_SCHEMA,
+  type DecisionParametersConfig,
   type DocumentActionsContext,
   type DocumentBadgesContext,
   type DocumentCommentsEnabledContext,
@@ -30,8 +32,6 @@ import {
   type NewDocumentOptionsContext,
   type PluginOptions,
   QUOTA_EXCLUDED_RELEASES_ENABLED,
-  DECISION_PARAMETERS_SCHEMA,
-  type DecisionParametersConfig,
   type ResolveProductionUrlContext,
   type Tool,
 } from './types'
