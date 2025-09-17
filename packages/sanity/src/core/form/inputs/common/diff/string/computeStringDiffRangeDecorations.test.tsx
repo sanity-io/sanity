@@ -2,7 +2,7 @@ import {diffInput, wrap} from '@sanity/diff'
 import {expect, it} from 'vitest'
 
 import {type ProvenanceDiffAnnotation} from '../../../../store/types/diff'
-import {computeRangeDecorations} from './computeRangeDecorations'
+import {computeStringDiffRangeDecorations} from './computeStringDiffRangeDecorations'
 
 const provenanceAnnotation: ProvenanceDiffAnnotation = {
   provenance: {
@@ -13,7 +13,7 @@ const provenanceAnnotation: ProvenanceDiffAnnotation = {
 it('produces an array of range decorations for the provided diff', () => {
   const diff = diffInput(wrap('a', provenanceAnnotation), wrap('b', provenanceAnnotation))
 
-  expect(computeRangeDecorations({diff})).toMatchInlineSnapshot(`
+  expect(computeStringDiffRangeDecorations({diff})).toMatchInlineSnapshot(`
     [
       {
         "component": [Function],
@@ -55,7 +55,7 @@ it('produces an array of range decorations for the provided diff', () => {
 it('merges overlapping range decorations', () => {
   const diff = diffInput(wrap('a b', provenanceAnnotation), wrap('a c', provenanceAnnotation))
 
-  expect(computeRangeDecorations({diff})).toMatchInlineSnapshot(`
+  expect(computeStringDiffRangeDecorations({diff})).toMatchInlineSnapshot(`
     [
       {
         "component": [Function],
@@ -97,7 +97,7 @@ it('merges overlapping range decorations', () => {
 it('applies the provided `mapPayload` function', () => {
   const diff = diffInput(wrap('a', provenanceAnnotation), wrap('b', provenanceAnnotation))
 
-  const rangeDecorations = computeRangeDecorations({
+  const rangeDecorations = computeStringDiffRangeDecorations({
     diff,
     mapPayload: (payload) => ({
       ...payload,

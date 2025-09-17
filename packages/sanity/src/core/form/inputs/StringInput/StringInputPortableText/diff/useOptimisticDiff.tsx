@@ -5,7 +5,7 @@ import {useCallback, useEffect, useMemo, useState} from 'react'
 
 import {type ProvenanceDiffAnnotation} from '../../../../store/types/diff'
 import {type ComputeDiff} from '../../../../store/types/nodes'
-import {computeRangeDecorations} from './computeRangeDecorations'
+import {computeStringDiffRangeDecorations} from '../../../common/diff/string/computeStringDiffRangeDecorations'
 
 type InputOrigin = 'optimistic' | 'definitive'
 
@@ -51,7 +51,7 @@ export function useOptimisticDiff({
 
   const rangeDecorations = useMemo(
     () =>
-      computeRangeDecorations({
+      computeStringDiffRangeDecorations({
         diff,
         mapPayload: (payload) => ({
           ...payload,
