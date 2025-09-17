@@ -72,6 +72,7 @@ export interface BaseFormNode<T = unknown, S extends SchemaType = SchemaType>
   readOnly?: boolean
   /** Whether the node is focused. */
   focused?: boolean
+  displayInlineChanges?: boolean
 }
 
 /** @internal */

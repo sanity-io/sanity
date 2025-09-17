@@ -37,6 +37,7 @@ export interface UseFormStateOptions {
   collapsedPaths?: StateTree<boolean> | undefined
   readOnly?: boolean
   changesOpen?: boolean
+  displayInlineChanges?: boolean
 }
 
 /** @internal */
@@ -57,6 +58,7 @@ export function useFormState<
   changesOpen,
   schemaType,
   perspective,
+  displayInlineChanges,
 }: UseFormStateOptions): FormState<T, S> | null {
   // note: feel free to move these state pieces out of this hook
   const currentUser = useCurrentUser()
@@ -149,6 +151,7 @@ export function useFormState<
       validation: isVersionGoingToUnpublish ? EMPTY_ARRAY : validation,
       changesOpen,
       perspective,
+      displayInlineChanges,
     }) as ObjectFormNode<T, S>
   }, [
     prepareFormState,
@@ -168,5 +171,6 @@ export function useFormState<
     isVersionGoingToUnpublish,
     validation,
     changesOpen,
+    displayInlineChanges,
   ])
 }
