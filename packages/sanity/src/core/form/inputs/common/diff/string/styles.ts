@@ -1,8 +1,10 @@
 import {css, type RuleSet} from 'styled-components'
 
+import {Segment} from './segments'
+
 export function stringDiffContainerStyles(): RuleSet {
   return css`
-    del {
+    del${Segment} {
       opacity: 0.5;
       text-decoration: line-through;
 
@@ -12,7 +14,7 @@ export function stringDiffContainerStyles(): RuleSet {
       }
     }
 
-    ins {
+    ins${Segment} {
       text-decoration: none;
     }
   `
