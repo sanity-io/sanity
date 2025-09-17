@@ -6,17 +6,21 @@ import {AudienceSelectInput} from '../components/AudienceSelectInput'
 
 // Generic decide field implementation that works for all types
 const defineLocalDecideField = (config: any) => {
-  const {name, title, description, type, ...otherConfig} = config
+  const {name, title, type, to, validation, description, readOnly, hidden, ...otherConfig} = config
 
   const valueFieldConfig = {
     type,
+    ...(to && {to}),
+    ...(validation && {validation}),
+    ...(description && {description}),
+    ...(readOnly && {readOnly}),
+    ...(hidden && {hidden}),
     ...otherConfig,
   }
 
   return defineField({
     name,
     title,
-    description,
     type: 'object',
     fields: [
       defineField({
@@ -25,19 +29,18 @@ const defineLocalDecideField = (config: any) => {
         ...valueFieldConfig,
       }),
       defineField({
-        name: 'conditions',
-        title: 'Conditions',
+        name: 'options',
+        title: 'Options',
         type: 'array',
         of: [
           defineField({
             type: 'object',
-            name: 'condition',
-            title: 'Condition',
+            name: 'option',
+            title: 'Option',
             fields: [
               defineField({
                 name: 'audience',
                 title: 'Audience Equality',
-                validation: (Rule) => Rule.required(),
                 type: 'string',
                 components: {
                   input: AudienceSelectInput,
@@ -61,44 +64,6 @@ const AUTHOR_ROLES = [
   {value: 'designer', title: 'Designer'},
   {value: 'ops', title: 'Operations'},
 ]
-
-export const defineDecideField = (config: {name: string; title: string; type: 'string'}) => {
-  return defineField({
-    name: config.name,
-    title: config.title,
-    type: 'object',
-    fields: [
-      defineField({
-        name: 'defaultValue',
-        title: config.title,
-        type: 'string',
-      }),
-      defineField({
-        name: 'options',
-        title: 'Options',
-        type: 'array',
-        of: [
-          defineField({
-            type: 'object',
-            name: 'option',
-            fields: [
-              defineField({
-                name: 'condition',
-                title: 'Condition',
-                type: 'string',
-              }),
-              defineField({
-                name: 'value',
-                title: 'Value',
-                type: 'string',
-              }),
-            ],
-          }),
-        ],
-      }),
-    ],
-  })
-}
 
 export default defineType({
   name: 'author',
