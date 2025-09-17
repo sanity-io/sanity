@@ -2,31 +2,31 @@ import {UserIcon as icon} from '@sanity/icons'
 import {type StringRule} from '@sanity/types'
 import {defineField, defineType} from 'sanity'
 
-// Example of how decision parameters can be accessed in a config context:
-// In sanity.config.ts, you can define:
-// [DECISION_PARAMETERS_SCHEMA]: {
-//   audiences: ['aud-a', 'aud-b', 'aud-c'],
-//   locales: ['en-GB', 'en-US'],
-//   ages: ['20-29', '30-39']
-// }
-// Then access them via the ConfigContext in plugins, components, etc.
+import {AudienceSelectInput} from '../components/AudienceSelectInput'
 
-const AUTHOR_ROLES = [
-  {value: 'developer', title: 'Developer'},
-  {value: 'designer', title: 'Designer'},
-  {value: 'ops', title: 'Operations'},
-]
+// Generic decide field implementation that works for all types
+const defineLocalDecideField = (config: any) => {
+  const {name, title, type, to, validation, description, readOnly, hidden, ...otherConfig} = config
 
-export const defineDecideField = (config: {name: string; title: string; type: 'string'}) => {
+  const valueFieldConfig = {
+    type,
+    ...(to && {to}),
+    ...(validation && {validation}),
+    ...(description && {description}),
+    ...(readOnly && {readOnly}),
+    ...(hidden && {hidden}),
+    ...otherConfig,
+  }
+
   return defineField({
-    name: config.name,
-    title: config.title,
+    name,
+    title,
     type: 'object',
     fields: [
       defineField({
-        name: 'defaultValue',
-        title: config.title,
-        type: 'string',
+        name: 'default',
+        title: 'Default Value',
+        ...valueFieldConfig,
       }),
       defineField({
         name: 'options',
@@ -36,16 +36,20 @@ export const defineDecideField = (config: {name: string; title: string; type: 's
           defineField({
             type: 'object',
             name: 'option',
+            title: 'Option',
             fields: [
               defineField({
-                name: 'condition',
-                title: 'Condition',
+                name: 'audience',
+                title: 'Audience Equality',
                 type: 'string',
+                components: {
+                  input: AudienceSelectInput,
+                },
               }),
               defineField({
                 name: 'value',
                 title: 'Value',
-                type: 'string',
+                ...valueFieldConfig,
               }),
             ],
           }),
@@ -54,6 +58,12 @@ export const defineDecideField = (config: {name: string; title: string; type: 's
     ],
   })
 }
+
+const AUTHOR_ROLES = [
+  {value: 'developer', title: 'Developer'},
+  {value: 'designer', title: 'Designer'},
+  {value: 'ops', title: 'Operations'},
+]
 
 export default defineType({
   name: 'author',
@@ -91,17 +101,30 @@ export default defineType({
       },
       validation: (rule: StringRule) => rule.required(),
     }),
-    defineDecideField({
-      name: 'decideName',
-      title: 'Decide Name',
-      type: 'string',
-    }),
     {
       name: 'bestFriend',
       title: 'Best friend',
       type: 'reference',
       to: [{type: 'author'}],
     },
+    defineLocalDecideField(
+      defineField({
+        name: 'decideName',
+        title: '[Decide] Name',
+        type: 'string',
+        options: {
+          search: {weight: 100},
+        },
+        validation: (rule: StringRule) => rule.required(),
+      }),
+    ),
+    defineLocalDecideField({
+      name: 'decideBestFriend',
+      title: '[Decide] Best Friend',
+      type: 'reference',
+      to: [{type: 'author'}],
+    }),
+
     {
       name: 'role',
       title: 'Role',
