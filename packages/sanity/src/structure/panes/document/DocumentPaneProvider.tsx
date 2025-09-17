@@ -228,6 +228,7 @@ export const DocumentPaneProvider = memo((props: DocumentPaneProviderProps) => {
   const {
     editState,
     upstreamEditState,
+    hasUpstreamVersion,
     connectionState,
     focusPath,
     onChange,
@@ -539,6 +540,7 @@ export const DocumentPaneProvider = memo((props: DocumentPaneProviderProps) => {
         previewUrl,
         ready,
         schemaType: schemaType!,
+        hasUpstreamVersion,
         isPermissionsLoading,
         isInitialValueLoading,
         permissions,
@@ -601,6 +603,7 @@ export const DocumentPaneProvider = memo((props: DocumentPaneProviderProps) => {
       previewUrl,
       ready,
       schemaType,
+      hasUpstreamVersion,
       isPermissionsLoading,
       isInitialValueLoading,
       permissions,

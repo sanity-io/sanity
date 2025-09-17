@@ -112,6 +112,7 @@ export function FormBuilder(props: FormBuilderProps) {
     presence,
     readOnly,
     schemaType,
+    hasUpstreamVersion,
     validation,
     value,
     compareValue,
@@ -205,6 +206,7 @@ export function FormBuilder(props: FormBuilderProps) {
   const rootInputProps: Omit<ObjectInputProps, 'renderDefault'> = useMemo(() => {
     const diffProps = prepareDiffProps({
       comparisonValue: compareValue,
+      hasUpstreamVersion,
       value,
       schemaType,
       perspective,
@@ -249,6 +251,7 @@ export function FormBuilder(props: FormBuilderProps) {
       __unstable_computeDiff: diffProps.__unstable_computeDiff,
       changed: members.some((m) => m.kind === 'field' && m.field.changed),
       displayInlineChanges: false,
+      hasUpstreamVersion: diffProps.hasUpstreamVersion,
     }
   }, [
     compareValue,
@@ -265,6 +268,7 @@ export function FormBuilder(props: FormBuilderProps) {
     handleFocus,
     handleOpenField,
     handleSelectFieldGroup,
+    hasUpstreamVersion,
     id,
     members,
     onPathFocus,

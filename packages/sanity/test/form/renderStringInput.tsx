@@ -36,6 +36,7 @@ export async function renderStringInput(options: {
       ...prepareDiffProps({
         schemaType,
         comparisonValue: value,
+        hasUpstreamVersion: false,
       }),
       changed: false,
     }
