@@ -31,6 +31,7 @@ import {EMPTY_ARRAY, isNonNullable} from '../util'
 import {
   advancedVersionControlEnabledReducer,
   announcementsEnabledReducer,
+  decisionParametersSchemaReducer,
   directUploadsReducer,
   documentActionsReducer,
   documentBadgesReducer,
@@ -45,7 +46,6 @@ import {
   initialDocumentBadges,
   initialLanguageFilter,
   internalQuotaExcludedReleasesEnabledReducer,
-  decisionParametersSchemaReducer,
   internalTasksReducer,
   legacySearchEnabledReducer,
   mediaLibraryEnabledReducer,
@@ -70,11 +70,11 @@ import {SchemaError} from './SchemaError'
 import {
   type Config,
   type ConfigContext,
+  DECISION_PARAMETERS_SCHEMA,
   type MissingConfigFile,
   type PluginOptions,
   type PreparedConfig,
   QUOTA_EXCLUDED_RELEASES_ENABLED,
-  DECISION_PARAMETERS_SCHEMA,
   type SingleWorkspace,
   type Source,
   type SourceClientOptions,
