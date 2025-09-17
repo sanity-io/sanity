@@ -27,7 +27,7 @@ export function ManageMenu() {
         </Stack>
       </Flex>
 
-      <Flex justify="space-between" align="center" gap={2} paddingTop={4}>
+      <Flex justify="flex-start" gap={4} paddingTop={4}>
         <Button
           mode="bleed"
           as="a"
