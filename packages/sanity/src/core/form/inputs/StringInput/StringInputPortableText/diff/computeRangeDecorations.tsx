@@ -2,8 +2,8 @@ import {type EditorSelection, type RangeDecoration} from '@portabletext/editor'
 import {type Diff} from '@sanity/diff'
 
 import {type ProvenanceDiffAnnotation} from '../../../../store/types/diff'
+import {DeletedSegment, InsertedSegment} from '../../../common/diff/string/segments'
 import {ROOT_PATH} from '../StringInputPortableText'
-import {DeletedSegment, InsertedSegment} from './segments'
 
 interface ComputeRangeDecorationsOptions {
   diff: Diff<ProvenanceDiffAnnotation>
