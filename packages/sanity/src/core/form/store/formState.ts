@@ -1051,6 +1051,7 @@ export function createPrepareFormState({
       schemaType: props.schemaType,
       readOnly,
       path: props.path,
+      perspective: props.perspective,
       id: toString(props.path),
       level: props.level,
       focused: isEqual(props.path, props.focusPath),
