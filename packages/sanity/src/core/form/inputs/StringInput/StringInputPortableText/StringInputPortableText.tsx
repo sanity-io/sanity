@@ -14,12 +14,12 @@ import {styled} from 'styled-components'
 
 import {set, unset} from '../../../patch/patch'
 import {type StringInputProps} from '../../../types'
+import {DeletedSegment} from '../../common/diff/string/segments'
+import {stringDiffContainerStyles} from '../../common/diff/string/styles'
 import {UpdateReadOnlyPlugin} from '../../PortableText/PortableTextInput'
-import {DeletedSegment} from './diff/segments'
 import {useOptimisticDiff} from './diff/useOptimisticDiff'
 import {packageValue} from './packageValue'
 import {
-  inputStyles,
   responsiveInputPaddingStyle,
   textInputBaseStyle,
   textInputFontSizeStyle,
@@ -48,7 +48,7 @@ const StyledInput = styled(PortableTextEditable)<
   ${textInputBaseStyle}
   ${responsiveInputPaddingStyle}
   ${textInputFontSizeStyle}
-  ${inputStyles}
+  ${stringDiffContainerStyles}
 `
 
 const StyledEditorRepresentation = styled(Card)<TextInputRepresentationStyleProps>(
