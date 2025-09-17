@@ -10,6 +10,13 @@ import {type LocaleResourceBundle} from '../types'
  * @hidden
  */
 export const studioLocaleStrings = defineLocalesResources('studio', {
+  /** "Configuration issue" header */
+  'about-dialog.configuration-issue.header': 'Configuration issue detected',
+  /** Message shown if sanity.cli.ts is missing deployment.appId */
+  'about-dialog.configuration-issue.missing-appid':
+    'Auto updates is enabled, but no <code>deployment.appId</code> configured in <code>sanity.cli.ts</code>. This Studio is updating against the <strong>latest</strong>-channel.',
+  /** "View documentation" link for auto-updating studios */
+  'about-dialog.configuration-issue.missing-appid.view-documentation': 'View documentation',
   /** "Disabled" status for auto-updates in About-dialog */
   'about-dialog.version-info.auto-updates.disabled': 'Auto Updates not enabled',
   /** "Enabled" status for auto-updates in About-dialog */
