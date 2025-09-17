@@ -53,6 +53,7 @@
     "e2e:preview": "pnpm e2e:build && pnpm --filter studio-e2e-testing preview",
     "e2e:setup": "tsx -r dotenv-flow/config test/e2e/scripts/setup",
     "e2e:start": "pnpm --filter studio-e2e-testing preview",
+    "efps:dev": "cd dev/efps && pnpm dev",
     "efps:test": "cd perf/efps && pnpm test",
     "efps:write:report": "cd perf/efps && pnpm write:report",
     "etl": "node --import=tsx -r dotenv-flow/config --no-experimental-strip-types scripts/etl.cts",
