@@ -1,5 +1,6 @@
-import {type EditorSelection, type RangeDecoration} from '@portabletext/editor'
+import {type RangeDecoration} from '@portabletext/editor'
 import {type Diff} from '@sanity/diff'
+import {type Path} from '@sanity/types'
 
 import {type ProvenanceDiffAnnotation} from '../../../../store/types/diff'
 import {DeletedSegment, InsertedSegment} from '../../../common/diff/string/segments'
@@ -8,11 +9,15 @@ import {ROOT_PATH} from '../StringInputPortableText'
 interface ComputeRangeDecorationsOptions {
   diff: Diff<ProvenanceDiffAnnotation>
   mapPayload?: (payload: Record<string, unknown>) => Record<string, unknown>
+  anchorPath?: Path
+  focusPath?: Path
 }
 
 export function computeRangeDecorations({
   diff,
   mapPayload = (payload) => payload,
+  anchorPath = ROOT_PATH,
+  focusPath = ROOT_PATH,
 }: ComputeRangeDecorationsOptions): RangeDecoration[] {
   if (diff.type !== 'string') {
     return []
@@ -41,10 +46,16 @@ export function computeRangeDecorations({
 
         if (isOverlapping) {
           state.rangeDecorations.splice(state.rangeDecorations.length - 1, 1, {
-            selection: rangeDecorationSelection(
-              state.position,
-              state.position + segment.text.length,
-            ),
+            selection: {
+              anchor: {
+                path: anchorPath,
+                offset: state.position,
+              },
+              focus: {
+                path: focusPath,
+                offset: state.position + segment.text.length,
+              },
+            },
             component: ({children}) => {
               return (
                 <span>
@@ -71,7 +82,16 @@ export function computeRangeDecorations({
 
       if (segment.action === 'added') {
         state.rangeDecorations.push({
-          selection: rangeDecorationSelection(state.position, state.position + segment.text.length),
+          selection: {
+            anchor: {
+              path: anchorPath,
+              offset: state.position,
+            },
+            focus: {
+              path: focusPath,
+              offset: state.position + segment.text.length,
+            },
+          },
           component: (props) => <InsertedSegment segment={segment} {...props} />,
           payload: mapPayload({
             id: segmentId('added', segment.text),
@@ -85,7 +105,16 @@ export function computeRangeDecorations({
 
       if (segment.action === 'removed') {
         state.rangeDecorations.push({
-          selection: rangeDecorationSelection(state.position, state.position),
+          selection: {
+            anchor: {
+              path: anchorPath,
+              offset: state.position,
+            },
+            focus: {
+              path: focusPath,
+              offset: state.position,
+            },
+          },
           component: () => <DeletedSegment segment={segment} />,
           payload: mapPayload({
             id: segmentId('removed', segment.text),
@@ -114,17 +143,4 @@ export function computeRangeDecorations({
 
 function segmentId(...path: string[]): string {
   return path.join('.')
-}
-
-function rangeDecorationSelection(anchorOffset: number, focusOffset: number): EditorSelection {
-  return {
-    anchor: {
-      path: ROOT_PATH,
-      offset: anchorOffset,
-    },
-    focus: {
-      path: ROOT_PATH,
-      offset: focusOffset,
-    },
-  }
 }
