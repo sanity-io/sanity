@@ -1,7 +1,7 @@
 import {memo} from 'react'
 
 import {type FIXME} from '../../../FIXME'
-import {type FieldMember} from '../../store'
+import {type BaseFormNode, type FieldMember, type PrimitiveFormNode} from '../../store'
 import {
   type RenderAnnotationCallback,
   type RenderArrayOfObjectsItemCallback,
@@ -88,5 +88,11 @@ export const MemberField = memo(function MemberField(props: MemberFieldProps) {
     )
   }
 
-  return <PrimitiveField member={member} renderField={renderField} renderInput={renderInput} />
+  return (
+    <PrimitiveField
+      member={member as FieldMember<BaseFormNode<PrimitiveFormNode['schemaType']['jsonType']>>}
+      renderField={renderField}
+      renderInput={renderInput}
+    />
+  )
 })
