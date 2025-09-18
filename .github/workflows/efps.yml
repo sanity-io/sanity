@@ -59,7 +59,7 @@ jobs:
         run: pnpm install --frozen-lockfile
 
       - name: Install dependencies in folder efps-tests
-        working-directory: ./dev/efps
+        working-directory: ./dev/efps/efps-tests
         run: pnpm install
 
       - name: Store Playwright's Version
