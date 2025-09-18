@@ -30,6 +30,7 @@ export function PrimitiveField(props: {
   const fieldActions = useDocumentFieldActions()
 
   const focusRef = useRef<{focus: () => void}>(undefined)
+  const valueRef = useRef<unknown>(undefined)
 
   const [localValue, setLocalValue] = useState<string | undefined>()
 
@@ -58,19 +59,26 @@ export function PrimitiveField(props: {
 
   const handleNativeChange = useCallback(
     (event: ChangeEvent<HTMLInputElement>) => {
-      let inputValue: number | string | boolean = event.currentTarget.value
+      let inputValue: number | string | boolean | undefined = event.currentTarget.value
       if (isNumberSchemaType(member.field.schemaType)) {
         inputValue = event.currentTarget.valueAsNumber
         if (inputValue > Number.MAX_SAFE_INTEGER || inputValue < Number.MIN_SAFE_INTEGER) {
           return
         }
       } else if (isBooleanSchemaType(member.field.schemaType)) {
-        inputValue = event.currentTarget.checked
+        if (member.field.schemaType.indeterminate) {
+          inputValue =
+            valueRef.current === undefined ? true : valueRef.current === false ? undefined : false
+        } else {
+          inputValue = event.currentTarget.checked
+        }
       }
 
       // `valueAsNumber` returns `NaN` on empty input
       const hasEmptyValue =
-        inputValue === '' || (typeof inputValue === 'number' && isNaN(inputValue))
+        inputValue === undefined ||
+        inputValue === '' ||
+        (typeof inputValue === 'number' && isNaN(inputValue))
 
       if (isNumberSchemaType(member.field.schemaType)) {
         // Store the local value for number inputs in order to support intermediate values
@@ -99,7 +107,7 @@ export function PrimitiveField(props: {
 
   const value =
     member.field.value === undefined ? member.field.schemaType.elideIf : member.field.value
-
+  valueRef.current = value
   const elementProps = useMemo(
     (): PrimitiveInputProps['elementProps'] => ({
       'onBlur': handleBlur,
