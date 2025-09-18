@@ -28,6 +28,7 @@ export async function measureFpsForPte({
   await contentEditable.waitFor({state: 'visible'})
 
   const rendersPromise = contentEditable.evaluate(
+    // Had to add this so we can run the tests
     // eslint-disable-next-line no-new-func
     new Function(
       'el',

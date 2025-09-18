@@ -30,6 +30,7 @@ export async function measureFpsForInput({
   await new Promise((resolve) => setTimeout(resolve, 500))
 
   const rendersPromise = input.evaluate(
+    // Had to add this so we can run the tests
     // eslint-disable-next-line no-new-func
     new Function(
       'el',

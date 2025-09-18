@@ -3,7 +3,7 @@ import {structureTool} from 'sanity/structure'
 
 export const singleStringEfps = defineConfig({
   name: 'single-string-efps',
-  projectId: import.meta.env.VITE_PERF_EFPS_PROJECT_ID || 'b8j69ts2',
+  projectId: import.meta.env.VITE_PERF_EFPS_PROJECT_ID!,
   dataset: import.meta.env.VITE_PERF_EFPS_DATASET || 'production',
   apiHost: 'https://api.sanity.work',
   scheduledPublishing: {
