@@ -22,7 +22,6 @@
     "styled-components": "^6.1.18"
   },
   "devDependencies": {
-    "@repo/eslint-config": "workspace:*",
     "@sanity/eslint-config-studio": "^5.0.2",
     "eslint": "^9.28"
   }
