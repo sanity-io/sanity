@@ -257,6 +257,7 @@ export interface BaseSchemaType extends Partial<DeprecationConfiguration> {
 export interface StringSchemaType extends BaseSchemaType {
   jsonType: 'string'
   options?: StringOptions & TextOptions & DateOptions & DatetimeOptions
+  elideIf?: string
   initialValue?: InitialValueProperty<any, string>
 }
 
@@ -269,6 +270,7 @@ export interface TextSchemaType extends StringSchemaType {
 export interface NumberSchemaType extends BaseSchemaType {
   jsonType: 'number'
   options?: NumberOptions
+  elideIf?: number
   initialValue?: InitialValueProperty<any, number>
 }
 
@@ -276,6 +278,7 @@ export interface NumberSchemaType extends BaseSchemaType {
 export interface BooleanSchemaType extends BaseSchemaType {
   jsonType: 'boolean'
   options?: BooleanOptions
+  elideIf?: number
   initialValue?: InitialValueProperty<any, boolean>
 }
 

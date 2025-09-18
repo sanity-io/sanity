@@ -80,10 +80,15 @@ export function PrimitiveField(props: {
         setLocalValue(hasEmptyValue ? undefined : event.currentTarget.value)
       }
 
-      onChange(PatchEvent.from(hasEmptyValue ? unset() : set(inputValue)).prefixAll(member.name))
+      const elide = member.field.schemaType.elideIf === inputValue
+
+      onChange(PatchEvent.from(elide ? unset() : set(inputValue)).prefixAll(member.name))
     },
     [member.name, member.field.schemaType, onChange],
   )
+
+  const value =
+    member.field.value === undefined ? member.field.schemaType.elideIf : member.field.value
 
   const elementProps = useMemo(
     (): PrimitiveInputProps['elementProps'] => ({
@@ -92,11 +97,7 @@ export function PrimitiveField(props: {
       'id': member.field.id,
       'ref': focusRef,
       'onChange': handleNativeChange,
-      'value': resolveNativeNumberInputValue(
-        member.field.schemaType,
-        member.field.value,
-        localValue,
-      ),
+      'value': resolveNativeNumberInputValue(member.field.schemaType, value, localValue),
       'readOnly': Boolean(member.field.readOnly),
       'placeholder': member.field.schemaType.placeholder,
       'aria-describedby': createDescriptionId(member.field.id, member.field.schemaType.description),
@@ -108,7 +109,7 @@ export function PrimitiveField(props: {
       member.field.id,
       member.field.readOnly,
       member.field.schemaType,
-      member.field.value,
+      value,
       localValue,
     ],
   )
@@ -120,7 +121,7 @@ export function PrimitiveField(props: {
         .map((item) => item.message)
         .join('\n') || undefined
     return {
-      value: member.field.value as any,
+      value,
       compareValue: member.field.compareValue,
       __unstable_computeDiff: member.field.__unstable_computeDiff,
       readOnly: member.field.readOnly,
@@ -139,8 +140,8 @@ export function PrimitiveField(props: {
       displayInlineChanges: member.field.displayInlineChanges ?? false,
     }
   }, [
+    value,
     member.field.displayInlineChanges,
-    member.field.value,
     member.field.compareValue,
     member.field.__unstable_computeDiff,
     member.field.readOnly,

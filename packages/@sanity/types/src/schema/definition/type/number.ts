@@ -23,6 +23,7 @@ export interface NumberDefinition extends BaseSchemaDefinition {
   type: 'number'
   options?: NumberOptions
   placeholder?: string
+  elideIf?: number
   validation?: ValidationBuilder<NumberRule, number>
   initialValue?: InitialValueProperty<any, number>
 }
