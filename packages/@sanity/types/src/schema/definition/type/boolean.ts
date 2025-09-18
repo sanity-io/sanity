@@ -14,6 +14,7 @@ export interface BooleanRule extends RuleDef<BooleanRule, boolean> {}
 export interface BooleanDefinition extends BaseSchemaDefinition {
   type: 'boolean'
   options?: BooleanOptions
+  elideIf?: boolean
   initialValue?: InitialValueProperty<any, boolean>
   validation?: ValidationBuilder<BooleanRule, boolean>
 }
