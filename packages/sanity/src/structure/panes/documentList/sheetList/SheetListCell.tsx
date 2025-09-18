@@ -1,6 +1,3 @@
-'use no memo'
-// The `use no memo` directive is due to a known issue with react-table and react compiler: https://github.com/TanStack/table/issues/5567
-
 /* eslint-disable i18next/no-literal-string */
 import {type ObjectFieldType} from '@sanity/types'
 import {Select, TextInput} from '@sanity/ui'
@@ -38,7 +35,7 @@ export function SheetListCellInner(props: SheetListCellInnerProps) {
   const cellId = `cell-${column.id}-${row.index}`
   const [renderValue, setRenderValue] = useState<string>(getValue() as string)
   const [isDirty, setIsDirty] = useState(false)
-  const inputRef = useRef<InputRef>(null)
+  const inputRef = useRef<HTMLInputElement | HTMLSelectElement | null>(null)
   const {
     focusAnchorCell,
     resetFocusSelection,
@@ -150,22 +147,16 @@ export function SheetListCellInner(props: SheetListCellInnerProps) {
     return '1px solid transparent'
   }
 
-  const inputProps = {
-    'onFocus': handleOnFocus,
-    'onBlur': handleOnBlur,
-    'onMouseDown': handleOnMouseDown,
-    'aria-selected': !!cellState,
-    'data-testid': cellId,
-    'id': cellId,
-    'ref': (ref: InputRef) => {
-      inputRef.current = ref
-    },
-  }
-
   if (fieldType.name === 'boolean') {
     return (
       <Select
-        {...inputProps}
+        onFocus={handleOnFocus}
+        onBlur={handleOnBlur}
+        onMouseDown={handleOnMouseDown}
+        aria-selected={!!cellState}
+        data-testid={cellId}
+        id={cellId}
+        ref={inputRef as React.Ref<HTMLSelectElement>}
         onChange={() => null}
         radius={0}
         style={{

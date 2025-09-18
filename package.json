@@ -186,6 +186,7 @@
       "@typescript-eslint/parser": "$@typescript-eslint/parser",
       "@vitest/coverage-v8": "$vitest",
       "@vitest/expect": "$vitest",
+      "babel-plugin-react-compiler": "experimental",
       "eslint-plugin-react-hooks": "$eslint-plugin-react-hooks",
       "jsdom": "$jsdom",
       "typescript@5.9.x": "catalog:",
