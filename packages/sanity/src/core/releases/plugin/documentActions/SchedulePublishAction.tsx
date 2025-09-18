@@ -8,12 +8,14 @@ import {
   type DocumentActionDescription,
   type DocumentActionProps,
 } from '../../../config/document/actions'
-import {useValidationStatus} from '../../../hooks'
+import {useFeatureEnabled, useValidationStatus} from '../../../hooks'
+import {FEATURES} from '../../../hooks/useFeatureEnabled'
 import {useTranslation} from '../../../i18n'
 import {usePerspective} from '../../../perspective/usePerspective'
 import {useDocumentPreviewValues} from '../../../tasks/hooks/useDocumentPreviewValues'
 import {ScheduleDraftDialog} from '../../components/dialog/ScheduleDraftDialog'
 import {useHasCardinalityOneReleaseVersions} from '../../hooks/useHasCardinalityOneReleaseVersions'
+import {useReleasesToolAvailable} from '../../hooks/useReleasesToolAvailable'
 import {useScheduleDraftOperations} from '../../hooks/useScheduleDraftOperations'
 import {releasesLocaleNamespace} from '../../i18n'
 
@@ -28,6 +30,8 @@ export const SchedulePublishAction: DocumentActionComponent = (
   const {createScheduledDraft} = useScheduleDraftOperations()
   const toast = useToast()
   const {perspectiveStack} = usePerspective()
+  const releasesToolAvailable = useReleasesToolAvailable()
+  const {enabled: releasesEnabled} = useFeatureEnabled(FEATURES.contentReleases)
 
   // Get document preview values to extract the title
   const {value: previewValues} = useDocumentPreviewValues({
@@ -89,6 +93,13 @@ export const SchedulePublishAction: DocumentActionComponent = (
     },
     [id, createScheduledDraft, previewValues?.title, toast, t],
   )
+
+  // scheduled publishing using scheduled drafts is not available if releases is not enabled
+  // releases may either be disabled in `sanity.config` as `releases.enabled: false`
+  // or might not be available on the project plan
+  if (!releasesToolAvailable || !releasesEnabled) {
+    return null
+  }
 
   if (!draft) {
     return null

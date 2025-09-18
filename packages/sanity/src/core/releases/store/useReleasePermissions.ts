@@ -1,7 +1,7 @@
 import {type SingleActionResult} from '@sanity/client'
 import {useMemo} from 'react'
 
-import {useFeatureEnabled} from '../../hooks/useFeatureEnabled'
+import {FEATURES, useFeatureEnabled} from '../../hooks/useFeatureEnabled'
 import {useResourceCache} from '../../store/_legacy/ResourceCacheProvider'
 import {createReleasePermissionsStore} from './createReleasePermissionsStore'
 
@@ -20,7 +20,7 @@ export interface useReleasePermissionsValue {
  */
 export function useReleasePermissions(): useReleasePermissionsValue {
   const resourceCache = useResourceCache()
-  const contentReleasesFeature = useFeatureEnabled('contentReleases')
+  const contentReleasesFeature = useFeatureEnabled(FEATURES.contentReleases)
 
   return useMemo(() => {
     const releasePermissionsStore =
