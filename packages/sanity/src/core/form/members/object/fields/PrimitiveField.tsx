@@ -2,7 +2,7 @@ import {isBooleanSchemaType, isNumberSchemaType} from '@sanity/types'
 import {type ChangeEvent, useCallback, useEffect, useMemo, useRef, useState} from 'react'
 
 import {type FormPatch, PatchEvent, set, unset} from '../../../patch'
-import {type FieldMember} from '../../../store'
+import {type FieldMember, type PrimitiveFormNode} from '../../../store'
 import {useDocumentFieldActions} from '../../../studio/contexts/DocumentFieldActions'
 import {useFormCallbacks} from '../../../studio/contexts/FormCallbacks'
 import {
@@ -21,7 +21,7 @@ import {resolveNativeNumberInputValue} from '../../common/resolveNativeNumberInp
  * @internal
  */
 export function PrimitiveField(props: {
-  member: FieldMember
+  member: FieldMember<PrimitiveFormNode>
   renderInput: RenderInputCallback<PrimitiveInputProps>
   renderField: RenderFieldCallback<PrimitiveFieldProps>
 }) {
@@ -80,7 +80,9 @@ export function PrimitiveField(props: {
         setLocalValue(hasEmptyValue ? undefined : event.currentTarget.value)
       }
 
-      onChange(PatchEvent.from(hasEmptyValue ? unset() : set(inputValue)).prefixAll(member.name))
+      const elide = member.field.schemaType.elideIf === inputValue
+
+      onChange(PatchEvent.from(elide ? unset() : set(inputValue)).prefixAll(member.name))
     },
     [member.name, member.field.schemaType, onChange],
   )
@@ -89,11 +91,14 @@ export function PrimitiveField(props: {
     useMemo(
       () =>
         member.field.validation
-          .filter((item) => item.level === 'error')
-          .map((item) => item.message)
+          .filter((item: any) => item.level === 'error')
+          .map((item: any) => item.message)
           .join('\n'),
       [member.field.validation],
     ) || undefined
+
+  const value =
+    member.field.value === undefined ? member.field.schemaType.elideIf : member.field.value
 
   const elementProps = useMemo(
     (): PrimitiveInputProps['elementProps'] => ({
@@ -102,11 +107,7 @@ export function PrimitiveField(props: {
       'id': member.field.id,
       'ref': focusRef,
       'onChange': handleNativeChange,
-      'value': resolveNativeNumberInputValue(
-        member.field.schemaType,
-        member.field.value,
-        localValue,
-      ),
+      'value': resolveNativeNumberInputValue(member.field.schemaType, value, localValue),
       'readOnly': Boolean(member.field.readOnly),
       'placeholder': member.field.schemaType.placeholder,
       'aria-describedby': createDescriptionId(member.field.id, member.field.schemaType.description),
@@ -118,14 +119,14 @@ export function PrimitiveField(props: {
       member.field.id,
       member.field.readOnly,
       member.field.schemaType,
-      member.field.value,
+      value,
       localValue,
     ],
   )
 
   const inputProps = useMemo((): Omit<PrimitiveInputProps, 'renderDefault'> => {
     return {
-      value: member.field.value as any,
+      value,
       __unstable_computeDiff: member.field.__unstable_computeDiff,
       readOnly: member.field.readOnly,
       schemaType: member.field.schemaType as any,
@@ -141,7 +142,7 @@ export function PrimitiveField(props: {
       elementProps,
     }
   }, [
-    member.field.value,
+    value,
     member.field.__unstable_computeDiff,
     member.field.readOnly,
     member.field.schemaType,
@@ -175,12 +176,12 @@ export function PrimitiveField(props: {
       schemaType: member.field.schemaType as any,
       title: member.field.schemaType.title,
       validation: member.field.validation,
-      value: member.field.value as any,
+      value: value,
     }
   }, [
     fieldActions,
     member.field.level,
-    member.field.value,
+    value,
     member.field.schemaType,
     member.field.id,
     member.field.path,

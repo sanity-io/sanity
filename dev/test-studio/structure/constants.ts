@@ -54,6 +54,7 @@ export const DEBUG_INPUT_TYPES = [
   'documentActionsTest',
   'documentWithHoistedPt',
   'empty',
+  'elidedValuesExample',
   'fieldActionsTest',
   'fieldComponentsTest',
   'fieldsetsTest',
