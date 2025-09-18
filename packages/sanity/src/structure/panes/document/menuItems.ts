@@ -1,7 +1,11 @@
 import {EarthAmericasIcon, JsonIcon, LinkIcon, TransferIcon} from '@sanity/icons'
-import {type DocumentInspector, type DocumentInspectorMenuItem, type TFunction} from 'sanity'
+import {
+  type DocumentIdStack,
+  type DocumentInspector,
+  type DocumentInspectorMenuItem,
+  type TFunction,
+} from 'sanity'
 
-import {type DocumentIdStack} from '../../hooks/useDocumentIdStack'
 import {type PaneMenuItem, type StructureToolFeatures} from '../../types'
 import {INSPECT_ACTION_PREFIX} from './constants'
 

@@ -6,6 +6,7 @@ import {
   type ReleaseDocument,
   type ReleaseId,
   useActiveReleases,
+  useFilteredReleases,
   useOnlyHasVersions,
   usePerspective,
 } from 'sanity'
@@ -22,13 +23,13 @@ import {
 } from 'vitest'
 
 import {createTestProvider} from '../../../../../../../../test/testUtils/TestProvider'
-import {useFilteredReleases} from '../../../../../../hooks/useFilteredReleases'
 import {type DocumentPaneContextValue} from '../../../../DocumentPaneContext'
 import {useDocumentPane} from '../../../../useDocumentPane'
 import {DocumentPerspectiveList} from '../DocumentPerspectiveList'
 
 vi.mock('sanity', async (importOriginal) => ({
   ...(await importOriginal()),
+  useFilteredReleases: vi.fn(),
   useOnlyHasVersions: vi.fn().mockReturnValue(false),
   usePerspective: vi.fn(),
   useActiveReleases: vi.fn().mockReturnValue({data: [], loading: false}),
@@ -59,7 +60,6 @@ vi.mock('sanity/router', () => {
 })
 
 vi.mock('../../../../useDocumentPane')
-vi.mock('../../../../../../hooks/useFilteredReleases')
 
 const mockUseDocumentPane = useDocumentPane as MockedFunction<
   () => Partial<DocumentPaneContextValue>

@@ -32,6 +32,7 @@ export * from './presence'
 export * from './preview'
 export {
   formatRelativeLocalePublishDate,
+  getDocumentIsInPerspective,
   getReleaseIdFromReleaseDocumentId,
   getReleaseTone,
   getVersionInlineBadge,

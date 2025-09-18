@@ -19,6 +19,7 @@ import {
   useActiveReleases,
   useCopyPaste,
   useDocumentForm,
+  useDocumentIdStack,
   usePerspective,
   useSchema,
   useSource,
@@ -31,7 +32,6 @@ import {DocumentPaneContext} from 'sanity/_singletons'
 
 import {usePaneRouter} from '../../components'
 import {useDiffViewRouter} from '../../diffView/hooks/useDiffViewRouter'
-import {useDocumentIdStack} from '../../hooks/useDocumentIdStack'
 import {useDocumentLastRev} from '../../hooks/useDocumentLastRev'
 import {structureLocaleNamespace} from '../../i18n'
 import {type PaneMenuItem} from '../../types'
@@ -165,8 +165,12 @@ export const DocumentPaneProvider = memo((props: DocumentPaneProviderProps) => {
   )
 
   const getComparisonValue = useCallback(
-    (editState: EditStateFor) => {
-      return changesOpen ? sinceDocument || editState?.published : editState?.published || null
+    (upstreamEditState: EditStateFor) => {
+      const upstream = upstreamEditState.version ?? upstreamEditState.published
+      if (changesOpen) {
+        return sinceDocument || upstream
+      }
+      return upstream || null
     },
     [changesOpen, sinceDocument],
   )
@@ -220,6 +224,7 @@ export const DocumentPaneProvider = memo((props: DocumentPaneProviderProps) => {
 
   const {
     editState,
+    upstreamEditState,
     connectionState,
     focusPath,
     onChange,
@@ -353,7 +358,12 @@ export const DocumentPaneProvider = memo((props: DocumentPaneProviderProps) => {
     [getDisplayed, value],
   )
 
-  const {previousId} = useDocumentIdStack({displayed, documentId, editState})
+  const {previousId} = useDocumentIdStack({
+    strict: true,
+    displayed,
+    documentId,
+    editState,
+  })
 
   const setTimelineRange = useCallback(
     (newSince: string, newRev: string | null) => {
@@ -449,7 +459,11 @@ export const DocumentPaneProvider = memo((props: DocumentPaneProviderProps) => {
     })
   }, [documentId, documentType, schemaType, onChange, setDocumentMeta])
 
-  const compareValue = useMemo(() => getComparisonValue(editState), [editState, getComparisonValue])
+  const compareValue = useMemo(
+    () => getComparisonValue(upstreamEditState),
+    [upstreamEditState, getComparisonValue],
+  )
+
   const isDeleted = useMemo(() => getIsDeleted(editState), [editState, getIsDeleted])
   const revisionNotFound = onOlderRevision && !revisionDocument
 
