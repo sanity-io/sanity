@@ -56,7 +56,7 @@ jobs:
             Waiting for Editor Performance Tests to finish…
 
       - name: Install project dependencies
-        run: pnpm install
+        run: pnpm install --frozen-lockfile
 
       - name: Store Playwright's Version
         id: playwright-version
