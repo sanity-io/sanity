@@ -1,9 +1,5 @@
 # Sanity Clean Content Studio
 
-Congratulations, you have now installed the Sanity Content Studio, an open-source real-time content editing environment connected to the Sanity backend.
+You can run this studio locally by running `pnpm run dev` or `pnpm run efps:dev` from the root
 
-Now you can do the following things:
-
-- [Read “getting started” in the docs](https://www.sanity.io/docs/introduction/getting-started?utm_source=readme)
-- [Join the Sanity community](https://www.sanity.io/community/join?utm_source=readme)
-- [Extend and build plugins](https://www.sanity.io/docs/content-studio/extending?utm_source=readme)
+You should set up the .env in the efps-tests to run the tests locally (the commands we have in the package.json)
