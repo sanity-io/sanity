@@ -45,6 +45,7 @@ const client = createClient({
   token,
   useCdn: false,
   apiVersion: 'v2024-08-08',
+  apiHost: 'https://api.sanity.work',
 })
 
 const workspaceDir = path.dirname(fileURLToPath(import.meta.url))

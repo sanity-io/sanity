@@ -77,3 +77,5 @@ export const recipeEfps = defineConfig({
     ],
   },
 })
+
+export default recipeEfps

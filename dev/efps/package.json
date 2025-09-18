@@ -22,7 +22,30 @@
     "styled-components": "^6.1.18"
   },
   "devDependencies": {
+    "@repo/eslint-config": "workspace:*",
+    "@sanity/client": "^7.11.1",
     "@sanity/eslint-config-studio": "^5.0.2",
-    "eslint": "^9.28"
+    "@swc-node/register": "^1.11.1",
+    "@types/react": "catalog:",
+    "@types/react-dom": "catalog:",
+    "@types/serve-handler": "^6.1.4",
+    "@types/yargs": "^17.0.33",
+    "@vitejs/plugin-react": "catalog:",
+    "babel-plugin-react-compiler": "19.1.0-rc.3",
+    "chalk": "^4.1.2",
+    "cli-table3": "^0.6.5",
+    "dotenv": "^16.6.1",
+    "eslint": "^9.28",
+    "globby": "^11.1.0",
+    "ora": "^8.2.0",
+    "playwright": "catalog:",
+    "react": "catalog:",
+    "react-dom": "catalog:",
+    "rollup-plugin-sourcemaps": "^0.6.3",
+    "sanity": "workspace:*",
+    "serve-handler": "^6.1.6",
+    "source-map": "^0.7.6",
+    "vite": "^7.1.5",
+    "yargs": "^17.7.2"
   }
 }

@@ -34,3 +34,5 @@ export const singleStringEfps = defineConfig({
     ],
   },
 })
+
+export default singleStringEfps

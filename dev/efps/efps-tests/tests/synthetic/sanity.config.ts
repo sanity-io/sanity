@@ -60,3 +60,5 @@ export const syntheticEfps = defineConfig({
     ],
   },
 })
+
+export default syntheticEfps

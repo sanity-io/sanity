@@ -27,40 +27,48 @@ export async function measureFpsForPte({
   const contentEditable = pteField.locator('[contenteditable="true"]')
   await contentEditable.waitFor({state: 'visible'})
 
-  const rendersPromise = contentEditable.evaluate(async (el: HTMLElement) => {
-    const updates: {
-      value: string
-      timestamp: number
-      // with very large PTE fields, it may take time to serialize the result
-      // so we capture this time and remove it from the final metric
-      textContentProcessingTime: number
-    }[] = []
+  const rendersPromise = contentEditable.evaluate(
+    // eslint-disable-next-line no-new-func
+    new Function(
+      'el',
+      `
+    return (async function() {
+      const updates = []
 
-    const mutationObserver = new MutationObserver(() => {
-      const textStart = performance.now()
-      const textContent = el.textContent || ''
-      const textEnd = performance.now()
+      const mutationObserver = new MutationObserver(() => {
+        const textStart = performance.now()
+        const textContent = el.textContent || ''
+        const textEnd = performance.now()
 
-      updates.push({
-        value: textContent,
-        timestamp: Date.now(),
-        textContentProcessingTime: textEnd - textStart,
+        updates.push({
+          value: textContent,
+          timestamp: Date.now(),
+          textContentProcessingTime: textEnd - textStart,
+        })
       })
-    })
 
-    mutationObserver.observe(el, {subtree: true, characterData: true})
+      mutationObserver.observe(el, {subtree: true, characterData: true})
 
-    await new Promise<void>((resolve) => {
-      const handler = () => {
-        el.removeEventListener('blur', handler)
-        resolve()
-      }
+      await new Promise((resolve) => {
+        const handler = () => {
+          el.removeEventListener('blur', handler)
+          resolve()
+        }
 
-      el.addEventListener('blur', handler)
-    })
+        el.addEventListener('blur', handler)
+      })
 
-    return updates
-  })
+      return updates
+    })()
+  `,
+    ) as (el: HTMLElement) => Promise<
+      {
+        value: string
+        timestamp: number
+        textContentProcessingTime: number
+      }[]
+    >,
+  )
   await new Promise((resolve) => setTimeout(resolve, 500))
 
   const inputEvents: {character: string; timestamp: number}[] = []

@@ -115,3 +115,5 @@ export const articleEfps = defineConfig({
     ],
   },
 })
+
+export default articleEfps
