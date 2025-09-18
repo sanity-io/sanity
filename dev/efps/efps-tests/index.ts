@@ -19,6 +19,7 @@ import {exec} from './helpers/exec'
 import {runTest} from './runTest'
 import article from './tests/article/article'
 import recipe from './tests/recipe/recipe'
+import singleString from './tests/singleString/singleString'
 import synthetic from './tests/synthetic/synthetic'
 import {type EfpsAbResult, type EfpsResult, type EfpsTest} from './types'
 import {formatPercentageChange, isSignificantlyDifferent} from './utils'
@@ -33,7 +34,7 @@ const ENABLE_PROFILER = process.env.ENABLE_PROFILER === 'true'
 const REFERENCE_TAG = process.env.REFERENCE_TAG || 'latest'
 // eslint-disable-next-line turbo/no-undeclared-env-vars
 const RECORD_VIDEO = process.env.RECORD_VIDEO === 'true'
-const TESTS = [article, recipe, synthetic]
+const TESTS = [article, recipe, singleString, synthetic]
 
 const projectId = process.env.VITE_PERF_EFPS_PROJECT_ID!
 const dataset = process.env.VITE_PERF_EFPS_DATASET!
