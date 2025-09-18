@@ -64,7 +64,7 @@ export function HomeButton() {
         </LogoMarkContainer>
         {!multipleWorkspaces && (
           <Box paddingX={2}>
-            <Text size={1} weight="medium">
+            <Text size={2} weight="medium">
               {activeWorkspace.title}
             </Text>
           </Box>
