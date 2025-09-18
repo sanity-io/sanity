@@ -67,9 +67,11 @@ export function WorkspaceMenuButton() {
             {workspaces.length > 1 && (
               <>
                 <MenuDivider />
-                <Box paddingTop={3}>
+                <Box paddingTop={2}>
                   <Box paddingX={5} paddingBottom={2}>
-                    <Text size={0}>{t('workspaces.action.switch-workspace')}</Text>
+                    <Text size={0} weight="medium">
+                      {t('workspaces.action.switch-workspace')}
+                    </Text>
                   </Box>
 
                   <Stack space={1} style={{overflowY: 'auto', maxHeight: '40vh'}}>
