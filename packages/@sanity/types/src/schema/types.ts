@@ -278,7 +278,8 @@ export interface NumberSchemaType extends BaseSchemaType {
 export interface BooleanSchemaType extends BaseSchemaType {
   jsonType: 'boolean'
   options?: BooleanOptions
-  elideIf?: number
+  elideIf?: boolean
+  indeterminate?: boolean
   initialValue?: InitialValueProperty<any, boolean>
 }
 
