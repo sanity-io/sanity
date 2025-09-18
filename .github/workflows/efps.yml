@@ -109,6 +109,10 @@ jobs:
           node-version: lts/*
 
       - name: Install project dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Install dependencies in folder efps-tests
+        working-directory: ./dev/efps/efps-tests
         run: pnpm install
 
       - name: Download blob reports from Github Actions Artifacts
