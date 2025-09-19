@@ -77,7 +77,7 @@ jobs:
           VERCEL_PROJECT_ID: ${{ secrets.VERCEL_EFPS_STUDIO_PROJECT_ID }}
           COMMIT_MESSAGE: ${{ github.event.head_commit.message || github.event.pull_request.title }}
         run: |
-          echo "DEPLOY_URL=$(vercel deploy --prebuilt --env ENABLE_EXPERIMENTAL_COREPACK=1 --token=${{ secrets.VERCEL_EFPS_STUDIO_TOKEN }} -- \
+          echo "DEPLOY_URL=$(vercel deploy --env ENABLE_EXPERIMENTAL_COREPACK=1 --token=${{ secrets.VERCEL_EFPS_STUDIO_TOKEN }} \
           -m githubDeployment="1" \
           -m githubCommitAuthorName="${{ github.event.sender.name || 'GitHub Actions' }}" \
           -m githubCommitMessage="$COMMIT_MESSAGE" \
@@ -87,8 +87,7 @@ jobs:
           -m githubCommitSha="${{ github.sha }}" \
           -m githubOrg="${{ github.repository_owner }}" \
           -m githubRepo="${{ github.event.repository.name }}" \
-          -m githubCommitAuthorLogin="${{ github.event.sender.login || github.actor }}" | tail -n 1)" >> $GITHUB_OUTPUT
-
+          -m githubCommitAuthorLogin="${{ github.event.sender.login || github.actor }}"
       - name: Echo the deployed URL
         run: |
           if [ -z "${{ steps.deploy.outputs.DEPLOY_URL }}" ]; then
