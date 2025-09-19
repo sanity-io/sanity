@@ -4916,6 +4916,7 @@ packages:
   '@sanity/tsdoc@1.0.169':
     resolution: {integrity: sha512-+cJ1lkI4LNoNwiDhpEDMly6WGnSX3tbjXRBZcu9rCCWruB74gbg0JEhmdPSRDD0IhhHG2PArjzKU2ztYJpHQfA==}
     engines: {node: '>=14.0.0'}
+    deprecated: Package no longer supported. Contact Support at https://www.npmjs.com/support for more info.
     hasBin: true
     peerDependencies:
       react: ^18 || ^19
