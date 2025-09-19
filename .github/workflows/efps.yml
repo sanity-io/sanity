@@ -74,7 +74,7 @@ jobs:
           VERCEL_PROJECT_ID: ${{ secrets.VERCEL_EFPS_STUDIO_PROJECT_ID }}
           COMMIT_MESSAGE: ${{ github.event.head_commit.message || github.event.pull_request.title }}
         run: |
-          echo "DEPLOY_URL=$(vercel deploy --prebuilt --token=${{ secrets.VERCEL_EFPS_STUDIO_TOKEN }} \
+          echo "DEPLOY_URL=$(vercel deploy --prebuilt --env ENABLE_EXPERIMENTAL_COREPACK=1 --token=${{ secrets.VERCEL_EFPS_STUDIO_TOKEN }} -- \
           -m githubDeployment="1" \
           -m githubCommitAuthorName="${{ github.event.sender.name || 'GitHub Actions' }}" \
           -m githubCommitMessage="$COMMIT_MESSAGE" \
