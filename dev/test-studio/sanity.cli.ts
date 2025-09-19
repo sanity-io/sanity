@@ -60,7 +60,6 @@ export default defineCliConfig({
         include: ['react/jsx-runtime'],
         exclude: [
           ...(viteConfig.optimizeDeps?.exclude || []),
-          '@sanity/tsdoc',
           '@sanity/assist',
           'sanity',
           // This is needed to avoid a full page reload as vite discovers it while rendering the `./preview/index.html` iframe

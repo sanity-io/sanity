@@ -9,7 +9,6 @@ import {ptPTLocale} from '@sanity/locale-pt-pt'
 import {svSELocale} from '@sanity/locale-sv-se'
 import {SanityMonogram} from '@sanity/logos'
 import {debugSecrets} from '@sanity/preview-url-secret/sanity-plugin-debug-secrets'
-import {tsdoc} from '@sanity/tsdoc/studio'
 import {visionTool} from '@sanity/vision'
 import {
   defineConfig,
@@ -207,7 +206,6 @@ const sharedSettings = ({projectId}: {projectId: string}) => {
       imageHotspotArrayPlugin(),
       routerDebugTool(),
       errorReportingTestPlugin(),
-      tsdoc(),
       media(),
       markdownSchema(),
       wave(),
@@ -313,18 +311,6 @@ export default defineConfig([
     unstable_tasks: {
       enabled: false,
     },
-    mediaLibrary: {
-      enabled: true,
-    },
-  },
-  {
-    name: 'tsdoc',
-    title: 'tsdoc',
-    projectId: 'ppsg7ml5',
-    dataset: 'tsdoc-2',
-    ...envConfig.production,
-    plugins: [sharedSettings({projectId: 'ppsg7ml5'})],
-    basePath: '/tsdoc',
     mediaLibrary: {
       enabled: true,
     },
