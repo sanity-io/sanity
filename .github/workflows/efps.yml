@@ -61,9 +61,17 @@ jobs:
       - name: Build Studio for Deployment
         run: pnpm build:studio
 
+      - name: Configure Vercel Project
+        env:
+          VERCEL_ORG_ID: ${{ secrets.VERCEL_EFPS_STUDIO_ORG_ID }}
+          VERCEL_PROJECT_ID: ${{ secrets.VERCEL_EFPS_STUDIO_PROJECT_ID }}
+        run: vercel pull --yes --environment=preview --token=${{ secrets.VERCEL_EFPS_STUDIO_TOKEN }}
+
       - name: Deploy Studio to Vercel
         id: deploy
         env:
+          VERCEL_ORG_ID: ${{ secrets.VERCEL_EFPS_STUDIO_ORG_ID }}
+          VERCEL_PROJECT_ID: ${{ secrets.VERCEL_EFPS_STUDIO_PROJECT_ID }}
           COMMIT_MESSAGE: ${{ github.event.head_commit.message || github.event.pull_request.title }}
         run: |
           echo "DEPLOY_URL=$(vercel deploy --prebuilt --token=${{ secrets.VERCEL_EFPS_STUDIO_TOKEN }} \
