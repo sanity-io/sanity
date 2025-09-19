@@ -21,6 +21,8 @@ import {
   type AsyncConfigPropertyReducer,
   type ConfigContext,
   type ConfigPropertyReducer,
+  DECISION_PARAMETERS_SCHEMA,
+  type DecisionParametersConfig,
   type DocumentActionsContext,
   type DocumentBadgesContext,
   type DocumentCommentsEnabledContext,
@@ -520,6 +522,28 @@ export const internalQuotaExcludedReleasesEnabledReducer = (opts: {
 
     throw new Error(`Expected a boolean, but received ${getPrintableType(enabled)}`)
   }, initialValue)
+
+  return result
+}
+
+export const decisionParametersSchemaReducer = (opts: {
+  config: PluginOptions
+  initialValue: DecisionParametersConfig | undefined
+}): DecisionParametersConfig | undefined => {
+  const {config, initialValue} = opts
+  const flattenedConfig = flattenConfig(config, [])
+
+  const result = flattenedConfig.reduce(
+    (acc: DecisionParametersConfig | undefined, {config: innerConfig}) => {
+      const schema = innerConfig[DECISION_PARAMETERS_SCHEMA]
+
+      if (typeof schema === 'undefined') return acc
+      if (typeof schema === 'object' && schema !== null) return schema
+
+      throw new Error(`Expected an object, but received ${getPrintableType(schema)}`)
+    },
+    initialValue,
+  )
 
   return result
 }
