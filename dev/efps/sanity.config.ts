@@ -1,11 +1,12 @@
+import {visionTool} from '@sanity/vision'
 import {defineConfig} from 'sanity'
 import {structureTool} from 'sanity/structure'
-import {visionTool} from '@sanity/vision'
+
 import {schemaTypes} from './schemaTypes'
 import {articleEfps} from './tests/article/sanity.config'
 import {recipeEfps} from './tests/recipe/sanity.config'
-import {syntheticEfps} from './tests/synthetic/sanity.config'
 import {singleStringEfps} from './tests/singleString/sanity.config'
+import {syntheticEfps} from './tests/synthetic/sanity.config'
 
 export const defaultConfig = defineConfig({
   name: 'default',

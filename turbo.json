@@ -54,7 +54,7 @@
     "SYSTEMROOT",
     "VISUAL",
     "EDITOR",
-    // These are for the perf/efps perf suite and should not be cached
+    // These are for the dev/efps perf suite and should not be cached
     "VITE_PERF_EFPS_PROJECT_ID",
     "VITE_PERF_EFPS_DATASET",
     // These should be passed through but not be used as cache keys since they are tokens
