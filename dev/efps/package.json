@@ -1,5 +1,5 @@
 {
-  "name": "Studio Performance - efps tests",
+  "name": "efps-tests",
   "version": "0.0.0",
   "private": true,
   "description": "Sanity Studio eFPS perf suite",
@@ -11,13 +11,16 @@
     "#config": "./placeholderConfig.ts"
   },
   "scripts": {
+    "dev": "sanity dev",
     "lint": "eslint .",
     "start": "tsx ./index.ts",
     "test": "pnpm start",
     "write:report": "tsx ./formatefpsResult.ts"
   },
   "dependencies": {
-    "@swc/types": "^0.1.25",
+    "@sanity/eslint-config-studio": "catalog:",
+    "@sanity/vision": "workspace:*",
+    "styled-components": "^6.1.15",
     "tsx": "^4.20.5"
   },
   "devDependencies": {

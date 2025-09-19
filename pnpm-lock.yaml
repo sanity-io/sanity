@@ -325,9 +325,15 @@ importers:
 
   dev/efps:
     dependencies:
-      '@swc/types':
-        specifier: ^0.1.25
-        version: 0.1.25
+      '@sanity/eslint-config-studio':
+        specifier: 'catalog:'
+        version: 5.0.2(eslint@9.35.0(jiti@2.5.1))(typescript@5.9.2)
+      '@sanity/vision':
+        specifier: workspace:*
+        version: link:../../packages/@sanity/vision
+      styled-components:
+        specifier: ^6.1.15
+        version: 6.1.19(react-dom@19.1.1(react@19.1.1))(react@19.1.1)
       tsx:
         specifier: ^4.20.5
         version: 4.20.5
