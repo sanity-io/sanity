@@ -122,7 +122,7 @@ importers:
         specifier: workspace:*
         version: link:packages/@repo/utils
       '@sanity/client':
-        specifier: ^7.11.1
+        specifier: ^7.11.2
         version: 7.11.2(debug@4.4.3)
       '@sanity/mutate':
         specifier: ^0.13.0
@@ -336,7 +336,7 @@ importers:
         specifier: workspace:*
         version: link:../../packages/@repo/eslint-config
       '@sanity/client':
-        specifier: ^7.11.1
+        specifier: ^7.11.2
         version: 7.11.2(debug@4.4.3)
       '@swc-node/register':
         specifier: ^1.11.1
@@ -595,7 +595,7 @@ importers:
         specifier: workspace:*
         version: link:../../packages/@sanity/cli
       '@sanity/client':
-        specifier: ^7.11.1
+        specifier: ^7.11.2
         version: 7.11.2(debug@4.4.3)
       '@sanity/color':
         specifier: ^3.0.6
@@ -982,7 +982,7 @@ importers:
         specifier: ^7.28.4
         version: 7.28.4(supports-color@5.5.0)
       '@sanity/client':
-        specifier: ^7.11.1
+        specifier: ^7.11.2
         version: 7.11.2(debug@4.4.3)
       '@sanity/codegen':
         specifier: workspace:*
@@ -1282,7 +1282,7 @@ importers:
   packages/@sanity/migrate:
     dependencies:
       '@sanity/client':
-        specifier: ^7.11.1
+        specifier: ^7.11.2
         version: 7.11.2(debug@4.4.3)
       '@sanity/mutate':
         specifier: ^0.13.0
@@ -1429,7 +1429,7 @@ importers:
   packages/@sanity/types:
     dependencies:
       '@sanity/client':
-        specifier: ^7.11.1
+        specifier: ^7.11.2
         version: 7.11.2(debug@4.4.3)
       '@sanity/media-library-types':
         specifier: ^1.0.1
@@ -1472,7 +1472,7 @@ importers:
         specifier: ^2.1.1
         version: 2.1.1
       '@sanity/client':
-        specifier: ^7.11.1
+        specifier: ^7.11.2
         version: 7.11.2(debug@4.4.3)
       '@sanity/types':
         specifier: workspace:*
@@ -1600,7 +1600,7 @@ importers:
         specifier: workspace:*
         version: link:../cli
       '@sanity/client':
-        specifier: ^7.11.1
+        specifier: ^7.11.2
         version: 7.11.2(debug@4.4.3)
       '@sanity/codegen':
         specifier: workspace:*
@@ -1727,7 +1727,7 @@ importers:
         specifier: workspace:*
         version: link:../@sanity/cli
       '@sanity/client':
-        specifier: ^7.11.1
+        specifier: ^7.11.2
         version: 7.11.2(debug@4.4.3)
       '@sanity/color':
         specifier: ^3.0.6
@@ -2305,7 +2305,7 @@ importers:
         specifier: 'catalog:'
         version: 1.55.0
       '@sanity/client':
-        specifier: ^7.11.1
+        specifier: ^7.11.2
         version: 7.11.2(debug@4.4.3)
       '@sanity/uuid':
         specifier: ^3.0.2
