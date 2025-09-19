@@ -20,7 +20,7 @@
   },
   "dependencies": {
     "@sanity/eslint-config-studio": "catalog:",
-    "styled-components": "^6.1.15",
+    "styled-components": "^6.1.19",
     "tsx": "^4.20.5"
   },
   "devDependencies": {
@@ -45,7 +45,7 @@
     "sanity": "workspace:*",
     "serve-handler": "^6.1.6",
     "source-map": "^0.7.6",
-    "vite": "^7.1.5",
+    "vite": "^7.1.6",
     "yargs": "^17.7.2"
   }
 }
