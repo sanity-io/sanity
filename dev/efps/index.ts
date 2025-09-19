@@ -3,7 +3,6 @@
 import 'dotenv/config'
 
 import fs from 'node:fs'
-import os from 'node:os'
 import path from 'node:path'
 import process from 'node:process'
 import {fileURLToPath} from 'node:url'
@@ -34,6 +33,9 @@ const ENABLE_PROFILER = process.env.ENABLE_PROFILER === 'true'
 const REFERENCE_TAG = process.env.REFERENCE_TAG || 'latest'
 // eslint-disable-next-line turbo/no-undeclared-env-vars
 const RECORD_VIDEO = process.env.RECORD_VIDEO === 'true'
+const STUDIO_URL =
+  // eslint-disable-next-line turbo/no-undeclared-env-vars
+  process.env.STUDIO_URL || 'https://test-studio-git-main.sanity.dev/test/structure'
 const TESTS = [article, recipe, singleString, synthetic]
 
 // this is the project for the efps
@@ -51,7 +53,6 @@ const client = createClient({
 })
 
 const workspaceDir = path.dirname(fileURLToPath(import.meta.url))
-const monorepoRoot = path.resolve(workspaceDir, '../..')
 const timestamp = new Date()
 
 const resultsDir = path.join(
@@ -94,25 +95,7 @@ function getTestsForShard(tests: EfpsTest[], shard: {current: number; total: num
 const shard = argv.shard ? parseShard(argv.shard) : null
 const selectedTests = shard ? getTestsForShard(TESTS, shard) : TESTS
 
-const getSanityPkgPathForTag = async (tag: string) => {
-  const tmpDir = path.join(os.tmpdir(), `sanity-${tag}`)
-
-  try {
-    await fs.promises.rm(tmpDir, {recursive: true})
-  } catch {
-    // intentionally blank
-  }
-  await fs.promises.mkdir(tmpDir, {recursive: true})
-
-  await exec({
-    command: `npm install sanity@${tag}`,
-    cwd: tmpDir,
-    spinner,
-    text: [`Downloading sanity@${tag} package…`, `Downloaded sanity@${tag}`],
-  })
-
-  return path.join(tmpDir, 'node_modules', 'sanity')
-}
+// Removed getSanityPkgPathForTag function as we no longer need to download packages
 
 const formatEfps = (latencyMs: number) => {
   const efps = 1000 / latencyMs
@@ -129,13 +112,7 @@ const spinner = Ora()
 spinner.info(
   `Running ${selectedTests.length} tests: ${selectedTests.map((t) => `'${t.name}'`).join(', ')}`,
 )
-
-await exec({
-  text: ['Building the monorepo…', 'Built monorepo'],
-  command: 'pnpm run build',
-  spinner,
-  cwd: monorepoRoot,
-})
+spinner.info(`Using studio URL: ${STUDIO_URL}`)
 
 await exec({
   text: ['Ensuring playwright is installed…', 'Playwright is installed'],
@@ -143,10 +120,8 @@ await exec({
   spinner,
 })
 
-const localSanityPkgPath = path.dirname(fileURLToPath(import.meta.resolve('sanity/package.json')))
-
-const referenceSanityPkgPath = await getSanityPkgPathForTag(REFERENCE_TAG)
-const experimentSanityPkgPath = localSanityPkgPath
+// Note: We no longer need to download reference packages since we're using external URLs
+// The studio URL will determine which version of Sanity is being tested
 
 function mergeResults(baseResults: EfpsResult[] | undefined, incomingResults: EfpsResult[]) {
   if (!baseResults) return incomingResults
@@ -189,7 +164,7 @@ async function runAbTest(test: EfpsTest) {
         recordVideo: RECORD_VIDEO,
         enableProfiler: ENABLE_PROFILER,
         projectId,
-        sanityPkgPath: referenceSanityPkgPath,
+        studioUrl: STUDIO_URL,
         log: (message) => {
           spinner.text = `${referenceMessage}: ${message}`
         },
@@ -210,7 +185,7 @@ async function runAbTest(test: EfpsTest) {
         recordVideo: RECORD_VIDEO,
         enableProfiler: ENABLE_PROFILER,
         projectId,
-        sanityPkgPath: experimentSanityPkgPath,
+        studioUrl: STUDIO_URL,
         log: (message) => {
           spinner.text = `${experimentMessage}: ${message}`
         },

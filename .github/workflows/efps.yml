@@ -10,6 +10,10 @@ on:
         description: "npm reference tag for comparison"
         required: true
         default: "latest"
+      studio_url:
+        description: "Studio URL to test against"
+        required: false
+        default: "https://test-studio-git-main.sanity.dev/test/structure"
       enable_profiler:
         description: "Enable profiler"
         required: true
@@ -29,9 +33,6 @@ jobs:
   efps-test:
     timeout-minutes: 30
     runs-on: ubuntu-latest
-    env:
-      TURBO_TOKEN: ${{ secrets.TURBO_TOKEN }}
-      TURBO_TEAM: ${{ vars.TURBO_TEAM }}
     strategy:
       fail-fast: false
       matrix:
@@ -45,6 +46,21 @@ jobs:
         with:
           node-version: lts/*
 
+      - name: Set Studio URL
+        id: set-studio-url
+        run: |
+          if [ "${{ github.event_name }}" = "pull_request" ]; then
+            # For PRs, try to construct PR-specific URL
+            BRANCH_NAME="${{ github.head_ref }}"
+            echo "url=https://test-studio-git-${BRANCH_NAME}.sanity.dev/test/structure" >> $GITHUB_OUTPUT
+            echo "Using PR-specific studio URL: https://test-studio-git-${BRANCH_NAME}.sanity.dev/test/structure"
+          else
+            # For manual runs, use the input or default to main
+            STUDIO_URL="${{ github.event.inputs.studio_url || 'https://test-studio-git-main.sanity.dev/test/structure' }}"
+            echo "url=${STUDIO_URL}" >> $GITHUB_OUTPUT
+            echo "Using studio URL: ${STUDIO_URL}"
+          fi
+
       - name: Add PR comment placeholder
         uses: thollander/actions-comment-pull-request@24bffb9b452ba05a4f3f77933840a6a841d1b32b # v3
         if: ${{ github.event_name == 'pull_request' }}
@@ -52,6 +68,8 @@ jobs:
           comment-tag: "efps-report"
           message: |
             ### ⚡️ Editor Performance Report
+
+            Testing against: ${{ steps.set-studio-url.outputs.url }}
 
             Waiting for Editor Performance Tests to finish…
 
@@ -84,6 +102,7 @@ jobs:
           REFERENCE_TAG: ${{ github.event.inputs.reference_tag || 'latest' }}
           ENABLE_PROFILER: ${{ github.event.inputs.enable_profiler || false }}
           RECORD_VIDEO: ${{ github.event.inputs.record_video || false }}
+          STUDIO_URL: ${{ steps.set-studio-url.outputs.url }}
         run: pnpm efps:test -- -- --shard ${{ matrix.shardIndex }}/${{ matrix.shardTotal }}
 
       - uses: actions/upload-artifact@v4
