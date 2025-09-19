@@ -61,7 +61,7 @@ jobs:
       - name: Build Studio for Deployment
         run: pnpm build:efps
 
-      - name: Configure Vercel Project
+      - name: Pull Vercel Environment Information
         env:
           VERCEL_ORG_ID: ${{ secrets.VERCEL_EFPS_STUDIO_ORG_ID }}
           VERCEL_PROJECT_ID: ${{ secrets.VERCEL_EFPS_STUDIO_PROJECT_ID }}
