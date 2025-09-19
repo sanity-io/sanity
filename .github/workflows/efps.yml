@@ -59,7 +59,7 @@ jobs:
         run: pnpm install
 
       - name: Build Studio for Deployment
-        run: pnpm build:studio
+        run: pnpm build:efps
 
       - name: Configure Vercel Project
         env:
