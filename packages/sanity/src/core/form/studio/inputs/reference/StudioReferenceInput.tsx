@@ -155,7 +155,7 @@ export function StudioReferenceInput(props: StudioReferenceInputProps) {
     [onEditReference, path],
   )
 
-  const selectedState = PathUtils.startsWith(path, activePath?.path || [])
+  const activeState = PathUtils.startsWith(path, activePath?.path || [])
     ? activePath?.state
     : 'none'
 
@@ -202,7 +202,7 @@ export function StudioReferenceInput(props: StudioReferenceInputProps) {
       onSearch={handleSearch}
       liveEdit={isDocumentLiveEdit}
       getReferenceInfo={getReferenceInfo}
-      selectedState={selectedState}
+      activeState={activeState}
       editReferenceLinkComponent={EditReferenceLink}
       createOptions={createOptions}
       onEditReference={handleEditReference}
