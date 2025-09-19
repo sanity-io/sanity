@@ -92,7 +92,7 @@ const listDatasetBackupCommand: CliCommandDefinition<ListDatasetBackupFlags> = {
         query.before = flags.before
         query.after = flags.after
       } catch (err) {
-        throw new Error(`Parsing date flags: ${err}`)
+        throw new Error(`Parsing date flags: ${err}`, {cause: err})
       }
     }
 

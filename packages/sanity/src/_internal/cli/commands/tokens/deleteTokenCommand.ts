@@ -31,7 +31,7 @@ const deleteTokenCommand: CliCommandDefinition = {
         output.print('Token deleted successfully')
       }
     } catch (err) {
-      throw new Error(`Token deletion failed:\n${err.message}`)
+      throw new Error(`Token deletion failed:\n${err.message}`, {cause: err})
     }
   },
 }

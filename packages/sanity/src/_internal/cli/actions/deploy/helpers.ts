@@ -411,7 +411,7 @@ async function getOrCreateStudioFromConfig({
     spinner.fail()
     // if the name is taken, it should return a 409 so we relay to the user
     if ([402, 409].includes(e?.statusCode)) {
-      throw new Error(e?.response?.body?.message || 'Bad request') // just in case
+      throw new Error(e?.response?.body?.message || 'Bad request', {cause: e}) // just in case
     }
     debug('Error creating user application from config', e)
     // otherwise, it's a fatal error

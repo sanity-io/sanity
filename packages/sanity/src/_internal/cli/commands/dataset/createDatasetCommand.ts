@@ -61,7 +61,7 @@ const createDatasetCommand: CliCommandDefinition<CreateFlags> = {
       await client.datasets.create(datasetName, {aclMode})
       output.print('Dataset created successfully')
     } catch (err) {
-      throw new Error(`Dataset creation failed:\n${err.message}`)
+      throw new Error(`Dataset creation failed:\n${err.message}`, {cause: err})
     }
   },
 }

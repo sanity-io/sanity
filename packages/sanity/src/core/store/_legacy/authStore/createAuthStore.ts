@@ -139,7 +139,7 @@ const getCurrentUser = async (
     // Some non-CORS error - is it one of those undefinable network errors?
     if (err.isNetworkError && !err.message && err.request && err.request.url) {
       const host = new URL(err.request.url).host
-      throw new Error(`Unknown network error attempting to reach ${host}`)
+      throw new Error(`Unknown network error attempting to reach ${host}`, {cause: err})
     }
 
     // Some other error, just throw it
