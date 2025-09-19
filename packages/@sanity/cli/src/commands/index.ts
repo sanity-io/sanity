@@ -23,6 +23,11 @@ import testfunctionsCommand from './functions/testFunctionsCommand'
 import helpCommand from './help/helpCommand'
 import initCommand from './init/initCommand'
 import installCommand from './install/installCommand'
+import addIntentCommand from './intents/addIntentCommand'
+import detailIntentCommand from './intents/detailIntentCommand'
+import intentsGroup from './intents/intentsGroup'
+import listIntentsCommand from './intents/listIntentsCommand'
+import syncIntentsCommand from './intents/syncIntentsCommand'
 import learnCommand from './learn/learnCommand'
 import loginCommand from './login/loginCommand'
 import logoutCommand from './logout/logoutCommand'
@@ -83,4 +88,9 @@ export const baseCommands: (CliCommandDefinition | CliCommandGroupDefinition)[] 
   listBlueprintsCommand,
   logsBlueprintsCommand,
   planBlueprintsCommand,
+  intentsGroup,
+  detailIntentCommand,
+  listIntentsCommand,
+  addIntentCommand,
+  syncIntentsCommand,
 ]
