@@ -10,10 +10,6 @@ on:
         description: "npm reference tag for comparison"
         required: true
         default: "latest"
-      studio_url:
-        description: "Studio URL to test against"
-        required: false
-        default: "https://test-studio-git-main.sanity.dev/test/structure"
       enable_profiler:
         description: "Enable profiler"
         required: true
@@ -33,6 +29,9 @@ jobs:
   efps-test:
     timeout-minutes: 30
     runs-on: ubuntu-latest
+    env:
+      TURBO_TOKEN: ${{ secrets.TURBO_TOKEN }}
+      TURBO_TEAM: ${{ vars.TURBO_TEAM }}
     strategy:
       fail-fast: false
       matrix:
@@ -46,21 +45,6 @@ jobs:
         with:
           node-version: lts/*
 
-      - name: Set Studio URL
-        id: set-studio-url
-        run: |
-          if [ "${{ github.event_name }}" = "pull_request" ]; then
-            # For PRs, try to construct PR-specific URL
-            BRANCH_NAME="${{ github.head_ref }}"
-            echo "url=https://test-studio-git-${BRANCH_NAME}.sanity.dev/test/structure" >> $GITHUB_OUTPUT
-            echo "Using PR-specific studio URL: https://test-studio-git-${BRANCH_NAME}.sanity.dev/test/structure"
-          else
-            # For manual runs, use the input or default to main
-            STUDIO_URL="${{ github.event.inputs.studio_url || 'https://test-studio-git-main.sanity.dev/test/structure' }}"
-            echo "url=${STUDIO_URL}" >> $GITHUB_OUTPUT
-            echo "Using studio URL: ${STUDIO_URL}"
-          fi
-
       - name: Add PR comment placeholder
         uses: thollander/actions-comment-pull-request@24bffb9b452ba05a4f3f77933840a6a841d1b32b # v3
         if: ${{ github.event_name == 'pull_request' }}
@@ -69,12 +53,50 @@ jobs:
           message: |
             ### ⚡️ Editor Performance Report
 
-            Testing against: ${{ steps.set-studio-url.outputs.url }}
-
-            Waiting for Editor Performance Tests to finish…
+            Deploying studio and running performance tests…
 
       - name: Install project dependencies
         run: pnpm install
+
+      - name: Build Studio for Deployment
+        run: pnpm build:studio
+
+      - name: Deploy Studio to Vercel
+        id: deploy
+        env:
+          COMMIT_MESSAGE: ${{ github.event.head_commit.message || github.event.pull_request.title }}
+        run: |
+          echo "DEPLOY_URL=$(vercel deploy --prebuilt --token=${{ secrets.VERCEL_EFPS_STUDIO_TOKEN }} \
+          -m githubDeployment="1" \
+          -m githubCommitAuthorName="${{ github.event.sender.name || 'GitHub Actions' }}" \
+          -m githubCommitMessage="$COMMIT_MESSAGE" \
+          -m githubCommitOrg="${{ github.repository_owner }}" \
+          -m githubCommitRef="${{ github.head_ref || github.ref_name }}" \
+          -m githubCommitRepo="${{ github.event.repository.name }}" \
+          -m githubCommitSha="${{ github.sha }}" \
+          -m githubOrg="${{ github.repository_owner }}" \
+          -m githubRepo="${{ github.event.repository.name }}" \
+          -m githubCommitAuthorLogin="${{ github.event.sender.login || github.actor }}" | tail -n 1)" >> $GITHUB_OUTPUT
+
+      - name: Echo the deployed URL
+        run: |
+          if [ -z "${{ steps.deploy.outputs.DEPLOY_URL }}" ]; then
+           echo "::error::Deployment URL was not found. Deployment may have failed."
+           exit 1
+          fi
+          echo "Deployed Studio URL: ${{ steps.deploy.outputs.DEPLOY_URL }}"
+
+      - name: Update PR comment with deployed URL
+        uses: thollander/actions-comment-pull-request@24bffb9b452ba05a4f3f77933840a6a841d1b32b # v3
+        if: ${{ github.event_name == 'pull_request' }}
+        with:
+          comment-tag: "efps-report"
+          message: |
+            ### ⚡️ Editor Performance Report
+
+            Testing against: [${{ steps.deploy.outputs.DEPLOY_URL }}](${{ steps.deploy.outputs.DEPLOY_URL }})
+
+            Running performance tests…
 
       - name: Store Playwright's Version
         id: playwright-version
@@ -102,7 +124,7 @@ jobs:
           REFERENCE_TAG: ${{ github.event.inputs.reference_tag || 'latest' }}
           ENABLE_PROFILER: ${{ github.event.inputs.enable_profiler || false }}
           RECORD_VIDEO: ${{ github.event.inputs.record_video || false }}
-          STUDIO_URL: ${{ steps.set-studio-url.outputs.url }}
+          STUDIO_URL: ${{ steps.deploy.outputs.DEPLOY_URL }}
         run: pnpm efps:test -- -- --shard ${{ matrix.shardIndex }}/${{ matrix.shardTotal }}
 
       - uses: actions/upload-artifact@v4
