@@ -152,7 +152,7 @@
     "lodash-es": "^4.17.21",
     "minimist": "^1.2.8",
     "npm-run-all2": "^6.2.6",
-    "oxlint": "^1.14.0",
+    "oxlint": "1.14.0",
     "pkg-pr-new": "^0.0.54",
     "prettier": "catalog:",
     "read-package-up": "^11.0.0",
