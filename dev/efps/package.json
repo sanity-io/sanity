@@ -11,6 +11,7 @@
     "#config": "./placeholderConfig.ts"
   },
   "scripts": {
+    "build": "sanity build",
     "dev": "sanity dev",
     "lint": "eslint .",
     "start": "tsx ./index.ts",
