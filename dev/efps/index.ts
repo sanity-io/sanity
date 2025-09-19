@@ -36,6 +36,7 @@ const REFERENCE_TAG = process.env.REFERENCE_TAG || 'latest'
 const RECORD_VIDEO = process.env.RECORD_VIDEO === 'true'
 const TESTS = [article, recipe, singleString, synthetic]
 
+// this is the project for the efps
 const projectId = process.env.VITE_PERF_EFPS_PROJECT_ID!
 const dataset = process.env.VITE_PERF_EFPS_DATASET!
 const token = process.env.PERF_EFPS_SANITY_TOKEN!
