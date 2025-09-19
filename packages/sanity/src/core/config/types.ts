@@ -75,6 +75,20 @@ export interface GroupableActionDescription<GroupType = unknown> extends BaseAct
 export const QUOTA_EXCLUDED_RELEASES_ENABLED = Symbol('__internal_quotaExcludedReleasesEnabled')
 
 /**
+ * Symbol for configuring decision parameters schema
+ * @beta
+ */
+export const DECISION_PARAMETERS_SCHEMA = Symbol('__decisionParametersSchema')
+
+/**
+ * Configuration for decision parameters
+ * @beta
+ */
+export interface DecisionParametersConfig {
+  [key: string]: string[]
+}
+
+/**
  * @hidden
  * @beta
  */
@@ -254,6 +268,8 @@ export interface ConfigContext {
   i18n: LocaleSource
   /** @internal */
   [QUOTA_EXCLUDED_RELEASES_ENABLED]?: boolean
+  /** @beta */
+  [DECISION_PARAMETERS_SCHEMA]?: DecisionParametersConfig
 }
 
 /** @public */
@@ -501,6 +517,9 @@ export interface PluginOptions {
   /** @internal */
   [QUOTA_EXCLUDED_RELEASES_ENABLED]?: WorkspaceOptions[typeof QUOTA_EXCLUDED_RELEASES_ENABLED]
 
+  /** @beta */
+  [DECISION_PARAMETERS_SCHEMA]?: DecisionParametersConfig
+
   /** Configuration for Content Releases */
   releases?: DefaultPluginsWorkspaceOptions['releases']
 
@@ -627,6 +646,11 @@ export interface WorkspaceOptions extends SourceOptions {
    * @internal
    */
   [QUOTA_EXCLUDED_RELEASES_ENABLED]?: boolean
+
+  /**
+   * @beta
+   */
+  [DECISION_PARAMETERS_SCHEMA]?: DecisionParametersConfig
 
   scheduledPublishing?: DefaultPluginsWorkspaceOptions['scheduledPublishing']
 }
