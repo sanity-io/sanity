@@ -13,7 +13,8 @@
     "timeout": 10,
     "event": {
       "on": [
-        "publish"
+        "create",
+        "update"
       ],
       "filter": "_type == 'article' && delta::changedAny(content[_type == 'code'])",
       "projection": "{_id, content}"

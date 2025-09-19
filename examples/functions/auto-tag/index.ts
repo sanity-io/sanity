@@ -16,7 +16,7 @@ export const handler = documentEventHandler(async ({context, event}) => {
       instructionParams: {
         content: {
           type: 'field',
-          path: 'body',
+          path: 'content',
         },
         tagsUsedInOtherPosts: {
           type: 'groq',

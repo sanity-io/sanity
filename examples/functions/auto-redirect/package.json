@@ -14,7 +14,7 @@
     "timeout": 30,
     "event": {
       "on": [
-        "publish"
+        "update"
       ],
       "filter": "delta::changedAny(slug.current)",
       "projection": "{'beforeSlug': before().slug.current, 'slug': after().slug.current}"

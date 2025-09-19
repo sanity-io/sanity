@@ -44,7 +44,7 @@ This Sanity Function automatically sets a `firstPublished` timestamp when a post
      name: 'first-published',
      memory: 1,
      timeout: 10,
-     on: ['publish'],
+     on: ['create'],
      filter: "_type == 'post' && !defined(firstPublished)",
      projection: '{_id}',
    })
