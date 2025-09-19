@@ -19,7 +19,6 @@
   },
   "dependencies": {
     "@sanity/eslint-config-studio": "catalog:",
-    "@sanity/vision": "workspace:*",
     "styled-components": "^6.1.15",
     "tsx": "^4.20.5"
   },
