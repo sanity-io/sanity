@@ -58,6 +58,9 @@ jobs:
       - name: Install project dependencies
         run: pnpm install
 
+      - name: Install Vercel CLI
+        run: pnpm install --global vercel@latest
+
       - name: Build Studio for Deployment
         run: pnpm build:efps
 
