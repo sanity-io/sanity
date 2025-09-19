@@ -117,7 +117,7 @@
     "@repo/utils": "workspace:*",
     "@sanity/client": "^7.11.1",
     "@sanity/mutate": "^0.13.0",
-    "@sanity/pkg-utils": "6.13.5",
+    "@sanity/pkg-utils": "7.11.9",
     "@sanity/prettier-config": "^1.0.6",
     "@sanity/tsdoc": "1.0.169",
     "@sanity/ui": "^3.1.3",
