@@ -56,13 +56,7 @@ jobs:
             Waiting for Editor Performance Tests to finish…
 
       - name: Install project dependencies
-        run: pnpm install --frozen-lockfile
-
-      - name: Install dependencies in folder efp
-        run: cd ./dev/efps && pnpm install --frozen-lockfile
-
-      - name: Install dependencies in folder efps-tests
-        run: cd ./dev/efps && pnpm install --frozen-lockfile
+        run: pnpm install
 
       - name: Store Playwright's Version
         id: playwright-version
@@ -114,11 +108,7 @@ jobs:
         run: rm -rf ./dev/efps/node_modules && rm -rf pnpm-lock.yaml
 
       - name: Install project dependencies
-        run: pnpm install --frozen-lockfile
-
-      - name: Install dependencies in folder efps-tests
-        working-directory: ./dev/efps
-        run: pnpm install --frozen-lockfile
+        run: pnpm install
 
       - name: Download blob reports from Github Actions Artifacts
         uses: actions/download-artifact@v5
