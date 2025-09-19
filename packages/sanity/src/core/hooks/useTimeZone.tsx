@@ -1,7 +1,7 @@
 import {type ClientError} from '@sanity/client'
 import {useToast} from '@sanity/ui'
 import {sanitizeLocale} from '@sanity/util/legacyDateFormat'
-import {formatInTimeZone, utcToZonedTime, zonedTimeToUtc} from 'date-fns-tz'
+import {formatInTimeZone, fromZonedTime, toZonedTime} from 'date-fns-tz'
 import {useCallback, useEffect, useMemo, useState} from 'react'
 import {useObservable} from 'react-rx'
 import {startWith} from 'rxjs/operators'
@@ -279,7 +279,7 @@ export const useTimeZone = (scope: TimeZoneScope) => {
 
   const getCurrentZoneDate = useCallback(() => {
     if (!timeZone) return new Date()
-    return utcToZonedTime(new Date(), timeZone.name)
+    return toZonedTime(new Date(), timeZone.name)
   }, [timeZone])
 
   const getTimeZone = useCallback(
@@ -331,7 +331,7 @@ export const useTimeZone = (scope: TimeZoneScope) => {
   const utcToCurrentZoneDate = useCallback(
     (date: Date) => {
       if (!timeZone) return date
-      return utcToZonedTime(date, timeZone.name)
+      return toZonedTime(date, timeZone.name)
     },
     [timeZone],
   )
@@ -339,7 +339,7 @@ export const useTimeZone = (scope: TimeZoneScope) => {
   const zoneDateToUtc = useCallback(
     (date: Date) => {
       if (!timeZone) return date
-      return zonedTimeToUtc(date, timeZone.name)
+      return fromZonedTime(date, timeZone.name)
     },
     [timeZone],
   )
