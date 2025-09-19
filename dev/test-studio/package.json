@@ -69,6 +69,6 @@
     "@repo/eslint-config": "workspace:*",
     "babel-plugin-react-compiler": "19.1.0-rc.3",
     "chokidar": "^3.6.0",
-    "vite": "^7.1.5"
+    "vite": "^7.1.6"
   }
 }
