@@ -4,9 +4,7 @@ permissions:
 
 on:
   pull_request:
-  repository_dispatch:
-    types:
-      - "vercel.deployment.success"
+  deployment_status:
   workflow_dispatch:
     inputs:
       reference_tag:
