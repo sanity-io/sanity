@@ -7,45 +7,47 @@ import {Button, Dialog, Tooltip} from '../../ui-components'
 import {presentationLocaleNamespace} from '../i18n'
 
 interface PreviewVariantButtonProps {
-  onVariantChange?: (selections: Record<string, string>) => void
+  currentSelections?: Record<string, string>
+  onSelectionChange?: (selections: Record<string, string>) => void
 }
 
 /** @internal */
 export function PreviewVariantButton({
-  onVariantChange,
+  currentSelections = {},
+  onSelectionChange,
 }: PreviewVariantButtonProps): React.JSX.Element | null {
   const {t} = useTranslation(presentationLocaleNamespace)
   const [isDialogOpen, setIsDialogOpen] = useState(false)
-  const [selections, setSelections] = useState<Record<string, string>>({})
+  const [pendingSelections, setPendingSelections] = useState<Record<string, string>>({})
   const workspace = useWorkspace()
 
   // Only render if DECISION_PARAMETERS_SCHEMA is configured
-  const decisionParametersConfig = workspace.__internal.options[DECISION_PARAMETERS_SCHEMA]
-  if (!decisionParametersConfig) {
+  const decideParametersConfig = workspace.__internal.options[DECISION_PARAMETERS_SCHEMA]
+  if (!decideParametersConfig) {
     return null
   }
 
   // Filter and validate that each value is an array of strings
-  const validParameters = Object.entries(decisionParametersConfig).filter(([key, value]) => {
+  const validParameters = Object.entries(decideParametersConfig).filter(([, value]) => {
     return Array.isArray(value) && value.every((item) => typeof item === 'string')
   }) as Array<[string, string[]]>
 
   const handleSelectionChange = (key: string, value: string) => {
-    setSelections((prev) => ({
+    setPendingSelections(prev => ({
       ...prev,
       [key]: value,
     }))
   }
 
   const handleSave = () => {
-    onVariantChange?.(selections)
+    // Apply pending selections via callback
+    onSelectionChange?.(pendingSelections)
     setIsDialogOpen(false)
   }
 
   const handleCancel = () => {
-    // Clear all selections
-    setSelections({})
-    onVariantChange?.({})
+    // Reset pending selections and close dialog
+    setPendingSelections({})
     setIsDialogOpen(false)
   }
 
@@ -63,7 +65,10 @@ export function PreviewVariantButton({
           aria-label={t('preview-frame.variant-button.aria-label')}
           icon={UsersIcon}
           mode="bleed"
-          onClick={() => setIsDialogOpen(true)}
+          onClick={() => {
+            setPendingSelections(currentSelections)
+            setIsDialogOpen(true)
+          }}
           tooltipProps={null}
         />
       </Tooltip>
@@ -95,7 +100,7 @@ export function PreviewVariantButton({
                       {key}
                     </Text>
                     <Select
-                      value={selections[key] || ''}
+                      value={pendingSelections[key] || ''}
                       onChange={(event) => handleSelectionChange(key, event.currentTarget.value)}
                       placeholder={t('preview-frame.variant-dialog.select-placeholder', {key})}
                     >
