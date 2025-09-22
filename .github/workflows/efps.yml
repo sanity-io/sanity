@@ -32,7 +32,10 @@ jobs:
   get-vercel-url:
     timeout-minutes: 30
     runs-on: ubuntu-latest
-    if: github.event.deployment_status.state == 'success' && github.event.deployment_status.environment == 'efps'
+    if: |
+      (github.event_name == 'repository_dispatch' && github.event.action == 'vercel.deployment.success') ||
+      (github.event.deployment_status.state == 'success' && github.event.deployment_status.environment == 'efps') ||
+      github.event_name == 'workflow_dispatch'
     outputs:
       deploy_url: ${{ github.event.deployment_status.target_url }}
     steps:
@@ -81,7 +84,7 @@ jobs:
           message: |
             ### ⚡️ Editor Performance Report
 
-            Testing against: [${{ steps.deploy.outputs.DEPLOY_URL }}](${{ steps.deploy.outputs.DEPLOY_URL }})
+            Testing against: [${{ needs.get-vercel-url.outputs.deploy_url }}](${{ needs.get-vercel-url.outputs.deploy_url }})
 
             Running performance tests…
 
@@ -111,7 +114,7 @@ jobs:
           REFERENCE_TAG: ${{ github.event.inputs.reference_tag || 'latest' }}
           ENABLE_PROFILER: ${{ github.event.inputs.enable_profiler || false }}
           RECORD_VIDEO: ${{ github.event.inputs.record_video || false }}
-          STUDIO_URL: ${{ github.event.deployment_status.target_url }}
+          STUDIO_URL: ${{ needs.get-vercel-url.outputs.deploy_url }}
         run: pnpm efps:test -- -- --shard ${{ matrix.shardIndex }}/${{ matrix.shardTotal }}
 
       - uses: actions/upload-artifact@v4
@@ -122,7 +125,6 @@ jobs:
           retention-days: 30
 
   merge-reports:
-    if: always()
     needs: [efps-test]
     runs-on: ubuntu-latest
     steps:
