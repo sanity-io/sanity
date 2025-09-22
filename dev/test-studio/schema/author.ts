@@ -6,21 +6,22 @@ import {AudienceSelectInput} from '../components/AudienceSelectInput'
 
 // Generic decide field implementation that works for all types
 const defineLocalDecideField = (config: any) => {
-  const {name, title, type, to, validation, description, readOnly, hidden, ...otherConfig} = config
+  const {name, title, description, type, ...otherConfig} = config
 
   const valueFieldConfig = {
     type,
-    ...(to && {to}),
-    ...(validation && {validation}),
-    ...(description && {description}),
-    ...(readOnly && {readOnly}),
-    ...(hidden && {hidden}),
+    // ...(to && {to}),
+    // ...(validation && {validation}),
+    // ...(description && {description}),
+    // ...(readOnly && {readOnly}),
+    // ...(hidden && {hidden}),
     ...otherConfig,
   }
 
   return defineField({
     name,
     title,
+    description,
     type: 'object',
     fields: [
       defineField({
@@ -29,18 +30,19 @@ const defineLocalDecideField = (config: any) => {
         ...valueFieldConfig,
       }),
       defineField({
-        name: 'options',
-        title: 'Options',
+        name: 'conditions',
+        title: 'Conditions',
         type: 'array',
         of: [
           defineField({
             type: 'object',
-            name: 'option',
-            title: 'Option',
+            name: 'condition',
+            title: 'Condition',
             fields: [
               defineField({
                 name: 'audience',
                 title: 'Audience Equality',
+                validation: (Rule) => Rule.required(),
                 type: 'string',
                 components: {
                   input: AudienceSelectInput,
