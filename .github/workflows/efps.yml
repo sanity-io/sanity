@@ -29,8 +29,6 @@ jobs:
   get-vercel-url:
     timeout-minutes: 30
     runs-on: ubuntu-latest
-    if: >
-      github.event_name == 'deployment_status'
     outputs:
       deploy_url: ${{ github.event.deployment_status.target_url }}
     steps:
