@@ -3,7 +3,7 @@ permissions:
   pull-requests: write # for comment
 
 on:
-  deployment_status:
+  push:
   workflow_dispatch:
     inputs:
       reference_tag:
