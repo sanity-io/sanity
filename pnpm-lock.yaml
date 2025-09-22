@@ -800,8 +800,8 @@ importers:
         specifier: 6.0.0-rc.2
         version: 6.0.0-rc.2(eslint@9.36.0(jiti@2.5.1))
       eslint-plugin-react-hooks-with-use-effect-event:
-        specifier: npm:eslint-plugin-react-hooks@0.0.0-experimental-8a8e9a7e-20250912
-        version: eslint-plugin-react-hooks@0.0.0-experimental-8a8e9a7e-20250912(eslint@9.36.0(jiti@2.5.1))
+        specifier: npm:eslint-plugin-react-hooks@0.0.0-experimental-d415fd3e-20250919
+        version: eslint-plugin-react-hooks@0.0.0-experimental-d415fd3e-20250919(eslint@9.36.0(jiti@2.5.1))
       eslint-plugin-simple-import-sort:
         specifier: ^12.1.1
         version: 12.1.1(eslint@9.36.0(jiti@2.5.1))
@@ -7274,8 +7274,8 @@ packages:
   eslint-plugin-oxlint@1.16.0:
     resolution: {integrity: sha512-OwxJcCOt2S2xMA8LvbAbPjgi5IyIBpK8znvKYlhSWz3R0BWgKVhNcYIDEndAxvDcfob4WPahrq+53TUeJqqeFg==}
 
-  eslint-plugin-react-hooks@0.0.0-experimental-8a8e9a7e-20250912:
-    resolution: {integrity: sha512-YNau5W/LLgLsFINauIbrGJV4tU8Ksr7NlWBfTJGN7PuN6VnhajANHvzPWiAdhbsIvjP0SFILlgk6+8pltP8WOQ==}
+  eslint-plugin-react-hooks@0.0.0-experimental-d415fd3e-20250919:
+    resolution: {integrity: sha512-OLjBx5XcFJLl0224WPNCbbuVD1OAIPpqkFIv+iy7X1ha9KmSb63pC54/QJV9DiJftHHk5OcSt+PSbF3mj01sxQ==}
     engines: {node: '>=18'}
     peerDependencies:
       eslint: ^3.0.0 || ^4.0.0 || ^5.0.0 || ^6.0.0 || ^7.0.0 || ^8.0.0-0 || ^9.0.0
@@ -18202,7 +18202,7 @@ snapshots:
     dependencies:
       jsonc-parser: 3.3.1
 
-  eslint-plugin-react-hooks@0.0.0-experimental-8a8e9a7e-20250912(eslint@9.36.0(jiti@2.5.1)):
+  eslint-plugin-react-hooks@0.0.0-experimental-d415fd3e-20250919(eslint@9.36.0(jiti@2.5.1)):
     dependencies:
       '@babel/core': 7.28.4
       '@babel/parser': 7.28.4
