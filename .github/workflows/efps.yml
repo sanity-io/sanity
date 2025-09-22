@@ -33,9 +33,8 @@ jobs:
     timeout-minutes: 30
     runs-on: ubuntu-latest
     if: |
-      (github.event_name == 'repository_dispatch' && github.event.action == 'vercel.deployment.success') ||
-      (github.event.deployment_status.state == 'success' && github.event.deployment_status.environment == 'efps') ||
-      github.event_name == 'workflow_dispatch'
+      (github.event.action == 'vercel.deployment.success') ||
+      (github.event.deployment_status.state == 'success' && github.event.deployment_status.environment == 'efps')
     outputs:
       deploy_url: ${{ github.event.deployment_status.target_url }}
     steps:
