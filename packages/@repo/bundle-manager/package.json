@@ -32,6 +32,7 @@
   "dependencies": {
     "@google-cloud/storage": "^7.16.0",
     "@repo/utils": "workspace:*",
+    "@sanity/client": "7.11.2-audience-decide.0",
     "lodash-es": "^4.17.21",
     "read-package-up": "^11.0.0",
     "semver": "^7.7.2",

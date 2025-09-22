@@ -10,5 +10,8 @@
   "devDependencies": {
     "@repo/dev-aliases": "workspace:*",
     "vitest": "^3.2.4"
+  },
+  "dependencies": {
+    "@sanity/client": "7.11.2-audience-decide.0"
   }
 }

@@ -85,7 +85,7 @@
     "@repo/package.config": "workspace:*",
     "@repo/test-config": "workspace:*",
     "@sanity/cli": "workspace:*",
-    "@sanity/client": "^7.11.2",
+    "@sanity/client": "7.11.2-audience-decide.0",
     "@sanity/codegen": "workspace:*",
     "@sanity/diff": "workspace:*",
     "@sanity/eslint-config-i18n": "catalog:",

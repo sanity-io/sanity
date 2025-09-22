@@ -30,6 +30,7 @@
   },
   "dependencies": {
     "@sanity/cli": "workspace:*",
+    "@sanity/client": "7.11.2-audience-decide.0",
     "resolve-pkg": "^2.0.0"
   },
   "devDependencies": {

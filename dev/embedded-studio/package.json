@@ -8,6 +8,7 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@sanity/client": "7.11.2-audience-decide.0",
     "@sanity/ui": "^3.1.4",
     "react": "catalog:",
     "react-dom": "catalog:",

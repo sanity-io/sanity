@@ -57,6 +57,7 @@
     "@babel/register": "^7.28.3",
     "@babel/traverse": "^7.28.4",
     "@babel/types": "^7.28.4",
+    "@sanity/client": "7.11.2-audience-decide.0",
     "debug": "^4.4.1",
     "globby": "^11.1.0",
     "groq": "workspace:*",

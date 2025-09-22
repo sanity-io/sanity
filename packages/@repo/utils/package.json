@@ -11,6 +11,7 @@
     "lint": "eslint ."
   },
   "dependencies": {
+    "@sanity/client": "7.11.2-audience-decide.0",
     "dotenv": "^16.6.1",
     "lodash-es": "^4.17.21",
     "ora": "^8.2.0"
