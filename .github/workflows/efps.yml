@@ -30,13 +30,19 @@ jobs:
   get-vercel-url:
     timeout-minutes: 30
     runs-on: ubuntu-latest
-    if: github.event.deployment_status.state == 'success' && github.event.deployment_status.environment == 'preview'
+    if: github.event_name == 'deployment_status' && github.event.deployment.environment == 'preview' && github.event.deployment_status.state == 'success'
     outputs:
       deploy_url: ${{ github.event.deployment_status.target_url }}
     steps:
+      - name: Debug deployment event
+        run: |
+          echo "Event name: ${{ github.event_name }}"
+          echo "Deployment status state: ${{ github.event.deployment_status.state }}"
+          echo "Deployment environment: ${{ github.event.deployment.environment }}"
+          echo "Deployment status environment: ${{ github.event.deployment_status.environment }}"
+          echo "Target URL: ${{ github.event.deployment_status.target_url }}"
       - name: Set deploy URL
         run: echo "Deploy URL is ${{ github.event.deployment_status.target_url }}"
-
   efps-test:
     timeout-minutes: 30
     runs-on: ubuntu-latest
