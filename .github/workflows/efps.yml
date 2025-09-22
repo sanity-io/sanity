@@ -35,13 +35,11 @@ jobs:
     steps:
       - name: Debug deployment event
         run: |
-          echo "${{ toJSON(github.event.deployment_status) }}"
           echo "Event name: ${{ github.event_name }}"
           echo "Deployment status state: ${{ github.event.deployment_status.state }}"
           echo "Deployment environment: ${{ github.event.deployment.environment }}"
           echo "Deployment status environment: ${{ github.event.deployment_status.environment }}"
           echo "Target URL: ${{ github.event.deployment_status.target_url }}"
-          echo "Project ID: ${{ github.event.deployment.payload.project_id }}"
       - name: Set deploy URL
         run: echo "Deploy URL is ${{ github.event.deployment_status.target_url }}"
   efps-test:
