@@ -162,7 +162,7 @@
     "tsx": "^4.20.5",
     "turbo": "^2.5.6",
     "typescript": "catalog:",
-    "vite": "^7.1.6",
+    "vite": "^7.1.7",
     "vite-tsconfig-paths": "^5.1.4",
     "vitest": "3.2.4",
     "yargs": "^17.7.2"
