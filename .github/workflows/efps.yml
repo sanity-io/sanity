@@ -33,8 +33,8 @@ jobs:
     runs-on: ubuntu-latest
     if: github.event.deployment_status.state == 'success' && github.event.deployment_status.environment == 'Preview – efps'
     env:
-      STATUS_CONTEXT: "efps-preview-tests/getting-vercel-url"
-      TARGET_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+      STATUS_CONTEXT: "efps-test/getting-vercel-url"
+      TARGET_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}/job/${{ job.check_run_id }}
     outputs:
       deploy_url: ${{ github.event.deployment_status.target_url }}
     steps:
@@ -98,8 +98,8 @@ jobs:
       TURBO_TOKEN: ${{ secrets.TURBO_TOKEN }}
       TURBO_TEAM: ${{ vars.TURBO_TEAM }}
       DEPLOY_URL: ${{ needs.get-vercel-url.outputs.deploy_url }}
-      STATUS_CONTEXT: efps-preview-tests/shard-${{ matrix.shardIndex }}
-      TARGET_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}/job/${{ github.job }}
+      STATUS_CONTEXT: efps-test/shard-${{ matrix.shardIndex }}
+      TARGET_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}/job/${{ job.check_run_id }}
     strategy:
       fail-fast: false
       matrix:
@@ -222,8 +222,8 @@ jobs:
     needs: [efps-test]
     runs-on: ubuntu-latest
     env:
-      STATUS_CONTEXT: "efps-preview-tests/merge-reports"
-      TARGET_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+      STATUS_CONTEXT: "efps-test/merge-reports"
+      TARGET_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}/job/${{ job.check_run_id }}
     steps:
       - name: Set merging reports status
         uses: actions/github-script@v7
