@@ -51,7 +51,7 @@ export function resolveMigrationScript(
         mod = require(absolutePath)
       } catch (err) {
         if (err.code !== 'MODULE_NOT_FOUND') {
-          throw new Error(`Error: ${err.message}"`)
+          throw new Error(`Error: ${err.message}"`, {cause: err})
         }
       }
       return {relativePath, absolutePath, mod}

@@ -57,7 +57,7 @@
   },
   "dependencies": {
     "@babel/traverse": "^7.28.4",
-    "@sanity/client": "^7.11.1",
+    "@sanity/client": "^7.11.2",
     "@sanity/codegen": "workspace:*",
     "@sanity/runtime-cli": "^10.6.1",
     "@sanity/telemetry": "^0.8.0",
@@ -95,6 +95,7 @@
     "@types/which": "^2.0.1",
     "@vercel/frameworks": "1.6.0",
     "@vercel/fs-detectors": "4.1.3",
+    "babel-plugin-react-compiler": "19.1.0-rc.3",
     "boxen": "^4.2.0",
     "clean-stack": "^3.0.1",
     "configstore": "^5.0.1",
@@ -123,10 +124,18 @@
     "semver": "^7.7.2",
     "semver-compare": "^1.0.0",
     "tar": "^6.2.1",
-    "vite": "^7.1.5",
+    "vite": "^7.1.7",
     "vitest": "^3.2.4",
     "which": "^2.0.2",
     "xdg-basedir": "^4.0.0"
+  },
+  "peerDependencies": {
+    "babel-plugin-react-compiler": "*"
+  },
+  "peerDependenciesMeta": {
+    "babel-plugin-react-compiler": {
+      "optional": true
+    }
   },
   "engines": {
     "node": ">=20.19 <22 || >=22.12"

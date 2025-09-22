@@ -328,6 +328,8 @@ import type {
   DatetimeOptions,
   DatetimeRule,
   dec,
+  DECISION_PARAMETERS_SCHEMA,
+  DecisionParametersConfig,
   decodePath,
   DEFAULT_MAX_RECURSION_DEPTH,
   DEFAULT_STUDIO_CLIENT_OPTIONS,
@@ -2636,6 +2638,12 @@ describe('sanity', () => {
   })
   test('dec', () => {
     expectTypeOf<typeof dec>().toBeFunction()
+  })
+  test('DECISION_PARAMETERS_SCHEMA', () => {
+    expectTypeOf<typeof DECISION_PARAMETERS_SCHEMA>().not.toBeNever()
+  })
+  test('DecisionParametersConfig', () => {
+    expectTypeOf<DecisionParametersConfig>().toBeObject()
   })
   test('decodePath', () => {
     expectTypeOf<typeof decodePath>().toBeFunction()

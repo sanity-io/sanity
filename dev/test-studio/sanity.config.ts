@@ -9,9 +9,9 @@ import {ptPTLocale} from '@sanity/locale-pt-pt'
 import {svSELocale} from '@sanity/locale-sv-se'
 import {SanityMonogram} from '@sanity/logos'
 import {debugSecrets} from '@sanity/preview-url-secret/sanity-plugin-debug-secrets'
-import {tsdoc} from '@sanity/tsdoc/studio'
 import {visionTool} from '@sanity/vision'
 import {
+  DECISION_PARAMETERS_SCHEMA,
   defineConfig,
   definePlugin,
   QUOTA_EXCLUDED_RELEASES_ENABLED,
@@ -207,7 +207,6 @@ const sharedSettings = ({projectId}: {projectId: string}) => {
       imageHotspotArrayPlugin(),
       routerDebugTool(),
       errorReportingTestPlugin(),
-      tsdoc(),
       media(),
       markdownSchema(),
       wave(),
@@ -246,6 +245,11 @@ const defaultWorkspace = defineConfig({
     enabled: true,
   },
   [QUOTA_EXCLUDED_RELEASES_ENABLED]: true,
+  [DECISION_PARAMETERS_SCHEMA]: {
+    audiences: ['aud-a', 'aud-b', 'aud-c'],
+    locales: ['en-GB', 'en-US'],
+    ages: ['20-29', '30-39'],
+  },
   document: {
     actions: (prev, ctx) => {
       if (ctx.schemaType === 'book' && ctx.releaseId) {
@@ -313,18 +317,6 @@ export default defineConfig([
     unstable_tasks: {
       enabled: false,
     },
-    mediaLibrary: {
-      enabled: true,
-    },
-  },
-  {
-    name: 'tsdoc',
-    title: 'tsdoc',
-    projectId: 'ppsg7ml5',
-    dataset: 'tsdoc-2',
-    ...envConfig.production,
-    plugins: [sharedSettings({projectId: 'ppsg7ml5'})],
-    basePath: '/tsdoc',
     mediaLibrary: {
       enabled: true,
     },

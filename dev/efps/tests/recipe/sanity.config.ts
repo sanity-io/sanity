@@ -1,12 +1,31 @@
 import {defineConfig, defineField, defineType} from 'sanity'
+import {structureTool} from 'sanity/structure'
 
-import {API_HOST, API_VERSION} from '../../utils/const'
-
-export default defineConfig({
-  projectId: import.meta.env.VITE_PERF_EFPS_PROJECT_ID,
-  dataset: import.meta.env.VITE_PERF_EFPS_DATASET,
-  apiHost: API_HOST,
-  apiVersion: API_VERSION,
+export const recipeEfps = defineConfig({
+  name: 'recipe-efps',
+  // Had to add the alternative or when running the studio locally it throws errors
+  projectId: import.meta.env.VITE_PERF_EFPS_PROJECT_ID || 'b8j69ts2',
+  dataset: import.meta.env.VITE_PERF_EFPS_DATASET || 'production',
+  apiHost: 'https://api.sanity.work',
+  scheduledPublishing: {
+    enabled: false,
+  },
+  releases: {
+    enabled: false,
+  },
+  plugins: [
+    structureTool({
+      structure: (S) =>
+        S.list()
+          .title('Content')
+          .items([
+            S.listItem().title('Recipes').child(S.documentTypeList('recipe').title('Recipes')),
+            S.listItem()
+              .title('Categories')
+              .child(S.documentTypeList('category').title('Categories')),
+          ]),
+    }),
+  ],
   schema: {
     types: [
       defineType({
@@ -59,3 +78,5 @@ export default defineConfig({
     ],
   },
 })
+
+export default recipeEfps

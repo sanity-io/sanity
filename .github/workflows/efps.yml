@@ -22,7 +22,7 @@ on:
         default: false
 
 concurrency:
-  group: ${{ github.workflow }}-${{ github.head_ref }}
+  group: ${{ github.workflow }}-${{ github.head_ref || github.run_id }}
   cancel-in-progress: true
 
 jobs:
@@ -90,7 +90,7 @@ jobs:
         if: always()
         with:
           name: efps-report-${{ matrix.shardIndex }}
-          path: ${{ github.workspace }}/perf/efps/results/
+          path: ${{ github.workspace }}/dev/efps/results/
           retention-days: 30
 
   merge-reports:
@@ -104,6 +104,9 @@ jobs:
         with:
           node-version: lts/*
 
+      - name: remove node_modules in folder efps
+        run: rm -rf ./dev/efps/node_modules && rm -rf pnpm-lock.yaml
+
       - name: Install project dependencies
         run: pnpm install
 
@@ -112,7 +115,7 @@ jobs:
         with:
           pattern: efps-report-*
           merge-multiple: true
-          path: perf/efps/results
+          path: dev/efps/results
 
       - name: Write report
         run: pnpm efps:write:report
@@ -122,4 +125,4 @@ jobs:
         if: ${{ github.event_name == 'pull_request' }}
         with:
           comment-tag: "efps-report"
-          file-path: ${{ github.workspace }}/perf/efps/results/benchmark-results.md
+          file-path: ${{ github.workspace }}/dev/efps/results/benchmark-results.md

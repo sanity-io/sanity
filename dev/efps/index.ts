@@ -19,10 +19,10 @@ import {exec} from './helpers/exec'
 import {runTest} from './runTest'
 import article from './tests/article/article'
 import recipe from './tests/recipe/recipe'
+import singleString from './tests/singleString/singleString'
 import synthetic from './tests/synthetic/synthetic'
 import {type EfpsAbResult, type EfpsResult, type EfpsTest} from './types'
 import {formatPercentageChange, isSignificantlyDifferent} from './utils'
-import {API_HOST, API_VERSION} from './utils/const'
 
 const TEST_ATTEMPTS = process.env.CI ? 3 : 1
 
@@ -34,8 +34,9 @@ const ENABLE_PROFILER = process.env.ENABLE_PROFILER === 'true'
 const REFERENCE_TAG = process.env.REFERENCE_TAG || 'latest'
 // eslint-disable-next-line turbo/no-undeclared-env-vars
 const RECORD_VIDEO = process.env.RECORD_VIDEO === 'true'
-const TESTS = [article, recipe, synthetic]
+const TESTS = [article, recipe, singleString, synthetic]
 
+// this is the project for the efps
 const projectId = process.env.VITE_PERF_EFPS_PROJECT_ID!
 const dataset = process.env.VITE_PERF_EFPS_DATASET!
 const token = process.env.PERF_EFPS_SANITY_TOKEN!
@@ -45,8 +46,8 @@ const client = createClient({
   dataset,
   token,
   useCdn: false,
-  apiVersion: API_VERSION,
-  apiHost: API_HOST,
+  apiVersion: 'v2024-08-08',
+  apiHost: 'https://api.sanity.work',
 })
 
 const workspaceDir = path.dirname(fileURLToPath(import.meta.url))

@@ -106,7 +106,7 @@ describe('@sanity/cli', () => {
     expectTypeOf<PackageJson>().toBeObject()
   })
   test('ReactCompilerConfig', () => {
-    expectTypeOf<ReactCompilerConfig>().toBeObject()
+    expectTypeOf<ReactCompilerConfig>().not.toBeNever()
   })
   test('ResolvedCliCommand', () => {
     expectTypeOf<ResolvedCliCommand>().toBeObject()

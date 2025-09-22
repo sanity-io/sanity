@@ -51,8 +51,10 @@ jspm_packages
 !/.vscode/extensions.json
 
 # Environment files
-# ignore all local .env files
+# ignore all .env files
 *.local
+.env
+.env.*
 
 # TypeScript
 tsconfig.tsbuildinfo

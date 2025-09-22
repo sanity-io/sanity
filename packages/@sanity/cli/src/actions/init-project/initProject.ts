@@ -199,10 +199,12 @@ export default async function initSanity(
         if (useDefaultPlan) {
           print(`Using default plan.`)
         } else {
-          throw new Error(`Coupon "${intendedCoupon}" does not exist`)
+          throw new Error(`Coupon "${intendedCoupon}" does not exist`, {cause: err})
         }
       } else {
-        throw new Error(`Unable to validate coupon, please try again later:\n\n${err.message}`)
+        throw new Error(`Unable to validate coupon, please try again later:\n\n${err.message}`, {
+          cause: err,
+        })
       }
     }
   } else if (intendedPlan) {
@@ -228,10 +230,12 @@ export default async function initSanity(
         if (useDefaultPlan) {
           print(`Using default plan.`)
         } else {
-          throw new Error(`Plan id "${intendedPlan}" does not exist`)
+          throw new Error(`Plan id "${intendedPlan}" does not exist`, {cause: err})
         }
       } else {
-        throw new Error(`Unable to validate plan, please try again later:\n\n${err.message}`)
+        throw new Error(`Unable to validate plan, please try again later:\n\n${err.message}`, {
+          cause: err,
+        })
       }
     }
   }
@@ -855,7 +859,7 @@ export default async function initSanity(
           userAction: 'select',
         }
       }
-      throw new Error(`Failed to communicate with the Sanity API:\n${err.message}`)
+      throw new Error(`Failed to communicate with the Sanity API:\n${err.message}`, {cause: err})
     }
 
     if (projects.length === 0 && unattended) {
