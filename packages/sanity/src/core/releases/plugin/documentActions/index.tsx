@@ -15,6 +15,8 @@ type Action = DocumentActionComponent
 function ScheduleAction(ScheduledPublishingPluginAction?: DocumentActionComponent) {
   const isScheduledDraftsEnabled = useScheduledDraftsEnabled()
 
+  // TODO: Simplify expression to !isScheduledDraftsEnabled
+  // once the scheduled publishing plugin is removed
   if (!ScheduledPublishingPluginAction || isScheduledDraftsEnabled) {
     return SchedulePublishAction
   }
