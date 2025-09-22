@@ -82,7 +82,7 @@ npx sanity schema deploy
          timeout: 30,
          event: {
            on: ['create', 'update'],
-           filter: "_type == 'post' && delta::changedAny('content')",
+           filter: "_type == 'post' && delta::changedAny(content)",
            projection: '{_id}',
          },
        }),
@@ -184,5 +184,5 @@ target: {
 Modify the blueprint filter to target different content types:
 
 ```typescript
-filter: "_type == 'article' && !defined(keywords) && delta::changedAny('content')"
+filter: "_type == 'article' && !defined(keywords) && delta::changedAny(content)"
 ```

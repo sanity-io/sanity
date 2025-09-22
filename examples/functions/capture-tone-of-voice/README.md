@@ -82,7 +82,7 @@ npx sanity schema deploy
          timeout: 60,
          event: {
            on: ['create', 'update'],
-           filter: "_type == 'post' && delta::changedAny('content')",
+           filter: "_type == 'post' && delta::changedAny(content)",
            projection: '{_id}',
          },
        }),
@@ -170,7 +170,7 @@ export default defineBlueprint({
       timeout: 60,
       event: {
         on: ['create', 'update'],
-        filter: "_type == 'post' && delta::changedAny('content')",
+        filter: "_type == 'post' && delta::changedAny(content)",
         projection: '{_id}',
       },
     }),

@@ -115,7 +115,7 @@ defineField({
          timeout: 10,
          event: {
            on: ['create', 'update'],
-           filter: "_type == 'post' && delta::changedAny('blueskyPost')",
+           filter: "_type == 'post' && delta::changedAny(blueskyPost)",
            projection: '{title, blueskyPost, slug}',
          },
          env: {
@@ -267,7 +267,7 @@ Read more: ${slug.current}`
 Only post when the `postToBlue` field is set to true:
 
 ```ts
-filter: "_type == 'post' && delta::changedAny('blueskyPost') && postToBluesky == true"
+filter: "_type == 'post' && delta::changedAny(blueskyPost) && postToBluesky == true"
 ```
 
 ### Include additional fields

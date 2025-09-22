@@ -17,7 +17,7 @@
         "create"
       ],
       "filter": "_type == 'post'",
-      "projection": "{_id, title, slug, _updatedAt}"
+      "projection": "{_id, title, slug, _createdAt}"
     },
     "env": {
       "COMMENT": "SLACK_OAUTH_TOKEN and SLACK_CHANNEL are required. Optional: BASE_URL, STUDIO_URL as they will default to dev mode localhost urls",

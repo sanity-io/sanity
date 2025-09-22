@@ -78,7 +78,7 @@ npx sanity schema deploy
      name: 'auto-summary',
      event: {
        on: ['create', 'update'],
-       filter: "_type == 'post' && delta::changedAny('content')",
+       filter: "_type == 'post' && delta::changedAny(content)",
        projection: '{_id}',
      },
    })

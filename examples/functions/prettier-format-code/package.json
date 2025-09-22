@@ -16,7 +16,7 @@
         "create",
         "update"
       ],
-      "filter": "_type == 'article' && delta::changedAny(content[_type == 'code'])",
+      "filter": "_type == 'post' && delta::changedAny(content[_type == 'code'])",
       "projection": "{_id, content}"
     }
   },
