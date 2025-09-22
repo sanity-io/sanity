@@ -1,0 +1,46 @@
+[
+  {
+    "latency": {
+      "p50": 21,
+      "p75": 23,
+      "p90": 31,
+      "p99": 45.41000000000002
+    },
+    "blockingTime": 45.400000005960464,
+    "label": "title",
+    "runDuration": 8718
+  },
+  {
+    "latency": {
+      "p50": 8,
+      "p75": 10,
+      "p90": 12,
+      "p99": 87.5810000029208
+    },
+    "blockingTime": 61.29999999701977,
+    "label": "body",
+    "runDuration": 5569
+  },
+  {
+    "latency": {
+      "p50": 20,
+      "p75": 21,
+      "p90": 25.9,
+      "p99": 77.20000000000016
+    },
+    "blockingTime": 39.30000001192093,
+    "label": "string inside object",
+    "runDuration": 6952
+  },
+  {
+    "latency": {
+      "p50": 23,
+      "p75": 24,
+      "p90": 30.799999999999997,
+      "p99": 78.83000000000013
+    },
+    "blockingTime": 43.5,
+    "label": "string inside array",
+    "runDuration": 7184
+  }
+]

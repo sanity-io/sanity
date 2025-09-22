@@ -6,6 +6,8 @@ import {styled} from 'styled-components'
 
 import {LoadingBlock} from '../../components/loadingBlock/LoadingBlock'
 import {TimeZoneButton} from '../../components/timeZone/timeZoneButton/TimeZoneButton'
+import {useFeatureEnabled} from '../../hooks'
+import {FEATURES} from '../../hooks/useFeatureEnabled'
 import {useTimeZone} from '../../hooks/useTimeZone'
 import {useTranslation} from '../../i18n/hooks/useTranslation'
 import {useReleasesToolAvailable} from '../../releases/hooks/useReleasesToolAvailable'
@@ -43,10 +45,12 @@ const DATE_SLUG_FORMAT = 'yyyy-MM-dd' // date-fns format
 function ScheduledDraftsBanner() {
   const router = useRouter()
   const isScheduledDraftsEnabled = useScheduledDraftsEnabled()
+  const releasesToolAvailable = useReleasesToolAvailable()
+  const {enabled: releasesEnabled} = useFeatureEnabled(FEATURES.contentReleases)
 
   const releasesUrl = router.resolveIntentLink(RELEASES_SCHEDULED_DRAFTS_INTENT, {view: 'drafts'})
 
-  if (isScheduledDraftsEnabled) {
+  if (isScheduledDraftsEnabled && releasesToolAvailable && releasesEnabled) {
     return (
       <Card padding={4} tone="caution" width="fill">
         <Flex gap={3} align="center" justify="center">

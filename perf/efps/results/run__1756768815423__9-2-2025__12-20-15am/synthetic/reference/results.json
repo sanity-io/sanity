@@ -1,0 +1,24 @@
+[
+  {
+    "latency": {
+      "p50": 30,
+      "p75": 31,
+      "p90": 32,
+      "p99": 48.820000000000036
+    },
+    "blockingTime": 11.099999994039536,
+    "label": "title",
+    "runDuration": 11450
+  },
+  {
+    "latency": {
+      "p50": 30,
+      "p75": 31,
+      "p90": 34,
+      "p99": 116.5000000000003
+    },
+    "blockingTime": 110.79999999701977,
+    "label": "string inside object",
+    "runDuration": 7792
+  }
+]

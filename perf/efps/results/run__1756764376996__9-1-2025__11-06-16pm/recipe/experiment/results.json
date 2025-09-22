@@ -1,0 +1,35 @@
+[
+  {
+    "latency": {
+      "p50": 10,
+      "p75": 12,
+      "p90": 13,
+      "p99": 23.470000000000006
+    },
+    "blockingTime": 0,
+    "label": "name",
+    "runDuration": 6909
+  },
+  {
+    "latency": {
+      "p50": 10,
+      "p75": 12,
+      "p90": 14,
+      "p99": 29.880000000000024
+    },
+    "blockingTime": 0,
+    "label": "description",
+    "runDuration": 5809
+  },
+  {
+    "latency": {
+      "p50": 5.5,
+      "p75": 11.75,
+      "p90": 19.9,
+      "p99": 25.45000000000001
+    },
+    "blockingTime": 0,
+    "label": "instructions",
+    "runDuration": 4887
+  }
+]

@@ -1,0 +1,233 @@
+[
+  {
+    "name": "article",
+    "results": [
+      {
+        "experiment": {
+          "latency": {
+            "p50": 21,
+            "p75": 25,
+            "p90": 32,
+            "p99": 53.35000000000003
+          },
+          "blockingTime": 83,
+          "label": "title",
+          "runDuration": 6702
+        },
+        "reference": {
+          "latency": {
+            "p50": 18.5,
+            "p75": 20,
+            "p90": 27.599999999999994,
+            "p99": 46.170000000000066
+          },
+          "blockingTime": 52.20000000298023,
+          "label": "title",
+          "runDuration": 6226
+        }
+      },
+      {
+        "experiment": {
+          "latency": {
+            "p50": 6.5,
+            "p75": 38.42500000447035,
+            "p90": 45.90000000447035,
+            "p99": 112.59000000000017
+          },
+          "blockingTime": 70.50000001490116,
+          "label": "body",
+          "runDuration": 4204
+        },
+        "reference": {
+          "latency": {
+            "p50": 4.899999991059303,
+            "p75": 9,
+            "p90": 11,
+            "p99": 79.99999999836105
+          },
+          "blockingTime": 49,
+          "label": "body",
+          "runDuration": 3156
+        }
+      },
+      {
+        "experiment": {
+          "latency": {
+            "p50": 20,
+            "p75": 21,
+            "p90": 23,
+            "p99": 82.75000000000014
+          },
+          "blockingTime": 38.400000005960464,
+          "label": "string inside object",
+          "runDuration": 4806
+        },
+        "reference": {
+          "latency": {
+            "p50": 19,
+            "p75": 20,
+            "p90": 21,
+            "p99": 32.96000000000001
+          },
+          "blockingTime": 34.29999999701977,
+          "label": "string inside object",
+          "runDuration": 4584
+        }
+      },
+      {
+        "experiment": {
+          "latency": {
+            "p50": 22.5,
+            "p75": 25,
+            "p90": 30.9,
+            "p99": 43.96000000000001
+          },
+          "blockingTime": 38.400000005960464,
+          "label": "string inside array",
+          "runDuration": 5018
+        },
+        "reference": {
+          "latency": {
+            "p50": 24.5,
+            "p75": 26.5,
+            "p90": 32.8,
+            "p99": 55.820000000000036
+          },
+          "blockingTime": 0,
+          "label": "string inside array",
+          "runDuration": 5069
+        }
+      }
+    ]
+  },
+  {
+    "name": "recipe",
+    "results": [
+      {
+        "experiment": {
+          "latency": {
+            "p50": 12,
+            "p75": 13,
+            "p90": 15,
+            "p99": 20.920000000000016
+          },
+          "blockingTime": 0,
+          "label": "name",
+          "runDuration": 5070
+        },
+        "reference": {
+          "latency": {
+            "p50": 11,
+            "p75": 13.25,
+            "p90": 15,
+            "p99": 18.490000000000002
+          },
+          "blockingTime": 0,
+          "label": "name",
+          "runDuration": 5491
+        }
+      },
+      {
+        "experiment": {
+          "latency": {
+            "p50": 10,
+            "p75": 12,
+            "p90": 14.899999999999999,
+            "p99": 21.490000000000002
+          },
+          "blockingTime": 0,
+          "label": "description",
+          "runDuration": 3850
+        },
+        "reference": {
+          "latency": {
+            "p50": 10,
+            "p75": 11,
+            "p90": 12.899999999999999,
+            "p99": 29.370000000000026
+          },
+          "blockingTime": 0,
+          "label": "description",
+          "runDuration": 3812
+        }
+      },
+      {
+        "experiment": {
+          "latency": {
+            "p50": 2.9499999955296516,
+            "p75": 3.25,
+            "p90": 21.699999999999996,
+            "p99": 34.430000000000014
+          },
+          "blockingTime": 0,
+          "label": "instructions",
+          "runDuration": 2829
+        },
+        "reference": {
+          "latency": {
+            "p50": 3,
+            "p75": 3,
+            "p90": 5,
+            "p99": 6.490000000000002
+          },
+          "blockingTime": 0,
+          "label": "instructions",
+          "runDuration": 2546
+        }
+      }
+    ]
+  },
+  {
+    "name": "synthetic",
+    "results": [
+      {
+        "experiment": {
+          "latency": {
+            "p50": 31,
+            "p75": 32,
+            "p90": 35,
+            "p99": 131.58000000000027
+          },
+          "blockingTime": 103.19999998807907,
+          "label": "title",
+          "runDuration": 15420
+        },
+        "reference": {
+          "latency": {
+            "p50": 30,
+            "p75": 31,
+            "p90": 43.9,
+            "p99": 88.11000000000007
+          },
+          "blockingTime": 176.40000000596046,
+          "label": "title",
+          "runDuration": 10869
+        }
+      },
+      {
+        "experiment": {
+          "latency": {
+            "p50": 31,
+            "p75": 32,
+            "p90": 34,
+            "p99": 57.330000000000034
+          },
+          "blockingTime": 178.5,
+          "label": "string inside object",
+          "runDuration": 5612
+        },
+        "reference": {
+          "latency": {
+            "p50": 29,
+            "p75": 30,
+            "p90": 31,
+            "p99": 168.75000000000054
+          },
+          "blockingTime": 168.69999998807907,
+          "label": "string inside object",
+          "runDuration": 5495
+        }
+      }
+    ]
+  }
+]
