@@ -3,7 +3,6 @@ permissions:
   pull-requests: write # for comment
 
 on:
-  pull_request:
   deployment_status:
   workflow_dispatch:
     inputs:
@@ -30,7 +29,7 @@ jobs:
   get-vercel-url:
     timeout-minutes: 30
     runs-on: ubuntu-latest
-    if: github.event_name == 'deployment_status' && github.event.deployment.environment == 'preview' && github.event.deployment_status.state == 'success'
+    if: github.event.deployment_status.state == 'success'
     outputs:
       deploy_url: ${{ github.event.deployment_status.target_url }}
     steps:
