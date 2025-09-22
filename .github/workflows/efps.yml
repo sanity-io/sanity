@@ -29,10 +29,17 @@ jobs:
   get-vercel-url:
     timeout-minutes: 30
     runs-on: ubuntu-latest
-    if: ${{ github.event.deployment_status.state == 'success' && github.event.deployment.environment == 'Preview - efps' }}
+    if: ${{ github.event.deployment_status.state == 'success' }}
     outputs:
       deploy_url: ${{ github.event.deployment_status.target_url }}
     steps:
+      - name: Check deployment environment
+        run: |
+          echo "Deployment environment: ${{ github.event.deployment.environment }}"
+          if [ "${{ github.event.deployment.environment }}" != "Preview - efps" ]; then
+            echo "Skipping this deployment"
+            exit 0
+          fi
       - name: Debug deployment event
         run: |
           echo "Event name: ${{ github.event_name }}"
