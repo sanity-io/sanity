@@ -32,10 +32,13 @@ jobs:
     timeout-minutes: 30
     runs-on: ubuntu-latest
     if: github.event.deployment_status.state == 'success' && github.event.deployment_status.environment == 'Preview – efps'
+    env:
+      STATUS_CONTEXT: "efps-preview-tests/getting-vercel-url"
+      TARGET_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
     outputs:
       deploy_url: ${{ github.event.deployment_status.target_url }}
     steps:
-      - name: Set pending status
+      - name: Set getting URL status
         uses: actions/github-script@v7
         with:
           script: |
@@ -44,10 +47,11 @@ jobs:
               repo: context.repo.repo,
               sha: '${{ github.event.deployment_status.deployment.sha || github.sha }}',
               state: 'pending',
-              context: 'efps-preview-tests',
-              description: 'eFPS tests starting…',
-              target_url: `${context.serverUrl}/${context.repo.owner}/${context.repo.repo}/actions/runs/${context.runId}`
+              context: process.env.STATUS_CONTEXT,
+              description: 'Getting Vercel deployment URL…',
+              target_url: process.env.TARGET_URL
             });
+
       - name: Debug deployment event
         run: |
           echo "Event name: ${{ github.event_name }}"
@@ -56,6 +60,36 @@ jobs:
           echo "Target URL: ${{ github.event.deployment_status.target_url }}"
       - name: Set deploy URL
         run: echo "Deploy URL is ${{ github.event.deployment_status.target_url }}"
+
+      - name: Mark getting URL status success
+        if: success()
+        uses: actions/github-script@v7
+        with:
+          script: |
+            await github.rest.repos.createCommitStatus({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              sha: '${{ github.event.deployment_status.deployment.sha || github.sha }}',
+              state: 'success',
+              context: process.env.STATUS_CONTEXT,
+              description: 'Vercel URL retrieved ✅',
+              target_url: process.env.TARGET_URL
+            });
+
+      - name: Mark getting URL status failure
+        if: failure()
+        uses: actions/github-script@v7
+        with:
+          script: |
+            await github.rest.repos.createCommitStatus({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              sha: '${{ github.event.deployment_status.deployment.sha || github.sha }}',
+              state: 'failure',
+              context: process.env.STATUS_CONTEXT,
+              description: 'Failed to get Vercel URL ❌',
+              target_url: process.env.TARGET_URL
+            });
   efps-test:
     timeout-minutes: 30
     runs-on: ubuntu-latest
@@ -64,6 +98,8 @@ jobs:
       TURBO_TOKEN: ${{ secrets.TURBO_TOKEN }}
       TURBO_TEAM: ${{ vars.TURBO_TEAM }}
       DEPLOY_URL: ${{ needs.get-vercel-url.outputs.deploy_url }}
+      STATUS_CONTEXT: efps-preview-tests/shard-${{ matrix.shardIndex }}
+      TARGET_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}/job/${{ github.job }}
     strategy:
       fail-fast: false
       matrix:
@@ -77,7 +113,7 @@ jobs:
         with:
           node-version: lts/*
 
-      - name: Set running status
+      - name: Set shard running status
         uses: actions/github-script@v7
         with:
           script: |
@@ -86,9 +122,9 @@ jobs:
               repo: context.repo.repo,
               sha: '${{ github.event.deployment_status.deployment.sha || github.sha }}',
               state: 'pending',
-              context: 'efps-preview-tests',
-              description: 'Running eFPS tests…',
-              target_url: `${context.serverUrl}/${context.repo.owner}/${context.repo.repo}/actions/runs/${context.runId}`
+              context: process.env.STATUS_CONTEXT,
+              description: 'Running eFPS shard ${{ matrix.shardIndex }}/${{ matrix.shardTotal }}…',
+              target_url: process.env.TARGET_URL
             });
 
       - name: Add PR comment placeholder
@@ -162,9 +198,9 @@ jobs:
               repo: context.repo.repo,
               sha: '${{ github.event.deployment_status.deployment.sha || github.sha }}',
               state: 'success',
-              context: 'efps-preview-tests/shard-${{ matrix.shardIndex }}',
+              context: process.env.STATUS_CONTEXT,
               description: 'eFPS shard ${{ matrix.shardIndex }}/${{ matrix.shardTotal }} passed ✅',
-              target_url: `${context.serverUrl}/${context.repo.owner}/${context.repo.repo}/actions/runs/${context.runId}/job/${context.job}`
+              target_url: process.env.TARGET_URL
             });
 
       - name: Mark shard status failure
@@ -177,15 +213,32 @@ jobs:
               repo: context.repo.repo,
               sha: '${{ github.event.deployment_status.deployment.sha || github.sha }}',
               state: 'failure',
-              context: 'efps-preview-tests/shard-${{ matrix.shardIndex }}',
+              context: process.env.STATUS_CONTEXT,
               description: 'eFPS shard ${{ matrix.shardIndex }}/${{ matrix.shardTotal }} failed ❌',
-              target_url: `${context.serverUrl}/${context.repo.owner}/${context.repo.repo}/actions/runs/${context.runId}/job/${context.job}`
+              target_url: process.env.TARGET_URL
             });
 
   merge-reports:
     needs: [efps-test]
     runs-on: ubuntu-latest
+    env:
+      STATUS_CONTEXT: "efps-preview-tests/merge-reports"
+      TARGET_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
     steps:
+      - name: Set merging reports status
+        uses: actions/github-script@v7
+        with:
+          script: |
+            await github.rest.repos.createCommitStatus({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              sha: '${{ github.event.deployment_status.deployment.sha || github.sha }}',
+              state: 'pending',
+              context: process.env.STATUS_CONTEXT,
+              description: 'Merging eFPS test reports…',
+              target_url: process.env.TARGET_URL
+            });
+
       - uses: actions/checkout@v5
       - uses: pnpm/action-setup@v4
       - uses: actions/setup-node@v5
@@ -215,3 +268,33 @@ jobs:
         with:
           comment-tag: "efps-report"
           file-path: ${{ github.workspace }}/dev/efps/results/benchmark-results.md
+
+      - name: Mark merge reports status success
+        if: success()
+        uses: actions/github-script@v7
+        with:
+          script: |
+            await github.rest.repos.createCommitStatus({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              sha: '${{ github.event.deployment_status.deployment.sha || github.sha }}',
+              state: 'success',
+              context: process.env.STATUS_CONTEXT,
+              description: 'eFPS reports merged and posted ✅',
+              target_url: process.env.TARGET_URL
+            });
+
+      - name: Mark merge reports status failure
+        if: failure()
+        uses: actions/github-script@v7
+        with:
+          script: |
+            await github.rest.repos.createCommitStatus({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              sha: '${{ github.event.deployment_status.deployment.sha || github.sha }}',
+              state: 'failure',
+              context: process.env.STATUS_CONTEXT,
+              description: 'Failed to merge eFPS reports ❌',
+              target_url: process.env.TARGET_URL
+            });
