@@ -41,7 +41,6 @@
     "react-dom": "catalog:",
     "sanity": "workspace:*",
     "source-map": "^0.7.6",
-    "vite": "^7.1.6",
     "yargs": "^17.7.2"
   }
 }
