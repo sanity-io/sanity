@@ -79,7 +79,7 @@ catalogs:
 
 overrides:
   '@npmcli/arborist': ^7.5.4
-  '@sanity/ui@3': ^3.1.4
+  '@sanity/ui@3': ^3.1.5
   '@typescript-eslint/eslint-plugin': ^8.44.0
   '@typescript-eslint/parser': ^8.44.0
   '@vitest/coverage-v8': 3.2.4
@@ -134,7 +134,7 @@ importers:
         specifier: ^1.0.6
         version: 1.0.6(prettier@3.6.2)
       '@sanity/ui':
-        specifier: ^3.1.4
+        specifier: ^3.1.5
         version: 3.1.5(@emotion/is-prop-valid@1.4.0)(react-dom@19.1.1(react@19.1.1))(react-is@19.1.1)(react@19.1.1)(styled-components@6.1.19(react-dom@19.1.1(react@19.1.1))(react@19.1.1))
       '@sanity/uuid':
         specifier: ^3.0.2
@@ -305,7 +305,7 @@ importers:
         specifier: ^3.7.4
         version: 3.7.4(react@19.1.1)
       '@sanity/ui':
-        specifier: ^3.1.4
+        specifier: ^3.1.5
         version: 3.1.5(@emotion/is-prop-valid@1.4.0)(react-dom@19.1.1(react@19.1.1))(react-is@19.1.1)(react@19.1.1)(styled-components@6.1.19(react-dom@19.1.1(react@19.1.1))(react@19.1.1))
       react:
         specifier: 'catalog:'
@@ -405,7 +405,7 @@ importers:
   dev/embedded-studio:
     dependencies:
       '@sanity/ui':
-        specifier: ^3.1.4
+        specifier: ^3.1.5
         version: 3.1.5(@emotion/is-prop-valid@1.4.0)(react-dom@19.1.1(react@19.1.1))(react-is@19.1.1)(react@19.1.1)(styled-components@6.1.19(react-dom@19.1.1(react@19.1.1))(react@19.1.1))
       react:
         specifier: 'catalog:'
@@ -523,7 +523,7 @@ importers:
         specifier: ^3.7.4
         version: 3.7.4(react@19.1.1)
       '@sanity/ui':
-        specifier: ^3.1.4
+        specifier: ^3.1.5
         version: 3.1.5(@emotion/is-prop-valid@1.4.0)(react-dom@19.1.1(react@19.1.1))(react-is@19.1.1)(react@19.1.1)(styled-components@6.1.19(react-dom@19.1.1(react@19.1.1))(react@19.1.1))
       '@sanity/vision':
         specifier: workspace:*
@@ -643,7 +643,7 @@ importers:
         specifier: workspace:*
         version: link:../../packages/@sanity/types
       '@sanity/ui':
-        specifier: ^3.1.4
+        specifier: ^3.1.5
         version: 3.1.5(@emotion/is-prop-valid@1.4.0)(react-dom@19.1.1(react@19.1.1))(react-is@19.1.1)(react@19.1.1)(styled-components@6.1.19(react-dom@19.1.1(react@19.1.1))(react@19.1.1))
       '@sanity/ui-workshop':
         specifier: 'catalog:'
@@ -1548,7 +1548,7 @@ importers:
         specifier: ^3.7.4
         version: 3.7.4(react@19.1.1)
       '@sanity/ui':
-        specifier: ^3.1.4
+        specifier: ^3.1.5
         version: 3.1.5(@emotion/is-prop-valid@1.4.0)(react-dom@19.1.1(react@19.1.1))(react-is@19.1.1)(react@19.1.1)(styled-components@6.1.19(react-dom@19.1.1(react@19.1.1))(react@19.1.1))
       '@sanity/uuid':
         specifier: ^3.0.2
@@ -1802,7 +1802,7 @@ importers:
         specifier: workspace:*
         version: link:../@sanity/types
       '@sanity/ui':
-        specifier: ^3.1.4
+        specifier: ^3.1.5
         version: 3.1.5(@emotion/is-prop-valid@1.4.0)(react-dom@19.1.1(react@19.1.1))(react-is@19.1.1)(react@19.1.1)(styled-components@6.1.19(react-dom@19.1.1(react@19.1.1))(react@19.1.1))
       '@sanity/util':
         specifier: workspace:*
@@ -4825,7 +4825,7 @@ packages:
     resolution: {integrity: sha512-nYUZfwqjEHJ9xRZWNlaYlQfz+QlKk/2+haXlNnrV796GQuo6AxuxJxQORMoEcxwjT+cI7bLiCDZ6IVbCc6xmvA==}
     hasBin: true
     peerDependencies:
-      '@sanity/ui': ^3.1.4
+      '@sanity/ui': ^3.1.5
       react: ^19
       react-dom: ^19
 
