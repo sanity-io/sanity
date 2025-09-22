@@ -577,9 +577,6 @@ importers:
       '@portabletext/react':
         specifier: ^4.0.3
         version: 4.0.3(react@19.1.1)
-      '@sanity/assist':
-        specifier: ^5.0.0
-        version: 5.0.0(@emotion/is-prop-valid@1.4.0)(@sanity/mutator@packages+@sanity+mutator)(react-dom@19.1.1(react@19.1.1))(react-is@19.1.1)(react@19.1.1)(sanity@packages+sanity)(styled-components@6.1.19(react-dom@19.1.1(react@19.1.1))(react@19.1.1))
       '@sanity/cli':
         specifier: workspace:*
         version: link:../../packages/@sanity/cli
@@ -589,9 +586,6 @@ importers:
       '@sanity/color':
         specifier: ^3.0.6
         version: 3.0.6
-      '@sanity/color-input':
-        specifier: ^4.0.6
-        version: 4.0.6(@emotion/is-prop-valid@1.4.0)(react-dom@19.1.1(react@19.1.1))(react-is@19.1.1)(react@19.1.1)(sanity@packages+sanity)(styled-components@6.1.19(react-dom@19.1.1(react@19.1.1))(react@19.1.1))
       '@sanity/google-maps-input':
         specifier: ^4.2.0
         version: 4.2.0(@emotion/is-prop-valid@1.4.0)(react-dom@19.1.1(react@19.1.1))(react-is@19.1.1)(react@19.1.1)(sanity@packages+sanity)(styled-components@6.1.19(react-dom@19.1.1(react@19.1.1))(react@19.1.1))
@@ -700,9 +694,6 @@ importers:
       sanity-plugin-markdown:
         specifier: ^6.0.0
         version: 6.0.0(@emotion/is-prop-valid@1.4.0)(easymde@2.20.0)(react-dom@19.1.1(react@19.1.1))(react-is@19.1.1)(react@19.1.1)(sanity@packages+sanity)(styled-components@6.1.19(react-dom@19.1.1(react@19.1.1))(react@19.1.1))
-      sanity-plugin-media:
-        specifier: ^4.0.0
-        version: 4.0.0(@emotion/is-prop-valid@1.4.0)(@types/react@19.1.13)(react-dom@19.1.1(react@19.1.1))(react-is@19.1.1)(react@19.1.1)(sanity@packages+sanity)(styled-components@6.1.19(react-dom@19.1.1(react@19.1.1))(react@19.1.1))
       sanity-plugin-mux-input:
         specifier: ^2.9.0
         version: 2.9.0(@emotion/is-prop-valid@1.4.0)(@types/react@19.1.13)(react-dom@19.1.1(react@19.1.1))(react-is@19.1.1)(react@19.1.1)(sanity@packages+sanity)(styled-components@6.1.19(react-dom@19.1.1(react@19.1.1))(react@19.1.1))
@@ -1439,9 +1430,6 @@ importers:
       '@repo/test-config':
         specifier: workspace:*
         version: link:../../@repo/test-config
-      '@sanity/insert-menu':
-        specifier: 2.0.2
-        version: 2.0.2(@emotion/is-prop-valid@1.4.0)(@sanity/types@packages+@sanity+types)(react-dom@19.1.1(react@19.1.1))(react-is@19.1.1)(react@19.1.1)
       '@sanity/ui':
         specifier: 'catalog:'
         version: 4.0.0-static.29(@emotion/is-prop-valid@1.4.0)(react-dom@19.1.1(react@19.1.1))(react-is@19.1.1)(react@19.1.1)
@@ -1536,9 +1524,6 @@ importers:
       '@rexxars/react-split-pane':
         specifier: ^1.0.0
         version: 1.0.0(react-dom@19.1.1(react@19.1.1))(react@19.1.1)
-      '@sanity/color':
-        specifier: ^3.0.6
-        version: 3.0.6
       '@sanity/icons':
         specifier: ^3.7.4
         version: 3.7.4(react@19.1.1)
@@ -1760,9 +1745,6 @@ importers:
       '@sanity/import':
         specifier: ^3.38.3
         version: 3.38.3(@types/react@19.1.13)
-      '@sanity/insert-menu':
-        specifier: ^2.0.2
-        version: 2.0.2(@emotion/is-prop-valid@1.4.0)(@sanity/types@packages+@sanity+types)(react-dom@19.1.1(react@19.1.1))(react-is@19.1.1)(react@19.1.1)
       '@sanity/logos':
         specifier: ^2.2.2
         version: 2.2.2(react@19.1.1)
@@ -1991,9 +1973,6 @@ importers:
       pluralize-esm:
         specifier: ^9.0.5
         version: 9.0.5
-      polished:
-        specifier: ^4.3.1
-        version: 4.3.1
       preferred-pm:
         specifier: ^4.1.1
         version: 4.1.1
@@ -4539,15 +4518,6 @@ packages:
     resolution: {integrity: sha512-dlEmALjQ5iyQG0O8ZVmkkE3wUYCKfRmiyMvuuGN5SF9buAHxmseBOKJ/Iy2DU/8ef70mtUXlzeCRSlTN/nmZsg==}
     engines: {node: '>=18'}
 
-  '@sanity/assist@5.0.0':
-    resolution: {integrity: sha512-nysQhDRPXkwoICWdfSEc7uz/cLaw+ObQR+zLKea1wOaEzTtmMWSBbfmwriIFcRZYpRtykFKCMzvyhzK9W4V6SA==}
-    engines: {node: '>=20'}
-    peerDependencies:
-      '@sanity/mutator': ^3.36.4 || ^4.0.0-0
-      react: ^18 || ^19
-      sanity: ^3.36.4 || ^4.0.0-0
-      styled-components: ^6.1
-
   '@sanity/bifur-client@0.4.1':
     resolution: {integrity: sha512-mHM8WR7pujbIw2qxuV0lzinS1izOoyLza/ejWV6quITTLpBhUoPIQGPER3Ar0SON5JV0VEEqkJGa1kjiYYgx2w==}
 
@@ -6702,9 +6672,6 @@ packages:
   date-fns@2.30.0:
     resolution: {integrity: sha512-fnULvOpxnC5/Vg3NCiWelDsLiUc9bRwAPs/+LfTLNvetFCtCTN+yQz15C/fs4AwX1R9K5GLtLfn8QW+dWisaAw==}
     engines: {node: '>=0.11'}
-
-  date-fns@3.6.0:
-    resolution: {integrity: sha512-fRHTG8g/Gif+kSh50gaGEdToemgfj74aRX3swtiouboip5JDLAyDE9F11nHMIcvOaXeOC6D7SpNhi7uFyB7Uww==}
 
   date-fns@4.1.0:
     resolution: {integrity: sha512-Ukq0owbQXxa/U3EGtsdVBkR1w7KOQ5gIBqdH2hkvknzZPYvBxb/aa6E8L7tmjFtkwZBu3UXBbjIgPo/Ez4xaNg==}
@@ -10000,10 +9967,6 @@ packages:
   pluralize@8.0.0:
     resolution: {integrity: sha512-Nc3IT5yHzflTfbjgqWcCPpo7DaKy4FnpB0l/zCAW0Tc7jxAiuqSxHasntB3D7887LSrA93kDJ9IXovxJYxyLCA==}
     engines: {node: '>=4'}
-
-  polished@4.3.1:
-    resolution: {integrity: sha512-OBatVyC/N7SCW/FaDHrSd+vn0o5cS855TOmYi4OkdWUMSJCET/xip//ch8xGUvtr3i44X9LVyWwQlRMTN3pwSA==}
-    engines: {node: '>=10'}
 
   posix-character-classes@0.1.1:
     resolution: {integrity: sha512-xTgYBc3fuo7Yt7JbiuFxSYGToMoz8fLoE6TC9Wx1P/u+LfeThMOAqmuyECnlBaaJb+u1m9hHiXUEtwW4OzfUJg==}
@@ -14831,26 +14794,6 @@ snapshots:
 
   '@sanity/asset-utils@2.3.0': {}
 
-  '@sanity/assist@5.0.0(@emotion/is-prop-valid@1.4.0)(@sanity/mutator@packages+@sanity+mutator)(react-dom@19.1.1(react@19.1.1))(react-is@19.1.1)(react@19.1.1)(sanity@packages+sanity)(styled-components@6.1.19(react-dom@19.1.1(react@19.1.1))(react@19.1.1))':
-    dependencies:
-      '@sanity/icons': 3.7.4(react@19.1.1)
-      '@sanity/incompatible-plugin': 1.0.5(react-dom@19.1.1(react@19.1.1))(react@19.1.1)
-      '@sanity/mutator': link:packages/@sanity/mutator
-      '@sanity/ui': 4.0.0-static.29(@emotion/is-prop-valid@1.4.0)(react-dom@19.1.1(react@19.1.1))(react-is@19.1.1)(react@19.1.1)
-      date-fns: 3.6.0
-      lodash: 4.17.21
-      lodash-es: 4.17.21
-      react: 19.1.1
-      react-fast-compare: 3.2.2
-      rxjs: 7.8.2
-      rxjs-exhaustmap-with-trailing: 2.1.1(rxjs@7.8.2)
-      sanity: link:packages/sanity
-      styled-components: 6.1.19(react-dom@19.1.1(react@19.1.1))(react@19.1.1)
-    transitivePeerDependencies:
-      - '@emotion/is-prop-valid'
-      - react-dom
-      - react-is
-
   '@sanity/bifur-client@0.4.1':
     dependencies:
       nanoid: 3.3.11
@@ -17530,8 +17473,6 @@ snapshots:
   date-fns@2.30.0:
     dependencies:
       '@babel/runtime': 7.28.4
-
-  date-fns@3.6.0: {}
 
   date-fns@4.1.0: {}
 
@@ -21307,10 +21248,6 @@ snapshots:
   pluralize-esm@9.0.5: {}
 
   pluralize@8.0.0: {}
-
-  polished@4.3.1:
-    dependencies:
-      '@babel/runtime': 7.28.4
 
   posix-character-classes@0.1.1: {}
 
