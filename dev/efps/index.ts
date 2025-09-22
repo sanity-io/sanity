@@ -34,6 +34,7 @@ const REFERENCE_TAG = process.env.REFERENCE_TAG || 'latest'
 // eslint-disable-next-line turbo/no-undeclared-env-vars
 const RECORD_VIDEO = process.env.RECORD_VIDEO === 'true'
 const STUDIO_URL =
+  // the test studio
   // eslint-disable-next-line turbo/no-undeclared-env-vars
   process.env.STUDIO_URL || 'https://test-studio-git-main.sanity.dev/test/structure'
 const TESTS = [article, recipe, singleString, synthetic]
