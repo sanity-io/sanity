@@ -11,6 +11,7 @@ import {SanityMonogram} from '@sanity/logos'
 import {debugSecrets} from '@sanity/preview-url-secret/sanity-plugin-debug-secrets'
 import {visionTool} from '@sanity/vision'
 import {
+  DECISION_PARAMETERS_SCHEMA,
   defineConfig,
   definePlugin,
   QUOTA_EXCLUDED_RELEASES_ENABLED,
@@ -244,6 +245,11 @@ const defaultWorkspace = defineConfig({
     enabled: true,
   },
   [QUOTA_EXCLUDED_RELEASES_ENABLED]: true,
+  [DECISION_PARAMETERS_SCHEMA]: {
+    audiences: ['aud-a', 'aud-b', 'aud-c'],
+    locales: ['en-GB', 'en-US'],
+    ages: ['20-29', '30-39'],
+  },
   document: {
     actions: (prev, ctx) => {
       if (ctx.schemaType === 'book' && ctx.releaseId) {
