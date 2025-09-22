@@ -1,5 +1,10 @@
 {
   "$schema": "https://turbo.build/schema.json",
   "extends": ["//"],
-  "tasks": {}
+  "tasks": {
+    "build": {
+      "env": ["SANITY_EFPS_PROJECT_ID", "SANITY_EFPS_DATASET"],
+      "outputs": ["dist/**"]
+    }
+  }
 }
