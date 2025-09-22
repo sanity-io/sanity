@@ -46,7 +46,7 @@ const predefinedStringArray = defineField({
 export default defineType({
   name: 'arraysTest',
   type: 'document',
-  title: 'Arrays test',
+  title: 'Arrays test h',
   icon: OlistIcon,
   fields: [
     {

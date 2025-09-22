@@ -15,6 +15,7 @@
     "start": "sanity start"
   },
   "dependencies": {
+    "@sanity/client": "7.11.2-audience-decide.0",
     "@sanity/vision": "workspace:*",
     "react": "catalog:",
     "sanity": "workspace:*",

@@ -14,6 +14,7 @@
   },
   "dependencies": {
     "@repo/eslint-config": "workspace:*",
+    "@sanity/client": "7.11.2-audience-decide.0",
     "@sanity/code-input": "^6.0.1",
     "react": "catalog:",
     "react-dom": "catalog:",

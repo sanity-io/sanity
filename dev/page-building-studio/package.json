@@ -13,6 +13,7 @@
   },
   "dependencies": {
     "@repo/eslint-config": "workspace:*",
+    "@sanity/client": "7.11.2-audience-decide.0",
     "@sanity/vision": "workspace:*",
     "babel-plugin-react-compiler": "19.1.0-rc.3",
     "react": "catalog:",

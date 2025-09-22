@@ -8,5 +8,8 @@
     ".": "./dev-aliases.cjs",
     "./vite": "./vite.mjs"
   },
-  "main": "./dev-aliases.cjs"
+  "main": "./dev-aliases.cjs",
+  "dependencies": {
+    "@sanity/client": "7.11.2-audience-decide.0"
+  }
 }

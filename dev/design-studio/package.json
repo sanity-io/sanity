@@ -32,6 +32,7 @@
   },
   "dependencies": {
     "@repo/eslint-config": "workspace:*",
+    "@sanity/client": "7.11.2-audience-decide.0",
     "@sanity/icons": "^3.7.4",
     "@sanity/ui": "catalog:",
     "react": "catalog:",

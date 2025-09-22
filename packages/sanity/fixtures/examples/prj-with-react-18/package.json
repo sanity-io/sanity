@@ -2,6 +2,7 @@
   "name": "prj-with-react-18",
   "private": true,
   "dependencies": {
+    "@sanity/client": "7.11.2-audience-decide.0",
     "react": "catalog:react18",
     "react-dom": "catalog:react18",
     "styled-components": "catalog:"

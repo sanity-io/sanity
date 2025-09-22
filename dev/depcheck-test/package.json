@@ -3,5 +3,8 @@
   "version": "4.10.3",
   "private": true,
   "license": "MIT",
-  "author": "Sanity.io <hello@sanity.io>"
+  "author": "Sanity.io <hello@sanity.io>",
+  "dependencies": {
+    "@sanity/client": "7.11.2-audience-decide.0"
+  }
 }
