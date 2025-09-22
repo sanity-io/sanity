@@ -3,7 +3,9 @@ permissions:
   pull-requests: write # for comment
 
 on:
-  deployment_status:
+  repository_dispatch:
+    types:
+      - "vercel.deployment.success"
   workflow_dispatch:
     inputs:
       reference_tag:
