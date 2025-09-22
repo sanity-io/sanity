@@ -26,12 +26,24 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
+  get-vercel-url:
+    timeout-minutes: 30
+    runs-on: ubuntu-latest
+    if: github.event.deployment_status.state == 'success' && github.event.deployment_status.environment == 'efps'
+    outputs:
+      deploy_url: ${{ github.event.deployment_status.target_url }}
+    steps:
+      - name: Set deploy URL
+        run: echo "Deploy URL is ${{ github.event.deployment_status.target_url }}"
+
   efps-test:
     timeout-minutes: 30
     runs-on: ubuntu-latest
+    needs: [get-vercel-url]
     env:
       TURBO_TOKEN: ${{ secrets.TURBO_TOKEN }}
       TURBO_TEAM: ${{ vars.TURBO_TEAM }}
+      DEPLOY_URL: ${{ needs.get-vercel-url.outputs.deploy_url }}
     strategy:
       fail-fast: false
       matrix:
@@ -57,45 +69,6 @@ jobs:
 
       - name: Install project dependencies
         run: pnpm install
-
-      - name: Install Vercel CLI
-        run: pnpm install --global vercel@latest
-
-      - name: Build Studio for Deployment
-        run: pnpm build:efps
-
-      - name: Pull Vercel Environment Information
-        env:
-          VERCEL_ORG_ID: ${{ secrets.VERCEL_EFPS_STUDIO_ORG_ID }}
-          VERCEL_PROJECT_ID: ${{ secrets.VERCEL_EFPS_STUDIO_PROJECT_ID }}
-        run: vercel pull --yes --environment=preview --token=${{ secrets.VERCEL_EFPS_STUDIO_TOKEN }}
-
-      - name: Deploy Studio to Vercel
-        id: deploy
-        env:
-          VERCEL_ORG_ID: ${{ secrets.VERCEL_EFPS_STUDIO_ORG_ID }}
-          VERCEL_PROJECT_ID: ${{ secrets.VERCEL_EFPS_STUDIO_PROJECT_ID }}
-          COMMIT_MESSAGE: ${{ github.event.head_commit.message || github.event.pull_request.title }}
-        run: |
-          run: |
-          echo "DEPLOY_URL=$(vercel deploy --env ENABLE_EXPERIMENTAL_COREPACK=1 --token=${{ secrets.VERCEL_EFPS_STUDIO_TOKEN }} \
-          -m githubDeployment="1" \
-          -m githubCommitAuthorName="${{ github.event.sender.name || 'GitHub Actions' }}" \
-          -m githubCommitMessage="$COMMIT_MESSAGE" \
-          -m githubCommitOrg="${{ github.repository_owner }}" \
-          -m githubCommitRef="${{ github.head_ref || github.ref_name }}" \
-          -m githubCommitRepo="${{ github.event.repository.name }}" \
-          -m githubCommitSha="${{ github.sha }}" \
-          -m githubOrg="${{ github.repository_owner }}" \
-          -m githubRepo="${{ github.event.repository.name }}" \
-          -m githubCommitAuthorLogin="${{ github.event.sender.login || github.actor }}" | tail -n 1)" >> $GITHUB_OUTPUT
-      - name: Echo the deployed URL
-        run: |
-          if [ -z "${{ steps.deploy.outputs.DEPLOY_URL }}" ]; then
-           echo "::error::Deployment URL was not found. Deployment may have failed."
-           exit 1
-          fi
-          echo "Deployed Studio URL: ${{ steps.deploy.outputs.DEPLOY_URL }}"
 
       - name: Update PR comment with deployed URL
         uses: thollander/actions-comment-pull-request@24bffb9b452ba05a4f3f77933840a6a841d1b32b # v3
@@ -135,7 +108,7 @@ jobs:
           REFERENCE_TAG: ${{ github.event.inputs.reference_tag || 'latest' }}
           ENABLE_PROFILER: ${{ github.event.inputs.enable_profiler || false }}
           RECORD_VIDEO: ${{ github.event.inputs.record_video || false }}
-          STUDIO_URL: ${{ steps.deploy.outputs.DEPLOY_URL }}
+          STUDIO_URL: ${{ github.event.deployment_status.target_url }}
         run: pnpm efps:test -- -- --shard ${{ matrix.shardIndex }}/${{ matrix.shardTotal }}
 
       - uses: actions/upload-artifact@v4
