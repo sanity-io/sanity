@@ -30,14 +30,13 @@ jobs:
     timeout-minutes: 30
     runs-on: ubuntu-latest
     if: >
-      github.event_name == 'deployment_status' &&
-      github.event.deployment_status.state == 'success' &&
-      github.event.deployment.payload.project_id == secrets.VERCEL_EFPS_STUDIO_PROJECT_ID
+      github.event_name == 'deployment_status'
     outputs:
       deploy_url: ${{ github.event.deployment_status.target_url }}
     steps:
       - name: Debug deployment event
         run: |
+          echo "Event: ${{ github.event }}"
           echo "Event name: ${{ github.event_name }}"
           echo "Deployment status state: ${{ github.event.deployment_status.state }}"
           echo "Deployment environment: ${{ github.event.deployment.environment }}"
