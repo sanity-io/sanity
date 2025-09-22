@@ -1,8 +1,110 @@
 import {UserIcon as icon} from '@sanity/icons'
-import {type StringRule} from '@sanity/types'
+import {type PreviewConfig, type StringRule} from '@sanity/types'
 import {defineField, defineType} from 'sanity'
 
-import {AudienceSelectInput} from '../components/AudienceSelectInput'
+const rulePreview: PreviewConfig = {
+  select: {
+    property: 'property',
+    operator: 'operator',
+    targetValue: 'targetValue',
+    and: 'and',
+  },
+  prepare(context) {
+    const property = context.property
+    const operator = context.operator
+    const targetValue = context.targetValue
+    const and = context.and as Rule[]
+    return {
+      title: `${property} ${operator} ${targetValue} ${and ? `& ${and.map((a) => `${a.property} ${a.operator} ${a.targetValue}`).join(' & ')}` : ''}`,
+    }
+  },
+}
+const stringRule = defineField({
+  name: 'stringRule',
+  title: 'String Rule',
+  type: 'object',
+  fields: [
+    defineField({
+      name: 'property',
+      title: 'Property',
+      type: 'string',
+      options: {
+        // User configurable list
+        list: ['audience', 'language'],
+      },
+    }),
+    defineField({
+      name: 'operator',
+      title: 'Operator',
+      type: 'string',
+      options: {
+        list: [
+          {title: 'is equal to', value: 'equals'},
+          {title: 'is not equal to', value: 'not-equals'},
+          {title: 'contains', value: 'contains'},
+          {title: 'does not contain', value: 'not-contains'},
+          {title: 'is empty', value: 'is-empty'},
+          {title: 'is not empty', value: 'is-not-empty'},
+        ],
+      },
+    }),
+    defineField({
+      name: 'targetValue',
+      title: 'Target Value',
+      type: 'string',
+      // components: {
+      //   input: AudienceSelectInput,
+      // },
+    }),
+  ],
+  preview: rulePreview,
+})
+const numberRule = defineField({
+  name: 'numberRule',
+  title: 'Number Rule',
+  type: 'object',
+  preview: rulePreview,
+
+  fields: [
+    defineField({
+      name: 'property',
+      title: 'Property',
+      type: 'string',
+      options: {
+        list: ['born', 'age'],
+      },
+    }),
+    defineField({
+      name: 'operator',
+      title: 'Operator',
+      type: 'string',
+      options: {
+        list: [
+          {title: 'is equal to', value: 'equals'},
+          {title: 'is not equal to', value: 'not-equals'},
+          {title: 'is empty', value: 'is-empty'},
+          {title: 'is not empty', value: 'is-not-empty'},
+          {title: 'is greater than', value: '>'},
+          {title: 'is less than', value: '<'},
+          {title: 'is greater than or equal to', value: '>='},
+          {title: 'is less than or equal to', value: '<='},
+        ],
+      },
+    }),
+    defineField({
+      name: 'targetValue',
+      title: 'Target Value',
+      type: 'number',
+    }),
+  ],
+})
+
+interface Rule {
+  property: string
+  operator: string
+  targetValue: string
+  and?: Rule[]
+}
 
 // Generic decide field implementation that works for all types
 const defineLocalDecideField = (config: any) => {
@@ -38,15 +140,53 @@ const defineLocalDecideField = (config: any) => {
             type: 'object',
             name: 'condition',
             title: 'Condition',
+            preview: {
+              select: {
+                rules: 'anyOf',
+                value: 'value',
+              },
+              prepare(context) {
+                const value = context.value
+                const rules = context.rules as Rule[]
+
+                return {
+                  title: value,
+                  subtitle: `${rules.map((rule) => `${rule.property} ${rule.operator} ${rule.targetValue} ${rule.and ? `& ${rule.and.map((and) => `${and.property} ${and.operator} ${and.targetValue}`).join(' & ')}` : ''}`).join(' | ')}`,
+                }
+              },
+            },
             fields: [
               defineField({
-                name: 'audience',
-                title: 'Audience Equality',
-                validation: (Rule) => Rule.required(),
-                type: 'string',
-                components: {
-                  input: AudienceSelectInput,
-                },
+                name: 'anyOf',
+                title: 'Any of',
+                description: 'If any of the rules are true, the condition is true',
+                type: 'array',
+                of: [
+                  {
+                    ...stringRule,
+                    fields: [
+                      ...stringRule.fields,
+                      defineField({
+                        name: 'and',
+                        title: 'And',
+                        type: 'array',
+                        of: [stringRule, numberRule],
+                      }),
+                    ],
+                  },
+                  {
+                    ...numberRule,
+                    fields: [
+                      ...numberRule.fields,
+                      defineField({
+                        name: 'and',
+                        title: 'And',
+                        type: 'array',
+                        of: [stringRule, numberRule],
+                      }),
+                    ],
+                  },
+                ],
               }),
               defineField({
                 name: 'value',
