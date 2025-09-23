@@ -180,6 +180,7 @@
     },
     "overrides": {
       "@npmcli/arborist": "^7.5.4",
+      "@sanity/client": "7.11.2-audience-decide.0",
       "@sanity/ui@3": "$@sanity/ui",
       "@typescript-eslint/eslint-plugin": "$@typescript-eslint/eslint-plugin",
       "@typescript-eslint/parser": "$@typescript-eslint/parser",
