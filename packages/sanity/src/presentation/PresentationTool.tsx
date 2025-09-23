@@ -69,6 +69,7 @@ import {debounce} from './util/debounce'
 const LiveQueries = lazy(() => import('./loader/LiveQueries'))
 const PostMessageDocuments = lazy(() => import('./overlays/PostMessageDocuments'))
 const PostMessageRefreshMutations = lazy(() => import('./editor/PostMessageRefreshMutations'))
+const PostMessageDecideParameters = lazy(() => import('./PostMessageDecideParameters'))
 const PostMessagePerspective = lazy(() => import('./PostMessagePerspective'))
 const PostMessagePreviewSnapshots = lazy(() => import('./editor/PostMessagePreviewSnapshots'))
 const PostMessageSchema = lazy(() => import('./overlays/schema/PostMessageSchema'))
@@ -618,6 +619,7 @@ export default function PresentationTool(props: {
           <PostMessageDocuments comlink={visualEditingComlink} perspective={perspective} />
         )}
         {visualEditingComlink && <PostMessageFeatures comlink={visualEditingComlink} />}
+        {visualEditingComlink && <PostMessageDecideParameters comlink={visualEditingComlink} />}
         {visualEditingComlink && (
           <PostMessagePerspective comlink={visualEditingComlink} perspective={perspective} />
         )}
