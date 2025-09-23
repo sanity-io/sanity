@@ -39,7 +39,6 @@ const DEPLOYED_STUDIO_URL = process.env.STUDIO_URL
 
 const TESTS = [article, recipe, singleString, synthetic]
 
-// this is the project for the efps
 const projectId = process.env.VITE_PERF_EFPS_PROJECT_ID!
 const dataset = process.env.VITE_PERF_EFPS_DATASET!
 const token = process.env.PERF_EFPS_SANITY_TOKEN!
@@ -96,8 +95,6 @@ function getTestsForShard(tests: EfpsTest[], shard: {current: number; total: num
 const shard = argv.shard ? parseShard(argv.shard) : null
 const selectedTests = shard ? getTestsForShard(TESTS, shard) : TESTS
 
-// Removed getSanityPkgPathForTag function as we no longer need to download packages
-
 const formatEfps = (latencyMs: number) => {
   const efps = 1000 / latencyMs
   const rounded = efps.toFixed(1)
@@ -119,9 +116,6 @@ await exec({
   command: 'npx playwright install',
   spinner,
 })
-
-// Note: We no longer need to download reference packages since we're using external URLs
-// The studio URL will determine which version of Sanity is being tested
 
 function mergeResults(baseResults: EfpsResult[] | undefined, incomingResults: EfpsResult[]) {
   if (!baseResults) return incomingResults
