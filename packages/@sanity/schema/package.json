@@ -62,7 +62,6 @@
     "watch": "pkg-utils watch"
   },
   "dependencies": {
-    "@sanity/client": "7.11.2-audience-decide.0",
     "@sanity/descriptors": "^1.1.1",
     "@sanity/generate-help-url": "^3.0.0",
     "@sanity/types": "workspace:*",
