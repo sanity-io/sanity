@@ -166,6 +166,7 @@ jobs:
           retention-days: 30
 
   merge-reports:
+    if: always()
     needs: [efps-test]
     runs-on: ubuntu-latest
     steps:
