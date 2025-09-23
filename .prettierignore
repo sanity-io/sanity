@@ -47,3 +47,5 @@ CHANGELOG.md
 /pnpm-lock.yaml
 
 /packages/sanity/playwright-ct/template/.cache/**/*
+
+/.nx/workspace-data
