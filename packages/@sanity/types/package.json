@@ -50,7 +50,7 @@
     "watch": "pkg-utils watch"
   },
   "dependencies": {
-    "@sanity/client": "^7.11.2",
+    "@sanity/client": "7.11.2-audience-decide.0",
     "@sanity/media-library-types": "^1.0.1"
   },
   "devDependencies": {
