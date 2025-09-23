@@ -5,7 +5,7 @@ import {defineField, defineType} from 'sanity'
 import {AudienceSelectInput} from '../components/AudienceSelectInput'
 
 // Generic decide field implementation that works for all types
-const defineLocalDecideField = (config: any) => {
+export const defineLocalDecideField = (config: any) => {
   const {name, title, description, type, ...otherConfig} = config
 
   const valueFieldConfig = {

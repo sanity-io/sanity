@@ -1,5 +1,7 @@
 import {defineType} from 'sanity'
 
+import {defineLocalDecideField} from '../author'
+
 export default defineType({
   type: 'document',
   name: 'markdownTest',
@@ -10,10 +12,10 @@ export default defineType({
       name: 'title',
       title: 'Title',
     },
-    {
+    defineLocalDecideField({
       type: 'markdown',
       name: 'markdown',
       title: 'Markdown',
-    },
+    }),
   ],
 })
