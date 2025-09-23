@@ -3,7 +3,6 @@ permissions:
   pull-requests: write # for comment
 
 on:
-  push:
   pull_request:
   workflow_dispatch:
     inputs:
@@ -106,7 +105,7 @@ jobs:
 
       - name: Add PR comment placeholder
         uses: thollander/actions-comment-pull-request@24bffb9b452ba05a4f3f77933840a6a841d1b32b # v3
-        if: ${{ github.event_name == 'push' }}
+        if: ${{ github.event_name == 'pull_request' }}
         with:
           comment-tag: "efps-report"
           message: |
@@ -183,7 +182,7 @@ jobs:
 
       - name: PR comment with report
         uses: thollander/actions-comment-pull-request@24bffb9b452ba05a4f3f77933840a6a841d1b32b # v3
-        if: ${{ always() && github.event_name == 'push' }}
+        if: ${{ always() && github.event_name == 'pull_request' }}
         with:
           comment-tag: "efps-report"
           file-path: ${{ github.workspace }}/dev/efps/results/benchmark-results.md
