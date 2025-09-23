@@ -19,20 +19,27 @@ export const handler = documentEventHandler(async ({event}) => {
     const message = `New comment received: ${comment}`
     const studioUrl = `${STUDIO_URL}/structure/comment;${_id}`
 
-    // Build payload - conditionally include inline keyboard for non-localhost URLs
-    const payload = {
-      chat_id: TELEGRAM_CHAT_ID,
-      text: message,
-    }
-
-    // Telegram doesn't allow 'localhost' in the URL, so we include it in the message text instead
-    if (STUDIO_URL.includes('localhost')) {
-      payload.text += `\n\n📝 Open in Sanity Studio: ${studioUrl}`
-    } else {
-      payload.reply_markup = {
-        inline_keyboard: [[{text: '📝 Open in Sanity Studio', url: studioUrl}]],
+    // Define the payload type for type safety
+    type TelegramPayload = {
+      chat_id: string
+      text: string
+      reply_markup?: {
+        inline_keyboard: Array<Array<{text: string; url: string}>>
       }
     }
+    // Build payload - conditionally include inline keyboard for non-localhost URLs
+    const payload: TelegramPayload = STUDIO_URL.includes('localhost')
+      ? {
+          chat_id: TELEGRAM_CHAT_ID,
+          text: `${message}\n\n📝 Open in Sanity Studio: ${studioUrl}`,
+        }
+      : {
+          chat_id: TELEGRAM_CHAT_ID,
+          text: message,
+          reply_markup: {
+            inline_keyboard: [[{text: '📝 Open in Sanity Studio', url: studioUrl}]],
+          },
+        }
 
     const response = await fetch(`https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendMessage`, {
       method: 'POST',
