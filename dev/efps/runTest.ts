@@ -106,8 +106,7 @@ export async function runTest({
         path.join(testResultsDir, 'raw.cpuprofile'),
         JSON.stringify(profile),
       )
-      // Note: CPU profile remapping may not work perfectly with external URLs
-      // but we'll keep the raw profile for analysis
+
       await fs.promises.writeFile(
         path.join(testResultsDir, 'mapped.cpuprofile'),
         JSON.stringify(profile),
