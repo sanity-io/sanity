@@ -115,6 +115,7 @@ export function useMainDocument(props: {
   const mainDocumentIdRef = useRef<string | undefined>(undefined)
 
   const handleResponse = useEffectEvent((doc: MainDocument | undefined, url: URL) => {
+    console.log('handleResponse', doc)
     if (!doc || mainDocumentIdRef.current !== doc._id) {
       setMainDocumentState({
         document: doc,
@@ -167,7 +168,7 @@ export function useMainDocument(props: {
             perspective: perspectiveStack,
             decideParameters: {
               ...decideParameters,
-              audience: decideParameters.audience ?? 'preview',
+              audience: decideParameters.audiences ?? 'preview',
             },
             signal: controller.signal,
             tag: 'use-main-document',
