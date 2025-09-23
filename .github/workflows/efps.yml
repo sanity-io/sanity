@@ -117,18 +117,6 @@ jobs:
       - name: Install project dependencies
         run: pnpm install
 
-      - name: Update PR comment with deployed URL
-        uses: thollander/actions-comment-pull-request@24bffb9b452ba05a4f3f77933840a6a841d1b32b # v3
-        if: ${{ github.event_name == 'pull_request' }}
-        with:
-          comment-tag: "efps-report"
-          message: |
-            ### ⚡️ Editor Performance Report
-
-            Testing against: [${{ needs.deploy-preview.outputs.preview_url }}](${{ needs.deploy-preview.outputs.preview_url }})
-
-            Running performance tests…
-
       - name: Store Playwright's Version
         id: playwright-version
         run: |
@@ -190,11 +178,12 @@ jobs:
           path: dev/efps/results
 
       - name: Write report
+        id: write-report
         run: pnpm efps:write:report
 
       - name: PR comment with report
         uses: thollander/actions-comment-pull-request@24bffb9b452ba05a4f3f77933840a6a841d1b32b # v3
-        if: ${{ github.event_name == 'pull_request' }}
+        if: ${{ always() && steps.write-report.conclusion == 'success' && github.event_name == 'pull_request' }}
         with:
           comment-tag: "efps-report"
           file-path: ${{ github.workspace }}/dev/efps/results/benchmark-results.md
