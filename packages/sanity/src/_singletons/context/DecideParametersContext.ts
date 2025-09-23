@@ -1,5 +1,8 @@
 import {createContext} from 'sanity/_createContext'
 
+/**
+ * @internal
+ */
 export interface DecideParametersContextValue {
   decideParameters: Record<string, string>
   setDecideParameters: (params: Record<string, string>) => void

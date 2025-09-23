@@ -1869,8 +1869,8 @@ importers:
         specifier: workspace:*
         version: link:../@sanity/mutator
       '@sanity/presentation-comlink':
-        specifier: ^1.0.29
-        version: 1.0.29(@sanity/client@7.11.2-audience-decide.0(debug@4.4.3))(@sanity/types@packages+@sanity+types)
+        specifier: 1.0.29-audience-decide.1
+        version: 1.0.29-audience-decide.1(@sanity/client@7.11.2-audience-decide.0(debug@4.4.3))(@sanity/types@packages+@sanity+types)
       '@sanity/preview-url-secret':
         specifier: ^2.1.15
         version: 2.1.15(@sanity/client@7.11.2-audience-decide.0(debug@4.4.3))(@sanity/icons@3.7.4(react@19.1.1))(sanity@packages+sanity)
@@ -4872,6 +4872,12 @@ packages:
     engines: {node: '>=18'}
     peerDependencies:
       '@sanity/client': ^7.8.2
+
+  '@sanity/presentation-comlink@1.0.29-audience-decide.1':
+    resolution: {integrity: sha512-lYkQndLO0Jt/4A2qaIgNo/ud9uAJpHGWSQWrosL8KEkT8O2ut9A1ll/RwWDyqW69fXVzLPC1ZeoZ7hr1U+vX1g==}
+    engines: {node: '>=18'}
+    peerDependencies:
+      '@sanity/client': 'catalog:'
 
   '@sanity/prettier-config@1.0.6':
     resolution: {integrity: sha512-pbkaHa33gJjRhhDr7be5WJ+c2PNEUCcrNNsgAA0W3a/pAkdrNujC09Gzvi/JkydgjliP/T2KLeuPCBlzftuzKw==}
@@ -15413,7 +15419,7 @@ snapshots:
     transitivePeerDependencies:
       - '@sanity/types'
 
-  '@sanity/presentation-comlink@1.0.29(@sanity/client@7.11.2-audience-decide.0(debug@4.4.3))(@sanity/types@packages+@sanity+types)':
+  '@sanity/presentation-comlink@1.0.29(@sanity/client@7.11.2-audience-decide.0)(@sanity/types@packages+@sanity+types)':
     dependencies:
       '@sanity/client': 7.11.2-audience-decide.0(debug@4.4.3)
       '@sanity/comlink': 3.0.9
@@ -15421,7 +15427,7 @@ snapshots:
     transitivePeerDependencies:
       - '@sanity/types'
 
-  '@sanity/presentation-comlink@1.0.29(@sanity/client@7.11.2-audience-decide.0)(@sanity/types@packages+@sanity+types)':
+  '@sanity/presentation-comlink@1.0.29-audience-decide.1(@sanity/client@7.11.2-audience-decide.0(debug@4.4.3))(@sanity/types@packages+@sanity+types)':
     dependencies:
       '@sanity/client': 7.11.2-audience-decide.0(debug@4.4.3)
       '@sanity/comlink': 3.0.9
