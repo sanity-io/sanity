@@ -1,5 +1,5 @@
 import {type QueryParams} from '@sanity/client'
-import {useEffect, useMemo, useState} from 'react'
+import {startTransition, useEffect, useMemo, useState} from 'react'
 import {catchError, finalize, map, type Observable, of, shareReplay} from 'rxjs'
 
 import {useDataset} from '../../hooks/useDataset'
@@ -57,7 +57,7 @@ export function useDocumentVersions(props: DocumentPerspectiveProps): DocumentPe
 
   useEffect(() => {
     const subscription = observable.subscribe((result) => {
-      setResults(result)
+      startTransition(() => setResults(result))
     })
     return () => subscription.unsubscribe()
   }, [observable])

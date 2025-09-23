@@ -275,8 +275,8 @@ export function QueryRecall({
           const isEdited = isSelected && !areQueriesEqual
           return (
             <Card
-              as="button"
               key={q._key}
+              as="button"
               width={'fill'}
               padding={4}
               // border

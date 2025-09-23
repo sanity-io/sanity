@@ -16,17 +16,6 @@ export const SVGContainer = styled.div`
   -webkit-user-select: none;
 `
 
-export const StyledSVG = styled.svg`
-  display: block;
-  overflow: visible;
-  shape-rendering: crispEdges;
-`
-
-export const DarkenedOverlay = styled.rect`
-  fill: rgba(0, 0, 0, 0.5);
-  pointer-events: none;
-`
-
 export interface StyledElementProps {
   $focused?: boolean
   $hovered?: boolean
@@ -77,33 +66,7 @@ export const CropEdgeHandle = styled.rect<StyledElementProps>`
   outline: none;
 `
 
-export const HotspotEllipse = styled.ellipse<StyledElementProps>`
-  fill: transparent;
-  stroke: ${getHotspotStrokeColor};
-  stroke-opacity: 1;
-  stroke-width: 1px;
-  outline: none;
-  ${(props) =>
-    props.$focused &&
-    css`
-      stroke-width: 2px;
-    `}
-`
-
-export const HotspotHandle = styled.circle<StyledElementProps>`
-  fill: #fff;
-  stroke: ${getHandleStrokeColor};
-  stroke-width: 1;
-  outline: none;
-`
-
 export const CropHandleInteractionArea = styled.rect<StyledElementProps>`
-  fill: transparent;
-  stroke: transparent;
-  pointer-events: all;
-`
-
-export const HotspotHandleInteractionArea = styled.circle`
   fill: transparent;
   stroke: transparent;
   pointer-events: all;

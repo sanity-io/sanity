@@ -15,7 +15,7 @@ export function useConditionalToast(
     setEnabledAt((current) => (params.enabled ? current || new Date() : undefined))
   }, [params.enabled])
 
-  const now = useCurrentTime(1000)
+  const now = useCurrentTime(1000, Boolean(params.enabled))
   const enabled =
     enabledAt && params.enabled && now.getTime() - enabledAt.getTime() > (params?.delay ?? 0)
 
@@ -34,13 +34,14 @@ export function useConditionalToast(
   }, [params, toast, enabled])
 }
 
-function useCurrentTime(updateIntervalMs: number): Date {
-  const [currentTime, setCurrentTime] = useState(new Date())
+function useCurrentTime(updateIntervalMs: number, enabled: boolean): Date {
+  const [currentTime, setCurrentTime] = useState(() => new Date())
   useEffect(() => {
+    if (!enabled) return undefined
     const intervalId = setInterval(() => {
       setCurrentTime(new Date())
     }, updateIntervalMs)
     return () => clearInterval(intervalId)
-  }, [updateIntervalMs])
+  }, [updateIntervalMs, enabled])
   return currentTime
 }

@@ -1,6 +1,6 @@
 import {ChannelError, ClientError, type ClientPerspective, ServerError} from '@sanity/client'
 import {observableCallback} from 'observable-callback'
-import {useMemo, useState} from 'react'
+import {useDeferredValue, useMemo, useState} from 'react'
 import {useObservable} from 'react-rx'
 import {concat, fromEvent, merge, NEVER, of, timer} from 'rxjs'
 import {
@@ -262,7 +262,7 @@ export function useDocumentList(opts: UseDocumentListOpts): UseDocumentListHookV
     isRetrying,
     autoRetry,
     retryCount,
-  } = useObservable(queryResults$, INITIAL_QUERY_STATE)
+  } = useDeferredValue(useObservable(queryResults$, INITIAL_QUERY_STATE), INITIAL_QUERY_STATE)
 
   return {
     error,

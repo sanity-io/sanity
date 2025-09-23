@@ -4,6 +4,7 @@ import {
   type PropsWithChildren,
   type ReactNode,
   useCallback,
+  useDeferredValue,
   useMemo,
   useSyncExternalStore,
 } from 'react'
@@ -40,10 +41,13 @@ export const FieldActionsProvider = memo(function FieldActionsProvider(
    * The `useSyncExternalStore` has a super power: if the value returned by the snapshot hasn't changed since last time, React won't re-render the component.
    * This is why we can subscribe to the state of what's currently being hovered, but the component won't re-render unless the hovered state changes between `true` and `false`.
    */
-  const hovered = useSyncExternalStore(hoveredStore.subscribe, () => {
-    const [hoveredPath] = hoveredStore.getSnapshot()
-    return supportsTouch || (hoveredPath ? pathToString(path) === hoveredPath : false)
-  })
+  const hovered = useDeferredValue(
+    useSyncExternalStore(hoveredStore.subscribe, () => {
+      const [hoveredPath] = hoveredStore.getSnapshot()
+      return supportsTouch || (hoveredPath ? pathToString(path) === hoveredPath : false)
+    }),
+    false,
+  )
 
   const handleMouseEnter = useCallback(() => {
     onFieldMouseEnter(path)

@@ -11,20 +11,6 @@ interface CalendarDayProps {
   onSelect: (date: Date) => void
 }
 
-const CircleSvg = styled.svg`
-  bottom: 0;
-  left: 0;
-  position: absolute;
-  right: 0;
-  top: 0;
-
-  circle {
-    stroke: ${vars.color.tinted.default.border[1]};
-    stroke-width: 3;
-    fill: none;
-  }
-`
-
 const CustomCard = styled(Card)`
   position: relative;
 
@@ -92,15 +78,29 @@ export function CalendarDay({date, onSelect}: CalendarDayProps) {
       tone={isWithinRange ? 'primary' : 'default'}
     >
       {isToday && (
-        <CircleSvg
+        <svg
           height="100%"
           preserveAspectRatio="xMidYMid meet"
           vectorEffect="non-scaling-stroke"
           viewBox="0 0 100 100"
           width="100%"
+          style={{
+            position: 'absolute',
+            bottom: 0,
+            left: 0,
+            right: 0,
+            top: 0,
+          }}
         >
-          <circle cx="50" cy="50" r="40%" />
-        </CircleSvg>
+          <circle
+            cx="50"
+            cy="50"
+            r="40%"
+            strokeWidth={3}
+            fill="none"
+            stroke={vars.color.tinted.default.border[1]}
+          />
+        </svg>
       )}
       <Text
         align="center"

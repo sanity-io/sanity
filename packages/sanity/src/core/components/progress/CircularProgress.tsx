@@ -4,12 +4,6 @@ import {styled} from 'styled-components'
 const SIZE = 43
 const STROKE_WIDTH = 3
 
-const Root = styled.svg`
-  width: ${SIZE}px;
-  height: ${SIZE}px;
-  transform: rotate(-90deg);
-`
-
 const BgCircle = styled.circle`
   fill: none;
   stroke: ${vars.color.tinted.default.border[0]};
@@ -38,7 +32,7 @@ export function CircularProgress(props: {
   const viewBox = `${SIZE / 2} ${SIZE / 2} ${SIZE} ${SIZE}`
 
   return (
-    <Root viewBox={viewBox}>
+    <svg viewBox={viewBox} style={{width: SIZE, height: SIZE, transform: 'rotate(-90deg)'}}>
       <BgCircle cx={SIZE} cy={SIZE} r={radius} />
       <ProgressCircle
         cx={SIZE}
@@ -49,6 +43,6 @@ export function CircularProgress(props: {
           strokeDashoffset: `${offset}px`,
         }}
       />
-    </Root>
+    </svg>
   )
 }

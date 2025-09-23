@@ -1,5 +1,5 @@
 import {type Path} from '@sanity/types'
-import {useCallback, useMemo, useState} from 'react'
+import {startTransition, useCallback, useMemo, useState} from 'react'
 
 import {type Reported} from '../../components/react-track-elements'
 import {useOnScroll} from '../../components/scroll'
@@ -11,7 +11,6 @@ import {isChangeBar} from '../helpers/isChangeBar'
 import {scrollIntoView} from '../helpers/scrollIntoView'
 import {type TrackedArea, type TrackedChange, useChangeIndicatorsReportedValues} from '../tracker'
 import {Connector} from './Connector'
-import {SvgWrapper} from './ConnectorsOverlay.styled'
 import {DebugLayers} from './DebugLayers'
 import {useResizeObserver} from './useResizeObserver'
 
@@ -112,18 +111,14 @@ export function ConnectorsOverlay(props: ConnectorsOverlayProps) {
     getState(allReportedValues, hovered, byId, rootElement),
   )
 
-  const visibleConnector = useMemo(
-    () =>
-      // Get the connector with longest path, it will be the one that is most specific
-      connectors.sort((a, b) => b.field.id.length - a.field.id.length)[0],
-    [connectors],
-  )
+  // Get the connector with longest path, it will be the one that is most specific
+  const visibleConnector = connectors.sort((a, b) => b.field.id.length - a.field.id.length)[0]
 
   const handleScrollOrResize = useCallback(() => {
     // Only update the state if the review changes panel is open
     // Otherwise we don't need to show the connectors.
     if (isReviewChangesOpen) {
-      setState(getState(allReportedValues, hovered, byId, rootElement))
+      startTransition(() => setState(getState(allReportedValues, hovered, byId, rootElement)))
     }
   }, [byId, allReportedValues, hovered, rootElement, isReviewChangesOpen])
 
@@ -131,7 +126,19 @@ export function ConnectorsOverlay(props: ConnectorsOverlayProps) {
   useOnScroll(handleScrollOrResize)
 
   return (
-    <SvgWrapper style={{zIndex: visibleConnector && visibleConnector.field.zIndex}}>
+    <svg
+      style={{
+        position: 'absolute',
+        left: 0,
+        top: 0,
+        right: 0,
+        bottom: 0,
+        width: '100%',
+        height: '100%',
+        pointerEvents: 'none',
+        zIndex: visibleConnector && visibleConnector.field.zIndex,
+      }}
+    >
       {visibleConnector?.change && (
         <ConnectorGroup
           key={visibleConnector.field.id}
@@ -141,7 +148,7 @@ export function ConnectorsOverlay(props: ConnectorsOverlayProps) {
           setHovered={setHovered}
         />
       )}
-    </SvgWrapper>
+    </svg>
   )
 }
 

@@ -2,7 +2,7 @@ import {CloseIcon, SyncIcon, WarningOutlineIcon} from '@sanity/icons'
 import {type KeyedSegment, type Reference} from '@sanity/types'
 import {Text} from '@sanity/ui'
 import {fromString as pathFromString, get as pathGet} from '@sanity/util/paths'
-import {memo, useCallback, useMemo} from 'react'
+import {memo, useCallback, useDeferredValue, useMemo} from 'react'
 import {useObservable} from 'react-rx'
 import {concat, type Observable, of} from 'rxjs'
 import {debounceTime, map} from 'rxjs/operators'
@@ -30,6 +30,8 @@ interface ParentReferenceInfo {
     refValue: string | undefined
   }
 }
+
+const INITIAL = {loading: true} as ParentReferenceInfo
 
 export const ReferenceChangedBanner = memo(() => {
   const documentPreviewStore = useDocumentPreviewStore()
@@ -113,7 +115,7 @@ export const ReferenceChangedBanner = memo(() => {
         ),
     )
   }, [selectedReleaseId, documentPreviewStore, parentId, parentRefPath])
-  const referenceInfo = useObservable(referenceInfoObservable, {loading: true})
+  const referenceInfo = useDeferredValue(useObservable(referenceInfoObservable, INITIAL), INITIAL)
 
   const handleReloadReference = useCallback(() => {
     if (referenceInfo.loading) return

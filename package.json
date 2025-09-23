@@ -180,13 +180,16 @@
     },
     "overrides": {
       "@npmcli/arborist": "^7.5.4",
+      "@sanity/insert-menu": "3.0.0-canary.1",
       "@sanity/ui@3": "$@sanity/ui",
+      "@sanity/ui-workshop": "4.0.0-static.11",
       "@typescript-eslint/eslint-plugin": "$@typescript-eslint/eslint-plugin",
       "@typescript-eslint/parser": "$@typescript-eslint/parser",
       "@vitest/coverage-v8": "$vitest",
       "@vitest/expect": "$vitest",
       "eslint-plugin-react-hooks": "$eslint-plugin-react-hooks",
       "jsdom": "$jsdom",
+      "styled-components": "npm:@sanity/styled-components@6.1.23",
       "typescript@5.9.x": "catalog:",
       "vite": "$vite",
       "vitest": "$vitest"

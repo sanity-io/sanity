@@ -1,5 +1,8 @@
 // import {assist} from '@sanity/assist'
 // import {colorInput} from '@sanity/color-input'
+// oxlint-disable-next-line no-unassigned-import
+import '@sanity/ui/css/index.css'
+
 import {googleMapsInput} from '@sanity/google-maps-input'
 import {BookIcon} from '@sanity/icons'
 // import {koKRLocale} from '@sanity/locale-ko-kr'
@@ -57,7 +60,6 @@ import {wave} from './plugins/input/wave-plugin'
 import {languageFilter} from './plugins/language-filter'
 import {routerDebugTool} from './plugins/router-debug'
 import {ArchiveAndDeleteCustomAction} from './releases/customReleaseActions'
-// eslint-disable-next-line import/extensions
 // import {theme as tailwindTheme} from './sanity.theme.mjs'
 import {createSchemaTypes} from './schema'
 import {StegaDebugger} from './schema/debug/components/DebugStega'

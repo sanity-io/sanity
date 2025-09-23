@@ -15,7 +15,7 @@ export function ConditionalWrapper({
   wrapper: ConditionalWrapperRenderWrapperCallback
 }): React.ReactNode {
   if (!condition) {
-    return children
+    return <>{children}</>
   }
 
   return wrapper(children)

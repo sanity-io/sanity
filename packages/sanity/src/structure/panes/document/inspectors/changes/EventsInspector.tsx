@@ -1,7 +1,7 @@
 import {diffInput, wrap} from '@sanity/diff'
 import {BoundaryElementProvider, Box, Card, Flex, Spinner, Stack, Text} from '@sanity/ui'
 import {motion} from 'framer-motion'
-import {type ReactElement, useMemo, useState} from 'react'
+import {type ReactElement, useDeferredValue, useMemo, useState} from 'react'
 import {useObservable} from 'react-rx'
 import {
   ChangeFieldWrapper,
@@ -127,7 +127,7 @@ export function EventsInspector({showChanges}: {showChanges: boolean}): ReactEle
     diff,
     loading: diffLoading,
     error: diffError,
-  } = useObservable(changesList$, DIFF_INITIAL_VALUE)
+  } = useDeferredValue(useObservable(changesList$, DIFF_INITIAL_VALUE), DIFF_INITIAL_VALUE)
 
   const {t} = useTranslation('studio')
 

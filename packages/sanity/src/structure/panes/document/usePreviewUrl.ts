@@ -1,5 +1,5 @@
 import {type SanityDocument} from '@sanity/types'
-import {useEffect, useMemo} from 'react'
+import {useDeferredValue, useEffect, useMemo} from 'react'
 import {useObservable} from 'react-rx'
 import {BehaviorSubject, from, of} from 'rxjs'
 import {catchError, debounceTime, distinctUntilChanged, switchMap} from 'rxjs/operators'
@@ -36,5 +36,5 @@ export function usePreviewUrl(value: Partial<SanityDocument> | undefined): strin
     )
   }, [resolveProductionUrl, subject])
 
-  return useObservable(resolvedUrlObservable)
+  return useDeferredValue(useObservable(resolvedUrlObservable))
 }
