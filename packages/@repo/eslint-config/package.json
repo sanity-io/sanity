@@ -12,7 +12,6 @@
   },
   "dependencies": {
     "@eslint/js": "^9.36.0",
-    "@sanity/client": "7.11.2-audience-decide.0",
     "eslint-config-prettier": "^10.1.8",
     "eslint-config-sanity": "^7.1.4",
     "eslint-config-turbo": "^2.5.6",

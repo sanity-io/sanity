@@ -16,8 +16,5 @@
     "lodash-es": "^4.17.21",
     "vite": "^7.1.7",
     "vite-tsconfig-paths": "^5.1.4"
-  },
-  "dependencies": {
-    "@sanity/client": "7.11.2-audience-decide.0"
   }
 }

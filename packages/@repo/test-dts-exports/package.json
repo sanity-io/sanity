@@ -13,7 +13,6 @@
   },
   "dependencies": {
     "@sanity/cli": "workspace:*",
-    "@sanity/client": "7.11.2-audience-decide.0",
     "@sanity/codegen": "workspace:*",
     "@sanity/diff": "workspace:*",
     "@sanity/migrate": "workspace:*",

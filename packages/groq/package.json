@@ -56,8 +56,5 @@
   },
   "engines": {
     "node": ">=20.19 <22 || >=22.12"
-  },
-  "dependencies": {
-    "@sanity/client": "7.11.2-audience-decide.0"
   }
 }

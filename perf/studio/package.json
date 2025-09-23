@@ -14,7 +14,6 @@
     "start": "sanity start --port 3300"
   },
   "dependencies": {
-    "@sanity/client": "7.11.2-audience-decide.0",
     "babel-plugin-react-compiler": "19.1.0-rc.3",
     "react": "catalog:",
     "react-dom": "catalog:",
