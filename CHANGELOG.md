@@ -3,6 +3,46 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [4.10.0](https://github.com/sanity-io/sanity/compare/v4.9.0...v4.10.0) (2025-09-23)
+
+
+### Features
+
+* add the dev/efps for vercel deployment project ([#10661](https://github.com/sanity-io/sanity/issues/10661)) ([22d5689](https://github.com/sanity-io/sanity/commit/22d5689b741bda0682abedae85ee00492615d886))
+* **sanity:** add strict version layering ([cdb7d83](https://github.com/sanity-io/sanity/commit/cdb7d83d5e0b5443627730d19765d0853d42c280))
+* **sanity:** export `getDocumentIsInPerspective` ([066182d](https://github.com/sanity-io/sanity/commit/066182d252f6b1843ea3ec594407721279c3e00d))
+* **sanity:** use strict version layering when opening document comparison view ([c11fbe5](https://github.com/sanity-io/sanity/commit/c11fbe5e581753269ecc4ce4bf0e7886bc1fb82e))
+* **sanity:** use upstream version as comparison value in document editor ([#10655](https://github.com/sanity-io/sanity/issues/10655)) ([1b4ee38](https://github.com/sanity-io/sanity/commit/1b4ee386822f114f9aac638dc0561aa03eed078c))
+* update recipes from deprecations and add qroq functions ([#10613](https://github.com/sanity-io/sanity/issues/10613)) ([bd456d6](https://github.com/sanity-io/sanity/commit/bd456d681441ac31b6b8a210f2276e1d31c5a574))
+
+
+### Bug Fixes
+
+* **core:** sanitize authorization header from copy error details ([#10582](https://github.com/sanity-io/sanity/issues/10582)) ([8feeace](https://github.com/sanity-io/sanity/commit/8feeacea5b35845f8a3e88230d5d38cda90cd117))
+* **core:** tasks due dates showing incorrect value on timezones behind UTC ([#10680](https://github.com/sanity-io/sanity/issues/10680)) ([a033aad](https://github.com/sanity-io/sanity/commit/a033aad7d2d741a1841e0019a014626b204b5ae4))
+* **deps:** update dependency @portabletext/block-tools to ^3.5.6 ([#10662](https://github.com/sanity-io/sanity/issues/10662)) ([8168375](https://github.com/sanity-io/sanity/commit/816837593ede0ba4ef4bcd421de82e507c6806e8))
+* **deps:** update dependency @portabletext/block-tools to ^3.5.7 ([#10722](https://github.com/sanity-io/sanity/issues/10722)) ([7eda14c](https://github.com/sanity-io/sanity/commit/7eda14cbce435ad5a9983fec566e4956502d732d))
+* **deps:** update dependency @portabletext/editor to ^2.12.1 ([#10663](https://github.com/sanity-io/sanity/issues/10663)) ([6387c2a](https://github.com/sanity-io/sanity/commit/6387c2a9840b47f2652f9c229c8f9511453d9770))
+* **deps:** update dependency @portabletext/editor to ^2.12.3 ([#10716](https://github.com/sanity-io/sanity/issues/10716)) ([97f5149](https://github.com/sanity-io/sanity/commit/97f5149309d0e78f2d972a84036cc3a739d7862c))
+* **deps:** update dependency @portabletext/editor to ^2.13.0 ([#10736](https://github.com/sanity-io/sanity/issues/10736)) ([a964a24](https://github.com/sanity-io/sanity/commit/a964a2419f1fac50fdbfbde18440bc8c214612c8))
+* **deps:** update dependency @sanity/client to ^7.11.2 ([#10667](https://github.com/sanity-io/sanity/issues/10667)) ([3d3ea0d](https://github.com/sanity-io/sanity/commit/3d3ea0df4bad43af82ae6b10f0c2ca6c7270bfeb))
+* **deps:** update dependency @sanity/ui to ^3.1.3 ([#10673](https://github.com/sanity-io/sanity/issues/10673)) ([43d4d8e](https://github.com/sanity-io/sanity/commit/43d4d8e69cb78eaffca0e0c7bede1a84aab93b55))
+* **deps:** update dependency @sanity/ui to ^3.1.4 ([#10691](https://github.com/sanity-io/sanity/issues/10691)) ([cbab31b](https://github.com/sanity-io/sanity/commit/cbab31b5d6c7ac8c36c8d2f044a0b336c1df7e61))
+* **deps:** update dependency @sanity/ui to ^3.1.5 ([#10706](https://github.com/sanity-io/sanity/issues/10706)) ([1387e57](https://github.com/sanity-io/sanity/commit/1387e57333104649f3e9929864f34f7bf38c07b8))
+* **deps:** update dependency framer-motion to ^12.23.13 ([#10651](https://github.com/sanity-io/sanity/issues/10651)) ([f0c5ca1](https://github.com/sanity-io/sanity/commit/f0c5ca1f09f72957d452fa068c7cb26ebad0aa08))
+* **deps:** update dependency framer-motion to ^12.23.16 ([#10688](https://github.com/sanity-io/sanity/issues/10688)) ([299c200](https://github.com/sanity-io/sanity/commit/299c20072043b6aa2b2e4db9d298d4fdc7cfeb11))
+* **deps:** update dependency framer-motion to ^12.23.18 ([#10701](https://github.com/sanity-io/sanity/issues/10701)) ([73f0dd6](https://github.com/sanity-io/sanity/commit/73f0dd6a1fc58cf35c9b41217f6880345d24d907))
+* **deps:** update dependency framer-motion to ^12.23.19 ([#10728](https://github.com/sanity-io/sanity/issues/10728)) ([8e320db](https://github.com/sanity-io/sanity/commit/8e320db00c2562f165ae57436f0b987de192f644))
+* **deps:** update dependency react-rx to ^4.2.1 ([#10717](https://github.com/sanity-io/sanity/issues/10717)) ([4d26a51](https://github.com/sanity-io/sanity/commit/4d26a51ac383d40436ccf26cbaac091717bba473))
+* **deps:** update dependency xstate to ^5.22.0 ([#10690](https://github.com/sanity-io/sanity/issues/10690)) ([1893e40](https://github.com/sanity-io/sanity/commit/1893e40a7c16f4d6950a3a3b2637e416c76ba0bf))
+* ignore env files ([#10684](https://github.com/sanity-io/sanity/issues/10684)) ([6e091b1](https://github.com/sanity-io/sanity/commit/6e091b18d1953bea1c566903432aa86228c9bb40))
+* **sanity:** add a warning for version info dialog if appId is missing ([#10659](https://github.com/sanity-io/sanity/issues/10659)) ([dadb15c](https://github.com/sanity-io/sanity/commit/dadb15c6bf912ff3903d647f5eaa0f01545cc835))
+* scheduled pub action only shows when releases enabled ([#10649](https://github.com/sanity-io/sanity/issues/10649)) ([15416c3](https://github.com/sanity-io/sanity/commit/15416c35ce6a9c60526d070322199b475e6b352e))
+* **structure:** use origin for comments studio url ([#10677](https://github.com/sanity-io/sanity/issues/10677)) ([d1ebf15](https://github.com/sanity-io/sanity/commit/d1ebf15a1bb02b7b3da041ae5e7f1f1a74871d15))
+* use generated react compiler typings ([#10672](https://github.com/sanity-io/sanity/issues/10672)) ([ac6c9a0](https://github.com/sanity-io/sanity/commit/ac6c9a09559c4ae33929f63f4379c73efec0f3f8))
+
+
+
 ## [4.9.0](https://github.com/sanity-io/sanity/compare/v4.8.1...v4.9.0) (2025-09-16)
 
 
