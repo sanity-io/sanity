@@ -33,7 +33,7 @@ jobs:
     runs-on: ubuntu-latest
     if: github.event.deployment_status.state == 'success' && github.event.deployment_status.environment == 'Preview – efps'
     env:
-      STATUS_CONTEXT: "efps-test/getting-vercel-url"
+      STATUS_CONTEXT: "eFPS Test / get-vercel-url"
       TARGET_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
     outputs:
       deploy_url: ${{ github.event.deployment_status.target_url }}
@@ -98,7 +98,7 @@ jobs:
       TURBO_TOKEN: ${{ secrets.TURBO_TOKEN }}
       TURBO_TEAM: ${{ vars.TURBO_TEAM }}
       DEPLOY_URL: ${{ needs.get-vercel-url.outputs.deploy_url }}
-      STATUS_CONTEXT: efps-test/shard-${{ matrix.shardIndex }}
+      STATUS_CONTEXT: eFPS Test / efps-test (${{ matrix.shardIndex }})
       TARGET_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
     strategy:
       fail-fast: false
@@ -222,7 +222,7 @@ jobs:
     needs: [efps-test]
     runs-on: ubuntu-latest
     env:
-      STATUS_CONTEXT: "efps-test/merge-reports"
+      STATUS_CONTEXT: "eFPS Test / merge-reports"
       TARGET_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
     steps:
       - name: Set merging reports status
