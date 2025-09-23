@@ -81,11 +81,24 @@ export const QUOTA_EXCLUDED_RELEASES_ENABLED = Symbol('__internal_quotaExcludedR
 export const DECISION_PARAMETERS_SCHEMA = Symbol('__decisionParametersSchema')
 
 /**
- * Configuration for decision parameters
+ * Decision parameter configuration
  * @beta
  */
-export interface DecisionParametersConfig {
-  [key: string]: string[]
+export interface DecisionParameter {
+  title: string
+  type?: 'number' | 'string' // TODO: Support boolean?
+  /**
+   * If not provided, the input component will be a string input
+   */
+  options?: ({title: string; value: string} | string)[]
+}
+/**
+ * Configuration for decision parameters
+ * @beta
+ * TODO: Support async callback
+ */
+export type DecisionParametersConfig = () => {
+  [key: string]: DecisionParameter
 }
 
 /**
