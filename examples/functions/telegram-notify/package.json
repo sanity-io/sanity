@@ -12,7 +12,7 @@
     "timeout": 10,
     "event": {
       "on": [
-        "publish"
+        "create"
       ],
       "filter": "_type == 'comment' && defined(comment)",
       "projection": "{_id, comment}"

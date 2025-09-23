@@ -15,14 +15,15 @@ catalog:
   '@sanity/eslint-config-i18n': ^2.0.0
   '@sanity/eslint-config-studio': ^5.0.2
   '@sanity/pkg-utils': ^8.1.13
+  '@sanity/ui': ^3.1.5
   '@sanity/ui-workshop': ^3.1.2
   '@types/node': ^24.3.0
   '@types/react': ^19.1.9
   '@types/react-dom': ^19.1.7
   '@types/react-is': ^19.0.0
   '@vitejs/plugin-react': ^4.6.0
-  esbuild-register: ^3.6.0
   esbuild: 0.25.10
+  esbuild-register: ^3.6.0
   globals: ^16.2.0
   playwright: 1.55.0
   prettier: ^3.5.3

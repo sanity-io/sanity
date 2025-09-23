@@ -14,9 +14,10 @@
     "timeout": 10,
     "event": {
       "on": [
-        "publish"
+        "create",
+        "update"
       ],
-      "filter": "_type == 'post'",
+      "filter": "_type == 'post' && delta::changedAny(mastodonPost)",
       "projection": "{title, mastodonPost, slug}"
     },
     "env": {
