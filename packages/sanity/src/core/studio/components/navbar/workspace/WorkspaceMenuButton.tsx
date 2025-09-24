@@ -60,8 +60,8 @@ export function WorkspaceMenuButton() {
             <ManageMenu />
             {workspaces.length > 1 && (
               <>
-                <MenuDivider />
-                <Box paddingTop={2}>
+                <MenuDivider style={{padding: 0}} />
+                <Box paddingTop={2} paddingBottom={1}>
                   <Box paddingX={5} paddingBottom={2}>
                     <Text size={0} weight="medium">
                       {t('workspaces.action.switch-workspace')}
@@ -96,7 +96,7 @@ export function WorkspaceMenuButton() {
                           __unstable_subtitle={workspace.subtitle}
                           __unstable_space={1}
                           text={workspace?.title || workspace.name}
-                          style={{paddingLeft: '2rem', paddingRight: '2rem'}}
+                          style={{marginLeft: '1rem', marginRight: '0.25rem'}}
                         />
                       )
                     })}
