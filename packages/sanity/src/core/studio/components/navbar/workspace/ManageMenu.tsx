@@ -21,7 +21,7 @@ export function ManageMenu() {
         <WorkspacePreviewIcon icon={activeWorkspace.icon} size="large" />
         <Stack marginLeft={2} space={2}>
           <Text size={0}>{activeWorkspace.name}</Text>
-          <Text size={2} weight="medium">
+          <Text size={1} weight="medium">
             {activeWorkspace.title}
           </Text>
         </Stack>
