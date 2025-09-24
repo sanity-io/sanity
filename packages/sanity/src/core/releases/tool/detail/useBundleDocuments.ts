@@ -274,12 +274,12 @@ const getReleaseDocumentsObservable = ({
       }),
       switchMap((release) => {
         // Create cache key based on fields that affect document validation + _rev
-        const validationRelevantHash = [
+        const cacheKey = [
+          releaseId,
           release.state,
-          release.finalDocumentStates?.length || 0,
+          release.finalDocumentStates?.flatMap((doc) => doc.id),
           release._rev,
         ].join('-')
-        const cacheKey = `${releaseId}-${validationRelevantHash}`
 
         if (!bundleDocumentsCache[cacheKey]) {
           let observable: ReleaseDocumentsObservableResult
