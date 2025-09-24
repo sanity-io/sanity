@@ -1739,6 +1739,9 @@ importers:
       '@sanity/import':
         specifier: ^3.38.3
         version: 3.38.3(@types/react@19.2.2)
+      '@sanity/insert-menu':
+        specifier: ^3.0.0-canary.1
+        version: 3.0.0-canary.1(@emotion/is-prop-valid@1.4.0)(@sanity/types@packages+@sanity+types)(react-dom@19.2.0(react@19.2.0))(react-is@19.2.0)(react@19.2.0)
       '@sanity/logos':
         specifier: ^2.2.2
         version: 2.2.2(react@19.2.0)
@@ -4652,6 +4655,15 @@ packages:
       react-dom: ^18.3 || ^19
       react-is: ^18.3 || ^19
 
+  '@sanity/insert-menu@3.0.0-canary.1':
+    resolution: {integrity: sha512-ocdWzxVOUnIaHPWfdQeAQTsPu262lW7elYj1UUGXvcE75Nv8mXYXHL/XBgvh98SBzXxl5WhJihK4FU0QzEC4Gg==}
+    engines: {node: '>=18.0.0'}
+    peerDependencies:
+      '@sanity/types': '*'
+      react: ^19
+      react-dom: ^19
+      react-is: ^19
+
   '@sanity/json-match@1.0.5':
     resolution: {integrity: sha512-skhIX8gT/hLritEBkjfc7+TBlJNu/NLisyA8noKceCk28OatFK0wX7dIuFawkt3pfhTYVomVPykAYFcIm2OqJg==}
     engines: {node: '>=18.2'}
@@ -4812,6 +4824,14 @@ packages:
 
   '@sanity/ui@4.0.0-static.29':
     resolution: {integrity: sha512-idJupKUeG6nGOTPvPXWKkmQ2YUp3aLVDTjrE6MLjNeNf/T5j4btH6JFwJJeNR8Fey2qsPUuk69V0QOn9IAN+HQ==}
+    engines: {node: '>=20.19 <22 || >=22.12'}
+    peerDependencies:
+      react: ^19
+      react-dom: ^19
+      react-is: ^19
+
+  '@sanity/ui@4.0.0-static.35':
+    resolution: {integrity: sha512-Tp7c8GdP9Sw2ED+gKHgckqC6ys1YeBIu7oMX5v3MEi6cX18xGoBn0SCRZRiwsDH371Fa12bDzuL973raM1281Q==}
     engines: {node: '>=20.19 <22 || >=22.12'}
     peerDependencies:
       react: ^19
@@ -15016,6 +15036,18 @@ snapshots:
     transitivePeerDependencies:
       - '@emotion/is-prop-valid'
 
+  '@sanity/insert-menu@3.0.0-canary.1(@emotion/is-prop-valid@1.4.0)(@sanity/types@packages+@sanity+types)(react-dom@19.2.0(react@19.2.0))(react-is@19.2.0)(react@19.2.0)':
+    dependencies:
+      '@sanity/icons': 3.7.4(react@19.2.0)
+      '@sanity/types': link:packages/@sanity/types
+      '@sanity/ui': 4.0.0-static.35(@emotion/is-prop-valid@1.4.0)(react-dom@19.2.0(react@19.2.0))(react-is@19.2.0)(react@19.2.0)
+      lodash: 4.17.21
+      react: 19.2.0
+      react-dom: 19.2.0(react@19.2.0)
+      react-is: 19.2.0
+    transitivePeerDependencies:
+      - '@emotion/is-prop-valid'
+
   '@sanity/json-match@1.0.5': {}
 
   '@sanity/locale-ko-kr@1.1.23(sanity@packages+sanity)':
@@ -15362,6 +15394,23 @@ snapshots:
       - '@emotion/is-prop-valid'
 
   '@sanity/ui@4.0.0-static.29(@emotion/is-prop-valid@1.4.0)(react-dom@19.2.0(react@19.2.0))(react-is@19.2.0)(react@19.2.0)':
+    dependencies:
+      '@floating-ui/react-dom': 2.1.6(react-dom@19.2.0(react@19.2.0))(react@19.2.0)
+      '@juggle/resize-observer': 3.4.0
+      '@sanity/color': 3.0.6
+      '@sanity/icons': 3.7.4(react@19.2.0)
+      '@vanilla-extract/dynamic': 2.1.5
+      csstype: 3.1.3
+      framer-motion: 12.23.22(@emotion/is-prop-valid@1.4.0)(react-dom@19.2.0(react@19.2.0))(react@19.2.0)
+      react: 19.2.0
+      react-dom: 19.2.0(react@19.2.0)
+      react-is: 19.2.0
+      react-refractor: 4.0.0(react@19.2.0)
+      use-effect-event: 2.0.3(react@19.2.0)
+    transitivePeerDependencies:
+      - '@emotion/is-prop-valid'
+
+  '@sanity/ui@4.0.0-static.35(@emotion/is-prop-valid@1.4.0)(react-dom@19.2.0(react@19.2.0))(react-is@19.2.0)(react@19.2.0)':
     dependencies:
       '@floating-ui/react-dom': 2.1.6(react-dom@19.2.0(react@19.2.0))(react@19.2.0)
       '@juggle/resize-observer': 3.4.0
