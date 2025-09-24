@@ -16,7 +16,7 @@ export function ManageMenu() {
   const {t} = useTranslation()
 
   return (
-    <Stack paddingX={5} paddingTop={4} paddingBottom={3}>
+    <Stack paddingX={5} paddingTop={4} paddingBottom={4}>
       <Flex align="center">
         <WorkspacePreviewIcon icon={activeWorkspace.icon} size="large" />
         <Stack marginLeft={2} space={2}>
