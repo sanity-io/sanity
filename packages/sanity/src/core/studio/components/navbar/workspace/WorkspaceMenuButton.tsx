@@ -57,7 +57,7 @@ export function WorkspaceMenuButton() {
       menu={
         !disabled && authStates ? (
           <Menu padding={0} style={{maxWidth: '350px', minWidth: '250px', overflowY: 'hidden'}}>
-            <ManageMenu />
+            <ManageMenu multipleWorkspaces={workspaces.length > 1} />
             {workspaces.length > 1 && (
               <>
                 <MenuDivider style={{padding: 0}} />
@@ -96,7 +96,7 @@ export function WorkspaceMenuButton() {
                           __unstable_subtitle={workspace.subtitle}
                           __unstable_space={1}
                           text={workspace?.title || workspace.name}
-                          style={{marginLeft: '1rem', marginRight: '0.25rem'}}
+                          style={{marginLeft: '1.25rem', marginRight: '0.25rem'}}
                         />
                       )
                     })}

@@ -9,7 +9,7 @@ import {useActiveWorkspace} from '../../../activeWorkspaceMatcher/useActiveWorks
 import {useWorkspace} from '../../../workspace'
 import {WorkspacePreviewIcon} from './WorkspacePreview'
 
-export function ManageMenu() {
+export function ManageMenu({multipleWorkspaces}: {multipleWorkspaces: boolean}) {
   const {projectId, currentUser} = useWorkspace()
   const {value: project} = useProject()
   const {activeWorkspace} = useActiveWorkspace()
@@ -18,7 +18,7 @@ export function ManageMenu() {
   const {t} = useTranslation()
 
   return (
-    <Stack padding={4}>
+    <Stack paddingX={4} paddingTop={4} paddingBottom={multipleWorkspaces ? 3 : 4}>
       <Flex align="center">
         <WorkspacePreviewIcon icon={activeWorkspace.icon} size="large" />
         <Stack marginLeft={2} space={2}>
