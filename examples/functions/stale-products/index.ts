@@ -168,7 +168,7 @@ export const handler = documentEventHandler(
         )
 
         // Flag as old if created more than 30 days ago
-        const isOld = createdAgeInDays > 30
+        const isOld = createdAgeInDays > STALE_PRODUCT_THRESHOLD_DAYS
 
         return {
           _key: `product-age-${product._id}`,
