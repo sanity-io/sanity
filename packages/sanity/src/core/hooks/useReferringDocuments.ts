@@ -24,11 +24,11 @@ const DEFAULT_FIELDS: DocumentField[] = ['_id', '_type']
  * The returned list of referring documents is not extensive, will only return the 101 first documents.
  *
  * ## Gotcha
- * For every component that calls this hook, a new listener connection will be made to the backed.
+ * For every component that calls this hook, a new listener connection will be made to the backend.
  *
  * Make sure call this hook sparingly
  * @param id - id of document to search for referring documents for
- * @param fields - which fields to return for each document (defaults to _id and _type). Pass an empty array to return full documents
+ * @param fields - which root level fields to return for each document (defaults to _id and _type). Pass an empty array to return full documents
  */
 export function useReferringDocuments<DocumentType extends SanityDocument>(
   id: string,
@@ -40,32 +40,35 @@ export function useReferringDocuments<DocumentType extends SanityDocument>(
     return fields.length === 0 ? '' : fields.join(',')
   }, [fields])
 
-  const observable = useMemo(
-    () =>
-      documentStore
-        .listenQuery(
-          `*[references($docId)] [0...101]${projection}`,
-          {docId: id},
-          {tag: 'use-referring-documents'},
-        )
-        .pipe(
-          map(
-            (docs: DocumentType[]): ReferringDocumentsState<DocumentType> => ({
-              referringDocuments: docs,
-              isLoading: false,
-            }),
-          ),
-          startWith(INITIAL_STATE),
+  const observable = useMemo(() => {
+    const filter = `references($docId)`
+    return documentStore
+      .listenQuery(
+        {
+          fetch: `*[${filter}][0...101]${projection ? `{${projection}}` : ''}`,
+          listen: `*[${filter}]`,
+        },
+        {docId: id},
+        {tag: 'use-referring-documents'},
+      )
+      .pipe(
+        map(
+          (docs: DocumentType[]): ReferringDocumentsState<DocumentType> => ({
+            referringDocuments: docs,
+            isLoading: false,
+          }),
         ),
-    [documentStore, id, projection],
-  )
+        startWith(INITIAL_STATE),
+      )
+  }, [documentStore, id, projection])
   return useObservable(observable, INITIAL_STATE)
 }
 
 const EMPTY_FIELDS: never[] = []
 /**
  * Kept for backwards compat
- * - useReferringDocuments(id) will select `{_id, _type}` from returned documents,
+ * - useReferringDocuments(id) will select `
+          }{_id, _type}` from returned documents,
  * - while this hook will return full documents
  *
  * Internal callers of this hook should migrate over to useReferringDocuments
