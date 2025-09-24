@@ -27,6 +27,8 @@ interface ProductWithDates {
   }
 }
 
+const STALE_PRODUCT_THRESHOLD_DAYS = 30
+
 export const handler = documentEventHandler(
   async ({context, event}: {context: any; event: DocumentEvent<PagePayload>}) => {
     console.log('📄 Page Product Age Analysis Function called at', new Date().toISOString())
