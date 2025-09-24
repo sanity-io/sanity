@@ -128,9 +128,11 @@ export const handler = documentEventHandler(
       })
 
       // Remove duplicates based on product ID
-      const uniqueProducts = products.filter(
-        (product, index, self) => index === self.findIndex((p) => p._id === product._id),
-      )
+      const productMap = new Map<string, ProductWithDates>()
+      products.forEach((product) => {
+        productMap.set(product._id, product)
+      })
+      const uniqueProducts = Array.from(productMap.values())
 
       console.log(
         '📦 Found products:',
