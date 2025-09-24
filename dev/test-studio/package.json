@@ -42,7 +42,7 @@
     "@sanity/util": "workspace:*",
     "@sanity/uuid": "^3.0.2",
     "@sanity/vision": "workspace:*",
-    "@sanity/visual-editing": "3.0.5",
+    "@sanity/visual-editing": "4.0.0-canary.5",
     "@turf/helpers": "^6.5.0",
     "@turf/points-within-polygon": "^5.1.5",
     "@vercel/stega": "0.1.2",
