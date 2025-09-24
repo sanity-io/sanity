@@ -44,7 +44,7 @@ export const handler = documentEventHandler(
 
       const client = createClient({
         ...context.clientOptions,
-        dataset: 'production',
+        useCdn: false,
         apiVersion: '2025-06-01',
       })
 
