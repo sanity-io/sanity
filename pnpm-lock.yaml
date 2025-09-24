@@ -5552,6 +5552,15 @@ packages:
       '@sanity/types': ^5.0.0
       react: ^19.2
 
+  '@sanity/insert-menu@3.0.0-canary.1':
+    resolution: {integrity: sha512-ocdWzxVOUnIaHPWfdQeAQTsPu262lW7elYj1UUGXvcE75Nv8mXYXHL/XBgvh98SBzXxl5WhJihK4FU0QzEC4Gg==}
+    engines: {node: '>=18.0.0'}
+    peerDependencies:
+      '@sanity/types': '*'
+      react: ^19
+      react-dom: ^19
+      react-is: ^19
+
   '@sanity/json-match@1.0.5':
     resolution: {integrity: sha512-skhIX8gT/hLritEBkjfc7+TBlJNu/NLisyA8noKceCk28OatFK0wX7dIuFawkt3pfhTYVomVPykAYFcIm2OqJg==}
     engines: {node: '>=18.2'}
@@ -16535,6 +16544,18 @@ snapshots:
       - '@emotion/is-prop-valid'
       - react-dom
       - styled-components
+
+  '@sanity/insert-menu@3.0.0-canary.1(@emotion/is-prop-valid@1.4.0)(@sanity/types@packages+@sanity+types)(react-dom@19.1.1(react@19.1.1))(react-is@19.1.1)(react@19.1.1)':
+    dependencies:
+      '@sanity/icons': 3.7.4(react@19.1.1)
+      '@sanity/types': link:packages/@sanity/types
+      '@sanity/ui': 4.0.0-static.35(@emotion/is-prop-valid@1.4.0)(react-dom@19.1.1(react@19.1.1))(react-is@19.1.1)(react@19.1.1)
+      lodash: 4.17.21
+      react: 19.1.1
+      react-dom: 19.1.1(react@19.1.1)
+      react-is: 19.1.1
+    transitivePeerDependencies:
+      - '@emotion/is-prop-valid'
 
   '@sanity/json-match@1.0.5': {}
 

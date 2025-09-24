@@ -1,7 +1,7 @@
-// import {
-//   InsertMenu as SanityInsertMenu,
-//   type InsertMenuProps as SanityInsertMenuProps,
-// } from '@sanity/insert-menu'
+import {
+  InsertMenu as SanityInsertMenu,
+  type InsertMenuProps as SanityInsertMenuProps,
+} from '@sanity/insert-menu'
 import {type SchemaType} from '@sanity/types'
 import {useClickOutsideEvent, useGlobalKeyDown} from '@sanity/ui'
 import {useCallback, useMemo, useReducer, useRef} from 'react'
@@ -84,8 +84,7 @@ export function useInsertMenuPopover(props: {
 /**
  * @internal
  */
-// export type InsertMenuProps = Omit<SanityInsertMenuProps, 'labels'>
-export type InsertMenuProps = any
+export type InsertMenuProps = Omit<SanityInsertMenuProps, 'labels'>
 
 /**
  * `InsertMenu` with pre-configured `labels`
@@ -93,19 +92,20 @@ export type InsertMenuProps = any
 function InsertMenu(props: InsertMenuProps) {
   const {t} = useTranslation()
 
-  return null
-  // <SanityInsertMenu
-  //   {...props}
-  //   labels={{
-  //     'insert-menu.filter.all-items': t('inputs.array.insert-menu.filter.all-items'),
-  //     'insert-menu.search.no-results': t('inputs.array.insert-menu.search.no-results'),
-  //     'insert-menu.search.placeholder': t('inputs.array.insert-menu.search.placeholder'),
-  //     'insert-menu.toggle-grid-view.tooltip': t(
-  //       'inputs.array.insert-menu.toggle-grid-view.tooltip',
-  //     ),
-  //     'insert-menu.toggle-list-view.tooltip': t(
-  //       'inputs.array.insert-menu.toggle-list-view.tooltip',
-  //     ),
-  //   }}
-  // />
+  return (
+    <SanityInsertMenu
+      {...props}
+      labels={{
+        'insert-menu.filter.all-items': t('inputs.array.insert-menu.filter.all-items'),
+        'insert-menu.search.no-results': t('inputs.array.insert-menu.search.no-results'),
+        'insert-menu.search.placeholder': t('inputs.array.insert-menu.search.placeholder'),
+        'insert-menu.toggle-grid-view.tooltip': t(
+          'inputs.array.insert-menu.toggle-grid-view.tooltip',
+        ),
+        'insert-menu.toggle-list-view.tooltip': t(
+          'inputs.array.insert-menu.toggle-list-view.tooltip',
+        ),
+      }}
+    />
+  )
 }
