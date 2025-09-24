@@ -31,8 +31,8 @@ catalogs:
       specifier: ^0.8.1
       version: 0.8.1
     '@sanity/ui':
-      specifier: 4.0.0-static.29
-      version: 4.0.0-static.29
+      specifier: 4.0.0-static.35
+      version: 4.0.0-static.35
     '@types/node':
       specifier: ^24.3.0
       version: 24.10.4
@@ -125,7 +125,7 @@ importers:
         version: link:packages/@repo/tsconfig
       '@sanity/ui':
         specifier: 'catalog:'
-        version: 4.0.0-static.29(@emotion/is-prop-valid@1.4.0)(react-dom@19.2.4(react@19.2.4))(react-is@19.2.4)(react@19.2.4)
+        version: 4.0.0-static.35(@emotion/is-prop-valid@1.4.0)(react-dom@19.2.4(react@19.2.4))(react-is@19.2.4)(react@19.2.4)
       '@types/node':
         specifier: ^24.6.1
         version: 24.10.4
@@ -227,7 +227,7 @@ importers:
         version: 3.7.4(react@19.2.4)
       '@sanity/ui':
         specifier: 'catalog:'
-        version: 4.0.0-static.29(@emotion/is-prop-valid@1.4.0)(react-dom@19.2.4(react@19.2.4))(react-is@19.2.4)(react@19.2.4)
+        version: 4.0.0-static.35(@emotion/is-prop-valid@1.4.0)(react-dom@19.2.4(react@19.2.4))(react-is@19.2.4)(react@19.2.4)
       react:
         specifier: 'catalog:'
         version: 19.2.4
@@ -359,7 +359,7 @@ importers:
     dependencies:
       '@sanity/ui':
         specifier: 'catalog:'
-        version: 4.0.0-static.29(@emotion/is-prop-valid@1.4.0)(react-dom@19.2.4(react@19.2.4))(react-is@19.2.4)(react@19.2.4)
+        version: 4.0.0-static.35(@emotion/is-prop-valid@1.4.0)(react-dom@19.2.4(react@19.2.4))(react-is@19.2.4)(react@19.2.4)
       react:
         specifier: 'catalog:'
         version: 19.2.4
@@ -501,7 +501,7 @@ importers:
         version: 3.7.4(react@19.2.4)
       '@sanity/ui':
         specifier: 'catalog:'
-        version: 4.0.0-static.29(@emotion/is-prop-valid@1.4.0)(react-dom@19.2.4(react@19.2.4))(react-is@19.2.4)(react@19.2.4)
+        version: 4.0.0-static.35(@emotion/is-prop-valid@1.4.0)(react-dom@19.2.4(react@19.2.4))(react-is@19.2.4)(react@19.2.4)
       '@sanity/vision':
         specifier: workspace:*
         version: link:../../packages/@sanity/vision
@@ -635,7 +635,7 @@ importers:
         version: link:../../packages/@sanity/types
       '@sanity/ui':
         specifier: 'catalog:'
-        version: 4.0.0-static.29(@emotion/is-prop-valid@1.4.0)(react-dom@19.2.4(react@19.2.4))(react-is@19.2.4)(react@19.2.4)
+        version: 4.0.0-static.35(@emotion/is-prop-valid@1.4.0)(react-dom@19.2.4(react@19.2.4))(react-is@19.2.4)(react@19.2.4)
       '@sanity/util':
         specifier: workspace:*
         version: link:../../packages/@sanity/util
@@ -1469,7 +1469,7 @@ importers:
         version: 10.4.6(@types/babel__core@7.20.5)(@types/node@24.10.4)(@typescript/native-preview@7.0.0-dev.20260112.1)(babel-plugin-macros@3.1.0)(babel-plugin-react-compiler@1.0.0)(debug@4.4.3)(oxc-resolver@11.17.1)(typescript@5.9.3)
       '@sanity/ui':
         specifier: 'catalog:'
-        version: 4.0.0-static.29(@emotion/is-prop-valid@1.4.0)(react-dom@19.2.4(react@19.2.4))(react-is@19.2.4)(react@19.2.4)
+        version: 4.0.0-static.35(@emotion/is-prop-valid@1.4.0)(react-dom@19.2.4(react@19.2.4))(react-is@19.2.4)(react@19.2.4)
       '@types/lodash':
         specifier: ^4.17.20
         version: 4.17.21
@@ -1524,7 +1524,7 @@ importers:
         version: 10.4.6(@types/babel__core@7.20.5)(@types/node@24.10.4)(@typescript/native-preview@7.0.0-dev.20260112.1)(babel-plugin-macros@3.1.0)(babel-plugin-react-compiler@1.0.0)(debug@4.4.3)(oxc-resolver@11.17.1)(typescript@5.9.3)
       '@sanity/ui':
         specifier: 'catalog:'
-        version: 4.0.0-static.29(@emotion/is-prop-valid@1.4.0)(react-dom@19.2.4(react@19.2.4))(react-is@19.2.4)(react@19.2.4)
+        version: 4.0.0-static.35(@emotion/is-prop-valid@1.4.0)(react-dom@19.2.4(react@19.2.4))(react-is@19.2.4)(react@19.2.4)
       '@types/react':
         specifier: 'catalog:'
         version: 19.2.11
@@ -1639,7 +1639,7 @@ importers:
         version: 3.7.4(react@19.2.4)
       '@sanity/ui':
         specifier: 'catalog:'
-        version: 4.0.0-static.29(@emotion/is-prop-valid@1.4.0)(react-dom@19.2.4(react@19.2.4))(react-is@19.2.4)(react@19.2.4)
+        version: 4.0.0-static.35(@emotion/is-prop-valid@1.4.0)(react-dom@19.2.4(react@19.2.4))(react-is@19.2.4)(react@19.2.4)
       '@sanity/uuid':
         specifier: ^3.0.2
         version: 3.0.2
@@ -1919,7 +1919,7 @@ importers:
         version: link:../@sanity/types
       '@sanity/ui':
         specifier: 'catalog:'
-        version: 4.0.0-static.29(@emotion/is-prop-valid@1.4.0)(react-dom@19.2.4(react@19.2.4))(react-is@19.2.4)(react@19.2.4)
+        version: 4.0.0-static.35(@emotion/is-prop-valid@1.4.0)(react-dom@19.2.4(react@19.2.4))(react-is@19.2.4)(react@19.2.4)
       '@sanity/ui-v3':
         specifier: catalog:ui-v3
         version: '@sanity/ui@3.1.13(@emotion/is-prop-valid@1.4.0)(@sanity/styled-components@6.1.24(react-dom@19.2.4(react@19.2.4))(react@19.2.4))(react-dom@19.2.4(react@19.2.4))(react-is@19.2.4)(react@19.2.4)'
@@ -5552,15 +5552,6 @@ packages:
       '@sanity/types': ^5.0.0
       react: ^19.2
 
-  '@sanity/insert-menu@3.0.0-canary.1':
-    resolution: {integrity: sha512-ocdWzxVOUnIaHPWfdQeAQTsPu262lW7elYj1UUGXvcE75Nv8mXYXHL/XBgvh98SBzXxl5WhJihK4FU0QzEC4Gg==}
-    engines: {node: '>=18.0.0'}
-    peerDependencies:
-      '@sanity/types': '*'
-      react: ^19
-      react-dom: ^19
-      react-is: ^19
-
   '@sanity/json-match@1.0.5':
     resolution: {integrity: sha512-skhIX8gT/hLritEBkjfc7+TBlJNu/NLisyA8noKceCk28OatFK0wX7dIuFawkt3pfhTYVomVPykAYFcIm2OqJg==}
     engines: {node: '>=18.2'}
@@ -5711,8 +5702,8 @@ packages:
       react-is: ^18 || >=19.0.0-0
       styled-components: ^5.2 || ^6
 
-  '@sanity/ui@4.0.0-static.29':
-    resolution: {integrity: sha512-idJupKUeG6nGOTPvPXWKkmQ2YUp3aLVDTjrE6MLjNeNf/T5j4btH6JFwJJeNR8Fey2qsPUuk69V0QOn9IAN+HQ==}
+  '@sanity/ui@4.0.0-static.35':
+    resolution: {integrity: sha512-Tp7c8GdP9Sw2ED+gKHgckqC6ys1YeBIu7oMX5v3MEi6cX18xGoBn0SCRZRiwsDH371Fa12bDzuL973raM1281Q==}
     engines: {node: '>=20.19 <22 || >=22.12'}
     peerDependencies:
       react: ^19
@@ -16545,18 +16536,6 @@ snapshots:
       - react-dom
       - styled-components
 
-  '@sanity/insert-menu@3.0.0-canary.1(@emotion/is-prop-valid@1.4.0)(@sanity/types@packages+@sanity+types)(react-dom@19.1.1(react@19.1.1))(react-is@19.1.1)(react@19.1.1)':
-    dependencies:
-      '@sanity/icons': 3.7.4(react@19.1.1)
-      '@sanity/types': link:packages/@sanity/types
-      '@sanity/ui': 4.0.0-static.35(@emotion/is-prop-valid@1.4.0)(react-dom@19.1.1(react@19.1.1))(react-is@19.1.1)(react@19.1.1)
-      lodash: 4.17.21
-      react: 19.1.1
-      react-dom: 19.1.1(react@19.1.1)
-      react-is: 19.1.1
-    transitivePeerDependencies:
-      - '@emotion/is-prop-valid'
-
   '@sanity/json-match@1.0.5': {}
 
   '@sanity/language-filter@4.1.0(@emotion/is-prop-valid@1.4.0)(@sanity/styled-components@6.1.24(react-dom@19.2.4(react@19.2.4))(react@19.2.4))(react-dom@19.2.4(react@19.2.4))(react-is@19.2.4)(react@19.2.4)(sanity@packages+sanity)':
@@ -16952,7 +16931,7 @@ snapshots:
     transitivePeerDependencies:
       - '@emotion/is-prop-valid'
 
-  '@sanity/ui@4.0.0-static.29(@emotion/is-prop-valid@1.4.0)(react-dom@19.2.4(react@19.2.4))(react-is@19.2.4)(react@19.2.4)':
+  '@sanity/ui@4.0.0-static.35(@emotion/is-prop-valid@1.4.0)(react-dom@19.2.4(react@19.2.4))(react-is@19.2.4)(react@19.2.4)':
     dependencies:
       '@floating-ui/react-dom': 2.1.6(react-dom@19.2.4(react@19.2.4))(react@19.2.4)
       '@juggle/resize-observer': 3.4.0

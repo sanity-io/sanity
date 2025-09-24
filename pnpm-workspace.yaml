@@ -19,7 +19,7 @@ catalog:
   '@sanity/telemetry': ^0.8.1
   '@sanity/eslint-config-i18n': ^2.0.0
   '@sanity/pkg-utils': ^10.4.6
-  '@sanity/ui': 4.0.0-static.29
+  '@sanity/ui': 4.0.0-static.35
   '@types/node': ^24.3.0
   '@types/react': ^19.2.11
   '@types/react-dom': ^19.2.3
