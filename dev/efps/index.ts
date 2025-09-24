@@ -3,7 +3,6 @@
 import 'dotenv/config'
 
 import fs from 'node:fs'
-import os from 'node:os'
 import path from 'node:path'
 import process from 'node:process'
 import {fileURLToPath} from 'node:url'
@@ -34,9 +33,12 @@ const ENABLE_PROFILER = process.env.ENABLE_PROFILER === 'true'
 const REFERENCE_TAG = process.env.REFERENCE_TAG || 'latest'
 // eslint-disable-next-line turbo/no-undeclared-env-vars
 const RECORD_VIDEO = process.env.RECORD_VIDEO === 'true'
+const MAIN_STUDIO_URL = 'https://efps-git-main.sanity.dev'
+// eslint-disable-next-line turbo/no-undeclared-env-vars
+const DEPLOYED_STUDIO_URL = process.env.STUDIO_URL
+
 const TESTS = [article, recipe, singleString, synthetic]
 
-// this is the project for the efps
 const projectId = process.env.VITE_PERF_EFPS_PROJECT_ID!
 const dataset = process.env.VITE_PERF_EFPS_DATASET!
 const token = process.env.PERF_EFPS_SANITY_TOKEN!
@@ -51,7 +53,6 @@ const client = createClient({
 })
 
 const workspaceDir = path.dirname(fileURLToPath(import.meta.url))
-const monorepoRoot = path.resolve(workspaceDir, '../..')
 const timestamp = new Date()
 
 const resultsDir = path.join(
@@ -94,26 +95,6 @@ function getTestsForShard(tests: EfpsTest[], shard: {current: number; total: num
 const shard = argv.shard ? parseShard(argv.shard) : null
 const selectedTests = shard ? getTestsForShard(TESTS, shard) : TESTS
 
-const getSanityPkgPathForTag = async (tag: string) => {
-  const tmpDir = path.join(os.tmpdir(), `sanity-${tag}`)
-
-  try {
-    await fs.promises.rm(tmpDir, {recursive: true})
-  } catch {
-    // intentionally blank
-  }
-  await fs.promises.mkdir(tmpDir, {recursive: true})
-
-  await exec({
-    command: `npm install sanity@${tag}`,
-    cwd: tmpDir,
-    spinner,
-    text: [`Downloading sanity@${tag} package…`, `Downloaded sanity@${tag}`],
-  })
-
-  return path.join(tmpDir, 'node_modules', 'sanity')
-}
-
 const formatEfps = (latencyMs: number) => {
   const efps = 1000 / latencyMs
   const rounded = efps.toFixed(1)
@@ -131,22 +112,10 @@ spinner.info(
 )
 
 await exec({
-  text: ['Building the monorepo…', 'Built monorepo'],
-  command: 'pnpm run build',
-  spinner,
-  cwd: monorepoRoot,
-})
-
-await exec({
   text: ['Ensuring playwright is installed…', 'Playwright is installed'],
   command: 'npx playwright install',
   spinner,
 })
-
-const localSanityPkgPath = path.dirname(fileURLToPath(import.meta.resolve('sanity/package.json')))
-
-const referenceSanityPkgPath = await getSanityPkgPathForTag(REFERENCE_TAG)
-const experimentSanityPkgPath = localSanityPkgPath
 
 function mergeResults(baseResults: EfpsResult[] | undefined, incomingResults: EfpsResult[]) {
   if (!baseResults) return incomingResults
@@ -175,7 +144,9 @@ async function runAbTest(test: EfpsTest) {
 
   for (let attempt = 0; attempt < TEST_ATTEMPTS; attempt++) {
     const attemptMessage = TEST_ATTEMPTS > 1 ? ` [${attempt + 1}/${TEST_ATTEMPTS}]` : ''
-    const referenceMessage = `Running test '${test.name}' on \`sanity@${REFERENCE_TAG}\`${attemptMessage}`
+
+    spinner.info(`Using studio URL: ${MAIN_STUDIO_URL}`)
+    const referenceMessage = `Running test '${test.name}' on \`main\`${attemptMessage}`
     spinner.start(referenceMessage)
 
     referenceResults = mergeResults(
@@ -189,7 +160,7 @@ async function runAbTest(test: EfpsTest) {
         recordVideo: RECORD_VIDEO,
         enableProfiler: ENABLE_PROFILER,
         projectId,
-        sanityPkgPath: referenceSanityPkgPath,
+        studioUrl: MAIN_STUDIO_URL,
         log: (message) => {
           spinner.text = `${referenceMessage}: ${message}`
         },
@@ -197,6 +168,7 @@ async function runAbTest(test: EfpsTest) {
     )
     spinner.succeed(`Ran test '${test.name}' on \`sanity@${REFERENCE_TAG}\`${attemptMessage}`)
 
+    spinner.info(`Using studio URL: ${DEPLOYED_STUDIO_URL!}`)
     const experimentMessage = `Running test '${test.name}' on this branch${attemptMessage}`
     spinner.start(experimentMessage)
     experimentResults = mergeResults(
@@ -210,7 +182,7 @@ async function runAbTest(test: EfpsTest) {
         recordVideo: RECORD_VIDEO,
         enableProfiler: ENABLE_PROFILER,
         projectId,
-        sanityPkgPath: experimentSanityPkgPath,
+        studioUrl: DEPLOYED_STUDIO_URL!,
         log: (message) => {
           spinner.text = `${experimentMessage}: ${message}`
         },
