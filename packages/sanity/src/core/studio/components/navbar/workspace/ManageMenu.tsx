@@ -3,6 +3,7 @@ import {Flex, Stack, Text} from '@sanity/ui'
 
 import {Button} from '../../../../../ui-components/button/Button'
 import {useTranslation} from '../../../../i18n'
+import {useProject} from '../../../../store/_legacy/project/useProject'
 import {userHasRole} from '../../../../util/userHasRole'
 import {useActiveWorkspace} from '../../../activeWorkspaceMatcher/useActiveWorkspace'
 import {useWorkspace} from '../../../workspace'
@@ -10,6 +11,7 @@ import {WorkspacePreviewIcon} from './WorkspacePreview'
 
 export function ManageMenu() {
   const {projectId, currentUser} = useWorkspace()
+  const {value: project} = useProject()
   const {activeWorkspace} = useActiveWorkspace()
   const isAdmin = Boolean(currentUser && userHasRole(currentUser, 'administrator'))
 
@@ -20,7 +22,7 @@ export function ManageMenu() {
       <Flex align="center">
         <WorkspacePreviewIcon icon={activeWorkspace.icon} size="large" />
         <Stack marginLeft={2} space={2}>
-          <Text size={0}>{activeWorkspace.name}</Text>
+          <Text size={0}>{project?.displayName}</Text>
           <Text size={1} weight="medium">
             {activeWorkspace.title}
           </Text>
