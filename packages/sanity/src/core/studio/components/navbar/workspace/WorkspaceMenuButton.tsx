@@ -31,12 +31,6 @@ export function WorkspaceMenuButton() {
   const [authStates] = useWorkspaceAuthStates(workspaces)
   const {t} = useTranslation()
 
-  const multipleWorkspaces = workspaces.length > 1
-
-  if (!multipleWorkspaces) {
-    return null
-  }
-
   const disabled = !authStates
 
   return (
