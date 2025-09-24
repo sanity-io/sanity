@@ -28,6 +28,17 @@ You'll need to add a `productAgeAnalysis` field to your `page` document schema:
 
 ```typescript
 defineField({
+      name: 'modules',
+      type: 'array',
+      description: 'Editorial modules to associate with this collection',
+      of: [
+        defineArrayMember({type: 'grid'}),
+        // Additional types can be added
+      ],
+      group: 'editorial',
+    }),
+    
+defineField({
   name: 'productAgeAnalysis',
   title: 'Product Age Analysis',
   type: 'array',
