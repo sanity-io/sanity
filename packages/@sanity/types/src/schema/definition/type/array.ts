@@ -17,9 +17,6 @@ import {
   type TitledListValue,
 } from './common'
 
-/** @beta */
-type InsertMenuOptions = any
-
 export type {InsertMenuOptions}
 
 /**
