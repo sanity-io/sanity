@@ -59,6 +59,7 @@ import {
   searchStrategyReducer,
   serverDocumentActionsReducer,
   toolsReducer,
+  treeArrayEditingEnabledReducer,
 } from './configPropertyReducers'
 import {ConfigResolutionError} from './ConfigResolutionError'
 import {createDefaultIcon} from './createDefaultIcon'
@@ -752,8 +753,7 @@ function resolveSource({
         releases: eventsAPIReducer({config, initialValue: false, key: 'releases'}),
       },
       treeArrayEditing: {
-        // This beta feature is no longer available.
-        enabled: false,
+        enabled: treeArrayEditingEnabledReducer({config, initialValue: false}),
       },
       create: {
         startInCreateEnabled: false,

@@ -138,7 +138,7 @@ export function TreeEditingMenuItem(props: TreeEditingMenuItemProps): React.JSX.
   const title = useMemo(() => {
     // If the item is an array parent, we want to show the schema type title
     if (isArrayParent) {
-      return getSchemaTypeTitle(item.schemaType)
+      return item.schemaType ? getSchemaTypeTitle(item.schemaType) : 'Unknown'
     }
 
     // Else, we show the preview title

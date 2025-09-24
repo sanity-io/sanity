@@ -42,7 +42,7 @@ function ResultItem(props: ResultItemProps): React.JSX.Element {
 
           <Box>
             <Text muted size={0} textOverflow="ellipsis">
-              {getSchemaTypeTitle(item.parentSchemaType)}
+              {item.parentSchemaType ? getSchemaTypeTitle(item.parentSchemaType) : 'Unknown'}
             </Text>
           </Box>
         </Stack>

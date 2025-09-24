@@ -1,10 +1,5 @@
 import {isKeySegment, type ObjectSchemaType, type Path} from '@sanity/types'
-import {
-  Card,
-  // eslint-disable-next-line no-restricted-imports
-  Dialog, // Custom dialog needed
-  Flex,
-} from '@sanity/ui'
+import {Breadcrumbs, Card, Flex} from '@sanity/ui'
 // eslint-disable-next-line camelcase
 import {getTheme_v2, type Theme} from '@sanity/ui/theme'
 import {toString} from '@sanity/util/paths'
@@ -13,8 +8,11 @@ import {debounce, isEqual} from 'lodash'
 import {useCallback, useEffect, useMemo, useRef, useState} from 'react'
 import {css, styled} from 'styled-components'
 
-import {Button} from '../../../../../ui-components'
+import {Button, Dialog} from '../../../../../ui-components'
+import {PopoverDialog} from '../../../../components/popoverDialog/PopoverDialog'
 import {useTranslation} from '../../../../i18n/hooks/useTranslation'
+import {getSchemaTypeTitle} from '../../../../schema/helpers'
+import {EditPortal} from '../../../components/EditPortal'
 import {FormInput} from '../../../components/FormInput'
 import {type InputProps, type ObjectInputProps} from '../../../types/inputProps'
 import {
@@ -24,6 +22,7 @@ import {
   type TreeEditingState,
 } from '../utils'
 import {isArrayItemPath} from '../utils/build-tree-editing-state/utils'
+import {TreeEditingBreadcrumbs} from './breadcrumbs'
 import {TreeEditingLayout} from './layout'
 
 const EMPTY_ARRAY: [] = []
@@ -137,6 +136,8 @@ export function TreeEditingDialog(props: TreeEditingDialogProps): React.JSX.Elem
 
   const onHandlePathSelect = useCallback(
     (path: Path) => {
+      if (path.length === 0) onClose()
+
       // Cancel any debounced state building when navigating.
       debouncedBuildTreeEditingState.cancel()
 
@@ -149,7 +150,7 @@ export function TreeEditingDialog(props: TreeEditingDialogProps): React.JSX.Elem
         onPathFocus(path)
       }
     },
-    [debouncedBuildTreeEditingState, onPathFocus, onPathOpen],
+    [debouncedBuildTreeEditingState, onClose, onPathFocus, onPathOpen],
   )
 
   useEffect(() => {
@@ -198,60 +199,27 @@ export function TreeEditingDialog(props: TreeEditingDialogProps): React.JSX.Elem
 
   if (treeState.relativePath.length === 0) return null
 
+  const header = (
+    <TreeEditingBreadcrumbs
+      items={treeState.breadcrumbs}
+      onPathSelect={onHandlePathSelect}
+      selectedPath={openPath}
+    />
+  )
+
   return (
     <StyledDialog
-      __unstable_hideCloseButton
-      animate
       data-testid="tree-editing-dialog"
-      id="tree-editing-dialog"
-      onClickOutside={onClose}
       onClose={onClose}
-      padding={0}
+      id={'nested-object-dialog'}
+      header={header}
       width={3}
     >
-      <TreeEditingLayout
-        breadcrumbs={treeState.breadcrumbs}
-        items={treeState.menuItems}
-        onPathSelect={onHandlePathSelect}
-        selectedPath={treeState.relativePath}
-        title={treeState.rootTitle}
-        setScrollElement={setLayoutScrollElement}
-        footer={
-          <Card borderTop>
-            <Flex align="center" justify="flex-end" paddingX={3} paddingY={2} sizing="border">
-              <Button
-                size="large"
-                data-testid="tree-editing-done"
-                text={t('tree-editing-dialog.sidebar.action.done')}
-                onClick={onClose}
-              />
-            </Flex>
-          </Card>
-        }
-      >
-        <AnimatePresence initial={false} mode="wait" onExitComplete={handleAnimationExitComplete}>
-          <MotionFlex
-            key={toString(treeState.relativePath)}
-            animate="animate"
-            data-testid="tree-editing-dialog-content"
-            direction="column"
-            exit="exit"
-            height="fill"
-            initial="initial"
-            overflow="hidden"
-            padding={1}
-            sizing="border"
-            transition={ANIMATION_TRANSITION}
-            variants={ANIMATION_VARIANTS}
-          >
-            <FormInput
-              {...rootInputProps}
-              relativePath={treeState.relativePath}
-              renderDefault={renderDefault}
-            />
-          </MotionFlex>
-        </AnimatePresence>
-      </TreeEditingLayout>
+      <FormInput
+        {...rootInputProps}
+        relativePath={treeState.relativePath}
+        renderDefault={renderDefault}
+      />
     </StyledDialog>
   )
 }
