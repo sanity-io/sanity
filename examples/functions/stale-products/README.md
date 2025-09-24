@@ -67,6 +67,30 @@ defineField({
           type: 'datetime',
         },
       ],
+      preview: {
+            select: {
+              title: 'product.title',
+              productTitle: 'product.store.title',
+              ageInDays: 'ageInDays',
+              updatedAgeInDays: 'updatedAgeInDays',
+              isOld: 'isOld',
+              createdAt: 'createdAt',
+              lastUpdated: 'lastUpdated',
+            },
+            prepare({title, productTitle, ageInDays, updatedAgeInDays, isOld}) {
+              const displayTitle = productTitle || title || 'Untitled Product'
+              const createdAgeText = ageInDays ? `${ageInDays}d old` : 'Unknown age'
+              const updatedAgeText = updatedAgeInDays
+                ? `${updatedAgeInDays}d since update`
+                : 'Unknown'
+              const status = isOld ? '🔴 OLD' : '🟢 FRESH'
+
+              return {
+                title: displayTitle,
+                subtitle: `${status} - Created: ${createdAgeText} | Updated: ${updatedAgeText}`,
+              }
+            },
+          },
     },
   ],
   description: 'Automatically populated by the stale-products function',
