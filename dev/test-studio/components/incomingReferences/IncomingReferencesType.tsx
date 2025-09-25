@@ -16,7 +16,7 @@ import {useDocumentPane} from 'sanity/structure'
 import {AddIncomingReference} from './AddIncomingReference'
 import {CreateNewIncomingReference} from './CreateNewIncomingReference'
 import {IncomingReferenceDocument} from './IncomingReferenceDocument'
-import {type LinkedDocumentActions, type OnLinkDocumentCallback} from './types'
+import {type IncomingReferencesOptions} from './types'
 
 export function IncomingReferencesType({
   type,
@@ -33,8 +33,8 @@ export function IncomingReferencesType({
     id: string
     type: string
   }
-  onLinkDocument: OnLinkDocumentCallback | undefined
-  actions: LinkedDocumentActions | undefined
+  onLinkDocument: IncomingReferencesOptions['onLinkDocument']
+  actions: IncomingReferencesOptions['actions']
 }) {
   const schema = useSchema()
   const schemaType = schema.get(type)
@@ -58,7 +58,7 @@ export function IncomingReferencesType({
     async (documentId: string) => {
       setIsAdding(false)
       setNewReferenceId(documentId)
-
+      const liveEdit = Boolean(schemaType?.liveEdit)
       const document = await client.fetch(`*[_id == "${documentId}"][0]`)
 
       const linkedDocument = onLinkDocument?.(document, {
@@ -78,20 +78,12 @@ export function IncomingReferencesType({
 
       // if the document is published and the schema is not live edit, we want to update the draft id, not the published id
       // If it's a version, we can update the version document.
-      if (isPublishedId(documentId) && !schemaType?.liveEdit) {
+      if (isPublishedId(documentId) && !liveEdit) {
         linkedDocument._id = getDraftId(documentId)
       }
       await client.createOrReplace(linkedDocument)
     },
-    [
-      client,
-      onLinkDocument,
-      referenced.id,
-      referenced.type,
-      publishedExists,
-      schemaType?.liveEdit,
-      toast,
-    ],
+    [client, onLinkDocument, referenced, publishedExists, toast, schemaType?.liveEdit],
   )
 
   useEffect(() => {
@@ -130,7 +122,7 @@ export function IncomingReferencesType({
             <Flex
               align="center"
               justify="center"
-              padding={1}
+              padding={2}
               hidden={isAdding || Boolean(newReferenceId)}
             >
               <Text size={1} muted>
