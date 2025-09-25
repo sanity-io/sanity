@@ -1,5 +1,6 @@
 import {CheckmarkCircleIcon, ErrorOutlineIcon} from '@sanity/icons'
 import {Card, type CardTone, Flex, Text} from '@sanity/ui'
+import {AnimatePresence, motion} from 'framer-motion'
 import {useEffect, useMemo, useState} from 'react'
 
 import {ProgressIcon} from '../../../../ui-components/progressIcon'
@@ -92,15 +93,25 @@ export function ValidationProgressIndicator({
             </Tooltip>
           )}
         </Text>
-        {!showCheckmark && !isMinimal && (
-          <Text muted size={1}>
-            {isValidating
-              ? t('summary.validating-documents', {validatedCount, totalCount})
-              : hasError
-                ? t('summary.all-documents-errors-found')
-                : t('summary.all-documents-validated')}
-          </Text>
-        )}
+        <AnimatePresence>
+          {!showCheckmark && !isMinimal && (
+            <motion.div
+              initial={{width: 'auto'}}
+              animate={{width: 'auto'}}
+              exit={{width: 0}}
+              transition={{duration: 0.2, ease: 'easeInOut'}}
+              style={{overflow: 'hidden', whiteSpace: 'nowrap'}}
+            >
+              <Text muted size={1}>
+                {isValidating
+                  ? t('summary.validating-documents', {validatedCount, totalCount})
+                  : hasError
+                    ? t('summary.all-documents-errors-found')
+                    : t('summary.all-documents-validated')}
+              </Text>
+            </motion.div>
+          )}
+        </AnimatePresence>
       </Flex>
     </Card>
   )
