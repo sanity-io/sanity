@@ -584,47 +584,47 @@ export default function PresentationTool(props: {
               </SharedStateProvider>
             </PresentationParamsProvider>
           </PresentationNavigateProvider>
+          <Suspense>
+            {controller && (
+              <LiveQueries
+                controller={controller}
+                perspective={perspective}
+                liveDocument={displayedDocument}
+                onDocumentsOnPage={setDocumentsOnPage}
+                onLoadersConnection={setLoadersConnection}
+              />
+            )}
+            {visualEditingComlink && params.id && params.type && (
+              <PostMessageRefreshMutations
+                comlink={visualEditingComlink}
+                id={params.id}
+                type={params.type}
+                loadersConnection={loadersConnection}
+                previewKitConnection={previewKitConnection}
+              />
+            )}
+            {visualEditingComlink && (
+              <PostMessageSchema comlink={visualEditingComlink} perspective={perspective} />
+            )}
+            {visualEditingComlink && documentsOnPage.length > 0 && (
+              <PostMessagePreviewSnapshots
+                comlink={visualEditingComlink}
+                perspective={perspective}
+                refs={documentsOnPage}
+              />
+            )}
+            {visualEditingComlink && (
+              <PostMessageDocuments comlink={visualEditingComlink} perspective={perspective} />
+            )}
+            {visualEditingComlink && <PostMessageFeatures comlink={visualEditingComlink} />}
+            {visualEditingComlink && <PostMessageDecideParameters comlink={visualEditingComlink} />}
+            {visualEditingComlink && (
+              <PostMessagePerspective comlink={visualEditingComlink} perspective={perspective} />
+            )}
+            {visualEditingComlink && <PostMessageTelemetry comlink={visualEditingComlink} />}
+          </Suspense>
         </DecideParametersProvider>
       </PresentationProvider>
-      <Suspense>
-        {controller && (
-          <LiveQueries
-            controller={controller}
-            perspective={perspective}
-            liveDocument={displayedDocument}
-            onDocumentsOnPage={setDocumentsOnPage}
-            onLoadersConnection={setLoadersConnection}
-          />
-        )}
-        {visualEditingComlink && params.id && params.type && (
-          <PostMessageRefreshMutations
-            comlink={visualEditingComlink}
-            id={params.id}
-            type={params.type}
-            loadersConnection={loadersConnection}
-            previewKitConnection={previewKitConnection}
-          />
-        )}
-        {visualEditingComlink && (
-          <PostMessageSchema comlink={visualEditingComlink} perspective={perspective} />
-        )}
-        {visualEditingComlink && documentsOnPage.length > 0 && (
-          <PostMessagePreviewSnapshots
-            comlink={visualEditingComlink}
-            perspective={perspective}
-            refs={documentsOnPage}
-          />
-        )}
-        {visualEditingComlink && (
-          <PostMessageDocuments comlink={visualEditingComlink} perspective={perspective} />
-        )}
-        {visualEditingComlink && <PostMessageFeatures comlink={visualEditingComlink} />}
-        {visualEditingComlink && <PostMessageDecideParameters comlink={visualEditingComlink} />}
-        {visualEditingComlink && (
-          <PostMessagePerspective comlink={visualEditingComlink} perspective={perspective} />
-        )}
-        {visualEditingComlink && <PostMessageTelemetry comlink={visualEditingComlink} />}
-      </Suspense>
     </>
   )
 }
