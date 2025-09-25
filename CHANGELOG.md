@@ -3,6 +3,22 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [4.10.1](https://github.com/sanity-io/sanity/compare/v4.10.0...v4.10.1) (2025-09-25)
+
+
+### Bug Fixes
+
+* **core:** wrap useReferringDocuments projection in curly braces ([#10750](https://github.com/sanity-io/sanity/issues/10750)) ([8e15373](https://github.com/sanity-io/sanity/commit/8e1537391d8ee80873213e7916b796895c0512dd))
+* **deps:** update dependency @portabletext/editor to ^2.13.1 ([#10747](https://github.com/sanity-io/sanity/issues/10747)) ([5edcd32](https://github.com/sanity-io/sanity/commit/5edcd328ad3e8cfff1c2677b44c8ad2bfa298316))
+* **deps:** update dependency @portabletext/editor to ^2.13.2 ([#10752](https://github.com/sanity-io/sanity/issues/10752)) ([962c5b0](https://github.com/sanity-io/sanity/commit/962c5b01037e488a4ef0e3c1620828b4fc406a98))
+* **deps:** update dependency groq-js to ^1.19.0 ([#10751](https://github.com/sanity-io/sanity/issues/10751)) ([0e61cf3](https://github.com/sanity-io/sanity/commit/0e61cf345b61c49a2408c40210e60aa165ea8a97))
+* fix issue where single workspaces weren't opening the dropdown to show the new manage actions ([#10746](https://github.com/sanity-io/sanity/issues/10746)) ([29fdbfe](https://github.com/sanity-io/sanity/commit/29fdbfec1387979b984fdaf446d31977f7690e70))
+* **sanity:** make new manage links staging aware ([#10753](https://github.com/sanity-io/sanity/issues/10753)) ([db183ef](https://github.com/sanity-io/sanity/commit/db183ef64afb49cbf38a6959f2fd51bfbb4042fb))
+* **sanity:** pasting Portable Text data into `StringInputPortableText` ([#10748](https://github.com/sanity-io/sanity/issues/10748)) ([0f14b5c](https://github.com/sanity-io/sanity/commit/0f14b5c4ef8843c4163b3cebd9d20ac54677b0d2))
+* **sanity:** use the correct colour for diffs in draft versions ([#10738](https://github.com/sanity-io/sanity/issues/10738)) ([1b86d66](https://github.com/sanity-io/sanity/commit/1b86d66400b5765c08985dbc1e72b7d09a955a41))
+
+
+
 ## [4.10.0](https://github.com/sanity-io/sanity/compare/v4.9.0...v4.10.0) (2025-09-23)
 
 
