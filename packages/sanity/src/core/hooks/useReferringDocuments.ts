@@ -67,8 +67,7 @@ export function useReferringDocuments<DocumentType extends SanityDocument>(
 const EMPTY_FIELDS: never[] = []
 /**
  * Kept for backwards compat
- * - useReferringDocuments(id) will select `
-          }{_id, _type}` from returned documents,
+ * - useReferringDocuments(id) will select `{_id, _type}` from returned documents,
  * - while this hook will return full documents
  *
  * Internal callers of this hook should migrate over to useReferringDocuments
