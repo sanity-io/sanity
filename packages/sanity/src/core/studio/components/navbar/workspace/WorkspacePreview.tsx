@@ -18,6 +18,7 @@ interface MediaProps {
 export const Media = styled.div<MediaProps>`
   width: ${(props) => (props.$size === 'small' ? '25px' : '41px')};
   height: ${(props) => (props.$size === 'small' ? '25px' : '41px')};
+  border-radius: 0.25rem;
   padding: 0;
 
   svg {
