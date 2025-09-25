@@ -1,12 +1,12 @@
-import {assist} from '@sanity/assist'
-import {colorInput} from '@sanity/color-input'
+// import {assist} from '@sanity/assist'
+// import {colorInput} from '@sanity/color-input'
 import {googleMapsInput} from '@sanity/google-maps-input'
 import {BookIcon} from '@sanity/icons'
-import {koKRLocale} from '@sanity/locale-ko-kr'
-import {nbNOLocale} from '@sanity/locale-nb-no'
-import {nnNOLocale} from '@sanity/locale-nn-no'
-import {ptPTLocale} from '@sanity/locale-pt-pt'
-import {svSELocale} from '@sanity/locale-sv-se'
+// import {koKRLocale} from '@sanity/locale-ko-kr'
+// import {nbNOLocale} from '@sanity/locale-nb-no'
+// import {nnNOLocale} from '@sanity/locale-nn-no'
+// import {ptPTLocale} from '@sanity/locale-pt-pt'
+// import {svSELocale} from '@sanity/locale-sv-se'
 import {SanityMonogram} from '@sanity/logos'
 import {debugSecrets} from '@sanity/preview-url-secret/sanity-plugin-debug-secrets'
 import {visionTool} from '@sanity/vision'
@@ -17,12 +17,12 @@ import {
   QUOTA_EXCLUDED_RELEASES_ENABLED,
   type WorkspaceOptions,
 } from 'sanity'
-import {defineDocuments, defineLocations, presentationTool} from 'sanity/presentation'
+// import {defineDocuments, defineLocations, presentationTool} from 'sanity/presentation'
 import {structureTool} from 'sanity/structure'
 import {unsplashAssetSource, UnsplashIcon} from 'sanity-plugin-asset-source-unsplash'
 import {imageHotspotArrayPlugin} from 'sanity-plugin-hotspot-array'
 import {markdownSchema} from 'sanity-plugin-markdown'
-import {media} from 'sanity-plugin-media'
+// import {media} from 'sanity-plugin-media'
 import {muxInput} from 'sanity-plugin-mux-input'
 
 import {imageAssetSource} from './assetSources'
@@ -58,18 +58,18 @@ import {languageFilter} from './plugins/language-filter'
 import {routerDebugTool} from './plugins/router-debug'
 import {ArchiveAndDeleteCustomAction} from './releases/customReleaseActions'
 // eslint-disable-next-line import/extensions
-import {theme as tailwindTheme} from './sanity.theme.mjs'
+// import {theme as tailwindTheme} from './sanity.theme.mjs'
 import {createSchemaTypes} from './schema'
 import {StegaDebugger} from './schema/debug/components/DebugStega'
-import {CustomNavigator} from './schema/presentation/CustomNavigator'
+// import {CustomNavigator} from './schema/presentation/CustomNavigator'
 import {types as presentationNextSanitySchemaTypes} from './schema/presentation/next-sanity'
 import {types as presentationPreviewKitSchemaTypes} from './schema/presentation/preview-kit'
 import {defaultDocumentNode, newDocumentOptions, structure} from './structure'
-import {googleTheme} from './themes/google'
-import {vercelTheme} from './themes/vercel'
-import {workshopTool} from './workshop'
+// import {googleTheme} from './themes/google'
+// import {vercelTheme} from './themes/vercel'
+// import {workshopTool} from './workshop'
 
-const localePlugins = [koKRLocale(), nbNOLocale(), nnNOLocale(), ptPTLocale(), svSELocale()]
+// const localePlugins = [koKRLocale(), nbNOLocale(), nnNOLocale(), ptPTLocale(), svSELocale()]
 
 // @ts-expect-error - defined by vite
 const isStaging = globalThis.__SANITY_STAGING__ === true
@@ -142,34 +142,34 @@ const sharedSettings = ({projectId}: {projectId: string}) => {
         defaultDocumentNode,
       }),
       debugSecrets(),
-      presentationTool({
-        allowOrigins: ['https://*.sanity.dev', 'http://localhost:*'],
-        previewUrl: '/preview/index.html',
-        resolve: {
-          mainDocuments: defineDocuments([
-            {
-              route: '/preview/index.html',
-              filter: `_type == "simpleBlock" && isMain`,
-            },
-          ]),
-          locations: {
-            simpleBlock: defineLocations({
-              select: {title: 'title'},
-              resolve: (doc) => {
-                if (!doc?.title) return {}
-                return {
-                  locations: [
-                    {
-                      title: doc.title,
-                      href: `/preview/index.html?${new URLSearchParams({title: doc.title})}`,
-                    },
-                  ],
-                }
-              },
-            }),
-          },
-        },
-      }),
+      // presentationTool({
+      //   allowOrigins: ['https://*.sanity.dev', 'http://localhost:*'],
+      //   previewUrl: '/preview/index.html',
+      //   resolve: {
+      //     mainDocuments: defineDocuments([
+      //       {
+      //         route: '/preview/index.html',
+      //         filter: `_type == "simpleBlock" && isMain`,
+      //       },
+      //     ]),
+      //     locations: {
+      //       simpleBlock: defineLocations({
+      //         select: {title: 'title'},
+      //         resolve: (doc) => {
+      //           if (!doc?.title) return {}
+      //           return {
+      //             locations: [
+      //               {
+      //                 title: doc.title,
+      //                 href: `/preview/index.html?${new URLSearchParams({title: doc.title})}`,
+      //               },
+      //             ],
+      //           }
+      //         },
+      //       }),
+      //     },
+      //   },
+      // }),
       languageFilter({
         defaultLanguages: ['nb'],
         supportedLanguages: [
@@ -190,14 +190,14 @@ const sharedSettings = ({projectId}: {projectId: string}) => {
           lng: -74.1180863,
         },
       }),
-      colorInput(),
-      workshopTool({
-        collections: [
-          {name: 'sanity', title: 'sanity'},
-          {name: 'structure-tool', title: 'sanity/structure'},
-          {name: 'form-builder', title: '@sanity/form-builder'},
-        ],
-      }),
+      // colorInput(),
+      // workshopTool({
+      //   collections: [
+      //     {name: 'sanity', title: 'sanity'},
+      //     {name: 'structure-tool', title: 'sanity/structure'},
+      //     {name: 'form-builder', title: '@sanity/form-builder'},
+      //   ],
+      // }),
       visionTool({
         // uncomment to test
         //defaultApiVersion: '2025-02-05',
@@ -207,7 +207,7 @@ const sharedSettings = ({projectId}: {projectId: string}) => {
       imageHotspotArrayPlugin(),
       routerDebugTool(),
       errorReportingTestPlugin(),
-      media(),
+      // media(),
       markdownSchema(),
       wave(),
       autoCloseBrackets(),
@@ -468,7 +468,7 @@ export default defineConfig([
     ...envConfig.production,
     plugins: [sharedSettings({projectId: 'ppsg7ml5'})],
     basePath: '/google',
-    theme: googleTheme,
+    // theme: googleTheme,
     icon: GoogleLogo,
     mediaLibrary: {
       enabled: true,
@@ -482,7 +482,7 @@ export default defineConfig([
     ...envConfig.production,
     plugins: [sharedSettings({projectId: 'ppsg7ml5'})],
     basePath: '/vercel',
-    theme: vercelTheme,
+    // theme: vercelTheme,
     icon: VercelLogo,
     mediaLibrary: {
       enabled: true,
@@ -496,7 +496,7 @@ export default defineConfig([
     ...envConfig.production,
     plugins: [sharedSettings({projectId: 'ppsg7ml5'})],
     basePath: '/tailwind',
-    theme: tailwindTheme,
+    // theme: tailwindTheme,
     icon: TailwindLogo,
     mediaLibrary: {
       enabled: true,
@@ -508,7 +508,10 @@ export default defineConfig([
     projectId: 'ppsg7ml5',
     dataset: 'test',
     ...envConfig.production,
-    plugins: [sharedSettings({projectId: 'ppsg7ml5'}), assist()],
+    plugins: [
+      sharedSettings({projectId: 'ppsg7ml5'}),
+      // assist()
+    ],
     basePath: '/ai-assist',
     mediaLibrary: {
       enabled: true,
@@ -546,32 +549,32 @@ export default defineConfig([
     schema: {types: presentationPreviewKitSchemaTypes},
     plugins: [
       structureTool(),
-      presentationTool({
-        allowOrigins: ({origin}) => ['https://preview-kit-*.sanity.dev', origin],
-        previewUrl: {
-          initial: 'https://preview-kit-next-app-router.sanity.dev',
-          previewMode: ({origin, targetOrigin}) =>
-            origin === targetOrigin
-              ? false
-              : {
-                  enable: '/api/draft',
-                },
-        },
-        resolve: {
-          locations: {
-            page: defineLocations({
-              locations: [
-                {title: 'App Router', href: 'https://preview-kit-next-app-router.sanity.dev/'},
-                {title: 'Pages Router', href: 'https://preview-kit-next-pages-router.sanity.dev/'},
-                {title: 'Remix', href: 'https://preview-kit-remix.sanity.dev/'},
-              ],
-            }),
-          },
-        },
-        components: {
-          unstable_navigator: {minWidth: 120, maxWidth: 240, component: CustomNavigator},
-        },
-      }),
+      // presentationTool({
+      //   allowOrigins: ({origin}) => ['https://preview-kit-*.sanity.dev', origin],
+      //   previewUrl: {
+      //     initial: 'https://preview-kit-next-app-router.sanity.dev',
+      //     previewMode: ({origin, targetOrigin}) =>
+      //       origin === targetOrigin
+      //         ? false
+      //         : {
+      //             enable: '/api/draft',
+      //           },
+      //   },
+      //   resolve: {
+      //     locations: {
+      //       page: defineLocations({
+      //         locations: [
+      //           {title: 'App Router', href: 'https://preview-kit-next-app-router.sanity.dev/'},
+      //           {title: 'Pages Router', href: 'https://preview-kit-next-pages-router.sanity.dev/'},
+      //           {title: 'Remix', href: 'https://preview-kit-remix.sanity.dev/'},
+      //         ],
+      //       }),
+      //     },
+      //   },
+      //   components: {
+      //     unstable_navigator: {minWidth: 120, maxWidth: 240, component: CustomNavigator},
+      //   },
+      // }),
       visionTool(),
     ],
     mediaLibrary: {
@@ -588,16 +591,16 @@ export default defineConfig([
     ...envConfig.production,
     schema: {types: presentationNextSanitySchemaTypes},
     plugins: [
-      assist(),
+      // assist(),
       structureTool(),
-      presentationTool({
-        allowOrigins: ['https://*.sanity.dev'],
-        previewUrl: {
-          // Intentionally using sanity.build instead of sanity.dev, to test that it's able to recover from the server side domain redirect to sanity.dev
-          initial: 'https://next.sanity.build',
-          previewMode: {enable: '/api/draft-mode/enable'},
-        },
-      }),
+      // presentationTool({
+      //   allowOrigins: ['https://*.sanity.dev'],
+      //   previewUrl: {
+      //     // Intentionally using sanity.build instead of sanity.dev, to test that it's able to recover from the server side domain redirect to sanity.dev
+      //     initial: 'https://next.sanity.build',
+      //     previewMode: {enable: '/api/draft-mode/enable'},
+      //   },
+      // }),
       visionTool(),
     ],
     mediaLibrary: {

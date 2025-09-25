@@ -2,21 +2,16 @@
 import {
   Badge,
   Box,
+  type DEFAULT_MENU_ITEM_ELEMENT,
   Flex,
   MenuItem as UIMenuItem,
+  type MenuItemElementType,
   type MenuItemProps as UIMenuItemProps,
+  type Props,
   Stack,
   Text,
 } from '@sanity/ui'
-import {
-  forwardRef,
-  type HTMLProps,
-  isValidElement,
-  type ReactNode,
-  type Ref,
-  useCallback,
-  useMemo,
-} from 'react'
+import {isValidElement, type ReactNode, useCallback, useMemo} from 'react'
 import {isValidElementType} from 'react-is'
 import {styled} from 'styled-components'
 
@@ -36,9 +31,9 @@ const SubtitleText = styled(Text)`
 `
 
 /** @internal */
-export type MenuItemProps = Pick<
-  UIMenuItemProps,
-  'as' | 'icon' | 'iconRight' | 'pressed' | 'selected' | 'tone' | 'hotkeys'
+export type MenuItemOwnProps = Pick<
+  UIMenuItemProps<'button'>,
+  'disabled' | 'icon' | 'iconRight' | 'pressed' | 'selected' | 'tone' | 'hotkeys'
 > & {
   badgeText?: string
   /**
@@ -73,6 +68,12 @@ const PreviewWrapper = styled(Box)`
   overflow: hidden;
 `
 
+/** @public */
+export type MenuItemProps<E extends MenuItemElementType = MenuItemElementType> = Props<
+  MenuItemOwnProps,
+  E
+>
+
 /**
  * Customized Sanity UI <MenuItem> that restricts usage of `children` to encourage simple,
  * single line menu items.
@@ -84,8 +85,10 @@ const PreviewWrapper = styled(Box)`
  *
  * @internal
  */
-export const MenuItem = forwardRef(function MenuItem(
-  {
+export function MenuItem<E extends MenuItemElementType = typeof DEFAULT_MENU_ITEM_ELEMENT>(
+  props: MenuItemProps<E>,
+): React.JSX.Element {
+  const {
     badgeText,
     children: childrenProp,
     disabled,
@@ -99,10 +102,8 @@ export const MenuItem = forwardRef(function MenuItem(
     __unstable_subtitle,
     __unstable_space,
     ...rest
-  }: MenuItemProps &
-    Omit<HTMLProps<HTMLDivElement>, 'as' | 'height' | 'ref' | 'selected' | 'tabIndex' | 'size'>,
-  ref: Ref<HTMLDivElement>,
-) {
+  } = props as MenuItemProps<typeof DEFAULT_MENU_ITEM_ELEMENT>
+
   const menuItemContent = useMemo(() => {
     return (
       <Flex align="center" gap={2}>
@@ -127,7 +128,7 @@ export const MenuItem = forwardRef(function MenuItem(
         {text && (
           <Stack
             flex={1}
-            space={__unstable_subtitle ? 1 : 2}
+            gap={__unstable_subtitle ? 1 : 2}
             paddingLeft={__unstable_subtitle ? 1 : 0}
           >
             <Text size={FONT_SIZE} textOverflow="ellipsis" weight="medium">
@@ -191,7 +192,6 @@ export const MenuItem = forwardRef(function MenuItem(
         paddingLeft={preview ? 1 : 3}
         paddingRight={3}
         paddingY={preview ? 1 : 3}
-        ref={ref}
         {...rest}
       >
         {typeof childrenProp === 'undefined' && typeof renderMenuItem === 'function'
@@ -200,4 +200,4 @@ export const MenuItem = forwardRef(function MenuItem(
       </UIMenuItem>
     </ConditionalWrapper>
   )
-})
+}

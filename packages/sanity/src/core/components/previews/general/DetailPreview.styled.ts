@@ -1,7 +1,10 @@
-import {Box, Flex, rem, Skeleton, Text, TextSkeleton} from '@sanity/ui'
+import {Box, Flex, Skeleton, Text, TextSkeleton} from '@sanity/ui'
+import {vars} from '@sanity/ui/css'
 import {css, styled} from 'styled-components'
 
 import {PREVIEW_SIZES} from '../constants'
+
+const rem = (value: number) => `${value / 16}rem`
 
 export const RootFlex = styled(Flex).attrs({align: 'center'})`
   height: ${rem(PREVIEW_SIZES.detail.media.height)};
@@ -32,14 +35,13 @@ export const DescriptionSkeleton = styled(TextSkeleton).attrs({animated: true, r
 `
 
 export const DescriptionText = styled(Text)(({theme}) => {
-  const {fonts} = theme.sanity
-  const textSize1 = fonts.text.sizes[1]
+  const textSize1 = vars.font.text.scale[1]
   const maxLines = 2
-  const maxHeight = textSize1.lineHeight * maxLines
+  const maxHeight = `calc(${textSize1.lineHeight} * ${maxLines})`
 
   return css`
     & > span {
-      max-height: ${rem(maxHeight)};
+      max-height: ${maxHeight};
 
       /* Multi-line text overflow */
       display: -webkit-box;

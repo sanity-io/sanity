@@ -74,7 +74,7 @@ export function WorkspaceMenuButton() {
                     </Text>
                   </Box>
 
-                  <Stack space={1} style={{overflowY: 'auto', maxHeight: '40vh'}}>
+                  <Stack gap={1} style={{overflowY: 'auto', maxHeight: '40vh'}}>
                     {workspaces.map((workspace) => {
                       const authState = authStates[workspace.name]
 

@@ -1,7 +1,7 @@
 'use no memo'
 // The `use no memo` directive is due to a known issue with react-virtual and react compiler: https://github.com/TanStack/virtual/issues/736
 
-import {Box, Card, type CardProps, Flex, rem, Text, useTheme} from '@sanity/ui'
+import {Box, Card, type CardProps, Flex, Text} from '@sanity/ui'
 import {useVirtualizer, type VirtualItem} from '@tanstack/react-virtual'
 import {isValid} from 'date-fns'
 import {get} from 'lodash'
@@ -20,16 +20,13 @@ import {TableHeader} from './TableHeader'
 import {TableLayout} from './TableLayout'
 import {TableProvider, type TableSort, useTableContext} from './TableProvider'
 import {type Column} from './types'
+import {vars} from '@sanity/ui/css'
 
 type RowDatum<TableData, AdditionalRowTableData> = (AdditionalRowTableData extends undefined
   ? TableData
   : TableData & AdditionalRowTableData) & {isLoading?: boolean}
 
-export type TableRowProps = Omit<
-  CardProps & Omit<HTMLProps<HTMLDivElement>, 'height' | 'as'>,
-  'ref'
-> &
-  RefAttributes<HTMLDivElement>
+export type TableRowProps = CardProps<'tr'>
 
 type VirtualDatum = {
   virtualRow: VirtualItem
@@ -159,6 +156,8 @@ const TableInner = <TableData, AdditionalRowTableData>({
         const cardRowProps = rowProps(datum as TableData)
         const cardKey = loading ? `skeleton-${datum.index}` : String(get(datum, rowId))
 
+        // cardRowProps.children
+
         return (
           <Card
             key={cardKey}
@@ -215,10 +214,6 @@ const TableInner = <TableData, AdditionalRowTableData>({
       })),
     [amalgamatedColumnDefs],
   )
-
-  const theme = useTheme()
-
-  const maxInlineSize = (!hideTableInlinePadding && theme.sanity.v2?.container[3]) || 0
 
   const renderLoadingRows = (
     rowRenderer: (
@@ -277,8 +272,8 @@ const TableInner = <TableData, AdditionalRowTableData>({
             'width': '100%',
             'height': '100%',
             'position': 'relative',
-            '--maxInlineSize': rem(maxInlineSize),
-            '--paddingInline': rem(theme.sanity.v2?.space[3] ?? 0),
+            '--maxInlineSize': hideTableInlinePadding ? 0 : vars.container[3],
+            '--paddingInline': vars.space[3],
           } as CSSProperties
         }
       >

@@ -1,5 +1,3 @@
-import path from 'node:path'
-
 import {defineCliConfig} from 'sanity/cli'
 import {type UserConfig} from 'vite'
 
@@ -86,15 +84,15 @@ export default defineCliConfig({
         ...viteConfig.build,
         // Enable production source maps to easier debug deployed test studios
         sourcemap: reactProductionProfiling || viteConfig.build?.sourcemap,
-        rollupOptions: {
-          ...viteConfig.build?.rollupOptions,
-          input: {
-            // NOTE: this is required to build static files for the workshop frame
-            'workshop/frame': path.resolve(__dirname, 'workshop/frame/index.html'),
-            // NOTE: this is required to build static files for the presentation preview iframe
-            'preview': path.resolve(__dirname, 'preview/index.html'),
-          },
-        },
+        // rollupOptions: {
+        //   ...viteConfig.build?.rollupOptions,
+        //   input: {
+        //     // NOTE: this is required to build static files for the workshop frame
+        //     'workshop/frame': path.resolve(__dirname, 'workshop/frame/index.html'),
+        //     // NOTE: this is required to build static files for the presentation preview iframe
+        //     'preview': path.resolve(__dirname, 'preview/index.html'),
+        //   },
+        // },
       },
     }
   },

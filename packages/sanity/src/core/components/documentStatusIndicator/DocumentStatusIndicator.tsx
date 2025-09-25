@@ -1,4 +1,6 @@
 import {Flex} from '@sanity/ui'
+import {vars} from '@sanity/ui/css'
+import {getVarName} from '@sanity/ui/css'
 import {useMemo} from 'react'
 import {css, styled} from 'styled-components'
 
@@ -24,24 +26,24 @@ const Dot = styled.div<{$index: number}>((props) => {
   return css`
     width: 5px;
     height: 5px;
-    background-color: var(--card-icon-color);
+    background-color: ${vars.color.muted.fg};
     border-radius: 999px;
-    box-shadow: 0 0 0 1px var(--card-bg-color);
+    box-shadow: 0 0 0 1px ${vars.color.bg};
     z-index: ${$index};
     &[data-status='published'] {
-      --card-icon-color: var(--card-badge-positive-dot-color);
+      ${getVarName(vars.color.muted.fg)}: ${vars.color.solid.positive.bg[0]};
     }
     &[data-status='draft'] {
-      --card-icon-color: var(--card-badge-caution-dot-color);
+      ${getVarName(vars.color.muted.fg)}: ${vars.color.solid.caution.bg[0]};
     }
     &[data-status='asap'] {
-      --card-icon-color: var(--card-badge-${tone.asap}-dot-color);
+      ${getVarName(vars.color.muted.fg)}: ${vars.color.solid[tone.asap].bg[0]};
     }
     &[data-status='undecided'] {
-      --card-icon-color: var(--card-badge-${tone.undecided}-dot-color);
+      ${getVarName(vars.color.muted.fg)}: ${vars.color.solid[tone.undecided].bg[0]};
     }
     &[data-status='scheduled'] {
-      --card-icon-color: var(--card-badge-${tone.scheduled}-dot-color);
+      ${getVarName(vars.color.muted.fg)}: ${vars.color.solid[tone.scheduled].bg[0]};
     }
   `
 })

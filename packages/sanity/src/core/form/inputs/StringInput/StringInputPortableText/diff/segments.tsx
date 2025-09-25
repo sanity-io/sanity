@@ -1,7 +1,6 @@
 import {type StringDiffSegment} from '@sanity/diff'
-import {type BadgeTone, type ButtonTone} from '@sanity/ui'
-// eslint-disable-next-line camelcase
-import {getTheme_v2} from '@sanity/ui/theme'
+import {ElementTone} from '@sanity/ui/theme'
+import {vars} from '@sanity/ui/css'
 import {type ComponentType, type PropsWithChildren} from 'react'
 import {styled} from 'styled-components'
 
@@ -10,20 +9,18 @@ import {getReleaseTone} from '../../../../../releases/util/getReleaseTone'
 import {type ProvenanceDiffAnnotation} from '../../../../store/types/diff'
 
 interface StyledSegmentProps {
-  $tone?: ButtonTone
+  $tone?: ElementTone
 }
 
 const Segment = styled.span<StyledSegmentProps>`
-  ${({theme, $tone}) => {
+  ${({$tone}) => {
     if (typeof $tone === 'undefined') {
       return undefined
     }
 
-    const {color} = getTheme_v2(theme)
-
     return {
-      backgroundColor: color.button.bleed[$tone]?.pressed?.bg,
-      color: color.button.bleed[$tone]?.pressed?.fg,
+      backgroundColor: vars.color.tinted[$tone].bg[2],
+      color: vars.color.tinted[$tone].fg[1],
       textDecoration: 'none',
     }
   }}
@@ -55,7 +52,9 @@ export const InsertedSegment: ComponentType<PropsWithChildren<SegmentProps>> = (
   )
 }
 
-function segmentTone(segment: StringDiffSegment<ProvenanceDiffAnnotation>): BadgeTone | undefined {
+function segmentTone(
+  segment: StringDiffSegment<ProvenanceDiffAnnotation>,
+): ElementTone | undefined {
   if (
     segment.action !== 'unchanged' &&
     typeof segment.annotation.provenance.bundle !== 'undefined'

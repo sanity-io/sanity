@@ -4,13 +4,14 @@ import {
   Box,
   Button,
   Card,
-  type CardTone,
   Inline,
   Popover,
   Stack,
   Text,
   useClickOutsideEvent,
 } from '@sanity/ui'
+import {vars} from '@sanity/ui/css'
+import {type ElementTone} from '@sanity/ui/theme'
 import {useCallback, useRef, useState} from 'react'
 import {Translate, useTranslation} from 'sanity'
 import {styled} from 'styled-components'
@@ -18,12 +19,12 @@ import {styled} from 'styled-components'
 import {visionLocaleNamespace} from '../i18n'
 import {PerspectivePopoverContent, PerspectivePopoverLink} from './PerspectivePopover.styled'
 
-const Dot = styled.div<{$tone: CardTone}>`
+const Dot = styled.div<{$tone: ElementTone}>`
   width: 4px;
   height: 4px;
   border-radius: 3px;
-  box-shadow: 0 0 0 1px var(--card-bg-color);
-  background-color: ${({$tone}) => `var(--card-badge-${$tone}-dot-color)`};
+  box-shadow: 0 0 0 1px ${vars.color.bg};
+  background-color: ${({$tone}) => vars.color.solid[$tone].bg[0]};
 `
 
 const SHOW_DEFAULT_PERSPECTIVE_NOTIFICATION = false
@@ -46,8 +47,8 @@ export function PerspectivePopover() {
     <Popover
       content={
         <PerspectivePopoverContent>
-          <Stack space={4}>
-            <Inline space={2}>
+          <Stack gap={4}>
+            <Inline gap={2}>
               <Text weight="medium">{t('settings.perspectives.title')}</Text>
             </Inline>
 
@@ -55,7 +56,7 @@ export function PerspectivePopover() {
               <Text muted>{t('settings.perspectives.description')}</Text>
             </Card>
             <Card>
-              <Stack space={2}>
+              <Stack gap={2}>
                 <Box>
                   <Badge tone="primary">{t('label.new')}</Badge>
                 </Box>
@@ -97,7 +98,7 @@ export function PerspectivePopover() {
       <Button
         icon={HelpCircleIcon}
         mode="bleed"
-        padding={2}
+        padding={1}
         paddingRight={1}
         tone="primary"
         fontSize={1}

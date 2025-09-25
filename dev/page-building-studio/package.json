@@ -9,7 +9,7 @@
     "clean": "rimraf .sanity dist",
     "dev": "sanity dev --source-maps",
     "lint": "eslint .",
-    "start": "sanity start"
+    "preview": "sanity preview"
   },
   "dependencies": {
     "@repo/eslint-config": "workspace:*",
@@ -18,7 +18,6 @@
     "react": "catalog:",
     "react-dom": "catalog:",
     "react-icons": "^5.5.0",
-    "sanity": "workspace:*",
-    "styled-components": "catalog:"
+    "sanity": "workspace:*"
   }
 }

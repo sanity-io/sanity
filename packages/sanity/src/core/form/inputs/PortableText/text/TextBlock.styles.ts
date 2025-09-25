@@ -1,8 +1,6 @@
-/* eslint-disable camelcase */
-
 import {hues} from '@sanity/color'
-import {Box, Flex, type Theme} from '@sanity/ui'
-import {getTheme_v2, rgba} from '@sanity/ui/theme'
+import {Box, Flex} from '@sanity/ui'
+import {getVarName, vars} from '@sanity/ui/css'
 import {css, styled} from 'styled-components'
 
 import {DEBUG} from '../../../../changeIndicators/constants'
@@ -10,12 +8,12 @@ import {TEXT_BULLET_MARKERS, TEXT_NUMBER_FORMATS} from './constants'
 import {createListName} from './helpers'
 
 interface TextBlockStyleProps {
+  $isDark: boolean
   $level: number
 }
 
-function textBlockStyle(props: TextBlockStyleProps & {theme: Theme}) {
-  const {$level} = props
-  const {color, font, radius, space} = getTheme_v2(props.theme)
+function textBlockStyle(props: TextBlockStyleProps) {
+  const {$isDark, $level} = props
 
   const numberMarker = TEXT_NUMBER_FORMATS[($level - 1) % TEXT_NUMBER_FORMATS.length]
   const bulletMarker = TEXT_BULLET_MARKERS[($level - 1) % TEXT_BULLET_MARKERS.length]
@@ -23,7 +21,7 @@ function textBlockStyle(props: TextBlockStyleProps & {theme: Theme}) {
   return css`
     --marker-bg-color: transparent;
 
-    mix-blend-mode: ${color._dark ? 'screen' : 'multiply'};
+    /* mix-blend-mode: ${$isDark ? 'screen' : 'multiply'}; */
     position: relative;
 
     & > [data-ui='TextBlock_inner'] {
@@ -34,11 +32,11 @@ function textBlockStyle(props: TextBlockStyleProps & {theme: Theme}) {
     & > div:before {
       content: '';
       position: absolute;
-      top: -${space[1]}px;
-      bottom: -${space[1]}px;
-      left: -${space[1]}px;
-      right: -${space[1]}px;
-      border-radius: ${radius[2]}px;
+      top: -${vars.space[1]};
+      bottom: -${vars.space[1]};
+      left: -${vars.space[1]};
+      right: -${vars.space[1]};
+      border-radius: ${vars.radius[2]};
       background-color: var(--marker-bg-color);
       // This is to make sure the marker is always behind the text
       z-index: -1;
@@ -46,17 +44,17 @@ function textBlockStyle(props: TextBlockStyleProps & {theme: Theme}) {
     }
 
     &[data-markers] {
-      --marker-bg-color: ${color._dark ? hues.purple[950].hex : hues.purple[50].hex};
+      --marker-bg-color: ${$isDark ? hues.purple[950].hex : hues.purple[50].hex};
     }
 
     &[data-warning] {
-      --card-border-color: ${color.button.ghost.caution.enabled.border};
-      --marker-bg-color: ${color.button.ghost.caution.hovered.bg};
+      ${getVarName(vars.color.border)}: ${vars.color.tinted.caution.border[2]};
+      --marker-bg-color: ${vars.color.tinted.caution.bg[1]};
     }
 
     &[data-error] {
-      --card-border-color: ${color.button.ghost.critical.enabled.border};
-      --marker-bg-color: ${color.button.ghost.critical.hovered.bg};
+      ${getVarName(vars.color.border)}: ${vars.color.tinted.critical.border[2]};
+      --marker-bg-color: ${vars.color.tinted.critical.bg[1]};
     }
 
     & [data-list-prefix] {
@@ -92,11 +90,11 @@ function textBlockStyle(props: TextBlockStyleProps & {theme: Theme}) {
       overflow-wrap: anywhere;
       text-transform: none;
       white-space: pre-wrap;
-      font-family: ${font.text.family};
+      font-family: ${vars.font.text.family};
       flex: 1;
 
       *::selection {
-        background-color: ${rgba(color.focusRing, 0.3)};
+        background-color: color-mix(in srgb, transparent, ${vars.color.focusRing} 30%);
       }
     }
   `
@@ -123,25 +121,28 @@ export const BlockActionsOuter = styled(Box)`
   position: relative;
 `
 
-export const BlockActionsInner = styled(Flex)(({theme}: {theme: Theme}) => {
-  const {fonts, space} = theme.sanity
-  const textSize1 = fonts.text.sizes[1]
-  const textSize2 = fonts.text.sizes[2]
-  const capHeight1 = textSize1.lineHeight - textSize1.ascenderHeight - textSize1.descenderHeight
-  const capHeight2 = textSize2.lineHeight - textSize2.ascenderHeight - textSize2.descenderHeight
-  const buttonHeight = capHeight1 + space[2] + space[2]
+export const BlockActionsInner = styled(Flex)(() => {
+  const textSize1 = vars.font.text.scale[1]
+  const textSize2 = vars.font.text.scale[2]
+  const capHeight1 = `calc(${textSize1.lineHeight} - ${textSize1.ascenderHeight} - ${textSize1.descenderHeight})`
+  const capHeight2 = `calc(${textSize2.lineHeight} - ${textSize2.ascenderHeight} - ${textSize2.descenderHeight})`
+  const buttonHeight = `calc(var(--capHeight1) + ${vars.space[2]} + ${vars.space[2]})`
 
   // This calculates the following:
   // > var buttonHeight = 25px
   // > var capHeight2 = 11px
   // > 0 - (buttonHeight - capHeight2) / 2 = -7px
-  const negativeTop = 0 - (buttonHeight - capHeight2) / 2
+  const negativeTop = `calc(0px - (var(--buttonHeight) - var(--capHeight2)) / 2)`
 
   return css`
+    --capHeight1: ${capHeight1};
+    --capHeight2: ${capHeight2};
+    --buttonHeight: ${buttonHeight};
+
     user-select: none;
     position: absolute;
     right: 0;
-    top: ${negativeTop}px;
+    top: ${negativeTop};
   `
 })
 
@@ -155,17 +156,15 @@ export const TextFlex = styled(Flex)<{$level?: number}>`
 `
 
 export const ChangeIndicatorWrapper = styled.div<{$hasChanges: boolean}>(
-  ({theme, $hasChanges}: {theme: Theme; $hasChanges: boolean}) => {
-    const {space} = theme.sanity
-
+  ({$hasChanges}: {$hasChanges: boolean}) => {
     return css`
       position: absolute;
-      width: ${space[2]}px;
+      width: ${vars.space[2]};
       right: 0;
       top: 0;
       bottom: 0;
-      padding-left: ${space[1]}px;
-      padding-right: ${space[2]}px;
+      padding-left: ${vars.space[1]};
+      padding-right: ${vars.space[2]};
       user-select: none;
       ${DEBUG &&
       css`

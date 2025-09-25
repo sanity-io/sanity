@@ -19,7 +19,7 @@ export function ManageMenu() {
     <Stack paddingX={5} paddingTop={4} paddingBottom={3}>
       <Flex align="center">
         <WorkspacePreviewIcon icon={activeWorkspace.icon} size="large" />
-        <Stack marginLeft={2} space={2}>
+        <Stack marginLeft={2} gap={2}>
           <Text size={0}>{activeWorkspace.name}</Text>
           <Text size={2} weight="medium">
             {activeWorkspace.title}

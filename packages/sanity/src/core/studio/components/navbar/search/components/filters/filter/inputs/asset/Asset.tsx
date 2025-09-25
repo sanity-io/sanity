@@ -112,7 +112,7 @@ export function SearchFilterAssetInput(type?: AssetType) {
 
     return (
       <ContainerBox>
-        <Stack space={3}>
+        <Stack gap={3}>
           {/* Asset source component */}
           {selectedAssetSource && AssetSourceComponent && (
             <Portal>

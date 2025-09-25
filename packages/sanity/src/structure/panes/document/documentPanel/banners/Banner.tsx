@@ -1,26 +1,28 @@
-import {Box, type ButtonMode, type ButtonTone, Card, type CardTone, Flex, Text} from '@sanity/ui'
-import {type ComponentType, type ElementType, type ReactNode} from 'react'
+import {type ButtonElementType} from '@sanity/ui'
+import {Box, Card, Flex, Text} from '@sanity/ui'
+import {type ButtonMode, type CardTone, type ElementTone, type Space} from '@sanity/ui/theme'
+import {type ComponentType, type ReactNode} from 'react'
 
 import {Button} from '../../../../../ui-components'
 
 interface BannerProps {
   action?: {
-    as?: ElementType | keyof React.JSX.IntrinsicElements
+    as?: ButtonElementType
     icon?: ComponentType
     onClick?: () => void
     text: string
-    tone?: ButtonTone
+    tone?: ElementTone
     disabled?: boolean
     mode?: ButtonMode
   }
   content: ReactNode
   icon?: ComponentType
   tone?: CardTone
-  paddingY?: number
+  paddingY?: Space
 }
 
 export function Banner(props: BannerProps) {
-  const {action, content, icon: Icon, tone = 'transparent', paddingY = 2, ...rest} = props
+  const {action, content, icon: Icon, tone = 'neutral', paddingY = 2, ...rest} = props
 
   return (
     <Box padding={1}>

@@ -2,10 +2,9 @@ import {CopyIcon, LinkIcon, TrashIcon} from '@sanity/icons'
 import {useTelemetry} from '@sanity/telemetry/react'
 import {type PortableTextBlock} from '@sanity/types'
 import {Box, Card, Flex, Menu, MenuDivider, Stack} from '@sanity/ui'
-// eslint-disable-next-line camelcase
-import {getTheme_v2} from '@sanity/ui/theme'
+import {vars} from '@sanity/ui/css'
 import {useCallback} from 'react'
-import {css, styled} from 'styled-components'
+import {styled} from 'styled-components'
 
 import {MenuButton, MenuItem, TooltipDelayGroupProvider} from '../../../../../ui-components'
 import {CommentsProvider} from '../../../../comments'
@@ -30,13 +29,10 @@ import {AssigneeEditFormField, DateEditFormField, StatusSelector, Title} from '.
 import {RemoveTaskDialog} from '../RemoveTaskDialog'
 import {getMentionedUsers} from '../utils'
 
-const FirstRow = styled(Flex)((props) => {
-  const theme = getTheme_v2(props.theme)
-  return css`
-    column-gap: ${theme.space[2]}px;
-    row-gap: ${theme.space[3]}px;
-  `
-})
+const FirstRow = styled(Flex)`
+  column-gap: ${vars.space[2]};
+  row-gap: ${vars.space[3]};
+`
 
 function FormActionsMenu({id, value}: {id: string; value: TaskDocument}) {
   const {setViewMode, handleCopyLinkToTask} = useTasksNavigation()

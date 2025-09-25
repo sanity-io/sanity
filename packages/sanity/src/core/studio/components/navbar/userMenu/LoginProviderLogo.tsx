@@ -1,23 +1,24 @@
 import {SanityMonogram} from '@sanity/logos'
+import {vars} from '@sanity/ui/css'
 import {styled} from 'styled-components'
 
 const Root = styled.div`
   position: absolute;
   width: 18px;
   height: 18px;
-  background: var(--card-bg-color);
+  background: ${vars.color.bg};
   bottom: -4px;
   right: -4px;
   border-radius: 50%;
   display: flex;
   justify-content: center;
   align-items: center;
-  border: 1px solid var(--card-bg-color);
+  border: 1px solid ${vars.color.bg};
   box-sizing: content-box;
 
   svg {
     box-sizing: content-box;
-    border: 1px solid var(--card-hairline-soft-color);
+    border: 1px solid ${vars.color.border};
     border-radius: 50%;
     padding: 2px;
     width: 12px;
@@ -27,7 +28,7 @@ const Root = styled.div`
   &[data-logo='github'] {
     svg {
       path {
-        fill: var(--card-fg-color);
+        fill: ${vars.color.fg};
       }
     }
   }
@@ -35,7 +36,7 @@ const Root = styled.div`
   &[data-logo='saml'] {
     svg {
       path {
-        fill: var(--card-fg-color);
+        fill: ${vars.color.fg};
       }
     }
   }

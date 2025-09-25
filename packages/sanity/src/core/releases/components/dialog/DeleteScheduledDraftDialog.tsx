@@ -93,7 +93,7 @@ export function DeleteScheduledDraftDialog(
         },
       }}
     >
-      <Stack space={3} paddingX={3} marginBottom={2}>
+      <Stack gap={3} paddingX={3} marginBottom={2}>
         {schemaType && firstDocument ? (
           <Preview value={firstDocument} schemaType={schemaType} />
         ) : (
