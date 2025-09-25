@@ -23,7 +23,7 @@ export function ManageMenu({multipleWorkspaces}: {multipleWorkspaces: boolean}) 
         <WorkspacePreviewIcon icon={activeWorkspace.icon} size="large" />
         <Stack marginLeft={2} space={2}>
           <Text size={0}>{project?.displayName}</Text>
-          <Text size={1} weight="medium">
+          <Text size={2} weight="medium">
             {activeWorkspace.title}
           </Text>
         </Stack>
