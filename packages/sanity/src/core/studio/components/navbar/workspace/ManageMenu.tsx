@@ -5,6 +5,7 @@ import {Button} from '../../../../../ui-components/button/Button'
 import {useTranslation} from '../../../../i18n'
 import {userHasRole} from '../../../../util/userHasRole'
 import {useActiveWorkspace} from '../../../activeWorkspaceMatcher/useActiveWorkspace'
+import {useEnvAwareSanityWebsiteUrl} from '../../../hooks/useEnvAwareSanityWebsiteUrl'
 import {useWorkspace} from '../../../workspace'
 import {WorkspacePreviewIcon} from './WorkspacePreview'
 
@@ -12,6 +13,7 @@ export function ManageMenu() {
   const {projectId, currentUser} = useWorkspace()
   const {activeWorkspace} = useActiveWorkspace()
   const isAdmin = Boolean(currentUser && userHasRole(currentUser, 'administrator'))
+  const envAwareWebsiteUrl = useEnvAwareSanityWebsiteUrl()
 
   const {t} = useTranslation()
 
@@ -31,7 +33,7 @@ export function ManageMenu() {
         <Button
           mode="bleed"
           as="a"
-          href={`https://sanity.io/manage/project/${projectId}`}
+          href={`${envAwareWebsiteUrl}/manage/project/${projectId}`}
           target="_blank"
           icon={CogIcon}
           tooltipProps={{content: t('user-menu.action.manage-project-aria-label')}}
@@ -43,7 +45,7 @@ export function ManageMenu() {
           <Button
             mode="bleed"
             as="a"
-            href={`https://www.sanity.io/manage/project/${projectId}/members?invite=true`}
+            href={`${envAwareWebsiteUrl}/manage/project/${projectId}/members?invite=true`}
             target="_blank"
             icon={AddUserIcon}
             tooltipProps={{content: t('user-menu.action.invite-members')}}
