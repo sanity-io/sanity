@@ -1,16 +1,13 @@
-import {type ReleaseDocument} from '@sanity/client'
-import {useCallback, useEffect, useRef, useState} from 'react'
+import {type EditableReleaseDocument} from '@sanity/client'
+import {useCallback, useEffect, useMemo, useRef, useState} from 'react'
 
-type ReleaseFormData = {
-  title: string
-  description: string
-}
+type ReleaseFormFields = Pick<EditableReleaseDocument['metadata'], 'title' | 'description'>
 
-interface UseFocusAwareFormStateOptions<T> {
+interface UseFocusAwareFormStateOptions {
   /** The external value from props/server */
-  externalValue: T
+  externalValue: EditableReleaseDocument
   id: string
-  extractData: (value: T) => ReleaseFormData
+  extractData: (value: EditableReleaseDocument) => ReleaseFormFields
 }
 
 /**
@@ -21,40 +18,47 @@ interface UseFocusAwareFormStateOptions<T> {
  *
  * @internal
  */
-export function useFocusAwareFormState<T>({
+export function useFocusAwareFormState({
   externalValue,
   id,
   extractData,
-}: UseFocusAwareFormStateOptions<T>) {
-  const [localData, setLocalData] = useState(() => extractData(externalValue))
+}: UseFocusAwareFormStateOptions) {
+  const incomingFormData = useMemo(() => extractData(externalValue), [externalValue, extractData])
+  const [localData, setLocalData] = useState(() => incomingFormData)
   const [focusedField, setFocusedField] = useState<string | null>(null)
   const previousIdRef = useRef(id)
 
-  useEffect(() => {
-    const incomingFormData = extractData(externalValue)
-    // New releases don't have _createdAt and should always sync to support local storage
-    const isPersistedRelease = Boolean('_createdAt' in externalValue && externalValue._createdAt)
+  const updateUnfocusedFields = useCallback(
+    (currentFormData: ReleaseFormFields) => {
+      const formFieldNames = Object.keys(incomingFormData) as Array<keyof ReleaseFormFields>
+      const unfocusedFieldUpdates = formFieldNames
+        .filter((field) => field !== focusedField)
+        .reduce<Partial<ReleaseFormFields>>((fieldUpdates, field) => {
+          fieldUpdates[field] = incomingFormData[field]
 
+          return fieldUpdates
+        }, {})
+
+      return {...currentFormData, ...unfocusedFieldUpdates}
+    },
+    [incomingFormData, focusedField],
+  )
+
+  useEffect(() => {
+    // New releases don't have _createdAt and should always sync to support local storage
+    const isEditingExistingRelease = Boolean(externalValue._createdAt)
+
+    // if tracking a new ID
     if (previousIdRef.current !== id) {
       previousIdRef.current = id
       setLocalData(incomingFormData)
       setFocusedField(null)
-    } else if (isPersistedRelease) {
-      setLocalData((currentFormData) => {
-        const formFieldNames = Object.keys(incomingFormData) as Array<keyof ReleaseFormData>
-        const unfocusedFieldUpdates = formFieldNames
-          .filter((field) => field !== focusedField)
-          .reduce<Partial<ReleaseFormData>>((fieldUpdates, field) => {
-            fieldUpdates[field] = incomingFormData[field]
-            return fieldUpdates
-          }, {})
-
-        return {...currentFormData, ...unfocusedFieldUpdates}
-      })
+    } else if (isEditingExistingRelease) {
+      setLocalData(updateUnfocusedFields)
     } else {
       setLocalData(incomingFormData)
     }
-  }, [externalValue, id, extractData, focusedField])
+  }, [incomingFormData, id, externalValue._createdAt, updateUnfocusedFields])
 
   const createFocusHandler = useCallback(
     (fieldName: string) => () => setFocusedField(fieldName),
@@ -63,7 +67,7 @@ export function useFocusAwareFormState<T>({
 
   const handleBlur = useCallback(() => setFocusedField(null), [])
 
-  const updateLocalData = useCallback((formDataUpdates: Partial<ReleaseFormData>) => {
+  const updateLocalData = useCallback((formDataUpdates: Partial<ReleaseFormFields>) => {
     setLocalData((currentFormData) => ({...currentFormData, ...formDataUpdates}))
   }, [])
 
