@@ -16,7 +16,7 @@ import {usePaneRouter} from 'sanity/structure'
 
 import {getReferencePaths} from './getReferencePaths'
 import {IncomingReferencePreview} from './IncomingReferencePreview'
-import {type LinkedDocumentActions} from './types'
+import {type IncomingReferencesOptions} from './types'
 
 const Root = motion.create(Flex)
 
@@ -43,7 +43,7 @@ const ErrorCard = ({message}: {message: string}) => (
 export const IncomingReferenceDocument = (props: {
   document: SanityDocument
   referenceToId: string
-  actions: LinkedDocumentActions | undefined
+  actions: IncomingReferencesOptions['actions']
 }) => {
   const {document, referenceToId, actions} = props
   const referencePaths = getReferencePaths(document, referenceToId)
@@ -56,10 +56,8 @@ export const IncomingReferenceDocument = (props: {
   const type = document?._type
 
   const resolvedActions = useMemo(() => {
-    return actions?.({
-      linkedDocument: document,
-      client,
-    })
+    if (!actions) return []
+    return actions({linkedDocument: document, client})
   }, [document, client, actions])
 
   const handleClick = useCallback(() => {

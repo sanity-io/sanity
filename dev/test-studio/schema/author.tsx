@@ -114,7 +114,7 @@ export default defineType({
     }),
     defineField({
       name: 'incomingReferences',
-      title: 'Incoming references',
+      title: 'Incoming references (author - designer)',
       type: 'array',
       components: {
         input: (props: ArrayOfPrimitivesInputProps) => (
@@ -147,10 +147,18 @@ export default defineType({
               }
               return []
             }}
-            // @ts-expect-error - filterQuery is not implemented yet
-            filterQuery={`_type == "author"`}
+            filterQuery={`role == "designer"`}
           />
         ),
+      },
+      of: [{type: 'author'}],
+    }),
+    defineField({
+      name: 'allAuthors',
+      title: 'All authors',
+      type: 'array',
+      components: {
+        input: (props: ArrayOfPrimitivesInputProps) => <IncomingReferencesInput {...props} />,
       },
       of: [{type: 'author'}],
     }),
