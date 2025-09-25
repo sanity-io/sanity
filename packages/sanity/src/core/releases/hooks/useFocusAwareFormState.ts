@@ -1,49 +1,58 @@
+import {type ReleaseDocument} from '@sanity/client'
 import {useCallback, useEffect, useRef, useState} from 'react'
 
-interface UseFocusAwareFormStateOptions<T, TFormData extends Record<string, unknown>> {
+type ReleaseFormData = {
+  title: string
+  description: string
+}
+
+interface UseFocusAwareFormStateOptions<T> {
   /** The external value from props/server */
   externalValue: T
   id: string
-  extractData: (value: T) => TFormData
+  extractData: (value: T) => ReleaseFormData
 }
 
 /**
- * Hook for managing form state that syncs with external data while respecting per-field focus.
+ * Hook for managing release form state that syncs with server data while respecting per-field focus.
  *
- * This prevents the issue where server updates override user input during typing.
- * The local state will sync with external data on a per-field basis when the field is not focused.
+ * This prevents server updates from overriding user input during typing.
+ * Local state syncs with server data on a per-field basis only when the field is not focused.
  *
  * @internal
  */
-export function useFocusAwareFormState<T, TFormData extends Record<string, unknown>>({
+export function useFocusAwareFormState<T>({
   externalValue,
   id,
   extractData,
-}: UseFocusAwareFormStateOptions<T, TFormData>) {
+}: UseFocusAwareFormStateOptions<T>) {
   const [localData, setLocalData] = useState(() => extractData(externalValue))
   const [focusedField, setFocusedField] = useState<string | null>(null)
-  const idRef = useRef(id)
+  const previousIdRef = useRef(id)
 
-  // Sync external data to local state when:
-  // 1. ID changes (navigating to different item) - always sync all fields
-  // 2. Same ID - only sync unfocused fields (allow server updates for unfocused fields)
   useEffect(() => {
-    const newData = extractData(externalValue)
+    const incomingFormData = extractData(externalValue)
+    // New releases don't have _createdAt and should always sync to support local storage
+    const isPersistedRelease = Boolean('_createdAt' in externalValue && externalValue._createdAt)
 
-    if (idRef.current === id) {
-      setLocalData((prev) => {
-        const updated = {...prev} as Record<string, unknown>
-        Object.keys(newData).forEach((field) => {
-          if (focusedField !== field) {
-            updated[field] = (newData as Record<string, unknown>)[field]
-          }
-        })
-        return updated as TFormData
+    if (previousIdRef.current !== id) {
+      previousIdRef.current = id
+      setLocalData(incomingFormData)
+      setFocusedField(null)
+    } else if (isPersistedRelease) {
+      setLocalData((currentFormData) => {
+        const formFieldNames = Object.keys(incomingFormData) as Array<keyof ReleaseFormData>
+        const unfocusedFieldUpdates = formFieldNames
+          .filter((field) => field !== focusedField)
+          .reduce<Partial<ReleaseFormData>>((fieldUpdates, field) => {
+            fieldUpdates[field] = incomingFormData[field]
+            return fieldUpdates
+          }, {})
+
+        return {...currentFormData, ...unfocusedFieldUpdates}
       })
     } else {
-      idRef.current = id
-      setLocalData(newData)
-      setFocusedField(null)
+      setLocalData(incomingFormData)
     }
   }, [externalValue, id, extractData, focusedField])
 
@@ -54,8 +63,8 @@ export function useFocusAwareFormState<T, TFormData extends Record<string, unkno
 
   const handleBlur = useCallback(() => setFocusedField(null), [])
 
-  const updateLocalData = useCallback((updates: Partial<TFormData>) => {
-    setLocalData((prev) => ({...prev, ...updates}))
+  const updateLocalData = useCallback((formDataUpdates: Partial<ReleaseFormData>) => {
+    setLocalData((currentFormData) => ({...currentFormData, ...formDataUpdates}))
   }, [])
 
   return {
