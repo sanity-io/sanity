@@ -94,9 +94,9 @@ export function WorkspaceMenuButton() {
                           preview={<WorkspacePreviewIcon icon={workspace.icon} size="small" />}
                           selected={isSelected}
                           __unstable_subtitle={workspace.subtitle}
-                          __unstable_space={1}
                           text={workspace?.title || workspace.name}
                           style={{marginLeft: '1.25rem', marginRight: '0.25rem'}}
+                          __unstable_space={0}
                         />
                       )
                     })}
