@@ -115,6 +115,7 @@ export function useMainDocument(props: {
   const mainDocumentIdRef = useRef<string | undefined>(undefined)
 
   const handleResponse = useEffectEvent((doc: MainDocument | undefined, url: URL) => {
+    // oxlint-disable-next-line no-console
     console.log('handleResponse', doc)
     if (!doc || mainDocumentIdRef.current !== doc._id) {
       setMainDocumentState({
@@ -163,6 +164,7 @@ export function useMainDocument(props: {
         const params = getParamsFromResult(result.resolver, result.context)
         if (query) {
           const controller = new AbortController()
+          // oxlint-disable-next-line no-console
           console.log('decideParameters', decideParameters)
           const options: ResponseQueryOptions = {
             perspective: perspectiveStack,

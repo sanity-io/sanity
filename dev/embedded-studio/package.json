@@ -9,7 +9,6 @@
   },
   "dependencies": {
     "@sanity/ui": "catalog:",
-    "@sanity/client": "7.11.2-audience-decide.0",
     "react": "catalog:",
     "react-dom": "catalog:",
     "sanity": "workspace:*",

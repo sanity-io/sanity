@@ -33,7 +33,7 @@ export function PreviewVariantButton({
   }) as Array<[string, string[]]>
 
   const handleSelectionChange = (key: string, value: string) => {
-    setPendingSelections(prev => ({
+    setPendingSelections((prev) => ({
       ...prev,
       [key]: value,
     }))
