@@ -4,6 +4,9 @@ import {type ArrayOfPrimitivesInputProps} from 'sanity'
 import {IncomingReferencesList} from './IncomingReferencesList'
 import {type IncomingReferencesOptions} from './types'
 
+/**
+ * @beta
+ */
 export function IncomingReferencesInput(
   props: ArrayOfPrimitivesInputProps & IncomingReferencesOptions,
 ) {

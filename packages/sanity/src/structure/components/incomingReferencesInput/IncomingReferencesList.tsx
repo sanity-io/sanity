@@ -1,9 +1,10 @@
 import {Card, Flex, Stack, Text} from '@sanity/ui'
 import {useMemo} from 'react'
 import {useObservable} from 'react-rx'
-import {LoadingBlock, useDocumentPreviewStore} from 'sanity'
-import {useDocumentPane} from 'sanity/structure'
+import {LoadingBlock, useDocumentPreviewStore, useTranslation} from 'sanity'
 
+import {structureLocaleNamespace} from '../../i18n'
+import {useDocumentPane} from '../../panes/document/useDocumentPane'
 import {getIncomingReferences} from './getIncomingReferences'
 import {IncomingReferencesType} from './IncomingReferencesType'
 import {type IncomingReferencesOptions} from './types'
@@ -22,7 +23,7 @@ export function IncomingReferencesList({
 }: IncomingReferencesListProps) {
   const {documentId, documentType} = useDocumentPane()
   const documentPreviewStore = useDocumentPreviewStore()
-
+  const {t} = useTranslation(structureLocaleNamespace)
   const references$ = useMemo(
     () => getIncomingReferences({documentId, documentPreviewStore, types, filterQuery}),
     [documentId, documentPreviewStore, types, filterQuery],
@@ -35,7 +36,7 @@ export function IncomingReferencesList({
       <Card border radius={2} padding={3} tone="critical">
         <Flex align="center" justify="center">
           <Text size={1} muted>
-            No incoming references defined for this type, see the docs for more information.
+            {t('incoming-references-input.types-not-defined')}
           </Text>
         </Flex>
       </Card>

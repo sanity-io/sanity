@@ -1,9 +1,9 @@
 import {TrashIcon, UserIcon as icon} from '@sanity/icons'
 import {type StringRule} from '@sanity/types'
 import {type ArrayOfPrimitivesInputProps, defineField, defineType, getDraftId} from 'sanity'
+import {IncomingReferencesInput} from 'sanity/structure'
 
 import {AudienceSelectInput} from '../components/AudienceSelectInput'
-import {IncomingReferencesInput} from '../components/incomingReferences/IncomingReferencesInput'
 
 // Generic decide field implementation that works for all types
 const defineLocalDecideField = (config: any) => {

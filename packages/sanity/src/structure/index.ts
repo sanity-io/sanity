@@ -8,6 +8,7 @@ export type {
   ReferenceChildLinkProps,
 } from './components'
 export {ConfirmDeleteDialog, Pane, PaneContent, PaneLayout, usePaneRouter} from './components'
+export {IncomingReferencesInput} from './components/incomingReferencesInput/IncomingReferencesInput'
 export {structureLocaleNamespace, type StructureLocaleResourceKeys} from './i18n'
 export * from './panes/document'
 export {DocumentInspectorHeader} from './panes/document/documentInspector'

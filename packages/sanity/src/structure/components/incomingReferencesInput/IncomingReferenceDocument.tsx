@@ -1,4 +1,4 @@
-import {Box, Card, Flex, Menu, MenuButton, MenuItem, Text} from '@sanity/ui'
+import {Box, Card, Flex, Menu, Text} from '@sanity/ui'
 import {motion, type Variants} from 'framer-motion'
 import {useCallback, useMemo, useState} from 'react'
 import {
@@ -10,10 +10,14 @@ import {
   type SanityDocument,
   useClient,
   useSchema,
+  useTranslation,
 } from 'sanity'
 import {useRouter} from 'sanity/router'
-import {usePaneRouter} from 'sanity/structure'
 
+import {MenuButton} from '../../../ui-components/menuButton/MenuButton'
+import {MenuItem} from '../../../ui-components/menuItem/MenuItem'
+import {structureLocaleNamespace} from '../../i18n'
+import {usePaneRouter} from '../paneRouter'
 import {getReferencePaths} from './getReferencePaths'
 import {IncomingReferencePreview} from './IncomingReferencePreview'
 import {type IncomingReferencesOptions} from './types'
@@ -54,6 +58,7 @@ export const IncomingReferenceDocument = (props: {
   const {routerPanesState, groupIndex} = usePaneRouter()
   const client = useClient(DEFAULT_STUDIO_CLIENT_OPTIONS)
   const type = document?._type
+  const {t} = useTranslation(structureLocaleNamespace)
 
   const resolvedActions = useMemo(() => {
     if (!actions) return []
@@ -72,7 +77,12 @@ export const IncomingReferenceDocument = (props: {
 
   const schemaType = schema.get(document._type)
 
-  if (!schemaType) return <ErrorCard message={`Schema type ${document._type} not found`} />
+  if (!schemaType)
+    return (
+      <ErrorCard
+        message={t('incoming-references-input.schema-type-not-found', {type: document._type})}
+      />
+    )
   return (
     <Root
       initial="initial"
