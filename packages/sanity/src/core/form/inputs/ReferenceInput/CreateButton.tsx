@@ -35,6 +35,9 @@ const POPOVER_PROPS: MenuButtonProps['popover'] = {
   preventOverflow: true,
 }
 
+/**
+ * @internal
+ */
 export function CreateButton(props: Props) {
   const {createOptions, onCreate, id, menuRef, ...rest} = props
   const currentUser = useCurrentUser()
