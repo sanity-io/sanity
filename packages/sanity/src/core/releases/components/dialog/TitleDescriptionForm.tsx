@@ -6,6 +6,7 @@ import {type ChangeEvent, useCallback, useEffect, useRef, useState} from 'react'
 import {css, styled} from 'styled-components'
 
 import {useTranslation} from '../../../i18n/hooks/useTranslation'
+import {useReleaseFormOptimisticUpdating} from '../../hooks/useReleaseFormOptimisticUpdating'
 
 const MAX_DESCRIPTION_HEIGHT = 200
 
@@ -95,16 +96,21 @@ export function TitleDescriptionForm({
 }): React.JSX.Element {
   const isReleaseOpen = getIsReleaseOpen(release)
   const descriptionRef = useRef<HTMLTextAreaElement | null>(null)
-
   const [scrollHeight, setScrollHeight] = useState(46)
-  const [value, setValue] = useState<EditableReleaseDocument>({
-    _id: release?._id,
-    metadata: {
-      title: release?.metadata.title,
-      description: release?.metadata.description,
-    },
-  })
   const {t} = useTranslation()
+
+  const {localData, updateLocalData, createFocusHandler, handleBlur} =
+    useReleaseFormOptimisticUpdating({
+      externalValue: release,
+      id: release._id,
+      extractData: useCallback(
+        ({metadata}: EditableReleaseDocument) => ({
+          title: metadata.title,
+          description: metadata.description,
+        }),
+        [],
+      ),
+    })
 
   useEffect(() => {
     // make sure that the text area for the description has the right height initially
@@ -113,19 +119,15 @@ export function TitleDescriptionForm({
     }
   }, [])
 
-  useEffect(() => {
-    setValue(release)
-  }, [release])
-
   const handleTitleChange = useCallback(
     (event: ChangeEvent<HTMLInputElement>) => {
       event.preventDefault()
       const title = event.target.value
-      onChange({...value, metadata: {...release.metadata, title}})
       // save the values to make input snappier while requests happen in the background
-      setValue({...value, metadata: {...release.metadata, title}})
+      updateLocalData({title})
+      onChange({...release, metadata: {...release.metadata, title}})
     },
-    [onChange, release.metadata, value],
+    [onChange, release, updateLocalData],
   )
 
   const handleDescriptionChange = useCallback(
@@ -134,9 +136,9 @@ export function TitleDescriptionForm({
       if (!isReleaseOpen) return
 
       const description = event.target.value
-      onChange({...value, metadata: {...release.metadata, description}})
       // save the values to make input snappier while requests happen in the background
-      setValue({...value, metadata: {...release.metadata, description}})
+      updateLocalData({description})
+      onChange({...release, metadata: {...release.metadata, description}})
 
       /** we must reset the height in order to make sure that if the text area shrinks,
        * that the actual input will change height as well */
@@ -152,16 +154,18 @@ export function TitleDescriptionForm({
 
       setScrollHeight(event.currentTarget.scrollHeight)
     },
-    [isReleaseOpen, onChange, release.metadata, value],
+    [isReleaseOpen, onChange, release, updateLocalData],
   )
 
-  const shouldShowDescription = isReleaseOpen || value.metadata.description
+  const shouldShowDescription = isReleaseOpen || localData.description
 
   return (
     <Stack space={3}>
       <TitleInput
         onChange={handleTitleChange}
-        value={value.metadata.title}
+        onFocus={createFocusHandler('title')}
+        onBlur={handleBlur}
+        value={localData.title}
         placeholder={t('release.placeholder-untitled-release')}
         data-testid="release-form-title"
         readOnly={!isReleaseOpen}
@@ -170,10 +174,12 @@ export function TitleDescriptionForm({
       {shouldShowDescription && (
         <DescriptionTextArea
           ref={descriptionRef}
-          autoFocus={!value}
-          value={value.metadata.description}
+          autoFocus={!localData.title}
+          value={localData.description}
           placeholder={t('release.form.placeholder-describe-release')}
           onChange={handleDescriptionChange}
+          onFocus={createFocusHandler('description')}
+          onBlur={handleBlur}
           style={{
             height: `${scrollHeight}px`,
             maxHeight: MAX_DESCRIPTION_HEIGHT,
