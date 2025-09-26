@@ -60,6 +60,7 @@ exports[`exports snapshot 1`] = `
     "ContextMenuButton": "object",
     "CopyPasteProvider": "function",
     "CorsOriginError": "function",
+    "CreateReferenceButton": "function",
     "CrossDatasetReferenceInput": "function",
     "DECISION_PARAMETERS_SCHEMA": "symbol",
     "DEFAULT_MAX_RECURSION_DEPTH": "number",

@@ -39,6 +39,9 @@ export interface EditReferenceEvent {
   version?: ReleaseId
 }
 
+/**
+ * @internal
+ */
 export interface CreateReferenceOption {
   id: string
   title: string
