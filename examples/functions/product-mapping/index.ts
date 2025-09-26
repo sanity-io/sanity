@@ -1,4 +1,4 @@
-import {documentEventHandler, type DocumentEvent} from '@sanity/functions'
+import {documentEventHandler} from '@sanity/functions'
 import {createClient} from '@sanity/client'
 
 interface ShopifyPayload {
