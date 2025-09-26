@@ -38,6 +38,27 @@ import {useLiveEvents} from './useLiveEvents'
 import {useLiveQueries} from './useLiveQueries'
 import {mapChangedValue} from './utils'
 
+/**
+ * Cleanses a value to be valid for use as a client tag.
+ * Tag can only contain alphanumeric characters, underscores, dashes and dots,
+ * and be between one and 75 characters long.
+ */
+function cleanseTag(input: string | string[] | undefined | null): string {
+  if (!input) return 'unknown'
+
+  // Convert array to string representation
+  const stringValue = Array.isArray(input) ? input.join('-') : String(input)
+
+  // Replace invalid characters with dashes, limit to 75 chars
+  return (
+    stringValue
+      .replace(/[^a-zA-Z0-9_.-]/g, '-')
+      .slice(0, 75)
+      .replace(/^-+|-+$/g, '') || // Remove leading/trailing dashes
+    'unknown'
+  ) // Fallback if string becomes empty
+}
+
 export interface LiveQueriesProps {
   liveDocument: Partial<SanityDocument> | null | undefined
   controller: Controller | undefined
@@ -321,7 +342,7 @@ function useQuerySubscription(props: UseQuerySubscriptionProps) {
     client
       .fetch(query, params, {
         lastLiveEventId,
-        tag: `presentation-loader-${JSON.stringify(transformedDecideParameters.audience)}`,
+        tag: `presentation-loader-${cleanseTag(transformedDecideParameters?.audience)}`,
         signal: controller.signal,
         perspective,
         decideParameters: transformedDecideParameters,
