@@ -1,6 +1,7 @@
 import {type Path} from '@sanity/types'
-import {useCallback, useMemo, useRef} from 'react'
+import {useCallback, useMemo, useState} from 'react'
 
+import {pathToString} from '../../../../../validation/util/pathToString'
 import {FullscreenPTEContext, type FullscreenPTEContextValue} from './FullscreenPTEContext'
 
 interface FullscreenPTEProviderProps {
@@ -12,43 +13,38 @@ interface FullscreenPTEProviderProps {
  * @internal
  */
 export function FullscreenPTEProvider({children}: FullscreenPTEProviderProps): React.JSX.Element {
-  const fullscreenStateRef = useRef<Map<string, boolean>>(new Map())
+  const [fullscreenPaths, setFullscreenPaths] = useState<string[]>([])
 
-  const pathToKey = useCallback((path: Path): string => {
-    return JSON.stringify(path)
-  }, [])
-
-  const getFullscreenState = useCallback(
-    (path: Path): boolean => {
-      const key = pathToKey(path)
-      return fullscreenStateRef.current.get(key) ?? false
+  const getFullscreenPath = useCallback(
+    (path: Path): string | undefined => {
+      return fullscreenPaths.find((savedPath) => savedPath === pathToString(path)) ?? undefined
     },
-    [pathToKey],
+    [fullscreenPaths],
   )
 
-  const setFullscreenState = useCallback(
+  const setFullscreenPath = useCallback(
     (path: Path, isFullscreen: boolean): void => {
-      const key = pathToKey(path)
       if (isFullscreen) {
-        fullscreenStateRef.current.set(key, true)
+        setFullscreenPaths([...fullscreenPaths, pathToString(path)])
       } else {
-        fullscreenStateRef.current.delete(key)
+        setFullscreenPaths(fullscreenPaths.filter((savedPath) => savedPath !== pathToString(path)))
       }
     },
-    [pathToKey],
+    [fullscreenPaths],
   )
 
   const hasAnyFullscreen = useCallback((): boolean => {
-    return fullscreenStateRef.current.size > 0
-  }, [])
+    return fullscreenPaths.length > 0
+  }, [fullscreenPaths])
 
   const contextValue = useMemo(
     (): FullscreenPTEContextValue => ({
-      getFullscreenState,
-      setFullscreenState,
+      getFullscreenPath,
+      setFullscreenPath,
       hasAnyFullscreen,
+      allFullscreenPaths: fullscreenPaths,
     }),
-    [getFullscreenState, setFullscreenState, hasAnyFullscreen],
+    [getFullscreenPath, setFullscreenPath, hasAnyFullscreen, fullscreenPaths],
   )
 
   return (

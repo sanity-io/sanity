@@ -9,22 +9,27 @@ export interface FullscreenPTEContextValue {
   /**
    * Get the fullscreen state for a specific path
    */
-  getFullscreenState: (path: Path) => boolean
+  getFullscreenPath: (path: Path) => string | undefined
   /**
    * Set the fullscreen state for a specific path
    */
-  setFullscreenState: (path: Path, isFullscreen: boolean) => void
+  setFullscreenPath: (path: Path, isFullscreen: boolean) => void
   /**
    * Check if any portable text editor is currently in fullscreen mode
    */
   hasAnyFullscreen: () => boolean
+  /**
+   * Get all fullscreen paths
+   */
+  allFullscreenPaths: string[]
 }
 
 export const FullscreenPTEContext = createContext<FullscreenPTEContextValue>(
   'sanity/_singletons/context/fullscreen-pte',
   {
-    getFullscreenState: () => false,
-    setFullscreenState: () => {},
+    getFullscreenPath: () => undefined,
+    setFullscreenPath: () => {},
     hasAnyFullscreen: () => false,
+    allFullscreenPaths: [],
   },
 )

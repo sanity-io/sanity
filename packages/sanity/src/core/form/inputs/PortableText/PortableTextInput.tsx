@@ -149,8 +149,8 @@ export function PortableTextInput(props: PortableTextInputProps): ReactNode {
   const telemetry = useTelemetry()
 
   // Use fullscreen context to persist state across navigation
-  const {getFullscreenState, setFullscreenState} = useFullscreenPTE()
-  const isFullscreen = getFullscreenState(path) || (initialFullscreen ?? false)
+  const {getFullscreenPath, setFullscreenPath} = useFullscreenPTE()
+  const isFullscreen = Boolean(getFullscreenPath(path)) || (initialFullscreen ?? false)
 
   const toast = useToast()
 
@@ -162,9 +162,9 @@ export function PortableTextInput(props: PortableTextInputProps): ReactNode {
       telemetry.log(PortableTextInputCollapsed)
     }
 
-    setFullscreenState(path, next)
+    setFullscreenPath(path, next)
     onFullScreenChange?.(next)
-  }, [isFullscreen, onFullScreenChange, path, setFullscreenState, telemetry])
+  }, [isFullscreen, onFullScreenChange, path, setFullscreenPath, telemetry])
 
   // Reset invalidValue if new value is coming in from props
   useEffect(() => {

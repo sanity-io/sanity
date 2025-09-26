@@ -6,7 +6,9 @@ import {useCallback, useEffect, useMemo, useRef, useState} from 'react'
 import {css, styled} from 'styled-components'
 
 import {Dialog} from '../../../../../ui-components'
+import {pathToString, stringToPath} from '../../../../field/paths/helpers'
 import {FormInput} from '../../../components/FormInput'
+import {useFullscreenPTE} from '../../../inputs/PortableText/contexts/fullscreen'
 import {type ObjectInputProps} from '../../../types/inputProps'
 import {
   buildTreeEditingState,
@@ -52,6 +54,8 @@ export function TreeEditingDialog(props: TreeEditingDialogProps): React.JSX.Elem
   const {value} = rootInputProps
 
   const [treeState, setTreeState] = useState<TreeEditingState>(EMPTY_TREE_STATE)
+  const {getFullscreenPath, setFullscreenPath, hasAnyFullscreen, allFullscreenPaths} =
+    useFullscreenPTE()
 
   const openPathRef = useRef<Path | undefined>(undefined)
   const valueRef = useRef<Record<string, unknown> | undefined>(undefined)
@@ -83,6 +87,17 @@ export function TreeEditingDialog(props: TreeEditingDialogProps): React.JSX.Elem
   )
 
   const onClose = useCallback(() => {
+    // Check if any PTE within the current tree editing context is in fullscreen mode
+    if (hasAnyFullscreen()) {
+      allFullscreenPaths.forEach((path) => {
+        if (pathToString(treeState.relativePath).includes(path)) {
+          onPathOpen(stringToPath(path))
+        }
+      })
+
+      return
+    }
+
     // Cancel any debounced state building when closing the dialog.
     debouncedBuildTreeEditingState.cancel()
 
@@ -104,7 +119,15 @@ export function TreeEditingDialog(props: TreeEditingDialogProps): React.JSX.Elem
     const firstKeySegmentIndex = openPath.findIndex(isKeySegment)
     const rootFocusPath = openPath.slice(0, firstKeySegmentIndex + 1)
     onPathFocus(rootFocusPath)
-  }, [debouncedBuildTreeEditingState, onPathFocus, onPathOpen, openPath])
+  }, [
+    hasAnyFullscreen,
+    debouncedBuildTreeEditingState,
+    onPathOpen,
+    openPath,
+    onPathFocus,
+    treeState.relativePath,
+    allFullscreenPaths,
+  ])
 
   const onHandlePathSelect = useCallback(
     (path: Path) => {
