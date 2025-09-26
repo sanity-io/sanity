@@ -105,6 +105,9 @@
     ]
   },
   "prettier": "@sanity/prettier-config",
+  "dependencies": {
+    "@sanity/presentation-comlink": "1.0.29-audience-decide.2"
+  },
   "devDependencies": {
     "@google-cloud/storage": "^7.16.0",
     "@playwright/test": "catalog:",

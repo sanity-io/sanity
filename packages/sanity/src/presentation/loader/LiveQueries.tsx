@@ -140,7 +140,6 @@ export default function LiveQueries(props: LiveQueriesProps): React.JSX.Element 
   useEffect(() => {
     console.warn('[LiveQueries] Posting loader/decide-parameters:', decideParameters)
     if (comlink) {
-      // @ts-expect-error - TODO: Add 'loader/decide-parameters' to LoaderControllerMsg type
       comlink.post('loader/decide-parameters', {
         projectId,
         dataset,
@@ -264,6 +263,7 @@ interface UseQuerySubscriptionProps extends Required<Pick<SharedProps, 'client'>
 }
 function useQuerySubscription(props: UseQuerySubscriptionProps) {
   const {liveDocument, client, query, params, perspective, liveEventsMessages} = props
+  const {decideParameters} = useDecideParameters()
   const [result, setResult] = useState<unknown>(null)
   const [resultSourceMap, setResultSourceMap] = useState<ContentSourceMap | null | undefined>(null)
   const [syncTags, setSyncTags] = useState<SyncTag[] | undefined>(undefined)
@@ -282,12 +282,22 @@ function useQuerySubscription(props: UseQuerySubscriptionProps) {
   useEffect(() => {
     const controller = new AbortController()
 
+    // Transform decideParameters following the same pattern as useMainDocument
+    const transformedDecideParameters =
+      decideParameters && Object.keys(decideParameters).length > 0
+        ? {
+            ...decideParameters,
+            audience: decideParameters.audiences ?? 'preview',
+          }
+        : undefined
+
     client
       .fetch(query, params, {
         lastLiveEventId,
         tag: 'presentation-loader',
         signal: controller.signal,
         perspective,
+        decideParameters: transformedDecideParameters,
         filterResponse: false,
         returnQuery: false,
       })
@@ -309,7 +319,7 @@ function useQuerySubscription(props: UseQuerySubscriptionProps) {
     return () => {
       controller.abort()
     }
-  }, [client, lastLiveEventId, params, perspective, query])
+  }, [client, lastLiveEventId, params, perspective, query, decideParameters])
   /* eslint-enable max-nested-callbacks */
 
   return useMemo(() => {
