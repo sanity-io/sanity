@@ -8,8 +8,8 @@ import {
   useReferenceInputOptions,
 } from 'sanity'
 import {useRouter} from 'sanity/router'
-import {usePaneRouter} from 'sanity/structure'
 
+import {usePaneRouter} from '../paneRouter'
 import {type IncomingReferencesOptions} from './types'
 
 export function CreateNewIncomingReference({

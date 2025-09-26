@@ -25,25 +25,25 @@ export interface LinkToExistingPreviewProps {
   onLinkToDocument: () => void
 }
 
+const getPerspective = (id: string) => {
+  if (isDraftId(id)) return ['drafts']
+  if (isVersionId(id)) return [getVersionFromId(id) as string]
+  if (isPublishedId(id)) return ['published']
+  return ['raw']
+}
+
 export function LinkToExistingPreview(props: LinkToExistingPreviewProps) {
   const {schemaType, value, onLinkToDocument} = props
   const {data: releases} = useActiveReleases()
-
-  const documentPerspective = useMemo(() => {
-    if (isDraftId(value._id)) return ['drafts']
-    if (isVersionId(value._id)) return [getVersionFromId(value._id) as string]
-    if (isPublishedId(value._id)) return ['published']
-    return ['raw']
-  }, [value._id])
 
   const previewStateObservable = useMemo(() => {
     return getPreviewStateObservable(
       props.documentPreviewStore,
       schemaType,
       value._id,
-      documentPerspective,
+      getPerspective(value._id),
     )
-  }, [props.documentPreviewStore, schemaType, value._id, documentPerspective])
+  }, [props.documentPreviewStore, schemaType, value._id])
 
   const {snapshot, original, isLoading} = useObservable(previewStateObservable, {
     snapshot: null,
