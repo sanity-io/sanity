@@ -22,7 +22,24 @@ export interface DocumentDefinition extends Omit<ObjectDefinition, 'type'> {
   orderings?: SortOrdering[]
   options?: DocumentOptions
   validation?: ValidationBuilder<DocumentRule, SanityDocument>
-  initialValue?: InitialValueProperty<any, Record<string, unknown>>
+  initialValue?: InitialValueProperty<
+    {
+      reference?: {
+        _type: 'reference'
+        _ref: string
+        _weak?: boolean
+        _strengthenOnPublish?: {
+          type: string
+        }
+      }
+      from?: {
+        fieldName: string
+        type: string
+      }
+      [key: string]: unknown
+    },
+    Record<string, unknown>
+  >
   /** @deprecated Unused. Use the new field-level search config. */
   __experimental_search?: {path: string; weight: number; mapWith?: string}[]
   /** @alpha */

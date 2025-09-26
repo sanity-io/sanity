@@ -1,6 +1,7 @@
-import {UserIcon as icon} from '@sanity/icons'
+import {TrashIcon, UserIcon as icon} from '@sanity/icons'
 import {type StringRule} from '@sanity/types'
-import {defineField, defineType} from 'sanity'
+import {type ArrayOfPrimitivesInputProps, defineField, defineType, getDraftId} from 'sanity'
+import {IncomingReferencesInput} from 'sanity/structure'
 
 import {AudienceSelectInput} from '../components/AudienceSelectInput'
 
@@ -72,7 +73,6 @@ export default defineType({
   type: 'document',
   title: 'Author',
   icon,
-  description: 'This represents an author',
   preview: {
     select: {
       title: 'name',
@@ -98,11 +98,95 @@ export default defineType({
       name: 'name',
       title: 'Name',
       type: 'string',
-      options: {
-        search: {weight: 100},
-      },
-      validation: (rule: StringRule) => rule.required(),
     }),
+    defineField({
+      hidden: true,
+      name: 'incomingReferencesDesigner',
+      title: 'Incoming references (author - designer)',
+      type: 'array',
+      components: {
+        input: (props: ArrayOfPrimitivesInputProps) => (
+          <IncomingReferencesInput
+            {...props}
+            onLinkDocument={(document, reference) => {
+              return {
+                ...document,
+                bestFriend: reference,
+              }
+            }}
+            actions={({linkedDocument, client}) => {
+              if (linkedDocument._type === 'author') {
+                return [
+                  {
+                    label: 'Unlink document',
+                    icon: TrashIcon,
+                    tone: 'critical',
+                    onClick: async () => {
+                      await client.createOrReplace({
+                        ...linkedDocument,
+                        _id: getDraftId(linkedDocument._id),
+                        bestFriend: undefined,
+                      })
+                    },
+                  },
+                ]
+              }
+              return []
+            }}
+            filterQuery={`role == "designer"`}
+            // creationAllowed={['author', 'author-developer']}
+            // creationAllowed={false}
+          />
+        ),
+      },
+      of: [{type: 'author'}],
+    }),
+    defineField({
+      name: 'booksCreated',
+      title: 'Books created by this author',
+      type: 'array',
+      components: {
+        input: (props: ArrayOfPrimitivesInputProps) => (
+          <IncomingReferencesInput
+            {...props}
+            onLinkDocument={(document, reference) => {
+              return {
+                ...document,
+                author: reference,
+              }
+            }}
+            actions={({linkedDocument, client}) => {
+              return [
+                {
+                  label: 'Unlink document',
+                  icon: TrashIcon,
+                  tone: 'critical',
+                  onClick: async () => {
+                    await client.createOrReplace({
+                      ...linkedDocument,
+                      _id: getDraftId(linkedDocument._id),
+                      author: undefined,
+                    })
+                  },
+                },
+              ]
+            }}
+          />
+        ),
+      },
+      of: [{type: 'book'}],
+    }),
+    {
+      name: 'favoriteBooks',
+      title: 'Favorite books',
+      type: 'array',
+      of: [
+        {
+          type: 'reference',
+          to: {type: 'book'},
+        },
+      ],
+    },
     {
       name: 'bestFriend',
       title: 'Best friend',
@@ -151,17 +235,7 @@ export default defineType({
         },
       ],
     },
-    {
-      name: 'favoriteBooks',
-      title: 'Favorite books',
-      type: 'array',
-      of: [
-        {
-          type: 'reference',
-          to: {type: 'book'},
-        },
-      ],
-    },
+
     {
       name: 'minimalBlock',
       title: 'Reset all options',
@@ -193,15 +267,18 @@ export default defineType({
     },
   ],
 
-  initialValue: () => ({
-    name: 'Foo',
-    bestFriend: {_type: 'reference', _ref: 'foo-bar'},
-    image: {
-      _type: 'image',
-      asset: {
-        _ref: 'image-8dcc1391e06e4b4acbdc6bbf2e8c8588d537cbb8-4896x3264-jpg',
-        _type: 'reference',
+  initialValue: (params) => {
+    return {
+      name: 'Foo',
+      bestFriend: params?.reference || {_type: 'reference', _ref: 'foo-bar'},
+      image: {
+        _type: 'image',
+        asset: {
+          _ref: 'image-8dcc1391e06e4b4acbdc6bbf2e8c8588d537cbb8-4896x3264-jpg',
+          _type: 'reference',
+        },
       },
-    },
-  }),
+      role: params?.from?.fieldName === 'incomingReferencesDesigner' ? 'designer' : undefined,
+    }
+  },
 })
