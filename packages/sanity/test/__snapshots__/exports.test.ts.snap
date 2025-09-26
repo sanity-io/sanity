@@ -155,6 +155,7 @@ exports[`exports snapshot 1`] = `
     "PreviewLoader": "function",
     "RELEASES_INTENT": "string",
     "RELEASES_STUDIO_CLIENT_OPTIONS": "object",
+    "ReferenceAutocomplete": "object",
     "ReferenceInput": "function",
     "ReferenceInputOptionsProvider": "function",
     "ReferenceInputPreviewCard": "object",

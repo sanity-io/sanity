@@ -1,12 +1,13 @@
 import {DEFAULT_MAX_FIELD_DEPTH} from '@sanity/schema/_internal'
-import {Autocomplete, Box, Flex, Grid, Stack, Text, useToast} from '@sanity/ui'
-import {type Ref, useCallback, useMemo, useRef, useState} from 'react'
+import {Box, Grid, Stack, Text, useToast} from '@sanity/ui'
+import {useCallback, useMemo, useState} from 'react'
 import {useObservableEvent} from 'react-rx'
 import {catchError, concat, filter, map, type Observable, of, scan, switchMap, tap} from 'rxjs'
 import {
   createSearch,
   DEFAULT_STUDIO_CLIENT_OPTIONS,
   isNonNullable,
+  ReferenceAutocomplete,
   type SanityClient,
   type SchemaType,
   type SearchStrategy,
@@ -16,20 +17,11 @@ import {
   useSource,
   useTranslation,
 } from 'sanity'
-import {styled} from 'styled-components'
 
-import {Popover} from '../../../ui-components/popover/Popover'
 import {structureLocaleNamespace} from '../../i18n'
 import {CreateNewIncomingReference} from './CreateNewIncomingReference'
 import {LinkToExistingPreview} from './LinkToExistingPreview'
 import {type IncomingReferencesOptions} from './types'
-
-const StyledPopover = styled(Popover)`
-  & > div {
-    overflow: auto;
-    -webkit-overflow-scrolling: touch;
-  }
-`
 
 interface ReferenceSearchState {
   hits: ReferenceSearchHit[]
@@ -37,6 +29,10 @@ interface ReferenceSearchState {
   searchString?: string
 }
 
+interface ReferenceOption {
+  value: string
+  hit: ReferenceSearchHit
+}
 interface ReferenceSearchHit {
   _id: string
   _type: string
@@ -98,7 +94,6 @@ export function AddIncomingReference({
   const client = useClient(DEFAULT_STUDIO_CLIENT_OPTIONS)
   const source = useSource()
   const {strategy: searchStrategy} = source.search
-  const autoCompletePortalRef = useRef<HTMLDivElement>(null)
   const documentPreviewStore = useDocumentPreviewStore()
   const handleSearch = useMemo(
     () => incomingReferenceSearch(client, schemaType!, searchStrategy),
@@ -121,7 +116,6 @@ export function AddIncomingReference({
                 status: 'error',
                 id: `reference-search-fail-${type}`,
               })
-
               console.error(error)
               return of({hits: [], isLoading: false})
             }),
@@ -138,18 +132,19 @@ export function AddIncomingReference({
     )
   })
 
-  const options = useMemo(() => {
+  const options: ReferenceOption[] = useMemo(() => {
     return searchState.hits.map((hit) => ({
       value: hit._id,
       hit: hit,
     }))
   }, [searchState.hits])
+
   const handleAutocompleteOpenButtonClick = useCallback(() => {
     handleQueryChange('')
   }, [handleQueryChange])
 
   const renderOption = useCallback(
-    (option: {value: string; hit: ReferenceSearchHit}) => {
+    (option: ReferenceOption) => {
       return (
         <LinkToExistingPreview
           onLinkToDocument={() => onLinkDocument(option.value)}
@@ -162,53 +157,6 @@ export function AddIncomingReference({
     [documentPreviewStore, schemaType, onLinkDocument],
   )
 
-  // TODO: Use ReferenceAutocomplete?
-  const renderPopover = useCallback(
-    (
-      props: {
-        content: React.JSX.Element | null
-        hidden: boolean
-        inputElement: HTMLInputElement | null
-        onMouseEnter: () => void
-        onMouseLeave: () => void
-      },
-      contentRef: Ref<HTMLDivElement>,
-    ) => (
-      <StyledPopover
-        data-testid="autocomplete-popover"
-        placement="bottom-start"
-        arrow={false}
-        constrainSize
-        onMouseEnter={props.onMouseEnter}
-        fallbackPlacements={['bottom', 'top']}
-        onMouseLeave={props.onMouseLeave}
-        content={
-          <div ref={contentRef}>
-            {options?.length ? (
-              props.content
-            ) : (
-              <Box padding={4}>
-                <Flex align="center" height="fill" justify="center">
-                  <Text align="center" muted>
-                    {t('incoming-references-input.no-results-for-query', {
-                      searchTerm: searchState.searchString,
-                    })}
-                  </Text>
-                </Flex>
-              </Box>
-            )}
-          </div>
-        }
-        open={!searchState.isLoading && !props.hidden}
-        ref={autoCompletePortalRef}
-        portal
-        referenceElement={props.inputElement}
-        matchReferenceWidth
-      />
-    ),
-    [options, searchState.searchString, searchState.isLoading, autoCompletePortalRef, t],
-  )
-
   return (
     <Stack space={2} padding={2}>
       <Box paddingY={2}>
@@ -217,7 +165,7 @@ export function AddIncomingReference({
         </Text>
       </Box>
       <Grid gap={creationAllowed ? 2 : 0} style={{gridTemplateColumns: '1fr min-content'}}>
-        <Autocomplete
+        <ReferenceAutocomplete
           id={`${type}-autocomplete`}
           radius={2}
           autoFocus
@@ -225,9 +173,11 @@ export function AddIncomingReference({
           placeholder={t('incoming-references-input.type-to-search')}
           onQueryChange={handleQueryChange}
           filterOption={NO_FILTER}
+          // @ts-expect-error - Types are not derived correctly
           renderOption={renderOption}
           openButton={{onClick: handleAutocompleteOpenButtonClick}}
-          renderPopover={renderPopover}
+          referenceElement={null}
+          loading={searchState.isLoading}
         />
         <CreateNewIncomingReference
           type={type}
