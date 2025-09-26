@@ -1,12 +1,6 @@
 import {TrashIcon, UserIcon as icon} from '@sanity/icons'
 import {type StringRule} from '@sanity/types'
-import {
-  type ArrayOfPrimitivesInputProps,
-  defineField,
-  defineType,
-  getDraftId,
-  isPublishedId,
-} from 'sanity'
+import {type ArrayOfPrimitivesInputProps, defineField, defineType, getDraftId} from 'sanity'
 
 import {AudienceSelectInput} from '../components/AudienceSelectInput'
 import {IncomingReferencesInput} from '../components/incomingReferences/IncomingReferencesInput'
@@ -79,9 +73,6 @@ export default defineType({
   type: 'document',
   title: 'Author',
   icon,
-  options: {
-    referencedBy: ['author', 'book'],
-  },
   preview: {
     select: {
       title: 'name',

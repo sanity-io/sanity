@@ -420,6 +420,10 @@ const structureLocaleStrings = defineLocalesResources('structure', {
   'events.open.draft': 'Open <VersionBadge>draft</VersionBadge> document',
   /**The title for the menu items that will be shown when expanding a publish release event to inspect the release*/
   'events.open.release': 'Open <VersionBadge>{{releaseTitle}}</VersionBadge> release',
+  /** The text shown if there are no incoming references for a type */
+  'incoming-references-pane.no-references-found': 'No references of this type found.',
+  /** The text shown if there is no schema type found for a document in the incoming references pane */
+  'incoming-references-pane.schema-type-not-found': 'Schema type {{type}} not found',
   /** The loading messaging for when the tooltip is still loading permission info */
   'insufficient-permissions-message-tooltip.loading-text': 'Loading…',
 
