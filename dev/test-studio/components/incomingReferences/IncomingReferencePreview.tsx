@@ -1,3 +1,4 @@
+// This was copied from IncomingReferencePreview in structure, decide to keep it or export it from the package
 import {type Path, type SanityDocument, type SchemaType} from '@sanity/types'
 import {type ReactNode, useCallback} from 'react'
 import {
@@ -12,11 +13,9 @@ import {usePaneRouter} from 'sanity/structure'
 
 import {PaneItemPreview} from './PaneItemPreview'
 
-const EMPTY_ARRAY: [] = []
-
 interface IncomingReferencePreviewProps {
   onClick?: () => void
-  type: SchemaType & {icon?: any}
+  type: SchemaType
   value: SanityDocument
   path: Path
 }
@@ -33,21 +32,21 @@ export function IncomingReferencePreview(props: IncomingReferencePreviewProps) {
       return (
         <ChildLink
           childId={getPublishedId(value?._id)}
-          childParameters={{type: type?.name, path: pathToString(path)}}
+          childParameters={{type: type.name, path: pathToString(path)}}
           {...linkProps}
         />
       )
     },
-    [ChildLink, type?.name, value?._id, path],
+    [ChildLink, type.name, value?._id, path],
   )
 
   return (
     <PreviewCard __unstable_focusRing as={Link as FIXME} data-as="a" onClick={onClick} radius={2}>
       <PaneItemPreview
         documentPreviewStore={documentPreviewStore}
-        icon={type?.icon}
+        icon={type.icon || false}
         layout="default"
-        presence={documentPresence?.length > 0 ? documentPresence : EMPTY_ARRAY}
+        presence={documentPresence}
         schemaType={type}
         value={value}
       />

@@ -9,9 +9,7 @@ import {type ObjectDefinition} from './object'
  *
  * @public
  */
-export interface DocumentOptions extends BaseSchemaTypeOptions {
-  referencedBy?: string[]
-}
+export interface DocumentOptions extends BaseSchemaTypeOptions {}
 
 /** @public */
 export interface DocumentRule extends RuleDef<DocumentRule, SanityDocument> {}
