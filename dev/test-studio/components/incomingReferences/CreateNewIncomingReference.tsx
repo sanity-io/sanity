@@ -10,18 +10,22 @@ import {
 import {useRouter} from 'sanity/router'
 import {usePaneRouter} from 'sanity/structure'
 
+import {type IncomingReferencesOptions} from './types'
+
 export function CreateNewIncomingReference({
   type,
   referenceToId,
   referenceToType,
-  disableNew,
   onCreateNewReference,
+  fieldName,
+  creationAllowed,
 }: {
   type: string
   referenceToId: string
   referenceToType: string
-  disableNew: boolean
   onCreateNewReference: (id: string) => void
+  fieldName: string
+  creationAllowed: IncomingReferencesOptions['creationAllowed']
 }) {
   const {initialValueTemplateItems} = useReferenceInputOptions()
 
@@ -45,6 +49,7 @@ export function CreateNewIncomingReference({
                   _weak: true,
                   _strengthenOnPublish: {type: referenceToType},
                 },
+                from: {fieldName, type: referenceToType},
               },
             },
           ],
@@ -60,17 +65,21 @@ export function CreateNewIncomingReference({
       referenceToId,
       referenceToType,
       onCreateNewReference,
+      fieldName,
     ],
   )
 
   const createOptions = useMemo(() => {
-    if (disableNew) {
-      return []
-    }
+    if (!creationAllowed) return []
     return (initialValueTemplateItems || [])
 
       .filter((i) => {
-        return type === i.template?.schemaType
+        const typeMatch = type === i.template?.schemaType
+        if (Array.isArray(creationAllowed)) {
+          // Check if the template id is in the creationAllowed array
+          return typeMatch && creationAllowed.includes(i.template.id)
+        }
+        return typeMatch
       })
       .map((item): CreateReferenceOption | undefined =>
         item.template?.schemaType
@@ -90,8 +99,11 @@ export function CreateNewIncomingReference({
           : undefined,
       )
       .filter(isNonNullable)
-  }, [disableNew, initialValueTemplateItems, type])
+  }, [creationAllowed, initialValueTemplateItems, type])
 
+  if (!creationAllowed) {
+    return null
+  }
   return (
     <CreateReferenceButton
       id={`create-new-incoming-reference-${type}`}

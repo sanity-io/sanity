@@ -7,7 +7,14 @@ import {type IncomingReferencesOptions} from './types'
 export function IncomingReferencesInput(
   props: ArrayOfPrimitivesInputProps & IncomingReferencesOptions,
 ) {
-  const {schemaType, onLinkDocument, actions, filterQuery} = props
+  const {
+    schemaType,
+    onLinkDocument,
+    actions,
+    filterQuery,
+    id: fieldName,
+    creationAllowed = true,
+  } = props
   const types = useMemo(() => schemaType.of.map((type) => type.name), [schemaType])
 
   if (types.length > 1) {
@@ -20,6 +27,8 @@ export function IncomingReferencesInput(
       onLinkDocument={onLinkDocument}
       actions={actions}
       filterQuery={filterQuery}
+      fieldName={fieldName}
+      creationAllowed={creationAllowed}
     />
   )
 }
