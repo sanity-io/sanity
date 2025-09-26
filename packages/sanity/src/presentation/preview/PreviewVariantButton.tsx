@@ -23,7 +23,15 @@ export function PreviewVariantButton({
 
   // Only render if DECISION_PARAMETERS_SCHEMA is configured
   const decideParametersConfig = workspace.__internal.options[DECISION_PARAMETERS_SCHEMA]
+
+  console.warn('[PreviewVariantButton] Component rendered with:', {
+    currentSelections,
+    decideParametersConfig,
+    hasOnSelectionChange: !!onSelectionChange,
+  })
+
   if (!decideParametersConfig) {
+    console.warn('[PreviewVariantButton] No DECISION_PARAMETERS_SCHEMA configured, not rendering')
     return null
   }
 
@@ -32,7 +40,10 @@ export function PreviewVariantButton({
     return Array.isArray(value) && value.every((item) => typeof item === 'string')
   }) as Array<[string, string[]]>
 
+  console.warn('[PreviewVariantButton] Valid parameters:', validParameters)
+
   const handleSelectionChange = (key: string, value: string) => {
+    console.warn('[PreviewVariantButton] Selection changed:', {key, value})
     setPendingSelections((prev) => ({
       ...prev,
       [key]: value,
@@ -40,6 +51,8 @@ export function PreviewVariantButton({
   }
 
   const handleSave = () => {
+    console.warn('[PreviewVariantButton] Saving selections:', pendingSelections)
+    console.warn('[PreviewVariantButton] Current selections before save:', currentSelections)
     // Apply pending selections via callback
     onSelectionChange?.(pendingSelections)
     setIsDialogOpen(false)

@@ -49,8 +49,11 @@ const PreviewHeaderDefault = (props: Omit<PreviewHeaderProps, 'renderDefault'>) 
   const {decideParameters: decisionParameters, setDecideParameters: setDecisionParameters} =
     useDecideParameters()
 
+  console.warn('[PreviewHeader] Component rendered with decisionParameters:', decisionParameters)
+
   const handleVariantSelectionChange = useCallback(
     (selections: Record<string, string>) => {
+      console.warn('[PreviewHeader] handleVariantSelectionChange called with:', selections)
       setDecisionParameters(selections)
     },
     [setDecisionParameters],
