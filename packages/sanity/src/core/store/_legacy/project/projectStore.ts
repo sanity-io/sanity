@@ -24,11 +24,11 @@ const getOrganizationId = memoize(
       })
       .pipe(
         map((res) => res.organizationId),
-        repeat({delay: REFETCH_INTERVAL}),
-        shareReplay(1),
         catchError(() => {
           return of(null)
         }),
+        repeat({delay: REFETCH_INTERVAL}),
+        shareReplay({bufferSize: 1, refCount: true}),
       )
   },
   (client) => `${client.config().projectId}-${client.config().dataset}`,
@@ -43,12 +43,14 @@ export function createProjectStore(context: {client: SanityClient}): ProjectStor
   function get(): Observable<ProjectData> {
     return versionedClient.observable.request({
       url: `/projects/${projectId}`,
+      tag: 'get-project',
     })
   }
 
   function getDatasets() {
     return versionedClient.observable.request({
       url: `/projects/${projectId}/datasets`,
+      tag: 'get-datasets',
     })
   }
 
