@@ -18,6 +18,7 @@ export const handler = documentEventHandler(
       ...context.clientOptions,
       dataset: 'production',
       useCdn: false,
+      apiVersion: '2025-06-25',
     })
     const {data} = event
 
