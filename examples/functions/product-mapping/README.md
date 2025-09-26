@@ -20,7 +20,7 @@ This Sanity Function automatically processes Shopify product tags to create prod
 
 ## Compatible Templates
 
-This function is built to be compatible with the [Sanity E-commerce template](https://www.sanity.io/templates/ecommerce-shopify). It works specifically with Shopify product data and requires the `product`, `productMap`, and `colorVariant` document types.
+This function is built to be compatible with the Sanity E-commerce Shopify template.. It works specifically with Shopify product data and requires the `product`, `productMap`, and `colorVariant` document types.  Install Sanity's Shopify template: `npm create sanity@latest -- --template shopify`
 
 ## How it works with Sanity Connect for Shopify
 
