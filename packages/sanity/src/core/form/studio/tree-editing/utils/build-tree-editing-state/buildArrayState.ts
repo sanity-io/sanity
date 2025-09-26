@@ -235,6 +235,18 @@ export function buildArrayState(props: BuildArrayState): TreeEditingState {
           // Check if openPath points to this block itself or to an array field within it
           const openPathPointsToThisBlock = toString(openPath).startsWith(toString(blockPath))
 
+          // Add breadcrumb for the PortableText block object if openPath points to it
+          if (openPathPointsToThisBlock && shouldBeInBreadcrumb(blockPath, openPath)) {
+            const blockBreadcrumb: TreeEditingBreadcrumb = {
+              children: EMPTY_ARRAY,
+              parentSchemaType: childField.type as ArraySchemaType,
+              path: blockPath,
+              schemaType: blockSchemaType,
+              value: blockObj,
+            }
+            breadcrumbs.push(blockBreadcrumb)
+          }
+
           if (openPathPointsToThisBlock) {
             // eslint-disable-next-line max-nested-callbacks
             blockSchemaType.fields.forEach((blockField) => {
