@@ -12,7 +12,7 @@ import {useMemo} from 'react'
 import {styled} from 'styled-components'
 
 import {Tooltip} from '../../../../ui-components'
-import {useDateTimeFormat} from '../../../hooks'
+import {useDateTimeFormat, type UseDateTimeFormatOptions} from '../../../hooks'
 import {type TaskDocument} from '../../types'
 import {TasksUserAvatar} from '../TasksUserAvatar'
 import {DocumentPreview} from './DocumentPreview'
@@ -44,11 +44,23 @@ function getTargetDocumentMeta(target?: TaskDocument['target']) {
     _type: target?.documentType,
   }
 }
-
+const FULL_DATE_FORMAT_OPTIONS: UseDateTimeFormatOptions = {
+  dateStyle: 'medium',
+  timeZone: 'UTC',
+}
+const MONTH_AND_DAY_FORMAT_OPTIONS: UseDateTimeFormatOptions = {
+  month: 'short',
+  day: 'numeric',
+  timeZone: 'UTC',
+}
+const DAY_FORMAT_OPTIONS: UseDateTimeFormatOptions = {
+  weekday: 'long',
+  timeZone: 'UTC',
+}
 function TaskDueDate({dueBy}: {dueBy: string}) {
-  const fullDateFormatter = useDateTimeFormat({dateStyle: 'medium'})
-  const monthAndDayFormatter = useDateTimeFormat({month: 'short', day: 'numeric'})
-  const dayFormatter = useDateTimeFormat({weekday: 'long'})
+  const fullDateFormatter = useDateTimeFormat(FULL_DATE_FORMAT_OPTIONS)
+  const monthAndDayFormatter = useDateTimeFormat(MONTH_AND_DAY_FORMAT_OPTIONS)
+  const dayFormatter = useDateTimeFormat(DAY_FORMAT_OPTIONS)
 
   const dateOptions = useMemo(() => {
     const date = new Date(dueBy)

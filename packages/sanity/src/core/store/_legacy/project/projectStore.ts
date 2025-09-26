@@ -1,5 +1,5 @@
 import {type SanityClient} from '@sanity/client'
-import {catchError, map, type Observable, of, repeat, shareReplay} from 'rxjs'
+import {catchError, map, type Observable, of, repeat, ReplaySubject, share, timer} from 'rxjs'
 
 import {memoize} from '../document/utils/createMemoizer'
 import {type ProjectData, type ProjectStore} from './types'
@@ -24,10 +24,16 @@ const getOrganizationId = memoize(
       })
       .pipe(
         map((res) => res.organizationId),
-        repeat({delay: REFETCH_INTERVAL}),
-        shareReplay(1),
         catchError(() => {
           return of(null)
+        }),
+        repeat({delay: REFETCH_INTERVAL}),
+        share({
+          connector: () => new ReplaySubject(1),
+          resetOnComplete: true,
+          // delay unsubscriptions a little to keep the observable active
+          // during React effect setup and teardown due to rapidly changing deps
+          resetOnRefCountZero: () => timer(1000),
         }),
       )
   },
@@ -43,12 +49,14 @@ export function createProjectStore(context: {client: SanityClient}): ProjectStor
   function get(): Observable<ProjectData> {
     return versionedClient.observable.request({
       url: `/projects/${projectId}`,
+      tag: 'get-project',
     })
   }
 
   function getDatasets() {
     return versionedClient.observable.request({
       url: `/projects/${projectId}/datasets`,
+      tag: 'get-datasets',
     })
   }
 

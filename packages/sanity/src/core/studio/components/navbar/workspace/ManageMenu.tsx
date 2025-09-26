@@ -3,24 +3,28 @@ import {Flex, Stack, Text} from '@sanity/ui'
 
 import {Button} from '../../../../../ui-components/button/Button'
 import {useTranslation} from '../../../../i18n'
+import {useProject} from '../../../../store/_legacy/project/useProject'
 import {userHasRole} from '../../../../util/userHasRole'
 import {useActiveWorkspace} from '../../../activeWorkspaceMatcher/useActiveWorkspace'
+import {useEnvAwareSanityWebsiteUrl} from '../../../hooks/useEnvAwareSanityWebsiteUrl'
 import {useWorkspace} from '../../../workspace'
 import {WorkspacePreviewIcon} from './WorkspacePreview'
 
-export function ManageMenu() {
+export function ManageMenu({multipleWorkspaces}: {multipleWorkspaces: boolean}) {
   const {projectId, currentUser} = useWorkspace()
+  const {value: project} = useProject()
   const {activeWorkspace} = useActiveWorkspace()
   const isAdmin = Boolean(currentUser && userHasRole(currentUser, 'administrator'))
+  const envAwareWebsiteUrl = useEnvAwareSanityWebsiteUrl()
 
   const {t} = useTranslation()
 
   return (
-    <Stack paddingX={5} paddingTop={4} paddingBottom={3}>
+    <Stack paddingX={4} paddingTop={4} paddingBottom={multipleWorkspaces ? 3 : 4}>
       <Flex align="center">
         <WorkspacePreviewIcon icon={activeWorkspace.icon} size="large" />
         <Stack marginLeft={2} space={2}>
-          <Text size={0}>{activeWorkspace.name}</Text>
+          <Text size={0}>{project?.displayName}</Text>
           <Text size={2} weight="medium">
             {activeWorkspace.title}
           </Text>
@@ -31,7 +35,7 @@ export function ManageMenu() {
         <Button
           mode="bleed"
           as="a"
-          href={`https://sanity.io/manage/project/${projectId}`}
+          href={`${envAwareWebsiteUrl}/manage/project/${projectId}`}
           target="_blank"
           icon={CogIcon}
           tooltipProps={{content: t('user-menu.action.manage-project-aria-label')}}
@@ -43,7 +47,7 @@ export function ManageMenu() {
           <Button
             mode="bleed"
             as="a"
-            href={`https://www.sanity.io/manage/project/${projectId}/members?invite=true`}
+            href={`${envAwareWebsiteUrl}/manage/project/${projectId}/members?invite=true`}
             target="_blank"
             icon={AddUserIcon}
             tooltipProps={{content: t('user-menu.action.invite-members')}}

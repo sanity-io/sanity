@@ -14,9 +14,10 @@
     "timeout": 60,
     "event": {
       "on": [
-        "publish"
+        "create",
+        "update"
       ],
-      "filter": "_type == 'post'",
+      "filter": "_type == 'post' && delta::changedAny(content)",
       "projection": "{_id}"
     }
   },

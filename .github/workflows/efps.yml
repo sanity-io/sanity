@@ -21,17 +21,75 @@ on:
         type: boolean
         default: false
 
-concurrency:
-  group: ${{ github.workflow }}-${{ github.head_ref || github.run_id }}
-  cancel-in-progress: true
-
 jobs:
-  efps-test:
-    timeout-minutes: 30
+  deploy-preview:
     runs-on: ubuntu-latest
     env:
       TURBO_TOKEN: ${{ secrets.TURBO_TOKEN }}
       TURBO_TEAM: ${{ vars.TURBO_TEAM }}
+    outputs:
+      preview_url: ${{ steps.deploy.outputs.DEPLOY_URL }}
+    steps:
+      - uses: actions/checkout@v5
+      - uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@v5
+        with:
+          node-version: lts/*
+
+      - name: Install project dependencies
+        run: pnpm install
+
+      - name: Install Vercel CLI
+        run: pnpm install --global vercel@latest
+
+      - name: Pull Vercel Environment Information
+        env:
+          VERCEL_ORG_ID: ${{ secrets.VERCEL_EFPS_STUDIO_ORG_ID }}
+          VERCEL_PROJECT_ID: ${{ secrets.VERCEL_EFPS_STUDIO_PROJECT_ID }}
+        run: vercel pull --yes --environment=preview --token=${{ secrets.VERCEL_EFPS_STUDIO_TOKEN }}
+
+      - name: Build Project Artifacts
+        env:
+          VERCEL_ORG_ID: ${{ secrets.VERCEL_EFPS_STUDIO_ORG_ID }}
+          VERCEL_PROJECT_ID: ${{ secrets.VERCEL_EFPS_STUDIO_PROJECT_ID }}
+          VERCEL_SANITY_API_DEPLOY_TOKEN: ${{ secrets.VERCEL_SANITY_API_DEPLOY_TOKEN }}
+          VITE_PERF_EFPS_PROJECT_ID: ${{ vars.PERF_EFPS_PROJECT_ID_TEST }}
+          VITE_PERF_EFPS_DATASET: ${{ vars.PERF_EFPS_DATASET_TEST }}
+        run: vercel build --token=${{ secrets.VERCEL_EFPS_STUDIO_TOKEN }}
+
+      - name: Deploy Project Artifacts to Vercel
+        id: deploy
+        env:
+          COMMIT_MESSAGE: ${{ github.event.head_commit.message || github.event.pull_request.title }}
+        run: |
+          echo "DEPLOY_URL=$(vercel deploy --prebuilt --token=${{ secrets.VERCEL_EFPS_STUDIO_TOKEN }} \
+          -m githubDeployment="1" \
+          -m githubCommitAuthorName="${{ github.event.sender.name || 'GitHub Actions' }}" \
+          -m githubCommitMessage="$COMMIT_MESSAGE" \
+          -m githubCommitOrg="${{ github.repository_owner }}" \
+          -m githubCommitRef="${{ github.head_ref || github.ref_name }}" \
+          -m githubCommitRepo="${{ github.event.repository.name }}" \
+          -m githubCommitSha="${{ github.sha }}" \
+          -m githubOrg="${{ github.repository_owner }}" \
+          -m githubRepo="${{ github.event.repository.name }}" \
+          -m githubCommitAuthorLogin="${{ github.event.sender.login || github.actor }}" | tail -n 1)" >> $GITHUB_OUTPUT
+
+      - name: Echo the preview URL
+        run: |
+          if [ -z "${{ steps.deploy.outputs.DEPLOY_URL }}" ]; then
+           echo "::error::Preview URL was not found. Deployment may have failed."
+           exit 1
+          fi
+          echo "Preview URL: ${{ steps.deploy.outputs.DEPLOY_URL }}"
+
+  efps-test:
+    timeout-minutes: 30
+    runs-on: ubuntu-latest
+    needs: [deploy-preview]
+    env:
+      TURBO_TOKEN: ${{ secrets.TURBO_TOKEN }}
+      TURBO_TEAM: ${{ vars.TURBO_TEAM }}
+      DEPLOY_URL: ${{ needs.deploy-preview.outputs.preview_url }}
     strategy:
       fail-fast: false
       matrix:
@@ -53,7 +111,7 @@ jobs:
           message: |
             ### ⚡️ Editor Performance Report
 
-            Waiting for Editor Performance Tests to finish…
+            Deploying studio and running performance tests…
 
       - name: Install project dependencies
         run: pnpm install
@@ -84,6 +142,7 @@ jobs:
           REFERENCE_TAG: ${{ github.event.inputs.reference_tag || 'latest' }}
           ENABLE_PROFILER: ${{ github.event.inputs.enable_profiler || false }}
           RECORD_VIDEO: ${{ github.event.inputs.record_video || false }}
+          STUDIO_URL: ${{ needs.deploy-preview.outputs.preview_url }}
         run: pnpm efps:test -- -- --shard ${{ matrix.shardIndex }}/${{ matrix.shardTotal }}
 
       - uses: actions/upload-artifact@v4
@@ -118,11 +177,12 @@ jobs:
           path: dev/efps/results
 
       - name: Write report
+        id: write-report
         run: pnpm efps:write:report
 
       - name: PR comment with report
         uses: thollander/actions-comment-pull-request@24bffb9b452ba05a4f3f77933840a6a841d1b32b # v3
-        if: ${{ github.event_name == 'pull_request' }}
+        if: ${{ always() && github.event_name == 'pull_request' }}
         with:
           comment-tag: "efps-report"
           file-path: ${{ github.workspace }}/dev/efps/results/benchmark-results.md
