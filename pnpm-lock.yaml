@@ -260,7 +260,7 @@ importers:
         specifier: ^4.20.5
         version: 4.20.5
       turbo:
-        specifier: ^2.5.6
+        specifier: ^2.5.8
         version: 2.5.8
       typescript:
         specifier: 'catalog:'
