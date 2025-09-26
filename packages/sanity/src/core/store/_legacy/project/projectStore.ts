@@ -1,5 +1,5 @@
 import {type SanityClient} from '@sanity/client'
-import {catchError, map, type Observable, of, repeat, shareReplay} from 'rxjs'
+import {catchError, map, type Observable, of, repeat, ReplaySubject, share, timer} from 'rxjs'
 
 import {memoize} from '../document/utils/createMemoizer'
 import {type ProjectData, type ProjectStore} from './types'
@@ -28,7 +28,13 @@ const getOrganizationId = memoize(
           return of(null)
         }),
         repeat({delay: REFETCH_INTERVAL}),
-        shareReplay({bufferSize: 1, refCount: true}),
+        share({
+          connector: () => new ReplaySubject(1),
+          resetOnComplete: true,
+          // delay unsubscriptions a little to keep the observable active
+          // during React effect setup and teardown due to rapidly changing deps
+          resetOnRefCountZero: () => timer(1000),
+        }),
       )
   },
   (client) => `${client.config().projectId}-${client.config().dataset}`,
