@@ -98,12 +98,6 @@ export default function LiveQueries(props: LiveQueriesProps): React.JSX.Element 
             )
           }
 
-          console.warn('[core-loader] Received decideParameters:', data.decideParameters)
-          console.warn(
-            '[core-loader] Sending query-listen with decideParameters:',
-            data.decideParameters,
-          )
-
           liveQueriesDispatch({
             type: 'query-listen',
             payload: {
@@ -146,7 +140,6 @@ export default function LiveQueries(props: LiveQueriesProps): React.JSX.Element 
 
   // Post decide parameters to loaders when they change
   useEffect(() => {
-    console.warn('[LiveQueries] Posting loader/decide-parameters:', decideParameters)
     if (comlink) {
       comlink.post('loader/decide-parameters', {
         projectId,
@@ -293,12 +286,7 @@ function useQuerySubscription(props: UseQuerySubscriptionProps) {
     ? (() => {
         try {
           return JSON.parse(passedDecideParameters)
-        } catch (error) {
-          console.error(
-            '[core-loader] Failed to parse decideParameters:',
-            passedDecideParameters,
-            error,
-          )
+        } catch {
           return globalDecideParameters
         }
       })()
@@ -341,14 +329,6 @@ function useQuerySubscription(props: UseQuerySubscriptionProps) {
         returnQuery: false,
       })
       .then((response) => {
-        console.warn('[core-loader] Query result received:', {
-          query: `${query.slice(0, 50)}...`,
-          perspective,
-          decideParameters: passedDecideParameters || 'fallback-to-global',
-          resultCount: Array.isArray(response.result) ? response.result.length : 'single-result',
-        })
-        console.warn('[core-loader] Updated cache, triggering live query updates')
-
         startTransition(() => {
           setResult((prev: unknown) => (isEqual(prev, response.result) ? prev : response.result))
           setResultSourceMap((prev) =>
@@ -359,12 +339,6 @@ function useQuerySubscription(props: UseQuerySubscriptionProps) {
       })
       .catch((err) => {
         if (typeof err !== 'object' || err?.name !== 'AbortError') {
-          console.error('[core-loader] Query execution failed:', {
-            query: `${query.slice(0, 50)}...`,
-            perspective,
-            decideParameters: passedDecideParameters || 'fallback-to-global',
-            error: err,
-          })
           setError(err)
         }
       })
