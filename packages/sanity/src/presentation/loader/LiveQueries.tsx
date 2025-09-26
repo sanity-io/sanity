@@ -342,7 +342,9 @@ function useQuerySubscription(props: UseQuerySubscriptionProps) {
 
     // Parse and transform decideParameters following the same pattern as useMainDocument
     const parsedDecideParameters = decideParameters
-      ? (JSON.parse(decideParameters) as Record<string, string | string[]>)
+      ? typeof decideParameters === 'string'
+        ? (JSON.parse(decideParameters) as Record<string, string | string[]>)
+        : (decideParameters as Record<string, string | string[]>)
       : undefined
 
     const transformedDecideParameters =
@@ -457,6 +459,7 @@ export function turboChargeResultIfSourceMap<T = unknown>(
         if (typeof liveDocument._id === 'string' && typeof sourceDocument._type === 'string') {
           return liveDocument as unknown as Required<Pick<SanityDocument, '_id' | '_type'>>
         }
+
         return {
           ...liveDocument,
           _id: liveDocument._id || sourceDocument._id,
