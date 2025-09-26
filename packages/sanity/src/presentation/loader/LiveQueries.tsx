@@ -321,7 +321,7 @@ function useQuerySubscription(props: UseQuerySubscriptionProps) {
     client
       .fetch(query, params, {
         lastLiveEventId,
-        tag: `presentation-loader-${JSON.stringify(transformedDecideParameters)}`,
+        tag: `presentation-loader-${JSON.stringify(transformedDecideParameters.audience)}`,
         signal: controller.signal,
         perspective,
         decideParameters: transformedDecideParameters,
