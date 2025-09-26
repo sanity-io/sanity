@@ -47,7 +47,6 @@ import {
   TooltipBox,
 } from './BlockObject.styles'
 import {BlockObjectActionsMenu} from './BlockObjectActionsMenu'
-import {ObjectEditModal} from './modals/ObjectEditModal'
 
 interface BlockObjectProps extends PropsWithChildren {
   floatingBoundary: HTMLElement | null
@@ -428,19 +427,6 @@ export const DefaultBlockObjectComponent = (props: BlockProps) => {
           value,
         })}
       </Root>
-      {open && (
-        <ObjectEditModal
-          floatingBoundary={__unstable_floatingBoundary}
-          defaultType="dialog"
-          onClose={onClose}
-          autoFocus
-          schemaType={schemaType}
-          referenceBoundary={__unstable_referenceBoundary}
-          referenceElement={__unstable_referenceElement}
-        >
-          {children}
-        </ObjectEditModal>
-      )}
     </>
   )
 }

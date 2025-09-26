@@ -1,5 +1,4 @@
 import {
-  isArrayOfBlocksSchemaType,
   isArrayOfObjectsSchemaType,
   isObjectSchemaType,
   type ObjectField,
@@ -31,7 +30,7 @@ export function findArrayTypePaths(fields: ObjectField<SchemaType>[]): Path[] {
       const newPath = [...currentPath, field.name]
 
       // If the field type is an array, add the new path to the arrayPaths array
-      if (isArrayOfObjectsSchemaType(field.type) && !isArrayOfBlocksSchemaType(field.type)) {
+      if (isArrayOfObjectsSchemaType(field.type)) {
         arrayPaths.push(newPath)
       }
 

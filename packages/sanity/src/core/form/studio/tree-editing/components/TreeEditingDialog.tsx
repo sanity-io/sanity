@@ -1,20 +1,13 @@
 import {isKeySegment, type ObjectSchemaType, type Path} from '@sanity/types'
-import {Breadcrumbs, Card, Flex} from '@sanity/ui'
 // eslint-disable-next-line camelcase
 import {getTheme_v2, type Theme} from '@sanity/ui/theme'
-import {toString} from '@sanity/util/paths'
-import {AnimatePresence, motion, type Transition, type Variants} from 'framer-motion'
 import {debounce, isEqual} from 'lodash'
 import {useCallback, useEffect, useMemo, useRef, useState} from 'react'
 import {css, styled} from 'styled-components'
 
-import {Button, Dialog} from '../../../../../ui-components'
-import {PopoverDialog} from '../../../../components/popoverDialog/PopoverDialog'
-import {useTranslation} from '../../../../i18n/hooks/useTranslation'
-import {getSchemaTypeTitle} from '../../../../schema/helpers'
-import {EditPortal} from '../../../components/EditPortal'
+import {Dialog} from '../../../../../ui-components'
 import {FormInput} from '../../../components/FormInput'
-import {type InputProps, type ObjectInputProps} from '../../../types/inputProps'
+import {type ObjectInputProps} from '../../../types/inputProps'
 import {
   buildTreeEditingState,
   type BuildTreeEditingStateProps,
@@ -23,20 +16,11 @@ import {
 } from '../utils'
 import {isArrayItemPath} from '../utils/build-tree-editing-state/utils'
 import {TreeEditingBreadcrumbs} from './breadcrumbs'
-import {TreeEditingLayout} from './layout'
 
 const EMPTY_ARRAY: [] = []
 
-const ANIMATION_VARIANTS: Variants = {
-  initial: {opacity: 0},
-  animate: {opacity: 1},
-  exit: {opacity: 0},
-}
-
-const ANIMATION_TRANSITION: Transition = {duration: 0.2, ease: 'easeInOut'}
-
-function renderDefault(props: InputProps) {
-  return props.renderDefault(props)
+function renderDefault(props: unknown) {
+  return (props as {renderDefault: (p: unknown) => React.ReactElement}).renderDefault(props)
 }
 
 const StyledDialog = styled(Dialog)(({theme}: {theme: Theme}) => {
@@ -55,8 +39,6 @@ const StyledDialog = styled(Dialog)(({theme}: {theme: Theme}) => {
   `
 })
 
-const MotionFlex = motion.create(Flex)
-
 interface TreeEditingDialogProps {
   onPathFocus: (path: Path) => void
   onPathOpen: (path: Path) => void
@@ -68,25 +50,15 @@ interface TreeEditingDialogProps {
 export function TreeEditingDialog(props: TreeEditingDialogProps): React.JSX.Element | null {
   const {onPathFocus, onPathOpen, openPath, rootInputProps, schemaType} = props
   const {value} = rootInputProps
-  const {t} = useTranslation()
 
   const [treeState, setTreeState] = useState<TreeEditingState>(EMPTY_TREE_STATE)
-  const [layoutScrollElement, setLayoutScrollElement] = useState<HTMLDivElement | null>(null)
 
   const openPathRef = useRef<Path | undefined>(undefined)
   const valueRef = useRef<Record<string, unknown> | undefined>(undefined)
 
-  const handleAnimationExitComplete = useCallback(() => {
-    // Scroll to the top of the layout when the animation has completed
-    // to avoid the layout being scrolled while the content is being
-    // animated out and then back in.
-    layoutScrollElement?.scrollTo(0, 0)
-  }, [layoutScrollElement])
-
   const handleBuildTreeEditingState = useCallback(
     (opts: BuildTreeEditingStateProps) => {
       const nextState = buildTreeEditingState(opts)
-
       if (isEqual(nextState, treeState)) return
 
       const builtRelativePath = nextState.relativePath
@@ -164,6 +136,7 @@ export function TreeEditingDialog(props: TreeEditingDialogProps): React.JSX.Elem
     // updated immediately when the openPath changes.
     // We only want to debounce the state building when the value changes
     // as that might happen frequently when the user is editing the document.
+
     if (isInitialRender || openPathChanged) {
       handleBuildTreeEditingState({
         schemaType,
