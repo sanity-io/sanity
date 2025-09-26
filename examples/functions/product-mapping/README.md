@@ -420,7 +420,7 @@ console.log('✅ Created colorVariant:', colorName, 'with ID:', newColorVariant.
 - **Use real document IDs** - For CLI testing, document functions require IDs that exist in your dataset
 - **Query for test documents** - Use `npx sanity documents query` to find suitable test documents
 - **Use Node.js v22.x** locally to match production runtime
-- **Check function logs** for detailed processing information
+- **Check function logs** for detailed processing information. `npx sanity functions logs product-mapping`
 - **Create test content** - If you don't have suitable products, create some test products with tags first
 
 ## Requirements
