@@ -10,12 +10,15 @@ import {type IncomingReferencesOptions} from './types'
 
 interface IncomingReferencesListProps extends IncomingReferencesOptions {
   types: string[]
+  fieldName: string
 }
 export function IncomingReferencesList({
   types,
   onLinkDocument,
   actions,
   filterQuery,
+  fieldName,
+  creationAllowed,
 }: IncomingReferencesListProps) {
   const {documentId, documentType} = useDocumentPane()
   const documentPreviewStore = useDocumentPreviewStore()
@@ -26,7 +29,7 @@ export function IncomingReferencesList({
   )
 
   const references = useObservable(references$, null)
-  console.log('references', references)
+
   if (!types || types?.length === 0) {
     return (
       <Card border radius={2} padding={3} tone="critical">
@@ -56,6 +59,8 @@ export function IncomingReferencesList({
             onLinkDocument={onLinkDocument}
             actions={actions}
             shouldRenderTitle={types.length > 1}
+            fieldName={fieldName}
+            creationAllowed={creationAllowed}
           />
         )
       })}
