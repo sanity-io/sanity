@@ -1,52 +1,21 @@
-// TODO: Remove this eslint-disable
-/* eslint-disable @sanity/i18n/no-attribute-string-literals */
-/* eslint-disable @sanity/i18n/no-attribute-template-literals */
-import {TrashIcon} from '@sanity/icons'
-import {Box, Card, Flex, Menu, Text} from '@sanity/ui'
+import {Box, Card, Flex, Text} from '@sanity/ui'
 import {motion} from 'framer-motion'
 import {useCallback} from 'react'
-import {
-  ContextMenuButton,
-  getPublishedId,
-  pathToString,
-  type SanityDocument,
-  useDocumentOperation,
-  useSchema,
-} from 'sanity'
+import {getPublishedId, pathToString, type SanityDocument, useSchema, useTranslation} from 'sanity'
 import {useRouter} from 'sanity/router'
 
-import {MenuButton} from '../../../../../ui-components/menuButton/MenuButton'
-import {MenuItem} from '../../../../../ui-components/menuItem/MenuItem'
 import {usePaneRouter} from '../../../../components/paneRouter/usePaneRouter'
+import {structureLocaleNamespace} from '../../../../i18n'
 import {getReferencePaths} from './getReferencePaths'
 import {IncomingReferencePreview} from './IncomingReferencePreview'
 
 const FadeInFlex = motion(Flex)
 
-const ErrorCard = ({message}: {message: string}) => (
-  <Card border radius={2} padding={1} tone="critical">
-    <Box paddingY={4} paddingX={3}>
-      <Text size={1}>{message}</Text>
-    </Box>
-  </Card>
-)
-
-const RemoveMenuItem = ({document}: {document: SanityDocument}) => {
-  const documentOperation = useDocumentOperation(getPublishedId(document._id), document._type)
-
-  const handleRemoveReference = useCallback(() => {
-    // Removes the reference to the document in the pane from the document referring it.
-    // TODO: Get the reference field from the document
-    documentOperation.patch.execute([{unset: ['author']}])
-  }, [documentOperation])
-
-  return <MenuItem text="Remove" tone="critical" icon={TrashIcon} onClick={handleRemoveReference} />
-}
-
 export const IncomingReferenceDocument = (props: {
   document: SanityDocument
   referenceToId: string
 }) => {
+  const {t} = useTranslation(structureLocaleNamespace)
   const {document, referenceToId} = props
   const referencePaths = getReferencePaths(document, referenceToId)
   const id = document._id
@@ -67,7 +36,16 @@ export const IncomingReferenceDocument = (props: {
   }, [routerPanesState, groupIndex, type, navigate, id, referencePaths])
 
   const schemaType = schema.get(document._type)
-  if (!schemaType) return <ErrorCard message={`Schema type ${document._type} not found`} />
+  if (!schemaType)
+    return (
+      <Card border radius={2} padding={1} tone="critical">
+        <Box paddingY={4} paddingX={3}>
+          <Text size={1}>
+            {t('incoming-references-pane.schema-type-not-found', {type: document._type})}
+          </Text>
+        </Box>
+      </Card>
+    )
 
   return (
     <Card border radius={2} padding={1} tone="default">
@@ -80,18 +58,6 @@ export const IncomingReferenceDocument = (props: {
             path={referencePaths[0]}
           />
         </Box>
-        {/* <Box>
-          <MenuButton
-            button={<ContextMenuButton />}
-            id={`${document._id}-menuButton`}
-            menu={
-              <Menu>
-                <RemoveMenuItem document={document} />
-              </Menu>
-            }
-            popover={{portal: true, tone: 'default'}}
-          />
-        </Box> */}
       </FadeInFlex>
     </Card>
   )
