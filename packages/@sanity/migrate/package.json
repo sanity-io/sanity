@@ -54,7 +54,7 @@
     "@sanity/types": "workspace:*",
     "@sanity/util": "workspace:*",
     "arrify": "^2.0.1",
-    "debug": "^4.4.1",
+    "debug": "^4.4.3",
     "fast-fifo": "^1.3.2",
     "groq-js": "^1.19.0",
     "p-map": "^7.0.1"

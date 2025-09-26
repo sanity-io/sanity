@@ -988,7 +988,7 @@ importers:
         specifier: ^4.1.2
         version: 4.1.2
       debug:
-        specifier: ^4.4.1
+        specifier: ^4.4.3
         version: 4.4.3(supports-color@5.5.0)
       esbuild:
         specifier: 'catalog:'
@@ -1202,7 +1202,7 @@ importers:
         specifier: ^7.28.4
         version: 7.28.4
       debug:
-        specifier: ^4.4.1
+        specifier: ^4.4.3
         version: 4.4.3(supports-color@5.5.0)
       globby:
         specifier: ^11.1.0
@@ -1288,7 +1288,7 @@ importers:
         specifier: ^2.0.1
         version: 2.0.1
       debug:
-        specifier: ^4.4.1
+        specifier: ^4.4.3
         version: 4.4.3(supports-color@5.5.0)
       fast-fifo:
         specifier: ^1.3.2
@@ -1331,7 +1331,7 @@ importers:
         specifier: ^3.0.2
         version: 3.0.2
       debug:
-        specifier: ^4.4.1
+        specifier: ^4.4.3
         version: 4.4.3(supports-color@5.5.0)
       lodash:
         specifier: ^4.17.21
@@ -1865,7 +1865,7 @@ importers:
         specifier: ^2.30.0
         version: 2.30.0
       debug:
-        specifier: ^4.4.1
+        specifier: ^4.4.3
         version: 4.4.3(supports-color@5.5.0)
       esbuild:
         specifier: 'catalog:'
