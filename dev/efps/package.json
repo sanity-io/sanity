@@ -1,6 +1,6 @@
 {
   "name": "efps-tests",
-  "version": "4.10.1",
+  "version": "4.10.2",
   "private": true,
   "description": "Sanity Studio eFPS perf suite",
   "keywords": [],

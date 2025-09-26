@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [4.10.2](https://github.com/sanity-io/sanity/compare/v4.10.1...v4.10.2) (2025-09-26)
+
+
+### Bug Fixes
+
+* **core:** avoid repeated requests in case of failing project requests ([#10770](https://github.com/sanity-io/sanity/issues/10770)) ([c03497f](https://github.com/sanity-io/sanity/commit/c03497f939b5cd0107bb333c9a2f41eae03c49ad))
+* delay teardown of get-org-id request ([#10771](https://github.com/sanity-io/sanity/issues/10771)) ([de40474](https://github.com/sanity-io/sanity/commit/de40474d2e8b945634194ee77882945bdbd463f2))
+* only reading server metadata when unfocused from input ([#10749](https://github.com/sanity-io/sanity/issues/10749)) ([a255a6d](https://github.com/sanity-io/sanity/commit/a255a6d894d0be3f5d82a716909ddcda0e7ad257))
+
+
+
 ## [4.10.1](https://github.com/sanity-io/sanity/compare/v4.10.0...v4.10.1) (2025-09-25)
 
 

@@ -1,6 +1,6 @@
 {
   "name": "@repo/bundle-manager",
-  "version": "4.10.1",
+  "version": "4.10.2",
   "private": true,
   "description": "Internal tool for building and uploading bundles to modules.sanity-cdn.com",
   "license": "MIT",

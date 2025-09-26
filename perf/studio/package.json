@@ -1,6 +1,6 @@
 {
   "name": "perf-studio",
-  "version": "4.10.1",
+  "version": "4.10.2",
   "private": true,
   "description": "Sanity Studio with various test cases for tracking performance",
   "license": "MIT",
