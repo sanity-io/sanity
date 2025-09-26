@@ -18,7 +18,7 @@
         "update"
       ],
       "filter": "_type == 'product'",
-      "projection": "{_id, store, colorVariant, productMap, 'operation': delta::operation()}"
+      "projection": "{_id, _type, store, colorVariant, productMap, 'operation': delta::operation()}"
     }
   },
   "exampleInstructions": "Add this configuration to your blueprint config's resources array. Go to README.md for more details."
