@@ -2,7 +2,7 @@ import {DesktopIcon, MobileDeviceIcon, PanelLeftIcon, RefreshIcon} from '@sanity
 import {withoutSecretSearchParams} from '@sanity/preview-url-secret/without-secret-search-params'
 import {Box, Card, Flex, Hotkeys, Switch, Text} from '@sanity/ui'
 import {useSelector} from '@xstate/react'
-import {type RefObject, useCallback, useMemo, useState} from 'react'
+import {type RefObject, useCallback, useMemo} from 'react'
 import {useTranslation} from 'sanity'
 
 import {Button, Tooltip} from '../../ui-components'
