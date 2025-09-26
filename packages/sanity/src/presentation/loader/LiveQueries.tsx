@@ -32,6 +32,7 @@ import {useEffectEvent} from 'use-effect-event'
 
 import {API_VERSION, MIN_LOADER_QUERY_LISTEN_HEARTBEAT_INTERVAL} from '../constants'
 import {type LoaderConnection, type PresentationPerspective} from '../types'
+import {useDecideParameters} from '../useDecideParameters'
 import {type DocumentOnPage} from '../useDocumentsOnPage'
 import {useLiveEvents} from './useLiveEvents'
 import {useLiveQueries} from './useLiveQueries'
@@ -54,6 +55,7 @@ export default function LiveQueries(props: LiveQueriesProps): React.JSX.Element 
 
   const [comlink, setComlink] = useState<ChannelInstance<LoaderControllerMsg, LoaderNodeMsg>>()
   const [liveQueries, liveQueriesDispatch] = useLiveQueries()
+  const {decideParameters} = useDecideParameters()
 
   const projectId = useProjectId()
   const dataset = useDataset()
@@ -133,6 +135,19 @@ export default function LiveQueries(props: LiveQueriesProps): React.JSX.Element 
       })
     }
   }, [comlink, activePerspective, projectId, dataset])
+
+  // Post decide parameters to loaders when they change
+  useEffect(() => {
+    console.warn('[LiveQueries] Posting loader/decide-parameters:', decideParameters)
+    if (comlink) {
+      // @ts-expect-error - TODO: Add 'loader/decide-parameters' to LoaderControllerMsg type
+      comlink.post('loader/decide-parameters', {
+        projectId,
+        dataset,
+        decideParameters: JSON.stringify(decideParameters),
+      })
+    }
+  }, [comlink, decideParameters, projectId, dataset])
 
   /**
    * Defer the liveDocument to avoid unnecessary rerenders on rapid edits
