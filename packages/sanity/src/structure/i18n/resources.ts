@@ -424,8 +424,6 @@ const structureLocaleStrings = defineLocalesResources('structure', {
   'incoming-references-input.add-reference-item': 'Add item',
   /** The text for the no items in the incoming references input */
   'incoming-references-input.no-items': 'No items',
-  /** The text for the no results for a query in the incoming references input */
-  'incoming-references-input.no-results-for-query': 'No results for {{searchTerm}}',
   /** The text for the reference from in the incoming references input */
   'incoming-references-input.reference-from': 'Reference from {{type}}',
   /** The text for the schema type not found in the incoming references input */
