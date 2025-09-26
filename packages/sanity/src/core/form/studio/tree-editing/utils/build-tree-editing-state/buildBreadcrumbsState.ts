@@ -38,11 +38,13 @@ export function buildBreadcrumbsState(props: BuildBreadcrumbsStateProps): TreeEd
 
   const selectedItem = items.find((item) => isEqual(item.path, itemPath)) as TreeEditingBreadcrumb
 
-  return {
+  const result: TreeEditingBreadcrumb = {
     children: items,
     parentSchemaType: arraySchemaType,
     path: itemPath,
     schemaType: selectedItem.schemaType,
     value: selectedItem.value,
   }
+
+  return result
 }

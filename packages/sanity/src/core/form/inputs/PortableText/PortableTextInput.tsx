@@ -42,6 +42,7 @@ import {type ResolvedUploader} from '../../studio/uploads/types'
 import {type PortableTextInputProps} from '../../types'
 import {extractPastedFiles} from '../common/fileTarget/utils/extractFiles'
 import {Compositor} from './Compositor'
+import {useFullscreenPTE} from './contexts/fullscreen'
 import {PortableTextMarkersProvider} from './contexts/PortableTextMarkers'
 import {PortableTextMemberItemsProvider} from './contexts/PortableTextMembers'
 import {usePortableTextMemberItemsFromProps} from './hooks/usePortableTextMembers'
@@ -142,27 +143,28 @@ export function PortableTextInput(props: PortableTextInputProps): ReactNode {
   const {t} = useTranslation()
   const [ignoreValidationError, setIgnoreValidationError] = useState(false)
   const [invalidValue, setInvalidValue] = useState<InvalidValue | null>(null)
-  const [isFullscreen, setIsFullscreen] = useState(initialFullscreen ?? false)
   const [isActive, setIsActive] = useState(initialActive ?? true)
   const [hasFocusWithin, setHasFocusWithin] = useState(false)
   const [ready, setReady] = useState(false)
   const telemetry = useTelemetry()
 
+  // Use fullscreen context to persist state across navigation
+  const {getFullscreenPath, setFullscreenPath} = useFullscreenPTE()
+  const isFullscreen = Boolean(getFullscreenPath(path)) || (initialFullscreen ?? false)
+
   const toast = useToast()
 
   const handleToggleFullscreen = useCallback(() => {
-    setIsFullscreen((v) => {
-      const next = !v
-      if (next) {
-        telemetry.log(PortableTextInputExpanded)
-      } else {
-        telemetry.log(PortableTextInputCollapsed)
-      }
+    const next = !isFullscreen
+    if (next) {
+      telemetry.log(PortableTextInputExpanded)
+    } else {
+      telemetry.log(PortableTextInputCollapsed)
+    }
 
-      onFullScreenChange?.(next)
-      return next
-    })
-  }, [onFullScreenChange, telemetry])
+    setFullscreenPath(path, next)
+    onFullScreenChange?.(next)
+  }, [isFullscreen, onFullScreenChange, path, setFullscreenPath, telemetry])
 
   // Reset invalidValue if new value is coming in from props
   useEffect(() => {

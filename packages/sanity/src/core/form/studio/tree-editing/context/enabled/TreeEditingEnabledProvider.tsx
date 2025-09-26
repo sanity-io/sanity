@@ -1,6 +1,7 @@
 import {useMemo} from 'react'
 import {TreeEditingEnabledContext} from 'sanity/_singletons'
 
+import {useSource} from '../../../../../studio/source'
 import {type TreeEditingEnabledContextValue, useTreeEditingEnabled} from './useTreeEditingEnabled'
 
 interface TreeEditingEnabledProviderProps {
@@ -13,6 +14,7 @@ export function TreeEditingEnabledProvider(
 ): React.JSX.Element {
   const {children, legacyEditing: legacyEditingProp} = props
   const parentContextValue = useTreeEditingEnabled()
+  const {beta} = useSource()
 
   const value = useMemo((): TreeEditingEnabledContextValue => {
     const legacyEditing =
@@ -25,10 +27,10 @@ export function TreeEditingEnabledProvider(
       legacyEditingProp
 
     return {
-      enabled: false, // The tree editing beta feature has been disabled
+      enabled: beta?.treeArrayEditing?.enabled === true, // The tree editing beta feature is now enabled
       legacyEditing: Boolean(legacyEditing),
     }
-  }, [legacyEditingProp, parentContextValue.legacyEditing])
+  }, [beta?.treeArrayEditing?.enabled, legacyEditingProp, parentContextValue.legacyEditing])
 
   return (
     <TreeEditingEnabledContext.Provider value={value}>
