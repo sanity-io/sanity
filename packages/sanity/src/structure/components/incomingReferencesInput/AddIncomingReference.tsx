@@ -1,5 +1,5 @@
 import {DEFAULT_MAX_FIELD_DEPTH} from '@sanity/schema/_internal'
-import {Autocomplete, Box, Flex, Grid, Popover, Stack, Text, useToast} from '@sanity/ui'
+import {Autocomplete, Box, Flex, Grid, Stack, Text, useToast} from '@sanity/ui'
 import {type Ref, useCallback, useMemo, useRef, useState} from 'react'
 import {useObservableEvent} from 'react-rx'
 import {catchError, concat, filter, map, type Observable, of, scan, switchMap, tap} from 'rxjs'
@@ -14,9 +14,12 @@ import {
   useDocumentPreviewStore,
   useSchema,
   useSource,
+  useTranslation,
 } from 'sanity'
 import {styled} from 'styled-components'
 
+import {Popover} from '../../../ui-components/popover/Popover'
+import {structureLocaleNamespace} from '../../i18n'
 import {CreateNewIncomingReference} from './CreateNewIncomingReference'
 import {LinkToExistingPreview} from './LinkToExistingPreview'
 import {type IncomingReferencesOptions} from './types'
@@ -57,7 +60,6 @@ const incomingReferenceSearch = (
   })
   return (textTerm: string) =>
     search(textTerm, {perspective: 'raw'}).pipe(
-      tap((res) => console.log('results for', textTerm, res)),
       map(({hits}) => hits.map(({hit}) => hit)),
       map((docs) => docs.slice(0, 100)),
       map((collated) =>
@@ -89,6 +91,7 @@ export function AddIncomingReference({
   fieldName: string
   creationAllowed: IncomingReferencesOptions['creationAllowed']
 }) {
+  const {t} = useTranslation(structureLocaleNamespace)
   const {push} = useToast()
   const schema = useSchema()
   const schemaType = schema.get(type)
@@ -159,6 +162,7 @@ export function AddIncomingReference({
     [documentPreviewStore, schemaType, onLinkDocument],
   )
 
+  // TODO: Use ReferenceAutocomplete?
   const renderPopover = useCallback(
     (
       props: {
@@ -186,7 +190,9 @@ export function AddIncomingReference({
               <Box padding={4}>
                 <Flex align="center" height="fill" justify="center">
                   <Text align="center" muted>
-                    No results for {searchState.searchString}
+                    {t('incoming-references-input.no-results-for-query', {
+                      searchTerm: searchState.searchString,
+                    })}
                   </Text>
                 </Flex>
               </Box>
@@ -200,14 +206,14 @@ export function AddIncomingReference({
         matchReferenceWidth
       />
     ),
-    [options, searchState.searchString, searchState.isLoading, autoCompletePortalRef],
+    [options, searchState.searchString, searchState.isLoading, autoCompletePortalRef, t],
   )
 
   return (
     <Stack space={2} padding={2}>
       <Box paddingY={2}>
         <Text size={1} weight="medium">
-          Reference from {type}
+          {t('incoming-references-input.reference-from', {type})}
         </Text>
       </Box>
       <Grid gap={creationAllowed ? 2 : 0} style={{gridTemplateColumns: '1fr min-content'}}>
@@ -216,7 +222,7 @@ export function AddIncomingReference({
           radius={2}
           autoFocus
           options={options}
-          placeholder="Type to search"
+          placeholder={t('incoming-references-input.type-to-search')}
           onQueryChange={handleQueryChange}
           filterOption={NO_FILTER}
           renderOption={renderOption}

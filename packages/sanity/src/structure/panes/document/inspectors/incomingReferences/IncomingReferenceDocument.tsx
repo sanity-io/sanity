@@ -4,10 +4,10 @@ import {useCallback} from 'react'
 import {getPublishedId, pathToString, type SanityDocument, useSchema, useTranslation} from 'sanity'
 import {useRouter} from 'sanity/router'
 
+import {IncomingReferencePreview} from '../../../../components/incomingReferencesInput/IncomingReferencePreview'
 import {usePaneRouter} from '../../../../components/paneRouter/usePaneRouter'
 import {structureLocaleNamespace} from '../../../../i18n'
 import {getReferencePaths} from './getReferencePaths'
-import {IncomingReferencePreview} from './IncomingReferencePreview'
 
 const FadeInFlex = motion(Flex)
 

@@ -9,8 +9,8 @@ import {
   useDocumentPreviewStore,
 } from 'sanity'
 
-import {PaneItemPreview} from '../../../../components/paneItem/PaneItemPreview'
-import {usePaneRouter} from '../../../../components/paneRouter'
+import {PaneItemPreview} from '../paneItem/PaneItemPreview'
+import {usePaneRouter} from '../paneRouter'
 
 interface IncomingReferencePreviewProps {
   onClick?: () => void
@@ -31,7 +31,7 @@ export function IncomingReferencePreview(props: IncomingReferencePreviewProps) {
       return (
         <ChildLink
           childId={getPublishedId(value?._id)}
-          childParameters={{type: type?.name, path: pathToString(path)}}
+          childParameters={{type: type.name, path: pathToString(path)}}
           {...linkProps}
         />
       )

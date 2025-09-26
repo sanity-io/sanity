@@ -1,5 +1,5 @@
 import {AddIcon} from '@sanity/icons'
-import {Box, Button, Card, Flex, Stack, Text, useToast} from '@sanity/ui'
+import {Box, Card, Flex, Stack, Text, useToast} from '@sanity/ui'
 import {useCallback, useEffect, useState} from 'react'
 import {
   DEFAULT_STUDIO_CLIENT_OPTIONS,
@@ -10,9 +10,12 @@ import {
   type SanityDocument,
   useClient,
   useSchema,
+  useTranslation,
 } from 'sanity'
-import {useDocumentPane} from 'sanity/structure'
 
+import {Button} from '../../../ui-components/button/Button'
+import {structureLocaleNamespace} from '../../i18n'
+import {useDocumentPane} from '../../panes/document/useDocumentPane'
 import {AddIncomingReference} from './AddIncomingReference'
 import {CreateNewIncomingReference} from './CreateNewIncomingReference'
 import {IncomingReferenceDocument} from './IncomingReferenceDocument'
@@ -41,6 +44,7 @@ export function IncomingReferencesType({
   fieldName: string
 }) {
   const schema = useSchema()
+  const {t} = useTranslation(structureLocaleNamespace)
   const schemaType = schema.get(type)
   const client = useClient(DEFAULT_STUDIO_CLIENT_OPTIONS)
   const [isAdding, setIsAdding] = useState(false)
@@ -130,7 +134,7 @@ export function IncomingReferencesType({
               hidden={isAdding || Boolean(newReferenceId)}
             >
               <Text size={1} muted>
-                No items
+                {t('incoming-references-input.no-items')}
               </Text>
             </Flex>
           </>
@@ -152,13 +156,12 @@ export function IncomingReferencesType({
       </Card>
       {onLinkDocument ? (
         <Button
+          size="large"
           disabled={false}
           icon={AddIcon}
           mode="ghost"
-          space={3}
-          padding={3}
           onClick={handleAdd}
-          text="Add item"
+          text={t('incoming-references-input.add-reference-item')}
         />
       ) : (
         <CreateNewIncomingReference
