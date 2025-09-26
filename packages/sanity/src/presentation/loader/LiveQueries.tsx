@@ -256,6 +256,16 @@ function QuerySubscriptionComponent(props: QuerySubscriptionProps) {
       resultSourceMap: ContentSourceMap | undefined,
       tags: `s1:${string}`[] | undefined,
     ) => {
+      // Add diagnostic logging before sending to preview
+      const resultStr = JSON.stringify(result)
+      const hasConditionalContent = resultStr.includes('"conditions"')
+
+      console.warn('[STUDIO-DECIDE] Sending to preview:', {
+        hasConditionalContent,
+        resultType: typeof result,
+        resultSample: `${resultStr.slice(0, 200)}${resultStr.length > 200 ? '...' : ''}`,
+      })
+
       comlink?.post('loader/query-change', {
         projectId,
         dataset,
@@ -330,14 +340,25 @@ function useQuerySubscription(props: UseQuerySubscriptionProps) {
   useEffect(() => {
     const controller = new AbortController()
 
-    // Transform decideParameters following the same pattern as useMainDocument
+    // Parse and transform decideParameters following the same pattern as useMainDocument
+    const parsedDecideParameters = decideParameters
+      ? (JSON.parse(decideParameters) as Record<string, string | string[]>)
+      : undefined
+
     const transformedDecideParameters =
-      decideParameters && Object.keys(decideParameters).length > 0
+      parsedDecideParameters && Object.keys(parsedDecideParameters).length > 0
         ? {
-            ...decideParameters,
-            audience: decideParameters.audiences ?? 'preview',
+            ...parsedDecideParameters,
+            audience: parsedDecideParameters.audiences ?? 'preview',
           }
         : undefined
+
+    // Add diagnostic logging to trace decideParameters usage
+    console.warn('[STUDIO-DECIDE] Executing query with decideParameters:', {
+      query: `${query.slice(0, 50)}...`,
+      decideParameters: transformedDecideParameters,
+      hasConditionalFields: false, // Will be updated after response
+    })
 
     client
       .fetch(query, params, {
@@ -350,6 +371,15 @@ function useQuerySubscription(props: UseQuerySubscriptionProps) {
         returnQuery: false,
       })
       .then((response) => {
+        const responseStr = JSON.stringify(response.result)
+        const hasConditionalContent = responseStr.includes('"conditions"')
+
+        console.warn('[STUDIO-DECIDE] Query response received:', {
+          hasConditionalContent,
+          decideParameters: transformedDecideParameters,
+          resultType: typeof response.result,
+          resultSample: `${responseStr.slice(0, 200)}${responseStr.length > 200 ? '...' : ''}`,
+        })
         startTransition(() => {
           setResult((prev: unknown) => (isEqual(prev, response.result) ? prev : response.result))
           setResultSourceMap((prev) =>
