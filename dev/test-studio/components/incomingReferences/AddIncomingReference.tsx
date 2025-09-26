@@ -19,6 +19,7 @@ import {styled} from 'styled-components'
 
 import {CreateNewIncomingReference} from './CreateNewIncomingReference'
 import {LinkToExistingPreview} from './LinkToExistingPreview'
+import {type IncomingReferencesOptions} from './types'
 
 const StyledPopover = styled(Popover)`
   & > div {
@@ -78,11 +79,15 @@ export function AddIncomingReference({
   referenced,
   onCreateNewReference,
   onLinkDocument,
+  fieldName,
+  creationAllowed,
 }: {
   type: string
   referenced: {id: string; type: string}
   onCreateNewReference: (id: string) => void
   onLinkDocument: (documentId: string) => void
+  fieldName: string
+  creationAllowed: IncomingReferencesOptions['creationAllowed']
 }) {
   const {push} = useToast()
   const schema = useSchema()
@@ -205,7 +210,7 @@ export function AddIncomingReference({
           Reference from {type}
         </Text>
       </Box>
-      <Grid gap={2} style={{gridTemplateColumns: '1fr min-content'}}>
+      <Grid gap={creationAllowed ? 2 : 0} style={{gridTemplateColumns: '1fr min-content'}}>
         <Autocomplete
           id={`${type}-autocomplete`}
           radius={2}
@@ -222,9 +227,9 @@ export function AddIncomingReference({
           type={type}
           referenceToId={referenced.id}
           referenceToType={referenced.type}
-          // TODO: Add option to disable new references.
-          disableNew={false}
+          creationAllowed={creationAllowed}
           onCreateNewReference={onCreateNewReference}
+          fieldName={fieldName}
         />
       </Grid>
     </Stack>

@@ -25,6 +25,8 @@ export function IncomingReferencesType({
   onLinkDocument,
   actions,
   shouldRenderTitle,
+  fieldName,
+  creationAllowed,
 }: {
   type: string
   shouldRenderTitle: boolean
@@ -35,6 +37,8 @@ export function IncomingReferencesType({
   }
   onLinkDocument: IncomingReferencesOptions['onLinkDocument']
   actions: IncomingReferencesOptions['actions']
+  creationAllowed: IncomingReferencesOptions['creationAllowed']
+  fieldName: string
 }) {
   const schema = useSchema()
   const schemaType = schema.get(type)
@@ -141,6 +145,8 @@ export function IncomingReferencesType({
             referenced={referenced}
             onCreateNewReference={handleCreateNewReference}
             onLinkDocument={handleLinkDocument}
+            creationAllowed={creationAllowed}
+            fieldName={fieldName}
           />
         )}
       </Card>
@@ -159,9 +165,9 @@ export function IncomingReferencesType({
           type={type}
           referenceToId={referenced.id}
           referenceToType={referenced.type}
-          // TODO: Add option to disable new references.
-          disableNew={false}
+          creationAllowed={creationAllowed}
           onCreateNewReference={handleCreateNewReference}
+          fieldName={fieldName}
         />
       )}
     </Stack>

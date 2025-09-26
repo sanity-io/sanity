@@ -34,6 +34,10 @@ export interface DocumentDefinition extends Omit<ObjectDefinition, 'type'> {
           type: string
         }
       }
+      from?: {
+        fieldName: string
+        type: string
+      }
       [key: string]: unknown
     },
     Record<string, unknown>

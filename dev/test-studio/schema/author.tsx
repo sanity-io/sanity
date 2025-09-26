@@ -107,13 +107,10 @@ export default defineType({
       name: 'name',
       title: 'Name',
       type: 'string',
-      options: {
-        search: {weight: 100},
-      },
-      validation: (rule: StringRule) => rule.required(),
     }),
     defineField({
-      name: 'incomingReferences',
+      hidden: true,
+      name: 'incomingReferencesDesigner',
       title: 'Incoming references (author - designer)',
       type: 'array',
       components: {
@@ -136,9 +133,7 @@ export default defineType({
                     onClick: async () => {
                       await client.createOrReplace({
                         ...linkedDocument,
-                        _id: isPublishedId(linkedDocument._id)
-                          ? getDraftId(linkedDocument._id)
-                          : linkedDocument._id,
+                        _id: getDraftId(linkedDocument._id),
                         bestFriend: undefined,
                       })
                     },
@@ -148,26 +143,45 @@ export default defineType({
               return []
             }}
             filterQuery={`role == "designer"`}
+            // creationAllowed={['author', 'author-developer']}
+            // creationAllowed={false}
           />
         ),
       },
       of: [{type: 'author'}],
     }),
     defineField({
-      name: 'allAuthors',
-      title: 'All authors',
+      name: 'booksCreated',
+      title: 'Books created by this author',
       type: 'array',
       components: {
-        input: (props: ArrayOfPrimitivesInputProps) => <IncomingReferencesInput {...props} />,
-      },
-      of: [{type: 'author'}],
-    }),
-    defineField({
-      name: 'incomingReferencesBooks',
-      title: 'Incoming references books',
-      type: 'array',
-      components: {
-        input: (props: ArrayOfPrimitivesInputProps) => <IncomingReferencesInput {...props} />,
+        input: (props: ArrayOfPrimitivesInputProps) => (
+          <IncomingReferencesInput
+            {...props}
+            onLinkDocument={(document, reference) => {
+              return {
+                ...document,
+                author: reference,
+              }
+            }}
+            actions={({linkedDocument, client}) => {
+              return [
+                {
+                  label: 'Unlink document',
+                  icon: TrashIcon,
+                  tone: 'critical',
+                  onClick: async () => {
+                    await client.createOrReplace({
+                      ...linkedDocument,
+                      _id: getDraftId(linkedDocument._id),
+                      author: undefined,
+                    })
+                  },
+                },
+              ]
+            }}
+          />
+        ),
       },
       of: [{type: 'book'}],
     }),
@@ -273,6 +287,7 @@ export default defineType({
           _type: 'reference',
         },
       },
+      role: params?.from?.fieldName === 'incomingReferencesDesigner' ? 'designer' : undefined,
     }
   },
 })
