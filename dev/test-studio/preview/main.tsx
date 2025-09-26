@@ -12,7 +12,7 @@ import {SimpleBlockPortableText} from './SimpleBlockPortableText'
 
 function Main() {
   const [id, setId] = useState<'simple' | 'nested' | 'markdown' | 'longlist' | 'initialvalues'>(
-    'simple',
+    'markdown',
   )
   return (
     <>

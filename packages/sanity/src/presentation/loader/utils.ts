@@ -44,6 +44,7 @@ export function getQueryCacheKey(
   perspective: ClientPerspective,
   query: string,
   params: QueryParams,
+  decideParameters?: string,
 ): QueryCacheKey {
-  return `${perspective}:${query}:${JSON.stringify(params)}`
+  return `${perspective}:${query}:${JSON.stringify(params)}:${decideParameters || ''}`
 }
