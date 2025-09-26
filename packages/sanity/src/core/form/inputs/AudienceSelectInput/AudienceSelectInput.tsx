@@ -1,7 +1,9 @@
 import {Box, Select} from '@sanity/ui'
 import {useMemo} from 'react'
 
-import {DECISION_PARAMETERS_SCHEMA, useWorkspace} from '../../../config'
+import {DECISION_PARAMETERS_SCHEMA} from '../../../config'
+import {useTranslation} from '../../../i18n'
+import {useWorkspace} from '../../../studio/workspace'
 import {set, unset} from '../../patch'
 import {type StringInputProps} from '../../types'
 
@@ -13,6 +15,7 @@ import {type StringInputProps} from '../../types'
  */
 export function AudienceSelectInput(props: StringInputProps) {
   const {value, onChange} = props
+  const {t} = useTranslation()
   const workspace = useWorkspace()
   const decisionParametersConfig = workspace.__internal.options[DECISION_PARAMETERS_SCHEMA]
 
@@ -38,9 +41,9 @@ export function AudienceSelectInput(props: StringInputProps) {
       <Select
         value={value || ''}
         onChange={(event) => handleChange(event.currentTarget.value)}
-        placeholder="Select an audience..."
+        placeholder={t('form.input.audience-select.placeholder')}
       >
-        <option value="">Select an audience...</option>
+        <option value="">{t('form.input.audience-select.placeholder')}</option>
         {audiences.map((audience: string) => (
           <option key={audience} value={audience}>
             {audience}
