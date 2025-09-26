@@ -38,6 +38,86 @@ import {useLiveEvents} from './useLiveEvents'
 import {useLiveQueries} from './useLiveQueries'
 import {mapChangedValue} from './utils'
 
+// Conditional content resolution logic from client
+interface DecideCondition {
+  audience: string
+  value: unknown
+  [key: string]: unknown
+}
+
+interface DecideField {
+  default: unknown
+  conditions: DecideCondition[]
+}
+
+interface LocalDecideParameters {
+  audience: string | string[]
+  [key: string]: unknown
+}
+
+function isDecideField(value: unknown): value is DecideField {
+  return (
+    value != null &&
+    typeof value === 'object' &&
+    !Array.isArray(value) &&
+    'default' in value &&
+    'conditions' in value &&
+    Array.isArray((value as any).conditions)
+  )
+}
+
+function resolveDecideField(field: DecideField, decideParameters?: LocalDecideParameters): unknown {
+  const audience = decideParameters?.audience
+
+  if (
+    !decideParameters ||
+    !audience ||
+    (Array.isArray(audience) && audience.length === 0) ||
+    audience === ''
+  ) {
+    return field.default
+  }
+
+  const matchingCondition = field.conditions.find((condition) => {
+    return Array.isArray(audience)
+      ? audience.includes(condition.audience)
+      : condition.audience === audience
+  })
+
+  return matchingCondition ? matchingCondition.value : field.default
+}
+
+function processObjectRecursively(obj: unknown, decideParameters?: LocalDecideParameters): unknown {
+  if (obj === null || obj === undefined || typeof obj !== 'object') {
+    return obj
+  }
+
+  if (Array.isArray(obj)) {
+    return obj.map((item) => processObjectRecursively(item, decideParameters))
+  }
+
+  return Object.entries(obj).reduce<Record<string, unknown>>((processed, [key, value]) => {
+    try {
+      if (isDecideField(value)) {
+        processed[key] = resolveDecideField(value, decideParameters)
+      } else {
+        processed[key] = processObjectRecursively(value, decideParameters)
+      }
+    } catch (error) {
+      processed[key] = value
+    }
+    return processed
+  }, {})
+}
+
+function processDecideFields(data: unknown, decideParameters?: LocalDecideParameters): unknown {
+  try {
+    return processObjectRecursively(data, decideParameters)
+  } catch (error) {
+    return data
+  }
+}
+
 /**
  * Cleanses a value to be valid for use as a client tag.
  * Tag can only contain alphanumeric characters, underscores, dashes and dots,
@@ -72,6 +152,8 @@ export interface LiveQueriesProps {
 }
 
 export default function LiveQueries(props: LiveQueriesProps): React.JSX.Element {
+  console.warn('[STUDIO-DECIDE] LiveQueries component mounted - our code is running!')
+
   const {controller, perspective: activePerspective, onLoadersConnection, onDocumentsOnPage} = props
 
   const [comlink, setComlink] = useState<ChannelInstance<LoaderControllerMsg, LoaderNodeMsg>>()
@@ -322,6 +404,32 @@ function useQuerySubscription(props: UseQuerySubscriptionProps) {
         }
       })()
     : globalDecideParameters
+
+  // Transform decideParameters for both useEffect and useMemo to use
+  const transformedDecideParameters: LocalDecideParameters | undefined = useMemo(() => {
+    if (!decideParameters || typeof decideParameters !== 'object') return undefined
+
+    const parsedParams =
+      typeof decideParameters === 'string'
+        ? (() => {
+            try {
+              return JSON.parse(decideParameters) as Record<string, string | string[]>
+            } catch {
+              return undefined
+            }
+          })()
+        : (decideParameters as Record<string, string | string[]>)
+
+    if (!parsedParams || Object.keys(parsedParams).length === 0) return undefined
+
+    const audience = parsedParams.audiences ?? 'preview'
+    if (!audience) return undefined
+
+    return {
+      ...parsedParams,
+      audience,
+    }
+  }, [decideParameters])
   const [result, setResult] = useState<unknown>(null)
   const [resultSourceMap, setResultSourceMap] = useState<ContentSourceMap | null | undefined>(null)
   const [syncTags, setSyncTags] = useState<SyncTag[] | undefined>(undefined)
@@ -339,21 +447,6 @@ function useQuerySubscription(props: UseQuerySubscriptionProps) {
   /* eslint-disable max-nested-callbacks */
   useEffect(() => {
     const controller = new AbortController()
-
-    // Parse and transform decideParameters following the same pattern as useMainDocument
-    const parsedDecideParameters = decideParameters
-      ? typeof decideParameters === 'string'
-        ? (JSON.parse(decideParameters) as Record<string, string | string[]>)
-        : (decideParameters as Record<string, string | string[]>)
-      : undefined
-
-    const transformedDecideParameters =
-      parsedDecideParameters && Object.keys(parsedDecideParameters).length > 0
-        ? {
-            ...parsedDecideParameters,
-            audience: parsedDecideParameters.audiences ?? 'preview',
-          }
-        : undefined
 
     // Add diagnostic logging to trace decideParameters usage
     console.warn('[STUDIO-DECIDE] Executing query with decideParameters:', {
@@ -427,13 +520,19 @@ function useQuerySubscription(props: UseQuerySubscriptionProps) {
       })
 
       return {
-        result: turboChargeResultIfSourceMap(liveDocument, result, perspective, resultSourceMap),
+        result: turboChargeResultIfSourceMap(
+          liveDocument,
+          result,
+          perspective,
+          resultSourceMap,
+          transformedDecideParameters,
+        ),
         resultSourceMap,
         syncTags,
       }
     }
     return {result, resultSourceMap, syncTags}
-  }, [liveDocument, perspective, result, resultSourceMap, syncTags])
+  }, [liveDocument, perspective, result, resultSourceMap, syncTags, transformedDecideParameters])
 }
 
 export function turboChargeResultIfSourceMap<T = unknown>(
@@ -441,6 +540,7 @@ export function turboChargeResultIfSourceMap<T = unknown>(
   result: T,
   perspective: ClientPerspective,
   resultSourceMap?: ContentSourceMap,
+  decideParameters?: LocalDecideParameters,
 ): T {
   if (perspective === 'raw') {
     throw new Error('turboChargeResultIfSourceMap does not support raw perspective')
@@ -457,11 +557,36 @@ export function turboChargeResultIfSourceMap<T = unknown>(
         getPublishedId(liveDocument._id) === getPublishedId(sourceDocument._id)
       ) {
         if (typeof liveDocument._id === 'string' && typeof sourceDocument._type === 'string') {
-          return liveDocument as unknown as Required<Pick<SanityDocument, '_id' | '_type'>>
+          // Resolve conditional content in liveDocument before using it
+          const resolvedLiveDocument = processDecideFields(
+            liveDocument,
+            decideParameters,
+          ) as Required<Pick<SanityDocument, '_id' | '_type'>>
+
+          console.warn(
+            '[STUDIO-DECIDE] TurboCharge: Resolved conditional content in liveDocument',
+            {
+              originalHasConditional: JSON.stringify(liveDocument).includes('"conditions"'),
+              resolvedHasConditional: JSON.stringify(resolvedLiveDocument).includes('"conditions"'),
+            },
+          )
+
+          return resolvedLiveDocument
         }
 
+        // Resolve conditional content in liveDocument before using it
+        const resolvedLiveDocument = processDecideFields(liveDocument, decideParameters)
+
+        console.warn(
+          '[STUDIO-DECIDE] TurboCharge: Resolved conditional content in liveDocument (fallback)',
+          {
+            originalHasConditional: JSON.stringify(liveDocument).includes('"conditions"'),
+            resolvedHasConditional: JSON.stringify(resolvedLiveDocument).includes('"conditions"'),
+          },
+        )
+
         return {
-          ...liveDocument,
+          ...(resolvedLiveDocument as Partial<SanityDocument>),
           _id: liveDocument._id || sourceDocument._id,
           _type: liveDocument._type || sourceDocument._type,
         }
