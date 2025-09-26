@@ -97,6 +97,13 @@ export default function LiveQueries(props: LiveQueriesProps): React.JSX.Element 
               `Loader query listen heartbeat interval must be at least ${MIN_LOADER_QUERY_LISTEN_HEARTBEAT_INTERVAL}ms`,
             )
           }
+
+          console.warn('[core-loader] Received decideParameters:', data.decideParameters)
+          console.warn(
+            '[core-loader] Sending query-listen with decideParameters:',
+            data.decideParameters,
+          )
+
           liveQueriesDispatch({
             type: 'query-listen',
             payload: {
@@ -104,6 +111,7 @@ export default function LiveQueries(props: LiveQueriesProps): React.JSX.Element 
               query: data.query,
               params: data.params,
               heartbeat: data.heartbeat ?? false,
+              decideParameters: data.decideParameters,
             },
           })
         }
@@ -157,7 +165,7 @@ export default function LiveQueries(props: LiveQueriesProps): React.JSX.Element 
 
   return (
     <>
-      {[...liveQueries.entries()].map(([key, {query, params, perspective}]) => (
+      {[...liveQueries.entries()].map(([key, {query, params, perspective, decideParameters}]) => (
         <QuerySubscription
           key={`${liveEvents.resets}:${key}`}
           projectId={projectId}
@@ -169,6 +177,7 @@ export default function LiveQueries(props: LiveQueriesProps): React.JSX.Element 
           client={client}
           liveDocument={liveDocument}
           liveEventsMessages={liveEvents.messages}
+          decideParameters={decideParameters}
         />
       ))}
     </>
@@ -190,6 +199,7 @@ interface QuerySubscriptionProps
   query: string
   params: QueryParams
   comlink: LoaderConnection | undefined
+  decideParameters?: string
 }
 function QuerySubscriptionComponent(props: QuerySubscriptionProps) {
   const {
@@ -202,6 +212,7 @@ function QuerySubscriptionComponent(props: QuerySubscriptionProps) {
     params,
     comlink,
     liveEventsMessages,
+    decideParameters,
   } = props
 
   const {
@@ -215,6 +226,7 @@ function QuerySubscriptionComponent(props: QuerySubscriptionProps) {
     perspective,
     query,
     liveEventsMessages,
+    decideParameters,
   }) || {}
 
   /* eslint-disable @typescript-eslint/no-shadow,max-params */
@@ -260,10 +272,35 @@ interface UseQuerySubscriptionProps extends Required<Pick<SharedProps, 'client'>
   params: QueryParams
   perspective: ClientPerspective
   liveEventsMessages: LiveEventMessage[]
+  decideParameters?: string
 }
 function useQuerySubscription(props: UseQuerySubscriptionProps) {
-  const {liveDocument, client, query, params, perspective, liveEventsMessages} = props
-  const {decideParameters} = useDecideParameters()
+  const {
+    liveDocument,
+    client,
+    query,
+    params,
+    perspective,
+    liveEventsMessages,
+    decideParameters: passedDecideParameters,
+  } = props
+
+  // Use passed decideParameters if provided, otherwise fall back to global context
+  const {decideParameters: globalDecideParameters} = useDecideParameters()
+  const decideParameters = passedDecideParameters
+    ? (() => {
+        try {
+          return JSON.parse(passedDecideParameters)
+        } catch (error) {
+          console.error(
+            '[core-loader] Failed to parse decideParameters:',
+            passedDecideParameters,
+            error,
+          )
+          return globalDecideParameters
+        }
+      })()
+    : globalDecideParameters
   const [result, setResult] = useState<unknown>(null)
   const [resultSourceMap, setResultSourceMap] = useState<ContentSourceMap | null | undefined>(null)
   const [syncTags, setSyncTags] = useState<SyncTag[] | undefined>(undefined)
@@ -302,6 +339,14 @@ function useQuerySubscription(props: UseQuerySubscriptionProps) {
         returnQuery: false,
       })
       .then((response) => {
+        console.warn('[core-loader] Query result received:', {
+          query: `${query.slice(0, 50)}...`,
+          perspective,
+          decideParameters: passedDecideParameters || 'fallback-to-global',
+          resultCount: Array.isArray(response.result) ? response.result.length : 'single-result',
+        })
+        console.warn('[core-loader] Updated cache, triggering live query updates')
+
         startTransition(() => {
           setResult((prev: unknown) => (isEqual(prev, response.result) ? prev : response.result))
           setResultSourceMap((prev) =>
@@ -312,6 +357,12 @@ function useQuerySubscription(props: UseQuerySubscriptionProps) {
       })
       .catch((err) => {
         if (typeof err !== 'object' || err?.name !== 'AbortError') {
+          console.error('[core-loader] Query execution failed:', {
+            query: `${query.slice(0, 50)}...`,
+            perspective,
+            decideParameters: passedDecideParameters || 'fallback-to-global',
+            error: err,
+          })
           setError(err)
         }
       })
@@ -319,7 +370,15 @@ function useQuerySubscription(props: UseQuerySubscriptionProps) {
     return () => {
       controller.abort()
     }
-  }, [client, lastLiveEventId, params, perspective, query, decideParameters])
+  }, [
+    client,
+    lastLiveEventId,
+    params,
+    perspective,
+    query,
+    decideParameters,
+    passedDecideParameters,
+  ])
   /* eslint-enable max-nested-callbacks */
 
   return useMemo(() => {
