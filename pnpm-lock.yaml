@@ -332,7 +332,7 @@ importers:
         specifier: ^6.1.19
         version: 6.1.19(react-dom@19.1.1(react@19.1.1))(react@19.1.1)
       tsx:
-        specifier: ^4.20.5
+        specifier: ^4.20.6
         version: 4.20.6
     devDependencies:
       '@repo/eslint-config':

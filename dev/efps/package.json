@@ -21,7 +21,7 @@
   "dependencies": {
     "@sanity/eslint-config-studio": "catalog:",
     "styled-components": "^6.1.19",
-    "tsx": "^4.20.5"
+    "tsx": "^4.20.6"
   },
   "devDependencies": {
     "@repo/eslint-config": "workspace:*",
