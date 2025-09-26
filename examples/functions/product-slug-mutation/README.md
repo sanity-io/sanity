@@ -115,7 +115,7 @@ npx sanity functions dev
 
 ### 2. Test with Custom Data
 
-Given that we assume you already have data or at least test data from doing our e-commerce learn tutorial, we assume you have a product doucment already, and given products are only created from the Shopify pipeline it makes sense to only modify an existing product document.
+Given that we assume you already have data or at least test data from doing our e-commerce learn tutorial, we assume you have a product document already, and given products are only created from the Shopify pipeline it makes sense to only modify an existing product document.
 
 Test with your own product document data:
 
