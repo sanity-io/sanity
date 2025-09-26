@@ -117,7 +117,7 @@
   "dependencies": {
     "@date-fns/tz": "^1.4.1",
     "@date-fns/utc": "^2.1.1",
-    "@sanity/client": "7.11.2-audience-decide.0",
+    "@sanity/client": "audience-decide",
     "@sanity/types": "workspace:*",
     "date-fns": "^4.1.0",
     "get-random-values-esm": "1.0.2",

@@ -106,7 +106,7 @@
   },
   "prettier": "@sanity/prettier-config",
   "dependencies": {
-    "@sanity/presentation-comlink": "1.0.29-audience-decide.2"
+    "@sanity/presentation-comlink": "audience-decide"
   },
   "devDependencies": {
     "@google-cloud/storage": "^7.16.0",
@@ -118,7 +118,7 @@
     "@repo/test-config": "workspace:*",
     "@repo/tsconfig": "workspace:*",
     "@repo/utils": "workspace:*",
-    "@sanity/client": "7.11.2-audience-decide.0",
+    "@sanity/client": "audience-decide",
     "@sanity/mutate": "^0.13.0",
     "@sanity/pkg-utils": "catalog:",
     "@sanity/prettier-config": "^1.0.6",
@@ -183,7 +183,7 @@
     },
     "overrides": {
       "@npmcli/arborist": "^7.5.4",
-      "@sanity/client": "7.11.2-audience-decide.0",
+      "@sanity/client": "audience-decide",
       "@sanity/ui@3": "$@sanity/ui",
       "@typescript-eslint/eslint-plugin": "$@typescript-eslint/eslint-plugin",
       "@typescript-eslint/parser": "$@typescript-eslint/parser",

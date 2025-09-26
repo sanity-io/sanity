@@ -49,7 +49,7 @@
     "watch": "pkg-utils watch"
   },
   "dependencies": {
-    "@sanity/client": "7.11.2-audience-decide.0",
+    "@sanity/client": "audience-decide",
     "@sanity/mutate": "^0.13.0",
     "@sanity/types": "workspace:*",
     "@sanity/util": "workspace:*",
