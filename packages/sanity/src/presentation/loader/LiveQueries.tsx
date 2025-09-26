@@ -165,21 +165,23 @@ export default function LiveQueries(props: LiveQueriesProps): React.JSX.Element 
 
   return (
     <>
-      {[...liveQueries.entries()].map(([key, {query, params, perspective, decideParameters}]) => (
-        <QuerySubscription
-          key={`${liveEvents.resets}:${key}`}
-          projectId={projectId}
-          dataset={dataset}
-          perspective={perspective}
-          query={query}
-          params={params}
-          comlink={comlink}
-          client={client}
-          liveDocument={liveDocument}
-          liveEventsMessages={liveEvents.messages}
-          decideParameters={decideParameters}
-        />
-      ))}
+      {[...liveQueries.entries()].map(
+        ([key, {query, params, perspective, decideParameters: queryDecideParameters}]) => (
+          <QuerySubscription
+            key={`${liveEvents.resets}:${key}`}
+            projectId={projectId}
+            dataset={dataset}
+            perspective={perspective}
+            query={query}
+            params={params}
+            comlink={comlink}
+            client={client}
+            liveDocument={liveDocument}
+            liveEventsMessages={liveEvents.messages}
+            decideParameters={queryDecideParameters}
+          />
+        ),
+      )}
     </>
   )
 }
