@@ -3,7 +3,7 @@ import {useCallback, useEffect, useMemo, useRef, useState} from 'react'
 
 type ReleaseFormFields = Pick<EditableReleaseDocument['metadata'], 'title' | 'description'>
 
-interface UseFocusAwareFormStateOptions {
+interface UseReleaseFormOptimisticUpdatingOptions {
   /** The external value from props/server */
   externalValue: EditableReleaseDocument
   id: string
@@ -18,11 +18,11 @@ interface UseFocusAwareFormStateOptions {
  *
  * @internal
  */
-export function useFocusAwareFormState({
+export function useReleaseFormOptimisticUpdating({
   externalValue,
   id,
   extractData,
-}: UseFocusAwareFormStateOptions) {
+}: UseReleaseFormOptimisticUpdatingOptions) {
   const incomingFormData = useMemo(() => extractData(externalValue), [externalValue, extractData])
   const [localData, setLocalData] = useState(() => incomingFormData)
   const [focusedField, setFocusedField] = useState<string | null>(null)
@@ -49,14 +49,13 @@ export function useFocusAwareFormState({
     const isEditingExistingRelease = Boolean(externalValue._createdAt)
 
     // if tracking a new ID
-    if (previousIdRef.current !== id) {
+
+    if (previousIdRef.current === id) {
+      setLocalData(isEditingExistingRelease ? updateUnfocusedFields : incomingFormData)
+    } else {
       previousIdRef.current = id
       setLocalData(incomingFormData)
       setFocusedField(null)
-    } else if (isEditingExistingRelease) {
-      setLocalData(updateUnfocusedFields)
-    } else {
-      setLocalData(incomingFormData)
     }
   }, [incomingFormData, id, externalValue._createdAt, updateUnfocusedFields])
 

@@ -6,7 +6,7 @@ import {type ChangeEvent, useCallback, useEffect, useRef, useState} from 'react'
 import {css, styled} from 'styled-components'
 
 import {useTranslation} from '../../../i18n/hooks/useTranslation'
-import {useFocusAwareFormState} from '../../hooks/useFocusAwareFormState'
+import {useReleaseFormOptimisticUpdating} from '../../hooks/useReleaseFormOptimisticUpdating'
 
 const MAX_DESCRIPTION_HEIGHT = 200
 
@@ -99,17 +99,18 @@ export function TitleDescriptionForm({
   const [scrollHeight, setScrollHeight] = useState(46)
   const {t} = useTranslation()
 
-  const {localData, updateLocalData, createFocusHandler, handleBlur} = useFocusAwareFormState({
-    externalValue: release,
-    id: release._id,
-    extractData: useCallback(
-      ({metadata}: EditableReleaseDocument) => ({
-        title: metadata.title,
-        description: metadata.description,
-      }),
-      [],
-    ),
-  })
+  const {localData, updateLocalData, createFocusHandler, handleBlur} =
+    useReleaseFormOptimisticUpdating({
+      externalValue: release,
+      id: release._id,
+      extractData: useCallback(
+        ({metadata}: EditableReleaseDocument) => ({
+          title: metadata.title,
+          description: metadata.description,
+        }),
+        [],
+      ),
+    })
 
   useEffect(() => {
     // make sure that the text area for the description has the right height initially
