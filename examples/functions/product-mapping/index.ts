@@ -12,8 +12,7 @@ interface ShopifyPayload {
   }
 }
 
-export const handler = documentEventHandler(
-  async ({context, event}: {context: any; event: DocumentEvent<ShopifyPayload>}) => {
+export const handler = documentEventHandler(async ({context, event}) => {
     console.log('👋 Your Sanity Function was called at', new Date().toISOString())
     console.log('👋 Event:', event)
 
