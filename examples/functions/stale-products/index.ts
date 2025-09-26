@@ -1,4 +1,4 @@
-import {documentEventHandler, type DocumentEvent} from '@sanity/functions'
+import {documentEventHandler} from '@sanity/functions'
 import {createClient} from '@sanity/client'
 
 interface PagePayload {
@@ -27,8 +27,9 @@ interface ProductWithDates {
   }
 }
 
-export const handler = documentEventHandler(
-  async ({context, event}: {context: any; event: DocumentEvent<PagePayload>}) => {
+const STALE_PRODUCT_THRESHOLD_DAYS = 30
+
+export const handler = documentEventHandler(async ({context, event}) => {
     console.log('📄 Page Product Age Analysis Function called at', new Date().toISOString())
     console.log('📝 Event:', event)
 
@@ -42,7 +43,7 @@ export const handler = documentEventHandler(
 
       const client = createClient({
         ...context.clientOptions,
-        dataset: 'production',
+        useCdn: false,
         apiVersion: '2025-06-01',
       })
 
@@ -126,9 +127,11 @@ export const handler = documentEventHandler(
       })
 
       // Remove duplicates based on product ID
-      const uniqueProducts = products.filter(
-        (product, index, self) => index === self.findIndex((p) => p._id === product._id),
-      )
+      const productMap = new Map<string, ProductWithDates>()
+      products.forEach((product) => {
+        productMap.set(product._id, product)
+      })
+      const uniqueProducts = Array.from(productMap.values())
 
       console.log(
         '📦 Found products:',
@@ -166,7 +169,7 @@ export const handler = documentEventHandler(
         )
 
         // Flag as old if created more than 30 days ago
-        const isOld = createdAgeInDays > 30
+        const isOld = createdAgeInDays > STALE_PRODUCT_THRESHOLD_DAYS
 
         return {
           _key: `product-age-${product._id}`,

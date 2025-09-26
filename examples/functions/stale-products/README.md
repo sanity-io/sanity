@@ -20,13 +20,24 @@ This Sanity Function automatically analyzes the age of products referenced in pa
 
 ## Compatible Templates
 
-This function is built to be compatible with the [Sanity E-commerce template](https://www.sanity.io/templates/ecommerce-shopify). It works specifically with page documents that have `modules` containing product references in a grid layout structure.
+This function is built to be compatible with the Sanity E-commerce Shopify template. It works specifically well with page documents that have `modules` containing product references in a grid layout structure.  Install this template with: `npm create sanity@latest -- --template "shopify"`
 
 ### Adding required schema field to your project
 
 You'll need to add a `productAgeAnalysis` field to your `page` document schema:
 
 ```typescript
+defineField({
+      name: 'modules',
+      type: 'array',
+      description: 'Editorial modules to associate with this collection',
+      of: [
+        defineArrayMember({type: 'grid'}),
+        // Additional types can be added
+      ],
+      group: 'editorial',
+    }),
+    
 defineField({
   name: 'productAgeAnalysis',
   title: 'Product Age Analysis',
@@ -67,6 +78,30 @@ defineField({
           type: 'datetime',
         },
       ],
+      preview: {
+            select: {
+              title: 'product.title',
+              productTitle: 'product.store.title',
+              ageInDays: 'ageInDays',
+              updatedAgeInDays: 'updatedAgeInDays',
+              isOld: 'isOld',
+              createdAt: 'createdAt',
+              lastUpdated: 'lastUpdated',
+            },
+            prepare({title, productTitle, ageInDays, updatedAgeInDays, isOld}) {
+              const displayTitle = productTitle || title || 'Untitled Product'
+              const createdAgeText = ageInDays ? `${ageInDays}d old` : 'Unknown age'
+              const updatedAgeText = updatedAgeInDays
+                ? `${updatedAgeInDays}d since update`
+                : 'Unknown'
+              const status = isOld ? '🔴 OLD' : '🟢 FRESH'
+
+              return {
+                title: displayTitle,
+                subtitle: `${status} - Created: ${createdAgeText} | Updated: ${updatedAgeText}`,
+              }
+            },
+          },
     },
   ],
   description: 'Automatically populated by the stale-products function',
