@@ -410,6 +410,20 @@ function useQuerySubscription(props: UseQuerySubscriptionProps) {
 
   return useMemo(() => {
     if (liveDocument && resultSourceMap) {
+      // Add diagnostic logging for turboCharge process
+      const resultStr = JSON.stringify(result)
+      const liveDocStr = JSON.stringify(liveDocument)
+      const resultHasConditional = resultStr.includes('"conditions"')
+      const liveDocHasConditional = liveDocStr.includes('"conditions"')
+
+      console.warn('[STUDIO-DECIDE] TurboCharge process:', {
+        resultHasConditional,
+        liveDocHasConditional,
+        message: liveDocHasConditional
+          ? 'LiveDocument will overwrite resolved conditional content!'
+          : 'No conditional content conflict',
+      })
+
       return {
         result: turboChargeResultIfSourceMap(liveDocument, result, perspective, resultSourceMap),
         resultSourceMap,
