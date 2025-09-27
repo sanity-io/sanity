@@ -266,9 +266,20 @@ const getReleaseDocumentsObservable = ({
         releasesState.releases.get(getReleaseDocumentIdFromReleaseId(releaseId)),
       ),
       filter(Boolean), // Removes falsey values
-      distinctUntilChanged((prev, next) => prev._rev === next._rev),
+      distinctUntilChanged((prev, next) => {
+        // Only skip re-validation if the core fields that affect document validation haven't changed
+        // Return true to skip, false to trigger re-validation
+        // _rev wasn't enough since it changed on every edit of the release document itself
+        return prev.state === next.state && prev.finalDocumentStates === next.finalDocumentStates
+      }),
       switchMap((release) => {
-        const cacheKey = `${releaseId}-${release._rev}`
+        // Create cache key based on fields that affect document validation + _rev
+        const cacheKey = [
+          releaseId,
+          release.state,
+          release.finalDocumentStates?.flatMap((doc) => doc.id),
+          release._rev,
+        ].join('-')
 
         if (!bundleDocumentsCache[cacheKey]) {
           let observable: ReleaseDocumentsObservableResult

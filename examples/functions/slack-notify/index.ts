@@ -16,7 +16,7 @@ export const handler = documentEventHandler(async ({event}) => {
 
   try {
     // Prepare message content
-    const message = `*New Document Published!*\nTitle: ${event.data.title || 'Untitled'}\nWebpage: <${BASE_URL}/posts/${event.data.slug?.current || 'no-slug'}|Click Here>\nStudio: <${STUDIO_URL}/structure/post;${event.data._id}|Click Here>\nDateTime Published: ${new Date(event.data._updatedAt).toLocaleString()}`
+    const message = `*New Document Created!*\nTitle: ${event.data.title || 'Untitled'}\nWebpage: <${BASE_URL}/posts/${event.data.slug?.current || 'no-slug'}|Click Here>\nStudio: <${STUDIO_URL}/structure/post;${event.data._id}|Click Here>\nDateTime Created: ${new Date(event.data._createdAt).toLocaleString()}`
 
     // Send message to Slack
     await slack.chat.postMessage({
