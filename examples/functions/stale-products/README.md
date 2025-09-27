@@ -20,7 +20,7 @@ This Sanity Function automatically analyzes the age of products referenced in pa
 
 ## Compatible Templates
 
-This function is built to be compatible with the Sanity E-commerce Shopify template. It works specifically well with page documents that have `modules` containing product references in a grid layout structure.  Install this template with: `npm create sanity@latest -- --template "shopify"`
+This function is built to be compatible with the Sanity E-commerce Shopify template. It works specifically well with page documents that have `modules` containing product references in a grid layout structure. Install this template with: `npm create sanity@latest -- --template "shopify"`
 
 ### Adding required schema field to your project
 
@@ -37,7 +37,7 @@ defineField({
       ],
       group: 'editorial',
     }),
-    
+
 defineField({
   name: 'productAgeAnalysis',
   title: 'Product Age Analysis',
