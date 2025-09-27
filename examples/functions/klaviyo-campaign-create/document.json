@@ -1,0 +1,27 @@
+{
+  "_type": "emails",
+  "_id": "test-email-123",
+  "title": "New Product Launch Email",
+  "body": [
+    {
+      "_type": "block",
+      "children": [
+        {
+          "_type": "span",
+          "text": "Check out our amazing new products!"
+        }
+      ]
+    },
+    {
+      "_type": "products",
+      "products": [
+        {
+          "_ref": "product-123",
+          "_type": "reference"
+        }
+      ]
+    }
+  ],
+  "status": "inprogress",
+  "klaviyoListId": "optional-list-override"
+}
