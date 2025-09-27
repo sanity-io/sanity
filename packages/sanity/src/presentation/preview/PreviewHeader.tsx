@@ -12,6 +12,7 @@ import {useId} from '../useId'
 import {OpenPreviewButton} from './OpenPreviewButton'
 import {type PreviewProps} from './Preview'
 import {PreviewLocationInput} from './PreviewLocationInput'
+import {PreviewVariantButton} from './PreviewVariantButton'
 import {SharePreviewMenu} from './SharePreviewMenu'
 
 /** @public */
@@ -44,6 +45,10 @@ const PreviewHeaderDefault = (props: Omit<PreviewHeaderProps, 'renderDefault'>) 
   } = props
 
   const {t} = useTranslation(presentationLocaleNamespace)
+
+  const handleVariantChange = useCallback((selections: Record<string, string>) => {
+    console.warn('Variant selections:', selections)
+  }, [])
 
   const toggleViewportSize = useCallback(
     () => setViewport(viewport === 'desktop' ? 'mobile' : 'desktop'),
@@ -239,6 +244,8 @@ const PreviewHeaderDefault = (props: Omit<PreviewHeaderProps, 'renderDefault'>) 
             tooltipProps={null}
           />
         </Tooltip>
+
+        <PreviewVariantButton onVariantChange={handleVariantChange} />
       </Flex>
 
       {canSharePreviewAccess && (
