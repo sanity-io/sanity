@@ -1,7 +1,7 @@
 /* eslint-disable max-statements */
 import {type ReleaseDocument} from '@sanity/client'
-import {AddIcon, CalendarIcon, ChevronDownIcon, EarthGlobeIcon} from '@sanity/icons'
-import {Box, type ButtonMode, Card, Flex, Inline, Menu, Text, useMediaIndex} from '@sanity/ui'
+import {AddIcon, ChevronDownIcon, EarthGlobeIcon} from '@sanity/icons'
+import {Box, type ButtonMode, Card, Flex, Inline, useMediaIndex} from '@sanity/ui'
 import {isSameDay} from 'date-fns'
 import {AnimatePresence, motion} from 'framer-motion'
 import {type MouseEventHandler, useCallback, useEffect, useMemo, useRef, useState} from 'react'
@@ -9,8 +9,6 @@ import {useRouter} from 'sanity/router'
 
 import {Tooltip} from '../../../../ui-components'
 import {Button} from '../../../../ui-components/button/Button'
-import {MenuButton} from '../../../../ui-components/menuButton'
-import {MenuItem} from '../../../../ui-components/menuItem'
 import {CalendarFilter} from '../../../components/inputs/DateFilters/calendar/CalendarFilter'
 import useDialogTimeZone from '../../../hooks/useDialogTimeZone'
 import {useTimeZone} from '../../../hooks/useTimeZone'
@@ -18,7 +16,6 @@ import {useTranslation} from '../../../i18n'
 import {usePerspective} from '../../../perspective/usePerspective'
 import {CONTENT_RELEASES_TIME_ZONE_SCOPE} from '../../../studio/constants'
 import {useWorkspace} from '../../../studio/workspace'
-import {isCardinalityOneRelease} from '../../../util/releaseUtils'
 import {CreateReleaseDialog} from '../../components/dialog/CreateReleaseDialog'
 import {useReleasesUpsell} from '../../contexts/upsell/useReleasesUpsell'
 import {useScheduledDraftsEnabled} from '../../hooks/useScheduledDraftsEnabled'
@@ -34,6 +31,7 @@ import {getReleaseDefaults, shouldShowReleaseInView} from '../../util/util'
 import {Table, type TableRowProps} from '../components/Table/Table'
 import {type TableSort} from '../components/Table/TableProvider'
 import {CalendarPopover} from './CalendarPopover'
+import {CardinalityViewPicker} from './CardinalityViewPicker'
 import {DraftsDisabledBanner} from './DraftsDisabledBanner'
 import {
   buildReleasesSearchParams,
@@ -217,119 +215,6 @@ export function ReleasesOverview() {
 
   const showCalendar = mediaIndex > 2
 
-  const cardinalityViewPicker = useMemo(() => {
-    if (!isScheduledDraftsEnabled) {
-      const hasActiveCardinalityOneReleases = allReleases.some(isCardinalityOneRelease)
-
-      if (!hasActiveCardinalityOneReleases) {
-        return (
-          <Flex align="center" gap={2}>
-            <CalendarIcon />
-            <Text size={1} weight="semibold">
-              {t('action.releases')}
-            </Text>
-          </Flex>
-        )
-      }
-
-      const currentViewText =
-        cardinalityView === 'releases' ? t('action.releases') : t('action.drafts')
-
-      return (
-        <MenuButton
-          id="cardinality-view-menu"
-          button={
-            <Button
-              mode="bleed"
-              paddingY={2}
-              text={currentViewText}
-              icon={CalendarIcon}
-              iconRight={ChevronDownIcon}
-              disabled={loading}
-              style={{fontWeight: 600}}
-            />
-          }
-          menu={
-            <Menu>
-              <MenuItem
-                text={t('action.releases')}
-                selected={cardinalityView === 'releases'}
-                onClick={handleCardinalityViewChange('releases')}
-              />
-              <MenuItem
-                text={t('action.drafts')}
-                selected={cardinalityView === 'drafts'}
-                onClick={handleCardinalityViewChange('drafts')}
-              />
-            </Menu>
-          }
-        />
-      )
-    }
-
-    // When scheduled drafts are enabled, we need to check if drafts mode is also enabled
-    // If drafts mode is disabled, only show releases and drafts menu items if there are any cardinality one releases
-    // otherwise, show only the releases label
-    if (!isDraftModelEnabled) {
-      const hasActiveCardinalityOneReleases = allReleases.some((release) =>
-        isCardinalityOneRelease(release),
-      )
-
-      if (!hasActiveCardinalityOneReleases) {
-        return (
-          <Flex align="center" gap={2}>
-            <CalendarIcon />
-            <Text size={1} weight="semibold">
-              {t('action.releases')}
-            </Text>
-          </Flex>
-        )
-      }
-    }
-
-    const currentViewText =
-      cardinalityView === 'releases' ? t('action.releases') : t('action.drafts')
-
-    return (
-      <MenuButton
-        id="cardinality-view-menu"
-        button={
-          <Button
-            mode="bleed"
-            paddingY={2}
-            text={currentViewText}
-            icon={CalendarIcon}
-            iconRight={ChevronDownIcon}
-            disabled={loading}
-            style={{fontWeight: 600}}
-          />
-        }
-        menu={
-          <Menu>
-            <MenuItem
-              text={t('action.releases')}
-              selected={cardinalityView === 'releases'}
-              onClick={handleCardinalityViewChange('releases')}
-            />
-            <MenuItem
-              text={t('action.drafts')}
-              selected={cardinalityView === 'drafts'}
-              onClick={handleCardinalityViewChange('drafts')}
-            />
-          </Menu>
-        }
-      />
-    )
-  }, [
-    loading,
-    cardinalityView,
-    t,
-    handleCardinalityViewChange,
-    isScheduledDraftsEnabled,
-    isDraftModelEnabled,
-    allReleases,
-  ])
-
   const currentArchivedPicker = useMemo(() => {
     const groupModeButtonBaseProps = {
       disabled: loading || !hasReleases,
@@ -482,18 +367,13 @@ export function ReleasesOverview() {
     getTimezoneAdjustedDateTimeRange,
   ])
 
-  const ReleaseCalendarFilterDay = useMemo(
-    () => createReleaseCalendarFilterDay(cardinalityView),
-    [cardinalityView],
-  )
-
   const renderCalendarFilter = useMemo(() => {
     return (
       <Flex flex="none">
         <Card borderRight flex="none" disabled>
           <CalendarFilter
             disabled={loading || releases.length === 0}
-            renderCalendarDay={ReleaseCalendarFilterDay}
+            renderCalendarDay={createReleaseCalendarFilterDay(cardinalityView)}
             selectedDate={releaseFilterDate}
             onSelect={handleSelectFilterDate}
             timeZoneScope={CONTENT_RELEASES_TIME_ZONE_SCOPE}
@@ -501,7 +381,7 @@ export function ReleasesOverview() {
         </Card>
       </Flex>
     )
-  }, [loading, releases, releaseFilterDate, handleSelectFilterDate, ReleaseCalendarFilterDay])
+  }, [loading, releases, releaseFilterDate, handleSelectFilterDate, cardinalityView])
 
   const tableColumns = useMemo(() => {
     if (cardinalityView === 'drafts') {
@@ -568,7 +448,14 @@ export function ReleasesOverview() {
                 <Flex align="center" flex={1} gap={3}>
                   <Inline>
                     {!showCalendar && <CalendarPopover content={renderCalendarFilter} />}
-                    {cardinalityViewPicker}
+                    <CardinalityViewPicker
+                      cardinalityView={cardinalityView}
+                      loading={loading}
+                      onCardinalityViewChange={handleCardinalityViewChange}
+                      isScheduledDraftsEnabled={isScheduledDraftsEnabled}
+                      isDraftModelEnabled={isDraftModelEnabled}
+                      allReleases={allReleases}
+                    />
                   </Inline>
 
                   <Flex flex={1} gap={1}>

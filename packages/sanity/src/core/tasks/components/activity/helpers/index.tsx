@@ -55,12 +55,14 @@ export function UserName({userId}: {userId: string}) {
 const DUE_BY_DATE_OPTIONS: UseDateTimeFormatOptions = {
   month: 'short',
   day: 'numeric',
+  timeZone: 'UTC',
 }
 
 function DueByChange({date}: {date: string}) {
   const dueBy = new Date(date)
   const dateFormatter = useDateTimeFormat(DUE_BY_DATE_OPTIONS)
   const formattedDate = dateFormatter.format(dueBy)
+
   return (
     <Strong>
       <NoWrap>{formattedDate}</NoWrap>

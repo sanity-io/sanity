@@ -1,21 +1,25 @@
+import {type ReleaseDocument} from '@sanity/client'
+import {type SanityDocument, type StrictVersionLayeringOptions} from '@sanity/types'
 import {useMemo} from 'react'
-import {
-  getReleaseIdFromReleaseDocumentId,
-  getVersionFromId,
-  type ReleaseDocument,
-  useActiveReleases,
-  useArchivedReleases,
-  useDocumentVersions,
-  usePerspective,
-} from 'sanity'
 
-import {usePaneRouter} from '../components/paneRouter/usePaneRouter'
-import {type DocumentPaneContextValue} from '../panes/document/DocumentPaneContext'
+import {usePerspective} from '../perspective/usePerspective'
+import {useDocumentVersions} from '../releases/hooks/useDocumentVersions'
+import {useActiveReleases} from '../releases/store/useActiveReleases'
+import {useArchivedReleases} from '../releases/store/useArchivedReleases'
+import {getReleaseIdFromReleaseDocumentId} from '../releases/util/getReleaseIdFromReleaseDocumentId'
+import {getDocumentIsInPerspective} from '../releases/util/util'
+import {getVersionFromId} from '../util/draftUtils'
 
 type FilterReleases = {
   notCurrentReleases: ReleaseDocument[]
   currentReleases: ReleaseDocument[]
   inCreation: ReleaseDocument | null
+}
+
+interface Options extends StrictVersionLayeringOptions {
+  displayed: Partial<SanityDocument> | null
+  documentId: string
+  historyVersion?: string
 }
 
 /**
@@ -24,13 +28,14 @@ type FilterReleases = {
 export function useFilteredReleases({
   displayed,
   documentId,
-}: Pick<DocumentPaneContextValue, 'displayed' | 'documentId'>): FilterReleases {
+  strict,
+  historyVersion,
+}: Options): FilterReleases {
   const {selectedReleaseId} = usePerspective()
   const {data: releases} = useActiveReleases()
   const {data: archivedReleases} = useArchivedReleases()
   const {data: documentVersions} = useDocumentVersions({documentId})
   const isCreatingDocument = displayed && !displayed._createdAt
-  const {params} = usePaneRouter()
 
   return useMemo(() => {
     if (!documentVersions) return {notCurrentReleases: [], currentReleases: [], inCreation: null}
@@ -50,7 +55,25 @@ export function useFilteredReleases({
         if (isCreatingThisVersion) {
           acc.inCreation = release
         } else if (versionDocExists) {
-          acc.currentReleases.push(release)
+          if (strict) {
+            // In strict mode, only include the release if it contains the displayed version, or
+            // if it's a scheduled release. This ensures layering reflects only the known
+            // chronology of releases.
+            //
+            // For example, when viewing an ASAP version, it's impossible to know whether
+            // some other ASAP version will be published first.
+            if (
+              getDocumentIsInPerspective(
+                displayed?._id ?? '',
+                getReleaseIdFromReleaseDocumentId(release._id),
+              ) ||
+              release.metadata.releaseType === 'scheduled'
+            ) {
+              acc.currentReleases.push(release)
+            }
+          } else {
+            acc.currentReleases.push(release)
+          }
         } else {
           acc.notCurrentReleases.push(release)
         }
@@ -60,10 +83,10 @@ export function useFilteredReleases({
     )
 
     // without historyVersion, version is not in an archived release
-    if (!params?.historyVersion) return activeReleases
+    if (!historyVersion) return activeReleases
 
     const archivedRelease = archivedReleases.find(
-      (r) => getReleaseIdFromReleaseDocumentId(r._id) === params?.historyVersion,
+      (r) => getReleaseIdFromReleaseDocumentId(r._id) === historyVersion,
     )
 
     // only for explicitly archived releases; published releases use published perspective
@@ -77,8 +100,9 @@ export function useFilteredReleases({
     isCreatingDocument,
     displayed?._id,
     documentVersions,
-    params?.historyVersion,
+    historyVersion,
     releases,
     selectedReleaseId,
+    strict,
   ])
 }

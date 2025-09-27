@@ -32,7 +32,7 @@ export async function deleteToken(
     return true
   } catch (err) {
     if (err.statusCode === 404) {
-      throw new Error(`Token with ID "${tokenId}" not found`)
+      throw new Error(`Token with ID "${tokenId}" not found`, {cause: err})
     }
     throw err
   }

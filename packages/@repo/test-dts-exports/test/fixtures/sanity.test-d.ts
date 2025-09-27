@@ -328,6 +328,8 @@ import type {
   DatetimeOptions,
   DatetimeRule,
   dec,
+  DECISION_PARAMETERS_SCHEMA,
+  DecisionParametersConfig,
   decodePath,
   DEFAULT_MAX_RECURSION_DEPTH,
   DEFAULT_STUDIO_CLIENT_OPTIONS,
@@ -431,6 +433,7 @@ import type {
   DocumentFormNode,
   DocumentGroupEvent,
   documentIdEquals,
+  DocumentIdStack,
   DocumentInspector,
   DocumentInspectorComponent,
   DocumentInspectorContext,
@@ -632,6 +635,7 @@ import type {
   getCalendarLabels,
   getConfigContextFromSource,
   getDiffAtPath,
+  getDocumentIsInPerspective,
   getDocumentPairPermissions,
   getDocumentValuePermissions,
   getDocumentVariantType,
@@ -1304,6 +1308,7 @@ import type {
   StatusButton,
   StatusButtonProps,
   StrictDefinition,
+  StrictVersionLayeringOptions,
   StringComponents,
   StringDefinition,
   StringDiff,
@@ -1469,6 +1474,7 @@ import type {
   useDiffAnnotationColor,
   useDocumentChange,
   useDocumentForm,
+  useDocumentIdStack,
   useDocumentLimitsUpsellContext,
   useDocumentOperation,
   useDocumentOperationEvent,
@@ -1489,6 +1495,7 @@ import type {
   useExcludedPerspective,
   useFeatureEnabled,
   useFieldActions,
+  useFilteredReleases,
   useFormattedDuration,
   UseFormattedDurationOptions,
   useFormBuilder,
@@ -2632,6 +2639,12 @@ describe('sanity', () => {
   test('dec', () => {
     expectTypeOf<typeof dec>().toBeFunction()
   })
+  test('DECISION_PARAMETERS_SCHEMA', () => {
+    expectTypeOf<typeof DECISION_PARAMETERS_SCHEMA>().not.toBeNever()
+  })
+  test('DecisionParametersConfig', () => {
+    expectTypeOf<DecisionParametersConfig>().toBeObject()
+  })
   test('decodePath', () => {
     expectTypeOf<typeof decodePath>().toBeFunction()
   })
@@ -2942,6 +2955,9 @@ describe('sanity', () => {
   })
   test('documentIdEquals', () => {
     expectTypeOf<typeof documentIdEquals>().toBeFunction()
+  })
+  test('DocumentIdStack', () => {
+    expectTypeOf<DocumentIdStack>().toBeObject()
   })
   test('DocumentInspector', () => {
     expectTypeOf<DocumentInspector>().toBeObject()
@@ -3551,6 +3567,9 @@ describe('sanity', () => {
   })
   test('getDiffAtPath', () => {
     expectTypeOf<typeof getDiffAtPath>().toBeFunction()
+  })
+  test('getDocumentIsInPerspective', () => {
+    expectTypeOf<typeof getDocumentIsInPerspective>().toBeFunction()
   })
   test('getDocumentPairPermissions', () => {
     expectTypeOf<typeof getDocumentPairPermissions>().toBeFunction()
@@ -5581,6 +5600,9 @@ describe('sanity', () => {
   test('StrictDefinition', () => {
     expectTypeOf<StrictDefinition>().not.toBeNever()
   })
+  test('StrictVersionLayeringOptions', () => {
+    expectTypeOf<StrictVersionLayeringOptions>().toBeObject()
+  })
   test('StringComponents', () => {
     // This export has 2 declarations, run `TEST_DTS_EXPORTS_DIAGNOSTICS=duplicates pnpm generate:dts-exports` to see where each declaration is coming from
     expectTypeOf<StringComponents>().toBeObject()
@@ -6083,6 +6105,9 @@ describe('sanity', () => {
   test('useDocumentForm', () => {
     expectTypeOf<typeof useDocumentForm>().toBeFunction()
   })
+  test('useDocumentIdStack', () => {
+    expectTypeOf<typeof useDocumentIdStack>().toBeFunction()
+  })
   test('useDocumentLimitsUpsellContext', () => {
     expectTypeOf<typeof useDocumentLimitsUpsellContext>().not.toBeNever()
   })
@@ -6142,6 +6167,9 @@ describe('sanity', () => {
   })
   test('useFieldActions', () => {
     expectTypeOf<typeof useFieldActions>().toBeFunction()
+  })
+  test('useFilteredReleases', () => {
+    expectTypeOf<typeof useFilteredReleases>().toBeFunction()
   })
   test('useFormattedDuration', () => {
     expectTypeOf<typeof useFormattedDuration>().toBeFunction()

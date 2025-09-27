@@ -9,6 +9,7 @@ import {
   FieldActionsResolver,
   GetFormValueProvider,
   type Path,
+  useDocumentIdStack,
   useGlobalCopyPasteElementHandler,
   useTranslation,
   useZIndex,
@@ -16,7 +17,6 @@ import {
 import {styled} from 'styled-components'
 
 import {Pane, usePaneLayout, usePaneRouter} from '../../../components'
-import {useDocumentIdStack} from '../../../hooks/useDocumentIdStack'
 import {structureLocaleNamespace} from '../../../i18n'
 import {useStructureTool} from '../../../useStructureTool'
 import {

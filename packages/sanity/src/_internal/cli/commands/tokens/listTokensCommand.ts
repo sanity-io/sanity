@@ -68,7 +68,7 @@ const listTokensCommand: CliCommandDefinition<ListTokensFlags> = {
 
       table.printTable()
     } catch (err) {
-      throw new Error(`Failed to list tokens:\n${err.message}`)
+      throw new Error(`Failed to list tokens:\n${err.message}`, {cause: err})
     }
   },
 }

@@ -86,6 +86,7 @@ export function createSetTelemetryConsentAction(status: SettableConsentStatus): 
         const errorMessage = resultMessages[status].failure(err.response?.body?.message)
         if (err.statusCode === 403) {
           // throw without stack trace from original error
+          // oxlint-disable-next-line preserve-caught-error is intentional
           throw new Error(errorMessage)
         } else {
           // if not 403, throw original error

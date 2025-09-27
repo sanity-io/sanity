@@ -20,7 +20,7 @@ const deleteHookCommand: CliCommandDefinition = {
         .config({apiVersion: '2021-10-04'})
         .request({method: 'DELETE', uri: `/hooks/${hookId}`})
     } catch (err) {
-      throw new Error(`Hook deletion failed:\n${err.message}`)
+      throw new Error(`Hook deletion failed:\n${err.message}`, {cause: err})
     }
   },
 }

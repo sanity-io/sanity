@@ -29,30 +29,41 @@ export async function measureFpsForInput({
   await input.click()
   await new Promise((resolve) => setTimeout(resolve, 500))
 
-  const rendersPromise = input.evaluate(async (el: HTMLInputElement | HTMLTextAreaElement) => {
-    const updates: {value: string; timestamp: number}[] = []
+  const rendersPromise = input.evaluate(
+    // Had to add this so we can run the tests
+    // eslint-disable-next-line no-new-func
+    new Function(
+      'el',
+      `
+    return (async function() {
+      const updates = []
 
-    const mutationObserver = new MutationObserver(() => {
-      updates.push({value: el.value, timestamp: Date.now()})
-    })
+      const mutationObserver = new MutationObserver(() => {
+        updates.push({value: el.value, timestamp: Date.now()})
+      })
 
-    if (el instanceof HTMLTextAreaElement) {
-      mutationObserver.observe(el, {childList: true, characterData: true, subtree: true})
-    } else {
-      mutationObserver.observe(el, {attributes: true, attributeFilter: ['value']})
-    }
-
-    await new Promise<void>((resolve) => {
-      const handler = () => {
-        el.removeEventListener('blur', handler)
-        resolve()
+      if (el instanceof HTMLTextAreaElement) {
+        mutationObserver.observe(el, {childList: true, characterData: true, subtree: true})
+      } else {
+        mutationObserver.observe(el, {attributes: true, attributeFilter: ['value']})
       }
 
-      el.addEventListener('blur', handler)
-    })
+      await new Promise((resolve) => {
+        const handler = () => {
+          el.removeEventListener('blur', handler)
+          resolve()
+        }
 
-    return updates
-  })
+        el.addEventListener('blur', handler)
+      })
+
+      return updates
+    })()
+  `,
+    ) as (
+      el: HTMLInputElement | HTMLTextAreaElement,
+    ) => Promise<{value: string; timestamp: number}[]>,
+  )
   await new Promise((resolve) => setTimeout(resolve, 500))
 
   const inputEvents: {character: string; timestamp: number}[] = []

@@ -10,7 +10,7 @@ export function resolveRootDir(cwd: string): string {
   try {
     return resolveProjectRoot(cwd) || cwd
   } catch (err) {
-    throw new Error(`Error occurred trying to resolve project root:\n${err.message}`)
+    throw new Error(`Error occurred trying to resolve project root:\n${err.message}`, {cause: err})
   }
 }
 

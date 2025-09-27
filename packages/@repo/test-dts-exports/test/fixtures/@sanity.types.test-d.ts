@@ -315,6 +315,7 @@ import type {
   SpanSchemaType,
   SpanTextObjectField,
   StrictDefinition,
+  StrictVersionLayeringOptions,
   StringDefinition,
   StringOptions,
   StringRule,
@@ -1288,6 +1289,9 @@ describe('@sanity/types', () => {
   })
   test('StrictDefinition', () => {
     expectTypeOf<StrictDefinition>().not.toBeNever()
+  })
+  test('StrictVersionLayeringOptions', () => {
+    expectTypeOf<StrictVersionLayeringOptions>().toBeObject()
   })
   test('StringDefinition', () => {
     expectTypeOf<StringDefinition>().toBeObject()
