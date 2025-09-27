@@ -45,7 +45,6 @@ import {
   initialDocumentActions,
   initialDocumentBadges,
   initialLanguageFilter,
-  internalQuotaExcludedReleasesEnabledReducer,
   internalTasksReducer,
   legacySearchEnabledReducer,
   mediaLibraryEnabledReducer,
@@ -74,7 +73,6 @@ import {
   type MissingConfigFile,
   type PluginOptions,
   type PreparedConfig,
-  QUOTA_EXCLUDED_RELEASES_ENABLED,
   type SingleWorkspace,
   type Source,
   type SourceClientOptions,
@@ -360,10 +358,6 @@ function resolveSource({
     projectId,
     schema,
     i18n: i18n.source,
-    [QUOTA_EXCLUDED_RELEASES_ENABLED]: internalQuotaExcludedReleasesEnabledReducer({
-      config,
-      initialValue: false,
-    }),
     [DECISION_PARAMETERS_SCHEMA]: decisionParametersSchemaReducer({
       config,
       initialValue: undefined,
@@ -796,6 +790,9 @@ function resolveSource({
               propertyName: 'releases.actions',
               reducer: releaseActionsReducer,
             }),
+          scheduledDrafts: {
+            enabled: config.releases.scheduledDrafts?.enabled ?? true,
+          },
         }
       : undefined,
   }
