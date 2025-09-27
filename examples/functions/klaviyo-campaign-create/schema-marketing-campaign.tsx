@@ -64,12 +64,5 @@ export const marketingCampaignType = defineType({
       type: 'string',
       description: 'A description of this marketing campaign',
     }),
-    // defineField({
-    //   name: 'listId',
-    //   title: 'Klaviyo List ID',
-    //   type: 'string',
-    //   description: 'The list ID from Klaviyo that this campaign will be sent to',
-    //   validation: (Rule: any) => Rule.required(),
-    // }),
   ],
 })
