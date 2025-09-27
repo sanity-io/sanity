@@ -124,6 +124,7 @@ import strings from './standard/strings'
 import texts from './standard/texts'
 import urls from './standard/urls'
 import videos from './standard/videos'
+import {elidedValuesExample} from './debug/elidedValues'
 
 // @todo temporary, until code input is v3 compatible
 const codeInputType = {
@@ -261,6 +262,7 @@ export function createSchemaTypes(projectId: string) {
     simpleReferences,
     reservedFieldNames,
     review,
+    elidedValuesExample,
     select,
     typeWithNoToplevelStrings,
     uploads,
