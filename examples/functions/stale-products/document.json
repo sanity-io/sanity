@@ -1,0 +1,33 @@
+{
+  "_type": "page",
+  "_id": "page-123",
+  "title": "Page with Product Grid",
+  "modules": [
+    {
+      "_type": "grid",
+      "_key": "grid-1",
+      "items": [
+        {
+          "_type": "productReference",
+          "_key": "product-ref-1",
+          "productWithVariant": {
+            "product": {
+              "_ref": "product-123",
+              "_type": "reference"
+            }
+          }
+        },
+        {
+          "_type": "productReference",
+          "_key": "product-ref-2",
+          "productWithVariant": {
+            "product": {
+              "_ref": "product-456",
+              "_type": "reference"
+            }
+          }
+        }
+      ]
+    }
+  ]
+}
