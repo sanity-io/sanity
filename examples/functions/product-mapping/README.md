@@ -20,7 +20,7 @@ This Sanity Function automatically processes Shopify product tags to create prod
 
 ## Compatible Templates
 
-This function is built to be compatible with the Sanity E-commerce Shopify template.. It works specifically with Shopify product data and requires the `product`, `productMap`, and `colorVariant` document types.  Install Sanity's Shopify template: `npm create sanity@latest -- --template shopify`
+This function is built to be compatible with the Sanity E-commerce Shopify template.. It works specifically with Shopify product data and requires the `product`, `productMap`, and `colorVariant` document types. Install Sanity's Shopify template: `npm create sanity@latest -- --template shopify`
 
 ## How it works with Sanity Connect for Shopify
 
@@ -217,7 +217,8 @@ defineField({
          event: {
            on: ['create', 'update'],
            filter: "_type == 'product' && delta::changedAny(store.tags)",
-           projection: '{_id, _type, store, colorVariant, productMap, "operation": delta::operation()}',
+           projection:
+             '{_id, _type, store, colorVariant, productMap, "operation": delta::operation()}',
          },
        }),
      ],
