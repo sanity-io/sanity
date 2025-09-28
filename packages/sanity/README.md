@@ -109,3 +109,9 @@ Your contributions not only improve Sanity Studio but also bring together a dive
 ## License
 
 Sanity Studio is available under the [_MIT License_](https://github.com/sanity-io/sanity/blob/main/LICENSE)
+
+## 🎃 Hacktoberfest 2025 (Proposed)
+
+Sanity Studio plans to join Hacktoberfest 2025!  
+Learn how to contribute: [HACKTOBERFEST.md](./HACKTOBERFEST.md)  
+Participation pending maintainer approval (topic & issue labels).
