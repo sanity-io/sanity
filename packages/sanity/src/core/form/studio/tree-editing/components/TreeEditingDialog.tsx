@@ -54,8 +54,7 @@ export function TreeEditingDialog(props: TreeEditingDialogProps): React.JSX.Elem
   const {value} = rootInputProps
 
   const [treeState, setTreeState] = useState<TreeEditingState>(EMPTY_TREE_STATE)
-  const {getFullscreenPath, setFullscreenPath, hasAnyFullscreen, allFullscreenPaths} =
-    useFullscreenPTE()
+  const {hasAnyFullscreen, allFullscreenPaths} = useFullscreenPTE()
 
   const openPathRef = useRef<Path | undefined>(undefined)
   const valueRef = useRef<Record<string, unknown> | undefined>(undefined)
