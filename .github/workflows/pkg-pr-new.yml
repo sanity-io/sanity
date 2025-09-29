@@ -103,7 +103,7 @@ jobs:
             ${renderPackages(pkgManager, commonPackages)}
 
             <details>
-            <summary><b>:package: Other packages</b></summary>
+            <summary><b>:package: Other packages…</b></summary>
 
             ${renderPackages(pkgManager, otherPackages)}
 
@@ -125,13 +125,13 @@ jobs:
 
             _Note: This installs the latest Sanity Studio from the npm registry. To apply the changes from this PR in your newly created project, run the install commands below for each package listed in your package.json_
 
-            ### Run the Sanity CLI
+            ### ...Or run the Sanity CLI
 
             ${BACKTICKS}
             npx https://pkg.pr.new/@sanity/cli@23db03f <command>
             ${BACKTICKS}
 
-            ### Upgrade project dependencies
+            ### ...Or upgrade project dependencies
 
             ${renderInstallInstructions()}
 
