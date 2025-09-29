@@ -17,7 +17,7 @@ import {useHoveredChange} from '../../../../changeIndicators/useHoveredChange'
 import {pathToString} from '../../../../field'
 import {useTranslation} from '../../../../i18n'
 import {EMPTY_ARRAY} from '../../../../util'
-import {useFormCallbacks} from '../../../studio'
+import {useFormCallbacks, useTreeEditingEnabled} from '../../../studio'
 import {useChildPresence} from '../../../studio/contexts/Presence'
 import {
   type BlockProps,
@@ -47,6 +47,7 @@ import {
   TooltipBox,
 } from './BlockObject.styles'
 import {BlockObjectActionsMenu} from './BlockObjectActionsMenu'
+import {ObjectEditModal} from './modals/ObjectEditModal'
 
 interface BlockObjectProps extends PropsWithChildren {
   floatingBoundary: HTMLElement | null
@@ -113,6 +114,8 @@ export function BlockObject(props: BlockObjectProps) {
   const [divElement, setDivElement] = useState<HTMLDivElement | null>(null)
   const memberItem = usePortableTextMemberItem(pathToString(path))
   const isDeleting = useRef<boolean>(false)
+
+  const {enabled: nestedObjectNavigationEnabled} = useTreeEditingEnabled()
 
   const selfSelection = useMemo(
     (): EditorSelection => ({
@@ -213,7 +216,7 @@ export function BlockObject(props: BlockObjectProps) {
   const nodePath = memberItem?.node.path || EMPTY_ARRAY
   const referenceElement = divElement
 
-  const componentProps: BlockProps = useMemo(
+  const componentProps = useMemo(
     () => ({
       __unstable_floatingBoundary: floatingBoundary,
       __unstable_referenceBoundary: referenceBoundary,
@@ -233,6 +236,7 @@ export function BlockObject(props: BlockObjectProps) {
       renderAnnotation,
       renderBlock,
       renderDefault: DefaultBlockObjectComponent,
+      nestedObjectNavigationEnabled,
       renderField,
       renderInlineBlock,
       renderInput,
@@ -245,6 +249,7 @@ export function BlockObject(props: BlockObjectProps) {
     }),
     [
       floatingBoundary,
+      referenceBoundary,
       referenceElement,
       input,
       focused,
@@ -258,9 +263,9 @@ export function BlockObject(props: BlockObjectProps) {
       nodePath,
       rootPresence,
       readOnly,
-      referenceBoundary,
       renderAnnotation,
       renderBlock,
+      nestedObjectNavigationEnabled,
       renderField,
       renderInlineBlock,
       renderInput,
@@ -357,12 +362,15 @@ export function BlockObject(props: BlockObjectProps) {
   )
 }
 
-export const DefaultBlockObjectComponent = (props: BlockProps) => {
+export const DefaultBlockObjectComponent = (
+  props: BlockProps & {nestedObjectNavigationEnabled: boolean},
+) => {
   const {
     __unstable_floatingBoundary,
     __unstable_referenceBoundary,
     __unstable_referenceElement,
     children,
+    nestedObjectNavigationEnabled,
     focused,
     markers,
     onClose,
@@ -427,6 +435,19 @@ export const DefaultBlockObjectComponent = (props: BlockProps) => {
           value,
         })}
       </Root>
+      {open && !nestedObjectNavigationEnabled && (
+        <ObjectEditModal
+          floatingBoundary={__unstable_floatingBoundary}
+          defaultType="dialog"
+          onClose={onClose}
+          autoFocus
+          schemaType={schemaType}
+          referenceBoundary={__unstable_referenceBoundary}
+          referenceElement={__unstable_referenceElement}
+        >
+          {children}
+        </ObjectEditModal>
+      )}
     </>
   )
 }
