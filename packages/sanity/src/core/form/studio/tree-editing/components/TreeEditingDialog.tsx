@@ -216,7 +216,7 @@ export function TreeEditingDialog(props: TreeEditingDialogProps): React.JSX.Elem
     <TreeEditingBreadcrumbs
       items={treeState.breadcrumbs}
       onPathSelect={onHandlePathSelect}
-      selectedPath={openPath}
+      selectedPath={treeState.relativePath}
     />
   )
 
