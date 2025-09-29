@@ -2,6 +2,7 @@ import {isKeySegment, type ObjectSchemaType, type Path} from '@sanity/types'
 import {Box} from '@sanity/ui'
 // eslint-disable-next-line camelcase
 import {getTheme_v2, type Theme} from '@sanity/ui/theme'
+import {toString} from '@sanity/util/paths'
 import {debounce, isEqual} from 'lodash'
 import {useCallback, useEffect, useMemo, useRef, useState} from 'react'
 import {css, styled} from 'styled-components'
@@ -63,6 +64,9 @@ export function TreeEditingDialog(props: TreeEditingDialogProps): React.JSX.Elem
 
   const handleBuildTreeEditingState = useCallback(
     (opts: BuildTreeEditingStateProps) => {
+      // If we're clicking on text content (path contains 'children'), preserve existing breadcrumbs
+      const isTextContent = toString(opts.openPath).includes('.children')
+
       const nextState = buildTreeEditingState(opts)
       if (isEqual(nextState, treeState)) return
 
@@ -77,7 +81,17 @@ export function TreeEditingDialog(props: TreeEditingDialogProps): React.JSX.Elem
       const useCurrentRelativePath = hasNoRelativePath || !isArrayItemPath(builtRelativePath)
       const nextRelativePath = useCurrentRelativePath ? treeState.relativePath : builtRelativePath
 
-      setTreeState({...nextState, relativePath: nextRelativePath})
+      // Preserve breadcrumbs when clicking on text content in portable text editors
+      const nextBreadcrumbs =
+        isTextContent && treeState.breadcrumbs.length > 0
+          ? treeState.breadcrumbs
+          : nextState.breadcrumbs
+
+      setTreeState({
+        ...nextState,
+        relativePath: nextRelativePath,
+        breadcrumbs: nextBreadcrumbs,
+      })
     },
     [treeState],
   )
