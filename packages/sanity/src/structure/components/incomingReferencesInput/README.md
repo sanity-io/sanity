@@ -1,8 +1,12 @@
 ## TODO:
 
+### Add field define helper.
+
+- Make a helper function which sets a name for the field and it's also automatically removed when exporting the schema, use a Symbol export for this with a special field type.
+
 ### Actions
 
-- make actions component type, like document actions?
+- make actions component type, like document actions [done]
 - Add option for a dialog or popover
 - onLinkDocument action as part of the actions array?
 - Add option to disable creation of new references, only link to existing.
