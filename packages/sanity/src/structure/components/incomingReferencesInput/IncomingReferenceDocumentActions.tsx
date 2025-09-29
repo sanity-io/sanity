@@ -1,16 +1,18 @@
 import {Box, Menu} from '@sanity/ui'
-import {type Dispatch, type SetStateAction, useCallback} from 'react'
+import {type Dispatch, type SetStateAction, useCallback, useMemo, useState} from 'react'
 import {
   ContextMenuButton,
   DEFAULT_STUDIO_CLIENT_OPTIONS,
   type DocumentActionDescription,
   GetHookCollectionState,
+  LegacyLayerProvider,
   type SanityDocument,
   useClient,
 } from 'sanity'
 
 import {MenuButton} from '../../../ui-components/menuButton/MenuButton'
 import {MenuItem} from '../../../ui-components/menuItem/MenuItem'
+import {ActionStateDialog} from '../../panes/document/statusBar/ActionStateDialog'
 import {
   type IncomingReferenceAction,
   type LinkedDocumentAction,
@@ -28,33 +30,45 @@ const IncomingReferenceDocumentActionsInner = ({
   setIsExecutingAction: Dispatch<SetStateAction<boolean>>
   isExecutingAction: boolean
 }) => {
+  const [actionIndex, setActionIndex] = useState(-1)
+  const [referenceElement, setReferenceElement] = useState<HTMLDivElement | null>(null)
+  const currentAction = useMemo(() => states[actionIndex], [actionIndex, states])
+
   if (!states.length) return null
   return (
-    <Box>
-      <MenuButton
-        button={<ContextMenuButton loading={isExecutingAction} />}
-        id={`${document._id}-menuButton`}
-        menu={
-          <Menu>
-            {states.map((action) => (
-              <MenuItem
-                key={action.label}
-                text={action.label}
-                icon={action.icon}
-                tone={action.tone}
-                disabled={Boolean(action.disabled) || !action.onHandle}
-                onClick={async () => {
-                  setIsExecutingAction(true)
-                  await action.onHandle?.()
-                  setIsExecutingAction(false)
-                }}
-              />
-            ))}
-          </Menu>
-        }
-        popover={{portal: true, tone: 'default'}}
-      />
-    </Box>
+    <>
+      <Box ref={setReferenceElement}>
+        <MenuButton
+          button={<ContextMenuButton loading={isExecutingAction} />}
+          id={`${document._id}-menuButton`}
+          menu={
+            <Menu>
+              {states.map((action, index) => (
+                <MenuItem
+                  key={action.label}
+                  text={action.label}
+                  icon={action.icon}
+                  tone={action.tone}
+                  disabled={Boolean(action.disabled)}
+                  onClick={async () => {
+                    setActionIndex(index)
+                    setIsExecutingAction(true)
+                    await action.onHandle?.()
+                    setIsExecutingAction(false)
+                  }}
+                />
+              ))}
+            </Menu>
+          }
+          popover={{portal: true, tone: 'default'}}
+        />
+      </Box>
+      {currentAction && currentAction.dialog && (
+        <LegacyLayerProvider zOffset="pane">
+          <ActionStateDialog dialog={currentAction.dialog} referenceElement={referenceElement} />
+        </LegacyLayerProvider>
+      )}
+    </>
   )
 }
 

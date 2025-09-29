@@ -1,6 +1,7 @@
 import {TrashIcon, UserIcon as icon} from '@sanity/icons'
 import {type StringRule} from '@sanity/types'
 import {type IncomingReferenceAction} from 'packages/sanity/src/structure/components/incomingReferencesInput/types'
+import {useState} from 'react'
 import {type ArrayOfPrimitivesInputProps, defineField, defineType, getDraftId} from 'sanity'
 import {IncomingReferencesInput} from 'sanity/structure'
 
@@ -70,25 +71,39 @@ const AUTHOR_ROLES = [
 ]
 
 const RemoveReferenceAction: IncomingReferenceAction = ({linkedDocument, client}) => {
+  const [dialogOpen, setDialogOpen] = useState(false)
+
   return {
     label: 'Remove reference',
     icon: TrashIcon,
     tone: 'critical',
-    onHandle: async () => {
-      if (linkedDocument._type === 'author') {
-        await client.createOrReplace({
-          ...linkedDocument,
-          _id: getDraftId(linkedDocument._id),
-          bestFriend: undefined,
-        })
-      }
-      if (linkedDocument._type === 'book') {
-        await client.createOrReplace({
-          ...linkedDocument,
-          _id: getDraftId(linkedDocument._id),
-          author: undefined,
-        })
-      }
+    dialog: dialogOpen
+      ? {
+          type: 'confirm',
+          message: 'Are you sure you want to remove the reference?',
+          onCancel: () => {
+            setDialogOpen(false)
+          },
+          onConfirm: async () => {
+            if (linkedDocument._type === 'author') {
+              await client.createOrReplace({
+                ...linkedDocument,
+                _id: getDraftId(linkedDocument._id),
+                bestFriend: undefined,
+              })
+            }
+            if (linkedDocument._type === 'book') {
+              await client.createOrReplace({
+                ...linkedDocument,
+                _id: getDraftId(linkedDocument._id),
+                author: undefined,
+              })
+            }
+          },
+        }
+      : null,
+    onHandle: () => {
+      setDialogOpen(true)
     },
   }
 }
