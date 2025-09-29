@@ -152,8 +152,6 @@ export interface LiveQueriesProps {
 }
 
 export default function LiveQueries(props: LiveQueriesProps): React.JSX.Element {
-  console.warn('[STUDIO-DECIDE] LiveQueries component mounted - our code is running!')
-
   const {controller, perspective: activePerspective, onLoadersConnection, onDocumentsOnPage} = props
 
   const [comlink, setComlink] = useState<ChannelInstance<LoaderControllerMsg, LoaderNodeMsg>>()
@@ -338,16 +336,6 @@ function QuerySubscriptionComponent(props: QuerySubscriptionProps) {
       resultSourceMap: ContentSourceMap | undefined,
       tags: `s1:${string}`[] | undefined,
     ) => {
-      // Add diagnostic logging before sending to preview
-      const resultStr = JSON.stringify(result)
-      const hasConditionalContent = resultStr.includes('"conditions"')
-
-      console.warn('[STUDIO-DECIDE] Sending to preview:', {
-        hasConditionalContent,
-        resultType: typeof result,
-        resultSample: `${resultStr.slice(0, 200)}${resultStr.length > 200 ? '...' : ''}`,
-      })
-
       comlink?.post('loader/query-change', {
         projectId,
         dataset,
@@ -448,13 +436,6 @@ function useQuerySubscription(props: UseQuerySubscriptionProps) {
   useEffect(() => {
     const controller = new AbortController()
 
-    // Add diagnostic logging to trace decideParameters usage
-    console.warn('[STUDIO-DECIDE] Executing query with decideParameters:', {
-      query: `${query.slice(0, 50)}...`,
-      decideParameters: transformedDecideParameters,
-      hasConditionalFields: false, // Will be updated after response
-    })
-
     client
       .fetch(query, params, {
         lastLiveEventId,
@@ -469,12 +450,6 @@ function useQuerySubscription(props: UseQuerySubscriptionProps) {
         const responseStr = JSON.stringify(response.result)
         const hasConditionalContent = responseStr.includes('"conditions"')
 
-        console.warn('[STUDIO-DECIDE] Query response received:', {
-          hasConditionalContent,
-          decideParameters: transformedDecideParameters,
-          resultType: typeof response.result,
-          resultSample: `${responseStr.slice(0, 200)}${responseStr.length > 200 ? '...' : ''}`,
-        })
         startTransition(() => {
           setResult((prev: unknown) => (isEqual(prev, response.result) ? prev : response.result))
           setResultSourceMap((prev) =>
@@ -500,25 +475,12 @@ function useQuerySubscription(props: UseQuerySubscriptionProps) {
     query,
     decideParameters,
     passedDecideParameters,
+    transformedDecideParameters,
   ])
   /* eslint-enable max-nested-callbacks */
 
   return useMemo(() => {
     if (liveDocument && resultSourceMap) {
-      // Add diagnostic logging for turboCharge process
-      const resultStr = JSON.stringify(result)
-      const liveDocStr = JSON.stringify(liveDocument)
-      const resultHasConditional = resultStr.includes('"conditions"')
-      const liveDocHasConditional = liveDocStr.includes('"conditions"')
-
-      console.warn('[STUDIO-DECIDE] TurboCharge process:', {
-        resultHasConditional,
-        liveDocHasConditional,
-        message: liveDocHasConditional
-          ? 'LiveDocument will overwrite resolved conditional content!'
-          : 'No conditional content conflict',
-      })
-
       return {
         result: turboChargeResultIfSourceMap(
           liveDocument,
@@ -563,27 +525,11 @@ export function turboChargeResultIfSourceMap<T = unknown>(
             decideParameters,
           ) as Required<Pick<SanityDocument, '_id' | '_type'>>
 
-          console.warn(
-            '[STUDIO-DECIDE] TurboCharge: Resolved conditional content in liveDocument',
-            {
-              originalHasConditional: JSON.stringify(liveDocument).includes('"conditions"'),
-              resolvedHasConditional: JSON.stringify(resolvedLiveDocument).includes('"conditions"'),
-            },
-          )
-
           return resolvedLiveDocument
         }
 
         // Resolve conditional content in liveDocument before using it
         const resolvedLiveDocument = processDecideFields(liveDocument, decideParameters)
-
-        console.warn(
-          '[STUDIO-DECIDE] TurboCharge: Resolved conditional content in liveDocument (fallback)',
-          {
-            originalHasConditional: JSON.stringify(liveDocument).includes('"conditions"'),
-            resolvedHasConditional: JSON.stringify(resolvedLiveDocument).includes('"conditions"'),
-          },
-        )
 
         return {
           ...(resolvedLiveDocument as Partial<SanityDocument>),
