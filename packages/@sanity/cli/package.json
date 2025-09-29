@@ -63,7 +63,7 @@
     "@sanity/telemetry": "^0.8.0",
     "@sanity/template-validator": "^2.4.3",
     "chalk": "^4.1.2",
-    "debug": "^4.4.1",
+    "debug": "^4.4.3",
     "esbuild": "catalog:",
     "esbuild-register": "catalog:",
     "get-it": "^8.6.10",

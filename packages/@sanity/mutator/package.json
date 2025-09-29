@@ -52,7 +52,7 @@
     "@sanity/diff-match-patch": "^3.2.0",
     "@sanity/types": "workspace:*",
     "@sanity/uuid": "^3.0.2",
-    "debug": "^4.4.1",
+    "debug": "^4.4.3",
     "lodash": "^4.17.21"
   },
   "devDependencies": {
