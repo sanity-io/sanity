@@ -110,6 +110,25 @@ const animal = defineField({
       ],
     },
     {
+      type: 'array',
+      name: 'children',
+      title: 'Children',
+      of: [
+        {
+          type: 'object',
+          name: 'child',
+          fields: [
+            {
+              name: 'nameChild',
+              type: 'string',
+              title: 'Name Child',
+            },
+          ],
+        },
+      ],
+    },
+
+    {
       name: 'size',
       type: 'object',
       title: 'Size',
