@@ -1,4 +1,5 @@
 import {isKeySegment, type ObjectSchemaType, type Path} from '@sanity/types'
+import {Box} from '@sanity/ui'
 // eslint-disable-next-line camelcase
 import {getTheme_v2, type Theme} from '@sanity/ui/theme'
 import {debounce, isEqual} from 'lodash'
@@ -8,6 +9,7 @@ import {css, styled} from 'styled-components'
 import {Dialog} from '../../../../../ui-components'
 import {pathToString, stringToPath} from '../../../../field/paths/helpers'
 import {FormInput} from '../../../components/FormInput'
+import {VirtualizerScrollInstanceProvider} from '../../../inputs/arrays/ArrayOfObjectsInput/List/VirtualizerScrollInstanceProvider'
 import {useFullscreenPTE} from '../../../inputs/PortableText/contexts/fullscreen'
 import {type ObjectInputProps} from '../../../types/inputProps'
 import {
@@ -191,6 +193,8 @@ export function TreeEditingDialog(props: TreeEditingDialogProps): React.JSX.Elem
       debouncedBuildTreeEditingState.cancel()
     }
   }, [schemaType, value, debouncedBuildTreeEditingState, openPath, handleBuildTreeEditingState])
+  const [documentScrollElement, setDocumentScrollElement] = useState<HTMLDivElement | null>(null)
+  const containerElement = useRef<HTMLDivElement | null>(null)
 
   if (treeState.relativePath.length === 0) return null
 
@@ -203,18 +207,26 @@ export function TreeEditingDialog(props: TreeEditingDialogProps): React.JSX.Elem
   )
 
   return (
-    <StyledDialog
-      data-testid="tree-editing-dialog"
-      onClose={onClose}
-      id={'nested-object-dialog'}
-      header={header}
-      width={3}
+    <VirtualizerScrollInstanceProvider
+      scrollElement={documentScrollElement}
+      containerElement={containerElement}
     >
-      <FormInput
-        {...rootInputProps}
-        relativePath={treeState.relativePath}
-        renderDefault={renderDefault}
-      />
-    </StyledDialog>
+      <StyledDialog
+        data-testid="tree-editing-dialog"
+        onClose={onClose}
+        id={'nested-object-dialog'}
+        header={header}
+        width={3}
+        contentRef={setDocumentScrollElement}
+      >
+        <Box ref={containerElement}>
+          <FormInput
+            {...rootInputProps}
+            relativePath={treeState.relativePath}
+            renderDefault={renderDefault}
+          />
+        </Box>
+      </StyledDialog>
+    </VirtualizerScrollInstanceProvider>
   )
 }
