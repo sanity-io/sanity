@@ -1,5 +1,10 @@
 import {type SelectableTone} from '@sanity/ui'
-import {type ActionComponent, type SanityClient, type SanityDocument} from 'sanity'
+import {
+  type ActionComponent,
+  type DocumentActionDialogProps,
+  type SanityClient,
+  type SanityDocument,
+} from 'sanity'
 
 export type LinkedDocumentActionsContext = {
   /**
@@ -15,6 +20,7 @@ export type LinkedDocumentAction = {
   tone?: SelectableTone
   disabled?: boolean
   onHandle: (() => Promise<void>) | (() => void)
+  dialog?: DocumentActionDialogProps | false | null
 }
 
 export type IncomingReferenceAction = ActionComponent<
