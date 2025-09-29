@@ -83,7 +83,7 @@ jobs:
               return pkgs
                 .map(
                   (pkg) =>
-                    `#### :package: \`${pkg.name}\`
+                    `##### :package: \`${pkg.name}\`
             ${BACKTICKS}sh
             ${pkgManager.installCommand} ${pkg.url}
             ${BACKTICKS}
@@ -98,12 +98,12 @@ jobs:
             function renderInstallInstructions() {
               return PACKAGE_MANAGERS.map(
                 (pkgManager) =>
-                  `### <img height="16" align="center" alt="${pkgManager.name} logo" src="${pkgManager.logoUrl}" /> Using ${pkgManager.name}
+                  `#### <img height="16" align="center" alt="${pkgManager.name} logo" src="${pkgManager.logoUrl}" /> Using ${pkgManager.name}
 
             ${renderPackages(pkgManager, commonPackages)}
 
             <details>
-            <summary><b>Other packages</b></summary>
+            <summary><b>:package: Other packages</b></summary>
 
             ${renderPackages(pkgManager, otherPackages)}
 
@@ -115,7 +115,23 @@ jobs:
 
             const sha = context.payload.pull_request?.head?.sha
 
-            const body = `## Install this PR with [pkg.pr.new](https://pkg.pr.new)
+            const body = `## Preview this PR with [pkg.pr.new](https://pkg.pr.new)
+
+            ### Create a new project
+
+            ${BACKTICKS}sh
+            npx https://pkg.pr.new/create-sanity@23db03f
+            ${BACKTICKS}
+
+            _Note: This installs the latest Sanity Studio from the npm registry. To apply the changes from this PR in your newly created project, run the install commands below for each package listed in your package.json_
+
+            ### Run the Sanity CLI
+
+            ${BACKTICKS}
+            npx https://pkg.pr.new/@sanity/cli@23db03f <command>
+            ${BACKTICKS}
+
+            ### Upgrade project dependencies
 
             ${renderInstallInstructions()}
 
