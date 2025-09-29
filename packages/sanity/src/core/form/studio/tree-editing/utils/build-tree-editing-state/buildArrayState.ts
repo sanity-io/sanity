@@ -66,9 +66,13 @@ export function buildArrayState(props: BuildArrayState): TreeEditingState {
       if (!blockObj._key || !blockObj._type) return false
 
       // Check if this is a regular text block and openPath points to it
+      // This makes sure that we don't go further into the dialog when clicking on a regular text block
+      // because it is not necessary
       if (blockObj._type === 'block') {
         const blockPath = [...rootPath, {_key: blockObj._key}] as Path
-        return toString(openPath).startsWith(toString(blockPath))
+        const pathMatches = toString(openPath).startsWith(toString(blockPath))
+
+        return pathMatches
       }
       return false
     })
@@ -207,14 +211,31 @@ export function buildArrayState(props: BuildArrayState): TreeEditingState {
         })
       }
 
-      // Handle portable text arrays - but only for custom object blocks that contain arrays
+      // Handle portable text arrays - process even if empty to handle new item creation
       // Regular text blocks (type: 'block') should not be processed as they can only be rendered
       // within the portable text editor context
-      if (isPortableText && childValue && Array.isArray(childValue)) {
+      if (isPortableText) {
+        // Ensure we have an array to work with, even if empty
+        const portableTextValue = Array.isArray(childValue) ? childValue : []
+        // Check if the openPath points to a regular text block anywhere within this portable text field
+        // We need to check if the openPath contains patterns that indicate it's pointing to a text block
+        const openPathString = toString(openPath)
+        const childPathString = toString(childPath)
+
+        // If the openPath starts with this childPath and contains 'children',
+        // It's pointing at a regular text block
+        const pointsToTextContent =
+          openPathString.startsWith(childPathString) && openPathString.includes('.children')
+
+        // If openPath points to text content within this portable text field, skip processing
+        if (pointsToTextContent) {
+          return
+        }
+
         // Check if the openPath points to an array field within a custom object block
         // OR if it points to a custom object block that contains array fields
 
-        childValue.forEach((block: unknown) => {
+        portableTextValue.forEach((block: unknown) => {
           const blockObj = block as Record<string, unknown>
           if (!blockObj._key || !blockObj._type) return
 
@@ -228,8 +249,9 @@ export function buildArrayState(props: BuildArrayState): TreeEditingState {
           ) as ObjectSchemaType
 
           // Only process if this is a custom object block (not a regular text block)
-          if (!blockSchemaType || !blockSchemaType.fields || blockSchemaType.name === 'block')
+          if (!blockSchemaType || !blockSchemaType.fields) {
             return
+          }
 
           // Check if openPath points to this block itself or to an array field within it
           const openPathPointsToThisBlock = toString(openPath).startsWith(toString(blockPath))
@@ -247,7 +269,7 @@ export function buildArrayState(props: BuildArrayState): TreeEditingState {
           }
         })
 
-        childValue.forEach((block: unknown) => {
+        portableTextValue.forEach((block: unknown) => {
           const blockObj = block as Record<string, unknown>
           if (!blockObj._key || !blockObj._type) return
 
@@ -261,8 +283,7 @@ export function buildArrayState(props: BuildArrayState): TreeEditingState {
           ) as ObjectSchemaType
 
           // Only process if this is a custom object block
-          if (!blockSchemaType || !blockSchemaType.fields || blockSchemaType.name === 'block')
-            return
+          if (!blockSchemaType || !blockSchemaType.fields) return
 
           // eslint-disable-next-line max-nested-callbacks
           blockSchemaType.fields.forEach((blockField) => {
@@ -340,6 +361,31 @@ export function buildArrayState(props: BuildArrayState): TreeEditingState {
       })
     }
   })
+
+  // Final check: if relativePath points to a non-existent item, point to the parent array instead
+  // This handles new item creation (in portable text arrays) at any nesting level
+  if (relativePath.length > 0) {
+    const relativePathString = toString(relativePath)
+    const keyMatch = relativePathString.match(/\[_key=="([^"]+)"\]$/)
+
+    if (keyMatch) {
+      // This relativePath points to a specific item. Check if this item exists.
+      const parentPath = relativePath.slice(0, -1)
+      const parentValue = getValueAtPath(documentValue, parentPath)
+
+      if (Array.isArray(parentValue)) {
+        const itemKey = keyMatch[1]
+        const itemExists = parentValue.some((item) => {
+          return item && typeof item === 'object' && '_key' in item && item._key === itemKey
+        })
+
+        // If the item doesn't exist, point to the parent array instead
+        if (!itemExists) {
+          relativePath = parentPath
+        }
+      }
+    }
+  }
 
   return {
     breadcrumbs,
