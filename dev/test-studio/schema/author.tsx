@@ -1,5 +1,6 @@
 import {TrashIcon, UserIcon as icon} from '@sanity/icons'
 import {type StringRule} from '@sanity/types'
+import {type IncomingReferenceAction} from 'packages/sanity/src/structure/components/incomingReferencesInput/types'
 import {type ArrayOfPrimitivesInputProps, defineField, defineType, getDraftId} from 'sanity'
 import {IncomingReferencesInput} from 'sanity/structure'
 
@@ -68,6 +69,30 @@ const AUTHOR_ROLES = [
   {value: 'ops', title: 'Operations'},
 ]
 
+const RemoveReferenceAction: IncomingReferenceAction = ({linkedDocument, client}) => {
+  return {
+    label: 'Remove reference',
+    icon: TrashIcon,
+    tone: 'critical',
+    onHandle: async () => {
+      if (linkedDocument._type === 'author') {
+        await client.createOrReplace({
+          ...linkedDocument,
+          _id: getDraftId(linkedDocument._id),
+          bestFriend: undefined,
+        })
+      }
+      if (linkedDocument._type === 'book') {
+        await client.createOrReplace({
+          ...linkedDocument,
+          _id: getDraftId(linkedDocument._id),
+          author: undefined,
+        })
+      }
+    },
+  }
+}
+
 export default defineType({
   name: 'author',
   type: 'document',
@@ -114,26 +139,9 @@ export default defineType({
                 bestFriend: reference,
               }
             }}
-            actions={({linkedDocument, client}) => {
-              if (linkedDocument._type === 'author') {
-                return [
-                  {
-                    label: 'Unlink document',
-                    icon: TrashIcon,
-                    tone: 'critical',
-                    onClick: async () => {
-                      await client.createOrReplace({
-                        ...linkedDocument,
-                        _id: getDraftId(linkedDocument._id),
-                        bestFriend: undefined,
-                      })
-                    },
-                  },
-                ]
-              }
-              return []
-            }}
             filterQuery={`role == "designer"`}
+            actions={[RemoveReferenceAction]}
+
             // creationAllowed={['author', 'author-developer']}
             // creationAllowed={false}
           />
@@ -155,22 +163,7 @@ export default defineType({
                 author: reference,
               }
             }}
-            actions={({linkedDocument, client}) => {
-              return [
-                {
-                  label: 'Unlink document',
-                  icon: TrashIcon,
-                  tone: 'critical',
-                  onClick: async () => {
-                    await client.createOrReplace({
-                      ...linkedDocument,
-                      _id: getDraftId(linkedDocument._id),
-                      author: undefined,
-                    })
-                  },
-                },
-              ]
-            }}
+            actions={[RemoveReferenceAction]}
           />
         ),
       },

@@ -1,24 +1,20 @@
-import {Box, Card, Flex, Menu, Text} from '@sanity/ui'
+import {Box, Card, Flex, Text} from '@sanity/ui'
 import {motion, type Variants} from 'framer-motion'
-import {useCallback, useMemo, useState} from 'react'
+import {useCallback, useState} from 'react'
 import {
-  ContextMenuButton,
-  DEFAULT_STUDIO_CLIENT_OPTIONS,
   getPublishedId,
   pathToString,
   SanityDefaultPreview,
   type SanityDocument,
-  useClient,
   useSchema,
   useTranslation,
 } from 'sanity'
 import {useRouter} from 'sanity/router'
 
-import {MenuButton} from '../../../ui-components/menuButton/MenuButton'
-import {MenuItem} from '../../../ui-components/menuItem/MenuItem'
 import {structureLocaleNamespace} from '../../i18n'
 import {usePaneRouter} from '../paneRouter'
 import {getReferencePaths} from './getReferencePaths'
+import {IncomingReferenceDocumentActions} from './IncomingReferenceDocumentActions'
 import {IncomingReferencePreview} from './IncomingReferencePreview'
 import {type IncomingReferencesOptions} from './types'
 
@@ -56,17 +52,11 @@ export const IncomingReferenceDocument = (props: {
   const schema = useSchema()
   const {navigate} = useRouter()
   const {routerPanesState, groupIndex} = usePaneRouter()
-  const client = useClient(DEFAULT_STUDIO_CLIENT_OPTIONS)
   const type = document?._type
   const {t} = useTranslation(structureLocaleNamespace)
 
-  const resolvedActions = useMemo(() => {
-    if (!actions) return []
-    return actions({linkedDocument: document, client})
-  }, [document, client, actions])
-
   const handleClick = useCallback(() => {
-    if (!type) return // This should not happen
+    if (!type || !referencePaths.length) return // This should not happen
     navigate({
       panes: [
         ...routerPanesState.slice(0, groupIndex + 1),
@@ -83,6 +73,7 @@ export const IncomingReferenceDocument = (props: {
         message={t('incoming-references-input.schema-type-not-found', {type: document._type})}
       />
     )
+
   return (
     <Root
       initial="initial"
@@ -105,31 +96,14 @@ export const IncomingReferenceDocument = (props: {
           <SanityDefaultPreview icon={schemaType.icon} layout={'default'} isPlaceholder />
         )}
       </Box>
-      {resolvedActions && resolvedActions.length > 0 && (
-        <Box>
-          <MenuButton
-            button={<ContextMenuButton loading={isExecutingAction} />}
-            id={`${document._id}-menuButton`}
-            menu={
-              <Menu>
-                {resolvedActions.map((action) => (
-                  <MenuItem
-                    key={action.label}
-                    text={action.label}
-                    icon={action.icon}
-                    tone={action.tone}
-                    onClick={async () => {
-                      setIsExecutingAction(true)
-                      await action.onClick()
-                      setIsExecutingAction(false)
-                    }}
-                  />
-                ))}
-              </Menu>
-            }
-            popover={{portal: true, tone: 'default'}}
-          />
-        </Box>
+
+      {actions && actions?.length > 0 && (
+        <IncomingReferenceDocumentActions
+          document={document}
+          actions={actions}
+          isExecutingAction={isExecutingAction}
+          setIsExecutingAction={setIsExecutingAction}
+        />
       )}
     </Root>
   )

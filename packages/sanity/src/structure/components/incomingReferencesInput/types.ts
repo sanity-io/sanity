@@ -1,7 +1,7 @@
 import {type SelectableTone} from '@sanity/ui'
-import {type SanityClient, type SanityDocument} from 'sanity'
+import {type ActionComponent, type SanityClient, type SanityDocument} from 'sanity'
 
-type LinkedDocumentActionsContext = {
+export type LinkedDocumentActionsContext = {
   /**
    * The document that is linked to the reference.
    */
@@ -9,14 +9,18 @@ type LinkedDocumentActionsContext = {
   client: SanityClient
 }
 
-type LinkedDocumentAction = {
+export type LinkedDocumentAction = {
   label: string
   icon?: React.ElementType
   tone?: SelectableTone
   disabled?: boolean
-  onClick: (() => Promise<void>) | (() => void)
+  onHandle: (() => Promise<void>) | (() => void)
 }
 
+export type IncomingReferenceAction = ActionComponent<
+  LinkedDocumentActionsContext,
+  LinkedDocumentAction
+>
 export type IncomingReferencesOptions = {
   /**
    * The filter query to apply to the incoming references in addition to the type filter.
@@ -85,7 +89,7 @@ export type IncomingReferencesOptions = {
    * @returns The actions that will be shown for the linked document.
 
    */
-  actions?: (context: LinkedDocumentActionsContext) => LinkedDocumentAction[]
+  actions?: IncomingReferenceAction[]
   /**
    * Whether to allow creation of new references.
    * default: true
