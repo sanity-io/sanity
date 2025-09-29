@@ -439,7 +439,7 @@ async function getOrCreateAppFromConfig({
       client,
       appId,
       appHost,
-      isSdkApp: cliConfig && 'app' in cliConfig,
+      isSdkApp: determineIsApp(cliConfig),
     })
     spinner.succeed()
 
