@@ -204,9 +204,7 @@ export const Preview = memo(
       if (overlaysConnection === 'connecting') {
         const timeout = setTimeout(() => {
           setTimedOut(true)
-          console.error(
-            `Unable to connect to visual editing. Make sure you've setup '@sanity/visual-editing' correctly`,
-          )
+          // Unable to connect to visual editing
         }, MAX_TIME_TO_OVERLAYS_CONNECTION)
         return () => clearTimeout(timeout)
       }
@@ -286,7 +284,7 @@ export const Preview = memo(
       }
       if (reportedMismatches.has(reportedOrigin)) return
       reportedMismatches.add(reportedOrigin)
-      console.warn('Visual Editing is here but misconfigured', {reportedOrigin})
+      // Visual Editing is here but misconfigured
       toast.push({
         closable: true,
         id: `presentation-iframe-origin-mismatch-${reportedOrigin}`,
