@@ -213,7 +213,6 @@ export function buildArrayState(props: BuildArrayState): TreeEditingState {
       if (isPortableText && childValue && Array.isArray(childValue)) {
         // Check if the openPath points to an array field within a custom object block
         // OR if it points to a custom object block that contains array fields
-        let foundMatchingArrayField = false
 
         childValue.forEach((block: unknown) => {
           const blockObj = block as Record<string, unknown>
@@ -246,112 +245,88 @@ export function buildArrayState(props: BuildArrayState): TreeEditingState {
             }
             breadcrumbs.push(blockBreadcrumb)
           }
-
-          if (openPathPointsToThisBlock) {
-            // eslint-disable-next-line max-nested-callbacks
-            blockSchemaType.fields.forEach((blockField) => {
-              if (
-                isArrayOfObjectsSchemaType(blockField.type) &&
-                !isArrayOfBlocksSchemaType(blockField.type)
-              ) {
-                const blockFieldPath = [...blockPath, blockField.name] as Path
-                const blockFieldValue = getValueAtPath(documentValue, blockFieldPath)
-
-                // If this block has array fields with data, we should handle it
-                if (
-                  blockFieldValue &&
-                  Array.isArray(blockFieldValue) &&
-                  blockFieldValue.length > 0
-                ) {
-                  foundMatchingArrayField = true
-                }
-              }
-            })
-          }
         })
 
-        // Only process if we found a matching array field in a custom object block
-        if (foundMatchingArrayField) {
-          childValue.forEach((block: unknown) => {
-            const blockObj = block as Record<string, unknown>
-            if (!blockObj._key || !blockObj._type) return
+        childValue.forEach((block: unknown) => {
+          const blockObj = block as Record<string, unknown>
+          if (!blockObj._key || !blockObj._type) return
 
-            // Skip regular text blocks - only process custom object blocks
-            if (blockObj._type === 'block') return
+          // Skip regular text blocks - only process custom object blocks
+          if (blockObj._type === 'block') return
 
-            const blockPath = [...childPath, {_key: blockObj._key}] as Path
-            const blockSchemaType = getItemType(
-              childField.type as ArraySchemaType,
-              blockObj,
-            ) as ObjectSchemaType
+          const blockPath = [...childPath, {_key: blockObj._key}] as Path
+          const blockSchemaType = getItemType(
+            childField.type as ArraySchemaType,
+            blockObj,
+          ) as ObjectSchemaType
 
-            // Only process if this is a custom object block
-            if (!blockSchemaType || !blockSchemaType.fields || blockSchemaType.name === 'block')
-              return
+          // Only process if this is a custom object block
+          if (!blockSchemaType || !blockSchemaType.fields || blockSchemaType.name === 'block')
+            return
 
-            // eslint-disable-next-line max-nested-callbacks
-            blockSchemaType.fields.forEach((blockField) => {
-              if (
-                isArrayOfObjectsSchemaType(blockField.type) &&
-                !isArrayOfBlocksSchemaType(blockField.type)
-              ) {
-                const blockFieldPath = [...blockPath, blockField.name] as Path
-                const blockFieldValue = getValueAtPath(documentValue, blockFieldPath)
+          // eslint-disable-next-line max-nested-callbacks
+          blockSchemaType.fields.forEach((blockField) => {
+            if (
+              isArrayOfObjectsSchemaType(blockField.type) &&
+              !isArrayOfBlocksSchemaType(blockField.type)
+            ) {
+              const blockFieldPath = [...blockPath, blockField.name] as Path
+              const blockFieldValue = getValueAtPath(documentValue, blockFieldPath)
 
-                if (
-                  blockFieldValue &&
-                  Array.isArray(blockFieldValue) &&
-                  blockFieldValue.length > 0
-                ) {
-                  // Check if the openPath points to this array within the block
-                  // OR if it points to the block itself (in which case we redirect to the first array field)
-                  const openPathPointsToBlock = toString(openPath).startsWith(toString(blockPath))
-                  const openPathPointsToArrayField = toString(openPath).startsWith(
-                    toString(blockFieldPath),
-                  )
+              // Process array fields even if they're empty (for new blocks)
+              // But ensure the value is at least an empty array for processing
+              const arrayFieldValue = Array.isArray(blockFieldValue) ? blockFieldValue : []
 
-                  // Set relativePath based on where openPath points
-                  if (openPathPointsToArrayField) {
-                    // If openPath points to the array field or deeper within it, use openPath as relativePath
-                    relativePath = getRelativePath(openPath)
-                  } else if (openPathPointsToBlock && relativePath.length === 0) {
-                    // If openPath points to the block itself, redirect to the array field
-                    relativePath = getRelativePath(blockFieldPath)
-                  }
+              // Check if the openPath points to this array within the block
+              // OR if it points to the block itself (in which case we redirect to the first array field)
+              const openPathPointsToBlock = toString(openPath).startsWith(toString(blockPath))
+              const openPathPointsToArrayField = toString(openPath).startsWith(
+                toString(blockFieldPath),
+              )
 
-                  if (shouldBeInBreadcrumb(blockFieldPath, openPath)) {
-                    const breadcrumbsResult = buildBreadcrumbsState({
-                      arraySchemaType: blockField.type as ArraySchemaType,
-                      arrayValue: blockFieldValue as Record<string, unknown>[],
-                      itemPath: blockFieldPath,
-                      parentPath: blockPath,
-                    })
-
-                    breadcrumbs.push(breadcrumbsResult)
-                  }
-
-                  const blockFieldState = recursive({
-                    documentValue,
-                    path: blockFieldPath,
-                    schemaType: blockField as ObjectSchemaType,
-                  })
-
-                  childrenMenuItems.push({
-                    children: blockFieldState?.menuItems || EMPTY_ARRAY,
-                    parentSchemaType: blockSchemaType,
-                    path: blockFieldPath,
-                    schemaType: blockField as ObjectSchemaType,
-                    value: blockFieldValue,
-                  })
+              // Process this array field if openPath points to it or to the parent block
+              if (openPathPointsToArrayField || openPathPointsToBlock) {
+                // Set relativePath based on where openPath points
+                if (openPathPointsToArrayField) {
+                  // If openPath points to the array field or deeper within it, use openPath as relativePath
+                  relativePath = getRelativePath(openPath)
+                } else if (openPathPointsToBlock && relativePath.length === 0) {
+                  // If openPath points to the block itself, redirect to the array field
+                  relativePath = getRelativePath(blockFieldPath)
                 }
+
+                if (shouldBeInBreadcrumb(blockFieldPath, openPath)) {
+                  const breadcrumbsResult = buildBreadcrumbsState({
+                    arraySchemaType: blockField.type as ArraySchemaType,
+                    arrayValue: arrayFieldValue as Record<string, unknown>[],
+                    itemPath: blockFieldPath,
+                    parentPath: blockPath,
+                  })
+
+                  breadcrumbs.push(breadcrumbsResult)
+                }
+
+                const blockFieldState = recursive({
+                  documentValue,
+                  path: blockFieldPath,
+                  schemaType: blockField as ObjectSchemaType,
+                })
+
+                childrenMenuItems.push({
+                  children: blockFieldState?.menuItems || EMPTY_ARRAY,
+                  parentSchemaType: blockSchemaType,
+                  path: blockFieldPath,
+                  schemaType: blockField as ObjectSchemaType,
+                  value: arrayFieldValue,
+                })
               }
-            })
+            }
           })
-        }
+        })
       }
     })
 
-    if (isArrayItemSelected(itemPath, openPath)) {
+    if (isArrayItemSelected(itemPath, openPath) && relativePath.length === 0) {
       relativePath = getRelativePath(itemPath)
     }
 
