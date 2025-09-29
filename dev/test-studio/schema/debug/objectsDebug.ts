@@ -41,6 +41,66 @@ const animal = defineField({
                       name: 'value',
                       title: 'Value',
                     },
+                    {
+                      type: 'array',
+                      name: 'description_two',
+                      title: 'Description Two',
+                      of: [
+                        {type: 'block'},
+                        {
+                          type: 'object',
+                          name: 'info_two',
+                          title: 'Info Two',
+                          fields: [
+                            {
+                              type: 'array',
+                              name: 'item_two',
+                              title: 'Item Two',
+                              of: [
+                                {
+                                  type: 'object',
+                                  name: 'property_two',
+                                  title: 'Property Two',
+                                  fields: [
+                                    {
+                                      type: 'string',
+                                      name: 'title_two',
+                                      title: 'Title Two',
+                                      validation: (Rule) => Rule.required(),
+                                    },
+                                    {
+                                      type: 'string',
+                                      name: 'value_two',
+                                      title: 'Value Two',
+                                    },
+                                    {
+                                      type: 'array',
+                                      name: 'description_three',
+                                      title: 'Description Three',
+                                      of: [
+                                        {type: 'block'},
+                                        {
+                                          type: 'object',
+                                          name: 'info_three',
+                                          title: 'Info Three',
+                                          fields: [
+                                            {
+                                              type: 'string',
+                                              name: 'title_three',
+                                              title: 'Title Three',
+                                            },
+                                          ],
+                                        },
+                                      ],
+                                    },
+                                  ],
+                                },
+                              ],
+                            },
+                          ],
+                        },
+                      ],
+                    },
                   ],
                 },
               ],
