@@ -84,6 +84,18 @@ export default {
   'preview-frame.viewport-button.tooltip_full': 'Switch to full viewport',
   /** The viewport size button tooltip text when switching to a narrow viewport */
   'preview-frame.viewport-button.tooltip_narrow': 'Switch to narrow viewport',
+  /** The `aria-label` for the variant button */
+  'preview-frame.variant-button.aria-label': 'Open variants',
+  /** The tooltip text for the variant button */
+  'preview-frame.variant-button.tooltip': 'Variants',
+  /** The title for the variant dialog */
+  'preview-frame.variant-dialog.title': 'Preview Variants',
+  /** The body text for the variant dialog */
+  'preview-frame.variant-dialog.body': 'Configure your preview variants here.',
+  /** The text shown when no valid parameters are found */
+  'preview-frame.variant-dialog.no-parameters': 'No valid parameters found.',
+  /** The placeholder text for parameter selection */
+  'preview-frame.variant-dialog.select-placeholder': 'Select {{key}}...',
   /** The validation error message shown when the preview location input is missing an origin */
   'preview-location-input.error_missing-origin': 'URL must start with {{origin}}',
   /** The validation error message shown when the preview location input's base path matches that of the studio */

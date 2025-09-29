@@ -48,7 +48,7 @@ export const ReleasesNav: ComponentType<Props> = ({withReleasesToolButton, menuI
   const {selectedPerspective, selectedReleaseId} = usePerspective()
 
   return (
-    <ReleasesNavContainer flex="none" tone="inherit" radius="full" data-ui="ReleasesNav" border>
+    <ReleasesNavContainer flex="none" tone="inherit" radius="full" data-ui="ReleasesNav-123" border>
       {withReleasesToolButton && releasesToolAvailable && <ReleasesToolLink />}
       <CurrentGlobalPerspectiveLabel selectedPerspective={selectedPerspective} />
       <GlobalPerspectiveMenu
