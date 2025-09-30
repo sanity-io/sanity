@@ -5,6 +5,7 @@ import {UniversalArrayInput} from '../../inputs/arrays/UniversalArrayInput'
 import {BooleanInput} from '../../inputs/BooleanInput'
 import {DateInput, DateTimeInput} from '../../inputs/DateInputs'
 import {EmailInput} from '../../inputs/EmailInput'
+import {InternalFormDecoratorInput} from '../../inputs/internalFormDecoratorInput/internalFormDecoratorInput'
 import {NumberInput} from '../../inputs/NumberInput/NumberInput'
 import {ObjectInput} from '../../inputs/ObjectInput'
 import {SlugInput} from '../../inputs/Slug/SlugInput'
@@ -17,20 +18,21 @@ import {StudioFileInput} from '../inputs/StudioFileInput'
 import {StudioImageInput} from '../inputs/StudioImageInput'
 
 export const defaultInputs: Record<string, ComponentType<FIXME>> = {
-  document: ObjectInput,
-  object: ObjectInput,
-  array: UniversalArrayInput,
-  boolean: BooleanInput,
-  number: NumberInput,
-  text: TextInput,
-  email: EmailInput,
-  datetime: DateTimeInput,
-  date: DateInput,
-  url: UrlInput,
-  image: StudioImageInput,
-  file: StudioFileInput,
-  string: StringInput,
-  slug: SlugInput,
-  crossDatasetReference: StudioCrossDatasetReferenceInput,
-  globalDocumentReference: StudioGlobalDocumentReferenceInput,
+  'document': ObjectInput,
+  'object': ObjectInput,
+  'array': UniversalArrayInput,
+  'boolean': BooleanInput,
+  'number': NumberInput,
+  'text': TextInput,
+  'email': EmailInput,
+  'datetime': DateTimeInput,
+  'date': DateInput,
+  'url': UrlInput,
+  'image': StudioImageInput,
+  'file': StudioFileInput,
+  'string': StringInput,
+  'slug': SlugInput,
+  'crossDatasetReference': StudioCrossDatasetReferenceInput,
+  'globalDocumentReference': StudioGlobalDocumentReferenceInput,
+  'sanity.internalFormDecorator': InternalFormDecoratorInput,
 }

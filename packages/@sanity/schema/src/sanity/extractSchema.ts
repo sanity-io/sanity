@@ -1,5 +1,6 @@
 import {
   type ArraySchemaType,
+  type InternalFormDecoratorSchemaType,
   type NumberSchemaType,
   type ObjectField,
   type ObjectFieldType,
@@ -26,6 +27,8 @@ import {
   type UnionTypeNode,
   type UnknownTypeNode,
 } from 'groq-js'
+
+import {INTERNAL_FORM_DECORATOR} from '../legacy/types/constants'
 
 const documentDefaultFields = (typeName: string): Record<string, ObjectAttribute> => ({
   _id: {
@@ -120,7 +123,7 @@ export function extractSchema(
     }
 
     const value = convertSchemaType(schemaType)
-    if (value.type === 'unknown') {
+    if (value === null || value.type === 'unknown') {
       return null
     }
     if (value.type === 'object') {
@@ -148,7 +151,7 @@ export function extractSchema(
     }
   }
 
-  function convertSchemaType(schemaType: SanitySchemaType): TypeNode {
+  function convertSchemaType(schemaType: SanitySchemaType): TypeNode | null {
     // if we have already seen the base type, we can just reference it
     if (inlineFields.has(schemaType.type!)) {
       return {type: 'inline', name: schemaType.type!.name} satisfies InlineTypeNode
@@ -160,12 +163,15 @@ export function extractSchema(
       return {type: 'inline', name: schemaType.name} satisfies InlineTypeNode
     }
 
+    if (isDecoratorType(schemaType)) {
+      return null
+    }
     if (isStringType(schemaType)) {
-      return createStringTypeNodeDefintion(schemaType)
+      return createStringTypeNodeDefinition(schemaType)
     }
 
     if (isNumberType(schemaType)) {
-      return createNumberTypeNodeDefintion(schemaType)
+      return createNumberTypeNodeDefinition(schemaType)
     }
 
     // map some known types
@@ -261,6 +267,9 @@ export function extractSchema(
     const of: TypeNode[] = []
     for (const item of arraySchemaType.of) {
       const field = convertSchemaType(item)
+      if (field === null) {
+        continue
+      }
       if (field.type === 'inline') {
         of.push({
           type: 'object',
@@ -416,7 +425,10 @@ function isStringType(typeDef: SanitySchemaType): typeDef is StringSchemaType {
 function isNumberType(typeDef: SanitySchemaType): typeDef is NumberSchemaType {
   return isType(typeDef, 'number')
 }
-function createStringTypeNodeDefintion(
+function isDecoratorType(typeDef: SanitySchemaType): typeDef is InternalFormDecoratorSchemaType {
+  return isType(typeDef, INTERNAL_FORM_DECORATOR)
+}
+function createStringTypeNodeDefinition(
   stringSchemaType: StringSchemaType,
 ): StringTypeNode | UnionTypeNode<StringTypeNode> {
   const listOptions = stringSchemaType.options?.list
@@ -434,7 +446,7 @@ function createStringTypeNodeDefintion(
   }
 }
 
-function createNumberTypeNodeDefintion(
+function createNumberTypeNodeDefinition(
   numberSchemaType: NumberSchemaType,
 ): NumberTypeNode | UnionTypeNode<NumberTypeNode> {
   const listOptions = numberSchemaType.options?.list

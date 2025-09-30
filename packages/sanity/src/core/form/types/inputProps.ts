@@ -14,6 +14,7 @@ import {
   type FileValue,
   type GeopointValue,
   type ImageValue,
+  type InternalFormDecoratorSchemaType,
   type NumberSchemaType,
   type ObjectSchemaType,
   type Path,
@@ -36,6 +37,7 @@ import {type FormFieldGroup} from '../store'
 import {
   type ArrayOfObjectsFormNode,
   type ArrayOfPrimitivesFormNode,
+  type BaseFormNode,
   type BooleanFormNode,
   type NumberFormNode,
   type ObjectFormNode,
@@ -582,6 +584,14 @@ export interface PortableTextInputProps
    */
   rangeDecorations?: RangeDecoration[]
 }
+
+/**
+ * @hidden
+ * @beta */
+export interface InternalFormDecoratorInputProps<
+  S extends InternalFormDecoratorSchemaType = InternalFormDecoratorSchemaType,
+> extends BaseInputProps,
+    BaseFormNode<null | undefined, S> {}
 
 /**
  * @hidden
