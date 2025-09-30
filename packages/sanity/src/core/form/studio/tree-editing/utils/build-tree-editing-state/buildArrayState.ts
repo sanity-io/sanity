@@ -2,6 +2,7 @@ import {
   type ArraySchemaType,
   isArrayOfBlocksSchemaType,
   isArrayOfObjectsSchemaType,
+  isKeySegment,
   isObjectSchemaType,
   isPrimitiveSchemaType,
   isReferenceSchemaType,
@@ -18,6 +19,7 @@ import {getItemType} from '../../../../store/utils/getItemType'
 import {type TreeEditingBreadcrumb, type TreeEditingMenuItem} from '../../types'
 import {findArrayTypePaths} from '../findArrayTypePaths'
 import {getSchemaField} from '../getSchemaField'
+import {isPathTextInPTEField} from '../isPathTextInPTEField'
 import {buildBreadcrumbsState} from './buildBreadcrumbsState'
 import {type RecursiveProps, type TreeEditingState} from './buildTreeEditingState'
 import {getRelativePath, isArrayItemSelected, shouldBeInBreadcrumb} from './utils'
@@ -35,13 +37,23 @@ interface BuildArrayState {
   recursive: (props: RecursiveProps) => TreeEditingState
   /** The root path of the array */
   rootPath: Path
+  /** The root schema type to check for portable text fields */
+  rootSchemaType: ObjectSchemaType
 }
 
 /**
  * Build the tree editing state for an array field.
  */
 export function buildArrayState(props: BuildArrayState): TreeEditingState {
-  const {arraySchemaType, arrayValue, documentValue, openPath, rootPath, recursive} = props
+  const {
+    arraySchemaType,
+    arrayValue,
+    documentValue,
+    openPath,
+    rootPath,
+    recursive,
+    rootSchemaType,
+  } = props
 
   let relativePath: Path = []
   const menuItems: TreeEditingMenuItem[] = []
@@ -217,19 +229,10 @@ export function buildArrayState(props: BuildArrayState): TreeEditingState {
       if (isPortableText) {
         // Ensure we have an array to work with, even if empty
         const portableTextValue = Array.isArray(childValue) ? childValue : []
-        // Check if the openPath points to a regular text block anywhere within this portable text field
-        // We need to check if the openPath contains patterns that indicate it's pointing to a text block
-        const openPathString = toString(openPath)
-        const childPathString = toString(childPath)
-
-        // If the openPath starts with this childPath and contains 'children',
-        // It's pointing at a regular text block
-        // This only works in this case because we know we are already within a portable text context
-        const pointsToTextContent =
-          openPathString.startsWith(childPathString) && openPathString.includes('.children')
 
         // If openPath points to text content within this portable text field, skip processing
-        if (pointsToTextContent) {
+        // This avoids false positives with regular object fields named 'children'
+        if (isPathTextInPTEField(rootSchemaType.fields, openPath)) {
           return
         }
 
@@ -364,20 +367,21 @@ export function buildArrayState(props: BuildArrayState): TreeEditingState {
   })
 
   // Final check: if relativePath points to a non-existent item, point to the parent array instead
-  // This handles new item creation (in portable text arrays) at any nesting level
+  // This handles new item creation (in portable text arrays) and is especially important in deeply nested level
+  // This prevents the dialog from attempting to navigate when the new key is not ready yet
   if (relativePath.length > 0) {
-    const relativePathString = toString(relativePath)
-    const keyMatch = relativePathString.match(/\[_key=="([^"]+)"\]$/)
+    const lastSegment = relativePath[relativePath.length - 1]
 
-    if (keyMatch) {
+    if (isKeySegment(lastSegment)) {
       // This relativePath points to a specific item. Check if this item exists.
       const parentPath = relativePath.slice(0, -1)
       const parentValue = getValueAtPath(documentValue, parentPath)
 
       if (Array.isArray(parentValue)) {
-        const itemKey = keyMatch[1]
         const itemExists = parentValue.some((item) => {
-          return item && typeof item === 'object' && '_key' in item && item._key === itemKey
+          return (
+            item && typeof item === 'object' && '_key' in item && item._key === lastSegment._key
+          )
         })
 
         // If the item doesn't exist, point to the parent array instead
