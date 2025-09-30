@@ -68,7 +68,6 @@ export function TreeEditingDialog(props: TreeEditingDialogProps): React.JSX.Elem
 
   const handleBuildTreeEditingState = useCallback(
     (opts: BuildTreeEditingStateProps) => {
-      // Check if we're within a portable text context by examining the schema
       const isPathWithinPTEtext = isPathTextInPTEField(schemaType.fields, opts.openPath)
 
       const nextState = buildTreeEditingState(opts)
