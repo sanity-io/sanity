@@ -12,7 +12,7 @@ import {pathToString, stringToPath} from '../../../../field/paths/helpers'
 import {FormInput} from '../../../components/FormInput'
 import {VirtualizerScrollInstanceProvider} from '../../../inputs/arrays/ArrayOfObjectsInput/List/VirtualizerScrollInstanceProvider'
 import {useFullscreenPTE} from '../../../inputs/PortableText/contexts/fullscreen'
-import {type ObjectInputProps} from '../../../types/inputProps'
+import {type InputProps, type ObjectInputProps} from '../../../types/inputProps'
 import {NestedDialogClosed, NestedDialogOpened} from '../__telemetry__/nestedObjects.telemetry'
 import {
   buildTreeEditingState,
@@ -26,8 +26,8 @@ import {TreeEditingBreadcrumbs} from './breadcrumbs'
 
 const EMPTY_ARRAY: [] = []
 
-function renderDefault(props: unknown) {
-  return (props as {renderDefault: (p: unknown) => React.ReactElement}).renderDefault(props)
+function renderDefault(props: InputProps) {
+  return props.renderDefault(props)
 }
 
 const StyledDialog = styled(Dialog)(({theme}: {theme: Theme}) => {
