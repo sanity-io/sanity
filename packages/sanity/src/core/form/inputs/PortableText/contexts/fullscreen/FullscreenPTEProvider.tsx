@@ -1,7 +1,13 @@
+import {useTelemetry} from '@sanity/telemetry/react'
 import {type Path} from '@sanity/types'
 import {useCallback, useMemo, useState} from 'react'
 
 import {pathToString} from '../../../../../validation/util/pathToString'
+import {
+  ClosedPortableTextEditorFullScreen,
+  OpenedPortableTextEditorFullScreen,
+} from '../../../../studio/tree-editing/__telemetry__/nestedObjects.telemetry'
+import {useTreeEditingEnabled} from '../../../../studio/tree-editing/context/enabled/useTreeEditingEnabled'
 import {FullscreenPTEContext, type FullscreenPTEContextValue} from './FullscreenPTEContext'
 
 interface FullscreenPTEProviderProps {
@@ -14,23 +20,35 @@ interface FullscreenPTEProviderProps {
  */
 export function FullscreenPTEProvider({children}: FullscreenPTEProviderProps): React.JSX.Element {
   const [fullscreenPaths, setFullscreenPaths] = useState<string[]>([])
+  const telemetry = useTelemetry()
+  const {enabled} = useTreeEditingEnabled()
 
   const getFullscreenPath = useCallback(
     (path: Path): string | undefined => {
+      telemetry.log(ClosedPortableTextEditorFullScreen, {
+        objectPath: pathToString(path),
+        timestamp: new Date(),
+        origin: enabled ? 'nested-object' : 'default',
+      })
       return fullscreenPaths.find((savedPath) => savedPath === pathToString(path)) ?? undefined
     },
-    [fullscreenPaths],
+    [fullscreenPaths, enabled, telemetry],
   )
 
   const setFullscreenPath = useCallback(
     (path: Path, isFullscreen: boolean): void => {
+      telemetry.log(OpenedPortableTextEditorFullScreen, {
+        objectPath: pathToString(path),
+        timestamp: new Date(),
+        origin: enabled ? 'nested-object' : 'default',
+      })
       if (isFullscreen) {
         setFullscreenPaths([...fullscreenPaths, pathToString(path)])
       } else {
         setFullscreenPaths(fullscreenPaths.filter((savedPath) => savedPath !== pathToString(path)))
       }
     },
-    [fullscreenPaths],
+    [fullscreenPaths, telemetry, enabled],
   )
 
   const hasAnyFullscreen = useCallback((): boolean => {

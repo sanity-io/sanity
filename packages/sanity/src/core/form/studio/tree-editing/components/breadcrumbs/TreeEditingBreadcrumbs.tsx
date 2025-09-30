@@ -1,3 +1,4 @@
+import {useTelemetry} from '@sanity/telemetry/react'
 import {type Path} from '@sanity/types'
 import {
   Box,
@@ -15,11 +16,14 @@ import {
   forwardRef,
   Fragment,
   type PropsWithChildren,
+  useCallback,
   useMemo,
   useState,
 } from 'react'
 import {css, styled} from 'styled-components'
 
+import {pathToString} from '../../../../../field/paths/helpers'
+import {NavigatedToNestedObjectViaBreadcrumb} from '../../__telemetry__/nestedObjects.telemetry'
 import {useValuePreviewWithFallback} from '../../hooks'
 import {type TreeEditingBreadcrumb} from '../../types'
 import {TreeEditingBreadcrumbsMenuButton} from './TreeEditingBreadcrumbsMenuButton'
@@ -66,13 +70,23 @@ const MenuButton = function MenuButton(props: MenuButtonProps) {
     value: item.value,
   })
 
+  const telemetry = useTelemetry()
+
   const title = value.title
+
+  const handleClick = useCallback(() => {
+    onPathSelect(item.path)
+    telemetry.log(NavigatedToNestedObjectViaBreadcrumb, {
+      objectPath: pathToString(item.path),
+      timestamp: new Date(),
+    })
+  }, [onPathSelect, item.path, telemetry])
 
   return (
     <StyledButton
       data-active={isSelected ? 'true' : 'false'}
       mode="bleed"
-      onClick={() => onPathSelect(item.path)}
+      onClick={handleClick}
       padding={1}
       title={title}
       {...rest}
