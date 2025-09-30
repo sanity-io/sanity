@@ -17,7 +17,7 @@ export function TreeEditingEnabledProvider(
 
   const value = useMemo((): TreeEditingEnabledContextValue => {
     return {
-      enabled: beta?.treeArrayEditing?.enabled === true, // The tree editing beta feature is now enabled
+      enabled: beta?.treeArrayEditing?.enabled === true,
       legacyEditing: Boolean(legacyEditing),
     }
   }, [beta?.treeArrayEditing?.enabled, legacyEditing])
