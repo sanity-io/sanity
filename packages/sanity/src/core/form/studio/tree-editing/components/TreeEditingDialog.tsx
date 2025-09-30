@@ -21,7 +21,7 @@ import {
   type TreeEditingState,
 } from '../utils'
 import {isArrayItemPath} from '../utils/build-tree-editing-state/utils'
-import {isPathWithinPortableText} from '../utils/isPathWithinPortableText'
+import {isPathTextInPTEField} from '../utils/isPathTextInPTEField'
 import {TreeEditingBreadcrumbs} from './breadcrumbs'
 
 const EMPTY_ARRAY: [] = []
@@ -69,7 +69,7 @@ export function TreeEditingDialog(props: TreeEditingDialogProps): React.JSX.Elem
   const handleBuildTreeEditingState = useCallback(
     (opts: BuildTreeEditingStateProps) => {
       // Check if we're within a portable text context by examining the schema
-      const isPathWithinPTEtext = isPathWithinPortableText(schemaType.fields, opts.openPath)
+      const isPathWithinPTEtext = isPathTextInPTEField(schemaType.fields, opts.openPath)
 
       const nextState = buildTreeEditingState(opts)
       if (isEqual(nextState, treeState)) return
