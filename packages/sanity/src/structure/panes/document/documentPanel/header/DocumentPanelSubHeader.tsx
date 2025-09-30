@@ -55,9 +55,7 @@ export const DocumentPanelSubHeader = memo(function DocumentPanelHeader() {
       <FavoriteToggle
         resourceType="studio"
         // use the version, draft or published id if it exists, otherwise use the documentId
-        documentId={
-          (editState?.version ?? editState?.draft ?? editState?.published)?._id ?? documentId
-        }
+        documentId={displayed?._id ?? documentId}
         documentType={displayed?._type ?? ''}
         resourceId={[activeWorkspace.projectId, activeWorkspace.dataset].join('.')}
         schemaName={activeWorkspace.name}
