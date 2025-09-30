@@ -224,6 +224,7 @@ export function buildArrayState(props: BuildArrayState): TreeEditingState {
 
         // If the openPath starts with this childPath and contains 'children',
         // It's pointing at a regular text block
+        // This only works in this case because we know we are already within a portable text context
         const pointsToTextContent =
           openPathString.startsWith(childPathString) && openPathString.includes('.children')
 

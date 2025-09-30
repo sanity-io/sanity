@@ -3,7 +3,6 @@ import {isKeySegment, type ObjectSchemaType, type Path} from '@sanity/types'
 import {Box} from '@sanity/ui'
 // eslint-disable-next-line camelcase
 import {getTheme_v2, type Theme} from '@sanity/ui/theme'
-import {toString} from '@sanity/util/paths'
 import {debounce, isEqual} from 'lodash'
 import {useCallback, useEffect, useMemo, useRef, useState} from 'react'
 import {css, styled} from 'styled-components'
@@ -22,6 +21,7 @@ import {
   type TreeEditingState,
 } from '../utils'
 import {isArrayItemPath} from '../utils/build-tree-editing-state/utils'
+import {isPathWithinPortableText} from '../utils/isPathWithinPortableText'
 import {TreeEditingBreadcrumbs} from './breadcrumbs'
 
 const EMPTY_ARRAY: [] = []
@@ -68,8 +68,8 @@ export function TreeEditingDialog(props: TreeEditingDialogProps): React.JSX.Elem
 
   const handleBuildTreeEditingState = useCallback(
     (opts: BuildTreeEditingStateProps) => {
-      // If we're clicking on text content (path contains 'children'), preserve existing breadcrumbs
-      const isTextContent = toString(opts.openPath).includes('.children')
+      // Check if we're within a portable text context by examining the schema
+      const isPathWithinPTEtext = isPathWithinPortableText(schemaType.fields, opts.openPath)
 
       const nextState = buildTreeEditingState(opts)
       if (isEqual(nextState, treeState)) return
@@ -87,7 +87,7 @@ export function TreeEditingDialog(props: TreeEditingDialogProps): React.JSX.Elem
 
       // Preserve breadcrumbs when clicking on text content in portable text editors
       const nextBreadcrumbs =
-        isTextContent && treeState.breadcrumbs.length > 0
+        isPathWithinPTEtext && treeState.breadcrumbs.length > 0
           ? treeState.breadcrumbs
           : nextState.breadcrumbs
 
@@ -108,7 +108,7 @@ export function TreeEditingDialog(props: TreeEditingDialogProps): React.JSX.Elem
         breadcrumbs: nextBreadcrumbs,
       })
     },
-    [treeState, telemetry],
+    [treeState, telemetry, schemaType.fields],
   )
 
   const debouncedBuildTreeEditingState = useMemo(
