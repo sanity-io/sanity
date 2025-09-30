@@ -63,10 +63,6 @@ export function buildTreeEditingState(props: BuildTreeEditingStateProps): TreeEd
     return EMPTY_TREE_STATE
   }
 
-  if (rootField.options?.treeEditing === false) {
-    return EMPTY_TREE_STATE
-  }
-
   let relativePath: Path = []
   const breadcrumbs: TreeEditingBreadcrumb[] = []
 

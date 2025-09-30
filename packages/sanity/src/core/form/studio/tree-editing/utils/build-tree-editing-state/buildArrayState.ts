@@ -59,16 +59,6 @@ export function buildArrayState(props: BuildArrayState): TreeEditingState {
   const menuItems: TreeEditingMenuItem[] = []
   const breadcrumbs: TreeEditingBreadcrumb[] = []
 
-  // If tree editing is disabled for the array field, return early.
-  if (arraySchemaType.options?.treeEditing === false) {
-    return {
-      breadcrumbs,
-      menuItems,
-      relativePath,
-      rootTitle: '',
-    }
-  }
-
   // Check if this is a PortableText array and if the openPath points to a regular text block
   // If so, return empty state to prevent tree editing dialog from opening
   // Example: when I am clicking a normal text
@@ -110,7 +100,6 @@ export function buildArrayState(props: BuildArrayState): TreeEditingState {
 
     if (!itemSchemaField) return
     if (isReferenceSchemaType(itemSchemaField)) return
-    if (itemSchemaField?.options?.treeEditing === false) return
 
     const childrenFields = itemSchemaField?.fields || []
     const childrenMenuItems: TreeEditingMenuItem[] = []
@@ -128,8 +117,6 @@ export function buildArrayState(props: BuildArrayState): TreeEditingState {
 
     // Iterate over the fields of the array item to resolve any nested fields.
     childrenFields.forEach((childField) => {
-      if (childField?.type?.options?.treeEditing === false) return
-
       // Construct the path to the child field.
       const childPath = [...itemPath, childField.name] as Path
 
@@ -167,7 +154,6 @@ export function buildArrayState(props: BuildArrayState): TreeEditingState {
 
           // If the array field has no value or tree editing is disabled, return early.
           if (!arrayFieldValue.length) return
-          if (nestedArrayField.type.options?.treeEditing === false) return
 
           // Update the relative path if the array field is selected.
           if (isArrayItemSelected(fieldPath, openPath)) {
