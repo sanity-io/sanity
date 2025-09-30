@@ -1,3 +1,4 @@
+import {useTelemetry} from '@sanity/telemetry/react'
 import {isKeySegment, type ObjectSchemaType, type Path} from '@sanity/types'
 import {Box} from '@sanity/ui'
 // eslint-disable-next-line camelcase
@@ -13,6 +14,7 @@ import {FormInput} from '../../../components/FormInput'
 import {VirtualizerScrollInstanceProvider} from '../../../inputs/arrays/ArrayOfObjectsInput/List/VirtualizerScrollInstanceProvider'
 import {useFullscreenPTE} from '../../../inputs/PortableText/contexts/fullscreen'
 import {type ObjectInputProps} from '../../../types/inputProps'
+import {NestedDialogClosed, NestedDialogOpened} from '../__telemetry__/nestedObjects.telemetry'
 import {
   buildTreeEditingState,
   type BuildTreeEditingStateProps,
@@ -62,6 +64,8 @@ export function TreeEditingDialog(props: TreeEditingDialogProps): React.JSX.Elem
   const openPathRef = useRef<Path | undefined>(undefined)
   const valueRef = useRef<Record<string, unknown> | undefined>(undefined)
 
+  const telemetry = useTelemetry()
+
   const handleBuildTreeEditingState = useCallback(
     (opts: BuildTreeEditingStateProps) => {
       // If we're clicking on text content (path contains 'children'), preserve existing breadcrumbs
@@ -87,13 +91,24 @@ export function TreeEditingDialog(props: TreeEditingDialogProps): React.JSX.Elem
           ? treeState.breadcrumbs
           : nextState.breadcrumbs
 
+      // Check if dialog is opening (transitioning from no relative path to having one)
+      const wasDialogClosed = treeState.relativePath.length === 0
+      const willDialogOpen = nextRelativePath.length > 0
+
+      if (wasDialogClosed && willDialogOpen) {
+        telemetry.log(NestedDialogOpened, {
+          objectPath: pathToString(nextRelativePath),
+          timestamp: new Date(),
+        })
+      }
+
       setTreeState({
         ...nextState,
         relativePath: nextRelativePath,
         breadcrumbs: nextBreadcrumbs,
       })
     },
-    [treeState],
+    [treeState, telemetry],
   )
 
   const debouncedBuildTreeEditingState = useMemo(
@@ -116,6 +131,11 @@ export function TreeEditingDialog(props: TreeEditingDialogProps): React.JSX.Elem
     // Cancel any debounced state building when closing the dialog.
     debouncedBuildTreeEditingState.cancel()
 
+    telemetry.log(NestedDialogClosed, {
+      objectPath: pathToString(treeState.relativePath),
+      timestamp: new Date(),
+    })
+
     // Reset the `openPath`
     onPathOpen(EMPTY_ARRAY)
 
@@ -133,14 +153,16 @@ export function TreeEditingDialog(props: TreeEditingDialogProps): React.JSX.Elem
     // Focus the root array item when closing the dialog.
     const firstKeySegmentIndex = openPath.findIndex(isKeySegment)
     const rootFocusPath = openPath.slice(0, firstKeySegmentIndex + 1)
+
     onPathFocus(rootFocusPath)
   }, [
     hasAnyFullscreen,
     debouncedBuildTreeEditingState,
+    telemetry,
+    treeState.relativePath,
     onPathOpen,
     openPath,
     onPathFocus,
-    treeState.relativePath,
     allFullscreenPaths,
   ])
 
