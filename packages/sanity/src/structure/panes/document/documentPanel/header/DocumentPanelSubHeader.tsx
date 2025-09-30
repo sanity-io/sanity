@@ -54,7 +54,6 @@ export const DocumentPanelSubHeader = memo(function DocumentPanelHeader() {
     <CapabilityGate capability="comlink" condition="available">
       <FavoriteToggle
         resourceType="studio"
-        // use the version, draft or published id if it exists, otherwise use the documentId
         documentId={displayed?._id ?? documentId}
         documentType={displayed?._type ?? ''}
         resourceId={[activeWorkspace.projectId, activeWorkspace.dataset].join('.')}
