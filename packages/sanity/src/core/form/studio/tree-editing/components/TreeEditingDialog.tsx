@@ -120,6 +120,8 @@ export function TreeEditingDialog(props: TreeEditingDialogProps): React.JSX.Elem
     // Check if any PTE within the current tree editing context is in fullscreen mode
     if (hasAnyFullscreen()) {
       allFullscreenPaths.forEach((path) => {
+        // Check if the relative path exists in the fullscreen path (so, more deeply nested path)
+        // So that we can open the dialog at the correct level (the full screen) instead of closing the dialg
         if (pathToString(treeState.relativePath).includes(path)) {
           onPathOpen(stringToPath(path))
         }
