@@ -20,7 +20,7 @@
   },
   "dependencies": {
     "@sanity/eslint-config-studio": "catalog:",
-    "styled-components": "^6.1.19",
+    "styled-components": "catalog:",
     "tsx": "^4.20.6"
   },
   "devDependencies": {
