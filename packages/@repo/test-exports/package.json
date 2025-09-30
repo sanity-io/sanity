@@ -1,6 +1,6 @@
 {
   "name": "@repo/test-exports",
-  "version": "4.10.1",
+  "version": "4.10.2",
   "private": true,
   "description": "Ensures that all the monorepo packages that are published works in native node ESM and CJS runtimes",
   "exports": {

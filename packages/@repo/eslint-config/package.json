@@ -1,6 +1,6 @@
 {
   "name": "@repo/eslint-config",
-  "version": "4.10.1",
+  "version": "4.10.2",
   "private": true,
   "type": "module",
   "exports": {
