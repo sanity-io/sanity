@@ -5,6 +5,7 @@ import {useEffect, useMemo} from 'react'
 import {styled} from 'styled-components'
 
 import {Dialog} from '../../../ui-components'
+import {useEnvAwareSanityWebsiteUrl} from '../hooks/useEnvAwareSanityWebsiteUrl'
 
 interface CorsOriginErrorScreenProps {
   projectId?: string
@@ -26,17 +27,15 @@ export function CorsOriginErrorScreen(props: CorsOriginErrorScreenProps) {
   const {projectId, isStaging} = props
 
   const origin = window.location.origin
+  const sanityWebsiteUrl = useEnvAwareSanityWebsiteUrl()
   const corsUrl = useMemo(() => {
-    const url = new URL(
-      `/manage/project/${projectId}/api`,
-      isStaging ? 'https://sanity.work' : 'https://sanity.io',
-    )
+    const url = new URL(`/manage/project/${projectId}/api`, sanityWebsiteUrl)
     url.searchParams.set('cors', 'add')
     url.searchParams.set('origin', origin)
     url.searchParams.set('credentials', '')
 
     return url.toString()
-  }, [isStaging, origin, projectId])
+  }, [origin, projectId, sanityWebsiteUrl])
 
   useEffect(() => {
     const handleFocus = () => {
