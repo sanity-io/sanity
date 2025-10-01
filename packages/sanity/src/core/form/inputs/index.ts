@@ -9,6 +9,7 @@ export {ArrayOfPrimitivesFunctions} from './arrays/ArrayOfPrimitivesInput/ArrayO
 export * from './arrays/ArrayOfPrimitivesInput/ArrayOfPrimitivesInput'
 export * from './arrays/UniversalArrayInput'
 export * from './BooleanInput'
+export { CrossDatasetReferencePreview } from './CrossDatasetReferenceInput/CrossDatasetReferencePreview'
 export * from './DateInputs'
 export * from './EmailInput'
 export * from './files/types'
