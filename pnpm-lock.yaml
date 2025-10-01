@@ -2280,6 +2280,9 @@ importers:
       '@types/yargs':
         specifier: ^17.0.33
         version: 17.0.33
+      '@vanilla-extract/vite-plugin':
+        specifier: ^5.1.1
+        version: 5.1.1(@types/node@24.6.1)(babel-plugin-macros@3.1.0)(jiti@2.6.1)(lightningcss@1.30.2)(terser@5.44.0)(tsx@4.20.6)(vite@7.1.12(@types/node@24.6.1)(jiti@2.6.1)(lightningcss@1.30.2)(terser@5.44.0)(tsx@4.20.6)(yaml@2.8.1))(yaml@2.8.1)
       '@vitest/expect':
         specifier: ^3.2.4
         version: 3.2.4
