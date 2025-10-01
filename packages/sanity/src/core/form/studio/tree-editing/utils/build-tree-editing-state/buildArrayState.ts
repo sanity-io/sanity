@@ -2,7 +2,6 @@ import {
   type ArraySchemaType,
   isArrayOfBlocksSchemaType,
   isArrayOfObjectsSchemaType,
-  isKeySegment,
   isObjectSchemaType,
   isPrimitiveSchemaType,
   isReferenceSchemaType,
@@ -20,6 +19,7 @@ import {type TreeEditingBreadcrumb, type TreeEditingMenuItem} from '../../types'
 import {findArrayTypePaths} from '../findArrayTypePaths'
 import {getSchemaField} from '../getSchemaField'
 import {isPathTextInPTEField} from '../isPathTextInPTEField'
+import {buildArrayStatePTE} from './buildArrayStatePTE'
 import {buildBreadcrumbsState} from './buildBreadcrumbsState'
 import {type RecursiveProps, type TreeEditingState} from './buildTreeEditingState'
 import {getRelativePath, isArrayItemSelected, shouldBeInBreadcrumb} from './utils'
@@ -163,10 +163,11 @@ export function buildArrayState(props: BuildArrayState): TreeEditingState {
       }
 
       const isPortableText = isArrayOfBlocksSchemaType(childField.type)
-      const isValid = isArrayOfObjectsSchemaType(childField.type) && childValue && !isPortableText
+      const IsArrayOfObjects =
+        isArrayOfObjectsSchemaType(childField.type) && childValue && !isPortableText
 
       // Handle regular arrays of objects (not portable text)
-      if (isValid) {
+      if (IsArrayOfObjects) {
         if (shouldBeInBreadcrumb(childPath, openPath)) {
           const breadcrumbsResult = buildBreadcrumbsState({
             arraySchemaType: childField.type as ArraySchemaType,
@@ -195,107 +196,23 @@ export function buildArrayState(props: BuildArrayState): TreeEditingState {
 
       // Handle portable text editors inside an array of objects
       if (isPortableText) {
-        // Ensure we have an array to work with, even if empty
-        const portableTextValue = Array.isArray(childValue) ? childValue : []
-
-        // If openPath points to text content within this portable text field, skip processing
-        // This avoids false positives with regular object fields named 'children'
-        if (isPathTextInPTEField(rootSchemaType.fields, openPath)) {
-          return
-        }
-
-        // Process blocks within portable text
-        portableTextValue.forEach((block: unknown) => {
-          const blockObj = block as Record<string, unknown>
-          if (!blockObj._key || !blockObj._type) return
-
-          // Skip regular text blocks - only process custom object blocks
-          // This is usually text - this is handled further down or by the PTE itself
-          if (blockObj._type === 'block') return
-
-          const blockPath = [...childPath, {_key: blockObj._key}] as Path
-          const blockSchemaType = getItemType(
-            childField.type as ArraySchemaType,
-            blockObj,
-          ) as ObjectSchemaType
-
-          // Handle breadcrumbs for blocks that already exist
-          if (blockSchemaType && blockSchemaType.fields) {
-            // Check if openPath points to this block itself or to an array field within it
-            const openPathPointsToThisBlock = toString(openPath).startsWith(toString(blockPath))
-
-            // Add breadcrumb for the PortableText block object if openPath points to it
-            if (openPathPointsToThisBlock && shouldBeInBreadcrumb(blockPath, openPath)) {
-              const blockBreadcrumb: TreeEditingBreadcrumb = {
-                children: EMPTY_ARRAY,
-                parentSchemaType: childField.type as ArraySchemaType,
-                path: blockPath,
-                schemaType: blockSchemaType,
-                value: blockObj,
-              }
-              breadcrumbs.push(blockBreadcrumb)
-            }
-          }
-
-          // eslint-disable-next-line max-nested-callbacks
-          blockSchemaType.fields.forEach((blockField) => {
-            if (
-              isArrayOfObjectsSchemaType(blockField.type) &&
-              !isArrayOfBlocksSchemaType(blockField.type)
-            ) {
-              const blockFieldPath = [...blockPath, blockField.name] as Path
-              const blockFieldValue = getValueAtPath(documentValue, blockFieldPath)
-
-              // Process array fields even if they're empty (for new blocks)
-              // But ensure the value is at least an empty array for processing
-              const arrayFieldValue = Array.isArray(blockFieldValue) ? blockFieldValue : []
-
-              // Check if the openPath points to this array within the block
-              // OR if it points to the block itself (in which case we redirect to the first array field)
-              const openPathPointsToBlock = toString(openPath).startsWith(toString(blockPath))
-              const openPathPointsToArrayField = toString(openPath).startsWith(
-                toString(blockFieldPath),
-              )
-
-              // Process this array field if openPath points to it or to the parent block
-              if (openPathPointsToArrayField || openPathPointsToBlock) {
-                // Set relativePath based on where openPath points
-                if (openPathPointsToArrayField) {
-                  // If openPath points to the array field or deeper within it, use openPath as relativePath
-                  relativePath = getRelativePath(openPath)
-                } else if (openPathPointsToBlock && relativePath.length === 0) {
-                  // If openPath points to the block itself, redirect to the array field
-                  relativePath = getRelativePath(blockFieldPath)
-                }
-
-                if (shouldBeInBreadcrumb(blockFieldPath, openPath)) {
-                  const breadcrumbsResult = buildBreadcrumbsState({
-                    arraySchemaType: blockField.type as ArraySchemaType,
-                    arrayValue: arrayFieldValue as Record<string, unknown>[],
-                    itemPath: blockFieldPath,
-                    parentPath: blockPath,
-                  })
-
-                  breadcrumbs.push(breadcrumbsResult)
-                }
-
-                const blockFieldState = recursive({
-                  documentValue,
-                  path: blockFieldPath,
-                  schemaType: blockField as ObjectSchemaType,
-                })
-
-                childrenMenuItems.push({
-                  children: blockFieldState?.menuItems || EMPTY_ARRAY,
-                  parentSchemaType: blockSchemaType,
-                  path: blockFieldPath,
-                  schemaType: blockField as ObjectSchemaType,
-                  value: arrayFieldValue,
-                })
-              }
-            }
-          })
+        const pteResult = buildArrayStatePTE({
+          childField,
+          childPath,
+          childValue,
+          documentValue,
+          openPath,
+          recursive,
+          rootSchemaType,
+          breadcrumbs,
+          childrenMenuItems,
         })
+
+        // This is needed for cases where new blocks are added to the array within a PTE
+        // This will make sure that the relative path is updated with the PTE path only when it should
+        if (pteResult.relativePath && relativePath.length === 0) {
+          relativePath = pteResult.relativePath
+        }
       }
     })
 
@@ -313,32 +230,6 @@ export function buildArrayState(props: BuildArrayState): TreeEditingState {
       })
     }
   })
-
-  // Final check: if relativePath points to a non-existent item, point to the parent array instead
-  // This handles new item creation (in portable text arrays) and is especially important in deeply nested level
-  // This prevents the dialog from attempting to navigate when the new key is not ready yet
-  if (relativePath.length > 0) {
-    const lastSegment = relativePath[relativePath.length - 1]
-
-    if (isKeySegment(lastSegment)) {
-      // This relativePath points to a specific item. Check if this item exists.
-      const parentPath = relativePath.slice(0, -1)
-      const parentValue = getValueAtPath(documentValue, parentPath)
-
-      if (Array.isArray(parentValue)) {
-        const itemExists = parentValue.some((item) => {
-          return (
-            item && typeof item === 'object' && '_key' in item && item._key === lastSegment._key
-          )
-        })
-
-        // If the item doesn't exist, point to the parent array instead
-        if (!itemExists) {
-          relativePath = parentPath
-        }
-      }
-    }
-  }
 
   return {
     breadcrumbs,

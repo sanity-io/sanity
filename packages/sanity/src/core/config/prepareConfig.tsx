@@ -754,7 +754,7 @@ function resolveSource({
       // TODO: Rename treeArrayEditing property to NestedObjectEditing (or similar) before "public" availability.
       treeArrayEditing: {
         // TODO: Keep it disabled while in development.
-        enabled: false, // treeArrayEditingEnabledReducer({config, initialValue: false}),
+        enabled: true, // treeArrayEditingEnabledReducer({config, initialValue: false}),
       },
       create: {
         startInCreateEnabled: false,
