@@ -1,14 +1,16 @@
 import {AddIcon} from '@sanity/icons'
 import {Box, Card, Flex, Stack, Text, useToast} from '@sanity/ui'
-import {useCallback, useEffect, useState} from 'react'
+import {useCallback, useEffect, useMemo, useState} from 'react'
+import {useObservable} from 'react-rx'
 import {
   DEFAULT_STUDIO_CLIENT_OPTIONS,
   getDraftId,
   getPublishedId,
   isPublishedId,
+  LoadingBlock,
   SanityDefaultPreview,
-  type SanityDocument,
   useClient,
+  useDocumentPreviewStore,
   useSchema,
   useTranslation,
 } from 'sanity'
@@ -18,34 +20,46 @@ import {structureLocaleNamespace} from '../../i18n'
 import {useDocumentPane} from '../../panes/document/useDocumentPane'
 import {AddIncomingReference} from './AddIncomingReference'
 import {CreateNewIncomingReference} from './CreateNewIncomingReference'
+import {getIncomingReferences, INITIAL_STATE} from './getIncomingReferences'
 import {IncomingReferenceDocument} from './IncomingReferenceDocument'
 import {type IncomingReferencesOptions} from './types'
 
 export function IncomingReferencesType({
   type,
-  documents = [],
   referenced,
   onLinkDocument,
   actions,
   shouldRenderTitle,
   fieldName,
   creationAllowed,
+  filterQuery,
 }: {
-  type: string
   shouldRenderTitle: boolean
-  documents: SanityDocument[] | undefined
-  referenced: {
-    id: string
-    type: string
-  }
+  referenced: {id: string; type: string}
+  fieldName: string
+  type: IncomingReferencesOptions['types'][number]
   onLinkDocument: IncomingReferencesOptions['onLinkDocument']
   actions: IncomingReferencesOptions['actions']
   creationAllowed: IncomingReferencesOptions['creationAllowed']
-  fieldName: string
+  filterQuery: IncomingReferencesOptions['filterQuery']
 }) {
+  const documentPreviewStore = useDocumentPreviewStore()
+  const references$ = useMemo(
+    () =>
+      getIncomingReferences({
+        documentId: referenced.id,
+        documentPreviewStore,
+        type: type.type,
+        filterQuery,
+      }),
+    [documentPreviewStore, type, filterQuery, referenced.id],
+  )
+
+  const {documents, loading} = useObservable(references$, INITIAL_STATE)
+
   const schema = useSchema()
   const {t} = useTranslation(structureLocaleNamespace)
-  const schemaType = schema.get(type)
+  const schemaType = schema.get(type.type)
   const client = useClient(DEFAULT_STUDIO_CLIENT_OPTIONS)
   const [isAdding, setIsAdding] = useState(false)
   const [newReferenceId, setNewReferenceId] = useState<string | null>(null)
@@ -103,13 +117,17 @@ export function IncomingReferencesType({
       if (isAdded) setNewReferenceId(null)
     }
   }, [documents, newReferenceId])
+
   if (!schemaType) return null
+  if (loading) {
+    return <LoadingBlock showText title={'Loading documents'} />
+  }
   return (
-    <Stack key={type} space={2} marginBottom={2}>
+    <Stack space={2} marginBottom={2}>
       {shouldRenderTitle && (
         <Box paddingY={2} paddingX={0}>
           <Text size={1} weight="medium">
-            {schemaType?.title}
+            {type.title || schemaType?.title}
           </Text>
         </Box>
       )}
@@ -145,7 +163,7 @@ export function IncomingReferencesType({
         )}
         {isAdding && (
           <AddIncomingReference
-            type={type}
+            type={type.type}
             referenced={referenced}
             onCreateNewReference={handleCreateNewReference}
             onLinkDocument={handleLinkDocument}

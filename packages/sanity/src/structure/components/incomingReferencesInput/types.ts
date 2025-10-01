@@ -27,7 +27,28 @@ export type IncomingReferenceAction = ActionComponent<
   LinkedDocumentActionsContext,
   LinkedDocumentAction
 >
+
+export interface CrossDatasetIncomingReference {
+  type: string
+  title?: string
+  dataset: string
+  preview: PreviewConfig
+  studioUrl?: (document: {id: string; type?: string}) => string | null
+}
+
 export type IncomingReferencesOptions = {
+  /**
+   * The type of the incoming references.
+   */
+  types: (
+    | {
+        type: string
+        dataset?: never
+        title?: string
+      }
+    | CrossDatasetIncomingReference
+  )[]
+
   /**
    * The filter query to apply to the incoming references in addition to the type filter.
    * For example: filter all books that are from an specific editorial brand: `editorialBrand == "Random House"`

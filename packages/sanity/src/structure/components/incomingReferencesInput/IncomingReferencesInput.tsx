@@ -1,5 +1,4 @@
-import {useMemo} from 'react'
-import {type ArrayOfPrimitivesInputProps} from 'sanity'
+import {type StringInputProps} from 'sanity'
 
 import {IncomingReferencesList} from './IncomingReferencesList'
 import {type IncomingReferencesOptions} from './types'
@@ -7,22 +6,8 @@ import {type IncomingReferencesOptions} from './types'
 /**
  * @beta
  */
-export function IncomingReferencesInput(
-  props: ArrayOfPrimitivesInputProps & IncomingReferencesOptions,
-) {
-  const {
-    schemaType,
-    onLinkDocument,
-    actions,
-    filterQuery,
-    id: fieldName,
-    creationAllowed = true,
-  } = props
-  const types = useMemo(() => schemaType.of.map((type) => type.name), [schemaType])
-
-  if (types.length > 1) {
-    throw new Error('IncomingReferencesInput does not support multiple types in the `of` option')
-  }
+export function IncomingReferencesInput(props: StringInputProps & IncomingReferencesOptions) {
+  const {onLinkDocument, actions, filterQuery, id: fieldName, creationAllowed = true, types} = props
 
   return (
     <IncomingReferencesList
