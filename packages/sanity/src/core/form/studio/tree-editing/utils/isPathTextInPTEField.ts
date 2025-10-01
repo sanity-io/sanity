@@ -18,7 +18,11 @@ import {toString} from '@sanity/util/paths'
  * // => [['field1', 'field2', 'arrayField'], ['field1', 'field2', 'arrayField2']]
  * ```
  */
-export function findPTEtypePaths(fields: ObjectField<SchemaType>[], basePath: Path = []): Path[] {
+export function findPTEtypePaths(
+  fields: ObjectField<SchemaType>[],
+  basePath: Path = [],
+  visitedTypes: Set<string> = new Set(),
+): Path[] {
   // Array to store paths to array schema types
   const arrayPaths: Path[] = []
 
@@ -33,9 +37,17 @@ export function findPTEtypePaths(fields: ObjectField<SchemaType>[], basePath: Pa
 
     // If the field type is an object, recursively check its fields
     if (isObjectSchemaType(field.type)) {
-      // Recursively check the fields of the nested object with the correct path context
-      const nestedPaths = findPTEtypePaths(field.type.fields, newPath)
-      arrayPaths.push(...nestedPaths)
+      const typeName = field.type.name
+
+      // Prevent infinite recursion by checking if we've already visited this type
+      if (!visitedTypes.has(typeName)) {
+        const newVisitedTypes = new Set(visitedTypes)
+        newVisitedTypes.add(typeName)
+
+        // Recursively check the fields of the nested object with the correct path context
+        const nestedPaths = findPTEtypePaths(field.type.fields, newPath, newVisitedTypes)
+        arrayPaths.push(...nestedPaths)
+      }
     }
 
     // If the field type is an array of objects, check inside the object schema for portable text fields
@@ -44,9 +56,17 @@ export function findPTEtypePaths(fields: ObjectField<SchemaType>[], basePath: Pa
       // The array's 'of' property contains the possible object types
       field.type.of?.forEach((arrayMemberType) => {
         if (isObjectSchemaType(arrayMemberType)) {
-          // Recursively check the fields of objects within the array
-          const nestedPaths = findPTEtypePaths(arrayMemberType.fields, newPath)
-          arrayPaths.push(...nestedPaths)
+          const typeName = arrayMemberType.name
+
+          // Prevent infinite recursion by checking if we've already visited this type
+          if (!visitedTypes.has(typeName)) {
+            const newVisitedTypes = new Set(visitedTypes)
+            newVisitedTypes.add(typeName)
+
+            // Recursively check the fields of objects within the array
+            const nestedPaths = findPTEtypePaths(arrayMemberType.fields, newPath, newVisitedTypes)
+            arrayPaths.push(...nestedPaths)
+          }
         }
       })
     }
