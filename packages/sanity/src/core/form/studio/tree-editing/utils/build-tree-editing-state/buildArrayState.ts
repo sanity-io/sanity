@@ -216,10 +216,14 @@ export function buildArrayState(props: BuildArrayState): TreeEditingState {
       }
     })
 
-    if (isArrayItemSelected(itemPath, openPath) && relativePath.length === 0) {
+    // Update the relative path if the array item is selected
+    // this is specifically done for the case where the array of objects is not nested (exists in the root of the document)
+    if (isArrayItemSelected(itemPath, openPath)) {
       relativePath = getRelativePath(itemPath)
     }
 
+    // In cases of primitive types, we don't want to show the menu items
+    // the menu items were used for the breadcrumbs for sibling navigation but it's not something we want to use right now explicitly
     if (!isPrimitiveSchemaType(itemSchemaField?.type)) {
       menuItems.push({
         children: childrenMenuItems,
