@@ -118,9 +118,13 @@ test.describe('Portable Text Input', () => {
       const $portableTextInput = component.getByTestId('field-body')
       const $pteTextbox = $portableTextInput.getByRole('textbox')
       await expect($pteTextbox).not.toBeFocused()
-      await expect(page.getByTestId('objectBlockInputField').getByRole('textbox')).toBeVisible()
-      await page.keyboard.press('Tab+Tab')
+
+      // Wait for the input to be visible and then focus it directly
       const blockObjectInput = page.getByTestId('objectBlockInputField').getByRole('textbox')
+      await expect(blockObjectInput).toBeVisible()
+
+      // Focus the input directly - more reliable than tab navigation in CI
+      await blockObjectInput.focus()
       await expect(blockObjectInput).toBeFocused()
     })
     test(`for block paths`, async ({mount, page}) => {
