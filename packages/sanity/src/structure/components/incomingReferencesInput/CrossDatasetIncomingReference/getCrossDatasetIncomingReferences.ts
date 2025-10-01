@@ -1,5 +1,5 @@
 import {DocumentIcon} from '@sanity/icons'
-import {map, startWith, tap} from 'rxjs'
+import {map, startWith} from 'rxjs'
 import {mergeMapArray} from 'rxjs-mergemap-array'
 import {
   type DocumentPreviewStore,
@@ -21,11 +21,13 @@ export function getCrossDatasetIncomingReferences({
   type,
   client,
   documentPreviewStore,
+  crossDatasetApiConfig,
 }: {
   documentId: string
   type: CrossDatasetIncomingReference
   client: SanityClient
   documentPreviewStore: DocumentPreviewStore
+  crossDatasetApiConfig: {dataset: string; projectId: string} | undefined
 }) {
   // Here we get all the references to this document from the any other dataset
   return fetchCrossDatasetReferences(documentId, {versionedClient: client}).pipe(
@@ -39,31 +41,32 @@ export function getCrossDatasetIncomingReferences({
     // Now that we have all the references from the dataset the user defined, we need to get the document type from the documentId
     mergeMapArray((document) =>
       documentPreviewStore
-        .observeDocumentTypeFromId(document.documentId, undefined)
+        .observeDocumentTypeFromId(document.documentId, crossDatasetApiConfig)
         .pipe(map((documentType) => ({...document, documentType}))),
     ),
-    tap((documents) => console.log('documents after observeDocumentTypeFromId', documents)),
     // We filter the documents so only the documents of the type the user defined are included
     map((documents) => documents.filter((document) => document.documentType === type.type)),
     //  Now we get the preview values for the document so we can display it in the preview
     mergeMapArray((document) => {
       const previewPaths = getPreviewPaths(type.preview) || []
-      return documentPreviewStore.observePaths({_id: document.documentId}, previewPaths, undefined).pipe(
-        map((result) => {
-          const previewValue = prepareForPreview(result, {
-            type: type.type,
-            title: type.title || '',
-            icon: DocumentIcon,
-            preview: type.preview,
-          })
-          return {
-            type: type.type,
-            id: document.documentId,
-            preview: {published: previewValue},
-            availability: {available: true, reason: 'READABLE'} as const,
-          }
-        }),
-      )
+      return documentPreviewStore
+        .observePaths({_id: document.documentId}, previewPaths, crossDatasetApiConfig)
+        .pipe(
+          map((result) => {
+            const previewValue = prepareForPreview(result, {
+              type: type.type,
+              title: type.title || '',
+              icon: DocumentIcon,
+              preview: type.preview,
+            })
+            return {
+              type: type.type,
+              id: document.documentId,
+              preview: {published: previewValue},
+              availability: {available: true, reason: 'READABLE'} as const,
+            }
+          }),
+        )
     }),
     map((documents) => ({documents, loading: false})),
     startWith(INITIAL_STATE),

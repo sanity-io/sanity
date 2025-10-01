@@ -175,7 +175,7 @@ export function createObserveFields(options: {
   const getBatchFetcherForDataset = memoize(
     function getBatchFetcherForDataset(apiConfig: ApiConfig) {
       const client = currentDatasetClient.withConfig(apiConfig)
-      const fetchAll = fetchAllDocumentPathsWith(client, ['drafts'])
+      const fetchAll = fetchAllDocumentPathsWith(client)
       return debounceCollect(fetchAll, 10)
     },
     (apiConfig) => apiConfig.dataset + apiConfig.projectId,
