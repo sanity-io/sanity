@@ -249,7 +249,7 @@ export function TreeEditingDialog(props: TreeEditingDialogProps): React.JSX.Elem
       containerElement={containerElement}
     >
       <StyledDialog
-        data-testid="tree-editing-dialog"
+        data-testid="nested-object-dialog"
         onClose={onClose}
         id={'nested-object-dialog'}
         header={header}
