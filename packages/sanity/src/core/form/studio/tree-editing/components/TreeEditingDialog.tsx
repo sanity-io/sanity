@@ -117,16 +117,20 @@ export function TreeEditingDialog(props: TreeEditingDialogProps): React.JSX.Elem
 
   const onClose = useCallback(() => {
     // Check if any PTE within the current tree editing context is in fullscreen mode
+    // If the openPath is at the root level and the fullscreen is open then it means that the user
+    // is at the root and should close the window
     if (hasAnyFullscreen()) {
-      allFullscreenPaths.forEach((path) => {
-        // Check if the relative path exists in the fullscreen path (so, more deeply nested path)
-        // So that we can open the dialog at the correct level (the full screen) instead of closing the dialg
-        if (pathToString(treeState.relativePath).includes(path)) {
-          onPathOpen(stringToPath(path))
-        }
-      })
+      if (allFullscreenPaths.length > 1) {
+        allFullscreenPaths.forEach((path) => {
+          // Check if the relative path exists in the fullscreen path (so, more deeply nested path)
+          // So that we can open the dialog at the correct level (the full screen) instead of closing the dialg
+          if (pathToString(treeState.relativePath).includes(path)) {
+            onPathOpen(stringToPath(path))
+          }
+        })
 
-      return
+        return
+      }
     }
 
     // Cancel any debounced state building when closing the dialog.
