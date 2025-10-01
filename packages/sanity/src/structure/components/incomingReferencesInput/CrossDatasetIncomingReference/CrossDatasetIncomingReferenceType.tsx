@@ -1,9 +1,7 @@
-/* eslint-disable react-hooks/preserve-manual-memoization */
 import {Box, Card, Flex, Stack, Text} from '@sanity/ui'
 import {useMemo} from 'react'
 import {useObservable} from 'react-rx'
 import {
-  createDocumentPreviewStore,
   CrossDatasetReferencePreview,
   DEFAULT_STUDIO_CLIENT_OPTIONS,
   LoadingBlock,
@@ -30,14 +28,7 @@ export function CrossDatasetIncomingReferenceType({
 }) {
   const client = useClient(DEFAULT_STUDIO_CLIENT_OPTIONS)
   const projectId = client.config().projectId || ''
-  const crossDatasetClient = useMemo(
-    () => client.withConfig({dataset: type.dataset, ignoreBrowserTokenWarning: true}).clone(),
-    [client, type.dataset],
-  )
-  const crossDatasetDocumentPreviewStore = useMemo(
-    () => createDocumentPreviewStore({client: crossDatasetClient}),
-    [crossDatasetClient],
-  )
+  const documentPreviewStore = useDocumentPreviewStore()
 
   const references$ = useMemo(
     () =>
@@ -45,9 +36,10 @@ export function CrossDatasetIncomingReferenceType({
         documentId: referenced.id,
         client,
         type: type,
-        documentPreviewStore: crossDatasetDocumentPreviewStore,
+        documentPreviewStore,
+        crossDatasetApiConfig: {dataset: type.dataset, projectId: projectId},
       }),
-    [client, type, referenced.id, crossDatasetDocumentPreviewStore],
+    [client, type, referenced.id, documentPreviewStore, projectId],
   )
 
   const {documents, loading} = useObservable(references$, INITIAL_STATE)
