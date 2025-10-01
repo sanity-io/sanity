@@ -113,10 +113,12 @@ test.describe('Portable Text Input', () => {
       const component = await mount(
         <FocusTrackingStory document={document} focusPath={['body', {_key: 'k'}, 'text']} />,
       )
+      test.slow()
       await expect(page.getByTestId('nested-object-dialog')).toBeVisible()
       const $portableTextInput = component.getByTestId('field-body')
       const $pteTextbox = $portableTextInput.getByRole('textbox')
       await expect($pteTextbox).not.toBeFocused()
+      await expect(page.getByTestId('objectBlockInputField').getByRole('textbox')).toBeVisible()
       await page.keyboard.press('Tab+Tab')
       const blockObjectInput = page.getByTestId('objectBlockInputField').getByRole('textbox')
       await expect(blockObjectInput).toBeFocused()
