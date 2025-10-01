@@ -152,7 +152,8 @@
     "eslint/no-unsafe-optional-chaining": "warn",
     "promise/always-return": ["error", {"ignoreLastCallback": true}],
     // Temporarily disabled, will be re-enabled in the near term
-    "unicorn/prefer-set-has": "off"
+    "unicorn/prefer-set-has": "off",
+    "no-array-reverse": "off" // Requires polyfills for older browsers
   },
   "overrides": [
     {"files": ["scripts/**/*", "examples/functions/**/*"], "rules": {"no-console": "off"}}

@@ -3,6 +3,56 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [4.10.2](https://github.com/sanity-io/sanity/compare/v4.10.1...v4.10.2) (2025-09-30)
+
+
+### Bug Fixes
+
+* **deps:** update React Compiler dependencies 🤖 ✨ ([#10777](https://github.com/sanity-io/sanity/issues/10777)) ([128ea47](https://github.com/sanity-io/sanity/commit/128ea47658c270baaa5f09a66739acae86abf66d))
+
+
+
+## [4.10.1](https://github.com/sanity-io/sanity/compare/v4.10.0...v4.10.1) (2025-09-25)
+
+**Note:** Version bump only for package @repo/eslint-config
+
+
+
+
+
+## [4.10.0](https://github.com/sanity-io/sanity/compare/v4.9.0...v4.10.0) (2025-09-23)
+
+**Note:** Version bump only for package @repo/eslint-config
+
+
+
+
+
+## [4.9.0](https://github.com/sanity-io/sanity/compare/v4.8.1...v4.9.0) (2025-09-16)
+
+
+### Bug Fixes
+
+* **deps:** update React Compiler dependencies 🤖 ✨ ([#10639](https://github.com/sanity-io/sanity/issues/10639)) ([7ef8e25](https://github.com/sanity-io/sanity/commit/7ef8e2545d4093890a953dba74635f2c431cf1d3))
+
+
+
+## [4.8.1](https://github.com/sanity-io/sanity/compare/v4.8.0...v4.8.1) (2025-09-10)
+
+**Note:** Version bump only for package @repo/eslint-config
+
+
+
+
+
+## [4.8.0](https://github.com/sanity-io/sanity/compare/v4.7.0...v4.8.0) (2025-09-10)
+
+**Note:** Version bump only for package @repo/eslint-config
+
+
+
+
+
 ## [4.7.0](https://github.com/sanity-io/sanity/compare/v4.6.1...v4.7.0) (2025-09-09)
 
 

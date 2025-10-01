@@ -10,12 +10,16 @@ import {
   type EditStateFor,
   EMPTY_ARRAY,
   getPublishedId,
+  getReleaseIdFromReleaseDocumentId,
+  isCardinalityOneRelease,
   isGoingToUnpublish,
   isPerspectiveWriteable,
   isVersionId,
   type PartialContext,
+  useActiveReleases,
   useCopyPaste,
   useDocumentForm,
+  useDocumentIdStack,
   usePerspective,
   useSchema,
   useSource,
@@ -28,7 +32,6 @@ import {DocumentPaneContext} from 'sanity/_singletons'
 
 import {usePaneRouter} from '../../components'
 import {useDiffViewRouter} from '../../diffView/hooks/useDiffViewRouter'
-import {useDocumentIdStack} from '../../hooks/useDocumentIdStack'
 import {useDocumentLastRev} from '../../hooks/useDocumentLastRev'
 import {structureLocaleNamespace} from '../../i18n'
 import {type PaneMenuItem} from '../../types'
@@ -106,6 +109,7 @@ export const DocumentPaneProvider = memo((props: DocumentPaneProviderProps) => {
     if (forcedVersion) {
       return forcedVersion
     }
+
     return {
       selectedPerspectiveName: perspective.selectedPerspectiveName,
       selectedReleaseId: perspective.selectedReleaseId,
@@ -161,8 +165,12 @@ export const DocumentPaneProvider = memo((props: DocumentPaneProviderProps) => {
   )
 
   const getComparisonValue = useCallback(
-    (editState: EditStateFor) => {
-      return changesOpen ? sinceDocument || editState?.published : editState?.published || null
+    (upstreamEditState: EditStateFor) => {
+      const upstream = upstreamEditState.version ?? upstreamEditState.published
+      if (changesOpen) {
+        return sinceDocument || upstream
+      }
+      return upstream || null
     },
     [changesOpen, sinceDocument],
   )
@@ -216,6 +224,7 @@ export const DocumentPaneProvider = memo((props: DocumentPaneProviderProps) => {
 
   const {
     editState,
+    upstreamEditState,
     connectionState,
     focusPath,
     onChange,
@@ -251,15 +260,27 @@ export const DocumentPaneProvider = memo((props: DocumentPaneProviderProps) => {
     getFormDocumentValue: getDisplayed,
   })
 
+  const {data: releases = []} = useActiveReleases()
+
   const getDocumentVersionType = useCallback(() => {
     let version: DocumentActionsVersionType
     switch (true) {
       case Boolean(params.rev):
         version = 'revision'
         break
-      case selectedReleaseId && isVersionId(value._id):
-        version = 'version'
+      case selectedReleaseId && isVersionId(value._id): {
+        // Check if this is a scheduled draft (cardinality one release)
+        const releaseDocument = releases.find(
+          (r) => getReleaseIdFromReleaseDocumentId(r._id) === selectedReleaseId,
+        )
+
+        if (releaseDocument && isCardinalityOneRelease(releaseDocument)) {
+          version = 'scheduled-draft'
+        } else {
+          version = 'version'
+        }
         break
+      }
       case selectedPerspectiveName === 'published':
         version = 'published'
         break
@@ -271,7 +292,7 @@ export const DocumentPaneProvider = memo((props: DocumentPaneProviderProps) => {
     }
 
     return version
-  }, [params.rev, selectedReleaseId, value._id, selectedPerspectiveName, draftsEnabled])
+  }, [params.rev, selectedReleaseId, value._id, selectedPerspectiveName, draftsEnabled, releases])
 
   const actionsPerspective = useMemo(() => getDocumentVersionType(), [getDocumentVersionType])
 
@@ -337,7 +358,12 @@ export const DocumentPaneProvider = memo((props: DocumentPaneProviderProps) => {
     [getDisplayed, value],
   )
 
-  const {previousId} = useDocumentIdStack({displayed, documentId, editState})
+  const {previousId} = useDocumentIdStack({
+    strict: true,
+    displayed,
+    documentId,
+    editState,
+  })
 
   const setTimelineRange = useCallback(
     (newSince: string, newRev: string | null) => {
@@ -433,7 +459,11 @@ export const DocumentPaneProvider = memo((props: DocumentPaneProviderProps) => {
     })
   }, [documentId, documentType, schemaType, onChange, setDocumentMeta])
 
-  const compareValue = useMemo(() => getComparisonValue(editState), [editState, getComparisonValue])
+  const compareValue = useMemo(
+    () => getComparisonValue(upstreamEditState),
+    [upstreamEditState, getComparisonValue],
+  )
+
   const isDeleted = useMemo(() => getIsDeleted(editState), [editState, getIsDeleted])
   const revisionNotFound = onOlderRevision && !revisionDocument
 

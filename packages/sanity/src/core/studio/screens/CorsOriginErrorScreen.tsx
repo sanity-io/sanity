@@ -5,9 +5,11 @@ import {useEffect, useMemo} from 'react'
 import {styled} from 'styled-components'
 
 import {Dialog} from '../../../ui-components'
+import {useEnvAwareSanityWebsiteUrl} from '../hooks/useEnvAwareSanityWebsiteUrl'
 
 interface CorsOriginErrorScreenProps {
   projectId?: string
+  isStaging: boolean
 }
 
 export const ScreenReaderLabel = styled.label`
@@ -22,17 +24,18 @@ export const ScreenReaderLabel = styled.label`
 `
 
 export function CorsOriginErrorScreen(props: CorsOriginErrorScreenProps) {
-  const {projectId} = props
+  const {projectId, isStaging} = props
 
   const origin = window.location.origin
+  const sanityWebsiteUrl = useEnvAwareSanityWebsiteUrl()
   const corsUrl = useMemo(() => {
-    const url = new URL(`https://sanity.io/manage/project/${projectId}/api`)
+    const url = new URL(`/manage/project/${projectId}/api`, sanityWebsiteUrl)
     url.searchParams.set('cors', 'add')
     url.searchParams.set('origin', origin)
     url.searchParams.set('credentials', '')
 
     return url.toString()
-  }, [origin, projectId])
+  }, [origin, projectId, sanityWebsiteUrl])
 
   useEffect(() => {
     const handleFocus = () => {

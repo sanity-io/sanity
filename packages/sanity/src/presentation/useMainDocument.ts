@@ -87,7 +87,7 @@ export function getRouteContext(route: Path, url: URL): DocumentResolverContext 
         return {origin, params, path}
       }
     } catch (e) {
-      throw new Error(`"${route}" is not a valid route pattern`)
+      throw new Error(`"${route}" is not a valid route pattern`, {cause: e})
     }
   }
   return undefined

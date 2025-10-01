@@ -2,7 +2,7 @@ import {type TransactionLogEventWithEffects} from '@sanity/types'
 import {useCallback, useEffect, useMemo, useRef, useState} from 'react'
 
 import {useClient} from '../../../../hooks'
-import {getJsonStream} from '../../../../store/_legacy/history/history/getJsonStream'
+import {getTransactionsLogs} from '../../../../store/translog/getTransactionsLogs'
 import {getVersionId} from '../../../../util'
 import {RELEASES_STUDIO_CLIENT_OPTIONS} from '../../../util/releasesClient'
 
@@ -44,24 +44,17 @@ export function useReleaseHistory(
   loading: boolean
 } {
   const client = useClient(RELEASES_STUDIO_CLIENT_OPTIONS)
-  const {dataset, token} = client.config()
   const [history, setHistory] = useState<TransactionLogEventWithEffects[] | null>(null)
-  const queryParams = `tag=sanity.studio.tasks.history&effectFormat=mendoza&excludeContent=true&includeIdentifiedDocumentsOnly=true`
 
   const versionId = useMemo(() => {
     if (!releaseDocumentId || !releaseId) return ''
     return getVersionId(releaseDocumentId, releaseId)
   }, [releaseDocumentId, releaseId])
 
-  const transactionsUrl = useMemo(() => {
-    if (!versionId) return ''
-    return client.getUrl(`/data/history/${dataset}/transactions/${versionId}?${queryParams}`)
-  }, [client, dataset, queryParams, versionId])
-
   const cancelledRef = useRef(false)
 
   const fetchAndParse = useCallback(async (): Promise<void> => {
-    if (!versionId || !transactionsUrl) {
+    if (!versionId) {
       setHistory(null)
       return
     }
@@ -76,22 +69,15 @@ export function useReleaseHistory(
 
     await acquireHistorySlot()
     try {
-      const transactions: TransactionLogEventWithEffects[] = []
-      const stream = await getJsonStream(transactionsUrl, token)
-      const reader = stream.getReader()
+      const transactions = await getTransactionsLogs(client, versionId, {
+        tag: 'sanity.studio.releases.documents.history',
+        effectFormat: 'mendoza',
+        excludeContent: true,
+        includeIdentifiedDocumentsOnly: true,
+        limit: 1,
+        reverse: true,
+      })
 
-      const readAll = async (): Promise<void> => {
-        const result = await reader.read()
-        if (result.done) return
-        if ('error' in result.value) {
-          throw new Error(result.value.error.description || result.value.error.type)
-        }
-
-        transactions.push(result.value)
-        await readAll()
-      }
-
-      await readAll()
       if (!cancelledRef.current) {
         setHistory(transactions)
 
@@ -105,7 +91,7 @@ export function useReleaseHistory(
     } finally {
       releaseHistorySlot()
     }
-  }, [versionId, transactionsUrl, releaseDocumentId, documentRevision, token])
+  }, [versionId, releaseDocumentId, documentRevision, client])
 
   useEffect(() => {
     cancelledRef.current = false

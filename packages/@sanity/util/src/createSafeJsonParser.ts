@@ -28,7 +28,7 @@ export function createSafeJsonParser<Type>({errorLabel}: Options): Parser<Type> 
       const errorLine = JSON.parse(errorJson)
       const error = errorLine && errorLine.error
       if (error && error.description) {
-        throw new Error(`${errorLabel}: ${error.description}\n\n${errorJson}\n`)
+        throw new Error(`${errorLabel}: ${error.description}\n\n${errorJson}\n`, {cause: err})
       }
 
       throw err

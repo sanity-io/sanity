@@ -71,6 +71,7 @@ import type {
   PresentationParamsContext,
   PresentationSharedStateContext,
   PreviewCardContext,
+  RawPerspectiveContext,
   ReferenceInputOptionsContext,
   ReferenceItemRef,
   ReferenceItemRefContext,
@@ -307,6 +308,9 @@ describe('sanity/_singletons', () => {
   })
   test('PreviewCardContext', () => {
     expectTypeOf<typeof PreviewCardContext>().not.toBeNever()
+  })
+  test('RawPerspectiveContext', () => {
+    expectTypeOf<typeof RawPerspectiveContext>().not.toBeNever()
   })
   test('ReferenceInputOptionsContext', () => {
     expectTypeOf<typeof ReferenceInputOptionsContext>().not.toBeNever()

@@ -1,6 +1,6 @@
 import {ArrowLeftIcon} from '@sanity/icons'
 import {memo, useMemo} from 'react'
-import {CapabilityGate, getPublishedId, useActiveWorkspace, useTranslation} from 'sanity'
+import {CapabilityGate, useActiveWorkspace, useTranslation} from 'sanity'
 
 import {Button} from '../../../../../ui-components'
 import {PaneHeader, usePane, usePaneRouter} from '../../../../components'
@@ -20,7 +20,6 @@ export const DocumentPanelSubHeader = memo(function DocumentPanelHeader() {
   const {features} = useStructureTool()
   const {index, BackLink} = usePaneRouter()
   const {activeWorkspace} = useActiveWorkspace()
-  const publishedDocId = getPublishedId(documentId)
 
   const showTabs = views.length > 1
 
@@ -55,7 +54,7 @@ export const DocumentPanelSubHeader = memo(function DocumentPanelHeader() {
     <CapabilityGate capability="comlink" condition="available">
       <FavoriteToggle
         resourceType="studio"
-        documentId={publishedDocId}
+        documentId={displayed?._id ?? documentId}
         documentType={displayed?._type ?? ''}
         resourceId={[activeWorkspace.projectId, activeWorkspace.dataset].join('.')}
         schemaName={activeWorkspace.name}

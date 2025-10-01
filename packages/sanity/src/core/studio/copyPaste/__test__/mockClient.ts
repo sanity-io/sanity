@@ -47,7 +47,7 @@ export function createMockClient(mockData: FIXME[]): ClientWithFetch {
               console.error('Error position:', (error as {position: number}).position)
             }
           }
-          throw new Error('Error in mock client query execution')
+          throw new Error('Error in mock client query execution', {cause: error})
         }
       },
     ),
