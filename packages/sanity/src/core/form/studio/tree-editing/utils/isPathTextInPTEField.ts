@@ -113,14 +113,6 @@ export function isPathTextInPTEField(fields: ObjectField<SchemaType>[], targetPa
   )
 
   const result = isWithinPTEField && containsChildren
-  console.warn(
-    'isPathWithinPortableText result:',
-    result,
-    '(withinPTE:',
-    isWithinPTEField,
-    ', hasChildren:',
-    containsChildren,
-    ')',
-  )
+
   return result
 }
