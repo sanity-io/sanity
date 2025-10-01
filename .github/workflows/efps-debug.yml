@@ -40,6 +40,7 @@ jobs:
     steps:
       - name: Debug deployment event
         run: |
+          echo "Event: ${{ toJSON(github.event) }}"
           echo "Event name: ${{ github.event_name }}"
           echo "Deployment status state: ${{ github.event.deployment_status.state }}"
           echo "Deployment status environment: ${{ github.event.deployment_status.environment }}"
