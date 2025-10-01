@@ -59,34 +59,18 @@ export function buildArrayState(props: BuildArrayState): TreeEditingState {
   const menuItems: TreeEditingMenuItem[] = []
   const breadcrumbs: TreeEditingBreadcrumb[] = []
 
-  // Check if this is a PortableText array and if the openPath points to a regular text block
-  // If so, return empty state to prevent tree editing dialog from opening
-  // Example: when I am clicking a normal text
-  if (isArrayOfBlocksSchemaType(arraySchemaType)) {
-    const openPathPointsToRegularTextBlock = arrayValue.some((item) => {
-      const blockObj = item as Record<string, unknown>
-      if (!blockObj._key || !blockObj._type) return false
-
-      // Check if this is a regular text block and openPath points to it
-      // This makes sure that we don't go further into the dialog when clicking on a regular text block
-      // because it is not necessary
-      if (blockObj._type === 'block') {
-        const blockPath = [...rootPath, {_key: blockObj._key}] as Path
-        const pathMatches = toString(openPath).startsWith(toString(blockPath))
-
-        return pathMatches
-      }
-      return false
-    })
-
-    // If openPath points to a regular text block, return empty state
-    if (openPathPointsToRegularTextBlock) {
-      return {
-        breadcrumbs,
-        menuItems,
-        relativePath,
-        rootTitle: '',
-      }
+  // This is specifically needed for Portable Text editors that are at a root level in the document
+  // In that case, and if the openPath points to a regular text block (such as when you write it), we return empty state
+  // Since this SHOULDN'T open the dialog
+  if (
+    isArrayOfBlocksSchemaType(arraySchemaType) &&
+    isPathTextInPTEField(rootSchemaType.fields, openPath)
+  ) {
+    return {
+      breadcrumbs,
+      menuItems,
+      relativePath,
+      rootTitle: '',
     }
   }
 
@@ -209,9 +193,7 @@ export function buildArrayState(props: BuildArrayState): TreeEditingState {
         })
       }
 
-      // Handle portable text arrays - process even if empty to handle new item creation
-      // Regular text blocks (type: 'block') should not be processed as they can only be rendered
-      // within the portable text editor context
+      // Handle portable text editors inside an array of objects
       if (isPortableText) {
         // Ensure we have an array to work with, even if empty
         const portableTextValue = Array.isArray(childValue) ? childValue : []
@@ -222,14 +204,13 @@ export function buildArrayState(props: BuildArrayState): TreeEditingState {
           return
         }
 
-        // Check if the openPath points to an array field within a custom object block
-        // OR if it points to a custom object block that contains array fields
-
+        // Process blocks within portable text
         portableTextValue.forEach((block: unknown) => {
           const blockObj = block as Record<string, unknown>
           if (!blockObj._key || !blockObj._type) return
 
           // Skip regular text blocks - only process custom object blocks
+          // This is usually text - this is handled further down or by the PTE itself
           if (blockObj._type === 'block') return
 
           const blockPath = [...childPath, {_key: blockObj._key}] as Path
@@ -238,42 +219,23 @@ export function buildArrayState(props: BuildArrayState): TreeEditingState {
             blockObj,
           ) as ObjectSchemaType
 
-          // Only process if this is a custom object block (not a regular text block)
-          if (!blockSchemaType || !blockSchemaType.fields) {
-            return
-          }
+          // Handle breadcrumbs for blocks that already exist
+          if (blockSchemaType && blockSchemaType.fields) {
+            // Check if openPath points to this block itself or to an array field within it
+            const openPathPointsToThisBlock = toString(openPath).startsWith(toString(blockPath))
 
-          // Check if openPath points to this block itself or to an array field within it
-          const openPathPointsToThisBlock = toString(openPath).startsWith(toString(blockPath))
-
-          // Add breadcrumb for the PortableText block object if openPath points to it
-          if (openPathPointsToThisBlock && shouldBeInBreadcrumb(blockPath, openPath)) {
-            const blockBreadcrumb: TreeEditingBreadcrumb = {
-              children: EMPTY_ARRAY,
-              parentSchemaType: childField.type as ArraySchemaType,
-              path: blockPath,
-              schemaType: blockSchemaType,
-              value: blockObj,
+            // Add breadcrumb for the PortableText block object if openPath points to it
+            if (openPathPointsToThisBlock && shouldBeInBreadcrumb(blockPath, openPath)) {
+              const blockBreadcrumb: TreeEditingBreadcrumb = {
+                children: EMPTY_ARRAY,
+                parentSchemaType: childField.type as ArraySchemaType,
+                path: blockPath,
+                schemaType: blockSchemaType,
+                value: blockObj,
+              }
+              breadcrumbs.push(blockBreadcrumb)
             }
-            breadcrumbs.push(blockBreadcrumb)
           }
-        })
-
-        portableTextValue.forEach((block: unknown) => {
-          const blockObj = block as Record<string, unknown>
-          if (!blockObj._key || !blockObj._type) return
-
-          // Skip regular text blocks - only process custom object blocks
-          if (blockObj._type === 'block') return
-
-          const blockPath = [...childPath, {_key: blockObj._key}] as Path
-          const blockSchemaType = getItemType(
-            childField.type as ArraySchemaType,
-            blockObj,
-          ) as ObjectSchemaType
-
-          // Only process if this is a custom object block
-          if (!blockSchemaType || !blockSchemaType.fields) return
 
           // eslint-disable-next-line max-nested-callbacks
           blockSchemaType.fields.forEach((blockField) => {
