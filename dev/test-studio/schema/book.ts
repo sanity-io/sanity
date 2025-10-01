@@ -1,5 +1,5 @@
 import {BookIcon} from '@sanity/icons'
-import {defineType, type Rule} from '@sanity/types'
+import {defineField, defineType, type Rule} from '@sanity/types'
 
 function formatSubtitle(book: any) {
   return [
@@ -46,6 +46,42 @@ export default defineType({
       type: 'reference',
       to: {type: 'author', title: 'Author'},
     },
+    {
+      name: 'relatedBook',
+      title: 'Related book',
+      type: 'reference',
+      to: {type: 'book', title: 'Book'},
+    },
+    defineField({
+      name: 'testAuthor',
+      title: 'A cross dataset reference to an author',
+      type: 'crossDatasetReference',
+      dataset: 'test',
+      to: [
+        {
+          type: 'author',
+          preview: {
+            select: {
+              title: 'name',
+              awards: 'awards',
+              role: 'role',
+              relatedAuthors: 'relatedAuthors',
+              lastUpdated: '_updatedAt',
+              media: 'image',
+            },
+            prepare({title, media, awards, role: roleName}: any) {
+              const awardsText = Array.isArray(awards) && awards.filter(Boolean).join(', ')
+
+              return {
+                title: typeof title === 'string' ? title : undefined,
+                media: media as any,
+                subtitle: [roleName, awardsText].filter(Boolean).join(' · '),
+              }
+            },
+          },
+        },
+      ],
+    }),
     {
       name: 'coverImage',
       title: 'Cover Image',

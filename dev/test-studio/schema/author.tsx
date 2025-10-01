@@ -2,7 +2,7 @@ import {TrashIcon, UserIcon as icon} from '@sanity/icons'
 import {type StringRule} from '@sanity/types'
 import {type IncomingReferenceAction} from 'packages/sanity/src/structure/components/incomingReferencesInput/types'
 import {useState} from 'react'
-import {type ArrayOfPrimitivesInputProps, defineField, defineType, getDraftId} from 'sanity'
+import {defineField, defineType, getDraftId} from 'sanity'
 import {IncomingReferencesInput} from 'sanity/structure'
 
 import {AudienceSelectInput} from '../components/AudienceSelectInput'
@@ -143,9 +143,9 @@ export default defineType({
       hidden: true,
       name: 'incomingReferencesDesigner',
       title: 'Incoming references (author - designer)',
-      type: 'array',
+      type: 'string',
       components: {
-        input: (props: ArrayOfPrimitivesInputProps) => (
+        input: (props) => (
           <IncomingReferencesInput
             {...props}
             onLinkDocument={(document, reference) => {
@@ -156,20 +156,19 @@ export default defineType({
             }}
             filterQuery={`role == "designer"`}
             actions={[RemoveReferenceAction]}
-
+            types={[{type: 'author'}]}
             // creationAllowed={['author', 'author-developer']}
             // creationAllowed={false}
           />
         ),
       },
-      of: [{type: 'author'}],
     }),
     defineField({
       name: 'booksCreated',
       title: 'Books created by this author',
-      type: 'array',
+      type: 'string',
       components: {
-        input: (props: ArrayOfPrimitivesInputProps) => (
+        input: (props) => (
           <IncomingReferencesInput
             {...props}
             onLinkDocument={(document, reference) => {
@@ -179,10 +178,27 @@ export default defineType({
               }
             }}
             actions={[RemoveReferenceAction]}
+            types={[
+              {type: 'book'},
+              {
+                type: 'book',
+                dataset: 'test-us',
+                // title: 'Book in test-us dataset',
+                studioUrl: ({id, type}) => {
+                  return type
+                    ? `/us/intent/edit/id=${id};type=${type}`
+                    : // "http://localhost:3333/test/intent/edit/id=04c86968-2e91-4ba0-9dbc-be947fdf807e;type=author;inspect=sanity%2Fcomments;comment=bc4de80c-f202-4141-b0f3-e2c13f3a0e09/"
+
+                      null
+                },
+                preview: {
+                  select: {title: 'title', media: 'coverImage', subtitle: 'publicationYear'},
+                },
+              },
+            ]}
           />
         ),
       },
-      of: [{type: 'book'}],
     }),
     {
       name: 'favoriteBooks',

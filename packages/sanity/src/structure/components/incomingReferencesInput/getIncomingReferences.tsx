@@ -2,35 +2,30 @@ import {filter, map, type Observable, startWith} from 'rxjs'
 import {mergeMapArray} from 'rxjs-mergemap-array'
 import {type DocumentPreviewStore, getPublishedId, type SanityDocument} from 'sanity'
 
-const INITIAL_STATE = {
-  list: [],
+export const INITIAL_STATE = {
+  documents: [],
   loading: true,
 }
 export function getIncomingReferences({
   documentId,
   documentPreviewStore,
-  types,
+  type,
   filterQuery,
 }: {
   documentId: string
   documentPreviewStore: DocumentPreviewStore
-  types: string[]
+  type: string
   filterQuery?: string
 }): Observable<{
-  list: {
-    type: string
-    documents: SanityDocument[]
-  }[]
+  documents: SanityDocument[]
   loading: boolean
 }> {
   const publishedId = getPublishedId(documentId)
-  //  If only one type is defined, use type == $type, otherwise use _type in $types
-  const typeFilter = types.length > 1 ? `_type in $types` : `_type == $type`
-  const typesParam = types.length > 1 ? {types} : {type: types[0]}
+
   return documentPreviewStore
     .unstable_observeDocumentIdSet(
-      `references("${publishedId}") && ${typeFilter} ${filterQuery ? `&& ${filterQuery}` : ''}`,
-      typesParam,
+      `references("${publishedId}") && _type == $type ${filterQuery ? `&& ${filterQuery}` : ''}`,
+      {type: type},
       {insert: 'append'},
     )
     .pipe(
@@ -53,13 +48,8 @@ export function getIncomingReferences({
           return true
         })
       }),
-      map((documents) => {
-        return types.map((type) => ({
-          type,
-          documents: documents.filter((doc) => doc._type === type),
-        }))
-      }),
-      map((list) => ({list, loading: false})),
+
+      map((documents) => ({documents, loading: false})),
       startWith(INITIAL_STATE),
     )
 }
