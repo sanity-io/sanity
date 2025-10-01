@@ -59,7 +59,6 @@ import {
   searchStrategyReducer,
   serverDocumentActionsReducer,
   toolsReducer,
-  treeArrayEditingEnabledReducer,
 } from './configPropertyReducers'
 import {ConfigResolutionError} from './ConfigResolutionError'
 import {createDefaultIcon} from './createDefaultIcon'
@@ -752,8 +751,10 @@ function resolveSource({
         documents: eventsAPIReducer({config, initialValue: true, key: 'documents'}),
         releases: eventsAPIReducer({config, initialValue: false, key: 'releases'}),
       },
+      // TODO: Rename treeArrayEditing property to NestedObjectEditing (or similar) before "public" availability.
       treeArrayEditing: {
-        enabled: treeArrayEditingEnabledReducer({config, initialValue: false}),
+        // TODO: Keep it disabled while in development.
+        enabled: false, // treeArrayEditingEnabledReducer({config, initialValue: false}),
       },
       create: {
         startInCreateEnabled: false,
