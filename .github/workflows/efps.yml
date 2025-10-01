@@ -3,6 +3,7 @@ permissions:
   pull-requests: write # for comment
 
 on:
+  # Build on pushes branches that have a PR (including drafts)
   pull_request:
   workflow_dispatch:
     inputs:

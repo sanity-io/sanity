@@ -3,6 +3,26 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [4.10.2](https://github.com/sanity-io/sanity/compare/v4.10.1...v4.10.2) (2025-09-30)
+
+
+### Bug Fixes
+
+* **cli:** pass appType param when fetching existing SDK apps ([#10775](https://github.com/sanity-io/sanity/issues/10775)) ([b870af5](https://github.com/sanity-io/sanity/commit/b870af5f1ca1fb9011d25b559cb0dbccfe40179d))
+* **cli:** remove redundant curly brace in code example ([#10781](https://github.com/sanity-io/sanity/issues/10781)) ([792c250](https://github.com/sanity-io/sanity/commit/792c250c149ee9a782e48f38fdfca0badfb1f0e2))
+* **core:** avoid repeated requests in case of failing project requests ([#10770](https://github.com/sanity-io/sanity/issues/10770)) ([c03497f](https://github.com/sanity-io/sanity/commit/c03497f939b5cd0107bb333c9a2f41eae03c49ad))
+* delay teardown of get-org-id request ([#10771](https://github.com/sanity-io/sanity/issues/10771)) ([de40474](https://github.com/sanity-io/sanity/commit/de40474d2e8b945634194ee77882945bdbd463f2))
+* **deps:** update dependency @portabletext/block-tools to ^3.5.8 ([#10783](https://github.com/sanity-io/sanity/issues/10783)) ([13ef5e3](https://github.com/sanity-io/sanity/commit/13ef5e3771b87497d3e678f829cf572dd5dfb1ca))
+* **deps:** update dependency @portabletext/editor to ^2.13.3 ([#10784](https://github.com/sanity-io/sanity/issues/10784)) ([b6c49ab](https://github.com/sanity-io/sanity/commit/b6c49ab7bc71b7631a9e2ce0dea2261a61adb691))
+* **deps:** update dependency framer-motion to ^12.23.22 ([#10768](https://github.com/sanity-io/sanity/issues/10768)) ([268d44a](https://github.com/sanity-io/sanity/commit/268d44a75080da1ced68ae7efbe088c9ab233ac0))
+* **deps:** update React Compiler dependencies 🤖 ✨ ([#10777](https://github.com/sanity-io/sanity/issues/10777)) ([128ea47](https://github.com/sanity-io/sanity/commit/128ea47658c270baaa5f09a66739acae86abf66d))
+* only reading server metadata when unfocused from input ([#10749](https://github.com/sanity-io/sanity/issues/10749)) ([a255a6d](https://github.com/sanity-io/sanity/commit/a255a6d894d0be3f5d82a716909ddcda0e7ad257))
+* **structure:** pass the same documentId to the favorite toggle as to history ([#10779](https://github.com/sanity-io/sanity/issues/10779)) ([fb9257f](https://github.com/sanity-io/sanity/commit/fb9257f8066abbe4d1c17658d1a6a632fc92fa79))
+* the main efps also needs to be deployed ([#10786](https://github.com/sanity-io/sanity/issues/10786)) ([8430ecf](https://github.com/sanity-io/sanity/commit/8430ecf63ddb1bc30f45ff93e00330ab505f1761))
+* use www for website urls ([#10788](https://github.com/sanity-io/sanity/issues/10788)) ([071e54e](https://github.com/sanity-io/sanity/commit/071e54ef0af37cc5c5b213bf1d12a63583b1d4e6))
+
+
+
 ## [4.10.1](https://github.com/sanity-io/sanity/compare/v4.10.0...v4.10.1) (2025-09-25)
 
 
