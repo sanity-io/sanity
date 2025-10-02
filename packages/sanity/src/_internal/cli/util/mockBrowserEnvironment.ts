@@ -38,6 +38,7 @@ export function mockBrowserEnvironment(basePath: string): () => void {
     extensions: ['.js', '.jsx', '.ts', '.tsx', '.mjs'],
     jsx: 'automatic',
     define: {
+      __SANITY_STAGING__: process.env.SANITY_INTERNAL_ENV === 'staging' ? 'true' : 'false',
       // define the `process.env` global
       ...getStudioEnvironmentVariables({prefix: 'process.env.', jsonEncode: true}),
       // define the `import.meta.env` global
