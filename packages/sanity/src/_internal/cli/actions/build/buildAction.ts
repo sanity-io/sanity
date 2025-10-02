@@ -21,7 +21,6 @@ import {getPackageManagerChoice} from '../../util/packageManager/packageManagerC
 import {isInteractive} from '../../util/isInteractive'
 import {getAutoUpdatesImportMap} from '../../util/getAutoUpdatesImportMap'
 import {getAppId} from '../../util/getAppId'
-import {baseUrl} from '../../util/baseUrl'
 import {warnAboutMissingAppId} from '../../util/warnAboutMissingAppId'
 
 export interface BuildSanityStudioCommandFlags {
