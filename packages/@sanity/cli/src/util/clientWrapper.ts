@@ -49,9 +49,9 @@ function isReqResError(err: Error): err is ClientError | ServerError {
   return err.hasOwnProperty('response')
 }
 
-export function getCliToken(): string | undefined {
+export function getCliToken(apiHost?: string): string | undefined {
   const envAuthToken = process.env.SANITY_AUTH_TOKEN
-  const userConfig = getUserConfig()
+  const userConfig = getUserConfig(apiHost)
   return envAuthToken || userConfig.get('authToken')
 }
 
@@ -76,19 +76,12 @@ export function getClientWrapper(
 
   return function (opts?: ClientRequirements) {
     // Read these environment variables "late" to allow `.env` files
-
-    const sanityEnv = process.env.SANITY_INTERNAL_ENV || 'production'
-
     const {requireUser, requireProject, api} = {...defaults, ...opts}
-    const token = getCliToken()
-    const apiHost = apiHosts[sanityEnv]
+    const token = getCliToken(cliApiConfig?.apiHost)
+
     const apiConfig = {
       ...cliApiConfig,
       ...api,
-    }
-
-    if (apiHost) {
-      apiConfig.apiHost = apiHost
     }
 
     if (requireUser && !token) {
