@@ -1,4 +1,12 @@
-const staging = process.env.NODE_ENV == 'staging'
-
-export const projectId = staging ? 'exx11uqh' : 'ppsg7ml5'
-export const dataset = staging ? 'playground' : 'autoupdates'
+export const API_CONFIG = {
+  staging: {
+    projectId: 'exx11uqh',
+    dataset: 'playground',
+    apiHost: 'https://api.sanity.work',
+  },
+  production: {
+    projectId: 'ppsg7ml5',
+    dataset: 'autoupdates',
+    apiHost: 'https://api.sanity.io',
+  },
+}
