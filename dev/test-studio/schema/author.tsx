@@ -113,6 +113,7 @@ export default defineType({
   type: 'document',
   title: 'Author',
   icon,
+  description: 'This represents an author',
   preview: {
     select: {
       title: 'name',
@@ -138,6 +139,10 @@ export default defineType({
       name: 'name',
       title: 'Name',
       type: 'string',
+      options: {
+        search: {weight: 100},
+      },
+      validation: (rule: StringRule) => rule.required(),
     }),
     defineField({
       name: 'incomingReferencesDesigner',
@@ -203,17 +208,6 @@ export default defineType({
       },
     }),
     {
-      name: 'favoriteBooks',
-      title: 'Favorite books',
-      type: 'array',
-      of: [
-        {
-          type: 'reference',
-          to: {type: 'book'},
-        },
-      ],
-    },
-    {
       name: 'bestFriend',
       title: 'Best friend',
       type: 'reference',
@@ -236,7 +230,6 @@ export default defineType({
       type: 'reference',
       to: [{type: 'author'}],
     }),
-
     {
       name: 'role',
       title: 'Role',
@@ -261,7 +254,17 @@ export default defineType({
         },
       ],
     },
-
+    {
+      name: 'favoriteBooks',
+      title: 'Favorite books',
+      type: 'array',
+      of: [
+        {
+          type: 'reference',
+          to: {type: 'book'},
+        },
+      ],
+    },
     {
       name: 'minimalBlock',
       title: 'Reset all options',

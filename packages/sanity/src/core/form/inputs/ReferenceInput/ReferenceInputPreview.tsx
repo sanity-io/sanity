@@ -1,4 +1,3 @@
-/* eslint-disable complexity */
 import {LaunchIcon as OpenInNewTabIcon, SyncIcon as ReplaceIcon, TrashIcon} from '@sanity/icons'
 import {type Reference} from '@sanity/types'
 import {Box, Card, type CardTone, Flex, Menu, MenuDivider, Stack} from '@sanity/ui'
