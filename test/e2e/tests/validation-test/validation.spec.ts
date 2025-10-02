@@ -126,8 +126,7 @@ test.describe('Validation test', () => {
 
       await createDraftDocument('/content/house')
 
-      // Wait for the form to be ready before proceeding
-      await page.waitForLoadState('networkidle', {timeout: 10000})
+      await expect(page.getByTestId('document-panel-scroller')).toBeVisible()
 
       await page.getByTestId('add-single-object-button').click()
 
