@@ -182,6 +182,7 @@ async function writeWorkspaceFile(
     ...workspace,
     schema: schemaFilename,
     tools: toolsFilename,
+    apiHost: workspace.apiHost,
   }
 }
 
