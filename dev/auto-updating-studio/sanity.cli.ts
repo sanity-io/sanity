@@ -1,9 +1,9 @@
 import {defineCliConfig} from 'sanity/cli'
 
-import {dataset, projectId} from './apiConfig'
+import {API_CONFIG} from './apiConfig'
 
 export default defineCliConfig({
-  api: {dataset, projectId},
+  api: API_CONFIG.production,
   deployment: {
     appId: 'iwyfhbjad8dipooo6r1r28vs',
 

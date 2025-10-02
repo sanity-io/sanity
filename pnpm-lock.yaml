@@ -284,6 +284,9 @@ importers:
 
   dev/auto-updating-studio:
     dependencies:
+      '@sanity/cli':
+        specifier: workspace:*
+        version: link:../../packages/@sanity/cli
       '@sanity/vision':
         specifier: workspace:*
         version: link:../../packages/@sanity/vision

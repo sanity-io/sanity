@@ -15,6 +15,7 @@
     "start": "sanity start"
   },
   "dependencies": {
+    "@sanity/cli": "workspace:*",
     "@sanity/vision": "workspace:*",
     "react": "catalog:",
     "sanity": "workspace:*",
