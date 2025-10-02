@@ -26,7 +26,9 @@ test.describe('Validation test', () => {
       await page.getByTestId('field-name').getByTestId('string-input').fill('Test House')
       await page.getByTestId('add-single-object-button').click()
 
-      await expect(page.getByTestId('nested-object-dialog')).toBeVisible()
+      // @TODO replace once nested object dialog is set as true
+      //await expect(page.getByTestId('nested-object-dialog')).toBeVisible()
+      await expect(page.getByTestId('edit-portal-dialog')).toBeVisible()
       await page
         .getByTestId(/field-house\[.*\]\.name/)
         .getByTestId('string-input')
@@ -34,7 +36,9 @@ test.describe('Validation test', () => {
 
       await page.getByRole('button', {name: 'Close dialog'}).click()
 
-      await expect(page.getByTestId('nested-object-dialog')).not.toBeVisible()
+      // @TODO replace once nested object dialog is set as true
+      //await expect(page.getByTestId('nested-object-dialog')).not.toBeVisible()
+      await expect(page.getByTestId('edit-portal-dialog')).not.toBeVisible()
       await page.getByRole('button', {name: 'Validation'}).click()
 
       await page.getByTestId('array-item-menu-button').click()
@@ -68,7 +72,9 @@ test.describe('Validation test', () => {
 
       await page.getByTestId('add-single-object-button').click()
 
-      await expect(page.getByTestId('nested-object-dialog')).toBeVisible()
+      // @TODO replace once nested object dialog is set as true
+      //await expect(page.getByTestId('nested-object-dialog')).toBeVisible()
+      await expect(page.getByTestId('edit-portal-dialog')).toBeVisible()
       await page
         .getByTestId(/field-house\[.*\]\.name/)
         .getByTestId('string-input')
@@ -76,11 +82,15 @@ test.describe('Validation test', () => {
 
       await page.getByRole('button', {name: 'Close dialog'}).click()
 
-      await expect(page.getByTestId('nested-object-dialog')).not.toBeVisible()
+      // @TODO replace once nested object dialog is set as true
+      //await expect(page.getByTestId('nested-object-dialog')).not.toBeVisible()
+      await expect(page.getByTestId('edit-portal-dialog')).not.toBeVisible()
 
       await page.getByTestId('add-single-object-button').click()
 
-      await expect(page.getByTestId('nested-object-dialog')).toBeVisible()
+      // @TODO replace once nested object dialog is set as true
+      //await expect(page.getByTestId('nested-object-dialog')).toBeVisible()
+      await expect(page.getByTestId('edit-portal-dialog')).toBeVisible()
       await page
         .getByTestId(/field-house\[.*\]\.name/)
         .getByTestId('string-input')
@@ -88,7 +98,9 @@ test.describe('Validation test', () => {
 
       await page.getByRole('button', {name: 'Close dialog'}).click()
 
-      await expect(page.getByTestId('nested-object-dialog')).not.toBeVisible()
+      // @TODO replace once nested object dialog is set as true
+      //await expect(page.getByTestId('nested-object-dialog')).not.toBeVisible()
+      await expect(page.getByTestId('edit-portal-dialog')).not.toBeVisible()
 
       await page.getByRole('button', {name: 'Validation'}).click()
 
@@ -130,7 +142,9 @@ test.describe('Validation test', () => {
 
       await page.getByTestId('add-single-object-button').click()
 
-      await expect(page.getByTestId('nested-object-dialog')).toBeVisible()
+      // @TODO replace once nested object dialog is set as true
+      //await expect(page.getByTestId('nested-object-dialog')).toBeVisible()
+      await expect(page.getByTestId('edit-portal-dialog')).toBeVisible()
       await page
         .getByTestId(/field-house\[.*\]\.name/)
         .getByTestId('string-input')
@@ -138,7 +152,9 @@ test.describe('Validation test', () => {
 
       await page.getByRole('button', {name: 'Close dialog'}).click()
 
-      await expect(page.getByTestId('nested-object-dialog')).not.toBeVisible()
+      // @TODO replace once nested object dialog is set as true
+      //await expect(page.getByTestId('nested-object-dialog')).not.toBeVisible()
+      await expect(page.getByTestId('edit-portal-dialog')).not.toBeVisible()
       await page.getByRole('button', {name: 'Validation'}).click()
 
       await expect(page.getByRole('button', {name: 'Name Required'})).toBeVisible()

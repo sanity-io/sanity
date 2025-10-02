@@ -44,11 +44,28 @@ test.describe('Portable Text Input - ImageArrayDrag', () => {
       .getByRole('button', {name: 'Insert Image slideshow (block)'})
       .click()
 
-    await expect(page.getByTestId('nested-object-dialog')).toBeVisible()
+    // @TODO replace once nested object dialog is set as true
+    //await expect(page.getByTestId('nested-object-dialog')).toBeVisible()
+
+    await expect(
+      page
+        .locator('div')
+        .filter({hasText: /^Edit Image slideshow$/})
+        .nth(1),
+    ).toBeVisible()
 
     // Close the dialog to create an empty image slideshow block
     await page.getByRole('button', {name: 'Close dialog'}).click()
-    await expect(page.getByTestId('nested-object-dialog')).not.toBeVisible()
+
+    // @TODO replace once nested object dialog is set as true
+    //await expect(page.getByTestId('nested-object-dialog')).not.toBeVisible()
+
+    await expect(
+      page
+        .locator('div')
+        .filter({hasText: /^Edit Image slideshow$/})
+        .nth(1),
+    ).not.toBeVisible()
 
     // Wait for the block object to be rendered
     await expect(page.getByTestId('pte-block-object')).toBeVisible()
