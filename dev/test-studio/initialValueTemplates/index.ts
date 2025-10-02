@@ -13,7 +13,7 @@ export const resolveInitialValueTemplates: Template[] = [
     title: 'Author unlocked',
     description: 'An unlocked author',
     schemaType: 'author',
-    value: {locked: false, name: 'Unlocked author'},
+    value: {locked: false},
   },
   {
     id: 'book-by-author',
