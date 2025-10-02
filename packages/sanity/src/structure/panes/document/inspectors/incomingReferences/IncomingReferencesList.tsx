@@ -1,18 +1,11 @@
+import {type SanityDocument} from '@sanity/types'
 import {Box, Card, Flex, Stack, Text} from '@sanity/ui'
 import {useMemo} from 'react'
 import {useObservable} from 'react-rx'
-import {filter, map, type Observable, startWith} from 'rxjs'
-import {mergeMapArray} from 'rxjs-mergemap-array'
-import {
-  type DocumentPreviewStore,
-  getPublishedId,
-  LoadingBlock,
-  type SanityDocument,
-  useDocumentPreviewStore,
-  useSchema,
-  useTranslation,
-} from 'sanity'
+import {map} from 'rxjs'
+import {LoadingBlock, useDocumentPreviewStore, useSchema, useSource, useTranslation} from 'sanity'
 
+import {getIncomingReferences} from '../../../../components/incomingReferencesInput/getIncomingReferences'
 import {structureLocaleNamespace} from '../../../../i18n'
 import {useDocumentPane} from '../../useDocumentPane'
 import {IncomingReferenceDocument} from './IncomingReferenceDocument'
@@ -36,65 +29,32 @@ const INITIAL_STATE = {
   loading: true,
 }
 
-function getIncomingReferences({
-  documentId,
-  documentPreviewStore,
-}: {
-  documentId: string
-  documentPreviewStore: DocumentPreviewStore
-}): Observable<{
-  list: {
-    type: string
-    documents: SanityDocument[]
-  }[]
-  loading: boolean
-}> {
-  const publishedId = getPublishedId(documentId)
-  return documentPreviewStore
-    .unstable_observeDocumentIdSet(`references("${publishedId}")`, {
-      insert: 'prepend',
-    })
-    .pipe(
-      map((state) => state.documentIds),
-      mergeMapArray((id: string) => {
-        return documentPreviewStore.unstable_observeDocument(id).pipe(
-          filter(Boolean),
-          map((doc) => doc),
-        )
-      }),
-      // Remove duplicates due to different versions of the same document.
-      map((documents) => {
-        const seenPublishedId: string[] = []
-        return documents.filter((doc) => {
-          const pId = getPublishedId(doc._id)
-          if (seenPublishedId.includes(pId)) return false
-
-          seenPublishedId.push(pId)
-          return true
-        })
-      }),
-      map((documents) => {
-        const types = documents.map((doc) => doc._type)
-        const uniqueTypes = [...new Set(types)].sort((a, b) => a.localeCompare(b))
-        return uniqueTypes.map((type) => ({
-          type,
-          documents: documents.filter((doc) => doc._type === type),
-        }))
-      }),
-      map((list) => ({list, loading: false})),
-      startWith(INITIAL_STATE),
-    )
-}
-
 export function IncomingReferencesList() {
   const {documentId} = useDocumentPane()
   const {t} = useTranslation(structureLocaleNamespace)
-
+  const {getClient} = useSource()
   const documentPreviewStore = useDocumentPreviewStore()
 
   const references$ = useMemo(
-    () => getIncomingReferences({documentId, documentPreviewStore}),
-    [documentId, documentPreviewStore],
+    () =>
+      getIncomingReferences({documentId, documentPreviewStore, getClient}).pipe(
+        map(({documents}) => {
+          const documentsByType = documents.reduce(
+            (acc, doc) => {
+              const type = doc._type
+              // If the type exists add the document to it.
+              if (acc[type]) acc[type].push(doc)
+              // else, create the type with the document.
+              else acc[type] = [doc]
+              return acc
+            },
+            {} as Record<string, SanityDocument[]>,
+          )
+          return Object.entries(documentsByType).map(([type, docs]) => ({type, documents: docs}))
+        }),
+        map((list) => ({list, loading: false})),
+      ),
+    [documentId, documentPreviewStore, getClient],
   )
   const references = useObservable(references$, INITIAL_STATE)
 

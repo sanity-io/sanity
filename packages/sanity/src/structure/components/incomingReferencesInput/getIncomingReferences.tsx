@@ -28,6 +28,26 @@ async function resolveRawFilterCallback(
   return resolvedFilter
 }
 
+interface InputIncomingReferencesOptions {
+  documentId: string
+  documentPreviewStore: DocumentPreviewStore
+  getClient: (options: {apiVersion: string}) => SanityClient
+  type?: string
+  filter?: IncomingReferencesOptions['filter']
+  filterParams?: IncomingReferencesOptions['filterParams']
+  document: SanityDocument
+}
+
+interface InspectorIncomingReferencesOptions {
+  documentId: string
+  documentPreviewStore: DocumentPreviewStore
+  getClient: (options: {apiVersion: string}) => SanityClient
+  type?: undefined
+  filter?: undefined
+  filterParams?: undefined
+  document?: undefined
+}
+
 export function getIncomingReferences({
   documentId,
   documentPreviewStore,
@@ -36,15 +56,7 @@ export function getIncomingReferences({
   filterParams: filterParamsRaw,
   document,
   getClient,
-}: {
-  documentId: string
-  documentPreviewStore: DocumentPreviewStore
-  type: string
-  filter?: IncomingReferencesOptions['filter']
-  filterParams?: IncomingReferencesOptions['filterParams']
-  document: SanityDocument
-  getClient: (options: {apiVersion: string}) => SanityClient
-}): Observable<{
+}: InspectorIncomingReferencesOptions | InputIncomingReferencesOptions): Observable<{
   documents: SanityDocument[]
   loading: boolean
 }> {
@@ -66,8 +78,8 @@ export function getIncomingReferences({
     switchMap(({filter: filterQuery, filterParams}) => {
       return documentPreviewStore
         .unstable_observeDocumentIdSet(
-          `references("${publishedId}") && _type == $type ${filterQuery ? `&& ${filterQuery}` : ''}`,
-          {type: type, ...filterParams},
+          `references("${publishedId}") ${type ? `&& _type == ${type}` : ''} ${filterQuery ? `&& ${filterQuery}` : ''}`,
+          filterParams,
           {insert: 'append'},
         )
         .pipe(
