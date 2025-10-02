@@ -5,6 +5,7 @@ import {test} from '../../studio-test'
 test.describe('Validation test', () => {
   test.describe('should not throw error when a validation error is present', () => {
     test('and the one array item has been deleted', async ({page, createDraftDocument}) => {
+      test.slow()
       const errors: string[] = []
 
       // eslint-disable-next-line max-nested-callbacks
@@ -25,7 +26,7 @@ test.describe('Validation test', () => {
       await page.getByTestId('field-name').getByTestId('string-input').fill('Test House')
       await page.getByTestId('add-single-object-button').click()
 
-      await expect(page.getByTestId('edit-portal-dialog')).toBeVisible()
+      await expect(page.getByTestId('nested-object-dialog')).toBeVisible()
       await page
         .getByTestId(/field-house\[.*\]\.name/)
         .getByTestId('string-input')
@@ -33,7 +34,7 @@ test.describe('Validation test', () => {
 
       await page.getByRole('button', {name: 'Close dialog'}).click()
 
-      await expect(page.getByTestId('edit-portal-dialog')).not.toBeVisible()
+      await expect(page.getByTestId('nested-object-dialog')).not.toBeVisible()
       await page.getByRole('button', {name: 'Validation'}).click()
 
       await page.getByTestId('array-item-menu-button').click()
@@ -51,6 +52,8 @@ test.describe('Validation test', () => {
       page,
       createDraftDocument,
     }) => {
+      test.slow()
+
       const errors: string[] = []
 
       // eslint-disable-next-line max-nested-callbacks
@@ -65,7 +68,7 @@ test.describe('Validation test', () => {
 
       await page.getByTestId('add-single-object-button').click()
 
-      await expect(page.getByTestId('edit-portal-dialog')).toBeVisible()
+      await expect(page.getByTestId('nested-object-dialog')).toBeVisible()
       await page
         .getByTestId(/field-house\[.*\]\.name/)
         .getByTestId('string-input')
@@ -73,11 +76,11 @@ test.describe('Validation test', () => {
 
       await page.getByRole('button', {name: 'Close dialog'}).click()
 
-      await expect(page.getByTestId('edit-portal-dialog')).not.toBeVisible()
+      await expect(page.getByTestId('nested-object-dialog')).not.toBeVisible()
 
       await page.getByTestId('add-single-object-button').click()
 
-      await expect(page.getByTestId('edit-portal-dialog')).toBeVisible()
+      await expect(page.getByTestId('nested-object-dialog')).toBeVisible()
       await page
         .getByTestId(/field-house\[.*\]\.name/)
         .getByTestId('string-input')
@@ -85,7 +88,7 @@ test.describe('Validation test', () => {
 
       await page.getByRole('button', {name: 'Close dialog'}).click()
 
-      await expect(page.getByTestId('edit-portal-dialog')).not.toBeVisible()
+      await expect(page.getByTestId('nested-object-dialog')).not.toBeVisible()
 
       await page.getByRole('button', {name: 'Validation'}).click()
 
@@ -103,6 +106,8 @@ test.describe('Validation test', () => {
       page,
       createDraftDocument,
     }) => {
+      test.slow()
+
       const errors: string[] = []
 
       // eslint-disable-next-line max-nested-callbacks
@@ -121,9 +126,12 @@ test.describe('Validation test', () => {
 
       await createDraftDocument('/content/house')
 
+      // Wait for the form to be ready before proceeding
+      await page.waitForLoadState('networkidle', {timeout: 10000})
+
       await page.getByTestId('add-single-object-button').click()
 
-      await expect(page.getByTestId('edit-portal-dialog')).toBeVisible()
+      await expect(page.getByTestId('nested-object-dialog')).toBeVisible()
       await page
         .getByTestId(/field-house\[.*\]\.name/)
         .getByTestId('string-input')
@@ -131,7 +139,7 @@ test.describe('Validation test', () => {
 
       await page.getByRole('button', {name: 'Close dialog'}).click()
 
-      await expect(page.getByTestId('edit-portal-dialog')).not.toBeVisible()
+      await expect(page.getByTestId('nested-object-dialog')).not.toBeVisible()
       await page.getByRole('button', {name: 'Validation'}).click()
 
       await expect(page.getByRole('button', {name: 'Name Required'})).toBeVisible()
