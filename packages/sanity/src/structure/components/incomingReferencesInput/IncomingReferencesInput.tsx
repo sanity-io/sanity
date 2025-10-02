@@ -7,15 +7,24 @@ import {type IncomingReferencesOptions} from './types'
  * @beta
  */
 export function IncomingReferencesInput(props: StringInputProps & IncomingReferencesOptions) {
-  const {onLinkDocument, actions, filterQuery, id: fieldName, creationAllowed = true, types} = props
+  const {
+    onLinkDocument,
+    actions,
+    filter,
+    filterParams,
+    id: fieldName,
+    creationAllowed = true,
+    types,
+  } = props
 
   return (
     <IncomingReferencesList
+      fieldName={fieldName}
       types={types}
       onLinkDocument={onLinkDocument}
       actions={actions}
-      filterQuery={filterQuery}
-      fieldName={fieldName}
+      filter={filter}
+      filterParams={filterParams}
       creationAllowed={creationAllowed}
     />
   )

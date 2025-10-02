@@ -2,12 +2,11 @@ import {Box, Menu} from '@sanity/ui'
 import {type Dispatch, type SetStateAction, useCallback, useMemo, useState} from 'react'
 import {
   ContextMenuButton,
-  DEFAULT_STUDIO_CLIENT_OPTIONS,
   type DocumentActionDescription,
   GetHookCollectionState,
   LegacyLayerProvider,
   type SanityDocument,
-  useClient,
+  useSource,
 } from 'sanity'
 
 import {MenuButton} from '../../../ui-components/menuButton/MenuButton'
@@ -79,7 +78,7 @@ export const IncomingReferenceDocumentActions = (props: {
   setIsExecutingAction: Dispatch<SetStateAction<boolean>>
 }) => {
   const {document, actions, setIsExecutingAction, isExecutingAction} = props
-  const client = useClient(DEFAULT_STUDIO_CLIENT_OPTIONS)
+  const {getClient} = useSource()
 
   const renderActions = useCallback<
     (props: {states: DocumentActionDescription[]}) => React.ReactNode
@@ -99,7 +98,7 @@ export const IncomingReferenceDocumentActions = (props: {
   return (
     <GetHookCollectionState<LinkedDocumentActionsContext, LinkedDocumentAction>
       hooks={actions}
-      args={{linkedDocument: document, client}}
+      args={{linkedDocument: document, getClient}}
     >
       {renderActions}
     </GetHookCollectionState>
