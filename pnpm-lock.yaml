@@ -657,7 +657,7 @@ importers:
         version: 3.6.0
       framer-motion:
         specifier: ^12.23.12
-        version: 12.23.18(@emotion/is-prop-valid@1.4.0)(react-dom@19.1.1(react@19.1.1))(react@19.1.1)
+        version: 12.23.22(@emotion/is-prop-valid@1.4.0)(react-dom@19.1.1(react@19.1.1))(react@19.1.1)
       globby:
         specifier: ^11.1.0
         version: 11.1.0
