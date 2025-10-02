@@ -41,13 +41,11 @@ export function resolveConfig(config: Config): Observable<Workspace[]> {
 }
 
 /** @internal */
-export type CreateWorkspaceFromConfigOptions =
-  | SingleWorkspace
-  | (SingleWorkspace & {
-      currentUser: CurrentUser
-      getClient: (options: {apiVersion: string}) => SanityClient
-      schema?: SchemaPluginOptions
-    })
+export type CreateWorkspaceFromConfigOptions = (SingleWorkspace | SingleWorkspace) & {
+  currentUser: CurrentUser
+  getClient: (options: {apiVersion: string}) => SanityClient
+  schema?: SchemaPluginOptions
+}
 
 /**
  * PRIMARILY FOR TESTING PURPOSES.
