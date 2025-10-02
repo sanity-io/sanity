@@ -1,10 +1,14 @@
 import {type CliApiClient} from '@sanity/cli'
+import {type ClientConfig} from '@sanity/client'
 
-export function createSchemaApiClient(apiClient: CliApiClient) {
+export function createSchemaApiClient(
+  apiClient: CliApiClient,
+  clientOptions?: Partial<ClientConfig>,
+) {
   const client = apiClient({
-    requireUser: true,
+    requireUser: false,
     requireProject: true,
-  }).withConfig({apiVersion: 'v2025-03-01', useCdn: false})
+  }).withConfig(clientOptions)
 
   const projectId = client.config().projectId
   const dataset = client.config().dataset
