@@ -2,10 +2,8 @@ import {Box, Card, Flex, Stack, Text} from '@sanity/ui'
 import {useMemo} from 'react'
 import {useObservable} from 'react-rx'
 import {
-  CrossDatasetReferencePreview,
   DEFAULT_STUDIO_CLIENT_OPTIONS,
   LoadingBlock,
-  PreviewCard,
   useClient,
   useDocumentPreviewStore,
   useSchema,
@@ -15,6 +13,7 @@ import {
 import {structureLocaleNamespace} from '../../../i18n'
 import {INITIAL_STATE} from '../getIncomingReferences'
 import {type CrossDatasetIncomingReference} from '../types'
+import {CrossDatasetIncomingReferenceDocumentPreview} from './CrossDatasetIncomingReferenceDocumentPreview'
 import {getCrossDatasetIncomingReferences} from './getCrossDatasetIncomingReferences'
 
 export function CrossDatasetIncomingReferenceType({
@@ -37,9 +36,8 @@ export function CrossDatasetIncomingReferenceType({
         client,
         type: type,
         documentPreviewStore,
-        crossDatasetApiConfig: {dataset: type.dataset, projectId: projectId},
       }),
-    [client, type, referenced.id, documentPreviewStore, projectId],
+    [client, type, referenced.id, documentPreviewStore],
   )
 
   const {documents, loading} = useObservable(references$, INITIAL_STATE)
@@ -64,49 +62,13 @@ export function CrossDatasetIncomingReferenceType({
       <Card radius={2} padding={1} border tone="default">
         {documents && documents.length > 0 ? (
           <Stack space={1}>
-            {documents.map((document) => {
-              const studioUrl = type.studioUrl?.({id: document.id, type: document.type})
-              return (
-                <Flex key={document.id} gap={1} align="center">
-                  <Box flex={1}>
-                    {/* In some cases when the document has been recently linked the value we get 
-                 in the listener is not the latest, but a previous value with the document not yet linked, this handles that */}
-                    <PreviewCard
-                      data-as={studioUrl ? 'a' : 'div'}
-                      flex={1}
-                      padding={1}
-                      paddingRight={3}
-                      radius={2}
-                      tone="inherit"
-                      __unstable_focusRing
-                      tabIndex={0}
-                      onFocus={() => {}}
-                      onBlur={() => {}}
-                      {...(studioUrl
-                        ? {href: studioUrl, target: '_blank', rel: 'noopener noreferrer', as: 'a'}
-                        : {})}
-                    >
-                      <CrossDatasetReferencePreview
-                        availability={document.availability}
-                        hasStudioUrl={Boolean(studioUrl)}
-                        showStudioUrlIcon={Boolean(studioUrl)}
-                        preview={document.preview}
-                        refType={{
-                          type: type.type,
-                          title: document.preview.published?.title,
-                          icon: () => null,
-                          preview: type.preview,
-                        }}
-                        projectId={projectId}
-                        dataset={type.dataset}
-                        id={document.id}
-                        showTypeLabel={false}
-                      />
-                    </PreviewCard>
-                  </Box>
-                </Flex>
-              )
-            })}
+            {documents.map((document) => (
+              <CrossDatasetIncomingReferenceDocumentPreview
+                key={document.id}
+                document={document}
+                type={type}
+              />
+            ))}
           </Stack>
         ) : (
           <>

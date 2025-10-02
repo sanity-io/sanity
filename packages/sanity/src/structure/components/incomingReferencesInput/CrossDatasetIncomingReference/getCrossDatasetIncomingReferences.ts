@@ -1,9 +1,12 @@
 import {DocumentIcon} from '@sanity/icons'
-import {map, startWith} from 'rxjs'
+import {type PreviewValue} from '@sanity/types'
+import {map, type Observable, of, startWith} from 'rxjs'
 import {mergeMapArray} from 'rxjs-mergemap-array'
 import {
+  type DocumentAvailability,
   type DocumentPreviewStore,
   getPreviewPaths,
+  isNonNullable,
   prepareForPreview,
   type SanityClient,
 } from 'sanity'
@@ -16,41 +19,106 @@ export const INITIAL_STATE = {
   loading: true,
 }
 
+interface InputIncomingReferencesOptions {
+  documentId: string
+  type: CrossDatasetIncomingReference
+  client: SanityClient
+  documentPreviewStore: DocumentPreviewStore
+}
+interface InspectorIncomingReferencesOptions {
+  documentId: string
+  client: SanityClient
+  documentPreviewStore: DocumentPreviewStore
+  type?: undefined
+}
+
+interface CompleteReferencesResponse {
+  documentId: string
+  projectId: string
+  datasetName: string
+}
+
+export interface CrossDatasetIncomingReferenceDocument {
+  id: string
+  type: string
+  availability: DocumentAvailability | null
+  preview: {
+    published: PreviewValue | undefined
+  }
+  projectId: string
+  dataset: string
+}
 export function getCrossDatasetIncomingReferences({
   documentId,
   type,
   client,
   documentPreviewStore,
-  crossDatasetApiConfig,
-}: {
-  documentId: string
-  type: CrossDatasetIncomingReference
-  client: SanityClient
-  documentPreviewStore: DocumentPreviewStore
-  crossDatasetApiConfig: {dataset: string; projectId: string} | undefined
-}) {
+}: InputIncomingReferencesOptions | InspectorIncomingReferencesOptions): Observable<{
+  documents: CrossDatasetIncomingReferenceDocument[]
+  loading: boolean
+}> {
+  // const projectId = client.config().projectId
+  // if (!projectId) {
+  //   throw new Error('No project id defined in provided client')
+  // }
   // Here we get all the references to this document from the any other dataset
   return fetchCrossDatasetReferences(documentId, {versionedClient: client}).pipe(
-    map((references) => {
-      if (!references) return []
-      // We filter the references so only the references to the current dataset are included and the documentId is not undefined
-      return references?.references.filter(
-        (reference) => reference.datasetName === type.dataset && reference.documentId,
-      ) as {documentId: string; projectId: string; datasetName: string}[]
+    map((result) => {
+      if (!result) return []
+      if (!type?.dataset) {
+        // Return all the references that contain a datasetName and a documentId.
+        return result.references.filter(
+          (ref) => ref.documentId && ref.datasetName,
+        ) as CompleteReferencesResponse[]
+      }
+      // Return all the references with document id and where the datasetName matches with the dataset provided.
+      return result.references.filter(
+        (ref) => ref.datasetName === type.dataset && ref.documentId,
+      ) as CompleteReferencesResponse[]
     }),
     // Now that we have all the references from the dataset the user defined, we need to get the document type from the documentId
     mergeMapArray((document) =>
       documentPreviewStore
-        .observeDocumentTypeFromId(document.documentId, crossDatasetApiConfig)
+        .observeDocumentTypeFromId(document.documentId, {
+          dataset: document.datasetName,
+          projectId: document.projectId,
+        })
         .pipe(map((documentType) => ({...document, documentType}))),
     ),
-    // We filter the documents so only the documents of the type the user defined are included
-    map((documents) => documents.filter((document) => document.documentType === type.type)),
-    //  Now we get the preview values for the document so we can display it in the preview
+
     mergeMapArray((document) => {
+      if (!document.documentType) return of(null)
+      if (!type) {
+        // If we don't have a type defined with the preview we can't derive how the document preview will look
+        // So let's use the document Id as the title, dataset name as subtitle and a default icon.
+        // as next step we will implement an option to configure the inspector and provide a preview and url config
+        // for each of the types.
+        return of({
+          type: document.documentType,
+          id: document.documentId,
+          preview: {
+            published: {
+              _id: document.documentId,
+              title: document.documentId,
+              subtitle: document.datasetName,
+              media: DocumentIcon,
+            } as PreviewValue,
+          },
+          availability: {available: true, reason: 'READABLE'} as const,
+          projectId: document.projectId,
+          dataset: document.datasetName,
+        })
+      }
+
+      // We filter the documents so only the documents of the type the user defined are included
+      if (document.documentType !== type.type) return of(null)
       const previewPaths = getPreviewPaths(type.preview) || []
+      //  Now we get the preview values for the document so we can display it in the preview
       return documentPreviewStore
-        .observePaths({_id: document.documentId}, previewPaths, crossDatasetApiConfig)
+        .observePaths({_id: document.documentId}, previewPaths, {
+          dataset: document.datasetName,
+          projectId: document.projectId,
+        })
         .pipe(
           map((result) => {
             const previewValue = prepareForPreview(result, {
@@ -60,15 +128,17 @@ export function getCrossDatasetIncomingReferences({
               preview: type.preview,
             })
             return {
-              type: type.type,
+              type: document.documentType as string,
               id: document.documentId,
               preview: {published: previewValue},
               availability: {available: true, reason: 'READABLE'} as const,
+              projectId: document.projectId,
+              dataset: document.datasetName,
             }
           }),
         )
     }),
-    map((documents) => ({documents, loading: false})),
+    map((documents) => ({documents: documents.filter(isNonNullable), loading: false})),
     startWith(INITIAL_STATE),
   )
 }

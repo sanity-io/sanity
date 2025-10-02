@@ -3,8 +3,21 @@ import {Box, Card, Flex, Stack, Text} from '@sanity/ui'
 import {useMemo} from 'react'
 import {useObservable} from 'react-rx'
 import {map} from 'rxjs'
-import {LoadingBlock, useDocumentPreviewStore, useSchema, useSource, useTranslation} from 'sanity'
+import {
+  DEFAULT_STUDIO_CLIENT_OPTIONS,
+  LoadingBlock,
+  useClient,
+  useDocumentPreviewStore,
+  useSchema,
+  useSource,
+  useTranslation,
+} from 'sanity'
 
+import {CrossDatasetIncomingReferenceDocumentPreview} from '../../../../components/incomingReferencesInput/CrossDatasetIncomingReference/CrossDatasetIncomingReferenceDocumentPreview'
+import {
+  type CrossDatasetIncomingReferenceDocument,
+  getCrossDatasetIncomingReferences,
+} from '../../../../components/incomingReferencesInput/CrossDatasetIncomingReference/getCrossDatasetIncomingReferences'
 import {getIncomingReferences} from '../../../../components/incomingReferencesInput/getIncomingReferences'
 import {structureLocaleNamespace} from '../../../../i18n'
 import {useDocumentPane} from '../../useDocumentPane'
@@ -24,20 +37,20 @@ const TypeTitle = ({type}: {type: string}) => {
   )
 }
 
-const INITIAL_STATE = {
-  list: [],
-  loading: true,
-}
-
 export function IncomingReferencesList() {
   const {documentId} = useDocumentPane()
   const {t} = useTranslation(structureLocaleNamespace)
   const {getClient} = useSource()
   const documentPreviewStore = useDocumentPreviewStore()
+  const client = useClient(DEFAULT_STUDIO_CLIENT_OPTIONS)
 
   const references$ = useMemo(
     () =>
-      getIncomingReferences({documentId, documentPreviewStore, getClient}).pipe(
+      getIncomingReferences({
+        documentId,
+        documentPreviewStore,
+        getClient,
+      }).pipe(
         map(({documents}) => {
           const documentsByType = documents.reduce(
             (acc, doc) => {
@@ -56,39 +69,81 @@ export function IncomingReferencesList() {
       ),
     [documentId, documentPreviewStore, getClient],
   )
-  const references = useObservable(references$, INITIAL_STATE)
+  const references = useObservable(references$, null)
 
-  if (references.loading) {
-    return <LoadingBlock showText title={'Loading documents'} />
-  }
+  const crossDatasetIncomingRefs$ = useMemo(
+    () =>
+      getCrossDatasetIncomingReferences({documentId, client, documentPreviewStore}).pipe(
+        map(({documents}) => {
+          const documentsByType = documents.reduce(
+            (acc, doc) => {
+              const type = doc.type as string
+              // If the type exists add the document to it.
+              if (acc[type]) acc[type].push(doc)
+              // else, create the type with the document.
+              else acc[type] = [doc]
+              return acc
+            },
+            {} as Record<string, CrossDatasetIncomingReferenceDocument[]>,
+          )
+          return Object.entries(documentsByType).map(([type, docs]) => ({type, documents: docs}))
+        }),
+        map((list) => ({list, loading: false})),
+      ),
+    [client, documentId, documentPreviewStore],
+  )
+
+  const crossDatasetRefs = useObservable(crossDatasetIncomingRefs$, null)
+
   return (
     <>
-      {references.list.map(({type, documents}) => {
-        return (
-          <Stack key={type} padding={2} space={1} marginBottom={2}>
-            <TypeTitle type={type} />
-            {documents && documents.length > 0 ? (
-              documents.map((document) => (
-                <IncomingReferenceDocument
-                  key={document._id}
+      {references?.loading ? (
+        <LoadingBlock showText title={'Loading documents'} />
+      ) : (
+        references?.list.map(({type, documents}) => {
+          return (
+            <Stack key={type} padding={2} space={1} marginBottom={2}>
+              <TypeTitle type={type} />
+              {documents && documents.length > 0 ? (
+                documents.map((document) => (
+                  <IncomingReferenceDocument
+                    key={document._id}
+                    document={document}
+                    referenceToId={documentId}
+                  />
+                ))
+              ) : (
+                <Box padding={0}>
+                  <Card border radius={3} padding={1} tone="default">
+                    <Box paddingY={3} paddingX={2}>
+                      <Text size={1} muted>
+                        {t('incoming-references-pane.no-references-found')}
+                      </Text>
+                    </Box>
+                  </Card>
+                </Box>
+              )}
+            </Stack>
+          )
+        })
+      )}
+      {crossDatasetRefs?.loading ? (
+        <LoadingBlock showText title={'Loading cross dataset documents'} />
+      ) : (
+        crossDatasetRefs?.list.map(({type, documents}) => {
+          return (
+            <Stack key={type} padding={2} space={1} marginBottom={2}>
+              <TypeTitle type={type} />
+              {documents.map((document) => (
+                <CrossDatasetIncomingReferenceDocumentPreview
+                  key={document.id}
                   document={document}
-                  referenceToId={documentId}
                 />
-              ))
-            ) : (
-              <Box padding={0}>
-                <Card border radius={3} padding={1} tone="default">
-                  <Box paddingY={3} paddingX={2}>
-                    <Text size={1} muted>
-                      {t('incoming-references-pane.no-references-found')}
-                    </Text>
-                  </Box>
-                </Card>
-              </Box>
-            )}
-          </Stack>
-        )
-      })}
+              ))}
+            </Stack>
+          )
+        })
+      )}
     </>
   )
 }
