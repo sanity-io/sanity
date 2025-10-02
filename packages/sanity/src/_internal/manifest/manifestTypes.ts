@@ -21,6 +21,7 @@ export interface CreateManifest {
 export interface ManifestWorkspaceFile extends Omit<CreateWorkspaceManifest, 'schema' | 'tools'> {
   schema: string // filename
   tools: string // filename
+  apiHost?: string
 }
 
 export interface CreateWorkspaceManifest {
@@ -30,6 +31,7 @@ export interface CreateWorkspaceManifest {
   basePath: string
   dataset: string
   projectId: string
+  apiHost?: string
   mediaLibrary?: MediaLibraryConfig
   schema: ManifestSchemaType[]
   tools: ManifestTool[]
