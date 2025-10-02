@@ -2,6 +2,7 @@ import {
   type ArraySchemaType,
   isArrayOfBlocksSchemaType,
   isArrayOfObjectsSchemaType,
+  isObjectSchemaType,
   type ObjectField,
   type ObjectSchemaType,
   type Path,
@@ -116,6 +117,9 @@ export function buildArrayStatePTE(props: BuildArrayStatePTEProps): {
       breadcrumbs.push(blockBreadcrumb)
     }
 
+    // Collect nested menu items for this block
+    const blockChildrenMenuItems: TreeEditingMenuItem[] = []
+
     // Process array fields within the block
     blockSchemaType.fields.forEach((blockField) => {
       if (
@@ -155,7 +159,7 @@ export function buildArrayStatePTE(props: BuildArrayStatePTEProps): {
             schemaType: blockField as ObjectSchemaType,
           })
 
-          childrenMenuItems.push({
+          blockChildrenMenuItems.push({
             children: blockFieldState?.menuItems || EMPTY_ARRAY,
             parentSchemaType: blockSchemaType,
             path: blockFieldPath,
@@ -165,6 +169,17 @@ export function buildArrayStatePTE(props: BuildArrayStatePTEProps): {
         }
       }
     })
+
+    if (isObjectSchemaType(blockSchemaType)) {
+      // Add this block as a menu item (similar to how buildArrayState adds array items)
+      childrenMenuItems.push({
+        children: blockChildrenMenuItems,
+        parentSchemaType: childField.type as ArraySchemaType,
+        path: blockPath,
+        schemaType: blockSchemaType,
+        value: blockObj,
+      })
+    }
   })
 
   // Final check: if relativePath points to a non-existent item, point to the parent array instead
