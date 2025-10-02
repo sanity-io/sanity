@@ -1,5 +1,4 @@
-import {type CliCommandContext, type CliOutputter} from '@sanity/cli'
-import {type SanityClient} from '@sanity/client'
+import {type CliApiClient, type CliCommandContext, type CliOutputter} from '@sanity/cli'
 import chalk from 'chalk'
 import partition from 'lodash/partition'
 
@@ -78,14 +77,13 @@ export async function deploySchemasAction(
 
   try {
     trace.start()
-    const {client} = createSchemaApiClient(apiClient)
     const manifestReader = createManifestReader({manifestDir, output, jsonReader})
     const manifest = await manifestReader.getManifest()
 
     const storeWorkspaceSchema = createStoreWorkspaceSchema({
       tag,
       verbose,
-      client,
+      apiClient,
       output,
       manifestReader,
     })
@@ -137,11 +135,11 @@ export async function deploySchemasAction(
 function createStoreWorkspaceSchema(args: {
   tag?: string
   verbose: boolean
-  client: SanityClient
+  apiClient: CliApiClient
   output: CliOutputter
   manifestReader: CreateManifestReader
 }): (workspace: ManifestWorkspaceFile) => Promise<void> {
-  const {tag, verbose, client, output, manifestReader} = args
+  const {tag, verbose, apiClient, output, manifestReader} = args
 
   return async (workspace) => {
     const {safeBaseId: id, idWarning} = getWorkspaceSchemaId({
@@ -149,7 +147,6 @@ function createStoreWorkspaceSchema(args: {
       tag,
     })
     if (idWarning) output.warn(idWarning)
-
     try {
       const schema = await manifestReader.getWorkspaceSchema(workspace.name)
 
@@ -164,15 +161,18 @@ function createStoreWorkspaceSchema(args: {
         schema,
       }
 
-      await client
-        .withConfig({dataset: workspace.dataset, projectId: workspace.projectId})
-        .request({
-          method: 'PUT',
-          url: `/projects/${workspace.projectId}/datasets/${workspace.dataset}/schemas`,
-          body: {
-            schemas: [storedWorkspaceSchema],
-          },
-        })
+      const {client} = createSchemaApiClient(apiClient, {
+        dataset: workspace.dataset,
+        projectId: workspace.projectId,
+        apiHost: workspace.apiHost,
+      })
+      await client.request({
+        method: 'PUT',
+        url: `/projects/${workspace.projectId}/datasets/${workspace.dataset}/schemas`,
+        body: {
+          schemas: [storedWorkspaceSchema],
+        },
+      })
 
       if (verbose) {
         output.print(

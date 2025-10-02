@@ -17,8 +17,6 @@ interface ValidateFlags {
   level?: 'error' | 'warning'
 }
 
-export type SchemaValidationFormatter = (result: ValidateSchemaWorkerResult) => string
-
 export default async function validateAction(
   args: CliCommandArguments<ValidateFlags>,
   {workDir, output}: CliCommandContext,
