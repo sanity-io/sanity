@@ -24,6 +24,23 @@ export type LinkedDocumentAction = {
   dialog?: DocumentActionDialogProps | false | null
 }
 
+/**
+ * Incoming reference action component definition.
+ * Allows users to define actions that will be shown in the IncomingReferences component as part
+ * of each reference
+ * example:
+ * ```ts
+ * export const LogReferenceAction: IncomingReferenceAction = ({linkedDocument, getClient}) => {
+ *   return {
+ *     label: 'Log reference',
+ *     icon: LogIcon,
+ *     onHandle: () => console.log(linkedDocument._id)
+ *   }
+ * }
+ * ```
+ *
+ * @beta
+ */
 export type IncomingReferenceAction = ActionComponent<
   LinkedDocumentActionsContext,
   LinkedDocumentAction

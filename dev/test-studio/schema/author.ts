@@ -1,11 +1,10 @@
-import {TrashIcon, UserIcon as icon} from '@sanity/icons'
+import {UserIcon as icon} from '@sanity/icons'
 import {type StringRule} from '@sanity/types'
-import {type IncomingReferenceAction} from 'packages/sanity/src/structure/components/incomingReferencesInput/types'
-import {useState} from 'react'
-import {defineField, defineType, getDraftId} from 'sanity'
-import {IncomingReferencesInput} from 'sanity/structure'
+import {defineField, defineType} from 'sanity'
+import {defineIncomingReferenceField} from 'sanity/structure'
 
 import {AudienceSelectInput} from '../components/AudienceSelectInput'
+import {RemoveReferenceAction} from '../components/IncomingReferencesActions'
 
 // Generic decide field implementation that works for all types
 const defineLocalDecideField = (config: any) => {
@@ -70,44 +69,6 @@ const AUTHOR_ROLES = [
   {value: 'ops', title: 'Operations'},
 ]
 
-const RemoveReferenceAction: IncomingReferenceAction = ({linkedDocument, client}) => {
-  const [dialogOpen, setDialogOpen] = useState(false)
-
-  return {
-    label: 'Remove reference',
-    icon: TrashIcon,
-    tone: 'critical',
-    dialog: dialogOpen
-      ? {
-          type: 'confirm',
-          message: 'Are you sure you want to remove the reference?',
-          onCancel: () => {
-            setDialogOpen(false)
-          },
-          onConfirm: async () => {
-            if (linkedDocument._type === 'author') {
-              await client.createOrReplace({
-                ...linkedDocument,
-                _id: getDraftId(linkedDocument._id),
-                bestFriend: undefined,
-              })
-            }
-            if (linkedDocument._type === 'book') {
-              await client.createOrReplace({
-                ...linkedDocument,
-                _id: getDraftId(linkedDocument._id),
-                author: undefined,
-              })
-            }
-          },
-        }
-      : null,
-    onHandle: () => {
-      setDialogOpen(true)
-    },
-  }
-}
-
 export default defineType({
   name: 'author',
   type: 'document',
@@ -144,67 +105,51 @@ export default defineType({
       },
       validation: (rule: StringRule) => rule.required(),
     }),
-    defineField({
+    defineIncomingReferenceField({
       name: 'incomingReferencesDesigner',
       title: 'Incoming references with the same role',
-      type: 'string',
-      components: {
-        input: (props) => (
-          <IncomingReferencesInput
-            {...props}
-            onLinkDocument={(document, reference) => {
-              return {
-                ...document,
-                bestFriend: reference,
-              }
-            }}
-            filter={(context) => {
-              return {
-                filter: `role == $role`,
-                filterParams: {role: (context.document.role as string) || ''},
-              }
-            }}
-            actions={[RemoveReferenceAction]}
-            types={[{type: 'author'}]}
-          />
-        ),
+      options: {
+        onLinkDocument: (document, reference) => {
+          return {
+            ...document,
+            bestFriend: reference,
+          }
+        },
+        filter: (context) => {
+          return {
+            filter: `role == $role`,
+            filterParams: {role: (context.document.role as string) || ''},
+          }
+        },
+        actions: [RemoveReferenceAction],
+        types: [{type: 'author'}],
       },
     }),
-    defineField({
+    defineIncomingReferenceField({
       name: 'booksCreated',
       title: 'Books created by this author',
-      type: 'string',
-      components: {
-        input: (props) => (
-          <IncomingReferencesInput
-            {...props}
-            onLinkDocument={(document, reference) => {
-              return {
-                ...document,
-                author: reference,
-              }
-            }}
-            actions={[RemoveReferenceAction]}
-            types={[
-              {type: 'book'},
-              {
-                type: 'book',
-                dataset: 'test-us',
-                // title: 'Book in test-us dataset',
-                studioUrl: ({id, type}) => {
-                  return type
-                    ? `/us/intent/edit/id=${id};type=${type}`
-                    : // "http://localhost:3333/test/intent/edit/id=04c86968-2e91-4ba0-9dbc-be947fdf807e;type=author;inspect=sanity%2Fcomments;comment=bc4de80c-f202-4141-b0f3-e2c13f3a0e09/"
-
-                      null
-                },
-                preview: {
-                  select: {title: 'title', media: 'coverImage', subtitle: 'publicationYear'},
-                },
-              },
-            ]}
-          />
-        ),
+      options: {
+        onLinkDocument: (document, reference) => {
+          return {
+            ...document,
+            author: reference,
+          }
+        },
+        actions: [RemoveReferenceAction],
+        types: [
+          {type: 'book'},
+          {
+            type: 'book',
+            dataset: 'test-us',
+            title: 'Book in test-us dataset',
+            studioUrl: ({id, type}) => {
+              return type ? `/us/intent/edit/id=${id};type=${type}` : null
+            },
+            preview: {
+              select: {title: 'title', media: 'coverImage', subtitle: 'publicationYear'},
+            },
+          },
+        ],
       },
     }),
     {
