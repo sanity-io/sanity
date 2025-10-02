@@ -22,7 +22,7 @@ import {
 } from '../utils'
 import {isArrayItemPath} from '../utils/build-tree-editing-state/utils'
 import {isPathTextInPTEField} from '../utils/isPathTextInPTEField'
-import {TreeEditingBreadcrumbs} from './breadcrumbs'
+import {NestedDialogHeader} from './NestedDialogHeader'
 
 const EMPTY_ARRAY: [] = []
 
@@ -275,14 +275,6 @@ export function TreeEditingDialog(props: TreeEditingDialogProps): React.JSX.Elem
 
   if (treeState.relativePath.length === 0) return null
 
-  const header = (
-    <TreeEditingBreadcrumbs
-      items={treeState.breadcrumbs}
-      onPathSelect={onHandlePathSelect}
-      selectedPath={treeState.relativePath}
-    />
-  )
-
   return (
     <VirtualizerScrollInstanceProvider
       scrollElement={documentScrollElement}
@@ -292,7 +284,9 @@ export function TreeEditingDialog(props: TreeEditingDialogProps): React.JSX.Elem
         data-testid="nested-object-dialog"
         onClose={onClose}
         id={'nested-object-dialog'}
-        header={header}
+        header={
+          <NestedDialogHeader treeState={treeState} onHandlePathSelect={onHandlePathSelect} />
+        }
         width={3}
         contentRef={setDocumentScrollElement}
       >
