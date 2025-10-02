@@ -61,7 +61,9 @@ export type CreateWorkspaceFromConfigOptions = (SingleWorkspace | SingleWorkspac
 export async function createWorkspaceFromConfig(
   options: CreateWorkspaceFromConfigOptions,
 ): Promise<Workspace> {
-  const client = 'getClient' in options ? options.getClient({apiVersion: '2023-11-13'}) : undefined
+  const client = options.getClient({apiVersion: '2023-11-13'}).withConfig({
+    apiHost: options.apiHost,
+  })
   const [workspace] = await firstValueFrom(
     resolveConfig({
       ...options,
