@@ -2,6 +2,7 @@ import {type SelectableTone} from '@sanity/ui'
 import {
   type ActionComponent,
   type DocumentActionDialogProps,
+  type PreviewConfig,
   type SanityClient,
   type SanityDocument,
 } from 'sanity'
@@ -11,7 +12,7 @@ export type LinkedDocumentActionsContext = {
    * The document that is linked to the reference.
    */
   linkedDocument: SanityDocument
-  client: SanityClient
+  getClient: (options: {apiVersion: string}) => SanityClient
 }
 
 export type LinkedDocumentAction = {
@@ -36,25 +37,47 @@ export interface CrossDatasetIncomingReference {
   studioUrl?: (document: {id: string; type?: string}) => string | null
 }
 
+export interface IncomingReferenceType {
+  type: string
+  dataset?: never
+  title?: string
+}
+
+export function isIncomingReferenceType(
+  type: IncomingReferenceType | CrossDatasetIncomingReference,
+): type is IncomingReferenceType {
+  return !type.dataset
+}
+
+export function isCrossDatasetIncomingReference(
+  type: IncomingReferenceType | CrossDatasetIncomingReference,
+): type is CrossDatasetIncomingReference {
+  return Boolean(type.dataset)
+}
+
+export type IncomingReferencesFilterResolver = (context: {
+  document: SanityDocument
+  getClient: (options: {apiVersion: string}) => SanityClient
+}) =>
+  | string
+  | {filter: string; filterParams?: Record<string, string>}
+  | Promise<{filter: string; filterParams?: Record<string, string>}>
+
+// TODO: Divide this into two types, one for the same dataset and other for the cross dataset references?
 export type IncomingReferencesOptions = {
   /**
    * The type of the incoming references.
    */
-  types: (
-    | {
-        type: string
-        dataset?: never
-        title?: string
-      }
-    | CrossDatasetIncomingReference
-  )[]
+  types: (IncomingReferenceType | CrossDatasetIncomingReference)[]
 
   /**
    * The filter query to apply to the incoming references in addition to the type filter.
    * For example: filter all books that are from an specific editorial brand: `editorialBrand == "Random House"`
    * The `_type` filter is applied automatically.
    */
-  filterQuery?: string
+  filter?: string | IncomingReferencesFilterResolver
+  filterParams?: Record<string, string>
+
   /**
    * Callback to link a document to a reference.
    *

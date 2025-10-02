@@ -140,9 +140,8 @@ export default defineType({
       type: 'string',
     }),
     defineField({
-      hidden: true,
       name: 'incomingReferencesDesigner',
-      title: 'Incoming references (author - designer)',
+      title: 'Incoming references with the same role',
       type: 'string',
       components: {
         input: (props) => (
@@ -154,11 +153,14 @@ export default defineType({
                 bestFriend: reference,
               }
             }}
-            filterQuery={`role == "designer"`}
+            filter={(context) => {
+              return {
+                filter: `role == $role`,
+                filterParams: {role: (context.document.role as string) || ''},
+              }
+            }}
             actions={[RemoveReferenceAction]}
             types={[{type: 'author'}]}
-            // creationAllowed={['author', 'author-developer']}
-            // creationAllowed={false}
           />
         ),
       },

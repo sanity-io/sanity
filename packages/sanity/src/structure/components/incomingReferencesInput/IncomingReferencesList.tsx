@@ -5,7 +5,7 @@ import {structureLocaleNamespace} from '../../i18n'
 import {useDocumentPane} from '../../panes/document/useDocumentPane'
 import {CrossDatasetIncomingReferenceType} from './CrossDatasetIncomingReference/CrossDatasetIncomingReferenceType'
 import {IncomingReferencesType} from './IncomingReferencesType'
-import {type IncomingReferencesOptions} from './types'
+import {type IncomingReferencesOptions, isCrossDatasetIncomingReference} from './types'
 
 interface IncomingReferencesListProps extends IncomingReferencesOptions {
   fieldName: string
@@ -14,13 +14,14 @@ export function IncomingReferencesList({
   types,
   onLinkDocument,
   actions,
-  filterQuery,
+  filter,
+  filterParams,
   fieldName,
   creationAllowed,
 }: IncomingReferencesListProps) {
   const {documentId, documentType} = useDocumentPane()
   const {t} = useTranslation(structureLocaleNamespace)
-  
+
   if (!types || types?.length === 0) {
     return (
       <Card border radius={2} padding={3} tone="critical">
@@ -36,7 +37,7 @@ export function IncomingReferencesList({
   return (
     <Stack space={3}>
       {types.map((type) => {
-        if (type.dataset) {
+        if (isCrossDatasetIncomingReference(type)) {
           return (
             <CrossDatasetIncomingReferenceType
               key={`${type.type}-${type.dataset || ''}`}
@@ -56,7 +57,8 @@ export function IncomingReferencesList({
             shouldRenderTitle={types.length > 1}
             fieldName={fieldName}
             creationAllowed={creationAllowed}
-            filterQuery={filterQuery}
+            filter={filter}
+            filterParams={filterParams}
           />
         )
       })}

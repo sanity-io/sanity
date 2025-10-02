@@ -9,9 +9,12 @@ import {
   isPublishedId,
   LoadingBlock,
   SanityDefaultPreview,
+  type SanityDocument,
   useClient,
   useDocumentPreviewStore,
+  useFormValue,
   useSchema,
+  useSource,
   useTranslation,
 } from 'sanity'
 
@@ -22,7 +25,7 @@ import {AddIncomingReference} from './AddIncomingReference'
 import {CreateNewIncomingReference} from './CreateNewIncomingReference'
 import {getIncomingReferences, INITIAL_STATE} from './getIncomingReferences'
 import {IncomingReferenceDocument} from './IncomingReferenceDocument'
-import {type IncomingReferencesOptions} from './types'
+import {type IncomingReferencesOptions, type IncomingReferenceType} from './types'
 
 export function IncomingReferencesType({
   type,
@@ -32,27 +35,35 @@ export function IncomingReferencesType({
   shouldRenderTitle,
   fieldName,
   creationAllowed,
-  filterQuery,
+  filter,
+  filterParams,
 }: {
   shouldRenderTitle: boolean
   referenced: {id: string; type: string}
   fieldName: string
-  type: IncomingReferencesOptions['types'][number]
+  type: IncomingReferenceType
   onLinkDocument: IncomingReferencesOptions['onLinkDocument']
   actions: IncomingReferencesOptions['actions']
   creationAllowed: IncomingReferencesOptions['creationAllowed']
-  filterQuery: IncomingReferencesOptions['filterQuery']
+  filter: IncomingReferencesOptions['filter']
+  filterParams: IncomingReferencesOptions['filterParams']
 }) {
   const documentPreviewStore = useDocumentPreviewStore()
+  const formDocument = useFormValue([]) as SanityDocument
+  const {getClient} = useSource()
+
   const references$ = useMemo(
     () =>
       getIncomingReferences({
         documentId: referenced.id,
         documentPreviewStore,
         type: type.type,
-        filterQuery,
+        filter,
+        filterParams,
+        document: formDocument,
+        getClient,
       }),
-    [documentPreviewStore, type, filterQuery, referenced.id],
+    [documentPreviewStore, type, filter, filterParams, referenced.id, formDocument, getClient],
   )
 
   const {documents, loading} = useObservable(references$, INITIAL_STATE)
@@ -183,7 +194,7 @@ export function IncomingReferencesType({
         />
       ) : (
         <CreateNewIncomingReference
-          type={type}
+          type={type.type}
           referenceToId={referenced.id}
           referenceToType={referenced.type}
           creationAllowed={creationAllowed}
