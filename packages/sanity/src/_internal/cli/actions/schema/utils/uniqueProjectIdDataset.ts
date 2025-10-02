@@ -8,6 +8,7 @@ export function uniqueProjectIdDataset(workspaces: ManifestWorkspaceFile[]) {
       key: `${w.projectId}-${w.dataset}`,
       projectId: w.projectId,
       dataset: w.dataset,
+      apiHost: w.apiHost,
     })),
     'key',
   )

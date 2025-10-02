@@ -1,4 +1,4 @@
-import {type CliCommandContext} from '@sanity/cli'
+import {type CliCommandContext, getCliClient} from '@sanity/cli'
 import chalk from 'chalk'
 import uniq from 'lodash/uniq'
 
@@ -78,7 +78,6 @@ export async function deleteSchemaAction(
     return 'failure'
   }
 
-  const {client, projectId} = createSchemaApiClient(apiClient)
   const manifest = await createManifestReader({manifestDir, output, jsonReader}).getManifest()
 
   const workspaces = manifest.workspaces.filter(
@@ -87,8 +86,17 @@ export async function deleteSchemaAction(
 
   const projectDatasets = uniqueProjectIdDataset(workspaces)
 
+  const envToken = process.env.SANITY_AUTH_TOKEN
+
   const results = await Promise.allSettled(
-    projectDatasets.flatMap(({projectId: targetProjectId, dataset: targetDataset}) => {
+    projectDatasets.flatMap(({projectId: targetProjectId, dataset: targetDataset, apiHost}) => {
+      const {client} = createSchemaApiClient(apiClient, {
+        projectId: targetProjectId,
+        dataset: targetDataset,
+        apiHost,
+        token: envToken || getCliClient.__internal__getToken(apiHost),
+      })
+
       return ids.map(async ({schemaId}): Promise<DeleteResult> => {
         const targetClient = client.withConfig({
           projectId: targetProjectId,
