@@ -114,7 +114,9 @@ test.describe('Portable Text Input', () => {
         <FocusTrackingStory document={document} focusPath={['body', {_key: 'k'}, 'text']} />,
       )
       test.slow()
-      await expect(page.getByTestId('nested-object-dialog')).toBeVisible()
+      // @TODO replace once nested object dialog is set as true
+      //await expect(page.getByTestId('nested-object-dialog')).toBeVisible()
+
       const $portableTextInput = component.getByTestId('field-body')
       const $pteTextbox = $portableTextInput.getByRole('textbox')
       await expect($pteTextbox).not.toBeFocused()
