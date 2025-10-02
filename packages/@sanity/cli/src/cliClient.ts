@@ -11,6 +11,7 @@ export interface CliClientOptions {
   useCdn?: boolean
   token?: string
   apiVersion?: string
+  apiHost?: string
 }
 
 interface GetCliClient {
@@ -20,7 +21,7 @@ interface GetCliClient {
    * @deprecated This is only for INTERNAL use, and should not be relied upon outside of official Sanity modules
    * @returns A token to use when constructing a client without a `token` explicitly defined, or undefined
    */
-  __internal__getToken: () => string | undefined
+  __internal__getToken: (apiHost?: string) => string | undefined
 }
 
 function getCliClientImpl(options: CliClientOptions = {}): SanityClient {
@@ -34,11 +35,12 @@ function getCliClientImpl(options: CliClientOptions = {}): SanityClient {
     apiVersion = '2022-06-06',
     projectId,
     dataset,
-    token = getCliClient.__internal__getToken(),
+    apiHost,
+    token = getCliClient.__internal__getToken(options.apiHost),
   } = options
 
   if (projectId && dataset) {
-    return createClient({projectId, dataset, apiVersion, useCdn, token})
+    return createClient({projectId, dataset, apiVersion, useCdn, token, apiHost})
   }
 
   const rootDir = resolveRootDir(cwd)
@@ -56,6 +58,7 @@ function getCliClientImpl(options: CliClientOptions = {}): SanityClient {
     projectId: apiConfig.projectId,
     dataset: apiConfig.dataset,
     apiVersion,
+    apiHost,
     useCdn,
     token,
   })
