@@ -2,6 +2,7 @@ import {
   type ArraySchemaType,
   isArrayOfBlocksSchemaType,
   isArrayOfObjectsSchemaType,
+  isObjectSchemaType,
   type ObjectField,
   type ObjectSchemaType,
   type Path,
@@ -52,6 +53,10 @@ export function buildArrayStatePTE(props: BuildArrayStatePTEProps): {
   relativePath: Path | null
   breadcrumbs: TreeEditingBreadcrumb[]
   childrenMenuItems: TreeEditingMenuItem[]
+  /** Map of path strings to their sibling arrays (including non-editable items, for example references)
+   * Starts at 1
+   */
+  siblings: Map<string, {count: number; index: number}>
 } {
   const {
     childField,
@@ -66,6 +71,7 @@ export function buildArrayStatePTE(props: BuildArrayStatePTEProps): {
   } = props
 
   let relativePath: Path | null = null
+  const siblings = new Map<string, {count: number; index: number}>()
 
   // Ensure we have an array to work with, even if empty
   const portableTextValue = Array.isArray(childValue) ? childValue : []
@@ -77,6 +83,7 @@ export function buildArrayStatePTE(props: BuildArrayStatePTEProps): {
       relativePath: null, // This will mean that we don't want the path to update in the Array State
       breadcrumbs,
       childrenMenuItems,
+      siblings,
     }
   }
 
@@ -100,6 +107,18 @@ export function buildArrayStatePTE(props: BuildArrayStatePTEProps): {
     // Set relativePath if openPath points directly to this block
     if (isArrayItemSelected(blockPath, openPath)) {
       relativePath = getRelativePath(blockPath)
+
+      /*const nonBlockArray = portableTextValue.filter((b) => {
+        const bObj = b as Record<string, unknown>
+        // Only count custom blocks (not regular text blocks)
+        return bObj && bObj._type && bObj._type !== 'block'
+      })
+
+      // Store the index for the parent PTE array
+      siblings.set(toString(childPath), {
+        count: nonBlockArray.length,
+        index: nonBlockArray.findIndex((b) => b._key === blockObj._key) + 1,
+      })*/
     }
 
     // Add breadcrumb for the block if openPath starts with this block path
@@ -116,6 +135,9 @@ export function buildArrayStatePTE(props: BuildArrayStatePTEProps): {
       }
       breadcrumbs.push(blockBreadcrumb)
     }
+
+    // Collect nested menu items for this block
+    const blockChildrenMenuItems: TreeEditingMenuItem[] = []
 
     // Process array fields within the block
     blockSchemaType.fields.forEach((blockField) => {
@@ -156,7 +178,12 @@ export function buildArrayStatePTE(props: BuildArrayStatePTEProps): {
             schemaType: blockField as ObjectSchemaType,
           })
 
-          childrenMenuItems.push({
+          // Merge sibling counts from nested state
+          blockFieldState.siblings.forEach((info, pathString) => {
+            siblings.set(pathString, info)
+          })
+
+          blockChildrenMenuItems.push({
             children: blockFieldState?.menuItems || EMPTY_ARRAY,
             parentSchemaType: blockSchemaType,
             path: blockFieldPath,
@@ -166,6 +193,17 @@ export function buildArrayStatePTE(props: BuildArrayStatePTEProps): {
         }
       }
     })
+
+    if (isObjectSchemaType(blockSchemaType)) {
+      // Add this block as a menu item (similar to how buildArrayState adds array items)
+      childrenMenuItems.push({
+        children: blockChildrenMenuItems,
+        parentSchemaType: childField.type as ArraySchemaType,
+        path: blockPath,
+        schemaType: blockSchemaType,
+        value: blockObj,
+      })
+    }
   })
 
   // Final check: if relativePath points to a non-existent item, point to the parent array instead
@@ -178,5 +216,6 @@ export function buildArrayStatePTE(props: BuildArrayStatePTEProps): {
     relativePath,
     breadcrumbs,
     childrenMenuItems,
+    siblings,
   }
 }
