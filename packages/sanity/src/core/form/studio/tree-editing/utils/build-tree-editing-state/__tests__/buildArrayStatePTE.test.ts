@@ -15,6 +15,35 @@ import {type TreeEditingState} from '../buildTreeEditingState'
 const schema = Schema.compile({
   name: 'default',
   types: [
+    // Required built-in types for image support
+    {
+      name: 'sanity.imageAsset',
+      type: 'object',
+      fields: [
+        {name: 'url', type: 'string'},
+        {name: '_id', type: 'string'},
+      ],
+    },
+    {
+      name: 'sanity.imageHotspot',
+      type: 'object',
+      fields: [
+        {name: 'x', type: 'number'},
+        {name: 'y', type: 'number'},
+        {name: 'height', type: 'number'},
+        {name: 'width', type: 'number'},
+      ],
+    },
+    {
+      name: 'sanity.imageCrop',
+      type: 'object',
+      fields: [
+        {name: 'top', type: 'number'},
+        {name: 'bottom', type: 'number'},
+        {name: 'left', type: 'number'},
+        {name: 'right', type: 'number'},
+      ],
+    },
     {
       name: 'testDocument',
       title: 'Test Document',
@@ -75,6 +104,11 @@ const schema = Schema.compile({
                       ],
                     },
                   ],
+                },
+                {
+                  name: 'image',
+                  title: 'Image',
+                  type: 'image',
                 },
               ],
             },
@@ -332,5 +366,73 @@ describe('buildArrayStatePTE', () => {
 
     // Should return null for text content paths
     expect(result.relativePath).toBeNull()
+  })
+
+  test('when openPath points to a PTE block item, it should set relativePath to that block', () => {
+    const openPath: Path = ['body', {_key: 'custom1'}]
+    const props = createTestProps({openPath})
+
+    const result = buildArrayStatePTE(props)
+
+    // Should return the path to the block item itself
+    expect(result.relativePath).toEqual(['body', {_key: 'custom1'}])
+  })
+
+  test('when openPath points to nested array items, it should set relativePath correctly', () => {
+    const openPath: Path = ['body', {_key: 'custom1'}, 'items', {_key: 'item1'}]
+    const props = createTestProps({openPath})
+
+    const result = buildArrayStatePTE(props)
+
+    // Should return the path that was actually requested
+    expect(result.relativePath).toEqual(['body', {_key: 'custom1'}, 'items', {_key: 'item1'}])
+  })
+
+  test('when openPath points to an image block in PTE, it should set relativePath to that block', () => {
+    const openPath: Path = ['body', {_key: 'custom1'}]
+    const props = createTestProps({
+      openPath,
+      childValue: [
+        {
+          _type: 'customBlock',
+          _key: 'custom1',
+          title: 'Test Block',
+          image: {
+            _type: 'image',
+            asset: {_ref: 'image-123', _type: 'reference'},
+          },
+        },
+      ],
+    })
+
+    const result = buildArrayStatePTE(props)
+
+    // Should return the path to the image block itself
+    expect(result.relativePath).toEqual(['body', {_key: 'custom1'}])
+  })
+
+  test('when openPath points to an image block, breadcrumbs should be created correctly', () => {
+    const openPath: Path = ['body', {_key: 'custom1'}]
+    const props = createTestProps({
+      openPath,
+      childValue: [
+        {
+          _type: 'customBlock',
+          _key: 'custom1',
+          title: 'Test Block',
+          image: {
+            _type: 'image',
+            asset: {_ref: 'image-123', _type: 'reference'},
+          },
+        },
+      ],
+    })
+
+    const result = buildArrayStatePTE(props)
+
+    // Should have breadcrumbs for the block
+    expect(result.breadcrumbs).toHaveLength(1)
+    expect(result.breadcrumbs[0].path).toEqual(['body', {_key: 'custom1'}])
+    expect(result.breadcrumbs[0].schemaType.name).toBe('customBlock')
   })
 })
