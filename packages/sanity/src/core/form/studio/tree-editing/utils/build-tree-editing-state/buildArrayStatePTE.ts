@@ -17,7 +17,7 @@ import {type TreeEditingBreadcrumb, type TreeEditingMenuItem} from '../../types'
 import {isPathTextInPTEField} from '../isPathTextInPTEField'
 import {buildBreadcrumbsState} from './buildBreadcrumbsState'
 import {type RecursiveProps, type TreeEditingState} from './buildTreeEditingState'
-import {getRelativePath, shouldBeInBreadcrumb} from './utils'
+import {getRelativePath, isArrayItemSelected, shouldBeInBreadcrumb} from './utils'
 
 interface BuildArrayStatePTEProps {
   /** The child field that is a portable text editor */
@@ -82,7 +82,6 @@ export function buildArrayStatePTE(props: BuildArrayStatePTEProps): {
     if (!blockObj._key || !blockObj._type) return
 
     // Skip regular text blocks - only process custom object blocks
-    // This is usually text - this is handled further down or by the PTE itself
     if (blockObj._type === 'block') return
 
     const blockPath = [...childPath, {_key: blockObj._key}] as Path
@@ -91,24 +90,29 @@ export function buildArrayStatePTE(props: BuildArrayStatePTEProps): {
       blockObj,
     ) as ObjectSchemaType
 
-    // Handle breadcrumbs for blocks that already exist
-    if (blockSchemaType && blockSchemaType.fields) {
-      // Check if openPath points to this block itself or to an array field within it
-      const openPathPointsToThisBlock = toString(openPath).startsWith(toString(blockPath))
+    if (!blockSchemaType?.fields) return
 
-      // Add breadcrumb for the PortableText block object if openPath points to it
-      if (openPathPointsToThisBlock && shouldBeInBreadcrumb(blockPath, openPath)) {
-        const blockBreadcrumb: TreeEditingBreadcrumb = {
-          children: EMPTY_ARRAY,
-          parentSchemaType: childField.type as ArraySchemaType,
-          path: blockPath,
-          schemaType: blockSchemaType,
-          value: blockObj,
-        }
-        breadcrumbs.push(blockBreadcrumb)
-      }
+    // Check if openPath points to this block (for direct block editing like images)
+    // Set relativePath if openPath points directly to this block
+    if (isArrayItemSelected(blockPath, openPath)) {
+      relativePath = getRelativePath(blockPath)
     }
 
+    // Add breadcrumb for the block if openPath starts with this block path
+    // This handles both direct block selection and nested paths within the block
+    const openPathStartsWithBlock = toString(openPath).startsWith(toString(blockPath))
+    if (openPathStartsWithBlock && shouldBeInBreadcrumb(blockPath, openPath)) {
+      const blockBreadcrumb: TreeEditingBreadcrumb = {
+        children: EMPTY_ARRAY,
+        parentSchemaType: childField.type as ArraySchemaType,
+        path: blockPath,
+        schemaType: blockSchemaType,
+        value: blockObj,
+      }
+      breadcrumbs.push(blockBreadcrumb)
+    }
+
+    // Process array fields within the block
     blockSchemaType.fields.forEach((blockField) => {
       if (
         isArrayOfObjectsSchemaType(blockField.type) &&
@@ -117,26 +121,18 @@ export function buildArrayStatePTE(props: BuildArrayStatePTEProps): {
         const blockFieldPath = [...blockPath, blockField.name] as Path
         const blockFieldValue = getValueAtPath(documentValue, blockFieldPath)
 
-        // Process array fields even if they're empty (for new blocks)
-        // But ensure the value is at least an empty array for processing
-        const arrayFieldValue = Array.isArray(blockFieldValue) ? blockFieldValue : []
-
-        // Check if the openPath points to this array within the block - this is to check in the first nested level of the PTE
-        // To allow to open that block further
-        const openPathPointsToBlock = toString(openPath).startsWith(toString(blockPath))
-        // OR if it points to the block itself (in which case we redirect to the first array field)
+        // If it points to the block itself (in which case we redirect to the first array field)
         // - this is the case for more nested levels of the PTE
         const openPathPointsToArrayField = toString(openPath).startsWith(toString(blockFieldPath))
 
-        // Process this array field if openPath points to it or to the parent block
-        if (openPathPointsToBlock || openPathPointsToArrayField) {
-          if (openPathPointsToArrayField) {
-            // If openPath points to the array field or deeper within it, use openPath as relativePath
-            relativePath = getRelativePath(openPath)
-          } else if (openPathPointsToBlock) {
-            // If openPath points to the block itself, redirect to the array field
-            relativePath = getRelativePath(blockFieldPath)
-          }
+        // This prevents overriding the block-level relativePath set above which is meant to be more general
+        if (openPathPointsToArrayField) {
+          // Use openPath as relativePath for more precise targeting
+          // meaning that we in fact want to go deeper into the nested structure
+          relativePath = getRelativePath(openPath)
+          // Process array fields even if they're empty (for new blocks)
+          // But ensure the value is at least an empty array for processing
+          const arrayFieldValue = Array.isArray(blockFieldValue) ? blockFieldValue : []
 
           if (shouldBeInBreadcrumb(blockFieldPath, openPath)) {
             const breadcrumbsResult = buildBreadcrumbsState({
@@ -145,19 +141,16 @@ export function buildArrayStatePTE(props: BuildArrayStatePTEProps): {
               itemPath: blockFieldPath,
               parentPath: blockPath,
             })
-
             breadcrumbs.push(breadcrumbsResult)
           }
 
-          // As always this is needed to build the structure for even more potentially nested fields
+          // Build nested structure
           const blockFieldState = recursive({
             documentValue,
             path: blockFieldPath,
             schemaType: blockField as ObjectSchemaType,
           })
 
-          // This is currently not needed but in the future we might want to do something with sibling items
-          // And since the structure is already built, I am simply keeping it here for future use
           childrenMenuItems.push({
             children: blockFieldState?.menuItems || EMPTY_ARRAY,
             parentSchemaType: blockSchemaType,

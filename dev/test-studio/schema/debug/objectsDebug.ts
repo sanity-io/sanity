@@ -99,6 +99,11 @@ const animal = defineField({
                             },
                           ],
                         },
+                        {
+                          type: 'image',
+                          name: 'image_two',
+                          title: 'Image',
+                        },
                       ],
                     },
                   ],
@@ -106,6 +111,11 @@ const animal = defineField({
               ],
             },
           ],
+        },
+        {
+          type: 'image',
+          name: 'image',
+          title: 'Image',
         },
       ],
     },
