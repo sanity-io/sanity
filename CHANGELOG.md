@@ -3,6 +3,19 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [4.10.3](https://github.com/sanity-io/sanity/compare/v4.10.2...v4.10.3) (2025-10-03)
+
+
+### Bug Fixes
+
+* add --prod when in main ([#10787](https://github.com/sanity-io/sanity/issues/10787)) ([39ad712](https://github.com/sanity-io/sanity/commit/39ad712d47bcf824bd50cb64cfcc1dd134e7cbfb))
+* **deps:** update dependency @portabletext/block-tools to ^3.5.9 ([#10794](https://github.com/sanity-io/sanity/issues/10794)) ([a16f5b9](https://github.com/sanity-io/sanity/commit/a16f5b98dc9ab1c193dc77ed3d0cb8dc8f9aaa84))
+* **deps:** update dependency @portabletext/editor to ^2.13.4 ([#10795](https://github.com/sanity-io/sanity/issues/10795)) ([b89f08a](https://github.com/sanity-io/sanity/commit/b89f08a367e51ac020f7a2f3fb854cd1ced99fd3))
+* **deps:** update dependency @sanity/client to ^7.11.2 ([#10796](https://github.com/sanity-io/sanity/issues/10796)) ([a06dd5b](https://github.com/sanity-io/sanity/commit/a06dd5bbeac4a9e4a106cd6839358a7059052989))
+* fix issue related to the efps stuff ([#10793](https://github.com/sanity-io/sanity/issues/10793)) ([4231352](https://github.com/sanity-io/sanity/commit/4231352b0fe9e65a3f6c6d679cddb7a5d184d087))
+
+
+
 ## [4.10.2](https://github.com/sanity-io/sanity/compare/v4.10.1...v4.10.2) (2025-09-30)
 
 
