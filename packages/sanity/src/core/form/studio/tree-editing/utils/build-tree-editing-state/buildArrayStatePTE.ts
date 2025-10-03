@@ -2,7 +2,6 @@ import {
   type ArraySchemaType,
   isArrayOfBlocksSchemaType,
   isArrayOfObjectsSchemaType,
-  isKeySegment,
   type ObjectField,
   type ObjectSchemaType,
   type Path,
@@ -17,7 +16,12 @@ import {type TreeEditingBreadcrumb, type TreeEditingMenuItem} from '../../types'
 import {isPathTextInPTEField} from '../isPathTextInPTEField'
 import {buildBreadcrumbsState} from './buildBreadcrumbsState'
 import {type RecursiveProps, type TreeEditingState} from './buildTreeEditingState'
-import {getRelativePath, isArrayItemSelected, shouldBeInBreadcrumb} from './utils'
+import {
+  getRelativePath,
+  isArrayItemSelected,
+  shouldBeInBreadcrumb,
+  validateRelativePathExists,
+} from './utils'
 
 interface BuildArrayStatePTEProps {
   /** The child field that is a portable text editor */
@@ -166,29 +170,8 @@ export function buildArrayStatePTE(props: BuildArrayStatePTEProps): {
   // Final check: if relativePath points to a non-existent item, point to the parent array instead
   // This handles new item creation (in portable text arrays) and is especially important in deeply nested level
   // This prevents the dialog from attempting to navigate when the new key is not ready yet
-  const currentRelativePath = relativePath as Path | null
-  if (currentRelativePath !== null && currentRelativePath.length > 0) {
-    const lastSegment = currentRelativePath[currentRelativePath.length - 1]
-
-    if (isKeySegment(lastSegment)) {
-      // This relativePath points to a specific item. Check if this item exists.
-      const parentPath = currentRelativePath.slice(0, -1)
-      const parentValue = getValueAtPath(documentValue, parentPath)
-
-      if (Array.isArray(parentValue)) {
-        const itemExists = parentValue.some((item) => {
-          return (
-            item && typeof item === 'object' && '_key' in item && item._key === lastSegment._key
-          )
-        })
-
-        // If the item doesn't exist, point to the parent array instead
-        if (!itemExists) {
-          relativePath = parentPath
-        }
-      }
-    }
-  }
+  // This is for deeply nested PTEs
+  relativePath = validateRelativePathExists(relativePath, documentValue)
 
   return {
     relativePath,

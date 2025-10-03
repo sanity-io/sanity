@@ -22,7 +22,12 @@ import {isPathTextInPTEField} from '../isPathTextInPTEField'
 import {buildArrayStatePTE} from './buildArrayStatePTE'
 import {buildBreadcrumbsState} from './buildBreadcrumbsState'
 import {type RecursiveProps, type TreeEditingState} from './buildTreeEditingState'
-import {getRelativePath, isArrayItemSelected, shouldBeInBreadcrumb} from './utils'
+import {
+  getRelativePath,
+  isArrayItemSelected,
+  shouldBeInBreadcrumb,
+  validateRelativePathExists,
+} from './utils'
 
 interface BuildArrayState {
   /** The schema type of the array field  */
@@ -234,6 +239,11 @@ export function buildArrayState(props: BuildArrayState): TreeEditingState {
       })
     }
   })
+
+  // Final check: if relativePath points to a non-existent item, point to the parent array instead
+  // This handles new item creation and is especially important in deeply nested structures
+  // This prevents the dialog from attempting to navigate when the new key is not ready yet
+  relativePath = validateRelativePathExists(relativePath, documentValue) as Path
 
   return {
     breadcrumbs,
