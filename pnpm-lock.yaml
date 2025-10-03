@@ -568,7 +568,7 @@ importers:
   dev/test-studio:
     dependencies:
       '@portabletext/block-tools':
-        specifier: ^3.5.8
+        specifier: ^3.5.9
         version: 3.5.9(@sanity/schema@packages+@sanity+schema)(@sanity/types@packages+@sanity+types)(@types/react@19.1.13)
       '@portabletext/editor':
         specifier: ^2.13.4
@@ -1694,7 +1694,7 @@ importers:
         specifier: ^3.6.0
         version: 3.6.0(@types/react-dom@19.1.9(@types/react@19.1.13))(@types/react@19.1.13)(react-dom@19.1.1(react@19.1.1))(react@19.1.1)
       '@portabletext/block-tools':
-        specifier: ^3.5.8
+        specifier: ^3.5.9
         version: 3.5.9(@sanity/schema@packages+@sanity+schema)(@sanity/types@packages+@sanity+types)(@types/react@19.1.13)
       '@portabletext/editor':
         specifier: ^2.13.4
