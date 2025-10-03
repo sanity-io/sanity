@@ -20,6 +20,7 @@ export const EMPTY_TREE_STATE: TreeEditingState = {
   menuItems: EMPTY_ARRAY,
   relativePath: EMPTY_ARRAY,
   rootTitle: '',
+  siblings: new Map(),
 }
 
 export interface BuildTreeEditingStateProps {
@@ -40,6 +41,10 @@ export interface TreeEditingState {
   relativePath: Path
   /** The title of the root field */
   rootTitle: string
+  /** Map of path strings to their sibling arrays (including non-editable items, for example references)
+   * Starts at 1
+   */
+  siblings: Map<string, {count: number; index: number}>
 }
 
 export interface RecursiveProps extends Omit<BuildTreeEditingStateProps, 'openPath'> {
@@ -106,5 +111,6 @@ export function buildTreeEditingState(props: BuildTreeEditingStateProps): TreeEd
     breadcrumbs,
     menuItems: result.menuItems,
     rootTitle,
+    siblings: result.siblings,
   }
 }
