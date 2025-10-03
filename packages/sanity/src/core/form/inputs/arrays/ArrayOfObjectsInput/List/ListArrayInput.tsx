@@ -270,6 +270,7 @@ export function ListArrayInput<Item extends ObjectItem>(props: ArrayOfObjectsInp
         onItemAppend={onItemAppend}
         onItemPrepend={onItemPrepend}
         onValueCreate={createProtoArrayValue}
+        path={props.path}
         readOnly={readOnly}
         schemaType={schemaType}
         value={value}
