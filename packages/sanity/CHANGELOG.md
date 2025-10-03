@@ -3,6 +3,16 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [4.10.3](https://github.com/sanity-io/sanity/compare/v4.10.2...v4.10.3) (2025-10-03)
+
+
+### Bug Fixes
+
+* **deps:** update dependency @portabletext/block-tools to ^3.5.9 ([#10794](https://github.com/sanity-io/sanity/issues/10794)) ([a16f5b9](https://github.com/sanity-io/sanity/commit/a16f5b98dc9ab1c193dc77ed3d0cb8dc8f9aaa84))
+* **deps:** update dependency @portabletext/editor to ^2.13.4 ([#10795](https://github.com/sanity-io/sanity/issues/10795)) ([b89f08a](https://github.com/sanity-io/sanity/commit/b89f08a367e51ac020f7a2f3fb854cd1ced99fd3))
+
+
+
 ## [4.10.2](https://github.com/sanity-io/sanity/compare/v4.10.1...v4.10.2) (2025-09-30)
 
 
