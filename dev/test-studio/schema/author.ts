@@ -1,8 +1,10 @@
 import {UserIcon as icon} from '@sanity/icons'
 import {type StringRule} from '@sanity/types'
 import {defineField, defineType} from 'sanity'
+import {defineIncomingReferenceField} from 'sanity/structure'
 
 import {AudienceSelectInput} from '../components/AudienceSelectInput'
+import {RemoveReferenceAction} from '../components/IncomingReferencesActions'
 
 // Generic decide field implementation that works for all types
 const defineLocalDecideField = (config: any) => {
@@ -103,6 +105,53 @@ export default defineType({
       },
       validation: (rule: StringRule) => rule.required(),
     }),
+    defineIncomingReferenceField({
+      name: 'incomingReferencesDesigner',
+      title: 'Incoming references with the same role',
+      options: {
+        onLinkDocument: (document, reference) => {
+          return {
+            ...document,
+            bestFriend: reference,
+          }
+        },
+        filter: (context) => {
+          return {
+            filter: `role == $role`,
+            filterParams: {role: (context.document.role as string) || ''},
+          }
+        },
+        actions: [RemoveReferenceAction],
+        types: [{type: 'author'}],
+      },
+    }),
+    defineIncomingReferenceField({
+      name: 'booksCreated',
+      title: 'Books created by this author',
+      options: {
+        onLinkDocument: (document, reference) => {
+          return {
+            ...document,
+            author: reference,
+          }
+        },
+        actions: [RemoveReferenceAction],
+        types: [
+          {type: 'book'},
+          {
+            type: 'book',
+            dataset: 'test-us',
+            title: 'Book in test-us dataset',
+            studioUrl: ({id, type}) => {
+              return type ? `/us/intent/edit/id=${id};type=${type}` : null
+            },
+            preview: {
+              select: {title: 'title', media: 'coverImage', subtitle: 'publicationYear'},
+            },
+          },
+        ],
+      },
+    }),
     {
       name: 'bestFriend',
       title: 'Best friend',
@@ -126,7 +175,6 @@ export default defineType({
       type: 'reference',
       to: [{type: 'author'}],
     }),
-
     {
       name: 'role',
       title: 'Role',
@@ -193,15 +241,18 @@ export default defineType({
     },
   ],
 
-  initialValue: () => ({
-    name: 'Foo',
-    bestFriend: {_type: 'reference', _ref: 'foo-bar'},
-    image: {
-      _type: 'image',
-      asset: {
-        _ref: 'image-8dcc1391e06e4b4acbdc6bbf2e8c8588d537cbb8-4896x3264-jpg',
-        _type: 'reference',
+  initialValue: (params) => {
+    return {
+      name: 'Foo',
+      bestFriend: params?.reference || {_type: 'reference', _ref: 'foo-bar'},
+      image: {
+        _type: 'image',
+        asset: {
+          _ref: 'image-8dcc1391e06e4b4acbdc6bbf2e8c8588d537cbb8-4896x3264-jpg',
+          _type: 'reference',
+        },
       },
-    },
-  }),
+      role: params?.from?.fieldName === 'incomingReferencesDesigner' ? 'designer' : undefined,
+    }
+  },
 })
