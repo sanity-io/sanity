@@ -147,6 +147,7 @@ export function ArrayOfPrimitivesItem(props: PrimitiveMemberItemProps) {
       validation: member.item.validation,
       presence: member.item.presence,
       elementProps,
+      displayInlineChanges: member.item.displayInlineChanges ?? false,
     }
   }, [
     member.item.changed,
@@ -160,6 +161,7 @@ export function ArrayOfPrimitivesItem(props: PrimitiveMemberItemProps) {
     member.item.focused,
     member.item.validation,
     member.item.presence,
+    member.item.displayInlineChanges,
     handleChange,
     elementProps,
   ])

@@ -219,6 +219,7 @@ export const ObjectField = function ObjectField(props: {
       renderInput,
       renderItem,
       renderPreview,
+      displayInlineChanges: member.field.displayInlineChanges ?? false,
     }
   }, [
     elementProps,
@@ -236,6 +237,7 @@ export const ObjectField = function ObjectField(props: {
     member.field.focusPath,
     member.field.focused,
     member.field.groups,
+    member.field.displayInlineChanges,
     handleSelectFieldGroup,
     handleOpenField,
     handleCloseField,

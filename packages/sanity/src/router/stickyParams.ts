@@ -1,4 +1,8 @@
 /**
  * @internal
  */
-export const STICKY_PARAMS: string[] = ['perspective', 'excludedPerspectives']
+export const STICKY_PARAMS: string[] = [
+  'perspective',
+  'excludedPerspectives',
+  'displayInlineChanges',
+]
