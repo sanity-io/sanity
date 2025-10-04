@@ -80,7 +80,7 @@ function DocumentPaneInner(props: DocumentPaneProviderProps) {
   const routerPanesStateLength = routerPanesState.length
   const {parentRefPath} = childParams
 
-  const activePath: {path: Path; state: 'selected' | 'pressed' | 'none'} = useMemo(() => {
+  const activePath: {path: Path; state: 'active' | 'pressed' | 'none'} = useMemo(() => {
     return parentRefPath
       ? {
           path: pathFromString(parentRefPath),
@@ -88,7 +88,7 @@ function DocumentPaneInner(props: DocumentPaneProviderProps) {
             groupIndex >= routerPanesStateLength - 1
               ? 'none'
               : groupIndex >= routerPanesStateLength - 2
-                ? 'selected'
+                ? 'active'
                 : 'pressed',
         }
       : {path: [], state: 'none'}

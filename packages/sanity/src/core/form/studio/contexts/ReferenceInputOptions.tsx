@@ -39,7 +39,7 @@ export interface ReferenceInputOptions {
    * Represents the highlighted path if ths current document has a related open
    * child (e.g. reference in place).
    */
-  activePath?: {path: Path; state: 'selected' | 'pressed' | 'none'}
+  activePath?: {path: Path; state: 'active' | 'pressed' | 'none'}
   /**
    * A specialized `EditReferenceLinkComponent` component that takes in the needed props to open a
    * referenced document to the right
