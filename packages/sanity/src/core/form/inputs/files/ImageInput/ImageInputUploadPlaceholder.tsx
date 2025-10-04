@@ -38,7 +38,7 @@ function ImageInputUploadPlaceholderComponent(props: {
   return (
     <div style={{padding: 1}}>
       <Card
-        tone={readOnly ? 'transparent' : 'inherit'}
+        tone={readOnly ? 'neutral' : 'inherit'}
         border
         paddingX={3}
         paddingY={2}

@@ -1,9 +1,8 @@
 import {ToggleArrowRightIcon} from '@sanity/icons'
-import {Box, Flex, rem, Text, type Theme} from '@sanity/ui'
+import {Box, Flex, Text} from '@sanity/ui'
+import {vars} from '@sanity/ui/css'
 import {memo, type ReactNode} from 'react'
 import {css, styled} from 'styled-components'
-
-import {focusRingStyle} from './styles'
 
 export interface FormFieldSetLegendProps {
   collapsed: boolean
@@ -18,10 +17,10 @@ const Root = styled.legend`
   display: table;
 `
 
-const ToggleButton = styled(Flex).attrs({forwardedAs: 'button'})((props: {theme: Theme}) => {
-  const {theme} = props
-  const {focusRing, radius} = theme.sanity
-  const {base} = theme.sanity.color
+const ToggleButton = styled(Flex).attrs({forwardedAs: 'button'})(() => {
+  // const {theme} = props
+  // const {focusRing, radius} = theme.sanity
+  // const {base} = theme.sanity.color
 
   return css`
     appearance: none;
@@ -31,7 +30,7 @@ const ToggleButton = styled(Flex).attrs({forwardedAs: 'button'})((props: {theme:
     -webkit-font-smoothing: inherit;
     font: inherit;
     outline: none;
-    border-radius: ${rem(radius[2])};
+    border-radius: ${vars.radius[2]};
     position: relative;
 
     &:not([hidden]) {
@@ -39,7 +38,7 @@ const ToggleButton = styled(Flex).attrs({forwardedAs: 'button'})((props: {theme:
     }
 
     &:focus {
-      box-shadow: ${focusRingStyle({base, focusRing})};
+      /* TODO: fix this */
     }
 
     &:focus:not(:focus-visible) {

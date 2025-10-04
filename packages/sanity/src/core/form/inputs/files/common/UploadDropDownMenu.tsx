@@ -102,7 +102,6 @@ function UploadDropDownMenuComponent(
           }
           data-testid={`file-input-upload-button-${index}`}
           disabled={uploadsDisabled}
-          htmlFor={inputId}
           icon={assetSource.icon}
           onClick={handleMenuItemClick}
           renderMenuItem={renderMenuItemLabel}

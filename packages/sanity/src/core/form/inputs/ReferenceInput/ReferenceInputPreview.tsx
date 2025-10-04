@@ -1,15 +1,8 @@
 import {LaunchIcon as OpenInNewTabIcon, SyncIcon as ReplaceIcon, TrashIcon} from '@sanity/icons'
 import {type Reference} from '@sanity/types'
-import {Box, Card, type CardTone, Flex, Menu, MenuDivider, Stack} from '@sanity/ui'
-import {
-  type ComponentProps,
-  type FocusEvent,
-  type ForwardedRef,
-  forwardRef,
-  useCallback,
-  useMemo,
-  useRef,
-} from 'react'
+import {Box, Card, Flex, Menu, MenuDivider, Stack} from '@sanity/ui'
+import {type CardTone} from '@sanity/ui/theme'
+import {type FocusEvent, useCallback, useRef} from 'react'
 import {IntentLink} from 'sanity/router'
 
 import {MenuButton, MenuItem, TooltipDelayGroupProvider} from '../../../../ui-components'
@@ -38,7 +31,7 @@ function getTone({
   hasWarnings: boolean
 }): CardTone {
   if (readOnly) {
-    return 'transparent'
+    return 'neutral'
   }
   if (hasErrors) {
     return 'critical'
@@ -47,6 +40,7 @@ function getTone({
 }
 const MENU_POPOVER_PROPS = {portal: true, tone: 'default'} as const
 
+// eslint-disable-next-line complexity
 export function ReferenceInputPreview(props: ReferenceInputProps & {children: React.ReactNode}) {
   const elementRef = useRef<HTMLDivElement | null>(null)
   const {schemaType, path, children, focusPath} = props
@@ -149,68 +143,46 @@ export function ReferenceInputPreview(props: ReferenceInputProps & {children: Re
     </>
   )
 
-  const OpenLink = useMemo(
-    () =>
-      // eslint-disable-next-line @typescript-eslint/no-shadow
-      forwardRef(function OpenLink(
-        restProps: ComponentProps<typeof IntentLink>,
-        _ref: ForwardedRef<HTMLAnchorElement>,
-      ) {
-        return (
-          <IntentLink
-            {...restProps}
-            intent="edit"
-            params={{id: value?._ref, type: refType?.name}}
-            target="_blank"
-            rel="noopener noreferrer"
-            ref={_ref}
-          />
-        )
-      }),
-    [refType?.name, value?._ref],
-  )
+  const menu = readOnly ? null : (
+    <Box flex="none">
+      <MenuButton
+        button={<ContextMenuButton />}
+        id={`${inputId}-menuButton`}
+        menu={
+          <Menu>
+            {!readOnly && (
+              <>
+                <MenuItem
+                  text={t('inputs.reference.action.clear')}
+                  tone="critical"
+                  icon={TrashIcon}
+                  onClick={handleClear}
+                />
+                <MenuItem
+                  text={t('inputs.reference.action.replace')}
+                  icon={ReplaceIcon}
+                  onClick={handleReplace}
+                />
+              </>
+            )}
 
-  const menu = useMemo(
-    () =>
-      readOnly ? null : (
-        <Box flex="none">
-          <MenuButton
-            button={<ContextMenuButton />}
-            id={`${inputId}-menuButton`}
-            menu={
-              <Menu>
-                {!readOnly && (
-                  <>
-                    <MenuItem
-                      text={t('inputs.reference.action.clear')}
-                      tone="critical"
-                      icon={TrashIcon}
-                      onClick={handleClear}
-                    />
-                    <MenuItem
-                      text={t('inputs.reference.action.replace')}
-                      icon={ReplaceIcon}
-                      onClick={handleReplace}
-                    />
-                  </>
-                )}
-
-                {!readOnly && value?._ref && <MenuDivider />}
-                {value?._ref && (
-                  <MenuItem
-                    as={OpenLink}
-                    data-as="a"
-                    text={t('inputs.reference.action.open-in-new-tab')}
-                    icon={OpenInNewTabIcon}
-                  />
-                )}
-              </Menu>
-            }
-            popover={MENU_POPOVER_PROPS}
-          />
-        </Box>
-      ),
-    [handleClear, handleReplace, inputId, OpenLink, readOnly, t, value?._ref],
+            {!readOnly && value?._ref && <MenuDivider />}
+            {value?._ref && (
+              <MenuItem
+                as={IntentLink}
+                icon={OpenInNewTabIcon}
+                intent="edit"
+                params={{id: value?._ref, type: refType?.name}}
+                rel="noopener noreferrer"
+                target="_blank"
+                text={t('inputs.reference.action.open-in-new-tab')}
+              />
+            )}
+          </Menu>
+        }
+        popover={MENU_POPOVER_PROPS}
+      />
+    </Box>
   )
 
   const handleFocus = useCallback(
@@ -228,7 +200,7 @@ export function ReferenceInputPreview(props: ReferenceInputProps & {children: Re
 
   return (
     <Card border radius={2} padding={1} tone={tone}>
-      <Stack space={1}>
+      <Stack gap={1}>
         <Flex gap={1} align="center" style={{lineHeight: 0}}>
           <TooltipDelayGroupProvider>
             <ReferenceLinkCard

@@ -57,7 +57,7 @@ export function ArrayOfObjectsFunctions<
       placement: 'bottom',
       fallbackPlacements: ['top'],
       matchReferenceWidth: props.schemaType.options?.insertMenu?.views?.some(
-        (view) => view.name === 'grid',
+        (view: any) => view.name === 'grid',
       ),
       referenceBoundary: gridElement,
       referenceElement: popoverToggleElement,

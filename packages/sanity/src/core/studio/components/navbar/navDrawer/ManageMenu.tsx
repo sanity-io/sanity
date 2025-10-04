@@ -17,7 +17,7 @@ export function ManageMenu() {
 
   return (
     <Card borderTop flex="none" padding={2}>
-      <Stack as="ul" space={1}>
+      <Stack as="ul" gap={1}>
         <Stack as="li">
           <FreeTrial type="sidebar" />
         </Stack>

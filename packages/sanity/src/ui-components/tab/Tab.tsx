@@ -18,8 +18,11 @@ export type TabProps = Pick<
  * @internal
  */
 export const Tab = forwardRef(function Tab(
-  {tone = 'default', ...props}: TabProps & Omit<HTMLProps<HTMLButtonElement>, 'as' | 'size'>,
+  {
+    tone = 'default',
+    ...props
+  }: TabProps & Omit<HTMLProps<HTMLButtonElement>, 'as' | 'size' | 'type'>,
   ref: ForwardedRef<HTMLButtonElement>,
 ) {
-  return <UITab {...props} muted padding={2} ref={ref} tone={tone} />
+  return <UITab {...props} padding={2} ref={ref} tone={tone} />
 })

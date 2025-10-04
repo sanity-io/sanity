@@ -63,7 +63,7 @@ export function StructureError({error}: StructureErrorProps) {
 
         <Card marginTop={4} padding={4} radius={2} overflow="auto" shadow={1} tone="inherit">
           {path.length > 0 && (
-            <Stack space={2}>
+            <Stack gap={2}>
               <Text size={1} weight="medium">
                 {t('structure-error.structure-path.label')}
               </Text>
@@ -77,7 +77,7 @@ export function StructureError({error}: StructureErrorProps) {
             </Stack>
           )}
 
-          <Stack marginTop={4} space={2}>
+          <Stack marginTop={4} gap={2}>
             <Text size={1} weight="medium">
               {t('structure-error.error.label')}
             </Text>

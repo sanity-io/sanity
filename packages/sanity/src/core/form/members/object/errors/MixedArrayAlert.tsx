@@ -49,7 +49,7 @@ export function MixedArrayAlert(props: Props) {
         </Text>
 
         <Details marginTop={4} open={isDev} title={t('form.error.mixed-array-alert.details.title')}>
-          <Stack space={3}>
+          <Stack gap={3}>
             <Text as="p" muted size={1}>
               {t('form.error.mixed-array-alert.details.description')}
             </Text>

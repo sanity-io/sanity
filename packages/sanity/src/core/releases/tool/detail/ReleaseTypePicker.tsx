@@ -180,8 +180,8 @@ export function ReleaseTypePicker(props: {release: NotArchivedRelease}): React.J
 
   const PopoverContent = () => {
     return (
-      <Stack space={1}>
-        <TabList space={0.5}>
+      <Stack gap={1}>
+        <TabList gap={1}>
           <Tab
             aria-controls="release-timing-asap"
             id="release-timing-asap-tab"
@@ -229,6 +229,7 @@ export function ReleaseTypePicker(props: {release: NotArchivedRelease}): React.J
               value={intendedPublishAtTimezoneAdjusted}
               onChange={handlePublishAtCalendarChange}
               isPastDisabled
+              // @ts-expect-error - TODO: Fix this.
               showTimeZone
               timeZoneScope={CONTENT_RELEASES_TIME_ZONE_SCOPE}
             />

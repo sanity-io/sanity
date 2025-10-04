@@ -1,4 +1,5 @@
 import {Box, Text} from '@sanity/ui'
+import {vars} from '@sanity/ui/css'
 import {useCallback} from 'react'
 import {
   CommandList,
@@ -30,7 +31,7 @@ const DividerContainer = styled(Box)`
 
 const Divider = styled.hr`
   flex: 1;
-  background-color: var(--card-border-color);
+  background-color: ${vars.color.border};
   height: 1px;
   margin: 0;
   border: none;

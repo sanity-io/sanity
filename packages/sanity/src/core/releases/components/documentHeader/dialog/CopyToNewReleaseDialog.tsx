@@ -1,6 +1,7 @@
 import {type EditableReleaseDocument} from '@sanity/client'
 import {useTelemetry} from '@sanity/telemetry/react'
-import {type BadgeTone, Box, Card, Flex, Text, useToast} from '@sanity/ui'
+import {Box, Card, Flex, Text, useToast} from '@sanity/ui'
+import {type ElementTone} from '@sanity/ui/theme'
 import {useCallback, useState} from 'react'
 
 import {Button} from '../../../../../ui-components/button/Button'
@@ -27,7 +28,7 @@ export function CopyToNewReleaseDialog(props: {
   onClose: () => void
   documentId: string
   documentType: string
-  tone: BadgeTone
+  tone: ElementTone
   title: string
   onCreateVersion: (releaseId: string) => void
 }): React.JSX.Element {
@@ -145,11 +146,7 @@ export function CopyToNewReleaseDialog(props: {
       padding={false}
       width={1}
     >
-      <Box
-        paddingX={2}
-        marginBottom={2}
-        style={{borderBottom: '1px solid var(--card-border-color)'}}
-      >
+      <Box borderBottom paddingX={2} marginBottom={2}>
         <Flex align="center" padding={4} paddingTop={1} justify="space-between">
           {schemaType ? (
             <Preview value={{_id: documentId}} schemaType={schemaType} />
@@ -159,14 +156,14 @@ export function CopyToNewReleaseDialog(props: {
 
           <Flex
             align="center"
+            border
             gap={2}
             padding={1}
             paddingRight={2}
+            overflow="hidden"
+            radius="full"
             style={{
-              borderRadius: 999,
-              border: '1px solid var(--card-border-color)',
               whiteSpace: 'nowrap',
-              overflow: 'hidden',
               textOverflow: 'ellipsis',
             }}
           >
@@ -186,7 +183,7 @@ export function CopyToNewReleaseDialog(props: {
         )}
         <ReleaseForm onChange={handleOnChange} value={release} />
 
-        <Flex width="full" gap={3} justify="flex-end" paddingTop={3} align="center">
+        <Flex width="fill" gap={3} justify="flex-end" paddingTop={3} align="center">
           <Button
             disabled={isSubmitting}
             text={t('common.dialog.cancel-button.text')}

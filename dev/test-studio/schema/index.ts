@@ -1,3 +1,5 @@
+import {defineType} from 'sanity'
+
 import {allTypes} from './allTypes'
 import author from './author'
 import book from './book'
@@ -161,6 +163,19 @@ const codeInputType = {
 
 export function createSchemaTypes(projectId: string) {
   return [
+    defineType({
+      type: 'document',
+      name: 'color',
+      title: 'Color',
+      fields: [
+        {
+          type: 'string',
+          name: 'name',
+          title: 'Name',
+        },
+      ],
+    }),
+
     // Test documents with standard inputs
     arrays,
     topLevelArrayType,

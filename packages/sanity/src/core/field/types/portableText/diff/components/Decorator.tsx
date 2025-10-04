@@ -1,3 +1,4 @@
+import {vars} from '@sanity/ui/css'
 import {styled} from 'styled-components'
 
 const DecoratorWrapper = styled.span<{decoration: string}>`
@@ -16,8 +17,8 @@ const DecoratorWrapper = styled.span<{decoration: string}>`
         return 'text-decoration: line-through;'
       case 'code':
         return `
-          font-family: ${theme.sanity.fonts.code.family};
-          background: ${theme.sanity.color.muted.default.enabled.bg};
+          font-family: ${vars.font.code.family};
+          background: ${vars.color.tinted.default.bg[0]};
         `
       default:
         return ''

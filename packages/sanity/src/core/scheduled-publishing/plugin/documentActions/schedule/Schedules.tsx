@@ -11,13 +11,13 @@ const Schedules = (props: Props) => {
   const {schedules} = props
 
   return (
-    <Stack space={4}>
+    <Stack gap={4}>
       {schedules.length === 0 ? (
         <Box>
           <Text size={1}>No schedules</Text>
         </Box>
       ) : (
-        <Stack space={2}>
+        <Stack gap={2}>
           {schedules.map((schedule) => (
             <ScheduleItem key={schedule.id} schedule={schedule} type="document" />
           ))}

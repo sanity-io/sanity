@@ -1,7 +1,6 @@
 import {ArrowRightIcon, WarningOutlineIcon} from '@sanity/icons'
-import {Card, Flex, rem, Text, useMediaIndex} from '@sanity/ui'
-// eslint-disable-next-line camelcase
-import {getTheme_v2, type Theme} from '@sanity/ui/theme'
+import {Card, Flex, Text, useMediaIndex} from '@sanity/ui'
+import {vars} from '@sanity/ui/css'
 import {css, styled} from 'styled-components'
 
 import {RELEASES_DOCS_URL} from '../../constants'
@@ -10,19 +9,18 @@ import {RELEASES_DOCS_URL} from '../../constants'
  * Updates the size of the icon to be used inside a Text size=1 to a Text size=0, without having to add a new
  * Text element, allowing to sit inline in the same anchor element.
  */
-const SmallIcon = styled(ArrowRightIcon)((props) => {
-  const {font} = getTheme_v2(props.theme as Theme)
-  const {ascenderHeight, descenderHeight, lineHeight, iconSize} = font.text.sizes[0]
-  const negHeight = ascenderHeight + descenderHeight
-  const capHeight = lineHeight - negHeight
-  const iconOffset = (capHeight - iconSize) / 2
+const SmallIcon = styled(ArrowRightIcon)(() => {
+  const {ascenderHeight, descenderHeight, lineHeight, iconSize} = vars.font.text.scale[0]
+  const negHeight = `calc(${ascenderHeight} + ${descenderHeight})`
+  const capHeight = `calc(${lineHeight} - ${negHeight})`
+  const iconOffset = `calc((${capHeight} - ${iconSize}) / 2)`
 
   return css`
     &[data-sanity-icon] {
-      color: var(--card-link-color);
+      color: ${vars.color.link.fg};
       font-size: calc(${iconSize} / 16 * 1rem);
-      margin: ${rem(iconOffset)};
-      margin-bottom: ${rem(iconOffset)};
+      margin: ${iconOffset};
+      margin-bottom: ${iconOffset};
     }
   `
 })

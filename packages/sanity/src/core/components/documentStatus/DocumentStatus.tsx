@@ -1,5 +1,7 @@
 import {type PreviewValue, type SanityDocument} from '@sanity/types'
-import {type BadgeTone, Flex, Text} from '@sanity/ui'
+import {Flex, Text} from '@sanity/ui'
+import {vars} from '@sanity/ui/css'
+import {type ElementTone} from '@sanity/ui/theme'
 import {useMemo} from 'react'
 
 import {useRelativeTime} from '../../hooks'
@@ -103,7 +105,7 @@ const VersionStatus = ({
   title: string | undefined
   mode: Mode
   timestamp?: string
-  tone: BadgeTone
+  tone: ElementTone
 }) => {
   const {t} = useTranslation()
 
@@ -117,9 +119,7 @@ const VersionStatus = ({
       <ReleaseAvatar tone={tone} padding={0} />
       <Text size={1}>
         {title || t('release.placeholder-untitled-release')}{' '}
-        <span style={{color: 'var(--card-muted-fg-color)'}}>
-          {t(labels[mode], {date: relativeTime})}
-        </span>
+        <span style={{color: vars.color.muted.fg}}>{t(labels[mode], {date: relativeTime})}</span>
       </Text>
     </Flex>
   )

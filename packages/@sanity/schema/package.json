@@ -77,10 +77,14 @@
     "@repo/package.config": "workspace:*",
     "@repo/test-config": "workspace:*",
     "@sanity/icons": "^3.7.4",
+    "@sanity/ui": "catalog:",
     "@types/lodash": "^4.17.20",
     "@types/object-inspect": "^1.13.0",
     "@types/react": "catalog:",
     "rimraf": "^5.0.10",
     "vitest": "^3.2.4"
+  },
+  "peerDependencies": {
+    "@sanity/ui": "^4"
   }
 }

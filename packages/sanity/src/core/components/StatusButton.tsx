@@ -1,4 +1,5 @@
-import {type ForwardedRef, forwardRef, type HTMLProps, type ReactNode, useMemo} from 'react'
+import {vars} from '@sanity/ui/css'
+import {type ForwardedRef, forwardRef, type HTMLProps, type ReactNode} from 'react'
 import {styled} from 'styled-components'
 
 import {Button, type ButtonProps} from '../../ui-components'
@@ -27,7 +28,7 @@ const Dot = styled.div({
   width: 4,
   height: 4,
   borderRadius: 3,
-  boxShadow: '0 0 0 1px var(--card-bg-color)',
+  boxShadow: `0 0 0 1px ${vars.color.bg}`,
 })
 
 /** @hidden @beta */
@@ -46,7 +47,6 @@ export const StatusButton = forwardRef(function StatusButton(
     ...restProps
   } = props
 
-  const dotStyle = useMemo(() => ({backgroundColor: `var(--card-badge-${tone}-dot-color)`}), [tone])
   const disabled = Boolean(disabledProp)
 
   return (
@@ -60,7 +60,7 @@ export const StatusButton = forwardRef(function StatusButton(
       text={text}
       icon={icon}
     >
-      {tone && <Dot style={dotStyle} />}
+      {tone && <Dot style={{backgroundColor: vars.color.solid[tone].bg[0]}} />}
     </StyledButton>
   )
 })

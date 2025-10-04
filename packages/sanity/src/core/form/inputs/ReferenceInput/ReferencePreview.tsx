@@ -36,8 +36,8 @@ export function ReferencePreview(props: {
     () => ({
       children: (
         <Box paddingLeft={3}>
-          <Inline space={3}>
-            {showTypeLabel && <Badge mode="outline">{refType.title}</Badge>}
+          <Inline gap={3}>
+            {showTypeLabel && <Badge>{refType.title}</Badge>}
 
             {documentPresence && documentPresence.length > 0 && (
               <DocumentPreviewPresence presence={documentPresence} />

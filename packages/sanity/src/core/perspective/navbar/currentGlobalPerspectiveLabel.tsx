@@ -2,16 +2,7 @@ import {type ReleaseDocument} from '@sanity/client'
 // eslint-disable-next-line no-restricted-imports -- Bundle Button requires more fine-grained styling than studio button
 import {Box, Button, Text} from '@sanity/ui'
 import {motion} from 'framer-motion'
-import {
-  type ForwardedRef,
-  forwardRef,
-  type ReactNode,
-  useCallback,
-  useLayoutEffect,
-  useMemo,
-  useRef,
-  useState,
-} from 'react'
+import {type ReactNode, useCallback, useLayoutEffect, useRef, useState} from 'react'
 import {IntentLink} from 'sanity/router'
 import {styled} from 'styled-components'
 
@@ -74,30 +65,9 @@ function AnimatedTextWidth({children, text}: {children: ReactNode; text: string}
 const ReleasesLink = ({selectedPerspective}: {selectedPerspective: ReleaseDocument}) => {
   const {t} = useTranslation()
 
-  const ReleasesIntentLink = useMemo(
-    () =>
-      // eslint-disable-next-line @typescript-eslint/no-shadow
-      forwardRef(function ReleasesIntentLink(
-        {children, ...intentProps}: {children: ReactNode},
-        linkRef: ForwardedRef<HTMLAnchorElement>,
-      ) {
-        return (
-          <OversizedButton
-            {...intentProps}
-            ref={linkRef}
-            intent={RELEASES_INTENT}
-            params={{id: getReleaseIdFromReleaseDocumentId(selectedPerspective._id)}}
-          >
-            {children}
-          </OversizedButton>
-        )
-      }),
-    [selectedPerspective],
-  )
-
   return (
     <Button
-      as={ReleasesIntentLink}
+      as={OversizedButton}
       data-as="a"
       rel="noopener noreferrer"
       mode="bleed"
@@ -105,6 +75,8 @@ const ReleasesLink = ({selectedPerspective}: {selectedPerspective: ReleaseDocume
       radius="full"
       style={{maxWidth: '180px', textOverflow: 'ellipsis'}}
       text={selectedPerspective.metadata?.title || t('release.placeholder-untitled-release')}
+      intent={RELEASES_INTENT}
+      params={{id: getReleaseIdFromReleaseDocumentId(selectedPerspective._id)}}
     />
   )
 }

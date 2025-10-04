@@ -104,10 +104,10 @@ function BaseImageInputComponent(props: BaseImageInputProps): React.JSX.Element 
     }
 
     if (readOnly) {
-      return 'transparent'
+      return 'neutral'
     }
 
-    return value?._upload && value?.asset ? 'transparent' : 'default'
+    return value?._upload && value?.asset ? 'neutral' : 'default'
   }, [
     directUploads,
     hoveringFiles,
@@ -552,7 +552,7 @@ function BaseImageInputComponent(props: BaseImageInputProps): React.JSX.Element 
 
   return (
     // The Stack space should match the space in ObjectInput
-    <Stack space={5} data-testid="image-input">
+    <Stack gap={5} data-testid="image-input">
       {members.map((member) => {
         if (member.kind === 'field' && (member.name === 'crop' || member.name === 'hotspot')) {
           // we're rendering these separately
