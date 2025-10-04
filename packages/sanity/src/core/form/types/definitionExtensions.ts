@@ -30,6 +30,7 @@ import {
   type ArrayOfObjectsInputProps,
   type ArrayOfPrimitivesInputProps,
   type BooleanInputProps,
+  type InternalFormDecoratorInputProps,
   type NumberInputProps,
   type ObjectInputProps,
   type StringInputProps,
@@ -307,6 +308,15 @@ declare module '@sanity/types' {
     preview?: ComponentType<PreviewProps>
   }
 
+  /**
+   *
+   * @hidden
+   * @beta
+   */
+  export interface InternalFormDecoratorComponents {
+    input?: ComponentType<InternalFormDecoratorInputProps>
+  }
+
   export interface ArrayDefinition {
     /**
      *
@@ -566,5 +576,14 @@ declare module '@sanity/types' {
      * @beta
      */
     components?: EmailComponents
+  }
+
+  export interface InternalFormDecoratorDefinition {
+    /**
+     *
+     * @hidden
+     * @beta
+     */
+    components?: InternalFormDecoratorComponents
   }
 }

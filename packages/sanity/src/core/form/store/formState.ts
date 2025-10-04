@@ -1373,6 +1373,7 @@ const emptyValuesByType = {
   boolean: false,
   array: [],
   object: {},
+  null: null,
 } satisfies Record<SchemaType['jsonType'], unknown>
 
 /**

@@ -1,3 +1,5 @@
+import {INTERNAL_FORM_DECORATOR} from '../legacy/types/constants'
+
 const coreTypes = [
   {name: 'array', jsonType: 'array', type: 'type'},
   {name: 'block', jsonType: 'object', type: 'type'},
@@ -20,6 +22,7 @@ const coreTypes = [
   {name: 'telephone', jsonType: 'string', type: 'type'},
   {name: 'text', jsonType: 'string', type: 'type'},
   {name: 'url', jsonType: 'string', type: 'type'},
+  {name: INTERNAL_FORM_DECORATOR, jsonType: 'null', type: 'type'},
 ] as const
 
 export const coreTypeNames = coreTypes.map((t) => t.name)

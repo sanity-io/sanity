@@ -1,4 +1,5 @@
 import {UserIcon as icon} from '@sanity/icons'
+import {INTERNAL_FORM_DECORATOR} from '@sanity/schema/_internal'
 import {type StringRule} from '@sanity/types'
 import {defineField, defineType} from 'sanity'
 
@@ -191,6 +192,10 @@ export default defineType({
       description: 'Used for testing the "locked" permissions pattern',
       type: 'boolean',
     },
+    defineField({
+      type: INTERNAL_FORM_DECORATOR,
+      name: 'incomingReferencesPlaceholder',
+    }),
   ],
 
   initialValue: () => ({
