@@ -6023,6 +6023,9 @@ packages:
   babel-plugin-react-compiler@19.1.0-rc.3:
     resolution: {integrity: sha512-mjRn69WuTz4adL0bXGx8Rsyk1086zFJeKmes6aK0xPuK3aaXmDJdLHqwKKMrpm6KAI1MCoUK72d2VeqQbu8YIA==}
 
+  babel-plugin-react-compiler@0.0.0-experimental-e68eda9-20240829:
+    resolution: {integrity: sha512-H7e+R9ze2Ftdbh4W7C1oUIdWSn4xQEcRQDM2vVG2LBA8qiyvnnSR5L6+e06/J3fYHjFEkgdL96FsdOM7TNW2AA==}
+
   babel-plugin-styled-components@2.1.4:
     resolution: {integrity: sha512-Xgp9g+A/cG47sUyRwwYxGM4bR/jDRg5N6it/8+HxCnbT5XNKSKDT9xm4oag/osgqjC2It/vH0yXsomOG6k558g==}
     peerDependencies:
@@ -7825,6 +7828,9 @@ packages:
 
   git-url-parse@16.1.0:
     resolution: {integrity: sha512-cPLz4HuK86wClEW7iDdeAKcCVlWXmrLpb2L+G9goW0Z1dtpNS6BXXSOckUTlJT/LDQViE1QZKstNORzHsLnobw==}
+
+  git-url-parse@15.0.0:
+    resolution: {integrity: sha512-5reeBufLi+i4QD3ZFftcJs9jC26aULFLBU23FeKM/b1rI0K6ofIeAblmDVO7Ht22zTDE9+CkJ3ZVb0CgJmz3UQ==}
 
   git-user-info@2.0.3:
     resolution: {integrity: sha512-G4ffrtck6AhUvJBmaWiq50viL9Zt3l1G/Qv0tV8BTKJZcJYnKWKGW8m7JvPrhzrPwh+Pwuq88pzERGlrLuOWng==}
@@ -18852,6 +18858,10 @@ snapshots:
   git-url-parse@16.1.0:
     dependencies:
       git-up: 8.1.1
+
+  git-url-parse@15.0.0:
+    dependencies:
+      git-up: 7.0.0
 
   git-user-info@2.0.3:
     dependencies:
