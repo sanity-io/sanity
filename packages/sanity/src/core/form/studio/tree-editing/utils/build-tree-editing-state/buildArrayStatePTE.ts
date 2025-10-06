@@ -76,16 +76,9 @@ export function buildArrayStatePTE(props: BuildArrayStatePTEProps): {
   // Ensure we have an array to work with, even if empty
   const portableTextValue = Array.isArray(childValue) ? childValue : []
 
-  // If openPath points to text content within this portable text field, skip processing
-  // This avoids false positives with regular object fields named 'children'
-  if (isPathTextInPTEField(rootSchemaType.fields, openPath, documentValue)) {
-    return {
-      relativePath: null, // This will mean that we don't want the path to update in the Array State
-      breadcrumbs,
-      childrenMenuItems,
-      siblings,
-    }
-  }
+  // If openPath points to text content within this portable text field, we still need to process
+  // the PTE to build siblings for nested arrays, but we won't set a relativePath
+  const isTextContent = isPathTextInPTEField(rootSchemaType.fields, openPath, documentValue)
 
   // Process blocks within portable text
   portableTextValue.forEach((block: unknown) => {
@@ -212,7 +205,7 @@ export function buildArrayStatePTE(props: BuildArrayStatePTEProps): {
   relativePath = validateRelativePathExists(relativePath, documentValue)
 
   return {
-    relativePath,
+    relativePath: isTextContent ? null : relativePath,
     breadcrumbs,
     childrenMenuItems,
     siblings,
