@@ -2,7 +2,7 @@ import {visionTool} from '@sanity/vision'
 import {defineConfig} from 'sanity'
 import {structureTool} from 'sanity/structure'
 
-import {API_CONFIG} from './apiConfig'
+import {ENV_CONFIG} from './apiConfig'
 import {schemaTypes} from './schemaTypes'
 
 export default defineConfig([
@@ -10,7 +10,7 @@ export default defineConfig([
     basePath: '/staging',
     name: 'staging',
     title: 'Auto Updating Studios Test',
-    ...API_CONFIG.staging,
+    ...ENV_CONFIG.staging.api,
     plugins: [structureTool(), visionTool()],
 
     schema: {
@@ -21,7 +21,7 @@ export default defineConfig([
     basePath: '/production',
     name: 'production',
     title: 'Auto Updating Studios Test',
-    ...API_CONFIG.production,
+    ...ENV_CONFIG.production.api,
     plugins: [structureTool(), visionTool()],
 
     schema: {

@@ -293,6 +293,9 @@ importers:
       react:
         specifier: 'catalog:'
         version: 19.1.1
+      react-dom:
+        specifier: 'catalog:'
+        version: 19.1.1(react@19.1.1)
       sanity:
         specifier: workspace:*
         version: link:../../packages/sanity

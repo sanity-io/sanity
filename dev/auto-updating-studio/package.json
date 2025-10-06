@@ -18,6 +18,7 @@
     "@sanity/cli": "workspace:*",
     "@sanity/vision": "workspace:*",
     "react": "catalog:",
+    "react-dom": "catalog:",
     "sanity": "workspace:*",
     "styled-components": "catalog:"
   }

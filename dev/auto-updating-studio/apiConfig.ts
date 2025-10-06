@@ -1,12 +1,18 @@
-export const API_CONFIG = {
+export const ENV_CONFIG = {
   staging: {
-    projectId: 'exx11uqh',
-    dataset: 'playground',
-    apiHost: 'https://api.sanity.work',
+    api: {
+      projectId: 'exx11uqh',
+      dataset: 'playground',
+      apiHost: 'https://api.sanity.work',
+    },
+    appId: 'iwyfhbjad8dipooo6r1r28vs',
   },
   production: {
-    projectId: 'ppsg7ml5',
-    dataset: 'autoupdates',
-    apiHost: 'https://api.sanity.io',
+    api: {
+      projectId: 'ppsg7ml5',
+      dataset: 'autoupdates',
+      apiHost: 'https://api.sanity.io',
+    },
+    appId: 'ka1afc9k0yeyilf1plj931ay',
   },
 }
