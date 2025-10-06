@@ -1,5 +1,4 @@
 import {BoundaryElementProvider, Card, type CardProps, Code, Flex} from '@sanity/ui'
-import {vars} from '@sanity/ui/css'
 import {
   type ForwardedRef,
   forwardRef,
@@ -13,11 +12,11 @@ import {
 } from 'react'
 import {IsLastPaneProvider, LegacyLayerProvider} from 'sanity'
 import {PaneContext} from 'sanity/_singletons'
-import {styled} from 'styled-components'
 
 import {PANE_COLLAPSED_WIDTH, PANE_DEBUG, PANE_DEFAULT_MIN_WIDTH} from './constants'
 import {PaneDivider} from './PaneDivider'
 import {usePaneLayout} from './usePaneLayout'
+import * as styles from '../../Structure.css'
 
 interface PaneProps
   extends Omit<CardProps<'div'>, 'as' | 'flex' | 'id' | 'maxWidth' | 'minWidth' | 'overflow'> {
@@ -30,14 +29,6 @@ interface PaneProps
   maxWidth?: number
   selected?: boolean
 }
-
-const Root = styled(Card)`
-  outline: none;
-
-  // NOTE: This will render a border to the right side of each pane
-  // without taking up physical space.
-  box-shadow: 1px 0 0 ${vars.color.border};
-`
 
 /**
  * @hidden
@@ -194,7 +185,8 @@ export const Pane = forwardRef(function Pane(
       <LegacyLayerProvider zOffset="pane">
         <PaneContext.Provider value={contextValue}>
           <IsLastPaneProvider isLastPane={isLast}>
-            <Root
+            <Card
+              className={styles.paneRootStyle}
               data-testid="pane"
               data-ui="Pane"
               tone="inherit"
@@ -231,7 +223,7 @@ export const Pane = forwardRef(function Pane(
                   </Flex>
                 )}
               </BoundaryElementProvider>
-            </Root>
+            </Card>
           </IsLastPaneProvider>
         </PaneContext.Provider>
       </LegacyLayerProvider>

@@ -1,4 +1,4 @@
-import {Box, Flex, Stack, Text} from '@sanity/ui'
+import {Box, Flex, Skeleton, Stack, Text, TextSkeleton} from '@sanity/ui'
 import {getDevicePixelRatio} from 'use-device-pixel-ratio'
 
 import {useTranslation} from '../../../i18n'
@@ -6,15 +6,7 @@ import {Media} from '../_common/Media'
 import {PREVIEW_SIZES} from '../constants'
 import {renderPreviewNode} from '../helpers'
 import {type PreviewMediaDimensions, type PreviewProps} from '../types'
-import {
-  DescriptionSkeleton,
-  DescriptionText,
-  MediaSkeleton,
-  RootFlex,
-  StatusBox,
-  SubtitleSkeleton,
-  TitleSkeleton,
-} from './DetailPreview.styled'
+import * as styles from './DetailPreview.css'
 
 /**
  * @hidden
@@ -45,29 +37,43 @@ export function DetailPreview(props: DetailPreviewProps) {
   const {t} = useTranslation()
 
   const statusNode = status && (
-    <StatusBox marginLeft={3} paddingRight={1}>
+    <Box className={styles.statusBoxStyle} marginLeft={3} paddingRight={1}>
       {renderPreviewNode(status, 'detail')}
-    </StatusBox>
+    </Box>
   )
 
   if (isPlaceholder) {
     return (
-      <RootFlex
+      <Flex
+        align="center"
+        className={styles.rootFlexStyle}
         data-testid="detail-preview"
         paddingLeft={media ? 2 : 3}
         paddingRight={2}
         paddingY={2}
       >
         <Flex align="center" flex={1} gap={3}>
-          {media && <MediaSkeleton data-testid="detail-preview__media" />}
+          {media && (
+            <Skeleton
+              animated
+              className={styles.mediaSkeletonStyle}
+              data-testid="detail-preview__media"
+              radius={2}
+            />
+          )}
 
           <Flex align="center" data-testid="detail-preview__header" flex={1}>
             <Stack flex={1} gap={2}>
-              <TitleSkeleton />
-              <SubtitleSkeleton />
+              <TextSkeleton animated className={styles.titleSkeletonStyle} radius={1} size={1} />
+              <TextSkeleton animated className={styles.subtitleSkeletonStyle} radius={1} size={1} />
               {description && (
                 <Box marginTop={1}>
-                  <DescriptionSkeleton />
+                  <TextSkeleton
+                    animated
+                    className={styles.descriptionSkeletonStyle}
+                    radius={1}
+                    size={1}
+                  />
                 </Box>
               )}
             </Stack>
@@ -75,12 +81,14 @@ export function DetailPreview(props: DetailPreviewProps) {
 
           {statusNode}
         </Flex>
-      </RootFlex>
+      </Flex>
     )
   }
 
   return (
-    <RootFlex
+    <Flex
+      align="center"
+      className={styles.rootFlexStyle}
       data-testid="detail-preview"
       paddingLeft={media ? 2 : 3}
       paddingRight={2}
@@ -104,9 +112,9 @@ export function DetailPreview(props: DetailPreviewProps) {
 
             {description && (
               <Box marginTop={1}>
-                <DescriptionText muted size={1}>
+                <Text className={styles.descriptionTextStyle} muted size={1}>
                   {renderPreviewNode(description, 'detail')}
-                </DescriptionText>
+                </Text>
               </Box>
             )}
           </Stack>
@@ -116,6 +124,6 @@ export function DetailPreview(props: DetailPreviewProps) {
 
         {children}
       </Flex>
-    </RootFlex>
+    </Flex>
   )
 }

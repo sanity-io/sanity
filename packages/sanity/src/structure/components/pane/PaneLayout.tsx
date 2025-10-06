@@ -1,11 +1,11 @@
-import {type CardProps} from '@sanity/ui'
+import {Card, type CardProps} from '@sanity/ui'
 import {useElementRect} from '@sanity/ui-v3'
 import {type HTMLProps, useEffect, useMemo, useState} from 'react'
 import {PaneLayoutContext} from 'sanity/_singletons'
 
-import {Root} from './PaneLayout.styles'
 import {createPaneLayoutController, type PaneLayoutState} from './paneLayoutController'
 import {type PaneLayoutContextValue} from './types'
+import * as styles from '../../Structure.css'
 
 /**
  *
@@ -73,7 +73,8 @@ export function PaneLayout(
 
   return (
     <PaneLayoutContext.Provider value={paneLayout}>
-      <Root
+      <Card
+        className={styles.paneLayoutRootStyle}
         data-ui="PaneLayout"
         {...restProps}
         data-collapsed={collapsed ? '' : undefined}
@@ -85,7 +86,7 @@ export function PaneLayout(
         ref={setRootElement}
       >
         {children}
-      </Root>
+      </Card>
     </PaneLayoutContext.Provider>
   )
 }

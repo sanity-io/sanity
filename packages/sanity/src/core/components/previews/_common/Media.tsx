@@ -1,10 +1,13 @@
 import {Text} from '@sanity/ui'
+import {vars} from '@sanity/ui/css'
 import {type Radius} from '@sanity/ui/theme'
 import {isValidElement, type ReactNode} from 'react'
 import {isValidElementType} from 'react-is'
 
 import {type PreviewLayoutKey, type PreviewMediaDimensions, type PreviewProps} from '../types'
-import {MediaWrapper} from './Media.styled'
+import * as styles from './Media.css'
+
+const rem = (value: number) => `${value / 16}rem`
 
 export interface MediaProps {
   border?: boolean
@@ -20,20 +23,42 @@ export interface MediaProps {
 }
 
 export function Media(props: MediaProps) {
-  const {border = true, dimensions, layout, media, radius = 1, responsive = false, styles} = props
+  const {
+    border = true,
+    dimensions,
+    layout,
+    media,
+    radius = 1,
+    responsive = false,
+    styles: propStyles,
+  } = props
+
+  const width = dimensions.width || 0
+  const height = dimensions.height || 0
+
+  const wrapperStyle = {
+    position: 'relative' as const,
+    width: responsive ? '100%' : rem(width),
+    height: responsive ? '100%' : rem(height),
+    minWidth: responsive ? undefined : rem(width),
+    borderRadius: vars.radius[radius],
+    display: 'flex',
+    overflow: 'clip' as const,
+    alignItems: 'center' as const,
+    justifyContent: 'center' as const,
+  }
 
   return (
-    <MediaWrapper
-      $dimensions={dimensions}
-      $layout={layout}
-      $radius={radius}
-      $responsive={responsive}
-      className={styles?.media}
+    <span
+      className={propStyles?.media}
       data-testid="Media"
+      style={wrapperStyle}
+      data-media-wrapper=""
+      data-layout={layout}
     >
       {renderMedia({dimensions, layout, media})}
-      {border && <span data-border />}
-    </MediaWrapper>
+      {border && <span className={styles.mediaWrapperBorderStyle} data-border />}
+    </span>
   )
 }
 

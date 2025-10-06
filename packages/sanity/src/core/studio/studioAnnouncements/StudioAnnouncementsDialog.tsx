@@ -2,9 +2,7 @@
 import {CloseIcon} from '@sanity/icons'
 import {useTelemetry} from '@sanity/telemetry/react'
 import {Box, Flex, Grid, Text} from '@sanity/ui'
-import {vars} from '@sanity/ui/css'
 import {Fragment, useCallback, useEffect, useMemo, useRef} from 'react'
-import {styled} from 'styled-components'
 
 import {Button, Dialog} from '../../../ui-components'
 import {useDateTimeFormat, type UseDateTimeFormatOptions} from '../../hooks'
@@ -16,34 +14,13 @@ import {
   ProductAnnouncementViewed,
 } from './__telemetry__/studioAnnouncements.telemetry'
 import {Divider} from './Divider'
+import * as styles from './StudioAnnouncements.css'
 import {type DialogMode, type StudioAnnouncementDocument} from './types'
 
 const DATE_FORMAT_OPTIONS: UseDateTimeFormatOptions = {
   month: 'short',
   day: '2-digit',
 }
-
-const Root = styled(Box)`
-  overflow: auto;
-  max-height: 75vh;
-`
-
-const DialogHeader = styled(Grid)`
-  position: sticky;
-  display: grid;
-  grid-template-columns: 64px 1fr 64px;
-  top: 0;
-  z-index: 1;
-  background: ${vars.color.bg};
-`
-
-const FloatingButtonBox = styled(Box)`
-  position: absolute;
-  top: 12px;
-  right: 24px;
-  z-index: 2;
-`
-const FloatingButton = styled(Button)``
 
 interface AnnouncementProps {
   announcement: StudioAnnouncementDocument
@@ -128,7 +105,7 @@ function Announcement({announcement, mode, isFirst, parentRef}: AnnouncementProp
 
   return (
     <Box>
-      <DialogHeader padding={3}>
+      <Grid className={styles.dialogHeaderStyle} padding={3}>
         <Box flex={'none'} padding={2} paddingRight={0}>
           <Box paddingLeft={2}>
             <Text size={1} muted>
@@ -141,7 +118,7 @@ function Announcement({announcement, mode, isFirst, parentRef}: AnnouncementProp
             {announcement.title}
           </Text>
         </Flex>
-      </DialogHeader>
+      </Grid>
       <Box padding={4}>
         <UpsellDescriptionSerializer
           blocks={announcement.body || []}
@@ -182,7 +159,7 @@ export function StudioAnnouncementsDialog({
       __unstable_hideCloseButton
       __unstable_autoFocus={false}
     >
-      <Root ref={dialogRef} height="fill">
+      <Box className={styles.dialogRootStyle} ref={dialogRef} height="fill">
         {announcements.map((announcement, index) => (
           <Fragment key={announcement._id}>
             <Announcement
@@ -195,8 +172,8 @@ export function StudioAnnouncementsDialog({
             {index < announcements.length - 1 && <Divider parentRef={dialogRef} />}
           </Fragment>
         ))}
-        <FloatingButtonBox>
-          <FloatingButton
+        <Box className={styles.dialogFloatingButtonBoxStyle}>
+          <Button
             aria-label={t('announcement.dialog.close-label')}
             icon={CloseIcon}
             mode="bleed"
@@ -205,8 +182,8 @@ export function StudioAnnouncementsDialog({
               content: t('announcement.dialog.close'),
             }}
           />
-        </FloatingButtonBox>
-      </Root>
+        </Box>
+      </Box>
     </Dialog>
   )
 }

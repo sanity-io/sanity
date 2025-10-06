@@ -1,5 +1,4 @@
 import {Box, Card, Flex, Skeleton, Stack, Text} from '@sanity/ui'
-import {vars} from '@sanity/ui/css'
 import {type AvatarColor} from '@sanity/ui/theme'
 import {type MouseEvent, useCallback, useMemo} from 'react'
 import {
@@ -12,32 +11,13 @@ import {
   useTranslation,
   useUser,
 } from 'sanity'
-import {css, styled} from 'styled-components'
 
 import {Tooltip} from '../../../../ui-components'
 import {getTimelineEventIconComponent} from './helpers'
 import {TIMELINE_ITEM_I18N_KEY_MAPPING} from './timelineI18n'
 import {UserAvatarStack} from './userAvatarStack'
 import {type ChunksWithCollapsedDrafts} from './utils'
-
-export const IconBox = styled(Flex)<{$color: AvatarColor}>((props) => {
-  const color = props.$color
-
-  return css`
-    /* TODO: this no longer works in @sanity/ui@3 */
-    --card-icon-color: ${vars.color.avatar[color].fg};
-
-    background-color: ${vars.color.avatar[color].bg};
-    box-shadow: 0 0 0 1px ${vars.color.bg};
-
-    position: absolute;
-    width: ${vars.avatar.scale[0].size};
-    height: ${vars.avatar.scale[0].size};
-    right: -3px;
-    bottom: -3px;
-    border-radius: 50%;
-  `
-})
+import * as styles from '../../../Structure.css'
 
 const TIMELINE_ITEM_EVENT_TONE: Record<ChunkType | 'withinSelection', AvatarColor> = {
   initial: 'blue',
@@ -64,11 +44,6 @@ const RELATIVE_TIME_OPTIONS: RelativeTimeOptions = {
   useTemporalPhrase: true,
 }
 
-const NameSkeleton = styled(Skeleton)`
-  width: 6ch;
-  height: ${vars.font.text.scale[0].lineHeight};
-`
-
 const UserLine = ({userId}: {userId: string}) => {
   const [user, loading] = useUser(userId)
 
@@ -78,7 +53,7 @@ const UserLine = ({userId}: {userId: string}) => {
       <Box>
         {loading || !user?.displayName ? (
           <Text size={1}>
-            <NameSkeleton animated />
+            <Skeleton className={styles.timelineItemNameSkeletonStyle} animated />
           </Text>
         ) : (
           <Text muted size={1}>
@@ -156,9 +131,13 @@ export function TimelineItem({
         <Flex align="center" gap={3}>
           <div style={{position: 'relative'}}>
             <UserAvatarStack maxLength={3} userIds={authorUserIds} size={2} />
-            <IconBox align="center" justify="center" $color={TIMELINE_ITEM_EVENT_TONE[type]}>
+            <Flex
+              className={styles.timelineItemIconBoxStyle[TIMELINE_ITEM_EVENT_TONE[type]]}
+              align="center"
+              justify="center"
+            >
               <Text size={0}>{IconComponent && <IconComponent />}</Text>
-            </IconBox>
+            </Flex>
           </div>
           <Stack gap={2}>
             <Text size={1} weight="medium">

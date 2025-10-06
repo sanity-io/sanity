@@ -14,28 +14,12 @@ import {
   useTranslation,
 } from 'sanity'
 import {DocumentChangeContext} from 'sanity/_singletons'
-import {styled} from 'styled-components'
 
 import {structureLocaleNamespace} from '../../../../i18n'
 import {TimelineMenu} from '../../timeline'
 import {TimelineError} from '../../timeline/TimelineError'
 import {useDocumentPane} from '../../useDocumentPane'
-
-const Scroller = styled(ScrollContainer)`
-  height: 100%;
-  overflow: auto;
-  position: relative;
-  scroll-behavior: smooth;
-`
-
-const Grid = styled(Box)`
-  &:not([hidden]) {
-    display: grid;
-  }
-  grid-template-columns: 48px 1fr;
-  align-items: center;
-  gap: 0.25em;
-`
+import * as styles from '../../../../Structure.css'
 
 export function ChangesInspector({showChanges}: {showChanges: boolean}): React.JSX.Element {
   const {documentId, schemaType, timelineError, timelineStore, value} = useDocumentPane()
@@ -81,7 +65,7 @@ export function ChangesInspector({showChanges}: {showChanges: boolean}): React.J
   return (
     <Flex data-testid="review-changes-pane" direction="column" height="fill" overflow="hidden">
       <Box padding={3}>
-        <Grid paddingX={2} paddingBottom={2}>
+        <Box className={styles.changesInspectorGridStyle} paddingX={2} paddingBottom={2}>
           <Text size={1} muted>
             {structureT('changes.from.label')}
           </Text>
@@ -91,12 +75,16 @@ export function ChangesInspector({showChanges}: {showChanges: boolean}): React.J
             {structureT('changes.to.label')}
           </Text>
           <TimelineMenu chunk={rev} mode="rev" placement="bottom-end" />
-        </Grid>
+        </Box>
       </Box>
 
       <Card flex={1} paddingX={2} paddingY={2}>
         <BoundaryElementProvider element={scrollRef}>
-          <Scroller data-ui="Scroller" ref={setScrollRef}>
+          <ScrollContainer
+            className={styles.changesInspectorScrollerStyle}
+            data-ui="Scroller"
+            ref={setScrollRef}
+          >
             <Box flex={1} paddingX={3} height="fill">
               {showChanges && (
                 <Content
@@ -108,7 +96,7 @@ export function ChangesInspector({showChanges}: {showChanges: boolean}): React.J
                 />
               )}
             </Box>
-          </Scroller>
+          </ScrollContainer>
         </BoundaryElementProvider>
       </Card>
     </Flex>

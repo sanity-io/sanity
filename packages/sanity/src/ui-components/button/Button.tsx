@@ -7,13 +7,13 @@ import {
   type Props,
 } from '@sanity/ui'
 import {useCallback} from 'react'
-import {styled} from 'styled-components'
 
 import {
   ConditionalWrapper,
   type ConditionalWrapperRenderWrapperCallback,
 } from '../conditionalWrapper'
 import {Tooltip, type TooltipProps} from '../tooltip'
+import * as styles from './Button.css'
 
 type BaseButtonProps = Pick<
   UIButtonProps<'button'>,
@@ -63,9 +63,6 @@ const DEFAULT_BUTTON_PROPS: UIButtonProps = {
   padding: 2,
 }
 
-const TooltipButtonWrapper = styled.span`
-  display: inline-flex;
-`
 /**
  * Customized Sanity UI <Button> with pre-defined layout options.
  *
@@ -87,7 +84,7 @@ export function Button<E extends ButtonElementType = 'button'>(props: ButtonProp
       return (
         <Tooltip content={tooltipProps?.content} portal {...tooltipProps}>
           {/* This span is needed to make the tooltip work in disabled buttons */}
-          <TooltipButtonWrapper>{children}</TooltipButtonWrapper>
+          <span className={styles.tooltipButtonWrapper}>{children}</span>
         </Tooltip>
       )
     },

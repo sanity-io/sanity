@@ -1,51 +1,17 @@
 import {Flex} from '@sanity/ui'
-import {getVarName, vars} from '@sanity/ui/css'
 import {useMemo} from 'react'
-import {css, styled} from 'styled-components'
 
-import {RELEASE_TYPES_TONES, type VersionInfoDocumentStub} from '../../releases'
+import {type VersionInfoDocumentStub} from '../../releases'
 import {useActiveReleases} from '../../releases/store/useActiveReleases'
 import {getReleaseIdFromReleaseDocumentId} from '../../releases/util/getReleaseIdFromReleaseDocumentId'
 import {useWorkspace} from '../../studio/workspace'
+import * as styles from './DocumentStatusIndicator.css'
 
 interface DocumentStatusProps {
   draft?: VersionInfoDocumentStub | undefined
   published?: VersionInfoDocumentStub | undefined
   versions?: Record<string, VersionInfoDocumentStub | undefined>
 }
-
-const Dot = styled.div<{$index: number}>((props) => {
-  const {$index} = props
-  const tone = {
-    asap: RELEASE_TYPES_TONES.asap.tone,
-    scheduled: RELEASE_TYPES_TONES.scheduled.tone,
-    undecided: RELEASE_TYPES_TONES.undecided.tone,
-  }
-
-  return css`
-    width: 5px;
-    height: 5px;
-    background-color: ${vars.color.muted.fg};
-    border-radius: 999px;
-    box-shadow: 0 0 0 1px ${vars.color.bg};
-    z-index: ${$index};
-    &[data-status='published'] {
-      ${getVarName(vars.color.muted.fg)}: ${vars.color.solid.positive.bg[0]};
-    }
-    &[data-status='draft'] {
-      ${getVarName(vars.color.muted.fg)}: ${vars.color.solid.caution.bg[0]};
-    }
-    &[data-status='asap'] {
-      ${getVarName(vars.color.muted.fg)}: ${vars.color.solid[tone.asap].bg[0]};
-    }
-    &[data-status='undecided'] {
-      ${getVarName(vars.color.muted.fg)}: ${vars.color.solid[tone.undecided].bg[0]};
-    }
-    &[data-status='scheduled'] {
-      ${getVarName(vars.color.muted.fg)}: ${vars.color.solid[tone.scheduled].bg[0]};
-    }
-  `
-})
 
 type Status = 'published' | 'draft' | 'asap' | 'scheduled' | 'undecided'
 
@@ -110,7 +76,7 @@ export function DocumentStatusIndicator({draft, published, versions}: DocumentSt
       {indicators
         .filter(({show}) => show)
         .map(({status}, index) => (
-          <Dot key={status} data-status={status} $index={index + 1} />
+          <div key={status} className={styles.dotStyles[index + 1]} data-status={status} />
         ))}
     </Flex>
   )

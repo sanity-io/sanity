@@ -1,34 +1,17 @@
 import {SearchIcon} from '@sanity/icons'
 import {Autocomplete, BoundaryElementProvider, Card, Flex, Inline, Stack, Text} from '@sanity/ui'
-import {vars} from '@sanity/ui/css'
 import {useCallback, useMemo, useState} from 'react'
-import {styled} from 'styled-components'
 
 import {Dialog} from '../../../ui-components'
 import {type TimeZoneScope, type TimeZoneScopeType, useTimeZone} from '../../hooks/useTimeZone'
 import {useTranslation} from '../../i18n/hooks/useTranslation'
 import {type NormalizedTimeZone} from '../../studio/timezones/types'
+import * as styles from './DialogTimeZone.css'
 
 export interface DialogTimeZoneProps {
   onClose?: () => void
   timeZoneScope: TimeZoneScope
 }
-
-const TimeZoneCitySpan = styled.span`
-  color: ${vars.color.fg};
-  font-weight: 500;
-  margin-left: 1em;
-`
-
-const TimeZoneOffsetSpan = styled.span`
-  color: ${vars.color.tinted.default.fg[0]};
-  font-weight: 500;
-`
-
-const TimeZoneAlternativeNameSpan = styled.span`
-  color: ${vars.color.tinted.default.fg[4]};
-  float: right;
-`
 
 const DialogTimeZone = (props: DialogTimeZoneProps) => {
   const {onClose, timeZoneScope} = props
@@ -74,14 +57,14 @@ const DialogTimeZone = (props: DialogTimeZoneProps) => {
     return (
       <Card as="button" padding={3}>
         <Text size={1} textOverflow="ellipsis">
-          <TimeZoneCitySpan>{option.city}</TimeZoneCitySpan>
-          <TimeZoneOffsetSpan>
+          <span className={styles.timeZoneCityStyle}>{option.city}</span>
+          <span className={styles.timeZoneOffsetStyle}>
             {' '}
             ({'GMT'}
             {option.offset})
-          </TimeZoneOffsetSpan>
+          </span>
 
-          <TimeZoneAlternativeNameSpan>{option.alternativeName}</TimeZoneAlternativeNameSpan>
+          <span className={styles.timeZoneAlternativeNameStyle}>{option.alternativeName}</span>
         </Text>
       </Card>
     )

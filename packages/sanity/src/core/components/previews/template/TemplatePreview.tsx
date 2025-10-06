@@ -1,14 +1,12 @@
 import {Box, Flex, Stack, Text, TextSkeleton} from '@sanity/ui'
 import {type ElementType, isValidElement, type ReactNode} from 'react'
 import {isValidElementType} from 'react-is'
-import {styled} from 'styled-components'
 import {getDevicePixelRatio} from 'use-device-pixel-ratio'
 
 import {Media, type MediaProps} from '../_common/Media'
 import {PREVIEW_SIZES} from '../constants'
 import {type PreviewMediaDimensions} from '../types'
-
-const rem = (value: number) => `${value / 16}rem`
+import * as styles from './TemplatePreview.css'
 
 /**
  * @hidden
@@ -29,33 +27,6 @@ const DEFAULT_MEDIA_DIMENSION: PreviewMediaDimensions = {
   dpr: getDevicePixelRatio(),
 }
 
-const Root = styled(Box)`
-  height: 100%;
-
-  a {
-    color: currentColor;
-    text-decoration: none;
-  }
-
-  svg[data-sanity-icon] {
-    margin: 0;
-  }
-`
-
-const HeaderFlex = styled(Flex).attrs({align: 'center'})`
-  height: ${rem(PREVIEW_SIZES.default.media.height)};
-`
-
-const TitleSkeleton = styled(TextSkeleton).attrs({animated: true, radius: 1})`
-  max-width: ${rem(160)};
-  width: 80%;
-`
-
-const SubtitleSkeleton = styled(TextSkeleton).attrs({animated: true, radius: 1, size: 1})`
-  max-width: ${rem(120)};
-  width: 60%;
-`
-
 /**
  * @hidden
  * @beta */
@@ -71,20 +42,20 @@ export function TemplatePreview(props: TemplatePreviewProps) {
 
   if (isPlaceholder) {
     return (
-      <Root>
-        <HeaderFlex>
+      <Box className={styles.rootStyle}>
+        <Flex align="center" className={styles.headerFlexStyle}>
           <Stack flex={1} gap={2}>
-            <TitleSkeleton />
-            <SubtitleSkeleton />
+            <TextSkeleton animated className={styles.titleSkeletonStyle} radius={1} />
+            <TextSkeleton animated className={styles.subtitleSkeletonStyle} radius={1} size={1} />
           </Stack>
-        </HeaderFlex>
-      </Root>
+        </Flex>
+      </Box>
     )
   }
 
   return (
-    <Root>
-      <HeaderFlex>
+    <Box className={styles.rootStyle}>
+      <Flex align="center" className={styles.headerFlexStyle}>
         <Stack flex={1} gap={2}>
           {isValidElementType(Title) && (
             <Text textOverflow="ellipsis">
@@ -110,7 +81,7 @@ export function TemplatePreview(props: TemplatePreviewProps) {
             <Media dimensions={mediaDimensions} layout="default" media={media} />
           </Flex>
         )}
-      </HeaderFlex>
+      </Flex>
 
       {description && (
         <Box marginTop={3}>
@@ -119,6 +90,6 @@ export function TemplatePreview(props: TemplatePreviewProps) {
           </Text>
         </Box>
       )}
-    </Root>
+    </Box>
   )
 }

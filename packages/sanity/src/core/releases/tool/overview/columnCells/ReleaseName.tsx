@@ -1,11 +1,11 @@
 import {PinFilledIcon, PinIcon} from '@sanity/icons'
-import {Box, Card, type CardProps, Flex, Skeleton, Stack, Text} from '@sanity/ui'
+import {Box, Card, type CardProps, Flex, Skeleton, Stack, Text, TextSkeleton} from '@sanity/ui'
 import {useCallback} from 'react'
 import {useRouter} from 'sanity/router'
 
 import {Button, Tooltip} from '../../../../../ui-components'
 import {PREVIEW_SIZES} from '../../../../components/previews/constants'
-import {TitleSkeleton} from '../../../../components/previews/general/DetailPreview.styled'
+import * as previewStyles from '../../../../components/previews/general/DetailPreview.css'
 import {Translate, useTranslation} from '../../../../i18n'
 import {usePerspective} from '../../../../perspective/usePerspective'
 import {useSetPerspective} from '../../../../perspective/useSetPerspective'
@@ -54,7 +54,7 @@ export const ReleaseNameCell: VisibleColumn<TableRelease>['cell'] = ({
       <WrapperBox>
         <Flex align="center" gap={2}>
           <Skeleton animated radius={1} style={PREVIEW_SIZES.default.media} />
-          <TitleSkeleton />
+          <TextSkeleton animated className={previewStyles.titleSkeletonStyle} radius={1} size={1} />
         </Flex>
       </WrapperBox>
     )

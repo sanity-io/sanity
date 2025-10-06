@@ -19,12 +19,12 @@ import {
   useEvents,
   useTranslation,
 } from 'sanity'
-import {styled} from 'styled-components'
 
 import {Button, Popover} from '../../../../../ui-components'
 import {useDocumentPane} from '../../useDocumentPane'
 import {TimelineError} from '../TimelineError'
 import {EventsTimeline} from './EventsTimeline'
+import * as styles from '../../../../Structure.css'
 
 interface TimelineMenuProps {
   event: DocumentGroupEvent | null
@@ -32,11 +32,6 @@ interface TimelineMenuProps {
   mode: 'rev' | 'since'
   placement?: Placement
 }
-
-const Root = styled(Popover)`
-  overflow: hidden;
-  overflow: clip;
-`
 
 export const TIMELINE_MENU_PORTAL = 'timeline-menu'
 
@@ -188,7 +183,8 @@ export function EventsTimelineMenu({event, events, mode, placement}: TimelineMen
 
   return (
     <PortalProvider __unstable_elements={portalElements}>
-      <Root
+      <Popover
+        className={styles.timelineMenuRootStyle}
         data-testid="timeline-menu"
         constrainSize
         content={open && content}
@@ -217,7 +213,7 @@ export function EventsTimelineMenu({event, events, mode, placement}: TimelineMen
             text={loading ? t('timeline.loading-history') : buttonLabel}
           />
         </Flex>
-      </Root>
+      </Popover>
     </PortalProvider>
   )
 }

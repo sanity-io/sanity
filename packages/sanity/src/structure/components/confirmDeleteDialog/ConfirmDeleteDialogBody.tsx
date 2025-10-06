@@ -12,16 +12,10 @@ import {SanityDefaultPreview, Translate, useSchema, useTranslation} from 'sanity
 
 import {Button} from '../../../ui-components'
 import {structureLocaleNamespace} from '../../i18n'
-import {
-  ChevronWrapper,
-  CrossDatasetReferencesDetails,
-  CrossDatasetReferencesSummary,
-  DocumentIdFlex,
-  OtherReferenceCount,
-  Table,
-} from './ConfirmDeleteDialogBody.styles'
+import {OtherReferenceCount} from './ConfirmDeleteDialogBody.styles'
 import {ReferencePreviewLink} from './ReferencePreviewLink'
 import {type ReferringDocuments} from './useReferringDocuments'
+import * as styles from '../../Structure.css'
 
 type DeletionConfirmationDialogBodyProps = Required<ReferringDocuments> & {
   documentTitle: React.ReactNode
@@ -147,7 +141,8 @@ export function ConfirmDeleteDialogBody({
           )}
 
           {crossDatasetReferences.totalCount > 0 && (
-            <CrossDatasetReferencesDetails
+            <details
+              className={styles.crossDatasetReferencesDetailsStyle}
               data-testid="cross-dataset-references"
               style={{
                 // only add the border if needed
@@ -157,7 +152,7 @@ export function ConfirmDeleteDialogBody({
                     : undefined,
               }}
             >
-              <CrossDatasetReferencesSummary>
+              <summary className={styles.crossDatasetReferencesSummaryStyle}>
                 <Card
                   as="a"
                   marginTop={internalReferences.totalCount > 0 ? 2 : 0}
@@ -182,17 +177,17 @@ export function ConfirmDeleteDialogBody({
                         {datasetSubtitle}
                       </Text>
                     </Stack>
-                    <ChevronWrapper>
+                    <Box className={styles.chevronWrapperStyle}>
                       <Text muted size={1}>
                         <ChevronDownIcon />
                       </Text>
-                    </ChevronWrapper>
+                    </Box>
                   </Flex>
                 </Card>
-              </CrossDatasetReferencesSummary>
+              </summary>
 
               <Box overflow="auto" paddingTop={2}>
-                <Table>
+                <table className={styles.tableStyle}>
                   <thead>
                     <tr>
                       <th>
@@ -226,7 +221,12 @@ export function ConfirmDeleteDialogBody({
                             <Text size={1}>{datasetName || 'unavailable'}</Text>
                           </td>
                           <td>
-                            <DocumentIdFlex align="center" gap={2} justify="flex-end">
+                            <Flex
+                              className={styles.documentIdFlexStyle}
+                              align="center"
+                              gap={2}
+                              justify="flex-end"
+                            >
                               <Text textOverflow="ellipsis" size={1}>
                                 {documentId || 'unavailable'}
                               </Text>
@@ -251,16 +251,16 @@ export function ConfirmDeleteDialogBody({
                                   }}
                                 />
                               )}
-                            </DocumentIdFlex>
+                            </Flex>
                           </td>
                         </tr>
                       ))}
                   </tbody>
-                </Table>
+                </table>
 
                 <OtherReferenceCount {...crossDatasetReferences} />
               </Box>
-            </CrossDatasetReferencesDetails>
+            </details>
           )}
         </Flex>
       </Card>

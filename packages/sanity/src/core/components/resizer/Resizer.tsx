@@ -1,72 +1,6 @@
-import {vars} from '@sanity/ui/css'
 import {type MouseEvent, useCallback, useRef} from 'react'
-import {css, styled} from 'styled-components'
 
-interface PositionProps {
-  position: 'left' | 'right'
-}
-
-const Root = styled.div<PositionProps>`
-  position: absolute;
-  top: 0;
-  bottom: 0;
-  width: 9px;
-  z-index: 201;
-  cursor: ew-resize;
-
-  ${({position}) =>
-    position === 'right'
-      ? css`
-          right: -4px;
-        `
-      : css`
-          left: -4px;
-        `}
-
-  /* Border */
-  & > span:nth-child(1) {
-    display: block;
-    border-left: 1px solid ${vars.color.border};
-    position: absolute;
-    top: 0;
-    ${({position}) =>
-      position === 'right'
-        ? css`
-            right: 4px;
-          `
-        : css`
-            left: 4px;
-          `}
-    bottom: 0;
-    transition: opacity 200ms;
-  }
-
-  /* Hover effect */
-  & > span:nth-child(2) {
-    display: block;
-    position: absolute;
-    top: 0;
-    ${({position}) =>
-      position === 'right'
-        ? css`
-            right: 0px;
-          `
-        : css`
-            left: 0px;
-          `}
-    width: 9px;
-    bottom: 0;
-    background-color: ${vars.color.border};
-    opacity: 0;
-    transition: opacity 150ms;
-  }
-
-  @media (hover: hover) {
-    &:hover > span:nth-child(2) {
-      opacity: 0.2;
-    }
-  }
-`
+import * as styles from './Resizer.css'
 
 export function Resizer(props: {
   onResize: (delta: number) => void
@@ -102,12 +36,12 @@ export function Resizer(props: {
   )
 
   return (
-    <Root onMouseDown={handleMouseDown} position={position}>
-      {/* Hover effect */}
-      <span />
-
+    <div className={styles.rootStyles[position]} onMouseDown={handleMouseDown}>
       {/* Border */}
-      <span />
-    </Root>
+      <span className={styles.borderStyles[position]} />
+
+      {/* Hover effect */}
+      <span className={`${styles.hoverEffectStyles[position]} ${styles.hoverEffectHoverStyle}`} />
+    </div>
   )
 }

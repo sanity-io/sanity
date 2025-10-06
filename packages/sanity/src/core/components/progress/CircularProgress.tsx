@@ -1,27 +1,7 @@
-import {vars} from '@sanity/ui/css'
-import {styled} from 'styled-components'
+import * as styles from './CircularProgress.css'
 
 const SIZE = 43
 const STROKE_WIDTH = 3
-
-const Root = styled.svg`
-  width: ${SIZE}px;
-  height: ${SIZE}px;
-  transform: rotate(-90deg);
-`
-
-const BgCircle = styled.circle`
-  fill: none;
-  stroke: ${vars.color.tinted.default.border[0]};
-  stroke-width: ${STROKE_WIDTH}px;
-`
-
-const ProgressCircle = styled.circle`
-  fill: none;
-  stroke: ${vars.color.solid.primary.bg[0]};
-  stroke-width: ${STROKE_WIDTH}px;
-  transition: stroke-dashoffset 75ms;
-`
 
 /**
  * @hidden
@@ -38,9 +18,10 @@ export function CircularProgress(props: {
   const viewBox = `${SIZE / 2} ${SIZE / 2} ${SIZE} ${SIZE}`
 
   return (
-    <Root viewBox={viewBox}>
-      <BgCircle cx={SIZE} cy={SIZE} r={radius} />
-      <ProgressCircle
+    <svg className={styles.rootStyle} viewBox={viewBox}>
+      <circle className={styles.bgCircleStyle} cx={SIZE} cy={SIZE} r={radius} />
+      <circle
+        className={styles.progressCircleStyle}
         cx={SIZE}
         cy={SIZE}
         r={radius}
@@ -49,6 +30,6 @@ export function CircularProgress(props: {
           strokeDashoffset: `${offset}px`,
         }}
       />
-    </Root>
+    </svg>
   )
 }

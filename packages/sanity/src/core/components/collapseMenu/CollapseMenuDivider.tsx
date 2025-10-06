@@ -1,14 +1,4 @@
-import {vars} from '@sanity/ui/css'
-import {styled} from 'styled-components'
-
-const DividerDiv = styled.div`
-  border-right: 1px solid ${vars.color.border};
-  height: auto;
-
-  &[data-hidden] {
-    opacity: 0;
-  }
-`
+import * as styles from './CollapseMenuDivider.css'
 
 interface CollapseMenuDividerProps {
   hidden?: boolean
@@ -18,6 +8,11 @@ export function CollapseMenuDivider(props: CollapseMenuDividerProps) {
   const {hidden, ...rest} = props
 
   return (
-    <DividerDiv data-ui="CollapseMenuDivider" data-hidden={hidden ? '' : undefined} {...rest} />
+    <div
+      className={styles.dividerStyle}
+      data-ui="CollapseMenuDivider"
+      data-hidden={hidden ? '' : undefined}
+      {...rest}
+    />
   )
 }

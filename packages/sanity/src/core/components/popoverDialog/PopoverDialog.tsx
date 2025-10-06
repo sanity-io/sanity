@@ -1,22 +1,10 @@
 import {CloseIcon} from '@sanity/icons'
 import {Box, type ContainerProps, Flex, Layer, Stack, Text} from '@sanity/ui'
-import {vars} from '@sanity/ui/css'
 import {type Dispatch, type ReactNode, type SetStateAction, useCallback} from 'react'
 import TrapFocus from 'react-focus-lock'
-import {styled} from 'styled-components'
 
 import {Button, Popover, type PopoverProps} from '../../../ui-components'
-
-// This layer is sticky so that the header is always visible when scrolling
-const StickyLayer = styled(Layer)`
-  position: sticky;
-  top: 0;
-  width: 100%;
-  background: ${vars.color.bg};
-  border-bottom: 1px solid ${vars.color.border};
-  border-top-left-radius: ${vars.radius[3]};
-  border-top-right-radius: ${vars.radius[3]};
-`
+import * as styles from './PopoverDialog.css'
 
 interface PopoverDialogProps {
   children: ReactNode
@@ -42,7 +30,7 @@ export function PopoverDialog(props: PopoverDialogProps) {
   const content = (
     <TrapFocus autoFocus>
       <Stack ref={containerRef}>
-        <StickyLayer>
+        <Layer className={styles.stickyLayerStyle}>
           <Box padding={2} paddingLeft={4}>
             <Flex align="center" gap={2}>
               <Box flex={1}>
@@ -58,7 +46,7 @@ export function PopoverDialog(props: PopoverDialogProps) {
               />
             </Flex>
           </Box>
-        </StickyLayer>
+        </Layer>
         <Box padding={4}>{children}</Box>
       </Stack>
     </TrapFocus>
