@@ -97,7 +97,7 @@ export function buildArrayState(props: BuildArrayState): TreeEditingState {
     // Check if openPath is within this array item (for fields within the item)
     // This needs to be less strict than the isArrayItemSelected check
     // Because from a UI perspective we're still within the item
-    if (toString(openPath).startsWith(toString(itemPath))) {
+    if (item._key && toString(openPath).startsWith(toString(itemPath))) {
       // Store the current item's 1-based index for the parent array
       siblings.set(toString(rootPath), {count: arrayValue.length, index: arrayIndex + 1})
     }
