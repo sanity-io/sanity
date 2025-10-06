@@ -92,6 +92,12 @@ export function buildArrayState(props: BuildArrayState): TreeEditingState {
     // Check if this is the currently selected item and store its index
     if (isArrayItemSelected(itemPath, openPath)) {
       relativePath = getRelativePath(itemPath)
+    }
+
+    // Check if openPath is within this array item (for fields within the item)
+    // This needs to be less strict than the isArrayItemSelected check
+    // Because from a UI perspective we're still within the item
+    if (toString(openPath).startsWith(toString(itemPath))) {
       // Store the current item's 1-based index for the parent array
       siblings.set(toString(rootPath), {count: arrayValue.length, index: arrayIndex + 1})
     }
@@ -168,7 +174,7 @@ export function buildArrayState(props: BuildArrayState): TreeEditingState {
             const nestedItemObj = nestedItem as Record<string, unknown>
             const nestedItemPath = [...fieldPath, {_key: nestedItemObj._key}] as Path
 
-            // Check if any item in this nested array is selected and update the index
+            // Check if openPath is within this nested array item (for fields within the item)
             // Avoids setting siblings that we do not care about
             if (isArrayItemSelected(nestedItemPath, openPath)) {
               siblings.set(toString(fieldPath), {
