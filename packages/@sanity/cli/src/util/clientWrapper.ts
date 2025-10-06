@@ -16,6 +16,7 @@ import {getUserConfig} from './getUserConfig'
 const apiHosts: Record<string, string | undefined> = {
   staging: 'https://api.sanity.work',
   development: 'http://api.sanity.local',
+  production: 'https://api.sanity.io',
 }
 
 /**
@@ -74,18 +75,29 @@ export function getClientWrapper(
   const requester = defaultRequester.clone()
   requester.use(authErrors())
 
-  return function (opts?: ClientRequirements) {
+  return function getClient(opts?: ClientRequirements) {
     // Read these environment variables "late" to allow `.env` files
+
+    const internalEnv = process.env.SANITY_INTERNAL_ENV
+
     const {requireUser, requireProject, api} = {...defaults, ...opts}
-    const token = getCliToken(cliApiConfig?.apiHost)
+    const apiHost = api?.apiHost || apiHosts[internalEnv || 'production']
+    const token = getCliToken(apiHost)
 
     const apiConfig = {
       ...cliApiConfig,
       ...api,
     }
 
+    if (apiHost) {
+      apiConfig.apiHost = apiHost
+    }
+
+    const env = apiHost?.endsWith('.work') ? 'staging' : 'production'
     if (requireUser && !token) {
-      throw new Error('You must login first - run "sanity login"')
+      throw new Error(
+        `You must login ${env === 'staging' ? 'to staging ' : ''}first - run "${env === 'staging' ? 'SANITY_INTERNAL_ENV=staging ' : ''}sanity login"`,
+      )
     }
 
     if (requireProject && !apiConfig.projectId) {
