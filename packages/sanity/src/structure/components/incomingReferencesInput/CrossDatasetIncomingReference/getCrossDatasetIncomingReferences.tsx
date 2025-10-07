@@ -99,9 +99,9 @@ export function getCrossDatasetIncomingReferences({
           preview: {
             published: {
               _id: document.documentId,
-              title: document.documentId,
-              subtitle: document.datasetName,
-              media: DocumentIcon,
+              title: `Document Id: ${document.documentId}`,
+              subtitle: `Dataset: ${document.datasetName} - Project Id: ${document.projectId}`,
+              media: <DocumentIcon />,
             } as PreviewValue,
           },
           availability: {available: true, reason: 'READABLE'} as const,
@@ -124,13 +124,18 @@ export function getCrossDatasetIncomingReferences({
             const previewValue = prepareForPreview(result, {
               type: type.type,
               title: type.title || '',
-              icon: DocumentIcon,
+              icon: () => <DocumentIcon />,
               preview: type.preview,
             })
             return {
               type: document.documentType as string,
               id: document.documentId,
-              preview: {published: previewValue},
+              preview: {
+                published: {
+                  ...previewValue,
+                  media: previewValue.media ?? <DocumentIcon />,
+                },
+              },
               availability: {available: true, reason: 'READABLE'} as const,
               projectId: document.projectId,
               dataset: document.datasetName,
