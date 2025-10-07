@@ -18,14 +18,11 @@ export function CrossDatasetIncomingReferenceDocumentPreview({
         <PreviewCard
           data-as={studioUrl ? 'a' : 'div'}
           flex={1}
-          padding={1}
-          paddingRight={3}
           radius={2}
+          paddingRight={studioUrl ? 3 : 0}
           tone="inherit"
           __unstable_focusRing
           tabIndex={0}
-          onFocus={() => {}}
-          onBlur={() => {}}
           {...(studioUrl
             ? {href: studioUrl, target: '_blank', rel: 'noopener noreferrer', as: 'a'}
             : {})}

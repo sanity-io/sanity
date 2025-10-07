@@ -78,7 +78,7 @@ export function getIncomingReferences({
     switchMap(({filter: filterQuery, filterParams}) => {
       return documentPreviewStore
         .unstable_observeDocumentIdSet(
-          `references("${publishedId}") ${type ? `&& _type == ${type}` : ''} ${filterQuery ? `&& ${filterQuery}` : ''}`,
+          `references("${publishedId}") ${type ? `&& _type == "${type}"` : ''} ${filterQuery ? `&& ${filterQuery}` : ''}`,
           filterParams,
           {insert: 'append'},
         )
