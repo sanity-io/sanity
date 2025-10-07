@@ -50,20 +50,20 @@ export function IncomingReferencesType({
 }) {
   const documentPreviewStore = useDocumentPreviewStore()
   const formDocument = useFormValue([]) as SanityDocument
+  const {displayed} = useDocumentPane()
   const {getClient} = useSource()
-
+  const displayedId = displayed?._id as string
   const references$ = useMemo(
     () =>
       getIncomingReferences({
-        documentId: referenced.id,
+        documentId: displayedId,
         documentPreviewStore,
         type: type.type,
         filter,
         filterParams,
-        document: formDocument,
         getClient,
       }),
-    [documentPreviewStore, type, filter, filterParams, referenced.id, formDocument, getClient],
+    [documentPreviewStore, type, filter, filterParams, displayedId, formDocument, getClient],
   )
 
   const {documents, loading} = useObservable(references$, INITIAL_STATE)
