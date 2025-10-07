@@ -1,4 +1,4 @@
-import {filter, from, map, type Observable, of, startWith, switchMap} from 'rxjs'
+import {distinctUntilChanged, filter, map, type Observable, of, startWith, switchMap} from 'rxjs'
 import {mergeMapArray} from 'rxjs-mergemap-array'
 import {
   type DocumentPreviewStore,
@@ -35,7 +35,6 @@ interface InputIncomingReferencesOptions {
   type?: string
   filter?: IncomingReferencesOptions['filter']
   filterParams?: IncomingReferencesOptions['filterParams']
-  document: SanityDocument
 }
 
 interface InspectorIncomingReferencesOptions {
@@ -45,7 +44,6 @@ interface InspectorIncomingReferencesOptions {
   type?: undefined
   filter?: undefined
   filterParams?: undefined
-  document?: undefined
 }
 
 export function getIncomingReferences({
@@ -54,7 +52,6 @@ export function getIncomingReferences({
   type,
   filter: filterQueryRaw,
   filterParams: filterParamsRaw,
-  document,
   getClient,
 }: InspectorIncomingReferencesOptions | InputIncomingReferencesOptions): Observable<{
   documents: SanityDocument[]
@@ -66,7 +63,14 @@ export function getIncomingReferences({
     filterParams?: Record<string, unknown> | undefined
   }> =
     typeof filterQueryRaw === 'function'
-      ? from(resolveRawFilterCallback(filterQueryRaw, {document, getClient})).pipe(
+      ? documentPreviewStore.unstable_observeDocument(documentId).pipe(
+          distinctUntilChanged((a, b) => a?._rev === b?._rev),
+          switchMap((document) =>
+            resolveRawFilterCallback(filterQueryRaw, {
+              document: document as SanityDocument,
+              getClient,
+            }),
+          ),
           map((resolvedFilter) => ({
             filter: resolvedFilter.filter,
             filterParams: resolvedFilter.filterParams || filterParamsRaw,
@@ -75,6 +79,10 @@ export function getIncomingReferences({
       : of({filter: filterQueryRaw, filterParams: filterParamsRaw})
 
   return filterResolver.pipe(
+    distinctUntilChanged(
+      (a, b) =>
+        a.filter === b.filter && JSON.stringify(a.filterParams) === JSON.stringify(b.filterParams),
+    ),
     switchMap(({filter: filterQuery, filterParams}) => {
       return documentPreviewStore
         .unstable_observeDocumentIdSet(
