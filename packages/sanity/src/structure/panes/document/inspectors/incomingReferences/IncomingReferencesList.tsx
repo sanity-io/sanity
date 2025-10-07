@@ -135,10 +135,16 @@ export function IncomingReferencesList() {
             <Stack key={type} padding={2} space={1} marginBottom={2}>
               <TypeTitle type={type} />
               {documents.map((document) => (
-                <CrossDatasetIncomingReferenceDocumentPreview
+                <Card
                   key={document.id}
-                  document={document}
-                />
+                  border
+                  radius={2}
+                  padding={1}
+                  tone="default"
+                  overflow="hidden"
+                >
+                  <CrossDatasetIncomingReferenceDocumentPreview document={document} />
+                </Card>
               ))}
             </Stack>
           )

@@ -26,7 +26,6 @@ export function CrossDatasetIncomingReferenceType({
   type: CrossDatasetIncomingReference
 }) {
   const client = useClient(DEFAULT_STUDIO_CLIENT_OPTIONS)
-  const projectId = client.config().projectId || ''
   const documentPreviewStore = useDocumentPreviewStore()
 
   const references$ = useMemo(
