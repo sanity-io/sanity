@@ -163,9 +163,6 @@ export function useDocumentForm(options: DocumentFormOptions): DocumentFormValue
 
   const telemetry = useTelemetry()
 
-  const {validation: validationRaw} = useValidationStatus(documentId, documentType, releaseId)
-  const validation = useUnique(validationRaw)
-
   // if it only has versions then we need to make sure that whatever the first document that is allowed
   // is a version document, but also that it has the right order
   // this will make sure that then the right document appears and so does the right chip within the document header
@@ -238,6 +235,14 @@ export function useDocumentForm(options: DocumentFormOptions): DocumentFormValue
     selectedPerspectiveName,
     onlyHasVersions,
   ])
+
+  const {validation: validationRaw} = useValidationStatus(
+    documentId,
+    documentType,
+    releaseId,
+    value._id,
+  )
+  const validation = useUnique(validationRaw)
 
   const {previousId: upstreamId} = useDocumentIdStack({
     strict: true,

@@ -15,7 +15,7 @@ import {checkoutPair, type DocumentVersionEvent, type Pair} from './document-pai
 import {consistencyStatus} from './document-pair/consistencyStatus'
 import {documentEvents} from './document-pair/documentEvents'
 import {editOperations} from './document-pair/editOperations'
-import {editState, type EditStateFor} from './document-pair/editState'
+import {editState} from './document-pair/editState'
 import {
   type OperationError,
   operationEvents,
@@ -94,6 +94,7 @@ export interface DocumentStore {
       publishedId: string,
       type: string,
       version?: string,
+      displayedDocumentId?: string,
     ) => Observable<ValidationStatus>
   }
 }
@@ -212,9 +213,9 @@ export function createDocumentStore({
           }),
         )
       },
-      validation(publishedId, type, version) {
+      validation(publishedId, type, version, displayedDocumentId) {
         const idPair = getIdPairFromPublished(publishedId, version)
-        return validation(ctx, idPair, type)
+        return validation(ctx, idPair, type, displayedDocumentId)
       },
     },
   }
