@@ -39,7 +39,7 @@ export const TitleCard = styled(Card)(({theme}: {theme: Theme}) => {
   return css`
     background-color: ${bg};
 
-    [data-ui='Text'] {
+    > [data-ui='Text'] {
       color: ${fg};
     }
   `

@@ -25,6 +25,8 @@ export const ImageInputHotspotInput = memo(function ImageInputHotspotInputCompon
     [imageUrlBuilder, value?.asset],
   )
 
+  console.log('imageUrl', imageUrl)
+
   return (
     <Dialog
       __unstable_autoFocus={false}

@@ -1,6 +1,8 @@
-import {ArrowLeftIcon} from '@sanity/icons'
+import {ArrowLeftIcon, CheckmarkCircleIcon, CircleIcon, DotIcon} from '@sanity/icons'
+import {Badge, Flex} from '@sanity/ui'
 import {memo, useMemo} from 'react'
 import {CapabilityGate, getPublishedId, useActiveWorkspace, useTranslation} from 'sanity'
+import {styled} from 'styled-components'
 
 import {Button} from '../../../../../ui-components'
 import {PaneHeader, usePane, usePaneRouter} from '../../../../components'
@@ -10,6 +12,14 @@ import {useDocumentPane} from '../../useDocumentPane'
 import {DocumentHeaderTabs} from './DocumentHeaderTabs'
 import {DocumentHeaderTitle} from './DocumentHeaderTitle'
 import {FavoriteToggle} from './FavoriteToggle'
+
+const WorkflowTitleBadge = styled(Badge)`
+  padding: 8px 12px;
+  span {
+    font-size: 13px;
+    font-weight: 500;
+  }
+`
 
 /**
  * When not collapsed this component will render the title and the tabs.
@@ -77,7 +87,19 @@ export const DocumentPanelSubHeader = memo(function DocumentPanelHeader() {
       tabs={tabs}
       tabIndex={tabIndex}
       backButton={backButton}
-      appendTitle={favoriteToggle}
+      // appendTitle={favoriteToggle}
+      appendTitle={
+        <WorkflowTitleBadge tone="suggest">
+          <Flex align="center" gap={2}>
+            {'3 active workflows'}
+            <DotIcon
+              style={{
+                color: 'inherit',
+              }}
+            />
+          </Flex>
+        </WorkflowTitleBadge>
+      }
     />
   )
 })

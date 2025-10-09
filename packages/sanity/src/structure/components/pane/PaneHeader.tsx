@@ -101,7 +101,7 @@ export const PaneHeader = forwardRef(function PaneHeader(
                     </Box>
                   )}
                   {!loading && (
-                    <Flex align="center" gap={1}>
+                    <Flex align="center" gap={1} justify={'space-between'}>
                       <TitleText size={1} textOverflow="ellipsis" weight="semibold">
                         {title}
                       </TitleText>

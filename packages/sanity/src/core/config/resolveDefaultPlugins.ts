@@ -6,6 +6,7 @@ import {releases, RELEASES_NAME} from '../releases/plugin'
 // oxlint-disable-next-line no-restricted-imports
 import {SCHEDULED_PUBLISHING_NAME, scheduledPublishing} from '../scheduled-publishing/plugin'
 import {tasks, TASKS_NAME} from '../tasks/plugin'
+import {workflows} from '../workflows/plugin'
 import {
   type AppsOptions,
   type DefaultPluginsWorkspaceOptions,
@@ -22,6 +23,7 @@ const defaultPlugins = [
   releases(),
   canvasIntegration(),
   mediaLibrary(),
+  workflows(),
 ]
 
 type DefaultPluginsOptions = DefaultPluginsWorkspaceOptions & {

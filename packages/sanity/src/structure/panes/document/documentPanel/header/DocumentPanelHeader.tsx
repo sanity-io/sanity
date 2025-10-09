@@ -1,5 +1,5 @@
 import {ArrowLeftIcon, CloseIcon, SplitVerticalIcon} from '@sanity/icons'
-import {Box, Card, Flex} from '@sanity/ui'
+import {Badge, Box, Card, Flex} from '@sanity/ui'
 // eslint-disable-next-line camelcase
 import {getTheme_v2, rgba} from '@sanity/ui/theme'
 import {
