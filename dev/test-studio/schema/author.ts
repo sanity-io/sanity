@@ -109,6 +109,15 @@ export default defineType({
       type: 'reference',
       to: [{type: 'author'}],
     },
+    defineField({
+      name: 'netWorth',
+      title: 'Net worth',
+      type: 'source',
+      options: {
+        name: 'ECommerce',
+        field: 'worth',
+      },
+    }),
     defineLocalDecideField(
       defineField({
         name: 'decideName',

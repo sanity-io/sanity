@@ -77,6 +77,7 @@ import * as scrollBugTypes from './debug/scrollBug'
 import select from './debug/select'
 import {simpleArrayOfObjects} from './debug/simpleArrayOfObjects'
 import {simpleReferences} from './debug/simpleReferences'
+import {source} from './debug/source'
 import typeWithNoToplevelStrings from './debug/typeWithNoToplevelStrings'
 import uploads from './debug/uploads'
 import validation, {validationArraySuperType} from './debug/validation'
@@ -262,6 +263,7 @@ export function createSchemaTypes(projectId: string) {
     reservedFieldNames,
     review,
     select,
+    source,
     typeWithNoToplevelStrings,
     uploads,
     validation,

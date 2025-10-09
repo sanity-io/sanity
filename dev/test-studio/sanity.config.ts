@@ -250,6 +250,17 @@ const defaultWorkspace = defineConfig({
     locales: ['en-GB', 'en-US'],
     ages: ['20-29', '30-39'],
   },
+  externalSources: {
+    connections: [
+      {
+        name: 'ECommerce',
+        resolver: async (documentId) => {
+          const ecommerceResult = await fetch(`https://api.ecommerce.com/documents/${documentId}`)
+          return ecommerceResult.json()
+        },
+      },
+    ],
+  },
   document: {
     actions: (prev, ctx) => {
       if (ctx.schemaType === 'book' && ctx.releaseId) {
