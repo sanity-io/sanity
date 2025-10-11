@@ -47,7 +47,13 @@ import {TreeEditingDialog, TreeEditingEnabledProvider, useTreeEditingEnabled} fr
 export interface FormBuilderProps
   extends Omit<
     ObjectFormNode,
-    'level' | 'path' | 'presence' | 'validation' | '_allMembers' | '__unstable_computeDiff'
+    | 'level'
+    | 'path'
+    | 'presence'
+    | 'validation'
+    | '_allMembers'
+    | '__unstable_computeDiff'
+    | 'displayInlineChanges'
   > {
   /** @internal */
   __internal_fieldActions?: DocumentFieldAction[]
@@ -242,6 +248,7 @@ export function FormBuilder(props: FormBuilderProps) {
       value,
       __unstable_computeDiff: diffProps.__unstable_computeDiff,
       changed: members.some((m) => m.kind === 'field' && m.field.changed),
+      displayInlineChanges: false,
     }
   }, [
     compareValue,

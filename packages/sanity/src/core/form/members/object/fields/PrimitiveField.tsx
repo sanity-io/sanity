@@ -139,8 +139,10 @@ export function PrimitiveField(props: {
       presence: member.field.presence,
       validationError,
       elementProps,
+      displayInlineChanges: member.field.displayInlineChanges ?? false,
     }
   }, [
+    member.field.displayInlineChanges,
     member.field.value,
     member.field.__unstable_computeDiff,
     member.field.readOnly,

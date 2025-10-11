@@ -363,6 +363,7 @@ export function ArrayOfPrimitivesField(props: {
       renderItem,
       onIndexFocus: handleFocusIndex,
       renderPreview,
+      displayInlineChanges: member.field.displayInlineChanges ?? false,
     }
   }, [
     member.field.level,
@@ -378,6 +379,7 @@ export function ArrayOfPrimitivesField(props: {
     member.field.focused,
     member.field.validation,
     member.field.presence,
+    member.field.displayInlineChanges,
     handleSetCollapsed,
     elementProps,
     handleChange,
