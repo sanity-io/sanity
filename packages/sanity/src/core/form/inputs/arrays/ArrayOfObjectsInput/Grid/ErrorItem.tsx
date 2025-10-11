@@ -5,6 +5,7 @@ import {useCallback, useId} from 'react'
 import {MenuButton, MenuItem} from '../../../../../../ui-components'
 import {ContextMenuButton} from '../../../../../components/contextMenuButton'
 import {useTranslation} from '../../../../../i18n'
+import {useParentArrayInput} from '../../../../members/object/fields/ArrayOfObjectsField'
 import {PatchEvent, unset} from '../../../../patch'
 import {type ArrayItemError} from '../../../../store'
 import {useFormCallbacks} from '../../../../studio/contexts/FormCallbacks'
@@ -15,6 +16,8 @@ const MENU_POPOVER_PROPS = {portal: true, tone: 'default'} as const
 
 export function ErrorItem(props: {member: ArrayItemError; sortable?: boolean; readOnly?: boolean}) {
   const {member, sortable, readOnly} = props
+  const {active, onItemUnselect, selectedItemKeys, onItemSelect} = useParentArrayInput(true)
+
   const id = useId()
   const {onChange} = useFormCallbacks()
   const {t} = useTranslation()
@@ -23,10 +26,20 @@ export function ErrorItem(props: {member: ArrayItemError; sortable?: boolean; re
     onChange(PatchEvent.from([unset([{_key: member.key}])]))
   }, [onChange, member.key])
 
+  const handleSelect = useCallback(() => {
+    onItemSelect(member.key)
+  }, [member.key, onItemSelect])
+  const handleUnselect = useCallback(() => {
+    onItemUnselect(member.key)
+  }, [member.key, onItemUnselect])
+
   return (
     <CellLayout
-      dragHandle={sortable}
       readOnly={readOnly}
+      selectable={active}
+      selected={selectedItemKeys.includes(member.key)}
+      onSelect={handleSelect}
+      onUnselect={handleUnselect}
       tone="caution"
       style={{height: '100%'}}
       menu={
