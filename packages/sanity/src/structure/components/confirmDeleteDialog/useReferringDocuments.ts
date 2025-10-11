@@ -123,7 +123,7 @@ function getDocumentExistence(
  * fetches the cross-dataset references using the client observable.request
  * method (for that requests can be automatically cancelled)
  */
-function fetchCrossDatasetReferences(
+export function fetchCrossDatasetReferences(
   documentId: string,
   context: {versionedClient: SanityClient},
 ): Observable<ReferringDocuments['crossDatasetReferences']> {
