@@ -49,7 +49,7 @@ const getDefaultDashboardURL = ({
   url: string
 }): string => {
   return `${baseUrl}/@${organizationId}?${new URLSearchParams({
-    url,
+    dev: url,
   }).toString()}`
 }
 
