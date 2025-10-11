@@ -123,13 +123,13 @@ export async function login(
   }
 
   // Store the token
-  getUserConfig().set({
+  getUserConfig(apiHost).set({
     authToken: authToken,
     authType: 'normal',
   })
 
   // Clear cached telemetry consent
-  getUserConfig().delete(TELEMETRY_CONSENT_CONFIG_KEY)
+  getUserConfig(apiHost).delete(TELEMETRY_CONSENT_CONFIG_KEY)
 
   // If we had a session previously, attempt to clear it
   if (hasExistingToken) {

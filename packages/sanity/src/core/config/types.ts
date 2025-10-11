@@ -801,6 +801,8 @@ export interface Source {
   projectId: string
   /** The name of the dataset. */
   dataset: string
+  /** @hidden */
+  apiHost?: string
   /** The schema of the source. */
   schema: Schema
   /** The templates of the source. */
