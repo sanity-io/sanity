@@ -111,6 +111,7 @@ export interface ArrayInputFunctionsProps<Item, SchemaType extends ArraySchemaTy
   onChange: (event: PatchEvent) => void
   onValueCreate: (type: SchemaType) => Item
   onItemPrepend: (itemValue: Item) => void
+  path: Path
   readOnly?: boolean
   schemaType: SchemaType
   value?: Item[]

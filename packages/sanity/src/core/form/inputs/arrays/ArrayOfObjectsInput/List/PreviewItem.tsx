@@ -67,14 +67,11 @@ export function PreviewItem<Item extends ObjectItem = ObjectItem>(props: Preview
   } = props
   const {t} = useTranslation()
 
-  const treeEditing = useTreeEditingEnabled()
-  const treeEditingDisabledByOption = parentSchemaType?.options?.treeEditing === false
-  const legacyEditing = treeEditingDisabledByOption || treeEditing.legacyEditing
+  const {enabled, legacyEditing} = useTreeEditingEnabled()
 
   // The edit portal should open if the item is open and:
   // - tree array editing is disabled
-  // - legacy array editing is enabled (e.g. in a Portable Text editor)
-  const openPortal = open && (!treeEditing.enabled || legacyEditing)
+  const openPortal = open && (!enabled || legacyEditing)
 
   const sortable = parentSchemaType.options?.sortable !== false
   const insertableTypes = parentSchemaType.of
@@ -268,7 +265,7 @@ export function PreviewItem<Item extends ObjectItem = ObjectItem>(props: Preview
   const itemTypeTitle = getSchemaTypeTitle(schemaType)
 
   return (
-    <TreeEditingEnabledProvider legacyEditing={treeEditingDisabledByOption}>
+    <TreeEditingEnabledProvider legacyEditing={legacyEditing}>
       <ChangeIndicator path={path} isChanged={changed} hasFocus={Boolean(focused)}>
         <Box paddingX={1}>{item}</Box>
       </ChangeIndicator>

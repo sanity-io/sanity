@@ -16,7 +16,6 @@ import {type ReactNode, useCallback, useMemo, useState} from 'react'
 import {ChangeIndicator} from '../../../changeIndicators'
 import {EMPTY_ARRAY} from '../../../util'
 import {ActivateOnFocus} from '../../components/ActivateOnFocus/ActivateOnFocus'
-import {TreeEditingEnabledProvider} from '../../studio/tree-editing'
 import {type ArrayOfObjectsInputProps, type RenderCustomMarkers} from '../../types'
 import {type RenderBlockActionsCallback} from '../../types/_transitional'
 import {UploadTargetCard} from '../arrays/common/UploadTargetCard'
@@ -488,34 +487,32 @@ export function Compositor(props: Omit<InputProps, 'schemaType' | 'arrayFunction
   const editorFocused = focused || hasFocusWithin
 
   return (
-    <TreeEditingEnabledProvider legacyEditing>
-      <PortalProvider __unstable_elements={portalElements} element={portal.element}>
-        <ActivateOnFocus onActivate={onActivate} isOverlayActive={!isActive}>
-          <ChangeIndicator
-            disabled={isFullscreen}
-            hasFocus={Boolean(focused)}
-            isChanged={changed}
-            path={path}
+    <PortalProvider __unstable_elements={portalElements} element={portal.element}>
+      <ActivateOnFocus onActivate={onActivate} isOverlayActive={!isActive}>
+        <ChangeIndicator
+          disabled={isFullscreen}
+          hasFocus={Boolean(focused)}
+          isChanged={changed}
+          path={path}
+        >
+          <Root
+            data-focused={editorFocused ? '' : undefined}
+            data-read-only={readOnly ? '' : undefined}
           >
-            <Root
-              data-focused={editorFocused ? '' : undefined}
-              data-read-only={readOnly ? '' : undefined}
-            >
-              <Box data-wrapper="" ref={setWrapperElement}>
-                <Portal __unstable_name={isFullscreen ? 'expanded' : 'collapsed'}>
-                  {isFullscreen ? <ExpandedLayer>{editorNode}</ExpandedLayer> : editorNode}
-                  <AnnotationObjectEditModal
-                    focused={focused}
-                    onItemClose={onItemClose}
-                    referenceBoundary={scrollElement}
-                  />
-                </Portal>
-              </Box>
-              <div data-border="" />
-            </Root>
-          </ChangeIndicator>
-        </ActivateOnFocus>
-      </PortalProvider>
-    </TreeEditingEnabledProvider>
+            <Box data-wrapper="" ref={setWrapperElement}>
+              <Portal __unstable_name={isFullscreen ? 'expanded' : 'collapsed'}>
+                {isFullscreen ? <ExpandedLayer>{editorNode}</ExpandedLayer> : editorNode}
+                <AnnotationObjectEditModal
+                  focused={focused}
+                  onItemClose={onItemClose}
+                  referenceBoundary={scrollElement}
+                />
+              </Portal>
+            </Box>
+            <div data-border="" />
+          </Root>
+        </ChangeIndicator>
+      </ActivateOnFocus>
+    </PortalProvider>
   )
 }
