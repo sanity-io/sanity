@@ -230,7 +230,7 @@ export function extractSchema(workspace: Workspace, theme: ThemeContextValue): S
 
   function extractIcon(schemaType: SanitySchemaType): string | undefined {
     if (!schemaType.icon) return undefined
-    return renderToString(<SchemaIcon schemaType={schemaType} theme={theme} />)
+    return renderToString(<SchemaIcon schemaType={schemaType} />)
   }
 
   function convertBaseType(schemaType: SanitySchemaType): SchemaType | null {
