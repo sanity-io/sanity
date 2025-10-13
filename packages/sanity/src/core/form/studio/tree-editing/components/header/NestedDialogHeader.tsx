@@ -1,5 +1,5 @@
 import {type Path} from '@sanity/types'
-import {Flex, Text} from '@sanity/ui'
+import {Box, Flex, Text} from '@sanity/ui'
 
 import {pathToString} from '../../../../../field/paths/helpers'
 import {useTranslation} from '../../../../../i18n/hooks/useTranslation'
@@ -37,12 +37,14 @@ export function NestedDialogHeader(props: NestedDialogHeaderProps) {
       />
       <Flex align="center" gap={2}>
         {total && total >= 1 && (
-          <Text style={{whiteSpace: 'nowrap'}}>
-            {t('nested-object-editing-dialog.header.sibling-count', {
-              count: currentIndex,
-              total,
-            })}
-          </Text>
+          <Box padding={2}>
+            <Text style={{whiteSpace: 'nowrap'}} muted size={1}>
+              {t('nested-object-editing-dialog.header.sibling-count', {
+                count: currentIndex,
+                total,
+              })}
+            </Text>
+          </Box>
         )}
         <NestedDialogActions
           relativePath={relativePath}
