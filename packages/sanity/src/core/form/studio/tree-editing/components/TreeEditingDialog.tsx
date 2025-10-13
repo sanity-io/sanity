@@ -119,16 +119,52 @@ export function TreeEditingDialog(props: TreeEditingDialogProps): React.JSX.Elem
     // Check if any PTE within the current tree editing context is in fullscreen mode
     // If the openPath is at the root level and the fullscreen is open then it means that the user
     // is at the root and should close the window
-    if (hasAnyFullscreen()) {
-      if (allFullscreenPaths.length > 1) {
-        allFullscreenPaths.forEach((path) => {
-          // Check if the relative path exists in the fullscreen path (so, more deeply nested path)
-          // So that we can open the dialog at the correct level (the full screen) instead of closing the dialg
-          if (pathToString(treeState.relativePath).includes(path)) {
-            onPathOpen(stringToPath(path))
-          }
+    if (hasAnyFullscreen() && allFullscreenPaths.length >= 1) {
+      // Find all fullscreen paths that are ancestors of the current relative path
+      const ancestorPaths = allFullscreenPaths.filter((pathStr) => {
+        const fullscreenPath = stringToPath(pathStr)
+
+        // Check if fullscreen path is shorter, which means that it's not an ancestor
+        if (fullscreenPath.length >= treeState.relativePath.length) {
+          return false
+        }
+
+        // Check if all segments of fullscreen path match the start of relative path
+        // This is important for nested fullscreen PTEs
+        const segmentsMatch = fullscreenPath.every((segment, index) => {
+          const relativeSegment = treeState.relativePath[index]
+
+          // For key segments, compare the _key property
+          // For string segments, direct comparison
+          return isKeySegment(segment) && isKeySegment(relativeSegment)
+            ? segment._key === relativeSegment._key
+            : segment === relativeSegment
         })
 
+        if (!segmentsMatch) {
+          return false
+        }
+
+        // Check if the fullscreen path contains a key segment (that is nested)
+        const isNestedFullscreenPath = fullscreenPath.some((segment) => isKeySegment(segment))
+
+        if (isNestedFullscreenPath) {
+          // For nested fullscreen PTEs, always navigate back to them
+          return true
+        }
+
+        // For root-level fullscreen PTEs, only navigate back if the next segment
+        // is NOT a key segment (i.e., we're going to a child field, not selecting an array item)
+        const nextSegment = treeState.relativePath[fullscreenPath.length]
+        return !isKeySegment(nextSegment)
+      })
+
+      // If we found ancestor paths, navigate to the most nested one (longest/closest parent)
+      if (ancestorPaths.length > 0) {
+        const closestParentPath = ancestorPaths.reduce((longest, current) =>
+          current.length > longest.length ? current : longest,
+        )
+        onPathOpen(stringToPath(closestParentPath))
         return
       }
     }
