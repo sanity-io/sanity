@@ -57,10 +57,6 @@ export function getCrossDatasetIncomingReferences({
   documents: CrossDatasetIncomingReferenceDocument[]
   loading: boolean
 }> {
-  // const projectId = client.config().projectId
-  // if (!projectId) {
-  //   throw new Error('No project id defined in provided client')
-  // }
   // Here we get all the references to this document from the any other dataset
   return fetchCrossDatasetReferences(documentId, {versionedClient: client}).pipe(
     map((result) => {
