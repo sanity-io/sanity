@@ -30,11 +30,11 @@ export type IncomingReferenceActionDescription = {
  * of each reference
  * example:
  * ```ts
- * export const LogReferenceAction: IncomingReferenceAction = ({linkedDocument, getClient}) => {
+ * export const LogReferenceAction: IncomingReferenceAction = ({document, getClient}) => {
  *   return {
  *     label: 'Log reference',
  *     icon: LogIcon,
- *     onHandle: () => console.log(linkedDocument._id)
+ *     onHandle: () => console.log(document._id)
  *   }
  * }
  * ```
@@ -135,17 +135,17 @@ export type IncomingReferencesOptions = {
     },
   ) => SanityDocument | false
   /**
-   * Callback to define the actions that will be shown for the linked document.
+   * Callback to define the actions that will be shown for the incoming reference document.
    *
    * For example:
    * ```ts
-   * actions: ({linkedDocument, client}) => {
+   * actions: ({document, client}) => {
    *   return [
    *     {label: 'Unlink document',
    *     icon: TrashIcon,
    *     tone: 'critical',
    *     onClick: async () => {
-   *       await client.createOrReplace({...linkedDocument, _id: getDraftId(linkedDocument._id), author: undefined})
+   *       await client.createOrReplace({...document, _id: getDraftId(document._id), author: undefined})
    *     }
    *   }
    *  ]
