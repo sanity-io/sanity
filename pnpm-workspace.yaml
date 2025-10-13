@@ -31,7 +31,7 @@ catalog:
   react-dom: ^19.1.1
   react-is: ^19.1.1
   styled-components: ^6.1.18
-  typescript: 5.9.2
+  typescript: 5.9.3
 
 catalogs:
   react18:
