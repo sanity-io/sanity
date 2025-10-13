@@ -14,8 +14,8 @@ import {MenuItem} from '../../../ui-components/menuItem/MenuItem'
 import {ActionStateDialog} from '../../panes/document/statusBar/ActionStateDialog'
 import {
   type IncomingReferenceAction,
-  type LinkedDocumentAction,
-  type LinkedDocumentActionsContext,
+  type IncomingReferenceActionDescription,
+  type IncomingReferenceActionsContext,
 } from './types'
 
 const IncomingReferenceDocumentActionsInner = ({
@@ -96,9 +96,9 @@ export const IncomingReferenceDocumentActions = (props: {
   )
 
   return (
-    <GetHookCollectionState<LinkedDocumentActionsContext, LinkedDocumentAction>
+    <GetHookCollectionState<IncomingReferenceActionsContext, IncomingReferenceActionDescription>
       hooks={actions}
-      args={{linkedDocument: document, getClient}}
+      args={{document, getClient}}
     >
       {renderActions}
     </GetHookCollectionState>

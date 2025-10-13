@@ -7,15 +7,15 @@ import {
   type SanityDocument,
 } from 'sanity'
 
-export type LinkedDocumentActionsContext = {
+export type IncomingReferenceActionsContext = {
   /**
    * The document that is linked to the reference.
    */
-  linkedDocument: SanityDocument
+  document: SanityDocument
   getClient: (options: {apiVersion: string}) => SanityClient
 }
 
-export type LinkedDocumentAction = {
+export type IncomingReferenceActionDescription = {
   label: string
   icon?: React.ElementType
   tone?: SelectableTone
@@ -42,8 +42,8 @@ export type LinkedDocumentAction = {
  * @beta
  */
 export type IncomingReferenceAction = ActionComponent<
-  LinkedDocumentActionsContext,
-  LinkedDocumentAction
+  IncomingReferenceActionsContext,
+  IncomingReferenceActionDescription
 >
 
 export interface CrossDatasetIncomingReference {
@@ -80,7 +80,6 @@ export type IncomingReferencesFilterResolver = (context: {
   | {filter: string; filterParams?: Record<string, string>}
   | Promise<{filter: string; filterParams?: Record<string, string>}>
 
-// TODO: Divide this into two types, one for the same dataset and other for the cross dataset references?
 export type IncomingReferencesOptions = {
   /**
    * The type of the incoming references.
@@ -161,7 +160,7 @@ export type IncomingReferencesOptions = {
    * Whether to allow creation of new references.
    * default: true
    *
-   * If false, it will only be possible to link to existing documents.
+   * If false, it will only be possible to link to existing documents, if the `onLinkDocument` callback is provided.
    * If true, it will be possible to create new references to any template of the type.
    * If an array is provided, it will only be possible to create new references that match the template id in the array provided.
    *
