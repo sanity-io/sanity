@@ -41,13 +41,11 @@ export function resolveConfig(config: Config): Observable<Workspace[]> {
 }
 
 /** @internal */
-export type CreateWorkspaceFromConfigOptions =
-  | SingleWorkspace
-  | (SingleWorkspace & {
-      currentUser: CurrentUser
-      getClient: (options: {apiVersion: string}) => SanityClient
-      schema?: SchemaPluginOptions
-    })
+export type CreateWorkspaceFromConfigOptions = (SingleWorkspace | SingleWorkspace) & {
+  currentUser: CurrentUser
+  getClient: (options: {apiVersion: string}) => SanityClient
+  schema?: SchemaPluginOptions
+}
 
 /**
  * PRIMARILY FOR TESTING PURPOSES.
@@ -63,7 +61,9 @@ export type CreateWorkspaceFromConfigOptions =
 export async function createWorkspaceFromConfig(
   options: CreateWorkspaceFromConfigOptions,
 ): Promise<Workspace> {
-  const client = 'getClient' in options ? options.getClient({apiVersion: '2023-11-13'}) : undefined
+  const client = options.getClient({apiVersion: '2023-11-13'}).withConfig({
+    apiHost: options.apiHost,
+  })
   const [workspace] = await firstValueFrom(
     resolveConfig({
       ...options,
