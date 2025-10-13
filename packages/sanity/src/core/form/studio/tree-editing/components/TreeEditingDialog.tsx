@@ -21,8 +21,9 @@ import {
   type TreeEditingState,
 } from '../utils'
 import {isArrayItemPath} from '../utils/build-tree-editing-state/utils'
+import {getReadOnlyForPath} from '../utils/getReadOnlyForPath'
 import {isPathTextInPTEField} from '../utils/isPathTextInPTEField'
-import {NestedDialogHeader} from './NestedDialogHeader'
+import {NestedDialogHeader} from './header/NestedDialogHeader'
 
 const EMPTY_ARRAY: [] = []
 
@@ -275,6 +276,10 @@ export function TreeEditingDialog(props: TreeEditingDialogProps): React.JSX.Elem
 
   if (treeState.relativePath.length === 0) return null
 
+  // Compute the readOnly value for the current field being edited
+  const isRootReadOnly =
+    rootInputProps.readOnly || getReadOnlyForPath(schemaType, treeState.relativePath)
+
   return (
     <VirtualizerScrollInstanceProvider
       scrollElement={documentScrollElement}
@@ -285,7 +290,12 @@ export function TreeEditingDialog(props: TreeEditingDialogProps): React.JSX.Elem
         onClose={onClose}
         id={'nested-object-dialog'}
         header={
-          <NestedDialogHeader treeState={treeState} onHandlePathSelect={onHandlePathSelect} />
+          <NestedDialogHeader
+            treeState={treeState}
+            onHandlePathSelect={onHandlePathSelect}
+            rootOnChange={rootInputProps.onChange}
+            readOnly={isRootReadOnly}
+          />
         }
         width={3}
         contentRef={setDocumentScrollElement}
