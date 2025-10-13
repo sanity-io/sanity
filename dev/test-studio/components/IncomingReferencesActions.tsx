@@ -3,7 +3,7 @@ import {useState} from 'react'
 import {getDraftId} from 'sanity'
 import {type IncomingReferenceAction} from 'sanity/structure'
 
-export const RemoveReferenceAction: IncomingReferenceAction = ({linkedDocument, getClient}) => {
+export const RemoveReferenceAction: IncomingReferenceAction = ({document, getClient}) => {
   const [dialogOpen, setDialogOpen] = useState(false)
   const client = getClient({apiVersion: '2025-10-01'})
 
@@ -19,17 +19,17 @@ export const RemoveReferenceAction: IncomingReferenceAction = ({linkedDocument, 
             setDialogOpen(false)
           },
           onConfirm: async () => {
-            if (linkedDocument._type === 'author') {
+            if (document._type === 'author') {
               await client.createOrReplace({
-                ...linkedDocument,
-                _id: getDraftId(linkedDocument._id),
+                ...document,
+                _id: getDraftId(document._id),
                 bestFriend: undefined,
               })
             }
-            if (linkedDocument._type === 'book') {
+            if (document._type === 'book') {
               await client.createOrReplace({
-                ...linkedDocument,
-                _id: getDraftId(linkedDocument._id),
+                ...document,
+                _id: getDraftId(document._id),
                 author: undefined,
               })
             }
