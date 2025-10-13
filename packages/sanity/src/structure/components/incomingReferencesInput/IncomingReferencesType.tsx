@@ -9,10 +9,8 @@ import {
   isPublishedId,
   LoadingBlock,
   SanityDefaultPreview,
-  type SanityDocument,
   useClient,
   useDocumentPreviewStore,
-  useFormValue,
   useSchema,
   useSource,
   useTranslation,
@@ -49,7 +47,6 @@ export function IncomingReferencesType({
   filterParams: IncomingReferencesOptions['filterParams']
 }) {
   const documentPreviewStore = useDocumentPreviewStore()
-  const formDocument = useFormValue([]) as SanityDocument
   const {displayed} = useDocumentPane()
   const {getClient} = useSource()
   const displayedId = displayed?._id as string
@@ -63,7 +60,7 @@ export function IncomingReferencesType({
         filterParams,
         getClient,
       }),
-    [documentPreviewStore, type, filter, filterParams, displayedId, formDocument, getClient],
+    [documentPreviewStore, type, filter, filterParams, displayedId, getClient],
   )
 
   const {documents, loading} = useObservable(references$, INITIAL_STATE)
