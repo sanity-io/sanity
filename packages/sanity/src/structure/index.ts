@@ -9,6 +9,7 @@ export type {
 } from './components'
 export {ConfirmDeleteDialog, Pane, PaneContent, PaneLayout, usePaneRouter} from './components'
 export {defineIncomingReferenceField} from './components/incomingReferencesInput/defineIncomingReferenceField'
+export {isIncomingReferenceCreation} from './components/incomingReferencesInput/isIncomingReferenceCreation'
 export {type IncomingReferenceAction} from './components/incomingReferencesInput/types'
 export {structureLocaleNamespace, type StructureLocaleResourceKeys} from './i18n'
 export * from './panes/document'

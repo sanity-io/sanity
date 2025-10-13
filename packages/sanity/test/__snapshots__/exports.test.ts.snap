@@ -924,6 +924,7 @@ exports[`exports snapshot 1`] = `
     "getOrderingMenuItemsForSchemaType": "function",
     "getTypeNamesFromFilter": "function",
     "isDocumentListItem": "function",
+    "isIncomingReferenceCreation": "function",
     "maybeSerializeInitialValueTemplateItem": "function",
     "maybeSerializeMenuItem": "function",
     "maybeSerializeMenuItemGroup": "function",
