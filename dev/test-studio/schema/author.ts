@@ -1,7 +1,7 @@
 import {UserIcon as icon} from '@sanity/icons'
 import {type StringRule} from '@sanity/types'
 import {defineField, defineType} from 'sanity'
-import {defineIncomingReferenceField} from 'sanity/structure'
+import {defineIncomingReferenceField, isIncomingReferenceCreation} from 'sanity/structure'
 
 import {AudienceSelectInput} from '../components/AudienceSelectInput'
 import {RemoveReferenceAction} from '../components/IncomingReferencesActions'
@@ -242,9 +242,24 @@ export default defineType({
   ],
 
   initialValue: (params) => {
+    if (isIncomingReferenceCreation(params)) {
+      return {
+        name: 'Foo',
+        bestFriend: params.reference,
+        image: {
+          _type: 'image',
+          asset: {
+            _ref: 'image-8dcc1391e06e4b4acbdc6bbf2e8c8588d537cbb8-4896x3264-jpg',
+            _type: 'reference',
+          },
+        },
+        role: params.from.fieldName === 'incomingReferencesDesigner' ? 'designer' : undefined,
+      }
+    }
+
     return {
       name: 'Foo',
-      bestFriend: params?.reference || {_type: 'reference', _ref: 'foo-bar'},
+      bestFriend: {_type: 'reference', _ref: 'foo-bar'},
       image: {
         _type: 'image',
         asset: {
@@ -252,7 +267,6 @@ export default defineType({
           _type: 'reference',
         },
       },
-      role: params?.from?.fieldName === 'incomingReferencesDesigner' ? 'designer' : undefined,
     }
   },
 })

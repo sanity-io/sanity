@@ -10,6 +10,7 @@ import {
 import {useRouter} from 'sanity/router'
 
 import {usePaneRouter} from '../paneRouter'
+import {type IncomingReferenceCreationParams} from './isIncomingReferenceCreation'
 import {type IncomingReferencesOptions} from './types'
 
 export function CreateNewIncomingReference({
@@ -50,7 +51,9 @@ export function CreateNewIncomingReference({
                   _strengthenOnPublish: {type: referenceToType},
                 },
                 from: {fieldName, type: referenceToType},
-              },
+                // eslint-disable-next-line camelcase
+                __internal_isIncomingReferenceCreation: true,
+              } satisfies IncomingReferenceCreationParams,
             },
           ],
         ],
