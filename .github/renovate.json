@@ -9,7 +9,13 @@
     "github>sanity-io/renovate-config:group-non-major",
     "github>sanity-io/renovate-config:workarounds-esm"
   ],
+  "minimumReleaseAge": "3 days",
   "packageRules": [
+    {
+      "description": "Exclude @sanity/* packages from minimumReleaseAge (no delay for internal packages)",
+      "matchPackageNames": ["/^@sanity\\//"],
+      "minimumReleaseAge": "0 days"
+    },
     {
       "description": "Enable automerge with GitHub merge queues (note that this doesn't bypass required checks and code reviews)",
       "matchUpdateTypes": ["minor", "patch"],
