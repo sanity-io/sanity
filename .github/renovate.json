@@ -7,7 +7,8 @@
   ],
   "ignorePresets": [
     "github>sanity-io/renovate-config:group-non-major",
-    "github>sanity-io/renovate-config:workarounds-esm"
+    "github>sanity-io/renovate-config:workarounds-esm",
+    "github>sanity-io/renovate-config:dedupe"
   ],
   "minimumReleaseAge": "3 days",
   "packageRules": [
