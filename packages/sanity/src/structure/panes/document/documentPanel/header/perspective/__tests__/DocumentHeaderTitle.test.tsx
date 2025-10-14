@@ -11,6 +11,7 @@ import {beforeEach, describe, expect, it, type Mock, type MockedFunction, vi} fr
 
 import {createMockSanityClient} from '../../../../../../../../test/mocks/mockSanityClient'
 import {createTestProvider} from '../../../../../../../../test/testUtils/TestProvider'
+import {usePerspectiveMockReturn} from '../../../../../../../core/perspective/__mocks__/usePerspective.mock'
 import {structureUsEnglishLocaleBundle} from '../../../../../../i18n'
 import {
   mockUseDocumentTitle,
@@ -55,7 +56,7 @@ vi.mock('sanity', async (importOriginal) => {
   return {
     ...(await importOriginal()),
     useDocumentVersions: vi.fn(),
-    usePerspective: vi.fn(() => ({perspective: undefined})),
+    usePerspective: vi.fn(() => usePerspectiveMockReturn),
   }
 })
 
