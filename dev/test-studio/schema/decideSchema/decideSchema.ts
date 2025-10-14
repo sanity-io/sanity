@@ -1,9 +1,11 @@
 import {type PreviewConfig} from '@sanity/types'
 import {defineField} from 'sanity'
 
+import {DecideObjectField, DecideObjectInput} from './DecideComponents'
 import {OperatorSelectInput} from './OperatorSelectInput'
 import {PropertySelectInput} from './PropertySelectInput'
 import {TargetValueInput} from './TargetValueInput'
+import {type DecideRule} from './types'
 
 const rulePreview: PreviewConfig = {
   select: {
@@ -16,7 +18,7 @@ const rulePreview: PreviewConfig = {
     const property = context.property
     const operator = context.operator
     const targetValue = context.targetValue
-    const and = context.and as Rule[]
+    const and = context.and as DecideRule[]
     return {
       title: `${property || ''} ${operator || ''} ${targetValue || ''} ${and ? `& ${and.map((a) => `${a.property || ''} ${a.operator || ''} ${a.targetValue || ''}`).join(' & ')}` : ''}`,
     }
@@ -57,13 +59,6 @@ const rule = defineField({
   preview: rulePreview,
 })
 
-interface Rule {
-  property: string
-  operator: string
-  targetValue: string
-  and?: Rule[]
-}
-
 // Generic decide field implementation that works for all types
 export const defineLocalDecideField = (config: any) => {
   const {name, title, description, type, ...otherConfig} = config
@@ -83,10 +78,14 @@ export const defineLocalDecideField = (config: any) => {
     title,
     description,
     type: 'object',
+    components: {
+      field: DecideObjectField,
+      input: DecideObjectInput,
+    },
     fields: [
       defineField({
         name: 'default',
-        title: 'Default Value',
+        title: title || name,
         ...valueFieldConfig,
       }),
       defineField({
@@ -105,7 +104,7 @@ export const defineLocalDecideField = (config: any) => {
               },
               prepare(context) {
                 const value = context.value
-                const rules = (context.rules || []) as Rule[]
+                const rules = (context.rules || []) as DecideRule[]
 
                 return {
                   title: value,
