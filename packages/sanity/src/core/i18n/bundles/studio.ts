@@ -1395,7 +1395,7 @@ export const studioLocaleStrings = defineLocalesResources('studio', {
   'release.dialog.publish-scheduled-draft.header': 'Publish draft now',
   /** Label for description in tooltip to explain release types */
   'release.dialog.tooltip.description':
-    'The intended release time is used to create better previews and hints about whether documents conflict.',
+    "This is only for planning, previews and hints about whether documents conflict. Setting a time here will not schedule your release. You'll still need to run or schedule the release once all documents are ready.",
   /** Label for noting that a release time is not final */
   'release.dialog.tooltip.note': 'You can always change it later.',
   /** Title for tooltip to explain release time */
