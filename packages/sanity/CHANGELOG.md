@@ -3,6 +3,21 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [4.10.3](https://github.com/sanity-io/sanity/compare/v4.10.2...v4.10.3) (2025-10-14)
+
+
+### Bug Fixes
+
+* **cli:** default dashboard url should use dev as the search param not url ([#10813](https://github.com/sanity-io/sanity/issues/10813)) ([9c34aff](https://github.com/sanity-io/sanity/commit/9c34affda6738231d52a7e3e3d2ff2d1b5f08aca))
+* datetime custom types resolves field wrapper ([#10809](https://github.com/sanity-io/sanity/issues/10809)) ([f3ab8cd](https://github.com/sanity-io/sanity/commit/f3ab8cd00632c33020febf7187ff4073ac65f54a))
+* **deps:** update dependency @portabletext/block-tools to ^3.5.10 ([#10807](https://github.com/sanity-io/sanity/issues/10807)) ([3f5441b](https://github.com/sanity-io/sanity/commit/3f5441bc1d21f0c8b9b2d08877a193b2225d2cb0))
+* **deps:** update dependency @portabletext/block-tools to ^3.5.9 ([#10794](https://github.com/sanity-io/sanity/issues/10794)) ([a16f5b9](https://github.com/sanity-io/sanity/commit/a16f5b98dc9ab1c193dc77ed3d0cb8dc8f9aaa84))
+* **deps:** update dependency @portabletext/editor to ^2.13.4 ([#10795](https://github.com/sanity-io/sanity/issues/10795)) ([b89f08a](https://github.com/sanity-io/sanity/commit/b89f08a367e51ac020f7a2f3fb854cd1ced99fd3))
+* **deps:** update dependency @portabletext/editor to ^2.13.7 ([#10801](https://github.com/sanity-io/sanity/issues/10801)) ([f976597](https://github.com/sanity-io/sanity/commit/f97659787dc5bfb0e0d8464768200805e3fbd00a))
+* **deps:** update dependency @sanity/client to ^7.12.0 ([#10802](https://github.com/sanity-io/sanity/issues/10802)) ([391127a](https://github.com/sanity-io/sanity/commit/391127adf802b946deba689f64099cb4ee306e61))
+
+
+
 ## [4.10.2](https://github.com/sanity-io/sanity/compare/v4.10.1...v4.10.2) (2025-09-30)
 
 

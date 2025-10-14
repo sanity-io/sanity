@@ -3,6 +3,15 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [4.10.3](https://github.com/sanity-io/sanity/compare/v4.10.2...v4.10.3) (2025-10-14)
+
+
+### Bug Fixes
+
+* **deps:** update React Compiler dependencies 🤖 ✨ ([#10808](https://github.com/sanity-io/sanity/issues/10808)) ([74e5445](https://github.com/sanity-io/sanity/commit/74e54453b1eb032179c11cc1def82fc71d8eb08d))
+
+
+
 ## [4.10.2](https://github.com/sanity-io/sanity/compare/v4.10.1...v4.10.2) (2025-09-30)
 
 
