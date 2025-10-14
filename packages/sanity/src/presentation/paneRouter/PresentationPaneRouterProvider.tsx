@@ -113,6 +113,7 @@ export function PresentationPaneRouterProvider(
           const doc = refs?.find((r) => r._id === childId || getPublishedId(r._id) === childId)
 
           if (!doc) {
+            console.warn(`ChildLink: No document found for childId "${childId}"`)
             return null
           }
 
@@ -137,6 +138,12 @@ export function PresentationPaneRouterProvider(
           return <ReferenceChildLink {...childLinkProps} ref={ref} searchParams={searchParams} />
         },
       ),
+      ParameterizedLink: () => {
+        throw new Error('ParameterizedLink not implemented')
+      },
+      closeCurrentAndAfter: () => {
+        console.warn('closeCurrentAndAfter')
+      },
       handleEditReference: (options) => {
         const {id, template, type, parentRefPath, version} = options
         onEditReference({
@@ -148,7 +155,25 @@ export function PresentationPaneRouterProvider(
           },
         })
       },
+      replaceCurrent: (pane) => {
+        console.warn('replaceCurrent', pane)
+      },
+      closeCurrent: () => {
+        console.warn('closeCurrent')
+      },
+      duplicateCurrent: (pane) => {
+        console.warn('duplicateCurrent', pane)
+      },
+      setView: (viewId) => {
+        console.warn('setView', viewId)
+      },
       setParams: onStructureParams,
+      setPayload: (payload) => {
+        console.warn('setPayload', payload)
+      },
+      navigateIntent: (intentName, intentParams, options) => {
+        console.warn('navigateIntent', intentName, intentParams, options)
+      },
       createPathWithParams,
     }
   }, [
