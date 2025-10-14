@@ -1,6 +1,4 @@
-import {defineType} from 'sanity'
-
-import {defineLocalDecideField} from '../author'
+import {defineLocalDecideField, defineType} from 'sanity'
 
 export default defineType({
   type: 'document',
