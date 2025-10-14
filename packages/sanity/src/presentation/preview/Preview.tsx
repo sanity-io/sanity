@@ -171,11 +171,11 @@ export const Preview = memo(
 
       presentationRef.send({type: 'iframe reload'})
     }, [presentationRef, previewUrl])
+
+    const [continueAnyway, setContinueAnyway] = useState(false)
     const handleContinueAnyway = useCallback(() => {
       setContinueAnyway(true)
     }, [])
-
-    const [continueAnyway, setContinueAnyway] = useState(false)
     const [showOverlaysConnectionStatus, setShowOverlaysConnectionState] = useState(false)
     useEffect(() => {
       if (isLoading || isRefreshing) {

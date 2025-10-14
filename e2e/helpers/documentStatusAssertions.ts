@@ -9,6 +9,7 @@ const documentStatusPatterns = {
   created: /Created (just now|\d+ sec\. ago)/i,
   unpublished: /Unpublished (just now|\d+ sec\. ago)/i,
   edited: /Edited (just now|\d+ sec\. ago)/i,
+  createdOrEdited: /(Created|Edited) (just now|\d+ sec\. ago)/i,
 } as const
 
 /**
@@ -45,6 +46,19 @@ export async function expectCreatedStatus(
   options: DocumentStatusOptions = DEFAULT_OPTIONS,
 ) {
   await expect(statusElement).toContainText(documentStatusPatterns.created, {
+    useInnerText: options.useInnerText,
+    timeout: options.timeout,
+  })
+}
+
+/**
+ * Assert that a document status element shows a created or edited state, sometimes the way the test is written can lead to the "created" status changing to "edited", and it's fine
+ */
+export async function expectCreatedOrEditedStatus(
+  statusElement: Locator,
+  options: DocumentStatusOptions = DEFAULT_OPTIONS,
+) {
+  await expect(statusElement).toContainText(documentStatusPatterns.createdOrEdited, {
     useInnerText: options.useInnerText,
     timeout: options.timeout,
   })

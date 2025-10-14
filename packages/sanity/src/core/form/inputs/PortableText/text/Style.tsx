@@ -41,6 +41,7 @@ export const Style = (props: BlockStyleRenderProps) => {
     return CustomComponent ? (
       <CustomComponent {...componentProps}>{children}</CustomComponent>
     ) : (
+      // eslint-disable-next-line react-hooks/static-components -- this is intentional and how the middleware components has to work
       <DefaultComponent {...componentProps}>{children}</DefaultComponent>
     )
   }, [DefaultComponent, block, children, focused, schemaType, selected])
