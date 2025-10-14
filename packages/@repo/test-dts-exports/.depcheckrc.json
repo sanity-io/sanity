@@ -1,1 +1,1 @@
-{"ignores": ["@types/node", "@repo/test-dts-exports"]}
+{"ignores": ["@types/node", "@repo/test-dts-exports", "zod"]}

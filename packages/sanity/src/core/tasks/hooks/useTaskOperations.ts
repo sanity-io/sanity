@@ -35,54 +35,34 @@ export function useTaskOperations(): TaskOperations {
       } satisfies Partial<TaskDocument>
 
       if (!client) {
-        try {
-          const newCreatedClient = await createAddonDataset()
-          if (!newCreatedClient) throw new Error('No addon client found. Unable to create task.')
-          const created = await newCreatedClient.create(task)
-          return created
-        } catch (err) {
-          // TODO: Handle error
-          throw err
-        }
+        const newCreatedClient = await createAddonDataset()
+        if (!newCreatedClient) throw new Error('No addon client found. Unable to create task.')
+        const created = await newCreatedClient.create(task)
+        return created
       }
 
-      try {
-        const created = await client.create(task)
-        return created
-      } catch (err) {
-        // TODO: Handle error
-        throw err
-      }
+      const created = await client.create(task)
+      return created
     },
     [client, createAddonDataset, currentUser],
   )
 
   const handleEdit = useCallback(
     async (id: string, set: TaskEditPayload) => {
-      try {
-        if (!client) {
-          throw new Error('No client. Unable to create task.')
-        }
-        const edited = (await client.patch(id).set(set).commit()) as TaskDocument
-        return edited
-      } catch (e) {
-        // TODO: Handle error
-        throw e
+      if (!client) {
+        throw new Error('No client. Unable to create task.')
       }
+      const edited = (await client.patch(id).set(set).commit()) as TaskDocument
+      return edited
     },
     [client],
   )
   const handleRemove = useCallback(
     async (id: string) => {
-      try {
-        if (!client) {
-          throw new Error('No client. Unable to create task.')
-        }
-        await client.delete(id)
-      } catch (e) {
-        // TODO: Handle error
-        throw e
+      if (!client) {
+        throw new Error('No client. Unable to create task.')
       }
+      await client.delete(id)
     },
     [client],
   )

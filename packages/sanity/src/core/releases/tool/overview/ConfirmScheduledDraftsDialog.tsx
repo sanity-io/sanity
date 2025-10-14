@@ -121,9 +121,8 @@ export function ConfirmScheduledDraftsDialog({
         status: 'error',
         title: t('toast.confirm-active-scheduled-drafts.error', {error: error.message}),
       })
-    } finally {
-      setIsScheduling(false)
     }
+    setIsScheduling(false)
   }, [activeScheduledDrafts, scheduleActiveDrafts, onClose, toast, t])
 
   return (

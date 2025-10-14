@@ -141,6 +141,7 @@ export function useUserListWithPermissions(
     return $alphabetical
   }, [documentValue, permission, users$, systemGroup$])
 
+  // @TODO refactor to useObservable
   useEffect(() => {
     const initial$ = of(INITIAL_STATE)
     const state$ = concat(initial$, list$)

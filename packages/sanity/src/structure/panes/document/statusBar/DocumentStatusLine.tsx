@@ -7,7 +7,7 @@ import {
   Text,
 } from '@sanity/ui'
 import {AnimatePresence, motion} from 'framer-motion'
-import {useEffect, useLayoutEffect, useMemo, useState} from 'react'
+import {useEffect, useLayoutEffect, useState} from 'react'
 import {
   AvatarSkeleton,
   isPublishedPerspective,
@@ -88,7 +88,7 @@ const FallbackStatus = () => {
   const {editState} = useDocumentPane()
   const {selectedPerspective} = usePerspective()
 
-  const status = useMemo(() => {
+  function getStatus() {
     if (isPublishedPerspective(selectedPerspective) && editState?.published?._updatedAt) {
       return {
         translationKey: TIMELINE_ITEM_I18N_KEY_MAPPING.published.createDocumentVersion,
@@ -98,7 +98,7 @@ const FallbackStatus = () => {
     if (editState?.version?._updatedAt) {
       return {
         translationKey:
-          editState?.version?._updatedAt === editState?.version?._createdAt
+          editState.version._updatedAt === editState.version._createdAt
             ? TIMELINE_ITEM_I18N_KEY_MAPPING.version.createDocumentVersion
             : TIMELINE_ITEM_I18N_KEY_MAPPING.version.editDocumentVersion,
         timestamp: editState.version._updatedAt,
@@ -107,21 +107,15 @@ const FallbackStatus = () => {
     if (editState?.draft?._updatedAt) {
       return {
         translationKey:
-          editState?.draft?._updatedAt === editState?.draft?._createdAt
+          editState.draft._updatedAt === editState.draft._createdAt
             ? TIMELINE_ITEM_I18N_KEY_MAPPING.draft.createDocumentVersion
             : TIMELINE_ITEM_I18N_KEY_MAPPING.draft.editDocumentVersion,
         timestamp: editState.draft._updatedAt,
       }
     }
     return null
-  }, [
-    selectedPerspective,
-    editState?.published?._updatedAt,
-    editState?.version?._updatedAt,
-    editState?.version?._createdAt,
-    editState?.draft?._updatedAt,
-    editState?.draft?._createdAt,
-  ])
+  }
+  const status = getStatus()
   if (!status) {
     return null
   }

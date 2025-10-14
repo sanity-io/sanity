@@ -6,7 +6,6 @@ import {
   memo,
   type MouseEvent,
   useCallback,
-  useEffect,
   useMemo,
   useRef,
   useState,
@@ -154,10 +153,10 @@ export const CommentsListItem = memo(function CommentsListItem(props: CommentsLi
 
   const [mouseOver, setMouseOver] = useState<boolean>(false)
 
-  const handleMouseEnter = useCallback(() => setMouseOver(true), [])
-  const handleMouseLeave = useCallback(() => setMouseOver(false), [])
+  const handleMouseEnter = () => setMouseOver(true)
+  const handleMouseLeave = () => setMouseOver(false)
 
-  const handleReplySubmit = useCallback(() => {
+  const handleReplySubmit = () => {
     const nextComment: CommentBaseCreatePayload = {
       message: value,
       parentCommentId: parentComment._id,
@@ -174,14 +173,7 @@ export const CommentsListItem = memo(function CommentsListItem(props: CommentsLi
 
     onReply?.(nextComment)
     setValue(EMPTY_ARRAY)
-  }, [
-    onReply,
-    parentComment._id,
-    parentComment?.status,
-    parentComment.target.path?.field,
-    parentComment.threadId,
-    value,
-  ])
+  }
 
   const startDiscard = useCallback(() => {
     if (!hasValue) {
@@ -251,61 +243,13 @@ export const CommentsListItem = memo(function CommentsListItem(props: CommentsLi
     return replies.length > MAX_COLLAPSED_REPLIES
   }, [replies])
 
-  const expandButtonText = useMemo(() => {
-    return `${replies?.length - MAX_COLLAPSED_REPLIES} more ${
-      replies?.length - MAX_COLLAPSED_REPLIES === 1 ? 'comment' : 'comments'
-    }`
-  }, [replies?.length])
+  const expandButtonText = `${replies?.length - MAX_COLLAPSED_REPLIES} more ${
+    replies?.length - MAX_COLLAPSED_REPLIES === 1 ? 'comment' : 'comments'
+  }`
 
-  useEffect(() => {
-    if (replies.length > MAX_COLLAPSED_REPLIES && !didExpand) {
-      setCollapsed(true)
-    }
-  }, [didExpand, replies])
-
-  const renderedReplies = useMemo(
-    () =>
-      splicedReplies.map((reply) => (
-        <Stack key={reply._id} as="li" {...applyCommentIdAttr(reply._id)}>
-          <CommentsListItemLayout
-            avatarSize={avatarConfig.avatarSize}
-            canDelete={reply.authorId === currentUser.id}
-            canEdit={reply.authorId === currentUser.id}
-            comment={reply}
-            currentUser={currentUser}
-            hasError={reply._state?.type === 'createError'}
-            isRetrying={reply._state?.type === 'createRetrying'}
-            intent={commentIntentIfDiffers(parentComment, reply)}
-            mentionOptions={mentionOptions}
-            mode={mode}
-            onCopyLink={onCopyLink}
-            onCreateRetry={onCreateRetry}
-            onDelete={onDelete}
-            onEdit={onEdit}
-            onInputKeyDown={handleInputKeyDown}
-            onReactionSelect={onReactionSelect}
-            readOnly={readOnly}
-            withAvatar={avatarConfig.threadCommentsAvatar}
-          />
-        </Stack>
-      )),
-    [
-      avatarConfig.threadCommentsAvatar,
-      avatarConfig.avatarSize,
-      currentUser,
-      handleInputKeyDown,
-      mentionOptions,
-      onCopyLink,
-      onCreateRetry,
-      onDelete,
-      onEdit,
-      onReactionSelect,
-      parentComment,
-      readOnly,
-      splicedReplies,
-      mode,
-    ],
-  )
+  if (replies.length > MAX_COLLAPSED_REPLIES && !didExpand) {
+    setCollapsed(true)
+  }
 
   return (
     <StyledThreadCard
@@ -369,7 +313,30 @@ export const CommentsListItem = memo(function CommentsListItem(props: CommentsLi
           </Flex>
         )}
 
-        {renderedReplies}
+        {splicedReplies.map((reply) => (
+          <Stack key={reply._id} as="li" {...applyCommentIdAttr(reply._id)}>
+            <CommentsListItemLayout
+              avatarSize={avatarConfig.avatarSize}
+              canDelete={reply.authorId === currentUser.id}
+              canEdit={reply.authorId === currentUser.id}
+              comment={reply}
+              currentUser={currentUser}
+              hasError={reply._state?.type === 'createError'}
+              isRetrying={reply._state?.type === 'createRetrying'}
+              intent={commentIntentIfDiffers(parentComment, reply)}
+              mentionOptions={mentionOptions}
+              mode={mode}
+              onCopyLink={onCopyLink}
+              onCreateRetry={onCreateRetry}
+              onDelete={onDelete}
+              onEdit={onEdit}
+              onInputKeyDown={handleInputKeyDown}
+              onReactionSelect={onReactionSelect}
+              readOnly={readOnly}
+              withAvatar={avatarConfig.threadCommentsAvatar}
+            />
+          </Stack>
+        ))}
 
         {canReply && (
           <CommentInput

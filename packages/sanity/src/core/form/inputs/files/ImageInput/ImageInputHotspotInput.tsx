@@ -1,5 +1,4 @@
 import {Stack} from '@sanity/ui'
-import {memo, useMemo} from 'react'
 
 import {Dialog} from '../../../../../ui-components'
 import {type FIXME} from '../../../../FIXME'
@@ -9,7 +8,7 @@ import {type InputProps} from '../../../types'
 import {ImageToolInput} from '../ImageToolInput'
 import {type BaseImageInputProps} from './types'
 
-export const ImageInputHotspotInput = memo(function ImageInputHotspotInputComponent(props: {
+export function ImageInputHotspotInput(props: {
   handleCloseDialog: () => void
   inputProps: Omit<InputProps, 'renderDefault'>
   imageInputProps: BaseImageInputProps
@@ -20,10 +19,7 @@ export const ImageInputHotspotInput = memo(function ImageInputHotspotInputCompon
   const {changed, id, imageUrlBuilder, value} = imageInputProps
 
   const withImageTool = isImageToolEnabled && value && value.asset
-  const imageUrl = useMemo(
-    () => (value?.asset ? imageUrlBuilder.image(value.asset).url() : ''),
-    [imageUrlBuilder, value?.asset],
-  )
+  const imageUrl = value?.asset ? imageUrlBuilder.image(value.asset).url() : ''
 
   return (
     <Dialog
@@ -49,4 +45,4 @@ export const ImageInputHotspotInput = memo(function ImageInputHotspotInputCompon
       </PresenceOverlay>
     </Dialog>
   )
-})
+}

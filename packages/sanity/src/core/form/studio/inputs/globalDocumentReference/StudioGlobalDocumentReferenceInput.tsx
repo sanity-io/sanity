@@ -7,7 +7,7 @@ import {
   type SanityDocument,
 } from '@sanity/types'
 import {get} from '@sanity/util/paths'
-import {useCallback, useEffect, useMemo, useRef} from 'react'
+import {useCallback, useMemo} from 'react'
 import {from, throwError} from 'rxjs'
 import {catchError, mergeMap} from 'rxjs/operators'
 
@@ -59,14 +59,6 @@ export type StudioGlobalDocumentReferenceInputProps = ObjectInputProps<
   GlobalDocumentReferenceSchemaType
 >
 
-function useValueRef<T>(value: T): {current: T} {
-  const ref = useRef(value)
-  useEffect(() => {
-    ref.current = value
-  }, [value])
-  return ref
-}
-
 type SearchError = {
   message: string
   details?: {
@@ -96,11 +88,10 @@ export function StudioGlobalDocumentReferenceInput(
     [client, schemaType],
   )
   const documentValue = useFormValue([]) as FIXME
-  const documentRef = useValueRef(documentValue)
 
   const handleSearch = useCallback(
     (searchString: string) =>
-      from(resolveUserDefinedFilter(schemaType.options, documentRef.current, path, getClient)).pipe(
+      from(resolveUserDefinedFilter(schemaType.options, documentValue, path, getClient)).pipe(
         mergeMap(({filter, params}) =>
           search(referenceClient, searchString, schemaType, {
             ...schemaType.options,
@@ -120,7 +111,7 @@ export function StudioGlobalDocumentReferenceInput(
         }),
       ),
 
-    [schemaType, documentRef, path, getClient, referenceClient, searchStrategy],
+    [schemaType, documentValue, path, getClient, referenceClient, searchStrategy],
   )
 
   const getReferenceInfo = useMemo(

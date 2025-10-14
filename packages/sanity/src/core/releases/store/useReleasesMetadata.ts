@@ -1,4 +1,4 @@
-import {useEffect, useState} from 'react'
+import {useEffect} from 'react'
 
 import {useReleasesMetadataProvider} from '../contexts/ReleasesMetadataProvider'
 
@@ -19,7 +19,6 @@ export const useReleasesMetadata = (releaseIds: string[]) => {
     removeReleaseIdsFromListener: removeBundleIdsFromListener,
     state,
   } = useReleasesMetadataProvider()
-  const [responseData, setResponseData] = useState<Record<string, ReleasesMetadata> | null>(null)
 
   useEffect(() => {
     if (releaseIds.length) addBundleIdsToListener([...new Set(releaseIds)])
@@ -29,20 +28,16 @@ export const useReleasesMetadata = (releaseIds: string[]) => {
 
   const {data, loading} = state
 
-  useEffect(() => {
-    if (!data) return
+  let responseData = null
 
+  if (data) {
     const hasUpdatedMetadata =
       !responseData || Object.entries(responseData).some(([key, value]) => value !== data[key])
 
     if (hasUpdatedMetadata) {
-      const nextResponseData = Object.fromEntries(
-        releaseIds.map((releaseId) => [releaseId, data[releaseId]]),
-      )
-
-      setResponseData(nextResponseData)
+      responseData = Object.fromEntries(releaseIds.map((releaseId) => [releaseId, data[releaseId]]))
     }
-  }, [releaseIds, data, responseData])
+  }
 
   return {
     error: state.error,

@@ -104,7 +104,7 @@ export const CommentsProvider = memo(function CommentsProvider(props: CommentsPr
   const documentRevisionId = useMemo(() => documentValue?._rev, [documentValue])
 
   // A map to keep track of the latest transaction ID for each comment document.
-  const transactionsIdMap = useMemo(() => new Map<DocumentId, TransactionId>(), [])
+  const [transactionsIdMap] = useState(() => new Map<DocumentId, TransactionId>())
 
   // When the latest transaction ID is received, we remove the transaction id from the map.
   const handleOnLatestTransactionIdReceived = useCallback(

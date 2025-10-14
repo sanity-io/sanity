@@ -198,6 +198,7 @@ export const NavDrawer = memo(function NavDrawer(props: NavDrawerProps) {
               <Flex direction="column" flex={1} justify="space-between" overflow="auto">
                 {/* Tools */}
                 <Card flex="none" padding={2}>
+                  {/* eslint-disable-next-line react-hooks/static-components -- this is intentional and how the middleware components has to work */}
                   <ToolMenu
                     activeToolName={activeToolName}
                     closeSidebar={onClose}

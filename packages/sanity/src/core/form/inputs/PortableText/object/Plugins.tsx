@@ -133,5 +133,6 @@ export const RenderDefault = (props: Omit<PortableTextPluginsProps, 'renderDefau
     defaultComponent: DefaultPortableTextEditorPlugins,
     pick: pickPortableTextEditorPluginsComponent,
   })
+  // eslint-disable-next-line react-hooks/static-components -- this is intentional and how the middleware components has to work
   return <RenderPlugins {...props} />
 }

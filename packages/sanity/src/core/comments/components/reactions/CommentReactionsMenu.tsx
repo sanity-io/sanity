@@ -18,13 +18,12 @@ interface CommentReactionsMenuProps {
 export function CommentReactionsMenu(props: CommentReactionsMenuProps) {
   const {options, onSelect} = props
   const {t} = useTranslation(commentsLocaleNamespace)
-  const [focusableElements, setFocusableElements] = useState<HTMLButtonElement[]>([])
   const [rootElement, setRootElement] = useState<HTMLDivElement | null>(null)
   const [focusedIndex, setFocusedIndex] = useState<number>(0)
 
   const handleRootKeyDown = useCallback(
     (event: React.KeyboardEvent<HTMLDivElement>) => {
-      const focusableLen = focusableElements.length
+      const focusableLen = rootElement?.querySelectorAll('button').length ?? 0
 
       if (event.key === 'ArrowRight') {
         setFocusedIndex((prev) => (prev + 1) % focusableLen)
@@ -39,32 +38,28 @@ export function CommentReactionsMenu(props: CommentReactionsMenuProps) {
       //   setFocusedIndex((prev) => (prev - GRID_COLUMNS + focusableLen) % focusableLen)
       // }
     },
-    [focusableElements.length],
+    [rootElement],
   )
 
   const handleOptionClick = useCallback(
     (event: React.MouseEvent<HTMLButtonElement>) => {
-      const index = focusableElements.indexOf(event.currentTarget)
+      const index = rootElement
+        ? Array.from(rootElement.querySelectorAll('button')).indexOf(event.currentTarget)
+        : -1
       setFocusedIndex(index)
       onSelect(options[index])
     },
-    [focusableElements, onSelect, options],
+    [rootElement, onSelect, options],
   )
-
-  // Get all the buttons in the grid and set them as focusable elements.
-  useEffect(() => {
-    if (rootElement) {
-      const buttons = rootElement.querySelectorAll('button')
-      setFocusableElements(Array.from(buttons))
-    }
-  }, [rootElement])
 
   // Focus the button at the focused index.
   useEffect(() => {
+    if (!rootElement) return
+    const focusableElements = Array.from(rootElement.querySelectorAll('button'))
     if (focusableElements.length > 0) {
       focusableElements[focusedIndex].focus()
     }
-  }, [focusableElements, focusedIndex])
+  }, [focusedIndex, rootElement])
 
   return (
     <Grid

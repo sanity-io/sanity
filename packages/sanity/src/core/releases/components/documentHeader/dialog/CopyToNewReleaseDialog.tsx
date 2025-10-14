@@ -1,7 +1,7 @@
 import {type EditableReleaseDocument} from '@sanity/client'
 import {useTelemetry} from '@sanity/telemetry/react'
 import {type BadgeTone, Box, Card, Flex, Text, useToast} from '@sanity/ui'
-import {useCallback, useState} from 'react'
+import {useState} from 'react'
 
 import {Button} from '../../../../../ui-components/button/Button'
 import {Dialog} from '../../../../../ui-components/dialog/Dialog'
@@ -71,15 +71,15 @@ export function CopyToNewReleaseDialog(props: {
   const isScheduledDateInPast = getIsScheduledDateInPast(release)
   const invalid = getIsReleaseInvalid(release)
 
-  const handleOnChange = useCallback((releaseMetadata: EditableReleaseDocument) => {
+  const handleOnChange = (releaseMetadata: EditableReleaseDocument) => {
     setRelease(releaseMetadata)
-  }, [])
+  }
 
-  const handleAddVersion = useCallback(async () => {
+  const handleAddVersion = () => {
     onCreateVersion(newReleaseId)
-  }, [onCreateVersion, newReleaseId])
+  }
 
-  const handleCreateRelease = useCallback(async () => {
+  const handleCreateRelease = async () => {
     // re-evaluate if date is in past
     // as dialog could have been left idle for a while
     if (getIsScheduledDateInPast(release)) {
@@ -100,7 +100,7 @@ export function CopyToNewReleaseDialog(props: {
 
       await createRelease(releaseValue)
 
-      await handleAddVersion()
+      handleAddVersion()
       telemetry.log(CreatedRelease, {origin: 'document-panel'})
     } catch (err) {
       if (isReleaseLimitError(err)) {
@@ -114,27 +114,15 @@ export function CopyToNewReleaseDialog(props: {
           description: err.message,
         })
       }
-    } finally {
-      setIsSubmitting(false)
-      clearReleaseDataFromStorage()
     }
-  }, [
-    release,
-    releasePromise,
-    createReleaseMetadata,
-    createRelease,
-    handleAddVersion,
-    telemetry,
-    onClose,
-    toast,
-    t,
-    clearReleaseDataFromStorage,
-  ])
+    setIsSubmitting(false)
+    clearReleaseDataFromStorage()
+  }
 
-  const handleOnClose = useCallback(() => {
+  const handleOnClose = () => {
     clearReleaseDataFromStorage()
     onClose()
-  }, [clearReleaseDataFromStorage, onClose])
+  }
 
   return (
     <Dialog

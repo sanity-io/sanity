@@ -230,13 +230,10 @@ function QRCodeSVGComponent(props: QRProps) {
     size,
   })
 
-  const cellsToDraw = useMemo(
-    () =>
-      logoSize && calculatedImageSettings?.excavation
-        ? excavateModules(cells, calculatedImageSettings.excavation)
-        : cells,
-    [calculatedImageSettings?.excavation, cells, logoSize],
-  )
+  const cellsToDraw =
+    logoSize && calculatedImageSettings?.excavation
+      ? excavateModules(cells, calculatedImageSettings.excavation)
+      : cells
 
   // Drawing strategy: instead of a rect per module, we're going to create a
   // single path for the dark modules and layer that on top of a light rect,

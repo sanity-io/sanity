@@ -166,30 +166,28 @@ export const DocumentPerspectiveList = memo(function DocumentPerspectiveList() {
     return !editState?.published
   }, [isLiveEdit, selectedReleaseId, editState?.published])
 
-  const getReleaseChipState = useCallback(
-    (release: ReleaseDocument): {selected: boolean; disabled?: boolean} => {
-      if (!params?.historyVersion) {
-        const isCurrentVersionGoingToUnpublish =
-          editState?.version &&
-          isGoingToUnpublish(editState?.version) &&
+  const getReleaseChipState = (
+    release: ReleaseDocument,
+  ): {selected: boolean; disabled?: boolean} => {
+    if (!params?.historyVersion) {
+      const isCurrentVersionGoingToUnpublish =
+        editState?.version &&
+        isGoingToUnpublish(editState?.version) &&
+        getReleaseIdFromReleaseDocumentId(release._id) === getVersionFromId(editState?.version?._id)
+
+      return {
+        selected: Boolean(
           getReleaseIdFromReleaseDocumentId(release._id) ===
-            getVersionFromId(editState?.version?._id)
-
-        return {
-          selected: Boolean(
-            getReleaseIdFromReleaseDocumentId(release._id) ===
-              getVersionFromId(displayed?._id || '') || isCurrentVersionGoingToUnpublish,
-          ),
-        }
+            getVersionFromId(displayed?._id || '') || isCurrentVersionGoingToUnpublish,
+        ),
       }
+    }
 
-      const isReleaseHistoryMatch =
-        getReleaseIdFromReleaseDocumentId(release._id) === params.historyVersion
+    const isReleaseHistoryMatch =
+      getReleaseIdFromReleaseDocumentId(release._id) === params.historyVersion
 
-      return {selected: isReleaseHistoryMatch, disabled: isReleaseHistoryMatch}
-    },
-    [displayed?._id, editState?.version, params?.historyVersion],
-  )
+    return {selected: isReleaseHistoryMatch, disabled: isReleaseHistoryMatch}
+  }
 
   const isPublishSelected: boolean = useMemo(() => {
     /**

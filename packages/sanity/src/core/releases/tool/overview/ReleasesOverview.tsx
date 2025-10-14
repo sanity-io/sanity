@@ -169,11 +169,9 @@ export function ReleasesOverview() {
   }, [checkWithPermissionGuard, createRelease])
 
   // switch to open mode if on archived mode and there are no archived releases
-  useEffect(() => {
-    if (releaseGroupMode === 'archived' && !loadingReleases && !archivedReleases.length) {
-      setReleaseGroupMode('active')
-    }
-  }, [releaseGroupMode, archivedReleases.length, loadingReleases])
+  if (releaseGroupMode === 'archived' && !loadingReleases && !archivedReleases.length) {
+    setReleaseGroupMode('active')
+  }
 
   const handleReleaseGroupModeChange = useCallback<MouseEventHandler<HTMLButtonElement>>(
     ({currentTarget: {value: groupMode}}) => {

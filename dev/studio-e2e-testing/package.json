@@ -21,7 +21,7 @@
     "@sanity/icons": "^3.7.4",
     "@sanity/ui": "catalog:",
     "@sanity/vision": "workspace:*",
-    "babel-plugin-react-compiler": "19.1.0-rc.3",
+    "babel-plugin-react-compiler": "1.0.0",
     "react": "catalog:",
     "react-dom": "catalog:",
     "sanity": "workspace:*",
