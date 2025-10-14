@@ -198,6 +198,7 @@ export const NavDrawer = memo(function NavDrawer(props: NavDrawerProps) {
               <Flex direction="column" flex={1} justify="space-between" overflow="auto">
                 {/* Tools */}
                 <Card flex="none" padding={2}>
+                  {/* // todo lint error */}
                   <ToolMenu
                     activeToolName={activeToolName}
                     closeSidebar={onClose}

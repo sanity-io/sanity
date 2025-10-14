@@ -66,6 +66,7 @@ function AddonDatasetProviderInner(props: AddonDatasetSetupProviderProps) {
       // it since we will create the dataset in the next step.
     }
 
+    // todo lint error
     try {
       // 1. Create the addon dataset
       const res = await originalClient.request({

@@ -340,6 +340,7 @@ export function ArrayOfObjectsItem(props: MemberItemProps) {
     renderPreview,
   ])
 
+  // todo lint error
   const renderedInput = useMemo(() => renderInput(inputProps), [inputProps, renderInput])
 
   const itemProps = useMemo((): Omit<ObjectItemProps, 'renderDefault'> => {
@@ -416,6 +417,7 @@ export function ArrayOfObjectsItem(props: MemberItemProps) {
       onPathBlur={onPathBlur}
       onPathFocus={onPathFocus}
     >
+      {/* // todo lint error */}
       {useMemo(() => renderItem(itemProps), [itemProps, renderItem])}
     </FormCallbacksProvider>
   )

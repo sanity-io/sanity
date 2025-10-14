@@ -49,6 +49,7 @@ function useRectFromElements(props: RectFromElementsHookOptions): DOMRect | null
     setRect(nextRect)
   }, [disabled, selector])
 
+  // todo lint error
   useEffect(handleSetRect, [handleSetRect])
 
   useEffect(() => {

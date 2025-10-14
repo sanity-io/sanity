@@ -75,6 +75,7 @@ export function StudioLayout() {
   // The default component is the `StudioLayoutComponent` defined below.
   const Layout = useLayoutComponent()
 
+  // todo lint error
   return <Layout />
 }
 
@@ -183,6 +184,7 @@ export function StudioLayoutComponent() {
   return (
     <Flex data-ui="ToolScreen" direction="column" height="fill" data-testid="studio-layout">
       <NavbarContext.Provider value={navbarContextValue}>
+        {/* // todo lint error */}
         <Navbar />
       </NavbarContext.Provider>
       {isLegacyDeskRedirect && <RedirectingScreen />}
@@ -210,6 +212,7 @@ export function StudioLayoutComponent() {
               }
             >
               <Suspense fallback={<LoadingBlock showText />}>
+                {/* // todo lint error */}
                 <ActiveToolLayout activeTool={activeTool} />
               </Suspense>
             </RouteScope>

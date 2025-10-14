@@ -1,6 +1,3 @@
-'use no memo'
-// The `use no memo` directive is due to a known issue with react-virtual and react compiler: https://github.com/TanStack/virtual/issues/736
-
 import {type DragStartEvent} from '@dnd-kit/core'
 import {isKeySegment} from '@sanity/types'
 import {Card, Stack, Text, useTheme} from '@sanity/ui'
@@ -142,6 +139,7 @@ export function ListArrayInput<Item extends ObjectItem>(props: ArrayOfObjectsInp
   // custom components can have different dimensions and the library recalculate the size of the element
   const estimateSize = useCallback(() => 53, [])
 
+  // todo lint error
   const virtualizer = useVirtualizer({
     count: members.length,
     estimateSize,

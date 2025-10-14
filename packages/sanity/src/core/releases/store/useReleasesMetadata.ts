@@ -40,6 +40,7 @@ export const useReleasesMetadata = (releaseIds: string[]) => {
         releaseIds.map((releaseId) => [releaseId, data[releaseId]]),
       )
 
+      // todo lint error
       setResponseData(nextResponseData)
     }
   }, [releaseIds, data, responseData])

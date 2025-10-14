@@ -443,6 +443,7 @@ export function ArrayOfObjectsField(props: {
     elementProps,
   ])
 
+  // todo lint error
   const renderedInput = useMemo(() => renderInput(inputProps), [inputProps, renderInput])
 
   const fieldProps = useMemo((): Omit<ArrayFieldProps, 'renderDefault'> => {
@@ -497,6 +498,7 @@ export function ArrayOfObjectsField(props: {
       onPathBlur={onPathBlur}
       onPathFocus={onPathFocus}
     >
+      {/* // todo lint error */}
       {useMemo(() => renderField(fieldProps), [fieldProps, renderField])}
     </FormCallbacksProvider>
   )

@@ -278,6 +278,7 @@ export function TextBlock(props: TextBlockProps) {
   )
 
   return useMemo(
+    // todo lint error
     () => (
       <Box
         {...outerPaddingProps}

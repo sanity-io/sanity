@@ -47,6 +47,7 @@ export function HistorySelector({showList}: {showList: boolean}) {
   const selectRev = useCallback(
     (revChunk: Chunk) => {
       try {
+        // todo lint error
         const [sinceId, revId] = timelineStore?.findRangeForRev(revChunk) || [null, null]
         setTimelineRange(sinceId, revId)
       } catch (err) {

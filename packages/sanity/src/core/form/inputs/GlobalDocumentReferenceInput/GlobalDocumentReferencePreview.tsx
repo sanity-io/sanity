@@ -51,6 +51,7 @@ export function GlobalDocumentReferencePreview(props: {
     if (previewMedia) {
       const isValidImageAsset =
         typeof (previewMedia as FIXME)?.asset !== 'undefined' && isImageSource(previewMedia)
+      // todo lint error
       const isValidElement = ReactIsValidElement(previewMedia)
 
       if (!isValidImageAsset && !isValidElement) {

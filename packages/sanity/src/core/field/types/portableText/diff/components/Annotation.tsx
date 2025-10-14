@@ -139,6 +139,7 @@ function AnnnotationWithDiff({
 
   useEffect(() => {
     if (!open && isEditing) {
+      // todo lint error
       setOpen(true)
       onSetFocus(myPath)
     }

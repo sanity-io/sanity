@@ -76,6 +76,7 @@ export const Calendar = forwardRef(function Calendar(
   const {
     selectTime,
     onFocusedDateChange,
+    // todo lint error
     selectedDate = new Date(),
     focusedDate = selectedDate,
     timeStep = 1,

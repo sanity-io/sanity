@@ -454,6 +454,7 @@ export default function PresentationTool(props: {
       presentationRef.send({type: 'iframe refresh'})
       if (visualEditingComlink) {
         // We only wait 300ms for the iframe to ack the refresh request before running the fallback logic
+        // todo lint error
         refreshRef.current = window.setTimeout(fallback, 300)
         visualEditingComlink.post('presentation/refresh', {
           source: 'manual',

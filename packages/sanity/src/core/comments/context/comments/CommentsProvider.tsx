@@ -109,6 +109,7 @@ export const CommentsProvider = memo(function CommentsProvider(props: CommentsPr
   // When the latest transaction ID is received, we remove the transaction id from the map.
   const handleOnLatestTransactionIdReceived = useCallback(
     (commentDocumentId: string) => {
+      // todo lint error
       transactionsIdMap.delete(commentDocumentId)
     },
     [transactionsIdMap],
@@ -135,6 +136,7 @@ export const CommentsProvider = memo(function CommentsProvider(props: CommentsPr
   // transactions are started in a short time span.
   const handleOnTransactionStart = useCallback(
     (commentDocumentId: string, transactionId: string) => {
+      // todo lint error
       transactionsIdMap.set(commentDocumentId, transactionId)
     },
     [transactionsIdMap],

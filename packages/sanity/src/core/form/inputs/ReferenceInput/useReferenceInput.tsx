@@ -51,9 +51,11 @@ export function useReferenceInput(options: Options) {
   const documentValue = useFormValue([]) as FIXME
   const documentRef = useValueRef(documentValue)
 
+  // todo lint error
   const documentTypeName = documentRef.current?._type
 
   const isCurrentDocumentLiveEdit = useMemo(() => {
+    // todo lint error
     return schema.get(documentTypeName)?.liveEdit
   }, [documentTypeName, schema])
 

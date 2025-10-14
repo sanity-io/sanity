@@ -358,6 +358,7 @@ export function BaseFileInput(props: BaseFileInputProps) {
           setIsBrowseMenuOpen={setIsBrowseMenuOpen}
           setIsUploading={setIsUploading}
           setSelectedAssetSource={setSelectedAssetSource}
+          // todo lint error
           uploader={assetSourceUploaderRef.current?.uploader}
         />
       )}

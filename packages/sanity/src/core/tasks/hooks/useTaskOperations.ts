@@ -37,6 +37,7 @@ export function useTaskOperations(): TaskOperations {
       if (!client) {
         try {
           const newCreatedClient = await createAddonDataset()
+          // todo lint error
           if (!newCreatedClient) throw new Error('No addon client found. Unable to create task.')
           const created = await newCreatedClient.create(task)
           return created
@@ -61,6 +62,7 @@ export function useTaskOperations(): TaskOperations {
     async (id: string, set: TaskEditPayload) => {
       try {
         if (!client) {
+          // todo lint error
           throw new Error('No client. Unable to create task.')
         }
         const edited = (await client.patch(id).set(set).commit()) as TaskDocument
@@ -76,6 +78,7 @@ export function useTaskOperations(): TaskOperations {
     async (id: string) => {
       try {
         if (!client) {
+          // todo lint error
           throw new Error('No client. Unable to create task.')
         }
         await client.delete(id)

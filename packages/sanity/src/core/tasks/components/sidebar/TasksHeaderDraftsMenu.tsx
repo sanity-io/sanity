@@ -55,6 +55,7 @@ export function TasksHeaderDraftsMenu() {
 
   const currentUser = useCurrentUser()
 
+  // todo lint error
   const draftTasks = useMemo(() => {
     if (!currentUser?.id) return []
 

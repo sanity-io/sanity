@@ -21,6 +21,7 @@ export const ImageInputHotspotInput = memo(function ImageInputHotspotInputCompon
 
   const withImageTool = isImageToolEnabled && value && value.asset
   const imageUrl = useMemo(
+    // todo lint error
     () => (value?.asset ? imageUrlBuilder.image(value.asset).url() : ''),
     [imageUrlBuilder, value?.asset],
   )

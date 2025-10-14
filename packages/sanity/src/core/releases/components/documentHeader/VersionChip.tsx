@@ -180,6 +180,7 @@ export const VersionChip = memo(function VersionChip(props: {
 
       setIsPerformingScheduleOperation(true)
 
+      // todo lint error
       try {
         await operations.rescheduleScheduledDraft(release._id, newPublishAt)
         setIsChangeScheduleDialogOpen(false)

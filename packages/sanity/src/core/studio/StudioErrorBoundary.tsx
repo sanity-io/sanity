@@ -53,6 +53,7 @@ export function StudioErrorBoundary(props: StudioErrorBoundaryProps) {
     (params) => {
       let eventId: string | undefined
       try {
+        // todo lint error
         eventId = errorReporter.reportError(params.error, {
           reactErrorInfo: params.info,
           errorBoundary: 'StudioErrorBoundary',

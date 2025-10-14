@@ -70,6 +70,7 @@ export default function LiveQueries(props: LiveQueriesProps): React.JSX.Element 
           actors: createCompatibilityActors<LoaderControllerMsg>(),
         }),
       )
+      // todo lint error
       setComlink(nextComlink)
 
       nextComlink.onStatus(onLoadersConnection)

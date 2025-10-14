@@ -39,6 +39,7 @@ export function TasksStudioSidebarInner() {
 
   const onTaskSelect = useCallback((id: string) => setViewMode({type: 'edit', id}), [setViewMode])
 
+  // todo lint error
   const filteredList = useMemo(() => {
     return data.filter((item) => {
       if (!item.createdByUser) return false

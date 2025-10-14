@@ -110,6 +110,7 @@ export const ReleaseScheduleButton = ({
       return
     }
 
+    // todo lint error
     try {
       setStatus('scheduling')
       await schedule(release._id, publishAt)

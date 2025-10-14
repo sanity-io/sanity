@@ -44,6 +44,7 @@ export function Decorator(props: BlockDecoratorRenderProps) {
     return CustomComponent ? (
       <CustomComponent {...componentProps}>{children}</CustomComponent>
     ) : (
+      // todo lint error
       <DefaultComponent {...componentProps}>{children}</DefaultComponent>
     )
   }, [CustomComponent, DefaultComponent, children, focused, schemaType, selected, value])

@@ -178,6 +178,7 @@ export function StringInputPortableText(props: StringInputProps) {
 
   return (
     <StyledRoot>
+      {/* // todo lint error */}
       <EditorProvider initialConfig={initialConfig.current}>
         <OneLinePlugin />
         <EventListenerPlugin on={handleEditorEvent} />

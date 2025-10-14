@@ -137,6 +137,7 @@ export function PaneItem(props: PaneItemProps) {
   }, [])
 
   // Reset `clicked` state when `selected` prop changes
+  // todo lint error
   useEffect(() => setClicked(false), [selected])
 
   // Preloads the edit state on hover, using concurrent rendering with `startTransition` so preloads can be interrupted and not block rendering

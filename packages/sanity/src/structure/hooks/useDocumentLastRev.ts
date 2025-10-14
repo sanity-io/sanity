@@ -23,6 +23,7 @@ export const useDocumentLastRev = (documentId: string, documentType: string) => 
 
   useEffect(() => {
     if (lastNonDeletedRevId && documentId) {
+      // todo lint error
       setLoading(true)
       historyStore
         .getDocumentAtRevision(documentId, lastNonDeletedRevId)

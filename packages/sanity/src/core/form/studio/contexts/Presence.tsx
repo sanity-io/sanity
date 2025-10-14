@@ -30,11 +30,13 @@ export function useChildPresence(path: Path, inclusive?: boolean): FormNodePrese
   const presence = useFormFieldPresence()
   const prev = useRef(presence)
   const next = immutableReconcile(
+    // todo lint error
     prev.current,
     presence.filter(
       (item) => startsWith(path, item.path) && (inclusive || !isEqual(path, item.path)),
     ),
   )
+  // todo lint error
   prev.current = next
   return next
 }

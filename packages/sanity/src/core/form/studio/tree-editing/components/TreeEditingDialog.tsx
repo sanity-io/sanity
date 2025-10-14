@@ -164,6 +164,7 @@ export function TreeEditingDialog(props: TreeEditingDialogProps): React.JSX.Elem
     // We only want to debounce the state building when the value changes
     // as that might happen frequently when the user is editing the document.
     if (isInitialRender || openPathChanged) {
+      // todo lint error
       handleBuildTreeEditingState({
         schemaType,
         documentValue: value,

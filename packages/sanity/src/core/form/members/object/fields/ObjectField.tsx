@@ -254,6 +254,7 @@ export const ObjectField = function ObjectField(props: {
     renderPreview,
   ])
 
+  // todo lint error
   const renderedInput = useMemo(() => renderInput(inputProps), [inputProps, renderInput])
 
   const fieldProps = useMemo((): Omit<ObjectFieldProps, 'renderDefault'> => {
@@ -318,6 +319,7 @@ export const ObjectField = function ObjectField(props: {
       onPathBlur={onPathBlur}
       onPathFocus={onPathFocus}
     >
+      {/* // todo lint error */}
       {useMemo(() => renderField(fieldProps), [fieldProps, renderField])}
     </FormCallbacksProvider>
   )

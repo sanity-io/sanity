@@ -21,6 +21,7 @@ export function TasksStatus(props: TasksStatusProps) {
       setCheckboxValue(isChecked)
       setIsLoading(true)
 
+      // todo lint error
       try {
         if (isChecked) {
           await operations.edit(documentId, {status: 'closed'})

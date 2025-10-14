@@ -162,6 +162,7 @@ export function ReleasesOverview() {
   // switch to open mode if on archived mode and there are no archived releases
   useEffect(() => {
     if (releaseGroupMode === 'archived' && !loadingReleases && !archivedReleases.length) {
+      // todo lint error
       setReleaseGroupMode('active')
     }
   }, [releaseGroupMode, archivedReleases.length, loadingReleases])
@@ -210,6 +211,7 @@ export function ReleasesOverview() {
   const [hasMounted, setHasMounted] = useState(false)
 
   useEffect(() => {
+    // todo lint error
     setHasMounted(true)
   }, [])
 
@@ -440,6 +442,7 @@ export function ReleasesOverview() {
         {showCalendar && renderCalendarFilter}
 
         {hasNoReleases ? (
+          // todo lint error
           <NoRelease />
         ) : (
           <>

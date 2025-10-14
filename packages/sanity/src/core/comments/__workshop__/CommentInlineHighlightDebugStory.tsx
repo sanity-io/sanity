@@ -155,6 +155,7 @@ export default function CommentInlineHighlightDebugStory() {
         currentHoveredCommentId,
         onDecorationMoved: (details) => {
           const {rangeDecoration, newSelection} = details
+          // todo lint error
           setRangeDecorations(buildRangeDecorationsCallback())
           const commentId = rangeDecoration.payload?.commentId as undefined | string
           const range = rangeDecoration.payload?.range as undefined | {_key: string; text: string}

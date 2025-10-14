@@ -103,11 +103,13 @@ describe('createHookFromObservableFactory', () => {
     }: {
       tuple: ReturnType<typeof useHook>
     }) {
+      // todo lint error
       deferRenders++
       return <Profiler id="defer" onRender={(id, phase) => phasesTimeline.push([id, phase])} />
     })
     const TestComponent = ({value}: {value: string}) => {
       const result = useHook(value)
+      // todo lint error
       syncRenders++
       const deferredResult = useDeferredValue(result)
       return <InnerMemoTestComponent tuple={deferredResult} />

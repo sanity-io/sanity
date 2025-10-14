@@ -61,6 +61,7 @@ export function useScheduledDraftMenuActions(
       if (!release?._id) return
 
       setIsPerformingOperation(true)
+      // todo lint error
       try {
         await operations.rescheduleScheduledDraft(release._id, newPublishAt)
         onActionComplete?.()

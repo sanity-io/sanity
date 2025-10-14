@@ -68,6 +68,7 @@ export function DescriptionInput(props: ArrayFieldProps & {mode: FormMode}) {
 
   useEffect(() => {
     if (!rootRef) return
+    // todo lint error
     setTextboxHeight(rootRef)
   }, [value, setTextboxHeight, rootRef])
 

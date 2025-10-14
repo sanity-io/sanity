@@ -30,6 +30,7 @@ export function DocumentInspectorMenuItemsResolver(props: DocumentInspectorMenuI
         newFieldActions[i] = menuItems[i]
       }
 
+      // todo lint error
       setMenuItems(newFieldActions)
     }
   }, [len, menuItems])

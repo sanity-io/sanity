@@ -79,7 +79,9 @@ export function StudioReferenceInput(props: StudioReferenceInputProps) {
 
   const documentValue = useFormValue([]) as FIXME
   const documentRef = useValueRef(documentValue)
+  // todo lint error
   const documentTypeName = documentRef.current?._type
+  // todo lint error
   const refType = schema.get(documentTypeName)
 
   const isDocumentLiveEdit = useMemo(() => refType?.liveEdit, [refType])

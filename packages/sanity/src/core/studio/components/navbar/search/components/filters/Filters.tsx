@@ -37,6 +37,7 @@ export function Filters({showTypeFilter = true}: {showTypeFilter?: boolean}) {
   const clearFiltersButtonVisible = filters.length > 0 || (showTypeFilter && types.length > 0)
 
   useEffect(() => {
+    // todo lint error
     setIsMounted(true)
   }, [])
 
@@ -69,12 +70,14 @@ export function Filters({showTypeFilter = true}: {showTypeFilter?: boolean}) {
           })}
           {!fullscreen && <AddFilterButton />}
         </Flex>
+        {/* // todo lint error */}
         {clearFiltersButtonVisible && !fullscreen && <ClearFiltersButton />}
       </Flex>
 
       {fullscreen && (
         <Flex justify="space-between" paddingBottom={2} paddingX={2}>
           <AddFilterButton />
+          {/* // todo lint error */}
           {clearFiltersButtonVisible && <ClearFiltersButton />}
         </Flex>
       )}

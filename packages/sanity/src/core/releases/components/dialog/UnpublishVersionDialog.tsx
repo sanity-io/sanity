@@ -45,6 +45,7 @@ export function UnpublishVersionDialog(props: {
 
   const preview = useValuePreview({schemaType, value: {_id: documentVersionId}})
 
+  // todo lint error
   const handleUnpublish = useCallback(async () => {
     setIsUnpublishing(true)
 

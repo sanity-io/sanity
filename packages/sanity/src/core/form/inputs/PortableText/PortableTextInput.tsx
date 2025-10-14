@@ -286,7 +286,9 @@ export function PortableTextInput(props: PortableTextInputProps): ReactNode {
 
   const rangeDecorations = useMemo((): RangeDecoration[] => {
     const result = [...(rangeDecorationsProp || []), ...presenceCursorDecorations]
+    // todo lint error
     const reconciled = immutableReconcile(previousRangeDecorations.current, result)
+    // todo lint error
     previousRangeDecorations.current = reconciled
     return reconciled
   }, [presenceCursorDecorations, rangeDecorationsProp])

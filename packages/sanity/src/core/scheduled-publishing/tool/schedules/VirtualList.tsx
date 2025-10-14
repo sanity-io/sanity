@@ -95,6 +95,7 @@ function useVirtualizedSchedules(activeSchedules: Schedule[], sortBy?: ScheduleS
     return items
   }, [activeSchedules, sortBy])
 
+  // todo lint error
   const virtualizer = useVirtualizer({
     count: listSourceItems.length,
     getScrollElement: () => containerRef.current,

@@ -132,6 +132,7 @@ export const FormView = forwardRef<HTMLDivElement, FormViewProps>(function FormV
     // This is to avoid stealing focus from intent links
     if (!focusedFirstDescendant && ready && !formState?.focusPath.length && formRef) {
       // todo lint error
+      // todo lint error
       setFocusedFirstDescendant(true)
       focusFirstDescendant(formRef)
     }

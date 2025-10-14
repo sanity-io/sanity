@@ -1,6 +1,3 @@
-'use no memo'
-// The `use no memo` directive is due to a known issue with react-table and react compiler: https://github.com/TanStack/table/issues/5567
-
 import {studioTheme, ThemeProvider} from '@sanity/ui'
 import {type ColumnDef, useReactTable} from '@tanstack/react-table'
 import {fireEvent, render, screen} from '@testing-library/react'
@@ -19,6 +16,7 @@ const TableHarness = ({columns}: {columns: ColumnDef<SanityDocument>[]}) => {
     'Fifth Column': true,
     'Sixth Column': false,
   }
+  // todo lint error
   const table = useReactTable<SanityDocument>({
     columns,
     data: [],

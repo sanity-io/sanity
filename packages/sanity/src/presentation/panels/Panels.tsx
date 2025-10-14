@@ -199,6 +199,7 @@ export const Panels: FunctionComponent<PropsWithChildren> = function ({children}
 
     if (storedWidths) {
       const validatedStoredWidths = validateWidths(panels, storedWidths, window.innerWidth)
+      // todo lint error
       setWidths(validatedStoredWidths)
       return
     }

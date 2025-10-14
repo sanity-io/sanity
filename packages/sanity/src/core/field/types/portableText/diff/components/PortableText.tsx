@@ -106,6 +106,7 @@ export function PortableText(props: Props): React.JSX.Element {
           | undefined
         const allMarkDefs = getAllMarkDefs(diff.origin)
         segments.forEach((seg) => {
+          // todo lint error
           segIndex++
           const isInline = TextSymbols.INLINE_SYMBOLS.includes(seg.text)
           const isMarkStart = allSymbolsStart.includes(seg.text)
@@ -114,6 +115,7 @@ export function PortableText(props: Props): React.JSX.Element {
           const isRemoved = seg.action === 'removed'
           if (isChildStart) {
             if (!isRemoved) {
+              // todo lint error
               childToIndex++
             }
             // No output

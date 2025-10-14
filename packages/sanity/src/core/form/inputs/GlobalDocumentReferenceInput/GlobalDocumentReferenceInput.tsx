@@ -357,6 +357,7 @@ export function GlobalDocumentReferenceInput(props: GlobalDocumentReferenceInput
                   tabIndex={0}
                   onFocus={handleFocus}
                   onBlur={handleBlur}
+                  // todo lint error
                   ref={elementProps.ref}
                 >
                   <PreviewReferenceValue
@@ -378,6 +379,7 @@ export function GlobalDocumentReferenceInput(props: GlobalDocumentReferenceInput
                   tabIndex={0}
                   onFocus={handleFocus}
                   onBlur={handleBlur}
+                  // todo lint error
                   ref={elementProps.ref}
                 >
                   <PreviewReferenceValue

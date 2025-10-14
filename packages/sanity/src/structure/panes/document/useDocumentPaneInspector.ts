@@ -33,6 +33,7 @@ export function useDocumentPaneInspector({
   useEffect(() => {
     if (inspectParamRef.current !== params.inspect) {
       inspectParamRef.current = params.inspect
+      // todo lint error
       setInspectorName(params.inspect || null)
     }
   }, [params.inspect])

@@ -115,6 +115,7 @@ export const UploadAssetsDialog = function UploadAssetsDialog(
             type: 'uploadRequest',
             files: uploader.getFiles(),
           })
+          // todo lint error
           setPageReadyForUploads(false)
         }
       }

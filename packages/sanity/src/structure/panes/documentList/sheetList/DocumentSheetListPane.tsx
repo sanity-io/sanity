@@ -66,6 +66,7 @@ function DocumentSheetListPaneInner({
   const [selectedAnchor, setSelectedAnchor] = useState<number | null>(null)
 
   const totalRows = state.result.hits.length
+  // todo lint error
   const table = useReactTable({
     data,
     columns,

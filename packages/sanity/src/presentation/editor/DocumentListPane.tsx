@@ -81,6 +81,7 @@ export function DocumentListPane(props: {
   const [structureParams] = useState(() => ({}))
 
   // Reset error state when `refs` value schanges
+  // todo lint error
   useEffect(() => setErrorParams(null), [refs])
 
   if (errorParams) {

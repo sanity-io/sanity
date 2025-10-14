@@ -38,6 +38,7 @@ export function useDocumentType(documentId: string, specifiedType = '*'): Docume
 
   // Reset documentType when documentId changes. Note that we're using the referentially
   // stable LOADING_STATE in order to prevent double rendering on initial load.
+  // todo lint error
   useEffect(() => setDocumentType(LOADING_STATE), [publishedId, specifiedType])
 
   // Load the documentType from Content Lake, unless we're already in a resolved state

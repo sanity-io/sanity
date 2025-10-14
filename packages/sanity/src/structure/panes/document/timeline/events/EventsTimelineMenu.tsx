@@ -87,6 +87,7 @@ export function EventsTimelineMenu({event, events, mode, placement}: TimelineMen
     (revEvent: DocumentGroupEvent) => {
       try {
         if (
+          // todo lint error
           isDeleteDocumentVersionEvent(revEvent) ||
           isDeleteDocumentGroupEvent(revEvent) ||
           isUnpublishDocumentEvent(revEvent) ||

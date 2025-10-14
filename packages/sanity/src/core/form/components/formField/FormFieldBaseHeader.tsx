@@ -205,6 +205,7 @@ export function FormFieldBaseHeader(props: FormFieldBaseHeaderProps) {
 
   // Calculate floating card's width
   useEffect(() => {
+    // todo lint error
     handleSetFloatingCardElementWidth()
   }, [handleSetFloatingCardElementWidth, showFieldActions])
 
@@ -212,6 +213,7 @@ export function FormFieldBaseHeader(props: FormFieldBaseHeaderProps) {
   useEffect(() => {
     if (slotElement) {
       const {width} = slotElement.getBoundingClientRect()
+      // todo lint error
       setSlotWidth(width || 0)
     }
   }, [slotElement])

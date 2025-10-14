@@ -157,6 +157,7 @@ export function PrimitiveField(props: {
     elementProps,
   ])
 
+  // todo lint error
   const renderedInput = useMemo(() => renderInput(inputProps), [inputProps, renderInput])
 
   const fieldProps = useMemo((): Omit<PrimitiveFieldProps, 'renderDefault'> => {

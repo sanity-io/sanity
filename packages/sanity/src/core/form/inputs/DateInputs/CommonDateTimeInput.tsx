@@ -58,6 +58,7 @@ export const CommonDateTimeInput = forwardRef(function CommonDateTimeInput(
   const {t} = useTranslation()
 
   useEffect(() => {
+    // todo lint error
     setLocalValue(null)
   }, [value])
 

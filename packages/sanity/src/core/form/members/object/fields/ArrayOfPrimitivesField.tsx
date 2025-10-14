@@ -397,6 +397,7 @@ export function ArrayOfPrimitivesField(props: {
     renderPreview,
   ])
 
+  // todo lint error
   const renderedInput = useMemo(() => renderInput(inputProps), [inputProps, renderInput])
 
   const fieldProps: Omit<ArrayOfPrimitivesFieldProps, 'renderDefault'> = useMemo(() => {
@@ -451,6 +452,7 @@ export function ArrayOfPrimitivesField(props: {
       onPathBlur={onPathBlur}
       onPathFocus={onPathFocus}
     >
+      {/* // todo lint error */}
       {useMemo(() => renderField(fieldProps as FIXME), [fieldProps, renderField])}
     </FormCallbacksProvider>
   )

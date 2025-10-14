@@ -138,6 +138,7 @@ export function useTimelineStore({
     controller.setRange(since || null, rev || null)
     timelineController$.next(controller)
 
+    // todo lint error
     controller.handler = (err, innerController) => {
       if (err) {
         timelineController$.error(err)

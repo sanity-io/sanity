@@ -181,6 +181,7 @@ export function TasksActivityLog(props: TasksActivityLogProps) {
 
   const handleDeleteCommentConfirm = useCallback(
     async (id: string) => {
+      // todo lint error
       try {
         setCommentDeleteLoading(true)
         setCommentDeleteError(null)

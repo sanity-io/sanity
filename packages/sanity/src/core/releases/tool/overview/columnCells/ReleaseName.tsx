@@ -52,6 +52,7 @@ export const ReleaseNameCell: VisibleColumn<TableRelease>['cell'] = ({
 
   if (release.isLoading) {
     return (
+      // todo lint error
       <WrapperBox>
         <Flex align="center" gap={2}>
           <Skeleton animated radius={1} style={PREVIEW_SIZES.default.media} />
@@ -74,6 +75,7 @@ export const ReleaseNameCell: VisibleColumn<TableRelease>['cell'] = ({
   const displayTitle = release.metadata.title || tCore('release.placeholder-untitled-release')
 
   return (
+    // todo lint error
     <WrapperBox>
       <Tooltip
         disabled={!release.isDeleted}

@@ -128,6 +128,7 @@ export const DiffViewPane = forwardRef<HTMLDivElement, DiffViewPaneProps>(functi
                 <PortalProvider element={portalElement}>
                   <DialogProvider position="absolute">
                     <Container ref={containerElement} padding={4} width={1}>
+                      {/* // todo lint error */}
                       <DocumentLayout documentId={documentId} documentType={documentType} />
                     </Container>
                   </DialogProvider>

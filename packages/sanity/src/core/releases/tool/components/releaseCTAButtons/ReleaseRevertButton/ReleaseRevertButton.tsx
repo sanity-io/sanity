@@ -63,8 +63,10 @@ const ConfirmReleaseDialog = ({
 
     const revertReleaseId = createReleaseId()
 
+    // todo lint error
     try {
       if (!documentRevertStates) {
+        // todo lint error
         throw new Error('Unable to find documents to revert')
       }
 

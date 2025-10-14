@@ -138,6 +138,7 @@ export function ChangeList({diff, fields, schemaType}: ChangeListProps): React.J
         onConfirm={revertAllChanges}
         onCancel={closeRevertAllChangesConfirmDialog}
         changeCount={changes.length}
+        // todo lint error
         referenceElement={buttonRef.current}
       />
     </Card>

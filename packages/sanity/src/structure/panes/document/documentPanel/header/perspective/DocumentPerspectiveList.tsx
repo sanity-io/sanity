@@ -128,6 +128,7 @@ export const DocumentPerspectiveList = memo(function DocumentPerspectiveList() {
   }, [isLiveEdit, selectedReleaseId, editState?.published])
 
   const getReleaseChipState = useCallback(
+    // todo lint error
     (release: ReleaseDocument): {selected: boolean; disabled?: boolean} => {
       if (!params?.historyVersion) {
         const isCurrentVersionGoingToUnpublish =
