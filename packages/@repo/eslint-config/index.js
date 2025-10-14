@@ -192,11 +192,15 @@ export default [
     // we also enable new rules that are not enabled by default yet
     name: 'react-hooks/react-compiler',
     rules: {
+      // Enabled by default, but we need them to be `error`
       // 'react-hooks/immutability': 'warn',
       // 'react-hooks/preserve-manual-memoization': 'warn',
       // 'react-hooks/refs': 'warn',
       // 'react-hooks/set-state-in-effect': 'warn',
       // 'react-hooks/static-components': 'warn',
+      // Enabled by default, but are `warn` while we want them to be `error`
+      'react-hooks/unsupported-syntax': 'error',
+      'react-hooks/incompatible-library': 'error',
       // Disabled by default, enabled here (https://github.com/facebook/react/blob/5f2b571878ec3b5884f5739915a974b98d7384d5/compiler/packages/babel-plugin-react-compiler/src/CompilerError.ts#L734-L1004)
       'react-hooks/capitalized-calls': 'error',
       'react-hooks/memoized-effect-dependencies': 'error',

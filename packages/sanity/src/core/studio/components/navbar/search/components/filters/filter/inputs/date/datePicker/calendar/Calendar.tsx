@@ -157,6 +157,7 @@ export function Calendar(props: CalendarProps) {
     // Only date has changed
     if (onlyDateChanged) {
       if (dateIsAfterEndDate) {
+        // todo lint error
         setSelectEndValue(true)
         onSelect({date, endDate: null})
       }
