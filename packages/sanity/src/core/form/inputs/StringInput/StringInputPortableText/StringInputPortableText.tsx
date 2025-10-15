@@ -12,7 +12,6 @@ import {Card, useArrayProp, useRootTheme} from '@sanity/ui'
 import {useCallback, useEffect, useRef} from 'react'
 import {styled} from 'styled-components'
 
-import {useWorkspace} from '../../../../studio/workspace'
 import {set, unset} from '../../../patch/patch'
 import {type StringInputProps} from '../../../types'
 import {UpdateReadOnlyPlugin} from '../../PortableText/PortableTextInput'
@@ -69,7 +68,6 @@ const StyledPlaceholder = styled.span<TextInputResponsivePaddingStyleProps>`
  * @beta
  */
 export function StringInputPortableText(props: StringInputProps) {
-  const {advancedVersionControl} = useWorkspace()
   const {
     elementProps,
     onChange,
@@ -186,8 +184,8 @@ export function StringInputPortableText(props: StringInputProps) {
         <BehaviorPlugin behaviors={[plainTextPasteBehaviour, plainTextOneLineBehaviour]} />
         <StyledInput
           className={props.validationError ? INVALID_CLASS_NAME : undefined}
-          renderPlaceholder={advancedVersionControl.enabled ? renderPlaceholder : undefined}
-          rangeDecorations={advancedVersionControl.enabled ? rangeDecorations : undefined}
+          renderPlaceholder={props.displayInlineChanges ? renderPlaceholder : undefined}
+          rangeDecorations={props.displayInlineChanges ? rangeDecorations : undefined}
           $fontSize={fontSize}
           $space={space}
           $padding={padding}

@@ -1,4 +1,3 @@
-import {useWorkspace} from '../../../studio/workspace'
 import {type StringInputProps} from '../../types'
 import {StringInputBasic} from './StringInputBasic/StringInputBasic'
 import {StringInputPortableText} from './StringInputPortableText/StringInputPortableText'
@@ -8,9 +7,7 @@ import {StringInputPortableText} from './StringInputPortableText/StringInputPort
  * @beta
  */
 export function StringInput(props: StringInputProps) {
-  const {advancedVersionControl} = useWorkspace()
-
-  if (advancedVersionControl?.enabled) {
+  if (props.displayInlineChanges) {
     return <StringInputPortableText {...props} />
   }
 

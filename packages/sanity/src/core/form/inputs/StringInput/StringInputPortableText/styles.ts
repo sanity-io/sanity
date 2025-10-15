@@ -77,7 +77,7 @@ export function textInputBaseStyle(
       --input-placeholder-color: ${color.input.default.enabled.placeholder};
 
       /* enabled */
-      &:not(:invalid):not(:disabled):not(:read-only) {
+      &:not(:invalid):not(:disabled):not([data-read-only='true']) {
         --input-fg-color: ${color.input.default.enabled.fg};
         --input-placeholder-color: ${color.input.default.enabled.placeholder};
       }
@@ -95,7 +95,7 @@ export function textInputBaseStyle(
       }
 
       /* readOnly */
-      &:read-only {
+      &[data-read-only='true'] {
         --input-fg-color: ${color.input.default.readOnly.fg};
         --input-placeholder-color: ${color.input.default.readOnly.placeholder};
       }
@@ -214,36 +214,37 @@ export function textInputRepresentationStyle(
       }
 
       /* readOnly */
-      *:not(.invalid):read-only + & {
+      *:not(.invalid)[data-read-only='true'] + & {
         --card-bg-color: ${color.input.default.readOnly.bg} !important;
         --card-fg-color: ${color.input.default.readOnly.fg} !important;
       }
 
-      *.invalid:read-only + & {
+      *.invalid[data-read-only='true'] + & {
         --card-bg-color: ${color.input.invalid.readOnly.bg} !important;
         --card-fg-color: ${color.input.invalid.readOnly.fg} !important;
       }
 
       /* hovered */
       @media (hover: hover) {
-        *:not(:disabled):not(:read-only):not(.invalid):hover + & {
+        *:not(:disabled):not([data-read-only='true']):not(.invalid):hover + & {
           --card-bg-color: ${color.input.default.hovered.bg};
           --card-fg-color: ${color.input.default.hovered.fg};
         }
 
-        *.invalid:not(:disabled):not(:read-only):hover + & {
+        *.invalid:not(:disabled):not([data-read-only='true']):hover + & {
           --card-bg-color: ${color.input.invalid.hovered.bg};
           --card-fg-color: ${color.input.invalid.hovered.fg};
         }
 
-        *:not(:disabled):not(:read-only):not(.invalid):not(:focus):hover + &[data-border] {
+        *:not(:disabled):not([data-read-only='true']):not(.invalid):not(:focus):hover
+          + &[data-border] {
           --input-box-shadow: ${focusRingBorderStyle({
             color: color.input.default.hovered.border,
             width: input.border.width,
           })};
         }
 
-        *.invalid:not(:disabled):not(:read-only):not(:focus):hover + &[data-border] {
+        *.invalid:not(:disabled):not([data-read-only='true']):not(:focus):hover + &[data-border] {
           --input-box-shadow: ${focusRingBorderStyle({
             color: color.input.invalid.hovered.border,
             width: input.border.width,

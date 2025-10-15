@@ -378,6 +378,7 @@ export function ArrayOfObjectsField(props: {
       onItemCollapse: handleCollapseItem,
       onItemClose: handleCloseItem,
       onItemOpen: handleOpenItem,
+      displayInlineChanges: member.field.displayInlineChanges ?? false,
 
       focusPath: member.field.focusPath,
       focused: member.field.focused,
@@ -419,6 +420,7 @@ export function ArrayOfObjectsField(props: {
     member.field.path,
     member.field.validation,
     member.field.presence,
+    member.field.displayInlineChanges,
     handleExpandItem,
     handleCollapseItem,
     handleCloseItem,
