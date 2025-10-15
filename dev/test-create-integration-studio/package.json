@@ -5,12 +5,12 @@
   "license": "MIT",
   "author": "Sanity.io <hello@sanity.io>",
   "scripts": {
-    "build": "../.bin/sanity build",
+    "build": "sanity build",
     "clean": "rimraf .sanity dist",
     "deploy": "npx sanity deploy",
-    "dev": "../.bin/sanity dev",
+    "dev": "sanity dev",
     "lint": "eslint .",
-    "start": "../.bin/sanity start"
+    "start": "sanity start"
   },
   "dependencies": {
     "@repo/eslint-config": "workspace:*",
