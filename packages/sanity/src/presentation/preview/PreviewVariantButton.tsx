@@ -1,10 +1,12 @@
 import {UsersIcon} from '@sanity/icons'
-import {Box, Select, Stack, Text} from '@sanity/ui'
+import {Stack, Text} from '@sanity/ui'
 import {useState} from 'react'
 import {DECISION_PARAMETERS_SCHEMA, useTranslation, useWorkspace} from 'sanity'
 
+import {type DecisionParameter} from '../../config'
 import {Button, Dialog, Tooltip} from '../../ui-components'
 import {presentationLocaleNamespace} from '../i18n'
+import {ParameterInput} from './ParameterInput'
 
 interface PreviewVariantButtonProps {
   currentSelections?: Record<string, string>
@@ -28,10 +30,9 @@ export function PreviewVariantButton({
     return null
   }
 
-  // Filter and validate that each value is an array of strings
-  const validParameters = Object.entries(decideParametersConfig).filter(([, value]) => {
-    return Array.isArray(value) && value.every((item) => typeof item === 'string')
-  }) as Array<[string, string[]]>
+  // Get decision parameters from the config function
+  const decisionParameters = decideParametersConfig ? decideParametersConfig() : undefined
+  const validParameters = decisionParameters ? Object.entries(decisionParameters) : []
 
   const handleSelectionChange = (key: string, value: string) => {
     setPendingSelections((prev) => ({
@@ -95,26 +96,14 @@ export function PreviewVariantButton({
 
             {validParameters.length > 0 ? (
               <Stack space={3}>
-                {validParameters.map(([key, options]) => (
-                  <Box key={key}>
-                    <Text size={1} weight="medium" style={{marginBottom: 8}}>
-                      {key}
-                    </Text>
-                    <Select
-                      value={pendingSelections[key] || ''}
-                      onChange={(event) => handleSelectionChange(key, event.currentTarget.value)}
-                      placeholder={t('preview-frame.variant-dialog.select-placeholder', {key})}
-                    >
-                      <option value="">
-                        {t('preview-frame.variant-dialog.select-placeholder', {key})}
-                      </option>
-                      {options.map((option) => (
-                        <option key={option} value={option}>
-                          {option}
-                        </option>
-                      ))}
-                    </Select>
-                  </Box>
+                {validParameters.map(([key, paramConfig]: [string, DecisionParameter]) => (
+                  <ParameterInput
+                    key={key}
+                    paramKey={key}
+                    paramConfig={paramConfig}
+                    value={pendingSelections[key] || ''}
+                    onChange={(value) => handleSelectionChange(key, value)}
+                  />
                 ))}
               </Stack>
             ) : (

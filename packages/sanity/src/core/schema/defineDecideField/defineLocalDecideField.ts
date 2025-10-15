@@ -1,35 +1,74 @@
-import {defineField} from '@sanity/types'
+import {type PreviewConfig, defineField} from '@sanity/types'
 
-import {AudienceSelectInput} from '../../form/inputs/AudienceSelectInput'
+import {DecideObjectField, DecideObjectInput} from './DecideComponents'
+import {OperatorSelectInput} from './OperatorSelectInput'
+import {PropertySelectInput} from './PropertySelectInput'
+import {TargetValueInput} from './TargetValueInput'
+import {type DecideRule} from './types'
 
-/**
- * Helper function for defining a "decide field" - a field that can have different values
- * based on audience conditions. This creates an object type with a default value and
- * conditional audience-specific values.
- *
- * The decide field structure includes:
- * - `default`: The default value used when no conditions match
- * - `conditions`: Array of audience-specific conditions with their values
- *
- * @param config - Field configuration object with name, title, type, and other field options
- *
- * @example
- * ```ts
- * defineLocalDecideField({
- *   name: 'decideName',
- *   title: '[Decide] Name',
- *   type: 'string',
- *   validation: (rule) => rule.required(),
- * })
- * ```
- *
- * @beta
- */
-export function defineLocalDecideField(config: any) {
+const rulePreview: PreviewConfig = {
+  select: {
+    property: 'property',
+    operator: 'operator',
+    targetValue: 'targetValue',
+    and: 'and',
+  },
+  prepare(context) {
+    const property = context.property
+    const operator = context.operator
+    const targetValue = context.targetValue
+    const and = context.and as DecideRule[]
+    return {
+      title: `${property || ''} ${operator || ''} ${targetValue || ''} ${and ? `& ${and.map((a) => `${a.property || ''} ${a.operator || ''} ${a.targetValue || ''}`).join(' & ')}` : ''}`,
+    }
+  },
+}
+
+const rule = defineField({
+  name: 'rule',
+  type: 'object',
+  fields: [
+    defineField({
+      name: 'property',
+      title: 'Property',
+      type: 'string',
+      components: {
+        input: PropertySelectInput,
+      },
+    }),
+    defineField({
+      name: 'operator',
+      title: 'Operator',
+      type: 'string',
+      readOnly: ({parent}) => !parent.property,
+      components: {
+        input: OperatorSelectInput,
+      },
+    }),
+    defineField({
+      name: 'targetValue',
+      title: 'Target Value',
+      type: 'string',
+      readOnly: ({parent}) => !parent.property,
+      components: {
+        input: TargetValueInput,
+      },
+    }),
+  ],
+  preview: rulePreview,
+})
+
+// Generic decide field implementation that works for all types
+export const defineLocalDecideField = (config: any) => {
   const {name, title, description, type, ...otherConfig} = config
 
   const valueFieldConfig = {
     type,
+    // ...(to && {to}),
+    // ...(validation && {validation}),
+    // ...(description && {description}),
+    // ...(readOnly && {readOnly}),
+    // ...(hidden && {hidden}),
     ...otherConfig,
   }
 
@@ -38,40 +77,71 @@ export function defineLocalDecideField(config: any) {
     title,
     description,
     type: 'object',
+    components: {
+      field: DecideObjectField,
+      input: DecideObjectInput,
+    },
     fields: [
       defineField({
         name: 'default',
-        title: 'Default Value',
+        title: title || name,
         ...valueFieldConfig,
-      } as any),
+      }),
       defineField({
+        // TODO: Change to variants?
         name: 'conditions',
-        title: 'Conditions',
+        title: 'Variants',
         type: 'array',
         of: [
           defineField({
             type: 'object',
             name: 'condition',
             title: 'Condition',
+            preview: {
+              select: {
+                rules: 'anyOf',
+                value: 'value',
+              },
+              prepare(context) {
+                const value = context.value
+                const rules = (context.rules || []) as DecideRule[]
+
+                return {
+                  title: value,
+                  subtitle: `${rules.map((r) => `${r.property || ''} ${r.operator || ''} ${r.targetValue || ''} ${r.and ? `& ${r.and.map((and) => `${and.property || ''} ${and.operator || ''} ${and.targetValue || ''}`).join(' & ')}` : ''}`).join(' | ')}`,
+                }
+              },
+            },
             fields: [
               defineField({
-                name: 'audience',
-                title: 'Audience Equality',
-                validation: (Rule: any) => Rule.required(),
-                type: 'string',
-                components: {
-                  input: AudienceSelectInput,
-                },
-              } as any),
+                name: 'anyOf',
+                title: 'Any of',
+                description: 'If any of the rules are true, the condition is true',
+                type: 'array',
+                of: [
+                  {
+                    ...rule,
+                    fields: [
+                      ...rule.fields,
+                      defineField({
+                        name: 'and',
+                        title: 'And',
+                        type: 'array',
+                        of: [rule],
+                      }),
+                    ],
+                  },
+                ],
+              }),
               defineField({
                 name: 'value',
-                title: 'Value',
+                title: 'Then value',
                 ...valueFieldConfig,
-              } as any),
+              }),
             ],
-          } as any),
+          }),
         ],
-      } as any),
+      }),
     ],
-  } as any)
+  })
 }

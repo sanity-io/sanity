@@ -538,9 +538,9 @@ export const decisionParametersSchemaReducer = (opts: {
       const schema = innerConfig[DECISION_PARAMETERS_SCHEMA]
 
       if (typeof schema === 'undefined') return acc
-      if (typeof schema === 'object' && schema !== null) return schema
+      if (typeof schema === 'function' && schema !== null) return schema
 
-      throw new Error(`Expected an object, but received ${getPrintableType(schema)}`)
+      throw new Error(`Expected a function, but received ${getPrintableType(schema)}`)
     },
     initialValue,
   )

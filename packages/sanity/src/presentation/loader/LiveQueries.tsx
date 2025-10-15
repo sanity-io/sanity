@@ -40,7 +40,6 @@ import {mapChangedValue} from './utils'
 
 // Conditional content resolution logic from client
 interface DecideCondition {
-  audience: string
   value: unknown
   [key: string]: unknown
 }
@@ -51,7 +50,6 @@ interface DecideField {
 }
 
 interface LocalDecideParameters {
-  audience: string | string[]
   [key: string]: unknown
 }
 
@@ -67,21 +65,31 @@ function isDecideField(value: unknown): value is DecideField {
 }
 
 function resolveDecideField(field: DecideField, decideParameters?: LocalDecideParameters): unknown {
-  const audience = decideParameters?.audience
-
-  if (
-    !decideParameters ||
-    !audience ||
-    (Array.isArray(audience) && audience.length === 0) ||
-    audience === ''
-  ) {
+  if (!decideParameters || Object.keys(decideParameters).length === 0) {
     return field.default
   }
 
   const matchingCondition = field.conditions.find((condition) => {
-    return Array.isArray(audience)
-      ? audience.includes(condition.audience)
-      : condition.audience === audience
+    // Support both old format (condition.audience) and new dynamic format
+    if ('audience' in condition && condition.audience) {
+      // Legacy support: check audience parameter (audiences or audience)
+      const audience = decideParameters.audience || decideParameters.audiences
+      if (audience) {
+        return Array.isArray(audience)
+          ? audience.includes(condition.audience)
+          : condition.audience === audience
+      }
+    }
+
+    // New dynamic format: check all condition properties against parameters
+    return Object.entries(condition).every(([key, value]) => {
+      if (key === 'value' || key === '_key' || key === '_type') return true
+      const paramValue = decideParameters[key]
+      if (!paramValue) return false
+      return Array.isArray(paramValue)
+        ? paramValue.includes(value as string)
+        : paramValue === value
+    })
   })
 
   return matchingCondition ? matchingCondition.value : field.default
@@ -410,13 +418,8 @@ function useQuerySubscription(props: UseQuerySubscriptionProps) {
 
     if (!parsedParams || Object.keys(parsedParams).length === 0) return undefined
 
-    const audience = parsedParams.audiences ?? 'preview'
-    if (!audience) return undefined
-
-    return {
-      ...parsedParams,
-      audience,
-    }
+    // Pass through all parameters as-is - no hardcoded mappings
+    return parsedParams
   }, [decideParameters])
   const [result, setResult] = useState<unknown>(null)
   const [resultSourceMap, setResultSourceMap] = useState<ContentSourceMap | null | undefined>(null)
@@ -439,7 +442,7 @@ function useQuerySubscription(props: UseQuerySubscriptionProps) {
     client
       .fetch(query, params, {
         lastLiveEventId,
-        tag: `presentation-loader-${cleanseTag(transformedDecideParameters?.audience)}`,
+        tag: `presentation-loader-${cleanseTag(JSON.stringify(transformedDecideParameters || {}))}`,
         signal: controller.signal,
         perspective,
         decideParameters: transformedDecideParameters,

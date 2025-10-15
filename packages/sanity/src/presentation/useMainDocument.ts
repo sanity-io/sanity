@@ -164,10 +164,7 @@ export function useMainDocument(props: {
           const controller = new AbortController()
           const options: ResponseQueryOptions = {
             perspective: perspectiveStack,
-            decideParameters: {
-              ...decideParameters,
-              audience: decideParameters.audiences ?? 'preview',
-            },
+            decideParameters: decideParameters,
             signal: controller.signal,
             tag: 'use-main-document',
           }
