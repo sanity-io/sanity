@@ -1,4 +1,5 @@
 export interface DecideObject<T = unknown> {
+  _type: 'sanity.decideField'
   default?: T
   conditions?: Array<{
     _key: string

@@ -89,8 +89,9 @@ export const defineLocalDecideField = (config: any) => {
         ...valueFieldConfig,
       }),
       defineField({
+        // TODO: Change to variants?
         name: 'conditions',
-        title: 'Conditions',
+        title: 'Variants',
         type: 'array',
         of: [
           defineField({
@@ -114,11 +115,6 @@ export const defineLocalDecideField = (config: any) => {
             },
             fields: [
               defineField({
-                name: 'value',
-                title: 'Value',
-                ...valueFieldConfig,
-              }),
-              defineField({
                 name: 'anyOf',
                 title: 'Any of',
                 description: 'If any of the rules are true, the condition is true',
@@ -137,6 +133,11 @@ export const defineLocalDecideField = (config: any) => {
                     ],
                   },
                 ],
+              }),
+              defineField({
+                name: 'value',
+                title: 'Then value',
+                ...valueFieldConfig,
               }),
             ],
           }),
