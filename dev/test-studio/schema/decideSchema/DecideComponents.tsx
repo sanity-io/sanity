@@ -1,8 +1,8 @@
-import {CopyIcon} from '@sanity/icons'
+import {ControlsIcon} from '@sanity/icons'
 import {Button, Flex, Stack} from '@sanity/ui'
 import * as Path from '@sanity/util/paths'
 import {uuid} from '@sanity/uuid'
-import {useCallback} from 'react'
+import {useCallback, useEffect} from 'react'
 import {
   defineDocumentFieldAction,
   EditPortal,
@@ -10,6 +10,8 @@ import {
   insert,
   type ObjectFieldProps,
   type ObjectInputProps,
+  set,
+  unset,
   useFormValue,
 } from 'sanity'
 import {useDocumentPane} from 'sanity/structure'
@@ -39,9 +41,9 @@ export const copyAction = defineDocumentFieldAction({
 
     return {
       type: 'action',
-      icon: CopyIcon,
+      icon: ControlsIcon,
       onAction,
-      title: 'Add variant',
+      title: 'Configure variants',
     }
   },
 })
@@ -61,6 +63,16 @@ export const DecideObjectInput = (props: ObjectInputProps) => {
   const isConditionsOpen = Path.toString(openPath).startsWith(
     Path.toString(path.concat([CONDITIONS_PATH])),
   )
+
+  useEffect(() => {
+    if (value && !value?._type) {
+      onChange(set('sanity.decideField', ['_type']))
+    }
+    // Check if only value._type is present, if it's the only key remove it to remove the object
+    if (value && Object.keys(value).length === 1 && value._type) {
+      onChange(unset(['_type']))
+    }
+  }, [onChange, value?._type, value])
 
   return (
     <Stack space={2}>
