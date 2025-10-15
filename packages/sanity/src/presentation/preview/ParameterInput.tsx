@@ -1,8 +1,8 @@
 import {Box, Select, Text, TextInput} from '@sanity/ui'
 import {useTranslation} from 'sanity'
 
-import {presentationLocaleNamespace} from '../i18n'
 import {type DecisionParameter} from '../../config'
+import {presentationLocaleNamespace} from '../i18n'
 
 interface ParameterInputProps {
   paramKey: string

@@ -2,7 +2,6 @@ import {
   type FunctionComponent,
   type PropsWithChildren,
   useCallback,
-  useEffect,
   useMemo,
   useState,
 } from 'react'
@@ -19,7 +18,7 @@ export const DecideParametersProvider: FunctionComponent<PropsWithChildren> = fu
     (params: Record<string, string>) => {
       setDecideParametersState(params)
     },
-    [decideParameters],
+    [],
   )
 
   const contextValue = useMemo<DecideParametersContextValue>(

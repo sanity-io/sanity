@@ -1,7 +1,7 @@
 import {DECISION_PARAMETERS_SCHEMA} from '../../config'
-import {useWorkspace} from '../../studio/workspace'
-import {type StringInputProps} from '../../form/types'
 import {useFormValue} from '../../form/contexts/FormValue'
+import {type StringInputProps} from '../../form/types'
+import {useWorkspace} from '../../studio/workspace'
 
 /**
  * Custom input component for target value that reads from sanity.config and

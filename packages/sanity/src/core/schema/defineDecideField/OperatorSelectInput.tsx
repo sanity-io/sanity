@@ -1,8 +1,9 @@
-import {DECISION_PARAMETERS_SCHEMA} from '../../config'
-import {useWorkspace} from '../../studio/workspace'
-import {type StringInputProps} from '../../form/types'
-import {useFormValue} from '../../form/contexts/FormValue'
 import {type TitledListValue} from '@sanity/types'
+
+import {DECISION_PARAMETERS_SCHEMA} from '../../config'
+import {useFormValue} from '../../form/contexts/FormValue'
+import {type StringInputProps} from '../../form/types'
+import {useWorkspace} from '../../studio/workspace'
 
 const stringOperators: TitledListValue<string>[] = [
   {title: 'is equal to', value: 'equals'},

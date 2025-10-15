@@ -55,7 +55,7 @@ interface LocalDecideParameters {
 
 function isDecideField(value: unknown): value is DecideField {
   return (
-    value != null &&
+    value !== null &&
     typeof value === 'object' &&
     !Array.isArray(value) &&
     'default' in value &&

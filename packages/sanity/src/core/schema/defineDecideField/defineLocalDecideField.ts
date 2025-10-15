@@ -1,4 +1,4 @@
-import {type PreviewConfig, defineField} from '@sanity/types'
+import {defineField, type PreviewConfig} from '@sanity/types'
 
 import {DecideObjectField, DecideObjectInput} from './DecideComponents'
 import {OperatorSelectInput} from './OperatorSelectInput'
