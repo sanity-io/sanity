@@ -86,9 +86,7 @@ function resolveDecideField(field: DecideField, decideParameters?: LocalDecidePa
       if (key === 'value' || key === '_key' || key === '_type') return true
       const paramValue = decideParameters[key]
       if (!paramValue) return false
-      return Array.isArray(paramValue)
-        ? paramValue.includes(value as string)
-        : paramValue === value
+      return Array.isArray(paramValue) ? paramValue.includes(value as string) : paramValue === value
     })
   })
 

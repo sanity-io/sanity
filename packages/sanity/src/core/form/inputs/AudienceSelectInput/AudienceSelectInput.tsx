@@ -26,11 +26,11 @@ export function AudienceSelectInput(props: StringInputProps) {
       const config = decisionParametersConfig()
       // Find the first parameter that has options (could be audience or any other parameter)
       // In practice, this should be made more specific by the field configuration
-      const paramWithOptions = Object.values(config).find(param => param.options)
+      const paramWithOptions = Object.values(config).find((param) => param.options)
 
       if (paramWithOptions?.options) {
         return paramWithOptions.options.map((option) =>
-          typeof option === 'string' ? option : option.value
+          typeof option === 'string' ? option : option.value,
         )
       }
     }
