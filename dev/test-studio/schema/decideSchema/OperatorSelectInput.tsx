@@ -9,10 +9,10 @@ import {
 const stringOperators: TitledListValue<string>[] = [
   {title: 'is equal to', value: 'equals'},
   {title: 'is not equal to', value: 'not-equals'},
-  {title: 'contains', value: 'contains'},
-  {title: 'does not contain', value: 'not-contains'},
   {title: 'is empty', value: 'is-empty'},
   {title: 'is not empty', value: 'is-not-empty'},
+  {title: 'contains', value: 'contains'},
+  {title: 'does not contain', value: 'not-contains'},
 ]
 
 const numberOperators: TitledListValue<string>[] = [
