@@ -6,5 +6,9 @@ process.on('unhandledRejection', (error) => {
   process.exit(1)
 })
 
-// run cli
-require('../lib/run')
+if (process.env.SANITY_CLI_RUN_FROM_SOURCE === '1') {
+  require('./dev.js')
+} else {
+  // run cli
+  require('../lib/run')
+}

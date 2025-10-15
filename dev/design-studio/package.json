@@ -24,11 +24,11 @@
   "author": "Sanity.io <hello@sanity.io>",
   "main": "package.json",
   "scripts": {
-    "build": "../.bin/sanity build",
+    "build": "sanity build",
     "clean": "rimraf .sanity dist",
-    "dev": "../.bin/sanity dev --port 4000",
+    "dev": "sanity dev --port 4000",
     "lint": "eslint .",
-    "start": "../.bin/sanity start --port 4000"
+    "start": "sanity start --port 4000"
   },
   "dependencies": {
     "@repo/eslint-config": "workspace:*",
