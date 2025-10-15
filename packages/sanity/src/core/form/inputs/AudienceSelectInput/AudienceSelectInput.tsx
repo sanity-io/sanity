@@ -19,10 +19,20 @@ export function AudienceSelectInput(props: StringInputProps) {
   const workspace = useWorkspace()
   const decisionParametersConfig = workspace.__internal.options[DECISION_PARAMETERS_SCHEMA]
 
-  // Resolve audiences from sanity.config
+  // Resolve options from sanity.config decision parameters
+  // This component should be used with a specific parameter key from the config
   const audiences = useMemo(() => {
-    if (decisionParametersConfig && decisionParametersConfig.audiences) {
-      return decisionParametersConfig.audiences
+    if (decisionParametersConfig) {
+      const config = decisionParametersConfig()
+      // Find the first parameter that has options (could be audience or any other parameter)
+      // In practice, this should be made more specific by the field configuration
+      const paramWithOptions = Object.values(config).find(param => param.options)
+
+      if (paramWithOptions?.options) {
+        return paramWithOptions.options.map((option) =>
+          typeof option === 'string' ? option : option.value
+        )
+      }
     }
 
     return []

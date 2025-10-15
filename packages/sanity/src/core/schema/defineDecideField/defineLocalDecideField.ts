@@ -58,7 +58,10 @@ const rule = defineField({
   preview: rulePreview,
 })
 
-// Generic decide field implementation that works for all types
+/**
+ * Generic decide field implementation that works for all types
+ * @beta
+ */
 export const defineLocalDecideField = (config: any) => {
   const {name, title, description, type, ...otherConfig} = config
 

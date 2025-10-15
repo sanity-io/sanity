@@ -3,7 +3,7 @@ import {Stack, Text} from '@sanity/ui'
 import {useState} from 'react'
 import {DECISION_PARAMETERS_SCHEMA, useTranslation, useWorkspace} from 'sanity'
 
-import {type DecisionParameter} from '../../config'
+import {type DecisionParameter} from '../../core/config'
 import {Button, Dialog, Tooltip} from '../../ui-components'
 import {presentationLocaleNamespace} from '../i18n'
 import {ParameterInput} from './ParameterInput'

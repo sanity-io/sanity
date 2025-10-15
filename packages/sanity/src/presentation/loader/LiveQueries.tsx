@@ -445,7 +445,7 @@ function useQuerySubscription(props: UseQuerySubscriptionProps) {
         tag: `presentation-loader-${cleanseTag(JSON.stringify(transformedDecideParameters || {}))}`,
         signal: controller.signal,
         perspective,
-        decideParameters: transformedDecideParameters,
+        decideParameters: transformedDecideParameters as any,
         filterResponse: false,
         returnQuery: false,
       })

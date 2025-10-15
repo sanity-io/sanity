@@ -1,7 +1,7 @@
 import {Box, Select, Text, TextInput} from '@sanity/ui'
 import {useTranslation} from 'sanity'
 
-import {type DecisionParameter} from '../../config'
+import {type DecisionParameter} from '../../core/config'
 import {presentationLocaleNamespace} from '../i18n'
 
 interface ParameterInputProps {
@@ -36,7 +36,7 @@ export function ParameterInput({
           <option value="">
             {t('preview-frame.variant-dialog.select-placeholder', {key: displayTitle})}
           </option>
-          {paramConfig.options?.map((option) => {
+          {paramConfig.options?.map((option: {title: string; value: string} | string) => {
             const optionValue = typeof option === 'string' ? option : option.value
             const optionTitle = typeof option === 'string' ? option : option.title
             return (
