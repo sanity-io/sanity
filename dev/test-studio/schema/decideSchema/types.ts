@@ -1,9 +1,9 @@
 export interface DecideObject<T = unknown> {
   _type: 'sanity.decideField'
   default?: T
-  conditions?: Array<{
+  variants?: Array<{
     _key: string
-    _type: 'condition'
+    _type: 'variant'
     value?: T
     anyOf?: Array<DecideRule>
   }>
