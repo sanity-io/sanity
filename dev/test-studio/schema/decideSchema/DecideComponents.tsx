@@ -19,7 +19,7 @@ import {styled} from 'styled-components'
 
 import {type DecideObject} from './types'
 
-const CONDITIONS_PATH = 'conditions'
+const VARIANTS_PATH = 'variants'
 const DecideFieldWrapper = styled.div`
   /* the second div inside the fieldset of the decide field should not have padding */
   & > fieldset > div:nth-child(2) {
@@ -36,7 +36,7 @@ export const copyAction = defineDocumentFieldAction({
     const {onPathOpen} = useDocumentPane()
     const onAction = useCallback(() => {
       //  Set the context to open the decide field
-      onPathOpen(path.concat([CONDITIONS_PATH]))
+      onPathOpen(path.concat([VARIANTS_PATH]))
     }, [onPathOpen, path])
 
     return {
@@ -61,7 +61,7 @@ export const DecideObjectInput = (props: ObjectInputProps) => {
   const {path, onChange} = props
   const value = useFormValue(path) as DecideObject | undefined
   const isConditionsOpen = Path.toString(openPath).startsWith(
-    Path.toString(path.concat([CONDITIONS_PATH])),
+    Path.toString(path.concat([VARIANTS_PATH])),
   )
 
   useEffect(() => {
@@ -80,15 +80,15 @@ export const DecideObjectInput = (props: ObjectInputProps) => {
       {isConditionsOpen && (
         <EditPortal
           type="dialog"
-          header="Conditions"
-          id="conditions-edit-portal"
+          header="Variants"
+          id="variants-edit-portal"
           onClose={() => onPathOpen(path)}
           width={props.schemaType.options?.modal?.width ?? 1}
         >
-          <FormInput {...props} includeField relativePath={[CONDITIONS_PATH]} />
+          <FormInput {...props} includeField relativePath={[VARIANTS_PATH]} />
         </EditPortal>
       )}
-      {value?.conditions && value.conditions.length > 0 && (
+      {value?.variants && value.variants.length > 0 && (
         <Flex justify="space-between" align="center">
           <Button
             size={1}
@@ -97,8 +97,8 @@ export const DecideObjectInput = (props: ObjectInputProps) => {
             padding={2}
             space={2}
             muted
-            text={`${value.conditions.length} variants available`}
-            onClick={() => onPathOpen(path.concat([CONDITIONS_PATH]))}
+            text={`${value.variants.length} variants available`}
+            onClick={() => onPathOpen(path.concat([VARIANTS_PATH]))}
           />
 
           <Button
@@ -112,10 +112,10 @@ export const DecideObjectInput = (props: ObjectInputProps) => {
               const key = uuid()
               const newCondition = {
                 _key: key,
-                _type: 'condition',
+                _type: 'variant',
               }
-              onChange(insert([newCondition], 'after', [CONDITIONS_PATH, -1]))
-              onPathOpen(path.concat([CONDITIONS_PATH, {_key: key}]))
+              onChange(insert([newCondition], 'after', [VARIANTS_PATH, -1]))
+              onPathOpen(path.concat([VARIANTS_PATH, {_key: key}]))
             }}
           />
         </Flex>
