@@ -17,7 +17,7 @@ import {
 import {useDocumentPane} from 'sanity/structure'
 import {styled} from 'styled-components'
 
-import {type DecideObject} from './types'
+import {type DecideField} from './types'
 
 const VARIANTS_PATH = 'variants'
 const DecideFieldWrapper = styled.div`
@@ -59,7 +59,7 @@ export function DecideObjectField(props: ObjectFieldProps) {
 export const DecideObjectInput = (props: ObjectInputProps) => {
   const {openPath, onPathOpen} = useDocumentPane()
   const {path, onChange} = props
-  const value = useFormValue(path) as DecideObject | undefined
+  const value = useFormValue(path) as DecideField | undefined
   const isConditionsOpen = Path.toString(openPath).startsWith(
     Path.toString(path.concat([VARIANTS_PATH])),
   )
