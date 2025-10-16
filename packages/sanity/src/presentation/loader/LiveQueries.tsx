@@ -428,6 +428,9 @@ function useQuerySubscription(props: UseQuerySubscriptionProps) {
   useEffect(() => {
     const controller = new AbortController()
 
+    // oxlint-disable-next-line no-console
+    console.log('[presentation-loader] decideParameters:', transformedDecideParameters)
+
     client
       .fetch(query, params, {
         lastLiveEventId,
