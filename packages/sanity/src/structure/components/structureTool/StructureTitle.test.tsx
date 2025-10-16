@@ -5,7 +5,7 @@ import {beforeEach, describe, expect, it, type Mock, vi} from 'vitest'
 
 import {createMockSanityClient} from '../../../../test/mocks/mockSanityClient'
 import {createTestProvider} from '../../../../test/testUtils/TestProvider'
-import {usePerspectiveMockReturn} from '../../../core/perspective/__mocks__/usePerspective.mock'
+import {usePerspectiveMockReturn} from '../../__mocks__/usePerspective.mock'
 import {useDocumentLastRev} from '../../hooks/useDocumentLastRev'
 import {structureUsEnglishLocaleBundle} from '../../i18n'
 import {type StructureContext} from '../../structureBuilder'
