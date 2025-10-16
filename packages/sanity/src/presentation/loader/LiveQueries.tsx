@@ -114,24 +114,26 @@ function processDecideFields(data: unknown, decideParameters?: LocalDecideParame
 }
 
 /**
- * Cleanses a value to be valid for use as a client tag.
- * Tag can only contain alphanumeric characters, underscores, dashes and dots,
- * and be between one and 75 characters long.
+ * Creates a short hash of decide parameters for use in tags.
+ * Ensures tags stay under the 75 character limit while maintaining uniqueness.
+ * @returns A short base36 hash string (6-7 chars) or 'none' for empty params
  */
-function cleanseTag(input: string | string[] | undefined | null): string {
-  if (!input) return 'unknown'
+function hashDecideParameters(params: LocalDecideParameters | undefined): string {
+  if (!params || Object.keys(params).length === 0) return 'none'
 
-  // Convert array to string representation
-  const stringValue = Array.isArray(input) ? input.join('-') : String(input)
+  // Create deterministic string representation
+  const str = JSON.stringify(params)
+  let hash = 0
 
-  // Replace invalid characters with dashes, limit to 75 chars
-  return (
-    stringValue
-      .replace(/[^a-zA-Z0-9_.-]/g, '-')
-      .slice(0, 75)
-      .replace(/^-+|-+$/g, '') || // Remove leading/trailing dashes
-    'unknown'
-  ) // Fallback if string becomes empty
+  // Simple hash function (similar to Java's String.hashCode)
+  for (let i = 0; i < str.length; i++) {
+    const char = str.charCodeAt(i)
+    hash = (hash << 5) - hash + char
+    hash = hash & hash // Convert to 32bit integer
+  }
+
+  // Convert to base36 for shorter representation
+  return Math.abs(hash).toString(36)
 }
 
 export interface LiveQueriesProps {
@@ -429,7 +431,7 @@ function useQuerySubscription(props: UseQuerySubscriptionProps) {
     client
       .fetch(query, params, {
         lastLiveEventId,
-        tag: `presentation-loader-${cleanseTag(JSON.stringify(transformedDecideParameters || {}))}`,
+        tag: `presentation-loader-${hashDecideParameters(transformedDecideParameters)}`,
         signal: controller.signal,
         perspective,
         decideParameters: transformedDecideParameters as any,
