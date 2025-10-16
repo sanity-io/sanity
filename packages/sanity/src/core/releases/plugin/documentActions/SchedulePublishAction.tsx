@@ -16,7 +16,6 @@ import {useDocumentPreviewValues} from '../../../tasks/hooks/useDocumentPreviewV
 import {ScheduleDraftDialog} from '../../components/dialog/ScheduleDraftDialog'
 import {useHasCardinalityOneReleaseVersions} from '../../hooks/useHasCardinalityOneReleaseVersions'
 import {useReleasesToolAvailable} from '../../hooks/useReleasesToolAvailable'
-import {useScheduledDraftsEnabled} from '../../hooks/useScheduledDraftsEnabled'
 import {useScheduleDraftOperations} from '../../hooks/useScheduleDraftOperations'
 import {releasesLocaleNamespace} from '../../i18n'
 
@@ -27,7 +26,6 @@ export const SchedulePublishAction: DocumentActionComponent = (
   props: DocumentActionProps,
 ): DocumentActionDescription | null => {
   const {id, type, draft} = props
-  const scheduledDraftsEnabled = useScheduledDraftsEnabled()
   const {t} = useTranslation(releasesLocaleNamespace)
   const {createScheduledDraft} = useScheduleDraftOperations()
   const toast = useToast()
@@ -103,8 +101,7 @@ export const SchedulePublishAction: DocumentActionComponent = (
     return null
   }
 
-  // Return null if scheduled drafts are disabled or if there's no draft
-  if (!scheduledDraftsEnabled || !draft) {
+  if (!draft) {
     return null
   }
 
