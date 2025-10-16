@@ -352,6 +352,17 @@ function QuerySubscriptionComponent(props: QuerySubscriptionProps) {
       resultSourceMap: ContentSourceMap | undefined,
       tags: `s1:${string}`[] | undefined,
     ) => {
+      // oxlint-disable-next-line no-console
+      console.log('[handleQueryChange] Posting loader/query-change:', {
+        hasComlink: !!comlink,
+        perspective,
+        query,
+        params,
+        hasResult: !!result,
+        hasResultSourceMap: !!resultSourceMap,
+        tags,
+      })
+
       comlink?.post('loader/query-change', {
         projectId,
         dataset,
@@ -513,18 +524,35 @@ function useQuerySubscription(props: UseQuerySubscriptionProps) {
 
   return useMemo(() => {
     if (liveDocument && resultSourceMap) {
+      const turboChargedResult = turboChargeResultIfSourceMap(
+        liveDocument,
+        result,
+        perspective,
+        resultSourceMap,
+        transformedDecideParameters,
+      )
+
+      // oxlint-disable-next-line no-console
+      console.log('[useQuerySubscription] Returning turbocharged result:', {
+        hasTurboChargedResult: !!turboChargedResult,
+        hasResultSourceMap: !!resultSourceMap,
+        syncTags,
+      })
+
       return {
-        result: turboChargeResultIfSourceMap(
-          liveDocument,
-          result,
-          perspective,
-          resultSourceMap,
-          transformedDecideParameters,
-        ),
+        result: turboChargedResult,
         resultSourceMap,
         syncTags,
       }
     }
+
+    // oxlint-disable-next-line no-console
+    console.log('[useQuerySubscription] Returning non-turbocharged result:', {
+      hasResult: !!result,
+      hasResultSourceMap: !!resultSourceMap,
+      syncTags,
+    })
+
     return {result, resultSourceMap, syncTags}
   }, [liveDocument, perspective, result, resultSourceMap, syncTags, transformedDecideParameters])
 }
@@ -536,6 +564,15 @@ export function turboChargeResultIfSourceMap<T = unknown>(
   resultSourceMap?: ContentSourceMap,
   decideParameters?: LocalDecideParameters,
 ): T {
+  // oxlint-disable-next-line no-console
+  console.log('[turboChargeResultIfSourceMap] Called with:', {
+    hasLiveDocument: !!liveDocument,
+    liveDocumentId: liveDocument?._id,
+    perspective,
+    hasResultSourceMap: !!resultSourceMap,
+    decideParameters,
+  })
+
   if (perspective === 'raw') {
     throw new Error('turboChargeResultIfSourceMap does not support raw perspective')
   }
