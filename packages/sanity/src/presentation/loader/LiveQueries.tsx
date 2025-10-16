@@ -39,14 +39,14 @@ import {useLiveQueries} from './useLiveQueries'
 import {mapChangedValue} from './utils'
 
 // Conditional content resolution logic from client
-interface DecideCondition {
+interface DecideVariant {
   value: unknown
   [key: string]: unknown
 }
 
 interface DecideField {
   default: unknown
-  conditions: DecideCondition[]
+  variants: DecideVariant[]
 }
 
 interface LocalDecideParameters {
@@ -59,8 +59,8 @@ function isDecideField(value: unknown): value is DecideField {
     typeof value === 'object' &&
     !Array.isArray(value) &&
     'default' in value &&
-    'conditions' in value &&
-    Array.isArray((value as any).conditions)
+    'variants' in value &&
+    Array.isArray((value as any).variants)
   )
 }
 
@@ -69,20 +69,9 @@ function resolveDecideField(field: DecideField, decideParameters?: LocalDecidePa
     return field.default
   }
 
-  const matchingCondition = field.conditions.find((condition) => {
-    // Support both old format (condition.audience) and new dynamic format
-    if ('audience' in condition && condition.audience) {
-      // Legacy support: check audience parameter (audiences or audience)
-      const audience = decideParameters.audience || decideParameters.audiences
-      if (audience) {
-        return Array.isArray(audience)
-          ? audience.includes(condition.audience)
-          : condition.audience === audience
-      }
-    }
-
-    // New dynamic format: check all condition properties against parameters
-    return Object.entries(condition).every(([key, value]) => {
+  const matchingVariant = field.variants.find((variant) => {
+    // Check all variant properties against parameters
+    return Object.entries(variant).every(([key, value]) => {
       if (key === 'value' || key === '_key' || key === '_type') return true
       const paramValue = decideParameters[key]
       if (!paramValue) return false
@@ -90,7 +79,7 @@ function resolveDecideField(field: DecideField, decideParameters?: LocalDecidePa
     })
   })
 
-  return matchingCondition ? matchingCondition.value : field.default
+  return matchingVariant ? matchingVariant.value : field.default
 }
 
 function processObjectRecursively(obj: unknown, decideParameters?: LocalDecideParameters): unknown {
@@ -448,9 +437,6 @@ function useQuerySubscription(props: UseQuerySubscriptionProps) {
         returnQuery: false,
       })
       .then((response) => {
-        const responseStr = JSON.stringify(response.result)
-        const hasConditionalContent = responseStr.includes('"conditions"')
-
         startTransition(() => {
           setResult((prev: unknown) => (isEqual(prev, response.result) ? prev : response.result))
           setResultSourceMap((prev) =>
