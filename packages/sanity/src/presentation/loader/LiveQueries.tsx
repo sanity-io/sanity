@@ -125,12 +125,14 @@ function hashDecideParameters(params: LocalDecideParameters | undefined): string
   const str = JSON.stringify(params)
   let hash = 0
 
+  /* eslint-disable no-bitwise */
   // Simple hash function (similar to Java's String.hashCode)
   for (let i = 0; i < str.length; i++) {
     const char = str.charCodeAt(i)
     hash = (hash << 5) - hash + char
-    hash = hash & hash // Convert to 32bit integer
+    hash &= hash // Convert to 32bit integer
   }
+  /* eslint-enable no-bitwise */
 
   // Convert to base36 for shorter representation
   return Math.abs(hash).toString(36)
