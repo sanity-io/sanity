@@ -1,5 +1,6 @@
 import {type DocumentActionComponent} from '../../../config/document/actions'
-import {type DocumentActionsContext, QUOTA_EXCLUDED_RELEASES_ENABLED} from '../../../config/types'
+import {type DocumentActionsContext} from '../../../config/types'
+import {useScheduledDraftsEnabled} from '../../hooks/useScheduledDraftsEnabled'
 import {DiscardVersionAction} from './DiscardVersionAction'
 import {
   DeleteScheduledDraftAction,
@@ -10,6 +11,18 @@ import {SchedulePublishAction} from './SchedulePublishAction'
 import {UnpublishVersionAction} from './UnpublishVersionAction'
 
 type Action = DocumentActionComponent
+
+function ScheduleAction(ScheduledPublishingPluginAction?: DocumentActionComponent) {
+  const isScheduledDraftsEnabled = useScheduledDraftsEnabled()
+
+  // TODO: Simplify expression to !isScheduledDraftsEnabled
+  // once the scheduled publishing plugin is removed
+  if (!ScheduledPublishingPluginAction || isScheduledDraftsEnabled) {
+    return SchedulePublishAction
+  }
+
+  return ScheduledPublishingPluginAction
+}
 
 export default function resolveDocumentActions(
   existingActions: Action[],
@@ -27,13 +40,11 @@ export default function resolveDocumentActions(
     return duplicateAction.concat(DiscardVersionAction, UnpublishVersionAction)
   }
 
-  const isQuotaExcludedReleaseEnabled = context[QUOTA_EXCLUDED_RELEASES_ENABLED]
-
-  // Add SchedulePublishAction only for draft documents
-  if (isQuotaExcludedReleaseEnabled && context.versionType === 'draft') {
+  if (context.versionType === 'draft') {
     const actionsExcludingOriginalSchedule = existingActions.filter(
       ({action}) => action !== 'schedule',
     )
+    const ScheduledPublishingAction = existingActions.find(({action}) => action === 'schedule')
     const publishActionIndex = actionsExcludingOriginalSchedule.findIndex(
       ({action}) => action === 'publish',
     )
@@ -47,7 +58,14 @@ export default function resolveDocumentActions(
       ? actionsExcludingOriginalSchedule.slice(nextAfterPublishIndex)
       : actionsExcludingOriginalSchedule
 
-    return [...actionsBeforePublish, SchedulePublishAction, ...actionsAfterPublish]
+    // Add SchedulePublishAction for draft documents
+    // The action itself will handle checking if scheduled drafts are enabled
+    return [
+      ...actionsBeforePublish,
+      ScheduleAction(ScheduledPublishingAction),
+      ...actionsAfterPublish,
+    ]
   }
+
   return existingActions
 }
