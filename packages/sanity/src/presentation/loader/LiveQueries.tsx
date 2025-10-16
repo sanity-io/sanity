@@ -153,6 +153,14 @@ export interface LiveQueriesProps {
 export default function LiveQueries(props: LiveQueriesProps): React.JSX.Element {
   const {controller, perspective: activePerspective, onLoadersConnection, onDocumentsOnPage} = props
 
+  // oxlint-disable-next-line no-console
+  console.log('[LiveQueries] Component rendered with props:', {
+    hasController: !!controller,
+    perspective: activePerspective,
+    hasLiveDocument: !!props.liveDocument,
+    liveDocumentId: props.liveDocument?._id,
+  })
+
   const [comlink, setComlink] = useState<ChannelInstance<LoaderControllerMsg, LoaderNodeMsg>>()
   const [liveQueries, liveQueriesDispatch] = useLiveQueries()
   const {decideParameters} = useDecideParameters()
@@ -189,6 +197,15 @@ export default function LiveQueries(props: LiveQueriesProps): React.JSX.Element 
 
       nextComlink.on('loader/query-listen', (data) => {
         if (data.projectId === projectId && data.dataset === dataset) {
+          // oxlint-disable-next-line no-console
+          console.log('[LiveQueries] Received loader/query-listen:', {
+            perspective: data.perspective,
+            query: data.query,
+            params: data.params,
+            decideParameters: data.decideParameters,
+            heartbeat: data.heartbeat,
+          })
+
           if (
             typeof data.heartbeat === 'number' &&
             data.heartbeat < MIN_LOADER_QUERY_LISTEN_HEARTBEAT_INTERVAL
@@ -380,6 +397,16 @@ function useQuerySubscription(props: UseQuerySubscriptionProps) {
     decideParameters: passedDecideParameters,
   } = props
 
+  // oxlint-disable-next-line no-console
+  console.log('[useQuerySubscription] Called with:', {
+    query,
+    params,
+    perspective,
+    hasLiveDocument: !!liveDocument,
+    liveDocumentId: liveDocument?._id,
+    passedDecideParameters,
+  })
+
   // Use passed decideParameters if provided, otherwise fall back to global context
   const {decideParameters: globalDecideParameters} = useDecideParameters()
   const decideParameters = passedDecideParameters
@@ -444,6 +471,15 @@ function useQuerySubscription(props: UseQuerySubscriptionProps) {
         returnQuery: false,
       })
       .then((response) => {
+        // oxlint-disable-next-line no-console
+        console.log('[useQuerySubscription] Fetch response received:', {
+          hasResult: !!response.result,
+          resultType: typeof response.result,
+          hasResultSourceMap: !!response.resultSourceMap,
+          syncTags: response.syncTags,
+          query,
+        })
+
         startTransition(() => {
           setResult((prev: unknown) => (isEqual(prev, response.result) ? prev : response.result))
           setResultSourceMap((prev) =>
@@ -454,6 +490,8 @@ function useQuerySubscription(props: UseQuerySubscriptionProps) {
       })
       .catch((err) => {
         if (typeof err !== 'object' || err?.name !== 'AbortError') {
+          // oxlint-disable-next-line no-console
+          console.log('[useQuerySubscription] Fetch error:', err)
           setError(err)
         }
       })
