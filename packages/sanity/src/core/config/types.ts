@@ -69,6 +69,12 @@ export interface GroupableActionDescription<GroupType = unknown> extends BaseAct
 }
 
 /**
+ * Symbol for enabling releases outside of quota restrictions for single docs
+ * @internal
+ */
+export const QUOTA_EXCLUDED_RELEASES_ENABLED = Symbol('__internal_quotaExcludedReleasesEnabled')
+
+/**
  * Symbol for configuring decision parameters schema
  * @beta
  */
@@ -260,6 +266,8 @@ export interface ConfigContext {
    * Localization resources
    */
   i18n: LocaleSource
+  /** @internal */
+  [QUOTA_EXCLUDED_RELEASES_ENABLED]?: boolean
   /** @beta */
   [DECISION_PARAMETERS_SCHEMA]?: DecisionParametersConfig
 }
@@ -506,6 +514,9 @@ export interface PluginOptions {
   /** @internal */
   __internal_serverDocumentActions?: WorkspaceOptions['__internal_serverDocumentActions']
 
+  /** @internal */
+  [QUOTA_EXCLUDED_RELEASES_ENABLED]?: WorkspaceOptions[typeof QUOTA_EXCLUDED_RELEASES_ENABLED]
+
   /** @beta */
   [DECISION_PARAMETERS_SCHEMA]?: DecisionParametersConfig
 
@@ -631,6 +642,12 @@ export interface WorkspaceOptions extends SourceOptions {
   }
 
   /**
+   * @hidden
+   * @internal
+   */
+  [QUOTA_EXCLUDED_RELEASES_ENABLED]?: boolean
+
+  /**
    * @beta
    */
   [DECISION_PARAMETERS_SCHEMA]?: DecisionParametersConfig
@@ -709,6 +726,8 @@ export interface DocumentActionsContext extends ConfigContext {
   releaseId: string | undefined
   /** the type of the currently active document. */
   versionType: DocumentActionsVersionType
+  /** @internal */
+  [QUOTA_EXCLUDED_RELEASES_ENABLED]?: boolean
 }
 
 /**
@@ -1002,16 +1021,6 @@ export interface Source {
      * Returns an array of actions for the release.
      */
     actions?: (props: PartialContext<ReleaseActionsContext>) => ReleaseActionComponent[]
-    /**
-     * Configuration for scheduled drafts feature.
-     */
-    scheduledDrafts?: {
-      /**
-       * Whether scheduled drafts functionality is enabled.
-       * @defaultValue true
-       */
-      enabled: boolean
-    }
   }
 
   /** @internal */
@@ -1203,16 +1212,6 @@ export type DefaultPluginsWorkspaceOptions = {
      * Actions for releases.
      */
     actions?: ReleaseActionComponent[] | ReleaseActionsResolver
-    /**
-     * Configuration for scheduled drafts feature.
-     */
-    scheduledDrafts?: {
-      /**
-       * Whether scheduled drafts functionality is enabled.
-       * @defaultValue true
-       */
-      enabled?: boolean
-    }
   }
   mediaLibrary?: MediaLibraryConfig
 }
