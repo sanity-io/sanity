@@ -8,9 +8,9 @@ import {FormInput} from '../../form/components/FormInput'
 import {useFormValue} from '../../form/contexts/FormValue'
 import {set, unset} from '../../form/patch'
 import {type ObjectFieldProps, type ObjectInputProps} from '../../form/types'
-import {type DecideObject} from './types'
+import {type DecideField} from './types'
 
-const CONDITIONS_PATH = 'conditions'
+const VARIANTS_PATH = 'variants'
 const DecideFieldWrapper = styled.div`
   /* the second div inside the fieldset of the decide field should not have padding */
   & > fieldset > div:nth-child(2) {
@@ -47,7 +47,7 @@ export function DecideObjectField(props: ObjectFieldProps) {
 
 export const DecideObjectInput = (props: ObjectInputProps) => {
   const {path, onChange} = props
-  const value = useFormValue(path) as DecideObject | undefined
+  const value = useFormValue(path) as DecideField
 
   useEffect(() => {
     if (value && !value?._type) {
@@ -62,7 +62,7 @@ export const DecideObjectInput = (props: ObjectInputProps) => {
   return (
     <Stack space={2}>
       <FormInput {...props} relativePath={['default']} />
-      <FormInput {...props} includeField relativePath={[CONDITIONS_PATH]} />
+      <FormInput {...props} includeField relativePath={[VARIANTS_PATH]} />
     </Stack>
   )
 }

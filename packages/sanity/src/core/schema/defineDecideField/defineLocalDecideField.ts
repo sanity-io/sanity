@@ -91,15 +91,14 @@ export const defineLocalDecideField = (config: any) => {
         ...valueFieldConfig,
       }),
       defineField({
-        // TODO: Change to variants?
-        name: 'conditions',
+        name: 'variants',
         title: 'Variants',
         type: 'array',
         of: [
           defineField({
             type: 'object',
-            name: 'condition',
-            title: 'Condition',
+            name: 'variant',
+            title: 'Variant',
             preview: {
               select: {
                 rules: 'anyOf',
