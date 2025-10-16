@@ -1,11 +1,11 @@
 import {PinFilledIcon, PinIcon} from '@sanity/icons'
-import {Box, Card, Flex, Skeleton, Stack, Text} from '@sanity/ui'
+import {Box, Card, type CardProps, Flex, Skeleton, Stack, Text, TextSkeleton} from '@sanity/ui'
 import {useCallback} from 'react'
 import {useRouter} from 'sanity/router'
 
 import {Button, Tooltip} from '../../../../../ui-components'
 import {PREVIEW_SIZES} from '../../../../components/previews/constants'
-import {TitleSkeleton} from '../../../../components/previews/general/DetailPreview.styled'
+import * as previewStyles from '../../../../components/previews/general/DetailPreview.css'
 import {Translate, useTranslation} from '../../../../i18n'
 import {usePerspective} from '../../../../perspective/usePerspective'
 import {useSetPerspective} from '../../../../perspective/useSetPerspective'
@@ -13,7 +13,6 @@ import {ReleaseAvatar} from '../../../components/ReleaseAvatar'
 import {releasesLocaleNamespace} from '../../../i18n'
 import {getReleaseIdFromReleaseDocumentId} from '../../../util/getReleaseIdFromReleaseDocumentId'
 import {getReleaseTone} from '../../../util/getReleaseTone'
-import {type TableRowProps} from '../../components/Table/Table'
 import {type VisibleColumn} from '../../components/Table/types'
 import {type TableRelease} from '../ReleasesOverview'
 
@@ -55,14 +54,14 @@ export const ReleaseNameCell: VisibleColumn<TableRelease>['cell'] = ({
       <WrapperBox>
         <Flex align="center" gap={2}>
           <Skeleton animated radius={1} style={PREVIEW_SIZES.default.media} />
-          <TitleSkeleton />
+          <TextSkeleton animated className={previewStyles.titleSkeletonStyle} radius={1} size={1} />
         </Flex>
       </WrapperBox>
     )
   }
 
-  const cardProps: TableRowProps = release.isDeleted
-    ? {tone: 'transparent'}
+  const cardProps: CardProps = release.isDeleted
+    ? {tone: 'neutral'}
     : {
         as: 'a',
         // navigate to release detail
@@ -110,7 +109,7 @@ export const ReleaseNameCell: VisibleColumn<TableRelease>['cell'] = ({
               <Box flex="none">
                 <ReleaseAvatar tone={getReleaseTone(release)} />
               </Box>
-              <Stack flex={1} space={2}>
+              <Stack flex={1} gap={2}>
                 <Flex align="center" gap={2}>
                   <Text size={1} weight="medium">
                     {displayTitle}

@@ -1,53 +1,17 @@
 import {InfoOutlineIcon} from '@sanity/icons'
-import {Box, Flex, Inline, rem, Text} from '@sanity/ui'
+import {Box, Flex, Inline, Text} from '@sanity/ui'
 import {useTranslation} from 'sanity'
-import {styled} from 'styled-components'
 
 import {Tooltip} from '../../../ui-components'
 import {structureLocaleNamespace} from '../../i18n'
+import * as styles from '../../Structure.css'
 
-export const ChevronWrapper = styled(Box)`
-  margin-left: auto;
-`
-
-export const CrossDatasetReferencesDetails = styled.details`
-  flex: none;
-
-  &[open] ${ChevronWrapper} {
-    transform: rotate(180deg);
-  }
-`
-
-export const CrossDatasetReferencesSummary = styled.summary`
-  list-style: none;
-
-  &::-webkit-details-marker {
-    display: none;
-  }
-`
-
-export const Table = styled.table`
-  width: 100%;
-  text-align: left;
-  padding: 0 ${({theme}) => rem(theme.sanity.space[2])};
-  border-collapse: collapse;
-
-  th {
-    padding: ${({theme}) => rem(theme.sanity.space[1])};
-  }
-
-  td {
-    padding: 0 ${({theme}) => rem(theme.sanity.space[1])};
-  }
-
-  tr > *:last-child {
-    text-align: right;
-  }
-`
-
-export const DocumentIdFlex = styled(Flex)`
-  min-height: 33px;
-`
+// Re-export the styles for backward compatibility
+export const ChevronWrapper = Box
+export const CrossDatasetReferencesDetails = 'details'
+export const CrossDatasetReferencesSummary = 'summary'
+export const Table = 'table'
+export const DocumentIdFlex = Flex
 
 export const OtherReferenceCount = (props: {totalCount: number; references: unknown[]}) => {
   const {t} = useTranslation(structureLocaleNamespace)
@@ -57,7 +21,7 @@ export const OtherReferenceCount = (props: {totalCount: number; references: unkn
 
   return (
     <Box padding={2}>
-      <Inline space={2}>
+      <Inline gap={2}>
         <Text size={1} muted>
           {t('confirm-delete-dialog.other-reference-count.title', {count: difference})}
         </Text>

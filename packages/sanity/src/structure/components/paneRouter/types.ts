@@ -17,9 +17,7 @@ export interface ChildLinkProps {
 /**
  * @hidden
  * @beta */
-export interface BackLinkProps {
-  children?: ReactNode
-}
+export type BackLinkProps = React.ComponentProps<'a'>
 
 /**
  * @hidden

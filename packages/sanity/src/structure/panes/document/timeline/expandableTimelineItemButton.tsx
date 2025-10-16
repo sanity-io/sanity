@@ -1,11 +1,11 @@
 import {ChevronLeftIcon} from '@sanity/icons'
 import {type MouseEvent, useCallback} from 'react'
 import {useTranslation} from 'sanity'
-import {styled} from 'styled-components'
 
 import {Button} from '../../../../ui-components'
 import {structureLocaleNamespace} from '../../../i18n'
 import {TIMELINE_LIST_WRAPPER_ID} from './timeline'
+import * as styles from '../../../Structure.css'
 
 /**
  * This is a hack to force the scrollbar to not appear when the list is expanding,
@@ -34,13 +34,6 @@ function hideScrollbarOnExpand(isExpanded: boolean) {
   }
 }
 
-const FlipIcon = styled(ChevronLeftIcon)`
-  transition: transform 200ms;
-  &[data-expanded='true'] {
-    transform: rotate(-90deg);
-  }
-`
-
 export function ExpandableTimelineItemButton({
   isExpanded,
   onExpand,
@@ -62,7 +55,12 @@ export function ExpandableTimelineItemButton({
   return (
     <Button
       mode="bleed"
-      icon={<FlipIcon data-expanded={isExpanded} />}
+      icon={
+        <ChevronLeftIcon
+          className={styles.expandableTimelineFlipIconStyle}
+          data-expanded={isExpanded}
+        />
+      }
       tooltipProps={{
         content: isExpanded
           ? t('timeline-item.menu.action-collapse')

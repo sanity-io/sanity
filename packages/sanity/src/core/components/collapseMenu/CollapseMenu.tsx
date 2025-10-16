@@ -1,4 +1,4 @@
-import {Flex} from '@sanity/ui'
+import {type BoxProps, Flex} from '@sanity/ui'
 import {difference} from 'lodash'
 import {
   Children,
@@ -12,13 +12,13 @@ import {
   useMemo,
   useState,
 } from 'react'
-import {css, styled} from 'styled-components'
 
 import {type MenuButtonProps, Tooltip} from '../../../ui-components'
 import {ContextMenuButton} from '../contextMenuButton'
 import {CollapseMenuDivider} from './CollapseMenuDivider'
 import {CollapseOverflowMenu} from './CollapseOverflowMenu'
 import {ObserveElement} from './ObserveElement'
+import * as styles from './CollapseMenu.css'
 
 /** @internal */
 export interface CollapseMenuProps {
@@ -26,51 +26,13 @@ export interface CollapseMenuProps {
   collapsed?: boolean
   collapseText?: boolean
   disableRestoreFocusOnClose?: boolean
-  gap?: number | number[]
+  gap?: BoxProps['gap']
   menuButtonProps?: Omit<MenuButtonProps, 'id' | 'menu' | 'button'> & {
     id?: string
     button?: React.JSX.Element
   }
   onMenuClose?: () => void
 }
-
-const FOCUS_RING_PADDING = 3
-
-const OPTION_STYLE = css`
-  list-style: none;
-  display: flex;
-  white-space: nowrap;
-
-  &[data-hidden='true'] {
-    opacity: 0;
-    visibility: hidden;
-  }
-`
-
-const OuterFlex = styled(Flex)`
-  padding: ${FOCUS_RING_PADDING}px;
-  margin: -${FOCUS_RING_PADDING}px;
-  box-sizing: border-box;
-`
-
-const RootFlex = styled(Flex)`
-  border-radius: inherit;
-  position: relative;
-`
-
-const RowFlex = styled(Flex)`
-  width: max-content;
-  &[data-hidden='true'] {
-    visibility: hidden;
-    position: relative;
-    margin-top: -1px;
-    height: 1px;
-  }
-`
-
-const OptionObserveElement = styled(ObserveElement)`
-  ${OPTION_STYLE}
-`
 
 function _isReactElement(node: unknown): node is React.JSX.Element {
   return Boolean(node)
@@ -268,7 +230,8 @@ export const AutoCollapseMenu = forwardRef(function AutoCollapseMenu(
   )
 
   return (
-    <OuterFlex
+    <Flex
+      className={styles.outerFlexStyle}
       align="center"
       data-ui="CollapseMenu"
       overflow="hidden"
@@ -276,9 +239,15 @@ export const AutoCollapseMenu = forwardRef(function AutoCollapseMenu(
       ref={ref}
       {...rest}
     >
-      <RootFlex direction="column" flex={1} justify="center" ref={setRootEl}>
+      <Flex
+        className={styles.rootFlexStyle}
+        direction="column"
+        flex={1}
+        justify="center"
+        ref={setRootEl}
+      >
         {/* The actual visible options */}
-        <RowFlex gap={gap}>
+        <Flex className={styles.rowFlexStyle} gap={gap}>
           {pendingIntersections.length === 0 &&
             visibleMenuOptions.map((optionElement, index) => {
               const {dividerBefore, tooltipText = '', tooltipProps = {}} = optionElement.props
@@ -300,7 +269,7 @@ export const AutoCollapseMenu = forwardRef(function AutoCollapseMenu(
                 </Fragment>
               )
             })}
-        </RowFlex>
+        </Flex>
         {/* Rendered hidden in order to calculate intersections for original (expanded) menu options */}
         <RenderHidden
           gap={gap}
@@ -315,7 +284,7 @@ export const AutoCollapseMenu = forwardRef(function AutoCollapseMenu(
           intersectionOptions={intersectionOptions}
           onIntersectionChange={handleCollapsedIntersection}
         />
-      </RootFlex>
+      </Flex>
 
       {/* Show the collapsed items that doesn't fit in a menu */}
       {overflowingCollapsedOptionElements.length > 0 && (
@@ -329,26 +298,33 @@ export const AutoCollapseMenu = forwardRef(function AutoCollapseMenu(
           />
         </Flex>
       )}
-    </OuterFlex>
+    </Flex>
   )
 })
 
 const RenderHidden = memo(function RenderHidden(props: {
   elements: React.JSX.Element[]
-  gap?: number | number[]
+  gap?: BoxProps['gap']
   intersectionOptions: IntersectionObserverInit
   onIntersectionChange: (e: IntersectionObserverEntry, element: React.JSX.Element) => void
 }) {
   const {elements, gap, intersectionOptions, onIntersectionChange} = props
   return (
-    <RowFlex data-hidden aria-hidden="true" gap={gap} overflow="hidden">
+    <Flex
+      className={styles.rowFlexStyle}
+      data-hidden
+      aria-hidden="true"
+      gap={gap}
+      overflow="hidden"
+    >
       {elements.map((element, index) => {
         const {dividerBefore} = element.props
         return (
           <Fragment key={element.key}>
             {dividerBefore && index !== 0 && <CollapseMenuDivider hidden />}
 
-            <OptionObserveElement
+            <ObserveElement
+              className={styles.optionStyle}
               options={intersectionOptions}
               onIntersectionChange={(e) => onIntersectionChange(e[0], element)}
             >
@@ -358,10 +334,10 @@ const RenderHidden = memo(function RenderHidden(props: {
                   'aria-hidden': true,
                 })}
               </Flex>
-            </OptionObserveElement>
+            </ObserveElement>
           </Fragment>
         )
       })}
-    </RowFlex>
+    </Flex>
   )
 })

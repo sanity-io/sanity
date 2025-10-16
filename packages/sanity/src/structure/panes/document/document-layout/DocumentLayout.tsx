@@ -1,4 +1,5 @@
-import {DialogProvider, type DialogProviderProps, Flex, useElementRect} from '@sanity/ui'
+import {DialogProvider, type DialogProviderProps, Flex} from '@sanity/ui'
+import {useElementRect} from '@sanity/ui-v3'
 import {isHotkey} from 'is-hotkey-esm'
 import {useCallback, useMemo, useState} from 'react'
 import {
@@ -15,11 +16,11 @@ import {
   useZIndex,
 } from 'sanity'
 import {useRouter} from 'sanity/router'
-import {styled} from 'styled-components'
 
 import {Pane, usePaneLayout, usePaneRouter} from '../../../components'
 import {structureLocaleNamespace} from '../../../i18n'
 import {useStructureTool} from '../../../useStructureTool'
+import * as styles from '../../../Structure.css'
 import {
   DOCUMENT_INSPECTOR_MIN_WIDTH,
   DOCUMENT_PANEL_INITIAL_MIN_WIDTH,
@@ -44,14 +45,6 @@ const DIALOG_PROVIDER_POSITION: DialogProviderProps['position'] = [
   // And we use the `position: absolute` strategy (within panes) on wide screens.
   'absolute',
 ]
-
-const StyledChangeConnectorRoot = styled(ChangeConnectorRoot)`
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  min-height: 0;
-  min-width: 0;
-`
 
 export function DocumentLayout() {
   const {
@@ -89,6 +82,9 @@ export function DocumentLayout() {
   const [headerElement, setHeaderElement] = useState<HTMLDivElement | null>(null)
 
   const [actionsBoxElement, setActionsBoxElement] = useState<HTMLDivElement | null>(null)
+  const [documentFormPortalElement, setDocumentFormPortalElement] = useState<HTMLElement | null>(
+    null,
+  )
   const [documentPanelPortalElement, setDocumentPanelPortalElement] = useState<HTMLElement | null>(
     null,
   )
@@ -218,7 +214,8 @@ export function DocumentLayout() {
           <DocumentPanelHeader ref={setHeaderElement} menuItems={menuItems} />
           <DialogProvider position={DIALOG_PROVIDER_POSITION} zOffset={zOffsets.paneDialog}>
             <Flex direction="column" flex={1} height={layoutCollapsed ? undefined : 'fill'}>
-              <StyledChangeConnectorRoot
+              <ChangeConnectorRoot
+                className={styles.documentLayoutChangeConnectorStyle}
                 data-testid="change-connector-root"
                 isReviewChangesOpen={changesOpen && paneParams?.changesInspectorTab === 'review'}
                 onOpenReviewChanges={onHistoryOpen}
@@ -229,16 +226,18 @@ export function DocumentLayout() {
                   headerHeight={headerHeight || null}
                   isInspectOpen={inspectOpen}
                   rootElement={rootElement}
+                  setDocumentFormPortalElement={setDocumentFormPortalElement}
                   setDocumentPanelPortalElement={setDocumentPanelPortalElement}
                   footer={
                     <DocumentLayoutFooter
+                      documentFormPortalElement={documentFormPortalElement}
                       documentPanelPortalElement={documentPanelPortalElement}
                       setFooterElement={setFooterElement}
                       setActionsBoxElement={setActionsBoxElement}
                     />
                   }
                 />
-              </StyledChangeConnectorRoot>
+              </ChangeConnectorRoot>
             </Flex>
           </DialogProvider>
           <DocumentOperationResults />

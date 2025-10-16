@@ -9,24 +9,19 @@ import {
 } from '@sanity/ui'
 import {useCallback, useMemo, useState} from 'react'
 import {type Chunk, useTimelineSelector, useTranslation} from 'sanity'
-import {styled} from 'styled-components'
 
 import {Button, Popover} from '../../../../ui-components'
 import {useDocumentPane} from '../useDocumentPane'
 import {Timeline} from './timeline'
 import {TimelineError} from './TimelineError'
 import {TIMELINE_ITEM_I18N_KEY_MAPPING} from './timelineI18n'
+import * as styles from '../../../Structure.css'
 
 interface TimelineMenuProps {
   chunk: Chunk | null
   mode: 'rev' | 'since'
   placement?: Placement
 }
-
-const Root = styled(Popover)`
-  overflow: hidden;
-  overflow: clip;
-`
 
 export const TIMELINE_MENU_PORTAL = 'timeline-menu'
 
@@ -170,7 +165,8 @@ export function TimelineMenu({chunk, mode, placement}: TimelineMenuProps) {
 
   return (
     <PortalProvider __unstable_elements={portalElements}>
-      <Root
+      <Popover
+        className={styles.timelineMenuRootStyle}
         data-testid="timeline-menu"
         constrainSize
         content={open && content}
@@ -191,7 +187,7 @@ export function TimelineMenu({chunk, mode, placement}: TimelineMenuProps) {
             selected={open}
             width="fill"
             tooltipProps={null}
-            justify={'space-between'}
+            justify="space-between"
             style={{
               maxWidth: '100%',
             }}
@@ -199,7 +195,7 @@ export function TimelineMenu({chunk, mode, placement}: TimelineMenuProps) {
             text={ready ? buttonLabel : t('timeline.loading-history')}
           />
         </Flex>
-      </Root>
+      </Popover>
     </PortalProvider>
   )
 }

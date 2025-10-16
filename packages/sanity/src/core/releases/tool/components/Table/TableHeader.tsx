@@ -1,7 +1,7 @@
 import {ArrowUpIcon, SearchIcon} from '@sanity/icons'
 import {Box, Card, Flex, Stack, Text, TextInput} from '@sanity/ui'
 import {motion} from 'framer-motion'
-import {useMemo} from 'react'
+import {type ChangeEvent, useMemo} from 'react'
 
 import {Button, type ButtonProps} from '../../../../../ui-components'
 import {useTranslation} from '../../../../i18n/hooks/useTranslation'
@@ -66,7 +66,9 @@ const TableHeaderSearch = ({
         radius={3}
         value={searchTerm || ''}
         disabled={searchDisabled}
-        onChange={(event) => setSearchTerm(event.currentTarget.value)}
+        onChange={(event: ChangeEvent<HTMLInputElement>) =>
+          setSearchTerm(event.currentTarget.value)
+        }
         onClear={() => setSearchTerm('')}
         clearButton={!!searchTerm}
       />

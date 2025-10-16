@@ -1,8 +1,9 @@
 import {Heading} from '@sanity/ui'
+import {type FontHeadingSize} from '@sanity/ui/theme'
 import {type ReactNode} from 'react'
 import {styled} from 'styled-components'
 
-const headingSizes: Record<string, number | undefined> = {
+const headingSizes: Record<string, FontHeadingSize | undefined> = {
   h1: 2,
   h2: 1,
   h3: 0,

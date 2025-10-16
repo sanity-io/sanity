@@ -2,29 +2,19 @@
 import {generateHelpUrl} from '@sanity/generate-help-url'
 import {ErrorOutlineIcon, WarningOutlineIcon} from '@sanity/icons'
 import {type SchemaValidationProblemGroup} from '@sanity/types'
-import {Box, Breadcrumbs, Card, Flex, Stack, Text, type ThemeColorToneKey} from '@sanity/ui'
+import {Box, Breadcrumbs, Card, Flex, Stack, Text} from '@sanity/ui'
+import {type CardTone} from '@sanity/ui/theme'
 import {capitalize} from 'lodash'
 import {useMemo} from 'react'
-import {styled} from 'styled-components'
 
 import {useTranslation} from '../../../i18n'
+import * as styles from '../../studioAnnouncements/StudioAnnouncements.css'
 import {getTypeInfo} from './getTypeInfo'
 
-const TONES: Record<'error' | 'warning', ThemeColorToneKey> = {
+const TONES: Record<'error' | 'warning', CardTone> = {
   error: 'critical',
   warning: 'caution',
 }
-
-const SegmentSpan = styled.code`
-  && {
-    background: none;
-    color: inherit;
-  }
-`
-
-const ErrorMessageText = styled(Text)`
-  white-space: pre-line;
-`
 
 export function SchemaProblemGroups(props: {problemGroups: SchemaValidationProblemGroup[]}) {
   const {problemGroups} = props
@@ -43,7 +33,7 @@ export function SchemaProblemGroups(props: {problemGroups: SchemaValidationProbl
   }, [problemGroups])
 
   return (
-    <Stack as="ul" space={4}>
+    <Stack as="ul" gap={4}>
       {items.map(({group, problem}, i) => {
         const isError = problem.severity === 'error'
         const isWarning = problem.severity === 'warning'
@@ -86,7 +76,7 @@ export function SchemaProblemGroups(props: {problemGroups: SchemaValidationProbl
                       return (
                         // oxlint-disable-next-line no-array-index-key
                         <Text key={j} title={text} size={1} textOverflow="ellipsis">
-                          <SegmentSpan>{text}</SegmentSpan>
+                          <code className={styles.segmentSpanStyle}>{text}</code>
                         </Text>
                       )
                     }
@@ -95,7 +85,7 @@ export function SchemaProblemGroups(props: {problemGroups: SchemaValidationProbl
                       return (
                         // oxlint-disable-next-line no-array-index-key
                         <Text key={j} title={segment.name} size={1} textOverflow="ellipsis">
-                          <SegmentSpan>{segment.name}</SegmentSpan>
+                          <code className={styles.segmentSpanStyle}>{segment.name}</code>
                         </Text>
                       )
                     }
@@ -108,10 +98,10 @@ export function SchemaProblemGroups(props: {problemGroups: SchemaValidationProbl
 
             <Box as="ul" marginTop={4}>
               <Box as="li">
-                <Stack space={3}>
-                  <ErrorMessageText muted size={1}>
+                <Stack gap={3}>
+                  <Text className={styles.errorMessageTextStyle} muted size={1}>
                     {problem.message}
-                  </ErrorMessageText>
+                  </Text>
 
                   {problem.helpId && (
                     <Text muted size={1}>

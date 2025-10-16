@@ -1,27 +1,13 @@
 import {Box, Flex} from '@sanity/ui'
 import {useId, useMemo} from 'react'
 import {LoadingBlock, useTranslation} from 'sanity'
-import {styled} from 'styled-components'
 
 import {Dialog} from '../../../ui-components'
 import {structureLocaleNamespace} from '../../i18n'
 import {DocTitle} from '../DocTitle'
 import {ConfirmDeleteDialogBody} from './ConfirmDeleteDialogBody'
 import {useReferringDocuments} from './useReferringDocuments'
-
-/** @internal */
-export const DialogBody = styled(Box)`
-  box-sizing: border-box;
-`
-
-/** @internal */
-export const LoadingContainer = styled(Flex).attrs({
-  align: 'center',
-  direction: 'column',
-  justify: 'center',
-})`
-  height: 110px;
-`
+import * as styles from '../../Structure.css'
 
 /** @internal */
 export interface ConfirmDeleteDialogProps {
@@ -95,7 +81,7 @@ export function ConfirmDeleteDialog({
       onClose={onCancel}
       onClickOutside={onCancel}
     >
-      <DialogBody>
+      <Box className={styles.dialogBodyStyle}>
         {crossDatasetReferences && internalReferences && !isLoading ? (
           <ConfirmDeleteDialogBody
             crossDatasetReferences={crossDatasetReferences}
@@ -110,11 +96,11 @@ export function ConfirmDeleteDialog({
             onReferenceLinkClick={onCancel}
           />
         ) : (
-          <LoadingContainer data-testid="loading-container">
+          <Flex className={styles.loadingContainerStyle} data-testid="loading-container">
             <LoadingBlock showText title={t('confirm-delete-dialog.loading.text')} />
-          </LoadingContainer>
+          </Flex>
         )}
-      </DialogBody>
+      </Box>
     </Dialog>
   )
 }

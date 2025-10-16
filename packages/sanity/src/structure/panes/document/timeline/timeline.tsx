@@ -1,4 +1,4 @@
-import {Box, Text} from '@sanity/ui'
+import {Box, Flex, Stack, Text} from '@sanity/ui'
 import {useCallback, useEffect, useMemo, useState} from 'react'
 import {
   type Chunk,
@@ -9,7 +9,6 @@ import {
 } from 'sanity'
 
 import {ExpandableTimelineItemButton} from './expandableTimelineItemButton'
-import {ListWrapper, Root, StackWrapper} from './timeline.styled'
 import {TimelineItem} from './timelineItem'
 import {
   addChunksMetadata,
@@ -17,6 +16,7 @@ import {
   isNonPublishChunk,
   isPublishChunk,
 } from './utils'
+import * as styles from '../../../Structure.css'
 
 interface TimelineProps {
   chunks: Chunk[]
@@ -162,7 +162,8 @@ export const Timeline = ({
   useEffect(() => setMounted(true), [])
 
   return (
-    <Root
+    <Box
+      className={styles.timelineRootStyle}
       /**
        * We delay initial rendering if `selectedIndex` is present.
        * This is a _temporary_ workaround to allow the virtual <CommandList>
@@ -171,22 +172,26 @@ export const Timeline = ({
        * Without this, there'll be a noticeable 'flash' where the virtual list
        * will render with its child items at the top and then scroll into position.
        */
-      $visible={!selectedIndex || mounted}
+      data-visible={selectedIndex === -1 || mounted ? '' : undefined}
       data-ui="timeline"
     >
       {filteredChunks.length === 0 && (
-        <StackWrapper padding={3} space={3}>
+        <Stack className={styles.timelineStackWrapperStyle} padding={3} gap={3}>
           <Text size={1} weight="medium">
             {t('timeline.error.no-document-history-title')}
           </Text>
           <Text muted size={1}>
             {t('timeline.error.no-document-history-description')}
           </Text>
-        </StackWrapper>
+        </Stack>
       )}
 
       {filteredChunks.length > 0 && (
-        <ListWrapper direction="column" $maxHeight={listMaxHeight} id={TIMELINE_LIST_WRAPPER_ID}>
+        <Flex
+          direction="column"
+          style={{maxHeight: listMaxHeight, minWidth: '244px'}}
+          id={TIMELINE_LIST_WRAPPER_ID}
+        >
           <CommandList
             activeItemDataAttr="data-hovered"
             ariaLabel={t('timeline.list.aria-label')}
@@ -201,9 +206,9 @@ export const Timeline = ({
             renderItem={renderItem}
             wrapAround={false}
           />
-        </ListWrapper>
+        </Flex>
       )}
-    </Root>
+    </Box>
   )
 }
 

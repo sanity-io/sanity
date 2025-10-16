@@ -71,7 +71,7 @@ export function SearchFilterReferenceInput({
   return (
     <Box style={{width: 'min(calc(100vw - 40px), 420px)'}}>
       {value?._ref && value?._type ? (
-        <Stack space={3}>
+        <Stack gap={3}>
           <Card padding={1} radius={1} shadow={1}>
             <SearchResultItem
               documentId={value._ref}

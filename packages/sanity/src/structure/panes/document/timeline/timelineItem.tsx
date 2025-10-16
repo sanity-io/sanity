@@ -1,6 +1,5 @@
 import {Box, Card, Flex, Skeleton, Stack, Text} from '@sanity/ui'
-// eslint-disable-next-line camelcase
-import {getTheme_v2, type ThemeColorAvatarColorKey} from '@sanity/ui/theme'
+import {type AvatarColor} from '@sanity/ui/theme'
 import {type MouseEvent, useCallback, useMemo} from 'react'
 import {
   AvatarSkeleton,
@@ -12,33 +11,15 @@ import {
   useTranslation,
   useUser,
 } from 'sanity'
-import {css, styled} from 'styled-components'
 
 import {Tooltip} from '../../../../ui-components'
 import {getTimelineEventIconComponent} from './helpers'
 import {TIMELINE_ITEM_I18N_KEY_MAPPING} from './timelineI18n'
 import {UserAvatarStack} from './userAvatarStack'
 import {type ChunksWithCollapsedDrafts} from './utils'
+import * as styles from '../../../Structure.css'
 
-export const IconBox = styled(Flex)<{$color: ThemeColorAvatarColorKey}>((props) => {
-  const theme = getTheme_v2(props.theme)
-  const color = props.$color
-
-  return css`
-    --card-icon-color: ${theme.color.avatar[color].fg};
-    background-color: ${theme.color.avatar[color].bg};
-    box-shadow: 0 0 0 1px var(--card-bg-color);
-
-    position: absolute;
-    width: ${theme.avatar.sizes[0].size}px;
-    height: ${theme.avatar.sizes[0].size}px;
-    right: -3px;
-    bottom: -3px;
-    border-radius: 50%;
-  `
-})
-
-const TIMELINE_ITEM_EVENT_TONE: Record<ChunkType | 'withinSelection', ThemeColorAvatarColorKey> = {
+const TIMELINE_ITEM_EVENT_TONE: Record<ChunkType | 'withinSelection', AvatarColor> = {
   initial: 'blue',
   create: 'blue',
   publish: 'green',
@@ -63,14 +44,6 @@ const RELATIVE_TIME_OPTIONS: RelativeTimeOptions = {
   useTemporalPhrase: true,
 }
 
-const NameSkeleton = styled(Skeleton)((props) => {
-  const theme = getTheme_v2(props.theme)
-  return css`
-    width: 6ch;
-    height: ${theme.font.text.sizes[0].lineHeight}px;
-  `
-})
-
 const UserLine = ({userId}: {userId: string}) => {
   const [user, loading] = useUser(userId)
 
@@ -80,7 +53,7 @@ const UserLine = ({userId}: {userId: string}) => {
       <Box>
         {loading || !user?.displayName ? (
           <Text size={1}>
-            <NameSkeleton animated />
+            <Skeleton className={styles.timelineItemNameSkeletonStyle} animated />
           </Text>
         ) : (
           <Text muted size={1}>
@@ -132,7 +105,7 @@ export function TimelineItem({
   }, [timestamp, dateFormat])
 
   const handleClick = useCallback(
-    (evt: MouseEvent<HTMLDivElement>) => {
+    (evt: MouseEvent<HTMLButtonElement>) => {
       evt.preventDefault()
       evt.stopPropagation()
 
@@ -158,11 +131,15 @@ export function TimelineItem({
         <Flex align="center" gap={3}>
           <div style={{position: 'relative'}}>
             <UserAvatarStack maxLength={3} userIds={authorUserIds} size={2} />
-            <IconBox align="center" justify="center" $color={TIMELINE_ITEM_EVENT_TONE[type]}>
+            <Flex
+              className={styles.timelineItemIconBoxStyle[TIMELINE_ITEM_EVENT_TONE[type]]}
+              align="center"
+              justify="center"
+            >
               <Text size={0}>{IconComponent && <IconComponent />}</Text>
-            </IconBox>
+            </Flex>
           </div>
-          <Stack space={2}>
+          <Stack gap={2}>
             <Text size={1} weight="medium">
               {t(TIMELINE_ITEM_I18N_KEY_MAPPING[type]) || <code>{type}</code>}
             </Text>

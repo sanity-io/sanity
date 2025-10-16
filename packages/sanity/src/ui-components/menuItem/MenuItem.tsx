@@ -2,23 +2,17 @@
 import {
   Badge,
   Box,
+  type DEFAULT_MENU_ITEM_ELEMENT,
   Flex,
   MenuItem as UIMenuItem,
+  type MenuItemElementType,
   type MenuItemProps as UIMenuItemProps,
+  type Props,
   Stack,
   Text,
 } from '@sanity/ui'
-import {
-  forwardRef,
-  type HTMLProps,
-  isValidElement,
-  type ReactNode,
-  type Ref,
-  useCallback,
-  useMemo,
-} from 'react'
+import {isValidElement, type ReactNode, useCallback, useMemo} from 'react'
 import {isValidElementType} from 'react-is'
-import {styled} from 'styled-components'
 
 import {Hotkeys} from '../../core/components/Hotkeys'
 import {Tooltip, type TooltipProps} from '..'
@@ -26,19 +20,15 @@ import {
   ConditionalWrapper,
   type ConditionalWrapperRenderWrapperCallback,
 } from '../conditionalWrapper'
+import * as styles from './MenuItem.css'
 
 const FONT_SIZE = 1
 const SUBTITLE_FONT_SIZE = 0
 
-/* Using px value here to make title/subtitles align with icon */
-const SubtitleText = styled(Text)`
-  margin-top: 2px;
-`
-
 /** @internal */
-export type MenuItemProps = Pick<
-  UIMenuItemProps,
-  'as' | 'icon' | 'iconRight' | 'pressed' | 'selected' | 'tone' | 'hotkeys'
+export type MenuItemOwnProps = Pick<
+  UIMenuItemProps<'button'>,
+  'disabled' | 'icon' | 'iconRight' | 'pressed' | 'selected' | 'tone' | 'hotkeys'
 > & {
   badgeText?: string
   /**
@@ -67,11 +57,11 @@ export type MenuItemProps = Pick<
   __unstable_space?: number
 }
 
-const PreviewWrapper = styled(Box)`
-  height: 25px;
-  width: 25px;
-  overflow: hidden;
-`
+/** @public */
+export type MenuItemProps<E extends MenuItemElementType = MenuItemElementType> = Props<
+  MenuItemOwnProps,
+  E
+>
 
 /**
  * Customized Sanity UI <MenuItem> that restricts usage of `children` to encourage simple,
@@ -84,8 +74,10 @@ const PreviewWrapper = styled(Box)`
  *
  * @internal
  */
-export const MenuItem = forwardRef(function MenuItem(
-  {
+export function MenuItem<E extends MenuItemElementType = typeof DEFAULT_MENU_ITEM_ELEMENT>(
+  props: MenuItemProps<E>,
+): React.JSX.Element {
+  const {
     badgeText,
     children: childrenProp,
     disabled,
@@ -99,22 +91,21 @@ export const MenuItem = forwardRef(function MenuItem(
     __unstable_subtitle,
     __unstable_space,
     ...rest
-  }: MenuItemProps &
-    Omit<HTMLProps<HTMLDivElement>, 'as' | 'height' | 'ref' | 'selected' | 'tabIndex' | 'size'>,
-  ref: Ref<HTMLDivElement>,
-) {
+  } = props as MenuItemProps<typeof DEFAULT_MENU_ITEM_ELEMENT>
+
   const menuItemContent = useMemo(() => {
     return (
       <Flex align="center" gap={2}>
         {preview && (
-          <PreviewWrapper
+          <Box
+            className={styles.previewWrapper}
             style={{opacity: disabled ? 0.25 : undefined}}
             paddingRight={__unstable_space ? 1 : 0}
           >
             <Flex align="center" height="fill" justify="center">
               {preview}
             </Flex>
-          </PreviewWrapper>
+          </Box>
         )}
         {Icon && (
           <Box paddingRight={1}>
@@ -125,14 +116,20 @@ export const MenuItem = forwardRef(function MenuItem(
           </Box>
         )}
         {text && (
-          <Stack flex={1} space={__unstable_subtitle ? 1 : 2}>
+          <Stack flex={1} gap={__unstable_subtitle ? 1 : 2}>
             <Text size={FONT_SIZE} textOverflow="ellipsis" weight="medium">
               {text}
             </Text>
             {__unstable_subtitle && (
-              <SubtitleText size={SUBTITLE_FONT_SIZE} textOverflow="ellipsis" weight="medium" muted>
+              <Text
+                className={styles.subtitleText}
+                size={SUBTITLE_FONT_SIZE}
+                textOverflow="ellipsis"
+                weight="medium"
+                muted
+              >
                 {__unstable_subtitle}
-              </SubtitleText>
+              </Text>
             )}
           </Stack>
         )}
@@ -187,7 +184,6 @@ export const MenuItem = forwardRef(function MenuItem(
         paddingLeft={preview ? 1 : 3}
         paddingRight={3}
         paddingY={preview ? 1 : 3}
-        ref={ref}
         {...rest}
       >
         {typeof childrenProp === 'undefined' && typeof renderMenuItem === 'function'
@@ -196,4 +192,4 @@ export const MenuItem = forwardRef(function MenuItem(
       </UIMenuItem>
     </ConditionalWrapper>
   )
-})
+}

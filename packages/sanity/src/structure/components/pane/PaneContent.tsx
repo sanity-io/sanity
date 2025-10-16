@@ -1,13 +1,14 @@
-import {type BoxOverflow} from '@sanity/ui'
+import {Card} from '@sanity/ui'
+import {type Overflow} from '@sanity/ui/css'
 import {type ElementType, type ForwardedRef, forwardRef, type HTMLProps} from 'react'
 
-import {Root} from './PaneContent.styles'
 import {usePane} from './usePane'
 import {usePaneLayout} from './usePaneLayout'
+import * as styles from '../../Structure.css'
 
 interface PaneContentProps {
   as?: ElementType | keyof React.JSX.IntrinsicElements
-  overflow?: BoxOverflow
+  overflow?: Overflow
   padding?: number | number[]
 }
 
@@ -24,7 +25,8 @@ export const PaneContent = forwardRef(function PaneContent(
   const {collapsed: layoutCollapsed} = usePaneLayout()
 
   return (
-    <Root
+    <Card
+      className={styles.paneContentRootStyle}
       data-testid="pane-content"
       forwardedAs={as}
       {...restProps}
@@ -36,6 +38,6 @@ export const PaneContent = forwardRef(function PaneContent(
       tone="inherit"
     >
       {children}
-    </Root>
+    </Card>
   )
 })

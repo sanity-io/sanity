@@ -1,4 +1,4 @@
-import {Flex} from '@sanity/ui'
+import {type BoxProps, Flex} from '@sanity/ui'
 import {
   Children,
   cloneElement,
@@ -9,34 +9,20 @@ import {
   useMemo,
   useState,
 } from 'react'
-import {styled} from 'styled-components'
 
 import {type MenuButtonProps} from '../../../ui-components'
 import {CollapseOverflowMenu} from '../collapseMenu/CollapseOverflowMenu'
 import {ObserveElement} from '../collapseMenu/ObserveElement'
 import {ContextMenuButton} from '../contextMenuButton'
+import * as styles from './CollapseTabList.css'
 
 function _isReactElement(node: unknown): node is React.JSX.Element {
   return Boolean(node)
 }
 
-const OptionObserveElement = styled(ObserveElement)`
-  list-style: none;
-  white-space: nowrap;
-  flex-shrink: 0;
-  opacity: 0;
-  visibility: hidden;
-`
-
-const HiddenRow = styled(Flex)`
-  opacity: 0;
-  height: 0.1px;
-  overflow: hidden;
-`
-
 interface CollapseTabListProps {
   children: ReactNode
-  gap?: number | number[]
+  gap?: BoxProps['gap']
   menuButtonProps?: Omit<MenuButtonProps, 'id' | 'menu' | 'button'> & {
     id?: string
     button?: React.JSX.Element
@@ -137,13 +123,21 @@ export const CollapseTabList = forwardRef(function CollapseTabList(
       </Flex>
 
       {/* Element that always render all the children to keep track of their position and if the available space to render them */}
-      <HiddenRow justify="flex-start" gap={gap} ref={setRootEl} data-hidden aria-hidden="true">
+      <Flex
+        className={styles.hiddenRowStyle}
+        justify="flex-start"
+        gap={gap}
+        ref={setRootEl}
+        data-hidden
+        aria-hidden="true"
+      >
         {cloneElement(menuButton, {
           'disabled': true,
           'aria-hidden': true,
         })}
         {children?.map((child) => (
-          <OptionObserveElement
+          <ObserveElement
+            className={styles.optionObserveElementStyle}
             key={`${child.key}_observer`}
             options={intersectionOptions}
             onIntersectionChange={(e) => handleIntersection(e[0], child)}
@@ -153,9 +147,9 @@ export const CollapseTabList = forwardRef(function CollapseTabList(
               'aria-hidden': true,
               'tabIndex': -1,
             })}
-          </OptionObserveElement>
+          </ObserveElement>
         ))}
-      </HiddenRow>
+      </Flex>
     </Flex>
   )
 })

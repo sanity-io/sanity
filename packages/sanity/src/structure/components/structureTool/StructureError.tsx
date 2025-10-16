@@ -3,19 +3,12 @@ import {SyncIcon} from '@sanity/icons'
 import {Box, Card, Code, Container, Heading, Stack, Text} from '@sanity/ui'
 import {useCallback} from 'react'
 import {useTranslation} from 'sanity'
-import {styled} from 'styled-components'
 
 import {Button} from '../../../ui-components'
 import {structureLocaleNamespace} from '../../i18n'
+import * as styles from '../../Structure.css'
 import {SerializeError} from '../../structureBuilder'
 import {PaneResolutionError} from '../../structureResolvers'
-
-const PathSegment = styled.span`
-  &:not(:last-child)::after {
-    content: ' ➝ ';
-    opacity: 0.5;
-  }
-`
 
 function formatStack(stack: string) {
   return (
@@ -63,7 +56,7 @@ export function StructureError({error}: StructureErrorProps) {
 
         <Card marginTop={4} padding={4} radius={2} overflow="auto" shadow={1} tone="inherit">
           {path.length > 0 && (
-            <Stack space={2}>
+            <Stack gap={2}>
               <Text size={1} weight="medium">
                 {t('structure-error.structure-path.label')}
               </Text>
@@ -71,13 +64,15 @@ export function StructureError({error}: StructureErrorProps) {
                 {/* TODO: it seems like the path is off by one and includes */}
                 {/* `root` twice  */}
                 {path.slice(1).map((segment, i) => (
-                  <PathSegment key={`${segment}-${i}`}>{segment}</PathSegment>
+                  <span className={styles.pathSegmentStyle} key={`${segment}-${i}`}>
+                    {segment}
+                  </span>
                 ))}
               </Code>
             </Stack>
           )}
 
-          <Stack marginTop={4} space={2}>
+          <Stack marginTop={4} gap={2}>
             <Text size={1} weight="medium">
               {t('structure-error.error.label')}
             </Text>

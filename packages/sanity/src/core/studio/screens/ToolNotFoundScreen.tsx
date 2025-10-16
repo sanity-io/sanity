@@ -16,7 +16,7 @@ export function ToolNotFoundScreen(props: {toolName: string}) {
                   <WarningOutlineIcon />
                 </Text>
               </Box>
-              <Stack flex={1} marginLeft={3} space={3}>
+              <Stack flex={1} marginLeft={3} gap={3}>
                 <Text as="h1" size={1} weight="medium">
                   Tool not found: <code>{toolName}</code>
                 </Text>

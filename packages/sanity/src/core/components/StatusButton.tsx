@@ -1,7 +1,8 @@
-import {type ForwardedRef, forwardRef, type HTMLProps, type ReactNode, useMemo} from 'react'
-import {styled} from 'styled-components'
+import {vars} from '@sanity/ui/css'
+import {type ForwardedRef, forwardRef, type HTMLProps, type ReactNode} from 'react'
 
 import {Button, type ButtonProps} from '../../ui-components'
+import * as styles from './StatusButton.css'
 
 /** @hidden @beta */
 export type StatusButtonProps = ButtonProps & {
@@ -11,24 +12,6 @@ export type StatusButtonProps = ButtonProps & {
   mode?: ButtonProps['mode']
   iconRight?: undefined
 }
-
-const StyledButton = styled(Button)`
-  position: relative;
-  // The children in button is rendered inside a span, we need to absolutely position it.
-  & > span:nth-child(2) {
-    position: absolute;
-    top: 6px;
-    right: 6px;
-    padding: 0;
-  }
-`
-
-const Dot = styled.div({
-  width: 4,
-  height: 4,
-  borderRadius: 3,
-  boxShadow: '0 0 0 1px var(--card-bg-color)',
-})
 
 /** @hidden @beta */
 export const StatusButton = forwardRef(function StatusButton(
@@ -46,11 +29,11 @@ export const StatusButton = forwardRef(function StatusButton(
     ...restProps
   } = props
 
-  const dotStyle = useMemo(() => ({backgroundColor: `var(--card-badge-${tone}-dot-color)`}), [tone])
   const disabled = Boolean(disabledProp)
 
   return (
-    <StyledButton
+    <Button
+      className={styles.styledButton}
       data-ui="StatusButton"
       {...restProps}
       aria-label={label}
@@ -60,7 +43,9 @@ export const StatusButton = forwardRef(function StatusButton(
       text={text}
       icon={icon}
     >
-      {tone && <Dot style={dotStyle} />}
-    </StyledButton>
+      {tone && (
+        <div className={styles.dot} style={{backgroundColor: vars.color.solid[tone].bg[0]}} />
+      )}
+    </Button>
   )
 })

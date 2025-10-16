@@ -1,11 +1,11 @@
-import {Box, Flex, Stack, Text} from '@sanity/ui'
+import {Box, Card, Flex, Stack, Text} from '@sanity/ui'
 import {getDevicePixelRatio} from 'use-device-pixel-ratio'
 
 import {Media} from '../_common/Media'
 import {PREVIEW_SIZES} from '../constants'
 import {renderPreviewNode} from '../helpers'
 import {type PreviewMediaDimensions, type PreviewProps} from '../types'
-import {HeaderFlex, MediaCard, RootBox} from './BlockImagePreview.styled'
+import * as styles from './BlockImagePreview.css'
 
 /**
  * @hidden
@@ -45,10 +45,17 @@ export function BlockImagePreview(props: BlockImagePreviewProps) {
   } = props
 
   return (
-    <RootBox>
+    <Box className={styles.rootBoxStyle} overflow="hidden">
       <Stack>
-        <HeaderFlex paddingBottom={3} paddingLeft={2} paddingRight={1} paddingTop={1}>
-          <Stack flex={1} space={2}>
+        <Flex
+          align="center"
+          className={styles.headerFlexStyle}
+          paddingBottom={3}
+          paddingLeft={2}
+          paddingRight={1}
+          paddingTop={1}
+        >
+          <Stack flex={1} gap={2}>
             {(title || fallbackTitle) && (
               <Text size={1} textOverflow="ellipsis" weight="medium">
                 {title ? renderPreviewNode(title as any, 'block') : fallbackTitle}
@@ -71,14 +78,15 @@ export function BlockImagePreview(props: BlockImagePreviewProps) {
 
             {actions as any}
           </Flex>
-        </HeaderFlex>
+        </Flex>
 
-        <MediaCard
-          $ratio={getRatio(mediaDimensions)}
+        <Card
           __unstable_checkered
+          className={styles.mediaCardStyle}
           display="flex"
-          sizing="border"
           radius={2}
+          sizing="border"
+          style={{paddingBottom: `${getRatio(mediaDimensions)}%`}}
           tone="inherit"
         >
           <Media
@@ -89,7 +97,7 @@ export function BlockImagePreview(props: BlockImagePreviewProps) {
             radius={0}
             responsive
           />
-        </MediaCard>
+        </Card>
       </Stack>
 
       {description && (
@@ -101,6 +109,6 @@ export function BlockImagePreview(props: BlockImagePreviewProps) {
       )}
 
       {children && <div>{children}</div>}
-    </RootBox>
+    </Box>
   )
 }

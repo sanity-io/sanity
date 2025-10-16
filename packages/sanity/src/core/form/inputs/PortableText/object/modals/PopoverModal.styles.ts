@@ -1,4 +1,5 @@
 import {Box} from '@sanity/ui'
+import {vars} from '@sanity/ui/css'
 import {styled} from 'styled-components'
 
 import {Popover} from '../../../../../../ui-components'
@@ -16,7 +17,7 @@ export const ContentScrollerBox = styled(Box)`
 `
 
 export const ContentHeaderBox = styled(Box)`
-  box-shadow: 0 1px 0 var(--card-shadow-outline-color);
+  box-shadow: 0 1px 0 ${vars.color.shadow.outline};
   position: relative;
   z-index: 10;
   min-height: auto;

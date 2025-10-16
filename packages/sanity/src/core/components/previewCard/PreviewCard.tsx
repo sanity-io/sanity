@@ -1,22 +1,8 @@
 import {Card, type CardProps} from '@sanity/ui'
 import {type ForwardedRef, forwardRef, type HTMLProps, useContext, useMemo} from 'react'
 import {PreviewCardContext} from 'sanity/_singletons'
-import {css, styled} from 'styled-components'
 
-/** @internal */
-const StyledCard = styled(Card)(() => {
-  return css`
-    /* TextWithTone uses its own logic to set color, and we therefore need */
-    /* to override this logic in order to set the correct color in different states */
-    &[data-selected],
-    &[data-pressed],
-    &:active {
-      [data-ui='TextWithTone'] {
-        color: inherit;
-      }
-    }
-  `
-})
+import * as styles from './PreviewCard.css'
 
 /** @internal */
 export interface PreviewCardContextValue {
@@ -44,21 +30,32 @@ export const PreviewCard = forwardRef(function PreviewCard(
   const value = useMemo(() => ({selected}), [selected])
 
   return (
-    <StyledCard data-ui="PreviewCard" {...restProps} forwardedAs={as} ref={ref} selected={selected}>
+    <Card
+      className={styles.styledCardStyle}
+      data-ui="PreviewCard"
+      {...restProps}
+      forwardedAs={as}
+      ref={ref}
+      selected={selected}
+    >
       <PreviewCardContext.Provider value={value}>{children}</PreviewCardContext.Provider>
-    </StyledCard>
+    </Card>
   )
 })
 
 /**
- *  This is a workaround for a circular import issue.
- * Calling `styled(PreviewCard)` at program load time triggered a build error with the commonjs bundle because it tried
- * to access the PreviewCard variable/symbol before it was initialized.
- * The workaround is to colocate the styled component with the component itself.
+ *  This is a wrapper for PreviewCard with additional styling for reference inputs.
  * @internal
  */
-export const ReferenceInputPreviewCard = styled(PreviewCard)`
-  /* this is a hack to avoid layout jumps while previews are loading
-there's probably better ways of solving this */
-  min-height: 36px;
-`
+export const ReferenceInputPreviewCard = forwardRef(function ReferenceInputPreviewCard(
+  props: CardProps & Omit<HTMLProps<HTMLDivElement>, 'height'>,
+  ref: ForwardedRef<HTMLDivElement>,
+) {
+  return (
+    <PreviewCard
+      {...props}
+      ref={ref}
+      className={`${styles.styledCardStyle} ${styles.referenceInputPreviewCardStyle}`}
+    />
+  )
+})

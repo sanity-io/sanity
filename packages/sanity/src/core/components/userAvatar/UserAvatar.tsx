@@ -1,39 +1,23 @@
 import {type User} from '@sanity/types'
-import {
-  Avatar,
-  type AvatarPosition,
-  type AvatarProps,
-  type AvatarSize,
-  type AvatarStatus,
-  Skeleton,
-} from '@sanity/ui'
-// eslint-disable-next-line camelcase
-import {getTheme_v2} from '@sanity/ui/theme'
+import {Avatar, type AvatarPosition, type AvatarProps, Skeleton} from '@sanity/ui'
+import {type AvatarSize} from '@sanity/ui/theme'
+import {type AvatarStatus} from '@sanity/ui-v3'
 import {type ForwardedRef, forwardRef, useState} from 'react'
-import {css, styled} from 'styled-components'
 
 import {Tooltip} from '../../../ui-components'
 import {useUser} from '../../store'
 import {useUserColor} from '../../user-color'
 import {isRecord} from '../../util'
-
-interface AvatarSkeletonProps {
-  $size?: AvatarSize
-}
+import * as styles from './UserAvatar.css'
 
 /**
  * A loading skeleton element representing a user avatar
  * @beta
  */
-export const AvatarSkeleton = styled(Skeleton)<AvatarSkeletonProps>((props) => {
-  const theme = getTheme_v2(props.theme)
-  const size = props.$size ?? 1
-  return css`
-    border-radius: 50%;
-    width: ${theme.avatar.sizes[size].size}px;
-    height: ${theme.avatar.sizes[size].size}px;
-  `
-})
+export function AvatarSkeleton({size = 1, ...props}: {size?: AvatarSize; animated?: boolean}) {
+  const sizeClass = styles.avatarSkeletonSizeStyles[size]
+  return <Skeleton className={`${styles.avatarSkeletonStyle} ${sizeClass}`} {...props} />
+}
 
 /**
  * @hidden
@@ -43,6 +27,7 @@ export interface UserAvatarProps {
   animateArrowFrom?: AvatarPosition
   position?: AvatarPosition
   size?: AvatarSize
+  /** @deprecated No longer used. */
   status?: AvatarStatus
   tone?: 'navbar'
   user: User | string
@@ -120,7 +105,6 @@ const StaticUserAvatar = forwardRef(function StaticUserAvatar(
       onImageLoadError={setImageLoadError}
       ref={ref}
       size={typeof size === 'string' ? LEGACY_TO_UI_AVATAR_SIZES[size] : size}
-      status={status}
       title={user?.displayName}
       {...restProps}
     />
@@ -131,10 +115,10 @@ function UserAvatarLoader({user, ...loadedProps}: Omit<UserAvatarProps, 'user'> 
   const [value, loading] = useUser(user)
 
   if (loading) {
-    return <AvatarSkeleton $size={loadedProps.size} animated />
+    return <AvatarSkeleton size={loadedProps.size} animated />
   }
   if (!value) {
-    return <AvatarSkeleton $size={loadedProps.size} animated={false} />
+    return <AvatarSkeleton size={loadedProps.size} animated={false} />
   }
 
   return <UserAvatar {...loadedProps} user={value} />

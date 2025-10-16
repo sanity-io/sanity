@@ -1,4 +1,5 @@
-import {Card, rem, Text} from '@sanity/ui'
+import {Card, Text} from '@sanity/ui'
+import {vars} from '@sanity/ui/css'
 import {styled} from 'styled-components'
 
 import {useTranslation} from '../../../i18n'
@@ -6,7 +7,7 @@ import {type StringDiff, type StringDiffSegment} from '../../types'
 import {DiffCard} from './DiffCard'
 
 const RoundedCard = styled.span`
-  border-radius: ${({theme}) => rem(theme.sanity.radius[1])};
+  border-radius: ${vars.radius[1]};
 `
 
 const ChangeSegment = styled(Text)`
@@ -19,8 +20,8 @@ const ChangeSegment = styled(Text)`
     background-color: none !important;
     background-image: linear-gradient(
       to bottom,
-      var(--card-bg-color) 0,
-      var(--card-bg-color) 33.333%,
+      ${vars.color.bg} 0,
+      ${vars.color.bg} 33.333%,
       currentColor 33.333%,
       currentColor 100%
     );
@@ -28,7 +29,7 @@ const ChangeSegment = styled(Text)`
     background-repeat: repeat-x;
     background-position-y: bottom;
     padding-bottom: 3px;
-    box-shadow: 0 0 0 1px var(--card-bg-color);
+    box-shadow: 0 0 0 1px ${vars.color.bg};
     z-index: 1;
   }
 `

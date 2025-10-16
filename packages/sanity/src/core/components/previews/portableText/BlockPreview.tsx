@@ -1,11 +1,11 @@
-import {Box, Flex, rem, Stack, Text} from '@sanity/ui'
-import {styled} from 'styled-components'
+import {Box, Flex, Stack, Text} from '@sanity/ui'
 import {getDevicePixelRatio} from 'use-device-pixel-ratio'
 
 import {Media} from '../_common/Media'
 import {PREVIEW_SIZES} from '../constants'
 import {renderPreviewNode} from '../helpers'
 import {type PreviewMediaDimensions, type PreviewProps} from '../types'
+import * as styles from './BlockPreview.css'
 
 const DEFAULT_MEDIA_DIMENSIONS: PreviewMediaDimensions = {
   ...PREVIEW_SIZES.block.media,
@@ -13,10 +13,6 @@ const DEFAULT_MEDIA_DIMENSIONS: PreviewMediaDimensions = {
   fit: 'crop',
   dpr: getDevicePixelRatio(),
 }
-
-const HeaderFlex = styled(Flex).attrs({align: 'center'})`
-  min-height: ${rem(PREVIEW_SIZES.block.media.height)};
-`
 
 /**
  * @hidden
@@ -34,8 +30,8 @@ export function BlockPreview(props: Omit<PreviewProps<'block'>, 'renderDefault'>
   } = props
 
   return (
-    <Stack data-testid="block-preview" space={1}>
-      <HeaderFlex data-testid="block-preview__header">
+    <Stack data-testid="block-preview" gap={1}>
+      <Flex align="center" className={styles.headerFlexStyle} data-testid="block-preview__header">
         {media && <Media dimensions={mediaDimensions} layout="block" media={media as any} />}
 
         <Box flex={1} paddingLeft={media ? 2 : 1}>
@@ -69,7 +65,7 @@ export function BlockPreview(props: Omit<PreviewProps<'block'>, 'renderDefault'>
 
           {actions as any}
         </Flex>
-      </HeaderFlex>
+      </Flex>
 
       {children && <div data-testid="block-preview__children">{children}</div>}
     </Stack>

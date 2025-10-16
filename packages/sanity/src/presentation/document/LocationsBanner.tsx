@@ -122,7 +122,7 @@ export function LocationsBanner(props: {
                 </Box>
               </Flex>
             </Card>
-            <Stack hidden={!expanded} marginTop={1} space={1}>
+            <Stack hidden={!expanded} marginTop={1} gap={1}>
               {locations.map((l) => {
                 let active = false
                 if (
@@ -197,7 +197,7 @@ function LocationItem(props: {
             <DesktopIcon />
           </Text>
         </Box>
-        <Stack flex={1} space={2}>
+        <Stack flex={1} gap={2}>
           <Text size={1} weight="medium">
             {node.title}
           </Text>

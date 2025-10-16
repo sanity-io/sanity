@@ -11,8 +11,8 @@ import {useStructureToolSetting} from '../../../useStructureToolSetting'
 import {useDocumentPane} from '../useDocumentPane'
 import {VIEW_MODE_PARSED, VIEW_MODE_RAW, VIEW_MODES} from './constants'
 import {isDocumentLike, isExpanded, maybeSelectAll, select, toggleExpanded} from './helpers'
-import {JSONInspectorWrapper} from './InspectDialog.styles'
 import {Search} from './Search'
+import * as styles from '../../../Structure.css'
 
 interface InspectDialogProps {
   value: Partial<SanityDocument> | null
@@ -78,7 +78,7 @@ export function InspectDialog(props: InspectDialogProps) {
           shadow={1}
           style={{position: 'sticky', bottom: 0, zIndex: 3}}
         >
-          <TabList space={1}>
+          <TabList gap={1}>
             <Tab
               aria-controls={`${dialogIdPrefix}tabpanel`}
               id={`${dialogIdPrefix}tab-${VIEW_MODE_PARSED.id}`}
@@ -105,7 +105,7 @@ export function InspectDialog(props: InspectDialogProps) {
           style={{outline: 'none'}}
         >
           {viewMode === VIEW_MODE_PARSED && (
-            <JSONInspectorWrapper>
+            <div className={styles.jsonInspectorWrapperStyle}>
               <JsonInspector
                 data={value}
                 isExpanded={isExpanded}
@@ -113,7 +113,7 @@ export function InspectDialog(props: InspectDialogProps) {
                 search={Search}
                 filterOptions={{ignoreCase: true}}
               />
-            </JSONInspectorWrapper>
+            </div>
           )}
 
           {viewMode === VIEW_MODE_RAW && (

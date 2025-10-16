@@ -9,7 +9,6 @@ import {
   useSource,
   useTranslation,
 } from 'sanity'
-import {styled} from 'styled-components'
 
 import {Button, Tab, Tooltip} from '../../../../../ui-components'
 import {usePaneRouter} from '../../../../components/paneRouter/usePaneRouter'
@@ -19,14 +18,7 @@ import {ChangesInspector} from './ChangesInspector'
 import {EventsInspector} from './EventsInspector'
 import {EventsSelector} from './EventsSelector'
 import {HistorySelector} from './HistorySelector'
-
-const FadeInFlex = styled(Flex)`
-  opacity: 0;
-  transition: opacity 200ms;
-  &[data-ready] {
-    opacity: 1;
-  }
-`
+import * as styles from '../../../../Structure.css'
 const TABS = ['history', 'review'] as const
 const isValidTab = (tab: string | undefined): tab is (typeof TABS)[number] =>
   // @ts-expect-error TS doesn't understand the type guard
@@ -59,7 +51,8 @@ export function ChangesTabs(props: DocumentInspectorProps) {
       : t('compare-versions.status.published')
 
   return (
-    <FadeInFlex
+    <Flex
+      className={styles.changesInspectorFadeInFlexStyle}
       direction="column"
       padding={0}
       height="fill"
@@ -68,7 +61,7 @@ export function ChangesTabs(props: DocumentInspectorProps) {
     >
       <Card paddingBottom={1}>
         <Flex align="center" padding={3} gap={2}>
-          <TabList space={1} flex={1}>
+          <TabList gap={1} flex={1}>
             <Tab
               aria-controls="history-panel"
               id="history-tab"
@@ -152,6 +145,6 @@ export function ChangesTabs(props: DocumentInspectorProps) {
           <ChangesInspector showChanges={paneRouterTab === 'review'} />
         )}
       </TabPanel>
-    </FadeInFlex>
+    </Flex>
   )
 }

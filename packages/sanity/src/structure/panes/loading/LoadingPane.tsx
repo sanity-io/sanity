@@ -1,12 +1,13 @@
-import {_raf2, type CardTone, Flex} from '@sanity/ui'
+import {_raf2, Flex} from '@sanity/ui'
+import {type CardTone} from '@sanity/ui/theme'
 import {memo, useEffect, useMemo, useState} from 'react'
 import {type Observable} from 'rxjs'
 import {LoadingBlock, useTranslation} from 'sanity'
-import {styled} from 'styled-components'
 
 import {Delay} from '../../components/Delay'
 import {Pane, PaneContent} from '../../components/pane'
 import {structureLocaleNamespace} from '../../i18n'
+import * as styles from '../../Structure.css'
 import {getWaitMessages, type WaitMessage} from './getWaitMessages'
 
 interface LoadingPaneProps {
@@ -23,15 +24,6 @@ interface LoadingPaneProps {
 
 const DELAY = false
 const DEFAULT_MESSAGE_KEY = 'panes.resolving.default-message'
-
-const Content = styled(Flex)`
-  opacity: 0;
-  transition: opacity 200ms;
-
-  &[data-mounted] {
-    opacity: 1;
-  }
-`
 
 /**
  * @internal
@@ -84,8 +76,9 @@ export const LoadingPane = memo((props: LoadingPaneProps) => {
   }, [contentElement])
 
   const content = (
-    <Content
+    <Flex
       align="center"
+      className={styles.loadingPaneContentStyle}
       data-mounted={mounted ? '' : undefined}
       direction="column"
       height="fill"
@@ -93,7 +86,7 @@ export const LoadingPane = memo((props: LoadingPaneProps) => {
       ref={setContentElement}
     >
       <LoadingBlock showText title={title || currentMessage} />
-    </Content>
+    </Flex>
   )
 
   return (

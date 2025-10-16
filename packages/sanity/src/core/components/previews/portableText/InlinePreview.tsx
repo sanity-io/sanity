@@ -1,9 +1,10 @@
+import {Text} from '@sanity/ui'
 import {getDevicePixelRatio} from 'use-device-pixel-ratio'
 
 import {PREVIEW_SIZES} from '../constants'
 import {renderPreviewMedia, renderPreviewNode} from '../helpers'
 import {type PreviewMediaDimensions, type PreviewProps} from '../types'
-import {MediaSpan, RootSpan, TextSpan} from './InlinePreview.styled'
+import * as styles from './InlinePreview.css'
 
 /**
  * @hidden
@@ -29,17 +30,17 @@ export function InlinePreview(props: InlinePreviewProps) {
   } = props
 
   return (
-    <RootSpan data-testid="inline-preview">
+    <span className={styles.rootSpanStyle} data-testid="inline-preview">
       {media && (
-        <MediaSpan data-testid="inline-preview-media">
+        <span className={styles.mediaSpanStyle} data-testid="inline-preview-media">
           {renderPreviewMedia(media, 'inline', mediaDimensions)}
           <span />
-        </MediaSpan>
+        </span>
       )}
 
-      <TextSpan data-testid="inline-preview-title" size={1}>
+      <Text as="span" className={styles.textSpanStyle} data-testid="inline-preview-title" size={1}>
         {renderPreviewNode(title, 'inline', fallbackTitle)}
-      </TextSpan>
-    </RootSpan>
+      </Text>
+    </span>
   )
 }

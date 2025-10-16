@@ -3,9 +3,9 @@ import {
   // eslint-disable-next-line no-restricted-imports
   Button, // Button with specific styling and children behavior.
   Card,
-  rem,
   useClickOutsideEvent,
 } from '@sanity/ui'
+import {vars} from '@sanity/ui/css'
 import {type KeyboardEvent, useCallback, useRef, useState} from 'react'
 import {styled} from 'styled-components'
 
@@ -25,8 +25,7 @@ interface FilterButtonProps {
 }
 
 const CloseButton = styled(Button)`
-  border-radius: ${({theme}) =>
-    `0 ${rem(theme.sanity.radius[2])} ${rem(theme.sanity.radius[2])} 0`};
+  border-radius: 0 ${vars.radius[2]} ${vars.radius[2]} 0;
 `
 
 const CloseCard = styled(Card)`
@@ -103,12 +102,7 @@ export function FilterButton({filter, initialOpen}: FilterButtonProps) {
       ref={popoverRef}
     >
       <ContainerDiv>
-        <Card
-          __unstable_focusRing
-          display="flex"
-          radius={2}
-          tone={isValid ? 'primary' : 'transparent'}
-        >
+        <Card __unstable_focusRing display="flex" radius={2} tone={isValid ? 'primary' : 'neutral'}>
           <LabelButton
             mode="bleed"
             onClick={handleOpen}
@@ -127,7 +121,7 @@ export function FilterButton({filter, initialOpen}: FilterButtonProps) {
             __unstable_focusRing
             display="flex"
             radius={2}
-            tone={isValid ? 'primary' : 'transparent'}
+            tone={isValid ? 'primary' : 'neutral'}
           >
             <CloseButton
               aria-label={t('search.action.remove-filter-aria-label')}

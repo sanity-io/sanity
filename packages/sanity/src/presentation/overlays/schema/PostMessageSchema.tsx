@@ -1,7 +1,6 @@
 /* eslint-disable max-nested-callbacks */
 import {type ClientPerspective} from '@sanity/client'
 import {type UnresolvedPath} from '@sanity/presentation-comlink'
-import {useRootTheme} from '@sanity/ui'
 import {memo, useEffect} from 'react'
 import {
   getPublishedId,
@@ -44,12 +43,12 @@ function PostMessageSchema(props: PostMessageSchemaProps): React.JSX.Element | n
   const {comlink, perspective} = props
 
   const workspace = useWorkspace()
-  const theme = useRootTheme()
+  // const theme = useRootTheme()
 
   // Send a representation of the schema to the visual editing context
   useEffect(() => {
     try {
-      const schema = extractSchema(workspace, theme)
+      const schema = extractSchema(workspace)
       /**
        * @deprecated switch to explict schema fetching (using
        * 'visual-editing/schema') at next major
@@ -60,7 +59,7 @@ function PostMessageSchema(props: PostMessageSchemaProps): React.JSX.Element | n
     } catch {
       return undefined
     }
-  }, [comlink, theme, workspace])
+  }, [comlink, workspace])
 
   const client = useClient(
     isReleasePerspective(perspective) ? RELEASES_STUDIO_CLIENT_OPTIONS : {apiVersion: API_VERSION},

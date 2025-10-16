@@ -5,7 +5,7 @@ import {
   type SanityDocument,
   type ValidationMarker,
 } from '@sanity/types'
-import {Box, Card, Flex, useTheme, useToast} from '@sanity/ui'
+import {Box, Card, Flex, useCard, useToast} from '@sanity/ui'
 import {type ReactNode, useCallback, useMemo, useState} from 'react'
 
 import {Button} from '../../../../../ui-components'
@@ -39,9 +39,8 @@ export interface SelectAssetsDialogProps {
 }
 
 export function SelectAssetsDialog(props: SelectAssetsDialogProps): ReactNode {
-  const theme = useTheme()
+  const card = useCard()
   const {t} = useTranslation()
-  const {dark} = theme.sanity.color
   const mediaLibraryIds = useMediaLibraryIds()
 
   const mediaLibraryConfig = useSanityMediaLibraryConfig()
@@ -123,11 +122,11 @@ export function SelectAssetsDialog(props: SelectAssetsDialogProps): ReactNode {
     () => ({
       selectionType,
       selectAssetTypes: [selectAssetType === 'sanity.video' ? 'video' : selectAssetType],
-      scheme: dark ? 'dark' : 'light',
+      scheme: card.scheme,
       auth: authType,
       pluginFilters,
     }),
-    [selectionType, selectAssetType, dark, authType, pluginFilters],
+    [card.scheme, selectionType, selectAssetType, authType, pluginFilters],
   )
   const iframeUrl = usePluginFrameUrl('/assets', params)
 
@@ -198,7 +197,7 @@ export function SelectAssetsDialog(props: SelectAssetsDialogProps): ReactNode {
       width={3}
       footer={
         <Card
-          width="full"
+          width="fill"
           height="fill"
           padding={3}
           shadow={1}
@@ -207,8 +206,8 @@ export function SelectAssetsDialog(props: SelectAssetsDialogProps): ReactNode {
             minHeight: '2dvh',
           }}
         >
-          <Flex width="full" gap={3} justify="flex-end">
-            <Flex width="full" gap={2} justify="flex-end" align="center">
+          <Flex width="fill" gap={3} justify="flex-end">
+            <Flex width="fill" gap={2} justify="flex-end" align="center">
               {validation.length > 0 && (
                 <FormFieldValidationStatus fontSize={2} placement="top" validation={validation} />
               )}

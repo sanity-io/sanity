@@ -1,28 +1,25 @@
 import {Box, type BoxProps} from '@sanity/ui'
-import {type HTMLProps, useCallback, useMemo, useRef, useState} from 'react'
-import {styled} from 'styled-components'
+import {type ElementType, type HTMLProps, useCallback, useMemo, useRef, useState} from 'react'
 
 import {Resizer} from './Resizer'
+import * as styles from './Resizable.css'
 
 interface ResizableProps {
+  as?: ElementType
   minWidth: number
   maxWidth: number
   initialWidth?: number
   resizerPosition?: 'left' | 'right'
 }
 
-const Root = styled(Box)`
-  position: relative;
-  flex: 1;
-  padding-left: 1px;
-`
-
 /**
  * @internal
  * Provides a resizable container with a resizer handle.
  */
 export function Resizable(
-  props: ResizableProps & BoxProps & Omit<HTMLProps<HTMLDivElement>, 'as'>,
+  props: ResizableProps &
+    Omit<BoxProps, 'maxWidth' | 'minWidth'> &
+    Omit<HTMLProps<HTMLDivElement>, 'as'>,
 ) {
   const {
     as: forwardedAs,
@@ -60,7 +57,13 @@ export function Resizable(
   )
 
   return (
-    <Root as={forwardedAs} {...restProps} ref={setElement} style={style}>
+    <Box
+      className={styles.rootStyle}
+      as={forwardedAs}
+      {...restProps}
+      ref={setElement}
+      style={style}
+    >
       {resizerPosition === 'left' && (
         <Resizer onResize={handleResize} onResizeStart={handleResizeStart} position="left" />
       )}
@@ -68,6 +71,6 @@ export function Resizable(
       {resizerPosition === 'right' && (
         <Resizer onResize={handleResize} onResizeStart={handleResizeStart} position="right" />
       )}
-    </Root>
+    </Box>
   )
 }

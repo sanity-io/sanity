@@ -1,5 +1,5 @@
-import {Box, Flex, rem, Skeleton, Stack, Text, TextSkeleton} from '@sanity/ui'
-import {styled} from 'styled-components'
+import {Box, Flex, Skeleton, Stack, Text, TextSkeleton} from '@sanity/ui'
+import {vars} from '@sanity/ui/css'
 import {getDevicePixelRatio} from 'use-device-pixel-ratio'
 
 import {useTranslation} from '../../../i18n'
@@ -7,6 +7,7 @@ import {Media} from '../_common/Media'
 import {PREVIEW_SIZES} from '../constants'
 import {renderPreviewNode} from '../helpers'
 import {type PreviewMediaDimensions, type PreviewProps} from '../types'
+import * as styles from './CompactPreview.css'
 
 /**
  * @hidden
@@ -19,16 +20,6 @@ const DEFAULT_MEDIA_DIMENSIONS: PreviewMediaDimensions = {
   fit: 'crop',
   dpr: getDevicePixelRatio(),
 }
-
-const Root = styled(Flex)`
-  height: ${rem(PREVIEW_SIZES.compact.media.height)};
-  box-sizing: content-box;
-`
-
-const TitleSkeleton = styled(TextSkeleton).attrs({animated: true, radius: 1, size: 1})`
-  max-width: ${rem(160)};
-  width: 80%;
-`
 
 /**
  * @hidden
@@ -46,7 +37,8 @@ export function CompactPreview(props: CompactPreviewProps) {
 
   if (isPlaceholder) {
     return (
-      <Root
+      <Flex
+        className={styles.rootStyle}
         align="center"
         data-testid="default-preview"
         paddingLeft={media ? 1 : 2}
@@ -56,18 +48,19 @@ export function CompactPreview(props: CompactPreviewProps) {
         <Flex align="center" flex={1} gap={2}>
           {media && <Skeleton animated radius={2} style={PREVIEW_SIZES.compact.media} />}
 
-          <Stack data-testid="compact-preview__heading" flex={1} space={2}>
-            <TitleSkeleton />
+          <Stack data-testid="compact-preview__heading" flex={1} gap={2}>
+            <TextSkeleton className={styles.titleSkeletonStyle} animated radius={1} size={1} />
           </Stack>
 
           {statusNode}
         </Flex>
-      </Root>
+      </Flex>
     )
   }
 
   return (
-    <Root
+    <Flex
+      className={styles.rootStyle}
       align="center"
       data-testid="compact-preview"
       paddingLeft={media ? 1 : 2}
@@ -83,11 +76,11 @@ export function CompactPreview(props: CompactPreviewProps) {
             media={media as any}
           />
         )}
-        <Stack data-testid="compact-preview__header" flex={1} space={2}>
+        <Stack data-testid="compact-preview__header" flex={1} gap={2}>
           <Text size={1} style={{color: 'inherit'}} textOverflow="ellipsis" weight="medium">
             {title && renderPreviewNode(title, 'compact')}
             {!title && (
-              <span style={{color: 'var(--card-muted-fg-color)'}}>
+              <span style={{color: vars.color.muted.fg}}>
                 {t('preview.default.title-fallback')}
               </span>
             )}
@@ -98,6 +91,6 @@ export function CompactPreview(props: CompactPreviewProps) {
       </Flex>
 
       {children && <Box marginLeft={1}>{children}</Box>}
-    </Root>
+    </Flex>
   )
 }

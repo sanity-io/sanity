@@ -1,7 +1,8 @@
 import {type Schema, type SchemaType} from '@sanity/types'
 import {Box, Flex, MenuDivider, Stack, Text} from '@sanity/ui'
+import {vars} from '@sanity/ui/css'
 import {partition} from 'lodash'
-import {type KeyboardEvent, useCallback, useMemo, useRef, useState} from 'react'
+import {type ChangeEvent, useCallback, useMemo, useRef, useState} from 'react'
 import {styled} from 'styled-components'
 
 import {Button} from '../../../../../../../../ui-components'
@@ -20,7 +21,7 @@ import {FilterPopoverContentHeader} from '../common/FilterPopoverContentHeader'
 import {DocumentTypeFilterItem} from './items/DocumentTypeFilterItem'
 
 const ClearButtonBox = styled(Box)`
-  border-top: 1px solid ${({theme}) => theme.sanity.color.base.border};
+  border-top: 1px solid ${vars.color.border};
   flex-shrink: 0;
 `
 
@@ -52,7 +53,7 @@ export function DocumentTypesPopoverContent() {
   )
 
   const handleFilterChange = useCallback(
-    (e: KeyboardEvent<HTMLInputElement>) => setTypeFilter(e.currentTarget.value),
+    (e: ChangeEvent<HTMLInputElement>) => setTypeFilter(e.currentTarget.value),
     [setTypeFilter],
   )
   const handleFilterClear = useCallback(() => setTypeFilter(''), [])

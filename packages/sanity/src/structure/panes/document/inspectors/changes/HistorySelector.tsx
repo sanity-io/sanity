@@ -7,18 +7,11 @@ import {
   useTimelineSelector,
   useTranslation,
 } from 'sanity'
-import {styled} from 'styled-components'
 
 import {Timeline} from '../../timeline'
 import {TimelineError} from '../../timeline/TimelineError'
 import {useDocumentPane} from '../../useDocumentPane'
-
-const Scroller = styled(ScrollContainer)`
-  height: 100%;
-  overflow: auto;
-  position: relative;
-  scroll-behavior: smooth;
-`
+import * as styles from '../../../../Structure.css'
 
 export function HistorySelector({showList}: {showList: boolean}) {
   const {timelineError, setTimelineRange, timelineStore} = useDocumentPane()
@@ -75,7 +68,11 @@ export function HistorySelector({showList}: {showList: boolean}) {
           <TimelineError versionError={Boolean(selectedReleaseId)} />
         ) : (
           <BoundaryElementProvider element={scrollRef}>
-            <Scroller data-ui="Scroller" ref={getScrollerRef}>
+            <ScrollContainer
+              className={styles.changesInspectorScrollerStyle}
+              data-ui="Scroller"
+              ref={getScrollerRef}
+            >
               {listHeight &&
               // This forces the list to unmount and remount, which is needed to reset the scroll position
               showList ? (
@@ -88,7 +85,7 @@ export function HistorySelector({showList}: {showList: boolean}) {
                   listMaxHeight={`${listHeight}px`}
                 />
               ) : null}
-            </Scroller>
+            </ScrollContainer>
           </BoundaryElementProvider>
         )}
       </Card>

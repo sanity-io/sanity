@@ -15,9 +15,9 @@ import {
 } from 'sanity'
 
 import {ExpandableTimelineItemButton} from '../expandableTimelineItemButton'
-import {ListWrapper, Root} from '../timeline.styled'
 import {EventTimelineItem} from './EventTimelineItem'
 import {PublishedEventMenu} from './PublishedEventMenu'
+import * as styles from '../../../../Structure.css'
 
 interface TimelineProps {
   events: DocumentGroupEvent[]
@@ -220,7 +220,8 @@ export const EventsTimeline = ({
   const selectedIndex = events.findIndex((event) => event.id === selectedEventId)
 
   return (
-    <Root
+    <Box
+      className={styles.timelineRootStyle}
       /**
        * We delay initial rendering if `selectedIndex` is present.
        * This is a _temporary_ workaround to allow the virtual <CommandList>
@@ -229,11 +230,15 @@ export const EventsTimeline = ({
        * Without this, there'll be a noticeable 'flash' where the virtual list
        * will render with its child items at the top and then scroll into position.
        */
-      $visible={!selectedIndex || mounted}
+      data-visible={selectedIndex === -1 || mounted ? '' : undefined}
       data-ui="timeline"
     >
       {events.length > 0 ? (
-        <ListWrapper direction="column" $maxHeight={listMaxHeight} id={TIMELINE_LIST_WRAPPER_ID}>
+        <Flex
+          direction="column"
+          style={{maxHeight: listMaxHeight, minWidth: '244px'}}
+          id={TIMELINE_LIST_WRAPPER_ID}
+        >
           <CommandList
             activeItemDataAttr="data-hovered"
             ariaLabel={t('timeline.list.aria-label')}
@@ -248,9 +253,9 @@ export const EventsTimeline = ({
             renderItem={renderItem}
             wrapAround={false}
           />
-        </ListWrapper>
+        </Flex>
       ) : (
-        <Stack padding={3} space={3}>
+        <Stack padding={3} gap={3}>
           <Text size={1} weight="medium">
             {t('timeline.error.no-document-history-title')}
           </Text>
@@ -259,7 +264,7 @@ export const EventsTimeline = ({
           </Text>
         </Stack>
       )}
-    </Root>
+    </Box>
   )
 }
 
