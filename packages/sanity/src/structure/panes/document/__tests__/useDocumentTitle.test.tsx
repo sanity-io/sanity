@@ -20,17 +20,12 @@ vi.mock('../useDocumentPane')
 // Mock the useValuePreview, useTranslation, and usePerspective hooks
 vi.mock('sanity', async (importOriginal) => {
   const original = (await importOriginal()) as any
+  const {usePerspectiveMockReturn} = await import('../../../__mocks__/usePerspective.mock')
   return {
     ...original,
     unstable_useValuePreview: vi.fn(),
     prepareForPreview: vi.fn(),
-    usePerspective: vi.fn(() => ({
-      selectedPerspectiveName: undefined,
-      selectedReleaseId: undefined,
-      selectedPerspective: 'drafts',
-      perspectiveStack: ['drafts'],
-      excludedPerspectives: [],
-    })),
+    usePerspective: vi.fn(() => usePerspectiveMockReturn),
   }
 })
 

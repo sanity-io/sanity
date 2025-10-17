@@ -1,11 +1,15 @@
-import {type Mock} from 'vitest'
+import {type Mock, type Mocked} from 'vitest'
 
-export const usePerspectiveMockReturn = {
+import {type PerspectiveContextValue} from '../core/perspective/types'
+import {usePerspective} from '../core/perspective/usePerspective'
+
+export const perspectiveContextValueMock: Mocked<PerspectiveContextValue> = {
   selectedPerspectiveName: undefined,
   selectedReleaseId: undefined,
-  selectedPerspective: 'drafts' as const,
-  perspectiveStack: ['drafts' as const],
+  selectedPerspective: 'drafts',
+  perspectiveStack: ['drafts'],
   excludedPerspectives: [],
 }
+export const usePerspectiveMockReturn = perspectiveContextValueMock
 
-export type MockUsePerspective = Mock<() => typeof usePerspectiveMockReturn>
+export const mockUsePerspective = usePerspective as Mock<typeof usePerspective>
