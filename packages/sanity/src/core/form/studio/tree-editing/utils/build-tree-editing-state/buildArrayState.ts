@@ -69,7 +69,7 @@ export function buildArrayState(props: BuildArrayState): TreeEditingState {
   // Since this SHOULDN'T open the dialog
   if (
     isArrayOfBlocksSchemaType(arraySchemaType) &&
-    isPathTextInPTEField(rootSchemaType.fields, openPath)
+    isPathTextInPTEField(rootSchemaType.fields, openPath, documentValue)
   ) {
     return {
       breadcrumbs,
@@ -93,7 +93,7 @@ export function buildArrayState(props: BuildArrayState): TreeEditingState {
     const childrenFields = itemSchemaField?.fields || []
     const childrenMenuItems: TreeEditingMenuItem[] = []
 
-    if (shouldBeInBreadcrumb(itemPath, openPath)) {
+    if (shouldBeInBreadcrumb(itemPath, openPath, documentValue)) {
       const breadcrumbsResult = buildBreadcrumbsState({
         arraySchemaType,
         arrayValue,
@@ -173,7 +173,7 @@ export function buildArrayState(props: BuildArrayState): TreeEditingState {
 
       // Handle regular arrays of objects (not portable text)
       if (IsArrayOfObjects) {
-        if (shouldBeInBreadcrumb(childPath, openPath)) {
+        if (shouldBeInBreadcrumb(childPath, openPath, documentValue)) {
           const breadcrumbsResult = buildBreadcrumbsState({
             arraySchemaType: childField.type as ArraySchemaType,
             arrayValue: childValue as Record<string, unknown>[],

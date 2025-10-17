@@ -23,10 +23,48 @@ export function isArrayItemPath(path: Path): boolean {
   return path[path.length - 1].hasOwnProperty('_key')
 }
 
+/** Check if the block has span children */
+function hasSpanChildren(block: unknown): boolean {
+  if (!block || typeof block !== 'object' || !('children' in block)) return false
+  return (
+    Array.isArray(block.children) && block.children.some((child) => child && child._type === 'span')
+  )
+}
+
 /**
  * Check if the item should be in the breadcrumb
+ *
+ * Skips PTE blocks and inline objects from breadcrumbs
  */
-export function shouldBeInBreadcrumb(itemPath: Path, path: Path): boolean {
+export function shouldBeInBreadcrumb(itemPath: Path, path: Path, documentValue?: unknown): boolean {
+  if (!documentValue) {
+    return (
+      itemPath.every((segment, index) => {
+        return isArrayItemSelected(path[index], segment)
+      }) && isArrayItemPath(itemPath)
+    )
+  }
+
+  // Skip PTE blocks (object with children containing spans)
+  // Need to have the ancestors as it makes a difference if we are checking a block that has immediate children vs a block that is deeply nested
+  let currentValue: unknown = documentValue
+  const ancestors = []
+  for (const segment of itemPath) {
+    ancestors.push(currentValue)
+    if (typeof segment === 'string') {
+      currentValue = (currentValue as Record<string, unknown>)?.[segment]
+    } else if (typeof segment === 'object' && isKeySegment(segment)) {
+      if (Array.isArray(currentValue)) {
+        currentValue = currentValue.find((child) => child?._key === segment._key)
+      }
+    }
+    if (!currentValue) break
+  }
+
+  // Skip PTE blocks (block-level object with ANY span child)
+  if (currentValue && typeof currentValue === 'object' && '_type' in currentValue) {
+    if (hasSpanChildren(currentValue)) return false
+  }
   return (
     itemPath.every((segment, index) => {
       return isArrayItemSelected(path[index], segment)

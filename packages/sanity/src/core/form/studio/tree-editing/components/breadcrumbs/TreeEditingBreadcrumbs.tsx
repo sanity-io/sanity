@@ -189,14 +189,7 @@ export function TreeEditingBreadcrumbs(
         )
       }
 
-      // If the selected path contains 'children', we want to simplify it to the parent path
-      // To avoid deselecting the breadcrumb when clicking on text content in portable text editors
-      // Since the path gets updated, but the path itself in the dialog doesn't
-      const simplifiedPath = selectedPath.includes('.children')
-        ? selectedPath.slice(0, -1)
-        : selectedPath
-
-      const isSelected = isEqual(item.path, simplifiedPath)
+      const isSelected = isEqual(item.path, selectedPath)
 
       return (
         <Fragment key={key}>

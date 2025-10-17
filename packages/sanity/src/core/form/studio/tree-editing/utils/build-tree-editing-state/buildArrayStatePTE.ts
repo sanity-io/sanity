@@ -72,7 +72,7 @@ export function buildArrayStatePTE(props: BuildArrayStatePTEProps): {
 
   // If openPath points to text content within this portable text field, skip processing
   // This avoids false positives with regular object fields named 'children'
-  if (isPathTextInPTEField(rootSchemaType.fields, openPath)) {
+  if (isPathTextInPTEField(rootSchemaType.fields, openPath, documentValue)) {
     return {
       relativePath: null, // This will mean that we don't want the path to update in the Array State
       breadcrumbs,
@@ -105,7 +105,7 @@ export function buildArrayStatePTE(props: BuildArrayStatePTEProps): {
     // Add breadcrumb for the block if openPath starts with this block path
     // This handles both direct block selection and nested paths within the block
     const openPathStartsWithBlock = toString(openPath).startsWith(toString(blockPath))
-    if (openPathStartsWithBlock && shouldBeInBreadcrumb(blockPath, openPath)) {
+    if (openPathStartsWithBlock && shouldBeInBreadcrumb(blockPath, openPath, documentValue)) {
       const blockBreadcrumb: TreeEditingBreadcrumb = {
         children: EMPTY_ARRAY,
         parentSchemaType: childField.type as ArraySchemaType,
@@ -138,7 +138,7 @@ export function buildArrayStatePTE(props: BuildArrayStatePTEProps): {
           // But ensure the value is at least an empty array for processing
           const arrayFieldValue = Array.isArray(blockFieldValue) ? blockFieldValue : []
 
-          if (shouldBeInBreadcrumb(blockFieldPath, openPath)) {
+          if (shouldBeInBreadcrumb(blockFieldPath, openPath, documentValue)) {
             const breadcrumbsResult = buildBreadcrumbsState({
               arraySchemaType: blockField.type as ArraySchemaType,
               arrayValue: arrayFieldValue as Record<string, unknown>[],
