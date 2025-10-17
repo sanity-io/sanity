@@ -47,7 +47,13 @@ import {TreeEditingDialog, TreeEditingEnabledProvider, useTreeEditingEnabled} fr
 export interface FormBuilderProps
   extends Omit<
     ObjectFormNode,
-    'level' | 'path' | 'presence' | 'validation' | '_allMembers' | '__unstable_computeDiff'
+    | 'level'
+    | 'path'
+    | 'presence'
+    | 'validation'
+    | '_allMembers'
+    | '__unstable_computeDiff'
+    | 'displayInlineChanges'
   > {
   /** @internal */
   __internal_fieldActions?: DocumentFieldAction[]
@@ -106,6 +112,7 @@ export function FormBuilder(props: FormBuilderProps) {
     presence,
     readOnly,
     schemaType,
+    hasUpstreamVersion,
     validation,
     value,
     compareValue,
@@ -199,6 +206,7 @@ export function FormBuilder(props: FormBuilderProps) {
   const rootInputProps: Omit<ObjectInputProps, 'renderDefault'> = useMemo(() => {
     const diffProps = prepareDiffProps({
       comparisonValue: compareValue,
+      hasUpstreamVersion,
       value,
       schemaType,
       perspective,
@@ -242,6 +250,8 @@ export function FormBuilder(props: FormBuilderProps) {
       value,
       __unstable_computeDiff: diffProps.__unstable_computeDiff,
       changed: members.some((m) => m.kind === 'field' && m.field.changed),
+      displayInlineChanges: false,
+      hasUpstreamVersion: diffProps.hasUpstreamVersion,
     }
   }, [
     compareValue,
@@ -258,6 +268,7 @@ export function FormBuilder(props: FormBuilderProps) {
     handleFocus,
     handleOpenField,
     handleSelectFieldGroup,
+    hasUpstreamVersion,
     id,
     members,
     onPathFocus,

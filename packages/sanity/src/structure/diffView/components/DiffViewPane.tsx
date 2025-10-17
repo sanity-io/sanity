@@ -175,6 +175,7 @@ const DiffViewDocument: ComponentType<DiffViewPaneProps> = ({
     selectedPerspectiveName: perspectiveName(documentId),
     releaseId: getVersionFromId(documentId),
     comparisonValue: compareValue,
+    displayInlineChanges: true,
   })
 
   const isLoading = formState === null || !ready
@@ -225,6 +226,7 @@ const DiffViewDocument: ComponentType<DiffViewPaneProps> = ({
         validation={formState.validation}
         members={formState.members}
         perspective={sanitizeBundleName(perspective)}
+        hasUpstreamVersion={formState.hasUpstreamVersion}
         presence={formState.presence}
         schemaType={schemaType}
         value={value}

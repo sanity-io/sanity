@@ -45,6 +45,7 @@ import {
   type EditStateFor,
   type InitialValueState,
   type PermissionCheckResult,
+  selectUpstreamVersion,
   useDocumentValuePermissions,
   usePresenceStore,
 } from '../store'
@@ -60,6 +61,7 @@ import {
 import {
   type FormState,
   getExpandOperations,
+  type NodeChronologyProps,
   type OnPathFocusPayload,
   type PatchEvent,
   setAtPath,
@@ -93,8 +95,9 @@ interface DocumentFormOptions {
    * used by the <DocumentPaneProvider > to display the history values.
    */
   getFormDocumentValue?: (value: SanityDocumentLike) => SanityDocumentLike
+  displayInlineChanges?: boolean
 }
-interface DocumentFormValue {
+interface DocumentFormValue extends Pick<NodeChronologyProps, 'hasUpstreamVersion'> {
   /**
    * `EditStateFor` for the displayed document.
    * */
@@ -147,6 +150,7 @@ export function useDocumentForm(options: DocumentFormOptions): DocumentFormValue
     selectedPerspectiveName,
     readOnly: readOnlyProp,
     onFocusPath,
+    displayInlineChanges,
   } = options
   const schema = useSchema()
   const presenceStore = usePresenceStore()
@@ -460,6 +464,8 @@ export function useDocumentForm(options: DocumentFormOptions): DocumentFormValue
     return value
   }, [getFormDocumentValue, value])
 
+  const hasUpstreamVersion = selectUpstreamVersion(upstreamEditState) !== null
+
   const formState = useFormState({
     schemaType,
     documentValue: formDocumentValue,
@@ -474,6 +480,8 @@ export function useDocumentForm(options: DocumentFormOptions): DocumentFormValue
     collapsedFieldSets,
     fieldGroupState,
     changesOpen,
+    hasUpstreamVersion,
+    displayInlineChanges,
   })!
 
   const formStateRef = useRef(formState)
@@ -578,6 +586,7 @@ export function useDocumentForm(options: DocumentFormOptions): DocumentFormValue
     permissions,
     isPermissionsLoading,
     formStateRef,
+    hasUpstreamVersion,
 
     collapsedFieldSets,
     collapsedPaths,
