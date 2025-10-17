@@ -5,7 +5,7 @@ import {concatMap, map, switchMap, toArray} from 'rxjs/operators'
 
 import {useSchema} from '../../../hooks/useSchema'
 import {useTemplates} from '../../../hooks/useTemplates'
-import {resolveInitialValue} from '../../../templates'
+
 import {type InitialValueTemplateItem, type Template} from '../../../templates/types'
 import {createHookFromObservableFactory} from '../../../util/createHookFromObservableFactory'
 import {getDraftId, getPublishedId} from '../../../util/draftUtils'
@@ -14,6 +14,7 @@ import {useGrantsStore} from '../datastores'
 import {useInitialValueResolverContext} from '../document/useInitialValue'
 import {getDocumentValuePermissions} from './documentValuePermissions'
 import {type GrantsStore, type PermissionCheckResult} from './types'
+import {resolveInitialValue} from '../../../templates/resolve'
 
 /** @internal */
 export interface TemplatePermissionsResult<TInitialValue = Record<string, unknown>>

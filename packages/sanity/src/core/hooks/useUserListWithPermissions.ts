@@ -5,12 +5,12 @@ import {sortBy} from 'lodash'
 import {useEffect, useMemo, useState} from 'react'
 import {concat, forkJoin, map, mergeMap, type Observable, of, shareReplay, switchMap} from 'rxjs'
 
-import {grantsPermissionOn} from '../store'
 import {useProjectStore, useUserStore} from '../store/_legacy/datastores'
 import {type DocumentValuePermission} from '../store/_legacy/grants/types'
 import {type ProjectData} from '../store/_legacy/project/types'
 import {DEFAULT_STUDIO_CLIENT_OPTIONS} from '../studioClient'
 import {useClient} from './useClient'
+import {grantsPermissionOn} from '../store/_legacy/grants/grantsStore'
 
 type Loadable<T> = {
   data: T | null

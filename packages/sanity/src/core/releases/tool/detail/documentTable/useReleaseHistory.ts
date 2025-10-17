@@ -3,8 +3,9 @@ import {useCallback, useEffect, useMemo, useRef, useState} from 'react'
 
 import {useClient} from '../../../../hooks/useClient'
 import {getTransactionsLogs} from '../../../../store/translog/getTransactionsLogs'
-import {getVersionId} from '../../../../util'
+
 import {RELEASES_STUDIO_CLIENT_OPTIONS} from '../../../util/releasesClient'
+import {getVersionId} from '../../../../util/draftUtils'
 
 const historyCache: Record<string, {transactions: TransactionLogEventWithEffects[]}> =
   Object.create(null)

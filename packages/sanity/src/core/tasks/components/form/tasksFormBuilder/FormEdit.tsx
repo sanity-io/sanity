@@ -9,26 +9,32 @@ import {css, styled} from 'styled-components'
 
 import {MenuButton, MenuItem, TooltipDelayGroupProvider} from '../../../../../ui-components'
 import {CommentsProvider} from '../../../../comments/context/comments/CommentsProvider'
-import {ContextMenuButton, LoadingBlock} from '../../../../components'
-import {
-  type FormPatch,
-  type ObjectInputProps,
-  type PatchEvent,
-  set,
-  TransformPatches,
-} from '../../../../form'
-import {useTranslation} from '../../../../i18n'
-import {useCurrentUser} from '../../../../store'
 import {TaskDuplicated, TaskRemoved} from '../../../__telemetry__/tasks.telemetry'
-import {useTasksEnabled, useTasksNavigation} from '../../../context'
-import {useActivityLog, useRemoveTask} from '../../../hooks'
 import {tasksLocaleNamespace} from '../../../i18n'
 import {type TaskDocument} from '../../../types'
-import {TasksActivityLog} from '../../activity'
+
 import {CurrentWorkspaceProvider} from '../CurrentWorkspaceProvider'
-import {AssigneeEditFormField, DateEditFormField, StatusSelector, Title} from '../fields'
+
 import {RemoveTaskDialog} from '../RemoveTaskDialog'
 import {getMentionedUsers} from '../utils'
+import {AssigneeEditFormField} from '../fields/assignee/AssigneeEditFormField'
+import {useTasksNavigation} from '../../../context/navigation/useTasksNavigation'
+import {useTasksEnabled} from '../../../context/enabled/useTasksEnabled'
+import {useRemoveTask} from '../../../hooks/useRemoveTask'
+import {useTranslation} from '../../../../i18n/hooks/useTranslation'
+import {ContextMenuButton} from '../../../../components/contextMenuButton/ContextMenuButton'
+import {ObjectInputProps} from '../../../../form/types/inputProps'
+import {useCurrentUser} from '../../../../store/user/hooks'
+import {useActivityLog} from '../../../hooks/useActivityLog'
+import {FormPatch} from '../../../../form/patch/types'
+import {PatchEvent} from '../../../../form/patch/PatchEvent'
+import {set} from '../../../../form/patch/patch'
+import {LoadingBlock} from '../../../../components/loadingBlock/LoadingBlock'
+import {Title} from '../fields/TitleField'
+import {StatusSelector} from '../fields/StatusSelector'
+import {DateEditFormField} from '../fields/DateEditFormField'
+import {TasksActivityLog} from '../../activity/TasksActivityLog'
+import {TransformPatches} from '../../../../form/utils/TransformPatches'
 
 const FirstRow = styled(Flex)((props) => {
   const theme = getTheme_v2(props.theme)

@@ -50,7 +50,7 @@ import {useDocumentValuePermissions} from '../store/_legacy/grants/documentValue
 import {type PermissionCheckResult} from '../store/_legacy/grants/types'
 import {type DocumentPresence} from '../store/_legacy/presence/types'
 import {useWorkspace} from '../studio/workspace'
-import {getDraftId, getPublishedId, getVersionFromId, getVersionId} from '../util'
+import {getDraftId, getPublishedId, getVersionFromId, getVersionId} from '../util/draftUtils'
 import {EMPTY_ARRAY} from '../util/empty'
 import {useUnique} from '../util/useUnique'
 import {CreatedDraft} from './__telemetry__/form.telemetry'

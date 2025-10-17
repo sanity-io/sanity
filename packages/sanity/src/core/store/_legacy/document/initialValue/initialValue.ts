@@ -12,7 +12,7 @@ import {
 } from 'rxjs/operators'
 
 import {type DocumentPreviewStore} from '../../../../preview/documentPreviewStore'
-import {resolveInitialValue} from '../../../../templates'
+
 import {type Template} from '../../../../templates/types'
 import {getDraftId, getPublishedId} from '../../../../util/draftUtils'
 import {
@@ -21,6 +21,7 @@ import {
   type InitialValueMsg,
   type InitialValueSuccessMsg,
 } from './types'
+import {resolveInitialValue} from '../../../../templates/resolve'
 
 /**
  * @hidden
