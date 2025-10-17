@@ -5,7 +5,7 @@ import {
   type ThemeColorSchemeKey,
   type ThemeFontWeightKey,
 } from '@sanity/ui/theme'
-import {css, type CSSObject, type RuleSet} from 'styled-components'
+import {css, type CSSObject} from 'styled-components'
 
 import {focusRingBorderStyle, focusRingStyle} from '../../../components/formField/styles'
 
@@ -329,22 +329,4 @@ export function textInputFontSizeStyle(props: TextInputInputStyleProps & ThemePr
       lineHeight: size.lineHeight / size.fontSize,
     }
   })
-}
-
-export function inputStyles(): RuleSet {
-  return css`
-    del {
-      opacity: 0.5;
-      text-decoration: line-through;
-
-      &::before {
-        text-decoration: line-through;
-        content: attr(data-text);
-      }
-    }
-
-    ins {
-      text-decoration: none;
-    }
-  `
 }

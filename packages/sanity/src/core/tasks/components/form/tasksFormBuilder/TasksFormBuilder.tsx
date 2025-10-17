@@ -118,6 +118,7 @@ const TasksFormBuilderInner = ({
             presence={formState.presence}
             schemaType={schemaType}
             value={value}
+            hasUpstreamVersion={false}
           />
         </FormBuilderRoot>
       )}

@@ -16,6 +16,7 @@ import {
   isPerspectiveWriteable,
   isVersionId,
   type PartialContext,
+  selectUpstreamVersion,
   useActiveReleases,
   useCopyPaste,
   useDocumentForm,
@@ -168,7 +169,7 @@ export const DocumentPaneProvider = memo((props: DocumentPaneProviderProps) => {
 
   const getComparisonValue = useCallback(
     (upstreamEditState: EditStateFor) => {
-      const upstream = upstreamEditState.version ?? upstreamEditState.published
+      const upstream = selectUpstreamVersion(upstreamEditState)
       if (changesOpen) {
         return sinceDocument || upstream
       }
@@ -227,6 +228,7 @@ export const DocumentPaneProvider = memo((props: DocumentPaneProviderProps) => {
   const {
     editState,
     upstreamEditState,
+    hasUpstreamVersion,
     connectionState,
     focusPath,
     onChange,
@@ -538,6 +540,7 @@ export const DocumentPaneProvider = memo((props: DocumentPaneProviderProps) => {
         previewUrl,
         ready,
         schemaType: schemaType!,
+        hasUpstreamVersion,
         isPermissionsLoading,
         isInitialValueLoading,
         permissions,
@@ -600,6 +603,7 @@ export const DocumentPaneProvider = memo((props: DocumentPaneProviderProps) => {
       previewUrl,
       ready,
       schemaType,
+      hasUpstreamVersion,
       isPermissionsLoading,
       isInitialValueLoading,
       permissions,

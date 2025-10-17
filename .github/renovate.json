@@ -47,18 +47,12 @@
         "replacement",
         "rollback"
       ],
-      "matchPackageNames": [
-        "!@portabletext/block-tools",
-        "!@portabletext/editor",
-        "!@sanity/client",
-        "!@sanity/ui"
-      ]
+      "matchPackageNames": ["!@portabletext/*", "!@sanity/client", "!@sanity/ui"]
     },
     {
       "matchDepTypes": ["dependencies"],
       "matchPackageNames": [
-        "@portabletext/block-tools",
-        "@portabletext/editor",
+        "@portabletext/*",
         "@sanity/bifur-client",
         "@sanity/client",
         "@sanity/import",
@@ -118,6 +112,13 @@
       ],
       "dependencyDashboardApproval": false,
       "schedule": ["every weekday"]
+    },
+    {
+      "description": "Upgrade @portabletext/* packages together",
+      "matchPackageNames": ["@portabletext/*"],
+      "dependencyDashboardApproval": false,
+      "schedule": ["every weekday"],
+      "groupName": "portabletext"
     },
     {
       "description": "Group TypeScript related deps in a single PR, as they often have to update together",
