@@ -3,6 +3,8 @@ import {
   type ArrayActionName,
   type ArrayDefinition,
   type ArrayOfEntry,
+  type ArrayOfObjectsComponents,
+  type ArrayOfPrimitivesComponents,
   type ArrayOfType,
   type ArrayOptions,
   type ArrayRule,
@@ -29,7 +31,9 @@ import {
   type BaseSchemaDefinition,
   type BaseSchemaType,
   type BaseSchemaTypeOptions,
+  type BlockAnnotationDefinition,
   type BlockChildrenObjectField,
+  type BlockDecoratorDefinition,
   type BlockDefinition,
   type BlockListDefinition,
   type BlockListObjectField,
@@ -39,6 +43,7 @@ import {
   type BlockSchemaType,
   type BlockStyleDefinition,
   type BlockStyleObjectField,
+  type BooleanComponents,
   type BooleanDefinition,
   type BooleanOptions,
   type BooleanRule,
@@ -54,6 +59,7 @@ import {
   type CreateMutation,
   type CreateOrReplaceMutation,
   type CreateSquashedMutation,
+  type CrossDatasetReferenceComponents,
   type CrossDatasetReferenceDefinition,
   type CrossDatasetReferenceFilterResolver,
   type CrossDatasetReferenceFilterSearchOptions,
@@ -64,9 +70,11 @@ import {
   type CustomValidator,
   type CustomValidatorResult,
   type DashboardNotificationPayload,
+  type DateComponents,
   type DateDefinition,
   type DateOptions,
   type DateRule,
+  type DatetimeComponents,
   type DatetimeDefinition,
   type DatetimeOptions,
   type DatetimeRule,
@@ -82,9 +90,11 @@ import {
   type DeprecatedProperty,
   type DeprecatedSchemaType,
   type DeprecationConfiguration,
+  type DocumentComponents,
   type DocumentDefinition,
   type DocumentOptions,
   type DocumentRule,
+  type EmailComponents,
   type EmailDefinition,
   type EmailOptions,
   type EmailRule,
@@ -100,12 +110,14 @@ import {
   type FieldsetDefinition,
   type File,
   type FileAsset,
+  type FileComponents,
   type FileDefinition,
   type FileOptions,
   type FileRule,
   type FileSchemaType,
   type FileValue,
   type FormNodeValidation,
+  type GeopointComponents,
   type GeopointDefinition,
   type GeopointOptions,
   type GeopointRule,
@@ -122,6 +134,7 @@ import {
   type I18nTitledListValue,
   type Image,
   type ImageAsset,
+  type ImageComponents,
   type ImageCrop,
   type ImageDefinition,
   type ImageDimensions,
@@ -227,10 +240,12 @@ import {
   type MutationOperationName,
   type MutationSelection,
   type NarrowPreview,
+  type NumberComponents,
   type NumberDefinition,
   type NumberOptions,
   type NumberRule,
   type NumberSchemaType,
+  type ObjectComponents,
   type ObjectDefinition,
   type ObjectField,
   type ObjectFieldType,
@@ -254,6 +269,7 @@ import {
   type PreviewValue,
   type Reference,
   type ReferenceBaseOptions,
+  type ReferenceComponents,
   type ReferenceDefinition,
   type ReferenceFilterOptions,
   type ReferenceFilterQueryOptions,
@@ -292,6 +308,7 @@ import {
   type SingleFieldSet,
   type SingleMutationResult,
   type Slug,
+  type SlugComponents,
   type SlugDefinition,
   type SlugifierFn,
   type SlugIsUniqueValidator,
@@ -305,17 +322,21 @@ import {
   type SlugValue,
   type SortOrdering,
   type SortOrderingItem,
+  type SpanComponents,
+  type SpanDefinition,
   type SpanMarksObjectField,
   type SpanSchemaType,
   type SpanTextObjectField,
   type StrictDefinition,
   type StrictVersionLayeringOptions,
+  type StringComponents,
   type StringDefinition,
   type StringOptions,
   type StringRule,
   type StringSchemaType,
   type StudioNotificationPayload,
   type SwatchName,
+  type TextComponents,
   type TextDefinition,
   type TextOptions,
   type TextRule,
@@ -331,6 +352,7 @@ import {
   type TypeReference,
   type UploadState,
   type UriValidationOptions,
+  type UrlComponents,
   type UrlDefinition,
   type UrlOptions,
   type UrlRule,
@@ -369,7 +391,6 @@ import {
   useChangeIndicatorsReportedValues,
   useChangeIndicatorsReporter,
 } from '../core/changeIndicators/tracker'
-import {type CommentsSelectedPath} from '../core/comments'
 import {CommentDeleteDialog} from '../core/comments/components/CommentDeleteDialog'
 import {CommentDisabledIcon} from '../core/comments/components/icons/CommentDisabledIcon'
 import {CommentsList} from '../core/comments/components/list/CommentsList'
@@ -388,6 +409,7 @@ import {
   type CommentsIntentProviderProps,
 } from '../core/comments/context/intent/CommentsIntentProvider'
 import {CommentsSelectedPathProvider} from '../core/comments/context/selected-path/CommentsSelectedPathProvider'
+import {type CommentsSelectedPath} from '../core/comments/context/selected-path/types'
 import {hasCommentMessageValue, isTextSelectionComment} from '../core/comments/helpers'
 import {useComments} from '../core/comments/hooks/useComments'
 import {useCommentsEnabled} from '../core/comments/hooks/useCommentsEnabled'
@@ -1091,30 +1113,6 @@ import {
   type PortableTextPluginsProps,
 } from '../core/form/types/blockProps'
 import {
-  type ArrayOfObjectsComponents,
-  type ArrayOfPrimitivesComponents,
-  type BlockAnnotationDefinition,
-  type BlockDecoratorDefinition,
-  type BooleanComponents,
-  type CrossDatasetReferenceComponents,
-  type DateComponents,
-  type DatetimeComponents,
-  type DocumentComponents,
-  type EmailComponents,
-  type FileComponents,
-  type GeopointComponents,
-  type ImageComponents,
-  type NumberComponents,
-  type ObjectComponents,
-  type ReferenceComponents,
-  type SlugComponents,
-  type SpanComponents,
-  type SpanDefinition,
-  type StringComponents,
-  type TextComponents,
-  type UrlComponents,
-} from '../core/form/types/definitionExtensions'
-import {
   type ArrayInputCopyEvent,
   type ArrayInputInsertEvent,
   type ArrayInputMoveItemEvent,
@@ -1376,9 +1374,10 @@ import {EditScheduleForm} from '../core/scheduled-publishing/components/editSche
 // oxlint-disable-next-line no-restricted-imports
 import {type SchedulesContext} from '../core/scheduled-publishing/contexts/Schedules'
 // oxlint-disable-next-line no-restricted-imports
+import {type ScheduleAction} from '../core/scheduled-publishing/plugin/documentActions/schedule/ScheduleAction'
+// oxlint-disable-next-line no-restricted-imports
 import {ScheduledBadge} from '../core/scheduled-publishing/plugin/documentBadges/scheduled/ScheduledBadge'
 // oxlint-disable-next-line no-restricted-imports
-import {type ScheduleAction} from '../core/scheduled-publishing/types'
 import {createSchema} from '../core/schema/createSchema'
 import {getSchemaTypeTitle} from '../core/schema/helpers'
 import {getSearchableTypes} from '../core/search/common/getSearchableTypes'

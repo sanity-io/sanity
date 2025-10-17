@@ -11,8 +11,7 @@ import {
   tap,
 } from 'rxjs'
 
-import {type Chunk} from '../../..'
-import {type Annotation} from '../../../field/types'
+import {type Annotation, type Chunk} from '../../../field/types'
 import {useClient} from '../../../hooks/useClient'
 import {useHistoryStore} from '../../../store/_legacy/datastores'
 import {

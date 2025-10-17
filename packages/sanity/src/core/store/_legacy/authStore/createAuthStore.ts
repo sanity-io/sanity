@@ -7,7 +7,7 @@ import {isEqual, memoize} from 'lodash'
 import {defer} from 'rxjs'
 import {distinctUntilChanged, map, shareReplay, startWith, switchMap} from 'rxjs/operators'
 
-import {type AuthConfig} from '../../../config'
+import {type AuthConfig} from '../../../config/auth/types'
 import {DEFAULT_STUDIO_CLIENT_HEADERS} from '../../../studioClient'
 import {CorsOriginError} from '../cors/CorsOriginError'
 import {createBroadcastChannel} from './createBroadcastChannel'
