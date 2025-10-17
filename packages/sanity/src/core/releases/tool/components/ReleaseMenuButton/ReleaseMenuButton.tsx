@@ -110,7 +110,7 @@ export const ReleaseMenuButton = ({
     const duplicateReleaseId = createReleaseId()
 
     await guardWithReleaseLimitUpsell(async () => {
-      const releaseDocuments = documents?.map((document) => document.document)
+      const releaseDocuments = documents?.map((doc) => doc.document)
       const duplicatedMetadata = {
         ...release.metadata,
         title: `${release.metadata.title} (${t('copy-suffix')})`,
