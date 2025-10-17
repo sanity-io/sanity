@@ -639,6 +639,9 @@ const structureLocaleStrings = defineLocalesResources('structure', {
 
   /** The text for the published event menu tooltip when the release is not found */
   'timeline-item.not-found-release.tooltip': 'Release with id "{{releaseId}}" not found',
+
+  /** The text for the "Inline changes" action, which is used to toggle the visibility of content diffs inside inputs */
+  'toggle-inline-changes.menu-item.title': 'Inline changes',
 })
 
 /**

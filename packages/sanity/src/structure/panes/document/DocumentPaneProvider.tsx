@@ -16,6 +16,7 @@ import {
   isPerspectiveWriteable,
   isVersionId,
   type PartialContext,
+  selectUpstreamVersion,
   useActiveReleases,
   useCopyPaste,
   useDocumentForm,
@@ -29,13 +30,14 @@ import {
   useWorkspace,
 } from 'sanity'
 import {DocumentPaneContext} from 'sanity/_singletons'
+import {useRouter} from 'sanity/router'
 
 import {usePaneRouter} from '../../components'
 import {useDiffViewRouter} from '../../diffView/hooks/useDiffViewRouter'
 import {useDocumentLastRev} from '../../hooks/useDocumentLastRev'
 import {structureLocaleNamespace} from '../../i18n'
 import {type PaneMenuItem} from '../../types'
-import {DocumentURLCopied} from './__telemetry__'
+import {DocumentURLCopied, InlineChangesSwitchedOff, InlineChangesSwitchedOn} from './__telemetry__'
 import {DEFAULT_MENU_ITEM_GROUPS, EMPTY_PARAMS, INSPECT_ACTION_PREFIX} from './constants'
 import {type DocumentPaneContextValue} from './DocumentPaneContext'
 import {
@@ -80,6 +82,7 @@ export const DocumentPaneProvider = memo((props: DocumentPaneProviderProps) => {
     },
   } = useSource()
   const telemetry = useTelemetry()
+  const router = useRouter()
   const paneRouter = usePaneRouter()
   const setPaneParams = paneRouter.setParams
   const {push: pushToast} = useToast()
@@ -166,7 +169,7 @@ export const DocumentPaneProvider = memo((props: DocumentPaneProviderProps) => {
 
   const getComparisonValue = useCallback(
     (upstreamEditState: EditStateFor) => {
-      const upstream = upstreamEditState.version ?? upstreamEditState.published
+      const upstream = selectUpstreamVersion(upstreamEditState)
       if (changesOpen) {
         return sinceDocument || upstream
       }
@@ -225,6 +228,7 @@ export const DocumentPaneProvider = memo((props: DocumentPaneProviderProps) => {
   const {
     editState,
     upstreamEditState,
+    hasUpstreamVersion,
     connectionState,
     focusPath,
     onChange,
@@ -258,6 +262,7 @@ export const DocumentPaneProvider = memo((props: DocumentPaneProviderProps) => {
     readOnly: getIsReadOnly,
     onFocusPath,
     getFormDocumentValue: getDisplayed,
+    displayInlineChanges: router.stickyParams.displayInlineChanges === 'true',
   })
 
   const {data: releases = []} = useActiveReleases()
@@ -380,6 +385,17 @@ export const DocumentPaneProvider = memo((props: DocumentPaneProviderProps) => {
 
   const handlePaneSplit = useCallback(() => paneRouter.duplicateCurrent(), [paneRouter])
 
+  const toggleInlineChanges = useCallback(() => {
+    const nextState = router.stickyParams.displayInlineChanges !== 'true'
+    telemetry.log(nextState ? InlineChangesSwitchedOn : InlineChangesSwitchedOff)
+
+    router.navigate({
+      stickyParams: {
+        displayInlineChanges: String(nextState),
+      },
+    })
+  }, [router, telemetry])
+
   const handleMenuAction = useCallback(
     async (item: PaneMenuItem) => {
       if (item.action === 'production-preview' && previewUrl) {
@@ -432,6 +448,11 @@ export const DocumentPaneProvider = memo((props: DocumentPaneProviderProps) => {
         return true
       }
 
+      if (item.action === 'toggleInlineChanges') {
+        toggleInlineChanges()
+        return true
+      }
+
       return false
     },
     [
@@ -447,6 +468,7 @@ export const DocumentPaneProvider = memo((props: DocumentPaneProviderProps) => {
       handleInspectorAction,
       diffViewRouter,
       value._id,
+      toggleInlineChanges,
     ],
   )
 
@@ -518,6 +540,7 @@ export const DocumentPaneProvider = memo((props: DocumentPaneProviderProps) => {
         previewUrl,
         ready,
         schemaType: schemaType!,
+        hasUpstreamVersion,
         isPermissionsLoading,
         isInitialValueLoading,
         permissions,
@@ -580,6 +603,7 @@ export const DocumentPaneProvider = memo((props: DocumentPaneProviderProps) => {
       previewUrl,
       ready,
       schemaType,
+      hasUpstreamVersion,
       isPermissionsLoading,
       isInitialValueLoading,
       permissions,

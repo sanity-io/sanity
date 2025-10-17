@@ -22,11 +22,23 @@ import {type ArrayOfObjectsMember, type ArrayOfPrimitivesMember, type ObjectMemb
 export type ComputeDiff<Annotation> = (value: unknown) => Diff<Annotation>
 
 /**
+ * Props that encapsulate document chronology within a stack of versions.
+ *
+ * @public
+ */
+export interface NodeChronologyProps {
+  /**
+   * Whether the document has an upstream version.
+   */
+  hasUpstreamVersion: boolean
+}
+
+/**
  * Props that encapsulate changes in the node's value.
  *
  * @public
  */
-export interface NodeDiffProps<Annotation> {
+export interface NodeDiffProps<Annotation> extends NodeChronologyProps {
   /**
    * A function that takes any value and produces a diff between that value and the value the node
    * is being compared to.
@@ -72,6 +84,7 @@ export interface BaseFormNode<T = unknown, S extends SchemaType = SchemaType>
   readOnly?: boolean
   /** Whether the node is focused. */
   focused?: boolean
+  displayInlineChanges?: boolean
 }
 
 /** @internal */

@@ -2,18 +2,26 @@ import {type SanityDocument} from '@sanity/client'
 import {type CurrentUser, type SchemaType} from '@sanity/types'
 
 import {isTextSelectionComment} from '../helpers'
-import {type CommentDocument, type CommentsType, type CommentThreadItem} from '../types'
+import {type CommentDocument, type CommentThreadItem} from '../types'
 import {buildCommentBreadcrumbs} from './buildCommentBreadcrumbs'
 
 const EMPTY_ARRAY: [] = []
 
-interface BuildCommentThreadItemsProps {
-  comments: CommentDocument[]
-  currentUser: CurrentUser
-  documentValue: Partial<SanityDocument> | null
-  schemaType: SchemaType
-  type: CommentsType
-}
+type BuildCommentThreadItemsProps =
+  | {
+      comments: CommentDocument[]
+      currentUser: CurrentUser
+      documentValue: Partial<SanityDocument> | null
+      schemaType: SchemaType
+      type: 'field'
+    }
+  | {
+      schemaType?: undefined
+      comments: CommentDocument[]
+      currentUser: CurrentUser
+      documentValue: Partial<SanityDocument> | null
+      type: 'task'
+    }
 
 /**
  * This function formats comments into a structure that is easier to work with in the UI.

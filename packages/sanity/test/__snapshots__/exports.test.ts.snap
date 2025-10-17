@@ -491,6 +491,7 @@ exports[`exports snapshot 1`] = `
     "resolveInitialValueForType": "function",
     "resolveSchemaTypes": "function",
     "searchStrategies": "object",
+    "selectUpstreamVersion": "function",
     "serializeError": "function",
     "set": "function",
     "setAtPath": "function",

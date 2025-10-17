@@ -13,6 +13,7 @@ import {
   type DocumentInspector,
   type DocumentLanguageFilterComponent,
   type EditStateFor,
+  type NodeChronologyProps,
   type PatchEvent,
   type PermissionCheckResult,
   type ReleaseId,
@@ -24,7 +25,7 @@ import {type View} from '../../structureBuilder'
 import {type PaneMenuItem, type PaneMenuItemGroup} from '../../types'
 
 /** @internal */
-export interface DocumentPaneContextValue {
+export interface DocumentPaneContextValue extends Pick<NodeChronologyProps, 'hasUpstreamVersion'> {
   actions: DocumentActionComponent[] | null
   activeViewId: string | null
   badges: DocumentBadgeComponent[] | null
@@ -35,6 +36,7 @@ export interface DocumentPaneContextValue {
   compareValue: Partial<SanityDocument> | null
   connectionState: 'connecting' | 'reconnecting' | 'connected'
   displayed: Partial<SanityDocument> | null
+  displayInlineChanges?: boolean
   documentId: string
   documentIdRaw: string
   documentType: string

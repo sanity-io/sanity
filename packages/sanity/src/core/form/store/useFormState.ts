@@ -13,7 +13,7 @@ import {useCurrentUser} from '../../store'
 import {EMPTY_ARRAY} from '../../util/empty'
 import {createCallbackResolver} from './conditional-property/createCallbackResolver'
 import {createPrepareFormState} from './formState'
-import {type ObjectFormNode, type StateTree} from './types'
+import {type NodeChronologyProps, type ObjectFormNode, type StateTree} from './types'
 import {immutableReconcile} from './utils/immutableReconcile'
 
 /** @internal */
@@ -23,7 +23,7 @@ export type FormState<
 > = ObjectFormNode<T, S>
 
 /** @internal */
-export interface UseFormStateOptions {
+export interface UseFormStateOptions extends Pick<NodeChronologyProps, 'hasUpstreamVersion'> {
   schemaType: ObjectSchemaType
   documentValue: unknown
   comparisonValue: unknown
@@ -37,6 +37,7 @@ export interface UseFormStateOptions {
   collapsedPaths?: StateTree<boolean> | undefined
   readOnly?: boolean
   changesOpen?: boolean
+  displayInlineChanges?: boolean
 }
 
 /** @internal */
@@ -57,6 +58,8 @@ export function useFormState<
   changesOpen,
   schemaType,
   perspective,
+  hasUpstreamVersion,
+  displayInlineChanges,
 }: UseFormStateOptions): FormState<T, S> | null {
   // note: feel free to move these state pieces out of this hook
   const currentUser = useCurrentUser()
@@ -149,6 +152,8 @@ export function useFormState<
       validation: isVersionGoingToUnpublish ? EMPTY_ARRAY : validation,
       changesOpen,
       perspective,
+      hasUpstreamVersion,
+      displayInlineChanges,
     }) as ObjectFormNode<T, S>
   }, [
     prepareFormState,
@@ -168,5 +173,7 @@ export function useFormState<
     isVersionGoingToUnpublish,
     validation,
     changesOpen,
+    hasUpstreamVersion,
+    displayInlineChanges,
   ])
 }

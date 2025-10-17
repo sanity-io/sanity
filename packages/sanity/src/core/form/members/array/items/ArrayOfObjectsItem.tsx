@@ -276,6 +276,7 @@ export function ArrayOfObjectsItem(props: MemberItemProps) {
     return {
       changed: member.item.changed,
       __unstable_computeDiff: member.item.__unstable_computeDiff,
+      hasUpstreamVersion: member.item.hasUpstreamVersion,
       focusPath: member.item.focusPath,
       focused: member.item.focused,
       groups: member.item.groups,
@@ -305,9 +306,11 @@ export function ArrayOfObjectsItem(props: MemberItemProps) {
       validation: member.item.validation,
       value: member.item.value,
       elementProps: elementProps,
+      displayInlineChanges: member.item.displayInlineChanges ?? false,
     }
   }, [
     elementProps,
+    member.item.hasUpstreamVersion,
     handleChange,
     handleCloseField,
     handleCollapseField,
@@ -331,6 +334,7 @@ export function ArrayOfObjectsItem(props: MemberItemProps) {
     member.item.schemaType,
     member.item.validation,
     member.item.value,
+    member.item.displayInlineChanges,
     renderAnnotation,
     renderBlock,
     renderField,
@@ -349,6 +353,7 @@ export function ArrayOfObjectsItem(props: MemberItemProps) {
       level: member.item.level,
       value: member.item.value,
       __unstable_computeDiff: member.item.__unstable_computeDiff,
+      hasUpstreamVersion: member.item.hasUpstreamVersion,
       title: member.item.schemaType.title,
       description: member.item.schemaType.description,
       collapsible: member.collapsible,
@@ -381,6 +386,7 @@ export function ArrayOfObjectsItem(props: MemberItemProps) {
     member.item.level,
     member.item.value,
     member.item.__unstable_computeDiff,
+    member.item.hasUpstreamVersion,
     member.item.schemaType,
     member.item.presence,
     member.item.validation,
