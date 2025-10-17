@@ -3,6 +3,25 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [4.11.0](https://github.com/sanity-io/sanity/compare/v4.10.3...v4.11.0) (2025-10-17)
+
+
+### Features
+
+* **sanity:** add UI control for toggling visibility of inline changes ([2f71623](https://github.com/sanity-io/sanity/commit/2f716237597c3887c2a2f18c98ce6d9e8ec8d279))
+* scheduled drafts uses `sanity.config` property proper to disable ([#10635](https://github.com/sanity-io/sanity/issues/10635)) ([50a2e6e](https://github.com/sanity-io/sanity/commit/50a2e6e695e352f6878782686049995a58bc40f3))
+
+
+### Bug Fixes
+
+* **cli:** pipe stderr when installing dependencies ([#10839](https://github.com/sanity-io/sanity/issues/10839)) ([704a357](https://github.com/sanity-io/sanity/commit/704a357fc0c0e172fc9f4c5c44e5ed275e4895fe))
+* **core:** mention options in tasks comments showing as unauthorized ([#10832](https://github.com/sanity-io/sanity/issues/10832)) ([6c34de9](https://github.com/sanity-io/sanity/commit/6c34de9c4362734aabfd2af22e1de982a9529903))
+* published document uses the draft document's title ([#10827](https://github.com/sanity-io/sanity/issues/10827)) ([6c81fa3](https://github.com/sanity-io/sanity/commit/6c81fa3986351fca4688bc88fec877ba94247ce6))
+* **sanity:** do not compute inline diff using comparison value if there is no upstream version ([7a76727](https://github.com/sanity-io/sanity/commit/7a767271febd5227312d98b444cf98440d713c0c))
+* **sanity:** stale read-only styles rendered for `StringInputPortableText` ([be29073](https://github.com/sanity-io/sanity/commit/be290730035bc97b00ea6def53d0b7e576fb957b))
+
+
+
 ## [4.10.3](https://github.com/sanity-io/sanity/compare/v4.10.2...v4.10.3) (2025-10-14)
 
 
