@@ -972,6 +972,7 @@ import type {
   NewDocumentOptionsResolver,
   newDraftFrom,
   NoChanges,
+  NodeChronologyProps,
   NodeDiffProps,
   noop,
   normalizeIndexSegment,
@@ -1259,6 +1260,7 @@ import type {
   SelectInput,
   Selection,
   SelectionState,
+  selectUpstreamVersion,
   Serializeable,
   serializeError,
   Session,
@@ -4581,6 +4583,9 @@ describe('sanity', () => {
   test('NoChanges', () => {
     expectTypeOf<typeof NoChanges>().toBeFunction()
   })
+  test('NodeChronologyProps', () => {
+    expectTypeOf<NodeChronologyProps>().toBeObject()
+  })
   test('NodeDiffProps', () => {
     expectTypeOf<NodeDiffProps<any>>().toBeObject()
   })
@@ -5448,6 +5453,9 @@ describe('sanity', () => {
   })
   test('SelectionState', () => {
     expectTypeOf<SelectionState>().not.toBeNever()
+  })
+  test('selectUpstreamVersion', () => {
+    expectTypeOf<typeof selectUpstreamVersion>().toBeFunction()
   })
   test('Serializeable', () => {
     expectTypeOf<Serializeable<any>>().not.toBeNever()
