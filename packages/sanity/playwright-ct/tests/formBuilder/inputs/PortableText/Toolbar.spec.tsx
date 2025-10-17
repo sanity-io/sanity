@@ -160,15 +160,20 @@ test.describe('Portable Text Input', () => {
         // prepare the nested PTE
         await page.getByRole('button', {name: 'Insert Nested (block)'}).click()
 
+        // @TODO replace once nested object dialog is set as true
+        //await expect(page.getByTestId('nested-object-dialog')).toBeVisible()
         await expect(
           page
             .locator('div')
             .filter({hasText: /^Edit Nested$/})
             .first(),
         ).toBeVisible()
+
         await page.getByTestId('add-single-object-button').click()
 
         // nested PTE object item
+        //@TODO replace once nested object dialog is set as true
+        //await expect(page.getByRole('button', {name: 'Untitled'})).toBeVisible()
         await expect(
           page
             .locator('div')

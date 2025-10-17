@@ -1,4 +1,4 @@
-import {defineField, defineType} from 'sanity'
+import {defineArrayMember, defineField, defineType} from 'sanity'
 
 const animal = defineField({
   type: 'object',
@@ -41,14 +41,148 @@ const animal = defineField({
                       name: 'value',
                       title: 'Value',
                     },
+                    {
+                      type: 'array',
+                      name: 'description_two',
+                      title: 'Description Two',
+                      of: [
+                        {type: 'block'},
+                        {
+                          type: 'object',
+                          name: 'info_two',
+                          title: 'Info Two',
+                          fields: [
+                            {
+                              type: 'array',
+                              name: 'item_two',
+                              title: 'Item Two',
+                              of: [
+                                {
+                                  type: 'object',
+                                  name: 'property_two',
+                                  title: 'Property Two',
+                                  fields: [
+                                    {
+                                      type: 'string',
+                                      name: 'title_two',
+                                      title: 'Title Two',
+                                      validation: (Rule) => Rule.required(),
+                                    },
+                                    {
+                                      type: 'string',
+                                      name: 'value_two',
+                                      title: 'Value Two',
+                                    },
+                                    {
+                                      type: 'array',
+                                      name: 'description_three',
+                                      title: 'Description Three',
+                                      of: [
+                                        {type: 'block'},
+                                        {
+                                          type: 'object',
+                                          name: 'info_three',
+                                          title: 'Info Three',
+                                          fields: [
+                                            {
+                                              type: 'string',
+                                              name: 'title_three',
+                                              title: 'Title Three',
+                                            },
+                                          ],
+                                        },
+                                      ],
+                                    },
+                                  ],
+                                },
+                              ],
+                            },
+                          ],
+                        },
+                        {
+                          type: 'image',
+                          name: 'image_two',
+                          title: 'Image',
+                        },
+                      ],
+                    },
+                    defineField({
+                      name: 'content',
+                      type: 'array',
+                      of: [
+                        defineArrayMember({
+                          name: 'something',
+                          type: 'block',
+                          of: [
+                            defineArrayMember({
+                              name: 'nested',
+                              type: 'object',
+                              fields: [
+                                defineField({
+                                  name: 'items',
+                                  type: 'array',
+                                  of: [
+                                    defineArrayMember({
+                                      name: 'item',
+                                      type: 'object',
+                                      fields: [
+                                        defineField({
+                                          name: 'deep',
+                                          type: 'array',
+                                          of: [
+                                            defineArrayMember({
+                                              type: 'block',
+                                              styles: [
+                                                {title: 'Normal', value: 'normal'},
+                                                {title: 'H2', value: 'h2'},
+                                                {title: 'H3', value: 'h3'},
+                                                {title: 'H4', value: 'h4'},
+                                              ],
+                                            }),
+                                          ],
+                                        }),
+                                      ],
+                                    }),
+                                  ],
+                                }),
+                              ],
+                            }),
+                          ],
+                        }),
+                      ],
+                    }),
                   ],
                 },
               ],
             },
           ],
         },
+        {
+          type: 'image',
+          name: 'image',
+          title: 'Image',
+        },
       ],
     },
+    {
+      type: 'array',
+      name: 'children',
+      title: 'Children',
+      of: [
+        {
+          type: 'object',
+          name: 'child',
+          fields: [
+            {
+              name: 'nameChild',
+              type: 'string',
+              title: 'Name Child',
+            },
+          ],
+        },
+      ],
+    },
+
     {
       name: 'size',
       type: 'object',
