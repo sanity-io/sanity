@@ -81,7 +81,7 @@ export interface FormBuilderProps
   schemaType: ObjectSchemaType
   validation: ValidationMarker[]
   value: FormDocumentValue | undefined
-  compareValue?: Partial<SanityDocument>
+  compareValue?: SanityDocument
 }
 
 /**
