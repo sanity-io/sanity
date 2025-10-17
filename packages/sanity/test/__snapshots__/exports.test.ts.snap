@@ -150,7 +150,6 @@ exports[`exports snapshot 1`] = `
     "Preview": "function",
     "PreviewCard": "object",
     "PreviewLoader": "function",
-    "QUOTA_EXCLUDED_RELEASES_ENABLED": "symbol",
     "RELEASES_INTENT": "string",
     "RELEASES_STUDIO_CLIENT_OPTIONS": "object",
     "ReferenceInput": "function",
