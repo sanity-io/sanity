@@ -246,8 +246,16 @@ const defaultWorkspace = defineConfig({
   },
   [QUOTA_EXCLUDED_RELEASES_ENABLED]: true,
   [DECISION_PARAMETERS_SCHEMA]: () => ({
-    audiences: {title: 'Audiences', type: 'string', options: ['aud-a', 'aud-b', 'aud-c']},
-    locales: {title: 'Locales', type: 'string', options: ['en-GB', 'en-US']},
+    audiences: {
+      title: 'Audience',
+      type: 'string',
+      options: [
+        {title: 'Audience A', value: 'aud-a'},
+        {title: 'Audience B', value: 'aud-b'},
+        {title: 'Audience C', value: 'aud-c'},
+      ],
+    },
+    locales: {title: 'Locale', type: 'string', options: ['en-GB', 'en-US']},
     age: {title: 'Age', type: 'number'},
     gender: {title: 'Gender', type: 'string', options: ['male', 'female']},
   }),
