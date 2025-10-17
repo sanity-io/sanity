@@ -98,7 +98,7 @@ function processObjectRecursively(obj: unknown, decideParameters?: LocalDecidePa
       } else {
         processed[key] = processObjectRecursively(value, decideParameters)
       }
-    } catch (error) {
+    } catch {
       processed[key] = value
     }
     return processed
@@ -108,7 +108,7 @@ function processObjectRecursively(obj: unknown, decideParameters?: LocalDecidePa
 function processDecideFields(data: unknown, decideParameters?: LocalDecideParameters): unknown {
   try {
     return processObjectRecursively(data, decideParameters)
-  } catch (error) {
+  } catch {
     return data
   }
 }
@@ -127,14 +127,6 @@ export interface LiveQueriesProps {
 
 export default function LiveQueries(props: LiveQueriesProps): React.JSX.Element {
   const {controller, perspective: activePerspective, onLoadersConnection, onDocumentsOnPage} = props
-
-  // oxlint-disable-next-line no-console
-  console.log('[LiveQueries] Component rendered with props:', {
-    hasController: !!controller,
-    perspective: activePerspective,
-    hasLiveDocument: !!props.liveDocument,
-    liveDocumentId: props.liveDocument?._id,
-  })
 
   const [comlink, setComlink] = useState<ChannelInstance<LoaderControllerMsg, LoaderNodeMsg>>()
   const [liveQueries, liveQueriesDispatch] = useLiveQueries()
@@ -172,15 +164,6 @@ export default function LiveQueries(props: LiveQueriesProps): React.JSX.Element 
 
       nextComlink.on('loader/query-listen', (data) => {
         if (data.projectId === projectId && data.dataset === dataset) {
-          // oxlint-disable-next-line no-console
-          console.log('[LiveQueries] Received loader/query-listen:', {
-            perspective: data.perspective,
-            query: data.query,
-            params: data.params,
-            decideParameters: data.decideParameters,
-            heartbeat: data.heartbeat,
-          })
-
           if (
             typeof data.heartbeat === 'number' &&
             data.heartbeat < MIN_LOADER_QUERY_LISTEN_HEARTBEAT_INTERVAL
@@ -327,17 +310,6 @@ function QuerySubscriptionComponent(props: QuerySubscriptionProps) {
       resultSourceMap: ContentSourceMap | undefined,
       tags: `s1:${string}`[] | undefined,
     ) => {
-      // oxlint-disable-next-line no-console
-      console.log('[handleQueryChange] Posting loader/query-change:', {
-        hasComlink: !!comlink,
-        perspective,
-        query,
-        params,
-        hasResult: !!result,
-        hasResultSourceMap: !!resultSourceMap,
-        tags,
-      })
-
       comlink?.post('loader/query-change', {
         projectId,
         dataset,
@@ -382,16 +354,6 @@ function useQuerySubscription(props: UseQuerySubscriptionProps) {
     liveEventsMessages,
     decideParameters: passedDecideParameters,
   } = props
-
-  // oxlint-disable-next-line no-console
-  console.log('[useQuerySubscription] Called with:', {
-    query,
-    params,
-    perspective,
-    hasLiveDocument: !!liveDocument,
-    liveDocumentId: liveDocument?._id,
-    passedDecideParameters,
-  })
 
   // Use passed decideParameters if provided, otherwise fall back to global context
   const {decideParameters: globalDecideParameters} = useDecideParameters()
@@ -443,9 +405,6 @@ function useQuerySubscription(props: UseQuerySubscriptionProps) {
   useEffect(() => {
     const controller = new AbortController()
 
-    // oxlint-disable-next-line no-console
-    console.log('[presentation-loader] decideParameters:', transformedDecideParameters)
-
     client
       .fetch(query, params, {
         lastLiveEventId,
@@ -457,15 +416,6 @@ function useQuerySubscription(props: UseQuerySubscriptionProps) {
         returnQuery: false,
       })
       .then((response) => {
-        // oxlint-disable-next-line no-console
-        console.log('[useQuerySubscription] Fetch response received:', {
-          hasResult: !!response.result,
-          resultType: typeof response.result,
-          hasResultSourceMap: !!response.resultSourceMap,
-          syncTags: response.syncTags,
-          query,
-        })
-
         startTransition(() => {
           setResult((prev: unknown) => (isEqual(prev, response.result) ? prev : response.result))
           setResultSourceMap((prev) =>
@@ -476,8 +426,6 @@ function useQuerySubscription(props: UseQuerySubscriptionProps) {
       })
       .catch((err) => {
         if (typeof err !== 'object' || err?.name !== 'AbortError') {
-          // oxlint-disable-next-line no-console
-          console.log('[useQuerySubscription] Fetch error:', err)
           setError(err)
         }
       })
@@ -507,26 +455,12 @@ function useQuerySubscription(props: UseQuerySubscriptionProps) {
         transformedDecideParameters,
       )
 
-      // oxlint-disable-next-line no-console
-      console.log('[useQuerySubscription] Returning turbocharged result:', {
-        hasTurboChargedResult: !!turboChargedResult,
-        hasResultSourceMap: !!resultSourceMap,
-        syncTags,
-      })
-
       return {
         result: turboChargedResult,
         resultSourceMap,
         syncTags,
       }
     }
-
-    // oxlint-disable-next-line no-console
-    console.log('[useQuerySubscription] Returning non-turbocharged result:', {
-      hasResult: !!result,
-      hasResultSourceMap: !!resultSourceMap,
-      syncTags,
-    })
 
     return {result, resultSourceMap, syncTags}
   }, [liveDocument, perspective, result, resultSourceMap, syncTags, transformedDecideParameters])
@@ -539,15 +473,6 @@ export function turboChargeResultIfSourceMap<T = unknown>(
   resultSourceMap?: ContentSourceMap,
   decideParameters?: LocalDecideParameters,
 ): T {
-  // oxlint-disable-next-line no-console
-  console.log('[turboChargeResultIfSourceMap] Called with:', {
-    hasLiveDocument: !!liveDocument,
-    liveDocumentId: liveDocument?._id,
-    perspective,
-    hasResultSourceMap: !!resultSourceMap,
-    decideParameters,
-  })
-
   if (perspective === 'raw') {
     throw new Error('turboChargeResultIfSourceMap does not support raw perspective')
   }
