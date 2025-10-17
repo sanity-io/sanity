@@ -1,12 +1,13 @@
 import {type EditableReleaseDocument, type ReleaseDocument, type ReleaseState} from '@sanity/client'
 
 import {type TargetPerspective} from '../../perspective/types'
-import {getVersionFromId, isVersionId} from '../../util'
+
 import {formatRelativeLocale} from '../../util/formatRelativeLocale'
 import {isCardinalityOneRelease} from '../../util/releaseUtils'
 import {type CardinalityView} from '../tool/overview/queryParamUtils'
 import {DEFAULT_RELEASE_TYPE, LATEST} from './const'
 import {createReleaseId} from './createReleaseId'
+import {getVersionFromId, isVersionId} from '../../util/draftUtils'
 
 /** @internal */
 export type NotArchivedRelease = ReleaseDocument & {state: Exclude<ReleaseState, 'archived'>}

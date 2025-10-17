@@ -25,11 +25,10 @@ import {
 import usePollSchedules from '../hooks/usePollSchedules'
 import {type Schedule, type ScheduleState} from '../types'
 import {SchedulesProvider} from './contexts/schedules'
-import {ScheduleFilters} from './scheduleFilters'
-import {Schedules} from './schedules'
 import SchedulesContextMenu from './schedulesContextMenu/SchedulesContextMenu'
-import {ToolCalendar} from './toolCalendar'
-
+import {Schedules} from './schedules/Schedules'
+import {ToolCalendar} from './toolCalendar/ToolCalendar'
+import {ScheduleFilters} from './scheduleFilters/ScheduleFilters'
 const Column = styled(Box)`
   flex-direction: column;
   &:not(:last-child) {

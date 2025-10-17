@@ -23,7 +23,7 @@ import {PreviewCard} from '../../../components/previewCard/PreviewCard'
 import {type FIXME} from '../../../FIXME'
 import {FEATURES, useFeatureEnabled} from '../../../hooks/useFeatureEnabled'
 import {useTranslation} from '../../../i18n/hooks/useTranslation'
-import {getPublishedId} from '../../../util'
+
 import {isNonNullable} from '../../../util/isNonNullable'
 import {useDidUpdate} from '../../hooks/useDidUpdate'
 import {set, unset} from '../../patch/patch'
@@ -37,6 +37,7 @@ import {ReferenceAutocomplete} from './ReferenceAutocomplete'
 import {type CrossDatasetReferenceInfo, type CrossDatasetSearchHit, type SearchState} from './types'
 import {type GetReferenceInfoFn, useReferenceInfo} from './useReferenceInfo'
 import {useProjectId} from './utils/useProjectId'
+import {getPublishedId} from '../../../util/draftUtils'
 
 const INITIAL_SEARCH_STATE: SearchState = {
   hits: [],

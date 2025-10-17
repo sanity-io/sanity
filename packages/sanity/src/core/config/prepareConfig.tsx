@@ -65,7 +65,7 @@ import {
 } from './configPropertyReducers'
 import {ConfigResolutionError} from './ConfigResolutionError'
 import {createDefaultIcon} from './createDefaultIcon'
-import {initialDocumentFieldActions} from './document'
+
 import {documentFieldActionsReducer} from './document/fieldActions/reducer'
 import {resolveConfigProperty} from './resolveConfigProperty'
 import {getDefaultPlugins, getDefaultPluginsOptions} from './resolveDefaultPlugins'
@@ -87,6 +87,7 @@ import {
   type WorkspaceSummary,
 } from './types'
 import {uploadSchema} from './uploadSchema'
+import {initialDocumentFieldActions} from './document/fieldActions'
 
 type InternalSource = WorkspaceSummary['__internal']['sources'][number]
 

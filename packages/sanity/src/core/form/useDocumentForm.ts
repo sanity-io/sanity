@@ -48,7 +48,7 @@ import {selectUpstreamVersion} from '../store/_legacy/document/selectUpstreamVer
 import {useDocumentValuePermissions} from '../store/_legacy/grants/documentValuePermissions'
 import {type PermissionCheckResult} from '../store/_legacy/grants/types'
 import {type DocumentPresence} from '../store/_legacy/presence/types'
-import {getDraftId, getPublishedId, getVersionFromId, getVersionId} from '../util'
+
 import {EMPTY_ARRAY} from '../util/empty'
 import {useUnique} from '../util/useUnique'
 import {CreatedDraft} from './__telemetry__/form.telemetry'
@@ -61,6 +61,7 @@ import {getExpandOperations} from './store/utils/getExpandOperations'
 import {type OnPathFocusPayload} from './types/inputProps'
 import {useComlinkViewHistory} from './useComlinkViewHistory'
 import {toMutationPatches} from './utils/mutationPatch'
+import {getDraftId, getPublishedId, getVersionFromId, getVersionId} from '../util/draftUtils'
 
 interface DocumentFormOptions {
   documentType: string
