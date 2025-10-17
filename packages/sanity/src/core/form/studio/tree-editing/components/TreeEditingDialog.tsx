@@ -68,7 +68,11 @@ export function TreeEditingDialog(props: TreeEditingDialogProps): React.JSX.Elem
 
   const handleBuildTreeEditingState = useCallback(
     (opts: BuildTreeEditingStateProps) => {
-      const isPathWithinPTEtext = isPathTextInPTEField(schemaType.fields, opts.openPath)
+      const isPathWithinPTEtext = isPathTextInPTEField(
+        schemaType.fields,
+        opts.openPath,
+        opts.documentValue,
+      )
 
       const nextState = buildTreeEditingState(opts)
       if (isEqual(nextState, treeState)) return

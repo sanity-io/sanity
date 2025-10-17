@@ -6,7 +6,9 @@ import {
   type Path,
   type SchemaType,
 } from '@sanity/types'
-import {toString} from '@sanity/util/paths'
+import {get} from '@sanity/util/paths'
+
+import {pathToString} from '../../../../validation/util/pathToString'
 
 /**
  * Find the paths to Portable Text Editor (array of type block) schema types in a list of fields
@@ -81,6 +83,7 @@ export function findPTEtypePaths(
  *
  * @param fields - The schema fields to search through
  * @param targetPath - The path to check (can be a Path array or string)
+ * @param documentValue - Optional document value to check if path points to an inline object
  * @returns true if the path points to text content (children) within a portable text field
  *
  * Example:
@@ -89,50 +92,49 @@ export function findPTEtypePaths(
  * // Returns true if 'content' is a portable text field AND the path contains 'children'
  * ```
  */
-export function isPathTextInPTEField(fields: ObjectField<SchemaType>[], targetPath: Path): boolean {
+export function isPathTextInPTEField(
+  fields: ObjectField<SchemaType>[],
+  targetPath: Path,
+  documentValue?: unknown,
+): boolean {
   if (targetPath.length === 0) return false
 
-  // Get all portable text paths in the schema
   const allPTEPaths = findPTEtypePaths(fields)
 
-  // Convert target path to segments, collecting all possible field paths
-  // We need to check multiple levels because portable text can be nested deep
   const possiblePaths: string[] = []
   const currentSegments: string[] = []
-
   for (const segment of targetPath) {
     if (typeof segment === 'string') {
       currentSegments.push(segment)
-      // Add this path as a possible match
       possiblePaths.push(currentSegments.join('.'))
     }
-    // Continue processing even after array keys - don't break
   }
 
-  // Check if any portable text path matches any of our possible paths
-  // AND if the target path contains 'children' (which indicates actual text content)
-  const isWithinPTEField = allPTEPaths.some((ptePath) => {
-    const ptePathString = toString(ptePath)
-    return possiblePaths.some((possiblePath) => {
-      // Exact match: the path leads directly to a PTE field
-      if (possiblePath === ptePathString) {
-        return true
-      }
-      // Check if the target path is within a PTE field (possible path starts with PTE path)
-      // This handles cases where we're inside an array that contains PTE fields
-      // This is particularly important for nested arrays of objects or text
-      return possiblePath.startsWith(`${ptePathString}.`)
-    })
+  const isWithinPTEField = allPTEPaths.some((parentPath) => {
+    const ptePath = pathToString(parentPath)
+    return possiblePaths.some((path) => path === ptePath || path.startsWith(`${parentPath}.`))
   })
 
-  // Only return true if we're within a PTE field AND the path contains 'children'
   // The 'children' field is where the actual text spans live in portable text blocks
   // Which is the main reason we are here - to check if the path points to text content
   const containsChildren = targetPath.some(
     (segment) => typeof segment === 'string' && segment === 'children',
   )
+  if (!isWithinPTEField || !containsChildren) return false
 
-  const result = isWithinPTEField && containsChildren
+  // If we don't have the document value, default to "text content"
+  if (!documentValue) return true
 
-  return result
+  const valueAtPath = get(documentValue, targetPath)
+  // If the value at the path is an object with _type !== 'span', it is not text content
+  if (
+    valueAtPath &&
+    typeof valueAtPath === 'object' &&
+    '_type' in valueAtPath &&
+    valueAtPath._type !== 'span'
+  ) {
+    return false
+  }
+
+  return true
 }
