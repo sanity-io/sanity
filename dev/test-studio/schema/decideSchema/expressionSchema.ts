@@ -1,9 +1,9 @@
 import {defineField, defineType} from 'sanity'
 
-import {type Expr} from './astType'
 import {OperatorSelectInput} from './OperatorSelectInput'
 import {PropertySelectInput} from './PropertySelectInput'
 import {TargetValueInput} from './TargetValueInput'
+import {type Expr} from './types'
 import {ValueTypeInput} from './ValueTypeInput'
 
 // Helper function to format expressions into readable strings
@@ -19,22 +19,22 @@ function formatExpr(expr: Expr): string {
 
   if (expr.kind === 'and') {
     const exprs = expr.exprs || []
-    return exprs
+    return `(${exprs
       .map((e: any) => formatExpr(e))
       .filter(Boolean)
-      .join(' & ')
+      .join(' && ')})`
   }
 
   if (expr.kind === 'or') {
     const exprs = expr.exprs || []
-    return exprs
+    return `(${exprs
       .map((e: any) => formatExpr(e))
       .filter(Boolean)
-      .join(' | ')
+      .join(' || ')})`
   }
 
   if (expr.kind === 'not') {
-    return `NOT (${formatExpr(expr.expr)})`
+    return `!( ${formatExpr(expr.expr)} )`
   }
 
   return ''
@@ -166,13 +166,11 @@ export const expression = defineType({
         if (kind === 'and') {
           return {
             title: exprs.map((e: Expr) => formatExpr(e)).join(' && '),
-            subtitle: 'Logical operation',
           }
         }
         if (kind === 'or') {
           return {
             title: exprs.map((e: Expr) => formatExpr(e)).join(' || '),
-            subtitle: 'Logical operation',
           }
         }
       }
@@ -180,12 +178,10 @@ export const expression = defineType({
       if (kind === 'cmp') {
         return {
           title: `${attr || '?'} ${op || '?'} ${value}`,
-          subtitle: 'Comparison',
         }
       }
       return {
         title: kind?.toUpperCase() || 'Expression',
-        subtitle: 'Logical operation',
       }
     },
   },
