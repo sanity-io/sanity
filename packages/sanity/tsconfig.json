@@ -6,7 +6,6 @@
     "./scripts",
     "./src",
     "./test",
-    "./typings",
     "./node_modules/@sanity/diff/src",
     "./node_modules/@sanity/cli/src",
     "./node_modules/@sanity/cli/typings/deepSortObject.d.ts",

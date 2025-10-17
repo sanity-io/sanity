@@ -8,9 +8,9 @@ import {
   type DocumentActionDescription,
   type DocumentActionProps,
 } from '../../../config/document/actions'
-import {useFeatureEnabled, useValidationStatus} from '../../../hooks'
-import {FEATURES} from '../../../hooks/useFeatureEnabled'
-import {useTranslation} from '../../../i18n'
+import {FEATURES, useFeatureEnabled} from '../../../hooks/useFeatureEnabled'
+import {useValidationStatus} from '../../../hooks/useValidationStatus'
+import {useTranslation} from '../../../i18n/hooks/useTranslation'
 import {usePerspective} from '../../../perspective/usePerspective'
 import {useDocumentPreviewValues} from '../../../tasks/hooks/useDocumentPreviewValues'
 import {ScheduleDraftDialog} from '../../components/dialog/ScheduleDraftDialog'

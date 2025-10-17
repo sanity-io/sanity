@@ -4,8 +4,7 @@ import {
   type ScheduledPublishingEnabledContextValue,
 } from 'sanity/_singletons'
 
-import {useFeatureEnabled} from '../../hooks'
-import {FEATURES} from '../../hooks/useFeatureEnabled'
+import {FEATURES, useFeatureEnabled} from '../../hooks/useFeatureEnabled'
 import {useWorkspace} from '../../studio/workspace'
 import {useHasUsedScheduledPublishing} from '../tool/contexts/useHasUsedScheduledPublishing'
 

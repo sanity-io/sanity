@@ -4,9 +4,9 @@ import {useBoolean, useSelect} from '@sanity/ui-workshop'
 import {uuid} from '@sanity/uuid'
 import {useCallback, useMemo, useState} from 'react'
 
-import {useUserListWithPermissions} from '../../hooks'
-import {useCurrentUser} from '../../store'
-import {CommentsList} from '../components'
+import {useUserListWithPermissions} from '../../hooks/useUserListWithPermissions'
+import {useCurrentUser} from '../../store/user/hooks'
+import {CommentsList} from '../components/list/CommentsList'
 import {
   type CommentBaseCreatePayload,
   type CommentDocument,

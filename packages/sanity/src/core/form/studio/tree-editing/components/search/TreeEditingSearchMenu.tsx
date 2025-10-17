@@ -14,7 +14,7 @@ import {useTranslation} from '../../../../../i18n/hooks/useTranslation'
 import {SanityDefaultPreview} from '../../../../../preview/components/SanityDefaultPreview'
 import {getSchemaTypeTitle} from '../../../../../schema/helpers'
 import {supportsTouch} from '../../../../../util/supportsTouch'
-import {useValuePreviewWithFallback} from '../../hooks'
+import {useValuePreviewWithFallback} from '../../hooks/useValuePreviewWithFallback'
 import {type TreeEditingMenuItem} from '../../types'
 import {ITEM_HEIGHT} from './constants'
 

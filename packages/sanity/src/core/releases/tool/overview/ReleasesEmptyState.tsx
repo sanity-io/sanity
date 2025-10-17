@@ -1,8 +1,8 @@
 import {Flex, Inline, Text} from '@sanity/ui'
 import {useCallback} from 'react'
 
-import {Button} from '../../../../ui-components'
-import {useTranslation} from '../../../i18n'
+import {Button} from '../../../../ui-components/button/Button'
+import {useTranslation} from '../../../i18n/hooks/useTranslation'
 import {releasesLocaleNamespace} from '../../i18n'
 import {ReleaseIllustration} from '../resources/ReleaseIllustration'
 

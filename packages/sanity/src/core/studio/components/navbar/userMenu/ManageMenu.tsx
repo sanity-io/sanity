@@ -1,9 +1,9 @@
 import {AddUserIcon, CogIcon} from '@sanity/icons'
 import {MenuDivider} from '@sanity/ui'
 
-import {MenuItem} from '../../../../../ui-components'
-import {useTranslation} from '../../../../i18n'
-import {userHasRole} from '../../../../util'
+import {MenuItem} from '../../../../../ui-components/menuItem/MenuItem'
+import {useTranslation} from '../../../../i18n/hooks/useTranslation'
+import {userHasRole} from '../../../../util/userHasRole'
 import {useEnvAwareSanityWebsiteUrl} from '../../../hooks/useEnvAwareSanityWebsiteUrl'
 import {useWorkspace} from '../../../workspace'
 

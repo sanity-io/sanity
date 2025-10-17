@@ -1,6 +1,6 @@
 import {Flex, Skeleton, Stack, Text} from '@sanity/ui'
 
-import {AvatarSkeleton, UserAvatar} from '../../../../components'
+import {AvatarSkeleton, UserAvatar} from '../../../../components/userAvatar/UserAvatar'
 import {ReleaseTime} from '../../components/ReleaseTime'
 import {type VisibleColumn} from '../../components/Table/types'
 import {useReleaseCreator} from '../hooks/useReleaseCreator'

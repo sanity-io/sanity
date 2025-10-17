@@ -11,15 +11,17 @@ import {
   switchMap,
 } from 'rxjs/operators'
 
-import {type DocumentPreviewStore} from '../../../../preview'
-import {resolveInitialValue, type Template} from '../../../../templates'
-import {getDraftId, getPublishedId} from '../../../../util'
+import {type DocumentPreviewStore} from '../../../../preview/documentPreviewStore'
+
+import {type Template} from '../../../../templates/types'
+import {getDraftId, getPublishedId} from '../../../../util/draftUtils'
 import {
   type InitialValueErrorMsg,
   type InitialValueLoadingMsg,
   type InitialValueMsg,
   type InitialValueSuccessMsg,
 } from './types'
+import {resolveInitialValue} from '../../../../templates/resolve'
 
 /**
  * @hidden

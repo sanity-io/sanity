@@ -1,9 +1,9 @@
 import {type ArraySchemaType} from '@sanity/types'
 import {type ComponentType} from 'react'
 
-import {ArrayOfObjectsInput} from '../../inputs/arrays/ArrayOfObjectsInput'
-import {ArrayOfOptionsInput} from '../../inputs/arrays/ArrayOfOptionsInput'
-import {ArrayOfPrimitivesInput} from '../../inputs/arrays/ArrayOfPrimitivesInput'
+import {ArrayOfObjectsInput} from '../../inputs/arrays/ArrayOfObjectsInput/ArrayOfObjectsInput'
+import {ArrayOfOptionsInput} from '../../inputs/arrays/ArrayOfOptionsInput/ArrayOfOptionsInput'
+import {ArrayOfPrimitivesInput} from '../../inputs/arrays/ArrayOfPrimitivesInput/ArrayOfPrimitivesInput'
 import {PortableTextInput} from '../../inputs/PortableText/PortableTextInput'
 import {TagsArrayInput} from '../../inputs/TagsArrayInput'
 import * as is from '../../utils/is'

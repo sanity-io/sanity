@@ -1,7 +1,7 @@
 import {Button, Flex} from '@sanity/ui'
 import {useCallback, useState} from 'react'
 
-import {CommentReactionsMenuButton} from '../components'
+import {CommentReactionsMenuButton} from '../components/reactions/CommentReactionsMenuButton'
 import {COMMENT_REACTION_OPTIONS} from '../constants'
 import {type CommentReactionOption, type CommentReactionShortNames} from '../types'
 

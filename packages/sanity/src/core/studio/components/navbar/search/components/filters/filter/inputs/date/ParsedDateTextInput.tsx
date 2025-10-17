@@ -9,8 +9,8 @@ import {
   useState,
 } from 'react'
 
-import {Tooltip} from '../../../../../../../../../../ui-components'
-import {useTranslation} from '../../../../../../../../../i18n'
+import {Tooltip} from '../../../../../../../../../../ui-components/tooltip/Tooltip'
+import {useTranslation} from '../../../../../../../../../i18n/hooks/useTranslation'
 import {CustomTextInput} from '../../../../common/CustomTextInput'
 import {getDateISOString} from './utils/getDateISOString'
 

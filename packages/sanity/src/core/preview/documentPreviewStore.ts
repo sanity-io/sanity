@@ -9,7 +9,7 @@ import {type PrepareViewOptions, type SanityDocument} from '@sanity/types'
 import {combineLatest, type Observable} from 'rxjs'
 import {distinctUntilChanged, filter, map} from 'rxjs/operators'
 
-import {isRecord} from '../util'
+import {isRecord} from '../util/isRecord'
 import {createPreviewAvailabilityObserver} from './availability'
 import {createGlobalListener} from './createGlobalListener'
 import {createObserveDocument, type ObserveDocumentAPIConfig} from './createObserveDocument'

@@ -3,9 +3,10 @@ import path from 'node:path'
 
 import {describe, expect, test} from 'vitest'
 
-import {decodeText, parse} from '../../it-utils'
+import {decodeText} from '../../it-utils'
 import {firstValueFrom} from '../../it-utils/firstValueFrom'
 import {lastValueFrom} from '../../it-utils/lastValueFrom'
+import {parse} from '../../it-utils/ndjson'
 import {asyncIterableToStream} from '../../utils/asyncIterableToStream'
 import {streamToAsyncIterator} from '../../utils/streamToAsyncIterator'
 import {bufferThroughFile} from '../bufferThroughFile'

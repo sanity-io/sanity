@@ -2,7 +2,7 @@
 import {Text} from '@sanity/ui'
 import {type KeyboardEvent, type ReactNode, useCallback, useMemo, useState} from 'react'
 
-import {useTranslation} from '../../../i18n'
+import {useTranslation} from '../../../i18n/hooks/useTranslation'
 import {
   CardContainer,
   ContentContainer,

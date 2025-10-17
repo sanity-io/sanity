@@ -1,6 +1,6 @@
 import {useEffect, useMemo, useState} from 'react'
 
-import {getPublishedId} from '../../../../util'
+import {getPublishedId} from '../../../../util/draftUtils'
 import {useDocumentStore} from '../../datastores'
 
 /** @internal */

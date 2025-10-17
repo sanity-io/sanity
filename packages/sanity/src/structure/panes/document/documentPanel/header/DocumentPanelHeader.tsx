@@ -15,16 +15,15 @@ import {
 import {type DocumentActionDescription, useFieldActions, useTranslation} from 'sanity'
 import {css, styled} from 'styled-components'
 
-import {Button, TooltipDelayGroupProvider} from '../../../../../ui-components'
-import {
-  PaneContextMenuButton,
-  PaneHeader,
-  PaneHeaderActionButton,
-  RenderActionCollectionState,
-  usePane,
-  usePaneRouter,
-} from '../../../../components'
+import {Button} from '../../../../../ui-components/button/Button'
+import {TooltipDelayGroupProvider} from '../../../../../ui-components/tooltipDelayGroupProvider/TooltipDelayGroupProvider'
+import {PaneContextMenuButton} from '../../../../components/pane/PaneContextMenuButton'
+import {PaneHeader} from '../../../../components/pane/PaneHeader'
+import {PaneHeaderActionButton} from '../../../../components/pane/PaneHeaderActionButton'
 import {type _PaneMenuNode} from '../../../../components/pane/types'
+import {usePane} from '../../../../components/pane/usePane'
+import {usePaneRouter} from '../../../../components/paneRouter/usePaneRouter'
+import {RenderActionCollectionState} from '../../../../components/RenderActionCollectionState'
 import {structureLocaleNamespace} from '../../../../i18n'
 import {isMenuNodeButton, isNotMenuNodeButton, resolveMenuNodes} from '../../../../menuNodes'
 import {type PaneMenuItem} from '../../../../types'

@@ -22,8 +22,9 @@ import {
   useState,
 } from 'react'
 
-import {MenuButton, Tooltip} from '../../../../ui-components'
-import {useTranslation} from '../../../i18n'
+import {MenuButton} from '../../../../ui-components/menuButton/MenuButton'
+import {Tooltip} from '../../../../ui-components/tooltip/Tooltip'
+import {useTranslation} from '../../../i18n/hooks/useTranslation'
 import {CONTENT_RELEASES_TIME_ZONE_SCOPE} from '../../../studio/constants'
 import {useReleaseFormStorage} from '../../hooks/useReleaseFormStorage'
 import {isReleaseType} from '../../store/types'
