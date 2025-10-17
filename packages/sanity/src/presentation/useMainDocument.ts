@@ -13,6 +13,7 @@ import {
   type MainDocumentState,
   type PresentationNavigate,
 } from './types'
+import {useDecideParameters} from './useDecideParameters'
 
 // Helper function to "unwrap" a result when it is either explicitly provided or
 // returned as the result of a passed function
@@ -104,6 +105,7 @@ export function useMainDocument(props: {
   const {state: routerState} = useRouter()
   const {perspectiveStack} = usePerspective()
   const client = useClient({apiVersion: API_VERSION})
+  const {decideParameters} = useDecideParameters()
   const relativeUrl =
     path || routerState._searchParams?.find(([key]) => key === 'preview')?.[1] || ''
 
@@ -162,6 +164,7 @@ export function useMainDocument(props: {
           const controller = new AbortController()
           const options: ResponseQueryOptions = {
             perspective: perspectiveStack,
+            decideParameters: decideParameters as any,
             signal: controller.signal,
             tag: 'use-main-document',
           }
@@ -183,7 +186,7 @@ export function useMainDocument(props: {
     setMainDocumentState(undefined)
     mainDocumentIdRef.current = undefined
     return undefined
-  }, [client, perspectiveStack, relativeUrl, resolvers, targetOrigin])
+  }, [client, perspectiveStack, relativeUrl, resolvers, targetOrigin, decideParameters])
 
   return mainDocumentState
 }

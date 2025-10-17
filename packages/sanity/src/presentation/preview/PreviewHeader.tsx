@@ -8,10 +8,12 @@ import {useTranslation} from 'sanity'
 import {Button, Tooltip} from '../../ui-components'
 import {presentationLocaleNamespace} from '../i18n'
 import {type HeaderOptions} from '../types'
+import {useDecideParameters} from '../useDecideParameters'
 import {useId} from '../useId'
 import {OpenPreviewButton} from './OpenPreviewButton'
 import {type PreviewProps} from './Preview'
 import {PreviewLocationInput} from './PreviewLocationInput'
+import {PreviewVariantButton} from './PreviewVariantButton'
 import {SharePreviewMenu} from './SharePreviewMenu'
 
 /** @public */
@@ -44,6 +46,15 @@ const PreviewHeaderDefault = (props: Omit<PreviewHeaderProps, 'renderDefault'>) 
   } = props
 
   const {t} = useTranslation(presentationLocaleNamespace)
+  const {decideParameters: decisionParameters, setDecideParameters: setDecisionParameters} =
+    useDecideParameters()
+
+  const handleVariantSelectionChange = useCallback(
+    (selections: Record<string, string>) => {
+      setDecisionParameters(selections)
+    },
+    [setDecisionParameters],
+  )
 
   const toggleViewportSize = useCallback(
     () => setViewport(viewport === 'desktop' ? 'mobile' : 'desktop'),
@@ -239,6 +250,11 @@ const PreviewHeaderDefault = (props: Omit<PreviewHeaderProps, 'renderDefault'>) 
             tooltipProps={null}
           />
         </Tooltip>
+
+        <PreviewVariantButton
+          currentSelections={decisionParameters}
+          onSelectionChange={handleVariantSelectionChange}
+        />
       </Flex>
 
       {canSharePreviewAccess && (

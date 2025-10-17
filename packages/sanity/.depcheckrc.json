@@ -8,6 +8,8 @@
     "@types/react",
     "eslint-plugin-boundaries",
     "react-compiler-runtime",
-    "eslint"
+    "eslint",
+    "@sanity/comlink",
+    "@sanity/visual-editing-types"
   ]
 }
