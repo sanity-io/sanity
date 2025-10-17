@@ -1,4 +1,4 @@
-import {type Path, type SchemaType} from '@sanity/types'
+import {type KeyedObject, type Path, type SchemaType} from '@sanity/types'
 import {useToast} from '@sanity/ui'
 import {get} from 'lodash'
 import {type FocusEvent, useCallback, useEffect, useMemo, useRef} from 'react'
