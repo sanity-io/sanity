@@ -1,21 +1,162 @@
 import {CorsOriginError, type ReleaseDocument, type SanityClient} from '@sanity/client'
 import {
+  type ArrayActionName,
+  type ArrayDefinition,
+  type ArrayOfEntry,
+  type ArrayOfType,
+  type ArrayOptions,
+  type ArrayRule,
   type ArraySchemaType,
+  type ArraySchemaTypeOf,
   type Asset,
+  type AssetFromSource,
+  type AssetMetadataType,
+  type AssetSchemaTypeOptions,
+  type AssetSource,
+  type AssetSourceComponentProps,
+  type AssetSourceSpec,
+  type AssetSourceUploader,
+  type AssetSourceUploaderClass,
+  type AssetSourceUploadEvent,
+  type AssetSourceUploadEventAbort,
+  type AssetSourceUploadEventAllComplete,
+  type AssetSourceUploadEventError,
+  type AssetSourceUploadEventProgress,
+  type AssetSourceUploadEventStatus,
+  type AssetSourceUploadFile,
+  type AssetSourceUploadSubscriber,
+  type AutocompleteString,
+  type BaseSchemaDefinition,
+  type BaseSchemaType,
+  type BaseSchemaTypeOptions,
+  type BlockChildrenObjectField,
   type BlockDefinition,
+  type BlockListDefinition,
+  type BlockListObjectField,
+  type BlockMarksDefinition,
+  type BlockOptions,
+  type BlockRule,
+  type BlockSchemaType,
+  type BlockStyleDefinition,
+  type BlockStyleObjectField,
+  type BooleanDefinition,
+  type BooleanOptions,
+  type BooleanRule,
   type BooleanSchemaType,
+  type CanvasAppOptions,
+  type CanvasNotificationPayload,
+  type CollapseOptions,
+  type ConditionalIndexAccess,
+  type ConditionalProperty,
+  type ConditionalPropertyCallback,
+  type ConditionalPropertyCallbackContext,
+  type CreateIfNotExistsMutation,
+  type CreateMutation,
+  type CreateOrReplaceMutation,
+  type CreateSquashedMutation,
+  type CrossDatasetReferenceDefinition,
+  type CrossDatasetReferenceFilterResolver,
+  type CrossDatasetReferenceFilterSearchOptions,
   type CrossDatasetReferenceSchemaType,
+  type CrossDatasetReferenceValue,
+  type CrossDatasetType,
+  type CurrentUser,
+  type CustomValidator,
+  type CustomValidatorResult,
+  type DashboardNotificationPayload,
+  type DateDefinition,
+  type DateOptions,
+  type DateRule,
+  type DatetimeDefinition,
+  type DatetimeOptions,
+  type DatetimeRule,
   defineArrayMember,
+  type DefineArrayMemberBase,
+  type defineAssetAspect,
   defineField,
+  type DefineSchemaBase,
+  type DefineSchemaOptions,
+  type DefineSchemaType,
   defineType,
+  type DeleteMutation,
+  type DeprecatedProperty,
+  type DeprecatedSchemaType,
+  type DeprecationConfiguration,
+  type DocumentDefinition,
+  type DocumentOptions,
+  type DocumentRule,
+  type EmailDefinition,
+  type EmailOptions,
+  type EmailRule,
+  type EmptyProps,
+  type EnumListProps,
+  type FieldDefinition,
+  type FieldDefinitionBase,
+  type FieldGroup,
+  type FieldGroupDefinition,
+  type FieldReference,
+  type FieldRules,
+  type Fieldset,
+  type FieldsetDefinition,
+  type File,
+  type FileAsset,
+  type FileDefinition,
+  type FileOptions,
+  type FileRule,
   type FileSchemaType,
+  type FileValue,
   type FormNodeValidation,
+  type GeopointDefinition,
+  type GeopointOptions,
+  type GeopointRule,
+  type GeopointValue,
+  type GlobalDocumentReferenceDefinition,
+  type GlobalDocumentReferenceFilterResolver,
+  type GlobalDocumentReferenceFilterSearchOptions,
   type GlobalDocumentReferenceSchemaType,
+  type GlobalDocumentReferenceType,
+  type GlobalDocumentReferenceValue,
+  type HotspotOptions,
+  type HotspotPreview,
   type I18nTextRecord,
+  type I18nTitledListValue,
+  type Image,
+  type ImageAsset,
+  type ImageCrop,
+  type ImageDefinition,
+  type ImageDimensions,
+  type ImageHotspot,
+  type ImageMetadata,
+  type ImageMetadataType,
+  type ImageOptions,
+  type ImagePalette,
+  type ImageRule,
+  type ImageSchemaType,
+  type ImageSwatch,
+  type ImageUrlAutoMode,
+  type ImageUrlCropMode,
+  type ImageUrlFitMode,
+  type ImageUrlFormat,
+  type ImageUrlOrientation,
+  type ImageUrlParams,
+  type ImageValue,
+  type IndexTuple,
+  type InitialValueProperty,
+  type InitialValueResolver,
+  type InitialValueResolverContext,
+  type InlineFieldDefinition,
+  type InsertMenuOptions,
+  type InsertPatch,
+  type IntrinsicArrayOfBase,
+  type IntrinsicArrayOfDefinition,
+  type IntrinsicBase,
+  type IntrinsicDefinitions,
+  type IntrinsicTypeName,
   isArrayOfBlocksSchemaType,
   isArrayOfObjectsSchemaType,
   isArrayOfPrimitivesSchemaType,
   isArraySchemaType,
+  type isAssetAspect,
   isBlockChildrenObjectField,
   isBlockListObjectField,
   isBlockSchemaType,
@@ -27,6 +168,7 @@ import {
   isCreateSquashedMutation,
   isCrossDatasetReference,
   isCrossDatasetReferenceSchemaType,
+  type isDateTimeSchemaType,
   isDeleteMutation,
   isDeprecatedSchemaType,
   isDeprecationConfiguration,
@@ -61,26 +203,151 @@ import {
   isValidationInfoMarker,
   isValidationWarning,
   isValidationWarningMarker,
+  type KeyedObject,
+  type KeyedSegment,
+  type LocalizedValidationMessages,
+  type MaybeAllowUnknownProps,
+  type MaybePreview,
+  type MEDIA_LIBRARY_ASSET_ASPECT_TYPE_NAME,
+  type MediaAssetTypes,
+  type MediaLibraryAssetAspectDefinition,
+  type MediaLibraryAssetAspectDocument,
+  type MediaLibraryAssetAspectSupportedFieldDefinitions,
+  type MediaLibraryAssetAspectTypeName,
+  type MediaLibraryAssetType,
+  type MediaLibraryFilter,
+  type MediaLibraryOptions,
+  type MediaValidationValue,
+  type MediaValidator,
+  type MendozaEffectPair,
+  type MendozaPatch,
   type MultiFieldSet,
+  type MultipleMutationResult,
+  type Mutation,
+  type MutationOperationName,
+  type MutationSelection,
+  type NarrowPreview,
+  type NumberDefinition,
+  type NumberOptions,
+  type NumberRule,
   type NumberSchemaType,
+  type ObjectDefinition,
   type ObjectField,
+  type ObjectFieldType,
+  type ObjectOptions,
+  type ObjectRule,
   type ObjectSchemaType,
+  type ObjectSchemaTypeWithOptions,
+  type PatchMutation,
+  type PatchMutationOperation,
+  type PatchOperations,
   type Path,
+  type PathSegment,
+  type PortableTextBlock,
+  type PortableTextChild,
+  type PortableTextListBlock,
+  type PortableTextObject,
+  type PortableTextSpan,
+  type PortableTextTextBlock,
+  type PrepareViewOptions,
+  type PreviewConfig,
   type PreviewValue,
+  type Reference,
+  type ReferenceBaseOptions,
+  type ReferenceDefinition,
+  type ReferenceFilterOptions,
+  type ReferenceFilterQueryOptions,
+  type ReferenceFilterResolver,
+  type ReferenceFilterResolverContext,
+  type ReferenceFilterResolverOptions,
+  type ReferenceFilterSearchOptions,
+  type ReferenceOptions,
+  type ReferenceRule,
   type ReferenceSchemaType,
+  type ReferenceTo,
+  type ReferenceValue,
   type Role,
   type Rule,
+  type RuleBuilder,
+  type RuleClass,
+  type RuleDef,
   type RuleSpec,
+  type RuleSpecConstraint,
+  type RuleTypeConstraint,
+  type SanityCreateOptions,
   type SanityDocument,
   type SanityDocumentLike,
   type Schema,
   type SchemaType,
+  type SchemaTypeDefinition,
+  type SchemaValidationError,
+  type SchemaValidationProblem,
+  type SchemaValidationProblemGroup,
+  type SchemaValidationProblemPath,
   type SchemaValidationValue,
+  type SchemaValidationWarning,
+  type SearchConfiguration,
   searchStrategies,
   type SearchStrategy,
+  type SingleFieldSet,
+  type SingleMutationResult,
+  type Slug,
+  type SlugDefinition,
+  type SlugifierFn,
+  type SlugIsUniqueValidator,
+  type SlugOptions,
+  type SlugParent,
+  type SlugRule,
+  type SlugSchemaType,
+  type SlugSourceContext,
+  type SlugSourceFn,
+  type SlugValidationContext,
+  type SlugValue,
+  type SortOrdering,
+  type SortOrderingItem,
+  type SpanMarksObjectField,
   type SpanSchemaType,
+  type SpanTextObjectField,
+  type StrictDefinition,
+  type StrictVersionLayeringOptions,
+  type StringDefinition,
+  type StringOptions,
+  type StringRule,
   type StringSchemaType,
+  type StudioNotificationPayload,
+  type SwatchName,
+  type TextDefinition,
+  type TextOptions,
+  type TextRule,
+  type TextSchemaType,
+  type TitledListValue,
+  type TransactionLogEvent,
+  type TransactionLogEventWithEffects,
+  type TransactionLogEventWithMutations,
+  type TransactionLogMutation,
+  type TypeAliasDefinition,
   typed,
+  type TypedObject,
+  type TypeReference,
+  type UploadState,
+  type UriValidationOptions,
+  type UrlDefinition,
+  type UrlOptions,
+  type UrlRule,
+  type User,
+  type ValidationBuilder,
+  type ValidationContext,
+  type ValidationError,
+  type ValidationErrorClass,
+  type ValidationErrorOptions,
+  type ValidationMarker,
+  type Validator,
+  type Validators,
+  type WeakCrossDatasetReferenceValue,
+  type WeakGlobalDocumentReferenceValue,
+  type WeakReference,
+  type WidenInitialValue,
+  type WidenValidation,
 } from '@sanity/types'
 import {isEmptyObject} from '@sanity/util/content'
 import {findIndex, noop} from 'rxjs'
@@ -88,109 +355,226 @@ import {findIndex, noop} from 'rxjs'
 import {useCanvasCompanionDoc} from '../core/canvas/actions/useCanvasCompanionDoc'
 import {useNavigateToCanvasDoc} from '../core/canvas/useNavigateToCanvasDoc'
 import {ChangeFieldWrapper} from '../core/changeIndicators/ChangeFieldWrapper'
-import {ChangeIndicator} from '../core/changeIndicators/ChangeIndicator'
-import {ChangeConnectorRoot} from '../core/changeIndicators/overlay/ChangeConnectorRoot'
+import {ChangeIndicator, type ChangeIndicatorProps} from '../core/changeIndicators/ChangeIndicator'
+import {type ConnectorContextValue} from '../core/changeIndicators/ConnectorContext'
+import {
+  ChangeConnectorRoot,
+  type ChangeConnectorRootProps,
+} from '../core/changeIndicators/overlay/ChangeConnectorRoot'
 import {
   ChangeIndicatorsTracker,
+  type ChangeIndicatorTrackerContextValue,
+  type TrackedArea,
+  type TrackedChange,
   useChangeIndicatorsReportedValues,
   useChangeIndicatorsReporter,
 } from '../core/changeIndicators/tracker'
+import {type CommentsSelectedPath} from '../core/comments'
 import {CommentDeleteDialog} from '../core/comments/components/CommentDeleteDialog'
 import {CommentDisabledIcon} from '../core/comments/components/icons/CommentDisabledIcon'
 import {CommentsList} from '../core/comments/components/list/CommentsList'
-import {CommentInput} from '../core/comments/components/pte/comment-input/CommentInput'
+import {
+  CommentInput,
+  type CommentInputHandle,
+  type CommentInputProps,
+} from '../core/comments/components/pte/comment-input/CommentInput'
 import {CommentInlineHighlightSpan} from '../core/comments/components/pte/CommentInlineHighlightSpan'
 import {COMMENTS_INSPECTOR_NAME} from '../core/comments/constants'
 import {CommentsAuthoringPathProvider} from '../core/comments/context/authoring-path/CommentsAuthoringPathProvider'
 import {CommentsProvider} from '../core/comments/context/comments/CommentsProvider'
 import {CommentsEnabledProvider} from '../core/comments/context/enabled/CommentsEnabledProvider'
-import {CommentsIntentProvider} from '../core/comments/context/intent/CommentsIntentProvider'
+import {
+  CommentsIntentProvider,
+  type CommentsIntentProviderProps,
+} from '../core/comments/context/intent/CommentsIntentProvider'
 import {CommentsSelectedPathProvider} from '../core/comments/context/selected-path/CommentsSelectedPathProvider'
 import {hasCommentMessageValue, isTextSelectionComment} from '../core/comments/helpers'
 import {useComments} from '../core/comments/hooks/useComments'
 import {useCommentsEnabled} from '../core/comments/hooks/useCommentsEnabled'
 import {useCommentsSelectedPath} from '../core/comments/hooks/useCommentsSelectedPath'
 import {useCommentsTelemetry} from '../core/comments/hooks/useCommentsTelemetry'
-import {type CommentIntentGetter} from '../core/comments/types'
+import {
+  type CommentBaseCreatePayload,
+  type CommentContext,
+  type CommentCreatePayload,
+  type CommentDocument,
+  type CommentFieldCreatePayload,
+  type CommentIntentGetter,
+  type CommentListBreadcrumbs,
+  type CommentMessage,
+  type CommentOperations,
+  type CommentPath,
+  type CommentPostPayload,
+  type CommentReactionItem,
+  type CommentReactionOption,
+  type CommentReactionShortNames,
+  type CommentsListBreadcrumbItem,
+  type CommentStatus,
+  type CommentsTextSelectionItem,
+  type CommentsType,
+  type CommentsUIMode,
+  type CommentTaskCreatePayload,
+  type CommentTextSelection,
+  type CommentThreadItem,
+  type CommentUpdateOperationOptions,
+  type CommentUpdatePayload,
+  type Loadable,
+} from '../core/comments/types'
 import {buildCommentRangeDecorations} from '../core/comments/utils/inline-comments/buildCommentRangeDecorations'
 import {buildRangeDecorationSelectionsFromComments} from '../core/comments/utils/inline-comments/buildRangeDecorationSelectionsFromComments'
 import {buildTextSelectionFromFragment} from '../core/comments/utils/inline-comments/buildTextSelectionFromFragment'
-import {BetaBadge} from '../core/components/BetaBadge'
+import {BetaBadge, type BetaBadgeProps} from '../core/components/BetaBadge'
 import {CapabilityGate} from '../core/components/CapabilityGate'
-import {AutoCollapseMenu, CollapseMenu} from '../core/components/collapseMenu/CollapseMenu'
-import {CollapseMenuButton} from '../core/components/collapseMenu/CollapseMenuButton'
+import {
+  AutoCollapseMenu,
+  CollapseMenu,
+  type CollapseMenuProps,
+} from '../core/components/collapseMenu/CollapseMenu'
+import {
+  CollapseMenuButton,
+  type CollapseMenuButtonProps,
+  type CommonProps,
+} from '../core/components/collapseMenu/CollapseMenuButton'
 import {CommandList} from '../core/components/commandList/CommandList'
 import {
+  type CommandListElementType,
+  type CommandListGetItemDisabledCallback,
+  type CommandListGetItemKeyCallback,
+  type CommandListGetItemSelectedCallback,
+  type CommandListHandle,
   type CommandListItemContext,
+  type CommandListProps,
   type CommandListRenderItemCallback,
 } from '../core/components/commandList/types'
 import {ContextMenuButton} from '../core/components/contextMenuButton/ContextMenuButton'
 import {DocumentStatus} from '../core/components/documentStatus/DocumentStatus'
 import {DocumentStatusIndicator} from '../core/components/documentStatusIndicator/DocumentStatusIndicator'
-import {ErrorActions} from '../core/components/errorActions/ErrorActions'
+import {ErrorActions, type ErrorActionsProps} from '../core/components/errorActions/ErrorActions'
+import {type ErrorWithId} from '../core/components/errorActions/types'
 import {
   serializeError,
   useCopyErrorDetails,
 } from '../core/components/errorActions/useCopyErrorDetails'
 import {GetHookCollectionState} from '../core/components/hookCollection/GetHookCollectionState'
-import {Hotkeys} from '../core/components/Hotkeys'
-import {InsufficientPermissionsMessage} from '../core/components/InsufficientPermissionsMessage'
+import {
+  type GetHookCollectionStateProps,
+  type HookCollectionActionHook,
+} from '../core/components/hookCollection/types'
+import {Hotkeys, type HotkeysProps} from '../core/components/Hotkeys'
+import {
+  InsufficientPermissionsMessage,
+  type InsufficientPermissionsMessageProps,
+} from '../core/components/InsufficientPermissionsMessage'
 import {IntentButton} from '../core/components/IntentButton'
 import {LoadingBlock} from '../core/components/loadingBlock/LoadingBlock'
 import {PopoverDialog} from '../core/components/popoverDialog/PopoverDialog'
 import {
   PreviewCard,
+  type PreviewCardContextValue,
   ReferenceInputPreviewCard,
   usePreviewCard,
 } from '../core/components/previewCard/PreviewCard'
-import {CompactPreview} from '../core/components/previews/general/CompactPreview'
-import {DefaultPreview} from '../core/components/previews/general/DefaultPreview'
-import {DetailPreview} from '../core/components/previews/general/DetailPreview'
-import {MediaPreview} from '../core/components/previews/general/MediaPreview'
-import {BlockImagePreview} from '../core/components/previews/portableText/BlockImagePreview'
+import {
+  CompactPreview,
+  type CompactPreviewProps,
+} from '../core/components/previews/general/CompactPreview'
+import {
+  DefaultPreview,
+  type DefaultPreviewProps,
+} from '../core/components/previews/general/DefaultPreview'
+import {
+  DetailPreview,
+  type DetailPreviewProps,
+} from '../core/components/previews/general/DetailPreview'
+import {
+  MediaPreview,
+  type MediaPreviewProps,
+} from '../core/components/previews/general/MediaPreview'
+import {
+  BlockImagePreview,
+  type BlockImagePreviewProps,
+} from '../core/components/previews/portableText/BlockImagePreview'
 import {BlockPreview} from '../core/components/previews/portableText/BlockPreview'
-import {InlinePreview} from '../core/components/previews/portableText/InlinePreview'
-import {TemplatePreview} from '../core/components/previews/template/TemplatePreview'
+import {
+  InlinePreview,
+  type InlinePreviewProps,
+} from '../core/components/previews/portableText/InlinePreview'
+import {
+  TemplatePreview,
+  type TemplatePreviewProps,
+} from '../core/components/previews/template/TemplatePreview'
 import {
   type GeneralDocumentListLayoutKey,
   type GeneralPreviewLayoutKey,
+  type PortableTextPreviewLayoutKey,
+  type PreviewComponent,
   type PreviewLayoutKey,
+  type PreviewMediaDimensions,
+  type PreviewProps,
 } from '../core/components/previews/types'
 import {CircularProgress} from '../core/components/progress/CircularProgress'
 import {LinearProgress} from '../core/components/progress/LinearProgress'
 import {
+  type TrackerContextGetSnapshot,
+  type TrackerContextStore,
   useTrackerStore,
   useTrackerStoreReporter,
 } from '../core/components/react-track-elements/hooks'
-import {RelativeTime} from '../core/components/RelativeTime'
+import {
+  type IsEqualFunction,
+  type Reported,
+  type ReporterHook,
+} from '../core/components/react-track-elements/types'
+import {RelativeTime, type RelativeTimeProps} from '../core/components/RelativeTime'
 import {Resizable} from '../core/components/resizer/Resizable'
+import {
+  type RovingFocusNavigationType,
+  type RovingFocusProps,
+} from '../core/components/rovingFocus/types'
 import {useRovingFocus} from '../core/components/rovingFocus/useRovingFocus'
 import {useOnScroll} from '../core/components/scroll/hooks'
-import {ScrollContainer} from '../core/components/scroll/scrollContainer'
-import {StatusButton} from '../core/components/StatusButton'
-import {TextWithTone} from '../core/components/textWithTone/TextWithTone'
+import {ScrollContainer, type ScrollContainerProps} from '../core/components/scroll/scrollContainer'
+import {type ScrollContextValue, type ScrollEventHandler} from '../core/components/scroll/types'
+import {StatusButton, type StatusButtonProps} from '../core/components/StatusButton'
+import {TextWithTone, type TextWithToneProps} from '../core/components/textWithTone/TextWithTone'
 import {TooltipOfDisabled} from '../core/components/TooltipOfDisabled'
-import {ImperativeToast} from '../core/components/transitional/ImperativeToast'
-import {LegacyLayerProvider} from '../core/components/transitional/LegacyLayerProvider'
-import {AvatarSkeleton, UserAvatar} from '../core/components/userAvatar/UserAvatar'
+import {ImperativeToast, type ToastParams} from '../core/components/transitional/ImperativeToast'
+import {
+  LegacyLayerProvider,
+  type ZIndexContextValueKey,
+} from '../core/components/transitional/LegacyLayerProvider'
+import {
+  AvatarSkeleton,
+  UserAvatar,
+  type UserAvatarProps,
+} from '../core/components/userAvatar/UserAvatar'
 import {WithReferringDocuments} from '../core/components/WithReferringDocuments'
+import {type ZIndexContextValue} from '../core/components/zOffsets/types'
 import {useZIndex} from '../core/components/zOffsets/useZIndex'
 import {ZIndexProvider} from '../core/components/zOffsets/ZIndexProvider'
 import {useMiddlewareComponents} from '../core/config/components/useMiddlewareComponents'
-import {ConfigPropertyError} from '../core/config/ConfigPropertyError'
-import {ConfigResolutionError} from '../core/config/ConfigResolutionError'
+import {
+  ConfigPropertyError,
+  type ConfigPropertyErrorOptions,
+} from '../core/config/ConfigPropertyError'
+import {
+  ConfigResolutionError,
+  type ConfigResolutionErrorOptions,
+} from '../core/config/ConfigResolutionError'
 import {createDefaultIcon} from '../core/config/createDefaultIcon'
 import {createConfig, defineConfig} from '../core/config/defineConfig'
-import {createPlugin, definePlugin} from '../core/config/definePlugin'
+import {createPlugin, definePlugin, type PluginFactory} from '../core/config/definePlugin'
 import {
   type DocumentActionComponent,
   type DocumentActionConfirmDialogProps,
+  type DocumentActionCustomDialogComponentProps,
   type DocumentActionDescription,
   type DocumentActionDialogProps,
   type DocumentActionGroup,
   type DocumentActionModalDialogProps,
   type DocumentActionPopoverDialogProps,
   type DocumentActionProps,
+  type DuplicateActionProps,
   type DuplicateDocumentActionComponent,
   isSanityDefinedAction,
 } from '../core/config/document/actions'
@@ -204,50 +588,120 @@ import {defineDocumentFieldAction} from '../core/config/document/fieldActions/de
 import {documentFieldActionsReducer} from '../core/config/document/fieldActions/reducer'
 import {
   type DocumentFieldAction,
+  type DocumentFieldActionDivider,
   type DocumentFieldActionGroup,
+  type DocumentFieldActionHook,
   type DocumentFieldActionItem,
   type DocumentFieldActionNode,
   type DocumentFieldActionProps,
+  type DocumentFieldActionsResolver,
+  type DocumentFieldActionsResolverContext,
+  type DocumentFieldActionStatus,
+  type DocumentFieldActionTone,
 } from '../core/config/document/fieldActions/types'
 import {
   defineDocumentInspector,
   type DocumentInspector,
+  type DocumentInspectorComponent,
   type DocumentInspectorMenuItem,
   type DocumentInspectorProps,
   type DocumentInspectorUseMenuItemProps,
 } from '../core/config/document/inspector'
 import {flattenConfig} from '../core/config/flattenConfig'
+import {type FormComponents} from '../core/config/form/types'
 import {prepareConfig} from '../core/config/prepareConfig'
+import {
+  type ReleaseActionComponent,
+  type ReleaseActionDescription,
+  type ReleaseActionProps,
+  type ReleaseActionsContext,
+} from '../core/config/releases/actions'
 import {
   createSourceFromConfig,
   createWorkspaceFromConfig,
+  type CreateWorkspaceFromConfigOptions,
   resolveConfig,
 } from '../core/config/resolveConfig'
 import {resolveSchemaTypes} from '../core/config/resolveSchemaTypes'
 import {SchemaError} from '../core/config/SchemaError'
 import {
+  type ActiveToolLayoutProps,
+  type LayoutProps,
+  type LogoProps,
+  type NavbarAction,
+  type NavbarProps,
+  type StudioComponents,
+  type StudioComponentsPluginOptions,
+  type ToolMenuProps,
+} from '../core/config/studio/types'
+import {
+  type ActionComponent,
+  type AppsOptions,
+  type AssetSourceResolver,
+  type AsyncComposableOption,
+  type AsyncConfigPropertyReducer,
+  type AuthConfig,
+  type AuthProvider,
+  type BaseActionDescription,
+  type BetaFeatures,
+  type ComposableOption,
   type Config,
   type ConfigContext,
+  type ConfigPropertyReducer,
+  type CookielessCompatibleLoginMethod,
   DECISION_PARAMETERS_SCHEMA,
+  type DecisionParametersConfig,
+  type DefaultPluginsWorkspaceOptions,
   type DocumentActionsContext,
+  type DocumentActionsResolver,
   type DocumentActionsVersionType,
+  type DocumentBadgesContext,
+  type DocumentBadgesResolver,
+  type DocumentCommentsEnabledContext,
+  type DocumentInspectorContext,
+  type DocumentInspectorsResolver,
   type DocumentLanguageFilterComponent,
+  type DocumentLanguageFilterContext,
+  type DocumentLanguageFilterResolver,
   type DocumentLayoutProps,
+  type DocumentPluginOptions,
+  type FormBuilderComponentResolverContext,
+  type GroupableActionDescription,
+  type LoginMethod,
   type MediaLibraryConfig,
+  type MissingConfigFile,
+  type NewDocumentCreationContext,
+  type NewDocumentOptionsContext,
+  type NewDocumentOptionsResolver,
   type PartialContext,
+  type Plugin,
   type PluginOptions,
+  type PreparedConfig,
   QUOTA_EXCLUDED_RELEASES_ENABLED,
+  type ReleaseActionsResolver,
+  type ResolveProductionUrlContext,
+  type SanityFormConfig,
+  type ScheduledPublishingPluginOptions,
+  type SchemaPluginOptions,
+  type SingleWorkspace,
   type Source,
   type SourceClientOptions,
+  type SourceOptions,
+  type TemplateResolver,
   type Tool,
   type Workspace,
   type WorkspaceOptions,
+  type WorkspaceSummary,
 } from '../core/config/types'
 import {
   getConfigContextFromSource,
   useConfigContextFromSource,
 } from '../core/config/useConfigContextFromSource'
-import {useSanityCreateConfig} from '../core/create/context/useSanityCreateConfig'
+import {type SanityCreateConfigProvider} from '../core/create/context/SanityCreateConfigProvider'
+import {
+  type SanityCreateConfigContextValue,
+  useSanityCreateConfig,
+} from '../core/create/context/useSanityCreateConfig'
 import {
   getSanityCreateLinkMetadata,
   isSanityCreateExcludedType,
@@ -255,9 +709,15 @@ import {
   isSanityCreateLinkedDocument,
   isSanityCreateStartCompatibleDoc,
 } from '../core/create/createUtils'
-import {type CreateLinkMetadata} from '../core/create/types'
+import {
+  type CreateLinkedActionsProps,
+  type CreateLinkedDocumentBannerContentProps,
+  type CreateLinkedSanityDocument,
+  type CreateLinkMetadata,
+} from '../core/create/types'
 import {isDev, isProd} from '../core/environment'
 import {
+  type DiffVisitor,
   getAnnotationAtPath,
   getAnnotationColor,
   getDiffAtPath,
@@ -265,25 +725,40 @@ import {
 } from '../core/field/diff/annotations/helpers'
 import {useAnnotationColor, useDiffAnnotationColor} from '../core/field/diff/annotations/hooks'
 import {ChangeBreadcrumb} from '../core/field/diff/components/ChangeBreadcrumb'
-import {ChangeList} from '../core/field/diff/components/ChangeList'
-import {ChangeResolver} from '../core/field/diff/components/ChangeResolver'
+import {ChangeList, type ChangeListProps} from '../core/field/diff/components/ChangeList'
+import {
+  ChangeResolver,
+  type ChangeResolverProps,
+} from '../core/field/diff/components/ChangeResolver'
 import {ChangesError} from '../core/field/diff/components/ChangesError'
 import {ChangeTitleSegment} from '../core/field/diff/components/ChangeTitleSegment'
 import {TIMELINE_ITEM_I18N_KEY_MAPPING} from '../core/field/diff/components/constants'
-import {DiffCard} from '../core/field/diff/components/DiffCard'
-import {DiffErrorBoundary} from '../core/field/diff/components/DiffErrorBoundary'
-import {DiffFromTo} from '../core/field/diff/components/DiffFromTo'
-import {DiffInspectWrapper} from '../core/field/diff/components/DiffInspectWrapper'
+import {DiffCard, type DiffCardProps} from '../core/field/diff/components/DiffCard'
+import {
+  DiffErrorBoundary,
+  type DiffErrorBoundaryProps,
+  type DiffErrorBoundaryState,
+} from '../core/field/diff/components/DiffErrorBoundary'
+import {DiffFromTo, type DiffFromToProps} from '../core/field/diff/components/DiffFromTo'
+import {
+  DiffInspectWrapper,
+  type DiffInspectWrapperProps,
+} from '../core/field/diff/components/DiffInspectWrapper'
 import {DiffString, DiffStringSegment} from '../core/field/diff/components/DiffString'
-import {DiffTooltip} from '../core/field/diff/components/DiffTooltip'
+import {
+  DiffTooltip,
+  type DiffTooltipProps,
+  type DiffTooltipWithAnnotationsProps,
+} from '../core/field/diff/components/DiffTooltip'
 import {FallbackDiff} from '../core/field/diff/components/FallbackDiff'
 import {FieldChange} from '../core/field/diff/components/FieldChange'
-import {FromTo} from '../core/field/diff/components/FromTo'
-import {FromToArrow} from '../core/field/diff/components/FromToArrow'
+import {FromTo, type FromToProps} from '../core/field/diff/components/FromTo'
+import {FromToArrow, type FromToArrowDirection} from '../core/field/diff/components/FromToArrow'
 import {GroupChange} from '../core/field/diff/components/GroupChange'
-import {MetaInfo} from '../core/field/diff/components/MetaInfo'
+import {MetaInfo, type MetaInfoProps} from '../core/field/diff/components/MetaInfo'
 import {NoChanges} from '../core/field/diff/components/NoChanges'
 import {RevertChangesButton} from '../core/field/diff/components/RevertChangesButton'
+import {type RevertChangesConfirmDialog} from '../core/field/diff/components/RevertChangesConfirmDialog'
 import {TimelineEvent} from '../core/field/diff/components/TimelineEvent'
 import {ValueError} from '../core/field/diff/components/ValueError'
 import {type DocumentChangeContextInstance} from '../core/field/diff/contexts/DocumentChangeContext'
@@ -309,68 +784,146 @@ import {
   pathToString,
   stringToPath,
 } from '../core/field/paths/helpers'
+import {type FieldPreviewComponent} from '../core/field/preview/types'
 import {
   type AnnotationDetails,
+  type ArrayDiff,
+  type ArrayItemMetadata,
+  type BooleanDiff,
+  type ChangeNode,
+  type ChangeTitlePath,
   type Chunk,
   type ChunkType,
   type Diff,
+  type DiffComponent,
+  type DiffComponentOptions,
+  type DiffComponentResolver,
+  type DiffProps,
+  type FieldChangeNode,
+  type FieldOperationsAPI,
+  type FromToIndex,
+  type GroupChangeNode,
+  type ItemDiff,
+  type NullDiff,
+  type NumberDiff,
   type ObjectDiff,
+  type ReferenceDiff,
+  type StringDiff,
+  type StringDiffSegment,
+  type StringSegmentChanged,
+  type StringSegmentUnchanged,
+  type TypeChangeDiff,
 } from '../core/field/types'
-import {getValueError} from '../core/field/validation'
+import {type FieldValueError, getValueError} from '../core/field/validation'
 import {type FIXME} from '../core/FIXME'
 import {EditPortal} from '../core/form/components/EditPortal'
-import {FormField} from '../core/form/components/formField/FormField'
-import {FormFieldHeaderText} from '../core/form/components/formField/FormFieldHeaderText'
-import {FormFieldSet} from '../core/form/components/formField/FormFieldSet'
-import {FormFieldStatus} from '../core/form/components/formField/FormFieldStatus'
-import {FormFieldValidationStatus} from '../core/form/components/formField/FormFieldValidationStatus'
-import {FormInput} from '../core/form/components/FormInput'
-import {FormValueProvider, useFormValue} from '../core/form/contexts/FormValue'
+import {FormField, type FormFieldProps} from '../core/form/components/formField/FormField'
+import {
+  FormFieldHeaderText,
+  type FormFieldHeaderTextProps,
+} from '../core/form/components/formField/FormFieldHeaderText'
+import {FormFieldSet, type FormFieldSetProps} from '../core/form/components/formField/FormFieldSet'
+import {
+  type FieldStatusProps,
+  FormFieldStatus,
+} from '../core/form/components/formField/FormFieldStatus'
+import {
+  FormFieldValidationStatus,
+  type FormFieldValidationStatusProps,
+} from '../core/form/components/formField/FormFieldValidationStatus'
+import {
+  type FormFieldValidation,
+  type FormFieldValidationError,
+  type FormFieldValidationInfo,
+  type FormFieldValidationWarning,
+} from '../core/form/components/formField/types'
+import {
+  FormInput,
+  type FormInputAbsolutePathArg,
+  type FormInputRelativePathArg,
+} from '../core/form/components/FormInput'
+import {
+  type FormValueContextValue,
+  FormValueProvider,
+  useFormValue,
+} from '../core/form/contexts/FormValue'
 import {GetFormValueProvider, useGetFormValue} from '../core/form/contexts/GetFormValue'
-import {FieldActionMenu} from '../core/form/field/actions/FieldActionMenu'
+import {
+  FieldActionMenu,
+  type FieldActionMenuProps,
+} from '../core/form/field/actions/FieldActionMenu'
 import {FieldActionsProvider} from '../core/form/field/actions/FieldActionsProvider'
-import {FieldActionsResolver} from '../core/form/field/actions/FieldActionsResolver'
+import {
+  type FieldActionsProps,
+  FieldActionsResolver,
+} from '../core/form/field/actions/FieldActionsResolver'
 import {useFieldActions} from '../core/form/field/actions/useFieldActions'
 import {HoveredFieldProvider} from '../core/form/field/HoveredFieldProvider'
 import {useHoveredField} from '../core/form/field/useHoveredField'
+import {type FormBuilderContextValue} from '../core/form/FormBuilderContext'
 import {useDidUpdate} from '../core/form/hooks/useDidUpdate'
-import {BlockEditor} from '../core/form/inputs'
 import {ArrayOfObjectsFunctions} from '../core/form/inputs/arrays/ArrayOfObjectsInput/ArrayOfObjectsFunctions'
 import {ArrayOfObjectsInput} from '../core/form/inputs/arrays/ArrayOfObjectsInput/ArrayOfObjectsInput'
-import {useVirtualizerScrollInstance} from '../core/form/inputs/arrays/ArrayOfObjectsInput/List/useVirtualizerScrollInstance'
+import {
+  useVirtualizerScrollInstance,
+  type VirtualizerScrollInstance,
+} from '../core/form/inputs/arrays/ArrayOfObjectsInput/List/useVirtualizerScrollInstance'
 import {VirtualizerScrollInstanceProvider} from '../core/form/inputs/arrays/ArrayOfObjectsInput/List/VirtualizerScrollInstanceProvider'
 import {ArrayOfObjectOptionsInput} from '../core/form/inputs/arrays/ArrayOfOptionsInput/ArrayOfObjectOptionsInput'
 import {ArrayOfOptionsInput} from '../core/form/inputs/arrays/ArrayOfOptionsInput/ArrayOfOptionsInput'
-import {ArrayOfPrimitiveOptionsInput} from '../core/form/inputs/arrays/ArrayOfOptionsInput/ArrayOfPrimitiveOptionsInput'
 import {ArrayOfPrimitivesFunctions} from '../core/form/inputs/arrays/ArrayOfPrimitivesInput/ArrayOfPrimitivesFunctions'
 import {ArrayOfPrimitivesInput} from '../core/form/inputs/arrays/ArrayOfPrimitivesInput/ArrayOfPrimitivesInput'
 import {UniversalArrayInput} from '../core/form/inputs/arrays/UniversalArrayInput'
 import {BooleanInput} from '../core/form/inputs/BooleanInput'
 import {CrossDatasetReferenceInput} from '../core/form/inputs/CrossDatasetReferenceInput/CrossDatasetReferenceInput'
-import {DateInput} from '../core/form/inputs/DateInputs/DateInput'
-import {DateTimeInput} from '../core/form/inputs/DateInputs/DateTimeInput'
+import {DateInput, type DateInputProps} from '../core/form/inputs/DateInputs/DateInput'
+import {DateTimeInput, type DateTimeInputProps} from '../core/form/inputs/DateInputs/DateTimeInput'
 import {getCalendarLabels} from '../core/form/inputs/DateInputs/utils'
-import {EmailInput} from '../core/form/inputs/EmailInput'
+import {EmailInput, type EmailInputProps} from '../core/form/inputs/EmailInput'
+import {type ImageUrlBuilder} from '../core/form/inputs/files/types'
 import {NumberInput} from '../core/form/inputs/NumberInput/NumberInput'
 import {ObjectInput} from '../core/form/inputs/ObjectInput/ObjectInput'
-import {PortableTextInput} from '../core/form/inputs/PortableText/PortableTextInput'
+import {
+  PortableTextInput,
+  type PortableTextMemberItem,
+  type UpdateReadOnlyPlugin,
+} from '../core/form/inputs/PortableText/PortableTextInput'
 import {SelectInput} from '../core/form/inputs/SelectInput'
-import {SlugInput} from '../core/form/inputs/Slug/SlugInput'
+import {SlugInput, type SlugInputProps} from '../core/form/inputs/Slug/SlugInput'
 import {StringInput} from '../core/form/inputs/StringInput/StringInput'
-import {TagsArrayInput} from '../core/form/inputs/TagsArrayInput'
-import {TelephoneInput} from '../core/form/inputs/TelephoneInput'
-import {TextInput} from '../core/form/inputs/TextInput'
-import {UrlInput} from '../core/form/inputs/UrlInput'
-import {ArrayOfObjectsInputMember} from '../core/form/members/array/ArrayOfObjectsInputMember'
-import {ArrayOfObjectsInputMembers} from '../core/form/members/array/ArrayOfObjectsInputMembers'
-import {ArrayOfObjectsItem} from '../core/form/members/array/items/ArrayOfObjectsItem'
-import {ArrayOfPrimitivesItem} from '../core/form/members/array/items/ArrayOfPrimitivesItem'
+import {TagsArrayInput, type TagsArrayInputProps} from '../core/form/inputs/TagsArrayInput'
+import {TelephoneInput, type TelephoneInputProps} from '../core/form/inputs/TelephoneInput'
+import {TextInput, type TextInputProps} from '../core/form/inputs/TextInput'
+import {UrlInput, type UrlInputProps} from '../core/form/inputs/UrlInput'
+import {
+  ArrayOfObjectsInputMember,
+  type ArrayOfObjectsMemberProps,
+} from '../core/form/members/array/ArrayOfObjectsInputMember'
+import {
+  ArrayOfObjectsInputMembers,
+  type ArrayOfObjectsInputMembersProps,
+} from '../core/form/members/array/ArrayOfObjectsInputMembers'
+import {
+  ArrayOfObjectsItem,
+  type MemberItemProps,
+} from '../core/form/members/array/items/ArrayOfObjectsItem'
+import {
+  ArrayOfPrimitivesItem,
+  type PrimitiveMemberItemProps,
+} from '../core/form/members/array/items/ArrayOfPrimitivesItem'
 import {MemberItemError} from '../core/form/members/array/MemberItemError'
-import {MemberField} from '../core/form/members/object/MemberField'
+import {MemberField, type MemberFieldProps} from '../core/form/members/object/MemberField'
 import {MemberFieldError} from '../core/form/members/object/MemberFieldError'
 import {MemberFieldSet} from '../core/form/members/object/MemberFieldset'
-import {ObjectInputMember} from '../core/form/members/object/ObjectInputMember'
-import {ObjectInputMembers, ObjectMembers} from '../core/form/members/object/ObjectInputMembers'
+import {
+  ObjectInputMember,
+  type ObjectInputMemberProps,
+} from '../core/form/members/object/ObjectInputMember'
+import {
+  ObjectInputMembers,
+  ObjectMembers,
+  type ObjectMembersProps,
+} from '../core/form/members/object/ObjectInputMembers'
 import {
   dec,
   diffMatchPatch,
@@ -382,19 +935,100 @@ import {
   setIfMissing,
   unset,
 } from '../core/form/patch/patch'
-import {createPatchChannel, type PatchMsg} from '../core/form/patch/PatchChannel'
+import {
+  createPatchChannel,
+  type MutationPatchMsg,
+  type PatchChannel,
+  type PatchMsg,
+  type PatchMsgSubscriber,
+  type RebasePatchMsg,
+} from '../core/form/patch/PatchChannel'
 import {PatchEvent} from '../core/form/patch/PatchEvent'
+import {
+  type FormDecPatch,
+  type FormDiffMatchPatch,
+  type FormIncPatch,
+  type FormInsertPatch,
+  type FormInsertPatchPosition,
+  type FormPatch,
+  type FormPatchBase,
+  type FormPatchJSONValue,
+  type FormPatchOrigin,
+  type FormSetIfMissingPatch,
+  type FormSetPatch,
+  type FormUnsetPatch,
+  type PatchArg,
+} from '../core/form/patch/types'
 import {resolveConditionalProperty} from '../core/form/store/conditional-property/resolveConditionalProperty'
 import {ALL_FIELDS_GROUP} from '../core/form/store/constants'
 import {setAtPath} from '../core/form/store/stateTreeHelper'
-import {type DocumentFormNode, type NodeChronologyProps} from '../core/form/store/types/nodes'
-import {type StateTree} from '../core/form/store/types/state'
-import {useFormState} from '../core/form/store/useFormState'
-import {getExpandOperations} from '../core/form/store/utils/getExpandOperations'
-import {FormCallbacksProvider, useFormCallbacks} from '../core/form/studio/contexts/FormCallbacks'
+import {type ProvenanceDiffAnnotation} from '../core/form/store/types/diff'
+import {type FormFieldGroup} from '../core/form/store/types/fieldGroup'
+import {type FieldsetState} from '../core/form/store/types/fieldsetState'
 import {
+  type ArrayItemError,
+  type DuplicateKeysError,
+  type FieldError,
+  type IncompatibleTypeError,
+  type InvalidItemTypeError,
+  type MissingKeysError,
+  type MixedArrayError,
+  type TypeAnnotationMismatchError,
+  type UndeclaredMembersError,
+} from '../core/form/store/types/memberErrors'
+import {
+  type ArrayOfObjectsItemMember,
+  type ArrayOfObjectsMember,
+  type ArrayOfPrimitivesItemMember,
+  type ArrayOfPrimitivesMember,
+  type FieldMember,
+  type FieldSetMember,
+  type ObjectMember,
+} from '../core/form/store/types/members'
+import {
+  type ArrayOfObjectsFormNode,
+  type ArrayOfPrimitivesFormNode,
+  type BaseFormNode,
+  type BooleanFormNode,
+  type ComputeDiff,
+  type DocumentFormNode,
+  type HiddenField,
+  type NodeChronologyProps,
+  type NodeDiffProps,
+  type NumberFormNode,
+  type ObjectArrayFormNode,
+  type ObjectFormNode,
+  type PrimitiveFormNode,
+  type StringFormNode,
+} from '../core/form/store/types/nodes'
+import {type StateTree} from '../core/form/store/types/state'
+import {
+  type FormState,
+  useFormState,
+  type UseFormStateOptions,
+} from '../core/form/store/useFormState'
+import {
+  type ExpandFieldSetOperation,
+  type ExpandOperation,
+  type ExpandPathOperation,
+  getExpandOperations,
+  type SetActiveGroupOperation,
+} from '../core/form/store/utils/getExpandOperations'
+import {
+  type createSanityMediaLibraryFileSource,
+  type createSanityMediaLibraryImageSource,
+} from '../core/form/studio/assetSourceMediaLibrary/createAssetSource'
+import {
+  FormCallbacksProvider,
+  type FormCallbacksValue,
+  useFormCallbacks,
+} from '../core/form/studio/contexts/FormCallbacks'
+import {
+  type EditReferenceLinkComponentProps,
+  type EditReferenceOptions,
   type ReferenceInputOptions,
   ReferenceInputOptionsProvider,
+  type TemplateOption,
   useReferenceInputOptions,
 } from '../core/form/studio/contexts/ReferenceInputOptions'
 import {
@@ -406,10 +1040,38 @@ import {
   defaultRenderItem,
   defaultRenderPreview,
 } from '../core/form/studio/defaults'
-import {FormBuilder} from '../core/form/studio/FormBuilder'
-import {FormProvider} from '../core/form/studio/FormProvider'
-import {FileInput, ImageInput, ReferenceInput} from '../core/form/studio/inputs'
+import {FormBuilder, type FormBuilderProps} from '../core/form/studio/FormBuilder'
+import {FormProvider, type FormProviderProps} from '../core/form/studio/FormProvider'
+import {
+  type CrossDatasetReferenceInputProps,
+  FileInput,
+  type FileInputProps,
+  ImageInput,
+  type ImageInputProps,
+  ReferenceInput,
+  type ReferenceInputProps,
+} from '../core/form/studio/inputs'
 import {useTreeEditingEnabled} from '../core/form/studio/tree-editing/context/enabled/useTreeEditingEnabled'
+import {
+  type FileLike,
+  type ResolvedUploader,
+  type Uploader,
+  type UploaderDef,
+  type UploaderResolver,
+  type UploadOptions,
+  type UploadProgressEvent,
+} from '../core/form/studio/uploads/types'
+import {
+  type ArrayInputFunctionsProps,
+  type FormBuilderCustomMarkersComponent,
+  type FormBuilderFilterFieldFn,
+  type FormBuilderInputComponentMap,
+  type FormBuilderMarkersComponent,
+  type PortableTextMarker,
+  type RenderBlockActionsCallback,
+  type RenderBlockActionsProps,
+  type RenderCustomMarkers,
+} from '../core/form/types/_transitional'
 import {
   isArrayOfBlocksInputProps,
   isArrayOfObjectsInputProps,
@@ -420,16 +1082,103 @@ import {
   isObjectItemProps,
   isStringInputProps,
 } from '../core/form/types/asserters'
+import {
+  type BlockAnnotationProps,
+  type BlockDecoratorProps,
+  type BlockListItemProps,
+  type BlockProps,
+  type BlockStyleProps,
+  type PortableTextPluginsProps,
+} from '../core/form/types/blockProps'
+import {
+  type ArrayOfObjectsComponents,
+  type ArrayOfPrimitivesComponents,
+  type BlockAnnotationDefinition,
+  type BlockDecoratorDefinition,
+  type BooleanComponents,
+  type CrossDatasetReferenceComponents,
+  type DateComponents,
+  type DatetimeComponents,
+  type DocumentComponents,
+  type EmailComponents,
+  type FileComponents,
+  type GeopointComponents,
+  type ImageComponents,
+  type NumberComponents,
+  type ObjectComponents,
+  type ReferenceComponents,
+  type SlugComponents,
+  type SpanComponents,
+  type SpanDefinition,
+  type StringComponents,
+  type TextComponents,
+  type UrlComponents,
+} from '../core/form/types/definitionExtensions'
+import {
+  type ArrayInputCopyEvent,
+  type ArrayInputInsertEvent,
+  type ArrayInputMoveItemEvent,
+  type UploadEvent,
+} from '../core/form/types/event'
+import {
+  type ArrayFieldProps,
+  type ArrayOfPrimitivesFieldProps,
+  type BaseFieldProps,
+  type BooleanFieldProps,
+  type FieldCommentsProps,
+  type FieldProps,
+  type NumberFieldProps,
+  type ObjectFieldProps,
+  type PrimitiveFieldProps,
+  type StringFieldProps,
+} from '../core/form/types/fieldProps'
 import {type FormDocumentValue} from '../core/form/types/formDocumentValue'
-import {type InputProps} from '../core/form/types/inputProps'
+import {
+  type ArrayOfObjectsInputProps,
+  type ArrayOfPrimitivesElementType,
+  type ArrayOfPrimitivesInputProps,
+  type BaseInputProps,
+  type BooleanInputProps,
+  type ComplexElementProps,
+  type InputProps,
+  type NumberInputProps,
+  type ObjectInputProps,
+  type OnPathFocusPayload,
+  type PortableTextInputProps,
+  type PrimitiveInputElementProps,
+  type PrimitiveInputProps,
+  type StringInputProps,
+} from '../core/form/types/inputProps'
+import {
+  type BaseItemProps,
+  type ItemProps,
+  type ObjectItem,
+  type ObjectItemProps,
+  type PrimitiveItemProps,
+} from '../core/form/types/itemProps'
+import {
+  type RenderAnnotationCallback,
+  type RenderArrayOfObjectsItemCallback,
+  type RenderArrayOfPrimitivesItemCallback,
+  type RenderBlockCallback,
+  type RenderFieldCallback,
+  type RenderInputCallback,
+  type RenderItemCallback,
+  type RenderPreviewCallback,
+  type RenderPreviewCallbackProps,
+} from '../core/form/types/renderCallback'
 import {useDocumentForm} from '../core/form/useDocumentForm'
 import {useFormBuilder} from '../core/form/useFormBuilder'
-import {fromMutationPatches, toMutationPatches} from '../core/form/utils/mutationPatch'
+import {
+  fromMutationPatches,
+  type MutationPatch,
+  toMutationPatches,
+} from '../core/form/utils/mutationPatch'
 import {decodePath, encodePath} from '../core/form/utils/path'
 import {TransformPatches} from '../core/form/utils/TransformPatches'
 import {useClient} from '../core/hooks/useClient'
 import {useConditionalToast} from '../core/hooks/useConditionalToast'
-import {useConnectionState} from '../core/hooks/useConnectionState'
+import {type ConnectionState, useConnectionState} from '../core/hooks/useConnectionState'
 import {useDataset} from '../core/hooks/useDataset'
 import {useDateTimeFormat, type UseDateTimeFormatOptions} from '../core/hooks/useDateTimeFormat'
 import {type DocumentIdStack, useDocumentIdStack} from '../core/hooks/useDocumentIdStack'
@@ -438,24 +1187,41 @@ import {useDocumentOperationEvent} from '../core/hooks/useDocumentOperationEvent
 import {useEditState} from '../core/hooks/useEditState'
 import {useFeatureEnabled} from '../core/hooks/useFeatureEnabled'
 import {useFilteredReleases} from '../core/hooks/useFilteredReleases'
-import {useFormattedDuration} from '../core/hooks/useFormattedDuration'
-import {useGlobalCopyPasteElementHandler} from '../core/hooks/useGlobalCopyPasteElementHandler'
-import {useListFormat} from '../core/hooks/useListFormat'
+import {
+  type FormattedDuration,
+  useFormattedDuration,
+  type UseFormattedDurationOptions,
+} from '../core/hooks/useFormattedDuration'
+import {
+  type GlobalCopyPasteElementHandler,
+  useGlobalCopyPasteElementHandler,
+} from '../core/hooks/useGlobalCopyPasteElementHandler'
+import {useListFormat, type UseListFormatOptions} from '../core/hooks/useListFormat'
 import {useManageFavorite, type UseManageFavoriteProps} from '../core/hooks/useManageFavorite'
-import {useNumberFormat} from '../core/hooks/useNumberFormat'
+import {useNumberFormat, type UseNumberFormatOptions} from '../core/hooks/useNumberFormat'
 import {useProjectId} from '../core/hooks/useProjectId'
 import {useReconnectingToast} from '../core/hooks/useReconnectingToast'
-import {useReferringDocuments} from '../core/hooks/useReferringDocuments'
+import {type DocumentField, useReferringDocuments} from '../core/hooks/useReferringDocuments'
 import {type RelativeTimeOptions, useRelativeTime} from '../core/hooks/useRelativeTime'
 import {useReviewChanges} from '../core/hooks/useReviewChanges'
 import {useSchema} from '../core/hooks/useSchema'
 import {useStudioUrl} from '../core/hooks/useStudioUrl'
-import {useSyncState} from '../core/hooks/useSyncState'
+import {type SyncState, useSyncState} from '../core/hooks/useSyncState'
 import {useTemplates} from '../core/hooks/useTemplates'
-import {useTimeAgo} from '../core/hooks/useTimeAgo'
+import {type TimeAgoOpts, useTimeAgo} from '../core/hooks/useTimeAgo'
 import {useTools} from '../core/hooks/useTools'
-import {useUnitFormatter} from '../core/hooks/useUnitFormatter'
-import {useUserListWithPermissions} from '../core/hooks/useUserListWithPermissions'
+import {
+  type FormattableMeasurementUnit,
+  type UnitFormatter,
+  useUnitFormatter,
+  type UseUnitFormatterOptions,
+} from '../core/hooks/useUnitFormatter'
+import {
+  type UserListWithPermissionsHookValue,
+  type UserListWithPermissionsOptions,
+  type UserWithPermission,
+  useUserListWithPermissions,
+} from '../core/hooks/useUserListWithPermissions'
 import {useValidationStatus} from '../core/hooks/useValidationStatus'
 import {useWorkspaceSchemaId} from '../core/hooks/useWorkspaceSchemaId'
 import {LocaleProvider, LocaleProviderBase} from '../core/i18n/components/LocaleProvider'
@@ -466,16 +1232,33 @@ import {
   removeUndefinedLocaleResources,
 } from '../core/i18n/helpers'
 import {useGetI18nText} from '../core/i18n/hooks/useGetI18nText'
-import {useI18nText} from '../core/i18n/hooks/useI18nText'
+import {type I18nNode, useI18nText} from '../core/i18n/hooks/useI18nText'
 import {useCurrentLocale, useLocale} from '../core/i18n/hooks/useLocale'
-import {useTranslation} from '../core/i18n/hooks/useTranslation'
-import {defaultLocale, usEnglishLocale} from '../core/i18n/locales'
-import {Translate} from '../core/i18n/Translate'
 import {
+  useTranslation,
+  type UseTranslationOptions,
+  type UseTranslationResponse,
+} from '../core/i18n/hooks/useTranslation'
+import {defaultLocale, usEnglishLocale} from '../core/i18n/locales'
+import {Translate, type TranslateComponentMap, type TranslationProps} from '../core/i18n/Translate'
+import {
+  type ImplicitLocaleResourceBundle,
+  type Locale,
+  type LocaleConfigContext,
+  type LocaleDefinition,
+  type LocaleNestedResource,
+  type LocalePluginOptions,
   type LocaleResourceBundle,
+  type LocaleResourceKey,
+  type LocaleResourceRecord,
+  type LocalesBundlesOption,
+  type LocalesOption,
   type LocaleSource,
+  type LocaleWeekInfo,
+  type StaticLocaleResourceBundle,
   type StudioLocaleResourceKeys,
   type TFunction,
+  type ValidationLocaleResourceKeys,
 } from '../core/i18n/types'
 import {useDocumentLimitsUpsellContext} from '../core/limits/context/documents/DocumentLimitUpsellProvider'
 import {isDocumentLimitError} from '../core/limits/context/documents/isDocumentLimitError'
@@ -496,27 +1279,61 @@ import {
 import {useExcludedPerspective} from '../core/perspective/useExcludedPerspective'
 import {usePerspective} from '../core/perspective/usePerspective'
 import {useSetPerspective} from '../core/perspective/useSetPerspective'
-import {DocumentPreviewPresence} from '../core/presence/DocumentPreviewPresence'
+import {
+  DocumentPreviewPresence,
+  type DocumentPreviewPresenceProps,
+} from '../core/presence/DocumentPreviewPresence'
 import {
   FieldPresence,
   FieldPresenceInner,
+  type FieldPresenceInnerProps,
+  type FieldPresenceProps,
   FieldPresenceWithOverlay,
 } from '../core/presence/FieldPresence'
-import {PresenceOverlay} from '../core/presence/overlay/PresenceOverlay'
-import {PresenceScope} from '../core/presence/PresenceScope'
-import {unstable_useObserveDocument} from '../core/preview'
+import {PresenceOverlay, type PresenceOverlayProps} from '../core/presence/overlay/PresenceOverlay'
+import {PresenceScope, type PresenceScopeProps} from '../core/presence/PresenceScope'
+import {
+  type FieldPresenceData,
+  type FormNodePresence,
+  type Position,
+  type PresentUser,
+  type Rect,
+  type RegionWithIntersectionDetails,
+  type ReportedRegionWithRect,
+  type Size,
+} from '../core/presence/types'
 import {Preview} from '../core/preview/components/Preview'
 import {PreviewLoader} from '../core/preview/components/PreviewLoader'
-import {SanityDefaultPreview} from '../core/preview/components/SanityDefaultPreview'
+import {
+  SanityDefaultPreview,
+  type SanityDefaultPreviewProps,
+} from '../core/preview/components/SanityDefaultPreview'
 import {
   createDocumentPreviewStore,
   type DocumentPreviewStore,
+  type DocumentPreviewStoreOptions,
+  type ObserveForPreviewFn,
 } from '../core/preview/documentPreviewStore'
 import {
+  type ApiConfig,
+  type AvailabilityReason,
   type AvailabilityResponse,
   type DocumentAvailability,
+  type DraftsModelDocument,
+  type DraftsModelDocumentAvailability,
+  type FieldName,
+  type Id,
+  type InvalidationChannelEvent,
+  type ObserveDocumentAvailabilityFn,
+  type ObserveDocumentTypeFromIdFn,
+  type ObservePathsFn,
+  type PreparedSnapshot,
+  type Previewable,
   type PreviewableType,
+  type PreviewPath,
+  type Selection,
 } from '../core/preview/types'
+import {useObserveDocument as unstable_useObserveDocument} from '../core/preview/useObserveDocument'
 import {unstable_useValuePreview} from '../core/preview/useValuePreview'
 import {getPreviewPaths} from '../core/preview/utils/getPreviewPaths'
 import {getPreviewStateObservable} from '../core/preview/utils/getPreviewStateObservable'
@@ -534,7 +1351,7 @@ import {useIsReleaseActive} from '../core/releases/hooks/useIsReleaseActive'
 import {useOnlyHasVersions} from '../core/releases/hooks/useOnlyHasVersions'
 import {useVersionOperations} from '../core/releases/hooks/useVersionOperations'
 import {RELEASES_INTENT} from '../core/releases/plugin'
-import {isReleaseDocument} from '../core/releases/store/types'
+import {isReleaseDocument, type VersionInfoDocumentStub} from '../core/releases/store/types'
 import {useActiveReleases} from '../core/releases/store/useActiveReleases'
 import {useArchivedReleases} from '../core/releases/store/useArchivedReleases'
 import {useDocumentVersionInfo} from '../core/releases/store/useDocumentVersionInfo'
@@ -549,6 +1366,7 @@ import {
 } from '../core/releases/util/releasesClient'
 import {
   formatRelativeLocalePublishDate,
+  type getDocumentIsInPerspective,
   isDraftPerspective,
   isPublishedPerspective,
   isReleaseScheduledOrScheduling,
@@ -556,26 +1374,56 @@ import {
 // oxlint-disable-next-line no-restricted-imports
 import {EditScheduleForm} from '../core/scheduled-publishing/components/editScheduleForm/EditScheduleForm'
 // oxlint-disable-next-line no-restricted-imports
+import {type SchedulesContext} from '../core/scheduled-publishing/contexts/Schedules'
+// oxlint-disable-next-line no-restricted-imports
 import {ScheduledBadge} from '../core/scheduled-publishing/plugin/documentBadges/scheduled/ScheduledBadge'
+// oxlint-disable-next-line no-restricted-imports
+import {type ScheduleAction} from '../core/scheduled-publishing/types'
 import {createSchema} from '../core/schema/createSchema'
 import {getSchemaTypeTitle} from '../core/schema/helpers'
 import {getSearchableTypes} from '../core/search/common/getSearchableTypes'
 import {isPerspectiveRaw} from '../core/search/common/isPerspectiveRaw'
-import {type SearchOptions, type SearchSort} from '../core/search/common/types'
+import {
+  type SearchFactoryOptions,
+  type SearchOptions,
+  type SearchSort,
+  type SearchTerms,
+} from '../core/search/common/types'
 import {createSearch} from '../core/search/search'
-import {_createAuthStore, createAuthStore} from '../core/store/_legacy/authStore/createAuthStore'
-import {createMockAuthStore} from '../core/store/_legacy/authStore/createMockAuthStore'
+import {
+  _createAuthStore,
+  type AuthStoreOptions,
+  createAuthStore,
+} from '../core/store/_legacy/authStore/createAuthStore'
+import {
+  createMockAuthStore,
+  type MockAuthStoreOptions,
+} from '../core/store/_legacy/authStore/createMockAuthStore'
 import {getProviderTitle} from '../core/store/_legacy/authStore/providerTitle'
+import {
+  type AuthState,
+  type AuthStore,
+  type LoginComponentProps,
+} from '../core/store/_legacy/authStore/types'
 import {
   isAuthStore,
   isCookielessCompatibleLoginMethod,
 } from '../core/store/_legacy/authStore/utils/asserters'
 import {
+  type ConnectedStatus,
   CONNECTING,
+  type ConnectingStatus,
+  type ConnectionStatus,
+  type ConnectionStatusStore,
+  type ConnectionStatusStoreOptions,
   createConnectionStatusStore,
+  type ErrorStatus,
   onRetry,
+  type RetryingStatus,
 } from '../core/store/_legacy/connection-status/connection-status-store'
+import {type CorsOriginErrorOptions} from '../core/store/_legacy/cors/CorsOriginError'
 import {
+  type useComlinkStore,
   useConnectionStatusStore,
   useDocumentPreviewStore,
   useDocumentStore,
@@ -587,78 +1435,208 @@ import {
   useRenderingContextStore,
   useUserStore,
 } from '../core/store/_legacy/datastores'
-import {createBufferedDocument} from '../core/store/_legacy/document/buffered-doc/createBufferedDocument'
-import {createObservableBufferedDocument} from '../core/store/_legacy/document/buffered-doc/createObservableBufferedDocument'
 import {
+  type BufferedDocumentEvent,
+  type BufferedDocumentWrapper,
+  createBufferedDocument,
+} from '../core/store/_legacy/document/buffered-doc/createBufferedDocument'
+import {
+  type CommitRequest,
+  createObservableBufferedDocument,
+} from '../core/store/_legacy/document/buffered-doc/createObservableBufferedDocument'
+import {
+  type CommitFunction,
+  type CommittedEvent,
   type DocumentMutationEvent,
   type DocumentRebaseEvent,
+  type DocumentRemoteMutationEvent,
+  type MutationPayload,
+  type RemoteSnapshotEvent,
+  type SnapshotEvent,
 } from '../core/store/_legacy/document/buffered-doc/types'
-import {checkoutPair} from '../core/store/_legacy/document/document-pair/checkoutPair'
+import {
+  checkoutPair,
+  type DocumentVersion,
+  type DocumentVersionEvent,
+  type MutationResult,
+  type Pair,
+  type RemoteSnapshotVersionEvent,
+  type WithVersion,
+} from '../core/store/_legacy/document/document-pair/checkoutPair'
 import {editState, type EditStateFor} from '../core/store/_legacy/document/document-pair/editState'
 import {
   emitOperation,
+  type OperationError,
   operationEvents,
+  type OperationSuccess,
 } from '../core/store/_legacy/document/document-pair/operationEvents'
+import {
+  type MapDocument,
+  type Operation,
+  type OperationArgs,
+  type OperationImpl,
+  type OperationsAPI,
+} from '../core/store/_legacy/document/document-pair/operations/types'
 import {remoteSnapshots} from '../core/store/_legacy/document/document-pair/remoteSnapshots'
-import {snapshotPair} from '../core/store/_legacy/document/document-pair/snapshotPair'
+import {
+  type DocumentVersionSnapshots,
+  snapshotPair,
+} from '../core/store/_legacy/document/document-pair/snapshotPair'
 import {validation} from '../core/store/_legacy/document/document-pair/validation'
 import {
   createDocumentStore,
   type DocumentStore,
+  type DocumentStoreOptions,
   type QueryParams,
 } from '../core/store/_legacy/document/document-store'
-import {getPairListener} from '../core/store/_legacy/document/getPairListener'
-import {useDocumentType} from '../core/store/_legacy/document/hooks/useDocumentType'
+import {
+  type DocumentStoreExtraOptions,
+  getPairListener,
+  type InitialSnapshotEvent,
+  type LatencyReportEvent,
+  type ListenerEvent,
+} from '../core/store/_legacy/document/getPairListener'
+import {
+  type DocumentTypeResolveState,
+  useDocumentType,
+} from '../core/store/_legacy/document/hooks/useDocumentType'
 import {useDocumentValues} from '../core/store/_legacy/document/hooks/useDocumentValues'
-import {getInitialValueStream} from '../core/store/_legacy/document/initialValue/initialValue'
+import {
+  getInitialValueStream,
+  type InitialValueOptions,
+} from '../core/store/_legacy/document/initialValue/initialValue'
+import {
+  type InitialValueErrorMsg,
+  type InitialValueLoadingMsg,
+  type InitialValueMsg,
+  type InitialValueState,
+  type InitialValueSuccessMsg,
+} from '../core/store/_legacy/document/initialValue/types'
 import {isNewDocument} from '../core/store/_legacy/document/isNewDocument'
-import {listenQuery} from '../core/store/_legacy/document/listenQuery'
+import {
+  listenQuery,
+  type ListenQueryOptions,
+  type ListenQueryParams,
+} from '../core/store/_legacy/document/listenQuery'
 import {selectUpstreamVersion} from '../core/store/_legacy/document/selectUpstreamVersion'
+import {
+  type IdPair,
+  type MutationEvent,
+  type PendingMutationsEvent,
+  type ReconnectEvent,
+  type WelcomeEvent,
+} from '../core/store/_legacy/document/types'
 import {
   useInitialValue,
   useInitialValueResolverContext,
 } from '../core/store/_legacy/document/useInitialValue'
 import {useResolveInitialValueForType} from '../core/store/_legacy/document/useResolveInitialValueForType'
 import {
+  type DocumentPairPermissionsOptions,
+  type DocumentPermission,
   getDocumentPairPermissions,
   useDocumentPairPermissions,
   useDocumentPairPermissionsFromHookFactory,
 } from '../core/store/_legacy/grants/documentPairPermissions'
 import {
+  type DocumentValuePermissionsOptions,
   getDocumentValuePermissions,
   useDocumentValuePermissions,
 } from '../core/store/_legacy/grants/documentValuePermissions'
-import {createGrantsStore, grantsPermissionOn} from '../core/store/_legacy/grants/grantsStore'
+import {
+  createGrantsStore,
+  grantsPermissionOn,
+  type GrantsStoreOptions,
+} from '../core/store/_legacy/grants/grantsStore'
 import {
   getTemplatePermissions,
+  type TemplatePermissionsOptions,
   type TemplatePermissionsResult,
   useTemplatePermissions,
   useTemplatePermissionsFromHookFactory,
 } from '../core/store/_legacy/grants/templatePermissions'
 import {
   type DocumentValuePermission,
+  type EvaluationParams,
+  type Grant,
+  type GrantsStore,
   type PermissionCheckResult,
 } from '../core/store/_legacy/grants/types'
 import {
   createHistoryStore,
+  type DocumentRevision,
+  type HistoryStore,
+  type HistoryStoreOptions,
   removeMissingReferences,
 } from '../core/store/_legacy/history/createHistoryStore'
-import {Timeline} from '../core/store/_legacy/history/history/Timeline'
-import {TimelineController} from '../core/store/_legacy/history/history/TimelineController'
+import {
+  type ParsedTimeRef,
+  Timeline,
+  type TimelineOptions,
+} from '../core/store/_legacy/history/history/Timeline'
+import {
+  type SelectionState,
+  TimelineController,
+  type TimelineControllerOptions,
+} from '../core/store/_legacy/history/history/TimelineController'
+import {
+  type CombinedDocument,
+  type DocumentRemoteMutationVersionEvent,
+  type Transaction,
+} from '../core/store/_legacy/history/history/types'
 import {useTimelineSelector} from '../core/store/_legacy/history/useTimelineSelector'
-import {type TimelineStore, useTimelineStore} from '../core/store/_legacy/history/useTimelineStore'
-import {createPresenceStore, SESSION_ID} from '../core/store/_legacy/presence/presence-store'
-import {type DocumentPresence} from '../core/store/_legacy/presence/types'
+import {
+  type TimelineState,
+  type TimelineStore,
+  useTimelineStore,
+} from '../core/store/_legacy/history/useTimelineStore'
+import {
+  createPresenceStore,
+  type PresenceStore,
+  SESSION_ID,
+} from '../core/store/_legacy/presence/presence-store'
+import {
+  type DocumentPresence,
+  type GlobalPresence,
+  type PresenceLocation,
+  type Session,
+  type Status,
+  type UserSessionPair,
+} from '../core/store/_legacy/presence/types'
 import {useDocumentPresence} from '../core/store/_legacy/presence/useDocumentPresence'
 import {useGlobalPresence} from '../core/store/_legacy/presence/useGlobalPresence'
 import {createProjectStore} from '../core/store/_legacy/project/projectStore'
+import {
+  type ProjectData,
+  type ProjectDatasetData,
+  type ProjectStore,
+} from '../core/store/_legacy/project/types'
 import {useProject} from '../core/store/_legacy/project/useProject'
 import {useProjectDatasets} from '../core/store/_legacy/project/useProjectDatasets'
-import {ResourceCacheProvider, useResourceCache} from '../core/store/_legacy/ResourceCacheProvider'
-import {createUserStore} from '../core/store/_legacy/user/userStore'
+import {
+  type ResourceCache,
+  ResourceCacheProvider,
+  type ResourceCacheProviderProps,
+  useResourceCache,
+} from '../core/store/_legacy/ResourceCacheProvider'
+import {
+  createUserStore,
+  type UserStore,
+  type UserStoreOptions,
+} from '../core/store/_legacy/user/userStore'
 import {EventsProvider, useEvents} from '../core/store/events/EventsProvider'
 import {
+  type BaseEvent,
+  type CreateDocumentVersionEvent,
+  type CreateLiveDocumentEvent,
+  type DeleteDocumentGroupEvent,
+  type DeleteDocumentVersionEvent,
   type DocumentGroupEvent,
+  type DocumentVersionEventType,
+  type EditDocumentVersionEvent,
+  type EventsStore,
+  type EventsStoreRevision,
+  type HistoryClearedEvent,
   isCreateDocumentVersionEvent,
   isCreateLiveDocumentEvent,
   isDeleteDocumentGroupEvent,
@@ -670,20 +1648,34 @@ import {
   isUnscheduleDocumentVersionEvent,
   isUpdateLiveDocumentEvent,
   type PublishDocumentVersionEvent,
+  type ScheduleDocumentVersionEvent,
+  type UnpublishDocumentEvent,
+  type UnscheduleDocumentVersionEvent,
+  type UpdateLiveDocumentEvent,
 } from '../core/store/events/types'
 import {useEventsStore} from '../core/store/events/useEventsStore'
 import {createKeyValueStore} from '../core/store/key-value/keyValueStore'
-import {type KeyValueStoreValue} from '../core/store/key-value/types'
+import {type KeyValueStore, type KeyValueStoreValue} from '../core/store/key-value/types'
 import {useCurrentUser, useUser} from '../core/store/user/hooks'
-import {ActiveWorkspaceMatcher} from '../core/studio/activeWorkspaceMatcher/ActiveWorkspaceMatcher'
-import {matchWorkspace} from '../core/studio/activeWorkspaceMatcher/matchWorkspace'
+import {
+  ActiveWorkspaceMatcher,
+  type ActiveWorkspaceMatcherProps,
+} from '../core/studio/activeWorkspaceMatcher/ActiveWorkspaceMatcher'
+import {type ActiveWorkspaceMatcherContextValue} from '../core/studio/activeWorkspaceMatcher/ActiveWorkspaceMatcherContext'
+import {
+  matchWorkspace,
+  type MatchWorkspaceOptions,
+  type MatchWorkspaceResult,
+} from '../core/studio/activeWorkspaceMatcher/matchWorkspace'
 import {useActiveWorkspace} from '../core/studio/activeWorkspaceMatcher/useActiveWorkspace'
 import {AddonDatasetProvider} from '../core/studio/addonDataset/AddonDatasetProvider'
+import {type AddonDatasetContextValue} from '../core/studio/addonDataset/types'
 import {useAddonDataset} from '../core/studio/addonDataset/useAddonDataset'
 import {
   ColorSchemeCustomProvider,
   ColorSchemeLocalStorageProvider,
   ColorSchemeProvider,
+  type ColorSchemeProviderProps,
   useColorScheme,
   useColorSchemeInternalValue,
   useColorSchemeOptions,
@@ -692,56 +1684,107 @@ import {
 } from '../core/studio/colorScheme'
 import {Filters} from '../core/studio/components/navbar/search/components/filters/Filters'
 import {SearchHeader} from '../core/studio/components/navbar/search/components/SearchHeader'
-import {SearchPopover} from '../core/studio/components/navbar/search/components/SearchPopover'
+import {
+  SearchPopover,
+  type SearchPopoverProps,
+} from '../core/studio/components/navbar/search/components/SearchPopover'
 import {SearchResultItemPreview} from '../core/studio/components/navbar/search/components/searchResults/item/SearchResultItemPreview'
+import {type SearchContextValue} from '../core/studio/components/navbar/search/contexts/search/SearchContext'
 import {SearchProvider} from '../core/studio/components/navbar/search/contexts/search/SearchProvider'
 import {useSearchState} from '../core/studio/components/navbar/search/contexts/search/useSearchState'
 import {
   defineSearchFilter,
   defineSearchFilterOperators,
+  type SearchFilterDefinition,
 } from '../core/studio/components/navbar/search/definitions/filters'
-import {operatorDefinitions} from '../core/studio/components/navbar/search/definitions/operators/defaultOperators'
-import {defineSearchOperator} from '../core/studio/components/navbar/search/definitions/operators/operatorTypes'
-import {useSearchMaxFieldDepth} from '../core/studio/components/navbar/search/hooks/useSearchMaxFieldDepth'
+import {
+  operatorDefinitions,
+  type SearchOperatorType,
+} from '../core/studio/components/navbar/search/definitions/operators/defaultOperators'
+import {
+  defineSearchOperator,
+  type I18nSearchOperatorDescriptionKey,
+  type I18nSearchOperatorNameKey,
+  type OperatorButtonValueComponentProps,
+  type OperatorInputComponentProps,
+  type SearchOperatorBase,
+  type SearchOperatorBuilder,
+  type SearchOperatorButtonValue,
+  type SearchOperatorInput,
+  type SearchOperatorParams,
+  type SearchValueFormatterContext,
+  type ValuelessSearchOperatorBuilder,
+  type ValuelessSearchOperatorParams,
+} from '../core/studio/components/navbar/search/definitions/operators/operatorTypes'
+import {
+  type PartialIndexSettings,
+  useSearchMaxFieldDepth,
+} from '../core/studio/components/navbar/search/hooks/useSearchMaxFieldDepth'
 import {SearchButton} from '../core/studio/components/navbar/search/SearchButton'
 import {SearchDialog} from '../core/studio/components/navbar/search/SearchDialog'
 import {StudioLogo} from '../core/studio/components/navbar/StudioLogo'
 import {StudioNavbar} from '../core/studio/components/navbar/StudioNavbar'
 import {StudioToolMenu} from '../core/studio/components/navbar/tools/StudioToolMenu'
-import {ToolLink} from '../core/studio/components/navbar/tools/ToolLink'
+import {ToolLink, type ToolLinkProps} from '../core/studio/components/navbar/tools/ToolLink'
 import {CopyPasteProvider, useCopyPaste} from '../core/studio/copyPaste/CopyPasteProvider'
+import {
+  type BaseOptions,
+  type CopyOptions,
+  type CopyPasteContextType,
+  type DocumentMeta,
+  type PasteOptions,
+  type SanityClipboardItem,
+} from '../core/studio/copyPaste/types'
 import {renderStudio} from '../core/studio/renderStudio'
-import {SourceProvider, useSource} from '../core/studio/source'
-import {Studio} from '../core/studio/Studio'
+import {SourceProvider, type SourceProviderProps, useSource} from '../core/studio/source'
+import {Studio, type StudioProps} from '../core/studio/Studio'
 import {StudioAnnouncementsCard} from '../core/studio/studioAnnouncements/StudioAnnouncementsCard'
 import {StudioAnnouncementsDialog} from '../core/studio/studioAnnouncements/StudioAnnouncementsDialog'
 import {
   isValidAnnouncementAudience,
   isValidAnnouncementRole,
 } from '../core/studio/studioAnnouncements/utils'
-import {StudioLayout, StudioLayoutComponent} from '../core/studio/StudioLayout'
-import {StudioProvider} from '../core/studio/StudioProvider'
+import {
+  type NavbarContextValue,
+  StudioLayout,
+  type StudioLayoutComponent,
+} from '../core/studio/StudioLayout'
+import {StudioProvider, type StudioProviderProps} from '../core/studio/StudioProvider'
 import {
   UpsellDialogDismissed,
   UpsellDialogLearnMoreCtaClicked,
   UpsellDialogUpgradeCtaClicked,
   UpsellDialogViewed,
+  type UpsellDialogViewedInfo,
 } from '../core/studio/upsell/__telemetry__/upsell.telemetry'
-import {UpsellDescriptionSerializer} from '../core/studio/upsell/upsellDescriptionSerializer/UpsellDescriptionSerializer'
-import {useWorkspace, WorkspaceProvider} from '../core/studio/workspace'
-import {ErrorMessage} from '../core/studio/workspaceLoader/ErrorMessage'
+import {
+  type InterpolationProp,
+  UpsellDescriptionSerializer,
+} from '../core/studio/upsell/upsellDescriptionSerializer/UpsellDescriptionSerializer'
+import {
+  useWorkspace,
+  WorkspaceProvider,
+  type WorkspaceProviderProps,
+} from '../core/studio/workspace'
+import {ErrorMessage, type ErrorMessageProps} from '../core/studio/workspaceLoader/ErrorMessage'
 import {useWorkspaceLoader, WorkspaceLoader} from '../core/studio/workspaceLoader/WorkspaceLoader'
 import {
   getNamelessWorkspaceIdentifier,
   getWorkspaceIdentifier,
 } from '../core/studio/workspaces/helpers'
+import {type WorkspaceLike} from '../core/studio/workspaces/types'
 import {useWorkspaces} from '../core/studio/workspaces/useWorkspaces'
 import {
   validateBasePaths,
   validateNames,
+  type ValidateWorkspaceOptions,
   validateWorkspaces,
 } from '../core/studio/workspaces/validateWorkspaces'
-import {WorkspacesProvider} from '../core/studio/workspaces/WorkspacesProvider'
+import {type WorkspacesContextValue} from '../core/studio/workspaces/WorkspacesContext'
+import {
+  WorkspacesProvider,
+  type WorkspacesProviderProps,
+} from '../core/studio/workspaces/WorkspacesProvider'
 import {DEFAULT_STUDIO_CLIENT_OPTIONS} from '../core/studioClient'
 import {IsLastPaneProvider} from '../core/tasks/context/isLastPane/IsLastPaneProvider'
 import {
@@ -755,26 +1798,55 @@ import {
   resolveInitialObjectValue,
   resolveInitialValue,
   resolveInitialValueForType,
+  type Serializeable,
 } from '../core/templates/resolve'
-import {type InitialValueTemplateItem, type Template} from '../core/templates/types'
+import {
+  type InitialValueTemplateItem,
+  type Template,
+  type TemplateArrayFieldDefinition,
+  type TemplateFieldDefinition,
+  type TemplateItem,
+  type TemplateParameter,
+  type TemplateReferenceTarget,
+  type TypeTarget,
+} from '../core/templates/types'
 import {defaultTheme} from '../core/theme'
 import {buildLegacyTheme} from '../core/theme/_legacy/theme'
+import {type LegacyThemeProps, type LegacyThemeTints} from '../core/theme/_legacy/types'
+import {type StudioTheme, type StudioThemeColorSchemeKey} from '../core/theme/types'
 import {useUserColor, useUserColorManager} from '../core/user-color/hooks'
-import {createUserColorManager} from '../core/user-color/manager'
-import {UserColorManagerProvider} from '../core/user-color/provider'
+import {createUserColorManager, type UserColorManagerOptions} from '../core/user-color/manager'
+import {
+  UserColorManagerProvider,
+  type UserColorManagerProviderProps,
+} from '../core/user-color/provider'
+import {
+  type HexColor,
+  type UserColor,
+  type UserColorHue,
+  type UserColorManager,
+  type UserId,
+} from '../core/user-color/types'
 import {catchWithCount} from '../core/util/catchWithCount'
-import {createHookFromObservableFactory} from '../core/util/createHookFromObservableFactory'
+import {
+  createHookFromObservableFactory,
+  type LoadingTuple,
+  type ReactHook,
+} from '../core/util/createHookFromObservableFactory'
 import {
   collate,
+  type CollatedHit,
   createDraftFrom,
   createPublishedFrom,
   documentIdEquals,
+  type DraftId,
   DRAFTS_FOLDER,
   getDraftId,
   getIdPair,
   getPublishedId,
   getVersionFromId,
   getVersionId,
+  idMatchesPerspective,
   isDraft,
   isDraftId,
   isPublishedId,
@@ -784,20 +1856,31 @@ import {
   newDraftFrom,
   type PublishedId,
   removeDupes,
+  type SystemBundle,
   systemBundles,
   VERSION_FOLDER,
 } from '../core/util/draftUtils'
 import {EMPTY_ARRAY, EMPTY_OBJECT} from '../core/util/empty'
 import {formatRelativeLocale} from '../core/util/formatRelativeLocale'
-import {getDocumentVariantType} from '../core/util/getDocumentVariantType'
+import {type DocumentVariantType, getDocumentVariantType} from '../core/util/getDocumentVariantType'
+import {type getErrorMessage} from '../core/util/getErrorMessage'
 import {globalScope} from '../core/util/globalScope'
 import {isArray} from '../core/util/isArray'
 import {isNonNullable} from '../core/util/isNonNullable'
 import {isRecord} from '../core/util/isRecord'
 import {isString} from '../core/util/isString'
 import {isTruthy} from '../core/util/isTruthy'
-import {isCardinalityOnePerspective, isCardinalityOneRelease} from '../core/util/releaseUtils'
-import {createSharedResizeObserver, resizeObserver} from '../core/util/resizeObserver'
+import {type PartialExcept} from '../core/util/PartialExcept'
+import {
+  type CardinalityOneRelease,
+  isCardinalityOnePerspective,
+  isCardinalityOneRelease,
+} from '../core/util/releaseUtils'
+import {
+  createSharedResizeObserver,
+  resizeObserver,
+  type SharedResizeObserver,
+} from '../core/util/resizeObserver'
 import {createSWR} from '../core/util/rxSwr'
 import {
   _isCustomDocumentTypeDefinition,
@@ -807,81 +1890,278 @@ import {escapeField, fieldNeedsEscape, joinPath} from '../core/util/searchUtils'
 import {supportsTouch} from '../core/util/supportsTouch'
 import {uncaughtErrorHandler} from '../core/util/uncaughtErrorHandler'
 import {sliceString, truncateString} from '../core/util/unicodeString'
-import {asLoadable, useLoadable} from '../core/util/useLoadable'
+import {
+  asLoadable,
+  type ErrorState,
+  type LoadableState,
+  type LoadedState,
+  type LoadingState,
+  useLoadable,
+} from '../core/util/useLoadable'
 import {userHasRole} from '../core/util/userHasRole'
 import {useThrottledCallback} from '../core/util/useThrottledCallback'
 import {useUnique} from '../core/util/useUnique'
 import {Rule as ConcreteRuleClass} from '../core/validation/Rule'
-import {validateDocument} from '../core/validation/validateDocument'
+import {validateDocument, type ValidateDocumentOptions} from '../core/validation/validateDocument'
 import {SANITY_VERSION} from '../core/version'
 
 export {
   _createAuthStore,
   _isCustomDocumentTypeDefinition,
   _isSanityDocumentTypeDefinition,
+  type ActionComponent,
+  type ActiveToolLayoutProps,
   ActiveWorkspaceMatcher,
+  type ActiveWorkspaceMatcherContextValue,
+  type ActiveWorkspaceMatcherProps,
+  type AddonDatasetContextValue,
   AddonDatasetProvider,
   ALL_FIELDS_GROUP,
+  type AnnotationDetails,
+  type ApiConfig,
+  type AppsOptions,
+  type ArrayActionName,
+  type ArrayDefinition,
+  type ArrayDiff,
+  type ArrayFieldProps,
+  type ArrayInputCopyEvent,
+  type ArrayInputFunctionsProps,
+  type ArrayInputInsertEvent,
+  type ArrayInputMoveItemEvent,
+  type ArrayItemError,
+  type ArrayItemMetadata,
+  type ArrayOfEntry,
   ArrayOfObjectOptionsInput,
+  type ArrayOfObjectsComponents,
+  type ArrayOfObjectsFormNode,
   ArrayOfObjectsFunctions,
   ArrayOfObjectsInput,
   ArrayOfObjectsInputMember,
   ArrayOfObjectsInputMembers,
+  type ArrayOfObjectsInputMembersProps,
+  type ArrayOfObjectsInputProps,
   ArrayOfObjectsItem,
+  type ArrayOfObjectsItemMember,
+  type ArrayOfObjectsMember,
+  type ArrayOfObjectsMemberProps,
   ArrayOfOptionsInput,
-  ArrayOfPrimitiveOptionsInput,
+  type ArrayOfPrimitivesComponents,
+  type ArrayOfPrimitivesElementType,
+  type ArrayOfPrimitivesFieldProps,
+  type ArrayOfPrimitivesFormNode,
   ArrayOfPrimitivesFunctions,
   ArrayOfPrimitivesInput,
+  type ArrayOfPrimitivesInputProps,
   ArrayOfPrimitivesItem,
+  type ArrayOfPrimitivesItemMember,
+  type ArrayOfPrimitivesMember,
+  type ArrayOfType,
+  type ArrayOptions,
+  type ArrayRule,
+  ArraySchemaType,
+  type ArraySchemaTypeOf,
   asLoadable,
+  Asset,
+  type AssetFromSource,
+  type AssetMetadataType,
+  type AssetSchemaTypeOptions,
+  type AssetSource,
+  type AssetSourceComponentProps,
+  type AssetSourceResolver,
+  type AssetSourceSpec,
+  type AssetSourceUploader,
+  type AssetSourceUploaderClass,
+  type AssetSourceUploadEvent,
+  type AssetSourceUploadEventAbort,
+  type AssetSourceUploadEventAllComplete,
+  type AssetSourceUploadEventError,
+  type AssetSourceUploadEventProgress,
+  type AssetSourceUploadEventStatus,
+  type AssetSourceUploadFile,
+  type AssetSourceUploadSubscriber,
+  type AsyncComposableOption,
+  type AsyncConfigPropertyReducer,
+  type AuthConfig,
+  type AuthProvider,
+  type AuthState,
+  type AuthStore,
+  type AuthStoreOptions,
   AutoCollapseMenu,
+  type AutocompleteString,
+  type AvailabilityReason,
+  type AvailabilityResponse,
   AvatarSkeleton,
+  type BaseActionDescription,
+  type BaseEvent,
+  type BaseFieldProps,
+  type BaseFormNode,
+  type BaseInputProps,
+  type BaseItemProps,
+  type BaseOptions,
+  type BaseSchemaDefinition,
+  type BaseSchemaType,
+  type BaseSchemaTypeOptions,
   BetaBadge,
-  BlockEditor,
+  type BetaBadgeProps,
+  type BetaFeatures,
+  type BlockAnnotationDefinition,
+  type BlockAnnotationProps,
+  type BlockChildrenObjectField,
+  type BlockDecoratorDefinition,
+  type BlockDecoratorProps,
+  BlockDefinition,
+  PortableTextInput as BlockEditor,
   BlockImagePreview,
+  type BlockImagePreviewProps,
+  type BlockListDefinition,
+  type BlockListItemProps,
+  type BlockListObjectField,
+  type BlockMarksDefinition,
+  type BlockOptions,
   BlockPreview,
+  type BlockProps,
+  type BlockRule,
+  type BlockSchemaType,
+  type BlockStyleDefinition,
+  type BlockStyleObjectField,
+  type BlockStyleProps,
+  type BooleanComponents,
+  type BooleanDefinition,
+  type BooleanDiff,
+  type BooleanFieldProps,
+  type BooleanFormNode,
   BooleanInput,
+  type BooleanInputProps,
+  type BooleanOptions,
+  type BooleanRule,
+  BooleanSchemaType,
+  type BufferedDocumentEvent,
+  type BufferedDocumentWrapper,
   buildCommentRangeDecorations,
   buildLegacyTheme,
   buildRangeDecorationSelectionsFromComments,
   buildTextSelectionFromFragment,
+  type CanvasAppOptions,
+  type CanvasNotificationPayload,
+  CapabilityGate,
+  type CardinalityOneRelease,
+  catchWithCount,
   ChangeBreadcrumb,
   ChangeConnectorRoot,
+  type ChangeConnectorRootProps,
   ChangeFieldWrapper,
   ChangeIndicator,
+  type ChangeIndicatorProps,
   ChangeIndicatorsTracker,
+  type ChangeIndicatorTrackerContextValue,
   ChangeList,
+  type ChangeListProps,
+  type ChangeNode,
   ChangeResolver,
+  type ChangeResolverProps,
   ChangesError,
+  type ChangeTitlePath,
   ChangeTitleSegment,
   checkoutPair,
+  type Chunk,
+  type ChunkType,
   CircularProgress,
   CollapseMenu,
   CollapseMenuButton,
+  type CollapseMenuButtonProps,
+  type CollapseMenuProps,
+  type CollapseOptions,
   collate,
+  type CollatedHit,
   ColorSchemeCustomProvider,
   ColorSchemeLocalStorageProvider,
   ColorSchemeProvider,
+  type ColorSchemeProviderProps,
+  type CombinedDocument,
   CommandList,
+  type CommandListElementType,
+  type CommandListGetItemDisabledCallback,
+  type CommandListGetItemKeyCallback,
+  type CommandListGetItemSelectedCallback,
+  type CommandListHandle,
+  type CommandListItemContext,
+  type CommandListProps,
+  type CommandListRenderItemCallback,
+  type CommentBaseCreatePayload,
+  type CommentContext,
+  type CommentCreatePayload,
   CommentDeleteDialog,
   CommentDisabledIcon,
+  type CommentDocument,
+  type CommentFieldCreatePayload,
   CommentInlineHighlightSpan,
   CommentInput,
+  type CommentInputHandle,
+  type CommentInputProps,
+  type CommentIntentGetter,
+  type CommentListBreadcrumbs,
+  type CommentMessage,
+  type CommentOperations,
+  type CommentPath,
+  type CommentPostPayload,
+  type CommentReactionItem,
+  type CommentReactionOption,
+  type CommentReactionShortNames,
   COMMENTS_INSPECTOR_NAME,
   CommentsAuthoringPathProvider,
   CommentsEnabledProvider,
   CommentsIntentProvider,
+  type CommentsIntentProviderProps,
   CommentsList,
+  type CommentsListBreadcrumbItem,
   CommentsProvider,
+  type CommentsSelectedPath,
   CommentsSelectedPathProvider,
+  type CommentStatus,
+  type CommentsTextSelectionItem,
+  type CommentsType,
+  type CommentsUIMode,
+  type CommentTaskCreatePayload,
+  type CommentTextSelection,
+  type CommentThreadItem,
+  type CommentUpdateOperationOptions,
+  type CommentUpdatePayload,
+  type CommitFunction,
+  type CommitRequest,
+  type CommittedEvent,
+  type CommonProps,
   CompactPreview,
+  type CompactPreviewProps,
+  type ComplexElementProps,
+  type ComposableOption,
+  type ComputeDiff,
   ConcreteRuleClass,
+  type ConditionalIndexAccess,
+  type ConditionalProperty,
+  type ConditionalPropertyCallback,
+  type ConditionalPropertyCallbackContext,
+  type Config,
+  type ConfigContext,
   ConfigPropertyError,
+  type ConfigPropertyErrorOptions,
+  type ConfigPropertyReducer,
   ConfigResolutionError,
+  type ConfigResolutionErrorOptions,
+  type ConnectedStatus,
   CONNECTING,
+  type ConnectingStatus,
+  type ConnectionState,
+  type ConnectionStatus,
+  type ConnectionStatusStore,
+  type ConnectionStatusStoreOptions,
+  type ConnectorContextValue,
   ContextMenuButton,
+  type CookielessCompatibleLoginMethod,
+  type CopyOptions,
+  type CopyPasteContextType,
   CopyPasteProvider,
   CorsOriginError,
+  type CorsOriginErrorOptions,
   createAuthStore,
   createBufferedDocument,
   createConfig,
@@ -889,36 +2169,74 @@ export {
   createDefaultIcon,
   createDocumentPreviewStore,
   createDocumentStore,
+  type CreateDocumentVersionEvent,
   createDraftFrom,
   createGrantsStore,
   createHistoryStore,
   createHookFromObservableFactory,
+  type CreateIfNotExistsMutation,
   createKeyValueStore,
+  type CreateLinkedActionsProps,
+  type CreateLinkedDocumentBannerContentProps,
+  type CreateLinkedSanityDocument,
+  type CreateLinkMetadata,
+  type CreateLiveDocumentEvent,
   createMockAuthStore,
+  type CreateMutation,
   createObservableBufferedDocument,
+  type CreateOrReplaceMutation,
   createPatchChannel,
   createPlugin,
   createPresenceStore,
   createProjectStore,
   createPublishedFrom,
+  type createSanityMediaLibraryFileSource,
+  type createSanityMediaLibraryImageSource,
   createSchema,
   createSearch,
   createSharedResizeObserver,
   createSourceFromConfig,
+  type CreateSquashedMutation,
   createSWR,
   createUserColorManager,
   createUserStore,
   createWorkspaceFromConfig,
+  type CreateWorkspaceFromConfigOptions,
+  type CrossDatasetReferenceComponents,
+  type CrossDatasetReferenceDefinition,
+  type CrossDatasetReferenceFilterResolver,
+  type CrossDatasetReferenceFilterSearchOptions,
   CrossDatasetReferenceInput,
+  type CrossDatasetReferenceInputProps,
+  CrossDatasetReferenceSchemaType,
+  type CrossDatasetReferenceValue,
+  type CrossDatasetType,
+  type CurrentUser,
+  type CustomValidator,
+  type CustomValidatorResult,
+  type DashboardNotificationPayload,
+  type DateComponents,
+  type DateDefinition,
   DateInput,
+  type DateInputProps,
+  type DateOptions,
+  type DateRule,
+  type DatetimeComponents,
+  type DatetimeDefinition,
   DateTimeInput,
+  type DateTimeInputProps,
+  type DatetimeOptions,
+  type DatetimeRule,
   dec,
   DECISION_PARAMETERS_SCHEMA,
+  type DecisionParametersConfig,
   decodePath,
   DEFAULT_MAX_RECURSION_DEPTH,
   DEFAULT_STUDIO_CLIENT_OPTIONS,
   defaultLocale,
+  type DefaultPluginsWorkspaceOptions,
   DefaultPreview,
+  type DefaultPreviewProps,
   defaultRenderAnnotation,
   defaultRenderBlock,
   defaultRenderField,
@@ -930,6 +2248,8 @@ export {
   defaultTemplatesForSchema,
   defaultTheme,
   defineArrayMember,
+  type DefineArrayMemberBase,
+  type defineAssetAspect,
   defineConfig,
   defineDocumentFieldAction,
   defineDocumentInspector,
@@ -938,80 +2258,293 @@ export {
   defineLocaleResourceBundle,
   defineLocalesResources,
   definePlugin,
+  type DefineSchemaBase,
+  type DefineSchemaOptions,
+  type DefineSchemaType,
   defineSearchFilter,
   defineSearchFilterOperators,
   defineSearchOperator,
   defineType,
+  type DeleteDocumentGroupEvent,
+  type DeleteDocumentVersionEvent,
+  type DeleteMutation,
+  type DeprecatedProperty,
+  type DeprecatedSchemaType,
+  type DeprecationConfiguration,
   DetailPreview,
+  type DetailPreviewProps,
+  type Diff,
   DiffCard,
+  type DiffCardProps,
+  type DiffComponent,
+  type DiffComponentOptions,
+  type DiffComponentResolver,
   DiffErrorBoundary,
+  type DiffErrorBoundaryProps,
+  type DiffErrorBoundaryState,
   DiffFromTo,
+  type DiffFromToProps,
   DiffInspectWrapper,
+  type DiffInspectWrapperProps,
   diffMatchPatch,
+  type DiffProps,
   diffResolver,
   DiffString,
   DiffStringSegment,
   DiffTooltip,
+  type DiffTooltipProps,
+  type DiffTooltipWithAnnotationsProps,
+  type DiffVisitor,
+  type DocumentActionComponent,
+  type DocumentActionConfirmDialogProps,
+  type DocumentActionCustomDialogComponentProps,
+  type DocumentActionDescription,
+  type DocumentActionDialogProps,
+  type DocumentActionGroup,
+  type DocumentActionModalDialogProps,
+  type DocumentActionPopoverDialogProps,
+  type DocumentActionProps,
+  type DocumentActionsContext,
+  type DocumentActionsResolver,
+  type DocumentActionsVersionType,
+  type DocumentAvailability,
+  type DocumentBadgeComponent,
+  type DocumentBadgeDescription,
+  type DocumentBadgeProps,
+  type DocumentBadgesContext,
+  type DocumentBadgesResolver,
+  type DocumentChangeContextInstance,
+  type DocumentCommentsEnabledContext,
+  type DocumentComponents,
+  type DocumentDefinition,
+  type DocumentField,
+  type DocumentFieldAction,
+  type DocumentFieldActionDivider,
+  type DocumentFieldActionGroup,
+  type DocumentFieldActionHook,
+  type DocumentFieldActionItem,
+  type DocumentFieldActionNode,
+  type DocumentFieldActionProps,
   documentFieldActionsReducer,
+  type DocumentFieldActionsResolver,
+  type DocumentFieldActionsResolverContext,
+  type DocumentFieldActionStatus,
+  type DocumentFieldActionTone,
+  type DocumentFormNode,
+  type DocumentGroupEvent,
   documentIdEquals,
   type DocumentIdStack,
+  type DocumentInspector,
+  type DocumentInspectorComponent,
+  type DocumentInspectorContext,
+  type DocumentInspectorMenuItem,
+  type DocumentInspectorProps,
+  type DocumentInspectorsResolver,
+  type DocumentInspectorUseMenuItemProps,
+  type DocumentLanguageFilterComponent,
+  type DocumentLanguageFilterContext,
+  type DocumentLanguageFilterResolver,
+  type DocumentLayoutProps,
+  type DocumentMeta,
+  type DocumentMutationEvent,
+  type DocumentOptions,
+  type DocumentPairPermissionsOptions,
+  type DocumentPermission,
+  type DocumentPluginOptions,
+  type DocumentPresence,
   DocumentPreviewPresence,
+  type DocumentPreviewPresenceProps,
+  type DocumentPreviewStore,
+  type DocumentPreviewStoreOptions,
+  type DocumentRebaseEvent,
+  type DocumentRemoteMutationEvent,
+  type DocumentRemoteMutationVersionEvent,
+  type DocumentRevision,
+  type DocumentRule,
   DocumentStatus,
   DocumentStatusIndicator,
+  type DocumentStore,
+  type DocumentStoreExtraOptions,
+  type DocumentStoreOptions,
+  type DocumentTypeResolveState,
+  type DocumentValuePermission,
+  type DocumentValuePermissionsOptions,
+  type DocumentVariantType,
+  type DocumentVersion,
+  type DocumentVersionEvent,
+  type DocumentVersionEventType,
+  type DocumentVersionSnapshots,
+  type DraftId,
   DRAFTS_FOLDER,
+  type DraftsModelDocument,
+  type DraftsModelDocumentAvailability,
+  type DuplicateActionProps,
+  type DuplicateDocumentActionComponent,
+  type DuplicateKeysError,
+  type EditDocumentVersionEvent,
   EditPortal,
+  type EditReferenceLinkComponentProps,
+  type EditReferenceOptions,
   EditScheduleForm,
   editState,
+  type EditStateFor,
+  type EmailComponents,
+  type EmailDefinition,
   EmailInput,
+  type EmailInputProps,
+  type EmailOptions,
+  type EmailRule,
   emitOperation,
   EMPTY_ARRAY,
   EMPTY_OBJECT,
+  type EmptyProps,
   encodePath,
+  type EnumListProps,
   ErrorActions,
+  type ErrorActionsProps,
   ErrorMessage,
+  type ErrorMessageProps,
+  type ErrorState,
+  type ErrorStatus,
+  type ErrorWithId,
   escapeField,
+  type EvaluationParams,
   TimelineEvent as Event,
   EventsProvider,
+  type EventsStore,
+  type EventsStoreRevision,
+  type ExpandFieldSetOperation,
+  type ExpandOperation,
+  type ExpandPathOperation,
   FallbackDiff,
   FieldActionMenu,
+  type FieldActionMenuProps,
+  type FieldActionsProps,
   FieldActionsProvider,
   FieldActionsResolver,
   FieldChange,
+  type FieldChangeNode,
+  type FieldCommentsProps,
+  type FieldDefinition,
+  type FieldDefinitionBase,
+  type FieldError,
+  type FieldGroup,
+  type FieldGroupDefinition,
+  type FieldMember,
+  type FieldName,
   fieldNeedsEscape,
+  type FieldOperationsAPI,
   FieldPresence,
+  type FieldPresenceData,
   FieldPresenceInner,
+  type FieldPresenceInnerProps,
+  type FieldPresenceProps,
   FieldPresenceWithOverlay,
+  type FieldPreviewComponent,
+  type FieldProps,
+  type FieldReference,
+  type FieldRules,
+  type Fieldset,
+  type FieldsetDefinition,
+  type FieldSetMember,
+  type FieldsetState,
+  type FieldStatusProps,
+  type FieldValueError,
+  type File,
+  type FileAsset,
+  type FileComponents,
+  type FileDefinition,
   FileInput,
+  type FileInputProps,
+  type FileLike,
+  type FileOptions,
+  type FileRule,
+  FileSchemaType,
+  type FileValue,
   Filters,
-  findIndex, //todo
+  findIndex,
+  type FIXME,
   flattenConfig,
   formatRelativeLocale,
   formatRelativeLocalePublishDate,
+  type FormattableMeasurementUnit,
+  type FormattedDuration,
   FormBuilder,
+  type FormBuilderComponentResolverContext,
+  type FormBuilderContextValue,
+  type FormBuilderCustomMarkersComponent,
+  type FormBuilderFilterFieldFn,
+  type FormBuilderInputComponentMap,
+  type FormBuilderMarkersComponent,
+  type FormBuilderProps,
   FormCallbacksProvider,
+  type FormCallbacksValue,
+  type FormComponents,
+  type FormDecPatch,
+  type FormDiffMatchPatch,
+  type FormDocumentValue,
   FormField,
+  type FormFieldGroup,
   FormFieldHeaderText,
+  type FormFieldHeaderTextProps,
+  type FormFieldProps,
   FormFieldSet,
+  type FormFieldSetProps,
   FormFieldStatus,
+  type FormFieldValidation,
+  type FormFieldValidationError,
+  type FormFieldValidationInfo,
   FormFieldValidationStatus,
+  type FormFieldValidationStatusProps,
+  type FormFieldValidationWarning,
+  type FormIncPatch,
   FormInput,
+  type FormInputAbsolutePathArg,
+  type FormInputRelativePathArg,
+  type FormInsertPatch,
+  type FormInsertPatchPosition,
+  type FormNodePresence,
+  FormNodeValidation,
+  type FormPatch,
+  type FormPatchBase,
+  type FormPatchJSONValue,
+  type FormPatchOrigin,
   FormProvider,
+  type FormProviderProps,
+  type FormSetIfMissingPatch,
+  type FormSetPatch,
+  type FormState,
+  type FormUnsetPatch,
+  type FormValueContextValue,
   FormValueProvider,
   fromMutationPatches,
   FromTo,
   FromToArrow,
+  type FromToArrowDirection,
+  type FromToIndex,
+  type FromToProps,
+  type GeneralDocumentListLayoutKey,
+  type GeneralPreviewLayoutKey,
+  type GeopointComponents,
+  type GeopointDefinition,
+  type GeopointOptions,
+  type GeopointRule,
+  type GeopointValue,
   getAnnotationAtPath,
   getAnnotationColor,
   getCalendarLabels,
   getConfigContextFromSource,
   getDiffAtPath,
+  type getDocumentIsInPerspective,
   getDocumentPairPermissions,
   getDocumentValuePermissions,
   getDocumentVariantType,
   getDraftId,
+  type getErrorMessage,
   getExpandOperations,
   GetFormValueProvider,
   GetHookCollectionState,
+  type GetHookCollectionStateProps,
   getIdPair,
   getInitialValueStream,
   getItemKey,
@@ -1035,20 +2568,101 @@ export {
   getVersionId,
   getVersionInlineBadge,
   getWorkspaceIdentifier,
+  type GlobalCopyPasteElementHandler,
+  type GlobalDocumentReferenceDefinition,
+  type GlobalDocumentReferenceFilterResolver,
+  type GlobalDocumentReferenceFilterSearchOptions,
+  GlobalDocumentReferenceSchemaType,
+  type GlobalDocumentReferenceType,
+  type GlobalDocumentReferenceValue,
+  type GlobalPresence,
   globalScope,
+  type Grant,
   grantsPermissionOn,
+  type GrantsStore,
+  type GrantsStoreOptions,
+  type GroupableActionDescription,
   GroupChange,
+  type GroupChangeNode,
   hasCommentMessageValue,
+  type HexColor,
+  type HiddenField,
+  type HistoryClearedEvent,
+  type HistoryStore,
+  type HistoryStoreOptions,
+  type HookCollectionActionHook,
   Hotkeys,
+  type HotkeysProps,
+  type HotspotOptions,
+  type HotspotPreview,
   HoveredFieldProvider,
+  type I18nNode,
+  type I18nSearchOperatorDescriptionKey,
+  type I18nSearchOperatorNameKey,
+  I18nTextRecord,
+  type I18nTitledListValue,
+  type Id,
+  idMatchesPerspective,
+  type IdPair,
+  type Image,
+  type ImageAsset,
+  type ImageComponents,
+  type ImageCrop,
+  type ImageDefinition,
+  type ImageDimensions,
+  type ImageHotspot,
   ImageInput,
+  type ImageInputProps,
+  type ImageMetadata,
+  type ImageMetadataType,
+  type ImageOptions,
+  type ImagePalette,
+  type ImageRule,
+  type ImageSchemaType,
+  type ImageSwatch,
+  type ImageUrlAutoMode,
+  type ImageUrlBuilder,
+  type ImageUrlCropMode,
+  type ImageUrlFitMode,
+  type ImageUrlFormat,
+  type ImageUrlOrientation,
+  type ImageUrlParams,
+  type ImageValue,
   ImperativeToast,
+  type ImplicitLocaleResourceBundle,
   inc,
+  type IncompatibleTypeError,
+  type IndexTuple,
   initialDocumentFieldActions,
+  type InitialSnapshotEvent,
+  type InitialValueErrorMsg,
+  type InitialValueLoadingMsg,
+  type InitialValueMsg,
+  type InitialValueOptions,
+  type InitialValueProperty,
+  type InitialValueResolver,
+  type InitialValueResolverContext,
+  type InitialValueState,
+  type InitialValueSuccessMsg,
+  type InitialValueTemplateItem,
+  type InlineFieldDefinition,
   InlinePreview,
+  type InlinePreviewProps,
+  type InputProps,
   insert,
+  type InsertMenuOptions,
+  type InsertPatch,
   InsufficientPermissionsMessage,
+  type InsufficientPermissionsMessageProps,
   IntentButton,
+  type InterpolationProp,
+  type IntrinsicArrayOfBase,
+  type IntrinsicArrayOfDefinition,
+  type IntrinsicBase,
+  type IntrinsicDefinitions,
+  type IntrinsicTypeName,
+  type InvalidationChannelEvent,
+  type InvalidItemTypeError,
   isAddedItemDiff,
   isArray,
   isArrayOfBlocksInputProps,
@@ -1058,6 +2672,7 @@ export {
   isArrayOfPrimitivesInputProps,
   isArrayOfPrimitivesSchemaType,
   isArraySchemaType,
+  type isAssetAspect,
   isAuthStore,
   isBlockChildrenObjectField,
   isBlockListObjectField,
@@ -1077,6 +2692,7 @@ export {
   isCreateSquashedMutation,
   isCrossDatasetReference,
   isCrossDatasetReferenceSchemaType,
+  type isDateTimeSchemaType,
   isDeleteDocumentGroupEvent,
   isDeleteDocumentVersionEvent,
   isDeleteMutation,
@@ -1090,6 +2706,7 @@ export {
   isDraftPerspective,
   isEditDocumentVersionEvent,
   isEmptyObject,
+  type IsEqualFunction,
   isFieldChange,
   isFileSchemaType,
   isGlobalDocumentReference,
@@ -1111,6 +2728,7 @@ export {
   isObjectSchemaType,
   isPatchMutation,
   isPerspectiveRaw,
+  isPerspectiveWriteable,
   isPortableTextListBlock,
   isPortableTextSpan,
   isPortableTextTextBlock,
@@ -1158,147 +2776,577 @@ export {
   isValidationWarning,
   isValidationWarningMarker,
   isVersionId,
+  type ItemDiff,
+  type ItemProps,
   joinPath,
+  type KeyedObject,
+  type KeyedSegment,
+  type KeyValueStore,
+  type KeyValueStoreValue,
+  type LatencyReportEvent,
   LATEST,
+  type LayoutProps,
   LegacyLayerProvider,
+  type LegacyThemeProps,
+  type LegacyThemeTints,
   LinearProgress,
+  type ListenerEvent,
   listenQuery,
+  type ListenQueryOptions,
+  type ListenQueryParams,
+  type Loadable,
+  type LoadableState,
+  type LoadedState,
   LoadingBlock,
+  type LoadingState,
+  type LoadingTuple,
+  type Locale,
+  type LocaleConfigContext,
+  type LocaleDefinition,
+  type LocaleNestedResource,
+  type LocalePluginOptions,
   LocaleProvider,
   LocaleProviderBase,
+  type LocaleResourceBundle,
+  type LocaleResourceKey,
+  type LocaleResourceRecord,
+  type LocalesBundlesOption,
+  type LocalesOption,
+  type LocaleSource,
+  type LocaleWeekInfo,
+  type LocalizedValidationMessages,
+  type LoginComponentProps,
+  type LoginMethod,
+  type LogoProps,
+  type MapDocument,
   matchWorkspace,
+  type MatchWorkspaceOptions,
+  type MatchWorkspaceResult,
+  type MaybeAllowUnknownProps,
+  type MaybePreview,
+  type MEDIA_LIBRARY_ASSET_ASPECT_TYPE_NAME,
+  type MediaAssetTypes,
+  type MediaLibraryAssetAspectDefinition,
+  type MediaLibraryAssetAspectDocument,
+  type MediaLibraryAssetAspectSupportedFieldDefinitions,
+  type MediaLibraryAssetAspectTypeName,
+  type MediaLibraryAssetType,
+  type MediaLibraryConfig,
+  type MediaLibraryFilter,
+  type MediaLibraryOptions,
   MediaPreview,
+  type MediaPreviewProps,
+  type MediaValidationValue,
+  type MediaValidator,
   MemberField,
   MemberFieldError,
+  type MemberFieldProps,
   MemberFieldSet,
   MemberItemError,
+  type MemberItemProps,
+  type MendozaEffectPair,
+  type MendozaPatch,
   MetaInfo,
+  type MetaInfoProps,
+  type MissingConfigFile,
+  type MissingKeysError,
+  type MixedArrayError,
+  type MockAuthStoreOptions,
+  MultiFieldSet,
+  type MultipleMutationResult,
+  type Mutation,
+  type MutationEvent,
+  type MutationOperationName,
+  type MutationPatch,
+  type MutationPatchMsg,
+  type MutationPayload,
+  type MutationResult,
+  type MutationSelection,
+  type NarrowPreview,
+  type NavbarAction,
+  type NavbarContextValue,
+  type NavbarProps,
+  type NewDocumentCreationContext,
+  type NewDocumentOptionsContext,
+  type NewDocumentOptionsResolver,
   newDraftFrom,
   NoChanges,
   type NodeChronologyProps,
+  type NodeDiffProps,
   noop,
   normalizeIndexSegment,
   normalizeIndexTupleSegment,
   normalizeKeySegment,
   normalizePathSegment,
+  type NullDiff,
+  type NumberComponents,
+  type NumberDefinition,
+  type NumberDiff,
+  type NumberFieldProps,
+  type NumberFormNode,
   NumberInput,
+  type NumberInputProps,
+  type NumberOptions,
+  type NumberRule,
+  NumberSchemaType,
+  type ObjectArrayFormNode,
+  type ObjectComponents,
+  type ObjectDefinition,
+  type ObjectDiff,
+  ObjectField,
+  type ObjectFieldProps,
+  type ObjectFieldType,
+  type ObjectFormNode,
   ObjectInput,
   ObjectInputMember,
+  type ObjectInputMemberProps,
   ObjectInputMembers,
+  type ObjectInputProps,
+  type ObjectItem,
+  type ObjectItemProps,
+  type ObjectMember,
   ObjectMembers,
+  type ObjectMembersProps,
+  type ObjectOptions,
+  type ObjectRule,
+  ObjectSchemaType,
+  type ObjectSchemaTypeWithOptions,
+  type ObserveDocumentAvailabilityFn,
+  type ObserveDocumentTypeFromIdFn,
+  type ObserveForPreviewFn,
+  type ObservePathsFn,
+  type OnPathFocusPayload,
   onRetry,
+  type Operation,
+  type OperationArgs,
+  type OperationError,
   operationEvents,
+  type OperationImpl,
+  type OperationsAPI,
+  type OperationSuccess,
+  type OperatorButtonValueComponentProps,
   operatorDefinitions,
+  type OperatorInputComponentProps,
+  type Pair,
+  type ParsedTimeRef,
+  type PartialContext,
+  type PartialExcept,
+  type PartialIndexSettings,
+  type PasteOptions,
+  type PatchArg,
+  type PatchChannel,
   PatchEvent,
+  type PatchMsg,
+  type PatchMsgSubscriber,
+  type PatchMutation,
+  type PatchMutationOperation,
+  type PatchOperations,
+  Path,
   pathsAreEqual,
+  type PathSegment,
   pathToString,
+  type PendingMutationsEvent,
+  type PermissionCheckResult,
+  type PerspectiveContextValue,
+  type PerspectiveNotWriteableReason,
   PerspectiveProvider,
+  type PerspectiveStack,
+  type Plugin,
+  type PluginFactory,
+  type PluginOptions,
   PopoverDialog,
+  type PortableTextBlock,
+  type PortableTextChild,
   PortableTextInput,
+  type PortableTextInputProps,
+  type PortableTextListBlock,
+  type PortableTextMarker,
+  type PortableTextMemberItem,
+  type PortableTextObject,
+  type PortableTextPluginsProps,
+  type PortableTextPreviewLayoutKey,
+  type PortableTextSpan,
+  type PortableTextTextBlock,
+  type Position,
   prefixPath,
   prepareConfig,
+  type PreparedConfig,
+  type PreparedSnapshot,
   prepareForPreview,
   prepareTemplates,
+  type PrepareViewOptions,
+  type PresenceLocation,
   PresenceOverlay,
+  type PresenceOverlayProps,
   PresenceScope,
+  type PresenceScopeProps,
+  type PresenceStore,
+  type PresentUser,
   Preview,
+  type Previewable,
+  type PreviewableType,
   PreviewCard,
+  type PreviewCardContextValue,
+  type PreviewComponent,
+  type PreviewConfig,
+  type PreviewLayoutKey,
   PreviewLoader,
+  type PreviewMediaDimensions,
+  type PreviewPath,
+  type PreviewProps,
+  PreviewValue,
+  type PrimitiveFieldProps,
+  type PrimitiveFormNode,
+  type PrimitiveInputElementProps,
+  type PrimitiveInputProps,
+  type PrimitiveItemProps,
+  type PrimitiveMemberItemProps,
+  type ProjectData,
+  type ProjectDatasetData,
+  type ProjectStore,
+  type ProvenanceDiffAnnotation,
+  type PublishDocumentVersionEvent,
   PUBLISHED,
+  type PublishedId,
+  type QueryParams,
   QUOTA_EXCLUDED_RELEASES_ENABLED,
+  type ReactHook,
+  type RebasePatchMsg,
+  type ReconnectEvent,
+  type Rect,
+  type Reference,
+  type ReferenceBaseOptions,
+  type ReferenceComponents,
+  type ReferenceDefinition,
+  type ReferenceDiff,
+  type ReferenceFilterOptions,
+  type ReferenceFilterQueryOptions,
+  type ReferenceFilterResolver,
+  type ReferenceFilterResolverContext,
+  type ReferenceFilterResolverOptions,
+  type ReferenceFilterSearchOptions,
   ReferenceInput,
+  type ReferenceInputOptions,
   ReferenceInputOptionsProvider,
   ReferenceInputPreviewCard,
+  type ReferenceInputProps,
+  type ReferenceOptions,
+  type ReferenceRule,
+  ReferenceSchemaType,
+  type ReferenceTo,
+  type ReferenceValue,
+  type RegionWithIntersectionDetails,
   RelativeTime,
+  type RelativeTimeOptions,
+  type RelativeTimeProps,
+  type ReleaseActionComponent,
+  type ReleaseActionDescription,
+  type ReleaseActionProps,
+  type ReleaseActionsContext,
+  type ReleaseActionsResolver,
   ReleaseAvatar,
+  ReleaseDocument,
+  type ReleaseId,
   RELEASES_INTENT,
   RELEASES_STUDIO_CLIENT_OPTIONS,
+  ReleasesNav,
+  type ReleasesNavMenuItemPropsGetter,
+  type RemoteSnapshotEvent,
   remoteSnapshots,
+  type RemoteSnapshotVersionEvent,
   removeDupes,
   removeMissingReferences,
   removeUndefinedLocaleResources,
+  type RenderAnnotationCallback,
+  type RenderArrayOfObjectsItemCallback,
+  type RenderArrayOfPrimitivesItemCallback,
+  type RenderBlockActionsCallback,
+  type RenderBlockActionsProps,
+  type RenderBlockCallback,
+  type RenderCustomMarkers,
+  type RenderFieldCallback,
+  type RenderInputCallback,
+  type RenderItemCallback,
+  type RenderPreviewCallback,
+  type RenderPreviewCallbackProps,
   renderStudio,
+  type Reported,
+  type ReportedRegionWithRect,
+  type ReporterHook,
   Resizable,
   resizeObserver,
   resolveConditionalProperty,
   resolveConfig,
   resolveDiffComponent,
+  type ResolvedUploader,
   resolveInitialObjectValue,
   resolveInitialValue,
   resolveInitialValueForType,
+  type ResolveProductionUrlContext,
   resolveSchemaTypes,
+  type ResourceCache,
   ResourceCacheProvider,
+  type ResourceCacheProviderProps,
+  type RetryingStatus,
   RevertChangesButton,
+  type RevertChangesConfirmDialog,
+  Role,
+  type RovingFocusNavigationType,
+  type RovingFocusProps,
+  Rule,
+  type RuleBuilder,
+  type RuleClass,
+  type RuleDef,
+  RuleSpec,
+  type RuleSpecConstraint,
+  type RuleTypeConstraint,
   SANITY_PATCH_TYPE,
   SANITY_VERSION,
+  type SanityClient,
+  type SanityClipboardItem,
+  type SanityCreateConfigContextValue,
+  type SanityCreateConfigProvider,
+  type SanityCreateOptions,
   SanityDefaultPreview,
+  type SanityDefaultPreviewProps,
+  SanityDocument,
+  SanityDocumentLike,
+  type SanityFormConfig,
+  type ScheduleAction,
   ScheduledBadge,
+  type ScheduleDocumentVersionEvent,
+  type ScheduledPublishingPluginOptions,
+  type SchedulesContext,
+  Schema,
   SchemaError,
+  type SchemaPluginOptions,
+  SchemaType,
+  type SchemaTypeDefinition,
+  type SchemaValidationError,
+  type SchemaValidationProblem,
+  type SchemaValidationProblemGroup,
+  type SchemaValidationProblemPath,
+  SchemaValidationValue,
+  type SchemaValidationWarning,
   ScrollContainer,
+  type ScrollContainerProps,
+  type ScrollContextValue,
+  type ScrollEventHandler,
   SearchButton,
+  type SearchConfiguration,
+  type SearchContextValue,
   SearchDialog,
+  type SearchFactoryOptions,
+  type SearchFilterDefinition,
   SearchHeader,
+  type SearchOperatorBase,
+  type SearchOperatorBuilder,
+  type SearchOperatorButtonValue,
+  type SearchOperatorInput,
+  type SearchOperatorParams,
+  type SearchOperatorType,
+  type SearchOptions,
   SearchPopover,
+  type SearchPopoverProps,
   SearchProvider,
   SearchResultItemPreview,
+  type SearchSort,
   searchStrategies,
+  SearchStrategy,
+  type SearchTerms,
+  type SearchValueFormatterContext,
+  type SelectedPerspective,
   SelectInput,
+  type Selection,
+  type SelectionState,
   selectUpstreamVersion,
+  type Serializeable,
   serializeError,
+  type Session,
   SESSION_ID,
   set,
+  type SetActiveGroupOperation,
   setAtPath,
   setIfMissing,
+  type SharedResizeObserver,
+  type SingleFieldSet,
+  type SingleMutationResult,
+  type SingleWorkspace,
+  type Size,
   sliceString,
+  type Slug,
+  type SlugComponents,
+  type SlugDefinition,
+  type SlugifierFn,
   SlugInput,
+  type SlugInputProps,
+  type SlugIsUniqueValidator,
+  type SlugOptions,
+  type SlugParent,
+  type SlugRule,
+  type SlugSchemaType,
+  type SlugSourceContext,
+  type SlugSourceFn,
+  type SlugValidationContext,
+  type SlugValue,
+  type SnapshotEvent,
   snapshotPair,
+  type SortOrdering,
+  type SortOrderingItem,
+  type Source,
+  type SourceClientOptions,
+  type SourceOptions,
   SourceProvider,
+  type SourceProviderProps,
+  type SpanComponents,
+  type SpanDefinition,
+  type SpanMarksObjectField,
+  SpanSchemaType,
+  type SpanTextObjectField,
+  type StateTree,
+  type StaticLocaleResourceBundle,
+  type Status,
   StatusButton,
+  type StatusButtonProps,
+  type StrictDefinition,
+  type StrictVersionLayeringOptions,
+  type StringComponents,
+  type StringDefinition,
+  type StringDiff,
+  type StringDiffSegment,
+  type StringFieldProps,
+  type StringFormNode,
   StringInput,
+  type StringInputProps,
+  type StringOptions,
+  type StringRule,
+  StringSchemaType,
+  type StringSegmentChanged,
+  type StringSegmentUnchanged,
   stringToPath,
   Studio,
   StudioAnnouncementsCard,
   StudioAnnouncementsDialog,
+  type StudioComponents,
+  type StudioComponentsPluginOptions,
   StudioLayout,
-  StudioLayoutComponent,
+  type StudioLayoutComponent,
+  type StudioLocaleResourceKeys,
   StudioLogo,
   StudioNavbar,
+  type StudioNotificationPayload,
+  type StudioProps,
   StudioProvider,
+  type StudioProviderProps,
+  type StudioTheme,
+  type StudioThemeColorSchemeKey,
   StudioToolMenu,
   supportsTouch,
+  type SwatchName,
+  type SyncState,
+  type SystemBundle,
   systemBundles,
   TagsArrayInput,
+  type TagsArrayInputProps,
   type TargetPerspective,
   TelephoneInput,
+  type TelephoneInputProps,
+  type Template,
+  type TemplateArrayFieldDefinition,
+  type TemplateFieldDefinition,
+  type TemplateItem,
+  type TemplateOption,
+  type TemplateParameter,
+  type TemplatePermissionsOptions,
+  type TemplatePermissionsResult,
   TemplatePreview,
+  type TemplatePreviewProps,
+  type TemplateReferenceTarget,
+  type TemplateResolver,
+  type TextComponents,
+  type TextDefinition,
   TextInput,
+  type TextInputProps,
+  type TextOptions,
+  type TextRule,
+  type TextSchemaType,
   TextWithTone,
+  type TextWithToneProps,
+  type TFunction,
+  type TimeAgoOpts,
   Timeline,
   TIMELINE_ITEM_I18N_KEY_MAPPING,
   TimelineController,
+  type TimelineControllerOptions,
+  type TimelineOptions,
+  type TimelineState,
+  type TimelineStore,
+  type TitledListValue,
+  type ToastParams,
   toMutationPatches,
+  type Tool,
   ToolLink,
+  type ToolLinkProps,
+  type ToolMenuProps,
   TooltipOfDisabled,
+  type TrackedArea,
+  type TrackedChange,
+  type TrackerContextGetSnapshot,
+  type TrackerContextStore,
+  type Transaction,
+  type TransactionLogEvent,
+  type TransactionLogEventWithEffects,
+  type TransactionLogEventWithMutations,
+  type TransactionLogMutation,
   TransformPatches,
   Translate,
+  type TranslateComponentMap,
+  type TranslationProps,
   truncateString,
+  type TypeAliasDefinition,
+  type TypeAnnotationMismatchError,
+  type TypeChangeDiff,
   typed,
+  type TypedObject,
+  type TypeReference,
+  type TypeTarget,
   uncaughtErrorHandler,
+  type UndeclaredMembersError,
+  type UnitFormatter,
   UniversalArrayInput,
+  type UnpublishDocumentEvent,
+  type UnscheduleDocumentVersionEvent,
   unset,
   unstable_useObserveDocument,
   unstable_useValuePreview,
+  type UpdateLiveDocumentEvent,
+  type UpdateReadOnlyPlugin,
+  type Uploader,
+  type UploaderDef,
+  type UploaderResolver,
+  type UploadEvent,
+  type UploadOptions,
+  type UploadProgressEvent,
+  type UploadState,
   UpsellDescriptionSerializer,
   UpsellDialogDismissed,
   UpsellDialogLearnMoreCtaClicked,
   UpsellDialogUpgradeCtaClicked,
   UpsellDialogViewed,
+  type UpsellDialogViewedInfo,
+  type UriValidationOptions,
+  type UrlComponents,
+  type UrlDefinition,
   UrlInput,
+  type UrlInputProps,
+  type UrlOptions,
+  type UrlRule,
   useActiveReleases,
   useActiveWorkspace,
   useAddonDataset,
   useAnnotationColor,
   useArchivedReleases,
+  useCanvasCompanionDoc,
   useChangeIndicatorsReportedValues,
   useChangeIndicatorsReporter,
   useClient,
@@ -1307,10 +3355,12 @@ export {
   useColorSchemeOptions,
   useColorSchemeSetValue,
   useColorSchemeValue,
+  type useComlinkStore,
   useComments,
   useCommentsEnabled,
   useCommentsSelectedPath,
   useCommentsTelemetry,
+  useConditionalToast,
   useConfigContextFromSource,
   useConnectionState,
   useConnectionStatusStore,
@@ -1320,6 +3370,7 @@ export {
   useCurrentUser,
   useDataset,
   useDateTimeFormat,
+  type UseDateTimeFormatOptions,
   useDidUpdate,
   useDiffAnnotationColor,
   useDocumentChange,
@@ -1347,9 +3398,11 @@ export {
   useFieldActions,
   useFilteredReleases,
   useFormattedDuration,
+  type UseFormattedDurationOptions,
   useFormBuilder,
   useFormCallbacks,
   useFormState,
+  type UseFormStateOptions,
   useFormValue,
   useGetFormValue,
   useGetI18nText,
@@ -1364,11 +3417,16 @@ export {
   useIsReleaseActive,
   useKeyValueStore,
   useListFormat,
+  type UseListFormatOptions,
   useLoadable,
   useLocale,
+  useManageFavorite,
+  type UseManageFavoriteProps,
   useMiddlewareComponents,
+  useNavigateToCanvasDoc,
   usEnglishLocale,
   useNumberFormat,
+  type UseNumberFormatOptions,
   useOnlyHasVersions,
   useOnScroll,
   usePerspective,
@@ -1378,8 +3436,16 @@ export {
   useProjectDatasets,
   useProjectId,
   useProjectStore,
+  type User,
   UserAvatar,
+  type UserAvatarProps,
+  type UserColor,
+  type UserColorHue,
+  type UserColorManager,
+  type UserColorManagerOptions,
   UserColorManagerProvider,
+  type UserColorManagerProviderProps,
+  useReconnectingToast,
   useReferenceInputOptions,
   useReferringDocuments,
   useRelativeTime,
@@ -1389,7 +3455,14 @@ export {
   useResourceCache,
   useReviewChanges,
   userHasRole,
+  type UserId,
+  type UserListWithPermissionsHookValue,
+  type UserListWithPermissionsOptions,
   useRovingFocus,
+  type UserSessionPair,
+  type UserStore,
+  type UserStoreOptions,
+  type UserWithPermission,
   useSanityCreateConfig,
   useSchema,
   useSearchMaxFieldDepth,
@@ -1409,9 +3482,12 @@ export {
   useTrackerStore,
   useTrackerStoreReporter,
   useTranslation,
+  type UseTranslationOptions,
+  type UseTranslationResponse,
   useTreeEditingEnabled,
   useUnique,
   useUnitFormatter,
+  type UseUnitFormatterOptions,
   useUser,
   useUserColor,
   useUserColorManager,
@@ -1427,155 +3503,49 @@ export {
   useZIndex,
   validateBasePaths,
   validateDocument,
+  type ValidateDocumentOptions,
   validateNames,
+  type ValidateWorkspaceOptions,
   validateWorkspaces,
   validation,
+  type ValidationBuilder,
+  type ValidationContext,
+  type ValidationError,
+  type ValidationErrorClass,
+  type ValidationErrorOptions,
+  type ValidationLocaleResourceKeys,
+  type ValidationMarker,
+  type Validator,
+  type Validators,
   ValueError,
+  type ValuelessSearchOperatorBuilder,
+  type ValuelessSearchOperatorParams,
   VERSION_FOLDER,
   VersionChip,
+  type VersionInfoDocumentStub,
   VersionInlineBadge,
+  type VirtualizerScrollInstance,
   VirtualizerScrollInstanceProvider,
   visitDiff,
+  type WeakCrossDatasetReferenceValue,
+  type WeakGlobalDocumentReferenceValue,
+  type WeakReference,
+  type WelcomeEvent,
+  type WidenInitialValue,
+  type WidenValidation,
   WithReferringDocuments,
+  type WithVersion,
+  type Workspace,
+  type WorkspaceLike,
   WorkspaceLoader,
+  type WorkspaceOptions,
   WorkspaceProvider,
+  type WorkspaceProviderProps,
+  type WorkspacesContextValue,
   WorkspacesProvider,
+  type WorkspacesProviderProps,
+  type WorkspaceSummary,
+  type ZIndexContextValue,
+  type ZIndexContextValueKey,
   ZIndexProvider,
-}
-
-export type {
-  ArraySchemaType,
-  Asset,
-  BooleanSchemaType,
-  ConfigContext,
-  CrossDatasetReferenceSchemaType,
-  DocumentActionGroup,
-  DocumentActionProps,
-  DocumentFieldAction,
-  DocumentFieldActionGroup,
-  DocumentFieldActionItem,
-  DocumentFieldActionNode,
-  DocumentFieldActionProps,
-  DocumentInspector,
-  DocumentInspectorMenuItem,
-  DocumentInspectorProps,
-  DocumentPresence,
-  DocumentPreviewStore,
-  DocumentStore,
-  DocumentValuePermission,
-  EditStateFor,
-  FileSchemaType,
-  GeneralPreviewLayoutKey,
-  GlobalDocumentReferenceSchemaType,
-  I18nTextRecord,
-  InitialValueTemplateItem,
-  LocaleSource,
-  NumberSchemaType,
-  ObjectSchemaType,
-  PatchMsg,
-  PerspectiveNotWriteableReason,
-  PerspectiveStack,
-  PreviewableType,
-  PublishDocumentVersionEvent,
-  PublishedId,
-  ReferenceInputOptions,
-  ReferenceSchemaType,
-  ReleaseDocument,
-  SanityDocument,
-  SanityDocumentLike,
-  SearchStrategy,
-  SelectedPerspective,
-  SpanSchemaType,
-  StringSchemaType,
-  TemplatePermissionsResult,
-  TimelineStore,
-  UseDateTimeFormatOptions,
-  Workspace,
-}
-
-export {
-  CapabilityGate,
-  catchWithCount,
-  isPerspectiveWriteable,
-  ReleasesNav,
-  SanityClient,
-  useCanvasCompanionDoc,
-  useConditionalToast,
-  useManageFavorite,
-  useNavigateToCanvasDoc,
-  useReconnectingToast,
-}
-
-export type {
-  AnnotationDetails,
-  AvailabilityResponse,
-  BlockDefinition,
-  Chunk,
-  ChunkType,
-  CommandListItemContext,
-  CommandListRenderItemCallback,
-  CommentIntentGetter,
-  Config,
-  CreateLinkMetadata,
-  Diff,
-  DocumentActionComponent,
-  DocumentActionConfirmDialogProps,
-  DocumentActionDescription,
-  DocumentActionDialogProps,
-  DocumentActionModalDialogProps,
-  DocumentActionPopoverDialogProps,
-  DocumentActionsContext,
-  DocumentActionsVersionType,
-  DocumentAvailability,
-  DocumentBadgeComponent,
-  DocumentBadgeDescription,
-  DocumentBadgeProps,
-  DocumentChangeContextInstance,
-  DocumentFormNode,
-  DocumentGroupEvent,
-  DocumentInspectorUseMenuItemProps,
-  DocumentLanguageFilterComponent,
-  DocumentLayoutProps,
-  DocumentMutationEvent,
-  DocumentRebaseEvent,
-  DuplicateDocumentActionComponent,
-  FIXME,
-  FormDocumentValue,
-  FormNodeValidation,
-  GeneralDocumentListLayoutKey,
-  InputProps,
-  KeyValueStoreValue,
-  LocaleResourceBundle,
-  MediaLibraryConfig,
-  MultiFieldSet,
-  ObjectDiff,
-  ObjectField,
-  PartialContext,
-  Path,
-  PermissionCheckResult,
-  PerspectiveContextValue,
-  PluginOptions,
-  PreviewLayoutKey,
-  PreviewValue,
-  QueryParams,
-  RelativeTimeOptions,
-  ReleaseId,
-  ReleasesNavMenuItemPropsGetter,
-  Role,
-  Rule,
-  RuleSpec,
-  Schema,
-  SchemaType,
-  SchemaValidationValue,
-  SearchOptions,
-  SearchSort,
-  Source,
-  SourceClientOptions,
-  StateTree,
-  StudioLocaleResourceKeys,
-  Template,
-  TFunction,
-  Tool,
-  UseManageFavoriteProps,
-  WorkspaceOptions,
 }
