@@ -32,11 +32,12 @@ import {
 } from 'react'
 
 import {type FormPatch, type PatchEvent} from '../patch'
-import {type FormFieldGroup} from '../store'
+import {type FormFieldGroup, type ProvenanceDiffAnnotation} from '../store'
 import {
   type ArrayOfObjectsFormNode,
   type ArrayOfPrimitivesFormNode,
   type BooleanFormNode,
+  type NodeDiffProps,
   type NumberFormNode,
   type ObjectFormNode,
   type StringFormNode,
@@ -69,8 +70,14 @@ export interface OnPathFocusPayload {
 /**
  * @hidden
  * @public */
-export interface BaseInputProps {
+export interface BaseInputProps extends NodeDiffProps<ProvenanceDiffAnnotation> {
   renderDefault: (props: InputProps) => React.JSX.Element
+  /**
+   * Whether the input should display inline changes. Inline changes express how a field's value
+   * differs from its upstream version. Unlike custom diff components, inline changes is a mode
+   * that allows the input component itself to display the change in situ.
+   */
+  displayInlineChanges: boolean
 }
 
 /**
@@ -80,7 +87,7 @@ export interface ObjectInputProps<
   T = Record<string, any>,
   S extends ObjectSchemaType = ObjectSchemaType,
 > extends BaseInputProps,
-    Omit<ObjectFormNode<T, S>, '_allMembers'> {
+    Omit<ObjectFormNode<T, S>, '_allMembers' | 'displayInlineChanges'> {
   /**
    * @hidden
    * @beta */
@@ -190,7 +197,7 @@ export interface ArrayOfObjectsInputProps<
   T extends {_key: string} = {_key: string},
   S extends ArraySchemaType = ArraySchemaType,
 > extends BaseInputProps,
-    ArrayOfObjectsFormNode<T[], S> {
+    Omit<ArrayOfObjectsFormNode<T[], S>, 'displayInlineChanges'> {
   /**
    * @hidden
    * @beta */
@@ -326,7 +333,7 @@ export interface ArrayOfPrimitivesInputProps<
   T extends string | boolean | number = string | boolean | number,
   S extends ArraySchemaType = ArraySchemaType,
 > extends BaseInputProps,
-    ArrayOfPrimitivesFormNode<T[], S> {
+    Omit<ArrayOfPrimitivesFormNode<T[], S>, 'displayInlineChanges'> {
   /**
    * @hidden
    * @beta */
@@ -447,7 +454,7 @@ export interface ComplexElementProps {
  * @public */
 export interface StringInputProps<S extends StringSchemaType = StringSchemaType>
   extends BaseInputProps,
-    StringFormNode<S> {
+    Omit<StringFormNode<S>, 'displayInlineChanges'> {
   /**
    * @hidden
    * @beta */
@@ -464,7 +471,7 @@ export interface StringInputProps<S extends StringSchemaType = StringSchemaType>
  * @public */
 export interface NumberInputProps<S extends NumberSchemaType = NumberSchemaType>
   extends BaseInputProps,
-    NumberFormNode<S> {
+    Omit<NumberFormNode<S>, 'displayInlineChanges'> {
   /**
    * @hidden
    * @beta */
@@ -481,7 +488,7 @@ export interface NumberInputProps<S extends NumberSchemaType = NumberSchemaType>
  * @public */
 export interface BooleanInputProps<S extends BooleanSchemaType = BooleanSchemaType>
   extends BaseInputProps,
-    BooleanFormNode<S> {
+    Omit<BooleanFormNode<S>, 'displayInlineChanges'> {
   /**
    * @hidden
    * @beta */

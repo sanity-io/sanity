@@ -29,7 +29,7 @@ const listHookLogsCommand: CliCommandDefinition<ListHookFlags> = {
       messages = await client.request<HookMessage[]>({uri: `/hooks/${hookId}/messages`})
       attempts = await client.request<DeliveryAttempt[]>({uri: `/hooks/${hookId}/attempts`})
     } catch (err) {
-      throw new Error(`Hook logs retrieval failed:\n${err.message}`)
+      throw new Error(`Hook logs retrieval failed:\n${err.message}`, {cause: err})
     }
 
     const groupedAttempts = groupBy(attempts, 'messageId')

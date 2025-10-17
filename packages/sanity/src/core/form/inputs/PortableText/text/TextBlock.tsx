@@ -279,7 +279,13 @@ export function TextBlock(props: TextBlockProps) {
 
   return useMemo(
     () => (
-      <Box {...outerPaddingProps} data-testid="text-block" ref={setRef} style={debugRender()}>
+      <Box
+        {...outerPaddingProps}
+        data-testid="text-block"
+        data-fullscreen={isFullscreen}
+        ref={setRef}
+        style={debugRender()}
+      >
         <TextBlockFlexWrapper data-testid="text-block__wrapper">
           <Flex flex={1} {...innerPaddingProps}>
             <Box flex={1}>

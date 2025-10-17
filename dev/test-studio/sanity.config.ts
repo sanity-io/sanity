@@ -9,9 +9,9 @@ import {ptPTLocale} from '@sanity/locale-pt-pt'
 import {svSELocale} from '@sanity/locale-sv-se'
 import {SanityMonogram} from '@sanity/logos'
 import {debugSecrets} from '@sanity/preview-url-secret/sanity-plugin-debug-secrets'
-import {tsdoc} from '@sanity/tsdoc/studio'
 import {visionTool} from '@sanity/vision'
 import {
+  DECISION_PARAMETERS_SCHEMA,
   defineConfig,
   definePlugin,
   QUOTA_EXCLUDED_RELEASES_ENABLED,
@@ -70,6 +70,16 @@ import {vercelTheme} from './themes/vercel'
 import {workshopTool} from './workshop'
 
 const localePlugins = [koKRLocale(), nbNOLocale(), nnNOLocale(), ptPTLocale(), svSELocale()]
+
+// @ts-expect-error - defined by vite
+const isStaging = globalThis.__SANITY_STAGING__ === true
+
+const envConfig = {
+  // use this for production workspaces
+  production: isStaging ? {apiHost: 'https://api.sanity.io'} : {},
+  // use this for staging workspaces
+  staging: isStaging ? {} : {apiHost: 'https://api.sanity.work'},
+}
 
 const sharedSettings = ({projectId}: {projectId: string}) => {
   return definePlugin({
@@ -197,7 +207,6 @@ const sharedSettings = ({projectId}: {projectId: string}) => {
       imageHotspotArrayPlugin(),
       routerDebugTool(),
       errorReportingTestPlugin(),
-      tsdoc(),
       media(),
       markdownSchema(),
       wave(),
@@ -211,6 +220,7 @@ const defaultWorkspace = defineConfig({
   title: 'Test Studio',
   projectId: 'ppsg7ml5',
   dataset: 'test',
+  ...envConfig.production,
   plugins: [sharedSettings({projectId: 'ppsg7ml5'})],
 
   onUncaughtError: (error, errorInfo) => {
@@ -235,6 +245,11 @@ const defaultWorkspace = defineConfig({
     enabled: true,
   },
   [QUOTA_EXCLUDED_RELEASES_ENABLED]: true,
+  [DECISION_PARAMETERS_SCHEMA]: {
+    audiences: ['aud-a', 'aud-b', 'aud-c'],
+    locales: ['en-GB', 'en-US'],
+    ages: ['20-29', '30-39'],
+  },
   document: {
     actions: (prev, ctx) => {
       if (ctx.schemaType === 'book' && ctx.releaseId) {
@@ -290,6 +305,7 @@ export default defineConfig([
     dataset: 'partial-indexing-2',
     plugins: [sharedSettings({projectId: 'ppsg7ml5'})],
     basePath: '/partial-indexing',
+    ...envConfig.production,
     search: {
       unstable_partialIndexing: {
         enabled: true,
@@ -306,22 +322,12 @@ export default defineConfig([
     },
   },
   {
-    name: 'tsdoc',
-    title: 'tsdoc',
-    projectId: 'ppsg7ml5',
-    dataset: 'tsdoc-2',
-    plugins: [sharedSettings({projectId: 'ppsg7ml5'})],
-    basePath: '/tsdoc',
-    mediaLibrary: {
-      enabled: true,
-    },
-  },
-  {
     name: 'playground',
     title: 'Test Studio (playground)',
     subtitle: 'Playground dataset',
     projectId: 'ppsg7ml5',
     dataset: 'playground',
+    ...envConfig.production,
     plugins: [sharedSettings({projectId: 'ppsg7ml5'})],
     basePath: '/playground',
     beta: {
@@ -335,6 +341,9 @@ export default defineConfig([
     mediaLibrary: {
       enabled: true,
     },
+    advancedVersionControl: {
+      enabled: true,
+    },
   },
   {
     name: 'listener-events',
@@ -342,6 +351,7 @@ export default defineConfig([
     subtitle: 'Listener events debugging',
     projectId: 'ppsg7ml5',
     dataset: 'data-loss',
+    ...envConfig.production,
     plugins: [sharedSettings({projectId: 'ppsg7ml5'})],
     basePath: '/listener-events',
     mediaLibrary: {
@@ -353,6 +363,7 @@ export default defineConfig([
     title: 'Test Studio (playground-partial-indexing)',
     subtitle: 'Playground dataset',
     projectId: 'ppsg7ml5',
+    ...envConfig.production,
     dataset: 'playground-partial-indexing',
     plugins: [sharedSettings({projectId: 'ppsg7ml5'})],
     basePath: '/playground-partial-indexing',
@@ -366,9 +377,9 @@ export default defineConfig([
     subtitle: 'Staging dataset',
     projectId: 'exx11uqh',
     dataset: 'playground',
+    ...envConfig.staging,
     plugins: [sharedSettings({projectId: 'exx11uqh'})],
     basePath: '/staging',
-    apiHost: 'https://api.sanity.work',
     auth: {
       loginMethod: 'token',
     },
@@ -384,9 +395,9 @@ export default defineConfig([
     title: 'Media Library Playground (staging)',
     projectId: '5iedwjzw',
     dataset: 'production',
+    ...envConfig.staging,
     plugins: [sharedSettings({projectId: '5iedwjzw'})],
     basePath: '/media-library-playground-staging',
-    apiHost: 'https://api.sanity.work',
     auth: {
       loginMethod: 'token',
     },
@@ -399,9 +410,9 @@ export default defineConfig([
     title: 'playground (Staging)',
     projectId: 'exx11uqh',
     dataset: 'playground',
+    ...envConfig.staging,
     plugins: [sharedSettings({projectId: 'exx11uqh'})],
     basePath: '/playground-staging',
-    apiHost: 'https://api.sanity.work',
     auth: {
       loginMethod: 'token',
     },
@@ -414,6 +425,7 @@ export default defineConfig([
     title: 'Test Studio',
     subtitle: 'Components API playground',
     projectId: 'ppsg7ml5',
+    ...envConfig.production,
     dataset: 'test',
     plugins: [
       sharedSettings({projectId: 'ppsg7ml5'}),
@@ -453,6 +465,7 @@ export default defineConfig([
     title: 'Google Colors',
     projectId: 'ppsg7ml5',
     dataset: 'test',
+    ...envConfig.production,
     plugins: [sharedSettings({projectId: 'ppsg7ml5'})],
     basePath: '/google',
     theme: googleTheme,
@@ -466,6 +479,7 @@ export default defineConfig([
     title: 'Vercel Colors',
     projectId: 'ppsg7ml5',
     dataset: 'test',
+    ...envConfig.production,
     plugins: [sharedSettings({projectId: 'ppsg7ml5'})],
     basePath: '/vercel',
     theme: vercelTheme,
@@ -479,6 +493,7 @@ export default defineConfig([
     title: 'Tailwind Colors',
     projectId: 'ppsg7ml5',
     dataset: 'test',
+    ...envConfig.production,
     plugins: [sharedSettings({projectId: 'ppsg7ml5'})],
     basePath: '/tailwind',
     theme: tailwindTheme,
@@ -492,6 +507,7 @@ export default defineConfig([
     title: 'Sanity AI Assist',
     projectId: 'ppsg7ml5',
     dataset: 'test',
+    ...envConfig.production,
     plugins: [sharedSettings({projectId: 'ppsg7ml5'}), assist()],
     basePath: '/ai-assist',
     mediaLibrary: {
@@ -503,6 +519,7 @@ export default defineConfig([
     title: 'Debug Stega Studio',
     projectId: 'ppsg7ml5',
     dataset: 'test',
+    ...envConfig.production,
     plugins: [sharedSettings({projectId: 'ppsg7ml5'})],
     basePath: '/stega',
     form: {
@@ -525,6 +542,7 @@ export default defineConfig([
     releases: {enabled: true},
     projectId: 'pv8y60vp',
     dataset: 'production',
+    ...envConfig.production,
     schema: {types: presentationPreviewKitSchemaTypes},
     plugins: [
       structureTool(),
@@ -567,6 +585,7 @@ export default defineConfig([
     basePath: '/presentation-next-sanity',
     projectId: 'pv8y60vp',
     dataset: 'production',
+    ...envConfig.production,
     schema: {types: presentationNextSanitySchemaTypes},
     plugins: [
       assist(),

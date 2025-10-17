@@ -52,7 +52,7 @@ const addTokenCommand: CliCommandDefinition<AddTokenFlags> = {
       output.print('')
       output.print('Copy the token above – this is your only chance to do so!')
     } catch (err) {
-      throw new Error(`Token creation failed:\n${err.message}`)
+      throw new Error(`Token creation failed:\n${err.message}`, {cause: err})
     }
   },
 }

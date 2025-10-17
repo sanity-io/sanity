@@ -31,6 +31,7 @@ import {EMPTY_ARRAY, isNonNullable} from '../util'
 import {
   advancedVersionControlEnabledReducer,
   announcementsEnabledReducer,
+  decisionParametersSchemaReducer,
   directUploadsReducer,
   documentActionsReducer,
   documentBadgesReducer,
@@ -69,6 +70,7 @@ import {SchemaError} from './SchemaError'
 import {
   type Config,
   type ConfigContext,
+  DECISION_PARAMETERS_SCHEMA,
   type MissingConfigFile,
   type PluginOptions,
   type PreparedConfig,
@@ -361,6 +363,10 @@ function resolveSource({
     [QUOTA_EXCLUDED_RELEASES_ENABLED]: internalQuotaExcludedReleasesEnabledReducer({
       config,
       initialValue: false,
+    }),
+    [DECISION_PARAMETERS_SCHEMA]: decisionParametersSchemaReducer({
+      config,
+      initialValue: undefined,
     }),
   }
 

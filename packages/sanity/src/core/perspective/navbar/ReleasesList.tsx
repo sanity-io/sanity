@@ -7,8 +7,8 @@ import {CreateReleaseMenuItem} from '../../releases/components/CreateReleaseMenu
 import {useActiveReleases} from '../../releases/store/useActiveReleases'
 import {LATEST, PUBLISHED} from '../../releases/util/const'
 import {getReleaseIdFromReleaseDocumentId} from '../../releases/util/getReleaseIdFromReleaseDocumentId'
-import {isCardinalityOneRelease} from '../../releases/util/util'
 import {useWorkspace} from '../../studio/workspace'
+import {isCardinalityOneRelease} from '../../util/releaseUtils'
 import {type ReleasesNavMenuItemPropsGetter} from '../types'
 import {usePerspective} from '../usePerspective'
 import {

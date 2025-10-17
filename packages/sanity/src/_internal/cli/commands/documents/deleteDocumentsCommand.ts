@@ -57,7 +57,9 @@ const deleteDocumentsCommand: CliCommandDefinition<DeleteFlags> = {
         )
       }
     } catch (err) {
-      throw new Error(`Failed to delete ${pluralize('document', ids.length)}:\n${err.message}`)
+      throw new Error(`Failed to delete ${pluralize('document', ids.length)}:\n${err.message}`, {
+        cause: err,
+      })
     }
   },
 }

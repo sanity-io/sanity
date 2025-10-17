@@ -9,16 +9,28 @@ import {releasesLocaleNamespace} from '../../i18n'
 import {getDocumentValidationLoading} from '../../util/getDocumentValidationLoading'
 import {type DocumentInRelease} from './useBundleDocuments'
 
-export function ValidationProgressIndicator({documents}: {documents: DocumentInRelease[]}) {
+export function ValidationProgressIndicator({
+  documents,
+  layout = 'default',
+}: {
+  documents: DocumentInRelease[]
+  layout?: 'default' | 'minimal'
+}) {
   const totalCount = documents.length
   const {validatedCount, isValidating, hasError} = getDocumentValidationLoading(documents)
   const [showCheckmark, setShowCheckmark] = useState(false)
+  // in order if the caching has already happened once and the object is already at minimal,
+  // We don't want to show the whole thing again - instead we want to keep the minimal layout
+  const [hasFinishedOnce, setHasFinishedOnce] = useState(false)
   const {t} = useTranslation(releasesLocaleNamespace)
 
   const isFinished = useMemo(
     () => validatedCount === totalCount && validatedCount !== 0,
     [validatedCount, totalCount],
   )
+
+  // Use minimal layout if explicitly set OR if validation has finished once
+  const isMinimal = layout === 'minimal' || hasFinishedOnce
 
   // Add delay when validation is finished
   // so that we can show that it's finished but then show the checkmark
@@ -27,6 +39,7 @@ export function ValidationProgressIndicator({documents}: {documents: DocumentInR
     if (isFinished) {
       const timer = setTimeout(() => {
         setShowCheckmark(true)
+        setHasFinishedOnce(true)
       }, 2500)
 
       return () => clearTimeout(timer)
@@ -60,7 +73,7 @@ export function ValidationProgressIndicator({documents}: {documents: DocumentInR
 
   return (
     <Card
-      padding={2}
+      padding={isMinimal ? 0 : 2}
       radius="full"
       tone={tone}
       style={{
@@ -79,7 +92,7 @@ export function ValidationProgressIndicator({documents}: {documents: DocumentInR
             </Tooltip>
           )}
         </Text>
-        {!showCheckmark && (
+        {!showCheckmark && !isMinimal && (
           <Text muted size={1}>
             {isValidating
               ? t('summary.validating-documents', {validatedCount, totalCount})

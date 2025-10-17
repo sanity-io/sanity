@@ -82,7 +82,12 @@ export function StudioErrorBoundary(props: StudioErrorBoundaryProps) {
   }
 
   if (caughtError.error instanceof CorsOriginError) {
-    return <CorsOriginErrorScreen projectId={caughtError.error.projectId} />
+    return (
+      <CorsOriginErrorScreen
+        projectId={caughtError.error.projectId}
+        isStaging={caughtError.error.isStaging}
+      />
+    )
   }
 
   if (caughtError.error instanceof SchemaError) {

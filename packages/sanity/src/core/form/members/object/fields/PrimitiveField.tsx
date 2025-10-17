@@ -126,9 +126,11 @@ export function PrimitiveField(props: {
   const inputProps = useMemo((): Omit<PrimitiveInputProps, 'renderDefault'> => {
     return {
       value: member.field.value as any,
+      __unstable_computeDiff: member.field.__unstable_computeDiff,
       readOnly: member.field.readOnly,
       schemaType: member.field.schemaType as any,
       changed: member.field.changed,
+      hasUpstreamVersion: member.field.hasUpstreamVersion,
       id: member.field.id,
       path: member.field.path,
       focused: member.field.focused,
@@ -138,12 +140,16 @@ export function PrimitiveField(props: {
       presence: member.field.presence,
       validationError,
       elementProps,
+      displayInlineChanges: member.field.displayInlineChanges ?? false,
     }
   }, [
+    member.field.displayInlineChanges,
     member.field.value,
+    member.field.__unstable_computeDiff,
     member.field.readOnly,
     member.field.schemaType,
     member.field.changed,
+    member.field.hasUpstreamVersion,
     member.field.id,
     member.field.path,
     member.field.focused,

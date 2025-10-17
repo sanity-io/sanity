@@ -1,4 +1,4 @@
-# Telegram notifications on document publish
+# Telegram notifications when comments are submitted
 
 [Explore all examples](https://github.com/sanity-io/sanity/tree/main/examples)
 
@@ -52,9 +52,9 @@ export const comment = defineType({
 
 ## Usage Example
 
-When a `comment` type document is published, the function automatically:
+When a new `comment` type document is created, the function automatically:
 
-1. **Triggers** on the publish event for `comment` type documents
+1. **Triggers** on the on create event for `comment` type documents
 2. **Checks** if the `comment` field is defined (using filter)
 3. **Sends** a Telegram notification with a link to the comment in the Sanity Studio
 
@@ -128,7 +128,7 @@ export default defineBlueprint({
     defineDocumentFunction({
       name: 'comment-telegram',
       event: {
-        on: ['publish'],
+        on: ['create'],
         filter: '_type == "comment" && defined(comment)',
         projection: '{_id, comment}',
       },
@@ -221,7 +221,7 @@ This command will:
 
 - Package your function code
 - Upload it to Sanity's infrastructure
-- Configure the event triggers for comment publications
+- Configure the event triggers for new comment creation
 - Make your telegram-notify function live in production
 - Deploy .env file in the root directory if it exists
 
@@ -245,7 +245,7 @@ npx sanity functions env list comment-telegram
 
 After deployment, you can verify your function is active by:
 
-- Publishing a new comment and confirming Telegram notifications are sent
+- Creating a new comment and confirming Telegram notifications are sent
 - Monitoring function logs in the CLI
 
 ```bash

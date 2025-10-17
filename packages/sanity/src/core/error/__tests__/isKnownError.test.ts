@@ -25,6 +25,7 @@ describe('#isKnownError', () => {
     expect(
       isKnownError(
         new CorsOriginError({
+          isStaging: false,
           projectId: 'test',
         }),
       ),

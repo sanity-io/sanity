@@ -29,7 +29,11 @@ function runFromCli() {
 }
 
 async function getSanityCliPath() {
-  const modulePath = require.resolve('@sanity/cli')
+  const modulePath = require.resolve(
+    // Resolve package.json from `@sanity/cli` instead of the main export to allow resolving before
+    // the package is built. Used when running the CLI from source by setting the env var SANITY_CLI_RUN_FROM_SOURCE=1
+    '@sanity/cli/package.json',
+  )
   const pkg = await readPkgUp({cwd: path.dirname(modulePath)})
   if (pkg) {
     return path.dirname(pkg.path)

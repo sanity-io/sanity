@@ -27,6 +27,8 @@ import {
   isPublishedId,
   isVersionId,
   LoadingBlock,
+  type TargetPerspective,
+  useActiveReleases,
   useDocumentForm,
   useEditState,
   useMiddlewareComponents,
@@ -38,6 +40,7 @@ import {styled} from 'styled-components'
 import {pickDocumentLayoutComponent} from '../../panes/document/document-layout/pickDocumentLayoutComponent'
 import {usePathSyncChannel} from '../hooks/usePathSyncChannel'
 import {type PathSyncChannel} from '../types/pathSyncChannel'
+import {findRelease} from '../utils/findRelease'
 import {Scroller} from './Scroller'
 
 const DiffViewPaneLayout = styled(Card)`
@@ -147,7 +150,9 @@ const DiffViewDocument: ComponentType<DiffViewPaneProps> = ({
   compareDocument,
 }) => {
   const compareValue = useCompareValue({compareDocument})
+  const {data: releases} = useActiveReleases()
   const [patchChannel] = useState(() => createPatchChannel())
+  const perspective = useMemo(() => findRelease(documentId, releases), [documentId, releases])
 
   const {
     formState,
@@ -170,6 +175,7 @@ const DiffViewDocument: ComponentType<DiffViewPaneProps> = ({
     selectedPerspectiveName: perspectiveName(documentId),
     releaseId: getVersionFromId(documentId),
     comparisonValue: compareValue,
+    displayInlineChanges: true,
   })
 
   const isLoading = formState === null || !ready
@@ -219,9 +225,12 @@ const DiffViewDocument: ComponentType<DiffViewPaneProps> = ({
         groups={formState.groups}
         validation={formState.validation}
         members={formState.members}
+        perspective={sanitizeBundleName(perspective)}
+        hasUpstreamVersion={formState.hasUpstreamVersion}
         presence={formState.presence}
         schemaType={schemaType}
         value={value}
+        compareValue={compareValue}
       />
     </CommentsEnabledContext.Provider>
   )
@@ -272,4 +281,13 @@ function useCompareValue({compareDocument}: UseCompareValueOptions): SanityDocum
     compareDocumentEditState.published,
     compareDocumentEditState.version,
   ])
+}
+
+// TODO: Refactor `findRelease` to return a type compatible with `TargetPerspective` (`"draft"` must be `"drafts"`), so that `sanitizeBundleName` can be removed.
+function sanitizeBundleName(bundle: ReturnType<typeof findRelease>): TargetPerspective | undefined {
+  if (bundle === 'draft') {
+    return 'drafts'
+  }
+
+  return bundle
 }

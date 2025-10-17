@@ -1,4 +1,4 @@
-import {CogIcon, GithubIcon, LaunchIcon, RefreshIcon} from '@sanity/icons'
+import {CogIcon, GithubIcon, LaunchIcon, RefreshIcon, WarningOutlineIcon} from '@sanity/icons'
 import {SanityMonogram} from '@sanity/logos'
 import {Badge, Card, Flex, Grid, Spinner, Stack, Text} from '@sanity/ui'
 import {useEffect, useId} from 'react'
@@ -6,8 +6,10 @@ import semver, {type SemVer} from 'semver'
 import {styled} from 'styled-components'
 
 import {Button, Dialog, Tooltip} from '../../../../../ui-components'
+import {TextWithTone} from '../../../../components'
 import {isProd} from '../../../../environment'
-import {useTranslation} from '../../../../i18n'
+import {Translate, useTranslation} from '../../../../i18n'
+import {useEnvAwareSanityWebsiteUrl} from '../../../hooks/useEnvAwareSanityWebsiteUrl'
 import {usePackageVersionStatus} from '../../../packageVersionStatus/usePackageVersionStatus'
 import {useWorkspace} from '../../../workspace'
 
@@ -58,6 +60,7 @@ export function StudioInfoDialog(props: StudioInfoDialogProps) {
     isAutoUpdating,
     autoUpdatingVersion,
     currentVersion,
+    importMapInfo,
     latestTaggedVersion,
     versionCheckStatus,
     checkForUpdates,
@@ -82,7 +85,38 @@ export function StudioInfoDialog(props: StudioInfoDialogProps) {
   }, [checkForUpdates])
 
   const githubUrl = resolveGithubURLFromVersion(currentVersion)
+  const sanityWebsiteUrl = useEnvAwareSanityWebsiteUrl()
 
+  const importMapWarning =
+    importMapInfo?.valid && !importMapInfo.appId ? (
+      <Card padding={4} tone="caution">
+        <Flex align="flex-start" gap={3}>
+          <TextWithTone tone="caution">
+            <WarningOutlineIcon />
+          </TextWithTone>
+          <Stack space={4}>
+            <TextWithTone size={1} tone="caution" weight="medium">
+              {t('about-dialog.configuration-issue.header')}
+            </TextWithTone>
+            <TextWithTone size={1} tone="caution">
+              <Translate t={t} i18nKey="about-dialog.configuration-issue.missing-appid" />
+            </TextWithTone>
+            <TextWithTone size={1} tone="caution">
+              <Text muted size={1}>
+                <a
+                  href="https://www.sanity.io/docs/studio/latest-version-of-sanity"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  {t('about-dialog.configuration-issue.missing-appid.view-documentation')} &rarr;
+                </a>
+              </Text>
+            </TextWithTone>
+          </Stack>
+        </Flex>
+        <Stack space={2} />
+      </Card>
+    ) : null
   return (
     <Dialog width={0} onClickOutside={onClose} id={dialogId} padding={false}>
       {versionCheckStatus?.checking ? (
@@ -206,7 +240,7 @@ export function StudioInfoDialog(props: StudioInfoDialogProps) {
                 </Text>
                 <Button
                   as="a"
-                  href={`https://sanity.io/manage/project/${projectId}/studios?host=${document.location.hostname}`}
+                  href={`${sanityWebsiteUrl}/manage/project/${projectId}/studios?host=${document.location.hostname}`}
                   target="_blank"
                   rel="noopener noreferrer"
                   mode="ghost"
@@ -235,8 +269,8 @@ export function StudioInfoDialog(props: StudioInfoDialogProps) {
               </Flex>
             </Card>
           ) : null}
+          {importMapWarning}
         </Stack>
-
         <Stack paddingX={3}>
           <Button tone="primary" text="OK" paddingY={3} onClick={onClose} />
         </Stack>
