@@ -18,6 +18,7 @@ import {
   Translate,
   useSetPerspective,
   useTranslation,
+  useWorkspace,
   VersionInlineBadge,
 } from 'sanity'
 import {IntentLink} from 'sanity/router'
@@ -33,6 +34,10 @@ export function PublishedEventMenu({event}: {event: PublishDocumentVersionEvent}
   const portalContext = usePortal()
   const {params, setParams} = usePaneRouter()
   const setPerspective = useSetPerspective()
+  const {document} = useWorkspace()
+  const {
+    drafts: {enabled: isDraftModelEnabled},
+  } = document
 
   const handleOpenReleaseDocument = useCallback(() => {
     setParams({
@@ -54,9 +59,9 @@ export function PublishedEventMenu({event}: {event: PublishDocumentVersionEvent}
     setTimeout(() => {
       // A bug is generated when we change the perspective and the params at the same time
       // Resetting the params to the value it had before, because the paneRouter uses the previous value
-      setPerspective('drafts')
+      setPerspective(isDraftModelEnabled ? 'drafts' : 'published')
     }, 100)
-  }, [setParams, params, event.versionRevisionId, setPerspective])
+  }, [setParams, params, event.versionRevisionId, setPerspective, isDraftModelEnabled])
 
   const VersionBadge = ({children}: {children: React.ReactNode}) => {
     return (

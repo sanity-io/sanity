@@ -17,6 +17,7 @@ import {useProjectSubscriptions} from '../../../hooks/useProjectSubscriptions'
 import {useTranslation} from '../../../i18n'
 import {usePerspective} from '../../../perspective/usePerspective'
 import {useSetPerspective} from '../../../perspective/useSetPerspective'
+import {useWorkspace} from '../../../studio/workspace'
 import {releasesLocaleNamespace} from '../../i18n'
 import {useReleaseOperations} from '../../store/useReleaseOperations'
 import {useReleasePermissions} from '../../store/useReleasePermissions'
@@ -54,6 +55,10 @@ export function ReleaseDashboardDetails({
   const [shouldDisplayPermissionWarning, setShouldDisplayPermissionWarning] = useState(false)
   const shouldDisplayWarnings = isActive && shouldDisplayPermissionWarning
   const isMounted = useRef(false)
+  const {document} = useWorkspace()
+  const {
+    drafts: {enabled: isDraftModelEnabled},
+  } = document
   useEffect(() => {
     isMounted.current = true
 
@@ -87,11 +92,11 @@ export function ReleaseDashboardDetails({
 
   const handlePinRelease = useCallback(() => {
     if (isSelected) {
-      setPerspective('drafts')
+      setPerspective(isDraftModelEnabled ? 'drafts' : 'published')
     } else {
       setPerspective(releaseId)
     }
-  }, [isSelected, releaseId, setPerspective])
+  }, [isDraftModelEnabled, isSelected, releaseId, setPerspective])
 
   return (
     <Container width={3}>
