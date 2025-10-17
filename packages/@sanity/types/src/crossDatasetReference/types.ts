@@ -41,7 +41,7 @@ export interface CrossDatasetType {
   icon: ComponentType
   preview: PreviewConfig
   /** @deprecated Unused. Configuring search is no longer supported for cross-dataset references. */
-  __experimental_search: ObjectSchemaType['__experimental_search']
+  __experimental_search?: ObjectSchemaType['__experimental_search']
 }
 
 /** @beta */

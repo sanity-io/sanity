@@ -596,6 +596,9 @@ export const studioLocaleStrings = defineLocalesResources('studio', {
   /** Title for help and resources menus */
   'help-resources.title': 'Help and resources',
 
+  /**Incoming references inspector title */
+  'incoming-references.title': 'Incoming references',
+
   /** Text for button to cancel an ongoing upload */
   'input.files.common.cancel-upload': 'Cancel',
   /** Text for menuitem upload button default asset source */
