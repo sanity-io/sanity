@@ -1,63 +1,46 @@
-import {type PreviewConfig} from '@sanity/types'
+import {uuid} from '@sanity/uuid'
 import {defineField} from 'sanity'
 
-import {DecideObjectField, DecideObjectInput} from './DecideComponents'
-import {OperatorSelectInput} from './OperatorSelectInput'
-import {PropertySelectInput} from './PropertySelectInput'
-import {TargetValueInput} from './TargetValueInput'
-import {type DecideRule} from './types'
+import {
+  DecideObjectField,
+  DecideObjectInput,
+  VariantObjectField,
+  WhenExpressionInput,
+} from './DecideComponents'
 
-const rulePreview: PreviewConfig = {
-  select: {
-    property: 'property',
-    operator: 'operator',
-    targetValue: 'targetValue',
-    and: 'and',
-  },
-  prepare(context) {
-    const property = context.property
-    const operator = context.operator
-    const targetValue = context.targetValue
-    const and = context.and as DecideRule[]
-    return {
-      title: `${property || ''} ${operator || ''} ${targetValue || ''} ${and ? `& ${and.map((a) => `${a.property || ''} ${a.operator || ''} ${a.targetValue || ''}`).join(' & ')}` : ''}`,
-    }
-  },
+// Helper function to format expressions into readable strings
+function formatExpr(expr: any): string {
+  if (!expr) return ''
+
+  if (expr.kind === 'cmp') {
+    const attr = expr.attr || '?'
+    const op = expr.op || '?'
+    const value = expr.value ?? ''
+    return `${attr} ${op} ${value}`
+  }
+
+  if (expr.kind === 'and') {
+    const exprs = expr.exprs || []
+    return exprs
+      .map((e: any) => formatExpr(e))
+      .filter(Boolean)
+      .join(' & ')
+  }
+
+  if (expr.kind === 'or') {
+    const exprs = expr.exprs || []
+    return exprs
+      .map((e: any) => formatExpr(e))
+      .filter(Boolean)
+      .join(' | ')
+  }
+
+  if (expr.kind === 'not') {
+    return `NOT (${formatExpr(expr.expr)})`
+  }
+
+  return ''
 }
-
-const rule = defineField({
-  name: 'rule',
-  type: 'object',
-  fields: [
-    defineField({
-      name: 'property',
-      title: 'Property',
-      type: 'string',
-      components: {
-        input: PropertySelectInput,
-      },
-    }),
-    defineField({
-      name: 'operator',
-      title: 'Operator',
-      type: 'string',
-      readOnly: ({parent}) => !parent.property,
-      components: {
-        input: OperatorSelectInput,
-      },
-    }),
-    defineField({
-      name: 'targetValue',
-      title: 'Target Value',
-      type: 'string',
-      readOnly: ({parent}) => !parent.property,
-      components: {
-        input: TargetValueInput,
-      },
-    }),
-  ],
-  preview: rulePreview,
-})
 
 // Generic decide field implementation that works for all types
 export const defineLocalDecideField = (config: any) => {
@@ -89,7 +72,6 @@ export const defineLocalDecideField = (config: any) => {
         ...valueFieldConfig,
       }),
       defineField({
-        // TODO: Change to variants?
         name: 'variants',
         title: 'Variants',
         type: 'array',
@@ -98,41 +80,44 @@ export const defineLocalDecideField = (config: any) => {
             type: 'object',
             name: 'variant',
             title: 'Variant',
+            components: {
+              field: VariantObjectField,
+            },
             preview: {
               select: {
-                rules: 'anyOf',
+                when: 'when',
                 value: 'value',
               },
               prepare(context) {
                 const value = context.value
-                const rules = (context.rules || []) as DecideRule[]
+                const when = context.when
+                const condition = formatExpr(when)
 
                 return {
-                  title: value,
-                  subtitle: `${rules.map((r) => `${r.property || ''} ${r.operator || ''} ${r.targetValue || ''} ${r.and ? `& ${r.and.map((and) => `${and.property || ''} ${and.operator || ''} ${and.targetValue || ''}`).join(' & ')}` : ''}`).join(' | ')}`,
+                  title: `${value}`,
+                  subtitle: condition || 'No condition',
                 }
               },
             },
             fields: [
               defineField({
-                name: 'anyOf',
-                title: 'Any of',
-                description: 'If any of the rules are true, the condition is true',
-                type: 'array',
-                of: [
-                  {
-                    ...rule,
-                    fields: [
-                      ...rule.fields,
-                      defineField({
-                        name: 'and',
-                        title: 'And',
-                        type: 'array',
-                        of: [rule],
-                      }),
-                    ],
-                  },
-                ],
+                name: 'when',
+                title: 'When',
+                type: 'expr',
+                components: {
+                  input: WhenExpressionInput,
+                },
+                initialValue: {
+                  exprs: [
+                    {
+                      _key: uuid(),
+                      _type: 'expr',
+                      exprs: [],
+                      kind: 'and',
+                    },
+                  ],
+                  kind: 'or',
+                },
               }),
               defineField({
                 name: 'value',
