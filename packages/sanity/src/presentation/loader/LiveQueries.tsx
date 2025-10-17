@@ -113,31 +113,6 @@ function processDecideFields(data: unknown, decideParameters?: LocalDecideParame
   }
 }
 
-/**
- * Creates a short hash of decide parameters for use in tags.
- * Ensures tags stay under the 75 character limit while maintaining uniqueness.
- * @returns A short base36 hash string (6-7 chars) or 'none' for empty params
- */
-function hashDecideParameters(params: LocalDecideParameters | undefined): string {
-  if (!params || Object.keys(params).length === 0) return 'none'
-
-  // Create deterministic string representation
-  const str = JSON.stringify(params)
-  let hash = 0
-
-  /* eslint-disable no-bitwise */
-  // Simple hash function (similar to Java's String.hashCode)
-  for (let i = 0; i < str.length; i++) {
-    const char = str.charCodeAt(i)
-    hash = (hash << 5) - hash + char
-    hash &= hash // Convert to 32bit integer
-  }
-  /* eslint-enable no-bitwise */
-
-  // Convert to base36 for shorter representation
-  return Math.abs(hash).toString(36)
-}
-
 export interface LiveQueriesProps {
   liveDocument: Partial<SanityDocument> | null | undefined
   controller: Controller | undefined
@@ -474,7 +449,7 @@ function useQuerySubscription(props: UseQuerySubscriptionProps) {
     client
       .fetch(query, params, {
         lastLiveEventId,
-        tag: `presentation-loader-${hashDecideParameters(transformedDecideParameters)}`,
+        tag: 'presentation-loader',
         signal: controller.signal,
         perspective,
         decideParameters: transformedDecideParameters as any,
