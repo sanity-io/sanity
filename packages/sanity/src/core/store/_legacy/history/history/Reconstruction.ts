@@ -1,7 +1,6 @@
 import {type Diff} from '@sanity/diff'
 
-import {type Chunk} from '../../../../field'
-import {type Annotation} from '../../../../field/types'
+import {type Annotation, type Chunk} from '../../../../field/types'
 import {type Timeline} from './Timeline'
 import {type CombinedDocument} from './types'
 

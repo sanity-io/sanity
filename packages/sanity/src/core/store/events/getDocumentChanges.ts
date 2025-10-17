@@ -15,8 +15,7 @@ import {
   tap,
 } from 'rxjs'
 
-import {type ObjectDiff} from '../../field'
-import {type Annotation} from '../../field/types'
+import {type Annotation, type ObjectDiff} from '../../field/types'
 import {wrapValue} from '../_legacy/history/history/diffValue'
 import {getDocumentTransactions} from './getDocumentTransactions'
 import {HISTORY_CLEARED_EVENT_ID} from './getInitialFetchEvents'

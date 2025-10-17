@@ -8,7 +8,6 @@ import {DocumentChangeContext} from 'sanity/_singletons'
 
 import {Button} from '../../../../ui-components/button/Button'
 import {ChangeFieldWrapper} from '../../../changeIndicators/ChangeFieldWrapper'
-import {type Chunk} from '../../../field'
 import {ChangeList} from '../../../field/diff/components/ChangeList'
 import {type DocumentChangeContextInstance} from '../../../field/diff/contexts/DocumentChangeContext'
 import {useConnectionState} from '../../../hooks/useConnectionState'
