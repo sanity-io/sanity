@@ -248,6 +248,7 @@ export function FormBuilder(props: FormBuilderProps) {
       schemaType,
       validation: EMPTY_ARRAY,
       value,
+      compareValue,
       __unstable_computeDiff: diffProps.__unstable_computeDiff,
       changed: members.some((m) => m.kind === 'field' && m.field.changed),
       displayInlineChanges: false,
