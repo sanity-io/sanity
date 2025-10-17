@@ -1,7 +1,5 @@
+import {type PerspectiveContextValue, usePerspective} from 'sanity'
 import {type Mock, type Mocked} from 'vitest'
-
-import {type PerspectiveContextValue} from '../core/perspective/types'
-import {usePerspective} from '../core/perspective/usePerspective'
 
 export const perspectiveContextValueMock: Mocked<PerspectiveContextValue> = {
   selectedPerspectiveName: undefined,
