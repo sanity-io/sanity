@@ -18,7 +18,82 @@ import {
 } from 'sanity'
 import {styled} from 'styled-components'
 
-import {type AndExpr, type CmpExpr, type Decide, type Expr, type OrExpr} from './astType'
+import {type AndExpr, type CmpExpr, type Decide, type Expr, type OrExpr} from './types'
+
+function Node({
+  expr,
+  path,
+  onHover,
+  hoverPath = [],
+}: {
+  expr: Expr
+  path: Path
+  onHover: (path: Path) => void
+  hoverPath: Path
+}) {
+  const isHovered = PathUtils.isEqual(hoverPath, path)
+  if (expr.kind === 'cmp') {
+    const attr = expr.attr || '?'
+    const op = expr.op || '?'
+    const value = expr.value ?? ''
+    return (
+      <span
+        onMouseEnter={() => onHover(path)}
+        onMouseLeave={() => onHover([])}
+        style={{textDecoration: isHovered ? 'underline' : 'none'}}
+      >{`${attr} ${op} ${value}`}</span>
+    )
+  }
+
+  if (expr.kind === 'and' || expr.kind === 'or') {
+    const exprs = expr.exprs || []
+
+    return (
+      <span style={{textDecoration: isHovered ? 'underline' : 'none'}}>
+        <span onMouseEnter={() => onHover(path)} onMouseLeave={() => onHover([])}>
+          {`(`}
+        </span>
+        {exprs.map((e, index) => (
+          <Fragment key={e._key}>
+            <Node
+              expr={e}
+              path={path.concat(['exprs', {_key: e._key}])}
+              onHover={onHover}
+              hoverPath={hoverPath}
+            />
+            <span onMouseEnter={() => onHover(path)} onMouseLeave={() => onHover([])}>
+              {index < exprs.length - 1 ? (expr.kind === 'and' ? ` && ` : ` || `) : ''}
+            </span>
+          </Fragment>
+        ))}{' '}
+        <span onMouseEnter={() => onHover(path)} onMouseLeave={() => onHover([])}>
+          {`)`}
+        </span>
+      </span>
+    )
+  }
+
+  if (expr.kind === 'not') {
+    return (
+      <span style={{textDecoration: isHovered ? 'underline' : 'none'}}>
+        <span onMouseEnter={() => onHover(path)} onMouseLeave={() => onHover([])}>
+          {`!( `}
+        </span>
+        <Node
+          hoverPath={hoverPath}
+          expr={expr.expr}
+          path={path.concat(['exprs', {_key: expr.expr._key}])}
+          onHover={onHover}
+        />
+        <span onMouseEnter={() => onHover(path)} onMouseLeave={() => onHover([])}>
+          {` )`}
+        </span>
+      </span>
+    )
+  }
+
+  return null
+}
 
 const debug = false
 
@@ -28,10 +103,14 @@ const HoverCard = styled(Card)`
   }
 `
 export function ExpressionBuilder(props: ObjectInputProps) {
-  const {path, onChange} = props
+  const {onChange} = props
   const value = useFormValue(props.path) as Decide | undefined
   const handleRemoveVariant = (variantKey: string) => {
     onChange(unset(['variants', {_key: variantKey}]))
+  }
+  const [hoverPath, setHoverPath] = useState<Path>([])
+  const handleHover = (path: Path) => {
+    setHoverPath(path)
   }
   return (
     <Stack space={3}>
@@ -39,9 +118,11 @@ export function ExpressionBuilder(props: ObjectInputProps) {
         return (
           <Card key={variant._key} border paddingY={3} paddingX={3} radius={3}>
             <Flex justify="space-between" align="center" paddingBottom={2} paddingRight={1}>
-              <Text size={1} weight="medium">
-                Rule
-              </Text>
+              <Stack space={2}>
+                <Text size={1} weight="medium">
+                  Rule
+                </Text>
+              </Stack>
               <Button
                 padding={2}
                 fontSize={1}
@@ -56,6 +137,8 @@ export function ExpressionBuilder(props: ObjectInputProps) {
                 onChange={onChange}
                 path={['variants', {_key: variant._key}, 'when']}
                 inputProps={props}
+                onHover={handleHover}
+                hoverPath={hoverPath}
               />
 
               <FormInput
@@ -105,11 +188,15 @@ function Expression({
   onChange,
   path,
   inputProps,
+  onHover,
+  hoverPath,
 }: {
   expr: Expr | undefined
   onChange: (patch: FormPatch | FormPatch[]) => void
   path: Path
   inputProps: ObjectInputProps
+  onHover: (path: Path) => void
+  hoverPath: Path
 }) {
   if (!expr)
     return (
@@ -134,6 +221,8 @@ function Expression({
           onChange={onChange}
           path={path}
           inputProps={inputProps}
+          onHover={onHover}
+          hoverPath={hoverPath}
         />
       )}
       {expr?.kind === 'or' && (
@@ -142,6 +231,8 @@ function Expression({
           onChange={onChange}
           path={path}
           inputProps={inputProps}
+          onHover={onHover}
+          hoverPath={hoverPath}
         />
       )}
       {expr?.kind === 'cmp' && (
@@ -150,6 +241,7 @@ function Expression({
           onChange={onChange}
           path={path}
           inputProps={inputProps}
+          hoverPath={hoverPath}
         />
       )}
     </>
@@ -161,11 +253,15 @@ function AndOrExpression({
   onChange,
   path,
   inputProps,
+  onHover,
+  hoverPath,
 }: {
   expr: AndExpr | OrExpr
   onChange: (patch: FormPatch | FormPatch[]) => void
   path: Path
   inputProps: ObjectInputProps
+  onHover: (path: Path) => void
+  hoverPath: Path
 }) {
   const handleAddCmp = () => {
     const newCmpExpr: CmpExpr = {
@@ -181,20 +277,14 @@ function AndOrExpression({
   const handleChangeType = () => {
     onChange(set(expr.kind === 'and' ? 'or' : 'and', path.concat(['kind'])))
   }
+  const isHovered = PathUtils.isEqual(hoverPath ?? [], path)
   return (
-    <HoverCard border paddingY={3} paddingX={3} radius={3}>
+    <HoverCard border paddingY={3} paddingX={3} radius={3} tone={isHovered ? 'suggest' : undefined}>
       <Stack space={2}>
         <Flex justify="space-between" align="center">
-          <Stack space={2}>
-            <Text size={1} weight="medium">
-              {expr.kind === 'and' ? 'If all of' : 'If one of'}
-            </Text>
-            {/* <Text size={1} muted>
-              {expr.kind === 'and'
-                ? 'All of the rules must be true for the condition to be true'
-                : 'If any of the rules are true, the condition is true'}
-            </Text> */}
-          </Stack>
+          <Text size={1} weight="medium">
+            {expr.kind === 'and' ? 'If all of' : 'If one of'}
+          </Text>
           <Flex gap={2}>
             <Button
               padding={2}
@@ -215,6 +305,9 @@ function AndOrExpression({
             />
           </Flex>
         </Flex>
+        <Text size={0} muted>
+          <Node expr={expr} path={path} onHover={onHover} hoverPath={hoverPath} />
+        </Text>
         <Stack space={2} paddingTop={2}>
           {expr?.exprs?.map((exprItem, index) => (
             <Stack key={exprItem._key} space={2}>
@@ -223,6 +316,8 @@ function AndOrExpression({
                 onChange={onChange}
                 path={path.concat(['exprs', {_key: exprItem._key}])}
                 inputProps={inputProps}
+                onHover={onHover}
+                hoverPath={hoverPath}
               />
               {index < expr.exprs.length - 1 && (
                 <Box paddingY={2}>
@@ -276,27 +371,21 @@ const CompareFormInputWrapper = styled(Card)`
     gap: 16px;
   }
 `
-const Wrapper = (
-  props: {
-    isRootExpression: boolean
-    children: React.ReactNode
-  } & React.ComponentProps<typeof HoverCard>,
-) => {
-  if (props.isRootExpression) return <Fragment {...props} />
-  return <HoverCard {...props} />
-}
+
 function CompareExpression({
   expr,
   onChange,
   path,
   inputProps,
+  hoverPath = [],
 }: {
   expr: CmpExpr
   onChange: (patch: FormPatch | FormPatch[]) => void
   path: Path
   inputProps: ObjectInputProps
+  hoverPath: Path
 }) {
-  console.log('path', path)
+  const isHovered = PathUtils.isEqual(hoverPath, path)
   const isRootExpression = path[path.length - 1] === 'when'
   const [isEditing, setIsEditing] = useState(false)
   const decisionParametersConfig = useWorkspace().__internal.options[DECISION_PARAMETERS_SCHEMA]
@@ -362,18 +451,25 @@ function CompareExpression({
   }
 
   return (
-    <Wrapper
-      isRootExpression={isRootExpression}
-      border
-      paddingY={3}
-      paddingX={3}
-      radius={3}
-      shadow={1}
+    <HoverCard
+      border={!isRootExpression}
+      paddingY={isRootExpression ? 0 : 3}
+      paddingX={isRootExpression ? 0 : 3}
+      radius={isRootExpression ? 0 : 3}
+      shadow={isRootExpression ? 0 : 1}
+      tone={isHovered ? 'suggest' : undefined}
     >
       <Stack space={2}>
-        <HoverCard border paddingLeft={2} radius={3} padding={2} shadow={2}>
+        <HoverCard
+          border
+          paddingLeft={2}
+          radius={3}
+          padding={2}
+          shadow={2}
+          tone={isHovered ? 'suggest' : undefined}
+        >
           <Stack space={2}>
-            <Card border paddingY={1} paddingX={2} radius={3} tone="neutral">
+            <Card border paddingY={1} paddingX={2} radius={3}>
               <Flex align="center" justify="space-between" gap={2}>
                 <Text size={1} weight="medium">
                   {displayValue}
@@ -438,6 +534,6 @@ function CompareExpression({
           />
         </Flex>
       </Stack>
-    </Wrapper>
+    </HoverCard>
   )
 }

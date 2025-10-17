@@ -17,8 +17,8 @@ import {
 import {useDocumentPane} from 'sanity/structure'
 import {styled} from 'styled-components'
 
-import {type Decide} from './astType'
 import {ExpressionBuilder} from './ExpressionBuilder'
+import {type Decide} from './types'
 
 const VARIANTS_PATH = 'variants'
 const ObjectWrapper = styled.div`
