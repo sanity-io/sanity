@@ -116,6 +116,7 @@ export function FieldChange(
   const value = useMemo(() => ({path: change.path}), [change.path])
 
   const content = useMemo(
+    // todo lint error
     () =>
       hidden ? null : (
         <>

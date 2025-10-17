@@ -142,6 +142,7 @@ export function BlockObject(props: BlockObjectProps) {
     if (isDeleting.current) {
       return
     }
+    // todo lint error
     try {
       PortableTextEditor.delete(editor, selfSelection, {mode: 'blocks'})
     } catch (err) {

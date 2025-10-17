@@ -90,6 +90,7 @@ export const HotspotImage = memo(function HotspotImage(props: HotspotImageProps)
       imageElement.src = imageElement.src
     }
 
+    // todo lint error
     updateContainerAspect()
 
     window.addEventListener('resize', updateContainerAspect)

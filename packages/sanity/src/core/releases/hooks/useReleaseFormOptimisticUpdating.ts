@@ -51,6 +51,7 @@ export function useReleaseFormOptimisticUpdating({
     // if tracking a new ID
 
     if (previousIdRef.current === id) {
+      // todo lint error
       setLocalData(isEditingExistingRelease ? updateUnfocusedFields : incomingFormData)
     } else {
       previousIdRef.current = id

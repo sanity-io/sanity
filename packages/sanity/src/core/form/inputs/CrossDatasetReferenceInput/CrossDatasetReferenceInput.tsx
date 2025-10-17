@@ -344,6 +344,7 @@ export function CrossDatasetReferenceInput(props: CrossDatasetReferenceInputProp
                       tabIndex={0}
                       onFocus={handleFocus}
                       onBlur={handleBlur}
+                      // todo lint error
                       ref={elementProps.ref}
                     >
                       <PreviewReferenceValue
@@ -365,6 +366,7 @@ export function CrossDatasetReferenceInput(props: CrossDatasetReferenceInputProp
                       tabIndex={0}
                       onFocus={handleFocus}
                       onBlur={handleBlur}
+                      // todo lint error
                       ref={elementProps.ref}
                     >
                       <PreviewReferenceValue

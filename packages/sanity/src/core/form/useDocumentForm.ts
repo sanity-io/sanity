@@ -295,6 +295,7 @@ export function useDocumentForm(options: DocumentFormOptions): DocumentFormValue
   )
 
   const requiredPermission = value._createdAt ? 'update' : 'create'
+  // todo lint error
   const targetDocumentId = useMemo(() => {
     if (releaseId) {
       return getVersionId(publishedId, releaseId)

@@ -130,6 +130,7 @@ export const ReleaseMenuButton = ({
       }
       const actionValues = RELEASE_ACTION_MAP[action]
 
+      // todo lint error
       try {
         if (
           (action === 'archive' || action === 'delete') &&

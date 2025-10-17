@@ -78,9 +78,8 @@ export function useSavedQueries(): {
         } as unknown as KeyValueStoreValue)
       } catch (err) {
         setSaveQueryError(err as Error)
-      } finally {
-        setSaving(false)
       }
+      setSaving(false)
     },
     [keyValueStore, value.queries],
   )
@@ -99,9 +98,8 @@ export function useSavedQueries(): {
         } as unknown as KeyValueStoreValue)
       } catch (err) {
         setSaveQueryError(err as Error)
-      } finally {
-        setSaving(false)
       }
+      setSaving(false)
     },
     [keyValueStore, value.queries],
   )
@@ -118,9 +116,8 @@ export function useSavedQueries(): {
         } as unknown as KeyValueStoreValue)
       } catch (err) {
         setDeleteQueryError(err as Error)
-      } finally {
-        setDeleting((prev) => prev.filter((k) => k !== key))
       }
+      setDeleting((prev) => prev.filter((k) => k !== key))
     },
     [keyValueStore, value.queries],
   )

@@ -26,6 +26,7 @@ export function useVisibility(props: Props): boolean {
     }
 
     if (element && 'checkVisibility' in element) {
+      // todo lint error
       setVisible(element.checkVisibility())
     }
 

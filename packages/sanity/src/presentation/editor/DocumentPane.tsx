@@ -85,6 +85,7 @@ export function DocumentPane(props: {
 
   // Reset error state when parameters change
   useEffect(() => {
+    // todo lint error
     setErrorParams(null)
   }, [documentId, documentType, structureParams])
 

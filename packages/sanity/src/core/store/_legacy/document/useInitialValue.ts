@@ -59,6 +59,7 @@ export function useInitialValue(props: {
       }
     })
 
+    // todo lint error
     setState({loading: true, error: null, value: defaultValue})
 
     return () => sub.unsubscribe()

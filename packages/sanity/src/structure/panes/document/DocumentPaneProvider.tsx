@@ -270,9 +270,11 @@ export const DocumentPaneProvider = memo((props: DocumentPaneProviderProps) => {
   const getDocumentVersionType = useCallback(() => {
     let version: DocumentActionsVersionType
     switch (true) {
+      // todo lint error
       case Boolean(params.rev):
         version = 'revision'
         break
+      // todo lint error
       case selectedReleaseId && isVersionId(value._id): {
         // Check if this is a scheduled draft (cardinality one release)
         const releaseDocument = releases.find(
@@ -286,6 +288,7 @@ export const DocumentPaneProvider = memo((props: DocumentPaneProviderProps) => {
         }
         break
       }
+      // todo lint error
       case selectedPerspectiveName === 'published':
         version = 'published'
         break

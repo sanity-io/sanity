@@ -96,6 +96,7 @@ function useFormatRelativeTime(
   const parsedDate = date instanceof Date ? date : new Date(date)
   const useTemporalPhrase = Boolean(opts.useTemporalPhrase)
   const format = useCallback(
+    // todo lint error
     function formatWithUnit(count: number, unit: Intl.RelativeTimeFormatUnit): string {
       const isNextOrPrevDay = unit === 'day' && Math.abs(count) === 1
       const isNextOrPrevWeek = unit === 'week' && Math.abs(count) === 1
@@ -116,6 +117,7 @@ function useFormatRelativeTime(
         .numberFormat(currentLocale, {style: 'unit', unit, unitDisplay: minimal ? 'short' : 'long'})
         .format(Math.abs(count))
     },
+    // todo lint error
     [currentLocale, useTemporalPhrase, minimal],
   )
 

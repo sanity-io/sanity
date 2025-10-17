@@ -78,6 +78,7 @@ export const VersionModeHeader: ComponentType<
   }, [activeReleases.data, releasesIds])
 
   const onSelectPreviousRelease = useCallback(
+    // todo lint error
     (selectedDocumentId: string): void => {
       if (typeof documents?.previous !== 'undefined') {
         navigateDiffView({
@@ -92,6 +93,7 @@ export const VersionModeHeader: ComponentType<
   )
 
   const onSelectNextRelease = useCallback(
+    // todo lint error
     (selectedDocumentId: string): void => {
       if (typeof documents?.next !== 'undefined') {
         navigateDiffView({
@@ -255,6 +257,7 @@ const VersionMenuItem: ComponentType<VersionMenuItemProps> = ({
   const {t: tCore} = useTranslation()
   const {t: tStructure} = useTranslation(structureLocaleNamespace)
 
+  // todo lint error
   const onClick = useCallback(() => {
     if (type === 'draft') {
       onSelect(getDraftId(documentId))

@@ -162,6 +162,7 @@ export function ImageToolInput(props: ImageToolInputProps) {
           __unstable_checkered
           __unstable_focusRing
           tabIndex={0}
+          // todo lint error
           ref={elementProps.ref}
           onFocus={handleFocus}
           border

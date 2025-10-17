@@ -42,6 +42,7 @@ const CommentRangeDecoration = memo(function CommentRangeDecoration(
 
     // If there is no previous or next sibling, then the decorator is not nested
     if (!prevEl || !nextEl) {
+      // todo lint error
       setIsNested(false)
       return
     }

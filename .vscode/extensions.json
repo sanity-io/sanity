@@ -1,5 +1,6 @@
 {
   "recommendations": [
+    "blazejkustra.react-compiler-marker",
     "dbaeumer.vscode-eslint",
     "eamodio.gitlens",
     "github.vscode-github-actions",

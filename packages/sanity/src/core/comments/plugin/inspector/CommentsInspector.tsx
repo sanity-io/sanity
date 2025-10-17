@@ -245,6 +245,7 @@ function CommentsInspectorInner(
 
   const handleDeleteConfirm = useCallback(
     async (id: string) => {
+      // todo lint error
       try {
         setDeleteLoading(true)
         await operation.remove(id)

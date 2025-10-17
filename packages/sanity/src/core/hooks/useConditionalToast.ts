@@ -12,6 +12,7 @@ export function useConditionalToast(
 
   const [enabledAt, setEnabledAt] = useState<Date | undefined>()
   useEffect(() => {
+    // todo lint error
     setEnabledAt((current) => (params.enabled ? current || new Date() : undefined))
   }, [params.enabled])
 

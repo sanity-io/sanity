@@ -112,6 +112,7 @@ export function PreviewLocationInput(props: {
   }, [targetOrigin, value])
 
   useEffect(() => {
+    // todo lint error
     setCustomValidity(undefined)
     setSessionValue(undefined)
   }, [targetOrigin, value])

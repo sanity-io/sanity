@@ -70,6 +70,7 @@ export const ReleasePublishAllButton = ({
   const handleConfirmPublishAll = useCallback(async () => {
     if (!release) return
 
+    // todo lint error
     try {
       setPublishBundleStatus('publishing')
       await publishRelease(release._id)

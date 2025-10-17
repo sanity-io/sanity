@@ -24,6 +24,7 @@ export function useRemoveTask({id, onError, onRemoved}: RemoveTaskOptions): Remo
   const operations = useTaskOperations()
 
   const handleRemove = useCallback(async () => {
+    // todo lint error
     try {
       setRemoveStatus('loading')
       await operations.remove(id)

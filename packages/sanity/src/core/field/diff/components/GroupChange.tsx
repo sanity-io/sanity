@@ -112,6 +112,7 @@ export function GroupChange(
             onConfirm={handleRevertChanges}
             onCancel={closeRevertChangesConfirmDialog}
             changeCount={changes.length}
+            // todo lint error
             referenceElement={revertButtonRef.current}
           />
         </>

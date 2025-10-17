@@ -9,6 +9,7 @@ export function useGuardWithReleaseLimitUpsell() {
   const {guardWithReleaseLimitUpsell} = useReleasesUpsell()
 
   useEffect(() => {
+    // todo lint error
     setIsPendingGuardResponse(true)
 
     const promise = new Promise<boolean>((resolve) => {

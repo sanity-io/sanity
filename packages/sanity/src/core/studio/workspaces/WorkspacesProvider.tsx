@@ -22,6 +22,7 @@ export function WorkspacesProvider({
   const [workspaces, setWorkspaces] = useState<WorkspacesContextValue | null>(null)
 
   useEffect(() => {
+    // todo lint error
     setWorkspaces(prepareConfig(config, {basePath}).workspaces)
   }, [basePath, config])
 

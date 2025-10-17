@@ -45,6 +45,7 @@ export function DiscardVersionDialog(props: {
     if (isVersionId(documentId)) {
       try {
         await discardVersion(
+          // todo lint error
           getVersionFromId(documentId) ||
             getReleaseIdFromReleaseDocumentId((selectedPerspective as ReleaseDocument)._id),
           documentId,

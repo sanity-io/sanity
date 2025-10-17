@@ -68,6 +68,7 @@ export function useReleaseHistory(
     }
 
     await acquireHistorySlot()
+    // todo lint error
     try {
       const transactions = await getTransactionsLogs(client, versionId, {
         tag: 'sanity.studio.releases.documents.history',

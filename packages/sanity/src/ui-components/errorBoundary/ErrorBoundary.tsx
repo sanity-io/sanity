@@ -21,6 +21,7 @@ export function ErrorBoundary({onCatch, ...rest}: ErrorBoundaryProps): React.JSX
     ({error: caughtError, info: caughtInfo}: {error: Error; info: React.ErrorInfo}) => {
       // Send the error to the source if it has an onUncaughtError method
       try {
+        // todo lint error
         source?.onUncaughtError?.(caughtError, caughtInfo)
       } catch (e) {
         e.message = `Encountered an additional error when calling custom "onUncaughtError()": ${e.message}`

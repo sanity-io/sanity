@@ -118,6 +118,7 @@ export function usePortableTextMemberItemsFromProps(
       }
     }
 
+    // todo lint error
     const items: PortableTextMemberItem[] = result.map((item) => {
       const key = pathToString(item.node.path)
       const existingItem = portableTextMemberItemsRef.current.find((refItem) => refItem.key === key)
@@ -206,6 +207,7 @@ export function usePortableTextMemberItemsFromProps(
       }
     })
 
+    // todo lint error
     portableTextMemberItemsRef.current = items
 
     return items

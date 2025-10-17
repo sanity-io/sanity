@@ -35,6 +35,7 @@ export function FilterTooltip({
 
   const schema = useSchema()
 
+  // todo lint error
   const fieldDefinitionDocumentTypeTitles = useMemo(() => {
     if (fieldDefinition?.documentTypes) {
       return fieldDefinition.documentTypes
@@ -53,6 +54,7 @@ export function FilterTooltip({
    * Return a description only if this field description is identical (and defined)
    * across all ALL associated fields.
    */
+  // todo lint error
   const fieldDefinitionDescription = useMemo(() => {
     if (fieldDefinition?.documentTypes) {
       const descriptions = fieldDefinition.documentTypes

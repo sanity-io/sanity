@@ -156,6 +156,7 @@ export const DocumentListPane = memo(function DocumentListPane(props: DocumentLi
 
   useEffect(() => {
     if (!enableSearchSpinner && !isLoading) {
+      // todo lint error
       setEnableSearchSpinner(paneKey)
     }
   }, [enableSearchSpinner, isLoading, paneKey])
@@ -163,6 +164,7 @@ export const DocumentListPane = memo(function DocumentListPane(props: DocumentLi
   useEffect(() => {
     // Clear search field and disable search spinner
     // when switching between panes (i.e. when paneKey changes).
+    // todo lint error
     handleClearSearch()
     setEnableSearchSpinner()
   }, [paneKey, handleClearSearch])

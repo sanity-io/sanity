@@ -266,6 +266,7 @@ export const CopyPasteProvider: React.FC<{
           return
         }
 
+        // todo lint error
         if (errors.length > 0 && !_isEmptyValue) {
           const description = errors.map((error) => t(error.i18n.key, error.i18n.args)).join(', ')
 

@@ -83,6 +83,8 @@ function usePopoverOffset(element: HTMLElement | null) {
 
   useEffect(() => {
     if (element) {
+      // todo lint error
+      // todo lint error
       setOffset(calcPopoverOffset(element))
     }
   }, [element])

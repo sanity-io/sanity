@@ -59,6 +59,7 @@ export function usePresenceCursorDecorations(
     if (!isEqual(filteredNext, filteredPrevious)) {
       const value = nextPresence.length > 0 ? nextPresence : EMPTY_ARRAY
 
+      // todo lint error
       setCurrentPresence(value)
       // Store the previous presence to be able to compare it in the next render.
       previousPresence.current = value
@@ -84,6 +85,7 @@ export function usePresenceCursorDecorations(
       }
     }) as RangeDecoration[]
 
+    // todo lint error
     setPresenceCursorDecorations(decorations.filter(Boolean))
   }, [currentPresence, handleRangeDecorationMoved])
 

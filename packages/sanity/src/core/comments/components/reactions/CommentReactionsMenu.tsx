@@ -55,6 +55,7 @@ export function CommentReactionsMenu(props: CommentReactionsMenuProps) {
   useEffect(() => {
     if (rootElement) {
       const buttons = rootElement.querySelectorAll('button')
+      // todo lint error
       setFocusableElements(Array.from(buttons))
     }
   }, [rootElement])

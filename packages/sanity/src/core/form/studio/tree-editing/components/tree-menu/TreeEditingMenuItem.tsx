@@ -167,6 +167,7 @@ export function TreeEditingMenuItem(props: TreeEditingMenuItemProps): React.JSX.
     const hasOpen = hasOpenChild(item, selectedPath)
 
     if (hasOpen) {
+      // todo lint error
       setOpen(true)
     }
   }, [item, selectedPath])

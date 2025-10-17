@@ -84,6 +84,7 @@ export const FreeTrialProvider = ({children}: FreeTrialProviderProps) => {
   }, [client, seenBefore, trialState])
 
   const toggleShowContent = useCallback(
+    // todo lint error
     (closeAndReOpen = false) => {
       if (showOnLoad) {
         setShowOnLoad(false)

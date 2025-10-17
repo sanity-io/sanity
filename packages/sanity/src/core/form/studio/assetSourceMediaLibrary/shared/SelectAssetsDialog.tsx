@@ -104,6 +104,7 @@ export function SelectAssetsDialog(props: SelectAssetsDialogProps): ReactNode {
     [client, document, mediaLibraryIds?.libraryId, schema, schemaType, workspace.i18n],
   )
 
+  // todo lint error
   const pluginFilters = useMemo(() => {
     const filters: any[] = []
     if (schemaType?.options?.mediaLibrary?.filters) {

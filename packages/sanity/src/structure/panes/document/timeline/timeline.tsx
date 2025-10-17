@@ -62,6 +62,7 @@ export const Timeline = ({
       const selected = chunksWithMetadata.find((chunk) => chunk.id === selectedChunkId)
       if (selected && isNonPublishChunk(selected) && selected.parentId) {
         const parentId = selected.parentId
+        // todo lint error
         setExpandedParents((prev) => {
           if (prev.has(parentId)) return prev
           const next = new Set(prev)
@@ -159,6 +160,7 @@ export const Timeline = ({
     ],
   )
 
+  // todo lint error
   useEffect(() => setMounted(true), [])
 
   return (

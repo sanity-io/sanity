@@ -37,6 +37,7 @@ export function DeleteScheduledDraftDialog(
 
   const handleDeleteSchedule = useCallback(async () => {
     setIsDeleting(true)
+    // todo lint error
     try {
       await operations.deleteScheduledDraft(release._id)
       toast.push({

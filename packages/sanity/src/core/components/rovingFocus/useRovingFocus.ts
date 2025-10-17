@@ -140,6 +140,7 @@ export function useRovingFocus(props: RovingFocusProps): undefined {
    * Set focusable elements on mount
    */
   useEffect(() => {
+    // todo lint error
     handleSetElements()
   }, [handleSetElements, initialFocus, direction])
 

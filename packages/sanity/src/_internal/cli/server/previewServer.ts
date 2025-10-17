@@ -101,6 +101,7 @@ export async function startPreviewServer(options: PreviewServerOptions): Promise
     urls: server.resolvedUrls!,
     close: () =>
       new Promise((resolve, reject) =>
+        // oxlint-disable-next-line no-multiple-resolved
         server.httpServer.close((err) => (err ? reject(err) : resolve())),
       ),
   }

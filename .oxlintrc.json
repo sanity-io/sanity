@@ -108,9 +108,8 @@
     "jest/valid-describe-callback": "off",
     "jsx_a11y/no-autofocus": "off",
     "unicorn/require-post-message-target-origin": "off", // disabled since it can't distinguish between `window.postMessage` and node `Worker#postMessage`
-    // Since we use useEffectEvent, we can't use the oxlint checker for this rule, as it doesn't understand effect event semantics
-    "react/exhaustive-deps": "off",
     // Handy rules that are disabled by default
+    "react/exhaustive-deps": "error",
     "react/rules-of-hooks": "error",
     "eslint/no-console": ["error", {"allow": ["warn", "error"]}],
     // These rules should be enabled in the future, they are disabled for now to reduce the PR scope for landing oxlint
@@ -153,9 +152,20 @@
     "promise/always-return": ["error", {"ignoreLastCallback": true}],
     // Temporarily disabled, will be re-enabled in the near term
     "unicorn/prefer-set-has": "off",
-    "no-array-reverse": "off" // Requires polyfills for older browsers
+    "no-array-reverse": "off", // Requires polyfills for older browsers
+    "no-array-sort": "off" // Requires polyfills for older browsers
   },
   "overrides": [
-    {"files": ["scripts/**/*", "examples/functions/**/*"], "rules": {"no-console": "off"}}
+    {"files": ["scripts/**/*", "examples/functions/**/*"], "rules": {"no-console": "off"}},
+    {
+      "files": [
+        "**/playwright-ct/**/*",
+        "**/test/**/*",
+        "**/*.test.{js,ts,tsx}",
+        "packages/@sanity/util/src/_exports/index.ts",
+        "packages/sanity/typings/vitest.d.ts"
+      ],
+      "rules": {"require-module-specifiers": "off"}
+    }
   ]
 }

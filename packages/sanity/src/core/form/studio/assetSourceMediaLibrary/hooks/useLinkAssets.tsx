@@ -41,6 +41,7 @@ export function useLinkAssets({
   const handleLinkAssets = useCallback<
     (assetSelection: AssetSelectionItem[]) => Promise<AssetFromSource[]>
   >(
+    // todo lint error
     (assetSelection) => {
       if (!mediaLibraryIds?.libraryId) {
         throw new Error('No libraryId found')

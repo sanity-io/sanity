@@ -61,6 +61,7 @@ function ErrorCard(props: {error: unknown; info?: React.ErrorInfo; onRetry: () =
     [error],
   )
   const componentStack = useMemo(
+    // todo lint error
     () => typeof info?.componentStack === 'string' && info.componentStack,
     [info?.componentStack],
   )
