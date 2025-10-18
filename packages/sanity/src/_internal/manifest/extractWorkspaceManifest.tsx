@@ -24,7 +24,6 @@ import {
   type StringSchemaType,
   type Workspace,
 } from 'sanity'
-import {ServerStyleSheet} from 'styled-components'
 
 import {SchemaIcon, type SchemaIconProps} from './Icon'
 import {
@@ -557,27 +556,10 @@ const extractManifestTools = (tools: Workspace['tools']): ManifestTool[] =>
   })
 
 const resolveIcon = (props: SchemaIconProps): string | null => {
-  const sheet = new ServerStyleSheet()
-
   try {
-    /**
-     * You must render the element first so
-     * the style-sheet above can be populated
-     */
-    const element = renderToString(sheet.collectStyles(<SchemaIcon {...props} />))
-    const styleTags = sheet.getStyleTags()
-
-    /**
-     * We can then create a single string
-     * of HTML combining our styles and element
-     * before purifying below.
-     */
-    const html = `${styleTags}${element}`.trim()
-
-    return DOMPurify.sanitize(html, config)
-  } catch (error) {
+    const html = renderToString(<SchemaIcon {...props} />)
+    return DOMPurify.sanitize(html.trim(), config)
+  } catch {
     return null
-  } finally {
-    sheet.seal()
   }
 }
