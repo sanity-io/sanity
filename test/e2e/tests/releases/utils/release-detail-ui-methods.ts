@@ -11,6 +11,7 @@ export const archiveAndConfirmRelease = async ({page}: {page: Page}) => {
 
   await expect(page.getByTestId('retention-policy-card')).toBeVisible()
 }
+
 /** This method follows the unarchiving and confirming from the release detail page */
 export const unarchiveAndConfirmRelease = async ({page}: {page: Page}) => {
   await page.getByTestId('release-menu-button').click()
@@ -23,8 +24,11 @@ export const unarchiveAndConfirmRelease = async ({page}: {page: Page}) => {
  *  date should be a date example:new Date(new Date().setMinutes(new Date().getMinutes() + 20)) - current date + 20 minutes
  */
 export const scheduleAndConfirmReleaseMenu = async ({page, date}: {page: Page; date: Date}) => {
-  await expect(await page.getByTestId('release-menu-button')).toBeVisible()
+  await expect(page.getByTestId('release-menu-button')).toBeVisible()
   await page.getByTestId('release-menu-button').click()
+
+  // Wait for menu to be fully loaded before checking disabled state
+  await page.waitForTimeout(1000)
   await expect(page.getByTestId('schedule-button-menu-item')).not.toBeDisabled()
 
   await expect(page.getByTestId('schedule-button-menu-item')).toBeVisible()
@@ -73,6 +77,7 @@ export const scheduleAndConfirmRelease = async ({page, date}: {page: Page; date:
     hour12: false,
   })
   await page.getByRole('textbox', {name: 'Select time'}).fill(timeString)
+  await page.getByTestId('date-input-dialog').click()
   await page.getByTestId('select-date-button').click()
   await expect(page.getByTestId('date-input-dialog')).not.toBeVisible()
 
@@ -104,7 +109,7 @@ export const publishAndConfirmRelease = async ({page}: {page: Page}) => {
 
 /** This method follows the publishing and confirming from the release detail page */
 export const publishAndConfirmReleaseMenu = async ({page}: {page: Page}) => {
-  await expect(await page.getByTestId('release-menu-button')).toBeVisible()
+  await expect(page.getByTestId('release-menu-button')).toBeVisible()
   await page.getByTestId('release-menu-button').click()
   await expect(page.getByTestId('publish-all-button-menu-item')).not.toBeDisabled()
 
@@ -118,8 +123,8 @@ export const publishAndConfirmReleaseMenu = async ({page}: {page: Page}) => {
 
 /** This method follows the reverting and confirming from the release detail page */
 export const revertAndConfirmRelease = async ({page}: {page: Page}) => {
-  await expect(await page.getByTestId('revert-button')).toBeVisible()
-  await expect(await page.getByTestId('revert-button')).not.toBeDisabled()
+  await expect(page.getByTestId('revert-button')).toBeVisible()
+  await expect(page.getByTestId('revert-button')).not.toBeDisabled()
   await page.getByTestId('revert-button').click()
   await expect(page.locator('#confirm-revert-dialog')).toBeVisible()
   await expect(page.getByTestId('confirm-button')).toBeVisible()
