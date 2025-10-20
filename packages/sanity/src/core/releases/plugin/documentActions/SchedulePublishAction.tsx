@@ -11,8 +11,6 @@ import {
 import {useFeatureEnabled, useValidationStatus} from '../../../hooks'
 import {FEATURES} from '../../../hooks/useFeatureEnabled'
 import {useTranslation} from '../../../i18n'
-import {usePerspective} from '../../../perspective/usePerspective'
-import {useDocumentPreviewValues} from '../../../tasks/hooks/useDocumentPreviewValues'
 import {ScheduleDraftDialog} from '../../components/dialog/ScheduleDraftDialog'
 import {useHasCardinalityOneReleaseVersions} from '../../hooks/useHasCardinalityOneReleaseVersions'
 import {useReleasesToolAvailable} from '../../hooks/useReleasesToolAvailable'
@@ -29,16 +27,8 @@ export const SchedulePublishAction: DocumentActionComponent = (
   const {t} = useTranslation(releasesLocaleNamespace)
   const {createScheduledDraft} = useScheduleDraftOperations()
   const toast = useToast()
-  const {perspectiveStack} = usePerspective()
   const releasesToolAvailable = useReleasesToolAvailable()
   const {enabled: releasesEnabled} = useFeatureEnabled(FEATURES.contentReleases)
-
-  // Get document preview values to extract the title
-  const {value: previewValues} = useDocumentPreviewValues({
-    documentId: id,
-    documentType: type,
-    perspectiveStack,
-  })
 
   // Check validation status
   const validationStatus = useValidationStatus(id, type)
@@ -64,8 +54,7 @@ export const SchedulePublishAction: DocumentActionComponent = (
 
       try {
         // Pass the document title from preview values
-        const documentTitle = previewValues?.title || undefined
-        await createScheduledDraft(id, publishAt, documentTitle)
+        await createScheduledDraft(id, publishAt)
 
         toast.push({
           closable: true,
@@ -91,7 +80,7 @@ export const SchedulePublishAction: DocumentActionComponent = (
         setIsScheduling(false)
       }
     },
-    [id, createScheduledDraft, previewValues?.title, toast, t],
+    [id, createScheduledDraft, toast, t],
   )
 
   // scheduled publishing using scheduled drafts is not available if releases is not enabled

@@ -50,14 +50,14 @@ describe('useScheduleDraftOperations', () => {
     const {result} = renderHook(() => useScheduleDraftOperations(), {wrapper})
 
     const releaseDocumentId = await act(async () => {
-      return result.current.createScheduledDraft('documentId', mockPublishAt, 'Test Title')
+      return result.current.createScheduledDraft('documentId', mockPublishAt)
     })
 
     expect(useReleaseOperationsMockReturn.createRelease).toHaveBeenCalledWith(
       {
         _id: 'mock-release-id',
         metadata: {
-          title: "Scheduled publish of 'Test Title'",
+          title: 'Scheduled publish',
           description: '',
           releaseType: 'scheduled',
           cardinality: 'one',
@@ -90,7 +90,7 @@ describe('useScheduleDraftOperations', () => {
     expect(useReleaseOperationsMockReturn.createRelease).toHaveBeenCalledWith(
       expect.objectContaining({
         metadata: expect.objectContaining({
-          title: 'Schedule Publish',
+          title: 'Scheduled publish',
         }),
       }),
       undefined,
