@@ -297,7 +297,7 @@ export function TreeEditingDialog(props: TreeEditingDialogProps): React.JSX.Elem
         onClose={onClose}
         id={'nested-object-dialog'}
         header={header}
-        width={3}
+        width={1}
         contentRef={setDocumentScrollElement}
       >
         <Box ref={containerElement}>
