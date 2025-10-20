@@ -21,9 +21,8 @@ import {
   type TreeEditingState,
 } from '../utils'
 import {isArrayItemPath} from '../utils/build-tree-editing-state/utils'
-import {getReadOnlyForPath} from '../utils/getReadOnlyForPath'
 import {isPathTextInPTEField} from '../utils/isPathTextInPTEField'
-import {NestedDialogHeader} from './header/NestedDialogHeader'
+import {NestedDialogHeader} from './NestedDialogHeader'
 
 const EMPTY_ARRAY: [] = []
 
@@ -69,7 +68,11 @@ export function TreeEditingDialog(props: TreeEditingDialogProps): React.JSX.Elem
 
   const handleBuildTreeEditingState = useCallback(
     (opts: BuildTreeEditingStateProps) => {
-      const isPathWithinPTEtext = isPathTextInPTEField(schemaType.fields, opts.openPath)
+      const isPathWithinPTEtext = isPathTextInPTEField(
+        schemaType.fields,
+        opts.openPath,
+        opts.documentValue,
+      )
 
       const nextState = buildTreeEditingState(opts)
       if (isEqual(nextState, treeState)) return
@@ -276,10 +279,6 @@ export function TreeEditingDialog(props: TreeEditingDialogProps): React.JSX.Elem
 
   if (treeState.relativePath.length === 0) return null
 
-  // Compute the readOnly value for the current field being edited
-  const isRootReadOnly =
-    rootInputProps.readOnly || getReadOnlyForPath(schemaType, treeState.relativePath)
-
   return (
     <VirtualizerScrollInstanceProvider
       scrollElement={documentScrollElement}
@@ -290,14 +289,9 @@ export function TreeEditingDialog(props: TreeEditingDialogProps): React.JSX.Elem
         onClose={onClose}
         id={'nested-object-dialog'}
         header={
-          <NestedDialogHeader
-            treeState={treeState}
-            onHandlePathSelect={onHandlePathSelect}
-            rootOnChange={rootInputProps.onChange}
-            readOnly={isRootReadOnly}
-          />
+          <NestedDialogHeader treeState={treeState} onHandlePathSelect={onHandlePathSelect} />
         }
-        width={3}
+        width={1}
         contentRef={setDocumentScrollElement}
       >
         <Box ref={containerElement}>

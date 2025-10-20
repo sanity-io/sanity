@@ -3,21 +3,16 @@ import {Box, Flex, Text} from '@sanity/ui'
 
 import {pathToString} from '../../../../../field/paths/helpers'
 import {useTranslation} from '../../../../../i18n/hooks/useTranslation'
-import {type PatchEvent} from '../../../../patch/PatchEvent'
-import {type FormPatch} from '../../../../patch/types'
 import {type TreeEditingState} from '../../utils'
 import {TreeEditingBreadcrumbs} from '../breadcrumbs/TreeEditingBreadcrumbs'
-import {NestedDialogActions} from './NestedDialogActions'
 
 interface NestedDialogHeaderProps {
   treeState: TreeEditingState
   onHandlePathSelect: (path: Path) => void
-  rootOnChange?: (patch: FormPatch | FormPatch[] | PatchEvent) => void
-  readOnly?: boolean
 }
 
 export function NestedDialogHeader(props: NestedDialogHeaderProps) {
-  const {treeState, onHandlePathSelect, rootOnChange, readOnly} = props
+  const {treeState, onHandlePathSelect} = props
   const {relativePath, siblings} = treeState
   const {t} = useTranslation()
 
@@ -34,6 +29,7 @@ export function NestedDialogHeader(props: NestedDialogHeaderProps) {
         items={treeState.breadcrumbs}
         onPathSelect={onHandlePathSelect}
         selectedPath={treeState.relativePath}
+        siblings={treeState.siblings}
       />
       <Flex align="center" gap={2}>
         {total && total >= 1 && (
@@ -46,12 +42,6 @@ export function NestedDialogHeader(props: NestedDialogHeaderProps) {
             </Text>
           </Box>
         )}
-        <NestedDialogActions
-          relativePath={relativePath}
-          rootOnChange={rootOnChange!}
-          readOnly={!!readOnly}
-          onHandlePathSelect={onHandlePathSelect}
-        />
       </Flex>
     </Flex>
   )

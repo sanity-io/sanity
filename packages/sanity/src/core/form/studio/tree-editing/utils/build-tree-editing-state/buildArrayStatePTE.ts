@@ -21,6 +21,7 @@ import {
   getRelativePath,
   isArrayItemSelected,
   shouldBeInBreadcrumb,
+  shouldSkipSiblingCount,
   validateRelativePathExists,
 } from './utils'
 
@@ -78,7 +79,7 @@ export function buildArrayStatePTE(props: BuildArrayStatePTEProps): {
 
   // If openPath points to text content within this portable text field, we still need to process
   // the PTE to build siblings for nested arrays, but we won't set a relativePath
-  const isTextContent = isPathTextInPTEField(rootSchemaType.fields, openPath)
+  const isTextContent = isPathTextInPTEField(rootSchemaType.fields, openPath, documentValue)
 
   // Process blocks within portable text
   portableTextValue.forEach((block: unknown) => {
@@ -117,7 +118,7 @@ export function buildArrayStatePTE(props: BuildArrayStatePTEProps): {
     // Add breadcrumb for the block if openPath starts with this block path
     // This handles both direct block selection and nested paths within the block
     const openPathStartsWithBlock = toString(openPath).startsWith(toString(blockPath))
-    if (openPathStartsWithBlock && shouldBeInBreadcrumb(blockPath, openPath)) {
+    if (openPathStartsWithBlock && shouldBeInBreadcrumb(blockPath, openPath, documentValue)) {
       const blockBreadcrumb: TreeEditingBreadcrumb = {
         children: EMPTY_ARRAY,
         parentSchemaType: childField.type as ArraySchemaType,
@@ -153,7 +154,7 @@ export function buildArrayStatePTE(props: BuildArrayStatePTEProps): {
           // But ensure the value is at least an empty array for processing
           const arrayFieldValue = Array.isArray(blockFieldValue) ? blockFieldValue : []
 
-          if (shouldBeInBreadcrumb(blockFieldPath, openPath)) {
+          if (shouldBeInBreadcrumb(blockFieldPath, openPath, documentValue)) {
             const breadcrumbsResult = buildBreadcrumbsState({
               arraySchemaType: blockField.type as ArraySchemaType,
               arrayValue: arrayFieldValue as Record<string, unknown>[],
@@ -171,7 +172,16 @@ export function buildArrayStatePTE(props: BuildArrayStatePTEProps): {
           })
 
           // Merge sibling counts from nested state
+          const blockFieldPathString = toString(blockFieldPath)
+
+          // If it's an inline custom object/object array/span, skip siblings
+          const skipChildren = shouldSkipSiblingCount({
+            arraySchemaType: childField.type as ArraySchemaType,
+            fieldPath: blockFieldPath,
+          })
+
           blockFieldState.siblings.forEach((info, pathString) => {
+            if (skipChildren && pathString === blockFieldPathString) return
             siblings.set(pathString, info)
           })
 

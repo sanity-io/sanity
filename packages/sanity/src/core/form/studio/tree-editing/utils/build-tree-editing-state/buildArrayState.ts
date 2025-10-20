@@ -26,6 +26,7 @@ import {
   getRelativePath,
   isArrayItemSelected,
   shouldBeInBreadcrumb,
+  shouldSkipSiblingCount,
   validateRelativePathExists,
 } from './utils'
 
@@ -70,7 +71,7 @@ export function buildArrayState(props: BuildArrayState): TreeEditingState {
   // Since this SHOULDN'T open the dialog
   if (
     isArrayOfBlocksSchemaType(arraySchemaType) &&
-    isPathTextInPTEField(rootSchemaType.fields, openPath)
+    isPathTextInPTEField(rootSchemaType.fields, openPath, documentValue)
   ) {
     return {
       breadcrumbs,
@@ -97,8 +98,13 @@ export function buildArrayState(props: BuildArrayState): TreeEditingState {
     // Check if openPath is within this array item (for fields within the item)
     // This needs to be less strict than the isArrayItemSelected check
     // Because from a UI perspective we're still within the item
-    if (item._key && toString(openPath).startsWith(toString(itemPath))) {
-      // Store the current item's 1-based index for the parent array
+    // Important: do NOT set siblings for Portable Text arrays (arrays of blocks)
+    if (
+      item._key &&
+      toString(openPath).startsWith(toString(itemPath)) &&
+      !isArrayOfBlocksSchemaType(arraySchemaType)
+    ) {
+      // Store sibling info on the parent array path (header reads parent of relativePath)
       siblings.set(toString(rootPath), {count: arrayValue.length, index: arrayIndex + 1})
     }
 
@@ -111,7 +117,7 @@ export function buildArrayState(props: BuildArrayState): TreeEditingState {
     const childrenFields = itemSchemaField?.fields || []
     const childrenMenuItems: TreeEditingMenuItem[] = []
 
-    if (shouldBeInBreadcrumb(itemPath, openPath)) {
+    if (shouldBeInBreadcrumb(itemPath, openPath, documentValue)) {
       const breadcrumbsResult = buildBreadcrumbsState({
         arraySchemaType,
         arrayValue,
@@ -214,21 +220,26 @@ export function buildArrayState(props: BuildArrayState): TreeEditingState {
 
       // Handle regular arrays of objects (not portable text)
       if (IsArrayOfObjects) {
-        // Store the raw array count
         const childArray = Array.isArray(childValue) ? childValue : []
-        siblings.set(toString(childPath), {count: childArray.length, index: 1})
 
         // Check if any item in this array is selected and update the index
         const updateChildArrayIndex = (childItem: unknown, childIndex: number) => {
           const childItemObj = childItem as Record<string, unknown>
           const childItemPath = [...childPath, {_key: childItemObj._key}] as Path
           if (isArrayItemSelected(childItemPath, openPath)) {
-            siblings.set(toString(childPath), {count: childArray.length, index: childIndex + 1})
+            // When the parent array is a PTE (array of blocks) and this child array is the block's
+            // 'children' array, skip siblings so inline custom objects don't show siblings
+            const isBlockChildrenArray =
+              isArrayOfBlocksSchemaType(arraySchemaType) && childField.name === 'children'
+
+            if (!isBlockChildrenArray) {
+              siblings.set(toString(childPath), {count: childArray.length, index: childIndex + 1})
+            }
           }
         }
         childArray.forEach(updateChildArrayIndex)
 
-        if (shouldBeInBreadcrumb(childPath, openPath)) {
+        if (shouldBeInBreadcrumb(childPath, openPath, documentValue)) {
           const breadcrumbsResult = buildBreadcrumbsState({
             arraySchemaType: childField.type as ArraySchemaType,
             arrayValue: childValue as Record<string, unknown>[],
@@ -246,7 +257,15 @@ export function buildArrayState(props: BuildArrayState): TreeEditingState {
         })
 
         // Merge sibling counts from child state
+        const childPathString = toString(childPath)
+        const skipChildArraySiblings = shouldSkipSiblingCount({
+          arraySchemaType,
+          fieldPath: childPath,
+        })
+
+        // If it's an inline custom object/object array/span, skip siblings
         childState.siblings.forEach((info, pathString) => {
+          if (skipChildArraySiblings && pathString === childPathString) return
           siblings.set(pathString, info)
         })
 

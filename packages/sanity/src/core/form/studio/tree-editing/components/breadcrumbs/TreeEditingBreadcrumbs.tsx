@@ -1,10 +1,13 @@
 import {useTelemetry} from '@sanity/telemetry/react'
 import {type Path} from '@sanity/types'
 import {
+  Badge,
   Box,
   // eslint-disable-next-line no-restricted-imports
-  Button, // Custom button needed, special padding support required
+  Button,
+  Card, // Custom button needed, special padding support required
   Flex,
+  Inline,
   Text,
   useElementSize,
 } from '@sanity/ui'
@@ -14,7 +17,6 @@ import {isEqual} from 'lodash'
 import {
   type ForwardedRef,
   forwardRef,
-  Fragment,
   type PropsWithChildren,
   useCallback,
   useMemo,
@@ -31,6 +33,14 @@ import {TreeEditingBreadcrumbsMenuButton} from './TreeEditingBreadcrumbsMenuButt
 const MAX_LENGTH = 5
 const EMPTY_ARRAY: [] = []
 const SEPARATOR = '/'
+
+// Prevent wrapping and ensure horizontal overflow is handled gracefully
+const RootInline = styled(Inline)`
+  flex-wrap: nowrap;
+  overflow: hidden;
+  min-width: 0;
+  width: 100%;
+`
 
 const StyledButton = styled(Button)(({theme}: {theme: Theme}) => {
   const {bold} = getTheme_v2(theme)?.font.text?.weights || {}
@@ -60,16 +70,25 @@ interface MenuButtonProps {
   onPathSelect: (path: Path) => void
   isSelected: boolean
   isLast: boolean
+  maxWidthPx?: number
 }
 
-const MenuButton = function MenuButton(props: MenuButtonProps) {
-  const {item, onPathSelect, isSelected, isLast, ...rest} = props
+const MenuCard = function MenuCard(
+  props: MenuButtonProps & {
+    siblings: Map<string, {count: number; index: number}>
+  },
+) {
+  const {item, onPathSelect, isSelected, isLast, siblings, maxWidthPx} = props
 
   const {value} = useValuePreviewWithFallback({
     schemaType: item.schemaType,
     value: item.value,
   })
 
+  const parentPath = item.path.slice(0, -1)
+  const parentPathString = pathToString(parentPath)
+
+  const selectedInex = siblings.get(parentPathString)?.index
   const telemetry = useTelemetry()
 
   const title = value.title
@@ -83,18 +102,40 @@ const MenuButton = function MenuButton(props: MenuButtonProps) {
   }, [onPathSelect, item.path, telemetry])
 
   return (
-    <StyledButton
-      data-active={isSelected ? 'true' : 'false'}
-      mode="bleed"
-      onClick={handleClick}
+    <Card
+      as="button"
       padding={1}
-      title={title}
-      {...rest}
+      radius={3}
+      onClick={handleClick}
+      style={{minWidth: 0, width: isLast ? '100%' : undefined}}
     >
-      <Text muted={!isLast} size={1}>
-        {title}
-      </Text>
-    </StyledButton>
+      <Flex align="center" style={{minWidth: 0}}>
+        {selectedInex && (
+          <Box flex="none">
+            <Badge>#{selectedInex}</Badge>
+          </Box>
+        )}
+        <Box
+          padding={1}
+          style={{
+            minWidth: 0,
+            overflow: 'hidden',
+            maxWidth: isLast && maxWidthPx !== undefined ? `${maxWidthPx}px` : undefined,
+          }}
+          flex={isLast ? 1 : undefined}
+        >
+          <Text
+            muted={!isSelected}
+            size={1}
+            weight={isSelected ? 'bold' : 'medium'}
+            textOverflow="ellipsis"
+            style={{whiteSpace: 'nowrap'}}
+          >
+            {title}
+          </Text>
+        </Box>
+      </Flex>
+    </Card>
   )
 }
 
@@ -117,12 +158,13 @@ interface TreeEditingBreadcrumbsProps {
   items: TreeEditingBreadcrumb[]
   onPathSelect: (path: Path) => void
   selectedPath: Path
+  siblings: Map<string, {count: number; index: number}>
 }
 
 export function TreeEditingBreadcrumbs(
   props: TreeEditingBreadcrumbsProps,
 ): React.JSX.Element | null {
-  const {items: itemsProp = EMPTY_ARRAY, onPathSelect, selectedPath} = props
+  const {items: itemsProp = EMPTY_ARRAY, onPathSelect, selectedPath, siblings} = props
 
   const [rootElement, setRootElement] = useState<HTMLDivElement | null>(null)
   const size = useElementSize(rootElement)
@@ -135,8 +177,8 @@ export function TreeEditingBreadcrumbs(
     const w = size?.border.width
 
     if (!w) return MAX_LENGTH
-    if (w < 500) return 3
-    if (w < 700) return 4
+    if (w < 500) return 2
+    if (w < 700) return 3
 
     return MAX_LENGTH
   }, [size?.border.width])
@@ -157,6 +199,19 @@ export function TreeEditingBreadcrumbs(
     return itemsProp
   }, [itemsProp, maxLength])
 
+  const itemRefs = useState<Array<HTMLDivElement | null>>([])[0]
+
+  const lastItemMaxWidth = useMemo(() => {
+    const parentWidth = size?.border.width || 0
+    const count = items.length
+    if (!parentWidth || count === 0) return undefined
+    const before = itemRefs.slice(0, Math.max(0, count - 1))
+    const beforeWidth = before.reduce((acc, el) => acc + (el?.offsetWidth || 0), 0)
+    const available = parentWidth - beforeWidth
+    if (available <= 0) return 0
+    return Math.floor(available)
+  }, [size?.border.width, items, itemRefs])
+
   const nodes = useMemo(() => {
     return items.map((item, index) => {
       const key = `${item}-${index}`
@@ -166,7 +221,12 @@ export function TreeEditingBreadcrumbs(
       // be grouped in the same breadcrumbs menu button (i.e. the "..." button).
       if (Array.isArray(item)) {
         return (
-          <Fragment key={key}>
+          <Inline
+            key={key}
+            ref={(el) => {
+              itemRefs[index] = el as HTMLDivElement | null
+            }}
+          >
             <TreeEditingBreadcrumbsMenuButton
               button={
                 <StyledButton mode="bleed" padding={1}>
@@ -185,59 +245,57 @@ export function TreeEditingBreadcrumbs(
             />
 
             {showSeparator && <SeparatorItem>{SEPARATOR}</SeparatorItem>}
-          </Fragment>
+          </Inline>
         )
       }
 
-      // If the selected path contains 'children', we want to simplify it to the parent path
-      // To avoid deselecting the breadcrumb when clicking on text content in portable text editors
-      // Since the path gets updated, but the path itself in the dialog doesn't
-      const simplifiedPath = selectedPath.includes('.children')
-        ? selectedPath.slice(0, -1)
-        : selectedPath
-
-      const isSelected = isEqual(item.path, simplifiedPath)
+      const isSelected = isEqual(item.path, selectedPath)
 
       return (
-        <Fragment key={key}>
-          <MenuButton
+        <Inline
+          key={key}
+          ref={(el) => {
+            itemRefs[index] = el as HTMLDivElement | null
+          }}
+          style={{
+            minWidth: 0,
+            flex: index === items.length - 1 ? 1 : undefined,
+          }}
+        >
+          <MenuCard
             item={item}
             isSelected={isSelected}
             onPathSelect={onPathSelect}
             isLast={index === items.length - 1}
+            siblings={siblings}
+            maxWidthPx={index === items.length - 1 ? lastItemMaxWidth : undefined}
           />
 
           {showSeparator && <SeparatorItem>{SEPARATOR}</SeparatorItem>}
-        </Fragment>
+        </Inline>
       )
     })
-  }, [items, selectedPath, onPathSelect, rootElement])
+  }, [items, selectedPath, onPathSelect, siblings, rootElement, lastItemMaxWidth, itemRefs])
 
   return (
-    <Flex align="center" gap={2} ref={setRootElement}>
+    <RootInline ref={setRootElement}>
       {
-        <StyledButton
-          data-active={false}
-          mode="bleed"
-          onClick={() => onPathSelect(EMPTY_ARRAY)}
-          padding={1}
-        >
+        <Card onClick={() => onPathSelect(EMPTY_ARRAY)} as="button" padding={1} radius={3}>
           <Flex
             flex={1}
             align="center"
             justify="flex-start"
-            gap={1}
             overflow="hidden"
-            style={{textTransform: 'capitalize'}}
+            style={{textTransform: 'capitalize', minWidth: 0}}
           >
-            <Text muted size={1}>
+            <Text muted size={1} textOverflow="ellipsis">
               {selectedPath[0]?.toString()}
             </Text>
           </Flex>
-        </StyledButton>
+        </Card>
       }
       <SeparatorItem>{SEPARATOR}</SeparatorItem>
       {nodes}
-    </Flex>
+    </RootInline>
   )
 }
