@@ -12,7 +12,7 @@ import {SimpleBlockPortableText} from './SimpleBlockPortableText'
 
 function Main() {
   const [id, setId] = useState<'simple' | 'nested' | 'markdown' | 'longlist' | 'initialvalues'>(
-    'simple',
+    'nested',
   )
   return (
     <>
@@ -21,18 +21,18 @@ function Main() {
           <Box padding={4}>
             <TabList space={2}>
               <Tab
-                aria-controls="simple-panel"
-                id="simple-tab"
-                label="SimpleBlockPortableText"
-                onClick={() => setId('simple')}
-                selected={id === 'simple'}
-              />
-              <Tab
                 aria-controls="nested-panel"
                 id="nested-tab"
                 label="FieldGroups"
                 onClick={() => setId('nested')}
                 selected={id === 'nested'}
+              />
+              <Tab
+                aria-controls="simple-panel"
+                id="simple-tab"
+                label="SimpleBlockPortableText"
+                onClick={() => setId('simple')}
+                selected={id === 'simple'}
               />
               <Tab
                 aria-controls="markdown-panel"
