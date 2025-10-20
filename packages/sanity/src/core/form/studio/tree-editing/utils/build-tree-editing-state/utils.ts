@@ -1,4 +1,10 @@
-import {isKeySegment, type Path, type PathSegment} from '@sanity/types'
+import {
+  type ArraySchemaType,
+  isArrayOfBlocksSchemaType,
+  isKeySegment,
+  type Path,
+  type PathSegment,
+} from '@sanity/types'
 
 import {getValueAtPath} from '../../../../../field/paths/helpers'
 
@@ -133,4 +139,18 @@ export function validateRelativePathExists(
  */
 export function getRelativePath(path: Path): Path {
   return isArrayItemPath(path) ? path : path.slice(0, path.length - 1)
+}
+
+/**
+ * Determine if we should skip sibling display for the PTE block children array
+ * when the selected item is an inline custom object (non-span).
+ */
+export function shouldSkipSiblingCount(args: {
+  arraySchemaType: ArraySchemaType | unknown
+  fieldPath: Path
+}): boolean {
+  const {arraySchemaType, fieldPath} = args
+
+  const lastFieldSegment = fieldPath[fieldPath.length - 1]
+  return isArrayOfBlocksSchemaType(arraySchemaType) && lastFieldSegment === 'children'
 }

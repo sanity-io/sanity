@@ -26,6 +26,7 @@ import {
   getRelativePath,
   isArrayItemSelected,
   shouldBeInBreadcrumb,
+  shouldSkipSiblingCount,
   validateRelativePathExists,
 } from './utils'
 
@@ -81,9 +82,6 @@ export function buildArrayState(props: BuildArrayState): TreeEditingState {
     }
   }
 
-  // Store the raw array count for this path
-  siblings.set(toString(rootPath), {count: arrayValue.length, index: 1})
-
   // Iterate over the values of the array field.
   arrayValue.forEach((item, arrayIndex) => {
     // Construct the path to the array item.
@@ -97,8 +95,13 @@ export function buildArrayState(props: BuildArrayState): TreeEditingState {
     // Check if openPath is within this array item (for fields within the item)
     // This needs to be less strict than the isArrayItemSelected check
     // Because from a UI perspective we're still within the item
-    if (item._key && toString(openPath).startsWith(toString(itemPath))) {
-      // Store the current item's 1-based index for the parent array
+    // Important: do NOT set siblings for Portable Text arrays (arrays of blocks)
+    if (
+      item._key &&
+      toString(openPath).startsWith(toString(itemPath)) &&
+      !isArrayOfBlocksSchemaType(arraySchemaType)
+    ) {
+      // Store sibling info on the parent array path (header reads parent of relativePath)
       siblings.set(toString(rootPath), {count: arrayValue.length, index: arrayIndex + 1})
     }
 
@@ -159,9 +162,6 @@ export function buildArrayState(props: BuildArrayState): TreeEditingState {
           const arrayFieldValue_ = getValueAtPath(documentValue, fieldPath)
           const arrayFieldValue = Array.isArray(arrayFieldValue_) ? arrayFieldValue_ : []
 
-          // Store the raw array count for nested arrays
-          siblings.set(toString(fieldPath), {count: arrayFieldValue.length, index: 1})
-
           // If the array field has no value or tree editing is disabled, return early.
           if (!arrayFieldValue.length) return
 
@@ -214,16 +214,21 @@ export function buildArrayState(props: BuildArrayState): TreeEditingState {
 
       // Handle regular arrays of objects (not portable text)
       if (IsArrayOfObjects) {
-        // Store the raw array count
         const childArray = Array.isArray(childValue) ? childValue : []
-        siblings.set(toString(childPath), {count: childArray.length, index: 1})
 
         // Check if any item in this array is selected and update the index
         const updateChildArrayIndex = (childItem: unknown, childIndex: number) => {
           const childItemObj = childItem as Record<string, unknown>
           const childItemPath = [...childPath, {_key: childItemObj._key}] as Path
           if (isArrayItemSelected(childItemPath, openPath)) {
-            siblings.set(toString(childPath), {count: childArray.length, index: childIndex + 1})
+            // When the parent array is a PTE (array of blocks) and this child array is the block's
+            // 'children' array, skip siblings so inline custom objects don't show siblings
+            const isBlockChildrenArray =
+              isArrayOfBlocksSchemaType(arraySchemaType) && childField.name === 'children'
+
+            if (!isBlockChildrenArray) {
+              siblings.set(toString(childPath), {count: childArray.length, index: childIndex + 1})
+            }
           }
         }
         childArray.forEach(updateChildArrayIndex)
@@ -246,7 +251,15 @@ export function buildArrayState(props: BuildArrayState): TreeEditingState {
         })
 
         // Merge sibling counts from child state
+        const childPathString = toString(childPath)
+        const skipChildArraySiblings = shouldSkipSiblingCount({
+          arraySchemaType,
+          fieldPath: childPath,
+        })
+
+        // If it's an inline custom object/object array/span, skip siblings
         childState.siblings.forEach((info, pathString) => {
+          if (skipChildArraySiblings && pathString === childPathString) return
           siblings.set(pathString, info)
         })
 
