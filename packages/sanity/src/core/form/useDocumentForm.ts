@@ -3,6 +3,7 @@ import {type SanityDocument} from '@sanity/client'
 import {isActionEnabled} from '@sanity/schema/_internal'
 import {useTelemetry} from '@sanity/telemetry/react'
 import {
+  isKeySegment,
   type ObjectSchemaType,
   type Path,
   type SanityDocumentLike,
@@ -536,7 +537,23 @@ export function useDocumentForm(options: DocumentFormOptions): DocumentFormValue
       const nextFocusPath = pathFor(_nextFocusPath)
       if (nextFocusPath !== focusPathRef.current) {
         setFocusPath(pathFor(nextFocusPath))
-        handleSetOpenPath(pathFor(nextFocusPath.slice(0, -1)))
+
+        // When focusing on an object field, set openPath to the field's parent.
+        // Exception: if focusing directly on an array item (so it has a key),
+        // it should skip updating openPath - let explicit onPathOpen calls handle it.
+        const lastSegment = nextFocusPath[nextFocusPath.length - 1]
+
+        if (!isKeySegment(lastSegment)) {
+          // For fields inside array items, find the last key segment to preserve context
+          const lastKeyIndex = nextFocusPath.findLastIndex((seg) => isKeySegment(seg))
+          const newOpenPath =
+            lastKeyIndex >= 0
+              ? nextFocusPath.slice(0, lastKeyIndex + 1)
+              : nextFocusPath.slice(0, -1)
+
+          handleSetOpenPath(pathFor(newOpenPath))
+        }
+
         focusPathRef.current = nextFocusPath
         onFocusPath?.(nextFocusPath)
       }

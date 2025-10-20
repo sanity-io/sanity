@@ -1,5 +1,10 @@
 import {useTelemetry} from '@sanity/telemetry/react'
-import {type ObjectSchemaType, type SanityDocument, type SanityDocumentLike} from '@sanity/types'
+import {
+  type ObjectSchemaType,
+  type Path,
+  type SanityDocument,
+  type SanityDocumentLike,
+} from '@sanity/types'
 import {useToast} from '@sanity/ui'
 import {fromString as pathFromString, resolveKeyedPath} from '@sanity/util/paths'
 import {memo, useCallback, useEffect, useMemo, useRef, useState} from 'react'
@@ -16,6 +21,7 @@ import {
   isPerspectiveWriteable,
   isVersionId,
   type PartialContext,
+  pathToString,
   selectUpstreamVersion,
   useActiveReleases,
   useCopyPaste,
@@ -317,6 +323,19 @@ export const DocumentPaneProvider = memo((props: DocumentPaneProviderProps) => {
     [documentActions, documentActionsProps],
   )
 
+  const handlePathOpen = useCallback(
+    (path: Path) => {
+      // Update internal open path
+      onPathOpen(path)
+
+      const nextPath = pathToString(path)
+      if (params.path !== nextPath) {
+        setPaneParams({...params, path: nextPath})
+      }
+    },
+    [onPathOpen, params, setPaneParams],
+  )
+
   // Resolve document badges
   const badges = useMemo(
     () => documentBadges({schemaType: documentType, documentId}),
@@ -520,7 +539,7 @@ export const DocumentPaneProvider = memo((props: DocumentPaneProviderProps) => {
         onBlur,
         onChange,
         onFocus,
-        onPathOpen,
+        onPathOpen: handlePathOpen,
         onHistoryClose: handleHistoryClose,
         onHistoryOpen: handleHistoryOpen,
         onInspectClose: handleLegacyInspectClose,
@@ -583,7 +602,7 @@ export const DocumentPaneProvider = memo((props: DocumentPaneProviderProps) => {
       onBlur,
       onChange,
       onFocus,
-      onPathOpen,
+      handlePathOpen,
       handleHistoryClose,
       handleHistoryOpen,
       handleLegacyInspectClose,
@@ -628,16 +647,13 @@ export const DocumentPaneProvider = memo((props: DocumentPaneProviderProps) => {
   const pathRef = useRef<string | undefined>(undefined)
   useEffect(() => {
     if (ready && params.path) {
-      const {path, ...restParams} = params
+      const {path} = params
 
       // trigger a focus when `params.path` changes
       if (path !== pathRef.current) {
         const pathFromUrl = resolveKeyedPath(formStateRef.current?.value, pathFromString(path))
         onProgrammaticFocus(pathFromUrl)
       }
-
-      // remove the `path`-param from url after we have consumed it as the initial focus path
-      paneRouter.setParams(restParams)
     }
     pathRef.current = params.path
 
