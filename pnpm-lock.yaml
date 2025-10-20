@@ -1886,7 +1886,7 @@ importers:
         specifier: ^4.0.4
         version: 4.0.4
       framer-motion:
-        specifier: ^12.23.22
+        specifier: ^12.23.24
         version: 12.23.24(@emotion/is-prop-valid@1.4.0)(react-dom@19.2.0(react@19.2.0))(react@19.2.0)
       get-it:
         specifier: ^8.6.10
