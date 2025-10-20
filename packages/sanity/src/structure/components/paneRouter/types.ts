@@ -149,7 +149,7 @@ export interface PaneRouterContextValue {
   /**
    * Set the parameters for the current pane
    */
-  setParams: (params: Record<string, string | undefined>) => void
+  setParams: (params: Record<string, string | undefined>, options?: {replace?: boolean}) => void
 
   /**
    * Set the payload for the current pane
