@@ -169,6 +169,7 @@ export function ReferenceItem<Item extends ReferenceItemValue = ReferenceItemVal
   const {t} = useTranslation()
 
   const OpenLink = useMemo(
+    // todo lint error
     () =>
       // eslint-disable-next-line @typescript-eslint/no-shadow
       forwardRef(function OpenLink(

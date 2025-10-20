@@ -21,6 +21,7 @@ const DialogScheduleEdit = (props: DialogScheduleEditProps) => {
   const {formData, isDirty, onFormChange} = useScheduleForm(schedule)
 
   // Callbacks
+  // todo lint error
   const handleScheduleUpdate = useCallback(() => {
     if (!formData?.date) {
       return

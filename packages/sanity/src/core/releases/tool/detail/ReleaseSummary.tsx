@@ -146,6 +146,7 @@ export function ReleaseSummary(props: ReleaseSummaryProps) {
 
     if (documentsNoLongerPending.length)
       // cleanup all resolved added documents
+      // todo lint error
       setPendingAddedDocument((prev) =>
         prev.filter(({document}) => !documentsNoLongerPending.includes(document._id)),
       )

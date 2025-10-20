@@ -104,6 +104,7 @@ export const SharePreviewMenu = memo(function SharePreviewMenuComponent(
   }, [pushToast, t])
 
   const handleDisableSharing = useCallback(async () => {
+    // todo lint error
     try {
       setDisabling(true)
       await disablePreviewAccessSharing(
@@ -120,6 +121,7 @@ export const SharePreviewMenu = memo(function SharePreviewMenuComponent(
     }
   }, [client, currentUser?.id])
   const handleEnableSharing = useCallback(async () => {
+    // todo lint error
     try {
       setEnabling(true)
 
@@ -140,6 +142,7 @@ export const SharePreviewMenu = memo(function SharePreviewMenuComponent(
   const handleCopyUrl = useCallback(() => {
     try {
       if (!url) {
+        // todo lint error
         throw new Error('No URL to copy')
       }
       navigator.clipboard.writeText(url.toString())

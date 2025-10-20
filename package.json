@@ -139,7 +139,7 @@
     "esbuild-register": "catalog:",
     "eslint": "^9.37.0",
     "eslint-formatter-gha": "^1.6.0",
-    "eslint-plugin-react-hooks": "6.0.0-rc.2",
+    "eslint-plugin-react-hooks": "7.0.0",
     "execa": "^2.1.0",
     "glob": "^11.0.3",
     "globby": "^11.1.0",
@@ -151,7 +151,7 @@
     "lodash-es": "^4.17.21",
     "minimist": "^1.2.8",
     "npm-run-all2": "^6.2.6",
-    "oxlint": "1.18.0",
+    "oxlint": "1.23.0",
     "pkg-pr-new": "^0.0.54",
     "prettier": "catalog:",
     "read-package-up": "^11.0.0",
@@ -170,7 +170,7 @@
   "optionalDependencies": {
     "node-notifier": "^10.0.0"
   },
-  "packageManager": "pnpm@10.18.2",
+  "packageManager": "pnpm@10.18.3",
   "pnpm": {
     "peerDependencyRules": {
       "allowAny": [

@@ -37,6 +37,7 @@ export function PublishScheduledDraftDialog(
 
   const handlePublishScheduledDraft = useCallback(async () => {
     setIsPublishing(true)
+    // todo lint error
     try {
       await operations.publishScheduledDraft(release)
       toast.push({

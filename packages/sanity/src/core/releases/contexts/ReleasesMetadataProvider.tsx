@@ -38,6 +38,7 @@ const ReleasesMetadataProviderInner = ({children}: {children: React.ReactNode}) 
   // patch metadata in local state
   useEffect(
     () =>
+      // todo lint error
       setReleasesMetadata((prevReleaseMetadata) => {
         if (!observedResult.data) return prevReleaseMetadata
 

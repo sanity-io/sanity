@@ -13,6 +13,9 @@ type CustomObjectSelectInputProps = ObjectInputProps<Value, CustomSchemaType>
 const EMPTY_ARRAY: Value[] = []
 
 let objectSelectInputIdx = 0
+function getObjectSelectInputIdx() {
+  return String(++objectSelectInputIdx)
+}
 
 export const CustomObjectSelectInput = forwardRef(function CustomObjectSelectInput(
   props: CustomObjectSelectInputProps,
@@ -22,7 +25,7 @@ export const CustomObjectSelectInput = forwardRef(function CustomObjectSelectInp
 
   const items = (schemaType.options && schemaType.options.list) || EMPTY_ARRAY
   const errors = validation.filter(isValidationError)
-  const [inputId] = useState(() => String(++objectSelectInputIdx))
+  const [inputId] = useState(() => getObjectSelectInputIdx())
 
   const handleChange = useCallback(
     (evt: any) => {

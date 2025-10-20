@@ -51,6 +51,7 @@ export function CreateReleaseDialog(props: CreateReleaseDialogProps): React.JSX.
         return
       }
 
+      // todo lint error
       try {
         const releaseValue = createReleaseMetadata(release)
 

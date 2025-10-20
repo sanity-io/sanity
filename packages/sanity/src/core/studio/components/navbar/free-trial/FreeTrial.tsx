@@ -32,6 +32,7 @@ export function FreeTrial({type}: FreeTrialProps) {
   useEffect(() => {
     if (ref) {
       // set popover visible when the ref has been set (i.e. the element is ready)
+      // todo lint error
       setShowPopover(true)
     }
   }, [ref])
@@ -83,6 +84,7 @@ export function FreeTrial({type}: FreeTrialProps) {
     [data, closeAndReOpen, telemetry, showOnLoad],
   )
 
+  // todo lint error
   const handlePopoverCTAClick = useCallback(() => {
     if (data?.showOnLoad)
       telemetry.log(TrialDialogCTAClicked, {
@@ -97,6 +99,7 @@ export function FreeTrial({type}: FreeTrialProps) {
     closeAndReOpen()
   }, [data?.showOnLoad, data?.daysLeft, closeAndReOpen, telemetry])
 
+  // todo lint error
   const handleOnTrialButtonClick = useCallback(() => {
     if (data?.showOnClick)
       telemetry.log(TrialDialogViewed, {

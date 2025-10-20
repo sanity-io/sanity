@@ -20,6 +20,7 @@ export const DatePicker = forwardRef(function DatePicker(
   ref: ForwardedRef<HTMLDivElement>,
 ) {
   const {
+    // todo lint error
     value = new Date(),
     onChange,
     calendarLabels,

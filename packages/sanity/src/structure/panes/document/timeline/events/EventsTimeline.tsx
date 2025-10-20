@@ -216,6 +216,7 @@ export const EventsTimeline = ({
     ],
   )
 
+  // todo lint error
   useEffect(() => setMounted(true), [])
   const selectedIndex = events.findIndex((event) => event.id === selectedEventId)
 

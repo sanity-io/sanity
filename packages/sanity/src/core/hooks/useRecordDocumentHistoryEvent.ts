@@ -99,6 +99,7 @@ export function useRecordDocumentHistoryEvent({
           },
         }
 
+        // todo lint error
         node?.post?.(message.type, message.data)
       } catch (error) {
         console.error('Failed to record history event:', error)

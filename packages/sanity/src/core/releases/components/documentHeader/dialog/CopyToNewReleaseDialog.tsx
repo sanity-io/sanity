@@ -95,6 +95,7 @@ export function CopyToNewReleaseDialog(props: {
       return
     }
 
+    // todo lint error
     try {
       const releaseValue = createReleaseMetadata(release)
 

@@ -76,10 +76,12 @@ export function NumberInput(props: NumberInputProps) {
     return () => {
       element.removeEventListener('wheel', preventWheel)
     }
+    // todo lint error
   }, [inputElementRef])
 
   return (
     <TextInput
+      // todo lint error
       {...elementProps}
       type="number"
       step="any"

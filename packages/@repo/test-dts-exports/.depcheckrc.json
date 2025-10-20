@@ -15,6 +15,7 @@
     "groq",
     "sanity",
     "vitest",
-    "typescript"
+    "typescript",
+    "zod"
   ]
 }

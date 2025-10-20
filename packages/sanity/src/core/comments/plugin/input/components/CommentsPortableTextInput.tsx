@@ -259,6 +259,7 @@ export const CommentsPortableTextInputInner = memo(function CommentsPortableText
   )
 
   const debounceSelectionChange = useMemo(
+    // todo lint error
     () => debounce(handleSelectionChange, 200),
     [handleSelectionChange],
   )
@@ -438,6 +439,7 @@ export const CommentsPortableTextInputInner = memo(function CommentsPortableText
   const currentSelectionIsOverlapping = useMemo(() => {
     if (!currentSelection || addedCommentsDecorations.length === 0) return false
 
+    // todo lint error
     return addedCommentsDecorations.some((d) => {
       if (!editorRef.current) return false
 
@@ -525,6 +527,7 @@ export const CommentsPortableTextInputInner = memo(function CommentsPortableText
   }, [handleBuildRangeDecorations, textComments])
 
   const showFloatingButton = Boolean(
+    // todo lint error
     currentSelection && canSubmit && selectionReferenceElement && !mouseDownRef.current,
   )
   const showFloatingInput = Boolean(nextCommentSelection && popoverAuthoringReferenceElement)

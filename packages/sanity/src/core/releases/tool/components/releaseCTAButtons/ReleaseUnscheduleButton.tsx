@@ -30,6 +30,7 @@ export const ReleaseUnscheduleButton = ({
   const [status, setStatus] = useState<'idle' | 'confirm' | 'unscheduling'>('idle')
 
   const handleConfirmSchedule = useCallback(async () => {
+    // todo lint error
     try {
       setStatus('unscheduling')
       await unschedule(release._id)

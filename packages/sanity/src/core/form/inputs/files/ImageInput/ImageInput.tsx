@@ -616,6 +616,7 @@ function BaseImageInputComponent(props: BaseImageInputProps): React.JSX.Element 
           renderInput={renderHotspotInput}
         />
       )}
+      {/* // todo lint error */}
       {selectedAssetSource && renderAssetSource()}
     </Stack>
   )

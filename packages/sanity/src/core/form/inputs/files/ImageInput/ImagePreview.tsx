@@ -23,6 +23,7 @@ export function ImagePreview(props: ComponentProps<typeof Card> & Props) {
   useEffect(() => {
     /* set for when the src is being switched when the image input already had a image src
     - meaning it already had an asset */
+    // todo lint error
     setLoaded(false)
   }, [src])
 

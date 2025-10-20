@@ -224,6 +224,7 @@ async function packCli(): Promise<string> {
 
 function copy(src: string, dest: string, options: {dereference?: boolean}): Promise<void> {
   return new Promise((resolve, reject) =>
+    // oxlint-disable-next-line no-multiple-resolved
     copyCb(src, dest, options, (err) => (err ? reject(err) : resolve())),
   )
 }

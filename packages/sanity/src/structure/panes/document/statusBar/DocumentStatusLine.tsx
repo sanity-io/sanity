@@ -98,6 +98,7 @@ const FallbackStatus = () => {
     if (editState?.version?._updatedAt) {
       return {
         translationKey:
+          // todo lint error
           editState?.version?._updatedAt === editState?.version?._createdAt
             ? TIMELINE_ITEM_I18N_KEY_MAPPING.version.createDocumentVersion
             : TIMELINE_ITEM_I18N_KEY_MAPPING.version.editDocumentVersion,
@@ -207,12 +208,14 @@ export function DocumentStatusLine() {
 
   // Clear the status when documentId changes to make sure we don't show the wrong status when opening a new document
   useLayoutEffect(() => {
+    // todo lint error
     setStatus(null)
   }, [documentId])
 
   // Set status to 'syncing' when lastUpdated changes and we go from not syncing to syncing
   useLayoutEffect(() => {
     if (syncState.isSyncing) {
+      // todo lint error
       setStatus('syncing')
     }
   }, [syncState.isSyncing, lastUpdated])

@@ -67,6 +67,7 @@ export function StudioRootErrorHandler(props: {children: ReactNode}) {
 
       let eventId: string | undefined
       try {
+        // todo lint error
         eventId = errorReporter.reportError(event.error)?.eventId
       } catch (e) {
         e.message = `Encountered an additional error when reporting error: ${e.message}`

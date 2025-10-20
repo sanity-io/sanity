@@ -157,6 +157,7 @@ export const CommentsListItem = memo(function CommentsListItem(props: CommentsLi
   const handleMouseEnter = useCallback(() => setMouseOver(true), [])
   const handleMouseLeave = useCallback(() => setMouseOver(false), [])
 
+  // todo lint error
   const handleReplySubmit = useCallback(() => {
     const nextComment: CommentBaseCreatePayload = {
       message: value,
@@ -251,6 +252,7 @@ export const CommentsListItem = memo(function CommentsListItem(props: CommentsLi
     return replies.length > MAX_COLLAPSED_REPLIES
   }, [replies])
 
+  // todo lint error
   const expandButtonText = useMemo(() => {
     return `${replies?.length - MAX_COLLAPSED_REPLIES} more ${
       replies?.length - MAX_COLLAPSED_REPLIES === 1 ? 'comment' : 'comments'
@@ -259,6 +261,7 @@ export const CommentsListItem = memo(function CommentsListItem(props: CommentsLi
 
   useEffect(() => {
     if (replies.length > MAX_COLLAPSED_REPLIES && !didExpand) {
+      // todo lint error
       setCollapsed(true)
     }
   }, [didExpand, replies])

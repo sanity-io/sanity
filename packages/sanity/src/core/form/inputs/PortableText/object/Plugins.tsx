@@ -83,5 +83,6 @@ export const RenderDefault = (props: Omit<PortableTextPluginsProps, 'renderDefau
     defaultComponent: DefaultPortableTextEditorPlugins,
     pick: pickPortableTextEditorPluginsComponent,
   })
+  // todo lint error
   return <RenderPlugins {...props} />
 }

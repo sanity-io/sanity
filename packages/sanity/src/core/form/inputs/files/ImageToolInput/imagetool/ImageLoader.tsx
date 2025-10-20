@@ -17,6 +17,7 @@ export function ImageLoader(props: ImageLoaderProps) {
   const [error, setError] = useState<Error | null>(null)
 
   useEffect(() => {
+    // todo lint error
     setImage(null)
     setError(null)
     setIsLoading(true)

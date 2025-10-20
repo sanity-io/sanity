@@ -180,6 +180,7 @@ export function useMainDocument(props: {
         }
       }
     }
+    // todo lint error
     setMainDocumentState(undefined)
     mainDocumentIdRef.current = undefined
     return undefined

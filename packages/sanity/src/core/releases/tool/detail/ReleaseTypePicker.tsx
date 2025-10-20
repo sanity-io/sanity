@@ -267,6 +267,7 @@ export function ReleaseTypePicker(props: {release: NotArchivedRelease}): React.J
 
   return (
     <Popover
+      // todo lint error
       content={<PopoverContent />}
       open={open}
       padding={1}

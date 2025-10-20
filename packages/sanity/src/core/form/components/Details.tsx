@@ -57,6 +57,7 @@ export function Details(props: DetailsProps) {
 
   const handleToggle = useCallback(() => setOpen((v) => !v), [])
 
+  // todo lint error
   useEffect(() => setOpen(openProp || false), [openProp])
 
   return (

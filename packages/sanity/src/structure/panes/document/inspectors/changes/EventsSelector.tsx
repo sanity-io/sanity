@@ -61,6 +61,7 @@ export function EventsSelector({showList}: {showList: boolean}) {
     (event: DocumentGroupEvent) => {
       try {
         if (
+          // todo lint error
           isDeleteDocumentVersionEvent(event) ||
           isDeleteDocumentGroupEvent(event) ||
           isUnpublishDocumentEvent(event) ||

@@ -140,6 +140,8 @@ export function ParsedDateTextInput({
   useEffect(() => {
     const updatedDate = value && new Date(value)
     if (updatedDate) {
+      // todo lint error
+      // todo lint error
       processInputString({
         dateString: format(updatedDate, dateFormat),
         triggerOnChange: false,

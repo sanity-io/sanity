@@ -239,6 +239,7 @@ export const useTimeZone = (scope: TimeZoneScope) => {
   const [timeZone, setTimeZone] = useState<NormalizedTimeZone>(() => getInitialTimeZone())
 
   useEffect(() => {
+    // todo lint error
     setTimeZone(getInitialTimeZone())
   }, [getInitialTimeZone])
 

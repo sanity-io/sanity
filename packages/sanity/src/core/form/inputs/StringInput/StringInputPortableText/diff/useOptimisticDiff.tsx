@@ -44,6 +44,7 @@ export function useOptimisticDiff({
   )
 
   useEffect(() => {
+    // todo lint error
     setCurrentSignal('definitive')
     // Ensure the optimistic value is synced with the definitive value.
     setOptimisticValue(definitiveValue)

@@ -14,6 +14,7 @@ export const DatePicker = forwardRef(function DatePicker(
   },
   ref: ForwardedRef<HTMLDivElement>,
 ) {
+  // todo lint error
   const {value = new Date(), onChange, customValidation, timeZoneScope, ...rest} = props
   const {utcToCurrentZoneDate} = useTimeZone(timeZoneScope)
   const [focusedDate, setFocusedDay] = useState<Date>()

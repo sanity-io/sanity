@@ -85,6 +85,7 @@ export function InlineObjectToolbarPopover(props: InlineObjectToolbarPopoverProp
   useEffect(() => {
     focusTrappedRef.current = null
     if (inlineObjectOpen) {
+      // todo lint error
       setPopoverOpen(false)
       return
     }

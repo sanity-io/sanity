@@ -50,6 +50,7 @@ export function useSearchableList(items: TreeEditingMenuItem[]): SearchableTreeE
 
   useEffect(() => {
     // clear the searchableList when items change
+    // todo lint error
     setSearchableList([])
 
     flatList.forEach((item) => {

@@ -17,7 +17,7 @@ const PostMessageTelemetry: FC<PostMessageTelemetryProps> = (props) => {
       const {event, data} = message
 
       // SANITY_STUDIO_DEBUG_TELEMETRY ensures noop/in-browser logging for telemetry events
-      // eslint-disable-next-line @typescript-eslint/no-unused-expressions
+      // oxlint-disable-next-line no-unused-expressions
       data ? telemetry.log(event, data) : telemetry.log(event)
     })
   }, [comlink, telemetry])

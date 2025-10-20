@@ -1,6 +1,3 @@
-'use no memo'
-// The `use no memo` directive is due to a known issue with react-virtual and react compiler: https://github.com/TanStack/virtual/issues/736
-
 import {Box, rem, Stack} from '@sanity/ui'
 import {type ScrollToOptions, useVirtualizer, type Virtualizer} from '@tanstack/react-virtual'
 import {throttle} from 'lodash'
@@ -154,6 +151,7 @@ const CommandListComponent = forwardRef<CommandListHandle, CommandListProps>(fun
   )
 
   // This will trigger a re-render whenever its internal state changes
+  // todo lint error
   const virtualizer = useVirtualizer({
     count: items.length,
     getItemKey,

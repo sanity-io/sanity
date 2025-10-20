@@ -96,6 +96,7 @@ export function StudioNavbar(props: Omit<NavbarProps, 'renderDefault'>) {
   // Close the NavDrawer when changing tool or workspace
   useEffect(() => {
     if (routerStateRef.current.tool !== routerState.tool || name !== workspaceNameRef.current) {
+      // todo lint error
       setDrawerOpen(false)
     }
 
@@ -232,6 +233,7 @@ export function StudioNavbar(props: Omit<NavbarProps, 'renderDefault'>) {
             {/** Center flex */}
             <Flex align="center" justify="center">
               {shouldRender.tools && (
+                // todo lint error
                 <ToolMenu
                   activeToolName={activeToolName}
                   closeSidebar={handleCloseDrawer}

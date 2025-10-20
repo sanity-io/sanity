@@ -33,7 +33,9 @@ export function useMemberValidation(member: BaseFormNode | undefined) {
     [validation],
   )
 
+  // todo lint error
   const reconciled = immutableReconcile(prev.current, validation)
+  // todo lint error
   prev.current = reconciled
 
   return useMemo(() => {

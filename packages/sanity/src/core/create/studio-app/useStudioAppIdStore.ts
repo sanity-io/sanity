@@ -60,6 +60,7 @@ export function useStudioAppIdStoreInner(props: {
       }
       setLoading(true)
 
+      // todo lint error
       try {
         const entry = await cache.get({projectId, appIdFetcher})
         if (mounted) setStudioApp(entry)

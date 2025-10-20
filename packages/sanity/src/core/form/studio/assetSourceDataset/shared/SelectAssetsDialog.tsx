@@ -213,6 +213,7 @@ const SelectAssetsComponent = function SelectAssetsComponent(
     // We focus on the first item after we're doing loading, but only on initial load, as
     // this will reset the scroll position to the top if we do it on the second page
     if (!isLoading && (!currentPageNumber.current || currentPageNumber.current === 0)) {
+      // todo lint error
       setHasResetFocus(true)
     }
   }, [isLoading])

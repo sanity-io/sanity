@@ -146,6 +146,7 @@ function DocumentPaneInner(props: DocumentPaneProviderProps) {
       >
         <DiffViewDocumentLayout documentId={options.id} documentType={options.type}>
           <CommentsWrapper documentId={options.id} documentType={options.type}>
+            {/* // todo lint error */}
             <DocumentLayout documentId={options.id} documentType={options.type} />
           </CommentsWrapper>
         </DiffViewDocumentLayout>

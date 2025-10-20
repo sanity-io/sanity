@@ -89,8 +89,9 @@ function InputDebugger(props: InputProps) {
         .filter(Boolean)
         .join('')}`,
     ]
+    const key = `$['${sourcePath}']`
     const mappings = {
-      [`$['${sourcePath}']`]: {
+      [key]: {
         source: {
           document: 0,
           path: 0,

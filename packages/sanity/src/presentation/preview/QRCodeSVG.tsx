@@ -231,6 +231,7 @@ function QRCodeSVGComponent(props: QRProps) {
   })
 
   const cellsToDraw = useMemo(
+    // todo lint error
     () =>
       logoSize && calculatedImageSettings?.excavation
         ? excavateModules(cells, calculatedImageSettings.excavation)

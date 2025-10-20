@@ -37,6 +37,7 @@ export function useFilteredReleases({
   const {data: documentVersions} = useDocumentVersions({documentId})
   const isCreatingDocument = displayed && !displayed._createdAt
 
+  // todo lint error
   return useMemo(() => {
     if (!documentVersions) return {notCurrentReleases: [], currentReleases: [], inCreation: null}
     // Gets the releases ids from the document versions, it means, the releases that the document belongs to

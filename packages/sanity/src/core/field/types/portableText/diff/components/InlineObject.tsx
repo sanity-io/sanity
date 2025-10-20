@@ -106,6 +106,7 @@ function InlineObjectWithDiff({
 
   useEffect(() => {
     if (isEditing) {
+      // todo lint error
       setOpen(true)
       onSetFocus(focusPath)
     }

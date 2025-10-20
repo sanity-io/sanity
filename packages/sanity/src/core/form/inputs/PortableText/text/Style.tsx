@@ -41,6 +41,7 @@ export const Style = (props: BlockStyleRenderProps) => {
     return CustomComponent ? (
       <CustomComponent {...componentProps}>{children}</CustomComponent>
     ) : (
+      // todo lint error
       <DefaultComponent {...componentProps}>{children}</DefaultComponent>
     )
   }, [DefaultComponent, block, children, focused, schemaType, selected])

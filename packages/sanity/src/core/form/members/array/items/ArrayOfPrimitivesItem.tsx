@@ -168,6 +168,7 @@ export function ArrayOfPrimitivesItem(props: PrimitiveMemberItemProps) {
     elementProps,
   ])
 
+  // todo lint error
   const renderedInput = useMemo(() => renderInput(inputProps), [inputProps, renderInput])
 
   const onRemove = useCallback(() => {

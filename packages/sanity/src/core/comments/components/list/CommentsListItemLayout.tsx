@@ -211,6 +211,7 @@ export function CommentsListItemLayout(props: CommentsListItemLayoutProps) {
 
   // Filter out reactions that's been optimistically removed from the comment.
   const reactions = useMemo(
+    // todo lint error
     () =>
       (comment?.reactions?.filter((r) => r?._optimisticState !== 'removed') || EMPTY_ARRAY).filter(
         (r) => {
@@ -238,6 +239,7 @@ export function CommentsListItemLayout(props: CommentsListItemLayoutProps) {
     if (isEditing) return
 
     startMessage.current = message
+    // todo lint error
     setValue(message)
   }, [isEditing, message])
 

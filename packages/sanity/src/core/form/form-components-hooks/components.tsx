@@ -52,6 +52,7 @@ function useResolveDefaultComponent<T extends {schemaType?: SchemaType}>(props: 
     [componentResolver],
   )
 
+  // todo lint error
   return <DefaultResolvedComponent {...componentProps} renderDefault={renderDefault} />
 }
 

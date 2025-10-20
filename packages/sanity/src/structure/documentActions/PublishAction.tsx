@@ -98,6 +98,7 @@ export const PublishAction: DocumentActionComponent = (props) => {
     }
 
     if (!hasValidationErrors) {
+      // todo lint error
       doPublish()
     }
     setPublishScheduled(false)
