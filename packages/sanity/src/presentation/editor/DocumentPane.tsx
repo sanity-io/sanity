@@ -1,4 +1,3 @@
-import {studioPath} from '@sanity/client/csm'
 import {Card, Code, Label, Stack} from '@sanity/ui'
 import {type ErrorInfo, Suspense, useCallback, useEffect, useMemo, useState} from 'react'
 import {type Path, useTranslation} from 'sanity'
@@ -18,7 +17,6 @@ import {PresentationSpinner} from '../PresentationSpinner'
 import {
   type PresentationNavigate,
   type PresentationSearchParams,
-  type PresentationStateParams,
   type StructureDocumentPaneParams,
 } from '../types'
 import {usePresentationTool} from '../usePresentationTool'
@@ -30,7 +28,8 @@ const WrappedCode = styled(Code)`
 export function DocumentPane(props: {
   documentId: string
   documentType: string
-  onFocusPath: (state: Required<PresentationStateParams>) => void
+  onFocusPath: (path: Path) => void
+  focusPath: Path
   onEditReference: PresentationNavigate
   onStructureParams: (params: StructureDocumentPaneParams) => void
   structureParams: StructureDocumentPaneParams
@@ -40,6 +39,7 @@ export function DocumentPane(props: {
     documentId,
     documentType,
     onFocusPath,
+    focusPath,
     onEditReference,
     onStructureParams,
     searchParams,
@@ -63,17 +63,6 @@ export function DocumentPane(props: {
       type: 'document',
     }),
     [documentId, documentType, template, templateParams],
-  )
-
-  const handleFocusPath = useCallback(
-    (path: Path) => {
-      return onFocusPath({
-        id: documentId,
-        type: documentType,
-        path: studioPath.toString(path),
-      })
-    },
-    [documentId, documentType, onFocusPath],
   )
 
   const [errorParams, setErrorParams] = useState<{
@@ -122,7 +111,8 @@ export function DocumentPane(props: {
               index={1}
               itemId="document"
               pane={paneDocumentNode}
-              onFocusPath={handleFocusPath}
+              focusPath={focusPath}
+              onFocusPath={onFocusPath}
             />
           </Suspense>
         </PresentationPaneRouterProvider>
