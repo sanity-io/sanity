@@ -6,8 +6,17 @@ import {type BaseStructureToolPaneProps} from '../types'
 /** @internal */
 export type DocumentPaneProviderProps = {
   children?: React.ReactNode
-  onFocusPath?: (path: Path) => void
-} & BaseStructureToolPaneProps<'document'>
+} & BaseStructureToolPaneProps<'document'> &
+  (
+    | {
+        controlledFocusPath: true
+        /** if passed, document pane will not handle focus on its own */
+        onFocusPath: (path: Path) => void
+        /** if passed, document pane will not handle focus on its own */
+        focusPath: Path
+      }
+    | {controlledFocusPath: false; focusPath: undefined; onFocusPath: undefined}
+  )
 
 /** @internal */
 export interface HistoryStoreProps {
