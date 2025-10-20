@@ -11,11 +11,13 @@ import {
 import {useFeatureEnabled, useValidationStatus} from '../../../hooks'
 import {FEATURES} from '../../../hooks/useFeatureEnabled'
 import {useTranslation} from '../../../i18n'
+import {useSetPerspective} from '../../../perspective/useSetPerspective'
 import {ScheduleDraftDialog} from '../../components/dialog/ScheduleDraftDialog'
 import {useHasCardinalityOneReleaseVersions} from '../../hooks/useHasCardinalityOneReleaseVersions'
 import {useReleasesToolAvailable} from '../../hooks/useReleasesToolAvailable'
 import {useScheduleDraftOperations} from '../../hooks/useScheduleDraftOperations'
 import {releasesLocaleNamespace} from '../../i18n'
+import {getReleaseIdFromReleaseDocumentId} from '../../util/getReleaseIdFromReleaseDocumentId'
 
 /**
  * @internal
@@ -27,6 +29,7 @@ export const SchedulePublishAction: DocumentActionComponent = (
   const {t} = useTranslation(releasesLocaleNamespace)
   const {createScheduledDraft} = useScheduleDraftOperations()
   const toast = useToast()
+  const setPerspective = useSetPerspective()
   const releasesToolAvailable = useReleasesToolAvailable()
   const {enabled: releasesEnabled} = useFeatureEnabled(FEATURES.contentReleases)
 
@@ -54,7 +57,7 @@ export const SchedulePublishAction: DocumentActionComponent = (
 
       try {
         // Pass the document title from preview values
-        await createScheduledDraft(id, publishAt)
+        const releaseDocumentId = await createScheduledDraft(id, publishAt)
 
         toast.push({
           closable: true,
@@ -65,7 +68,7 @@ export const SchedulePublishAction: DocumentActionComponent = (
             `Publishing scheduled for ${publishAt.toLocaleString()}`,
           ),
         })
-
+        setPerspective(getReleaseIdFromReleaseDocumentId(releaseDocumentId))
         setDialogOpen(false)
       } catch (error) {
         console.error('Failed to schedule document publish:', error)
@@ -80,7 +83,7 @@ export const SchedulePublishAction: DocumentActionComponent = (
         setIsScheduling(false)
       }
     },
-    [id, createScheduledDraft, toast, t],
+    [id, createScheduledDraft, toast, t, setPerspective],
   )
 
   // scheduled publishing using scheduled drafts is not available if releases is not enabled
