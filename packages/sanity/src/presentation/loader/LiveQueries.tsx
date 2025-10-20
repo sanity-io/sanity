@@ -32,10 +32,86 @@ import {useEffectEvent} from 'use-effect-event'
 
 import {API_VERSION, MIN_LOADER_QUERY_LISTEN_HEARTBEAT_INTERVAL} from '../constants'
 import {type LoaderConnection, type PresentationPerspective} from '../types'
+import {useDecideParameters} from '../useDecideParameters'
 import {type DocumentOnPage} from '../useDocumentsOnPage'
 import {useLiveEvents} from './useLiveEvents'
 import {useLiveQueries} from './useLiveQueries'
 import {mapChangedValue} from './utils'
+
+// Conditional content resolution logic from client
+interface DecideVariant {
+  value: unknown
+  [key: string]: unknown
+}
+
+interface DecideField {
+  default: unknown
+  variants: DecideVariant[]
+}
+
+interface LocalDecideParameters {
+  [key: string]: unknown
+}
+
+function isDecideField(value: unknown): value is DecideField {
+  return (
+    value !== null &&
+    typeof value === 'object' &&
+    !Array.isArray(value) &&
+    'default' in value &&
+    'variants' in value &&
+    Array.isArray((value as any).variants)
+  )
+}
+
+function resolveDecideField(field: DecideField, decideParameters?: LocalDecideParameters): unknown {
+  if (!decideParameters || Object.keys(decideParameters).length === 0) {
+    return field.default
+  }
+
+  const matchingVariant = field.variants.find((variant) => {
+    // Check all variant properties against parameters
+    return Object.entries(variant).every(([key, value]) => {
+      if (key === 'value' || key === '_key' || key === '_type') return true
+      const paramValue = decideParameters[key]
+      if (!paramValue) return false
+      return Array.isArray(paramValue) ? paramValue.includes(value as string) : paramValue === value
+    })
+  })
+
+  return matchingVariant ? matchingVariant.value : field.default
+}
+
+function processObjectRecursively(obj: unknown, decideParameters?: LocalDecideParameters): unknown {
+  if (obj === null || obj === undefined || typeof obj !== 'object') {
+    return obj
+  }
+
+  if (Array.isArray(obj)) {
+    return obj.map((item) => processObjectRecursively(item, decideParameters))
+  }
+
+  return Object.entries(obj).reduce<Record<string, unknown>>((processed, [key, value]) => {
+    try {
+      if (isDecideField(value)) {
+        processed[key] = resolveDecideField(value, decideParameters)
+      } else {
+        processed[key] = processObjectRecursively(value, decideParameters)
+      }
+    } catch {
+      processed[key] = value
+    }
+    return processed
+  }, {})
+}
+
+function processDecideFields(data: unknown, decideParameters?: LocalDecideParameters): unknown {
+  try {
+    return processObjectRecursively(data, decideParameters)
+  } catch {
+    return data
+  }
+}
 
 export interface LiveQueriesProps {
   liveDocument: Partial<SanityDocument> | null | undefined
@@ -54,6 +130,7 @@ export default function LiveQueries(props: LiveQueriesProps): React.JSX.Element 
 
   const [comlink, setComlink] = useState<ChannelInstance<LoaderControllerMsg, LoaderNodeMsg>>()
   const [liveQueries, liveQueriesDispatch] = useLiveQueries()
+  const {decideParameters} = useDecideParameters()
 
   const projectId = useProjectId()
   const dataset = useDataset()
@@ -95,6 +172,7 @@ export default function LiveQueries(props: LiveQueriesProps): React.JSX.Element 
               `Loader query listen heartbeat interval must be at least ${MIN_LOADER_QUERY_LISTEN_HEARTBEAT_INTERVAL}ms`,
             )
           }
+
           liveQueriesDispatch({
             type: 'query-listen',
             payload: {
@@ -102,6 +180,7 @@ export default function LiveQueries(props: LiveQueriesProps): React.JSX.Element 
               query: data.query,
               params: data.params,
               heartbeat: data.heartbeat ?? false,
+              decideParameters: data.decideParameters,
             },
           })
         }
@@ -134,6 +213,17 @@ export default function LiveQueries(props: LiveQueriesProps): React.JSX.Element 
     }
   }, [comlink, activePerspective, projectId, dataset])
 
+  // Post decide parameters to loaders when they change
+  useEffect(() => {
+    if (comlink) {
+      comlink.post('loader/decide-parameters', {
+        projectId,
+        dataset,
+        decideParameters: JSON.stringify(decideParameters),
+      })
+    }
+  }, [comlink, decideParameters, projectId, dataset])
+
   /**
    * Defer the liveDocument to avoid unnecessary rerenders on rapid edits
    */
@@ -143,20 +233,23 @@ export default function LiveQueries(props: LiveQueriesProps): React.JSX.Element 
 
   return (
     <>
-      {[...liveQueries.entries()].map(([key, {query, params, perspective}]) => (
-        <QuerySubscription
-          key={`${liveEvents.resets}:${key}`}
-          projectId={projectId}
-          dataset={dataset}
-          perspective={perspective}
-          query={query}
-          params={params}
-          comlink={comlink}
-          client={client}
-          liveDocument={liveDocument}
-          liveEventsMessages={liveEvents.messages}
-        />
-      ))}
+      {[...liveQueries.entries()].map(
+        ([key, {query, params, perspective, decideParameters: queryDecideParameters}]) => (
+          <QuerySubscription
+            key={`${liveEvents.resets}:${key}`}
+            projectId={projectId}
+            dataset={dataset}
+            perspective={perspective}
+            query={query}
+            params={params}
+            comlink={comlink}
+            client={client}
+            liveDocument={liveDocument}
+            liveEventsMessages={liveEvents.messages}
+            decideParameters={queryDecideParameters}
+          />
+        ),
+      )}
     </>
   )
 }
@@ -176,6 +269,7 @@ interface QuerySubscriptionProps
   query: string
   params: QueryParams
   comlink: LoaderConnection | undefined
+  decideParameters?: string
 }
 function QuerySubscriptionComponent(props: QuerySubscriptionProps) {
   const {
@@ -188,6 +282,7 @@ function QuerySubscriptionComponent(props: QuerySubscriptionProps) {
     params,
     comlink,
     liveEventsMessages,
+    decideParameters,
   } = props
 
   const {
@@ -201,6 +296,7 @@ function QuerySubscriptionComponent(props: QuerySubscriptionProps) {
     perspective,
     query,
     liveEventsMessages,
+    decideParameters,
   }) || {}
 
   /* eslint-disable @typescript-eslint/no-shadow,max-params */
@@ -246,9 +342,51 @@ interface UseQuerySubscriptionProps extends Required<Pick<SharedProps, 'client'>
   params: QueryParams
   perspective: ClientPerspective
   liveEventsMessages: LiveEventMessage[]
+  decideParameters?: string
 }
 function useQuerySubscription(props: UseQuerySubscriptionProps) {
-  const {liveDocument, client, query, params, perspective, liveEventsMessages} = props
+  const {
+    liveDocument,
+    client,
+    query,
+    params,
+    perspective,
+    liveEventsMessages,
+    decideParameters: passedDecideParameters,
+  } = props
+
+  // Use passed decideParameters if provided, otherwise fall back to global context
+  const {decideParameters: globalDecideParameters} = useDecideParameters()
+  const decideParameters = passedDecideParameters
+    ? (() => {
+        try {
+          return JSON.parse(passedDecideParameters)
+        } catch {
+          return globalDecideParameters
+        }
+      })()
+    : globalDecideParameters
+
+  // Transform decideParameters for both useEffect and useMemo to use
+  const transformedDecideParameters: LocalDecideParameters | undefined = useMemo(() => {
+    if (!decideParameters || typeof decideParameters !== 'object') return undefined
+
+    const parsedParams =
+      typeof decideParameters === 'string'
+        ? (() => {
+            try {
+              return JSON.parse(decideParameters) as Record<string, string | string[]>
+            } catch {
+              return undefined
+            }
+          })()
+        : (decideParameters as Record<string, string | string[]>)
+
+    if (!parsedParams || Object.keys(parsedParams).length === 0) return undefined
+
+    // Pass through all parameters as-is - no hardcoded mappings
+    return parsedParams
+  }, [decideParameters])
   const [result, setResult] = useState<unknown>(null)
   const [resultSourceMap, setResultSourceMap] = useState<ContentSourceMap | null | undefined>(null)
   const [syncTags, setSyncTags] = useState<SyncTag[] | undefined>(undefined)
@@ -273,6 +411,7 @@ function useQuerySubscription(props: UseQuerySubscriptionProps) {
         tag: 'presentation-loader',
         signal: controller.signal,
         perspective,
+        decideParameters: transformedDecideParameters as any,
         filterResponse: false,
         returnQuery: false,
       })
@@ -294,19 +433,37 @@ function useQuerySubscription(props: UseQuerySubscriptionProps) {
     return () => {
       controller.abort()
     }
-  }, [client, lastLiveEventId, params, perspective, query])
+  }, [
+    client,
+    lastLiveEventId,
+    params,
+    perspective,
+    query,
+    decideParameters,
+    passedDecideParameters,
+    transformedDecideParameters,
+  ])
   /* eslint-enable max-nested-callbacks */
 
   return useMemo(() => {
     if (liveDocument && resultSourceMap) {
+      const turboChargedResult = turboChargeResultIfSourceMap(
+        liveDocument,
+        result,
+        perspective,
+        resultSourceMap,
+        transformedDecideParameters,
+      )
+
       return {
-        result: turboChargeResultIfSourceMap(liveDocument, result, perspective, resultSourceMap),
+        result: turboChargedResult,
         resultSourceMap,
         syncTags,
       }
     }
+
     return {result, resultSourceMap, syncTags}
-  }, [liveDocument, perspective, result, resultSourceMap, syncTags])
+  }, [liveDocument, perspective, result, resultSourceMap, syncTags, transformedDecideParameters])
 }
 
 export function turboChargeResultIfSourceMap<T = unknown>(
@@ -314,6 +471,7 @@ export function turboChargeResultIfSourceMap<T = unknown>(
   result: T,
   perspective: ClientPerspective,
   resultSourceMap?: ContentSourceMap,
+  decideParameters?: LocalDecideParameters,
 ): T {
   if (perspective === 'raw') {
     throw new Error('turboChargeResultIfSourceMap does not support raw perspective')
@@ -330,10 +488,20 @@ export function turboChargeResultIfSourceMap<T = unknown>(
         getPublishedId(liveDocument._id) === getPublishedId(sourceDocument._id)
       ) {
         if (typeof liveDocument._id === 'string' && typeof sourceDocument._type === 'string') {
-          return liveDocument as unknown as Required<Pick<SanityDocument, '_id' | '_type'>>
+          // Resolve conditional content in liveDocument before using it
+          const resolvedLiveDocument = processDecideFields(
+            liveDocument,
+            decideParameters,
+          ) as Required<Pick<SanityDocument, '_id' | '_type'>>
+
+          return resolvedLiveDocument
         }
+
+        // Resolve conditional content in liveDocument before using it
+        const resolvedLiveDocument = processDecideFields(liveDocument, decideParameters)
+
         return {
-          ...liveDocument,
+          ...(resolvedLiveDocument as Partial<SanityDocument>),
           _id: liveDocument._id || sourceDocument._id,
           _type: liveDocument._type || sourceDocument._type,
         }
