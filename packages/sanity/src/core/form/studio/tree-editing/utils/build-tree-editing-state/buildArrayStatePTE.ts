@@ -21,6 +21,7 @@ import {
   getRelativePath,
   isArrayItemSelected,
   shouldBeInBreadcrumb,
+  shouldSkipSiblingCount,
   validateRelativePathExists,
 } from './utils'
 
@@ -172,7 +173,16 @@ export function buildArrayStatePTE(props: BuildArrayStatePTEProps): {
           })
 
           // Merge sibling counts from nested state
+          const blockFieldPathString = toString(blockFieldPath)
+
+          // If it's an inline custom object/object array/span, skip siblings
+          const skipChildren = shouldSkipSiblingCount({
+            arraySchemaType: childField.type as ArraySchemaType,
+            fieldPath: blockFieldPath,
+          })
+
           blockFieldState.siblings.forEach((info, pathString) => {
+            if (skipChildren && pathString === blockFieldPathString) return
             siblings.set(pathString, info)
           })
 
