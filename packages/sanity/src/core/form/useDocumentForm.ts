@@ -19,7 +19,6 @@ import {
   useRef,
   useState,
 } from 'react'
-import deepEquals from 'react-fast-compare'
 
 import {useCanvasCompanionDoc} from '../canvas/actions/useCanvasCompanionDoc'
 import {isSanityCreateLinkedDocument} from '../create/createUtils'
@@ -50,34 +49,25 @@ import {
   usePresenceStore,
 } from '../store'
 import {isNewDocument} from '../store/_legacy/document/isNewDocument'
-import {
-  EMPTY_ARRAY,
-  getDraftId,
-  getPublishedId,
-  getVersionFromId,
-  getVersionId,
-  useUnique,
-} from '../util'
+import {getDraftId, getPublishedId, getVersionFromId, getVersionId, useUnique} from '../util'
 import {
   type FormState,
-  getExpandOperations,
   type NodeChronologyProps,
   type OnPathFocusPayload,
   type PatchEvent,
-  setAtPath,
   type StateTree,
   toMutationPatches,
   useFormState,
 } from '.'
 import {CreatedDraft} from './__telemetry__/form.telemetry'
 import {useComlinkViewHistory} from './useComlinkViewHistory'
+import {useFormLocationState} from './useFormLocation'
 
 interface DocumentFormOptions {
   documentType: string
   documentId: string
   releaseId?: ReleaseId
   initialValue?: InitialValueState
-  initialFocusPath?: Path
   selectedPerspectiveName?: ReleaseId | 'published'
   readOnly?: boolean | ((editState: EditStateFor) => boolean)
   /**
@@ -88,7 +78,8 @@ interface DocumentFormOptions {
     | Partial<SanityDocument>
     | ((editState: EditStateFor) => Partial<SanityDocument>)
     | null
-  onFocusPath?: (path: Path) => void
+  focusPath: Path
+  onFocusPath: (path: Path) => void
   changesOpen?: boolean
   /**
    * Callback that allows to transform the value before it's passed to the form
@@ -125,8 +116,7 @@ interface DocumentFormValue extends Pick<NodeChronologyProps, 'hasUpstreamVersio
   onSetCollapsedFieldSet: (path: Path, collapsed: boolean) => void
   onChange: (event: PatchEvent) => void
   onPathOpen: (path: Path) => void
-  onProgrammaticFocus: (nextPath: Path) => void
-  formStateRef: RefObject<FormState>
+  formStateRef: RefObject<FormState | undefined>
   schemaType: ObjectSchemaType
 }
 
@@ -146,7 +136,7 @@ export function useDocumentForm(options: DocumentFormOptions): DocumentFormValue
     changesOpen = false,
     comparisonValue: comparisonValueRaw,
     releaseId,
-    initialFocusPath,
+    focusPath,
     selectedPerspectiveName,
     readOnly: readOnlyProp,
     onFocusPath,
@@ -201,8 +191,6 @@ export function useDocumentForm(options: DocumentFormOptions): DocumentFormValue
 
   const connectionState = useConnectionState(documentId, documentType, releaseId)
   useReconnectingToast(connectionState === 'reconnecting')
-
-  const [focusPath, setFocusPath] = useState<Path>(initialFocusPath || EMPTY_ARRAY)
 
   const value: SanityDocumentLike = useMemo(() => {
     const baseValue = initialValue?.value || {_id: documentId, _type: documentType}
@@ -274,25 +262,6 @@ export function useDocumentForm(options: DocumentFormOptions): DocumentFormValue
       subscription.unsubscribe()
     }
   }, [presenceStore, value._id])
-
-  const [openPath, onSetOpenPath] = useState<Path>(EMPTY_ARRAY)
-  const [fieldGroupState, onSetFieldGroupState] = useState<StateTree<string>>()
-  const [collapsedPaths, onSetCollapsedPath] = useState<StateTree<boolean>>()
-  const [collapsedFieldSets, onSetCollapsedFieldSets] = useState<StateTree<boolean>>()
-
-  const handleOnSetCollapsedPath = useCallback((path: Path, collapsed: boolean) => {
-    onSetCollapsedPath((prevState) => setAtPath(prevState, path, collapsed))
-  }, [])
-
-  const handleOnSetCollapsedFieldSet = useCallback((path: Path, collapsed: boolean) => {
-    onSetCollapsedFieldSets((prevState) => setAtPath(prevState, path, collapsed))
-  }, [])
-
-  const handleSetActiveFieldGroup = useCallback(
-    (path: Path, groupName: string) =>
-      onSetFieldGroupState((prevState) => setAtPath(prevState, path, groupName)),
-    [],
-  )
 
   const requiredPermission = value._createdAt ? 'update' : 'create'
   const targetDocumentId = useMemo(() => {
@@ -466,6 +435,19 @@ export function useDocumentForm(options: DocumentFormOptions): DocumentFormValue
 
   const hasUpstreamVersion = selectUpstreamVersion(upstreamEditState) !== null
 
+  const prevFormStateRef = useRef<FormState>(undefined)
+
+  const {
+    onPathOpen,
+    openPath,
+    selectedFieldGroup,
+    collapsedPaths,
+    collapsedFieldSets,
+    onSetCollapsedPath,
+    onSetCollapsedFieldSet,
+    onSetActiveFieldGroup,
+  } = useFormLocationState({focusPath, prevFormStateRef})
+
   const formState = useFormState({
     schemaType,
     documentValue: formDocumentValue,
@@ -473,42 +455,22 @@ export function useDocumentForm(options: DocumentFormOptions): DocumentFormValue
     comparisonValue: comparisonValue || value,
     focusPath,
     openPath,
+    fieldGroupState: selectedFieldGroup,
     perspective: selectedPerspective,
     collapsedPaths,
     presence,
     validation,
     collapsedFieldSets,
-    fieldGroupState,
     changesOpen,
     hasUpstreamVersion,
     displayInlineChanges,
   })!
 
-  const formStateRef = useRef(formState)
   useEffect(() => {
-    formStateRef.current = formState
+    prevFormStateRef.current = formState
   }, [formState])
 
   useComlinkViewHistory({editState})
-
-  const handleSetOpenPath = useCallback(
-    (path: Path) => {
-      const ops = getExpandOperations(formStateRef.current!, path)
-      ops.forEach((op) => {
-        if (op.type === 'expandPath') {
-          onSetCollapsedPath((prevState) => setAtPath(prevState, op.path, false))
-        }
-        if (op.type === 'expandFieldSet') {
-          onSetCollapsedFieldSets((prevState) => setAtPath(prevState, op.path, false))
-        }
-        if (op.type === 'setSelectedGroup') {
-          onSetFieldGroupState((prevState) => setAtPath(prevState, op.path, op.groupName))
-        }
-      })
-      onSetOpenPath(path)
-    },
-    [formStateRef],
-  )
 
   const updatePresence = useCallback(
     (nextFocusPath: Path, payload?: OnPathFocusPayload) => {
@@ -529,51 +491,22 @@ export function useDocumentForm(options: DocumentFormOptions): DocumentFormValue
     () => throttle(updatePresence, 1000, {leading: true, trailing: true}),
     [updatePresence],
   )
-  const focusPathRef = useRef<Path>([])
 
-  const handleFocus = useCallback(
+  const handlePathFocus = useCallback(
     (_nextFocusPath: Path, payload?: OnPathFocusPayload) => {
       const nextFocusPath = pathFor(_nextFocusPath)
-      if (nextFocusPath !== focusPathRef.current) {
-        setFocusPath(pathFor(nextFocusPath))
-        handleSetOpenPath(pathFor(nextFocusPath.slice(0, -1)))
-        focusPathRef.current = nextFocusPath
-        onFocusPath?.(nextFocusPath)
-      }
       updatePresenceThrottled(nextFocusPath, payload)
+      onFocusPath(nextFocusPath)
     },
-    [onFocusPath, setFocusPath, handleSetOpenPath, updatePresenceThrottled],
+    [onFocusPath, updatePresenceThrottled],
   )
 
-  const handleBlur = useCallback(
-    (_blurredPath: Path) => {
-      setFocusPath(EMPTY_ARRAY)
+  const handleBlur = useCallback((_blurredPath: Path) => {
+    //onFocusPath(EMPTY_ARRAY)
+    // note: we're deliberately not syncing presence here since it would make the user avatar disappear when a
+    // user clicks outside a field without focusing another one
+  }, [])
 
-      if (focusPathRef.current !== EMPTY_ARRAY) {
-        focusPathRef.current = EMPTY_ARRAY
-        onFocusPath?.(EMPTY_ARRAY)
-      }
-
-      // note: we're deliberately not syncing presence here since it would make the user avatar disappear when a
-      // user clicks outside a field without focusing another one
-    },
-    [onFocusPath, setFocusPath],
-  )
-
-  const handleProgrammaticFocus = useCallback(
-    (nextPath: Path) => {
-      // Supports changing the focus path not by a user interaction, but by a programmatic change, e.g. the url path changes.
-
-      if (!deepEquals(focusPathRef.current, nextPath)) {
-        setFocusPath(nextPath)
-        handleSetOpenPath(nextPath)
-        onFocusPath?.(nextPath)
-
-        focusPathRef.current = nextPath
-      }
-    },
-    [onFocusPath, handleSetOpenPath],
-  )
   return {
     editState,
     upstreamEditState,
@@ -585,20 +518,18 @@ export function useDocumentForm(options: DocumentFormOptions): DocumentFormValue
     formState,
     permissions,
     isPermissionsLoading,
-    formStateRef,
+    formStateRef: prevFormStateRef,
     hasUpstreamVersion,
-
     collapsedFieldSets,
+    onSetCollapsedFieldSet,
     collapsedPaths,
+    onSetCollapsedPath,
     openPath,
     schemaType,
     onChange: handleChange,
-    onPathOpen: handleSetOpenPath,
-    onProgrammaticFocus: handleProgrammaticFocus,
+    onPathOpen,
     onBlur: handleBlur,
-    onFocus: handleFocus,
-    onSetActiveFieldGroup: handleSetActiveFieldGroup,
-    onSetCollapsedPath: handleOnSetCollapsedPath,
-    onSetCollapsedFieldSet: handleOnSetCollapsedFieldSet,
+    onFocus: handlePathFocus,
+    onSetActiveFieldGroup,
   }
 }

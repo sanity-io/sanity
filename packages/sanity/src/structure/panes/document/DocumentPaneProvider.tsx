@@ -1,14 +1,18 @@
 import {useTelemetry} from '@sanity/telemetry/react'
-import {type ObjectSchemaType, type SanityDocument, type SanityDocumentLike} from '@sanity/types'
+import {
+  type ObjectSchemaType,
+  type Path,
+  type SanityDocument,
+  type SanityDocumentLike,
+} from '@sanity/types'
 import {useToast} from '@sanity/ui'
-import {fromString as pathFromString, resolveKeyedPath} from '@sanity/util/paths'
-import {memo, useCallback, useEffect, useMemo, useRef, useState} from 'react'
+import {fromString, pathFor} from '@sanity/util/paths'
+import {memo, useCallback, useEffect, useMemo, useState} from 'react'
 import {
   type DocumentActionsContext,
   type DocumentActionsVersionType,
   type DocumentFieldAction,
   type EditStateFor,
-  EMPTY_ARRAY,
   getPublishedId,
   getReleaseIdFromReleaseDocumentId,
   isCardinalityOneRelease,
@@ -48,7 +52,7 @@ import {useDocumentPaneInitialValue} from './useDocumentPaneInitialValue'
 import {useDocumentPaneInspector} from './useDocumentPaneInspector'
 import {usePreviewUrl} from './usePreviewUrl'
 
-interface DocumentPaneProviderProps extends DocumentPaneProviderWrapperProps {
+type DocumentPaneProviderProps = DocumentPaneProviderWrapperProps & {
   historyStore: HistoryStoreProps
 }
 
@@ -57,7 +61,7 @@ interface DocumentPaneProviderProps extends DocumentPaneProviderWrapperProps {
  */
 // eslint-disable-next-line max-statements
 export const DocumentPaneProvider = memo((props: DocumentPaneProviderProps) => {
-  const {children, index, pane, paneKey, onFocusPath, forcedVersion, historyStore} = props
+  const {children, index, pane, paneKey, forcedVersion, historyStore} = props
   const {
     store: timelineStore,
     error: timelineError,
@@ -225,12 +229,35 @@ export const DocumentPaneProvider = memo((props: DocumentPaneProviderProps) => {
     [onOlderRevision, revisionDocument, lastNonDeletedRevId, lastRevisionDocument],
   )
 
+  const [focusPathState, setFocusPathState] = useState(() => {
+    return paneRouter.params?.path ? pathFor(fromString(paneRouter.params.path)) : pathFor([])
+  })
+
+  const focusPath = useMemo(() => {
+    if (props.controlledFocusPath) {
+      // focus path is controlled
+      return props.focusPath
+    }
+    return focusPathState
+    //return paneRouter.params?.path ? pathFor(fromString(paneRouter.params.path)) : pathFor([])
+  }, [focusPathState, props.controlledFocusPath, props.focusPath])
+
+  const handlePathFocus = useCallback(
+    (path: Path) => {
+      if (props.controlledFocusPath) {
+        return props.onFocusPath(path)
+      }
+      setFocusPathState(path)
+      // if focus path is not controlled, set it as local state here
+      //paneRouter.setParams({path: toString(path)}, {replace: true})
+    },
+    [props],
+  )
   const {
     editState,
     upstreamEditState,
     hasUpstreamVersion,
     connectionState,
-    focusPath,
     onChange,
     validation,
     ready: formReady,
@@ -239,9 +266,6 @@ export const DocumentPaneProvider = memo((props: DocumentPaneProviderProps) => {
     permissions,
     onPathOpen,
     isPermissionsLoading,
-    formStateRef,
-    onProgrammaticFocus,
-
     collapsedFieldSets,
     collapsedPaths,
     onBlur,
@@ -256,11 +280,11 @@ export const DocumentPaneProvider = memo((props: DocumentPaneProviderProps) => {
     documentId,
     initialValue: initialValue,
     comparisonValue: getComparisonValue,
+    onFocusPath: handlePathFocus,
+    focusPath: focusPath,
     releaseId: selectedReleaseId,
     selectedPerspectiveName,
-    initialFocusPath: params.path ? pathFromString(params.path) : EMPTY_ARRAY,
     readOnly: getIsReadOnly,
-    onFocusPath,
     getFormDocumentValue: getDisplayed,
     displayInlineChanges: router.stickyParams.displayInlineChanges === 'true',
   })
@@ -624,25 +648,6 @@ export const DocumentPaneProvider = memo((props: DocumentPaneProviderProps) => {
       lastRevisionDocument,
     ],
   )
-
-  const pathRef = useRef<string | undefined>(undefined)
-  useEffect(() => {
-    if (ready && params.path) {
-      const {path, ...restParams} = params
-
-      // trigger a focus when `params.path` changes
-      if (path !== pathRef.current) {
-        const pathFromUrl = resolveKeyedPath(formStateRef.current?.value, pathFromString(path))
-        onProgrammaticFocus(pathFromUrl)
-      }
-
-      // remove the `path`-param from url after we have consumed it as the initial focus path
-      paneRouter.setParams(restParams)
-    }
-    pathRef.current = params.path
-
-    return undefined
-  }, [formStateRef, onProgrammaticFocus, paneRouter, params, ready])
 
   return (
     <DocumentPaneContext.Provider value={documentPane}>{children}</DocumentPaneContext.Provider>

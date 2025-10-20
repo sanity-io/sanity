@@ -111,6 +111,7 @@ export function DocumentPane(props: {
               index={1}
               itemId="document"
               pane={paneDocumentNode}
+              controlledFocusPath
               focusPath={focusPath}
               onFocusPath={onFocusPath}
             />
