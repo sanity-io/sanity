@@ -4,7 +4,12 @@ import {
   type PropsWithChildren,
   type SetStateAction,
 } from 'react'
-import {type CommentIntentGetter, CommentsIntentProvider, type SanityDocument} from 'sanity'
+import {
+  type CommentIntentGetter,
+  CommentsIntentProvider,
+  type Path,
+  type SanityDocument,
+} from 'sanity'
 
 import {ContentEditor} from './editor/ContentEditor'
 import {DisplayedDocumentBroadcasterProvider} from './loader/DisplayedDocumentBroadcaster'
@@ -15,7 +20,6 @@ import {
   type PresentationNavigate,
   type PresentationParamsContextValue,
   type PresentationSearchParams,
-  type PresentationStateParams,
   type StructureDocumentPaneParams,
 } from './types'
 
@@ -26,7 +30,8 @@ export interface PresentationContentProps {
   getCommentIntent: CommentIntentGetter
   mainDocumentState: MainDocumentState | undefined
   onEditReference: PresentationNavigate
-  onFocusPath: (state: Required<PresentationStateParams>) => void
+  onFocusPath: (path: Path) => void
+  focusPath: Path
   onStructureParams: (params: StructureDocumentPaneParams) => void
   searchParams: PresentationSearchParams
   setDisplayedDocument: Dispatch<SetStateAction<Partial<SanityDocument> | null | undefined>>
@@ -67,6 +72,7 @@ export const PresentationContent: FunctionComponent<PresentationContentProps> = 
     mainDocumentState,
     onEditReference,
     onFocusPath,
+    focusPath,
     onStructureParams,
     searchParams,
     setDisplayedDocument,
@@ -82,9 +88,10 @@ export const PresentationContent: FunctionComponent<PresentationContentProps> = 
       <ContentEditor
         documentId={documentId}
         documentType={documentType}
+        focusPath={focusPath}
+        onFocusPath={onFocusPath}
         mainDocumentState={mainDocumentState}
         onEditReference={onEditReference}
-        onFocusPath={onFocusPath}
         onStructureParams={onStructureParams}
         refs={documentsOnPage}
         searchParams={searchParams}
