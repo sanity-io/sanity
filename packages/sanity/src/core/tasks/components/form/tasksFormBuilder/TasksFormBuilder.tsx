@@ -1,4 +1,4 @@
-import {type SanityDocument, type SanityDocumentLike} from '@sanity/types'
+import {type Path, type SanityDocument, type SanityDocumentLike} from '@sanity/types'
 import {Box, rem} from '@sanity/ui'
 // eslint-disable-next-line camelcase
 import {getTheme_v2} from '@sanity/ui/theme'
@@ -48,6 +48,7 @@ const TasksFormBuilderInner = ({
 }) => {
   const [patchChannel] = useState(() => createPatchChannel())
 
+  const [focusPath, setFocusPath] = useState<Path>([])
   const {
     formState,
     onChange,
@@ -64,6 +65,8 @@ const TasksFormBuilderInner = ({
     value,
   } = useDocumentForm({
     documentId,
+    focusPath: focusPath,
+    onFocusPath: setFocusPath,
     documentType: 'tasks.task',
     initialValue: initialValue
       ? {
