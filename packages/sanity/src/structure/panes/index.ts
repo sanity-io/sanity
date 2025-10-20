@@ -1,3 +1,3 @@
-export * from './document'
-export * from './loading'
-export * from './StructureToolPane'
+export {DocumentPane, DocumentPaneProvider, useDocumentTitle} from './document'
+export {LoadingPane} from './loading/LoadingPane'
+export {StructureToolPane} from './StructureToolPane'
