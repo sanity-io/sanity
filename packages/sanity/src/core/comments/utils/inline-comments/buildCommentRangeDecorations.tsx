@@ -2,8 +2,8 @@ import {type RangeDecoration, type RangeDecorationOnMovedDetails} from '@portabl
 import {type PortableTextBlock} from '@sanity/types'
 import {memo, useCallback, useEffect, useRef, useState} from 'react'
 
-import {CommentInlineHighlightSpan} from '../../components'
-import {applyInlineCommentIdAttr} from '../../hooks'
+import {CommentInlineHighlightSpan} from '../../components/pte/CommentInlineHighlightSpan'
+import {applyInlineCommentIdAttr} from '../../hooks/useCommentsScroll'
 import {type CommentDocument} from '../../types'
 import {buildRangeDecorationSelectionsFromComments} from './buildRangeDecorationSelectionsFromComments'
 

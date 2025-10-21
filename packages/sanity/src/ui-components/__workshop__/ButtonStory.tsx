@@ -2,7 +2,7 @@ import {EditIcon, PublishIcon} from '@sanity/icons'
 import {Box, Card, Container, Stack, Text} from '@sanity/ui'
 import {useString} from '@sanity/ui-workshop'
 
-import {Button} from '../button'
+import {Button} from '../button/Button'
 
 export default function ButtonStory() {
   const text = useString('Text', 'Text', 'Props') || ''

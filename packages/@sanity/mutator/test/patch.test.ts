@@ -2,7 +2,7 @@ import {cloneDeep} from 'lodash'
 import {expect, test} from 'vitest'
 
 import {type Doc} from '../src/document/types'
-import {Patcher} from '../src/patch'
+import {Patcher} from '../src/patch/Patcher'
 // Test suites
 import diffMatchPatch from './patchExamples/diffMatchPatch'
 import incDec from './patchExamples/incDec'

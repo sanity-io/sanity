@@ -6,7 +6,7 @@ import {catchError, map, type Observable, of, startWith} from 'rxjs'
 import {type Role, useClient, useProjectId, useTranslation, useZIndex} from 'sanity'
 import {styled} from 'styled-components'
 
-import {Dialog} from '../../../ui-components'
+import {Dialog} from '../../../ui-components/dialog/Dialog'
 import {structureLocaleNamespace} from '../../i18n'
 import {AskToEditRequestSent} from './__telemetry__/RequestPermissionDialog.telemetry'
 import {type AccessRequest} from './useRoleRequestsStatus'

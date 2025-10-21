@@ -2,9 +2,10 @@ import {studioTheme, ThemeProvider} from '@sanity/ui'
 import {renderHook} from '@testing-library/react'
 import {beforeAll, describe, expect, it} from 'vitest'
 
-import {LocaleProviderBase, usEnglishLocale} from '../../i18n'
 import {studioDefaultLocaleResources} from '../../i18n/bundles/studio'
+import {LocaleProviderBase} from '../../i18n/components/LocaleProvider'
 import {prepareI18n} from '../../i18n/i18nConfig'
+import {usEnglishLocale} from '../../i18n/locales'
 import {useRelativeTime} from '../useRelativeTime'
 
 describe('useRelativeTime', () => {

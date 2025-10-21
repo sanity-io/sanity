@@ -4,7 +4,7 @@ import {cloneElement, type KeyboardEvent, useCallback, useRef, useState} from 'r
 import ReactFocusLock from 'react-focus-lock'
 import {css, styled} from 'styled-components'
 
-import {Popover, type PopoverProps} from '../../../../../../ui-components'
+import {Popover, type PopoverProps} from '../../../../../../ui-components/popover/Popover'
 import {type TreeEditingBreadcrumb} from '../../types'
 import {ITEM_HEIGHT, MAX_DISPLAYED_ITEMS} from './constants'
 import {TreeEditingBreadcrumbsMenu} from './TreeEditingBreadcrumbsMenu'

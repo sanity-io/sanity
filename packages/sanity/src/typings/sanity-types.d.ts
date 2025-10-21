@@ -8,8 +8,9 @@ import {
 } from '@sanity/types'
 import {type ComponentType} from 'react'
 
-import {type PreviewProps} from '../../components'
-import {type CrossDatasetReferenceInputProps, type ReferenceInputProps} from '../studio'
+import {type PreviewProps} from '../core/components/previews/types'
+import {type CrossDatasetReferenceInputProps} from '../core/form/inputs/CrossDatasetReferenceInput/CrossDatasetReferenceInput'
+import {type ReferenceInputProps} from '../core/form/inputs/ReferenceInput/types'
 import {
   type BlockAnnotationProps,
   type BlockDecoratorProps,
@@ -17,7 +18,7 @@ import {
   type BlockProps,
   type BlockStyleProps,
   type PortableTextPluginsProps,
-} from './blockProps'
+} from '../core/form/types/blockProps'
 import {
   type ArrayFieldProps,
   type ArrayOfPrimitivesFieldProps,
@@ -25,7 +26,7 @@ import {
   type NumberFieldProps,
   type ObjectFieldProps,
   type StringFieldProps,
-} from './fieldProps'
+} from '../core/form/types/fieldProps'
 import {
   type ArrayOfObjectsInputProps,
   type ArrayOfPrimitivesInputProps,
@@ -33,8 +34,12 @@ import {
   type NumberInputProps,
   type ObjectInputProps,
   type StringInputProps,
-} from './inputProps'
-import {type ObjectItem, type ObjectItemProps, type PrimitiveItemProps} from './itemProps'
+} from '../core/form/types/inputProps'
+import {
+  type ObjectItem,
+  type ObjectItemProps,
+  type PrimitiveItemProps,
+} from '../core/form/types/itemProps'
 
 /* To avoid cyclic dependencies on Props, we extend all type definitions here, to add the correct component props */
 declare module '@sanity/types' {

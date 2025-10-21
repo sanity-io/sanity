@@ -1,8 +1,8 @@
 import {DialogProvider, Text, ThemeColorProvider} from '@sanity/ui'
 import {type MouseEvent, useCallback} from 'react'
 
-import {Dialog} from '../../../../../ui-components'
-import {useTranslation} from '../../../../i18n'
+import {Dialog} from '../../../../../ui-components/dialog/Dialog'
+import {useTranslation} from '../../../../i18n/hooks/useTranslation'
 import {commentsLocaleNamespace} from '../../../i18n'
 
 const Z_OFFSET = 9999999 // Change to appropriate z-offset

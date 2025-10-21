@@ -4,7 +4,7 @@ import {beforeEach, describe, expect, it, type MockedFunction, vi} from 'vitest'
 
 // Now we can safely import the hook and other dependencies
 import {createTestProvider} from '../../../../../test/testUtils/TestProvider'
-import {MenuItem} from '../../../../ui-components'
+import {MenuItem} from '../../../../ui-components/menuItem/MenuItem'
 import {scheduledRelease} from '../../__fixtures__/release.fixture'
 import {DeleteScheduledDraftDialog} from '../../components/dialog/DeleteScheduledDraftDialog'
 import {PublishScheduledDraftDialog} from '../../components/dialog/PublishScheduledDraftDialog'

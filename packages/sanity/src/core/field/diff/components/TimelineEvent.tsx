@@ -4,7 +4,7 @@ import {getTheme_v2, type ThemeColorAvatarColorKey} from '@sanity/ui/theme'
 import {useMemo} from 'react'
 import {css, styled} from 'styled-components'
 
-import {Tooltip} from '../../../../ui-components'
+import {Tooltip} from '../../../../ui-components/tooltip/Tooltip'
 import {UserAvatar} from '../../../components/userAvatar/UserAvatar'
 import {useDateTimeFormat} from '../../../hooks/useDateTimeFormat'
 import {type RelativeTimeOptions, useRelativeTime} from '../../../hooks/useRelativeTime'
@@ -124,7 +124,7 @@ interface TimelineItemProps {
 /**
  * @internal
  */
-export function Event({event, showChangesBy = 'tooltip'}: TimelineItemProps) {
+export function TimelineEvent({event, showChangesBy = 'tooltip'}: TimelineItemProps) {
   const {t} = useTranslation('studio')
   const {type, timestamp, documentVariantType} = event
 

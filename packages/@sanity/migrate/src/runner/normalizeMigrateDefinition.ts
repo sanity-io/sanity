@@ -4,15 +4,11 @@ import {type Path, type SanityDocument} from '@sanity/types'
 import arrify from 'arrify'
 
 import {type JsonArray, type JsonObject, type JsonValue} from '../json'
-import {
-  at,
-  type Mutation,
-  type NodePatch,
-  type Operation,
-  patch,
-  type Transaction,
-} from '../mutations'
 import {isMutation, isNodePatch, isOperation, isTransaction} from '../mutations/asserters'
+import {at, patch} from '../mutations/creators'
+import {type Operation} from '../mutations/operations/types'
+import {type Transaction} from '../mutations/transaction'
+import {type Mutation, type NodePatch} from '../mutations/types'
 import {
   type AsyncIterableMigration,
   type Migration,

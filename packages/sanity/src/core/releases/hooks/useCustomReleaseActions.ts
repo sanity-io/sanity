@@ -2,7 +2,7 @@ import {type ReleaseDocument} from '@sanity/client'
 import {useMemo} from 'react'
 
 import {type ReleaseActionComponent} from '../../config/releases/actions'
-import {useSource} from '../../studio'
+import {useSource} from '../../studio/source'
 import {type DocumentInRelease} from '../tool/detail/useBundleDocuments'
 
 /**

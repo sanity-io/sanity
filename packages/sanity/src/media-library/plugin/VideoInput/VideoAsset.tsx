@@ -10,7 +10,7 @@ import {UploadDestinationPicker} from '../../../core/form/inputs/files/common/Up
 import {UploadPlaceholder} from '../../../core/form/inputs/files/common/UploadPlaceholder'
 import {UploadProgress} from '../../../core/form/inputs/files/common/UploadProgress'
 import {UploadWarning} from '../../../core/form/inputs/files/common/UploadWarning'
-import {useTranslation} from '../../../core/i18n'
+import {useTranslation} from '../../../core/i18n/hooks/useTranslation'
 import {Browser} from './Browser'
 import {InvalidVideoWarning} from './InvalidVideoWarning'
 import {CardOverlay, FlexContainer} from './styles'

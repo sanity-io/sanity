@@ -14,7 +14,7 @@ import {flatten, uniqBy} from 'lodash'
 import {concat, defer, from, lastValueFrom, merge, Observable, of} from 'rxjs'
 import {catchError, map, mergeAll, mergeMap, switchMap, toArray} from 'rxjs/operators'
 
-import {type SourceClientOptions, type Workspace} from '../config'
+import {type SourceClientOptions, type Workspace} from '../config/types'
 import {getFallbackLocaleSource} from '../i18n/fallback'
 import {type ValidationContext} from './types'
 import {createBatchedGetDocumentExists} from './util/createBatchedGetDocumentExists'

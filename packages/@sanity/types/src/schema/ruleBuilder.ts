@@ -2,7 +2,7 @@ import {
   type CustomValidator,
   type FieldReference,
   type LocalizedValidationMessages,
-} from '../validation'
+} from '../validation/types'
 
 /** @public */
 export interface RuleDef<T, FieldValue = unknown> {

@@ -5,7 +5,7 @@ import {capitalize, cloneDeep, startCase} from 'lodash'
 import {expect} from 'vitest'
 
 import {extractManifestSchemaTypes} from '../../src/_internal/manifest/extractWorkspaceManifest'
-import {DESCRIPTOR_CONVERTER} from '../../src/core/schema'
+import {DESCRIPTOR_CONVERTER} from '../../src/core/schema/descriptors'
 
 type Descriptor = ReturnType<(typeof DESCRIPTOR_CONVERTER)['get']>
 
