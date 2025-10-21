@@ -133,6 +133,7 @@ const MenuCard = function MenuCard(
             weight={isSelected ? 'bold' : 'medium'}
             textOverflow="ellipsis"
             style={{whiteSpace: 'nowrap'}}
+            title={title}
           >
             {title}
           </Text>
@@ -250,7 +251,7 @@ export function Breadcrumbs(props: BreadcrumbsProps): React.JSX.Element | null {
                 <Menu>
                   {item.map((overflowItem: BreadcrumbItem) => (
                     <Box key={overflowItem.path.toString()} padding={1}>
-                      <RootInline>
+                      <Flex direction="row" align="center" style={{maxWidth: '250px'}}>
                         <SeparatorItem>{SEPARATOR}</SeparatorItem>
                         <MenuCard
                           key={overflowItem.path.toString()}
@@ -260,7 +261,7 @@ export function Breadcrumbs(props: BreadcrumbsProps): React.JSX.Element | null {
                           isLast={false}
                           siblings={siblings}
                         />
-                      </RootInline>
+                      </Flex>
                     </Box>
                   ))}
                 </Menu>
