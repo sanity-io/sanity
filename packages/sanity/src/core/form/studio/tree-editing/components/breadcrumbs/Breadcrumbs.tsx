@@ -305,7 +305,13 @@ export function Breadcrumbs(props: BreadcrumbsProps): React.JSX.Element | null {
   return (
     <RootInline ref={setRootElement}>
       {
-        <Card onClick={() => onPathSelect(EMPTY_ARRAY)} as="button" padding={1} radius={3}>
+        <Card
+          onClick={() => onPathSelect(EMPTY_ARRAY)}
+          as="button"
+          paddingRight={1}
+          paddingY={1}
+          radius={3}
+        >
           <Flex
             flex={1}
             align="center"
