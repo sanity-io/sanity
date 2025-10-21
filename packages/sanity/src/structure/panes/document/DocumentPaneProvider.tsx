@@ -245,10 +245,11 @@ export const DocumentPaneProvider = memo((props: DocumentPaneProviderProps) => {
   const handlePathFocus = useCallback(
     (path: Path) => {
       if (props.controlledFocusPath) {
-        return props.onFocusPath(path)
+        props.onFocusPath(path)
       }
-      setFocusPathState(path)
       // if focus path is not controlled, set it as local state here
+      setFocusPathState(path)
+      // alt: if we want to persist in url instead:
       //paneRouter.setParams({path: toString(path)}, {replace: true})
     },
     [props],
