@@ -1,36 +1,29 @@
 import {act, renderHook} from '@testing-library/react'
 import {beforeEach, describe, expect, it, vi} from 'vitest'
 
-import {createTestProvider} from '../../../../../test/testUtils/TestProvider'
+import {createTestProvider} from '../../../../test/testUtils/TestProvider'
 import {
   activeScheduledRelease,
   archivedScheduledRelease,
   publishedASAPRelease,
   scheduledRelease,
-} from '../../__fixtures__/release.fixture'
-import {useAllReleasesMockReturn} from '../../store/__tests__/__mocks/useAllReleases.mock'
-import {useReleaseOperationsMockReturn} from '../../store/__tests__/__mocks/useReleaseOperations.mock'
-import {useScheduleDraftOperations} from '../useScheduleDraftOperations'
+} from '../../releases/__fixtures__/release.fixture'
+import {useAllReleasesMockReturn} from '../../releases/store/__tests__/__mocks/useAllReleases.mock'
+import {useReleaseOperationsMockReturn} from '../../releases/store/__tests__/__mocks/useReleaseOperations.mock'
+import {getReleaseIdFromReleaseDocumentId} from '../../releases/util/getReleaseIdFromReleaseDocumentId'
+import {useScheduleDraftOperations} from './useScheduleDraftOperations'
 
-vi.mock('../../store/useReleaseOperations', () => ({
+vi.mock('../../releases/store/useReleaseOperations', () => ({
   useReleaseOperations: vi.fn(() => useReleaseOperationsMockReturn),
 }))
 
-vi.mock('../../store/useAllReleases', () => ({
+vi.mock('../../releases/store/useAllReleases', () => ({
   useAllReleases: vi.fn(() => useAllReleasesMockReturn),
 }))
 
-vi.mock('../../util/createReleaseId', () => ({
-  createReleaseId: vi.fn(() => 'mock-release-id'),
-}))
-
-vi.mock('../../util/getReleaseIdFromReleaseDocumentId', () => ({
-  getReleaseIdFromReleaseDocumentId: vi.fn(() => 'mock-release-id'),
-}))
-
-vi.mock('../../../util', async (importOriginal) => ({
-  ...(await importOriginal()),
-  getDraftId: vi.fn((id: string) => `drafts.${id}`),
+const mockReleaseId = '_.releases.mock-scheduled'
+vi.mock('../../releases/util/createReleaseId', () => ({
+  createReleaseId: vi.fn(() => mockReleaseId),
 }))
 
 describe('useScheduleDraftOperations', () => {
@@ -55,7 +48,7 @@ describe('useScheduleDraftOperations', () => {
 
     expect(useReleaseOperationsMockReturn.createRelease).toHaveBeenCalledWith(
       {
-        _id: 'mock-release-id',
+        _id: mockReleaseId,
         metadata: {
           title: 'Scheduled publish',
           description: '',
@@ -67,16 +60,16 @@ describe('useScheduleDraftOperations', () => {
       undefined,
     )
     expect(useReleaseOperationsMockReturn.createVersion).toHaveBeenCalledWith(
-      'mock-release-id',
+      getReleaseIdFromReleaseDocumentId(mockReleaseId),
       'drafts.documentId',
       undefined,
     )
     expect(useReleaseOperationsMockReturn.schedule).toHaveBeenCalledWith(
-      'mock-release-id',
+      mockReleaseId,
       mockPublishAt,
       undefined,
     )
-    expect(releaseDocumentId).toBe('mock-release-id')
+    expect(releaseDocumentId).toBe(mockReleaseId)
   })
 
   it('should create scheduled draft with default title when no title provided', async () => {

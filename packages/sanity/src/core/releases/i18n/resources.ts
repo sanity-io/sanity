@@ -28,14 +28,6 @@ const releasesLocaleStrings = {
   'action.releases': 'Releases',
   /** Action text for scheduling a release */
   'action.schedule': 'Schedule release...',
-  /** Action text for scheduling publish of a draft document */
-  'action.schedule-publish': 'Schedule Publish',
-  /** Tooltip text for when schedule publish is disabled due to validation errors */
-  'action.schedule-publish.disabled.validation-issues':
-    'Cannot Schedule Draft due to validation errors in the current draft.',
-  /** Tooltip text for when schedule publish is disabled due to cardinality one releases */
-  'action.schedule-publish.disabled.cardinality-one':
-    'A Scheduled Draft for this document already exists.',
   /** Action text for scheduling unpublish of a draft document */
   'action.schedule-unpublish': 'Schedule Unpublish',
   /** Tooltip text for when schedule unpublish is disabled because document is not published */

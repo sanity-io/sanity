@@ -171,6 +171,7 @@ describe('resolveConfig', () => {
       {name: 'sanity/releases'},
       {name: 'sanity/canvas-integration'},
       {name: 'sanity/schedules'},
+      {name: 'sanity/singleDocRelease'},
     ])
   })
 
@@ -204,6 +205,7 @@ describe('resolveConfig', () => {
       {name: 'sanity/releases'},
       {name: 'sanity/canvas-integration'},
       {name: 'sanity/schedules'},
+      {name: 'sanity/singleDocRelease'},
     ])
   })
 })

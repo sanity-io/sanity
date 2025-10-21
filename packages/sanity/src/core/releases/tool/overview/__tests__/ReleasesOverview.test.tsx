@@ -13,6 +13,7 @@ import {
   mockUsePerspective,
   usePerspectiveMockReturn,
 } from '../../../../perspective/__mocks__/usePerspective.mock'
+import {useScheduledDraftsEnabled} from '../../../../singleDocRelease/hooks/useScheduledDraftsEnabled'
 import {
   activeASAPRelease,
   activeScheduledRelease,
@@ -22,7 +23,6 @@ import {
   publishedASAPRelease,
   scheduledRelease,
 } from '../../../__fixtures__/release.fixture'
-import {useScheduledDraftsEnabled} from '../../../hooks/useScheduledDraftsEnabled'
 import {releasesUsEnglishLocaleBundle} from '../../../i18n'
 import {
   mockUseActiveReleases,
