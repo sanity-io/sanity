@@ -271,8 +271,8 @@ describe('buildArrayStatePTE', () => {
 
   test('when openPath points to a text block, it should return null', () => {
     const openPath: Path = ['body', {_key: 'block1'}, 'children', {_key: 'span1'}]
-    const breadcrumbs: TreeEditingBreadcrumb[] = []
-    const childrenMenuItems: TreeEditingMenuItem[] = []
+    const breadcrumbs: BreadcrumbItem[] = []
+    const childrenMenuItems: BreadcrumbItem[] = []
     const props = createTestProps({openPath, breadcrumbs, childrenMenuItems})
 
     const result = buildArrayStatePTE(props)

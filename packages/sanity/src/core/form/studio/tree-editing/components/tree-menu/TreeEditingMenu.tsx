@@ -3,12 +3,12 @@ import {Stack} from '@sanity/ui'
 import {toString} from '@sanity/util/paths'
 import {memo} from 'react'
 
-import {type TreeEditingMenuItem as TreeEditingMenuItemType} from '../../types'
+import {type BreadcrumbItem} from '../../types'
 import {TreeEditingMenuItem} from './TreeEditingMenuItem'
 import {getSiblingHasChildren} from './utils'
 
 interface TreeEditingMenuProps {
-  items: TreeEditingMenuItemType[]
+  items: BreadcrumbItem[]
   onPathSelect: (path: Path) => void
   selectedPath: Path | null
 }
