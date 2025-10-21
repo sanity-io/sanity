@@ -137,8 +137,8 @@ importers:
         specifier: ^7.12.0
         version: 7.12.0(debug@4.4.3)
       '@sanity/mutate':
-        specifier: ^0.13.0
-        version: 0.13.0(debug@4.4.3)
+        specifier: ^0.14.0
+        version: 0.14.0(debug@4.4.3)
       '@sanity/pkg-utils':
         specifier: 'catalog:'
         version: 8.1.23(@types/babel__core@7.20.5)(@types/node@24.5.2)(babel-plugin-macros@3.1.0)(babel-plugin-react-compiler@19.1.0-rc.3)(debug@4.4.3)(oxc-resolver@11.8.0)(typescript@5.9.3)
@@ -1282,8 +1282,8 @@ importers:
         specifier: ^7.12.0
         version: 7.12.0(debug@4.4.3)
       '@sanity/mutate':
-        specifier: ^0.13.0
-        version: 0.13.0(debug@4.4.3)
+        specifier: ^0.14.0
+        version: 0.14.0(debug@4.4.3)
       '@sanity/types':
         specifier: workspace:*
         version: link:../types
@@ -4834,8 +4834,8 @@ packages:
     resolution: {integrity: sha512-Ai9Dy0C79yUALnuLe0ealwqgz11T+ngpWCzTyZv01xdjB6coQo+KoM8E0FeRTK5Zr/IAgKphYuYLU5DFCB9cGw==}
     engines: {node: '>=18'}
 
-  '@sanity/mutate@0.13.0':
-    resolution: {integrity: sha512-UR+JTkH3z+0cV/PI3p9YXT4IaVl5qGDPn+E33B6A42HpOGwbI92XAKu1m1V7DVQ3iB9VtX1khgStAy9sAS9rsA==}
+  '@sanity/mutate@0.14.0':
+    resolution: {integrity: sha512-KQuCY/NgCgaBywopcbPaJWgCb6wAa0AjabdPyQm0ndp5pgu9H8umj59ulHO0WBE85cswTGRmkzQH73a6FKUNFw==}
     engines: {node: '>=18'}
 
   '@sanity/mutator@3.99.0':
@@ -15314,7 +15314,7 @@ snapshots:
     transitivePeerDependencies:
       - debug
 
-  '@sanity/mutate@0.13.0(debug@4.4.3)':
+  '@sanity/mutate@0.14.0(debug@4.4.3)':
     dependencies:
       '@sanity/client': 7.12.0(debug@4.4.3)
       '@sanity/diff-match-patch': 3.2.0

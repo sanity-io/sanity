@@ -119,7 +119,7 @@
     "@repo/tsconfig": "workspace:*",
     "@repo/utils": "workspace:*",
     "@sanity/client": "^7.12.0",
-    "@sanity/mutate": "^0.13.0",
+    "@sanity/mutate": "^0.14.0",
     "@sanity/pkg-utils": "catalog:",
     "@sanity/prettier-config": "^1.0.6",
     "@sanity/ui": "catalog:",
