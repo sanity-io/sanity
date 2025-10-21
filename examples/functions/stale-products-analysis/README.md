@@ -2,6 +2,8 @@
 
 [Explore all examples](https://github.com/sanity-io/sanity/tree/main/examples)
 
+![Stale products analysis screenshot](./stale-products-analysis.png)
+
 ## Problem
 
 E-commerce teams need to monitor the freshness of products featured on their pages to ensure they're showcasing current and relevant items. Manually tracking product ages and identifying stale content across page modules is time-consuming and often overlooked, leading to outdated product displays that can negatively impact user experience and sales.
