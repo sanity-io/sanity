@@ -101,18 +101,6 @@ export function buildArrayStatePTE(props: BuildArrayStatePTEProps): {
     // Set relativePath if openPath points directly to this block
     if (isArrayItemSelected(blockPath, openPath)) {
       relativePath = getRelativePath(blockPath)
-
-      /*const nonBlockArray = portableTextValue.filter((b) => {
-        const bObj = b as Record<string, unknown>
-        // Only count custom blocks (not regular text blocks)
-        return bObj && bObj._type && bObj._type !== 'block'
-      })
-
-      // Store the index for the parent PTE array
-      siblings.set(toString(childPath), {
-        count: nonBlockArray.length,
-        index: nonBlockArray.findIndex((b) => b._key === blockObj._key) + 1,
-      })*/
     }
 
     // Add breadcrumb for the block if openPath starts with this block path
