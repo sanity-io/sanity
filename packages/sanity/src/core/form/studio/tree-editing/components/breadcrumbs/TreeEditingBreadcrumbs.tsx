@@ -8,6 +8,7 @@ import {
   Card, // Custom button needed, special padding support required
   Flex,
   Inline,
+  Menu,
   Text,
   useElementSize,
 } from '@sanity/ui'
@@ -24,11 +25,11 @@ import {
 } from 'react'
 import {css, styled} from 'styled-components'
 
+import {MenuButton} from '../../../../../../ui-components'
 import {pathToString} from '../../../../../field/paths/helpers'
 import {NavigatedToNestedObjectViaBreadcrumb} from '../../__telemetry__/nestedObjects.telemetry'
 import {useValuePreviewWithFallback} from '../../hooks'
 import {type TreeEditingBreadcrumb} from '../../types'
-import {TreeEditingBreadcrumbsMenuButton} from './TreeEditingBreadcrumbsMenuButton'
 
 const MAX_LENGTH = 5
 const EMPTY_ARRAY: [] = []
@@ -231,7 +232,8 @@ export function TreeEditingBreadcrumbs(
               itemRefs[index] = el as HTMLDivElement | null
             }}
           >
-            <TreeEditingBreadcrumbsMenuButton
+            <MenuButton
+              id="breadcrumb-overflow-menu-button"
               button={
                 <StyledButton mode="bleed" padding={1}>
                   <Flex overflow="hidden">
@@ -241,11 +243,29 @@ export function TreeEditingBreadcrumbs(
                   </Flex>
                 </StyledButton>
               }
-              collapsed
-              items={item}
-              onPathSelect={onPathSelect}
-              parentElement={rootElement}
-              selectedPath={selectedPath}
+              popover={{
+                placement: 'bottom-start',
+                portal: true,
+              }}
+              menu={
+                <Menu>
+                  {item.map((overflowItem: TreeEditingBreadcrumb) => (
+                    <Box key={overflowItem.path.toString()} padding={1}>
+                      <RootInline>
+                        <SeparatorItem>{SEPARATOR}</SeparatorItem>
+                        <MenuCard
+                          key={overflowItem.path.toString()}
+                          item={overflowItem}
+                          onPathSelect={onPathSelect}
+                          isSelected={false}
+                          isLast={false}
+                          siblings={siblings}
+                        />
+                      </RootInline>
+                    </Box>
+                  ))}
+                </Menu>
+              }
             />
 
             {showSeparator && <SeparatorItem>{SEPARATOR}</SeparatorItem>}
@@ -280,7 +300,7 @@ export function TreeEditingBreadcrumbs(
         </Inline>
       )
     })
-  }, [items, selectedPath, onPathSelect, siblings, rootElement, lastItemMaxWidth, itemRefs])
+  }, [items, selectedPath, onPathSelect, siblings, lastItemMaxWidth, itemRefs])
 
   return (
     <RootInline ref={setRootElement}>
