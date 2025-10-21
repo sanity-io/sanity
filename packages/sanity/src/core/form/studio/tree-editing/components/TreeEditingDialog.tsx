@@ -22,7 +22,7 @@ import {
 } from '../utils'
 import {isArrayItemPath} from '../utils/build-tree-editing-state/utils'
 import {isPathTextInPTEField} from '../utils/isPathTextInPTEField'
-import {NestedDialogHeader} from './NestedDialogHeader'
+import {NestedDialogHeader} from './header/NestedDialogHeader'
 
 const EMPTY_ARRAY: [] = []
 

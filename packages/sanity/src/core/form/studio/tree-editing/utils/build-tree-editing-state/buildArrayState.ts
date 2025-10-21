@@ -15,7 +15,7 @@ import {toString} from '@sanity/util/paths'
 import {getValueAtPath} from '../../../../../field/paths/helpers'
 import {EMPTY_ARRAY} from '../../../../../util/empty'
 import {getItemType} from '../../../../store/utils/getItemType'
-import {type TreeEditingBreadcrumb, type TreeEditingMenuItem} from '../../types'
+import {type BreadcrumbItem} from '../../types'
 import {findArrayTypePaths} from '../findArrayTypePaths'
 import {getSchemaField} from '../getSchemaField'
 import {isPathTextInPTEField} from '../isPathTextInPTEField'
@@ -62,8 +62,8 @@ export function buildArrayState(props: BuildArrayState): TreeEditingState {
   } = props
 
   let relativePath: Path = []
-  const menuItems: TreeEditingMenuItem[] = []
-  const breadcrumbs: TreeEditingBreadcrumb[] = []
+  const menuItems: BreadcrumbItem[] = []
+  const breadcrumbs: BreadcrumbItem[] = []
   const siblings = new Map<string, {count: number; index: number}>()
 
   // This is specifically needed for Portable Text editors that are at a root level in the document
@@ -112,7 +112,7 @@ export function buildArrayState(props: BuildArrayState): TreeEditingState {
     if (isReferenceSchemaType(itemSchemaField)) return
 
     const childrenFields = itemSchemaField?.fields || []
-    const childrenMenuItems: TreeEditingMenuItem[] = []
+    const childrenMenuItems: BreadcrumbItem[] = []
 
     if (shouldBeInBreadcrumb(itemPath, openPath, documentValue)) {
       const breadcrumbsResult = buildBreadcrumbsState({

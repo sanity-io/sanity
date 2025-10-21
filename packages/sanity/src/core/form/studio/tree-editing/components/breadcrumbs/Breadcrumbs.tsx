@@ -29,7 +29,7 @@ import {MenuButton} from '../../../../../../ui-components'
 import {pathToString} from '../../../../../field/paths/helpers'
 import {NavigatedToNestedObjectViaBreadcrumb} from '../../__telemetry__/nestedObjects.telemetry'
 import {useValuePreviewWithFallback} from '../../hooks'
-import {type TreeEditingBreadcrumb} from '../../types'
+import {type BreadcrumbItem} from '../../types'
 
 const MAX_LENGTH = 5
 const EMPTY_ARRAY: [] = []
@@ -64,10 +64,10 @@ const StyledText = styled(Text)`
   padding: 8px 0;
 `
 
-type Item = TreeEditingBreadcrumb[] | TreeEditingBreadcrumb
+type Item = BreadcrumbItem[] | BreadcrumbItem
 
 interface MenuButtonProps {
-  item: TreeEditingBreadcrumb
+  item: BreadcrumbItem
   onPathSelect: (path: Path) => void
   isSelected: boolean
   isLast: boolean
@@ -157,16 +157,14 @@ const SeparatorItem = forwardRef(function SeparatorItem(
   )
 })
 
-interface TreeEditingBreadcrumbsProps {
-  items: TreeEditingBreadcrumb[]
+interface BreadcrumbsProps {
+  items: BreadcrumbItem[]
   onPathSelect: (path: Path) => void
   selectedPath: Path
   siblings: Map<string, {count: number; index: number}>
 }
 
-export function TreeEditingBreadcrumbs(
-  props: TreeEditingBreadcrumbsProps,
-): React.JSX.Element | null {
+export function Breadcrumbs(props: BreadcrumbsProps): React.JSX.Element | null {
   const {items: itemsProp = EMPTY_ARRAY, onPathSelect, selectedPath, siblings} = props
 
   const [rootElement, setRootElement] = useState<HTMLDivElement | null>(null)
@@ -250,7 +248,7 @@ export function TreeEditingBreadcrumbs(
               }}
               menu={
                 <Menu>
-                  {item.map((overflowItem: TreeEditingBreadcrumb) => (
+                  {item.map((overflowItem: BreadcrumbItem) => (
                     <Box key={overflowItem.path.toString()} padding={1}>
                       <RootInline>
                         <SeparatorItem>{SEPARATOR}</SeparatorItem>
