@@ -97,7 +97,7 @@ const MenuCard = function MenuCard(
   const handleClick = useCallback(() => {
     onPathSelect(item.path)
     telemetry.log(NavigatedToNestedObjectViaBreadcrumb, {
-      objectPath: pathToString(item.path),
+      path: pathToString(item.path),
       timestamp: new Date(),
     })
   }, [onPathSelect, item.path, telemetry])
@@ -123,7 +123,7 @@ const MenuCard = function MenuCard(
             minWidth: 0,
             overflow: 'hidden',
             // forces ellipsis on the last item if needed
-            maxWidth: isLast && maxWidthPx !== undefined ? `${maxWidthPx}px` : undefined,
+            maxWidth: isLast && maxWidthPx !== undefined ? `${maxWidthPx}px` : `200px`,
           }}
           flex={isLast ? 1 : undefined}
         >
@@ -179,14 +179,14 @@ export function Breadcrumbs(props: BreadcrumbsProps): React.JSX.Element | null {
     const w = size?.border.width
 
     if (!w) return MAX_LENGTH
-    if (w < 500) return 2
-    if (w < 700) return 3
+    if (w < 500) return 3
+    if (w < 700) return 4
 
     return MAX_LENGTH
   }, [size?.border.width])
 
   const items: Item[] = useMemo(() => {
-    const len = itemsProp.length
+    const len = itemsProp.length + 1 // +1 for the root item (the field name)
     const beforeLength = Math.ceil(maxLength / 2)
     const afterLength = Math.floor(maxLength / 2)
 

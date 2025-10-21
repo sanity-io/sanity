@@ -6,8 +6,9 @@ import {
   type Path,
   type SchemaType,
 } from '@sanity/types'
-import {get} from '@sanity/util/paths'
+import {get, startsWith} from '@sanity/util/paths'
 
+import {stringToPath} from '../../../../field/paths/helpers'
 import {pathToString} from '../../../../validation/util/pathToString'
 
 /**
@@ -111,8 +112,9 @@ export function isPathTextInPTEField(
   }
 
   const isWithinPTEField = allPTEPaths.some((parentPath) => {
-    const ptePath = pathToString(parentPath)
-    return possiblePaths.some((path) => path === ptePath || path.startsWith(`${parentPath}.`))
+    return possiblePaths.some(
+      (path) => path === pathToString(parentPath) || startsWith(parentPath, stringToPath(path)),
+    )
   })
 
   // The 'children' field is where the actual text spans live in portable text blocks

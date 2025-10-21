@@ -1,7 +1,7 @@
 import {defineEvent} from '@sanity/telemetry'
 
 interface NestedDialogOpenedInfo {
-  objectPath: string
+  path: string
   timestamp: Date
 }
 

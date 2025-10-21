@@ -435,6 +435,10 @@ export const DefaultBlockObjectComponent = (
           value,
         })}
       </Root>
+      {/**
+       * In situations where we are using the new nested method, we do not want to show this object edit modal.
+       * However, in cases where we aren't, the old modal needs to work as expected
+       */}
       {open && !nestedObjectNavigationEnabled && (
         <ObjectEditModal
           floatingBoundary={__unstable_floatingBoundary}

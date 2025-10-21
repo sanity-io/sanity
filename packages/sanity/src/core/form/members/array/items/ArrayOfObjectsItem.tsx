@@ -89,7 +89,7 @@ export function ArrayOfObjectsItem(props: MemberItemProps) {
   const getFormValue = useGetFormValue()
   const {onCopy} = useCopyPaste()
   const telemetry = useTelemetry()
-  const {enabled} = useTreeEditingEnabled()
+  const {enabled: enhancedObjectDialogEnabled} = useTreeEditingEnabled()
 
   useDidUpdate(member.item.focused, (hadFocus, hasFocus) => {
     if (!hadFocus && hasFocus) {
@@ -99,13 +99,13 @@ export function ArrayOfObjectsItem(props: MemberItemProps) {
 
   const onRemove = useCallback(() => {
     telemetry.log(RemovedObject, {
-      objectPath: pathToString(member.item.path),
+      path: pathToString(member.item.path),
       timestamp: new Date(),
-      origin: enabled ? 'nested-object' : 'default',
+      origin: enhancedObjectDialogEnabled ? 'nested-object' : 'default',
     })
 
     onChange(PatchEvent.from([unset([{_key: member.key}])]))
-  }, [enabled, member.item.path, member.key, onChange, telemetry])
+  }, [enhancedObjectDialogEnabled, member.item.path, member.key, onChange, telemetry])
 
   const handleOpenItem = useCallback(
     (path: Path) => {
@@ -120,19 +120,19 @@ export function ArrayOfObjectsItem(props: MemberItemProps) {
     (event: Omit<ArrayInputInsertEvent<ObjectItem>, 'referenceItem'>) => {
       if (event.position === 'before') {
         telemetry.log(CreatePrependedObject, {
-          objectPath: pathToString(member.item.path),
+          path: pathToString(member.item.path),
           timestamp: new Date(),
-          origin: enabled ? 'nested-object' : 'default',
+          origin: enhancedObjectDialogEnabled ? 'nested-object' : 'default',
         })
       } else {
         telemetry.log(CreateAppendedObject, {
-          objectPath: pathToString(member.item.path),
+          path: pathToString(member.item.path),
           timestamp: new Date(),
-          origin: enabled ? 'nested-object' : 'default',
+          origin: enhancedObjectDialogEnabled ? 'nested-object' : 'default',
         })
       }
     },
-    [enabled, member.item.path, telemetry],
+    [enhancedObjectDialogEnabled, member.item.path, telemetry],
   )
 
   // Note: this handles inserting *siblings*
@@ -229,9 +229,9 @@ export function ArrayOfObjectsItem(props: MemberItemProps) {
   const handleChange = useCallback(
     (event: PatchEvent | PatchArg) => {
       telemetry.log(EditedObject, {
-        objectPath: pathToString(member.item.path),
+        path: pathToString(member.item.path),
         timestamp: new Date(),
-        origin: enabled ? 'nested-object' : 'default',
+        origin: enhancedObjectDialogEnabled ? 'nested-object' : 'default',
       })
 
       onChange(
@@ -240,7 +240,14 @@ export function ArrayOfObjectsItem(props: MemberItemProps) {
           .prefixAll({_key: member.key}),
       )
     },
-    [enabled, onChange, member.item.schemaType, member.item.path, member.key, telemetry],
+    [
+      enhancedObjectDialogEnabled,
+      onChange,
+      member.item.schemaType,
+      member.item.path,
+      member.key,
+      telemetry,
+    ],
   )
   const handleCollapse = useCallback(() => {
     onSetPathCollapsed(member.item.path, true)
@@ -286,13 +293,13 @@ export function ArrayOfObjectsItem(props: MemberItemProps) {
 
   const handleOpen = useCallback(() => {
     telemetry.log(NavigatedToViaArrayList, {
-      objectPath: pathToString(member.item.path),
+      path: pathToString(member.item.path),
       timestamp: new Date(),
-      origin: enabled ? 'nested-object' : 'default',
+      origin: enhancedObjectDialogEnabled ? 'nested-object' : 'default',
     })
 
     onPathOpen(member.item.path)
-  }, [enabled, onPathOpen, member.item.path, telemetry])
+  }, [enhancedObjectDialogEnabled, onPathOpen, member.item.path, telemetry])
 
   const isEmptyValue = !member.item.value || isEmptyItem(member.item.value)
   const handleClose = useCallback(() => {

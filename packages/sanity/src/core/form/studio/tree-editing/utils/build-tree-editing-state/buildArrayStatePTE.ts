@@ -8,9 +8,9 @@ import {
   type Path,
   type SchemaType,
 } from '@sanity/types'
-import {toString} from '@sanity/util/paths'
+import {startsWith} from '@sanity/util/paths'
 
-import {getValueAtPath} from '../../../../../field/paths/helpers'
+import {getValueAtPath, pathToString} from '../../../../../field/paths/helpers'
 import {EMPTY_ARRAY} from '../../../../../util/empty'
 import {getItemType} from '../../../../store/utils/getItemType'
 import {type BreadcrumbItem} from '../../types'
@@ -117,7 +117,8 @@ export function buildArrayStatePTE(props: BuildArrayStatePTEProps): {
 
     // Add breadcrumb for the block if openPath starts with this block path
     // This handles both direct block selection and nested paths within the block
-    const openPathStartsWithBlock = toString(openPath).startsWith(toString(blockPath))
+    const openPathStartsWithBlock = startsWith(blockPath, openPath)
+
     if (openPathStartsWithBlock && shouldBeInBreadcrumb(blockPath, openPath, documentValue)) {
       const blockBreadcrumb: BreadcrumbItem = {
         children: EMPTY_ARRAY,
@@ -143,7 +144,7 @@ export function buildArrayStatePTE(props: BuildArrayStatePTEProps): {
 
         // If it points to the block itself (in which case we redirect to the first array field)
         // - this is the case for more nested levels of the PTE
-        const openPathPointsToArrayField = toString(openPath).startsWith(toString(blockFieldPath))
+        const openPathPointsToArrayField = startsWith(blockFieldPath, openPath)
 
         // This prevents overriding the block-level relativePath set above which is meant to be more general
         if (openPathPointsToArrayField) {
@@ -172,7 +173,7 @@ export function buildArrayStatePTE(props: BuildArrayStatePTEProps): {
           })
 
           // Merge sibling counts from nested state
-          const blockFieldPathString = toString(blockFieldPath)
+          const blockFieldPathString = pathToString(blockFieldPath)
 
           // If it's an inline custom object/object array/span, skip siblings
           const skipChildren = shouldSkipSiblingCount({

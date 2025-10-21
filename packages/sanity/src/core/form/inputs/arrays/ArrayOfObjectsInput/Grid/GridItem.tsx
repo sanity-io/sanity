@@ -84,11 +84,11 @@ export function GridItem<Item extends ObjectItem = ObjectItem>(props: GridItemPr
   } = props
   const {t} = useTranslation()
 
-  const {enabled, legacyEditing} = useTreeEditingEnabled()
+  const {enabled: enhancedObjectDialogEnabled} = useTreeEditingEnabled()
 
   // The edit portal should open if the item is open and:
   // - tree array editing is disabled
-  const openPortal = open && (!enabled || legacyEditing)
+  const openPortal = open && !enhancedObjectDialogEnabled
 
   const sortable = parentSchemaType.options?.sortable !== false
   const insertableTypes = parentSchemaType.of
@@ -276,7 +276,7 @@ export function GridItem<Item extends ObjectItem = ObjectItem>(props: GridItemPr
 
   const itemTypeTitle = getSchemaTypeTitle(schemaType)
   return (
-    <TreeEditingEnabledProvider legacyEditing={legacyEditing}>
+    <TreeEditingEnabledProvider>
       <ChangeIndicator path={path} isChanged={changed} hasFocus={Boolean(focused)}>
         {item}
       </ChangeIndicator>

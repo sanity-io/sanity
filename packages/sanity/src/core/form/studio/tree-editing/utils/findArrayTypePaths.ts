@@ -29,7 +29,7 @@ export function findArrayTypePaths(fields: ObjectField<SchemaType>[]): Path[] {
       // Create a new path by extending the current path with the current field's name
       const newPath = [...currentPath, field.name]
 
-      // If the field type is an array, add the new path to the arrayPaths array
+      // If the field type is an array of objects then add the new path to the arrayPaths array
       if (isArrayOfObjectsSchemaType(field.type)) {
         arrayPaths.push(newPath)
       }
