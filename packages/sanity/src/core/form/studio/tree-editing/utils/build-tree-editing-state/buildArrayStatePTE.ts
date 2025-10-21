@@ -13,7 +13,7 @@ import {startsWith} from '@sanity/util/paths'
 import {getValueAtPath} from '../../../../../field/paths/helpers'
 import {EMPTY_ARRAY} from '../../../../../util/empty'
 import {getItemType} from '../../../../store/utils/getItemType'
-import {type TreeEditingBreadcrumb, type TreeEditingMenuItem} from '../../types'
+import {type BreadcrumbItem} from '../../types'
 import {isPathTextInPTEField} from '../isPathTextInPTEField'
 import {buildBreadcrumbsState} from './buildBreadcrumbsState'
 import {type RecursiveProps, type TreeEditingState} from './buildTreeEditingState'
@@ -41,9 +41,9 @@ interface BuildArrayStatePTEProps {
   /** The root schema type to check for portable text fields */
   rootSchemaType: ObjectSchemaType
   /** The breadcrumbs array to add to */
-  breadcrumbs: TreeEditingBreadcrumb[]
+  breadcrumbs: BreadcrumbItem[]
   /** The children menu items array to add to */
-  childrenMenuItems: TreeEditingMenuItem[]
+  childrenMenuItems: BreadcrumbItem[]
 }
 
 /**
@@ -52,8 +52,8 @@ interface BuildArrayStatePTEProps {
  */
 export function buildArrayStatePTE(props: BuildArrayStatePTEProps): {
   relativePath: Path | null
-  breadcrumbs: TreeEditingBreadcrumb[]
-  childrenMenuItems: TreeEditingMenuItem[]
+  breadcrumbs: BreadcrumbItem[]
+  childrenMenuItems: BreadcrumbItem[]
   /** Map of path strings to their sibling arrays (including non-editable items, for example references)
    * Starts at 1
    */
@@ -120,7 +120,7 @@ export function buildArrayStatePTE(props: BuildArrayStatePTEProps): {
     const openPathStartsWithBlock = startsWith(blockPath, openPath)
 
     if (openPathStartsWithBlock && shouldBeInBreadcrumb(blockPath, openPath, documentValue)) {
-      const blockBreadcrumb: TreeEditingBreadcrumb = {
+      const blockBreadcrumb: BreadcrumbItem = {
         children: EMPTY_ARRAY,
         parentSchemaType: childField.type as ArraySchemaType,
         path: blockPath,
@@ -131,7 +131,7 @@ export function buildArrayStatePTE(props: BuildArrayStatePTEProps): {
     }
 
     // Collect nested menu items for this block
-    const blockChildrenMenuItems: TreeEditingMenuItem[] = []
+    const blockChildrenMenuItems: BreadcrumbItem[] = []
 
     // Process array fields within the block
     blockSchemaType.fields.forEach((blockField) => {
