@@ -6,6 +6,9 @@ import {type TreeEditingEnabledContextValue} from './useTreeEditingEnabled'
 
 interface TreeEditingEnabledProviderProps {
   children: React.ReactNode
+  /**
+   * A boolean indicating whether legacy editing is enabled - meaning that it will use the old modal based editing experience
+   */
   legacyEditing?: boolean
 }
 
