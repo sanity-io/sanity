@@ -77,7 +77,7 @@ const MenuButton = function MenuButton(props: MenuButtonProps) {
   const handleClick = useCallback(() => {
     onPathSelect(item.path)
     telemetry.log(NavigatedToNestedObjectViaBreadcrumb, {
-      objectPath: pathToString(item.path),
+      path: pathToString(item.path),
       timestamp: new Date(),
     })
   }, [onPathSelect, item.path, telemetry])

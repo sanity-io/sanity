@@ -99,7 +99,7 @@ export function ArrayOfObjectsItem(props: MemberItemProps) {
 
   const onRemove = useCallback(() => {
     telemetry.log(RemovedObject, {
-      objectPath: pathToString(member.item.path),
+      path: pathToString(member.item.path),
       timestamp: new Date(),
       origin: enabled ? 'nested-object' : 'default',
     })
@@ -120,13 +120,13 @@ export function ArrayOfObjectsItem(props: MemberItemProps) {
     (event: Omit<ArrayInputInsertEvent<ObjectItem>, 'referenceItem'>) => {
       if (event.position === 'before') {
         telemetry.log(CreatePrependedObject, {
-          objectPath: pathToString(member.item.path),
+          path: pathToString(member.item.path),
           timestamp: new Date(),
           origin: enabled ? 'nested-object' : 'default',
         })
       } else {
         telemetry.log(CreateAppendedObject, {
-          objectPath: pathToString(member.item.path),
+          path: pathToString(member.item.path),
           timestamp: new Date(),
           origin: enabled ? 'nested-object' : 'default',
         })
@@ -229,7 +229,7 @@ export function ArrayOfObjectsItem(props: MemberItemProps) {
   const handleChange = useCallback(
     (event: PatchEvent | PatchArg) => {
       telemetry.log(EditedObject, {
-        objectPath: pathToString(member.item.path),
+        path: pathToString(member.item.path),
         timestamp: new Date(),
         origin: enabled ? 'nested-object' : 'default',
       })
@@ -286,7 +286,7 @@ export function ArrayOfObjectsItem(props: MemberItemProps) {
 
   const handleOpen = useCallback(() => {
     telemetry.log(NavigatedToViaArrayList, {
-      objectPath: pathToString(member.item.path),
+      path: pathToString(member.item.path),
       timestamp: new Date(),
       origin: enabled ? 'nested-object' : 'default',
     })

@@ -26,7 +26,7 @@ export function FullscreenPTEProvider({children}: FullscreenPTEProviderProps): R
   const getFullscreenPath = useCallback(
     (path: Path): string | undefined => {
       telemetry.log(ClosedPortableTextEditorFullScreen, {
-        objectPath: pathToString(path),
+        path: pathToString(path),
         timestamp: new Date(),
         origin: enabled ? 'nested-object' : 'default',
       })
@@ -38,7 +38,7 @@ export function FullscreenPTEProvider({children}: FullscreenPTEProviderProps): R
   const setFullscreenPath = useCallback(
     (path: Path, isFullscreen: boolean): void => {
       telemetry.log(OpenedPortableTextEditorFullScreen, {
-        objectPath: pathToString(path),
+        path: pathToString(path),
         timestamp: new Date(),
         origin: enabled ? 'nested-object' : 'default',
       })
