@@ -10,7 +10,7 @@ import {
 } from '@sanity/types'
 import {startsWith} from '@sanity/util/paths'
 
-import {getValueAtPath} from '../../../../../field/paths/helpers'
+import {getValueAtPath, pathToString} from '../../../../../field/paths/helpers'
 import {EMPTY_ARRAY} from '../../../../../util/empty'
 import {getItemType} from '../../../../store/utils/getItemType'
 import {type BreadcrumbItem} from '../../types'
@@ -173,7 +173,7 @@ export function buildArrayStatePTE(props: BuildArrayStatePTEProps): {
           })
 
           // Merge sibling counts from nested state
-          const blockFieldPathString = toString(blockFieldPath)
+          const blockFieldPathString = pathToString(blockFieldPath)
 
           // If it's an inline custom object/object array/span, skip siblings
           const skipChildren = shouldSkipSiblingCount({
