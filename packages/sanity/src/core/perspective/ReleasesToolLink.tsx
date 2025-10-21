@@ -8,8 +8,8 @@ import {styled} from 'styled-components'
 
 import {Tooltip} from '../../ui-components/tooltip/Tooltip'
 import {useTranslation} from '../i18n'
-import {RELEASES_TOOL_NAME} from '../releases/plugin'
 import {useReleasesStore} from '../releases/store/useReleasesStore'
+import {SCHEDULES_TOOL_NAME} from '../schedules/plugin'
 import {ToolLink} from '../studio/components/navbar/tools/ToolLink'
 import {oversizedButtonStyle} from './styles'
 
@@ -45,14 +45,14 @@ export function ReleasesToolLink(): React.JSX.Element {
     <Tooltip content={t('release.navbar.tooltip')}>
       <Button
         as={OversizedButton}
-        name={RELEASES_TOOL_NAME}
+        name={SCHEDULES_TOOL_NAME}
         data-as="a"
         icon={CalendarIcon}
         mode="bleed"
         padding={2}
         radius="full"
         data-testid="releases-tool-link"
-        selected={activeToolName === RELEASES_TOOL_NAME}
+        selected={activeToolName === SCHEDULES_TOOL_NAME}
       >
         {hasError && (
           <Dot

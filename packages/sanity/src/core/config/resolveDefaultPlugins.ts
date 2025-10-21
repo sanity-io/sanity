@@ -5,6 +5,7 @@ import {createIntegration} from '../create/createIntegrationPlugin'
 import {releases, RELEASES_NAME} from '../releases/plugin'
 // oxlint-disable-next-line no-restricted-imports
 import {SCHEDULED_PUBLISHING_NAME, scheduledPublishing} from '../scheduled-publishing/plugin'
+import {schedules, SCHEDULES_NAME} from '../schedules/plugin'
 import {tasks, TASKS_NAME} from '../tasks/plugin'
 import {
   type AppsOptions,
@@ -22,6 +23,7 @@ const defaultPlugins = [
   releases(),
   canvasIntegration(),
   mediaLibrary(),
+  schedules(),
 ]
 
 type DefaultPluginsOptions = DefaultPluginsWorkspaceOptions & {
@@ -45,6 +47,11 @@ export function getDefaultPlugins(options: DefaultPluginsOptions, plugins?: Plug
     }
     if (plugin.name === MEDIA_LIBRARY_NAME) {
       return options.mediaLibrary?.enabled
+    }
+    if (plugin.name === SCHEDULES_NAME) {
+      // This tool is shared between releases and single doc release plugins.
+      // and it needs to be enabled if either of the plugins are enabled.
+      return options.releases.enabled // || options.singleDocRelease.enabled
     }
     return true
   })
