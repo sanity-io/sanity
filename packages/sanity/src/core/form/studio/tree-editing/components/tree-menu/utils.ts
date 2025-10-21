@@ -1,5 +1,5 @@
-import {type TreeEditingMenuItem} from '../../types'
+import {type BreadcrumbItem} from '../../types'
 
-export function getSiblingHasChildren(items: TreeEditingMenuItem[]): boolean {
+export function getSiblingHasChildren(items: BreadcrumbItem[]): boolean {
   return items.some((sibling) => sibling.children && sibling.children.length > 0)
 }
