@@ -134,7 +134,7 @@
     "@vitejs/plugin-react": "catalog:",
     "@vitest/coverage-v8": "^3.2.4",
     "chalk": "^4.1.2",
-    "conventional-changelog-conventionalcommits": "^7.0.2",
+    "conventional-changelog-conventionalcommits": "^9.1.0",
     "depcheck": "^1.4.7",
     "dotenv": "^16.6.1",
     "dotenv-flow": "^4.1.0",
