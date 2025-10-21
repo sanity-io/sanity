@@ -1227,11 +1227,6 @@ export const studioLocaleStrings = defineLocalesResources('studio', {
   /** Unexpected error: `{{error}}` */
   'member-field-error.unexpected-error': 'Unexpected error: {{error}}',
 
-  /**
-   * Label for the sibling count in the nested object editing dialog header
-   */
-  'nested-object-editing-dialog.header.sibling-count': '{{count}} of {{total}}',
-
   /** Text shown in warning when browser is using HTTP1 to communicate with the Sanity API */
   'network-check.slow-protocol-warning.description':
     'Your browser is using an outdated HTTP protocol to communicate with Sanity. This may result in substantially degraded performance.',
