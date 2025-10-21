@@ -10379,12 +10379,6 @@ packages:
     resolution: {integrity: sha512-z6F7K9bV85EfseRCp2bzrpyQ0Gkw1uLoCel9XBVWPg/TjRj94SkJzUTGfOa4bs7iJvBWtQG0Wq7wnI0syw3EBQ==}
     engines: {node: '>=0.10.0'}
 
-  react-rx@4.2.1:
-    resolution: {integrity: sha512-tafRnEQ8FSlvPuC8a7UzGYXr4QSZBD0AmJexWr+XGxW3RafkDWKHrXtgMUaT06RLOg3f3FzOoc3otRzaCdjulg==}
-    peerDependencies:
-      react: ^18.3 || >=19.0.0-0
-      rxjs: ^7
-
   react-rx@4.2.2:
     resolution: {integrity: sha512-L0M51QxRnb5RndopV3lGPtG+O2rGVZl6aIzH1Fyx5ieOog/E947Xu00JERxksPJ9Lxn7kdME2wFtsWpiKTgI+A==}
     peerDependencies:
@@ -21692,14 +21686,6 @@ snapshots:
 
   react-refresh@0.17.0: {}
 
-  react-rx@4.2.1(react@19.2.0)(rxjs@7.8.2):
-    dependencies:
-      observable-callback: 1.0.3(rxjs@7.8.2)
-      react: 19.2.0
-      react-compiler-runtime: 19.1.0-rc.3(react@19.2.0)
-      rxjs: 7.8.2
-      use-effect-event: 2.0.3(react@19.2.0)
-
   react-rx@4.2.2(react@19.2.0)(rxjs@7.8.2):
     dependencies:
       observable-callback: 1.0.3(rxjs@7.8.2)
@@ -22312,7 +22298,7 @@ snapshots:
       lodash: 4.17.21
       react: 19.2.0
       react-is: 19.2.0
-      react-rx: 4.2.1(react@19.2.0)(rxjs@7.8.2)
+      react-rx: 4.2.2(react@19.2.0)(rxjs@7.8.2)
       rxjs: 7.8.2
       sanity: link:packages/sanity
       scroll-into-view-if-needed: 3.1.0
