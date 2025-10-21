@@ -3,7 +3,7 @@ import {isEqual} from 'lodash'
 
 import {EMPTY_ARRAY} from '../../../../../util/empty'
 import {getItemType} from '../../../../store/utils/getItemType'
-import {type TreeEditingBreadcrumb} from '../../types'
+import {type BreadcrumbItem} from '../../types'
 
 interface BuildBreadcrumbsStateProps {
   arraySchemaType: ArraySchemaType
@@ -12,10 +12,10 @@ interface BuildBreadcrumbsStateProps {
   parentPath: Path
 }
 
-export function buildBreadcrumbsState(props: BuildBreadcrumbsStateProps): TreeEditingBreadcrumb {
+export function buildBreadcrumbsState(props: BuildBreadcrumbsStateProps): BreadcrumbItem {
   const {arraySchemaType, arrayValue, itemPath, parentPath} = props
 
-  const items: TreeEditingBreadcrumb[] = arrayValue
+  const items: BreadcrumbItem[] = arrayValue
     .map((arrayItem) => {
       const nestedItemPath = [...parentPath, {_key: arrayItem._key}] as Path
 
@@ -32,11 +32,11 @@ export function buildBreadcrumbsState(props: BuildBreadcrumbsStateProps): TreeEd
         path: nestedItemPath,
         schemaType: itemType,
         value: arrayItem,
-      } satisfies TreeEditingBreadcrumb
+      } satisfies BreadcrumbItem
     })
-    .filter(Boolean) as TreeEditingBreadcrumb[]
+    .filter(Boolean) as BreadcrumbItem[]
 
-  const selectedItem = items.find((item) => isEqual(item.path, itemPath)) as TreeEditingBreadcrumb
+  const selectedItem = items.find((item) => isEqual(item.path, itemPath)) as BreadcrumbItem
 
   return {
     children: items,

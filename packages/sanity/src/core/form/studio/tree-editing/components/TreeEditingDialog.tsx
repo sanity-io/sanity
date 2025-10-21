@@ -1,6 +1,6 @@
 import {useTelemetry} from '@sanity/telemetry/react'
 import {isKeySegment, type ObjectSchemaType, type Path} from '@sanity/types'
-import {Box} from '@sanity/ui'
+import {Box, useGlobalKeyDown} from '@sanity/ui'
 // eslint-disable-next-line camelcase
 import {getTheme_v2, type Theme} from '@sanity/ui/theme'
 import {debounce, isEqual} from 'lodash'
@@ -22,7 +22,7 @@ import {
 } from '../utils'
 import {isArrayItemPath} from '../utils/build-tree-editing-state/utils'
 import {isPathTextInPTEField} from '../utils/isPathTextInPTEField'
-import {NestedDialogHeader} from './NestedDialogHeader'
+import {NestedDialogHeader} from './header/NestedDialogHeader'
 
 const EMPTY_ARRAY: [] = []
 
@@ -210,6 +210,24 @@ export function TreeEditingDialog(props: TreeEditingDialogProps): React.JSX.Elem
     onPathFocus,
     allFullscreenPaths,
   ])
+
+  const handleGlobalKeyDown = useCallback(
+    (event: any) => {
+      if ((event.metaKey || event.ctrlKey) && event.key === 'ArrowUp') {
+        event.preventDefault()
+        // If the relative path is longer than 2, we want to open the parent path
+        // If the relative path is 2, we want to close the dialog
+        if (treeState.relativePath.length > 2) {
+          onPathOpen(treeState.relativePath.slice(0, -1))
+        } else {
+          onClose()
+        }
+      }
+    },
+    [onPathOpen, treeState.relativePath, onClose],
+  )
+
+  useGlobalKeyDown(handleGlobalKeyDown)
 
   const onHandlePathSelect = useCallback(
     (path: Path) => {

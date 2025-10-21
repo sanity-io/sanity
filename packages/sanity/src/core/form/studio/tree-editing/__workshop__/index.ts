@@ -21,11 +21,6 @@ export default defineScope({
       component: lazy(() => import('./TreeEditingLayoutStory')),
     },
     {
-      name: 'tree-editing-breadcrumbs',
-      title: 'TreeEditingBreadcrumbs',
-      component: lazy(() => import('./TreeEditingBreadcrumbsStory')),
-    },
-    {
       name: 'tree-editing-breadcrumbs-menu',
       title: 'TreeEditingBreadcrumbsMenu',
       component: lazy(() => import('./TreeEditingBreadcrumbsMenuStory')),
