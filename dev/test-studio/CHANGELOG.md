@@ -3,8 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
-## [4.10.3](https://github.com/sanity-io/sanity/compare/v4.10.2...v4.10.3) (2025-10-14)
+## [4.11.0](https://github.com/sanity-io/sanity/compare/v4.10.3...v4.11.0) (2025-10-21)
 
+### Features
+
+* scheduled drafts uses `sanity.config` property proper to disable ([#10635](https://github.com/sanity-io/sanity/issues/10635)) ([50a2e6e](https://github.com/sanity-io/sanity/commit/50a2e6e695e352f6878782686049995a58bc40f3)) by Jordan Lawrence (jordanl17@me.com)
+
+### Bug Fixes
+
+* **deps:** Update portabletext ([#10851](https://github.com/sanity-io/sanity/issues/10851)) ([0562b47](https://github.com/sanity-io/sanity/commit/0562b472be4698fbf56be908c9218a03e59dfd8a)) by renovate[bot] (29139614+renovate[bot]@users.noreply.github.com)
+
+## [4.10.3](https://github.com/sanity-io/sanity/compare/v4.10.2...v4.10.3) (2025-10-14)
 
 ### Bug Fixes
 
@@ -14,30 +23,21 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 * **deps:** update dependency @portabletext/editor to ^2.13.7 ([#10801](https://github.com/sanity-io/sanity/issues/10801)) ([f976597](https://github.com/sanity-io/sanity/commit/f97659787dc5bfb0e0d8464768200805e3fbd00a))
 * **deps:** update dependency @sanity/client to ^7.12.0 ([#10802](https://github.com/sanity-io/sanity/issues/10802)) ([391127a](https://github.com/sanity-io/sanity/commit/391127adf802b946deba689f64099cb4ee306e61))
 
-
-
 ## [4.10.2](https://github.com/sanity-io/sanity/compare/v4.10.1...v4.10.2) (2025-09-30)
-
 
 ### Bug Fixes
 
 * **deps:** update dependency @portabletext/block-tools to ^3.5.8 ([#10783](https://github.com/sanity-io/sanity/issues/10783)) ([13ef5e3](https://github.com/sanity-io/sanity/commit/13ef5e3771b87497d3e678f829cf572dd5dfb1ca))
 * **deps:** update dependency @portabletext/editor to ^2.13.3 ([#10784](https://github.com/sanity-io/sanity/issues/10784)) ([b6c49ab](https://github.com/sanity-io/sanity/commit/b6c49ab7bc71b7631a9e2ce0dea2261a61adb691))
 
-
-
 ## [4.10.1](https://github.com/sanity-io/sanity/compare/v4.10.0...v4.10.1) (2025-09-25)
-
 
 ### Bug Fixes
 
 * **deps:** update dependency @portabletext/editor to ^2.13.1 ([#10747](https://github.com/sanity-io/sanity/issues/10747)) ([5edcd32](https://github.com/sanity-io/sanity/commit/5edcd328ad3e8cfff1c2677b44c8ad2bfa298316))
 * **deps:** update dependency @portabletext/editor to ^2.13.2 ([#10752](https://github.com/sanity-io/sanity/issues/10752)) ([962c5b0](https://github.com/sanity-io/sanity/commit/962c5b01037e488a4ef0e3c1620828b4fc406a98))
 
-
-
 ## [4.10.0](https://github.com/sanity-io/sanity/compare/v4.9.0...v4.10.0) (2025-09-23)
-
 
 ### Bug Fixes
 
@@ -51,10 +51,7 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 * **deps:** update dependency @sanity/ui to ^3.1.4 ([#10691](https://github.com/sanity-io/sanity/issues/10691)) ([cbab31b](https://github.com/sanity-io/sanity/commit/cbab31b5d6c7ac8c36c8d2f044a0b336c1df7e61))
 * **deps:** update dependency @sanity/ui to ^3.1.5 ([#10706](https://github.com/sanity-io/sanity/issues/10706)) ([1387e57](https://github.com/sanity-io/sanity/commit/1387e57333104649f3e9929864f34f7bf38c07b8))
 
-
-
 ## [4.9.0](https://github.com/sanity-io/sanity/compare/v4.8.1...v4.9.0) (2025-09-16)
-
 
 ### Bug Fixes
 
@@ -65,34 +62,23 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 * **deps:** update dependency @portabletext/editor to ^2.9.2 ([#10641](https://github.com/sanity-io/sanity/issues/10641)) ([38d7116](https://github.com/sanity-io/sanity/commit/38d7116afb1e9d34160007427cb4ea6f203aaa73))
 * **deps:** update dependency @sanity/ui to ^3.1.0 ([#10627](https://github.com/sanity-io/sanity/issues/10627)) ([1a708b5](https://github.com/sanity-io/sanity/commit/1a708b5f58107ab9dc4dbcda67755e90e3b16596))
 
-
-
 ## [4.8.1](https://github.com/sanity-io/sanity/compare/v4.8.0...v4.8.1) (2025-09-10)
 
 **Note:** Version bump only for package sanity-test-studio
 
-
-
-
-
 ## [4.8.0](https://github.com/sanity-io/sanity/compare/v4.7.0...v4.8.0) (2025-09-10)
-
 
 ### Bug Fixes
 
 * **deps:** update dependency @portabletext/editor to ^2.8.3 ([#10570](https://github.com/sanity-io/sanity/issues/10570)) ([63acb06](https://github.com/sanity-io/sanity/commit/63acb0664682d92432a5b4a4336a82a290f064a0))
 * **deps:** update dependency @sanity/client to ^7.11.1 ([#10593](https://github.com/sanity-io/sanity/issues/10593)) ([96d3546](https://github.com/sanity-io/sanity/commit/96d35461db9de547e7ddd3d8987501ae41f9423d))
 
-
-
 ## [4.7.0](https://github.com/sanity-io/sanity/compare/v4.6.1...v4.7.0) (2025-09-09)
-
 
 ### Features
 
 * **core:** custom release actions ([#10286](https://github.com/sanity-io/sanity/issues/10286)) ([28a774b](https://github.com/sanity-io/sanity/commit/28a774b271558ae288b7d7d3a00c9ec8659bd68a))
 * **test-studio:** switch on advanced version control ([80cddca](https://github.com/sanity-io/sanity/commit/80cddca36b46700c2f836483d89e3a78a5c54cf3))
-
 
 ### Bug Fixes
 
@@ -108,10 +94,7 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 * **deps:** update dependency @sanity/ui to ^3.0.14 ([#10557](https://github.com/sanity-io/sanity/issues/10557)) ([8a1f41f](https://github.com/sanity-io/sanity/commit/8a1f41fad56b6c655d34701c955eda04567a4763))
 * **deps:** Update dev-non-major ([#10544](https://github.com/sanity-io/sanity/issues/10544)) ([1855306](https://github.com/sanity-io/sanity/commit/185530655c2948d2b5223939608413e89eec7dc0))
 
-
-
 ## [4.6.1](https://github.com/sanity-io/sanity/compare/v4.6.0...v4.6.1) (2025-09-02)
-
 
 ### Bug Fixes
 
@@ -125,10 +108,7 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 * **deps:** update dependency @sanity/client to ^7.10.0 ([#10465](https://github.com/sanity-io/sanity/issues/10465)) ([62103ca](https://github.com/sanity-io/sanity/commit/62103ca0e384f49317a8c25cdb578ca5895fbb1a))
 * **deps:** update dependency @sanity/ui to ^3.0.8 ([#10472](https://github.com/sanity-io/sanity/issues/10472)) ([62e01d1](https://github.com/sanity-io/sanity/commit/62e01d10e2cb496ce93e0d0a374ca1352c1f168c))
 
-
-
 ## [4.6.0](https://github.com/sanity-io/sanity/compare/v4.5.0...v4.6.0) (2025-08-26)
-
 
 ### Bug Fixes
 
@@ -143,10 +123,7 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 * fix scrolling issue inside of popover modals in PTE ([#10401](https://github.com/sanity-io/sanity/issues/10401)) ([c5a7d02](https://github.com/sanity-io/sanity/commit/c5a7d02ffc525417b049e12b78ea591d133b0974))
 * stop throwing error when removing array item when validation pane is open ([#10420](https://github.com/sanity-io/sanity/issues/10420)) ([9cc4337](https://github.com/sanity-io/sanity/commit/9cc433791506602c82e8a8beebad47ff94c7be89))
 
-
-
 ## [4.5.0](https://github.com/sanity-io/sanity/compare/v4.4.1...v4.5.0) (2025-08-19)
-
 
 ### Bug Fixes
 
@@ -156,24 +133,17 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 * **deps:** update dependency @portabletext/editor to ^2.3.8 ([#10389](https://github.com/sanity-io/sanity/issues/10389)) ([60e179c](https://github.com/sanity-io/sanity/commit/60e179c22b152059bab11bd006d58af1b2e6ef1f))
 * **deps:** Update dev-non-major ([#10302](https://github.com/sanity-io/sanity/issues/10302)) ([3f1c7d1](https://github.com/sanity-io/sanity/commit/3f1c7d147e691083eec47e108591b93619ac19c6))
 
-
-
 ## [4.4.1](https://github.com/sanity-io/sanity/compare/v4.4.0...v4.4.1) (2025-08-14)
-
 
 ### Bug Fixes
 
 * **deps:** update dependency @sanity/ui to ^3.0.7 ([#10293](https://github.com/sanity-io/sanity/issues/10293)) ([e671ffc](https://github.com/sanity-io/sanity/commit/e671ffc1bef570811838235630d2717590f65d15))
 
-
-
 ## [4.4.0](https://github.com/sanity-io/sanity/compare/v4.3.0...v4.4.0) (2025-08-13)
-
 
 ### Features
 
 * **util:** add support for localized moment tokens ([#10240](https://github.com/sanity-io/sanity/issues/10240)) ([caf47b6](https://github.com/sanity-io/sanity/commit/caf47b656f7ea94c0c871dcac62f3aae1d6ef6f6))
-
 
 ### Bug Fixes
 
@@ -189,15 +159,11 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 * **sanity:** presentation navigation issues and initial value handling ([#10207](https://github.com/sanity-io/sanity/issues/10207)) ([34fba7d](https://github.com/sanity-io/sanity/commit/34fba7d6c4d821e31acc4f898c0b6b282311783c))
 * **structure:** render actions menu if sideMenuItems has actions ([#10196](https://github.com/sanity-io/sanity/issues/10196)) ([62272a8](https://github.com/sanity-io/sanity/commit/62272a81a6d06d3e960699719621a15b6078292f))
 
-
-
 ## [4.3.0](https://github.com/sanity-io/sanity/compare/v4.2.0...v4.3.0) (2025-08-05)
-
 
 ### Features
 
 * **core:** allow all fields group customizations ([#10094](https://github.com/sanity-io/sanity/issues/10094)) ([f3237e1](https://github.com/sanity-io/sanity/commit/f3237e1203bdab30b3ee86c8ce2ea29f216100de))
-
 
 ### Bug Fixes
 
@@ -212,15 +178,11 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 * **deps:** Update dev-non-major ([#10185](https://github.com/sanity-io/sanity/issues/10185)) ([7a5255e](https://github.com/sanity-io/sanity/commit/7a5255e203c7c58329e0ced7e1d6724a300f3427))
 * issue where a slimple slug in an array was auto closing when focusing on it ([#10175](https://github.com/sanity-io/sanity/issues/10175)) ([dfb704d](https://github.com/sanity-io/sanity/commit/dfb704dd17e233a7155e5d9d464b0d0c8d384524))
 
-
-
 ## [4.2.0](https://github.com/sanity-io/sanity/compare/v4.1.1...v4.2.0) (2025-07-29)
-
 
 ### Features
 
 * **core:** add media library field groq filters ([#9900](https://github.com/sanity-io/sanity/issues/9900)) ([fd837ab](https://github.com/sanity-io/sanity/commit/fd837aba647ccd7757a159c000833c90001f350c))
-
 
 ### Bug Fixes
 
@@ -229,18 +191,11 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 * **deps:** update dependency @sanity/ui to ^3.0.1 ([#10079](https://github.com/sanity-io/sanity/issues/10079)) ([63e81eb](https://github.com/sanity-io/sanity/commit/63e81eba52b9014c58745776ddecc973ae5530b2))
 * **deps:** Update dev-non-major ([#10046](https://github.com/sanity-io/sanity/issues/10046)) ([cd7dc5c](https://github.com/sanity-io/sanity/commit/cd7dc5c04b2cf9f9dab1ebfb5e0066ca3c512fba))
 
-
-
 ## [4.1.1](https://github.com/sanity-io/sanity/compare/v4.1.0...v4.1.1) (2025-07-22)
 
 **Note:** Version bump only for package sanity-test-studio
 
-
-
-
-
 ## [4.1.0](https://github.com/sanity-io/sanity/compare/v4.0.1...v4.1.0) (2025-07-21)
-
 
 ### Bug Fixes
 
@@ -249,41 +204,28 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 * **deps:** update dependency @sanity/client to ^7.8.0 ([#9974](https://github.com/sanity-io/sanity/issues/9974)) ([abca37f](https://github.com/sanity-io/sanity/commit/abca37f07db11a1b97c53e6718f293542237a1ca))
 * **deps:** Update dev-non-major ([#9995](https://github.com/sanity-io/sanity/issues/9995)) ([4050e54](https://github.com/sanity-io/sanity/commit/4050e5476520085bd79318054933c01d714ee820))
 
-
-
 ## [4.0.1](https://github.com/sanity-io/sanity/compare/v4.0.0...v4.0.1) (2025-07-16)
 
 **Note:** Version bump only for package sanity-test-studio
 
-
-
-
-
 ## [4.0.0](https://github.com/sanity-io/sanity/compare/v3.99.0...v4.0.0) (2025-07-14)
-
 
 ### Bug Fixes
 
 * **deps:** update dependency @portabletext/editor to ^1.58.0 ([#9954](https://github.com/sanity-io/sanity/issues/9954)) ([662eadf](https://github.com/sanity-io/sanity/commit/662eadf9f097f83ab7ef94b8b74dfed030a540ca))
 * **deps:** update dependency @sanity/ui to ^2.16.7 ([#9953](https://github.com/sanity-io/sanity/issues/9953)) ([57f922a](https://github.com/sanity-io/sanity/commit/57f922a1535ed2f9629486a9d985e79ea658a311))
 
-
-
 ## [3.99.0](https://github.com/sanity-io/sanity/compare/v3.98.1...v3.99.0) (2025-07-11)
-
 
 ### Features
 
 * Media Library video integration ([#9909](https://github.com/sanity-io/sanity/issues/9909)) ([5342858](https://github.com/sanity-io/sanity/commit/534285836c3f1c7a5fe9772ed732731adc16992b))
-
 
 ### Bug Fixes
 
 * **deps:** update dependency @portabletext/block-tools to ^1.1.38 ([#9940](https://github.com/sanity-io/sanity/issues/9940)) ([3dd90d5](https://github.com/sanity-io/sanity/commit/3dd90d539e2287162f7d5cf98fde53b868f17285))
 * **deps:** update dependency @portabletext/editor to ^1.57.5 ([#9941](https://github.com/sanity-io/sanity/issues/9941)) ([892da2b](https://github.com/sanity-io/sanity/commit/892da2b9304ac9bbfd3842fa199bccd5f6e78f35))
 * **deps:** update dependency @sanity/ui to ^2.16.4 ([#9934](https://github.com/sanity-io/sanity/issues/9934)) ([3967361](https://github.com/sanity-io/sanity/commit/39673611a02253d2ea4c2a6cdc018431b9353130))
-
-
 
 ## <small>3.98.1 (2025-07-09)</small>
 
@@ -293,10 +235,6 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 * fix(deps): update dependency @portabletext/editor to ^1.57.1 (#9919) ([32ebd0c](https://github.com/sanity-io/sanity/commit/32ebd0c)), closes [#9919](https://github.com/sanity-io/sanity/issues/9919)
 * fix(deps): update dependency @portabletext/editor to ^1.57.3 (#9928) ([ea2b66d](https://github.com/sanity-io/sanity/commit/ea2b66d)), closes [#9928](https://github.com/sanity-io/sanity/issues/9928)
 * fix(deps): update dependency @sanity/ui to ^2.16.3 (#9931) ([d2b3cf5](https://github.com/sanity-io/sanity/commit/d2b3cf5)), closes [#9931](https://github.com/sanity-io/sanity/issues/9931)
-
-
-
-
 
 ## [3.98.0](https://github.com/sanity-io/sanity/compare/v3.97.1...v3.98.0) (2025-07-07)
 
