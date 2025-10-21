@@ -8,7 +8,7 @@ import {toString} from '@sanity/util/paths'
 
 import {getValueAtPath} from '../../../../../field/paths/helpers'
 import {getSchemaTypeTitle} from '../../../../../schema/helpers'
-import {type TreeEditingBreadcrumb, type TreeEditingMenuItem} from '../../types'
+import {type BreadcrumbItem} from '../../types'
 import {getRootPath} from '../getRootPath'
 import {getSchemaField} from '../getSchemaField'
 import {buildArrayState} from './buildArrayState'
@@ -31,9 +31,9 @@ export interface BuildTreeEditingStateProps {
 
 export interface TreeEditingState {
   /** The breadcrumbs for the tree editing state */
-  breadcrumbs: TreeEditingBreadcrumb[]
+  breadcrumbs: BreadcrumbItem[]
   /** The menu items for the tree editing state */
-  menuItems: TreeEditingMenuItem[]
+  menuItems: BreadcrumbItem[]
   /**
    * The relative path to the selected item in the tree editing state.
    * It is used to determine which field to show in the form editor.
@@ -69,7 +69,7 @@ export function buildTreeEditingState(props: BuildTreeEditingStateProps): TreeEd
   }
 
   let relativePath: Path = []
-  const breadcrumbs: TreeEditingBreadcrumb[] = []
+  const breadcrumbs: BreadcrumbItem[] = []
 
   const result = recursive({
     schemaType: rootField,
