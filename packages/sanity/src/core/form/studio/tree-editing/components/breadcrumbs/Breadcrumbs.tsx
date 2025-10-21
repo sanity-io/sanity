@@ -185,7 +185,7 @@ export function Breadcrumbs(props: BreadcrumbsProps): React.JSX.Element | null {
   }, [size?.border.width])
 
   const items: Item[] = useMemo(() => {
-    const len = itemsProp.length
+    const len = itemsProp.length + 1 // +1 for the root item (the field name)
     const beforeLength = Math.ceil(maxLength / 2)
     const afterLength = Math.floor(maxLength / 2)
 
