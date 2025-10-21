@@ -21,18 +21,18 @@ interface FullscreenPTEProviderProps {
 export function FullscreenPTEProvider({children}: FullscreenPTEProviderProps): React.JSX.Element {
   const [fullscreenPaths, setFullscreenPaths] = useState<string[]>([])
   const telemetry = useTelemetry()
-  const {enabled} = useTreeEditingEnabled()
+  const {enabled: enhancedObjectDialogEnabled} = useTreeEditingEnabled()
 
   const getFullscreenPath = useCallback(
     (path: Path): string | undefined => {
       telemetry.log(ClosedPortableTextEditorFullScreen, {
         path: pathToString(path),
         timestamp: new Date(),
-        origin: enabled ? 'nested-object' : 'default',
+        origin: enhancedObjectDialogEnabled ? 'nested-object' : 'default',
       })
       return fullscreenPaths.find((savedPath) => savedPath === pathToString(path)) ?? undefined
     },
-    [fullscreenPaths, enabled, telemetry],
+    [fullscreenPaths, enhancedObjectDialogEnabled, telemetry],
   )
 
   const setFullscreenPath = useCallback(
@@ -40,7 +40,7 @@ export function FullscreenPTEProvider({children}: FullscreenPTEProviderProps): R
       telemetry.log(OpenedPortableTextEditorFullScreen, {
         path: pathToString(path),
         timestamp: new Date(),
-        origin: enabled ? 'nested-object' : 'default',
+        origin: enhancedObjectDialogEnabled ? 'nested-object' : 'default',
       })
       if (isFullscreen) {
         setFullscreenPaths([...fullscreenPaths, pathToString(path)])
@@ -48,7 +48,7 @@ export function FullscreenPTEProvider({children}: FullscreenPTEProviderProps): R
         setFullscreenPaths(fullscreenPaths.filter((savedPath) => savedPath !== pathToString(path)))
       }
     },
-    [fullscreenPaths, telemetry, enabled],
+    [fullscreenPaths, telemetry, enhancedObjectDialogEnabled],
   )
 
   const hasAnyFullscreen = useCallback((): boolean => {

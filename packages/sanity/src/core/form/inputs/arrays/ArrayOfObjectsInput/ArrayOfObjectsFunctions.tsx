@@ -25,7 +25,7 @@ export function ArrayOfObjectsFunctions<
   const [popoverToggleElement, setPopoverToggleElement] = useState<HTMLButtonElement | null>(null)
 
   const telemetry = useTelemetry()
-  const {enabled} = useTreeEditingEnabled()
+  const {enabled: enhancedObjectDialogEnabled} = useTreeEditingEnabled()
 
   const insertItem = useCallback(
     (itemType: any) => {
@@ -40,11 +40,11 @@ export function ArrayOfObjectsFunctions<
     telemetry.log(CreatedNewObject, {
       path: pathToString(path),
       timestamp: new Date(),
-      origin: enabled ? 'nested-object' : 'default',
+      origin: enhancedObjectDialogEnabled ? 'nested-object' : 'default',
     })
 
     insertItem(schemaType.of[0])
-  }, [enabled, insertItem, schemaType.of, telemetry, path])
+  }, [enhancedObjectDialogEnabled, insertItem, schemaType.of, telemetry, path])
 
   // If we have more than a single type candidate, we render a menu, so the button might show
   // "Add item..." instead of simply "Add item", to indicate that further choices are available.
