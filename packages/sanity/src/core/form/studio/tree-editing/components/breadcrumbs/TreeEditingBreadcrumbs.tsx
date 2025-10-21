@@ -208,27 +208,26 @@ export function TreeEditingBreadcrumbs(
 
   return (
     <Flex align="center" gap={2} ref={setRootElement}>
-      {
-        <StyledButton
-          data-active={false}
-          mode="bleed"
-          onClick={() => onPathSelect(EMPTY_ARRAY)}
-          padding={1}
+      <StyledButton
+        data-active={false}
+        mode="bleed"
+        onClick={() => onPathSelect(EMPTY_ARRAY)}
+        padding={1}
+      >
+        <Flex
+          flex={1}
+          align="center"
+          justify="flex-start"
+          gap={1}
+          overflow="hidden"
+          style={{textTransform: 'capitalize'}}
         >
-          <Flex
-            flex={1}
-            align="center"
-            justify="flex-start"
-            gap={1}
-            overflow="hidden"
-            style={{textTransform: 'capitalize'}}
-          >
-            <Text muted size={1}>
-              {selectedPath[0]?.toString()}
-            </Text>
-          </Flex>
-        </StyledButton>
-      }
+          <Text muted size={1}>
+            {selectedPath[0]?.toString()}
+          </Text>
+        </Flex>
+      </StyledButton>
+
       <SeparatorItem>{SEPARATOR}</SeparatorItem>
       {nodes}
     </Flex>
