@@ -15,11 +15,11 @@ import {SanityDefaultPreview} from '../../../../../preview/components/SanityDefa
 import {getSchemaTypeTitle} from '../../../../../schema/helpers'
 import {supportsTouch} from '../../../../../util/supportsTouch'
 import {useValuePreviewWithFallback} from '../../hooks'
-import {type TreeEditingMenuItem} from '../../types'
+import {type BreadcrumbItem} from '../../types'
 import {ITEM_HEIGHT} from './constants'
 
 interface ResultItemProps {
-  item: TreeEditingMenuItem
+  item: BreadcrumbItem
   onPathSelect: (path: Path) => void
   isFirst: boolean
 }
@@ -52,7 +52,7 @@ function ResultItem(props: ResultItemProps): React.JSX.Element {
 }
 
 interface TreeEditingSearchMenuProps {
-  items: TreeEditingMenuItem[]
+  items: BreadcrumbItem[]
   onPathSelect: (path: Path) => void
   textInputElement: HTMLInputElement | null
 }
@@ -62,7 +62,7 @@ export function TreeEditingSearchMenu(props: TreeEditingSearchMenuProps): React.
   const {t} = useTranslation()
 
   const renderItem = useCallback(
-    (item: TreeEditingMenuItem) => {
+    (item: BreadcrumbItem) => {
       const isFirst = isEqual(item.path, items[0].path)
 
       return <ResultItem isFirst={isFirst} item={item} onPathSelect={onPathSelect} />
