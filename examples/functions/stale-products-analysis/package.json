@@ -1,5 +1,5 @@
 {
-  "name": "stale-products",
+  "name": "stale-products-analysis",
   "type": "module",
   "main": "index.ts",
   "dependencies": {
@@ -7,9 +7,9 @@
     "@sanity/functions": "^1.0.3"
   },
   "blueprintResourceItem": {
-    "name": "stale-products",
+    "name": "stale-products-analysis",
     "type": "sanity.function.document",
-    "src": "./functions/stale-products",
+    "src": "./functions/stale-products-analysis",
     "memory": 1,
     "timeout": 30,
     "event": {

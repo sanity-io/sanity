@@ -11,6 +11,12 @@ interface PagePayload {
       productWithVariant?: {
         product?: {
           _id: string
+          _createdAt: string
+          _updatedAt: string
+          title?: string
+          store?: {
+            title?: string
+          }
         }
       }
     }>
@@ -27,6 +33,31 @@ interface ProductWithDates {
   }
 }
 
+const query = `*[_id == $id][0] {
+  _id,
+  modules[] {
+    _type,
+    (_type == 'grid') => {
+      items[] {
+        _type,
+        (_type == 'productReference') => {
+          productWithVariant {
+            product-> {
+              _id,
+              _createdAt,
+              _updatedAt,
+              title,
+              store {
+                title
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}`
+
 const STALE_PRODUCT_THRESHOLD_DAYS = 30
 
 export const handler = documentEventHandler(async ({context, event}) => {
@@ -34,12 +65,7 @@ export const handler = documentEventHandler(async ({context, event}) => {
   console.log('📝 Event:', event)
 
   try {
-    const {_id, _type} = event.data as PagePayload
-
-    if (_type !== 'page') {
-      console.log('⏭️ Skipping non-page document:', _type)
-      return
-    }
+    const {_id} = event.data as PagePayload
 
     const client = createClient({
       ...context.clientOptions,
@@ -52,52 +78,7 @@ export const handler = documentEventHandler(async ({context, event}) => {
     // Fetch the page with its modules and product data in one query
     // We're intentionally showing a more complex query to demonstrate real world usage,
     // you may have additional modules/fields with product references you'd want to analyze
-    const page = await client.fetch<{
-      _id: string
-      modules: Array<{
-        _type: string
-        items?: Array<{
-          _type: string
-          productWithVariant?: {
-            product?: {
-              _id: string
-              _createdAt: string
-              _updatedAt: string
-              title?: string
-              store?: {
-                title?: string
-              }
-            }
-          }
-        }>
-      }>
-    }>(
-      `*[_id == $id][0] {
-      _id,
-      modules[] {
-        _type,
-        (_type == 'grid') => {
-          items[] {
-            _type,
-            (_type == 'productReference') => {
-              productWithVariant {
-                product-> {
-                  _id,
-                  _createdAt,
-                  _updatedAt,
-                  title,
-                  store {
-                    title
-                  }
-                }
-              }
-            }
-          }
-        }
-      }
-    }`,
-      {id: _id},
-    )
+    const page = await client.fetch<PagePayload>(query, {id: _id})
 
     if (!page) {
       console.log('❌ Page not found:', _id)
@@ -105,26 +86,7 @@ export const handler = documentEventHandler(async ({context, event}) => {
     }
 
     // Extract product data directly from the query result
-    const products: ProductWithDates[] = []
-
-    page.modules?.forEach((module) => {
-      if (module._type === 'grid' && module.items) {
-        module.items.forEach((item) => {
-          if (item._type === 'productReference' && item.productWithVariant?.product) {
-            const product = item.productWithVariant.product
-            if (product._id && product._createdAt && product._updatedAt) {
-              products.push({
-                _id: product._id,
-                _createdAt: product._createdAt,
-                _updatedAt: product._updatedAt,
-                title: product.title,
-                store: product.store,
-              })
-            }
-          }
-        })
-      }
-    })
+    const products = extraProductData(page)
 
     // Remove duplicates based on product ID
     const productMap = new Map<string, ProductWithDates>()
@@ -215,3 +177,28 @@ export const handler = documentEventHandler(async ({context, event}) => {
     throw error
   }
 })
+
+// This function extracts product data from the page modules, as you add additional modules you would
+// need to add additional logic to extract the product data from the new module
+const extraProductData = (page: PagePayload) => {
+  const products: ProductWithDates[] = []
+  page.modules?.forEach((module) => {
+    if (module._type === 'grid' && module.items) {
+      module.items.forEach((item) => {
+        if (item._type === 'productReference' && item.productWithVariant?.product) {
+          const product = item.productWithVariant.product
+          if (product._id && product._createdAt && product._updatedAt) {
+            products.push({
+              _id: product._id,
+              _createdAt: product._createdAt,
+              _updatedAt: product._updatedAt,
+              title: product.title,
+              store: product.store,
+            })
+          }
+        }
+      })
+    }
+  })
+  return products
+}

@@ -104,7 +104,7 @@ defineField({
           },
     },
   ],
-  description: 'Automatically populated by the stale-products function',
+  description: 'Automatically populated by the stale-products-analysis function',
   readOnly: true,
 }),
 ```
@@ -118,13 +118,13 @@ defineField({
    For a new project:
 
    ```bash
-   npx sanity blueprints init --example stale-products
+   npx sanity blueprints init --example stale-products-analysis
    ```
 
    For an existing project:
 
    ```bash
-   npx sanity blueprints add function --example stale-products
+   npx sanity blueprints add function --example stale-products-analysis
    ```
 
    You'll be prompted to select your organization and Sanity studio.
@@ -139,10 +139,10 @@ defineField({
      resources: [
        defineDocumentFunction({
          type: 'sanity.function.document',
-         name: 'stale-products',
+         name: 'stale-products-analysis',
          memory: 1,
          timeout: 30,
-         src: './functions/stale-products',
+         src: './functions/stale-products-analysis',
          event: {
            on: ['create', 'update'],
            filter: "_type == 'page' && delta::changedAny(modules)",
@@ -165,7 +165,7 @@ defineField({
 
    ```bash
    npm install @sanity/functions
-   cd functions/stale-products
+   cd functions/stale-products-analysis
    npm install
    cd ../..
    ```
@@ -187,7 +187,7 @@ defineField({
 
 ## Testing the function locally
 
-You can test the stale-products function locally using the Sanity CLI before deploying it to production.
+You can test the stale-products-analysis function locally using the Sanity CLI before deploying it to production.
 
 **Important:** Document functions require that the document ID used in testing actually exists in your dataset. The examples below show how to work with real document IDs.
 
@@ -227,7 +227,7 @@ npx sanity documents create test-page.json --replace
 
 # Back to project root for function testing
 cd ..
-npx sanity functions test stale-products --file studio/test-page.json --dataset production --with-user-token
+npx sanity functions test stale-products-analysis --file studio/test-page.json --dataset production --with-user-token
 ```
 
 **Alternative:** Test with a real page from your dataset:
@@ -239,7 +239,7 @@ npx sanity documents query "*[_type == 'page'][0]" > ../real-page.json
 
 # Back to project root for function testing
 cd ..
-npx sanity functions test stale-products --file real-page.json --dataset production --with-user-token
+npx sanity functions test stale-products-analysis --file real-page.json --dataset production --with-user-token
 ```
 
 ### 2. Interactive Development Mode
@@ -290,7 +290,7 @@ cat > test-custom-page.json << EOF
 EOF
 
 # Test with the custom data file
-npx sanity functions test stale-products --file test-custom-page.json --dataset production --with-user-token
+npx sanity functions test stale-products-analysis --file test-custom-page.json --dataset production --with-user-token
 ```
 
 ### 4. Test with Real Document Data
@@ -304,7 +304,7 @@ npx sanity documents query "*[_type == 'page' && defined(modules)][0]" > ../test
 
 # Back to project root for function testing
 cd ..
-npx sanity functions test stale-products --file test-real-page.json --dataset production --with-user-token
+npx sanity functions test stale-products-analysis --file test-real-page.json --dataset production --with-user-token
 ```
 
 ### 5. Enable Debugging
