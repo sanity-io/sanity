@@ -1,7 +1,7 @@
 import {type SanityClient} from '@sanity/client'
 import {type CurrentUser} from '@sanity/types'
 
-import {createWorkspaceFromConfig} from '../../src/core/config'
+import {createWorkspaceFromConfig} from '../../src/core/config/resolveConfig'
 import {
   type SchemaPluginOptions,
   type SingleWorkspace,

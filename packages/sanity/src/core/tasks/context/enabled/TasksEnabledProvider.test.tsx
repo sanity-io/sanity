@@ -6,7 +6,16 @@ import {useWorkspace} from '../../../studio/workspace'
 import {TasksEnabledProvider} from './TasksEnabledProvider'
 import {useTasksEnabled} from './useTasksEnabled'
 
-vi.mock('../../../hooks')
+vi.mock('../../../hooks/useFeatureEnabled', () => ({
+  useFeatureEnabled: vi.fn(),
+  FEATURES: {
+    contentReleases: 'contentReleases',
+    crossDatasetReferences: 'crossDatasetReferences',
+    sanityTasks: 'sanityTasks',
+    scheduledPublishing: 'scheduledPublishing',
+    studioComments: 'studioComments',
+  },
+}))
 
 vi.mock('../../../studio/workspace', () => ({
   useWorkspace: vi.fn().mockReturnValue({}),

@@ -9,7 +9,7 @@ import {type SearchTerms} from '../common/types'
 import {createWeightedSearch} from './createWeightedSearch'
 
 // Mock client
-vi.mock('../../hooks', () => ({
+vi.mock('../../hooks/useClient', () => ({
   useClient: () => ({
     observable: {
       fetch: vi.fn(),

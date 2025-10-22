@@ -9,7 +9,7 @@ import {documentsInRelease} from '../../tool/detail/__tests__/__mocks__/useBundl
 import {type DocumentInRelease} from '../../tool/detail/useBundleDocuments'
 import {useCustomReleaseActions} from '../useCustomReleaseActions'
 
-vi.mock('../../../studio', () => ({
+vi.mock('../../../studio/source', () => ({
   useSource: vi.fn(),
 }))
 
