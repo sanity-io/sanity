@@ -200,6 +200,7 @@ function ObjectOrArrayField(field: ObjectFieldProps | ArrayFieldProps) {
           level={field.level}
           onCollapse={field.onCollapse}
           onExpand={field.onExpand}
+          schemaType={field.schemaType}
           title={field.title}
           validation={field.validation}
           inputId={field.inputId}
@@ -257,6 +258,7 @@ function ImageOrFileField(field: ObjectFieldProps) {
           inputId={field.inputId}
           deprecated={field.schemaType.deprecated}
           path={field.path}
+          schemaType={field.schemaType}
           readOnly={field.inputProps.readOnly}
         >
           {field.children}

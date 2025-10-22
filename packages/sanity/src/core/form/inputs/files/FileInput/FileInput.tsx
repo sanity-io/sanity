@@ -215,6 +215,7 @@ export function BaseFileInput(props: BaseFileInputProps) {
               renderInput={renderInput}
               renderItem={renderItem}
               renderPreview={renderPreview}
+              schemaType={schemaType}
             />
           )
         }

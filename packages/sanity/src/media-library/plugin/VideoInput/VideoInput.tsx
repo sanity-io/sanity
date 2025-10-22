@@ -208,6 +208,7 @@ export function BaseVideoInput(props: BaseVideoInputProps) {
               renderInput={renderInput}
               renderItem={renderItem}
               renderPreview={renderPreview}
+              schemaType={schemaType}
             />
           )
         }
