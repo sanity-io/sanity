@@ -95,6 +95,7 @@ export function TreeEditingDialog(props: TreeEditingDialogProps): React.JSX.Elem
           : nextState.breadcrumbs
 
       // Preserve siblings / counter when clicking on text content in portable text editors
+      // Do NOT preserve siblings when the PTE is at document root level (eg: body) - only for nested PTEs
       const nextSiblings =
         isPathWithinPTEtext && treeState.siblings && treeState.siblings.size > 0
           ? treeState.siblings

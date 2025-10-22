@@ -749,11 +749,11 @@ describe('buildArrayState', () => {
     const subItemsSiblings = result.siblings.get('nestedArray[_key=="nested1"].subItems')
     expect(subItemsSiblings).toEqual({
       count: 2, // Two items in subItems (sub1 and sub2)
-      index: 1, // 1-based index of the selected item (sub2 is second)
+      index: 2, // 1-based index of the selected item (sub2 is second)
     })
   })
 
-  test('when openPath points to a text block, it should set siblings correctly (parents)', () => {
+  test('when openPath points to a text block, it should set siblings correctly (none)', () => {
     const openPath: Path = ['portableTextArray', {_key: 'block1'}]
     const pteArrayField = documentSchema.fields.find(
       (f) => f.name === 'portableTextArray',
@@ -768,15 +768,10 @@ describe('buildArrayState', () => {
     const result = buildArrayState(props)
 
     // Should have siblings information for the portableTextArray
-    expect(result.siblings.has('portableTextArray')).toBe(true)
-    const siblingsInfo = result.siblings.get('portableTextArray')
-    expect(siblingsInfo).toEqual({
-      count: 2, // Two items in portableTextArray (block1 and custom1)
-      index: 1, // 1-based index of the selected item (block1 is first)
-    })
+    expect(result.siblings.has('portableTextArray')).toBe(false)
   })
 
-  test('when openPath points to a text block, it should set siblings correctly (deeply nested)', () => {
+  test('when openPath points to a text block, it should set siblings correctly (deeply nested) - none', () => {
     const openPath: Path = ['portableTextArray', {_key: 'custom1'}, 'items', {_key: 'item1'}]
     const pteArrayField = documentSchema.fields.find(
       (f) => f.name === 'portableTextArray',
@@ -791,12 +786,7 @@ describe('buildArrayState', () => {
     const result = buildArrayState(props)
 
     // Should have siblings information for the portableTextArray
-    expect(result.siblings.has('portableTextArray')).toBe(true)
-    const siblingsInfo = result.siblings.get('portableTextArray')
-    expect(siblingsInfo).toEqual({
-      count: 2, // Two items in portableTextArray
-      index: 2, // 1-based index of the selected item (custom1 is second)
-    })
+    expect(result.siblings.has('portableTextArray')).toBe(false)
   })
 
   test('when openPath points to a object field that has no array fields, it should set siblings correctly (0)', () => {

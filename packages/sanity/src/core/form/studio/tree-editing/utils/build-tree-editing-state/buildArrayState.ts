@@ -95,7 +95,7 @@ export function buildArrayState(props: BuildArrayState): TreeEditingState {
     // Check if openPath is within this array item (for fields within the item)
     // This needs to be less strict than the isArrayItemSelected check
     // Because from a UI perspective we're still within the item
-    // Important: do NOT set siblings for Portable Text arrays (arrays of blocks)
+    // Important: do NOT set siblings for Portable Text arrays (arrays of blocks) as we handle them differently
     if (
       item._key &&
       toString(openPath).startsWith(toString(itemPath)) &&
@@ -176,7 +176,7 @@ export function buildArrayState(props: BuildArrayState): TreeEditingState {
 
             // Check if openPath is within this nested array item (for fields within the item)
             // Avoids setting siblings that we do not care about
-            if (isArrayItemSelected(nestedItemPath, openPath)) {
+            if (toString(openPath).startsWith(toString(nestedItemPath))) {
               siblings.set(toString(fieldPath), {
                 count: arrayFieldValue.length,
                 index: nestedIndex + 1,
@@ -220,7 +220,7 @@ export function buildArrayState(props: BuildArrayState): TreeEditingState {
         const updateChildArrayIndex = (childItem: unknown, childIndex: number) => {
           const childItemObj = childItem as Record<string, unknown>
           const childItemPath = [...childPath, {_key: childItemObj._key}] as Path
-          if (isArrayItemSelected(childItemPath, openPath)) {
+          if (toString(openPath).startsWith(toString(childItemPath))) {
             // When the parent array is a PTE (array of blocks) and this child array is the block's
             // 'children' array, skip siblings so inline custom objects don't show siblings
             const isBlockChildrenArray =

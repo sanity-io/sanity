@@ -460,7 +460,7 @@ describe('buildArrayStatePTE', () => {
     expect(result.siblings.get('body.custom1.items')).toEqual({count: 2, index: 1})
   })
 
-  test('when openPath points to a nested text block, it should set siblings correctly (parents)', () => {
+  test('when openPath points to a nested text block, it should set siblings correctly (none)', () => {
     const openPath: Path = [
       'body',
       {_key: 'custom1'},
@@ -489,19 +489,14 @@ describe('buildArrayStatePTE', () => {
     const result = buildArrayStatePTE(props)
 
     // Should preserve all parent siblings even when pointing to text content
-    expect(result.siblings.has('body.custom1.items')).toBe(true)
-    expect(result.siblings.get('body.custom1.items')).toEqual({count: 2, index: 1})
-    expect(result.siblings.has('body.custom1.items.item1.nestedItems')).toBe(true)
-    expect(result.siblings.get('body.custom1.items.item1.nestedItems')).toEqual({
-      count: 3,
-      index: 1,
-    })
+    expect(result.siblings.has('body.custom1.items')).toBe(false)
+    expect(result.siblings.has('body.custom1.items.item1.nestedItems')).toBe(false)
 
     // Should return null for relativePath since it's text content
     expect(result.relativePath).toBeNull()
   })
 
-  test('when openPath points to a nested text block, it should set siblings correctly (deeply nested)', () => {
+  test('when openPath points to a nested text block, it should set siblings correctly (deeply nested) - none', () => {
     const openPath: Path = [
       'body',
       {_key: 'custom1'},
@@ -530,13 +525,8 @@ describe('buildArrayStatePTE', () => {
     const result = buildArrayStatePTE(props)
 
     // Should preserve all parent siblings even when pointing to text content
-    expect(result.siblings.has('body.custom1.items')).toBe(true)
-    expect(result.siblings.get('body.custom1.items')).toEqual({count: 2, index: 1})
-    expect(result.siblings.has('body.custom1.items.item1.nestedItems')).toBe(true)
-    expect(result.siblings.get('body.custom1.items.item1.nestedItems')).toEqual({
-      count: 3,
-      index: 1,
-    })
+    expect(result.siblings.has('body.custom1.items')).toBe(false)
+    expect(result.siblings.has('body.custom1.items.item1.nestedItems')).toBe(false)
 
     // Should return null for relativePath since it's text content
     expect(result.relativePath).toBeNull()
