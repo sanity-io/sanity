@@ -7,7 +7,7 @@ import {debounce, isEqual} from 'lodash'
 import {useCallback, useEffect, useMemo, useRef, useState} from 'react'
 import {css, styled} from 'styled-components'
 
-import {Dialog} from '../../../../../ui-components'
+import {Dialog} from '../../../../../ui-components/dialog/Dialog'
 import {pathToString, stringToPath} from '../../../../field/paths/helpers'
 import {FormInput} from '../../../components/FormInput'
 import {VirtualizerScrollInstanceProvider} from '../../../inputs/arrays/ArrayOfObjectsInput/List/VirtualizerScrollInstanceProvider'
