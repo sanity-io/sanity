@@ -20,6 +20,7 @@ import {type FormNodePresence} from '../../../presence'
 import {useFieldActions} from '../../field'
 import {createDescriptionId} from '../../members/common/createDescriptionId'
 import {type FieldCommentsProps} from '../../types'
+import {FormRow} from '../layout/FormRow'
 import {FormFieldBaseHeader} from './FormFieldBaseHeader'
 import {FormFieldSetLegend} from './FormFieldSetLegend'
 import {FormFieldValidationStatus} from './FormFieldValidationStatus'
@@ -187,72 +188,77 @@ export const FormFieldSet = forwardRef(function FormFieldSet(
   }, [children, collapsed, columns])
 
   return (
-    <Root
-      data-level={level}
-      {...restProps}
-      onMouseEnter={onMouseEnter}
-      onMouseLeave={onMouseLeave}
-      space={2}
-    >
-      <FormFieldBaseHeader
-        __internal_comments={comments}
-        __internal_slot={slot}
-        actions={actions}
-        fieldFocused={Boolean(focused)}
-        fieldHovered={hovered}
-        presence={presence}
-        inputId={inputId}
-        content={
-          <Stack space={3}>
-            <Flex align="center">
-              {title && (
-                <FormFieldSetLegend
-                  collapsed={Boolean(collapsed)}
-                  collapsible={collapsible}
-                  onClick={collapsible ? handleToggle : undefined}
-                  title={title}
-                />
-              )}
-              {deprecated && (
-                <Box marginLeft={2}>
-                  <Badge data-testid={`deprecated-badge-${title}`} tone="caution">
-                    {t('form.field.deprecated-label')}
-                  </Badge>
-                </Box>
-              )}
-              {hasValidationMarkers && (
-                <Box marginLeft={2}>
-                  <FormFieldValidationStatus fontSize={1} placement="top" validation={validation} />
-                </Box>
-              )}
-            </Flex>
-
-            {deprecated && (
-              <TextWithTone data-testid={`deprecated-message-${title}`} tone="caution" size={1}>
-                {deprecated.reason}
-              </TextWithTone>
-            )}
-
-            {description && (
-              <Text muted size={1} id={createDescriptionId(inputId, description)}>
-                {description}
-              </Text>
-            )}
-          </Stack>
-        }
-      />
-
-      <Content
-        $borderLeft={level > 0}
-        $focused={Boolean(focused)}
-        hidden={collapsed}
-        paddingLeft={level === 0 ? 0 : 3}
-        onFocus={typeof tabIndex === 'number' && tabIndex > -1 ? handleFocus : undefined}
-        ref={ref}
-        tabIndex={tabIndex}
+    <FormRow>
+      <Root
+        data-level={level}
+        {...restProps}
+        onMouseEnter={onMouseEnter}
+        onMouseLeave={onMouseLeave}
+        space={2}
       >
-        {!collapsed && content}
-      </Content>
-    </Root>
+        <FormFieldBaseHeader
+          __internal_comments={comments}
+          __internal_slot={slot}
+          actions={actions}
+          fieldFocused={Boolean(focused)}
+          fieldHovered={hovered}
+          presence={presence}
+          inputId={inputId}
+          content={
+            <Stack space={3}>
+              <Flex align="center">
+                {title && (
+                  <FormFieldSetLegend
+                    collapsed={Boolean(collapsed)}
+                    collapsible={collapsible}
+                    onClick={collapsible ? handleToggle : undefined}
+                    title={title}
+                  />
+                )}
+                {deprecated && (
+                  <Box marginLeft={2}>
+                    <Badge data-testid={`deprecated-badge-${title}`} tone="caution">
+                      {t('form.field.deprecated-label')}
+                    </Badge>
+                  </Box>
+                )}
+                {hasValidationMarkers && (
+                  <Box marginLeft={2}>
+                    <FormFieldValidationStatus
+                      fontSize={1}
+                      placement="top"
+                      validation={validation}
+                    />
+                  </Box>
+                )}
+              </Flex>
+
+              {deprecated && (
+                <TextWithTone data-testid={`deprecated-message-${title}`} tone="caution" size={1}>
+                  {deprecated.reason}
+                </TextWithTone>
+              )}
+
+              {description && (
+                <Text muted size={1} id={createDescriptionId(inputId, description)}>
+                  {description}
+                </Text>
+              )}
+            </Stack>
+          }
+        />
+        <Content
+          $borderLeft={level > 0}
+          $focused={Boolean(focused)}
+          hidden={collapsed}
+          paddingLeft={level === 0 ? 0 : 3}
+          onFocus={typeof tabIndex === 'number' && tabIndex > -1 ? handleFocus : undefined}
+          ref={ref}
+          tabIndex={tabIndex}
+        >
+          {!collapsed && content}
+        </Content>
+      </Root>
+    </FormRow>
   )
 })

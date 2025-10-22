@@ -9,7 +9,7 @@ import {type ComponentType, useMemo, useState} from 'react'
 
 import {ChangeIndicator} from '../../../changeIndicators'
 import {type DocumentFieldActionNode} from '../../../config'
-import {FormField, FormFieldSet} from '../../components'
+import {FormField, FormFieldSet, FormRow} from '../../components'
 import {usePublishedId} from '../../contexts/DocumentIdProvider'
 import {FieldActionsProvider, FieldActionsResolver} from '../../field'
 import {ReferenceField} from '../../inputs/ReferenceInput/ReferenceField'
@@ -24,8 +24,12 @@ function BooleanField(field: FieldProps) {
   const [fieldActionsNodes, setFieldActionNodes] = useState<DocumentFieldActionNode[]>(EMPTY_ARRAY)
   const focused = Boolean(field.inputProps.focused)
 
+  // Boolean fields do not compose `FormField` or `FormFieldSet` components, so
+  // their content does not implicitly get rendered inside a `FormRow` like
+  // other fields' content does. Instead, the `FormRow` container is explicitly
+  // rendered here.
   return (
-    <>
+    <FormRow>
       {documentId && field.actions && field.actions.length > 0 && (
         <FieldActionsResolver
           actions={field.actions}
@@ -51,7 +55,7 @@ function BooleanField(field: FieldProps) {
           {field.children}
         </FieldActionsProvider>
       </ChangeIndicator>
-    </>
+    </FormRow>
   )
 }
 
@@ -63,8 +67,12 @@ function DateTimeField(field: FieldProps) {
   const [fieldActionsNodes, setFieldActionNodes] = useState<DocumentFieldActionNode[]>(EMPTY_ARRAY)
   const focused = Boolean(field.inputProps.focused)
 
+  // DateTime fields do not compose `FormField` or `FormFieldSet` components, so
+  // their content does not implicitly get rendered inside a `FormRow` like
+  // other fields' content does. Instead, the `FormRow` container is explicitly
+  // rendered here.
   return (
-    <>
+    <FormRow>
       {documentId && field.actions && field.actions.length > 0 && (
         <FieldActionsResolver
           actions={field.actions}
@@ -84,7 +92,7 @@ function DateTimeField(field: FieldProps) {
       >
         {field.children}
       </FieldActionsProvider>
-    </>
+    </FormRow>
   )
 }
 

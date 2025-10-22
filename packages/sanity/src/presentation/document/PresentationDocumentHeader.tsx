@@ -2,7 +2,7 @@ import {rem} from '@sanity/ui'
 // eslint-disable-next-line camelcase
 import {getTheme_v2} from '@sanity/ui/theme'
 import {type ReactNode, useContext} from 'react'
-import {type ObjectSchemaType, type PublishedId} from 'sanity'
+import {FormRow, type ObjectSchemaType, type PublishedId} from 'sanity'
 import {PresentationDocumentContext} from 'sanity/_singletons'
 import {css, styled} from 'styled-components'
 
@@ -42,19 +42,21 @@ export function PresentationDocumentHeader(props: {
   }
 
   return (
-    <LocationStack>
-      {contextOptions.map((_options, idx) => (
-        <LocationsBanner
-          // oxlint-disable-next-line no-array-index-key
-          key={idx}
-          documentId={documentId}
-          options={_options}
-          resolvers={resolvers[idx]}
-          schemaType={schemaType}
-          showPresentationTitle={contextOptions.length > 1}
-          version={version}
-        />
-      ))}
-    </LocationStack>
+    <FormRow>
+      <LocationStack>
+        {contextOptions.map((_options, idx) => (
+          <LocationsBanner
+            // oxlint-disable-next-line no-array-index-key
+            key={idx}
+            documentId={documentId}
+            options={_options}
+            resolvers={resolvers[idx]}
+            schemaType={schemaType}
+            showPresentationTitle={contextOptions.length > 1}
+            version={version}
+          />
+        ))}
+      </LocationStack>
+    </FormRow>
   )
 }
