@@ -262,7 +262,7 @@ export function useDocumentForm(options: DocumentFormOptions): DocumentFormValue
   const upstreamEditState = useEditState(
     documentId,
     documentType,
-    'low',
+    'default',
     getVersionFromId(upstreamId ?? ''),
   )
 

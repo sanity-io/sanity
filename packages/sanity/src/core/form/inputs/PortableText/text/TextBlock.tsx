@@ -6,8 +6,11 @@ import {type ReactNode, useCallback, useEffect, useMemo, useState} from 'react'
 
 import {Tooltip} from '../../../../../ui-components'
 import {useHoveredChange} from '../../../../changeIndicators/useHoveredChange'
+import {selectDivergence} from '../../../../divergence/divergenceNavigator'
 import {pathToString} from '../../../../field'
 import {EMPTY_ARRAY} from '../../../../util'
+import {FormNodeDivergenceDetail} from '../../../components/FormNodeDivergenceDetail'
+import {useDocumentDivergences} from '../../../contexts/DivergencesProvider'
 import {useFormCallbacks} from '../../../studio'
 import {useChildPresence} from '../../../studio/contexts/Presence'
 import {
@@ -108,6 +111,8 @@ export function TextBlock(props: TextBlockProps) {
   const schemaTypes = usePortableTextMemberSchemaTypes()
   const {onChange} = useFormCallbacks()
   const hoveredChange = useHoveredChange()
+  const divergenceNavigator = useDocumentDivergences()
+  const divergence = selectDivergence(divergenceNavigator.state, path)
 
   /**
    * Save the last valid memberItem data to prevent DOM mutations during text selection.
@@ -124,6 +129,8 @@ export function TextBlock(props: TextBlockProps) {
 
   const changeHovered =
     hoveredChange && pathToString(hoveredChange?.path || []) === pathToString(path)
+
+  const isFocusedDivergence = divergenceNavigator.state.focusedDivergence === pathToString(path)
 
   const presence = useChildPresence(path, true)
   // Include all presence paths pointing either directly to a block, or directly to a block child
@@ -306,59 +313,63 @@ export function TextBlock(props: TextBlockProps) {
       style={debugRender()}
     >
       <TextBlockFlexWrapper data-testid="text-block__wrapper">
-        <Flex flex={1} {...innerPaddingProps}>
-          <Box flex={1} style={{anchorName: anchorIdent}}>
-            <Tooltip
-              content={toolTipContent}
-              disabled={!tooltipEnabled}
-              placement="top"
-              portal="editor"
-            >
-              <TextRoot
-                $level={value.level || 1}
-                data-error={hasError ? '' : undefined}
-                data-list-item={value.listItem}
-                data-markers={hasMarkers ? '' : undefined}
-                data-read-only={readOnly}
-                data-testid="text-block__text"
-                data-warning={hasWarning ? '' : undefined}
-                spellCheck={spellCheck}
+        <FormNodeDivergenceDetail path={path} readOnly={readOnly}>
+          <Flex flex={1} {...innerPaddingProps}>
+            <Box flex={1} style={{anchorName: anchorIdent}}>
+              <Tooltip
+                content={toolTipContent}
+                disabled={!tooltipEnabled}
+                placement="top"
+                portal="editor"
               >
-                {renderBlock && renderBlock(componentProps)}
-              </TextRoot>
-            </Tooltip>
-          </Box>
+                <TextRoot
+                  $level={value.level || 1}
+                  data-error={hasError ? '' : undefined}
+                  data-list-item={value.listItem}
+                  data-markers={hasMarkers ? '' : undefined}
+                  data-read-only={readOnly}
+                  data-testid="text-block__text"
+                  data-warning={hasWarning ? '' : undefined}
+                  spellCheck={spellCheck}
+                >
+                  {renderBlock && renderBlock(componentProps)}
+                </TextRoot>
+              </Tooltip>
+            </Box>
 
-          {blockActionsEnabled && (
-            <BlockActionsOuter contentEditable={false} marginRight={3}>
-              <BlockActionsInner>
-                {focused && (
-                  <BlockActions
-                    block={value}
-                    onChange={onChange}
-                    renderBlockActions={renderBlockActions}
-                  />
-                )}
-              </BlockActionsInner>
-            </BlockActionsOuter>
-          )}
+            {blockActionsEnabled && (
+              <BlockActionsOuter contentEditable={false} marginRight={3}>
+                <BlockActionsInner>
+                  {focused && (
+                    <BlockActions
+                      block={value}
+                      onChange={onChange}
+                      renderBlockActions={renderBlockActions}
+                    />
+                  )}
+                </BlockActionsInner>
+              </BlockActionsOuter>
+            )}
 
-          {changeIndicatorVisible && (
-            <ChangeIndicatorWrapper
-              // Use current memberItem when available for accurate data, fallback to cached for stability
-              $hasChanges={(memberItem ?? memberItemRef).member.item.changed}
-              contentEditable={false}
-            >
-              <StyledChangeIndicatorWithProvidedFullPath
-                hasFocus={focused}
-                isChanged={(memberItem ?? memberItemRef).member.item.changed}
-                path={(memberItem ?? memberItemRef).member.item.path}
-                withHoverEffect={false}
-              />
-            </ChangeIndicatorWrapper>
-          )}
-          {changeHovered && <ReviewChangesHighlightBlock $fullScreen={Boolean(isFullscreen)} />}
-        </Flex>
+            {changeIndicatorVisible && (
+              <ChangeIndicatorWrapper
+                // Use current memberItem when available for accurate data, fallback to cached for stability
+                $hasChanges={(memberItem ?? memberItemRef).member.item.changed}
+                contentEditable={false}
+              >
+                <StyledChangeIndicatorWithProvidedFullPath
+                  hasFocus={focused}
+                  isChanged={(memberItem ?? memberItemRef).member.item.changed}
+                  path={(memberItem ?? memberItemRef).member.item.path}
+                  withHoverEffect={false}
+                />
+              </ChangeIndicatorWrapper>
+            )}
+            {(changeHovered || isFocusedDivergence) && (
+              <ReviewChangesHighlightBlock $fullScreen={Boolean(isFullscreen)} />
+            )}
+          </Flex>
+        </FormNodeDivergenceDetail>
       </TextBlockFlexWrapper>
     </Box>
   )

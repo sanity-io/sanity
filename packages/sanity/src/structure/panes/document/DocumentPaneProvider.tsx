@@ -6,8 +6,17 @@ import {
   type SanityDocumentLike,
 } from '@sanity/types'
 import {fromString as pathFromString, resolveKeyedPath} from '@sanity/util/paths'
-import {useEffectEvent, useCallback, useEffect, useMemo, useRef, useState} from 'react'
 import {
+  type ComponentType,
+  useCallback,
+  useEffect,
+  useEffectEvent,
+  useMemo,
+  useRef,
+  useState,
+} from 'react'
+import {
+  DivergencesProvider,
   type DocumentActionsContext,
   type DocumentActionsVersionType,
   type DocumentFieldAction,
@@ -26,6 +35,7 @@ import {
   selectUpstreamVersion,
   useActiveReleases,
   useCopyPaste,
+  useDocumentDivergences,
   useDocumentForm,
   useDocumentIdStack,
   usePerspective,
@@ -697,7 +707,19 @@ export function DocumentPaneProvider(props: DocumentPaneProviderProps) {
 
   return (
     <DocumentPaneInfoContext.Provider value={documentPaneInfo}>
-      <DocumentPaneContext.Provider value={documentPane}>{children}</DocumentPaneContext.Provider>
+      <DocumentPaneContext.Provider value={documentPane}>
+        <DivergencesProvider
+          upstreamEditState={upstreamEditState}
+          editState={editState}
+          subjectId={documentId}
+          schemaType={formState.schemaType}
+          displayedId={value._id}
+          formState={formState}
+        >
+          <DivergenceAutofocus onProgrammaticFocus={onProgrammaticFocus} />
+          {children}
+        </DivergencesProvider>
+      </DocumentPaneContext.Provider>
     </DocumentPaneInfoContext.Provider>
   )
 }
@@ -740,4 +762,22 @@ function getDocumentVersionType(
   }
 
   return version
+}
+
+const DivergenceAutofocus: ComponentType<
+  Pick<ReturnType<typeof useDocumentForm>, 'onProgrammaticFocus'>
+> = ({onProgrammaticFocus}) => {
+  const divergenceNavigator = useDocumentDivergences()
+
+  const focusDivergentPath = useEffectEvent(() => {
+    if (typeof divergenceNavigator.state.focusedDivergence !== 'undefined') {
+      onProgrammaticFocus(pathFromString(divergenceNavigator.state.focusedDivergence))
+    }
+  })
+
+  useEffect(() => {
+    focusDivergentPath()
+  }, [divergenceNavigator.state.focusedDivergence])
+
+  return null
 }

@@ -17,6 +17,7 @@ import {useDocumentPreviewStore} from '../../../../store'
 import {useSource} from '../../../../studio'
 import {useSearchMaxFieldDepth} from '../../../../studio/components/navbar/search/hooks/useSearchMaxFieldDepth'
 import {DEFAULT_STUDIO_CLIENT_OPTIONS} from '../../../../studioClient'
+import {FormNodeDivergenceDetail} from '../../../components/FormNodeDivergenceDetail'
 import {useFormValue} from '../../../contexts/FormValue'
 import {CrossDatasetReferenceInput} from '../../../inputs/CrossDatasetReferenceInput'
 import {type ObjectInputProps} from '../../../types'
@@ -77,7 +78,7 @@ type SearchError = {
  * @beta
  */
 export function StudioCrossDatasetReferenceInput(props: StudioCrossDatasetReferenceInputProps) {
-  const {path, schemaType} = props
+  const {path, schemaType, readOnly} = props
   const source = useSource()
   const client = source.getClient(DEFAULT_STUDIO_CLIENT_OPTIONS)
   const documentPreviewStore = useDocumentPreviewStore()
@@ -133,10 +134,12 @@ export function StudioCrossDatasetReferenceInput(props: StudioCrossDatasetRefere
   )
 
   return (
-    <CrossDatasetReferenceInput
-      {...props}
-      getReferenceInfo={getReferenceInfo}
-      onSearch={handleSearch}
-    />
+    <FormNodeDivergenceDetail path={path} readOnly={readOnly}>
+      <CrossDatasetReferenceInput
+        {...props}
+        getReferenceInfo={getReferenceInfo}
+        onSearch={handleSearch}
+      />
+    </FormNodeDivergenceDetail>
   )
 }
