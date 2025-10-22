@@ -566,6 +566,7 @@ exports[`exports snapshot 1`] = `
     "useDialogStack": "function",
     "useDidUpdate": "function",
     "useDiffAnnotationColor": "function",
+    "useDivergenceNavigator": "function",
     "useDocumentChange": "function",
     "useDocumentForm": "function",
     "useDocumentIdStack": "function",
