@@ -235,9 +235,12 @@ export class Timeline {
    * Once the timeline is updated, you must re-parse all references.
    */
   parseTimeId(id: string): ParsedTimeRef {
+    console.log('[PARSE]', '-A', {id})
     if (this._chunks.length === 0) {
       return this.reachedEarliestEntry ? 'invalid' : 'loading'
     }
+
+    console.log('[PARSE]', 'A', {id})
 
     // NOTE:
     // This was refactored from
@@ -246,25 +249,35 @@ export class Timeline {
     // ```
     // in order to avoid issues with `@microsoft/api-extractor`.
     const idSegments = id.split('/', 3)
+    console.log('[PARSE]', 'B', {idSegments})
     const timestampStr = idSegments.shift()
     const chunkId = idSegments.shift()
     const timestamp = Number(timestampStr)
+    console.log('[PARSE]', 'C', {timestampStr, chunkId, timestamp})
 
     for (let idx = this._chunks.lastIdx; idx >= this._chunks.firstIdx; idx--) {
       const chunk = this._chunks.get(idx)
+      console.log('[PARSE]', 'D', {chunk, idx, chunkId})
       if (chunk.id === chunkId) {
         return chunk
       }
+
+      // if (Date.parse(chunk.endTimestamp) >= timestamp) {
+      //   console.log('[PARSE]', 'D+', {chunk, idx, chunkId, timestamp})
+      //   return chunk
+      // }
 
       if (Date.parse(chunk.endTimestamp) + 60 * 60 * 1000 < timestamp) {
         // The chunk ended _before_ the timestamp we're asking for. This means that there
         // is no point in looking further and the chunk is invalid.
 
         // We add 1 hour to allow some slack since transactions are not guaranteed to be in order.
+        console.log('[PARSE]', 'E', 'invalid')
         return 'invalid'
       }
     }
 
+    console.log('[PARSE]', 'F', this.reachedEarliestEntry ? 'invalid' : 'loading')
     return this.reachedEarliestEntry ? 'invalid' : 'loading'
   }
 

@@ -81,6 +81,8 @@ export function StringInputPortableText(props: StringInputProps) {
     computeDiff,
   })
 
+  // console.log('[PATH]', props.path)
+
   const handleEditorEvent = useCallback(
     (event: EditorEmittedEvent) => {
       if (event.type === 'focused') {

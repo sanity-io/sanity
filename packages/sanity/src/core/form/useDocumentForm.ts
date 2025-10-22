@@ -1,4 +1,5 @@
 /* eslint-disable max-statements */
+
 import {type SanityDocument} from '@sanity/client'
 import {isActionEnabled} from '@sanity/schema/_internal'
 import {useTelemetry} from '@sanity/telemetry/react'
@@ -21,10 +22,13 @@ import {
   useState,
 } from 'react'
 import deepEquals from 'react-fast-compare'
+import {useObservable} from 'react-rx'
+import {of, tap, toArray} from 'rxjs'
 
 import {useCanvasCompanionDoc} from '../canvas/actions/useCanvasCompanionDoc'
 import {isSanityCreateLinkedDocument} from '../create/createUtils'
-import {useReconnectingToast} from '../hooks'
+import {findDivergences} from '../divergence/findDivergences'
+import {useClient, useReconnectingToast} from '../hooks'
 import {type ConnectionState, useConnectionState} from '../hooks/useConnectionState'
 import {useDocumentIdStack} from '../hooks/useDocumentIdStack'
 import {useDocumentOperation} from '../hooks/useDocumentOperation'
@@ -48,9 +52,11 @@ import {
   type PermissionCheckResult,
   selectUpstreamVersion,
   useDocumentValuePermissions,
+  useEventsStore,
   usePresenceStore,
 } from '../store'
 import {isNewDocument} from '../store/_legacy/document/isNewDocument'
+import {getDocumentAtRevision} from '../store/events/getDocumentAtRevision'
 import {
   EMPTY_ARRAY,
   getDraftId,
@@ -153,6 +159,7 @@ export function useDocumentForm(options: DocumentFormOptions): DocumentFormValue
     onFocusPath,
     displayInlineChanges,
   } = options
+  const client = useClient({apiVersion: '2025-10-26'}) // xxx!
   const schema = useSchema()
   const presenceStore = usePresenceStore()
   const {data: releases} = useActiveReleases()
@@ -423,6 +430,105 @@ export function useDocumentForm(options: DocumentFormOptions): DocumentFormValue
   })
   const handleChange = useCallback((event: PatchEvent) => patchRef.current(event), [])
 
+  // console.log('[value id]', value._id)
+
+  // `{ type: "createDocumentVersion"}` can be used to grab `timestamp`, which reflects when version created
+  const eventsStore = useEventsStore({
+    // documentId: releaseId ? getVersionId(documentId, releaseId) : documentId,
+    documentId: value._id,
+    documentType: editState.type /* , rev: editState.version, since*/,
+  })
+
+  // const upstreamEventsStore = useEventsStore({
+  //   documentId: selectUpstreamVersion(upstreamEditState)?._id ?? documentId,
+  //   documentType: editState.type /* , rev: editState.version, since*/,
+  // })
+
+  // upstreamEventsStore.getChangesList() // xxx
+
+  const versionCreatedAt = useMemo(
+    () => eventsStore.events.find((event) => event.type === 'createDocumentVersion')?.timestamp,
+    [eventsStore.events],
+  )
+
+  // const upstreamAtForkStore = useTimelineStore({
+  //   documentId: selectUpstreamVersion(upstreamEditState)?._id ?? documentId,
+  //   // documentId: 'ad8d3bd5-1990-454a-9f82-71c28864dfe8',
+  //   documentType,
+  //   onError: (error) => console.error(error),
+  //   // rev: params.rev,
+  //   // rev: 'UXAXn1cxk7P5t3sh0OC6dr',
+  //   // since: versionCreatedAt, // (-1ms)
+  //   since:
+  //     typeof versionCreatedAt === 'string'
+  //       ? // ? `${new Date(versionCreatedAt).getTime().toString()}/UXAXn1cxk7P5t3sh0OC6dr`
+  //         new Date(versionCreatedAt).getTime().toString()
+  //       : undefined,
+  //   // since: '@lastPublished',
+  //   // rev: '5e73LZVBzvO1Aylk80XvhO',
+  // })
+
+  // const upstreamAtForkTimeline = useTimelineSelector(
+  //   upstreamAtForkStore,
+  //   // (state) => state.timelineDisplayed,
+  //   (state) => state.sinceAttributes,
+  //   // (state) => state.lastNonDeletedRevId,
+  //   // (state) => state,
+  // )
+
+  const upstream = selectUpstreamVersion(upstreamEditState)
+
+  const upstreamAtFork$ = useMemo(
+    () =>
+      typeof versionCreatedAt === 'string' && typeof upstream?._id === 'string'
+        ? getDocumentAtRevision({
+            client,
+            documentId: upstream?._id,
+            time: versionCreatedAt,
+          })
+        : of(null),
+    [client, upstream?._id, versionCreatedAt],
+  )
+
+  const upstreamAtFork = useObservable(upstreamAtFork$, null)
+
+  // useEffect(() => {
+  //   console.log('[UPSTREAM AT FORK]', versionCreatedAt, upstreamAtFork)
+  // }, [documentId, documentType, upstreamAtFork, upstreamEditState, versionCreatedAt])
+
+  const divergences$ = useMemo(
+    () =>
+      findDivergences({
+        upstreamAtFork: upstreamAtFork?.document ?? undefined,
+        upstream: selectUpstreamVersion(upstreamEditState) ?? undefined,
+        subject: editState.version ?? editState.draft ?? undefined,
+        resolutions: (editState.version ?? editState.draft)?._system?.divergenceResolutions,
+      }).pipe(
+        toArray(),
+        tap((divergences) => console.log('[divergences!]', divergences)),
+      ),
+    [editState, upstreamAtFork?.document, upstreamEditState],
+  )
+
+  useObservable(divergences$)
+
+  // useEffect(() => {
+  //   if (typeof versionCreatedAt === 'undefined') {
+  //     return
+  //   }
+
+  //   ;(async () => {
+  //     for await (const divergence of findDivergences({
+  //       upstreamEditState,
+  //       editState,
+  //       upstreamAtFork: upstreamAtFork?.document ?? undefined,
+  //       // versionCreatedAt,
+  //     })) {
+  //       console.log('[divergence]', divergence)
+  //     }
+  //   })()
+  // }, [editState, eventsStore.events, upstreamAtFork, upstreamEditState, versionCreatedAt])
+
   useInsertionEffect(() => {
     // Create-linked documents enter a read-only state in Studio. However, unlinking a Create-linked
     // document necessitates patching it. This renders it impossible to unlink a Create-linked
@@ -619,3 +725,186 @@ export function useDocumentForm(options: DocumentFormOptions): DocumentFormValue
     onSetCollapsedFieldSet: handleOnSetCollapsedFieldSet,
   }
 }
+
+// async function* findDivergences({
+//   upstreamEditState,
+//   editState,
+//   upstreamAtFork,
+// }: FindDivergencesContext): AsyncGenerator<DivergenceAtPath> {
+//   // the problem with this approach is that changing any upstream field causes that document's
+//   // revision to change. the effect is that changes to any field in the upstream will result in a
+//   // divergence for all fields in the subject doc, even for fields that are unchanged since the last
+//   // resolution marker.
+//   //
+//   // lazy solution might be to store the upstream value in addition to the `_rev` in the `_system`
+//   // data of the subject doc. a divergence would require the upstream doc `_rev` has changes *and*
+//   // the content at the given field path has changed. however, this feels inefficient. maybe we could
+//   // use a hash instead? 🤔
+//   //
+//   // two fold approach:
+//   //   - first check `_rev` as an inexpensive comparison.
+//   //   - if rev changed, calculate and compare sha-1 hash.
+//   //
+//   // bonus:
+//   //   - we don't need transactions at all; just two documents to compare.
+//   //   - having the `_rev` means we can compute how the upstream has changed since the last
+//   //     resolution marker.
+//   //
+//   // how will this be stored in `_system`?
+//   //
+//   // ```json
+//   // {
+//   //   "_system": {
+//   //     "title": ["someRev", "someHash"],
+//   //     "someArray": ["someRev", "someHash"],
+//   //     "someArray[0]": ["someRev", "someHash"],
+//   //     "someObjectArray": ["someRev", "someHash"],
+//   //     "someObjectArray[_key=x].title": ["someRev", "someHash"],
+//   //     "someObject": ["someRev", "someHash"],
+//   //     "someObject.title": ["someRev", "someHash"]
+//   //   }
+//   // }
+//   // ```
+//   //
+//   // why store resolution markers for parent arrays and objects in addition to each member?
+//   //   - allows us to determine that a member was added, removed, or moved.
+//   //
+//   // what about understanding intention e.g. that an array member moved. or seeing who made the change?
+//   //   - identify existency of divergence cheaply using document comparison approach.
+//   //   - lazily computer further details on closer inspection. requires loading and processing
+//   //     transactions, which is more costly.
+//   //
+//   // things to be wary of:
+//   //   - removal or fields and setting fields to `null`.
+//   //   - upstream changing due to previous upstream being published or removed. should resolution marker include upstream id?
+//   //
+//   // ***
+//   //
+//   // another approach could be to walk the transaction log of the upstream in order to identify
+//   // whether any mutations have occurred for the given field path since the last resolution marker.
+//   // however, this is complicated and potentially costly in the quanity of data we'd need to load.
+//   // it also has the downside that noop changes could be identified as divergences (e.g. a value is
+//   // changed from "x" -> "y" -> "x" in the upstream since the last resolution marker).
+//   const upstream = selectUpstreamVersion(upstreamEditState)
+//   const value = editState.version ?? editState.draft
+
+//   if (upstream === null || value === null) {
+//     return // {}
+//   }
+
+//   // this would come from `_system` in the document
+//   const divergenceStatus: Record<string, ResolutionMarker> = {
+//     'image': ['GHo0Y0SNkSU8z2lb76buJ5', '9746c39664f005cd7b92aa24ab119fc5e11b53e8'],
+//     'image._type': ['GHo0Y0SNkSU8z2lb76buJ5', '0e76292794888d4f1fa75fb3aff4ca27c58f56a6'],
+//     'name': ['GHo0Y0SNkSU8z2lb76buJ5', 'bb3a7f6c39752c310e6a6e65bb8fe0772cf7bce0'],
+//     // 'slug': ['someRevision', 'someHash'],
+//     // 'slug.current': ['someRevision', 'someHash'],
+//   }
+
+//   const state: Record<string, Record<SnapshotType, unknown | undefined>> = {}
+
+//   for (const [snapshotType, [flatPath, nodeValue]] of combineIterators(
+//     flattenObject(value).map((v) => ['current', v]),
+//     flattenObject(upstream).map((v) => ['upstream', v]),
+//     flattenObject(upstreamAtFork ?? {}).map((v) => ['upstreamAtFork', v]),
+//   )) {
+//     state[flatPath] ??= {}
+//     state[flatPath][snapshotType] = nodeValue
+//   }
+
+//   for (const [flatPath, snapshots] of Object.entries(state)) {
+//     const resolutionMarker = divergenceStatus[flatPath]
+//     const nextResolutionMarkerXxx = [upstream._rev, await hashAnything(snapshots.upstream)]
+
+//     const strategy: DivergenceDetectionStrategy =
+//       typeof resolutionMarker === 'undefined' ? 'sinceFork' : 'sinceResolution'
+
+//     if (strategy === 'sinceFork') {
+//       // xxx what if new upstream created after fork? probably get earliest existing snapshot
+//       if (upstreamAtFork?._rev !== upstream._rev) {
+//         const [hashA, hashB] = await Promise.all([
+//           hashAnything(snapshots.upstreamAtFork),
+//           hashAnything(snapshots.upstream),
+//         ])
+
+//         if (hashA !== hashB) {
+//           yield [
+//             flatPath,
+//             {
+//               status: 'unresolved',
+//               debugA: {
+//                 hashA,
+//                 hashB,
+//                 snapshots,
+//                 nextResolutionMarkerXxx,
+//               },
+//             },
+//           ]
+//         }
+//       }
+
+//       continue
+//     }
+
+//     if (strategy === 'sinceResolution') {
+//       if (upstream._rev !== resolutionMarker[0]) {
+//         const hashA = await hashAnything(snapshots.upstream)
+
+//         if (hashA !== resolutionMarker[1]) {
+//           yield [
+//             flatPath,
+//             {
+//               status: 'unresolved',
+//               debugB: {
+//                 hashA,
+//                 hashB: resolutionMarker[1],
+//                 snapshots,
+//                 nextResolutionMarkerXxx,
+//               },
+//             },
+//           ]
+//         }
+//       }
+//     }
+//   }
+
+//   // this field has no existing resolution markers
+//   // we will need to check whether the upstream value has changed since version was created
+//   //
+//   // - has there been mutation to this node in upstream since version was created?
+//   // - AND is hash of current upstream value different to hash of current version value?
+//   //
+//   // 1. load transanctions for version… when was it created? sadly we can't determine this from the doc itself, as it inherits the base document's timestamps when it's created.
+//   // 2. load transactions for upstream (potentially *since version was created*. pro: less data, con: creates waterfall). has a mutation occurred at given path since version was created?
+//   // 3. if upstream has been mutated, is the hash of its value different to the hash of the value at the given path?
+
+//   // if there is a resolution marker, we don't need translog.
+//   // instead, we check:
+//   //   - is the upstream rev different to the resolution marker's rev?
+//   //   - AND is the hash of the upstream value different to the resolution marker's rev?
+// }
+
+// const stuff = combineIterators(
+//   (function* () {
+//     yield 'a'
+//   })(),
+//   (function* () {
+//     yield 1
+//   })(),
+// )
+
+// for (const thing of stuff) {
+//   console.log(thing)
+// }
+
+// function* combineIterators<A>(...iterators: Generator<A>[]): Generator<A> {
+//   for (const iterator of iterators) {
+//     yield* iterator
+//   }
+// }
+//
+// function* combineIterators(...iterators: Generator<any, any, any>[]): Generator<any, any, any> {
+//   for (const iterator of iterators) {
+//     yield* iterator
+//   }
+// }

@@ -11,20 +11,32 @@ export function getDocumentAtRevision({
   client,
   documentId,
   revisionId,
+  time,
 }: {
   client: SanityClient
   documentId: string
-  revisionId: string
-}): Observable<EventsStoreRevision | null> {
+} & (
+  | {
+      revisionId: string
+      time?: never
+    }
+  | {
+      time: string
+      revisionId?: never
+    }
+)): Observable<EventsStoreRevision | null> {
   if (revisionId === HISTORY_CLEARED_EVENT_ID) {
     return of({document: null, loading: false, revisionId: revisionId})
   }
-  const cacheKey = `${documentId}@${revisionId}`
+  const cacheKey = `${documentId}@${revisionId ?? time}`
   const dataset = client.config().dataset
   if (!documentRevisionCache[cacheKey]) {
+    const searchParams = new URLSearchParams(
+      typeof revisionId === 'string' ? {revision: revisionId} : {time},
+    )
     documentRevisionCache[cacheKey] = client.observable
       .request<{documents: SanityDocument[]}>({
-        url: `/data/history/${dataset}/documents/${documentId}?revision=${revisionId}`,
+        url: `/data/history/${dataset}/documents/${documentId}?${searchParams}`,
         tag: 'get-document-revision',
       })
       .pipe(
