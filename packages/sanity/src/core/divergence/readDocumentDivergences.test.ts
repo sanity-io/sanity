@@ -80,7 +80,7 @@ it('ignores divergences in system fields', async () => {
           "effect": "set",
           "isAddressable": true,
           "path": "someNonSystemField",
-          "sinceRevisionId": "revA",
+          "sinceRevisionId": "a@revA",
           "snapshots": {
             "subjectHead": {
               "parentArray": undefined,
@@ -193,7 +193,7 @@ it('emits only a divergences on the object when upstream object type has changed
           "effect": "changeObjectType",
           "isAddressable": true,
           "path": "someObjectArray[_key=="a"]",
-          "sinceRevisionId": "revA",
+          "sinceRevisionId": "a@revA",
           "snapshots": {
             "subjectHead": {
               "parentArray": undefined,
@@ -321,7 +321,7 @@ it('emits only a divergences on the object when upstream object type has changed
       resolutions: [
         {
           _key: 'someObjectArray[_key=="a"]',
-          resolutionMarker: ['revB', await hashData(upstreamHead.someObjectArray[0])],
+          resolutionMarker: ['a@revB', await hashData(upstreamHead.someObjectArray[0])],
         },
       ],
     }).pipe(toSortedArray()),
@@ -337,7 +337,7 @@ it('emits only a divergences on the object when upstream object type has changed
           "effect": "changeObjectType",
           "isAddressable": true,
           "path": "someObjectArray[_key=="a"]",
-          "sinceRevisionId": "revA",
+          "sinceRevisionId": "a@revA",
           "snapshots": {
             "subjectHead": {
               "parentArray": undefined,
@@ -476,7 +476,7 @@ it('emits only a divergences on the object when upstream object type no longer m
           "effect": "changeObjectType",
           "isAddressable": true,
           "path": "someObjectArray[_key=="a"]",
-          "sinceRevisionId": "revA",
+          "sinceRevisionId": "a@revA",
           "snapshots": {
             "subjectHead": undefined,
             "upstreamAtFork": {
@@ -580,28 +580,28 @@ it('emits divergences that have been resolved', async () => {
       resolutions: [
         {
           _key: 'someNonSystemField',
-          resolutionMarker: ['revB', await hashData('c')],
+          resolutionMarker: ['a@revB', await hashData('c')],
         },
         {
           _key: 'somePrimitiveArray',
-          resolutionMarker: ['revB', await hashData(['b', 'c', 'a'])],
+          resolutionMarker: ['a@revB', await hashData(['b', 'c', 'a'])],
         },
         {
           _key: 'somePrimitiveArray[0]',
-          resolutionMarker: ['revB', await hashData('b')],
+          resolutionMarker: ['a@revB', await hashData('b')],
         },
         {
           _key: 'somePrimitiveArray[1]',
-          resolutionMarker: ['revB', await hashData('c')],
+          resolutionMarker: ['a@revB', await hashData('c')],
         },
         {
           _key: 'somePrimitiveArray[2]',
-          resolutionMarker: ['revB', await hashData('a')],
+          resolutionMarker: ['a@revB', await hashData('a')],
         },
         {
           _key: 'someObjectArray',
           resolutionMarker: [
-            'revB',
+            'a@revB',
             await hashData([
               {_key: 'a', value: 'a1'},
               {_key: 'b', value: 'b1'},
@@ -610,11 +610,11 @@ it('emits divergences that have been resolved', async () => {
         },
         {
           _key: 'someObjectArray[_key=="a"].value',
-          resolutionMarker: ['revB', await hashData('a1')],
+          resolutionMarker: ['a@revB', await hashData('a1')],
         },
         {
           _key: 'someObjectArray[_key=="b"].value',
-          resolutionMarker: ['revB', await hashData('bu1')],
+          resolutionMarker: ['a@revB', await hashData('bu1')],
         },
       ],
     }).pipe(toSortedArray()),
@@ -629,7 +629,7 @@ it('emits divergences that have been resolved', async () => {
           "documentType": "article",
           "isAddressable": false,
           "path": "someNonSystemField",
-          "sinceRevisionId": "revB",
+          "sinceRevisionId": "a@revB",
           "snapshots": {
             "subjectHead": {
               "parentArray": undefined,
@@ -676,7 +676,7 @@ it('emits divergences that have been resolved', async () => {
           "documentType": "article",
           "isAddressable": false,
           "path": "someObjectArray",
-          "sinceRevisionId": "revB",
+          "sinceRevisionId": "a@revB",
           "snapshots": {
             "subjectHead": {
               "parentArray": undefined,
@@ -750,7 +750,7 @@ it('emits divergences that have been resolved', async () => {
           "documentType": "article",
           "isAddressable": false,
           "path": "someObjectArray[_key=="a"].value",
-          "sinceRevisionId": "revB",
+          "sinceRevisionId": "a@revB",
           "snapshots": {
             "subjectHead": {
               "parentArray": undefined,
@@ -821,7 +821,7 @@ it('emits divergences that have been resolved', async () => {
           "documentType": "article",
           "isAddressable": false,
           "path": "someObjectArray[_key=="b"].value",
-          "sinceRevisionId": "revB",
+          "sinceRevisionId": "a@revB",
           "snapshots": {
             "subjectHead": {
               "parentArray": undefined,
@@ -892,7 +892,7 @@ it('emits divergences that have been resolved', async () => {
           "documentType": "article",
           "isAddressable": false,
           "path": "somePrimitiveArray",
-          "sinceRevisionId": "revB",
+          "sinceRevisionId": "a@revB",
           "snapshots": {
             "subjectHead": {
               "parentArray": undefined,
@@ -949,7 +949,7 @@ it('emits divergences that have been resolved', async () => {
           "documentType": "article",
           "isAddressable": false,
           "path": "somePrimitiveArray[0]",
-          "sinceRevisionId": "revB",
+          "sinceRevisionId": "a@revB",
           "snapshots": {
             "subjectHead": {
               "parentArray": [
@@ -1018,7 +1018,7 @@ it('emits divergences that have been resolved', async () => {
           "documentType": "article",
           "isAddressable": false,
           "path": "somePrimitiveArray[1]",
-          "sinceRevisionId": "revB",
+          "sinceRevisionId": "a@revB",
           "snapshots": {
             "subjectHead": {
               "parentArray": [
@@ -1087,7 +1087,7 @@ it('emits divergences that have been resolved', async () => {
           "documentType": "article",
           "isAddressable": false,
           "path": "somePrimitiveArray[2]",
-          "sinceRevisionId": "revB",
+          "sinceRevisionId": "a@revB",
           "snapshots": {
             "subjectHead": undefined,
             "upstreamAtFork": undefined,
@@ -1167,7 +1167,7 @@ it('emits divergences that have been resolved if the _rev is stale but the hash 
         // Stale _rev, up-to-date hash.
         {
           _key: 'someNonSystemField',
-          resolutionMarker: ['revA', await hashData('c')],
+          resolutionMarker: ['a@revA', await hashData('c')],
         },
       ],
     }).pipe(toSortedArray()),
@@ -1183,7 +1183,7 @@ it('emits divergences that have been resolved if the _rev is stale but the hash 
           "effect": "set",
           "isAddressable": true,
           "path": "someNonSystemField",
-          "sinceRevisionId": "revA",
+          "sinceRevisionId": "a@revA",
           "snapshots": {
             "subjectHead": {
               "parentArray": undefined,
@@ -1275,7 +1275,7 @@ it('emits divergences that have stale resolutions', async () => {
         // Stale _rev and hash.
         {
           _key: 'someNonSystemField',
-          resolutionMarker: ['revA', await hashData('a')],
+          resolutionMarker: ['a@revA', await hashData('a')],
         },
       ],
     }).pipe(toSortedArray()),
@@ -1291,7 +1291,7 @@ it('emits divergences that have stale resolutions', async () => {
           "effect": "set",
           "isAddressable": true,
           "path": "someNonSystemField",
-          "sinceRevisionId": "revA",
+          "sinceRevisionId": "a@revA",
           "snapshots": {
             "subjectHead": {
               "parentArray": undefined,
@@ -1383,7 +1383,7 @@ it('emits divergences that have stale resolutions but are implicitly resolved be
         // Stale _rev and hash.
         {
           _key: 'someNonSystemField',
-          resolutionMarker: ['revA', await hashData('a')],
+          resolutionMarker: ['a@revA', await hashData('a')],
         },
       ],
     }).pipe(toSortedArray()),
@@ -1399,7 +1399,7 @@ it('emits divergences that have stale resolutions but are implicitly resolved be
           "effect": "set",
           "isAddressable": true,
           "path": "someNonSystemField",
-          "sinceRevisionId": "revA",
+          "sinceRevisionId": "a@revA",
           "snapshots": {
             "subjectHead": {
               "parentArray": undefined,
@@ -1491,7 +1491,7 @@ it('emits divergences when arrays of primitives have been reordered', async () =
           "effect": "set",
           "isAddressable": true,
           "path": "somePrimitiveArray[0]",
-          "sinceRevisionId": "revA",
+          "sinceRevisionId": "a@revA",
           "snapshots": {
             "subjectHead": {
               "parentArray": [
@@ -1560,7 +1560,7 @@ it('emits divergences when arrays of primitives have been reordered', async () =
           "effect": "set",
           "isAddressable": true,
           "path": "somePrimitiveArray[1]",
-          "sinceRevisionId": "revA",
+          "sinceRevisionId": "a@revA",
           "snapshots": {
             "subjectHead": {
               "parentArray": [
@@ -1674,7 +1674,7 @@ it('emits divergences when arrays of objects have been reordered', async () => {
           "effect": "move",
           "isAddressable": true,
           "path": "someObjectArray[_key=="d"]",
-          "sinceRevisionId": "revA",
+          "sinceRevisionId": "a@revA",
           "snapshots": {
             "subjectHead": {
               "parentArray": [
@@ -1859,12 +1859,12 @@ it('emits resolved divergences when arrays of objects have been reordered', asyn
         {
           _key: 'someObjectArray[_key=="c"]',
           // resolutionMarker: ['revA', ['c', 'd', 'a', 'b']],
-          resolutionMarker: ['revA', 0],
+          resolutionMarker: ['a@revA', 0],
         },
         {
           _key: 'someObjectArray[_key=="d"]',
           // resolutionMarker: ['revA', ['c', 'd', 'a', 'b']],
-          resolutionMarker: ['revA', 1],
+          resolutionMarker: ['a@revA', 1],
         },
       ],
     }).pipe(toSortedArray()),
@@ -2057,7 +2057,7 @@ it('emits divergences for fields in added objects', async () => {
           "effect": "set",
           "isAddressable": false,
           "path": "someObject",
-          "sinceRevisionId": "revA",
+          "sinceRevisionId": "a@revA",
           "snapshots": {
             "subjectHead": undefined,
             "upstreamAtFork": undefined,
@@ -2091,7 +2091,7 @@ it('emits divergences for fields in added objects', async () => {
           "effect": "set",
           "isAddressable": true,
           "path": "someObject.b",
-          "sinceRevisionId": "revA",
+          "sinceRevisionId": "a@revA",
           "snapshots": {
             "subjectHead": undefined,
             "upstreamAtFork": undefined,
@@ -2123,7 +2123,7 @@ it('emits divergences for fields in added objects', async () => {
           "effect": "set",
           "isAddressable": true,
           "path": "someObject.c",
-          "sinceRevisionId": "revA",
+          "sinceRevisionId": "a@revA",
           "snapshots": {
             "subjectHead": undefined,
             "upstreamAtFork": undefined,
@@ -2155,7 +2155,7 @@ it('emits divergences for fields in added objects', async () => {
           "effect": "set",
           "isAddressable": false,
           "path": "someObject.e",
-          "sinceRevisionId": "revA",
+          "sinceRevisionId": "a@revA",
           "snapshots": {
             "subjectHead": undefined,
             "upstreamAtFork": undefined,
@@ -2189,7 +2189,7 @@ it('emits divergences for fields in added objects', async () => {
           "effect": "set",
           "isAddressable": true,
           "path": "someObject.e.f",
-          "sinceRevisionId": "revA",
+          "sinceRevisionId": "a@revA",
           "snapshots": {
             "subjectHead": undefined,
             "upstreamAtFork": undefined,
@@ -2279,7 +2279,7 @@ it('emits divergences for fields in removed objects', async () => {
           "effect": "unset",
           "isAddressable": false,
           "path": "someObject",
-          "sinceRevisionId": "revA",
+          "sinceRevisionId": "a@revA",
           "snapshots": {
             "subjectHead": {
               "parentArray": undefined,
@@ -2328,7 +2328,7 @@ it('emits divergences for fields in removed objects', async () => {
           "effect": "unset",
           "isAddressable": true,
           "path": "someObject.b",
-          "sinceRevisionId": "revA",
+          "sinceRevisionId": "a@revA",
           "snapshots": {
             "subjectHead": {
               "parentArray": undefined,
@@ -2374,7 +2374,7 @@ it('emits divergences for fields in removed objects', async () => {
           "effect": "unset",
           "isAddressable": true,
           "path": "someObject.c",
-          "sinceRevisionId": "revA",
+          "sinceRevisionId": "a@revA",
           "snapshots": {
             "subjectHead": undefined,
             "upstreamAtFork": {
@@ -2406,7 +2406,7 @@ it('emits divergences for fields in removed objects', async () => {
           "effect": "unset",
           "isAddressable": false,
           "path": "someObject.e",
-          "sinceRevisionId": "revA",
+          "sinceRevisionId": "a@revA",
           "snapshots": {
             "subjectHead": {
               "parentArray": undefined,
@@ -2456,7 +2456,7 @@ it('emits divergences for fields in removed objects', async () => {
           "effect": "unset",
           "isAddressable": true,
           "path": "someObject.e.f",
-          "sinceRevisionId": "revA",
+          "sinceRevisionId": "a@revA",
           "snapshots": {
             "subjectHead": {
               "parentArray": undefined,
@@ -2565,7 +2565,7 @@ it('emits divergences for fields in nullified objects', async () => {
           "effect": "set",
           "isAddressable": false,
           "path": "someObject",
-          "sinceRevisionId": "revA",
+          "sinceRevisionId": "a@revA",
           "snapshots": {
             "subjectHead": {
               "parentArray": undefined,
@@ -2624,7 +2624,7 @@ it('emits divergences for fields in nullified objects', async () => {
           "effect": "unset",
           "isAddressable": true,
           "path": "someObject.b",
-          "sinceRevisionId": "revA",
+          "sinceRevisionId": "a@revA",
           "snapshots": {
             "subjectHead": {
               "parentArray": undefined,
@@ -2670,7 +2670,7 @@ it('emits divergences for fields in nullified objects', async () => {
           "effect": "unset",
           "isAddressable": true,
           "path": "someObject.c",
-          "sinceRevisionId": "revA",
+          "sinceRevisionId": "a@revA",
           "snapshots": {
             "subjectHead": undefined,
             "upstreamAtFork": {
@@ -2702,7 +2702,7 @@ it('emits divergences for fields in nullified objects', async () => {
           "effect": "unset",
           "isAddressable": false,
           "path": "someObject.e",
-          "sinceRevisionId": "revA",
+          "sinceRevisionId": "a@revA",
           "snapshots": {
             "subjectHead": {
               "parentArray": undefined,
@@ -2752,7 +2752,7 @@ it('emits divergences for fields in nullified objects', async () => {
           "effect": "unset",
           "isAddressable": true,
           "path": "someObject.e.f",
-          "sinceRevisionId": "revA",
+          "sinceRevisionId": "a@revA",
           "snapshots": {
             "subjectHead": {
               "parentArray": undefined,
@@ -2849,7 +2849,7 @@ it('emits divergences for fields in added primitive arrays', async () => {
           "isAddressable": true,
           "path": "someArray[0]",
           "position": -1,
-          "sinceRevisionId": "revA",
+          "sinceRevisionId": "a@revA",
           "snapshots": {
             "subjectHead": undefined,
             "upstreamAtFork": undefined,
@@ -2886,7 +2886,7 @@ it('emits divergences for fields in added primitive arrays', async () => {
           "isAddressable": true,
           "path": "someArray[1]",
           "position": -1,
-          "sinceRevisionId": "revA",
+          "sinceRevisionId": "a@revA",
           "snapshots": {
             "subjectHead": undefined,
             "upstreamAtFork": undefined,
@@ -2923,7 +2923,7 @@ it('emits divergences for fields in added primitive arrays', async () => {
           "isAddressable": true,
           "path": "someArray[2]",
           "position": -1,
-          "sinceRevisionId": "revA",
+          "sinceRevisionId": "a@revA",
           "snapshots": {
             "subjectHead": undefined,
             "upstreamAtFork": undefined,
@@ -3002,7 +3002,7 @@ it('emits divergences for fields in removed primitive arrays', async () => {
           "effect": "unset",
           "isAddressable": true,
           "path": "someArray[0]",
-          "sinceRevisionId": "revA",
+          "sinceRevisionId": "a@revA",
           "snapshots": {
             "subjectHead": {
               "parentArray": [
@@ -3055,7 +3055,7 @@ it('emits divergences for fields in removed primitive arrays', async () => {
           "effect": "unset",
           "isAddressable": true,
           "path": "someArray[1]",
-          "sinceRevisionId": "revA",
+          "sinceRevisionId": "a@revA",
           "snapshots": {
             "subjectHead": {
               "parentArray": [
@@ -3108,7 +3108,7 @@ it('emits divergences for fields in removed primitive arrays', async () => {
           "effect": "unset",
           "isAddressable": true,
           "path": "someArray[2]",
-          "sinceRevisionId": "revA",
+          "sinceRevisionId": "a@revA",
           "snapshots": {
             "subjectHead": undefined,
             "upstreamAtFork": {
@@ -3189,7 +3189,7 @@ it('emits divergences for items added to primitive arrays', async () => {
           "isAddressable": true,
           "path": "someArray[3]",
           "position": -1,
-          "sinceRevisionId": "revA",
+          "sinceRevisionId": "a@revA",
           "snapshots": {
             "subjectHead": undefined,
             "upstreamAtFork": undefined,
@@ -3260,7 +3260,7 @@ it('emits divergences for items added to primitive arrays since resolution', asy
         // Stale _rev.
         {
           _key: 'someArray[3]',
-          resolutionMarker: ['revA', await hashData('d')],
+          resolutionMarker: ['a@revA', await hashData('d')],
         },
       ],
     }).pipe(toSortedArray()),
@@ -3277,7 +3277,7 @@ it('emits divergences for items added to primitive arrays since resolution', asy
           "effect": "set",
           "isAddressable": true,
           "path": "someArray[3]",
-          "sinceRevisionId": "revA",
+          "sinceRevisionId": "a@revA",
           "snapshots": {
             "subjectHead": undefined,
             "upstreamAtFork": undefined,
@@ -3358,7 +3358,7 @@ it('emits divergences for items removed from primitive arrays', async () => {
           "effect": "unset",
           "isAddressable": true,
           "path": "someArray[2]",
-          "sinceRevisionId": "revA",
+          "sinceRevisionId": "a@revA",
           "snapshots": {
             "subjectHead": undefined,
             "upstreamAtFork": {
@@ -3428,7 +3428,7 @@ it('emits divergences for items removed from primitive arrays since resolution',
         // Stale _rev.
         {
           _key: 'someArray[3]',
-          resolutionMarker: ['revA', await hashData('c')],
+          resolutionMarker: ['a@revA', await hashData('c')],
         },
       ],
     }).pipe(toSortedArray()),
@@ -3444,7 +3444,7 @@ it('emits divergences for items removed from primitive arrays since resolution',
           "effect": "unset",
           "isAddressable": true,
           "path": "someArray[2]",
-          "sinceRevisionId": "revA",
+          "sinceRevisionId": "a@revA",
           "snapshots": {
             "subjectHead": undefined,
             "upstreamAtFork": {
@@ -3524,7 +3524,7 @@ it('emits divergences for fields in nullified primitive arrays', async () => {
           "effect": "unset",
           "isAddressable": true,
           "path": "someArray[0]",
-          "sinceRevisionId": "revA",
+          "sinceRevisionId": "a@revA",
           "snapshots": {
             "subjectHead": {
               "parentArray": [
@@ -3577,7 +3577,7 @@ it('emits divergences for fields in nullified primitive arrays', async () => {
           "effect": "unset",
           "isAddressable": true,
           "path": "someArray[1]",
-          "sinceRevisionId": "revA",
+          "sinceRevisionId": "a@revA",
           "snapshots": {
             "subjectHead": {
               "parentArray": [
@@ -3630,7 +3630,7 @@ it('emits divergences for fields in nullified primitive arrays', async () => {
           "effect": "unset",
           "isAddressable": true,
           "path": "someArray[2]",
-          "sinceRevisionId": "revA",
+          "sinceRevisionId": "a@revA",
           "snapshots": {
             "subjectHead": undefined,
             "upstreamAtFork": {
@@ -3713,7 +3713,7 @@ it('emits divergences for fields in added object arrays', async () => {
           "isAddressable": true,
           "path": "someArray[_key=="a"]",
           "position": 0,
-          "sinceRevisionId": "revA",
+          "sinceRevisionId": "a@revA",
           "snapshots": {
             "subjectHead": undefined,
             "upstreamAtFork": undefined,
@@ -3761,7 +3761,7 @@ it('emits divergences for fields in added object arrays', async () => {
           "effect": "set",
           "isAddressable": true,
           "path": "someArray[_key=="a"].value",
-          "sinceRevisionId": "revA",
+          "sinceRevisionId": "a@revA",
           "snapshots": {
             "subjectHead": undefined,
             "upstreamAtFork": undefined,
@@ -3798,7 +3798,7 @@ it('emits divergences for fields in added object arrays', async () => {
           "isAddressable": true,
           "path": "someArray[_key=="b"]",
           "position": 1,
-          "sinceRevisionId": "revA",
+          "sinceRevisionId": "a@revA",
           "snapshots": {
             "subjectHead": undefined,
             "upstreamAtFork": undefined,
@@ -3846,7 +3846,7 @@ it('emits divergences for fields in added object arrays', async () => {
           "effect": "set",
           "isAddressable": true,
           "path": "someArray[_key=="b"].value",
-          "sinceRevisionId": "revA",
+          "sinceRevisionId": "a@revA",
           "snapshots": {
             "subjectHead": undefined,
             "upstreamAtFork": undefined,
@@ -3883,7 +3883,7 @@ it('emits divergences for fields in added object arrays', async () => {
           "isAddressable": true,
           "path": "someArray[_key=="c"]",
           "position": 2,
-          "sinceRevisionId": "revA",
+          "sinceRevisionId": "a@revA",
           "snapshots": {
             "subjectHead": undefined,
             "upstreamAtFork": undefined,
@@ -3931,7 +3931,7 @@ it('emits divergences for fields in added object arrays', async () => {
           "effect": "set",
           "isAddressable": true,
           "path": "someArray[_key=="c"].value",
-          "sinceRevisionId": "revA",
+          "sinceRevisionId": "a@revA",
           "snapshots": {
             "subjectHead": undefined,
             "upstreamAtFork": undefined,
@@ -4017,7 +4017,7 @@ it('emits divergences for fields in removed object arrays', async () => {
           "effect": "unset",
           "isAddressable": true,
           "path": "someArray[_key=="a"]",
-          "sinceRevisionId": "revA",
+          "sinceRevisionId": "a@revA",
           "snapshots": {
             "subjectHead": {
               "parentArray": [
@@ -4091,7 +4091,7 @@ it('emits divergences for fields in removed object arrays', async () => {
           "effect": "unset",
           "isAddressable": true,
           "path": "someArray[_key=="a"].value",
-          "sinceRevisionId": "revA",
+          "sinceRevisionId": "a@revA",
           "snapshots": {
             "subjectHead": {
               "parentArray": undefined,
@@ -4145,7 +4145,7 @@ it('emits divergences for fields in removed object arrays', async () => {
           "effect": "unset",
           "isAddressable": true,
           "path": "someArray[_key=="b"]",
-          "sinceRevisionId": "revA",
+          "sinceRevisionId": "a@revA",
           "snapshots": {
             "subjectHead": {
               "parentArray": [
@@ -4219,7 +4219,7 @@ it('emits divergences for fields in removed object arrays', async () => {
           "effect": "unset",
           "isAddressable": true,
           "path": "someArray[_key=="b"].value",
-          "sinceRevisionId": "revA",
+          "sinceRevisionId": "a@revA",
           "snapshots": {
             "subjectHead": {
               "parentArray": undefined,
@@ -4273,7 +4273,7 @@ it('emits divergences for fields in removed object arrays', async () => {
           "effect": "unset",
           "isAddressable": true,
           "path": "someArray[_key=="c"]",
-          "sinceRevisionId": "revA",
+          "sinceRevisionId": "a@revA",
           "snapshots": {
             "subjectHead": undefined,
             "upstreamAtFork": {
@@ -4321,7 +4321,7 @@ it('emits divergences for fields in removed object arrays', async () => {
           "effect": "unset",
           "isAddressable": true,
           "path": "someArray[_key=="c"].value",
-          "sinceRevisionId": "revA",
+          "sinceRevisionId": "a@revA",
           "snapshots": {
             "subjectHead": undefined,
             "upstreamAtFork": {
@@ -4411,7 +4411,7 @@ it('emits divergences for items added to object arrays', async () => {
           "isAddressable": true,
           "path": "someArray[_key=="d"]",
           "position": 3,
-          "sinceRevisionId": "revA",
+          "sinceRevisionId": "a@revA",
           "snapshots": {
             "subjectHead": undefined,
             "upstreamAtFork": undefined,
@@ -4463,7 +4463,7 @@ it('emits divergences for items added to object arrays', async () => {
           "effect": "set",
           "isAddressable": true,
           "path": "someArray[_key=="d"].value",
-          "sinceRevisionId": "revA",
+          "sinceRevisionId": "a@revA",
           "snapshots": {
             "subjectHead": undefined,
             "upstreamAtFork": undefined,
@@ -4542,7 +4542,7 @@ it('emits divergences for items added to object arrays since resolution', async 
         // Stale _rev and hash.
         {
           _key: 'someArray[_key=="d"].value',
-          resolutionMarker: ['revA', await hashData('d')],
+          resolutionMarker: ['a@revA', await hashData('d')],
         },
       ],
     }).pipe(toSortedArray()),
@@ -4559,7 +4559,7 @@ it('emits divergences for items added to object arrays since resolution', async 
           "isAddressable": true,
           "path": "someArray[_key=="d"]",
           "position": 3,
-          "sinceRevisionId": "revA",
+          "sinceRevisionId": "a@revA",
           "snapshots": {
             "subjectHead": undefined,
             "upstreamAtFork": undefined,
@@ -4611,7 +4611,7 @@ it('emits divergences for items added to object arrays since resolution', async 
           "effect": "set",
           "isAddressable": true,
           "path": "someArray[_key=="d"].value",
-          "sinceRevisionId": "revA",
+          "sinceRevisionId": "a@revA",
           "snapshots": {
             "subjectHead": undefined,
             "upstreamAtFork": undefined,
@@ -4698,7 +4698,7 @@ it('emits divergences for items removed from object arrays', async () => {
           "effect": "unset",
           "isAddressable": true,
           "path": "someArray[_key=="c"]",
-          "sinceRevisionId": "revA",
+          "sinceRevisionId": "a@revA",
           "snapshots": {
             "subjectHead": undefined,
             "upstreamAtFork": {
@@ -4746,7 +4746,7 @@ it('emits divergences for items removed from object arrays', async () => {
           "effect": "unset",
           "isAddressable": true,
           "path": "someArray[_key=="c"].value",
-          "sinceRevisionId": "revA",
+          "sinceRevisionId": "a@revA",
           "snapshots": {
             "subjectHead": undefined,
             "upstreamAtFork": {
@@ -4823,7 +4823,7 @@ it('emits divergences for items removed from object arrays since resolution', as
         // Stale _rev and hash.
         {
           _key: 'someArray[_key=="c"].value',
-          resolutionMarker: ['revA', await hashData('d')],
+          resolutionMarker: ['a@revA', await hashData('d')],
         },
       ],
     }).pipe(toSortedArray()),
@@ -4839,7 +4839,7 @@ it('emits divergences for items removed from object arrays since resolution', as
           "effect": "unset",
           "isAddressable": true,
           "path": "someArray[_key=="c"]",
-          "sinceRevisionId": "revA",
+          "sinceRevisionId": "a@revA",
           "snapshots": {
             "subjectHead": undefined,
             "upstreamAtFork": {
@@ -4887,7 +4887,7 @@ it('emits divergences for items removed from object arrays since resolution', as
           "effect": "unset",
           "isAddressable": true,
           "path": "someArray[_key=="c"].value",
-          "sinceRevisionId": "revA",
+          "sinceRevisionId": "a@revA",
           "snapshots": {
             "subjectHead": undefined,
             "upstreamAtFork": {
@@ -4975,7 +4975,7 @@ it('emits divergences for fields in nullified object arrays', async () => {
           "effect": "unset",
           "isAddressable": true,
           "path": "someArray[_key=="a"]",
-          "sinceRevisionId": "revA",
+          "sinceRevisionId": "a@revA",
           "snapshots": {
             "subjectHead": {
               "parentArray": [
@@ -5049,7 +5049,7 @@ it('emits divergences for fields in nullified object arrays', async () => {
           "effect": "unset",
           "isAddressable": true,
           "path": "someArray[_key=="a"].value",
-          "sinceRevisionId": "revA",
+          "sinceRevisionId": "a@revA",
           "snapshots": {
             "subjectHead": {
               "parentArray": undefined,
@@ -5103,7 +5103,7 @@ it('emits divergences for fields in nullified object arrays', async () => {
           "effect": "unset",
           "isAddressable": true,
           "path": "someArray[_key=="b"]",
-          "sinceRevisionId": "revA",
+          "sinceRevisionId": "a@revA",
           "snapshots": {
             "subjectHead": {
               "parentArray": [
@@ -5177,7 +5177,7 @@ it('emits divergences for fields in nullified object arrays', async () => {
           "effect": "unset",
           "isAddressable": true,
           "path": "someArray[_key=="b"].value",
-          "sinceRevisionId": "revA",
+          "sinceRevisionId": "a@revA",
           "snapshots": {
             "subjectHead": {
               "parentArray": undefined,
@@ -5231,7 +5231,7 @@ it('emits divergences for fields in nullified object arrays', async () => {
           "effect": "unset",
           "isAddressable": true,
           "path": "someArray[_key=="c"]",
-          "sinceRevisionId": "revA",
+          "sinceRevisionId": "a@revA",
           "snapshots": {
             "subjectHead": undefined,
             "upstreamAtFork": {
@@ -5279,7 +5279,7 @@ it('emits divergences for fields in nullified object arrays', async () => {
           "effect": "unset",
           "isAddressable": true,
           "path": "someArray[_key=="c"].value",
-          "sinceRevisionId": "revA",
+          "sinceRevisionId": "a@revA",
           "snapshots": {
             "subjectHead": undefined,
             "upstreamAtFork": {
