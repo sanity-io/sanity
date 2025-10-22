@@ -39,7 +39,6 @@ export function ArrayOfObjectsFunctions<
   const handleAddBtnClick = useCallback(() => {
     telemetry.log(CreatedNewObject, {
       path: pathToString(path),
-      timestamp: new Date(),
       origin: enhancedObjectDialogEnabled ? 'nested-object' : 'default',
     })
 

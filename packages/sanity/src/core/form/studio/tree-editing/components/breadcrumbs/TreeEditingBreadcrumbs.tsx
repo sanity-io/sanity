@@ -78,7 +78,6 @@ const MenuButton = function MenuButton(props: MenuButtonProps) {
     onPathSelect(item.path)
     telemetry.log(NavigatedToNestedObjectViaBreadcrumb, {
       path: pathToString(item.path),
-      timestamp: new Date(),
     })
   }, [onPathSelect, item.path, telemetry])
 

@@ -101,7 +101,6 @@ export function TreeEditingDialog(props: TreeEditingDialogProps): React.JSX.Elem
       if (wasDialogClosed && willDialogOpen) {
         telemetry.log(NestedDialogOpened, {
           path: pathToString(nextRelativePath),
-          timestamp: new Date(),
         })
       }
 
@@ -178,7 +177,6 @@ export function TreeEditingDialog(props: TreeEditingDialogProps): React.JSX.Elem
 
     telemetry.log(NestedDialogClosed, {
       path: pathToString(treeState.relativePath),
-      timestamp: new Date(),
     })
 
     // Reset the `openPath`
