@@ -283,7 +283,7 @@ export function readDocumentDivergences({
 
         if (isRevisionIdEqual({strategy, upstreamAtFork, upstreamHead, resolutionMarker})) {
           // The entire document is unchanged since resolution: the divergence remains resolved.
-          if (strategy === 'sinceResolution') {
+          if (strategy === 'sinceResolution' && typeof resolutionMarker !== 'undefined') {
             return of<DivergenceAtPath>([
               path,
               {
@@ -294,7 +294,7 @@ export function readDocumentDivergences({
                 subjectId: subjectHead._id,
                 path: path,
                 snapshots,
-                sinceRevisionId: upstreamHead._rev,
+                sinceRevisionId: resolutionMarker?.[0],
               },
             ])
           }
@@ -357,7 +357,10 @@ export function readDocumentDivergences({
                   effect: 'move',
                   delta: positionDelta,
                   upstreamPosition: upstreamHeadIndex,
-                  sinceRevisionId: upstreamAtFork?._rev,
+                  sinceRevisionId: createDocumentRevisionMarker(
+                    upstreamAtFork._id,
+                    upstreamAtFork?._rev,
+                  ),
                   path: path,
                   snapshots,
                 },
@@ -480,7 +483,10 @@ export function readDocumentDivergences({
                 status: 'unresolved',
                 isAddressable,
                 effect,
-                sinceRevisionId: upstreamAtFork?._rev,
+                sinceRevisionId: createDocumentRevisionMarker(
+                  upstreamAtFork._id,
+                  upstreamAtFork?._rev,
+                ),
                 path,
                 snapshots,
               } satisfies BaseDivergence
@@ -794,7 +800,8 @@ function isRevisionIdEqual({
       throw new Error('Expected resolution marker')
     }
 
-    return upstreamHead._rev === resolutionMarker[0]
+    const [upstreamId, upstreamRevisionId] = resolutionMarker[0].split('@')
+    return upstreamId === upstreamHead._id && upstreamRevisionId === upstreamHead._rev
   }
 
   if (strategy === 'sinceFork') {
@@ -824,4 +831,10 @@ function isSanityObjectLike(
     maybeSanityObjectLike !== null &&
     '_type' in maybeSanityObjectLike
   )
+}
+
+function createDocumentRevisionMarker(
+  ...documentRevision: [documentId: string, revisionId: string]
+): string {
+  return documentRevision.join('@')
 }
