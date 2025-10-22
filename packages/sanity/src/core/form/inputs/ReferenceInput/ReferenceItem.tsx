@@ -350,6 +350,7 @@ export function ReferenceItem<Item extends ReferenceItemValue = ReferenceItemVal
               validation={validation}
               inputId={inputId}
               deprecated={schemaType.deprecated}
+              schemaType={schemaType}
               path={path}
               readOnly={readOnly}
             >

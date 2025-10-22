@@ -483,6 +483,7 @@ function BaseImageInputComponent(props: BaseImageInputProps): React.JSX.Element 
               renderInput={renderInput}
               renderItem={renderItem}
               renderPreview={renderPreviewProp}
+              schemaType={schemaType}
             />
           )
         }
