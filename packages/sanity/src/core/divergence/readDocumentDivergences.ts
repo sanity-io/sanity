@@ -40,22 +40,22 @@ import {hashData} from './utils/hashData'
 /**
  * @internal
  */
-export interface FindDivergencesContext {
-  upstreamHead: SanityDocument
-  subjectHead: SanityDocument
-  upstreamAtFork: SanityDocument
-  resolutions?: {
-    _key: string
-    resolutionMarker: ResolutionMarker
-  }[]
+export interface DivergenceResolution {
+  _key: string
+  resolutionMarker: ResolutionMarker
 }
-
-type DivergenceStatus = 'unresolved' | 'resolved'
 
 /**
  * @internal
  */
-type ResolutionMarkerAtPath = [path: string, resolutionMarker: ResolutionMarker]
+export interface FindDivergencesContext {
+  upstreamHead: SanityDocument
+  subjectHead: SanityDocument
+  upstreamAtFork: SanityDocument
+  resolutions?: DivergenceResolution[]
+}
+
+type DivergenceStatus = 'unresolved' | 'resolved'
 
 type SnapshotType = 'subjectHead' | 'upstreamHead' | 'upstreamAtFork'
 
