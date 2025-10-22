@@ -40,7 +40,7 @@ const PR_ID = process.env.VERCEL_GIT_PULL_REQUEST_ID
 const BRANCH_NAME = process.env.VERCEL_GIT_COMMIT_REF
 
 if (PR_ID || BRANCH_NAME) {
-  process.stdout.write(getVersion({pr: PR_ID, branch: BRANCH_NAME}))
+  console.log(getVersion({pr: PR_ID, branch: BRANCH_NAME}))
 } else {
   // intentionally produce no output to avoid stale hashes when switching branches/commits during local dev.
 }
