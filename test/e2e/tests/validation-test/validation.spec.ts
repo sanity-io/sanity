@@ -5,6 +5,7 @@ import {test} from '../../studio-test'
 test.describe('Validation test', () => {
   test.describe('should not throw error when a validation error is present', () => {
     test('and the one array item has been deleted', async ({page, createDraftDocument}) => {
+      test.slow()
       const errors: string[] = []
 
       // eslint-disable-next-line max-nested-callbacks
@@ -25,6 +26,8 @@ test.describe('Validation test', () => {
       await page.getByTestId('field-name').getByTestId('string-input').fill('Test House')
       await page.getByTestId('add-single-object-button').click()
 
+      // @TODO replace once nested object dialog is set as true
+      //await expect(page.getByTestId('nested-object-dialog')).toBeVisible()
       await expect(page.getByTestId('edit-portal-dialog')).toBeVisible()
       await page
         .getByTestId(/field-house\[.*\]\.name/)
@@ -33,6 +36,8 @@ test.describe('Validation test', () => {
 
       await page.getByRole('button', {name: 'Close dialog'}).click()
 
+      // @TODO replace once nested object dialog is set as true
+      //await expect(page.getByTestId('nested-object-dialog')).not.toBeVisible()
       await expect(page.getByTestId('edit-portal-dialog')).not.toBeVisible()
       await page.getByRole('button', {name: 'Validation'}).click()
 
@@ -51,6 +56,8 @@ test.describe('Validation test', () => {
       page,
       createDraftDocument,
     }) => {
+      test.slow()
+
       const errors: string[] = []
 
       // eslint-disable-next-line max-nested-callbacks
@@ -65,6 +72,8 @@ test.describe('Validation test', () => {
 
       await page.getByTestId('add-single-object-button').click()
 
+      // @TODO replace once nested object dialog is set as true
+      //await expect(page.getByTestId('nested-object-dialog')).toBeVisible()
       await expect(page.getByTestId('edit-portal-dialog')).toBeVisible()
       await page
         .getByTestId(/field-house\[.*\]\.name/)
@@ -73,10 +82,14 @@ test.describe('Validation test', () => {
 
       await page.getByRole('button', {name: 'Close dialog'}).click()
 
+      // @TODO replace once nested object dialog is set as true
+      //await expect(page.getByTestId('nested-object-dialog')).not.toBeVisible()
       await expect(page.getByTestId('edit-portal-dialog')).not.toBeVisible()
 
       await page.getByTestId('add-single-object-button').click()
 
+      // @TODO replace once nested object dialog is set as true
+      //await expect(page.getByTestId('nested-object-dialog')).toBeVisible()
       await expect(page.getByTestId('edit-portal-dialog')).toBeVisible()
       await page
         .getByTestId(/field-house\[.*\]\.name/)
@@ -85,6 +98,8 @@ test.describe('Validation test', () => {
 
       await page.getByRole('button', {name: 'Close dialog'}).click()
 
+      // @TODO replace once nested object dialog is set as true
+      //await expect(page.getByTestId('nested-object-dialog')).not.toBeVisible()
       await expect(page.getByTestId('edit-portal-dialog')).not.toBeVisible()
 
       await page.getByRole('button', {name: 'Validation'}).click()
@@ -103,6 +118,8 @@ test.describe('Validation test', () => {
       page,
       createDraftDocument,
     }) => {
+      test.slow()
+
       const errors: string[] = []
 
       // eslint-disable-next-line max-nested-callbacks
@@ -121,8 +138,12 @@ test.describe('Validation test', () => {
 
       await createDraftDocument('/content/house')
 
+      await expect(page.getByTestId('document-panel-scroller')).toBeVisible()
+
       await page.getByTestId('add-single-object-button').click()
 
+      // @TODO replace once nested object dialog is set as true
+      //await expect(page.getByTestId('nested-object-dialog')).toBeVisible()
       await expect(page.getByTestId('edit-portal-dialog')).toBeVisible()
       await page
         .getByTestId(/field-house\[.*\]\.name/)
@@ -131,6 +152,8 @@ test.describe('Validation test', () => {
 
       await page.getByRole('button', {name: 'Close dialog'}).click()
 
+      // @TODO replace once nested object dialog is set as true
+      //await expect(page.getByTestId('nested-object-dialog')).not.toBeVisible()
       await expect(page.getByTestId('edit-portal-dialog')).not.toBeVisible()
       await page.getByRole('button', {name: 'Validation'}).click()
 

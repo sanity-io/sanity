@@ -10,7 +10,7 @@ export interface TreeEditingEnabledContextValue {
    */
   enabled: boolean
   /**
-   * A boolean indicating whether legacy editing is enabled
+   * A boolean indicating whether legacy editing is enabled - meaning that it will use the old modal based editing experience
    */
   legacyEditing: boolean
 }

@@ -1,4 +1,4 @@
-import {ChevronDownIcon} from '@sanity/icons'
+import {useTelemetry} from '@sanity/telemetry/react'
 import {type Path} from '@sanity/types'
 import {
   Box,
@@ -16,13 +16,14 @@ import {
   forwardRef,
   Fragment,
   type PropsWithChildren,
+  useCallback,
   useMemo,
   useState,
 } from 'react'
 import {css, styled} from 'styled-components'
 
-import {SanityDefaultPreview} from '../../../../../preview/components/SanityDefaultPreview'
-import {getSchemaTypeTitle} from '../../../../../schema/helpers'
+import {pathToString} from '../../../../../field/paths/helpers'
+import {NavigatedToNestedObjectViaBreadcrumb} from '../../__telemetry__/nestedObjects.telemetry'
 import {useValuePreviewWithFallback} from '../../hooks'
 import {type TreeEditingBreadcrumb} from '../../types'
 import {TreeEditingBreadcrumbsMenuButton} from './TreeEditingBreadcrumbsMenuButton'
@@ -58,48 +59,44 @@ interface MenuButtonProps {
   item: TreeEditingBreadcrumb
   onPathSelect: (path: Path) => void
   isSelected: boolean
+  isLast: boolean
 }
 
-const MenuButton = forwardRef(function MenuButton(
-  props: MenuButtonProps,
-  ref: ForwardedRef<HTMLButtonElement>,
-) {
-  const {item, onPathSelect, isSelected, ...rest} = props
+const MenuButton = function MenuButton(props: MenuButtonProps) {
+  const {item, onPathSelect, isSelected, isLast, ...rest} = props
 
   const {value} = useValuePreviewWithFallback({
     schemaType: item.schemaType,
     value: item.value,
   })
 
+  const telemetry = useTelemetry()
+
   const title = value.title
 
-  // We check if the length is greater than 1 as the root item
-  // is also included in the children array.
-  const hasChildren = item.children && item.children?.length > 1
+  const handleClick = useCallback(() => {
+    onPathSelect(item.path)
+    telemetry.log(NavigatedToNestedObjectViaBreadcrumb, {
+      path: pathToString(item.path),
+      timestamp: new Date(),
+    })
+  }, [onPathSelect, item.path, telemetry])
 
   return (
     <StyledButton
       data-active={isSelected ? 'true' : 'false'}
       mode="bleed"
-      onClick={() => onPathSelect(item.path)}
+      onClick={handleClick}
       padding={1}
-      ref={ref}
-      space={2}
       title={title}
       {...rest}
     >
-      <Flex flex={1} align="center" justify="flex-start" gap={1} overflow="hidden">
-        <SanityDefaultPreview title={title} media={value.media} layout="inline" />
-
-        {hasChildren && (
-          <Text size={0}>
-            <ChevronDownIcon />
-          </Text>
-        )}
-      </Flex>
+      <Text muted={!isLast} size={1}>
+        {title}
+      </Text>
     </StyledButton>
   )
-})
+}
 
 const SeparatorItem = forwardRef(function SeparatorItem(
   props: PropsWithChildren,
@@ -109,7 +106,9 @@ const SeparatorItem = forwardRef(function SeparatorItem(
 
   return (
     <Box ref={ref}>
-      <Text size={1}>{children}</Text>
+      <Text size={1} muted>
+        {children}
+      </Text>
     </Box>
   )
 })
@@ -190,31 +189,16 @@ export function TreeEditingBreadcrumbs(
         )
       }
 
-      // We check if the length is greater than 1 as the root item
-      // is also included in the children array.
-      const hasChildren = item.children && item.children?.length > 1
-
       const isSelected = isEqual(item.path, selectedPath)
-
-      const button = <MenuButton item={item} isSelected={isSelected} onPathSelect={onPathSelect} />
 
       return (
         <Fragment key={key}>
-          {!hasChildren && button}
-
-          {hasChildren && (
-            <TreeEditingBreadcrumbsMenuButton
-              button={button}
-              items={item.children || EMPTY_ARRAY}
-              onPathSelect={onPathSelect}
-              menuTitle={getSchemaTypeTitle(item.schemaType)}
-              parentElement={rootElement}
-              // The selected path in the current menu is the path of the parent item.
-              // Therefore, we pass the parent item path as the selected path and
-              // not the selected path from the props.
-              selectedPath={item.path}
-            />
-          )}
+          <MenuButton
+            item={item}
+            isSelected={isSelected}
+            onPathSelect={onPathSelect}
+            isLast={index === items.length - 1}
+          />
 
           {showSeparator && <SeparatorItem>{SEPARATOR}</SeparatorItem>}
         </Fragment>
@@ -223,7 +207,28 @@ export function TreeEditingBreadcrumbs(
   }, [items, selectedPath, onPathSelect, rootElement])
 
   return (
-    <Flex align="center" as="ol" gap={2} ref={setRootElement}>
+    <Flex align="center" gap={2} ref={setRootElement}>
+      <StyledButton
+        data-active={false}
+        mode="bleed"
+        onClick={() => onPathSelect(EMPTY_ARRAY)}
+        padding={1}
+      >
+        <Flex
+          flex={1}
+          align="center"
+          justify="flex-start"
+          gap={1}
+          overflow="hidden"
+          style={{textTransform: 'capitalize'}}
+        >
+          <Text muted size={1}>
+            {selectedPath[0]?.toString()}
+          </Text>
+        </Flex>
+      </StyledButton>
+
+      <SeparatorItem>{SEPARATOR}</SeparatorItem>
       {nodes}
     </Flex>
   )
