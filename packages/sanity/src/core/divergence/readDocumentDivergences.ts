@@ -173,8 +173,7 @@ export type Divergence = BaseDivergence &
 export type DivergenceAtPath = [path: string, context: Divergence]
 
 // Fields that are never considered divergent.
-// TODO: Remove `_xSystem` from regex.
-const skipFields = /(\.|^)_(id|rev|key|system|createdAt|updatedAt|xSystem)(\.|$)/g
+const skipFields = /(\.|^)_(id|rev|key|system|createdAt|updatedAt|systemDivergences)(\.|$)/g
 
 type State = Record<string, SnapshotsByType>
 
