@@ -89,7 +89,7 @@ const MenuCard = function MenuCard(
   const parentPath = item.path.slice(0, -1)
   const parentPathString = pathToString(parentPath)
 
-  const selectedInex = siblings.get(parentPathString)?.index
+  const selectedIndex = siblings.get(parentPathString)?.index
   const telemetry = useTelemetry()
 
   const title = value.title
@@ -111,9 +111,9 @@ const MenuCard = function MenuCard(
       style={{minWidth: 0, width: isLast ? '100%' : undefined}}
     >
       <Flex align="center" style={{minWidth: 0}}>
-        {selectedInex && (
+        {selectedIndex && (
           <Box flex="none">
-            <Badge>#{selectedInex}</Badge>
+            <Badge>#{selectedIndex}</Badge>
           </Box>
         )}
         <Box

@@ -94,6 +94,12 @@ export function TreeEditingDialog(props: TreeEditingDialogProps): React.JSX.Elem
           ? treeState.breadcrumbs
           : nextState.breadcrumbs
 
+      // Preserve siblings / counter when clicking on text content in portable text editors
+      const nextSiblings =
+        isPathWithinPTEtext && treeState.siblings && treeState.siblings.size > 0
+          ? treeState.siblings
+          : nextState.siblings
+
       // Check if dialog is opening (transitioning from no relative path to having one)
       const wasDialogClosed = treeState.relativePath.length === 0
       const willDialogOpen = nextRelativePath.length > 0
@@ -108,6 +114,7 @@ export function TreeEditingDialog(props: TreeEditingDialogProps): React.JSX.Elem
         ...nextState,
         relativePath: nextRelativePath,
         breadcrumbs: nextBreadcrumbs,
+        siblings: nextSiblings,
       })
     },
     [treeState, telemetry, schemaType.fields],
