@@ -18,8 +18,10 @@
   },
   "dependencies": {
     "@portabletext/block-tools": "^3.5.11",
-    "@portabletext/editor": "^2.14.4",
+    "@portabletext/editor": "^2.15.0",
+    "@portabletext/plugin-input-rule": "^0.3.5",
     "@portabletext/react": "^4.0.3",
+    "@portabletext/toolkit": "^3.0.1",
     "@sanity/assist": "^5.0.0",
     "@sanity/cli": "workspace:*",
     "@sanity/client": "^7.12.0",
@@ -47,6 +49,7 @@
     "@turf/helpers": "^6.5.0",
     "@turf/points-within-polygon": "^5.1.5",
     "@vercel/stega": "0.1.2",
+    "@xstate/react": "^6.0.0",
     "chokidar": "^3.6.0",
     "globby": "^11.1.0",
     "history": "^5.3.0",
@@ -63,7 +66,8 @@
     "sanity-plugin-markdown": "^6.0.0",
     "sanity-plugin-media": "^4.0.0",
     "sanity-plugin-mux-input": "^2.9.1",
-    "styled-components": "catalog:"
+    "styled-components": "catalog:",
+    "xstate": "^5.23.0"
   },
   "devDependencies": {
     "@repo/eslint-config": "workspace:*",

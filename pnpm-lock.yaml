@@ -577,11 +577,17 @@ importers:
         specifier: ^3.5.11
         version: 3.5.11(@sanity/schema@packages+@sanity+schema)(@sanity/types@packages+@sanity+types)
       '@portabletext/editor':
-        specifier: ^2.14.4
-        version: 2.14.4(@portabletext/sanity-bridge@1.1.14(@sanity/schema@packages+@sanity+schema)(@sanity/types@packages+@sanity+types))(@sanity/schema@packages+@sanity+schema)(@sanity/types@packages+@sanity+types)(@types/react@19.1.17)(react-dom@19.1.1(react@19.1.1))(react@19.1.1)(rxjs@7.8.2)
+        specifier: ^2.15.0
+        version: 2.15.0(@portabletext/sanity-bridge@1.1.14(@sanity/schema@packages+@sanity+schema)(@sanity/types@packages+@sanity+types))(@sanity/schema@packages+@sanity+schema)(@sanity/types@packages+@sanity+types)(@types/react@19.1.17)(react-dom@19.1.1(react@19.1.1))(react@19.1.1)(rxjs@7.8.2)
+      '@portabletext/plugin-input-rule':
+        specifier: ^0.3.5
+        version: 0.3.5(@portabletext/editor@2.15.0(@portabletext/sanity-bridge@1.1.14(@sanity/schema@packages+@sanity+schema)(@sanity/types@packages+@sanity+types))(@sanity/schema@packages+@sanity+schema)(@sanity/types@packages+@sanity+types)(@types/react@19.1.17)(react-dom@19.1.1(react@19.1.1))(react@19.1.1)(rxjs@7.8.2))(@types/react@19.1.17)(react@19.1.1)
       '@portabletext/react':
         specifier: ^4.0.3
         version: 4.0.3(react@19.1.1)
+      '@portabletext/toolkit':
+        specifier: ^3.0.1
+        version: 3.0.1
       '@sanity/assist':
         specifier: ^5.0.0
         version: 5.0.0(@emotion/is-prop-valid@1.4.0)(@sanity/mutator@packages+@sanity+mutator)(react-dom@19.1.1(react@19.1.1))(react-is@19.1.1)(react@19.1.1)(sanity@packages+sanity)(styled-components@6.1.19(react-dom@19.1.1(react@19.1.1))(react@19.1.1))
@@ -663,6 +669,9 @@ importers:
       '@vercel/stega':
         specifier: 0.1.2
         version: 0.1.2
+      '@xstate/react':
+        specifier: ^6.0.0
+        version: 6.0.0(@types/react@19.1.17)(react@19.1.1)(xstate@5.23.0)
       chokidar:
         specifier: ^3.6.0
         version: 3.6.0
@@ -714,6 +723,9 @@ importers:
       styled-components:
         specifier: 'catalog:'
         version: 6.1.19(react-dom@19.1.1(react@19.1.1))(react@19.1.1)
+      xstate:
+        specifier: ^5.23.0
+        version: 5.23.0
     devDependencies:
       '@repo/eslint-config':
         specifier: workspace:*
@@ -1703,8 +1715,8 @@ importers:
         specifier: ^3.5.11
         version: 3.5.11(@sanity/schema@packages+@sanity+schema)(@sanity/types@packages+@sanity+types)
       '@portabletext/editor':
-        specifier: ^2.14.4
-        version: 2.14.4(@portabletext/sanity-bridge@1.1.14(@sanity/schema@packages+@sanity+schema)(@sanity/types@packages+@sanity+types))(@sanity/schema@packages+@sanity+schema)(@sanity/types@packages+@sanity+types)(@types/react@19.1.17)(react-dom@19.1.1(react@19.1.1))(react@19.1.1)(rxjs@7.8.2)
+        specifier: ^2.15.0
+        version: 2.15.0(@portabletext/sanity-bridge@1.1.14(@sanity/schema@packages+@sanity+schema)(@sanity/types@packages+@sanity+types))(@sanity/schema@packages+@sanity+schema)(@sanity/types@packages+@sanity+types)(@types/react@19.1.17)(react-dom@19.1.1(react@19.1.1))(react@19.1.1)(rxjs@7.8.2)
       '@portabletext/react':
         specifier: ^4.0.3
         version: 4.0.3(react@19.1.1)
@@ -4442,8 +4454,8 @@ packages:
     peerDependencies:
       '@sanity/types': ^4.10.3
 
-  '@portabletext/editor@2.14.4':
-    resolution: {integrity: sha512-968PvEUHrJ36TT4gdFUhsLYxui9NiuVu0qGTBYAsOfdC7yJxd6OPnWiWaWeR3MnE6IoSFpxOUbSFjwZO6Qq0rg==}
+  '@portabletext/editor@2.15.0':
+    resolution: {integrity: sha512-fO6FPWiZ+IixtUVrd6Rs8Yn58wygkpZDIkmvDh2l7evayHNcwy0mnxLAsDWTkMoTdZk+YBllpjfhMpgkdhTnpQ==}
     engines: {node: '>=20.19 <22 || >=22.12'}
     peerDependencies:
       '@portabletext/sanity-bridge': ^1.1.14
@@ -4457,6 +4469,12 @@ packages:
 
   '@portabletext/patches@1.1.8':
     resolution: {integrity: sha512-L2eIdfzN4WHGxmvsvUVEKpayJrNTzGktexMG2Xop9f4rWbH1I7KwHivjZ0NgroYHDwFPFhZadciwW1ehFPbZAg==}
+
+  '@portabletext/plugin-input-rule@0.3.5':
+    resolution: {integrity: sha512-iVoXS9BMCNnMQaUfIKIcAQCMGUPomC5IMku6GLFyFpPFcikgoF2IIi385HoDD8jQwcsgroFwitjZZrpiqLsJCA==}
+    peerDependencies:
+      '@portabletext/editor': ^2.14.4
+      react: ^19.1.1
 
   '@portabletext/react@4.0.3':
     resolution: {integrity: sha512-sdVSXbi0L5MBVb1Ch5KwbBPZjW/Oqe6s5ZkPi4LcItzHl8rqY2jB0VxsFaGywZyn8Jc47cGLaOtyBM9HkW/9Hg==}
@@ -15119,7 +15137,7 @@ snapshots:
     transitivePeerDependencies:
       - '@sanity/schema'
 
-  '@portabletext/editor@2.14.4(@portabletext/sanity-bridge@1.1.14(@sanity/schema@packages+@sanity+schema)(@sanity/types@packages+@sanity+types))(@sanity/schema@packages+@sanity+schema)(@sanity/types@packages+@sanity+types)(@types/react@19.1.17)(react-dom@19.1.1(react@19.1.1))(react@19.1.1)(rxjs@7.8.2)':
+  '@portabletext/editor@2.15.0(@portabletext/sanity-bridge@1.1.14(@sanity/schema@packages+@sanity+schema)(@sanity/types@packages+@sanity+types))(@sanity/schema@packages+@sanity+schema)(@sanity/types@packages+@sanity+types)(@types/react@19.1.17)(react-dom@19.1.1(react@19.1.1))(react@19.1.1)(rxjs@7.8.2)':
     dependencies:
       '@portabletext/block-tools': 3.5.11(@sanity/schema@packages+@sanity+schema)(@sanity/types@packages+@sanity+types)
       '@portabletext/keyboard-shortcuts': 1.1.1
@@ -15153,6 +15171,16 @@ snapshots:
     dependencies:
       '@sanity/diff-match-patch': 3.2.0
       lodash: 4.17.21
+
+  '@portabletext/plugin-input-rule@0.3.5(@portabletext/editor@2.15.0(@portabletext/sanity-bridge@1.1.14(@sanity/schema@packages+@sanity+schema)(@sanity/types@packages+@sanity+types))(@sanity/schema@packages+@sanity+schema)(@sanity/types@packages+@sanity+types)(@types/react@19.1.17)(react-dom@19.1.1(react@19.1.1))(react@19.1.1)(rxjs@7.8.2))(@types/react@19.1.17)(react@19.1.1)':
+    dependencies:
+      '@portabletext/editor': 2.15.0(@portabletext/sanity-bridge@1.1.14(@sanity/schema@packages+@sanity+schema)(@sanity/types@packages+@sanity+types))(@sanity/schema@packages+@sanity+schema)(@sanity/types@packages+@sanity+types)(@types/react@19.1.17)(react-dom@19.1.1(react@19.1.1))(react@19.1.1)(rxjs@7.8.2)
+      '@xstate/react': 6.0.0(@types/react@19.1.17)(react@19.1.1)(xstate@5.23.0)
+      react: 19.1.1
+      react-compiler-runtime: 1.0.0(react@19.1.1)
+      xstate: 5.23.0
+    transitivePeerDependencies:
+      - '@types/react'
 
   '@portabletext/react@4.0.3(react@19.1.1)':
     dependencies:
