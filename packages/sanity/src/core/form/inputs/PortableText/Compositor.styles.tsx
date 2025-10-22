@@ -64,5 +64,6 @@ export const ExpandedLayer = styled(Layer)`
 `
 
 export const StringDiffContainer = styled.div`
+  height: 100%;
   ${stringDiffContainerStyles}
 `
