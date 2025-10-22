@@ -71,7 +71,7 @@ const Root = styled.div((props) => {
 const ButtonRoot = styled.div`
   z-index: 1;
   position: absolute;
-  top: 0px;
+  top: 2px;
   right: 6px;
 `
 
