@@ -1,4 +1,10 @@
-import {isKeyedObject, type KeyedObject, type KeyedSegment, type Path} from '@sanity/types'
+import {
+  isKeyedObject,
+  type KeyedObject,
+  type KeyedSegment,
+  type Path,
+  type PathSegment,
+} from '@sanity/types'
 import {toString} from '@sanity/util/paths'
 
 import {isRecord} from '../../util/isRecord'
@@ -239,4 +245,19 @@ function readType(value: unknown): string {
   }
 
   return typeof value
+}
+
+/**
+ * @internal
+ */
+export function normalizePathSegment(
+  segment: PathSegment | PathSegmentWithType,
+): PathSegmentWithType | {segment: PathSegment; type?: never} {
+  if (typeof segment === 'object' && 'type' in segment) {
+    return segment
+  }
+
+  return {
+    segment,
+  }
 }
