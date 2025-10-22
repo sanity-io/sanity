@@ -71,7 +71,6 @@ interface MenuButtonProps {
   onPathSelect: (path: Path) => void
   isSelected: boolean
   isLast: boolean
-  maxWidthPx?: number
 }
 
 const MenuCard = function MenuCard(
@@ -79,7 +78,7 @@ const MenuCard = function MenuCard(
     siblings: Map<string, {count: number; index: number}>
   },
 ) {
-  const {item, onPathSelect, isSelected, isLast, siblings, maxWidthPx} = props
+  const {item, onPathSelect, isSelected, isLast, siblings} = props
 
   const {value} = useValuePreviewWithFallback({
     schemaType: item.schemaType,
@@ -108,9 +107,9 @@ const MenuCard = function MenuCard(
       radius={3}
       onClick={handleClick}
       // forces ellipsis on the last item if needed
-      style={{minWidth: 0, width: isLast ? '100%' : undefined}}
+      style={{minWidth: 0, width: '100%'}}
     >
-      <Flex align="center" style={{minWidth: 0}}>
+      <Flex align="center" style={{minWidth: 0, maxWidth: '250px'}}>
         {selectedIndex && (
           <Box flex="none">
             <Badge>#{selectedIndex}</Badge>
@@ -121,8 +120,6 @@ const MenuCard = function MenuCard(
           style={{
             minWidth: 0,
             overflow: 'hidden',
-            // forces ellipsis on the last item if needed
-            maxWidth: isLast && maxWidthPx !== undefined ? `${maxWidthPx}px` : `200px`,
           }}
           flex={isLast ? 1 : undefined}
         >
@@ -200,22 +197,6 @@ export function Breadcrumbs(props: BreadcrumbsProps): React.JSX.Element | null {
     return itemsProp
   }, [itemsProp, maxLength])
 
-  const itemRefs = useState<Array<HTMLDivElement | null>>([])[0]
-
-  const lastItemMaxWidth = useMemo(() => {
-    const parentWidth = size?.border.width || 0
-    const count = items.length
-    if (!parentWidth || count === 0) return undefined
-    const existingItemsExceptLast = itemRefs.slice(0, Math.max(0, count - 1))
-    const existingItemsWidth = existingItemsExceptLast.reduce(
-      (acc, el) => acc + (el?.offsetWidth || 0),
-      0,
-    )
-    const available = parentWidth - existingItemsWidth
-    if (available <= 0) return 0
-    return Math.floor(available)
-  }, [size?.border.width, items, itemRefs])
-
   const nodes = useMemo(() => {
     return items.map((item, index) => {
       const key = `${item}-${index}`
@@ -225,12 +206,7 @@ export function Breadcrumbs(props: BreadcrumbsProps): React.JSX.Element | null {
       // be grouped in the same breadcrumbs menu button (i.e. the "..." button).
       if (Array.isArray(item)) {
         return (
-          <Inline
-            key={key}
-            ref={(el) => {
-              itemRefs[index] = el as HTMLDivElement | null
-            }}
-          >
+          <Inline key={key}>
             <MenuButton
               id="breadcrumb-overflow-menu-button"
               button={
@@ -278,9 +254,6 @@ export function Breadcrumbs(props: BreadcrumbsProps): React.JSX.Element | null {
       return (
         <Inline
           key={key}
-          ref={(el) => {
-            itemRefs[index] = el as HTMLDivElement | null
-          }}
           flex={isLast ? 1 : undefined}
           style={{
             minWidth: 0,
@@ -292,14 +265,13 @@ export function Breadcrumbs(props: BreadcrumbsProps): React.JSX.Element | null {
             onPathSelect={onPathSelect}
             isLast={isLast}
             siblings={siblings}
-            maxWidthPx={isLast ? lastItemMaxWidth : undefined}
           />
 
           {showSeparator && <SeparatorItem>{SEPARATOR}</SeparatorItem>}
         </Inline>
       )
     })
-  }, [items, selectedPath, onPathSelect, siblings, lastItemMaxWidth, itemRefs])
+  }, [items, selectedPath, onPathSelect, siblings])
 
   return (
     <RootInline ref={setRootElement}>
