@@ -35,7 +35,12 @@ export function selectEffect({
   upstreamParent,
   path,
 }: SelectEffectContext): Exclude<DivergenceEffect, 'move'> {
-  if (fromString(path).at(-1) === '_type' && fromValue !== toValue) {
+  if (
+    fromString(path).at(-1) === '_type' &&
+    typeof fromValue !== 'undefined' &&
+    typeof toValue !== 'undefined' &&
+    fromValue !== toValue
+  ) {
     return 'changeObjectType'
   }
 
