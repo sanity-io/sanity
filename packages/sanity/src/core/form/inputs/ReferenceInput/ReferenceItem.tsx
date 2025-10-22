@@ -351,6 +351,7 @@ export function ReferenceItem<Item extends ReferenceItemValue = ReferenceItemVal
               inputId={inputId}
               deprecated={schemaType.deprecated}
               path={path}
+              readOnly={readOnly}
             >
               {children}
             </FormFieldSet>
