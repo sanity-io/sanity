@@ -13,7 +13,7 @@ beforeEach(async () => {
   vi.resetModules()
   vi.clearAllMocks()
 
-  resolveInitialValue = (await import('../')).resolveInitialValue
+  resolveInitialValue = (await import('../resolve')).resolveInitialValue
 })
 
 const example: Template = {

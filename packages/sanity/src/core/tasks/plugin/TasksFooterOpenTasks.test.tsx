@@ -12,8 +12,15 @@ import {type TaskDocument} from '../types'
 import {SetActiveDocument} from './structure/SetActiveDocument'
 import {TasksFooterOpenTasks} from './TasksFooterOpenTasks'
 
-vi.mock('../../hooks', () => ({
+vi.mock('../../hooks/useFeatureEnabled', () => ({
   useFeatureEnabled: vi.fn().mockReturnValue({enabled: true, isLoading: false}),
+  FEATURES: {
+    contentReleases: 'contentReleases',
+    crossDatasetReferences: 'crossDatasetReferences',
+    sanityTasks: 'sanityTasks',
+    scheduledPublishing: 'scheduledPublishing',
+    studioComments: 'studioComments',
+  },
 }))
 vi.mock('../../studio/workspace', () => ({
   useWorkspace: vi.fn().mockReturnValue({tasks: {enabled: true}}),
