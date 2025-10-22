@@ -137,6 +137,7 @@ export function ImageToolInput(props: ImageToolInputProps) {
       level={level}
       description={t('inputs.imagetool.description')}
       deprecated={schemaType.deprecated}
+      path={path}
       __unstable_presence={presence}
     >
       {isSvg ? (

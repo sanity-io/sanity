@@ -59,6 +59,7 @@ export function ReferenceField(props: ReferenceFieldProps) {
           title={props.title}
           validation={props.validation}
           deprecated={props.schemaType.deprecated}
+          path={path}
         >
           {children}
         </FormField>
