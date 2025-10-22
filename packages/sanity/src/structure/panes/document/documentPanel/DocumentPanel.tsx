@@ -16,6 +16,7 @@ import {
   LegacyLayerProvider,
   type ReleaseDocument,
   ScrollContainer,
+  useDocumentDivergences,
   useFilteredReleases,
   usePausedScheduledDraft,
   usePerspective,
@@ -100,6 +101,7 @@ export const DocumentPanel = function DocumentPanel(props: DocumentPanelProps) {
     schemaType,
     permissions,
     isPermissionsLoading,
+    formState,
   } = useDocumentPane()
   const createLinkMetadata = getSanityCreateLinkMetadata(value)
   const showCreateBanner = isSanityCreateLinked(createLinkMetadata)
@@ -175,6 +177,23 @@ export const DocumentPanel = function DocumentPanel(props: DocumentPanelProps) {
       prevDocumentIdRef.current = documentId
     }
   }, [documentId, documentScrollElement])
+
+  const divergenceNavigator = useDocumentDivergences()
+
+  // Scroll the focused divergence inspector into view.
+  useEffect(() => {
+    let timeout: ReturnType<typeof setTimeout> | undefined
+
+    if (divergenceNavigator.state.focusedDivergence) {
+      timeout = setTimeout(() => {
+        documentScrollElement
+          ?.querySelector('[data-divergence-overlay]')
+          ?.parentElement?.scrollIntoView({block: 'center'})
+      }, 0)
+    }
+
+    return () => clearTimeout(timeout)
+  }, [divergenceNavigator.state.focusedDivergence, documentScrollElement])
 
   // Pass portal element to `DocumentPane`
   useEffect(() => {

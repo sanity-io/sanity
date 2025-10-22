@@ -8,6 +8,7 @@ import {pathToString} from '../../../../field/paths/helpers'
 import {useTranslation} from '../../../../i18n'
 import {useResolveInitialValueForType} from '../../../../store'
 import {useCopyPaste} from '../../../../studio'
+import {FormNodeDivergenceDetail} from '../../../components/FormNodeDivergenceDetail'
 import {useGetFormValue} from '../../../contexts/GetFormValue'
 import {useDidUpdate} from '../../../hooks/useDidUpdate'
 import {insert, type PatchArg, PatchEvent, setIfMissing, unset} from '../../../patch'
@@ -435,7 +436,14 @@ export function ArrayOfObjectsItem(props: MemberItemProps) {
         inputProps={inputProps}
         render={renderItem}
       >
-        <RenderInput {...inputProps} render={renderInput} />
+        <RenderInput
+          {...inputProps}
+          render={(...renderProps) => (
+            <FormNodeDivergenceDetail path={member.item.path} readOnly={member.item.readOnly}>
+              {renderInput(...renderProps)}
+            </FormNodeDivergenceDetail>
+          )}
+        />
       </RenderItem>
     </FormCallbacksProvider>
   )

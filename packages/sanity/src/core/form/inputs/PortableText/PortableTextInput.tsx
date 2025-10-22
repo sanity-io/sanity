@@ -14,12 +14,14 @@ import {useTelemetry} from '@sanity/telemetry/react'
 import {isKeySegment, type Path, type PortableTextBlock} from '@sanity/types'
 import {Box, useToast} from '@sanity/ui'
 import {randomKey} from '@sanity/util/content'
+import {fromString, startsWith} from '@sanity/util/paths'
 import {
   forwardRef,
   type ReactNode,
   startTransition,
   useCallback,
   useEffect,
+  useEffectEvent,
   useImperativeHandle,
   useMemo,
   useRef,
@@ -33,6 +35,7 @@ import {
   PortableTextInputCollapsed,
   PortableTextInputExpanded,
 } from '../../__telemetry__/form.telemetry'
+import {useDocumentDivergences} from '../../contexts/DivergencesProvider'
 import {SANITY_PATCH_TYPE} from '../../patch'
 import {type ArrayOfObjectsItemMember, type ObjectFormNode} from '../../store'
 import {immutableReconcile} from '../../store/utils/immutableReconcile'
@@ -184,6 +187,34 @@ export function PortableTextInput(props: PortableTextInputProps): ReactNode {
       setIsFullscreen(Boolean(currentFullscreenPath))
     }
   }, [getFullscreenPath, path])
+
+  const divergenceNavigator = useDocumentDivergences()
+
+  // The PTE is implicitly expanded when inspecting a divergence within it.
+  const controlImplicitExpandedState = useEffectEvent(() => {
+    const focusedDivergenceDescendsNode =
+      typeof divergenceNavigator.state.focusedDivergence !== 'undefined' &&
+      startsWith(path, fromString(divergenceNavigator.state.focusedDivergence))
+
+    if (typeof divergenceNavigator.state.focusedDivergence === 'undefined' && isFullscreen) {
+      return
+    }
+
+    if (focusedDivergenceDescendsNode && !isFullscreen) {
+      setFullscreenPath(path, true)
+      onFullScreenChange?.(true)
+      setIsFullscreen(true)
+      return
+    }
+
+    if (!focusedDivergenceDescendsNode && isFullscreen) {
+      setFullscreenPath(path, false)
+      onFullScreenChange?.(false)
+      setIsFullscreen(false)
+    }
+  })
+
+  useEffect(() => controlImplicitExpandedState(), [divergenceNavigator.state.focusedDivergence])
 
   const toast = useToast()
 
