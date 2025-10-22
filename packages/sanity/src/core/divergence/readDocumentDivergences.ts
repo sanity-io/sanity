@@ -262,6 +262,21 @@ export function readDocumentDivergences({
       ),
     )
     .pipe(
+      filter(({snapshots}) => {
+        const hasObjectSnapshot = [
+          snapshots.upstreamAtFork?.value,
+          snapshots.upstreamHead?.value,
+          snapshots.subjectHead?.value,
+        ].some(isRecord)
+
+        const hasKeyedObjectSnapshot = [
+          snapshots.upstreamAtFork?.value,
+          snapshots.upstreamHead?.value,
+          snapshots.subjectHead?.value,
+        ].some(isKeyedObject)
+
+        return !hasObjectSnapshot || hasKeyedObjectSnapshot
+      }),
       delayTask(),
       mergeMap<
         {
@@ -671,7 +686,7 @@ function aggregateObjects<
  * An object's type is unlikely to change due to an operation performed by an editor in Studio,
  * but this can occur when scripting or using an agent to update content.
  *
- * This operator:
+ * This operation:
  *
  *  1. Finds any object whose type has changed.
  *  2. Filters all divergences that affect descendants of the changed object.
@@ -713,11 +728,19 @@ function coalesceChangedObjectTypes(): OperatorFunction<DivergenceAtPath, Diverg
       const pathArray = fromString(path)
       const parentObjectPath = pathArray.slice(0, -1)
 
+      const hasKeyedObjectSnapshot = [
+        divergence.snapshots.upstreamHead?.value,
+        divergence.snapshots.subjectHead?.value,
+      ].some(isKeyedObject)
+
       // Whether the object's current state in the upstream can be meaningfully compared with its
       // current state in the subject.
+      //
+      // Object type changes are only expected in arrays of objects.
       const isSubjectObjectTypeCompatible =
+        !hasKeyedObjectSnapshot ||
         divergence.snapshots.upstreamHead?.parentObjectType ===
-        divergence.snapshots.subjectHead?.parentObjectType
+          divergence.snapshots.subjectHead?.parentObjectType
 
       // Whether the object's type has changed in the upstream. It indicates whether the last
       // consistent state of the object can be meaninfully compared with the current state of the

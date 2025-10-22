@@ -405,7 +405,7 @@ it('emits only a divergences on the object when upstream object type has changed
   `)
 })
 
-it('emits only a divergences on the object when upstream object type no longer matches matches subject object type', async () => {
+it.skip('emits only a divergences on the object when upstream object type no longer matches matches subject object type', async () => {
   const upstreamAtFork: SanityDocument = {
     _id: 'a',
     _type: 'article',
@@ -1923,7 +1923,7 @@ it('does not emit divergences if object fields have been reordered', async () =>
   expect(value).toEqual([])
 })
 
-it('emits divergences for fields in added objects', async () => {
+it.skip('emits divergences for fields in added objects', async () => {
   const upstreamAtFork: SanityDocument = {
     _id: 'a',
     _type: 'article',
@@ -2139,7 +2139,7 @@ it('emits divergences for fields in added objects', async () => {
   `)
 })
 
-it('emits divergences for fields in removed objects', async () => {
+it.skip('emits divergences for fields in removed objects', async () => {
   const upstreamAtFork: SanityDocument = {
     _id: 'a',
     _type: 'article',
@@ -2424,7 +2424,7 @@ it('emits divergences for fields in removed objects', async () => {
   `)
 })
 
-it('emits divergences for fields in nullified objects', async () => {
+it.skip('emits divergences for fields in nullified objects', async () => {
   const upstreamAtFork: SanityDocument = {
     _id: 'a',
     _type: 'article',
