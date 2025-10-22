@@ -32,7 +32,10 @@ export interface CollatedDocumentDivergencesState {
   divergences: Record<string, Divergence>
 }
 
-interface Instance {
+/**
+ * @internal
+ */
+export interface CollatedDocumentDivergencesInstance {
   observable: Observable<CollatedDocumentDivergencesState>
   context: Subject<FindDivergencesContext>
 }
@@ -46,12 +49,12 @@ const DEBOUNCE_DURATION = 1_000
 const CACHE_MAX_SIZE = 10
 
 let cacheWriteChannel: Subject<string>
-let cache: QuickLRU<string, Instance>
+let cache: QuickLRU<string, CollatedDocumentDivergencesInstance>
 
 /**
  * @internal
  */
-const collateDocumentDivergencesInitialState: CollatedDocumentDivergencesState = {
+export const collateDocumentDivergencesInitialState: CollatedDocumentDivergencesState = {
   state: 'pending',
   upstreamId: undefined,
   divergences: {},
@@ -72,7 +75,7 @@ const collateDocumentDivergencesInitialState: CollatedDocumentDivergencesState =
 export function collateDocumentDivergences({
   upstreamId,
   subjectId,
-}: CollatedDocumentDivergencesContext): Instance {
+}: CollatedDocumentDivergencesContext): CollatedDocumentDivergencesInstance {
   initialiseCache()
 
   const cacheKey = getCacheKey({upstreamId, subjectId})
@@ -133,7 +136,7 @@ export function collateDocumentDivergences({
     shareReplay(1),
   )
 
-  const instance: Instance = {context, observable}
+  const instance: CollatedDocumentDivergencesInstance = {context, observable}
 
   cache.set(cacheKey, instance)
   cacheWriteChannel.next(cacheKey)
