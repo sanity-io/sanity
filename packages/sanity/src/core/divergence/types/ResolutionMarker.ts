@@ -22,3 +22,8 @@ export type ResolutionMarker = [
    */
   Signature: string | number,
 ]
+
+/**
+ * @internal
+ */
+export type ResolutionMarkerAtPath = [path: string, resolutionMarker: ResolutionMarker]
