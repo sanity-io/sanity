@@ -302,7 +302,11 @@ export function buildArrayState(props: BuildArrayState): TreeEditingState {
 
         // This is needed for cases where new blocks are added to the array within a PTE
         // This will make sure that the relative path is updated with the PTE path only when it should
-        if (pteResult.relativePath && relativePath.length === 0) {
+        if (
+          pteResult.relativePath &&
+          pteResult.relativePath !== null &&
+          relativePath.length === 0
+        ) {
           relativePath = pteResult.relativePath
         }
       }

@@ -81,6 +81,14 @@ export function buildArrayStatePTE(props: BuildArrayStatePTEProps): {
   // the PTE to build siblings for nested arrays, but we won't set a relativePath
   const isTextContent = isPathTextInPTEField(rootSchemaType.fields, openPath, documentValue)
 
+  if (isTextContent) {
+    return {
+      breadcrumbs,
+      childrenMenuItems,
+      siblings,
+      relativePath: null,
+    }
+  }
   // Process blocks within portable text
   portableTextValue.forEach((block: unknown) => {
     const blockObj = block as Record<string, unknown>
