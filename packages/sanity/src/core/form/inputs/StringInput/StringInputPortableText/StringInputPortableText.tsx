@@ -76,7 +76,7 @@ export function StringInputPortableText(props: StringInputProps) {
     value: definitiveValue,
     __unstable_computeDiff: computeDiff,
   } = props
-  const {onFocus, onBlur} = elementProps
+  const {onFocus, onBlur, style} = elementProps
 
   const {diff, rangeDecorations, onOptimisticChange} = useOptimisticDiff({
     definitiveValue,
@@ -178,6 +178,7 @@ export function StringInputPortableText(props: StringInputProps) {
         <BehaviorPlugin behaviors={[plainTextPasteBehaviour, plainTextOneLineBehaviour]} />
         <StyledInput
           className={props.validationError ? INVALID_CLASS_NAME : undefined}
+          style={style}
           renderPlaceholder={props.displayInlineChanges ? renderPlaceholder : undefined}
           rangeDecorations={props.displayInlineChanges ? rangeDecorations : undefined}
           $fontSize={fontSize}

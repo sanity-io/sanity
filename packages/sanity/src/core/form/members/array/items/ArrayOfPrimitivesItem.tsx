@@ -17,6 +17,7 @@ import {
   type RenderArrayOfPrimitivesItemCallback,
   type RenderInputCallback,
 } from '../../../types'
+import {pathToAnchorIdent} from '../../../utils/pathToAnchorIdent'
 import {createDescriptionId} from '../../common/createDescriptionId'
 import {resolveNativeNumberInputValue} from '../../common/resolveNativeNumberInputValue'
 
@@ -120,12 +121,16 @@ export function ArrayOfPrimitivesItem(props: PrimitiveMemberItemProps) {
       'readOnly': Boolean(member.item.readOnly),
       'placeholder': member.item.schemaType.placeholder,
       'aria-describedby': createDescriptionId(member.item.id, member.item.schemaType.description),
+      'style': {
+        anchorName: pathToAnchorIdent('input', member.item.path),
+      },
     }),
     [
       handleBlur,
       handleFocus,
       handleNativeChange,
       member.item.id,
+      member.item.path,
       member.item.readOnly,
       member.item.schemaType,
       member.item.value,

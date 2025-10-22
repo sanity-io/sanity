@@ -37,6 +37,7 @@ import {
   type RenderPreviewCallback,
   type UploadEvent,
 } from '../../../types'
+import {pathToAnchorIdent} from '../../../utils/pathToAnchorIdent'
 import {createDescriptionId} from '../../common/createDescriptionId'
 
 function move<T>(arr: T[], from: number, to: number): T[] {
@@ -300,8 +301,17 @@ export function ArrayOfPrimitivesField(props: {
       'id': member.field.id,
       'ref': focusRef,
       'aria-describedby': createDescriptionId(member.field.id, member.field.schemaType.description),
+      'style': {
+        anchorName: pathToAnchorIdent('input', member.field.path),
+      },
     }),
-    [handleBlur, handleFocus, member.field.id, member.field.schemaType.description],
+    [
+      handleBlur,
+      handleFocus,
+      member.field.id,
+      member.field.path,
+      member.field.schemaType.description,
+    ],
   )
 
   const plainTextUploader = useMemo(
