@@ -37,6 +37,7 @@ import {
 } from '../../../types'
 import {createProtoValue} from '../../../utils/createProtoValue'
 import {ensureKey} from '../../../utils/ensureKey'
+import {pathToAnchorIdent} from '../../../utils/pathToAnchorIdent'
 import {createDescriptionId} from '../../common/createDescriptionId'
 import {resolveInitialArrayValues} from '../../common/resolveInitialArrayValues'
 
@@ -309,8 +310,11 @@ export function ArrayOfObjectsItem(props: MemberItemProps) {
       'id': member.item.id,
       'ref': focusRef,
       'aria-describedby': createDescriptionId(member.item.id, member.item.schemaType.description),
+      'style': {
+        anchorName: pathToAnchorIdent('input', member.item.path),
+      },
     }),
-    [handleBlur, handleFocus, member.item.id, member.item.schemaType.description],
+    [handleBlur, handleFocus, member.item.id, member.item.schemaType.description, member.item.path],
   )
 
   const inputProps = useMemo((): Omit<ObjectInputProps, 'renderDefault'> => {

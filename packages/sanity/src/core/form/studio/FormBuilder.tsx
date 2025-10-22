@@ -37,6 +37,7 @@ import {
   type ObjectInputProps,
   type RenderPreviewCallbackProps,
 } from '../types'
+import {pathToAnchorIdent} from '../utils/pathToAnchorIdent'
 import {DialogStackProvider} from './contexts/DialogStackProvider'
 import {DocumentFieldActionsProvider} from './contexts/DocumentFieldActions'
 import {FormBuilderInputErrorBoundary} from './FormBuilderInputErrorBoundary'
@@ -226,6 +227,9 @@ export function FormBuilder(props: FormBuilderProps) {
         'onBlur': handleBlur,
         'onFocus': handleFocus,
         'aria-describedby': undefined, // Root input should not have any aria-describedby
+        'style': {
+          anchorName: pathToAnchorIdent('input', [id]),
+        },
       },
       focused,
       groups,

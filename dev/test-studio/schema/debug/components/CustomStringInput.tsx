@@ -14,6 +14,7 @@ export default function CustomStringInput(props: StringInputProps) {
           onChange(set(event.target.value))
         }}
         value={value}
+        style={props.elementProps.style}
       />
     </div>
   )
