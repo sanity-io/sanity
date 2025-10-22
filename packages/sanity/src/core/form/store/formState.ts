@@ -17,7 +17,6 @@ import {
   type ObjectField,
   type ObjectSchemaType,
   type Path,
-  type SchemaType,
   type StringSchemaType,
   type ValidationMarker,
 } from '@sanity/types'
@@ -26,6 +25,7 @@ import {isEqual, pathFor, startsWith, toString, trimChildPath} from '@sanity/uti
 import castArray from 'lodash-es/castArray.js'
 import _isEqual from 'lodash-es/isEqual.js'
 
+import {emptyValuesByType} from '../../field/diff/helpers'
 import {type FIXME} from '../../FIXME'
 import {type TargetPerspective} from '../../perspective/types'
 import {type FormNodePresence} from '../../presence'
@@ -1413,18 +1413,6 @@ export function createPrepareFormState({
 
   return prepareFormState
 }
-
-/**
- * A map of supported JSON types to valid empty values that may be used for diffing purposes when
- * the node has no underlying value to be compared with.
- */
-const emptyValuesByType = {
-  string: '',
-  number: 0,
-  boolean: false,
-  array: [],
-  object: {},
-} satisfies Record<SchemaType['jsonType'], unknown>
 
 /**
  * This utility creates the diff-related properties that are assigned to each node.
