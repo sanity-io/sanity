@@ -87,9 +87,7 @@ it('ignores divergences in system fields', async () => {
               "parentObjectType": undefined,
               "pathWithTypes": [
                 {
-                  "segment": {
-                    "_key": "someNonSystemField",
-                  },
+                  "segment": "someNonSystemField",
                   "type": "string",
                 },
               ],
@@ -100,9 +98,7 @@ it('ignores divergences in system fields', async () => {
               "parentObjectType": undefined,
               "pathWithTypes": [
                 {
-                  "segment": {
-                    "_key": "someNonSystemField",
-                  },
+                  "segment": "someNonSystemField",
                   "type": "string",
                 },
               ],
@@ -113,9 +109,7 @@ it('ignores divergences in system fields', async () => {
               "parentObjectType": undefined,
               "pathWithTypes": [
                 {
-                  "segment": {
-                    "_key": "someNonSystemField",
-                  },
+                  "segment": "someNonSystemField",
                   "type": "string",
                 },
               ],
@@ -206,21 +200,15 @@ it('emits only a divergences on the object when upstream object type has changed
               "parentObjectType": "alpha",
               "pathWithTypes": [
                 {
-                  "segment": {
-                    "_key": "someObjectArray",
-                  },
+                  "segment": "someObjectArray",
                   "type": "array",
                 },
                 {
-                  "segment": {
-                    "_key": "a",
-                  },
+                  "segment": "a",
                   "type": "alpha",
                 },
                 {
-                  "segment": {
-                    "_key": "_type",
-                  },
+                  "segment": "_type",
                   "type": "string",
                 },
               ],
@@ -231,21 +219,15 @@ it('emits only a divergences on the object when upstream object type has changed
               "parentObjectType": "alpha",
               "pathWithTypes": [
                 {
-                  "segment": {
-                    "_key": "someObjectArray",
-                  },
+                  "segment": "someObjectArray",
                   "type": "array",
                 },
                 {
-                  "segment": {
-                    "_key": "a",
-                  },
+                  "segment": "a",
                   "type": "alpha",
                 },
                 {
-                  "segment": {
-                    "_key": "_type",
-                  },
+                  "segment": "_type",
                   "type": "string",
                 },
               ],
@@ -256,21 +238,15 @@ it('emits only a divergences on the object when upstream object type has changed
               "parentObjectType": "beta",
               "pathWithTypes": [
                 {
-                  "segment": {
-                    "_key": "someObjectArray",
-                  },
+                  "segment": "someObjectArray",
                   "type": "array",
                 },
                 {
-                  "segment": {
-                    "_key": "a",
-                  },
+                  "segment": "a",
                   "type": "beta",
                 },
                 {
-                  "segment": {
-                    "_key": "_type",
-                  },
+                  "segment": "_type",
                   "type": "string",
                 },
               ],
@@ -368,21 +344,15 @@ it('emits only a divergences on the object when upstream object type has changed
               "parentObjectType": "alpha",
               "pathWithTypes": [
                 {
-                  "segment": {
-                    "_key": "someObjectArray",
-                  },
+                  "segment": "someObjectArray",
                   "type": "array",
                 },
                 {
-                  "segment": {
-                    "_key": "a",
-                  },
+                  "segment": "a",
                   "type": "alpha",
                 },
                 {
-                  "segment": {
-                    "_key": "_type",
-                  },
+                  "segment": "_type",
                   "type": "string",
                 },
               ],
@@ -393,21 +363,15 @@ it('emits only a divergences on the object when upstream object type has changed
               "parentObjectType": "alpha",
               "pathWithTypes": [
                 {
-                  "segment": {
-                    "_key": "someObjectArray",
-                  },
+                  "segment": "someObjectArray",
                   "type": "array",
                 },
                 {
-                  "segment": {
-                    "_key": "a",
-                  },
+                  "segment": "a",
                   "type": "alpha",
                 },
                 {
-                  "segment": {
-                    "_key": "_type",
-                  },
+                  "segment": "_type",
                   "type": "string",
                 },
               ],
@@ -418,21 +382,15 @@ it('emits only a divergences on the object when upstream object type has changed
               "parentObjectType": "beta",
               "pathWithTypes": [
                 {
-                  "segment": {
-                    "_key": "someObjectArray",
-                  },
+                  "segment": "someObjectArray",
                   "type": "array",
                 },
                 {
-                  "segment": {
-                    "_key": "a",
-                  },
+                  "segment": "a",
                   "type": "beta",
                 },
                 {
-                  "segment": {
-                    "_key": "_type",
-                  },
+                  "segment": "_type",
                   "type": "string",
                 },
               ],
@@ -526,21 +484,15 @@ it('emits only a divergences on the object when upstream object type no longer m
               "parentObjectType": "alpha",
               "pathWithTypes": [
                 {
-                  "segment": {
-                    "_key": "someObjectArray",
-                  },
+                  "segment": "someObjectArray",
                   "type": "array",
                 },
                 {
-                  "segment": {
-                    "_key": "a",
-                  },
+                  "segment": "a",
                   "type": "alpha",
                 },
                 {
-                  "segment": {
-                    "_key": "someAlphaValue",
-                  },
+                  "segment": "someAlphaValue",
                   "type": "string",
                 },
               ],
@@ -551,21 +503,15 @@ it('emits only a divergences on the object when upstream object type no longer m
               "parentObjectType": "alpha",
               "pathWithTypes": [
                 {
-                  "segment": {
-                    "_key": "someObjectArray",
-                  },
+                  "segment": "someObjectArray",
                   "type": "array",
                 },
                 {
-                  "segment": {
-                    "_key": "a",
-                  },
+                  "segment": "a",
                   "type": "alpha",
                 },
                 {
-                  "segment": {
-                    "_key": "someAlphaValue",
-                  },
+                  "segment": "someAlphaValue",
                   "type": "string",
                 },
               ],
@@ -690,9 +636,7 @@ it('emits divergences that have been resolved', async () => {
               "parentObjectType": undefined,
               "pathWithTypes": [
                 {
-                  "segment": {
-                    "_key": "someNonSystemField",
-                  },
+                  "segment": "someNonSystemField",
                   "type": "string",
                 },
               ],
@@ -703,9 +647,7 @@ it('emits divergences that have been resolved', async () => {
               "parentObjectType": undefined,
               "pathWithTypes": [
                 {
-                  "segment": {
-                    "_key": "someNonSystemField",
-                  },
+                  "segment": "someNonSystemField",
                   "type": "string",
                 },
               ],
@@ -716,9 +658,7 @@ it('emits divergences that have been resolved', async () => {
               "parentObjectType": undefined,
               "pathWithTypes": [
                 {
-                  "segment": {
-                    "_key": "someNonSystemField",
-                  },
+                  "segment": "someNonSystemField",
                   "type": "string",
                 },
               ],
@@ -743,9 +683,7 @@ it('emits divergences that have been resolved', async () => {
               "parentObjectType": undefined,
               "pathWithTypes": [
                 {
-                  "segment": {
-                    "_key": "someObjectArray",
-                  },
+                  "segment": "someObjectArray",
                   "type": "array",
                 },
               ],
@@ -765,9 +703,7 @@ it('emits divergences that have been resolved', async () => {
               "parentObjectType": undefined,
               "pathWithTypes": [
                 {
-                  "segment": {
-                    "_key": "someObjectArray",
-                  },
+                  "segment": "someObjectArray",
                   "type": "array",
                 },
               ],
@@ -787,9 +723,7 @@ it('emits divergences that have been resolved', async () => {
               "parentObjectType": undefined,
               "pathWithTypes": [
                 {
-                  "segment": {
-                    "_key": "someObjectArray",
-                  },
+                  "segment": "someObjectArray",
                   "type": "array",
                 },
               ],
@@ -823,21 +757,15 @@ it('emits divergences that have been resolved', async () => {
               "parentObjectType": undefined,
               "pathWithTypes": [
                 {
-                  "segment": {
-                    "_key": "someObjectArray",
-                  },
+                  "segment": "someObjectArray",
                   "type": "array",
                 },
                 {
-                  "segment": {
-                    "_key": "a",
-                  },
+                  "segment": "a",
                   "type": "object",
                 },
                 {
-                  "segment": {
-                    "_key": "value",
-                  },
+                  "segment": "value",
                   "type": "string",
                 },
               ],
@@ -848,21 +776,15 @@ it('emits divergences that have been resolved', async () => {
               "parentObjectType": undefined,
               "pathWithTypes": [
                 {
-                  "segment": {
-                    "_key": "someObjectArray",
-                  },
+                  "segment": "someObjectArray",
                   "type": "array",
                 },
                 {
-                  "segment": {
-                    "_key": "a",
-                  },
+                  "segment": "a",
                   "type": "object",
                 },
                 {
-                  "segment": {
-                    "_key": "value",
-                  },
+                  "segment": "value",
                   "type": "string",
                 },
               ],
@@ -873,21 +795,15 @@ it('emits divergences that have been resolved', async () => {
               "parentObjectType": undefined,
               "pathWithTypes": [
                 {
-                  "segment": {
-                    "_key": "someObjectArray",
-                  },
+                  "segment": "someObjectArray",
                   "type": "array",
                 },
                 {
-                  "segment": {
-                    "_key": "a",
-                  },
+                  "segment": "a",
                   "type": "object",
                 },
                 {
-                  "segment": {
-                    "_key": "value",
-                  },
+                  "segment": "value",
                   "type": "string",
                 },
               ],
@@ -912,21 +828,15 @@ it('emits divergences that have been resolved', async () => {
               "parentObjectType": undefined,
               "pathWithTypes": [
                 {
-                  "segment": {
-                    "_key": "someObjectArray",
-                  },
+                  "segment": "someObjectArray",
                   "type": "array",
                 },
                 {
-                  "segment": {
-                    "_key": "b",
-                  },
+                  "segment": "b",
                   "type": "object",
                 },
                 {
-                  "segment": {
-                    "_key": "value",
-                  },
+                  "segment": "value",
                   "type": "string",
                 },
               ],
@@ -937,21 +847,15 @@ it('emits divergences that have been resolved', async () => {
               "parentObjectType": undefined,
               "pathWithTypes": [
                 {
-                  "segment": {
-                    "_key": "someObjectArray",
-                  },
+                  "segment": "someObjectArray",
                   "type": "array",
                 },
                 {
-                  "segment": {
-                    "_key": "b",
-                  },
+                  "segment": "b",
                   "type": "object",
                 },
                 {
-                  "segment": {
-                    "_key": "value",
-                  },
+                  "segment": "value",
                   "type": "string",
                 },
               ],
@@ -962,21 +866,15 @@ it('emits divergences that have been resolved', async () => {
               "parentObjectType": undefined,
               "pathWithTypes": [
                 {
-                  "segment": {
-                    "_key": "someObjectArray",
-                  },
+                  "segment": "someObjectArray",
                   "type": "array",
                 },
                 {
-                  "segment": {
-                    "_key": "b",
-                  },
+                  "segment": "b",
                   "type": "object",
                 },
                 {
-                  "segment": {
-                    "_key": "value",
-                  },
+                  "segment": "value",
                   "type": "string",
                 },
               ],
@@ -1001,9 +899,7 @@ it('emits divergences that have been resolved', async () => {
               "parentObjectType": undefined,
               "pathWithTypes": [
                 {
-                  "segment": {
-                    "_key": "somePrimitiveArray",
-                  },
+                  "segment": "somePrimitiveArray",
                   "type": "array",
                 },
               ],
@@ -1017,9 +913,7 @@ it('emits divergences that have been resolved', async () => {
               "parentObjectType": undefined,
               "pathWithTypes": [
                 {
-                  "segment": {
-                    "_key": "somePrimitiveArray",
-                  },
+                  "segment": "somePrimitiveArray",
                   "type": "array",
                 },
               ],
@@ -1033,9 +927,7 @@ it('emits divergences that have been resolved', async () => {
               "parentObjectType": undefined,
               "pathWithTypes": [
                 {
-                  "segment": {
-                    "_key": "somePrimitiveArray",
-                  },
+                  "segment": "somePrimitiveArray",
                   "type": "array",
                 },
               ],
@@ -1067,9 +959,7 @@ it('emits divergences that have been resolved', async () => {
               "parentObjectType": undefined,
               "pathWithTypes": [
                 {
-                  "segment": {
-                    "_key": "somePrimitiveArray",
-                  },
+                  "segment": "somePrimitiveArray",
                   "type": "array",
                 },
                 {
@@ -1087,9 +977,7 @@ it('emits divergences that have been resolved', async () => {
               "parentObjectType": undefined,
               "pathWithTypes": [
                 {
-                  "segment": {
-                    "_key": "somePrimitiveArray",
-                  },
+                  "segment": "somePrimitiveArray",
                   "type": "array",
                 },
                 {
@@ -1108,9 +996,7 @@ it('emits divergences that have been resolved', async () => {
               "parentObjectType": undefined,
               "pathWithTypes": [
                 {
-                  "segment": {
-                    "_key": "somePrimitiveArray",
-                  },
+                  "segment": "somePrimitiveArray",
                   "type": "array",
                 },
                 {
@@ -1142,9 +1028,7 @@ it('emits divergences that have been resolved', async () => {
               "parentObjectType": undefined,
               "pathWithTypes": [
                 {
-                  "segment": {
-                    "_key": "somePrimitiveArray",
-                  },
+                  "segment": "somePrimitiveArray",
                   "type": "array",
                 },
                 {
@@ -1162,9 +1046,7 @@ it('emits divergences that have been resolved', async () => {
               "parentObjectType": undefined,
               "pathWithTypes": [
                 {
-                  "segment": {
-                    "_key": "somePrimitiveArray",
-                  },
+                  "segment": "somePrimitiveArray",
                   "type": "array",
                 },
                 {
@@ -1183,9 +1065,7 @@ it('emits divergences that have been resolved', async () => {
               "parentObjectType": undefined,
               "pathWithTypes": [
                 {
-                  "segment": {
-                    "_key": "somePrimitiveArray",
-                  },
+                  "segment": "somePrimitiveArray",
                   "type": "array",
                 },
                 {
@@ -1220,9 +1100,7 @@ it('emits divergences that have been resolved', async () => {
               "parentObjectType": undefined,
               "pathWithTypes": [
                 {
-                  "segment": {
-                    "_key": "somePrimitiveArray",
-                  },
+                  "segment": "somePrimitiveArray",
                   "type": "array",
                 },
                 {
@@ -1312,9 +1190,7 @@ it('emits divergences that have been resolved if the _rev is stale but the hash 
               "parentObjectType": undefined,
               "pathWithTypes": [
                 {
-                  "segment": {
-                    "_key": "someNonSystemField",
-                  },
+                  "segment": "someNonSystemField",
                   "type": "string",
                 },
               ],
@@ -1325,9 +1201,7 @@ it('emits divergences that have been resolved if the _rev is stale but the hash 
               "parentObjectType": undefined,
               "pathWithTypes": [
                 {
-                  "segment": {
-                    "_key": "someNonSystemField",
-                  },
+                  "segment": "someNonSystemField",
                   "type": "string",
                 },
               ],
@@ -1338,9 +1212,7 @@ it('emits divergences that have been resolved if the _rev is stale but the hash 
               "parentObjectType": undefined,
               "pathWithTypes": [
                 {
-                  "segment": {
-                    "_key": "someNonSystemField",
-                  },
+                  "segment": "someNonSystemField",
                   "type": "string",
                 },
               ],
@@ -1426,9 +1298,7 @@ it('emits divergences that have stale resolutions', async () => {
               "parentObjectType": undefined,
               "pathWithTypes": [
                 {
-                  "segment": {
-                    "_key": "someNonSystemField",
-                  },
+                  "segment": "someNonSystemField",
                   "type": "string",
                 },
               ],
@@ -1439,9 +1309,7 @@ it('emits divergences that have stale resolutions', async () => {
               "parentObjectType": undefined,
               "pathWithTypes": [
                 {
-                  "segment": {
-                    "_key": "someNonSystemField",
-                  },
+                  "segment": "someNonSystemField",
                   "type": "string",
                 },
               ],
@@ -1452,9 +1320,7 @@ it('emits divergences that have stale resolutions', async () => {
               "parentObjectType": undefined,
               "pathWithTypes": [
                 {
-                  "segment": {
-                    "_key": "someNonSystemField",
-                  },
+                  "segment": "someNonSystemField",
                   "type": "string",
                 },
               ],
@@ -1540,9 +1406,7 @@ it('emits divergences that have stale resolutions but are implicitly resolved be
               "parentObjectType": undefined,
               "pathWithTypes": [
                 {
-                  "segment": {
-                    "_key": "someNonSystemField",
-                  },
+                  "segment": "someNonSystemField",
                   "type": "string",
                 },
               ],
@@ -1553,9 +1417,7 @@ it('emits divergences that have stale resolutions but are implicitly resolved be
               "parentObjectType": undefined,
               "pathWithTypes": [
                 {
-                  "segment": {
-                    "_key": "someNonSystemField",
-                  },
+                  "segment": "someNonSystemField",
                   "type": "string",
                 },
               ],
@@ -1566,9 +1428,7 @@ it('emits divergences that have stale resolutions but are implicitly resolved be
               "parentObjectType": undefined,
               "pathWithTypes": [
                 {
-                  "segment": {
-                    "_key": "someNonSystemField",
-                  },
+                  "segment": "someNonSystemField",
                   "type": "string",
                 },
               ],
@@ -1641,9 +1501,7 @@ it('emits divergences when arrays of primitives have been reordered', async () =
               "parentObjectType": undefined,
               "pathWithTypes": [
                 {
-                  "segment": {
-                    "_key": "somePrimitiveArray",
-                  },
+                  "segment": "somePrimitiveArray",
                   "type": "array",
                 },
                 {
@@ -1661,9 +1519,7 @@ it('emits divergences when arrays of primitives have been reordered', async () =
               "parentObjectType": undefined,
               "pathWithTypes": [
                 {
-                  "segment": {
-                    "_key": "somePrimitiveArray",
-                  },
+                  "segment": "somePrimitiveArray",
                   "type": "array",
                 },
                 {
@@ -1681,9 +1537,7 @@ it('emits divergences when arrays of primitives have been reordered', async () =
               "parentObjectType": undefined,
               "pathWithTypes": [
                 {
-                  "segment": {
-                    "_key": "somePrimitiveArray",
-                  },
+                  "segment": "somePrimitiveArray",
                   "type": "array",
                 },
                 {
@@ -1716,9 +1570,7 @@ it('emits divergences when arrays of primitives have been reordered', async () =
               "parentObjectType": undefined,
               "pathWithTypes": [
                 {
-                  "segment": {
-                    "_key": "somePrimitiveArray",
-                  },
+                  "segment": "somePrimitiveArray",
                   "type": "array",
                 },
                 {
@@ -1736,9 +1588,7 @@ it('emits divergences when arrays of primitives have been reordered', async () =
               "parentObjectType": undefined,
               "pathWithTypes": [
                 {
-                  "segment": {
-                    "_key": "somePrimitiveArray",
-                  },
+                  "segment": "somePrimitiveArray",
                   "type": "array",
                 },
                 {
@@ -1756,9 +1606,7 @@ it('emits divergences when arrays of primitives have been reordered', async () =
               "parentObjectType": undefined,
               "pathWithTypes": [
                 {
-                  "segment": {
-                    "_key": "somePrimitiveArray",
-                  },
+                  "segment": "somePrimitiveArray",
                   "type": "array",
                 },
                 {
@@ -1846,15 +1694,11 @@ it('emits divergences when arrays of objects have been reordered', async () => {
               "parentObjectType": undefined,
               "pathWithTypes": [
                 {
-                  "segment": {
-                    "_key": "someObjectArray",
-                  },
+                  "segment": "someObjectArray",
                   "type": "array",
                 },
                 {
-                  "segment": {
-                    "_key": "d",
-                  },
+                  "segment": "d",
                   "type": "object",
                 },
               ],
@@ -1880,15 +1724,11 @@ it('emits divergences when arrays of objects have been reordered', async () => {
               "parentObjectType": undefined,
               "pathWithTypes": [
                 {
-                  "segment": {
-                    "_key": "someObjectArray",
-                  },
+                  "segment": "someObjectArray",
                   "type": "array",
                 },
                 {
-                  "segment": {
-                    "_key": "d",
-                  },
+                  "segment": "d",
                   "type": "object",
                 },
               ],
@@ -1914,15 +1754,11 @@ it('emits divergences when arrays of objects have been reordered', async () => {
               "parentObjectType": undefined,
               "pathWithTypes": [
                 {
-                  "segment": {
-                    "_key": "someObjectArray",
-                  },
+                  "segment": "someObjectArray",
                   "type": "array",
                 },
                 {
-                  "segment": {
-                    "_key": "d",
-                  },
+                  "segment": "d",
                   "type": "object",
                 },
               ],
@@ -2148,9 +1984,7 @@ it('emits divergences for fields in added objects', async () => {
               "parentObjectType": undefined,
               "pathWithTypes": [
                 {
-                  "segment": {
-                    "_key": "someObject",
-                  },
+                  "segment": "someObject",
                   "type": "object",
                 },
               ],
@@ -2184,15 +2018,11 @@ it('emits divergences for fields in added objects', async () => {
               "parentObjectType": undefined,
               "pathWithTypes": [
                 {
-                  "segment": {
-                    "_key": "someObject",
-                  },
+                  "segment": "someObject",
                   "type": "object",
                 },
                 {
-                  "segment": {
-                    "_key": "b",
-                  },
+                  "segment": "b",
                   "type": "string",
                 },
               ],
@@ -2220,15 +2050,11 @@ it('emits divergences for fields in added objects', async () => {
               "parentObjectType": undefined,
               "pathWithTypes": [
                 {
-                  "segment": {
-                    "_key": "someObject",
-                  },
+                  "segment": "someObject",
                   "type": "object",
                 },
                 {
-                  "segment": {
-                    "_key": "c",
-                  },
+                  "segment": "c",
                   "type": "string",
                 },
               ],
@@ -2256,15 +2082,11 @@ it('emits divergences for fields in added objects', async () => {
               "parentObjectType": undefined,
               "pathWithTypes": [
                 {
-                  "segment": {
-                    "_key": "someObject",
-                  },
+                  "segment": "someObject",
                   "type": "object",
                 },
                 {
-                  "segment": {
-                    "_key": "e",
-                  },
+                  "segment": "e",
                   "type": "object",
                 },
               ],
@@ -2294,21 +2116,15 @@ it('emits divergences for fields in added objects', async () => {
               "parentObjectType": undefined,
               "pathWithTypes": [
                 {
-                  "segment": {
-                    "_key": "someObject",
-                  },
+                  "segment": "someObject",
                   "type": "object",
                 },
                 {
-                  "segment": {
-                    "_key": "e",
-                  },
+                  "segment": "e",
                   "type": "object",
                 },
                 {
-                  "segment": {
-                    "_key": "f",
-                  },
+                  "segment": "f",
                   "type": "string",
                 },
               ],
@@ -2388,9 +2204,7 @@ it('emits divergences for fields in removed objects', async () => {
               "parentObjectType": undefined,
               "pathWithTypes": [
                 {
-                  "segment": {
-                    "_key": "someObject",
-                  },
+                  "segment": "someObject",
                   "type": "object",
                 },
               ],
@@ -2406,9 +2220,7 @@ it('emits divergences for fields in removed objects', async () => {
               "parentObjectType": undefined,
               "pathWithTypes": [
                 {
-                  "segment": {
-                    "_key": "someObject",
-                  },
+                  "segment": "someObject",
                   "type": "object",
                 },
               ],
@@ -2441,15 +2253,11 @@ it('emits divergences for fields in removed objects', async () => {
               "parentObjectType": undefined,
               "pathWithTypes": [
                 {
-                  "segment": {
-                    "_key": "someObject",
-                  },
+                  "segment": "someObject",
                   "type": "object",
                 },
                 {
-                  "segment": {
-                    "_key": "b",
-                  },
+                  "segment": "b",
                   "type": "string",
                 },
               ],
@@ -2460,15 +2268,11 @@ it('emits divergences for fields in removed objects', async () => {
               "parentObjectType": undefined,
               "pathWithTypes": [
                 {
-                  "segment": {
-                    "_key": "someObject",
-                  },
+                  "segment": "someObject",
                   "type": "object",
                 },
                 {
-                  "segment": {
-                    "_key": "b",
-                  },
+                  "segment": "b",
                   "type": "string",
                 },
               ],
@@ -2496,15 +2300,11 @@ it('emits divergences for fields in removed objects', async () => {
               "parentObjectType": undefined,
               "pathWithTypes": [
                 {
-                  "segment": {
-                    "_key": "someObject",
-                  },
+                  "segment": "someObject",
                   "type": "object",
                 },
                 {
-                  "segment": {
-                    "_key": "c",
-                  },
+                  "segment": "c",
                   "type": "string",
                 },
               ],
@@ -2531,15 +2331,11 @@ it('emits divergences for fields in removed objects', async () => {
               "parentObjectType": undefined,
               "pathWithTypes": [
                 {
-                  "segment": {
-                    "_key": "someObject",
-                  },
+                  "segment": "someObject",
                   "type": "object",
                 },
                 {
-                  "segment": {
-                    "_key": "e",
-                  },
+                  "segment": "e",
                   "type": "object",
                 },
               ],
@@ -2552,15 +2348,11 @@ it('emits divergences for fields in removed objects', async () => {
               "parentObjectType": undefined,
               "pathWithTypes": [
                 {
-                  "segment": {
-                    "_key": "someObject",
-                  },
+                  "segment": "someObject",
                   "type": "object",
                 },
                 {
-                  "segment": {
-                    "_key": "e",
-                  },
+                  "segment": "e",
                   "type": "object",
                 },
               ],
@@ -2589,21 +2381,15 @@ it('emits divergences for fields in removed objects', async () => {
               "parentObjectType": undefined,
               "pathWithTypes": [
                 {
-                  "segment": {
-                    "_key": "someObject",
-                  },
+                  "segment": "someObject",
                   "type": "object",
                 },
                 {
-                  "segment": {
-                    "_key": "e",
-                  },
+                  "segment": "e",
                   "type": "object",
                 },
                 {
-                  "segment": {
-                    "_key": "f",
-                  },
+                  "segment": "f",
                   "type": "string",
                 },
               ],
@@ -2614,21 +2400,15 @@ it('emits divergences for fields in removed objects', async () => {
               "parentObjectType": undefined,
               "pathWithTypes": [
                 {
-                  "segment": {
-                    "_key": "someObject",
-                  },
+                  "segment": "someObject",
                   "type": "object",
                 },
                 {
-                  "segment": {
-                    "_key": "e",
-                  },
+                  "segment": "e",
                   "type": "object",
                 },
                 {
-                  "segment": {
-                    "_key": "f",
-                  },
+                  "segment": "f",
                   "type": "string",
                 },
               ],
@@ -2710,9 +2490,7 @@ it('emits divergences for fields in nullified objects', async () => {
               "parentObjectType": undefined,
               "pathWithTypes": [
                 {
-                  "segment": {
-                    "_key": "someObject",
-                  },
+                  "segment": "someObject",
                   "type": "object",
                 },
               ],
@@ -2728,9 +2506,7 @@ it('emits divergences for fields in nullified objects', async () => {
               "parentObjectType": undefined,
               "pathWithTypes": [
                 {
-                  "segment": {
-                    "_key": "someObject",
-                  },
+                  "segment": "someObject",
                   "type": "object",
                 },
               ],
@@ -2747,9 +2523,7 @@ it('emits divergences for fields in nullified objects', async () => {
               "parentObjectType": undefined,
               "pathWithTypes": [
                 {
-                  "segment": {
-                    "_key": "someObject",
-                  },
+                  "segment": "someObject",
                   "type": "object",
                 },
               ],
@@ -2775,15 +2549,11 @@ it('emits divergences for fields in nullified objects', async () => {
               "parentObjectType": undefined,
               "pathWithTypes": [
                 {
-                  "segment": {
-                    "_key": "someObject",
-                  },
+                  "segment": "someObject",
                   "type": "object",
                 },
                 {
-                  "segment": {
-                    "_key": "b",
-                  },
+                  "segment": "b",
                   "type": "string",
                 },
               ],
@@ -2794,15 +2564,11 @@ it('emits divergences for fields in nullified objects', async () => {
               "parentObjectType": undefined,
               "pathWithTypes": [
                 {
-                  "segment": {
-                    "_key": "someObject",
-                  },
+                  "segment": "someObject",
                   "type": "object",
                 },
                 {
-                  "segment": {
-                    "_key": "b",
-                  },
+                  "segment": "b",
                   "type": "string",
                 },
               ],
@@ -2830,15 +2596,11 @@ it('emits divergences for fields in nullified objects', async () => {
               "parentObjectType": undefined,
               "pathWithTypes": [
                 {
-                  "segment": {
-                    "_key": "someObject",
-                  },
+                  "segment": "someObject",
                   "type": "object",
                 },
                 {
-                  "segment": {
-                    "_key": "c",
-                  },
+                  "segment": "c",
                   "type": "string",
                 },
               ],
@@ -2865,15 +2627,11 @@ it('emits divergences for fields in nullified objects', async () => {
               "parentObjectType": undefined,
               "pathWithTypes": [
                 {
-                  "segment": {
-                    "_key": "someObject",
-                  },
+                  "segment": "someObject",
                   "type": "object",
                 },
                 {
-                  "segment": {
-                    "_key": "e",
-                  },
+                  "segment": "e",
                   "type": "object",
                 },
               ],
@@ -2886,15 +2644,11 @@ it('emits divergences for fields in nullified objects', async () => {
               "parentObjectType": undefined,
               "pathWithTypes": [
                 {
-                  "segment": {
-                    "_key": "someObject",
-                  },
+                  "segment": "someObject",
                   "type": "object",
                 },
                 {
-                  "segment": {
-                    "_key": "e",
-                  },
+                  "segment": "e",
                   "type": "object",
                 },
               ],
@@ -2923,21 +2677,15 @@ it('emits divergences for fields in nullified objects', async () => {
               "parentObjectType": undefined,
               "pathWithTypes": [
                 {
-                  "segment": {
-                    "_key": "someObject",
-                  },
+                  "segment": "someObject",
                   "type": "object",
                 },
                 {
-                  "segment": {
-                    "_key": "e",
-                  },
+                  "segment": "e",
                   "type": "object",
                 },
                 {
-                  "segment": {
-                    "_key": "f",
-                  },
+                  "segment": "f",
                   "type": "string",
                 },
               ],
@@ -2948,21 +2696,15 @@ it('emits divergences for fields in nullified objects', async () => {
               "parentObjectType": undefined,
               "pathWithTypes": [
                 {
-                  "segment": {
-                    "_key": "someObject",
-                  },
+                  "segment": "someObject",
                   "type": "object",
                 },
                 {
-                  "segment": {
-                    "_key": "e",
-                  },
+                  "segment": "e",
                   "type": "object",
                 },
                 {
-                  "segment": {
-                    "_key": "f",
-                  },
+                  "segment": "f",
                   "type": "string",
                 },
               ],
@@ -3038,9 +2780,7 @@ it('emits divergences for fields in added primitive arrays', async () => {
               "parentObjectType": undefined,
               "pathWithTypes": [
                 {
-                  "segment": {
-                    "_key": "someArray",
-                  },
+                  "segment": "someArray",
                   "type": "array",
                 },
                 {
@@ -3077,9 +2817,7 @@ it('emits divergences for fields in added primitive arrays', async () => {
               "parentObjectType": undefined,
               "pathWithTypes": [
                 {
-                  "segment": {
-                    "_key": "someArray",
-                  },
+                  "segment": "someArray",
                   "type": "array",
                 },
                 {
@@ -3116,9 +2854,7 @@ it('emits divergences for fields in added primitive arrays', async () => {
               "parentObjectType": undefined,
               "pathWithTypes": [
                 {
-                  "segment": {
-                    "_key": "someArray",
-                  },
+                  "segment": "someArray",
                   "type": "array",
                 },
                 {
@@ -3194,9 +2930,7 @@ it('emits divergences for fields in removed primitive arrays', async () => {
               "parentObjectType": undefined,
               "pathWithTypes": [
                 {
-                  "segment": {
-                    "_key": "someArray",
-                  },
+                  "segment": "someArray",
                   "type": "array",
                 },
                 {
@@ -3215,9 +2949,7 @@ it('emits divergences for fields in removed primitive arrays', async () => {
               "parentObjectType": undefined,
               "pathWithTypes": [
                 {
-                  "segment": {
-                    "_key": "someArray",
-                  },
+                  "segment": "someArray",
                   "type": "array",
                 },
                 {
@@ -3251,9 +2983,7 @@ it('emits divergences for fields in removed primitive arrays', async () => {
               "parentObjectType": undefined,
               "pathWithTypes": [
                 {
-                  "segment": {
-                    "_key": "someArray",
-                  },
+                  "segment": "someArray",
                   "type": "array",
                 },
                 {
@@ -3272,9 +3002,7 @@ it('emits divergences for fields in removed primitive arrays', async () => {
               "parentObjectType": undefined,
               "pathWithTypes": [
                 {
-                  "segment": {
-                    "_key": "someArray",
-                  },
+                  "segment": "someArray",
                   "type": "array",
                 },
                 {
@@ -3310,9 +3038,7 @@ it('emits divergences for fields in removed primitive arrays', async () => {
               "parentObjectType": undefined,
               "pathWithTypes": [
                 {
-                  "segment": {
-                    "_key": "someArray",
-                  },
+                  "segment": "someArray",
                   "type": "array",
                 },
                 {
@@ -3395,9 +3121,7 @@ it('emits divergences for items added to primitive arrays', async () => {
               "parentObjectType": undefined,
               "pathWithTypes": [
                 {
-                  "segment": {
-                    "_key": "someArray",
-                  },
+                  "segment": "someArray",
                   "type": "array",
                 },
                 {
@@ -3485,9 +3209,7 @@ it('emits divergences for items added to primitive arrays since resolution', asy
               "parentObjectType": undefined,
               "pathWithTypes": [
                 {
-                  "segment": {
-                    "_key": "someArray",
-                  },
+                  "segment": "someArray",
                   "type": "array",
                 },
                 {
@@ -3566,9 +3288,7 @@ it('emits divergences for items removed from primitive arrays', async () => {
               "parentObjectType": undefined,
               "pathWithTypes": [
                 {
-                  "segment": {
-                    "_key": "someArray",
-                  },
+                  "segment": "someArray",
                   "type": "array",
                 },
                 {
@@ -3654,9 +3374,7 @@ it('emits divergences for items removed from primitive arrays since resolution',
               "parentObjectType": undefined,
               "pathWithTypes": [
                 {
-                  "segment": {
-                    "_key": "someArray",
-                  },
+                  "segment": "someArray",
                   "type": "array",
                 },
                 {
@@ -3734,9 +3452,7 @@ it('emits divergences for fields in nullified primitive arrays', async () => {
               "parentObjectType": undefined,
               "pathWithTypes": [
                 {
-                  "segment": {
-                    "_key": "someArray",
-                  },
+                  "segment": "someArray",
                   "type": "array",
                 },
                 {
@@ -3755,9 +3471,7 @@ it('emits divergences for fields in nullified primitive arrays', async () => {
               "parentObjectType": undefined,
               "pathWithTypes": [
                 {
-                  "segment": {
-                    "_key": "someArray",
-                  },
+                  "segment": "someArray",
                   "type": "array",
                 },
                 {
@@ -3791,9 +3505,7 @@ it('emits divergences for fields in nullified primitive arrays', async () => {
               "parentObjectType": undefined,
               "pathWithTypes": [
                 {
-                  "segment": {
-                    "_key": "someArray",
-                  },
+                  "segment": "someArray",
                   "type": "array",
                 },
                 {
@@ -3812,9 +3524,7 @@ it('emits divergences for fields in nullified primitive arrays', async () => {
               "parentObjectType": undefined,
               "pathWithTypes": [
                 {
-                  "segment": {
-                    "_key": "someArray",
-                  },
+                  "segment": "someArray",
                   "type": "array",
                 },
                 {
@@ -3850,9 +3560,7 @@ it('emits divergences for fields in nullified primitive arrays', async () => {
               "parentObjectType": undefined,
               "pathWithTypes": [
                 {
-                  "segment": {
-                    "_key": "someArray",
-                  },
+                  "segment": "someArray",
                   "type": "array",
                 },
                 {
@@ -3945,15 +3653,11 @@ it('emits divergences for fields in added object arrays', async () => {
               "parentObjectType": undefined,
               "pathWithTypes": [
                 {
-                  "segment": {
-                    "_key": "someArray",
-                  },
+                  "segment": "someArray",
                   "type": "array",
                 },
                 {
-                  "segment": {
-                    "_key": "a",
-                  },
+                  "segment": "a",
                   "type": "object",
                 },
               ],
@@ -3984,21 +3688,15 @@ it('emits divergences for fields in added object arrays', async () => {
               "parentObjectType": undefined,
               "pathWithTypes": [
                 {
-                  "segment": {
-                    "_key": "someArray",
-                  },
+                  "segment": "someArray",
                   "type": "array",
                 },
                 {
-                  "segment": {
-                    "_key": "a",
-                  },
+                  "segment": "a",
                   "type": "object",
                 },
                 {
-                  "segment": {
-                    "_key": "value",
-                  },
+                  "segment": "value",
                   "type": "string",
                 },
               ],
@@ -4040,15 +3738,11 @@ it('emits divergences for fields in added object arrays', async () => {
               "parentObjectType": undefined,
               "pathWithTypes": [
                 {
-                  "segment": {
-                    "_key": "someArray",
-                  },
+                  "segment": "someArray",
                   "type": "array",
                 },
                 {
-                  "segment": {
-                    "_key": "b",
-                  },
+                  "segment": "b",
                   "type": "object",
                 },
               ],
@@ -4079,21 +3773,15 @@ it('emits divergences for fields in added object arrays', async () => {
               "parentObjectType": undefined,
               "pathWithTypes": [
                 {
-                  "segment": {
-                    "_key": "someArray",
-                  },
+                  "segment": "someArray",
                   "type": "array",
                 },
                 {
-                  "segment": {
-                    "_key": "b",
-                  },
+                  "segment": "b",
                   "type": "object",
                 },
                 {
-                  "segment": {
-                    "_key": "value",
-                  },
+                  "segment": "value",
                   "type": "string",
                 },
               ],
@@ -4135,15 +3823,11 @@ it('emits divergences for fields in added object arrays', async () => {
               "parentObjectType": undefined,
               "pathWithTypes": [
                 {
-                  "segment": {
-                    "_key": "someArray",
-                  },
+                  "segment": "someArray",
                   "type": "array",
                 },
                 {
-                  "segment": {
-                    "_key": "c",
-                  },
+                  "segment": "c",
                   "type": "object",
                 },
               ],
@@ -4174,21 +3858,15 @@ it('emits divergences for fields in added object arrays', async () => {
               "parentObjectType": undefined,
               "pathWithTypes": [
                 {
-                  "segment": {
-                    "_key": "someArray",
-                  },
+                  "segment": "someArray",
                   "type": "array",
                 },
                 {
-                  "segment": {
-                    "_key": "c",
-                  },
+                  "segment": "c",
                   "type": "object",
                 },
                 {
-                  "segment": {
-                    "_key": "value",
-                  },
+                  "segment": "value",
                   "type": "string",
                 },
               ],
@@ -4273,15 +3951,11 @@ it('emits divergences for fields in removed object arrays', async () => {
               "parentObjectType": undefined,
               "pathWithTypes": [
                 {
-                  "segment": {
-                    "_key": "someArray",
-                  },
+                  "segment": "someArray",
                   "type": "array",
                 },
                 {
-                  "segment": {
-                    "_key": "a",
-                  },
+                  "segment": "a",
                   "type": "object",
                 },
               ],
@@ -4308,15 +3982,11 @@ it('emits divergences for fields in removed object arrays', async () => {
               "parentObjectType": undefined,
               "pathWithTypes": [
                 {
-                  "segment": {
-                    "_key": "someArray",
-                  },
+                  "segment": "someArray",
                   "type": "array",
                 },
                 {
-                  "segment": {
-                    "_key": "a",
-                  },
+                  "segment": "a",
                   "type": "object",
                 },
               ],
@@ -4346,21 +4016,15 @@ it('emits divergences for fields in removed object arrays', async () => {
               "parentObjectType": undefined,
               "pathWithTypes": [
                 {
-                  "segment": {
-                    "_key": "someArray",
-                  },
+                  "segment": "someArray",
                   "type": "array",
                 },
                 {
-                  "segment": {
-                    "_key": "a",
-                  },
+                  "segment": "a",
                   "type": "object",
                 },
                 {
-                  "segment": {
-                    "_key": "value",
-                  },
+                  "segment": "value",
                   "type": "string",
                 },
               ],
@@ -4371,21 +4035,15 @@ it('emits divergences for fields in removed object arrays', async () => {
               "parentObjectType": undefined,
               "pathWithTypes": [
                 {
-                  "segment": {
-                    "_key": "someArray",
-                  },
+                  "segment": "someArray",
                   "type": "array",
                 },
                 {
-                  "segment": {
-                    "_key": "a",
-                  },
+                  "segment": "a",
                   "type": "object",
                 },
                 {
-                  "segment": {
-                    "_key": "value",
-                  },
+                  "segment": "value",
                   "type": "string",
                 },
               ],
@@ -4421,15 +4079,11 @@ it('emits divergences for fields in removed object arrays', async () => {
               "parentObjectType": undefined,
               "pathWithTypes": [
                 {
-                  "segment": {
-                    "_key": "someArray",
-                  },
+                  "segment": "someArray",
                   "type": "array",
                 },
                 {
-                  "segment": {
-                    "_key": "b",
-                  },
+                  "segment": "b",
                   "type": "object",
                 },
               ],
@@ -4456,15 +4110,11 @@ it('emits divergences for fields in removed object arrays', async () => {
               "parentObjectType": undefined,
               "pathWithTypes": [
                 {
-                  "segment": {
-                    "_key": "someArray",
-                  },
+                  "segment": "someArray",
                   "type": "array",
                 },
                 {
-                  "segment": {
-                    "_key": "b",
-                  },
+                  "segment": "b",
                   "type": "object",
                 },
               ],
@@ -4494,21 +4144,15 @@ it('emits divergences for fields in removed object arrays', async () => {
               "parentObjectType": undefined,
               "pathWithTypes": [
                 {
-                  "segment": {
-                    "_key": "someArray",
-                  },
+                  "segment": "someArray",
                   "type": "array",
                 },
                 {
-                  "segment": {
-                    "_key": "b",
-                  },
+                  "segment": "b",
                   "type": "object",
                 },
                 {
-                  "segment": {
-                    "_key": "value",
-                  },
+                  "segment": "value",
                   "type": "string",
                 },
               ],
@@ -4519,21 +4163,15 @@ it('emits divergences for fields in removed object arrays', async () => {
               "parentObjectType": undefined,
               "pathWithTypes": [
                 {
-                  "segment": {
-                    "_key": "someArray",
-                  },
+                  "segment": "someArray",
                   "type": "array",
                 },
                 {
-                  "segment": {
-                    "_key": "b",
-                  },
+                  "segment": "b",
                   "type": "object",
                 },
                 {
-                  "segment": {
-                    "_key": "value",
-                  },
+                  "segment": "value",
                   "type": "string",
                 },
               ],
@@ -4574,15 +4212,11 @@ it('emits divergences for fields in removed object arrays', async () => {
               "parentObjectType": undefined,
               "pathWithTypes": [
                 {
-                  "segment": {
-                    "_key": "someArray",
-                  },
+                  "segment": "someArray",
                   "type": "array",
                 },
                 {
-                  "segment": {
-                    "_key": "c",
-                  },
+                  "segment": "c",
                   "type": "object",
                 },
               ],
@@ -4613,21 +4247,15 @@ it('emits divergences for fields in removed object arrays', async () => {
               "parentObjectType": undefined,
               "pathWithTypes": [
                 {
-                  "segment": {
-                    "_key": "someArray",
-                  },
+                  "segment": "someArray",
                   "type": "array",
                 },
                 {
-                  "segment": {
-                    "_key": "c",
-                  },
+                  "segment": "c",
                   "type": "object",
                 },
                 {
-                  "segment": {
-                    "_key": "value",
-                  },
+                  "segment": "value",
                   "type": "string",
                 },
               ],
@@ -4727,15 +4355,11 @@ it('emits divergences for items added to object arrays', async () => {
               "parentObjectType": undefined,
               "pathWithTypes": [
                 {
-                  "segment": {
-                    "_key": "someArray",
-                  },
+                  "segment": "someArray",
                   "type": "array",
                 },
                 {
-                  "segment": {
-                    "_key": "d",
-                  },
+                  "segment": "d",
                   "type": "object",
                 },
               ],
@@ -4766,21 +4390,15 @@ it('emits divergences for items added to object arrays', async () => {
               "parentObjectType": undefined,
               "pathWithTypes": [
                 {
-                  "segment": {
-                    "_key": "someArray",
-                  },
+                  "segment": "someArray",
                   "type": "array",
                 },
                 {
-                  "segment": {
-                    "_key": "d",
-                  },
+                  "segment": "d",
                   "type": "object",
                 },
                 {
-                  "segment": {
-                    "_key": "value",
-                  },
+                  "segment": "value",
                   "type": "string",
                 },
               ],
@@ -4885,15 +4503,11 @@ it('emits divergences for items added to object arrays since resolution', async 
               "parentObjectType": undefined,
               "pathWithTypes": [
                 {
-                  "segment": {
-                    "_key": "someArray",
-                  },
+                  "segment": "someArray",
                   "type": "array",
                 },
                 {
-                  "segment": {
-                    "_key": "d",
-                  },
+                  "segment": "d",
                   "type": "object",
                 },
               ],
@@ -4924,21 +4538,15 @@ it('emits divergences for items added to object arrays since resolution', async 
               "parentObjectType": undefined,
               "pathWithTypes": [
                 {
-                  "segment": {
-                    "_key": "someArray",
-                  },
+                  "segment": "someArray",
                   "type": "array",
                 },
                 {
-                  "segment": {
-                    "_key": "d",
-                  },
+                  "segment": "d",
                   "type": "object",
                 },
                 {
-                  "segment": {
-                    "_key": "value",
-                  },
+                  "segment": "value",
                   "type": "string",
                 },
               ],
@@ -5029,15 +4637,11 @@ it('emits divergences for items removed from object arrays', async () => {
               "parentObjectType": undefined,
               "pathWithTypes": [
                 {
-                  "segment": {
-                    "_key": "someArray",
-                  },
+                  "segment": "someArray",
                   "type": "array",
                 },
                 {
-                  "segment": {
-                    "_key": "c",
-                  },
+                  "segment": "c",
                   "type": "object",
                 },
               ],
@@ -5068,21 +4672,15 @@ it('emits divergences for items removed from object arrays', async () => {
               "parentObjectType": undefined,
               "pathWithTypes": [
                 {
-                  "segment": {
-                    "_key": "someArray",
-                  },
+                  "segment": "someArray",
                   "type": "array",
                 },
                 {
-                  "segment": {
-                    "_key": "c",
-                  },
+                  "segment": "c",
                   "type": "object",
                 },
                 {
-                  "segment": {
-                    "_key": "value",
-                  },
+                  "segment": "value",
                   "type": "string",
                 },
               ],
@@ -5180,15 +4778,11 @@ it('emits divergences for items removed from object arrays since resolution', as
               "parentObjectType": undefined,
               "pathWithTypes": [
                 {
-                  "segment": {
-                    "_key": "someArray",
-                  },
+                  "segment": "someArray",
                   "type": "array",
                 },
                 {
-                  "segment": {
-                    "_key": "c",
-                  },
+                  "segment": "c",
                   "type": "object",
                 },
               ],
@@ -5219,21 +4813,15 @@ it('emits divergences for items removed from object arrays since resolution', as
               "parentObjectType": undefined,
               "pathWithTypes": [
                 {
-                  "segment": {
-                    "_key": "someArray",
-                  },
+                  "segment": "someArray",
                   "type": "array",
                 },
                 {
-                  "segment": {
-                    "_key": "c",
-                  },
+                  "segment": "c",
                   "type": "object",
                 },
                 {
-                  "segment": {
-                    "_key": "value",
-                  },
+                  "segment": "value",
                   "type": "string",
                 },
               ],
@@ -5321,15 +4909,11 @@ it('emits divergences for fields in nullified object arrays', async () => {
               "parentObjectType": undefined,
               "pathWithTypes": [
                 {
-                  "segment": {
-                    "_key": "someArray",
-                  },
+                  "segment": "someArray",
                   "type": "array",
                 },
                 {
-                  "segment": {
-                    "_key": "a",
-                  },
+                  "segment": "a",
                   "type": "object",
                 },
               ],
@@ -5356,15 +4940,11 @@ it('emits divergences for fields in nullified object arrays', async () => {
               "parentObjectType": undefined,
               "pathWithTypes": [
                 {
-                  "segment": {
-                    "_key": "someArray",
-                  },
+                  "segment": "someArray",
                   "type": "array",
                 },
                 {
-                  "segment": {
-                    "_key": "a",
-                  },
+                  "segment": "a",
                   "type": "object",
                 },
               ],
@@ -5394,21 +4974,15 @@ it('emits divergences for fields in nullified object arrays', async () => {
               "parentObjectType": undefined,
               "pathWithTypes": [
                 {
-                  "segment": {
-                    "_key": "someArray",
-                  },
+                  "segment": "someArray",
                   "type": "array",
                 },
                 {
-                  "segment": {
-                    "_key": "a",
-                  },
+                  "segment": "a",
                   "type": "object",
                 },
                 {
-                  "segment": {
-                    "_key": "value",
-                  },
+                  "segment": "value",
                   "type": "string",
                 },
               ],
@@ -5419,21 +4993,15 @@ it('emits divergences for fields in nullified object arrays', async () => {
               "parentObjectType": undefined,
               "pathWithTypes": [
                 {
-                  "segment": {
-                    "_key": "someArray",
-                  },
+                  "segment": "someArray",
                   "type": "array",
                 },
                 {
-                  "segment": {
-                    "_key": "a",
-                  },
+                  "segment": "a",
                   "type": "object",
                 },
                 {
-                  "segment": {
-                    "_key": "value",
-                  },
+                  "segment": "value",
                   "type": "string",
                 },
               ],
@@ -5469,15 +5037,11 @@ it('emits divergences for fields in nullified object arrays', async () => {
               "parentObjectType": undefined,
               "pathWithTypes": [
                 {
-                  "segment": {
-                    "_key": "someArray",
-                  },
+                  "segment": "someArray",
                   "type": "array",
                 },
                 {
-                  "segment": {
-                    "_key": "b",
-                  },
+                  "segment": "b",
                   "type": "object",
                 },
               ],
@@ -5504,15 +5068,11 @@ it('emits divergences for fields in nullified object arrays', async () => {
               "parentObjectType": undefined,
               "pathWithTypes": [
                 {
-                  "segment": {
-                    "_key": "someArray",
-                  },
+                  "segment": "someArray",
                   "type": "array",
                 },
                 {
-                  "segment": {
-                    "_key": "b",
-                  },
+                  "segment": "b",
                   "type": "object",
                 },
               ],
@@ -5542,21 +5102,15 @@ it('emits divergences for fields in nullified object arrays', async () => {
               "parentObjectType": undefined,
               "pathWithTypes": [
                 {
-                  "segment": {
-                    "_key": "someArray",
-                  },
+                  "segment": "someArray",
                   "type": "array",
                 },
                 {
-                  "segment": {
-                    "_key": "b",
-                  },
+                  "segment": "b",
                   "type": "object",
                 },
                 {
-                  "segment": {
-                    "_key": "value",
-                  },
+                  "segment": "value",
                   "type": "string",
                 },
               ],
@@ -5567,21 +5121,15 @@ it('emits divergences for fields in nullified object arrays', async () => {
               "parentObjectType": undefined,
               "pathWithTypes": [
                 {
-                  "segment": {
-                    "_key": "someArray",
-                  },
+                  "segment": "someArray",
                   "type": "array",
                 },
                 {
-                  "segment": {
-                    "_key": "b",
-                  },
+                  "segment": "b",
                   "type": "object",
                 },
                 {
-                  "segment": {
-                    "_key": "value",
-                  },
+                  "segment": "value",
                   "type": "string",
                 },
               ],
@@ -5622,15 +5170,11 @@ it('emits divergences for fields in nullified object arrays', async () => {
               "parentObjectType": undefined,
               "pathWithTypes": [
                 {
-                  "segment": {
-                    "_key": "someArray",
-                  },
+                  "segment": "someArray",
                   "type": "array",
                 },
                 {
-                  "segment": {
-                    "_key": "c",
-                  },
+                  "segment": "c",
                   "type": "object",
                 },
               ],
@@ -5661,21 +5205,15 @@ it('emits divergences for fields in nullified object arrays', async () => {
               "parentObjectType": undefined,
               "pathWithTypes": [
                 {
-                  "segment": {
-                    "_key": "someArray",
-                  },
+                  "segment": "someArray",
                   "type": "array",
                 },
                 {
-                  "segment": {
-                    "_key": "c",
-                  },
+                  "segment": "c",
                   "type": "object",
                 },
                 {
-                  "segment": {
-                    "_key": "value",
-                  },
+                  "segment": "value",
                   "type": "string",
                 },
               ],
