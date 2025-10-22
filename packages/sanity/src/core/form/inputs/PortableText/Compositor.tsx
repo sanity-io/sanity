@@ -19,6 +19,7 @@ import {ActivateOnFocus} from '../../components/ActivateOnFocus/ActivateOnFocus'
 import {type ArrayOfObjectsInputProps, type RenderCustomMarkers} from '../../types'
 import {type RenderBlockActionsCallback} from '../../types/_transitional'
 import {type OnPasteFn} from '../../types/inputProps'
+import {pathToAnchorIdent} from '../../utils/pathToAnchorIdent'
 import {UploadTargetCard} from '../files/common/uploadTarget/UploadTargetCard'
 import {ExpandedLayer, Root, StringDiffContainer} from './Compositor.styles'
 import {useSetPortableTextMemberItemElementRef} from './contexts/PortableTextMemberItemElementRefsProvider'
@@ -137,6 +138,8 @@ export function Compositor(props: Omit<InputProps, 'schemaType' | 'arrayFunction
   const renderTextBlock = useCallback(
     (blockProps: EditorBlockRenderProps) => {
       const {children, focused: blockFocused, path: blockPath, selected, value: block} = blockProps
+      const fullyQualifiedPath = path.concat(blockPath)
+
       return (
         <TextBlock
           floatingBoundary={boundaryElement}
@@ -162,6 +165,7 @@ export function Compositor(props: Omit<InputProps, 'schemaType' | 'arrayFunction
           selected={selected}
           setElementRef={setElementRef}
           value={block as PortableTextTextBlock}
+          anchorIdent={pathToAnchorIdent('input', fullyQualifiedPath)}
         >
           {children}
         </TextBlock>
