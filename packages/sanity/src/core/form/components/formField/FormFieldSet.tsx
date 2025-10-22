@@ -1,4 +1,4 @@
-import {type DeprecatedProperty, type FormNodeValidation} from '@sanity/types'
+import {type Path, type DeprecatedProperty, type FormNodeValidation} from '@sanity/types'
 import {Badge, Box, Flex, Stack, Text, type Theme} from '@sanity/ui'
 import {
   type FocusEvent,
@@ -62,6 +62,8 @@ export interface FormFieldSetProps {
   validation?: FormNodeValidation[]
   inputId: string
   deprecated?: DeprecatedProperty
+
+  path: Path
 }
 
 function getChildren(children: ReactNode | (() => ReactNode)): ReactNode {

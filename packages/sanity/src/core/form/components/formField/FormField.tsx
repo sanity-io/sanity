@@ -1,4 +1,4 @@
-import {type DeprecatedProperty, type FormNodeValidation} from '@sanity/types'
+import {type Path, type DeprecatedProperty, type FormNodeValidation} from '@sanity/types'
 import {Stack} from '@sanity/ui'
 import {type HTMLProps, memo, type ReactNode} from 'react'
 
@@ -44,6 +44,7 @@ export interface FormFieldProps {
    */
   validation?: FormNodeValidation[]
   deprecated?: DeprecatedProperty
+  path: Path
 }
 
 /** @internal */

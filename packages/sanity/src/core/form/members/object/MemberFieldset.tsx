@@ -67,6 +67,7 @@ export const MemberFieldSet = memo(function MemberFieldSet(props: {
       columns={member?.fieldSet?.columns}
       data-testid={`fieldset-${member.fieldSet.name}`}
       inputId={member.fieldSet.name}
+      path={member.path}
     >
       {fieldsetMembers.map((fieldsetMember) => {
         if (fieldsetMember.kind === 'error') {
