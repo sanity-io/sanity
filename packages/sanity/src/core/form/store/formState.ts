@@ -497,6 +497,7 @@ export function createPrepareFormState({
           kind: 'error',
           key: field.name,
           fieldName: field.name,
+          path: fieldPath,
           error: {
             type: 'INCOMPATIBLE_TYPE',
             expectedSchemaType: field.type,
@@ -517,6 +518,7 @@ export function createPrepareFormState({
           key: `field-${field.name}`,
           name: field.name,
           index: index,
+          path: fieldPath,
         }
       }
 
@@ -581,6 +583,7 @@ export function createPrepareFormState({
         key: `field-${field.name}`,
         name: field.name,
         index: index,
+        path: fieldPath,
 
         inSelectedGroup,
         groups: normalizedFieldGroupNames,
@@ -604,6 +607,7 @@ export function createPrepareFormState({
             kind: 'error',
             key: field.name,
             fieldName: field.name,
+            path: fieldPath,
             error: {
               type: 'INCOMPATIBLE_TYPE',
               expectedSchemaType: field.type,
@@ -618,6 +622,7 @@ export function createPrepareFormState({
             kind: 'error',
             key: field.name,
             fieldName: field.name,
+            path: fieldPath,
             error: {
               type: 'MIXED_ARRAY',
               schemaType: field.type,
@@ -631,6 +636,7 @@ export function createPrepareFormState({
             kind: 'error',
             key: field.name,
             fieldName: field.name,
+            path: fieldPath,
             error: {
               type: 'MISSING_KEYS',
               value: fieldValue,
@@ -645,6 +651,7 @@ export function createPrepareFormState({
             kind: 'error',
             key: field.name,
             fieldName: field.name,
+            path: fieldPath,
             error: {
               type: 'DUPLICATE_KEYS',
               duplicates: duplicateKeyEntries,
@@ -693,6 +700,7 @@ export function createPrepareFormState({
         return {
           kind: 'field',
           key: `field-${field.name}`,
+          path: fieldPath,
           name: field.name,
           index: index,
 
@@ -714,6 +722,7 @@ export function createPrepareFormState({
           return {
             kind: 'error',
             key: field.name,
+            path: fieldPath,
             fieldName: field.name,
             error: {
               type: 'INCOMPATIBLE_TYPE',
@@ -764,6 +773,7 @@ export function createPrepareFormState({
         return {
           kind: 'field',
           key: `field-${field.name}`,
+          path: fieldPath,
           name: field.name,
           index: index,
 
@@ -817,6 +827,7 @@ export function createPrepareFormState({
       return {
         kind: 'field',
         key: `field-${field.name}`,
+        path: fieldPath,
         name: field.name,
         index: index,
         open: startsWith(fieldPath, parent.openPath),
@@ -954,15 +965,18 @@ export function createPrepareFormState({
           (props.collapsedFieldSets?.children || {})[fieldSet.name]?.value ??
           defaultCollapsedState.collapsed
 
+        const fieldSetPath = pathFor(props.path.concat(fieldSet.name))
+
         return [
           {
             kind: 'fieldSet',
             key: `fieldset-${fieldSet.name}`,
+            path: fieldSetPath,
             _inSelectedGroup: isFieldEnabledByGroupFilter(groups, fieldSet.group, selectedGroup),
             groups: fieldSet.group ? castArray(fieldSet.group) : [],
             renderMembers: fieldSet.renderMembers,
             fieldSet: {
-              path: pathFor(props.path.concat(fieldSet.name)),
+              path: fieldSetPath,
               name: fieldSet.name,
               title: fieldSet.title,
               description: fieldSet.description,
