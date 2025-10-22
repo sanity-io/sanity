@@ -1,10 +1,4 @@
-import {
-  isKeyedObject,
-  type KeyedObject,
-  type KeyedSegment,
-  type Path,
-  type PathSegment,
-} from '@sanity/types'
+import {isKeyedObject, type KeyedObject, type Path, type PathSegment} from '@sanity/types'
 import {toString} from '@sanity/util/paths'
 
 import {isRecord} from '../../util/isRecord'
@@ -13,7 +7,7 @@ import {isRecord} from '../../util/isRecord'
  * @internal
  */
 export interface PathSegmentWithType {
-  segment: number | KeyedSegment
+  segment: number | string
   type: string
 }
 
@@ -96,9 +90,7 @@ export function* flattenObject(
     const currentPath = path.concat(key)
 
     const currentPathWithTypes = pathWithTypes.concat({
-      segment: {
-        _key: key,
-      },
+      segment: key,
       type: readType(value),
     })
 
@@ -207,9 +199,7 @@ export function* flattenArray(
           {compact},
           path.concat({_key: value._key}),
           pathWithTypes.concat({
-            segment: {
-              _key: value._key,
-            },
+            segment: value._key,
             type: readType(value),
           }),
         )
