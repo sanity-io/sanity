@@ -311,6 +311,7 @@ exports[`exports snapshot 1`] = `
     "documentIdEquals": "function",
     "editState": "function",
     "emitOperation": "function",
+    "emptyValuesByType": "object",
     "encodePath": "function",
     "escapeField": "function",
     "fieldNeedsEscape": "function",
