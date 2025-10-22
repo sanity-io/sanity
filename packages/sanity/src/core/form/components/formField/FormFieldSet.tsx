@@ -1,4 +1,9 @@
-import {type Path, type DeprecatedProperty, type FormNodeValidation} from '@sanity/types'
+import {
+  type Path,
+  type SchemaType,
+  type DeprecatedProperty,
+  type FormNodeValidation,
+} from '@sanity/types'
 import {Badge, Box, Flex, Stack, Text, type Theme} from '@sanity/ui'
 import {
   type FocusEvent,
@@ -53,6 +58,7 @@ export interface FormFieldSetProps {
   level?: number
   onCollapse?: () => void
   onExpand?: () => void
+  schemaType?: SchemaType
   title?: ReactNode
   /**
    *
