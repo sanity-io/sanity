@@ -64,6 +64,7 @@ export interface FormFieldSetProps {
   deprecated?: DeprecatedProperty
 
   path: Path
+  readOnly?: boolean
 }
 
 function getChildren(children: ReactNode | (() => ReactNode)): ReactNode {
