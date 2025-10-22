@@ -1,7 +1,10 @@
 /* eslint-disable camelcase */
 
 import {getTheme_v2, rgba} from '@sanity/ui/theme'
+import {type ComponentType} from 'react'
 import {createGlobalStyle, css} from 'styled-components'
+
+import {useWorkspace} from './workspace'
 
 const SCROLLBAR_SIZE = 12 // px
 const SCROLLBAR_BORDER_SIZE = 4 // px
@@ -13,8 +16,20 @@ function buildResizeHandleDataUri(hexColor: string) {
   return `url("data:image/svg+xml,${encodedSvg}")`
 }
 
-export const GlobalStyle = createGlobalStyle((props) => {
-  const {color, font} = getTheme_v2(props.theme)
+export const GlobalStyle: ComponentType = () => {
+  const {
+    advancedVersionControl: {enabled: advancedVersionControlEnabled},
+  } = useWorkspace()
+
+  return <GlobalStyleSheet $documentEditorGutterEnabled={advancedVersionControlEnabled} />
+}
+
+interface Props {
+  $documentEditorGutterEnabled: boolean
+}
+
+const GlobalStyleSheet = createGlobalStyle<Props>(({theme, $documentEditorGutterEnabled}) => {
+  const {color, font, space} = getTheme_v2(theme)
 
   return css`
     ::-webkit-resizer {
@@ -48,6 +63,11 @@ export const GlobalStyle = createGlobalStyle((props) => {
 
     *::selection {
       background-color: ${rgba(color.focusRing, 0.3)};
+    }
+
+    :root {
+      --formGutterSize: ${$documentEditorGutterEnabled ? space[4] : 0}px;
+      --formGutterGap: ${$documentEditorGutterEnabled ? space[3] : 0}px;
     }
 
     html {

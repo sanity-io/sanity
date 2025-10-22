@@ -1,4 +1,4 @@
-import {Box, Container, Flex, focusFirstDescendant, Spinner, Text} from '@sanity/ui'
+import {Box, Flex, focusFirstDescendant, Spinner, Text} from '@sanity/ui'
 import {
   type FormEvent,
   forwardRef,
@@ -14,7 +14,9 @@ import {
   type DocumentMutationEvent,
   type DocumentRebaseEvent,
   FormBuilder,
+  FormContainer,
   type FormDocumentValue,
+  FormRow,
   fromMutationPatches,
   type PatchMsg,
   PresenceOverlay,
@@ -160,14 +162,7 @@ export const FormView = forwardRef<HTMLDivElement, FormViewProps>(function FormV
   const isReadOnly = connectionState === 'reconnecting' || formState?.readOnly || !editState?.ready
 
   return (
-    <Container
-      hidden={hidden}
-      paddingX={4}
-      paddingTop={5}
-      paddingBottom={9}
-      sizing="border"
-      width={1}
-    >
+    <FormContainer hidden={hidden}>
       <PresenceOverlay margins={margins}>
         <Box
           as="form"
@@ -194,7 +189,13 @@ export const FormView = forwardRef<HTMLDivElement, FormViewProps>(function FormV
             </Box>
           ) : (
             <>
-              <FormHeader documentId={documentId} schemaType={formState.schemaType} title={title} />
+              <FormRow>
+                <FormHeader
+                  documentId={documentId}
+                  schemaType={formState.schemaType}
+                  title={title}
+                />
+              </FormRow>
               <FormBuilder
                 __internal_fieldActions={fieldActions}
                 __internal_inspectOpen={inspectOpen}
@@ -232,7 +233,7 @@ export const FormView = forwardRef<HTMLDivElement, FormViewProps>(function FormV
           )}
         </Box>
       </PresenceOverlay>
-    </Container>
+    </FormContainer>
   )
 })
 
