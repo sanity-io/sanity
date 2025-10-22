@@ -1730,8 +1730,8 @@ importers:
         specifier: ^3.0.6
         version: 3.0.6
       '@sanity/comlink':
-        specifier: ^3.1.1
-        version: 3.1.1
+        specifier: ^4.0.0
+        version: 4.0.0
       '@sanity/diff':
         specifier: workspace:*
         version: link:../@sanity/diff
@@ -4889,6 +4889,10 @@ packages:
   '@sanity/comlink@3.1.1':
     resolution: {integrity: sha512-UyBJG4oWNs+VGVo5Yr5aKir5bgMzF/dnaNYjqxP2+5+iXnvhVOcI6dAtEXDj7kMmn5/ysHNKbLDlW6aVeBm7xg==}
     engines: {node: '>=18'}
+
+  '@sanity/comlink@4.0.0':
+    resolution: {integrity: sha512-vTidwlsO/I/sYcepdPRrSBA8TX4JGrO3wa703pxpSfXMUAClNYXi/3vtq9uhE2KUu8gbgUo1IO59mWBiQ39Ofg==}
+    engines: {node: '>=20.19 <22 || >=22.12'}
 
   '@sanity/core-loader@1.8.21':
     resolution: {integrity: sha512-CtutB4QXCX/M7729VVjFhdBQohlTOTfMMPXWweHAQIC+HZ5oDa0SGoXphxAjUGJcQcj7fBRmUKuUXq5Wmo0hyA==}
@@ -15533,6 +15537,12 @@ snapshots:
       xstate: 5.23.0
 
   '@sanity/comlink@3.1.1':
+    dependencies:
+      rxjs: 7.8.2
+      uuid: 11.1.0
+      xstate: 5.23.0
+
+  '@sanity/comlink@4.0.0':
     dependencies:
       rxjs: 7.8.2
       uuid: 11.1.0

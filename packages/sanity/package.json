@@ -161,7 +161,7 @@
     "@sanity/cli": "workspace:*",
     "@sanity/client": "^7.12.0",
     "@sanity/color": "^3.0.6",
-    "@sanity/comlink": "^3.1.1",
+    "@sanity/comlink": "^4.0.0",
     "@sanity/diff": "workspace:*",
     "@sanity/diff-match-patch": "^3.2.0",
     "@sanity/diff-patch": "^5.0.0",
