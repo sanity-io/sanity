@@ -88,6 +88,10 @@ const sharedSettings = ({projectId}: {projectId: string}) => {
       enabled: true,
     },
 
+    advancedVersionControl: {
+      enabled: true,
+    },
+
     document: {
       actions: documentActions,
       inspectors: (prev, ctx) => {
