@@ -3,6 +3,7 @@ import {type ChangeEvent, type FocusEvent, useCallback, useMemo, useRef, useStat
 
 import {type FIXME} from '../../../../FIXME'
 import {useCopyPaste} from '../../../../studio'
+import {FormNodeDivergenceDetail} from '../../../components/FormNodeDivergenceDetail'
 import {useGetFormValue} from '../../../contexts/GetFormValue'
 import {useDidUpdate} from '../../../hooks/useDidUpdate'
 import {getEmptyValue} from '../../../inputs/arrays/ArrayOfPrimitivesInput/getEmptyValue'
@@ -223,7 +224,9 @@ export function ArrayOfPrimitivesItem(props: PrimitiveMemberItemProps) {
       path={member.item.path}
       render={renderItem}
     >
-      <RenderInput {...inputProps} render={renderInput} />
+      <FormNodeDivergenceDetail path={member.item.path} readOnly={member.item.readOnly}>
+        <RenderInput {...inputProps} render={renderInput} />
+      </FormNodeDivergenceDetail>
     </RenderItem>
   )
 }

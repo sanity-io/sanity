@@ -31,7 +31,7 @@ import {
 import {isRecord} from '../util/isRecord'
 import {selectEffect} from './selectEffect'
 import {selectEffectFromHash} from './selectEffectFromHash'
-import {type ResolutionMarker} from './types/ResolutionMarker'
+import {isDivergenceResolutionMarker, type ResolutionMarker} from './types/ResolutionMarker'
 import {delayTask} from './utils/delayTask'
 import {findMovesInArrayOfObjects} from './utils/findMovesInArrayOfObjects'
 import {type FlattenedPair, flattenObject, type PathWithTypes} from './utils/flatten'
@@ -855,8 +855,39 @@ function isSanityObjectLike(
   )
 }
 
-function createDocumentRevisionMarker(
+/**
+ * @internal
+ */
+export function createDocumentRevisionMarker(
   ...documentRevision: [documentId: string, revisionId: string]
 ): string {
   return documentRevision.join('@')
+}
+
+/**
+ * @internal
+ */
+export function isDivergenceResolutions(
+  maybeDivergenceResolutions: unknown,
+): maybeDivergenceResolutions is DivergenceResolution[] {
+  return (
+    Array.isArray(maybeDivergenceResolutions) &&
+    maybeDivergenceResolutions.every(isDivergenceResolution)
+  )
+}
+
+/**
+ * @internal
+ */
+function isDivergenceResolution(
+  maybeDivergenceResolution: unknown,
+): maybeDivergenceResolution is DivergenceResolution {
+  return (
+    typeof maybeDivergenceResolution === 'object' &&
+    maybeDivergenceResolution !== null &&
+    '_key' in maybeDivergenceResolution &&
+    typeof maybeDivergenceResolution._key === 'string' &&
+    'resolutionMarker' in maybeDivergenceResolution &&
+    isDivergenceResolutionMarker(maybeDivergenceResolution.resolutionMarker)
+  )
 }

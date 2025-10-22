@@ -19,6 +19,7 @@ import {useTranslation} from '../../../i18n'
 import {FieldPresence} from '../../../presence'
 import {EMPTY_ARRAY} from '../../../util/empty'
 import {FormFieldSet, FormFieldValidationStatus} from '../../components/formField'
+import {FormNodeDivergenceDetail} from '../../components/FormNodeDivergenceDetail'
 import {useDidUpdate} from '../../hooks/useDidUpdate'
 import {useScrollIntoViewOnFocusWithin} from '../../hooks/useScrollIntoViewOnFocusWithin'
 import {set, unset} from '../../patch'
@@ -385,8 +386,10 @@ export function ReferenceItem<Item extends ReferenceItemValue = ReferenceItemVal
     </ReferenceItemRefProvider>
   )
   return (
-    <ChangeIndicator path={path} isChanged={changed} hasFocus={Boolean(focused)}>
-      <Box paddingX={1}>{item}</Box>
-    </ChangeIndicator>
+    <FormNodeDivergenceDetail path={path} readOnly={readOnly}>
+      <ChangeIndicator path={path} isChanged={changed} hasFocus={Boolean(focused)}>
+        <Box paddingX={1}>{item}</Box>
+      </ChangeIndicator>
+    </FormNodeDivergenceDetail>
   )
 }
