@@ -6,7 +6,7 @@ import {
   extractCreateWorkspaceManifest,
   extractManifestSchemaTypes,
 } from '../../src/_internal/manifest/extractWorkspaceManifest'
-import {createWorkspaceFromConfig} from '../../src/core'
+import {createWorkspaceFromConfig} from '../../src/core/config/resolveConfig'
 import {createSchema} from '../../src/core/schema/createSchema'
 
 describe('Extract studio manifest', () => {
