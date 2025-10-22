@@ -49,6 +49,8 @@ export const studioLocaleStrings = defineLocalesResources('studio', {
   'about-dialog.version-info.reload-to-update': 'Reload Studio to update',
   /** "New version available" tooltip in About-dialog */
   'about-dialog.version-info.tooltip.new-version-available': 'New version available',
+  /** "Development" tooltip in About-dialog */
+  'about-dialog.version-info.tooltip.development': 'Development',
   /** "Prerelease" tooltip in About-dialog */
   'about-dialog.version-info.tooltip.prerelease': 'Prerelease',
   /** "Up to date" tooltip in About-dialog */
