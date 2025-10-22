@@ -1,6 +1,15 @@
-import {isArrayOfObjectsSchemaType, isObjectSchemaType} from '@sanity/types'
+import {
+  isArrayOfObjectsSchemaType,
+  isArrayOfPrimitivesSchemaType,
+  isObjectSchemaType,
+} from '@sanity/types'
 
-import {type ArrayOfObjectsFormNode, type BaseFormNode, type ObjectFormNode} from './nodes'
+import {
+  type ArrayOfPrimitivesFormNode,
+  type ArrayOfObjectsFormNode,
+  type BaseFormNode,
+  type ObjectFormNode,
+} from './nodes'
 
 /** @internal */
 export function isObjectFormNode(formNode: BaseFormNode): formNode is ObjectFormNode {
@@ -11,4 +20,11 @@ export function isArrayOfObjectsFormNode(
   formNode: BaseFormNode,
 ): formNode is ArrayOfObjectsFormNode {
   return isArrayOfObjectsSchemaType(formNode.schemaType)
+}
+
+/** @internal */
+export function isArrayOfPrimitivesFormNode(
+  formNode: BaseFormNode,
+): formNode is ArrayOfPrimitivesFormNode {
+  return isArrayOfPrimitivesSchemaType(formNode.schemaType)
 }
