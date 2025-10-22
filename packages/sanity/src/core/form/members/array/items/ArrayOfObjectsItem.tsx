@@ -100,7 +100,6 @@ export function ArrayOfObjectsItem(props: MemberItemProps) {
   const onRemove = useCallback(() => {
     telemetry.log(RemovedObject, {
       path: pathToString(member.item.path),
-      timestamp: new Date(),
       origin: enhancedObjectDialogEnabled ? 'nested-object' : 'default',
     })
 
@@ -121,13 +120,11 @@ export function ArrayOfObjectsItem(props: MemberItemProps) {
       if (event.position === 'before') {
         telemetry.log(CreatePrependedObject, {
           path: pathToString(member.item.path),
-          timestamp: new Date(),
           origin: enhancedObjectDialogEnabled ? 'nested-object' : 'default',
         })
       } else {
         telemetry.log(CreateAppendedObject, {
           path: pathToString(member.item.path),
-          timestamp: new Date(),
           origin: enhancedObjectDialogEnabled ? 'nested-object' : 'default',
         })
       }
@@ -230,7 +227,6 @@ export function ArrayOfObjectsItem(props: MemberItemProps) {
     (event: PatchEvent | PatchArg) => {
       telemetry.log(EditedObject, {
         path: pathToString(member.item.path),
-        timestamp: new Date(),
         origin: enhancedObjectDialogEnabled ? 'nested-object' : 'default',
       })
 
@@ -294,7 +290,6 @@ export function ArrayOfObjectsItem(props: MemberItemProps) {
   const handleOpen = useCallback(() => {
     telemetry.log(NavigatedToViaArrayList, {
       path: pathToString(member.item.path),
-      timestamp: new Date(),
       origin: enhancedObjectDialogEnabled ? 'nested-object' : 'default',
     })
 

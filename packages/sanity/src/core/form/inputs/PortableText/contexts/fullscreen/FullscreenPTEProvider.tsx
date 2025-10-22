@@ -27,7 +27,6 @@ export function FullscreenPTEProvider({children}: FullscreenPTEProviderProps): R
     (path: Path): string | undefined => {
       telemetry.log(ClosedPortableTextEditorFullScreen, {
         path: pathToString(path),
-        timestamp: new Date(),
         origin: enhancedObjectDialogEnabled ? 'nested-object' : 'default',
       })
       return fullscreenPaths.find((savedPath) => savedPath === pathToString(path)) ?? undefined
@@ -39,7 +38,6 @@ export function FullscreenPTEProvider({children}: FullscreenPTEProviderProps): R
     (path: Path, isFullscreen: boolean): void => {
       telemetry.log(OpenedPortableTextEditorFullScreen, {
         path: pathToString(path),
-        timestamp: new Date(),
         origin: enhancedObjectDialogEnabled ? 'nested-object' : 'default',
       })
       if (isFullscreen) {
