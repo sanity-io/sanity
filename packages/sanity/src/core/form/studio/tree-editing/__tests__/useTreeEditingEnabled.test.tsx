@@ -41,7 +41,7 @@ describe('useTreeEditingEnabled', () => {
     expect(result.current).toEqual({enabled: false, legacyEditing: false})
   })
 
-  test('should return enabled: false when config is enabled, beta feature is no longer available', () => {
+  test('should return enabled: true when config is enabled', () => {
     const features = {
       beta: {
         treeArrayEditing: {
@@ -53,18 +53,12 @@ describe('useTreeEditingEnabled', () => {
 
     const {result} = renderHook(() => useTreeEditingEnabled(), {wrapper})
 
-    expect(result.current).toEqual({enabled: false, legacyEditing: false})
+    expect(result.current).toEqual({enabled: true, legacyEditing: false})
   })
 
   test('should return legacyEditing: true when legacyEditing is true', () => {
     const {result} = renderHook(() => useTreeEditingEnabled(), {wrapper: legacyEditingWrapper})
 
-    expect(result.current).toEqual({enabled: false, legacyEditing: true})
-  })
-
-  test('should return legacyEditing: true when parent has legacyEditing enabled', () => {
-    const {result} = renderHook(() => useTreeEditingEnabled(), {wrapper: nestedWrapper})
-
-    expect(result.current).toEqual({enabled: false, legacyEditing: true})
+    expect(result.current).toEqual({enabled: true, legacyEditing: true})
   })
 })

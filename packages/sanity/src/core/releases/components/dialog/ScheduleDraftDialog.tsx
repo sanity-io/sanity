@@ -110,7 +110,7 @@ export function ScheduleDraftDialog(props: ScheduleDraftDialogProps): React.JSX.
         },
       }}
     >
-      <Stack space={4} paddingX={4} paddingBottom={4}>
+      <Stack space={4} paddingX={4} paddingBottom={4} paddingTop={1}>
         <Text size={1} muted>
           {t(dialogConfig.descriptionI18nKey)}
         </Text>

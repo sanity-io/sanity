@@ -5,6 +5,7 @@ import {set, unset} from '../../../patch/patch'
 import {PatchEvent} from '../../../patch/PatchEvent'
 import {type FormPatch} from '../../../patch/types'
 import {type FieldMember} from '../../../store/types/members'
+import {type PrimitiveFormNode} from '../../../store/types/nodes'
 import {useDocumentFieldActions} from '../../../studio/contexts/DocumentFieldActions'
 import {useFormCallbacks} from '../../../studio/contexts/FormCallbacks'
 import {type PrimitiveFieldProps} from '../../../types/fieldProps'
@@ -20,7 +21,7 @@ import {resolveNativeNumberInputValue} from '../../common/resolveNativeNumberInp
  * @internal
  */
 export function PrimitiveField(props: {
-  member: FieldMember
+  member: FieldMember<PrimitiveFormNode>
   renderInput: RenderInputCallback<PrimitiveInputProps>
   renderField: RenderFieldCallback<PrimitiveFieldProps>
 }) {
@@ -125,6 +126,7 @@ export function PrimitiveField(props: {
   const inputProps = useMemo((): Omit<PrimitiveInputProps, 'renderDefault'> => {
     return {
       value: member.field.value as any,
+      compareValue: member.field.compareValue,
       __unstable_computeDiff: member.field.__unstable_computeDiff,
       readOnly: member.field.readOnly,
       schemaType: member.field.schemaType as any,
@@ -144,6 +146,7 @@ export function PrimitiveField(props: {
   }, [
     member.field.displayInlineChanges,
     member.field.value,
+    member.field.compareValue,
     member.field.__unstable_computeDiff,
     member.field.readOnly,
     member.field.schemaType,

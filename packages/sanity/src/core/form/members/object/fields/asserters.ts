@@ -5,6 +5,7 @@ import {
   type ArrayOfObjectsFormNode,
   type ArrayOfPrimitivesFormNode,
   type ObjectFormNode,
+  type PrimitiveFormNode,
 } from '../../../store/types/nodes'
 
 export function isMemberObject(member: FieldMember): member is FieldMember<ObjectFormNode> {
@@ -27,4 +28,8 @@ export function isMemberArrayOfObjects(
     isArraySchemaType(member.field.schemaType) &&
     member.field.schemaType.of.every((ofType) => isObjectSchemaType(ofType))
   )
+}
+
+export function isMemberPrimitive(member: FieldMember): member is FieldMember<PrimitiveFormNode> {
+  return isPrimitiveSchemaType(member.field.schemaType)
 }

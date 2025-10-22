@@ -13,6 +13,7 @@ import {useTranslation} from '../../../../i18n/hooks/useTranslation'
 import {Translate} from '../../../../i18n/Translate'
 import {usePerspective} from '../../../../perspective/usePerspective'
 import {useSetPerspective} from '../../../../perspective/useSetPerspective'
+import {useWorkspace} from '../../../../studio/workspace'
 import {PublishedRelease} from '../../../__telemetry__/releases.telemetry'
 import {releasesLocaleNamespace} from '../../../i18n'
 import {isReleaseDocument} from '../../../store/types'
@@ -45,6 +46,10 @@ export const ReleasePublishAllButton = ({
   const perspective = usePerspective()
   const setPerspective = useSetPerspective()
   const telemetry = useTelemetry()
+  const {document} = useWorkspace()
+  const {
+    drafts: {enabled: isDraftModelEnabled},
+  } = document
 
   const [publishBundleStatus, setPublishBundleStatus] = useState<'idle' | 'confirm' | 'publishing'>(
     'idle',
@@ -82,7 +87,7 @@ export const ReleasePublishAllButton = ({
         isReleaseDocument(perspective.selectedPerspective) &&
         perspective.selectedPerspective?._id === release._id
       ) {
-        setPerspective('drafts')
+        setPerspective(isDraftModelEnabled ? 'drafts' : 'published')
       }
     } catch (publishingError) {
       toast.push({
@@ -109,11 +114,12 @@ export const ReleasePublishAllButton = ({
     release,
     publishRelease,
     telemetry,
+    perspective.selectedPerspective,
+    setPerspective,
+    isDraftModelEnabled,
     toast,
     t,
     tCore,
-    perspective.selectedPerspective,
-    setPerspective,
     onConfirmDialogClose,
   ])
 

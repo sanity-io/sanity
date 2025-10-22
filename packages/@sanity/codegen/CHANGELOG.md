@@ -3,167 +3,107 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [4.11.0](https://github.com/sanity-io/sanity/compare/v4.10.3...v4.11.0) (2025-10-21)
+
+### Bug Fixes
+
+* **deps:** update dependency groq-js to ^1.20.0 ([#10852](https://github.com/sanity-io/sanity/issues/10852)) ([ae0f0c7](https://github.com/sanity-io/sanity/commit/ae0f0c78f89281b48f0dec0340ae55acf51c768b)) by renovate[bot] (29139614+renovate[bot]@users.noreply.github.com)
+
 ## [4.10.3](https://github.com/sanity-io/sanity/compare/v4.10.2...v4.10.3) (2025-10-14)
 
 **Note:** Version bump only for package @sanity/codegen
-
-
-
-
 
 ## [4.10.2](https://github.com/sanity-io/sanity/compare/v4.10.1...v4.10.2) (2025-09-30)
 
 **Note:** Version bump only for package @sanity/codegen
 
-
-
-
-
 ## [4.10.1](https://github.com/sanity-io/sanity/compare/v4.10.0...v4.10.1) (2025-09-25)
-
 
 ### Bug Fixes
 
 * **deps:** update dependency groq-js to ^1.19.0 ([#10751](https://github.com/sanity-io/sanity/issues/10751)) ([0e61cf3](https://github.com/sanity-io/sanity/commit/0e61cf345b61c49a2408c40210e60aa165ea8a97))
 
-
-
 ## [4.10.0](https://github.com/sanity-io/sanity/compare/v4.9.0...v4.10.0) (2025-09-23)
 
 **Note:** Version bump only for package @sanity/codegen
-
-
-
-
 
 ## [4.9.0](https://github.com/sanity-io/sanity/compare/v4.8.1...v4.9.0) (2025-09-16)
 
 **Note:** Version bump only for package @sanity/codegen
 
-
-
-
-
 ## [4.8.1](https://github.com/sanity-io/sanity/compare/v4.8.0...v4.8.1) (2025-09-10)
 
 **Note:** Version bump only for package @sanity/codegen
 
-
-
-
-
 ## [4.8.0](https://github.com/sanity-io/sanity/compare/v4.7.0...v4.8.0) (2025-09-10)
-
 
 ### Bug Fixes
 
 * **deps:** Update babel monorepo to ^7.28.4 ([#10601](https://github.com/sanity-io/sanity/issues/10601)) ([cd6611a](https://github.com/sanity-io/sanity/commit/cd6611a87fc6f003434bb72629effd31f21a0ab2))
 
-
-
 ## [4.7.0](https://github.com/sanity-io/sanity/compare/v4.6.1...v4.7.0) (2025-09-09)
-
 
 ### Bug Fixes
 
 * **deps:** update dependency groq-js to ^1.18.0 ([#10576](https://github.com/sanity-io/sanity/issues/10576)) ([176527f](https://github.com/sanity-io/sanity/commit/176527ff1aa281cb7a890e9abe00185a60263f2a))
 
-
-
 ## [4.6.1](https://github.com/sanity-io/sanity/compare/v4.6.0...v4.6.1) (2025-09-02)
 
 **Note:** Version bump only for package @sanity/codegen
-
-
-
-
 
 ## [4.6.0](https://github.com/sanity-io/sanity/compare/v4.5.0...v4.6.0) (2025-08-26)
 
 **Note:** Version bump only for package @sanity/codegen
 
-
-
-
-
 ## [4.5.0](https://github.com/sanity-io/sanity/compare/v4.4.1...v4.5.0) (2025-08-19)
-
 
 ### Bug Fixes
 
 * **codegen:** import json5 via default to match ESM entry ([#10388](https://github.com/sanity-io/sanity/issues/10388)) ([35861c6](https://github.com/sanity-io/sanity/commit/35861c68d7eeb7bbb2719cda6828576423796255))
 * **deps:** Update babel monorepo to ^7.28.3 ([#10301](https://github.com/sanity-io/sanity/issues/10301)) ([cb6718b](https://github.com/sanity-io/sanity/commit/cb6718b8ef05a003336aa0ac7bf42d092d8205ae))
 
-
-
 ## [4.4.1](https://github.com/sanity-io/sanity/compare/v4.4.0...v4.4.1) (2025-08-14)
-
 
 ### Bug Fixes
 
 * allow v20 in node engines ([#10290](https://github.com/sanity-io/sanity/issues/10290)) ([73150e9](https://github.com/sanity-io/sanity/commit/73150e9befde5cb531279c9b206a08682df3ff38))
 
-
-
 ## [4.4.0](https://github.com/sanity-io/sanity/compare/v4.3.0...v4.4.0) (2025-08-13)
-
 
 ### Bug Fixes
 
 * update engines to require node >=22.12.0 ([#10227](https://github.com/sanity-io/sanity/issues/10227)) ([c1b9fe2](https://github.com/sanity-io/sanity/commit/c1b9fe2b70ccbb9ff4bce0845dfaad25cafcd35a))
 
-
-
 ## [4.3.0](https://github.com/sanity-io/sanity/compare/v4.2.0...v4.3.0) (2025-08-05)
 
 **Note:** Version bump only for package @sanity/codegen
 
-
-
-
-
 ## [4.2.0](https://github.com/sanity-io/sanity/compare/v4.1.1...v4.2.0) (2025-07-29)
-
 
 ### Bug Fixes
 
 * **deps:** Update babel monorepo ([#10045](https://github.com/sanity-io/sanity/issues/10045)) ([a47ceea](https://github.com/sanity-io/sanity/commit/a47ceea64da2afd82133a16008cdfdb7890af782))
 * **deps:** update dependency groq-js to ^1.17.3 ([#10069](https://github.com/sanity-io/sanity/issues/10069)) ([d74c4fb](https://github.com/sanity-io/sanity/commit/d74c4fb87eeae2bd18cd99a5df725c8469b8f8e7))
 
-
-
 ## [4.1.1](https://github.com/sanity-io/sanity/compare/v4.1.0...v4.1.1) (2025-07-22)
 
 **Note:** Version bump only for package @sanity/codegen
 
-
-
-
-
 ## [4.1.0](https://github.com/sanity-io/sanity/compare/v4.0.1...v4.1.0) (2025-07-21)
-
 
 ### Features
 
 * **typegen:** add support for vue ([#9979](https://github.com/sanity-io/sanity/issues/9979)) ([76a0022](https://github.com/sanity-io/sanity/commit/76a0022ff8447f8c254275a677880e9333a370ce))
 
-
 ### Bug Fixes
 
 * **deps:** update dependency groq-js to ^1.17.2 ([#10020](https://github.com/sanity-io/sanity/issues/10020)) ([1c2dcb0](https://github.com/sanity-io/sanity/commit/1c2dcb096a8874e72bbc35e4a9fb7e1de7526eb0))
-
-
 
 ## [4.0.1](https://github.com/sanity-io/sanity/compare/v4.0.0...v4.0.1) (2025-07-16)
 
 **Note:** Version bump only for package @sanity/codegen
 
-
-
-
-
 ## [4.0.0](https://github.com/sanity-io/sanity/compare/v3.99.0...v4.0.0) (2025-07-14)
-
 
 ### ⚠ BREAKING CHANGES
 
@@ -173,23 +113,13 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 * remove node 18, make base 20 ([#9804](https://github.com/sanity-io/sanity/issues/9804)) ([8fa2157](https://github.com/sanity-io/sanity/commit/8fa2157bf7d5f1390f0e1663cb32bb1ffd361188))
 
-
-
 ## [3.99.0](https://github.com/sanity-io/sanity/compare/v3.98.1...v3.99.0) (2025-07-11)
 
 **Note:** Version bump only for package @sanity/codegen
 
-
-
-
-
 ## <small>3.98.1 (2025-07-09)</small>
 
 **Note:** Version bump only for package @sanity/codegen
-
-
-
-
 
 ## [3.98.0](https://github.com/sanity-io/sanity/compare/v3.97.1...v3.98.0) (2025-07-07)
 

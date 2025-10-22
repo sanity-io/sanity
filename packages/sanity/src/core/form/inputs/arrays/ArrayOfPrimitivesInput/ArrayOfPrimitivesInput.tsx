@@ -236,6 +236,7 @@ export class ArrayOfPrimitivesInput extends PureComponent<ArrayOfPrimitivesInput
           readOnly={this.props.readOnly}
           schemaType={this.props.schemaType}
           value={this.props.value}
+          path={this.props.path}
         />
       </Stack>
     )

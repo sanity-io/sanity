@@ -15,7 +15,6 @@ export interface ScheduleDraftOperationsValue {
   createScheduledDraft: (
     documentId: string,
     publishAt: Date,
-    title?: string,
     opts?: BaseActionOptions,
   ) => Promise<string>
   /**
@@ -67,14 +66,9 @@ export function useScheduleDraftOperations(): ScheduleDraftOperationsValue {
   )
 
   const handleCreateScheduledDraft = useCallback(
-    async (
-      documentId: string,
-      publishAt: Date,
-      title?: string,
-      opts?: BaseActionOptions,
-    ): Promise<string> => {
+    async (documentId: string, publishAt: Date, opts?: BaseActionOptions): Promise<string> => {
       // Create the release (but don't schedule it yet)
-      const releaseTitle = title ? `Scheduled publish of '${title}'` : 'Schedule Publish'
+      const releaseTitle = 'Scheduled publish'
       const releaseDocumentId = await createScheduledDraftRelease(releaseTitle, publishAt, opts)
 
       // Create a version of the document in the release (using draft as base)

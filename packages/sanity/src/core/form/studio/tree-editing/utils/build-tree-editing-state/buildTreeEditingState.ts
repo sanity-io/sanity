@@ -51,13 +51,15 @@ export function buildTreeEditingState(props: BuildTreeEditingStateProps): TreeEd
 
   const rootPath = getRootPath(openPath)
   const rootField = getSchemaField(props.schemaType, toString(rootPath)) as ObjectSchemaType
-  const rootTitle = getSchemaTypeTitle(rootField?.type as ObjectSchemaType)
 
-  if (!isArrayOfObjectsSchemaType(rootField?.type)) {
+  // Safety check: if rootField or rootField.type is undefined, return empty state
+  if (!rootField?.type) {
     return EMPTY_TREE_STATE
   }
 
-  if (rootField?.options?.treeEditing === false) {
+  const rootTitle = getSchemaTypeTitle(rootField.type as ObjectSchemaType)
+
+  if (!isArrayOfObjectsSchemaType(rootField.type)) {
     return EMPTY_TREE_STATE
   }
 
@@ -86,6 +88,8 @@ export function buildTreeEditingState(props: BuildTreeEditingStateProps): TreeEd
       // to allow for recursive calls in the array items.
       recursive,
       rootPath: path,
+      // Needed in order to keep track of portable text fields and its items types
+      rootSchemaType: props.schemaType as ObjectSchemaType,
     })
 
     if (arrayState.relativePath.length > 0) {

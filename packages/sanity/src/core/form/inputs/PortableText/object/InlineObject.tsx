@@ -13,6 +13,7 @@ import {pathToString} from '../../../../field/paths/helpers'
 import {useTranslation} from '../../../../i18n/hooks/useTranslation'
 import {EMPTY_ARRAY} from '../../../../util/empty'
 import {useChildPresence} from '../../../studio/contexts/Presence'
+import {useTreeEditingEnabled} from '../../../studio/tree-editing/context/enabled/useTreeEditingEnabled'
 import {type RenderCustomMarkers} from '../../../types/_transitional'
 import {type BlockProps} from '../../../types/blockProps'
 import {
@@ -260,6 +261,7 @@ export const DefaultInlineObjectComponent = (props: BlockProps): React.JSX.Eleme
   const popoverTitle = schemaType?.title || schemaType.name
   const hasError = validation.filter((v) => v.level === 'error').length > 0
   const hasWarning = validation.filter((v) => v.level === 'warning').length > 0
+  const {enabled: nestedObjectNavigaionEnabled} = useTreeEditingEnabled()
 
   const tone = useMemo(() => {
     if (hasError) {
@@ -313,7 +315,7 @@ export const DefaultInlineObjectComponent = (props: BlockProps): React.JSX.Eleme
           title={popoverTitle}
         />
       )}
-      {open && (
+      {open && !nestedObjectNavigaionEnabled && (
         <ObjectEditModal
           autoFocus
           defaultType="popover"

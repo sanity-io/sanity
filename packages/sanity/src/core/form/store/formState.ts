@@ -11,6 +11,7 @@ import {
   isArraySchemaType,
   isKeyedObject,
   isObjectSchemaType,
+  type KeyedObject,
   type NumberSchemaType,
   type ObjectField,
   type ObjectSchemaType,
@@ -1045,6 +1046,7 @@ export function createPrepareFormState({
 
     const node = {
       value: props.value as Record<string, unknown> | undefined,
+      compareValue: props.comparisonValue ?? undefined,
       schemaType: props.schemaType,
       readOnly,
       path: props.path,
@@ -1143,7 +1145,7 @@ export function createPrepareFormState({
         }),
       )
 
-      const diffProps = prepareDiffProps(props)
+      const diffProps = prepareDiffProps<KeyedObject[]>(props)
 
       return {
         value: props.value,
@@ -1161,6 +1163,7 @@ export function createPrepareFormState({
         __unstable_computeDiff: diffProps.__unstable_computeDiff,
         // checks for changes not only on the array itself, but also on any of its items
         changed: props.changed || members.some((m) => m.kind === 'item' && m.item.changed),
+        compareValue: diffProps.compareValue,
         hasUpstreamVersion: diffProps.hasUpstreamVersion,
         displayInlineChanges: props.displayInlineChanges,
       }
@@ -1416,16 +1419,16 @@ const emptyValuesByType = {
  *
  * @internal
  */
-export function prepareDiffProps({
+export function prepareDiffProps<Value = unknown>({
   comparisonValue,
   value: definitiveValue,
   schemaType,
   perspective,
   hasUpstreamVersion,
 }: Pick<
-  FormStateOptions<unknown, unknown>,
+  FormStateOptions<unknown, Value>,
   'comparisonValue' | 'value' | 'schemaType' | 'perspective' | 'hasUpstreamVersion'
->): Omit<NodeDiffProps<ProvenanceDiffAnnotation>, 'changed'> & {compareValue: unknown} {
+>): Omit<NodeDiffProps<ProvenanceDiffAnnotation, Value>, 'changed'> {
   const jsonType =
     typeof schemaType === 'object' &&
     schemaType !== null &&
@@ -1458,7 +1461,7 @@ export function prepareDiffProps({
   return {
     __unstable_computeDiff: computeDiff,
     // TODO: Establish consistent naming.
-    compareValue: comparisonValue,
+    compareValue: comparisonValue ?? undefined,
     hasUpstreamVersion,
   }
 }

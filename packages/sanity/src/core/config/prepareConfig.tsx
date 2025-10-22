@@ -756,9 +756,10 @@ function resolveSource({
         documents: eventsAPIReducer({config, initialValue: true, key: 'documents'}),
         releases: eventsAPIReducer({config, initialValue: false, key: 'releases'}),
       },
+      // TODO: Rename treeArrayEditing property to NestedObjectEditing (or similar) before "public" availability.
       treeArrayEditing: {
-        // This beta feature is no longer available.
-        enabled: false,
+        // TODO: Keep it disabled while in development.
+        enabled: false, // treeArrayEditingEnabledReducer({config, initialValue: false}),
       },
       create: {
         startInCreateEnabled: false,

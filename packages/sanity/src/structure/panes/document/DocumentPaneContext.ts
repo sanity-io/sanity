@@ -33,7 +33,7 @@ export interface DocumentPaneContextValue extends Pick<NodeChronologyProps, 'has
   closeInspector: (inspectorName?: string) => void
   collapsedFieldSets: StateTree<boolean> | undefined
   collapsedPaths: StateTree<boolean> | undefined
-  compareValue: Partial<SanityDocument> | null
+  compareValue: SanityDocument | null
   connectionState: 'connecting' | 'reconnecting' | 'connected'
   displayed: Partial<SanityDocument> | null
   displayInlineChanges?: boolean

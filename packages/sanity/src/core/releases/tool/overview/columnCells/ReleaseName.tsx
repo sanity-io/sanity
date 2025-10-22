@@ -11,6 +11,7 @@ import {useTranslation} from '../../../../i18n/hooks/useTranslation'
 import {Translate} from '../../../../i18n/Translate'
 import {usePerspective} from '../../../../perspective/usePerspective'
 import {useSetPerspective} from '../../../../perspective/useSetPerspective'
+import {useWorkspace} from '../../../../studio/workspace'
 import {ReleaseAvatar} from '../../../components/ReleaseAvatar'
 import {releasesLocaleNamespace} from '../../../i18n'
 import {getReleaseIdFromReleaseDocumentId} from '../../../util/getReleaseIdFromReleaseDocumentId'
@@ -32,14 +33,18 @@ export const ReleaseNameCell: VisibleColumn<TableRelease>['cell'] = ({
   const releaseId = release.isLoading ? 'loading' : getReleaseIdFromReleaseDocumentId(release._id)
   const isArchived = state === 'archived'
   const isReleasePinned = releaseId === selectedReleaseId
+  const {document} = useWorkspace()
+  const {
+    drafts: {enabled: isDraftModelEnabled},
+  } = document
 
   const handlePinRelease = useCallback(() => {
     if (isReleasePinned) {
-      setPerspective('drafts')
+      setPerspective(isDraftModelEnabled ? 'drafts' : 'published')
     } else {
       setPerspective(releaseId)
     }
-  }, [isReleasePinned, releaseId, setPerspective])
+  }, [isDraftModelEnabled, isReleasePinned, releaseId, setPerspective])
 
   const WrapperBox = useCallback(
     ({children}: {children: React.ReactNode}) => {

@@ -1,22 +1,19 @@
+import {useTelemetry} from '@sanity/telemetry/react'
 import {isKeySegment, type ObjectSchemaType, type Path} from '@sanity/types'
-import {
-  Card,
-  // eslint-disable-next-line no-restricted-imports
-  Dialog, // Custom dialog needed
-  Flex,
-} from '@sanity/ui'
+import {Box} from '@sanity/ui'
 // eslint-disable-next-line camelcase
 import {getTheme_v2, type Theme} from '@sanity/ui/theme'
-import {toString} from '@sanity/util/paths'
-import {AnimatePresence, motion, type Transition, type Variants} from 'framer-motion'
 import {debounce, isEqual} from 'lodash'
 import {useCallback, useEffect, useMemo, useRef, useState} from 'react'
 import {css, styled} from 'styled-components'
 
-import {Button} from '../../../../../ui-components/button/Button'
-import {useTranslation} from '../../../../i18n/hooks/useTranslation'
+import {Dialog} from '../../../../../ui-components'
+import {pathToString, stringToPath} from '../../../../field/paths/helpers'
 import {FormInput} from '../../../components/FormInput'
+import {VirtualizerScrollInstanceProvider} from '../../../inputs/arrays/ArrayOfObjectsInput/List/VirtualizerScrollInstanceProvider'
+import {useFullscreenPTE} from '../../../inputs/PortableText/contexts/fullscreen'
 import {type InputProps, type ObjectInputProps} from '../../../types/inputProps'
+import {NestedDialogClosed, NestedDialogOpened} from '../__telemetry__/nestedObjects.telemetry'
 import {
   buildTreeEditingState,
   type BuildTreeEditingStateProps,
@@ -24,17 +21,10 @@ import {
   type TreeEditingState,
 } from '../utils/build-tree-editing-state/buildTreeEditingState'
 import {isArrayItemPath} from '../utils/build-tree-editing-state/utils'
-import {TreeEditingLayout} from './layout/TreeEditingLayout'
+import {isPathTextInPTEField} from '../utils/isPathTextInPTEField'
+import {TreeEditingBreadcrumbs} from './breadcrumbs/TreeEditingBreadcrumbs'
 
 const EMPTY_ARRAY: [] = []
-
-const ANIMATION_VARIANTS: Variants = {
-  initial: {opacity: 0},
-  animate: {opacity: 1},
-  exit: {opacity: 0},
-}
-
-const ANIMATION_TRANSITION: Transition = {duration: 0.2, ease: 'easeInOut'}
 
 function renderDefault(props: InputProps) {
   return props.renderDefault(props)
@@ -56,8 +46,6 @@ const StyledDialog = styled(Dialog)(({theme}: {theme: Theme}) => {
   `
 })
 
-const MotionFlex = motion.create(Flex)
-
 interface TreeEditingDialogProps {
   onPathFocus: (path: Path) => void
   onPathOpen: (path: Path) => void
@@ -69,25 +57,24 @@ interface TreeEditingDialogProps {
 export function TreeEditingDialog(props: TreeEditingDialogProps): React.JSX.Element | null {
   const {onPathFocus, onPathOpen, openPath, rootInputProps, schemaType} = props
   const {value} = rootInputProps
-  const {t} = useTranslation()
 
   const [treeState, setTreeState] = useState<TreeEditingState>(EMPTY_TREE_STATE)
-  const [layoutScrollElement, setLayoutScrollElement] = useState<HTMLDivElement | null>(null)
+  const {hasAnyFullscreen, allFullscreenPaths} = useFullscreenPTE()
 
   const openPathRef = useRef<Path | undefined>(undefined)
   const valueRef = useRef<Record<string, unknown> | undefined>(undefined)
 
-  const handleAnimationExitComplete = useCallback(() => {
-    // Scroll to the top of the layout when the animation has completed
-    // to avoid the layout being scrolled while the content is being
-    // animated out and then back in.
-    layoutScrollElement?.scrollTo(0, 0)
-  }, [layoutScrollElement])
+  const telemetry = useTelemetry()
 
   const handleBuildTreeEditingState = useCallback(
     (opts: BuildTreeEditingStateProps) => {
-      const nextState = buildTreeEditingState(opts)
+      const isPathWithinPTEtext = isPathTextInPTEField(
+        schemaType.fields,
+        opts.openPath,
+        opts.documentValue,
+      )
 
+      const nextState = buildTreeEditingState(opts)
       if (isEqual(nextState, treeState)) return
 
       const builtRelativePath = nextState.relativePath
@@ -101,9 +88,29 @@ export function TreeEditingDialog(props: TreeEditingDialogProps): React.JSX.Elem
       const useCurrentRelativePath = hasNoRelativePath || !isArrayItemPath(builtRelativePath)
       const nextRelativePath = useCurrentRelativePath ? treeState.relativePath : builtRelativePath
 
-      setTreeState({...nextState, relativePath: nextRelativePath})
+      // Preserve breadcrumbs when clicking on text content in portable text editors
+      const nextBreadcrumbs =
+        isPathWithinPTEtext && treeState.breadcrumbs.length > 0
+          ? treeState.breadcrumbs
+          : nextState.breadcrumbs
+
+      // Check if dialog is opening (transitioning from no relative path to having one)
+      const wasDialogClosed = treeState.relativePath.length === 0
+      const willDialogOpen = nextRelativePath.length > 0
+
+      if (wasDialogClosed && willDialogOpen) {
+        telemetry.log(NestedDialogOpened, {
+          path: pathToString(nextRelativePath),
+        })
+      }
+
+      setTreeState({
+        ...nextState,
+        relativePath: nextRelativePath,
+        breadcrumbs: nextBreadcrumbs,
+      })
     },
-    [treeState],
+    [treeState, telemetry, schemaType.fields],
   )
 
   const debouncedBuildTreeEditingState = useMemo(
@@ -112,8 +119,65 @@ export function TreeEditingDialog(props: TreeEditingDialogProps): React.JSX.Elem
   )
 
   const onClose = useCallback(() => {
+    // Check if any PTE within the current tree editing context is in fullscreen mode
+    // If the openPath is at the root level and the fullscreen is open then it means that the user
+    // is at the root and should close the window
+    if (hasAnyFullscreen() && allFullscreenPaths.length >= 1) {
+      // Find all fullscreen paths that are ancestors of the current relative path
+      const ancestorPaths = allFullscreenPaths.filter((pathStr) => {
+        const fullscreenPath = stringToPath(pathStr)
+
+        // Check if fullscreen path is shorter, which means that it's not an ancestor
+        if (fullscreenPath.length >= treeState.relativePath.length) {
+          return false
+        }
+
+        // Check if all segments of fullscreen path match the start of relative path
+        // This is important for nested fullscreen PTEs
+        const segmentsMatch = fullscreenPath.every((segment, index) => {
+          const relativeSegment = treeState.relativePath[index]
+
+          // For key segments, compare the _key property
+          // For string segments, direct comparison
+          return isKeySegment(segment) && isKeySegment(relativeSegment)
+            ? segment._key === relativeSegment._key
+            : segment === relativeSegment
+        })
+
+        if (!segmentsMatch) {
+          return false
+        }
+
+        // Check if the fullscreen path contains a key segment (that is nested)
+        const isNestedFullscreenPath = fullscreenPath.some((segment) => isKeySegment(segment))
+
+        if (isNestedFullscreenPath) {
+          // For nested fullscreen PTEs, always navigate back to them
+          return true
+        }
+
+        // For root-level fullscreen PTEs, only navigate back if the next segment
+        // is NOT a key segment (i.e., we're going to a child field, not selecting an array item)
+        const nextSegment = treeState.relativePath[fullscreenPath.length]
+        return !isKeySegment(nextSegment)
+      })
+
+      // If we found ancestor paths, navigate to the most nested one (longest/closest parent)
+      if (ancestorPaths.length > 0) {
+        const closestParentPath = ancestorPaths.reduce((longest, current) =>
+          current.length > longest.length ? current : longest,
+        )
+        onPathOpen(stringToPath(closestParentPath))
+        return
+      }
+    }
+
     // Cancel any debounced state building when closing the dialog.
     debouncedBuildTreeEditingState.cancel()
+
+    telemetry.log(NestedDialogClosed, {
+      path: pathToString(treeState.relativePath),
+    })
 
     // Reset the `openPath`
     onPathOpen(EMPTY_ARRAY)
@@ -132,11 +196,23 @@ export function TreeEditingDialog(props: TreeEditingDialogProps): React.JSX.Elem
     // Focus the root array item when closing the dialog.
     const firstKeySegmentIndex = openPath.findIndex(isKeySegment)
     const rootFocusPath = openPath.slice(0, firstKeySegmentIndex + 1)
+
     onPathFocus(rootFocusPath)
-  }, [debouncedBuildTreeEditingState, onPathFocus, onPathOpen, openPath])
+  }, [
+    hasAnyFullscreen,
+    debouncedBuildTreeEditingState,
+    telemetry,
+    treeState.relativePath,
+    onPathOpen,
+    openPath,
+    onPathFocus,
+    allFullscreenPaths,
+  ])
 
   const onHandlePathSelect = useCallback(
     (path: Path) => {
+      if (path.length === 0) onClose()
+
       // Cancel any debounced state building when navigating.
       debouncedBuildTreeEditingState.cancel()
 
@@ -149,7 +225,7 @@ export function TreeEditingDialog(props: TreeEditingDialogProps): React.JSX.Elem
         onPathFocus(path)
       }
     },
-    [debouncedBuildTreeEditingState, onPathFocus, onPathOpen],
+    [debouncedBuildTreeEditingState, onClose, onPathFocus, onPathOpen],
   )
 
   useEffect(() => {
@@ -163,6 +239,7 @@ export function TreeEditingDialog(props: TreeEditingDialogProps): React.JSX.Elem
     // updated immediately when the openPath changes.
     // We only want to debounce the state building when the value changes
     // as that might happen frequently when the user is editing the document.
+
     if (isInitialRender || openPathChanged) {
       handleBuildTreeEditingState({
         schemaType,
@@ -195,63 +272,40 @@ export function TreeEditingDialog(props: TreeEditingDialogProps): React.JSX.Elem
       debouncedBuildTreeEditingState.cancel()
     }
   }, [schemaType, value, debouncedBuildTreeEditingState, openPath, handleBuildTreeEditingState])
+  const [documentScrollElement, setDocumentScrollElement] = useState<HTMLDivElement | null>(null)
+  const containerElement = useRef<HTMLDivElement | null>(null)
 
   if (treeState.relativePath.length === 0) return null
 
+  const header = (
+    <TreeEditingBreadcrumbs
+      items={treeState.breadcrumbs}
+      onPathSelect={onHandlePathSelect}
+      selectedPath={treeState.relativePath}
+    />
+  )
+
   return (
-    <StyledDialog
-      __unstable_hideCloseButton
-      animate
-      data-testid="tree-editing-dialog"
-      id="tree-editing-dialog"
-      onClickOutside={onClose}
-      onClose={onClose}
-      padding={0}
-      width={3}
+    <VirtualizerScrollInstanceProvider
+      scrollElement={documentScrollElement}
+      containerElement={containerElement}
     >
-      <TreeEditingLayout
-        breadcrumbs={treeState.breadcrumbs}
-        items={treeState.menuItems}
-        onPathSelect={onHandlePathSelect}
-        selectedPath={treeState.relativePath}
-        title={treeState.rootTitle}
-        setScrollElement={setLayoutScrollElement}
-        footer={
-          <Card borderTop>
-            <Flex align="center" justify="flex-end" paddingX={3} paddingY={2} sizing="border">
-              <Button
-                size="large"
-                data-testid="tree-editing-done"
-                text={t('tree-editing-dialog.sidebar.action.done')}
-                onClick={onClose}
-              />
-            </Flex>
-          </Card>
-        }
+      <StyledDialog
+        data-testid="nested-object-dialog"
+        onClose={onClose}
+        id={'nested-object-dialog'}
+        header={header}
+        width={1}
+        contentRef={setDocumentScrollElement}
       >
-        <AnimatePresence initial={false} mode="wait" onExitComplete={handleAnimationExitComplete}>
-          <MotionFlex
-            key={toString(treeState.relativePath)}
-            animate="animate"
-            data-testid="tree-editing-dialog-content"
-            direction="column"
-            exit="exit"
-            height="fill"
-            initial="initial"
-            overflow="hidden"
-            padding={1}
-            sizing="border"
-            transition={ANIMATION_TRANSITION}
-            variants={ANIMATION_VARIANTS}
-          >
-            <FormInput
-              {...rootInputProps}
-              relativePath={treeState.relativePath}
-              renderDefault={renderDefault}
-            />
-          </MotionFlex>
-        </AnimatePresence>
-      </TreeEditingLayout>
-    </StyledDialog>
+        <Box ref={containerElement}>
+          <FormInput
+            {...rootInputProps}
+            relativePath={treeState.relativePath}
+            renderDefault={renderDefault}
+          />
+        </Box>
+      </StyledDialog>
+    </VirtualizerScrollInstanceProvider>
   )
 }

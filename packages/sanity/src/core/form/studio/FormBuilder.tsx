@@ -22,6 +22,7 @@ import {
   useItemComponent,
   usePreviewComponent,
 } from '../form-components-hooks/componentHooks'
+import {FullscreenPTEProvider} from '../inputs/PortableText/contexts/fullscreen'
 import {type PatchChannel} from '../patch/PatchChannel'
 import {PatchEvent} from '../patch/PatchEvent'
 import {type FormPatch} from '../patch/types'
@@ -81,7 +82,7 @@ export interface FormBuilderProps
   schemaType: ObjectSchemaType
   validation: ValidationMarker[]
   value: FormDocumentValue | undefined
-  compareValue?: Partial<SanityDocument>
+  compareValue?: SanityDocument
 }
 
 /**
@@ -248,6 +249,7 @@ export function FormBuilder(props: FormBuilderProps) {
       schemaType,
       validation: EMPTY_ARRAY,
       value,
+      compareValue,
       __unstable_computeDiff: diffProps.__unstable_computeDiff,
       changed: members.some((m) => m.kind === 'field' && m.field.changed),
       displayInlineChanges: false,
@@ -312,14 +314,16 @@ export function FormBuilder(props: FormBuilderProps) {
       <GetFormValueProvider value={value}>
         <FormValueProvider value={value}>
           <DocumentFieldActionsProvider actions={fieldActions}>
-            <TreeEditingEnabledProvider>
-              <RootInput
-                rootInputProps={rootInputProps}
-                onPathOpen={onPathOpen}
-                openPath={openPath}
-                renderInput={renderInput}
-              />
-            </TreeEditingEnabledProvider>
+            <FullscreenPTEProvider>
+              <TreeEditingEnabledProvider>
+                <RootInput
+                  rootInputProps={rootInputProps}
+                  onPathOpen={onPathOpen}
+                  openPath={openPath}
+                  renderInput={renderInput}
+                />
+              </TreeEditingEnabledProvider>
+            </FullscreenPTEProvider>
           </DocumentFieldActionsProvider>
         </FormValueProvider>
       </GetFormValueProvider>

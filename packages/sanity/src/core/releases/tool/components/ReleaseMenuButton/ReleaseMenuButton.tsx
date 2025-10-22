@@ -14,6 +14,7 @@ import {useTranslation} from '../../../../i18n/hooks/useTranslation'
 import {Translate, type TranslateComponentMap} from '../../../../i18n/Translate'
 import {usePerspective} from '../../../../perspective/usePerspective'
 import {useSetPerspective} from '../../../../perspective/useSetPerspective'
+import {useWorkspace} from '../../../../studio/workspace'
 import {ReleaseActionsResolver} from '../../../components/ReleaseActionsResolver'
 import {useReleasesUpsell} from '../../../contexts/upsell/useReleasesUpsell'
 import {useCustomReleaseActions} from '../../../hooks/useCustomReleaseActions'
@@ -93,6 +94,10 @@ export const ReleaseMenuButton = ({
   const {guardWithReleaseLimitUpsell} = useReleasesUpsell()
   const releaseTitle = release.metadata.title || tCore('release.placeholder-untitled-release')
   const isActionPublishOrSchedule = selectedAction === 'publish' || selectedAction === 'schedule'
+  const {document} = useWorkspace()
+  const {
+    drafts: {enabled: isDraftModelEnabled},
+  } = document
 
   const handleDelete = useCallback(async () => {
     await deleteRelease(release._id)
@@ -109,7 +114,7 @@ export const ReleaseMenuButton = ({
     const duplicateReleaseId = createReleaseId()
 
     await guardWithReleaseLimitUpsell(async () => {
-      const releaseDocuments = documents?.map((document) => document.document)
+      const releaseDocuments = documents?.map((doc) => doc.document)
       const duplicatedMetadata = {
         ...release.metadata,
         title: `${release.metadata.title} (${t('copy-suffix')})`,
@@ -141,7 +146,7 @@ export const ReleaseMenuButton = ({
         ) {
           // Reset the perspective to drafts when the release is archived or deleted
           // To avoid showing the release archived / deleted toast.
-          setPerspective('drafts')
+          setPerspective(isDraftModelEnabled ? 'drafts' : 'published')
         }
         setIsPerformingOperation(true)
         const actionResult = await actionLookup[action](release._id)
@@ -203,8 +208,9 @@ export const ReleaseMenuButton = ({
       release._id,
       telemetry,
       setPerspective,
-      router,
+      isDraftModelEnabled,
       toast,
+      router,
       t,
       releaseTitle,
     ],
