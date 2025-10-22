@@ -1,3 +1,4 @@
+import {type SchemaType} from '@sanity/types'
 import capitalize from 'lodash-es/capitalize.js'
 import {memo, useCallback, useMemo} from 'react'
 
@@ -26,6 +27,7 @@ export const MemberFieldSet = memo(function MemberFieldSet(props: {
   renderInput: RenderInputCallback
   renderItem: RenderArrayOfObjectsItemCallback
   renderPreview: RenderPreviewCallback
+  schemaType?: SchemaType
 }) {
   const {
     member,
@@ -36,6 +38,7 @@ export const MemberFieldSet = memo(function MemberFieldSet(props: {
     renderInput,
     renderItem,
     renderPreview,
+    schemaType,
   } = props
 
   const {onSetFieldSetCollapsed} = useFormCallbacks()
@@ -64,6 +67,7 @@ export const MemberFieldSet = memo(function MemberFieldSet(props: {
       collapsed={member.fieldSet.collapsed}
       onCollapse={handleCollapse}
       onExpand={handleExpand}
+      schemaType={schemaType}
       columns={member?.fieldSet?.columns}
       data-testid={`fieldset-${member.fieldSet.name}`}
       inputId={member.fieldSet.name}
