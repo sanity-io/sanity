@@ -3,6 +3,7 @@ import QuickLRU from 'quick-lru'
 import {
   debounceTime,
   distinctUntilChanged,
+  EMPTY,
   filter,
   map,
   mergeMap,
@@ -27,6 +28,7 @@ import {delayTask} from './utils/delayTask'
 
 export interface CollatedDocumentDivergencesState {
   state: 'pending' | 'ready'
+  upstreamId: string | undefined
   divergences: Record<string, Divergence>
 }
 
@@ -36,8 +38,8 @@ interface Instance {
 }
 
 interface CollatedDocumentDivergencesContext {
-  upstreamId: string
-  subjectId: string
+  upstreamId: string | undefined
+  subjectId: string | undefined
 }
 
 const DEBOUNCE_DURATION = 1_000
@@ -51,6 +53,7 @@ let cache: QuickLRU<string, Instance>
  */
 const collateDocumentDivergencesInitialState: CollatedDocumentDivergencesState = {
   state: 'pending',
+  upstreamId: undefined,
   divergences: {},
 }
 
@@ -82,6 +85,13 @@ export function collateDocumentDivergences({
   const context = new Subject<FindDivergencesContext>()
   const markName = ['collateDocumentDivergences', cacheKey].join('.')
 
+  if (typeof upstreamId === 'undefined' || typeof subjectId === 'undefined') {
+    return {
+      observable: EMPTY,
+      context,
+    }
+  }
+
   const observable: Observable<CollatedDocumentDivergencesState> = context.pipe(
     debounceTime(DEBOUNCE_DURATION),
     tap(() => performance.mark(cacheKey)),
@@ -109,10 +119,12 @@ export function collateDocumentDivergences({
         map<Record<string, Divergence>, CollatedDocumentDivergencesState>((divergences) => ({
           ...state,
           state: 'ready',
+          upstreamId,
           divergences,
         })),
         startWith<CollatedDocumentDivergencesState>({
           ...state,
+          upstreamId,
           state: 'pending',
         }),
       )
@@ -139,6 +151,10 @@ export function peekCollatedDocumentDivergences({
   subjectId,
 }: CollatedDocumentDivergencesContext): Observable<CollatedDocumentDivergencesState> {
   initialiseCache()
+
+  if (typeof upstreamId === 'undefined' || typeof subjectId === 'undefined') {
+    return EMPTY
+  }
 
   const cacheKey = getCacheKey({upstreamId, subjectId})
   const instance = cache.get(cacheKey)
