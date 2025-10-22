@@ -69,6 +69,7 @@ export interface TextBlockProps {
   setElementRef: SetPortableTextMemberItemElementRef
   spellCheck?: boolean
   value: PortableTextTextBlock
+  anchorIdent?: string
 }
 
 export function TextBlock(props: TextBlockProps) {
@@ -97,6 +98,7 @@ export function TextBlock(props: TextBlockProps) {
     setElementRef,
     spellCheck,
     value,
+    anchorIdent,
   } = props
   const {Markers} = useFormBuilder().__internal.components
   const markers = usePortableTextMarkers(path)
@@ -305,7 +307,7 @@ export function TextBlock(props: TextBlockProps) {
     >
       <TextBlockFlexWrapper data-testid="text-block__wrapper">
         <Flex flex={1} {...innerPaddingProps}>
-          <Box flex={1}>
+          <Box flex={1} style={{anchorName: anchorIdent}}>
             <Tooltip
               content={toolTipContent}
               disabled={!tooltipEnabled}

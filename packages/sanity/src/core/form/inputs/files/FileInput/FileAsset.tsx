@@ -73,7 +73,7 @@ export function FileAsset(props: FileAssetProps) {
   }
 
   return (
-    <>
+    <div style={elementProps.style}>
       {isStale && (
         <Box marginBottom={2}>
           <UploadWarning onClearStale={onClearUploadStatus} />
@@ -117,7 +117,7 @@ export function FileAsset(props: FileAssetProps) {
           </UploadTargetCard>
         )}
       </ChangeIndicator>
-    </>
+    </div>
   )
 }
 

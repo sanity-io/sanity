@@ -11,6 +11,7 @@ import {
   type RenderFieldCallback,
   type RenderInputCallback,
 } from '../../../types'
+import {pathToAnchorIdent} from '../../../utils/pathToAnchorIdent'
 import {createDescriptionId} from '../../common/createDescriptionId'
 import {resolveNativeNumberInputValue} from '../../common/resolveNativeNumberInputValue'
 
@@ -100,6 +101,9 @@ export function PrimitiveField(props: {
       'readOnly': Boolean(member.field.readOnly),
       'placeholder': member.field.schemaType.placeholder,
       'aria-describedby': createDescriptionId(member.field.id, member.field.schemaType.description),
+      'style': {
+        anchorName: pathToAnchorIdent('input', member.field.path),
+      },
     }),
     [
       handleBlur,
@@ -109,6 +113,7 @@ export function PrimitiveField(props: {
       member.field.readOnly,
       member.field.schemaType,
       member.field.value,
+      member.field.path,
       localValue,
     ],
   )

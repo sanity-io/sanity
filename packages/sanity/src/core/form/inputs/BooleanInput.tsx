@@ -54,7 +54,7 @@ export function BooleanInput(props: BooleanInputProps) {
 
   return (
     <Card border data-testid="boolean-input" radius={2} tone={tone}>
-      <Flex>
+      <Flex style={props.elementProps.style}>
         {readOnly ? <Tooltip content={t('inputs.boolean.disabled')}>{input}</Tooltip> : input}
         <Box flex={1} onMouseEnter={onMouseEnter} onMouseLeave={onMouseLeave} paddingY={2}>
           <FormFieldBaseHeader
