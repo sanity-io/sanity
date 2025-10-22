@@ -1,3 +1,4 @@
+import {type Path} from '@sanity/types'
 import {Stack, Text} from '@sanity/ui'
 import isPlainObject from 'lodash-es/isPlainObject.js'
 
@@ -13,9 +14,10 @@ import {type MixedArrayError} from '../../../store'
 interface Props {
   error: MixedArrayError
   onChange: (patchEvent: PatchEvent) => void
+  path: Path
 }
 export function MixedArrayAlert(props: Props) {
-  const {error, onChange} = props
+  const {error, onChange, path} = props
 
   const handleRemoveNonObjectValues = () => {
     const nonObjectIndices = (error.value || [])
@@ -30,7 +32,11 @@ export function MixedArrayAlert(props: Props) {
   const {t} = useTranslation()
 
   return (
-    <FormField title={error.schemaType.title} description={error.schemaType.description}>
+    <FormField
+      title={error.schemaType.title}
+      description={error.schemaType.description}
+      path={path}
+    >
       <Alert
         status="error"
         suffix={

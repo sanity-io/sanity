@@ -140,6 +140,7 @@ export const CommonDateTimeInput = forwardRef(function CommonDateTimeInput(
       level={level}
       description={description}
       inputId={id}
+      path={[]}
     >
       {readOnly ? (
         <TextInput value={inputValue} readOnly />

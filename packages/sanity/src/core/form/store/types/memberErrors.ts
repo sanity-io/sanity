@@ -1,4 +1,4 @@
-import {type ArraySchemaType, type SchemaType} from '@sanity/types'
+import {type Path, type ArraySchemaType, type SchemaType} from '@sanity/types'
 
 /**
  * This error may happen if the member type is structurally incompatible with the defined schema type.
@@ -131,6 +131,8 @@ export interface FieldError {
     | DuplicateKeysError
     | UndeclaredMembersError
     | MixedArrayError
+
+  path: Path
 }
 
 /**

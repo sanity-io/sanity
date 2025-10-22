@@ -35,13 +35,13 @@ export function MemberFieldError(props: {member: FieldError}) {
     )
   }
   if (member.error.type === 'MISSING_KEYS') {
-    return <MissingKeysAlert error={member.error} onChange={handleChange} />
+    return <MissingKeysAlert error={member.error} onChange={handleChange} path={member.path} />
   }
   if (member.error.type === 'DUPLICATE_KEYS') {
-    return <DuplicateKeysAlert error={member.error} onChange={handleChange} />
+    return <DuplicateKeysAlert error={member.error} onChange={handleChange} path={member.path} />
   }
   if (member.error.type === 'MIXED_ARRAY') {
-    return <MixedArrayAlert onChange={handleChange} error={member.error} />
+    return <MixedArrayAlert onChange={handleChange} error={member.error} path={member.path} />
   }
   return <Box>{t('member-field-error.unexpected-error', {error: props.member.error.type})}</Box>
 }
