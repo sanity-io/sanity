@@ -4,7 +4,7 @@ import userEvent from '@testing-library/user-event'
 import {of} from 'rxjs'
 import {describe, expect, test, vi} from 'vitest'
 
-import {renderGlobalDocumentReferenceInput} from '../../../../../../test/form'
+import {renderGlobalDocumentReferenceInput} from '../../../../../../test/form/renderGlobalDocumentReferenceInput'
 import {createTestProvider} from '../../../../../../test/testUtils/TestProvider'
 import {set} from '../../../patch/patch'
 import {GlobalDocumentReferenceInput} from '../GlobalDocumentReferenceInput'

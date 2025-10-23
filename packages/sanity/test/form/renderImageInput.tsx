@@ -6,7 +6,7 @@ import {
 } from '@sanity/types'
 import {EMPTY} from 'rxjs'
 
-import {type BaseImageInputProps} from '../../src/core/form/inputs/files/ImageInput'
+import {type BaseImageInputProps} from '../../src/core/form/inputs/files/ImageInput/ImageInput'
 import {type ImageUrlBuilder} from '../../src/core/form/inputs/files/types'
 import {type ObjectInputProps} from '../../src/core/form/types/inputProps'
 import {type TestRenderInputContext} from './renderInput'
