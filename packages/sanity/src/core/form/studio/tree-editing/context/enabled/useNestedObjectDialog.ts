@@ -1,10 +1,10 @@
 import {useContext} from 'react'
-import {TreeEditingEnabledContext} from 'sanity/_singletons'
+import {NestedObjectDialogContext} from 'sanity/_singletons'
 
 /**
  * @internal
  */
-export interface TreeEditingEnabledContextValue {
+export interface NestedObjectDialogContextValue {
   /**
    * A boolean indicating whether tree editing is enabled
    */
@@ -18,6 +18,6 @@ export interface TreeEditingEnabledContextValue {
 /**
  * @internal
  */
-export function useTreeEditingEnabled(): TreeEditingEnabledContextValue {
-  return useContext(TreeEditingEnabledContext)
+export function useNestedObjectDialog(): NestedObjectDialogContextValue {
+  return useContext(NestedObjectDialogContext)
 }

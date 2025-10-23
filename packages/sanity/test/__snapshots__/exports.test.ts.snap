@@ -735,7 +735,7 @@ exports[`exports snapshot 1`] = `
     "TasksEnabledContext": "object",
     "TasksNavigationContext": "object",
     "TasksUpsellContext": "object",
-    "TreeEditingEnabledContext": "object",
+    "NestedObjectDialogContext": "object",
     "UserColorManagerContext": "object",
     "ValidationContext": "object",
     "VirtualizerScrollInstanceContext": "object",

@@ -1,2 +1,2 @@
-export * from './TreeEditingEnabledProvider'
-export * from './useTreeEditingEnabled'
+export * from './NestedObjectDialogProvider'
+export * from './useNestedObjectDialog'

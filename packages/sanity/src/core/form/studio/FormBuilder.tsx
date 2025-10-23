@@ -40,7 +40,7 @@ import {
 import {DocumentFieldActionsProvider} from './contexts/DocumentFieldActions'
 import {FormBuilderInputErrorBoundary} from './FormBuilderInputErrorBoundary'
 import {FormProvider} from './FormProvider'
-import {TreeEditingDialog, TreeEditingEnabledProvider, useTreeEditingEnabled} from './tree-editing'
+import {NestedObjectDialogProvider, TreeEditingDialog, useNestedObjectDialog} from './tree-editing'
 
 /**
  * @alpha
@@ -315,14 +315,14 @@ export function FormBuilder(props: FormBuilderProps) {
         <FormValueProvider value={value}>
           <DocumentFieldActionsProvider actions={fieldActions}>
             <FullscreenPTEProvider>
-              <TreeEditingEnabledProvider>
+              <NestedObjectDialogProvider>
                 <RootInput
                   rootInputProps={rootInputProps}
                   onPathOpen={onPathOpen}
                   openPath={openPath}
                   renderInput={renderInput}
                 />
-              </TreeEditingEnabledProvider>
+              </NestedObjectDialogProvider>
             </FullscreenPTEProvider>
           </DocumentFieldActionsProvider>
         </FormValueProvider>
@@ -340,7 +340,7 @@ interface RootInputProps {
 
 function RootInput(props: RootInputProps) {
   const {rootInputProps, onPathOpen, openPath, renderInput} = props
-  const treeEditing = useTreeEditingEnabled()
+  const treeEditing = useNestedObjectDialog()
   const isRoot = rootInputProps.id === 'root'
 
   const arrayEditingModal = treeEditing.enabled && isRoot && (

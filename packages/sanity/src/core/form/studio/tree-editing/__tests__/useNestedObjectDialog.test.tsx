@@ -3,7 +3,7 @@ import {type PropsWithChildren} from 'react'
 import {describe, expect, type Mock, test, vi} from 'vitest'
 
 import {useSource} from '../../../../studio/source'
-import {TreeEditingEnabledProvider, useTreeEditingEnabled} from '../context'
+import {NestedObjectDialogProvider, useNestedObjectDialog} from '../context'
 
 // Mock the entire module
 vi.mock('../../../../studio/source')
@@ -11,20 +11,14 @@ vi.mock('../../../../studio/source')
 const mockedUseInnerHook = useSource as Mock
 
 const wrapper = ({children}: PropsWithChildren) => (
-  <TreeEditingEnabledProvider>{children}</TreeEditingEnabledProvider>
+  <NestedObjectDialogProvider>{children}</NestedObjectDialogProvider>
 )
 
 const legacyEditingWrapper = ({children}: PropsWithChildren) => (
-  <TreeEditingEnabledProvider legacyEditing>{children}</TreeEditingEnabledProvider>
+  <NestedObjectDialogProvider legacyEditing>{children}</NestedObjectDialogProvider>
 )
 
-const nestedWrapper = ({children}: PropsWithChildren) => (
-  <TreeEditingEnabledProvider legacyEditing>
-    <TreeEditingEnabledProvider>{children}</TreeEditingEnabledProvider>
-  </TreeEditingEnabledProvider>
-)
-
-describe('useTreeEditingEnabled', () => {
+describe('useNestedObjectDialog', () => {
   test('should return enabled: false when config is not enabled', () => {
     const features = {
       beta: {
@@ -35,7 +29,7 @@ describe('useTreeEditingEnabled', () => {
     }
     mockedUseInnerHook.mockImplementation(() => features)
 
-    const {result} = renderHook(() => useTreeEditingEnabled(), {wrapper})
+    const {result} = renderHook(() => useNestedObjectDialog(), {wrapper})
 
     expect(result.current).toEqual({enabled: false, legacyEditing: false})
   })
@@ -43,20 +37,22 @@ describe('useTreeEditingEnabled', () => {
   test('should return enabled: true when config is enabled', () => {
     const features = {
       beta: {
-        treeArrayEditing: {
-          enabled: true,
+        form: {
+          enhancedObjectDialog: {
+            enabled: true,
+          },
         },
       },
     }
     mockedUseInnerHook.mockImplementation(() => features)
 
-    const {result} = renderHook(() => useTreeEditingEnabled(), {wrapper})
+    const {result} = renderHook(() => useNestedObjectDialog(), {wrapper})
 
     expect(result.current).toEqual({enabled: true, legacyEditing: false})
   })
 
   test('should return legacyEditing: true when legacyEditing is true', () => {
-    const {result} = renderHook(() => useTreeEditingEnabled(), {wrapper: legacyEditingWrapper})
+    const {result} = renderHook(() => useNestedObjectDialog(), {wrapper: legacyEditingWrapper})
 
     expect(result.current).toEqual({enabled: true, legacyEditing: true})
   })

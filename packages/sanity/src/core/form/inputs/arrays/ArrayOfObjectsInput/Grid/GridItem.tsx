@@ -18,7 +18,7 @@ import {useDidUpdate} from '../../../../hooks/useDidUpdate'
 import {useScrollIntoViewOnFocusWithin} from '../../../../hooks/useScrollIntoViewOnFocusWithin'
 import {useChildPresence} from '../../../../studio/contexts/Presence'
 import {useChildValidation} from '../../../../studio/contexts/Validation'
-import {TreeEditingEnabledProvider, useTreeEditingEnabled} from '../../../../studio/tree-editing'
+import {NestedObjectDialogProvider, useNestedObjectDialog} from '../../../../studio/tree-editing'
 import {type ObjectItem, type ObjectItemProps} from '../../../../types'
 import {randomKey} from '../../../../utils/randomKey'
 import {CellLayout} from '../../layouts/CellLayout'
@@ -84,7 +84,7 @@ export function GridItem<Item extends ObjectItem = ObjectItem>(props: GridItemPr
   } = props
   const {t} = useTranslation()
 
-  const {enabled: enhancedObjectDialogEnabled} = useTreeEditingEnabled()
+  const {enabled: enhancedObjectDialogEnabled} = useNestedObjectDialog()
 
   // The edit portal should open if the item is open and:
   // - tree array editing is disabled
@@ -276,7 +276,7 @@ export function GridItem<Item extends ObjectItem = ObjectItem>(props: GridItemPr
 
   const itemTypeTitle = getSchemaTypeTitle(schemaType)
   return (
-    <TreeEditingEnabledProvider>
+    <NestedObjectDialogProvider>
       <ChangeIndicator path={path} isChanged={changed} hasFocus={Boolean(focused)}>
         {item}
       </ChangeIndicator>
@@ -297,6 +297,6 @@ export function GridItem<Item extends ObjectItem = ObjectItem>(props: GridItemPr
           {children}
         </EditPortal>
       )}
-    </TreeEditingEnabledProvider>
+    </NestedObjectDialogProvider>
   )
 }

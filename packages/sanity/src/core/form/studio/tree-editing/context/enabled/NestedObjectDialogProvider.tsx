@@ -1,10 +1,10 @@
 import {useMemo} from 'react'
-import {TreeEditingEnabledContext} from 'sanity/_singletons'
+import {NestedObjectDialogContext} from 'sanity/_singletons'
 
 import {useSource} from '../../../../../studio/source'
-import {type TreeEditingEnabledContextValue} from './useTreeEditingEnabled'
+import {type NestedObjectDialogContextValue} from './useNestedObjectDialog'
 
-interface TreeEditingEnabledProviderProps {
+interface NestedObjectDialogProviderProps {
   children: React.ReactNode
   /**
    * A boolean indicating whether legacy editing is enabled - meaning that it will use the old modal based editing experience
@@ -12,13 +12,13 @@ interface TreeEditingEnabledProviderProps {
   legacyEditing?: boolean
 }
 
-export function TreeEditingEnabledProvider(
-  props: TreeEditingEnabledProviderProps,
+export function NestedObjectDialogProvider(
+  props: NestedObjectDialogProviderProps,
 ): React.JSX.Element {
   const {children, legacyEditing} = props
   const {beta} = useSource()
 
-  const value = useMemo((): TreeEditingEnabledContextValue => {
+  const value = useMemo((): NestedObjectDialogContextValue => {
     return {
       enabled: beta?.form?.enhancedObjectDialog?.enabled === true,
       legacyEditing: Boolean(legacyEditing),
@@ -26,8 +26,8 @@ export function TreeEditingEnabledProvider(
   }, [beta?.form?.enhancedObjectDialog?.enabled, legacyEditing])
 
   return (
-    <TreeEditingEnabledContext.Provider value={value}>
+    <NestedObjectDialogContext.Provider value={value}>
       {children}
-    </TreeEditingEnabledContext.Provider>
+    </NestedObjectDialogContext.Provider>
   )
 }
