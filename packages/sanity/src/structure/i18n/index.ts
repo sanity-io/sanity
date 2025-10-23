@@ -17,11 +17,3 @@ export const structureUsEnglishLocaleBundle = defineLocaleResourceBundle({
   namespace: structureLocaleNamespace,
   resources: () => import('./resources'),
 })
-
-/**
- * The locale resource keys for the structure tool.
- *
- * @alpha
- * @hidden
- */
-export type {StructureLocaleResourceKeys} from './resources'
