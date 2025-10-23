@@ -16,7 +16,7 @@ export {structureLocaleNamespace, type StructureLocaleResourceKeys} from './i18n
 export * from './panes/document'
 export {DocumentInspectorHeader} from './panes/document/documentInspector'
 export {type DocumentPaneProviderProps} from './panes/document/types'
-export * from './panes/document/useDocumentPane'
+export {useDocumentPane} from './panes/document/useDocumentPane'
 export {
   PaneContainer as DocumentListPane,
   type PaneContainerProps as DocumentListPaneProps,
