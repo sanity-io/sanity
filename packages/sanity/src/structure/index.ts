@@ -146,6 +146,33 @@ export {
 } from './structureBuilder/views/View'
 export {structureTool} from './structureTool'
 export {StructureToolProvider, type StructureToolProviderProps} from './StructureToolProvider'
-export * from './types'
+export type {
+  BaseResolvedPaneNode,
+  CustomComponentPaneNode,
+  DocumentFieldMenuActionNode,
+  DocumentListPaneNode,
+  DocumentPaneNode,
+  ListPaneNode,
+  PaneListItem,
+  PaneListItemDivider,
+  PaneMenuItem,
+  PaneMenuItemGroup,
+  PaneNode,
+  PaneNodeResolver,
+  RouterPaneGroup,
+  RouterPanes,
+  RouterPaneSibling,
+  RouterPaneSiblingContext,
+  SerializablePaneNode,
+  StrictVersionLayeringOptions,
+  StructureResolver,
+  StructureResolverContext,
+  StructureToolContextValue,
+  StructureToolFeatures,
+  StructureToolMenuItem,
+  StructureToolOptions,
+  StructureToolPaneActionHandler,
+  UnresolvedPaneNode,
+} from './types'
 export {useStructureTool} from './useStructureTool'
 export {PaneRouterContext} from 'sanity/_singletons'
