@@ -1,5 +1,5 @@
 import {AddDocumentIcon, CopyIcon, TrashIcon} from '@sanity/icons'
-import {type SchemaType} from '@sanity/types'
+import {type SchemaType, type UploadState} from '@sanity/types'
 import {Box, Card, type CardTone, Menu} from '@sanity/ui'
 import {useCallback, useImperativeHandle, useMemo, useRef, useState} from 'react'
 
@@ -20,6 +20,7 @@ import {
   EnhancedObjectDialogProvider,
   useEnhancedObjectDialog,
 } from '../../../../studio/tree-editing'
+import {UPLOAD_STATUS_KEY} from '../../../../studio/uploads/constants'
 import {type ObjectItem, type ObjectItemProps} from '../../../../types'
 import {randomKey} from '../../../../utils/randomKey'
 import {RowLayout} from '../../layouts/RowLayout'
@@ -104,6 +105,9 @@ export function PreviewItem<Item extends ObjectItem = ObjectItem>(props: Preview
   })
 
   const resolvingInitialValue = (value as any)._resolvingInitialValue
+  const uploadState = (value as any)[UPLOAD_STATUS_KEY] as UploadState | undefined
+  const uploadProgress =
+    typeof uploadState?.progress === 'number' ? uploadState?.progress : undefined
 
   const handleDuplicate = useCallback(() => {
     onInsert({
@@ -258,6 +262,7 @@ export function PreviewItem<Item extends ObjectItem = ObjectItem>(props: Preview
           layout: 'default',
           // Don't do visibility check for virtualized items as the calculation will be incorrect causing it to scroll
           skipVisibilityCheck: true,
+          progress: uploadProgress,
         })}
 
         {resolvingInitialValue && <LoadingBlock fill />}
