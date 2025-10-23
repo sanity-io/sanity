@@ -13,7 +13,7 @@ export default defineScope({
     {
       name: 'split-panes',
       title: 'Split panes',
-      component: lazy(() => import('./SplitPanesStory')),
+      component: lazy(() => import('./SplitPanesStory/SplitPanesStory')),
     },
     {
       name: 'change-connectors',

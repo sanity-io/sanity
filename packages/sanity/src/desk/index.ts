@@ -12,10 +12,8 @@ import {
   GenericViewBuilder as _GenericViewBuilder,
   structureLocaleNamespace as _structureLocaleNamespace,
 } from '../structure'
-import {
-  ConfirmDeleteDialog as _ConfirmDeleteDialog,
-  type ConfirmDeleteDialogProps as _ConfirmDeleteDialogProps,
-} from '../structure/components/confirmDeleteDialog'
+import {type ConfirmDeleteDialogProps as _ConfirmDeleteDialogProps} from '../structure/components/confirmDeleteDialog/ConfirmDeleteDialog'
+import {ConfirmDeleteDialogBoundary as _ConfirmDeleteDialog} from '../structure/components/confirmDeleteDialog/ConfirmDeleteDialogBoundary'
 import {PaneLayout as _PaneLayout} from '../structure/components/pane/PaneLayout'
 import {
   type BackLinkProps as _BackLinkProps,
