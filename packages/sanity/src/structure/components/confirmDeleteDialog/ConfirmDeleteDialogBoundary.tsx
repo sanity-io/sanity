@@ -7,13 +7,11 @@ import {ErrorBoundary} from '../../../ui-components/errorBoundary/ErrorBoundary'
 import {structureLocaleNamespace} from '../../i18n'
 import {ConfirmDeleteDialog, type ConfirmDeleteDialogProps} from './ConfirmDeleteDialog'
 
-export type {ConfirmDeleteDialogProps}
-
 type ArgType<T> = T extends (arg: infer U) => unknown ? U : never
 type ErrorInfo = ArgType<ComponentProps<typeof ErrorBoundary>['onCatch']>
 
 /** @internal */
-function ConfirmDeleteDialogContainer(props: ConfirmDeleteDialogProps) {
+export function ConfirmDeleteDialogBoundary(props: ConfirmDeleteDialogProps) {
   const {t} = useTranslation(structureLocaleNamespace)
   const id = useId()
   const [error, setError] = useState<ErrorInfo | null>(null)
@@ -43,5 +41,3 @@ function ConfirmDeleteDialogContainer(props: ConfirmDeleteDialogProps) {
     </ErrorBoundary>
   )
 }
-
-export {ConfirmDeleteDialogContainer as ConfirmDeleteDialog}

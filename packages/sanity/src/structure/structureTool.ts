@@ -103,7 +103,11 @@ export const structureTool = definePlugin<StructureToolOptions | void>((options)
         name: options?.name || 'structure',
         title: options?.title || 'Structure',
         icon,
-        component: lazy(() => import('./components/structureTool')),
+        component: lazy(() =>
+          import('./components/structureTool/StructureToolBoundary').then((module) => ({
+            default: module.StructureToolBoundary,
+          })),
+        ),
         canHandleIntent: (intent, params) => {
           if (intent === 'create') return canHandleCreateIntent(params)
           if (intent === 'edit') return canHandleEditIntent(params)

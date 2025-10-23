@@ -1,13 +1,17 @@
+export type {ConfirmDeleteDialogProps} from './components/confirmDeleteDialog/ConfirmDeleteDialog'
+export {ConfirmDeleteDialogBoundary as ConfirmDeleteDialog} from './components/confirmDeleteDialog/ConfirmDeleteDialogBoundary'
+export {Pane} from './components/pane/Pane'
+export {PaneContent} from './components/pane/PaneContent'
+export {PaneLayout} from './components/pane/PaneLayout'
 export type {
   BackLinkProps,
   ChildLinkProps,
-  ConfirmDeleteDialogProps,
   EditReferenceOptions,
   PaneRouterContextValue,
   ParameterizedLinkProps,
   ReferenceChildLinkProps,
-} from './components'
-export {ConfirmDeleteDialog, Pane, PaneContent, PaneLayout, usePaneRouter} from './components'
+} from './components/paneRouter/types'
+export {usePaneRouter} from './components/paneRouter/usePaneRouter'
 export {structureLocaleNamespace, type StructureLocaleResourceKeys} from './i18n'
 export * from './panes/document'
 export {DocumentInspectorHeader} from './panes/document/documentInspector'

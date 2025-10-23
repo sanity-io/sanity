@@ -9,7 +9,7 @@ import {
   useTranslation,
 } from 'sanity'
 
-import {ConfirmDeleteDialog} from '../components/confirmDeleteDialog'
+import {ConfirmDeleteDialogBoundary} from '../components/confirmDeleteDialog/ConfirmDeleteDialogBoundary'
 import {structureLocaleNamespace} from '../i18n'
 import {useDocumentPane} from '../panes/document/useDocumentPane'
 
@@ -77,7 +77,7 @@ export const DeleteAction: DocumentActionComponent = ({id, type, draft, onComple
       dialog: isConfirmDialogOpen && {
         type: 'custom',
         component: (
-          <ConfirmDeleteDialog
+          <ConfirmDeleteDialogBoundary
             action="delete"
             id={draft?._id || id}
             type={type}
