@@ -3,7 +3,7 @@ import {fireEvent, waitFor} from '@testing-library/react'
 import {type Observable, of} from 'rxjs'
 import {describe, expect, it} from 'vitest'
 
-import {renderFileInput} from '../../../../../../../test/form'
+import {renderFileInput} from '../../../../../../../test/form/renderFileInput'
 import {BaseFileInput} from '../FileInput'
 
 const observeAssetStub = (): Observable<FileAsset> =>
