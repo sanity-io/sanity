@@ -13,10 +13,12 @@ export type {
 } from './components/paneRouter/types'
 export {usePaneRouter} from './components/paneRouter/usePaneRouter'
 export {structureLocaleNamespace, type StructureLocaleResourceKeys} from './i18n'
-export * from './panes/document'
-export {DocumentInspectorHeader} from './panes/document/documentInspector'
+export {DocumentInspectorHeader} from './panes/document/documentInspector/DocumentInspectorHeader'
+export {DocumentPane, usePaneOptions} from './panes/document/DocumentPane'
+export {DocumentPaneProviderWrapper as DocumentPaneProvider} from './panes/document/DocumentPaneProviderWrapper'
 export {type DocumentPaneProviderProps} from './panes/document/types'
 export {useDocumentPane} from './panes/document/useDocumentPane'
+export {type UseDocumentTitle, useDocumentTitle} from './panes/document/useDocumentTitle'
 export {
   PaneContainer as DocumentListPane,
   type PaneContainerProps as DocumentListPaneProps,
