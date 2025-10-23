@@ -196,7 +196,10 @@ const commentsLocaleStrings = defineLocalesResources('comments', {
 })
 
 /**
+ * The locale resource keys for the comments plugin.
+ *
  * @alpha
+ * @hidden
  */
 export type CommentsLocaleResourceKeys = keyof typeof commentsLocaleStrings
 

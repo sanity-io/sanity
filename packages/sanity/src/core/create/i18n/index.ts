@@ -17,11 +17,3 @@ export const createUsEnglishLocaleBundle: LocaleResourceBundle = {
   namespace: createLocaleNamespace,
   resources: () => import('./resources'),
 }
-
-/**
- * The locale resource keys for the Create integration plugin.
- *
- * @alpha
- * @hidden
- */
-export type {CreateLocaleResourceKeys} from './resources'

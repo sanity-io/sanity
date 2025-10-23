@@ -495,7 +495,10 @@ const releasesLocaleStrings = {
 }
 
 /**
+ * The locale resource keys for the releases tool.
+ *
  * @alpha
+ * @hidden
  */
 export type ReleasesLocaleResourceKeys = keyof typeof releasesLocaleStrings
 

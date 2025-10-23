@@ -19,11 +19,3 @@ export const releasesUsEnglishLocaleBundle: LocaleResourceBundle = {
   namespace: releasesLocaleNamespace,
   resources: () => import('./resources'),
 }
-
-/**
- * The locale resource keys for the releases tool.
- *
- * @alpha
- * @hidden
- */
-export type {ReleasesLocaleResourceKeys} from './resources'

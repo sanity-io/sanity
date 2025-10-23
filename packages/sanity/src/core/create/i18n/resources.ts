@@ -45,7 +45,10 @@ const createLocaleStrings = defineLocalesResources('create', {
 })
 
 /**
+ * The locale resource keys for the Create integration plugin.
+ *
  * @alpha
+ * @hidden
  */
 export type CreateLocaleResourceKeys = keyof typeof createLocaleStrings
 

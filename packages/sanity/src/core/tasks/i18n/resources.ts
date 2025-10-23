@@ -167,7 +167,10 @@ const tasksLocaleStrings = defineLocalesResources('tasks', {
 })
 
 /**
+ * The locale resource keys for the task tool.
+ *
  * @alpha
+ * @hidden
  */
 export type TasksLocaleResourceKeys = keyof typeof tasksLocaleStrings
 
