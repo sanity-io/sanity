@@ -1585,7 +1585,7 @@ import type {
   useTranslation,
   UseTranslationOptions,
   UseTranslationResponse,
-  useTreeEditingEnabled,
+  useNestedObjectDialog,
   useUnique,
   useUnitFormatter,
   UseUnitFormatterOptions,
@@ -6441,8 +6441,8 @@ describe('sanity', () => {
   test('UseTranslationResponse', () => {
     expectTypeOf<UseTranslationResponse<any, any>>().not.toBeNever()
   })
-  test('useTreeEditingEnabled', () => {
-    expectTypeOf<typeof useTreeEditingEnabled>().toBeFunction()
+  test('useNestedObjectDialog', () => {
+    expectTypeOf<typeof useNestedObjectDialog>().toBeFunction()
   })
   test('useUnique', () => {
     expectTypeOf<typeof useUnique>().toBeFunction()
