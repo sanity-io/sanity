@@ -20,10 +20,10 @@ export function TreeEditingEnabledProvider(
 
   const value = useMemo((): TreeEditingEnabledContextValue => {
     return {
-      enabled: beta?.treeArrayEditing?.enabled === true,
+      enabled: beta?.form?.enhancedObjectDialog?.enabled === true,
       legacyEditing: Boolean(legacyEditing),
     }
-  }, [beta?.treeArrayEditing?.enabled, legacyEditing])
+  }, [beta?.form?.enhancedObjectDialog?.enabled, legacyEditing])
 
   return (
     <TreeEditingEnabledContext.Provider value={value}>

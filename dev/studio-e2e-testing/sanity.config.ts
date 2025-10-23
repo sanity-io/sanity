@@ -51,6 +51,12 @@ const defaultConfig = defineConfig({
     image: {
       assetSources: [imageAssetSource],
     },
+    components: {
+      input: (props) => {
+        if (props.renderDefault) return props.renderDefault(props)
+        return null
+      },
+    },
   },
 
   i18n: {
@@ -122,8 +128,10 @@ const defaultConfig = defineConfig({
     markdownSchema(),
   ],
   beta: {
-    treeArrayEditing: {
-      enabled: true,
+    form: {
+      enhancedObjectDialog: {
+        enabled: true,
+      },
     },
   },
   announcements: {

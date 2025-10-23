@@ -102,8 +102,10 @@ const sharedSettings = ({projectId}: {projectId: string}) => {
     },
 
     beta: {
-      treeArrayEditing: {
-        enabled: true,
+      form: {
+        enhancedObjectDialog: {
+          enabled: true,
+        },
       },
     },
 
