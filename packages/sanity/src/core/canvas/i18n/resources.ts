@@ -72,7 +72,10 @@ const canvasLocaleStrings = defineLocalesResources('canvas', {
 })
 
 /**
+ * The locale resource keys for the canvas integration plugin.
+ *
  * @alpha
+ * @hidden
  */
 export type CanvasLocaleResourceKeys = keyof typeof canvasLocaleStrings
 
