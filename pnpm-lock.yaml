@@ -256,9 +256,6 @@ importers:
       rxjs:
         specifier: ^7.8.2
         version: 7.8.2
-      sanity:
-        specifier: workspace:*
-        version: link:packages/sanity
       semver:
         specifier: ^7.7.2
         version: 7.7.3
