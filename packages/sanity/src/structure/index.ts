@@ -147,5 +147,5 @@ export {
 export {structureTool} from './structureTool'
 export {StructureToolProvider, type StructureToolProviderProps} from './StructureToolProvider'
 export * from './types'
-export * from './useStructureTool'
+export {useStructureTool} from './useStructureTool'
 export {PaneRouterContext} from 'sanity/_singletons'
