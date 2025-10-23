@@ -123,7 +123,7 @@ vi.mock('../../../../hooks/useTimeZone', () => ({
   useTimeZone: vi.fn(() => useTimeZoneMockReturn),
 }))
 
-vi.mock('../../../hooks/useScheduledDraftsEnabled', () => ({
+vi.mock('../../../../singleDocRelease/hooks/useScheduledDraftsEnabled', () => ({
   useScheduledDraftsEnabled: vi.fn(() => false),
 }))
 

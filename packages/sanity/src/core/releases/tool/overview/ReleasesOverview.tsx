@@ -454,6 +454,7 @@ export function ReleasesOverview() {
                       isScheduledDraftsEnabled={isScheduledDraftsEnabled}
                       allReleases={allReleases}
                       isReleasesEnabled={isReleasesEnabled}
+                      isDraftModelEnabled={isDraftModelEnabled}
                     />
                   </Inline>
 
