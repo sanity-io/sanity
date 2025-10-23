@@ -1,7 +1,10 @@
 import {type Path, type SchemaType} from '@sanity/types'
 
-export interface BreadcrumbItem {
-  children?: BreadcrumbItem[]
+/**
+ * Used for the dialog breadcrumbs and menu items
+ */
+export interface DialogItem {
+  children?: DialogItem[]
   parentSchemaType: SchemaType
   path: Path
   schemaType: SchemaType

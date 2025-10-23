@@ -8,7 +8,7 @@ import {styled} from 'styled-components'
 import {Button} from '../../../../../../ui-components'
 import {Resizable} from '../../../../../components/resizer/Resizable'
 import {useTranslation} from '../../../../../i18n'
-import {type BreadcrumbItem} from '../../types'
+import {type DialogItem} from '../../types'
 import {TreeEditingSearch} from '../search'
 import {TreeEditingMenu} from '../tree-menu'
 import {FixedHeightFlex} from './styles'
@@ -32,7 +32,7 @@ const SearchStack = styled(Stack)`
 `
 
 interface TreeEditingLayoutSidebarProps {
-  items: BreadcrumbItem[]
+  items: DialogItem[]
   onOpenToggle: () => void
   onPathSelect: (path: Path) => void
   open: boolean

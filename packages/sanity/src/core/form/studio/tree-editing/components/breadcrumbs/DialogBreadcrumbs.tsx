@@ -29,7 +29,7 @@ import {MenuButton} from '../../../../../../ui-components'
 import {pathToString} from '../../../../../field/paths/helpers'
 import {NavigatedToNestedObjectViaBreadcrumb} from '../../__telemetry__/nestedObjects.telemetry'
 import {useValuePreviewWithFallback} from '../../hooks'
-import {type BreadcrumbItem} from '../../types'
+import {type DialogItem} from '../../types'
 
 const MAX_LENGTH = 5
 const EMPTY_ARRAY: [] = []
@@ -64,10 +64,10 @@ const StyledText = styled(Text)`
   padding: 8px 0;
 `
 
-type Item = BreadcrumbItem[] | BreadcrumbItem
+type Item = DialogItem[] | DialogItem
 
 interface MenuButtonProps {
-  item: BreadcrumbItem
+  item: DialogItem
   onPathSelect: (path: Path) => void
   isSelected: boolean
   isLast: boolean
@@ -155,7 +155,7 @@ const SeparatorItem = forwardRef(function SeparatorItem(
 })
 
 interface BreadcrumbsProps {
-  items: BreadcrumbItem[]
+  items: DialogItem[]
   onPathSelect: (path: Path) => void
   selectedPath: Path
   siblings: Map<string, {count: number; index: number}>
@@ -224,7 +224,7 @@ export function DialogBreadcrumbs(props: BreadcrumbsProps): React.JSX.Element | 
               }}
               menu={
                 <Menu>
-                  {item.map((overflowItem: BreadcrumbItem) => (
+                  {item.map((overflowItem: DialogItem) => (
                     <Box key={overflowItem.path.toString()} padding={1}>
                       <Flex direction="row" align="center" style={{maxWidth: '250px'}}>
                         <SeparatorItem>{SEPARATOR}</SeparatorItem>

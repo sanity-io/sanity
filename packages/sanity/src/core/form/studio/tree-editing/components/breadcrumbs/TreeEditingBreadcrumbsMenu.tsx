@@ -15,11 +15,11 @@ import {useTranslation} from '../../../../../i18n/hooks/useTranslation'
 import {SanityDefaultPreview} from '../../../../../preview/components/SanityDefaultPreview'
 import {supportsTouch} from '../../../../../util/supportsTouch'
 import {useValuePreviewWithFallback} from '../../hooks'
-import {type BreadcrumbItem} from '../../types'
+import {type DialogItem} from '../../types'
 import {ITEM_HEIGHT} from './constants'
 
 interface BreadcrumbsItemProps {
-  item: BreadcrumbItem
+  item: DialogItem
   selected: boolean
   isFirst: boolean
   onPathSelect: (path: Path) => void
@@ -61,7 +61,7 @@ function BreadcrumbsItem(props: BreadcrumbsItemProps): React.JSX.Element {
 
 interface TreeEditingBreadcrumbsMenuProps {
   collapsed?: boolean
-  items: BreadcrumbItem[]
+  items: DialogItem[]
   onPathSelect: (path: Path) => void
   selectedPath: Path
 }
@@ -108,7 +108,7 @@ export function TreeEditingBreadcrumbsMenu(
   )
 
   const renderItem = useCallback(
-    (item: BreadcrumbItem) => {
+    (item: DialogItem) => {
       const selected = isEqual(item.path, selectedPath)
       const isFirst = isEqual(item.path, items[0].path)
 

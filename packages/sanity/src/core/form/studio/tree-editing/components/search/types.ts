@@ -1,6 +1,6 @@
-import {type BreadcrumbItem} from '../../types'
+import {type DialogItem} from '../../types'
 
-export interface SearchableTreeEditingMenuItem extends BreadcrumbItem {
+export interface SearchableTreeEditingMenuItem extends DialogItem {
   title: string | undefined
   children?: SearchableTreeEditingMenuItem[]
 }

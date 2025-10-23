@@ -5,7 +5,7 @@ import ReactFocusLock from 'react-focus-lock'
 import {css, styled} from 'styled-components'
 
 import {Popover, type PopoverProps} from '../../../../../../ui-components'
-import {type BreadcrumbItem} from '../../types'
+import {type DialogItem} from '../../types'
 import {ITEM_HEIGHT, MAX_DISPLAYED_ITEMS} from './constants'
 import {TreeEditingBreadcrumbsMenu} from './TreeEditingBreadcrumbsMenu'
 
@@ -51,7 +51,7 @@ const StyledPopover = styled(Popover)(() => {
 interface TreeEditingBreadcrumbsMenuButtonProps {
   button: React.JSX.Element
   collapsed?: boolean
-  items: BreadcrumbItem[]
+  items: DialogItem[]
   menuTitle?: string
   onPathSelect: (path: Path) => void
   parentElement: HTMLElement | null

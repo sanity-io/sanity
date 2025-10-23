@@ -1,13 +1,13 @@
 import {deburr} from 'lodash'
 
-import {type BreadcrumbItem} from '../../types'
+import {type DialogItem} from '../../types'
 import {type SearchableTreeEditingMenuItem} from './types'
 
 /**
  * Flattens a list of items and their children into a single list.
  */
-export function flattenItems(items: BreadcrumbItem[]): BreadcrumbItem[] {
-  const result: BreadcrumbItem[] = items.reduce((acc: BreadcrumbItem[], item: BreadcrumbItem) => {
+export function flattenItems(items: DialogItem[]): DialogItem[] {
+  const result: DialogItem[] = items.reduce((acc: DialogItem[], item: DialogItem) => {
     if (item?.children) {
       return [...acc, item, ...flattenItems(item.children)]
     }
@@ -27,7 +27,7 @@ export function flattenItems(items: BreadcrumbItem[]): BreadcrumbItem[] {
 export function treeEditingSearch(
   items: SearchableTreeEditingMenuItem[],
   query: string,
-): BreadcrumbItem[] {
+): DialogItem[] {
   // Flatten the items list so we can search through all items and their children
   const flattenItemsList = flattenItems(items) as SearchableTreeEditingMenuItem[]
 

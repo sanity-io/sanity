@@ -3,7 +3,7 @@ import {isEqual} from 'lodash'
 
 import {EMPTY_ARRAY} from '../../../../../util/empty'
 import {getItemType} from '../../../../store/utils/getItemType'
-import {type BreadcrumbItem} from '../../types'
+import {type DialogItem} from '../../types'
 
 interface BuildBreadcrumbsStateProps {
   arraySchemaType: ArraySchemaType
@@ -12,10 +12,10 @@ interface BuildBreadcrumbsStateProps {
   parentPath: Path
 }
 
-export function buildBreadcrumbsState(props: BuildBreadcrumbsStateProps): BreadcrumbItem {
+export function buildBreadcrumbsState(props: BuildBreadcrumbsStateProps): DialogItem {
   const {arraySchemaType, arrayValue, itemPath, parentPath} = props
 
-  const items: BreadcrumbItem[] = arrayValue
+  const items: DialogItem[] = arrayValue
     .map((arrayItem) => {
       const nestedItemPath = [...parentPath, {_key: arrayItem._key}] as Path
 
@@ -32,11 +32,11 @@ export function buildBreadcrumbsState(props: BuildBreadcrumbsStateProps): Breadc
         path: nestedItemPath,
         schemaType: itemType,
         value: arrayItem,
-      } satisfies BreadcrumbItem
+      } satisfies DialogItem
     })
-    .filter(Boolean) as BreadcrumbItem[]
+    .filter(Boolean) as DialogItem[]
 
-  const selectedItem = items.find((item) => isEqual(item.path, itemPath)) as BreadcrumbItem
+  const selectedItem = items.find((item) => isEqual(item.path, itemPath)) as DialogItem
 
   return {
     children: items,

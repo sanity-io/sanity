@@ -7,7 +7,7 @@ import {
 } from '@sanity/types'
 import {describe, expect, test, vi} from 'vitest'
 
-import {type BreadcrumbItem} from '../../../types'
+import {type DialogItem} from '../../../types'
 import {buildArrayStatePTE} from '../buildArrayStatePTE'
 import {type TreeEditingState} from '../buildTreeEditingState'
 
@@ -183,8 +183,8 @@ function createTestProps(overrides: Partial<Parameters<typeof buildArrayStatePTE
     openPath: ['body'] as Path,
     recursive: mockRecursive,
     rootSchemaType: documentSchema,
-    breadcrumbs: [] as BreadcrumbItem[],
-    childrenMenuItems: [] as BreadcrumbItem[],
+    breadcrumbs: [] as DialogItem[],
+    childrenMenuItems: [] as DialogItem[],
   }
 
   return {...defaultProps, ...overrides}
@@ -231,8 +231,8 @@ describe('buildArrayStatePTE', () => {
 
   test('when openPath points to a nested array field, it should return the correct breadcrumbs', () => {
     const openPath: Path = ['body', {_key: 'custom1'}, 'items', {_key: 'item1'}]
-    const breadcrumbs: BreadcrumbItem[] = []
-    const childrenMenuItems: BreadcrumbItem[] = []
+    const breadcrumbs: DialogItem[] = []
+    const childrenMenuItems: DialogItem[] = []
     const props = createTestProps({openPath, breadcrumbs, childrenMenuItems})
 
     const result = buildArrayStatePTE(props)
@@ -253,8 +253,8 @@ describe('buildArrayStatePTE', () => {
 
   test('when openPath points to a block, it should return the correct breadcrumbs', () => {
     const openPath: Path = ['body', {_key: 'custom1'}]
-    const breadcrumbs: BreadcrumbItem[] = []
-    const childrenMenuItems: BreadcrumbItem[] = []
+    const breadcrumbs: DialogItem[] = []
+    const childrenMenuItems: DialogItem[] = []
     const props = createTestProps({openPath, breadcrumbs, childrenMenuItems})
 
     const result = buildArrayStatePTE(props)
@@ -271,8 +271,8 @@ describe('buildArrayStatePTE', () => {
 
   test('when openPath points to a text block, it should return null', () => {
     const openPath: Path = ['body', {_key: 'block1'}, 'children', {_key: 'span1'}]
-    const breadcrumbs: BreadcrumbItem[] = []
-    const childrenMenuItems: BreadcrumbItem[] = []
+    const breadcrumbs: DialogItem[] = []
+    const childrenMenuItems: DialogItem[] = []
     const props = createTestProps({openPath, breadcrumbs, childrenMenuItems})
 
     const result = buildArrayStatePTE(props)
@@ -284,8 +284,8 @@ describe('buildArrayStatePTE', () => {
 
   test('when openPath points to a non-existent item (new item), it should return the correct breadcrumbs (parents)', () => {
     const openPath: Path = ['body', {_key: 'custom1'}, 'items', {_key: 'nonexistent'}]
-    const breadcrumbs: BreadcrumbItem[] = []
-    const childrenMenuItems: BreadcrumbItem[] = []
+    const breadcrumbs: DialogItem[] = []
+    const childrenMenuItems: DialogItem[] = []
     const props = createTestProps({openPath, breadcrumbs, childrenMenuItems})
 
     const result = buildArrayStatePTE(props)

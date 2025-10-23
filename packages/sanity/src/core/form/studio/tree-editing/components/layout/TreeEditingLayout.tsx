@@ -4,18 +4,18 @@ import {memo, type ReactNode, useCallback, useRef, useState} from 'react'
 
 import {PresenceOverlay} from '../../../../../presence/overlay/PresenceOverlay'
 import {VirtualizerScrollInstanceProvider} from '../../../../inputs/arrays/ArrayOfObjectsInput/List/VirtualizerScrollInstanceProvider'
-import {type BreadcrumbItem} from '../../types'
-import {Breadcrumbs} from '../breadcrumbs'
+import {type DialogItem} from '../../types'
+import {DialogBreadcrumbs} from '../breadcrumbs/DialogBreadcrumbs'
 import {FixedHeightFlex} from './styles'
 import {TreeEditingLayoutSidebar} from './TreeEditingLayoutSidebar'
 
 const PRESENCE_MARGINS: [number, number, number, number] = [0, 0, 1, 0]
 
 interface TreeEditingLayoutProps {
-  breadcrumbs: BreadcrumbItem[]
+  breadcrumbs: DialogItem[]
   children: ReactNode
   footer?: ReactNode
-  items: BreadcrumbItem[]
+  items: DialogItem[]
   onPathSelect: (path: Path) => void
   selectedPath: Path
   setScrollElement?: (ref: HTMLDivElement | null) => void
@@ -70,7 +70,7 @@ export const TreeEditingLayout = memo(function TreeEditingLayout(
       <Flex direction="column" flex={1} overflow="hidden">
         <FixedHeightFlex align="center" sizing="border" gap={2} paddingX={4}>
           <Flex flex={1}>
-            <Breadcrumbs
+            <DialogBreadcrumbs
               items={breadcrumbs}
               onPathSelect={onPathSelect}
               selectedPath={selectedPath}

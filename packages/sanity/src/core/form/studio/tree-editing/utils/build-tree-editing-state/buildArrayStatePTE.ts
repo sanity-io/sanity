@@ -13,7 +13,7 @@ import {startsWith} from '@sanity/util/paths'
 import {getValueAtPath, pathToString} from '../../../../../field/paths/helpers'
 import {EMPTY_ARRAY} from '../../../../../util/empty'
 import {getItemType} from '../../../../store/utils/getItemType'
-import {type BreadcrumbItem} from '../../types'
+import {type DialogItem} from '../../types'
 import {isPathTextInPTEField} from '../isPathTextInPTEField'
 import {buildBreadcrumbsState} from './buildBreadcrumbsState'
 import {type RecursiveProps, type TreeEditingState} from './buildTreeEditingState'
@@ -41,9 +41,9 @@ interface BuildArrayStatePTEProps {
   /** The root schema type to check for portable text fields */
   rootSchemaType: ObjectSchemaType
   /** The breadcrumbs array to add to */
-  breadcrumbs: BreadcrumbItem[]
+  breadcrumbs: DialogItem[]
   /** The children menu items array to add to */
-  childrenMenuItems: BreadcrumbItem[]
+  childrenMenuItems: DialogItem[]
 }
 
 /**
@@ -52,8 +52,8 @@ interface BuildArrayStatePTEProps {
  */
 export function buildArrayStatePTE(props: BuildArrayStatePTEProps): {
   relativePath: Path | null
-  breadcrumbs: BreadcrumbItem[]
-  childrenMenuItems: BreadcrumbItem[]
+  breadcrumbs: DialogItem[]
+  childrenMenuItems: DialogItem[]
   /** Map of path strings to their sibling arrays (including non-editable items, for example references)
    * Starts at 1
    */
@@ -116,7 +116,7 @@ export function buildArrayStatePTE(props: BuildArrayStatePTEProps): {
     const openPathStartsWithBlock = startsWith(blockPath, openPath)
 
     if (openPathStartsWithBlock && shouldBeInBreadcrumb(blockPath, openPath, documentValue)) {
-      const blockBreadcrumb: BreadcrumbItem = {
+      const blockBreadcrumb: DialogItem = {
         children: EMPTY_ARRAY,
         parentSchemaType: childField.type as ArraySchemaType,
         path: blockPath,
@@ -127,7 +127,7 @@ export function buildArrayStatePTE(props: BuildArrayStatePTEProps): {
     }
 
     // Collect nested menu items for this block
-    const blockChildrenMenuItems: BreadcrumbItem[] = []
+    const blockChildrenMenuItems: DialogItem[] = []
 
     // Process array fields within the block
     blockSchemaType.fields.forEach((blockField) => {
