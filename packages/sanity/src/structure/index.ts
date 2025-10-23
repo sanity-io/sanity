@@ -145,7 +145,7 @@ export {
   type ViewBuilder,
 } from './structureBuilder/views/View'
 export {structureTool} from './structureTool'
-export * from './StructureToolProvider'
+export {StructureToolProvider, type StructureToolProviderProps} from './StructureToolProvider'
 export * from './types'
 export * from './useStructureTool'
 export {PaneRouterContext} from 'sanity/_singletons'
