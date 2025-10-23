@@ -12,8 +12,6 @@ import {
 import {type Reported, type ReporterHook} from '../components/react-track-elements/types'
 import {type ChangeIndicatorTrackerContextValue} from './types'
 
-export * from './types'
-
 function ChangeIndicatorsTrackerComponent(props: {children: React.ReactNode}) {
   const {children} = props
   const {store, snapshot} = useTrackerStore<ChangeIndicatorTrackerContextValue>()

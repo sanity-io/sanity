@@ -385,12 +385,14 @@ import {
 } from '../core/changeIndicators/overlay/ChangeConnectorRoot'
 import {
   ChangeIndicatorsTracker,
-  type ChangeIndicatorTrackerContextValue,
-  type TrackedArea,
-  type TrackedChange,
   useChangeIndicatorsReportedValues,
   useChangeIndicatorsReporter,
 } from '../core/changeIndicators/tracker'
+import {
+  type ChangeIndicatorTrackerContextValue,
+  type TrackedArea,
+  type TrackedChange,
+} from '../core/changeIndicators/types'
 import {CommentDeleteDialog} from '../core/comments/components/CommentDeleteDialog'
 import {CommentDisabledIcon} from '../core/comments/components/icons/CommentDisabledIcon'
 import {CommentsList} from '../core/comments/components/list/CommentsList'
