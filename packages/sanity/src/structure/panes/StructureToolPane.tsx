@@ -23,10 +23,18 @@ interface StructureToolPaneProps {
 
 // TODO: audit this creates separate chunks
 const paneMap = {
-  component: lazy(() => import('./userComponent')),
-  document: lazy(() => import('./document/pane')),
-  documentList: lazy(() => import('./documentList/pane')),
-  list: lazy(() => import('./list')),
+  component: lazy(() =>
+    import('./userComponent/UserComponentPane').then((module) => ({
+      default: module.UserComponentPane,
+    })),
+  ),
+  document: lazy(() =>
+    import('./document/DocumentPane').then((module) => ({default: module.DocumentPane})),
+  ),
+  documentList: lazy(() =>
+    import('./documentList/PaneContainer').then((module) => ({default: module.PaneContainer})),
+  ),
+  list: lazy(() => import('./list/ListPane').then((module) => ({default: module.ListPane}))),
 }
 
 /**
