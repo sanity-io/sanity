@@ -4,4 +4,5 @@ import {version} from '../../package.json'
  * @hidden
  * @beta
  */
-export const SANITY_VERSION = process.env.PKG_VERSION || `${version}-dev`
+export const SANITY_VERSION =
+  process.env.PKG_BUILD_VERSION || process.env.PKG_VERSION || `${version}-dev`
