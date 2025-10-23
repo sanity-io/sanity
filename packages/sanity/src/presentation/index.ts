@@ -1,5 +1,5 @@
 export {useSharedState} from './overlays/useSharedState'
-export * from './plugin'
+export {defineDocuments, defineLocations, presentationTool} from './plugin'
 export type {PreviewProps} from './preview/Preview'
 export type {PreviewHeaderProps} from './preview/PreviewHeader'
 export type {
