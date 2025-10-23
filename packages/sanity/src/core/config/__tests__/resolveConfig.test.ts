@@ -170,6 +170,7 @@ describe('resolveConfig', () => {
       {name: 'sanity/create-integration'},
       {name: 'sanity/releases'},
       {name: 'sanity/canvas-integration'},
+      {name: 'sanity/schedules'},
     ])
   })
 
@@ -202,6 +203,7 @@ describe('resolveConfig', () => {
       {name: 'sanity/create-integration'},
       {name: 'sanity/releases'},
       {name: 'sanity/canvas-integration'},
+      {name: 'sanity/schedules'},
     ])
   })
 })
