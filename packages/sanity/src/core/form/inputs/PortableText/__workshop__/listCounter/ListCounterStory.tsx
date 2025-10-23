@@ -111,7 +111,7 @@ const EditableWrapper = styled(Stack)`
   }
 `
 
-export function ListCounterStory() {
+export default function ListCounterStory() {
   const debug = useBoolean('Debug', false)
   const fontSize = useSelect('Font size', FONT_SIZE_OPTIONS, 2)
   const space = useSelect('Space', SPACE_OPTIONS, 3)

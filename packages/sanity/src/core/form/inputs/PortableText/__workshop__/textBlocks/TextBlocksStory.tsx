@@ -36,7 +36,7 @@ const blockBase = {
   ],
 }
 
-export function TextBlocksStory() {
+export default function TextBlocksStory() {
   const hasErrors = useBoolean('Has errors', false)
   const hasMarkers = useBoolean('Has markers', false)
   const markers: PortableTextMarker[] = useMemo(
