@@ -22,7 +22,7 @@ import {
   useItemComponent,
   usePreviewComponent,
 } from '../form-components-hooks/componentHooks'
-import {FullscreenPTEProvider} from '../inputs/PortableText/contexts/fullscreen'
+import {FullscreenPTEProvider} from '../inputs/PortableText/contexts/fullscreen/FullscreenPTEProvider'
 import {type PatchChannel} from '../patch/PatchChannel'
 import {PatchEvent} from '../patch/PatchEvent'
 import {type FormPatch} from '../patch/types'

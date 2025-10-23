@@ -44,7 +44,7 @@ import {type ResolvedUploader} from '../../studio/uploads/types'
 import {type PortableTextInputProps} from '../../types/inputProps'
 import {extractPastedFiles} from '../common/fileTarget/utils/extractFiles'
 import {Compositor} from './Compositor'
-import {useFullscreenPTE} from './contexts/fullscreen'
+import {useFullscreenPTE} from './contexts/fullscreen/useFullscreenPTE'
 import {PortableTextMarkersProvider} from './contexts/PortableTextMarkers'
 import {PortableTextMemberItemsProvider} from './contexts/PortableTextMembers'
 import {

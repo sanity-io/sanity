@@ -21,12 +21,12 @@ export default defineScope({
     {
       name: 'list-counter',
       title: 'List counter',
-      component: lazy(() => import('./listCounter')),
+      component: lazy(() => import('./listCounter/ListCounterStory')),
     },
     {
       name: 'text-blocks',
       title: 'Text blocks',
-      component: lazy(() => import('./textBlocks')),
+      component: lazy(() => import('./textBlocks/TextBlocksStory')),
     },
     {
       name: 'user-presence-cursor',

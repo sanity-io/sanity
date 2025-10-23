@@ -11,7 +11,7 @@ import {Dialog} from '../../../../../ui-components/dialog/Dialog'
 import {pathToString, stringToPath} from '../../../../field/paths/helpers'
 import {FormInput} from '../../../components/FormInput'
 import {VirtualizerScrollInstanceProvider} from '../../../inputs/arrays/ArrayOfObjectsInput/List/VirtualizerScrollInstanceProvider'
-import {useFullscreenPTE} from '../../../inputs/PortableText/contexts/fullscreen'
+import {useFullscreenPTE} from '../../../inputs/PortableText/contexts/fullscreen/useFullscreenPTE'
 import {type InputProps, type ObjectInputProps} from '../../../types/inputProps'
 import {NestedDialogClosed, NestedDialogOpened} from '../__telemetry__/nestedObjects.telemetry'
 import {
