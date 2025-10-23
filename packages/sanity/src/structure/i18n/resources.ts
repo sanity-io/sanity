@@ -645,7 +645,10 @@ const structureLocaleStrings = defineLocalesResources('structure', {
 })
 
 /**
+ * The locale resource keys for the structure tool.
+ *
  * @alpha
+ * @hidden
  */
 export type StructureLocaleResourceKeys = keyof typeof structureLocaleStrings
 

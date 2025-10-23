@@ -12,7 +12,8 @@ export type {
   ReferenceChildLinkProps,
 } from './components/paneRouter/types'
 export {usePaneRouter} from './components/paneRouter/usePaneRouter'
-export {structureLocaleNamespace, type StructureLocaleResourceKeys} from './i18n'
+export {structureLocaleNamespace} from './i18n'
+export {type StructureLocaleResourceKeys} from './i18n/resources'
 export {DocumentInspectorHeader} from './panes/document/documentInspector/DocumentInspectorHeader'
 export {DocumentPane, usePaneOptions} from './panes/document/DocumentPane'
 export {DocumentPaneProviderWrapper as DocumentPaneProvider} from './panes/document/DocumentPaneProviderWrapper'
