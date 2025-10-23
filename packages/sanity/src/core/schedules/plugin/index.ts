@@ -2,9 +2,10 @@ import {route} from 'sanity/router'
 
 import {definePlugin} from '../../config/definePlugin'
 import {releasesUsEnglishLocaleBundle} from '../../releases/i18n'
-import {RELEASES_INTENT, RELEASES_SCHEDULED_DRAFTS_INTENT} from '../../releases/plugin'
+import {RELEASES_INTENT} from '../../releases/plugin'
 import {ReleasesStudioLayout} from '../../releases/plugin/ReleasesStudioLayout'
 import {ReleasesTool} from '../../releases/tool/ReleasesTool'
+import {RELEASES_SCHEDULED_DRAFTS_INTENT} from '../../singleDocRelease/plugin'
 
 /**
  * @internal

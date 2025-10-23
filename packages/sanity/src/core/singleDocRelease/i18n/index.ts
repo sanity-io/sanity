@@ -10,7 +10,7 @@ import {type LocaleResourceBundle} from '../../i18n'
 export const singleDocReleaseNamespace: 'singleDocRelease' = 'singleDocRelease'
 
 /**
- * The default locale release for the releases tool, which is US English.
+ * The default locale release for the single doc release tool, which is US English.
  *
  * @internal
  */

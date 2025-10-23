@@ -1,5 +1,5 @@
 /**
- * Defined locale strings for the releases tool, in US English.
+ * Defined locale strings for the single doc release tool, in US English.
  *
  * @internal
  */
