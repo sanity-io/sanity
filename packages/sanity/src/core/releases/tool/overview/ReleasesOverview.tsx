@@ -67,18 +67,17 @@ export function ReleasesOverview() {
   const {data: allArchivedReleases} = useArchivedReleases()
   const {mode} = useReleasesUpsell()
   const isScheduledDraftsEnabled = useScheduledDraftsEnabled()
-  const {
-    document: {
-      drafts: {enabled: isDraftModelEnabled},
-    },
-  } = useWorkspace()
+  const {document, releases: releasesConfig} = useWorkspace()
+  const isReleasesEnabled = Boolean(releasesConfig?.enabled)
+  const isDraftModelEnabled = document?.drafts?.enabled
 
   const router = useRouter()
   const [releaseGroupMode, setReleaseGroupMode] = useState<Mode>(getInitialReleaseGroupMode(router))
 
   const [cardinalityView, setCardinalityView] = useState<CardinalityView>(
-    isScheduledDraftsEnabled ? getInitialCardinalityView(router) : 'releases',
+    getInitialCardinalityView({router, isScheduledDraftsEnabled, isReleasesEnabled}),
   )
+
   const [releaseFilterDate, setReleaseFilterDate] = useState<Date | undefined>(
     getInitialFilterDate(router),
   )
@@ -453,8 +452,8 @@ export function ReleasesOverview() {
                       loading={loading}
                       onCardinalityViewChange={handleCardinalityViewChange}
                       isScheduledDraftsEnabled={isScheduledDraftsEnabled}
-                      isDraftModelEnabled={isDraftModelEnabled}
                       allReleases={allReleases}
+                      isReleasesEnabled={isReleasesEnabled}
                     />
                   </Inline>
 
@@ -486,6 +485,7 @@ export function ReleasesOverview() {
                 <DraftsDisabledBanner
                   isDraftModelEnabled={isDraftModelEnabled}
                   isScheduledDraftsEnabled={isScheduledDraftsEnabled}
+                  allReleases={allReleases}
                 />
               )}
               <Box

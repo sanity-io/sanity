@@ -244,7 +244,7 @@ const defaultWorkspace = defineConfig({
   mediaLibrary: {
     enabled: true,
   },
-  [QUOTA_EXCLUDED_RELEASES_ENABLED]: true,
+  [QUOTA_EXCLUDED_RELEASES_ENABLED]: false,
   [DECISION_PARAMETERS_SCHEMA]: {
     audiences: ['aud-a', 'aud-b', 'aud-c'],
     locales: ['en-GB', 'en-US'],
@@ -389,6 +389,7 @@ export default defineConfig([
     mediaLibrary: {
       enabled: true,
     },
+    [QUOTA_EXCLUDED_RELEASES_ENABLED]: false,
   },
   {
     name: 'media-library-playground',
