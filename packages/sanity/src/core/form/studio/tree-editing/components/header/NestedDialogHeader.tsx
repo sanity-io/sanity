@@ -2,7 +2,7 @@ import {type Path} from '@sanity/types'
 import {Flex} from '@sanity/ui'
 
 import {type TreeEditingState} from '../../utils'
-import {Breadcrumbs} from '../breadcrumbs/Breadcrumbs'
+import {DialogBreadcrumbs} from '../breadcrumbs/DialogBreadcrumbs'
 
 interface NestedDialogHeaderProps {
   treeState: TreeEditingState
@@ -15,7 +15,7 @@ export function NestedDialogHeader(props: NestedDialogHeaderProps) {
 
   return (
     <Flex align="center" gap={2} justify="space-between">
-      <Breadcrumbs
+      <DialogBreadcrumbs
         items={treeState.breadcrumbs}
         onPathSelect={onHandlePathSelect}
         selectedPath={relativePath}

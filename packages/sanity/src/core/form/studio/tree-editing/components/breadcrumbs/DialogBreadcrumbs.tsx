@@ -161,7 +161,7 @@ interface BreadcrumbsProps {
   siblings: Map<string, {count: number; index: number}>
 }
 
-export function Breadcrumbs(props: BreadcrumbsProps): React.JSX.Element | null {
+export function DialogBreadcrumbs(props: BreadcrumbsProps): React.JSX.Element | null {
   const {items: itemsProp = EMPTY_ARRAY, onPathSelect, selectedPath, siblings} = props
 
   const [rootElement, setRootElement] = useState<HTMLDivElement | null>(null)

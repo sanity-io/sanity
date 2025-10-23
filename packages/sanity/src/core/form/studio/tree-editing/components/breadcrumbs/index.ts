@@ -1,3 +1,3 @@
-export * from './Breadcrumbs'
+export * from './DialogBreadcrumbs'
 export * from './TreeEditingBreadcrumbsMenu'
 export * from './TreeEditingBreadcrumbsMenuButton'
