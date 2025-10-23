@@ -63,11 +63,13 @@ export function TreeEditingDialog(props: TreeEditingDialogProps): React.JSX.Elem
 
   const openPathRef = useRef<Path | undefined>(undefined)
   const valueRef = useRef<Record<string, unknown> | undefined>(undefined)
+  const treeStateRef = useRef<TreeEditingState>(EMPTY_TREE_STATE)
 
   const telemetry = useTelemetry()
 
   const handleBuildTreeEditingState = useCallback(
     (opts: BuildTreeEditingStateProps) => {
+      const currentTreeState = treeStateRef.current
       const isPathWithinPTEtext = isPathTextInPTEField(
         schemaType.fields,
         opts.openPath,
@@ -75,34 +77,39 @@ export function TreeEditingDialog(props: TreeEditingDialogProps): React.JSX.Elem
       )
 
       const nextState = buildTreeEditingState(opts)
-      if (isEqual(nextState, treeState)) return
+      if (isEqual(nextState, currentTreeState)) return
 
       const builtRelativePath = nextState.relativePath
       const len = builtRelativePath.length
 
       const hasNoRelativePath = len === 0
+      const isMarksDefinition = opts.openPath[opts.openPath.length - 2] === 'markDefs'
 
       // If there is not relative path or the path is not an array item path, we want to use the
       // current relative path. This is to avoid changing the fields being displayed in the form
       // when the path is not an array item path.
-      const useCurrentRelativePath = hasNoRelativePath || !isArrayItemPath(builtRelativePath)
-      const nextRelativePath = useCurrentRelativePath ? treeState.relativePath : builtRelativePath
+      // We also preserve the relative path for markDefs to avoid changing the form when editing annotations.
+      const useCurrentRelativePath =
+        hasNoRelativePath || !isArrayItemPath(builtRelativePath) || isMarksDefinition
+      const nextRelativePath = useCurrentRelativePath
+        ? currentTreeState.relativePath
+        : builtRelativePath
 
       // Preserve breadcrumbs when clicking on text content in portable text editors
       const nextBreadcrumbs =
-        isPathWithinPTEtext && treeState.breadcrumbs.length > 0
-          ? treeState.breadcrumbs
+        isPathWithinPTEtext && currentTreeState.breadcrumbs.length > 0
+          ? currentTreeState.breadcrumbs
           : nextState.breadcrumbs
 
       // Preserve siblings / counter when clicking on text content in portable text editors
       // Do NOT preserve siblings when the PTE is at document root level (eg: body) - only for nested PTEs
       const nextSiblings =
-        isPathWithinPTEtext && treeState.siblings && treeState.siblings.size > 0
-          ? treeState.siblings
+        isPathWithinPTEtext && currentTreeState.siblings && currentTreeState.siblings.size > 0
+          ? currentTreeState.siblings
           : nextState.siblings
 
       // Check if dialog is opening (transitioning from no relative path to having one)
-      const wasDialogClosed = treeState.relativePath.length === 0
+      const wasDialogClosed = currentTreeState.relativePath.length === 0
       const willDialogOpen = nextRelativePath.length > 0
 
       if (wasDialogClosed && willDialogOpen) {
@@ -111,14 +118,17 @@ export function TreeEditingDialog(props: TreeEditingDialogProps): React.JSX.Elem
         })
       }
 
-      setTreeState({
+      const newTreeState = {
         ...nextState,
         relativePath: nextRelativePath,
         breadcrumbs: nextBreadcrumbs,
         siblings: nextSiblings,
-      })
+      }
+
+      treeStateRef.current = newTreeState
+      setTreeState(newTreeState)
     },
-    [treeState, telemetry, schemaType.fields],
+    [telemetry, schemaType.fields],
   )
 
   const debouncedBuildTreeEditingState = useMemo(
@@ -191,6 +201,7 @@ export function TreeEditingDialog(props: TreeEditingDialogProps): React.JSX.Elem
     onPathOpen(EMPTY_ARRAY)
 
     // Reset the tree state when closing the dialog.
+    treeStateRef.current = EMPTY_TREE_STATE
     setTreeState(EMPTY_TREE_STATE)
 
     // Reset the stored value and openPath to undefined.
@@ -259,6 +270,8 @@ export function TreeEditingDialog(props: TreeEditingDialogProps): React.JSX.Elem
     const openPathChanged = !isEqual(openPath, openPathRef.current)
     const isInitialRender = valueRef.current === undefined && openPathRef.current === undefined
 
+    const isMarksDefinition = openPath[openPath.length - 2] === 'markDefs'
+
     // If the value has not changed but the openPath has changed, or
     // if it is the initial render, build the tree editing state
     // without debouncing. We do this to make sure that the UI is
@@ -266,13 +279,14 @@ export function TreeEditingDialog(props: TreeEditingDialogProps): React.JSX.Elem
     // We only want to debounce the state building when the value changes
     // as that might happen frequently when the user is editing the document.
 
-    if (isInitialRender || openPathChanged) {
+    if (isInitialRender || openPathChanged || !isMarksDefinition) {
       handleBuildTreeEditingState({
         schemaType,
         documentValue: value,
         openPath,
       })
 
+      valueRef.current = value
       openPathRef.current = openPath
 
       return undefined
@@ -280,7 +294,7 @@ export function TreeEditingDialog(props: TreeEditingDialogProps): React.JSX.Elem
 
     // Don't proceed with building the tree editing state if the
     // openPath and value has not changed.
-    if (!valueChanged && !openPathChanged) return undefined
+    if (!valueChanged && !openPathChanged && isMarksDefinition) return undefined
 
     // Store the openPath and value to be able to compare them
     // with the next openPath and value.
