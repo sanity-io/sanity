@@ -10,7 +10,7 @@ import {
   type Path,
   type SchemaType,
 } from '@sanity/types'
-import {toString} from '@sanity/util/paths'
+import {startsWith, toString} from '@sanity/util/paths'
 
 import {getValueAtPath} from '../../../../../field/paths/helpers'
 import {EMPTY_ARRAY} from '../../../../../util/empty'
@@ -98,7 +98,7 @@ export function buildArrayState(props: BuildArrayState): TreeEditingState {
     // Important: do NOT set siblings for Portable Text arrays (arrays of blocks) as we handle them differently
     if (
       item._key &&
-      toString(openPath).startsWith(toString(itemPath)) &&
+      startsWith(itemPath, openPath) &&
       !isArrayOfBlocksSchemaType(arraySchemaType)
     ) {
       // Store sibling info on the parent array path (header reads parent of relativePath)
@@ -176,7 +176,7 @@ export function buildArrayState(props: BuildArrayState): TreeEditingState {
 
             // Check if openPath is within this nested array item (for fields within the item)
             // Avoids setting siblings that we do not care about
-            if (toString(openPath).startsWith(toString(nestedItemPath))) {
+            if (startsWith(nestedItemPath, openPath)) {
               siblings.set(toString(fieldPath), {
                 count: arrayFieldValue.length,
                 index: nestedIndex + 1,
@@ -220,7 +220,7 @@ export function buildArrayState(props: BuildArrayState): TreeEditingState {
         const updateChildArrayIndex = (childItem: unknown, childIndex: number) => {
           const childItemObj = childItem as Record<string, unknown>
           const childItemPath = [...childPath, {_key: childItemObj._key}] as Path
-          if (toString(openPath).startsWith(toString(childItemPath))) {
+          if (startsWith(childItemPath, openPath)) {
             // When the parent array is a PTE (array of blocks) and this child array is the block's
             // 'children' array, skip siblings so inline custom objects don't show siblings
             const isBlockChildrenArray =
