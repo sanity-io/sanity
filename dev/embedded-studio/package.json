@@ -11,8 +11,7 @@
     "@sanity/ui": "catalog:",
     "react": "catalog:",
     "react-dom": "catalog:",
-    "sanity": "workspace:*",
-    "styled-components": "catalog:"
+    "sanity": "workspace:*"
   },
   "devDependencies": {
     "@types/react": "catalog:",

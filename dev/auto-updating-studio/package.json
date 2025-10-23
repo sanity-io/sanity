@@ -17,7 +17,6 @@
   "dependencies": {
     "@sanity/vision": "workspace:*",
     "react": "catalog:",
-    "sanity": "workspace:*",
-    "styled-components": "catalog:"
+    "sanity": "workspace:*"
   }
 }

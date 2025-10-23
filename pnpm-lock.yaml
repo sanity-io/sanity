@@ -300,9 +300,6 @@ importers:
       sanity:
         specifier: workspace:*
         version: link:../../packages/sanity
-      styled-components:
-        specifier: 'catalog:'
-        version: 6.1.19(react-dom@19.1.1(react@19.1.1))(react@19.1.1)
 
   dev/depcheck-test: {}
 
@@ -329,18 +326,12 @@ importers:
       sanity:
         specifier: workspace:*
         version: link:../../packages/sanity
-      styled-components:
-        specifier: 'catalog:'
-        version: 6.1.19(react-dom@19.1.1(react@19.1.1))(react@19.1.1)
 
   dev/efps:
     dependencies:
       '@sanity/eslint-config-studio':
         specifier: 'catalog:'
         version: 5.0.2(eslint@9.37.0(jiti@2.6.1))(typescript@5.9.3)
-      styled-components:
-        specifier: 'catalog:'
-        version: 6.1.19(react-dom@19.1.1(react@19.1.1))(react@19.1.1)
       tsx:
         specifier: ^4.20.6
         version: 4.20.6
@@ -414,9 +405,6 @@ importers:
       sanity:
         specifier: workspace:*
         version: link:../../packages/sanity
-      styled-components:
-        specifier: 'catalog:'
-        version: 6.1.19(react-dom@19.1.1(react@19.1.1))(react@19.1.1)
     devDependencies:
       '@types/react':
         specifier: 'catalog:'
@@ -463,9 +451,6 @@ importers:
       sanity:
         specifier: workspace:*
         version: link:../../packages/sanity
-      styled-components:
-        specifier: 'catalog:'
-        version: 6.1.19(react-dom@19.1.1(react@19.1.1))(react@19.1.1)
 
   dev/starter-studio:
     dependencies:
@@ -484,9 +469,6 @@ importers:
       sanity:
         specifier: workspace:*
         version: link:../../packages/sanity
-      styled-components:
-        specifier: 'catalog:'
-        version: 6.1.19(react-dom@19.1.1(react@19.1.1))(react@19.1.1)
 
   dev/strict-studio:
     dependencies:
@@ -502,9 +484,6 @@ importers:
       sanity:
         specifier: workspace:*
         version: link:../../packages/sanity
-      styled-components:
-        specifier: 'catalog:'
-        version: 6.1.19(react-dom@19.1.1(react@19.1.1))(react@19.1.1)
 
   dev/studio-e2e-testing:
     dependencies:
@@ -550,9 +529,6 @@ importers:
       sanity-test-studio:
         specifier: workspace:*
         version: link:../test-studio
-      styled-components:
-        specifier: 'catalog:'
-        version: 6.1.19(react-dom@19.1.1(react@19.1.1))(react@19.1.1)
 
   dev/test-create-integration-studio:
     dependencies:
@@ -571,9 +547,6 @@ importers:
       sanity:
         specifier: workspace:*
         version: link:../../packages/sanity
-      styled-components:
-        specifier: 'catalog:'
-        version: 6.1.19(react-dom@19.1.1(react@19.1.1))(react@19.1.1)
 
   dev/test-studio:
     dependencies:
@@ -706,9 +679,6 @@ importers:
       sanity-plugin-mux-input:
         specifier: ^2.9.1
         version: 2.9.1(@emotion/is-prop-valid@1.4.0)(@types/react@19.1.17)(react-dom@19.1.1(react@19.1.1))(react-is@19.1.1)(react@19.1.1)(sanity@packages+sanity)(styled-components@6.1.19(react-dom@19.1.1(react@19.1.1))(react@19.1.1))
-      styled-components:
-        specifier: 'catalog:'
-        version: 6.1.19(react-dom@19.1.1(react@19.1.1))(react@19.1.1)
     devDependencies:
       '@repo/eslint-config':
         specifier: workspace:*

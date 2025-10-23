@@ -17,7 +17,6 @@
     "@sanity/code-input": "^6.0.3",
     "react": "catalog:",
     "react-dom": "catalog:",
-    "sanity": "workspace:*",
-    "styled-components": "catalog:"
+    "sanity": "workspace:*"
   }
 }
