@@ -389,6 +389,9 @@ export default defineConfig([
     mediaLibrary: {
       enabled: true,
     },
+    releases: {
+      enabled: false,
+    },
     [QUOTA_EXCLUDED_RELEASES_ENABLED]: false,
   },
   {
