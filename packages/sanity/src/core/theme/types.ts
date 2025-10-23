@@ -1,6 +1,8 @@
 import {type RootTheme, type ThemeColorSchemeKey} from '@sanity/ui/theme'
 
-/** @public */
+/** @public
+ * @deprecated – Will be removed in upcoming major version
+ * */
 export interface StudioTheme
   extends Omit<
     RootTheme,
