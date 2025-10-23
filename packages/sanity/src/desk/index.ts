@@ -31,9 +31,9 @@ import {type DocumentPaneProviderProps as _DocumentPaneProviderProps} from '../s
 import {useDocumentPane as _useDocumentPane} from '../structure/panes/document/useDocumentPane'
 import {useDocumentTitle as _useDocumentTitle} from '../structure/panes/document/useDocumentTitle'
 import {
-  DocumentListPane as _DocumentListPane,
-  type DocumentListPaneProps as _DocumentListPaneProps,
-} from '../structure/panes/documentList'
+  PaneContainer as _DocumentListPane,
+  type PaneContainerProps as _DocumentListPaneProps,
+} from '../structure/panes/documentList/PaneContainer'
 import {
   type ChildObservable as _ChildObservable,
   type ChildResolver as _ChildResolver,

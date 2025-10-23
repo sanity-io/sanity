@@ -17,7 +17,10 @@ export * from './panes/document'
 export {DocumentInspectorHeader} from './panes/document/documentInspector'
 export {type DocumentPaneProviderProps} from './panes/document/types'
 export * from './panes/document/useDocumentPane'
-export * from './panes/documentList'
+export {
+  PaneContainer as DocumentListPane,
+  type PaneContainerProps as DocumentListPaneProps,
+} from './panes/documentList/PaneContainer'
 export type {
   ChildObservable,
   ChildResolver,
