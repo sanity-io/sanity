@@ -6,21 +6,32 @@ import {
   type PerspectiveContextValue,
   PUBLISHED,
   useDocumentVersions,
+  useRawPerspective,
   useSetPerspective,
   useWorkspace,
 } from 'sanity'
-import {PerspectiveContext, RawPerspectiveContext} from 'sanity/_singletons'
+import {PerspectiveContext} from 'sanity/_singletons'
+
+import {usePresentationTool} from '../../../presentation/usePresentationTool'
+
+function isDocumentInSelectedRelease(
+  documentVersions: string[],
+  selectedReleaseId: string,
+): boolean {
+  const releasesIds = documentVersions.map((id) => getVersionFromId(id))
+  return releasesIds.includes(selectedReleaseId)
+}
 
 // Clears URL for cardinality one releases when document doesn't exist in selected release
 const DocumentPerspectiveResetHandler = ({documentId}: {documentId: string}) => {
-  const rawContext = useContext(RawPerspectiveContext)
+  const rawContext = useRawPerspective()
   const {data: documentVersions, loading: documentVersionsLoading} = useDocumentVersions({
     documentId,
   })
   const setPerspective = useSetPerspective()
 
   useEffect(() => {
-    if (documentVersionsLoading || !rawContext) {
+    if (documentVersionsLoading) {
       return
     }
 
@@ -28,13 +39,15 @@ const DocumentPerspectiveResetHandler = ({documentId}: {documentId: string}) => 
       return
     }
 
-    if (!documentVersions?.length) {
+    if (!documentVersions?.length || !rawContext.selectedReleaseId) {
       setPerspective(undefined)
       return
     }
 
-    const releasesIds = documentVersions.map((id) => getVersionFromId(id))
-    const documentExistsInRelease = releasesIds.includes(rawContext.selectedReleaseId!)
+    const documentExistsInRelease = isDocumentInSelectedRelease(
+      documentVersions,
+      rawContext.selectedReleaseId,
+    )
 
     if (!documentExistsInRelease) {
       setPerspective(undefined)
@@ -55,11 +68,12 @@ export function DocumentPerspectiveProvider({
   children: ReactNode
   documentId: string
 }) {
-  const rawContext = useContext(RawPerspectiveContext)
+  const rawContext = useRawPerspective()
   const mappedContext = useContext(PerspectiveContext)
   const {data: documentVersions, loading: documentVersionsLoading} = useDocumentVersions({
     documentId,
   })
+  const inPresentationTool = usePresentationTool(false) !== null
 
   const {
     document: {
@@ -69,14 +83,14 @@ export function DocumentPerspectiveProvider({
   const defaultPerspective = isDraftModelEnabled ? LATEST : PUBLISHED
 
   const value = useMemo<PerspectiveContextValue | null>(() => {
-    if (!rawContext || !mappedContext) return mappedContext
+    if (!mappedContext) return mappedContext
 
     if (!isCardinalityOnePerspective(rawContext.selectedPerspective)) {
       return mappedContext
     }
 
     // Default to drafts while loading or if no versions exist
-    if (documentVersionsLoading || !documentVersions?.length) {
+    if (documentVersionsLoading || !documentVersions?.length || !rawContext.selectedReleaseId) {
       return {
         ...mappedContext,
         selectedPerspective: defaultPerspective,
@@ -85,8 +99,10 @@ export function DocumentPerspectiveProvider({
       }
     }
 
-    const releasesIds = documentVersions.map((id) => getVersionFromId(id))
-    const documentExistsInRelease = releasesIds.includes(rawContext.selectedReleaseId!)
+    const documentExistsInRelease = isDocumentInSelectedRelease(
+      documentVersions,
+      rawContext.selectedReleaseId,
+    )
 
     // use drafts if document doesn't exist in the selected cardinality one release
     if (!documentExistsInRelease) {
@@ -114,7 +130,7 @@ export function DocumentPerspectiveProvider({
   return (
     <PerspectiveContext.Provider value={value}>
       {children}
-      <DocumentPerspectiveResetHandler documentId={documentId} />
+      {!inPresentationTool && <DocumentPerspectiveResetHandler documentId={documentId} />}
     </PerspectiveContext.Provider>
   )
 }

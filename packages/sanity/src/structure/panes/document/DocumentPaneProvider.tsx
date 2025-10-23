@@ -21,7 +21,7 @@ import {
   useCopyPaste,
   useDocumentForm,
   useDocumentIdStack,
-  usePerspective,
+  useRawPerspective,
   useSchema,
   useSource,
   useStudioUrl,
@@ -99,7 +99,7 @@ export const DocumentPaneProvider = memo((props: DocumentPaneProviderProps) => {
   const params = useUnique(paneRouter.params) || EMPTY_PARAMS
   const {buildStudioUrl} = useStudioUrl()
 
-  const perspective = usePerspective()
+  const rawPerspective = useRawPerspective()
 
   const {
     document: {
@@ -114,10 +114,10 @@ export const DocumentPaneProvider = memo((props: DocumentPaneProviderProps) => {
     }
 
     return {
-      selectedPerspectiveName: perspective.selectedPerspectiveName,
-      selectedReleaseId: perspective.selectedReleaseId,
+      selectedPerspectiveName: rawPerspective.selectedPerspectiveName,
+      selectedReleaseId: rawPerspective.selectedReleaseId,
     }
-  }, [forcedVersion, perspective.selectedPerspectiveName, perspective.selectedReleaseId])
+  }, [forcedVersion, rawPerspective.selectedPerspectiveName, rawPerspective.selectedReleaseId])
 
   const diffViewRouter = useDiffViewRouter()
 
@@ -189,7 +189,7 @@ export const DocumentPaneProvider = memo((props: DocumentPaneProviderProps) => {
         isDeleting ||
         isDeleted ||
         !isPerspectiveWriteable({
-          selectedPerspective: perspective.selectedPerspective,
+          selectedPerspective: rawPerspective.selectedPerspective,
           isDraftModelEnabled,
           schemaType,
         }).result
@@ -200,7 +200,7 @@ export const DocumentPaneProvider = memo((props: DocumentPaneProviderProps) => {
       isDeleting,
       isDraftModelEnabled,
       params.rev,
-      perspective.selectedPerspective,
+      rawPerspective.selectedPerspective,
       schemaType,
     ],
   )

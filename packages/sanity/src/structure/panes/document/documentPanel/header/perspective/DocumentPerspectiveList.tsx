@@ -20,6 +20,7 @@ import {
   useFilteredReleases,
   useOnlyHasVersions,
   usePerspective,
+  useRawPerspective,
   useSchema,
   useSetPerspective,
   useTranslation,
@@ -82,6 +83,7 @@ const DATE_TIME_FORMAT: UseDateTimeFormatOptions = {
 // eslint-disable-next-line complexity
 export const DocumentPerspectiveList = memo(function DocumentPerspectiveList() {
   const {selectedReleaseId, selectedPerspectiveName} = usePerspective()
+  const rawPerspective = useRawPerspective()
   const {t} = useTranslation()
   const setPerspective = useSetPerspective()
   const {params, setParams} = usePaneRouter()
@@ -129,27 +131,36 @@ export const DocumentPerspectiveList = memo(function DocumentPerspectiveList() {
 
   const getReleaseChipState = useCallback(
     (release: ReleaseDocument): {selected: boolean; disabled?: boolean} => {
-      if (!params?.historyVersion) {
-        const isCurrentVersionGoingToUnpublish =
-          editState?.version &&
-          isGoingToUnpublish(editState?.version) &&
-          getReleaseIdFromReleaseDocumentId(release._id) ===
-            getVersionFromId(editState?.version?._id)
+      const releaseId = getReleaseIdFromReleaseDocumentId(release._id)
 
-        return {
-          selected: Boolean(
-            getReleaseIdFromReleaseDocumentId(release._id) ===
-              getVersionFromId(displayed?._id || '') || isCurrentVersionGoingToUnpublish,
-          ),
-        }
+      if (params?.historyVersion) {
+        const isMatch = releaseId === params.historyVersion
+        return {selected: isMatch, disabled: isMatch}
       }
 
-      const isReleaseHistoryMatch =
-        getReleaseIdFromReleaseDocumentId(release._id) === params.historyVersion
+      // Normal mode: check displayed version, URL perspective, or unpublish state
+      const isDisplayedVersion = releaseId === getVersionFromId(displayed?._id || '')
 
-      return {selected: isReleaseHistoryMatch, disabled: isReleaseHistoryMatch}
+      const isVersionGoingToUnpublish =
+        editState?.version &&
+        isGoingToUnpublish(editState.version) &&
+        releaseId === getVersionFromId(editState.version._id)
+
+      // Check both mapped (UI) and raw (URL) perspective to handle document perspective mapping
+      const isUrlPerspective =
+        releaseId === selectedReleaseId || releaseId === rawPerspective.selectedReleaseId
+
+      return {
+        selected: Boolean(isDisplayedVersion || isVersionGoingToUnpublish || isUrlPerspective),
+      }
     },
-    [displayed?._id, editState?.version, params?.historyVersion],
+    [
+      displayed?._id,
+      editState?.version,
+      params?.historyVersion,
+      selectedReleaseId,
+      rawPerspective.selectedReleaseId,
+    ],
   )
 
   const isPublishSelected: boolean = useMemo(() => {

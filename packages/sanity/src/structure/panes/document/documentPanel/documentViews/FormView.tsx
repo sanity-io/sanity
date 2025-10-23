@@ -14,6 +14,7 @@ import {
   useDocumentPresence,
   useDocumentStore,
   usePerspective,
+  useRawPerspective,
   useTranslation,
 } from 'sanity'
 import {useEffectEvent} from 'use-effect-event'
@@ -57,7 +58,8 @@ export const FormView = forwardRef<HTMLDivElement, FormViewProps>(function FormV
     compareValue,
     hasUpstreamVersion,
   } = useDocumentPane()
-  const {selectedReleaseId, selectedPerspective} = usePerspective()
+  const {selectedPerspective} = usePerspective()
+  const rawPerspective = useRawPerspective()
   const documentStore = useDocumentStore()
   const presence = useDocumentPresence(documentId)
   const {title} = useDocumentTitle()
@@ -66,6 +68,7 @@ export const FormView = forwardRef<HTMLDivElement, FormViewProps>(function FormV
   // - Used by the Portable Text input to modify selections.
   // - Used by `withDocument` to reset value.
   const [patchChannel] = useState(() => createPatchChannel())
+  const selectedReleaseId = rawPerspective.selectedReleaseId
 
   const isLocked = editState?.transactionSyncLock?.enabled
   const {t} = useTranslation(structureLocaleNamespace)
