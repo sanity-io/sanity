@@ -138,7 +138,6 @@ import type {
   BufferedDocumentEvent,
   BufferedDocumentWrapper,
   buildCommentRangeDecorations,
-  buildLegacyTheme,
   buildRangeDecorationSelectionsFromComments,
   buildTextSelectionFromFragment,
   CanvasAppOptions,
@@ -346,7 +345,6 @@ import type {
   defaultRenderPreview,
   defaultTemplateForType,
   defaultTemplatesForSchema,
-  defaultTheme,
   defineArrayMember,
   DefineArrayMemberBase,
   defineAssetAspect,
@@ -887,8 +885,6 @@ import type {
   LATEST,
   LayoutProps,
   LegacyLayerProvider,
-  LegacyThemeProps,
-  LegacyThemeTints,
   LinearProgress,
   ListenerEvent,
   listenQuery,
@@ -1339,8 +1335,6 @@ import type {
   StudioProps,
   StudioProvider,
   StudioProviderProps,
-  StudioTheme,
-  StudioThemeColorSchemeKey,
   StudioToolMenu,
   supportsTouch,
   SwatchName,
@@ -2064,9 +2058,6 @@ describe('sanity', () => {
   test('buildCommentRangeDecorations', () => {
     expectTypeOf<typeof buildCommentRangeDecorations>().toBeFunction()
   })
-  test('buildLegacyTheme', () => {
-    expectTypeOf<typeof buildLegacyTheme>().toBeFunction()
-  })
   test('buildRangeDecorationSelectionsFromComments', () => {
     expectTypeOf<typeof buildRangeDecorationSelectionsFromComments>().toBeFunction()
   })
@@ -2694,9 +2685,6 @@ describe('sanity', () => {
   })
   test('defaultTemplatesForSchema', () => {
     expectTypeOf<typeof defaultTemplatesForSchema>().toBeFunction()
-  })
-  test('defaultTheme', () => {
-    expectTypeOf<typeof defaultTheme>().not.toBeNever()
   })
   test('defineArrayMember', () => {
     expectTypeOf<typeof defineArrayMember>().toBeFunction()
@@ -4328,12 +4316,6 @@ describe('sanity', () => {
   test('LegacyLayerProvider', () => {
     expectTypeOf<typeof LegacyLayerProvider>().toBeFunction()
   })
-  test('LegacyThemeProps', () => {
-    expectTypeOf<LegacyThemeProps>().toBeObject()
-  })
-  test('LegacyThemeTints', () => {
-    expectTypeOf<LegacyThemeTints>().not.toBeNever()
-  })
   test('LinearProgress', () => {
     expectTypeOf<typeof LinearProgress>().toBeFunction()
   })
@@ -5696,12 +5678,6 @@ describe('sanity', () => {
   })
   test('StudioProviderProps', () => {
     expectTypeOf<StudioProviderProps>().toBeObject()
-  })
-  test('StudioTheme', () => {
-    expectTypeOf<StudioTheme>().toBeObject()
-  })
-  test('StudioThemeColorSchemeKey', () => {
-    expectTypeOf<StudioThemeColorSchemeKey>().not.toBeNever()
   })
   test('StudioToolMenu', () => {
     expectTypeOf<typeof StudioToolMenu>().toBeFunction()
