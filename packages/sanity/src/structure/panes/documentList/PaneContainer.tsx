@@ -1,6 +1,6 @@
 import {Card, Code} from '@sanity/ui'
 import {isEqual} from 'lodash'
-import {memo, useMemo, useState} from 'react'
+import {type ComponentProps, memo, useMemo, useState} from 'react'
 import {
   EMPTY_ARRAY,
   type GeneralDocumentListLayoutKey,
@@ -21,6 +21,11 @@ import {findStaticTypesInFilter} from './helpers'
 import {PaneHeader} from './PaneHeader'
 import {DocumentSheetListPane} from './sheetList/DocumentSheetListPane'
 import {type SortOrder} from './types'
+
+/**
+ * @internal
+ */
+export type PaneContainerProps = ComponentProps<typeof PaneContainer>
 
 const addSelectedStateToMenuItems = (options: {
   menuItems?: PaneMenuItem[]
