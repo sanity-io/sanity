@@ -426,18 +426,6 @@ export const ptAllTheBellsAndWhistlesType = defineType({
           name: 'something',
           type: 'block',
           of: [
-            {
-              type: 'object',
-              name: 'testObjectBlock',
-              title: 'Test object block',
-              fields: [
-                defineField({
-                  name: 'text',
-                  type: 'string',
-                  validation: (rule) => rule.required().error('Must have text'),
-                }),
-              ],
-            },
             defineArrayMember({
               name: 'nested',
               type: 'object',
