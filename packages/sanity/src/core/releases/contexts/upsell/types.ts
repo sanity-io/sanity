@@ -1,4 +1,5 @@
 import {type UpsellDialogViewedInfo} from '../../../studio'
+import {type UpsellData} from '../../../studio/upsell/types'
 
 export interface ReleasesUpsellContextValue {
   /**
@@ -8,6 +9,7 @@ export interface ReleasesUpsellContextValue {
    */
   mode: 'upsell' | 'default' | 'disabled'
   upsellDialogOpen: boolean
+  upsellData: UpsellData | null
   guardWithReleaseLimitUpsell: (
     callback: () => void,
     throwError?: boolean,
