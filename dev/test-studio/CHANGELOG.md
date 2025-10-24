@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [4.12.0](https://github.com/sanity-io/sanity/compare/v4.11.0...v4.12.0) (2025-10-24)
+
+### Features
+
+* add initial  approach to a nested objects navigation dialog ([#10759](https://github.com/sanity-io/sanity/issues/10759)) ([c1be253](https://github.com/sanity-io/sanity/commit/c1be2530095d24a0190903c39f3a407ba1e83111)) by RitaDias (rita@sanity.io)
+
+### Bug Fixes
+
+* **deps:** Update portabletext ([#10902](https://github.com/sanity-io/sanity/issues/10902)) ([f829425](https://github.com/sanity-io/sanity/commit/f829425f5fa0ff5ec0e0b7b8e103322ab5f49bb9)) by renovate[bot] (29139614+renovate[bot]@users.noreply.github.com)
+* **sanity:** add more detailed version info for deployed test-studios ([#10908](https://github.com/sanity-io/sanity/issues/10908)) ([b2c8975](https://github.com/sanity-io/sanity/commit/b2c8975b64ee9cda5927e6dfd1824df50aa946f2)) by Bjørge Næss (bjoerge@gmail.com)
+
 ## [4.11.0](https://github.com/sanity-io/sanity/compare/v4.10.3...v4.11.0) (2025-10-21)
 
 ### Features

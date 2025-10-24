@@ -3,6 +3,26 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [4.12.0](https://github.com/sanity-io/sanity/compare/v4.11.0...v4.12.0) (2025-10-24)
+
+### Features
+
+* add initial  approach to a nested objects navigation dialog ([#10759](https://github.com/sanity-io/sanity/issues/10759)) ([c1be253](https://github.com/sanity-io/sanity/commit/c1be2530095d24a0190903c39f3a407ba1e83111)) by RitaDias (rita@sanity.io)
+* **core:** adds single doc releases plugin. ([#10890](https://github.com/sanity-io/sanity/issues/10890)) ([2607d79](https://github.com/sanity-io/sanity/commit/2607d796a43b0bfbb5b75c0034c1d5902a2df74b)) by Pedro Bonamin (46196328+pedrobonamin@users.noreply.github.com)
+* **sanity:** add `compareValue` to input component props ([9f6ee90](https://github.com/sanity-io/sanity/commit/9f6ee9072e285779a30bf9e92c24c65d85d5024e)) by Ash (ash@sanity.io)
+* **sanity:** add inline diff support to Portable Text Editor ([75e44c2](https://github.com/sanity-io/sanity/commit/75e44c2bde768052892bf69b6fc441edd9b1d918)) by Ash (ash@sanity.io)
+* **sanity:** increase specificity of string diff segment styles ([53d7c15](https://github.com/sanity-io/sanity/commit/53d7c15e91081bcca08869edcb9858fc9819c8c2)) by Ash (ash@sanity.io)
+* **sanity:** support custom `anchorPath` and `focusPath` in `computeRangeDecorations` ([5f45705](https://github.com/sanity-io/sanity/commit/5f4570577369559667d2180f5f096b88704795dc)) by Ash (ash@sanity.io)
+
+### Bug Fixes
+
+* **core:** close icon alignment in studio announcements card ([#10909](https://github.com/sanity-io/sanity/issues/10909)) ([e641a1c](https://github.com/sanity-io/sanity/commit/e641a1ce3304e3d9493fabadf70c9680332d8350)) by Pedro Bonamin (46196328+pedrobonamin@users.noreply.github.com)
+* **core:** single doc scheduled publishing updates ([#10884](https://github.com/sanity-io/sanity/issues/10884)) ([a68bab9](https://github.com/sanity-io/sanity/commit/a68bab971d16ecf575fdd8c137335bd8feda986d)) by Pedro Bonamin (46196328+pedrobonamin@users.noreply.github.com)
+* **deps:** Update portabletext ([#10902](https://github.com/sanity-io/sanity/issues/10902)) ([f829425](https://github.com/sanity-io/sanity/commit/f829425f5fa0ff5ec0e0b7b8e103322ab5f49bb9)) by renovate[bot] (29139614+renovate[bot]@users.noreply.github.com)
+* rescheduling scheduled draft updates metadata.intendedPublishAt too ([#10919](https://github.com/sanity-io/sanity/issues/10919)) ([66b1858](https://github.com/sanity-io/sanity/commit/66b18583c288785b382b3090e1666a630e4269bd)) by Jordan Lawrence (jordanl17@me.com)
+* **sanity:** add more detailed version info for deployed test-studios ([#10908](https://github.com/sanity-io/sanity/issues/10908)) ([b2c8975](https://github.com/sanity-io/sanity/commit/b2c8975b64ee9cda5927e6dfd1824df50aa946f2)) by Bjørge Næss (bjoerge@gmail.com)
+* **sanity:** scrolling in expanded Portable Text Editor ([7519fdb](https://github.com/sanity-io/sanity/commit/7519fdbfb6aa68a80c8f04cdc3c3a3ce57d599e4)) by Ash (ash@sanity.io)
+
 ## [4.11.0](https://github.com/sanity-io/sanity/compare/v4.10.3...v4.11.0) (2025-10-21)
 
 ### Features
