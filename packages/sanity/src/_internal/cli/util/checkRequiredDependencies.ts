@@ -1,11 +1,7 @@
 import path from 'node:path'
 
 import {type CliCommandContext} from '@sanity/cli'
-import execa from 'execa'
-import oneline from 'oneline'
-import semver, {type SemVer} from 'semver'
 
-import {peerDependencies} from '../../../../package.json'
 import {determineIsApp} from './determineIsApp'
 import {readModuleVersion} from './readModuleVersion'
 import {type PartialPackageManifest, readPackageManifest} from './readPackageManifest'
@@ -40,92 +36,14 @@ export async function checkRequiredDependencies(context: CliCommandContext): Pro
   }
 
   const {workDir: studioPath, output} = context
-  const [studioPackageManifest, installedStyledComponentsVersion, installedSanityVersion] =
-    await Promise.all([
-      await readPackageManifest(path.join(studioPath, 'package.json'), defaultStudioManifestProps),
-      await readModuleVersion(studioPath, 'styled-components'),
-      await readModuleVersion(studioPath, 'sanity'),
-    ])
-
-  const wantedStyledComponentsVersionRange = peerDependencies['styled-components']
+  const [studioPackageManifest, installedSanityVersion] = await Promise.all([
+    await readPackageManifest(path.join(studioPath, 'package.json'), defaultStudioManifestProps),
+    await readModuleVersion(studioPath, 'sanity'),
+  ])
 
   // Retrieve the version of the 'sanity' dependency
   if (!installedSanityVersion) {
     throw new Error('Failed to read the installed sanity version.')
-  }
-
-  // The studio _must_ now declare `styled-components` as a dependency. If it's not there,
-  // we'll want to automatically _add it_ to the manifest and tell the user to reinstall
-  // dependencies before running whatever command was being run
-  const declaredStyledComponentsVersion =
-    studioPackageManifest.dependencies['styled-components'] ||
-    studioPackageManifest.devDependencies['styled-components']
-
-  if (!declaredStyledComponentsVersion) {
-    const [file, ...args] = process.argv
-    const deps = {'styled-components': wantedStyledComponentsVersionRange}
-    await installDependencies(deps, context)
-
-    // Re-run the same command (sanity dev/sanity build etc) after installation,
-    // as it can have shifted the entire `node_modules` folder around, result in
-    // broken assumptions about installation paths. This is a hack, and should be
-    // solved properly.
-    await execa(file, args, {cwd: studioPath, stdio: 'inherit'})
-    return {didInstall: true, installedSanityVersion}
-  }
-
-  // We ignore catalog identifiers since we check the actual version anyway
-  const isStyledComponentsVersionRangeInCatalog =
-    declaredStyledComponentsVersion.startsWith('catalog:')
-  // Theoretically the version specified in package.json could be incorrect, eg `foo`
-  let minDeclaredStyledComponentsVersion: SemVer | null = null
-  try {
-    minDeclaredStyledComponentsVersion = semver.minVersion(declaredStyledComponentsVersion)
-  } catch (err) {
-    // Intentional fall-through (variable will be left as null, throwing below)
-  }
-
-  if (!minDeclaredStyledComponentsVersion && !isStyledComponentsVersionRangeInCatalog) {
-    throw new Error(oneline`
-      Declared dependency \`styled-components\` has an invalid version range:
-      \`${declaredStyledComponentsVersion}\`.
-    `)
-  }
-
-  // The declared version should be semver-compatible with the version specified as a
-  // peer dependency in `sanity`. If not, we should tell the user to change it.
-  //
-  // Exception: Ranges are hard to compare. `>=5.0.0 && <=5.3.2 || ^6`... Comparing this
-  // to anything is going to be challenging, so only compare "simple" ranges/versions
-  // (^x.x.x / ~x.x.x / x.x.x)
-  if (
-    !isStyledComponentsVersionRangeInCatalog &&
-    isComparableRange(declaredStyledComponentsVersion) &&
-    !semver.satisfies(minDeclaredStyledComponentsVersion!, wantedStyledComponentsVersionRange)
-  ) {
-    output.warn(oneline`
-      Declared version of styled-components (${declaredStyledComponentsVersion})
-      is not compatible with the version required by sanity (${wantedStyledComponentsVersionRange}).
-      This might cause problems!
-    `)
-  }
-
-  // Ensure the studio has _installed_ a version of `styled-components`
-  if (!installedStyledComponentsVersion) {
-    throw new Error(oneline`
-      Declared dependency \`styled-components\` is not installed - run
-      \`npm install\`, \`yarn install\` or \`pnpm install\` to install it before re-running this command.
-    `)
-  }
-
-  // The studio should have an _installed_ version of `styled-components`, and it should
-  // be semver compatible with the version specified in `sanity` peer dependencies.
-  if (!semver.satisfies(installedStyledComponentsVersion, wantedStyledComponentsVersionRange)) {
-    output.warn(oneline`
-      Installed version of styled-components (${installedStyledComponentsVersion})
-      is not compatible with the version required by sanity (${wantedStyledComponentsVersionRange}).
-      This might cause problems!
-    `)
   }
 
   return {didInstall: false, installedSanityVersion}
