@@ -274,15 +274,6 @@ export function buildArrayState(props: BuildArrayState): TreeEditingState {
 
       // Handle portable text editors inside an array of objects
       if (isPortableText) {
-        // Store the raw PTE array count - but only count custom object blocks, not regular text blocks
-        /*const pteArray = Array.isArray(childValue) ? childValue : []
-        const customBlocksCount = pteArray.filter((block: unknown) => {
-          const blockObj = block as Record<string, unknown>
-          return blockObj && blockObj._type && blockObj._type !== 'block'
-        }).length
-
-        siblings.set(toString(childPath), {count: customBlocksCount, index: 1})*/
-
         const pteResult = buildArrayStatePTE({
           childField,
           childPath,
