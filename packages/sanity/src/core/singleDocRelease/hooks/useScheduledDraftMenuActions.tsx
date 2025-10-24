@@ -58,11 +58,11 @@ export function useScheduledDraftMenuActions(
 
   const handleReschedule = useCallback(
     async (newPublishAt: Date) => {
-      if (!release?._id) return
+      if (!release) return
 
       setIsPerformingOperation(true)
       try {
-        await operations.rescheduleScheduledDraft(release._id, newPublishAt)
+        await operations.rescheduleScheduledDraft(release, newPublishAt)
         onActionComplete?.()
       } catch (error) {
         console.error('Failed to reschedule draft:', error)
@@ -85,7 +85,7 @@ export function useScheduledDraftMenuActions(
         setSelectedAction(null)
       }
     },
-    [release?._id, operations, onActionComplete, toast, t, firstDocumentPreview?.title],
+    [release, operations, onActionComplete, toast, t, firstDocumentPreview?.title],
   )
 
   const handleMenuItemClick = useCallback(

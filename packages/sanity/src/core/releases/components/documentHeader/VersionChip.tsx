@@ -181,7 +181,7 @@ export const VersionChip = memo(function VersionChip(props: {
       setIsPerformingScheduleOperation(true)
 
       try {
-        await operations.rescheduleScheduledDraft(release._id, newPublishAt)
+        await operations.rescheduleScheduledDraft(release, newPublishAt)
         setIsChangeScheduleDialogOpen(false)
       } catch (error) {
         console.error('Failed to reschedule draft:', error)
