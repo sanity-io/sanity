@@ -1,5 +1,5 @@
 import {AddDocumentIcon, CopyIcon, TrashIcon} from '@sanity/icons'
-import {type SchemaType} from '@sanity/types'
+import {type SchemaType, type UploadState} from '@sanity/types'
 import {Box, Card, type CardTone, Menu} from '@sanity/ui'
 import {useCallback, useImperativeHandle, useMemo, useRef, useState} from 'react'
 import {styled} from 'styled-components'
@@ -19,6 +19,7 @@ import {useScrollIntoViewOnFocusWithin} from '../../../../hooks/useScrollIntoVie
 import {useChildPresence} from '../../../../studio/contexts/Presence'
 import {useChildValidation} from '../../../../studio/contexts/Validation'
 import {TreeEditingEnabledProvider, useTreeEditingEnabled} from '../../../../studio/tree-editing'
+import {UPLOAD_STATUS_KEY} from '../../../../studio/uploads/constants'
 import {type ObjectItem, type ObjectItemProps} from '../../../../types'
 import {randomKey} from '../../../../utils/randomKey'
 import {CellLayout} from '../../layouts/CellLayout'
@@ -85,6 +86,10 @@ export function GridItem<Item extends ObjectItem = ObjectItem>(props: GridItemPr
   const {t} = useTranslation()
 
   const {enabled: enhancedObjectDialogEnabled} = useTreeEditingEnabled()
+
+  const uploadState = (value as any)[UPLOAD_STATUS_KEY] as UploadState | undefined
+  const uploadProgress =
+    typeof uploadState?.progress === 'number' ? uploadState?.progress : undefined
 
   // The edit portal should open if the item is open and:
   // - tree array editing is disabled
@@ -267,6 +272,7 @@ export function GridItem<Item extends ObjectItem = ObjectItem>(props: GridItemPr
           layout: 'media',
           withBorder: false,
           withShadow: false,
+          progress: uploadProgress,
         })}
 
         {resolvingInitialValue && <LoadingBlock fill />}
