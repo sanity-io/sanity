@@ -92,7 +92,6 @@
     "test:vitest": "vitest --run",
     "test:vitest:watch": "vitest --watch",
     "tsdoc:dev": "sanity-tsdoc dev",
-    "updated": "lerna updated",
     "watch": "pnpm --filter @sanity/* --filter sanity watch"
   },
   "lint-staged": {
