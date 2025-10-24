@@ -1,5 +1,6 @@
 import {BookIcon} from '@sanity/icons'
-import {type Rule} from '@sanity/types'
+import {defineType, type Rule} from '@sanity/types'
+import {isIncomingReferenceCreation} from 'sanity/structure'
 
 function formatSubtitle(book: any) {
   return [
@@ -12,7 +13,7 @@ function formatSubtitle(book: any) {
     .join(' ')
 }
 
-export default {
+export default defineType({
   name: 'book',
   type: 'document',
   title: 'Book',
@@ -154,7 +155,10 @@ export default {
       })
     },
   },
-  initialValue: {
-    title: 'Foo',
+  initialValue: (params) => {
+    return {
+      title: 'Foo',
+      author: isIncomingReferenceCreation(params) ? params.reference : undefined,
+    }
   },
-}
+})
