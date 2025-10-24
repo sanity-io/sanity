@@ -328,6 +328,11 @@ export const DocumentPaneProvider = memo((props: DocumentPaneProviderProps) => {
       // Update internal open path
       onPathOpen(path)
 
+      /**
+       * Before we used to set the path open based on the focus path
+       * Now we set it based on open path, which changes what it represents and is something that could become a source of confusion.
+       * There is upcoming work to refactor this and other aspects of the control of the focus path which means that this might return to the focus path in the future.
+       */
       const nextPath = pathToString(path)
       if (params.path !== nextPath) {
         setPaneParams({...params, path: nextPath})
