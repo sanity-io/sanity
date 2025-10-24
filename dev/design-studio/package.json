@@ -28,7 +28,7 @@
     "clean": "rimraf .sanity dist",
     "dev": "sanity dev --port 4000",
     "lint": "eslint .",
-    "start": "sanity start --port 4000"
+    "start": "sanity preview --port 4000"
   },
   "dependencies": {
     "@repo/eslint-config": "workspace:*",
