@@ -1,2 +1,2 @@
-export * from './NestedObjectDialogProvider'
-export * from './useNestedObjectDialog'
+export * from './EnhancedObjectDialogProvider'
+export * from './useEnhancedObjectDialog'

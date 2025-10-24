@@ -1585,7 +1585,7 @@ import type {
   useTranslation,
   UseTranslationOptions,
   UseTranslationResponse,
-  useNestedObjectDialog,
+  useEnhancedObjectDialog,
   useUnique,
   useUnitFormatter,
   UseUnitFormatterOptions,
@@ -6441,8 +6441,8 @@ describe('sanity', () => {
   test('UseTranslationResponse', () => {
     expectTypeOf<UseTranslationResponse<any, any>>().not.toBeNever()
   })
-  test('useNestedObjectDialog', () => {
-    expectTypeOf<typeof useNestedObjectDialog>().toBeFunction()
+  test('useEnhancedObjectDialog', () => {
+    expectTypeOf<typeof useEnhancedObjectDialog>().toBeFunction()
   })
   test('useUnique', () => {
     expectTypeOf<typeof useUnique>().toBeFunction()

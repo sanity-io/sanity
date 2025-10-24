@@ -7,7 +7,7 @@ import {
   ClosedPortableTextEditorFullScreen,
   OpenedPortableTextEditorFullScreen,
 } from '../../../../studio/tree-editing/__telemetry__/nestedObjects.telemetry'
-import {useNestedObjectDialog} from '../../../../studio/tree-editing/context/enabled/useNestedObjectDialog'
+import {useEnhancedObjectDialog} from '../../../../studio/tree-editing/context/enabled/useEnhancedObjectDialog'
 import {FullscreenPTEContext, type FullscreenPTEContextValue} from './FullscreenPTEContext'
 
 interface FullscreenPTEProviderProps {
@@ -21,7 +21,7 @@ interface FullscreenPTEProviderProps {
 export function FullscreenPTEProvider({children}: FullscreenPTEProviderProps): React.JSX.Element {
   const [fullscreenPaths, setFullscreenPaths] = useState<string[]>([])
   const telemetry = useTelemetry()
-  const {enabled: enhancedObjectDialogEnabled} = useNestedObjectDialog()
+  const {enabled: enhancedObjectDialogEnabled} = useEnhancedObjectDialog()
 
   const getFullscreenPath = useCallback(
     (path: Path): string | undefined => {

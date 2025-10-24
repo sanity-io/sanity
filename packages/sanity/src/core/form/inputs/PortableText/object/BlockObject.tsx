@@ -17,8 +17,9 @@ import {useHoveredChange} from '../../../../changeIndicators/useHoveredChange'
 import {pathToString} from '../../../../field'
 import {useTranslation} from '../../../../i18n'
 import {EMPTY_ARRAY} from '../../../../util'
-import {useFormCallbacks, useNestedObjectDialog} from '../../../studio'
+import {useFormCallbacks} from '../../../studio'
 import {useChildPresence} from '../../../studio/contexts/Presence'
+import {useEnhancedObjectDialog} from '../../../studio/tree-editing/context/enabled/useEnhancedObjectDialog'
 import {
   type BlockProps,
   type RenderAnnotationCallback,
@@ -115,7 +116,7 @@ export function BlockObject(props: BlockObjectProps) {
   const memberItem = usePortableTextMemberItem(pathToString(path))
   const isDeleting = useRef<boolean>(false)
 
-  const {enabled: nestedObjectNavigationEnabled} = useNestedObjectDialog()
+  const {enabled: nestedObjectNavigationEnabled} = useEnhancedObjectDialog()
 
   const selfSelection = useMemo(
     (): EditorSelection => ({

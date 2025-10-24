@@ -21,7 +21,7 @@ import {
   NavigatedToViaArrayList,
   RemovedObject,
 } from '../../../studio/tree-editing/__telemetry__/nestedObjects.telemetry'
-import {useNestedObjectDialog} from '../../../studio/tree-editing/context/enabled/useNestedObjectDialog'
+import {useEnhancedObjectDialog} from '../../../studio/tree-editing/context/enabled/useEnhancedObjectDialog'
 import {
   type ArrayInputCopyEvent,
   type ArrayInputInsertEvent,
@@ -89,7 +89,7 @@ export function ArrayOfObjectsItem(props: MemberItemProps) {
   const getFormValue = useGetFormValue()
   const {onCopy} = useCopyPaste()
   const telemetry = useTelemetry()
-  const {enabled: enhancedObjectDialogEnabled} = useNestedObjectDialog()
+  const {enabled: enhancedObjectDialogEnabled} = useEnhancedObjectDialog()
 
   useDidUpdate(member.item.focused, (hadFocus, hasFocus) => {
     if (!hadFocus && hasFocus) {

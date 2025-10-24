@@ -97,7 +97,7 @@ import type {
   TasksEnabledContext,
   TasksNavigationContext,
   TasksUpsellContext,
-  NestedObjectDialogContext,
+  EnhancedObjectDialogContext,
   UserColorManagerContext,
   ValidationContext,
   VirtualizerScrollInstanceContext,
@@ -387,8 +387,8 @@ describe('sanity/_singletons', () => {
   test('TasksUpsellContext', () => {
     expectTypeOf<typeof TasksUpsellContext>().not.toBeNever()
   })
-  test('NestedObjectDialogContext', () => {
-    expectTypeOf<typeof NestedObjectDialogContext>().not.toBeNever()
+  test('EnhancedObjectDialogContext', () => {
+    expectTypeOf<typeof EnhancedObjectDialogContext>().not.toBeNever()
   })
   test('UserColorManagerContext', () => {
     expectTypeOf<typeof UserColorManagerContext>().not.toBeNever()
