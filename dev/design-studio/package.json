@@ -34,6 +34,7 @@
     "@repo/eslint-config": "workspace:*",
     "@sanity/icons": "^3.7.4",
     "@sanity/ui": "catalog:",
+    "@vanilla-extract/css": "^1.17.4",
     "react": "catalog:",
     "react-dom": "catalog:",
     "sanity": "workspace:*",
