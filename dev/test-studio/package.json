@@ -6,13 +6,14 @@
   "author": "Sanity.io <hello@sanity.io>",
   "scripts": {
     "build": "run-s workshop:build sanity:build sanity:manifest",
+    "check:types": "tsc --noEmit",
     "clean": "rimraf .sanity dist",
     "dev": "run-p workshop:dev sanity:dev",
     "lint": "eslint .",
     "sanity:build": "PKG_BUILD_VERSION=$(./get-version.ts) sanity build --source-maps",
     "sanity:dev": "sanity dev",
     "sanity:manifest": "SANITY_AUTH_TOKEN=${VERCEL_SANITY_API_DEPLOY_TOKEN} sanity schema deploy --workspace default",
-    "start": "sanity start",
+    "start": "sanity preview",
     "workshop:build": "node -r esbuild-register scripts/workshop/build.ts",
     "workshop:dev": "node -r esbuild-register scripts/workshop/dev.ts"
   },

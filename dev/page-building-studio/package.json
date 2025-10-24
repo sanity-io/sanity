@@ -9,7 +9,7 @@
     "clean": "rimraf .sanity dist",
     "dev": "sanity dev --source-maps",
     "lint": "eslint .",
-    "start": "sanity start"
+    "preview": "sanity preview"
   },
   "dependencies": {
     "@repo/eslint-config": "workspace:*",
