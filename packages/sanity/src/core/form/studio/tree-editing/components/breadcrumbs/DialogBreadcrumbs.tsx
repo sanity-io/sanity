@@ -1,10 +1,14 @@
 import {useTelemetry} from '@sanity/telemetry/react'
 import {type Path} from '@sanity/types'
 import {
+  Badge,
   Box,
   // eslint-disable-next-line no-restricted-imports
-  Button, // Custom button needed, special padding support required
+  Button,
+  Card, // Custom button needed, special padding support required
   Flex,
+  Inline,
+  Menu,
   Text,
   useElementSize,
 } from '@sanity/ui'
@@ -14,7 +18,6 @@ import {isEqual} from 'lodash'
 import {
   type ForwardedRef,
   forwardRef,
-  Fragment,
   type PropsWithChildren,
   useCallback,
   useMemo,
@@ -22,15 +25,23 @@ import {
 } from 'react'
 import {css, styled} from 'styled-components'
 
+import {MenuButton} from '../../../../../../ui-components'
 import {pathToString} from '../../../../../field/paths/helpers'
 import {NavigatedToNestedObjectViaBreadcrumb} from '../../__telemetry__/nestedObjects.telemetry'
 import {useValuePreviewWithFallback} from '../../hooks'
-import {type TreeEditingBreadcrumb} from '../../types'
-import {TreeEditingBreadcrumbsMenuButton} from './TreeEditingBreadcrumbsMenuButton'
+import {type DialogItem} from '../../types'
 
 const MAX_LENGTH = 5
 const EMPTY_ARRAY: [] = []
 const SEPARATOR = '/'
+
+// Prevent wrapping and ensure horizontal overflow is handled gracefully
+const RootInline = styled(Inline)`
+  flex-wrap: nowrap;
+  overflow: hidden;
+  min-width: 0;
+  width: 100%;
+`
 
 const StyledButton = styled(Button)(({theme}: {theme: Theme}) => {
   const {bold} = getTheme_v2(theme)?.font.text?.weights || {}
@@ -53,23 +64,31 @@ const StyledText = styled(Text)`
   padding: 8px 0;
 `
 
-type Item = TreeEditingBreadcrumb[] | TreeEditingBreadcrumb
+type Item = DialogItem[] | DialogItem
 
 interface MenuButtonProps {
-  item: TreeEditingBreadcrumb
+  item: DialogItem
   onPathSelect: (path: Path) => void
   isSelected: boolean
   isLast: boolean
 }
 
-const MenuButton = function MenuButton(props: MenuButtonProps) {
-  const {item, onPathSelect, isSelected, isLast, ...rest} = props
+const MenuCard = function MenuCard(
+  props: MenuButtonProps & {
+    siblings: Map<string, {count: number; index: number}>
+  },
+) {
+  const {item, onPathSelect, isSelected, isLast, siblings} = props
 
   const {value} = useValuePreviewWithFallback({
     schemaType: item.schemaType,
     value: item.value,
   })
 
+  const parentPath = item.path.slice(0, -1)
+  const parentPathString = pathToString(parentPath)
+
+  const selectedIndex = siblings.get(parentPathString)?.index
   const telemetry = useTelemetry()
 
   const title = value.title
@@ -82,18 +101,41 @@ const MenuButton = function MenuButton(props: MenuButtonProps) {
   }, [onPathSelect, item.path, telemetry])
 
   return (
-    <StyledButton
-      data-active={isSelected ? 'true' : 'false'}
-      mode="bleed"
-      onClick={handleClick}
+    <Card
+      as="button"
       padding={1}
-      title={title}
-      {...rest}
+      radius={3}
+      onClick={handleClick}
+      // forces ellipsis on the last item if needed
+      style={{minWidth: 0, width: '100%'}}
     >
-      <Text muted={!isLast} size={1}>
-        {title}
-      </Text>
-    </StyledButton>
+      <Flex align="center" style={{minWidth: 0, maxWidth: '250px'}}>
+        {selectedIndex && (
+          <Box flex="none">
+            <Badge>#{selectedIndex}</Badge>
+          </Box>
+        )}
+        <Box
+          padding={1}
+          style={{
+            minWidth: 0,
+            overflow: 'hidden',
+          }}
+          flex={isLast ? 1 : undefined}
+        >
+          <Text
+            muted={!isSelected}
+            size={1}
+            weight={isSelected ? 'bold' : 'medium'}
+            textOverflow="ellipsis"
+            style={{whiteSpace: 'nowrap'}}
+            title={title}
+          >
+            {title}
+          </Text>
+        </Box>
+      </Flex>
+    </Card>
   )
 }
 
@@ -112,16 +154,15 @@ const SeparatorItem = forwardRef(function SeparatorItem(
   )
 })
 
-interface TreeEditingBreadcrumbsProps {
-  items: TreeEditingBreadcrumb[]
+interface BreadcrumbsProps {
+  items: DialogItem[]
   onPathSelect: (path: Path) => void
   selectedPath: Path
+  siblings: Map<string, {count: number; index: number}>
 }
 
-export function TreeEditingBreadcrumbs(
-  props: TreeEditingBreadcrumbsProps,
-): React.JSX.Element | null {
-  const {items: itemsProp = EMPTY_ARRAY, onPathSelect, selectedPath} = props
+export function DialogBreadcrumbs(props: BreadcrumbsProps): React.JSX.Element | null {
+  const {items: itemsProp = EMPTY_ARRAY, onPathSelect, selectedPath, siblings} = props
 
   const [rootElement, setRootElement] = useState<HTMLDivElement | null>(null)
   const size = useElementSize(rootElement)
@@ -141,7 +182,7 @@ export function TreeEditingBreadcrumbs(
   }, [size?.border.width])
 
   const items: Item[] = useMemo(() => {
-    const len = itemsProp.length
+    const len = itemsProp.length + 1 // +1 for the root item (the field name)
     const beforeLength = Math.ceil(maxLength / 2)
     const afterLength = Math.floor(maxLength / 2)
 
@@ -165,8 +206,9 @@ export function TreeEditingBreadcrumbs(
       // be grouped in the same breadcrumbs menu button (i.e. the "..." button).
       if (Array.isArray(item)) {
         return (
-          <Fragment key={key}>
-            <TreeEditingBreadcrumbsMenuButton
+          <Inline key={key}>
+            <MenuButton
+              id="breadcrumb-overflow-menu-button"
               button={
                 <StyledButton mode="bleed" padding={1}>
                   <Flex overflow="hidden">
@@ -176,59 +218,86 @@ export function TreeEditingBreadcrumbs(
                   </Flex>
                 </StyledButton>
               }
-              collapsed
-              items={item}
-              onPathSelect={onPathSelect}
-              parentElement={rootElement}
-              selectedPath={selectedPath}
+              popover={{
+                placement: 'bottom-start',
+                portal: true,
+              }}
+              menu={
+                <Menu>
+                  {item.map((overflowItem: DialogItem) => (
+                    <Box key={overflowItem.path.toString()} padding={1}>
+                      <Flex direction="row" align="center" style={{maxWidth: '250px'}}>
+                        <SeparatorItem>{SEPARATOR}</SeparatorItem>
+                        <MenuCard
+                          key={overflowItem.path.toString()}
+                          item={overflowItem}
+                          onPathSelect={onPathSelect}
+                          isSelected={false}
+                          isLast={false}
+                          siblings={siblings}
+                        />
+                      </Flex>
+                    </Box>
+                  ))}
+                </Menu>
+              }
             />
 
             {showSeparator && <SeparatorItem>{SEPARATOR}</SeparatorItem>}
-          </Fragment>
+          </Inline>
         )
       }
 
       const isSelected = isEqual(item.path, selectedPath)
+      const isLast = index === items.length - 1
 
       return (
-        <Fragment key={key}>
-          <MenuButton
+        <Inline
+          key={key}
+          flex={isLast ? 1 : undefined}
+          style={{
+            minWidth: 0,
+          }}
+        >
+          <MenuCard
             item={item}
             isSelected={isSelected}
             onPathSelect={onPathSelect}
-            isLast={index === items.length - 1}
+            isLast={isLast}
+            siblings={siblings}
           />
 
           {showSeparator && <SeparatorItem>{SEPARATOR}</SeparatorItem>}
-        </Fragment>
+        </Inline>
       )
     })
-  }, [items, selectedPath, onPathSelect, rootElement])
+  }, [items, selectedPath, onPathSelect, siblings])
 
   return (
-    <Flex align="center" gap={2} ref={setRootElement}>
-      <StyledButton
-        data-active={false}
-        mode="bleed"
-        onClick={() => onPathSelect(EMPTY_ARRAY)}
-        padding={1}
-      >
-        <Flex
-          flex={1}
-          align="center"
-          justify="flex-start"
-          gap={1}
-          overflow="hidden"
-          style={{textTransform: 'capitalize'}}
+    <RootInline ref={setRootElement}>
+      {
+        <Card
+          onClick={() => onPathSelect(EMPTY_ARRAY)}
+          as="button"
+          paddingRight={1}
+          paddingY={1}
+          radius={3}
         >
-          <Text muted size={1}>
-            {selectedPath[0]?.toString()}
-          </Text>
-        </Flex>
-      </StyledButton>
-
+          <Flex
+            flex={1}
+            align="center"
+            justify="flex-start"
+            overflow="hidden"
+            style={{textTransform: 'capitalize', minWidth: 0}}
+          >
+            <Text muted size={1} textOverflow="ellipsis">
+              {selectedPath[0]?.toString()}
+            </Text>
+          </Flex>
+        </Card>
+      }
       <SeparatorItem>{SEPARATOR}</SeparatorItem>
       {nodes}
-    </Flex>
+    </RootInline>
   )
 }
