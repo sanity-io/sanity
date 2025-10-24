@@ -12,7 +12,7 @@ type BuildCommentThreadItemsProps =
       comments: CommentDocument[]
       currentUser: CurrentUser
       documentValue: Partial<SanityDocument> | null
-      schemaType: SchemaType
+      schemaType: Readonly<SchemaType>
       type: 'field'
     }
   | {
