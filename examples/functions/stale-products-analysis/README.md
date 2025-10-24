@@ -148,7 +148,7 @@ defineField({
          event: {
            on: ['create', 'update'],
            filter:
-             "_type == 'page' && (delta::changedAny(modules) || (delta::operation() == 'create' && defined(modules)))",
+             "_type == 'page' && defined(modules) && (delta::changedAny(modules) || delta::operation() == 'create')",
            projection: '{_id, _type, modules}',
          },
        }),

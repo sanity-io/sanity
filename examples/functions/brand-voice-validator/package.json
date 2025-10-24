@@ -17,7 +17,7 @@
         "create",
         "update"
       ],
-      "filter": "_type == 'post' && (delta::changedAny(content) || (delta::operation() == 'create' && defined(content)))",
+      "filter": "_type == 'post' && defined(content) && (delta::changedAny(content) || delta::operation() == 'create')",
       "projection": "{_id}"
     }
   },

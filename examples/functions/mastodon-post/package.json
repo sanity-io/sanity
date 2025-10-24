@@ -17,7 +17,7 @@
         "create",
         "update"
       ],
-      "filter": "_type == 'post' && (delta::changedAny(mastodonPost) || (delta::operation() == 'create' && defined(mastodonPost)))",
+      "filter": "_type == 'post' && defined(mastodonPost) && (delta::changedAny(mastodonPost) || delta::operation() == 'create')",
       "projection": "{title, mastodonPost, slug}"
     },
     "env": {

@@ -17,7 +17,7 @@
         "create",
         "update"
       ],
-      "filter": "_type == 'post' && (delta::changedAny(blueskyPost) || (delta::operation() == 'create' && defined(blueskyPost)))",
+      "filter": "_type == 'post' && defined(blueskyPost) && (delta::changedAny(blueskyPost) || delta::operation() == 'create')",
       "projection": "{title, blueskyPost, slug}"
     },
     "env": {

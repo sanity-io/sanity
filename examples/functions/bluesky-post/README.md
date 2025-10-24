@@ -116,7 +116,7 @@ defineField({
          event: {
            on: ['create', 'update'],
            filter:
-             "_type == 'post' && (delta::changedAny(blueskyPost) || (delta::operation() == 'create' && defined(blueskyPost)))",
+             "_type == 'post' && defined(blueskyPost) && (delta::changedAny(blueskyPost) || delta::operation() == 'create')",
            projection: '{title, blueskyPost, slug}',
          },
          env: {
@@ -268,7 +268,7 @@ Read more: ${slug.current}`
 Only post when the `postToBlue` field is set to true:
 
 ```ts
-filter: "_type == 'post' && (delta::changedAny(blueskyPost) || (delta::operation() == 'create' && defined(blueskyPost))) && postToBluesky == true"
+filter: "_type == 'post' && defined(blueskyPost) && (delta::changedAny(blueskyPost) || delta::operation() == 'create') && postToBluesky == true"
 ```
 
 ### Include additional fields
