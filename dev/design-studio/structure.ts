@@ -2,7 +2,6 @@ import {CogIcon} from '@sanity/icons'
 import {type DefaultDocumentNodeResolver, type StructureResolver} from 'sanity/structure'
 
 import {CustomPane} from './components/CustomPane'
-import {IFrameView} from './components/IframeView'
 import {JSONPreviewDocumentView} from './components/jsonPreview'
 import {StyledTestView} from './schemaTypes/documentWithViews/view/styledTest'
 
@@ -28,7 +27,6 @@ export const resolveDocumentNode: DefaultDocumentNodeResolver = (S, {schemaType}
   if (schemaType === 'documentWithViews') {
     return S.document().views([
       S.view.form(),
-      S.view.component(IFrameView).title('IFrame'),
       S.view.component(StyledTestView).title('Styled Test 1'),
       S.view.component(StyledTestView).title('Styled Test 2'),
       S.view.component(StyledTestView).title('Styled Test 3'),
