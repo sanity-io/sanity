@@ -14,10 +14,9 @@
     "timeout": 10,
     "event": {
       "on": [
-        "create",
-        "update"
+        "create"
       ],
-      "filter": "_type == 'post' && delta::changedAny(blueskyPost)",
+      "filter": "_type == 'post' && defined(blueskyPost)",
       "projection": "{title, blueskyPost, slug}"
     },
     "env": {
