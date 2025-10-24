@@ -16,7 +16,10 @@ import {useDidUpdate} from '../../../../hooks/useDidUpdate'
 import {useScrollIntoViewOnFocusWithin} from '../../../../hooks/useScrollIntoViewOnFocusWithin'
 import {useChildPresence} from '../../../../studio/contexts/Presence'
 import {useChildValidation} from '../../../../studio/contexts/Validation'
-import {TreeEditingEnabledProvider, useTreeEditingEnabled} from '../../../../studio/tree-editing'
+import {
+  EnhancedObjectDialogProvider,
+  useEnhancedObjectDialog,
+} from '../../../../studio/tree-editing'
 import {type ObjectItem, type ObjectItemProps} from '../../../../types'
 import {randomKey} from '../../../../utils/randomKey'
 import {RowLayout} from '../../layouts/RowLayout'
@@ -67,7 +70,7 @@ export function PreviewItem<Item extends ObjectItem = ObjectItem>(props: Preview
   } = props
   const {t} = useTranslation()
 
-  const {enabled: enhancedObjectDialogEnabled} = useTreeEditingEnabled()
+  const {enabled: enhancedObjectDialogEnabled} = useEnhancedObjectDialog()
 
   // The edit portal should open if the item is open and:
   // - tree array editing is disabled
@@ -265,7 +268,7 @@ export function PreviewItem<Item extends ObjectItem = ObjectItem>(props: Preview
   const itemTypeTitle = getSchemaTypeTitle(schemaType)
 
   return (
-    <TreeEditingEnabledProvider>
+    <EnhancedObjectDialogProvider>
       <ChangeIndicator path={path} isChanged={changed} hasFocus={Boolean(focused)}>
         <Box paddingX={1}>{item}</Box>
       </ChangeIndicator>
@@ -287,6 +290,6 @@ export function PreviewItem<Item extends ObjectItem = ObjectItem>(props: Preview
           {children}
         </EditPortal>
       )}
-    </TreeEditingEnabledProvider>
+    </EnhancedObjectDialogProvider>
   )
 }

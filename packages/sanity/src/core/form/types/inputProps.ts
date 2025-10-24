@@ -186,7 +186,7 @@ export interface ObjectInputProps<
    * because the root input may be wrapped in a React context using the Components API,
    * which is utilized by inputs in the form.
    */
-  __internal_arrayEditingModal?: ReactNode
+  __internal_enhancedbjectDialog?: ReactNode
 }
 
 /**

@@ -438,7 +438,7 @@ export const eventsAPIReducer = (opts: {
   return result
 }
 
-export const treeArrayEditingEnabledReducer = (opts: {
+export const enhancedObjectDialogEnabledReducer = (opts: {
   config: PluginOptions
   initialValue: boolean
 }): boolean => {
@@ -446,13 +446,13 @@ export const treeArrayEditingEnabledReducer = (opts: {
   const flattenedConfig = flattenConfig(config, [])
 
   const result = flattenedConfig.reduce((acc: boolean, {config: innerConfig}) => {
-    const enabled = innerConfig.beta?.treeArrayEditing?.enabled
+    const enabled = innerConfig.beta?.form?.enhancedObjectDialog?.enabled
 
     if (typeof enabled === 'undefined') return acc
     if (typeof enabled === 'boolean') return enabled
 
     throw new Error(
-      `Expected \`beta.treeArrayEditing.enabled\` to be a boolean, but received ${getPrintableType(
+      `Expected \`beta.form.enhancedObjectDialog.enabled\` to be a boolean, but received ${getPrintableType(
         enabled,
       )}`,
     )

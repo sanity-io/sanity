@@ -13,7 +13,7 @@ import {createPatchChannel} from '../patch'
 import {useFormState} from '../store/useFormState'
 import {type FormDocumentValue} from '../types'
 import {FormBuilder, type FormBuilderProps} from './FormBuilder'
-import {useTreeEditingEnabled} from './tree-editing'
+import {useEnhancedObjectDialog} from './tree-editing'
 
 const schemaTypes = [
   defineType({
@@ -30,10 +30,10 @@ const schemaTypes = [
   }),
 ]
 
-vi.mock('./tree-editing/context/enabled/useTreeEditingEnabled')
+vi.mock('./tree-editing/context/enabled/useEnhancedObjectDialog')
 
 describe('FormBuilder', () => {
-  const mockedUseTreeEditingEnabled = useTreeEditingEnabled as Mock
+  const mockedUseEnhancedObjectDialog = useEnhancedObjectDialog as Mock
 
   beforeEach(() => {
     vi.clearAllMocks()
@@ -50,7 +50,7 @@ describe('FormBuilder', () => {
         schema: {types: schemaTypes},
       },
     })
-    mockedUseTreeEditingEnabled.mockImplementation(() => ({enabled: false}))
+    mockedUseEnhancedObjectDialog.mockImplementation(() => ({enabled: false}))
 
     const focusPath: Path = []
     const openPath: Path = []
@@ -147,7 +147,7 @@ describe('FormBuilder', () => {
         schema: {types: schemaTypes},
       },
     })
-    mockedUseTreeEditingEnabled.mockImplementation(() => ({enabled: true}))
+    mockedUseEnhancedObjectDialog.mockImplementation(() => ({enabled: true}))
 
     const focusPath: Path = []
     const openPath: Path = []

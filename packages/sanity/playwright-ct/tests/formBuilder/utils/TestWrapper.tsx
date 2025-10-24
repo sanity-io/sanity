@@ -62,7 +62,14 @@ export const TestWrapper = (props: TestWrapperProps): React.JSX.Element | null =
           types: schemaTypes,
         },
 
-        beta: betaFeatures,
+        beta: {
+          form: {
+            enhancedObjectDialog: {
+              enabled: true,
+            },
+          },
+          ...betaFeatures,
+        },
       })
 
       const workspace = await getMockWorkspace({client, config})

@@ -97,7 +97,7 @@ import type {
   TasksEnabledContext,
   TasksNavigationContext,
   TasksUpsellContext,
-  TreeEditingEnabledContext,
+  EnhancedObjectDialogContext,
   UserColorManagerContext,
   ValidationContext,
   VirtualizerScrollInstanceContext,
@@ -387,8 +387,8 @@ describe('sanity/_singletons', () => {
   test('TasksUpsellContext', () => {
     expectTypeOf<typeof TasksUpsellContext>().not.toBeNever()
   })
-  test('TreeEditingEnabledContext', () => {
-    expectTypeOf<typeof TreeEditingEnabledContext>().not.toBeNever()
+  test('EnhancedObjectDialogContext', () => {
+    expectTypeOf<typeof EnhancedObjectDialogContext>().not.toBeNever()
   })
   test('UserColorManagerContext', () => {
     expectTypeOf<typeof UserColorManagerContext>().not.toBeNever()
