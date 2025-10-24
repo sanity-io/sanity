@@ -14,11 +14,6 @@ export const RELEASES_INTENT = 'release'
 /**
  * @internal
  */
-export const RELEASES_SCHEDULED_DRAFTS_INTENT = 'releases-scheduled-drafts'
-
-/**
- * @internal
- */
 export const releases = definePlugin({
   name: RELEASES_NAME,
   document: {

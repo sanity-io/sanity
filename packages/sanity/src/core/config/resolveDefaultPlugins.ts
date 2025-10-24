@@ -6,11 +6,13 @@ import {releases, RELEASES_NAME} from '../releases/plugin'
 // oxlint-disable-next-line no-restricted-imports
 import {SCHEDULED_PUBLISHING_NAME, scheduledPublishing} from '../scheduled-publishing/plugin'
 import {schedules, SCHEDULES_NAME} from '../schedules/plugin'
+import {SINGLE_DOC_RELEASE_NAME, singleDocRelease} from '../singleDocRelease/plugin'
 import {tasks, TASKS_NAME} from '../tasks/plugin'
 import {
   type AppsOptions,
   type DefaultPluginsWorkspaceOptions,
   type PluginOptions,
+  QUOTA_EXCLUDED_RELEASES_ENABLED,
   type SingleWorkspace,
   type WorkspaceOptions,
 } from './types'
@@ -24,10 +26,12 @@ const defaultPlugins = [
   canvasIntegration(),
   mediaLibrary(),
   schedules(),
+  singleDocRelease(),
 ]
 
 type DefaultPluginsOptions = DefaultPluginsWorkspaceOptions & {
   apps: AppsOptions
+  [QUOTA_EXCLUDED_RELEASES_ENABLED]: boolean
 }
 
 export function getDefaultPlugins(options: DefaultPluginsOptions, plugins?: PluginOptions[]) {
@@ -51,7 +55,10 @@ export function getDefaultPlugins(options: DefaultPluginsOptions, plugins?: Plug
     if (plugin.name === SCHEDULES_NAME) {
       // This tool is shared between releases and single doc release plugins.
       // and it needs to be enabled if either of the plugins are enabled.
-      return options.releases.enabled // || options.singleDocRelease.enabled
+      return options.releases.enabled || options[QUOTA_EXCLUDED_RELEASES_ENABLED]
+    }
+    if (plugin.name === SINGLE_DOC_RELEASE_NAME) {
+      return options[QUOTA_EXCLUDED_RELEASES_ENABLED]
     }
     return true
   })
@@ -88,5 +95,6 @@ export function getDefaultPluginsOptions(
       },
     },
     mediaLibrary: workspace?.mediaLibrary,
+    [QUOTA_EXCLUDED_RELEASES_ENABLED]: workspace[QUOTA_EXCLUDED_RELEASES_ENABLED] ?? false,
   }
 }

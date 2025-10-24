@@ -3,7 +3,7 @@ import {Menu, MenuDivider} from '@sanity/ui'
 import {memo} from 'react'
 
 import {MenuItem} from '../../../../../ui-components'
-import {useScheduledDraftMenuActions} from '../../../hooks/useScheduledDraftMenuActions'
+import {useScheduledDraftMenuActions} from '../../../../singleDocRelease/hooks/useScheduledDraftMenuActions'
 import {CopyToReleaseMenuGroup} from './CopyToReleaseMenuGroup'
 
 interface ScheduledDraftContextMenuProps {

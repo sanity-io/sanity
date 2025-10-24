@@ -10,14 +10,13 @@ import {
 } from '../../../config/document/actions'
 import {useFeatureEnabled, useValidationStatus} from '../../../hooks'
 import {FEATURES} from '../../../hooks/useFeatureEnabled'
-import {useTranslation} from '../../../i18n'
+import {Translate, useTranslation} from '../../../i18n'
 import {useSetPerspective} from '../../../perspective/useSetPerspective'
-import {useReleasesToolAvailable} from '../../../schedules/hooks/useReleasesToolAvailable'
-import {ScheduleDraftDialog} from '../../components/dialog/ScheduleDraftDialog'
+import {getReleaseIdFromReleaseDocumentId} from '../../../releases/util/getReleaseIdFromReleaseDocumentId'
+import {ScheduleDraftDialog} from '../../components/ScheduleDraftDialog'
 import {useHasCardinalityOneReleaseVersions} from '../../hooks/useHasCardinalityOneReleaseVersions'
 import {useScheduleDraftOperations} from '../../hooks/useScheduleDraftOperations'
-import {releasesLocaleNamespace} from '../../i18n'
-import {getReleaseIdFromReleaseDocumentId} from '../../util/getReleaseIdFromReleaseDocumentId'
+import {singleDocReleaseNamespace} from '../../i18n'
 
 /**
  * @internal
@@ -26,12 +25,11 @@ export const SchedulePublishAction: DocumentActionComponent = (
   props: DocumentActionProps,
 ): DocumentActionDescription | null => {
   const {id, type, draft} = props
-  const {t} = useTranslation(releasesLocaleNamespace)
+  const {t} = useTranslation(singleDocReleaseNamespace)
   const {createScheduledDraft} = useScheduleDraftOperations()
   const toast = useToast()
   const setPerspective = useSetPerspective()
-  const releasesToolAvailable = useReleasesToolAvailable()
-  const {enabled: releasesEnabled} = useFeatureEnabled(FEATURES.contentReleases)
+  const {enabled: singleDocReleaseEnabled} = useFeatureEnabled(FEATURES.singleDocRelease)
 
   // Check validation status
   const validationStatus = useValidationStatus(id, type)
@@ -62,10 +60,13 @@ export const SchedulePublishAction: DocumentActionComponent = (
         toast.push({
           closable: true,
           status: 'success',
-          title: t('action.schedule-publish-success', 'Document scheduled for publishing'),
-          description: t(
-            'action.schedule-publish-success-description',
-            `Publishing scheduled for ${publishAt.toLocaleString()}`,
+          title: t('action.schedule-publish-success'),
+          description: (
+            <Translate
+              t={t}
+              i18nKey="action.schedule-publish-success-description"
+              values={{publishAt: publishAt.toLocaleString()}}
+            />
           ),
         })
         setPerspective(getReleaseIdFromReleaseDocumentId(releaseDocumentId))
@@ -76,7 +77,7 @@ export const SchedulePublishAction: DocumentActionComponent = (
         toast.push({
           closable: true,
           status: 'error',
-          title: t('action.schedule-publish-error', 'Failed to schedule publishing'),
+          title: t('action.schedule-publish-error'),
           description: error instanceof Error ? error.message : 'An unknown error occurred',
         })
       } finally {
@@ -86,14 +87,7 @@ export const SchedulePublishAction: DocumentActionComponent = (
     [id, createScheduledDraft, toast, t, setPerspective],
   )
 
-  // scheduled publishing using scheduled drafts is not available if releases is not enabled
-  // releases may either be disabled in `sanity.config` as `releases.enabled: false`
-  // or might not be available on the project plan
-  if (!releasesToolAvailable || !releasesEnabled) {
-    return null
-  }
-
-  if (!draft) {
+  if (!draft || !singleDocReleaseEnabled) {
     return null
   }
 

@@ -26,13 +26,34 @@ export const getInitialReleaseGroupMode = (router: RouterContextValue) => (): Mo
   return activeGroupMode === 'archived' ? 'archived' : 'active'
 }
 
-export const getInitialCardinalityView = (router: RouterContextValue) => (): CardinalityView => {
-  const cardinalityView = new URLSearchParams(router.state._searchParams).get(VIEW_SEARCH_PARAM_KEY)
+export const getInitialCardinalityView =
+  ({
+    router,
+    isScheduledDraftsEnabled,
+    isReleasesEnabled,
+  }: {
+    router: RouterContextValue
+    isScheduledDraftsEnabled: boolean
+    isReleasesEnabled: boolean
+  }) =>
+  (): CardinalityView => {
+    if (!isScheduledDraftsEnabled) {
+      return 'releases'
+    }
 
-  // 'drafts' is the only value we store in the query param
-  // absence of the param means 'releases' (default)
-  return cardinalityView === 'drafts' ? 'drafts' : 'releases'
-}
+    if (!isReleasesEnabled) {
+      return 'drafts'
+    }
+
+    //  Both are enabled, use the query param
+    const cardinalityView = new URLSearchParams(router.state._searchParams).get(
+      VIEW_SEARCH_PARAM_KEY,
+    )
+
+    // 'drafts' is the only value we store in the query param
+    // absence of the param means 'releases' (default)
+    return cardinalityView === 'drafts' ? 'drafts' : 'releases'
+  }
 
 export const buildReleasesSearchParams = (
   releaseFilterDate: Date | undefined,

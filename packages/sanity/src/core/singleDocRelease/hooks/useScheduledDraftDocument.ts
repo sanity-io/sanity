@@ -3,8 +3,8 @@ import {type PreviewValue} from '@sanity/types'
 
 import {useSchema} from '../../hooks'
 import {unstable_useValuePreview as useValuePreview} from '../../preview/useValuePreview'
-import {useBundleDocuments} from '../tool/detail/useBundleDocuments'
-import {getReleaseIdFromReleaseDocumentId} from '../util/getReleaseIdFromReleaseDocumentId'
+import {useBundleDocuments} from '../../releases/tool/detail/useBundleDocuments'
+import {getReleaseIdFromReleaseDocumentId} from '../../releases/util/getReleaseIdFromReleaseDocumentId'
 
 /**
  * Hook to get the first document from a scheduled draft release bundle.

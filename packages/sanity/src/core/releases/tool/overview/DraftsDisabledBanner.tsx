@@ -1,12 +1,15 @@
 import {WarningOutlineIcon} from '@sanity/icons'
 import {Box, Card, Flex, Text} from '@sanity/ui'
+import {useMemo} from 'react'
 
+import {isCardinalityOneRelease, type ReleaseDocument} from '../../..'
 import {useTranslation} from '../../../i18n'
 import {releasesLocaleNamespace} from '../../i18n'
 
 interface DraftsDisabledBannerProps {
   isDraftModelEnabled: boolean
   isScheduledDraftsEnabled: boolean
+  allReleases: ReleaseDocument[]
 }
 
 /**
@@ -15,10 +18,15 @@ interface DraftsDisabledBannerProps {
 export const DraftsDisabledBanner = ({
   isDraftModelEnabled,
   isScheduledDraftsEnabled,
+  allReleases,
 }: DraftsDisabledBannerProps) => {
   const {t} = useTranslation(releasesLocaleNamespace)
-
-  const shouldShowBanner = !isDraftModelEnabled || !isScheduledDraftsEnabled
+  const hasSingleDocRelease = useMemo(
+    () => allReleases.some(isCardinalityOneRelease),
+    [allReleases],
+  )
+  const shouldShowBanner =
+    (!isDraftModelEnabled || !isScheduledDraftsEnabled) && hasSingleDocRelease
 
   if (!shouldShowBanner) return null
 
