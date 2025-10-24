@@ -37,6 +37,6 @@
     "react": "catalog:",
     "react-dom": "catalog:",
     "sanity": "workspace:*",
-    "styled-components": "^6.1.19"
+    "styled-components": "catalog:"
   }
 }
