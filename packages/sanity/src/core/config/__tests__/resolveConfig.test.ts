@@ -175,6 +175,87 @@ describe('resolveConfig', () => {
       {name: 'sanity/singleDocRelease'},
     ])
   })
+  it('wont include releases plugin if the feature is disabled', async () => {
+    const projectId = 'ppsg7ml5'
+    const dataset = 'production'
+    const client = createClient({
+      projectId,
+      apiVersion: '2021-06-07',
+      dataset,
+      useCdn: false,
+    })
+    const [workspace] = await firstValueFrom(
+      resolveConfig({
+        name: 'default',
+        dataset,
+        projectId,
+        auth: createMockAuthStore({client, currentUser: null}),
+        plugins: [], // No plugins
+        releases: {
+          enabled: false,
+        },
+        [QUOTA_EXCLUDED_RELEASES_ENABLED]: true,
+      }),
+    )
+    const pluginNames = workspace.__internal.options.plugins?.map((p) => p.name) ?? []
+    expect(pluginNames).toContain('sanity/singleDocRelease')
+    expect(pluginNames).toContain('sanity/schedules')
+    expect(pluginNames).not.toContain('sanity/releases')
+  })
+  it('wont include single doc release plugin if the feature is disabled', async () => {
+    const projectId = 'ppsg7ml5'
+    const dataset = 'production'
+    const client = createClient({
+      projectId,
+      apiVersion: '2021-06-07',
+      dataset,
+      useCdn: false,
+    })
+    const [workspace] = await firstValueFrom(
+      resolveConfig({
+        name: 'default',
+        dataset,
+        projectId,
+        auth: createMockAuthStore({client, currentUser: null}),
+        plugins: [], // No plugins
+        releases: {
+          enabled: true,
+        },
+        [QUOTA_EXCLUDED_RELEASES_ENABLED]: false,
+      }),
+    )
+    const pluginNames = workspace.__internal.options.plugins?.map((p) => p.name) ?? []
+    expect(pluginNames).not.toContain('sanity/singleDocRelease')
+    expect(pluginNames).toContain('sanity/schedules')
+    expect(pluginNames).toContain('sanity/releases')
+  })
+  it('wont include schedules, if both releases and single doc is disabled', async () => {
+    const projectId = 'ppsg7ml5'
+    const dataset = 'production'
+    const client = createClient({
+      projectId,
+      apiVersion: '2021-06-07',
+      dataset,
+      useCdn: false,
+    })
+    const [workspace] = await firstValueFrom(
+      resolveConfig({
+        name: 'default',
+        dataset,
+        projectId,
+        auth: createMockAuthStore({client, currentUser: null}),
+        plugins: [], // No plugins
+        releases: {
+          enabled: false,
+        },
+        [QUOTA_EXCLUDED_RELEASES_ENABLED]: false,
+      }),
+    )
+    const pluginNames = workspace.__internal.options.plugins?.map((p) => p.name) ?? []
+    expect(pluginNames).not.toContain('sanity/singleDocRelease')
+    expect(pluginNames).not.toContain('sanity/schedules')
+    expect(pluginNames).not.toContain('sanity/releases')
+  })
 
   it('wont include scheduled publishing default plugin', async () => {
     // Schedule publishing should not be included when none other plugin is included in the user config.
