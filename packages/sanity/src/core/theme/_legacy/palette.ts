@@ -1,6 +1,9 @@
 import {_toHex} from './helpers'
 import {type LegacyThemeProps} from './types'
 
+/**
+ * @deprecated – Will be removed in upcoming major version
+ */
 export interface LegacyPalette {
   black: string
   component: {

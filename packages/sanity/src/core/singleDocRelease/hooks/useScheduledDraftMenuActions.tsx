@@ -6,9 +6,9 @@ import {type ComponentProps, useCallback, useMemo, useState} from 'react'
 import {type MenuItem} from '../../../ui-components/menuItem'
 import {Translate, useTranslation} from '../../i18n'
 import {getErrorMessage} from '../../util'
-import {DeleteScheduledDraftDialog} from '../components/dialog/DeleteScheduledDraftDialog'
-import {PublishScheduledDraftDialog} from '../components/dialog/PublishScheduledDraftDialog'
-import {ScheduleDraftDialog} from '../components/dialog/ScheduleDraftDialog'
+import {DeleteScheduledDraftDialog} from '../components/DeleteScheduledDraftDialog'
+import {PublishScheduledDraftDialog} from '../components/PublishScheduledDraftDialog'
+import {ScheduleDraftDialog} from '../components/ScheduleDraftDialog'
 import {useScheduledDraftDocument} from './useScheduledDraftDocument'
 import {useScheduleDraftOperations} from './useScheduleDraftOperations'
 
@@ -58,11 +58,11 @@ export function useScheduledDraftMenuActions(
 
   const handleReschedule = useCallback(
     async (newPublishAt: Date) => {
-      if (!release?._id) return
+      if (!release) return
 
       setIsPerformingOperation(true)
       try {
-        await operations.rescheduleScheduledDraft(release._id, newPublishAt)
+        await operations.rescheduleScheduledDraft(release, newPublishAt)
         onActionComplete?.()
       } catch (error) {
         console.error('Failed to reschedule draft:', error)
@@ -85,7 +85,7 @@ export function useScheduledDraftMenuActions(
         setSelectedAction(null)
       }
     },
-    [release?._id, operations, onActionComplete, toast, t, firstDocumentPreview?.title],
+    [release, operations, onActionComplete, toast, t, firstDocumentPreview?.title],
   )
 
   const handleMenuItemClick = useCallback(

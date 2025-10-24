@@ -187,6 +187,18 @@ const mockDocumentValue = {
             },
           ],
         },
+        {
+          _key: 'sub2',
+          _type: 'subItem',
+          value: 'Sub Value 2',
+          deepItems: [
+            {
+              _key: 'deep2',
+              _type: 'deepItem',
+              content: 'Deep Content 2',
+            },
+          ],
+        },
       ],
     },
   ],
@@ -225,6 +237,7 @@ const mockRecursive = vi.fn(
     menuItems: [],
     relativePath: [],
     rootTitle: '',
+    siblings: new Map(),
   }),
 )
 
@@ -672,6 +685,122 @@ describe('buildArrayState', () => {
         {_key: 'prop_c1'},
       ],
       schemaType: expect.objectContaining({name: 'propertyItem'}),
+    })
+  })
+
+  /** Siblings */
+
+  test('when openPath points to a nested array item, it should set siblings correctly', () => {
+    const openPath: Path = ['nestedArray', {_key: 'nested1'}, 'subItems', {_key: 'sub1'}]
+    const nestedArrayField = documentSchema.fields.find(
+      (f) => f.name === 'nestedArray',
+    ) as ObjectField<ArraySchemaType>
+    const props = createTestProps({
+      arraySchemaType: nestedArrayField.type,
+      arrayValue: mockDocumentValue.nestedArray,
+      openPath,
+      rootPath: ['nestedArray'] as Path,
+    })
+
+    const result = buildArrayState(props)
+
+    // Should have siblings information for the nestedArray
+    expect(result.siblings.has('nestedArray')).toBe(true)
+    const siblingsInfo = result.siblings.get('nestedArray')
+    expect(siblingsInfo).toEqual({
+      count: 1, // Only one item in nestedArray
+      index: 1, // 1-based index of the selected item
+    })
+  })
+
+  test('when openPath points to a deeply nested array item (3 levels), it should set siblings correctly', () => {
+    const openPath: Path = [
+      'nestedArray',
+      {_key: 'nested1'},
+      'subItems',
+      {_key: 'sub2'}, // Opening the second child (sub2) of the subItems array
+      'deepItems',
+      {_key: 'deep2'},
+    ]
+    const nestedArrayField = documentSchema.fields.find(
+      (f) => f.name === 'nestedArray',
+    ) as ObjectField<ArraySchemaType>
+    const props = createTestProps({
+      arraySchemaType: nestedArrayField.type,
+      arrayValue: mockDocumentValue.nestedArray,
+      openPath,
+      rootPath: ['nestedArray'] as Path,
+    })
+
+    const result = buildArrayState(props)
+
+    // Should have siblings information for the nestedArray and subItems
+    expect(result.siblings.has('nestedArray')).toBe(true)
+    expect(result.siblings.has('nestedArray[_key=="nested1"].subItems')).toBe(true)
+
+    // Check nestedArray siblings info
+    const nestedArraySiblings = result.siblings.get('nestedArray')
+    expect(nestedArraySiblings).toEqual({
+      count: 1, // Only one item in nestedArray
+      index: 1, // 1-based index of the selected item
+    })
+
+    // Check subItems siblings info - now we have 2 siblings
+    const subItemsSiblings = result.siblings.get('nestedArray[_key=="nested1"].subItems')
+    expect(subItemsSiblings).toEqual({
+      count: 2, // Two items in subItems (sub1 and sub2)
+      index: 2, // 1-based index of the selected item (sub2 is second)
+    })
+  })
+
+  test('when openPath points to a text block, it should set siblings correctly (none)', () => {
+    const openPath: Path = ['portableTextArray', {_key: 'block1'}]
+    const pteArrayField = documentSchema.fields.find(
+      (f) => f.name === 'portableTextArray',
+    ) as ObjectField<ArraySchemaType>
+    const props = createTestProps({
+      arraySchemaType: pteArrayField.type,
+      arrayValue: mockDocumentValue.portableTextArray,
+      openPath,
+      rootPath: ['portableTextArray'] as Path,
+    })
+
+    const result = buildArrayState(props)
+
+    // Should have siblings information for the portableTextArray
+    expect(result.siblings.has('portableTextArray')).toBe(false)
+  })
+
+  test('when openPath points to a text block, it should set siblings correctly (deeply nested) - none', () => {
+    const openPath: Path = ['portableTextArray', {_key: 'custom1'}, 'items', {_key: 'item1'}]
+    const pteArrayField = documentSchema.fields.find(
+      (f) => f.name === 'portableTextArray',
+    ) as ObjectField<ArraySchemaType>
+    const props = createTestProps({
+      arraySchemaType: pteArrayField.type,
+      arrayValue: mockDocumentValue.portableTextArray,
+      openPath,
+      rootPath: ['portableTextArray'] as Path,
+    })
+
+    const result = buildArrayState(props)
+
+    // Should have siblings information for the portableTextArray
+    expect(result.siblings.has('portableTextArray')).toBe(false)
+  })
+
+  test('when openPath points to a object field that has no array fields, it should set siblings correctly (0)', () => {
+    const openPath: Path = ['simpleArray', {_key: 'item1'}, 'title']
+    const props = createTestProps({openPath})
+
+    const result = buildArrayState(props)
+
+    // Should have siblings information for the simpleArray
+    expect(result.siblings.has('simpleArray')).toBe(true)
+    const siblingsInfo = result.siblings.get('simpleArray')
+    expect(siblingsInfo).toEqual({
+      count: 2, // Two items in simpleArray
+      index: 1, // 1-based index of the selected item (item1 is first)
     })
   })
 })

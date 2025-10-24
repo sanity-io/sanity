@@ -5,7 +5,7 @@ import ReactFocusLock from 'react-focus-lock'
 import {css, styled} from 'styled-components'
 
 import {Popover, type PopoverProps} from '../../../../../../ui-components'
-import {type TreeEditingBreadcrumb} from '../../types'
+import {type DialogItem} from '../../types'
 import {ITEM_HEIGHT, MAX_DISPLAYED_ITEMS} from './constants'
 import {TreeEditingBreadcrumbsMenu} from './TreeEditingBreadcrumbsMenu'
 
@@ -51,13 +51,17 @@ const StyledPopover = styled(Popover)(() => {
 interface TreeEditingBreadcrumbsMenuButtonProps {
   button: React.JSX.Element
   collapsed?: boolean
-  items: TreeEditingBreadcrumb[]
+  items: DialogItem[]
   menuTitle?: string
   onPathSelect: (path: Path) => void
   parentElement: HTMLElement | null
   selectedPath: Path
 }
 
+/**
+ * This component is not currently used, but it might be useful to keep in the future if we want to return back to a solution revolving around a tree.
+ * For now I think it's best to keep it as a reference for future work.
+ */
 export function TreeEditingBreadcrumbsMenuButton(
   props: TreeEditingBreadcrumbsMenuButtonProps,
 ): React.JSX.Element {

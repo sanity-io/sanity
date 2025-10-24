@@ -10,7 +10,7 @@
     "deploy": "npx sanity deploy",
     "dev": "sanity dev",
     "lint": "eslint .",
-    "start": "sanity start"
+    "start": "sanity preview"
   },
   "dependencies": {
     "@repo/eslint-config": "workspace:*",

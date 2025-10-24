@@ -11,7 +11,7 @@
     "dev": "sanity dev --port 3300",
     "lint": "eslint .",
     "preview": "pnpm build && pnpm start",
-    "start": "sanity start --port 3300"
+    "start": "sanity preview --port 3300"
   },
   "dependencies": {
     "babel-plugin-react-compiler": "19.1.0-rc.3",

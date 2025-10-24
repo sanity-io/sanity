@@ -3,36 +3,36 @@ import {fireEvent, render, screen, waitFor} from '@testing-library/react'
 import {beforeEach, describe, expect, it, type MockedFunction, vi} from 'vitest'
 
 // Now we can safely import the hook and other dependencies
-import {createTestProvider} from '../../../../../test/testUtils/TestProvider'
-import {MenuItem} from '../../../../ui-components'
-import {scheduledRelease} from '../../__fixtures__/release.fixture'
-import {DeleteScheduledDraftDialog} from '../../components/dialog/DeleteScheduledDraftDialog'
-import {PublishScheduledDraftDialog} from '../../components/dialog/PublishScheduledDraftDialog'
-import {ScheduleDraftDialog} from '../../components/dialog/ScheduleDraftDialog'
+import {createTestProvider} from '../../../../test/testUtils/TestProvider'
+import {MenuItem} from '../../../ui-components'
+import {scheduledRelease} from '../../releases/__fixtures__/release.fixture'
+import {DeleteScheduledDraftDialog} from '../components/DeleteScheduledDraftDialog'
+import {PublishScheduledDraftDialog} from '../components/PublishScheduledDraftDialog'
+import {ScheduleDraftDialog} from '../components/ScheduleDraftDialog'
 import {
   useScheduledDraftMenuActions,
   type UseScheduledDraftMenuActionsOptions,
-} from '../useScheduledDraftMenuActions'
-import {useScheduleDraftOperations} from '../useScheduleDraftOperations'
+} from './useScheduledDraftMenuActions'
+import {useScheduleDraftOperations} from './useScheduleDraftOperations'
 
 // Mock the dialog components BEFORE importing the hook to prevent dependency issues
-vi.mock('../../components/dialog/PublishScheduledDraftDialog', () => ({
+vi.mock('../components/PublishScheduledDraftDialog', () => ({
   PublishScheduledDraftDialog: vi.fn(),
 }))
 
-vi.mock('../../components/dialog/ScheduleDraftDialog', () => ({
+vi.mock('../components/ScheduleDraftDialog', () => ({
   ScheduleDraftDialog: vi.fn(),
 }))
 
-vi.mock('../../components/dialog/DeleteScheduledDraftDialog', () => ({
+vi.mock('../components/DeleteScheduledDraftDialog', () => ({
   DeleteScheduledDraftDialog: vi.fn(),
 }))
 
-vi.mock('../useScheduleDraftOperations', () => ({
+vi.mock('./useScheduleDraftOperations', () => ({
   useScheduleDraftOperations: vi.fn(),
 }))
 
-vi.mock('../useScheduledDraftDocument', () => ({
+vi.mock('./useScheduledDraftDocument', () => ({
   useScheduledDraftDocument: () => ({
     firstDocument: null,
   }),
@@ -274,7 +274,7 @@ describe('useScheduledDraftMenuActions', () => {
 
       await waitFor(() => {
         expect(mockOperations.rescheduleScheduledDraft).toHaveBeenCalledWith(
-          scheduledRelease._id,
+          scheduledRelease,
           new Date('2024-12-31T10:00:00Z'),
         )
       })

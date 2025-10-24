@@ -787,7 +787,7 @@ function resolveSource({
 
     releases: config.releases
       ? {
-          enabled: config.releases.enabled,
+          enabled: config.releases.enabled ?? true,
           limit: config.releases.limit,
           actions: (partialContext) =>
             resolveConfigProperty({
@@ -798,7 +798,7 @@ function resolveSource({
               reducer: releaseActionsReducer,
             }),
         }
-      : undefined,
+      : {enabled: true},
   }
 
   return source

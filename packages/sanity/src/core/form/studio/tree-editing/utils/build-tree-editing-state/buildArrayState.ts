@@ -10,12 +10,12 @@ import {
   type Path,
   type SchemaType,
 } from '@sanity/types'
-import {toString} from '@sanity/util/paths'
+import {startsWith, toString} from '@sanity/util/paths'
 
 import {getValueAtPath} from '../../../../../field/paths/helpers'
 import {EMPTY_ARRAY} from '../../../../../util/empty'
 import {getItemType} from '../../../../store/utils/getItemType'
-import {type TreeEditingBreadcrumb, type TreeEditingMenuItem} from '../../types'
+import {type DialogItem} from '../../types'
 import {findArrayTypePaths} from '../findArrayTypePaths'
 import {getSchemaField} from '../getSchemaField'
 import {isPathTextInPTEField} from '../isPathTextInPTEField'
@@ -26,6 +26,7 @@ import {
   getRelativePath,
   isArrayItemSelected,
   shouldBeInBreadcrumb,
+  shouldSkipSiblingCount,
   validateRelativePathExists,
 } from './utils'
 
@@ -61,8 +62,9 @@ export function buildArrayState(props: BuildArrayState): TreeEditingState {
   } = props
 
   let relativePath: Path = []
-  const menuItems: TreeEditingMenuItem[] = []
-  const breadcrumbs: TreeEditingBreadcrumb[] = []
+  const menuItems: DialogItem[] = []
+  const breadcrumbs: DialogItem[] = []
+  const siblings = new Map<string, {count: number; index: number}>()
 
   // This is specifically needed for Portable Text editors that are at a root level in the document
   // In that case, and if the openPath points to a regular text block (such as when you write it), we return empty state
@@ -76,13 +78,32 @@ export function buildArrayState(props: BuildArrayState): TreeEditingState {
       menuItems,
       relativePath,
       rootTitle: '',
+      siblings,
     }
   }
 
   // Iterate over the values of the array field.
-  arrayValue.forEach((item) => {
+  arrayValue.forEach((item, arrayIndex) => {
     // Construct the path to the array item.
     const itemPath = [...rootPath, {_key: item._key}] as Path
+
+    // Check if this is the currently selected item and store its index
+    if (isArrayItemSelected(itemPath, openPath)) {
+      relativePath = getRelativePath(itemPath)
+    }
+
+    // Check if openPath is within this array item (for fields within the item)
+    // This needs to be less strict than the isArrayItemSelected check
+    // Because from a UI perspective we're still within the item
+    // Important: do NOT set siblings for Portable Text arrays (arrays of blocks) as we handle them differently
+    if (
+      item._key &&
+      startsWith(itemPath, openPath) &&
+      !isArrayOfBlocksSchemaType(arraySchemaType)
+    ) {
+      // Store sibling info on the parent array path (header reads parent of relativePath)
+      siblings.set(toString(rootPath), {count: arrayValue.length, index: arrayIndex + 1})
+    }
 
     // Get the schema field for the array item.
     const itemSchemaField = getItemType(arraySchemaType, item) as ObjectSchemaType
@@ -91,7 +112,7 @@ export function buildArrayState(props: BuildArrayState): TreeEditingState {
     if (isReferenceSchemaType(itemSchemaField)) return
 
     const childrenFields = itemSchemaField?.fields || []
-    const childrenMenuItems: TreeEditingMenuItem[] = []
+    const childrenMenuItems: DialogItem[] = []
 
     if (shouldBeInBreadcrumb(itemPath, openPath, documentValue)) {
       const breadcrumbsResult = buildBreadcrumbsState({
@@ -149,11 +170,31 @@ export function buildArrayState(props: BuildArrayState): TreeEditingState {
             relativePath = getRelativePath(fieldPath)
           }
 
+          const updateNestedArrayIndex = (nestedItem: unknown, nestedIndex: number) => {
+            const nestedItemObj = nestedItem as Record<string, unknown>
+            const nestedItemPath = [...fieldPath, {_key: nestedItemObj._key}] as Path
+
+            // Check if openPath is within this nested array item (for fields within the item)
+            // Avoids setting siblings that we do not care about
+            if (startsWith(nestedItemPath, openPath)) {
+              siblings.set(toString(fieldPath), {
+                count: arrayFieldValue.length,
+                index: nestedIndex + 1,
+              })
+            }
+          }
+          arrayFieldValue.forEach(updateNestedArrayIndex)
+
           // Recursively build the tree editing state for the array field.
           const nestedArrayState = recursive({
             documentValue,
             path: fieldPath,
             schemaType: nestedArrayField as ObjectSchemaType,
+          })
+
+          // Merge sibling counts from nested state
+          nestedArrayState.siblings.forEach((info, pathString) => {
+            siblings.set(pathString, info)
           })
 
           // Add the state of the array field to the children menu items.
@@ -173,6 +214,25 @@ export function buildArrayState(props: BuildArrayState): TreeEditingState {
 
       // Handle regular arrays of objects (not portable text)
       if (IsArrayOfObjects) {
+        const childArray = Array.isArray(childValue) ? childValue : []
+
+        // Check if any item in this array is selected and update the index
+        const updateChildArrayIndex = (childItem: unknown, childIndex: number) => {
+          const childItemObj = childItem as Record<string, unknown>
+          const childItemPath = [...childPath, {_key: childItemObj._key}] as Path
+          if (startsWith(childItemPath, openPath)) {
+            // When the parent array is a PTE (array of blocks) and this child array is the block's
+            // 'children' array, skip siblings so inline custom objects don't show siblings
+            const isBlockChildrenArray =
+              isArrayOfBlocksSchemaType(arraySchemaType) && childField.name === 'children'
+
+            if (!isBlockChildrenArray) {
+              siblings.set(toString(childPath), {count: childArray.length, index: childIndex + 1})
+            }
+          }
+        }
+        childArray.forEach(updateChildArrayIndex)
+
         if (shouldBeInBreadcrumb(childPath, openPath, documentValue)) {
           const breadcrumbsResult = buildBreadcrumbsState({
             arraySchemaType: childField.type as ArraySchemaType,
@@ -188,6 +248,19 @@ export function buildArrayState(props: BuildArrayState): TreeEditingState {
           documentValue,
           path: childPath,
           schemaType: childField as ObjectSchemaType,
+        })
+
+        // Merge sibling counts from child state
+        const childPathString = toString(childPath)
+        const skipChildArraySiblings = shouldSkipSiblingCount({
+          arraySchemaType,
+          fieldPath: childPath,
+        })
+
+        // If it's an inline custom object/object array/span, skip siblings
+        childState.siblings.forEach((info, pathString) => {
+          if (skipChildArraySiblings && pathString === childPathString) return
+          siblings.set(pathString, info)
         })
 
         childrenMenuItems.push({
@@ -213,9 +286,18 @@ export function buildArrayState(props: BuildArrayState): TreeEditingState {
           childrenMenuItems,
         })
 
+        // Merge sibling counts from PTE result
+        pteResult.siblings.forEach((info, pathString) => {
+          siblings.set(pathString, info)
+        })
+
         // This is needed for cases where new blocks are added to the array within a PTE
         // This will make sure that the relative path is updated with the PTE path only when it should
-        if (pteResult.relativePath && relativePath.length === 0) {
+        if (
+          pteResult.relativePath &&
+          pteResult.relativePath !== null &&
+          relativePath.length === 0
+        ) {
           relativePath = pteResult.relativePath
         }
       }
@@ -250,5 +332,6 @@ export function buildArrayState(props: BuildArrayState): TreeEditingState {
     menuItems,
     relativePath,
     rootTitle: '',
+    siblings,
   }
 }

@@ -140,3 +140,40 @@ export function isPathTextInPTEField(
 
   return true
 }
+
+/**
+ * Find the schema path for the Portable Text field that the target path belongs to, if any.
+ * Returns the path to the PTE array field within the document schema (without key segments).
+ */
+export function findPTEParentPathForTarget(
+  fields: ObjectField<SchemaType>[],
+  targetPath: Path,
+): Path | null {
+  if (targetPath.length === 0) return null
+
+  const allPTEPaths = findPTEtypePaths(fields)
+
+  const possiblePaths: string[] = []
+  const currentSegments: string[] = []
+  for (const segment of targetPath) {
+    if (typeof segment === 'string') {
+      currentSegments.push(segment)
+      possiblePaths.push(currentSegments.join('.'))
+    }
+  }
+
+  // Find all PTE parent paths that match or are ancestors of the target path
+  const matches = allPTEPaths.filter((parentPath) => {
+    return possiblePaths.some(
+      (path) => path === pathToString(parentPath) || startsWith(parentPath, stringToPath(path)),
+    )
+  })
+
+  if (matches.length === 0) return null
+
+  // Return the most specific (longest) matching parent path
+  return matches.reduce<Path | null>((prev, curr) => {
+    if (!prev) return curr
+    return curr.length > prev.length ? curr : prev
+  }, null)
+}

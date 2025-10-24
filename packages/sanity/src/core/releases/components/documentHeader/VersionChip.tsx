@@ -24,14 +24,14 @@ import {Popover, Tooltip} from '../../../../ui-components'
 import {useCanvasCompanionDocsStore} from '../../../canvas/store/useCanvasCompanionDocsStore'
 import {Translate, useTranslation} from '../../../i18n'
 import {useReleasesToolAvailable} from '../../../schedules/hooks/useReleasesToolAvailable'
+import {ScheduleDraftDialog} from '../../../singleDocRelease/components/ScheduleDraftDialog'
+import {useScheduleDraftOperations} from '../../../singleDocRelease/hooks/useScheduleDraftOperations'
 import {getDraftId, getPublishedId, getVersionId} from '../../../util/draftUtils'
 import {getErrorMessage} from '../../../util/getErrorMessage'
 import {isCardinalityOneRelease} from '../../../util/releaseUtils'
-import {useScheduleDraftOperations} from '../../hooks/useScheduleDraftOperations'
 import {useVersionOperations} from '../../hooks/useVersionOperations'
 import {getReleaseIdFromReleaseDocumentId} from '../../util/getReleaseIdFromReleaseDocumentId'
 import {DiscardVersionDialog} from '../dialog/DiscardVersionDialog'
-import {ScheduleDraftDialog} from '../dialog/ScheduleDraftDialog'
 import {ReleaseAvatarIcon} from '../ReleaseAvatar'
 import {VersionContextMenu} from './contextMenu/VersionContextMenu'
 import {CopyToNewReleaseDialog} from './dialog/CopyToNewReleaseDialog'
@@ -181,7 +181,7 @@ export const VersionChip = memo(function VersionChip(props: {
       setIsPerformingScheduleOperation(true)
 
       try {
-        await operations.rescheduleScheduledDraft(release._id, newPublishAt)
+        await operations.rescheduleScheduledDraft(release, newPublishAt)
         setIsChangeScheduleDialogOpen(false)
       } catch (error) {
         console.error('Failed to reschedule draft:', error)

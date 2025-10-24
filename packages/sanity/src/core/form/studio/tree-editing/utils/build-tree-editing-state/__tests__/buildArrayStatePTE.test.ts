@@ -7,7 +7,7 @@ import {
 } from '@sanity/types'
 import {describe, expect, test, vi} from 'vitest'
 
-import {type TreeEditingBreadcrumb, type TreeEditingMenuItem} from '../../../types'
+import {type DialogItem} from '../../../types'
 import {buildArrayStatePTE} from '../buildArrayStatePTE'
 import {type TreeEditingState} from '../buildTreeEditingState'
 
@@ -169,6 +169,7 @@ const mockRecursive = vi.fn(
     menuItems: [],
     relativePath: [],
     rootTitle: '',
+    siblings: new Map(),
   }),
 )
 
@@ -182,8 +183,8 @@ function createTestProps(overrides: Partial<Parameters<typeof buildArrayStatePTE
     openPath: ['body'] as Path,
     recursive: mockRecursive,
     rootSchemaType: documentSchema,
-    breadcrumbs: [] as TreeEditingBreadcrumb[],
-    childrenMenuItems: [] as TreeEditingMenuItem[],
+    breadcrumbs: [] as DialogItem[],
+    childrenMenuItems: [] as DialogItem[],
   }
 
   return {...defaultProps, ...overrides}
@@ -230,8 +231,8 @@ describe('buildArrayStatePTE', () => {
 
   test('when openPath points to a nested array field, it should return the correct breadcrumbs', () => {
     const openPath: Path = ['body', {_key: 'custom1'}, 'items', {_key: 'item1'}]
-    const breadcrumbs: TreeEditingBreadcrumb[] = []
-    const childrenMenuItems: TreeEditingMenuItem[] = []
+    const breadcrumbs: DialogItem[] = []
+    const childrenMenuItems: DialogItem[] = []
     const props = createTestProps({openPath, breadcrumbs, childrenMenuItems})
 
     const result = buildArrayStatePTE(props)
@@ -252,8 +253,8 @@ describe('buildArrayStatePTE', () => {
 
   test('when openPath points to a block, it should return the correct breadcrumbs', () => {
     const openPath: Path = ['body', {_key: 'custom1'}]
-    const breadcrumbs: TreeEditingBreadcrumb[] = []
-    const childrenMenuItems: TreeEditingMenuItem[] = []
+    const breadcrumbs: DialogItem[] = []
+    const childrenMenuItems: DialogItem[] = []
     const props = createTestProps({openPath, breadcrumbs, childrenMenuItems})
 
     const result = buildArrayStatePTE(props)
@@ -270,8 +271,8 @@ describe('buildArrayStatePTE', () => {
 
   test('when openPath points to a text block, it should return null', () => {
     const openPath: Path = ['body', {_key: 'block1'}, 'children', {_key: 'span1'}]
-    const breadcrumbs: TreeEditingBreadcrumb[] = []
-    const childrenMenuItems: TreeEditingMenuItem[] = []
+    const breadcrumbs: DialogItem[] = []
+    const childrenMenuItems: DialogItem[] = []
     const props = createTestProps({openPath, breadcrumbs, childrenMenuItems})
 
     const result = buildArrayStatePTE(props)
@@ -283,8 +284,8 @@ describe('buildArrayStatePTE', () => {
 
   test('when openPath points to a non-existent item (new item), it should return the correct breadcrumbs (parents)', () => {
     const openPath: Path = ['body', {_key: 'custom1'}, 'items', {_key: 'nonexistent'}]
-    const breadcrumbs: TreeEditingBreadcrumb[] = []
-    const childrenMenuItems: TreeEditingMenuItem[] = []
+    const breadcrumbs: DialogItem[] = []
+    const childrenMenuItems: DialogItem[] = []
     const props = createTestProps({openPath, breadcrumbs, childrenMenuItems})
 
     const result = buildArrayStatePTE(props)
@@ -434,5 +435,120 @@ describe('buildArrayStatePTE', () => {
     expect(result.breadcrumbs).toHaveLength(1)
     expect(result.breadcrumbs[0].path).toEqual(['body', {_key: 'custom1'}])
     expect(result.breadcrumbs[0].schemaType.name).toBe('customBlock')
+  })
+
+  test('when openPath points to a nested array item, it should set siblings correctly', () => {
+    const openPath: Path = ['body', {_key: 'custom1'}, 'items', {_key: 'item1'}]
+    const props = createTestProps({openPath})
+
+    // Mock the recursive function to return siblings for the nested array
+    const mockSiblings = new Map([
+      ['body.custom1.items', {count: 2, index: 1}], // First item in the items array
+    ])
+    mockRecursive.mockReturnValue({
+      breadcrumbs: [],
+      menuItems: [],
+      relativePath: [],
+      rootTitle: '',
+      siblings: mockSiblings,
+    })
+
+    const result = buildArrayStatePTE(props)
+
+    // Should preserve the siblings from the recursive call
+    expect(result.siblings.has('body.custom1.items')).toBe(true)
+    expect(result.siblings.get('body.custom1.items')).toEqual({count: 2, index: 1})
+  })
+
+  test('when openPath points to a nested text block, it should set siblings correctly (none)', () => {
+    const openPath: Path = [
+      'body',
+      {_key: 'custom1'},
+      'items',
+      {_key: 'item1'},
+      'nestedItems',
+      {_key: 'nested1'},
+      'children',
+      {_key: 'span1'},
+    ]
+    const props = createTestProps({openPath})
+
+    // Mock the recursive function to return siblings for nested arrays
+    const mockSiblings = new Map([
+      ['body.custom1.items', {count: 2, index: 1}], // First item in items array
+      ['body.custom1.items.item1.nestedItems', {count: 3, index: 1}], // First item in nestedItems array
+    ])
+    mockRecursive.mockReturnValue({
+      breadcrumbs: [],
+      menuItems: [],
+      relativePath: [],
+      rootTitle: '',
+      siblings: mockSiblings,
+    })
+
+    const result = buildArrayStatePTE(props)
+
+    // Should preserve all parent siblings even when pointing to text content
+    expect(result.siblings.has('body.custom1.items')).toBe(false)
+    expect(result.siblings.has('body.custom1.items.item1.nestedItems')).toBe(false)
+
+    // Should return null for relativePath since it's text content
+    expect(result.relativePath).toBeNull()
+  })
+
+  test('when openPath points to a nested text block, it should set siblings correctly (deeply nested) - none', () => {
+    const openPath: Path = [
+      'body',
+      {_key: 'custom1'},
+      'items',
+      {_key: 'item1'},
+      'nestedItems',
+      {_key: 'nested1'},
+      'children',
+      {_key: 'span1'},
+    ]
+    const props = createTestProps({openPath})
+
+    // Mock the recursive function to return siblings for deeply nested arrays
+    const mockSiblings = new Map([
+      ['body.custom1.items', {count: 2, index: 1}], // First item in items array
+      ['body.custom1.items.item1.nestedItems', {count: 3, index: 1}], // First item in nestedItems array
+    ])
+    mockRecursive.mockReturnValue({
+      breadcrumbs: [],
+      menuItems: [],
+      relativePath: [],
+      rootTitle: '',
+      siblings: mockSiblings,
+    })
+
+    const result = buildArrayStatePTE(props)
+
+    // Should preserve all parent siblings even when pointing to text content
+    expect(result.siblings.has('body.custom1.items')).toBe(false)
+    expect(result.siblings.has('body.custom1.items.item1.nestedItems')).toBe(false)
+
+    // Should return null for relativePath since it's text content
+    expect(result.relativePath).toBeNull()
+  })
+
+  test('when openPath points to a object field that has no array fields, it should set siblings correctly (0)', () => {
+    const openPath: Path = ['body', {_key: 'custom1'}, 'title']
+    const props = createTestProps({openPath})
+
+    // Mock the recursive function to return empty siblings (no arrays in this field)
+    mockRecursive.mockReturnValue({
+      breadcrumbs: [],
+      menuItems: [],
+      relativePath: [],
+      rootTitle: '',
+      siblings: new Map(), // No siblings since title field has no arrays
+    })
+
+    const result = buildArrayStatePTE(props)
+
+    // Should have empty siblings since the title field has no array fields
+    expect(result.siblings.size).toBe(0)
+    expect(result.relativePath).toBeNull() // No array to navigate to
   })
 })

@@ -3,12 +3,12 @@ import {
   type DocumentActionDescription,
   type DocumentActionProps,
 } from '../../../config/document/actions'
+import {useAllReleases} from '../../../releases/store/useAllReleases'
+import {getReleaseIdFromReleaseDocumentId} from '../../../releases/util/getReleaseIdFromReleaseDocumentId'
 import {
   useScheduledDraftMenuActions,
   type UseScheduledDraftMenuActionsReturn,
 } from '../../hooks/useScheduledDraftMenuActions'
-import {useAllReleases} from '../../store/useAllReleases'
-import {getReleaseIdFromReleaseDocumentId} from '../../util/getReleaseIdFromReleaseDocumentId'
 
 /**
  * Higher-order function that creates a scheduled draft document action

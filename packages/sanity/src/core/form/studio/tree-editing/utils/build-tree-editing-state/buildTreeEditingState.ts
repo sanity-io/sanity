@@ -8,7 +8,7 @@ import {toString} from '@sanity/util/paths'
 
 import {getValueAtPath} from '../../../../../field/paths/helpers'
 import {getSchemaTypeTitle} from '../../../../../schema/helpers'
-import {type TreeEditingBreadcrumb, type TreeEditingMenuItem} from '../../types'
+import {type DialogItem} from '../../types'
 import {getRootPath} from '../getRootPath'
 import {getSchemaField} from '../getSchemaField'
 import {buildArrayState} from './buildArrayState'
@@ -20,6 +20,7 @@ export const EMPTY_TREE_STATE: TreeEditingState = {
   menuItems: EMPTY_ARRAY,
   relativePath: EMPTY_ARRAY,
   rootTitle: '',
+  siblings: new Map(),
 }
 
 export interface BuildTreeEditingStateProps {
@@ -30,9 +31,9 @@ export interface BuildTreeEditingStateProps {
 
 export interface TreeEditingState {
   /** The breadcrumbs for the tree editing state */
-  breadcrumbs: TreeEditingBreadcrumb[]
+  breadcrumbs: DialogItem[]
   /** The menu items for the tree editing state */
-  menuItems: TreeEditingMenuItem[]
+  menuItems: DialogItem[]
   /**
    * The relative path to the selected item in the tree editing state.
    * It is used to determine which field to show in the form editor.
@@ -40,6 +41,10 @@ export interface TreeEditingState {
   relativePath: Path
   /** The title of the root field */
   rootTitle: string
+  /** Map of path strings to their sibling arrays (including non-editable items, for example references)
+   * Starts at 1
+   */
+  siblings: Map<string, {count: number; index: number}>
 }
 
 export interface RecursiveProps extends Omit<BuildTreeEditingStateProps, 'openPath'> {
@@ -64,7 +69,7 @@ export function buildTreeEditingState(props: BuildTreeEditingStateProps): TreeEd
   }
 
   let relativePath: Path = []
-  const breadcrumbs: TreeEditingBreadcrumb[] = []
+  const breadcrumbs: DialogItem[] = []
 
   const result = recursive({
     schemaType: rootField,
@@ -106,5 +111,6 @@ export function buildTreeEditingState(props: BuildTreeEditingStateProps): TreeEd
     breadcrumbs,
     menuItems: result.menuItems,
     rootTitle,
+    siblings: result.siblings,
   }
 }
