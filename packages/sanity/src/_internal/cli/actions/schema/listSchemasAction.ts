@@ -61,15 +61,19 @@ export async function listSchemasAction(
   if (!(await ensureManifestExtractSatisfied({schemaRequired: true, extractManifest, manifestDir,  manifestExtractor, output, telemetry: context.telemetry}))) {
     return 'failure'
   }
-  const {client} = createSchemaApiClient(apiClient)
 
   const manifest = await createManifestReader({manifestDir, output, jsonReader}).getManifest()
   const projectDatasets = uniqueProjectIdDataset(manifest.workspaces)
 
   const schemaResults = await Promise.allSettled(
-    projectDatasets.map(async ({projectId, dataset}) => {
+    projectDatasets.map(async ({projectId, dataset, apiHost}) => {
+      const {client: datasetClient} = createSchemaApiClient(apiClient, {
+        projectId,
+        dataset,
+        apiHost,
+      })
+
       try {
-        const datasetClient = client.withConfig({projectId, dataset})
         return id
           ? await datasetClient.request<StoredWorkspaceSchema | undefined>({
               method: 'GET',

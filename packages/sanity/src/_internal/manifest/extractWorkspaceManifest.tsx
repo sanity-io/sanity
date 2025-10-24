@@ -87,6 +87,7 @@ export function extractCreateWorkspaceManifest(workspace: Workspace): CreateWork
     basePath: workspace.basePath,
     projectId: workspace.projectId,
     dataset: workspace.dataset,
+    apiHost: workspace.apiHost,
     icon: resolveIcon({
       icon: workspace.icon,
       title: workspace.title,
