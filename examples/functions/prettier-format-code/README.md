@@ -99,7 +99,7 @@ export default defineBlueprint({
       event: {
         on: ['create', 'update'],
         filter:
-          '_type == "post" && (delta::changedAny(content[_type == "code"]) || (delta::operation() == "create" && defined(content)))',
+          '_type == "post" && (delta::changedAny(content[_type == "code"]) || (delta::operation() == "create" && defined(content[_type == "code"])))',
         projection: '{_id, content}',
       },
     }),
