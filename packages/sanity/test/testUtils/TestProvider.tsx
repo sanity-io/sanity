@@ -3,7 +3,7 @@ import {LayerProvider, studioTheme, ThemeProvider, ToastProvider} from '@sanity/
 import {createMemoryHistory} from 'history'
 import {noop} from 'lodash'
 import {type ReactNode} from 'react'
-import {AddonDatasetContext, PerspectiveContext} from 'sanity/_singletons'
+import {AddonDatasetContext, PerspectiveContext, RawPerspectiveContext} from 'sanity/_singletons'
 
 import {
   CopyPasteProvider,
@@ -73,9 +73,17 @@ export async function createTestProvider({
                                 ready: true,
                               }}
                             >
-                              <PerspectiveContext.Provider value={perspectiveContextValueMock}>
-                                {children}
-                              </PerspectiveContext.Provider>
+                              <RawPerspectiveContext.Provider
+                                value={{
+                                  selectedPerspective: 'drafts',
+                                  selectedPerspectiveName: undefined,
+                                  selectedReleaseId: undefined,
+                                }}
+                              >
+                                <PerspectiveContext.Provider value={perspectiveContextValueMock}>
+                                  {children}
+                                </PerspectiveContext.Provider>
+                              </RawPerspectiveContext.Provider>
                             </AddonDatasetContext.Provider>
                           </ResourceCacheProvider>
                         </CopyPasteProvider>

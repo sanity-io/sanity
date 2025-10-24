@@ -27,6 +27,7 @@ export {
 } from './perspective/types'
 export {useExcludedPerspective} from './perspective/useExcludedPerspective'
 export {usePerspective} from './perspective/usePerspective'
+export {useRawPerspective} from './perspective/useRawPerspective'
 export {useSetPerspective} from './perspective/useSetPerspective'
 export * from './presence'
 export * from './preview'
