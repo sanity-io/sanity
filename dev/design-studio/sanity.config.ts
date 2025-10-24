@@ -2,12 +2,15 @@ import {defineConfig} from 'sanity'
 import {structureTool} from 'sanity/structure'
 
 import {schemaTypes} from './schemaTypes'
-import {structure} from './structure'
+import {resolveDocumentNode, structure} from './structure'
 import {templates} from './templates'
 
 export default defineConfig({
   plugins: [
-    structureTool({structure}),
+    structureTool({
+      defaultDocumentNode: resolveDocumentNode,
+      structure,
+    }),
     // @todo
     // visionTool(),
   ],
