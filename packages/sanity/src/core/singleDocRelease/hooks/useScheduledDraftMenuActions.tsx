@@ -1,5 +1,5 @@
 import {type ReleaseDocument} from '@sanity/client'
-import {CalendarIcon, PublishIcon, TrashIcon} from '@sanity/icons'
+import {EditIcon, PublishIcon, TrashIcon} from '@sanity/icons'
 import {useToast} from '@sanity/ui'
 import {type ComponentProps, useCallback, useMemo, useState} from 'react'
 
@@ -112,7 +112,7 @@ export function useScheduledDraftMenuActions(
         'data-testid': 'publish-now-menu-item',
       },
       editSchedule: {
-        'icon': CalendarIcon,
+        'icon': EditIcon,
         'text': t('release.action.edit-schedule'),
         'tone': 'default' as const,
         'onClick': onEditSchedule || (() => handleMenuItemClick('edit-schedule')),
