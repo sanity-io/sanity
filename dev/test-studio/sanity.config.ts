@@ -2,11 +2,6 @@ import {assist} from '@sanity/assist'
 import {colorInput} from '@sanity/color-input'
 import {googleMapsInput} from '@sanity/google-maps-input'
 import {BookIcon} from '@sanity/icons'
-import {koKRLocale} from '@sanity/locale-ko-kr'
-import {nbNOLocale} from '@sanity/locale-nb-no'
-import {nnNOLocale} from '@sanity/locale-nn-no'
-import {ptPTLocale} from '@sanity/locale-pt-pt'
-import {svSELocale} from '@sanity/locale-sv-se'
 import {SanityMonogram} from '@sanity/logos'
 import {debugSecrets} from '@sanity/preview-url-secret/sanity-plugin-debug-secrets'
 import {visionTool} from '@sanity/vision'
@@ -63,8 +58,6 @@ import {types as presentationNextSanitySchemaTypes} from './schema/presentation/
 import {types as presentationPreviewKitSchemaTypes} from './schema/presentation/preview-kit'
 import {defaultDocumentNode, newDocumentOptions, structure} from './structure'
 import {workshopTool} from './workshop'
-
-const localePlugins = [koKRLocale(), nbNOLocale(), nnNOLocale(), ptPTLocale(), svSELocale()]
 
 // @ts-expect-error - defined by vite
 const isStaging = globalThis.__SANITY_STAGING__ === true
