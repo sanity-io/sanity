@@ -154,6 +154,11 @@ const DiffViewDocument: ComponentType<DiffViewPaneProps> = ({
   const [patchChannel] = useState(() => createPatchChannel())
   const perspective = useMemo(() => findRelease(documentId, releases), [documentId, releases])
 
+  const [focusPath, setFocusPath] = useState<Path>([])
+
+  const onPathFocus = (path: Path) => {
+    setFocusPath(path)
+  }
   const {
     formState,
     onChange,
@@ -167,11 +172,12 @@ const DiffViewDocument: ComponentType<DiffViewPaneProps> = ({
     collapsedPaths,
     schemaType,
     value,
-    onProgrammaticFocus,
     ...documentForm
   } = useDocumentForm({
     documentId: getPublishedId(documentId),
     documentType,
+    focusPath,
+    onFocusPath: onPathFocus,
     selectedPerspectiveName: perspectiveName(documentId),
     releaseId: getVersionFromId(documentId),
     comparisonValue: compareValue,
@@ -194,9 +200,9 @@ const DiffViewDocument: ComponentType<DiffViewPaneProps> = ({
   )
 
   useEffect(() => {
-    const subscription = pathSyncChannel.path.subscribe(onProgrammaticFocus)
+    const subscription = pathSyncChannel.path.subscribe((nextPath) => setFocusPath(nextPath))
     return () => subscription.unsubscribe()
-  }, [onProgrammaticFocus, pathSyncChannel.path])
+  }, [pathSyncChannel.path])
 
   return isLoading ? (
     <LoadingBlock showText />

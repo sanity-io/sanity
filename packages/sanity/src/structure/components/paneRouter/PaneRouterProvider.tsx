@@ -55,9 +55,14 @@ export function PaneRouterProvider(props: {
   )
 
   const modifyCurrentGroup = useCallback(
-    (modifier: (siblings: RouterPaneGroup, item: RouterPaneSibling) => RouterPaneGroup) => {
+    (
+      modifier: (siblings: RouterPaneGroup, item: RouterPaneSibling) => RouterPaneGroup,
+      options?: {replace?: boolean},
+    ) => {
       const nextRouterState = createNextRouterState(modifier)
-      setTimeout(() => navigate(nextRouterState), 0)
+      setTimeout(() => {
+        navigate(nextRouterState, options)
+      }, 0)
       return nextRouterState
     },
     [createNextRouterState, navigate],
@@ -77,23 +82,29 @@ export function PaneRouterProvider(props: {
   )
 
   const setPayload: PaneRouterContextValue['setPayload'] = useCallback(
-    (nextPayload) => {
-      modifyCurrentGroup((siblings, item) => [
-        ...siblings.slice(0, siblingIndex),
-        {...item, payload: nextPayload},
-        ...siblings.slice(siblingIndex + 1),
-      ])
+    (nextPayload, options?: {replace: boolean}) => {
+      modifyCurrentGroup(
+        (siblings, item) => [
+          ...siblings.slice(0, siblingIndex),
+          {...item, payload: nextPayload},
+          ...siblings.slice(siblingIndex + 1),
+        ],
+        options,
+      )
     },
     [modifyCurrentGroup, siblingIndex],
   )
 
   const setParams: PaneRouterContextValue['setParams'] = useCallback(
-    (nextParams) => {
-      modifyCurrentGroup((siblings, item) => [
-        ...siblings.slice(0, siblingIndex),
-        {...item, params: nextParams},
-        ...siblings.slice(siblingIndex + 1),
-      ])
+    (nextParams, options?: {replace?: boolean}) => {
+      modifyCurrentGroup(
+        (siblings, item) => [
+          ...siblings.slice(0, siblingIndex),
+          {...item, params: nextParams},
+          ...siblings.slice(siblingIndex + 1),
+        ],
+        options,
+      )
     },
     [modifyCurrentGroup, siblingIndex],
   )

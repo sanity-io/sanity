@@ -16,11 +16,13 @@ import {
   urlSearchParamVercelSetBypassCookie,
 } from '@sanity/preview-url-secret/constants'
 import {BoundaryElementProvider, Flex} from '@sanity/ui'
+import * as pathUtils from '@sanity/util/paths'
 import {useActorRef, useSelector} from '@xstate/react'
 import {lazy, Suspense, useCallback, useEffect, useMemo, useRef, useState} from 'react'
 import {
   type CommentIntentGetter,
   COMMENTS_INSPECTOR_NAME,
+  type Path,
   type SanityDocument,
   type Tool,
   useDataset,
@@ -317,17 +319,19 @@ export default function PresentationTool(props: {
       // When moving from one field to another, blur and focus events will trigger
       // this handler. We debounce to avoid unwanted intermediate navigations this
       // would cause.
-      debounce<(state: Required<PresentationStateParams>) => void>((state) => {
+      debounce<(nextPath: Path) => void>((nextPath) => {
+        const nextState = {
+          id: params.id,
+          type: params.type,
+          path: pathUtils.toString(nextPath),
+        }
         // We only ever want to update the path if we are still viewing the
         // document that was active when the focus event was triggered
-        if (isSameDocument(state)) {
-          navigate({
-            state,
-            replace: true,
-          })
+        if (isSameDocument(nextState)) {
+          navigate({state: nextState, replace: true})
         }
       }, 0),
-    [isSameDocument, navigate],
+    [isSameDocument, navigate, params.id, params.type],
   )
 
   const handlePreviewPath = useCallback(
@@ -504,6 +508,9 @@ export default function PresentationTool(props: {
     [navigate],
   )
 
+  const focusPath = useMemo(() => {
+    return pathUtils.pathFor(structureParams.path ? pathUtils.fromString(structureParams.path) : [])
+  }, [structureParams.path])
   return (
     <>
       <PresentationProvider
@@ -563,9 +570,10 @@ export default function PresentationTool(props: {
                     documentsOnPage={documentsOnPage}
                     documentType={params.type}
                     getCommentIntent={getCommentIntent}
+                    onFocusPath={handleFocusPath}
+                    focusPath={focusPath}
                     mainDocumentState={mainDocumentState}
                     onEditReference={handleEditReference}
-                    onFocusPath={handleFocusPath}
                     onStructureParams={handleStructureParams}
                     searchParams={searchParams}
                     setDisplayedDocument={setDisplayedDocument}

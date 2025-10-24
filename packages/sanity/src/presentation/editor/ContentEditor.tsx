@@ -3,6 +3,7 @@ import {Box, Card, Flex, Text} from '@sanity/ui'
 import {type HTMLProps, useCallback, useMemo} from 'react'
 import {
   getPreviewValueWithFallback,
+  type Path,
   PreviewCard,
   SanityDefaultPreview,
   Translate,
@@ -16,7 +17,6 @@ import {
   type MainDocumentState,
   type PresentationNavigate,
   type PresentationSearchParams,
-  type PresentationStateParams,
   type StructureDocumentPaneParams,
 } from '../types'
 import {DocumentListPane} from './DocumentListPane'
@@ -28,7 +28,8 @@ export function ContentEditor(props: {
   documentType?: string
   mainDocumentState?: MainDocumentState
   onEditReference: PresentationNavigate
-  onFocusPath: (state: Required<PresentationStateParams>) => void
+  onFocusPath: (path: Path) => void
+  focusPath: Path
   onStructureParams: (params: StructureDocumentPaneParams) => void
   refs: {_id: string; _type: string}[]
   structureParams: StructureDocumentPaneParams
@@ -40,6 +41,7 @@ export function ContentEditor(props: {
     mainDocumentState,
     onEditReference,
     onFocusPath,
+    focusPath,
     onStructureParams,
     refs,
     searchParams,
@@ -99,8 +101,9 @@ export function ContentEditor(props: {
       <DocumentPanel
         documentId={documentId}
         documentType={documentType}
-        onEditReference={onEditReference}
+        focusPath={focusPath}
         onFocusPath={onFocusPath}
+        onEditReference={onEditReference}
         onStructureParams={onStructureParams}
         searchParams={searchParams}
         structureParams={structureParams}
