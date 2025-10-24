@@ -118,9 +118,8 @@ defineField({
          memory: 1,
          timeout: 10,
          event: {
-           on: ['create', 'update'],
-           filter:
-             "_type == 'post' && defined(mastodonPost) && (delta::changedAny(mastodonPost) || delta::operation() == 'create')",
+           on: ['create'],
+           filter: "_type == 'post' && defined(mastodonPost)",
            projection: '{title, mastodonPost, slug}',
          },
          env: {
@@ -258,7 +257,7 @@ Once you've tested your function locally and are satisfied with its behavior, yo
 Only post when mastodonPost changes and `postToMastodon` is set to true:
 
 ```ts
-filter: "_type == 'post' && defined(mastodonPost) && (delta::changedAny(mastodonPost) || delta::operation() == 'create') && postToMastodon == true)"
+filter: "_type == 'post' && defined(mastodonPost) && postToMastodon == true)"
 ```
 
 ### Include additional fields

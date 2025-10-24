@@ -83,7 +83,7 @@ npx sanity schema deploy
          event: {
            on: ['create', 'update'],
            filter:
-             "_type == 'post' && defined(content) && (delta::changedAny(content) || delta::operation() == 'create')",
+             "_type == 'post' && (delta::changedAny(content) || (delta::operation() == 'create' && defined(content)))",
            projection: '{_id}',
          },
        }),
