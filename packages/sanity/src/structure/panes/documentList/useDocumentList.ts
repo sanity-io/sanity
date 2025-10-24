@@ -1,8 +1,7 @@
 import {ChannelError, ClientError, type ClientPerspective, ServerError} from '@sanity/client'
 import {observableCallback} from 'observable-callback'
-import {useMemo, useState} from 'react'
-import {useObservable} from 'react-rx'
-import {concat, fromEvent, merge, NEVER, of, timer} from 'rxjs'
+import {useEffect, useMemo, useState} from 'react'
+import {concat, fromEvent, merge, NEVER, type Observable, of, timer} from 'rxjs'
 import {
   filter,
   map,
@@ -293,4 +292,14 @@ function safeError(thrown: unknown): Error {
     return new Error(`${String(thrown)} ${nonErrorThrownWarning}`)
   }
   return new Error(`${String(thrown)} ${nonErrorThrownWarning}`)
+}
+
+function useObservable<T>(observable: Observable<T>, initialValue: T): T {
+  const [state, setState] = useState<T>(initialValue)
+  useEffect(() => {
+    const subscription = observable.subscribe((s) => setState(s))
+    return () => subscription.unsubscribe()
+  }, [observable])
+
+  return state
 }
