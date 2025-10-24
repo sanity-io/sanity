@@ -41,8 +41,8 @@ import {DocumentFieldActionsProvider} from './contexts/DocumentFieldActions'
 import {FormBuilderInputErrorBoundary} from './FormBuilderInputErrorBoundary'
 import {FormProvider} from './FormProvider'
 import {
+  EnhancedObjectDialog,
   EnhancedObjectDialogProvider,
-  TreeEditingDialog,
   useEnhancedObjectDialog,
 } from './tree-editing'
 
@@ -344,11 +344,11 @@ interface RootInputProps {
 
 function RootInput(props: RootInputProps) {
   const {rootInputProps, onPathOpen, openPath, renderInput} = props
-  const treeEditing = useEnhancedObjectDialog()
+  const {enabled: enhancedObjectDialogEnabled} = useEnhancedObjectDialog()
   const isRoot = rootInputProps.id === 'root'
 
-  const arrayEditingModal = treeEditing.enabled && isRoot && (
-    <TreeEditingDialog
+  const arrayEditingModal = enhancedObjectDialogEnabled && isRoot && (
+    <EnhancedObjectDialog
       // eslint-disable-next-line react/jsx-handler-names
       onPathFocus={rootInputProps.onPathFocus}
       onPathOpen={onPathOpen}
@@ -361,6 +361,6 @@ function RootInput(props: RootInputProps) {
   return renderInput({
     ...rootInputProps,
     // eslint-disable-next-line camelcase
-    __internal_arrayEditingModal: arrayEditingModal,
+    __internal_enhancedbjectDialog: arrayEditingModal,
   })
 }
