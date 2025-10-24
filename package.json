@@ -7,7 +7,7 @@
     "bootstrap": "pnpm install && pnpm build:cli",
     "build": "turbo run build --filter='./packages/*' --filter='./packages/@sanity/*'",
     "build:bundle": "turbo run build:bundle --filter='./packages/*' --filter='./packages/@sanity/*'",
-    "build:clean": "lerna run clean",
+    "build:clean": "pnpm -r run clean",
     "build:cli": "turbo run build --filter=@sanity/cli --filter=sanity",
     "build:cli-only": "turbo run --filter=@sanity/cli build",
     "build:e2e": "pnpm e2e:build",
@@ -93,7 +93,7 @@
     "test:vitest:watch": "vitest --watch",
     "tsdoc:dev": "sanity-tsdoc dev",
     "updated": "lerna updated",
-    "watch": "lerna run --parallel --stream --scope '{@sanity/*,sanity}' watch"
+    "watch": "pnpm --filter @sanity/* --filter sanity watch"
   },
   "lint-staged": {
     "*.{js,jsx,ts,tsx,mjs,cjs}": [
