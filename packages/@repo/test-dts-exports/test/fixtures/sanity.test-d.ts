@@ -4587,7 +4587,7 @@ describe('sanity', () => {
     expectTypeOf<NodeChronologyProps>().toBeObject()
   })
   test('NodeDiffProps', () => {
-    expectTypeOf<NodeDiffProps<any>>().toBeObject()
+    expectTypeOf<NodeDiffProps<any, any>>().toBeObject()
   })
   test('noop', () => {
     expectTypeOf<typeof noop>().toBeFunction()

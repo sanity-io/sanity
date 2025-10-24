@@ -1,7 +1,7 @@
 import {type LayoutProps} from '../../config'
+import {useReleasesToolAvailable} from '../../schedules/hooks/useReleasesToolAvailable'
 import {ReleasesMetadataProvider} from '../contexts/ReleasesMetadataProvider'
 import {ReleasesUpsellProvider} from '../contexts/upsell/ReleasesUpsellProvider'
-import {useReleasesToolAvailable} from '../hooks/useReleasesToolAvailable'
 
 export function ReleasesStudioLayout(props: LayoutProps) {
   const releasesToolAvailable = useReleasesToolAvailable()

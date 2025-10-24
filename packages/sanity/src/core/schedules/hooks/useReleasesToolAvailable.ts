@@ -1,7 +1,7 @@
 import {useMemo} from 'react'
 
 import {useWorkspace} from '../../studio/workspace'
-import {releasesToolAvailable} from '../util/releasesToolAvailable'
+import {SCHEDULES_TOOL_NAME} from '../plugin'
 
 /**
  * Determine whether the releases tool is available in the current workspace.
@@ -14,5 +14,5 @@ import {releasesToolAvailable} from '../util/releasesToolAvailable'
  */
 export function useReleasesToolAvailable(): boolean {
   const workspace = useWorkspace()
-  return useMemo(() => releasesToolAvailable(workspace), [workspace])
+  return useMemo(() => workspace.tools.some(({name}) => name === SCHEDULES_TOOL_NAME), [workspace])
 }

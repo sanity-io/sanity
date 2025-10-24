@@ -1,6 +1,6 @@
 import {Box, Flex, Skeleton} from '@sanity/ui'
 
-import {useScheduledDraftDocument} from '../../../hooks/useScheduledDraftDocument'
+import {useScheduledDraftDocument} from '../../../../singleDocRelease/hooks/useScheduledDraftDocument'
 import {ReleaseDocumentPreview} from '../../components/ReleaseDocumentPreview'
 import {type VisibleColumn} from '../../components/Table/types'
 import {type TableRelease} from '../ReleasesOverview'
