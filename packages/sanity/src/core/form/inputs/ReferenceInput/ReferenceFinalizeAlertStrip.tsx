@@ -30,7 +30,7 @@ export function ReferenceFinalizeAlertStrip({
       status="info"
       data-testid="alert-reference-published"
     >
-      <Stack space={3}>
+      <Stack gap={3}>
         <Text as="p" muted size={1}>
           <Translate
             t={t}

@@ -1,56 +1,23 @@
 import {HighlightStyle, syntaxHighlighting} from '@codemirror/language'
 import {EditorView} from '@codemirror/view'
 import {tags as t} from '@lezer/highlight'
-import {hues} from '@sanity/color'
-import {rem, type Theme} from '@sanity/ui'
+import {vars} from '@sanity/ui/css'
 import {useMemo} from 'react'
 
-export function useCodemirrorTheme(theme: Theme) {
-  const cmTheme = useMemo(() => createTheme(theme), [theme])
-  const cmHighlight = useMemo(() => syntaxHighlighting(createHighlight(theme)), [theme])
+export function useCodemirrorTheme() {
+  const cmTheme = useMemo(() => createTheme(), [])
+  const cmHighlight = useMemo(() => syntaxHighlighting(createHighlight()), [])
 
   return [cmTheme, cmHighlight]
 }
 
-function createTheme(theme: Theme) {
-  const {color, fonts} = theme.sanity
-  const card = color.card.enabled
-  const cursor = hues.blue[color.dark ? 400 : 500].hex
-  const selection = hues.gray[theme.sanity.color.dark ? 900 : 100].hex
-
-  return EditorView.theme(
-    {
-      '&': {
-        color: card.fg,
-        backgroundColor: card.bg,
-      },
-
-      '.cm-content': {
-        caretColor: cursor,
-      },
-
-      '.cm-editor': {
-        fontFamily: fonts.code.family,
-        fontSize: rem(fonts.code.sizes[1].fontSize),
-        lineHeight: 'inherit',
-      },
-
-      '.cm-cursor, .cm-dropCursor': {borderLeftColor: cursor},
-      '&.cm-focused .cm-selectionBackground, .cm-selectionBackground, .cm-content ::selection': {
-        backgroundColor: selection,
-      },
-
-      '.cm-panels': {backgroundColor: card.bg, color: card.fg},
-      '.cm-panels.cm-panels-top': {borderBottom: `2px solid ${card.border}`},
-      '.cm-panels.cm-panels-bottom': {borderTop: `2px solid ${card.border}`},
-    },
-    {dark: color.dark},
-  )
+function createTheme() {
+  return EditorView.theme({})
 }
 
-function createHighlight(theme: Theme) {
-  const c = theme.sanity.color.base
-  const s = theme.sanity.color.syntax
+function createHighlight() {
+  const s = vars.color.code.token
+
   return HighlightStyle.define([
     {tag: t.keyword, color: s.keyword},
     {tag: [t.propertyName, t.name, t.deleted, t.character, t.macroName], color: s.property},
@@ -81,6 +48,6 @@ function createHighlight(theme: Theme) {
     {tag: t.heading, fontWeight: 'bold', color: s.property},
     {tag: [t.atom, t.bool, t.special(t.variableName)], color: s.boolean},
     {tag: [t.processingInstruction, t.string, t.inserted], color: s.string},
-    {tag: t.invalid, color: c.fg},
+    {tag: t.invalid, color: vars.color.code.fg},
   ])
 }

@@ -127,7 +127,7 @@ function PaneContextIntentMenuItem(props: {
   const intentLink = useIntentLink({intent: intent.type, params: intent.params})
 
   const handleClick = useCallback(
-    (event: MouseEvent<HTMLDivElement>) => {
+    (event: MouseEvent<HTMLAnchorElement>) => {
       intentLink.onClick(event)
       node.onAction()
     },

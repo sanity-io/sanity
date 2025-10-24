@@ -1,18 +1,11 @@
-import {styled} from 'styled-components'
-
-const Thing = styled.div`
-  background: #fe0;
-  height: 100%;
-  padding: 20px;
-  box-sizing: border-box;
-`
+import {thing} from './styles.css'
 
 export function StyledTestView() {
   // throw new Error('called?')
 
   return (
-    <Thing key="test">
-      Styled with <code>styled-components</code>
-    </Thing>
+    <div key="test" className={thing}>
+      Styled with <code>vanilla extract</code>
+    </div>
   )
 }

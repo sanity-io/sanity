@@ -5,7 +5,7 @@ import {Button, type ButtonProps} from '../../../ui-components'
 import {useTranslation} from '../..'
 
 type ContextMenuButtonProps = Pick<
-  ButtonProps,
+  ButtonProps<'button'>,
   'mode' | 'selected' | 'size' | 'tone' | 'tooltipProps'
 >
 

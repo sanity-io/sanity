@@ -4,6 +4,7 @@
 /* eslint-disable i18next/no-literal-string */
 import {type ObjectFieldType} from '@sanity/types'
 import {Select, TextInput} from '@sanity/ui'
+import {vars} from '@sanity/ui/css'
 import {type Cell, type CellContext, flexRender} from '@tanstack/react-table'
 import {type MouseEventHandler, useCallback, useEffect, useRef, useState} from 'react'
 import {type SanityDocument} from 'sanity'
@@ -16,8 +17,8 @@ const DataCell = styled.td<{width: number}>`
   overflow: hidden;
   box-sizing: border-box;
   width: ${({width}) => width}px;
-  border-top: 1px solid var(--card-border-color);
-  background-color: var(--card-bg-color);
+  border-top: 1px solid ${vars.color.border};
+  background-color: ${vars.color.bg};
 `
 
 const PinnedDataCell = styled(DataCell)`
@@ -212,7 +213,7 @@ export function SheetListCell(cell: Cell<SanityDocument, unknown>) {
       key={cell.row.original._id + cell.id}
       style={{
         left: cell.column.getStart('left') ?? undefined,
-        borderRight: `${borderWidth}px solid var(--card-border-color)`,
+        borderRight: `${borderWidth}px solid ${vars.color.border}`,
       }}
       width={cell.column.getSize()}
     >

@@ -1,7 +1,9 @@
+import {type BoxElementType} from '@sanity/ui'
 import {type CSSProperties} from 'react'
 
 export interface InjectedTableProps {
-  as?: React.ElementType | keyof React.JSX.IntrinsicElements
+  // as?: React.ElementType | keyof React.JSX.IntrinsicElements
+  as?: BoxElementType
   id: string
   style: {width?: number}
 }

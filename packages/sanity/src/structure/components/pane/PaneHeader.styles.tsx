@@ -1,4 +1,5 @@
-import {Card, Flex, Layer, Text, TextSkeleton, type Theme} from '@sanity/ui'
+import {Card, Flex, Layer, Text, TextSkeleton} from '@sanity/ui'
+import {vars} from '@sanity/ui/css'
 import {css, styled} from 'styled-components'
 
 interface RootProps {
@@ -18,7 +19,7 @@ export const Root = styled(Layer)<RootProps>(({$border}) => {
       left: 0;
       right: 0;
       bottom: -1px;
-      border-bottom: 1px solid ${$border ? 'var(--card-border-color)' : 'transparent'};
+      border-bottom: 1px solid ${$border ? vars.color.border : 'transparent'};
       opacity: 1;
     }
   `
@@ -32,18 +33,15 @@ export const Layout = styled(Flex)`
   }
 `
 
-export const TitleCard = styled(Card)(({theme}: {theme: Theme}) => {
-  const {fg, bg} = theme.sanity.color.card.enabled
+export const TitleCard = styled(Card)`
+  /* Disable color updates on hover */
 
-  // Disable color updates on hover
-  return css`
-    background-color: ${bg};
+  background-color: ${vars.color.tinted.default.bg[0]};
 
-    [data-ui='Text'] {
-      color: ${fg};
-    }
-  `
-})
+  [data-ui='Text'] {
+    color: ${vars.color.tinted.default.fg[0]};
+  }
+`
 
 export const TitleTextSkeleton = styled(TextSkeleton)`
   width: 66%;

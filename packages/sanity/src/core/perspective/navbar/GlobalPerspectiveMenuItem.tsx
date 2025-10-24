@@ -2,6 +2,7 @@ import {type ReleaseDocument} from '@sanity/client'
 import {DotIcon, ErrorOutlineIcon, EyeClosedIcon, EyeOpenIcon, LockIcon} from '@sanity/icons'
 // eslint-disable-next-line no-restricted-imports -- custom use for MenuItem & Button not supported by ui-components
 import {Box, Button, Flex, MenuItem, Stack, Text} from '@sanity/ui'
+import {getVarName, vars} from '@sanity/ui/css'
 import {type CSSProperties, forwardRef, type MouseEvent, useCallback, useMemo} from 'react'
 import {css, styled} from 'styled-components'
 
@@ -37,16 +38,16 @@ export interface LayerRange {
 
 const ToggleLayerButton = styled(Button)<{$visible: boolean}>(
   ({$visible}) => css`
-    --card-fg-color: inherit;
-    --card-icon-color: inherit;
+    ${getVarName(vars.color.fg)}: inherit;
+    ${getVarName(vars.color.muted.fg)}: inherit;
 
     background-color: inherit;
     opacity: ${$visible ? 0 : 1};
 
     @media (hover: hover) {
       &:not([data-disabled='true']):hover {
-        --card-fg-color: inherit;
-        --card-icon-color: inherit;
+        ${getVarName(vars.color.fg)}: inherit;
+        ${getVarName(vars.color.muted.fg)}: inherit;
       }
     }
 
@@ -179,7 +180,7 @@ export const GlobalPerspectiveMenuItem = forwardRef<
             flex={1}
             paddingY={2}
             paddingRight={2}
-            space={2}
+            gap={2}
             style={{
               opacity: isReleasePerspectiveExcluded ? 0.5 : undefined,
             }}

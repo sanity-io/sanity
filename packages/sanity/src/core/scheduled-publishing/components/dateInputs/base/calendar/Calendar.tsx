@@ -7,6 +7,7 @@ import {
   Select,
   Text,
 } from '@sanity/ui'
+import {vars} from '@sanity/ui/css'
 import {addDays, addMonths, setDate, setHours, setMinutes, setMonth, setYear} from 'date-fns'
 import {range} from 'lodash'
 import {
@@ -227,7 +228,7 @@ export const Calendar = forwardRef(function Calendar(
 
       {/* Select time */}
       {selectTime && (
-        <Box padding={2} style={{borderTop: '1px solid var(--card-border-color)'}}>
+        <Box padding={2} style={{borderTop: `1px solid ${vars.color.border}`}}>
           <Flex align="center">
             <Flex align="center" flex={1}>
               <Box>

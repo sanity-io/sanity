@@ -293,9 +293,9 @@ export function GlobalDocumentReferenceInput(props: GlobalDocumentReferenceInput
   ])
 
   return (
-    <Stack space={1}>
+    <Stack gap={1}>
       {isEditing ? (
-        <Stack space={2} ref={clickOutsideBoundaryRef}>
+        <Stack gap={2} ref={clickOutsideBoundaryRef}>
           <ChangeIndicator path={path} isChanged={changed} hasFocus={!!focused}>
             <div ref={setAutocompletePopoverReferenceElement}>
               <ReferenceAutocomplete
@@ -334,7 +334,7 @@ export function GlobalDocumentReferenceInput(props: GlobalDocumentReferenceInput
             radius={1}
             tone={
               readOnly
-                ? 'transparent'
+                ? 'neutral'
                 : loadableReferenceInfo.error || errors.length > 0
                   ? 'critical'
                   : 'default'
@@ -414,8 +414,7 @@ export function GlobalDocumentReferenceInput(props: GlobalDocumentReferenceInput
                       )}
                     </Menu>
                   }
-                  placement="right"
-                  popover={{portal: true, tone: 'default'}}
+                  popover={{placement: 'right', portal: true, tone: 'default'}}
                 />
               </Inline>
             </Flex>

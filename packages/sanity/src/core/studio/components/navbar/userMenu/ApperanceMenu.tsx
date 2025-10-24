@@ -3,14 +3,10 @@ import {MenuDivider} from '@sanity/ui'
 
 import {MenuItem} from '../../../../../ui-components'
 import {useTranslation} from '../../../../i18n'
-import {type StudioThemeColorSchemeKey} from '../../../../theme'
+import {type StudioColorScheme} from '../../../../theme'
 import {useColorSchemeOptions} from '../../../colorScheme'
 
-export function AppearanceMenu({
-  setScheme,
-}: {
-  setScheme: (nextScheme: StudioThemeColorSchemeKey) => void
-}) {
+export function AppearanceMenu({setScheme}: {setScheme: (nextScheme: StudioColorScheme) => void}) {
   const {t} = useTranslation()
   // Subscribe to just what we need, if the menu isn't shown then we're not subscribed to these contexts
   const options = useColorSchemeOptions(setScheme, t)

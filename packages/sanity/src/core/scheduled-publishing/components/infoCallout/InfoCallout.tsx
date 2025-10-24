@@ -12,11 +12,11 @@ const InfoCallout = () => {
         <Text size={2}>
           <InfoOutlineIcon />
         </Text>
-        <Inline space={3}>
+        <Inline gap={3}>
           <Text size={1} weight="semibold">
             Schedule Publishing is not enabled
           </Text>
-          <Stack space={3} marginTop={2}>
+          <Stack gap={3} marginTop={2}>
             <Text size={1}>
               We recommend using{' '}
               <a target="_blank" href={RELEASES_DOCS_URL} rel="noreferrer">

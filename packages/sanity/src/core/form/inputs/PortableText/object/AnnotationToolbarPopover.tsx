@@ -1,6 +1,6 @@
 import {PortableTextEditor, usePortableTextEditor} from '@portabletext/editor'
 import {EditIcon, TrashIcon} from '@sanity/icons'
-import {Box, Flex, Text, useGlobalKeyDown, useTheme} from '@sanity/ui'
+import {Box, Flex, Text, useCard, useGlobalKeyDown} from '@sanity/ui'
 import {type ReactNode, useCallback, useEffect, useMemo, useRef, useState} from 'react'
 
 import {Button, Popover, type PopoverProps} from '../../../../../ui-components'
@@ -30,15 +30,14 @@ export function AnnotationToolbarPopover(props: AnnotationToolbarPopoverProps): 
     referenceElement,
     title,
   } = props
+  const card = useCard()
   const [popoverOpen, setPopoverOpen] = useState<boolean>(false)
   const [cursorRect, setCursorRect] = useState<DOMRect | null>(null)
   const rangeRef = useRef<Range | null>(null)
-  const {sanity} = useTheme()
   const {t} = useTranslation()
   const editButtonRef = useRef<HTMLButtonElement | null>(null)
   const deleteButtonRef = useRef<HTMLButtonElement | null>(null)
   const focusTrappedRef = useRef<HTMLButtonElement | null>(null)
-  const popoverScheme = sanity.color.dark ? 'light' : 'dark'
   const editor = usePortableTextEditor()
 
   // This is a "virtual element" (supported by Popper.js)
@@ -210,7 +209,7 @@ export function AnnotationToolbarPopover(props: AnnotationToolbarPopoverProps): 
       preventOverflow
       referenceBoundary={referenceBoundary}
       referenceElement={cursorElement}
-      scheme={popoverScheme}
+      scheme={card.scheme === 'dark' ? 'light' : 'dark'}
     />
   )
 }

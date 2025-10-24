@@ -1,5 +1,6 @@
 import {AddUserIcon, UsersIcon} from '@sanity/icons'
 import {Box, Menu, MenuDivider, Stack, Text} from '@sanity/ui'
+import {vars} from '@sanity/ui/css'
 import {useCallback, useMemo, useState} from 'react'
 import {styled} from 'styled-components'
 
@@ -19,7 +20,7 @@ const StyledMenu = styled(Menu)`
 const FooterStack = styled(Stack)`
   position: sticky;
   bottom: 0;
-  background-color: var(--card-bg-color);
+  background-color: ${vars.color.bg};
 `
 
 export function PresenceMenu() {
@@ -94,7 +95,7 @@ export function PresenceMenu() {
 
           {!hasPresence && (
             <Box padding={3}>
-              <Stack space={3}>
+              <Stack gap={3}>
                 <Text weight="medium" size={1}>
                   {t('presence.no-one-else-title')}
                 </Text>
@@ -106,7 +107,7 @@ export function PresenceMenu() {
             </Box>
           )}
 
-          <FooterStack space={1}>
+          <FooterStack gap={1}>
             <MenuDivider />
 
             <MenuItem

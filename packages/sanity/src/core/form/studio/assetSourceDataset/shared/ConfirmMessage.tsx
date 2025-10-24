@@ -31,7 +31,7 @@ export const ConfirmMessage = ({asset, assetType, hasResults = false}: ConfirmMe
   if (hasResults) {
     return (
       <Card tone="caution" padding={[3, 3, 4]} border radius={2} marginBottom={3}>
-        <Grid columns={3} gap={[2, 3, 4]}>
+        <Grid gridTemplateColumns={3} gap={[2, 3, 4]}>
           <Flex gap={[3, 4]} align="center" style={{gridColumn: isImage ? 'span 2' : 'span 3'}}>
             <Text>
               <WarningOutlineIcon />
@@ -62,7 +62,7 @@ export const ConfirmMessage = ({asset, assetType, hasResults = false}: ConfirmMe
 
   return (
     <Card paddingX={[2, 3, 4]} paddingY={[3, 3, 3, 4]}>
-      <Grid columns={3} gap={3}>
+      <Grid gridTemplateColumns={3} gap={3}>
         <Flex style={{gridColumn: isImage ? 'span 2' : 'span 3'}} align="center">
           <Text>
             <Translate

@@ -3,7 +3,8 @@
 
 import {type DragStartEvent} from '@dnd-kit/core'
 import {isKeySegment} from '@sanity/types'
-import {Card, Stack, Text, useTheme} from '@sanity/ui'
+import {Card, Stack, Text} from '@sanity/ui'
+import {vars} from '@sanity/ui/css'
 import {
   defaultRangeExtractor,
   elementScroll,
@@ -54,7 +55,6 @@ export function ListArrayInput<Item extends ObjectItem>(props: ArrayOfObjectsInp
 
   // Stores the index of the item being dragged
   const [activeDragItemIndex, setActiveDragItemIndex] = useState<number | null>(null)
-  const {space} = useTheme().sanity
 
   const memberKeys = useMemoCompare(
     useMemo(() => members.map((member) => member.key), [members]),
@@ -178,7 +178,7 @@ export function ListArrayInput<Item extends ObjectItem>(props: ArrayOfObjectsInp
   const radius = 2
 
   return (
-    <Stack space={2} ref={parentRef}>
+    <Stack gap={2} ref={parentRef}>
       <UploadTargetCard
         $radius={radius}
         types={schemaType.of}
@@ -187,7 +187,7 @@ export function ListArrayInput<Item extends ObjectItem>(props: ArrayOfObjectsInp
         {...elementProps}
         tabIndex={0}
       >
-        <Stack data-ui="ArrayInput__content" space={2}>
+        <Stack data-ui="ArrayInput__content" gap={2}>
           {members.length === 0 ? (
             <Card padding={3} border radius={2}>
               <Text align="center" muted size={1}>
@@ -202,9 +202,7 @@ export function ListArrayInput<Item extends ObjectItem>(props: ArrayOfObjectsInp
                 // This is not memoized since it changes on scroll so it will change anyways making memo useless
                 // Account for grid gap
                 boxSizing: 'border-box',
-                height: `${
-                  virtualizer.getTotalSize() + items.length * space[listGridGap] + space[paddingY]
-                }px`,
+                height: `calc(${virtualizer.getTotalSize()}px + (${items.length} * ${vars.space[listGridGap]}) + ${vars.space[paddingY]})`,
                 width: '100%',
                 position: 'relative',
               }}

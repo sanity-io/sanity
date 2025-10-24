@@ -161,6 +161,18 @@ const codeInputType = {
 
 export function createSchemaTypes(projectId: string) {
   return [
+    {
+      type: 'document',
+      name: 'color',
+      title: 'Color',
+      fields: [
+        {
+          type: 'string',
+          name: 'name',
+          title: 'Name',
+        },
+      ],
+    },
     // Test documents with standard inputs
     arrays,
     topLevelArrayType,

@@ -1,5 +1,6 @@
 import {type AssetSource} from '@sanity/types'
-import {Box, Card, type ThemeColorToneKey} from '@sanity/ui'
+import {Box, Card} from '@sanity/ui'
+import {type CardTone} from '@sanity/ui/theme'
 import {get} from 'lodash'
 import {useCallback, useMemo, useState} from 'react'
 
@@ -122,7 +123,7 @@ export function VideoAsset(props: VideoAssetProps) {
     ],
   )
 
-  const getVideoTone = useCallback(() => {
+  const getVideoTone = useCallback((): CardTone => {
     // Get the video tone
     const acceptedFiles = hoveringFiles.filter((file) => resolveUploader?.(schemaType, file))
     const rejectedFilesCount = hoveringFiles.length - acceptedFiles.length
@@ -136,7 +137,7 @@ export function VideoAsset(props: VideoAssetProps) {
     if (!value?._upload && !readOnly && hoveringFiles.length > 0) {
       return 'primary'
     }
-    return value?._upload && value?.asset && readOnly ? 'transparent' : 'default'
+    return value?._upload && value?.asset && readOnly ? 'neutral' : 'default'
   }, [
     directUploads,
     hoveringFiles,
@@ -327,7 +328,7 @@ function FileUploadPlaceHolder(props: VideoAssetProps) {
   )
 }
 
-function AssetPlaceholder(props: VideoAssetProps & {tone: ThemeColorToneKey}) {
+function AssetPlaceholder(props: VideoAssetProps & {tone: CardTone}) {
   const {directUploads, schemaType, readOnly, resolveUploader, hoveringFiles, tone} = props
 
   const acceptedFiles = hoveringFiles.filter((file) => resolveUploader?.(schemaType, file))

@@ -3,6 +3,7 @@
 
 import {type ReleaseDocument} from '@sanity/client'
 import {Box, Card, Flex, Text} from '@sanity/ui'
+import {getVarName, vars} from '@sanity/ui/css'
 import {AnimatePresence, motion} from 'framer-motion'
 import {styled} from 'styled-components'
 
@@ -20,7 +21,7 @@ interface ReleaseDashboardActivityPanelProps {
 }
 const MotionFlex = motion.create(Flex)
 const FillHeight = styled.div`
-  --card-border-color: transparent;
+  ${getVarName(vars.color.border)}: transparent;
   height: 100%;
   display: flex;
   flex-direction: column;

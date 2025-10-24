@@ -43,13 +43,13 @@ export function ImportErrorScreen(props: {error: Error; eventId?: string; autoRe
     <Card height="fill" overflow="auto" paddingY={[4, 5, 6, 7]} paddingX={4} sizing="border">
       <View display="flex" height="fill">
         <Container width={3}>
-          <Stack space={6}>
-            <Stack space={4}>
+          <Stack gap={6}>
+            <Stack gap={4}>
               <Heading>Import error</Heading>
               <Text>An error occurred during dynamic import.</Text>
               {isDev && (
                 <Card border radius={2} overflow="auto" padding={4} tone="critical">
-                  <Stack space={4}>
+                  <Stack gap={4}>
                     {error.message && (
                       <Code weight={'bold'} size={1}>
                         {error.message}
@@ -65,7 +65,7 @@ export function ImportErrorScreen(props: {error: Error; eventId?: string; autoRe
                   Reloading {countdownSeconds <= 0 ? 'now' : `in ${countdownSeconds}s`}…
                 </Text>
               ) : null}
-              <Inline space={3}>
+              <Inline gap={3}>
                 <Button
                   onClick={reloadPage}
                   text={autoReload ? 'Reload now' : 'Reload'}

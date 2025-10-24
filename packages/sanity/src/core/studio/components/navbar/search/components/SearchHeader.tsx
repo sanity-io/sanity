@@ -1,6 +1,6 @@
 import {ArrowLeftIcon, ControlsIcon, SearchIcon, SpinnerIcon} from '@sanity/icons'
 import {Box, Card, Flex} from '@sanity/ui'
-import {forwardRef, type KeyboardEvent, useCallback, useEffect, useRef} from 'react'
+import {type ChangeEvent, forwardRef, useCallback, useEffect, useRef} from 'react'
 import {keyframes, styled} from 'styled-components'
 
 import {Button} from '../../../../../../ui-components'
@@ -66,7 +66,7 @@ export const SearchHeader = forwardRef<HTMLInputElement, SearchHeaderProps>(func
     [dispatch, filtersVisible],
   )
   const handleQueryChange = useCallback(
-    (e: KeyboardEvent<HTMLInputElement>) =>
+    (e: ChangeEvent<HTMLInputElement>) =>
       dispatch({type: 'TERMS_QUERY_SET', query: e.currentTarget.value}),
     [dispatch],
   )

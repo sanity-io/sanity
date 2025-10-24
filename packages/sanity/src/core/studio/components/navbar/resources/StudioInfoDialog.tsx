@@ -119,7 +119,7 @@ export function StudioInfoDialog(props: StudioInfoDialogProps) {
           <TextWithTone tone="caution">
             <WarningOutlineIcon />
           </TextWithTone>
-          <Stack space={4}>
+          <Stack gap={4}>
             <TextWithTone size={1} tone="caution" weight="medium">
               {t('about-dialog.configuration-issue.header')}
             </TextWithTone>
@@ -139,7 +139,6 @@ export function StudioInfoDialog(props: StudioInfoDialogProps) {
             </TextWithTone>
           </Stack>
         </Flex>
-        <Stack space={2} />
       </Card>
     ) : null
 
@@ -157,13 +156,13 @@ export function StudioInfoDialog(props: StudioInfoDialogProps) {
         </Flex>
       ) : null}
 
-      <Stack space={3} paddingY={3}>
+      <Stack gap={3} paddingY={3}>
         <Flex align="center" justify="center" paddingY={4}>
           <MonogramContainer>
             <SanityMonogram height={75} width={75} />
           </MonogramContainer>
         </Flex>
-        <Grid columns={2} gap={2}>
+        <Grid gridTemplateColumns={2} gap={2}>
           <Flex justify="flex-end" align="center">
             {/* eslint-disable-next-line i18next/no-literal-string */}
             <Text as="h2" size={1} weight="semibold">
@@ -174,11 +173,11 @@ export function StudioInfoDialog(props: StudioInfoDialogProps) {
             placement="bottom"
             content={
               <Card>
-                <Inline space={1}>
+                <Inline gap={1}>
                   <Badge tone={versionBadgeTone}>
                     {ensureVersionPrefix(currentVersion.version)}
                   </Badge>
-                  <Badge size={1}>
+                  <Badge fontSize={1}>
                     {currentVersionType === 'development'
                       ? t('about-dialog.version-info.tooltip.development')
                       : currentVersionType === 'prerelease'
@@ -272,7 +271,7 @@ export function StudioInfoDialog(props: StudioInfoDialogProps) {
             </>
           ) : null}
         </Grid>
-        <Stack space={2} paddingY={3}>
+        <Stack gap={2} paddingY={3}>
           {isAutoUpdating ? (
             <Card tone="transparent" padding={2} radius={3} marginX={2}>
               <Flex align="center" justify="space-evenly" gap={2}>

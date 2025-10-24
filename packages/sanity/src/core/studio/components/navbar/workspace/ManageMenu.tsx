@@ -23,7 +23,7 @@ export function ManageMenu({multipleWorkspaces}: {multipleWorkspaces: boolean}) 
     <Stack paddingX={4} paddingTop={4} paddingBottom={multipleWorkspaces ? 3 : 4}>
       <Flex align="center">
         <WorkspacePreviewIcon icon={activeWorkspace.icon} size="large" />
-        <Stack marginLeft={2} space={2}>
+        <Stack marginLeft={2} gap={2}>
           <Text size={0}>{project?.displayName}</Text>
           <Text size={2} weight="medium">
             {activeWorkspace.title}

@@ -1,6 +1,7 @@
 import {AccessDeniedIcon, ImageIcon, ReadOnlyIcon} from '@sanity/icons'
-import {Box, type Card, type CardTone, Heading, Text} from '@sanity/ui'
-import {type ComponentProps, type ReactNode, useCallback, useEffect, useState} from 'react'
+import {Box, type CardProps, Heading, Text} from '@sanity/ui'
+import {type CardTone} from '@sanity/ui/theme'
+import {type ReactNode, useCallback, useEffect, useState} from 'react'
 
 import {LoadingBlock} from '../../../../components/loadingBlock'
 import {useTranslation} from '../../../../i18n'
@@ -10,11 +11,11 @@ interface Props {
   alt: string
   drag: boolean
   isRejected: boolean
-  readOnly?: boolean | null
+  readOnly?: boolean
   src: string
 }
 
-export function ImagePreview(props: ComponentProps<typeof Card> & Props) {
+export function ImagePreview(props: CardProps<'div'> & Props) {
   const {drag, readOnly, isRejected, src, ...rest} = props
   const [isLoaded, setLoaded] = useState(false)
   const acceptTone = isRejected || readOnly ? 'critical' : 'primary'
@@ -33,7 +34,7 @@ export function ImagePreview(props: ComponentProps<typeof Card> & Props) {
   const {t} = useTranslation()
 
   return (
-    <RatioBox {...rest} tone="transparent">
+    <RatioBox {...rest} tone="neutral">
       {!isLoaded && <OverlayComponent cardTone="transparent" content={<LoadingBlock showText />} />}
       <img
         src={src}

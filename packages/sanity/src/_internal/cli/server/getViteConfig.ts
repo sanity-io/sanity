@@ -92,6 +92,7 @@ export async function getViteConfig(options: ViteOptions): Promise<InlineConfig>
   const staticPath = `${basePath}static`
 
   const {default: viteReact} = await import('@vitejs/plugin-react')
+  const {vanillaExtractPlugin} = await import('@vanilla-extract/vite-plugin')
 
   const envVars = isApp
     ? getAppEnvironmentVariables({prefix: 'process.env.', jsonEncode: true})
@@ -128,6 +129,7 @@ export async function getViteConfig(options: ViteOptions): Promise<InlineConfig>
     configFile: false,
     mode,
     plugins: [
+      vanillaExtractPlugin(),
       viteReact(
         reactCompiler ? {babel: {plugins: [['babel-plugin-react-compiler', reactCompiler]]}} : {},
       ),
