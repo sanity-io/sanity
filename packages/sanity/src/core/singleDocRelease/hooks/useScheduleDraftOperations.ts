@@ -29,7 +29,7 @@ export interface ScheduleDraftOperationsValue {
    * Reschedules a draft to a new publish time
    */
   rescheduleScheduledDraft: (
-    releaseDocumentId: string,
+    release: ReleaseDocument,
     newPublishAt: Date,
     opts?: BaseActionOptions,
   ) => Promise<void>
@@ -124,15 +124,26 @@ export function useScheduleDraftOperations(): ScheduleDraftOperationsValue {
 
   const handleRescheduleScheduledDraft = useCallback(
     async (
-      releaseDocumentId: string,
+      release: ReleaseDocument,
       newPublishAt: Date,
       opts?: BaseActionOptions,
     ): Promise<void> => {
       // need to unschedule to bring release to `active` state
       // so that it can be rescheduled with the new date
-      await releaseOperations.unschedule(releaseDocumentId, opts)
+      await releaseOperations.unschedule(release._id, opts)
 
-      await releaseOperations.schedule(releaseDocumentId, newPublishAt, opts)
+      await releaseOperations.updateRelease(
+        {
+          _id: release._id,
+          metadata: {
+            ...release.metadata,
+            intendedPublishAt: newPublishAt.toISOString(),
+          },
+        },
+        opts,
+      )
+
+      await releaseOperations.schedule(release._id, newPublishAt, opts)
     },
     [releaseOperations],
   )

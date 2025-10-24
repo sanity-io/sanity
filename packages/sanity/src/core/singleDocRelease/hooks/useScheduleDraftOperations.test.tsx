@@ -199,11 +199,21 @@ describe('useScheduleDraftOperations', () => {
     const newPublishAt = new Date('2025-01-15T12:00:00Z')
 
     await act(async () => {
-      await result.current.rescheduleScheduledDraft(scheduledRelease._id, newPublishAt)
+      await result.current.rescheduleScheduledDraft(scheduledRelease, newPublishAt)
     })
 
     expect(useReleaseOperationsMockReturn.unschedule).toHaveBeenCalledWith(
       scheduledRelease._id,
+      undefined,
+    )
+    expect(useReleaseOperationsMockReturn.updateRelease).toHaveBeenCalledWith(
+      {
+        _id: scheduledRelease._id,
+        metadata: {
+          ...scheduledRelease.metadata,
+          intendedPublishAt: newPublishAt.toISOString(),
+        },
+      },
       undefined,
     )
     expect(useReleaseOperationsMockReturn.schedule).toHaveBeenCalledWith(

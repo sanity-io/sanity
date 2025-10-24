@@ -274,7 +274,7 @@ describe('useScheduledDraftMenuActions', () => {
 
       await waitFor(() => {
         expect(mockOperations.rescheduleScheduledDraft).toHaveBeenCalledWith(
-          scheduledRelease._id,
+          scheduledRelease,
           new Date('2024-12-31T10:00:00Z'),
         )
       })
