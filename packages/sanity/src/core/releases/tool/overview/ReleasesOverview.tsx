@@ -17,6 +17,7 @@ import {usePerspective} from '../../../perspective/usePerspective'
 import {useScheduledDraftsEnabled} from '../../../singleDocRelease/hooks/useScheduledDraftsEnabled'
 import {CONTENT_RELEASES_TIME_ZONE_SCOPE} from '../../../studio/constants'
 import {useWorkspace} from '../../../studio/workspace'
+import {isCardinalityOneRelease} from '../../../util/releaseUtils'
 import {CreateReleaseDialog} from '../../components/dialog/CreateReleaseDialog'
 import {useReleasesUpsell} from '../../contexts/upsell/useReleasesUpsell'
 import {releasesLocaleNamespace} from '../../i18n'
@@ -32,6 +33,7 @@ import {Table, type TableRowProps} from '../components/Table/Table'
 import {type TableSort} from '../components/Table/TableProvider'
 import {CalendarPopover} from './CalendarPopover'
 import {CardinalityViewPicker} from './CardinalityViewPicker'
+import {ConfirmActiveScheduledDraftsBanner} from './ConfirmActiveScheduledDraftsBanner'
 import {DraftsDisabledBanner} from './DraftsDisabledBanner'
 import {
   buildReleasesSearchParams,
@@ -135,6 +137,9 @@ export function ReleasesOverview() {
   // but there are still scheduled drafts
   const showDraftsDisabledBanner =
     cardinalityView === 'drafts' && (!isDraftModelEnabled || !isScheduledDraftsEnabled)
+  const showConfirmActiveScheduledDraftsBanner =
+    cardinalityView === 'drafts' &&
+    releases.some((release) => release.state === 'active' && isCardinalityOneRelease(release))
   const loadingOrHasReleases = loading || hasReleases
   const hasNoReleases = !loading && !hasReleases
 
@@ -354,23 +359,30 @@ export function ReleasesOverview() {
   )
 
   const filteredReleases = useMemo(() => {
-    if (!releaseFilterDate) return releaseGroupMode === 'active' ? tableReleases : archivedReleases
+    const filterActiveIfNeeded = (items: TableRelease[]) =>
+      cardinalityView === 'drafts' ? items.filter((release) => release.state !== 'active') : items
+
+    if (!releaseFilterDate) {
+      return filterActiveIfNeeded(releaseGroupMode === 'active' ? tableReleases : archivedReleases)
+    }
 
     const [startOfDayForTimeZone, endOfDayForTimeZone] =
       getTimezoneAdjustedDateTimeRange(releaseFilterDate)
 
-    return tableReleases.filter((release) => {
+    const dateFiltered = tableReleases.filter((release) => {
       if (!release.publishAt || release.metadata.releaseType !== 'scheduled') return false
-
       const publishDateUTC = new Date(release.publishAt)
       return publishDateUTC >= startOfDayForTimeZone && publishDateUTC <= endOfDayForTimeZone
     })
+
+    return filterActiveIfNeeded(dateFiltered)
   }, [
     releaseFilterDate,
     releaseGroupMode,
     tableReleases,
     archivedReleases,
     getTimezoneAdjustedDateTimeRange,
+    cardinalityView,
   ])
 
   const renderCalendarFilter = useMemo(() => {
@@ -472,6 +484,9 @@ export function ReleasesOverview() {
               allReleases={allReleases}
             />
           )}
+          {showConfirmActiveScheduledDraftsBanner && (
+            <ConfirmActiveScheduledDraftsBanner releases={releases} />
+          )}
 
           {hasNoReleases && cardinalityView === 'releases' ? (
             <ReleasesEmptyState
@@ -481,24 +496,28 @@ export function ReleasesOverview() {
           ) : (
             <Box
               ref={setScrollContainerRef}
-              marginTop={showDraftsDisabledBanner ? 0 : 3}
+              marginTop={
+                showDraftsDisabledBanner || showConfirmActiveScheduledDraftsBanner ? 0 : 3
+              }
               overflow={'auto'}
             >
-              <Table<TableRelease>
-                // for resetting filter and sort on table when filer changed
-                key={releaseFilterDate ? 'by_date' : releaseGroupMode}
-                defaultSort={defaultTableSort}
-                loading={loadingTableData}
-                data={filteredReleases}
-                columnDefs={tableColumns}
-                emptyState={tableEmptyState}
-                // eslint-disable-next-line @sanity/i18n/no-attribute-string-literals
-                rowId="_id"
-                rowActions={renderRowActions}
-                rowProps={getRowProps}
-                scrollContainerRef={scrollContainerRef}
-                hideTableInlinePadding
-              />
+              {(loading || hasReleases) && (
+                <Table<TableRelease>
+                  // for resetting filter and sort on table when filer changed
+                  key={releaseFilterDate ? 'by_date' : releaseGroupMode}
+                  defaultSort={defaultTableSort}
+                  loading={loadingTableData}
+                  data={filteredReleases}
+                  columnDefs={tableColumns}
+                  emptyState={tableEmptyState}
+                  // eslint-disable-next-line @sanity/i18n/no-attribute-string-literals
+                  rowId="_id"
+                  rowActions={renderRowActions}
+                  rowProps={getRowProps}
+                  scrollContainerRef={scrollContainerRef}
+                  hideTableInlinePadding
+                />
+              )}
             </Box>
           )}
         </Flex>
