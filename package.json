@@ -133,7 +133,7 @@
     "tsx": "^4.20.6",
     "turbo": "^2.5.8",
     "typescript": "catalog:",
-    "vitest": "3.2.4"
+    "vitest": "catalog:"
   },
   "packageManager": "pnpm@10.18.3",
   "pnpm": {
@@ -142,6 +142,10 @@
         "react",
         "react-dom"
       ]
+    },
+    "overrides": {
+      "jsdom": "26.1.0",
+      "vitest": "$vitest"
     }
   },
   "isSanityMonorepo": true

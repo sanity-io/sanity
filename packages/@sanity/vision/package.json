@@ -94,14 +94,13 @@
     "@vitejs/plugin-react": "catalog:",
     "babel-plugin-react-compiler": "19.1.0-rc.3",
     "eslint": "catalog:",
-    "jsdom": "^23.2.0",
     "react": "catalog:",
     "react-dom": "catalog:",
     "rimraf": "^5.0.10",
     "sanity": "workspace:*",
     "styled-components": "catalog:",
     "vite": "catalog:",
-    "vitest": "^3.2.4"
+    "vitest": "catalog:"
   },
   "peerDependencies": {
     "react": "^18 || ^19.0.0",

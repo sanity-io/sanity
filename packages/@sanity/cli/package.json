@@ -128,7 +128,7 @@
     "semver-compare": "^1.0.0",
     "tar": "^6.2.1",
     "vite": "catalog:",
-    "vitest": "^3.2.4",
+    "vitest": "catalog:",
     "which": "^2.0.2",
     "xdg-basedir": "^4.0.0"
   },
