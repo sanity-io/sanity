@@ -6,9 +6,9 @@ import {
   type PlaywrightTestConfig,
   type PlaywrightTestProject,
 } from '@playwright/test'
-
 import {loadEnvFiles} from '@repo/utils'
-import {findEnv, readBoolEnv, readEnv} from './test/e2e/helpers/envVars'
+
+import {findEnv, readBoolEnv, readEnv} from './helpers/envVars'
 
 loadEnvFiles()
 
@@ -21,8 +21,8 @@ const TOKEN = readEnv('SANITY_E2E_SESSION_TOKEN')
 const E2E_DEBUG = readBoolEnv('SANITY_E2E_DEBUG', false)
 
 // Paths
-const TESTS_PATH = './test/e2e/tests'
-const ARTIFACT_OUTPUT_PATH = './test/e2e/results'
+const TESTS_PATH = './tests'
+const ARTIFACT_OUTPUT_PATH = './results'
 
 // OS-specific browsers to include
 const OS_BROWSERS =
@@ -78,7 +78,7 @@ const FIREFOX_PROJECT: PlaywrightTestProject = {
  * See https://playwright.dev/docs/test-configuration.
  */
 const playwrightConfig: PlaywrightTestConfig = {
-  globalSetup: './test/e2e/globalSetup',
+  globalSetup: './globalSetup',
   testDir: TESTS_PATH,
 
   /* Maximum time one test can run for. */
@@ -136,7 +136,7 @@ const playwrightConfig: PlaywrightTestConfig = {
          * If it is running in CI just start the production build assuming that studio is already build
          * Locally run the dev server
          */
-        command: CI ? 'pnpm e2e:start' : 'pnpm e2e:dev',
+        command: CI ? 'pnpm start' : 'pnpm dev',
         port: 3339,
         reuseExistingServer: !CI,
         stdout: 'pipe',

@@ -307,8 +307,8 @@ jobs:
         with:
           name: playwright-report-${{ matrix.project }}-${{ matrix.shardIndex }}
           path: |
-            blob-report
-            test-results
+            e2e/blob-report
+            e2e/results
           retention-days: 30
 
   merge-reports:
