@@ -66,7 +66,8 @@ const DEFAULT_ARCHIVED_RELEASES_OVERVIEW_SORT: TableSort = {
 export function ReleasesOverview() {
   const {data: allReleases, loading: loadingReleases} = useActiveReleases()
   const {data: allArchivedReleases} = useArchivedReleases()
-  const {mode} = useReleasesUpsell()
+  const {mode: releasesUpsellMode, handleOpenDialog: handleOpenReleasesUpsellDialog} =
+    useReleasesUpsell()
   const isScheduledDraftsEnabled = useScheduledDraftsEnabled()
   const {document, releases: releasesConfig} = useWorkspace()
   const isReleasesEnabled = Boolean(releasesConfig?.enabled)
@@ -267,9 +268,13 @@ export function ReleasesOverview() {
     archivedReleases.length,
   ])
 
-  const handleOnClickCreateRelease = useCallback(async () => {
+  const handleOnClickCreateRelease = useCallback(() => {
+    if (releasesUpsellMode === 'upsell') {
+      handleOpenReleasesUpsellDialog()
+      return
+    }
     setIsCreateReleaseDialogOpen(true)
-  }, [])
+  }, [releasesUpsellMode, handleOpenReleasesUpsellDialog])
 
   const createReleaseButton = useMemo(() => {
     if (isScheduledDraftsEnabled && cardinalityView === 'drafts') return null
@@ -277,7 +282,9 @@ export function ReleasesOverview() {
     return (
       <Button
         icon={AddIcon}
-        disabled={!hasCreatePermission || isCreateReleaseDialogOpen || mode === 'disabled'}
+        disabled={
+          !hasCreatePermission || isCreateReleaseDialogOpen || releasesUpsellMode === 'disabled'
+        }
         onClick={handleOnClickCreateRelease}
         text={tCore('release.action.create-new')}
         tooltipProps={{
@@ -290,7 +297,7 @@ export function ReleasesOverview() {
     cardinalityView,
     hasCreatePermission,
     isCreateReleaseDialogOpen,
-    mode,
+    releasesUpsellMode,
     handleOnClickCreateRelease,
     tCore,
     isScheduledDraftsEnabled,

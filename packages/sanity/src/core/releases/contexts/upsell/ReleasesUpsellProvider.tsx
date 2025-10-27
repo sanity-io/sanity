@@ -178,6 +178,7 @@ export function ReleasesUpsellProvider(props: {children: React.ReactNode}) {
       onReleaseLimitReached,
       telemetryLogs,
       upsellData,
+      handleOpenDialog,
     }),
     [
       mode,
@@ -186,6 +187,7 @@ export function ReleasesUpsellProvider(props: {children: React.ReactNode}) {
       onReleaseLimitReached,
       telemetryLogs,
       upsellData,
+      handleOpenDialog,
     ],
   )
 

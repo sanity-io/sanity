@@ -46,7 +46,7 @@ export function ReleasesList({
   onScroll,
   isRangeVisible,
   selectedReleaseId,
-  setCreateBundleDialogOpen,
+  handleOpenBundleDialog,
   scrollElementRef,
   menuItemProps,
 }: {
@@ -55,7 +55,7 @@ export function ReleasesList({
   onScroll: (event: React.UIEvent<HTMLDivElement>) => void
   isRangeVisible: boolean
   selectedReleaseId: string | undefined
-  setCreateBundleDialogOpen: (open: boolean) => void
+  handleOpenBundleDialog: () => void
   scrollElementRef: RefObject<ScrollElement>
   menuItemProps?: ReleasesNavMenuItemPropsGetter
 }): React.JSX.Element {
@@ -72,11 +72,6 @@ export function ReleasesList({
       drafts: {enabled: isDraftModelEnabled},
     },
   } = useWorkspace()
-
-  const handleCreateBundleClick = useCallback(
-    () => setCreateBundleDialogOpen(true),
-    [setCreateBundleDialogOpen],
-  )
 
   const sortedReleaseTypeReleases = useMemo(
     () =>
@@ -170,7 +165,7 @@ export function ReleasesList({
       {areReleasesEnabled && (
         <>
           <MenuDivider />
-          <CreateReleaseMenuItem onCreateRelease={handleCreateBundleClick} />
+          <CreateReleaseMenuItem onCreateRelease={handleOpenBundleDialog} />
         </>
       )}
     </>

@@ -34,7 +34,7 @@ vi.mock('../../../releases/store/useActiveReleases', () => ({
   useActiveReleases: vi.fn(() => useActiveReleasesMockReturn),
 }))
 
-const setCreateBundleDialogOpen = vi.fn()
+const handleOpenBundleDialog = vi.fn()
 
 describe('ReleasesList', () => {
   describe('when releases are enabled', () => {
@@ -52,7 +52,7 @@ describe('ReleasesList', () => {
             onScroll={vi.fn()}
             isRangeVisible={false}
             selectedReleaseId={undefined}
-            setCreateBundleDialogOpen={setCreateBundleDialogOpen}
+            handleOpenBundleDialog={handleOpenBundleDialog}
             scrollElementRef={{current: null}}
             areReleasesEnabled
           />
@@ -67,13 +67,13 @@ describe('ReleasesList', () => {
       expect(screen.getByText('undecided Release')).toBeInTheDocument()
     })
 
-    it('calls setCreateBundleDialogOpen when create new release button is clicked', async () => {
+    it('calls handleOpenBundleDialog when create new release button is clicked', async () => {
       await waitFor(() =>
         expect(screen.getByTestId('create-new-release-button')).not.toBeDisabled(),
       )
 
       fireEvent.click(screen.getByTestId('create-new-release-button'))
-      expect(setCreateBundleDialogOpen).toHaveBeenCalledWith(true)
+      expect(handleOpenBundleDialog).toHaveBeenCalledWith(true)
     })
   })
 
@@ -108,7 +108,7 @@ describe('ReleasesList', () => {
             onScroll={vi.fn()}
             isRangeVisible={false}
             selectedReleaseId={undefined}
-            setCreateBundleDialogOpen={setCreateBundleDialogOpen}
+            handleOpenBundleDialog={handleOpenBundleDialog}
             scrollElementRef={{current: null}}
             areReleasesEnabled
           />
@@ -140,7 +140,7 @@ describe('ReleasesList', () => {
             onScroll={vi.fn()}
             isRangeVisible={false}
             selectedReleaseId={undefined}
-            setCreateBundleDialogOpen={setCreateBundleDialogOpen}
+            handleOpenBundleDialog={handleOpenBundleDialog}
             scrollElementRef={{current: null}}
             areReleasesEnabled={false}
           />
@@ -179,7 +179,7 @@ describe('ReleasesList', () => {
             onScroll={vi.fn()}
             isRangeVisible={false}
             selectedReleaseId={undefined}
-            setCreateBundleDialogOpen={setCreateBundleDialogOpen}
+            handleOpenBundleDialog={handleOpenBundleDialog}
             scrollElementRef={{current: null}}
             areReleasesEnabled
           />
