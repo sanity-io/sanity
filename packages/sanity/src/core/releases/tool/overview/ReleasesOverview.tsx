@@ -496,28 +496,24 @@ export function ReleasesOverview() {
           ) : (
             <Box
               ref={setScrollContainerRef}
-              marginTop={
-                showDraftsDisabledBanner || showConfirmActiveScheduledDraftsBanner ? 0 : 3
-              }
+              marginTop={showDraftsDisabledBanner || showConfirmActiveScheduledDraftsBanner ? 0 : 3}
               overflow={'auto'}
             >
-              {(loading || hasReleases) && (
-                <Table<TableRelease>
-                  // for resetting filter and sort on table when filer changed
-                  key={releaseFilterDate ? 'by_date' : releaseGroupMode}
-                  defaultSort={defaultTableSort}
-                  loading={loadingTableData}
-                  data={filteredReleases}
-                  columnDefs={tableColumns}
-                  emptyState={tableEmptyState}
-                  // eslint-disable-next-line @sanity/i18n/no-attribute-string-literals
-                  rowId="_id"
-                  rowActions={renderRowActions}
-                  rowProps={getRowProps}
-                  scrollContainerRef={scrollContainerRef}
-                  hideTableInlinePadding
-                />
-              )}
+              <Table<TableRelease>
+                // for resetting filter and sort on table when filer changed
+                key={releaseFilterDate ? 'by_date' : releaseGroupMode}
+                defaultSort={defaultTableSort}
+                loading={loadingTableData}
+                data={filteredReleases}
+                columnDefs={tableColumns}
+                emptyState={tableEmptyState}
+                // eslint-disable-next-line @sanity/i18n/no-attribute-string-literals
+                rowId="_id"
+                rowActions={renderRowActions}
+                rowProps={getRowProps}
+                scrollContainerRef={scrollContainerRef}
+                hideTableInlinePadding
+              />
             </Box>
           )}
         </Flex>
