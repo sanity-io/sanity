@@ -38,7 +38,10 @@ function TestPreview(props: any) {
         {...props}
         _renderAsBlockImage
         layout="block"
-        value={{media: <img src="https://source.unsplash.com/960x960/?tree" />, ...props.value}}
+        value={{
+          media: <img src="https://source.unsplash.com/960x960/?tree" alt="A tree" />,
+          ...props.value,
+        }}
       />
     )
   }

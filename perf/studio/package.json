@@ -23,6 +23,7 @@
   },
   "devDependencies": {
     "@repo/eslint-config": "workspace:*",
+    "@repo/tsconfig": "workspace:*",
     "eslint": "catalog:"
   }
 }
