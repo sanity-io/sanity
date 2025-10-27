@@ -1,5 +1,4 @@
 import baseConfig from '@repo/eslint-config'
-import studio from '@sanity/eslint-config-studio'
 import {defineConfig} from 'eslint/config'
 import globals from 'globals'
 
@@ -24,7 +23,6 @@ export default defineConfig([
   {
     name: '@sanity/cli/templates',
     files: ['templates/**/*'],
-    extends: [...studio],
     rules: {
       'import/no-unresolved': 'off',
       'no-restricted-imports': 'off',

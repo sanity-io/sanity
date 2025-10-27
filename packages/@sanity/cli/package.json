@@ -79,7 +79,6 @@
     "@repo/tsconfig": "workspace:*",
     "@rexxars/gitconfiglocal": "^3.0.1",
     "@rollup/plugin-node-resolve": "^16.0.1",
-    "@sanity/eslint-config-studio": "catalog:",
     "@sanity/generate-help-url": "^3.0.0",
     "@sanity/pkg-utils": "catalog:",
     "@sanity/types": "workspace:*",

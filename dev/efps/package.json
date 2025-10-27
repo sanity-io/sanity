@@ -25,7 +25,6 @@
   "devDependencies": {
     "@repo/eslint-config": "workspace:*",
     "@sanity/client": "^7.12.0",
-    "@sanity/eslint-config-studio": "catalog:",
     "@types/react": "catalog:",
     "@types/react-dom": "catalog:",
     "@types/yargs": "^17.0.33",
