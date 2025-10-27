@@ -104,6 +104,7 @@ export default [
       'import/no-named-as-default': 'off',
       'import/no-named-as-default-member': 'off',
       'import/no-unresolved': 'off',
+      'import/no-extraneous-dependencies': 'error',
       'import/default': 'off',
       'tsdoc/syntax': 'error',
       'react/no-unescaped-entities': 'off',
