@@ -51,6 +51,7 @@ import {
   usePresenceStore,
 } from '../store'
 import {isNewDocument} from '../store/_legacy/document/isNewDocument'
+import {useWorkspace} from '../studio/workspace'
 import {
   EMPTY_ARRAY,
   getDraftId,
@@ -68,7 +69,6 @@ import {
   setAtPath,
   type StateTree,
   toMutationPatches,
-  useEnhancedObjectDialog,
   useFormState,
 } from '.'
 import {CreatedDraft} from './__telemetry__/form.telemetry'
@@ -158,6 +158,11 @@ export function useDocumentForm(options: DocumentFormOptions): DocumentFormValue
   const presenceStore = usePresenceStore()
   const {data: releases} = useActiveReleases()
   const {data: documentVersions} = useDocumentVersions({documentId})
+  const workspace = useWorkspace()
+
+  const enhancedObjectDialogEnabled = useMemo(() => {
+    return workspace.beta?.form?.enhancedObjectDialog?.enabled
+  }, [workspace])
 
   const schemaType = schema.get(documentType) as ObjectSchemaType | undefined
   if (!schemaType) {
@@ -485,8 +490,6 @@ export function useDocumentForm(options: DocumentFormOptions): DocumentFormValue
     hasUpstreamVersion,
     displayInlineChanges,
   })!
-
-  const {enabled: enhancedObjectDialogEnabled} = useEnhancedObjectDialog()
 
   const formStateRef = useRef(formState)
   useEffect(() => {

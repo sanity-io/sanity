@@ -27,7 +27,6 @@ import {
   useCopyPaste,
   useDocumentForm,
   useDocumentIdStack,
-  useEnhancedObjectDialog,
   usePerspective,
   useSchema,
   useSource,
@@ -112,7 +111,12 @@ export const DocumentPaneProvider = memo((props: DocumentPaneProviderProps) => {
     document: {
       drafts: {enabled: isDraftModelEnabled},
     },
+    beta,
   } = useWorkspace()
+
+  const enhancedObjectDialogEnabled = useMemo(() => {
+    return beta?.form?.enhancedObjectDialog?.enabled
+  }, [beta])
 
   const {selectedReleaseId, selectedPerspectiveName} = useMemo(() => {
     // TODO: COREL - Remove this after updating sanity-assist to use <PerspectiveProvider>
@@ -273,7 +277,6 @@ export const DocumentPaneProvider = memo((props: DocumentPaneProviderProps) => {
   })
 
   const {data: releases = []} = useActiveReleases()
-  const {enabled: enhancedObjectDialogEnabled} = useEnhancedObjectDialog()
 
   const getDocumentVersionType = useCallback(() => {
     let version: DocumentActionsVersionType
