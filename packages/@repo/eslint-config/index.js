@@ -234,7 +234,7 @@ export default [
   },
   // Since we also use no-restricted-imports in oxlint, we need to add this after `buildFromOxlintConfigFile` or the rule is disabled
   {
-    files: ['test/e2e/**'],
+    files: ['e2e/**'],
     rules: {
       'no-restricted-imports': [
         'error',
