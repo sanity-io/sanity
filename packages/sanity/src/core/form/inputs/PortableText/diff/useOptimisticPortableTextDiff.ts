@@ -72,6 +72,10 @@ export function useOptimisticPortableTextDiff({
 
   const onOptimisticChange = useCallback<PortableTextOptimisticDiffApi['onOptimisticChange']>(
     (patch) => {
+      if (!displayInlineChanges) {
+        return
+      }
+
       const [rootPathSegment] = patch.path
 
       if (typeof rootPathSegment !== 'object' || !('_key' in rootPathSegment)) {
@@ -128,7 +132,7 @@ export function useOptimisticPortableTextDiff({
 
       setOptimisticValue(nextOptimisticValue)
     },
-    [definitiveValue, optimisticValue],
+    [definitiveValue, displayInlineChanges, optimisticValue],
   )
 
   // Reset the optimistic state after receiving definitive state.
