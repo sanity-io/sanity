@@ -3,6 +3,7 @@ import {useCallback} from 'react'
 
 import {Button} from '../../../../ui-components'
 import {useTranslation} from '../../../i18n'
+import {useReleasesUpsell} from '../../contexts/upsell/useReleasesUpsell'
 import {releasesLocaleNamespace} from '../../i18n'
 import {ReleaseIllustration} from '../resources/ReleaseIllustration'
 
@@ -16,10 +17,14 @@ export const ReleasesEmptyState = ({
   onClickCreateRelease,
 }: ReleasesEmptyStateProps) => {
   const {t} = useTranslation(releasesLocaleNamespace)
-
+  const {mode} = useReleasesUpsell()
   const handleDocumentationClick = useCallback(() => {
     onClickCreateRelease()
   }, [onClickCreateRelease])
+
+  if (mode === 'upsell') {
+    return null
+  }
 
   return (
     <Flex direction="column" flex={1} justify={'center'} align={'center'}>
