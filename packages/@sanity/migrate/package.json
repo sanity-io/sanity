@@ -63,7 +63,9 @@
     "@repo/eslint-config": "workspace:*",
     "@repo/package.config": "workspace:*",
     "@repo/test-config": "workspace:*",
+    "@sanity/pkg-utils": "catalog:",
     "@types/debug": "^4.1.12",
+    "eslint": "catalog:",
     "rimraf": "^5.0.10",
     "vitest": "^3.2.4"
   },

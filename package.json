@@ -139,7 +139,7 @@
     "dotenv-flow": "^4.1.0",
     "esbuild": "catalog:",
     "esbuild-register": "catalog:",
-    "eslint": "^9.37.0",
+    "eslint": "catalog:",
     "eslint-formatter-gha": "^1.6.0",
     "eslint-plugin-react-hooks": "6.0.0-rc.2",
     "execa": "^2.1.0",

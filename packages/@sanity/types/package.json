@@ -58,8 +58,10 @@
     "@repo/package.config": "workspace:*",
     "@repo/test-config": "workspace:*",
     "@sanity/insert-menu": "2.1.0",
+    "@sanity/pkg-utils": "catalog:",
     "@types/react": "catalog:",
     "@vitejs/plugin-react": "catalog:",
+    "eslint": "catalog:",
     "react": "catalog:",
     "rimraf": "^5.0.10",
     "vitest": "^3.2.4"

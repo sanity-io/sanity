@@ -11,6 +11,9 @@
   },
   "devDependencies": {
     "@repo/eslint-config": "workspace:*",
-    "@repo/tsconfig": "workspace:*"
+    "@repo/tsconfig": "workspace:*",
+    "@sanity/pkg-utils": "catalog:",
+    "@types/node": "catalog:",
+    "eslint": "catalog:"
   }
 }

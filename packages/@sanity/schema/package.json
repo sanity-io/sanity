@@ -77,9 +77,11 @@
     "@repo/package.config": "workspace:*",
     "@repo/test-config": "workspace:*",
     "@sanity/icons": "^3.7.4",
+    "@sanity/pkg-utils": "catalog:",
     "@types/lodash": "^4.17.20",
     "@types/object-inspect": "^1.13.0",
     "@types/react": "catalog:",
+    "eslint": "catalog:",
     "rimraf": "^5.0.10",
     "vitest": "^3.2.4"
   }
