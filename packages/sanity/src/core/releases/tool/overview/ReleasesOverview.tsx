@@ -46,7 +46,9 @@ import {ReleaseMenuButtonWrapper} from './ReleaseMenuButtonWrapper'
 import {ReleasesEmptyState} from './ReleasesEmptyState'
 import {releasesOverviewColumnDefs} from './ReleasesOverviewColumnDefs'
 import {ScheduledDraftMenuButtonWrapper} from './ScheduledDraftMenuButtonWrapper'
+import {ScheduledDraftsEmptyState} from './ScheduledDraftsEmptyState'
 import {scheduledDraftsOverviewColumnDefs} from './ScheduledDraftsOverviewColumnDefs'
+import {SchedulesUpsell} from './SchedulesUpsell'
 import {useTimezoneAdjustedDateTimeRange} from './useTimezoneAdjustedDateTimeRange'
 
 const MotionButton = motion.create(Button)
@@ -468,8 +470,16 @@ export function ReleasesOverview() {
             />
           )}
 
-          {hasNoReleases && cardinalityView === 'releases' ? (
-            <ReleasesEmptyState createReleaseButton={createReleaseButton} />
+          <SchedulesUpsell cardinalityView={cardinalityView} />
+
+          {hasNoReleases ? (
+            <>
+              {cardinalityView === 'releases' ? (
+                <ReleasesEmptyState createReleaseButton={createReleaseButton} />
+              ) : (
+                <ScheduledDraftsEmptyState />
+              )}
+            </>
           ) : (
             <Box
               ref={setScrollContainerRef}

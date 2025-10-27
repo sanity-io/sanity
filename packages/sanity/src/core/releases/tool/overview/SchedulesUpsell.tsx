@@ -1,4 +1,4 @@
-import {Container} from '@sanity/ui'
+import {Box, Container, Flex} from '@sanity/ui'
 import {motion} from 'framer-motion'
 import {useCallback} from 'react'
 import {styled} from 'styled-components'
@@ -7,6 +7,7 @@ import {useSingleDocReleaseEnabled} from '../../../singleDocRelease/context/Sing
 import {useSingleDocReleaseUpsell} from '../../../singleDocRelease/context/SingleDocReleaseUpsellProvider'
 import {UpsellPanel} from '../../../studio/upsell/UpsellPanel'
 import {useReleasesUpsell} from '../../contexts/upsell/useReleasesUpsell'
+import {ReleaseIllustration} from '../resources/ReleaseIllustration'
 import {type CardinalityView} from './queryParamUtils'
 
 const Panel = styled(Container)`
@@ -14,7 +15,7 @@ const Panel = styled(Container)`
   flex-shrink: 0;
 `
 
-const SingleDocReleasesUpsell = () => {
+export const SingleDocReleasesUpsell = () => {
   const {mode} = useSingleDocReleaseEnabled()
   const {upsellData, telemetryLogs} = useSingleDocReleaseUpsell()
   const handlePrimaryClick = useCallback(() => {
@@ -29,24 +30,28 @@ const SingleDocReleasesUpsell = () => {
     return null
   }
   return (
-    <motion.div
-      initial={{opacity: 0}}
-      animate={{opacity: 1}}
-      transition={{duration: 0.3, ease: 'easeInOut'}}
-    >
-      <Panel width={1} padding={4} paddingY={1}>
-        <UpsellPanel
-          layout="horizontal"
-          data={upsellData}
-          onPrimaryClick={handlePrimaryClick}
-          onSecondaryClick={handleSecondaryClick}
-        />
-      </Panel>
-    </motion.div>
+    <Flex direction="column" flex={1} justify={'center'} align={'center'}>
+      <motion.div
+        initial={{opacity: 0}}
+        animate={{opacity: 1}}
+        transition={{duration: 0.3, ease: 'easeInOut'}}
+      >
+        <Panel width={0} padding={4} paddingY={1}>
+          <UpsellPanel
+            layout="vertical"
+            align="center"
+            border={false}
+            data={upsellData}
+            onPrimaryClick={handlePrimaryClick}
+            onSecondaryClick={handleSecondaryClick}
+          />
+        </Panel>
+      </motion.div>
+    </Flex>
   )
 }
 
-const ReleasesUpsell = () => {
+export const ReleasesUpsell = () => {
   const {upsellData, telemetryLogs, mode} = useReleasesUpsell()
   const handlePrimaryClick = useCallback(() => {
     telemetryLogs.panelPrimaryClicked()
@@ -60,20 +65,29 @@ const ReleasesUpsell = () => {
     return null
   }
   return (
-    <motion.div
-      initial={{opacity: 0}}
-      animate={{opacity: 1}}
-      transition={{duration: 0.3, ease: 'easeInOut'}}
-    >
-      <Panel width={1} padding={4} paddingY={1}>
-        <UpsellPanel
-          layout="horizontal"
-          data={upsellData}
-          onPrimaryClick={handlePrimaryClick}
-          onSecondaryClick={handleSecondaryClick}
-        />
-      </Panel>
-    </motion.div>
+    <Flex direction="column" flex={1} justify={'center'} align={'center'}>
+      <motion.div
+        initial={{opacity: 0}}
+        animate={{opacity: 1}}
+        transition={{duration: 0.3, ease: 'easeInOut'}}
+      >
+        <Panel width={0} padding={4} paddingY={1}>
+          <Flex align={'center'} direction="column">
+            <ReleaseIllustration />
+            <Box paddingTop={2}>
+              <UpsellPanel
+                align="center"
+                layout="vertical"
+                data={{...upsellData, image: null}}
+                border={false}
+                onPrimaryClick={handlePrimaryClick}
+                onSecondaryClick={handleSecondaryClick}
+              />
+            </Box>
+          </Flex>
+        </Panel>
+      </motion.div>
+    </Flex>
   )
 }
 
