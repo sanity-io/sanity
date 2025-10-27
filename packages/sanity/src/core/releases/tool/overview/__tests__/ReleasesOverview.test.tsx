@@ -242,7 +242,7 @@ describe('ReleasesOverview', () => {
     })
 
     it('shows the page heading', () => {
-      screen.getByText('Releases')
+      within(screen.getByTestId('no-releases-info-text')).getByText('Releases')
     })
 
     it('shows create new releases button', () => {

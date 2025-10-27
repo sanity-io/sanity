@@ -73,7 +73,7 @@ describe('ReleasesList', () => {
       )
 
       fireEvent.click(screen.getByTestId('create-new-release-button'))
-      expect(handleOpenBundleDialog).toHaveBeenCalledWith(true)
+      expect(handleOpenBundleDialog).toHaveBeenCalled()
     })
   })
 

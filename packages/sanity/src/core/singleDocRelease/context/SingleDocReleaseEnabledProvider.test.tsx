@@ -18,7 +18,7 @@ vi.mock('../../studio/source', () => ({
 const useFeatureEnabledMock = useFeatureEnabled as ReturnType<typeof vi.fn>
 const useSourceMock = useSource as ReturnType<typeof vi.fn>
 
-const featureFlagName = 'scheduledPublishing'
+const featureFlagName = 'singleDocRelease'
 describe('SingleDocReleaseEnabledProvider', () => {
   beforeEach(() => {
     vi.clearAllMocks()

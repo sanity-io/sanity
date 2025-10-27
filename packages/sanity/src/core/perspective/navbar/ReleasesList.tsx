@@ -1,6 +1,6 @@
 import {type ReleaseDocument, type ReleaseType} from '@sanity/client'
 import {Box, Flex, MenuDivider, Spinner} from '@sanity/ui'
-import {type RefObject, useCallback, useMemo} from 'react'
+import {type RefObject, useMemo} from 'react'
 import {css, styled} from 'styled-components'
 
 import {CreateReleaseMenuItem} from '../../releases/components/CreateReleaseMenuItem'
