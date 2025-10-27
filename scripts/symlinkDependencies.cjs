@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-/* eslint-disable no-sync, no-console, strict */
+/* eslint-disable @typescript-eslint/no-require-imports, strict */
 /**
  * **************************************************************
  * This script needs to stay as a CommonJS/JavaScript file
@@ -34,7 +34,6 @@ const targetDepsPath = path.join(targetPath, 'node_modules')
 
 let targetDeps = packages
 if (!argv.all) {
-  // eslint-disable-next-line import/no-dynamic-require
   const targetPkg = require(path.join(targetPath, 'package.json'))
   const targetDeclared = Object.assign({}, targetPkg.dependencies, targetPkg.devDependencies)
   targetDeps = Object.keys(targetDeclared)

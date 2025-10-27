@@ -18,6 +18,7 @@ main().catch((err) => {
  * This is useful to inspect the contents of the published modules.
  */
 async function main() {
+  // eslint-disable-next-line @typescript-eslint/no-require-imports
   const root = require('../../package.json')
   const workspaces = root.workspaces as string[]
   const pkgJsonPaths = await globby(workspaces.map((p) => `${p}/package.json`))
@@ -25,6 +26,7 @@ async function main() {
   const versions: Record<string, string> = {}
 
   for (const pkgJsonPath of pkgJsonPaths) {
+    // eslint-disable-next-line @typescript-eslint/no-require-imports
     const pkg = require(
       path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../..', pkgJsonPath),
     )

@@ -1,4 +1,3 @@
-/* eslint-disable no-sync */
 import fs from 'node:fs'
 import path, {dirname} from 'node:path'
 import {fileURLToPath} from 'node:url'
