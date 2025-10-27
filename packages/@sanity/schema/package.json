@@ -76,6 +76,7 @@
     "@repo/eslint-config": "workspace:*",
     "@repo/package.config": "workspace:*",
     "@repo/test-config": "workspace:*",
+    "@repo/tsconfig": "workspace:*",
     "@sanity/icons": "^3.7.4",
     "@sanity/pkg-utils": "catalog:",
     "@types/lodash": "^4.17.20",

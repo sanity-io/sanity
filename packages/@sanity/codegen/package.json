@@ -69,6 +69,7 @@
     "@repo/eslint-config": "workspace:*",
     "@repo/package.config": "workspace:*",
     "@repo/test-config": "workspace:*",
+    "@repo/tsconfig": "workspace:*",
     "@sanity/pkg-utils": "catalog:",
     "@types/babel__core": "^7.20.5",
     "@types/babel__generator": "^7.27.0",
