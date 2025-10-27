@@ -51,12 +51,6 @@ const defaultConfig = defineConfig({
     image: {
       assetSources: [imageAssetSource],
     },
-    components: {
-      input: (props) => {
-        if (props.renderDefault) return props.renderDefault(props)
-        return null
-      },
-    },
   },
 
   i18n: {
