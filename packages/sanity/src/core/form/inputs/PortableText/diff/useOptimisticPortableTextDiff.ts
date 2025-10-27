@@ -101,6 +101,18 @@ export function useOptimisticPortableTextDiff({
       // Find the changed node in the optimistic or definitive root block.
       const [node] = extractWithPath(arrayToJSONMatchPath(patch.path), rootBlock)
 
+      // If the node still cannot be found for any reason after all other work has been performed,
+      // skip optimistic state update.
+      //
+      // This allows Portable Text Editor to continue operating without error. The updated diff will
+      // still appear, but only after the change has propagated through the data layer.
+      //
+      // This may occur if a Portable Text Editor patch occurs that changes the value, but that
+      // the optimistic change handler doesn't expect.
+      if (typeof node === 'undefined') {
+        return
+      }
+
       // Apply the patch to the node.
       const [nextNodeValue] = applyPatches(
         parsePatch(patch.value),
