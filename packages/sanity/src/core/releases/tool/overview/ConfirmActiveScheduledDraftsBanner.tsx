@@ -2,10 +2,10 @@ import {type ReleaseDocument} from '@sanity/client'
 import {WarningOutlineIcon} from '@sanity/icons'
 import {Box, Card, Flex, Text} from '@sanity/ui'
 import {useCallback, useMemo, useState} from 'react'
-import {isCardinalityOneRelease} from 'sanity'
 
 import {Button} from '../../../../ui-components'
 import {Translate, useTranslation} from '../../../i18n'
+import {isCardinalityOneRelease} from '../../../util/releaseUtils'
 import {releasesLocaleNamespace} from '../../i18n'
 import {ConfirmScheduledDraftsDialog} from './ConfirmScheduledDraftsDialog'
 
