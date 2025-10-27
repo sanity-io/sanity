@@ -17,6 +17,7 @@
   },
   "devDependencies": {
     "@repo/eslint-config": "workspace:*",
-    "@types/lodash-es": "^4.17.12"
+    "@types/lodash-es": "^4.17.12",
+    "eslint": "catalog:"
   }
 }

@@ -323,6 +323,7 @@
     "babel-plugin-react-compiler": "19.1.0-rc.3",
     "blob-polyfill": "^9.0.20240710",
     "date-fns-tz": "2.0.1",
+    "eslint": "catalog:",
     "eslint-plugin-boundaries": "^5.1.0",
     "globals": "catalog:",
     "react": "catalog:",
