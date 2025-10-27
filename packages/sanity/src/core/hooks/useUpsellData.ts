@@ -19,9 +19,6 @@ interface UpsellDataProps {
   feature: string
 }
 
-/**
- * TODO: Add option to not fetch upsell data if the feature is enabled.
- * @internal */
 export const useUpsellData = ({dataUri, feature}: UpsellDataProps) => {
   const [upsellData, setUpsellData] = useState<UpsellData | null>(null)
   const telemetry = useTelemetry()

@@ -4,6 +4,7 @@ import {
   getReleaseIdFromReleaseDocumentId,
   getReleaseTone,
   getVersionInlineBadge,
+  isCardinalityOneRelease,
   LATEST,
   type ReleaseDocument,
   Translate,
@@ -31,7 +32,7 @@ export function DocumentNotInReleaseBanner({
   documentId: string
   currentRelease: ReleaseDocument
   isScheduledRelease?: boolean
-}): React.JSX.Element {
+}) {
   const tone = getReleaseTone(currentRelease ?? LATEST)
   const {t} = useTranslation(structureLocaleNamespace)
   const {t: tCore} = useTranslation()
@@ -76,6 +77,9 @@ export function DocumentNotInReleaseBanner({
     description: t('banners.release.waiting.description'),
   })
 
+  if (isCardinalityOneRelease(currentRelease)) {
+    return null
+  }
   return (
     <Banner
       tone={tone}
