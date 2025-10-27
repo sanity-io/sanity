@@ -1,7 +1,6 @@
 import path from 'node:path'
 
 import {defineConfig} from '@repo/test-config/vitest'
-import {vanillaExtractPlugin} from '@vanilla-extract/vite-plugin'
 import react from '@vitejs/plugin-react'
 
 export default defineConfig({
@@ -31,8 +30,5 @@ export default defineConfig({
       ignoreSourceErrors: true,
     },
   },
-  plugins: [
-    vanillaExtractPlugin(),
-    react({babel: {plugins: [['babel-plugin-react-compiler', {target: '18'}]]}}),
-  ],
+  plugins: [react({babel: {plugins: [['babel-plugin-react-compiler', {target: '18'}]]}})],
 })
