@@ -37,14 +37,19 @@ export const SingleDocReleasesUpsell = () => {
         transition={{duration: 0.3, ease: 'easeInOut'}}
       >
         <Panel width={0} padding={4} paddingY={1}>
-          <UpsellPanel
-            layout="vertical"
-            align="center"
-            border={false}
-            data={upsellData}
-            onPrimaryClick={handlePrimaryClick}
-            onSecondaryClick={handleSecondaryClick}
-          />
+          <Flex align={'center'} direction="column">
+            <ReleaseIllustration />
+            <Box paddingTop={2}>
+              <UpsellPanel
+                align="center"
+                layout="vertical"
+                data={{...upsellData, image: null}}
+                border={false}
+                onPrimaryClick={handlePrimaryClick}
+                onSecondaryClick={handleSecondaryClick}
+              />
+            </Box>
+          </Flex>
         </Panel>
       </motion.div>
     </Flex>
