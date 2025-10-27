@@ -52,7 +52,10 @@
   },
   "devDependencies": {
     "@repo/eslint-config": "workspace:*",
-    "@repo/package.config": "workspace:*"
+    "@repo/package.config": "workspace:*",
+    "@sanity/pkg-utils": "catalog:",
+    "eslint": "catalog:",
+    "rimraf": "^5.0.10"
   },
   "engines": {
     "node": ">=20.19 <22 || >=22.12"

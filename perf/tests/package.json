@@ -31,6 +31,7 @@
     "@types/lodash": "^4.17.20",
     "@types/node": "catalog:",
     "esbuild": "catalog:",
+    "eslint": "catalog:",
     "ts-node": "^10.9.2",
     "typescript": "catalog:",
     "vitest": "^3.2.4"
