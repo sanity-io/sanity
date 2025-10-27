@@ -77,6 +77,8 @@ const ReleasesUpsell = () => {
   )
 }
 
+// TODO: This is not in used yet, is waiting for confirmation from Growth and how to show the upsell for schedules.
+// Leaving it here for now. Will be removed if we don't need it.
 export function SchedulesUpsell({cardinalityView}: {cardinalityView: CardinalityView}) {
   if (cardinalityView === 'drafts') {
     return <SingleDocReleasesUpsell />

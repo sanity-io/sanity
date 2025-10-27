@@ -47,7 +47,6 @@ import {ReleasesEmptyState} from './ReleasesEmptyState'
 import {releasesOverviewColumnDefs} from './ReleasesOverviewColumnDefs'
 import {ScheduledDraftMenuButtonWrapper} from './ScheduledDraftMenuButtonWrapper'
 import {scheduledDraftsOverviewColumnDefs} from './ScheduledDraftsOverviewColumnDefs'
-import {SchedulesUpsell} from './SchedulesUpsell'
 import {useTimezoneAdjustedDateTimeRange} from './useTimezoneAdjustedDateTimeRange'
 
 const MotionButton = motion.create(Button)
@@ -473,7 +472,6 @@ export function ReleasesOverview() {
               allReleases={allReleases}
             />
           )}
-          <SchedulesUpsell cardinalityView={cardinalityView} />
 
           {hasNoReleases && cardinalityView === 'releases' ? (
             <ReleasesEmptyState
