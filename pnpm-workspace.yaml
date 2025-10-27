@@ -15,7 +15,6 @@ catalog:
   '@playwright/experimental-ct-react': 1.56.1
   '@playwright/test': 1.56.1
   '@sanity/eslint-config-i18n': ^2.0.0
-  '@sanity/eslint-config-studio': ^5.0.2
   '@sanity/pkg-utils': ^8.1.13
   '@sanity/ui': ^3.1.5
   '@sanity/ui-workshop': ^3.1.2
