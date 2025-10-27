@@ -1338,6 +1338,8 @@ export const studioLocaleStrings = defineLocalesResources('studio', {
     'Successfully set <strong>{{title}}</strong> to be unpublished on release',
   /** Action message for when the view release is pressed */
   'release.action.view-release': 'View release',
+  /** Action message for when the view scheduled drafts is pressed */
+  'release.action.view-scheduled-drafts': 'View scheduled drafts',
   /** Label for banner when release is scheduled */
   'release.banner.scheduled-for-publishing-on': 'Scheduled to be published on {{date}}',
   /** Label for Draft chip in document header */
