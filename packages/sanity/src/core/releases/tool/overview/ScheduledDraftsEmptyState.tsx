@@ -6,9 +6,6 @@ import {useSingleDocReleaseEnabled} from '../../../singleDocRelease/context/Sing
 import {singleDocReleaseNamespace} from '../../../singleDocRelease/i18n'
 import {ReleaseIllustration} from '../resources/ReleaseIllustration'
 
-/**
- * Placeholder component for the scheduled drafts empty state
- */
 export const ScheduledDraftsEmptyState = () => {
   const {t} = useTranslation(singleDocReleaseNamespace)
   const {mode} = useSingleDocReleaseEnabled()
