@@ -134,7 +134,7 @@
     "turbo": "^2.5.8",
     "typescript": "catalog:",
     "vercel": "^48.6.0",
-    "vitest": "3.2.4"
+    "vitest": "catalog:"
   },
   "packageManager": "pnpm@10.18.3",
   "pnpm": {
@@ -143,6 +143,10 @@
         "react",
         "react-dom"
       ]
+    },
+    "overrides": {
+      "jsdom": "26.1.0",
+      "vitest": "$vitest"
     }
   },
   "isSanityMonorepo": true

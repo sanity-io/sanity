@@ -79,7 +79,7 @@
     "@types/node": "catalog:",
     "eslint": "catalog:",
     "rimraf": "^5.0.10",
-    "vitest": "^3.2.4"
+    "vitest": "catalog:"
   },
   "engines": {
     "node": ">=20.19 <22 || >=22.12"
