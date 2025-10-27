@@ -377,6 +377,27 @@ export default defineConfig([
     mediaLibrary: {
       enabled: true,
     },
+    [QUOTA_EXCLUDED_RELEASES_ENABLED]: true,
+  },
+  {
+    name: 'growth',
+    title: 'Growth (staging)',
+
+    projectId: 'qroupali',
+    dataset: 'production',
+    ...envConfig.staging,
+    plugins: [sharedSettings({projectId: 'qroupali'})],
+    basePath: '/growth',
+    auth: {
+      loginMethod: 'token',
+    },
+    unstable_tasks: {
+      enabled: true,
+    },
+    mediaLibrary: {
+      enabled: true,
+    },
+    [QUOTA_EXCLUDED_RELEASES_ENABLED]: true,
   },
   {
     name: 'media-library-playground',
