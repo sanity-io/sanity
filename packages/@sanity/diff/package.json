@@ -52,6 +52,8 @@
   "devDependencies": {
     "@repo/eslint-config": "workspace:*",
     "@repo/package.config": "workspace:*",
+    "@sanity/pkg-utils": "catalog:",
+    "eslint": "catalog:",
     "rimraf": "^5.0.10"
   },
   "engines": {

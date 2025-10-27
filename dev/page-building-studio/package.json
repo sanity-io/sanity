@@ -15,10 +15,17 @@
     "@repo/eslint-config": "workspace:*",
     "@sanity/vision": "workspace:*",
     "babel-plugin-react-compiler": "19.1.0-rc.3",
+    "eslint": "catalog:",
     "react": "catalog:",
     "react-dom": "catalog:",
     "react-icons": "^5.5.0",
     "sanity": "workspace:*",
     "styled-components": "catalog:"
+  },
+  "devDependencies": {
+    "@repo/eslint-config": "workspace:*",
+    "eslint": "catalog:",
+    "rimraf": "^5.0.10",
+    "vite": "catalog:"
   }
 }
