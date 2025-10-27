@@ -727,6 +727,8 @@ exports[`exports snapshot 1`] = `
     "ScheduledPublishingEnabledContext": "object",
     "ScrollContext": "object",
     "SearchContext": "object",
+    "SingleDocReleaseEnabledContext": "object",
+    "SingleDocReleaseUpsellContext": "object",
     "SortableItemIdContext": "object",
     "SourceContext": "object",
     "StructureToolContext": "object",

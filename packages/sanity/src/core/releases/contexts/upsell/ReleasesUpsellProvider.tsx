@@ -177,8 +177,18 @@ export function ReleasesUpsellProvider(props: {children: React.ReactNode}) {
       guardWithReleaseLimitUpsell,
       onReleaseLimitReached,
       telemetryLogs,
+      upsellData,
+      handleOpenDialog,
     }),
-    [mode, upsellDialogOpen, guardWithReleaseLimitUpsell, onReleaseLimitReached, telemetryLogs],
+    [
+      mode,
+      upsellDialogOpen,
+      guardWithReleaseLimitUpsell,
+      onReleaseLimitReached,
+      telemetryLogs,
+      upsellData,
+      handleOpenDialog,
+    ],
   )
 
   const interpolation = releaseLimit === null ? undefined : {releaseLimit: releaseLimit}

@@ -17,7 +17,7 @@ const releasesLocaleStrings = {
   /** Action text for deleting a release */
   'action.delete-release': 'Delete release',
   /** Menu item label for showing scheduled drafts */
-  'action.drafts': 'Drafts',
+  'action.drafts': 'Scheduled drafts',
   /** Action text for duplicating a release */
   'action.duplicate-release': 'Duplicate release',
   /** Action text for editing a release */

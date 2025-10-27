@@ -1,4 +1,5 @@
 import {type UpsellDialogViewedInfo} from '../../../studio'
+import {type UpsellData} from '../../../studio/upsell/types'
 
 export interface ReleasesUpsellContextValue {
   /**
@@ -8,12 +9,14 @@ export interface ReleasesUpsellContextValue {
    */
   mode: 'upsell' | 'default' | 'disabled'
   upsellDialogOpen: boolean
+  upsellData: UpsellData | null
   guardWithReleaseLimitUpsell: (
     callback: () => void,
     throwError?: boolean,
     whenResolved?: (hasPassed: boolean) => void,
   ) => Promise<false | void>
   onReleaseLimitReached: (limit: number) => void
+  handleOpenDialog: (source?: UpsellDialogViewedInfo['source']) => void
   telemetryLogs: {
     dialogSecondaryClicked: () => void
     dialogPrimaryClicked: () => void
