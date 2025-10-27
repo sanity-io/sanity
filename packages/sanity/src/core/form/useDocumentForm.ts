@@ -68,6 +68,7 @@ import {
   setAtPath,
   type StateTree,
   toMutationPatches,
+  useEnhancedObjectDialog,
   useFormState,
 } from '.'
 import {CreatedDraft} from './__telemetry__/form.telemetry'
@@ -485,6 +486,8 @@ export function useDocumentForm(options: DocumentFormOptions): DocumentFormValue
     displayInlineChanges,
   })!
 
+  const {enabled: enhancedObjectDialogEnabled} = useEnhancedObjectDialog()
+
   const formStateRef = useRef(formState)
   useEffect(() => {
     formStateRef.current = formState
@@ -538,20 +541,24 @@ export function useDocumentForm(options: DocumentFormOptions): DocumentFormValue
       if (nextFocusPath !== focusPathRef.current) {
         setFocusPath(pathFor(nextFocusPath))
 
-        // When focusing on an object field, set openPath to the field's parent.
-        // Exception: if focusing directly on an array item (so it has a key),
-        // it should skip updating openPath - let explicit onPathOpen calls handle it.
-        const lastSegment = nextFocusPath[nextFocusPath.length - 1]
+        if (enhancedObjectDialogEnabled) {
+          // When focusing on an object field, set openPath to the field's parent.
+          // Exception: if focusing directly on an array item (so it has a key),
+          // it should skip updating openPath - let explicit onPathOpen calls handle it.
+          const lastSegment = nextFocusPath[nextFocusPath.length - 1]
 
-        if (!isKeySegment(lastSegment)) {
-          // For fields inside array items, find the last key segment to preserve context
-          const lastKeyIndex = nextFocusPath.findLastIndex((seg) => isKeySegment(seg))
-          const newOpenPath =
-            lastKeyIndex >= 0
-              ? nextFocusPath.slice(0, lastKeyIndex + 1)
-              : nextFocusPath.slice(0, -1)
+          if (!isKeySegment(lastSegment)) {
+            // For fields inside array items, find the last key segment to preserve context
+            const lastKeyIndex = nextFocusPath.findLastIndex((seg) => isKeySegment(seg))
+            const newOpenPath =
+              lastKeyIndex >= 0
+                ? nextFocusPath.slice(0, lastKeyIndex + 1)
+                : nextFocusPath.slice(0, -1)
 
-          handleSetOpenPath(pathFor(newOpenPath))
+            handleSetOpenPath(pathFor(newOpenPath))
+          }
+        } else {
+          handleSetOpenPath(pathFor(nextFocusPath.slice(0, -1)))
         }
 
         focusPathRef.current = nextFocusPath
@@ -559,7 +566,13 @@ export function useDocumentForm(options: DocumentFormOptions): DocumentFormValue
       }
       updatePresenceThrottled(nextFocusPath, payload)
     },
-    [onFocusPath, setFocusPath, handleSetOpenPath, updatePresenceThrottled],
+    [
+      onFocusPath,
+      setFocusPath,
+      handleSetOpenPath,
+      updatePresenceThrottled,
+      enhancedObjectDialogEnabled,
+    ],
   )
 
   const handleBlur = useCallback(
