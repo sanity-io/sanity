@@ -46,7 +46,7 @@ const StyledDialog = styled(Dialog)(({theme}: {theme: Theme}) => {
   `
 })
 
-interface TreeEditingDialogProps {
+interface EnhancedObjectDialogProps {
   onPathFocus: (path: Path) => void
   onPathOpen: (path: Path) => void
   openPath: Path
@@ -54,7 +54,7 @@ interface TreeEditingDialogProps {
   schemaType: ObjectSchemaType
 }
 
-export function TreeEditingDialog(props: TreeEditingDialogProps): React.JSX.Element | null {
+export function EnhancedObjectDialog(props: EnhancedObjectDialogProps): React.JSX.Element | null {
   const {onPathFocus, onPathOpen, openPath, rootInputProps, schemaType} = props
   const {value} = rootInputProps
 

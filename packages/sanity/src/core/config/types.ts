@@ -1237,16 +1237,15 @@ export interface MediaLibraryConfig {
  * Configuration for studio beta features.
  * */
 export interface BetaFeatures {
-  /**
-   * @beta
-   * @hidden
-   * @deprecated beta feature is no longer available.
-   * */
-  treeArrayEditing?: {
+  /** beta features with the form namespace */
+  form?: {
     /**
-     * @deprecated beta feature is no longer available.
+     * Enhanced Object Dialog is a new dialog for editing objects in the studio.
+     * @beta
      */
-    enabled: boolean
+    enhancedObjectDialog?: {
+      enabled: boolean
+    }
   }
 
   /**

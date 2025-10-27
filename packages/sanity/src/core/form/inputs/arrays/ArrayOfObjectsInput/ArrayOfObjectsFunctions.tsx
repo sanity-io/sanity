@@ -8,7 +8,7 @@ import {Button, Tooltip} from '../../../../../ui-components'
 import {pathToString} from '../../../../field/paths/helpers'
 import {useTranslation} from '../../../../i18n'
 import {CreatedNewObject} from '../../../studio/tree-editing/__telemetry__/nestedObjects.telemetry'
-import {useTreeEditingEnabled} from '../../../studio/tree-editing/context/enabled/useTreeEditingEnabled'
+import {useEnhancedObjectDialog} from '../../../studio/tree-editing/context/enabled/useEnhancedObjectDialog'
 import {type ArrayInputFunctionsProps, type ObjectItem} from '../../../types'
 import {useInsertMenuPopover} from './InsertMenuPopover'
 
@@ -25,7 +25,7 @@ export function ArrayOfObjectsFunctions<
   const [popoverToggleElement, setPopoverToggleElement] = useState<HTMLButtonElement | null>(null)
 
   const telemetry = useTelemetry()
-  const {enabled: enhancedObjectDialogEnabled} = useTreeEditingEnabled()
+  const {enabled: enhancedObjectDialogEnabled} = useEnhancedObjectDialog()
 
   const insertItem = useCallback(
     (itemType: any) => {
