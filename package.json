@@ -162,7 +162,7 @@
     "tsx": "^4.20.6",
     "turbo": "^2.5.8",
     "typescript": "catalog:",
-    "vite": "^7.1.7",
+    "vite": "catalog:",
     "vite-tsconfig-paths": "^5.1.4",
     "vitest": "3.2.4",
     "yargs": "^17.7.2"
@@ -188,7 +188,6 @@
       "eslint-plugin-react-hooks": "$eslint-plugin-react-hooks",
       "jsdom": "$jsdom",
       "typescript@5.9.x": "catalog:",
-      "vite": "$vite",
       "vitest": "$vitest"
     }
   },
