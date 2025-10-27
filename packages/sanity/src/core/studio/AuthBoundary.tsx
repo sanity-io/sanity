@@ -40,7 +40,10 @@ export function AuthBoundary({
          * array on their user so to account for this case or the case that they have
          * had roles removed then we need to set the logged in state to unauthorized.
          */
-        if (!Array.isArray(currentUser?.roles) || currentUser.roles.length === 0) {
+        if (
+          authenticated &&
+          (!Array.isArray(currentUser?.roles) || currentUser.roles.length === 0)
+        ) {
           setLoggedIn('unauthorized')
           if (currentUser?.provider) setLoginProvider(currentUser.provider)
           return
