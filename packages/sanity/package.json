@@ -226,7 +226,7 @@
     "is-hotkey-esm": "^1.0.0",
     "is-tar": "^1.0.0",
     "isomorphic-dompurify": "^2.26.0",
-    "jsdom": "^23.2.0",
+    "jsdom": "catalog:",
     "jsdom-global": "^3.0.2",
     "json-lexer": "^1.2.0",
     "json-reduce": "^3.0.0",
@@ -310,7 +310,7 @@
     "@types/configstore": "^5.0.1",
     "@types/debug": "^4.1.12",
     "@types/gunzip-maybe": "^1.4.2",
-    "@types/jsdom": "^20.0.1",
+    "@types/jsdom": "27.0.0",
     "@types/lodash": "^4.17.20",
     "@types/log-symbols": "^2.0.0",
     "@types/node": "catalog:",
@@ -333,7 +333,7 @@
     "rxjs-etc": "^10.6.2",
     "styled-components": "catalog:",
     "swr": "2.2.5",
-    "vitest": "^3.2.4",
+    "vitest": "catalog:",
     "vitest-package-exports": "^0.1.1"
   },
   "peerDependencies": {
