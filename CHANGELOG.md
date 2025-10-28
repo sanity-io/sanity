@@ -3,6 +3,43 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [4.12.0](https://github.com/sanity-io/sanity/compare/v4.11.0...v4.12.0) (2025-10-28)
+
+### Features
+
+* add config flag for nested object dialog (beta) ([#10912](https://github.com/sanity-io/sanity/issues/10912)) ([07a25d3](https://github.com/sanity-io/sanity/commit/07a25d3d1b79b926b2df2e5818f7878c6a36ade9)) by RitaDias (rita@sanity.io)
+* add initial  approach to a nested objects navigation dialog ([#10759](https://github.com/sanity-io/sanity/issues/10759)) ([c1be253](https://github.com/sanity-io/sanity/commit/c1be2530095d24a0190903c39f3a407ba1e83111)) by RitaDias (rita@sanity.io)
+* **core:** adds single doc releases plugin. ([#10890](https://github.com/sanity-io/sanity/issues/10890)) ([2607d79](https://github.com/sanity-io/sanity/commit/2607d796a43b0bfbb5b75c0034c1d5902a2df74b)) by Pedro Bonamin (46196328+pedrobonamin@users.noreply.github.com)
+* **core:** adds View scheduled drafts menu action for scheduled drafts ([#10923](https://github.com/sanity-io/sanity/issues/10923)) ([2747339](https://github.com/sanity-io/sanity/commit/2747339182620a61e56281e807fa9067810fb9a0)) by Pedro Bonamin (46196328+pedrobonamin@users.noreply.github.com)
+* **core:** Scheduled drafts upsell ([#10933](https://github.com/sanity-io/sanity/issues/10933)) ([d0a8a7e](https://github.com/sanity-io/sanity/commit/d0a8a7e6d26d0a357370b7adf03a168991b2e6a0)) by Pedro Bonamin (46196328+pedrobonamin@users.noreply.github.com)
+* **media:** allow setting aspect definition to public ([#10900](https://github.com/sanity-io/sanity/issues/10900)) ([810bf28](https://github.com/sanity-io/sanity/commit/810bf28acd1ca80696297dbb16192ae771ceb6f8)) by Sindre Gulseth (sgulseth@gmail.com)
+* **sanity:** add `compareValue` to input component props ([9f6ee90](https://github.com/sanity-io/sanity/commit/9f6ee9072e285779a30bf9e92c24c65d85d5024e)) by Ash (ash@sanity.io)
+* **sanity:** add inline diff support to Portable Text Editor ([75e44c2](https://github.com/sanity-io/sanity/commit/75e44c2bde768052892bf69b6fc441edd9b1d918)) by Ash (ash@sanity.io)
+* **sanity:** increase specificity of string diff segment styles ([53d7c15](https://github.com/sanity-io/sanity/commit/53d7c15e91081bcca08869edcb9858fc9819c8c2)) by Ash (ash@sanity.io)
+* **sanity:** skip unnecessary work when inline changes not switched on ([847673d](https://github.com/sanity-io/sanity/commit/847673d8f0710ce76f3011d0a80d16890d32a60a)) by Ash (ash@sanity.io)
+* **sanity:** support custom `anchorPath` and `focusPath` in `computeRangeDecorations` ([5f45705](https://github.com/sanity-io/sanity/commit/5f4570577369559667d2180f5f096b88704795dc)) by Ash (ash@sanity.io)
+* schedule dangling active cardinality one releases ([#10941](https://github.com/sanity-io/sanity/issues/10941)) ([c8e7f48](https://github.com/sanity-io/sanity/commit/c8e7f48b6a563c65bfebd6076a9a518e0a725f7a)) by Jordan Lawrence (jordanl17@me.com)
+* showing document validation errors inside scheduled drafts list ([#10948](https://github.com/sanity-io/sanity/issues/10948)) ([3d9ff3b](https://github.com/sanity-io/sanity/commit/3d9ff3bfe28a75fb05c3ca3359d2fc6afc415271)) by Jordan Lawrence (jordanl17@me.com)
+
+### Bug Fixes
+
+* **auth:** having no roles array on your user marks you as unauthorized ([#10932](https://github.com/sanity-io/sanity/issues/10932)) ([266eca8](https://github.com/sanity-io/sanity/commit/266eca8cbcaaebb3559401f6ce1588a1ddd9f419)) by Josh (37798644+joshuaellis@users.noreply.github.com)
+* **auth:** include authenticated in roles check ([7fe20a1](https://github.com/sanity-io/sanity/commit/7fe20a1bd5bd14d8dbbf56350b6e696a02829f22)) by Bjørge Næss (bjoerge@gmail.com)
+* **core:** avoid workspace dependent hook CorsOriginError view ([#10935](https://github.com/sanity-io/sanity/issues/10935)) ([73e6173](https://github.com/sanity-io/sanity/commit/73e6173220309fac9553525af6af1b5413ee388c)) by Bjørge Næss (bjoerge@gmail.com)
+* **core:** close icon alignment in studio announcements card ([#10909](https://github.com/sanity-io/sanity/issues/10909)) ([e641a1c](https://github.com/sanity-io/sanity/commit/e641a1ce3304e3d9493fabadf70c9680332d8350)) by Pedro Bonamin (46196328+pedrobonamin@users.noreply.github.com)
+* **core:** don't open release create dialog after clicking documentation link ([#10944](https://github.com/sanity-io/sanity/issues/10944)) ([92739bb](https://github.com/sanity-io/sanity/commit/92739bba60d9e86e13126aec29c3231e82f28d36)) by Pedro Bonamin (46196328+pedrobonamin@users.noreply.github.com)
+* **core:** remove useRawPerspective in favor of perspective ([#10947](https://github.com/sanity-io/sanity/issues/10947)) ([1e9d639](https://github.com/sanity-io/sanity/commit/1e9d6399848ee187eb7bf46c0779cc232fd35d30)) by Pedro Bonamin (46196328+pedrobonamin@users.noreply.github.com)
+* **core:** single doc scheduled publishing updates ([#10884](https://github.com/sanity-io/sanity/issues/10884)) ([a68bab9](https://github.com/sanity-io/sanity/commit/a68bab971d16ecf575fdd8c137335bd8feda986d)) by Pedro Bonamin (46196328+pedrobonamin@users.noreply.github.com)
+* **core:** use release limit instead of count for upsell dialog ([#10929](https://github.com/sanity-io/sanity/issues/10929)) ([14a614c](https://github.com/sanity-io/sanity/commit/14a614c49583d175c98dd74bd3d10b5b4714a1e3)) by Pedro Bonamin (46196328+pedrobonamin@users.noreply.github.com)
+* **deps:** update dependency @portabletext/editor to ^2.15.5 ([#10927](https://github.com/sanity-io/sanity/issues/10927)) ([d62524f](https://github.com/sanity-io/sanity/commit/d62524f3a3c2ed9c48d9103d37b43afd57cf36f4)) by renovate[bot] (29139614+renovate[bot]@users.noreply.github.com)
+* **deps:** Update portabletext ([#10902](https://github.com/sanity-io/sanity/issues/10902)) ([f829425](https://github.com/sanity-io/sanity/commit/f829425f5fa0ff5ec0e0b7b8e103322ab5f49bb9)) by renovate[bot] (29139614+renovate[bot]@users.noreply.github.com)
+* overflow for titles ([#10943](https://github.com/sanity-io/sanity/issues/10943)) ([2a7757c](https://github.com/sanity-io/sanity/commit/2a7757c3f134165456f0f28a4046d429b372dc36)) by RitaDias (rita@sanity.io)
+* rescheduling scheduled draft updates metadata.intendedPublishAt too ([#10919](https://github.com/sanity-io/sanity/issues/10919)) ([66b1858](https://github.com/sanity-io/sanity/commit/66b18583c288785b382b3090e1666a630e4269bd)) by Jordan Lawrence (jordanl17@me.com)
+* **sanity:** add more detailed version info for deployed test-studios ([#10908](https://github.com/sanity-io/sanity/issues/10908)) ([b2c8975](https://github.com/sanity-io/sanity/commit/b2c8975b64ee9cda5927e6dfd1824df50aa946f2)) by Bjørge Næss (bjoerge@gmail.com)
+* **sanity:** handle processing video assets ([#10949](https://github.com/sanity-io/sanity/issues/10949)) ([abf39f7](https://github.com/sanity-io/sanity/commit/abf39f760a3c522cff819172c53484f8ad162865)) by Fred Carlsen (fred@sjelfull.no)
+* **sanity:** PTE error upon patch type unexpected by optimistic change handler ([e453150](https://github.com/sanity-io/sanity/commit/e4531502cdbdeb31cbb2d413fff5107d4e292c98)) by Ash (ash@sanity.io)
+* **sanity:** scrolling in expanded Portable Text Editor ([7519fdb](https://github.com/sanity-io/sanity/commit/7519fdbfb6aa68a80c8f04cdc3c3a3ce57d599e4)) by Ash (ash@sanity.io)
+
 ## [4.11.0](https://github.com/sanity-io/sanity/compare/v4.10.3...v4.11.0) (2025-10-21)
 
 ### Features
