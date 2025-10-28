@@ -14,7 +14,9 @@ import Ora from 'ora'
 import yargs from 'yargs'
 import {hideBin} from 'yargs/helpers'
 
+import {apiConfig} from './apiConfig'
 import {exec} from './helpers/exec'
+import {readEnvVar} from './readEnvVar'
 import {runTest} from './runTest'
 import article from './tests/article/article'
 import recipe from './tests/recipe/recipe'
@@ -39,17 +41,14 @@ const DEPLOYED_STUDIO_URL = process.env.STUDIO_URL
 
 const TESTS = [article, recipe, singleString, synthetic]
 
-const projectId = process.env.VITE_PERF_EFPS_PROJECT_ID!
-const dataset = process.env.VITE_PERF_EFPS_DATASET!
-const token = process.env.PERF_EFPS_SANITY_TOKEN!
+// Note: this should *not* be prefixed with `SANITY_STUDIO_`, otherwise it'll end up in the bundle
+const token = readEnvVar('PERF_EFPS_SANITY_TOKEN')
 
 const client = createClient({
-  projectId,
-  dataset,
+  ...apiConfig,
   token,
   useCdn: false,
   apiVersion: 'v2024-08-08',
-  apiHost: 'https://api.sanity.work',
 })
 
 const workspaceDir = path.dirname(fileURLToPath(import.meta.url))
@@ -159,7 +158,7 @@ async function runAbTest(test: EfpsTest) {
         headless: HEADLESS,
         recordVideo: RECORD_VIDEO,
         enableProfiler: ENABLE_PROFILER,
-        projectId,
+        projectId: apiConfig.projectId,
         studioUrl: MAIN_STUDIO_URL,
         log: (message) => {
           spinner.text = `${referenceMessage}: ${message}`
@@ -181,7 +180,7 @@ async function runAbTest(test: EfpsTest) {
         headless: HEADLESS,
         recordVideo: RECORD_VIDEO,
         enableProfiler: ENABLE_PROFILER,
-        projectId,
+        projectId: apiConfig.projectId,
         studioUrl: DEPLOYED_STUDIO_URL!,
         log: (message) => {
           spinner.text = `${experimentMessage}: ${message}`
