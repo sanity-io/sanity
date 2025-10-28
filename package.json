@@ -13,7 +13,7 @@
     "build:e2e": "pnpm e2e:build",
     "build:efps": "pnpm build --filter=efps-tests",
     "build:performance-studio": "pnpm perf:studio:build",
-    "build:test-studio": "pnpm build --filter=sanity-test-studio",
+    "build:test-studio": "pnpm --filter=sanity-test-studio build",
     "check": "npm-run-all build --parallel check:*",
     "check:deps": "pnpm --recursive --parallel exec depcheck",
     "check:format": "prettier --cache --check .",
