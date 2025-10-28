@@ -1,5 +1,4 @@
 import {Flex, Inline, Text} from '@sanity/ui'
-import {useCallback} from 'react'
 
 import {Button} from '../../../../ui-components'
 import {useTranslation} from '../../../i18n'
@@ -8,18 +7,10 @@ import {ReleaseIllustration} from '../resources/ReleaseIllustration'
 
 interface ReleasesEmptyStateProps {
   createReleaseButton?: React.ReactNode
-  onClickCreateRelease: () => void
 }
 
-export const ReleasesEmptyState = ({
-  createReleaseButton,
-  onClickCreateRelease,
-}: ReleasesEmptyStateProps) => {
+export const ReleasesEmptyState = ({createReleaseButton}: ReleasesEmptyStateProps) => {
   const {t} = useTranslation(releasesLocaleNamespace)
-
-  const handleDocumentationClick = useCallback(() => {
-    onClickCreateRelease()
-  }, [onClickCreateRelease])
 
   return (
     <Flex direction="column" flex={1} justify={'center'} align={'center'}>
@@ -38,7 +29,6 @@ export const ReleasesEmptyState = ({
             href="https://www.sanity.io/docs/content-releases"
             target="_blank"
             mode="ghost"
-            onClick={handleDocumentationClick}
             text={t('overview.action.documentation')}
           />
         </Inline>

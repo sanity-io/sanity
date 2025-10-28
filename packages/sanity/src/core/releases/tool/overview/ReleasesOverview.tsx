@@ -402,13 +402,8 @@ export function ReleasesOverview() {
     : DEFAULT_RELEASES_OVERVIEW_SORT
 
   const releasesEmptyStateComponent = useCallback(
-    () => (
-      <ReleasesEmptyState
-        createReleaseButton={createReleaseButton}
-        onClickCreateRelease={handleOnClickCreateRelease}
-      />
-    ),
-    [createReleaseButton, handleOnClickCreateRelease],
+    () => <ReleasesEmptyState createReleaseButton={createReleaseButton} />,
+    [createReleaseButton],
   )
 
   const tableEmptyState = useMemo(() => {
@@ -474,10 +469,7 @@ export function ReleasesOverview() {
           )}
 
           {hasNoReleases && cardinalityView === 'releases' ? (
-            <ReleasesEmptyState
-              createReleaseButton={createReleaseButton}
-              onClickCreateRelease={handleOnClickCreateRelease}
-            />
+            <ReleasesEmptyState createReleaseButton={createReleaseButton} />
           ) : (
             <Box
               ref={setScrollContainerRef}
