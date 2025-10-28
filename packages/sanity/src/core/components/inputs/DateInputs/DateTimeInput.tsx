@@ -1,5 +1,13 @@
 import {CalendarIcon} from '@sanity/icons'
-import {Box, Card, Flex, LayerProvider, Text, useClickOutsideEvent} from '@sanity/ui'
+import {
+  Box,
+  Card,
+  Flex,
+  LayerProvider,
+  type Placement,
+  Text,
+  useClickOutsideEvent,
+} from '@sanity/ui'
 import {isPast} from 'date-fns'
 import {
   type FocusEvent,
@@ -41,6 +49,7 @@ export interface DateTimeInputProps {
   padding?: number
   disableInput?: boolean
   isPastDisabled?: boolean
+  showTimeZone?: boolean
   timeZoneScope: TimeZoneScope
 }
 
@@ -62,6 +71,7 @@ export const DateTimeInput = forwardRef(function DateTimeInput(
     padding,
     disableInput,
     isPastDisabled,
+    showTimeZone = false,
     timeZoneScope,
     ...rest
   } = props
@@ -162,6 +172,7 @@ export const DateTimeInput = forwardRef(function DateTimeInput(
                       isPastDisabled={isPastDisabled}
                       onChange={onChange}
                       padding={padding}
+                      showTimeZone={showTimeZone}
                       timeZoneScope={timeZoneScope}
                     />
                   </FocusLock>
