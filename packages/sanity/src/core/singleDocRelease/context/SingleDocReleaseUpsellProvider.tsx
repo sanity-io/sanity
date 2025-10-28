@@ -14,7 +14,7 @@ import {UpsellDialog} from '../../studio/upsell/UpsellDialog'
 export function SingleDocReleaseUpsellProvider(props: {children: React.ReactNode}) {
   const [upsellDialogOpen, setUpsellDialogOpen] = useState(false)
   const {upsellData, telemetryLogs} = useUpsellData({
-    dataUri: '/journey/scheduled-publishing',
+    dataUri: '/journey/scheduled-drafts',
     feature: 'single_doc_release',
   })
 

@@ -2,6 +2,7 @@ import {Flex, Inline, Text} from '@sanity/ui'
 
 import {Button} from '../../../../ui-components'
 import {useTranslation} from '../../../i18n'
+import {useReleasesUpsell} from '../../contexts/upsell/useReleasesUpsell'
 import {releasesLocaleNamespace} from '../../i18n'
 import {ReleaseIllustration} from '../resources/ReleaseIllustration'
 
@@ -11,6 +12,11 @@ interface ReleasesEmptyStateProps {
 
 export const ReleasesEmptyState = ({createReleaseButton}: ReleasesEmptyStateProps) => {
   const {t} = useTranslation(releasesLocaleNamespace)
+  const {mode} = useReleasesUpsell()
+
+  if (mode === 'upsell') {
+    return null
+  }
 
   return (
     <Flex direction="column" flex={1} justify={'center'} align={'center'}>

@@ -48,7 +48,9 @@ import {ReleaseMenuButtonWrapper} from './ReleaseMenuButtonWrapper'
 import {ReleasesEmptyState} from './ReleasesEmptyState'
 import {releasesOverviewColumnDefs} from './ReleasesOverviewColumnDefs'
 import {ScheduledDraftMenuButtonWrapper} from './ScheduledDraftMenuButtonWrapper'
+import {ScheduledDraftsEmptyState} from './ScheduledDraftsEmptyState'
 import {scheduledDraftsOverviewColumnDefs} from './ScheduledDraftsOverviewColumnDefs'
+import {SchedulesUpsell} from './SchedulesUpsell'
 import {useTimezoneAdjustedDateTimeRange} from './useTimezoneAdjustedDateTimeRange'
 
 const MotionButton = motion.create(Button)
@@ -132,7 +134,7 @@ export function ReleasesOverview() {
 
   const [scrollContainerRef, setScrollContainerRef] = useState<HTMLDivElement | null>(null)
 
-  const hasReleases = allReleases.length > 0 || allArchivedReleases.length > 0
+  const hasReleases = releases.length > 0 || archivedReleases.length > 0
   // banner that shows when drafts mode is disabled, or scheduled drafts are disabled
   // but there are still scheduled drafts
   const showDraftsDisabledBanner =
@@ -483,8 +485,16 @@ export function ReleasesOverview() {
             <ConfirmActiveScheduledDraftsBanner releases={releases} />
           )}
 
-          {hasNoReleases && cardinalityView === 'releases' ? (
-            <ReleasesEmptyState createReleaseButton={createReleaseButton} />
+          <SchedulesUpsell cardinalityView={cardinalityView} />
+
+          {hasNoReleases ? (
+            <>
+              {cardinalityView === 'releases' ? (
+                <ReleasesEmptyState createReleaseButton={createReleaseButton} />
+              ) : (
+                <ScheduledDraftsEmptyState />
+              )}
+            </>
           ) : (
             <Box
               ref={setScrollContainerRef}
