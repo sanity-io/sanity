@@ -119,8 +119,7 @@ const MenuCard = function MenuCard(
           padding={1}
           style={{
             minWidth: 0,
-            overflowX: 'hidden',
-            overflowY: 'visible',
+            overflow: 'hidden',
           }}
           flex={isLast ? 1 : undefined}
         >
