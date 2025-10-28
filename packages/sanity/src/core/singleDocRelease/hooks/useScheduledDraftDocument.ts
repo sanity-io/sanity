@@ -1,5 +1,5 @@
 import {type SanityDocument} from '@sanity/client'
-import {type PreviewValue} from '@sanity/types'
+import {type PreviewValue, type ValidationMarker} from '@sanity/types'
 
 import {useSchema} from '../../hooks'
 import {unstable_useValuePreview as useValuePreview} from '../../preview/useValuePreview'
@@ -17,6 +17,7 @@ export function useScheduledDraftDocument(
 ): {
   firstDocument: SanityDocument | undefined
   firstDocumentPreview: PreviewValue | undefined
+  firstDocumentValidation: ValidationMarker[] | undefined
   documentsCount: number
   loading: boolean
   error: Error | null
@@ -28,6 +29,7 @@ export function useScheduledDraftDocument(
   const schema = useSchema()
 
   const firstDocument = documents?.[0]?.document
+  const firstDocumentValidation = documents?.[0]?.validation.validation
   const documentsCount = documents?.length || 0
 
   const schemaType = firstDocument ? schema.get(firstDocument._type) : null
@@ -41,6 +43,7 @@ export function useScheduledDraftDocument(
   return {
     firstDocument,
     firstDocumentPreview: includePreview ? previewValue : undefined,
+    firstDocumentValidation,
     documentsCount,
     loading,
     error,
