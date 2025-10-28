@@ -177,7 +177,7 @@ jobs:
         env:
           COMMIT_MESSAGE: ${{ github.event.head_commit.message || github.event.pull_request.title }}
         run: |
-          echo "DEPLOY_URL=$(vercel deploy --prebuilt --token=${{ secrets.VERCEL_E2E_STUDIO_TOKEN }} \
+          echo "DEPLOY_URL=$(pnpm vercel deploy --prebuilt --token=${{ secrets.VERCEL_E2E_STUDIO_TOKEN }} \
           -m githubDeployment="1" \
           -m githubCommitAuthorName="${{ github.event.sender.name || 'GitHub Actions' }}" \
           -m githubCommitMessage="$COMMIT_MESSAGE" \
