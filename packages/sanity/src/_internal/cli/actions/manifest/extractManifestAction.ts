@@ -15,10 +15,12 @@ import {
 import {type ExtractManifestWorkerData} from '../../threads/extractManifest'
 import {readModuleVersion} from '../../util/readModuleVersion'
 import {getTimer} from '../../util/timing'
+import {extractIntents} from './extractIntentsAction'
 
 export const MANIFEST_FILENAME = 'create-manifest.json'
 const SCHEMA_FILENAME_SUFFIX = '.create-schema.json'
 const TOOLS_FILENAME_SUFFIX = '.create-tools.json'
+const INTENTS_FILENAME_SUFFIX = '.sdk-intents.json'
 
 /** Escape-hatch env flags to change action behavior */
 const FEATURE_ENABLED_ENV_NAME = 'SANITY_CLI_EXTRACT_MANIFEST_ENABLED'
@@ -35,6 +37,7 @@ const EXTRACT_FAILURE_MESSAGE =
 
 export interface ExtractManifestFlags {
   path?: string
+  intentsDir?: string
 }
 
 /**
@@ -64,9 +67,10 @@ async function extractManifest(
   args: CliCommandArguments<ExtractManifestFlags>,
   context: CliCommandContext,
 ): Promise<void> {
-  const {output, workDir} = context
+  const {output, workDir, cliConfig} = context
 
   const flags = args.extOptions
+  const isApp = Boolean(cliConfig && 'app' in cliConfig)
   const defaultOutputDir = resolve(join(workDir, 'dist'))
 
   const outputDir = resolve(defaultOutputDir)
@@ -84,34 +88,51 @@ async function extractManifest(
   const timer = getTimer()
   timer.start(CREATE_TIMER)
   const spinner = output.spinner({}).start('Extracting manifest')
+  let workspaceFiles: ManifestWorkspaceFile[] = []
 
-  try {
-    const workspaceManifests = await getWorkspaceManifests({rootPkgPath, workDir})
-    await mkdir(staticPath, {recursive: true})
+  if (!isApp) {
+    try {
+      const workspaceManifests = await getWorkspaceManifests({rootPkgPath, workDir})
+      await mkdir(staticPath, {recursive: true})
 
-    const workspaceFiles = await writeWorkspaceFiles(workspaceManifests, staticPath)
-
-    const manifest: CreateManifest = {
-      /**
-       * Version history:
-       * 1: Initial release.
-       * 2: Added tools file.
-       * 3. Added studioVersion field.
-       */
-      version: 3,
-      createdAt: new Date().toISOString(),
-      workspaces: workspaceFiles,
-      studioVersion: await readModuleVersion(workDir, 'sanity'),
+      workspaceFiles = await writeWorkspaceFiles(workspaceManifests, staticPath)
+    } catch (err) {
+      spinner.fail(err.message)
+      throw err
     }
-
-    await writeFile(path, JSON.stringify(manifest, null, 2))
-    const manifestDuration = timer.end(CREATE_TIMER)
-
-    spinner.succeed(`Extracted manifest (${manifestDuration.toFixed()}ms)`)
-  } catch (err) {
-    spinner.fail(err.message)
-    throw err
   }
+
+  // Extract intents if this is an app
+  let intentsFilename: string | undefined
+  if (isApp) {
+    const intents = await extractIntents({
+      workDir,
+      intentsDir: flags.intentsDir,
+    })
+
+    if (intents.length > 0) {
+      intentsFilename = await createFile(staticPath, intents, INTENTS_FILENAME_SUFFIX)
+    }
+  }
+
+  const manifest: CreateManifest = {
+    /**
+     * Version history:
+     * 1: Initial release.
+     * 2: Added tools file.
+     * 3. Added studioVersion field.
+     * 4. Added intents file for apps.
+    */
+    version: 3,
+    createdAt: new Date().toISOString(),
+    workspaces: workspaceFiles,
+    ...(intentsFilename ? {intents: intentsFilename} : {}),
+  }
+
+  await writeFile(path, JSON.stringify(manifest, null, 2))
+  const manifestDuration = timer.end(CREATE_TIMER)
+
+  spinner.succeed(`Extracted manifest (${manifestDuration.toFixed()}ms)`)
 }
 
 async function getWorkspaceManifests({
