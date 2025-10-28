@@ -90,6 +90,15 @@ export const StructureTool = memo(function StructureTool({onPaneChange}: Structu
     },
     [setFocusedPane],
   )
+
+  // Clear focused pane when it no longer exists in the pane list
+  useEffect(() => {
+    const {focusedPane} = resolvedPanesValue
+    if (focusedPane && !paneDataItems.some((p) => p.key === focusedPane.key)) {
+      setFocusedPane(null)
+    }
+  }, [paneDataItems, resolvedPanesValue, setFocusedPane])
+
   if (!hasDefinedDocumentTypes) {
     return <NoDocumentTypesScreen />
   }
