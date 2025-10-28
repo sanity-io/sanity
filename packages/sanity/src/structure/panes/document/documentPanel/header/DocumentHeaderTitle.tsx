@@ -2,7 +2,13 @@ import {Flex} from '@sanity/ui'
 import {Fragment, useMemo} from 'react'
 import {useObservable} from 'react-rx'
 import {of} from 'rxjs'
-import {getPreviewStateObservable, useDocumentPreviewStore, useSchema, useTranslation} from 'sanity'
+import {
+  getPreviewStateObservable,
+  useDocumentPreviewStore,
+  usePerspective,
+  useSchema,
+  useTranslation,
+} from 'sanity'
 import {useRouter, useRouterState} from 'sanity/router'
 
 import {Button} from '../../../../../ui-components'
@@ -15,14 +21,15 @@ import {useDocumentTitle} from '../../useDocumentTitle'
 
 // Hook to get a single document's preview title
 function useDocumentPreviewTitle(documentId: string | null, documentType: string | null) {
+  const {perspectiveStack} = usePerspective()
   const documentPreviewStore = useDocumentPreviewStore()
   const schema = useSchema()
   const schemaType = documentType ? schema.get(documentType) : null
 
   const observable = useMemo(() => {
-    if (!documentId || !schemaType) return of({isLoading: true, snapshot: null})
-    return getPreviewStateObservable(documentPreviewStore, schemaType, documentId)
-  }, [documentId, documentPreviewStore, schemaType])
+    if (!documentId || !schemaType) return of({isLoading: true, snapshot: null, original: null})
+    return getPreviewStateObservable(documentPreviewStore, schemaType, documentId, perspectiveStack)
+  }, [documentId, documentPreviewStore, schemaType, perspectiveStack])
 
   const previewState = useObservable(observable, {isLoading: true, snapshot: null})
 
@@ -53,7 +60,7 @@ function PaneTitleButton({
   const {title: previewTitle, isLoading} = useDocumentPreviewTitle(documentId, documentType)
 
   // Use preview title for documents, static title for other panes
-  const displayTitle = documentId ? previewTitle : staticTitle
+  const displayTitle = documentId ? (previewTitle ? previewTitle : 'Untitled') : staticTitle
 
   if (!displayTitle && !isLoading) return null
 
