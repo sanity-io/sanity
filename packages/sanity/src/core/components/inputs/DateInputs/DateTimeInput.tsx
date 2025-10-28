@@ -1,13 +1,5 @@
 import {CalendarIcon} from '@sanity/icons'
-import {
-  Box,
-  Card,
-  Flex,
-  LayerProvider,
-  type Placement,
-  Text,
-  useClickOutsideEvent,
-} from '@sanity/ui'
+import {Box, Card, Flex, LayerProvider, Text, useClickOutsideEvent} from '@sanity/ui'
 import {isPast} from 'date-fns'
 import {
   type FocusEvent,
