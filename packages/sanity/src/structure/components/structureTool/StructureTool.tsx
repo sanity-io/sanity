@@ -96,7 +96,7 @@ export const StructureTool = memo(function StructureTool({onPaneChange}: Structu
 
   const focusedIndex = paneDataItems.findIndex((paneData) => paneData.focused)
   const filteredOnlyDocs =
-    focusedIndex === -1 ? paneDataItems : paneDataItems.filter((_, index) => index === focusedIndex)
+    focusedIndex === -1 ? paneDataItems : paneDataItems.filter((_, index) => index >= focusedIndex)
 
   return (
     <ResolvedPanesProvider value={resolvedPanesValue}>
