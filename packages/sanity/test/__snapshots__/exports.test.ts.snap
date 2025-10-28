@@ -437,6 +437,7 @@ exports[`exports snapshot 1`] = `
     "isSearchStrategy": "function",
     "isSlug": "function",
     "isSpanSchemaType": "function",
+    "isStaging": "boolean",
     "isString": "function",
     "isStringInputProps": "function",
     "isStringSchemaType": "function",
