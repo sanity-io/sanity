@@ -32,7 +32,7 @@ export const StructureTool = memo(function StructureTool({onPaneChange}: Structu
   const {push: pushToast} = useToast()
   const schema = useSchema()
   const {layoutCollapsed, setLayoutCollapsed} = useStructureTool()
-  const {paneDataItems, resolvedPanes} = useResolvedPanes()
+  const {paneDataItems, resolvedPanes, setFocusedPane} = useResolvedPanes()
   // Intent resolving is processed by the sibling `<IntentResolver />` but it doesn't have a UI for indicating progress.
   // We handle that here, so if there are only 1 pane (the root structure), and there's an intent state in the router, we need to show a placeholder LoadingPane until
   // the structure is resolved and we know what panes to load/display
@@ -83,6 +83,10 @@ export const StructureTool = memo(function StructureTool({onPaneChange}: Structu
     return <NoDocumentTypesScreen />
   }
 
+  const focusedIndex = paneDataItems.findIndex((paneData) => paneData.focused)
+  const filteredOnlyDocs =
+    focusedIndex === -1 ? paneDataItems : paneDataItems.filter((_, index) => index >= focusedIndex)
+
   return (
     <PortalProvider element={portalElement || null}>
       <StyledPaneLayout
@@ -92,8 +96,8 @@ export const StructureTool = memo(function StructureTool({onPaneChange}: Structu
         onCollapse={handleRootCollapse}
         onExpand={handleRootExpand}
       >
-        {paneDataItems.map(
-          ({
+        {filteredOnlyDocs.map((paneData) => {
+          const {
             active,
             childItemId,
             groupIndex,
@@ -106,7 +110,9 @@ export const StructureTool = memo(function StructureTool({onPaneChange}: Structu
             payload,
             siblingIndex,
             selected,
-          }) => (
+            focused,
+          } = paneData
+          return (
             <Fragment key={`${pane === LOADING_PANE ? 'loading' : pane.type}-${paneIndex}`}>
               {pane === LOADING_PANE ? (
                 <LoadingPane paneKey={paneKey} path={path} selected={selected} />
@@ -124,11 +130,13 @@ export const StructureTool = memo(function StructureTool({onPaneChange}: Structu
                   path={path}
                   selected={selected}
                   siblingIndex={siblingIndex}
+                  focused={focused}
+                  onSetFocusedPane={() => setFocusedPane(paneData)}
                 />
               )}
             </Fragment>
-          ),
-        )}
+          )
+        })}
         {/* If there's just 1 pane (the root), or less, and we're resolving an intent then it's necessary to show */}
         {/* a loading indicator as the intent resolving is async, could take a while and can also be interrupted/redirected */}
         {paneDataItems.length <= 1 && isResolvingIntent && (

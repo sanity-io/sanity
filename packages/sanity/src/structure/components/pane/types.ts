@@ -7,6 +7,7 @@ import {type Intent} from '../../structureBuilder'
  * @internal
  */
 export interface PaneData {
+  focused: boolean
   element: HTMLElement
   collapsed: boolean
   currentMinWidth?: number
@@ -58,6 +59,7 @@ export interface PaneLayoutContextValue {
   collapsed?: boolean
   expand: (element: HTMLElement) => void
   expandedElement: HTMLElement | null
+  focus: (element: HTMLElement) => void
   mount: (element: HTMLElement, opts: PaneConfigOpts) => () => void
   resize: (type: 'start' | 'move' | 'end', element: HTMLElement, deltaX: number) => void
   resizing: boolean

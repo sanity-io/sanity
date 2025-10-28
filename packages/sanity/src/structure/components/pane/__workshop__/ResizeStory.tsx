@@ -31,6 +31,7 @@ export default function ResizeStory() {
       collapsed,
       expand: controller.expand,
       expandedElement: state.expandedElement,
+      focus: controller.focus,
       mount: controller.mount,
       panes: state.panes,
       resize: controller.resize,

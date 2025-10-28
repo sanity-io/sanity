@@ -1,4 +1,4 @@
-import {ArrowLeftIcon, CloseIcon, SplitVerticalIcon} from '@sanity/icons'
+import {ArrowLeftIcon, CloseIcon, EyeOpenIcon, SplitVerticalIcon} from '@sanity/icons'
 import {Box, Card, Flex} from '@sanity/ui'
 // eslint-disable-next-line camelcase
 import {getTheme_v2, rgba} from '@sanity/ui/theme'
@@ -86,6 +86,7 @@ export const DocumentPanelHeader = memo(
       isInitialValueLoading,
       onPaneClose,
       onPaneSplit,
+      onSetFocusedPane,
       menuItemGroups,
       schemaType,
       connectionState,
@@ -188,6 +189,17 @@ export const DocumentPanelHeader = memo(
             </>
           )}
 
+          {onSetFocusedPane && (
+            <Button
+              key="focus-pane-button"
+              aria-label={t('buttons.focus-pane-button.aria-label')}
+              icon={EyeOpenIcon}
+              mode="bleed"
+              onClick={onSetFocusedPane}
+              tooltipProps={{content: t('buttons.focus-pane-button.tooltip')}}
+            />
+          )}
+
           {menuButtonNodes.map((item) => (
             <PaneHeaderActionButton key={item.key} node={item} />
           ))}
@@ -241,6 +253,7 @@ export const DocumentPanelHeader = memo(
         menuButtonNodes,
         onPaneClose,
         onPaneSplit,
+        onSetFocusedPane,
         renderPaneActions,
         schemaType,
         showPaneGroupCloseButton,
