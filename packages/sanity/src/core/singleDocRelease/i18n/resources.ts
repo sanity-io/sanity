@@ -24,9 +24,10 @@ const singleDocReleaseLocaleStrings = {
   /** Empty state title for scheduled drafts */
   'empty-state.title': 'Scheduled drafts',
   /** Empty state description for scheduled drafts */
-  'empty-state.description': 'Schedule and lock draft documents for publishing at a future date.',
+  'empty-state.description':
+    'Schedule and lock draft documents for publishing at a future date and time.',
   /** Empty state action documentation for scheduled drafts */
-  'empty-state.action.documentation': 'Read the docs',
+  'empty-state.action.documentation': 'Learn about scheduling',
 }
 
 /**
