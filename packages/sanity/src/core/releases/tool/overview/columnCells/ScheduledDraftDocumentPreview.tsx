@@ -31,9 +31,8 @@ export const ScheduledDraftDocumentPreview: VisibleColumn<TableRelease>['cell'] 
     )
   }
 
-  const validationErrorCount = firstDocumentValidation?.filter(
-    (validation) => validation.level === 'error',
-  ).length || 0
+  const validationErrorCount =
+    firstDocumentValidation?.filter((validation) => validation.level === 'error').length || 0
 
   return (
     <Box {...cellProps} flex={1} padding={1} paddingLeft={2} paddingRight={2} sizing="border">
