@@ -469,6 +469,29 @@ const releasesLocaleStrings = {
     'Drafts mode has been disabled but there are still scheduled drafts to be published.',
   /** Text for when no scheduled drafts are found */
   'no-scheduled-drafts': 'No Scheduled Drafts',
+
+  /** Banner text showing count of active scheduled drafts requiring confirmation with one draft */
+  'banner.confirm-active-scheduled-drafts_one':
+    'There is {{count}} Scheduled Draft that requires scheduling confirmation',
+  /** Banner text showing count of active scheduled drafts requiring confirmation with multiple drafts */
+  'banner.confirm-active-scheduled-drafts_other':
+    'There are {{count}} Scheduled Drafts that require scheduling confirmation',
+  /** Button text for confirming scheduling of active drafts */
+  'banner.confirm-active-scheduled-drafts.button': 'Confirm scheduling',
+
+  /** Dialog title for confirming active scheduled drafts */
+  'confirm-active-scheduled-drafts-dialog.title': 'Confirm Scheduled Drafts',
+  /** Dialog description for confirming active scheduled drafts */
+  'confirm-active-scheduled-drafts-dialog.description':
+    'These drafts require confirmation to schedule their publishing.',
+  /** Dialog warning when some scheduled drafts have past dates */
+  'confirm-active-scheduled-drafts-dialog.past-dates-warning':
+    'Some of these Scheduled Drafts are scheduled for past dates. Confirming schedules will immediately publish those versions of documents.',
+  /** Dialog confirm button text for confirming all scheduled drafts */
+  'confirm-active-scheduled-drafts-dialog.confirm-button': 'Confirm Schedules',
+
+  /** Toast error message when bulk scheduling of active drafts fails */
+  'toast.confirm-active-scheduled-drafts.error': 'Failed to schedule drafts: {{error}}',
 }
 
 /**
