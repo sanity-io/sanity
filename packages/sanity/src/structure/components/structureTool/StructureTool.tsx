@@ -7,7 +7,7 @@ import {styled} from 'styled-components'
 
 import {LOADING_PANE} from '../../constants'
 import {LoadingPane, StructureToolPane} from '../../panes'
-import {useResolvedPanes} from '../../structureResolvers'
+import {ResolvedPanesProvider, useResolvedPanes} from '../../structureResolvers'
 import {type PaneNode} from '../../types'
 import {useStructureTool} from '../../useStructureTool'
 import {PaneLayout} from '../pane'
@@ -32,7 +32,8 @@ export const StructureTool = memo(function StructureTool({onPaneChange}: Structu
   const {push: pushToast} = useToast()
   const schema = useSchema()
   const {layoutCollapsed, setLayoutCollapsed} = useStructureTool()
-  const {paneDataItems, resolvedPanes, setFocusedPane} = useResolvedPanes()
+  const resolvedPanesValue = useResolvedPanes()
+  const {paneDataItems, resolvedPanes, setFocusedPane} = resolvedPanesValue
   // Intent resolving is processed by the sibling `<IntentResolver />` but it doesn't have a UI for indicating progress.
   // We handle that here, so if there are only 1 pane (the root structure), and there's an intent state in the router, we need to show a placeholder LoadingPane until
   // the structure is resolved and we know what panes to load/display
@@ -88,63 +89,65 @@ export const StructureTool = memo(function StructureTool({onPaneChange}: Structu
     focusedIndex === -1 ? paneDataItems : paneDataItems.filter((_, index) => index >= focusedIndex)
 
   return (
-    <PortalProvider element={portalElement || null}>
-      <StyledPaneLayout
-        flex={1}
-        height={layoutCollapsed ? undefined : 'fill'}
-        minWidth={media[1]}
-        onCollapse={handleRootCollapse}
-        onExpand={handleRootExpand}
-      >
-        {filteredOnlyDocs.map((paneData) => {
-          const {
-            active,
-            childItemId,
-            groupIndex,
-            itemId,
-            key: paneKey,
-            pane,
-            index: paneIndex,
-            params: paneParams,
-            path,
-            payload,
-            siblingIndex,
-            selected,
-            focused,
-          } = paneData
-          return (
-            <Fragment key={`${pane === LOADING_PANE ? 'loading' : pane.type}-${paneIndex}`}>
-              {pane === LOADING_PANE ? (
-                <LoadingPane paneKey={paneKey} path={path} selected={selected} />
-              ) : (
-                <StructureToolPane
-                  active={active}
-                  groupIndex={groupIndex}
-                  index={paneIndex}
-                  pane={pane}
-                  childItemId={childItemId}
-                  itemId={itemId}
-                  paneKey={paneKey}
-                  params={paneParams}
-                  payload={payload}
-                  path={path}
-                  selected={selected}
-                  siblingIndex={siblingIndex}
-                  focused={focused}
-                  onSetFocusedPane={() => setFocusedPane(paneData)}
-                />
-              )}
-            </Fragment>
-          )
-        })}
-        {/* If there's just 1 pane (the root), or less, and we're resolving an intent then it's necessary to show */}
-        {/* a loading indicator as the intent resolving is async, could take a while and can also be interrupted/redirected */}
-        {paneDataItems.length <= 1 && isResolvingIntent && (
-          <LoadingPane paneKey="intent-resolver" />
-        )}
-      </StyledPaneLayout>
-      <StructureTitle resolvedPanes={resolvedPanes} />
-      <div data-portal="" ref={setPortalElement} />
-    </PortalProvider>
+    <ResolvedPanesProvider value={resolvedPanesValue}>
+      <PortalProvider element={portalElement || null}>
+        <StyledPaneLayout
+          flex={1}
+          height={layoutCollapsed ? undefined : 'fill'}
+          minWidth={media[1]}
+          onCollapse={handleRootCollapse}
+          onExpand={handleRootExpand}
+        >
+          {filteredOnlyDocs.map((paneData) => {
+            const {
+              active,
+              childItemId,
+              groupIndex,
+              itemId,
+              key: paneKey,
+              pane,
+              index: paneIndex,
+              params: paneParams,
+              path,
+              payload,
+              siblingIndex,
+              selected,
+              focused,
+            } = paneData
+            return (
+              <Fragment key={`${pane === LOADING_PANE ? 'loading' : pane.type}-${paneIndex}`}>
+                {pane === LOADING_PANE ? (
+                  <LoadingPane paneKey={paneKey} path={path} selected={selected} />
+                ) : (
+                  <StructureToolPane
+                    active={active}
+                    groupIndex={groupIndex}
+                    index={paneIndex}
+                    pane={pane}
+                    childItemId={childItemId}
+                    itemId={itemId}
+                    paneKey={paneKey}
+                    params={paneParams}
+                    payload={payload}
+                    path={path}
+                    selected={selected}
+                    siblingIndex={siblingIndex}
+                    focused={focused}
+                    onSetFocusedPane={() => setFocusedPane(paneData)}
+                  />
+                )}
+              </Fragment>
+            )
+          })}
+          {/* If there's just 1 pane (the root), or less, and we're resolving an intent then it's necessary to show */}
+          {/* a loading indicator as the intent resolving is async, could take a while and can also be interrupted/redirected */}
+          {paneDataItems.length <= 1 && isResolvingIntent && (
+            <LoadingPane paneKey="intent-resolver" />
+          )}
+        </StyledPaneLayout>
+        <StructureTitle resolvedPanes={resolvedPanes} />
+        <div data-portal="" ref={setPortalElement} />
+      </PortalProvider>
+    </ResolvedPanesProvider>
   )
 })

@@ -1,4 +1,4 @@
-import {Flex} from '@sanity/ui'
+import {Flex, Text} from '@sanity/ui'
 import {Fragment, useMemo} from 'react'
 import {useObservable} from 'react-rx'
 import {of} from 'rxjs'
@@ -14,7 +14,7 @@ import {useRouter, useRouterState} from 'sanity/router'
 import {Button} from '../../../../../ui-components'
 import {LOADING_PANE} from '../../../../constants'
 import {structureLocaleNamespace} from '../../../../i18n'
-import {useResolvedPanes} from '../../../../structureResolvers/useResolvedPanes'
+import {type Panes, useResolvedPanesContext} from '../../../../structureResolvers'
 import {type RouterPanes} from '../../../../types'
 import {useDocumentPane} from '../../useDocumentPane'
 import {useDocumentTitle} from '../../useDocumentTitle'
@@ -45,7 +45,7 @@ function PaneTitleButton({
   routerPanes,
   router,
 }: {
-  paneData: ReturnType<typeof useResolvedPanes>['paneDataItems'][number]
+  paneData: Panes['paneDataItems'][number]
   routerPanes: RouterPanes
   router: ReturnType<typeof useRouter>
 }) {
@@ -77,8 +77,8 @@ function PaneTitleButton({
 }
 
 export function DocumentHeaderTitle(): React.JSX.Element {
-  const {connectionState, schemaType, title, value: documentValue, focused} = useDocumentPane()
-  const {paneDataItems} = useResolvedPanes()
+  const {connectionState, schemaType, title, value: documentValue} = useDocumentPane()
+  const {paneDataItems} = useResolvedPanesContext()
   const {title: documentTitle, error} = useDocumentTitle()
   const router = useRouter()
   const routerState = useRouterState()
@@ -113,10 +113,9 @@ export function DocumentHeaderTitle(): React.JSX.Element {
 
   return (
     <>
-      {focused ? (
+      {focusIndex > 0 ? (
         <Flex direction="row" align="center">
           {paneDataItems.map((paneData, index) => {
-            if (focusIndex > index) return null
             return (
               <Fragment key={paneData.key}>
                 <PaneTitleButton
@@ -126,7 +125,7 @@ export function DocumentHeaderTitle(): React.JSX.Element {
                   router={router}
                 />
 
-                {index < paneDataItems.length - 1 && <>/</>}
+                {index < paneDataItems.length - 1 && <Text muted>/</Text>}
               </Fragment>
             )
           })}
