@@ -132,7 +132,7 @@ export function ReleasesOverview() {
 
   const [scrollContainerRef, setScrollContainerRef] = useState<HTMLDivElement | null>(null)
 
-  const hasReleases = allReleases.length > 0 || allArchivedReleases.length > 0
+  const hasReleases = releases.length > 0 || archivedReleases.length > 0
   // banner that shows when drafts mode is disabled, or scheduled drafts are disabled
   // but there are still scheduled drafts
   const showDraftsDisabledBanner =
