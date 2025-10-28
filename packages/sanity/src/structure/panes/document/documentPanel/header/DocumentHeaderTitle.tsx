@@ -77,7 +77,14 @@ function PaneTitleButton({
 }
 
 export function DocumentHeaderTitle(): React.JSX.Element {
-  const {connectionState, schemaType, title, value: documentValue} = useDocumentPane()
+  const {
+    connectionState,
+    schemaType,
+    title,
+    value: documentValue,
+    displayed,
+    index,
+  } = useDocumentPane()
   const {paneDataItems} = useResolvedPanesContext()
   const {title: documentTitle, error} = useDocumentTitle()
   const router = useRouter()
@@ -110,12 +117,14 @@ export function DocumentHeaderTitle(): React.JSX.Element {
   }
 
   const focusIndex = paneDataItems.findIndex((paneData) => paneData.focused)
+  const currentPaneIndex = index
 
   return (
     <>
       {focusIndex > 0 ? (
         <Flex direction="row" align="center">
-          {paneDataItems.map((paneData, index) => {
+          {paneDataItems.map((paneData, idx) => {
+            if (idx > currentPaneIndex) return null
             return (
               <Fragment key={paneData.key}>
                 <PaneTitleButton
@@ -125,7 +134,7 @@ export function DocumentHeaderTitle(): React.JSX.Element {
                   router={router}
                 />
 
-                {index < paneDataItems.length - 1 && <Text muted>/</Text>}
+                {idx < currentPaneIndex && <Text muted>/</Text>}
               </Fragment>
             )
           })}
