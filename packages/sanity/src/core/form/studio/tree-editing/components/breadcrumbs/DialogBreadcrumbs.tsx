@@ -287,10 +287,17 @@ export function DialogBreadcrumbs(props: BreadcrumbsProps): React.JSX.Element | 
             flex={1}
             align="center"
             justify="flex-start"
-            overflow="hidden"
-            style={{textTransform: 'capitalize', minWidth: 0}}
+            style={{
+              textTransform: 'capitalize',
+              minWidth: 0,
+            }}
           >
-            <Text muted size={1} textOverflow="ellipsis">
+            <Text
+              muted
+              size={1}
+              textOverflow="ellipsis"
+              style={{whiteSpace: 'nowrap', maxWidth: '250px'}}
+            >
               {selectedPath[0]?.toString()}
             </Text>
           </Flex>
