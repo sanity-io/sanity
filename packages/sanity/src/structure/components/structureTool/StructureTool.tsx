@@ -80,13 +80,23 @@ export const StructureTool = memo(function StructureTool({onPaneChange}: Structu
 
   const hasDefinedDocumentTypes = schema._original?.types.some(_isCustomDocumentTypeDefinition)
 
+  const onSetFocusedPane = useCallback(
+    (paneData: (typeof paneDataItems)[number] | null) => {
+      if (paneData?.focused) {
+        setFocusedPane(null)
+      } else {
+        setFocusedPane(paneData)
+      }
+    },
+    [setFocusedPane],
+  )
   if (!hasDefinedDocumentTypes) {
     return <NoDocumentTypesScreen />
   }
 
   const focusedIndex = paneDataItems.findIndex((paneData) => paneData.focused)
   const filteredOnlyDocs =
-    focusedIndex === -1 ? paneDataItems : paneDataItems.filter((_, index) => index >= focusedIndex)
+    focusedIndex === -1 ? paneDataItems : paneDataItems.filter((_, index) => index === focusedIndex)
 
   return (
     <ResolvedPanesProvider value={resolvedPanesValue}>
@@ -133,7 +143,7 @@ export const StructureTool = memo(function StructureTool({onPaneChange}: Structu
                     selected={selected}
                     siblingIndex={siblingIndex}
                     focused={focused}
-                    onSetFocusedPane={() => setFocusedPane(paneData)}
+                    onSetFocusedPane={() => onSetFocusedPane(paneData)}
                   />
                 )}
               </Fragment>
