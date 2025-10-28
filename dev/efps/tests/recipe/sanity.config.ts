@@ -6,7 +6,7 @@ export const recipeEfps = defineConfig({
   // Had to add the alternative or when running the studio locally it throws errors
   projectId: import.meta.env.VITE_PERF_EFPS_PROJECT_ID || 'b8j69ts2',
   dataset: import.meta.env.VITE_PERF_EFPS_DATASET || 'production',
-  apiHost: 'https://api.sanity.work',
+  apiHost: import.meta.env.VITE_PERF_EFPS_API_HOST || 'https://api.sanity.work',
   scheduledPublishing: {
     enabled: false,
   },
