@@ -58,6 +58,7 @@ export const ReleasesNav: ComponentType<Props> = ({withReleasesToolButton, menuI
       />
       <GlobalPerspectiveMenu
         selectedReleaseId={
+          // when global perspective is a cardinality one release (aka: scheduled draft) we want to visually show this as being 'drafts' in the global picker
           isCardinalityOnePerspective(selectedPerspective) ? undefined : selectedReleaseId
         }
         areReleasesEnabled={releasesToolAvailable}
