@@ -141,14 +141,11 @@ jobs:
       - name: Install project dependencies
         run: pnpm install
 
-      - name: Install Vercel CLI
-        run: pnpm install --global vercel@latest
-
       - name: Pull Vercel Environment Information
         env:
           VERCEL_ORG_ID: ${{ secrets.VERCEL_E2E_STUDIO_ORG_ID }}
           VERCEL_PROJECT_ID: ${{ secrets.VERCEL_E2E_STUDIO_PROJECT_ID }}
-        run: vercel pull --yes --environment=preview --token=${{ secrets.VERCEL_E2E_STUDIO_TOKEN }}
+        run: pnpm vercel pull --yes --environment=preview --token=${{ secrets.VERCEL_E2E_STUDIO_TOKEN }}
 
       - name: Build Project Artifacts on PR
         if: ${{ github.event_name == 'pull_request' }}
