@@ -7,10 +7,6 @@ on:
   pull_request:
   workflow_dispatch:
     inputs:
-      reference_tag:
-        description: "npm reference tag for comparison"
-        required: true
-        default: "latest"
       enable_profiler:
         description: "Enable profiler"
         required: true

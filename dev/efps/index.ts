@@ -31,8 +31,7 @@ const TEST_ATTEMPTS = process.env.CI ? 3 : 1
 const HEADLESS = process.env.HEADLESS !== 'false'
 // eslint-disable-next-line turbo/no-undeclared-env-vars
 const ENABLE_PROFILER = process.env.ENABLE_PROFILER === 'true'
-// eslint-disable-next-line turbo/no-undeclared-env-vars
-const REFERENCE_TAG = process.env.REFERENCE_TAG || 'latest'
+
 // eslint-disable-next-line turbo/no-undeclared-env-vars
 const RECORD_VIDEO = process.env.RECORD_VIDEO === 'true'
 const REFERENCE_STUDIO_URL = 'https://efps-git-main.sanity.dev'
@@ -180,7 +179,9 @@ async function runAbTest(test: EfpsTest) {
         },
       }),
     )
-    spinner.succeed(`Ran test '${test.name}' on \`sanity@${REFERENCE_TAG}\`${attemptMessage}`)
+    spinner.succeed(
+      `Ran test '${test.name}' on reference studio (${REFERENCE_STUDIO_URL})${attemptMessage}`,
+    )
 
     const experimentStudioClient = createClient({
       ...experimentConfig,
