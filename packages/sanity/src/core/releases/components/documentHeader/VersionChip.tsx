@@ -276,6 +276,7 @@ export const VersionChip = memo(function VersionChip(props: {
       </Tooltip>
 
       <Popover
+        animate={false}
         content={
           <VersionContextMenu
             documentId={documentId}
