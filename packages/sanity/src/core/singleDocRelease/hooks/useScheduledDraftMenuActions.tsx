@@ -19,7 +19,6 @@ export interface UseScheduledDraftMenuActionsOptions {
   documentType?: string
   disabled?: boolean
   onActionComplete?: () => void
-  onActionSelected?: (action: ScheduledDraftAction) => void
 }
 
 interface ScheduledDraftActionProps {
@@ -34,6 +33,8 @@ export interface UseScheduledDraftMenuActionsReturn {
   actions: Record<'publishNow' | 'editSchedule' | 'deleteSchedule', ScheduledDraftActionProps>
   dialogs: React.ReactNode
   isPerformingOperation: boolean
+  selectedAction: ScheduledDraftAction | null
+  handleDialogClose: () => void
 }
 
 /**
@@ -44,7 +45,7 @@ export interface UseScheduledDraftMenuActionsReturn {
 export function useScheduledDraftMenuActions(
   options: UseScheduledDraftMenuActionsOptions,
 ): UseScheduledDraftMenuActionsReturn {
-  const {release, documentType, disabled = false, onActionComplete, onActionSelected} = options
+  const {release, documentType, disabled = false, onActionComplete} = options
 
   const {t} = useTranslation()
   const toast = useToast()
@@ -88,13 +89,9 @@ export function useScheduledDraftMenuActions(
     [release, operations, onActionComplete, toast, t, firstDocumentPreview?.title],
   )
 
-  const handleMenuItemClick = useCallback(
-    (action: ScheduledDraftAction) => {
-      setSelectedAction(action)
-      onActionSelected?.(action)
-    },
-    [onActionSelected],
-  )
+  const handleMenuItemClick = useCallback((action: ScheduledDraftAction) => {
+    setSelectedAction(action)
+  }, [])
 
   const handleDialogClose = useCallback(() => {
     if (!isPerformingOperation) {
@@ -182,5 +179,7 @@ export function useScheduledDraftMenuActions(
     actions,
     dialogs,
     isPerformingOperation,
+    selectedAction,
+    handleDialogClose,
   }
 }

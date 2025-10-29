@@ -1,15 +1,12 @@
 import {type ReleaseDocument} from '@sanity/client'
 import {CalendarIcon} from '@sanity/icons'
 import {Menu, MenuDivider} from '@sanity/ui'
-import {memo, useCallback} from 'react'
+import {memo} from 'react'
 import {IntentLink} from 'sanity/router'
 
 import {MenuItem} from '../../../../../ui-components'
 import {useTranslation} from '../../../../i18n/hooks/useTranslation'
-import {
-  type ScheduledDraftAction,
-  useScheduledDraftMenuActions,
-} from '../../../../singleDocRelease/hooks/useScheduledDraftMenuActions'
+import {type UseScheduledDraftMenuActionsReturn} from '../../../../singleDocRelease/hooks/useScheduledDraftMenuActions'
 import {RELEASES_SCHEDULED_DRAFTS_INTENT} from '../../../../singleDocRelease/plugin'
 import {CopyToReleaseMenuGroup} from './CopyToReleaseMenuGroup'
 
@@ -19,13 +16,9 @@ interface ScheduledDraftContextMenuProps {
   onCreateRelease: () => void
   onCreateVersion: (targetId: string) => void
   disabled?: boolean
-  type: string
   isGoingToUnpublish?: boolean
-  release: ReleaseDocument
-  onChangeSchedule?: () => void
-  onDeleteSchedule?: () => void
-  onPublishNow?: () => void
   hasCreatePermission: boolean | null
+  scheduledDraftMenuActions: UseScheduledDraftMenuActionsReturn
 }
 
 export const ScheduledDraftContextMenu = memo(function ScheduledDraftContextMenu(
@@ -37,42 +30,14 @@ export const ScheduledDraftContextMenu = memo(function ScheduledDraftContextMenu
     onCreateRelease,
     onCreateVersion,
     disabled,
-    type,
     isGoingToUnpublish = false,
-    release,
-    onChangeSchedule,
-    onDeleteSchedule,
-    onPublishNow,
     hasCreatePermission,
+    scheduledDraftMenuActions,
   } = props
   const {t} = useTranslation()
   const isCopyToReleaseDisabled = disabled || !hasCreatePermission || isGoingToUnpublish
 
-  const handleActionSelected = useCallback(
-    (action: ScheduledDraftAction) => {
-      switch (action) {
-        case 'publish-now':
-          onPublishNow?.()
-          break
-        case 'edit-schedule':
-          onChangeSchedule?.()
-          break
-        case 'delete-schedule':
-          onDeleteSchedule?.()
-          break
-        default:
-          break
-      }
-    },
-    [onPublishNow, onChangeSchedule, onDeleteSchedule],
-  )
-
-  const {actions} = useScheduledDraftMenuActions({
-    release,
-    documentType: type,
-    disabled,
-    onActionSelected: handleActionSelected,
-  })
+  const {actions} = scheduledDraftMenuActions
 
   return (
     <Menu>
