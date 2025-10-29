@@ -59,12 +59,10 @@ export function useResolvedPanes(): Panes {
 
   const {structureContext, rootPaneNode} = useStructureTool()
 
-  const [data, setData] = useState<Panes>({
+  const [data, setData] = useState<Omit<Panes, 'focusedPane' | 'setFocusedPane'>>({
     paneDataItems: [],
     resolvedPanes: [],
     routerPanes: [],
-    focusedPane: null,
-    setFocusedPane: () => {},
   })
 
   const routerPanesStream = useRouterPanesStream()
@@ -120,7 +118,7 @@ export function useResolvedPanes(): Panes {
     )
 
     const subscription = resolvedPanes$.subscribe({
-      next: (result) => setData({...result, focusedPane: null, setFocusedPane: () => {}}),
+      next: (result) => setData(result),
       error: (e) => setError(e),
     })
 
@@ -130,7 +128,7 @@ export function useResolvedPanes(): Panes {
   const paneDataItemsWithFocus = useMemo(() => {
     return data.paneDataItems.map((item) => ({
       ...item,
-      focused: focusedPane?.key === item.key,
+      focused: focusedPane ? item.key === focusedPane.key : false,
     }))
   }, [data.paneDataItems, focusedPane])
 

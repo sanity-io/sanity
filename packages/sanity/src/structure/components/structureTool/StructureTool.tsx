@@ -1,6 +1,6 @@
 import {PortalProvider, useTheme, useToast} from '@sanity/ui'
 import {isHotkey} from 'is-hotkey-esm'
-import {Fragment, memo, useCallback, useEffect, useState} from 'react'
+import {Fragment, memo, useCallback, useEffect, useRef, useState} from 'react'
 import {_isCustomDocumentTypeDefinition, useSchema} from 'sanity'
 import {useRouterState} from 'sanity/router'
 import {styled} from 'styled-components'
@@ -33,7 +33,7 @@ export const StructureTool = memo(function StructureTool({onPaneChange}: Structu
   const schema = useSchema()
   const {layoutCollapsed, setLayoutCollapsed} = useStructureTool()
   const resolvedPanesValue = useResolvedPanes()
-  const {paneDataItems, resolvedPanes, setFocusedPane} = resolvedPanesValue
+  const {paneDataItems, resolvedPanes, setFocusedPane, focusedPane} = resolvedPanesValue
   // Intent resolving is processed by the sibling `<IntentResolver />` but it doesn't have a UI for indicating progress.
   // We handle that here, so if there are only 1 pane (the root structure), and there's an intent state in the router, we need to show a placeholder LoadingPane until
   // the structure is resolved and we know what panes to load/display
@@ -84,28 +84,72 @@ export const StructureTool = memo(function StructureTool({onPaneChange}: Structu
     (paneData: (typeof paneDataItems)[number] | null) => {
       if (paneData?.focused) {
         setFocusedPane(null)
-      } else {
-        setFocusedPane(paneData)
+        return
       }
+
+      setFocusedPane(paneData)
     },
     [setFocusedPane],
   )
 
+  const previousSelectedIndexRef = useRef(-1)
+
+  // When navigating while focused, move focus to the newly selected pane
+  useEffect(() => {
+    const selectedIndex = paneDataItems.findIndex((pane) => pane.selected)
+    const prevSelectedIndex = previousSelectedIndexRef.current
+
+    // Only act if we have a focused pane and the selected index actually changed
+    if (focusedPane && selectedIndex !== -1 && selectedIndex !== prevSelectedIndex) {
+      // If the newly selected pane is different from the focused pane, focus it
+      if (selectedIndex !== focusedPane.index) {
+        const selectedPane = paneDataItems[selectedIndex]
+        setFocusedPane(selectedPane)
+      }
+    }
+
+    previousSelectedIndexRef.current = selectedIndex
+  }, [focusedPane, paneDataItems, setFocusedPane])
+
   // Clear focused pane when it no longer exists in the pane list
   useEffect(() => {
-    const {focusedPane} = resolvedPanesValue
-    if (focusedPane && !paneDataItems.some((p) => p.key === focusedPane.key)) {
+    if (!focusedPane) return
+
+    const isFocusedPanePresent = paneDataItems.some((pane) => pane.key === focusedPane.key)
+
+    if (isFocusedPanePresent) {
+      return
+    }
+
+    const fallbackPane = paneDataItems.find(
+      (pane) =>
+        pane.groupIndex === focusedPane.groupIndex &&
+        pane.siblingIndex === focusedPane.siblingIndex,
+    )
+
+    if (fallbackPane) {
+      setFocusedPane(fallbackPane)
+    } else {
       setFocusedPane(null)
     }
-  }, [paneDataItems, resolvedPanesValue, setFocusedPane])
+  }, [focusedPane, paneDataItems, setFocusedPane])
 
   if (!hasDefinedDocumentTypes) {
     return <NoDocumentTypesScreen />
   }
 
-  const focusedIndex = paneDataItems.findIndex((paneData) => paneData.focused)
-  const filteredOnlyDocs =
-    focusedIndex === -1 ? paneDataItems : paneDataItems.filter((_, index) => index >= focusedIndex)
+  const focusedIndex = paneDataItems.findLastIndex((paneData) => paneData.focused)
+
+  // When a pane is focused, show from that pane onward, but limit to only show
+  // up to and including the focused pane (hide subsequent panes)
+  let filteredOnlyDocs = paneDataItems
+  if (focusedIndex !== -1) {
+    const focusedPaneData = paneDataItems[focusedIndex]
+    // Show panes from the focused index, but only up to the focused pane's groupIndex + 1
+    filteredOnlyDocs = paneDataItems
+      .slice(focusedIndex)
+      .filter((pane) => pane.groupIndex <= focusedPaneData.groupIndex)
+  }
 
   return (
     <ResolvedPanesProvider value={resolvedPanesValue}>

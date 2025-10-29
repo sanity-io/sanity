@@ -52,7 +52,12 @@ function DocumentPaneInner(props: DocumentPaneProviderProps) {
   const options = usePaneOptions(pane.options, paneRouter.params)
   const {documentType, isLoaded: isDocumentLoaded} = useDocumentType(options.id, options.type)
   useResetHistoryParams()
-  const DocumentLayout = useDocumentLayoutComponent()
+  const DocumentLayoutComponent = useDocumentLayoutComponent()
+  const documentLayoutElement = useMemo(
+    // eslint-disable-next-line react-hooks/static-components
+    () => <DocumentLayoutComponent documentId={options.id} documentType={options.type} />,
+    [DocumentLayoutComponent, options.id, options.type],
+  )
 
   // The templates that should be creatable from inside this document pane.
   // For example, from the "Create new" menu in reference inputs.
@@ -75,7 +80,7 @@ function DocumentPaneInner(props: DocumentPaneProviderProps) {
       : props
   }, [props, documentType, isLoaded, options])
 
-  const {ReferenceChildLink, handleEditReference, groupIndex, routerPanesState} = paneRouter
+  const {ReferenceChildLink, groupIndex, routerPanesState, handleEditReference} = paneRouter
   const childParams = routerPanesState[groupIndex + 1]?.[0].params || {}
   const routerPanesStateLength = routerPanesState.length
   const {parentRefPath} = childParams
@@ -146,7 +151,7 @@ function DocumentPaneInner(props: DocumentPaneProviderProps) {
       >
         <DiffViewDocumentLayout documentId={options.id} documentType={options.type}>
           <CommentsWrapper documentId={options.id} documentType={options.type}>
-            <DocumentLayout documentId={options.id} documentType={options.type} />
+            {documentLayoutElement}
           </CommentsWrapper>
         </DiffViewDocumentLayout>
       </ReferenceInputOptionsProvider>
