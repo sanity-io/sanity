@@ -120,7 +120,6 @@
     "@sanity/client": "^7.12.0",
     "@sanity/types": "workspace:*",
     "date-fns": "^4.1.0",
-    "get-random-values-esm": "1.0.2",
     "rxjs": "^7.8.2"
   },
   "devDependencies": {
