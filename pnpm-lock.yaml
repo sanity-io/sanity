@@ -166,6 +166,9 @@ importers:
       prettier:
         specifier: 'catalog:'
         version: 3.6.2
+      prettier-plugin-packagejson:
+        specifier: ^2.5.19
+        version: 2.5.19(prettier@3.6.2)
       tsx:
         specifier: ^4.20.6
         version: 4.20.6
