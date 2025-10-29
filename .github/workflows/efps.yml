@@ -24,13 +24,13 @@ on:
         default: false
 
 jobs:
-  deploy-preview:
+  deploy:
     runs-on: ubuntu-latest
     env:
       TURBO_TOKEN: ${{ secrets.TURBO_TOKEN }}
       TURBO_TEAM: ${{ vars.TURBO_TEAM }}
     outputs:
-      preview_url: ${{ steps.deploy.outputs.DEPLOY_URL }}
+      preview_url: ${{ steps.deploy-preview.outputs.DEPLOY_URL }}
     steps:
       - uses: actions/checkout@v5
       - uses: pnpm/action-setup@v4
@@ -63,7 +63,9 @@ jobs:
             SANITY_STUDIO_EFPS_EXPERIMENT_DATASET
             SANITY_STUDIO_EFPS_EXPERIMENT_API_HOST
 
-      - name: Build Experiment Studio from this branch
+      - name: Build Experiment Studio from PR
+        # We prebuild in the GH action if in a branch to make it faster
+        if: ${{github.ref_name != 'main'}}
         env:
           SANITY_STUDIO_EFPS_EXPERIMENT_PROJECT_ID: ${{ env.SANITY_STUDIO_EFPS_EXPERIMENT_PROJECT_ID }}
           SANITY_STUDIO_EFPS_EXPERIMENT_DATASET: ${{ env.SANITY_STUDIO_EFPS_EXPERIMENT_DATASET }}
@@ -74,8 +76,9 @@ jobs:
 
         run: pnpm vercel build --token=${{ secrets.VERCEL_EFPS_STUDIO_TOKEN }}
 
-      - name: Deploy Experiment Studio
-        id: deploy
+      - name: Deploy Experiment Studio from PR
+        id: deploy-preview
+        if: ${{github.ref_name != 'main'}}
         env:
           COMMIT_MESSAGE: ${{ github.event.head_commit.message || github.event.pull_request.title }}
         run: |
@@ -93,18 +96,23 @@ jobs:
               -m githubCommitAuthorLogin="${{ github.event.sender.login || github.actor }}" | tail -n 1
             )" >> $GITHUB_OUTPUT
 
-      - name: Promote to production if main
-        id: promote-to-prod
+      - name: Deploy new reference Studio from main
+        id: deploy-main
         if: ${{github.ref_name == 'main'}}
-        run: pnpm vercel promote "${{ steps.deploy.outputs.DEPLOY_URL }}" --token=${{ secrets.VERCEL_EFPS_STUDIO_TOKEN }}
-
-      - name: Echo the deploy URL
+        env:
+          COMMIT_MESSAGE: ${{ github.event.head_commit.message || github.event.pull_request.title }}
         run: |
-          if [ -z "${{ steps.deploy.outputs.DEPLOY_URL }}" ]; then
-           echo "::error::Preview URL was not found. Deployment may have failed."
-           exit 1
-          fi
-          echo "Preview URL: ${{ steps.deploy.outputs.DEPLOY_URL }}"
+          pnpm vercel deploy --prod --token=${{ secrets.VERCEL_EFPS_STUDIO_TOKEN }} \
+            -m githubDeployment="1" \
+            -m githubCommitAuthorName="${{ github.event.sender.name || 'GitHub Actions' }}" \
+            -m githubCommitMessage="$COMMIT_MESSAGE" \
+            -m githubCommitOrg="${{ github.repository_owner }}" \
+            -m githubCommitRef="${{ github.head_ref || github.ref_name }}" \
+            -m githubCommitRepo="${{ github.event.repository.name }}" \
+            -m githubCommitSha="${{ github.sha }}" \
+            -m githubOrg="${{ github.repository_owner }}" \
+            -m githubRepo="${{ github.event.repository.name }}" \
+            -m githubCommitAuthorLogin="${{ github.event.sender.login || github.actor }}"
 
   efps-test:
     # We do not currently run in main, but we could do that if we want to compare main
@@ -112,11 +120,11 @@ jobs:
     if: ${{github.ref_name != 'main'}}
     timeout-minutes: 30
     runs-on: ubuntu-latest
-    needs: [deploy-preview]
+    needs: [deploy]
     env:
       TURBO_TOKEN: ${{ secrets.TURBO_TOKEN }}
       TURBO_TEAM: ${{ vars.TURBO_TEAM }}
-      DEPLOY_URL: ${{ needs.deploy-preview.outputs.preview_url }}
+      DEPLOY_URL: ${{ needs.deploy.outputs.preview_url }}
     strategy:
       fail-fast: false
       matrix:
@@ -192,7 +200,7 @@ jobs:
           EFPS_SANITY_TOKEN_PROD: ${{ env.EFPS_SANITY_TOKEN_PROD }}
           ENABLE_PROFILER: ${{ github.event.inputs.enable_profiler || false }}
           RECORD_VIDEO: ${{ github.event.inputs.record_video || false }}
-          STUDIO_URL: ${{ needs.deploy-preview.outputs.preview_url }}
+          STUDIO_URL: ${{ needs.deploy.outputs.preview_url }}
         run: pnpm efps:test -- -- --shard ${{ matrix.shardIndex }}/${{ matrix.shardTotal }}
 
       - uses: actions/upload-artifact@v4
