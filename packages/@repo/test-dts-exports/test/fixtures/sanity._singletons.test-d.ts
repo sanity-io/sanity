@@ -32,6 +32,7 @@ import type {
   DocumentLimitUpsellContextValue,
   DocumentPaneContext,
   DocumentSheetListContext,
+  EnhancedObjectDialogContext,
   EventsContext,
   FieldActionsContext,
   FieldActionsContextValue,
@@ -87,6 +88,10 @@ import type {
   SchedulePublishUpsellContextValue,
   ScrollContext,
   SearchContext,
+  SingleDocReleaseEnabledContext,
+  SingleDocReleaseEnabledContextValue,
+  SingleDocReleaseUpsellContext,
+  SingleDocReleaseUpsellContextValue,
   SortableItemIdContext,
   SourceContext,
   StructureToolContext,
@@ -96,7 +101,6 @@ import type {
   TasksEnabledContext,
   TasksNavigationContext,
   TasksUpsellContext,
-  EnhancedObjectDialogContext,
   UserColorManagerContext,
   ValidationContext,
   VirtualizerScrollInstanceContext,
@@ -190,6 +194,9 @@ describe('sanity/_singletons', () => {
   })
   test('DocumentSheetListContext', () => {
     expectTypeOf<typeof DocumentSheetListContext>().not.toBeNever()
+  })
+  test('EnhancedObjectDialogContext', () => {
+    expectTypeOf<typeof EnhancedObjectDialogContext>().not.toBeNever()
   })
   test('EventsContext', () => {
     expectTypeOf<typeof EventsContext>().not.toBeNever()
@@ -356,6 +363,18 @@ describe('sanity/_singletons', () => {
   test('SearchContext', () => {
     expectTypeOf<typeof SearchContext>().not.toBeNever()
   })
+  test('SingleDocReleaseEnabledContext', () => {
+    expectTypeOf<typeof SingleDocReleaseEnabledContext>().not.toBeNever()
+  })
+  test('SingleDocReleaseEnabledContextValue', () => {
+    expectTypeOf<SingleDocReleaseEnabledContextValue>().not.toBeNever()
+  })
+  test('SingleDocReleaseUpsellContext', () => {
+    expectTypeOf<typeof SingleDocReleaseUpsellContext>().not.toBeNever()
+  })
+  test('SingleDocReleaseUpsellContextValue', () => {
+    expectTypeOf<SingleDocReleaseUpsellContextValue>().toBeObject()
+  })
   test('SortableItemIdContext', () => {
     expectTypeOf<typeof SortableItemIdContext>().not.toBeNever()
   })
@@ -382,9 +401,6 @@ describe('sanity/_singletons', () => {
   })
   test('TasksUpsellContext', () => {
     expectTypeOf<typeof TasksUpsellContext>().not.toBeNever()
-  })
-  test('EnhancedObjectDialogContext', () => {
-    expectTypeOf<typeof EnhancedObjectDialogContext>().not.toBeNever()
   })
   test('UserColorManagerContext', () => {
     expectTypeOf<typeof UserColorManagerContext>().not.toBeNever()
