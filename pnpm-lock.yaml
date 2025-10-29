@@ -344,6 +344,9 @@ importers:
       '@repo/eslint-config':
         specifier: workspace:*
         version: link:../../packages/@repo/eslint-config
+      '@repo/utils':
+        specifier: workspace:*
+        version: link:../../packages/@repo/utils
       '@sanity/client':
         specifier: ^7.12.0
         version: 7.12.0(debug@4.4.3)

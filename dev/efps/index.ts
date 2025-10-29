@@ -7,6 +7,7 @@ import path from 'node:path'
 import process from 'node:process'
 import {fileURLToPath} from 'node:url'
 
+import {readEnv} from '@repo/utils'
 import {createClient} from '@sanity/client'
 import chalk from 'chalk'
 import Table from 'cli-table3'
@@ -14,7 +15,6 @@ import Ora from 'ora'
 import yargs from 'yargs'
 import {hideBin} from 'yargs/helpers'
 
-import {apiConfig} from './apiConfig'
 import {exec} from './helpers/exec'
 import {readEnvVar} from './readEnvVar'
 import {runTest} from './runTest'
@@ -35,21 +35,29 @@ const ENABLE_PROFILER = process.env.ENABLE_PROFILER === 'true'
 const REFERENCE_TAG = process.env.REFERENCE_TAG || 'latest'
 // eslint-disable-next-line turbo/no-undeclared-env-vars
 const RECORD_VIDEO = process.env.RECORD_VIDEO === 'true'
-const MAIN_STUDIO_URL = 'https://efps-git-main.sanity.dev'
-// eslint-disable-next-line turbo/no-undeclared-env-vars
-const DEPLOYED_STUDIO_URL = process.env.STUDIO_URL
+const REFERENCE_STUDIO_URL = 'https://efps-git-main.sanity.dev'
+
+const EXPERIMENT_STUDIO_URL = readEnv('STUDIO_URL')
 
 const TESTS = [article, recipe, singleString, synthetic]
 
-// Note: this should *not* be prefixed with `SANITY_STUDIO_`, otherwise it'll end up in the bundle
-const token = readEnvVar('PERF_EFPS_SANITY_TOKEN')
+const stagingToken = readEnvVar('EFPS_SANITY_TOKEN_STAGING')
+const prodToken = readEnvVar('EFPS_SANITY_TOKEN_PROD')
 
-const client = createClient({
-  ...apiConfig,
-  token,
-  useCdn: false,
-  apiVersion: 'v2024-08-08',
-})
+const referenceConfig = {
+  projectId: readEnv('SANITY_STUDIO_EFPS_REFERENCE_PROJECT_ID'),
+  dataset: readEnv('SANITY_STUDIO_EFPS_REFERENCE_DATASET'),
+  apiHost: readEnv('SANITY_STUDIO_EFPS_REFERENCE_API_HOST'),
+} as const
+
+const experimentConfig = {
+  projectId: readEnv('SANITY_STUDIO_EFPS_EXPERIMENT_PROJECT_ID'),
+  dataset: readEnv('SANITY_STUDIO_EFPS_EXPERIMENT_DATASET'),
+  apiHost: readEnv('SANITY_STUDIO_EFPS_EXPERIMENT_API_HOST'),
+} as const
+
+const referenceToken = referenceConfig.apiHost?.endsWith('.work') ? stagingToken : prodToken
+const experimentToken = experimentConfig.apiHost?.endsWith('.work') ? stagingToken : prodToken
 
 const workspaceDir = path.dirname(fileURLToPath(import.meta.url))
 const timestamp = new Date()
@@ -141,10 +149,18 @@ async function runAbTest(test: EfpsTest) {
   let referenceResults: EfpsResult[] | undefined
   let experimentResults: EfpsResult[] | undefined
 
+  const referenceStudioClient = createClient({
+    ...referenceConfig,
+    token: referenceToken,
+    useCdn: false,
+    apiVersion: 'v2024-08-08',
+  })
+  referenceResults = undefined
+  experimentResults = undefined
   for (let attempt = 0; attempt < TEST_ATTEMPTS; attempt++) {
     const attemptMessage = TEST_ATTEMPTS > 1 ? ` [${attempt + 1}/${TEST_ATTEMPTS}]` : ''
 
-    spinner.info(`Using studio URL: ${MAIN_STUDIO_URL}`)
+    spinner.info(`Using studio URL: ${REFERENCE_STUDIO_URL}`)
     const referenceMessage = `Running test '${test.name}' on \`main\`${attemptMessage}`
     spinner.start(referenceMessage)
 
@@ -154,12 +170,11 @@ async function runAbTest(test: EfpsTest) {
         key: 'reference',
         test,
         resultsDir,
-        client,
+        client: referenceStudioClient,
         headless: HEADLESS,
         recordVideo: RECORD_VIDEO,
         enableProfiler: ENABLE_PROFILER,
-        projectId: apiConfig.projectId,
-        studioUrl: MAIN_STUDIO_URL,
+        studioUrl: REFERENCE_STUDIO_URL,
         log: (message) => {
           spinner.text = `${referenceMessage}: ${message}`
         },
@@ -167,7 +182,14 @@ async function runAbTest(test: EfpsTest) {
     )
     spinner.succeed(`Ran test '${test.name}' on \`sanity@${REFERENCE_TAG}\`${attemptMessage}`)
 
-    spinner.info(`Using studio URL: ${DEPLOYED_STUDIO_URL!}`)
+    const experimentStudioClient = createClient({
+      ...experimentConfig,
+      token: experimentToken,
+      useCdn: false,
+      apiVersion: 'v2024-08-08',
+    })
+
+    spinner.info(`Using studio URL: ${EXPERIMENT_STUDIO_URL!}`)
     const experimentMessage = `Running test '${test.name}' on this branch${attemptMessage}`
     spinner.start(experimentMessage)
     experimentResults = mergeResults(
@@ -176,12 +198,11 @@ async function runAbTest(test: EfpsTest) {
         key: 'experiment',
         test,
         resultsDir,
-        client,
+        client: experimentStudioClient,
         headless: HEADLESS,
         recordVideo: RECORD_VIDEO,
         enableProfiler: ENABLE_PROFILER,
-        projectId: apiConfig.projectId,
-        studioUrl: DEPLOYED_STUDIO_URL!,
+        studioUrl: EXPERIMENT_STUDIO_URL,
         log: (message) => {
           spinner.text = `${experimentMessage}: ${message}`
         },
