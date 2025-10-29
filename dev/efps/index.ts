@@ -119,7 +119,7 @@ spinner.info(
 
 await exec({
   text: ['Ensuring playwright is installed…', 'Playwright is installed'],
-  command: 'npx playwright install',
+  command: 'pnpm playwright install',
   spinner,
 })
 
