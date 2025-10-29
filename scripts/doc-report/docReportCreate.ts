@@ -33,7 +33,6 @@ function getTags(node: ts.Node) {
 type SyntaxType = 'function' | 'class' | 'interface' | 'variable' | 'typeAlias' | 'enum' | 'module'
 
 function getComment(comment: string | ts.NodeArray<JSDocComment>) {
-  // eslint-disable-next-line no-nested-ternary
   return typeof comment === 'string' ? [comment] : comment.flatMap((c) => c.text)
 }
 

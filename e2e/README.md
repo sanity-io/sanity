@@ -20,7 +20,7 @@ To run E2E tests run the following commands from the root of the project
   pnpm test:e2e
   ```
 
-- Run all tests in specific directory, it runs relative to the `test/e2e/tests`
+- Run all tests in specific directory, it runs relative to the `e2e/tests`
 
   ```sh
   pnpm test:e2e tests/default-layout

@@ -38,5 +38,10 @@
     "react-dom": "catalog:",
     "sanity": "workspace:*",
     "styled-components": "catalog:"
+  },
+  "devDependencies": {
+    "@repo/eslint-config": "workspace:*",
+    "eslint": "catalog:",
+    "rimraf": "^5.0.10"
   }
 }

@@ -5,7 +5,6 @@ export default defineConfig([
   ...baseConfig,
   {
     rules: {
-      'import/no-extraneous-dependencies': 'off',
       'no-warning-comments': 'off',
     },
   },

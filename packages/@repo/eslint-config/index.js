@@ -104,6 +104,7 @@ export default [
       'import/no-named-as-default': 'off',
       'import/no-named-as-default-member': 'off',
       'import/no-unresolved': 'off',
+      'import/no-extraneous-dependencies': 'error',
       'import/default': 'off',
       'tsdoc/syntax': 'error',
       'react/no-unescaped-entities': 'off',
@@ -233,7 +234,7 @@ export default [
   },
   // Since we also use no-restricted-imports in oxlint, we need to add this after `buildFromOxlintConfigFile` or the rule is disabled
   {
-    files: ['test/e2e/**'],
+    files: ['e2e/**'],
     rules: {
       'no-restricted-imports': [
         'error',

@@ -1,3 +1,1 @@
-{
-  "ignores": ["@sanity/pkg-utils", "eslint", "@repo/tsconfig"]
-}
+{"ignores": ["@types/node"]}

@@ -1,4 +1,0 @@
-{
-  "//": "Note: the schema is imported from the cli package, so these can safely be ignored as long as they are added to the template's package json",
-  "ignore": ["react-barcode"]
-}

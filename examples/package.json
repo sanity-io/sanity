@@ -6,6 +6,6 @@
     "@sanity/blueprints": "^0.2.0",
     "@sanity/functions": "^1.0.3",
     "sanity": "workspace:*",
-    "vite": "^7.1.7"
+    "vite": "catalog:"
   }
 }
