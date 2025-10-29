@@ -25,6 +25,8 @@ interface VersionContextMenuProps {
   isGoingToUnpublish?: boolean
   release?: ReleaseDocument
   onChangeSchedule?: () => void
+  onDeleteSchedule?: () => void
+  onPublishNow?: () => void
 }
 
 export const VersionContextMenu = memo(function VersionContextMenu(props: VersionContextMenuProps) {
@@ -43,6 +45,8 @@ export const VersionContextMenu = memo(function VersionContextMenu(props: Versio
     isGoingToUnpublish = false,
     release,
     onChangeSchedule,
+    onDeleteSchedule,
+    onPublishNow,
   } = props
   const isPublished = isPublishedId(documentId) && !isVersion
 
@@ -89,6 +93,8 @@ export const VersionContextMenu = memo(function VersionContextMenu(props: Versio
         isGoingToUnpublish={isGoingToUnpublish}
         release={release}
         onChangeSchedule={onChangeSchedule}
+        onDeleteSchedule={onDeleteSchedule}
+        onPublishNow={onPublishNow}
         hasCreatePermission={hasCreatePermission}
       />
     )

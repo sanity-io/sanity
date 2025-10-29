@@ -12,14 +12,14 @@ import {ScheduleDraftDialog} from '../components/ScheduleDraftDialog'
 import {useScheduledDraftDocument} from './useScheduledDraftDocument'
 import {useScheduleDraftOperations} from './useScheduleDraftOperations'
 
-type ScheduledDraftAction = 'publish-now' | 'edit-schedule' | 'delete-schedule'
+export type ScheduledDraftAction = 'publish-now' | 'edit-schedule' | 'delete-schedule'
 
 export interface UseScheduledDraftMenuActionsOptions {
   release: ReleaseDocument | undefined
   documentType?: string
   disabled?: boolean
   onActionComplete?: () => void
-  onEditSchedule?: () => void
+  onActionSelected?: (action: ScheduledDraftAction) => void
 }
 
 interface ScheduledDraftActionProps {
@@ -44,7 +44,7 @@ export interface UseScheduledDraftMenuActionsReturn {
 export function useScheduledDraftMenuActions(
   options: UseScheduledDraftMenuActionsOptions,
 ): UseScheduledDraftMenuActionsReturn {
-  const {release, documentType, disabled = false, onActionComplete, onEditSchedule} = options
+  const {release, documentType, disabled = false, onActionComplete, onActionSelected} = options
 
   const {t} = useTranslation()
   const toast = useToast()
@@ -89,8 +89,11 @@ export function useScheduledDraftMenuActions(
   )
 
   const handleMenuItemClick = useCallback(
-    (action: ScheduledDraftAction) => setSelectedAction(action),
-    [],
+    (action: ScheduledDraftAction) => {
+      setSelectedAction(action)
+      onActionSelected?.(action)
+    },
+    [onActionSelected],
   )
 
   const handleDialogClose = useCallback(() => {
@@ -115,7 +118,7 @@ export function useScheduledDraftMenuActions(
         'icon': EditIcon,
         'text': t('release.action.edit-schedule'),
         'tone': 'default' as const,
-        'onClick': onEditSchedule || (() => handleMenuItemClick('edit-schedule')),
+        'onClick': () => handleMenuItemClick('edit-schedule'),
         'disabled': baseDisabled,
         'data-testid': 'edit-schedule-menu-item',
       },
@@ -128,7 +131,7 @@ export function useScheduledDraftMenuActions(
         'data-testid': 'delete-schedule-menu-item',
       },
     }
-  }, [t, handleMenuItemClick, disabled, isPerformingOperation, onEditSchedule])
+  }, [t, handleMenuItemClick, disabled, isPerformingOperation])
 
   const dialogs = useMemo(() => {
     if (!selectedAction || !release) return null
