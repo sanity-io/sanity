@@ -196,7 +196,7 @@ jobs:
           retention-days: 30
 
   merge-reports:
-    if: always()
+    if: ${{github.ref_name != 'main'}}
     needs: [efps-test]
     runs-on: ubuntu-latest
     steps:
