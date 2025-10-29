@@ -1,4 +1,4 @@
-import {ArrowLeftIcon, CloseIcon, EyeOpenIcon, SplitVerticalIcon} from '@sanity/icons'
+import {ArrowLeftIcon, CloseIcon, CollapseIcon, ExpandIcon, SplitVerticalIcon} from '@sanity/icons'
 import {Box, Card, Flex} from '@sanity/ui'
 // eslint-disable-next-line camelcase
 import {getTheme_v2, rgba} from '@sanity/ui/theme'
@@ -27,6 +27,7 @@ import {
 import {type _PaneMenuNode} from '../../../../components/pane/types'
 import {structureLocaleNamespace} from '../../../../i18n'
 import {isMenuNodeButton, isNotMenuNodeButton, resolveMenuNodes} from '../../../../menuNodes'
+import {useResolvedPanesContext} from '../../../../structureResolvers/ResolvedPanesContext'
 import {type PaneMenuItem} from '../../../../types'
 import {useStructureTool} from '../../../../useStructureTool'
 import {ActionDialogWrapper, ActionMenuListItem} from '../../statusBar/ActionMenuButton'
@@ -92,9 +93,11 @@ export const DocumentPanelHeader = memo(
       connectionState,
       views,
       unstable_languageFilter,
+      documentId,
     } = useDocumentPane()
     const {features} = useStructureTool()
     const {index, BackLink, hasGroupSiblings} = usePaneRouter()
+    const {focusedPane} = useResolvedPanesContext()
     const {actions: fieldActions} = useFieldActions()
     const [referenceElement, setReferenceElement] = useState<HTMLElement | null>(null)
     const scrollContainerRef = useRef<HTMLDivElement>(null)
@@ -176,6 +179,14 @@ export const DocumentPanelHeader = memo(
         ),
       [BackLink, showBackButton, t],
     )
+    const isFocusedPane = useMemo(() => {
+      return (
+        focusedPane?.pane &&
+        typeof focusedPane.pane === 'object' &&
+        focusedPane.pane.type === 'document' &&
+        focusedPane.pane.options.id === documentId
+      )
+    }, [focusedPane, documentId])
     const renderedActions = useMemo(
       () => (
         <Flex align="center" gap={1}>
@@ -193,7 +204,7 @@ export const DocumentPanelHeader = memo(
             <Button
               key="focus-pane-button"
               aria-label={t('buttons.focus-pane-button.aria-label')}
-              icon={EyeOpenIcon}
+              icon={isFocusedPane ? CollapseIcon : ExpandIcon}
               mode="bleed"
               onClick={onSetFocusedPane}
               tooltipProps={{content: t('buttons.focus-pane-button.tooltip')}}
@@ -249,6 +260,7 @@ export const DocumentPanelHeader = memo(
         BackLink,
         actions,
         editState,
+        isFocusedPane,
         isInitialValueLoading,
         menuButtonNodes,
         onPaneClose,
