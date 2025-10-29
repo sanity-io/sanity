@@ -34,7 +34,7 @@ const ENABLE_PROFILER = process.env.ENABLE_PROFILER === 'true'
 
 // eslint-disable-next-line turbo/no-undeclared-env-vars
 const RECORD_VIDEO = process.env.RECORD_VIDEO === 'true'
-const REFERENCE_STUDIO_URL = 'https://efps-git-main.sanity.dev'
+const REFERENCE_STUDIO_URL = 'https://efps.sanity.dev'
 
 const EXPERIMENT_STUDIO_URL = readEnv('STUDIO_URL')
 
