@@ -5,6 +5,11 @@ permissions:
 on:
   # Build on pushes branches that have a PR (including drafts)
   pull_request:
+  push:
+    branches:
+      # deploy reference studio on push to main (but skip running actual perf tests)
+      - main
+
   workflow_dispatch:
     inputs:
       enable_profiler:
