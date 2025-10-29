@@ -1492,6 +1492,7 @@ import type {
   useDocumentVersions,
   useDocumentVersionTypeSortedList,
   useEditState,
+  useEnhancedObjectDialog,
   useEvents,
   useEventsStore,
   useExcludedPerspective,
@@ -1585,7 +1586,6 @@ import type {
   useTranslation,
   UseTranslationOptions,
   UseTranslationResponse,
-  useEnhancedObjectDialog,
   useUnique,
   useUnitFormatter,
   UseUnitFormatterOptions,
@@ -6161,6 +6161,9 @@ describe('sanity', () => {
   test('useEditState', () => {
     expectTypeOf<typeof useEditState>().toBeFunction()
   })
+  test('useEnhancedObjectDialog', () => {
+    expectTypeOf<typeof useEnhancedObjectDialog>().toBeFunction()
+  })
   test('useEvents', () => {
     expectTypeOf<typeof useEvents>().toBeFunction()
   })
@@ -6440,9 +6443,6 @@ describe('sanity', () => {
   })
   test('UseTranslationResponse', () => {
     expectTypeOf<UseTranslationResponse<any, any>>().not.toBeNever()
-  })
-  test('useEnhancedObjectDialog', () => {
-    expectTypeOf<typeof useEnhancedObjectDialog>().toBeFunction()
   })
   test('useUnique', () => {
     expectTypeOf<typeof useUnique>().toBeFunction()
