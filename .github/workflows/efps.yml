@@ -40,14 +40,11 @@ jobs:
       - name: Install project dependencies
         run: pnpm install
 
-      - name: Install Vercel CLI
-        run: pnpm install --global vercel@latest
-
       - name: Pull Vercel Environment Information
         env:
           VERCEL_ORG_ID: ${{ secrets.VERCEL_EFPS_STUDIO_ORG_ID }}
           VERCEL_PROJECT_ID: ${{ secrets.VERCEL_EFPS_STUDIO_PROJECT_ID }}
-        run: vercel pull --yes --environment=preview --token=${{ secrets.VERCEL_EFPS_STUDIO_TOKEN }}
+        run: pnpm vercel pull --yes --environment=preview --token=${{ secrets.VERCEL_EFPS_STUDIO_TOKEN }}
 
       - name: Build Project Artifacts
         env:
@@ -56,14 +53,14 @@ jobs:
           VERCEL_SANITY_API_DEPLOY_TOKEN: ${{ secrets.VERCEL_SANITY_API_DEPLOY_TOKEN }}
           VITE_PERF_EFPS_PROJECT_ID: ${{ vars.PERF_EFPS_PROJECT_ID_TEST }}
           VITE_PERF_EFPS_DATASET: ${{ vars.PERF_EFPS_DATASET_TEST }}
-        run: vercel build --token=${{ secrets.VERCEL_EFPS_STUDIO_TOKEN }}
+        run: pnpm vercel build --token=${{ secrets.VERCEL_EFPS_STUDIO_TOKEN }}
 
       - name: Deploy Project Artifacts to Vercel
         id: deploy
         env:
           COMMIT_MESSAGE: ${{ github.event.head_commit.message || github.event.pull_request.title }}
         run: |
-          echo "DEPLOY_URL=$(vercel deploy --prebuilt --token=${{ secrets.VERCEL_EFPS_STUDIO_TOKEN }} \
+          echo "DEPLOY_URL=$(pnpm vercel deploy --prebuilt --token=${{ secrets.VERCEL_EFPS_STUDIO_TOKEN }} \
           -m githubDeployment="1" \
           -m githubCommitAuthorName="${{ github.event.sender.name || 'GitHub Actions' }}" \
           -m githubCommitMessage="$COMMIT_MESSAGE" \
