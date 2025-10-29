@@ -1475,6 +1475,9 @@ export const studioLocaleStrings = defineLocalesResources('studio', {
   /** Header for the schedule publish dialog */
   'schedule-publish-dialog.header': 'Schedule draft for Publish',
 
+  /** Title for a scheduled draft release */
+  'scheduled-drafts.release.title': 'Scheduled publish',
+
   /** Accessibility label to open search action when the search would go fullscreen (eg on narrower screens) */
   'search.action-open-aria-label': 'Open search',
   /** Action label for adding a search filter */
