@@ -47,9 +47,9 @@ jobs:
           VERCEL_PROJECT_ID: ${{ secrets.VERCEL_EFPS_STUDIO_PROJECT_ID }}
         run: |
           pnpm vercel pull \
-          --yes \
-          --environment=${{github.ref_name == 'main' && 'production' || 'preview'}} \
-           --token=${{ secrets.VERCEL_EFPS_STUDIO_TOKEN }}
+            --yes \
+            --environment=${{github.ref_name == 'main' && 'production' || 'preview'}} \
+            --token=${{ secrets.VERCEL_EFPS_STUDIO_TOKEN }}
 
       - name: Load Vercel Env Vars into GITHUB_ENV
         uses: ./.github/actions/vercel-env
@@ -79,19 +79,26 @@ jobs:
         env:
           COMMIT_MESSAGE: ${{ github.event.head_commit.message || github.event.pull_request.title }}
         run: |
-          echo "DEPLOY_URL=$(pnpm vercel deploy --prebuilt --token=${{ secrets.VERCEL_EFPS_STUDIO_TOKEN }} \
-          -m githubDeployment="1" \
-          -m githubCommitAuthorName="${{ github.event.sender.name || 'GitHub Actions' }}" \
-          -m githubCommitMessage="$COMMIT_MESSAGE" \
-          -m githubCommitOrg="${{ github.repository_owner }}" \
-          -m githubCommitRef="${{ github.head_ref || github.ref_name }}" \
-          -m githubCommitRepo="${{ github.event.repository.name }}" \
-          -m githubCommitSha="${{ github.sha }}" \
-          -m githubOrg="${{ github.repository_owner }}" \
-          -m githubRepo="${{ github.event.repository.name }}" \
-          -m githubCommitAuthorLogin="${{ github.event.sender.login || github.actor }}" | tail -n 1)" >> $GITHUB_OUTPUT
+          echo "DEPLOY_URL=$(
+            pnpm vercel deploy --prebuilt --token=${{ secrets.VERCEL_EFPS_STUDIO_TOKEN }} \
+              -m githubDeployment="1" \
+              -m githubCommitAuthorName="${{ github.event.sender.name || 'GitHub Actions' }}" \
+              -m githubCommitMessage="$COMMIT_MESSAGE" \
+              -m githubCommitOrg="${{ github.repository_owner }}" \
+              -m githubCommitRef="${{ github.head_ref || github.ref_name }}" \
+              -m githubCommitRepo="${{ github.event.repository.name }}" \
+              -m githubCommitSha="${{ github.sha }}" \
+              -m githubOrg="${{ github.repository_owner }}" \
+              -m githubRepo="${{ github.event.repository.name }}" \
+              -m githubCommitAuthorLogin="${{ github.event.sender.login || github.actor }}" | tail -n 1
+            )" >> $GITHUB_OUTPUT
 
-      - name: Echo the preview URL
+      - name: Promote to production if main
+        id: promote-to-prod
+        if: ${{github.ref_name == 'main'}}
+        run: vercel promote ${{ steps.deploy.outputs.DEPLOY_URL }}"
+
+      - name: Echo the deploy URL
         run: |
           if [ -z "${{ steps.deploy.outputs.DEPLOY_URL }}" ]; then
            echo "::error::Preview URL was not found. Deployment may have failed."
