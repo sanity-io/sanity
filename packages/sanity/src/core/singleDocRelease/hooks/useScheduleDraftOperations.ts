@@ -1,6 +1,7 @@
 import {type BaseActionOptions, type ReleaseDocument} from '@sanity/client'
 import {useCallback} from 'react'
 
+import {useTranslation} from '../../i18n'
 import {useAllReleases} from '../../releases/store/useAllReleases'
 import {useReleaseOperations} from '../../releases/store/useReleaseOperations'
 import {createReleaseId} from '../../releases/util/createReleaseId'
@@ -39,6 +40,7 @@ export interface ScheduleDraftOperationsValue {
  * @internal
  */
 export function useScheduleDraftOperations(): ScheduleDraftOperationsValue {
+  const {t} = useTranslation()
   const releaseOperations = useReleaseOperations()
   const {data: allReleases} = useAllReleases()
 
@@ -68,7 +70,7 @@ export function useScheduleDraftOperations(): ScheduleDraftOperationsValue {
   const handleCreateScheduledDraft = useCallback(
     async (documentId: string, publishAt: Date, opts?: BaseActionOptions): Promise<string> => {
       // Create the release (but don't schedule it yet)
-      const releaseTitle = 'Scheduled publish'
+      const releaseTitle = t('scheduled-drafts.release.title')
       const releaseDocumentId = await createScheduledDraftRelease(releaseTitle, publishAt, opts)
 
       // Create a version of the document in the release (using draft as base)
@@ -81,7 +83,7 @@ export function useScheduleDraftOperations(): ScheduleDraftOperationsValue {
 
       return releaseDocumentId
     },
-    [releaseOperations, createScheduledDraftRelease],
+    [releaseOperations, createScheduledDraftRelease, t],
   )
 
   // used to immediately publish a scheduled draft
