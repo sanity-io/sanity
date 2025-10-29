@@ -25,6 +25,7 @@
   },
   "devDependencies": {
     "@repo/eslint-config": "workspace:*",
+    "@repo/utils": "workspace:*",
     "@sanity/client": "^7.12.0",
     "@swc-node/register": "^1.11.1",
     "@types/react": "catalog:",
