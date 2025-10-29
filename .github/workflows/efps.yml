@@ -96,7 +96,7 @@ jobs:
       - name: Promote to production if main
         id: promote-to-prod
         if: ${{github.ref_name == 'main'}}
-        run: pnpm vercel promote "${{ steps.deploy.outputs.DEPLOY_URL }}"
+        run: pnpm vercel promote "${{ steps.deploy.outputs.DEPLOY_URL }}" --token=${{ secrets.VERCEL_EFPS_STUDIO_TOKEN }}
 
       - name: Echo the deploy URL
         run: |
