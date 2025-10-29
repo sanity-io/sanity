@@ -1,4 +1,5 @@
-import {Flex, Text} from '@sanity/ui'
+import {ArrowRightIcon} from '@sanity/icons'
+import {Box, Flex, Text} from '@sanity/ui'
 import {Fragment, useMemo} from 'react'
 import {useObservable} from 'react-rx'
 import {of} from 'rxjs'
@@ -125,6 +126,8 @@ export function DocumentHeaderTitle(): React.JSX.Element {
         <Flex direction="row" align="center">
           {paneDataItems.map((paneData, idx) => {
             if (idx > currentPaneIndex) return null
+            const isDocumentPane =
+              paneData.pane !== LOADING_PANE && paneData.pane.type === 'document'
             return (
               <Fragment key={paneData.key}>
                 <PaneTitleButton
@@ -134,7 +137,14 @@ export function DocumentHeaderTitle(): React.JSX.Element {
                   router={router}
                 />
 
-                {idx < currentPaneIndex && <Text muted>/</Text>}
+                {idx < currentPaneIndex &&
+                  (isDocumentPane ? (
+                    <Box padding={1}>
+                      <ArrowRightIcon />
+                    </Box>
+                  ) : (
+                    <Text>/</Text>
+                  ))}
               </Fragment>
             )
           })}
