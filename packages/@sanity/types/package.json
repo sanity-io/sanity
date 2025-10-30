@@ -58,7 +58,6 @@
     "@repo/package.config": "workspace:*",
     "@repo/test-config": "workspace:*",
     "@repo/tsconfig": "workspace:*",
-    "@sanity/insert-menu": "2.1.0",
     "@sanity/insert-menu": "^3.0.0-canary.1",
     "@sanity/pkg-utils": "catalog:",
     "@types/react": "catalog:",
