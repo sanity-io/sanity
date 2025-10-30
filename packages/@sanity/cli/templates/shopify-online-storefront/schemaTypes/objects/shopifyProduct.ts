@@ -70,6 +70,13 @@ export default defineType({
       type: 'string',
       description: 'Title displayed in both cart and checkout',
     }),
+    // Shop Domain
+    defineField({
+      name: 'shopDomain',
+      title: 'Shop Domain',
+      type: 'string',
+      description: 'Shopify Shop Domain',
+    }),
     // Product ID
     defineField({
       name: 'id',

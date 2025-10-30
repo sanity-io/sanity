@@ -67,6 +67,13 @@ export default defineType({
       title: 'SKU',
       type: 'string',
     }),
+    // Shop Domain
+    defineField({
+      name: 'shopDomain',
+      title: 'Shop Domain',
+      type: 'string',
+      description: 'Shopify Shop Domain',
+    }),
     // ID
     defineField({
       name: 'id',

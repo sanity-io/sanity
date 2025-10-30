@@ -43,6 +43,13 @@ export default defineType({
       title: 'Title',
       type: 'string',
     }),
+    // Shop Domain
+    defineField({
+      name: 'shopDomain',
+      title: 'Shop Domain',
+      type: 'string',
+      description: 'Shopify Shop Domain',
+    }),
     // Collection ID
     defineField({
       name: 'id',
