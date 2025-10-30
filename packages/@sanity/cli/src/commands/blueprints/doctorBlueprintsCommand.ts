@@ -19,7 +19,7 @@ const doctorBlueprintsCommand: CliCommandDefinition<BlueprintsDoctorFlags> = {
   name: 'doctor',
   group: 'blueprints',
   helpText,
-  signature: '[--path <path>] [--verbose]',
+  signature: '[--verbose]',
   description: 'Check the health of a Blueprint project',
 
   async action(args, context) {
