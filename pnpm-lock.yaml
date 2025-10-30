@@ -1737,7 +1737,7 @@ importers:
         specifier: workspace:*
         version: link:../@repo/package.config
       '@repo/tsconfig':
-        specifier: 'workspace:'
+        specifier: workspace:*
         version: link:../@repo/tsconfig
       '@sanity/pkg-utils':
         specifier: 'catalog:'
