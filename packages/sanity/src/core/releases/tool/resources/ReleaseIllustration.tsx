@@ -1,6 +1,7 @@
 export const ReleaseIllustration = () => {
   return (
     <svg
+      data-testid="release-illustration"
       width="248"
       height="201"
       viewBox="0 0 248 201"

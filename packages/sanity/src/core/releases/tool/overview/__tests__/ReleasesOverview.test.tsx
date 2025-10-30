@@ -127,6 +127,16 @@ vi.mock('../../../../singleDocRelease/hooks/useScheduledDraftsEnabled', () => ({
   useScheduledDraftsEnabled: vi.fn(() => false),
 }))
 
+const mockUseSingleDocReleaseEnabled = vi.fn()
+vi.mock('../../../../singleDocRelease/context/SingleDocReleaseEnabledProvider', () => ({
+  useSingleDocReleaseEnabled: () => mockUseSingleDocReleaseEnabled(),
+}))
+
+const mockUseReleasesUpsell = vi.fn()
+vi.mock('../../../contexts/upsell/useReleasesUpsell', () => ({
+  useReleasesUpsell: () => mockUseReleasesUpsell(),
+}))
+
 vi.mock('../hooks/useReleaseCreator')
 
 vi.mock('../../../store/useReleaseOperations', () => ({
@@ -166,6 +176,28 @@ describe('ReleasesOverview', () => {
     mockUseReleaseCreator.mockReturnValue(useReleaseCreatorMockReturn)
 
     mockUseReleasePermissions.mockReturnValue(useReleasesPermissionsMockReturnTrue)
+
+    mockUseReleasesUpsell.mockReturnValue({
+      mode: 'default',
+      guardWithReleaseLimitUpsell: vi.fn((cb) => cb()),
+      onReleaseLimitReached: vi.fn(),
+      upsellDialogOpen: false,
+      handleOpenDialog: vi.fn(),
+      upsellData: null,
+      telemetryLogs: {
+        dialogSecondaryClicked: vi.fn(),
+        dialogPrimaryClicked: vi.fn(),
+        panelViewed: vi.fn(),
+        panelDismissed: vi.fn(),
+        panelPrimaryClicked: vi.fn(),
+        panelSecondaryClicked: vi.fn(),
+      },
+    })
+
+    mockUseSingleDocReleaseEnabled.mockReturnValue({
+      enabled: true,
+      mode: 'default',
+    })
   })
 
   setupVirtualListEnv()
@@ -1041,6 +1073,179 @@ describe('ReleasesOverview', () => {
         // menu button should be there now since we have cardinality one releases
         const releasesButton = screen.getByRole('button', {name: 'Releases'})
         expect(releasesButton).toBeInTheDocument()
+      })
+    })
+  })
+
+  describe('upsell and empty state logic', () => {
+    const mockUpsellData = {
+      title: 'Upgrade',
+      descriptionText: [],
+      ctaButton: {
+        text: 'Upgrade',
+        url: 'https://example.com',
+      },
+      secondaryButton: {
+        text: 'Learn more',
+        url: 'https://example.com',
+      },
+      image: null,
+      _id: 'test-upsell',
+      _type: 'upsell',
+      _createdAt: '2024-01-01',
+      _updatedAt: '2024-01-01',
+      _rev: '1',
+      id: 'test-upsell',
+    }
+
+    const setupEmptyState = () => {
+      mockUseActiveReleases.mockReturnValue({
+        ...useActiveReleasesMockReturn,
+        data: [],
+      })
+      mockUseArchivedReleases.mockReturnValue({
+        ...useArchivedReleasesMockReturn,
+        data: [],
+      })
+    }
+
+    const setupUpsellMode = () => {
+      mockUseReleasesUpsell.mockReturnValue({
+        mode: 'upsell',
+        guardWithReleaseLimitUpsell: vi.fn((cb) => cb()),
+        onReleaseLimitReached: vi.fn(),
+        upsellDialogOpen: false,
+        handleOpenDialog: vi.fn(),
+        upsellData: mockUpsellData,
+        telemetryLogs: {
+          dialogSecondaryClicked: vi.fn(),
+          dialogPrimaryClicked: vi.fn(),
+          panelViewed: vi.fn(),
+          panelDismissed: vi.fn(),
+          panelPrimaryClicked: vi.fn(),
+          panelSecondaryClicked: vi.fn(),
+        },
+      })
+    }
+
+    describe('regular releases (cardinalityView === "releases")', () => {
+      describe('when empty and plan requires upsell', () => {
+        beforeEach(async () => {
+          setupEmptyState()
+          setupUpsellMode()
+
+          const wrapper = await createTestProvider({
+            resources: [releasesUsEnglishLocaleBundle],
+          })
+
+          return await act(async () => render(<TestComponent />, {wrapper}))
+        })
+
+        it('should show upsell only', () => {
+          expect(screen.getByTestId('release-illustration')).toBeInTheDocument()
+          expect(screen.queryByTestId('no-releases-info-text')).not.toBeInTheDocument()
+          expect(screen.queryByRole('table')).not.toBeInTheDocument()
+        })
+      })
+
+      describe('when has data but plan requires upsell (downgraded)', () => {
+        beforeEach(async () => {
+          mockUseActiveReleases.mockReturnValue({
+            ...useActiveReleasesMockReturn,
+            data: [activeScheduledRelease, activeASAPRelease],
+          })
+          mockUseReleasesMetadata.mockReturnValue({
+            ...useReleasesMetadataMockReturn,
+            data: {
+              [activeScheduledRelease._id]: {documentCount: 2, updatedAt: null},
+              [activeASAPRelease._id]: {documentCount: 1, updatedAt: null},
+            },
+          })
+          setupUpsellMode()
+
+          const wrapper = await createTestProvider({
+            resources: [releasesUsEnglishLocaleBundle],
+          })
+
+          return await act(async () => render(<TestComponent />, {wrapper}))
+        })
+
+        it('should show data table only (not upsell)', async () => {
+          await waitFor(() => {
+            expect(screen.getByRole('table')).toBeInTheDocument()
+          })
+
+          const releaseRows = screen.getAllByTestId('table-row')
+          expect(releaseRows).toHaveLength(2)
+
+          expect(screen.queryByTestId('release-illustration')).not.toBeInTheDocument()
+          expect(screen.queryByTestId('no-releases-info-text')).not.toBeInTheDocument()
+        })
+      })
+
+      describe('when empty and plan supports releases', () => {
+        beforeEach(async () => {
+          setupEmptyState()
+
+          const wrapper = await createTestProvider({
+            resources: [releasesUsEnglishLocaleBundle],
+          })
+
+          return await act(async () => render(<TestComponent />, {wrapper}))
+        })
+
+        it('should show empty list state', () => {
+          expect(screen.getByTestId('no-releases-info-text')).toBeInTheDocument()
+          expect(screen.queryByTestId('release-illustration')).not.toBeInTheDocument()
+          expect(screen.queryByRole('table')).not.toBeInTheDocument()
+        })
+      })
+    })
+
+    describe('scheduled drafts', () => {
+      describe('when empty and plan requires upsell', () => {
+        beforeEach(async () => {
+          vi.mocked(useScheduledDraftsEnabled).mockReturnValue(true)
+          setupEmptyState()
+          mockUseSingleDocReleaseEnabled.mockReturnValue({
+            enabled: true,
+            mode: 'upsell',
+          })
+
+          const wrapper = await createTestProvider({
+            resources: [releasesUsEnglishLocaleBundle],
+          })
+
+          return await act(async () => render(<TestComponent />, {wrapper}))
+        })
+
+        it('should show upsell only', () => {
+          expect(screen.getByTestId('release-illustration')).toBeInTheDocument()
+          expect(screen.queryByRole('table')).not.toBeInTheDocument()
+        })
+      })
+
+      describe('when empty and plan supports scheduled drafts', () => {
+        beforeEach(async () => {
+          vi.mocked(useScheduledDraftsEnabled).mockReturnValue(true)
+          setupEmptyState()
+          mockUseSingleDocReleaseEnabled.mockReturnValue({
+            enabled: true,
+            mode: 'default',
+          })
+
+          const wrapper = await createTestProvider({
+            resources: [releasesUsEnglishLocaleBundle],
+          })
+
+          return await act(async () => render(<TestComponent />, {wrapper}))
+        })
+
+        it('should show empty list state', () => {
+          expect(screen.getByTestId('no-releases-info-text')).toBeInTheDocument()
+          expect(screen.queryByTestId('release-illustration')).not.toBeInTheDocument()
+          expect(screen.queryByRole('table')).not.toBeInTheDocument()
+        })
       })
     })
   })
