@@ -298,8 +298,6 @@ export const VersionChip = memo(function VersionChip(props: {
           title={text}
         />
       )}
-
-      {/* Render scheduled draft dialogs outside Popover to prevent unmounting */}
       {isScheduledDraft && scheduledDraftMenuActions.dialogs}
     </>
   )
