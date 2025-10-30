@@ -139,6 +139,17 @@ describe('findQueries with the groq template', () => {
     expect(queries[0].result).toBe('*[_type == "foo bar"]')
   })
 
+  test('can import deeply nested files', () => {
+    const source = `
+      import { groq } from "groq";
+      import {query}  from "../__tests__/fixtures/deeplyNestedImports/root";
+      const someQuery = groq\`$\{query}\`
+    `
+    const queries = findQueriesInSource(source, __filename, undefined)
+    expect(queries.length).toBe(1)
+    expect(queries[0].result).toBe('* { foo, bar }')
+  })
+
   test('can import from export *', () => {
     const source = `
       import { groq } from "groq";
@@ -318,6 +329,17 @@ describe('findQueries with defineQuery', () => {
     const queries = findQueriesInSource(source, __filename, undefined)
     expect(queries.length).toBe(1)
     expect(queries[0].result).toBe('*[_type == "foo bar"]')
+  })
+
+  test('can import deeply nested files', () => {
+    const source = `
+      import {defineQuery} from "groq";
+      import {query}  from "../__tests__/fixtures/deeplyNestedImports/root";
+      const someQuery = defineQuery(\`$\{query}\`);
+    `
+    const queries = findQueriesInSource(source, __filename, undefined)
+    expect(queries.length).toBe(1)
+    expect(queries[0].result).toBe('* { foo, bar }')
   })
 
   test('should detect defineQuery calls that have been required', () => {
