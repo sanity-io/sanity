@@ -242,6 +242,9 @@ importers:
 
   dev/efps:
     dependencies:
+      '@sanity/ui':
+        specifier: 'catalog:'
+        version: 4.0.0-static.35(@emotion/is-prop-valid@1.4.0)(react-dom@19.1.1(react@19.1.1))(react-is@19.1.1)(react@19.1.1)
       styled-components:
         specifier: 'catalog:'
         version: 6.1.19(react-dom@19.1.1(react@19.1.1))(react@19.1.1)
