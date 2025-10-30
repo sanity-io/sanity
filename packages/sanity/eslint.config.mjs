@@ -430,6 +430,12 @@ export default defineConfig([
       'import/no-unresolved': 'off',
     },
   },
+  {
+    files: ['src/structure/**/*', 'src/presentation/**/*'],
+    rules: {
+      'import/no-extraneous-dependencies': 'off',
+    },
+  },
   // An issue with the vitest suite prevented this file from changing the 'react-i18next' import to 'sanity'.
   // This should be fixed, and the rule is disabled here rather than with an inline comment to give the override visibility so we don't forget about it.
   {
