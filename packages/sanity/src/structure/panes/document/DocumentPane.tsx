@@ -25,6 +25,7 @@ import {CommentsWrapper} from './comments'
 import {useDocumentLayoutComponent} from './document-layout'
 import {DocumentPaneProviderWrapper} from './DocumentPaneProviderWrapper'
 import {type DocumentPaneProviderProps} from './types'
+import {useResetCardinalityOnePerspective} from './useResetCardinalityOnePerspective'
 import {useResetHistoryParams} from './useResetHistoryParams'
 
 type DocumentPaneOptions = DocumentPaneNode['options']
@@ -52,8 +53,8 @@ function DocumentPaneInner(props: DocumentPaneProviderProps) {
   const options = usePaneOptions(pane.options, paneRouter.params)
   const {documentType, isLoaded: isDocumentLoaded} = useDocumentType(options.id, options.type)
   useResetHistoryParams()
+  useResetCardinalityOnePerspective(options.id)
   const DocumentLayout = useDocumentLayoutComponent()
-
   // The templates that should be creatable from inside this document pane.
   // For example, from the "Create new" menu in reference inputs.
   const templateItems = useMemo(() => {
