@@ -9,7 +9,7 @@ import {
   useSingleDocReleaseEnabled,
 } from './SingleDocReleaseEnabledProvider'
 
-vi.mock('../../hooks')
+vi.mock('../../hooks/useFeatureEnabled')
 
 vi.mock('../../studio/source', () => ({
   useSource: vi.fn().mockReturnValue({}),
