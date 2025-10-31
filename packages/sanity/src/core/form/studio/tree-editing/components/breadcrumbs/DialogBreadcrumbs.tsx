@@ -25,10 +25,10 @@ import {
 } from 'react'
 import {css, styled} from 'styled-components'
 
-import {MenuButton} from '../../../../../../ui-components'
+import {MenuButton} from '../../../../../../ui-components/menuButton/MenuButton'
 import {pathToString} from '../../../../../field/paths/helpers'
 import {NavigatedToNestedObjectViaBreadcrumb} from '../../__telemetry__/nestedObjects.telemetry'
-import {useValuePreviewWithFallback} from '../../hooks'
+import {useValuePreviewWithFallback} from '../../hooks/useValuePreviewWithFallback'
 import {type DialogItem} from '../../types'
 
 const MAX_LENGTH = 5
