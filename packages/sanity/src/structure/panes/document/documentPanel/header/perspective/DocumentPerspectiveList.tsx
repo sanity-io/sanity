@@ -109,6 +109,9 @@ export const DocumentPerspectiveList = memo(function DocumentPerspectiveList() {
         setParams(
           {...params, scheduledDraft: getReleaseIdFromReleaseDocumentId(perspective._id)},
           // We need to reset the perspective sticky param when we set the scheduled draft local perspective.
+          // this is because the user may be clicking this from another perspective, for example they could be seeing a `release` perspective and then click to see this scheduled draft perspective.
+          // the perspective sticky param was set to the release perspective, so we need to remove it.
+          // We are changing both the params and the perspective sticky param to ensure that the scheduled draft perspective is set correctly.
           {perspective: ''},
         )
         return
