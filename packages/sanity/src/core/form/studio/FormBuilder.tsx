@@ -38,11 +38,9 @@ import {type RenderPreviewCallbackProps} from '../types/renderCallback'
 import {DocumentFieldActionsProvider} from './contexts/DocumentFieldActions'
 import {FormBuilderInputErrorBoundary} from './FormBuilderInputErrorBoundary'
 import {FormProvider} from './FormProvider'
-import {
-  EnhancedObjectDialog,
-  EnhancedObjectDialogProvider,
-  useEnhancedObjectDialog,
-} from './tree-editing'
+import {EnhancedObjectDialog} from './tree-editing/components/EnhancedObjectDialog'
+import {EnhancedObjectDialogProvider} from './tree-editing/context/enabled/EnhancedObjectDialogProvider'
+import {useEnhancedObjectDialog} from './tree-editing/context/enabled/useEnhancedObjectDialog'
 
 /**
  * @alpha
