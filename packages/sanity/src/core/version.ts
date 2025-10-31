@@ -5,4 +5,4 @@ import {version} from '../../package.json'
  * @beta
  */
 export const SANITY_VERSION =
-  process.env.PKG_BUILD_VERSION || process.env.PKG_VERSION || `${version}-dev`
+  process?.env?.PKG_BUILD_VERSION || process?.env?.PKG_VERSION || `${version}-dev`
