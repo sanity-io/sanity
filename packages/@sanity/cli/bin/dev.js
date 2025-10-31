@@ -1,12 +1,5 @@
-/* eslint-disable @typescript-eslint/no-require-imports */
-/* oxlint-disable import/no-unassigned-import */
-const {register} = require('esbuild-register/dist/node')
-
-register({
-  target: `node${process.version.slice(1)}`,
-  supported: {'dynamic-import': true},
-  jsx: 'automatic',
-})
+// oxlint-disable-next-line no-unassigned-import
+const tsx = require('tsx/cjs/api')
 
 // oxlint-disable-next-line no-console
 console.log('\n️ⓘ Running local Sanity CLI from source\n')
@@ -17,4 +10,4 @@ console.log('\n️ⓘ Running local Sanity CLI from source\n')
 // - exclude development-only code from the production build
 global.__DEV__ = true
 
-require('../src/run')
+tsx.require('../src/run', __filename)

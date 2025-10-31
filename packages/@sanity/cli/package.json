@@ -126,6 +126,7 @@
     "semver": "^7.7.2",
     "semver-compare": "^1.0.0",
     "tar": "^6.2.1",
+    "tsx": "^4.20.6",
     "vite": "catalog:",
     "vitest": "catalog:",
     "which": "^2.0.2",
