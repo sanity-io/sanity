@@ -634,7 +634,6 @@ it('exports snapshot', async () => {
           "useTrackerStore": "function",
           "useTrackerStoreReporter": "function",
           "useTranslation": "function",
-          "useTreeEditingEnabled": "function",
           "useUnique": "function",
           "useUnitFormatter": "function",
           "useUser": "function",

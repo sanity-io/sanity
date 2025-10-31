@@ -1075,7 +1075,6 @@ import {
   ReferenceInput,
   type ReferenceInputProps,
 } from '../core/form/studio/inputs'
-import {useTreeEditingEnabled} from '../core/form/studio/tree-editing/context/enabled/useTreeEditingEnabled'
 import {
   type FileLike,
   type ResolvedUploader,
@@ -3485,7 +3484,6 @@ export {
   useTranslation,
   type UseTranslationOptions,
   type UseTranslationResponse,
-  useTreeEditingEnabled,
   useUnique,
   useUnitFormatter,
   type UseUnitFormatterOptions,
