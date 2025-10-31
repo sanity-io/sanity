@@ -5,10 +5,12 @@ import {
   getReleaseIdFromReleaseDocumentId,
   getReleaseTone,
   getVersionFromId,
+  isCardinalityOneRelease,
   isDraftId,
   isGoingToUnpublish,
   isPublishedId,
   isPublishedPerspective,
+  isReleaseDocument,
   isReleaseScheduledOrScheduling,
   isVersionId,
   type ReleaseDocument,
@@ -101,7 +103,14 @@ export const DocumentPerspectiveList = memo(function DocumentPerspectiveList() {
   const workspace = useWorkspace()
 
   const handlePerspectiveChange = useCallback(
-    (perspective: Parameters<typeof setPerspective>[0]) => () => {
+    (perspective: 'published' | 'drafts' | ReleaseDocument) => () => {
+      if (isReleaseDocument(perspective) && isCardinalityOneRelease(perspective)) {
+        setParams({...params, scheduledDraft: getReleaseIdFromReleaseDocumentId(perspective._id)})
+        return
+      }
+
+      setParams({...params, scheduledDraft: undefined})
+
       if (perspective === 'published' && params?.historyVersion) {
         setParams({
           ...params,
@@ -110,7 +119,11 @@ export const DocumentPerspectiveList = memo(function DocumentPerspectiveList() {
           historyVersion: undefined,
         })
       }
-      setPerspective(perspective)
+      setPerspective(
+        isReleaseDocument(perspective)
+          ? getReleaseIdFromReleaseDocumentId(perspective._id)
+          : perspective,
+      )
     },
     [setPerspective, setParams, params],
   )
@@ -331,7 +344,7 @@ export const DocumentPerspectiveList = memo(function DocumentPerspectiveList() {
             key={release._id}
             tooltipContent={<TooltipContent release={release} />}
             {...getReleaseChipState(release)}
-            onClick={handlePerspectiveChange(getReleaseIdFromReleaseDocumentId(release._id))}
+            onClick={handlePerspectiveChange(release)}
             text={release.metadata.title || t('release.placeholder-untitled-release')}
             tone={getReleaseTone(release)}
             locked={isReleaseScheduledOrScheduling(release)}

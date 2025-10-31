@@ -4,7 +4,6 @@ import {
   getReleaseIdFromReleaseDocumentId,
   getReleaseTone,
   getVersionInlineBadge,
-  isCardinalityOneRelease,
   LATEST,
   type ReleaseDocument,
   Translate,
@@ -77,9 +76,6 @@ export function DocumentNotInReleaseBanner({
     description: t('banners.release.waiting.description'),
   })
 
-  if (isCardinalityOneRelease(currentRelease)) {
-    return null
-  }
   return (
     <Banner
       tone={tone}
