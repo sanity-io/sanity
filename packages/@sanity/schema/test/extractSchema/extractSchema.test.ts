@@ -34,6 +34,11 @@ describe('Extract schema test', () => {
       name: 'test',
       types: [
         defineType({
+          name: 'customUrlType',
+          title: 'My custom url type',
+          type: 'url',
+        }),
+        defineType({
           title: 'Valid document',
           name: 'validDocument',
           type: 'document',
@@ -76,6 +81,11 @@ describe('Extract schema test', () => {
               title: 'customStringType',
               name: 'customStringType',
               type: 'customStringType',
+            },
+            {
+              title: 'customUrlType',
+              name: 'customUrlType',
+              type: 'customUrlType',
             },
             {
               title: 'Blocks',
@@ -216,28 +226,30 @@ describe('Extract schema test', () => {
     })
 
     const extracted = extractSchema(schema)
+    expect(extracted.length).toBe(22)
     expect(extracted.map((v) => v.name)).toStrictEqual([
       'sanity.imagePaletteSwatch',
       'sanity.imagePalette',
       'sanity.imageDimensions',
+      'sanity.imageMetadata',
+      'sanity.imageHotspot',
+      'sanity.imageCrop',
       'geopoint',
       'slug',
+      'sanity.assetSourceData',
       'someTextType',
+      'manuscript',
       'sanity.fileAsset',
       'code',
       'customStringType',
+      'obj',
       'blocksTest',
       'book',
       'author',
-      'sanity.imageCrop',
-      'sanity.imageHotspot',
       'sanity.imageAsset',
-      'sanity.assetSourceData',
-      'sanity.imageMetadata',
       'validDocument',
       'otherValidDocument',
-      'manuscript',
-      'obj',
+      'customUrlType',
     ])
     const validDocument = extracted.find((type) => type.name === 'validDocument')
     expect(validDocument).toBeDefined()
@@ -259,6 +271,7 @@ describe('Extract schema test', () => {
       'manuscript',
       'someTextType',
       'customStringType',
+      'customUrlType',
       'blocks',
       'other',
       'others',
@@ -332,14 +345,14 @@ describe('Extract schema test', () => {
       'sanity.imagePaletteSwatch',
       'sanity.imagePalette',
       'sanity.imageDimensions',
+      'sanity.imageMetadata',
       'sanity.imageHotspot',
       'sanity.imageCrop',
       'sanity.fileAsset',
+      'sanity.assetSourceData',
       'sanity.imageAsset',
-      'sanity.imageMetadata',
       'geopoint',
       'slug',
-      'sanity.assetSourceData',
       'book',
       'author',
     ])
@@ -518,7 +531,13 @@ describe('Extract schema test', () => {
     assert(post !== undefined) // this is a workaround for TS, but leave the expect above for clarity in case of failure
     assert(post.type === 'document') // this is a workaround for TS, but leave the expect above for clarity in case of failure
 
-    expect(post.attributes.align.value.type).toBe('string')
+    strictEqual(post.attributes.align.value.type, 'inline')
+    strictEqual(post.attributes.align.value.name, 'stringWithListOption')
+
+    const stringWithListOption = extracted.find((type) => type.name === 'stringWithListOption')
+    assert(stringWithListOption !== undefined) // this is a workaround for TS, but leave the expect above for clarity in case of failure
+    strictEqual(stringWithListOption.type, 'type')
+    strictEqual(stringWithListOption.value.type, 'string')
   })
 
   describe('Can extract sample fixtures', () => {
@@ -621,20 +640,17 @@ describe('Extract schema test', () => {
       'referenceAuthors',
     ])
 
-    strictEqual(validDocument.attributes.inlineAuthor.value.type, 'object')
-    expect(validDocument.attributes.inlineAuthor.value.attributes).toEqual(
-      removeBuiltinAttributes(authorDocument).attributes,
-    )
+    strictEqual(validDocument.attributes.inlineAuthor.value.type, 'inline')
+    expect(validDocument.attributes.inlineAuthor.value.name).toEqual('author')
 
     strictEqual(validDocument.attributes.inlineAuthors.value.type, 'array')
     strictEqual(validDocument.attributes.inlineAuthors.value.of.type, 'object')
-    expect(validDocument.attributes.inlineAuthors.value.of.attributes).toEqual(
-      removeBuiltinAttributes(authorDocument).attributes,
-    )
-    strictEqual(validDocument.attributes.inlineAuthors.value.of.rest?.type, 'object')
-    expect(validDocument.attributes.inlineAuthors.value.of.rest?.attributes).toEqual({
+    expect(validDocument.attributes.inlineAuthors.value.of.attributes).toEqual({
       _key: {type: 'objectAttribute', value: {type: 'string'}},
     })
+
+    strictEqual(validDocument.attributes.inlineAuthors.value.of.rest?.type, 'inline')
+    expect(validDocument.attributes.inlineAuthors.value.of.rest.name).toEqual('author')
 
     expect(extracted).toMatchSnapshot()
   })
@@ -700,7 +716,7 @@ describe('Extract schema test', () => {
     )
 
     const extracted = extractSchema(schema)
-    expect(extracted.map((v) => v.name)).toStrictEqual(['validDocument', 'book'])
+    expect(extracted.map((v) => v.name)).toStrictEqual(['book', 'validDocument'])
     const validDocument = extracted.find((type) => type.name === 'validDocument')
     expect(validDocument).toBeDefined()
     assert(validDocument !== undefined) // this is a workaround for TS, but leave the expect above for clarity in case of failure
@@ -756,13 +772,3 @@ describe('Extract schema test', () => {
     expect(inlineRef.value.dereferencesTo).toBe('thing')
   })
 })
-
-const builtinAttrs = ['_id', '_createdAt', '_updatedAt', '_rev']
-function removeBuiltinAttributes(doc: DocumentSchemaType): DocumentSchemaType {
-  return {
-    ...doc,
-    attributes: Object.fromEntries(
-      Object.entries(doc.attributes).filter(([key]) => !builtinAttrs.includes(key)),
-    ),
-  }
-}
