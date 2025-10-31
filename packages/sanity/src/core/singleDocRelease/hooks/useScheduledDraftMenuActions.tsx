@@ -9,6 +9,7 @@ import {Translate} from '../../i18n/Translate'
 import {getErrorMessage} from '../../util/getErrorMessage'
 import {DeleteScheduledDraftDialog} from '../components/DeleteScheduledDraftDialog'
 import {PublishScheduledDraftDialog} from '../components/PublishScheduledDraftDialog'
+import {ScheduleDraftDialog} from '../components/ScheduleDraftDialog'
 import {useScheduledDraftDocument} from './useScheduledDraftDocument'
 import {useScheduleDraftOperations} from './useScheduleDraftOperations'
 
