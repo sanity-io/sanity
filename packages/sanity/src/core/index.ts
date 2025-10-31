@@ -26,6 +26,7 @@ export {
   type TargetPerspective,
 } from './perspective/types'
 export {useExcludedPerspective} from './perspective/useExcludedPerspective'
+export {useGetDefaultPerspective} from './perspective/useGetDefaultPerspective'
 export {usePerspective} from './perspective/usePerspective'
 export {useSetPerspective} from './perspective/useSetPerspective'
 export * from './presence'

@@ -20,6 +20,7 @@ import {
   useDateTimeFormat,
   type UseDateTimeFormatOptions,
   useFilteredReleases,
+  useGetDefaultPerspective,
   useOnlyHasVersions,
   usePerspective,
   useSchema,
@@ -92,7 +93,7 @@ export const DocumentPerspectiveList = memo(function DocumentPerspectiveList() {
   const schema = useSchema()
   const {editState, displayed, documentType, documentId} = useDocumentPane()
   const isCreatingDocument = displayed && !displayed._createdAt
-
+  const defaultPerspective = useGetDefaultPerspective()
   const filteredReleases = useFilteredReleases({
     historyVersion: params?.historyVersion,
     displayed,
@@ -105,11 +106,13 @@ export const DocumentPerspectiveList = memo(function DocumentPerspectiveList() {
   const handlePerspectiveChange = useCallback(
     (perspective: 'published' | 'drafts' | ReleaseDocument) => () => {
       if (isReleaseDocument(perspective) && isCardinalityOneRelease(perspective)) {
-        setParams({...params, scheduledDraft: getReleaseIdFromReleaseDocumentId(perspective._id)})
+        setParams(
+          {...params, scheduledDraft: getReleaseIdFromReleaseDocumentId(perspective._id)},
+          // We need to reset the perspective sticky param when we set the scheduled draft local perspective.
+          {perspective: ''},
+        )
         return
       }
-
-      setParams({...params, scheduledDraft: undefined})
 
       if (perspective === 'published' && params?.historyVersion) {
         setParams({
@@ -119,13 +122,26 @@ export const DocumentPerspectiveList = memo(function DocumentPerspectiveList() {
           historyVersion: undefined,
         })
       }
-      setPerspective(
-        isReleaseDocument(perspective)
-          ? getReleaseIdFromReleaseDocumentId(perspective._id)
-          : perspective,
-      )
+      const newPerspective = isReleaseDocument(perspective)
+        ? getReleaseIdFromReleaseDocumentId(perspective._id)
+        : perspective === defaultPerspective
+          ? ''
+          : perspective
+
+      if (params?.scheduledDraft) {
+        setParams(
+          {...params, scheduledDraft: undefined},
+          // If we have a scheduled draft perspective, then we need to remove that one and set the new perspective.
+          // We cannot do it in two passes, for example first set the paneParam and the use the `setPerspective`
+          // because we will have a race condition in where the last state wins, but the last state won't have the previous change.
+          // So we change the params and perspective in the same call.
+          {perspective: newPerspective},
+        )
+      } else {
+        setPerspective(newPerspective)
+      }
     },
-    [setPerspective, setParams, params],
+    [setPerspective, setParams, params, defaultPerspective],
   )
 
   const schemaType = schema.get(documentType)
