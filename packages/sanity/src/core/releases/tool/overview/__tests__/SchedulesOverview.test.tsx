@@ -52,7 +52,7 @@ import {
   mockUseReleaseCreator,
   useReleaseCreatorMockReturn,
 } from '../hooks/__tests__/__mocks__/useReleaseCreator.mock'
-import {ReleasesOverview} from '../ReleasesOverview'
+import {SchedulesOverview} from '../SchedulesOverview'
 
 const TODAY = set(new Date(), {
   hours: 22,
@@ -151,7 +151,7 @@ const getWrapper = () =>
 /**
  * To resolve issues with size render with Virtual list (as described
  * here: https://github.com/TanStack/virtual/issues/641), must rerender
- * ReleasesOverview once the exact height wrapper has mounted
+ * SchedulesOverview once the exact height wrapper has mounted
  */
 const TestComponent = () => {
   const [hasWrapperRendered, setHasWrapperRendered] = useState(false)
@@ -165,12 +165,12 @@ const TestComponent = () => {
 
   return (
     <div style={{height: '400px'}} ref={wrapperRef}>
-      <ReleasesOverview data-wrapperRendered={hasWrapperRendered.toString()} />
+      <SchedulesOverview data-wrapperRendered={hasWrapperRendered.toString()} />
     </div>
   )
 }
 
-describe('ReleasesOverview', () => {
+describe('SchedulesOverview', () => {
   beforeEach(() => {
     mockUseActiveReleases.mockRestore()
     mockUseReleaseCreator.mockReturnValue(useReleaseCreatorMockReturn)

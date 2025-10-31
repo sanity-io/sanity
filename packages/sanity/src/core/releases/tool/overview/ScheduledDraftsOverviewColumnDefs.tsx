@@ -7,7 +7,7 @@ import {type Column} from '../components/Table/types'
 import {ScheduledDraftDocumentPreview} from './columnCells/ScheduledDraftDocumentPreview'
 import {ScheduledDraftMetadataCell} from './columnCells/ScheduledDraftMetadataCell'
 import {type Mode} from './queryParamUtils'
-import {type TableRelease} from './ReleasesOverview'
+import {type TableRelease} from './ScheduledDraftsOverview'
 
 export const scheduledDraftsOverviewColumnDefs: (
   t: TFunction<'releases', undefined>,
