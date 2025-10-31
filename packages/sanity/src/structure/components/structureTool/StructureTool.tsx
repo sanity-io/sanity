@@ -11,6 +11,7 @@ import {useResolvedPanes} from '../../structureResolvers'
 import {type PaneNode} from '../../types'
 import {useStructureTool} from '../../useStructureTool'
 import {PaneLayout} from '../pane'
+import {StructureToolResetCardinalityOnePerspective} from '../ResetCardinalityOnePerspective'
 import {NoDocumentTypesScreen} from './NoDocumentTypesScreen'
 import {StructureTitle} from './StructureTitle'
 
@@ -137,6 +138,7 @@ export const StructureTool = memo(function StructureTool({onPaneChange}: Structu
       </StyledPaneLayout>
       <StructureTitle resolvedPanes={resolvedPanes} />
       <div data-portal="" ref={setPortalElement} />
+      <StructureToolResetCardinalityOnePerspective resolvedPanes={resolvedPanes} />
     </PortalProvider>
   )
 })

@@ -7,6 +7,7 @@ import {
   DocumentPane as StructureDocumentPane,
   type DocumentPaneNode,
   PaneLayout,
+  ResetCardinalityOnePerspective,
 } from 'sanity/structure'
 import {styled} from 'styled-components'
 
@@ -124,6 +125,7 @@ export function DocumentPane(props: {
               pane={paneDocumentNode}
               onFocusPath={handleFocusPath}
             />
+            <ResetCardinalityOnePerspective documentId={documentId} />
           </Suspense>
         </PresentationPaneRouterProvider>
       </PaneLayout>
