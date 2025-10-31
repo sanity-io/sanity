@@ -31,7 +31,10 @@ const singleDocReleaseLocaleStrings = {
 }
 
 /**
+ * The locale resource keys for the single doc release tool.
+ *
  * @alpha
+ * @hidden
  */
 export type SingleDocReleaseLocaleResourceKeys = keyof typeof singleDocReleaseLocaleStrings
 
