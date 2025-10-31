@@ -22,8 +22,6 @@
     "styled-components": "catalog:"
   },
   "devDependencies": {
-    "@types/react": "catalog:",
-    "sanity": "workspace:",
-    "typescript": "catalog:"
+    "sanity": "workspace:"
   }
 }

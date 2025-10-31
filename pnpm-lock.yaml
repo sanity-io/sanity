@@ -397,13 +397,6 @@ importers:
       styled-components:
         specifier: 'catalog:'
         version: 6.1.19(react-dom@19.1.1(react@19.1.1))(react@19.1.1)
-    devDependencies:
-      '@types/react':
-        specifier: 'catalog:'
-        version: 19.1.17
-      typescript:
-        specifier: 'catalog:'
-        version: 5.9.3
 
   dev/starter-studio:
     dependencies:
