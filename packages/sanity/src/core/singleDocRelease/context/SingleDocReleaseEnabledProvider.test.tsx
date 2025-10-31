@@ -2,7 +2,7 @@ import {renderHook} from '@testing-library/react'
 import {beforeEach, describe, expect, it, vi} from 'vitest'
 
 import {QUOTA_EXCLUDED_RELEASES_ENABLED} from '../../config/types'
-import {useFeatureEnabled} from '../../hooks'
+import {useFeatureEnabled} from '../../hooks/useFeatureEnabled'
 import {useSource} from '../../studio/source'
 import {
   SingleDocReleaseEnabledProvider,
