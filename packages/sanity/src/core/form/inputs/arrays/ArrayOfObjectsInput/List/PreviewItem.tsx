@@ -17,10 +17,8 @@ import {useDidUpdate} from '../../../../hooks/useDidUpdate'
 import {useScrollIntoViewOnFocusWithin} from '../../../../hooks/useScrollIntoViewOnFocusWithin'
 import {useChildPresence} from '../../../../studio/contexts/Presence'
 import {useChildValidation} from '../../../../studio/contexts/Validation'
-import {
-  EnhancedObjectDialogProvider,
-  useEnhancedObjectDialog,
-} from '../../../../studio/tree-editing'
+import {EnhancedObjectDialogProvider} from '../../../../studio/tree-editing/context/enabled/EnhancedObjectDialogProvider'
+import {useEnhancedObjectDialog} from '../../../../studio/tree-editing/context/enabled/useEnhancedObjectDialog'
 import {UPLOAD_STATUS_KEY} from '../../../../studio/uploads/constants'
 import {type ObjectItem, type ObjectItemProps} from '../../../../types/itemProps'
 import {randomKey} from '../../../../utils/randomKey'
