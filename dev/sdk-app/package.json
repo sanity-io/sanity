@@ -22,6 +22,7 @@
     "styled-components": "catalog:"
   },
   "devDependencies": {
+    "rimraf": "^5.0.10",
     "sanity": "workspace:"
   }
 }
