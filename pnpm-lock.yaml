@@ -315,6 +315,9 @@ importers:
         specifier: 'catalog:'
         version: 6.1.19(react-dom@19.1.1(react@19.1.1))(react@19.1.1)
     devDependencies:
+      '@repo/dev-aliases':
+        specifier: workspace:*
+        version: link:../../packages/@repo/dev-aliases
       '@types/react':
         specifier: 'catalog:'
         version: 19.1.17
