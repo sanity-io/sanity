@@ -14,7 +14,7 @@ export function usePresentationPerspective({
 
   const perspective = (
     selectedReleaseId || scheduledDraft
-      ? [...perspectiveStack, scheduledDraft]
+      ? [scheduledDraft, ...perspectiveStack]
       : selectedPerspectiveName
   ) as PresentationPerspective
   return perspective

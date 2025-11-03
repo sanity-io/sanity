@@ -11,7 +11,7 @@ export function usePresentationPerspectiveStack() {
   const scheduledDraftPerspective = paneRouter.params?.scheduledDraft
 
   if (scheduledDraftPerspective) {
-    return [...perspectiveStack, scheduledDraftPerspective]
+    return [scheduledDraftPerspective, ...perspectiveStack]
   }
   return perspectiveStack
 }
