@@ -1,6 +1,6 @@
-import {hues} from '@sanity/color'
-import {Card, type Theme} from '@sanity/ui'
-import {css, styled} from 'styled-components'
+import {Card} from '@sanity/ui'
+import {vars} from '@sanity/ui/css'
+import {styled} from 'styled-components'
 
 const STROKE_WIDTH = 0.5
 
@@ -9,15 +9,11 @@ const Root = styled(Card)`
   overflow: clip;
 `
 
-const Bar = styled(Card)(({theme}: {theme: Theme}) => {
-  const {color} = theme.sanity
-
-  return css`
-    height: ${STROKE_WIDTH}rem;
-    background: ${hues.blue[color.dark ? 400 : 500].hex};
-    transition: transform 75ms;
-  `
-})
+const Bar = styled(Card)`
+  height: ${STROKE_WIDTH}rem;
+  background: ${vars.color.solid.primary.bg[0]};
+  transition: transform 75ms;
+`
 
 /**
  * @hidden

@@ -1,6 +1,6 @@
 import {createContext} from 'sanity/_createContext'
 
-import type {StudioThemeColorSchemeKey} from '../../core/theme/types'
+import type {StudioColorScheme} from '../../core/theme/types'
 
 /**
  * The setter for ColorSchemeValueContext, in a separate context to avoid unnecessary re-renders
@@ -8,5 +8,5 @@ import type {StudioThemeColorSchemeKey} from '../../core/theme/types'
  * @internal
  */
 export const ColorSchemeSetValueContext = createContext<
-  ((nextScheme: StudioThemeColorSchemeKey) => void) | false | null
+  ((nextScheme: StudioColorScheme) => void) | false | null
 >('sanity/_singletons/context/color-scheme-set-value', null)

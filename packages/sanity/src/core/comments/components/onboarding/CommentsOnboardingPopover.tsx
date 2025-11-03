@@ -24,7 +24,8 @@ const StyledPopover = styled(Popover)`
   animation: ${fadeInKeyFrame} 200ms 500ms forwards;
 `
 
-interface CommentsOnboardingPopoverProps extends Omit<PopoverProps, 'content'> {
+interface CommentsOnboardingPopoverProps
+  extends Omit<PopoverProps, 'content' | 'height' | 'rows' | 'wrap'> {
   //   ...
   onDismiss: () => void
 }
@@ -37,7 +38,7 @@ export function CommentsOnboardingPopover(props: CommentsOnboardingPopoverProps)
     <StyledPopover
       content={
         <Root padding={4}>
-          <Stack space={3}>
+          <Stack gap={3}>
             <Text weight="medium" size={1}>
               {t('onboarding.header')}
             </Text>

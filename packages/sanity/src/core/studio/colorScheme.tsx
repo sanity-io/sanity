@@ -1,5 +1,6 @@
 import {DesktopIcon, MoonIcon, SunIcon} from '@sanity/icons'
-import {studioTheme, type ThemeColorSchemeKey, ThemeProvider, usePrefersDark} from '@sanity/ui'
+import {CardProvider, usePrefersDark} from '@sanity/ui'
+import {type ColorScheme} from '@sanity/ui/theme'
 import {
   type ComponentType,
   type ReactNode,
@@ -8,16 +9,16 @@ import {
   useMemo,
   useSyncExternalStore,
 } from 'react'
+import {flushSync} from 'react-dom'
 import {ColorSchemeSetValueContext, ColorSchemeValueContext} from 'sanity/_singletons'
 
 import {type TFunction} from '../i18n'
-import {type StudioThemeColorSchemeKey} from '../theme/types'
+import {type StudioColorScheme} from '../theme/types'
 import {getSnapshot, setSnapshot, subscribe} from './colorSchemeStore'
 
 /** @internal */
-function useSystemScheme(): ThemeColorSchemeKey {
-  const prefersDark = usePrefersDark()
-  return prefersDark ? 'dark' : 'light'
+function useSystemScheme(): ColorScheme {
+  return usePrefersDark() ? 'dark' : 'light'
 }
 
 function ColorThemeProvider({
@@ -25,19 +26,19 @@ function ColorThemeProvider({
   scheme: _scheme,
 }: {
   children: ReactNode
-  scheme: StudioThemeColorSchemeKey
+  scheme: StudioColorScheme
 }) {
   const systemScheme = useSystemScheme()
   const scheme = _scheme === 'system' ? systemScheme : _scheme
 
   return (
-    <ThemeProvider scheme={scheme} theme={studioTheme}>
+    <CardProvider scheme={scheme} tone="default">
       {/* Note: this is a fallback ThemeProvider that is for any components */}
       {/* that may render before the StudioThemeProvider renders. this is */}
       {/* required because the StudioThemeProvider has a dependence on the */}
       {/* active workspace provided via the ActiveWorkspaceMatcher */}
       {children}
-    </ThemeProvider>
+    </CardProvider>
   )
 }
 
@@ -46,8 +47,8 @@ const LOCAL_STORAGE_KEY = 'sanityStudio:ui:colorScheme'
 /** @internal */
 export interface ColorSchemeProviderProps {
   children: ReactNode
-  onSchemeChange?: (nextScheme: StudioThemeColorSchemeKey) => void
-  scheme?: StudioThemeColorSchemeKey
+  onSchemeChange?: (nextScheme: StudioColorScheme) => void
+  scheme?: StudioColorScheme
 }
 
 /** @internal */
@@ -79,7 +80,7 @@ export function ColorSchemeLocalStorageProvider({
   children,
   onSchemeChange,
 }: Pick<ColorSchemeProviderProps, 'children' | 'onSchemeChange'>) {
-  const scheme = useSyncExternalStore<StudioThemeColorSchemeKey>(
+  const scheme = useSyncExternalStore<StudioColorScheme>(
     subscribe,
     getSnapshot,
     // Only called during server-side rendering, and hydration if using hydrateRoot
@@ -89,7 +90,15 @@ export function ColorSchemeLocalStorageProvider({
 
   useEffect(() => {
     if (typeof onSchemeChange === 'function') {
-      onSchemeChange(scheme)
+      if (document.startViewTransition) {
+        document.startViewTransition(() => {
+          flushSync(() => {
+            onSchemeChange(scheme)
+          })
+        })
+      } else {
+        onSchemeChange(scheme)
+      }
     }
     localStorage.setItem(LOCAL_STORAGE_KEY, scheme)
   }, [onSchemeChange, scheme])
@@ -112,7 +121,7 @@ export function ColorSchemeCustomProvider({
   onSchemeChange,
   scheme,
 }: Pick<ColorSchemeProviderProps, 'children' | 'onSchemeChange'> & {
-  scheme: StudioThemeColorSchemeKey
+  scheme: StudioColorScheme
 }): React.JSX.Element {
   return (
     <ColorSchemeSetValueContext.Provider
@@ -126,23 +135,21 @@ export function ColorSchemeCustomProvider({
 }
 
 /** @alpha */
-export function useColorSchemeSetValue():
-  | false
-  | ((nextScheme: StudioThemeColorSchemeKey) => void) {
+export function useColorSchemeSetValue(): false | ((nextScheme: StudioColorScheme) => void) {
   const setValue = useContext(ColorSchemeSetValueContext)
   if (setValue === null) throw new Error('Could not find `ColorSchemeSetValueContext` context')
   return setValue
 }
 
 /** @internal */
-export function useColorSchemeInternalValue(): StudioThemeColorSchemeKey {
+export function useColorSchemeInternalValue(): StudioColorScheme {
   const value = useContext(ColorSchemeValueContext)
   if (value === null) throw new Error('Could not find `ColorSchemeValueContext` context')
   return value
 }
 
 /** @alpha */
-export function useColorSchemeValue(): ThemeColorSchemeKey {
+export function useColorSchemeValue(): ColorScheme {
   const scheme = useColorSchemeInternalValue()
   const systemScheme = useSystemScheme()
   return scheme === 'system' ? systemScheme : scheme
@@ -167,7 +174,7 @@ export function useColorScheme() {
 interface ColorSchemeOption {
   icon: ComponentType
   label: string
-  name: StudioThemeColorSchemeKey
+  name: StudioColorScheme
   onSelect: () => void
   selected: boolean
   title: string
@@ -176,7 +183,7 @@ interface ColorSchemeOption {
  * @internal
  */
 export function useColorSchemeOptions(
-  setScheme: (nextScheme: StudioThemeColorSchemeKey) => void,
+  setScheme: (nextScheme: StudioColorScheme) => void,
   t: TFunction<'studio', undefined>,
 ) {
   const scheme = useColorSchemeInternalValue()

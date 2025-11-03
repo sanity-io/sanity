@@ -62,8 +62,8 @@ export function ConfigIssuesButton() {
           scheme={scheme}
           id={dialogId}
         >
-          <Stack space={4}>
-            <Stack space={3}>
+          <Stack gap={4}>
+            <Stack gap={3}>
               <Text as="h2" size={1} weight="medium">
                 Found {groupsWithWarnings.length} schema warnings
               </Text>{' '}

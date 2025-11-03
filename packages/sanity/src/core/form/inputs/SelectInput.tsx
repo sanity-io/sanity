@@ -140,7 +140,7 @@ const RadioSelect = forwardRef(function RadioSelect(
   const Layout = direction === 'horizontal' ? Inline : Stack
   return (
     <Card border padding={3} radius={2}>
-      <Layout space={3} role="group">
+      <Layout gap={3} role="group">
         {items.map((item, index) => (
           <RadioSelectItem
             // oxlint-disable-next-line no-array-index-key

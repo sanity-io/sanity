@@ -6,6 +6,7 @@ import {
   MenuItem,
   Text,
 } from '@sanity/ui'
+import {getVarName, vars} from '@sanity/ui/css'
 import {memo, type MouseEvent, type ReactNode, useCallback, useMemo} from 'react'
 import {styled} from 'styled-components'
 
@@ -37,16 +38,10 @@ const StyledMenuItem = styled(MenuItem)`
   // to make the border visible when the MenuItem is selected
   &[data-selected] {
     [data-option='blockquote'] {
-      --card-border-color: var(--card-muted-fg-color);
+      ${getVarName(vars.color.border)}: ${vars.color.muted.fg};
     }
   }
 `
-
-const MENU_POPOVER_PROPS: MenuButtonProps['popover'] = {
-  constrainSize: true,
-  placement: 'bottom-start',
-  portal: 'default',
-}
 
 const TEXT_STYLE_OPTIONS: Record<string, (title: ReactNode) => ReactNode> = {
   h1: (title) => <Heading1>{title}</Heading1>,
@@ -165,7 +160,9 @@ export const BlockStyleSelect = memo(function BlockStyleSelect(
 
   const menu = useMemo(
     () => (
-      <Menu disabled={_disabled}>
+      <Menu
+      // disabled={_disabled}
+      >
         {items.map((item) => {
           return (
             <StyledMenuItem

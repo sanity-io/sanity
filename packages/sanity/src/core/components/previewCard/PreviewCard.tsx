@@ -1,22 +1,20 @@
 import {Card, type CardProps} from '@sanity/ui'
 import {type ForwardedRef, forwardRef, type HTMLProps, useContext, useMemo} from 'react'
 import {PreviewCardContext} from 'sanity/_singletons'
-import {css, styled} from 'styled-components'
+import {styled} from 'styled-components'
 
 /** @internal */
-const StyledCard = styled(Card)(() => {
-  return css`
-    /* TextWithTone uses its own logic to set color, and we therefore need */
-    /* to override this logic in order to set the correct color in different states */
-    &[data-selected],
-    &[data-pressed],
-    &:active {
-      [data-ui='TextWithTone'] {
-        color: inherit;
-      }
+const StyledCard = styled(Card)`
+  /* TextWithTone uses its own logic to set color, and we therefore need */
+  /* to override this logic in order to set the correct color in different states */
+  &[data-selected],
+  &[data-pressed],
+  &:active {
+    [data-ui='TextWithTone'] {
+      color: inherit;
     }
-  `
-})
+  }
+`
 
 /** @internal */
 export interface PreviewCardContextValue {

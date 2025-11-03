@@ -19,6 +19,7 @@
     "write:report": "tsx ./formatefpsResult.ts"
   },
   "dependencies": {
+    "@sanity/ui": "catalog:",
     "styled-components": "catalog:",
     "tsx": "^4.20.6"
   },

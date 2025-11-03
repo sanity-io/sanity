@@ -82,7 +82,7 @@ export function CommonDateRangeInput({
 
   return (
     <div>
-      <Stack space={3}>
+      <Stack gap={3}>
         <Flex direction="column" gap={3}>
           {/* Start date */}
           <ParsedDateTextInput

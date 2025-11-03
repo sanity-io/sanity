@@ -16,18 +16,18 @@ export function DebugFilterValues({filter}: DebugFilterValuesProps) {
 
   return (
     <Card borderTop padding={3} tone="transparent">
-      <Stack space={2}>
+      <Stack gap={2}>
         <Code size={0} weight="medium">
           Filter
         </Code>
         {fieldDefinition?.fieldPath && <Code size={0}>fieldPath: {fieldDefinition.fieldPath}</Code>}
-        <Code muted size={0} style={{whiteSpace: 'normal'}}>
+        <Code size={0} style={{whiteSpace: 'normal'}}>
           filterName: {filter.filterName}
         </Code>
-        <Code muted size={0} style={{whiteSpace: 'normal'}}>
+        <Code size={0} style={{whiteSpace: 'normal'}}>
           operatorType: {filter.operatorType}
         </Code>
-        <Code muted size={0} style={{whiteSpace: 'normal'}}>
+        <Code size={0} style={{whiteSpace: 'normal'}}>
           value: {typeof filter?.value === 'undefined' ? '' : JSON.stringify(filter.value)}
         </Code>
       </Stack>

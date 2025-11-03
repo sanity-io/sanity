@@ -3,7 +3,7 @@ import {type ReactNode, useId} from 'react'
 import {type DocumentActionDialogProps} from 'sanity'
 
 import {Dialog} from '../../../../ui-components'
-import {DOCUMENT_PANEL_PORTAL_ELEMENT} from '../../../constants'
+import {DOCUMENT_FORM_PORTAL_ELEMENT} from '../../../constants'
 import {ConfirmDialog} from './dialogs/ConfirmDialog'
 import {ModalDialog} from './dialogs/ModalDialog'
 import {PopoverDialog} from './dialogs/PopoverDialog'
@@ -18,7 +18,7 @@ export interface ActionStateDialogProps {
 function DocumentActionPortalProvider(props: {children: ReactNode}) {
   const {children} = props
   const {element, elements} = usePortal()
-  const portalElement = elements?.[DOCUMENT_PANEL_PORTAL_ELEMENT] || element
+  const portalElement = elements?.[DOCUMENT_FORM_PORTAL_ELEMENT] || elements?.default || element
 
   return <PortalProvider element={portalElement}>{children}</PortalProvider>
 }

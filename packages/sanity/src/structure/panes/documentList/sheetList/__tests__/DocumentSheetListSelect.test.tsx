@@ -1,5 +1,5 @@
 import {type SanityDocument} from '@sanity/types'
-import {studioTheme, ThemeProvider} from '@sanity/ui'
+import {Root} from '@sanity/ui'
 import {type CellContext} from '@tanstack/react-table'
 import {fireEvent, render, screen} from '@testing-library/react'
 import {beforeEach, describe, expect, it, vi} from 'vitest'
@@ -35,9 +35,9 @@ const props = {
 
 const renderTest = (renderProps?: Partial<CellContext<SanityDocument, unknown>>) =>
   render(
-    <ThemeProvider theme={studioTheme}>
+    <Root as="div">
       <DocumentSheetListSelect {...{...props, ...renderProps}} />
-    </ThemeProvider>,
+    </Root>,
   )
 
 describe('DocumentSheetListSelect', () => {

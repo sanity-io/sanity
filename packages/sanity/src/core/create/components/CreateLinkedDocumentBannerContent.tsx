@@ -52,14 +52,14 @@ export function CreateLinkedDocumentBannerContent(props: CreateLinkedDocumentBan
   const popoverContent = (
     <Card overflow="hidden" radius={POPOVER_RADIUS} ref={popoverRef}>
       <CreateSvg />
-      <Stack space={3} paddingX={4} paddingY={3}>
+      <Stack gap={3} paddingX={4} paddingY={3}>
         <Flex gap={1} align="center">
           <Text size={1} weight="semibold">
             {t('create-link-info-popover.eyebrow-title')}
           </Text>
           <Badge fontSize={1}>{t('create-link-info-popover.eyebrow-badge')}</Badge>
         </Flex>
-        <Stack space={4}>
+        <Stack gap={4}>
           <Heading size={2}>{t('create-link-info-popover.header')}</Heading>
           <Text size={1}>{t('create-link-info-popover.text')}</Text>
           <Flex flex={1} justify="flex-end">

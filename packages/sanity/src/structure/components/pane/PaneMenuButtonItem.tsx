@@ -4,12 +4,12 @@ import {type MouseEvent, useCallback} from 'react'
 import {TooltipOfDisabled, useGetI18nText, useI18nText} from 'sanity'
 import {useIntentLink} from 'sanity/router'
 
-import {MenuGroup, MenuItem, type PopoverProps} from '../../../ui-components'
+import {MenuGroup, type MenuGroupProps, MenuItem} from '../../../ui-components'
 import {type Intent} from '../../structureBuilder'
 import {toLowerCaseNoSpaces} from '../../util/toLowerCaseNoSpaces'
 import {type _PaneMenuItem, type _PaneMenuNode} from './types'
 
-const MENU_GROUP_POPOVER_PROPS: PopoverProps = {
+const MENU_GROUP_POPOVER_PROPS: MenuGroupProps['popover'] = {
   constrainSize: true,
   placement: 'left-start',
   portal: true,
@@ -127,7 +127,7 @@ function PaneContextIntentMenuItem(props: {
   const intentLink = useIntentLink({intent: intent.type, params: intent.params})
 
   const handleClick = useCallback(
-    (event: MouseEvent<HTMLDivElement>) => {
+    (event: MouseEvent<HTMLAnchorElement>) => {
       intentLink.onClick(event)
       node.onAction()
     },

@@ -1,5 +1,17 @@
 import {CopyIcon} from '@sanity/icons'
-import {Box, Button, Card, Flex, Grid, Inline, Select, Stack, TextInput, Tooltip} from '@sanity/ui'
+import {
+  Box,
+  Button,
+  Card,
+  Flex,
+  Grid,
+  Inline,
+  Select,
+  Stack,
+  Text,
+  TextInput,
+  Tooltip,
+} from '@sanity/ui'
 import {
   type ChangeEvent,
   type ComponentType,
@@ -92,9 +104,9 @@ export function VisionGuiHeader({
 
   return (
     <Header paddingX={3} paddingY={2}>
-      <Grid columns={[1, 4, 8, 12]}>
+      <Grid gridTemplateColumns={[1, 4, 8, 12]}>
         {/* Dataset selector */}
-        <Box padding={1} column={2}>
+        <Box padding={1} gridColumn={2}>
           <Stack>
             <Card paddingTop={2} paddingBottom={3}>
               <StyledLabel>{t('settings.dataset-label')}</StyledLabel>
@@ -108,7 +120,7 @@ export function VisionGuiHeader({
         </Box>
 
         {/* API version selector */}
-        <Box padding={1} column={2}>
+        <Box padding={1} gridColumn={2}>
           <Stack>
             <Card paddingTop={2} paddingBottom={3}>
               <StyledLabel>{t('settings.api-version-label')}</StyledLabel>
@@ -130,7 +142,7 @@ export function VisionGuiHeader({
 
         {/* Custom API version input */}
         {customApiVersion !== false && (
-          <Box padding={1} column={2}>
+          <Box padding={1} gridColumn={2}>
             <Stack>
               <Card paddingTop={2} paddingBottom={3}>
                 <StyledLabel textOverflow="ellipsis">
@@ -152,10 +164,10 @@ export function VisionGuiHeader({
         )}
 
         {/* Perspective selector */}
-        <Box padding={1} column={2}>
+        <Box padding={1} gridColumn={2}>
           <Stack>
             <Card paddingBottom={1}>
-              <Inline space={1}>
+              <Inline gap={1}>
                 <Box>
                   <StyledLabel>{t('settings.perspective-label')}</StyledLabel>
                 </Box>
@@ -165,6 +177,7 @@ export function VisionGuiHeader({
                 </Box>
               </Inline>
             </Card>
+
             <Select value={perspective || 'default'} onChange={onChangePerspective}>
               {SUPPORTED_PERSPECTIVES.map((perspectiveName) => {
                 if (perspectiveName === 'pinnedRelease') {
@@ -186,7 +199,7 @@ export function VisionGuiHeader({
 
         {/* Query URL (for copying) */}
         {typeof url === 'string' ? (
-          <Box padding={1} flex={1} column={customApiVersion === false ? 6 : 4}>
+          <Box padding={1} flex={1} gridColumn={customApiVersion === false ? 6 : 4}>
             <Stack>
               <Card paddingTop={2} paddingBottom={3}>
                 <StyledLabel>
@@ -200,7 +213,7 @@ export function VisionGuiHeader({
                 <Box flex={1}>
                   <TextInput readOnly type="url" ref={operationUrlElement} value={url} />
                 </Box>
-                <Tooltip content={t('action.copy-url-to-clipboard')}>
+                <Tooltip content={<Text size={1}>{t('action.copy-url-to-clipboard')}</Text>}>
                   <Button
                     aria-label={t('action.copy-url-to-clipboard')}
                     type="button"

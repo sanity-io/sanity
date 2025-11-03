@@ -1,10 +1,11 @@
 import {Box} from '@sanity/ui'
+import {vars} from '@sanity/ui/css'
 import {useEffect, useRef, useState} from 'react'
 import {styled} from 'styled-components'
 
 const Hr = styled.hr<{$show: boolean}>`
   height: 1px;
-  background: var(--card-border-color);
+  background: ${vars.color.border};
   width: 100%;
   opacity: ${({$show}) => ($show ? 1 : 0)};
   transition: opacity 0.3s ease;

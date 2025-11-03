@@ -143,9 +143,9 @@ export function ConfirmScheduledDraftsDialog({
         },
       }}
     >
-      <Stack space={4}>
+      <Stack gap={4}>
         <Box paddingX={4} paddingTop={4}>
-          <Stack space={3}>
+          <Stack gap={3}>
             <Text size={1} muted>
               {t('confirm-active-scheduled-drafts-dialog.description')}
             </Text>

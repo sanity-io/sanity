@@ -1,5 +1,4 @@
-import {type ThemeProps} from '@sanity/ui'
-import {getTheme_v2 as getThemeV2} from '@sanity/ui/theme'
+import {vars} from '@sanity/ui/css'
 import {css, styled} from 'styled-components'
 
 export const SVGContainer = styled.div`
@@ -33,23 +32,20 @@ export interface StyledElementProps {
   $hovered?: boolean
 }
 
-export const getCropStrokeColor = (props: StyledElementProps & ThemeProps): string => {
-  const {color} = getThemeV2(props.theme)
-  if (props.$focused) return color.focusRing
+export const getCropStrokeColor = (props: StyledElementProps): string => {
+  if (props.$focused) return vars.color.focusRing
   if (props.$hovered) return 'rgba(255, 255, 255, 1)'
   return 'rgba(255, 255, 255, .5)'
 }
 
-export const getHotspotStrokeColor = (props: StyledElementProps & ThemeProps): string => {
-  const {color} = getThemeV2(props.theme)
-  if (props.$focused) return color.focusRing
+export const getHotspotStrokeColor = (props: StyledElementProps): string => {
+  if (props.$focused) return vars.color.focusRing
   if (props.$hovered) return 'rgba(255, 255, 255, 1)'
   return 'rgba(255, 255, 255, .5)'
 }
 
-export const getHandleStrokeColor = (props: StyledElementProps & ThemeProps): string => {
-  const {color} = getThemeV2(props.theme)
-  if (props.$focused) return color.focusRing
+export const getHandleStrokeColor = (props: StyledElementProps): string => {
+  if (props.$focused) return vars.color.focusRing
   return '#000'
 }
 
@@ -114,10 +110,9 @@ export const HotspotHandleInteractionArea = styled.circle`
 `
 
 export const Guidelines = styled.g`
-  ${(props) => {
-    const {color} = getThemeV2(props.theme)
+  ${() => {
     return css`
-      stroke: ${color.fg};
+      stroke: ${vars.color.fg};
       stroke-opacity: 0.2;
       stroke-width: 1px;
       stroke-dasharray: 3, 3;

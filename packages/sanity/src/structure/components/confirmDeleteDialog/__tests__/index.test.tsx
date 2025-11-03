@@ -6,7 +6,7 @@ describe('confirmDeleteDialog', () => {
 // // eslint-disable-next-line import/no-unassigned-import
 // import React from 'react'
 // import {render, act} from '@testing-library/react'
-// import {ThemeProvider, ToastProvider, studioTheme} from '@sanity/ui'
+// import {ThemeProvider, ToastProvider, studioTheme} from '@sanity/ui-v3'
 // import type {Subject} from 'rxjs'
 // import documentStore from 'part:@sanity/base/datastore/document'
 // import client from 'part:@sanity/base/client'
@@ -105,17 +105,15 @@ describe('confirmDeleteDialog', () => {
 //     const request$ = client.observable.request({}) as Subject<any>
 
 //     const {findByTestId, queryByTestId, queryByText} = render(
-//       <ThemeProvider theme={studioTheme}>
-//         <ToastProvider>
-//           <ConfirmDeleteDialog
-//             id="example-docment"
-//             onCancel={jest.fn()}
-//             onConfirm={jest.fn()}
-//             type="author"
-//             action="Unpublish"
-//           />
-//         </ToastProvider>
-//       </ThemeProvider>
+//       <Root as="div">
+//         <ConfirmDeleteDialog
+//           id="example-docment"
+//           onCancel={jest.fn()}
+//           onConfirm={jest.fn()}
+//           type="author"
+//           action="Unpublish"
+//         />
+//       </Root>
 //     )
 
 //     // assert the loading container shows up
@@ -162,17 +160,15 @@ describe('confirmDeleteDialog', () => {
 //     })
 
 //     const {findByTestId} = render(
-//       <ThemeProvider theme={studioTheme}>
-//         <ToastProvider>
-//           <ConfirmDeleteDialog
-//             id="example-docment"
-//             onCancel={jest.fn()}
-//             onConfirm={jest.fn()}
-//             type="author"
-//             action="Unpublish"
-//           />
-//         </ToastProvider>
-//       </ThemeProvider>
+//       <Root as="div">
+//         <ConfirmDeleteDialog
+//           id="example-docment"
+//           onCancel={jest.fn()}
+//           onConfirm={jest.fn()}
+//           type="author"
+//           action="Unpublish"
+//         />
+//       </Root>
 //     )
 
 //     act(() => {

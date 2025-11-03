@@ -62,7 +62,7 @@ export function DetailPreview(props: DetailPreviewProps) {
           {media && <MediaSkeleton data-testid="detail-preview__media" />}
 
           <Flex align="center" data-testid="detail-preview__header" flex={1}>
-            <Stack flex={1} space={2}>
+            <Stack flex={1} gap={2}>
               <TitleSkeleton />
               <SubtitleSkeleton />
               {description && (
@@ -90,7 +90,7 @@ export function DetailPreview(props: DetailPreviewProps) {
         {media && <Media dimensions={mediaDimensions} layout="detail" media={media as any} />}
 
         <Flex align="center" data-testid="detail-preview__header" flex={1}>
-          <Stack flex={1} space={2}>
+          <Stack flex={1} gap={2}>
             <Text textOverflow="ellipsis" size={1} style={{color: 'inherit'}} weight="medium">
               {title && renderPreviewNode(title, 'detail')}
               {!title && <>{t('preview.default.title-fallback')}</>}

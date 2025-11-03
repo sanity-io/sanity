@@ -1,19 +1,19 @@
 /* eslint-disable no-restricted-imports */
 import {
   Box,
-  type BoxHeight,
   Button as UIButton,
   Dialog as UIDialog,
   type DialogProps as UIDialogProps,
   Flex,
   Text,
 } from '@sanity/ui'
+import {type Height} from '@sanity/ui/css'
 import {type ComponentProps, forwardRef, type HTMLProps, type ReactNode, type Ref} from 'react'
 import {useTranslation} from 'react-i18next'
 
 /** @internal */
 export type DialogProps = Pick<
-  UIDialogProps,
+  UIDialogProps<'div'>,
   | '__unstable_autoFocus'
   | '__unstable_hideCloseButton'
   | 'contentRef'
@@ -25,6 +25,7 @@ export type DialogProps = Pick<
   | 'portal'
   | 'position'
   | 'scheme'
+  | 'tone'
   | 'width'
 > & {
   /**
@@ -32,7 +33,7 @@ export type DialogProps = Pick<
    * Set this to 'fill' (i.e. 100%) if you want overflow body content to be contained
    * and not trigger dynamic border visibility.
    */
-  bodyHeight?: BoxHeight
+  bodyHeight?: Height
   children?: ReactNode
   zOffset?: number
   footer?: {
@@ -75,7 +76,7 @@ export const Dialog = forwardRef(function Dialog(
       ref={ref}
       footer={
         (footer?.confirmButton || footer?.cancelButton) && (
-          <Flex width="full" gap={3} justify="flex-end" padding={3} align="center">
+          <Flex width="fill" gap={3} justify="flex-end" padding={3} align="center">
             {footer?.description && (
               <Box flex={1} paddingLeft={1}>
                 <Text size={1} muted>

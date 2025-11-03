@@ -92,7 +92,7 @@ export function DiscardVersionDialog(props: {
         },
       }}
     >
-      <Stack space={3} paddingX={3} marginBottom={2}>
+      <Stack gap={3} paddingX={3} marginBottom={2}>
         {schemaType ? (
           <Preview
             value={{_id: documentId}}

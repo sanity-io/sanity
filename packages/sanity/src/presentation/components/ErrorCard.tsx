@@ -33,8 +33,8 @@ export function ErrorCard(
     <Card height="fill" {...restProps}>
       <Flex align="center" height="fill" justify="center">
         <Container padding={4} sizing="border" width={0}>
-          <Stack space={4}>
-            <Stack space={3}>
+          <Stack gap={4}>
+            <Stack gap={3}>
               <Text size={1} weight="semibold">
                 {t('error-card.title')}
               </Text>
@@ -46,7 +46,7 @@ export function ErrorCard(
             {children}
 
             {onRetry && onContinueAnyway ? (
-              <Inline space={2}>
+              <Inline gap={2}>
                 {retryButton}
                 {continueAnywayButton}
               </Inline>

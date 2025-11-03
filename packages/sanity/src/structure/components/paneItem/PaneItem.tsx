@@ -155,7 +155,6 @@ export function PaneItem(props: PaneItemProps) {
       data-testid={`pane-item-${title}`}
       __unstable_focusRing
       as={ChildLink as FIXME}
-      // @ts-expect-error - `childId` is a valid prop on `ChildLink`
       childId={id}
       data-as="a"
       margin={margin}

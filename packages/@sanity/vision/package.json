@@ -63,7 +63,6 @@
     "@lezer/highlight": "^1.2.1",
     "@rexxars/react-json-inspector": "^9.0.1",
     "@rexxars/react-split-pane": "^1.0.0",
-    "@sanity/color": "^3.0.6",
     "@sanity/icons": "^3.7.4",
     "@sanity/ui": "catalog:",
     "@sanity/uuid": "^3.0.2",
@@ -103,7 +102,7 @@
     "vitest": "catalog:"
   },
   "peerDependencies": {
-    "react": "^18 || ^19.0.0",
+    "react": "^19",
     "styled-components": "^6.1.15"
   }
 }

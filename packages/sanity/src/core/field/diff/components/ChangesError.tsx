@@ -11,7 +11,7 @@ export function ChangesError({error}: {error?: Error | null}) {
   const revisionNotFoundError = error instanceof MissingSinceDocumentError
   return (
     <Card tone="caution" padding={3}>
-      <Stack space={3}>
+      <Stack gap={3}>
         <Text size={1} weight="medium" as="h3">
           {t('changes.error-title')}
         </Text>

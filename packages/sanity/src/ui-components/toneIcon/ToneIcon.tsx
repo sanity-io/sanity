@@ -1,22 +1,18 @@
-import {type ThemeColorStateToneKey} from '@sanity/ui/theme'
-import {type CSSProperties} from 'react'
-
-type Tone = ThemeColorStateToneKey
+import {getVarName, vars} from '@sanity/ui/css'
+import {type ElementTone} from '@sanity/ui/theme'
 
 export const ToneIcon = ({
   tone,
   icon: Icon,
 }: {
-  tone: Tone
+  tone: ElementTone
   icon: React.FC<React.SVGProps<SVGSVGElement>>
 }) => {
   return (
     <Icon
-      style={
-        {
-          '--card-icon-color': `var(--card-badge-${tone}-icon-color)`,
-        } as CSSProperties
-      }
+      style={{
+        [getVarName(vars.color.muted.fg)]: vars.color.tinted[tone].fg[4],
+      }}
     />
   )
 }

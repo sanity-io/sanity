@@ -56,7 +56,6 @@ export function OpenPreviewButton(
         rel="opener"
         target="_blank"
         tooltipProps={null}
-        // @ts-expect-error the `as="a"` prop isn't enough to change the type of event.target from <div> to <a>
         onClick={handleOpenPopup}
       />
     </Tooltip>
