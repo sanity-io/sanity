@@ -17,7 +17,6 @@ export const usEnglishLocale = defineLocale({
   weekInfo: {
     firstDay: 7, // Sunday
     weekend: [6, 7], // Saturday, Sunday
-    minimalDays: 1,
   },
 })
 
