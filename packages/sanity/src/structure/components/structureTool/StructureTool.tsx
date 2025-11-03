@@ -2,13 +2,13 @@ import {PortalProvider, useTheme, useToast} from '@sanity/ui'
 import {isHotkey} from 'is-hotkey-esm'
 import {Fragment, memo, useCallback, useEffect, useRef, useState} from 'react'
 import {_isCustomDocumentTypeDefinition, useSchema} from 'sanity'
-import {useRouterState} from 'sanity/router'
+import {useRouter, useRouterState} from 'sanity/router'
 import {styled} from 'styled-components'
 
 import {LOADING_PANE} from '../../constants'
 import {LoadingPane, StructureToolPane} from '../../panes'
 import {ResolvedPanesProvider, useResolvedPanes} from '../../structureResolvers'
-import {type PaneNode} from '../../types'
+import {type PaneNode, type RouterPanes} from '../../types'
 import {useStructureTool} from '../../useStructureTool'
 import {PaneLayout} from '../pane'
 import {NoDocumentTypesScreen} from './NoDocumentTypesScreen'
@@ -31,6 +31,8 @@ const isSaveHotkey = isHotkey('mod+s')
 export const StructureTool = memo(function StructureTool({onPaneChange}: StructureToolProps) {
   const {push: pushToast} = useToast()
   const schema = useSchema()
+  const {navigate} = useRouter()
+  const routerState = useRouterState()
   const {layoutCollapsed, setLayoutCollapsed} = useStructureTool()
   const resolvedPanesValue = useResolvedPanes()
   const {paneDataItems, resolvedPanes, setFocusedPane, focusedPane} = resolvedPanesValue
@@ -38,7 +40,7 @@ export const StructureTool = memo(function StructureTool({onPaneChange}: Structu
   // We handle that here, so if there are only 1 pane (the root structure), and there's an intent state in the router, we need to show a placeholder LoadingPane until
   // the structure is resolved and we know what panes to load/display
   const isResolvingIntent = useRouterState(
-    useCallback((routerState) => typeof routerState.intent === 'string', []),
+    useCallback((state) => typeof state.intent === 'string', []),
   )
   const {
     sanity: {media},
@@ -82,14 +84,20 @@ export const StructureTool = memo(function StructureTool({onPaneChange}: Structu
 
   const onSetFocusedPane = useCallback(
     (paneData: (typeof paneDataItems)[number] | null) => {
-      if (paneData?.focused) {
-        setFocusedPane(null)
-        return
-      }
+      if (!paneData) return
 
+      const currentPanes = (routerState?.panes || []) as RouterPanes
+
+      // Navigate to this pane, closing all panes after it
+      // groupIndex 0 (root) is not in router, so router index = groupIndex - 1
+      // We keep all router panes up to and including this one
+      const slicedPanes = currentPanes.slice(0, paneData.groupIndex)
       setFocusedPane(paneData)
+      navigate({
+        panes: slicedPanes,
+      })
     },
-    [setFocusedPane],
+    [navigate, routerState, setFocusedPane],
   )
 
   const previousSelectedIndexRef = useRef(-1)
