@@ -51,6 +51,17 @@ export const StructureTool = memo(function StructureTool({onPaneChange}: Structu
   const handleRootCollapse = useCallback(() => setLayoutCollapsed(true), [setLayoutCollapsed])
   const handleRootExpand = useCallback(() => setLayoutCollapsed(false), [setLayoutCollapsed])
 
+  // When a pane is focused, show only from that pane up to and including its group
+  // It's important to use the last index as there might be panes that have the same document (so ids and such)
+  // But the structure should be kept
+  const focusedLastIndex = paneDataItems.findLastIndex((pane) => pane.focused)
+  const paneItemsToShow =
+    focusedLastIndex === -1
+      ? paneDataItems
+      : paneDataItems
+          .slice(focusedLastIndex)
+          .filter((pane) => pane.groupIndex <= paneDataItems[focusedLastIndex].groupIndex)
+
   useEffect(() => {
     // we check for length before emitting here to skip the initial empty array
     // state from the `useResolvedPanes` hook. there should always be a root
@@ -140,19 +151,6 @@ export const StructureTool = memo(function StructureTool({onPaneChange}: Structu
     return <NoDocumentTypesScreen />
   }
 
-  const focusedIndex = paneDataItems.findLastIndex((paneData) => paneData.focused)
-
-  // When a pane is focused, show from that pane onward, but limit to only show
-  // up to and including the focused pane (hide subsequent panes)
-  let filteredOnlyDocs = paneDataItems
-  if (focusedIndex !== -1) {
-    const focusedPaneData = paneDataItems[focusedIndex]
-    // Show panes from the focused index, but only up to the focused pane's groupIndex + 1
-    filteredOnlyDocs = paneDataItems
-      .slice(focusedIndex)
-      .filter((pane) => pane.groupIndex <= focusedPaneData.groupIndex)
-  }
-
   return (
     <ResolvedPanesProvider value={resolvedPanesValue}>
       <PortalProvider element={portalElement || null}>
@@ -163,7 +161,7 @@ export const StructureTool = memo(function StructureTool({onPaneChange}: Structu
           onCollapse={handleRootCollapse}
           onExpand={handleRootExpand}
         >
-          {filteredOnlyDocs.map((paneData) => {
+          {paneItemsToShow.map((paneData) => {
             const {
               active,
               childItemId,
