@@ -4,6 +4,7 @@ import {
   type ClientPerspective,
   type ListenEvent,
   type MutationEvent,
+  type ReleaseDocument,
   type StackablePerspective,
 } from '@sanity/client'
 import {ChevronLeftIcon, ChevronRightIcon} from '@sanity/icons'
@@ -176,10 +177,10 @@ export function VisionGui(props: VisionGuiProps) {
     if (!isScheduledDraftsEnabled) return undefined
 
     const scheduledDraftReleases = releases.filter(
-      (release) => isCardinalityOneRelease(release) && release.state === 'scheduled',
+      (release: ReleaseDocument) => isCardinalityOneRelease(release) && release.state === 'scheduled',
     )
     const sorted = sortReleases(scheduledDraftReleases)
-    const releaseIds = sorted.map((release) => getReleaseIdFromReleaseDocumentId(release._id))
+    const releaseIds = sorted.map((release: ReleaseDocument) => getReleaseIdFromReleaseDocumentId(release._id))
     const defaultPerspective = isDraftModelEnabled ? ['drafts'] : ['published']
     return [...releaseIds, ...defaultPerspective] as PerspectiveStack
   }, [releases, isDraftModelEnabled, isScheduledDraftsEnabled])
