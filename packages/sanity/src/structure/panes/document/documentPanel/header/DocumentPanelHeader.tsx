@@ -200,17 +200,6 @@ export const DocumentPanelHeader = memo(
             </>
           )}
 
-          {onSetFocusedPane && (
-            <Button
-              key="focus-pane-button"
-              aria-label={t('buttons.focus-pane-button.aria-label')}
-              icon={isFocusedPane ? CollapseIcon : ExpandIcon}
-              mode="bleed"
-              onClick={onSetFocusedPane}
-              tooltipProps={{content: t('buttons.focus-pane-button.tooltip')}}
-            />
-          )}
-
           {menuButtonNodes.map((item) => (
             <PaneHeaderActionButton key={item.key} node={item} />
           ))}
@@ -242,6 +231,17 @@ export const DocumentPanelHeader = memo(
               mode="bleed"
               onClick={onPaneClose}
               tooltipProps={{content: t('buttons.split-pane-close-button.title')}}
+            />
+          )}
+
+          {onSetFocusedPane && (
+            <Button
+              key="focus-pane-button"
+              aria-label={t('buttons.focus-pane-button.aria-label')}
+              icon={isFocusedPane ? CollapseIcon : ExpandIcon}
+              mode="bleed"
+              onClick={onSetFocusedPane}
+              tooltipProps={{content: t('buttons.focus-pane-button.tooltip')}}
             />
           )}
 
