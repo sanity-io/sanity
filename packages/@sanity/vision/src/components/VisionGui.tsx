@@ -177,10 +177,13 @@ export function VisionGui(props: VisionGuiProps) {
     if (!isScheduledDraftsEnabled) return undefined
 
     const scheduledDraftReleases = releases.filter(
-      (release: ReleaseDocument) => isCardinalityOneRelease(release) && release.state === 'scheduled',
+      (release: ReleaseDocument) =>
+        isCardinalityOneRelease(release) && release.state === 'scheduled',
     )
     const sorted = sortReleases(scheduledDraftReleases)
-    const releaseIds = sorted.map((release: ReleaseDocument) => getReleaseIdFromReleaseDocumentId(release._id))
+    const releaseIds = sorted.map((release: ReleaseDocument) =>
+      getReleaseIdFromReleaseDocumentId(release._id),
+    )
     const defaultPerspective = isDraftModelEnabled ? ['drafts'] : ['published']
     return [...releaseIds, ...defaultPerspective] as PerspectiveStack
   }, [releases, isDraftModelEnabled, isScheduledDraftsEnabled])
@@ -244,7 +247,8 @@ export function VisionGui(props: VisionGuiProps) {
         dataset: options?.dataset || dataset,
         params: parseParams(JSON.stringify(options?.params || params.parsed, null, 2), t),
         perspective: getActivePerspective({
-          visionPerspective: options && 'perspective' in options ? options.perspective : perspective,
+          visionPerspective:
+            options && 'perspective' in options ? options.perspective : perspective,
           perspectiveStack,
           scheduledDraftsStack,
         }),
