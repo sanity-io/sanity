@@ -1,4 +1,4 @@
 export * from './PaneResolutionError'
-export * from './ResolvedPanesContext'
+export {ResolvedPanesProvider} from './ResolvedPanesContext'
 export * from './resolveIntent'
 export * from './useResolvedPanes'

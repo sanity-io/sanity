@@ -15,7 +15,8 @@ import {useRouter, useRouterState} from 'sanity/router'
 import {Button} from '../../../../../ui-components'
 import {LOADING_PANE} from '../../../../constants'
 import {structureLocaleNamespace} from '../../../../i18n'
-import {type Panes, useResolvedPanesContext} from '../../../../structureResolvers'
+import {type Panes} from '../../../../structureResolvers'
+import {useResolvedPanesList} from '../../../../structureResolvers/useResolvedPanesList'
 import {type RouterPanes} from '../../../../types'
 import {useDocumentPane} from '../../useDocumentPane'
 import {useDocumentTitle} from '../../useDocumentTitle'
@@ -86,7 +87,7 @@ export function DocumentHeaderTitle(): React.JSX.Element {
     displayed,
     index,
   } = useDocumentPane()
-  const {paneDataItems} = useResolvedPanesContext()
+  const {paneDataItems} = useResolvedPanesList()
   const {title: documentTitle, error} = useDocumentTitle()
   const router = useRouter()
   const routerState = useRouterState()

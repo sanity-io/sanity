@@ -27,7 +27,7 @@ import {
 import {type _PaneMenuNode} from '../../../../components/pane/types'
 import {structureLocaleNamespace} from '../../../../i18n'
 import {isMenuNodeButton, isNotMenuNodeButton, resolveMenuNodes} from '../../../../menuNodes'
-import {useResolvedPanesContext} from '../../../../structureResolvers/ResolvedPanesContext'
+import {useResolvedPanesList} from '../../../../structureResolvers/useResolvedPanesList'
 import {type PaneMenuItem} from '../../../../types'
 import {useStructureTool} from '../../../../useStructureTool'
 import {ActionDialogWrapper, ActionMenuListItem} from '../../statusBar/ActionMenuButton'
@@ -97,7 +97,7 @@ export const DocumentPanelHeader = memo(
     } = useDocumentPane()
     const {features} = useStructureTool()
     const {index, BackLink, hasGroupSiblings} = usePaneRouter()
-    const {focusedPane} = useResolvedPanesContext()
+    const {focusedPane} = useResolvedPanesList()
     const {actions: fieldActions} = useFieldActions()
     const [referenceElement, setReferenceElement] = useState<HTMLElement | null>(null)
     const scrollContainerRef = useRef<HTMLDivElement>(null)
