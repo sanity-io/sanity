@@ -88,14 +88,19 @@ export const StructureTool = memo(function StructureTool({onPaneChange}: Structu
 
       const currentPanes = (routerState?.panes || []) as RouterPanes
 
-      // Navigate to this pane, closing all panes after it
-      // groupIndex 0 (root) is not in router, so router index = groupIndex - 1
-      // We keep all router panes up to and including this one
-      const slicedPanes = currentPanes.slice(0, paneData.groupIndex)
-      setFocusedPane(paneData)
-      navigate({
-        panes: slicedPanes,
-      })
+      if (paneData.focused) {
+        setFocusedPane(null)
+        navigate({
+          panes: currentPanes,
+        })
+      } else {
+        // Navigate to this pane, closing all panes after it
+        const slicedPanes = currentPanes.slice(0, paneData.groupIndex)
+        setFocusedPane(paneData)
+        navigate({
+          panes: slicedPanes,
+        })
+      }
     },
     [navigate, routerState, setFocusedPane],
   )
