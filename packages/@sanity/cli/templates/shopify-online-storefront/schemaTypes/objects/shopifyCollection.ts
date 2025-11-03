@@ -43,13 +43,6 @@ export default defineType({
       title: 'Title',
       type: 'string',
     }),
-    // Shop Domain
-    defineField({
-      name: 'shopDomain',
-      title: 'Shop Domain',
-      type: 'string',
-      description: 'Shopify Shop Domain',
-    }),
     // Collection ID
     defineField({
       name: 'id',
@@ -104,6 +97,13 @@ export default defineType({
       name: 'sortOrder',
       title: 'Sort order',
       type: 'string',
+    }),
+    // Shop details
+    defineField({
+      name: 'shop',
+      title: 'Shop',
+      type: 'shop',
+      description: 'Shopify Shop details',
     }),
   ],
 })

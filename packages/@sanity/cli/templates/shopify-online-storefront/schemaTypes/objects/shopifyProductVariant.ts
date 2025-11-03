@@ -67,13 +67,6 @@ export default defineType({
       title: 'SKU',
       type: 'string',
     }),
-    // Shop Domain
-    defineField({
-      name: 'shopDomain',
-      title: 'Shop Domain',
-      type: 'string',
-      description: 'Shopify Shop Domain',
-    }),
     // ID
     defineField({
       name: 'id',
@@ -145,6 +138,13 @@ export default defineType({
       title: 'Preview Image URL',
       type: 'string',
       description: 'Image displayed in both cart and checkout',
+    }),
+    // Shop details
+    defineField({
+      name: 'shop',
+      title: 'Shop',
+      type: 'shop',
+      description: 'Shopify Shop details',
     }),
   ],
   readOnly: true,
