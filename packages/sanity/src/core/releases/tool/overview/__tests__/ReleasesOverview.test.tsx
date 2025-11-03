@@ -137,6 +137,11 @@ vi.mock('../../../contexts/upsell/useReleasesUpsell', () => ({
   useReleasesUpsell: () => mockUseReleasesUpsell(),
 }))
 
+const mockUseSingleDocReleaseUpsell = vi.fn()
+vi.mock('../../../../singleDocRelease/context/SingleDocReleaseUpsellProvider', () => ({
+  useSingleDocReleaseUpsell: () => mockUseSingleDocReleaseUpsell(),
+}))
+
 vi.mock('../hooks/useReleaseCreator')
 
 vi.mock('../../../store/useReleaseOperations', () => ({
@@ -198,6 +203,16 @@ describe('ReleasesOverview', () => {
       enabled: true,
       mode: 'default',
     })
+
+    mockUseSingleDocReleaseUpsell.mockImplementation(() => ({
+      upsellData: null,
+      telemetryLogs: {
+        panelViewed: vi.fn(),
+        panelDismissed: vi.fn(),
+        panelPrimaryClicked: vi.fn(),
+        panelSecondaryClicked: vi.fn(),
+      },
+    }))
   })
 
   setupVirtualListEnv()
@@ -1196,7 +1211,7 @@ describe('ReleasesOverview', () => {
 
         it('should show empty list state', () => {
           expect(screen.getByTestId('no-releases-info-text')).toBeInTheDocument()
-          expect(screen.queryByTestId('release-illustration')).not.toBeInTheDocument()
+          expect(screen.getByTestId('release-illustration')).toBeInTheDocument()
           expect(screen.queryByRole('table')).not.toBeInTheDocument()
         })
       })
@@ -1211,6 +1226,15 @@ describe('ReleasesOverview', () => {
             enabled: true,
             mode: 'upsell',
           })
+          mockUseSingleDocReleaseUpsell.mockImplementation(() => ({
+            upsellData: mockUpsellData,
+            telemetryLogs: {
+              panelViewed: vi.fn(),
+              panelDismissed: vi.fn(),
+              panelPrimaryClicked: vi.fn(),
+              panelSecondaryClicked: vi.fn(),
+            },
+          }))
 
           const wrapper = await createTestProvider({
             resources: [releasesUsEnglishLocaleBundle],
@@ -1243,7 +1267,7 @@ describe('ReleasesOverview', () => {
 
         it('should show empty list state', () => {
           expect(screen.getByTestId('no-releases-info-text')).toBeInTheDocument()
-          expect(screen.queryByTestId('release-illustration')).not.toBeInTheDocument()
+          expect(screen.getByTestId('release-illustration')).toBeInTheDocument()
           expect(screen.queryByRole('table')).not.toBeInTheDocument()
         })
       })
