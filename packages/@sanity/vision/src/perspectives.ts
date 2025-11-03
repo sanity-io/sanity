@@ -1,8 +1,14 @@
 import {type ClientPerspective} from '@sanity/client'
 import isEqual from 'react-fast-compare'
-import {type PerspectiveContextValue} from 'sanity'
+import {type PerspectiveContextValue, type PerspectiveStack} from 'sanity'
 
-export const SUPPORTED_PERSPECTIVES = ['pinnedRelease', 'raw', 'published', 'drafts'] as const
+export const SUPPORTED_PERSPECTIVES = [
+  'pinnedRelease',
+  'scheduledDrafts',
+  'raw',
+  'published',
+  'drafts',
+] as const
 
 export type SupportedPerspective = (typeof SUPPORTED_PERSPECTIVES)[number]
 
@@ -12,9 +18,10 @@ export type SupportedPerspective = (typeof SUPPORTED_PERSPECTIVES)[number]
  * interact with data.
  *
  * For example, the `pinnedRelease` virtual perspective is transformed to the real perspective
- * currently pinned in Studio.
+ * currently pinned in Studio, and `scheduledDrafts` is transformed to a stack of all scheduled
+ * draft release IDs.
  */
-export const VIRTUAL_PERSPECTIVES = ['pinnedRelease'] as const
+export const VIRTUAL_PERSPECTIVES = ['pinnedRelease', 'scheduledDrafts'] as const
 
 export type VirtualPerspective = (typeof VIRTUAL_PERSPECTIVES)[number]
 
@@ -49,12 +56,17 @@ export function hasPinnedPerspectiveChanged(
 export function getActivePerspective({
   visionPerspective,
   perspectiveStack,
+  scheduledDraftsStack,
 }: {
   visionPerspective: ClientPerspective | SupportedPerspective | undefined
   perspectiveStack: PerspectiveContextValue['perspectiveStack']
+  scheduledDraftsStack?: PerspectiveStack
 }): ClientPerspective | undefined {
-  if (visionPerspective !== 'pinnedRelease') {
-    return visionPerspective
+  if (visionPerspective === 'pinnedRelease') {
+    return perspectiveStack
   }
-  return perspectiveStack
+  if (visionPerspective === 'scheduledDrafts') {
+    return scheduledDraftsStack
+  }
+  return visionPerspective
 }

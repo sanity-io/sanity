@@ -10,7 +10,18 @@ import {ChevronLeftIcon, ChevronRightIcon} from '@sanity/icons'
 import {Box, Button, Flex, useToast} from '@sanity/ui'
 import {isHotkey} from 'is-hotkey-esm'
 import {type ChangeEvent, useCallback, useEffect, useMemo, useRef, useState} from 'react'
-import {useClient, usePerspective, useTranslation} from 'sanity'
+import {
+  getReleaseIdFromReleaseDocumentId,
+  isCardinalityOneRelease,
+  type PerspectiveStack,
+  sortReleases,
+  useActiveReleases,
+  useClient,
+  usePerspective,
+  useScheduledDraftsEnabled,
+  useTranslation,
+  useWorkspace,
+} from 'sanity'
 import {useEffectEvent} from 'use-effect-event'
 
 import {API_VERSIONS, DEFAULT_API_VERSION} from '../apiVersions'
@@ -97,6 +108,10 @@ export function VisionGui(props: VisionGuiProps) {
   const toast = useToast()
   const {t} = useTranslation(visionLocaleNamespace)
   const {perspectiveStack} = usePerspective()
+  const isScheduledDraftsEnabled = useScheduledDraftsEnabled()
+  const {data: releases = []} = useActiveReleases()
+  const workspace = useWorkspace()
+  const isDraftModelEnabled = workspace.document.drafts.enabled
 
   const editorQueryRef = useRef<VisionCodeMirrorHandle>(null)
   const editorParamsRef = useRef<VisionCodeMirrorHandle>(null)
@@ -156,6 +171,19 @@ export function VisionGui(props: VisionGuiProps) {
 
   const {paneSizeOptions, isNarrowBreakpoint} = usePaneSize({visionRootRef})
 
+  // Compute scheduled drafts perspective stack
+  const scheduledDraftsStack = useMemo((): PerspectiveStack | undefined => {
+    if (!isScheduledDraftsEnabled) return undefined
+
+    const scheduledDraftReleases = releases.filter(
+      (release) => isCardinalityOneRelease(release) && release.state === 'scheduled',
+    )
+    const sorted = sortReleases(scheduledDraftReleases)
+    const releaseIds = sorted.map((release) => getReleaseIdFromReleaseDocumentId(release._id))
+    const defaultPerspective = isDraftModelEnabled ? ['drafts'] : ['published']
+    return [...releaseIds, ...defaultPerspective] as PerspectiveStack
+  }, [releases, isDraftModelEnabled, isScheduledDraftsEnabled])
+
   // Client  with memoized initial value
   const _client = useClient({
     apiVersion: isValidApiVersion && customApiVersion ? customApiVersion : apiVersion,
@@ -163,12 +191,17 @@ export function VisionGui(props: VisionGuiProps) {
   const client = useMemo(() => {
     return _client.withConfig({
       apiVersion: isValidApiVersion && customApiVersion ? customApiVersion : apiVersion,
-      perspective: getActivePerspective({visionPerspective: perspective, perspectiveStack}),
+      perspective: getActivePerspective({
+        visionPerspective: perspective,
+        perspectiveStack,
+        scheduledDraftsStack,
+      }),
       dataset,
       allowReconfigure: true,
     })
   }, [
     perspectiveStack,
+    scheduledDraftsStack,
     perspective,
     customApiVersion,
     apiVersion,
@@ -212,6 +245,7 @@ export function VisionGui(props: VisionGuiProps) {
         perspective: getActivePerspective({
           visionPerspective: options?.perspective || perspective,
           perspectiveStack,
+          scheduledDraftsStack,
         }),
         apiVersion:
           options?.apiVersion ||
@@ -279,6 +313,7 @@ export function VisionGui(props: VisionGuiProps) {
       t,
       perspective,
       perspectiveStack,
+      scheduledDraftsStack,
       customApiVersion,
       isValidApiVersion,
       apiVersion,
@@ -575,13 +610,18 @@ export function VisionGui(props: VisionGuiProps) {
   const generateUrl = useCallback(
     (queryString: string, queryParams: Record<string, unknown>) => {
       const urlQueryOpts: Record<string, string | string[]> = {
-        perspective: getActivePerspective({visionPerspective: perspective, perspectiveStack}) ?? [],
+        perspective:
+          getActivePerspective({
+            visionPerspective: perspective,
+            perspectiveStack,
+            scheduledDraftsStack,
+          }) ?? [],
       }
       return client.getUrl(
         client.getDataUrl('query', encodeQueryString(queryString, queryParams, urlQueryOpts)),
       )
     },
-    [client, perspective, perspectiveStack],
+    [client, perspective, perspectiveStack, scheduledDraftsStack],
   )
 
   return (
@@ -606,6 +646,7 @@ export function VisionGui(props: VisionGuiProps) {
         onChangePerspective={handleChangePerspective}
         url={url}
         perspective={perspective}
+        isScheduledDraftsEnabled={isScheduledDraftsEnabled}
       />
 
       <SplitpaneContainer flex="auto">

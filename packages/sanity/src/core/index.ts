@@ -47,6 +47,7 @@ export {
   ReleaseAvatar,
   RELEASES_INTENT,
   RELEASES_STUDIO_CLIENT_OPTIONS,
+  sortReleases,
   useActiveReleases,
   useArchivedReleases,
   useDocumentVersionInfo,
@@ -69,6 +70,7 @@ export {
 export {createSchema, getSchemaTypeTitle} from './schema'
 export type {SearchFactoryOptions, SearchOptions, SearchSort, SearchTerms} from './search'
 export {createSearch, getSearchableTypes, isPerspectiveRaw} from './search'
+export {useScheduledDraftsEnabled} from './singleDocRelease'
 export * from './store'
 export * from './studio'
 export {DEFAULT_STUDIO_CLIENT_OPTIONS} from './studioClient'
