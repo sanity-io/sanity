@@ -1296,6 +1296,8 @@ export const studioLocaleStrings = defineLocalesResources('studio', {
   'release.action.add-to-new-release': 'Add to release',
   /** Action message to add document to release */
   'release.action.add-to-release': 'Add to {{title}}',
+  /** Tooltip message for document that is already added to release */
+  'release.action.already-exists-in-release': 'Document already exists in release',
   /** Action message for when document is already in release  */
   'release.action.already-in-release': 'Already in release {{title}}',
   /** Action message for when you click to view all versions you can copy the current document to */
