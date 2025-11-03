@@ -1,4 +1,3 @@
-/* eslint-disable no-sync, no-console, id-length */
 import fs from 'node:fs'
 import path, {dirname} from 'node:path'
 import {fileURLToPath} from 'node:url'
@@ -147,7 +146,7 @@ fixablePackages.forEach((pkg) => {
 
   let manifest: {dependencies: Record<string, string>; devDependencies: Record<string, string>}
   try {
-    // eslint-disable-next-line import/no-dynamic-require
+    // eslint-disable-next-line @typescript-eslint/no-require-imports
     manifest = require(manifestPath)
   } catch (err) {
     return

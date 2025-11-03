@@ -30,5 +30,9 @@
     "sanity-plugin-mux-input": "^2.9.1",
     "sanity-test-studio": "workspace:*",
     "styled-components": "catalog:"
+  },
+  "devDependencies": {
+    "@repo/eslint-config": "workspace:*",
+    "eslint": "catalog:"
   }
 }

@@ -1,4 +1,4 @@
-import {dirname, resolve} from 'node:path'
+import {dirname} from 'node:path'
 import {fileURLToPath} from 'node:url'
 
 import baseConfig from '@repo/eslint-config'
@@ -9,7 +9,6 @@ import globals from 'globals'
 
 const __filename = fileURLToPath(import.meta.url)
 const __dirname = dirname(__filename)
-const ROOT_PATH = resolve(__dirname, '../..')
 
 // @TODO these could be moved to oxlint, it's just that oxlint doesn't support merging individual rules atm so doing it there would create a lot of rules duplication
 const noRestrictedImportPaths = [
@@ -60,7 +59,6 @@ export default defineConfig([
     name: 'sanity/overrides',
     rules: {
       '@typescript-eslint/no-require-imports': 'off',
-      'import/no-extraneous-dependencies': ['error', {packageDir: [ROOT_PATH, __dirname]}],
       'i18next/no-literal-string': ['error'],
       '@sanity/i18n/no-attribute-string-literals': [
         'error',
@@ -172,7 +170,6 @@ export default defineConfig([
     rules: {
       ...boundaries.configs.recommended.rules,
       '@typescript-eslint/no-require-imports': 'off',
-      'import/no-extraneous-dependencies': ['error', {packageDir: [ROOT_PATH, __dirname]}],
       'i18next/no-literal-string': ['error'],
       '@sanity/i18n/no-attribute-string-literals': [
         'error',
@@ -426,14 +423,27 @@ export default defineConfig([
   {
     files: ['src/core/form/studio/**/*'],
     rules: {
-      'import/no-extraneous-dependencies': 'off',
       'import/no-unresolved': 'off',
     },
   },
   {
-    files: ['src/structure/**/*', 'src/presentation/**/*'],
+    files: [
+      'src/_internal/**/*',
+      'src/desk/**/*',
+      'src/media-library/**/*',
+      'src/presentation/**/*',
+      'src/structure/**/*',
+      'test/**/*',
+      'playwright-ct/**/*',
+    ],
     rules: {
-      'import/no-extraneous-dependencies': 'off',
+      'import/no-extraneous-dependencies': [
+        'error',
+        {
+          includeTypes: true,
+          packageDir: [__dirname, `${__dirname}/.eslint_no_extraneous_dependencies_workaround`],
+        },
+      ],
     },
   },
   // An issue with the vitest suite prevented this file from changing the 'react-i18next' import to 'sanity'.

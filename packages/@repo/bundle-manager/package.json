@@ -43,7 +43,8 @@
     "@repo/tsconfig": "workspace:*",
     "@repo/utils": "workspace:*",
     "@types/lodash-es": "^4.17.12",
-    "vitest": "^3.2.4"
+    "eslint": "catalog:",
+    "vitest": "catalog:"
   },
   "engines": {
     "node": ">=20.19 <22 || >=22.12"
