@@ -81,7 +81,7 @@ export interface Params {
 interface QueryExecutionOptions {
   apiVersion?: string
   dataset?: string
-  perspective?: SupportedPerspective
+  perspective?: SupportedPerspective | undefined
   query?: string
   params?: Record<string, unknown>
 }
@@ -99,7 +99,7 @@ export interface ParsedUrlState {
   dataset: string
   apiVersion: string
   customApiVersion: string | false | undefined
-  perspective: SupportedPerspective
+  perspective: SupportedPerspective | undefined
   url: string
 }
 
@@ -149,7 +149,7 @@ export function VisionGui(props: VisionGuiProps) {
   const [customApiVersion, setCustomApiVersion] = useState<string | false>(() =>
     API_VERSIONS.includes(storedApiVersion) ? false : storedApiVersion,
   )
-  const [perspective, setPerspectiveState] = useState<SupportedPerspective>(
+  const [perspective, setPerspectiveState] = useState<SupportedPerspective | undefined>(
     storedPerspective || 'raw',
   )
   const isValidApiVersion = customApiVersion ? validateApiVersion(customApiVersion) : true
@@ -243,7 +243,7 @@ export function VisionGui(props: VisionGuiProps) {
         dataset: options?.dataset || dataset,
         params: parseParams(JSON.stringify(options?.params || params.parsed, null, 2), t),
         perspective: getActivePerspective({
-          visionPerspective: options?.perspective || perspective,
+          visionPerspective: options && 'perspective' in options ? options.perspective : perspective,
           perspectiveStack,
           scheduledDraftsStack,
         }),
@@ -330,7 +330,7 @@ export function VisionGui(props: VisionGuiProps) {
         return
       }
 
-      setPerspectiveState(newPerspective as SupportedPerspective)
+      setPerspectiveState(newPerspective as SupportedPerspective | undefined)
       localStorage.set('perspective', newPerspective)
 
       handleQueryExecution({perspective: newPerspective})
