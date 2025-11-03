@@ -124,7 +124,7 @@ export function SearchResultItem({
   )
 
   const tooltipContent = existsInRelease
-    ? t('search.disabledItem')
+    ? t('release.action.already-exists-in-release')
     : t('release.action.permission.error')
 
   return disabledAction ? (
