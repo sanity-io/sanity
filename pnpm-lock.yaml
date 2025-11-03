@@ -377,6 +377,31 @@ importers:
         specifier: 'catalog:'
         version: 7.1.12(@types/node@24.6.1)(jiti@2.6.1)(lightningcss@1.30.2)(terser@5.44.0)(tsx@4.20.6)(yaml@2.8.1)
 
+  dev/sdk-app:
+    dependencies:
+      '@sanity/sdk':
+        specifier: ^2.3.1
+        version: 2.3.1(@types/react@19.1.17)(immer@10.2.0)(react@19.1.1)(use-sync-external-store@1.6.0(react@19.1.1))
+      '@sanity/sdk-react':
+        specifier: ^2.3.1
+        version: 2.3.1(@types/react@19.1.17)(immer@10.2.0)(react-dom@19.1.1(react@19.1.1))(react@19.1.1)(use-sync-external-store@1.6.0(react@19.1.1))
+      react:
+        specifier: 'catalog:'
+        version: 19.1.1
+      react-dom:
+        specifier: 'catalog:'
+        version: 19.1.1(react@19.1.1)
+      sanity:
+        specifier: workspace:*
+        version: link:../../packages/sanity
+      styled-components:
+        specifier: 'catalog:'
+        version: 6.1.19(react-dom@19.1.1(react@19.1.1))(react@19.1.1)
+    devDependencies:
+      rimraf:
+        specifier: ^5.0.10
+        version: 5.0.10
+
   dev/starter-studio:
     dependencies:
       babel-plugin-react-compiler:
@@ -5075,8 +5100,19 @@ packages:
     engines: {node: '>=20.19'}
     hasBin: true
 
+  '@sanity/sdk-react@2.3.1':
+    resolution: {integrity: sha512-kDZc6w1ZebDHZZZ/CNxSFPYsuWK8LkBu1cTEaue0bZGQumTbHeUYW2OMSRrKSlFYIi1SU3kfJSzEvv8wDugYaA==}
+    engines: {node: '>=20.0.0'}
+    peerDependencies:
+      react: ^18.0.0 || ^19.0.0
+      react-dom: ^18.0.0 || ^19.0.0
+
   '@sanity/sdk@2.1.2':
     resolution: {integrity: sha512-gRBMDNvMUqlFTVoNgOLtcOFDO+e8Fh6v+BrEA4C5F18oi949ObjMmPB2aZMoyP3N3GQuqwVQP6L2PrhH70H7Bw==}
+    engines: {node: '>=20.0.0'}
+
+  '@sanity/sdk@2.3.1':
+    resolution: {integrity: sha512-+A5UCsRqBjc9xjYscqSRqes3X8+p8iO73yPQY76dBKSk06uJq+z7C1UHx0tH5tZVAmSwBgDnisXVaJZRu08+6w==}
     engines: {node: '>=20.0.0'}
 
   '@sanity/telemetry@0.8.1':
@@ -10619,6 +10655,11 @@ packages:
     peerDependencies:
       react: ^17.0.0 || ^18.0.0 || ^19.0.0 || ^0.0.0-experimental
 
+  react-compiler-runtime@19.1.0-rc.2:
+    resolution: {integrity: sha512-852AwyIsbWJ5o1LkQVAZsVK3iLjMxOfKZuxqeGd/RfD+j1GqHb6j3DSHLtpu4HhFbQHsP2DzxjJyKR6luv4D8w==}
+    peerDependencies:
+      react: ^17.0.0 || ^18.0.0 || ^19.0.0 || ^0.0.0-experimental
+
   react-compiler-runtime@19.1.0-rc.3:
     resolution: {integrity: sha512-Cssogys2XZu6SqxRdX2xd8cQAf57BBvFbLEBlIa77161lninbKUn/EqbecCe7W3eqDQfg3rIoOwzExzgCh7h/g==}
     peerDependencies:
@@ -10639,6 +10680,11 @@ packages:
     engines: {node: '>= 10.13'}
     peerDependencies:
       react: '>= 16.8'
+
+  react-error-boundary@5.0.0:
+    resolution: {integrity: sha512-tnjAxG+IkpLephNcePNA7v6F/QpWLH8He65+DmedchDwg162JZqx4NmbXj0mlAYVVEd81OW7aFhmbsScYfiAFQ==}
+    peerDependencies:
+      react: '>=16.13.1'
 
   react-fast-compare@3.2.2:
     resolution: {integrity: sha512-nsO+KSNgo1SbJqJEYRE9ERzo7YtYbou/OqjSQKxV7jcKox7+usiUVZOAC+XnDOABXggQTno0Y1CpVnuWEc1boQ==}
@@ -15994,6 +16040,27 @@ snapshots:
       - utf-8-validate
       - yaml
 
+  '@sanity/sdk-react@2.3.1(@types/react@19.1.17)(immer@10.2.0)(react-dom@19.1.1(react@19.1.1))(react@19.1.1)(use-sync-external-store@1.6.0(react@19.1.1))':
+    dependencies:
+      '@sanity/client': 7.12.0(debug@4.4.3)
+      '@sanity/message-protocol': 0.12.0
+      '@sanity/sdk': 2.3.1(@types/react@19.1.17)(immer@10.2.0)(react@19.1.1)(use-sync-external-store@1.6.0(react@19.1.1))
+      '@sanity/types': 3.99.0(@types/react@19.1.17)(debug@4.4.3)
+      '@types/lodash-es': 4.17.12
+      groq: 3.88.1-typegen-experimental.0
+      lodash-es: 4.17.21
+      react: 19.1.1
+      react-compiler-runtime: 19.1.0-rc.2(react@19.1.1)
+      react-dom: 19.1.1(react@19.1.1)
+      react-error-boundary: 5.0.0(react@19.1.1)
+      rxjs: 7.8.2
+    transitivePeerDependencies:
+      - '@types/react'
+      - debug
+      - immer
+      - supports-color
+      - use-sync-external-store
+
   '@sanity/sdk@2.1.2(@types/react@19.1.17)(debug@4.4.3)(immer@10.2.0)(react@19.1.1)(use-sync-external-store@1.6.0(react@19.1.1))':
     dependencies:
       '@sanity/bifur-client': 0.4.1
@@ -16015,6 +16082,31 @@ snapshots:
       - debug
       - immer
       - react
+      - use-sync-external-store
+
+  '@sanity/sdk@2.3.1(@types/react@19.1.17)(immer@10.2.0)(react@19.1.1)(use-sync-external-store@1.6.0(react@19.1.1))':
+    dependencies:
+      '@sanity/bifur-client': 0.4.1
+      '@sanity/client': 7.12.0(debug@4.4.3)
+      '@sanity/comlink': 3.1.1
+      '@sanity/diff-match-patch': 3.2.0
+      '@sanity/diff-patch': 6.0.0
+      '@sanity/json-match': 1.0.5
+      '@sanity/message-protocol': 0.12.0
+      '@sanity/mutate': 0.12.6(debug@4.4.3)
+      '@sanity/types': 3.99.0(@types/react@19.1.17)(debug@4.4.3)
+      groq: 3.88.1-typegen-experimental.0
+      groq-js: 1.20.0
+      lodash-es: 4.17.21
+      reselect: 5.1.1
+      rxjs: 7.8.2
+      zustand: 5.0.8(@types/react@19.1.17)(immer@10.2.0)(react@19.1.1)(use-sync-external-store@1.6.0(react@19.1.1))
+    transitivePeerDependencies:
+      - '@types/react'
+      - debug
+      - immer
+      - react
+      - supports-color
       - use-sync-external-store
 
   '@sanity/telemetry@0.8.1(react@19.1.1)':
@@ -22216,6 +22308,10 @@ snapshots:
     dependencies:
       react: 19.1.1
 
+  react-compiler-runtime@19.1.0-rc.2(react@19.1.1):
+    dependencies:
+      react: 19.1.1
+
   react-compiler-runtime@19.1.0-rc.3(react@19.1.1):
     dependencies:
       react: 19.1.1
@@ -22236,6 +22332,11 @@ snapshots:
       attr-accept: 2.2.5
       file-selector: 0.4.0
       prop-types: 15.8.1
+      react: 19.1.1
+
+  react-error-boundary@5.0.0(react@19.1.1):
+    dependencies:
+      '@babel/runtime': 7.28.4
       react: 19.1.1
 
   react-fast-compare@3.2.2: {}
