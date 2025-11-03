@@ -570,6 +570,7 @@ exports[`exports snapshot 1`] = `
     "useFormState": "function",
     "useFormValue": "function",
     "useFormattedDuration": "function",
+    "useGetDefaultPerspective": "function",
     "useGetFormValue": "function",
     "useGetI18nText": "function",
     "useGlobalCopyPasteElementHandler": "function",
