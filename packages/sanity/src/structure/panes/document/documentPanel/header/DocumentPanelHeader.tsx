@@ -237,11 +237,19 @@ export const DocumentPanelHeader = memo(
           {onSetFocusedPane && (
             <Button
               key="focus-pane-button"
-              aria-label={t('buttons.focus-pane-button.aria-label')}
+              aria-label={
+                isFocusedPane
+                  ? t('buttons.focus-pane-button.aria-label.collapse')
+                  : t('buttons.focus-pane-button.aria-label.focus')
+              }
               icon={isFocusedPane ? CollapseIcon : ExpandIcon}
               mode="bleed"
               onClick={onSetFocusedPane}
-              tooltipProps={{content: t('buttons.focus-pane-button.tooltip')}}
+              tooltipProps={{
+                content: isFocusedPane
+                  ? t('buttons.focus-pane-button.tooltip.collapse')
+                  : t('buttons.focus-pane-button.tooltip.focus'),
+              }}
             />
           )}
 
