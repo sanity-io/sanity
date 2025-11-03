@@ -108,47 +108,31 @@ export const StructureTool = memo(function StructureTool({onPaneChange}: Structu
 
   const previousSelectedIndexRef = useRef(-1)
 
-  // When navigating while focused, move focus to the newly selected pane
-  // This is especially important for situations where there are multiple panes that are open
-  // And the focus pane is in the middle, and panes that existed no longer exist but we still want to navigate to them
+  // Manage focused pane: sync with navigation and handle cleanup
   useEffect(() => {
     const selectedIndex = paneDataItems.findIndex((pane) => pane.selected)
     const prevSelectedIndex = previousSelectedIndexRef.current
-
-    // Only act if we have a focused pane and the selected index actually changed
-    if (focusedPane && selectedIndex !== -1 && selectedIndex !== prevSelectedIndex) {
-      // If the newly selected pane is different from the focused pane, focus it
-      if (selectedIndex !== focusedPane.index) {
-        const selectedPane = paneDataItems[selectedIndex]
-        setFocusedPane(selectedPane)
-      }
-    }
-
     previousSelectedIndexRef.current = selectedIndex
-  }, [focusedPane, paneDataItems, setFocusedPane])
 
-  // Clear focused pane when it no longer exists in the pane list
-  // This is especially important for situations where there are multiple panes
-  // That can reference the same document at different levels of the pane hierarchy.
-  useEffect(() => {
     if (!focusedPane) return
 
-    const isFocusedPanePresent = paneDataItems.some((pane) => pane.key === focusedPane.key)
-
-    if (isFocusedPanePresent) {
+    // When navigating in focus mode, update focus to follow the newly selected pane
+    // This ensures opening a document to the right works correctly even when they were opened previously
+    if (selectedIndex !== -1 && selectedIndex !== prevSelectedIndex) {
+      setFocusedPane(paneDataItems[selectedIndex])
       return
     }
 
-    const fallbackPane = paneDataItems.find(
-      (pane) =>
-        pane.groupIndex === focusedPane.groupIndex &&
-        pane.siblingIndex === focusedPane.siblingIndex,
-    )
+    // Clean up or find fallback when focused pane no longer exists
+    const isFocusedPanePresent = paneDataItems.some((pane) => pane.key === focusedPane.key)
 
-    if (fallbackPane) {
-      setFocusedPane(fallbackPane)
-    } else {
-      setFocusedPane(null)
+    if (!isFocusedPanePresent) {
+      const fallbackPane = paneDataItems.find(
+        (pane) =>
+          pane.groupIndex === focusedPane.groupIndex &&
+          pane.siblingIndex === focusedPane.siblingIndex,
+      )
+      setFocusedPane(fallbackPane || null)
     }
   }, [focusedPane, paneDataItems, setFocusedPane])
 
