@@ -90,6 +90,7 @@ export const StructureTool = memo(function StructureTool({onPaneChange}: Structu
 
       if (paneData.focused) {
         setFocusedPane(null)
+        // Resets all the panes to the current state
         navigate({
           panes: currentPanes,
         })
@@ -102,12 +103,14 @@ export const StructureTool = memo(function StructureTool({onPaneChange}: Structu
         })
       }
     },
-    [navigate, routerState, setFocusedPane],
+    [navigate, routerState?.panes, setFocusedPane],
   )
 
   const previousSelectedIndexRef = useRef(-1)
 
   // When navigating while focused, move focus to the newly selected pane
+  // This is especially important for situations where there are multiple panes
+  // That can reference the same document at different levels of the pane hierarchy.
   useEffect(() => {
     const selectedIndex = paneDataItems.findIndex((pane) => pane.selected)
     const prevSelectedIndex = previousSelectedIndexRef.current
@@ -125,6 +128,8 @@ export const StructureTool = memo(function StructureTool({onPaneChange}: Structu
   }, [focusedPane, paneDataItems, setFocusedPane])
 
   // Clear focused pane when it no longer exists in the pane list
+  // This is especially important for situations where there are multiple panes that are open
+  // And the focus pane is in the middle, and panes that existed no longer exist but we still want to navigate to them
   useEffect(() => {
     if (!focusedPane) return
 
