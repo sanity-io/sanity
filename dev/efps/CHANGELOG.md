@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [4.13.0](https://github.com/sanity-io/sanity/compare/v4.12.0...v4.13.0) (2025-11-03)
+
+### Bug Fixes
+
+* **efps:** allow setting apihost via env ([#10953](https://github.com/sanity-io/sanity/issues/10953)) ([999c5ca](https://github.com/sanity-io/sanity/commit/999c5ca9ac1f83023036b43c4b63cf5518d1b580)) by Bjørge Næss (bjoerge@gmail.com)
+
 ## [4.12.0](https://github.com/sanity-io/sanity/compare/v4.11.0...v4.12.0) (2025-10-28)
 
 **Note:** Version bump only for package efps-tests

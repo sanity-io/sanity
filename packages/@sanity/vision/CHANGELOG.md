@@ -3,6 +3,13 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [4.13.0](https://github.com/sanity-io/sanity/compare/v4.12.0...v4.13.0) (2025-11-03)
+
+### Bug Fixes
+
+* **deps:** catalog vitest, jsdom add overrides ([a54467e](https://github.com/sanity-io/sanity/commit/a54467e2e5a2b6cd0fceb46b37f3143577cb45bc)) by Bjørge Næss (bjoerge@gmail.com)
+* use www for sanity website urls ([#10994](https://github.com/sanity-io/sanity/issues/10994)) ([de66f58](https://github.com/sanity-io/sanity/commit/de66f58229ed3999cd2c193cac6df48aa3046e58)) by Bjørge Næss (bjoerge@gmail.com)
+
 ## [4.12.0](https://github.com/sanity-io/sanity/compare/v4.11.0...v4.12.0) (2025-10-28)
 
 **Note:** Version bump only for package @sanity/vision
