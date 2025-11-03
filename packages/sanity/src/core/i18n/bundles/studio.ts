@@ -1469,6 +1469,8 @@ export const studioLocaleStrings = defineLocalesResources('studio', {
   /** Success toast for rescheduling a draft */
   'release.toast.reschedule-scheduled-draft.success':
     'The scheduled draft document <strong>{{title}}</strong> has been rescheduled.',
+  /** The toast title that will be shown when the user has a scheduled draft perspective which is now published */
+  'release.toast.scheduled-draft-published.title': 'The scheduled draft was published',
   /** Label for when a version of a document has already been added to the release */
   'release.tooltip.already-added': 'A version of this document has already been added',
   /** Label for when a release is scheduled / scheduling and a user can't add a document version to it */

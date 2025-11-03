@@ -9,6 +9,7 @@ import {useActiveReleases} from '../releases/store/useActiveReleases'
 import {useArchivedReleases} from '../releases/store/useArchivedReleases'
 import {LATEST, PUBLISHED} from '../releases/util/const'
 import {getReleaseIdFromReleaseDocumentId} from '../releases/util/getReleaseIdFromReleaseDocumentId'
+import {isCardinalityOneRelease} from '../releases/util/isCardinalityOneRelease'
 import {isPublishedPerspective} from '../releases/util/util'
 import {useWorkspace} from '../studio/workspace'
 import {EMPTY_ARRAY} from '../util/empty'
@@ -22,11 +23,17 @@ const getToastTitleAndDescription = (
 ): {title: string; description?: string} => {
   if (!archived) return {title: 'release.toast.not-found-release.title'}
 
-  if (archived.state === 'published')
+  if (archived.state === 'published') {
+    if (isCardinalityOneRelease(archived)) {
+      return {
+        title: 'release.toast.scheduled-draft-published.title',
+      }
+    }
     return {
       title: 'release.toast.published-release.title',
       description: 'release.toast.published-release.description',
     }
+  }
 
   return {
     title: 'release.toast.archived-release.title',
