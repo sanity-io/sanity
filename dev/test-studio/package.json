@@ -24,7 +24,7 @@
     "@portabletext/toolkit": "^3.0.1",
     "@sanity/assist": "^5.0.0",
     "@sanity/cli": "workspace:*",
-    "@sanity/client": "^7.12.0",
+    "@sanity/client": "^7.12.1",
     "@sanity/color": "^3.0.6",
     "@sanity/color-input": "^4.0.6",
     "@sanity/google-maps-input": "^4.2.0",
