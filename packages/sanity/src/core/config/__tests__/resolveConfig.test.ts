@@ -6,7 +6,7 @@ import {describe, expect, it} from 'vitest'
 import {createMockAuthStore} from '../../store'
 import {definePlugin} from '../definePlugin'
 import {createSourceFromConfig, createWorkspaceFromConfig, resolveConfig} from '../resolveConfig'
-import {type PluginOptions, QUOTA_EXCLUDED_RELEASES_ENABLED} from '../types'
+import {type PluginOptions} from '../types'
 
 describe('resolveConfig', () => {
   it('throws on invalid tools property', async () => {
@@ -160,7 +160,9 @@ describe('resolveConfig', () => {
         releases: {
           enabled: true,
         },
-        [QUOTA_EXCLUDED_RELEASES_ENABLED]: true,
+        scheduledDrafts: {
+          enabled: true,
+        },
       }),
     )
     expect(workspace.__internal.options.plugins).toMatchObject([
@@ -194,7 +196,9 @@ describe('resolveConfig', () => {
         releases: {
           enabled: false,
         },
-        [QUOTA_EXCLUDED_RELEASES_ENABLED]: true,
+        scheduledDrafts: {
+          enabled: true,
+        },
       }),
     )
     const pluginNames = workspace.__internal.options.plugins?.map((p) => p.name) ?? []
@@ -221,7 +225,9 @@ describe('resolveConfig', () => {
         releases: {
           enabled: true,
         },
-        [QUOTA_EXCLUDED_RELEASES_ENABLED]: false,
+        scheduledDrafts: {
+          enabled: false,
+        },
       }),
     )
     const pluginNames = workspace.__internal.options.plugins?.map((p) => p.name) ?? []
@@ -248,7 +254,9 @@ describe('resolveConfig', () => {
         releases: {
           enabled: false,
         },
-        [QUOTA_EXCLUDED_RELEASES_ENABLED]: false,
+        scheduledDrafts: {
+          enabled: false,
+        },
       }),
     )
     const pluginNames = workspace.__internal.options.plugins?.map((p) => p.name) ?? []

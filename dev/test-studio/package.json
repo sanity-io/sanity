@@ -18,9 +18,10 @@
     "workshop:dev": "tsx scripts/workshop/dev.ts"
   },
   "dependencies": {
-    "@portabletext/block-tools": "^3.5.13",
-    "@portabletext/editor": "^2.16.0",
+    "@portabletext/block-tools": "^3.5.14",
+    "@portabletext/editor": "^2.17.2",
     "@portabletext/react": "^4.0.3",
+    "@portabletext/toolkit": "^3.0.1",
     "@sanity/assist": "^5.0.0",
     "@sanity/cli": "workspace:*",
     "@sanity/client": "^7.12.0",
@@ -32,7 +33,7 @@
     "@sanity/logos": "^2.2.2",
     "@sanity/migrate": "workspace:*",
     "@sanity/preview-url-secret": "^2.1.15",
-    "@sanity/react-loader": "^1.11.22",
+    "@sanity/react-loader": "^2.0.0",
     "@sanity/types": "workspace:*",
     "@sanity/ui": "catalog:",
     "@sanity/ui-workshop": "catalog:",

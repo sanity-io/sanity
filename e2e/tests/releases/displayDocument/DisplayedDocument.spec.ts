@@ -488,10 +488,6 @@ test.describe('displayedDocument', () => {
       await expect(page.getByTestId('document-panel-document-title')).not.toHaveText('Untitled')
       // Check that the name field shows the version name
       await expect(page.getByTestId('document-panel-document-title')).toHaveText('(published)')
-
-      // Clean up
-      await sanityClient.delete(versionId)
-      await sanityClient.delete(customPublished._id)
     })
   })
 })
