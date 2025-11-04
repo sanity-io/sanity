@@ -1,6 +1,7 @@
 import {renderHook} from '@testing-library/react'
 import {beforeEach, describe, expect, it, vi} from 'vitest'
 
+import {QUOTA_EXCLUDED_RELEASES_ENABLED} from '../../config/types'
 import {useFeatureEnabled} from '../../hooks'
 import {useSource} from '../../studio/source'
 import {
@@ -25,7 +26,9 @@ describe('SingleDocReleaseEnabledProvider', () => {
 
   it('should not show single doc releases if user opt out and the feature is not enabled (any plan)', () => {
     useFeatureEnabledMock.mockReturnValue({enabled: false, isLoading: false})
-    useSourceMock.mockReturnValue({scheduledDrafts: {enabled: false}})
+    useSourceMock.mockReturnValue({
+      __internal: {options: {[QUOTA_EXCLUDED_RELEASES_ENABLED]: false}},
+    })
 
     const value = renderHook(useSingleDocReleaseEnabled, {wrapper: SingleDocReleaseEnabledProvider})
 
@@ -34,7 +37,9 @@ describe('SingleDocReleaseEnabledProvider', () => {
   })
   it('should not show single doc releases if user opt out and the feature is enabled (any plan)', () => {
     useFeatureEnabledMock.mockReturnValue({enabled: true, isLoading: false})
-    useSourceMock.mockReturnValue({scheduledDrafts: {enabled: false}})
+    useSourceMock.mockReturnValue({
+      __internal: {options: {[QUOTA_EXCLUDED_RELEASES_ENABLED]: false}},
+    })
 
     const value = renderHook(useSingleDocReleaseEnabled, {wrapper: SingleDocReleaseEnabledProvider})
 
@@ -44,7 +49,9 @@ describe('SingleDocReleaseEnabledProvider', () => {
 
   it('should show default mode if user hasnt opted out and the feature flag is enabled (growth or above)', () => {
     useFeatureEnabledMock.mockReturnValue({enabled: true, isLoading: false})
-    useSourceMock.mockReturnValue({scheduledDrafts: {enabled: true}})
+    useSourceMock.mockReturnValue({
+      __internal: {options: {[QUOTA_EXCLUDED_RELEASES_ENABLED]: true}},
+    })
 
     const value = renderHook(useSingleDocReleaseEnabled, {wrapper: SingleDocReleaseEnabledProvider})
 
@@ -54,7 +61,9 @@ describe('SingleDocReleaseEnabledProvider', () => {
 
   it('should show upsell mode if user has not opt out and the feature is not enabled (free plans)', () => {
     useFeatureEnabledMock.mockReturnValue({enabled: false, isLoading: false})
-    useSourceMock.mockReturnValue({scheduledDrafts: {enabled: true}})
+    useSourceMock.mockReturnValue({
+      __internal: {options: {[QUOTA_EXCLUDED_RELEASES_ENABLED]: true}},
+    })
 
     const value = renderHook(useSingleDocReleaseEnabled, {wrapper: SingleDocReleaseEnabledProvider})
 
@@ -64,7 +73,9 @@ describe('SingleDocReleaseEnabledProvider', () => {
 
   it('should not show single doc releases if it is loading the feature', () => {
     useFeatureEnabledMock.mockReturnValue({enabled: false, isLoading: true})
-    useSourceMock.mockReturnValue({scheduledDrafts: {enabled: true}})
+    useSourceMock.mockReturnValue({
+      __internal: {options: {[QUOTA_EXCLUDED_RELEASES_ENABLED]: true}},
+    })
 
     const value = renderHook(useSingleDocReleaseEnabled, {wrapper: SingleDocReleaseEnabledProvider})
 
@@ -78,7 +89,9 @@ describe('SingleDocReleaseEnabledProvider', () => {
       isLoading: true,
       error: new Error('Something went wrong'),
     })
-    useSourceMock.mockReturnValue({scheduledDrafts: {enabled: true}})
+    useSourceMock.mockReturnValue({
+      __internal: {options: {[QUOTA_EXCLUDED_RELEASES_ENABLED]: true}},
+    })
 
     const value = renderHook(useSingleDocReleaseEnabled, {wrapper: SingleDocReleaseEnabledProvider})
 
