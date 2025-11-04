@@ -105,7 +105,11 @@ export const StructureTool = memo(function StructureTool({onPaneChange}: Structu
         navigate({
           panes: currentPanes,
         })
-      } else {
+        return
+      }
+
+      // Only allow document panes to be focused
+      if (paneData.pane !== LOADING_PANE && paneData.pane.type === 'document') {
         // Navigate to this pane, closing all panes after it
         const slicedPanes = currentPanes.slice(0, paneData.groupIndex)
         setFocusedPane(paneData)
@@ -127,10 +131,20 @@ export const StructureTool = memo(function StructureTool({onPaneChange}: Structu
 
     if (!focusedPane) return
 
+    // Clear focus if the focused pane is not a document pane (focus only works with documents)
+    if (focusedPane.pane !== LOADING_PANE && focusedPane.pane.type !== 'document') {
+      setFocusedPane(null)
+      return
+    }
+
     // When navigating in focus mode, update focus to follow the newly selected pane
     // This ensures opening a document to the right works correctly even when they were opened previously
     if (selectedIndex !== -1 && selectedIndex !== prevSelectedIndex) {
-      setFocusedPane(paneDataItems[selectedIndex])
+      const selectedPane = paneDataItems[selectedIndex]
+      // Only set focus if the newly selected pane is a document pane
+      if (selectedPane.pane !== LOADING_PANE && selectedPane.pane.type === 'document') {
+        setFocusedPane(selectedPane)
+      }
       return
     }
 
@@ -141,7 +155,9 @@ export const StructureTool = memo(function StructureTool({onPaneChange}: Structu
       const fallbackPane = paneDataItems.find(
         (pane) =>
           pane.groupIndex === focusedPane.groupIndex &&
-          pane.siblingIndex === focusedPane.siblingIndex,
+          pane.siblingIndex === focusedPane.siblingIndex &&
+          pane.pane !== LOADING_PANE &&
+          pane.pane.type === 'document',
       )
       setFocusedPane(fallbackPane || null)
     }
