@@ -19,8 +19,8 @@ catalogs:
       specifier: ^2.0.0
       version: 2.0.0
     '@sanity/pkg-utils':
-      specifier: ^8.1.13
-      version: 8.1.29
+      specifier: ^9.0.0
+      version: 9.0.0
     '@sanity/ui':
       specifier: ^3.1.5
       version: 3.1.11
@@ -913,7 +913,7 @@ importers:
         version: link:../tsconfig
       '@sanity/pkg-utils':
         specifier: 'catalog:'
-        version: 8.1.29(@types/babel__core@7.20.5)(@types/node@24.10.0)(babel-plugin-macros@3.1.0)(babel-plugin-react-compiler@1.0.0)(debug@4.4.3)(oxc-resolver@11.8.4)(typescript@5.9.3)
+        version: 9.0.0(@types/babel__core@7.20.5)(@types/node@24.10.0)(babel-plugin-macros@3.1.0)(babel-plugin-react-compiler@1.0.0)(debug@4.4.3)(oxc-resolver@11.8.4)(typescript@5.9.3)
       '@types/node':
         specifier: 'catalog:'
         version: 24.10.0
@@ -1138,7 +1138,7 @@ importers:
         version: 3.0.0
       '@sanity/pkg-utils':
         specifier: 'catalog:'
-        version: 8.1.29(@types/babel__core@7.20.5)(@types/node@24.10.0)(babel-plugin-macros@3.1.0)(babel-plugin-react-compiler@1.0.0)(debug@4.4.3)(oxc-resolver@11.8.4)(typescript@5.9.3)
+        version: 9.0.0(@types/babel__core@7.20.5)(@types/node@24.10.0)(babel-plugin-macros@3.1.0)(babel-plugin-react-compiler@1.0.0)(debug@4.4.3)(oxc-resolver@11.8.4)(typescript@5.9.3)
       '@sanity/types':
         specifier: workspace:*
         version: link:../types
@@ -1346,7 +1346,7 @@ importers:
         version: link:../../@repo/tsconfig
       '@sanity/pkg-utils':
         specifier: 'catalog:'
-        version: 8.1.29(@types/babel__core@7.20.5)(@types/node@24.10.0)(babel-plugin-macros@3.1.0)(babel-plugin-react-compiler@1.0.0)(debug@4.4.3)(oxc-resolver@11.8.4)(typescript@5.9.3)
+        version: 9.0.0(@types/babel__core@7.20.5)(@types/node@24.10.0)(babel-plugin-macros@3.1.0)(babel-plugin-react-compiler@1.0.0)(debug@4.4.3)(oxc-resolver@11.8.4)(typescript@5.9.3)
       '@types/babel__core':
         specifier: ^7.20.5
         version: 7.20.5
@@ -1392,7 +1392,7 @@ importers:
         version: link:../../@repo/tsconfig
       '@sanity/pkg-utils':
         specifier: 'catalog:'
-        version: 8.1.29(@types/babel__core@7.20.5)(@types/node@24.10.0)(babel-plugin-macros@3.1.0)(babel-plugin-react-compiler@1.0.0)(debug@4.4.3)(oxc-resolver@11.8.4)(typescript@5.9.3)
+        version: 9.0.0(@types/babel__core@7.20.5)(@types/node@24.10.0)(babel-plugin-macros@3.1.0)(babel-plugin-react-compiler@1.0.0)(debug@4.4.3)(oxc-resolver@11.8.4)(typescript@5.9.3)
       eslint:
         specifier: 'catalog:'
         version: 9.39.1(jiti@2.6.1)
@@ -1444,7 +1444,7 @@ importers:
         version: link:../../@repo/tsconfig
       '@sanity/pkg-utils':
         specifier: 'catalog:'
-        version: 8.1.29(@types/babel__core@7.20.5)(@types/node@24.10.0)(babel-plugin-macros@3.1.0)(babel-plugin-react-compiler@1.0.0)(debug@4.4.3)(oxc-resolver@11.8.4)(typescript@5.9.3)
+        version: 9.0.0(@types/babel__core@7.20.5)(@types/node@24.10.0)(babel-plugin-macros@3.1.0)(babel-plugin-react-compiler@1.0.0)(debug@4.4.3)(oxc-resolver@11.8.4)(typescript@5.9.3)
       '@types/debug':
         specifier: ^4.1.12
         version: 4.1.12
@@ -1490,7 +1490,7 @@ importers:
         version: link:../../@repo/tsconfig
       '@sanity/pkg-utils':
         specifier: 'catalog:'
-        version: 8.1.29(@types/babel__core@7.20.5)(@types/node@24.10.0)(babel-plugin-macros@3.1.0)(babel-plugin-react-compiler@1.0.0)(debug@4.4.3)(oxc-resolver@11.8.4)(typescript@5.9.3)
+        version: 9.0.0(@types/babel__core@7.20.5)(@types/node@24.10.0)(babel-plugin-macros@3.1.0)(babel-plugin-react-compiler@1.0.0)(debug@4.4.3)(oxc-resolver@11.8.4)(typescript@5.9.3)
       '@types/debug':
         specifier: ^4.1.12
         version: 4.1.12
@@ -1557,7 +1557,7 @@ importers:
         version: 3.7.4(react@19.2.0)
       '@sanity/pkg-utils':
         specifier: 'catalog:'
-        version: 8.1.29(@types/babel__core@7.20.5)(@types/node@24.10.0)(babel-plugin-macros@3.1.0)(babel-plugin-react-compiler@1.0.0)(debug@4.4.3)(oxc-resolver@11.8.4)(typescript@5.9.3)
+        version: 9.0.0(@types/babel__core@7.20.5)(@types/node@24.10.0)(babel-plugin-macros@3.1.0)(babel-plugin-react-compiler@1.0.0)(debug@4.4.3)(oxc-resolver@11.8.4)(typescript@5.9.3)
       '@types/lodash':
         specifier: ^4.17.20
         version: 4.17.20
@@ -1603,7 +1603,7 @@ importers:
         version: 2.1.0(@emotion/is-prop-valid@1.4.0)(@sanity/types@packages+@sanity+types)(react-dom@19.2.0(react@19.2.0))(react-is@19.2.0)(react@19.2.0)(styled-components@6.1.19(react-dom@19.2.0(react@19.2.0))(react@19.2.0))
       '@sanity/pkg-utils':
         specifier: 'catalog:'
-        version: 8.1.29(@types/babel__core@7.20.5)(@types/node@24.10.0)(babel-plugin-macros@3.1.0)(babel-plugin-react-compiler@1.0.0)(debug@4.4.3)(oxc-resolver@11.8.4)(typescript@5.9.3)
+        version: 9.0.0(@types/babel__core@7.20.5)(@types/node@24.10.0)(babel-plugin-macros@3.1.0)(babel-plugin-react-compiler@1.0.0)(debug@4.4.3)(oxc-resolver@11.8.4)(typescript@5.9.3)
       '@types/react':
         specifier: 'catalog:'
         version: 19.2.2
@@ -1658,7 +1658,7 @@ importers:
         version: link:../../@repo/tsconfig
       '@sanity/pkg-utils':
         specifier: 'catalog:'
-        version: 8.1.29(@types/babel__core@7.20.5)(@types/node@24.10.0)(babel-plugin-macros@3.1.0)(babel-plugin-react-compiler@1.0.0)(debug@4.4.3)(oxc-resolver@11.8.4)(typescript@5.9.3)
+        version: 9.0.0(@types/babel__core@7.20.5)(@types/node@24.10.0)(babel-plugin-macros@3.1.0)(babel-plugin-react-compiler@1.0.0)(debug@4.4.3)(oxc-resolver@11.8.4)(typescript@5.9.3)
       '@types/node':
         specifier: 'catalog:'
         version: 24.10.0
@@ -1776,7 +1776,7 @@ importers:
         version: 2.0.0(eslint@9.39.1(jiti@2.6.1))
       '@sanity/pkg-utils':
         specifier: 'catalog:'
-        version: 8.1.29(@types/babel__core@7.20.5)(@types/node@24.10.0)(babel-plugin-macros@3.1.0)(babel-plugin-react-compiler@1.0.0)(debug@4.4.3)(oxc-resolver@11.8.4)(typescript@5.9.3)
+        version: 9.0.0(@types/babel__core@7.20.5)(@types/node@24.10.0)(babel-plugin-macros@3.1.0)(babel-plugin-react-compiler@1.0.0)(debug@4.4.3)(oxc-resolver@11.8.4)(typescript@5.9.3)
       '@testing-library/react':
         specifier: ^16.3.0
         version: 16.3.0(@testing-library/dom@10.4.1)(@types/react-dom@19.2.2(@types/react@19.2.2))(@types/react@19.2.2)(react-dom@19.2.0(react@19.2.0))(react@19.2.0)
@@ -1846,7 +1846,7 @@ importers:
         version: link:../@repo/tsconfig
       '@sanity/pkg-utils':
         specifier: 'catalog:'
-        version: 8.1.29(@types/babel__core@7.20.5)(@types/node@24.10.0)(babel-plugin-macros@3.1.0)(babel-plugin-react-compiler@1.0.0)(debug@4.4.3)(oxc-resolver@11.8.4)(typescript@5.9.3)
+        version: 9.0.0(@types/babel__core@7.20.5)(@types/node@24.10.0)(babel-plugin-macros@3.1.0)(babel-plugin-react-compiler@1.0.0)(debug@4.4.3)(oxc-resolver@11.8.4)(typescript@5.9.3)
       '@types/node':
         specifier: 'catalog:'
         version: 24.10.0
@@ -2330,7 +2330,7 @@ importers:
         version: 3.0.0
       '@sanity/pkg-utils':
         specifier: 'catalog:'
-        version: 8.1.29(@types/babel__core@7.20.5)(@types/node@24.10.0)(babel-plugin-macros@3.1.0)(babel-plugin-react-compiler@1.0.0)(debug@4.4.3)(oxc-resolver@11.8.4)(typescript@5.9.3)
+        version: 9.0.0(@types/babel__core@7.20.5)(@types/node@24.10.0)(babel-plugin-macros@3.1.0)(babel-plugin-react-compiler@1.0.0)(debug@4.4.3)(oxc-resolver@11.8.4)(typescript@5.9.3)
       '@sanity/ui-workshop':
         specifier: 'catalog:'
         version: 3.4.0(@sanity/ui@3.1.11(@emotion/is-prop-valid@1.4.0)(react-dom@19.2.0(react@19.2.0))(react-is@19.2.0)(react@19.2.0)(styled-components@6.1.19(react-dom@19.2.0(react@19.2.0))(react@19.2.0)))(@types/node@24.10.0)(babel-plugin-macros@3.1.0)(jiti@2.6.1)(lightningcss@1.30.2)(react-dom@19.2.0(react@19.2.0))(react@19.2.0)(terser@5.44.1)(tsx@4.20.6)(yaml@2.8.1)
@@ -4927,11 +4927,11 @@ packages:
   '@rolldown/pluginutils@1.0.0-beta.45':
     resolution: {integrity: sha512-Le9ulGCrD8ggInzWw/k2J8QcbPz7eGIOWqfJ2L+1R0Opm7n6J37s2hiDWlh6LJN0Lk9L5sUzMvRHKW7UxBZsQA==}
 
-  '@rollup/plugin-alias@5.1.1':
-    resolution: {integrity: sha512-PR9zDb+rOzkRb2VD+EuKB7UC41vU5DIwZ5qqCpk0KJudcWAyi8rvYOhS7+L5aZCspw1stTViLgN5v6FF1p5cgQ==}
-    engines: {node: '>=14.0.0'}
+  '@rollup/plugin-alias@6.0.0':
+    resolution: {integrity: sha512-tPCzJOtS7uuVZd+xPhoy5W4vThe6KWXNmsFCNktaAh5RTqcLiSfT4huPQIXkgJ6YCOjJHvecOAzQxLFhPxKr+g==}
+    engines: {node: '>=20.19.0'}
     peerDependencies:
-      rollup: ^1.20.0||^2.0.0||^3.0.0||^4.0.0
+      rollup: '>=4.0.0'
     peerDependenciesMeta:
       rollup:
         optional: true
@@ -5350,8 +5350,8 @@ packages:
   '@sanity/mutator@3.99.0':
     resolution: {integrity: sha512-CrX2B2OXYtjFpLQeUC971XiMeyOXyDaMK5qH150qYkg6sVuIdsPjN0kXyMhWR6LuTp96blUOUNPQhkTsfAo44w==}
 
-  '@sanity/pkg-utils@8.1.29':
-    resolution: {integrity: sha512-97Vo9YnYOp/hEYkE9zkI0Nj4NUm5EVo1DpRUcr6tf7jzO0u65yyventjcDSdbOFVsKmUFjMa1GrY5oKRn7Mi1Q==}
+  '@sanity/pkg-utils@9.0.0':
+    resolution: {integrity: sha512-LSfMpQm2bYpPAOKRzs32UoWfsLnqF1a4p2C9gsGZCHBmHZyKErRPs0dU70ni88HVADc/HYFrQ2dskVXvq9YnhA==}
     engines: {node: '>=20.19 <22 || >=22.12'}
     hasBin: true
     peerDependencies:
@@ -15823,7 +15823,7 @@ snapshots:
 
   '@rolldown/pluginutils@1.0.0-beta.45': {}
 
-  '@rollup/plugin-alias@5.1.1(rollup@4.53.3)':
+  '@rollup/plugin-alias@6.0.0(rollup@4.53.3)':
     optionalDependencies:
       rollup: 4.53.3
 
@@ -16331,7 +16331,7 @@ snapshots:
       - '@types/react'
       - supports-color
 
-  '@sanity/pkg-utils@8.1.29(@types/babel__core@7.20.5)(@types/node@24.10.0)(babel-plugin-macros@3.1.0)(babel-plugin-react-compiler@1.0.0)(debug@4.4.3)(oxc-resolver@11.8.4)(typescript@5.9.3)':
+  '@sanity/pkg-utils@9.0.0(@types/babel__core@7.20.5)(@types/node@24.10.0)(babel-plugin-macros@3.1.0)(babel-plugin-react-compiler@1.0.0)(debug@4.4.3)(oxc-resolver@11.8.4)(typescript@5.9.3)':
     dependencies:
       '@babel/core': 7.28.5
       '@babel/parser': 7.28.5
@@ -16340,7 +16340,7 @@ snapshots:
       '@microsoft/api-extractor': 7.53.3(@types/node@24.10.0)
       '@microsoft/tsdoc-config': 0.17.1
       '@optimize-lodash/rollup-plugin': 5.0.2(rollup@4.53.3)
-      '@rollup/plugin-alias': 5.1.1(rollup@4.53.3)
+      '@rollup/plugin-alias': 6.0.0(rollup@4.53.3)
       '@rollup/plugin-babel': 6.1.0(@babel/core@7.28.5)(@types/babel__core@7.20.5)(rollup@4.53.3)
       '@rollup/plugin-commonjs': 29.0.0(rollup@4.53.3)
       '@rollup/plugin-json': 6.1.0(rollup@4.53.3)
