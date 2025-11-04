@@ -1,3 +1,4 @@
+import {useMemo} from 'react'
 import {useTranslation} from 'sanity'
 import {useRouter, useRouterState} from 'sanity/router'
 
@@ -19,20 +20,22 @@ export function DocumentHeaderBreadcrumbItem({
   const routerState = useRouterState()
   const routerPanes = (routerState?.panes || []) as RouterPanes
 
-  // Get the static title from the pane
+  // In case if it's a pane with a title, use the title
   const staticTitle = pane !== LOADING_PANE && 'title' in pane ? pane.title : null
 
-  // For document panes, get the document preview title
+  // In case if it's a document pane, we need to fetch the document preview title
   const documentId = pane !== LOADING_PANE && pane.type === 'document' ? pane.options.id : null
   const documentType = pane !== LOADING_PANE && pane.type === 'document' ? pane.options.type : null
   const {title: previewTitle, isLoading} = useDocumentPreviewTitle(documentId, documentType)
 
   // Use preview title for documents, static title for other panes
-  const displayTitle = documentId
-    ? previewTitle
-      ? previewTitle
-      : t('panes.document-header-title.untitled.text')
-    : staticTitle
+  const displayTitle = useMemo(() => {
+    if (documentId && !isLoading) {
+      return previewTitle ? previewTitle : t('panes.document-header-title.untitled.text')
+    }
+
+    return staticTitle
+  }, [documentId, previewTitle, staticTitle, t, isLoading])
 
   if (!displayTitle && !isLoading) return null
 
