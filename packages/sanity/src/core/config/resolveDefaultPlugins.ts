@@ -93,6 +93,6 @@ export function getDefaultPluginsOptions(
       },
     },
     mediaLibrary: workspace?.mediaLibrary,
-    scheduledDrafts: workspace.scheduledDrafts ?? {enabled: false},
+    scheduledDrafts: workspace.scheduledDrafts ?? {enabled: true},
   }
 }

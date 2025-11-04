@@ -781,7 +781,7 @@ function resolveSource({
       }),
     },
     scheduledDrafts: {
-      enabled: scheduledDraftsEnabledReducer({config, initialValue: false}),
+      enabled: scheduledDraftsEnabledReducer({config, initialValue: true}),
     },
 
     releases: config.releases

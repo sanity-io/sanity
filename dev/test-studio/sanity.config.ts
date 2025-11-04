@@ -228,9 +228,6 @@ const defaultWorkspace = defineConfig({
   mediaLibrary: {
     enabled: true,
   },
-  scheduledDrafts: {
-    enabled: false,
-  },
   [DECISION_PARAMETERS_SCHEMA]: {
     audiences: ['aud-a', 'aud-b', 'aud-c'],
     locales: ['en-GB', 'en-US'],
