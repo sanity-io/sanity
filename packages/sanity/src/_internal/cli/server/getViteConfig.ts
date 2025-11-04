@@ -17,6 +17,8 @@ import {sanityBuildEntries} from './vite/plugin-sanity-build-entries'
 import {sanityFaviconsPlugin} from './vite/plugin-sanity-favicons'
 import {sanityRuntimeRewritePlugin} from './vite/plugin-sanity-runtime-rewrite'
 
+const __dirname = path.dirname(new URL(import.meta.url).pathname)
+
 export interface ViteOptions {
   /**
    * Root path of the studio/sanity app

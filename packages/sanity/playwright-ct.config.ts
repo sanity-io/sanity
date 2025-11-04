@@ -3,6 +3,8 @@ import path from 'node:path'
 import {defineConfig, devices} from '@playwright/experimental-ct-react'
 import aliases from '@repo/dev-aliases'
 
+const __dirname = path.dirname(new URL(import.meta.url).pathname)
+
 // Paths
 const TESTS_PATH = path.join(__dirname, 'playwright-ct', 'tests')
 const HTML_REPORT_PATH = path.join(__dirname, 'playwright-ct', 'report')

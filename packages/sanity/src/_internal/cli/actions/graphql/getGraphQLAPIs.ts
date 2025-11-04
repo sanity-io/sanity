@@ -12,6 +12,8 @@ import {
   type TypeResolvedGraphQLAPI,
 } from './types'
 
+const __dirname = path.dirname(new URL(import.meta.url).pathname)
+
 export async function getGraphQLAPIs(cliContext: CliCommandContext): Promise<ResolvedGraphQLAPI[]> {
   if (!isMainThread) {
     throw new Error('getGraphQLAPIs() must be called from the main thread')
@@ -41,7 +43,14 @@ function getApisWithSchemaTypes(cliContext: CliCommandContext): Promise<TypeReso
     }
 
     const rootDir = path.dirname(rootPkgPath)
-    const workerPath = path.join(rootDir, 'lib', '_internal', 'cli', 'threads', 'getGraphQLAPIs.js')
+    const workerPath = path.join(
+      rootDir,
+      'lib',
+      '_internal',
+      'cli',
+      'threads',
+      'getGraphQLAPIs.cjs',
+    )
     const worker = new Worker(workerPath, {
       workerData: {cliConfig: serialize(cliConfig || {}), cliConfigPath, workDir},
       env: process.env,

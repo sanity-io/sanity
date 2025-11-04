@@ -11,6 +11,8 @@ import {
 } from '../../threads/validateSchema'
 import {formatSchemaValidation, getAggregatedSeverity} from './formatSchemaValidation'
 
+const __dirname = path.dirname(new URL(import.meta.url).pathname)
+
 interface ValidateFlags {
   workspace?: string
   format?: string
@@ -36,7 +38,7 @@ export default async function validateAction(
     '_internal',
     'cli',
     'threads',
-    'validateSchema.js',
+    'validateSchema.cjs',
   )
 
   const level = flags.level || 'warning'

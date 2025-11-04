@@ -1,7 +1,7 @@
 import {type CliCommandContext, type CliOutputter} from '@sanity/cli'
 import {type SanityClient} from '@sanity/client'
 import chalk from 'chalk'
-import partition from 'lodash/partition'
+import {partition} from 'lodash'
 
 import {
   CURRENT_WORKSPACE_SCHEMA_VERSION,

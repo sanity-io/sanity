@@ -10,6 +10,8 @@ import {asyncIterableToStream} from '../../utils/asyncIterableToStream'
 import {streamToAsyncIterator} from '../../utils/streamToAsyncIterator'
 import {bufferThroughFile} from '../bufferThroughFile'
 
+const __dirname = path.dirname(new URL(import.meta.url).pathname)
+
 const sleep = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms))
 
 let id = 0

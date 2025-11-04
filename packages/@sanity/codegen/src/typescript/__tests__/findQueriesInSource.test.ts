@@ -1,6 +1,10 @@
+import {fileURLToPath} from 'node:url'
+
 import {describe, expect, test, vi} from 'vitest'
 
 import {findQueriesInSource} from '../findQueriesInSource'
+
+const __filename = fileURLToPath(import.meta.url)
 
 // Mock require since it's not supported in vitest
 vi.mock('node:module', () => ({

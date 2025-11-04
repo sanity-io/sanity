@@ -6,6 +6,8 @@ import {expect, test} from 'vitest'
 
 import {absolutify, expandHome, pathIsEmpty} from '../src/fsTools'
 
+const __dirname = path.dirname(new URL(import.meta.url).pathname)
+
 test('path tools: returns whether or not a path is empty (false)', async () => {
   const isEmpty = await pathIsEmpty(__dirname)
   expect(isEmpty).toEqual(false)

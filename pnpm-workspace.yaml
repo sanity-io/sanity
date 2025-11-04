@@ -16,7 +16,7 @@ catalog:
   '@playwright/test': 1.56.1
   '@sanity/client': ^7.12.1
   '@sanity/eslint-config-i18n': ^2.0.0
-  '@sanity/pkg-utils': ^9.0.0
+  '@sanity/pkg-utils': ^9.1.4
   '@sanity/ui': ^3.1.5
   '@sanity/ui-workshop': ^3.1.2
   '@types/node': ^24.3.0
@@ -82,7 +82,7 @@ trustPolicy: no-downgrade
 trustPolicyExclude:
   - '@octokit/endpoint@9.0.6'
   - '@octokit/plugin-paginate-rest@9.2.2'
-  - '@reduxjs/toolkit@2.9.0'
+  - '@reduxjs/toolkit@2.9.0 || 2.10.1'
   - '@sanity/mutate@0.11.0-canary.4'
   - '@sanity/sdk@2.1.2'
   - '@swc/core@1.13.5'

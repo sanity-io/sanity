@@ -7,6 +7,8 @@ import readPkgUp from 'read-pkg-up'
 import {hideBin} from 'yargs/helpers'
 import yargs from 'yargs/yargs'
 
+const __dirname = path.dirname(new URL(import.meta.url).pathname)
+
 interface ExecFlags {
   'with-user-token'?: boolean
   'mock-browser-env'?: boolean
@@ -44,9 +46,9 @@ const execScript: CliCommandAction<ExecFlags> = async function execScript(args, 
 
   const sanityDir = path.dirname(sanityPkgPath)
   const threadsDir = path.join(sanityDir, 'lib', '_internal', 'cli', 'threads')
-  const esbuildPath = path.join(threadsDir, 'esbuild.js')
-  const browserEnvPath = path.join(threadsDir, 'registerBrowserEnv.js')
-  const configClientPath = path.join(threadsDir, 'configClient.js')
+  const esbuildPath = path.join(threadsDir, 'esbuild.cjs')
+  const browserEnvPath = path.join(threadsDir, 'registerBrowserEnv.cjs')
+  const configClientPath = path.join(threadsDir, 'configClient.cjs')
 
   if (!(await fs.stat(esbuildPath).catch(() => false))) {
     throw new Error('`sanity` module build error: missing threads')

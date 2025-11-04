@@ -5,6 +5,8 @@ const {register} = require('esbuild-register/dist/node')
 register({
   target: `node${process.version.slice(1)}`,
   jsx: 'automatic',
+  // Force CJS output since sanity/package.json has "type": "module"
+  format: 'cjs',
 
   /**
    * Set 'dynamic-import': false to force esbuild to transpile dynamic import() calls

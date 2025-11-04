@@ -10,6 +10,8 @@ import {getMonorepoAliases} from '../../server/sanityMonorepo'
 import {createReceiver, type WorkerChannelReceiver} from '../../util/workerChannels'
 import {type ValidateDocumentsWorkerData, type ValidationWorkerChannel} from '../validateDocuments'
 
+const __dirname = path.dirname(new URL(import.meta.url).pathname)
+
 async function toArray<T>(asyncIterator: AsyncIterable<T>) {
   const arr: T[] = []
   for await (const i of asyncIterator) arr.push(i)
