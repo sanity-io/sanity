@@ -1818,6 +1818,9 @@ importers:
       '@portabletext/plugin-markdown-shortcuts':
         specifier: ^1.4.15
         version: 1.4.15(@portabletext/editor@2.17.2(@portabletext/sanity-bridge@1.1.17(@sanity/schema@packages+@sanity+schema)(@sanity/types@packages+@sanity+types))(@sanity/schema@packages+@sanity+schema)(@sanity/types@packages+@sanity+types)(@types/react@19.1.17)(react-dom@19.1.1(react@19.1.1))(react@19.1.1)(rxjs@7.8.2))(@types/react@19.1.17)(react@19.1.1)
+      '@portabletext/plugin-one-line':
+        specifier: ^1.1.17
+        version: 1.1.17(@portabletext/editor@2.17.2(@portabletext/sanity-bridge@1.1.17(@sanity/schema@packages+@sanity+schema)(@sanity/types@packages+@sanity+types))(@sanity/schema@packages+@sanity+schema)(@sanity/types@packages+@sanity+types)(@types/react@19.1.17)(react-dom@19.1.1(react@19.1.1))(react@19.1.1)(rxjs@7.8.2))(react@19.1.1)
       '@portabletext/react':
         specifier: ^4.0.3
         version: 4.0.3(react@19.1.1)
@@ -4442,6 +4445,12 @@ packages:
 
   '@portabletext/plugin-markdown-shortcuts@1.4.15':
     resolution: {integrity: sha512-wQuvtZfWvVdNsJDx9b6FfteJvEY6g6spDgWyCuSliCoO7gMjsNYtvIZKXryEFRb3v58zkwhzXRpiMx8LYMr0ww==}
+    peerDependencies:
+      '@portabletext/editor': ^2.17.2
+      react: ^19
+
+  '@portabletext/plugin-one-line@1.1.17':
+    resolution: {integrity: sha512-sEDalkBudA1+Dm9NkPDu14BH1g0rU/dkR95MUxvjCtTwk6EGF8yLdIx2rImNKhAm1FhUoP3v+2TuRsbjYw/2Qw==}
     peerDependencies:
       '@portabletext/editor': ^2.17.2
       react: ^19
@@ -15267,6 +15276,11 @@ snapshots:
       react: 19.1.1
     transitivePeerDependencies:
       - '@types/react'
+
+  '@portabletext/plugin-one-line@1.1.17(@portabletext/editor@2.17.2(@portabletext/sanity-bridge@1.1.17(@sanity/schema@packages+@sanity+schema)(@sanity/types@packages+@sanity+types))(@sanity/schema@packages+@sanity+schema)(@sanity/types@packages+@sanity+types)(@types/react@19.1.17)(react-dom@19.1.1(react@19.1.1))(react@19.1.1)(rxjs@7.8.2))(react@19.1.1)':
+    dependencies:
+      '@portabletext/editor': 2.17.2(@portabletext/sanity-bridge@1.1.17(@sanity/schema@packages+@sanity+schema)(@sanity/types@packages+@sanity+types))(@sanity/schema@packages+@sanity+schema)(@sanity/types@packages+@sanity+types)(@types/react@19.1.17)(react-dom@19.1.1(react@19.1.1))(react@19.1.1)(rxjs@7.8.2)
+      react: 19.1.1
 
   '@portabletext/react@4.0.3(react@19.1.1)':
     dependencies:
