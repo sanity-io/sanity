@@ -85,7 +85,6 @@ export function createPaneLayoutController(): PaneLayoutController {
 
       optionsMap.delete(element)
 
-      // If the focused element is being unmounted, clear focus
       if (focusedElement === element) {
         focusedElement = null
       }
