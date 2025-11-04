@@ -30,6 +30,7 @@ export const FEATURES: Record<string, string> = {
   crossDatasetReferences: 'crossDatasetReferences',
   scheduledPublishing: 'scheduledPublishing',
   sanityTasks: 'sanityTasks',
+  singleDocRelease: 'singleDocRelease',
 }
 /**
  * fetches all the enabled features for this project

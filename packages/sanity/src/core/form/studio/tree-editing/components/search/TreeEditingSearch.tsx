@@ -7,7 +7,7 @@ import {css, styled} from 'styled-components'
 import {Popover, type PopoverProps} from '../../../../../../ui-components'
 import {useTranslation} from '../../../../../i18n/hooks/useTranslation'
 import {useSearchableList} from '../../hooks'
-import {type TreeEditingMenuItem} from '../../types'
+import {type DialogItem} from '../../types'
 import {ITEM_HEIGHT, MAX_DISPLAYED_ITEMS} from './constants'
 import {TreeEditingSearchMenu} from './TreeEditingSearchMenu'
 import {treeEditingSearch} from './utils'
@@ -53,7 +53,7 @@ const StyledTextInput = styled(TextInput)`
 `
 
 interface TreeEditingSearchProps {
-  items: TreeEditingMenuItem[]
+  items: DialogItem[]
   onPathSelect: (path: Path) => void
 }
 

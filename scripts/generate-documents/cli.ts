@@ -73,7 +73,6 @@ const HELP_TEXT = `Usage: tsx --env-file=.env.local ./${path.relative(process.cw
     `
 
 if (args.help) {
-  // eslint-disable-next-line no-console
   console.log(HELP_TEXT)
   process.exit(0)
 }
@@ -115,7 +114,6 @@ run({
   .pipe(
     tap({
       next: (doc) => {
-        // eslint-disable-next-line no-console
         console.log('Created', doc._id)
       },
       error: console.error,

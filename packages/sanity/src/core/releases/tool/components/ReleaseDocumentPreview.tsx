@@ -20,6 +20,7 @@ interface ReleaseDocumentPreviewProps {
   hasValidationError?: boolean
   layout?: PreviewLayoutKey
   isGoingToBePublished?: boolean
+  isCardinalityOneRelease?: boolean
 }
 
 const isArchivedRelease = (releaseState: ReleaseState | undefined) =>
@@ -30,6 +31,7 @@ export function ReleaseDocumentPreview({
   documentTypeName,
   releaseId,
   releaseState,
+  isCardinalityOneRelease,
   documentRevision,
   layout,
   isGoingToBePublished = false,
@@ -37,6 +39,11 @@ export function ReleaseDocumentPreview({
   const documentPresence = useDocumentPresence(documentId)
 
   const intentParams = useMemo(() => {
+    if (isCardinalityOneRelease) {
+      return {
+        scheduledDraft: getReleaseIdFromReleaseDocumentId(releaseId),
+      }
+    }
     if (releaseState === 'published') {
       // We are inspecting this document through the published view of the doc.
       return {
@@ -57,7 +64,7 @@ export function ReleaseDocumentPreview({
     }
 
     return {}
-  }, [releaseState, releaseId, documentRevision])
+  }, [releaseState, releaseId, documentRevision, isCardinalityOneRelease])
 
   const LinkComponent = useMemo(
     () =>
@@ -73,7 +80,7 @@ export function ReleaseDocumentPreview({
               ...intentParams,
             }}
             searchParams={
-              isArchivedRelease(releaseState)
+              isCardinalityOneRelease || isArchivedRelease(releaseState)
                 ? undefined
                 : [
                     [
@@ -88,7 +95,7 @@ export function ReleaseDocumentPreview({
           />
         )
       }),
-    [documentId, documentTypeName, intentParams, releaseState, releaseId],
+    [documentId, documentTypeName, intentParams, releaseState, releaseId, isCardinalityOneRelease],
   )
 
   const previewPresence = useMemo(

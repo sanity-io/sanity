@@ -6,6 +6,7 @@ import {styled} from 'styled-components'
 
 import {MenuButton} from '../../../ui-components'
 import {CreateReleaseDialog} from '../../releases/components/dialog/CreateReleaseDialog'
+import {useReleasesUpsell} from '../../releases/contexts/upsell/useReleasesUpsell'
 import {oversizedButtonStyle} from '../styles'
 import {type ReleaseId, type ReleasesNavMenuItemPropsGetter} from '../types'
 import {ReleasesList} from './ReleasesList'
@@ -29,10 +30,19 @@ export function GlobalPerspectiveMenu({
   menuItemProps?: ReleasesNavMenuItemPropsGetter
 }): React.JSX.Element {
   const [createBundleDialogOpen, setCreateBundleDialogOpen] = useState(false)
+  const {handleOpenDialog: handleOpenReleasesUpsellDialog, mode: releasesUpsellMode} =
+    useReleasesUpsell()
   const styledMenuRef = useRef<HTMLDivElement>(null)
 
   const {isRangeVisible, onScroll, resetRangeVisibility, setScrollContainer, scrollElementRef} =
     useScrollIndicatorVisibility()
+  const handleOpenBundleDialog = useCallback(() => {
+    if (releasesUpsellMode === 'upsell') {
+      handleOpenReleasesUpsellDialog()
+      return
+    }
+    setCreateBundleDialogOpen(true)
+  }, [releasesUpsellMode, handleOpenReleasesUpsellDialog])
 
   const handleClose = useCallback(() => {
     setCreateBundleDialogOpen(false)
@@ -61,7 +71,7 @@ export function GlobalPerspectiveMenu({
               isRangeVisible={isRangeVisible}
               scrollElementRef={scrollElementRef}
               selectedReleaseId={selectedReleaseId}
-              setCreateBundleDialogOpen={setCreateBundleDialogOpen}
+              handleOpenBundleDialog={handleOpenBundleDialog}
               menuItemProps={menuItemProps}
             />
           </StyledMenu>

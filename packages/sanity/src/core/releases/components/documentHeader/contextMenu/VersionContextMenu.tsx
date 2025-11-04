@@ -1,9 +1,9 @@
 import {type ReleaseDocument} from '@sanity/client'
 import {memo, useEffect, useRef, useState} from 'react'
 
+import {type UseScheduledDraftMenuActionsReturn} from '../../../../singleDocRelease/hooks/useScheduledDraftMenuActions'
 import {useDocumentPairPermissions} from '../../../../store/_legacy/grants/documentPairPermissions'
 import {getPublishedId, isPublishedId} from '../../../../util/draftUtils'
-import {isCardinalityOneRelease} from '../../../../util/releaseUtils'
 import {useReleaseOperations} from '../../../store/useReleaseOperations'
 import {useReleasePermissions} from '../../../store/useReleasePermissions'
 import {getReleaseDefaults} from '../../../util/util'
@@ -24,7 +24,8 @@ interface VersionContextMenuProps {
   type: string
   isGoingToUnpublish?: boolean
   release?: ReleaseDocument
-  onChangeSchedule?: () => void
+  isScheduledDraft?: boolean
+  scheduledDraftMenuActions?: UseScheduledDraftMenuActionsReturn
 }
 
 export const VersionContextMenu = memo(function VersionContextMenu(props: VersionContextMenuProps) {
@@ -42,7 +43,8 @@ export const VersionContextMenu = memo(function VersionContextMenu(props: Versio
     type,
     isGoingToUnpublish = false,
     release,
-    onChangeSchedule,
+    isScheduledDraft,
+    scheduledDraftMenuActions,
   } = props
   const isPublished = isPublishedId(documentId) && !isVersion
 
@@ -74,10 +76,8 @@ export const VersionContextMenu = memo(function VersionContextMenu(props: Versio
     }
   }, [checkWithPermissionGuard, createRelease])
 
-  const isScheduledDraft = release && isCardinalityOneRelease(release)
-
   // Scheduled drafts use different menu with publish-now, reschedule, and delete actions
-  if (isScheduledDraft && isVersion && release) {
+  if (isScheduledDraft && isVersion && release && scheduledDraftMenuActions) {
     return (
       <ScheduledDraftContextMenu
         releases={releases}
@@ -85,11 +85,9 @@ export const VersionContextMenu = memo(function VersionContextMenu(props: Versio
         onCreateRelease={onCreateRelease}
         onCreateVersion={onCreateVersion}
         disabled={disabled}
-        type={type}
         isGoingToUnpublish={isGoingToUnpublish}
-        release={release}
-        onChangeSchedule={onChangeSchedule}
         hasCreatePermission={hasCreatePermission}
+        scheduledDraftMenuActions={scheduledDraftMenuActions}
       />
     )
   }

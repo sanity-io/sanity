@@ -47,6 +47,8 @@ export const studioLocaleStrings = defineLocalesResources('studio', {
   'about-dialog.version-info.reload': 'Reload',
   /** "Reload to update"-tooltip when auto updates is enabled and a new version is available */
   'about-dialog.version-info.reload-to-update': 'Reload Studio to update',
+  /** "Development" tooltip in About-dialog */
+  'about-dialog.version-info.tooltip.development': 'Development',
   /** "New version available" tooltip in About-dialog */
   'about-dialog.version-info.tooltip.new-version-available': 'New version available',
   /** "Prerelease" tooltip in About-dialog */
@@ -1294,6 +1296,8 @@ export const studioLocaleStrings = defineLocalesResources('studio', {
   'release.action.add-to-new-release': 'Add to release',
   /** Action message to add document to release */
   'release.action.add-to-release': 'Add to {{title}}',
+  /** Tooltip message for document that is already added to release */
+  'release.action.already-exists-in-release': 'Document already exists in release',
   /** Action message for when document is already in release  */
   'release.action.already-in-release': 'Already in release {{title}}',
   /** Action message for when you click to view all versions you can copy the current document to */
@@ -1336,6 +1340,8 @@ export const studioLocaleStrings = defineLocalesResources('studio', {
     'Successfully set <strong>{{title}}</strong> to be unpublished on release',
   /** Action message for when the view release is pressed */
   'release.action.view-release': 'View release',
+  /** Action message for when the view scheduled drafts is pressed */
+  'release.action.view-scheduled-drafts': 'View scheduled drafts',
   /** Label for banner when release is scheduled */
   'release.banner.scheduled-for-publishing-on': 'Scheduled to be published on {{date}}',
   /** Label for Draft chip in document header */
@@ -1413,7 +1419,7 @@ export const studioLocaleStrings = defineLocalesResources('studio', {
   /** Label for published releases in navbar */
   'release.navbar.published': 'Published',
   /** Tooltip for releases navigation in navbar */
-  'release.navbar.tooltip': 'Releases',
+  'release.navbar.tooltip': 'View scheduling',
   /** The placeholder text when the release doesn't have a title */
   'release.placeholder-untitled-release': 'Untitled release',
   /** Description for warning that the published schedule time is in the past */
@@ -1470,6 +1476,9 @@ export const studioLocaleStrings = defineLocalesResources('studio', {
   'schedule-publish-dialog.description': 'Select when this document should be published.',
   /** Header for the schedule publish dialog */
   'schedule-publish-dialog.header': 'Schedule draft for Publish',
+
+  /** Title for a scheduled draft release */
+  'scheduled-drafts.release.title': 'Scheduled publish',
 
   /** Accessibility label to open search action when the search would go fullscreen (eg on narrower screens) */
   'search.action-open-aria-label': 'Open search',

@@ -3,7 +3,7 @@ import {type ComponentType} from 'react'
 import {styled} from 'styled-components'
 
 import {usePerspective} from '../../perspective/usePerspective'
-import {useReleasesToolAvailable} from '../../releases/hooks/useReleasesToolAvailable'
+import {useReleasesToolAvailable} from '../../schedules/hooks/useReleasesToolAvailable'
 import {ReleasesToolLink} from '../ReleasesToolLink'
 import {type ReleasesNavMenuItemPropsGetter} from '../types'
 import {CurrentGlobalPerspectiveLabel} from './currentGlobalPerspectiveLabel'

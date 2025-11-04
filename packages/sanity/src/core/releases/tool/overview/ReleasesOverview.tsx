@@ -14,11 +14,13 @@ import useDialogTimeZone from '../../../hooks/useDialogTimeZone'
 import {useTimeZone} from '../../../hooks/useTimeZone'
 import {useTranslation} from '../../../i18n'
 import {usePerspective} from '../../../perspective/usePerspective'
+import {useSingleDocReleaseEnabled} from '../../../singleDocRelease/context/SingleDocReleaseEnabledProvider'
+import {useScheduledDraftsEnabled} from '../../../singleDocRelease/hooks/useScheduledDraftsEnabled'
 import {CONTENT_RELEASES_TIME_ZONE_SCOPE} from '../../../studio/constants'
 import {useWorkspace} from '../../../studio/workspace'
+import {isCardinalityOneRelease} from '../../../util/releaseUtils'
 import {CreateReleaseDialog} from '../../components/dialog/CreateReleaseDialog'
 import {useReleasesUpsell} from '../../contexts/upsell/useReleasesUpsell'
-import {useScheduledDraftsEnabled} from '../../hooks/useScheduledDraftsEnabled'
 import {releasesLocaleNamespace} from '../../i18n'
 import {isReleaseDocument} from '../../store/types'
 import {useActiveReleases} from '../../store/useActiveReleases'
@@ -32,6 +34,7 @@ import {Table, type TableRowProps} from '../components/Table/Table'
 import {type TableSort} from '../components/Table/TableProvider'
 import {CalendarPopover} from './CalendarPopover'
 import {CardinalityViewPicker} from './CardinalityViewPicker'
+import {ConfirmActiveScheduledDraftsBanner} from './ConfirmActiveScheduledDraftsBanner'
 import {DraftsDisabledBanner} from './DraftsDisabledBanner'
 import {
   buildReleasesSearchParams,
@@ -46,7 +49,9 @@ import {ReleaseMenuButtonWrapper} from './ReleaseMenuButtonWrapper'
 import {ReleasesEmptyState} from './ReleasesEmptyState'
 import {releasesOverviewColumnDefs} from './ReleasesOverviewColumnDefs'
 import {ScheduledDraftMenuButtonWrapper} from './ScheduledDraftMenuButtonWrapper'
+import {ScheduledDraftsEmptyState} from './ScheduledDraftsEmptyState'
 import {scheduledDraftsOverviewColumnDefs} from './ScheduledDraftsOverviewColumnDefs'
+import {SchedulesUpsell} from './SchedulesUpsell'
 import {useTimezoneAdjustedDateTimeRange} from './useTimezoneAdjustedDateTimeRange'
 
 const MotionButton = motion.create(Button)
@@ -65,20 +70,21 @@ const DEFAULT_ARCHIVED_RELEASES_OVERVIEW_SORT: TableSort = {
 export function ReleasesOverview() {
   const {data: allReleases, loading: loadingReleases} = useActiveReleases()
   const {data: allArchivedReleases} = useArchivedReleases()
-  const {mode} = useReleasesUpsell()
+  const {mode: releasesUpsellMode, handleOpenDialog: handleOpenReleasesUpsellDialog} =
+    useReleasesUpsell()
+  const {mode: scheduledDraftsMode} = useSingleDocReleaseEnabled()
   const isScheduledDraftsEnabled = useScheduledDraftsEnabled()
-  const {
-    document: {
-      drafts: {enabled: isDraftModelEnabled},
-    },
-  } = useWorkspace()
+  const {document, releases: releasesConfig} = useWorkspace()
+  const isReleasesEnabled = Boolean(releasesConfig?.enabled)
+  const isDraftModelEnabled = document?.drafts?.enabled
 
   const router = useRouter()
   const [releaseGroupMode, setReleaseGroupMode] = useState<Mode>(getInitialReleaseGroupMode(router))
 
   const [cardinalityView, setCardinalityView] = useState<CardinalityView>(
-    isScheduledDraftsEnabled ? getInitialCardinalityView(router) : 'releases',
+    getInitialCardinalityView({router, isScheduledDraftsEnabled, isReleasesEnabled}),
   )
+
   const [releaseFilterDate, setReleaseFilterDate] = useState<Date | undefined>(
     getInitialFilterDate(router),
   )
@@ -130,11 +136,14 @@ export function ReleasesOverview() {
 
   const [scrollContainerRef, setScrollContainerRef] = useState<HTMLDivElement | null>(null)
 
-  const hasReleases = allReleases.length > 0 || allArchivedReleases.length > 0
+  const hasReleases = releases.length > 0 || archivedReleases.length > 0
   // banner that shows when drafts mode is disabled, or scheduled drafts are disabled
   // but there are still scheduled drafts
   const showDraftsDisabledBanner =
     cardinalityView === 'drafts' && (!isDraftModelEnabled || !isScheduledDraftsEnabled)
+  const showConfirmActiveScheduledDraftsBanner =
+    cardinalityView === 'drafts' &&
+    releases.some((release) => release.state === 'active' && isCardinalityOneRelease(release))
   const loadingOrHasReleases = loading || hasReleases
   const hasNoReleases = !loading && !hasReleases
 
@@ -267,9 +276,13 @@ export function ReleasesOverview() {
     archivedReleases.length,
   ])
 
-  const handleOnClickCreateRelease = useCallback(async () => {
+  const handleOnClickCreateRelease = useCallback(() => {
+    if (releasesUpsellMode === 'upsell') {
+      handleOpenReleasesUpsellDialog()
+      return
+    }
     setIsCreateReleaseDialogOpen(true)
-  }, [])
+  }, [releasesUpsellMode, handleOpenReleasesUpsellDialog])
 
   const createReleaseButton = useMemo(() => {
     if (isScheduledDraftsEnabled && cardinalityView === 'drafts') return null
@@ -277,7 +290,9 @@ export function ReleasesOverview() {
     return (
       <Button
         icon={AddIcon}
-        disabled={!hasCreatePermission || isCreateReleaseDialogOpen || mode === 'disabled'}
+        disabled={
+          !hasCreatePermission || isCreateReleaseDialogOpen || releasesUpsellMode === 'disabled'
+        }
         onClick={handleOnClickCreateRelease}
         text={tCore('release.action.create-new')}
         tooltipProps={{
@@ -290,7 +305,7 @@ export function ReleasesOverview() {
     cardinalityView,
     hasCreatePermission,
     isCreateReleaseDialogOpen,
-    mode,
+    releasesUpsellMode,
     handleOnClickCreateRelease,
     tCore,
     isScheduledDraftsEnabled,
@@ -348,23 +363,30 @@ export function ReleasesOverview() {
   )
 
   const filteredReleases = useMemo(() => {
-    if (!releaseFilterDate) return releaseGroupMode === 'active' ? tableReleases : archivedReleases
+    const filterActiveIfNeeded = (items: TableRelease[]) =>
+      cardinalityView === 'drafts' ? items.filter((release) => release.state !== 'active') : items
+
+    if (!releaseFilterDate) {
+      return filterActiveIfNeeded(releaseGroupMode === 'active' ? tableReleases : archivedReleases)
+    }
 
     const [startOfDayForTimeZone, endOfDayForTimeZone] =
       getTimezoneAdjustedDateTimeRange(releaseFilterDate)
 
-    return tableReleases.filter((release) => {
+    const dateFiltered = tableReleases.filter((release) => {
       if (!release.publishAt || release.metadata.releaseType !== 'scheduled') return false
-
       const publishDateUTC = new Date(release.publishAt)
       return publishDateUTC >= startOfDayForTimeZone && publishDateUTC <= endOfDayForTimeZone
     })
+
+    return filterActiveIfNeeded(dateFiltered)
   }, [
     releaseFilterDate,
     releaseGroupMode,
     tableReleases,
     archivedReleases,
     getTimezoneAdjustedDateTimeRange,
+    cardinalityView,
   ])
 
   const renderCalendarFilter = useMemo(() => {
@@ -395,31 +417,9 @@ export function ReleasesOverview() {
     ? DEFAULT_ARCHIVED_RELEASES_OVERVIEW_SORT
     : DEFAULT_RELEASES_OVERVIEW_SORT
 
-  const NoRelease = useCallback(() => {
-    return (
-      <Flex
-        direction="column"
-        flex={1}
-        justify={hasNoReleases ? 'center' : 'flex-start'}
-        align={hasNoReleases ? 'center' : 'flex-start'}
-        style={{position: 'relative'}}
-      >
-        <ReleasesEmptyState
-          createReleaseButton={createReleaseButton}
-          onClickCreateRelease={handleOnClickCreateRelease}
-        />
-      </Flex>
-    )
-  }, [hasNoReleases, createReleaseButton, handleOnClickCreateRelease])
-
   const releasesEmptyStateComponent = useCallback(
-    () => (
-      <ReleasesEmptyState
-        createReleaseButton={createReleaseButton}
-        onClickCreateRelease={handleOnClickCreateRelease}
-      />
-    ),
-    [createReleaseButton, handleOnClickCreateRelease],
+    () => <ReleasesEmptyState createReleaseButton={createReleaseButton} />,
+    [createReleaseButton],
   )
 
   const tableEmptyState = useMemo(() => {
@@ -439,81 +439,92 @@ export function ReleasesOverview() {
       <Flex flex={1}>
         {showCalendar && renderCalendarFilter}
 
-        {hasNoReleases ? (
-          <NoRelease />
-        ) : (
-          <>
-            <Flex direction="column" flex={1} style={{position: 'relative'}}>
-              <Card flex="none" padding={3}>
-                <Flex align="center" flex={1} gap={3}>
-                  <Inline>
-                    {!showCalendar && <CalendarPopover content={renderCalendarFilter} />}
-                    <CardinalityViewPicker
-                      cardinalityView={cardinalityView}
-                      loading={loading}
-                      onCardinalityViewChange={handleCardinalityViewChange}
-                      isScheduledDraftsEnabled={isScheduledDraftsEnabled}
-                      isDraftModelEnabled={isDraftModelEnabled}
-                      allReleases={allReleases}
-                    />
-                  </Inline>
-
-                  <Flex flex={1} gap={1}>
-                    {loadingOrHasReleases &&
-                      (releaseFilterDate ? (
-                        <DateFilterButton
-                          filterDate={releaseFilterDate}
-                          onClear={clearFilterDate}
-                        />
-                      ) : (
-                        currentArchivedPicker
-                      ))}
-                  </Flex>
-                  <Flex flex="none" gap={2}>
-                    <Button
-                      icon={EarthGlobeIcon}
-                      iconRight={ChevronDownIcon}
-                      mode="bleed"
-                      text={`${timeZone.abbreviation} (${timeZone.namePretty})`}
-                      onClick={dialogTimeZoneShow}
-                    />
-                    {DialogTimeZone && <DialogTimeZone {...dialogProps} />}
-                    {loadingOrHasReleases && createReleaseButton}
-                  </Flex>
-                </Flex>
-              </Card>
-              {showDraftsDisabledBanner && (
-                <DraftsDisabledBanner
-                  isDraftModelEnabled={isDraftModelEnabled}
+        <Flex direction="column" flex={1} style={{position: 'relative'}}>
+          <Card flex="none" padding={3}>
+            <Flex align="center" flex={1} gap={3}>
+              <Inline>
+                {!showCalendar && <CalendarPopover content={renderCalendarFilter} />}
+                <CardinalityViewPicker
+                  cardinalityView={cardinalityView}
+                  loading={loading}
+                  onCardinalityViewChange={handleCardinalityViewChange}
                   isScheduledDraftsEnabled={isScheduledDraftsEnabled}
+                  allReleases={allReleases}
+                  isReleasesEnabled={isReleasesEnabled}
+                  isDraftModelEnabled={isDraftModelEnabled}
                 />
-              )}
-              <Box
-                ref={setScrollContainerRef}
-                marginTop={showDraftsDisabledBanner ? 0 : 3}
-                overflow={'auto'}
-              >
-                {(loading || hasReleases) && (
-                  <Table<TableRelease>
-                    // for resetting filter and sort on table when filer changed
-                    key={releaseFilterDate ? 'by_date' : releaseGroupMode}
-                    defaultSort={defaultTableSort}
-                    loading={loadingTableData}
-                    data={filteredReleases}
-                    columnDefs={tableColumns}
-                    emptyState={tableEmptyState}
-                    // eslint-disable-next-line @sanity/i18n/no-attribute-string-literals
-                    rowId="_id"
-                    rowActions={renderRowActions}
-                    rowProps={getRowProps}
-                    scrollContainerRef={scrollContainerRef}
-                    hideTableInlinePadding
-                  />
-                )}
-              </Box>
+              </Inline>
+
+              <Flex flex={1} gap={1}>
+                {loadingOrHasReleases &&
+                  (releaseFilterDate ? (
+                    <DateFilterButton filterDate={releaseFilterDate} onClear={clearFilterDate} />
+                  ) : (
+                    currentArchivedPicker
+                  ))}
+              </Flex>
+              <Flex flex="none" gap={2}>
+                <Button
+                  icon={EarthGlobeIcon}
+                  iconRight={ChevronDownIcon}
+                  mode="bleed"
+                  text={`${timeZone.abbreviation} (${timeZone.namePretty})`}
+                  onClick={dialogTimeZoneShow}
+                />
+                {DialogTimeZone && <DialogTimeZone {...dialogProps} />}
+                {loadingOrHasReleases && createReleaseButton}
+              </Flex>
             </Flex>
-          </>
-        )}
+          </Card>
+          {showDraftsDisabledBanner && (
+            <DraftsDisabledBanner
+              isDraftModelEnabled={isDraftModelEnabled}
+              isScheduledDraftsEnabled={isScheduledDraftsEnabled}
+              allReleases={allReleases}
+            />
+          )}
+          {showConfirmActiveScheduledDraftsBanner && (
+            <ConfirmActiveScheduledDraftsBanner releases={releases} />
+          )}
+
+          {hasNoReleases ? (
+            <>
+              {cardinalityView === 'releases' ? (
+                releasesUpsellMode === 'upsell' ? (
+                  <SchedulesUpsell cardinalityView={cardinalityView} />
+                ) : (
+                  <ReleasesEmptyState createReleaseButton={createReleaseButton} />
+                )
+              ) : scheduledDraftsMode === 'upsell' ? (
+                <SchedulesUpsell cardinalityView={cardinalityView} />
+              ) : (
+                <ScheduledDraftsEmptyState />
+              )}
+            </>
+          ) : (
+            <Box
+              ref={setScrollContainerRef}
+              marginTop={showDraftsDisabledBanner || showConfirmActiveScheduledDraftsBanner ? 0 : 3}
+              overflow={'auto'}
+            >
+              <Table<TableRelease>
+                // for resetting filter and sort on table when filer changed
+                key={releaseFilterDate ? 'by_date' : releaseGroupMode}
+                defaultSort={defaultTableSort}
+                loading={loadingTableData}
+                data={filteredReleases}
+                columnDefs={tableColumns}
+                emptyState={tableEmptyState}
+                // eslint-disable-next-line @sanity/i18n/no-attribute-string-literals
+                rowId="_id"
+                rowActions={renderRowActions}
+                rowProps={getRowProps}
+                scrollContainerRef={scrollContainerRef}
+                hideTableInlinePadding
+              />
+            </Box>
+          )}
+        </Flex>
       </Flex>
       {renderCreateReleaseDialog()}
     </Flex>

@@ -126,7 +126,7 @@ const addBlueprintsCommand: CliCommandDefinition<BlueprintsAddFlags> = {
     }
 
     const {initBlueprintConfig} = await import('@sanity/runtime-cli/cores')
-    const {blueprintAddCore} = await import('@sanity/runtime-cli/cores/blueprints')
+    const {functionAddCore} = await import('@sanity/runtime-cli/cores/functions')
 
     const cmdConfig = await initBlueprintConfig({
       bin: 'sanity',
@@ -139,18 +139,17 @@ const addBlueprintsCommand: CliCommandDefinition<BlueprintsAddFlags> = {
     let userWantsFnHelpers = flags.helpers || flags['fn-helpers']
     if (flags['no-fn-helpers'] === true) userWantsFnHelpers = false // override
 
-    const {success, error} = await blueprintAddCore({
+    const {success, error} = await functionAddCore({
       ...cmdConfig.value,
-      args: {type: resourceType},
       flags: {
-        'example': flags.example,
-        'name': flags.n ?? flags.name,
-        'fn-type': flags['fn-type'],
-        'language': flags.lang ?? flags['fn-language'],
-        'javascript': flags.js || flags.javascript,
-        'fn-helpers': userWantsFnHelpers,
-        'fn-installer': flags.installer ?? flags['fn-installer'],
-        'install': flags.i || flags.install,
+        example: flags.example,
+        name: flags.n ?? flags.name,
+        type: flags['fn-type'],
+        language: flags.lang ?? flags['fn-language'],
+        javascript: flags.js || flags.javascript,
+        helpers: userWantsFnHelpers,
+        installer: flags.installer ?? flags['fn-installer'],
+        install: flags.i || flags.install,
       },
     })
 

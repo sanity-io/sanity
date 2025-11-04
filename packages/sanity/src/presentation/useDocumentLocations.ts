@@ -5,7 +5,6 @@ import {
   type PreviewableType,
   useDocumentPreviewStore,
   useDocumentStore,
-  usePerspective,
 } from 'sanity'
 
 import {
@@ -14,6 +13,7 @@ import {
   type DocumentLocationsState,
   type DocumentLocationsStatus,
 } from './types'
+import {usePresentationPerspectiveStack} from './usePresentationPerspectiveStack'
 
 const INITIAL_STATE: DocumentLocationsState = {locations: []}
 
@@ -30,7 +30,7 @@ export function useDocumentLocations(props: {
   const documentStore = useDocumentStore()
   const documentPreviewStore = useDocumentPreviewStore()
 
-  const {perspectiveStack} = usePerspective()
+  const perspectiveStack = usePresentationPerspectiveStack()
   const [locationsState, setLocationsState] = useState<DocumentLocationsState>(INITIAL_STATE)
 
   const resolver = resolvers && (typeof resolvers === 'function' ? resolvers : resolvers[type.name])

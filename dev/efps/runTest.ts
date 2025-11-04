@@ -12,7 +12,6 @@ interface RunTestOptions {
   headless: boolean
   key: string
   log: (text: string) => void
-  projectId: string
   recordVideo: boolean
   resultsDir: string
   studioUrl: string
@@ -25,7 +24,6 @@ export async function runTest({
   headless,
   key,
   log,
-  projectId,
   recordVideo,
   resultsDir,
   studioUrl,
@@ -53,7 +51,7 @@ export async function runTest({
             origin: studioUrl,
             localStorage: [
               {
-                name: `__studio_auth_token_${projectId}`,
+                name: `__studio_auth_token_${client.config().projectId}`,
                 value: JSON.stringify({
                   token: client.config().token,
                   time: new Date().toISOString(),

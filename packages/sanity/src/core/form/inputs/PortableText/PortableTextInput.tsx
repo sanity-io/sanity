@@ -30,6 +30,7 @@ import {
 } from 'react'
 
 import {useTranslation} from '../../../i18n'
+import {usePerspective} from '../../../perspective/usePerspective'
 import {EMPTY_ARRAY} from '../../../util'
 import {
   PortableTextInputCollapsed,
@@ -42,8 +43,13 @@ import {type ResolvedUploader} from '../../studio/uploads/types'
 import {type PortableTextInputProps} from '../../types'
 import {extractPastedFiles} from '../common/fileTarget/utils/extractFiles'
 import {Compositor} from './Compositor'
+import {useFullscreenPTE} from './contexts/fullscreen'
 import {PortableTextMarkersProvider} from './contexts/PortableTextMarkers'
 import {PortableTextMemberItemsProvider} from './contexts/PortableTextMembers'
+import {
+  type PortableTextOptimisticDiffApi,
+  useOptimisticPortableTextDiff,
+} from './diff/useOptimisticPortableTextDiff'
 import {usePortableTextMemberItemsFromProps} from './hooks/usePortableTextMembers'
 import {InvalidValue as RespondToInvalidContent} from './InvalidValue'
 import {PortableTextEditorPlugins} from './object/Plugins'
@@ -124,6 +130,7 @@ export function PortableTextInput(props: PortableTextInputProps): ReactNode {
     value,
     resolveUploader,
     onUpload,
+    displayInlineChanges,
   } = props
 
   const {onBlur, ref: elementRef} = elementProps
@@ -139,30 +146,41 @@ export function PortableTextInput(props: PortableTextInputProps): ReactNode {
     ),
   )
 
+  const {selectedPerspective} = usePerspective()
+
+  const {rangeDecorations: diffRangeDecorations, onOptimisticChange} =
+    useOptimisticPortableTextDiff({
+      upstreamValue: props.hasUpstreamVersion ? props.compareValue : [],
+      definitiveValue: value,
+      perspective: selectedPerspective,
+      displayInlineChanges,
+    })
+
   const {t} = useTranslation()
   const [ignoreValidationError, setIgnoreValidationError] = useState(false)
   const [invalidValue, setInvalidValue] = useState<InvalidValue | null>(null)
-  const [isFullscreen, setIsFullscreen] = useState(initialFullscreen ?? false)
   const [isActive, setIsActive] = useState(initialActive ?? true)
   const [hasFocusWithin, setHasFocusWithin] = useState(false)
   const [ready, setReady] = useState(false)
   const telemetry = useTelemetry()
 
+  // Use fullscreen context to persist state across navigation
+  const {getFullscreenPath, setFullscreenPath} = useFullscreenPTE()
+  const isFullscreen = Boolean(getFullscreenPath(path)) || (initialFullscreen ?? false)
+
   const toast = useToast()
 
   const handleToggleFullscreen = useCallback(() => {
-    setIsFullscreen((v) => {
-      const next = !v
-      if (next) {
-        telemetry.log(PortableTextInputExpanded)
-      } else {
-        telemetry.log(PortableTextInputCollapsed)
-      }
+    const next = !isFullscreen
+    if (next) {
+      telemetry.log(PortableTextInputExpanded)
+    } else {
+      telemetry.log(PortableTextInputCollapsed)
+    }
 
-      onFullScreenChange?.(next)
-      return next
-    })
-  }, [onFullScreenChange, telemetry])
+    setFullscreenPath(path, next)
+    onFullScreenChange?.(next)
+  }, [isFullscreen, onFullScreenChange, path, setFullscreenPath, telemetry])
 
   // Reset invalidValue if new value is coming in from props
   useEffect(() => {
@@ -285,11 +303,24 @@ export function PortableTextInput(props: PortableTextInputProps): ReactNode {
   const previousRangeDecorations = useRef<RangeDecoration[]>([])
 
   const rangeDecorations = useMemo((): RangeDecoration[] => {
-    const result = [...(rangeDecorationsProp || []), ...presenceCursorDecorations]
+    // Portable Text Editor cannot reliably handle overlapping range decorations. In the worst case,
+    // this can cause bugs such as diff segments being repeated, which is highly confusing.
+    //
+    // Range decorations cannot simply be merged, because they may rely on the `onMoved` API, which
+    // expects each instance to be treated discretely.
+    //
+    // To avoid confusion, no other range decorations are rendered while inline diffs are switched on.
+    //
+    // Users are able to quickly toggle inline diffs on and off from the Studio UI, so this is a
+    // reasonable trade-off for now.
+    const result: RangeDecoration[] = displayInlineChanges
+      ? diffRangeDecorations
+      : [...(rangeDecorationsProp || []), ...presenceCursorDecorations]
+
     const reconciled = immutableReconcile(previousRangeDecorations.current, result)
     previousRangeDecorations.current = reconciled
     return reconciled
-  }, [presenceCursorDecorations, rangeDecorationsProp])
+  }, [diffRangeDecorations, displayInlineChanges, presenceCursorDecorations, rangeDecorationsProp])
 
   const uploadFile = useCallback(
     (file: File, resolvedUploader: ResolvedUploader) => {
@@ -384,7 +415,10 @@ export function PortableTextInput(props: PortableTextInputProps): ReactNode {
                 schema: schemaType,
               }}
             >
-              <EditorChangePlugin onChange={handleEditorChange} />
+              <EditorChangePlugin
+                onChange={handleEditorChange}
+                onOptimisticChange={onOptimisticChange}
+              />
               <EditorRefPlugin ref={editorRef} />
               <PatchesPlugin path={path} />
               <UpdateReadOnlyPlugin readOnly={readOnly || !ready} />
@@ -421,7 +455,11 @@ export function PortableTextInput(props: PortableTextInputProps): ReactNode {
  *
  * @internal
  */
-function EditorChangePlugin(props: {onChange: (change: EditorChange) => void}) {
+function EditorChangePlugin(
+  props: {
+    onChange: (change: EditorChange) => void
+  } & Pick<PortableTextOptimisticDiffApi, 'onOptimisticChange'>,
+) {
   const handleEditorEvent = useCallback(
     (event: EditorEmittedEvent) => {
       switch (event.type) {
@@ -468,6 +506,9 @@ function EditorChangePlugin(props: {onChange: (change: EditorChange) => void}) {
           props.onChange(event)
           break
         case 'patch': {
+          if (event.patch.type === 'diffMatchPatch' && event.patch.origin === 'local') {
+            props.onOptimisticChange(event.patch)
+          }
           props.onChange(event)
           break
         }

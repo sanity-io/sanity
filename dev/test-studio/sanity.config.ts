@@ -2,11 +2,6 @@ import {assist} from '@sanity/assist'
 import {colorInput} from '@sanity/color-input'
 import {googleMapsInput} from '@sanity/google-maps-input'
 import {BookIcon} from '@sanity/icons'
-import {koKRLocale} from '@sanity/locale-ko-kr'
-import {nbNOLocale} from '@sanity/locale-nb-no'
-import {nnNOLocale} from '@sanity/locale-nn-no'
-import {ptPTLocale} from '@sanity/locale-pt-pt'
-import {svSELocale} from '@sanity/locale-sv-se'
 import {SanityMonogram} from '@sanity/logos'
 import {debugSecrets} from '@sanity/preview-url-secret/sanity-plugin-debug-secrets'
 import {visionTool} from '@sanity/vision'
@@ -44,7 +39,6 @@ import {
   CustomToolMenu,
   studioComponentsPlugin,
 } from './components/studioComponents'
-import {GoogleLogo, TailwindLogo, VercelLogo} from './components/workspaceLogos'
 import {resolveDocumentActions as documentActions} from './documentActions'
 import {TestVersionAction} from './documentActions/actions/TestVersionAction'
 import {assistFieldActionGroup} from './fieldActions/assistFieldActionGroup'
@@ -57,19 +51,13 @@ import {wave} from './plugins/input/wave-plugin'
 import {languageFilter} from './plugins/language-filter'
 import {routerDebugTool} from './plugins/router-debug'
 import {ArchiveAndDeleteCustomAction} from './releases/customReleaseActions'
-// eslint-disable-next-line import/extensions
-import {theme as tailwindTheme} from './sanity.theme.mjs'
 import {createSchemaTypes} from './schema'
 import {StegaDebugger} from './schema/debug/components/DebugStega'
 import {CustomNavigator} from './schema/presentation/CustomNavigator'
 import {types as presentationNextSanitySchemaTypes} from './schema/presentation/next-sanity'
 import {types as presentationPreviewKitSchemaTypes} from './schema/presentation/preview-kit'
 import {defaultDocumentNode, newDocumentOptions, structure} from './structure'
-import {googleTheme} from './themes/google'
-import {vercelTheme} from './themes/vercel'
 import {workshopTool} from './workshop'
-
-const localePlugins = [koKRLocale(), nbNOLocale(), nnNOLocale(), ptPTLocale(), svSELocale()]
 
 // @ts-expect-error - defined by vite
 const isStaging = globalThis.__SANITY_STAGING__ === true
@@ -102,8 +90,10 @@ const sharedSettings = ({projectId}: {projectId: string}) => {
     },
 
     beta: {
-      treeArrayEditing: {
-        enabled: true,
+      form: {
+        enhancedObjectDialog: {
+          enabled: true,
+        },
       },
     },
 
@@ -389,6 +379,27 @@ export default defineConfig([
     mediaLibrary: {
       enabled: true,
     },
+    [QUOTA_EXCLUDED_RELEASES_ENABLED]: true,
+  },
+  {
+    name: 'growth',
+    title: 'Growth (staging)',
+
+    projectId: 'qroupali',
+    dataset: 'production',
+    ...envConfig.staging,
+    plugins: [sharedSettings({projectId: 'qroupali'})],
+    basePath: '/growth',
+    auth: {
+      loginMethod: 'token',
+    },
+    unstable_tasks: {
+      enabled: true,
+    },
+    mediaLibrary: {
+      enabled: true,
+    },
+    [QUOTA_EXCLUDED_RELEASES_ENABLED]: true,
   },
   {
     name: 'media-library-playground',
@@ -456,48 +467,6 @@ export default defineConfig([
         toolMenu: CustomToolMenu,
       },
     },
-    mediaLibrary: {
-      enabled: true,
-    },
-  },
-  {
-    name: 'google-theme',
-    title: 'Google Colors',
-    projectId: 'ppsg7ml5',
-    dataset: 'test',
-    ...envConfig.production,
-    plugins: [sharedSettings({projectId: 'ppsg7ml5'})],
-    basePath: '/google',
-    theme: googleTheme,
-    icon: GoogleLogo,
-    mediaLibrary: {
-      enabled: true,
-    },
-  },
-  {
-    name: 'vercel-theme',
-    title: 'Vercel Colors',
-    projectId: 'ppsg7ml5',
-    dataset: 'test',
-    ...envConfig.production,
-    plugins: [sharedSettings({projectId: 'ppsg7ml5'})],
-    basePath: '/vercel',
-    theme: vercelTheme,
-    icon: VercelLogo,
-    mediaLibrary: {
-      enabled: true,
-    },
-  },
-  {
-    name: 'tailwind-theme',
-    title: 'Tailwind Colors',
-    projectId: 'ppsg7ml5',
-    dataset: 'test',
-    ...envConfig.production,
-    plugins: [sharedSettings({projectId: 'ppsg7ml5'})],
-    basePath: '/tailwind',
-    theme: tailwindTheme,
-    icon: TailwindLogo,
     mediaLibrary: {
       enabled: true,
     },

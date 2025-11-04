@@ -438,7 +438,7 @@ export type AppsOptions = {
   canvas?: {
     enabled: boolean
     /**
-     * To allow the "Link to canvas" action on localhost, or in studios not listed under Studios in sanity.io/manage
+     * To allow the "Link to canvas" action on localhost, or in studios not listed under Studios in https://www.sanity.io/manage
      * provide a fallback origin as a string.
      *
      * The string must be the exactly equal `name` as shown for the Studio in manage, and the studio must have create-manifest.json available.
@@ -1237,16 +1237,15 @@ export interface MediaLibraryConfig {
  * Configuration for studio beta features.
  * */
 export interface BetaFeatures {
-  /**
-   * @beta
-   * @hidden
-   * @deprecated beta feature is no longer available.
-   * */
-  treeArrayEditing?: {
+  /** beta features with the form namespace */
+  form?: {
     /**
-     * @deprecated beta feature is no longer available.
+     * Enhanced Object Dialog is a new dialog for editing objects in the studio.
+     * @beta
      */
-    enabled: boolean
+    enhancedObjectDialog?: {
+      enabled: boolean
+    }
   }
 
   /**
@@ -1266,7 +1265,7 @@ export interface BetaFeatures {
     startInCreateEnabled?: boolean
 
     /**
-     * To show the "Start in Create" button on localhost, or in studios not listed under Studios in sanity.io/manage
+     * To show the "Start in Create" button on localhost, or in studios not listed under Studios in https://www.sanity.io/manage
      * provide a fallback origin as a string.
      *
      * The string must be the exactly equal `name` as shown for the Studio in manage, and the studio must have create-manifest.json available.

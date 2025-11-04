@@ -19,7 +19,6 @@ interface UpsellDataProps {
   feature: string
 }
 
-/** @internal */
 export const useUpsellData = ({dataUri, feature}: UpsellDataProps) => {
   const [upsellData, setUpsellData] = useState<UpsellData | null>(null)
   const telemetry = useTelemetry()

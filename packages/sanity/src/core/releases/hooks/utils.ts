@@ -4,6 +4,10 @@ import {type PerspectiveStack, type ReleaseId} from '../../perspective/types'
 import {isCardinalityOneRelease} from '../../util/releaseUtils'
 import {getReleaseIdFromReleaseDocumentId} from '../util/getReleaseIdFromReleaseDocumentId'
 
+/**
+ * Sorts releases by their release type and created date.
+ * @internal
+ */
 export function sortReleases(releases: ReleaseDocument[] = []): ReleaseDocument[] {
   // The order should always be:
   // [undecided (sortByCreatedAt), scheduled(sortBy publishAt || metadata.intendedPublishAt), asap(sortByCreatedAt)]

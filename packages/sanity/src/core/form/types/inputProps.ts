@@ -32,12 +32,11 @@ import {
 } from 'react'
 
 import {type FormPatch, type PatchEvent} from '../patch'
-import {type FormFieldGroup, type ProvenanceDiffAnnotation} from '../store'
+import {type FormFieldGroup} from '../store'
 import {
   type ArrayOfObjectsFormNode,
   type ArrayOfPrimitivesFormNode,
   type BooleanFormNode,
-  type NodeDiffProps,
   type NumberFormNode,
   type ObjectFormNode,
   type StringFormNode,
@@ -70,7 +69,7 @@ export interface OnPathFocusPayload {
 /**
  * @hidden
  * @public */
-export interface BaseInputProps extends NodeDiffProps<ProvenanceDiffAnnotation> {
+export interface BaseInputProps {
   renderDefault: (props: InputProps) => React.JSX.Element
   /**
    * Whether the input should display inline changes. Inline changes express how a field's value
@@ -187,7 +186,7 @@ export interface ObjectInputProps<
    * because the root input may be wrapped in a React context using the Components API,
    * which is utilized by inputs in the form.
    */
-  __internal_arrayEditingModal?: ReactNode
+  __internal_enhancedbjectDialog?: ReactNode
 }
 
 /**

@@ -1,5 +1,10 @@
 import {useTelemetry} from '@sanity/telemetry/react'
-import {type ObjectSchemaType, type SanityDocument, type SanityDocumentLike} from '@sanity/types'
+import {
+  type ObjectSchemaType,
+  type Path,
+  type SanityDocument,
+  type SanityDocumentLike,
+} from '@sanity/types'
 import {useToast} from '@sanity/ui'
 import {fromString as pathFromString, resolveKeyedPath} from '@sanity/util/paths'
 import {memo, useCallback, useEffect, useMemo, useRef, useState} from 'react'
@@ -16,6 +21,7 @@ import {
   isPerspectiveWriteable,
   isVersionId,
   type PartialContext,
+  pathToString,
   selectUpstreamVersion,
   useActiveReleases,
   useCopyPaste,
@@ -105,7 +111,12 @@ export const DocumentPaneProvider = memo((props: DocumentPaneProviderProps) => {
     document: {
       drafts: {enabled: isDraftModelEnabled},
     },
+    beta,
   } = useWorkspace()
+
+  const enhancedObjectDialogEnabled = useMemo(() => {
+    return beta?.form?.enhancedObjectDialog?.enabled
+  }, [beta])
 
   const {selectedReleaseId, selectedPerspectiveName} = useMemo(() => {
     // TODO: COREL - Remove this after updating sanity-assist to use <PerspectiveProvider>
@@ -317,6 +328,26 @@ export const DocumentPaneProvider = memo((props: DocumentPaneProviderProps) => {
     [documentActions, documentActionsProps],
   )
 
+  const handlePathOpen = useCallback(
+    (path: Path) => {
+      // Update internal open path
+      onPathOpen(path)
+
+      if (enhancedObjectDialogEnabled) {
+        /**
+         * Before we used to set the path open based on the focus path
+         * Now we set it based on open path, which changes what it represents and is something that could become a source of confusion.
+         * There is upcoming work to refactor this and other aspects of the control of the focus path which means that this might return to the focus path in the future.
+         */
+        const nextPath = pathToString(path)
+        if (params.path !== nextPath) {
+          setPaneParams({...params, path: nextPath})
+        }
+      }
+    },
+    [onPathOpen, params, setPaneParams, enhancedObjectDialogEnabled],
+  )
+
   // Resolve document badges
   const badges = useMemo(
     () => documentBadges({schemaType: documentType, documentId}),
@@ -520,7 +551,7 @@ export const DocumentPaneProvider = memo((props: DocumentPaneProviderProps) => {
         onBlur,
         onChange,
         onFocus,
-        onPathOpen,
+        onPathOpen: handlePathOpen,
         onHistoryClose: handleHistoryClose,
         onHistoryOpen: handleHistoryOpen,
         onInspectClose: handleLegacyInspectClose,
@@ -583,7 +614,7 @@ export const DocumentPaneProvider = memo((props: DocumentPaneProviderProps) => {
       onBlur,
       onChange,
       onFocus,
-      onPathOpen,
+      handlePathOpen,
       handleHistoryClose,
       handleHistoryOpen,
       handleLegacyInspectClose,
@@ -636,13 +667,15 @@ export const DocumentPaneProvider = memo((props: DocumentPaneProviderProps) => {
         onProgrammaticFocus(pathFromUrl)
       }
 
-      // remove the `path`-param from url after we have consumed it as the initial focus path
-      paneRouter.setParams(restParams)
+      if (!enhancedObjectDialogEnabled) {
+        // remove the `path`-param from url after we have consumed it as the initial focus path
+        paneRouter.setParams(restParams)
+      }
     }
     pathRef.current = params.path
 
     return undefined
-  }, [formStateRef, onProgrammaticFocus, paneRouter, params, ready])
+  }, [formStateRef, onProgrammaticFocus, paneRouter, params, ready, enhancedObjectDialogEnabled])
 
   return (
     <DocumentPaneContext.Provider value={documentPane}>{children}</DocumentPaneContext.Provider>

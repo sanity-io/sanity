@@ -1,6 +1,6 @@
 {
   "name": "sanity-strict-studio",
-  "version": "4.10.3",
+  "version": "4.13.0",
   "private": true,
   "license": "MIT",
   "author": "Sanity.io <hello@sanity.io>",
@@ -9,12 +9,14 @@
     "clean": "rimraf .sanity dist",
     "dev": "sanity dev",
     "lint": "eslint .",
-    "start": "sanity start"
+    "start": "sanity preview"
   },
   "dependencies": {
     "@repo/eslint-config": "workspace:*",
+    "eslint": "catalog:",
     "react": "catalog:",
     "react-dom": "catalog:",
+    "rimraf": "^5.0.10",
     "sanity": "workspace:*",
     "styled-components": "catalog:"
   }

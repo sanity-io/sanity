@@ -920,6 +920,7 @@ import type {
   LoginMethod,
   LogoProps,
   MapDocument,
+  MarkdownConfig,
   matchWorkspace,
   MatchWorkspaceOptions,
   MatchWorkspaceResult,
@@ -1294,6 +1295,7 @@ import type {
   snapshotPair,
   SortOrdering,
   SortOrderingItem,
+  sortReleases,
   Source,
   SourceClientOptions,
   SourceOptions,
@@ -1492,6 +1494,7 @@ import type {
   useDocumentVersions,
   useDocumentVersionTypeSortedList,
   useEditState,
+  useEnhancedObjectDialog,
   useEvents,
   useEventsStore,
   useExcludedPerspective,
@@ -1505,6 +1508,7 @@ import type {
   useFormState,
   UseFormStateOptions,
   useFormValue,
+  useGetDefaultPerspective,
   useGetFormValue,
   useGetI18nText,
   useGlobalCopyPasteElementHandler,
@@ -1565,6 +1569,7 @@ import type {
   UserStoreOptions,
   UserWithPermission,
   useSanityCreateConfig,
+  useScheduledDraftsEnabled,
   useSchema,
   useSearchMaxFieldDepth,
   useSearchState,
@@ -1585,7 +1590,6 @@ import type {
   useTranslation,
   UseTranslationOptions,
   UseTranslationResponse,
-  useTreeEditingEnabled,
   useUnique,
   useUnitFormatter,
   UseUnitFormatterOptions,
@@ -1701,7 +1705,7 @@ describe('sanity', () => {
     expectTypeOf<ArrayActionName>().not.toBeNever()
   })
   test('ArrayDefinition', () => {
-    // This export has 3 declarations, run `TEST_DTS_EXPORTS_DIAGNOSTICS=duplicates pnpm generate:dts-exports` to see where each declaration is coming from
+    // This export has 2 declarations, run `TEST_DTS_EXPORTS_DIAGNOSTICS=duplicates pnpm generate:dts-exports` to see where each declaration is coming from
     expectTypeOf<ArrayDefinition>().toBeObject()
   })
   test('ArrayDiff', () => {
@@ -1735,7 +1739,6 @@ describe('sanity', () => {
     expectTypeOf<typeof ArrayOfObjectOptionsInput>().toBeFunction()
   })
   test('ArrayOfObjectsComponents', () => {
-    // This export has 2 declarations, run `TEST_DTS_EXPORTS_DIAGNOSTICS=duplicates pnpm generate:dts-exports` to see where each declaration is coming from
     expectTypeOf<ArrayOfObjectsComponents>().toBeObject()
   })
   test('ArrayOfObjectsFormNode', () => {
@@ -1778,7 +1781,6 @@ describe('sanity', () => {
     expectTypeOf<typeof ArrayOfPrimitiveOptionsInput>().toBeFunction()
   })
   test('ArrayOfPrimitivesComponents', () => {
-    // This export has 2 declarations, run `TEST_DTS_EXPORTS_DIAGNOSTICS=duplicates pnpm generate:dts-exports` to see where each declaration is coming from
     expectTypeOf<ArrayOfPrimitivesComponents>().toBeObject()
   })
   test('ArrayOfPrimitivesElementType', () => {
@@ -1956,7 +1958,7 @@ describe('sanity', () => {
     expectTypeOf<BetaFeatures>().toBeObject()
   })
   test('BlockAnnotationDefinition', () => {
-    // This export has 3 declarations, run `TEST_DTS_EXPORTS_DIAGNOSTICS=duplicates pnpm generate:dts-exports` to see where each declaration is coming from
+    // This export has 2 declarations, run `TEST_DTS_EXPORTS_DIAGNOSTICS=duplicates pnpm generate:dts-exports` to see where each declaration is coming from
     expectTypeOf<BlockAnnotationDefinition>().toBeObject()
   })
   test('BlockAnnotationProps', () => {
@@ -1966,14 +1968,14 @@ describe('sanity', () => {
     expectTypeOf<BlockChildrenObjectField>().not.toBeNever()
   })
   test('BlockDecoratorDefinition', () => {
-    // This export has 3 declarations, run `TEST_DTS_EXPORTS_DIAGNOSTICS=duplicates pnpm generate:dts-exports` to see where each declaration is coming from
+    // This export has 2 declarations, run `TEST_DTS_EXPORTS_DIAGNOSTICS=duplicates pnpm generate:dts-exports` to see where each declaration is coming from
     expectTypeOf<BlockDecoratorDefinition>().toBeObject()
   })
   test('BlockDecoratorProps', () => {
     expectTypeOf<BlockDecoratorProps>().toBeObject()
   })
   test('BlockDefinition', () => {
-    // This export has 3 declarations, run `TEST_DTS_EXPORTS_DIAGNOSTICS=duplicates pnpm generate:dts-exports` to see where each declaration is coming from
+    // This export has 2 declarations, run `TEST_DTS_EXPORTS_DIAGNOSTICS=duplicates pnpm generate:dts-exports` to see where each declaration is coming from
     expectTypeOf<BlockDefinition>().toBeObject()
   })
   test('BlockEditor', () => {
@@ -1986,7 +1988,7 @@ describe('sanity', () => {
     expectTypeOf<BlockImagePreviewProps>().not.toBeNever()
   })
   test('BlockListDefinition', () => {
-    // This export has 3 declarations, run `TEST_DTS_EXPORTS_DIAGNOSTICS=duplicates pnpm generate:dts-exports` to see where each declaration is coming from
+    // This export has 2 declarations, run `TEST_DTS_EXPORTS_DIAGNOSTICS=duplicates pnpm generate:dts-exports` to see where each declaration is coming from
     expectTypeOf<BlockListDefinition>().toBeObject()
   })
   test('BlockListItemProps', () => {
@@ -2014,7 +2016,7 @@ describe('sanity', () => {
     expectTypeOf<BlockSchemaType>().toBeObject()
   })
   test('BlockStyleDefinition', () => {
-    // This export has 3 declarations, run `TEST_DTS_EXPORTS_DIAGNOSTICS=duplicates pnpm generate:dts-exports` to see where each declaration is coming from
+    // This export has 2 declarations, run `TEST_DTS_EXPORTS_DIAGNOSTICS=duplicates pnpm generate:dts-exports` to see where each declaration is coming from
     expectTypeOf<BlockStyleDefinition>().toBeObject()
   })
   test('BlockStyleObjectField', () => {
@@ -2024,11 +2026,10 @@ describe('sanity', () => {
     expectTypeOf<BlockStyleProps>().toBeObject()
   })
   test('BooleanComponents', () => {
-    // This export has 2 declarations, run `TEST_DTS_EXPORTS_DIAGNOSTICS=duplicates pnpm generate:dts-exports` to see where each declaration is coming from
     expectTypeOf<BooleanComponents>().toBeObject()
   })
   test('BooleanDefinition', () => {
-    // This export has 3 declarations, run `TEST_DTS_EXPORTS_DIAGNOSTICS=duplicates pnpm generate:dts-exports` to see where each declaration is coming from
+    // This export has 2 declarations, run `TEST_DTS_EXPORTS_DIAGNOSTICS=duplicates pnpm generate:dts-exports` to see where each declaration is coming from
     expectTypeOf<BooleanDefinition>().toBeObject()
   })
   test('BooleanDiff', () => {
@@ -2558,11 +2559,10 @@ describe('sanity', () => {
     expectTypeOf<CreateWorkspaceFromConfigOptions>().not.toBeNever()
   })
   test('CrossDatasetReferenceComponents', () => {
-    // This export has 2 declarations, run `TEST_DTS_EXPORTS_DIAGNOSTICS=duplicates pnpm generate:dts-exports` to see where each declaration is coming from
     expectTypeOf<CrossDatasetReferenceComponents>().toBeObject()
   })
   test('CrossDatasetReferenceDefinition', () => {
-    // This export has 3 declarations, run `TEST_DTS_EXPORTS_DIAGNOSTICS=duplicates pnpm generate:dts-exports` to see where each declaration is coming from
+    // This export has 2 declarations, run `TEST_DTS_EXPORTS_DIAGNOSTICS=duplicates pnpm generate:dts-exports` to see where each declaration is coming from
     expectTypeOf<CrossDatasetReferenceDefinition>().toBeObject()
   })
   test('CrossDatasetReferenceFilterResolver', () => {
@@ -2599,11 +2599,10 @@ describe('sanity', () => {
     expectTypeOf<DashboardNotificationPayload>().toBeObject()
   })
   test('DateComponents', () => {
-    // This export has 2 declarations, run `TEST_DTS_EXPORTS_DIAGNOSTICS=duplicates pnpm generate:dts-exports` to see where each declaration is coming from
     expectTypeOf<DateComponents>().toBeObject()
   })
   test('DateDefinition', () => {
-    // This export has 3 declarations, run `TEST_DTS_EXPORTS_DIAGNOSTICS=duplicates pnpm generate:dts-exports` to see where each declaration is coming from
+    // This export has 2 declarations, run `TEST_DTS_EXPORTS_DIAGNOSTICS=duplicates pnpm generate:dts-exports` to see where each declaration is coming from
     expectTypeOf<DateDefinition>().toBeObject()
   })
   test('DateInput', () => {
@@ -2619,11 +2618,10 @@ describe('sanity', () => {
     expectTypeOf<DateRule>().toBeObject()
   })
   test('DatetimeComponents', () => {
-    // This export has 2 declarations, run `TEST_DTS_EXPORTS_DIAGNOSTICS=duplicates pnpm generate:dts-exports` to see where each declaration is coming from
     expectTypeOf<DatetimeComponents>().toBeObject()
   })
   test('DatetimeDefinition', () => {
-    // This export has 3 declarations, run `TEST_DTS_EXPORTS_DIAGNOSTICS=duplicates pnpm generate:dts-exports` to see where each declaration is coming from
+    // This export has 2 declarations, run `TEST_DTS_EXPORTS_DIAGNOSTICS=duplicates pnpm generate:dts-exports` to see where each declaration is coming from
     expectTypeOf<DatetimeDefinition>().toBeObject()
   })
   test('DateTimeInput', () => {
@@ -2903,11 +2901,10 @@ describe('sanity', () => {
     expectTypeOf<DocumentCommentsEnabledContext>().toBeObject()
   })
   test('DocumentComponents', () => {
-    // This export has 2 declarations, run `TEST_DTS_EXPORTS_DIAGNOSTICS=duplicates pnpm generate:dts-exports` to see where each declaration is coming from
     expectTypeOf<DocumentComponents>().toBeObject()
   })
   test('DocumentDefinition', () => {
-    // This export has 3 declarations, run `TEST_DTS_EXPORTS_DIAGNOSTICS=duplicates pnpm generate:dts-exports` to see where each declaration is coming from
+    // This export has 2 declarations, run `TEST_DTS_EXPORTS_DIAGNOSTICS=duplicates pnpm generate:dts-exports` to see where each declaration is coming from
     expectTypeOf<DocumentDefinition>().toBeObject()
   })
   test('DocumentField', () => {
@@ -3124,11 +3121,10 @@ describe('sanity', () => {
     expectTypeOf<EditStateFor>().toBeObject()
   })
   test('EmailComponents', () => {
-    // This export has 2 declarations, run `TEST_DTS_EXPORTS_DIAGNOSTICS=duplicates pnpm generate:dts-exports` to see where each declaration is coming from
     expectTypeOf<EmailComponents>().toBeObject()
   })
   test('EmailDefinition', () => {
-    // This export has 3 declarations, run `TEST_DTS_EXPORTS_DIAGNOSTICS=duplicates pnpm generate:dts-exports` to see where each declaration is coming from
+    // This export has 2 declarations, run `TEST_DTS_EXPORTS_DIAGNOSTICS=duplicates pnpm generate:dts-exports` to see where each declaration is coming from
     expectTypeOf<EmailDefinition>().toBeObject()
   })
   test('EmailInput', () => {
@@ -3318,11 +3314,10 @@ describe('sanity', () => {
     expectTypeOf<FileAsset>().toBeObject()
   })
   test('FileComponents', () => {
-    // This export has 2 declarations, run `TEST_DTS_EXPORTS_DIAGNOSTICS=duplicates pnpm generate:dts-exports` to see where each declaration is coming from
     expectTypeOf<FileComponents>().toBeObject()
   })
   test('FileDefinition', () => {
-    // This export has 3 declarations, run `TEST_DTS_EXPORTS_DIAGNOSTICS=duplicates pnpm generate:dts-exports` to see where each declaration is coming from
+    // This export has 2 declarations, run `TEST_DTS_EXPORTS_DIAGNOSTICS=duplicates pnpm generate:dts-exports` to see where each declaration is coming from
     expectTypeOf<FileDefinition>().toBeObject()
   })
   test('FileInput', () => {
@@ -3539,11 +3534,10 @@ describe('sanity', () => {
     expectTypeOf<GeneralPreviewLayoutKey>().not.toBeNever()
   })
   test('GeopointComponents', () => {
-    // This export has 2 declarations, run `TEST_DTS_EXPORTS_DIAGNOSTICS=duplicates pnpm generate:dts-exports` to see where each declaration is coming from
     expectTypeOf<GeopointComponents>().toBeObject()
   })
   test('GeopointDefinition', () => {
-    // This export has 3 declarations, run `TEST_DTS_EXPORTS_DIAGNOSTICS=duplicates pnpm generate:dts-exports` to see where each declaration is coming from
+    // This export has 2 declarations, run `TEST_DTS_EXPORTS_DIAGNOSTICS=duplicates pnpm generate:dts-exports` to see where each declaration is coming from
     expectTypeOf<GeopointDefinition>().toBeObject()
   })
   test('GeopointOptions', () => {
@@ -3784,14 +3778,13 @@ describe('sanity', () => {
     expectTypeOf<ImageAsset>().toBeObject()
   })
   test('ImageComponents', () => {
-    // This export has 2 declarations, run `TEST_DTS_EXPORTS_DIAGNOSTICS=duplicates pnpm generate:dts-exports` to see where each declaration is coming from
     expectTypeOf<ImageComponents>().toBeObject()
   })
   test('ImageCrop', () => {
     expectTypeOf<ImageCrop>().toBeObject()
   })
   test('ImageDefinition', () => {
-    // This export has 3 declarations, run `TEST_DTS_EXPORTS_DIAGNOSTICS=duplicates pnpm generate:dts-exports` to see where each declaration is coming from
+    // This export has 2 declarations, run `TEST_DTS_EXPORTS_DIAGNOSTICS=duplicates pnpm generate:dts-exports` to see where each declaration is coming from
     expectTypeOf<ImageDefinition>().toBeObject()
   })
   test('ImageDimensions', () => {
@@ -4427,6 +4420,9 @@ describe('sanity', () => {
   test('MapDocument', () => {
     expectTypeOf<MapDocument>().not.toBeNever()
   })
+  test('MarkdownConfig', () => {
+    expectTypeOf<MarkdownConfig>().not.toBeNever()
+  })
   test('matchWorkspace', () => {
     expectTypeOf<typeof matchWorkspace>().toBeFunction()
   })
@@ -4587,7 +4583,7 @@ describe('sanity', () => {
     expectTypeOf<NodeChronologyProps>().toBeObject()
   })
   test('NodeDiffProps', () => {
-    expectTypeOf<NodeDiffProps<any>>().toBeObject()
+    expectTypeOf<NodeDiffProps<any, any>>().toBeObject()
   })
   test('noop', () => {
     expectTypeOf<typeof noop>().toBeFunction()
@@ -4608,11 +4604,10 @@ describe('sanity', () => {
     expectTypeOf<NullDiff>().not.toBeNever()
   })
   test('NumberComponents', () => {
-    // This export has 2 declarations, run `TEST_DTS_EXPORTS_DIAGNOSTICS=duplicates pnpm generate:dts-exports` to see where each declaration is coming from
     expectTypeOf<NumberComponents>().toBeObject()
   })
   test('NumberDefinition', () => {
-    // This export has 3 declarations, run `TEST_DTS_EXPORTS_DIAGNOSTICS=duplicates pnpm generate:dts-exports` to see where each declaration is coming from
+    // This export has 2 declarations, run `TEST_DTS_EXPORTS_DIAGNOSTICS=duplicates pnpm generate:dts-exports` to see where each declaration is coming from
     expectTypeOf<NumberDefinition>().toBeObject()
   })
   test('NumberDiff', () => {
@@ -4643,11 +4638,10 @@ describe('sanity', () => {
     expectTypeOf<ObjectArrayFormNode<any, any>>().toBeObject()
   })
   test('ObjectComponents', () => {
-    // This export has 2 declarations, run `TEST_DTS_EXPORTS_DIAGNOSTICS=duplicates pnpm generate:dts-exports` to see where each declaration is coming from
     expectTypeOf<ObjectComponents>().toBeObject()
   })
   test('ObjectDefinition', () => {
-    // This export has 3 declarations, run `TEST_DTS_EXPORTS_DIAGNOSTICS=duplicates pnpm generate:dts-exports` to see where each declaration is coming from
+    // This export has 2 declarations, run `TEST_DTS_EXPORTS_DIAGNOSTICS=duplicates pnpm generate:dts-exports` to see where each declaration is coming from
     expectTypeOf<ObjectDefinition>().toBeObject()
   })
   test('ObjectDiff', () => {
@@ -5023,11 +5017,10 @@ describe('sanity', () => {
     expectTypeOf<ReferenceBaseOptions>().toBeObject()
   })
   test('ReferenceComponents', () => {
-    // This export has 2 declarations, run `TEST_DTS_EXPORTS_DIAGNOSTICS=duplicates pnpm generate:dts-exports` to see where each declaration is coming from
     expectTypeOf<ReferenceComponents>().toBeObject()
   })
   test('ReferenceDefinition', () => {
-    // This export has 3 declarations, run `TEST_DTS_EXPORTS_DIAGNOSTICS=duplicates pnpm generate:dts-exports` to see where each declaration is coming from
+    // This export has 2 declarations, run `TEST_DTS_EXPORTS_DIAGNOSTICS=duplicates pnpm generate:dts-exports` to see where each declaration is coming from
     expectTypeOf<ReferenceDefinition>().toBeObject()
   })
   test('ReferenceDiff', () => {
@@ -5503,11 +5496,10 @@ describe('sanity', () => {
     expectTypeOf<Slug>().toBeObject()
   })
   test('SlugComponents', () => {
-    // This export has 2 declarations, run `TEST_DTS_EXPORTS_DIAGNOSTICS=duplicates pnpm generate:dts-exports` to see where each declaration is coming from
     expectTypeOf<SlugComponents>().toBeObject()
   })
   test('SlugDefinition', () => {
-    // This export has 3 declarations, run `TEST_DTS_EXPORTS_DIAGNOSTICS=duplicates pnpm generate:dts-exports` to see where each declaration is coming from
+    // This export has 2 declarations, run `TEST_DTS_EXPORTS_DIAGNOSTICS=duplicates pnpm generate:dts-exports` to see where each declaration is coming from
     expectTypeOf<SlugDefinition>().toBeObject()
   })
   test('SlugifierFn', () => {
@@ -5558,6 +5550,9 @@ describe('sanity', () => {
   test('SortOrderingItem', () => {
     expectTypeOf<SortOrderingItem>().toBeObject()
   })
+  test('sortReleases', () => {
+    expectTypeOf<typeof sortReleases>().toBeFunction()
+  })
   test('Source', () => {
     expectTypeOf<Source>().toBeObject()
   })
@@ -5574,11 +5569,9 @@ describe('sanity', () => {
     expectTypeOf<SourceProviderProps>().not.toBeNever()
   })
   test('SpanComponents', () => {
-    // This export has 2 declarations, run `TEST_DTS_EXPORTS_DIAGNOSTICS=duplicates pnpm generate:dts-exports` to see where each declaration is coming from
     expectTypeOf<SpanComponents>().toBeObject()
   })
   test('SpanDefinition', () => {
-    // This export has 2 declarations, run `TEST_DTS_EXPORTS_DIAGNOSTICS=duplicates pnpm generate:dts-exports` to see where each declaration is coming from
     expectTypeOf<SpanDefinition>().toBeObject()
   })
   test('SpanMarksObjectField', () => {
@@ -5612,11 +5605,10 @@ describe('sanity', () => {
     expectTypeOf<StrictVersionLayeringOptions>().toBeObject()
   })
   test('StringComponents', () => {
-    // This export has 2 declarations, run `TEST_DTS_EXPORTS_DIAGNOSTICS=duplicates pnpm generate:dts-exports` to see where each declaration is coming from
     expectTypeOf<StringComponents>().toBeObject()
   })
   test('StringDefinition', () => {
-    // This export has 3 declarations, run `TEST_DTS_EXPORTS_DIAGNOSTICS=duplicates pnpm generate:dts-exports` to see where each declaration is coming from
+    // This export has 2 declarations, run `TEST_DTS_EXPORTS_DIAGNOSTICS=duplicates pnpm generate:dts-exports` to see where each declaration is coming from
     expectTypeOf<StringDefinition>().toBeObject()
   })
   test('StringDiff', () => {
@@ -5773,11 +5765,10 @@ describe('sanity', () => {
     expectTypeOf<TemplateResolver>().not.toBeNever()
   })
   test('TextComponents', () => {
-    // This export has 2 declarations, run `TEST_DTS_EXPORTS_DIAGNOSTICS=duplicates pnpm generate:dts-exports` to see where each declaration is coming from
     expectTypeOf<TextComponents>().toBeObject()
   })
   test('TextDefinition', () => {
-    // This export has 3 declarations, run `TEST_DTS_EXPORTS_DIAGNOSTICS=duplicates pnpm generate:dts-exports` to see where each declaration is coming from
+    // This export has 2 declarations, run `TEST_DTS_EXPORTS_DIAGNOSTICS=duplicates pnpm generate:dts-exports` to see where each declaration is coming from
     expectTypeOf<TextDefinition>().toBeObject()
   })
   test('TextInput', () => {
@@ -5991,11 +5982,10 @@ describe('sanity', () => {
     expectTypeOf<UriValidationOptions>().toBeObject()
   })
   test('UrlComponents', () => {
-    // This export has 2 declarations, run `TEST_DTS_EXPORTS_DIAGNOSTICS=duplicates pnpm generate:dts-exports` to see where each declaration is coming from
     expectTypeOf<UrlComponents>().toBeObject()
   })
   test('UrlDefinition', () => {
-    // This export has 3 declarations, run `TEST_DTS_EXPORTS_DIAGNOSTICS=duplicates pnpm generate:dts-exports` to see where each declaration is coming from
+    // This export has 2 declarations, run `TEST_DTS_EXPORTS_DIAGNOSTICS=duplicates pnpm generate:dts-exports` to see where each declaration is coming from
     expectTypeOf<UrlDefinition>().toBeObject()
   })
   test('UrlInput', () => {
@@ -6161,6 +6151,9 @@ describe('sanity', () => {
   test('useEditState', () => {
     expectTypeOf<typeof useEditState>().toBeFunction()
   })
+  test('useEnhancedObjectDialog', () => {
+    expectTypeOf<typeof useEnhancedObjectDialog>().toBeFunction()
+  })
   test('useEvents', () => {
     expectTypeOf<typeof useEvents>().toBeFunction()
   })
@@ -6199,6 +6192,9 @@ describe('sanity', () => {
   })
   test('useFormValue', () => {
     expectTypeOf<typeof useFormValue>().toBeFunction()
+  })
+  test('useGetDefaultPerspective', () => {
+    expectTypeOf<typeof useGetDefaultPerspective>().toBeFunction()
   })
   test('useGetFormValue', () => {
     expectTypeOf<typeof useGetFormValue>().toBeFunction()
@@ -6381,6 +6377,9 @@ describe('sanity', () => {
   test('useSanityCreateConfig', () => {
     expectTypeOf<typeof useSanityCreateConfig>().toBeFunction()
   })
+  test('useScheduledDraftsEnabled', () => {
+    expectTypeOf<typeof useScheduledDraftsEnabled>().toBeFunction()
+  })
   test('useSchema', () => {
     expectTypeOf<typeof useSchema>().toBeFunction()
   })
@@ -6440,9 +6439,6 @@ describe('sanity', () => {
   })
   test('UseTranslationResponse', () => {
     expectTypeOf<UseTranslationResponse<any, any>>().not.toBeNever()
-  })
-  test('useTreeEditingEnabled', () => {
-    expectTypeOf<typeof useTreeEditingEnabled>().toBeFunction()
   })
   test('useUnique', () => {
     expectTypeOf<typeof useUnique>().toBeFunction()
@@ -6517,7 +6513,7 @@ describe('sanity', () => {
     expectTypeOf<ValidationBuilder<any, any>>().not.toBeNever()
   })
   test('ValidationContext', () => {
-    // This export has 3 declarations, run `TEST_DTS_EXPORTS_DIAGNOSTICS=duplicates pnpm generate:dts-exports` to see where each declaration is coming from
+    // This export has 2 declarations, run `TEST_DTS_EXPORTS_DIAGNOSTICS=duplicates pnpm generate:dts-exports` to see where each declaration is coming from
     expectTypeOf<ValidationContext>().toBeObject()
   })
   test('ValidationError', () => {

@@ -5,12 +5,13 @@ permissions:
 on:
   # Build on pushes branches that have a PR (including drafts)
   pull_request:
+  push:
+    branches:
+      # deploy reference studio on push to main (but skip running actual perf tests)
+      - main
+
   workflow_dispatch:
     inputs:
-      reference_tag:
-        description: "npm reference tag for comparison"
-        required: true
-        default: "latest"
       enable_profiler:
         description: "Enable profiler"
         required: true
@@ -23,13 +24,13 @@ on:
         default: false
 
 jobs:
-  deploy-preview:
+  deploy:
     runs-on: ubuntu-latest
     env:
       TURBO_TOKEN: ${{ secrets.TURBO_TOKEN }}
       TURBO_TEAM: ${{ vars.TURBO_TEAM }}
     outputs:
-      preview_url: ${{ steps.deploy.outputs.DEPLOY_URL }}
+      preview_url: ${{ steps.deploy-preview.outputs.DEPLOY_URL }}
     steps:
       - uses: actions/checkout@v5
       - uses: pnpm/action-setup@v4
@@ -40,57 +41,90 @@ jobs:
       - name: Install project dependencies
         run: pnpm install
 
-      - name: Install Vercel CLI
-        run: pnpm install --global vercel@latest
-
       - name: Pull Vercel Environment Information
         env:
           VERCEL_ORG_ID: ${{ secrets.VERCEL_EFPS_STUDIO_ORG_ID }}
           VERCEL_PROJECT_ID: ${{ secrets.VERCEL_EFPS_STUDIO_PROJECT_ID }}
-        run: vercel pull --yes --environment=preview --token=${{ secrets.VERCEL_EFPS_STUDIO_TOKEN }}
+        run: |
+          pnpm vercel pull \
+            --yes \
+            --environment=${{github.ref_name == 'main' && 'production' || 'preview'}} \
+            --token=${{ secrets.VERCEL_EFPS_STUDIO_TOKEN }}
 
-      - name: Build Project Artifacts
+      - name: Load Vercel Env Vars into GITHUB_ENV
+        uses: ./.github/actions/vercel-env
+        with:
+          org-id: ${{ secrets.VERCEL_EFPS_STUDIO_ORG_ID }}
+          project-id: ${{ secrets.VERCEL_EFPS_STUDIO_PROJECT_ID }}
+          token: ${{ secrets.VERCEL_EFPS_STUDIO_TOKEN }}
+          environment: ${{github.ref_name == 'main' && 'production' || 'preview'}}
+          variables: |
+            SANITY_STUDIO_EFPS_EXPERIMENT_PROJECT_ID
+            SANITY_STUDIO_EFPS_EXPERIMENT_DATASET
+            SANITY_STUDIO_EFPS_EXPERIMENT_API_HOST
+
+      - name: Build Experiment Studio from PR
+        # We prebuild in the GH action if in a branch to make it faster
+        if: ${{github.ref_name != 'main'}}
         env:
+          SANITY_STUDIO_EFPS_EXPERIMENT_PROJECT_ID: ${{ env.SANITY_STUDIO_EFPS_EXPERIMENT_PROJECT_ID }}
+          SANITY_STUDIO_EFPS_EXPERIMENT_DATASET: ${{ env.SANITY_STUDIO_EFPS_EXPERIMENT_DATASET }}
+          SANITY_STUDIO_EFPS_EXPERIMENT_API_HOST: ${{ env.SANITY_STUDIO_EFPS_EXPERIMENT_API_HOST }}
           VERCEL_ORG_ID: ${{ secrets.VERCEL_EFPS_STUDIO_ORG_ID }}
           VERCEL_PROJECT_ID: ${{ secrets.VERCEL_EFPS_STUDIO_PROJECT_ID }}
           VERCEL_SANITY_API_DEPLOY_TOKEN: ${{ secrets.VERCEL_SANITY_API_DEPLOY_TOKEN }}
-          VITE_PERF_EFPS_PROJECT_ID: ${{ vars.PERF_EFPS_PROJECT_ID_TEST }}
-          VITE_PERF_EFPS_DATASET: ${{ vars.PERF_EFPS_DATASET_TEST }}
-        run: vercel build --token=${{ secrets.VERCEL_EFPS_STUDIO_TOKEN }}
 
-      - name: Deploy Project Artifacts to Vercel
-        id: deploy
+        run: pnpm vercel build --token=${{ secrets.VERCEL_EFPS_STUDIO_TOKEN }}
+
+      - name: Deploy Experiment Studio from PR
+        id: deploy-preview
+        if: ${{github.ref_name != 'main'}}
         env:
           COMMIT_MESSAGE: ${{ github.event.head_commit.message || github.event.pull_request.title }}
         run: |
-          echo "DEPLOY_URL=$(vercel deploy --prebuilt --token=${{ secrets.VERCEL_EFPS_STUDIO_TOKEN }} \
-          -m githubDeployment="1" \
-          -m githubCommitAuthorName="${{ github.event.sender.name || 'GitHub Actions' }}" \
-          -m githubCommitMessage="$COMMIT_MESSAGE" \
-          -m githubCommitOrg="${{ github.repository_owner }}" \
-          -m githubCommitRef="${{ github.head_ref || github.ref_name }}" \
-          -m githubCommitRepo="${{ github.event.repository.name }}" \
-          -m githubCommitSha="${{ github.sha }}" \
-          -m githubOrg="${{ github.repository_owner }}" \
-          -m githubRepo="${{ github.event.repository.name }}" \
-          -m githubCommitAuthorLogin="${{ github.event.sender.login || github.actor }}" | tail -n 1)" >> $GITHUB_OUTPUT
+          echo "DEPLOY_URL=$(
+            pnpm vercel deploy --prebuilt --token=${{ secrets.VERCEL_EFPS_STUDIO_TOKEN }} \
+              -m githubDeployment="1" \
+              -m githubCommitAuthorName="${{ github.event.sender.name || 'GitHub Actions' }}" \
+              -m githubCommitMessage="$COMMIT_MESSAGE" \
+              -m githubCommitOrg="${{ github.repository_owner }}" \
+              -m githubCommitRef="${{ github.head_ref || github.ref_name }}" \
+              -m githubCommitRepo="${{ github.event.repository.name }}" \
+              -m githubCommitSha="${{ github.sha }}" \
+              -m githubOrg="${{ github.repository_owner }}" \
+              -m githubRepo="${{ github.event.repository.name }}" \
+              -m githubCommitAuthorLogin="${{ github.event.sender.login || github.actor }}" | tail -n 1
+            )" >> $GITHUB_OUTPUT
 
-      - name: Echo the preview URL
+      - name: Deploy new reference Studio from main
+        id: deploy-main
+        if: ${{github.ref_name == 'main'}}
+        env:
+          COMMIT_MESSAGE: ${{ github.event.head_commit.message || github.event.pull_request.title }}
         run: |
-          if [ -z "${{ steps.deploy.outputs.DEPLOY_URL }}" ]; then
-           echo "::error::Preview URL was not found. Deployment may have failed."
-           exit 1
-          fi
-          echo "Preview URL: ${{ steps.deploy.outputs.DEPLOY_URL }}"
+          pnpm vercel deploy --prod --token=${{ secrets.VERCEL_EFPS_STUDIO_TOKEN }} \
+            -m githubDeployment="1" \
+            -m githubCommitAuthorName="${{ github.event.sender.name || 'GitHub Actions' }}" \
+            -m githubCommitMessage="$COMMIT_MESSAGE" \
+            -m githubCommitOrg="${{ github.repository_owner }}" \
+            -m githubCommitRef="${{ github.head_ref || github.ref_name }}" \
+            -m githubCommitRepo="${{ github.event.repository.name }}" \
+            -m githubCommitSha="${{ github.sha }}" \
+            -m githubOrg="${{ github.repository_owner }}" \
+            -m githubRepo="${{ github.event.repository.name }}" \
+            -m githubCommitAuthorLogin="${{ github.event.sender.login || github.actor }}"
 
   efps-test:
+    # We do not currently run in main, but we could do that if we want to compare main
+    # against e.g. previous release
+    if: ${{github.ref_name != 'main'}}
     timeout-minutes: 30
     runs-on: ubuntu-latest
-    needs: [deploy-preview]
+    needs: [deploy]
     env:
       TURBO_TOKEN: ${{ secrets.TURBO_TOKEN }}
       TURBO_TEAM: ${{ vars.TURBO_TEAM }}
-      DEPLOY_URL: ${{ needs.deploy-preview.outputs.preview_url }}
+      DEPLOY_URL: ${{ needs.deploy.outputs.preview_url }}
     strategy:
       fail-fast: false
       matrix:
@@ -120,7 +154,7 @@ jobs:
       - name: Store Playwright's Version
         id: playwright-version
         run: |
-          PLAYWRIGHT_VERSION=$(npx playwright --version | sed 's/Version //')
+          PLAYWRIGHT_VERSION=$(pnpm playwright --version | sed 's/Version //')
           echo "Playwright's Version: $PLAYWRIGHT_VERSION"
           echo "version=${PLAYWRIGHT_VERSION}" >> "$GITHUB_OUTPUT"
 
@@ -133,17 +167,40 @@ jobs:
 
       - name: Install Playwright Browsers
         if: steps.cache-playwright-browsers.outputs.cache-hit != 'true'
-        run: npx playwright install --with-deps
+        run: pnpm playwright install --with-deps
+
+      - name: Load Vercel Env Vars into GITHUB_ENV
+        uses: ./.github/actions/vercel-env
+        with:
+          org-id: ${{ secrets.VERCEL_EFPS_STUDIO_ORG_ID }}
+          project-id: ${{ secrets.VERCEL_EFPS_STUDIO_PROJECT_ID }}
+          token: ${{ secrets.VERCEL_EFPS_STUDIO_TOKEN }}
+          # we don't run efps in production
+          environment: preview
+          variables: |
+            SANITY_STUDIO_EFPS_REFERENCE_PROJECT_ID
+            SANITY_STUDIO_EFPS_REFERENCE_DATASET
+            SANITY_STUDIO_EFPS_REFERENCE_API_HOST
+            SANITY_STUDIO_EFPS_EXPERIMENT_PROJECT_ID
+            SANITY_STUDIO_EFPS_EXPERIMENT_DATASET
+            SANITY_STUDIO_EFPS_EXPERIMENT_API_HOST
+          secrets: |
+            EFPS_SANITY_TOKEN_STAGING
+            EFPS_SANITY_TOKEN_PROD
 
       - name: Run eFPS tests
         env:
-          VITE_PERF_EFPS_PROJECT_ID: ${{ vars.PERF_EFPS_PROJECT_ID_TEST }}
-          VITE_PERF_EFPS_DATASET: ${{ vars.PERF_EFPS_DATASET_TEST }}
-          PERF_EFPS_SANITY_TOKEN: ${{ secrets.PERF_EFPS_SANITY_TOKEN_TEST }}
-          REFERENCE_TAG: ${{ github.event.inputs.reference_tag || 'latest' }}
+          SANITY_STUDIO_EFPS_EXPERIMENT_PROJECT_ID: ${{ env.SANITY_STUDIO_EFPS_EXPERIMENT_PROJECT_ID }}
+          SANITY_STUDIO_EFPS_EXPERIMENT_DATASET: ${{ env.SANITY_STUDIO_EFPS_EXPERIMENT_DATASET }}
+          SANITY_STUDIO_EFPS_EXPERIMENT_API_HOST: ${{ env.SANITY_STUDIO_EFPS_EXPERIMENT_API_HOST }}
+          SANITY_STUDIO_EFPS_REFERENCE_PROJECT_ID: ${{ env.SANITY_STUDIO_EFPS_REFERENCE_PROJECT_ID }}
+          SANITY_STUDIO_EFPS_REFERENCE_DATASET: ${{ env.SANITY_STUDIO_EFPS_REFERENCE_DATASET }}
+          SANITY_STUDIO_EFPS_REFERENCE_API_HOST: ${{ env.SANITY_STUDIO_EFPS_REFERENCE_API_HOST }}
+          EFPS_SANITY_TOKEN_STAGING: ${{ env.EFPS_SANITY_TOKEN_STAGING }}
+          EFPS_SANITY_TOKEN_PROD: ${{ env.EFPS_SANITY_TOKEN_PROD }}
           ENABLE_PROFILER: ${{ github.event.inputs.enable_profiler || false }}
           RECORD_VIDEO: ${{ github.event.inputs.record_video || false }}
-          STUDIO_URL: ${{ needs.deploy-preview.outputs.preview_url }}
+          STUDIO_URL: ${{ needs.deploy.outputs.preview_url }}
         run: pnpm efps:test -- -- --shard ${{ matrix.shardIndex }}/${{ matrix.shardTotal }}
 
       - uses: actions/upload-artifact@v4
@@ -154,7 +211,7 @@ jobs:
           retention-days: 30
 
   merge-reports:
-    if: always()
+    if: ${{github.ref_name != 'main'}}
     needs: [efps-test]
     runs-on: ubuntu-latest
     steps:

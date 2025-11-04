@@ -1,18 +1,8 @@
-import {defineConfig, defineField, defineType} from 'sanity'
+import {type Config, defineField, defineType} from 'sanity'
 import {structureTool} from 'sanity/structure'
 
-export const articleEfps = defineConfig({
+export const articleEfps = {
   name: 'article-efps',
-  // Had to add the alternative or when running the studio locally it throws errors
-  projectId: import.meta.env.VITE_PERF_EFPS_PROJECT_ID || 'b8j69ts2',
-  dataset: import.meta.env.VITE_PERF_EFPS_DATASET || 'production',
-  apiHost: 'https://api.sanity.work',
-  scheduledPublishing: {
-    enabled: false,
-  },
-  releases: {
-    enabled: false,
-  },
   plugins: [
     structureTool({
       structure: (S) =>
@@ -115,6 +105,4 @@ export const articleEfps = defineConfig({
       }),
     ],
   },
-})
-
-export default articleEfps
+} satisfies Partial<Config>

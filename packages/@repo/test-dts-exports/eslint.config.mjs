@@ -5,7 +5,6 @@ export default defineConfig([
   ...baseConfig,
   {
     rules: {
-      'import/no-extraneous-dependencies': 'off',
       'import/consistent-type-specifier-style': 'off',
       'simple-import-sort/imports': 'off',
       'max-statements': 'off',

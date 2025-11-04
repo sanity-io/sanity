@@ -39,6 +39,7 @@ import {
   documentInspectorsReducer,
   documentLanguageFilterReducer,
   draftsEnabledReducer,
+  enhancedObjectDialogEnabledReducer,
   eventsAPIReducer,
   fileAssetSourceResolver,
   imageAssetSourceResolver,
@@ -751,9 +752,10 @@ function resolveSource({
         documents: eventsAPIReducer({config, initialValue: true, key: 'documents'}),
         releases: eventsAPIReducer({config, initialValue: false, key: 'releases'}),
       },
-      treeArrayEditing: {
-        // This beta feature is no longer available.
-        enabled: false,
+      form: {
+        enhancedObjectDialog: {
+          enabled: enhancedObjectDialogEnabledReducer({config, initialValue: false}),
+        },
       },
       create: {
         startInCreateEnabled: false,
@@ -786,7 +788,7 @@ function resolveSource({
 
     releases: config.releases
       ? {
-          enabled: config.releases.enabled,
+          enabled: config.releases.enabled ?? true,
           limit: config.releases.limit,
           actions: (partialContext) =>
             resolveConfigProperty({
@@ -797,7 +799,7 @@ function resolveSource({
               reducer: releaseActionsReducer,
             }),
         }
-      : undefined,
+      : {enabled: true},
   }
 
   return source
