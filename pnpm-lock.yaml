@@ -545,6 +545,9 @@ importers:
       '@portabletext/editor':
         specifier: ^2.18.1
         version: 2.18.1(@portabletext/sanity-bridge@1.2.0(@sanity/schema@packages+@sanity+schema)(@sanity/types@packages+@sanity+types))(@sanity/schema@packages+@sanity+schema)(@sanity/types@packages+@sanity+types)(@types/react@19.2.2)(react-dom@19.2.0(react@19.2.0))(react@19.2.0)(rxjs@7.8.2)
+      '@portabletext/plugin-character-pair-decorator':
+        specifier: ^2.0.0
+        version: 2.0.1(@portabletext/editor@2.18.1(@portabletext/sanity-bridge@1.2.0(@sanity/schema@packages+@sanity+schema)(@sanity/types@packages+@sanity+types))(@sanity/schema@packages+@sanity+schema)(@sanity/types@packages+@sanity+types)(@types/react@19.2.2)(react-dom@19.2.0(react@19.2.0))(react@19.2.0)(rxjs@7.8.2))(@types/react@19.2.2)(react@19.2.0)
       '@portabletext/react':
         specifier: ^5.0.0
         version: 5.0.0(react@19.2.0)
