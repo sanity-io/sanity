@@ -22,7 +22,7 @@ from: import PersonIcon from 'react-icons/lib/md/person'
 export const reactIconsV3: CodeMod = {
   purpose,
   description,
-  filename: 'reactIconsV3.js',
+  filename: 'reactIconsV3.cjs',
   verify: async (context) => {
     const {workDir} = context
 

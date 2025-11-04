@@ -201,15 +201,17 @@ async function renderDocumentFromWorkerData() {
   // Alias monorepo modules
   debug('Registering potential aliases')
   if (monorepo) {
-    require('module-alias').addAliases(getMonorepoAliases(monorepo.path))
+    const {addAliases} = await import('module-alias')
+    addAliases(await getMonorepoAliases(monorepo.path))
   }
 
   // Require hook #2
   // Use `esbuild` to allow JSX/TypeScript and modern JS features
   debug('Registering esbuild for node %s', process.version)
+  const {register} = await import('esbuild-register/dist/node')
   const {unregister} = __DEV__
     ? {unregister: () => undefined}
-    : require('esbuild-register/dist/node').register({
+    : register({
         target: `node${process.version.slice(1)}`,
         supported: {'dynamic-import': true},
         jsx: 'automatic',
@@ -221,7 +223,7 @@ async function renderDocumentFromWorkerData() {
   debug('Registering esbuild for .js files using jsx loader')
   const {unregister: unregisterJs} = __DEV__
     ? {unregister: () => undefined}
-    : require('esbuild-register/dist/node').register({
+    : register({
         target: `node${process.version.slice(1)}`,
         supported: {'dynamic-import': true},
         extensions: ['.js'],

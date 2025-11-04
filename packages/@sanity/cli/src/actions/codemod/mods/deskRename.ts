@@ -15,5 +15,5 @@ from: import {StructureBuilder} from 'sanity/desk'
 export const deskRename: CodeMod = {
   purpose,
   description,
-  filename: 'deskRename.js',
+  filename: 'deskRename.cjs',
 }

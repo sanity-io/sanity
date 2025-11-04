@@ -24,5 +24,5 @@ import client from 'part:@sanity/base/client'
 export const partsTypeDirective: CodeMod = {
   purpose,
   description,
-  filename: 'partsTypeDirective.js',
+  filename: 'partsTypeDirective.cjs',
 }

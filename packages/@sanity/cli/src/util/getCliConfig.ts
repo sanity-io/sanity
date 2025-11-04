@@ -37,16 +37,14 @@ export async function getCliConfig(
     }
   }
 
+  const {register} = await import('esbuild-register/dist/node')
   const {unregister} = __DEV__
     ? {unregister: () => undefined}
-    : // eslint-disable-next-line @typescript-eslint/no-require-imports
-      require('esbuild-register/dist/node').register({supported: {'dynamic-import': true}})
+    : register({supported: {'dynamic-import': true}})
 
   try {
     // If forked execution failed, we need to clear the cache to reload the env vars
     return getSanityCliConfig(cwd, clearCache)
-  } catch (err) {
-    throw err
   } finally {
     unregister()
   }

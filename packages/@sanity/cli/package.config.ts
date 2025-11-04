@@ -1,11 +1,14 @@
 import fs from 'node:fs'
 import {isBuiltin} from 'node:module'
 import path from 'node:path'
+import {fileURLToPath} from 'node:url'
 
 import baseConfig from '@repo/package.config'
 import {nodeResolve} from '@rollup/plugin-node-resolve'
 import {defineConfig} from '@sanity/pkg-utils'
 
+const __filename = fileURLToPath(import.meta.url)
+const __dirname = path.dirname(__filename)
 const workersDir = path.join(__dirname, 'src', 'workers')
 
 const workerNames = fs
@@ -41,18 +44,18 @@ export default defineConfig({
   bundles: [
     {
       source: './src/cli.ts',
-      require: './lib/cli.js',
+      import: './lib/cli.js',
       runtime: 'node',
     },
     {
       source: './src/run.ts',
-      require: './lib/run.js',
+      import: './lib/run.js',
       runtime: 'node',
     },
 
     ...workerNames.map((name) => ({
       source: `./src/workers/${name}.ts`,
-      require: `./lib/workers/${name}.js`,
+      import: `./lib/workers/${name}.js`,
       runtime: 'node' as const,
     })),
   ],

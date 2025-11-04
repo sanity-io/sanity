@@ -8,42 +8,42 @@ export default defineConfig({
   bundles: [
     {
       source: './src/_internal/cli/threads/esbuild.ts',
-      require: './lib/_internal/cli/threads/esbuild.js',
+      import: './lib/_internal/cli/threads/esbuild.js',
       runtime: 'node',
     },
     {
       source: './src/_internal/cli/threads/registerBrowserEnv.ts',
-      require: './lib/_internal/cli/threads/registerBrowserEnv.js',
+      import: './lib/_internal/cli/threads/registerBrowserEnv.js',
       runtime: 'node',
     },
     {
       source: './src/_internal/cli/threads/configClient.ts',
-      require: './lib/_internal/cli/threads/configClient.js',
+      import: './lib/_internal/cli/threads/configClient.js',
       runtime: 'node',
     },
     {
       source: './src/_internal/cli/threads/getGraphQLAPIs.ts',
-      require: './lib/_internal/cli/threads/getGraphQLAPIs.js',
+      import: './lib/_internal/cli/threads/getGraphQLAPIs.js',
       runtime: 'node',
     },
     {
       source: './src/_internal/cli/threads/validateDocuments.ts',
-      require: './lib/_internal/cli/threads/validateDocuments.js',
+      import: './lib/_internal/cli/threads/validateDocuments.js',
       runtime: 'node',
     },
     {
       source: './src/_internal/cli/threads/validateSchema.ts',
-      require: './lib/_internal/cli/threads/validateSchema.js',
+      import: './lib/_internal/cli/threads/validateSchema.js',
       runtime: 'node',
     },
     {
       source: './src/_internal/cli/threads/extractSchema.ts',
-      require: './lib/_internal/cli/threads/extractSchema.js',
+      import: './lib/_internal/cli/threads/extractSchema.js',
       runtime: 'node',
     },
     {
       source: './src/_internal/cli/threads/extractManifest.ts',
-      require: './lib/_internal/cli/threads/extractManifest.js',
+      import: './lib/_internal/cli/threads/extractManifest.js',
       runtime: 'node',
     },
   ],

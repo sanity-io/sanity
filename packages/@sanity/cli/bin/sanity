@@ -1,5 +1,7 @@
 #!/usr/bin/env node
-/* eslint-disable no-var, no-console, no-process-exit, prefer-template, import/no-unassigned-import */
+import {createRequire} from 'node:module'
+
+const require = createRequire(import.meta.url)
 
 process.on('unhandledRejection', (error) => {
   console.error(error)
@@ -7,8 +9,8 @@ process.on('unhandledRejection', (error) => {
 })
 
 if (process.env.SANITY_CLI_RUN_FROM_SOURCE === '1') {
-  require('./dev.js')
+  require('./dev.cjs')
 } else {
   // run cli
-  require('../lib/run')
+  require('../lib/run.js')
 }

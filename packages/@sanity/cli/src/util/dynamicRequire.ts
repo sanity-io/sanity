@@ -1,3 +1,7 @@
+import {createRequire} from 'node:module'
+
+const require = createRequire(import.meta.url)
+
 // Prevent webpack from bundling in webpack context,
 // use regular node require for unbundled context
 

@@ -90,9 +90,10 @@ export async function startPreviewServer(options: PreviewServerOptions): Promise
 
   const startupDuration = Date.now() - startTime
 
+  const {version} = await import('vite')
   info(
     `Sanity ${isApp ? 'application' : 'Studio'} ` +
-      `using ${chalk.cyan(`vite@${require('vite/package.json').version}`)} ` +
+      `using ${chalk.cyan(`vite@${version}`)} ` +
       `ready in ${chalk.cyan(`${Math.ceil(startupDuration)}ms`)} ` +
       `and running at ${chalk.cyan(url)} (production preview mode)`,
   )

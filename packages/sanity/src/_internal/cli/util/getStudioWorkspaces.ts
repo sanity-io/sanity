@@ -1,4 +1,5 @@
 import fs from 'node:fs'
+import {createRequire} from 'node:module'
 import path from 'node:path'
 
 import {firstValueFrom} from 'rxjs'
@@ -12,6 +13,8 @@ const candidates = [
   'sanity.config.ts',
   'sanity.config.tsx',
 ]
+
+const require = createRequire(import.meta.url)
 
 interface GetStudioWorkspacesOptions {
   configPath?: string
@@ -44,6 +47,7 @@ export function getStudioConfig({
 
     let config: Config | undefined
     try {
+      //
       // eslint-disable-next-line import/no-dynamic-require
       const mod = require(configPath)
       config = mod.__esModule && mod.default ? mod.default : mod
