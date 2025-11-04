@@ -1,1 +1,1 @@
-{"ignores": ["rimraf"]}
+{"ignores": ["@portabletext/toolkit", "rimraf"]}
