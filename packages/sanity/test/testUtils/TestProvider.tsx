@@ -22,7 +22,7 @@ import {perspectiveContextValueMock} from '../../src/core/perspective/__mocks__/
 import {ActiveWorkspaceMatcherProvider} from '../../src/core/studio/activeWorkspaceMatcher/ActiveWorkspaceMatcherProvider'
 import {route, RouterProvider} from '../../src/router'
 import {type Panes} from '../../src/structure/structureResolvers'
-import {ResolvedPanesProvider} from '../../src/structure/structureResolvers/ResolvedPanesContext'
+import {ResolvedPanesProvider} from '../../src/structure/structureResolvers/provider/ResolvedPanesProvider'
 import {getMockWorkspace} from './getMockWorkspaceFromConfig'
 
 export interface TestProviderOptions {

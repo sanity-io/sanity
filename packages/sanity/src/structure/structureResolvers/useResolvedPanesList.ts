@@ -1,6 +1,6 @@
 import {useContext} from 'react'
 
-import {ResolvedPanesContext} from './ResolvedPanesContext'
+import {ResolvedPanesContext} from './provider/ResolvedPanesProvider'
 import {type Panes} from './useResolvedPanes'
 
 export function useResolvedPanesList(): Panes {

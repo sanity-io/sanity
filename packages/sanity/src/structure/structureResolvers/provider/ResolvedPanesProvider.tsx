@@ -1,7 +1,7 @@
 import {type ReactNode} from 'react'
 import {createContext} from 'sanity/_createContext'
 
-import {type Panes} from './useResolvedPanes'
+import {type Panes} from '../useResolvedPanes'
 
 export const ResolvedPanesContext = createContext<Panes | null>(
   'sanity/_singletons/context/resolved-panes',
