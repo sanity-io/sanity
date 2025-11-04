@@ -69,6 +69,12 @@ export interface GroupableActionDescription<GroupType = unknown> extends BaseAct
 }
 
 /**
+ * Symbol for enabling releases outside of quota restrictions for single docs
+ * @internal
+ */
+export const QUOTA_EXCLUDED_RELEASES_ENABLED = Symbol('__internal_quotaExcludedReleasesEnabled')
+
+/**
  * Symbol for configuring decision parameters schema
  * @beta
  */
@@ -260,6 +266,8 @@ export interface ConfigContext {
    * Localization resources
    */
   i18n: LocaleSource
+  /** @internal */
+  [QUOTA_EXCLUDED_RELEASES_ENABLED]?: boolean
   /** @beta */
   [DECISION_PARAMETERS_SCHEMA]?: DecisionParametersConfig
 }
@@ -506,8 +514,8 @@ export interface PluginOptions {
   /** @internal */
   __internal_serverDocumentActions?: WorkspaceOptions['__internal_serverDocumentActions']
 
-  /** Configuration for Scheduled drafts */
-  scheduledDrafts?: DefaultPluginsWorkspaceOptions['scheduledDrafts']
+  /** @internal */
+  [QUOTA_EXCLUDED_RELEASES_ENABLED]?: WorkspaceOptions[typeof QUOTA_EXCLUDED_RELEASES_ENABLED]
 
   /** @beta */
   [DECISION_PARAMETERS_SCHEMA]?: DecisionParametersConfig
@@ -633,7 +641,11 @@ export interface WorkspaceOptions extends SourceOptions {
     enabled?: boolean
   }
 
-  scheduledDrafts?: DefaultPluginsWorkspaceOptions['scheduledDrafts']
+  /**
+   * @hidden
+   * @internal
+   */
+  [QUOTA_EXCLUDED_RELEASES_ENABLED]?: boolean
 
   /**
    * @beta
@@ -714,6 +726,8 @@ export interface DocumentActionsContext extends ConfigContext {
   releaseId: string | undefined
   /** the type of the currently active document. */
   versionType: DocumentActionsVersionType
+  /** @internal */
+  [QUOTA_EXCLUDED_RELEASES_ENABLED]?: boolean
 }
 
 /**
@@ -996,9 +1010,6 @@ export interface Source {
   /** @beta */
   tasks?: WorkspaceOptions['tasks']
 
-  scheduledDrafts?: {
-    enabled: boolean
-  }
   /** @beta */
   releases?: {
     enabled?: boolean
@@ -1190,7 +1201,6 @@ export type {
 /** @beta */
 export type DefaultPluginsWorkspaceOptions = {
   tasks: {enabled: boolean}
-  scheduledDrafts: {enabled: boolean}
   scheduledPublishing: ScheduledPublishingPluginOptions
   releases: {
     enabled?: boolean
