@@ -540,11 +540,11 @@ importers:
   dev/test-studio:
     dependencies:
       '@portabletext/block-tools':
-        specifier: ^3.5.13
-        version: 3.5.13(@sanity/schema@packages+@sanity+schema)(@sanity/types@packages+@sanity+types)
+        specifier: ^3.5.14
+        version: 3.5.14(@sanity/schema@packages+@sanity+schema)(@sanity/types@packages+@sanity+types)
       '@portabletext/editor':
-        specifier: ^2.16.0
-        version: 2.16.0(@portabletext/sanity-bridge@1.1.16(@sanity/schema@packages+@sanity+schema)(@sanity/types@packages+@sanity+types))(@sanity/schema@packages+@sanity+schema)(@sanity/types@packages+@sanity+types)(@types/react@19.1.17)(react-dom@19.1.1(react@19.1.1))(react@19.1.1)(rxjs@7.8.2)
+        specifier: ^2.17.2
+        version: 2.17.2(@portabletext/sanity-bridge@1.1.17(@sanity/schema@packages+@sanity+schema)(@sanity/types@packages+@sanity+types))(@sanity/schema@packages+@sanity+schema)(@sanity/types@packages+@sanity+types)(@types/react@19.1.17)(react-dom@19.1.1(react@19.1.1))(react@19.1.1)(rxjs@7.8.2)
       '@portabletext/react':
         specifier: ^4.0.3
         version: 4.0.3(react@19.1.1)
@@ -1804,11 +1804,11 @@ importers:
         specifier: ^3.6.0
         version: 3.6.1(@types/react-dom@19.1.11(@types/react@19.1.17))(@types/react@19.1.17)(react-dom@19.1.1(react@19.1.1))(react@19.1.1)
       '@portabletext/block-tools':
-        specifier: ^3.5.13
-        version: 3.5.13(@sanity/schema@packages+@sanity+schema)(@sanity/types@packages+@sanity+types)
+        specifier: ^3.5.14
+        version: 3.5.14(@sanity/schema@packages+@sanity+schema)(@sanity/types@packages+@sanity+types)
       '@portabletext/editor':
-        specifier: ^2.16.0
-        version: 2.16.0(@portabletext/sanity-bridge@1.1.16(@sanity/schema@packages+@sanity+schema)(@sanity/types@packages+@sanity+types))(@sanity/schema@packages+@sanity+schema)(@sanity/types@packages+@sanity+types)(@types/react@19.1.17)(react-dom@19.1.1(react@19.1.1))(react@19.1.1)(rxjs@7.8.2)
+        specifier: ^2.17.2
+        version: 2.17.2(@portabletext/sanity-bridge@1.1.17(@sanity/schema@packages+@sanity+schema)(@sanity/types@packages+@sanity+types))(@sanity/schema@packages+@sanity+schema)(@sanity/types@packages+@sanity+types)(@types/react@19.1.17)(react-dom@19.1.1(react@19.1.1))(react@19.1.1)(rxjs@7.8.2)
       '@portabletext/patches':
         specifier: ^1.1.8
         version: 1.1.8
@@ -4397,16 +4397,16 @@ packages:
     resolution: {integrity: sha512-c83qWb22rNRuB0UaVCI0uRPNRr8Z0FWnEIvT47jiHAmOIUHbBOg5XvV7pM5x+rKn9HRpjxquDbXYSXr3fAKFcw==}
     engines: {node: '>=12'}
 
-  '@portabletext/block-tools@3.5.13':
-    resolution: {integrity: sha512-vMbxQlsRl16VhG8/npX9CVrSLea5448HOe4SenQcPpNxca7tSpWNrNj2qCue6vF9Mq7Y10MQNa0cXZKdnn/lxQ==}
+  '@portabletext/block-tools@3.5.14':
+    resolution: {integrity: sha512-Kb2VGxL1CdgaHfA2zmSQQoDUm/DKE54V7EArgnM/kbyIF9EhLLSweMBzlowGLS++EKq6y/OklyNm3zQW173d3g==}
     peerDependencies:
       '@sanity/types': ^4.12.0
 
-  '@portabletext/editor@2.16.0':
-    resolution: {integrity: sha512-sVlYbaQBqwMYv5lZfnnVbtnLbl3J6vZnHIx+k6u9o0Q1SUkTSHxl3ocnNeSX96V2b+WqYaFcUn113kIqsmQrVQ==}
+  '@portabletext/editor@2.17.2':
+    resolution: {integrity: sha512-ZuebzF1sHeqFDjivlzymW/psSOd6xRLJ7Kjr53goqb1y8m0VStzmLVCWEXMJM8jVLOQ8ZhJw2vEVgKTPoZlMkA==}
     engines: {node: '>=20.19 <22 || >=22.12'}
     peerDependencies:
-      '@portabletext/sanity-bridge': ^1.1.16
+      '@portabletext/sanity-bridge': ^1.1.17
       '@sanity/schema': ^4.12.0
       '@sanity/types': ^4.12.0
       react: ^18.3 || ^19
@@ -4424,8 +4424,8 @@ packages:
     peerDependencies:
       react: ^18.2 || ^19
 
-  '@portabletext/sanity-bridge@1.1.16':
-    resolution: {integrity: sha512-ojb9zOBCK8y1J7yXK1Dbx9hF43uudEUAv+YHOr4TAmGx7Pny0JaTNIEyhe9KiyoBydG352/AI71e7hs+ikzQ0w==}
+  '@portabletext/sanity-bridge@1.1.17':
+    resolution: {integrity: sha512-tb1xtRoVTgdI0VZfyK5MFBLYrg24YezYY9NrNxut37SN8NSWNHjmPdLeGf0rON5m+3o4NA5gn3OhRJ301kvO/g==}
     engines: {node: '>=20.19 <22 || >=22.12'}
     peerDependencies:
       '@sanity/schema': ^4.12.0
@@ -15154,29 +15154,27 @@ snapshots:
       '@pnpm/network.ca-file': 1.0.2
       config-chain: 1.1.13
 
-  '@portabletext/block-tools@3.5.13(@sanity/schema@packages+@sanity+schema)(@sanity/types@packages+@sanity+types)':
+  '@portabletext/block-tools@3.5.14(@sanity/schema@packages+@sanity+schema)(@sanity/types@packages+@sanity+types)':
     dependencies:
-      '@portabletext/sanity-bridge': 1.1.16(@sanity/schema@packages+@sanity+schema)(@sanity/types@packages+@sanity+types)
+      '@portabletext/sanity-bridge': 1.1.17(@sanity/schema@packages+@sanity+schema)(@sanity/types@packages+@sanity+types)
       '@portabletext/schema': 1.2.0
       '@sanity/types': link:packages/@sanity/types
-      get-random-values-esm: 1.0.2
       lodash: 4.17.21
     transitivePeerDependencies:
       - '@sanity/schema'
 
-  '@portabletext/editor@2.16.0(@portabletext/sanity-bridge@1.1.16(@sanity/schema@packages+@sanity+schema)(@sanity/types@packages+@sanity+types))(@sanity/schema@packages+@sanity+schema)(@sanity/types@packages+@sanity+types)(@types/react@19.1.17)(react-dom@19.1.1(react@19.1.1))(react@19.1.1)(rxjs@7.8.2)':
+  '@portabletext/editor@2.17.2(@portabletext/sanity-bridge@1.1.17(@sanity/schema@packages+@sanity+schema)(@sanity/types@packages+@sanity+types))(@sanity/schema@packages+@sanity+schema)(@sanity/types@packages+@sanity+types)(@types/react@19.1.17)(react-dom@19.1.1(react@19.1.1))(react@19.1.1)(rxjs@7.8.2)':
     dependencies:
-      '@portabletext/block-tools': 3.5.13(@sanity/schema@packages+@sanity+schema)(@sanity/types@packages+@sanity+types)
+      '@portabletext/block-tools': 3.5.14(@sanity/schema@packages+@sanity+schema)(@sanity/types@packages+@sanity+types)
       '@portabletext/keyboard-shortcuts': 1.1.1
       '@portabletext/patches': 1.1.8
-      '@portabletext/sanity-bridge': 1.1.16(@sanity/schema@packages+@sanity+schema)(@sanity/types@packages+@sanity+types)
+      '@portabletext/sanity-bridge': 1.1.17(@sanity/schema@packages+@sanity+schema)(@sanity/types@packages+@sanity+types)
       '@portabletext/schema': 1.2.0
       '@portabletext/to-html': 3.0.0
       '@sanity/schema': link:packages/@sanity/schema
       '@sanity/types': link:packages/@sanity/types
       '@xstate/react': 6.0.0(@types/react@19.1.17)(react@19.1.1)(xstate@5.23.0)
       debug: 4.4.3(supports-color@5.5.0)
-      get-random-values-esm: 1.0.2
       immer: 10.2.0
       lodash: 4.17.21
       lodash.startcase: 4.4.0
@@ -15205,12 +15203,11 @@ snapshots:
       '@portabletext/types': 2.0.15
       react: 19.1.1
 
-  '@portabletext/sanity-bridge@1.1.16(@sanity/schema@packages+@sanity+schema)(@sanity/types@packages+@sanity+types)':
+  '@portabletext/sanity-bridge@1.1.17(@sanity/schema@packages+@sanity+schema)(@sanity/types@packages+@sanity+types)':
     dependencies:
       '@portabletext/schema': 1.2.0
       '@sanity/schema': link:packages/@sanity/schema
       '@sanity/types': link:packages/@sanity/types
-      get-random-values-esm: 1.0.2
       lodash.startcase: 4.4.0
 
   '@portabletext/schema@1.2.0': {}
