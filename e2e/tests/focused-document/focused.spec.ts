@@ -49,11 +49,10 @@ test.describe('focused document', () => {
     ).toBeVisible()
     await page.getByTestId('create-new-document-select-reference-test-selectTypeMenuItem').click()
 
-    await expect(page.getByTestId('document-panel-document-title')).toBeVisible()
+    expect(page.getByTestId('field-title').getByTestId('string-input').nth(1)).toBeVisible()
+    expect(page.getByTestId('field-title').getByTestId('string-input').nth(1)).toBeEnabled()
 
-    expect(page.getByTestId('field-title').getByTestId('string-input')).toBeVisible()
-
-    await page.getByTestId('field-title').getByTestId('string-input').fill('Test Name')
+    await page.getByTestId('field-title').getByTestId('string-input').nth(1).fill('Test Name')
 
     await expect(page.getByTestId('document-header-breadcrumb')).toBeVisible()
     await expect(
@@ -111,5 +110,17 @@ test.describe('focused document', () => {
     await expect(
       page.getByTestId('document-header-breadcrumb').getByText('Test Name'),
     ).not.toBeVisible()
+  })
+
+  test('navigating to a non-document pane shows the right panes', async ({page}) => {
+    await page.getByTestId('focus-pane-button-focus').click()
+
+    await expect(page.locator('[data-testid="pane-header"]')).toHaveCount(1)
+    await expect(page.getByTestId('document-header-breadcrumb')).toBeVisible()
+
+    await expect(page.getByRole('button', {name: 'Reference test'})).toBeVisible()
+    await page.getByRole('button', {name: 'Reference test'}).click()
+
+    await expect(page.locator('[data-testid="pane-header"]')).toHaveCount(3)
   })
 })
