@@ -2650,10 +2650,6 @@ packages:
     resolution: {integrity: sha512-+W6cISkXFa1jXsDEdYA8HeevQT/FULhxzR99pxphltZcVaugps53THCeiWA8SguxxpSp3gKPiuYfSWopkLQ4hw==}
     engines: {node: '>=6.9.0'}
 
-  '@babel/helper-member-expression-to-functions@7.27.1':
-    resolution: {integrity: sha512-E5chM8eWjTp/aNoVpcbfM7mLxu9XGLWYise2eBKGQomAk/Mb4XoxyqXTZbuTohbsl8EKqdlMhnDI2CCLfcs9wA==}
-    engines: {node: '>=6.9.0'}
-
   '@babel/helper-member-expression-to-functions@7.28.5':
     resolution: {integrity: sha512-cwM7SBRZcPCLgl8a7cY0soT1SptSzAlMH39vwiRpOQkJlh53r5hdHwLSCZpQdVLT39sZt+CRpNwYG4Y2v77atg==}
     engines: {node: '>=6.9.0'}
@@ -13023,13 +13019,6 @@ snapshots:
 
   '@babel/helper-globals@7.28.0': {}
 
-  '@babel/helper-member-expression-to-functions@7.27.1':
-    dependencies:
-      '@babel/traverse': 7.28.5(supports-color@5.5.0)
-      '@babel/types': 7.28.5
-    transitivePeerDependencies:
-      - supports-color
-
   '@babel/helper-member-expression-to-functions@7.28.5':
     dependencies:
       '@babel/traverse': 7.28.5(supports-color@5.5.0)
@@ -13071,7 +13060,7 @@ snapshots:
   '@babel/helper-replace-supers@7.27.1(@babel/core@7.28.5)':
     dependencies:
       '@babel/core': 7.28.5
-      '@babel/helper-member-expression-to-functions': 7.27.1
+      '@babel/helper-member-expression-to-functions': 7.28.5
       '@babel/helper-optimise-call-expression': 7.27.1
       '@babel/traverse': 7.28.5(supports-color@5.5.0)
     transitivePeerDependencies:
