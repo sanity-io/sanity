@@ -62,7 +62,6 @@ export function PaneLayout(
       collapsed,
       expand: controller.expand,
       expandedElement: state.expandedElement,
-      focus: controller.focus,
       mount: controller.mount,
       panes: state.panes,
       resize: controller.resize,

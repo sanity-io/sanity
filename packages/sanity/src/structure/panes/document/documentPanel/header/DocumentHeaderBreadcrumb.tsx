@@ -14,7 +14,7 @@ export function DocumentHeaderBreadcrumb({
   currentPaneIndex: number
 }): React.JSX.Element {
   return (
-    <Flex direction="row" align="center">
+    <Flex direction="row" align="center" data-testid="document-header-breadcrumb">
       {paneDataItems.map((paneData, idx) => {
         if (idx > currentPaneIndex) return null
         const isDocumentPane = paneData.pane !== LOADING_PANE && paneData.pane.type === 'document'

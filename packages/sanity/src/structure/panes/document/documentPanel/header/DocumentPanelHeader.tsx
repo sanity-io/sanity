@@ -250,6 +250,7 @@ export const DocumentPanelHeader = memo(
                   ? t('buttons.focus-pane-button.tooltip.collapse')
                   : t('buttons.focus-pane-button.tooltip.focus'),
               }}
+              data-testid={isFocusedPane ? 'focus-pane-button-collapse' : 'focus-pane-button-focus'}
             />
           )}
 
