@@ -67,6 +67,7 @@ describe('VersionContextMenu', () => {
     isVersion: true,
     onDiscard: vi.fn(),
     onCreateRelease: vi.fn(),
+    onCopyToDrafts: vi.fn(),
     onCreateVersion: vi.fn(),
     disabled: false,
     type: 'document',

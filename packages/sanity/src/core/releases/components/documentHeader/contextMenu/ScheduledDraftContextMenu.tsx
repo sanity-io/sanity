@@ -15,11 +15,14 @@ interface ScheduledDraftContextMenuProps {
   releases: ReleaseDocument[]
   fromRelease: string
   onCreateRelease: () => void
+  onCopyToDrafts: () => void
   onCreateVersion: (targetId: string) => void
   disabled?: boolean
   isGoingToUnpublish?: boolean
   hasCreatePermission: boolean | null
   scheduledDraftMenuActions: UseScheduledDraftMenuActionsReturn
+  documentId: string
+  documentType: string
 }
 
 export const ScheduledDraftContextMenu = memo(function ScheduledDraftContextMenu(
@@ -29,11 +32,14 @@ export const ScheduledDraftContextMenu = memo(function ScheduledDraftContextMenu
     releases,
     fromRelease,
     onCreateRelease,
+    onCopyToDrafts,
     onCreateVersion,
     disabled,
     isGoingToUnpublish = false,
     hasCreatePermission,
     scheduledDraftMenuActions,
+    documentId,
+    documentType,
   } = props
   const {t} = useTranslation()
   const isCopyToReleaseDisabled = disabled || !hasCreatePermission || isGoingToUnpublish
@@ -61,9 +67,12 @@ export const ScheduledDraftContextMenu = memo(function ScheduledDraftContextMenu
             releases={copyToReleaseOptions}
             fromRelease={fromRelease}
             onCreateRelease={onCreateRelease}
+            onCopyToDrafts={onCopyToDrafts}
             onCreateVersion={onCreateVersion}
             disabled={isCopyToReleaseDisabled}
             hasCreatePermission={hasCreatePermission}
+            documentId={documentId}
+            documentType={documentType}
           />
           <MenuDivider />
         </>

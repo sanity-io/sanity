@@ -17,6 +17,7 @@ interface CanonicalReleaseContextMenuProps {
   isVersion: boolean
   onDiscard: () => void
   onCreateRelease: () => void
+  onCopyToDrafts: () => void
   onCreateVersion: (targetId: string) => void
   disabled?: boolean
   locked?: boolean
@@ -24,6 +25,8 @@ interface CanonicalReleaseContextMenuProps {
   hasCreatePermission: boolean | null
   hasDiscardPermission: boolean
   isPublished: boolean
+  documentId: string
+  documentType: string
 }
 
 export const CanonicalReleaseContextMenu = memo(function CanonicalReleaseContextMenu(
@@ -36,6 +39,7 @@ export const CanonicalReleaseContextMenu = memo(function CanonicalReleaseContext
     isVersion,
     onDiscard,
     onCreateRelease,
+    onCopyToDrafts,
     onCreateVersion,
     disabled,
     locked,
@@ -43,6 +47,8 @@ export const CanonicalReleaseContextMenu = memo(function CanonicalReleaseContext
     hasCreatePermission,
     hasDiscardPermission,
     isPublished,
+    documentId,
+    documentType,
   } = props
   const {t} = useTranslation()
 
@@ -69,12 +75,16 @@ export const CanonicalReleaseContextMenu = memo(function CanonicalReleaseContext
           releases={copyToReleaseOptions}
           fromRelease={fromRelease}
           onCreateRelease={onCreateRelease}
+          onCopyToDrafts={onCopyToDrafts}
           onCreateVersion={onCreateVersion}
           disabled={isCopyToReleaseDisabled}
           hasCreatePermission={hasCreatePermission}
+          documentId={documentId}
+          documentType={documentType}
         />
       )}
       {(isVersion || showCopyToReleaseMenuItem) && !isPublished && <MenuDivider />}
+
       {!isPublished && (
         <MenuItem
           icon={TrashIcon}
