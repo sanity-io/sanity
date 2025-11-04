@@ -1,7 +1,8 @@
 import {usePortableTextEditor} from '@portabletext/editor'
 import {defineBehavior} from '@portabletext/editor/behaviors'
-import {BehaviorPlugin, OneLinePlugin} from '@portabletext/editor/plugins'
+import {BehaviorPlugin} from '@portabletext/editor/plugins'
 import {MarkdownShortcutsPlugin} from '@portabletext/plugin-markdown-shortcuts'
+import {OneLinePlugin} from '@portabletext/plugin-one-line'
 import {type ArraySchemaType, type PortableTextBlock} from '@sanity/types'
 import {type ComponentType, useMemo} from 'react'
 
