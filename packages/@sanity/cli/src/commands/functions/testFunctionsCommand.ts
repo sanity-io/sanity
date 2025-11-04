@@ -20,7 +20,7 @@ Options
   --dataset <dataset> The Sanity dataset to use
   --project-id <id> Sanity Project ID to use
   --with-user-token Prime access token from CLI config into context.clientOptions
-  --media-library-id Sanity Media Library ID to use
+  --media-library-id <id> Sanity Media Library ID to use
 
 
 Examples
