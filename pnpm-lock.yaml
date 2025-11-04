@@ -582,8 +582,8 @@ importers:
         specifier: ^2.1.15
         version: 2.1.15(@sanity/client@7.12.0(debug@4.4.3))(@sanity/icons@3.7.4(react@19.1.1))(sanity@packages+sanity)
       '@sanity/react-loader':
-        specifier: ^1.11.22
-        version: 1.11.22(@sanity/types@packages+@sanity+types)(react@19.1.1)(typescript@5.9.3)
+        specifier: ^2.0.0
+        version: 2.0.0(@sanity/types@packages+@sanity+types)(react@19.1.1)(typescript@5.9.3)
       '@sanity/types':
         specifier: workspace:*
         version: link:../../packages/@sanity/types
@@ -4939,8 +4939,8 @@ packages:
     resolution: {integrity: sha512-vTidwlsO/I/sYcepdPRrSBA8TX4JGrO3wa703pxpSfXMUAClNYXi/3vtq9uhE2KUu8gbgUo1IO59mWBiQ39Ofg==}
     engines: {node: '>=20.19 <22 || >=22.12'}
 
-  '@sanity/core-loader@1.8.21':
-    resolution: {integrity: sha512-CtutB4QXCX/M7729VVjFhdBQohlTOTfMMPXWweHAQIC+HZ5oDa0SGoXphxAjUGJcQcj7fBRmUKuUXq5Wmo0hyA==}
+  '@sanity/core-loader@2.0.0':
+    resolution: {integrity: sha512-KhxRuCtJeZXxX8NGkNaBBgFfbIK3PYBDh2nnFrvw90QOl1Hm0P7SP/D1Sf64FCwUz6H73sq4iBhNKxFZWiwRpw==}
     engines: {node: '>=18'}
 
   '@sanity/descriptors@1.1.1':
@@ -5097,8 +5097,8 @@ packages:
       sanity:
         optional: true
 
-  '@sanity/react-loader@1.11.22':
-    resolution: {integrity: sha512-MWkhoP4uyFWQD1XA6LlRIy/0RfPtjlvksh8DvN70CnYTLsuPGMWVInZjexc/6lb404c+4mLN0+le3Ogh4CfJiQ==}
+  '@sanity/react-loader@2.0.0':
+    resolution: {integrity: sha512-DXrcdsqQc6kAY15cXvpr6YmaL+Lw8eng7/gV5teM9nwjGe74N1VID8Vc62E6qJ0v73oM0iX80OUnBGbzh4T14g==}
     engines: {node: '>=18'}
     peerDependencies:
       react: ^18.3 || ^19
@@ -15641,11 +15641,11 @@ snapshots:
       uuid: 11.1.0
       xstate: 5.23.0
 
-  '@sanity/core-loader@1.8.21(@sanity/types@packages+@sanity+types)(typescript@5.9.3)':
+  '@sanity/core-loader@2.0.0(@sanity/types@packages+@sanity+types)(typescript@5.9.3)':
     dependencies:
       '@sanity/client': 7.12.0(debug@4.4.3)
-      '@sanity/comlink': 3.1.1
-      '@sanity/presentation-comlink': 1.0.33(@sanity/client@7.12.0)(@sanity/types@packages+@sanity+types)
+      '@sanity/comlink': 4.0.0
+      '@sanity/presentation-comlink': 2.0.0(@sanity/client@7.12.0(debug@4.4.3))(@sanity/types@packages+@sanity+types)
       '@sanity/visual-editing-csm': 2.0.26(@sanity/client@7.12.0(debug@4.4.3))(@sanity/types@packages+@sanity+types)(typescript@5.9.3)
     transitivePeerDependencies:
       - '@sanity/types'
@@ -15992,10 +15992,10 @@ snapshots:
       '@sanity/icons': 3.7.4(react@19.1.1)
       sanity: link:packages/sanity
 
-  '@sanity/react-loader@1.11.22(@sanity/types@packages+@sanity+types)(react@19.1.1)(typescript@5.9.3)':
+  '@sanity/react-loader@2.0.0(@sanity/types@packages+@sanity+types)(react@19.1.1)(typescript@5.9.3)':
     dependencies:
       '@sanity/client': 7.12.0(debug@4.4.3)
-      '@sanity/core-loader': 1.8.21(@sanity/types@packages+@sanity+types)(typescript@5.9.3)
+      '@sanity/core-loader': 2.0.0(@sanity/types@packages+@sanity+types)(typescript@5.9.3)
       '@sanity/visual-editing-csm': 2.0.26(@sanity/client@7.12.0(debug@4.4.3))(@sanity/types@packages+@sanity+types)(typescript@5.9.3)
       react: 19.1.1
     transitivePeerDependencies:
