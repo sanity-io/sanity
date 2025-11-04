@@ -1,4 +1,5 @@
-import {useMemo} from 'react'
+import {useTelemetry} from '@sanity/telemetry/react'
+import {useCallback, useMemo} from 'react'
 import {useTranslation} from 'sanity'
 import {useRouter, useRouterState} from 'sanity/router'
 
@@ -7,6 +8,7 @@ import {LOADING_PANE} from '../../../../constants'
 import {structureLocaleNamespace} from '../../../../i18n'
 import {type Panes} from '../../../../structureResolvers/useResolvedPanes'
 import {type RouterPanes} from '../../../../types'
+import {FocusDocumentPaneNavigated} from './__telemetry__/focus.telemetry'
 import {useDocumentPreviewTitle} from './hook/useDocumentPreviewTitle'
 
 export function DocumentHeaderBreadcrumbItem({
@@ -18,7 +20,8 @@ export function DocumentHeaderBreadcrumbItem({
   const router = useRouter()
   const {t} = useTranslation(structureLocaleNamespace)
   const routerState = useRouterState()
-  const routerPanes = (routerState?.panes || []) as RouterPanes
+  const telemetry = useTelemetry()
+  const routerPanes = useMemo(() => (routerState?.panes || []) as RouterPanes, [routerState?.panes])
 
   // In case if it's a pane with a title, use the title
   const staticTitle = pane !== LOADING_PANE && 'title' in pane ? pane.title : null
@@ -37,6 +40,11 @@ export function DocumentHeaderBreadcrumbItem({
     return staticTitle
   }, [documentId, previewTitle, staticTitle, t, isLoading])
 
+  const handleClick = useCallback(() => {
+    telemetry.log(FocusDocumentPaneNavigated)
+    router.navigate({panes: routerPanes.slice(0, paneData.groupIndex)})
+  }, [telemetry, router, routerPanes, paneData.groupIndex])
+
   if (!displayTitle && !isLoading) return null
 
   return (
@@ -44,9 +52,7 @@ export function DocumentHeaderBreadcrumbItem({
       mode="bleed"
       text={displayTitle || t('panes.document-header-title.untitled.text')}
       tooltipProps={{content: displayTitle || t('panes.document-header-title.untitled.text')}}
-      onClick={() => {
-        router.navigate({panes: routerPanes.slice(0, paneData.groupIndex)})
-      }}
+      onClick={handleClick}
     />
   )
 }

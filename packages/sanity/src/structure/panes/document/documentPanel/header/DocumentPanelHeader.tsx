@@ -1,4 +1,5 @@
 import {ArrowLeftIcon, CloseIcon, CollapseIcon, ExpandIcon, SplitVerticalIcon} from '@sanity/icons'
+import {useTelemetry} from '@sanity/telemetry/react'
 import {Box, Card, Flex} from '@sanity/ui'
 // eslint-disable-next-line camelcase
 import {getTheme_v2, rgba} from '@sanity/ui/theme'
@@ -33,6 +34,7 @@ import {useStructureTool} from '../../../../useStructureTool'
 import {ActionDialogWrapper, ActionMenuListItem} from '../../statusBar/ActionMenuButton'
 import {isRestoreAction} from '../../statusBar/DocumentStatusBarActions'
 import {useDocumentPane} from '../../useDocumentPane'
+import {FocusDocumentPaneClicked, FocusDocumentPaneCollapsed} from './__telemetry__/focus.telemetry'
 import {DocumentHeaderTitle} from './DocumentHeaderTitle'
 import {useChipScrollPosition} from './hook/useChipScrollPosition'
 import {DocumentPerspectiveList} from './perspective/DocumentPerspectiveList'
@@ -102,6 +104,7 @@ export const DocumentPanelHeader = memo(
     const [referenceElement, setReferenceElement] = useState<HTMLElement | null>(null)
     const scrollContainerRef = useRef<HTMLDivElement>(null)
     const showGradient = useChipScrollPosition(scrollContainerRef)
+    const telemetry = useTelemetry()
 
     // The restore action has a dedicated place in the UI; it's only visible when the user is
     // viewing a different document revision. It must be omitted from this collection.
@@ -151,6 +154,24 @@ export const DocumentPanelHeader = memo(
 
     const {t} = useTranslation(structureLocaleNamespace)
 
+    const isFocusedPane = useMemo(() => {
+      return (
+        focusedPane?.pane &&
+        typeof focusedPane.pane === 'object' &&
+        focusedPane.pane.type === 'document' &&
+        focusedPane.pane.options.id === documentId
+      )
+    }, [focusedPane, documentId])
+
+    const handleFocusPane = useCallback(() => {
+      onSetFocusedPane?.()
+
+      if (isFocusedPane) {
+        telemetry.log(FocusDocumentPaneCollapsed)
+      } else {
+        telemetry.log(FocusDocumentPaneClicked)
+      }
+    }, [onSetFocusedPane, isFocusedPane, telemetry])
     const renderPaneActions = useCallback<
       (props: {states: DocumentActionDescription[]}) => React.ReactNode
     >(
@@ -179,14 +200,6 @@ export const DocumentPanelHeader = memo(
         ),
       [BackLink, showBackButton, t],
     )
-    const isFocusedPane = useMemo(() => {
-      return (
-        focusedPane?.pane &&
-        typeof focusedPane.pane === 'object' &&
-        focusedPane.pane.type === 'document' &&
-        focusedPane.pane.options.id === documentId
-      )
-    }, [focusedPane, documentId])
     const renderedActions = useMemo(
       () => (
         <Flex align="center" gap={1}>
@@ -244,7 +257,7 @@ export const DocumentPanelHeader = memo(
               }
               icon={isFocusedPane ? CollapseIcon : ExpandIcon}
               mode="bleed"
-              onClick={onSetFocusedPane}
+              onClick={handleFocusPane}
               tooltipProps={{
                 content: isFocusedPane
                   ? t('buttons.focus-pane-button.tooltip.collapse')
@@ -269,6 +282,7 @@ export const DocumentPanelHeader = memo(
         BackLink,
         actions,
         editState,
+        handleFocusPane,
         isFocusedPane,
         isInitialValueLoading,
         menuButtonNodes,
