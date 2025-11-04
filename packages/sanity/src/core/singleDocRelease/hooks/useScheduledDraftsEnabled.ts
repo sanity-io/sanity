@@ -1,4 +1,3 @@
-import {QUOTA_EXCLUDED_RELEASES_ENABLED} from '../../config/types'
 import {useSource} from '../../studio/source'
 
 /**
@@ -7,8 +6,7 @@ import {useSource} from '../../studio/source'
  */
 export function useScheduledDraftsEnabled(): boolean {
   const source = useSource()
-  const sourceInternal = source.__internal
-  const isEnabled = Boolean(sourceInternal?.options?.[QUOTA_EXCLUDED_RELEASES_ENABLED])
+  const isEnabled = Boolean(source.scheduledDrafts?.enabled)
 
   return isEnabled
 }
