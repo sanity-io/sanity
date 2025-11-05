@@ -19,6 +19,7 @@ interface VersionContextMenuProps {
   onDiscard: () => void
   onCreateRelease: () => void
   onCopyToDrafts: () => void
+  onCopyToDraftsNavigate?: () => void
   onCreateVersion: (targetId: string) => void
   disabled?: boolean
   locked?: boolean
@@ -39,6 +40,7 @@ export const VersionContextMenu = memo(function VersionContextMenu(props: Versio
     onDiscard,
     onCreateRelease,
     onCopyToDrafts,
+    onCopyToDraftsNavigate,
     onCreateVersion,
     disabled,
     locked,
@@ -86,6 +88,7 @@ export const VersionContextMenu = memo(function VersionContextMenu(props: Versio
         fromRelease={fromRelease}
         onCreateRelease={onCreateRelease}
         onCopyToDrafts={onCopyToDrafts}
+        onCopyToDraftsNavigate={onCopyToDraftsNavigate}
         onCreateVersion={onCreateVersion}
         disabled={disabled}
         isGoingToUnpublish={isGoingToUnpublish}
@@ -106,6 +109,7 @@ export const VersionContextMenu = memo(function VersionContextMenu(props: Versio
       onDiscard={onDiscard}
       onCreateRelease={onCreateRelease}
       onCopyToDrafts={onCopyToDrafts}
+      onCopyToDraftsNavigate={onCopyToDraftsNavigate}
       onCreateVersion={onCreateVersion}
       disabled={disabled}
       locked={locked}

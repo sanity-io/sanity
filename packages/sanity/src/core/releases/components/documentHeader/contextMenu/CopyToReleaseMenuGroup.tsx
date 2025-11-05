@@ -23,6 +23,7 @@ interface CopyToReleaseMenuGroupProps {
   fromRelease: string
   onCreateRelease: () => void
   onCopyToDrafts: () => void
+  onCopyToDraftsNavigate?: () => void
   onCreateVersion: (targetId: string) => void
   disabled: boolean
   hasCreatePermission: boolean | null
@@ -38,6 +39,7 @@ export const CopyToReleaseMenuGroup = memo(function CopyToReleaseMenuGroup(
     fromRelease,
     onCreateRelease,
     onCopyToDrafts,
+    onCopyToDraftsNavigate,
     onCreateVersion,
     disabled,
     hasCreatePermission,
@@ -65,6 +67,7 @@ export const CopyToReleaseMenuGroup = memo(function CopyToReleaseMenuGroup(
           documentId={documentId}
           fromRelease={fromRelease}
           onClick={onCopyToDrafts}
+          onNavigate={onCopyToDraftsNavigate}
         />
         {releases.map((targetRelease) => {
           return (

@@ -14,12 +14,13 @@ interface CopyToDraftsMenuItemProps {
   documentType: string
   fromRelease: string
   onClick: () => void
+  onNavigate?: () => void
 }
 
 export const CopyToDraftsMenuItem = memo(function CopyToDraftsMenuItem(
   props: CopyToDraftsMenuItemProps,
 ) {
-  const {documentId, documentType, fromRelease, onClick} = props
+  const {documentId, documentType, fromRelease, onClick, onNavigate} = props
   const {t} = useTranslation()
   const {document} = useWorkspace()
   const schema = useSchema()
@@ -29,7 +30,11 @@ export const CopyToDraftsMenuItem = memo(function CopyToDraftsMenuItem(
   const isDraftModelEnabled = document?.drafts?.enabled
   const shouldShowDraftsOption = isDraftModelEnabled && fromRelease !== 'draft' && !isLiveEdit
 
-  const {handleCopyToDrafts, hasDraftVersion} = useCopyToDrafts({documentId, fromRelease})
+  const {handleCopyToDrafts, hasDraftVersion} = useCopyToDrafts({
+    documentId,
+    fromRelease,
+    onNavigate,
+  })
 
   const handleDraftsClick = useCallback(() => {
     if (hasDraftVersion) {

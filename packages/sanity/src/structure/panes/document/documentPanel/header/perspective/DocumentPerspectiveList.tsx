@@ -105,6 +105,14 @@ export const DocumentPerspectiveList = memo(function DocumentPerspectiveList() {
   const workspace = useWorkspace()
   const {onSetScheduledDraftPerspective} = useSingleDocRelease()
 
+  const handleCopyToDraftsNavigate = useCallback(() => {
+    if (params?.scheduledDraft) {
+      setParams({...params, scheduledDraft: undefined}, {perspective: 'drafts'})
+    } else {
+      setPerspective('drafts')
+    }
+  }, [params, setParams, setPerspective])
+
   const handlePerspectiveChange = useCallback(
     (perspective: 'published' | 'drafts' | ReleaseDocument) => () => {
       if (isReleaseDocument(perspective) && isCardinalityOneRelease(perspective)) {
@@ -270,6 +278,7 @@ export const DocumentPerspectiveList = memo(function DocumentPerspectiveList() {
         selected={isPublishSelected}
         text={t('release.chip.published')}
         tone="positive"
+        onCopyToDraftsNavigate={handleCopyToDraftsNavigate}
         contextValues={{
           documentId: editState?.published?._id || editState?.id || '',
           menuReleaseId: editState?.published?._id || editState?.id || '',
@@ -315,6 +324,7 @@ export const DocumentPerspectiveList = memo(function DocumentPerspectiveList() {
           text={t('release.chip.draft')}
           tone={editState?.draft ? 'caution' : 'neutral'}
           onClick={handlePerspectiveChange('drafts')}
+          onCopyToDraftsNavigate={handleCopyToDraftsNavigate}
           contextValues={{
             documentId: editState?.draft?._id || editState?.published?._id || editState?.id || '',
             menuReleaseId:
@@ -337,6 +347,7 @@ export const DocumentPerspectiveList = memo(function DocumentPerspectiveList() {
           text={
             filteredReleases.inCreation.metadata.title || t('release.placeholder-untitled-release')
           }
+          onCopyToDraftsNavigate={handleCopyToDraftsNavigate}
           contextValues={{
             disabled: true, // disable the chip context menu, this one is in creation
             documentId: displayed?._id || '',
@@ -362,6 +373,7 @@ export const DocumentPerspectiveList = memo(function DocumentPerspectiveList() {
             text={release.metadata.title || t('release.placeholder-untitled-release')}
             tone={getReleaseTone(release)}
             locked={isReleaseScheduledOrScheduling(release)}
+            onCopyToDraftsNavigate={handleCopyToDraftsNavigate}
             contextValues={{
               documentId: displayed?._id || '',
               menuReleaseId: release._id,

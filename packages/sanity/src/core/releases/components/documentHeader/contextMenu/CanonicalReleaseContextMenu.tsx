@@ -18,6 +18,7 @@ interface CanonicalReleaseContextMenuProps {
   onDiscard: () => void
   onCreateRelease: () => void
   onCopyToDrafts: () => void
+  onCopyToDraftsNavigate?: () => void
   onCreateVersion: (targetId: string) => void
   disabled?: boolean
   locked?: boolean
@@ -40,6 +41,7 @@ export const CanonicalReleaseContextMenu = memo(function CanonicalReleaseContext
     onDiscard,
     onCreateRelease,
     onCopyToDrafts,
+    onCopyToDraftsNavigate,
     onCreateVersion,
     disabled,
     locked,
@@ -76,6 +78,7 @@ export const CanonicalReleaseContextMenu = memo(function CanonicalReleaseContext
           fromRelease={fromRelease}
           onCreateRelease={onCreateRelease}
           onCopyToDrafts={onCopyToDrafts}
+          onCopyToDraftsNavigate={onCopyToDraftsNavigate}
           onCreateVersion={onCreateVersion}
           disabled={isCopyToReleaseDisabled}
           hasCreatePermission={hasCreatePermission}

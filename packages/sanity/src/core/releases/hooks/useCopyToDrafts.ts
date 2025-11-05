@@ -3,7 +3,6 @@ import {useCallback, useMemo} from 'react'
 
 import {useClient} from '../../hooks/useClient'
 import {useTranslation} from '../../i18n'
-import {useSetPerspective} from '../../perspective/useSetPerspective'
 import {DEFAULT_STUDIO_CLIENT_OPTIONS} from '../../studioClient'
 import {getPublishedId, getVersionId} from '../../util/draftUtils'
 import {useDocumentVersionInfo} from '../store/useDocumentVersionInfo'
@@ -11,6 +10,7 @@ import {useDocumentVersionInfo} from '../store/useDocumentVersionInfo'
 export interface UseCopyToDraftsOptions {
   documentId: string
   fromRelease: string
+  onNavigate: () => void
 }
 
 export interface UseCopyToDraftsReturn {
@@ -19,11 +19,10 @@ export interface UseCopyToDraftsReturn {
 }
 
 export function useCopyToDrafts(options: UseCopyToDraftsOptions) {
-  const {documentId, fromRelease} = options
+  const {documentId, fromRelease, onNavigate} = options
   const client = useClient(DEFAULT_STUDIO_CLIENT_OPTIONS)
   const toast = useToast()
   const {t} = useTranslation()
-  const setPerspective = useSetPerspective()
 
   const publishedId = useMemo(() => getPublishedId(documentId), [documentId])
 
@@ -52,7 +51,8 @@ export function useCopyToDrafts(options: UseCopyToDraftsOptions) {
         ifBaseRevisionId: sourceDoc._rev,
         publishedId,
       })
-      setPerspective('draft')
+
+      onNavigate()
     } catch (err) {
       toast.push({
         closable: true,
@@ -61,7 +61,7 @@ export function useCopyToDrafts(options: UseCopyToDraftsOptions) {
         description: err.message,
       })
     }
-  }, [client, sourceDocumentId, hasDraftVersion, publishedId, toast, setPerspective, t])
+  }, [client, sourceDocumentId, hasDraftVersion, publishedId, toast, onNavigate, t])
 
   return {
     handleCopyToDrafts,

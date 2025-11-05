@@ -10,15 +10,16 @@ interface CopyToDraftsDialogProps {
   documentId: string
   fromRelease: string
   onClose: () => void
+  onNavigate?: () => void
 }
 
 export const CopyToDraftsDialog = memo(function CopyToDraftsDialog(props: CopyToDraftsDialogProps) {
-  const {documentId, fromRelease, onClose} = props
+  const {documentId, fromRelease, onClose, onNavigate} = props
   const {t: tReleases} = useTranslation(releasesLocaleNamespace)
 
   const [isProcessing, startTransition] = useTransition()
 
-  const {handleCopyToDrafts} = useCopyToDrafts({documentId, fromRelease})
+  const {handleCopyToDrafts} = useCopyToDrafts({documentId, fromRelease, onNavigate})
 
   const handleConfirm = useCallback(
     () =>

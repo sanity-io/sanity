@@ -76,6 +76,7 @@ export const VersionChip = memo(function VersionChip(props: {
   text: string
   tone: BadgeTone
   locked?: boolean
+  onCopyToDraftsNavigate?: () => void
   contextValues: {
     documentId: string
     releases: ReleaseDocument[]
@@ -98,6 +99,7 @@ export const VersionChip = memo(function VersionChip(props: {
     text,
     tone,
     locked = false,
+    onCopyToDraftsNavigate,
     contextValues: {
       documentId,
       releases,
@@ -258,6 +260,7 @@ export const VersionChip = memo(function VersionChip(props: {
             onDiscard={openDiscardDialog}
             onCreateRelease={openCreateReleaseDialog}
             onCopyToDrafts={openCopyToDraftsDialog}
+            onCopyToDraftsNavigate={onCopyToDraftsNavigate}
             disabled={contextMenuDisabled}
             onCreateVersion={handleAddVersion}
             locked={locked}
@@ -310,6 +313,7 @@ export const VersionChip = memo(function VersionChip(props: {
           onClose={() => setDialogState('idle')}
           documentId={documentId}
           fromRelease={fromRelease}
+          onNavigate={onCopyToDraftsNavigate}
         />
       )}
       {isScheduledDraft && scheduledDraftMenuActions.dialogs}
