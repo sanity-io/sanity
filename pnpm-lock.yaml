@@ -2316,7 +2316,7 @@ importers:
         version: 2024.1.0
       '@types/yargs':
         specifier: ^17.0.33
-        version: 17.0.33
+        version: 17.0.34
       '@vitest/expect':
         specifier: ^3.2.4
         version: 3.2.4
@@ -2507,7 +2507,7 @@ importers:
         version: 7.7.1
       '@types/yargs':
         specifier: ^17.0.33
-        version: 17.0.33
+        version: 17.0.34
       chalk:
         specifier: ^4.1.2
         version: 4.1.2
@@ -5752,9 +5752,6 @@ packages:
 
   '@types/yargs-parser@21.0.3':
     resolution: {integrity: sha512-I4q9QU9MQv4oEOz4tAHJtNz1cwuLxn2F3xcc2iV5WdqLPpUnj30aUuxt1mAxYTG+oe8CZMV/+6rU4S4gRDzqtQ==}
-
-  '@types/yargs@17.0.33':
-    resolution: {integrity: sha512-WpxBCKWPLr4xSsHgz511rFJAM+wS28w2zEO1QDNY5zM/S8ok70NNfztH0xwhqKyaK0OHCbN98LDAZuy1ctxDkA==}
 
   '@types/yargs@17.0.34':
     resolution: {integrity: sha512-KExbHVa92aJpw9WDQvzBaGVE2/Pz+pLZQloT2hjL8IqsZnV62rlPOYvNnLmf/L2dyllfVUOVBj64M0z/46eR2A==}
@@ -16860,10 +16857,6 @@ snapshots:
   '@types/wicg-task-scheduling@2024.1.0': {}
 
   '@types/yargs-parser@21.0.3': {}
-
-  '@types/yargs@17.0.33':
-    dependencies:
-      '@types/yargs-parser': 21.0.3
 
   '@types/yargs@17.0.34':
     dependencies:
