@@ -14,7 +14,7 @@ interface CopyToDraftsMenuItemProps {
   documentType: string
   fromRelease: string
   onClick: () => void
-  onNavigate?: () => void
+  onNavigate: () => void
 }
 
 export const CopyToDraftsMenuItem = memo(function CopyToDraftsMenuItem(

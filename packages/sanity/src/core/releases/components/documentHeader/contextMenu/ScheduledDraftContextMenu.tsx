@@ -16,7 +16,7 @@ interface ScheduledDraftContextMenuProps {
   fromRelease: string
   onCreateRelease: () => void
   onCopyToDrafts: () => void
-  onCopyToDraftsNavigate?: () => void
+  onCopyToDraftsNavigate: () => void
   onCreateVersion: (targetId: string) => void
   disabled?: boolean
   isGoingToUnpublish?: boolean

@@ -10,7 +10,7 @@ interface CopyToDraftsDialogProps {
   documentId: string
   fromRelease: string
   onClose: () => void
-  onNavigate?: () => void
+  onNavigate: () => void
 }
 
 export const CopyToDraftsDialog = memo(function CopyToDraftsDialog(props: CopyToDraftsDialogProps) {

@@ -76,7 +76,7 @@ export const VersionChip = memo(function VersionChip(props: {
   text: string
   tone: BadgeTone
   locked?: boolean
-  onCopyToDraftsNavigate?: () => void
+  onCopyToDraftsNavigate: () => void
   contextValues: {
     documentId: string
     releases: ReleaseDocument[]

@@ -19,7 +19,7 @@ interface VersionContextMenuProps {
   onDiscard: () => void
   onCreateRelease: () => void
   onCopyToDrafts: () => void
-  onCopyToDraftsNavigate?: () => void
+  onCopyToDraftsNavigate: () => void
   onCreateVersion: (targetId: string) => void
   disabled?: boolean
   locked?: boolean
