@@ -18,10 +18,10 @@
     "workshop:dev": "tsx scripts/workshop/dev.ts"
   },
   "dependencies": {
-    "@portabletext/block-tools": "^3.5.14",
+    "@portabletext/block-tools": "^4.0.0",
     "@portabletext/editor": "^2.17.2",
     "@portabletext/react": "^4.0.3",
-    "@portabletext/toolkit": "^3.0.1",
+    "@portabletext/toolkit": "^4.0.0",
     "@sanity/assist": "^5.0.0",
     "@sanity/cli": "workspace:*",
     "@sanity/client": "^7.12.1",
