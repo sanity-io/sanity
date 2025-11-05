@@ -13,7 +13,9 @@ import {tsdoc} from '@sanity/tsdoc/studio'
 import {visionTool} from '@sanity/vision'
 import {
   defineConfig,
+  defineField,
   definePlugin,
+  defineType,
   QUOTA_EXCLUDED_RELEASES_ENABLED,
   type WorkspaceOptions,
 } from 'sanity'
@@ -347,6 +349,18 @@ export default defineConfig([
     dataset: 'data-loss',
     plugins: [sharedSettings({projectId: 'ppsg7ml5'})],
     basePath: '/listener-events',
+    mediaLibrary: {
+      enabled: true,
+    },
+  },
+  {
+    name: 'document-limit',
+    title: 'Document limit',
+    projectId: '0e8c26k1',
+    dataset: 'production',
+    apiHost: 'https://api.sanity.work',
+    plugins: [media()],
+    basePath: '/dl',
     mediaLibrary: {
       enabled: true,
     },

@@ -20,6 +20,8 @@ import {
 } from './studio-components-hooks'
 import {StudioErrorBoundary} from './StudioErrorBoundary'
 import {useWorkspace} from './workspace'
+import {isAssetLimitError} from '../limits/context/assets/isAssetLimitError'
+import {AssetLimitsUpsellPanel} from '../limits/context/assets/AssetLimitUpsellPanel'
 
 const DetectViteDevServerStopped = lazy(() =>
   import('./ViteDevServerStopped').then((DevServerStopped) => ({
@@ -173,12 +175,18 @@ export function StudioLayoutComponent() {
     })
   }, [isLegacyDeskRedirect, router])
 
-  const getErrorScreen = useCallback((error: Error) => {
-    if (isDocumentLimitError(error)) {
-      return <DocumentLimitsUpsellPanel />
-    }
-    return null
-  }, [])
+  const getErrorScreen = useCallback(
+    (error: Error) => {
+      if (isDocumentLimitError(error)) {
+        return <DocumentLimitsUpsellPanel />
+      }
+      if (isAssetLimitError(error)) {
+        return <AssetLimitsUpsellPanel />
+      }
+      return null
+    },
+    [isAssetLimitError, isDocumentLimitError],
+  )
 
   return (
     <Flex data-ui="ToolScreen" direction="column" height="fill" data-testid="studio-layout">
