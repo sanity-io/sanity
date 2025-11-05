@@ -45,6 +45,9 @@ catalogs:
     esbuild-register:
       specifier: ^3.6.0
       version: 3.6.0
+    eslint:
+      specifier: ^9.37.0
+      version: 9.39.0
     globals:
       specifier: ^16.2.0
       version: 16.4.0
@@ -20039,7 +20042,7 @@ snapshots:
     dependencies:
       foreground-child: 3.3.1
       jackspeak: 4.1.1
-      minimatch: 10.0.3
+      minimatch: 10.1.1
       minipass: 7.1.2
       package-json-from-dist: 1.0.1
       path-scurry: 2.0.0
