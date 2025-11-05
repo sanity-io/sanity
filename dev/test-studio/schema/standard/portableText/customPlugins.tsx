@@ -136,6 +136,35 @@ export const customPlugins = defineType({
     },
 
     /**
+     * Markdown Shortcuts Disabled
+     */
+    {
+      type: 'array',
+      name: 'markdownShortcutsDisabled',
+      title: 'Markdown Shortcuts Disabled',
+      description: 'The markdown shortcuts are disabled',
+      of: [
+        {
+          type: 'block',
+        },
+      ],
+      components: {
+        portableText: {
+          plugins: (props) => {
+            return props.renderDefault({
+              ...props,
+              plugins: {
+                markdown: {
+                  enabled: false,
+                },
+              },
+            })
+          },
+        },
+      },
+    },
+
+    /**
      * Custom Decorator Shortcuts
      *
      * Uses the `CharacterPairDecoratorPlugin` add custom decorator shortcuts in the
