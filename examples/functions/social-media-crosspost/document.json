@@ -1,0 +1,19 @@
+{
+  "_type": "socialPost",
+  "_id": "test-social-post-123",
+  "platforms": ["bluesky", "mastodon", "x"],
+  "body": "We're excited to announce our new product launch! Check out the latest features and improvements that will help you build better content experiences. Read more on our blog.",
+  "mainImage": {
+    "asset": {
+      "_ref": "image-abc123-1920x1080-jpg",
+      "_type": "reference"
+    },
+    "alt": "Product launch announcement with colorful interface preview"
+  },
+  "platformSettings": [
+    {
+      "platform": "x",
+      "body": "🚀 New product launch! Discover the latest features to build better content experiences. Learn more on our blog."
+    }
+  ]
+}
