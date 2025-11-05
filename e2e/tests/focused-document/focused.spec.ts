@@ -49,10 +49,10 @@ test.describe('focused document', () => {
     ).toBeVisible()
     await page.getByTestId('create-new-document-select-reference-test-selectTypeMenuItem').click()
 
-    expect(page.getByTestId('field-title').getByTestId('string-input').nth(1)).toBeVisible()
-    expect(page.getByTestId('field-title').getByTestId('string-input').nth(1)).toBeEnabled()
+    expect(page.getByTestId('field-title').getByTestId('string-input')).toBeVisible()
+    expect(page.getByTestId('field-title').getByTestId('string-input')).toBeEnabled()
 
-    await page.getByTestId('field-title').getByTestId('string-input').nth(1).fill('Test Name')
+    await page.getByTestId('field-title').getByTestId('string-input').fill('Test Name')
 
     await expect(page.getByTestId('document-header-breadcrumb')).toBeVisible()
     await expect(
