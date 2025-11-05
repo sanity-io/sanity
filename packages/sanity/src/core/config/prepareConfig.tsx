@@ -337,7 +337,7 @@ function resolveSource({
   auth,
   i18n,
 }: ResolveSourceOptions): Source {
-  const {dataset, projectId} = config
+  const {dataset, projectId, apiHost} = config
   const bifur = getBifurClient(client, auth)
   const errors: unknown[] = []
   const clients: Record<string, SanityClient> = {}
@@ -572,6 +572,7 @@ function resolveSource({
     dataset,
     projectId,
     tools,
+    apiHost,
     currentUser,
     authenticated,
     templates,
