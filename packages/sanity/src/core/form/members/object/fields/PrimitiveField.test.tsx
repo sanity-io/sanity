@@ -152,8 +152,7 @@ describe('PrimitiveField', () => {
       expect(input.value).toEqual('42')
     })
 
-    // @TODO move to e2e tests
-    it.skip('keeps input value when field value is updated with a "simplified" version of the current input', async () => {
+    it('keeps input value when field value is updated with a "simplified" version of the current input', async () => {
       // Given
       const {member, TestWrapper} = setupTest('number', 1)
 
@@ -171,11 +170,25 @@ describe('PrimitiveField', () => {
       // uses fireEvent.change instead of userEvent.type due to https://github.com/testing-library/user-event/issues/1150
       // eslint-disable-next-line testing-library/prefer-user-event
       fireEvent.change(getByTestId('number-input'), {target: {value: '1.00', valueAsNumber: 1}})
-      member.field.value = 1
+      
+      // Wait for the localValue state to update after the change event
+      await waitFor(() => {
+        const input = getByTestId('number-input') as HTMLInputElement
+        expect(input.value).toEqual('1.00')
+      })
+      
+      // Update member field value (same value but ensures consistency)
+      const updatedMember = {
+        ...member,
+        field: {
+          ...member.field,
+          value: 1,
+        },
+      }
 
       rerender(
         <PrimitiveField
-          member={member}
+          member={updatedMember}
           renderInput={defaultRenderInput}
           renderField={defaultRenderField}
         />,
@@ -184,7 +197,8 @@ describe('PrimitiveField', () => {
       // Then
       const input = getByTestId('number-input') as HTMLInputElement
       expect(input).toBeInstanceOf(HTMLInputElement)
-      await waitFor(() => expect(input.value).toEqual('1.00'))
+      // The input should still show '1.00' because localValue is preserved
+      expect(input.value).toEqual('1.00')
     })
 
     it('wont trigger `onChange` callbacks when number input values are out of range', async () => {
