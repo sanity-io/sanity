@@ -134,14 +134,20 @@ export const studioLocaleStrings = defineLocalesResources('studio', {
   'asset-source.dialog.default-title_file': 'Select file',
   /** Select asset dialog title for images */
   'asset-source.dialog.default-title_image': 'Select image',
+  /** Select asset dialog title for videos */
+  'asset-source.dialog.default-title_video': 'Select video',
   /** Insert asset error */
   'asset-source.dialog.insert-asset-error':
     'Error inserting asset. See the console for more information.',
   /** Select asset dialog load more items */
   'asset-source.dialog.load-more': 'Load more',
-  /** Text shown when selecting a file but there's no files to select from */
+  /** Text shown when selecting a file but there's no files to select from
+   * @deprecated no longer in use
+   */
   'asset-source.dialog.no-assets_file': 'No files',
-  /** Text shown when selecting an image but there's no images to select from */
+  /** Text shown when selecting an image but there's no images to select from
+   * @deprecated no longer in use
+   */
   'asset-source.dialog.no-assets_image': 'No images',
   'asset-source.file.asset-list.action.delete.disabled-cannot-delete-current-file':
     'Cannot delete currently selected file',
@@ -211,7 +217,9 @@ export const studioLocaleStrings = defineLocalesResources('studio', {
   'asset-sources.media-library.image.title': 'Media Library',
 
   /** Info messages for the Media Library Asset Source  */
-  'asset-sources.media-library.select-dialog.title': 'Selecting {{assetType}} for {{targetTitle}}',
+  'asset-sources.media-library.select-dialog.title_file': 'Selecting file for {{targetTitle}}',
+  'asset-sources.media-library.select-dialog.title_image': 'Selecting image for {{targetTitle}}',
+  'asset-sources.media-library.select-dialog.title_video': 'Selecting video for {{targetTitle}}',
 
   /** Warning message shown when uploading already existing files to the Media Library Asset Source */
   'asset-sources.media-library.warning.file-already-exist.description':
