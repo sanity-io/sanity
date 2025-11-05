@@ -43,7 +43,7 @@ export function runUpdateCheck(options: UpdateCheckOptions): {notify: () => Prom
       return
     }
 
-    printResult(result)
+    await printResult(result)
   }
 
   async function printCachedResult(): Promise<false> {

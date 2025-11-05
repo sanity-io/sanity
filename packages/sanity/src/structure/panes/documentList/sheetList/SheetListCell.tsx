@@ -108,9 +108,10 @@ export function SheetListCellInner(props: SheetListCellInnerProps) {
     [column.id, patchDocument, row.id],
   )
 
-  const handleCopy = useCallback(() => {
-    navigator.clipboard.writeText(renderValue.toString())
-  }, [renderValue])
+  const handleCopy = useCallback(
+    () => navigator.clipboard.writeText(renderValue.toString()),
+    [renderValue],
+  )
 
   useEffect(() => {
     if (cellState === 'selectedAnchor' || cellState === 'focused')

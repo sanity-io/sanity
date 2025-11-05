@@ -195,13 +195,13 @@ export function getSentryErrorReporter(): ErrorReporter {
   function enable() {
     const transport = client?.getTransport()
     if (isBufferedTransport(transport)) {
-      transport.setConsent(true)
+      void transport.setConsent(true)
     }
   }
   function disable() {
     const transport = client?.getTransport()
     if (isBufferedTransport(transport)) {
-      transport.setConsent(false)
+      void transport.setConsent(false)
     }
   }
 

@@ -90,7 +90,7 @@ export const FreeTrialProvider = ({children}: FreeTrialProviderProps) => {
         // If the user clicks on the button, while the show on load is open, we want to trigger the modal.
         setShowDialog(closeAndReOpen)
         if (data?.showOnLoad?.id) {
-          client.request({url: `/journey/trial/${data?.showOnLoad.id}`, method: 'POST'})
+          void client.request({url: `/journey/trial/${data?.showOnLoad.id}`, method: 'POST'})
         }
       } else {
         setShowDialog((p) => !p)

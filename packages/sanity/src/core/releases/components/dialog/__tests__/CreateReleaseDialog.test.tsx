@@ -44,14 +44,14 @@ describe('CreateReleaseDialog', () => {
     it('should call createRelease and onCreate when form is submitted', async () => {
       const value: Partial<ReleaseDocument> = activeASAPRelease
 
-      act(async () => {
+      await act(async () => {
         const titleInput = screen.getByTestId('release-form-title')
         fireEvent.change(titleInput, {target: {value: value.metadata?.title}})
 
         const submitButton = screen.getByTestId('submit-release-button')
         fireEvent.click(submitButton)
 
-        waitFor(async () => {
+        await waitFor(async () => {
           await Promise.resolve()
 
           expect(onSubmitMock).toHaveBeenCalledOnce()

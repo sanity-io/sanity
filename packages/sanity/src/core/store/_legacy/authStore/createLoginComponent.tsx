@@ -145,7 +145,7 @@ export function createLoginComponent({
         setProviderData({providers, lastUsedProvider, isLoading: false})
       }
 
-      setup()
+      void setup()
     }, [client, getLastUsedProvider, getProviderData])
 
     const {providers, lastUsedProvider, isLoading} = providerData

@@ -17,6 +17,7 @@ export default defineCliConfig({
       resolve: {
         ...viteConfig.resolve,
         alias: {
+          // oxlint-disable-next-line no-misused-spread
           ...viteConfig.resolve?.alias,
           'react-dom/client': require.resolve('react-dom/profiling'),
         },

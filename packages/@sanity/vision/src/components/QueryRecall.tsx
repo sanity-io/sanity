@@ -291,7 +291,7 @@ export function QueryRecall({
                         onChange={(event) => setEditingTitle(event.currentTarget.value)}
                         onKeyDown={(event) => {
                           if (event.key === 'Enter') {
-                            handleTitleSave(q, editingTitle)
+                            void handleTitleSave(q, editingTitle)
                           } else if (event.key === 'Escape') {
                             setEditingKey(null)
                           }
@@ -346,7 +346,7 @@ export function QueryRecall({
                           text={t('action.delete')}
                           onClick={(event) => {
                             event.stopPropagation()
-                            deleteQuery(q._key)
+                            void deleteQuery(q._key)
                           }}
                         />
                       </Menu>
@@ -379,7 +379,7 @@ export function QueryRecall({
                     text={t('action.update')}
                     onClick={(e) => {
                       e.stopPropagation()
-                      handleUpdate(q)
+                      void handleUpdate(q)
                     }}
                   />
                 )}

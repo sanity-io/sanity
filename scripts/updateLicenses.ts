@@ -8,7 +8,7 @@ import readPackages from './utils/readPackages'
 
 const readLicense = fs.readFile(path.join(process.cwd(), 'LICENSE'), 'utf-8')
 
-Promise.all(
+void Promise.all(
   readPackages().map(async (pkg) => {
     const licenseTxt = await readLicense
     const targetPath = path.join(pkg.dirname, 'LICENSE')

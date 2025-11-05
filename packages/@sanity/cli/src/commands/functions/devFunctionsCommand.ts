@@ -65,7 +65,7 @@ const devFunctionsCommand: CliCommandDefinition<FunctionsDevFlags> = {
     if (!success) throw new Error(error)
 
     if (shouldOpen) {
-      open(`http://localhost:${flags.port}`)
+      await open(`http://localhost:${flags.port}`)
     }
   },
 }

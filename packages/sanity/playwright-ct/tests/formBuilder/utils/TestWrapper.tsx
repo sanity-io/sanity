@@ -77,7 +77,7 @@ export const TestWrapper = (props: TestWrapperProps): React.JSX.Element | null =
       return workspace
     }
 
-    getWorkspace()
+    void getWorkspace()
   }, [schemaTypes, betaFeatures])
 
   if (!mockWorkspace) {

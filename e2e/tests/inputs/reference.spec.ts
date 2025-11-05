@@ -50,7 +50,7 @@ withDefaultClient((context) => {
     await expectEditedStatus(paneFooter)
 
     // Wait for the document to be published.
-    publishButton.click()
+    await publishButton.click()
     await expectPublishedStatus(paneFooter)
 
     // Open the Author reference input.
@@ -70,7 +70,7 @@ withDefaultClient((context) => {
     await expectEditedStatus(paneFooter)
 
     // Wait for the document to be published.
-    publishButton.click()
+    await publishButton.click()
     await expectPublishedStatus(paneFooter)
   })
 
@@ -84,7 +84,7 @@ withDefaultClient((context) => {
     const originalTitle = 'Initial Doc'
 
     await createDraftDocument('/content/input-standard;referenceTest')
-    page.getByTestId('string-input').fill(originalTitle)
+    await page.getByTestId('string-input').fill(originalTitle)
 
     await expect(
       page.getByTestId('create-new-document-select-aliasRef-selectTypeMenuButton'),
@@ -96,11 +96,11 @@ withDefaultClient((context) => {
     await expect(page.getByTestId('document-panel-document-title').nth(1)).toContainText('Untitled')
 
     // switch to original doc
-    page.locator('[data-testid="document-pane"]', {hasText: originalTitle}).click()
+    await page.locator('[data-testid="document-pane"]', {hasText: originalTitle}).click()
 
     // open the context menu
-    page.getByTestId('pane-context-menu-button').first().click()
-    page.getByTestId('action-inspect').click()
+    await page.getByTestId('pane-context-menu-button').first().click()
+    await page.getByTestId('action-inspect').click()
 
     /** Checks that the properties were added when a weak reference is added */
     await expect(
@@ -124,7 +124,7 @@ withDefaultClient((context) => {
       `/intent/create/template=referenceTest;type=referenceTest;version=r56VOgCmW/?perspective=r56VOgCmW`,
     )
 
-    page.getByTestId('string-input').fill(originalTitle)
+    await page.getByTestId('string-input').fill(originalTitle)
 
     await expect(
       page.getByTestId('create-new-document-select-aliasRef-selectTypeMenuButton'),
@@ -136,11 +136,11 @@ withDefaultClient((context) => {
     await expect(page.getByTestId('document-panel-document-title').nth(1)).toContainText('Untitled')
 
     // switch to original doc
-    page.locator('[data-testid="document-pane"]', {hasText: originalTitle}).click()
+    await page.locator('[data-testid="document-pane"]', {hasText: originalTitle}).click()
 
     // open the context menu
-    page.getByTestId('pane-context-menu-button').first().click()
-    page.getByTestId('action-inspect').click()
+    await page.getByTestId('pane-context-menu-button').first().click()
+    await page.getByTestId('action-inspect').click()
     await expect(page.getByTestId('leaf-root')).toBeVisible()
 
     /** Checks that the properties were added when a weak reference is added */
@@ -165,35 +165,35 @@ withDefaultClient((context) => {
     const documentStatus = page.getByTestId('pane-footer-document-status')
 
     await createDraftDocument('/content/input-debug;simpleReferences')
-    page.getByTestId('string-input').fill(originalTitle)
+    await page.getByTestId('string-input').fill(originalTitle)
 
     /** create reference */
     await expect(
       page.getByTestId('create-new-document-select-referenceField-selectTypeMenuButton'),
     ).toBeVisible()
-    page.getByTestId('create-new-document-select-referenceField-selectTypeMenuButton').click()
+    await page.getByTestId('create-new-document-select-referenceField-selectTypeMenuButton').click()
 
     // wait for the reference document to open
     await expect(page.getByTestId('document-panel-document-title').nth(1)).toContainText('Untitled')
 
     // update and publish the reference
-    page.getByTestId('string-input').nth(1).fill('Reference test')
+    await page.getByTestId('string-input').nth(1).fill('Reference test')
     await expect(page.getByTestId('document-panel-document-title').nth(1)).toContainText(
       'Reference test',
     )
-    page.getByTestId('action-publish').nth(1).click() // publish reference
+    await page.getByTestId('action-publish').nth(1).click() // publish reference
     await expectPublishedStatus(documentStatus.nth(1))
 
     /** --- IN ORIGINAL DOC --- */
-    page.locator('[data-testid="document-pane"]', {hasText: originalTitle}).click()
+    await page.locator('[data-testid="document-pane"]', {hasText: originalTitle}).click()
 
-    page.getByTestId('action-publish').first().click() // publish reference
+    await page.getByTestId('action-publish').first().click() // publish reference
 
     await expectPublishedStatus(documentStatus.first())
 
     // open the context menu
-    page.getByTestId('pane-context-menu-button').first().click()
-    page.getByTestId('action-inspect').click()
+    await page.getByTestId('pane-context-menu-button').first().click()
+    await page.getByTestId('action-inspect').click()
 
     /** Checks that the properties were added when a weak reference is added */
     await expect(
@@ -220,29 +220,31 @@ withDefaultClient((context) => {
     await expect(
       page.getByTestId('create-new-document-select-referenceFieldWeak-selectTypeMenuButton'),
     ).toBeVisible()
-    page.getByTestId('create-new-document-select-referenceFieldWeak-selectTypeMenuButton').click()
+    await page
+      .getByTestId('create-new-document-select-referenceFieldWeak-selectTypeMenuButton')
+      .click()
 
     // wait for the reference document to open
     await expect(page.getByTestId('document-panel-document-title').nth(1)).toContainText('Untitled')
 
     // update and publish the reference
-    page.getByTestId('string-input').nth(1).fill('Reference test')
+    await page.getByTestId('string-input').nth(1).fill('Reference test')
     await expect(page.getByTestId('document-panel-document-title').nth(1)).toContainText(
       'Reference test',
     )
-    page.getByTestId('action-publish').nth(1).click() // publish reference
+    await page.getByTestId('action-publish').nth(1).click() // publish reference
     await expectPublishedStatus(documentStatus.nth(1))
 
     /** --- IN ORIGINAL DOC --- */
-    page.locator('[data-testid="document-pane"]', {hasText: originalTitle}).click()
+    await page.locator('[data-testid="document-pane"]', {hasText: originalTitle}).click()
 
-    page.getByTestId('action-publish').first().click() // publish reference
+    await page.getByTestId('action-publish').first().click() // publish reference
 
     await expectPublishedStatus(documentStatus.first())
 
     // open the context menu
-    page.getByTestId('pane-context-menu-button').first().click()
-    page.getByTestId('action-inspect').click()
+    await page.getByTestId('pane-context-menu-button').first().click()
+    await page.getByTestId('action-inspect').click()
 
     /** Checks that the properties were added when a weak reference is added */
     await expect(

@@ -39,7 +39,7 @@ export default {
       await openFieldsets(page, 17)
     }
 
-    const input = await page.getByTestId(inputTestId).getByTestId('string-input')
+    const input = page.getByTestId(inputTestId).getByTestId('string-input')
 
     await input.click()
 

@@ -104,7 +104,7 @@ export async function login(
     .start()
 
   if (shouldLaunchBrowser) {
-    open(loginUrl.href)
+    await open(loginUrl.href)
   }
 
   // Wait for a success/error on the HTTP callback server

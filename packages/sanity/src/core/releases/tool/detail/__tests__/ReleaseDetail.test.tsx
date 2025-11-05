@@ -234,11 +234,11 @@ describe('after releases have loaded', () => {
         expect(screen.getByTestId('publish-all-button').closest('button')).not.toBeDisabled()
       })
 
-      it('should require confirmation to publish', () => {
+      it('should require confirmation to publish', async () => {
         act(() => {
           expect(screen.getByTestId('publish-all-button')).toBeInTheDocument()
           fireEvent.click(screen.getByTestId('publish-all-button'))
-          waitFor(() => {
+          void waitFor(() => {
             screen.getByText(
               'Are you sure you want to publish the release and all document versions?',
             )

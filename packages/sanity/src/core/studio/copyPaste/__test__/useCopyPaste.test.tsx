@@ -74,8 +74,8 @@ describe('useCopyPaste', () => {
     const {result} = renderHook(() => useCopyPaste(), {wrapper: TestWrapper})
 
     await act(async () => {
-      await expect(result.current).toBeDefined()
-      await expect(result.current).not.toBeNull()
+      expect(result.current).toBeDefined()
+      expect(result.current).not.toBeNull()
     })
 
     return result

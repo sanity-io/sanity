@@ -6,7 +6,7 @@ const dataset = sanityIdify(readEnv('SANITY_E2E_DATASET'))
 
 const studioE2EClient = createE2EClient(readEnv('SANITY_E2E_DATASET'))
 
-studioE2EClient.datasets.list().then(async (datasets) => {
+void studioE2EClient.datasets.list().then(async (datasets) => {
   // If the dataset doesn't exist, create it
   if (!datasets.find((ds) => ds.name === dataset)) {
     const timer = startTimer(`Creating dataset ${dataset}`)

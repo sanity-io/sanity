@@ -216,7 +216,7 @@ export const ReleaseMenuButton = ({
   useEffect(() => {
     if (!selectedAction || isActionPublishOrSchedule) return
 
-    if (!RELEASE_ACTION_MAP[selectedAction].confirmDialog) handleAction(selectedAction)
+    if (!RELEASE_ACTION_MAP[selectedAction].confirmDialog) void handleAction(selectedAction)
   }, [documentsCount, handleAction, isActionPublishOrSchedule, selectedAction])
 
   const confirmActionDialog = useMemo(() => {

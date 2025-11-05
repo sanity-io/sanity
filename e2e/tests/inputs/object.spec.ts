@@ -5,7 +5,7 @@ import {test} from '../../studio-test'
 test('fields groups can use/not use i18n titles', async ({page, createDraftDocument}) => {
   await createDraftDocument('/content/input-debug;field-groups;fieldGroupsWithI18n')
 
-  await expect(await page.getByTestId(`group-tab-i18n-group1`)).toBeVisible()
+  await expect(page.getByTestId(`group-tab-i18n-group1`)).toBeVisible()
 
   // Should be translated (see e2e studio `i18n/bundles`)
   await expect(page.getByTestId('group-tab-i18n-group1')).toHaveText('🇺🇸 Group 1')

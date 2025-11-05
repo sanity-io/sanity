@@ -48,7 +48,7 @@ async function main() {
   }
 }
 
-main().then(() => process.exit())
+void main().then(() => process.exit())
 
 function getWorkspace({
   workspaces,

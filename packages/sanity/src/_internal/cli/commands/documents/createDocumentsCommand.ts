@@ -106,7 +106,7 @@ const createDocumentsCommand: CliCommandDefinition<CreateFlags> = {
         output.print('')
         return readAndPerformCreatesFromFile(tmpFile)
       })
-      execa(editor.bin, editor.args.concat(tmpFile), {stdio: 'inherit'})
+      await execa(editor.bin, editor.args.concat(tmpFile), {stdio: 'inherit'})
     } else {
       // While in normal mode, we just want to wait for the editor to close and run the thing once
       execa.sync(editor.bin, editor.args.concat(tmpFile), {stdio: 'inherit'})

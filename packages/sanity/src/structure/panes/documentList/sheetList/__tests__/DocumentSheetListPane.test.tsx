@@ -129,7 +129,7 @@ describe.skip('DocumentSheetListPane', () => {
       it('copies when cell is selected', async () => {
         await renderTest()
 
-        await act(() => {
+        act(() => {
           userEvent.click(screen.getByTestId('cell-name-0'))
         })
 
@@ -145,7 +145,7 @@ describe.skip('DocumentSheetListPane', () => {
       it('pastes when cell is selected', async () => {
         await renderTest()
 
-        await act(() => {
+        act(() => {
           userEvent.click(screen.getByTestId('cell-name-0'))
         })
 
@@ -165,7 +165,7 @@ describe.skip('DocumentSheetListPane', () => {
       it('pastes when cell is focused', async () => {
         await renderTest()
 
-        await act(() => {
+        act(() => {
           userEvent.click(screen.getByTestId('cell-name-0'))
           userEvent.type(screen.getByTestId('cell-name-0'), '{Enter}')
         })
@@ -184,11 +184,11 @@ describe.skip('DocumentSheetListPane', () => {
       it('pastes to all selected cells when anchor is selected', async () => {
         await renderTest()
 
-        await act(() => {
+        act(() => {
           userEvent.click(screen.getByTestId('cell-name-0'))
         })
 
-        await act(() => {
+        act(() => {
           userEvent.keyboard('{Shift}{ArrowDown}')
         })
 
@@ -207,11 +207,11 @@ describe.skip('DocumentSheetListPane', () => {
       it('pastes to all selected cells when anchor is focused', async () => {
         await renderTest()
 
-        await act(() => {
+        act(() => {
           userEvent.dblClick(screen.getByTestId('cell-name-0'))
         })
 
-        await act(() => {
+        act(() => {
           userEvent.keyboard('{Shift}{ArrowDown}')
         })
 
@@ -232,7 +232,7 @@ describe.skip('DocumentSheetListPane', () => {
       it('does not paste when pasting across columns', async () => {
         await renderTest()
 
-        await act(() => {
+        act(() => {
           userEvent.click(screen.getByTestId('cell-name-0'))
         })
 
@@ -257,10 +257,10 @@ describe.skip('DocumentSheetListPane', () => {
       it('pastes only to focused anchor when escaped before pasting', async () => {
         await renderTest()
 
-        await act(async () => {
-          await userEvent.click(screen.getByTestId('cell-name-0'))
-          await userEvent.keyboard('{Shift}{ArrowRight}')
-          await userEvent.keyboard('{Escape}')
+        act(() => {
+          userEvent.click(screen.getByTestId('cell-name-0'))
+          userEvent.keyboard('{Shift}{ArrowRight}')
+          userEvent.keyboard('{Escape}')
         })
 
         act(() => {
@@ -278,10 +278,10 @@ describe.skip('DocumentSheetListPane', () => {
       it('does not paste when escaped before pasting', async () => {
         await renderTest()
 
-        await act(async () => {
-          await userEvent.dblClick(screen.getByTestId('cell-name-0'))
-          await userEvent.keyboard('{Escape}')
-          await userEvent.keyboard('{Escape}')
+        act(() => {
+          userEvent.dblClick(screen.getByTestId('cell-name-0'))
+          userEvent.keyboard('{Escape}')
+          userEvent.keyboard('{Escape}')
           fireEvent.paste(document, {
             clipboardData: {
               getData: () => 'Joe Blogs',

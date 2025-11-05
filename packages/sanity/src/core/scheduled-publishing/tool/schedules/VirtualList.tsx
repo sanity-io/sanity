@@ -30,7 +30,7 @@ const VirtualList = () => {
   const {deleteSchedules} = useScheduleOperation()
 
   const handleClearSchedules = () => {
-    deleteSchedules({schedules: activeSchedules || []})
+    void deleteSchedules({schedules: activeSchedules || []})
   }
 
   // Reset virtual list scroll position on state changes

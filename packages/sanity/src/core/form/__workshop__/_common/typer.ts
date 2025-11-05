@@ -45,7 +45,7 @@ export function runTest(props: TestOptions): () => boolean {
   // synchronously within the same call stack, and defer any re-render til the event handler completes
   // This means the first sample will be super fast because React will not re-render at all while it is running
   // For this reason we want to schedule the first sample async to escape the React event call stack
-  Promise.resolve().then(sampleNext)
+  void Promise.resolve().then(sampleNext)
 
   if (!handleRun) {
     // oxlint-disable-next-line no-console

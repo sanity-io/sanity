@@ -187,7 +187,7 @@ describe('ReleaseSummary', () => {
     })
 
     it('allows for searching documents', async () => {
-      await act(() => {
+      act(() => {
         fireEvent.change(screen.getByPlaceholderText('Search documents'), {
           target: {value: 'Second'},
         })

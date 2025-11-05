@@ -8,5 +8,5 @@ export function targetsToIndicies(targets: Expression[], accessor: ImmutableAcce
       result.push(...target.toIndicies(accessor))
     }
   })
-  return result.sort()
+  return result.sort((a, b) => a - b)
 }

@@ -41,7 +41,7 @@ describe('ReleaseDetailsEditor', () => {
       render(<ReleaseDetailsEditor release={initialRelease} />, {wrapper})
     })
 
-    it('should call updateRelease after title change', () => {
+    it('should call updateRelease after title change', async () => {
       const release = {
         _id: 'release1',
         metadata: {
@@ -55,7 +55,7 @@ describe('ReleaseDetailsEditor', () => {
       const input = screen.getByTestId('release-form-title')
       fireEvent.change(input, {target: {value: release.metadata.title}})
 
-      waitFor(
+      await waitFor(
         () => {
           expect(useReleaseOperations().updateRelease).toHaveBeenCalledWith(release)
         },
@@ -63,7 +63,7 @@ describe('ReleaseDetailsEditor', () => {
       )
     })
 
-    it('should call updateRelease after description change', () => {
+    it('should call updateRelease after description change', async () => {
       const release = {
         _id: 'release1',
         metadata: {
@@ -77,7 +77,7 @@ describe('ReleaseDetailsEditor', () => {
       const input = screen.getByTestId('release-form-description')
       fireEvent.change(input, {target: {value: release.metadata.description}})
 
-      waitFor(
+      await waitFor(
         () => {
           expect(useReleaseOperations().updateRelease).toHaveBeenCalledWith(release)
         },

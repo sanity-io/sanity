@@ -85,7 +85,7 @@ describe('VersionContextMenu', () => {
       expect(screen.getByTestId('copy-version-to-release-button-group')).not.toBeDisabled()
     })
 
-    await act(() => {
+    await act(async () => {
       fireEvent.click(screen.getByTestId('copy-version-to-release-button-group'))
     })
     await waitFor(() => {
@@ -108,7 +108,7 @@ describe('VersionContextMenu', () => {
       expect(screen.getByTestId('copy-version-to-release-button-group')).not.toBeDisabled()
     })
 
-    await act(() => {
+    await act(async () => {
       fireEvent.click(screen.getByTestId('copy-version-to-release-button-group'))
     })
 
@@ -144,7 +144,7 @@ describe('VersionContextMenu', () => {
       expect(screen.getByText('Discard version')).not.toBeDisabled()
     })
 
-    await act(() => {
+    await act(async () => {
       fireEvent.click(screen.getByText('Discard version'))
     })
     expect(defaultProps.onDiscard).toHaveBeenCalled()
@@ -163,7 +163,7 @@ describe('VersionContextMenu', () => {
       expect(screen.getByTestId('copy-version-to-release-button-group')).not.toBeDisabled()
     })
 
-    await act(() => {
+    await act(async () => {
       fireEvent.click(screen.getByTestId('copy-version-to-release-button-group'))
     })
 
@@ -186,7 +186,7 @@ describe('VersionContextMenu', () => {
       expect(screen.getByTestId('copy-version-to-release-button-group')).not.toBeDisabled()
     })
 
-    await act(() => {
+    await act(async () => {
       fireEvent.click(screen.getByTestId('copy-version-to-release-button-group'))
     })
 

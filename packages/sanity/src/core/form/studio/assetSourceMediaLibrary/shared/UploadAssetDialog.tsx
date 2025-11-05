@@ -96,7 +96,7 @@ export const UploadAssetsDialog = function UploadAssetsDialog(
       }
       // The upload has completed inside the iframe
       if (message.type === 'uploadResponse' && uploader) {
-        handleUploaded(message.assets)
+        void handleUploaded(message.assets)
       }
     },
     [handleUploaded, open, uploader],

@@ -24,7 +24,7 @@ test.describe('auto-updating studio behavior', () => {
   }) => {
     // Intercept the API request and provide a mock response
     await page.route('https://sanity-cdn.**/v1/modules/sanity/default/**', (route) => {
-      route.fulfill({
+      return route.fulfill({
         status: 200,
         contentType: 'application/json',
         body: JSON.stringify({

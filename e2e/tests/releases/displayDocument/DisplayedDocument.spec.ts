@@ -442,7 +442,7 @@ test.describe('displayedDocument', () => {
       // field
       await expect(page.getByTestId('field-name').getByTestId('string-input')).toHaveValue('ASAP A')
 
-      archiveAndDeleteRelease({sanityClient, dataset, releaseId: scheduledId})
+      await archiveAndDeleteRelease({sanityClient, dataset, releaseId: scheduledId})
     })
 
     test('no draft,  publish, one version with _system.delete shows published', async ({

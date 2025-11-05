@@ -175,7 +175,7 @@ export function SelectAssetsDialog(props: SelectAssetsDialogProps): ReactNode {
     (message: PluginPostMessage) => {
       if (message.type === 'assetSelection') {
         setAssetSelection(message.selection)
-        handleAssetSelection(message.selection)
+        void handleAssetSelection(message.selection)
       }
     },
     [handleAssetSelection],

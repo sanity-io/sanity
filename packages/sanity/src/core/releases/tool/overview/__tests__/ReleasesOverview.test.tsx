@@ -225,7 +225,7 @@ describe('ReleasesOverview', () => {
         resources: [releasesUsEnglishLocaleBundle],
       })
 
-      return await act(async () => render(<TestComponent />, {wrapper}))
+      return act(async () => render(<TestComponent />, {wrapper}))
     })
 
     it('shows loading state when releases are loading', async () => {
@@ -272,7 +272,7 @@ describe('ReleasesOverview', () => {
         resources: [releasesUsEnglishLocaleBundle],
       })
 
-      return await act(async () => render(<TestComponent />, {wrapper}))
+      return act(async () => render(<TestComponent />, {wrapper}))
     })
 
     it('shows a message about releases', () => {
@@ -319,7 +319,7 @@ describe('ReleasesOverview', () => {
 
       const wrapper = await getWrapper()
 
-      return await act(async () => render(<TestComponent />, {wrapper}))
+      return act(async () => render(<TestComponent />, {wrapper}))
     }
 
     beforeEach(async () => {
@@ -351,7 +351,7 @@ describe('ReleasesOverview', () => {
 
       const wrapper = await getWrapper()
 
-      return await act(async () => {
+      return act(async () => {
         activeRender = render(<TestComponent />, {wrapper})
       })
     })
@@ -709,7 +709,7 @@ describe('ReleasesOverview', () => {
             resources: [releasesUsEnglishLocaleBundle],
           })
 
-          return await act(async () => render(<TestComponent />, {wrapper}))
+          return act(async () => render(<TestComponent />, {wrapper}))
         })
 
         it('should not show the cardinality view dropdown', () => {
@@ -781,7 +781,7 @@ describe('ReleasesOverview', () => {
             resources: [releasesUsEnglishLocaleBundle],
           })
 
-          return await act(async () => render(<TestComponent />, {wrapper}))
+          return act(async () => render(<TestComponent />, {wrapper}))
         })
 
         it('should show the cardinality view dropdown', () => {
@@ -872,7 +872,7 @@ describe('ReleasesOverview', () => {
           resources: [releasesUsEnglishLocaleBundle],
         })
 
-        return await act(async () => render(<TestComponent />, {wrapper}))
+        return act(async () => render(<TestComponent />, {wrapper}))
       })
 
       it('should show the cardinality view dropdown', () => {
@@ -952,7 +952,7 @@ describe('ReleasesOverview', () => {
           resources: [releasesUsEnglishLocaleBundle],
         })
 
-        return await act(async () => render(<TestComponent />, {wrapper}))
+        return act(async () => render(<TestComponent />, {wrapper}))
       })
 
       it('should still show the cardinality view dropdown', () => {
@@ -1153,7 +1153,7 @@ describe('ReleasesOverview', () => {
             resources: [releasesUsEnglishLocaleBundle],
           })
 
-          return await act(async () => render(<TestComponent />, {wrapper}))
+          return act(async () => render(<TestComponent />, {wrapper}))
         })
 
         it('should show upsell only', () => {
@@ -1182,7 +1182,7 @@ describe('ReleasesOverview', () => {
             resources: [releasesUsEnglishLocaleBundle],
           })
 
-          return await act(async () => render(<TestComponent />, {wrapper}))
+          return act(async () => render(<TestComponent />, {wrapper}))
         })
 
         it('should show data table only (not upsell)', async () => {
@@ -1206,7 +1206,7 @@ describe('ReleasesOverview', () => {
             resources: [releasesUsEnglishLocaleBundle],
           })
 
-          return await act(async () => render(<TestComponent />, {wrapper}))
+          return act(async () => render(<TestComponent />, {wrapper}))
         })
 
         it('should show empty list state', () => {
@@ -1240,7 +1240,7 @@ describe('ReleasesOverview', () => {
             resources: [releasesUsEnglishLocaleBundle],
           })
 
-          return await act(async () => render(<TestComponent />, {wrapper}))
+          return act(async () => render(<TestComponent />, {wrapper}))
         })
 
         it('should show upsell only', () => {
@@ -1262,7 +1262,7 @@ describe('ReleasesOverview', () => {
             resources: [releasesUsEnglishLocaleBundle],
           })
 
-          return await act(async () => render(<TestComponent />, {wrapper}))
+          return act(async () => render(<TestComponent />, {wrapper}))
         })
 
         it('should show empty list state', () => {

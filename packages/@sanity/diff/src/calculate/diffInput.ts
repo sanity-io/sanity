@@ -69,6 +69,7 @@ function diffWithType<A>(
     case 'object':
       return diffObject(fromInput as ObjectInput<A>, toInput as ObjectInput<A>, options)
     default:
+      // oxlint-disable-next-line restrict-template-expressions - this is a fallback in an edge case scenario, so we can't trust that `type` is truly `never`
       throw new Error(`Unhandled diff type "${type}"`)
   }
 }

@@ -1,3 +1,4 @@
+/* eslint-disable no-new-func */
 import {type Page} from 'playwright'
 
 import {type EfpsResult} from '../types'
@@ -31,7 +32,7 @@ export async function measureFpsForInput({
 
   const rendersPromise = input.evaluate(
     // Had to add this so we can run the tests
-    // eslint-disable-next-line no-new-func
+    // oxlint-disable-next-line no-implied-eval
     new Function(
       'el',
       `

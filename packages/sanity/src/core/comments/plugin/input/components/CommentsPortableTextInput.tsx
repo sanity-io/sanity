@@ -160,7 +160,7 @@ export const CommentsPortableTextInputInner = memo(function CommentsPortableText
 
     const threadId = uuid()
 
-    operation.create({
+    void operation.create({
       type: 'field',
       contentSnapshot: fragment,
       fieldPath: stringFieldPath,
@@ -345,7 +345,7 @@ export const CommentsPortableTextInputInner = memo(function CommentsPortableText
         },
       }
 
-      operation.update(comment._id, nextComment)
+      void operation.update(comment._id, nextComment)
     })
 
     // Mark the range decorations as not dirty

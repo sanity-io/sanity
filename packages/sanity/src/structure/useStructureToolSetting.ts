@@ -12,7 +12,7 @@ export function useStructureToolSetting<ValueType>(
   namespace: string,
   key: string | null,
   defaultValue?: ValueType,
-): [ValueType | undefined, (_value: ValueType) => void] {
+): [ValueType | undefined, (_value: ValueType) => Promise<void>] {
   const keyValueStore = useKeyValueStore()
 
   const keyValueStoreKey = [STRUCTURE_TOOL_NAMESPACE, namespace, key].filter(Boolean).join('.')
@@ -25,9 +25,9 @@ export function useStructureToolSetting<ValueType>(
 
   const value = useObservable(value$, defaultValue) as ValueType
   const set = useCallback(
-    (newValue: ValueType) => {
+    async (newValue: ValueType) => {
       if (newValue !== value) {
-        keyValueStore.setKey(keyValueStoreKey, newValue as string)
+        await keyValueStore.setKey(keyValueStoreKey, newValue as string)
       }
     },
     [keyValueStore, keyValueStoreKey, value],

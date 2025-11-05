@@ -99,7 +99,7 @@ test.describe('inputs: text', () => {
     await expectEditedStatus(paneFooter)
 
     // Wait for the document to be published.
-    publishButton.click()
+    await publishButton.click()
     await expectPublishedStatus(paneFooter)
 
     // Change the title.
@@ -107,7 +107,7 @@ test.describe('inputs: text', () => {
     await expectCreatedStatus(paneFooter)
 
     // Wait for the document to be published.
-    publishButton.click()
+    await publishButton.click()
     await expectPublishedStatus(paneFooter)
   })
 })

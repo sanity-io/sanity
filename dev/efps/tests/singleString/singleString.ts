@@ -6,7 +6,7 @@ import {defineEfpsTest} from '../../types'
 
 export default defineEfpsTest({
   name: path.basename(fileURLToPath(import.meta.url), path.extname(fileURLToPath(import.meta.url))),
-  configPath: await import.meta.resolve?.('./sanity.config.ts'),
+  configPath: import.meta.resolve?.('./sanity.config.ts'),
   document: {_type: 'singleString'},
   run: async ({page}) => {
     const result = await measureFpsForInput({

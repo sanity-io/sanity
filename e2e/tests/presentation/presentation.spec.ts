@@ -17,7 +17,7 @@ test.describe('Presentation', () => {
     await openPresentationTool(page)
 
     const {root} = await getPresentationRegions(page)
-    const viewportToggle = await root.getByTestId('preview-viewport-toggle')
+    const viewportToggle = root.getByTestId('preview-viewport-toggle')
 
     await expect(viewportToggle).toHaveAttribute('data-viewport', 'desktop')
     await viewportToggle.click()

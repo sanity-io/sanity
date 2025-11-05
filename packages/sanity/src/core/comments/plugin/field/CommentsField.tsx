@@ -233,7 +233,7 @@ function CommentFieldInner(
       }
 
       // Execute the create mutation
-      operation.create(nextComment)
+      void operation.create(nextComment)
 
       // If a comment is added to a field when viewing resolved comments, we switch
       // to open comments and scroll to the comment that was just added

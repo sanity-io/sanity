@@ -19,7 +19,7 @@ export class TestContext {
   }
 
   teardown(): void {
-    this.client.delete({
+    void this.client.delete({
       query: '*[_id in $ids]',
       params: {ids: [...this.documentIds].map((id) => `drafts.${id}`)},
     })

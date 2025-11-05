@@ -123,7 +123,7 @@ export function PackageVersionStatusProvider({children}: {children: ReactNode}) 
             resolveLatestTaggedVersion
         : undefined
 
-    Promise.all([resolveLatestTaggedVersion, resolveAutoUpdatingVersion])
+    void Promise.all([resolveLatestTaggedVersion, resolveAutoUpdatingVersion])
       .then(([nextLatestVersion, nextAutoUpdatingVersion]) => {
         setAutoUpdatingVersionRaw(nextAutoUpdatingVersion)
         setLatestTaggedVersionRaw(nextLatestVersion)
@@ -137,7 +137,7 @@ export function PackageVersionStatusProvider({children}: {children: ReactNode}) 
     }
 
     // Run on first render
-    poll()
+    void poll()
 
     // Set interval for subsequent runs
     const intervalId = setInterval(poll, POLL_INTERVAL_MS)

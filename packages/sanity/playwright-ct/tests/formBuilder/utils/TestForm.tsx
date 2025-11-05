@@ -167,7 +167,7 @@ export function TestForm(props: TestFormProps) {
   )
 
   useEffect(() => {
-    validateStaticDocument(document, workspace, (result) => setValidation(result))
+    void validateStaticDocument(document, workspace, (result) => setValidation(result))
   }, [document, workspace])
 
   const formState = useFormState({

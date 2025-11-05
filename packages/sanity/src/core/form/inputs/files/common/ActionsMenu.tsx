@@ -21,7 +21,7 @@ export function ActionsMenu(props: Props) {
   const {t} = useTranslation()
 
   const handleCopyURL = useCallback(() => {
-    navigator.clipboard.writeText(copyUrl || '')
+    void navigator.clipboard.writeText(copyUrl || '')
     pushToast({
       closable: true,
       status: 'success',

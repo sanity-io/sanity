@@ -105,7 +105,7 @@ export function fileTarget<ComponentProps>(
     }, [])
     const handlePaste = useCallback(
       (event: ClipboardEvent) => {
-        extractPastedFiles(event.clipboardData)
+        void extractPastedFiles(event.clipboardData)
           .then((files) => {
             if (!pasteInput.current) {
               return []
@@ -143,7 +143,7 @@ export function fileTarget<ComponentProps>(
         event.stopPropagation()
         const dataTransfer = event.nativeEvent.dataTransfer
         if (onFiles && dataTransfer) {
-          extractDroppedFiles(dataTransfer).then((files) => {
+          void extractDroppedFiles(dataTransfer).then((files) => {
             if (files) {
               emitFiles(files)
             }

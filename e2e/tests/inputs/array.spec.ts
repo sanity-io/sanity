@@ -44,7 +44,7 @@ test(`file drop event should not propagate to dialog parent`, async ({
   await list.dispatchEvent('drop', {dataTransfer})
 
   // Ensure the list contains one item.
-  expect(item).toHaveCount(1)
+  await expect(item).toHaveCount(1)
 
   // Open the dialog.
   await page.getByRole('button', {name: fileName}).click()
@@ -61,7 +61,7 @@ test(`file drop event should not propagate to dialog parent`, async ({
   await expect(page.getByRole('dialog')).not.toBeVisible()
 
   // Ensure the list still contains one item.
-  expect(item).toHaveCount(1)
+  await expect(item).toHaveCount(1)
 })
 
 test(`Scenario: Adding a new type from multiple options`, async ({page, createDraftDocument}) => {
@@ -151,7 +151,7 @@ test(`Scenario: Adding new array item before using the context menu`, async ({
   await expect(insertDialog).toBeVisible()
 
   // And when the "Common name" input is filled with "Dog"
-  input('Common name').fill('Dog')
+  await input('Common name').fill('Dog')
 
   // And the "insert dialog" is closed
   await closeDialogButton.click()
@@ -205,7 +205,7 @@ test(`Scenario: Adding new array item after using the context menu`, async ({
   await expect(insertDialog).toBeVisible()
 
   // And when the "Common name" input is filled with "Dog"
-  input('Common name').fill('Cat')
+  await input('Common name').fill('Cat')
 
   // And the "insert dialog" is closed
   await closeDialogButton.click()

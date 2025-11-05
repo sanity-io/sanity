@@ -150,7 +150,7 @@ describe('ReleasesList', () => {
     })
 
     it('should hide the releases list, but show publish and draft', async () => {
-      waitFor(() => {
+      await waitFor(() => {
         expect(screen.queryByTestId('release-drafts')).toBeInTheDocument()
         expect(screen.queryByTestId('release-drafts')).toBeInTheDocument()
         expect(screen.queryByTestId('release-rASAP')).not.toBeInTheDocument()

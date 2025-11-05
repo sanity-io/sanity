@@ -88,9 +88,9 @@ export function bufferThroughFile(
         debug('Initializing bufferThroughFile')
         writeHandle = await open(filename, 'w')
         // start pumping data from the source stream to the buffer file
-        // note, don't await this, as it will block the ReadableStream.start() method
         debug('Start buffering source stream to file')
-        pump(source.getReader()).then(() => {
+        // note, don't await this, as it will block the ReadableStream.start() method
+        void pump(source.getReader()).then(() => {
           debug('Buffering source stream to buffer file')
         })
       })()
@@ -127,12 +127,12 @@ export function bufferThroughFile(
     const readChunk = createBufferedReader()
 
     let didEnd = false
-    function onEnd() {
+    async function onEnd() {
       if (didEnd) {
         return
       }
       didEnd = true
-      onReaderEnd()
+      await onReaderEnd()
     }
     return new ReadableStream<Uint8Array>({
       async start() {
@@ -157,8 +157,8 @@ export function bufferThroughFile(
           controller.enqueue(buffer.subarray(0, bytesRead))
         }
       },
-      cancel() {
-        onEnd()
+      async cancel() {
+        await onEnd()
       },
     })
   }

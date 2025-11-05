@@ -8,7 +8,7 @@ test(`date input shows validation on selecting date from datepicker`, async ({
 }) => {
   await createDraftDocument('/content/input-debug;dateValidation')
 
-  await expect(await page.getByTestId(`field-requiredDate`)).toBeVisible()
+  await expect(page.getByTestId(`field-requiredDate`)).toBeVisible()
 
   await page.getByTestId('field-requiredDate').getByTestId('select-date-button').click()
   await page.getByTestId('date-input-dialog').getByTestId('date-input').fill('2023')
@@ -46,7 +46,7 @@ test(`publish button is disabled when invalid date is entered in the field`, asy
 }) => {
   await createDraftDocument('/content/input-debug;dateValidation')
 
-  await expect(await page.getByTestId('field-requiredDate')).toBeVisible()
+  await expect(page.getByTestId('field-requiredDate')).toBeVisible()
 
   await page.getByTestId('field-requiredDate').getByTestId('date-input').fill('20230101')
   // TODO: Remove this after fixing the blur test

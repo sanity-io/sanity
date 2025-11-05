@@ -171,7 +171,7 @@ export const useTimeZone = (scope: TimeZoneScope) => {
       if (legacyValue) {
         // Migrate the value to key-value store
         const scheduledPublishingValue = JSON.parse(legacyValue)
-        keyValueStore.setKey(keyStoreId, scheduledPublishingValue.name)
+        void keyValueStore.setKey(keyStoreId, scheduledPublishingValue.name)
         // Remove the legacy key
         localStorage.removeItem(legacyKey)
       }
@@ -211,7 +211,7 @@ export const useTimeZone = (scope: TimeZoneScope) => {
 
       const fallbackTimeZone = allTimeZones.find((tz) => tz.offset === wholeTimeZone?.offset)
       if (fallbackTimeZone) {
-        keyValueStore.setKey(keyStoreId, fallbackTimeZone.name)
+        void keyValueStore.setKey(keyStoreId, fallbackTimeZone.name)
         return fallbackTimeZone
       }
     } catch {
@@ -295,7 +295,7 @@ export const useTimeZone = (scope: TimeZoneScope) => {
       setTimeZone((prevTz) => {
         try {
           if (prevTz?.name !== tz.name) {
-            keyValueStore.setKey(keyStoreId, tz.name)
+            void keyValueStore.setKey(keyStoreId, tz.name)
             window.dispatchEvent(new Event(TimeZoneEvents.update))
           }
 

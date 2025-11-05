@@ -200,7 +200,7 @@ export function ArrayOfObjectsItem(props: MemberItemProps) {
   const handleCopy = useCallback(
     (_: Omit<ArrayInputCopyEvent<ObjectItem>, 'referenceItem'>) => {
       const documentValue = getFormValue([]) as FormDocumentValue
-      onCopy(member.item.path, documentValue, {
+      void onCopy(member.item.path, documentValue, {
         context: {source: 'arrayItem'},
         patchType: 'append',
       })

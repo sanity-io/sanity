@@ -43,11 +43,11 @@ const ContextMenuItems = (props: Props) => {
   }
 
   const handleDelete = () => {
-    deleteSchedule({schedule}).then(() => onDelete?.())
+    void deleteSchedule({schedule}).then(() => onDelete?.())
   }
 
   const handleExecute = () => {
-    publishSchedule({schedule})
+    void publishSchedule({schedule})
   }
 
   if (!currentUser) {

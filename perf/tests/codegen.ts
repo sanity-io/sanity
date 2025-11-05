@@ -22,7 +22,7 @@ async function run({projectId, token, url}: {projectId: string; token: string; u
   await page.pause()
 }
 
-run({
+void run({
   projectId: STUDIO_PROJECT_ID,
   token: readEnv('PERF_TEST_SANITY_TOKEN'),
   url: 'http://localhost:3300',

@@ -53,8 +53,13 @@ linkWorkspacePackages: deep
 
 minimumReleaseAge: 4320
 minimumReleaseAgeExclude:
-  - '@sanity/*'
+  - '@oxlint/*'
+  - '@oxlint-tsgolint/*'
   - '@portabletext/*'
+  - '@sanity/*'
+  - 'groq-js'
+  - 'oxlint'
+  - 'oxlint-tsgolint'
+  - 'eslint-plugin-oxlint'
   - 'react-rx'
   - 'use-effect-event'
-  - 'groq-js'

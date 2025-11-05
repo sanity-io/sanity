@@ -20,7 +20,7 @@ const generateKey = () => {
 
 export default defineEfpsTest({
   name: 'recipe',
-  configPath: await import.meta.resolve?.('./sanity.config.ts'),
+  configPath: import.meta.resolve?.('./sanity.config.ts'),
   document: async ({client}) => {
     const imageAsset = await client.assets.upload(
       'image',

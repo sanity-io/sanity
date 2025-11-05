@@ -109,7 +109,7 @@ describe('StudioAnnouncementsCard', () => {
     const onCloseMock = vi.fn()
 
     const wrapper = await createAnnouncementWrapper()
-    await render(
+    render(
       <StudioAnnouncementsDialog
         announcements={MOCKED_ANNOUNCEMENTS}
         onClose={onCloseMock}
@@ -142,7 +142,7 @@ describe('StudioAnnouncementsCard', () => {
     const onCloseMock = vi.fn()
 
     const wrapper = await createAnnouncementWrapper()
-    await render(
+    render(
       <StudioAnnouncementsDialog
         announcements={MOCKED_ANNOUNCEMENTS}
         onClose={onCloseMock}
@@ -163,7 +163,7 @@ describe('StudioAnnouncementsCard', () => {
     const {useTelemetry} = await import('@sanity/telemetry/react')
     ;(useTelemetry as ReturnType<typeof vi.fn>).mockReturnValue({log: mockLog})
     const wrapper = await createAnnouncementWrapper()
-    await render(
+    render(
       <StudioAnnouncementsDialog
         announcements={MOCKED_ANNOUNCEMENTS}
         onClose={onCloseMock}

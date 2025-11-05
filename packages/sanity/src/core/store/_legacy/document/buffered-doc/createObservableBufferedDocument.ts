@@ -146,7 +146,7 @@ export const createObservableBufferedDocument = (listenerEvent$: Observable<List
         if (bufferedDocument) {
           // we received a new snapshot and already got an old one. When we receive a snapshot again
           // it is usually because the connection has been down. Attempt to save pending changes (if any)
-          bufferedDocument.commit()
+          void bufferedDocument.commit()
         }
         // mark as consistent when a new snapshot is received
         consistency$.next(true)
@@ -189,7 +189,7 @@ export const createObservableBufferedDocument = (listenerEvent$: Observable<List
         bufferedDocument!.add(new Mutation({mutations: action.mutations}))
       }
       if (action.type === 'commit') {
-        bufferedDocument!.commit()
+        void bufferedDocument!.commit()
       }
     }),
     // We subscribe to this only for the side effects

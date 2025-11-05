@@ -22,7 +22,7 @@ const generateKey = () => {
 
 export default defineEfpsTest({
   name: 'article',
-  configPath: await import.meta.resolve?.('./sanity.config.ts'),
+  configPath: import.meta.resolve?.('./sanity.config.ts'),
   document: async ({client}) => {
     const images = (await fs.promises.readdir(path.join(dirname, './assets'))).filter((name) =>
       name.endsWith('.webp'),

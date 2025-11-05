@@ -41,7 +41,7 @@ export function useGlobalCopyPasteElementHandler({
 
       event.preventDefault()
       event.stopPropagation()
-      onCopy(focusPath!, value, {
+      void onCopy(focusPath!, value, {
         context: {source: 'keyboardShortcut'},
       })
     }
@@ -57,7 +57,7 @@ export function useGlobalCopyPasteElementHandler({
 
       event.stopPropagation()
       event.preventDefault()
-      onPaste(focusPath!, value, {
+      void onPaste(focusPath!, value, {
         context: {source: 'keyboardShortcut'},
       })
     }

@@ -7,7 +7,7 @@ const id = 'test-id'
 
 test.describe('Document Components API:', () => {
   test('document.components.layout', async ({page}) => {
-    page.goto(`/content/v3;formComponentsApi;${id}`)
+    await page.goto(`/content/v3;formComponentsApi;${id}`)
 
     await expect(
       page

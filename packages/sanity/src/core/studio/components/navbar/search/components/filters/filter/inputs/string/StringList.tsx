@@ -80,7 +80,11 @@ export function SearchFilterStringListInput({
         const prevValue = acc[prevIndex]
         acc[prevIndex] = {
           ...acc[prevIndex],
-          title: uniq([...prevValue.title, val.title]).sort(),
+          title: uniq([...prevValue.title, val.title]).sort((a, b) =>
+            typeof a === 'string' && typeof b === 'string'
+              ? a.localeCompare(b)
+              : Number(a) - Number(b),
+          ),
         }
       } else {
         acc.push({

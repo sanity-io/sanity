@@ -35,8 +35,8 @@ export function useSeenAnnouncements(): [
   )
 
   const setSeenAnnouncements = useCallback(
-    (seen: string[]) => {
-      keyValueStore.setKey(KEY, seen)
+    async (seen: string[]) => {
+      await keyValueStore.setKey(KEY, seen)
     },
     [keyValueStore],
   )
@@ -49,7 +49,7 @@ export function useSeenAnnouncements(): [
     // Will reset the values of the seen announcement to: ['foo', 'bar']
     if (resetAnnouncementsParams !== null) {
       const resetValue = resetAnnouncementsParams ? resetAnnouncementsParams.split(',') : []
-      setSeenAnnouncements(resetValue)
+      void setSeenAnnouncements(resetValue)
     }
   }, [resetAnnouncementsParams, setSeenAnnouncements])
 

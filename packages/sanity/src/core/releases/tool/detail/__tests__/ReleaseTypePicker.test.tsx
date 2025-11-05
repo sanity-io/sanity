@@ -1,4 +1,4 @@
-import {fireEvent, render, screen, waitFor, within} from '@testing-library/react'
+import {act, fireEvent, render, screen, waitFor, within} from '@testing-library/react'
 import {beforeEach, describe, expect, it, vi} from 'vitest'
 
 import {getByDataUi, queryByDataUi} from '../../../../../../test/setup/customQueries'
@@ -142,22 +142,24 @@ describe('ReleaseTypePicker', () => {
       await renderComponent()
 
       const pickerButton = screen.getByRole('button')
-      fireEvent.click(pickerButton)
+      await act(() => fireEvent.click(pickerButton))
       const scheduledTab = screen.getByText('At time')
-      fireEvent.click(scheduledTab)
+      await act(() => fireEvent.click(scheduledTab))
 
       const Calendar = getByDataUi(document.body, 'Calendar')
       const CalendarMonth = getByDataUi(document.body, 'CalendarMonth')
 
       // Select the 10th day in the calendar month
-      fireEvent.click(within(Calendar).getByTestId('calendar-next-month'))
-      fireEvent.click(within(CalendarMonth).getByText('10'))
-      fireEvent.change(screen.getByLabelText('Select time'), {target: {value: '10:55'}})
-      fireEvent.blur(screen.getByLabelText('Select time'))
+      act(() => {
+        fireEvent.click(within(Calendar).getByTestId('calendar-next-month'))
+        fireEvent.click(within(CalendarMonth).getByText('10'))
+        fireEvent.change(screen.getByLabelText('Select time'), {target: {value: '10:55'}})
+        fireEvent.blur(screen.getByLabelText('Select time'))
+      })
       expect(mockUpdateRelease).not.toHaveBeenCalled()
 
       // Close the popup and check if the release is updated
-      fireEvent.click(screen.getByTestId('release-type-picker'))
+      await act(() => fireEvent.click(screen.getByTestId('release-type-picker')))
       expect(mockUpdateRelease).toHaveBeenCalledTimes(1)
       expect(mockUpdateRelease).toHaveBeenCalledWith({
         ...activeASAPRelease,
@@ -174,10 +176,11 @@ describe('ReleaseTypePicker', () => {
       await renderComponent()
 
       const pickerButton = screen.getByRole('button')
-      fireEvent.click(pickerButton)
+      await act(() => fireEvent.click(pickerButton))
       const undecidedTab = screen.getByText('Undecided')
-      fireEvent.click(undecidedTab)
-      fireEvent.click(screen.getByTestId('release-type-picker'))
+      await act(() => fireEvent.click(undecidedTab))
+      await act(() => fireEvent.click(screen.getByTestId('release-type-picker')))
+
       expect(mockUpdateRelease).toHaveBeenCalledTimes(1)
       expect(mockUpdateRelease).toHaveBeenCalledWith({
         ...activeASAPRelease,

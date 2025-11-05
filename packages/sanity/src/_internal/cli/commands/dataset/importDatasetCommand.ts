@@ -159,7 +159,7 @@ const importDatasetCommand: CliCommandDefinition = {
         inputStream = sourceFile
       } else {
         assetsBase = path.dirname(sourceFile)
-        inputStream = await createReadStream(sourceFile)
+        inputStream = createReadStream(sourceFile)
       }
     }
 

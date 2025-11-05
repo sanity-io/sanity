@@ -57,7 +57,7 @@ export default {
     await page.waitForSelector('[data-testid="string-input"]')
     await page.getByRole('button', {name: 'Add item'}).click()
 
-    const input = await page.getByTestId('autocomplete')
+    const input = page.getByTestId('autocomplete')
     await input.click()
 
     const samples = await input.evaluate((el: HTMLInputElement) =>

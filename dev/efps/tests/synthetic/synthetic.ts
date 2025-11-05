@@ -52,7 +52,7 @@ const getRandomWords = () => {
 
 export default defineEfpsTest({
   name: 'synthetic',
-  configPath: await import.meta.resolve?.('./sanity.config.ts'),
+  configPath: import.meta.resolve?.('./sanity.config.ts'),
   document: async ({client}) => {
     const imageAsset = await client.assets.upload(
       'image',

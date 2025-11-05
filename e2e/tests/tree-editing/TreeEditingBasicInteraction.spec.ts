@@ -17,7 +17,7 @@ test.skip('basic - open and close', () => {
   }) => {
     await page.getByTestId('field-animals').getByRole('button', {name: 'Add item'}).click()
 
-    const modal = await page.getByTestId('tree-editing-dialog')
+    const modal = page.getByTestId('tree-editing-dialog')
     await expect(page.getByTestId('tree-editing-dialog')).toBeAttached()
     await expect(modal).toBeVisible()
   })
@@ -30,7 +30,7 @@ test.skip('basic - open and close', () => {
     test.skip(browserName !== 'chromium')
 
     await page.getByTestId('field-animals').getByRole('button', {name: 'Add item'}).click()
-    const modal = await page.getByTestId('tree-editing-dialog')
+    const modal = page.getByTestId('tree-editing-dialog')
 
     await expect(page.getByTestId('tree-editing-dialog')).toBeAttached()
     await page.getByRole('button', {name: 'Done'}).click()

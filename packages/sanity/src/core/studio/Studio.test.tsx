@@ -64,7 +64,7 @@ describe('Studio', () => {
 
       document.head.innerHTML += sheet.getStyleTags()
       const root = await act(() => hydrateRoot(node, <Studio config={config} />))
-      await act(() => root.unmount())
+      act(() => root.unmount())
     } finally {
       sheet.seal()
     }

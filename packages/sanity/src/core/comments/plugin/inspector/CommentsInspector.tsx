@@ -145,7 +145,7 @@ function CommentsInspectorInner(
       const comment = getComment(id)
       if (!comment) return
 
-      operation.create({
+      void operation.create({
         type: 'field',
         fieldPath: comment.target.path?.field || '',
         id: comment._id,
@@ -191,7 +191,7 @@ function CommentsInspectorInner(
     (nextComment: CommentBaseCreatePayload) => {
       const fieldPath = nextComment?.payload?.fieldPath || ''
 
-      operation.create({
+      void operation.create({
         type: 'field',
         fieldPath,
         message: nextComment.message,
@@ -212,7 +212,7 @@ function CommentsInspectorInner(
 
   const handleReply = useCallback(
     (nextComment: CommentBaseCreatePayload) => {
-      operation.create({
+      void operation.create({
         ...nextComment,
         type: 'field',
         fieldPath: nextComment?.payload?.fieldPath || '',
@@ -223,7 +223,7 @@ function CommentsInspectorInner(
 
   const handleEdit = useCallback(
     (id: string, nextComment: CommentUpdatePayload) => {
-      operation.update(id, nextComment)
+      void operation.update(id, nextComment)
     },
     [operation],
   )
@@ -260,7 +260,7 @@ function CommentsInspectorInner(
 
   const handleStatusChange = useCallback(
     (id: string, nextStatus: CommentStatus) => {
-      operation.update(id, {
+      void operation.update(id, {
         status: nextStatus,
       })
 
@@ -287,7 +287,7 @@ function CommentsInspectorInner(
 
   const handleReactionSelect = useCallback(
     (id: string, reaction: CommentReactionOption) => {
-      operation.react(id, reaction)
+      void operation.react(id, reaction)
     },
     [operation],
   )

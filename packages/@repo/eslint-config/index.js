@@ -147,6 +147,8 @@ export default [
       ],
       // Since we use React Compiler we don't need to warn about arrow functions
       'react/jsx-no-bind': 'off',
+      // Since the oxlint no-floating-promises rule directs marking intentionally hanging promises with `void` we need to disable the `no-void` rule
+      'no-void': 'off',
     },
     settings: {
       'import/extensions': extensions,
