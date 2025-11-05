@@ -998,6 +998,9 @@ importers:
 
   packages/@sanity/cli:
     dependencies:
+      '@babel/parser':
+        specifier: ^7.28.5
+        version: 7.28.5
       '@babel/traverse':
         specifier: ^7.28.4
         version: 7.28.5(supports-color@5.5.0)
