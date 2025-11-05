@@ -354,18 +354,6 @@ export default defineConfig([
     },
   },
   {
-    name: 'document-limit',
-    title: 'Document limit',
-    projectId: '0e8c26k1',
-    dataset: 'production',
-    apiHost: 'https://api.sanity.work',
-    plugins: [media()],
-    basePath: '/dl',
-    mediaLibrary: {
-      enabled: true,
-    },
-  },
-  {
     name: 'playground-partial-indexing',
     title: 'Test Studio (playground-partial-indexing)',
     subtitle: 'Playground dataset',
