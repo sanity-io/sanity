@@ -156,7 +156,7 @@
     "@portabletext/patches": "^2.0.0",
     "@portabletext/plugin-markdown-shortcuts": "^2.0.0",
     "@portabletext/plugin-one-line": "^2.0.0",
-    "@portabletext/react": "^4.0.3",
+    "@portabletext/react": "^5.0.0",
     "@portabletext/toolkit": "^4.0.0",
     "@rexxars/react-json-inspector": "^9.0.1",
     "@sanity/asset-utils": "^2.3.0",
