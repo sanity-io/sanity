@@ -107,7 +107,7 @@ export const DocumentPerspectiveList = memo(function DocumentPerspectiveList() {
 
   const handleCopyToDraftsNavigate = useCallback(() => {
     if (params?.scheduledDraft) {
-      setParams({...params, scheduledDraft: undefined}, {perspective: 'drafts'})
+      setParams({...params, scheduledDraft: undefined}, {perspective: ''})
     } else {
       setPerspective('drafts')
     }
