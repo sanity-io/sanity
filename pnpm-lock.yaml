@@ -543,8 +543,8 @@ importers:
         specifier: ^2.17.2
         version: 2.17.2(@portabletext/sanity-bridge@1.2.0(@sanity/schema@packages+@sanity+schema)(@sanity/types@packages+@sanity+types))(@sanity/schema@packages+@sanity+schema)(@sanity/types@packages+@sanity+types)(@types/react@19.1.17)(react-dom@19.1.1(react@19.1.1))(react@19.1.1)(rxjs@7.8.2)
       '@portabletext/react':
-        specifier: ^4.0.3
-        version: 4.0.3(react@19.1.1)
+        specifier: ^5.0.0
+        version: 5.0.0(react@19.1.1)
       '@portabletext/toolkit':
         specifier: ^4.0.0
         version: 4.0.0
@@ -1819,8 +1819,8 @@ importers:
         specifier: ^2.0.0
         version: 2.0.0(@portabletext/editor@2.17.2(@portabletext/sanity-bridge@1.2.0(@sanity/schema@packages+@sanity+schema)(@sanity/types@packages+@sanity+types))(@sanity/schema@packages+@sanity+schema)(@sanity/types@packages+@sanity+types)(@types/react@19.1.17)(react-dom@19.1.1(react@19.1.1))(react@19.1.1)(rxjs@7.8.2))(react@19.1.1)
       '@portabletext/react':
-        specifier: ^4.0.3
-        version: 4.0.3(react@19.1.1)
+        specifier: ^5.0.0
+        version: 5.0.0(react@19.1.1)
       '@portabletext/toolkit':
         specifier: ^4.0.0
         version: 4.0.0
@@ -4462,9 +4462,9 @@ packages:
       '@portabletext/editor': ^2.18.0
       react: ^19
 
-  '@portabletext/react@4.0.3':
-    resolution: {integrity: sha512-sdVSXbi0L5MBVb1Ch5KwbBPZjW/Oqe6s5ZkPi4LcItzHl8rqY2jB0VxsFaGywZyn8Jc47cGLaOtyBM9HkW/9Hg==}
-    engines: {node: ^14.13.1 || >=16.0.0}
+  '@portabletext/react@5.0.0':
+    resolution: {integrity: sha512-ZEYhjsiUn2Dvrhyao3qAvi6C/re9ZBt2atp14dtwWtPruMNgp1uMf3p+URf0pEEhu+rMEh9JeK0A8FgNejEWCg==}
+    engines: {node: '>=20.19 <22 || >=22.12'}
     peerDependencies:
       react: ^18.2 || ^19
 
@@ -15312,10 +15312,10 @@ snapshots:
       '@portabletext/editor': 2.17.2(@portabletext/sanity-bridge@1.2.0(@sanity/schema@packages+@sanity+schema)(@sanity/types@packages+@sanity+types))(@sanity/schema@packages+@sanity+schema)(@sanity/types@packages+@sanity+types)(@types/react@19.1.17)(react-dom@19.1.1(react@19.1.1))(react@19.1.1)(rxjs@7.8.2)
       react: 19.1.1
 
-  '@portabletext/react@4.0.3(react@19.1.1)':
+  '@portabletext/react@5.0.0(react@19.1.1)':
     dependencies:
-      '@portabletext/toolkit': 3.0.1
-      '@portabletext/types': 2.0.15
+      '@portabletext/toolkit': 4.0.0
+      '@portabletext/types': 3.0.0
       react: 19.1.1
 
   '@portabletext/sanity-bridge@1.2.0(@sanity/schema@packages+@sanity+schema)(@sanity/types@packages+@sanity+types)':
