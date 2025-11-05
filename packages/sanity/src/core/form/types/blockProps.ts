@@ -454,6 +454,10 @@ export interface PortableTextPluginsProps {
         }
       | (MarkdownShortcutsPluginProps & {
           config?: undefined
+          /**
+           * @defaultValue true
+           */
+          enabled?: boolean
         })
   }
 }
