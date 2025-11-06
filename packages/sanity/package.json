@@ -154,7 +154,7 @@
     "@portabletext/block-tools": "^4.0.0",
     "@portabletext/editor": "^2.19.0",
     "@portabletext/patches": "^2.0.0",
-    "@portabletext/plugin-markdown-shortcuts": "^2.0.1",
+    "@portabletext/plugin-markdown-shortcuts": "^3.0.3",
     "@portabletext/plugin-one-line": "^2.1.0",
     "@portabletext/react": "^5.0.0",
     "@portabletext/toolkit": "^4.0.0",
