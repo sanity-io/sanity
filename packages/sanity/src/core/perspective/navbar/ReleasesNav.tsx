@@ -1,5 +1,6 @@
 import {Card} from '@sanity/ui'
 import {type ComponentType} from 'react'
+import {useWorkspace} from 'sanity'
 import {styled} from 'styled-components'
 
 import {usePerspective} from '../../perspective/usePerspective'
@@ -45,6 +46,7 @@ interface Props {
  */
 export const ReleasesNav: ComponentType<Props> = ({withReleasesToolButton, menuItemProps}) => {
   const releasesToolAvailable = useReleasesToolAvailable()
+  const isReleasesEnabled = !!useWorkspace().releases?.enabled
   const {selectedPerspective, selectedReleaseId} = usePerspective()
 
   return (
@@ -53,7 +55,7 @@ export const ReleasesNav: ComponentType<Props> = ({withReleasesToolButton, menuI
       <CurrentGlobalPerspectiveLabel selectedPerspective={selectedPerspective} />
       <GlobalPerspectiveMenu
         selectedReleaseId={selectedReleaseId}
-        areReleasesEnabled={releasesToolAvailable}
+        areReleasesEnabled={releasesToolAvailable && isReleasesEnabled}
         menuItemProps={menuItemProps}
       />
     </ReleasesNavContainer>
