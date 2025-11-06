@@ -2,7 +2,7 @@ import {type SanityClient} from '@sanity/client'
 import {Card, LayerProvider, ThemeProvider, ToastProvider} from '@sanity/ui'
 import {buildTheme, type RootTheme} from '@sanity/ui/theme'
 import {noop} from 'lodash'
-import {type ReactNode, Suspense, useEffect, useState} from 'react'
+import {type ReactNode, Suspense, use, useMemo} from 'react'
 import {
   ChangeConnectorRoot,
   ColorSchemeProvider,
@@ -49,81 +49,86 @@ const router = route.create('/')
  */
 export const TestWrapper = (props: TestWrapperProps): React.JSX.Element | null => {
   const {children, schemaTypes, betaFeatures} = props
-  const [mockWorkspace, setMockWorkspace] = useState<Workspace | null>(null)
 
-  useEffect(() => {
-    const getWorkspace = async () => {
-      const client = createMockSanityClient() as unknown as SanityClient
-      const config = defineConfig({
-        name: 'default',
-        projectId: 'test',
-        dataset: 'test',
-        schema: {
-          types: schemaTypes,
-        },
+  const workspacePromise = useMemo(() => {
+    const client = createMockSanityClient() as unknown as SanityClient
+    const config = defineConfig({
+      name: 'default',
+      projectId: 'test',
+      dataset: 'test',
+      schema: {
+        types: schemaTypes,
+      },
 
-        beta: {
-          form: {
-            enhancedObjectDialog: {
-              enabled: true,
-            },
+      beta: {
+        form: {
+          enhancedObjectDialog: {
+            enabled: true,
           },
-          ...betaFeatures,
         },
-      })
+        ...betaFeatures,
+      },
+    })
 
-      const workspace = await getMockWorkspace({client, config})
-      setMockWorkspace(workspace)
-      return workspace
-    }
+    return getMockWorkspace({client, config})
+  }, [betaFeatures, schemaTypes])
 
-    void getWorkspace()
-  }, [schemaTypes, betaFeatures])
+  return (
+    <Suspense fallback={null}>
+      <TestWrapperContents workspacePromise={workspacePromise}>{children}</TestWrapperContents>
+    </Suspense>
+  )
+}
+
+export const TestWrapperContents = (props: {
+  children: React.ReactNode
+  workspacePromise: Promise<Workspace>
+}): React.JSX.Element | null => {
+  const {workspacePromise, children} = props
+  const mockWorkspace = use(workspacePromise)
 
   if (!mockWorkspace) {
     return null
   }
 
   return (
-    <Suspense fallback={null}>
-      <RouterProvider router={router} state={{}} onNavigate={noop}>
-        <ThemeProvider theme={studioThemeConfig}>
-          <ToastProvider>
-            <LayerProvider>
-              <WorkspaceProvider workspace={mockWorkspace}>
-                <ResourceCacheProvider>
-                  <SourceProvider source={mockWorkspace.unstable_sources[0]}>
-                    <CopyPasteProvider>
-                      <ColorSchemeProvider>
-                        <UserColorManagerProvider>
-                          <StyledChangeConnectorRoot
-                            isReviewChangesOpen={false}
-                            onOpenReviewChanges={() => {}}
-                            onSetFocus={() => {}}
+    <RouterProvider router={router} state={{}} onNavigate={noop}>
+      <ThemeProvider theme={studioThemeConfig}>
+        <ToastProvider>
+          <LayerProvider>
+            <WorkspaceProvider workspace={mockWorkspace}>
+              <ResourceCacheProvider>
+                <SourceProvider source={mockWorkspace.unstable_sources[0]}>
+                  <CopyPasteProvider>
+                    <ColorSchemeProvider>
+                      <UserColorManagerProvider>
+                        <StyledChangeConnectorRoot
+                          isReviewChangesOpen={false}
+                          onOpenReviewChanges={noop}
+                          onSetFocus={noop}
+                        >
+                          <PerspectiveProvider
+                            selectedPerspectiveName={undefined}
+                            excludedPerspectives={EMPTY_ARRAY}
                           >
-                            <PerspectiveProvider
-                              selectedPerspectiveName={undefined}
-                              excludedPerspectives={EMPTY_ARRAY}
-                            >
-                              <PaneLayout height="fill">
-                                <Pane id="test-pane">
-                                  <PaneContent>
-                                    <Card padding={3}>{children}</Card>
-                                  </PaneContent>
-                                </Pane>
-                              </PaneLayout>
-                            </PerspectiveProvider>
-                          </StyledChangeConnectorRoot>
-                        </UserColorManagerProvider>
-                      </ColorSchemeProvider>
-                    </CopyPasteProvider>
-                  </SourceProvider>
-                </ResourceCacheProvider>
-              </WorkspaceProvider>
-            </LayerProvider>
-          </ToastProvider>
-        </ThemeProvider>
-      </RouterProvider>
-    </Suspense>
+                            <PaneLayout height="fill">
+                              <Pane id="test-pane">
+                                <PaneContent>
+                                  <Card padding={3}>{children}</Card>
+                                </PaneContent>
+                              </Pane>
+                            </PaneLayout>
+                          </PerspectiveProvider>
+                        </StyledChangeConnectorRoot>
+                      </UserColorManagerProvider>
+                    </ColorSchemeProvider>
+                  </CopyPasteProvider>
+                </SourceProvider>
+              </ResourceCacheProvider>
+            </WorkspaceProvider>
+          </LayerProvider>
+        </ToastProvider>
+      </ThemeProvider>
+    </RouterProvider>
   )
 }
