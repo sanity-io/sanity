@@ -1,7 +1,7 @@
 import {type ObjectSchemaType} from '@sanity/types'
 import {LayerProvider, studioTheme, ThemeProvider} from '@sanity/ui'
-import {render} from '@testing-library/react'
-import userEvent from '@testing-library/user-event'
+import {act, fireEvent, render, screen, waitFor} from '@testing-library/react'
+import {userEvent} from '@testing-library/user-event'
 import {type PropsWithChildren} from 'react'
 import {FormBuilderContext} from 'sanity/_singletons'
 import {describe, expect, it, vi} from 'vitest'
@@ -88,7 +88,7 @@ describe('PrimitiveField', () => {
       // Given
       const {member, formCallbacks, TestWrapper} = setupTest('number', undefined)
 
-      const {getByTestId} = render(
+      render(
         <PrimitiveField
           member={member}
           renderInput={defaultRenderInput}
@@ -96,9 +96,16 @@ describe('PrimitiveField', () => {
         />,
         {wrapper: TestWrapper},
       )
-
       // When
-      await userEvent.type(getByTestId('number-input'), '1.01')
+      const input = screen.getByTestId('number-input')
+      // uses fireEvent.change instead of userEvent.type due to https://github.com/testing-library/user-event/issues/1150
+      // await userEvent.type(input, '1.01)
+      // eslint-disable-next-line testing-library/prefer-user-event
+      fireEvent.change(input, {target: {value: '1', valueAsNumber: 1}})
+      // eslint-disable-next-line testing-library/prefer-user-event
+      fireEvent.change(input, {target: {value: '1.0', valueAsNumber: 1}})
+      // eslint-disable-next-line testing-library/prefer-user-event
+      fireEvent.change(input, {target: {value: '1.01', valueAsNumber: 1.01}})
 
       // Then
       expect(formCallbacks.onChange).toHaveBeenNthCalledWith(
@@ -159,7 +166,10 @@ describe('PrimitiveField', () => {
       )
 
       // When
-      await userEvent.type(getByTestId('number-input'), '.00')
+      // await userEvent.type(getByTestId('number-input'), '.00')
+      // uses fireEvent.change instead of userEvent.type due to https://github.com/testing-library/user-event/issues/1150
+      // eslint-disable-next-line testing-library/prefer-user-event
+      fireEvent.change(getByTestId('number-input'), {target: {value: '1.00', valueAsNumber: 1}})
       member.field.value = 1
 
       rerender(
@@ -173,7 +183,7 @@ describe('PrimitiveField', () => {
       // Then
       const input = getByTestId('number-input') as HTMLInputElement
       expect(input).toBeInstanceOf(HTMLInputElement)
-      expect(input.value).toEqual('1.00')
+      await waitFor(() => expect(input.value).toEqual('1.00'))
     })
 
     it('wont trigger `onChange` callbacks when number input values are out of range', async () => {
