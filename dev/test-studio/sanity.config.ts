@@ -372,9 +372,6 @@ export default defineConfig([
     mediaLibrary: {
       enabled: true,
     },
-    scheduledDrafts: {
-      enabled: true,
-    },
   },
   {
     name: 'growth',
@@ -392,9 +389,6 @@ export default defineConfig([
       enabled: true,
     },
     mediaLibrary: {
-      enabled: true,
-    },
-    scheduledDrafts: {
       enabled: true,
     },
   },
