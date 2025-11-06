@@ -1,5 +1,5 @@
 import {defineField, defineType} from 'sanity'
-import {CharacterCount} from './components/characterCount'
+import {CharacterCount} from '../../components/characterCount'
 
 export const platformConfig = {
   x: {limit: 280, label: 'X'},
@@ -8,6 +8,7 @@ export const platformConfig = {
   linkedin: {limit: 3000, label: 'LinkedIn'},
   discord: {limit: 2000, label: 'Discord'},
   telegram: {limit: 4096, label: 'Telegram'},
+  slack: {limit: 4000, label: 'Slack'},
   devto: {limit: 10_000, label: 'Dev.to'},
 } as const
 
@@ -171,19 +172,16 @@ export const socialPost = defineType({
     prepare(selection) {
       const {title: body, subtitle: platforms} = selection
 
-      // Trim title to word boundary
-      const maxLength = 40
-      const bodyTrimmed =
-        body.length > maxLength
-          ? body.slice(0, body.slice(0, maxLength).lastIndexOf(' ')) + '...'
-          : body
+      const title = body || 'Untitled Post'
 
-      const platformTitles = platforms
-        .map((platform: keyof typeof platformConfig) => platformConfig[platform].label)
-        .sort()
-        .join(', ')
+      const subtitle = platforms
+        ? platforms
+            .map((platform: keyof typeof platformConfig) => platformConfig[platform].label)
+            .sort()
+            .join(', ')
+        : ''
 
-      return {title: bodyTrimmed, subtitle: platformTitles}
+      return {title, subtitle}
     },
   },
 })

@@ -8,11 +8,11 @@ Content teams need to share their content across multiple social media platforms
 
 ## Solution
 
-This Sanity Function automatically posts content to multiple social media platforms (X, Mastodon, Bluesky, LinkedIn, Discord, Telegram, and Dev.to) when a social post document is created. Using the `@humanwhocodes/crosspost` library, it handles platform-specific formatting, character limits, and authentication, allowing you to write once and publish everywhere from a single Sanity document.
+This Sanity Function automatically posts content to multiple social media platforms (X, Mastodon, Bluesky, LinkedIn, Discord, Telegram, Slack, and Dev.to) when a social post document is created. Using the `@humanwhocodes/crosspost` library, it handles platform-specific formatting, character limits, and authentication, allowing you to write once and publish everywhere from a single Sanity document.
 
 ## Benefits
 
-- **Multi-platform distribution** - Post to any or all of 7 social networks simultaneously from one place
+- **Multi-platform distribution** - Post to any or all of 8 social networks simultaneously from one place
 - **Platform-specific overrides** - Write one global post body, then override text for specific platforms when needed (with visual "Overridden" badges)
 - **Real-time character validation** - Character count badges for each platform turn red when over limit, preventing publishing errors
 - **Smart scheduling** - Use Content Releases to schedule posts in advance for coordinated launches
@@ -69,7 +69,7 @@ This function includes a `socialPost` document type schema with a custom charact
 - Node.js v22.x for local testing
 - At least one social media platform account with API credentials
 
-**Supported Platforms:** This function supports 7 platforms via the `@humanwhocodes/crosspost` library:
+**Supported Platforms:** This function supports 8 platforms via the `@humanwhocodes/crosspost` library:
 
 - **X (Twitter)** - Social media platform
 - **Mastodon** - Decentralized social network
@@ -77,6 +77,7 @@ This function includes a `socialPost` document type schema with a custom charact
 - **LinkedIn** - Professional networking
 - **Discord** - Via webhook URL (no bot setup required)
 - **Telegram** - Messaging platform
+- **Slack** - Team communication platform
 - **Dev.to** - Developer blogging platform
 
 ## Implementation
@@ -128,8 +129,30 @@ This function includes a `socialPost` document type schema with a custom charact
      DISCORD_WEBHOOK_URL,
      TELEGRAM_BOT_TOKEN,
      TELEGRAM_CHAT_ID,
+     SLACK_BOT_TOKEN,
+     SLACK_CHANNEL,
      DEVTO_API_KEY,
    } = process.env
+
+   // Ensure environment variables are strings or provide defaults
+   const crosspostEnvVars = {
+     TWITTER_ACCESS_TOKEN_KEY: TWITTER_ACCESS_TOKEN_KEY || '',
+     TWITTER_ACCESS_TOKEN_SECRET: TWITTER_ACCESS_TOKEN_SECRET || '',
+     TWITTER_API_CONSUMER_KEY: TWITTER_API_CONSUMER_KEY || '',
+     TWITTER_API_CONSUMER_SECRET: TWITTER_API_CONSUMER_SECRET || '',
+     MASTODON_ACCESS_TOKEN: MASTODON_ACCESS_TOKEN || '',
+     MASTODON_HOST: MASTODON_HOST || '',
+     BLUESKY_IDENTIFIER: BLUESKY_IDENTIFIER || '',
+     BLUESKY_PASSWORD: BLUESKY_PASSWORD || '',
+     BLUESKY_HOST: BLUESKY_HOST || '',
+     LINKEDIN_ACCESS_TOKEN: LINKEDIN_ACCESS_TOKEN || '',
+     DISCORD_WEBHOOK_URL: DISCORD_WEBHOOK_URL || '',
+     TELEGRAM_BOT_TOKEN: TELEGRAM_BOT_TOKEN || '',
+     TELEGRAM_CHAT_ID: TELEGRAM_CHAT_ID || '',
+     SLACK_BOT_TOKEN: SLACK_BOT_TOKEN || '',
+     SLACK_CHANNEL: SLACK_CHANNEL || '',
+     DEVTO_API_KEY: DEVTO_API_KEY || '',
+   }
 
    export default defineBlueprint({
      resources: [
@@ -144,22 +167,7 @@ This function includes a `socialPost` document type schema with a custom charact
            filter: "_type == 'socialPost'",
            projection: '{_id, body, mainImage, platforms, platformOverrides}',
          },
-         env: {
-           TWITTER_ACCESS_TOKEN_KEY,
-           TWITTER_ACCESS_TOKEN_SECRET,
-           TWITTER_API_CONSUMER_KEY,
-           TWITTER_API_CONSUMER_SECRET,
-           MASTODON_ACCESS_TOKEN,
-           MASTODON_HOST,
-           BLUESKY_IDENTIFIER,
-           BLUESKY_PASSWORD,
-           BLUESKY_HOST,
-           LINKEDIN_ACCESS_TOKEN,
-           DISCORD_WEBHOOK_URL,
-           TELEGRAM_BOT_TOKEN,
-           TELEGRAM_CHAT_ID,
-           DEVTO_API_KEY,
-         },
+         env: crosspostEnvVars,
        }),
      ],
    })
@@ -172,7 +180,7 @@ This function includes a `socialPost` document type schema with a custom charact
    ```bash
    # Install dependencies in the root
    npm install dotenv
-   # Install in the functions directions
+   # Install in the functions directory
    cd functions/social-media-crosspost
    npm install
    ```
@@ -206,6 +214,10 @@ This function includes a `socialPost` document type schema with a custom charact
    # Telegram
    TELEGRAM_BOT_TOKEN=your-bot-token
    TELEGRAM_CHAT_ID=your-chat-id
+
+   # Slack
+   SLACK_BOT_TOKEN=xoxb-your-bot-token
+   SLACK_CHANNEL=your-channel-id
 
    # Dev.to
    DEVTO_API_KEY=your-api-key
@@ -363,6 +375,13 @@ You can override the global post body for specific platforms:
 
 - Bot must be added to the channel/chat
 - Chat ID can be negative for groups/channels
+
+**Slack:**
+
+- Bot token must start with `xoxb-`
+- Bot needs `chat:write` and `files:write` scopes
+- **Important:** `files:write` scope is required if attaching images - posts will fail with "missing_scope" error without it
+- Bot must be invited to the channel before posting
 
 **Dev.to:**
 

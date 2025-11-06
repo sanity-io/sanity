@@ -7,6 +7,7 @@ import {
   DiscordWebhookStrategy,
   LinkedInStrategy,
   MastodonStrategy,
+  SlackStrategy,
   TelegramStrategy,
   TwitterStrategy,
   type Strategy,
@@ -45,6 +46,12 @@ type StrategyConfig = {
   bodyOverride: string | undefined
 }
 
+// Map our platform keys to their corresponding strategy IDs
+const PLATFORM_TO_STRATEGY_ID: Record<string, string> = {
+  x: 'twitter',
+  discord: 'discord-webhook',
+}
+
 const {
   TWITTER_ACCESS_TOKEN_KEY,
   TWITTER_ACCESS_TOKEN_SECRET,
@@ -64,6 +71,9 @@ const {
 
   TELEGRAM_BOT_TOKEN,
   TELEGRAM_CHAT_ID,
+
+  SLACK_BOT_TOKEN,
+  SLACK_CHANNEL,
 
   DEVTO_API_KEY,
 } = env
@@ -168,6 +178,16 @@ const createStrategies = (
     })
   }
 
+  if (platforms.includes('slack') && SLACK_BOT_TOKEN && SLACK_CHANNEL) {
+    strategyConfigs.push({
+      strategy: new SlackStrategy({
+        botToken: SLACK_BOT_TOKEN,
+        channel: SLACK_CHANNEL,
+      }),
+      bodyOverride: getBody('slack', platformOverrides),
+    })
+  }
+
   if (platforms.includes('devto') && DEVTO_API_KEY) {
     strategyConfigs.push({
       strategy: new DevtoStrategy({
@@ -181,7 +201,14 @@ const createStrategies = (
 }
 
 export const handler = documentEventHandler(async ({context, event}) => {
+  const {local} = context // local is true when running locally
   console.log('Starting crosspost...')
+
+  if (local) {
+    console.log(
+      '⚠️  Running in local development mode - posts will be sent to platforms but status updates to Sanity documents will be skipped',
+    )
+  }
 
   const {_id, mainImage, platforms, platformOverrides, body} = event.data as EventData
 
@@ -213,17 +240,39 @@ export const handler = documentEventHandler(async ({context, event}) => {
       `Found ${strategyConfigs.length} enabled strategies: ${strategyConfigs.map((config) => config.strategy.name).join(', ')}`,
     )
 
+    // Identify platforms that were selected but don't have credentials configured
+    const enabledPlatformIds = strategyConfigs.map((config) => config.strategy.id)
+    const skippedPlatforms = platforms.filter((platform) => {
+      const strategyId = PLATFORM_TO_STRATEGY_ID[platform] || platform
+      return !enabledPlatformIds.includes(strategyId)
+    })
+
+    if (skippedPlatforms.length > 0) {
+      console.warn(
+        `Skipping ${skippedPlatforms.length} platforms due to missing credentials: ${skippedPlatforms.join(', ')}`,
+      )
+    }
+
     // Support single image attachment across all platforms
-    const imageArg = mainImage
-      ? {
-          data: await getImageData(mainImage, sanityClient),
+    let imageArg: {data: Uint8Array; alt: string} | undefined = undefined
+    if (mainImage) {
+      const imageData = await getImageData(mainImage, sanityClient)
+      if (imageData) {
+        imageArg = {
+          data: imageData,
           alt: mainImage.alt ?? '',
         }
-      : undefined
+      }
+    }
 
-    // Set all statuses to pending
-    const statuses = strategyConfigs.map((config) => `Posting to ${config.strategy.name}...`)
-    await sanityClient.patch(_id).set({status: statuses}).commit()
+    // Set all statuses to pending (skip in local development mode)
+    if (!local) {
+      const statuses = [
+        ...strategyConfigs.map((config) => `Posting to ${config.strategy.name}...`),
+        ...skippedPlatforms.map((platform) => `Skipped ${platform}: No credentials configured`),
+      ]
+      await sanityClient.patch(_id).set({status: statuses}).commit()
+    }
 
     const postPromises = strategyConfigs.map((strategyConfig, index) => {
       const strategyName = strategyConfig.strategy.name
@@ -256,8 +305,10 @@ export const handler = documentEventHandler(async ({context, event}) => {
           console.error(resultMessage)
         }
 
-        // Update the status for this specific post
-        await sanityClient.patch(_id).splice('status', index, 1, [resultMessage]).commit()
+        // Update the status for this specific post (skip in local development mode)
+        if (!local) {
+          await sanityClient.patch(_id).splice('status', index, 1, [resultMessage]).commit()
+        }
       })()
     })
 
