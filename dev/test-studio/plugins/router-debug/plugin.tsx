@@ -24,7 +24,7 @@ export const routerDebugTool = definePlugin<RouterDebugConfig | void>((options) 
         },
         getIntentState: (_intent, params) => {
           return {
-            section: 'from-intent',
+            section: `from-intent-${Math.random().toString(36).slice(2, 12)}`,
             _searchParams: [
               ['intentResolved', 'yes'],
               ['paramFromIntent', params.favorite],
