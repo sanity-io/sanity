@@ -5,7 +5,6 @@ import {defer, merge, type Observable, of, throwError} from 'rxjs'
 import {catchError, concatMap, filter, map, mergeMap, scan, share} from 'rxjs/operators'
 
 import {shareReplayLatest} from '../../../preview/utils/shareReplayLatest'
-import {RELEASES_STUDIO_CLIENT_OPTIONS} from '../../../releases'
 import {getVersionFromId} from '../../../util'
 import {debug} from './debug'
 import {
@@ -13,6 +12,8 @@ import {
   type MutationEvent,
   type PendingMutationsEvent,
   type ReconnectEvent,
+  type ResetEvent,
+  type WelcomeBackEvent,
   type WelcomeEvent,
 } from './types'
 import {dedupeListenerEvents} from './utils/dedupeListenerEvents'
@@ -60,12 +61,11 @@ export type ListenerEvent =
   | InitialSnapshotEvent
   | PendingMutationsEvent
   | WelcomeEvent
+  | WelcomeBackEvent
+  | ResetEvent
 
 const PENDING_START: PendingMutationsEvent = {type: 'pending', phase: 'begin'}
 const PENDING_END: PendingMutationsEvent = {type: 'pending', phase: 'end'}
-
-// refetch and reset local document to server snapshot if listener connection has been disconnected for longer than this
-const REFETCH_IF_DISCONNECTED_LONGER_THAN_MS = 20_000
 
 function isMutationEvent(msg: ListenerEvent): msg is MutationEvent {
   return msg.type === 'mutation'
@@ -92,7 +92,12 @@ export function getPairListener(
   options: DocumentStoreExtraOptions = {},
 ): Observable<ListenerEvent> {
   const {publishedId, draftId, versionId} = idPair
-  const client = idPair.versionId ? _client.withConfig(RELEASES_STUDIO_CLIENT_OPTIONS) : _client
+  const client = idPair.versionId
+    ? _client.withConfig({
+        // @todo: remove
+        apiVersion: 'vX',
+      })
+    : _client
   if (
     (idPair.versionId && getVersionFromId(idPair.versionId) === 'published') ||
     (idPair.versionId && getVersionFromId(idPair.versionId) === 'drafts')
@@ -109,14 +114,16 @@ export function getPairListener(
         {
           includeResult: false,
           includeAllVersions: true,
-          events: ['welcome', 'mutation', 'reconnect'],
+          // @ts-expect-error - @todo: remove
+          enableResume: true,
+          events: ['welcome', 'mutation', 'reconnect', 'reset', 'welcomeback'],
           effectFormat: 'mendoza',
           tag: options.tag || 'document.pair-listener',
         },
-      ) as Observable<WelcomeEvent | MutationEvent | ReconnectEvent>
+      ) as Observable<WelcomeEvent | MutationEvent | ReconnectEvent | WelcomeBackEvent | ResetEvent>
     ).pipe(
       dedupeListenerEvents(),
-      map((event): WelcomeEvent | MutationEvent | ReconnectEvent =>
+      map((event): WelcomeEvent | MutationEvent | ReconnectEvent | WelcomeBackEvent | ResetEvent =>
         event.type === 'mutation'
           ? {
               ...event,
@@ -133,42 +140,9 @@ export function getPairListener(
   )
 
   const pairEvents$ = sharedEvents.pipe(
-    scan(
-      (
-        acc:
-          | {
-              event: WelcomeEvent | MutationEvent | ReconnectEvent
-              disconnectedAt?: Date
-              disconnectedTime?: number
-            }
-          | undefined,
-        event,
-      ) => ({
-        event,
-        disconnectedAt: event.type === 'reconnect' ? acc?.disconnectedAt || new Date() : undefined,
-        disconnectedTime:
-          event.type === 'welcome' && acc?.disconnectedAt
-            ? acc.disconnectedAt && Date.now() - acc.disconnectedAt.getTime()
-            : undefined,
-      }),
-      undefined,
-    ),
     filter(Boolean),
-    concatMap(({event, disconnectedTime}, i) => {
-      const shouldSyncDocument =
-        (event.type === 'welcome' && i === 0) ||
-        (disconnectedTime && disconnectedTime > REFETCH_IF_DISCONNECTED_LONGER_THAN_MS)
-      if ((disconnectedTime || 0) > 0) {
-        debug('Reconnected after being disconnected for: %dms', disconnectedTime)
-      }
-      // Note: during disconnect, we might have lost mutation events that are required for the local buffered
-      // documents consistency.
-      // If mutation events keep arriving, the gap detection (see sequentializeListenerEvents.ts) will eventually kick
-      // in and reset/resync the document back to current server state.
-      // However, if no mutation events arrive after reconnect, there is a chance for the document to get stuck in a
-      // forever inconsistent state (which usually manifests itself by the "Saving…"-state getting stuck).
-      // However, as long as the document is actively being edited, either by the local user, or other collaborators,
-      // the gap detection and recovery will eventually activate and the document will be consistent again.
+    concatMap((event) => {
+      const shouldSyncDocument = event.type === 'welcome' || event.type === 'reset'
       return shouldSyncDocument
         ? fetchInitialDocumentSnapshots().pipe(
             mergeMap(({draft, published, version}) => [

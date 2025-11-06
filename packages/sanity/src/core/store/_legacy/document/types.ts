@@ -23,7 +23,13 @@ export interface MutationEvent {
 
   transition: 'update' | 'appear' | 'disappear'
 }
+export interface ResetEvent {
+  type: 'reset'
+}
 
+export interface WelcomeBackEvent {
+  type: 'welcomeback'
+}
 /**
  * @hidden
  * @beta */
