@@ -1,8 +1,8 @@
 import {type SanityClient} from '@sanity/client'
 import {Card, LayerProvider, ThemeProvider, ToastProvider} from '@sanity/ui'
 import {buildTheme, type RootTheme} from '@sanity/ui/theme'
-import {noop} from 'lodash'
-import {type ReactNode, Suspense, use, useMemo} from 'react'
+import {memoize, noop} from 'lodash'
+import {type ReactNode, Suspense, use, useState} from 'react'
 import {
   ChangeConnectorRoot,
   ColorSchemeProvider,
@@ -13,7 +13,6 @@ import {
   type SchemaTypeDefinition,
   SourceProvider,
   UserColorManagerProvider,
-  type Workspace,
   type WorkspaceOptions,
   WorkspaceProvider,
 } from 'sanity'
@@ -42,16 +41,12 @@ const StyledChangeConnectorRoot = styled(ChangeConnectorRoot)`
 `
 
 const router = route.create('/')
-
-/**
- * @description This component is used to wrap all tests in the providers it needs to be able to run successfully.
- * It provides a mock Sanity client and a mock workspace.
- */
-export const TestWrapper = (props: TestWrapperProps): React.JSX.Element | null => {
-  const {children, schemaTypes, betaFeatures} = props
-
-  const workspacePromise = useMemo(() => {
-    const client = createMockSanityClient() as unknown as SanityClient
+const getCachedMockWorkspace = memoize(
+  (
+    client: SanityClient,
+    schemaTypes: SchemaTypeDefinition[],
+    betaFeatures: WorkspaceOptions['beta'] | undefined,
+  ) => {
     const config = defineConfig({
       name: 'default',
       projectId: 'test',
@@ -71,21 +66,33 @@ export const TestWrapper = (props: TestWrapperProps): React.JSX.Element | null =
     })
 
     return getMockWorkspace({client, config})
-  }, [betaFeatures, schemaTypes])
+  },
+)
+
+/**
+ * @description This component is used to wrap all tests in the providers it needs to be able to run successfully.
+ * It provides a mock Sanity client and a mock workspace.
+ */
+export const TestWrapper = (props: TestWrapperProps): React.JSX.Element | null => {
+  const {children, schemaTypes, betaFeatures} = props
+  const [client] = useState(() => createMockSanityClient() as unknown as SanityClient)
 
   return (
     <Suspense fallback={null}>
-      <TestWrapperContents workspacePromise={workspacePromise}>{children}</TestWrapperContents>
+      <TestWrapperContents client={client} schemaTypes={schemaTypes} betaFeatures={betaFeatures}>
+        {children}
+      </TestWrapperContents>
     </Suspense>
   )
 }
 
-export const TestWrapperContents = (props: {
-  children: React.ReactNode
-  workspacePromise: Promise<Workspace>
-}): React.JSX.Element | null => {
-  const {workspacePromise, children} = props
-  const mockWorkspace = use(workspacePromise)
+export const TestWrapperContents = (
+  props: TestWrapperProps & {
+    client: SanityClient
+  },
+): React.JSX.Element | null => {
+  const {children, schemaTypes, betaFeatures, client} = props
+  const mockWorkspace = use(getCachedMockWorkspace(client, schemaTypes, betaFeatures))
 
   if (!mockWorkspace) {
     return null
