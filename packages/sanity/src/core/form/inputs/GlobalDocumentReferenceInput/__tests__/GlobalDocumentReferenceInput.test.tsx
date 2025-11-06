@@ -213,7 +213,7 @@ describe('user interaction happy paths', () => {
 
     const autocomplete = await result.findByTestId('autocomplete')
 
-    act(() => userEvent.type(autocomplete, 'foo'))
+    await userEvent.type(autocomplete, 'foo')
 
     const popover = await result.findByTestId('autocomplete-popover')
     const previews = within(popover).getAllByTestId('preview')
@@ -223,7 +223,7 @@ describe('user interaction happy paths', () => {
     expect(previews[1]).toHaveTextContent('Product two')
 
     // Click "Product two"
-    userEvent.click(previews[1])
+    await userEvent.click(previews[1])
 
     // Note: this asserts the necessity of awaiting after click. Currently, the onChange event is
     // emitted asynchronously after an item is selected due to behavior in Sanity UI's autocomplete
@@ -318,7 +318,7 @@ describe('user interaction happy paths', () => {
     // })
 
     const autocomplete = result.getByTestId('autocomplete')
-    userEvent.type(autocomplete, 'foo')
+    await userEvent.type(autocomplete, 'foo')
     const popover = result.getByTestId('autocomplete-popover')
     const previews = within(popover).getAllByTestId('preview')
 
@@ -326,7 +326,7 @@ describe('user interaction happy paths', () => {
     expect(previews[0]).toHaveTextContent('Product one')
     expect(previews[1]).toHaveTextContent('Product two')
 
-    userEvent.click(previews[1])
+    await userEvent.click(previews[1])
 
     // Note: this asserts the necessity of awaiting after click. Currently, the onChange event is emitted asynchronously after an item is selected due to behavior in Sanity UI's autocomplete
     // (https://github.com/sanity-io/design/blob/b956686c2c663c4f21910f7d3d0be0a27663f5f4/packages/%40sanity/ui/src/components/autocomplete/autocompleteOption.tsx#L16-L20)

@@ -75,7 +75,7 @@ describe('Mouse accessibility', () => {
       render: (inputProps) => <BooleanInput {...inputProps} />,
     })
     const input = result.container.querySelector('input[id="booleanTest"]')
-    userEvent.click(input!)
+    await userEvent.click(input!)
     expect(onFocus).toBeCalled()
   })
 
@@ -86,7 +86,7 @@ describe('Mouse accessibility', () => {
     })
 
     const input = result.container.querySelector('input[id="booleanTest"]')
-    userEvent.click(input!)
+    await userEvent.click(input!)
     expect(onChange).toBeCalled()
   })
 })
@@ -99,7 +99,7 @@ describe('Keyboard accessibility', () => {
     })
 
     const input = result.container.querySelector('input[id="booleanTest"]')
-    userEvent.tab()
+    await userEvent.tab()
     expect(input).toHaveFocus()
     expect(onFocus).toBeCalled()
   })
@@ -110,8 +110,8 @@ describe('Keyboard accessibility', () => {
       render: (inputProps) => <BooleanInput {...inputProps} />,
     })
 
-    userEvent.tab()
-    userEvent.keyboard('{space}')
+    await userEvent.tab()
+    await userEvent.keyboard('{space}')
     expect(onChange).toBeCalled()
   })
 
@@ -122,8 +122,8 @@ describe('Keyboard accessibility', () => {
     })
 
     const input = result.container.querySelector('input[id="booleanTest"]')
-    userEvent.tab()
-    userEvent.tab()
+    await userEvent.tab()
+    await userEvent.tab()
     expect(input).not.toHaveFocus()
 
     expect(onBlur).toBeCalled()
@@ -163,12 +163,12 @@ describe('readOnly property', () => {
     expect(input).toBeDisabled()
 
     // Mouse event
-    userEvent.click(input!)
+    await userEvent.click(input!)
     // expect(input).toHaveFocus()
     expect(onChange).not.toBeCalled()
 
     // Keyboard event
-    userEvent.tab()
+    await userEvent.tab()
     expect(input).not.toHaveFocus()
   })
 
@@ -194,13 +194,13 @@ describe('readOnly property', () => {
     expect(input).not.toBeDisabled()
 
     // Mouse event
-    userEvent.click(input!)
+    await userEvent.click(input!)
     expect(onChange).toBeCalled()
 
     // Keyboard event
-    userEvent.tab({shift: true})
-    userEvent.tab()
-    userEvent.keyboard('{space}')
+    await userEvent.tab({shift: true})
+    await userEvent.tab()
+    await userEvent.keyboard('{space}')
     expect(onChange).toBeCalled()
   })
 
@@ -215,11 +215,11 @@ describe('readOnly property', () => {
     expect(input).toBeDisabled()
 
     // Mouse event
-    userEvent.click(input!)
+    await userEvent.click(input!)
     expect(onChange).not.toBeCalled()
 
     // Keyboard event
-    userEvent.tab()
+    await userEvent.tab()
     expect(input).not.toHaveFocus()
   })
 })

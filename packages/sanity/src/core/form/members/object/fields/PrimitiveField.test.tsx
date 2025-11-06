@@ -84,7 +84,7 @@ describe('PrimitiveField', () => {
       expect(input.value).toEqual('0')
     })
 
-    it('calls `onChange` callback when the input changes', () => {
+    it('calls `onChange` callback when the input changes', async () => {
       // Given
       const {member, formCallbacks, TestWrapper} = setupTest('number', undefined)
 
@@ -98,7 +98,7 @@ describe('PrimitiveField', () => {
       )
 
       // When
-      userEvent.type(getByTestId('number-input'), '1.01')
+      await userEvent.type(getByTestId('number-input'), '1.01')
 
       // Then
       expect(formCallbacks.onChange).toHaveBeenNthCalledWith(
@@ -145,7 +145,7 @@ describe('PrimitiveField', () => {
       expect(input.value).toEqual('42')
     })
 
-    it('keeps input value when field value is updated with a "simplified" version of the current input', () => {
+    it('keeps input value when field value is updated with a "simplified" version of the current input', async () => {
       // Given
       const {member, TestWrapper} = setupTest('number', 1)
 
@@ -159,7 +159,7 @@ describe('PrimitiveField', () => {
       )
 
       // When
-      userEvent.type(getByTestId('number-input'), '.00')
+      await userEvent.type(getByTestId('number-input'), '.00')
       member.field.value = 1
 
       rerender(
@@ -176,7 +176,7 @@ describe('PrimitiveField', () => {
       expect(input.value).toEqual('1.00')
     })
 
-    it('wont trigger `onChange` callbacks when number input values are out of range', () => {
+    it('wont trigger `onChange` callbacks when number input values are out of range', async () => {
       // Given
       const {formCallbacks, member, TestWrapper} = setupTest('number', undefined)
 
@@ -191,8 +191,8 @@ describe('PrimitiveField', () => {
 
       // When
       const input = getByTestId('number-input') as HTMLInputElement
-      userEvent.paste(input!, (Number.MIN_SAFE_INTEGER - 1).toString())
-      userEvent.paste(input!, (Number.MAX_SAFE_INTEGER + 1).toString())
+      await userEvent.paste(input!, (Number.MIN_SAFE_INTEGER - 1).toString())
+      await userEvent.paste(input!, (Number.MAX_SAFE_INTEGER + 1).toString())
 
       // Then
       expect(formCallbacks.onChange).toBeCalledTimes(0)

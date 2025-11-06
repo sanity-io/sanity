@@ -462,6 +462,11 @@ export default defineConfig([
     rules: {
       ...testingLibrary.configs['flat/react'].rules,
       'testing-library/prefer-user-event': 'error',
+      // Rules that require follow up work to be enabled
+      'testing-library/prefer-screen-queries': 'warn',
+      'testing-library/no-node-access': 'warn',
+      'testing-library/no-container': 'warn',
+      'testing-library/prefer-query-by-disappearance': 'warn',
     },
   },
 ])

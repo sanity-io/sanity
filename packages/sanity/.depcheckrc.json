@@ -1,3 +1,8 @@
 {
-  "ignores": ["sanity", "react-compiler-runtime", "@sanity/codegen"]
+  "ignores": [
+    "sanity",
+    "react-compiler-runtime",
+    "@sanity/codegen",
+    "eslint-plugin-testing-library"
+  ]
 }

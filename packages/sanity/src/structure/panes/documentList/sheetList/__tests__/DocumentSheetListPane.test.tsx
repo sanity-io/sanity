@@ -88,54 +88,42 @@ describe.skip('DocumentSheetListPane', () => {
       it('should not edit cell when only single clicked', async () => {
         await renderTest()
 
-        act(() => {
-          userEvent.click(screen.getByTestId('cell-name-0'))
-          userEvent.type(screen.getByTestId('cell-name-0'), 'addition text')
+        await userEvent.click(screen.getByTestId('cell-name-0'))
+        await userEvent.type(screen.getByTestId('cell-name-0'), 'addition text')
 
-          expect(screen.getByTestId('cell-name-0')).toHaveValue('John Doe')
-        })
+        expect(screen.getByTestId('cell-name-0')).toHaveValue('John Doe')
       })
 
       it('should update cell when double clicked', async () => {
         await renderTest()
 
-        act(() => {
-          expect(screen.getByTestId('cell-name-0')).toHaveValue('John Doe')
-          userEvent.dblClick(screen.getByTestId('cell-name-0'))
-          userEvent.clear(screen.getByTestId('cell-name-0'))
-          userEvent.type(screen.getByTestId('cell-name-0'), 'Jane Doe')
+        expect(screen.getByTestId('cell-name-0')).toHaveValue('John Doe')
 
-          expect(screen.getByTestId('cell-name-0')).toHaveValue('Jane Doe')
-        })
+        await userEvent.dblClick(screen.getByTestId('cell-name-0'))
+        await userEvent.clear(screen.getByTestId('cell-name-0'))
+        await userEvent.type(screen.getByTestId('cell-name-0'), 'Jane Doe')
+
+        expect(screen.getByTestId('cell-name-0')).toHaveValue('Jane Doe')
       })
 
       it('should update cell when selected and enter key pressed', async () => {
         await renderTest()
 
-        act(() => {
-          userEvent.click(screen.getByTestId('cell-name-0'))
-        })
-        // separate act to allow for initial state flush before clicking enter
-        act(() => {
-          userEvent.type(screen.getByTestId('cell-name-0'), '{Enter}')
-          userEvent.clear(screen.getByTestId('cell-name-0'))
-          userEvent.type(screen.getByTestId('cell-name-0'), 'Jane Doe')
+        await userEvent.click(screen.getByTestId('cell-name-0'))
+        await userEvent.type(screen.getByTestId('cell-name-0'), '{Enter}')
+        await userEvent.clear(screen.getByTestId('cell-name-0'))
+        await userEvent.type(screen.getByTestId('cell-name-0'), 'Jane Doe')
 
-          expect(screen.getByTestId('cell-name-0')).toHaveValue('Jane Doe')
-        })
+        expect(screen.getByTestId('cell-name-0')).toHaveValue('Jane Doe')
       })
     })
     describe('to copy a value', () => {
       it('copies when cell is selected', async () => {
         await renderTest()
 
-        act(() => {
-          userEvent.click(screen.getByTestId('cell-name-0'))
-        })
+        await userEvent.click(screen.getByTestId('cell-name-0'))
 
-        act(() => {
-          fireEvent.copy(document)
-        })
+        fireEvent.copy(document)
 
         expect(navigator.clipboard.writeText).toHaveBeenCalledWith('John Doe')
       })
@@ -145,18 +133,14 @@ describe.skip('DocumentSheetListPane', () => {
       it('pastes when cell is selected', async () => {
         await renderTest()
 
-        act(() => {
-          userEvent.click(screen.getByTestId('cell-name-0'))
-        })
+        await userEvent.click(screen.getByTestId('cell-name-0'))
 
         expect(screen.getByTestId('cell-name-0')).toHaveAttribute('aria-selected', 'true')
 
-        act(() => {
-          fireEvent.paste(document, {
-            clipboardData: {
-              getData: () => 'Joe Blogs',
-            } as unknown as ClipboardEvent['clipboardData'],
-          })
+        fireEvent.paste(document, {
+          clipboardData: {
+            getData: () => 'Joe Blogs',
+          } as unknown as ClipboardEvent['clipboardData'],
         })
 
         expect(screen.getByTestId('cell-name-0')).toHaveValue('Joe Blogs')
@@ -165,17 +149,13 @@ describe.skip('DocumentSheetListPane', () => {
       it('pastes when cell is focused', async () => {
         await renderTest()
 
-        act(() => {
-          userEvent.click(screen.getByTestId('cell-name-0'))
-          userEvent.type(screen.getByTestId('cell-name-0'), '{Enter}')
-        })
+        await userEvent.click(screen.getByTestId('cell-name-0'))
+        await userEvent.type(screen.getByTestId('cell-name-0'), '{Enter}')
 
-        act(() => {
-          fireEvent.paste(document, {
-            clipboardData: {
-              getData: () => 'Joe Blogs',
-            } as unknown as ClipboardEvent['clipboardData'],
-          })
+        fireEvent.paste(document, {
+          clipboardData: {
+            getData: () => 'Joe Blogs',
+          } as unknown as ClipboardEvent['clipboardData'],
         })
 
         expect(screen.getByTestId('cell-name-0')).toHaveValue('Joe Blogs')
@@ -184,20 +164,14 @@ describe.skip('DocumentSheetListPane', () => {
       it('pastes to all selected cells when anchor is selected', async () => {
         await renderTest()
 
-        act(() => {
-          userEvent.click(screen.getByTestId('cell-name-0'))
-        })
+        await userEvent.click(screen.getByTestId('cell-name-0'))
 
-        act(() => {
-          userEvent.keyboard('{Shift}{ArrowDown}')
-        })
+        await userEvent.keyboard('{Shift}{ArrowDown}')
 
-        act(() => {
-          fireEvent.paste(document, {
-            clipboardData: {
-              getData: () => 'Joe Blogs',
-            } as unknown as ClipboardEvent['clipboardData'],
-          })
+        fireEvent.paste(document, {
+          clipboardData: {
+            getData: () => 'Joe Blogs',
+          } as unknown as ClipboardEvent['clipboardData'],
         })
 
         expect(screen.getByTestId('cell-name-0')).toHaveValue('Joe Blogs')
@@ -207,23 +181,17 @@ describe.skip('DocumentSheetListPane', () => {
       it('pastes to all selected cells when anchor is focused', async () => {
         await renderTest()
 
-        act(() => {
-          userEvent.dblClick(screen.getByTestId('cell-name-0'))
-        })
+        await userEvent.dblClick(screen.getByTestId('cell-name-0'))
 
-        act(() => {
-          userEvent.keyboard('{Shift}{ArrowDown}')
-        })
+        await userEvent.keyboard('{Shift}{ArrowDown}')
 
         expect(screen.getByTestId('cell-name-0')).toHaveAttribute('aria-selected', 'true')
         expect(screen.getByTestId('cell-name-1')).toHaveAttribute('aria-selected', 'true')
 
-        act(() => {
-          fireEvent.paste(document, {
-            clipboardData: {
-              getData: () => 'Joe Blogs',
-            } as unknown as ClipboardEvent['clipboardData'],
-          })
+        fireEvent.paste(document, {
+          clipboardData: {
+            getData: () => 'Joe Blogs',
+          } as unknown as ClipboardEvent['clipboardData'],
         })
 
         expect(screen.getByTestId('cell-name-1')).toHaveValue('Joe Blogs')
@@ -232,22 +200,16 @@ describe.skip('DocumentSheetListPane', () => {
       it('does not paste when pasting across columns', async () => {
         await renderTest()
 
-        act(() => {
-          userEvent.click(screen.getByTestId('cell-name-0'))
-        })
+        await userEvent.click(screen.getByTestId('cell-name-0'))
 
-        act(() => {
-          userEvent.keyboard('{Shift}{ArrowRight}')
-        })
+        await userEvent.keyboard('{Shift}{ArrowRight}')
 
         expect(screen.getByTestId('cell-age-0')).toHaveAttribute('aria-selected', 'true')
 
-        act(() => {
-          fireEvent.paste(document, {
-            clipboardData: {
-              getData: () => 'Joe Blogs',
-            } as unknown as ClipboardEvent['clipboardData'],
-          })
+        fireEvent.paste(document, {
+          clipboardData: {
+            getData: () => 'Joe Blogs',
+          } as unknown as ClipboardEvent['clipboardData'],
         })
 
         expect(screen.getByTestId('cell-name-0')).toHaveValue('John Doe')
@@ -257,18 +219,14 @@ describe.skip('DocumentSheetListPane', () => {
       it('pastes only to focused anchor when escaped before pasting', async () => {
         await renderTest()
 
-        act(() => {
-          userEvent.click(screen.getByTestId('cell-name-0'))
-          userEvent.keyboard('{Shift}{ArrowRight}')
-          userEvent.keyboard('{Escape}')
-        })
+        await userEvent.click(screen.getByTestId('cell-name-0'))
+        await userEvent.keyboard('{Shift}{ArrowRight}')
+        await userEvent.keyboard('{Escape}')
 
-        act(() => {
-          fireEvent.paste(document, {
-            clipboardData: {
-              getData: () => 'Joe Blogs',
-            } as unknown as ClipboardEvent['clipboardData'],
-          })
+        fireEvent.paste(document, {
+          clipboardData: {
+            getData: () => 'Joe Blogs',
+          } as unknown as ClipboardEvent['clipboardData'],
         })
 
         expect(screen.getByTestId('cell-name-0')).toHaveValue('Joe Blogs')
@@ -278,15 +236,13 @@ describe.skip('DocumentSheetListPane', () => {
       it('does not paste when escaped before pasting', async () => {
         await renderTest()
 
-        act(() => {
-          userEvent.dblClick(screen.getByTestId('cell-name-0'))
-          userEvent.keyboard('{Escape}')
-          userEvent.keyboard('{Escape}')
-          fireEvent.paste(document, {
-            clipboardData: {
-              getData: () => 'Joe Blogs',
-            } as unknown as ClipboardEvent['clipboardData'],
-          })
+        await userEvent.dblClick(screen.getByTestId('cell-name-0'))
+        await userEvent.keyboard('{Escape}')
+        await userEvent.keyboard('{Escape}')
+        fireEvent.paste(document, {
+          clipboardData: {
+            getData: () => 'Joe Blogs',
+          } as unknown as ClipboardEvent['clipboardData'],
         })
 
         expect(screen.getByTestId('cell-name-0')).toHaveValue('John Doe')
