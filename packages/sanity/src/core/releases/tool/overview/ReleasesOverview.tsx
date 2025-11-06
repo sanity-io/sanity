@@ -1,3 +1,4 @@
+// oxlint-disable no-console
 /* eslint-disable max-statements */
 import {type ReleaseDocument} from '@sanity/client'
 import {AddIcon, ChevronDownIcon, EarthGlobeIcon} from '@sanity/icons'
@@ -159,9 +160,18 @@ export function ReleasesOverview() {
   const isMounted = useRef(false)
   useEffect(() => {
     isMounted.current = true
-    checkWithPermissionGuard(createRelease, getReleaseDefaults()).then((hasPermissions) => {
-      if (isMounted.current) setHasCreatePermission(hasPermissions)
-    })
+    console.log('triggering checkWithPermissionGuard for createRelease')
+    checkWithPermissionGuard(createRelease, getReleaseDefaults())
+      .then((hasPermissions) => {
+        console.log('checkWithPermissionGuard for createRelease result', {
+          hasPermissions,
+          isMounted: isMounted.current,
+        })
+        if (isMounted.current) setHasCreatePermission(hasPermissions)
+      })
+      .catch((e) => {
+        console.log('error checking createRelease permission', {e})
+      })
 
     return () => {
       isMounted.current = false
@@ -286,6 +296,8 @@ export function ReleasesOverview() {
 
   const createReleaseButton = useMemo(() => {
     if (isScheduledDraftsEnabled && cardinalityView === 'drafts') return null
+
+    console.log('createReleaseButton', {hasCreatePermission, releasesUpsellMode})
 
     return (
       <Button

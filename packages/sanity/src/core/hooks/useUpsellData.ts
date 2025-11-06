@@ -1,3 +1,4 @@
+// oxlint-disable no-console
 import {useTelemetry} from '@sanity/telemetry/react'
 import {template} from 'lodash'
 import {useEffect, useMemo, useState} from 'react'
@@ -84,6 +85,7 @@ export const useUpsellData = ({dataUri, feature}: UpsellDataProps) => {
 
     const sub = data$.subscribe({
       next: (data) => {
+        console.log('received upsell data', {data})
         if (!data) return
         try {
           const ctaUrl = template(data.ctaButton.url, TEMPLATE_OPTIONS)
@@ -93,10 +95,12 @@ export const useUpsellData = ({dataUri, feature}: UpsellDataProps) => {
           data.secondaryButton.url = secondaryUrl({baseUrl, projectId})
           setUpsellData(data)
         } catch (e) {
+          console.log('error parsing upsell data', {e})
           // silently fail
         }
       },
-      error: () => {
+      error: (e) => {
+        console.log('error fetching upsell data', {e})
         // silently fail
       },
     })

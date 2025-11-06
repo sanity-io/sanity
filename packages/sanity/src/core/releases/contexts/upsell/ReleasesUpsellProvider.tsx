@@ -1,3 +1,4 @@
+// oxlint-disable no-console
 import {useCallback, useMemo, useState} from 'react'
 import {firstValueFrom, tap} from 'rxjs'
 import {ReleasesUpsellContext} from 'sanity/_singletons'
@@ -46,7 +47,8 @@ export function ReleasesUpsellProvider(props: {children: React.ReactNode}) {
       return 'upsell'
     }
     if (isReleasesFeatureEnabled && !upsellData) {
-      return 'disabled'
+      console.log('isReleasesFeatureEnabled && !upsellData', {upsellData})
+      return 'default'
     }
     return 'default'
   }, [isReleasesFeatureEnabled, upsellData])
