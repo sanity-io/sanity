@@ -333,7 +333,7 @@ const releasesLocaleStrings = {
     'The release will no longer be published on the scheduled date',
   /** Description for warning that the published schedule time is in the past */
   'schedule-dialog.publish-date-in-past-warning':
-    'Schedule this release for a future time and date.',
+    'Schedule for a future time and date.',
 
   /** Header for the schedule unpublish dialog */
   'schedule-unpublish-dialog.header': 'Schedule draft for Unpublish',
