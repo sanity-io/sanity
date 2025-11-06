@@ -13,9 +13,7 @@ import {tsdoc} from '@sanity/tsdoc/studio'
 import {visionTool} from '@sanity/vision'
 import {
   defineConfig,
-  defineField,
   definePlugin,
-  defineType,
   QUOTA_EXCLUDED_RELEASES_ENABLED,
   type WorkspaceOptions,
 } from 'sanity'
