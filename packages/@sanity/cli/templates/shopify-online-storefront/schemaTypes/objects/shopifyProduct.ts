@@ -154,5 +154,12 @@ export default defineType({
         },
       ],
     }),
+    // Shop details
+    defineField({
+      name: 'shop',
+      title: 'Shop',
+      type: 'shop',
+      description: 'Shopify Shop details',
+    }),
   ],
 })

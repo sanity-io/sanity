@@ -130,6 +130,7 @@ import type {
   SerializePath,
   shallowIntentChecker,
   SortMenuItem,
+  StrictVersionLayeringOptions,
   StructureBuilder,
   StructureBuilderOptions,
   StructureContext,
@@ -539,6 +540,9 @@ describe('sanity/structure', () => {
   })
   test('SortMenuItem', () => {
     expectTypeOf<SortMenuItem>().toBeObject()
+  })
+  test('StrictVersionLayeringOptions', () => {
+    expectTypeOf<StrictVersionLayeringOptions>().toBeObject()
   })
   test('StructureBuilder', () => {
     expectTypeOf<StructureBuilder>().toBeObject()

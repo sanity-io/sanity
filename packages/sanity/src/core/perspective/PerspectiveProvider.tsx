@@ -45,8 +45,9 @@ export function PerspectiveProvider({
     [releases, selectedPerspectiveName, excludedPerspectives, isDraftModelEnabled],
   )
 
-  const value: PerspectiveContextValue = useMemo(
-    () => ({
+  const value: PerspectiveContextValue = useMemo(() => {
+    // For regular releases and published, use as-is
+    return {
       selectedPerspective,
       selectedPerspectiveName,
       selectedReleaseId: isSystemBundleName(selectedPerspectiveName)
@@ -54,8 +55,8 @@ export function PerspectiveProvider({
         : selectedPerspectiveName,
       perspectiveStack,
       excludedPerspectives,
-    }),
-    [selectedPerspective, selectedPerspectiveName, perspectiveStack, excludedPerspectives],
-  )
+    }
+  }, [selectedPerspectiveName, selectedPerspective, perspectiveStack, excludedPerspectives])
+
   return <PerspectiveContext.Provider value={value}>{children}</PerspectiveContext.Provider>
 }

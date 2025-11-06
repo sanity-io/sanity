@@ -1,9 +1,11 @@
 import {useCallback, useMemo, useState} from 'react'
-import {firstValueFrom} from 'rxjs'
+import {firstValueFrom, tap} from 'rxjs'
 import {ReleasesUpsellContext} from 'sanity/_singletons'
 
 import {useFeatureEnabled} from '../../../hooks'
+import {FEATURES} from '../../../hooks/useFeatureEnabled'
 import {useUpsellData} from '../../../hooks/useUpsellData'
+import {type UpsellDialogViewedInfo} from '../../../studio/upsell/__telemetry__/upsell.telemetry'
 import {UpsellDialog} from '../../../studio/upsell/UpsellDialog'
 import {useActiveReleases} from '../../store/useActiveReleases'
 import {useOrgActiveReleaseCount} from '../../store/useOrgActiveReleaseCount'
@@ -29,7 +31,7 @@ class StudioReleaseLimitExceededError extends Error {
 export function ReleasesUpsellProvider(props: {children: React.ReactNode}) {
   const [upsellDialogOpen, setUpsellDialogOpen] = useState(false)
   const {data: activeReleases} = useActiveReleases()
-  const {enabled: isReleasesFeatureEnabled} = useFeatureEnabled('contentReleases')
+  const {enabled: isReleasesFeatureEnabled} = useFeatureEnabled(FEATURES.contentReleases)
   const {upsellData, telemetryLogs} = useUpsellData({
     dataUri: '/journey/content-releases',
     feature: 'content-releases',
@@ -62,15 +64,12 @@ export function ReleasesUpsellProvider(props: {children: React.ReactNode}) {
     telemetryLogs.dialogDismissed()
   }, [telemetryLogs])
 
-  const [releaseCount, setReleaseCount] = useState<number | null>(null)
-
+  const [releaseLimit, setReleaseLimit] = useState<number | null>(null)
   const handleOpenDialog = useCallback(
-    (orgActiveReleaseCount?: number) => {
+    (source: UpsellDialogViewedInfo['source'] = 'navbar') => {
       setUpsellDialogOpen(true)
-      if (orgActiveReleaseCount !== undefined) {
-        setReleaseCount(orgActiveReleaseCount)
-      }
-      telemetryLogs.dialogViewed('navbar')
+
+      telemetryLogs.dialogViewed(source)
     },
     [telemetryLogs],
   )
@@ -84,8 +83,8 @@ export function ReleasesUpsellProvider(props: {children: React.ReactNode}) {
       throwError: boolean = false,
       whenResolved?: (hasPassed: boolean) => void,
     ) => {
-      const doUpsell: (count?: number) => false = (count) => {
-        handleOpenDialog(count)
+      const doUpsell = (): false => {
+        handleOpenDialog()
         if (throwError) {
           throw new StudioReleaseLimitExceededError()
         }
@@ -102,7 +101,11 @@ export function ReleasesUpsellProvider(props: {children: React.ReactNode}) {
           // if either fails then catch the error
           return await Promise.all([
             firstValueFrom(orgActiveReleaseCount$),
-            firstValueFrom(releaseLimits$),
+            firstValueFrom(
+              releaseLimits$.pipe(
+                tap((limit) => setReleaseLimit(limit?.orgActiveReleaseLimit || null)),
+              ),
+            ),
           ])
         } catch (e) {
           console.error('Error fetching release limits and org count for upsell:', e)
@@ -150,7 +153,7 @@ export function ReleasesUpsellProvider(props: {children: React.ReactNode}) {
 
       if (shouldShowDialog) {
         whenResolved?.(false)
-        return doUpsell(orgActiveReleaseCount)
+        return doUpsell()
       }
 
       whenResolved?.(true)
@@ -160,7 +163,10 @@ export function ReleasesUpsellProvider(props: {children: React.ReactNode}) {
   )
 
   const onReleaseLimitReached = useCallback(
-    (limit: number) => handleOpenDialog(limit),
+    (limit: number) => {
+      setReleaseLimit(limit)
+      handleOpenDialog()
+    },
     [handleOpenDialog],
   )
 
@@ -171,11 +177,21 @@ export function ReleasesUpsellProvider(props: {children: React.ReactNode}) {
       guardWithReleaseLimitUpsell,
       onReleaseLimitReached,
       telemetryLogs,
+      upsellData,
+      handleOpenDialog,
     }),
-    [mode, upsellDialogOpen, guardWithReleaseLimitUpsell, onReleaseLimitReached, telemetryLogs],
+    [
+      mode,
+      upsellDialogOpen,
+      guardWithReleaseLimitUpsell,
+      onReleaseLimitReached,
+      telemetryLogs,
+      upsellData,
+      handleOpenDialog,
+    ],
   )
 
-  const interpolation = releaseCount === null ? undefined : {releaseLimit: releaseCount}
+  const interpolation = releaseLimit === null ? undefined : {releaseLimit: releaseLimit}
 
   return (
     <ReleasesUpsellContext.Provider value={ctxValue}>

@@ -181,7 +181,7 @@ export function CopyToNewReleaseDialog(props: {
       <Box paddingX={5} paddingY={3}>
         {isScheduledDateInPast && (
           <Card padding={3} marginBottom={3} radius={2} shadow={1} tone="critical">
-            <Text size={1}>{tRelease('schedule-dialog.publish-date-in-past-warning')}</Text>
+            <Text size={1}>{t('release.schedule-dialog.publish-date-in-past-warning')}</Text>
           </Card>
         )}
         <ReleaseForm onChange={handleOnChange} value={release} />

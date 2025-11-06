@@ -3,6 +3,7 @@ import {type SanityDocument} from '@sanity/client'
 import {isActionEnabled} from '@sanity/schema/_internal'
 import {useTelemetry} from '@sanity/telemetry/react'
 import {
+  isKeySegment,
   type ObjectSchemaType,
   type Path,
   type SanityDocumentLike,
@@ -25,6 +26,7 @@ import {useCanvasCompanionDoc} from '../canvas/actions/useCanvasCompanionDoc'
 import {isSanityCreateLinkedDocument} from '../create/createUtils'
 import {useReconnectingToast} from '../hooks'
 import {type ConnectionState, useConnectionState} from '../hooks/useConnectionState'
+import {useDocumentIdStack} from '../hooks/useDocumentIdStack'
 import {useDocumentOperation} from '../hooks/useDocumentOperation'
 import {useEditState} from '../hooks/useEditState'
 import {useSchema} from '../hooks/useSchema'
@@ -44,10 +46,12 @@ import {
   type EditStateFor,
   type InitialValueState,
   type PermissionCheckResult,
+  selectUpstreamVersion,
   useDocumentValuePermissions,
   usePresenceStore,
 } from '../store'
 import {isNewDocument} from '../store/_legacy/document/isNewDocument'
+import {useWorkspace} from '../studio/workspace'
 import {
   EMPTY_ARRAY,
   getDraftId,
@@ -59,6 +63,7 @@ import {
 import {
   type FormState,
   getExpandOperations,
+  type NodeChronologyProps,
   type OnPathFocusPayload,
   type PatchEvent,
   setAtPath,
@@ -92,9 +97,17 @@ interface DocumentFormOptions {
    * used by the <DocumentPaneProvider > to display the history values.
    */
   getFormDocumentValue?: (value: SanityDocumentLike) => SanityDocumentLike
+  displayInlineChanges?: boolean
 }
-interface DocumentFormValue {
+interface DocumentFormValue extends Pick<NodeChronologyProps, 'hasUpstreamVersion'> {
+  /**
+   * `EditStateFor` for the displayed document.
+   * */
   editState: EditStateFor
+  /**
+   *  `EditStateFor` for the displayed document's upstream version.
+   */
+  upstreamEditState: EditStateFor
   connectionState: ConnectionState
   collapsedFieldSets: StateTree<boolean> | undefined
   collapsedPaths: StateTree<boolean> | undefined
@@ -139,11 +152,17 @@ export function useDocumentForm(options: DocumentFormOptions): DocumentFormValue
     selectedPerspectiveName,
     readOnly: readOnlyProp,
     onFocusPath,
+    displayInlineChanges,
   } = options
   const schema = useSchema()
   const presenceStore = usePresenceStore()
   const {data: releases} = useActiveReleases()
   const {data: documentVersions} = useDocumentVersions({documentId})
+  const workspace = useWorkspace()
+
+  const enhancedObjectDialogEnabled = useMemo(() => {
+    return workspace.beta?.form?.enhancedObjectDialog?.enabled
+  }, [workspace])
 
   const schemaType = schema.get(documentType) as ObjectSchemaType | undefined
   if (!schemaType) {
@@ -192,13 +211,6 @@ export function useDocumentForm(options: DocumentFormOptions): DocumentFormValue
 
   const [focusPath, setFocusPath] = useState<Path>(initialFocusPath || EMPTY_ARRAY)
 
-  const comparisonValue = useMemo(() => {
-    if (typeof comparisonValueRaw === 'function') {
-      return comparisonValueRaw(editState)
-    }
-    return comparisonValueRaw
-  }, [comparisonValueRaw, editState])
-
   const value: SanityDocumentLike = useMemo(() => {
     const baseValue = initialValue?.value || {_id: documentId, _type: documentType}
     if (releaseId) {
@@ -236,6 +248,27 @@ export function useDocumentForm(options: DocumentFormOptions): DocumentFormValue
     selectedPerspectiveName,
     onlyHasVersions,
   ])
+
+  const {previousId: upstreamId} = useDocumentIdStack({
+    strict: true,
+    displayed: value,
+    documentId,
+    editState,
+  })
+
+  const upstreamEditState = useEditState(
+    documentId,
+    documentType,
+    'low',
+    getVersionFromId(upstreamId ?? ''),
+  )
+
+  const comparisonValue = useMemo(() => {
+    if (typeof comparisonValueRaw === 'function') {
+      return comparisonValueRaw(upstreamEditState)
+    }
+    return comparisonValueRaw
+  }, [comparisonValueRaw, upstreamEditState])
 
   const [presence, setPresence] = useState<DocumentPresence[]>([])
   useEffect(() => {
@@ -438,6 +471,8 @@ export function useDocumentForm(options: DocumentFormOptions): DocumentFormValue
     return value
   }, [getFormDocumentValue, value])
 
+  const hasUpstreamVersion = selectUpstreamVersion(upstreamEditState) !== null
+
   const formState = useFormState({
     schemaType,
     documentValue: formDocumentValue,
@@ -452,6 +487,8 @@ export function useDocumentForm(options: DocumentFormOptions): DocumentFormValue
     collapsedFieldSets,
     fieldGroupState,
     changesOpen,
+    hasUpstreamVersion,
+    displayInlineChanges,
   })!
 
   const formStateRef = useRef(formState)
@@ -506,13 +543,39 @@ export function useDocumentForm(options: DocumentFormOptions): DocumentFormValue
       const nextFocusPath = pathFor(_nextFocusPath)
       if (nextFocusPath !== focusPathRef.current) {
         setFocusPath(pathFor(nextFocusPath))
-        handleSetOpenPath(pathFor(nextFocusPath.slice(0, -1)))
+
+        if (enhancedObjectDialogEnabled) {
+          // When focusing on an object field, set openPath to the field's parent.
+          // Exception: if focusing directly on an array item (so it has a key),
+          // it should skip updating openPath - let explicit onPathOpen calls handle it.
+          const lastSegment = nextFocusPath[nextFocusPath.length - 1]
+
+          if (!isKeySegment(lastSegment)) {
+            // For fields inside array items, find the last key segment to preserve context
+            const lastKeyIndex = nextFocusPath.findLastIndex((seg) => isKeySegment(seg))
+            const newOpenPath =
+              lastKeyIndex >= 0
+                ? nextFocusPath.slice(0, lastKeyIndex + 1)
+                : nextFocusPath.slice(0, -1)
+
+            handleSetOpenPath(pathFor(newOpenPath))
+          }
+        } else {
+          handleSetOpenPath(pathFor(nextFocusPath.slice(0, -1)))
+        }
+
         focusPathRef.current = nextFocusPath
         onFocusPath?.(nextFocusPath)
       }
       updatePresenceThrottled(nextFocusPath, payload)
     },
-    [onFocusPath, setFocusPath, handleSetOpenPath, updatePresenceThrottled],
+    [
+      onFocusPath,
+      setFocusPath,
+      handleSetOpenPath,
+      updatePresenceThrottled,
+      enhancedObjectDialogEnabled,
+    ],
   )
 
   const handleBlur = useCallback(
@@ -546,6 +609,7 @@ export function useDocumentForm(options: DocumentFormOptions): DocumentFormValue
   )
   return {
     editState,
+    upstreamEditState,
     connectionState,
     focusPath,
     validation,
@@ -555,6 +619,7 @@ export function useDocumentForm(options: DocumentFormOptions): DocumentFormValue
     permissions,
     isPermissionsLoading,
     formStateRef,
+    hasUpstreamVersion,
 
     collapsedFieldSets,
     collapsedPaths,

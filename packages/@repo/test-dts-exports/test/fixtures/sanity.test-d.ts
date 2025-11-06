@@ -144,6 +144,7 @@ import type {
   CanvasAppOptions,
   CanvasNotificationPayload,
   CapabilityGate,
+  CardinalityOneRelease,
   catchWithCount,
   ChangeBreadcrumb,
   ChangeConnectorRoot,
@@ -327,6 +328,8 @@ import type {
   DatetimeOptions,
   DatetimeRule,
   dec,
+  DECISION_PARAMETERS_SCHEMA,
+  DecisionParametersConfig,
   decodePath,
   DEFAULT_MAX_RECURSION_DEPTH,
   DEFAULT_STUDIO_CLIENT_OPTIONS,
@@ -430,6 +433,7 @@ import type {
   DocumentFormNode,
   DocumentGroupEvent,
   documentIdEquals,
+  DocumentIdStack,
   DocumentInspector,
   DocumentInspectorComponent,
   DocumentInspectorContext,
@@ -631,10 +635,12 @@ import type {
   getCalendarLabels,
   getConfigContextFromSource,
   getDiffAtPath,
+  getDocumentIsInPerspective,
   getDocumentPairPermissions,
   getDocumentValuePermissions,
   getDocumentVariantType,
   getDraftId,
+  getErrorMessage,
   getExpandOperations,
   GetFormValueProvider,
   GetHookCollectionState,
@@ -775,6 +781,8 @@ import type {
   isBooleanInputProps,
   isBooleanSchemaType,
   isBuilder,
+  isCardinalityOnePerspective,
+  isCardinalityOneRelease,
   isCookielessCompatibleLoginMethod,
   isCreateDocumentVersionEvent,
   isCreateIfNotExistsMutation,
@@ -912,6 +920,7 @@ import type {
   LoginMethod,
   LogoProps,
   MapDocument,
+  MarkdownConfig,
   matchWorkspace,
   MatchWorkspaceOptions,
   MatchWorkspaceResult,
@@ -964,6 +973,7 @@ import type {
   NewDocumentOptionsResolver,
   newDraftFrom,
   NoChanges,
+  NodeChronologyProps,
   NodeDiffProps,
   noop,
   normalizeIndexSegment,
@@ -1009,7 +1019,6 @@ import type {
   ObservePathsFn,
   OnPathFocusPayload,
   onRetry,
-  Opaque,
   Operation,
   OperationArgs,
   OperationError,
@@ -1099,9 +1108,9 @@ import type {
   ProjectStore,
   ProvenanceDiffAnnotation,
   PublishDocumentVersionEvent,
+  PUBLISHED,
   PublishedId,
   QueryParams,
-  QUOTA_EXCLUDED_RELEASES_ENABLED,
   ReactHook,
   RebasePatchMsg,
   ReconnectEvent,
@@ -1251,6 +1260,7 @@ import type {
   SelectInput,
   Selection,
   SelectionState,
+  selectUpstreamVersion,
   Serializeable,
   serializeError,
   Session,
@@ -1284,6 +1294,7 @@ import type {
   snapshotPair,
   SortOrdering,
   SortOrderingItem,
+  sortReleases,
   Source,
   SourceClientOptions,
   SourceOptions,
@@ -1300,6 +1311,7 @@ import type {
   StatusButton,
   StatusButtonProps,
   StrictDefinition,
+  StrictVersionLayeringOptions,
   StringComponents,
   StringDefinition,
   StringDiff,
@@ -1465,6 +1477,7 @@ import type {
   useDiffAnnotationColor,
   useDocumentChange,
   useDocumentForm,
+  useDocumentIdStack,
   useDocumentLimitsUpsellContext,
   useDocumentOperation,
   useDocumentOperationEvent,
@@ -1480,11 +1493,13 @@ import type {
   useDocumentVersions,
   useDocumentVersionTypeSortedList,
   useEditState,
+  useEnhancedObjectDialog,
   useEvents,
   useEventsStore,
   useExcludedPerspective,
   useFeatureEnabled,
   useFieldActions,
+  useFilteredReleases,
   useFormattedDuration,
   UseFormattedDurationOptions,
   useFormBuilder,
@@ -1492,6 +1507,7 @@ import type {
   useFormState,
   UseFormStateOptions,
   useFormValue,
+  useGetDefaultPerspective,
   useGetFormValue,
   useGetI18nText,
   useGlobalCopyPasteElementHandler,
@@ -1552,6 +1568,7 @@ import type {
   UserStoreOptions,
   UserWithPermission,
   useSanityCreateConfig,
+  useScheduledDraftsEnabled,
   useSchema,
   useSearchMaxFieldDepth,
   useSearchState,
@@ -1572,7 +1589,6 @@ import type {
   useTranslation,
   UseTranslationOptions,
   UseTranslationResponse,
-  useTreeEditingEnabled,
   useUnique,
   useUnitFormatter,
   UseUnitFormatterOptions,
@@ -2068,6 +2084,9 @@ describe('sanity', () => {
   })
   test('CapabilityGate', () => {
     expectTypeOf<typeof CapabilityGate>().not.toBeNever()
+  })
+  test('CardinalityOneRelease', () => {
+    expectTypeOf<CardinalityOneRelease>().not.toBeNever()
   })
   test('catchWithCount', () => {
     expectTypeOf<typeof catchWithCount>().toBeFunction()
@@ -2625,6 +2644,12 @@ describe('sanity', () => {
   test('dec', () => {
     expectTypeOf<typeof dec>().toBeFunction()
   })
+  test('DECISION_PARAMETERS_SCHEMA', () => {
+    expectTypeOf<typeof DECISION_PARAMETERS_SCHEMA>().not.toBeNever()
+  })
+  test('DecisionParametersConfig', () => {
+    expectTypeOf<DecisionParametersConfig>().toBeObject()
+  })
   test('decodePath', () => {
     expectTypeOf<typeof decodePath>().toBeFunction()
   })
@@ -2935,6 +2960,9 @@ describe('sanity', () => {
   })
   test('documentIdEquals', () => {
     expectTypeOf<typeof documentIdEquals>().toBeFunction()
+  })
+  test('DocumentIdStack', () => {
+    expectTypeOf<DocumentIdStack>().toBeObject()
   })
   test('DocumentInspector', () => {
     expectTypeOf<DocumentInspector>().toBeObject()
@@ -3545,6 +3573,9 @@ describe('sanity', () => {
   test('getDiffAtPath', () => {
     expectTypeOf<typeof getDiffAtPath>().toBeFunction()
   })
+  test('getDocumentIsInPerspective', () => {
+    expectTypeOf<typeof getDocumentIsInPerspective>().toBeFunction()
+  })
   test('getDocumentPairPermissions', () => {
     expectTypeOf<typeof getDocumentPairPermissions>().toBeFunction()
   })
@@ -3556,6 +3587,9 @@ describe('sanity', () => {
   })
   test('getDraftId', () => {
     expectTypeOf<typeof getDraftId>().toBeFunction()
+  })
+  test('getErrorMessage', () => {
+    expectTypeOf<typeof getErrorMessage>().toBeFunction()
   })
   test('getExpandOperations', () => {
     expectTypeOf<typeof getExpandOperations>().toBeFunction()
@@ -3979,6 +4013,12 @@ describe('sanity', () => {
   test('isBuilder', () => {
     expectTypeOf<typeof isBuilder>().toBeFunction()
   })
+  test('isCardinalityOnePerspective', () => {
+    expectTypeOf<typeof isCardinalityOnePerspective>().toBeFunction()
+  })
+  test('isCardinalityOneRelease', () => {
+    expectTypeOf<typeof isCardinalityOneRelease>().toBeFunction()
+  })
   test('isCookielessCompatibleLoginMethod', () => {
     expectTypeOf<typeof isCookielessCompatibleLoginMethod>().toBeFunction()
   })
@@ -4390,6 +4430,9 @@ describe('sanity', () => {
   test('MapDocument', () => {
     expectTypeOf<MapDocument>().not.toBeNever()
   })
+  test('MarkdownConfig', () => {
+    expectTypeOf<MarkdownConfig>().not.toBeNever()
+  })
   test('matchWorkspace', () => {
     expectTypeOf<typeof matchWorkspace>().toBeFunction()
   })
@@ -4546,8 +4589,11 @@ describe('sanity', () => {
   test('NoChanges', () => {
     expectTypeOf<typeof NoChanges>().toBeFunction()
   })
+  test('NodeChronologyProps', () => {
+    expectTypeOf<NodeChronologyProps>().toBeObject()
+  })
   test('NodeDiffProps', () => {
-    expectTypeOf<NodeDiffProps<any>>().toBeObject()
+    expectTypeOf<NodeDiffProps<any, any>>().toBeObject()
   })
   test('noop', () => {
     expectTypeOf<typeof noop>().toBeFunction()
@@ -4684,9 +4730,6 @@ describe('sanity', () => {
   })
   test('onRetry', () => {
     expectTypeOf<typeof onRetry>().not.toBeNever()
-  })
-  test('Opaque', () => {
-    expectTypeOf<Opaque<any, any>>().not.toBeNever()
   })
   test('Operation', () => {
     expectTypeOf<Operation<any, any>>().toBeObject()
@@ -4955,14 +4998,14 @@ describe('sanity', () => {
   test('PublishDocumentVersionEvent', () => {
     expectTypeOf<PublishDocumentVersionEvent>().toBeObject()
   })
+  test('PUBLISHED', () => {
+    expectTypeOf<typeof PUBLISHED>().not.toBeNever()
+  })
   test('PublishedId', () => {
     expectTypeOf<PublishedId>().not.toBeNever()
   })
   test('QueryParams', () => {
     expectTypeOf<QueryParams>().not.toBeNever()
-  })
-  test('QUOTA_EXCLUDED_RELEASES_ENABLED', () => {
-    expectTypeOf<typeof QUOTA_EXCLUDED_RELEASES_ENABLED>().not.toBeNever()
   })
   test('ReactHook', () => {
     expectTypeOf<ReactHook<any, any>>().not.toBeNever()
@@ -5414,6 +5457,9 @@ describe('sanity', () => {
   test('SelectionState', () => {
     expectTypeOf<SelectionState>().not.toBeNever()
   })
+  test('selectUpstreamVersion', () => {
+    expectTypeOf<typeof selectUpstreamVersion>().toBeFunction()
+  })
   test('Serializeable', () => {
     expectTypeOf<Serializeable<any>>().not.toBeNever()
   })
@@ -5515,6 +5561,9 @@ describe('sanity', () => {
   test('SortOrderingItem', () => {
     expectTypeOf<SortOrderingItem>().toBeObject()
   })
+  test('sortReleases', () => {
+    expectTypeOf<typeof sortReleases>().toBeFunction()
+  })
   test('Source', () => {
     expectTypeOf<Source>().toBeObject()
   })
@@ -5564,6 +5613,9 @@ describe('sanity', () => {
   })
   test('StrictDefinition', () => {
     expectTypeOf<StrictDefinition>().not.toBeNever()
+  })
+  test('StrictVersionLayeringOptions', () => {
+    expectTypeOf<StrictVersionLayeringOptions>().toBeObject()
   })
   test('StringComponents', () => {
     // This export has 2 declarations, run `TEST_DTS_EXPORTS_DIAGNOSTICS=duplicates pnpm generate:dts-exports` to see where each declaration is coming from
@@ -6067,6 +6119,9 @@ describe('sanity', () => {
   test('useDocumentForm', () => {
     expectTypeOf<typeof useDocumentForm>().toBeFunction()
   })
+  test('useDocumentIdStack', () => {
+    expectTypeOf<typeof useDocumentIdStack>().toBeFunction()
+  })
   test('useDocumentLimitsUpsellContext', () => {
     expectTypeOf<typeof useDocumentLimitsUpsellContext>().not.toBeNever()
   })
@@ -6112,6 +6167,9 @@ describe('sanity', () => {
   test('useEditState', () => {
     expectTypeOf<typeof useEditState>().toBeFunction()
   })
+  test('useEnhancedObjectDialog', () => {
+    expectTypeOf<typeof useEnhancedObjectDialog>().toBeFunction()
+  })
   test('useEvents', () => {
     expectTypeOf<typeof useEvents>().toBeFunction()
   })
@@ -6126,6 +6184,9 @@ describe('sanity', () => {
   })
   test('useFieldActions', () => {
     expectTypeOf<typeof useFieldActions>().toBeFunction()
+  })
+  test('useFilteredReleases', () => {
+    expectTypeOf<typeof useFilteredReleases>().toBeFunction()
   })
   test('useFormattedDuration', () => {
     expectTypeOf<typeof useFormattedDuration>().toBeFunction()
@@ -6147,6 +6208,9 @@ describe('sanity', () => {
   })
   test('useFormValue', () => {
     expectTypeOf<typeof useFormValue>().toBeFunction()
+  })
+  test('useGetDefaultPerspective', () => {
+    expectTypeOf<typeof useGetDefaultPerspective>().toBeFunction()
   })
   test('useGetFormValue', () => {
     expectTypeOf<typeof useGetFormValue>().toBeFunction()
@@ -6329,6 +6393,9 @@ describe('sanity', () => {
   test('useSanityCreateConfig', () => {
     expectTypeOf<typeof useSanityCreateConfig>().toBeFunction()
   })
+  test('useScheduledDraftsEnabled', () => {
+    expectTypeOf<typeof useScheduledDraftsEnabled>().toBeFunction()
+  })
   test('useSchema', () => {
     expectTypeOf<typeof useSchema>().toBeFunction()
   })
@@ -6388,9 +6455,6 @@ describe('sanity', () => {
   })
   test('UseTranslationResponse', () => {
     expectTypeOf<UseTranslationResponse<any, any>>().not.toBeNever()
-  })
-  test('useTreeEditingEnabled', () => {
-    expectTypeOf<typeof useTreeEditingEnabled>().toBeFunction()
   })
   test('useUnique', () => {
     expectTypeOf<typeof useUnique>().toBeFunction()

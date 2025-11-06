@@ -156,17 +156,25 @@ export const CommentsProvider = memo(function CommentsProvider(props: CommentsPr
   )
 
   const threadItemsByStatus: ThreadItemsByStatus = useMemo(() => {
-    if (!schemaType || !currentUser) return EMPTY_COMMENTS_DATA
+    if (!currentUser) {
+      return EMPTY_COMMENTS_DATA
+    }
     const sorted = orderBy(data, ['_createdAt'], [sortOrder])
-
-    const items = buildCommentThreadItems({
-      comments: sorted,
-      currentUser,
-      documentValue,
-      schemaType,
-      type,
-    })
-
+    let items: CommentThreadItem[] = []
+    if (type === 'task') {
+      items = buildCommentThreadItems({comments: sorted, currentUser, documentValue, type})
+    } else {
+      if (!schemaType) {
+        return EMPTY_COMMENTS_DATA
+      }
+      items = buildCommentThreadItems({
+        comments: sorted,
+        currentUser,
+        documentValue,
+        schemaType,
+        type,
+      })
+    }
     return {
       open: items.filter((item) => item.parentComment.status === 'open'),
       resolved: items.filter((item) => item.parentComment.status === 'resolved'),

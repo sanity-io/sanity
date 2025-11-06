@@ -55,6 +55,7 @@ export const FormView = forwardRef<HTMLDivElement, FormViewProps>(function FormV
     onSetActiveFieldGroup,
     openPath,
     compareValue,
+    hasUpstreamVersion,
   } = useDocumentPane()
   const {selectedReleaseId, selectedPerspective} = usePerspective()
   const documentStore = useDocumentStore()
@@ -207,6 +208,7 @@ export const FormView = forwardRef<HTMLDivElement, FormViewProps>(function FormV
                 onSetPathCollapsed={onSetCollapsedPath}
                 openPath={openPath}
                 perspective={selectedPerspective}
+                hasUpstreamVersion={hasUpstreamVersion}
                 presence={presence}
                 readOnly={isReadOnly}
                 schemaType={formState.schemaType}

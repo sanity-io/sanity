@@ -1,14 +1,14 @@
 import {type ReleaseDocument, type ReleaseType} from '@sanity/client'
 import {Box, Flex, MenuDivider, Spinner} from '@sanity/ui'
-import {type RefObject, useCallback, useMemo} from 'react'
+import {type RefObject, useMemo} from 'react'
 import {css, styled} from 'styled-components'
 
 import {CreateReleaseMenuItem} from '../../releases/components/CreateReleaseMenuItem'
 import {useActiveReleases} from '../../releases/store/useActiveReleases'
 import {LATEST, PUBLISHED} from '../../releases/util/const'
 import {getReleaseIdFromReleaseDocumentId} from '../../releases/util/getReleaseIdFromReleaseDocumentId'
-import {isCardinalityOneRelease} from '../../releases/util/util'
 import {useWorkspace} from '../../studio/workspace'
+import {isCardinalityOneRelease} from '../../util/releaseUtils'
 import {type ReleasesNavMenuItemPropsGetter} from '../types'
 import {usePerspective} from '../usePerspective'
 import {
@@ -46,7 +46,7 @@ export function ReleasesList({
   onScroll,
   isRangeVisible,
   selectedReleaseId,
-  setCreateBundleDialogOpen,
+  handleOpenBundleDialog,
   scrollElementRef,
   menuItemProps,
 }: {
@@ -55,7 +55,7 @@ export function ReleasesList({
   onScroll: (event: React.UIEvent<HTMLDivElement>) => void
   isRangeVisible: boolean
   selectedReleaseId: string | undefined
-  setCreateBundleDialogOpen: (open: boolean) => void
+  handleOpenBundleDialog: () => void
   scrollElementRef: RefObject<ScrollElement>
   menuItemProps?: ReleasesNavMenuItemPropsGetter
 }): React.JSX.Element {
@@ -72,11 +72,6 @@ export function ReleasesList({
       drafts: {enabled: isDraftModelEnabled},
     },
   } = useWorkspace()
-
-  const handleCreateBundleClick = useCallback(
-    () => setCreateBundleDialogOpen(true),
-    [setCreateBundleDialogOpen],
-  )
 
   const sortedReleaseTypeReleases = useMemo(
     () =>
@@ -170,7 +165,7 @@ export function ReleasesList({
       {areReleasesEnabled && (
         <>
           <MenuDivider />
-          <CreateReleaseMenuItem onCreateRelease={handleCreateBundleClick} />
+          <CreateReleaseMenuItem onCreateRelease={handleOpenBundleDialog} />
         </>
       )}
     </>

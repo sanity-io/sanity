@@ -76,62 +76,83 @@ function Content(props: PopoverEditDialogProps) {
     useCallback(
       (event: KeyboardEvent) => {
         if (event.key === 'Escape') {
+          event.preventDefault()
+          event.stopPropagation()
+          event.stopImmediatePropagation()
           handleClose()
         }
       },
       [handleClose],
     ),
+    {
+      /**
+       * We need to capture the event to prevent it from being propagated to the parent
+       * This is needed when, for example, in order for the fullscreen mode to be closed
+       * Last over existing popovers
+       */
+      capture: true,
+    },
+  )
+
+  useClickOutsideEvent(
+    handleClose,
+    () => [referenceElement],
+    () => referenceBoundary,
   )
 
   // This seems to work with regular refs as well, but it might be safer to use state.
   const [contentElement, setContentElement] = useState<HTMLDivElement | null>(null)
   const containerElement = useRef<HTMLDivElement | null>(null)
-  const [parentElement, setParentElement] = useState<HTMLDivElement | null>(null)
 
   const handleFocusLockWhiteList = useCallback((element: HTMLElement) => {
     // This is needed in order for focusLock not to trap focus in the
     // popover when closing the popover and focus is to be returned to the editor
     if (isClosedRef.current) return false
+
+    const target = element as Node
+    const portalElements = document.querySelectorAll('[data-portal]')
+    const isWithinPortal = Array.from(portalElements).some((portal) => portal.contains(target))
+
+    // We want to have an exception to the clicking when the target is outside of the portal
+    // And the popover is not closed.
+    // This is needed in order for focusLock not to trap focus in the modal
+    // Because then, if we are trying to change matters in an opened pane, focusLock will trap focus in the modal
+    if (!isWithinPortal && !isClosedRef.current) return false
+
     return Boolean(element.contentEditable) || Boolean(containerElement.current?.contains(element))
   }, [])
 
-  useClickOutsideEvent(handleClose, () => [referenceElement, referenceBoundary, parentElement])
-
   return (
-    // The style will make the parent element not take up space in the DOM
-    // Mimicking a fragment
-    <div ref={setParentElement} style={{display: 'contents'}}>
-      <VirtualizerScrollInstanceProvider
-        scrollElement={contentElement}
-        containerElement={containerElement}
-      >
-        <FocusLock autoFocus whiteList={handleFocusLockWhiteList}>
-          <Flex as={NoopContainer} ref={containerElement} direction="column" height="fill">
-            <ContentHeaderBox flex="none" padding={1}>
-              <Flex align="center">
-                <Box flex={1} padding={2}>
-                  <Text weight="medium">{title}</Text>
-                </Box>
+    <VirtualizerScrollInstanceProvider
+      scrollElement={contentElement}
+      containerElement={containerElement}
+    >
+      <FocusLock autoFocus whiteList={handleFocusLockWhiteList}>
+        <Flex as={NoopContainer} ref={containerElement} direction="column" height="fill">
+          <ContentHeaderBox flex="none" padding={1}>
+            <Flex align="center">
+              <Box flex={1} padding={2}>
+                <Text weight="medium">{title}</Text>
+              </Box>
 
-                <Button
-                  autoFocus
-                  icon={CloseIcon}
-                  mode="bleed"
-                  onClick={handleClose}
-                  tooltipProps={{content: 'Close'}}
-                />
-              </Flex>
-            </ContentHeaderBox>
-            <ContentScrollerBox flex={1}>
-              <PresenceOverlay margins={[0, 0, 1, 0]}>
-                <Box padding={3} ref={setContentElement}>
-                  {props.children}
-                </Box>
-              </PresenceOverlay>
-            </ContentScrollerBox>
-          </Flex>
-        </FocusLock>
-      </VirtualizerScrollInstanceProvider>
-    </div>
+              <Button
+                autoFocus
+                icon={CloseIcon}
+                mode="bleed"
+                onClick={handleClose}
+                tooltipProps={{content: 'Close'}}
+              />
+            </Flex>
+          </ContentHeaderBox>
+          <ContentScrollerBox flex={1}>
+            <PresenceOverlay margins={[0, 0, 1, 0]}>
+              <Box padding={3} ref={setContentElement}>
+                {props.children}
+              </Box>
+            </PresenceOverlay>
+          </ContentScrollerBox>
+        </Flex>
+      </FocusLock>
+    </VirtualizerScrollInstanceProvider>
   )
 }

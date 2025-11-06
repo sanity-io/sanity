@@ -22,9 +22,11 @@ import {styled} from 'styled-components'
 
 import {Popover, Tooltip} from '../../../../ui-components'
 import {useCanvasCompanionDocsStore} from '../../../canvas/store/useCanvasCompanionDocsStore'
-import {useTranslation} from '../../../i18n/hooks/useTranslation'
+import {useTranslation} from '../../../i18n'
+import {useReleasesToolAvailable} from '../../../schedules/hooks/useReleasesToolAvailable'
+import {useScheduledDraftMenuActions} from '../../../singleDocRelease/hooks/useScheduledDraftMenuActions'
 import {getDraftId, getPublishedId, getVersionId} from '../../../util/draftUtils'
-import {useReleasesToolAvailable} from '../../hooks/useReleasesToolAvailable'
+import {isCardinalityOneRelease} from '../../../util/releaseUtils'
 import {useVersionOperations} from '../../hooks/useVersionOperations'
 import {getReleaseIdFromReleaseDocumentId} from '../../util/getReleaseIdFromReleaseDocumentId'
 import {DiscardVersionDialog} from '../dialog/DiscardVersionDialog'
@@ -43,6 +45,9 @@ const ChipButton = styled(Button)`
   cursor: pointer;
   --card-border-color: var(--border-color);
 `
+
+type VersionChipDialogState = 'idle' | 'discard-version' | 'create-release'
+
 const useVersionIsLinked = (documentId: string, fromRelease: string) => {
   const versionId = useMemo(() => {
     if (fromRelease === 'published') return getPublishedId(documentId)
@@ -81,6 +86,7 @@ export const VersionChip = memo(function VersionChip(props: {
     isVersion: boolean
     disabled?: boolean
     isGoingToUnpublish?: boolean
+    release?: ReleaseDocument
   }
 }) {
   const {
@@ -98,10 +104,10 @@ export const VersionChip = memo(function VersionChip(props: {
       documentType,
       menuReleaseId,
       fromRelease,
-      releaseState,
       isVersion,
       disabled: contextMenuDisabled = false,
       isGoingToUnpublish = false,
+      release,
     },
   } = props
   const releasesToolAvailable = useReleasesToolAvailable()
@@ -111,8 +117,7 @@ export const VersionChip = memo(function VersionChip(props: {
     undefined,
   )
   const popoverRef = useRef<HTMLDivElement | null>(null)
-  const [isDiscardDialogOpen, setIsDiscardDialogOpen] = useState(false)
-  const [isCreateReleaseDialogOpen, setIsCreateReleaseDialogOpen] = useState(false)
+  const [dialogState, setDialogState] = useState<VersionChipDialogState>('idle')
 
   const chipRef = useRef<HTMLButtonElement | null>(null)
 
@@ -155,10 +160,12 @@ export const VersionChip = memo(function VersionChip(props: {
   )
 
   const openDiscardDialog = useCallback(() => {
-    setIsDiscardDialogOpen(true)
-  }, [setIsDiscardDialogOpen])
+    setDialogState('discard-version')
+  }, [])
 
-  const openCreateReleaseDialog = useCallback(() => setIsCreateReleaseDialogOpen(true), [])
+  const openCreateReleaseDialog = useCallback(() => {
+    setDialogState('create-release')
+  }, [])
 
   const handleAddVersion = useCallback(
     async (targetRelease: string) => {
@@ -201,6 +208,13 @@ export const VersionChip = memo(function VersionChip(props: {
 
   const contextMenuHandler = disabled || !releasesToolAvailable ? undefined : handleContextMenu
 
+  const isScheduledDraft = release && isVersion && isCardinalityOneRelease(release)
+  const scheduledDraftMenuActions = useScheduledDraftMenuActions({
+    release,
+    documentType,
+    disabled: contextMenuDisabled,
+  })
+
   return (
     <>
       <Tooltip content={tooltipContent} fallbackPlacements={[]} portal placement="bottom">
@@ -228,6 +242,7 @@ export const VersionChip = memo(function VersionChip(props: {
       </Tooltip>
 
       <Popover
+        animate={false}
         content={
           <VersionContextMenu
             documentId={documentId}
@@ -242,6 +257,9 @@ export const VersionChip = memo(function VersionChip(props: {
             locked={locked}
             type={documentType}
             isGoingToUnpublish={isGoingToUnpublish}
+            release={release}
+            isScheduledDraft={isScheduledDraft}
+            scheduledDraftMenuActions={scheduledDraftMenuActions}
           />
         }
         fallbackPlacements={[]}
@@ -253,9 +271,9 @@ export const VersionChip = memo(function VersionChip(props: {
         zOffset={10}
       />
 
-      {isDiscardDialogOpen && (
+      {dialogState === 'discard-version' && (
         <DiscardVersionDialog
-          onClose={() => setIsDiscardDialogOpen(false)}
+          onClose={() => setDialogState('idle')}
           documentId={
             isVersion
               ? getVersionId(documentId, getReleaseIdFromReleaseDocumentId(menuReleaseId))
@@ -266,9 +284,9 @@ export const VersionChip = memo(function VersionChip(props: {
         />
       )}
 
-      {isCreateReleaseDialogOpen && (
+      {dialogState === 'create-release' && (
         <CopyToNewReleaseDialog
-          onClose={() => setIsCreateReleaseDialogOpen(false)}
+          onClose={() => setDialogState('idle')}
           onCreateVersion={handleAddVersion}
           documentId={
             isVersion
@@ -280,6 +298,7 @@ export const VersionChip = memo(function VersionChip(props: {
           title={text}
         />
       )}
+      {isScheduledDraft && scheduledDraftMenuActions.dialogs}
     </>
   )
 })

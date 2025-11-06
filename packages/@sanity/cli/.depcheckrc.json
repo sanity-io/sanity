@@ -1,24 +1,4 @@
 {
-  "ignores": [
-    "@repo/tsconfig",
-    "@sanity/pkg-utils",
-    "sanity",
-    "@sanity/icons",
-    "pluralize-esm",
-    "vite",
-    "@portabletext/toolkit",
-    "react",
-    "@sanity/ui",
-    "lodash.get",
-    "@portabletext/types",
-    "slug",
-    "@sanity/asset-utils",
-    "@sanity/sdk",
-    "@sanity/sdk-react",
-    "styled-components",
-    "sanity-plugin-hotspot-array",
-    "react-icons",
-    "react-barcode",
-    "eslint"
-  ]
+  "ignores": ["@babel/parser"],
+  "ignore-patterns": ["templates/**"]
 }

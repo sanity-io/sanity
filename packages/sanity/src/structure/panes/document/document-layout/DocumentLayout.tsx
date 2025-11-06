@@ -9,14 +9,15 @@ import {
   FieldActionsResolver,
   GetFormValueProvider,
   type Path,
+  useDocumentIdStack,
   useGlobalCopyPasteElementHandler,
   useTranslation,
   useZIndex,
 } from 'sanity'
+import {useRouter} from 'sanity/router'
 import {styled} from 'styled-components'
 
 import {Pane, usePaneLayout, usePaneRouter} from '../../../components'
-import {useDocumentIdStack} from '../../../hooks/useDocumentIdStack'
 import {structureLocaleNamespace} from '../../../i18n'
 import {useStructureTool} from '../../../useStructureTool'
 import {
@@ -75,6 +76,7 @@ export function DocumentLayout() {
     ready,
     previewUrl,
   } = useDocumentPane()
+  const {stickyParams} = useRouter()
   const {params: paneParams} = usePaneRouter()
   const {features} = useStructureTool()
   const {t} = useTranslation(structureLocaleNamespace)
@@ -128,6 +130,7 @@ export function DocumentLayout() {
         previewUrl,
         documentIdStack,
         t,
+        displayInlineChanges: stickyParams.displayInlineChanges === 'true',
       }),
     [
       currentInspector,
@@ -138,6 +141,7 @@ export function DocumentLayout() {
       inspectors,
       previewUrl,
       t,
+      stickyParams.displayInlineChanges,
     ],
   )
 

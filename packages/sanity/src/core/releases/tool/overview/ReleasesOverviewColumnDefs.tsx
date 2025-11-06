@@ -1,5 +1,5 @@
-import {ErrorOutlineIcon, LockIcon} from '@sanity/icons'
-import {Flex, Text} from '@sanity/ui'
+import {CheckmarkCircleIcon, ErrorOutlineIcon, LockIcon} from '@sanity/icons'
+import {Card, Flex, Text} from '@sanity/ui'
 // eslint-disable-next-line @sanity/i18n/no-i18next-import -- figure out how to have the linter be fine with importing types-only
 import {type TFunction} from 'i18next'
 import {Fragment} from 'react'
@@ -124,7 +124,7 @@ export const releasesOverviewColumnDefs: (
         width: 250,
         header: (props) => (
           <Flex {...props.headerProps} paddingY={3} sizing="border">
-            <Headers.SortHeaderButton text={t('table-header.publishedAt')} {...props} />
+            <Headers.SortHeaderButton text={t('table-header.published-at')} {...props} />
           </Flex>
         ),
         cell: ({cellProps, datum: release}) => (
@@ -250,6 +250,31 @@ export const releasesOverviewColumnDefs: (
           return (
             <Flex {...cellProps} align="center" paddingX={2} paddingY={3} sizing="border" gap={2}>
               {state === 'active' && <ReleaseColumnValidationLoading releaseId={_id} />}
+
+              {/**
+               * Show a checkmark for scheduled releases
+               * A scheduled release can't be anything other than valid
+               * Since it can't be edited via the API or the UI
+               * However we should still gives a visual indicator of that instead of showing nothing
+               */}
+              {state === 'scheduled' && (
+                <Card
+                  padding={0}
+                  radius="full"
+                  tone="neutral"
+                  style={{
+                    background: 'transparent',
+                  }}
+                >
+                  <Flex gap={2}>
+                    <Text size={1}>
+                      <Tooltip content={t('summary.all-documents-validated')}>
+                        <CheckmarkCircleIcon />
+                      </Tooltip>
+                    </Text>
+                  </Flex>
+                </Card>
+              )}
 
               {!isDeleted && (
                 <>

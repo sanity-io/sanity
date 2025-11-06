@@ -24,5 +24,6 @@ export function defineAssetAspect(
     ...(assetType && {
       assetType: Array.isArray(assetType) ? assetType : [assetType],
     }),
+    public: definition.public,
   }
 }

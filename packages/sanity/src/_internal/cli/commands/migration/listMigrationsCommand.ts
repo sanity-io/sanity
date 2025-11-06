@@ -51,7 +51,9 @@ const listMigrationCommand: CliCommandDefinition = {
         )
         return
       }
-      throw new Error(`An error occurred while listing migrations: ${error.message}`)
+      throw new Error(`An error occurred while listing migrations: ${error.message}`, {
+        cause: error,
+      })
     }
   },
 }

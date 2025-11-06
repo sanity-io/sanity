@@ -2879,6 +2879,22 @@ exports[`tree-editing: buildTreeEditingState > should build tree editing state f
     },
   ],
   "rootTitle": "Array 1",
+  "siblings": Map {
+    "array1" => {
+      "count": 1,
+      "index": 1,
+    },
+  },
+}
+`;
+
+exports[`tree-editing: buildTreeEditingState > should build tree editing state for an array of objects with portable text fields 1`] = `
+{
+  "breadcrumbs": [],
+  "menuItems": [],
+  "relativePath": [],
+  "rootTitle": "",
+  "siblings": Map {},
 }
 `;
 
@@ -10267,6 +10283,16 @@ exports[`tree-editing: buildTreeEditingState > should build tree editing state f
     },
   ],
   "rootTitle": "Array With Array Field In Nested Objects",
+  "siblings": Map {
+    "arrayWithArrayFieldInNestedObjects" => {
+      "count": 1,
+      "index": 1,
+    },
+    "arrayWithArrayFieldInNestedObjects[_key=="key1"].secondObject.thirdObject.nestedArray" => {
+      "count": 1,
+      "index": 1,
+    },
+  },
 }
 `;
 
@@ -10855,6 +10881,12 @@ exports[`tree-editing: buildTreeEditingState > should build tree editing state f
     },
   ],
   "rootTitle": "Array",
+  "siblings": Map {
+    "objectWithArray.myArray" => {
+      "count": 1,
+      "index": 1,
+    },
+  },
 }
 `;
 
@@ -11443,6 +11475,12 @@ exports[`tree-editing: buildTreeEditingState > should build tree editing state f
     },
   ],
   "rootTitle": "Array",
+  "siblings": Map {
+    "objectWithArray.myArray" => {
+      "count": 1,
+      "index": 1,
+    },
+  },
 }
 `;
 
@@ -34038,5 +34076,11 @@ exports[`tree-editing: buildTreeEditingState > should build tree editing state f
     },
   ],
   "rootTitle": "Mixed array",
+  "siblings": Map {
+    "mixedArray" => {
+      "count": 2,
+      "index": 1,
+    },
+  },
 }
 `;

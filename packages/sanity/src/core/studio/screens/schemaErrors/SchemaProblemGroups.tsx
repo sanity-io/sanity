@@ -8,6 +8,7 @@ import {useMemo} from 'react'
 import {styled} from 'styled-components'
 
 import {useTranslation} from '../../../i18n'
+import {getTypeInfo} from './getTypeInfo'
 
 const TONES: Record<'error' | 'warning', ThemeColorToneKey> = {
   error: 'critical',
@@ -131,16 +132,6 @@ export function SchemaProblemGroups(props: {problemGroups: SchemaValidationProbl
       })}
     </Stack>
   )
-}
-
-function getTypeInfo(problem: SchemaValidationProblemGroup): {name: string; type: string} | null {
-  // note: unsure if the first segment here can ever be anything else than a type
-  // a possible API improvement is to add schemaType info to the problem group interface itself
-  const first = problem.path[0]
-  if (first.kind === 'type') {
-    return {name: first.name || `<anonymous ${first.type}>`, type: first.type}
-  }
-  return null
 }
 
 function _renderSegmentName(str: string) {

@@ -8,11 +8,11 @@ Content teams want to automatically share their published articles on Bluesky to
 
 ## Solution
 
-This Sanity Function automatically posts to Bluesky when content is published using the `@humanwhocodes/crosspost` library. When a post is published, the function creates a Bluesky post containing the title, summary, and slug, helping maintain consistent social media presence without manual effort.
+This Sanity Function automatically posts to Bluesky when the `blueskyPost` field is changed using the `@humanwhocodes/crosspost` library. When a post's `blueskyPost` field is updated, the function creates a Bluesky post containing the title, summary, and slug, helping maintain consistent social media presence without manual effort.
 
 ## Benefits
 
-- **Automates social media sharing** by posting to Bluesky on content publish
+- **Automates social media sharing** by posting to Bluesky
 - **Saves time** by eliminating manual cross-posting tasks
 - **Ensures consistency** with automatic posting of title, summary, and link
 - **Increases content reach** by maintaining active social media presence
@@ -114,8 +114,8 @@ defineField({
          memory: 1,
          timeout: 10,
          event: {
-           on: ['publish'],
-           filter: "_type == 'post'",
+           on: ['create', 'update'],
+           filter: "_type == 'post' && delta::changedAny(blueskyPost)",
            projection: '{title, blueskyPost, slug}',
          },
          env: {
@@ -223,7 +223,7 @@ Once you've tested your function locally and are satisfied with its behavior, yo
    This command will:
    - Package your function code
    - Upload it to Sanity's infrastructure
-   - Configure the event triggers for post publications
+   - Configure the event triggers on `blueskyPost` field changes
    - Make your bluesky-post function live in production
 
 3. **Add environment variables**
@@ -245,7 +245,7 @@ Once you've tested your function locally and are satisfied with its behavior, yo
 4. **Verify deployment**
 
    After deployment, you can verify your function is active by:
-   - Publishing a new post and confirming it appears on Bluesky
+   - Updating the `blueskyPost` field on a post and confirming it appears on Bluesky
    - Monitoring function logs in the CLI
 
 ## Customization
@@ -264,10 +264,10 @@ Read more: ${slug.current}`
 
 ### Add conditional posting
 
-Only post certain types of content by updating the filter:
+Only post when the `postToBlue` field is set to true:
 
 ```ts
-filter: "_type == 'post' && defined(publishedAt)"
+filter: "_type == 'post' && delta::changedAny(blueskyPost) && postToBluesky == true"
 ```
 
 ### Include additional fields
@@ -305,7 +305,7 @@ projection: '{title, blueskyPost, slug, author}'
 **Function not triggering**
 
 - Cause: Blueprint filter or event configuration issues
-- Solution: Verify the filter matches your document structure and the event is set to 'publish'
+- Solution: Verify the filter matches your document structure and that the `blueskyPost` field is being changed
 
 ## Related Examples
 

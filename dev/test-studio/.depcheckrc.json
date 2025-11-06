@@ -1,11 +1,1 @@
-{
-  "ignores": [
-    "eslint",
-    "@sanity/locale-ko-kr",
-    "@sanity/locale-nb-no",
-    "@sanity/locale-nn-no",
-    "@sanity/locale-pt-pt",
-    "@sanity/locale-sv-se",
-    "babel-plugin-react-compiler"
-  ]
-}
+{"ignores": ["@portabletext/toolkit", "rimraf"]}

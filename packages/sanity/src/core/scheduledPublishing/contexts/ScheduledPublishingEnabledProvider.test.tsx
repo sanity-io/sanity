@@ -2,8 +2,8 @@ import {renderHook} from '@testing-library/react'
 import {of} from 'rxjs'
 import {beforeEach, describe, expect, it, vi} from 'vitest'
 
+import {useFeatureEnabled} from '../../hooks'
 import {useClient} from '../../hooks/useClient'
-import {useFeatureEnabled} from '../../hooks/useFeatureEnabled'
 import {useWorkspace} from '../../studio/workspace'
 import {cachedUsedScheduledPublishing} from '../tool/contexts/useHasUsedScheduledPublishing'
 import {
@@ -11,9 +11,7 @@ import {
   useScheduledPublishingEnabled,
 } from './ScheduledPublishingEnabledProvider'
 
-vi.mock('../../hooks/useFeatureEnabled', () => ({
-  useFeatureEnabled: vi.fn().mockReturnValue({}),
-}))
+vi.mock('../../hooks')
 
 vi.mock('../../studio/workspace', () => ({
   useWorkspace: vi.fn().mockReturnValue({}),

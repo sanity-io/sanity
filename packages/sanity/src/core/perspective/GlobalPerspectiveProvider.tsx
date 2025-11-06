@@ -122,6 +122,7 @@ export function GlobalPerspectiveProvider({children}: {children: ReactNode}) {
     () => router.stickyParams.excludedPerspectives?.split(',') || EMPTY_ARRAY,
     [router.stickyParams.excludedPerspectives],
   )
+
   return (
     <PerspectiveProvider
       selectedPerspectiveName={selectedPerspectiveName}

@@ -1,0 +1,19 @@
+{
+  "$schema": "https://turbo.build/schema.json",
+  "extends": ["//"],
+  "tasks": {
+    "build": {
+      "env": [
+        "SANITY_STUDIO_EFPS_EXPERIMENT_PROJECT_ID",
+        "SANITY_STUDIO_EFPS_EXPERIMENT_DATASET",
+        "SANITY_STUDIO_EFPS_EXPERIMENT_API_HOST",
+        "SANITY_STUDIO_EFPS_REFERENCE_PROJECT_ID",
+        "SANITY_STUDIO_EFPS_REFERENCE_DATASET",
+        "SANITY_STUDIO_EFPS_REFERENCE_API_HOST",
+        "EFPS_SANITY_TOKEN_STAGING",
+        "EFPS_SANITY_TOKEN_PROD"
+      ],
+      "outputs": ["dist/**"]
+    }
+  }
+}

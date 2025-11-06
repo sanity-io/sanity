@@ -26,12 +26,14 @@ export {
   type TargetPerspective,
 } from './perspective/types'
 export {useExcludedPerspective} from './perspective/useExcludedPerspective'
+export {useGetDefaultPerspective} from './perspective/useGetDefaultPerspective'
 export {usePerspective} from './perspective/usePerspective'
 export {useSetPerspective} from './perspective/useSetPerspective'
 export * from './presence'
 export * from './preview'
 export {
   formatRelativeLocalePublishDate,
+  getDocumentIsInPerspective,
   getReleaseIdFromReleaseDocumentId,
   getReleaseTone,
   getVersionInlineBadge,
@@ -42,9 +44,11 @@ export {
   isReleasePerspective,
   isReleaseScheduledOrScheduling,
   LATEST,
+  PUBLISHED,
   ReleaseAvatar,
   RELEASES_INTENT,
   RELEASES_STUDIO_CLIENT_OPTIONS,
+  sortReleases,
   useActiveReleases,
   useArchivedReleases,
   useDocumentVersionInfo,
@@ -67,6 +71,7 @@ export {
 export {createSchema, getSchemaTypeTitle} from './schema'
 export type {SearchFactoryOptions, SearchOptions, SearchSort, SearchTerms} from './search'
 export {createSearch, getSearchableTypes, isPerspectiveRaw} from './search'
+export * from './singleDocRelease'
 export * from './store'
 export * from './studio'
 export {DEFAULT_STUDIO_CLIENT_OPTIONS} from './studioClient'

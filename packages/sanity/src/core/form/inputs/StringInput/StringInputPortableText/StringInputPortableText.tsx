@@ -5,21 +5,21 @@ import {
   PortableTextEditable,
   useEditor,
 } from '@portabletext/editor'
-import {EventListenerPlugin, OneLinePlugin} from '@portabletext/editor/plugins'
+import {defineBehavior, forward, raise} from '@portabletext/editor/behaviors'
+import {BehaviorPlugin, EventListenerPlugin, OneLinePlugin} from '@portabletext/editor/plugins'
 import {type Path} from '@sanity/types'
 import {Card, useArrayProp, useRootTheme} from '@sanity/ui'
 import {useCallback, useEffect, useRef} from 'react'
 import {styled} from 'styled-components'
 
-import {useWorkspace} from '../../../../studio/workspace'
 import {set, unset} from '../../../patch/patch'
 import {type StringInputProps} from '../../../types'
+import {DeletedSegment} from '../../common/diff/string/segments'
+import {stringDiffContainerStyles} from '../../common/diff/string/styles'
 import {UpdateReadOnlyPlugin} from '../../PortableText/PortableTextInput'
-import {DeletedSegment} from './diff/segments'
 import {useOptimisticDiff} from './diff/useOptimisticDiff'
 import {packageValue} from './packageValue'
 import {
-  inputStyles,
   responsiveInputPaddingStyle,
   textInputBaseStyle,
   textInputFontSizeStyle,
@@ -48,7 +48,7 @@ const StyledInput = styled(PortableTextEditable)<
   ${textInputBaseStyle}
   ${responsiveInputPaddingStyle}
   ${textInputFontSizeStyle}
-  ${inputStyles}
+  ${stringDiffContainerStyles}
 `
 
 const StyledEditorRepresentation = styled(Card)<TextInputRepresentationStyleProps>(
@@ -68,19 +68,16 @@ const StyledPlaceholder = styled.span<TextInputResponsivePaddingStyleProps>`
  * @beta
  */
 export function StringInputPortableText(props: StringInputProps) {
-  const {advancedVersionControl} = useWorkspace()
   const {
     elementProps,
     onChange,
     value: definitiveValue,
-    __unstable_diff: definitiveDiff,
     __unstable_computeDiff: computeDiff,
   } = props
   const {onFocus, onBlur} = elementProps
 
   const {diff, rangeDecorations, onOptimisticChange} = useOptimisticDiff({
     definitiveValue,
-    definitiveDiff,
     computeDiff,
   })
 
@@ -184,10 +181,11 @@ export function StringInputPortableText(props: StringInputProps) {
         <EventListenerPlugin on={handleEditorEvent} />
         <UpdateValuePlugin value={props.value} />
         <UpdateReadOnlyPlugin readOnly={props.readOnly ?? false} />
+        <BehaviorPlugin behaviors={[plainTextPasteBehaviour, plainTextOneLineBehaviour]} />
         <StyledInput
           className={props.validationError ? INVALID_CLASS_NAME : undefined}
-          renderPlaceholder={advancedVersionControl.enabled ? renderPlaceholder : undefined}
-          rangeDecorations={advancedVersionControl.enabled ? rangeDecorations : undefined}
+          renderPlaceholder={props.displayInlineChanges ? renderPlaceholder : undefined}
+          rangeDecorations={props.displayInlineChanges ? rangeDecorations : undefined}
           $fontSize={fontSize}
           $space={space}
           $padding={padding}
@@ -227,3 +225,39 @@ function UpdateValuePlugin(props: {value: string | undefined}) {
 
   return null
 }
+
+/**
+ * Convert pasted data to plain text.
+ *
+ * This is essential to allow pasting of data copied from Portable Text based fields. If pasting
+ * Portable Text data was permitted, it would cause a conflict with the expected data structure.
+ */
+const plainTextPasteBehaviour = defineBehavior({
+  on: 'clipboard.paste',
+  actions: [
+    (event) => [
+      raise({
+        type: 'insert.text',
+        text: event.event.originEvent.dataTransfer.getData('text'),
+      }),
+    ],
+  ],
+})
+
+/**
+ * Remove new lines from inserted text.
+ *
+ * This ensures new lines are removed when pasting data copied from Portable Text based fields. Each
+ * sequence of new line characters is replaced with a single space character.
+ */
+const plainTextOneLineBehaviour = defineBehavior({
+  on: 'insert.text',
+  actions: [
+    ({event}) => [
+      forward({
+        type: 'insert.text',
+        text: event.text.replaceAll(/\n+/g, ' '),
+      }),
+    ],
+  ],
+})

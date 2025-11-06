@@ -1,6 +1,7 @@
 import {type CliCommandArguments, type CliCommandContext} from '@sanity/cli'
 
 import {debug as debugIt} from '../../debug'
+import {getAppId} from '../../util/getAppId'
 import {deleteUserApplication, getUserApplication} from '../deploy/helpers'
 import {type UndeployStudioActionFlags} from '../deploy/undeployAction'
 
@@ -20,7 +21,7 @@ export default async function undeployAppAction(
   // Check that the project has an application ID
   let spinner = output.spinner('Checking application info').start()
 
-  const appId = cliConfig && 'app' in cliConfig ? cliConfig.app?.id : undefined
+  const appId = getAppId({cliConfig, output})
 
   if (!appId) {
     spinner.fail()
@@ -33,6 +34,7 @@ export default async function undeployAppAction(
   const userApplication = await getUserApplication({
     client,
     appId,
+    isSdkApp: true,
   })
 
   spinner.succeed()

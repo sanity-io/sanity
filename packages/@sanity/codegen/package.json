@@ -1,6 +1,6 @@
 {
   "name": "@sanity/codegen",
-  "version": "4.7.0",
+  "version": "4.13.0",
   "description": "Codegen toolkit for Sanity.io",
   "keywords": [
     "sanity",
@@ -49,18 +49,18 @@
     "watch": "pkg-utils watch"
   },
   "dependencies": {
-    "@babel/core": "^7.28.3",
+    "@babel/core": "^7.28.4",
     "@babel/generator": "^7.28.3",
     "@babel/preset-env": "^7.28.3",
     "@babel/preset-react": "^7.27.1",
     "@babel/preset-typescript": "^7.27.1",
     "@babel/register": "^7.28.3",
-    "@babel/traverse": "^7.28.3",
-    "@babel/types": "^7.28.2",
-    "debug": "^4.4.1",
+    "@babel/traverse": "^7.28.4",
+    "@babel/types": "^7.28.4",
+    "debug": "^4.4.3",
     "globby": "^11.1.0",
     "groq": "workspace:*",
-    "groq-js": "^1.18.0",
+    "groq-js": "^1.20.0",
     "json5": "^2.2.3",
     "tsconfig-paths": "^4.2.0",
     "zod": "^3.25.76"
@@ -69,13 +69,17 @@
     "@repo/eslint-config": "workspace:*",
     "@repo/package.config": "workspace:*",
     "@repo/test-config": "workspace:*",
+    "@repo/tsconfig": "workspace:*",
+    "@sanity/pkg-utils": "catalog:",
     "@types/babel__core": "^7.20.5",
     "@types/babel__generator": "^7.27.0",
     "@types/babel__register": "^7.17.3",
     "@types/babel__traverse": "^7.28.0",
     "@types/debug": "^4.1.12",
+    "@types/node": "catalog:",
+    "eslint": "catalog:",
     "rimraf": "^5.0.10",
-    "vitest": "^3.2.4"
+    "vitest": "catalog:"
   },
   "engines": {
     "node": ">=20.19 <22 || >=22.12"

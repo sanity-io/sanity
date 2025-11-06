@@ -289,18 +289,34 @@ describeCliTest('CLI: `sanity init`', () => {
 
         await cleanOutputDirectory(outpath)
 
-        await runSanityCmdCommand(studioName, [
-          'init',
-          '--y',
-          '--project',
-          cliProjectId,
-          '--dataset',
-          testRunArgs.dataset,
-          '--output-path',
-          `${baseTestPath}/${outpath}`,
-          '--package-manager',
-          'pnpm',
-        ])
+        await runSanityCmdCommand(
+          studioName,
+          [
+            'init',
+            '--y',
+            '--project',
+            cliProjectId,
+            '--dataset',
+            testRunArgs.dataset,
+            '--output-path',
+            `${baseTestPath}/${outpath}`,
+            '--package-manager',
+            'pnpm',
+          ],
+          {
+            env: {
+              // when running tests via `pnpm test`, the 'npm_config_minimum_release_age' is set from
+              // monorepo workspace config. however, minimumReleaseAgeExclude is *not* set,
+              // so CLI tests using pnpm as package manager will fail during install of monorepo packages
+              // if less than the configured minimumReleaseAge value
+              // As a workaround, explicitly set it to `0` here
+              // Note: majority of tests are already running `npm install`, which doesn't (yet) support
+              // minimumReleaseAge, so this should not make a big difference
+              // eslint-disable-next-line camelcase
+              npm_config_minimum_release_age: '0',
+            },
+          },
+        )
 
         // Verify Next.js config files were created in the Next.js root (confirms the command completed successfully)
         const hasPnpmLock = await fs

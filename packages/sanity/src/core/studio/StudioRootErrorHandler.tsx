@@ -98,7 +98,12 @@ export function StudioRootErrorHandler(props: {children: ReactNode}) {
   }
 
   if (errorState.error instanceof CorsOriginError) {
-    return <CorsOriginErrorScreen projectId={errorState.error.projectId} />
+    return (
+      <CorsOriginErrorScreen
+        projectId={errorState.error.projectId}
+        isStaging={errorState.error.isStaging}
+      />
+    )
   }
 
   if (errorState.error instanceof SchemaError) {

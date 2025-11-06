@@ -160,21 +160,12 @@ test.describe('Portable Text Input', () => {
         // prepare the nested PTE
         await page.getByRole('button', {name: 'Insert Nested (block)'}).click()
 
-        await expect(
-          page
-            .locator('div')
-            .filter({hasText: /^Edit Nested$/})
-            .first(),
-        ).toBeVisible()
+        await expect(page.getByTestId('nested-object-dialog')).toBeVisible()
+
         await page.getByTestId('add-single-object-button').click()
 
         // nested PTE object item
-        await expect(
-          page
-            .locator('div')
-            .filter({hasText: /^Edit Item$/})
-            .first(),
-        ).toBeVisible()
+        await expect(page.getByRole('button', {name: 'Untitled'})).toBeVisible()
 
         // get the nested PTE
         const $overlay = await page.getByTestId('activate-overlay')

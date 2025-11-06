@@ -4,6 +4,7 @@ import {MenuDivider} from '@sanity/ui'
 import {MenuItem} from '../../../../../ui-components'
 import {useTranslation} from '../../../../i18n'
 import {userHasRole} from '../../../../util'
+import {useEnvAwareSanityWebsiteUrl} from '../../../hooks/useEnvAwareSanityWebsiteUrl'
 import {useWorkspace} from '../../../workspace'
 
 export function ManageMenu() {
@@ -11,14 +12,14 @@ export function ManageMenu() {
   const isAdmin = Boolean(currentUser && userHasRole(currentUser, 'administrator'))
 
   const {t} = useTranslation()
-
+  const envAwareWebsiteUrl = useEnvAwareSanityWebsiteUrl()
   return (
     <>
       <MenuDivider />
       <MenuItem
         as="a"
         aria-label={t('user-menu.action.manage-project-aria-label')}
-        href={`https://sanity.io/manage/project/${projectId}`}
+        href={`${envAwareWebsiteUrl}/manage/project/${projectId}`}
         target="_blank"
         text={t('user-menu.action.manage-project')}
         icon={CogIcon}
@@ -27,7 +28,7 @@ export function ManageMenu() {
         <MenuItem
           as="a"
           aria-label={t('user-menu.action.invite-members-aria-label')}
-          href={`https://www.sanity.io/manage/project/${projectId}/members?invite=true`}
+          href={`${envAwareWebsiteUrl}/manage/project/${projectId}/members?invite=true`}
           target="_blank"
           text={t('user-menu.action.invite-members')}
           icon={AddUserIcon}

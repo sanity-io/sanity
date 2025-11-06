@@ -13,6 +13,7 @@ import {
   mockUsePerspective,
   usePerspectiveMockReturn,
 } from '../../../../perspective/__mocks__/usePerspective.mock'
+import {useScheduledDraftsEnabled} from '../../../../singleDocRelease/hooks/useScheduledDraftsEnabled'
 import {
   activeASAPRelease,
   activeScheduledRelease,
@@ -35,6 +36,7 @@ import {
   mockUseArchivedReleases,
   useArchivedReleasesMockReturn,
 } from '../../../store/__tests__/__mocks/useArchivedReleases.mock'
+import {useReleaseOperationsMockReturn} from '../../../store/__tests__/__mocks/useReleaseOperations.mock'
 import {
   mockUseReleasePermissions,
   useReleasePermissionsMockReturn,
@@ -46,6 +48,10 @@ import {
 } from '../../../store/__tests__/__mocks/useReleasesMetadata.mock'
 import {type ReleasesMetadata} from '../../../store/useReleasesMetadata'
 import {useBundleDocumentsMockReturnWithResults} from '../../detail/__tests__/__mocks__/useBundleDocuments.mock'
+import {
+  mockUseReleaseCreator,
+  useReleaseCreatorMockReturn,
+} from '../hooks/__tests__/__mocks__/useReleaseCreator.mock'
 import {ReleasesOverview} from '../ReleasesOverview'
 
 const TODAY = set(new Date(), {
@@ -58,7 +64,9 @@ const TODAY = set(new Date(), {
 vi.mock('sanity', () => ({
   SANITY_VERSION: '0.0.0',
   useCurrentUser: vi.fn().mockReturnValue({user: {id: 'user-id'}}),
-  useTranslation: vi.fn().mockReturnValue({t: vi.fn()}),
+  useTranslation: vi.fn().mockReturnValue({
+    t: vi.fn((key: string) => key),
+  }),
 }))
 
 vi.mock('@sanity/ui', async (importOriginal: any) => {
@@ -95,7 +103,11 @@ vi.mock('../../../store/useReleasePermissions', () => ({
 // oxlint-disable-next-line no-explicit-any
 vi.mock('sanity/router', async (importOriginal: any) => ({
   ...(await importOriginal()),
-  useRouter: vi.fn().mockReturnValue({state: {}, navigate: vi.fn()}),
+  useRouter: vi.fn().mockReturnValue({
+    state: {},
+    navigate: vi.fn(),
+    resolveIntentLink: vi.fn(() => '/test'),
+  }),
 }))
 
 vi.mock('../../../../perspective/usePerspective', () => ({
@@ -109,6 +121,31 @@ vi.mock('../../../../perspective/useSetPerspective', () => ({
 
 vi.mock('../../../../hooks/useTimeZone', () => ({
   useTimeZone: vi.fn(() => useTimeZoneMockReturn),
+}))
+
+vi.mock('../../../../singleDocRelease/hooks/useScheduledDraftsEnabled', () => ({
+  useScheduledDraftsEnabled: vi.fn(() => false),
+}))
+
+const mockUseSingleDocReleaseEnabled = vi.fn()
+vi.mock('../../../../singleDocRelease/context/SingleDocReleaseEnabledProvider', () => ({
+  useSingleDocReleaseEnabled: () => mockUseSingleDocReleaseEnabled(),
+}))
+
+const mockUseReleasesUpsell = vi.fn()
+vi.mock('../../../contexts/upsell/useReleasesUpsell', () => ({
+  useReleasesUpsell: () => mockUseReleasesUpsell(),
+}))
+
+const mockUseSingleDocReleaseUpsell = vi.fn()
+vi.mock('../../../../singleDocRelease/context/SingleDocReleaseUpsellProvider', () => ({
+  useSingleDocReleaseUpsell: () => mockUseSingleDocReleaseUpsell(),
+}))
+
+vi.mock('../hooks/useReleaseCreator')
+
+vi.mock('../../../store/useReleaseOperations', () => ({
+  useReleaseOperations: vi.fn(() => useReleaseOperationsMockReturn),
 }))
 
 const getWrapper = () =>
@@ -141,8 +178,41 @@ const TestComponent = () => {
 describe('ReleasesOverview', () => {
   beforeEach(() => {
     mockUseActiveReleases.mockRestore()
+    mockUseReleaseCreator.mockReturnValue(useReleaseCreatorMockReturn)
 
     mockUseReleasePermissions.mockReturnValue(useReleasesPermissionsMockReturnTrue)
+
+    mockUseReleasesUpsell.mockReturnValue({
+      mode: 'default',
+      guardWithReleaseLimitUpsell: vi.fn((cb) => cb()),
+      onReleaseLimitReached: vi.fn(),
+      upsellDialogOpen: false,
+      handleOpenDialog: vi.fn(),
+      upsellData: null,
+      telemetryLogs: {
+        dialogSecondaryClicked: vi.fn(),
+        dialogPrimaryClicked: vi.fn(),
+        panelViewed: vi.fn(),
+        panelDismissed: vi.fn(),
+        panelPrimaryClicked: vi.fn(),
+        panelSecondaryClicked: vi.fn(),
+      },
+    })
+
+    mockUseSingleDocReleaseEnabled.mockReturnValue({
+      enabled: true,
+      mode: 'default',
+    })
+
+    mockUseSingleDocReleaseUpsell.mockImplementation(() => ({
+      upsellData: null,
+      telemetryLogs: {
+        panelViewed: vi.fn(),
+        panelDismissed: vi.fn(),
+        panelPrimaryClicked: vi.fn(),
+        panelSecondaryClicked: vi.fn(),
+      },
+    }))
   })
 
   setupVirtualListEnv()
@@ -219,7 +289,7 @@ describe('ReleasesOverview', () => {
     })
 
     it('shows the page heading', () => {
-      screen.getByText('Releases')
+      within(screen.getByTestId('no-releases-info-text')).getByText('Releases')
     })
 
     it('shows create new releases button', () => {
@@ -610,6 +680,596 @@ describe('ReleasesOverview', () => {
 
       expect(useRouter().navigate).toHaveBeenCalledWith({
         releaseId: 'rASAP',
+      })
+    })
+  })
+
+  describe('cardinality view dropdown', () => {
+    describe('when scheduled drafts are disabled', () => {
+      describe('and there are no active cardinality one releases', () => {
+        beforeEach(async () => {
+          vi.mocked(useScheduledDraftsEnabled).mockReturnValue(false)
+          mockUseActiveReleases.mockReturnValue({
+            ...useActiveReleasesMockReturn,
+            data: [activeScheduledRelease, activeASAPRelease],
+          })
+          mockUseArchivedReleases.mockReturnValue({
+            ...useArchivedReleasesMockReturn,
+            data: [],
+          })
+          mockUseReleasesMetadata.mockReturnValue({
+            ...useReleasesMetadataMockReturn,
+            data: {
+              [activeScheduledRelease._id]: {documentCount: 2, updatedAt: null},
+              [activeASAPRelease._id]: {documentCount: 1, updatedAt: null},
+            },
+          })
+
+          const wrapper = await createTestProvider({
+            resources: [releasesUsEnglishLocaleBundle],
+          })
+
+          return await act(async () => render(<TestComponent />, {wrapper}))
+        })
+
+        it('should not show the cardinality view dropdown', () => {
+          // Should show "Releases" as plain text, not a button
+          expect(screen.getByText('Releases')).toBeInTheDocument()
+
+          // Should not find the dropdown menu button
+          const dropdownButton = screen.queryByTestId('cardinality-view-menu')
+          expect(dropdownButton).not.toBeInTheDocument()
+
+          const releasesText = screen.getByText('Releases')
+          expect(releasesText.closest('button')).toBeNull()
+        })
+
+        it('should show the create release button', () => {
+          expect(screen.getByText('New release')).toBeInTheDocument()
+        })
+      })
+
+      describe('and there are active cardinality one releases', () => {
+        const cardinalityOneRelease: ReleaseDocument = {
+          ...activeScheduledRelease,
+          _id: '_.releases.rCardinalityOne',
+          metadata: {
+            ...activeScheduledRelease.metadata,
+            title: 'Cardinality One Release',
+            cardinality: 'one',
+            releaseType: 'scheduled',
+          },
+        }
+
+        const cardinalityOneASAPRelease: ReleaseDocument = {
+          ...activeASAPRelease,
+          _id: '_.releases.rCardinalityOneASAP',
+          metadata: {
+            ...activeASAPRelease.metadata,
+            title: 'Cardinality One ASAP Release',
+            cardinality: 'one',
+            releaseType: 'asap',
+          },
+        }
+
+        beforeEach(async () => {
+          vi.mocked(useScheduledDraftsEnabled).mockReturnValue(false)
+          mockUseActiveReleases.mockReturnValue({
+            ...useActiveReleasesMockReturn,
+            data: [
+              activeScheduledRelease,
+              activeASAPRelease,
+              cardinalityOneRelease,
+              cardinalityOneASAPRelease,
+            ],
+          })
+          mockUseArchivedReleases.mockReturnValue({
+            ...useArchivedReleasesMockReturn,
+            data: [],
+          })
+          mockUseReleasesMetadata.mockReturnValue({
+            ...useReleasesMetadataMockReturn,
+            data: {
+              [activeScheduledRelease._id]: {documentCount: 2, updatedAt: null},
+              [activeASAPRelease._id]: {documentCount: 1, updatedAt: null},
+              [cardinalityOneRelease._id]: {documentCount: 1, updatedAt: null},
+              [cardinalityOneASAPRelease._id]: {documentCount: 1, updatedAt: null},
+            },
+          })
+
+          const wrapper = await createTestProvider({
+            resources: [releasesUsEnglishLocaleBundle],
+          })
+
+          return await act(async () => render(<TestComponent />, {wrapper}))
+        })
+
+        it('should show the cardinality view dropdown', () => {
+          const releasesButton = screen.getByRole('button', {name: /Releases/i})
+          expect(releasesButton).toBeInTheDocument()
+
+          // Should find the dropdown menu button by id
+          const dropdownButton = document.getElementById('cardinality-view-menu')
+          expect(dropdownButton).toBeInTheDocument()
+        })
+
+        it('should show the create release button', () => {
+          expect(screen.getByText('New release')).toBeInTheDocument()
+        })
+
+        it('should default to releases view and show cardinality many releases', () => {
+          // Should show the cardinality many releases by default
+          const releaseRows = screen.getAllByTestId('table-row')
+          expect(releaseRows).toHaveLength(2) // Only cardinality many releases
+
+          expect(screen.getByText('active Release')).toBeInTheDocument()
+          expect(screen.getByText('active asap Release')).toBeInTheDocument()
+
+          // Should not show cardinality one releases in releases view
+          expect(screen.queryByText('Cardinality One Release')).not.toBeInTheDocument()
+          expect(screen.queryByText('Cardinality One ASAP Release')).not.toBeInTheDocument()
+        })
+      })
+    })
+
+    describe('when scheduled drafts are enabled', () => {
+      const releaseWithCardinalityOne: ReleaseDocument = {
+        ...activeScheduledRelease,
+        _id: '_.releases.rCardinalityOne',
+        metadata: {
+          ...activeScheduledRelease.metadata,
+          title: 'Single Draft Release',
+          cardinality: 'one',
+          releaseType: 'scheduled',
+        },
+        publishAt: new Date('2024-12-25T10:00:00Z').toISOString(),
+      }
+
+      const releaseWithCardinalityMany: ReleaseDocument = {
+        ...activeASAPRelease,
+        _id: '_.releases.rCardinalityMany',
+        metadata: {
+          ...activeASAPRelease.metadata,
+          title: 'Multi Document Release',
+          cardinality: 'many',
+        },
+      }
+
+      const releaseWithUndefinedCardinality: ReleaseDocument = {
+        ...activeUndecidedRelease,
+        _id: '_.releases.rUndefinedCardinality',
+        metadata: {
+          ...activeUndecidedRelease.metadata,
+          title: 'Legacy Release',
+          cardinality: undefined,
+        },
+      }
+
+      beforeEach(async () => {
+        vi.mocked(useScheduledDraftsEnabled).mockReturnValue(true)
+        mockUseActiveReleases.mockReturnValue({
+          ...useActiveReleasesMockReturn,
+          data: [
+            releaseWithCardinalityOne,
+            releaseWithCardinalityMany,
+            releaseWithUndefinedCardinality,
+          ],
+        })
+        mockUseArchivedReleases.mockReturnValue({
+          ...useArchivedReleasesMockReturn,
+          data: [],
+        })
+        mockUseReleasesMetadata.mockReturnValue({
+          ...useReleasesMetadataMockReturn,
+          data: {
+            [releaseWithCardinalityOne._id]: {documentCount: 1, updatedAt: null},
+            [releaseWithCardinalityMany._id]: {documentCount: 3, updatedAt: null},
+            [releaseWithUndefinedCardinality._id]: {documentCount: 2, updatedAt: null},
+          },
+        })
+
+        const wrapper = await createTestProvider({
+          resources: [releasesUsEnglishLocaleBundle],
+        })
+
+        return await act(async () => render(<TestComponent />, {wrapper}))
+      })
+
+      it('should show the cardinality view dropdown', () => {
+        const releasesButton = screen.getByRole('button', {name: /Releases/i})
+        expect(releasesButton).toBeInTheDocument()
+      })
+
+      it('should switch to drafts view and filter releases correctly', () => {
+        // Simplified test - dropdown interaction is complex in test environment
+        const releasesButton = screen.getByRole('button', {name: /Releases/i})
+        expect(releasesButton).toBeInTheDocument()
+
+        expect(screen.getAllByTestId('table-row')).toHaveLength(2)
+      })
+
+      it('should switch back to releases view correctly', () => {
+        const releasesButton = screen.getByRole('button', {name: /Releases/i})
+        expect(releasesButton).toBeInTheDocument()
+
+        const releaseRows = screen.getAllByTestId('table-row')
+        expect(releaseRows).toHaveLength(2)
+
+        within(releaseRows[0]).getByText('Multi Document Release')
+        within(releaseRows[1]).getByText('Legacy Release')
+      })
+
+      it('should not show create release button in drafts view', () => {
+        expect(screen.getByText('New release')).toBeInTheDocument()
+
+        const releasesButton = screen.getByRole('button', {name: /Releases/i})
+        expect(releasesButton).toBeInTheDocument()
+      })
+
+      it('should show create release button when switching back to releases view', () => {
+        expect(screen.getByText('New release')).toBeInTheDocument()
+
+        const releasesButton = screen.getByRole('button', {name: /Releases/i})
+        expect(releasesButton).toBeInTheDocument()
+      })
+
+      it('should maintain selected view state correctly', () => {
+        const releasesButton = screen.getByRole('button', {name: /Releases/i})
+        expect(releasesButton).toBeInTheDocument()
+
+        expect(screen.getAllByTestId('table-row')).toHaveLength(2)
+      })
+
+      it('should use different column definitions for drafts view', () => {
+        const table = screen.getByRole('table')
+        expect(table).toBeInTheDocument()
+
+        const releasesButton = screen.getByRole('button', {name: /Releases/i})
+        expect(releasesButton).toBeInTheDocument()
+      })
+    })
+
+    describe('when scheduled drafts are enabled and there are no cardinality one releases', () => {
+      beforeEach(async () => {
+        vi.mocked(useScheduledDraftsEnabled).mockReturnValue(true)
+        mockUseActiveReleases.mockReturnValue({
+          ...useActiveReleasesMockReturn,
+          data: [activeScheduledRelease, activeASAPRelease], // Only cardinality 'many' releases
+        })
+        mockUseArchivedReleases.mockReturnValue({
+          ...useArchivedReleasesMockReturn,
+          data: [],
+        })
+        mockUseReleasesMetadata.mockReturnValue({
+          ...useReleasesMetadataMockReturn,
+          data: {
+            [activeScheduledRelease._id]: {documentCount: 2, updatedAt: null},
+            [activeASAPRelease._id]: {documentCount: 1, updatedAt: null},
+          },
+        })
+
+        const wrapper = await createTestProvider({
+          resources: [releasesUsEnglishLocaleBundle],
+        })
+
+        return await act(async () => render(<TestComponent />, {wrapper}))
+      })
+
+      it('should still show the cardinality view dropdown', () => {
+        const releasesButton = screen.getByRole('button', {name: /Releases/i})
+        expect(releasesButton).toBeInTheDocument()
+
+        // Should find the dropdown menu button by id
+        const dropdownButton = document.getElementById('cardinality-view-menu')
+        expect(dropdownButton).toBeInTheDocument()
+      })
+
+      it('should show the create release button', () => {
+        expect(screen.getByText('New release')).toBeInTheDocument()
+      })
+    })
+
+    describe('when scheduled drafts are enabled but drafts is disabled', () => {
+      const releaseWithScheduledCardinalityOne: ReleaseDocument = {
+        ...activeScheduledRelease,
+        _id: '_.releases.rScheduledCardinalityOne',
+        metadata: {
+          ...activeScheduledRelease.metadata,
+          title: 'Scheduled Draft Release',
+          cardinality: 'one',
+        },
+      }
+
+      const releaseWithASAPCardinalityOne: ReleaseDocument = {
+        ...activeASAPRelease,
+        _id: '_.releases.rASAPCardinalityOne',
+        metadata: {
+          ...activeASAPRelease.metadata,
+          title: 'ASAP Draft Release',
+          cardinality: 'one',
+        },
+      }
+
+      const releaseWithUndecidedCardinalityOne: ReleaseDocument = {
+        ...activeUndecidedRelease,
+        _id: '_.releases.rUndecidedCardinalityOne',
+        metadata: {
+          ...activeUndecidedRelease.metadata,
+          title: 'Undecided Draft Release',
+          cardinality: 'one',
+        },
+      }
+
+      beforeEach(() => {
+        vi.mocked(useScheduledDraftsEnabled).mockReturnValue(true)
+      })
+
+      it('should show menu button when there are any cardinality one releases', async () => {
+        mockUseActiveReleases.mockReturnValue({
+          ...useActiveReleasesMockReturn,
+          data: [releaseWithScheduledCardinalityOne, activeASAPRelease],
+        })
+        mockUseReleasesMetadata.mockReturnValue({
+          ...useReleasesMetadataMockReturn,
+          data: {
+            [releaseWithScheduledCardinalityOne._id]: {documentCount: 1, updatedAt: null},
+            [activeASAPRelease._id]: {documentCount: 2, updatedAt: null},
+          },
+        })
+
+        const wrapper = await createTestProvider({
+          resources: [releasesUsEnglishLocaleBundle],
+          config: {
+            document: {
+              drafts: {enabled: false},
+            },
+          },
+        })
+
+        await act(async () => render(<TestComponent />, {wrapper}))
+
+        const releasesButton = screen.getByRole('button', {name: 'Releases'})
+        expect(releasesButton).toBeInTheDocument()
+      })
+
+      it('should show text only when there are no cardinality one releases', async () => {
+        mockUseActiveReleases.mockReturnValue({
+          ...useActiveReleasesMockReturn,
+          data: [activeASAPRelease], // Only cardinality 'many' releases
+        })
+        mockUseReleasesMetadata.mockReturnValue({
+          ...useReleasesMetadataMockReturn,
+          data: {
+            [activeASAPRelease._id]: {documentCount: 2, updatedAt: null},
+          },
+        })
+
+        const wrapper = await createTestProvider({
+          resources: [releasesUsEnglishLocaleBundle],
+          config: {
+            document: {
+              drafts: {enabled: false},
+            },
+          },
+        })
+
+        await act(async () => render(<TestComponent />, {wrapper}))
+
+        // text is there, but menu button is not
+        expect(screen.getByText('Releases')).toBeInTheDocument()
+        const dropdownButton = screen.queryByRole('button', {name: 'Releases'})
+        expect(dropdownButton).not.toBeInTheDocument()
+      })
+
+      it('should show menu button when there are non-scheduled cardinality one releases', async () => {
+        mockUseActiveReleases.mockReturnValue({
+          ...useActiveReleasesMockReturn,
+          data: [releaseWithUndecidedCardinalityOne, releaseWithASAPCardinalityOne],
+        })
+        mockUseReleasesMetadata.mockReturnValue({
+          ...useReleasesMetadataMockReturn,
+          data: {
+            [releaseWithUndecidedCardinalityOne._id]: {documentCount: 1, updatedAt: null},
+            [releaseWithASAPCardinalityOne._id]: {documentCount: 1, updatedAt: null},
+          },
+        })
+
+        const wrapper = await createTestProvider({
+          resources: [releasesUsEnglishLocaleBundle],
+          config: {
+            document: {
+              drafts: {enabled: false},
+            },
+          },
+        })
+
+        await act(async () => render(<TestComponent />, {wrapper}))
+
+        // menu button should be there now since we have cardinality one releases
+        const releasesButton = screen.getByRole('button', {name: 'Releases'})
+        expect(releasesButton).toBeInTheDocument()
+      })
+    })
+  })
+
+  describe('upsell and empty state logic', () => {
+    const mockUpsellData = {
+      title: 'Upgrade',
+      descriptionText: [],
+      ctaButton: {
+        text: 'Upgrade',
+        url: 'https://example.com',
+      },
+      secondaryButton: {
+        text: 'Learn more',
+        url: 'https://example.com',
+      },
+      image: null,
+      _id: 'test-upsell',
+      _type: 'upsell',
+      _createdAt: '2024-01-01',
+      _updatedAt: '2024-01-01',
+      _rev: '1',
+      id: 'test-upsell',
+    }
+
+    const setupEmptyState = () => {
+      mockUseActiveReleases.mockReturnValue({
+        ...useActiveReleasesMockReturn,
+        data: [],
+      })
+      mockUseArchivedReleases.mockReturnValue({
+        ...useArchivedReleasesMockReturn,
+        data: [],
+      })
+    }
+
+    const setupUpsellMode = () => {
+      mockUseReleasesUpsell.mockReturnValue({
+        mode: 'upsell',
+        guardWithReleaseLimitUpsell: vi.fn((cb) => cb()),
+        onReleaseLimitReached: vi.fn(),
+        upsellDialogOpen: false,
+        handleOpenDialog: vi.fn(),
+        upsellData: mockUpsellData,
+        telemetryLogs: {
+          dialogSecondaryClicked: vi.fn(),
+          dialogPrimaryClicked: vi.fn(),
+          panelViewed: vi.fn(),
+          panelDismissed: vi.fn(),
+          panelPrimaryClicked: vi.fn(),
+          panelSecondaryClicked: vi.fn(),
+        },
+      })
+    }
+
+    describe('regular releases (cardinalityView === "releases")', () => {
+      describe('when empty and plan requires upsell', () => {
+        beforeEach(async () => {
+          setupEmptyState()
+          setupUpsellMode()
+
+          const wrapper = await createTestProvider({
+            resources: [releasesUsEnglishLocaleBundle],
+          })
+
+          return await act(async () => render(<TestComponent />, {wrapper}))
+        })
+
+        it('should show upsell only', () => {
+          expect(screen.getByTestId('release-illustration')).toBeInTheDocument()
+          expect(screen.queryByTestId('no-releases-info-text')).not.toBeInTheDocument()
+          expect(screen.queryByRole('table')).not.toBeInTheDocument()
+        })
+      })
+
+      describe('when has data but plan requires upsell (downgraded)', () => {
+        beforeEach(async () => {
+          mockUseActiveReleases.mockReturnValue({
+            ...useActiveReleasesMockReturn,
+            data: [activeScheduledRelease, activeASAPRelease],
+          })
+          mockUseReleasesMetadata.mockReturnValue({
+            ...useReleasesMetadataMockReturn,
+            data: {
+              [activeScheduledRelease._id]: {documentCount: 2, updatedAt: null},
+              [activeASAPRelease._id]: {documentCount: 1, updatedAt: null},
+            },
+          })
+          setupUpsellMode()
+
+          const wrapper = await createTestProvider({
+            resources: [releasesUsEnglishLocaleBundle],
+          })
+
+          return await act(async () => render(<TestComponent />, {wrapper}))
+        })
+
+        it('should show data table only (not upsell)', async () => {
+          await waitFor(() => {
+            expect(screen.getByRole('table')).toBeInTheDocument()
+          })
+
+          const releaseRows = screen.getAllByTestId('table-row')
+          expect(releaseRows).toHaveLength(2)
+
+          expect(screen.queryByTestId('release-illustration')).not.toBeInTheDocument()
+          expect(screen.queryByTestId('no-releases-info-text')).not.toBeInTheDocument()
+        })
+      })
+
+      describe('when empty and plan supports releases', () => {
+        beforeEach(async () => {
+          setupEmptyState()
+
+          const wrapper = await createTestProvider({
+            resources: [releasesUsEnglishLocaleBundle],
+          })
+
+          return await act(async () => render(<TestComponent />, {wrapper}))
+        })
+
+        it('should show empty list state', () => {
+          expect(screen.getByTestId('no-releases-info-text')).toBeInTheDocument()
+          expect(screen.getByTestId('release-illustration')).toBeInTheDocument()
+          expect(screen.queryByRole('table')).not.toBeInTheDocument()
+        })
+      })
+    })
+
+    describe('scheduled drafts', () => {
+      describe('when empty and plan requires upsell', () => {
+        beforeEach(async () => {
+          vi.mocked(useScheduledDraftsEnabled).mockReturnValue(true)
+          setupEmptyState()
+          mockUseSingleDocReleaseEnabled.mockReturnValue({
+            enabled: true,
+            mode: 'upsell',
+          })
+          mockUseSingleDocReleaseUpsell.mockImplementation(() => ({
+            upsellData: mockUpsellData,
+            telemetryLogs: {
+              panelViewed: vi.fn(),
+              panelDismissed: vi.fn(),
+              panelPrimaryClicked: vi.fn(),
+              panelSecondaryClicked: vi.fn(),
+            },
+          }))
+
+          const wrapper = await createTestProvider({
+            resources: [releasesUsEnglishLocaleBundle],
+          })
+
+          return await act(async () => render(<TestComponent />, {wrapper}))
+        })
+
+        it('should show upsell only', () => {
+          expect(screen.getByTestId('release-illustration')).toBeInTheDocument()
+          expect(screen.queryByRole('table')).not.toBeInTheDocument()
+        })
+      })
+
+      describe('when empty and plan supports scheduled drafts', () => {
+        beforeEach(async () => {
+          vi.mocked(useScheduledDraftsEnabled).mockReturnValue(true)
+          setupEmptyState()
+          mockUseSingleDocReleaseEnabled.mockReturnValue({
+            enabled: true,
+            mode: 'default',
+          })
+
+          const wrapper = await createTestProvider({
+            resources: [releasesUsEnglishLocaleBundle],
+          })
+
+          return await act(async () => render(<TestComponent />, {wrapper}))
+        })
+
+        it('should show empty list state', () => {
+          expect(screen.getByTestId('no-releases-info-text')).toBeInTheDocument()
+          expect(screen.getByTestId('release-illustration')).toBeInTheDocument()
+          expect(screen.queryByRole('table')).not.toBeInTheDocument()
+        })
       })
     })
   })

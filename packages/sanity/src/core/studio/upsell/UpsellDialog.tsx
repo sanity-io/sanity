@@ -76,7 +76,7 @@ export function UpsellDialog(props: UpsellDialogProps) {
         confirmButton: {
           text: data.ctaButton?.text,
           mode: 'default',
-          tone: 'primary',
+          tone: 'default',
           ...(data.ctaButton.url && {
             target: '_blank',
             rel: 'noopener noreferrer',

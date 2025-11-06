@@ -5,13 +5,12 @@ import {useCallback, useEffect, useMemo, useState} from 'react'
 
 import {type ProvenanceDiffAnnotation} from '../../../../store/types/diff'
 import {type ComputeDiff} from '../../../../store/types/nodes'
-import {computeRangeDecorations} from './computeRangeDecorations'
+import {computeStringDiffRangeDecorations} from '../../../common/diff/string/computeStringDiffRangeDecorations'
 
 type InputOrigin = 'optimistic' | 'definitive'
 
 export interface OptimisticDiffOptions {
   definitiveValue: string | undefined
-  definitiveDiff: Diff<ProvenanceDiffAnnotation>
   computeDiff: ComputeDiff<ProvenanceDiffAnnotation>
 }
 
@@ -23,16 +22,14 @@ export interface OptimisticDiffApi {
 
 export function useOptimisticDiff({
   definitiveValue,
-  definitiveDiff,
   computeDiff,
 }: OptimisticDiffOptions): OptimisticDiffApi {
   const [optimisticValue, setOptimisticValue] = useState(definitiveValue)
   const [currentSignal, setCurrentSignal] = useState<InputOrigin>('definitive')
-  const optimisticDiff = useMemo(() => computeDiff(optimisticValue), [computeDiff, optimisticValue])
 
   const diffsBySignal: Record<InputOrigin, Diff<ProvenanceDiffAnnotation>> = {
-    optimistic: optimisticDiff,
-    definitive: definitiveDiff,
+    optimistic: useMemo(() => computeDiff(optimisticValue), [computeDiff, optimisticValue]),
+    definitive: useMemo(() => computeDiff(definitiveValue), [computeDiff, definitiveValue]),
   }
 
   const diff = diffsBySignal[currentSignal]
@@ -54,7 +51,7 @@ export function useOptimisticDiff({
 
   const rangeDecorations = useMemo(
     () =>
-      computeRangeDecorations({
+      computeStringDiffRangeDecorations({
         diff,
         mapPayload: (payload) => ({
           ...payload,

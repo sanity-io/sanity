@@ -168,7 +168,7 @@ const downloadBackupCommand: CliCommandDefinition = {
     } catch (error) {
       progressSpinner.fail()
       const {message} = parseApiErr(error)
-      throw new Error(`Downloading dataset backup failed: ${message}`)
+      throw new Error(`Downloading dataset backup failed: ${message}`, {cause: error})
     }
 
     docOutStream.end()
@@ -183,7 +183,7 @@ const downloadBackupCommand: CliCommandDefinition = {
       })
     } catch (err) {
       progressSpinner.fail()
-      throw new Error(`Archiving backup failed: ${err.message}`)
+      throw new Error(`Archiving backup failed: ${err.message}`, {cause: err})
     }
 
     progressSpinner.set({

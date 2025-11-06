@@ -122,8 +122,10 @@ const defaultConfig = defineConfig({
     markdownSchema(),
   ],
   beta: {
-    treeArrayEditing: {
-      enabled: true,
+    form: {
+      enhancedObjectDialog: {
+        enabled: true,
+      },
     },
   },
   announcements: {

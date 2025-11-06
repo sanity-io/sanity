@@ -14,6 +14,9 @@ export type MediaLibraryAssetAspectSupportedFieldDefinitions = FieldDefinition<
  */
 export type MediaLibraryAssetAspectDefinition = MediaLibraryAssetAspectSupportedFieldDefinitions & {
   assetType?: MediaLibraryAssetType | MediaLibraryAssetType[]
+
+  // Whether the aspect is publicly available from GROQ queries
+  public?: boolean
 }
 
 /**
@@ -47,4 +50,5 @@ export interface MediaLibraryAssetAspectDocument extends SanityDocumentLike {
    */
   assetType?: MediaLibraryAssetType[]
   definition: FieldDefinition
+  public?: boolean
 }

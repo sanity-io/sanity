@@ -1,15 +1,17 @@
-import {Box, Container, Flex, Text, useTheme} from '@sanity/ui'
+import {Box, Card, Container, Flex, Text, useTheme} from '@sanity/ui'
 import {parse} from 'date-fns'
 import {useEffect, useMemo, useRef} from 'react'
-import {type RouterContextValue, useRouter} from 'sanity/router'
+import {Link, type RouterContextValue, useRouter} from 'sanity/router'
 import {styled} from 'styled-components'
 
 import {LoadingBlock} from '../../components/loadingBlock/LoadingBlock'
 import {TimeZoneButton} from '../../components/timeZone/timeZoneButton/TimeZoneButton'
 import {useTimeZone} from '../../hooks/useTimeZone'
 import {useTranslation} from '../../i18n/hooks/useTranslation'
-import {useReleasesToolAvailable} from '../../releases/hooks/useReleasesToolAvailable'
 import {useScheduledPublishingEnabled} from '../../scheduledPublishing/contexts/ScheduledPublishingEnabledProvider'
+import {useReleasesToolAvailable} from '../../schedules/hooks/useReleasesToolAvailable'
+import {useScheduledDraftsEnabled} from '../../singleDocRelease/hooks/useScheduledDraftsEnabled'
+import {RELEASES_SCHEDULED_DRAFTS_INTENT} from '../../singleDocRelease/plugin'
 import {useWorkspace} from '../../studio/workspace'
 import TimeZoneButtonElementQuery from '../components/dialogs/TimeZoneButtonElementQuery'
 import ErrorCallout from '../components/errorCallout/ErrorCallout'
@@ -37,6 +39,26 @@ const Column = styled(Box)`
 
 const NO_SCHEDULE: Schedule[] = []
 const DATE_SLUG_FORMAT = 'yyyy-MM-dd' // date-fns format
+
+function ScheduledDraftsBanner() {
+  const router = useRouter()
+  const isScheduledDraftsEnabled = useScheduledDraftsEnabled()
+
+  const releasesUrl = router.resolveIntentLink(RELEASES_SCHEDULED_DRAFTS_INTENT, {view: 'drafts'})
+
+  if (isScheduledDraftsEnabled) {
+    return (
+      <Card padding={4} tone="caution" width="fill">
+        <Flex gap={3} align="center" justify="center">
+          <Text size={1} weight="medium">
+            Scheduled Drafts is enabled for this Studio. All new Scheduled Drafts will be{' '}
+            <Link href={releasesUrl}>available here</Link>
+          </Text>
+        </Flex>
+      </Card>
+    )
+  }
+}
 
 export default function Tool() {
   const router = useRouter()
@@ -134,6 +156,7 @@ export default function Tool() {
           </Column>
           {/* RHS Column */}
           <Column display="flex" flex={1} overflow="hidden">
+            <ScheduledDraftsBanner />
             <TimeZoneButtonElementQuery
               style={{
                 background: theme.color.card.enabled.bg,

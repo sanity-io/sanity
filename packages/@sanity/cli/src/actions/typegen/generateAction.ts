@@ -53,7 +53,7 @@ export default async function typegenGenerateAction(
       // If the user has not provided a specific schema path (eg we're using the default), give some help
       const hint =
         codegenConfig.schema === './schema.json' ? ` - did you run "sanity schema extract"?` : ''
-      throw new Error(`Schema file not found: ${codegenConfig.schema}${hint}`)
+      throw new Error(`Schema file not found: ${codegenConfig.schema}${hint}`, {cause: err})
     }
     throw err
   }
