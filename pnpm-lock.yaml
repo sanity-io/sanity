@@ -169,6 +169,9 @@ importers:
       prettier-plugin-packagejson:
         specifier: ^2.5.19
         version: 2.5.19(prettier@3.6.2)
+      sanity:
+        specifier: workspace:*
+        version: link:packages/sanity
       tsx:
         specifier: ^4.20.6
         version: 4.20.6
