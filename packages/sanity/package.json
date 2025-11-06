@@ -157,6 +157,7 @@
     "@portabletext/patches": "^2.0.0",
     "@portabletext/plugin-markdown-shortcuts": "^3.0.3",
     "@portabletext/plugin-one-line": "^2.1.2",
+    "@portabletext/plugin-typography": "^3.0.1",
     "@portabletext/react": "^5.0.0",
     "@portabletext/toolkit": "^4.0.0",
     "@rexxars/react-json-inspector": "^9.0.1",
