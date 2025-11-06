@@ -157,12 +157,6 @@ describe('resolveConfig', () => {
         projectId,
         auth: createMockAuthStore({client, currentUser: null}),
         plugins: [mockPlugin()],
-        releases: {
-          enabled: true,
-        },
-        scheduledDrafts: {
-          enabled: true,
-        },
       }),
     )
     expect(workspace.__internal.options.plugins).toMatchObject([
@@ -196,9 +190,6 @@ describe('resolveConfig', () => {
         releases: {
           enabled: false,
         },
-        scheduledDrafts: {
-          enabled: true,
-        },
       }),
     )
     const pluginNames = workspace.__internal.options.plugins?.map((p) => p.name) ?? []
@@ -222,9 +213,6 @@ describe('resolveConfig', () => {
         projectId,
         auth: createMockAuthStore({client, currentUser: null}),
         plugins: [], // No plugins
-        releases: {
-          enabled: true,
-        },
         scheduledDrafts: {
           enabled: false,
         },
@@ -282,9 +270,6 @@ describe('resolveConfig', () => {
         projectId,
         auth: createMockAuthStore({client, currentUser: null}),
         plugins: [], // No plugins
-        releases: {
-          enabled: true,
-        },
       }),
     )
 
@@ -295,6 +280,7 @@ describe('resolveConfig', () => {
       {name: 'sanity/releases'},
       {name: 'sanity/canvas-integration'},
       {name: 'sanity/schedules'},
+      {name: 'sanity/singleDocRelease'},
     ])
   })
 })
