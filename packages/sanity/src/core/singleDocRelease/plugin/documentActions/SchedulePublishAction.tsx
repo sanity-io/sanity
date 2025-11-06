@@ -13,11 +13,11 @@ import {Translate, useTranslation} from '../../../i18n'
 import {getReleaseIdFromReleaseDocumentId} from '../../../releases/util/getReleaseIdFromReleaseDocumentId'
 import {ScheduleDraftDialog} from '../../components/ScheduleDraftDialog'
 import {useSingleDocReleaseEnabled} from '../../context/SingleDocReleaseEnabledProvider'
+import {useSingleDocRelease} from '../../context/SingleDocReleaseProvider'
 import {useSingleDocReleaseUpsell} from '../../context/SingleDocReleaseUpsellProvider'
 import {useHasCardinalityOneReleaseVersions} from '../../hooks/useHasCardinalityOneReleaseVersions'
 import {useScheduleDraftOperations} from '../../hooks/useScheduleDraftOperations'
 import {singleDocReleaseNamespace} from '../../i18n'
-import {usePaneRouter} from 'sanity/structure'
 
 /**
  * @internal
@@ -40,7 +40,7 @@ export const SchedulePublishAction: DocumentActionComponent = (
 
   const [dialogOpen, setDialogOpen] = useState(false)
   const [isScheduling, setIsScheduling] = useState(false)
-  const {params, setParams} = usePaneRouter()
+  const {onSetScheduledDraftPerspective} = useSingleDocRelease()
   const handleOpenDialog = useCallback(() => {
     if (mode === 'upsell') {
       handleOpenUpsellDialog('document_action')
@@ -73,14 +73,7 @@ export const SchedulePublishAction: DocumentActionComponent = (
             />
           ),
         })
-        setParams(
-          {...params, scheduledDraft: getReleaseIdFromReleaseDocumentId(releaseDocumentId)},
-          // We need to reset the perspective sticky param when we set the scheduled draft local perspective.
-          // this is because the user may be clicking this from another perspective, for example they could be seeing a `release` perspective and then click to see this scheduled draft perspective.
-          // the perspective sticky param was set to the release perspective, so we need to remove it.
-          // We are changing both the params and the perspective sticky param to ensure that the scheduled draft perspective is set correctly.
-          {perspective: ''},
-        )
+        onSetScheduledDraftPerspective(getReleaseIdFromReleaseDocumentId(releaseDocumentId))
         setDialogOpen(false)
       } catch (error) {
         console.error('Failed to schedule document publish:', error)
@@ -95,7 +88,7 @@ export const SchedulePublishAction: DocumentActionComponent = (
         setIsScheduling(false)
       }
     },
-    [id, createScheduledDraft, toast, t, params, setParams],
+    [id, createScheduledDraft, toast, t, onSetScheduledDraftPerspective],
   )
 
   if (!draft || !singleDocReleaseEnabled) {
