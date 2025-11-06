@@ -20,7 +20,7 @@
     "@repo/eslint-config": "workspace:*",
     "@repo/tsconfig": "workspace:*",
     "@repo/utils": "workspace:*",
-    "@sanity/client": "^7.12.1",
+    "@sanity/client": "catalog:",
     "@sanity/uuid": "^3.0.2",
     "eslint": "catalog:",
     "tsx": "^4.20.6"
