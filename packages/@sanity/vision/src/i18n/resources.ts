@@ -120,6 +120,8 @@ const visionLocaleStrings = defineLocalesResources('vision', {
     'The default perspective will change from "<code>raw</code>" to "<code>published</code>" in an upcoming API version. Please consult docs for more details.',
   /** Label for the pinned release perspective */
   'settings.perspectives.pinned-release-label': 'Pinned release',
+  /** Label for the scheduled drafts perspective */
+  'settings.perspectives.scheduled-drafts': 'Scheduled drafts',
   /** Title for popover that explains what "Perspectives" are */
   'settings.perspectives.title': 'Perspectives',
 } as const)

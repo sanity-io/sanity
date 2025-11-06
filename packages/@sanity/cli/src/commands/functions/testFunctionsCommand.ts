@@ -20,6 +20,7 @@ Options
   --dataset <dataset> The Sanity dataset to use
   --project-id <id> Sanity Project ID to use
   --with-user-token Prime access token from CLI config into context.clientOptions
+  --media-library-id <id> Sanity Media Library ID to use
 
 
 Examples
@@ -52,6 +53,7 @@ export interface FunctionsTestFlags {
   'document-id-before'?: string
   'document-id-after'?: string
   'with-user-token'?: boolean
+  'media-library-id'?: string
 }
 
 const defaultFlags: FunctionsTestFlags = {
@@ -64,7 +66,7 @@ const testFunctionsCommand: CliCommandDefinition<FunctionsTestFlags> = {
   group: 'functions',
   helpText,
   signature:
-    '<name> [--event create|update|delete] [--data <json>] [--data-before <json>] [--data-after <json>] [--file <filename>] [--file-before <filename>] [--file-after <filename>] [--document-id <id>] [--document-id-before <id>] [--document-id-before <id>] [--timeout <seconds>] [--api <version>] [--dataset <name>] [--project-id] <id>] [--with-user-token]',
+    '<name> [--event create|update|delete] [--data <json>] [--data-before <json>] [--data-after <json>] [--file <filename>] [--file-before <filename>] [--file-after <filename>] [--document-id <id>] [--document-id-before <id>] [--document-id-before <id>] [--timeout <seconds>] [--api <version>] [--dataset <name>] [--project-id <id>] [--media-library-id <id>] [--with-user-token]',
   description: 'Invoke a local Sanity Function',
   async action(args, context) {
     const {apiClient, output, chalk} = context
@@ -143,6 +145,7 @@ const testFunctionsCommand: CliCommandDefinition<FunctionsTestFlags> = {
         'dataset': flags.dataset || actualDataset,
         'project-id': flags['project-id'] || bpProjectId,
         'with-user-token': flags['with-user-token'],
+        'media-library-id': flags['media-library-id'],
       },
     })
 

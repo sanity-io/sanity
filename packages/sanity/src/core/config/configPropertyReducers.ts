@@ -31,7 +31,6 @@ import {
   type DocumentLanguageFilterContext,
   type NewDocumentOptionsContext,
   type PluginOptions,
-  QUOTA_EXCLUDED_RELEASES_ENABLED,
   type ResolveProductionUrlContext,
   type Tool,
 } from './types'
@@ -530,15 +529,15 @@ export const serverDocumentActionsReducer = (opts: {
   return result
 }
 
-export const internalQuotaExcludedReleasesEnabledReducer = (opts: {
+export const scheduledDraftsEnabledReducer = (opts: {
   config: PluginOptions
-  initialValue: boolean | undefined
-}): boolean | undefined => {
+  initialValue: boolean
+}): boolean => {
   const {config, initialValue} = opts
   const flattenedConfig = flattenConfig(config, [])
 
-  const result = flattenedConfig.reduce((acc: boolean | undefined, {config: innerConfig}) => {
-    const enabled = innerConfig[QUOTA_EXCLUDED_RELEASES_ENABLED]
+  const result = flattenedConfig.reduce((acc: boolean, {config: innerConfig}) => {
+    const enabled = innerConfig.scheduledDrafts?.enabled
 
     if (typeof enabled === 'undefined') return acc
     if (typeof enabled === 'boolean') return enabled

@@ -4,7 +4,7 @@ import {styled} from 'styled-components'
 
 import {usePerspective} from '../../perspective/usePerspective'
 import {useReleasesToolAvailable} from '../../schedules/hooks/useReleasesToolAvailable'
-import {isCardinalityOnePerspective} from '../../util/releaseUtils'
+import {useWorkspace} from '../../studio/workspace'
 import {ReleasesToolLink} from '../ReleasesToolLink'
 import {type ReleasesNavMenuItemPropsGetter} from '../types'
 import {CurrentGlobalPerspectiveLabel} from './currentGlobalPerspectiveLabel'
@@ -46,22 +46,16 @@ interface Props {
  */
 export const ReleasesNav: ComponentType<Props> = ({withReleasesToolButton, menuItemProps}) => {
   const releasesToolAvailable = useReleasesToolAvailable()
+  const isReleasesEnabled = !!useWorkspace().releases?.enabled
   const {selectedPerspective, selectedReleaseId} = usePerspective()
 
   return (
     <ReleasesNavContainer flex="none" tone="inherit" radius="full" data-ui="ReleasesNav" border>
       {withReleasesToolButton && releasesToolAvailable && <ReleasesToolLink />}
-      <CurrentGlobalPerspectiveLabel
-        selectedPerspective={
-          isCardinalityOnePerspective(selectedPerspective) ? 'drafts' : selectedPerspective
-        }
-      />
+      <CurrentGlobalPerspectiveLabel selectedPerspective={selectedPerspective} />
       <GlobalPerspectiveMenu
-        selectedReleaseId={
-          // when global perspective is a cardinality one release (aka: scheduled draft) we want to visually show this as being 'drafts' in the global picker
-          isCardinalityOnePerspective(selectedPerspective) ? undefined : selectedReleaseId
-        }
-        areReleasesEnabled={releasesToolAvailable}
+        selectedReleaseId={selectedReleaseId}
+        areReleasesEnabled={releasesToolAvailable && isReleasesEnabled}
         menuItemProps={menuItemProps}
       />
     </ReleasesNavContainer>

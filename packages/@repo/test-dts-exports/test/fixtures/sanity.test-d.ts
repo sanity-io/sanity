@@ -920,6 +920,7 @@ import type {
   LoginMethod,
   LogoProps,
   MapDocument,
+  MarkdownConfig,
   matchWorkspace,
   MatchWorkspaceOptions,
   MatchWorkspaceResult,
@@ -1110,7 +1111,6 @@ import type {
   PUBLISHED,
   PublishedId,
   QueryParams,
-  QUOTA_EXCLUDED_RELEASES_ENABLED,
   ReactHook,
   RebasePatchMsg,
   ReconnectEvent,
@@ -1270,6 +1270,7 @@ import type {
   setAtPath,
   setIfMissing,
   SharedResizeObserver,
+  SingleDocReleaseProvider,
   SingleFieldSet,
   SingleMutationResult,
   SingleWorkspace,
@@ -1294,6 +1295,7 @@ import type {
   snapshotPair,
   SortOrdering,
   SortOrderingItem,
+  sortReleases,
   Source,
   SourceClientOptions,
   SourceOptions,
@@ -1506,6 +1508,7 @@ import type {
   useFormState,
   UseFormStateOptions,
   useFormValue,
+  useGetDefaultPerspective,
   useGetFormValue,
   useGetI18nText,
   useGlobalCopyPasteElementHandler,
@@ -1566,10 +1569,12 @@ import type {
   UserStoreOptions,
   UserWithPermission,
   useSanityCreateConfig,
+  useScheduledDraftsEnabled,
   useSchema,
   useSearchMaxFieldDepth,
   useSearchState,
   useSetPerspective,
+  useSingleDocRelease,
   useSource,
   useStudioUrl,
   useSyncState,
@@ -4427,6 +4432,9 @@ describe('sanity', () => {
   test('MapDocument', () => {
     expectTypeOf<MapDocument>().not.toBeNever()
   })
+  test('MarkdownConfig', () => {
+    expectTypeOf<MarkdownConfig>().not.toBeNever()
+  })
   test('matchWorkspace', () => {
     expectTypeOf<typeof matchWorkspace>().toBeFunction()
   })
@@ -5001,9 +5009,6 @@ describe('sanity', () => {
   test('QueryParams', () => {
     expectTypeOf<QueryParams>().not.toBeNever()
   })
-  test('QUOTA_EXCLUDED_RELEASES_ENABLED', () => {
-    expectTypeOf<typeof QUOTA_EXCLUDED_RELEASES_ENABLED>().not.toBeNever()
-  })
   test('ReactHook', () => {
     expectTypeOf<ReactHook<any, any>>().not.toBeNever()
   })
@@ -5484,6 +5489,9 @@ describe('sanity', () => {
   test('SharedResizeObserver', () => {
     expectTypeOf<SharedResizeObserver>().toBeObject()
   })
+  test('SingleDocReleaseProvider', () => {
+    expectTypeOf<typeof SingleDocReleaseProvider>().toBeFunction()
+  })
   test('SingleFieldSet', () => {
     expectTypeOf<SingleFieldSet>().toBeObject()
   })
@@ -5557,6 +5565,9 @@ describe('sanity', () => {
   })
   test('SortOrderingItem', () => {
     expectTypeOf<SortOrderingItem>().toBeObject()
+  })
+  test('sortReleases', () => {
+    expectTypeOf<typeof sortReleases>().toBeFunction()
   })
   test('Source', () => {
     expectTypeOf<Source>().toBeObject()
@@ -6203,6 +6214,9 @@ describe('sanity', () => {
   test('useFormValue', () => {
     expectTypeOf<typeof useFormValue>().toBeFunction()
   })
+  test('useGetDefaultPerspective', () => {
+    expectTypeOf<typeof useGetDefaultPerspective>().toBeFunction()
+  })
   test('useGetFormValue', () => {
     expectTypeOf<typeof useGetFormValue>().toBeFunction()
   })
@@ -6384,6 +6398,9 @@ describe('sanity', () => {
   test('useSanityCreateConfig', () => {
     expectTypeOf<typeof useSanityCreateConfig>().toBeFunction()
   })
+  test('useScheduledDraftsEnabled', () => {
+    expectTypeOf<typeof useScheduledDraftsEnabled>().toBeFunction()
+  })
   test('useSchema', () => {
     expectTypeOf<typeof useSchema>().toBeFunction()
   })
@@ -6395,6 +6412,9 @@ describe('sanity', () => {
   })
   test('useSetPerspective', () => {
     expectTypeOf<typeof useSetPerspective>().toBeFunction()
+  })
+  test('useSingleDocRelease', () => {
+    expectTypeOf<typeof useSingleDocRelease>().toBeFunction()
   })
   test('useSource', () => {
     expectTypeOf<typeof useSource>().toBeFunction()
