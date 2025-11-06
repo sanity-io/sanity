@@ -25,6 +25,7 @@ import {
   usePerspective,
   useSchema,
   useSetPerspective,
+  useSingleDocRelease,
   useTranslation,
   useWorkspace,
   VersionChip,
@@ -102,18 +103,12 @@ export const DocumentPerspectiveList = memo(function DocumentPerspectiveList() {
 
   const onlyHasVersions = useOnlyHasVersions({documentId})
   const workspace = useWorkspace()
+  const {onSetScheduledDraftPerspective} = useSingleDocRelease()
 
   const handlePerspectiveChange = useCallback(
     (perspective: 'published' | 'drafts' | ReleaseDocument) => () => {
       if (isReleaseDocument(perspective) && isCardinalityOneRelease(perspective)) {
-        setParams(
-          {...params, scheduledDraft: getReleaseIdFromReleaseDocumentId(perspective._id)},
-          // We need to reset the perspective sticky param when we set the scheduled draft local perspective.
-          // this is because the user may be clicking this from another perspective, for example they could be seeing a `release` perspective and then click to see this scheduled draft perspective.
-          // the perspective sticky param was set to the release perspective, so we need to remove it.
-          // We are changing both the params and the perspective sticky param to ensure that the scheduled draft perspective is set correctly.
-          {perspective: ''},
-        )
+        onSetScheduledDraftPerspective(getReleaseIdFromReleaseDocumentId(perspective._id))
         return
       }
 
@@ -144,7 +139,7 @@ export const DocumentPerspectiveList = memo(function DocumentPerspectiveList() {
         setPerspective(newPerspective)
       }
     },
-    [setPerspective, setParams, params, defaultPerspective],
+    [setPerspective, setParams, params, defaultPerspective, onSetScheduledDraftPerspective],
   )
 
   const schemaType = schema.get(documentType)
