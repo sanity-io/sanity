@@ -1,10 +1,10 @@
 import {Card} from '@sanity/ui'
 import {type ComponentType} from 'react'
-import {useWorkspace} from 'sanity'
 import {styled} from 'styled-components'
 
 import {usePerspective} from '../../perspective/usePerspective'
 import {useReleasesToolAvailable} from '../../schedules/hooks/useReleasesToolAvailable'
+import {useWorkspace} from '../../studio/workspace'
 import {ReleasesToolLink} from '../ReleasesToolLink'
 import {type ReleasesNavMenuItemPropsGetter} from '../types'
 import {CurrentGlobalPerspectiveLabel} from './currentGlobalPerspectiveLabel'
