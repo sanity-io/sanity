@@ -88,6 +88,8 @@ import type {
   SchedulePublishUpsellContextValue,
   ScrollContext,
   SearchContext,
+  SingleDocReleaseContext,
+  SingleDocReleaseContextValue,
   SingleDocReleaseEnabledContext,
   SingleDocReleaseEnabledContextValue,
   SingleDocReleaseUpsellContext,
@@ -362,6 +364,12 @@ describe('sanity/_singletons', () => {
   })
   test('SearchContext', () => {
     expectTypeOf<typeof SearchContext>().not.toBeNever()
+  })
+  test('SingleDocReleaseContext', () => {
+    expectTypeOf<typeof SingleDocReleaseContext>().not.toBeNever()
+  })
+  test('SingleDocReleaseContextValue', () => {
+    expectTypeOf<SingleDocReleaseContextValue>().toBeObject()
   })
   test('SingleDocReleaseEnabledContext', () => {
     expectTypeOf<typeof SingleDocReleaseEnabledContext>().not.toBeNever()

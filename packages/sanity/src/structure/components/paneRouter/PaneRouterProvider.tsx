@@ -55,9 +55,12 @@ export function PaneRouterProvider(props: {
   )
 
   const modifyCurrentGroup = useCallback(
-    (modifier: (siblings: RouterPaneGroup, item: RouterPaneSibling) => RouterPaneGroup) => {
+    (
+      modifier: (siblings: RouterPaneGroup, item: RouterPaneSibling) => RouterPaneGroup,
+      stickyParams?: Record<string, string>,
+    ) => {
       const nextRouterState = createNextRouterState(modifier)
-      setTimeout(() => navigate(nextRouterState), 0)
+      setTimeout(() => navigate(nextRouterState, stickyParams ? {stickyParams} : undefined), 0)
       return nextRouterState
     },
     [createNextRouterState, navigate],
@@ -88,12 +91,15 @@ export function PaneRouterProvider(props: {
   )
 
   const setParams: PaneRouterContextValue['setParams'] = useCallback(
-    (nextParams) => {
-      modifyCurrentGroup((siblings, item) => [
-        ...siblings.slice(0, siblingIndex),
-        {...item, params: nextParams},
-        ...siblings.slice(siblingIndex + 1),
-      ])
+    (nextParams, stickyParams) => {
+      modifyCurrentGroup(
+        (siblings, item) => [
+          ...siblings.slice(0, siblingIndex),
+          {...item, params: nextParams},
+          ...siblings.slice(siblingIndex + 1),
+        ],
+        stickyParams,
+      )
     },
     [modifyCurrentGroup, siblingIndex],
   )

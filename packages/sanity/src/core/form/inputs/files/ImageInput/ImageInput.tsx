@@ -84,7 +84,7 @@ function BaseImageInputComponent(props: BaseImageInputProps): React.JSX.Element 
 
   const uploadSubscription = useRef<null | Subscription>(null)
 
-  const assetSourceUploaderRef = useRef<{
+  const [assetSourceUploader, setAssetSourceUploader] = useState<{
     unsubscribe: () => void
     uploader: AssetSourceUploader
   } | null>(null)
@@ -272,8 +272,8 @@ function BaseImageInputComponent(props: BaseImageInputProps): React.JSX.Element 
         try {
           const uploader = new assetSource.Uploader()
           // Unsubscribe from the previous uploader
-          assetSourceUploaderRef.current?.unsubscribe()
-          assetSourceUploaderRef.current = {
+          assetSourceUploader?.unsubscribe()
+          setAssetSourceUploader({
             unsubscribe: uploader.subscribe((event) => {
               switch (event.type) {
                 case 'progress':
@@ -302,16 +302,16 @@ function BaseImageInputComponent(props: BaseImageInputProps): React.JSX.Element 
               }
             }),
             uploader,
-          }
+          })
           setIsUploading(true)
           onChange(PatchEvent.from(createInitialUploadPatches(files[0])))
           uploader.upload(files, {schemaType, onChange: onChange as (patch: unknown) => void})
         } catch (err) {
           onChange(PatchEvent.from([unset([UPLOAD_STATUS_KEY])]))
           setIsUploading(false)
-          assetSourceUploaderRef.current?.unsubscribe()
+          assetSourceUploader?.unsubscribe()
           setSelectedAssetSource(null)
-          assetSourceUploaderRef.current = null
+          setAssetSourceUploader(null)
           push({
             status: 'error',
             description: t('asset-sources.common.uploader.upload-failed.description'),
@@ -321,16 +321,16 @@ function BaseImageInputComponent(props: BaseImageInputProps): React.JSX.Element 
         }
       }
     },
-    [onChange, push, schemaType, t],
+    [assetSourceUploader, onChange, push, schemaType, t],
   )
 
   // Abort asset source uploads and unsubscribe from the uploader is the component unmounts
   useEffect(() => {
     return () => {
-      assetSourceUploaderRef.current?.uploader?.abort()
-      assetSourceUploaderRef.current?.unsubscribe()
+      assetSourceUploader?.uploader?.abort()
+      assetSourceUploader?.unsubscribe()
     }
-  }, [])
+  }, [assetSourceUploader])
 
   const handleSelectImageFromAssetSource = useCallback((source: AssetSource) => {
     setSelectedAssetSource(source)
@@ -527,11 +527,12 @@ function BaseImageInputComponent(props: BaseImageInputProps): React.JSX.Element 
         observeAsset={observeAsset}
         schemaType={schemaType}
         selectedAssetSource={selectedAssetSource}
-        uploader={assetSourceUploaderRef.current?.uploader}
+        uploader={assetSourceUploader?.uploader}
         value={value}
       />
     )
   }, [
+    assetSourceUploader?.uploader,
     handleAssetSourceClosed,
     handleSelectAssetFromSource,
     isUploading,

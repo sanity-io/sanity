@@ -8,6 +8,7 @@ import {MenuItem} from '../../../../../ui-components'
 import {useTranslation} from '../../../../i18n/hooks/useTranslation'
 import {type UseScheduledDraftMenuActionsReturn} from '../../../../singleDocRelease/hooks/useScheduledDraftMenuActions'
 import {RELEASES_SCHEDULED_DRAFTS_INTENT} from '../../../../singleDocRelease/plugin'
+import {isReleaseScheduledOrScheduling} from '../../../util/util'
 import {CopyToReleaseMenuGroup} from './CopyToReleaseMenuGroup'
 
 interface ScheduledDraftContextMenuProps {
@@ -36,6 +37,8 @@ export const ScheduledDraftContextMenu = memo(function ScheduledDraftContextMenu
   } = props
   const {t} = useTranslation()
   const isCopyToReleaseDisabled = disabled || !hasCreatePermission || isGoingToUnpublish
+  const copyToReleaseOptions = releases.filter((r) => !isReleaseScheduledOrScheduling(r))
+  const showCopyToReleaseMenuItem = copyToReleaseOptions.length > 0
 
   const {actions} = scheduledDraftMenuActions
 
@@ -52,15 +55,19 @@ export const ScheduledDraftContextMenu = memo(function ScheduledDraftContextMenu
         <MenuItem icon={CalendarIcon} text={t('release.action.view-scheduled-drafts')} />
       </IntentLink>
       <MenuDivider />
-      <CopyToReleaseMenuGroup
-        releases={releases}
-        fromRelease={fromRelease}
-        onCreateRelease={onCreateRelease}
-        onCreateVersion={onCreateVersion}
-        disabled={isCopyToReleaseDisabled}
-        hasCreatePermission={hasCreatePermission}
-      />
-      <MenuDivider />
+      {showCopyToReleaseMenuItem && (
+        <>
+          <CopyToReleaseMenuGroup
+            releases={copyToReleaseOptions}
+            fromRelease={fromRelease}
+            onCreateRelease={onCreateRelease}
+            onCreateVersion={onCreateVersion}
+            disabled={isCopyToReleaseDisabled}
+            hasCreatePermission={hasCreatePermission}
+          />
+          <MenuDivider />
+        </>
+      )}
       <MenuItem {...actions.deleteSchedule} />
     </Menu>
   )

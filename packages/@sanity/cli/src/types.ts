@@ -350,7 +350,7 @@ export interface CliConfig {
      * The ID of your Sanity studio or app. Generated when deploying your studio or app for the first time.
      * Get the appId either by
      * - Checking the output of `sanity deploy`.
-     * - Get it from your project's Studio tab in https://sanity.io/manage
+     * - Get it from your project's Studio tab in https://www.sanity.io/manage
      */
     appId?: string
 

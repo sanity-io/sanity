@@ -12,7 +12,6 @@ import {
   type AppsOptions,
   type DefaultPluginsWorkspaceOptions,
   type PluginOptions,
-  QUOTA_EXCLUDED_RELEASES_ENABLED,
   type SingleWorkspace,
   type WorkspaceOptions,
 } from './types'
@@ -31,7 +30,6 @@ const defaultPlugins = [
 
 type DefaultPluginsOptions = DefaultPluginsWorkspaceOptions & {
   apps: AppsOptions
-  [QUOTA_EXCLUDED_RELEASES_ENABLED]: boolean
 }
 
 export function getDefaultPlugins(options: DefaultPluginsOptions, plugins?: PluginOptions[]) {
@@ -55,10 +53,10 @@ export function getDefaultPlugins(options: DefaultPluginsOptions, plugins?: Plug
     if (plugin.name === SCHEDULES_NAME) {
       // This tool is shared between releases and single doc release plugins.
       // and it needs to be enabled if either of the plugins are enabled.
-      return options.releases.enabled || options[QUOTA_EXCLUDED_RELEASES_ENABLED]
+      return options.releases.enabled || options.scheduledDrafts?.enabled
     }
     if (plugin.name === SINGLE_DOC_RELEASE_NAME) {
-      return options[QUOTA_EXCLUDED_RELEASES_ENABLED]
+      return options.scheduledDrafts?.enabled
     }
     return true
   })
@@ -95,6 +93,6 @@ export function getDefaultPluginsOptions(
       },
     },
     mediaLibrary: workspace?.mediaLibrary,
-    [QUOTA_EXCLUDED_RELEASES_ENABLED]: workspace[QUOTA_EXCLUDED_RELEASES_ENABLED] ?? false,
+    scheduledDrafts: workspace.scheduledDrafts ?? {enabled: true},
   }
 }

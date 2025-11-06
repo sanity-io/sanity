@@ -1,3 +1,4 @@
 {
+  "ignores": ["@babel/parser"],
   "ignore-patterns": ["templates/**"]
 }

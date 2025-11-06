@@ -9,6 +9,7 @@ import {
   useFilteredReleases,
   useOnlyHasVersions,
   usePerspective,
+  useSingleDocRelease,
 } from 'sanity'
 import {type IntentLinkProps} from 'sanity/router'
 import {
@@ -34,6 +35,7 @@ vi.mock('sanity', async (importOriginal) => ({
   usePerspective: vi.fn(),
   useActiveReleases: vi.fn().mockReturnValue({data: [], loading: false}),
   useArchivedReleases: vi.fn().mockReturnValue({data: [], loading: false}),
+  useSingleDocRelease: vi.fn().mockReturnValue({onSetScheduledDraftPerspective: vi.fn()}),
   SANITY_VERSION: '0.0.0',
 }))
 
@@ -65,6 +67,7 @@ const mockUseDocumentPane = useDocumentPane as MockedFunction<
   () => Partial<DocumentPaneContextValue>
 >
 const mockUseActiveReleases = useActiveReleases as Mock<typeof useActiveReleases>
+const mockUseSingleDocRelease = useSingleDocRelease as Mock<typeof useSingleDocRelease>
 const mockUseOnlyHasVersions = useOnlyHasVersions as Mock<typeof useOnlyHasVersions>
 const mockUseFilteredReleases = useFilteredReleases as Mock<typeof useFilteredReleases>
 const mockUsePerspective = usePerspective as Mock<typeof usePerspective>
@@ -98,6 +101,7 @@ const getTestProvider = async ({liveEdit}: {liveEdit?: boolean} = {}) => {
       },
     },
   })
+
   return wrapper
 }
 
@@ -175,6 +179,9 @@ describe('DocumentPerspectiveList', () => {
       loading: false,
       data: [mockCurrent],
       dispatch: vi.fn(),
+    })
+    mockUseSingleDocRelease.mockReturnValue({
+      onSetScheduledDraftPerspective: vi.fn(),
     })
 
     mockUseOnlyHasVersions.mockReturnValue(false)
