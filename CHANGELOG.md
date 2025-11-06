@@ -3,6 +3,39 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [4.14.0](https://github.com/sanity-io/sanity/compare/v4.13.0...v4.14.0) (2025-11-06)
+
+### Features
+
+* **core:** adds `scheduledDrafts` config option (on by default) ([#11026](https://github.com/sanity-io/sanity/issues/11026)) ([bb05c55](https://github.com/sanity-io/sanity/commit/bb05c557c1f0861d9e29ab1c1516afbcdb4194f1)) by Pedro Bonamin (46196328+pedrobonamin@users.noreply.github.com)
+* **core:** allow disabling the built-in PTE Markdown shortcuts plugin ([1b9a227](https://github.com/sanity-io/sanity/commit/1b9a227971a5a69a60f8171e0d22f783bc3c2e26)) by Christian Hamburger Grøngaard (christian.groengaard@sanity.io)
+* **core:** sticky drop message ([#11010](https://github.com/sanity-io/sanity/issues/11010)) ([d3be836](https://github.com/sanity-io/sanity/commit/d3be83617623e207c0aba9f628a2d804820e4d17)) by Per-Kristian Nordnes (per.kristian.nordnes@gmail.com)
+* vision perspective scheduled drafts ([#10999](https://github.com/sanity-io/sanity/issues/10999)) ([4876ac2](https://github.com/sanity-io/sanity/commit/4876ac28986babe7374fe7b11f42f28054b32f7d)) by Jordan Lawrence (jordanl17@me.com)
+
+### Bug Fixes
+
+* **ci:** change expected npm user ([#11057](https://github.com/sanity-io/sanity/issues/11057)) ([72cb37e](https://github.com/sanity-io/sanity/commit/72cb37e136977d2add74eadcbad9e8e3d792c4ff)) by Bjørge Næss (bjoerge@gmail.com)
+* **cli:** add new function test flag ([#11007](https://github.com/sanity-io/sanity/issues/11007)) ([22bd071](https://github.com/sanity-io/sanity/commit/22bd07126984e872f3fd3817f54c52a0da1114e9)) by Simon MacDonald (simon.macdonald@gmail.com)
+* **core:** close release dialog immediately after release creation ([#11011](https://github.com/sanity-io/sanity/issues/11011)) ([13a9958](https://github.com/sanity-io/sanity/commit/13a99580e8398017f0183923a06ac5db96aae5f7)) by Pedro Bonamin (46196328+pedrobonamin@users.noreply.github.com)
+* **core:** scheduled publish action should set pane perspective, not global ([#11058](https://github.com/sanity-io/sanity/issues/11058)) ([29faf6e](https://github.com/sanity-io/sanity/commit/29faf6e8857764eff49d1701276791b04c6be6b3)) by Pedro Bonamin (46196328+pedrobonamin@users.noreply.github.com)
+* **core:** use state over ref in ImageInput ([#11048](https://github.com/sanity-io/sanity/issues/11048)) ([7fad934](https://github.com/sanity-io/sanity/commit/7fad9348ea10ce195807a4333306d6aa883e0a80)) by Per-Kristian Nordnes (per.kristian.nordnes@gmail.com)
+* **deps:** add `@babel/parser`, an implicit dep of `recast` ([#11042](https://github.com/sanity-io/sanity/issues/11042)) ([bc08d28](https://github.com/sanity-io/sanity/commit/bc08d286f2cf618152dd483765df70304a120155)) by Cody Olsen (81981+stipsan@users.noreply.github.com)
+* **deps:** update dependency @portabletext/plugin-character-pair-decorator to ^2.0.1 ([#11039](https://github.com/sanity-io/sanity/issues/11039)) ([22ac6c9](https://github.com/sanity-io/sanity/commit/22ac6c93947a42fb085792333b205c9b76aaebcf)) by renovate[bot] (29139614+renovate[bot]@users.noreply.github.com)
+* **deps:** update dependency @portabletext/react to v5 ([#11034](https://github.com/sanity-io/sanity/issues/11034)) ([486476a](https://github.com/sanity-io/sanity/commit/486476a321c18f3c83eb5cc6d7eeecfc94668a97)) by renovate[bot] (29139614+renovate[bot]@users.noreply.github.com)
+* **deps:** update dependency @sanity/client to ^7.12.1 ([#11029](https://github.com/sanity-io/sanity/issues/11029)) ([df2aa67](https://github.com/sanity-io/sanity/commit/df2aa672f39c9a847e4102f1f0e18d240e1aa808)) by renovate[bot] (29139614+renovate[bot]@users.noreply.github.com)
+* **deps:** Update portabletext ([#10981](https://github.com/sanity-io/sanity/issues/10981)) ([a27f27b](https://github.com/sanity-io/sanity/commit/a27f27b87c91fd860d13bc4f6246557e59f7724c)) by renovate[bot] (29139614+renovate[bot]@users.noreply.github.com)
+* **deps:** Update portabletext ([#11031](https://github.com/sanity-io/sanity/issues/11031)) ([870a2f5](https://github.com/sanity-io/sanity/commit/870a2f5371f6c133dc64cda963e67259b8303de3)) by renovate[bot] (29139614+renovate[bot]@users.noreply.github.com)
+* **deps:** Update portabletext ([#11045](https://github.com/sanity-io/sanity/issues/11045)) ([184152b](https://github.com/sanity-io/sanity/commit/184152bdcbaba5e0e81a6b5ec4eb2ec0b02c1bad)) by renovate[bot] (29139614+renovate[bot]@users.noreply.github.com)
+* **deps:** Update portabletext to v2 (major) ([#11028](https://github.com/sanity-io/sanity/issues/11028)) ([786e057](https://github.com/sanity-io/sanity/commit/786e057aea2047362184c0e408254d29f7ab8f47)) by renovate[bot] (29139614+renovate[bot]@users.noreply.github.com)
+* **deps:** Update portabletext to v4 (major) ([#11027](https://github.com/sanity-io/sanity/issues/11027)) ([73dcb1d](https://github.com/sanity-io/sanity/commit/73dcb1d157492e9f7e9c9c8db0df3be10eb07997)) by renovate[bot] (29139614+renovate[bot]@users.noreply.github.com)
+* **e2e-test:** deleting the document crashes the test ([#11002](https://github.com/sanity-io/sanity/issues/11002)) ([33588e7](https://github.com/sanity-io/sanity/commit/33588e7d5a0cd1303138eefcd2579c9c816226bb)) by Pedro Bonamin (46196328+pedrobonamin@users.noreply.github.com)
+* **e2e:** increase timeout for beforeEach in references popover test ([#11054](https://github.com/sanity-io/sanity/issues/11054)) ([8190fa4](https://github.com/sanity-io/sanity/commit/8190fa4e1ad1ed392a70fe3ecb7cbfc8edf8ac7d)) by Pedro Bonamin (46196328+pedrobonamin@users.noreply.github.com)
+* replace deprecated `MarkdownPlugin` ([684c799](https://github.com/sanity-io/sanity/commit/684c799caa0f3f463ff14c72694a814108d682ab)) by Christian Hamburger Grøngaard (christian.groengaard@sanity.io)
+* replace deprecated `OneLinePlugin` ([78dcb72](https://github.com/sanity-io/sanity/commit/78dcb7266bf73b57160253dcb1f190748a512e9a)) by Christian Hamburger Grøngaard (christian.groengaard@sanity.io)
+* **sanity:** add missing translation string ([#11001](https://github.com/sanity-io/sanity/issues/11001)) ([46263b9](https://github.com/sanity-io/sanity/commit/46263b9b186b7beab5a4d91e192099738d0cfaa2)) by Bjørge Næss (bjoerge@gmail.com)
+* **studio:** pass asset type as context instead of argument ([#11038](https://github.com/sanity-io/sanity/issues/11038)) ([a105a57](https://github.com/sanity-io/sanity/commit/a105a5717792f0203413fdeacf55e8b4ba74cf69)) by Bjørge Næss (bjoerge@gmail.com)
+* when releases disabled don't show create release options ([#11064](https://github.com/sanity-io/sanity/issues/11064)) ([7956975](https://github.com/sanity-io/sanity/commit/7956975faa05fff9bd34c571f655d9769d0142c2)) by Jordan Lawrence (jordanl17@me.com)
+
 ## [4.13.0](https://github.com/sanity-io/sanity/compare/v4.12.0...v4.13.0) (2025-11-03)
 
 ### Features
