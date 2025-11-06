@@ -291,17 +291,17 @@ export const handler = documentEventHandler(async ({context, event}) => {
           const response = responses[0]
 
           if (response.ok) {
-            const successMessage = `Successfully posted to ${strategyName}: ${response.url} at ${new Date().toISOString()}`
+            const successMessage = `✅ ${response.url}`
             console.log(successMessage)
             resultMessage = successMessage
           } else {
             const error = response.reason?.toString() || 'Unknown error'
-            resultMessage = `Error posting to ${strategyName}: ${error}`
+            resultMessage = `⚠️ Error posting to ${strategyName}: ${error}`
             console.error(resultMessage)
           }
         } catch (error) {
           const errorMessage = error instanceof Error ? error.message : String(error)
-          resultMessage = `Error posting to ${strategyName}: ${errorMessage}`
+          resultMessage = `⚠️ Error posting to ${strategyName}: ${errorMessage}`
           console.error(resultMessage)
         }
 
