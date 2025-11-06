@@ -454,4 +454,9 @@ export default defineConfig([
       '@sanity/i18n/no-i18next-import': 'off',
     },
   },
+  // Enable rules that aid with ensuring react tests don't have race conditions
+  {
+    files: ['**/__tests__/**/*.[jt]s?(x)', '**/?(*.)+(spec|test).[jt]s?(x)'],
+    extends: ['plugin:testing-library/react'],
+  },
 ])
