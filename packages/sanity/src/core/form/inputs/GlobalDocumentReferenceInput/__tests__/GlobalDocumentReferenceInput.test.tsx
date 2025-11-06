@@ -60,7 +60,7 @@ describe('render states', () => {
       },
     })
 
-    expect(result.queryByTestId('autocomplete')).toBeInTheDocument()
+    expect(result.getByTestId('autocomplete')).toBeInTheDocument()
   })
 
   test('it renders the autocomplete when it has a value but focus is on the _ref', async () => {

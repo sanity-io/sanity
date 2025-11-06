@@ -1,5 +1,5 @@
 import {defineField} from '@sanity/types'
-import {fireEvent, screen, waitFor} from '@testing-library/react'
+import {fireEvent, screen} from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import {describe, expect, it} from 'vitest'
 
@@ -181,7 +181,7 @@ describe('readOnly property', () => {
     const input = container.querySelector('input[id="booleanReadOnly"]')
     fireEvent.mouseEnter(input!)
 
-    await waitFor(() => screen.getByText('Disabled'))
+    await screen.findByText('Disabled')
   })
 
   it('does not make field read-only with callback', async () => {

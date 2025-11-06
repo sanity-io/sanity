@@ -214,8 +214,8 @@ describe('StudioAnnouncementsProvider', () => {
 
       const {queryByText, getByLabelText} = render(null, {wrapper})
 
-      expect(queryByText("What's new")).toBeInTheDocument()
-      expect(queryByText(mockAnnouncements[1].title)).toBeInTheDocument()
+      expect(getByText("What's new")).toBeInTheDocument()
+      expect(getByText(mockAnnouncements[1].title)).toBeInTheDocument()
       const cardButton = getByLabelText('Open announcements')
       fireEvent.click(cardButton)
 
@@ -225,7 +225,7 @@ describe('StudioAnnouncementsProvider', () => {
       // The first announcement is seen, so it's not rendered
       expect(queryByText(mockAnnouncements[0].title)).toBeNull()
       // The second announcement is unseen, so it's rendered
-      expect(queryByText(mockAnnouncements[1].title)).toBeInTheDocument()
+      expect(getByText(mockAnnouncements[1].title)).toBeInTheDocument()
 
       // Opening the dialog calls the telemetry only once, with the seen card
       expect(mockLog).toBeCalledTimes(3)
@@ -261,8 +261,8 @@ describe('StudioAnnouncementsProvider', () => {
 
       const {queryByText, getByLabelText} = render(null, {wrapper})
 
-      expect(queryByText("What's new")).toBeInTheDocument()
-      expect(queryByText(mockAnnouncements[1].title)).toBeInTheDocument()
+      expect(getByText("What's new")).toBeInTheDocument()
+      expect(getByText(mockAnnouncements[1].title)).toBeInTheDocument()
       const closeButton = getByLabelText('Dismiss announcements')
       fireEvent.click(closeButton)
       await waitFor(() => {
@@ -295,14 +295,14 @@ describe('StudioAnnouncementsProvider', () => {
 
       const {queryByText, getByLabelText} = render(null, {wrapper})
 
-      expect(queryByText("What's new")).toBeInTheDocument()
-      expect(queryByText(mockAnnouncements[1].title)).toBeInTheDocument()
+      expect(getByText("What's new")).toBeInTheDocument()
+      expect(getByText(mockAnnouncements[1].title)).toBeInTheDocument()
       const cardButton = getByLabelText('Open announcements')
       fireEvent.click(cardButton)
       await waitFor(() => {
         expect(queryByText("What's new")).toBeNull()
       })
-      expect(queryByText(mockAnnouncements[1].title)).toBeInTheDocument()
+      expect(getByText(mockAnnouncements[1].title)).toBeInTheDocument()
 
       const closeButton = getByLabelText('Close dialog')
       fireEvent.click(closeButton)
@@ -354,8 +354,8 @@ describe('StudioAnnouncementsProvider', () => {
 
       const {queryByText, getByRole} = render(<Component />, {wrapper})
 
-      expect(queryByText("What's new")).toBeInTheDocument()
-      expect(queryByText(mockAnnouncements[1].title)).toBeInTheDocument()
+      expect(getByText("What's new")).toBeInTheDocument()
+      expect(getByText(mockAnnouncements[1].title)).toBeInTheDocument()
 
       const openDialogButton = getByRole('button', {name: 'Open dialog'})
       fireEvent.click(openDialogButton)
@@ -365,9 +365,9 @@ describe('StudioAnnouncementsProvider', () => {
         expect(queryByText("What's new")).toBeNull()
       })
       // The first announcement is seen, it's rendered because it's showing all
-      expect(queryByText(mockAnnouncements[0].title)).toBeInTheDocument()
+      expect(getByText(mockAnnouncements[0].title)).toBeInTheDocument()
       // The second announcement is unseen, so it's rendered
-      expect(queryByText(mockAnnouncements[1].title)).toBeInTheDocument()
+      expect(getByText(mockAnnouncements[1].title)).toBeInTheDocument()
     })
   })
   describe('tests audiences - studio version is 3.57.0', () => {

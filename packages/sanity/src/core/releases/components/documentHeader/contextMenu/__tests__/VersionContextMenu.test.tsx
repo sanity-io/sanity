@@ -112,9 +112,7 @@ describe('VersionContextMenu', () => {
       fireEvent.click(screen.getByTestId('copy-version-to-release-button-group'))
     })
 
-    await waitFor(() => {
-      fireEvent.click(screen.getByTestId('create-new-release-button'))
-    })
+    fireEvent.click(screen.getByTestId('create-new-release-button'))
     expect(defaultProps.onCreateRelease).toHaveBeenCalled()
   })
 
@@ -167,9 +165,7 @@ describe('VersionContextMenu', () => {
       fireEvent.click(screen.getByTestId('copy-version-to-release-button-group'))
     })
 
-    await waitFor(() => {
-      fireEvent.click(screen.getByTestId('create-new-release-button'))
-    })
+    fireEvent.click(screen.getByTestId('create-new-release-button'))
     expect(defaultProps.onCreateRelease).toHaveBeenCalled()
   })
 
@@ -190,9 +186,7 @@ describe('VersionContextMenu', () => {
       fireEvent.click(screen.getByTestId('copy-version-to-release-button-group'))
     })
 
-    await waitFor(() => {
-      fireEvent.click(screen.getByText('Release 2'))
-    })
+    fireEvent.click(screen.getByText('Release 2'))
     expect(defaultProps.onCreateRelease).toHaveBeenCalled()
   })
 

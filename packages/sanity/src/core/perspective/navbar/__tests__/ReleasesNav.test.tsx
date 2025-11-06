@@ -259,7 +259,7 @@ describe('ReleasesNav', () => {
             .getByText('Drafts')
             .closest('button')!
 
-          expect(within(drafts).queryByTestId('release-toggle-visibility')).toBeInTheDocument()
+          expect(within(drafts).getByTestId('release-toggle-visibility')).toBeInTheDocument()
           // toggle to hide
           fireEvent.click(within(drafts).getByTestId('release-toggle-visibility'))
           expect(useExcludedPerspectiveMockReturn.toggleExcludedPerspective).toHaveBeenCalledWith(

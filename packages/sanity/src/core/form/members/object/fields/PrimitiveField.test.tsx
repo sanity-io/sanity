@@ -1,6 +1,6 @@
 import {type ObjectSchemaType} from '@sanity/types'
 import {LayerProvider, studioTheme, ThemeProvider} from '@sanity/ui'
-import {act, fireEvent, render, screen, waitFor} from '@testing-library/react'
+import {fireEvent, render, screen, waitFor} from '@testing-library/react'
 import {userEvent} from '@testing-library/user-event'
 import {type PropsWithChildren} from 'react'
 import {FormBuilderContext} from 'sanity/_singletons'

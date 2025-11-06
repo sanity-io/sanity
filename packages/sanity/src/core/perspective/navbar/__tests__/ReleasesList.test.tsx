@@ -151,12 +151,12 @@ describe('ReleasesList', () => {
 
     it('should hide the releases list, but show publish and draft', async () => {
       await waitFor(() => {
-        expect(screen.queryByTestId('release-drafts')).toBeInTheDocument()
-        expect(screen.queryByTestId('release-drafts')).toBeInTheDocument()
+        expect(screen.getByTestId('release-drafts')).toBeInTheDocument()
         expect(screen.queryByTestId('release-rASAP')).not.toBeInTheDocument()
         expect(screen.queryByTestId('release-rScheduled')).not.toBeInTheDocument()
         expect(screen.queryByTestId('release-rActive')).not.toBeInTheDocument()
       })
+      expect(screen.getByTestId('release-drafts')).toBeInTheDocument()
     })
 
     it('should hide the create new release', async () => {

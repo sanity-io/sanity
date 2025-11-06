@@ -139,7 +139,7 @@ describe.skip('if schema type is a strong reference', () => {
       />,
     )
 
-    expect(queryByTestId('alert-reference-strength-mismatch')).toBeInTheDocument()
+    expect(getByTestId('alert-reference-strength-mismatch')).toBeInTheDocument()
   })
 })
 

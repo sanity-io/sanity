@@ -136,6 +136,6 @@ describe('OpenReleaseToEditbanner', () => {
       wrapper,
     })
 
-    expect(screen.queryByTestId('open-release-to-edit-banner')).not.toBeNull()
+    expect(screen.getByTestId('open-release-to-edit-banner')).not.toBeNull()
   })
 })

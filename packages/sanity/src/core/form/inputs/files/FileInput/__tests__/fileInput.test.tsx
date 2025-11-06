@@ -47,8 +47,8 @@ describe('FileInput with empty state', () => {
       render: (inputProps) => <BaseFileInput {...inputProps} />,
     })
 
-    expect(result.queryByTestId('file-input-upload-button-test-source')).toBeInTheDocument()
-    expect(result.queryByTestId('file-input-browse-button-test-source')).toBeInTheDocument()
+    expect(result.getByTestId('file-input-upload-button-test-source')).toBeInTheDocument()
+    expect(result.getByTestId('file-input-browse-button-test-source')).toBeInTheDocument()
   })
 
   it('renders only the upload button when it has no assetSources', async () => {
@@ -62,7 +62,7 @@ describe('FileInput with empty state', () => {
       render: (inputProps) => <BaseFileInput {...inputProps} assetSources={[]} />,
     })
     expect(result.queryByTestId('file-input-browse-button-test-source')).not.toBeInTheDocument()
-    expect(result.queryByTestId('file-input-upload-button-sanity-default')).toBeInTheDocument()
+    expect(result.getByTestId('file-input-upload-button-sanity-default')).toBeInTheDocument()
     expect(result.queryByTestId('file-input-browse-button-sanity-default')).not.toBeInTheDocument()
   })
 
@@ -84,14 +84,14 @@ describe('FileInput with empty state', () => {
 
     const browseButton = result.queryByTestId('file-input-multi-browse-button')
 
-    expect(result.queryByTestId('file-input-upload-button-source1')).toBeInTheDocument()
+    expect(result.getByTestId('file-input-upload-button-source1')).toBeInTheDocument()
     expect(browseButton).toBeInTheDocument()
 
     fireEvent.click(browseButton!)
 
     await waitFor(() => {
-      expect(result.queryByTestId('file-input-browse-button-source1')).toBeInTheDocument()
-      expect(result.queryByTestId('file-input-browse-button-source2')).toBeInTheDocument()
+      expect(result.getByTestId('file-input-browse-button-source1')).toBeInTheDocument()
+      expect(result.getByTestId('file-input-browse-button-source2')).toBeInTheDocument()
     })
   })
 
@@ -183,7 +183,7 @@ describe('FileInput with empty state', () => {
     })
 
     await waitFor(() => {
-      expect(result.queryByText('Read only')).toBeInTheDocument()
+      expect(result.getByText('Read only')).toBeInTheDocument()
     })
   })
 
@@ -210,8 +210,8 @@ describe('FileInput with asset', () => {
       render: (inputProps) => <BaseFileInput {...inputProps} value={value} />,
     })
 
-    expect(result.queryByText('cats.txt')).toBeInTheDocument()
-    expect(result.queryByText('31 Bytes')).toBeInTheDocument()
+    expect(result.getByText('cats.txt')).toBeInTheDocument()
+    expect(result.getByText('31 Bytes')).toBeInTheDocument()
   })
 
   it.todo('renders new file when a new file in uploaded')
@@ -238,7 +238,7 @@ describe('FileInput with asset', () => {
     fireEvent.click(result.queryByTestId('options-menu-button')!)
 
     await waitFor(() => {
-      expect(result.queryByTestId('file-input-browse-button-test-source')).toBeInTheDocument()
+      expect(result.getByTestId('file-input-browse-button-test-source')).toBeInTheDocument()
     })
   })
 
@@ -265,7 +265,7 @@ describe('FileInput with asset', () => {
     fireEvent.click(result.queryByTestId('options-menu-button')!)
 
     await waitFor(() => {
-      expect(result.queryByTestId('file-input-upload-button-test-source')).toBeInTheDocument()
+      expect(result.getByTestId('file-input-upload-button-test-source')).toBeInTheDocument()
       expect(result.queryByTestId('file-input-browse-button-test-source')).not.toBeInTheDocument()
     })
   })
@@ -290,8 +290,8 @@ describe('FileInput with asset', () => {
     fireEvent.click(result.queryByTestId('options-menu-button')!)
 
     await waitFor(() => {
-      expect(result.queryByTestId('file-input-browse-button-source1')).toBeInTheDocument()
-      expect(result.queryByTestId('file-input-browse-button-source2')).toBeInTheDocument()
+      expect(result.getByTestId('file-input-browse-button-source1')).toBeInTheDocument()
+      expect(result.getByTestId('file-input-browse-button-source2')).toBeInTheDocument()
     })
   })
 
@@ -461,8 +461,8 @@ describe('FileInput with asset', () => {
     })
 
     await waitFor(() => {
-      expect(result.queryByText('cats.txt')).toBeInTheDocument()
-      expect(result.queryByText('31 Bytes')).toBeInTheDocument()
+      expect(result.getByText('cats.txt')).toBeInTheDocument()
+      expect(result.getByText('31 Bytes')).toBeInTheDocument()
     })
   })
 

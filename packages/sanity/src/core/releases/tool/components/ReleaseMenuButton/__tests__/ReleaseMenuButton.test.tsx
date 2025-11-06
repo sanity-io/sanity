@@ -163,7 +163,7 @@ describe('ReleaseMenuButton', () => {
           fireEvent.click(screen.getByTestId('archive-release-menu-item'))
         })
 
-        expect(screen.queryByTestId('confirm-archive-dialog')).toBeInTheDocument()
+        expect(screen.getByTestId('confirm-archive-dialog')).toBeInTheDocument()
         act(() => {
           fireEvent.click(screen.getByTestId('confirm-button'))
         })
@@ -267,7 +267,7 @@ describe('ReleaseMenuButton', () => {
 
         await act(() => fireEvent.click(screen.getByTestId('delete-release-menu-item')))
 
-        expect(screen.queryByTestId('confirm-delete-dialog')).toBeInTheDocument()
+        expect(screen.getByTestId('confirm-delete-dialog')).toBeInTheDocument()
         await act(() => fireEvent.click(screen.getByTestId('confirm-button')))
         expect(useReleaseOperationsMockReturn.deleteRelease).toHaveBeenCalledWith(
           publishedASAPRelease._id,
@@ -424,7 +424,7 @@ describe('ReleaseMenuButton', () => {
 
         fireEvent.click(screen.getByTestId('publish-all-button-menu-item'))
 
-        expect(screen.queryByTestId('confirm-publish-dialog')).toBeInTheDocument()
+        expect(screen.getByTestId('confirm-publish-dialog')).toBeInTheDocument()
       })
     })
 
@@ -489,7 +489,7 @@ describe('ReleaseMenuButton', () => {
 
         fireEvent.click(screen.getByTestId('publish-all-button-menu-item'))
 
-        expect(screen.queryByTestId('confirm-publish-dialog')).toBeInTheDocument()
+        expect(screen.getByTestId('confirm-publish-dialog')).toBeInTheDocument()
       })
     })
 
@@ -541,7 +541,7 @@ describe('ReleaseMenuButton', () => {
       ])('allows duplicating an $name release', async ({release}) => {
         await renderTest({release, documentsCount: 1, documents: []})
 
-        await waitFor(() => screen.getByTestId('release-menu-button'))
+        await screen.findByTestId('release-menu-button')
         fireEvent.click(screen.getByTestId('release-menu-button'))
 
         const duplicateMenuItem = screen.getByTestId('duplicate-release-menu-item')
@@ -569,7 +569,7 @@ describe('ReleaseMenuButton', () => {
       ])('does not allow for duplicating of $state releases', async ({fixture}) => {
         await renderTest({release: fixture, documentsCount: 1})
 
-        await waitFor(() => screen.getByTestId('release-menu-button'))
+        await screen.findByTestId('release-menu-button')
         fireEvent.click(screen.getByTestId('release-menu-button'))
 
         expect(screen.queryByTestId('duplicate-release-menu-item')).not.toBeInTheDocument()
@@ -580,7 +580,7 @@ describe('ReleaseMenuButton', () => {
 
         await renderTest({release: activeScheduledRelease, documentsCount: 1, documents: []})
 
-        await waitFor(() => screen.getByTestId('release-menu-button'))
+        await screen.findByTestId('release-menu-button')
         fireEvent.click(screen.getByTestId('release-menu-button'))
 
         expect(screen.queryByTestId('duplicate-release-menu-item')).not.toBeInTheDocument()
@@ -594,7 +594,7 @@ describe('ReleaseMenuButton', () => {
         test('handles failure when trying to duplicate an active release', async () => {
           await renderTest({release: activeScheduledRelease, documentsCount: 1, documents: []})
 
-          await waitFor(() => screen.getByTestId('release-menu-button'))
+          await screen.findByTestId('release-menu-button')
           fireEvent.click(screen.getByTestId('release-menu-button'))
 
           const duplicateMenuItem = screen.getByTestId('duplicate-release-menu-item')
@@ -668,7 +668,7 @@ describe('ReleaseMenuButton', () => {
     test('will disable duplicate menu', async () => {
       await renderTest({release: activeScheduledRelease, documentsCount: 1})
 
-      await waitFor(() => screen.getByTestId('release-menu-button'))
+      await screen.findByTestId('release-menu-button')
       fireEvent.click(screen.getByTestId('release-menu-button'))
 
       expect(screen.getByTestId('duplicate-release-menu-item')).toBeDisabled()
