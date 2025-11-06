@@ -46,6 +46,26 @@ describe('isValidAnnouncementAudience', () => {
     expect(isValidAnnouncementAudience(announcement, sanityVersion)).toBe(true)
   })
 
+  describe('when we want ranges', () => {
+    const document = {
+      audience: 'greater-than-or-equal-version',
+      studioVersion: '3.74.0 <3.76.0',
+    } as const
+    test('should return true when versions match', () => {
+      const sanityVersion = '3.75.0'
+      expect(isValidAnnouncementAudience(document, sanityVersion)).toBe(true)
+    })
+    test('should return true when versions match', () => {
+      const sanityVersion = '3.74.0'
+      expect(isValidAnnouncementAudience(document, sanityVersion)).toBe(true)
+    })
+
+    test('should return false when versions do not match', () => {
+      const sanityVersion = '3.76.0'
+      expect(isValidAnnouncementAudience(document, sanityVersion)).toBe(false)
+    })
+  })
+
   describe('when audience is "specific-version"', () => {
     const document = {audience: 'specific-version', studioVersion: '3.55.0'} as const
     test('should return true when versions match', () => {
