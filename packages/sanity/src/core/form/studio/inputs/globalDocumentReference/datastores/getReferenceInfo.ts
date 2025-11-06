@@ -123,7 +123,7 @@ function createObserveFields(context: {
   ): Observable<SanityDocument<Record<string, any>> | null> {
     return listener.pipe(
       switchMap((event) => {
-        if (event.type === 'welcome') {
+        if (event.type === 'welcome' || event.type === 'reset') {
           return client.observable
             .getDocument(id, {
               tag: `${REQUEST_TAG_BASE}.get-document`,

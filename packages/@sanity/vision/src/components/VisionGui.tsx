@@ -433,7 +433,10 @@ export function VisionGui(props: VisionGuiProps) {
     }
 
     listenSubscriptionRef.current = client
-      .listen(query, params.parsed, {events: ['mutation', 'welcome'], includeAllVersions: true})
+      .listen(query, params.parsed, {
+        events: ['mutation', 'welcome', 'reset'],
+        includeAllVersions: true,
+      })
       .subscribe({
         next: handleListenerEvent,
         error: (err) => {
