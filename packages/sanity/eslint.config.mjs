@@ -5,6 +5,7 @@ import baseConfig from '@repo/eslint-config'
 import i18nConfig from '@sanity/eslint-config-i18n'
 import {defineConfig} from 'eslint/config'
 import boundaries from 'eslint-plugin-boundaries'
+import testingLibrary from 'eslint-plugin-testing-library'
 import globals from 'globals'
 
 const __filename = fileURLToPath(import.meta.url)
@@ -456,7 +457,11 @@ export default defineConfig([
   },
   // Enable rules that aid with ensuring react tests don't have race conditions
   {
+    ...testingLibrary.configs['flat/react'],
     files: ['**/__tests__/**/*.[jt]s?(x)', '**/?(*.)+(spec|test).[jt]s?(x)'],
-    extends: ['plugin:testing-library/react'],
+    rules: {
+      ...testingLibrary.configs['flat/react'].rules,
+      'testing-library/prefer-user-event': 'error',
+    },
   },
 ])
