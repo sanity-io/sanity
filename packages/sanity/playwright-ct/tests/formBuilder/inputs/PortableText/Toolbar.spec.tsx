@@ -175,7 +175,7 @@ test.describe('Portable Text Input', () => {
 
         // click the block
 
-        await expect(page.getByTestId('pt-editor__toolbar-card')).toBeVisible()
+        await expect(page.getByTestId('pt-editor__toolbar-card').nth(1)).toBeVisible()
 
         // click the nested PTE expand
         await page.getByLabel('Expand editor').nth(1).click()
