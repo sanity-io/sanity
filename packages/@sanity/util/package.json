@@ -117,7 +117,7 @@
   "dependencies": {
     "@date-fns/tz": "^1.4.1",
     "@date-fns/utc": "^2.1.1",
-    "@sanity/client": "^7.12.1",
+    "@sanity/client": "catalog:",
     "@sanity/types": "workspace:*",
     "date-fns": "^4.1.0",
     "rxjs": "^7.8.2"

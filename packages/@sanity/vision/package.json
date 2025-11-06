@@ -85,7 +85,7 @@
     "@repo/package.config": "workspace:*",
     "@repo/test-config": "workspace:*",
     "@repo/tsconfig": "workspace:*",
-    "@sanity/client": "^7.12.1",
+    "@sanity/client": "catalog:",
     "@sanity/eslint-config-i18n": "catalog:",
     "@sanity/pkg-utils": "catalog:",
     "@testing-library/react": "^16.3.0",
