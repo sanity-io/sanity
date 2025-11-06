@@ -5,11 +5,8 @@
   "dependencies": {
     "@humanwhocodes/crosspost": "^0.1.1",
     "@sanity/client": "^6.24.1",
-    "@sanity/functions": "^1.0.3",
-    "@sanity/image-url": "^1.1.0",
-    "@sanity/ui": "^2.10.6",
-    "react": "^18.3.1",
-    "sanity": "^3.69.3"
+    "@sanity/functions": "^1.1.0",
+    "@sanity/image-url": "^1.1.0"
   },
   "blueprintResourceItem": {
     "type": "sanity.function.document",
@@ -22,10 +19,10 @@
         "create"
       ],
       "filter": "_type == 'socialPost'",
-      "projection": "{_id, body, mainImage, platforms, platformSettings}"
+      "projection": "{_id, body, mainImage, platforms, platformOverrides}"
     },
     "env": {
-      "COMMENT": "See https://github.com/humanwhocodes/crosspost?tab=readme-ov-file#setting-up-strategies for credential setup instructions",
+      "COMMENT": "Delete any unnecessary environment variables. See https://github.com/humanwhocodes/crosspost?tab=readme-ov-file#setting-up-strategies for credential setup instructions",
       "TWITTER_ACCESS_TOKEN_KEY": "TWITTER_ACCESS_TOKEN_KEY",
       "TWITTER_ACCESS_TOKEN_SECRET": "TWITTER_ACCESS_TOKEN_SECRET",
       "TWITTER_API_CONSUMER_KEY": "TWITTER_API_CONSUMER_KEY",

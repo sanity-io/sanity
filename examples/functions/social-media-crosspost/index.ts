@@ -32,7 +32,7 @@ type EventData = {
     alt?: string
   }
   platforms?: string[]
-  platformSettings?: Array<{
+  platformOverrides?: Array<{
     platform?: string
     body?: string
   }>
@@ -77,7 +77,7 @@ const getImageData = async (
   }
 
   const builder = imageUrlBuilder(client)
-  const imageUrl = builder.image(image).url()
+  const imageUrl = builder.image(image).width(1024).quality(75).url()
   const response = await fetch(imageUrl)
 
   if (!response.ok) {
@@ -89,15 +89,15 @@ const getImageData = async (
 
 const getBody = (
   platform: Platform,
-  platformSettings: EventData['platformSettings'],
+  platformOverrides: EventData['platformOverrides'],
 ): string | undefined => {
-  const setting = platformSettings?.find((item) => item.platform === platform)
+  const setting = platformOverrides?.find((item) => item.platform === platform)
   return setting?.body?.trim()
 }
 
 const createStrategies = (
   platforms: Platform[],
-  platformSettings: EventData['platformSettings'],
+  platformOverrides: EventData['platformOverrides'],
 ): StrategyConfig[] => {
   const strategyConfigs: StrategyConfig[] = []
 
@@ -115,7 +115,7 @@ const createStrategies = (
         apiConsumerKey: TWITTER_API_CONSUMER_KEY,
         apiConsumerSecret: TWITTER_API_CONSUMER_SECRET,
       }),
-      bodyOverride: getBody('x', platformSettings),
+      bodyOverride: getBody('x', platformOverrides),
     })
   }
 
@@ -125,7 +125,7 @@ const createStrategies = (
         accessToken: MASTODON_ACCESS_TOKEN,
         host: MASTODON_HOST,
       }),
-      bodyOverride: getBody('mastodon', platformSettings),
+      bodyOverride: getBody('mastodon', platformOverrides),
     })
   }
 
@@ -136,7 +136,7 @@ const createStrategies = (
         password: BLUESKY_PASSWORD,
         host: BLUESKY_HOST,
       }),
-      bodyOverride: getBody('bluesky', platformSettings),
+      bodyOverride: getBody('bluesky', platformOverrides),
     })
   }
 
@@ -145,7 +145,7 @@ const createStrategies = (
       strategy: new LinkedInStrategy({
         accessToken: LINKEDIN_ACCESS_TOKEN,
       }),
-      bodyOverride: getBody('linkedin', platformSettings),
+      bodyOverride: getBody('linkedin', platformOverrides),
     })
   }
 
@@ -154,7 +154,7 @@ const createStrategies = (
       strategy: new DiscordWebhookStrategy({
         webhookUrl: DISCORD_WEBHOOK_URL,
       }),
-      bodyOverride: getBody('discord', platformSettings),
+      bodyOverride: getBody('discord', platformOverrides),
     })
   }
 
@@ -164,7 +164,7 @@ const createStrategies = (
         botToken: TELEGRAM_BOT_TOKEN,
         chatId: TELEGRAM_CHAT_ID,
       }),
-      bodyOverride: getBody('telegram', platformSettings),
+      bodyOverride: getBody('telegram', platformOverrides),
     })
   }
 
@@ -173,7 +173,7 @@ const createStrategies = (
       strategy: new DevtoStrategy({
         apiKey: DEVTO_API_KEY,
       }),
-      bodyOverride: getBody('devto', platformSettings),
+      bodyOverride: getBody('devto', platformOverrides),
     })
   }
 
@@ -183,7 +183,7 @@ const createStrategies = (
 export const handler = documentEventHandler(async ({context, event}) => {
   console.log('Starting crosspost...')
 
-  const {_id, mainImage, platforms, platformSettings, body} = event.data as EventData
+  const {_id, mainImage, platforms, platformOverrides, body} = event.data as EventData
 
   if (!platforms?.length) {
     console.warn('No platforms were selected. Skipping.')
@@ -197,12 +197,12 @@ export const handler = documentEventHandler(async ({context, event}) => {
 
   const sanityClient = createClient({
     ...context.clientOptions,
-    apiVersion: 'vX',
+    apiVersion: '2025-11-05',
     useCdn: false,
   })
 
   try {
-    const strategyConfigs = createStrategies(platforms, platformSettings)
+    const strategyConfigs = createStrategies(platforms, platformOverrides)
 
     if (strategyConfigs.length === 0) {
       console.warn('No enabled strategies found. Check your environment variables.')
@@ -215,7 +215,10 @@ export const handler = documentEventHandler(async ({context, event}) => {
 
     // Support single image attachment across all platforms
     const imageArg = mainImage
-      ? {data: await getImageData(mainImage, sanityClient), alt: mainImage.alt ?? ''}
+      ? {
+          data: await getImageData(mainImage, sanityClient),
+          alt: mainImage.alt ?? '',
+        }
       : undefined
 
     // Set all statuses to pending
@@ -239,8 +242,9 @@ export const handler = documentEventHandler(async ({context, event}) => {
           const response = responses[0]
 
           if (response.ok) {
-            console.log(`Successfully posted to ${strategyName}: ${response.url}`)
-            resultMessage = response.url
+            const successMessage = `Successfully posted to ${strategyName}: ${response.url} at ${new Date().toISOString()}`
+            console.log(successMessage)
+            resultMessage = successMessage
           } else {
             const error = response.reason?.toString() || 'Unknown error'
             resultMessage = `Error posting to ${strategyName}: ${error}`

@@ -1,7 +1,7 @@
 import {useFormValue} from 'sanity'
 import {Badge, Card, Flex, Stack, Text} from '@sanity/ui'
 
-import {platformConfig, type Platform} from '../schema-socialPost'
+import {platformConfig, type Platform} from '../schemaTypes/documents/socialPost'
 
 export function CharacterCount(props: any) {
   const doc = useFormValue([]) as any
@@ -27,8 +27,8 @@ export function CharacterCount(props: any) {
       <Stack space={3}>
         <Flex gap={3} direction="row" align="center" wrap="wrap">
           {platformsToDisplay.map((platform: Platform) => {
-            const platformSetting = Array.isArray(doc.platformSettings)
-              ? doc.platformSettings.find((setting: any) => setting.platform === platform)
+            const platformSetting = Array.isArray(doc.platformOverrides)
+              ? doc.platformOverrides.find((setting: any) => setting.platform === platform)
               : undefined
             const text = platformSetting?.body ?? doc.body ?? ''
             const limit = platformConfig[platform].limit

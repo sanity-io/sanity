@@ -46,7 +46,7 @@ export const socialPost = defineType({
         Rule.required().custom((body, context) => {
           const document = context.document as any
           const selectedPlatforms = document?.platforms as Platform[] | undefined
-          const overriddenSettings = document?.platformSettings
+          const overriddenSettings = document?.platformOverrides
 
           if (!document || !body || !Array.isArray(selectedPlatforms)) {
             return true
@@ -97,8 +97,8 @@ export const socialPost = defineType({
       ],
     }),
     defineField({
-      name: 'platformSettings',
-      title: 'Platform Settings',
+      name: 'platformOverrides',
+      title: 'Platform Overrides',
       type: 'array',
       readOnly: ({document}) => Boolean(document?.status),
       of: [
