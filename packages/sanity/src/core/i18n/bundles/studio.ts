@@ -1431,8 +1431,7 @@ export const studioLocaleStrings = defineLocalesResources('studio', {
   /** The placeholder text when the release doesn't have a title */
   'release.placeholder-untitled-release': 'Untitled release',
   /** Description for warning that the published schedule time is in the past */
-  'release.schedule-dialog.publish-date-in-past-warning':
-    'Schedule for a future time and date.',
+  'release.schedule-dialog.publish-date-in-past-warning': 'Schedule for a future time and date.',
   /** Label for date picker when scheduling a release */
   'release.schedule-dialog.select-publish-date-label': 'Publish on',
   /** The toast description that will be shown when the user has a release perspective which is now archived */
