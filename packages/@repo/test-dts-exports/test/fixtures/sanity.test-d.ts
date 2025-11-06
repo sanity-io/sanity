@@ -1270,6 +1270,7 @@ import type {
   setAtPath,
   setIfMissing,
   SharedResizeObserver,
+  SingleDocReleaseProvider,
   SingleFieldSet,
   SingleMutationResult,
   SingleWorkspace,
@@ -1573,6 +1574,7 @@ import type {
   useSearchMaxFieldDepth,
   useSearchState,
   useSetPerspective,
+  useSingleDocRelease,
   useSource,
   useStudioUrl,
   useSyncState,
@@ -5487,6 +5489,9 @@ describe('sanity', () => {
   test('SharedResizeObserver', () => {
     expectTypeOf<SharedResizeObserver>().toBeObject()
   })
+  test('SingleDocReleaseProvider', () => {
+    expectTypeOf<typeof SingleDocReleaseProvider>().toBeFunction()
+  })
   test('SingleFieldSet', () => {
     expectTypeOf<SingleFieldSet>().toBeObject()
   })
@@ -6407,6 +6412,9 @@ describe('sanity', () => {
   })
   test('useSetPerspective', () => {
     expectTypeOf<typeof useSetPerspective>().toBeFunction()
+  })
+  test('useSingleDocRelease', () => {
+    expectTypeOf<typeof useSingleDocRelease>().toBeFunction()
   })
   test('useSource', () => {
     expectTypeOf<typeof useSource>().toBeFunction()

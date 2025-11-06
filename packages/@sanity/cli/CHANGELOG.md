@@ -3,6 +3,14 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [4.14.0](https://github.com/sanity-io/sanity/compare/v4.13.0...v4.14.0) (2025-11-06)
+
+### Bug Fixes
+
+* **cli:** add new function test flag ([#11007](https://github.com/sanity-io/sanity/issues/11007)) ([22bd071](https://github.com/sanity-io/sanity/commit/22bd07126984e872f3fd3817f54c52a0da1114e9)) by Simon MacDonald (simon.macdonald@gmail.com)
+* **deps:** add `@babel/parser`, an implicit dep of `recast` ([#11042](https://github.com/sanity-io/sanity/issues/11042)) ([bc08d28](https://github.com/sanity-io/sanity/commit/bc08d286f2cf618152dd483765df70304a120155)) by Cody Olsen (81981+stipsan@users.noreply.github.com)
+* **deps:** update dependency @sanity/client to ^7.12.1 ([#11029](https://github.com/sanity-io/sanity/issues/11029)) ([df2aa67](https://github.com/sanity-io/sanity/commit/df2aa672f39c9a847e4102f1f0e18d240e1aa808)) by renovate[bot] (29139614+renovate[bot]@users.noreply.github.com)
+
 ## [4.13.0](https://github.com/sanity-io/sanity/compare/v4.12.0...v4.13.0) (2025-11-03)
 
 ### Features
