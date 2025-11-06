@@ -47,7 +47,7 @@ jobs:
     env:
       TURBO_TOKEN: ${{ secrets.TURBO_TOKEN }}
       TURBO_TEAM: ${{ vars.TURBO_TEAM }}
-      EXPECTED_NPM_USER: sanity-io
+      EXPECTED_NPM_USER: sanity-svc.npm
 
     steps:
       - uses: actions/checkout@v5
