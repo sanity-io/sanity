@@ -26,6 +26,21 @@ export interface MutationEvent {
 
 /**
  * @hidden
+ * @beta
+ */
+export interface ResetEvent {
+  type: 'reset'
+}
+
+/**
+ * @hidden
+ * @beta
+ */
+export interface WelcomeBackEvent {
+  type: 'welcomeback'
+}
+/**
+ * @hidden
  * @beta */
 export interface ReconnectEvent {
   type: 'reconnect'
