@@ -4,6 +4,7 @@ import {createMemoryHistory} from 'history'
 import {noop} from 'lodash'
 import {type ReactNode} from 'react'
 import {AddonDatasetContext, PerspectiveContext} from 'sanity/_singletons'
+import {vi} from 'vitest'
 
 import {
   CopyPasteProvider,
@@ -22,6 +23,25 @@ import {perspectiveContextValueMock} from '../../src/core/perspective/__mocks__/
 import {ActiveWorkspaceMatcherProvider} from '../../src/core/studio/activeWorkspaceMatcher/ActiveWorkspaceMatcherProvider'
 import {route, RouterProvider} from '../../src/router'
 import {getMockWorkspace} from './getMockWorkspaceFromConfig'
+import {DocumentLimitUpsellProvider} from '../../src/core/limits/context/documents/DocumentLimitUpsellProvider'
+import {AssetLimitUpsellProvider} from '../../src/core/limits/context/assets/AssetLimitUpsellProvider'
+
+// Mock the useUpsellData hook to prevent API calls in tests
+vi.mock('../../src/core/hooks/useUpsellData', () => ({
+  useUpsellData: vi.fn(() => ({
+    upsellData: null,
+    telemetryLogs: {
+      dialogViewed: vi.fn(),
+      dialogDismissed: vi.fn(),
+      dialogPrimaryClicked: vi.fn(),
+      dialogSecondaryClicked: vi.fn(),
+      panelViewed: vi.fn(),
+      panelDismissed: vi.fn(),
+      panelPrimaryClicked: vi.fn(),
+      panelSecondaryClicked: vi.fn(),
+    },
+  })),
+}))
 
 export interface TestProviderOptions {
   config?: Partial<SingleWorkspace>
@@ -74,7 +94,9 @@ export async function createTestProvider({
                               }}
                             >
                               <PerspectiveContext.Provider value={perspectiveContextValueMock}>
-                                {children}
+                                <DocumentLimitUpsellProvider>
+                                  <AssetLimitUpsellProvider>{children}</AssetLimitUpsellProvider>
+                                </DocumentLimitUpsellProvider>
                               </PerspectiveContext.Provider>
                             </AddonDatasetContext.Provider>
                           </ResourceCacheProvider>
