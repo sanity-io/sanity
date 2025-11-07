@@ -358,6 +358,7 @@ exports[`exports snapshot 1`] = `
     "isArrayOfPrimitivesSchemaType": "function",
     "isArraySchemaType": "function",
     "isAssetAspect": "function",
+    "isAssetLimitError": "function",
     "isAuthStore": "function",
     "isBlockChildrenObjectField": "function",
     "isBlockListObjectField": "function",
@@ -661,6 +662,7 @@ exports[`exports snapshot 1`] = `
     "ActiveWorkspaceMatcherContext": "object",
     "AddonDatasetContext": "object",
     "AppIdCacheContext": "object",
+    "AssetLimitUpsellContext": "object"
     "CalendarContext": "object",
     "ChangeIndicatorTrackerContextGetSnapshot": "object",
     "ChangeIndicatorTrackerContextStore": "object",
