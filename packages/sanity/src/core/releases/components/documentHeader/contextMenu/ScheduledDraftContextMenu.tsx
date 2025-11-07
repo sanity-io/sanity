@@ -9,6 +9,7 @@ import {useTranslation} from '../../../../i18n/hooks/useTranslation'
 import {type UseScheduledDraftMenuActionsReturn} from '../../../../singleDocRelease/hooks/useScheduledDraftMenuActions'
 import {RELEASES_SCHEDULED_DRAFTS_INTENT} from '../../../../singleDocRelease/plugin'
 import {isReleaseScheduledOrScheduling} from '../../../util/util'
+import {useHasCopyToDraftOption} from './CopyToDraftsMenuItem'
 import {CopyToReleaseMenuGroup} from './CopyToReleaseMenuGroup'
 
 interface ScheduledDraftContextMenuProps {
@@ -44,9 +45,11 @@ export const ScheduledDraftContextMenu = memo(function ScheduledDraftContextMenu
     documentType,
   } = props
   const {t} = useTranslation()
+  const hasCopyToDraftOption = useHasCopyToDraftOption(documentType, fromRelease)
+
   const isCopyToReleaseDisabled = disabled || !hasCreatePermission || isGoingToUnpublish
   const copyToReleaseOptions = releases.filter((r) => !isReleaseScheduledOrScheduling(r))
-  const showCopyToReleaseMenuItem = copyToReleaseOptions.length > 0
+  const showCopyToReleaseMenuItem = copyToReleaseOptions.length > 0 || hasCopyToDraftOption
 
   const {actions} = scheduledDraftMenuActions
 

@@ -106,12 +106,16 @@ export const DocumentPerspectiveList = memo(function DocumentPerspectiveList() {
   const {onSetScheduledDraftPerspective} = useSingleDocRelease()
 
   const handleCopyToDraftsNavigate = useCallback(() => {
+    // after copying to draft, we want to navigate to the draft version
     if (params?.scheduledDraft) {
-      setParams({...params, scheduledDraft: undefined}, {perspective: ''})
+      // if currently viewing a scheduled draft, remove the scheduled draft perspective
+      // the global perspective is already set to drafts
+      onSetScheduledDraftPerspective('')
     } else {
+      // otherwise, only need to set the global perspective to drafts
       setPerspective('drafts')
     }
-  }, [params, setParams, setPerspective])
+  }, [params, setPerspective, onSetScheduledDraftPerspective])
 
   const handlePerspectiveChange = useCallback(
     (perspective: 'published' | 'drafts' | ReleaseDocument) => () => {

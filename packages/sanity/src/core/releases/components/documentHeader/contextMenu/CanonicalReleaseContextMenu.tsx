@@ -8,6 +8,7 @@ import {MenuItem} from '../../../../../ui-components/menuItem/MenuItem'
 import {useTranslation} from '../../../../i18n'
 import {RELEASES_INTENT} from '../../../plugin'
 import {isReleaseScheduledOrScheduling} from '../../../util/util'
+import {useHasCopyToDraftOption} from './CopyToDraftsMenuItem'
 import {CopyToReleaseMenuGroup} from './CopyToReleaseMenuGroup'
 
 interface CanonicalReleaseContextMenuProps {
@@ -53,10 +54,15 @@ export const CanonicalReleaseContextMenu = memo(function CanonicalReleaseContext
     documentType,
   } = props
   const {t} = useTranslation()
+  const hasCopyToDraftOption = useHasCopyToDraftOption(
+    documentType,
+    fromRelease,
+  )
 
   const isCopyToReleaseDisabled = disabled || !hasCreatePermission || isGoingToUnpublish
   const copyToReleaseOptions = releases.filter((r) => !isReleaseScheduledOrScheduling(r))
-  const showCopyToReleaseMenuItem = copyToReleaseOptions.length > 0
+  const showCopyToReleaseMenuItem = copyToReleaseOptions.length > 0 || hasCopyToDraftOption
+
 
   return (
     <Menu>
@@ -87,7 +93,6 @@ export const CanonicalReleaseContextMenu = memo(function CanonicalReleaseContext
         />
       )}
       {(isVersion || showCopyToReleaseMenuItem) && !isPublished && <MenuDivider />}
-
       {!isPublished && (
         <MenuItem
           icon={TrashIcon}

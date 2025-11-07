@@ -17,18 +17,29 @@ interface CopyToDraftsMenuItemProps {
   onNavigate: () => void
 }
 
+/**
+ * Copy version to draft option shown as long as document type supports drafts (not live edit),
+ * so long as draft mode is enabled in project, and the selected version is not draft
+ */
+export const useHasCopyToDraftOption = (documentType: string, fromRelease: string) => {
+  const {document} = useWorkspace()
+  const schema = useSchema()
+
+  const schemaType = schema.get(documentType)
+  const isLiveEdit = schemaType?.liveEdit
+
+  const isDraftModelEnabled = document?.drafts?.enabled
+  const shouldShowDraftsOption = isDraftModelEnabled && fromRelease !== 'draft' && fromRelease !== 'published' && !isLiveEdit
+
+  return shouldShowDraftsOption
+}
+
 export const CopyToDraftsMenuItem = memo(function CopyToDraftsMenuItem(
   props: CopyToDraftsMenuItemProps,
 ) {
   const {documentId, documentType, fromRelease, onClick, onNavigate} = props
   const {t} = useTranslation()
-  const {document} = useWorkspace()
-  const schema = useSchema()
-  const schemaType = schema.get(documentType)
-  const isLiveEdit = schemaType?.liveEdit
-
-  const isDraftModelEnabled = document?.drafts?.enabled
-  const shouldShowDraftsOption = isDraftModelEnabled && fromRelease !== 'draft' && !isLiveEdit
+  const shouldShowDraftsOption = useHasCopyToDraftOption(documentType, fromRelease)
 
   const {handleCopyToDrafts, hasDraftVersion} = useCopyToDrafts({
     documentId,
