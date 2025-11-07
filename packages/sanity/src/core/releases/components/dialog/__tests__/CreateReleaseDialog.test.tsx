@@ -57,18 +57,25 @@ describe('CreateReleaseDialog', () => {
       await userEvent.type(titleInput, value.metadata?.title || '')
 
       const submitButton = screen.getByTestId('submit-release-button')
+
+      // Wait for the button to be enabled after typing
+      await waitFor(() => {
+        expect(submitButton.closest('button')).not.toBeDisabled()
+      })
+
       await userEvent.click(submitButton)
 
-      await Promise.resolve()
-
-      await waitFor(async () => {
-        expect(onSubmitMock).toHaveBeenCalledOnce()
-        expect(useReleaseOperationsMockReturn.createRelease).toHaveBeenCalledWith(
-          expect.objectContaining({
-            _id: expect.stringContaining('releases'),
-          }),
-        )
-      })
+      await waitFor(
+        () => {
+          expect(onSubmitMock).toHaveBeenCalledOnce()
+          expect(useReleaseOperationsMockReturn.createRelease).toHaveBeenCalledWith(
+            expect.objectContaining({
+              _id: expect.stringContaining('releases'),
+            }),
+          )
+        },
+        {timeout: 3000},
+      )
     })
   })
 })

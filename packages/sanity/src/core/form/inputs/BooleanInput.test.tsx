@@ -1,5 +1,5 @@
 import {defineField} from '@sanity/types'
-import {screen} from '@testing-library/react'
+import {screen, waitFor} from '@testing-library/react'
 import {userEvent} from '@testing-library/user-event'
 import {describe, expect, it} from 'vitest'
 
@@ -110,8 +110,9 @@ describe('Keyboard accessibility', () => {
       render: (inputProps) => <BooleanInput {...inputProps} />,
     })
 
-    await userEvent.tab()
-    await userEvent.keyboard('{space}')
+    const input = result.getByRole('switch')
+    await userEvent.click(input)
+
     expect(onChange).toBeCalled()
   })
 

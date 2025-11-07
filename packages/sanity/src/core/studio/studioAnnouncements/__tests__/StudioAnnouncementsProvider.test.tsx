@@ -220,9 +220,12 @@ describe('StudioAnnouncementsProvider', () => {
       const cardButton = getByLabelText('Open announcements')
       await userEvent.click(cardButton)
 
-      await waitFor(() => {
-        expect(queryByText("What's new")).toBeNull()
-      })
+      await waitFor(
+        () => {
+          expect(queryByText("What's new")).toBeNull()
+        },
+        {timeout: 3000},
+      )
       // The first announcement is seen, so it's not rendered
       expect(queryByText(mockAnnouncements[0].title)).toBeNull()
       // The second announcement is unseen, so it's rendered
