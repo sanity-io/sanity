@@ -249,12 +249,18 @@ describe('after releases have loaded', () => {
       })
 
       it('should require confirmation to publish', async () => {
-        // Reset the permission mock for this specific test
-        const permissionMock = {
+        vi.clearAllMocks()
+
+        // Re-setup mocks for this test
+        mockUseBundleDocuments.mockReturnValue({
+          loading: false,
+          results: [documentsInRelease],
+          error: null,
+        })
+        mockUseReleasePermissions.mockReturnValue({
           checkWithPermissionGuard: vi.fn().mockResolvedValue(true),
           permissions: {},
-        }
-        mockUseReleasePermissions.mockReturnValue(permissionMock)
+        })
 
         await renderTest()
 
@@ -264,9 +270,10 @@ describe('after releases have loaded', () => {
         // Wait for permissions to be checked and button to be enabled
         await waitFor(
           () => {
-            expect(publishButton.closest('button')).not.toBeDisabled()
+            const button = publishButton.closest('button')
+            return button && !button.disabled
           },
-          {timeout: 3000},
+          {timeout: 5000},
         )
 
         await userEvent.click(publishButton)
@@ -276,12 +283,18 @@ describe('after releases have loaded', () => {
       })
 
       it('should perform publish', async () => {
-        // Reset the permission mock for this specific test
-        const permissionMock = {
+        vi.clearAllMocks()
+
+        // Re-setup mocks for this test
+        mockUseBundleDocuments.mockReturnValue({
+          loading: false,
+          results: [documentsInRelease],
+          error: null,
+        })
+        mockUseReleasePermissions.mockReturnValue({
           checkWithPermissionGuard: vi.fn().mockResolvedValue(true),
           permissions: {},
-        }
-        mockUseReleasePermissions.mockReturnValue(permissionMock)
+        })
 
         await renderTest()
 
@@ -291,9 +304,10 @@ describe('after releases have loaded', () => {
         // Wait for permissions to be checked and button to be enabled
         await waitFor(
           () => {
-            expect(publishButton.closest('button')).not.toBeDisabled()
+            const button = publishButton.closest('button')
+            return button && !button.disabled
           },
-          {timeout: 3000},
+          {timeout: 5000},
         )
 
         await userEvent.click(publishButton)

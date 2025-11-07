@@ -482,13 +482,22 @@ describe('ReleasesOverview', () => {
     })
 
     it('allows for pinning perspectives', async () => {
-      await userEvent.click(
-        within(screen.getAllByTestId('table-row')[0]).getByTestId('pin-release-button'),
+      const rows = screen.getAllByTestId('table-row')
+      const firstRow = rows[0]
+      const pinButton = within(firstRow).getByTestId('pin-release-button')
+
+      expect(pinButton).toBeInTheDocument()
+
+      await userEvent.click(pinButton)
+
+      await waitFor(
+        () => {
+          expect(mockedSetPerspective).toHaveBeenCalled()
+        },
+        {timeout: 3000},
       )
 
-      await waitFor(() => {
-        expect(mockedSetPerspective).toHaveBeenCalledWith('rASAP')
-      })
+      expect(mockedSetPerspective).toHaveBeenCalledWith('rASAP')
     })
 
     it('will show pinned release in release list', async () => {
