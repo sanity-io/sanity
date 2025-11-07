@@ -486,7 +486,9 @@ describe('ReleasesOverview', () => {
         within(screen.getAllByTestId('table-row')[0]).getByTestId('pin-release-button'),
       )
 
-      expect(mockedSetPerspective).toHaveBeenCalledWith('rASAP')
+      await waitFor(() => {
+        expect(mockedSetPerspective).toHaveBeenCalledWith('rASAP')
+      })
     })
 
     it('will show pinned release in release list', async () => {
@@ -677,8 +679,10 @@ describe('ReleasesOverview', () => {
       const releaseRow = screen.getAllByTestId('table-row')[0]
       await userEvent.click(within(releaseRow).getByText(activeASAPRelease.metadata.title))
 
-      expect(useRouter().navigate).toHaveBeenCalledWith({
-        releaseId: 'rASAP',
+      await waitFor(() => {
+        expect(useRouter().navigate).toHaveBeenCalledWith({
+          releaseId: 'rASAP',
+        })
       })
     })
   })

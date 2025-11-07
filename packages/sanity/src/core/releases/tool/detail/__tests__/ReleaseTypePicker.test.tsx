@@ -196,7 +196,11 @@ describe('ReleaseTypePicker', () => {
       const undecidedTab = await findTabByName('Undecided')
       await userEvent.click(undecidedTab)
       await userEvent.click(screen.getByTestId('release-type-picker'))
-      expect(mockUpdateRelease).toHaveBeenCalledTimes(1)
+
+      await waitFor(() => {
+        expect(mockUpdateRelease).toHaveBeenCalledTimes(1)
+      })
+
       expect(mockUpdateRelease).toHaveBeenCalledWith({
         ...activeASAPRelease,
         metadata: expect.objectContaining({

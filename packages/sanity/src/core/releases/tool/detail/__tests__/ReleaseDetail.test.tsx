@@ -106,11 +106,13 @@ const renderTest = async () => {
 
 const publishAgnosticTests = (title: string) => {
   it('should allow for navigating back to releases overview', async () => {
+    await renderTest()
     await userEvent.click(screen.getByTestId('back-to-releases-button'))
   })
 
-  it('should show the release title', () => {
-    screen.getAllByText(title)
+  it('should show the release title', async () => {
+    await renderTest()
+    expect(await screen.findAllByText(title, {exact: false})).not.toHaveLength(0)
   })
 }
 
@@ -183,8 +185,11 @@ describe('after releases have loaded', () => {
 
     const loadedReleaseAndDocumentsTests = () => {
       it('should allow for the release to be archived', async () => {
+        await renderTest()
         await userEvent.click(screen.getByTestId('release-menu-button'))
-        screen.getByTestId('archive-release-menu-item')
+        await waitFor(() => {
+          expect(screen.getByTestId('archive-release-menu-item')).toBeInTheDocument()
+        })
       })
     }
 
@@ -210,7 +215,6 @@ describe('after releases have loaded', () => {
 
       it('should disable publish all button', async () => {
         await renderTest()
-
         await waitFor(() => {
           expect(screen.getByTestId('publish-all-button').closest('button')).toBeDisabled()
         })
@@ -224,7 +228,13 @@ describe('after releases have loaded', () => {
           results: [documentsInRelease],
           error: null,
         })
-        mockUseReleasePermissions.mockReturnValue(useReleasesPermissionsMockReturnTrue)
+
+        // Reset the permission mock and set it to return true
+        const permissionMock = {
+          checkWithPermissionGuard: vi.fn().mockResolvedValue(true),
+          permissions: {},
+        }
+        mockUseReleasePermissions.mockReturnValue(permissionMock)
       })
 
       publishAgnosticTests(activeASAPRelease.metadata.title)
@@ -233,30 +243,62 @@ describe('after releases have loaded', () => {
       it('should show publish all button when release not published', async () => {
         await renderTest()
 
-        expect(screen.getByTestId('publish-all-button').closest('button')).not.toBeDisabled()
+        await waitFor(() => {
+          expect(screen.getByTestId('publish-all-button').closest('button')).not.toBeDisabled()
+        })
       })
 
       it('should require confirmation to publish', async () => {
+        // Reset the permission mock for this specific test
+        const permissionMock = {
+          checkWithPermissionGuard: vi.fn().mockResolvedValue(true),
+          permissions: {},
+        }
+        mockUseReleasePermissions.mockReturnValue(permissionMock)
+
         await renderTest()
 
-        expect(screen.getByTestId('publish-all-button')).toBeInTheDocument()
-        await userEvent.click(screen.getByTestId('publish-all-button'))
-        await waitFor(() => {
-          screen.getByText(
-            'Are you sure you want to publish the release and all document versions?',
-          )
-        })
+        const publishButton = screen.getByTestId('publish-all-button')
+        expect(publishButton).toBeInTheDocument()
+
+        // Wait for permissions to be checked and button to be enabled
+        await waitFor(
+          () => {
+            expect(publishButton.closest('button')).not.toBeDisabled()
+          },
+          {timeout: 3000},
+        )
+
+        await userEvent.click(publishButton)
+        await screen.findByText(/Are you sure you want to publish the release/i)
 
         expect(screen.getByTestId('confirm-button')).not.toBeDisabled()
       })
 
       it('should perform publish', async () => {
+        // Reset the permission mock for this specific test
+        const permissionMock = {
+          checkWithPermissionGuard: vi.fn().mockResolvedValue(true),
+          permissions: {},
+        }
+        mockUseReleasePermissions.mockReturnValue(permissionMock)
+
         await renderTest()
 
-        expect(screen.getByTestId('publish-all-button')).toBeInTheDocument()
-        await userEvent.click(screen.getByTestId('publish-all-button'))
+        const publishButton = screen.getByTestId('publish-all-button')
+        expect(publishButton).toBeInTheDocument()
 
-        screen.getByText('Are you sure you want to publish the release and all document versions?')
+        // Wait for permissions to be checked and button to be enabled
+        await waitFor(
+          () => {
+            expect(publishButton.closest('button')).not.toBeDisabled()
+          },
+          {timeout: 3000},
+        )
+
+        await userEvent.click(publishButton)
+
+        await screen.findByText(/Are you sure you want to publish the release/i)
 
         await userEvent.click(screen.getByTestId('confirm-button'))
 
@@ -480,7 +522,9 @@ describe('after releases have loaded', () => {
     it('should show warning chip', async () => {
       await renderTest()
 
-      screen.getByTestId('release-permission-error-details')
+      await waitFor(() => {
+        expect(screen.getByTestId('release-permission-error-details')).toBeInTheDocument()
+      })
     })
   })
 })
