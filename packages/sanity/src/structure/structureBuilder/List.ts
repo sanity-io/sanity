@@ -1,7 +1,8 @@
-import {find} from 'lodash'
+import {find, uniq} from 'lodash'
 import {isRecord} from 'sanity'
 
 import {type ChildResolver, type ChildResolverOptions} from './ChildResolver'
+import {type Component, ComponentBuilder, type ComponentInput} from './Component'
 import {DividerBuilder} from './Divider'
 import {isDocumentListItem} from './DocumentListItem'
 import {
@@ -14,8 +15,9 @@ import {
 import {type IntentChecker} from './Intent'
 import {type ListItem, ListItemBuilder} from './ListItem'
 import {HELP_URL, SerializeError} from './SerializeError'
-import {type Divider, type SerializeOptions, type SerializePath} from './StructureNodes'
-import {type StructureContext} from './types'
+import {type Child, type Divider, type SerializeOptions, type SerializePath} from './StructureNodes'
+import {type StructureContext, type View} from './types'
+import {maybeSerializeView, type ViewBuilder} from './views/View'
 
 const getArgType = (thing: ListItem) => {
   if (thing instanceof ListBuilder) {
@@ -47,13 +49,40 @@ const defaultCanHandleIntent: IntentChecker = (intentName: string, params, conte
 const resolveChildForItem: ChildResolver = (itemId: string, options: ChildResolverOptions) => {
   const parentItem = options.parent as List
   const items = parentItem.items.filter(isListItem)
-  const target = (items.find((item) => item.id === itemId) || {child: undefined}).child
+  const item = items.find((item) => item.id === itemId)
 
-  if (!target || typeof target !== 'function') {
-    return target
+  // If we have a matching item, return its child
+  if (item) {
+    const target = item.child
+    if (!target || typeof target !== 'function') {
+      return target
+    }
+    return typeof target === 'function' ? target(itemId, options) : target
   }
 
-  return typeof target === 'function' ? target(itemId, options) : target
+  // Otherwise return undefined
+  return undefined
+}
+
+// Resolver for lists with overview - returns the overview when no item matches
+function createOverviewChildResolver(overview: Component): ChildResolver {
+  return (itemId: string, options: ChildResolverOptions) => {
+    const parentItem = options.parent as List
+    const items = parentItem.items.filter(isListItem)
+    const item = items.find((item) => item.id === itemId)
+
+    // If we have a matching item, return its child
+    if (item) {
+      const target = item.child
+      if (!target || typeof target !== 'function') {
+        return target
+      }
+      return typeof target === 'function' ? target(itemId, options) : target
+    }
+
+    // If no matching item, return the overview
+    return overview
+  }
 }
 
 function maybeSerializeListItem(
@@ -91,6 +120,31 @@ function isPromise<T>(thing: unknown): thing is PromiseLike<T> {
   return isRecord(thing) && typeof thing.then === 'function'
 }
 
+function isSerializableComponent(
+  component: Component | ComponentBuilder | ComponentInput,
+): component is ComponentBuilder {
+  return typeof (component as ComponentBuilder).serialize === 'function'
+}
+
+function maybeSerializeComponent(
+  item: Component | ComponentBuilder | ComponentInput,
+  path: SerializePath,
+  index?: number,
+): Component {
+  if (isSerializableComponent(item)) {
+    return item.serialize({path, index})
+  }
+
+  // If it's a ComponentInput, wrap it in ComponentBuilder and serialize
+  if ('component' in item && !('menuItems' in item && Array.isArray(item.menuItems))) {
+    const builder = new ComponentBuilder(item as ComponentInput)
+    return builder.serialize({path, index})
+  }
+
+  // Otherwise, it should already be a Component
+  return item as Component
+}
+
 /**
  * Interface for List
  *
@@ -100,6 +154,10 @@ export interface List extends GenericList {
   type: 'list'
   /** List items. See {@link ListItem} and {@link Divider} */
   items: (ListItem | Divider)[]
+  /** List views. See {@link View} */
+  views?: View[]
+  /** Overview component shown when no list item is selected. See {@link Component} */
+  overview?: Component
 }
 
 /**
@@ -120,6 +178,10 @@ export interface ListInput extends GenericListInput {
 export interface BuildableList extends BuildableGenericList {
   /** List items. See {@link ListItem}, {@link ListItemBuilder} and {@link Divider} */
   items?: (ListItem | ListItemBuilder | Divider | DividerBuilder)[]
+  /** List views. See {@link ViewBuilder} and {@link View} */
+  views?: (View | ViewBuilder)[]
+  /** Overview component shown when no list item is selected. See {@link Component}, {@link ComponentBuilder} and {@link ComponentInput} */
+  overview?: Component | ComponentBuilder | ComponentInput
 }
 
 /**
@@ -161,6 +223,38 @@ export class ListBuilder extends GenericListBuilder<BuildableList, ListBuilder> 
     return this.spec.items
   }
 
+  /**
+   * Set list views
+   * @param views - list views. See {@link ViewBuilder} and {@link View}
+   * @returns list builder based on views provided. See {@link ListBuilder}
+   */
+  views(views: (View | ViewBuilder)[]): ListBuilder {
+    return this.clone({views})
+  }
+
+  /** Get list views
+   * @returns list views. See {@link ViewBuilder} and {@link View}
+   */
+  getViews(): (View | ViewBuilder)[] {
+    return this.spec.views || []
+  }
+
+  /**
+   * Set overview component shown when no list item is selected
+   * @param overview - overview component. See {@link ComponentBuilder}, {@link Component} and {@link ComponentInput}
+   * @returns list builder with overview set. See {@link ListBuilder}
+   */
+  overview(overview: Component | ComponentBuilder | ComponentInput): ListBuilder {
+    return this.clone({overview})
+  }
+
+  /** Get overview component
+   * @returns overview component. See {@link Component}, {@link ComponentBuilder} and {@link ComponentInput}
+   */
+  getOverview(): BuildableList['overview'] {
+    return this.spec.overview
+  }
+
   /** Serialize list builder
    * @param options - serialization options. See {@link SerializeOptions}
    * @returns list based on path in options. See {@link List}
@@ -198,12 +292,53 @@ export class ListBuilder extends GenericListBuilder<BuildableList, ListBuilder> 
       ).withHelpUrl(HELP_URL.LIST_ITEM_IDS_MUST_BE_UNIQUE)
     }
 
+    // Serialize views if provided
+    const views =
+      this.spec.views && this.spec.views.length > 0
+        ? this.spec.views.map((item, i) => maybeSerializeView(item, i, path))
+        : undefined
+
+    // Check for duplicate view IDs
+    if (views && views.length > 0) {
+      const viewIds = views.map((view) => view.id)
+      const viewDupes = uniq(viewIds.filter((viewId, i) => viewIds.includes(viewId, i + 1)))
+      if (viewDupes.length > 0) {
+        throw new SerializeError(
+          `list has views with duplicate IDs: ${viewDupes.join(', ')}`,
+          path,
+          id,
+        )
+      }
+    }
+
+    // Serialize overview if provided
+    const overview = this.spec.overview
+      ? maybeSerializeComponent(this.spec.overview, path, options.index)
+      : undefined
+
+    // Determine the child property:
+    // - If there's an explicit child, use it
+    // - If there's an overview, set it as the direct child (this makes it appear by default)
+    //   but also use a custom resolver that can handle item navigation
+    // - Otherwise, use the default resolveChildForItem
+    let child: Child
+    if (this.spec.child) {
+      child = this.spec.child
+    } else if (overview) {
+      // Set overview as the default child AND create a resolver for item navigation
+      child = createOverviewChildResolver(overview)
+    } else {
+      child = resolveChildForItem
+    }
+
     return {
       ...super.serialize(options),
       type: 'list',
       canHandleIntent: this.spec.canHandleIntent || defaultCanHandleIntent,
-      child: this.spec.child || resolveChildForItem,
+      child,
       items: serializedItems,
+      views,
+      overview,
     }
   }
 

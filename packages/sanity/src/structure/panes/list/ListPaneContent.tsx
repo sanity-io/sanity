@@ -1,5 +1,5 @@
 import {Box, Text} from '@sanity/ui'
-import {useCallback} from 'react'
+import {useCallback, useMemo} from 'react'
 import {
   CommandList,
   type CommandListItemContext,
@@ -11,6 +11,7 @@ import {styled} from 'styled-components'
 
 import {PaneContent, PaneItem, usePaneLayout} from '../../components'
 import {type PaneListItem, type PaneListItemDivider} from '../../types'
+import {useListPane} from './useListPane'
 
 interface ListPaneContentProps {
   childItemId?: string
@@ -65,12 +66,23 @@ function DividerItem({item}: DividerItemProps) {
 export function ListPaneContent(props: ListPaneContentProps) {
   const {childItemId, items, isActive, layout, showIcons, title} = props
   const {collapsed: layoutCollapsed} = usePaneLayout()
+  const {activeViewId, views} = useListPane()
+
   const getI18nText = useGetI18nText(
     items?.filter(
       (item): item is Exclude<typeof item, {type: 'divider'}> => item.type !== 'divider',
     ),
   )
 
+  // Find the active view if one is selected
+  const activeView = useMemo(() => {
+    if (!activeViewId || !views || views.length === 0) {
+      return null
+    }
+    return views.find((view) => view.id === activeViewId) || null
+  }, [activeViewId, views])
+
+  // Define all hooks before any conditional returns (Rules of Hooks)
   const getItemDisabled = useCallback(
     (itemIndex: number) => {
       return items?.find((_, i) => i === itemIndex)?.type === 'divider'
@@ -131,6 +143,35 @@ export function ListPaneContent(props: ListPaneContentProps) {
     },
     [childItemId, getI18nText, isActive, layout, shouldShowIconForItem],
   )
+
+  // Render custom view component if active
+  const customViewNode = useMemo(() => {
+    if (activeView && activeView.type === 'component' && activeView.component) {
+      const ActiveViewComponent = activeView.component as unknown as React.ComponentType<{
+        items: (PaneListItem<unknown> | PaneListItemDivider)[]
+        layout?: GeneralPreviewLayoutKey
+        title: string
+        options?: Record<string, unknown>
+      }>
+
+      return (
+        <ActiveViewComponent
+          items={items || []}
+          layout={layout}
+          title={title}
+          options={activeView.options || {}}
+        />
+      )
+    }
+    return null
+  }, [activeView, items, layout, title])
+
+  // If custom view is active, render it instead of the default list
+  if (customViewNode) {
+    return (
+      <PaneContent overflow={layoutCollapsed ? 'hidden' : 'auto'}>{customViewNode}</PaneContent>
+    )
+  }
 
   return (
     <PaneContent overflow={layoutCollapsed ? 'hidden' : 'auto'}>

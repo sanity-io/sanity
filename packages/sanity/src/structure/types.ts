@@ -357,6 +357,8 @@ export interface ListPaneNode extends BaseResolvedPaneNode<'list'> {
   defaultLayout?: GeneralPreviewLayoutKey
   displayOptions?: {showIcons?: boolean}
   items?: Array<PaneListItem | PaneListItemDivider>
+  views?: View[]
+  overview?: CustomComponentPaneNode
   // TODO: mark as unstable or remove
   source?: string
 }

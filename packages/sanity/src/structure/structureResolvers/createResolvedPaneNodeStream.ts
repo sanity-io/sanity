@@ -221,6 +221,36 @@ function resolvePaneTree({
         })
 
         if (!rest.length) {
+          // Check if this pane has a child that should be shown by default (e.g. list with overview)
+          if (paneNode.child && paneNode.type === 'list' && (paneNode as any).overview) {
+            // Create an implicit child pane for the overview
+            const implicitChildId = `__overview__${paneNode.id}`
+            const implicitPane: FlattenedRouterPane = {
+              routerPaneSibling: {id: implicitChildId, params: {}, payload: undefined},
+              flatIndex: current.flatIndex + 1,
+              groupIndex: current.groupIndex + 1,
+              siblingIndex: 0,
+            }
+
+            // Resolve the overview as a child pane
+            const nextStream = resolvePaneTree({
+              unresolvedPane:
+                typeof paneNode.child === 'function'
+                  ? (memoBind(paneNode, 'child') as PaneNodeResolver)
+                  : paneNode.child,
+              flattenedRouterPanes: [implicitPane],
+              parent: paneNode,
+              path: context.path,
+              resolvePane,
+              structureContext,
+            })
+
+            return concat(
+              observableOf([resolvedPaneMeta]),
+              nextStream.pipe(map((nextResolvedPanes) => [resolvedPaneMeta, ...nextResolvedPanes])),
+            )
+          }
+
           return observableOf([resolvedPaneMeta])
         }
 
