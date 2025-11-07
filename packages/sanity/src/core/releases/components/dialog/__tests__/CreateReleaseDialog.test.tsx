@@ -1,5 +1,6 @@
 import {type ReleaseDocument} from '@sanity/client'
-import {act, fireEvent, render, screen, waitFor} from '@testing-library/react'
+import {render, screen, waitFor} from '@testing-library/react'
+import {userEvent} from '@testing-library/user-event'
 import {beforeEach, describe, expect, it, vi} from 'vitest'
 
 import {createTestProvider} from '../../../../../../test/testUtils/TestProvider'
@@ -35,8 +36,8 @@ describe('CreateReleaseDialog', () => {
       expect(screen.getByRole('dialog')).toBeInTheDocument()
     })
 
-    it('should call onCancel when dialog is closed', () => {
-      fireEvent.click(screen.getByRole('button', {name: /close/i}))
+    it('should call onCancel when dialog is closed', async () => {
+      await userEvent.click(screen.getByRole('button', {name: /close/i}))
 
       expect(onCancelMock).toHaveBeenCalled()
     })
@@ -44,23 +45,21 @@ describe('CreateReleaseDialog', () => {
     it('should call createRelease and onCreate when form is submitted', async () => {
       const value: Partial<ReleaseDocument> = activeASAPRelease
 
-      await act(async () => {
-        const titleInput = screen.getByTestId('release-form-title')
-        fireEvent.change(titleInput, {target: {value: value.metadata?.title}})
+      const titleInput = screen.getByTestId('release-form-title')
+      await userEvent.type(titleInput, value.metadata?.title || '')
 
-        const submitButton = screen.getByTestId('submit-release-button')
-        fireEvent.click(submitButton)
+      const submitButton = screen.getByTestId('submit-release-button')
+      await userEvent.click(submitButton)
 
-        await waitFor(async () => {
-          await Promise.resolve()
+      await Promise.resolve()
 
-          expect(onSubmitMock).toHaveBeenCalledOnce()
-          expect(useReleaseOperationsMockReturn.createRelease).toHaveBeenCalledWith(
-            expect.objectContaining({
-              _id: expect.stringContaining('releases'),
-            }),
-          )
-        })
+      await waitFor(async () => {
+        expect(onSubmitMock).toHaveBeenCalledOnce()
+        expect(useReleaseOperationsMockReturn.createRelease).toHaveBeenCalledWith(
+          expect.objectContaining({
+            _id: expect.stringContaining('releases'),
+          }),
+        )
       })
     })
   })

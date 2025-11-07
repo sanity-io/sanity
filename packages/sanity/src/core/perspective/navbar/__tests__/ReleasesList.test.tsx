@@ -1,6 +1,7 @@
 import {type ReleaseDocument} from '@sanity/client'
 import {Menu} from '@sanity/ui'
-import {fireEvent, render, screen, waitFor} from '@testing-library/react'
+import {render, screen, waitFor} from '@testing-library/react'
+import {userEvent} from '@testing-library/user-event'
 import {beforeEach, describe, expect, it, vi} from 'vitest'
 
 import {createTestProvider} from '../../../../../test/testUtils/TestProvider'
@@ -72,7 +73,7 @@ describe('ReleasesList', () => {
         expect(screen.getByTestId('create-new-release-button')).not.toBeDisabled(),
       )
 
-      fireEvent.click(screen.getByTestId('create-new-release-button'))
+      await userEvent.click(screen.getByTestId('create-new-release-button'))
       expect(handleOpenBundleDialog).toHaveBeenCalled()
     })
   })

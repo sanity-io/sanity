@@ -1,5 +1,6 @@
 import {type ReleaseDocument} from '@sanity/client'
-import {fireEvent, render, screen, waitFor} from '@testing-library/react'
+import {render, screen, waitFor} from '@testing-library/react'
+import {userEvent} from '@testing-library/user-event'
 import {beforeEach, describe, expect, it, vi} from 'vitest'
 
 import {createTestProvider} from '../../../../../../test/testUtils/TestProvider'
@@ -53,7 +54,7 @@ describe('ReleaseDetailsEditor', () => {
       } as ReleaseDocument
 
       const input = screen.getByTestId('release-form-title')
-      fireEvent.change(input, {target: {value: release.metadata.title}})
+      await userEvent.type(input, release.metadata.title!)
 
       await waitFor(
         () => {
@@ -75,7 +76,7 @@ describe('ReleaseDetailsEditor', () => {
       } as ReleaseDocument
 
       const input = screen.getByTestId('release-form-description')
-      fireEvent.change(input, {target: {value: release.metadata.description}})
+      await userEvent.type(input, release.metadata.description!)
 
       await waitFor(
         () => {

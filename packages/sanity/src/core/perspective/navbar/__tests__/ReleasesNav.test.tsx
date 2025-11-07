@@ -1,4 +1,5 @@
-import {fireEvent, render, type RenderResult, screen, waitFor, within} from '@testing-library/react'
+import {render, type RenderResult, screen, waitFor, within} from '@testing-library/react'
+import {userEvent} from '@testing-library/user-event'
 import {beforeEach, describe, expect, it, vi} from 'vitest'
 
 import {createTestProvider} from '../../../../../test/testUtils/TestProvider'
@@ -106,7 +107,7 @@ describe('ReleasesNav', () => {
     const renderAndWaitForStableMenu = async () => {
       await renderTest()
 
-      fireEvent.click(screen.getByTestId('global-perspective-menu-button'))
+      await userEvent.click(screen.getByTestId('global-perspective-menu-button'))
 
       await waitFor(() => {
         expect(screen.queryByTestId('spinner')).toBeNull()
@@ -134,7 +135,7 @@ describe('ReleasesNav', () => {
       it('should show published perspective item', async () => {
         within(screen.getByTestId('release-menu')).getByText('Published')
 
-        fireEvent.click(screen.getByText('Published'))
+        await userEvent.click(screen.getByText('Published'))
 
         expect(mockedSetPerspective).toHaveBeenCalledWith('published')
       })
@@ -183,7 +184,7 @@ describe('ReleasesNav', () => {
       })
 
       it('allows for new release to be created', async () => {
-        fireEvent.click(screen.getByText('New release'))
+        await userEvent.click(screen.getByText('New release'))
 
         expect(screen.getByRole('dialog')).toHaveAttribute('id', 'create-release-dialog')
       })
@@ -219,7 +220,7 @@ describe('ReleasesNav', () => {
           await renderAndWaitForStableMenu()
 
           // select a release that has some other nested layer releases
-          fireEvent.click(screen.getByText('active Scheduled 2'))
+          await userEvent.click(screen.getByText('active Scheduled 2'))
         })
 
         it('should set a given perspective from the menu', async () => {
@@ -232,13 +233,13 @@ describe('ReleasesNav', () => {
             .closest('button')!
 
           // toggle to hide
-          fireEvent.click(within(deepLayerRelease).getByTestId('release-toggle-visibility'))
+          await userEvent.click(within(deepLayerRelease).getByTestId('release-toggle-visibility'))
           expect(useExcludedPerspectiveMockReturn.toggleExcludedPerspective).toHaveBeenCalledWith(
             'rActive',
           )
 
           // toggle to include
-          fireEvent.click(within(deepLayerRelease).getByTestId('release-toggle-visibility'))
+          await userEvent.click(within(deepLayerRelease).getByTestId('release-toggle-visibility'))
           expect(useExcludedPerspectiveMockReturn.toggleExcludedPerspective).toHaveBeenCalledWith(
             'rActive',
           )
@@ -261,12 +262,12 @@ describe('ReleasesNav', () => {
 
           expect(within(drafts).getByTestId('release-toggle-visibility')).toBeInTheDocument()
           // toggle to hide
-          fireEvent.click(within(drafts).getByTestId('release-toggle-visibility'))
+          await userEvent.click(within(drafts).getByTestId('release-toggle-visibility'))
           expect(useExcludedPerspectiveMockReturn.toggleExcludedPerspective).toHaveBeenCalledWith(
             'drafts',
           )
           // toggle to include
-          fireEvent.click(within(drafts).getByTestId('release-toggle-visibility'))
+          await userEvent.click(within(drafts).getByTestId('release-toggle-visibility'))
           expect(useExcludedPerspectiveMockReturn.toggleExcludedPerspective).toHaveBeenCalledWith(
             'drafts',
           )

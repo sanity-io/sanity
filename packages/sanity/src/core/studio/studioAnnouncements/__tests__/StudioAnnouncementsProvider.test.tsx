@@ -1,5 +1,6 @@
 /* eslint-disable camelcase */
-import {fireEvent, render, renderHook, waitFor} from '@testing-library/react'
+import {render, renderHook, waitFor} from '@testing-library/react'
+import {userEvent} from '@testing-library/user-event'
 import {type ReactNode} from 'react'
 import {of} from 'rxjs'
 import {beforeAll, beforeEach, describe, expect, test, vi} from 'vitest'
@@ -212,12 +213,12 @@ describe('StudioAnnouncementsProvider', () => {
       const {useTelemetry} = await import('@sanity/telemetry/react')
       ;(useTelemetry as ReturnType<typeof vi.fn>).mockReturnValue({log: mockLog})
 
-      const {queryByText, getByLabelText} = render(null, {wrapper})
+      const {queryByText, getByLabelText, getByText} = render(null, {wrapper})
 
       expect(getByText("What's new")).toBeInTheDocument()
       expect(getByText(mockAnnouncements[1].title)).toBeInTheDocument()
       const cardButton = getByLabelText('Open announcements')
-      fireEvent.click(cardButton)
+      await userEvent.click(cardButton)
 
       await waitFor(() => {
         expect(queryByText("What's new")).toBeNull()
@@ -259,12 +260,12 @@ describe('StudioAnnouncementsProvider', () => {
       const {useTelemetry} = await import('@sanity/telemetry/react')
       ;(useTelemetry as ReturnType<typeof vi.fn>).mockReturnValue({log: mockLog})
 
-      const {queryByText, getByLabelText} = render(null, {wrapper})
+      const {queryByText, getByLabelText, getByText} = render(null, {wrapper})
 
       expect(getByText("What's new")).toBeInTheDocument()
       expect(getByText(mockAnnouncements[1].title)).toBeInTheDocument()
       const closeButton = getByLabelText('Dismiss announcements')
-      fireEvent.click(closeButton)
+      await userEvent.click(closeButton)
       await waitFor(() => {
         expect(queryByText("What's new")).toBeNull()
       })
@@ -293,19 +294,19 @@ describe('StudioAnnouncementsProvider', () => {
       const {useTelemetry} = await import('@sanity/telemetry/react')
       ;(useTelemetry as ReturnType<typeof vi.fn>).mockReturnValue({log: mockLog})
 
-      const {queryByText, getByLabelText} = render(null, {wrapper})
+      const {queryByText, getByLabelText, getByText} = render(null, {wrapper})
 
       expect(getByText("What's new")).toBeInTheDocument()
       expect(getByText(mockAnnouncements[1].title)).toBeInTheDocument()
       const cardButton = getByLabelText('Open announcements')
-      fireEvent.click(cardButton)
+      await userEvent.click(cardButton)
       await waitFor(() => {
         expect(queryByText("What's new")).toBeNull()
       })
       expect(getByText(mockAnnouncements[1].title)).toBeInTheDocument()
 
       const closeButton = getByLabelText('Close dialog')
-      fireEvent.click(closeButton)
+      await userEvent.click(closeButton)
       expect(queryByText("What's new")).toBeNull()
       expect(queryByText(mockAnnouncements[1].title)).toBeNull()
 
@@ -352,13 +353,13 @@ describe('StudioAnnouncementsProvider', () => {
         )
       }
 
-      const {queryByText, getByRole} = render(<Component />, {wrapper})
+      const {queryByText, getByRole, getByText} = render(<Component />, {wrapper})
 
       expect(getByText("What's new")).toBeInTheDocument()
       expect(getByText(mockAnnouncements[1].title)).toBeInTheDocument()
 
       const openDialogButton = getByRole('button', {name: 'Open dialog'})
-      fireEvent.click(openDialogButton)
+      await userEvent.click(openDialogButton)
 
       // The card closes even if we open it from somewhere else
       await waitFor(() => {
@@ -570,7 +571,7 @@ describe('StudioAnnouncementsProvider', () => {
     beforeEach(() => {
       vi.clearAllMocks()
     })
-    test('when the card is dismissed, and only 1 announcement received', () => {
+    test('when the card is dismissed, and only 1 announcement received', async () => {
       const saveSeenAnnouncementsMock = vi.fn()
       seenAnnouncementsMock.mockReturnValue([
         of({value: [], error: null, loading: false}),
@@ -581,10 +582,10 @@ describe('StudioAnnouncementsProvider', () => {
       const {getByLabelText} = render(null, {wrapper})
 
       const closeButton = getByLabelText('Dismiss announcements')
-      fireEvent.click(closeButton)
+      await userEvent.click(closeButton)
       expect(saveSeenAnnouncementsMock).toHaveBeenCalledWith([mockAnnouncements[0]._id])
     })
-    test('when the card is dismissed, and 2 announcements are received', () => {
+    test('when the card is dismissed, and 2 announcements are received', async () => {
       const saveSeenAnnouncementsMock = vi.fn()
       seenAnnouncementsMock.mockReturnValue([
         of({value: [], error: null, loading: false}),
@@ -595,10 +596,10 @@ describe('StudioAnnouncementsProvider', () => {
       const {getByLabelText} = render(null, {wrapper})
 
       const closeButton = getByLabelText('Dismiss announcements')
-      fireEvent.click(closeButton)
+      await userEvent.click(closeButton)
       expect(saveSeenAnnouncementsMock).toHaveBeenCalledWith(mockAnnouncements.map((d) => d._id))
     })
-    test("when the card is dismissed, doesn't persist previous stored values", () => {
+    test("when the card is dismissed, doesn't persist previous stored values", async () => {
       const saveSeenAnnouncementsMock = vi.fn()
       // The id received here is not present anymore in the mock announcements, this id won't be stored in next save.
       seenAnnouncementsMock.mockReturnValue([
@@ -609,10 +610,10 @@ describe('StudioAnnouncementsProvider', () => {
       const {getByLabelText} = render(null, {wrapper})
 
       const closeButton = getByLabelText('Dismiss announcements')
-      fireEvent.click(closeButton)
+      await userEvent.click(closeButton)
       expect(saveSeenAnnouncementsMock).toHaveBeenCalledWith(mockAnnouncements.map((d) => d._id))
     })
-    test('when the card is dismissed, persist previous stored values', () => {
+    test('when the card is dismissed, persist previous stored values', async () => {
       const saveSeenAnnouncementsMock = vi.fn()
       // The id received here is present in the mock announcements, this id will be persisted in next save.
       seenAnnouncementsMock.mockReturnValue([
@@ -624,10 +625,10 @@ describe('StudioAnnouncementsProvider', () => {
       const {getByLabelText} = render(null, {wrapper})
 
       const closeButton = getByLabelText('Dismiss announcements')
-      fireEvent.click(closeButton)
+      await userEvent.click(closeButton)
       expect(saveSeenAnnouncementsMock).toHaveBeenCalledWith(mockAnnouncements.map((d) => d._id))
     })
-    test('when the dialog is closed', () => {
+    test('when the dialog is closed', async () => {
       const saveSeenAnnouncementsMock = vi.fn()
       seenAnnouncementsMock.mockReturnValue([
         of({value: [], error: null, loading: false}),
@@ -638,10 +639,10 @@ describe('StudioAnnouncementsProvider', () => {
       const {getByLabelText} = render(null, {wrapper})
 
       const openButton = getByLabelText('Open announcements')
-      fireEvent.click(openButton)
+      await userEvent.click(openButton)
       // Dialog renders and we close it
       const closeButton = getByLabelText('Close dialog')
-      fireEvent.click(closeButton)
+      await userEvent.click(closeButton)
       expect(saveSeenAnnouncementsMock).toHaveBeenCalledWith(mockAnnouncements.map((d) => d._id))
     })
   })

@@ -136,6 +136,7 @@ describe.skip('DocumentSheetListPane', () => {
 
         expect(screen.getByTestId('cell-name-0')).toHaveAttribute('aria-selected', 'true')
 
+        // eslint-disable-next-line testing-library/prefer-user-event
         fireEvent.paste(document, {
           clipboardData: {
             getData: () => 'Joe Blogs',
@@ -151,6 +152,7 @@ describe.skip('DocumentSheetListPane', () => {
         await userEvent.click(screen.getByTestId('cell-name-0'))
         await userEvent.type(screen.getByTestId('cell-name-0'), '{Enter}')
 
+        // eslint-disable-next-line testing-library/prefer-user-event
         fireEvent.paste(document, {
           clipboardData: {
             getData: () => 'Joe Blogs',
@@ -167,6 +169,7 @@ describe.skip('DocumentSheetListPane', () => {
 
         await userEvent.keyboard('{Shift}{ArrowDown}')
 
+        // eslint-disable-next-line testing-library/prefer-user-event
         fireEvent.paste(document, {
           clipboardData: {
             getData: () => 'Joe Blogs',
@@ -187,6 +190,7 @@ describe.skip('DocumentSheetListPane', () => {
         expect(screen.getByTestId('cell-name-0')).toHaveAttribute('aria-selected', 'true')
         expect(screen.getByTestId('cell-name-1')).toHaveAttribute('aria-selected', 'true')
 
+        // eslint-disable-next-line testing-library/prefer-user-event
         fireEvent.paste(document, {
           clipboardData: {
             getData: () => 'Joe Blogs',
@@ -205,6 +209,7 @@ describe.skip('DocumentSheetListPane', () => {
 
         expect(screen.getByTestId('cell-age-0')).toHaveAttribute('aria-selected', 'true')
 
+        // eslint-disable-next-line testing-library/prefer-user-event
         fireEvent.paste(document, {
           clipboardData: {
             getData: () => 'Joe Blogs',
@@ -222,6 +227,7 @@ describe.skip('DocumentSheetListPane', () => {
         await userEvent.keyboard('{Shift}{ArrowRight}')
         await userEvent.keyboard('{Escape}')
 
+        // eslint-disable-next-line testing-library/prefer-user-event
         fireEvent.paste(document, {
           clipboardData: {
             getData: () => 'Joe Blogs',
@@ -238,6 +244,7 @@ describe.skip('DocumentSheetListPane', () => {
         await userEvent.dblClick(screen.getByTestId('cell-name-0'))
         await userEvent.keyboard('{Escape}')
         await userEvent.keyboard('{Escape}')
+        // eslint-disable-next-line testing-library/prefer-user-event
         fireEvent.paste(document, {
           clipboardData: {
             getData: () => 'Joe Blogs',
@@ -261,6 +268,7 @@ describe.skip('DocumentSheetListPane', () => {
     it('should not allow for hiding preview column', async () => {
       await renderTest()
 
+      // eslint-disable-next-line testing-library/prefer-user-event
       fireEvent.mouseMove(screen.getByText('Preview'))
       expect(
         within(screen.getByTestId('header-Preview')).queryByTestId('field-menu-button'),
@@ -270,13 +278,16 @@ describe.skip('DocumentSheetListPane', () => {
     it('should allow for hiding other columns', async () => {
       await renderTest()
 
+      // eslint-disable-next-line testing-library/prefer-user-event
       fireEvent.mouseMove(screen.getByText('Name'))
 
       expect(
         within(screen.getByTestId('header-name')).getByTestId('field-menu-button'),
       ).toBeInTheDocument()
 
+      // eslint-disable-next-line testing-library/prefer-user-event
       fireEvent.click(within(screen.getByTestId('header-name')).getByTestId('field-menu-button'))
+      // eslint-disable-next-line testing-library/prefer-user-event
       fireEvent.click(screen.getByText('Remove from table'))
 
       expect(screen.queryByText('Name')).toBeNull()

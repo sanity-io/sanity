@@ -1,5 +1,6 @@
 import {Menu} from '@sanity/ui'
-import {fireEvent, render, screen, waitFor} from '@testing-library/react'
+import {render, screen, waitFor} from '@testing-library/react'
+import {userEvent} from '@testing-library/user-event'
 import {beforeEach, describe, expect, it, type MockedFunction, vi} from 'vitest'
 
 // Now we can safely import the hook and other dependencies
@@ -222,11 +223,11 @@ describe('useScheduledDraftMenuActions', () => {
       )
 
       // Click menu item to open dialog
-      fireEvent.click(screen.getByTestId('publish-now-menu-item'))
+      await userEvent.click(screen.getByTestId('publish-now-menu-item'))
       expect(screen.getByTestId('publish-scheduled-draft-dialog')).toBeInTheDocument()
 
       // Confirm action
-      fireEvent.click(screen.getByTestId('confirm-publish'))
+      await userEvent.click(screen.getByTestId('confirm-publish'))
 
       await waitFor(() => {
         expect(mockOperations.publishScheduledDraft).toHaveBeenCalledWith(scheduledRelease)
@@ -243,8 +244,8 @@ describe('useScheduledDraftMenuActions', () => {
         </TestProvider>,
       )
 
-      fireEvent.click(screen.getByTestId('publish-now-menu-item'))
-      fireEvent.click(screen.getByTestId('confirm-publish'))
+      await userEvent.click(screen.getByTestId('publish-now-menu-item'))
+      await userEvent.click(screen.getByTestId('confirm-publish'))
 
       await waitFor(() => {
         expect(mockToastPush).toHaveBeenCalledWith(
@@ -266,11 +267,11 @@ describe('useScheduledDraftMenuActions', () => {
       )
 
       // Click menu item to open dialog
-      fireEvent.click(screen.getByTestId('edit-schedule-menu-item'))
+      await userEvent.click(screen.getByTestId('edit-schedule-menu-item'))
       expect(screen.getByTestId('schedule-draft-dialog')).toBeInTheDocument()
 
       // Confirm action
-      fireEvent.click(screen.getByTestId('confirm-reschedule'))
+      await userEvent.click(screen.getByTestId('confirm-reschedule'))
 
       await waitFor(() => {
         expect(mockOperations.rescheduleScheduledDraft).toHaveBeenCalledWith(
@@ -290,8 +291,8 @@ describe('useScheduledDraftMenuActions', () => {
         </TestProvider>,
       )
 
-      fireEvent.click(screen.getByTestId('edit-schedule-menu-item'))
-      fireEvent.click(screen.getByTestId('confirm-reschedule'))
+      await userEvent.click(screen.getByTestId('edit-schedule-menu-item'))
+      await userEvent.click(screen.getByTestId('confirm-reschedule'))
 
       await waitFor(() => {
         expect(mockToastPush).toHaveBeenCalledWith(
@@ -313,11 +314,11 @@ describe('useScheduledDraftMenuActions', () => {
       )
 
       // Click menu item to open dialog
-      fireEvent.click(screen.getByTestId('delete-schedule-menu-item'))
+      await userEvent.click(screen.getByTestId('delete-schedule-menu-item'))
       expect(screen.getByTestId('delete-scheduled-draft-dialog')).toBeInTheDocument()
 
       // Confirm action
-      fireEvent.click(screen.getByTestId('confirm-delete'))
+      await userEvent.click(screen.getByTestId('confirm-delete'))
 
       await waitFor(() => {
         expect(mockOperations.deleteScheduledDraft).toHaveBeenCalledWith(scheduledRelease)

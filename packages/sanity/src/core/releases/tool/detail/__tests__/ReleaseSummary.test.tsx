@@ -1,4 +1,5 @@
-import {act, fireEvent, render, screen, within} from '@testing-library/react'
+import {render, screen, within} from '@testing-library/react'
+import {userEvent} from '@testing-library/user-event'
 import {
   cloneElement,
   type FC,
@@ -156,20 +157,20 @@ describe('ReleaseSummary', () => {
       expect(documents).toHaveLength(2)
     })
 
-    it('allows for document to be discarded', () => {
+    it('allows for document to be discarded', async () => {
       const [firstDocumentRow] = screen.getAllByTestId('table-row')
 
-      fireEvent.click(getByDataUi(firstDocumentRow, 'MenuButton'))
-      fireEvent.click(screen.getByText('Discard version'))
+      await userEvent.click(getByDataUi(firstDocumentRow, 'MenuButton'))
+      await userEvent.click(screen.getByText('Discard version'))
     })
 
-    it('allows for sorting of documents', () => {
+    it('allows for sorting of documents', async () => {
       const [initialFirstDocument, initialSecondDocument] = screen.getAllByTestId('table-row')
 
       within(initialFirstDocument).getByText('First document')
       within(initialSecondDocument).getByText('Second document')
 
-      fireEvent.click(within(screen.getByRole('table')).getByText('Edited'))
+      await userEvent.click(within(screen.getByRole('table')).getByText('Edited'))
 
       const [sortedCreatedAscFirstDocument, sortedCreatedAscSecondDocument] =
         screen.getAllByTestId('table-row')
@@ -177,7 +178,7 @@ describe('ReleaseSummary', () => {
       within(sortedCreatedAscFirstDocument).getByText('Second document')
       within(sortedCreatedAscSecondDocument).getByText('First document')
 
-      fireEvent.click(within(screen.getByRole('table')).getByText('Edited'))
+      await userEvent.click(within(screen.getByRole('table')).getByText('Edited'))
 
       const [sortedEditedDescFirstDocument, sortedEditedDescSecondDocument] =
         screen.getAllByTestId('table-row')
@@ -187,11 +188,7 @@ describe('ReleaseSummary', () => {
     })
 
     it('allows for searching documents', async () => {
-      act(() => {
-        fireEvent.change(screen.getByPlaceholderText('Search documents'), {
-          target: {value: 'Second'},
-        })
-      })
+      await userEvent.type(screen.getByPlaceholderText('Search documents'), 'Second')
 
       const [searchedFirstDocument] = screen.getAllByTestId('table-row')
 

@@ -1201,15 +1201,15 @@ describe('ReleasesOverview', () => {
       describe('when empty and plan supports releases', () => {
         beforeEach(async () => {
           setupEmptyState()
+        })
 
+        it('should show empty list state', async () => {
           const wrapper = await createTestProvider({
             resources: [releasesUsEnglishLocaleBundle],
           })
 
-          return act(async () => render(<TestComponent />, {wrapper}))
-        })
+          render(<TestComponent />, {wrapper})
 
-        it('should show empty list state', () => {
           expect(screen.getByTestId('no-releases-info-text')).toBeInTheDocument()
           expect(screen.getByTestId('release-illustration')).toBeInTheDocument()
           expect(screen.queryByRole('table')).not.toBeInTheDocument()
@@ -1235,15 +1235,15 @@ describe('ReleasesOverview', () => {
               panelSecondaryClicked: vi.fn(),
             },
           }))
+        })
 
+        it('should show upsell only', async () => {
           const wrapper = await createTestProvider({
             resources: [releasesUsEnglishLocaleBundle],
           })
 
-          return act(async () => render(<TestComponent />, {wrapper}))
-        })
+          render(<TestComponent />, {wrapper})
 
-        it('should show upsell only', () => {
           expect(screen.getByTestId('release-illustration')).toBeInTheDocument()
           expect(screen.queryByRole('table')).not.toBeInTheDocument()
         })
@@ -1257,15 +1257,15 @@ describe('ReleasesOverview', () => {
             enabled: true,
             mode: 'default',
           })
+        })
 
+        it('should show empty list state', async () => {
           const wrapper = await createTestProvider({
             resources: [releasesUsEnglishLocaleBundle],
           })
 
-          return act(async () => render(<TestComponent />, {wrapper}))
-        })
+          render(<TestComponent />, {wrapper})
 
-        it('should show empty list state', () => {
           expect(screen.getByTestId('no-releases-info-text')).toBeInTheDocument()
           expect(screen.getByTestId('release-illustration')).toBeInTheDocument()
           expect(screen.queryByRole('table')).not.toBeInTheDocument()

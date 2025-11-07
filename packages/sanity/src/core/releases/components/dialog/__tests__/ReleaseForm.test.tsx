@@ -1,5 +1,6 @@
 import {type EditableReleaseDocument, type ReleaseDocument} from '@sanity/client'
-import {fireEvent, render, screen, waitFor} from '@testing-library/react'
+import {render, screen, waitFor} from '@testing-library/react'
+import {userEvent} from '@testing-library/user-event'
 import {useCallback, useState} from 'react'
 import {beforeEach, describe, expect, it, type Mock, vi} from 'vitest'
 
@@ -121,23 +122,27 @@ describe('ReleaseForm', () => {
       expect(screen.getByTestId('release-form-description')).toBeInTheDocument()
     })
 
-    it('should call onChange when title input value changes', () => {
+    it('should call onChange when title input value changes', async () => {
       const titleInput = screen.getByTestId('release-form-title')
-      fireEvent.change(titleInput, {target: {value: 'Bundle 1'}})
+      await userEvent.type(titleInput, 'Bundle 1')
 
-      expect(onChangeMock).toHaveBeenCalledWith({
-        ...valueMock,
-        metadata: {...valueMock.metadata, title: 'Bundle 1'},
+      await waitFor(() => {
+        expect(onChangeMock).toHaveBeenCalledWith({
+          ...valueMock,
+          metadata: {...valueMock.metadata, title: 'Bundle 1'},
+        })
       })
     })
 
-    it('should call onChange when description textarea value changes', () => {
+    it('should call onChange when description textarea value changes', async () => {
       const descriptionTextarea = screen.getByTestId('release-form-description')
-      fireEvent.change(descriptionTextarea, {target: {value: 'New Description'}})
+      await userEvent.type(descriptionTextarea, 'New Description')
 
-      expect(onChangeMock).toHaveBeenCalledWith({
-        ...valueMock,
-        metadata: {...valueMock.metadata, description: 'New Description'},
+      await waitFor(() => {
+        expect(onChangeMock).toHaveBeenCalledWith({
+          ...valueMock,
+          metadata: {...valueMock.metadata, description: 'New Description'},
+        })
       })
     })
 
@@ -302,9 +307,11 @@ describe('ReleaseForm', () => {
       expect(titleInput).toHaveValue(existingBundleValue.metadata.title)
       // the slug of this title already exists,
       // but the slug for the existing edited release will not be changed
-      fireEvent.change(titleInput, {target: {value: 'Spring Drop'}})
+      await userEvent.type(titleInput, 'Spring Drop')
 
-      expect(screen.queryByTestId('input-validation-icon-error')).not.toBeInTheDocument()
+      await waitFor(() => {
+        expect(screen.queryByTestId('input-validation-icon-error')).not.toBeInTheDocument()
+      })
     })
 
     it('should populate the form with the existing release values', () => {

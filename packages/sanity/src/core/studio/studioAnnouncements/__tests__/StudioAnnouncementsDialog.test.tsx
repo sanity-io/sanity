@@ -1,5 +1,6 @@
 /* eslint-disable camelcase */
-import {fireEvent, render, screen} from '@testing-library/react'
+import {render, screen} from '@testing-library/react'
+import {userEvent} from '@testing-library/user-event'
 import {type ReactNode} from 'react'
 import {afterEach, describe, expect, test, vi} from 'vitest'
 
@@ -152,7 +153,7 @@ describe('StudioAnnouncementsCard', () => {
     )
     // Check that the close button is rendered
     const closeButton = screen.getByLabelText('Close dialog')
-    fireEvent.click(closeButton)
+    await userEvent.click(closeButton)
 
     expect(onCloseMock).toHaveBeenCalled()
   })
@@ -174,7 +175,7 @@ describe('StudioAnnouncementsCard', () => {
 
     // Simulate clicking on a link
     const link = screen.getByText('Content with a link')
-    fireEvent.click(link)
+    await userEvent.click(link)
     expect(mockLog).toHaveBeenCalledTimes(2)
     expect(mockLog).toHaveBeenCalledWith(ProductAnnouncementViewed, {
       announcement_id: 'studioAnnouncement-1',
