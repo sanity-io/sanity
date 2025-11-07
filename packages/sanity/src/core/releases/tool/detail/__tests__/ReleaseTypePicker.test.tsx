@@ -1,4 +1,4 @@
-import {fireEvent, render, screen, waitFor, within} from '@testing-library/react'
+import {render, screen, waitFor, within} from '@testing-library/react'
 import {userEvent} from '@testing-library/user-event'
 import {beforeEach, describe, expect, it, vi} from 'vitest'
 
@@ -38,6 +38,20 @@ const renderComponent = async (release = activeASAPRelease) => {
   await waitFor(() => {
     expect(screen.getByTestId('release-type-label')).toBeInTheDocument()
   })
+}
+
+const findTabByName = async (name: string) => {
+  const labels = await screen.findAllByText(name)
+
+  for (const label of labels) {
+    const tab = label.closest('[role="tab"]') as HTMLButtonElement | null
+
+    if (tab) {
+      return tab
+    }
+  }
+
+  throw new Error(`Could not find tab with name "${name}"`)
 }
 
 const mockUpdateRelease = vi.fn()
@@ -119,7 +133,7 @@ describe('ReleaseTypePicker', () => {
 
       const pickerButton = screen.getByRole('button')
       await userEvent.click(pickerButton)
-      const scheduledTab = screen.getByText('At time')
+      const scheduledTab = await findTabByName('At time')
       await userEvent.click(scheduledTab)
       expect(screen.getByTestId('date-input')).toBeInTheDocument()
       expect(getByDataUi(document.body, 'Calendar')).toBeInTheDocument()
@@ -130,9 +144,9 @@ describe('ReleaseTypePicker', () => {
 
       const pickerButton = screen.getByRole('button')
       await userEvent.click(pickerButton)
-      const scheduledTab = within(screen.getByRole('tablist')).getByText('At time')
+      const scheduledTab = await findTabByName('At time')
       await userEvent.click(scheduledTab)
-      const asapTab = within(screen.getByRole('tablist')).getByText('ASAP')
+      const asapTab = await findTabByName('ASAP')
       await userEvent.click(asapTab)
 
       expect(screen.queryByTestId('date-input')).not.toBeInTheDocument()
@@ -144,7 +158,7 @@ describe('ReleaseTypePicker', () => {
 
       const pickerButton = screen.getByRole('button')
       await userEvent.click(pickerButton)
-      const scheduledTab = screen.getByText('At time')
+      const scheduledTab = await findTabByName('At time')
       await userEvent.click(scheduledTab)
 
       const Calendar = getByDataUi(document.body, 'Calendar')
@@ -153,9 +167,11 @@ describe('ReleaseTypePicker', () => {
       // Select the 10th day in the calendar month
       await userEvent.click(within(Calendar).getByTestId('calendar-next-month'))
       await userEvent.click(within(CalendarMonth).getByText('10'))
-      // eslint-disable-next-line testing-library/prefer-user-event
-      fireEvent.change(screen.getByLabelText('Select time'), {target: {value: '10:55'}})
-      fireEvent.blur(screen.getByLabelText('Select time'))
+
+      const timeInput = screen.getByLabelText('Select time') as HTMLInputElement
+      await userEvent.clear(timeInput)
+      await userEvent.type(timeInput, '10:55')
+      await userEvent.tab()
       expect(mockUpdateRelease).not.toHaveBeenCalled()
 
       // Close the popup and check if the release is updated
@@ -177,7 +193,7 @@ describe('ReleaseTypePicker', () => {
 
       const pickerButton = screen.getByRole('button')
       await userEvent.click(pickerButton)
-      const undecidedTab = screen.getByText('Undecided')
+      const undecidedTab = await findTabByName('Undecided')
       await userEvent.click(undecidedTab)
       await userEvent.click(screen.getByTestId('release-type-picker'))
       expect(mockUpdateRelease).toHaveBeenCalledTimes(1)
@@ -198,10 +214,10 @@ describe('ReleaseTypePicker', () => {
       const pickerButton = screen.getByRole('button')
       await userEvent.click(pickerButton)
 
-      const undecidedTab = within(screen.getByRole('tablist')).getByText('Undecided')
+      const undecidedTab = await findTabByName('Undecided')
       await userEvent.click(undecidedTab)
 
-      const asapTab = within(screen.getByRole('tablist')).getByText('ASAP')
+      const asapTab = await findTabByName('ASAP')
       await userEvent.click(asapTab)
 
       await userEvent.click(screen.getByTestId('release-type-picker'))
@@ -216,10 +232,10 @@ describe('ReleaseTypePicker', () => {
       const pickerButton = screen.getByRole('button')
       await userEvent.click(pickerButton)
 
-      const atTimeTab = within(screen.getByRole('tablist')).getByText('At time')
+      const atTimeTab = await findTabByName('At time')
       await userEvent.click(atTimeTab)
 
-      const asapTab = within(screen.getByRole('tablist')).getByText('ASAP')
+      const asapTab = await findTabByName('ASAP')
       await userEvent.click(asapTab)
 
       await userEvent.click(screen.getByTestId('release-type-picker'))
@@ -241,13 +257,13 @@ describe('ReleaseTypePicker', () => {
       const pickerButton = screen.getByRole('button')
       await userEvent.click(pickerButton)
 
-      const asapTab = within(screen.getByRole('tablist')).getByText('ASAP')
+      const asapTab = await findTabByName('ASAP')
       await userEvent.click(asapTab)
 
       // 23 hours before `intendedPublishAt` (one hour after picker opened).
       vi.setSystemTime(new Date(intendedPublishAt.getTime() - 3_600 * 1_000 * 23))
 
-      const atTimeTab = within(screen.getByRole('tablist')).getByText('At time')
+      const atTimeTab = await findTabByName('At time')
       await userEvent.click(atTimeTab)
 
       await userEvent.click(pickerButton)
