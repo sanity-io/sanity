@@ -83,6 +83,7 @@
     },
     "./migrate": {
       "source": "./src/_exports/migrate.ts",
+      "import": "./lib/migrate.mjs",
       "require": "./lib/migrate.js",
       "default": "./lib/migrate.js"
     },
