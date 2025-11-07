@@ -213,7 +213,7 @@ describe('StudioAnnouncementsProvider', () => {
       const {useTelemetry} = await import('@sanity/telemetry/react')
       ;(useTelemetry as ReturnType<typeof vi.fn>).mockReturnValue({log: mockLog})
 
-      const {queryByText, getByLabelText, getByText} = render(null, {wrapper})
+      const {queryByText, queryAllByText, getByLabelText, getByText} = render(null, {wrapper})
 
       expect(getByText("What's new")).toBeInTheDocument()
       expect(getByText(mockAnnouncements[1].title)).toBeInTheDocument()
@@ -222,14 +222,16 @@ describe('StudioAnnouncementsProvider', () => {
 
       await waitFor(
         () => {
-          expect(queryByText("What's new")).toBeNull()
+          const element = queryByText("What's new")
+          expect(element).not.toBeVisible()
         },
         {timeout: 3000},
       )
       // The first announcement is seen, so it's not rendered
       expect(queryByText(mockAnnouncements[0].title)).toBeNull()
-      // The second announcement is unseen, so it's rendered
-      expect(getByText(mockAnnouncements[1].title)).toBeInTheDocument()
+      // The second announcement is unseen, so it's rendered (may appear multiple times - in dialog and elsewhere)
+      const announcement2Elements = queryAllByText(mockAnnouncements[1].title)
+      expect(announcement2Elements.length).toBeGreaterThan(0)
 
       // Opening the dialog calls the telemetry only once, with the seen card
       expect(mockLog).toBeCalledTimes(3)

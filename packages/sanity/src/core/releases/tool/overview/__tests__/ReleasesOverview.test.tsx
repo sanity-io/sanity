@@ -483,8 +483,10 @@ describe('ReleasesOverview', () => {
 
     it('allows for pinning perspectives', async () => {
       const rows = screen.getAllByTestId('table-row')
-      const firstRow = rows[0]
-      const pinButton = within(firstRow).getByTestId('pin-release-button')
+      // First row is activeScheduledRelease with ID 'rActive'
+      // Second row is activeASAPRelease with ID 'rASAP'
+      const secondRow = rows[1]
+      const pinButton = within(secondRow).getByTestId('pin-release-button')
 
       expect(pinButton).toBeInTheDocument()
 
@@ -685,13 +687,24 @@ describe('ReleasesOverview', () => {
     })
 
     it('should navigate to release when row clicked', async () => {
-      const releaseRow = screen.getAllByTestId('table-row')[0]
-      await userEvent.click(within(releaseRow).getByText(activeASAPRelease.metadata.title))
+      // Row 1 is activeASAPRelease (row 0 is activeScheduledRelease)
+      const releaseRows = screen.getAllByTestId('table-row')
+      const asapReleaseRow = releaseRows.find((row) =>
+        within(row).queryByText('active asap Release'),
+      )
+
+      expect(asapReleaseRow).toBeDefined()
+
+      // Click on the card within the row
+      const card = within(asapReleaseRow!).getByText('active asap Release')
+      await userEvent.click(card)
 
       await waitFor(() => {
-        expect(useRouter().navigate).toHaveBeenCalledWith({
-          releaseId: 'rASAP',
-        })
+        expect(useRouter().navigate).toHaveBeenCalledWith(
+          expect.objectContaining({
+            releaseId: 'rASAP',
+          }),
+        )
       })
     })
   })

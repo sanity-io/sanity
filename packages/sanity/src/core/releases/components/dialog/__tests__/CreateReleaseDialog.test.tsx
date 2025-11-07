@@ -12,6 +12,12 @@ vi.mock('../../../store/useReleaseOperations', () => ({
   useReleaseOperations: vi.fn(() => useReleaseOperationsMockReturn),
 }))
 
+vi.mock('../../../hooks/useGuardWithReleaseLimitUpsell', () => ({
+  useGuardWithReleaseLimitUpsell: vi.fn(() => ({
+    releasePromise: Promise.resolve(true),
+  })),
+}))
+
 describe('CreateReleaseDialog', () => {
   describe('when creating a new release', () => {
     const onCancelMock = vi.fn()

@@ -110,10 +110,11 @@ describe('Keyboard accessibility', () => {
       render: (inputProps) => <BooleanInput {...inputProps} />,
     })
 
-    const input = result.getByRole('switch')
-    await userEvent.click(input)
-
-    expect(onChange).toBeCalled()
+    const input = result.container.querySelector('input[id="booleanTest"]')
+    await userEvent.click(input!)
+    await waitFor(() => {
+      expect(onChange).toBeCalled()
+    })
   })
 
   it('emits onBlur when navigating away from field', async () => {
