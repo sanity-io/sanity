@@ -119,6 +119,7 @@
     "ora": "^8.2.0",
     "p-map": "^4.0.0",
     "p-timeout": "^4.1.0",
+    "patch-package": "^8.0.1",
     "preferred-pm": "^3.1.4",
     "promise-props-recursive": "^2.0.2",
     "recast": "^0.23.11",
