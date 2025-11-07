@@ -360,7 +360,14 @@ describe('getReleasesPerspectiveStack()', () => {
       selectedPerspectiveName: 'rcardinalityOne2',
       isDraftModelEnabled: false,
       excludedPerspectives: [],
-      expected: ['rcardinalityOne2', 'rfuture1', 'rcardinalityOne1', 'rasap2', 'rasap1', 'published'],
+      expected: [
+        'rcardinalityOne2',
+        'rfuture1',
+        'rcardinalityOne1',
+        'rasap2',
+        'rasap1',
+        'published',
+      ],
     },
     // Test cardinality one with excluded perspectives
     {
