@@ -1,6 +1,6 @@
 import {defineField} from '@sanity/types'
-import {fireEvent, screen} from '@testing-library/react'
-import userEvent from '@testing-library/user-event'
+import {screen} from '@testing-library/react'
+import {userEvent} from '@testing-library/user-event'
 import {describe, expect, it} from 'vitest'
 
 import {renderBooleanInput} from '../../../../test/form/renderBooleanInput'
@@ -179,7 +179,7 @@ describe('readOnly property', () => {
     })
 
     const input = container.querySelector('input[id="booleanReadOnly"]')
-    fireEvent.mouseEnter(input!)
+    await userEvent.hover(input!)
 
     await screen.findByText('Disabled')
   })

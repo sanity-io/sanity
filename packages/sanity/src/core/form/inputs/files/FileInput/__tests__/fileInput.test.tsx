@@ -1,5 +1,6 @@
 import {type FileAsset, type FileSchemaType} from '@sanity/types'
-import {fireEvent, waitFor} from '@testing-library/react'
+import {waitFor} from '@testing-library/react'
+import {userEvent} from '@testing-library/user-event'
 import {type Observable, of} from 'rxjs'
 import {describe, expect, it} from 'vitest'
 
@@ -87,7 +88,7 @@ describe('FileInput with empty state', () => {
     expect(result.getByTestId('file-input-upload-button-source1')).toBeInTheDocument()
     expect(browseButton).toBeInTheDocument()
 
-    fireEvent.click(browseButton!)
+    await userEvent.click(browseButton!)
 
     await waitFor(() => {
       expect(result.getByTestId('file-input-browse-button-source1')).toBeInTheDocument()
@@ -176,11 +177,7 @@ describe('FileInput with empty state', () => {
 
     const input = result.queryByTestId('file-button-input')
 
-    fireEvent.change(input!, {
-      target: {
-        files: [new File(['(⌐□_□)'], 'cool_sunglasses.pdf', {type: 'file/pdf'})],
-      },
-    })
+    await userEvent.upload(input!, new File(['(⌐□_□)'], 'cool_sunglasses.pdf', {type: 'file/pdf'}))
 
     await waitFor(() => {
       expect(result.getByText('Read only')).toBeInTheDocument()
@@ -235,7 +232,7 @@ describe('FileInput with asset', () => {
       render: (inputProps) => <BaseFileInput {...inputProps} value={value} />,
     })
 
-    fireEvent.click(result.queryByTestId('options-menu-button')!)
+    await userEvent.click(result.queryByTestId('options-menu-button')!)
 
     await waitFor(() => {
       expect(result.getByTestId('file-input-browse-button-test-source')).toBeInTheDocument()
@@ -262,7 +259,7 @@ describe('FileInput with asset', () => {
       ),
     })
 
-    fireEvent.click(result.queryByTestId('options-menu-button')!)
+    await userEvent.click(result.queryByTestId('options-menu-button')!)
 
     await waitFor(() => {
       expect(result.getByTestId('file-input-upload-button-test-source')).toBeInTheDocument()
@@ -287,7 +284,7 @@ describe('FileInput with asset', () => {
       ),
     })
 
-    fireEvent.click(result.queryByTestId('options-menu-button')!)
+    await userEvent.click(result.queryByTestId('options-menu-button')!)
 
     await waitFor(() => {
       expect(result.getByTestId('file-input-browse-button-source1')).toBeInTheDocument()
@@ -308,7 +305,7 @@ describe('FileInput with asset', () => {
       render: (inputProps) => <BaseFileInput {...inputProps} directUploads={false} value={value} />,
     })
 
-    fireEvent.click(result.queryByTestId('options-menu-button')!)
+    await userEvent.click(result.queryByTestId('options-menu-button')!)
 
     await waitFor(() => {
       expect(
@@ -330,7 +327,7 @@ describe('FileInput with asset', () => {
       render: (inputProps) => <BaseFileInput {...inputProps} readOnly value={value} />,
     })
 
-    fireEvent.click(result.queryByTestId('options-menu-button')!)
+    await userEvent.click(result.queryByTestId('options-menu-button')!)
 
     await waitFor(() => {
       expect(
@@ -350,7 +347,7 @@ describe('FileInput with asset', () => {
       render: (inputProps) => <BaseFileInput {...inputProps} readOnly value={value} />,
     })
 
-    fireEvent.click(result.queryByTestId('options-menu-button')!)
+    await userEvent.click(result.queryByTestId('options-menu-button')!)
 
     await waitFor(() => {
       expect(
@@ -377,7 +374,7 @@ describe('FileInput with asset', () => {
       ),
     })
 
-    fireEvent.click(result.queryByTestId('options-menu-button')!)
+    await userEvent.click(result.queryByTestId('options-menu-button')!)
 
     await waitFor(() => {
       expect(
@@ -400,7 +397,7 @@ describe('FileInput with asset', () => {
       render: (inputProps) => <BaseFileInput {...inputProps} readOnly value={value} />,
     })
 
-    fireEvent.click(result.queryByTestId('options-menu-button')!)
+    await userEvent.click(result.queryByTestId('options-menu-button')!)
 
     await waitFor(() => {
       expect(result.queryByTestId('file-input-clear')!.hasAttribute('data-disabled'))
@@ -452,13 +449,12 @@ describe('FileInput with asset', () => {
       ),
     })
 
-    fireEvent.click(result.queryByTestId('options-menu-button')!)
+    await userEvent.click(result.queryByTestId('options-menu-button')!)
 
-    fireEvent.change(result.queryByTestId('file-button-input')!, {
-      target: {
-        files: [new File(['(⌐□_□)'], 'cool_sunglasses.pdf', {type: 'file/pdf'})],
-      },
-    })
+    await userEvent.upload(
+      result.queryByTestId('file-button-input')!,
+      new File(['(⌐□_□)'], 'cool_sunglasses.pdf', {type: 'file/pdf'}),
+    )
 
     await waitFor(() => {
       expect(result.getByText('cats.txt')).toBeInTheDocument()
