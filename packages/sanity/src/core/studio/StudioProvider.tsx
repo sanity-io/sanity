@@ -36,6 +36,7 @@ import {StudioThemeProvider} from './StudioThemeProvider'
 import {StudioTelemetryProvider} from './telemetry/StudioTelemetryProvider'
 import {WorkspaceLoader} from './workspaceLoader'
 import {WorkspacesProvider} from './workspaces'
+import {AssetLimitUpsellProvider} from '../limits/context/assets/AssetLimitUpsellProvider'
 
 registerLanguage(bash)
 registerLanguage(javascript)
@@ -79,7 +80,9 @@ export function StudioProvider({
                   <ComlinkRouteHandler />
                   <StudioAnnouncementsProvider>
                     <GlobalPerspectiveProvider>
-                      <DocumentLimitUpsellProvider>{children}</DocumentLimitUpsellProvider>
+                      <DocumentLimitUpsellProvider>
+                        <AssetLimitUpsellProvider>{children}</AssetLimitUpsellProvider>
+                      </DocumentLimitUpsellProvider>
                     </GlobalPerspectiveProvider>
                   </StudioAnnouncementsProvider>
                 </AppIdCacheProvider>

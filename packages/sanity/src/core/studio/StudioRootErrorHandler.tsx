@@ -7,7 +7,6 @@ import {errorReporter} from '../error/errorReporter'
 import {isImportError} from '../error/isImportError'
 import {isKnownError} from '../error/isKnownError'
 import {isDocumentLimitError} from '../limits/context/documents/isDocumentLimitError'
-import {isAssetLimitError} from '../limits/context/assets/isAssetLimitError'
 import {CorsOriginError} from '../store'
 import {globalScope} from '../util'
 import {CorsOriginErrorScreen, SchemaErrorsScreen} from './screens'
@@ -45,7 +44,7 @@ export function StudioRootErrorHandler(props: {children: ReactNode}) {
     // errorChannel.subscribe() returns a unsubscriber function.
     // By returning it from this `useEffect`, it'll unsubscribe on unmount.
     return errorChannel.subscribe((event) => {
-      if (isDocumentLimitError(event.error) || isAssetLimitError(event.error)) {
+      if (isDocumentLimitError(event.error)) {
         return
       }
 

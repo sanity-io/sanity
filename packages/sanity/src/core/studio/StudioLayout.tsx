@@ -20,7 +20,6 @@ import {
 } from './studio-components-hooks'
 import {StudioErrorBoundary} from './StudioErrorBoundary'
 import {useWorkspace} from './workspace'
-import {isAssetLimitError} from '../limits/context/assets/isAssetLimitError'
 import {AssetLimitsUpsellPanel} from '../limits/context/assets/AssetLimitUpsellPanel'
 
 const DetectViteDevServerStopped = lazy(() =>
@@ -180,12 +179,9 @@ export function StudioLayoutComponent() {
       if (isDocumentLimitError(error)) {
         return <DocumentLimitsUpsellPanel />
       }
-      if (isAssetLimitError(error)) {
-        return <AssetLimitsUpsellPanel />
-      }
       return null
     },
-    [isAssetLimitError, isDocumentLimitError],
+    [isDocumentLimitError],
   )
 
   return (

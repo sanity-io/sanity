@@ -40,6 +40,8 @@ import {ImageInputPreview} from './ImageInputPreview'
 import {ImageInputUploadPlaceholder} from './ImageInputUploadPlaceholder'
 import {InvalidImageWarning} from './InvalidImageWarning'
 import {type BaseImageInputProps, type BaseImageInputValue, type FileInfo} from './types'
+import {isAssetLimitError} from '../../../../limits/context/assets/isAssetLimitError'
+import {useAssetLimitsUpsellContext} from '../../../../limits/context/assets/AssetLimitUpsellProvider'
 
 export {BaseImageInputProps, BaseImageInputValue}
 
@@ -81,6 +83,7 @@ function BaseImageInputComponent(props: BaseImageInputProps): React.JSX.Element 
   // it when closing the dialog (see `handleAssetSourceClosed`)
   const [menuButtonElement, setMenuButtonElement] = useState<HTMLButtonElement | null>(null)
   const [isMenuOpen, setMenuOpen] = useState(false)
+  const {handleOpenDialog: handleAssetLimitUpsellDialog} = useAssetLimitsUpsellContext()
 
   const uploadSubscription = useRef<null | Subscription>(null)
 
@@ -295,6 +298,13 @@ function BaseImageInputComponent(props: BaseImageInputProps): React.JSX.Element 
                   })
                   break
                 case 'all-complete':
+                  // Payment errors only come through after all file uploads attemps have been made
+                  const hasAssetLimitError = event.files.some(
+                    (file) => file.status === 'error' && isAssetLimitError(file.error),
+                  )
+                  if (hasAssetLimitError) {
+                    handleAssetLimitUpsellDialog('field_action')
+                  }
                   onChange(PatchEvent.from([unset([UPLOAD_STATUS_KEY])]))
                   setMenuOpen(false)
                   break

@@ -29,6 +29,8 @@ import {handleSelectAssetFromSource as handleSelectAssetFromSourceShared} from '
 import {type FileInfo} from '../common/styles'
 import {FileAsset as FileAssetComponent} from './FileAsset'
 import {FileAssetSource} from './FileInputAssetSource'
+import {isAssetLimitError} from '../../../../limits/context/assets/isAssetLimitError'
+import {useAssetLimitsUpsellContext} from '../../../../limits/context/assets/AssetLimitUpsellProvider'
 
 /**
  * @hidden
@@ -75,7 +77,7 @@ export function BaseFileInput(props: BaseFileInputProps) {
   const [isUploading, setIsUploading] = useState(false)
   const [isBrowseMenuOpen, setIsBrowseMenuOpen] = useState(false)
   const [selectedAssetSource, setSelectedAssetSource] = useState<AssetSource | null>(null)
-
+  const {handleOpenDialog: handleAssetLimitUpsellDialog} = useAssetLimitsUpsellContext()
   const browseButtonElementRef = useRef<HTMLButtonElement>(null)
 
   const assetSourceUploaderRef = useRef<{
@@ -210,6 +212,13 @@ export function BaseFileInput(props: BaseFileInputProps) {
                   })
                   break
                 case 'all-complete':
+                  // Payment errors only come through after all file uploads attemps have been made
+                  const hasAssetLimitError = event.files.some(
+                    (file) => file.status === 'error' && isAssetLimitError(file.error),
+                  )
+                  if (hasAssetLimitError) {
+                    handleAssetLimitUpsellDialog('field_action')
+                  }
                   onChange(PatchEvent.from([unset([UPLOAD_STATUS_KEY])]))
                   break
                 default:

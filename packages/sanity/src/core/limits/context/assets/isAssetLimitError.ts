@@ -5,8 +5,7 @@ import {ClientError} from '@sanity/client'
  */
 export const isAssetLimitError = (error: unknown) => {
   if (error instanceof ClientError) {
-    // TODO: figure out the right error type
-    return error.response.body.error.type === 'assetLimitExceededError'
+    return error.response.body.error === 'plan_limit_reached'
   }
   return false
 }
