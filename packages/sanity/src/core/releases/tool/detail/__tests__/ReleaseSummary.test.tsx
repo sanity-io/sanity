@@ -1,4 +1,4 @@
-import {render, screen, within} from '@testing-library/react'
+import {render, screen, waitFor, within} from '@testing-library/react'
 import {userEvent} from '@testing-library/user-event'
 import {
   cloneElement,
@@ -143,21 +143,26 @@ describe('ReleaseSummary', () => {
   setupVirtualListEnv()
 
   describe('for an active release', () => {
-    beforeEach(async () => {
+    const prerenderTest = async () => {
       await renderTest({})
-      await vi.waitFor(() => screen.getByTestId('document-table-card'), {
+      // eslint-disable-next-line testing-library/prefer-find-by
+      await waitFor(() => screen.getByTestId('document-table-card'), {
         timeout: 5000,
         interval: 500,
       })
-    })
+    }
 
     it('shows list of all documents in release', async () => {
+      await prerenderTest()
+
       const documents = screen.getAllByTestId('table-row')
 
       expect(documents).toHaveLength(2)
     })
 
     it('allows for document to be discarded', async () => {
+      await prerenderTest()
+
       const [firstDocumentRow] = screen.getAllByTestId('table-row')
 
       await userEvent.click(getByDataUi(firstDocumentRow, 'MenuButton'))
@@ -165,6 +170,8 @@ describe('ReleaseSummary', () => {
     })
 
     it('allows for sorting of documents', async () => {
+      await prerenderTest()
+
       const [initialFirstDocument, initialSecondDocument] = screen.getAllByTestId('table-row')
 
       within(initialFirstDocument).getByText('First document')
@@ -188,6 +195,8 @@ describe('ReleaseSummary', () => {
     })
 
     it('allows for searching documents', async () => {
+      await prerenderTest()
+
       await userEvent.type(screen.getByPlaceholderText('Search documents'), 'Second')
 
       const [searchedFirstDocument] = screen.getAllByTestId('table-row')
@@ -195,29 +204,33 @@ describe('ReleaseSummary', () => {
       within(searchedFirstDocument).getByText('Second document')
     })
 
-    it('Allows for adding a document to an active release', () => {
+    it('Allows for adding a document to an active release', async () => {
+      await prerenderTest()
+
       screen.getByText('Add document')
     })
   })
 
   describe('for an archived release', () => {
-    beforeEach(async () => {
+    const prerenderTest = async () => {
       await renderTest({release: archivedScheduledRelease})
-      await vi.waitFor(() => screen.getByTestId('document-table-card'))
-    })
+      await screen.findByTestId('document-table-card')
+    }
 
-    it('does not allow for adding documents', () => {
+    it('does not allow for adding documents', async () => {
+      await prerenderTest()
       expect(screen.queryByText('Add document')).toBeNull()
     })
   })
 
   describe('for a scheduled release', () => {
-    beforeEach(async () => {
+    const prerenderTest = async () => {
       await renderTest({release: scheduledRelease})
-      await vi.waitFor(() => screen.getByTestId('document-table-card'))
-    })
+      await screen.findByTestId('document-table-card')
+    }
 
-    it('does not allow for adding documents', () => {
+    it('does not allow for adding documents', async () => {
+      await prerenderTest()
       expect(screen.queryByText('Add document')).toBeNull()
     })
   })
@@ -237,7 +250,7 @@ describe('ReleaseSummary', () => {
           },
         ],
       })
-      await vi.waitFor(() => screen.getByTestId('document-table-card'))
+      await screen.findByTestId('document-table-card')
     })
 
     it('should show `change` if a document is published', async () => {
@@ -253,7 +266,7 @@ describe('ReleaseSummary', () => {
           },
         ],
       })
-      await vi.waitFor(() => screen.getByTestId('document-table-card'))
+      await screen.findByTestId('document-table-card')
 
       const [firstDocumentRow] = screen.getAllByTestId('table-row')
 
@@ -274,7 +287,7 @@ describe('ReleaseSummary', () => {
           },
         ],
       })
-      await vi.waitFor(() => screen.getByTestId('document-table-card'))
+      await screen.findByTestId('document-table-card')
 
       const [firstDocumentRow] = screen.getAllByTestId('table-row')
 

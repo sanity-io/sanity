@@ -216,18 +216,22 @@ describe('ReleasesNav', () => {
       })
 
       describe('when a release is clicked', () => {
-        beforeEach(async () => {
+        const prerenderTest = async () => {
           await renderAndWaitForStableMenu()
 
           // select a release that has some other nested layer releases
           await userEvent.click(screen.getByText('active Scheduled 2'))
-        })
+        }
 
         it('should set a given perspective from the menu', async () => {
+          await prerenderTest()
+
           expect(mockedSetPerspective).toHaveBeenCalledWith('rScheduled2')
         })
 
         it('should allow for hiding of any deeper layered releases', async () => {
+          await prerenderTest()
+
           const deepLayerRelease = within(screen.getByTestId('release-menu'))
             .getByText('active Release')
             .closest('button')!
@@ -246,6 +250,8 @@ describe('ReleasesNav', () => {
         })
 
         it('should not allow for hiding of published perspective', async () => {
+          await prerenderTest()
+
           const publishedRelease = within(screen.getByTestId('release-menu'))
             .getByText('Published')
             .closest('button')!
@@ -256,6 +262,8 @@ describe('ReleasesNav', () => {
         })
 
         it('should allow for hiding of draft perspective', async () => {
+          await prerenderTest()
+
           const drafts = within(screen.getByTestId('release-menu'))
             .getByText('Drafts')
             .closest('button')!
@@ -274,6 +282,8 @@ describe('ReleasesNav', () => {
         })
 
         it('should not allow hiding of the current perspective', async () => {
+          await prerenderTest()
+
           const currentRelease = within(screen.getByTestId('release-menu'))
             .getByText('active Scheduled 2')
             .closest('button')!
@@ -284,6 +294,8 @@ describe('ReleasesNav', () => {
         })
 
         it('should not allow hiding of un-nested releases', async () => {
+          await prerenderTest()
+
           const unNestedRelease = within(screen.getByTestId('release-menu'))
             .getByText('undecided Release')
             .closest('button')!
@@ -294,6 +306,8 @@ describe('ReleasesNav', () => {
         })
 
         it('should not allow hiding of locked in scheduled releases', async () => {
+          await prerenderTest()
+
           const scheduledReleaseMenuItem = within(screen.getByTestId('release-menu'))
             .getByText('scheduled Release')
             .closest('button')!

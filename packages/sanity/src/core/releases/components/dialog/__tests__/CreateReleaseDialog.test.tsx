@@ -17,10 +17,7 @@ describe('CreateReleaseDialog', () => {
     const onCancelMock = vi.fn()
     const onSubmitMock = vi.fn()
 
-    beforeEach(async () => {
-      onCancelMock.mockClear()
-      onSubmitMock.mockClear()
-
+    const prerenderTest = async () => {
       const wrapper = await createTestProvider()
       render(<CreateReleaseDialog onCancel={onCancelMock} onSubmit={onSubmitMock} />, {wrapper})
 
@@ -30,19 +27,30 @@ describe('CreateReleaseDialog', () => {
         },
         {timeout: 5000, interval: 500},
       )
+    }
+
+    beforeEach(async () => {
+      onCancelMock.mockClear()
+      onSubmitMock.mockClear()
     })
 
-    it('should render the dialog', () => {
+    it('should render the dialog', async () => {
+      await prerenderTest()
+
       expect(screen.getByRole('dialog')).toBeInTheDocument()
     })
 
     it('should call onCancel when dialog is closed', async () => {
+      await prerenderTest()
+
       await userEvent.click(screen.getByRole('button', {name: /close/i}))
 
       expect(onCancelMock).toHaveBeenCalled()
     })
 
     it('should call createRelease and onCreate when form is submitted', async () => {
+      await prerenderTest()
+
       const value: Partial<ReleaseDocument> = activeASAPRelease
 
       const titleInput = screen.getByTestId('release-form-title')

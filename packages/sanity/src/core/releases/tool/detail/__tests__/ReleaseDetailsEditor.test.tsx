@@ -25,24 +25,24 @@ vi.mock('../../../store/useReleasePermissions', () => ({
 
 describe('ReleaseDetailsEditor', () => {
   describe('when there is permission', () => {
+    const initialRelease = {
+      _id: 'release1',
+      metadata: {
+        title: 'Initial Title',
+        description: '',
+        releaseType: 'asap',
+        intendedPublishAt: undefined,
+      },
+    } as ReleaseDocument
+
     beforeEach(async () => {
-      const initialRelease = {
-        _id: 'release1',
-        metadata: {
-          title: 'Initial Title',
-          description: '',
-          releaseType: 'asap',
-          intendedPublishAt: undefined,
-        },
-      } as ReleaseDocument
-
       mockUseReleasePermissions.mockReturnValue(useReleasesPermissionsMockReturnTrue)
-
-      const wrapper = await createTestProvider()
-      render(<ReleaseDetailsEditor release={initialRelease} />, {wrapper})
     })
 
     it('should call updateRelease after title change', async () => {
+      const wrapper = await createTestProvider()
+      render(<ReleaseDetailsEditor release={initialRelease} />, {wrapper})
+
       const release = {
         _id: 'release1',
         metadata: {
@@ -65,6 +65,9 @@ describe('ReleaseDetailsEditor', () => {
     })
 
     it('should call updateRelease after description change', async () => {
+      const wrapper = await createTestProvider()
+      render(<ReleaseDetailsEditor release={initialRelease} />, {wrapper})
+
       const release = {
         _id: 'release1',
         metadata: {
@@ -88,24 +91,24 @@ describe('ReleaseDetailsEditor', () => {
   })
 
   describe('when there is no permission', () => {
+    const initialRelease = {
+      _id: 'release1',
+      metadata: {
+        title: 'Initial Title',
+        description: '',
+        releaseType: 'asap',
+        intendedPublishAt: undefined,
+      },
+    } as ReleaseDocument
+
     beforeEach(async () => {
-      const initialRelease = {
-        _id: 'release1',
-        metadata: {
-          title: 'Initial Title',
-          description: '',
-          releaseType: 'asap',
-          intendedPublishAt: undefined,
-        },
-      } as ReleaseDocument
-
       mockUseReleasePermissions.mockReturnValue(useReleasesPermissionsMockReturnFalse)
-
-      const wrapper = await createTestProvider()
-      render(<ReleaseDetailsEditor release={initialRelease} />, {wrapper})
     })
 
     it('when there is no permission, should not call updateRelease', async () => {
+      const wrapper = await createTestProvider()
+      render(<ReleaseDetailsEditor release={initialRelease} />, {wrapper})
+
       const input = screen.getByTestId('release-form-description')
       expect(input).toBeDisabled()
     })
