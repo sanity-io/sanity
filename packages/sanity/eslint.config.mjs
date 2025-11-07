@@ -468,6 +468,7 @@ export default defineConfig([
       'testing-library/no-container': 'warn',
       'testing-library/prefer-query-by-disappearance': 'warn',
       'testing-library/render-result-naming-convention': 'warn',
+      'testing-library/no-render-in-lifecycle': 'warn',
     },
   },
 ])

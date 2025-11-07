@@ -1,5 +1,6 @@
 import {type ReleaseDocument} from '@sanity/client'
-import {act, fireEvent, render, screen, waitFor, within} from '@testing-library/react'
+import {render, screen, waitFor, within} from '@testing-library/react'
+import {userEvent} from '@testing-library/user-event'
 import {format, set} from 'date-fns'
 import {useEffect, useRef, useState} from 'react'
 import {useRouter} from 'sanity/router'
@@ -225,7 +226,7 @@ describe('ReleasesOverview', () => {
         resources: [releasesUsEnglishLocaleBundle],
       })
 
-      return act(async () => render(<TestComponent />, {wrapper}))
+      render(<TestComponent />, {wrapper})
     })
 
     it('shows loading state when releases are loading', async () => {
@@ -272,7 +273,7 @@ describe('ReleasesOverview', () => {
         resources: [releasesUsEnglishLocaleBundle],
       })
 
-      return act(async () => render(<TestComponent />, {wrapper}))
+      return render(<TestComponent />, {wrapper})
     })
 
     it('shows a message about releases', () => {
@@ -319,7 +320,7 @@ describe('ReleasesOverview', () => {
 
       const wrapper = await getWrapper()
 
-      return act(async () => render(<TestComponent />, {wrapper}))
+      return render(<TestComponent />, {wrapper})
     }
 
     beforeEach(async () => {
@@ -351,9 +352,7 @@ describe('ReleasesOverview', () => {
 
       const wrapper = await getWrapper()
 
-      return act(async () => {
-        activeRender = render(<TestComponent />, {wrapper})
-      })
+      activeRender = render(<TestComponent />, {wrapper})
     })
 
     it('filters out releases with cardinality "one"', async () => {
@@ -411,7 +410,7 @@ describe('ReleasesOverview', () => {
         data: [archivedScheduledRelease, publishedASAPRelease, archivedReleaseWithCardinalityOne],
       })
 
-      fireEvent.click(screen.getByText('Archived'))
+      await userEvent.click(screen.getByText('Archived'))
 
       await waitFor(() => {
         const archivedReleaseRows = screen.getAllByTestId('table-row')
@@ -482,8 +481,8 @@ describe('ReleasesOverview', () => {
       expect(screen.getByText('Archived').closest('button')).not.toBeDisabled()
     })
 
-    it('allows for pinning perspectives', () => {
-      fireEvent.click(
+    it('allows for pinning perspectives', async () => {
+      await userEvent.click(
         within(screen.getAllByTestId('table-row')[0]).getByTestId('pin-release-button'),
       )
 
@@ -520,11 +519,11 @@ describe('ReleasesOverview', () => {
       })
 
       describe('selecting a release date', () => {
-        beforeEach(() => {
+        beforeEach(async () => {
           const todayTile = within(getByDataUi(document.body, 'Calendar')).getByTestId(
             'day-tile-today',
           )
-          fireEvent.click(todayTile)
+          await userEvent.click(todayTile)
         })
 
         it('does not show open and archive filter group buttons', () => {
@@ -542,7 +541,7 @@ describe('ReleasesOverview', () => {
         it('clears the filter by clicking the selected date', async () => {
           // not ideal, but the easiest way of finding the now selected date
           const todayTile = getCalendar().querySelector('[data-selected]')
-          fireEvent.click(todayTile!)
+          await userEvent.click(todayTile!)
 
           await waitFor(() => {
             expect(screen.getAllByTestId('table-row')).toHaveLength(5)
@@ -550,7 +549,7 @@ describe('ReleasesOverview', () => {
         })
 
         it('clears the filter by clicking the date filter button', async () => {
-          fireEvent.click(screen.getByTestId('selected-date-filter'))
+          await userEvent.click(screen.getByTestId('selected-date-filter'))
 
           await waitFor(() => {
             expect(screen.getAllByTestId('table-row')).toHaveLength(5)
@@ -564,8 +563,8 @@ describe('ReleasesOverview', () => {
         screen.getByText('SCT (Sanity/Oslo)')
       })
 
-      it('opens the timezone selector', () => {
-        fireEvent.click(screen.getByText('SCT (Sanity/Oslo)'))
+      it('opens the timezone selector', async () => {
+        await userEvent.click(screen.getByText('SCT (Sanity/Oslo)'))
 
         within(getByDataUi(document.body, 'DialogCard')).getByText('Select time zone')
       })
@@ -608,11 +607,11 @@ describe('ReleasesOverview', () => {
           expect(todayTile.parentNode).not.toHaveStyle('font-weight: 700')
         })
 
-        it('shows no releases when filtered by today', () => {
+        it('shows no releases when filtered by today', async () => {
           const todayTile = within(getByDataUi(document.body, 'Calendar')).getByTestId(
             'day-tile-today',
           )
-          fireEvent.click(todayTile)
+          await userEvent.click(todayTile)
 
           expect(screen.queryAllByTestId('table-row')).toHaveLength(0)
         })
@@ -620,8 +619,8 @@ describe('ReleasesOverview', () => {
     })
 
     describe('archived releases', () => {
-      beforeEach(() => {
-        fireEvent.click(screen.getByText('Archived'))
+      beforeEach(async () => {
+        await userEvent.click(screen.getByText('Archived'))
       })
 
       it('shows published releases', async () => {
@@ -642,7 +641,7 @@ describe('ReleasesOverview', () => {
       })
     })
 
-    it('sorts the list of releases', () => {
+    it('sorts the list of releases', async () => {
       const [
         unsortedFirstRelease,
         unsortedSecondRelease,
@@ -659,7 +658,7 @@ describe('ReleasesOverview', () => {
       within(unsortedFifthRelease).getByText(activeUndecidedErrorRelease.metadata.title)
 
       // sort by asc publish at
-      fireEvent.click(screen.getByText('Time'))
+      await userEvent.click(screen.getByText('Time'))
       const [
         descPublishSortedFirstRelease,
         descPublishSortedSecondRelease,
@@ -676,7 +675,7 @@ describe('ReleasesOverview', () => {
 
     it('should navigate to release when row clicked', async () => {
       const releaseRow = screen.getAllByTestId('table-row')[0]
-      fireEvent.click(within(releaseRow).getByText(activeASAPRelease.metadata.title))
+      await userEvent.click(within(releaseRow).getByText(activeASAPRelease.metadata.title))
 
       expect(useRouter().navigate).toHaveBeenCalledWith({
         releaseId: 'rASAP',
@@ -709,7 +708,7 @@ describe('ReleasesOverview', () => {
             resources: [releasesUsEnglishLocaleBundle],
           })
 
-          return act(async () => render(<TestComponent />, {wrapper}))
+          return render(<TestComponent />, {wrapper})
         })
 
         it('should not show the cardinality view dropdown', () => {
@@ -781,7 +780,7 @@ describe('ReleasesOverview', () => {
             resources: [releasesUsEnglishLocaleBundle],
           })
 
-          return act(async () => render(<TestComponent />, {wrapper}))
+          render(<TestComponent />, {wrapper})
         })
 
         it('should show the cardinality view dropdown', () => {
@@ -872,7 +871,7 @@ describe('ReleasesOverview', () => {
           resources: [releasesUsEnglishLocaleBundle],
         })
 
-        return act(async () => render(<TestComponent />, {wrapper}))
+        return render(<TestComponent />, {wrapper})
       })
 
       it('should show the cardinality view dropdown', () => {
@@ -952,7 +951,7 @@ describe('ReleasesOverview', () => {
           resources: [releasesUsEnglishLocaleBundle],
         })
 
-        return act(async () => render(<TestComponent />, {wrapper}))
+        render(<TestComponent />, {wrapper})
       })
 
       it('should still show the cardinality view dropdown', () => {
@@ -1026,7 +1025,7 @@ describe('ReleasesOverview', () => {
           },
         })
 
-        await act(async () => render(<TestComponent />, {wrapper}))
+        render(<TestComponent />, {wrapper})
 
         const releasesButton = screen.getByRole('button', {name: 'Releases'})
         expect(releasesButton).toBeInTheDocument()
@@ -1053,7 +1052,7 @@ describe('ReleasesOverview', () => {
           },
         })
 
-        await act(async () => render(<TestComponent />, {wrapper}))
+        render(<TestComponent />, {wrapper})
 
         // text is there, but menu button is not
         expect(screen.getByText('Releases')).toBeInTheDocument()
@@ -1083,7 +1082,7 @@ describe('ReleasesOverview', () => {
           },
         })
 
-        await act(async () => render(<TestComponent />, {wrapper}))
+        render(<TestComponent />, {wrapper})
 
         // menu button should be there now since we have cardinality one releases
         const releasesButton = screen.getByRole('button', {name: 'Releases'})
@@ -1153,7 +1152,7 @@ describe('ReleasesOverview', () => {
             resources: [releasesUsEnglishLocaleBundle],
           })
 
-          return act(async () => render(<TestComponent />, {wrapper}))
+          return render(<TestComponent />, {wrapper})
         })
 
         it('should show upsell only', () => {
@@ -1182,7 +1181,7 @@ describe('ReleasesOverview', () => {
             resources: [releasesUsEnglishLocaleBundle],
           })
 
-          return act(async () => render(<TestComponent />, {wrapper}))
+          return render(<TestComponent />, {wrapper})
         })
 
         it('should show data table only (not upsell)', async () => {
