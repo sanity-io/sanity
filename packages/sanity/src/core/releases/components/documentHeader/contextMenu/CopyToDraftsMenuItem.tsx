@@ -29,7 +29,8 @@ export const useHasCopyToDraftOption = (documentType: string, fromRelease: strin
   const isLiveEdit = schemaType?.liveEdit
 
   const isDraftModelEnabled = document?.drafts?.enabled
-  const shouldShowDraftsOption = isDraftModelEnabled && fromRelease !== 'draft' && fromRelease !== 'published' && !isLiveEdit
+  const shouldShowDraftsOption =
+    isDraftModelEnabled && fromRelease !== 'draft' && fromRelease !== 'published' && !isLiveEdit
 
   return shouldShowDraftsOption
 }

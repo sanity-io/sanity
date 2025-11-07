@@ -54,15 +54,11 @@ export const CanonicalReleaseContextMenu = memo(function CanonicalReleaseContext
     documentType,
   } = props
   const {t} = useTranslation()
-  const hasCopyToDraftOption = useHasCopyToDraftOption(
-    documentType,
-    fromRelease,
-  )
+  const hasCopyToDraftOption = useHasCopyToDraftOption(documentType, fromRelease)
 
   const isCopyToReleaseDisabled = disabled || !hasCreatePermission || isGoingToUnpublish
   const copyToReleaseOptions = releases.filter((r) => !isReleaseScheduledOrScheduling(r))
   const showCopyToReleaseMenuItem = copyToReleaseOptions.length > 0 || hasCopyToDraftOption
-
 
   return (
     <Menu>
