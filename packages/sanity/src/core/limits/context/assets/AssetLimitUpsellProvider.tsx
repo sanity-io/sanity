@@ -1,5 +1,4 @@
 import {type PropsWithChildren, useCallback, useContext, useMemo, useState} from 'react'
-import {DocumentLimitUpsellContext, type DocumentLimitUpsellContextValue} from 'sanity/_singletons'
 
 import {useUpsellData} from '../../../hooks/useUpsellData'
 import {type UpsellDialogViewedInfo} from '../../../studio'

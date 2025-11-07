@@ -13,8 +13,6 @@ export interface AssetLimitUpsellContextValue {
   telemetryLogs: {
     dialogSecondaryClicked: () => void
     dialogPrimaryClicked: () => void
-    panelPrimaryClicked: () => void
-    panelSecondaryClicked: () => void
   }
 }
 
