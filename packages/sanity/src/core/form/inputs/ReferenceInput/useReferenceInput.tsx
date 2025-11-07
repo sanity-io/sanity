@@ -36,7 +36,7 @@ interface Options {
 }
 
 export function useReferenceInput(options: Options) {
-  const {path, schemaType, version} = options
+  const {path, schemaType} = options
   const schema = useSchema()
   const perspective = usePerspective()
   const documentPreviewStore = useDocumentPreviewStore()
@@ -122,11 +122,8 @@ export function useReferenceInput(options: Options) {
 
   const getReferenceInfo = useCallback(
     (id: string) =>
-      adapter.getReferenceInfo(documentPreviewStore, id, schemaType, {
-        version,
-        perspective: perspective.perspectiveStack,
-      }),
-    [documentPreviewStore, schemaType, version, perspective.perspectiveStack],
+      adapter.getReferenceInfo(documentPreviewStore, id, schemaType, perspective.perspectiveStack),
+    [documentPreviewStore, schemaType, perspective.perspectiveStack],
   )
 
   return {

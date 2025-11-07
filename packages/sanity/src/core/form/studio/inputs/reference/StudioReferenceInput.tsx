@@ -192,8 +192,8 @@ export function StudioReferenceInput(props: StudioReferenceInputProps) {
 
   const getReferenceInfo = useCallback(
     (id: string, _type: ReferenceSchemaType) =>
-      adapter.getReferenceInfo(documentPreviewStore, id, _type),
-    [documentPreviewStore],
+      adapter.getReferenceInfo(documentPreviewStore, id, _type, perspectiveStack),
+    [documentPreviewStore, perspectiveStack],
   )
 
   return (
