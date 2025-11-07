@@ -228,20 +228,18 @@ export function ReferenceInput(props: ReferenceInputProps) {
 
   const renderOption = useCallback(
     (option: AutocompleteOption) => {
-      const documentId = option.hit.draft?._id || option.hit.published?._id || option.value
-
       return (
         <ReferenceInputPreviewCard forwardedAs="button" type="button" radius={2} tone="inherit">
           <OptionPreview
-            getReferenceInfo={getReferenceInfo}
-            id={documentId}
+            id={option.hit.id}
+            type={option.hit.type}
             renderPreview={renderPreview}
-            type={schemaType}
+            referenceType={schemaType}
           />
         </ReferenceInputPreviewCard>
       )
     },
-    [schemaType, getReferenceInfo, renderPreview],
+    [schemaType, renderPreview],
   )
 
   const renderValue = useCallback(() => {
