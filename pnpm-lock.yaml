@@ -1040,6 +1040,9 @@ importers:
       groq-js:
         specifier: ^1.20.0
         version: 1.20.0
+      patch-package:
+        specifier: ^8.0.1
+        version: 8.0.1
       pkg-dir:
         specifier: ^5.0.0
         version: 5.0.0
@@ -1185,9 +1188,6 @@ importers:
       p-timeout:
         specifier: ^4.1.0
         version: 4.1.0
-      patch-package:
-        specifier: ^8.0.1
-        version: 8.0.1
       preferred-pm:
         specifier: ^3.1.4
         version: 3.1.4
