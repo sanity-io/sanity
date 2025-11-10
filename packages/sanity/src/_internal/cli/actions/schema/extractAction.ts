@@ -3,13 +3,17 @@ import {dirname, join} from 'node:path'
 import {Worker} from 'node:worker_threads'
 
 import {type CliCommandArguments, type CliCommandContext} from '@sanity/cli'
+import {type SchemaValidationProblemGroup} from '@sanity/types'
 import readPkgUp from 'read-pkg-up'
+import {SchemaError as CoreSchemaError} from 'sanity'
 
 import {
   type ExtractSchemaWorkerData,
   type ExtractSchemaWorkerResult,
 } from '../../threads/extractSchema'
+import {getStudioWorkspaces} from '../../util/getStudioWorkspaces'
 import {SchemaExtractedTrace} from './extractSchema.telemetry'
+import {formatSchemaValidation} from './formatSchemaValidation'
 
 interface ExtractFlags {
   'workspace'?: string
@@ -97,6 +101,44 @@ export default async function extractAction(
         ? 'Failed to extract schema, with enforced required fields'
         : 'Failed to extract schema',
     )
+
+    if (isSchemaError(err)) {
+      try {
+        // Re-resolve config in-process to surface validation details
+        await getStudioWorkspaces({basePath: workDir})
+      } catch (innerErr) {
+        const validation = extractValidationFromCoreSchemaError(innerErr)
+        if (validation && validation.length > 0) {
+          output.print('')
+          output.print(formatSchemaValidation(validation))
+        }
+        throw err
+      }
+    }
     throw err
   }
+}
+
+function extractValidationFromCoreSchemaError(
+  error: unknown,
+): SchemaValidationProblemGroup[] | null {
+  if (!(error instanceof CoreSchemaError)) return null
+  const schema: unknown = error.schema
+  if (!schema || typeof schema !== 'object') return null
+  const v = (schema as Record<string, unknown>)._validation
+  if (!Array.isArray(v)) return null
+  const isValid = v.every((group) => {
+    if (typeof group !== 'object' || group === null) return false
+    const g = group as Record<string, unknown>
+    return Array.isArray(g.path) && Array.isArray(g.problems)
+  })
+  return isValid ? (v as SchemaValidationProblemGroup[]) : null
+}
+
+function isSchemaError(err: unknown): err is {name: string} {
+  if (typeof err !== 'object' || err === null) return false
+  const obj = err as Record<string, unknown>
+  const name = typeof obj.name === 'string' ? obj.name : undefined
+  const message = typeof (obj as any).message === 'string' ? (obj as any).message : undefined
+  return name === 'SchemaError' || message === 'SchemaError'
 }
