@@ -6,6 +6,8 @@ import {
   type PortableTextInputProps,
 } from 'sanity'
 
+import {SideBySideObjectInput, SideBySideObjectItem} from './components/SideBySideObjectInput'
+
 const animal = defineField({
   type: 'object',
   name: 'animal',
@@ -241,7 +243,33 @@ const animal = defineField({
         },
       ],
     },
-
+    {
+      type: 'array',
+      name: 'childrenWithComponents',
+      title: 'Children with components',
+      of: [
+        {
+          type: 'object',
+          name: 'child',
+          components: {
+            item: SideBySideObjectItem,
+            input: SideBySideObjectInput,
+          },
+          fields: [
+            {
+              name: 'nameChild',
+              type: 'string',
+              title: 'Name Child',
+            },
+            {
+              type: 'internationalizedArrayString',
+              name: 'internationalizedArrayStringChild',
+              title: 'Internationalized array string',
+            },
+          ],
+        },
+      ],
+    },
     {
       name: 'size',
       type: 'object',
