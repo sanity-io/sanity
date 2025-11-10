@@ -183,14 +183,16 @@ export function DialogBreadcrumbs(props: BreadcrumbsProps): React.JSX.Element | 
 
   const items: Item[] = useMemo(() => {
     const len = itemsProp.length + 1 // +1 for the root item (the field name)
-    const beforeLength = Math.ceil(maxLength / 2)
-    const afterLength = Math.floor(maxLength / 2)
+    // Account for root item in the total visible count
+    const availableSlots = maxLength - 1
+    const beforeLength = Math.ceil(availableSlots / 2)
+    const afterLength = Math.floor(availableSlots / 2)
 
     if (maxLength && len > maxLength) {
       return [
         ...itemsProp.slice(0, beforeLength - 1),
-        itemsProp.slice(beforeLength - 1, len - afterLength),
-        ...itemsProp.slice(len - afterLength),
+        itemsProp.slice(beforeLength - 1, itemsProp.length - afterLength),
+        ...itemsProp.slice(itemsProp.length - afterLength),
       ]
     }
 

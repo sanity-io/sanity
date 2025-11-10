@@ -168,7 +168,8 @@ const DiffViewDocument: ComponentType<DiffViewPaneProps> = ({
     schemaType,
     value,
     onProgrammaticFocus,
-    ...documentForm
+    openPath,
+    onPathOpen: onPathOpenFromForm,
   } = useDocumentForm({
     documentId: getPublishedId(documentId),
     documentType,
@@ -187,16 +188,19 @@ const DiffViewDocument: ComponentType<DiffViewPaneProps> = ({
 
   const onPathOpen = useCallback(
     (path: Path) => {
-      documentForm.onPathOpen(path)
+      onPathOpenFromForm(path)
       pathSyncChannel.push({source: role, path})
     },
-    [documentForm, pathSyncChannel, role],
+    [onPathOpenFromForm, pathSyncChannel, role],
   )
 
   useEffect(() => {
-    const subscription = pathSyncChannel.path.subscribe(onProgrammaticFocus)
+    const subscription = pathSyncChannel.path.subscribe((path) => {
+      onPathOpenFromForm(path)
+      onProgrammaticFocus(path)
+    })
     return () => subscription.unsubscribe()
-  }, [onProgrammaticFocus, pathSyncChannel.path])
+  }, [onPathOpenFromForm, onProgrammaticFocus, pathSyncChannel.path, role])
 
   return isLoading ? (
     <LoadingBlock showText />
@@ -220,6 +224,7 @@ const DiffViewDocument: ComponentType<DiffViewPaneProps> = ({
         collapsedPaths={collapsedPaths}
         collapsedFieldSets={collapsedFieldSets}
         focusPath={formState.focusPath}
+        openPath={openPath}
         changed={formState.changed}
         focused={formState.focused}
         groups={formState.groups}
