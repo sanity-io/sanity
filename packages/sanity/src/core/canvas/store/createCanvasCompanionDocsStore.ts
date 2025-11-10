@@ -31,7 +31,6 @@ const getCompanionDocs = memoize(
       previewStore.unstable_observeDocumentIdSet(
         `_type == "sanity.canvas.link" && studioDocumentId in *[sanity::versionOf($publishedId)]._id`,
         {publishedId: id},
-        {apiVersion: 'v2025-02-19'}, // sanity::versionOf was released in version 2025-02-19
       )
 
     const getCompanionDoc$ = (id: string) =>
