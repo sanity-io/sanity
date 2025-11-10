@@ -1,4 +1,4 @@
 {
-  "ignores": ["@babel/parser", "patch-package"],
+  "ignores": ["@babel/parser"],
   "ignore-patterns": ["templates/**"]
 }

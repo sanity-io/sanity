@@ -1,5 +1,5 @@
 import {constants, mkdir, open, stat} from 'node:fs/promises'
-import {dirname, join} from 'node:path'
+import {dirname, isAbsolute, join} from 'node:path'
 import {Worker} from 'node:worker_threads'
 
 import {readConfig} from '@sanity/codegen'
@@ -58,7 +58,9 @@ export default async function typegenGenerateAction(
     throw err
   }
 
-  const outputPath = join(process.cwd(), codegenConfig.generates)
+  const outputPath = isAbsolute(codegenConfig.generates)
+    ? codegenConfig.generates
+    : join(process.cwd(), codegenConfig.generates)
   const outputDir = dirname(outputPath)
   await mkdir(outputDir, {recursive: true})
   const workerPath = await getCliWorkerPath('typegenGenerate')

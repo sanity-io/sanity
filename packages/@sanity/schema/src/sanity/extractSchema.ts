@@ -156,8 +156,8 @@ export function extractSchema(
 
     // If we have a type that is point to a type, that is pointing to a type, we assume this is a circular reference
     // and we return an inline type referencing it instead
-    if (schemaType.type?.type?.name === 'object') {
-      return {type: 'inline', name: schemaType.type.name} satisfies InlineTypeNode
+    if (schemaType.type?.name && sortedSchemaTypeNames.indexOf(schemaType.type?.name) > -1) {
+      return {type: 'inline', name: schemaType.name} satisfies InlineTypeNode
     }
 
     if (isStringType(schemaType)) {
@@ -548,13 +548,14 @@ function sortByDependencies(compiledSchema: SchemaDef): string[] {
         } else if ('jsonType' in schemaType.type!) {
           schemaTypeName = field.type.jsonType
         }
-
         if (schemaTypeName === 'object' || schemaTypeName === 'block') {
           if (isReferenceType(field.type)) {
             field.type.to.forEach((ref) => dependencies.add(ref.type!))
           } else {
             dependencies.add(field.type)
           }
+        } else if (field.type) {
+          dependencies.add(field.type)
         }
         walkDependencies(field.type, dependencies)
       }
@@ -565,11 +566,14 @@ function sortByDependencies(compiledSchema: SchemaDef): string[] {
     }
   }
   const dependencyMap = new Map<SanitySchemaType, Set<SanitySchemaType>>()
-  compiledSchema.getTypeNames().forEach((typeName) => {
+  const schemaTypeNames = compiledSchema.getTypeNames()
+  const validSchemaNames = new Set<string>()
+  schemaTypeNames.forEach((typeName) => {
     const schemaType = compiledSchema.get(typeName)
     if (schemaType === undefined || schemaType.type === null) {
       return
     }
+    validSchemaNames.add(typeName)
     const dependencies = new Set<SanitySchemaType>()
 
     walkDependencies(schemaType, dependencies)
@@ -603,14 +607,15 @@ function sortByDependencies(compiledSchema: SchemaDef): string[] {
     currentlyVisiting.delete(type)
     visited.add(type)
 
-    if (!typeNames.includes(type.name)) {
-      typeNames.unshift(type.name)
+    if (typeNames.includes(type.name)) {
+      typeNames.splice(typeNames.indexOf(type.name), 1)
     }
+    typeNames.unshift(type.name)
   }
   // Visit all types in the dependency map
   for (const [type] of dependencyMap) {
     visit(type)
   }
 
-  return typeNames
+  return typeNames.filter((typeName) => validSchemaNames.has(typeName))
 }
