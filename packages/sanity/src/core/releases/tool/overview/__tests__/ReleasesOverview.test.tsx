@@ -102,7 +102,9 @@ vi.mock('../../../store/useReleasePermissions', () => ({
 }))
 
 const {mockNavigate, mockResolveIntentLink} = vi.hoisted(() => {
+  // eslint-disable-next-line @typescript-eslint/no-shadow
   const mockNavigate = vi.fn()
+  // eslint-disable-next-line @typescript-eslint/no-shadow
   const mockResolveIntentLink = vi.fn(() => '/test')
   return {mockNavigate, mockResolveIntentLink}
 })
