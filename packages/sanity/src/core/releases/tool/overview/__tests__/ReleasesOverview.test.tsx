@@ -2,8 +2,8 @@ import {type ReleaseDocument} from '@sanity/client'
 import {render, screen, waitFor, within} from '@testing-library/react'
 import {userEvent} from '@testing-library/user-event'
 import {format, set} from 'date-fns'
-import {useEffect, useRef, useState} from 'react'
-import {useRouter} from 'sanity/router'
+import {useEffect, useMemo, useRef, useState} from 'react'
+import {RouterContext, useRouter} from 'sanity/router'
 import {beforeEach, describe, expect, it, vi} from 'vitest'
 
 import {getByDataUi} from '../../../../../../test/setup/customQueries'
@@ -101,21 +101,24 @@ vi.mock('../../../store/useReleasePermissions', () => ({
   useReleasePermissions: vi.fn(() => useReleasePermissionsMockReturn),
 }))
 
-const {mockNavigate, mockUseRouter} = vi.hoisted(() => {
+const {mockNavigate, mockResolveIntentLink} = vi.hoisted(() => {
   const mockNavigate = vi.fn()
-  const mockUseRouter = vi.fn().mockReturnValue({
-    state: {},
-    navigate: mockNavigate,
-    resolveIntentLink: vi.fn(() => '/test'),
-  })
-  return {mockNavigate, mockUseRouter}
+  const mockResolveIntentLink = vi.fn(() => '/test')
+  return {mockNavigate, mockResolveIntentLink}
 })
 
-// oxlint-disable-next-line no-explicit-any
-vi.mock('sanity/router', async (importOriginal: any) => ({
-  ...(await importOriginal()),
-  useRouter: mockUseRouter,
-}))
+// Mock the router at module level
+vi.mock('sanity/router', async (importOriginal) => {
+  const actual = await importOriginal()
+  return {
+    ...actual,
+    useRouter: vi.fn(() => ({
+      state: {},
+      navigate: mockNavigate,
+      resolveIntentLink: mockResolveIntentLink,
+    })),
+  }
+})
 
 vi.mock('../../../../perspective/usePerspective', () => ({
   usePerspective: vi.fn(() => usePerspectiveMockReturn),
@@ -155,10 +158,37 @@ vi.mock('../../../store/useReleaseOperations', () => ({
   useReleaseOperations: vi.fn(() => useReleaseOperationsMockReturn),
 }))
 
-const getWrapper = () =>
-  createTestProvider({
+const getWrapper = async () => {
+  const BaseProvider = await createTestProvider({
     resources: [releasesUsEnglishLocaleBundle],
   })
+
+  // Create a wrapper that intercepts useRouter calls
+  return function WrapperWithMockRouter({children}: {children: React.ReactNode}) {
+    return (
+      <BaseProvider>
+        <RouterInterceptor>{children}</RouterInterceptor>
+      </BaseProvider>
+    )
+  }
+}
+
+// Component that intercepts router context and replaces navigate
+function RouterInterceptor({children}: {children: React.ReactNode}) {
+  const realRouter = useRouter()
+
+  // Create a proxy router with our mock navigate
+  const proxiedRouter = useMemo(
+    () => ({
+      ...realRouter,
+      navigate: mockNavigate,
+    }),
+    [realRouter],
+  )
+
+  // Provide the proxied router to children
+  return <RouterContext.Provider value={proxiedRouter}>{children}</RouterContext.Provider>
+}
 
 /**
  * To resolve issues with size render with Virtual list (as described
@@ -488,6 +518,8 @@ describe('ReleasesOverview', () => {
     })
 
     it('allows for pinning perspectives', async () => {
+      mockNavigate.mockClear()
+
       const rows = screen.getAllByTestId('table-row')
       // First row is activeScheduledRelease with ID 'rActive'
       // Second row is activeASAPRelease with ID 'rASAP'
@@ -499,11 +531,19 @@ describe('ReleasesOverview', () => {
       expect(buttonElement).not.toBeNull()
       expect(buttonElement).not.toBeDisabled()
 
-      // Just verify the button can be clicked without errors
-      // The actual perspective change is tested by the router integration
       await userEvent.click(buttonElement!)
 
-      // If we got here without errors, the click handler worked successfully
+      // Wait for navigate to be called
+      await waitFor(
+        () => {
+          expect(mockNavigate).toHaveBeenCalled()
+        },
+        {timeout: 3000},
+      )
+
+      // The mock was called, which means the button click triggered navigation
+      // This verifies the pinning functionality works
+      expect(mockNavigate).toHaveBeenCalled()
     })
 
     it('will show pinned release in release list', async () => {
@@ -691,6 +731,8 @@ describe('ReleasesOverview', () => {
     })
 
     it('should navigate to release when row clicked', async () => {
+      mockNavigate.mockClear()
+
       // Row 1 is activeASAPRelease (row 0 is activeScheduledRelease)
       const releaseRows = screen.getAllByTestId('table-row')
       const asapReleaseRow = releaseRows.find((row) =>
@@ -703,11 +745,19 @@ describe('ReleasesOverview', () => {
       const card = within(asapReleaseRow!).getByText('active asap Release')
       expect(card).toBeInTheDocument()
 
-      // The router mock doesn't intercept the real router from test provider
-      // Just verify the click works without errors - the navigation logic is tested elsewhere
       await userEvent.click(card)
 
-      // If we got here without errors, the click handler worked
+      // Wait for navigate to be called
+      await waitFor(
+        () => {
+          expect(mockNavigate).toHaveBeenCalled()
+        },
+        {timeout: 3000},
+      )
+
+      // The mock was called, which means the card click triggered navigation
+      // This verifies the navigation functionality works
+      expect(mockNavigate).toHaveBeenCalled()
     })
   })
 
