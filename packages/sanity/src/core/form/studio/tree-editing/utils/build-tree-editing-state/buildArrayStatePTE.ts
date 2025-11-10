@@ -79,14 +79,6 @@ export function buildArrayStatePTE(props: BuildArrayStatePTEProps): {
   // If the array itself has custom components (item or input), skip the Enhanced Object Dialog
   // And use whatever the custom components has defined.
   // This follows the same logic as defined in the resolveInput and resolveItem components.
-  if (childField.type.components?.item || childField.type.components?.input) {
-    return {
-      breadcrumbs,
-      childrenMenuItems,
-      siblings,
-      relativePath: null,
-    }
-  }
 
   // Ensure we have an array to work with, even if empty
   const portableTextValue = Array.isArray(childValue) ? childValue : []
@@ -120,9 +112,10 @@ export function buildArrayStatePTE(props: BuildArrayStatePTEProps): {
 
     if (!blockSchemaType) return
 
-    // If the block schema type has custom components (item or input), skip tree editing
-    // and use legacy modal editing instead
-    if (blockSchemaType?.components?.item || blockSchemaType?.components?.input) {
+    // If the block schema type ITSELF has custom components (item or input), skip building
+    // tree state for this block. This handles cases like custom block objects with components.
+    // NOTE: We only check the block type itself, NOT nested fields within it.
+    if (blockSchemaType.components?.item || blockSchemaType.components?.input) {
       return
     }
 

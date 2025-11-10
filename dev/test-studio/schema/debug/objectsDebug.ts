@@ -1,4 +1,10 @@
-import {defineArrayMember, defineField, defineType} from 'sanity'
+import {
+  defineArrayMember,
+  defineField,
+  defineType,
+  type InputProps,
+  type PortableTextInputProps,
+} from 'sanity'
 
 const animal = defineField({
   type: 'object',
@@ -226,6 +232,11 @@ const animal = defineField({
               type: 'string',
               title: 'Name Child',
             },
+            {
+              type: 'internationalizedArrayString',
+              name: 'internationalizedArrayStringChild',
+              title: 'Internationalized array string',
+            },
           ],
         },
       ],
@@ -324,6 +335,11 @@ const animal = defineField({
                                       title: 'Title',
                                     },
                                     {
+                                      type: 'internationalizedArrayString',
+                                      name: 'internationalizedArrayString',
+                                      title: 'Internationalized array string',
+                                    },
+                                    {
                                       name: 'properties_d',
                                       type: 'array',
                                       title: 'Friend properties',
@@ -371,6 +387,54 @@ const body = defineField({
       name: 'block',
       title: 'Block',
     },
+    defineArrayMember({
+      name: 'nested',
+      type: 'object',
+      fields: [
+        defineField({
+          name: 'items',
+          type: 'array',
+          of: [
+            defineArrayMember({
+              name: 'item',
+              type: 'object',
+              fields: [
+                defineField({
+                  name: 'deep',
+                  type: 'array',
+                  of: [
+                    defineArrayMember({
+                      type: 'block',
+                      styles: [
+                        {title: 'Normal', value: 'normal'},
+                        {title: 'H2', value: 'h2'},
+                        {title: 'H3', value: 'h3'},
+                        {title: 'H4', value: 'h4'},
+                      ],
+                    }),
+                  ],
+                  components: {
+                    input: (inputProps: InputProps) => {
+                      const editorProps = {
+                        ...inputProps,
+                        initialActive: false,
+                      } as PortableTextInputProps
+                      return inputProps.renderDefault(editorProps)
+                    },
+                  },
+                }),
+              ],
+            }),
+          ],
+
+          components: {
+            input: (inputProps: InputProps) => {
+              return inputProps.renderDefault({...inputProps, initialActive: false})
+            },
+          },
+        }),
+      ],
+    }),
     animal,
   ],
 })
