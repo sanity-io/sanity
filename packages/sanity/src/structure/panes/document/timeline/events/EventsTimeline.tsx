@@ -1,5 +1,5 @@
 import {Box, Flex, Spinner, Stack, Text} from '@sanity/ui'
-import {motion, type Variants} from 'framer-motion'
+import {motion, type Variants} from 'motion/react'
 import {useCallback, useEffect, useMemo, useState} from 'react'
 import {
   CommandList,

@@ -1,5 +1,5 @@
 import {Box, Flex, Layer, useMediaIndex} from '@sanity/ui'
-import {AnimatePresence} from 'framer-motion'
+import {AnimatePresence} from 'motion/react'
 import {css, styled} from 'styled-components'
 
 import {type ActiveToolLayoutProps} from '../../config'

@@ -1,5 +1,5 @@
 import {Box} from '@sanity/ui'
-import {motion, type VariantLabels, type Variants} from 'framer-motion'
+import {motion, type VariantLabels, type Variants} from 'motion/react'
 import {forwardRef, type ReactEventHandler, useEffect, useImperativeHandle, useRef} from 'react'
 import {createGlobalStyle, styled} from 'styled-components'
 

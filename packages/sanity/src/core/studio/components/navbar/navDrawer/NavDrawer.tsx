@@ -1,6 +1,6 @@
 import {CloseIcon, LeaveIcon} from '@sanity/icons'
 import {Box, Card, Flex, Layer, Stack, Text} from '@sanity/ui'
-import {AnimatePresence, motion, type Transition, type Variants} from 'framer-motion'
+import {AnimatePresence, motion, type Transition, type Variants} from 'motion/react'
 import {type KeyboardEvent, memo, useCallback, useMemo} from 'react'
 import TrapFocus from 'react-focus-lock'
 import {styled} from 'styled-components'

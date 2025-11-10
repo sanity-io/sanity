@@ -1,6 +1,6 @@
 import {diffInput, wrap} from '@sanity/diff'
 import {BoundaryElementProvider, Box, Card, Flex, Spinner, Stack, Text} from '@sanity/ui'
-import {motion} from 'framer-motion'
+import {motion} from 'motion/react'
 import {type ReactElement, useMemo, useState} from 'react'
 import {useObservable} from 'react-rx'
 import {
