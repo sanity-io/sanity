@@ -113,7 +113,7 @@ export function TasksActivityLog(props: TasksActivityLogProps) {
 
       onChange(set(notification.subscribers, ['subscribers']))
 
-      operation.create(nextComment)
+      void operation.create(nextComment)
     },
     [operation, handleGetNotificationValue, onChange],
   )
@@ -126,7 +126,7 @@ export function TasksActivityLog(props: TasksActivityLogProps) {
 
       onChange(set(notification.subscribers, ['subscribers']))
 
-      operation.create({
+      void operation.create({
         id: commentId,
         type: 'task',
         message: nextComment.message,
@@ -153,7 +153,7 @@ export function TasksActivityLog(props: TasksActivityLogProps) {
 
       onChange(set(notification.subscribers, ['subscribers']))
 
-      operation.create({
+      void operation.create({
         type: 'task',
         id: comment._id,
         message: comment.message,
@@ -171,7 +171,7 @@ export function TasksActivityLog(props: TasksActivityLogProps) {
 
   const handleCommentReact = useCallback(
     (id: string, reaction: CommentReactionOption) => {
-      operation.react(id, reaction)
+      void operation.react(id, reaction)
     },
     [operation],
   )
@@ -197,7 +197,7 @@ export function TasksActivityLog(props: TasksActivityLogProps) {
 
   const handleCommentEdit = useCallback(
     (id: string, next: CommentUpdatePayload) => {
-      operation.update(id, next)
+      void operation.update(id, next)
     },
     [operation],
   )

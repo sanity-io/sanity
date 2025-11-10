@@ -71,7 +71,7 @@ export const ReleaseScheduleButton = ({
   useEffect(() => {
     isMounted.current = true
 
-    checkWithPermissionGuard(schedule, release._id, new Date()).then((hasPermission) => {
+    void checkWithPermissionGuard(schedule, release._id, new Date()).then((hasPermission) => {
       if (isMounted.current) setSchedulePermission(hasPermission)
     })
 
@@ -100,7 +100,7 @@ export const ReleaseScheduleButton = ({
       }
 
       if (!isEqual(newRelease, release)) {
-        updateRelease(newRelease)
+        void updateRelease(newRelease)
       }
     }
 

@@ -1,5 +1,6 @@
 import {type ReleaseDocument} from '@sanity/client'
-import {fireEvent, render, screen, waitFor} from '@testing-library/react'
+import {render, screen, waitFor} from '@testing-library/react'
+import {userEvent} from '@testing-library/user-event'
 import {beforeEach, describe, expect, it, vi} from 'vitest'
 
 import {createTestProvider} from '../../../../../../test/testUtils/TestProvider'
@@ -24,24 +25,25 @@ vi.mock('../../../store/useReleasePermissions', () => ({
 
 describe('ReleaseDetailsEditor', () => {
   describe('when there is permission', () => {
+    const initialRelease = {
+      _id: 'release1',
+      metadata: {
+        title: 'Initial Title',
+        description: '',
+        releaseType: 'asap',
+        intendedPublishAt: undefined,
+      },
+    } as ReleaseDocument
+
     beforeEach(async () => {
-      const initialRelease = {
-        _id: 'release1',
-        metadata: {
-          title: 'Initial Title',
-          description: '',
-          releaseType: 'asap',
-          intendedPublishAt: undefined,
-        },
-      } as ReleaseDocument
-
+      vi.clearAllMocks()
       mockUseReleasePermissions.mockReturnValue(useReleasesPermissionsMockReturnTrue)
-
-      const wrapper = await createTestProvider()
-      render(<ReleaseDetailsEditor release={initialRelease} />, {wrapper})
     })
 
-    it('should call updateRelease after title change', () => {
+    it('should call updateRelease after title change', async () => {
+      const wrapper = await createTestProvider()
+      const {container} = render(<ReleaseDetailsEditor release={initialRelease} />, {wrapper})
+
       const release = {
         _id: 'release1',
         metadata: {
@@ -52,18 +54,31 @@ describe('ReleaseDetailsEditor', () => {
         },
       } as ReleaseDocument
 
-      const input = screen.getByTestId('release-form-title')
-      fireEvent.change(input, {target: {value: release.metadata.title}})
+      const input = screen.getByTestId('release-form-title') as HTMLInputElement
 
-      waitFor(
+      await waitFor(() => {
+        expect(input).not.toBeDisabled()
+      })
+
+      const updateReleaseMock = (useReleaseOperations as unknown as vi.Mock).mock.results[0]?.value
+        .updateRelease
+
+      await userEvent.clear(input)
+      await userEvent.type(input, release.metadata.title!)
+
+      // Wait for debounce (200ms) + some buffer
+      await waitFor(
         () => {
-          expect(useReleaseOperations().updateRelease).toHaveBeenCalledWith(release)
+          expect(updateReleaseMock).toHaveBeenCalledWith(release)
         },
-        {timeout: 10_000},
+        {timeout: 1000},
       )
     })
 
-    it('should call updateRelease after description change', () => {
+    it('should call updateRelease after description change', async () => {
+      const wrapper = await createTestProvider()
+      const {container} = render(<ReleaseDetailsEditor release={initialRelease} />, {wrapper})
+
       const release = {
         _id: 'release1',
         metadata: {
@@ -74,37 +89,48 @@ describe('ReleaseDetailsEditor', () => {
         },
       } as ReleaseDocument
 
-      const input = screen.getByTestId('release-form-description')
-      fireEvent.change(input, {target: {value: release.metadata.description}})
+      const input = screen.getByTestId('release-form-description') as HTMLTextAreaElement
 
-      waitFor(
+      await waitFor(() => {
+        expect(input).not.toBeDisabled()
+      })
+
+      const updateReleaseMock = (useReleaseOperations as unknown as vi.Mock).mock.results[0]?.value
+        .updateRelease
+
+      await userEvent.clear(input)
+      await userEvent.type(input, release.metadata.description!)
+
+      // Wait for debounce (200ms) + some buffer
+      await waitFor(
         () => {
-          expect(useReleaseOperations().updateRelease).toHaveBeenCalledWith(release)
+          expect(updateReleaseMock).toHaveBeenCalledWith(release)
         },
-        {timeout: 10_000},
+        {timeout: 1000},
       )
     })
   })
 
   describe('when there is no permission', () => {
+    const initialRelease = {
+      _id: 'release1',
+      metadata: {
+        title: 'Initial Title',
+        description: '',
+        releaseType: 'asap',
+        intendedPublishAt: undefined,
+      },
+    } as ReleaseDocument
+
     beforeEach(async () => {
-      const initialRelease = {
-        _id: 'release1',
-        metadata: {
-          title: 'Initial Title',
-          description: '',
-          releaseType: 'asap',
-          intendedPublishAt: undefined,
-        },
-      } as ReleaseDocument
-
+      vi.clearAllMocks()
       mockUseReleasePermissions.mockReturnValue(useReleasesPermissionsMockReturnFalse)
-
-      const wrapper = await createTestProvider()
-      render(<ReleaseDetailsEditor release={initialRelease} />, {wrapper})
     })
 
     it('when there is no permission, should not call updateRelease', async () => {
+      const wrapper = await createTestProvider()
+      render(<ReleaseDetailsEditor release={initialRelease} />, {wrapper})
+
       const input = screen.getByTestId('release-form-description')
       expect(input).toBeDisabled()
     })

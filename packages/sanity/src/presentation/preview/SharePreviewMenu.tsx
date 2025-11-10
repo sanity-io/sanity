@@ -142,7 +142,7 @@ export const SharePreviewMenu = memo(function SharePreviewMenuComponent(
       if (!url) {
         throw new Error('No URL to copy')
       }
-      navigator.clipboard.writeText(url.toString())
+      void navigator.clipboard.writeText(url.toString())
       pushToast({
         closable: true,
         status: 'success',
@@ -175,14 +175,14 @@ export const SharePreviewMenu = memo(function SharePreviewMenuComponent(
           controller.abort()
           controller = new AbortController()
           if (event.tags.some((tag) => usedTags.includes(tag))) {
-            fetchShareSecret(event.id, controller.signal)
+            void fetchShareSecret(event.id, controller.signal)
           }
         }
       },
       error: setError,
     })
 
-    fetchShareSecret(null, controller.signal).finally(() => setLoading(false))
+    void fetchShareSecret(null, controller.signal).finally(() => setLoading(false))
 
     return () => {
       subscription.unsubscribe()

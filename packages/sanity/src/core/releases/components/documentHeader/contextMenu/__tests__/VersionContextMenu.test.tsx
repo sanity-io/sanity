@@ -1,5 +1,6 @@
 import {type ReleaseDocument} from '@sanity/client'
-import {act, fireEvent, render, screen, waitFor} from '@testing-library/react'
+import {render, screen, waitFor} from '@testing-library/react'
+import {userEvent} from '@testing-library/user-event'
 import {describe, expect, it, vi} from 'vitest'
 
 import {useDocumentPairPermissionsMockReturn} from '../../../../../../../test/mocks/useDocumentPairPermissions.mock'
@@ -85,9 +86,8 @@ describe('VersionContextMenu', () => {
       expect(screen.getByTestId('copy-version-to-release-button-group')).not.toBeDisabled()
     })
 
-    await act(() => {
-      fireEvent.click(screen.getByTestId('copy-version-to-release-button-group'))
-    })
+    await userEvent.click(screen.getByTestId('copy-version-to-release-button-group'))
+
     await waitFor(() => {
       expect(screen.getByTestId('create-new-release-button')).toBeInTheDocument()
       expect(screen.getByText('Release 1')).toBeInTheDocument()
@@ -108,13 +108,9 @@ describe('VersionContextMenu', () => {
       expect(screen.getByTestId('copy-version-to-release-button-group')).not.toBeDisabled()
     })
 
-    await act(() => {
-      fireEvent.click(screen.getByTestId('copy-version-to-release-button-group'))
-    })
+    await userEvent.click(screen.getByTestId('copy-version-to-release-button-group'))
 
-    await waitFor(() => {
-      fireEvent.click(screen.getByTestId('create-new-release-button'))
-    })
+    await userEvent.click(screen.getByTestId('create-new-release-button'))
     expect(defaultProps.onCreateRelease).toHaveBeenCalled()
   })
 
@@ -144,9 +140,8 @@ describe('VersionContextMenu', () => {
       expect(screen.getByText('Discard version')).not.toBeDisabled()
     })
 
-    await act(() => {
-      fireEvent.click(screen.getByText('Discard version'))
-    })
+    await userEvent.click(screen.getByText('Discard version'))
+
     expect(defaultProps.onDiscard).toHaveBeenCalled()
   })
 
@@ -163,13 +158,9 @@ describe('VersionContextMenu', () => {
       expect(screen.getByTestId('copy-version-to-release-button-group')).not.toBeDisabled()
     })
 
-    await act(() => {
-      fireEvent.click(screen.getByTestId('copy-version-to-release-button-group'))
-    })
+    await userEvent.click(screen.getByTestId('copy-version-to-release-button-group'))
 
-    await waitFor(() => {
-      fireEvent.click(screen.getByTestId('create-new-release-button'))
-    })
+    await userEvent.click(screen.getByTestId('create-new-release-button'))
     expect(defaultProps.onCreateRelease).toHaveBeenCalled()
   })
 
@@ -186,13 +177,9 @@ describe('VersionContextMenu', () => {
       expect(screen.getByTestId('copy-version-to-release-button-group')).not.toBeDisabled()
     })
 
-    await act(() => {
-      fireEvent.click(screen.getByTestId('copy-version-to-release-button-group'))
-    })
+    await userEvent.click(screen.getByTestId('copy-version-to-release-button-group'))
 
-    await waitFor(() => {
-      fireEvent.click(screen.getByText('Release 2'))
-    })
+    await userEvent.click(screen.getByText('Release 2'))
     expect(defaultProps.onCreateRelease).toHaveBeenCalled()
   })
 

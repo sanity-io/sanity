@@ -389,7 +389,7 @@ export function PortableTextInput(props: PortableTextInputProps): ReactNode {
         return onPaste?.(input)
       }
 
-      extractPastedFiles(event.clipboardData)
+      void extractPastedFiles(event.clipboardData)
         .then((files) => {
           return files.length > 0 ? files : []
         })

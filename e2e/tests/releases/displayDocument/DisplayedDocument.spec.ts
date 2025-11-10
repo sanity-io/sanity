@@ -111,12 +111,15 @@ test.describe('displayedDocument', () => {
       archiveAndDeleteRelease({sanityClient, dataset, releaseId: undecidedReleaseId}),
     ])
 
-    await sanityClient.delete(publishedDocument._id)
-    await sanityClient.delete(publishedDocumentDupe._id)
-    await discardVersion({sanityClient, dataset, versionId: publishedWithVersion._id})
-    await discardVersion({sanityClient, dataset, versionId: singleASAPVersionDocument._id})
-    await discardVersion({sanityClient, dataset, versionId: versionDocumentOne._id})
-    await discardVersion({sanityClient, dataset, versionId: versionDocumentTwo._id})
+    // Delete documents - using allSettled to handle documents that may not exist
+    await Promise.allSettled([
+      sanityClient.delete(publishedDocument._id),
+      sanityClient.delete(publishedDocumentDupe._id),
+      discardVersion({sanityClient, dataset, versionId: publishedWithVersion._id}),
+      discardVersion({sanityClient, dataset, versionId: singleASAPVersionDocument._id}),
+      discardVersion({sanityClient, dataset, versionId: versionDocumentOne._id}),
+      discardVersion({sanityClient, dataset, versionId: versionDocumentTwo._id}),
+    ])
   })
 
   test.describe('draft pinned - draft or published, no version', () => {
@@ -442,7 +445,7 @@ test.describe('displayedDocument', () => {
       // field
       await expect(page.getByTestId('field-name').getByTestId('string-input')).toHaveValue('ASAP A')
 
-      archiveAndDeleteRelease({sanityClient, dataset, releaseId: scheduledId})
+      await archiveAndDeleteRelease({sanityClient, dataset, releaseId: scheduledId})
     })
 
     test('no draft,  publish, one version with _system.delete shows published', async ({
@@ -457,7 +460,7 @@ test.describe('displayedDocument', () => {
       const documentId = _testContext.getUniqueDocumentId()
       const versionId = `versions.${asapReleaseId}.${documentId}`
 
-      const customPublished = await createDocument(sanityClient, {
+      await createDocument(sanityClient, {
         ...speciesDocumentNamePublished,
         _id: documentId,
       })

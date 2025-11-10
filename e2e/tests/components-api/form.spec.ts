@@ -7,7 +7,7 @@ const id = 'test-id'
 
 test.describe('Form Components API:', () => {
   test('form.components.input', async ({page}) => {
-    page.goto(`/content/v3;formComponentsApi;${id}`)
+    await page.goto(`/content/v3;formComponentsApi;${id}`)
 
     await expect(
       page
@@ -18,7 +18,7 @@ test.describe('Form Components API:', () => {
   })
 
   test('form.components.field', async ({page}) => {
-    page.goto(`/content/v3;formComponentsApi;${id}`)
+    await page.goto(`/content/v3;formComponentsApi;${id}`)
 
     await expect(
       page

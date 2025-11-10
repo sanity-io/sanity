@@ -190,7 +190,7 @@ async function runAbTest(test: EfpsTest) {
       apiVersion: 'v2024-08-08',
     })
 
-    spinner.info(`Using studio URL: ${EXPERIMENT_STUDIO_URL!}`)
+    spinner.info(`Using studio URL: ${EXPERIMENT_STUDIO_URL}`)
     const experimentMessage = `Running test '${test.name}' on this branch${attemptMessage}`
     spinner.start(experimentMessage)
     experimentResults = mergeResults(

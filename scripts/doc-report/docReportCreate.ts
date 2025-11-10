@@ -197,7 +197,7 @@ const dataset = sanityIdify(readEnv<KnownEnvVar>('DOCS_REPORT_DATASET'))
 
 const studioMetricsClient = createDocClient(readEnv<KnownEnvVar>('DOCS_REPORT_DATASET'))
 
-studioMetricsClient.datasets.list().then(async (datasets) => {
+void studioMetricsClient.datasets.list().then(async (datasets) => {
   // If the dataset doesn't exist, create it
   if (!datasets.find((ds) => ds.name === dataset)) {
     const timer = startTimer(`Creating dataset ${dataset}`)

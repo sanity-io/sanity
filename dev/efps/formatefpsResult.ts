@@ -156,4 +156,4 @@ ${experimentTable}
   await fs.promises.writeFile(markdownOutputPath, markdown)
 }
 
-writeEPSResults()
+void writeEPSResults()

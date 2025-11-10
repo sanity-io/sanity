@@ -156,12 +156,12 @@ describe('resolveConfigProperty', () => {
     expect(asyncReducer.mock.calls[0][2]).toBe(context)
   })
 
-  it('throws `ConfigPropertyError`s with breadcrumbs', () => {
+  it('throws `ConfigPropertyError`s with breadcrumbs', async () => {
     const deepest = definePlugin({name: 'deepest'})
     const deeper = definePlugin({name: 'deeper', plugins: [deepest()]})
     const deep = definePlugin({name: 'deep', plugins: [deeper()]})
 
-    expect(
+    await expect(
       resolveConfigProperty({
         propertyName: 'example',
         config: {name: 'config', plugins: [deep()]},
