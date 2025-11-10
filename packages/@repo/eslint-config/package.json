@@ -18,7 +18,7 @@
     "eslint-config-turbo": "^2.6.0",
     "eslint-import-resolver-typescript": "^4.4.4",
     "eslint-plugin-import": "^2.32.0",
-    "eslint-plugin-oxlint": "1.25.0",
+    "eslint-plugin-oxlint": "1.28.0",
     "eslint-plugin-react": "^7.37.5",
     "eslint-plugin-react-hooks": "6.0.0-rc.2",
     "eslint-plugin-react-hooks-with-use-effect-event": "npm:eslint-plugin-react-hooks@0.0.0-experimental-4fdf7cf2-20251003",
