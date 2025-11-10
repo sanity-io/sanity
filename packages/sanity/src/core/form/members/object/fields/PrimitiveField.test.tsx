@@ -183,7 +183,6 @@ describe('PrimitiveField', () => {
       // Then
       const input = getByTestId('number-input') as HTMLInputElement
       expect(input).toBeInstanceOf(HTMLInputElement)
-      // The input should still show '1.00' because localValue is preserved
       await waitFor(() => expect(input.value).toEqual('1.00'))
     })
 
