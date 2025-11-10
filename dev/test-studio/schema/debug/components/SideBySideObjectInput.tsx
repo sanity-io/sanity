@@ -1,5 +1,5 @@
 import {Box, Card, Flex, Stack, Text} from '@sanity/ui'
-import {type ItemProps, type ObjectInputProps, ObjectInputMembers} from 'sanity'
+import {type ItemProps, ObjectInputMembers, type ObjectInputProps} from 'sanity'
 
 /**
  * Simple custom item component for array of objects
