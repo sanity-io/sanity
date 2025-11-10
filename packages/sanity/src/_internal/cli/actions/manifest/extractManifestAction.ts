@@ -10,6 +10,7 @@ import readPkgUp from 'read-pkg-up'
 import {
   type CreateManifest,
   type CreateWorkspaceManifest,
+  type ManifestIntent,
   type ManifestWorkspaceFile,
 } from '../../../manifest/manifestTypes'
 import {type ExtractManifestWorkerData} from '../../threads/extractManifest'
@@ -90,28 +91,31 @@ async function extractManifest(
   const spinner = output.spinner({}).start('Extracting manifest')
   let workspaceFiles: ManifestWorkspaceFile[] = []
 
-  if (!isApp) {
-    try {
-      const workspaceManifests = await getWorkspaceManifests({rootPkgPath, workDir})
-      await mkdir(staticPath, {recursive: true})
-
-      workspaceFiles = await writeWorkspaceFiles(workspaceManifests, staticPath)
-    } catch (err) {
-      spinner.fail(err.message)
-      throw err
-    }
-  }
-
-  // Extract intents if this is an app
   let intentsFilename: string | undefined
+
   if (isApp) {
-    const intents = await extractIntents({
+    await mkdir(staticPath, {recursive: true})
+
+    // For apps: extract intents from directory
+    const baseIntents = await extractIntents({
       workDir,
       intentsDir: flags.intentsDir,
     })
 
-    if (intents.length > 0) {
-      intentsFilename = await createFile(staticPath, intents, INTENTS_FILENAME_SUFFIX)
+    // Create a single intents file for apps
+    if (baseIntents.length > 0) {
+      intentsFilename = await createFile(staticPath, baseIntents, INTENTS_FILENAME_SUFFIX)
+    }
+  } else {
+    try {
+      const workspaceManifests = await getWorkspaceManifests({rootPkgPath, workDir})
+      await mkdir(staticPath, {recursive: true})
+
+      // For studios: auto-generate workspace-scoped intents from schema
+      workspaceFiles = await writeWorkspaceFiles(workspaceManifests, staticPath)
+    } catch (err) {
+      spinner.fail(err.message)
+      throw err
     }
   }
 
@@ -120,12 +124,13 @@ async function extractManifest(
      * Version history:
      * 1: Initial release.
      * 2: Added tools file.
-     * 3. Added studioVersion field.
-     * 4. Added intents file for apps.
-    */
-    version: 3,
+     * 3: Added studioVersion field.
+     * 4: Added intents file for apps and auto-generated workspace-scoped intents for studios.
+     */
+    version: 4,
     createdAt: new Date().toISOString(),
     workspaces: workspaceFiles,
+    studioVersion: await readModuleVersion(workDir, 'sanity'),
     ...(intentsFilename ? {intents: intentsFilename} : {}),
   }
 
@@ -202,10 +207,40 @@ async function writeWorkspaceFile(
     createFile(staticPath, workspace.tools, TOOLS_FILENAME_SUFFIX),
   ])
 
+  // Auto-generate workspace-scoped intents from schema types
+  // Get all document type names (filter out system types)
+  const documentTypeNames = workspace.schema
+    .filter((type) => type.type === 'document')
+    .map((type) => type.name)
+
+  let intentsFilename: string | undefined
+  if (documentTypeNames.length > 0) {
+    // Generate edit intent with all types in one filter
+    // Use workspace name to ensure unique IDs across workspaces
+    const workspaceIntents: ManifestIntent[] = [
+      {
+        id: `edit-workspace-${workspace.name}`,
+        action: 'edit',
+        title: 'Edit',
+        description: 'Edit an existing document',
+        filters: [
+          {
+            projectId: workspace.projectId,
+            dataset: workspace.dataset,
+            types: documentTypeNames,
+          },
+        ],
+      },
+    ]
+
+    intentsFilename = await createFile(staticPath, workspaceIntents, INTENTS_FILENAME_SUFFIX)
+  }
+
   return {
     ...workspace,
     schema: schemaFilename,
     tools: toolsFilename,
+    ...(intentsFilename ? {intents: intentsFilename} : {}),
   }
 }
 

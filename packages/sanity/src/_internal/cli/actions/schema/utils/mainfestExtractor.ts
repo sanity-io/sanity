@@ -46,9 +46,15 @@ export async function ensureManifestExtractSatisfied(args: {
 
 export function createManifestExtractor(context: CliCommandContext & {safe?: boolean}) {
   return async (manifestDir: string) => {
+    // For studios, intents are auto-generated, so no intentsDir needed
+    // For apps, intentsDir comes from CLI config (handled in extractManifest)
     const error = await extractManifestSafe(
       {
-        extOptions: {path: manifestDir},
+        extOptions: {
+          path: manifestDir,
+          // Only pass intentsDir for apps (will be ignored for studios)
+          intentsDir: context.cliConfig?.intents?.directory || '_intents',
+        },
         groupOrCommand: 'extract',
         argv: [],
         argsWithoutOptions: [],

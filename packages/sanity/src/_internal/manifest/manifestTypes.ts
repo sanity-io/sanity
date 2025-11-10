@@ -23,6 +23,7 @@ export interface CreateManifest {
 export interface ManifestWorkspaceFile extends Omit<CreateWorkspaceManifest, 'schema' | 'tools'> {
   schema: string // filename
   tools: string // filename
+  intents?: string // filename for studios (workspace-scoped)
 }
 
 export interface CreateWorkspaceManifest {
