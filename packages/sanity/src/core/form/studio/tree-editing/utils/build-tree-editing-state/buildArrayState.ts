@@ -66,10 +66,6 @@ export function buildArrayState(props: BuildArrayState): TreeEditingState {
   const breadcrumbs: DialogItem[] = []
   const siblings = new Map<string, {count: number; index: number}>()
 
-  // If the array itself has custom components (item or input), skip the Enhanced Object Dialog
-  // And use whatever the custom components has defined.
-  // This follows the same logic as defined in the resolveInput and resolveItem components.
-
   // This is specifically needed for Portable Text editors that are at a root level in the document
   // In that case, and if the openPath points to a regular text block (such as when you write it), we return empty state
   // Since this SHOULDN'T open the dialog
@@ -98,10 +94,9 @@ export function buildArrayState(props: BuildArrayState): TreeEditingState {
     // Skip references early, references are handled by the reference input and shouldn't open the enhanced dialog
     if (isReferenceSchemaType(itemSchemaField)) return
 
-    // If the item schema type ITSELF has custom components.item, skip building
-    // array dialog for this item. This handles cases like internationalized arrays.
+    // If the item schema type itself has custom components.item, skip building
+    // Array dialog for this item. This handles cases like internationalized arrays.
     // NOTE: We only check the item type itself, NOT nested fields within it.
-    // IMPORTANT: Check this BEFORE setting relativePath to prevent the dialog from opening
     if (itemSchemaField.components?.item) {
       return
     }
