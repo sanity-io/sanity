@@ -7,13 +7,16 @@ import {
 import {get} from '@sanity/util/paths'
 
 import {type Source} from '../../../../config'
+import {type PerspectiveStack} from '../../../../perspective/types'
 
-export async function resolveUserDefinedFilter(
-  options: ReferenceOptions | undefined,
-  document: SanityDocument,
-  valuePath: Path,
-  getClient: Source['getClient'],
-): Promise<ReferenceFilterSearchOptions> {
+export async function resolveUserDefinedFilter(ctx: {
+  options: ReferenceOptions | undefined
+  document: SanityDocument
+  valuePath: Path
+  getClient: Source['getClient']
+  perspective: PerspectiveStack
+}): Promise<ReferenceFilterSearchOptions> {
+  const {options, document, valuePath, perspective, getClient} = ctx
   if (!options) {
     return {}
   }
@@ -21,7 +24,13 @@ export async function resolveUserDefinedFilter(
   if (typeof options.filter === 'function') {
     const parentPath = valuePath.slice(0, -1)
     const parent = get(document, parentPath) as Record<string, unknown>
-    const resolvedFilter = await options.filter({document, parentPath, parent, getClient})
+    const resolvedFilter = await options.filter({
+      document,
+      parentPath,
+      parent,
+      perspective,
+      getClient,
+    })
     return resolvedFilter
   }
 

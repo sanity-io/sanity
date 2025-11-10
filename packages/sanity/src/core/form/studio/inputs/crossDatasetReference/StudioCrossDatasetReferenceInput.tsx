@@ -36,7 +36,14 @@ async function resolveUserDefinedFilter(
   if (typeof options.filter === 'function') {
     const parentPath = valuePath.slice(0, -1)
     const parent = get(document, parentPath) as Record<string, unknown>
-    const resolvedFilter = await options.filter({document, parentPath, parent, getClient})
+    const resolvedFilter = await options.filter({
+      document,
+      parentPath,
+      parent,
+      // published is default, so this should be good for x-dataset refs
+      perspective: [],
+      getClient,
+    })
     return resolvedFilter
   }
 

@@ -89,19 +89,69 @@ export function StudioReferenceInput(props: StudioReferenceInputProps) {
 
   const handleSearch = useCallback(
     (searchString: string) =>
-      from(resolveUserDefinedFilter(schemaType.options, documentRef.current, path, getClient)).pipe(
-        mergeMap(({filter, params}) =>
-          adapter.referenceSearch(searchClient, searchString, schemaType, {
+      from(
+        resolveUserDefinedFilter({
+          options: schemaType.options,
+          document: documentRef.current,
+          perspective: perspectiveStack,
+          valuePath: path,
+          getClient,
+        }),
+      ).pipe(
+        mergeMap(({filter, params, perspective: userDefinedFilterPerspective}) => {
+          if (
+            userDefinedFilterPerspective?.includes('raw') ||
+            userDefinedFilterPerspective?.includes('previewDrafts')
+          ) {
+            throw new Error(
+              'Invalid perspective returned from reference filter: Neither raw nor previewDrafts is supported.',
+            )
+          }
+
+          const options = {
             ...schemaType.options,
             filter,
             params,
             tag: 'search.reference',
             maxFieldDepth,
             strategy: searchStrategy,
-            perspective: perspectiveStack,
-          }),
-        ),
+            perspective: userDefinedFilterPerspective || perspectiveStack,
+          }
 
+          const search = createSearch(schemaType.to, searchClient, {
+            ...options,
+            maxDepth: options.maxFieldDepth || DEFAULT_MAX_FIELD_DEPTH,
+          })
+
+          return search(searchString, {
+            perspective: ensurePublished(options.perspective),
+            limit: 101,
+          }).pipe(
+            map(({hits}) => hits.map(({hit}) => hit)),
+            switchMap((docs) => {
+              // Note: It might seem like this step is redundant, but it's here for a reason:
+              // The list of search hits returned from here will be passed as options to the reference input's autocomplete. When
+              // one of them gets selected by the user, it will then be passed as the argument to the `onChange` handler in the
+              // Reference Input. This handler will then look at the passed value to determine whether to make a link to a
+              // draft (using _strengthenOnPublish) or a published document.
+              //
+              // Without this step, in a case where both a draft and a published version exist but only the draft matches
+              // the search term, we'd end up making a reference with `_strengthenOnPublish: true`, when we instead should be
+              // making a normal reference to the published id
+              return combineLatest(
+                docs.map((doc) =>
+                  documentPreviewStore.observePaths({_id: getPublishedId(doc._id)}, ['_rev']).pipe(
+                    map((published) => ({
+                      id: doc._id,
+                      type: doc._type,
+                      published: Boolean(published),
+                    })),
+                  ),
+                ),
+              )
+            }),
+          )
+        }),
         catchError((err: SearchError) => {
           const isQueryError = err.details && err.details.type === 'queryParseError'
           if (schemaType.options?.filter && isQueryError) {
