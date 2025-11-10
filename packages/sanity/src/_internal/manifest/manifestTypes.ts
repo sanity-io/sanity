@@ -16,6 +16,7 @@ export interface CreateManifest {
   version: number
   createdAt: string
   workspaces: ManifestWorkspaceFile[]
+  studioVersion: string | null
 }
 
 export interface ManifestWorkspaceFile extends Omit<CreateWorkspaceManifest, 'schema' | 'tools'> {
