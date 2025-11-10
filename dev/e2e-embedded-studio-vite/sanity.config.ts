@@ -16,9 +16,16 @@ const BLOG_POST_SCHEMA = defineType({
 
 export const SCHEMA_TYPES = [BLOG_POST_SCHEMA]
 
+const projectId = process.env.SANITY_E2E_PROJECT_ID
+const dataset = process.env.SANITY_E2E_DATASET
+
+if (!projectId || !dataset) {
+  throw new Error('SANITY_E2E_PROJECT_ID and SANITY_E2E_DATASET must be set')
+}
+
 export default defineConfig({
-  projectId: 'ppsg7ml5',
-  dataset: 'test',
+  projectId: projectId,
+  dataset: dataset,
   schema: {
     types: SCHEMA_TYPES,
   },
@@ -26,4 +33,5 @@ export default defineConfig({
     enabled: false,
   },
   plugins: [structureTool()],
+  apiHost: 'https://api.sanity.work',
 })

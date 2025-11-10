@@ -5,7 +5,9 @@
   "scripts": {
     "build": "tsc && vite build && sanity manifest extract",
     "dev": "vite",
-    "preview": "vite preview"
+    "preview": "vite preview --port 5173",
+    "start": "pnpm --filter e2e-embedded-studio-vite preview",
+    "test": "playwright test"
   },
   "dependencies": {
     "@sanity/ui": "catalog:",
@@ -15,6 +17,7 @@
     "styled-components": "catalog:"
   },
   "devDependencies": {
+    "@playwright/test": "catalog:",
     "@repo/dev-aliases": "workspace:*",
     "@types/react": "catalog:",
     "@types/react-dom": "catalog:",
