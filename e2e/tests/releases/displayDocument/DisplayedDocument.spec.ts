@@ -111,37 +111,15 @@ test.describe('displayedDocument', () => {
       archiveAndDeleteRelease({sanityClient, dataset, releaseId: undecidedReleaseId}),
     ])
 
-    // Delete documents with error handling for documents that may not exist
-    try {
-      await sanityClient.delete(publishedDocument._id)
-    } catch (e) {
-      // Document may not exist
-    }
-    try {
-      await sanityClient.delete(publishedDocumentDupe._id)
-    } catch (e) {
-      // Document may not exist
-    }
-    try {
-      await discardVersion({sanityClient, dataset, versionId: publishedWithVersion._id})
-    } catch (e) {
-      // Version may not exist
-    }
-    try {
-      await discardVersion({sanityClient, dataset, versionId: singleASAPVersionDocument._id})
-    } catch (e) {
-      // Version may not exist
-    }
-    try {
-      await discardVersion({sanityClient, dataset, versionId: versionDocumentOne._id})
-    } catch (e) {
-      // Version may not exist
-    }
-    try {
-      await discardVersion({sanityClient, dataset, versionId: versionDocumentTwo._id})
-    } catch (e) {
-      // Version may not exist
-    }
+    // Delete documents - using allSettled to handle documents that may not exist
+    await Promise.allSettled([
+      sanityClient.delete(publishedDocument._id),
+      sanityClient.delete(publishedDocumentDupe._id),
+      discardVersion({sanityClient, dataset, versionId: publishedWithVersion._id}),
+      discardVersion({sanityClient, dataset, versionId: singleASAPVersionDocument._id}),
+      discardVersion({sanityClient, dataset, versionId: versionDocumentOne._id}),
+      discardVersion({sanityClient, dataset, versionId: versionDocumentTwo._id}),
+    ])
   })
 
   test.describe('draft pinned - draft or published, no version', () => {
