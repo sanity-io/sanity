@@ -319,6 +319,8 @@ export function FormBuilder(props: FormBuilderProps) {
         <FormValueProvider value={value}>
           <DocumentFieldActionsProvider actions={fieldActions}>
             <FullscreenPTEProvider>
+              {/** The id 'root' is always attributed to being in a document,
+               * if there is not root then it means it's outside of the document and so it doesn't have access to the dialog */}
               <EnhancedObjectDialogProvider dialogAvailable={id === 'root'}>
                 <RootInput
                   rootInputProps={rootInputProps}
