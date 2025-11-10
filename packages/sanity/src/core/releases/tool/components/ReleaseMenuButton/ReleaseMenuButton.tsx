@@ -21,6 +21,7 @@ import {createReleaseId} from '../../../util/createReleaseId'
 import {getReleaseIdFromReleaseDocumentId} from '../../../util/getReleaseIdFromReleaseDocumentId'
 import {type DocumentInRelease} from '../../detail/useBundleDocuments'
 import {DuplicateReleaseToastLink} from './DuplicateReleaseToastLink'
+import {MergeReleaseDialog} from './MergeReleaseDialog'
 import {RELEASE_ACTION_MAP, type ReleaseAction} from './releaseActions'
 import {ReleaseMenu} from './ReleaseMenu'
 import {ReleasePreviewCard} from './ReleasePreviewCard'
@@ -64,6 +65,7 @@ export const ReleaseMenuButton = ({
 
   const [isPerformingOperation, setIsPerformingOperation] = useState(false)
   const [selectedAction, setSelectedAction] = useState<ReleaseAction>()
+  const [showMergeDialog, setShowMergeDialog] = useState(false)
   const {selectedReleaseId} = usePerspective()
   const setPerspective = useSetPerspective()
 
@@ -82,6 +84,11 @@ export const ReleaseMenuButton = ({
     },
     [],
   )
+
+  const handleMerge = useCallback(async (fromReleaseId: string, toReleaseId: string) => {
+    setShowMergeDialog(false)
+    setSelectedAction(undefined)
+  }, [])
 
   const releaseMenuDisabled = !release
   const {t} = useTranslation(releasesLocaleNamespace)
@@ -124,6 +131,10 @@ export const ReleaseMenuButton = ({
   const handleAction = useCallback(
     async (action: ReleaseAction) => {
       if (action === 'publish' || action === 'schedule') return
+      if (action === 'merge') {
+        setShowMergeDialog(true)
+        return
+      }
       if (releaseMenuDisabled) return
 
       const actionLookup = {
@@ -145,7 +156,7 @@ export const ReleaseMenuButton = ({
           setPerspective(isDraftModelEnabled ? 'drafts' : 'published')
         }
         setIsPerformingOperation(true)
-        const actionResult = await actionLookup[action](release._id)
+        const actionResult = await actionLookup[action as keyof typeof actionLookup](release._id)
 
         telemetry.log(actionValues.telemetry)
 
@@ -215,6 +226,12 @@ export const ReleaseMenuButton = ({
   /** in some instances, immediately execute the action without requiring confirmation */
   useEffect(() => {
     if (!selectedAction || isActionPublishOrSchedule) return
+
+    // Handle merge action immediately
+    if (selectedAction === 'merge') {
+      handleAction(selectedAction)
+      return
+    }
 
     if (!RELEASE_ACTION_MAP[selectedAction].confirmDialog) handleAction(selectedAction)
   }, [documentsCount, handleAction, isActionPublishOrSchedule, selectedAction])
@@ -368,6 +385,19 @@ export const ReleaseMenuButton = ({
         />
       </Popover>
       {confirmActionDialog}
+      {showMergeDialog && (
+        <>
+          <MergeReleaseDialog
+            release={release}
+            onClose={() => {
+              setShowMergeDialog(false)
+              setSelectedAction(undefined)
+            }}
+            onConfirm={handleMerge}
+            isPerformingOperation={isPerformingOperation}
+          />
+        </>
+      )}
     </>
   )
 }

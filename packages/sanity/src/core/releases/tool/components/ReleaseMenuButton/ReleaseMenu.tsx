@@ -1,4 +1,15 @@
-import {ArchiveIcon, CloseCircleIcon, CopyIcon, TrashIcon, UnarchiveIcon} from '@sanity/icons'
+import {type ReleaseDocument} from '@sanity/client'
+import {
+  ArchiveIcon,
+  CalendarIcon,
+  CloseCircleIcon,
+  CopyIcon,
+  PublishIcon,
+  TrashIcon,
+  TransferIcon,
+  UnarchiveIcon,
+  UnpublishIcon,
+} from '@sanity/icons'
 import {
   type Dispatch,
   type MouseEventHandler,
@@ -17,6 +28,7 @@ import {useIsReleasesPlus} from '../../../hooks/useIsReleasesPlus'
 import {releasesLocaleNamespace} from '../../../i18n'
 import {useReleaseOperations} from '../../../store'
 import {useReleasePermissions} from '../../../store/useReleasePermissions'
+import {getReleaseIdFromReleaseDocumentId} from '../../../util/getReleaseIdFromReleaseDocumentId'
 import {getReleaseDefaults} from '../../../util/util'
 import {type DocumentInRelease} from '../../detail/useBundleDocuments'
 import {ReleasePublishAllButton} from '../releaseCTAButtons/ReleasePublishAllButton'
@@ -49,6 +61,7 @@ export const ReleaseMenu = ({
   const [hasPublishPermission, setHasPublishPermission] = useState<boolean | null>(null)
   const [hasSchedulePermission, setHasSchedulePermission] = useState<boolean | null>(null)
   const [hasDuplicatePermission, setHasDuplicatePermission] = useState<boolean | null>(null)
+  const [hasMergePermission, setHasMergePermission] = useState<boolean | null>(null)
 
   const isReleasesPlus = useIsReleasesPlus()
 
@@ -76,6 +89,8 @@ export const ReleaseMenu = ({
         }
         checkWithPermissionGuard(createRelease, getReleaseDefaults()).then((hasPermission) => {
           if (isMounted.current) setHasDuplicatePermission(hasPermission)
+          // For merge, we'll use the same permission as duplicate for now
+          if (isMounted.current) setHasMergePermission(hasPermission)
         })
       }
 
@@ -236,6 +251,28 @@ export const ReleaseMenu = ({
     )
   }, [documents, hasPublishPermission, ignoreCTA, release, releaseMenuDisabled, setSelectedAction])
 
+  const mergeMenuItem = useMemo(() => {
+    // Temporarily removed isReleasesPlus check for testing
+    if (release.state === 'published' || release.state === 'archived') {
+      return null
+    }
+
+    return (
+      <MenuItem
+        key="merge"
+        data-value="merge"
+        onClick={handleOnInitiateAction}
+        disabled={releaseMenuDisabled || !hasMergePermission || mode === 'disabled'}
+        icon={TransferIcon}
+        text={t('action.merge-release')}
+        data-testid="merge-release-menu-item"
+        tooltipProps={{
+          content: !hasMergePermission && t('permissions.error.merge'),
+        }}
+      />
+    )
+  }, [handleOnInitiateAction, hasMergePermission, mode, release.state, releaseMenuDisabled, t])
+
   const duplicateMenuItem = useMemo(() => {
     if (!isReleasesPlus || release.state === 'published' || release.state === 'archived') {
       return null
@@ -273,11 +310,14 @@ export const ReleaseMenu = ({
     return [publishMenuItem, scheduleMenuItem]
   }, [release.metadata.releaseType, publishMenuItem, scheduleMenuItem])
 
-  return [
+  const menuItems = [
     unscheduleMenuItem,
     ...ActionsOrder,
+    mergeMenuItem,
     duplicateMenuItem,
     archiveUnarchiveMenuItem,
     deleteMenuItem,
   ]
+
+  return menuItems
 }
