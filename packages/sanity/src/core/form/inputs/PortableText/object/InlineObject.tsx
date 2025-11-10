@@ -13,6 +13,7 @@ import {pathToString} from '../../../../field/paths'
 import {useTranslation} from '../../../../i18n'
 import {EMPTY_ARRAY} from '../../../../util'
 import {useChildPresence} from '../../../studio/contexts/Presence'
+import {useEnhancedObjectDialog} from '../../../studio/tree-editing/context/enabled/useEnhancedObjectDialog'
 import {
   type BlockProps,
   type RenderAnnotationCallback,
@@ -260,6 +261,11 @@ export const DefaultInlineObjectComponent = (props: BlockProps): React.JSX.Eleme
   const popoverTitle = schemaType?.title || schemaType.name
   const hasError = validation.filter((v) => v.level === 'error').length > 0
   const hasWarning = validation.filter((v) => v.level === 'warning').length > 0
+  const {dialogAvailable} = useEnhancedObjectDialog()
+
+  // If there's an EnhancedObjectDialog available in the tree, it will handle the opening
+  // Otherwise, we render our own modal
+  const shouldRenderOwnModal = !dialogAvailable
 
   const tone = useMemo(() => {
     if (hasError) {
@@ -313,7 +319,7 @@ export const DefaultInlineObjectComponent = (props: BlockProps): React.JSX.Eleme
           title={popoverTitle}
         />
       )}
-      {open && (
+      {open && shouldRenderOwnModal && (
         <ObjectEditModal
           autoFocus
           defaultType="popover"
