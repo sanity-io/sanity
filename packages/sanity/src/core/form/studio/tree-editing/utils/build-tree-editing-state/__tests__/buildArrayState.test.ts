@@ -1083,8 +1083,9 @@ describe('buildArrayState', () => {
       expect(result.menuItems).toEqual([])
     })
 
-    test('should NOT set relativePath when item type has custom components.input', () => {
+    test('should set relativePath when item type has custom components.input', () => {
       // Create a schema with custom components.input
+      // components.input is allowed as it's often just a wrapper
       const schemaWithCustomInput = Schema.compile({
         name: 'default',
         types: [
@@ -1136,10 +1137,11 @@ describe('buildArrayState', () => {
 
       const result = buildArrayState(props)
 
-      // relativePath should NOT be set when item has custom components
-      expect(result.relativePath).toEqual([])
-      // Should not build menu items for items with custom components
-      expect(result.menuItems).toEqual([])
+      // relativePath SHOULD be set when item has custom components.input
+      // because components.input is often just a wrapper
+      expect(result.relativePath).toEqual(['customArray', {_key: 'item1'}])
+      // Should build menu items for items with custom components.input
+      expect(result.menuItems.length).toBeGreaterThan(0)
     })
 
     test('should set relativePath when nested fields have custom components but item type does not', () => {

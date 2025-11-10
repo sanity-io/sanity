@@ -927,8 +927,9 @@ describe('buildArrayStatePTE', () => {
       expect(result.childrenMenuItems).toEqual([])
     })
 
-    test('should NOT set relativePath when PTE block type has custom components.input', () => {
+    test('should set relativePath when PTE block type has custom components.input', () => {
       // Create a schema with custom components.input on a block
+      // components.input is allowed as it's often just a wrapper
       const schemaWithCustomBlock = Schema.compile({
         name: 'default',
         types: [
@@ -990,10 +991,11 @@ describe('buildArrayStatePTE', () => {
 
       const result = buildArrayStatePTE(propsWithCustom)
 
-      // relativePath should NOT be set when block has custom components
-      expect(result.relativePath).toBeNull()
-      // Should not build menu items for blocks with custom components
-      expect(result.childrenMenuItems).toEqual([])
+      // relativePath SHOULD be set when block has custom components.input
+      // because components.input is often just a wrapper
+      expect(result.relativePath).toEqual(['body', {_key: 'custom1'}])
+      // Should build menu items for blocks with custom components.input
+      expect(result.childrenMenuItems.length).toBeGreaterThan(0)
     })
 
     test('should set relativePath when nested fields have custom components but block type does not', () => {

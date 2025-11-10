@@ -108,10 +108,10 @@ export function buildArrayStatePTE(props: BuildArrayStatePTEProps): {
 
     if (!blockSchemaType) return
 
-    // If the block schema type ITSELF has custom components (item or input), skip building
-    // tree state for this block. This handles cases like custom block objects with components.
+    // If the item schema type ITSELF has custom components.item, skip building
+    // array dialog for this block. This handles cases like internationalized arrays.
     // NOTE: We only check the block type itself, NOT nested fields within it.
-    if (blockSchemaType.components?.item || blockSchemaType.components?.input) {
+    if (blockSchemaType.components?.item) {
       return
     }
 
