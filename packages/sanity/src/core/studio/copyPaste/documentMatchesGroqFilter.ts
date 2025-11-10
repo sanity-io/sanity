@@ -23,6 +23,7 @@ export async function documentMatchesGroqFilter(ctx: {
     options: schemaTypeOptions,
     document: rootDocumentValue as SanityDocument,
     valuePath: targetRootPath,
+    perspective: [],
     getClient,
   })
 

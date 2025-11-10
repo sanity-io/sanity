@@ -96,11 +96,21 @@ export function StudioReferenceInput(props: StudioReferenceInputProps) {
         resolveUserDefinedFilter({
           options: schemaType.options,
           document: documentRef.current,
+          perspective: perspectiveStack,
           valuePath: path,
           getClient,
         }),
       ).pipe(
-        mergeMap(({filter, params}) => {
+        mergeMap(({filter, params, perspective: userDefinedFilterPerspective}) => {
+          if (
+            userDefinedFilterPerspective?.includes('raw') ||
+            userDefinedFilterPerspective?.includes('previewDrafts')
+          ) {
+            throw new Error(
+              'Invalid perspective returned from reference filter: Neither raw nor previewDrafts is supported.',
+            )
+          }
+
           const options = {
             ...schemaType.options,
             filter,
@@ -108,7 +118,7 @@ export function StudioReferenceInput(props: StudioReferenceInputProps) {
             tag: 'search.reference',
             maxFieldDepth,
             strategy: searchStrategy,
-            perspective: perspectiveStack,
+            perspective: userDefinedFilterPerspective || perspectiveStack,
           }
 
           const search = createSearch(schemaType.to, searchClient, {
