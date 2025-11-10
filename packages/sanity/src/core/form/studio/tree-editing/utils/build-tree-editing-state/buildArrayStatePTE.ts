@@ -76,6 +76,18 @@ export function buildArrayStatePTE(props: BuildArrayStatePTEProps): {
   let relativePath: Path | null = null
   const siblings = new Map<string, {count: number; index: number}>()
 
+  // If the array itself has custom components (item or input), skip the Enhanced Object Dialog
+  // And use whatever the custom components has defined.
+  // This follows the same logic as defined in the resolveInput and resolveItem components.
+  if (childField.type.components?.item || childField.type.components?.input) {
+    return {
+      breadcrumbs,
+      childrenMenuItems,
+      siblings,
+      relativePath: null,
+    }
+  }
+
   // Ensure we have an array to work with, even if empty
   const portableTextValue = Array.isArray(childValue) ? childValue : []
 
@@ -100,17 +112,20 @@ export function buildArrayStatePTE(props: BuildArrayStatePTEProps): {
     if (blockObj._type === 'block') return
 
     const blockPath = [...childPath, {_key: blockObj._key}] as Path
-    const blockSchemaType = getItemType(
-      childField.type as ArraySchemaType,
-      blockObj,
-    ) as ObjectSchemaType
 
-    if (!blockSchemaType) return
+    // Get the block's schema type to check for custom components
+    const blockSchemaType = (childField.type as ArraySchemaType).of
+      ? getItemType(childField.type as ArraySchemaType, blockObj)
+      : null
 
-    // Skip references early, references are handled by the reference input and shouldn't open the enhanced dialog
-    if (isReferenceSchemaType(blockSchemaType)) return
+    // If the block schema type has custom components (item or input), skip tree editing
+    // and use legacy modal editing instead
+    if (blockSchemaType?.components?.item || blockSchemaType?.components?.input) {
+      return
+    }
 
-    if (!blockSchemaType?.fields) return
+    if (!blockSchemaType || !isObjectSchemaType(blockSchemaType)) return
+    if (!blockSchemaType.fields) return
 
     // Check if openPath points to this block (for direct block editing like images)
     // Set relativePath if openPath points directly to this block

@@ -66,6 +66,19 @@ export function buildArrayState(props: BuildArrayState): TreeEditingState {
   const breadcrumbs: DialogItem[] = []
   const siblings = new Map<string, {count: number; index: number}>()
 
+  // If the array itself has custom components (item or input), skip the Enhanced Object Dialog
+  // And use whatever the custom components has defined.
+  // This follows the same logic as defined in the resolveInput and resolveItem components.
+  if (arraySchemaType.components?.item || arraySchemaType.components?.input) {
+    return {
+      breadcrumbs,
+      menuItems,
+      relativePath,
+      rootTitle: '',
+      siblings,
+    }
+  }
+
   // This is specifically needed for Portable Text editors that are at a root level in the document
   // In that case, and if the openPath points to a regular text block (such as when you write it), we return empty state
   // Since this SHOULDN'T open the dialog
@@ -110,6 +123,12 @@ export function buildArrayState(props: BuildArrayState): TreeEditingState {
     ) {
       // Store sibling info on the parent array path (header reads parent of relativePath)
       siblings.set(toString(rootPath), {count: arrayValue.length, index: arrayIndex + 1})
+    }
+
+    // If the item schema type has custom components (item or input), skip tree editing
+    // and use legacy modal editing instead
+    if (itemSchemaField.components?.item || itemSchemaField.components?.input) {
+      return
     }
 
     const childrenFields = itemSchemaField?.fields || []

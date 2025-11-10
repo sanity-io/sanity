@@ -802,6 +802,17 @@ export const objectsDebug = defineType({
       name: 'title',
       type: 'string',
     },
+    /** Internationalized array string */
+    defineField({
+      name: 'greeting',
+      type: 'internationalizedArrayString',
+    }),
+    /** Internationalized array string value */
+    defineField({
+      name: 'internationalizedArrayStringValue',
+      type: 'internationalizedArrayStringValue',
+      title: 'Internationalized array string value',
+    }),
     animals,
     arrayOfMixedTypes,
     body,
