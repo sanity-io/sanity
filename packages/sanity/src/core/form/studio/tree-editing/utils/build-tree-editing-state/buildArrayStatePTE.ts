@@ -76,10 +76,6 @@ export function buildArrayStatePTE(props: BuildArrayStatePTEProps): {
   let relativePath: Path | null = null
   const siblings = new Map<string, {count: number; index: number}>()
 
-  // If the array itself has custom components (item or input), skip the Enhanced Object Dialog
-  // And use whatever the custom components has defined.
-  // This follows the same logic as defined in the resolveInput and resolveItem components.
-
   // Ensure we have an array to work with, even if empty
   const portableTextValue = Array.isArray(childValue) ? childValue : []
 
