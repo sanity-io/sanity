@@ -486,8 +486,8 @@ test.describe('displayedDocument', () => {
       await expect(asapChip).toHaveAttribute('data-selected')
 
       await expect(page.getByTestId('document-panel-document-title')).not.toHaveText('Untitled')
-      // Check that the document title shows the published document name
-      await expect(page.getByTestId('document-panel-document-title')).toHaveText('published')
+      // Check that the name field shows the version name
+      await expect(page.getByTestId('document-panel-document-title')).toHaveText('(published)')
     })
   })
 })
