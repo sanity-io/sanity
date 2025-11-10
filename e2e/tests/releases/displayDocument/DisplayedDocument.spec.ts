@@ -488,6 +488,14 @@ test.describe('displayedDocument', () => {
       await expect(page.getByTestId('document-panel-document-title')).not.toHaveText('Untitled')
       // Check that the name field shows the version name
       await expect(page.getByTestId('document-panel-document-title')).toHaveText('(published)')
+
+      // Clean up test documents
+      try {
+        await sanityClient.delete(versionId)
+      } catch (e) {
+        // Version document may already be deleted due to _system.delete
+      }
+      await sanityClient.delete(documentId)
     })
   })
 })
