@@ -182,6 +182,10 @@ const structureLocaleStrings = defineLocalesResources('structure', {
   /** The text for the banner that appears when there are multiple versions but no drafts or published, more than one extra releases */
   'banners.release.navigate-to-edit-description-multiple_other':
     'This document is part of the <VersionBadge/> release and {{count}} more releases',
+  /** The text for the banner that appears when a document is not part of any release
+   * @deprecated – no longer in use
+   * */
+  'banners.release.navigate-to-edit-description-none': 'This document is not part of any release',
   /** The text for the banner that appears when a document only has one version but is in a draft or published pinned release */
   'banners.release.navigate-to-edit-description-single':
     'This document is part of the <VersionBadge/> release',
