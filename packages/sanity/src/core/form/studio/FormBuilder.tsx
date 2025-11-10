@@ -347,9 +347,8 @@ interface RootInputProps {
 function RootInput(props: RootInputProps) {
   const {rootInputProps, onPathOpen, openPath, renderInput} = props
   const {enabled: enhancedObjectDialogEnabled} = useEnhancedObjectDialog()
-  const isRoot = rootInputProps.id === 'root'
 
-  const arrayEditingModal = enhancedObjectDialogEnabled && isRoot && (
+  const arrayEditingModal = enhancedObjectDialogEnabled && (
     <EnhancedObjectDialog
       // eslint-disable-next-line react/jsx-handler-names
       onPathFocus={rootInputProps.onPathFocus}
