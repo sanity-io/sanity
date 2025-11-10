@@ -212,7 +212,7 @@ export function BaseFileInput(props: BaseFileInputProps) {
                   })
                   break
                 case 'all-complete':
-                  // Payment errors only come through after all file uploads attemps have been made
+                  // Asset limit errors only come through after all file uploads attemps have been made
                   const hasAssetLimitError = event.files.some(
                     (file) => file.status === 'error' && isAssetLimitError(file.error),
                   )
