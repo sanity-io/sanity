@@ -796,8 +796,8 @@ importers:
         specifier: 6.0.0-rc.2
         version: 6.0.0-rc.2(eslint@9.39.0(jiti@2.6.1))
       eslint-plugin-react-hooks-with-use-effect-event:
-        specifier: npm:eslint-plugin-react-hooks@0.0.0-experimental-4fdf7cf2-20251003
-        version: eslint-plugin-react-hooks@0.0.0-experimental-4fdf7cf2-20251003(eslint@9.39.0(jiti@2.6.1))
+        specifier: npm:eslint-plugin-react-hooks@0.0.0-fb28e9048
+        version: eslint-plugin-react-hooks@0.0.0-fb28e9048(eslint@9.39.0(jiti@2.6.1))
       eslint-plugin-simple-import-sort:
         specifier: ^12.1.1
         version: 12.1.1(eslint@9.39.0(jiti@2.6.1))
@@ -7792,11 +7792,11 @@ packages:
   eslint-plugin-oxlint@1.18.0:
     resolution: {integrity: sha512-H4H8GYHBTvh4Ozaf6/FABRKh3kensV5tarSn+ox58qmMJWDAWh9eboIho8LJIFEolcxZJ5EsYo1ecinZIJGRGA==}
 
-  eslint-plugin-react-hooks@0.0.0-experimental-4fdf7cf2-20251003:
-    resolution: {integrity: sha512-ofOp8G4OYh1GgbuseKrU2HeTjlGHv6tmIE3H2hgIk1HH0Mn1AOPDYn5i/DTWeLlu8GYE0QR7njLHP3zzwYC6Yw==}
-    engines: {node: '>=18'}
+  eslint-plugin-react-hooks@0.0.0-fb28e9048:
+    resolution: {integrity: sha512-c5ckChgU1gVlwPWM4A0sE0MFpAS8K/LKEnQckfLB6CpLYs+QGMXGdjueLSw9hnGm+ptu+LAc5hgIXzk936R14g==}
+    engines: {node: '>=7'}
     peerDependencies:
-      eslint: ^3.0.0 || ^4.0.0 || ^5.0.0 || ^6.0.0 || ^7.0.0 || ^8.0.0-0 || ^9.0.0
+      eslint: ^3.0.0 || ^4.0.0 || ^5.0.0
 
   eslint-plugin-react-hooks@6.0.0-rc.2:
     resolution: {integrity: sha512-2cnFkQl2xld2BgKDtxLSd/JqkpZHBXZKcz+ZurfiQ7GECzMckIddJN5PZyWach3MN4h/CjwfqPigAtYxInXtuw==}
@@ -12830,11 +12830,11 @@ packages:
     resolution: {integrity: sha512-zK7YHHz4ZXpW89AHXUPbQVGKI7uvkd3hzusTdotCg1UxyaVtg0zFJSTfW/Dq5f7OBBVnq6cZIaC8Ti4hb6dtCA==}
     engines: {node: '>= 14'}
 
-  zod-validation-error@3.5.3:
-    resolution: {integrity: sha512-OT5Y8lbUadqVZCsnyFaTQ4/O2mys4tj7PqhdbBCp7McPwvIEKfPtdA6QfPeFQK2/Rz5LgwmAXRJTugBNBi0btw==}
+  zod-validation-error@3.5.4:
+    resolution: {integrity: sha512-+hEiRIiPobgyuFlEojnqjJnhFvg4r/i3cqgcm67eehZf/WBaK3g6cD02YU9mtdVxZjv8CzCA9n/Rhrs3yAAvAw==}
     engines: {node: '>=18.0.0'}
     peerDependencies:
-      zod: ^3.25.0 || ^4.0.0
+      zod: ^3.24.4
 
   zod-validation-error@4.0.2:
     resolution: {integrity: sha512-Q6/nZLe6jxuU80qb/4uJ4t5v2VEZ44lzQjPDhYJNztRQ4wyWc6VF3D3Kb/fAuPetZQnhS3hnajCf9CsWesghLQ==}
@@ -19245,15 +19245,9 @@ snapshots:
     dependencies:
       jsonc-parser: 3.3.1
 
-  eslint-plugin-react-hooks@0.0.0-experimental-4fdf7cf2-20251003(eslint@9.39.0(jiti@2.6.1)):
+  eslint-plugin-react-hooks@0.0.0-fb28e9048(eslint@9.39.0(jiti@2.6.1)):
     dependencies:
-      '@babel/core': 7.28.5
-      '@babel/parser': 7.28.5
       eslint: 9.39.0(jiti@2.6.1)
-      zod: 3.25.76
-      zod-validation-error: 4.0.2(zod@3.25.76)
-    transitivePeerDependencies:
-      - supports-color
 
   eslint-plugin-react-hooks@6.0.0-rc.2(eslint@9.39.0(jiti@2.6.1)):
     dependencies:
@@ -19263,7 +19257,7 @@ snapshots:
       eslint: 9.39.0(jiti@2.6.1)
       hermes-parser: 0.25.1
       zod: 3.25.76
-      zod-validation-error: 3.5.3(zod@3.25.76)
+      zod-validation-error: 3.5.4(zod@3.25.76)
     transitivePeerDependencies:
       - supports-color
 
@@ -24802,11 +24796,7 @@ snapshots:
       compress-commons: 6.0.2
       readable-stream: 4.7.0
 
-  zod-validation-error@3.5.3(zod@3.25.76):
-    dependencies:
-      zod: 3.25.76
-
-  zod-validation-error@4.0.2(zod@3.25.76):
+  zod-validation-error@3.5.4(zod@3.25.76):
     dependencies:
       zod: 3.25.76
 
