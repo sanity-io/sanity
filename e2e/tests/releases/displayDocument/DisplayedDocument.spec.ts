@@ -111,12 +111,37 @@ test.describe('displayedDocument', () => {
       archiveAndDeleteRelease({sanityClient, dataset, releaseId: undecidedReleaseId}),
     ])
 
-    await sanityClient.delete(publishedDocument._id)
-    await sanityClient.delete(publishedDocumentDupe._id)
-    await discardVersion({sanityClient, dataset, versionId: publishedWithVersion._id})
-    await discardVersion({sanityClient, dataset, versionId: singleASAPVersionDocument._id})
-    await discardVersion({sanityClient, dataset, versionId: versionDocumentOne._id})
-    await discardVersion({sanityClient, dataset, versionId: versionDocumentTwo._id})
+    // Delete documents with error handling for documents that may not exist
+    try {
+      await sanityClient.delete(publishedDocument._id)
+    } catch (e) {
+      // Document may not exist
+    }
+    try {
+      await sanityClient.delete(publishedDocumentDupe._id)
+    } catch (e) {
+      // Document may not exist
+    }
+    try {
+      await discardVersion({sanityClient, dataset, versionId: publishedWithVersion._id})
+    } catch (e) {
+      // Version may not exist
+    }
+    try {
+      await discardVersion({sanityClient, dataset, versionId: singleASAPVersionDocument._id})
+    } catch (e) {
+      // Version may not exist
+    }
+    try {
+      await discardVersion({sanityClient, dataset, versionId: versionDocumentOne._id})
+    } catch (e) {
+      // Version may not exist
+    }
+    try {
+      await discardVersion({sanityClient, dataset, versionId: versionDocumentTwo._id})
+    } catch (e) {
+      // Version may not exist
+    }
   })
 
   test.describe('draft pinned - draft or published, no version', () => {
@@ -461,9 +486,6 @@ test.describe('displayedDocument', () => {
         ...speciesDocumentNamePublished,
         _id: documentId,
       })
-
-      // Wait for the document to be fully created before creating the version
-      await page.waitForTimeout(1000)
 
       // Create a document with a version that has _system.delete set to true
       await createDocument(sanityClient, {
