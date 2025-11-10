@@ -69,15 +69,6 @@ export function buildArrayState(props: BuildArrayState): TreeEditingState {
   // If the array itself has custom components (item or input), skip the Enhanced Object Dialog
   // And use whatever the custom components has defined.
   // This follows the same logic as defined in the resolveInput and resolveItem components.
-  if (arraySchemaType.components?.item || arraySchemaType.components?.input) {
-    return {
-      breadcrumbs,
-      menuItems,
-      relativePath,
-      rootTitle: '',
-      siblings,
-    }
-  }
 
   // This is specifically needed for Portable Text editors that are at a root level in the document
   // In that case, and if the openPath points to a regular text block (such as when you write it), we return empty state
@@ -107,6 +98,14 @@ export function buildArrayState(props: BuildArrayState): TreeEditingState {
     // Skip references early, references are handled by the reference input and shouldn't open the enhanced dialog
     if (isReferenceSchemaType(itemSchemaField)) return
 
+    // If the item schema type ITSELF has custom components (item or input), skip building
+    // tree state for this item. This handles cases like internationalized arrays.
+    // NOTE: We only check the item type itself, NOT nested fields within it.
+    // IMPORTANT: Check this BEFORE setting relativePath to prevent the dialog from opening
+    if (itemSchemaField.components?.item || itemSchemaField.components?.input) {
+      return
+    }
+
     // Check if this is the currently selected item and store its index
     if (isArrayItemSelected(itemPath, openPath)) {
       relativePath = getRelativePath(itemPath)
@@ -123,12 +122,6 @@ export function buildArrayState(props: BuildArrayState): TreeEditingState {
     ) {
       // Store sibling info on the parent array path (header reads parent of relativePath)
       siblings.set(toString(rootPath), {count: arrayValue.length, index: arrayIndex + 1})
-    }
-
-    // If the item schema type has custom components (item or input), skip tree editing
-    // and use legacy modal editing instead
-    if (itemSchemaField.components?.item || itemSchemaField.components?.input) {
-      return
     }
 
     const childrenFields = itemSchemaField?.fields || []
