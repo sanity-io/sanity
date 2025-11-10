@@ -155,12 +155,60 @@ const animal = defineField({
                 },
               ],
             },
+            {
+              name: 'arrayOfObjects__deep',
+              type: 'array',
+              title: 'Array of objects',
+              of: [
+                {
+                  type: 'object',
+                  name: 'myObject',
+                  fields: [
+                    {
+                      name: 'string',
+                      type: 'string',
+                      title: 'String',
+                    },
+                  ],
+                },
+                {
+                  type: 'reference',
+                  name: 'author',
+                  title: 'Author',
+                  to: [{type: 'author'}],
+                },
+              ],
+            },
           ],
         },
         {
           type: 'image',
           name: 'image',
           title: 'Image',
+        },
+      ],
+    },
+    {
+      name: 'arrayOfObjects__flat',
+      type: 'array',
+      title: 'Array of objects',
+      of: [
+        {
+          type: 'object',
+          name: 'myObject',
+          fields: [
+            {
+              name: 'string',
+              type: 'string',
+              title: 'String',
+            },
+          ],
+        },
+        {
+          type: 'reference',
+          name: 'author',
+          title: 'Author',
+          to: [{type: 'author'}],
         },
       ],
     },

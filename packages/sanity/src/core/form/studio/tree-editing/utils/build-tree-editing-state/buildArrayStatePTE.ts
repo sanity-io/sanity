@@ -2,7 +2,9 @@ import {
   type ArraySchemaType,
   isArrayOfBlocksSchemaType,
   isArrayOfObjectsSchemaType,
+  isKeySegment,
   isObjectSchemaType,
+  isReferenceSchemaType,
   type ObjectField,
   type ObjectSchemaType,
   type Path,
@@ -103,6 +105,11 @@ export function buildArrayStatePTE(props: BuildArrayStatePTEProps): {
       blockObj,
     ) as ObjectSchemaType
 
+    if (!blockSchemaType) return
+
+    // Skip references early, references are handled by the reference input and shouldn't open the enhanced dialog
+    if (isReferenceSchemaType(blockSchemaType)) return
+
     if (!blockSchemaType?.fields) return
 
     // Check if openPath points to this block (for direct block editing like images)
@@ -144,6 +151,30 @@ export function buildArrayStatePTE(props: BuildArrayStatePTEProps): {
 
         // This prevents overriding the block-level relativePath set above which is meant to be more general
         if (openPathPointsToArrayField) {
+          // Check if openPath points to a reference item within this array
+          // References handle their own UI and shouldn't open the enhanced dialog
+          const lastSegment = openPath[openPath.length - 1]
+
+          if (isKeySegment(lastSegment)) {
+            // openPath points to a specific item in the array, check if it's a reference
+            // because if it is a reference, we don't want to set relativePath to open / keep the enhanced dialog open
+            const arrayFieldValue = Array.isArray(blockFieldValue) ? blockFieldValue : []
+            const targetItem = arrayFieldValue.find(
+              (item: unknown) =>
+                item &&
+                typeof item === 'object' &&
+                '_key' in item &&
+                item._key === lastSegment._key,
+            )
+
+            const itemSchemaType = targetItem
+              ? getItemType(blockField.type as ArraySchemaType, targetItem)
+              : null
+
+            // Skip setting relativePath for references
+            if (itemSchemaType && isReferenceSchemaType(itemSchemaType)) return
+          }
+
           // Use openPath as relativePath for more precise targeting
           // meaning that we in fact want to go deeper into the nested structure
           relativePath = getRelativePath(openPath)
