@@ -266,6 +266,9 @@ importers:
       '@types/yargs':
         specifier: ^17.0.34
         version: 17.0.34
+      babel-plugin-react-compiler:
+        specifier: 19.1.0-rc.3
+        version: 19.1.0-rc.3
       chalk:
         specifier: ^4.1.2
         version: 4.1.2
