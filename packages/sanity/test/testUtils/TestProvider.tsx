@@ -68,9 +68,19 @@ export async function createTestProvider({
 
   await i18next.init()
 
+  const routerState = {}
+  const activeWorkspace = {name: 'default'} as WorkspaceSummary
+  const history = createMemoryHistory()
+  const addonDatasetContextValue = {
+    createAddonDataset: async () => Promise.resolve(null),
+    isCreatingDataset: false,
+    client: null,
+    ready: true,
+  }
+
   function TestProvider({children}: {children: ReactNode}) {
     return (
-      <RouterProvider router={router} state={{}} onNavigate={noop}>
+      <RouterProvider router={router} state={routerState} onNavigate={noop}>
         <ThemeProvider theme={studioTheme}>
           <LocaleProviderBase locales={locales} i18next={i18next} projectId="test" sourceId="test">
             <ResourceCacheProvider>
@@ -79,20 +89,13 @@ export async function createTestProvider({
                   <WorkspaceProvider workspace={workspace}>
                     <SourceProvider source={workspace.unstable_sources[0]}>
                       <ActiveWorkspaceMatcherProvider
-                        activeWorkspace={{name: 'default'} as WorkspaceSummary}
+                        activeWorkspace={activeWorkspace}
                         setActiveWorkspace={noop}
-                        history={createMemoryHistory()}
+                        history={history}
                       >
                         <CopyPasteProvider>
                           <ResourceCacheProvider>
-                            <AddonDatasetContext.Provider
-                              value={{
-                                createAddonDataset: async () => Promise.resolve(null),
-                                isCreatingDataset: false,
-                                client: null,
-                                ready: true,
-                              }}
-                            >
+                            <AddonDatasetContext.Provider value={addonDatasetContextValue}>
                               <PerspectiveContext.Provider value={perspectiveContextValueMock}>
                                 <DocumentLimitUpsellProvider>
                                   <AssetLimitUpsellProvider>{children}</AssetLimitUpsellProvider>

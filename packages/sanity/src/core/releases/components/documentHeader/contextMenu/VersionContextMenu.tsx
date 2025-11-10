@@ -67,7 +67,7 @@ export const VersionContextMenu = memo(function VersionContextMenu(props: Versio
   useEffect(() => {
     isMounted.current = true
 
-    checkWithPermissionGuard(createRelease, getReleaseDefaults()).then((hasPermission) => {
+    void checkWithPermissionGuard(createRelease, getReleaseDefaults()).then((hasPermission) => {
       if (isMounted.current) setHasCreatePermission(hasPermission)
     })
 

@@ -170,7 +170,7 @@ export function _prefixUrlWithBasePath(url: string, basePath: string): string {
 }
 
 if (!isMainThread && parentPort) {
-  renderDocumentFromWorkerData()
+  void renderDocumentFromWorkerData()
 }
 
 async function renderDocumentFromWorkerData() {

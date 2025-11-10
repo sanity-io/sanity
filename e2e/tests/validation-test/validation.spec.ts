@@ -41,7 +41,7 @@ test.describe('Validation test', () => {
         page.getByRole('button', {name: 'Room cant be unfurnished!', exact: true}),
       ).not.toBeVisible()
 
-      await expect(errors).toHaveLength(0)
+      expect(errors).toHaveLength(0)
     })
 
     test('and the one array item has been deleted when there are more than one item with errors', async ({
@@ -95,7 +95,7 @@ test.describe('Validation test', () => {
       await page.getByRole('menuitem', {name: 'Remove'}).click()
       await expect(page.getByRole('button', {name: 'House / Room / List furniture'})).toHaveCount(1)
 
-      await expect(errors).toHaveLength(0)
+      expect(errors).toHaveLength(0)
     })
 
     test('and the one array item has been deleted there are more validation errors outside of the array', async ({
@@ -149,7 +149,7 @@ test.describe('Validation test', () => {
         page.getByRole('button', {name: 'House / Room / List furniture'}),
       ).not.toBeVisible()
 
-      await expect(errors).toHaveLength(0)
+      expect(errors).toHaveLength(0)
     })
   })
 })

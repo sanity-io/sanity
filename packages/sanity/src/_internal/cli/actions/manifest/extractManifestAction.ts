@@ -135,7 +135,7 @@ async function getWorkspaceManifests({
   let timeout = false
   const timeoutId = setTimeout(() => {
     timeout = true
-    worker.terminate()
+    void worker.terminate()
   }, EXTRACT_TASK_TIMEOUT_MS)
 
   try {

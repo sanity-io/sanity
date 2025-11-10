@@ -129,7 +129,7 @@ async function* readerToGenerator(reader: ReadableStreamDefaultReader<Uint8Array
   }
 }
 
-main().then(() => process.exit())
+void main().then(() => process.exit())
 
 async function loadWorkspace() {
   const workspaces = await getStudioWorkspaces({basePath: workDir, configPath})

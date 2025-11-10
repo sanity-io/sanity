@@ -21,7 +21,7 @@ const createHookCommand: CliCommandDefinition = {
     const manageUrl = `https://www.sanity.io/organizations/${organizationId}/project/${projectId}/api/webhooks/new`
 
     output.print(`Opening ${manageUrl}`)
-    open(manageUrl)
+    await open(manageUrl)
   },
 }
 

@@ -70,7 +70,7 @@ describe('render states', () => {
       },
     })
 
-    expect(result.queryByTestId('autocomplete')).toBeInTheDocument()
+    expect(result.getByTestId('autocomplete')).toBeInTheDocument()
   })
 
   test('it renders the autocomplete when it has a value but focus is on the _ref', async () => {
@@ -279,7 +279,7 @@ describe('user interaction happy paths', () => {
 
     const autocomplete = await result.findByTestId('autocomplete')
 
-    act(() => userEvent.type(autocomplete, 'foo'))
+    await userEvent.type(autocomplete, 'foo')
 
     const popover = await result.findByTestId('autocomplete-popover')
     const previews = within(popover).getAllByTestId('preview')
@@ -289,7 +289,7 @@ describe('user interaction happy paths', () => {
     expect(previews[1]).toHaveTextContent('Product two')
 
     // Click "Product two"
-    userEvent.click(within(popover).getAllByRole('button')[1])
+    await userEvent.click(within(popover).getAllByRole('button')[1])
 
     // Note: this asserts the necessity of awaiting after click. Currently, the onChange event is
     // emitted asynchronously after an item is selected due to behavior in Sanity UI's autocomplete
@@ -394,7 +394,7 @@ describe('user interaction happy paths', () => {
     // })
 
     const autocomplete = result.getByTestId('autocomplete')
-    userEvent.type(autocomplete, 'foo')
+    await userEvent.type(autocomplete, 'foo')
     const popover = result.getByTestId('autocomplete-popover')
     const previews = within(popover).getAllByTestId('preview')
 
@@ -402,7 +402,7 @@ describe('user interaction happy paths', () => {
     expect(previews[0]).toHaveTextContent('Product one')
     expect(previews[1]).toHaveTextContent('Product two')
 
-    userEvent.click(within(popover).getAllByRole('button')[1])
+    await userEvent.click(within(popover).getAllByRole('button')[1])
 
     // Note: this asserts the necessity of awaiting after click. Currently, the onChange event is emitted asynchronously after an item is selected due to behavior in Sanity UI's autocomplete
     // (https://github.com/sanity-io/design/blob/b956686c2c663c4f21910f7d3d0be0a27663f5f4/packages/%40sanity/ui/src/components/autocomplete/autocompleteOption.tsx#L16-L20)
@@ -481,9 +481,9 @@ describe('user interaction happy paths', () => {
     const preview = result.getByTestId('preview')
     expect(preview).toHaveTextContent('Product some-product')
     const menuButton = result.getByTestId('menu-button')
-    await act(() => menuButton.click())
+    act(() => menuButton.click())
     const replaceMenuItem = result.getByTestId('menu-item-clear')
-    await act(() => replaceMenuItem.click())
+    act(() => replaceMenuItem.click())
 
     expect(onChange).toHaveBeenCalledTimes(1)
     expect(onChange.mock.calls[0]).toEqual([

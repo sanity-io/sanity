@@ -33,7 +33,7 @@ test.describe('In PTE - references in popover', () => {
       .getByTestId('inlineReference-insert-menu-button')
       .click()
 
-    page.getByTestId('inline-preview').dblclick()
+    await page.getByTestId('inline-preview').dblclick()
 
     await expect(page.getByTestId('popover-edit-dialog')).toBeVisible()
 

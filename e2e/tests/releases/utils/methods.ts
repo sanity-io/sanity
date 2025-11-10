@@ -48,7 +48,7 @@ export const archiveRelease = async ({
   releaseId: string
 }) => {
   try {
-    sanityClient.withConfig(CLIENT_OPTIONS).request({
+    await sanityClient.withConfig(CLIENT_OPTIONS).request({
       uri: `/data/actions/${dataset}`,
       method: 'POST',
       body: {
@@ -76,7 +76,7 @@ export const unarchiveRelease = async ({
   releaseId: string
 }) => {
   try {
-    sanityClient.withConfig(CLIENT_OPTIONS).request({
+    await sanityClient.withConfig(CLIENT_OPTIONS).request({
       uri: `/data/actions/${dataset}`,
       method: 'POST',
       body: {
@@ -94,7 +94,7 @@ export const unarchiveRelease = async ({
   }
 }
 
-export const deleteRelease = ({
+export const deleteRelease = async ({
   sanityClient,
   dataset,
   releaseId,
@@ -104,7 +104,7 @@ export const deleteRelease = ({
   releaseId: string
 }) => {
   // delete release
-  sanityClient.withConfig(CLIENT_OPTIONS).request({
+  await sanityClient.withConfig(CLIENT_OPTIONS).request({
     uri: `/data/actions/${dataset}`,
     method: 'POST',
     body: {
@@ -132,7 +132,7 @@ export const archiveAndDeleteRelease = async ({
   await deleteRelease({sanityClient, dataset, releaseId})
 }
 
-export const discardVersion = ({
+export const discardVersion = async ({
   sanityClient,
   dataset,
   versionId,
@@ -142,7 +142,7 @@ export const discardVersion = ({
   versionId: string
 }) => {
   // discard release
-  sanityClient.withConfig(CLIENT_OPTIONS).request({
+  await sanityClient.withConfig(CLIENT_OPTIONS).request({
     uri: `/data/actions/${dataset}`,
     method: 'POST',
     body: {
@@ -241,6 +241,7 @@ async function waitForReleaseToBeArchived({
       setTimeout(checkStatus, interval)
     }
 
+    // oxlint-disable-next-line no-floating-promises - false negative
     checkStatus()
   })
 }

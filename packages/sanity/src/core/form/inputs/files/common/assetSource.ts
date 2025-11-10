@@ -115,7 +115,7 @@ export function handleSelectAssetFromSource({
       break
     }
     case 'base64':
-      base64ToFile(firstAsset.value as FIXME, originalFilename).then((file) => {
+      void base64ToFile(firstAsset.value as FIXME, originalFilename).then((file) => {
         const uploader = resolveUploader(type, file)
         if (uploader) {
           uploadWith(uploader, file, assetOptions)
@@ -123,7 +123,7 @@ export function handleSelectAssetFromSource({
       })
       break
     case 'url':
-      urlToFile(firstAsset.value as FIXME, originalFilename).then((file) => {
+      void urlToFile(firstAsset.value as FIXME, originalFilename).then((file) => {
         const uploader = resolveUploader(type, file)
         if (uploader) {
           uploadWith(uploader, file, assetOptions)

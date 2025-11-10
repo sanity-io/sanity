@@ -26,7 +26,7 @@ const allTypes = [
 test(`type shows deprecated message`, async ({page, createDraftDocument}) => {
   await createDraftDocument('/content/input-debug;deprecatedFields')
   for (const type of allTypes) {
-    await expect(await page.getByTestId(`deprecated-badge-${type}`)).toBeVisible()
+    await expect(page.getByTestId(`deprecated-badge-${type}`)).toBeVisible()
 
     const deprecatedBadge = page.getByTestId(`deprecated-badge-${type}`)
     const deprecatedMessage = page.getByTestId(`deprecated-message-${type}`)

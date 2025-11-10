@@ -63,7 +63,7 @@ function getStream(response: Response): ReadableStream<StreamResult> {
             } catch (err) {
               controller.error(err)
               cancelled = true
-              reader.cancel()
+              void reader.cancel()
               return
             }
           }
@@ -81,7 +81,7 @@ function getStream(response: Response): ReadableStream<StreamResult> {
 
     cancel(): void {
       cancelled = true
-      reader.cancel()
+      void reader.cancel()
     },
   })
 }
