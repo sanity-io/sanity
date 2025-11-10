@@ -253,15 +253,13 @@ function warnOnNonProductionEnvironment(): void {
     return
   }
 
-  if (process.env.TEST !== 'true') {
-    console.warn(
-      chalk.yellow(
-        knownEnvs.includes(sanityEnv)
-          ? `[WARN] Running in ${sanityEnv} environment mode\n`
-          : `[WARN] Running in ${chalk.red('UNKNOWN')} "${sanityEnv}" environment mode\n`,
-      ),
-    )
-  }
+  console.warn(
+    chalk.yellow(
+      knownEnvs.includes(sanityEnv)
+        ? `[WARN] Running in ${sanityEnv} environment mode\n`
+        : `[WARN] Running in ${chalk.red('UNKNOWN')} "${sanityEnv}" environment mode\n`,
+    ),
+  )
 }
 
 function loadAndSetEnvFromDotEnvFiles({
