@@ -118,6 +118,8 @@ export function buildArrayStatePTE(props: BuildArrayStatePTEProps): {
       ? getItemType(childField.type as ArraySchemaType, blockObj)
       : null
 
+    if (!blockSchemaType) return
+
     // If the block schema type has custom components (item or input), skip tree editing
     // and use legacy modal editing instead
     if (blockSchemaType?.components?.item || blockSchemaType?.components?.input) {
@@ -126,6 +128,9 @@ export function buildArrayStatePTE(props: BuildArrayStatePTEProps): {
 
     if (!blockSchemaType || !isObjectSchemaType(blockSchemaType)) return
     if (!blockSchemaType.fields) return
+
+    // Skip references early, references are handled by the reference input and shouldn't open the enhanced dialog
+    if (isReferenceSchemaType(blockSchemaType)) return
 
     // Check if openPath points to this block (for direct block editing like images)
     // Set relativePath if openPath points directly to this block
