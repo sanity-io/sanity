@@ -890,7 +890,7 @@ describe('buildArrayStatePTE', () => {
       })
 
       const docSchema = schemaWithCustomBlock.get('testDocument') as ObjectSchemaType
-      const bodyField = docSchema.fields.find(
+      const bodyFieldCustom = docSchema.fields.find(
         (f) => f.name === 'body',
       ) as ObjectField<ArraySchemaType>
 
@@ -906,7 +906,7 @@ describe('buildArrayStatePTE', () => {
 
       const openPath: Path = ['body', {_key: 'custom1'}]
       const props = createTestProps({
-        childField: bodyField,
+        childField: bodyFieldCustom,
         childPath: ['body'] as Path,
         childValue: mockValue.body,
         documentValue: mockValue,
@@ -960,9 +960,6 @@ describe('buildArrayStatePTE', () => {
       })
 
       const docSchema = schemaWithCustomBlock.get('testDocument') as ObjectSchemaType
-      const bodyField = docSchema.fields.find(
-        (f) => f.name === 'body',
-      ) as ObjectField<ArraySchemaType>
 
       const mockValue = {
         body: [
@@ -1041,9 +1038,6 @@ describe('buildArrayStatePTE', () => {
       })
 
       const docSchema = schemaWithNestedCustom.get('testDocument') as ObjectSchemaType
-      const bodyField = docSchema.fields.find(
-        (f) => f.name === 'body',
-      ) as ObjectField<ArraySchemaType>
 
       const mockValue = {
         body: [
