@@ -1,12 +1,9 @@
 import {type PropsWithChildren, useCallback, useContext, useMemo, useState} from 'react'
+import {AssetLimitUpsellContext, type AssetLimitUpsellContextValue} from 'sanity/_singletons'
 
 import {useUpsellData} from '../../../hooks/useUpsellData'
 import {type UpsellDialogViewedInfo} from '../../../studio'
 import {UpsellDialog} from '../../../studio/upsell/UpsellDialog'
-import {
-  AssetLimitUpsellContext,
-  AssetLimitUpsellContextValue,
-} from '../../../../_singletons/context/AssetLimitContext'
 
 export function AssetLimitUpsellProvider({children}: PropsWithChildren) {
   const [upsellDialogOpen, setUpsellDialogOpen] = useState(false)

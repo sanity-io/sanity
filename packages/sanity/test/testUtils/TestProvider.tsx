@@ -19,12 +19,12 @@ import {studioDefaultLocaleResources} from '../../src/core/i18n/bundles/studio'
 import {LocaleProviderBase} from '../../src/core/i18n/components/LocaleProvider'
 import {prepareI18n} from '../../src/core/i18n/i18nConfig'
 import {usEnglishLocale} from '../../src/core/i18n/locales'
+import {AssetLimitUpsellProvider} from '../../src/core/limits/context/assets/AssetLimitUpsellProvider'
+import {DocumentLimitUpsellProvider} from '../../src/core/limits/context/documents/DocumentLimitUpsellProvider'
 import {perspectiveContextValueMock} from '../../src/core/perspective/__mocks__/usePerspective.mock'
 import {ActiveWorkspaceMatcherProvider} from '../../src/core/studio/activeWorkspaceMatcher/ActiveWorkspaceMatcherProvider'
 import {route, RouterProvider} from '../../src/router'
 import {getMockWorkspace} from './getMockWorkspaceFromConfig'
-import {DocumentLimitUpsellProvider} from '../../src/core/limits/context/documents/DocumentLimitUpsellProvider'
-import {AssetLimitUpsellProvider} from '../../src/core/limits/context/assets/AssetLimitUpsellProvider'
 
 // Mock the useUpsellData hook to prevent API calls in tests
 vi.mock('../../src/core/hooks/useUpsellData', () => ({

@@ -11,6 +11,7 @@ import {LoadingBlock} from '../components/loadingBlock'
 import {AppIdCacheProvider} from '../create/studio-app/AppIdCacheProvider'
 import {errorReporter} from '../error/errorReporter'
 import {LocaleProvider} from '../i18n'
+import {AssetLimitUpsellProvider} from '../limits/context/assets/AssetLimitUpsellProvider'
 import {DocumentLimitUpsellProvider} from '../limits/context/documents/DocumentLimitUpsellProvider'
 import {GlobalPerspectiveProvider} from '../perspective/GlobalPerspectiveProvider'
 import {ResourceCacheProvider} from '../store'
@@ -36,7 +37,6 @@ import {StudioThemeProvider} from './StudioThemeProvider'
 import {StudioTelemetryProvider} from './telemetry/StudioTelemetryProvider'
 import {WorkspaceLoader} from './workspaceLoader'
 import {WorkspacesProvider} from './workspaces'
-import {AssetLimitUpsellProvider} from '../limits/context/assets/AssetLimitUpsellProvider'
 
 registerLanguage(bash)
 registerLanguage(javascript)
