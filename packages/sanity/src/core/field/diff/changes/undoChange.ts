@@ -1,10 +1,4 @@
-import {
-  diffItem,
-  type DiffOptions,
-  type InsertAfterPatch,
-  type SetPatch,
-  type UnsetPatch,
-} from '@sanity/diff-patch'
+import {diffValue} from '@sanity/diff-patch'
 import {
   isIndexSegment,
   isKeyedObject,
@@ -31,10 +25,6 @@ import {
   type ObjectDiff,
 } from '../../types'
 import {flattenChangeNode, isAddedAction, isSubpathOf, pathSegmentOfCorrectType} from './helpers'
-
-const diffOptions: DiffOptions = {
-  diffMatchPatch: {enabled: false, lengthThresholdAbsolute: 30, lengthThresholdRelative: 1.2},
-}
 
 export function undoChange(
   change: ChangeNode,
@@ -196,38 +186,21 @@ function buildMovePatches(
 }
 
 function buildUndoPatches(diff: Diff, rootDiff: ObjectDiff, path: Path): PatchOperations[] {
-  const patches = diffItem(diff.toValue, diff.fromValue, diffOptions, path)
-
-  const inserts = patches
-    .filter((patch): patch is InsertAfterPatch => patch.op === 'insert')
-    .map(({after, items}) => ({insert: {after: pathToString(after), items}}) as any)
-
-  const unsets = patches
-    .filter((patch): patch is UnsetPatch => patch.op === 'unset')
-    .reduce((acc, patch) => acc.concat(pathToString(patch.path)), [] as string[])
+  const patches = diffValue(diff.toValue, diff.fromValue, path)
 
   const stubbedPaths = new Set<string>()
-  const stubs: PatchOperations[] = []
-
-  let hasSets = false
-  const sets = patches
-    .filter((patch): patch is SetPatch => patch.op === 'set')
-    .reduce(
-      (acc, patch) => {
-        hasSets = true
-        stubs.push(...getParentStubs(patch.path, rootDiff, stubbedPaths))
-        acc[pathToString(patch.path)] = patch.value
-        return acc
-      },
-      {} as Record<string, unknown>,
+  const stubs = patches
+    .filter((patch) => patch.set)
+    .flatMap((patch) =>
+      Object.keys(patch.set!).map((pathStr) => {
+        const segments = pathStr.split('.').filter((s) => s.length > 0)
+        const patchPath = [...path, ...segments]
+        return getParentStubs(patchPath, rootDiff, stubbedPaths)
+      }),
     )
+    .flat()
 
-  return [
-    ...stubs,
-    ...inserts,
-    ...(unsets.length > 0 ? [{unset: unsets}] : []),
-    ...(hasSets ? [{set: sets}] : []),
-  ]
+  return [...stubs, ...patches]
 }
 
 function getParentStubs(path: Path, rootDiff: ObjectDiff, stubbed: Set<string>): PatchOperations[] {
