@@ -1,6 +1,6 @@
 import {ErrorOutlineIcon} from '@sanity/icons'
 import {Box, Card, Container, Flex, Heading, Stack, Text} from '@sanity/ui'
-import {motion} from 'framer-motion'
+import {motion} from 'motion/react'
 import {useMemo, useState} from 'react'
 import {useRouter} from 'sanity/router'
 

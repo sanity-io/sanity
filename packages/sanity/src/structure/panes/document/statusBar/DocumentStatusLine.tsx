@@ -6,7 +6,7 @@ import {
   Skeleton,
   Text,
 } from '@sanity/ui'
-import {AnimatePresence, motion} from 'framer-motion'
+import {AnimatePresence, motion} from 'motion/react'
 import {useEffect, useLayoutEffect, useState} from 'react'
 import {
   AvatarSkeleton,

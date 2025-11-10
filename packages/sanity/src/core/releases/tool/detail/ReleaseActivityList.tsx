@@ -1,6 +1,6 @@
 import {Box} from '@sanity/ui'
 import {useVirtualizer} from '@tanstack/react-virtual'
-import {AnimatePresence} from 'framer-motion'
+import {AnimatePresence} from 'motion/react'
 import {useEffect, useMemo, useRef} from 'react'
 import {styled} from 'styled-components'
 

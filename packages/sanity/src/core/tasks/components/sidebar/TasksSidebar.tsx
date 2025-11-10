@@ -1,5 +1,5 @@
 import {Card, Flex, Spinner, Stack} from '@sanity/ui'
-import {motion} from 'framer-motion'
+import {motion} from 'motion/react'
 import {useCallback, useMemo} from 'react'
 import {styled} from 'styled-components'
 
