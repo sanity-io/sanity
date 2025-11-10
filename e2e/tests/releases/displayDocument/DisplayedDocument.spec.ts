@@ -445,10 +445,7 @@ test.describe('displayedDocument', () => {
       await archiveAndDeleteRelease({sanityClient, dataset, releaseId: scheduledId})
     })
 
-    // TODO: This test is currently skipped because creating a document with _system.delete: true
-    // causes "document not found" errors. This might be a limitation in how Sanity handles
-    // documents marked for deletion, or the test setup needs to be reconsidered.
-    test.skip('no draft,  publish, one version with _system.delete shows published', async ({
+    test('no draft,  publish, one version with _system.delete shows published', async ({
       page,
       sanityClient,
       _testContext,
@@ -464,6 +461,9 @@ test.describe('displayedDocument', () => {
         ...speciesDocumentNamePublished,
         _id: documentId,
       })
+
+      // Wait for the document to be fully created before creating the version
+      await page.waitForTimeout(1000)
 
       // Create a document with a version that has _system.delete set to true
       await createDocument(sanityClient, {
@@ -491,14 +491,6 @@ test.describe('displayedDocument', () => {
       await expect(page.getByTestId('document-panel-document-title')).not.toHaveText('Untitled')
       // Check that the name field shows the version name
       await expect(page.getByTestId('document-panel-document-title')).toHaveText('(published)')
-
-      // Clean up test documents
-      try {
-        await sanityClient.delete(versionId)
-      } catch (e) {
-        // Version document may already be deleted due to _system.delete
-      }
-      await sanityClient.delete(documentId)
     })
   })
 })
