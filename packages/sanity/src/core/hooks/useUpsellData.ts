@@ -1,5 +1,4 @@
 import {useTelemetry} from '@sanity/telemetry/react'
-import {template} from 'lodash'
 import {useEffect, useMemo, useState} from 'react'
 
 import {
@@ -9,14 +8,60 @@ import {
   UpsellDialogViewed,
   type UpsellDialogViewedInfo,
 } from '../studio'
-import {TEMPLATE_OPTIONS} from '../studio/upsell/constants'
 import {type UpsellData} from '../studio/upsell/types'
 import {DEFAULT_STUDIO_CLIENT_OPTIONS} from '../studioClient'
+import {interpolateTemplate} from '../util/interpolateTemplate'
 import {useClient, useProjectId} from './'
 
 interface UpsellDataProps {
   dataUri: string
   feature: string
+}
+
+/**
+ * Creates a generic fallback upsell data object when the custom upsell data fails to load.
+ * This ensures users always see an upsell dialog rather than silently failing.
+ * @internal
+ */
+function createFallbackUpsellData(
+  feature: string,
+  baseUrl: string,
+  projectId: string,
+): UpsellData {
+  const timestamp = new Date().toISOString()
+  return {
+    _createdAt: timestamp,
+    _id: `fallback-${feature}`,
+    _rev: 'fallback',
+    _type: 'upsellData',
+    _updatedAt: timestamp,
+    id: `fallback-${feature}`,
+    image: null,
+    descriptionText: [
+      {
+        _key: 'fallback-desc',
+        _type: 'block',
+        children: [
+          {
+            _key: 'fallback-text',
+            _type: 'span',
+            text: 'This feature is available on higher plans. Upgrade your plan to unlock this functionality.',
+            marks: [],
+          },
+        ],
+        markDefs: [],
+        style: 'normal',
+      },
+    ],
+    ctaButton: {
+      text: 'Upgrade plan',
+      url: `${baseUrl}/manage/project/${projectId}/upgrade`,
+    },
+    secondaryButton: {
+      text: 'Learn more',
+      url: `${baseUrl}/pricing`,
+    },
+  }
 }
 
 export const useUpsellData = ({dataUri, feature}: UpsellDataProps) => {
@@ -84,27 +129,35 @@ export const useUpsellData = ({dataUri, feature}: UpsellDataProps) => {
 
     const sub = data$.subscribe({
       next: (data) => {
-        if (!data) return
+        if (!data) {
+          // No data returned - use fallback
+          setUpsellData(createFallbackUpsellData(feature, baseUrl, projectId))
+          return
+        }
         try {
-          const ctaUrl = template(data.ctaButton.url, TEMPLATE_OPTIONS)
-          data.ctaButton.url = ctaUrl({baseUrl, projectId})
-
-          const secondaryUrl = template(data.secondaryButton.url, TEMPLATE_OPTIONS)
-          data.secondaryButton.url = secondaryUrl({baseUrl, projectId})
+          data.ctaButton.url = interpolateTemplate(data.ctaButton.url, {baseUrl, projectId})
+          data.secondaryButton.url = interpolateTemplate(data.secondaryButton.url, {
+            baseUrl,
+            projectId,
+          })
           setUpsellData(data)
         } catch (e) {
-          // silently fail
+          // Template interpolation failed - use fallback
+          console.error('Failed to parse upsell data:', e)
+          setUpsellData(createFallbackUpsellData(feature, baseUrl, projectId))
         }
       },
-      error: () => {
-        // silently fail
+      error: (err) => {
+        // Request failed - use fallback instead of silently failing
+        console.error('Failed to fetch upsell data:', err)
+        setUpsellData(createFallbackUpsellData(feature, baseUrl, projectId))
       },
     })
 
     return () => {
       sub.unsubscribe()
     }
-  }, [client, projectId, baseUrl, dataUri])
+  }, [client, projectId, baseUrl, dataUri, feature])
 
   return {upsellData, telemetryLogs}
 }

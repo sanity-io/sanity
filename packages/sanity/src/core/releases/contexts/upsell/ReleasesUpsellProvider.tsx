@@ -45,9 +45,6 @@ export function ReleasesUpsellProvider(props: {children: React.ReactNode}) {
     if (!isReleasesFeatureEnabled && upsellData) {
       return 'upsell'
     }
-    if (isReleasesFeatureEnabled && !upsellData) {
-      return 'disabled'
-    }
     return 'default'
   }, [isReleasesFeatureEnabled, upsellData])
 
