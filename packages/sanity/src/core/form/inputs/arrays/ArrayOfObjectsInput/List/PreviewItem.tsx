@@ -71,11 +71,12 @@ export function PreviewItem<Item extends ObjectItem = ObjectItem>(props: Preview
   } = props
   const {t} = useTranslation()
 
-  const {enabled: enhancedObjectDialogEnabled} = useEnhancedObjectDialog()
+  const {enabled: enhancedObjectDialogEnabled, isDialogAvailable} = useEnhancedObjectDialog()
 
   // The edit portal should open if the item is open and:
-  // - tree array editing is disabled
-  const openPortal = open && !enhancedObjectDialogEnabled
+  // - EnhancedObjectDialog is disabled
+  // - the EnhancedObjectDialog is not available
+  const openPortal = open && !enhancedObjectDialogEnabled && !isDialogAvailable
 
   const sortable = parentSchemaType.options?.sortable !== false
   const insertableTypes = parentSchemaType.of
