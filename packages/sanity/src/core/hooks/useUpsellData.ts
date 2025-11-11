@@ -79,7 +79,7 @@ export const useUpsellData = ({dataUri, feature}: UpsellDataProps) => {
 
   useEffect(() => {
     const data$ = client.observable.request<UpsellData | null>({
-      uri: dataUri + 'x',
+      uri: dataUri,
     })
 
     const sub = data$.subscribe({
