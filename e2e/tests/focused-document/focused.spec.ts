@@ -124,3 +124,44 @@ test.describe('focused document', () => {
     await expect(page.locator('[data-testid="pane-header"]')).toHaveCount(3)
   })
 })
+
+test.describe('focused document - with enhanced object dialog', () => {
+  test.beforeEach(async ({createDraftDocument}) => {
+    await createDraftDocument('/content/input-debug;objectsDebug')
+  })
+
+  test('when the enhanced object dialog is open, the focused document should be the one that is open', async ({
+    page,
+  }) => {
+    await page.getByTestId('focus-pane-button-focus').click()
+
+    await expect(page.getByTestId('field-title').getByTestId('string-input')).toBeVisible()
+    await page.getByTestId('field-title').getByTestId('string-input').fill('Object')
+
+    await page.getByTestId('field-animals').getByRole('button', {name: 'Add item'}).click()
+    const modal = page.getByTestId('nested-object-dialog')
+
+    await expect(modal).toBeVisible()
+
+    await expect(page.getByTestId('add-multiple-object-button').nth(1)).toBeVisible()
+    await page.getByTestId('add-multiple-object-button').nth(1).click()
+
+    await expect(page.getByRole('menuitem', {name: 'Species'})).toBeVisible()
+    await page.getByRole('menuitem', {name: 'Species'}).click()
+
+    await expect(page.locator('[data-testid^="create-new-document-select-"]')).toBeVisible()
+    await page.locator('[data-testid^="create-new-document-select-"]').click()
+
+    await expect(page.getByTestId('document-panel-document-title')).toBeVisible()
+
+    await expect(page.getByTestId('field-name').getByTestId('string-input')).toBeVisible()
+    await page.getByTestId('field-name').getByTestId('string-input').fill('Species')
+
+    await expect(
+      page.getByTestId('document-header-breadcrumb').getByText('Object').nth(1),
+    ).toBeVisible()
+    await expect(
+      page.getByTestId('document-header-breadcrumb').getByText('Species'),
+    ).not.toBeVisible()
+  })
+})
