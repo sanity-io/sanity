@@ -187,7 +187,7 @@ export function referenceSearch(
     ...options,
     maxDepth: options.maxFieldDepth || DEFAULT_MAX_FIELD_DEPTH,
   })
-  return search(textTerm, {includeDrafts: true}).pipe(
+  return search(textTerm).pipe(
     map(({hits}) => hits.map(({hit}) => hit)),
     map((docs) =>
       docs.map((doc) => ({
