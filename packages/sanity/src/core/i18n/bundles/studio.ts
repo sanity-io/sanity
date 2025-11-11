@@ -1312,6 +1312,8 @@ export const studioLocaleStrings = defineLocalesResources('studio', {
   'release.action.copy-to': 'Copy version to',
   /** Action message for creating new releases */
   'release.action.create-new': 'New release',
+  /** Description for toast when version creation failed */
+  'release.action.create-version.failure': 'Failed to create version',
   /** Action message for deleting a scheduled publish */
   'release.action.delete-schedule': 'Delete schedule',
   /** Action message for when document is already in release  */

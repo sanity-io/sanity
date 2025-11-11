@@ -8,6 +8,7 @@ import {MenuItem} from '../../../../../ui-components/menuItem/MenuItem'
 import {useTranslation} from '../../../../i18n'
 import {RELEASES_INTENT} from '../../../plugin'
 import {isReleaseScheduledOrScheduling} from '../../../util/util'
+import {useHasCopyToDraftOption} from './CopyToDraftsMenuItem'
 import {CopyToReleaseMenuGroup} from './CopyToReleaseMenuGroup'
 
 interface CanonicalReleaseContextMenuProps {
@@ -17,6 +18,8 @@ interface CanonicalReleaseContextMenuProps {
   isVersion: boolean
   onDiscard: () => void
   onCreateRelease: () => void
+  onCopyToDrafts: () => void
+  onCopyToDraftsNavigate: () => void
   onCreateVersion: (targetId: string) => void
   disabled?: boolean
   locked?: boolean
@@ -24,6 +27,8 @@ interface CanonicalReleaseContextMenuProps {
   hasCreatePermission: boolean | null
   hasDiscardPermission: boolean
   isPublished: boolean
+  documentId: string
+  documentType: string
 }
 
 export const CanonicalReleaseContextMenu = memo(function CanonicalReleaseContextMenu(
@@ -36,6 +41,8 @@ export const CanonicalReleaseContextMenu = memo(function CanonicalReleaseContext
     isVersion,
     onDiscard,
     onCreateRelease,
+    onCopyToDrafts,
+    onCopyToDraftsNavigate,
     onCreateVersion,
     disabled,
     locked,
@@ -43,12 +50,15 @@ export const CanonicalReleaseContextMenu = memo(function CanonicalReleaseContext
     hasCreatePermission,
     hasDiscardPermission,
     isPublished,
+    documentId,
+    documentType,
   } = props
   const {t} = useTranslation()
+  const hasCopyToDraftOption = useHasCopyToDraftOption(documentType, fromRelease)
 
   const isCopyToReleaseDisabled = disabled || !hasCreatePermission || isGoingToUnpublish
   const copyToReleaseOptions = releases.filter((r) => !isReleaseScheduledOrScheduling(r))
-  const showCopyToReleaseMenuItem = copyToReleaseOptions.length > 0
+  const showCopyToReleaseMenuItem = copyToReleaseOptions.length > 0 || hasCopyToDraftOption
 
   return (
     <Menu>
@@ -69,9 +79,13 @@ export const CanonicalReleaseContextMenu = memo(function CanonicalReleaseContext
           releases={copyToReleaseOptions}
           fromRelease={fromRelease}
           onCreateRelease={onCreateRelease}
+          onCopyToDrafts={onCopyToDrafts}
+          onCopyToDraftsNavigate={onCopyToDraftsNavigate}
           onCreateVersion={onCreateVersion}
           disabled={isCopyToReleaseDisabled}
           hasCreatePermission={hasCreatePermission}
+          documentId={documentId}
+          documentType={documentType}
         />
       )}
       {(isVersion || showCopyToReleaseMenuItem) && !isPublished && <MenuDivider />}
