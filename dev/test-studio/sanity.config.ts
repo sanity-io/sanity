@@ -211,10 +211,10 @@ const sharedSettings = ({projectId}: {projectId: string}) => {
 const defaultWorkspace = defineConfig({
   name: 'default',
   title: 'Test Studio',
-  projectId: 'ppsg7ml5',
-  dataset: 'test',
+  projectId: 'd1ls7k8v',
+  dataset: 'production',
   ...envConfig.production,
-  plugins: [sharedSettings({projectId: 'ppsg7ml5'})],
+  plugins: [sharedSettings({projectId: 'd1ls7k8v'})],
 
   onUncaughtError: (error, errorInfo) => {
     console.log(error)

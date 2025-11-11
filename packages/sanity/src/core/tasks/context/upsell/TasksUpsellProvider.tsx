@@ -1,13 +1,14 @@
 import {TasksUpsellContext} from 'sanity/_singletons'
 
-import {useUpsellDialog} from '../../../hooks/useUpsellDialog'
+import {getDialogPropsFromContext, useUpsellContext} from '../../../hooks/useUpsellContext'
+import {UpsellDialog} from '../../../studio/upsell/UpsellDialog'
 
 /**
  * @beta
  * @hidden
  */
 export function TasksUpsellProvider(props: {children: React.ReactNode}) {
-  const {DialogComponent, contextValue} = useUpsellDialog({
+  const contextValue = useUpsellContext({
     dataUri: '/journey/tasks',
     feature: 'tasks',
   })
@@ -15,7 +16,7 @@ export function TasksUpsellProvider(props: {children: React.ReactNode}) {
   return (
     <TasksUpsellContext.Provider value={contextValue}>
       {props.children}
-      <DialogComponent />
+      <UpsellDialog {...getDialogPropsFromContext(contextValue)} />
     </TasksUpsellContext.Provider>
   )
 }

@@ -4,13 +4,14 @@ import {
   type SingleDocReleaseUpsellContextValue,
 } from 'sanity/_singletons'
 
-import {useUpsellDialog} from '../../hooks/useUpsellDialog'
+import {getDialogPropsFromContext, useUpsellContext} from '../../hooks/useUpsellContext'
+import {UpsellDialog} from '../../studio/upsell/UpsellDialog'
 
 /**
  * @beta
  */
 export function SingleDocReleaseUpsellProvider(props: {children: React.ReactNode}) {
-  const {DialogComponent, contextValue} = useUpsellDialog({
+  const contextValue = useUpsellContext({
     dataUri: '/journey/scheduled-drafts',
     feature: 'single_doc_release',
   })
@@ -18,7 +19,7 @@ export function SingleDocReleaseUpsellProvider(props: {children: React.ReactNode
   return (
     <SingleDocReleaseUpsellContext.Provider value={contextValue}>
       {props.children}
-      <DialogComponent />
+      <UpsellDialog {...getDialogPropsFromContext(contextValue)} />
     </SingleDocReleaseUpsellContext.Provider>
   )
 }

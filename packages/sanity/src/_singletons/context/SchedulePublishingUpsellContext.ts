@@ -9,6 +9,7 @@ import type {UpsellData} from '../../core/studio/upsell/types'
 export interface SchedulePublishUpsellContextValue {
   upsellDialogOpen: boolean
   handleOpenDialog: (source: UpsellDialogViewedInfo['source']) => void
+  handleClose: () => void
   upsellData: UpsellData | null
   telemetryLogs: {
     dialogSecondaryClicked: () => void
@@ -28,6 +29,7 @@ export const SchedulePublishUpsellContext = createContext<SchedulePublishUpsellC
   {
     upsellData: null,
     handleOpenDialog: () => null,
+    handleClose: () => null,
     upsellDialogOpen: false,
     telemetryLogs: {
       dialogSecondaryClicked: () => null,

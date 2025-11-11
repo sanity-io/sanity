@@ -1,13 +1,14 @@
 import {CommentsUpsellContext} from 'sanity/_singletons'
 
-import {useUpsellDialog} from '../../../hooks/useUpsellDialog'
+import {getDialogPropsFromContext, useUpsellContext} from '../../../hooks/useUpsellContext'
+import {UpsellDialog} from '../../../studio/upsell/UpsellDialog'
 
 /**
  * @beta
  * @hidden
  */
 export function CommentsUpsellProvider(props: {children: React.ReactNode}) {
-  const {DialogComponent, contextValue} = useUpsellDialog({
+  const contextValue = useUpsellContext({
     dataUri: '/journey/comments',
     feature: 'comments',
   })
@@ -15,7 +16,7 @@ export function CommentsUpsellProvider(props: {children: React.ReactNode}) {
   return (
     <CommentsUpsellContext.Provider value={contextValue}>
       {props.children}
-      <DialogComponent />
+      <UpsellDialog {...getDialogPropsFromContext(contextValue)} />
     </CommentsUpsellContext.Provider>
   )
 }

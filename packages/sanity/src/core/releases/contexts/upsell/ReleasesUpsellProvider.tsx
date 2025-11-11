@@ -201,20 +201,34 @@ export function ReleasesUpsellProvider(props: {children: React.ReactNode}) {
     ],
   )
 
-  const interpolation = releaseLimit === null ? undefined : {releaseLimit: releaseLimit}
+  const interpolation = useMemo(
+    () => (releaseLimit === null ? undefined : {releaseLimit: releaseLimit}),
+    [releaseLimit],
+  )
+
+  const dialogProps = useMemo(
+    () => ({
+      data: upsellData,
+      open: upsellDialogOpen,
+      interpolation,
+      onClose: handleClose,
+      onPrimaryClick: handlePrimaryButtonClick,
+      onSecondaryClick: handleSecondaryButtonClick,
+    }),
+    [
+      upsellData,
+      upsellDialogOpen,
+      interpolation,
+      handleClose,
+      handlePrimaryButtonClick,
+      handleSecondaryButtonClick,
+    ],
+  )
 
   return (
     <ReleasesUpsellContext.Provider value={ctxValue}>
       {props.children}
-      {upsellData && upsellDialogOpen && (
-        <UpsellDialog
-          interpolation={interpolation}
-          data={upsellData}
-          onClose={handleClose}
-          onPrimaryClick={handlePrimaryButtonClick}
-          onSecondaryClick={handleSecondaryButtonClick}
-        />
-      )}
+      <UpsellDialog {...dialogProps} />
     </ReleasesUpsellContext.Provider>
   )
 }

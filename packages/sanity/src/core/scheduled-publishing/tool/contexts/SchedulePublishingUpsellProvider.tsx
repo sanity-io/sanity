@@ -4,13 +4,14 @@ import {
   type SchedulePublishUpsellContextValue,
 } from 'sanity/_singletons'
 
-import {useUpsellDialog} from '../../../hooks/useUpsellDialog'
+import {getDialogPropsFromContext, useUpsellContext} from '../../../hooks/useUpsellContext'
+import {UpsellDialog} from '../../../studio/upsell/UpsellDialog'
 
 /**
  * @beta
  */
 export function SchedulePublishingUpsellProvider(props: {children: React.ReactNode}) {
-  const {DialogComponent, contextValue} = useUpsellDialog({
+  const contextValue = useUpsellContext({
     dataUri: '/journey/scheduled-publishing',
     feature: 'scheduled_publishing',
   })
@@ -18,7 +19,7 @@ export function SchedulePublishingUpsellProvider(props: {children: React.ReactNo
   return (
     <SchedulePublishUpsellContext.Provider value={contextValue}>
       {props.children}
-      <DialogComponent />
+      <UpsellDialog {...getDialogPropsFromContext(contextValue)} />
     </SchedulePublishUpsellContext.Provider>
   )
 }
