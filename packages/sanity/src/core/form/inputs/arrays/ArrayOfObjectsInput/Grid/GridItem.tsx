@@ -94,10 +94,11 @@ export function GridItem<Item extends ObjectItem = ObjectItem>(props: GridItemPr
   const uploadProgress =
     typeof uploadState?.progress === 'number' ? uploadState?.progress : undefined
 
+  const shouldUseEnhancedDialog = enhancedObjectDialogEnabled && isDialogAvailable
   // The edit portal should open if the item is open and:
   // - EnhancedObjectDialog is disabled
   // - the EnhancedObjectDialog is not available
-  const openPortal = open && !enhancedObjectDialogEnabled && !isDialogAvailable
+  const openPortal = open && !shouldUseEnhancedDialog
 
   const sortable = parentSchemaType.options?.sortable !== false
   const insertableTypes = parentSchemaType.of
