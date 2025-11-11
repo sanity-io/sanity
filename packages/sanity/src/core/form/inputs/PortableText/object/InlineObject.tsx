@@ -262,14 +262,14 @@ export const DefaultInlineObjectComponent = (props: BlockProps): React.JSX.Eleme
   const popoverTitle = schemaType?.title || schemaType.name
   const hasError = validation.filter((v) => v.level === 'error').length > 0
   const hasWarning = validation.filter((v) => v.level === 'warning').length > 0
-  const {isDialogAvailable} = useEnhancedObjectDialog()
+  const {enabled: nestedObjectNavigationEnabled, isDialogAvailable} = useEnhancedObjectDialog()
 
   // For inline references, always use the normal dialog (not the enhanced dialog)
   // This allows the reference picker to work properly
   const isReference = isReferenceSchemaType(schemaType)
   // If there's an EnhancedObjectDialog available, it will handle the opening
   // Otherwise, we render our own modal
-  const shouldUseEnhancedDialog = isDialogAvailable && !isReference
+  const shouldUseEnhancedDialog = nestedObjectNavigationEnabled && isDialogAvailable && !isReference
 
   const tone = useMemo(() => {
     if (hasError) {
