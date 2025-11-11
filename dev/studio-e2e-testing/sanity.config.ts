@@ -160,4 +160,19 @@ export default defineConfig([
     dataset: process.env.SANITY_E2E_DATASET_FIREFOX || process.env.SANITY_E2E_DATASET!,
     apiHost: 'https://api.sanity.work',
   },
+  {
+    ...defaultConfig,
+    basePath: '/no-enhanced-dialog',
+    name: 'no-enhanced-dialog',
+    title: 'studio-e2e-testing-no-enhanced-dialog',
+    dataset: process.env.SANITY_E2E_DATASET_CHROMIUM || process.env.SANITY_E2E_DATASET!,
+    apiHost: 'https://api.sanity.work',
+    beta: {
+      form: {
+        enhancedObjectDialog: {
+          enabled: false,
+        },
+      },
+    },
+  },
 ])
