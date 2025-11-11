@@ -31,5 +31,3 @@ describe('email types', () => {
     })
   })
 })
-
-export {}

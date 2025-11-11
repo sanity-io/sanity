@@ -244,5 +244,3 @@ describe('createFieldDefinitions', () => {
     expect(fieldDefs[0].title).toEqual('A title wrapped in a component')
   })
 })
-
-export {}
