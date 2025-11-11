@@ -68,6 +68,7 @@ const playwrightConfig: PlaywrightTestConfig = {
         },
       ],
     },
+    video: 'retain-on-failure',
   },
   projects: [CHROMIUM_PROJECT, FIREFOX_PROJECT],
   webServer: {
