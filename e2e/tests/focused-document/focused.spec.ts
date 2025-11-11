@@ -7,8 +7,8 @@ test.describe('focused document', () => {
     test.slow()
     await createDraftDocument('/content/input-standard;referenceTest')
 
-    expect(page.getByTestId('focus-pane-button-focus')).toBeVisible()
-    expect(page.getByTestId('field-title').getByTestId('string-input')).toBeVisible()
+    await expect(page.getByTestId('focus-pane-button-focus')).toBeVisible()
+    await expect(page.getByTestId('field-title').getByTestId('string-input')).toBeVisible()
 
     await page.getByTestId('field-title').getByTestId('string-input').fill('Test Author')
   })
@@ -49,8 +49,8 @@ test.describe('focused document', () => {
     ).toBeVisible()
     await page.getByTestId('create-new-document-select-reference-test-selectTypeMenuItem').click()
 
-    expect(page.getByTestId('field-title').getByTestId('string-input')).toBeVisible()
-    expect(page.getByTestId('field-title').getByTestId('string-input')).toBeEnabled()
+    await expect(page.getByTestId('field-title').getByTestId('string-input')).toBeVisible()
+    await expect(page.getByTestId('field-title').getByTestId('string-input')).toBeEnabled()
 
     await page.getByTestId('field-title').getByTestId('string-input').fill('Test Name')
 
@@ -85,7 +85,7 @@ test.describe('focused document', () => {
 
     await expect(page.getByTestId('document-panel-document-title').nth(1)).toBeVisible()
 
-    expect(page.getByTestId('field-title').getByTestId('string-input').nth(1)).toBeVisible()
+    await expect(page.getByTestId('field-title').getByTestId('string-input').nth(1)).toBeVisible()
 
     await page.getByTestId('field-title').getByTestId('string-input').nth(1).fill('Test Name')
 
@@ -98,7 +98,7 @@ test.describe('focused document', () => {
     )
 
     await expect(page.locator('[data-testid="pane-header"]')).toHaveCount(6)
-    expect(page.getByTestId('focus-pane-button-focus')).toBeVisible()
+    await expect(page.getByTestId('focus-pane-button-focus')).toBeVisible()
     await page.getByTestId('focus-pane-button-focus').click()
 
     await expect(page.locator('[data-testid="pane-header"]')).toHaveCount(1)
