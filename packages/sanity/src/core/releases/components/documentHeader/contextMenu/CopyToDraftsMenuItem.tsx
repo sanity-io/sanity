@@ -52,7 +52,7 @@ export const CopyToDraftsMenuItem = memo(function CopyToDraftsMenuItem(
     if (hasDraftVersion) {
       onClick()
     } else {
-      handleCopyToDrafts()
+      void handleCopyToDrafts()
     }
   }, [hasDraftVersion, onClick, handleCopyToDrafts])
 
