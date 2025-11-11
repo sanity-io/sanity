@@ -142,9 +142,8 @@ export const StructureTool = memo(function StructureTool({onPaneChange}: Structu
     if (selectedIndex !== -1 && selectedIndex !== prevSelectedIndex) {
       const selectedPane = paneDataItems[selectedIndex]
       // Only set focus if the newly selected pane is a document pane
-      if (selectedPane.pane !== LOADING_PANE && selectedPane.pane.type === 'document') {
-        setFocusedPane(selectedPane)
-      }
+      setFocusedPane(selectedPane)
+
       return
     }
 
