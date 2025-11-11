@@ -2,11 +2,14 @@ import {constants, mkdir, open, stat} from 'node:fs/promises'
 import {dirname, isAbsolute, join} from 'node:path'
 import {Worker} from 'node:worker_threads'
 
-import {readConfig} from '@sanity/codegen'
+import {type CodegenConfig, readConfig} from '@sanity/codegen'
+import chalk from 'chalk'
 import {format as prettierFormat, resolveConfig as resolvePrettierConfig} from 'prettier'
 
+import {configDefintion} from '../../../../codegen/src/readConfig'
 import {type CliCommandArguments, type CliCommandContext} from '../../types'
 import {getCliWorkerPath} from '../../util/cliWorker'
+import {getCliConfig} from '../../util/getCliConfig'
 import {
   type TypegenGenerateTypesWorkerData,
   type TypegenGenerateTypesWorkerMessage,
@@ -31,6 +34,67 @@ const generatedFileWarning = `/**
  * ---------------------------------------------------------------------------------
  */\n\n`
 
+async function getConfig(
+  workDir: string,
+  configPath?: string,
+): Promise<{config: CodegenConfig; type: 'legacy' | 'cli'}> {
+  const config = await getCliConfig(workDir)
+
+  // check if the legacy config exist
+  const legacyConfigPath = configPath || 'sanity-typegen.json'
+  let hasLegacyConfig = false
+  try {
+    const file = await stat(legacyConfigPath)
+    hasLegacyConfig = file.isFile()
+  } catch (err) {
+    if (err.code === 'ENOENT' && configPath) {
+      throw new Error(`Typegen config file not found: ${configPath}`, {cause: err})
+    }
+
+    if (err.code !== 'ENOENT') {
+      throw new Error(`Error when checking if typegen config file exists: ${legacyConfigPath}`, {
+        cause: err,
+      })
+    }
+  }
+
+  // we have both legacy and cli config with typegen
+  if (config?.config?.typegen && hasLegacyConfig) {
+    console.warn(
+      chalk.yellow(
+        `You've specified typegen in your Sanity CLI config, but also have a typegen config.
+
+The typegen config is loaded, but it's a deprecated feature and we advice moving to the config in the CLI config.
+`,
+      ),
+    )
+
+    return {
+      config: await readConfig(legacyConfigPath),
+      type: 'legacy',
+    }
+  }
+
+  // we only have legacy typegen config
+  if (hasLegacyConfig) {
+    console.warn(
+      chalk.yellow(
+        'The separate typegen config has been deprecated. Use `typegen` in the sanity CLI config instead.',
+      ),
+    )
+    return {
+      config: await readConfig(legacyConfigPath),
+      type: 'legacy',
+    }
+  }
+
+  // we only have cli config
+  return {
+    config: configDefintion.parse(config?.config?.typegen || {}),
+    type: 'cli',
+  }
+}
+
 export default async function typegenGenerateAction(
   args: CliCommandArguments<TypegenGenerateTypesCommandFlags>,
   context: CliCommandContext,
@@ -41,7 +105,10 @@ export default async function typegenGenerateAction(
   const trace = telemetry.trace(TypesGeneratedTrace)
   trace.start()
 
-  const codegenConfig = await readConfig(flags['config-path'] || 'sanity-typegen.json')
+  const {config: codegenConfig, type: codegenConfigMethod} = await getConfig(
+    workDir,
+    flags['config-path'],
+  )
 
   try {
     const schemaStats = await stat(codegenConfig.schema)
