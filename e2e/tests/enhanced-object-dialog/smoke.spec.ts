@@ -34,10 +34,19 @@ test.describe('Enhanced Object Dialog - open and close', () => {
 })
 
 test.describe('Enhanced Object Dialog - when disabled', () => {
-  test.use({baseURL: 'http://localhost:3339/no-enhanced-dialog'})
+  test.beforeEach(async ({page, _testContext, browserName, baseURL}) => {
+    // Navigate to the browser-specific no-enhanced-dialog workspace
+    const workspacePath =
+      browserName === 'firefox' ? 'firefox-no-enhanced-dialog' : 'chromium-no-enhanced-dialog'
+    const baseUrl = new URL(baseURL || 'http://localhost:3339')
+    const id = _testContext.getUniqueDocumentId()
 
-  test.beforeEach(async ({createDraftDocument}) => {
-    await createDraftDocument('/content/input-debug;objectsDebug')
+    // Use absolute URL to navigate to the correct workspace
+    await page.goto(`${baseUrl.origin}/${workspacePath}/content/input-debug;objectsDebug;${id}`)
+    await page.locator('[data-testid="form-view"]').waitFor({state: 'visible', timeout: 30_000})
+    await page
+      .locator('[data-testid="form-view"]:not([data-read-only="true"])')
+      .waitFor({state: 'visible', timeout: 30_000})
   })
 
   test(`when enhancedObjectDialog is disabled, the tree editing modal should NOT open`, async ({
