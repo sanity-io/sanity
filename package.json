@@ -48,7 +48,7 @@
     "docs:report:cleanup": "tsx -r dotenv-flow/config scripts/doc-report/docReportCleanup",
     "docs:report:create": "tsx -r dotenv-flow/config scripts/doc-report/docReportCreate",
     "e2e:build": "pnpm turbo run build --filter=studio-e2e-testing",
-    "e2e:cleanup:pr": "tsx -r dotenv-flow/config test/scripts/cleanupPr",
+    "e2e:cleanup:pr": "tsx -r dotenv-flow/config e2e/scripts/cleanupPr",
     "e2e:codegen": "node -r dotenv-flow/config ./node_modules/.bin/sanity-test codegen",
     "e2e:dev": "pnpm --filter studio-e2e-testing dev",
     "e2e:preview": "pnpm --filter e2e build && pnpm --filter studio-e2e-testing preview",
