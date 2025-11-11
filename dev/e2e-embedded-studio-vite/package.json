@@ -10,7 +10,6 @@
     "test": "playwright test"
   },
   "dependencies": {
-    "@sanity/ui": "catalog:",
     "react": "catalog:",
     "react-dom": "catalog:",
     "sanity": "workspace:*",
