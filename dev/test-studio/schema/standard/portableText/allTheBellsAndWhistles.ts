@@ -463,5 +463,22 @@ export const ptAllTheBellsAndWhistlesType = defineType({
         }),
       ],
     }),
+    defineField({
+      name: 'fullscreenDefault',
+      title: 'Fullscreen default',
+      type: 'array',
+      of: [
+        defineArrayMember({
+          type: 'block',
+          name: 'block',
+          title: 'Block',
+        }),
+      ],
+      components: {
+        input: (props: any) => {
+          return props.renderDefault({...props, initialFullscreen: true})
+        },
+      },
+    }),
   ],
 })

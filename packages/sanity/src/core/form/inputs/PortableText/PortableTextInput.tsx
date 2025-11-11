@@ -166,21 +166,37 @@ export function PortableTextInput(props: PortableTextInputProps): ReactNode {
 
   // Use fullscreen context to persist state across navigation
   const {getFullscreenPath, setFullscreenPath} = useFullscreenPTE()
-  const isFullscreen = Boolean(getFullscreenPath(path)) || (initialFullscreen ?? false)
+  const [isFullscreen, setIsFullscreen] = useState(
+    Boolean(getFullscreenPath(path)) || (initialFullscreen ?? false),
+  )
+
+  const hasSyncedInitialFullscreenRef = useRef(false)
+
+  useEffect(() => {
+    // If the initial fullscreen state is set and the path is not in the fullscreen context, set it
+    // This is to ensure that the fullscreen state is persisted across navigation
+    // This is especially important for nested fullscreen PTEs
+    if (!hasSyncedInitialFullscreenRef.current && initialFullscreen && !getFullscreenPath(path)) {
+      hasSyncedInitialFullscreenRef.current = true
+      setFullscreenPath(path, true)
+    }
+  }, [initialFullscreen, path, getFullscreenPath, setFullscreenPath])
 
   const toast = useToast()
 
   const handleToggleFullscreen = useCallback(() => {
-    const next = !isFullscreen
-    if (next) {
-      telemetry.log(PortableTextInputExpanded)
-    } else {
-      telemetry.log(PortableTextInputCollapsed)
-    }
-
-    setFullscreenPath(path, next)
-    onFullScreenChange?.(next)
-  }, [isFullscreen, onFullScreenChange, path, setFullscreenPath, telemetry])
+    setIsFullscreen((v) => {
+      const next = !v
+      if (next) {
+        telemetry.log(PortableTextInputExpanded)
+      } else {
+        telemetry.log(PortableTextInputCollapsed)
+      }
+      setFullscreenPath(path, next)
+      onFullScreenChange?.(next)
+      return next
+    })
+  }, [onFullScreenChange, setFullscreenPath, path, telemetry])
 
   // Reset invalidValue if new value is coming in from props
   useEffect(() => {
