@@ -2,11 +2,10 @@ import {constants, mkdir, open, stat} from 'node:fs/promises'
 import {dirname, isAbsolute, join} from 'node:path'
 import {Worker} from 'node:worker_threads'
 
-import {type CodegenConfig, readConfig} from '@sanity/codegen'
+import {type CodegenConfig, configDefintion, readConfig} from '@sanity/codegen'
 import chalk from 'chalk'
 import {format as prettierFormat, resolveConfig as resolvePrettierConfig} from 'prettier'
 
-import {configDefintion} from '../../../../codegen/src/readConfig'
 import {type CliCommandArguments, type CliCommandContext} from '../../types'
 import {getCliWorkerPath} from '../../util/cliWorker'
 import {getCliConfig} from '../../util/getCliConfig'
