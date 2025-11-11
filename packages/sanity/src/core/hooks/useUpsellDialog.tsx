@@ -43,10 +43,7 @@ interface UseUpsellDialogReturn {
  *
  * @internal
  */
-export function useUpsellDialog({
-  dataUri,
-  feature,
-}: UseUpsellDialogOptions): UseUpsellDialogReturn {
+export function useUpsellDialog({dataUri, feature}: UseUpsellDialogOptions): UseUpsellDialogReturn {
   const [upsellDialogOpen, setUpsellDialogOpen] = useState(false)
   const {upsellData, telemetryLogs, hasError} = useUpsellData({
     dataUri,
@@ -97,7 +94,13 @@ export function useUpsellDialog({
         onSecondaryClick={handleSecondaryButtonClick}
       />
     )
-  }, [upsellData, upsellDialogOpen, handleClose, handlePrimaryButtonClick, handleSecondaryButtonClick])
+  }, [
+    upsellData,
+    upsellDialogOpen,
+    handleClose,
+    handlePrimaryButtonClick,
+    handleSecondaryButtonClick,
+  ])
 
   const contextValue = useMemo(
     () => ({
