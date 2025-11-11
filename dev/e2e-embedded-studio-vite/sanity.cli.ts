@@ -1,12 +1,14 @@
 import {defineCliConfig} from 'sanity/cli'
 
-if (!process.env.SANITY_E2E_PROJECT_ID || !process.env.SANITY_E2E_DATASET) {
+const projectId = import.meta.env.SANITY_E2E_PROJECT_ID
+const dataset = import.meta.env.SANITY_E2E_DATASET
+if (!projectId || !dataset) {
   throw new Error('SANITY_E2E_PROJECT_ID and SANITY_E2E_DATASET must be set')
 }
 
 export default defineCliConfig({
   api: {
-    projectId: process.env.SANITY_E2E_PROJECT_ID,
-    dataset: process.env.SANITY_E2E_DATASET,
+    projectId: projectId,
+    dataset: dataset,
   },
 })

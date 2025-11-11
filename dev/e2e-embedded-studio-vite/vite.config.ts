@@ -11,7 +11,7 @@ export default defineConfig({
     },
   },
   define: {
-    'process.env.SANITY_E2E_PROJECT_ID': JSON.stringify(process.env.SANITY_E2E_PROJECT_ID),
-    'process.env.SANITY_E2E_DATASET': JSON.stringify(process.env.SANITY_E2E_DATASET),
+    'import.meta.env.SANITY_E2E_PROJECT_ID': JSON.stringify(process.env.SANITY_E2E_PROJECT_ID),
+    'import.meta.env.SANITY_E2E_DATASET': JSON.stringify(process.env.SANITY_E2E_DATASET),
   },
 })

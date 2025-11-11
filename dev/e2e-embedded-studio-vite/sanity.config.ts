@@ -16,8 +16,8 @@ const BLOG_POST_SCHEMA = defineType({
 
 export const SCHEMA_TYPES = [BLOG_POST_SCHEMA]
 
-const projectId = process.env.SANITY_E2E_PROJECT_ID
-const dataset = process.env.SANITY_E2E_DATASET
+const projectId = import.meta.env.SANITY_E2E_PROJECT_ID
+const dataset = import.meta.env.SANITY_E2E_DATASET
 
 if (!projectId || !dataset) {
   throw new Error('SANITY_E2E_PROJECT_ID and SANITY_E2E_DATASET must be set')
