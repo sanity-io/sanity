@@ -12,7 +12,7 @@ export interface EnhancedObjectDialogContextValue {
   /**
    * A boolean indicating whether the EnhancedObjectDialog component is available in this tree to handle paths
    */
-  dialogAvailable: boolean
+  isDialogAvailable: boolean
   /**
    * A boolean indicating whether legacy editing is enabled - meaning that it will use the old modal based editing experience
    */

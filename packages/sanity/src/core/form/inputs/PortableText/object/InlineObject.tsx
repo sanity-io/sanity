@@ -261,11 +261,11 @@ export const DefaultInlineObjectComponent = (props: BlockProps): React.JSX.Eleme
   const popoverTitle = schemaType?.title || schemaType.name
   const hasError = validation.filter((v) => v.level === 'error').length > 0
   const hasWarning = validation.filter((v) => v.level === 'warning').length > 0
-  const {dialogAvailable} = useEnhancedObjectDialog()
+  const {isDialogAvailable} = useEnhancedObjectDialog()
 
   // If there's an EnhancedObjectDialog available in the tree, it will handle the opening
   // Otherwise, we render our own modal
-  const shouldRenderOwnModal = !dialogAvailable
+  const shouldRenderOwnModal = !isDialogAvailable
 
   const tone = useMemo(() => {
     if (hasError) {

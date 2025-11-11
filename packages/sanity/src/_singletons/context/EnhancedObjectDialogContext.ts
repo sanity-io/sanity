@@ -9,7 +9,7 @@ export const EnhancedObjectDialogContext = createContext<EnhancedObjectDialogCon
   'sanity/_singletons/context/enhanced-object-dialog-enabled',
   {
     enabled: false,
-    dialogAvailable: false,
+    isDialogAvailable: false,
     legacyEditing: false,
   },
 )
