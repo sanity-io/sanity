@@ -18,6 +18,10 @@ const legacyEditingWrapper = ({children}: PropsWithChildren) => (
   <EnhancedObjectDialogProvider legacyEditing>{children}</EnhancedObjectDialogProvider>
 )
 
+const isDialogAvailableWrapper = ({children}: PropsWithChildren) => (
+  <EnhancedObjectDialogProvider isDialogAvailable>{children}</EnhancedObjectDialogProvider>
+)
+
 describe('useEnhancedObjectDialog', () => {
   test('should return enabled: false when config is not enabled', () => {
     const features = {
@@ -31,7 +35,7 @@ describe('useEnhancedObjectDialog', () => {
 
     const {result} = renderHook(() => useEnhancedObjectDialog(), {wrapper})
 
-    expect(result.current).toEqual({enabled: false, legacyEditing: false})
+    expect(result.current).toEqual({enabled: false, legacyEditing: false, isDialogAvailable: false})
   })
 
   test('should return enabled: true when config is enabled', () => {
@@ -48,12 +52,20 @@ describe('useEnhancedObjectDialog', () => {
 
     const {result} = renderHook(() => useEnhancedObjectDialog(), {wrapper})
 
-    expect(result.current).toEqual({enabled: true, legacyEditing: false})
+    expect(result.current).toEqual({enabled: true, legacyEditing: false, isDialogAvailable: false})
   })
 
   test('should return legacyEditing: true when legacyEditing is true', () => {
     const {result} = renderHook(() => useEnhancedObjectDialog(), {wrapper: legacyEditingWrapper})
 
-    expect(result.current).toEqual({enabled: true, legacyEditing: true})
+    expect(result.current).toEqual({enabled: true, legacyEditing: true, isDialogAvailable: false})
+  })
+
+  test('should return isDialogAvailable: true when isDialogAvailable is true', () => {
+    const {result} = renderHook(() => useEnhancedObjectDialog(), {
+      wrapper: isDialogAvailableWrapper,
+    })
+
+    expect(result.current).toEqual({enabled: true, legacyEditing: false, isDialogAvailable: true})
   })
 })
