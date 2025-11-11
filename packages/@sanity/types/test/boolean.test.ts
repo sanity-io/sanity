@@ -41,5 +41,3 @@ describe('boolean types', () => {
     })
   })
 })
-
-export {}

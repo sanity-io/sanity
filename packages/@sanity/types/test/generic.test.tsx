@@ -132,5 +132,3 @@ describe('common type test', () => {
     })
   })
 })
-
-export {}

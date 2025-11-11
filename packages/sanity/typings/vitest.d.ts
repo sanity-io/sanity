@@ -17,5 +17,3 @@ declare module 'vitest' {
   interface Assertion<T = any> extends OperatorFunctionMatchers<T> {}
   interface AsymmetricMatchersContaining extends OperatorFunctionMatchers {}
 }
-
-export {}

@@ -55,5 +55,3 @@ describe('datetime types', () => {
     })
   })
 })
-
-export {}

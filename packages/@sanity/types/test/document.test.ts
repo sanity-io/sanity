@@ -317,5 +317,3 @@ describe('document types', () => {
     })
   })
 })
-
-export {}
