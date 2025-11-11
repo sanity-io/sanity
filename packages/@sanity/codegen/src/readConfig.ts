@@ -3,6 +3,9 @@ import {readFile} from 'node:fs/promises'
 import json5 from 'json5'
 import * as z from 'zod'
 
+/**
+ * @internal
+ */
 export const configDefintion = z.object({
   path: z
     .string()
@@ -20,6 +23,10 @@ export const configDefintion = z.object({
 
 export type CodegenConfig = z.infer<typeof configDefintion>
 
+/**
+ * Read, parse and process a config file
+ * @internal
+ */
 export async function readConfig(path: string): Promise<CodegenConfig> {
   try {
     const content = await readFile(path, 'utf-8')
