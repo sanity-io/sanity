@@ -83,15 +83,17 @@ export async function createTestProvider({
                         setActiveWorkspace={noop}
                         history={history}
                       >
-                        <CopyPasteProvider>
-                          <ResourceCacheProvider>
-                            <AddonDatasetContext.Provider value={addonDatasetContextValue}>
-                              <PerspectiveContext.Provider value={perspectiveContextValueMock}>
-                                {children}
-                              </PerspectiveContext.Provider>
-                            </AddonDatasetContext.Provider>
-                          </ResourceCacheProvider>
-                        </CopyPasteProvider>
+                        <ResolvedPanesProvider value={resolvedPanes}>
+                          <CopyPasteProvider>
+                            <ResourceCacheProvider>
+                              <AddonDatasetContext.Provider value={addonDatasetContextValue}>
+                                <PerspectiveContext.Provider value={perspectiveContextValueMock}>
+                                  {children}
+                                </PerspectiveContext.Provider>
+                              </AddonDatasetContext.Provider>
+                            </ResourceCacheProvider>
+                          </CopyPasteProvider>
+                        </ResolvedPanesProvider>
                       </ActiveWorkspaceMatcherProvider>
                     </SourceProvider>
                   </WorkspaceProvider>
