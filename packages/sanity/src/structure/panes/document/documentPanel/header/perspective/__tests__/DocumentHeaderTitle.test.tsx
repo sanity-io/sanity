@@ -135,8 +135,8 @@ describe('DocumentHeaderTitle', () => {
     const client = createMockSanityClient()
     const wrapper = await createWrapperComponent(client as any)
 
-    const {getByText} = render(<DocumentHeaderTitle />, {wrapper})
-    await waitFor(() => expect(getByText('Test Title')).toBeInTheDocument())
+    const {findByText} = render(<DocumentHeaderTitle />, {wrapper})
+    await findByText('Test Title')
   })
 
   it('should return the title if it is provided', async () => {
