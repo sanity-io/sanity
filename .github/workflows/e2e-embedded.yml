@@ -59,6 +59,7 @@ jobs:
       TURBO_TEAM: ${{ vars.TURBO_TEAM }}
       SANITY_E2E_PROJECT_ID: ${{ vars.SANITY_E2E_PROJECT_ID_STAGING }}
       SANITY_E2E_DATASET: ${{ vars.SANITY_E2E_DATASET_STAGING }}
+      SANITY_E2E_SESSION_TOKEN: ${{ secrets.SANITY_E2E_SESSION_TOKEN_NEW_STAGING }}
     strategy:
       fail-fast: true
       matrix:

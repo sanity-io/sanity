@@ -9,6 +9,9 @@ const BASE_URL = 'http://localhost:5173'
 const PROJECT_ID = process.env.SANITY_E2E_PROJECT_ID
 const TOKEN = process.env.SANITY_E2E_SESSION_TOKEN
 const CI = process.env.CI === 'true'
+if (CI && !TOKEN) {
+  throw new Error('SANITY_E2E_SESSION_TOKEN is not set')
+}
 
 const CHROMIUM_PROJECT: PlaywrightTestProject = {
   name: 'chromium',
