@@ -3,6 +3,38 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [4.15.0](https://github.com/sanity-io/sanity/compare/v4.14.2...v4.15.0) (2025-11-11)
+
+### Features
+
+* Copy version to draft ([#11030](https://github.com/sanity-io/sanity/issues/11030)) ([2b75633](https://github.com/sanity-io/sanity/commit/2b75633a55dcc936577fbbc956aee2f8ae899485)) by Jordan Lawrence (jordanl17@me.com)
+* **manifest:** add studioVersion to improve UX of external studios in dashboard dev-setup ([#11012](https://github.com/sanity-io/sanity/issues/11012)) ([2358e1f](https://github.com/sanity-io/sanity/commit/2358e1f208f2b593246ce2492ba1f5f4f28a5166)) by Josh (37798644+joshuaellis@users.noreply.github.com)
+
+### Bug Fixes
+
+* **actions:** update e2e cleanup pr script ([#11109](https://github.com/sanity-io/sanity/issues/11109)) ([ce47ad3](https://github.com/sanity-io/sanity/commit/ce47ad339b97b062216fed3a21d533c0fea3165a)) by Pedro Bonamin (46196328+pedrobonamin@users.noreply.github.com)
+* cardinality one releases use the original perspective stack logic ([#11080](https://github.com/sanity-io/sanity/issues/11080)) ([c5dd642](https://github.com/sanity-io/sanity/commit/c5dd6420f7f60ef52de2bb5489a6220657fd3473)) by Jordan Lawrence (jordanl17@me.com)
+* compare versions now works with the new enhanced object ([#11040](https://github.com/sanity-io/sanity/issues/11040)) ([028a52e](https://github.com/sanity-io/sanity/commit/028a52e37e93adb79063f086cf86ddfd71bf2a7c)) by RitaDias (rita@sanity.io)
+* Correctly fetch canvas documents linked to releases ([#11067](https://github.com/sanity-io/sanity/issues/11067)) ([e874690](https://github.com/sanity-io/sanity/commit/e87469057d303600ee1b8bf215c01822d523dd9a)) by Josef Hlavacek (josef.hlavacek@sanity.io)
+* **deps:** update dependency @sanity/client to v7 ([#11074](https://github.com/sanity-io/sanity/issues/11074)) ([0035802](https://github.com/sanity-io/sanity/commit/0035802d9493860d2645443bd1fb2d51802a5320)) by renovate[bot] (29139614+renovate[bot]@users.noreply.github.com)
+* **deps:** update dependency xstate to ^5.24.0 ([#11101](https://github.com/sanity-io/sanity/issues/11101)) ([6b3f691](https://github.com/sanity-io/sanity/commit/6b3f691b836c5fde508189ff9788de0bf6caae1c)) by renovate[bot] (29139614+renovate[bot]@users.noreply.github.com)
+* do not block on upsell data failures; use custom interpolator rather that lodash templator ([#11115](https://github.com/sanity-io/sanity/issues/11115)) ([131f31b](https://github.com/sanity-io/sanity/commit/131f31bf0fab58ddac8df428e256f6159e6b69c6)) by Jordan Lawrence (jordanl17@me.com)
+* enhancedObjectDialog where custom items are being used ([#11090](https://github.com/sanity-io/sanity/issues/11090)) ([f45045b](https://github.com/sanity-io/sanity/commit/f45045b68e0973043d70d46e4c0abe9d4b79126d)) by RitaDias (rita@sanity.io)
+* Fix assist ai when using enhanced object dialog  ([#11097](https://github.com/sanity-io/sanity/issues/11097)) ([fc24066](https://github.com/sanity-io/sanity/commit/fc24066e687bf356972e988bbf4a5c2a6b031c70)) by RitaDias (rita@sanity.io)
+* issue where initialFullscreen ptes weren't being able to close ([#11106](https://github.com/sanity-io/sanity/issues/11106)) ([8207267](https://github.com/sanity-io/sanity/commit/8207267806715b9327c095f7134fa276ffa71404)) by RitaDias (rita@sanity.io)
+* issue where reference inputs were behaving oddly with the dialog ([#11047](https://github.com/sanity-io/sanity/issues/11047)) ([c5db32e](https://github.com/sanity-io/sanity/commit/c5db32e982fd89716cd5aa14ef6c8750e28838c6)) by RitaDias (rita@sanity.io)
+* issue where when enhancedObjectDialog was turned off, the old dialog wasn't opening ([#11108](https://github.com/sanity-io/sanity/issues/11108)) ([be015c5](https://github.com/sanity-io/sanity/commit/be015c582b5651fb23d20c97170380b3e08b01c6)) by RitaDias (rita@sanity.io)
+* **migrate:** exports esm bundle for migrate package ([#11082](https://github.com/sanity-io/sanity/issues/11082)) ([2922a73](https://github.com/sanity-io/sanity/commit/2922a73d3596a432baa905db58c5b3203e86913c)) by Binoy Patel (me@binoy.io)
+* **presentation:** persist scheduled draft perspective in location item ([#11089](https://github.com/sanity-io/sanity/issues/11089)) ([8514f39](https://github.com/sanity-io/sanity/commit/8514f39b784f03dd99f79bd3633553a0dd35b9c1)) by Pedro Bonamin (46196328+pedrobonamin@users.noreply.github.com)
+* **schema:** extract inline non-objects ([#10990](https://github.com/sanity-io/sanity/issues/10990)) ([c151b89](https://github.com/sanity-io/sanity/commit/c151b89802f4450858d4856f2dc14f3761590d27)) by Sindre Gulseth (sgulseth@gmail.com)
+* **structure:** pass edit intent params for pane to handle ([#11077](https://github.com/sanity-io/sanity/issues/11077)) ([0249ef6](https://github.com/sanity-io/sanity/commit/0249ef6663261f9f16e9a4bd2e19f3e1d809d9b8)) by Josh (37798644+joshuaellis@users.noreply.github.com)
+* **typegen:** allow generating types to absolute path ([#7620](https://github.com/sanity-io/sanity/issues/7620)) ([#11081](https://github.com/sanity-io/sanity/issues/11081)) ([f8b4e87](https://github.com/sanity-io/sanity/commit/f8b4e87fdb54a8d294a7ffc754cf5f662adfdaab)) by Kristoffer Brabrand (kristoffer@brabrand.no)
+* void unawaited promise in CopyToDrafts ([#11117](https://github.com/sanity-io/sanity/issues/11117)) ([3bea1a5](https://github.com/sanity-io/sanity/commit/3bea1a54d359daa23435ffec251973292a6fcf37)) by Jordan Lawrence (jordanl17@me.com)
+
+### Reverts
+
+* **deps:** add patch-package as direct dependency ([#11085](https://github.com/sanity-io/sanity/issues/11085)) ([#11086](https://github.com/sanity-io/sanity/issues/11086)) ([45a5dbf](https://github.com/sanity-io/sanity/commit/45a5dbf56a174884032b212e4dc5b61cba1acb31)) by Bjørge Næss (bjoerge@gmail.com)
+
 ## [4.14.2](https://github.com/sanity-io/sanity/compare/v4.14.1...v4.14.2) (2025-11-07)
 
 ### Bug Fixes
