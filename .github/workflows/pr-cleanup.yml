@@ -6,28 +6,6 @@ on:
     types: [closed]
 
 jobs:
-  docs-cleanup:
-    runs-on: ubuntu-latest
-    env:
-      TURBO_TOKEN: ${{ secrets.TURBO_TOKEN }}
-      TURBO_TEAM: ${{ vars.TURBO_TEAM }}
-
-    steps:
-      - uses: actions/checkout@v5
-      - uses: pnpm/action-setup@v4
-      - uses: actions/setup-node@v5
-        with:
-          node-version: lts/*
-
-      - name: Install project dependencies
-        run: pnpm install
-
-      - name: Remove docs report datasets for closed PRs
-        env:
-          DOCS_REPORT_TOKEN: ${{ secrets.DOCS_REPORT_DATASET_TOKEN }}
-          DOCS_REPORT_DATASET: pr-${{ github.event.number }}
-        run: pnpm docs:report:cleanup
-
   e2e-cleanup:
     runs-on: ubuntu-latest
     env:
