@@ -151,11 +151,42 @@
     "promise/no-callback-in-promise": "warn",
     "eslint/no-unsafe-optional-chaining": "warn",
     "promise/always-return": ["error", {"ignoreLastCallback": true}],
+    "require-module-specifiers": "warn",
+    // Powerful type-aware rules that should be enabled in the future, but have too many violations to be handled in a single PR
+    "no-base-to-string": "warn",
+    "no-duplicate-type-constituents": "warn",
+    "no-implied-eval": "warn",
+    "no-misused-spread": "warn",
+    "no-multiple-resolved": "warn",
+    "no-redundant-type-constituents": "warn",
+    "no-unnecessary-boolean-literal-compare": "warn",
+    "no-unnecessary-template-expression": "warn",
+    "no-unnecessary-type-arguments": "warn",
+    "no-unnecessary-type-assertion": "warn",
+    "no-unsafe-type-assertion": "warn",
+    "restrict-template-expressions": "warn",
+    "unbound-method": "warn",
     // Temporarily disabled, will be re-enabled in the near term
     "unicorn/prefer-set-has": "off",
-    "no-array-reverse": "off" // Requires polyfills for older browsers
+    // Requires polyfills for older browsers
+    "no-array-reverse": "off",
+    "no-array-sort": "off"
   },
   "overrides": [
-    {"files": ["scripts/**/*", "examples/functions/**/*"], "rules": {"no-console": "off"}}
+    {
+      "files": ["scripts/**/*", "examples/functions/**/*"],
+      "rules": {"no-console": "off", "no-unsafe-type-assertion": "off"}
+    },
+    {
+      "files": ["**/*.test.{ts,tsx,cjs,mjs,js,jsx}", "**/__workshop__/**"],
+      "rules": {
+        "no-base-to-string": "off",
+        "no-unnecessary-boolean-literal-compare": "off",
+        "no-unnecessary-template-expression": "off",
+        "no-unnecessary-type-assertion": "off",
+        "no-unsafe-type-assertion": "off",
+        "unbound-method": "off"
+      }
+    }
   ]
 }

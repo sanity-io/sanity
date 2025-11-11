@@ -186,7 +186,7 @@ const runMigrationCommand: CliCommandDefinition<CreateFlags> = {
       apiVersion: ensureApiVersionFormat(apiVersion ?? DEFAULT_API_VERSION),
     } as const
     if (dry) {
-      dryRunHandler()
+      void dryRunHandler()
       return
     }
 

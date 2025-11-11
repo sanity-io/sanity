@@ -85,12 +85,17 @@ export function EnhancedObjectDialog(props: EnhancedObjectDialogProps): React.JS
       const hasNoRelativePath = len === 0
       const isMarksDefinition = opts.openPath[opts.openPath.length - 2] === 'markDefs'
 
+      // If openPath is empty, we're closing the dialog and should clear the relative path
+      const isClosingDialog = opts.openPath.length === 0
+
       // If there is not relative path or the path is not an array item path, we want to use the
       // current relative path. This is to avoid changing the fields being displayed in the form
       // when the path is not an array item path.
       // We also preserve the relative path for markDefs to avoid changing the form when editing annotations.
+      // However, if we're explicitly closing the dialog (openPath is empty), don't preserve the path.
       const useCurrentRelativePath =
-        hasNoRelativePath || !isArrayItemPath(builtRelativePath) || isMarksDefinition
+        (hasNoRelativePath || !isArrayItemPath(builtRelativePath) || isMarksDefinition) &&
+        !isClosingDialog
       const nextRelativePath = useCurrentRelativePath
         ? currentTreeState.relativePath
         : builtRelativePath

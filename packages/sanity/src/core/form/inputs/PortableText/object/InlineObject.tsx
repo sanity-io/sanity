@@ -1,5 +1,6 @@
 import {type EditorSelection, PortableTextEditor, usePortableTextEditor} from '@portabletext/editor'
 import {
+  isReferenceSchemaType,
   type ObjectSchemaType,
   type Path,
   type PortableTextBlock,
@@ -261,7 +262,14 @@ export const DefaultInlineObjectComponent = (props: BlockProps): React.JSX.Eleme
   const popoverTitle = schemaType?.title || schemaType.name
   const hasError = validation.filter((v) => v.level === 'error').length > 0
   const hasWarning = validation.filter((v) => v.level === 'warning').length > 0
-  const {enabled: nestedObjectNavigaionEnabled} = useEnhancedObjectDialog()
+  const {enabled: nestedObjectNavigationEnabled, isDialogAvailable} = useEnhancedObjectDialog()
+
+  // For inline references, always use the normal dialog (not the enhanced dialog)
+  // This allows the reference picker to work properly
+  const isReference = isReferenceSchemaType(schemaType)
+  // If there's an EnhancedObjectDialog available, it will handle the opening
+  // Otherwise, we render our own modal
+  const shouldUseEnhancedDialog = nestedObjectNavigationEnabled && isDialogAvailable && !isReference
 
   const tone = useMemo(() => {
     if (hasError) {
@@ -315,7 +323,7 @@ export const DefaultInlineObjectComponent = (props: BlockProps): React.JSX.Eleme
           title={popoverTitle}
         />
       )}
-      {open && !nestedObjectNavigaionEnabled && (
+      {open && !shouldUseEnhancedDialog && (
         <ObjectEditModal
           autoFocus
           defaultType="popover"

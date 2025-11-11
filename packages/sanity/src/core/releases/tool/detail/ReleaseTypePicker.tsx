@@ -101,7 +101,7 @@ export function ReleaseTypePicker(props: {release: NotArchivedRelease}): React.J
           })
         } else {
           setIsUpdating(true)
-          updateRelease(newRelease).finally(() => {
+          void updateRelease(newRelease).finally(() => {
             setIsUpdating(false)
           })
         }

@@ -25,7 +25,7 @@ test.describe('Portable Text Input', () => {
         const {getFocusedPortableTextInput} = testHelpers({page})
         await mount(<StylesStory />)
         const $portableTextInput = await getFocusedPortableTextInput('field-defaultStyles')
-        const $styleSelectButton = await $portableTextInput.locator('button#block-style-select')
+        const $styleSelectButton = $portableTextInput.locator('button#block-style-select')
         await $styleSelectButton.click()
 
         for (const styleName of DEFAULT_STYLE_NAMES) {

@@ -225,7 +225,7 @@ const SelectAssetsComponent = function SelectAssetsComponent(
       header={
         dialogHeaderTitle ||
         t('asset-source.dialog.default-title', {
-          context: assetType,
+          context: assetType === 'sanity.video' ? 'video' : assetType,
         })
       }
       id={_elementId}

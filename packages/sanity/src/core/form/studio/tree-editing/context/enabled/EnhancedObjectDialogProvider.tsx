@@ -7,6 +7,10 @@ import {type EnhancedObjectDialogContextValue} from './useEnhancedObjectDialog'
 interface EnhancedObjectDialogProviderProps {
   children: React.ReactNode
   /**
+   * A boolean indicating whether the EnhancedObjectDialog component is rendered and available in this tree
+   */
+  isDialogAvailable?: boolean
+  /**
    * A boolean indicating whether legacy editing is enabled - meaning that it will use the old modal based editing experience
    */
   legacyEditing?: boolean
@@ -15,15 +19,16 @@ interface EnhancedObjectDialogProviderProps {
 export function EnhancedObjectDialogProvider(
   props: EnhancedObjectDialogProviderProps,
 ): React.JSX.Element {
-  const {children, legacyEditing} = props
+  const {children, isDialogAvailable, legacyEditing} = props
   const {beta} = useSource()
 
   const value = useMemo((): EnhancedObjectDialogContextValue => {
     return {
       enabled: beta?.form?.enhancedObjectDialog?.enabled === true,
+      isDialogAvailable: Boolean(isDialogAvailable),
       legacyEditing: Boolean(legacyEditing),
     }
-  }, [beta?.form?.enhancedObjectDialog?.enabled, legacyEditing])
+  }, [beta?.form?.enhancedObjectDialog?.enabled, isDialogAvailable, legacyEditing])
 
   return (
     <EnhancedObjectDialogContext.Provider value={value}>

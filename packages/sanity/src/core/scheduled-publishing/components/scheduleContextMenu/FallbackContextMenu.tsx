@@ -21,7 +21,7 @@ export const FallbackContextMenu = (props: Props) => {
   const {deleteSchedule} = useScheduleOperation()
 
   const handleDelete = () => {
-    deleteSchedule({schedule}).then(() => onDelete?.())
+    void deleteSchedule({schedule}).then(() => onDelete?.())
   }
 
   return (

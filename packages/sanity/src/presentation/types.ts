@@ -447,6 +447,8 @@ export interface StructureDocumentPaneParams extends InspectorTab {
 
   // comments
   comment?: string
+
+  scheduledDraft?: string
 }
 
 /**

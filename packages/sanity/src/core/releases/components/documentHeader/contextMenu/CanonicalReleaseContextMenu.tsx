@@ -7,6 +7,7 @@ import {IntentLink} from 'sanity/router'
 import {MenuItem} from '../../../../../ui-components/menuItem/MenuItem'
 import {useTranslation} from '../../../../i18n'
 import {RELEASES_INTENT} from '../../../plugin'
+import {isReleaseScheduledOrScheduling} from '../../../util/util'
 import {CopyToReleaseMenuGroup} from './CopyToReleaseMenuGroup'
 
 interface CanonicalReleaseContextMenuProps {
@@ -46,6 +47,8 @@ export const CanonicalReleaseContextMenu = memo(function CanonicalReleaseContext
   const {t} = useTranslation()
 
   const isCopyToReleaseDisabled = disabled || !hasCreatePermission || isGoingToUnpublish
+  const copyToReleaseOptions = releases.filter((r) => !isReleaseScheduledOrScheduling(r))
+  const showCopyToReleaseMenuItem = copyToReleaseOptions.length > 0
 
   return (
     <Menu>
@@ -61,29 +64,29 @@ export const CanonicalReleaseContextMenu = memo(function CanonicalReleaseContext
         </IntentLink>
       )}
       {releasesLoading && <Spinner />}
-      <CopyToReleaseMenuGroup
-        releases={releases}
-        fromRelease={fromRelease}
-        onCreateRelease={onCreateRelease}
-        onCreateVersion={onCreateVersion}
-        disabled={isCopyToReleaseDisabled}
-        hasCreatePermission={hasCreatePermission}
-      />
+      {showCopyToReleaseMenuItem && (
+        <CopyToReleaseMenuGroup
+          releases={copyToReleaseOptions}
+          fromRelease={fromRelease}
+          onCreateRelease={onCreateRelease}
+          onCreateVersion={onCreateVersion}
+          disabled={isCopyToReleaseDisabled}
+          hasCreatePermission={hasCreatePermission}
+        />
+      )}
+      {(isVersion || showCopyToReleaseMenuItem) && !isPublished && <MenuDivider />}
       {!isPublished && (
-        <>
-          <MenuDivider />
-          <MenuItem
-            icon={TrashIcon}
-            onClick={onDiscard}
-            text={t('release.action.discard-version')}
-            tone="critical"
-            disabled={disabled || locked || !hasDiscardPermission}
-            tooltipProps={{
-              disabled: hasDiscardPermission === true,
-              content: t('release.action.permission.error'),
-            }}
-          />
-        </>
+        <MenuItem
+          icon={TrashIcon}
+          onClick={onDiscard}
+          text={t('release.action.discard-version')}
+          tone="critical"
+          disabled={disabled || locked || !hasDiscardPermission}
+          tooltipProps={{
+            disabled: hasDiscardPermission === true,
+            content: t('release.action.permission.error'),
+          }}
+        />
       )}
     </Menu>
   )

@@ -41,6 +41,7 @@ const maintainOnSameDocument = exhaustiveTupleOf<keyof StructureDocumentPanePara
   'comment',
   'inspect',
   'instruction',
+  'scheduledDraft',
   'parentRefPath',
   'path',
   'pathKey',
@@ -85,6 +86,8 @@ export function useParams({
       perspective: routerSearchParams.perspective,
       viewport: routerSearchParams.viewport,
       inspect: routerSearchParams.inspect,
+      scheduledDraft: routerSearchParams.scheduledDraft,
+
       parentRefPath: routerSearchParams.parentRefPath,
       rev: routerSearchParams.rev,
       since: routerSearchParams.since,
@@ -103,6 +106,7 @@ export function useParams({
   const structureParams = useMemo<StructureDocumentPaneParams>(() => {
     const pruned = pruneObject({
       inspect: params.inspect,
+      scheduledDraft: params.scheduledDraft,
       path: params.path,
       parentRefPath: params.parentRefPath,
       rev: params.rev,
@@ -131,6 +135,7 @@ export function useParams({
     params.template,
     params.templateParams,
     params.view,
+    params.scheduledDraft,
   ])
 
   const searchParams = useMemo<PresentationSearchParams>(() => {

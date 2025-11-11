@@ -12,6 +12,7 @@ export function defineConfig(config) {
     ...config,
     test: {
       ...config?.test,
+      // oxlint-disable-next-line no-misused-spread
       alias: {...config?.test?.alias, ...getViteAliases()},
       typecheck: {
         ...config?.test?.typecheck,

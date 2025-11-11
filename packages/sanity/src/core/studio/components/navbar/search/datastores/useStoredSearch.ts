@@ -42,7 +42,7 @@ export function useStoredSearch(): [StoredSearch, (_value: StoredSearch) => void
           // Check if the version matches RECENT_SEARCH_VERSION
           if (data?.version !== RECENT_SEARCH_VERSION) {
             // If not, return the default object and mutate the store (per original verifySearchVersionNumber logic)
-            keyValueStore.setKey(keyValueStoreKey, defaultValue as any)
+            void keyValueStore.setKey(keyValueStoreKey, defaultValue as any)
             return defaultValue
           }
           // Otherwise, return the data as is
@@ -59,7 +59,7 @@ export function useStoredSearch(): [StoredSearch, (_value: StoredSearch) => void
   const set = useCallback(
     (newValue: StoredSearch) => {
       setValue(newValue)
-      keyValueStore.setKey(keyValueStoreKey, newValue as any)
+      void keyValueStore.setKey(keyValueStoreKey, newValue as any)
     },
     [keyValueStore, keyValueStoreKey],
   )

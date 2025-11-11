@@ -23,7 +23,7 @@ withDefaultClient((context) => {
       await expect(page.getByTestId('string-input')).toBeAttached()
 
       // checks that inputs are set to read only
-      await expect(await page.getByTestId('string-input')).toHaveAttribute('readonly', '')
+      await expect(page.getByTestId('string-input')).toHaveAttribute('readonly', '')
       // checks that the banner is visible
       await expect(page.getByTestId('live-edit-type-banner')).toBeVisible()
     })

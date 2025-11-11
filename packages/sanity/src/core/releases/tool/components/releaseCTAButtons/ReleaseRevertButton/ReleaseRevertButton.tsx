@@ -253,7 +253,7 @@ export const ReleaseRevertButton = ({
   const isMounted = useRef(false)
   useEffect(() => {
     isMounted.current = true
-    checkWithPermissionGuard(createRelease, getReleaseDefaults()).then((hasPermissions) => {
+    void checkWithPermissionGuard(createRelease, getReleaseDefaults()).then((hasPermissions) => {
       if (isMounted.current) setHasCreatePermission(hasPermissions)
     })
 

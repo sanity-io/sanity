@@ -14,6 +14,7 @@ import useDialogTimeZone from '../../../hooks/useDialogTimeZone'
 import {useTimeZone} from '../../../hooks/useTimeZone'
 import {useTranslation} from '../../../i18n'
 import {usePerspective} from '../../../perspective/usePerspective'
+import {useSingleDocReleaseEnabled} from '../../../singleDocRelease/context/SingleDocReleaseEnabledProvider'
 import {useScheduledDraftsEnabled} from '../../../singleDocRelease/hooks/useScheduledDraftsEnabled'
 import {CONTENT_RELEASES_TIME_ZONE_SCOPE} from '../../../studio/constants'
 import {useWorkspace} from '../../../studio/workspace'
@@ -71,6 +72,7 @@ export function ReleasesOverview() {
   const {data: allArchivedReleases} = useArchivedReleases()
   const {mode: releasesUpsellMode, handleOpenDialog: handleOpenReleasesUpsellDialog} =
     useReleasesUpsell()
+  const {mode: scheduledDraftsMode} = useSingleDocReleaseEnabled()
   const isScheduledDraftsEnabled = useScheduledDraftsEnabled()
   const {document, releases: releasesConfig} = useWorkspace()
   const isReleasesEnabled = Boolean(releasesConfig?.enabled)
@@ -157,7 +159,7 @@ export function ReleasesOverview() {
   const isMounted = useRef(false)
   useEffect(() => {
     isMounted.current = true
-    checkWithPermissionGuard(createRelease, getReleaseDefaults()).then((hasPermissions) => {
+    void checkWithPermissionGuard(createRelease, getReleaseDefaults()).then((hasPermissions) => {
       if (isMounted.current) setHasCreatePermission(hasPermissions)
     })
 
@@ -485,12 +487,16 @@ export function ReleasesOverview() {
             <ConfirmActiveScheduledDraftsBanner releases={releases} />
           )}
 
-          <SchedulesUpsell cardinalityView={cardinalityView} />
-
           {hasNoReleases ? (
             <>
               {cardinalityView === 'releases' ? (
-                <ReleasesEmptyState createReleaseButton={createReleaseButton} />
+                releasesUpsellMode === 'upsell' ? (
+                  <SchedulesUpsell cardinalityView={cardinalityView} />
+                ) : (
+                  <ReleasesEmptyState createReleaseButton={createReleaseButton} />
+                )
+              ) : scheduledDraftsMode === 'upsell' ? (
+                <SchedulesUpsell cardinalityView={cardinalityView} />
               ) : (
                 <ScheduledDraftsEmptyState />
               )}

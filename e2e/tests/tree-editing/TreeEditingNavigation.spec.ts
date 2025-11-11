@@ -89,7 +89,7 @@ test.skip('navigation - tree sidebar', () => {
 
     // make sure that item is selected on nav tree
     await expect(
-      await page
+      page
         .getByRole('treeitem', {name: 'Lucy, the cat'})
         .getByTestId('tree-editing-menu-item-content'),
     ).toHaveAttribute('data-selected')
@@ -101,14 +101,12 @@ test.skip('navigation - tree sidebar', () => {
     }, '[data-testid="string-input"]')
 
     // make sure first input has the right data
-    await expect(
-      await page.locator('#tree-editing-form').getByTestId('string-input').inputValue(),
-    ).toBe('Lucy, the cat')
-
-    // make sure breadcrumb shows the right item
-    await expect(await page.locator('#tree-breadcrumb-menu-button').textContent()).toBe(
+    expect(await page.locator('#tree-editing-form').getByTestId('string-input').inputValue()).toBe(
       'Lucy, the cat',
     )
+
+    // make sure breadcrumb shows the right item
+    expect(await page.locator('#tree-breadcrumb-menu-button').textContent()).toBe('Lucy, the cat')
 
     await page.getByRole('button', {name: 'Done'}).click()
 
@@ -182,7 +180,7 @@ test.skip('navigation - breadcrumb', () => {
 
     // make sure that item is selected on nav tree
     await expect(
-      await page
+      page
         .getByRole('treeitem', {name: 'Lucy, the cat'})
         .getByTestId('tree-editing-menu-item-content'),
     ).toHaveAttribute('data-selected')
@@ -194,12 +192,12 @@ test.skip('navigation - breadcrumb', () => {
     }, '[data-testid="string-input"]')
 
     // make sure first input has the right data
-    await expect(
+    expect(
       await page.getByTestId('tree-editing-dialog').getByTestId('string-input').inputValue(),
     ).toBe('Lucy, the cat')
 
     // make sure breadcrumb shows the right item
-    await expect(
+    expect(
       await page
         .getByTestId('tree-editing-dialog')
         .locator('#tree-breadcrumb-menu-button')

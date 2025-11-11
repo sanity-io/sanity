@@ -338,56 +338,61 @@ describe('getReleasesPerspectiveStack()', () => {
       excludedPerspectives: [],
       expected: ['published'],
     },
-    // CARDINALITY ONE RELEASE TEST CASES:
-    // For cardinality one releases, the perspective stack should contain only that release + default perspective
     {
       selectedPerspectiveName: 'rcardinalityOne1',
       isDraftModelEnabled: true,
       excludedPerspectives: [],
-      expected: ['rcardinalityOne1', 'drafts'],
+      expected: ['rcardinalityOne1', 'rasap2', 'rasap1', 'drafts'],
     },
     {
       selectedPerspectiveName: 'rcardinalityOne1',
       isDraftModelEnabled: false,
       excludedPerspectives: [],
-      expected: ['rcardinalityOne1', 'published'],
+      expected: ['rcardinalityOne1', 'rasap2', 'rasap1', 'published'],
     },
     {
       selectedPerspectiveName: 'rcardinalityOne2',
       isDraftModelEnabled: true,
       excludedPerspectives: [],
-      expected: ['rcardinalityOne2', 'drafts'],
+      expected: ['rcardinalityOne2', 'rfuture1', 'rcardinalityOne1', 'rasap2', 'rasap1', 'drafts'],
     },
     {
       selectedPerspectiveName: 'rcardinalityOne2',
       isDraftModelEnabled: false,
       excludedPerspectives: [],
-      expected: ['rcardinalityOne2', 'published'],
+      expected: [
+        'rcardinalityOne2',
+        'rfuture1',
+        'rcardinalityOne1',
+        'rasap2',
+        'rasap1',
+        'published',
+      ],
     },
     // Test cardinality one with excluded perspectives
     {
       selectedPerspectiveName: 'rcardinalityOne1',
       isDraftModelEnabled: true,
       excludedPerspectives: ['rcardinalityOne1'],
-      expected: ['drafts'],
+      expected: ['rasap2', 'rasap1', 'drafts'],
     },
     {
       selectedPerspectiveName: 'rcardinalityOne2',
       isDraftModelEnabled: false,
       excludedPerspectives: ['rcardinalityOne2'],
-      expected: ['published'],
+      expected: ['rfuture1', 'rcardinalityOne1', 'rasap2', 'rasap1', 'published'],
     },
     {
       selectedPerspectiveName: 'rcardinalityOne1',
       isDraftModelEnabled: true,
       excludedPerspectives: ['drafts'],
-      expected: ['rcardinalityOne1'],
+      expected: ['rcardinalityOne1', 'rasap2', 'rasap1'],
     },
     {
       selectedPerspectiveName: 'rcardinalityOne2',
       isDraftModelEnabled: false,
       excludedPerspectives: ['published'],
-      expected: ['rcardinalityOne2'],
+      expected: ['rcardinalityOne2', 'rfuture1', 'rcardinalityOne1', 'rasap2', 'rasap1'],
     },
   ]
   it.each(testCases)(

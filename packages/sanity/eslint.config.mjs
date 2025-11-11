@@ -5,6 +5,7 @@ import baseConfig from '@repo/eslint-config'
 import i18nConfig from '@sanity/eslint-config-i18n'
 import {defineConfig} from 'eslint/config'
 import boundaries from 'eslint-plugin-boundaries'
+import testingLibrary from 'eslint-plugin-testing-library'
 import globals from 'globals'
 
 const __filename = fileURLToPath(import.meta.url)
@@ -452,6 +453,22 @@ export default defineConfig([
     files: ['src/ui-components/dialog/Dialog.tsx'],
     rules: {
       '@sanity/i18n/no-i18next-import': 'off',
+    },
+  },
+  // Enable rules that aid with ensuring react tests don't have race conditions
+  {
+    ...testingLibrary.configs['flat/react'],
+    files: ['**/__tests__/**/*.[jt]s?(x)', '**/?(*.)+(spec|test).[jt]s?(x)'],
+    rules: {
+      ...testingLibrary.configs['flat/react'].rules,
+      'testing-library/prefer-user-event': 'error',
+      // Rules that require follow up work to be enabled
+      'testing-library/prefer-screen-queries': 'warn',
+      'testing-library/no-node-access': 'warn',
+      'testing-library/no-container': 'warn',
+      'testing-library/prefer-query-by-disappearance': 'warn',
+      'testing-library/render-result-naming-convention': 'warn',
+      'testing-library/no-render-in-lifecycle': 'warn',
     },
   },
 ])

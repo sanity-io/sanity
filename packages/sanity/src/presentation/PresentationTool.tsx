@@ -104,7 +104,6 @@ export default function PresentationTool(props: {
     state: PresentationStateParams
   }
   const routerSearchParams = useUnique(Object.fromEntries(routerState._searchParams || []))
-  const perspective = usePresentationPerspective()
 
   const canSharePreviewAccess = useSelector(
     previewUrlRef,
@@ -140,6 +139,7 @@ export default function PresentationTool(props: {
       routerSearchParams,
       frameStateRef,
     })
+  const perspective = usePresentationPerspective({scheduledDraft: params.scheduledDraft})
 
   const presentationRef = useActorRef(presentationMachine)
 
@@ -156,6 +156,7 @@ export default function PresentationTool(props: {
     path: params.preview,
     targetOrigin,
     resolvers: tool.options?.resolve?.mainDocuments,
+    perspective,
   })
 
   const [overlaysConnection, setOverlaysConnection] = useStatus()

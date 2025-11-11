@@ -186,7 +186,7 @@ export function ArrayOfPrimitivesItem(props: PrimitiveMemberItemProps) {
   const handleCopy = useCallback(
     (_: ArrayInputCopyEvent<unknown>) => {
       const documentValue = getFormValue([]) as FormDocumentValue
-      onCopy(member.item.path, documentValue, {
+      void onCopy(member.item.path, documentValue, {
         context: {source: 'arrayItem'},
         patchType: 'append',
       })

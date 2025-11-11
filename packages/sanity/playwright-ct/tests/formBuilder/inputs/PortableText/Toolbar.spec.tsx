@@ -168,14 +168,14 @@ test.describe('Portable Text Input', () => {
         await expect(page.getByRole('button', {name: 'Untitled'})).toBeVisible()
 
         // get the nested PTE
-        const $overlay = await page.getByTestId('activate-overlay')
+        const $overlay = page.getByTestId('activate-overlay')
 
-        $overlay.focus()
-        $overlay.click()
+        await $overlay.focus()
+        await $overlay.click()
 
         // click the block
 
-        await expect(await page.getByTestId('pt-editor__toolbar-card')).toBeVisible()
+        await expect(page.getByTestId('pt-editor__toolbar-card').nth(1)).toBeVisible()
 
         // click the nested PTE expand
         await page.getByLabel('Expand editor').nth(1).click()

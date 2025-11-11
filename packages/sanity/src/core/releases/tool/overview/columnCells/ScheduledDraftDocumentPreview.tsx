@@ -44,6 +44,7 @@ export const ScheduledDraftDocumentPreview: VisibleColumn<TableRelease>['cell'] 
               documentTypeName={firstDocument._type}
               releaseId={release._id}
               releaseState={release.state}
+              isCardinalityOneRelease
               documentRevision={firstDocument._rev}
               layout="default"
             />

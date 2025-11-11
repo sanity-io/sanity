@@ -18,7 +18,7 @@
     "check:deps": "pnpm --recursive --parallel exec depcheck",
     "check:format": "prettier --cache --check .",
     "check:lint": "turbo run lint --continue -- --quiet",
-    "check:oxlint": "oxlint --quiet",
+    "check:oxlint": "oxlint --type-aware --quiet",
     "check:test": "pnpm test -- --silent",
     "check:types": "tsc && turbo run check:types --filter='./packages/*' --filter='./packages/@sanity/*' --continue",
     "chore:format:fix": "prettier --cache --write .",
@@ -26,7 +26,7 @@
     "chore:lint:fix": "turbo run lint --ui tui -- --quiet --fix",
     "chore:lint:inspect": "eslint --inspect-config",
     "chore:normalize-versions": "node -r esbuild-register scripts/normalizeDependencyVersions.ts",
-    "chore:oxlint:fix": "oxlint --fix --fix-suggestions --quiet",
+    "chore:oxlint:fix": "oxlint --type-aware --fix --fix-suggestions --quiet",
     "clean": "npm-run-all build:clean clean:deps",
     "clean:deps": "pnpm --r --parallel exec rm -Rf node_modules && rm -Rf node_modules",
     "depcheck": "pnpm check:deps",
@@ -48,7 +48,7 @@
     "docs:report:cleanup": "tsx -r dotenv-flow/config scripts/doc-report/docReportCleanup",
     "docs:report:create": "tsx -r dotenv-flow/config scripts/doc-report/docReportCreate",
     "e2e:build": "pnpm turbo run build --filter=studio-e2e-testing",
-    "e2e:cleanup:pr": "tsx -r dotenv-flow/config test/scripts/cleanupPr",
+    "e2e:cleanup:pr": "tsx -r dotenv-flow/config e2e/scripts/cleanupPr",
     "e2e:codegen": "node -r dotenv-flow/config ./node_modules/.bin/sanity-test codegen",
     "e2e:dev": "pnpm --filter studio-e2e-testing dev",
     "e2e:preview": "pnpm --filter e2e build && pnpm --filter studio-e2e-testing preview",
@@ -97,7 +97,7 @@
   "lint-staged": {
     "*.{js,jsx,ts,tsx,mjs,cjs}": [
       "prettier --cache --write",
-      "oxlint --fix --quiet"
+      "oxlint --type-aware --fix --quiet"
     ],
     "*.{md,yml,yaml,css,json}": [
       "prettier --cache --write"
@@ -127,17 +127,19 @@
     "husky": "^9.1.7",
     "lint-staged": "^16.1.0",
     "npm-run-all2": "^6.2.6",
-    "oxlint": "1.18.0",
+    "oxlint": "1.28.0",
+    "oxlint-tsgolint": "0.5.1",
     "playwright": "catalog:",
     "prettier": "catalog:",
     "prettier-plugin-packagejson": "^2.5.19",
+    "sanity": "workspace:*",
     "tsx": "^4.20.6",
     "turbo": "^2.5.8",
     "typescript": "catalog:",
     "vercel": "^48.6.0",
     "vitest": "catalog:"
   },
-  "packageManager": "pnpm@10.18.3",
+  "packageManager": "pnpm@10.20.0",
   "pnpm": {
     "peerDependencyRules": {
       "allowAny": [

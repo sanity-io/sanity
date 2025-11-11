@@ -7,7 +7,7 @@ import {styled} from 'styled-components'
 import {MenuGroup} from '../../../../../ui-components/menuGroup/MenuGroup'
 import {MenuItem} from '../../../../../ui-components/menuItem/MenuItem'
 import {useTranslation} from '../../../../i18n'
-import {isReleaseScheduledOrScheduling} from '../../../util/util'
+import {useWorkspace} from '../../../../studio/workspace'
 import {CreateReleaseMenuItem} from '../../CreateReleaseMenuItem'
 import {VersionContextMenuItem} from './VersionContextMenuItem'
 
@@ -32,8 +32,7 @@ export const CopyToReleaseMenuGroup = memo(function CopyToReleaseMenuGroup(
   const {releases, fromRelease, onCreateRelease, onCreateVersion, disabled, hasCreatePermission} =
     props
   const {t} = useTranslation()
-
-  const optionsReleaseList = releases.filter((r) => !isReleaseScheduledOrScheduling(r))
+  const isReleasesEnabled = !!useWorkspace().releases?.enabled
 
   return (
     <MenuGroup
@@ -48,7 +47,7 @@ export const CopyToReleaseMenuGroup = memo(function CopyToReleaseMenuGroup(
       data-testid="copy-version-to-release-button-group"
     >
       <ReleasesList key={fromRelease} space={1}>
-        {optionsReleaseList.map((targetRelease) => {
+        {releases.map((targetRelease) => {
           return (
             <MenuItem
               key={targetRelease._id}
@@ -59,8 +58,8 @@ export const CopyToReleaseMenuGroup = memo(function CopyToReleaseMenuGroup(
           )
         })}
       </ReleasesList>
-      {optionsReleaseList.length > 1 && <MenuDivider />}
-      <CreateReleaseMenuItem onCreateRelease={onCreateRelease} />
+      {releases.length > 1 && <MenuDivider />}
+      {isReleasesEnabled && <CreateReleaseMenuItem onCreateRelease={onCreateRelease} />}
     </MenuGroup>
   )
 })
