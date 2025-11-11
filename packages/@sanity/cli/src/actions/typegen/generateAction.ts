@@ -259,6 +259,7 @@ export default async function typegenGenerateAction(
     schemaTypesCount: stats.schemaTypesCount,
     queryFilesCount: stats.queryFilesCount,
     filesWithErrors: stats.errors,
+    configMethod: codegenConfigMethod,
     typeNodesGenerated: stats.typeNodesGenerated,
     unknownTypeNodesGenerated: stats.unknownTypeNodesGenerated,
     unknownTypeNodesRatio:
