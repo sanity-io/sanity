@@ -76,9 +76,9 @@ const playwrightConfig: PlaywrightTestConfig = {
   },
   projects: [CHROMIUM_PROJECT, FIREFOX_PROJECT],
   webServer: {
-    command: CI ? 'pnpm start' : 'pnpm dev',
+    command: 'pnpm dev',
     port: 5173,
-    reuseExistingServer: !CI,
+    reuseExistingServer: true,
     stdout: 'pipe',
   },
 }
