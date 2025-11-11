@@ -18,54 +18,9 @@ interface UpsellDataProps {
   feature: string
 }
 
-/**
- * Creates a generic fallback upsell data object when the custom upsell data fails to load.
- * This ensures users always see an upsell dialog rather than silently failing.
- * @internal
- */
-function createFallbackUpsellData(
-  feature: string,
-  baseUrl: string,
-  projectId: string,
-): UpsellData {
-  const timestamp = new Date().toISOString()
-  return {
-    _createdAt: timestamp,
-    _id: `fallback-${feature}`,
-    _rev: 'fallback',
-    _type: 'upsellData',
-    _updatedAt: timestamp,
-    id: `fallback-${feature}`,
-    image: null,
-    descriptionText: [
-      {
-        _key: 'fallback-desc',
-        _type: 'block',
-        children: [
-          {
-            _key: 'fallback-text',
-            _type: 'span',
-            text: 'This feature is available on higher plans. Upgrade your plan to unlock this functionality.',
-            marks: [],
-          },
-        ],
-        markDefs: [],
-        style: 'normal',
-      },
-    ],
-    ctaButton: {
-      text: 'Upgrade plan',
-      url: `${baseUrl}/manage/project/${projectId}/upgrade`,
-    },
-    secondaryButton: {
-      text: 'Learn more',
-      url: `${baseUrl}/pricing`,
-    },
-  }
-}
-
 export const useUpsellData = ({dataUri, feature}: UpsellDataProps) => {
   const [upsellData, setUpsellData] = useState<UpsellData | null>(null)
+  const [hasError, setHasError] = useState(false)
   const telemetry = useTelemetry()
   const projectId = useProjectId()
   const client = useClient(DEFAULT_STUDIO_CLIENT_OPTIONS)
@@ -124,14 +79,14 @@ export const useUpsellData = ({dataUri, feature}: UpsellDataProps) => {
 
   useEffect(() => {
     const data$ = client.observable.request<UpsellData | null>({
-      uri: dataUri,
+      uri: dataUri + 'x',
     })
 
     const sub = data$.subscribe({
       next: (data) => {
         if (!data) {
-          // No data returned - use fallback
-          setUpsellData(createFallbackUpsellData(feature, baseUrl, projectId))
+          setHasError(true)
+          setUpsellData(null)
           return
         }
         try {
@@ -141,23 +96,22 @@ export const useUpsellData = ({dataUri, feature}: UpsellDataProps) => {
             projectId,
           })
           setUpsellData(data)
+          setHasError(false)
         } catch (e) {
-          // Template interpolation failed - use fallback
-          console.error('Failed to parse upsell data:', e)
-          setUpsellData(createFallbackUpsellData(feature, baseUrl, projectId))
+          setHasError(true)
+          setUpsellData(null)
         }
       },
       error: (err) => {
-        // Request failed - use fallback instead of silently failing
-        console.error('Failed to fetch upsell data:', err)
-        setUpsellData(createFallbackUpsellData(feature, baseUrl, projectId))
+        setHasError(true)
+        setUpsellData(null)
       },
     })
 
     return () => {
       sub.unsubscribe()
     }
-  }, [client, projectId, baseUrl, dataUri, feature])
+  }, [client, projectId, baseUrl, dataUri])
 
-  return {upsellData, telemetryLogs}
+  return {upsellData, telemetryLogs, hasError}
 }
