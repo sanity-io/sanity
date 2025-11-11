@@ -64,14 +64,14 @@ export function ReleaseDashboardDetails({
 
     // only run if the release is active
     if (isActive) {
-      checkWithPermissionGuard(publishRelease, release._id).then((hasPermission) => {
+      void checkWithPermissionGuard(publishRelease, release._id).then((hasPermission) => {
         if (isMounted.current) setShouldDisplayPermissionWarning(!hasPermission)
         return null
       })
 
       // if it's a release that can be scheduled, check if it can be scheduled
       if (release.metadata.intendedPublishAt && isAtTimeRelease) {
-        checkWithPermissionGuard(schedule, release._id, new Date()).then((hasPermission) => {
+        void checkWithPermissionGuard(schedule, release._id, new Date()).then((hasPermission) => {
           if (isMounted.current) setShouldDisplayPermissionWarning(!hasPermission)
           return null
         })

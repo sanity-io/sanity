@@ -16,7 +16,7 @@ test(`document panel displays correct title for published document`, async ({
   await expect(page.getByTestId('document-panel-document-title')).toHaveText(title)
 
   // Focus the publish button to trigger the tooltip showing the keyboard shortcut
-  page.getByTestId('action-publish').focus()
+  await page.getByTestId('action-publish').focus()
 
   // There is a delay before the tooltip opens, let's explicitly wait for it
   await page.waitForTimeout(300)
@@ -27,14 +27,14 @@ test(`document panel displays correct title for published document`, async ({
   const hotkeys = page.getByTestId('document-status-bar-hotkeys')
 
   const isMac = await page.evaluate(() => /Mac|iPod|iPhone|iPad/.test(navigator.platform || ''))
-  expect(hotkeys).toHaveText(isMac ? 'CtrlOptionP' : 'CtrlAltP')
+  await expect(hotkeys).toHaveText(isMac ? 'CtrlOptionP' : 'CtrlAltP')
 
   // Wait for the document to be published.
-  page.getByTestId('action-publish').click()
+  await page.getByTestId('action-publish').click()
   await expectPublishedStatus(page.getByTestId('pane-footer-document-status'))
 
   // Ensure the correct title is displayed after publishing.
-  expect(page.getByTestId('document-panel-document-title')).toHaveText(title)
+  await expect(page.getByTestId('document-panel-document-title')).toHaveText(title)
 })
 
 test(`custom publish action can patch document before publication`, async ({

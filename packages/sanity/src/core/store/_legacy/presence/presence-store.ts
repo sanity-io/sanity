@@ -273,7 +273,9 @@ export function createPresenceStore(context: {
       userAndSessions.map((userAndSession) => ({
         user: userAndSession.user,
         status: 'online',
-        lastActiveAt: userAndSession.sessions.sort()[0]?.lastActiveAt,
+        lastActiveAt: userAndSession.sessions.sort((a, b) =>
+          b.lastActiveAt.localeCompare(a.lastActiveAt),
+        )[0]?.lastActiveAt,
         locations: flatten(
           (userAndSession.sessions || []).map((session) => session.locations || []),
         )

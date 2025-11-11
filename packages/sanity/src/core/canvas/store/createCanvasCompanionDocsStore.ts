@@ -29,10 +29,7 @@ const getCompanionDocs = memoize(
   ): Observable<CompanionDocs> => {
     const companionDocsIdsListener$ = (id: string) =>
       previewStore.unstable_observeDocumentIdSet(
-        `_type == "sanity.canvas.link" && (
-            studioDocumentId in path("versions.**."+ $publishedId) || 
-            studioDocumentId in [$publishedId, "drafts." + $publishedId]
-         )`,
+        `_type == "sanity.canvas.link" && studioDocumentId in *[sanity::versionOf($publishedId)]._id`,
         {publishedId: id},
       )
 

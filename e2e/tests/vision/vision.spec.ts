@@ -74,7 +74,7 @@ test.describe('Vision', () => {
       sanityClient.getDataUrl('query', encodeQueryString(query, params)),
     )
     await page.evaluate((text) => {
-      navigator.clipboard.writeText(text)
+      return navigator.clipboard.writeText(text)
     }, url)
 
     const {queryEditor, paramsEditor, resultRegion, queryEditorRegion} =

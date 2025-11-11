@@ -34,7 +34,7 @@ function installProcessExitHack(finalTask: () => Promise<unknown>) {
 
   // @ts-expect-error ignore TS2534
   process.exit = (exitCode?: number | undefined): never => {
-    finalTask().finally(() => originalProcessExit(exitCode))
+    void finalTask().finally(() => originalProcessExit(exitCode))
   }
 }
 

@@ -59,28 +59,28 @@ export const ReleaseMenu = ({
     if (!releaseMenuDisabled) {
       if (release.state !== 'published') {
         if (release.state === 'archived') {
-          checkWithPermissionGuard(unarchive, release._id).then((hasPermission) => {
+          void checkWithPermissionGuard(unarchive, release._id).then((hasPermission) => {
             if (isMounted.current) setHasUnarchivePermission(hasPermission)
           })
         } else {
-          checkWithPermissionGuard(archive, release._id).then((hasPermission) => {
+          void checkWithPermissionGuard(archive, release._id).then((hasPermission) => {
             if (isMounted.current) setHasArchivePermission(hasPermission)
           })
 
-          checkWithPermissionGuard(publishRelease, release._id).then((hasPermission) => {
+          void checkWithPermissionGuard(publishRelease, release._id).then((hasPermission) => {
             if (isMounted.current) setHasPublishPermission(hasPermission)
           })
-          checkWithPermissionGuard(schedule, release._id, new Date()).then((hasPermission) => {
+          void checkWithPermissionGuard(schedule, release._id, new Date()).then((hasPermission) => {
             if (isMounted.current) setHasSchedulePermission(hasPermission)
           })
         }
-        checkWithPermissionGuard(createRelease, getReleaseDefaults()).then((hasPermission) => {
+        void checkWithPermissionGuard(createRelease, getReleaseDefaults()).then((hasPermission) => {
           if (isMounted.current) setHasDuplicatePermission(hasPermission)
         })
       }
 
       if (release.state === 'archived' || release.state == 'published') {
-        checkWithPermissionGuard(deleteRelease, release._id).then((hasPermission) => {
+        void checkWithPermissionGuard(deleteRelease, release._id).then((hasPermission) => {
           if (isMounted.current) setHasDeletePermission(hasPermission)
         })
       }

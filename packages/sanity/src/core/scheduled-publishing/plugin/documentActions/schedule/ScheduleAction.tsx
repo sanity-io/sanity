@@ -100,7 +100,7 @@ export const ScheduleAction: DocumentActionComponent = (props: DocumentActionPro
     }
 
     // Create schedule then close dialog
-    createSchedule({date: formData.date, documentId: id}).then(onComplete)
+    void createSchedule({date: formData.date, documentId: id}).then(onComplete)
   }, [onComplete, createSchedule, id, formData?.date])
 
   const title = hasExistingSchedules ? 'Edit Schedule' : 'Schedule'

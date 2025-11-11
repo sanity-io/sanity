@@ -1,4 +1,5 @@
-import {fireEvent, render, screen, waitFor} from '@testing-library/react'
+import {render, screen, waitFor} from '@testing-library/react'
+import {userEvent} from '@testing-library/user-event'
 import {describe, expect, it, vi} from 'vitest'
 
 import {mockUseRouterReturn} from '../../../../../../../test/mocks/useRouter.mock'
@@ -73,7 +74,7 @@ describe('ReleaseNameCell', () => {
     await renderTest(activeASAPRelease)
 
     const pinButton = screen.getByTestId('pin-release-button')
-    fireEvent.click(pinButton)
+    await userEvent.click(pinButton)
 
     expect(mockedSetPerspective).toHaveBeenCalledWith('rASAP')
   })
@@ -83,7 +84,7 @@ describe('ReleaseNameCell', () => {
     await renderTest(activeASAPRelease)
 
     const pinButton = screen.getByTestId('pin-release-button')
-    fireEvent.click(pinButton)
+    await userEvent.click(pinButton)
 
     expect(mockedSetPerspective).toHaveBeenCalledWith('drafts')
   })
@@ -91,7 +92,7 @@ describe('ReleaseNameCell', () => {
   it('navigates to the release detail page on click', async () => {
     await renderTest(activeASAPRelease)
 
-    fireEvent.click(screen.getByText('active asap Release'))
+    await userEvent.click(screen.getByText('active asap Release'))
 
     expect(mockUseRouterReturn.navigate).toHaveBeenCalledWith({releaseId: 'rASAP'})
   })
