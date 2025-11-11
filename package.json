@@ -11,6 +11,7 @@
     "build:cli": "turbo run build --filter=@sanity/cli --filter=sanity",
     "build:cli-only": "turbo run --filter=@sanity/cli build",
     "build:e2e": "pnpm e2e:build",
+    "build:e2e-embedded-studio-vite": "pnpm turbo run build --filter=e2e-embedded-studio-vite",
     "build:efps": "pnpm build --filter=efps-tests",
     "build:performance-studio": "pnpm perf:studio:build",
     "build:test-studio": "pnpm build --filter=sanity-test-studio",

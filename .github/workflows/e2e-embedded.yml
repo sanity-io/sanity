@@ -73,6 +73,9 @@ jobs:
       - name: Install project dependencies
         run: pnpm install
 
+      - name: Build E2E Embedded Studio Vite
+        run: pnpm build:e2e-embedded-studio-vite
+
       - name: Run E2E Embedded Tests
         run: pnpm e2e-embedded:test --project ${{ matrix.project }}
 
