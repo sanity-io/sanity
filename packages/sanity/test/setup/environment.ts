@@ -15,8 +15,6 @@ expect.extend({
 })
 
 afterEach(() => cleanup())
-
-export {}
 ;(globalThis as any).IS_REACT_ACT_ENVIRONMENT = true
 
 // get rid of context warning
