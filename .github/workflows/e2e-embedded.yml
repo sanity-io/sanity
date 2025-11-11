@@ -4,12 +4,9 @@ permissions:
   pull-requests: write # for comment
 
 on:
-  # Build on pushes branches that have a PR (including drafts)
   pull_request:
-  # Build on commits pushed to branches without a PR if it's in the allowlist
   push:
-    # TODO: Remove embedded-studio-e2e-test after testing
-    branches: [main, embedded-studio-e2e-test]
+    branches: [main]
 
 jobs:
   install:
@@ -93,10 +90,10 @@ jobs:
         run: npx playwright install --with-deps
 
       - name: Build E2E Embedded Studio Vite
-        run: pnpm build:e2e-embedded-studio-vite --output-logs=full
+        run: pnpm embedded-studio-vite:build
 
       - name: Run E2E Embedded Tests
-        run: pnpm e2e-embedded:test --project ${{ matrix.project }}
+        run: pnpm embedded-studio-vite:test --project ${{ matrix.project }}
 
       - name: Upload Playwright Report
         uses: actions/upload-artifact@v4
