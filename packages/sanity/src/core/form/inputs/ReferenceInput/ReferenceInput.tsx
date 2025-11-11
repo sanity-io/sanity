@@ -198,7 +198,7 @@ export function ReferenceInput(props: ReferenceInputProps) {
               })
 
               console.error(error)
-              return of({hits: []})
+              return of({hits: [], searchString, isLoading: false})
             }),
           ),
         ),
