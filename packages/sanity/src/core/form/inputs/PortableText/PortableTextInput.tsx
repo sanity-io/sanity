@@ -32,6 +32,7 @@ import {
 import {useTranslation} from '../../../i18n'
 import {usePerspective} from '../../../perspective/usePerspective'
 import {EMPTY_ARRAY} from '../../../util'
+import {pathToString} from '../../../validation/util/pathToString'
 import {
   PortableTextInputCollapsed,
   PortableTextInputExpanded,
@@ -171,7 +172,7 @@ export function PortableTextInput(props: PortableTextInputProps): ReactNode {
   )
 
   const hasSyncedInitialFullscreenRef = useRef(false)
-  const previousFullscreenPathRef = useRef(getFullscreenPath(path))
+  const previousPathRef = useRef(path)
 
   useEffect(() => {
     // If the initial fullscreen state is set and the path is not in the fullscreen context, set it
@@ -186,11 +187,11 @@ export function PortableTextInput(props: PortableTextInputProps): ReactNode {
   // Sync local isFullscreen state with the fullscreen context
   // This ensures the state updates when the fullscreen path changes from elsewhere
   useEffect(() => {
-    const currentFullscreenPath = getFullscreenPath(path)
-
     // Check if the fullscreen path value has actually changed
-    if (currentFullscreenPath !== previousFullscreenPathRef.current) {
-      previousFullscreenPathRef.current = currentFullscreenPath
+    if (pathToString(previousPathRef.current) !== pathToString(path)) {
+      previousPathRef.current = path
+      const currentFullscreenPath = getFullscreenPath(path)
+
       setIsFullscreen(Boolean(currentFullscreenPath))
     }
   }, [getFullscreenPath, path])
