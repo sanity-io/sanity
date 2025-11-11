@@ -104,6 +104,7 @@ import globalDocumentReference, {
   createGlobalDocumentReferenceSubtype,
 } from './standard/globalDocumentReference'
 import images, {myImage} from './standard/images'
+import {initialFullScreenPTEType} from './standard/initialFullScreenPTE'
 import numbers from './standard/numbers'
 import objects, {myObject} from './standard/objects'
 import {ptAllTheBellsAndWhistlesType} from './standard/portableText/allTheBellsAndWhistles'
@@ -175,6 +176,7 @@ export function createSchemaTypes(projectId: string) {
     numbers,
     objects,
     ptAllTheBellsAndWhistlesType,
+    initialFullScreenPTEType,
     blocks,
     ptCustomBlockEditors,
     ptCustomMarkersTestType,

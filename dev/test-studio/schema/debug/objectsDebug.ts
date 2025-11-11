@@ -53,6 +53,11 @@ const animal = defineField({
                       type: 'array',
                       name: 'description_two',
                       title: 'Description Two',
+                      components: {
+                        input: (props: any) => {
+                          return props.renderDefault({...props, initialFullscreen: true})
+                        },
+                      },
                       of: [
                         {type: 'block'},
                         {
