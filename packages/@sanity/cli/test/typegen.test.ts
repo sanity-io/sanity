@@ -83,16 +83,24 @@ describeCliTest('CLI: `sanity typegen`', () => {
       expect(err.stderr).toContain('Schema file not found')
     })
 
-    test('sanity typegen generate: typegen config is not a file', async () => {
-      const err = await runSanityCmdCommand(studioName, [
-        'typegen',
-        'generate',
-        '--config-path',
-        'folder-typegen.json',
-      ]).catch((error) => error)
-      expect(err.code).toBe(1)
-      expect(err.stderr).toContain('Schema path is not a file')
-    })
+    test(
+      'sanity typegen generate: typegen config is not a file',
+      withConfig(
+        {
+          config: {
+            schema: './components',
+          },
+          legacyConfig: false,
+        },
+        async () => {
+          const err = await runSanityCmdCommand(studioName, ['typegen', 'generate']).catch(
+            (error) => error,
+          )
+          expect(err.code).toBe(1)
+          expect(err.stderr).toContain('Schema path is not a file')
+        },
+      ),
+    )
 
     test('sanity typegen generate: typegen config does not exist', async () => {
       const err = await runSanityCmdCommand(studioName, [
@@ -282,7 +290,7 @@ describeCliTest('CLI: `sanity typegen`', () => {
             },
             legacyConfig,
           },
-          async () => {
+          async (legacyConfigFile) => {
             await writeFile(
               `${studiosPath}/cli-test-studio/out/.prettierrc`,
               '{\n  "singleQuote": true\n}\n',
@@ -290,8 +298,7 @@ describeCliTest('CLI: `sanity typegen`', () => {
             const result = await runSanityCmdCommand(studioName, [
               'typegen',
               'generate',
-              '--config-path',
-              'working-typegen-overloadClientMethods.json',
+              ...(legacyConfig ? ['--config-path', legacyConfigFile] : []),
             ])
 
             expect(result.code).toBe(0)
