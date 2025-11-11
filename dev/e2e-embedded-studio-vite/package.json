@@ -3,7 +3,7 @@
   "version": "4.14.2",
   "private": true,
   "scripts": {
-    "build": "tsc && vite build && sanity manifest extract",
+    "build": "tsc && vite build",
     "dev": "vite",
     "preview": "vite preview --port 5173",
     "start": "pnpm --filter e2e-embedded-studio-vite preview",

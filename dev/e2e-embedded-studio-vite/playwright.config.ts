@@ -8,7 +8,7 @@ import {
 const BASE_URL = 'http://localhost:5173'
 const PROJECT_ID = process.env.SANITY_E2E_PROJECT_ID
 const TOKEN = process.env.SANITY_E2E_SESSION_TOKEN
-const CI = process.env.CI === 'true' || false
+const CI = process.env.CI === 'true'
 
 const CHROMIUM_PROJECT: PlaywrightTestProject = {
   name: 'chromium',

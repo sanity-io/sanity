@@ -92,7 +92,7 @@ jobs:
         run: npx playwright install --with-deps
 
       - name: Build E2E Embedded Studio Vite
-        run: pnpm build:e2e-embedded-studio-vite
+        run: pnpm build:e2e-embedded-studio-vite --output-logs=full
 
       - name: Run E2E Embedded Tests
         run: pnpm e2e-embedded:test --project ${{ matrix.project }}
