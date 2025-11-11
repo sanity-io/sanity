@@ -14,10 +14,7 @@ expect.extend({
   toMatchEmissions,
 })
 
-afterEach(() => cleanup())
-
-export {}
-;(globalThis as any).IS_REACT_ACT_ENVIRONMENT = true
+afterEach(() => cleanup())(globalThis as any).IS_REACT_ACT_ENVIRONMENT = true
 
 // get rid of context warning
 const warn = console.warn
