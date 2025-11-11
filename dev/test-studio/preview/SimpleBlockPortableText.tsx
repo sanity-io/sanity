@@ -1,6 +1,8 @@
 import {PortableText, type PortableTextComponents} from '@portabletext/react'
 import {stegaClean} from '@sanity/client/stega'
+import {ErrorBoundary} from '@sanity/ui'
 import {createDataAttribute} from '@sanity/visual-editing/create-data-attribute'
+import {useDeferredValue} from 'react'
 import {type PortableTextBlock} from 'sanity'
 
 import {imageBuilder, useQuery} from './loader'
@@ -22,7 +24,11 @@ const components: PortableTextComponents = {
 }
 
 export function SimpleBlockPortableText(): React.JSX.Element {
-  const {data, loading, error} = useQuery<
+  const {
+    data: _data,
+    loading,
+    error,
+  } = useQuery<
     {
       _id: string
       _type: string
@@ -36,6 +42,7 @@ export function SimpleBlockPortableText(): React.JSX.Element {
   >(
     /* groq */ `*[_type == "simpleBlock"] | order(_updatedAt desc)[0..10]{_id,_type,slug,title,slugs,"bodyString":pt::text(body),body,notes}`,
   )
+  const data = useDeferredValue(_data)
 
   if (error) {
     throw error
@@ -93,12 +100,32 @@ export function SimpleBlockPortableText(): React.JSX.Element {
               </div>
             ))}
             <p>{item.bodyString}</p>
-            <PortableText components={components} value={item.body} />
+            <ErrorBoundary
+              onCatch={(params) => {
+                console.error(
+                  'An error happened while rendering <PortableText />',
+                  params.error,
+                  params.info,
+                )
+              }}
+            >
+              <PortableText components={components} value={item.body} />
+            </ErrorBoundary>
             {item.notes?.map((note) => (
               <div key={note._key}>
                 <h2>{note.title}</h2>
                 <p>{note.minutes} minutes</p>
-                <PortableText components={components} value={note.notes || []} />
+                <ErrorBoundary
+                  onCatch={(params) => {
+                    console.error(
+                      'An error happened while rendering <PortableText />',
+                      params.error,
+                      params.info,
+                    )
+                  }}
+                >
+                  <PortableText components={components} value={note.notes || []} />
+                </ErrorBoundary>
               </div>
             ))}
           </article>

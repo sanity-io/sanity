@@ -39,7 +39,9 @@ export function Markdown(): React.JSX.Element {
                 language="markdown"
                 style={{overflowX: 'auto', overflowY: 'clip', paddingBlock: '1rem'}}
               >
-                {stegaClean(item.markdown)}
+                {stegaClean(
+                  typeof item.markdown === 'string' ? item.markdown : item.markdown?.default,
+                )}
               </Code>
             </Stack>
           </Card>
