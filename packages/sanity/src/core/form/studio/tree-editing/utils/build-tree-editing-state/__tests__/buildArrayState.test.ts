@@ -1022,4 +1022,204 @@ describe('buildArrayState', () => {
       )
     })
   })
+
+  describe('custom components', () => {
+    test('should NOT set relativePath when item type has custom components.item', () => {
+      // Create a schema with custom components.item
+      const schemaWithCustomItem = Schema.compile({
+        name: 'default',
+        types: [
+          {
+            name: 'testDocument',
+            type: 'document',
+            fields: [
+              {
+                name: 'customArray',
+                type: 'array',
+                of: [
+                  {
+                    name: 'customItem',
+                    type: 'object',
+                    fields: [{name: 'title', type: 'string'}],
+                    components: {
+                      item: () => null, // Custom item component
+                    },
+                  },
+                ],
+              },
+            ],
+          },
+        ],
+      })
+
+      const docSchema = schemaWithCustomItem.get('testDocument') as ObjectSchemaType
+      const customArrayField = docSchema.fields.find(
+        (f) => f.name === 'customArray',
+      ) as ObjectField<ArraySchemaType>
+
+      const mockValue = {
+        customArray: [
+          {_key: 'item1', _type: 'customItem', title: 'Item 1'},
+          {_key: 'item2', _type: 'customItem', title: 'Item 2'},
+        ],
+      }
+
+      const openPath: Path = ['customArray', {_key: 'item1'}]
+      const props = {
+        arraySchemaType: customArrayField.type,
+        arrayValue: mockValue.customArray,
+        documentValue: mockValue,
+        openPath,
+        rootPath: ['customArray'] as Path,
+        recursive: mockRecursive,
+        rootSchemaType: docSchema,
+      }
+
+      const result = buildArrayState(props)
+
+      // relativePath should NOT be set when item has custom components
+      expect(result.relativePath).toEqual([])
+      // Should not build menu items for items with custom components
+      expect(result.menuItems).toEqual([])
+    })
+
+    test('should set relativePath when item type has custom components.input', () => {
+      // Create a schema with custom components.input
+      // components.input is allowed as it's often just a wrapper
+      const schemaWithCustomInput = Schema.compile({
+        name: 'default',
+        types: [
+          {
+            name: 'testDocument',
+            type: 'document',
+            fields: [
+              {
+                name: 'customArray',
+                type: 'array',
+                of: [
+                  {
+                    name: 'customItem',
+                    type: 'object',
+                    fields: [{name: 'title', type: 'string'}],
+                    components: {
+                      input: () => null, // Custom input component
+                    },
+                  },
+                ],
+              },
+            ],
+          },
+        ],
+      })
+
+      const docSchema = schemaWithCustomInput.get('testDocument') as ObjectSchemaType
+      const customArrayField = docSchema.fields.find(
+        (f) => f.name === 'customArray',
+      ) as ObjectField<ArraySchemaType>
+
+      const mockValue = {
+        customArray: [
+          {_key: 'item1', _type: 'customItem', title: 'Item 1'},
+          {_key: 'item2', _type: 'customItem', title: 'Item 2'},
+        ],
+      }
+
+      const openPath: Path = ['customArray', {_key: 'item1'}]
+      const props = {
+        arraySchemaType: customArrayField.type,
+        arrayValue: mockValue.customArray,
+        documentValue: mockValue,
+        openPath,
+        rootPath: ['customArray'] as Path,
+        recursive: mockRecursive,
+        rootSchemaType: docSchema,
+      }
+
+      const result = buildArrayState(props)
+
+      // relativePath SHOULD be set when item has custom components.input
+      // because components.input is often just a wrapper
+      expect(result.relativePath).toEqual(['customArray', {_key: 'item1'}])
+      // Should build menu items for items with custom components.input
+      expect(result.menuItems.length).toBeGreaterThan(0)
+    })
+
+    test('should set relativePath when nested fields have custom components but item type does not', () => {
+      // Create a schema where the item itself has no custom components,
+      // but nested fields do (simulating the nested structure scenario)
+      const schemaWithNestedCustomComponents = Schema.compile({
+        name: 'default',
+        types: [
+          {
+            name: 'testDocument',
+            type: 'document',
+            fields: [
+              {
+                name: 'nestedArray',
+                type: 'array',
+                of: [
+                  {
+                    name: 'item',
+                    type: 'object',
+                    // No custom components on the item itself
+                    fields: [
+                      {name: 'title', type: 'string'},
+                      {
+                        name: 'deepArray',
+                        type: 'array',
+                        of: [
+                          {
+                            name: 'deepItem',
+                            type: 'object',
+                            fields: [{name: 'value', type: 'string'}],
+                          },
+                        ],
+                        components: {
+                          input: () => null, // Custom input on nested field
+                        },
+                      },
+                    ],
+                  },
+                ],
+              },
+            ],
+          },
+        ],
+      })
+
+      const docSchema = schemaWithNestedCustomComponents.get('testDocument') as ObjectSchemaType
+      const nestedArrayField = docSchema.fields.find(
+        (f) => f.name === 'nestedArray',
+      ) as ObjectField<ArraySchemaType>
+
+      const mockValue = {
+        nestedArray: [
+          {
+            _key: 'item1',
+            _type: 'item',
+            title: 'Item 1',
+            deepArray: [{_key: 'deep1', _type: 'deepItem', value: 'Deep Value'}],
+          },
+        ],
+      }
+
+      const openPath: Path = ['nestedArray', {_key: 'item1'}]
+      const props = {
+        arraySchemaType: nestedArrayField.type,
+        arrayValue: mockValue.nestedArray,
+        documentValue: mockValue,
+        openPath,
+        rootPath: ['nestedArray'] as Path,
+        recursive: mockRecursive,
+        rootSchemaType: docSchema,
+      }
+
+      const result = buildArrayState(props)
+
+      // relativePath SHOULD be set because the item itself has no custom components
+      expect(result.relativePath).toEqual(['nestedArray', {_key: 'item1'}])
+      // Should build menu items for the item
+      expect(result.menuItems.length).toBeGreaterThan(0)
+    })
+  })
 })

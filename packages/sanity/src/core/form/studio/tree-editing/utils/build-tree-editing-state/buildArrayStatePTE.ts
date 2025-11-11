@@ -100,17 +100,26 @@ export function buildArrayStatePTE(props: BuildArrayStatePTEProps): {
     if (blockObj._type === 'block') return
 
     const blockPath = [...childPath, {_key: blockObj._key}] as Path
-    const blockSchemaType = getItemType(
-      childField.type as ArraySchemaType,
-      blockObj,
-    ) as ObjectSchemaType
+
+    // Get the block's schema type to check for custom components
+    const blockSchemaType = (childField.type as ArraySchemaType).of
+      ? getItemType(childField.type as ArraySchemaType, blockObj)
+      : null
 
     if (!blockSchemaType) return
 
+    // If the item schema type ITSELF has custom components.item, skip building
+    // array dialog for this block. This handles cases like internationalized arrays.
+    // NOTE: We only check the block type itself, NOT nested fields within it.
+    if (blockSchemaType.components?.item) {
+      return
+    }
+
+    if (!blockSchemaType || !isObjectSchemaType(blockSchemaType)) return
+    if (!blockSchemaType.fields) return
+
     // Skip references early, references are handled by the reference input and shouldn't open the enhanced dialog
     if (isReferenceSchemaType(blockSchemaType)) return
-
-    if (!blockSchemaType?.fields) return
 
     // Check if openPath points to this block (for direct block editing like images)
     // Set relativePath if openPath points directly to this block

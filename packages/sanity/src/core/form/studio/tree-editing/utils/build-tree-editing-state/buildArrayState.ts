@@ -94,6 +94,13 @@ export function buildArrayState(props: BuildArrayState): TreeEditingState {
     // Skip references early, references are handled by the reference input and shouldn't open the enhanced dialog
     if (isReferenceSchemaType(itemSchemaField)) return
 
+    // If the item schema type itself has custom components.item, skip building
+    // Array dialog for this item. This handles cases like internationalized arrays.
+    // NOTE: We only check the item type itself, NOT nested fields within it.
+    if (itemSchemaField.components?.item) {
+      return
+    }
+
     // Check if this is the currently selected item and store its index
     if (isArrayItemSelected(itemPath, openPath)) {
       relativePath = getRelativePath(itemPath)
