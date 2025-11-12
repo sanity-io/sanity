@@ -44,11 +44,8 @@
     "dev:test-create-studio": "pnpm --filter test-create-integration-studio dev",
     "dev:test-studio": "pnpm --filter sanity-test-studio dev",
     "dev:test-studio-production-profiling": "REACT_PRODUCTION_PROFILING=true turbo run start --filter=sanity-test-studio",
-    "docs:report": "tsx -r dotenv-flow/config scripts/doc-report/docReport.ts",
-    "docs:report:cleanup": "tsx -r dotenv-flow/config scripts/doc-report/docReportCleanup",
-    "docs:report:create": "tsx -r dotenv-flow/config scripts/doc-report/docReportCreate",
     "e2e:build": "pnpm turbo run build --filter=studio-e2e-testing",
-    "e2e:cleanup:pr": "tsx -r dotenv-flow/config test/scripts/cleanupPr",
+    "e2e:cleanup:pr": "tsx -r dotenv-flow/config e2e/scripts/cleanupPr",
     "e2e:codegen": "node -r dotenv-flow/config ./node_modules/.bin/sanity-test codegen",
     "e2e:dev": "pnpm --filter studio-e2e-testing dev",
     "e2e:preview": "pnpm --filter e2e build && pnpm --filter studio-e2e-testing preview",
@@ -116,6 +113,7 @@
     "@repo/tsconfig": "workspace:*",
     "@repo/utils": "workspace:*",
     "@sanity/prettier-config": "^1.0.6",
+    "@sanity/ui": "catalog:",
     "@types/node": "^24.6.1",
     "@vitest/coverage-v8": "^3.2.4",
     "conventional-changelog-conventionalcommits": "^9.1.0",
@@ -148,6 +146,7 @@
       ]
     },
     "overrides": {
+      "@sanity/ui@3": "$@sanity/ui",
       "jsdom": "26.1.0",
       "vitest": "$vitest"
     }

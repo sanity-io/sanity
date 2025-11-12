@@ -8,12 +8,11 @@ import {type PortableTextBlock} from '@sanity/types'
 import {Box, Card, Flex, Heading, Text} from '@sanity/ui'
 // eslint-disable-next-line camelcase
 import {getTheme_v2} from '@sanity/ui/theme'
-import {template} from 'lodash'
 import {type ReactNode, useEffect, useMemo, useState} from 'react'
 import {css, styled} from 'styled-components'
 
 import {ConditionalWrapper} from '../../../../ui-components/conditionalWrapper'
-import {TEMPLATE_OPTIONS} from '../constants'
+import {interpolateTemplate} from '../../../util/interpolateTemplate'
 import {transformBlocks} from './helpers'
 
 /** @internal */
@@ -185,8 +184,7 @@ const interpolateChildrenText = (interpolation?: InterpolationProp) => (children
 
   return childrenArray.map((child) => {
     if (typeof child === 'string') {
-      const childTemplate = template(child, TEMPLATE_OPTIONS)
-      return childTemplate(interpolation)
+      return interpolateTemplate(child, interpolation)
     }
 
     return child

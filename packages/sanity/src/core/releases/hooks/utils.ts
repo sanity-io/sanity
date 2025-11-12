@@ -1,7 +1,6 @@
 import {type ClientPerspective, type ReleaseDocument} from '@sanity/client'
 
 import {type PerspectiveStack, type ReleaseId} from '../../perspective/types'
-import {isCardinalityOneRelease} from '../../util/releaseUtils'
 import {getReleaseIdFromReleaseDocumentId} from '../util/getReleaseIdFromReleaseDocumentId'
 
 /**
@@ -73,19 +72,6 @@ export function getReleasesPerspectiveStack({
   }
   if (selectedPerspectiveName === 'published') {
     return PUBLISHED
-  }
-
-  const selectedRelease = releases.find(
-    (release) => getReleaseIdFromReleaseDocumentId(release._id) === selectedPerspectiveName,
-  )
-  // For cardinality one releases, we only want that specific release in the perspective stack,
-  // not the full chronological stack of releases that come before it
-  if (selectedRelease && isCardinalityOneRelease(selectedRelease)) {
-    // Return the cardinality one release + default perspective (drafts/published)
-    // cardinality one releases are scheduled drafts, so are considered layers atop default perspective
-    return [selectedPerspectiveName]
-      .concat(defaultPerspective)
-      .filter((name) => !excludedPerspectives.includes(name))
   }
 
   const sorted: ClientPerspective = sortReleases(releases).map((release) =>

@@ -40,7 +40,7 @@ export function selectElement(element: HTMLElement): void {
 }
 
 export function select(event: any): void {
-  selectElement(event.currentTarget)
+  selectElement(event.target)
 }
 
 export function maybeSelectAll(event: any): void {

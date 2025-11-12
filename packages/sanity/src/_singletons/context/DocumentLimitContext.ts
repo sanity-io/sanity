@@ -9,6 +9,7 @@ import type {UpsellData} from '../../core/studio/upsell/types'
 export interface DocumentLimitUpsellContextValue {
   upsellDialogOpen: boolean
   handleOpenDialog: (source: UpsellDialogViewedInfo['source']) => void
+  handleClose: () => void
   upsellData: UpsellData | null
   telemetryLogs: {
     dialogSecondaryClicked: () => void

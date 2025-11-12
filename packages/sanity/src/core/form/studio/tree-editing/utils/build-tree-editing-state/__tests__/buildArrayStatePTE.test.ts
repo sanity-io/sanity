@@ -856,4 +856,221 @@ describe('buildArrayStatePTE', () => {
       })
     })
   })
+
+  describe('custom components', () => {
+    test('should NOT set relativePath when PTE block type has custom components.item', () => {
+      // Create a schema with custom components.item on a block
+      const schemaWithCustomBlock = Schema.compile({
+        name: 'default',
+        types: [
+          {
+            name: 'testDocument',
+            type: 'document',
+            fields: [
+              {
+                name: 'body',
+                type: 'array',
+                of: [
+                  {
+                    type: 'block',
+                  },
+                  {
+                    name: 'customBlock',
+                    type: 'object',
+                    fields: [{name: 'title', type: 'string'}],
+                    components: {
+                      item: () => null, // Custom item component
+                    },
+                  },
+                ],
+              },
+            ],
+          },
+        ],
+      })
+
+      const docSchema = schemaWithCustomBlock.get('testDocument') as ObjectSchemaType
+      const bodyFieldCustom = docSchema.fields.find(
+        (f) => f.name === 'body',
+      ) as ObjectField<ArraySchemaType>
+
+      const mockValue = {
+        body: [
+          {
+            _key: 'custom1',
+            _type: 'customBlock',
+            title: 'Custom Block',
+          },
+        ],
+      }
+
+      const openPath: Path = ['body', {_key: 'custom1'}]
+      const props = createTestProps({
+        childField: bodyFieldCustom,
+        childPath: ['body'] as Path,
+        childValue: mockValue.body,
+        documentValue: mockValue,
+        openPath,
+      })
+
+      // Override the schema to use the one with custom components
+      const propsWithCustom = {
+        ...props,
+        rootSchemaType: docSchema,
+      }
+
+      const result = buildArrayStatePTE(propsWithCustom)
+
+      // relativePath should NOT be set when block has custom components
+      expect(result.relativePath).toBeNull()
+      // Should not build menu items for blocks with custom components
+      expect(result.childrenMenuItems).toEqual([])
+    })
+
+    test('should set relativePath when PTE block type has custom components.input', () => {
+      // Create a schema with custom components.input on a block
+      // components.input is allowed as it's often just a wrapper
+      const schemaWithCustomBlock = Schema.compile({
+        name: 'default',
+        types: [
+          {
+            name: 'testDocument',
+            type: 'document',
+            fields: [
+              {
+                name: 'body',
+                type: 'array',
+                of: [
+                  {
+                    type: 'block',
+                  },
+                  {
+                    name: 'customBlock',
+                    type: 'object',
+                    fields: [{name: 'title', type: 'string'}],
+                    components: {
+                      input: () => null, // Custom input component
+                    },
+                  },
+                ],
+              },
+            ],
+          },
+        ],
+      })
+
+      const docSchema = schemaWithCustomBlock.get('testDocument') as ObjectSchemaType
+
+      const mockValue = {
+        body: [
+          {
+            _key: 'custom1',
+            _type: 'customBlock',
+            title: 'Custom Block',
+          },
+        ],
+      }
+
+      const openPath: Path = ['body', {_key: 'custom1'}]
+      const props = createTestProps({
+        childField: bodyField,
+        childPath: ['body'] as Path,
+        childValue: mockValue.body,
+        documentValue: mockValue,
+        openPath,
+      })
+
+      // Override the schema to use the one with custom components
+      const propsWithCustom = {
+        ...props,
+        rootSchemaType: docSchema,
+      }
+
+      const result = buildArrayStatePTE(propsWithCustom)
+
+      // relativePath SHOULD be set when block has custom components.input
+      // because components.input is often just a wrapper
+      expect(result.relativePath).toEqual(['body', {_key: 'custom1'}])
+      // Should build menu items for blocks with custom components.input
+      expect(result.childrenMenuItems.length).toBeGreaterThan(0)
+    })
+
+    test('should set relativePath when nested fields have custom components but block type does not', () => {
+      // Create a schema where the block itself has no custom components,
+      // but nested fields do (simulating the nested structure scenario)
+      const schemaWithNestedCustom = Schema.compile({
+        name: 'default',
+        types: [
+          {
+            name: 'testDocument',
+            type: 'document',
+            fields: [
+              {
+                name: 'body',
+                type: 'array',
+                of: [
+                  {
+                    type: 'block',
+                  },
+                  {
+                    name: 'customBlock',
+                    type: 'object',
+                    // No custom components on the block itself
+                    fields: [
+                      {name: 'title', type: 'string'},
+                      {
+                        name: 'items',
+                        type: 'array',
+                        of: [
+                          {name: 'item', type: 'object', fields: [{name: 'name', type: 'string'}]},
+                        ],
+                        components: {
+                          input: () => null, // Custom input on nested field
+                        },
+                      },
+                    ],
+                  },
+                ],
+              },
+            ],
+          },
+        ],
+      })
+
+      const docSchema = schemaWithNestedCustom.get('testDocument') as ObjectSchemaType
+
+      const mockValue = {
+        body: [
+          {
+            _key: 'custom1',
+            _type: 'customBlock',
+            title: 'Custom Block',
+            items: [{_key: 'item1', _type: 'item', name: 'Item 1'}],
+          },
+        ],
+      }
+
+      const openPath: Path = ['body', {_key: 'custom1'}]
+      const props = createTestProps({
+        childField: bodyField,
+        childPath: ['body'] as Path,
+        childValue: mockValue.body,
+        documentValue: mockValue,
+        openPath,
+      })
+
+      // Override the schema to use the one with nested custom components
+      const propsWithNested = {
+        ...props,
+        rootSchemaType: docSchema,
+      }
+
+      const result = buildArrayStatePTE(propsWithNested)
+
+      // relativePath SHOULD be set because the block itself has no custom components
+      expect(result.relativePath).toEqual(['body', {_key: 'custom1'}])
+      // Should build menu items for the block
+      expect(result.childrenMenuItems.length).toBeGreaterThan(0)
+    })
+  })
 })

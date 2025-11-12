@@ -151,5 +151,3 @@ describe('image types', () => {
     const fieldsType = imageDef.fields
   })
 })
-
-export {}
