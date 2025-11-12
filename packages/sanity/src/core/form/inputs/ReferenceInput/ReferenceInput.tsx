@@ -54,7 +54,6 @@ export function ReferenceInput(props: ReferenceInputProps) {
     id,
     onPathFocus,
     value,
-    version,
     renderPreview,
     path,
     elementProps,
@@ -66,7 +65,6 @@ export function ReferenceInput(props: ReferenceInputProps) {
     path,
     schemaType,
     value,
-    version,
   })
 
   const [searchState, setSearchState] = useState<ReferenceSearchState>(INITIAL_SEARCH_STATE)
@@ -141,12 +139,12 @@ export function ReferenceInput(props: ReferenceInputProps) {
       if (!hit) {
         throw new Error('Selected an item that wasnt part of the result set')
       }
-      // if there's no published version of this document, set the reference to weak
 
+      // if there's no published version of this document, set the reference to weak
       const patches = [
         setIfMissing({}),
         set(schemaType.name, ['_type']),
-        set(getPublishedId(nextId), ['_ref']),
+        set(getPublishedId(hit.id), ['_ref']),
         hit.published && !schemaType.weak ? unset(['_weak']) : set(true, ['_weak']),
         hit.published
           ? unset(['_strengthenOnPublish'])

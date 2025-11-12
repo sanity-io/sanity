@@ -1,3 +1,7 @@
+/* eslint-disable max-nested-callbacks */
+import {type ClientPerspective, type SanityDocument} from '@sanity/client'
+import {getPublishedId} from '@sanity/client/csm'
+import {DEFAULT_MAX_FIELD_DEPTH} from '@sanity/schema/_internal'
 import {type Reference, type ReferenceSchemaType} from '@sanity/types'
 import * as PathUtils from '@sanity/util/paths'
 import {
@@ -9,16 +13,15 @@ import {
   useMemo,
   useRef,
 } from 'react'
-import {from, throwError} from 'rxjs'
-import {catchError, mergeMap} from 'rxjs/operators'
+import {combineLatest, from, throwError} from 'rxjs'
+import {catchError, map, mergeMap, switchMap} from 'rxjs/operators'
 
-import {type FIXME} from '../../../../FIXME'
 import {useSchema} from '../../../../hooks'
 import {usePerspective} from '../../../../perspective/usePerspective'
+import {createSearch} from '../../../../search'
 import {useDocumentPreviewStore} from '../../../../store'
 import {useSource} from '../../../../studio'
 import {useSearchMaxFieldDepth} from '../../../../studio/components/navbar/search/hooks/useSearchMaxFieldDepth'
-import {DEFAULT_STUDIO_CLIENT_OPTIONS} from '../../../../studioClient'
 import {isNonNullable} from '../../../../util'
 import {useFormValue} from '../../../contexts/FormValue'
 import {ReferenceInput} from '../../../inputs/ReferenceInput/ReferenceInput'
@@ -55,18 +58,32 @@ type SearchError = {
 }
 
 /**
+ * createSearchQuery currently defaults to explicitly set `raw` perspective if no perspective is given
+ * so we here need to bypass that default by explicitly setting `published` if no perspective or empty array
+ * @param perspective - a perspective or perspective stack
+ */
+function ensurePublished(
+  perspective: Exclude<ClientPerspective, 'raw' | 'previewDrafts'> | undefined,
+) {
+  // note: perspective may be a string here too, but that's ok
+  if (!perspective || perspective.length === 0) {
+    return ['published']
+  }
+  return perspective
+}
+
+/**
  *
  * @hidden
  * @beta
  */
 export function StudioReferenceInput(props: StudioReferenceInputProps) {
   const source = useSource()
-  const searchClient = source.getClient(DEFAULT_STUDIO_CLIENT_OPTIONS)
+  const searchClient = source.getClient({apiVersion: 'vX'})
   const {perspectiveStack} = usePerspective()
   const schema = useSchema()
   const maxFieldDepth = useSearchMaxFieldDepth()
   const documentPreviewStore = useDocumentPreviewStore()
-  const {selectedReleaseId} = usePerspective()
   const {path, schemaType} = props
   const {
     EditReferenceLinkComponent,
@@ -77,7 +94,7 @@ export function StudioReferenceInput(props: StudioReferenceInputProps) {
   } = useReferenceInputOptions()
   const {strategy: searchStrategy} = source.search
 
-  const documentValue = useFormValue([]) as FIXME
+  const documentValue = useFormValue([]) as SanityDocument
   const documentRef = useValueRef(documentValue)
   const documentTypeName = documentRef.current?._type
   const refType = schema.get(documentTypeName)
@@ -155,21 +172,27 @@ export function StudioReferenceInput(props: StudioReferenceInputProps) {
         catchError((err: SearchError) => {
           const isQueryError = err.details && err.details.type === 'queryParseError'
           if (schemaType.options?.filter && isQueryError) {
-            err.message = `Invalid reference filter, please check the custom "filter" option`
+            return throwError(
+              () =>
+                new Error(`Invalid reference filter, please check the custom "filter" option`, {
+                  cause: err,
+                }),
+            )
           }
-          return throwError(err)
+          return throwError(() => err)
         }),
       ),
-
     [
-      schemaType,
+      schemaType.options,
+      schemaType.to,
       documentRef,
+      perspectiveStack,
       path,
       getClient,
-      searchClient,
       maxFieldDepth,
       searchStrategy,
-      perspectiveStack,
+      searchClient,
+      documentPreviewStore,
     ],
   )
 
@@ -256,7 +279,6 @@ export function StudioReferenceInput(props: StudioReferenceInputProps) {
       editReferenceLinkComponent={EditReferenceLink}
       createOptions={createOptions}
       onEditReference={handleEditReference}
-      version={selectedReleaseId}
     />
   )
 }

@@ -1,13 +1,11 @@
-import {type SanityClient, type StackablePerspective} from '@sanity/client'
-import {DEFAULT_MAX_FIELD_DEPTH} from '@sanity/schema/_internal'
-import {type ReferenceFilterSearchOptions, type ReferenceSchemaType} from '@sanity/types'
+import {type StackablePerspective} from '@sanity/client'
+import {type ReferenceSchemaType} from '@sanity/types'
 import {combineLatest, type Observable, of} from 'rxjs'
-import {map, mergeMap, switchMap} from 'rxjs/operators'
+import {map, switchMap} from 'rxjs/operators'
 
 import {type DocumentPreviewStore, getPreviewStateObservable} from '../../../../preview'
-import {createSearch} from '../../../../search'
-import {collate, type CollatedHit, getDraftId, getIdPair} from '../../../../util'
-import {type ReferenceInfo, type ReferenceSearchHit} from '../../../inputs/ReferenceInput/types'
+import {getIdPair} from '../../../../util'
+import {type ReferenceInfo} from '../../../inputs/ReferenceInput/types'
 
 const READABLE = {
   available: true,
@@ -26,6 +24,12 @@ const NOT_FOUND = {
 
 /**
  * Takes an id and a reference schema type, returns metadata about it
+ * This metadata includes both preview fields and availability, e.g. readable, nonexistent or inaccessible (due to user permissions)
+ * Note that using calling this function with a document returned by a search should not be needed, since
+ * a document returned by search already per definition must be accessible/readable to the current user.
+ *
+ *  In other words: this function is designed for cases where you have a known document id that may
+ *  or may not be available for the current user, typically a reference with an existing value
  */
 export function getReferenceInfo(
   documentPreviewStore: DocumentPreviewStore,
@@ -61,7 +65,7 @@ export function getReferenceInfo(
             snapshot: null,
             original: null,
           },
-        } as const)
+        })
       }
 
       const typeName$ = documentPreviewStore.observeDocumentTypeFromId(
