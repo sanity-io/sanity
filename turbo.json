@@ -62,7 +62,6 @@
     "SYSTEMROOT",
     "VISUAL",
     "EDITOR",
-    "TEST",
     // These should be passed through but not be used as cache keys since they are tokens
     "EFPS_SANITY_TOKEN_STAGING",
     "EFPS_SANITY_TOKEN_PROD,",
