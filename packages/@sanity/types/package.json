@@ -1,6 +1,6 @@
 {
   "name": "@sanity/types",
-  "version": "4.11.0",
+  "version": "4.15.0",
   "description": "Type definitions for common Sanity data structures",
   "keywords": [
     "sanity",
@@ -50,19 +50,22 @@
     "watch": "pkg-utils watch"
   },
   "dependencies": {
-    "@sanity/client": "^7.12.0",
+    "@sanity/client": "^7.12.1",
     "@sanity/media-library-types": "^1.0.1"
   },
   "devDependencies": {
     "@repo/eslint-config": "workspace:*",
     "@repo/package.config": "workspace:*",
     "@repo/test-config": "workspace:*",
+    "@repo/tsconfig": "workspace:*",
     "@sanity/insert-menu": "2.1.0",
+    "@sanity/pkg-utils": "catalog:",
     "@types/react": "catalog:",
     "@vitejs/plugin-react": "catalog:",
+    "eslint": "catalog:",
     "react": "catalog:",
     "rimraf": "^5.0.10",
-    "vitest": "^3.2.4"
+    "vitest": "catalog:"
   },
   "peerDependencies": {
     "@types/react": "18 || 19"

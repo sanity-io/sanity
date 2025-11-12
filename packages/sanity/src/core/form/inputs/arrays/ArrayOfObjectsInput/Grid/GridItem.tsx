@@ -1,5 +1,5 @@
 import {AddDocumentIcon, CopyIcon, TrashIcon} from '@sanity/icons'
-import {type SchemaType} from '@sanity/types'
+import {type SchemaType, type UploadState} from '@sanity/types'
 import {Box, Card, type CardTone, Menu} from '@sanity/ui'
 import {useCallback, useImperativeHandle, useMemo, useRef, useState} from 'react'
 import {styled} from 'styled-components'
@@ -18,7 +18,11 @@ import {useDidUpdate} from '../../../../hooks/useDidUpdate'
 import {useScrollIntoViewOnFocusWithin} from '../../../../hooks/useScrollIntoViewOnFocusWithin'
 import {useChildPresence} from '../../../../studio/contexts/Presence'
 import {useChildValidation} from '../../../../studio/contexts/Validation'
-import {TreeEditingEnabledProvider, useTreeEditingEnabled} from '../../../../studio/tree-editing'
+import {
+  EnhancedObjectDialogProvider,
+  useEnhancedObjectDialog,
+} from '../../../../studio/tree-editing'
+import {UPLOAD_STATUS_KEY} from '../../../../studio/uploads/constants'
 import {type ObjectItem, type ObjectItemProps} from '../../../../types'
 import {randomKey} from '../../../../utils/randomKey'
 import {CellLayout} from '../../layouts/CellLayout'
@@ -84,11 +88,17 @@ export function GridItem<Item extends ObjectItem = ObjectItem>(props: GridItemPr
   } = props
   const {t} = useTranslation()
 
-  const {enabled: enhancedObjectDialogEnabled} = useTreeEditingEnabled()
+  const {enabled: enhancedObjectDialogEnabled, isDialogAvailable} = useEnhancedObjectDialog()
 
+  const uploadState = (value as any)[UPLOAD_STATUS_KEY] as UploadState | undefined
+  const uploadProgress =
+    typeof uploadState?.progress === 'number' ? uploadState?.progress : undefined
+
+  const shouldUseEnhancedDialog = enhancedObjectDialogEnabled && isDialogAvailable
   // The edit portal should open if the item is open and:
-  // - tree array editing is disabled
-  const openPortal = open && !enhancedObjectDialogEnabled
+  // - EnhancedObjectDialog is disabled
+  // - the EnhancedObjectDialog is not available
+  const openPortal = open && !shouldUseEnhancedDialog
 
   const sortable = parentSchemaType.options?.sortable !== false
   const insertableTypes = parentSchemaType.of
@@ -267,6 +277,7 @@ export function GridItem<Item extends ObjectItem = ObjectItem>(props: GridItemPr
           layout: 'media',
           withBorder: false,
           withShadow: false,
+          progress: uploadProgress,
         })}
 
         {resolvingInitialValue && <LoadingBlock fill />}
@@ -276,7 +287,7 @@ export function GridItem<Item extends ObjectItem = ObjectItem>(props: GridItemPr
 
   const itemTypeTitle = getSchemaTypeTitle(schemaType)
   return (
-    <TreeEditingEnabledProvider>
+    <EnhancedObjectDialogProvider>
       <ChangeIndicator path={path} isChanged={changed} hasFocus={Boolean(focused)}>
         {item}
       </ChangeIndicator>
@@ -297,6 +308,6 @@ export function GridItem<Item extends ObjectItem = ObjectItem>(props: GridItemPr
           {children}
         </EditPortal>
       )}
-    </TreeEditingEnabledProvider>
+    </EnhancedObjectDialogProvider>
   )
 }

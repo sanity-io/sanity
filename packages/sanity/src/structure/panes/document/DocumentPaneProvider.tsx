@@ -111,7 +111,12 @@ export const DocumentPaneProvider = memo((props: DocumentPaneProviderProps) => {
     document: {
       drafts: {enabled: isDraftModelEnabled},
     },
+    beta,
   } = useWorkspace()
+
+  const enhancedObjectDialogEnabled = useMemo(() => {
+    return beta?.form?.enhancedObjectDialog?.enabled
+  }, [beta])
 
   const {selectedReleaseId, selectedPerspectiveName} = useMemo(() => {
     // TODO: COREL - Remove this after updating sanity-assist to use <PerspectiveProvider>
@@ -328,17 +333,19 @@ export const DocumentPaneProvider = memo((props: DocumentPaneProviderProps) => {
       // Update internal open path
       onPathOpen(path)
 
-      /**
-       * Before we used to set the path open based on the focus path
-       * Now we set it based on open path, which changes what it represents and is something that could become a source of confusion.
-       * There is upcoming work to refactor this and other aspects of the control of the focus path which means that this might return to the focus path in the future.
-       */
-      const nextPath = pathToString(path)
-      if (params.path !== nextPath) {
-        setPaneParams({...params, path: nextPath})
+      if (enhancedObjectDialogEnabled) {
+        /**
+         * Before we used to set the path open based on the focus path
+         * Now we set it based on open path, which changes what it represents and is something that could become a source of confusion.
+         * There is upcoming work to refactor this and other aspects of the control of the focus path which means that this might return to the focus path in the future.
+         */
+        const nextPath = pathToString(path)
+        if (params.path !== nextPath) {
+          setPaneParams({...params, path: nextPath})
+        }
       }
     },
-    [onPathOpen, params, setPaneParams],
+    [onPathOpen, params, setPaneParams, enhancedObjectDialogEnabled],
   )
 
   // Resolve document badges
@@ -652,18 +659,23 @@ export const DocumentPaneProvider = memo((props: DocumentPaneProviderProps) => {
   const pathRef = useRef<string | undefined>(undefined)
   useEffect(() => {
     if (ready && params.path) {
-      const {path} = params
+      const {path, ...restParams} = params
 
       // trigger a focus when `params.path` changes
       if (path !== pathRef.current) {
         const pathFromUrl = resolveKeyedPath(formStateRef.current?.value, pathFromString(path))
         onProgrammaticFocus(pathFromUrl)
       }
+
+      if (!enhancedObjectDialogEnabled) {
+        // remove the `path`-param from url after we have consumed it as the initial focus path
+        paneRouter.setParams(restParams)
+      }
     }
     pathRef.current = params.path
 
     return undefined
-  }, [formStateRef, onProgrammaticFocus, paneRouter, params, ready])
+  }, [formStateRef, onProgrammaticFocus, paneRouter, params, ready, enhancedObjectDialogEnabled])
 
   return (
     <DocumentPaneContext.Provider value={documentPane}>{children}</DocumentPaneContext.Provider>

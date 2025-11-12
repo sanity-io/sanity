@@ -1,5 +1,5 @@
 import {type DocumentActionComponent} from '../../../config/document/actions'
-import {type DocumentActionsContext, QUOTA_EXCLUDED_RELEASES_ENABLED} from '../../../config/types'
+import {type DocumentActionsContext} from '../../../config/types'
 import {
   DeleteScheduledDraftAction,
   EditScheduledDraftAction,
@@ -16,10 +16,8 @@ export default function resolveDocumentActions(
     return [PublishScheduledDraftAction, EditScheduledDraftAction, DeleteScheduledDraftAction]
   }
 
-  const isQuotaExcludedReleaseEnabled = context[QUOTA_EXCLUDED_RELEASES_ENABLED]
-
   // Add SchedulePublishAction only for draft documents
-  if (isQuotaExcludedReleaseEnabled && context.versionType === 'draft') {
+  if (context.versionType === 'draft') {
     const actionsExcludingOriginalSchedule = existingActions.filter(
       ({action}) => action !== 'schedule',
     )

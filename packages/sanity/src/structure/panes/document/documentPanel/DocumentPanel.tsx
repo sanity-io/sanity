@@ -330,7 +330,7 @@ export const DocumentPanel = function DocumentPanel(props: DocumentPanelProps) {
               {banners}
               <DocumentPanelSubHeader />
             </LegacyLayerProvider>
-            <DocumentBox flex={2} overflow="hidden">
+            <DocumentBox flex={2}>
               <PortalProvider element={portalElement} __unstable_elements={portalElements}>
                 <BoundaryElementProvider element={documentScrollElement}>
                   <VirtualizerScrollInstanceProvider

@@ -141,14 +141,11 @@ jobs:
       - name: Install project dependencies
         run: pnpm install
 
-      - name: Install Vercel CLI
-        run: pnpm install --global vercel@latest
-
       - name: Pull Vercel Environment Information
         env:
           VERCEL_ORG_ID: ${{ secrets.VERCEL_E2E_STUDIO_ORG_ID }}
           VERCEL_PROJECT_ID: ${{ secrets.VERCEL_E2E_STUDIO_PROJECT_ID }}
-        run: vercel pull --yes --environment=preview --token=${{ secrets.VERCEL_E2E_STUDIO_TOKEN }}
+        run: pnpm vercel pull --yes --environment=preview --token=${{ secrets.VERCEL_E2E_STUDIO_TOKEN }}
 
       - name: Build Project Artifacts on PR
         if: ${{ github.event_name == 'pull_request' }}
@@ -160,7 +157,7 @@ jobs:
           SANITY_E2E_DATASET: ${{ env.CHROMIUM_DATASET }}
           SANITY_E2E_DATASET_FIREFOX: ${{ env.FIREFOX_DATASET }}
           SANITY_E2E_DATASET_CHROMIUM: ${{ env.CHROMIUM_DATASET }}
-        run: vercel build --token=${{ secrets.VERCEL_E2E_STUDIO_TOKEN }}
+        run: pnpm vercel build --token=${{ secrets.VERCEL_E2E_STUDIO_TOKEN }}
 
       - name: Build Project Artifacts on main
         if: ${{ github.event_name == 'push' && github.ref == 'refs/heads/main' }}
@@ -173,14 +170,14 @@ jobs:
           # TODO: Set a new dataset for main in each run and it should be for each project [chromium, firefox]
           # SANITY_E2E_DATASET_FIREFOX: ${{ env.FIREFOX_DATASET }}
           # SANITY_E2E_DATASET_CHROMIUM: ${{ env.CHROMIUM_DATASET }}
-        run: vercel build --token=${{ secrets.VERCEL_E2E_STUDIO_TOKEN }}
+        run: pnpm vercel build --token=${{ secrets.VERCEL_E2E_STUDIO_TOKEN }}
 
       - name: Deploy Project Artifacts to Vercel
         id: deploy
         env:
           COMMIT_MESSAGE: ${{ github.event.head_commit.message || github.event.pull_request.title }}
         run: |
-          echo "DEPLOY_URL=$(vercel deploy --prebuilt --token=${{ secrets.VERCEL_E2E_STUDIO_TOKEN }} \
+          echo "DEPLOY_URL=$(pnpm vercel deploy --prebuilt --token=${{ secrets.VERCEL_E2E_STUDIO_TOKEN }} \
           -m githubDeployment="1" \
           -m githubCommitAuthorName="${{ github.event.sender.name || 'GitHub Actions' }}" \
           -m githubCommitMessage="$COMMIT_MESSAGE" \
@@ -307,8 +304,8 @@ jobs:
         with:
           name: playwright-report-${{ matrix.project }}-${{ matrix.shardIndex }}
           path: |
-            blob-report
-            test-results
+            e2e/blob-report
+            e2e/results
           retention-days: 30
 
   merge-reports:

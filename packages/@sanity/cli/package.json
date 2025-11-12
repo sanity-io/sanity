@@ -1,6 +1,6 @@
 {
   "name": "@sanity/cli",
-  "version": "4.11.0",
+  "version": "4.15.0",
   "description": "Sanity CLI tool for managing Sanity installations, managing plugins, schemas and datasets",
   "keywords": [
     "sanity",
@@ -56,10 +56,11 @@
     "watch": "pkg-utils watch"
   },
   "dependencies": {
+    "@babel/parser": "^7.28.5",
     "@babel/traverse": "^7.28.4",
-    "@sanity/client": "^7.12.0",
+    "@sanity/client": "^7.12.1",
     "@sanity/codegen": "workspace:*",
-    "@sanity/runtime-cli": "^10.6.1",
+    "@sanity/runtime-cli": "^11.1.3",
     "@sanity/telemetry": "^0.8.0",
     "@sanity/template-validator": "^2.4.3",
     "chalk": "^4.1.2",
@@ -76,10 +77,11 @@
     "@repo/eslint-config": "workspace:*",
     "@repo/package.config": "workspace:*",
     "@repo/test-config": "workspace:*",
+    "@repo/tsconfig": "workspace:*",
     "@rexxars/gitconfiglocal": "^3.0.1",
     "@rollup/plugin-node-resolve": "^16.0.1",
-    "@sanity/eslint-config-studio": "catalog:",
     "@sanity/generate-help-url": "^3.0.0",
+    "@sanity/pkg-utils": "catalog:",
     "@sanity/types": "workspace:*",
     "@types/babel__traverse": "^7.28.0",
     "@types/configstore": "^5.0.1",
@@ -103,6 +105,7 @@
     "deep-sort-object": "^1.0.2",
     "dotenv": "^16.6.1",
     "dotenv-expand": "^9.0.0",
+    "eslint": "catalog:",
     "execa": "^2.1.0",
     "get-latest-version": "^5.1.0",
     "git-user-info": "^2.0.3",
@@ -124,8 +127,8 @@
     "semver": "^7.7.2",
     "semver-compare": "^1.0.0",
     "tar": "^6.2.1",
-    "vite": "^7.1.7",
-    "vitest": "^3.2.4",
+    "vite": "catalog:",
+    "vitest": "catalog:",
     "which": "^2.0.2",
     "xdg-basedir": "^4.0.0"
   },

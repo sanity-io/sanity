@@ -1,5 +1,5 @@
 import {constants, mkdir, open, stat} from 'node:fs/promises'
-import {dirname, join} from 'node:path'
+import {dirname, isAbsolute, join} from 'node:path'
 import {Worker} from 'node:worker_threads'
 
 import {readConfig} from '@sanity/codegen'
@@ -58,7 +58,9 @@ export default async function typegenGenerateAction(
     throw err
   }
 
-  const outputPath = join(process.cwd(), codegenConfig.generates)
+  const outputPath = isAbsolute(codegenConfig.generates)
+    ? codegenConfig.generates
+    : join(process.cwd(), codegenConfig.generates)
   const outputDir = dirname(outputPath)
   await mkdir(outputDir, {recursive: true})
   const workerPath = await getCliWorkerPath('typegenGenerate')
@@ -81,7 +83,7 @@ export default async function typegenGenerateAction(
     constants.O_TRUNC | constants.O_CREAT | constants.O_WRONLY,
   )
 
-  typeFile.write(generatedFileWarning)
+  void typeFile.write(generatedFileWarning)
 
   const stats = {
     queryFilesCount: 0,
@@ -117,7 +119,7 @@ export default async function typegenGenerateAction(
       if (msg.type === 'typemap') {
         let typeMapStr = `// Query TypeMap\n`
         typeMapStr += msg.typeMap
-        typeFile.write(typeMapStr)
+        void typeFile.write(typeMapStr)
         stats.size += Buffer.byteLength(typeMapStr)
         return
       }
@@ -127,7 +129,7 @@ export default async function typegenGenerateAction(
       if (msg.type === 'schema') {
         stats.schemaTypesCount += msg.length
         fileTypeString += msg.schema
-        typeFile.write(fileTypeString)
+        void typeFile.write(fileTypeString)
         return
       }
 
@@ -149,7 +151,7 @@ export default async function typegenGenerateAction(
           stats.unknownTypeNodesGenerated += unknownTypeNodesGenerated
           stats.emptyUnionTypeNodesGenerated += emptyUnionTypeNodesGenerated
         }
-        typeFile.write(`${fileTypeString}\n`)
+        void typeFile.write(`${fileTypeString}\n`)
         stats.size += Buffer.byteLength(fileTypeString)
       }
     })

@@ -1,0 +1,69 @@
+name: Load Vercel Env Vars into GITHUB_ENV
+description: "Pulls environment variables from Vercel and loads them into GITHUB_ENV"
+inputs:
+  variables:
+    required: false
+    description: 'List of environment variables to import. A whitespace or comma separated list of variables, e.g: "VAR1 VAR2"'
+  secrets:
+    required: false
+    description: 'List of environment variables to set as secrets. A whitespace or comma separated list of variables, e.g: "SECRET1 SECRET2"'
+  environment:
+    required: false
+    default: "preview"
+    description: "What vercel environment to pull variables from (production or preview)"
+  org-id:
+    required: true
+    description: "Vercel organization id"
+  project-id:
+    required: true
+    description: "Vercel project id"
+  token:
+    required: true
+    description: "Vercel access token with read access to variables"
+
+runs:
+  using: "composite"
+  steps:
+    - name: Pull Vercel environment variables
+      shell: bash
+      env:
+        VERCEL_ORG_ID: ${{ inputs.org-id }}
+        VERCEL_PROJECT_ID: ${{ inputs.project-id }}
+      run: pnpm vercel env pull .env.tmp --yes --environment=${{ inputs.environment }} --token=${{ inputs.token }}
+
+    - name: Load Vercel environment variables into GITHUB_ENV
+      uses: actions/github-script@v6
+      with:
+        script: |
+          const dotenv = require('dotenv')
+          const fs = require('node:fs')
+
+          const env = dotenv.parse(fs.readFileSync('.env.tmp'))
+
+          function parseListInput(input) {
+            return input
+              .split(/,|\s+/)
+              .map((l) => l.trim())
+              .filter((l) => l)
+          }
+
+          const variables = `${{ inputs.variables }}` || ''
+          const secrets = `${{ inputs.secrets }}` || ''
+
+          if (!variables && !secrets) {
+            core.setFailed(`Provide either environment variables or secrets`)
+          }
+          parseListInput(variables).forEach((name) => {
+            core.info(`Setting environment variable ${name} from Vercel: ${env[name]}`)
+            core.exportVariable(name, env[name])
+          })
+
+          parseListInput(secrets).forEach((name) => {
+            core.setSecret(env[name])
+            core.info(`Setting environment variable ${name} from Vercel: ${env[name]}`)
+            core.exportVariable(name, env[name])
+          })
+
+    - name: Cleanup
+      shell: bash
+      run: rm -f .env.tmp

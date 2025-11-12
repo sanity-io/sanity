@@ -301,6 +301,7 @@ function onlyContainsStubs(
     return false
   }
 
+  // oxlint-disable-next-line no-for-in-array - a bit risky to refactor this to no longer use for-in, do it later
   for (const child in item) {
     if (!Object.prototype.hasOwnProperty.call(item, child)) {
       continue

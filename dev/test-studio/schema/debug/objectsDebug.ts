@@ -1,4 +1,12 @@
-import {defineArrayMember, defineField, defineType} from 'sanity'
+import {
+  defineArrayMember,
+  defineField,
+  defineType,
+  type InputProps,
+  type PortableTextInputProps,
+} from 'sanity'
+
+import {SideBySideObjectInput, SideBySideObjectItem} from './components/SideBySideObjectInput'
 
 const animal = defineField({
   type: 'object',
@@ -45,6 +53,11 @@ const animal = defineField({
                       type: 'array',
                       name: 'description_two',
                       title: 'Description Two',
+                      components: {
+                        input: (props: any) => {
+                          return props.renderDefault({...props, initialFullscreen: true})
+                        },
+                      },
                       of: [
                         {type: 'block'},
                         {
@@ -155,12 +168,60 @@ const animal = defineField({
                 },
               ],
             },
+            {
+              name: 'arrayOfObjects__deep',
+              type: 'array',
+              title: 'Array of objects',
+              of: [
+                {
+                  type: 'object',
+                  name: 'myObject',
+                  fields: [
+                    {
+                      name: 'string',
+                      type: 'string',
+                      title: 'String',
+                    },
+                  ],
+                },
+                {
+                  type: 'reference',
+                  name: 'author',
+                  title: 'Author',
+                  to: [{type: 'author'}],
+                },
+              ],
+            },
           ],
         },
         {
           type: 'image',
           name: 'image',
           title: 'Image',
+        },
+      ],
+    },
+    {
+      name: 'arrayOfObjects__flat',
+      type: 'array',
+      title: 'Array of objects',
+      of: [
+        {
+          type: 'object',
+          name: 'myObject',
+          fields: [
+            {
+              name: 'string',
+              type: 'string',
+              title: 'String',
+            },
+          ],
+        },
+        {
+          type: 'reference',
+          name: 'author',
+          title: 'Author',
+          to: [{type: 'author'}],
         },
       ],
     },
@@ -178,11 +239,42 @@ const animal = defineField({
               type: 'string',
               title: 'Name Child',
             },
+            {
+              type: 'internationalizedArrayString',
+              name: 'internationalizedArrayStringChild',
+              title: 'Internationalized array string',
+            },
           ],
         },
       ],
     },
-
+    {
+      type: 'array',
+      name: 'childrenWithComponents',
+      title: 'Children with components',
+      of: [
+        {
+          type: 'object',
+          name: 'child',
+          components: {
+            item: SideBySideObjectItem,
+            input: SideBySideObjectInput,
+          },
+          fields: [
+            {
+              name: 'nameChild',
+              type: 'string',
+              title: 'Name Child',
+            },
+            {
+              type: 'internationalizedArrayString',
+              name: 'internationalizedArrayStringChild',
+              title: 'Internationalized array string',
+            },
+          ],
+        },
+      ],
+    },
     {
       name: 'size',
       type: 'object',
@@ -276,6 +368,11 @@ const animal = defineField({
                                       title: 'Title',
                                     },
                                     {
+                                      type: 'internationalizedArrayString',
+                                      name: 'internationalizedArrayString',
+                                      title: 'Internationalized array string',
+                                    },
+                                    {
                                       name: 'properties_d',
                                       type: 'array',
                                       title: 'Friend properties',
@@ -323,6 +420,54 @@ const body = defineField({
       name: 'block',
       title: 'Block',
     },
+    defineArrayMember({
+      name: 'nested',
+      type: 'object',
+      fields: [
+        defineField({
+          name: 'items',
+          type: 'array',
+          of: [
+            defineArrayMember({
+              name: 'item',
+              type: 'object',
+              fields: [
+                defineField({
+                  name: 'deep',
+                  type: 'array',
+                  of: [
+                    defineArrayMember({
+                      type: 'block',
+                      styles: [
+                        {title: 'Normal', value: 'normal'},
+                        {title: 'H2', value: 'h2'},
+                        {title: 'H3', value: 'h3'},
+                        {title: 'H4', value: 'h4'},
+                      ],
+                    }),
+                  ],
+                  components: {
+                    input: (inputProps: InputProps) => {
+                      const editorProps = {
+                        ...inputProps,
+                        initialActive: false,
+                      } as PortableTextInputProps
+                      return inputProps.renderDefault(editorProps)
+                    },
+                  },
+                }),
+              ],
+            }),
+          ],
+
+          components: {
+            input: (inputProps: InputProps) => {
+              return inputProps.renderDefault({...inputProps, initialActive: false})
+            },
+          },
+        }),
+      ],
+    }),
     animal,
   ],
 })
@@ -754,6 +899,17 @@ export const objectsDebug = defineType({
       name: 'title',
       type: 'string',
     },
+    /** Internationalized array string */
+    defineField({
+      name: 'greeting',
+      type: 'internationalizedArrayString',
+    }),
+    /** Internationalized array string value */
+    defineField({
+      name: 'internationalizedArrayStringValue',
+      type: 'internationalizedArrayStringValue',
+      title: 'Internationalized array string value',
+    }),
     animals,
     arrayOfMixedTypes,
     body,

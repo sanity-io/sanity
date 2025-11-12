@@ -551,4 +551,526 @@ describe('buildArrayStatePTE', () => {
     expect(result.siblings.size).toBe(0)
     expect(result.relativePath).toBeNull() // No array to navigate to
   })
+
+  describe('reference handling', () => {
+    // Create a schema with references in PTE
+    const schemaWithReferences = Schema.compile({
+      name: 'default',
+      types: [
+        {
+          name: 'sanity.imageAsset',
+          type: 'object',
+          fields: [
+            {name: 'url', type: 'string'},
+            {name: '_id', type: 'string'},
+          ],
+        },
+        {
+          name: 'sanity.imageHotspot',
+          type: 'object',
+          fields: [
+            {name: 'x', type: 'number'},
+            {name: 'y', type: 'number'},
+            {name: 'height', type: 'number'},
+            {name: 'width', type: 'number'},
+          ],
+        },
+        {
+          name: 'sanity.imageCrop',
+          type: 'object',
+          fields: [
+            {name: 'top', type: 'number'},
+            {name: 'bottom', type: 'number'},
+            {name: 'left', type: 'number'},
+            {name: 'right', type: 'number'},
+          ],
+        },
+        {
+          name: 'author',
+          type: 'document',
+          fields: [{name: 'name', type: 'string'}],
+        },
+        {
+          name: 'testDocument',
+          title: 'Test Document',
+          type: 'document',
+          fields: [
+            {
+              name: 'body',
+              title: 'Body',
+              type: 'array',
+              of: [
+                {type: 'block'},
+                {
+                  name: 'authorRef',
+                  type: 'reference',
+                  to: [{type: 'author'}],
+                },
+                {
+                  name: 'customBlock',
+                  title: 'Custom Block',
+                  type: 'object',
+                  fields: [
+                    {
+                      name: 'title',
+                      title: 'Title',
+                      type: 'string',
+                    },
+                    {
+                      name: 'items',
+                      title: 'Items',
+                      type: 'array',
+                      of: [
+                        {
+                          name: 'item',
+                          title: 'Item',
+                          type: 'object',
+                          fields: [{name: 'name', type: 'string'}],
+                        },
+                        {
+                          name: 'itemAuthorRef',
+                          type: 'reference',
+                          to: [{type: 'author'}],
+                        },
+                      ],
+                    },
+                  ],
+                },
+              ],
+            },
+          ],
+        },
+      ],
+    })
+
+    const docSchemaWithRefs = schemaWithReferences.get('testDocument') as ObjectSchemaType
+    const bodyFieldWithRefs = docSchemaWithRefs.fields.find(
+      (f) => f.name === 'body',
+    ) as ObjectField<ArraySchemaType>
+
+    test('should NOT set relativePath when openPath points to a reference block in PTE', () => {
+      const mockValue = {
+        body: [
+          {
+            _key: 'block1',
+            _type: 'block',
+            children: [{_key: 'span1', _type: 'span', text: 'Text'}],
+          },
+          {
+            _key: 'ref1',
+            _type: 'authorRef',
+            _ref: 'author-123',
+          },
+        ],
+      }
+
+      const openPath: Path = ['body', {_key: 'ref1'}]
+      const props = createTestProps({
+        childField: bodyFieldWithRefs,
+        childPath: ['body'] as Path,
+        childValue: mockValue.body,
+        documentValue: mockValue,
+        openPath,
+      })
+
+      // Override the schema to use the one with references
+      const propsWithRefs = {
+        ...props,
+        rootSchemaType: docSchemaWithRefs,
+      }
+
+      const result = buildArrayStatePTE(propsWithRefs)
+
+      // relativePath should remain null for reference blocks
+      expect(result.relativePath).toBeNull()
+    })
+
+    test('should NOT set relativePath when openPath points to a reference item in array within PTE block', () => {
+      const mockValue = {
+        body: [
+          {
+            _key: 'custom1',
+            _type: 'customBlock',
+            title: 'Custom Block',
+            items: [
+              {_key: 'item1', _type: 'item', name: 'Item 1'},
+              {_key: 'ref1', _type: 'itemAuthorRef', _ref: 'author-123'},
+            ],
+          },
+        ],
+      }
+
+      const openPath: Path = ['body', {_key: 'custom1'}, 'items', {_key: 'ref1'}]
+      const props = createTestProps({
+        childField: bodyFieldWithRefs,
+        childPath: ['body'] as Path,
+        childValue: mockValue.body,
+        documentValue: mockValue,
+        openPath,
+      })
+
+      // Override the schema to use the one with references
+      const propsWithRefs = {
+        ...props,
+        rootSchemaType: docSchemaWithRefs,
+      }
+
+      const result = buildArrayStatePTE(propsWithRefs)
+
+      // relativePath should remain null for references in nested arrays
+      expect(result.relativePath).toBeNull()
+    })
+
+    test('should set relativePath when openPath points to a non-reference item in array within PTE block', () => {
+      const mockValue = {
+        body: [
+          {
+            _key: 'custom1',
+            _type: 'customBlock',
+            title: 'Custom Block',
+            items: [
+              {_key: 'item1', _type: 'item', name: 'Item 1'},
+              {_key: 'ref1', _type: 'itemAuthorRef', _ref: 'author-123'},
+            ],
+          },
+        ],
+      }
+
+      const openPath: Path = ['body', {_key: 'custom1'}, 'items', {_key: 'item1'}]
+      const props = createTestProps({
+        childField: bodyFieldWithRefs,
+        childPath: ['body'] as Path,
+        childValue: mockValue.body,
+        documentValue: mockValue,
+        openPath,
+      })
+
+      // Override the schema to use the one with references
+      const propsWithRefs = {
+        ...props,
+        rootSchemaType: docSchemaWithRefs,
+      }
+
+      const result = buildArrayStatePTE(propsWithRefs)
+
+      // relativePath should be set for non-reference items
+      expect(result.relativePath).toEqual(['body', {_key: 'custom1'}, 'items', {_key: 'item1'}])
+    })
+
+    test('should set relativePath when openPath points to a non-reference custom block', () => {
+      const mockValue = {
+        body: [
+          {
+            _key: 'block1',
+            _type: 'block',
+            children: [{_key: 'span1', _type: 'span', text: 'Text'}],
+          },
+          {
+            _key: 'custom1',
+            _type: 'customBlock',
+            title: 'Custom Block',
+          },
+          {
+            _key: 'ref1',
+            _type: 'authorRef',
+            _ref: 'author-123',
+          },
+        ],
+      }
+
+      const openPath: Path = ['body', {_key: 'custom1'}]
+      const props = createTestProps({
+        childField: bodyFieldWithRefs,
+        childPath: ['body'] as Path,
+        childValue: mockValue.body,
+        documentValue: mockValue,
+        openPath,
+      })
+
+      // Override the schema to use the one with references
+      const propsWithRefs = {
+        ...props,
+        rootSchemaType: docSchemaWithRefs,
+      }
+
+      const result = buildArrayStatePTE(propsWithRefs)
+
+      // relativePath should be set for non-reference custom blocks
+      expect(result.relativePath).toEqual(['body', {_key: 'custom1'}])
+    })
+
+    test('should NOT include reference blocks in childrenMenuItems', () => {
+      const mockValue = {
+        body: [
+          {
+            _key: 'block1',
+            _type: 'block',
+            children: [{_key: 'span1', _type: 'span', text: 'Text'}],
+          },
+          {
+            _key: 'custom1',
+            _type: 'customBlock',
+            title: 'Custom Block 1',
+          },
+          {
+            _key: 'ref1',
+            _type: 'authorRef',
+            _ref: 'author-123',
+          },
+          {
+            _key: 'custom2',
+            _type: 'customBlock',
+            title: 'Custom Block 2',
+          },
+        ],
+      }
+
+      const openPath: Path = ['body']
+      const childrenMenuItems: DialogItem[] = []
+      const props = createTestProps({
+        childField: bodyFieldWithRefs,
+        childPath: ['body'] as Path,
+        childValue: mockValue.body,
+        documentValue: mockValue,
+        openPath,
+        childrenMenuItems,
+      })
+
+      // Override the schema to use the one with references
+      const propsWithRefs = {
+        ...props,
+        rootSchemaType: docSchemaWithRefs,
+      }
+
+      buildArrayStatePTE(propsWithRefs)
+
+      // Should only include custom blocks, not references
+      expect(childrenMenuItems).toHaveLength(2)
+      expect(childrenMenuItems[0]).toMatchObject({
+        path: ['body', {_key: 'custom1'}],
+        schemaType: expect.objectContaining({name: 'customBlock'}),
+      })
+      expect(childrenMenuItems[1]).toMatchObject({
+        path: ['body', {_key: 'custom2'}],
+        schemaType: expect.objectContaining({name: 'customBlock'}),
+      })
+    })
+  })
+
+  describe('custom components', () => {
+    test('should NOT set relativePath when PTE block type has custom components.item', () => {
+      // Create a schema with custom components.item on a block
+      const schemaWithCustomBlock = Schema.compile({
+        name: 'default',
+        types: [
+          {
+            name: 'testDocument',
+            type: 'document',
+            fields: [
+              {
+                name: 'body',
+                type: 'array',
+                of: [
+                  {
+                    type: 'block',
+                  },
+                  {
+                    name: 'customBlock',
+                    type: 'object',
+                    fields: [{name: 'title', type: 'string'}],
+                    components: {
+                      item: () => null, // Custom item component
+                    },
+                  },
+                ],
+              },
+            ],
+          },
+        ],
+      })
+
+      const docSchema = schemaWithCustomBlock.get('testDocument') as ObjectSchemaType
+      const bodyFieldCustom = docSchema.fields.find(
+        (f) => f.name === 'body',
+      ) as ObjectField<ArraySchemaType>
+
+      const mockValue = {
+        body: [
+          {
+            _key: 'custom1',
+            _type: 'customBlock',
+            title: 'Custom Block',
+          },
+        ],
+      }
+
+      const openPath: Path = ['body', {_key: 'custom1'}]
+      const props = createTestProps({
+        childField: bodyFieldCustom,
+        childPath: ['body'] as Path,
+        childValue: mockValue.body,
+        documentValue: mockValue,
+        openPath,
+      })
+
+      // Override the schema to use the one with custom components
+      const propsWithCustom = {
+        ...props,
+        rootSchemaType: docSchema,
+      }
+
+      const result = buildArrayStatePTE(propsWithCustom)
+
+      // relativePath should NOT be set when block has custom components
+      expect(result.relativePath).toBeNull()
+      // Should not build menu items for blocks with custom components
+      expect(result.childrenMenuItems).toEqual([])
+    })
+
+    test('should set relativePath when PTE block type has custom components.input', () => {
+      // Create a schema with custom components.input on a block
+      // components.input is allowed as it's often just a wrapper
+      const schemaWithCustomBlock = Schema.compile({
+        name: 'default',
+        types: [
+          {
+            name: 'testDocument',
+            type: 'document',
+            fields: [
+              {
+                name: 'body',
+                type: 'array',
+                of: [
+                  {
+                    type: 'block',
+                  },
+                  {
+                    name: 'customBlock',
+                    type: 'object',
+                    fields: [{name: 'title', type: 'string'}],
+                    components: {
+                      input: () => null, // Custom input component
+                    },
+                  },
+                ],
+              },
+            ],
+          },
+        ],
+      })
+
+      const docSchema = schemaWithCustomBlock.get('testDocument') as ObjectSchemaType
+
+      const mockValue = {
+        body: [
+          {
+            _key: 'custom1',
+            _type: 'customBlock',
+            title: 'Custom Block',
+          },
+        ],
+      }
+
+      const openPath: Path = ['body', {_key: 'custom1'}]
+      const props = createTestProps({
+        childField: bodyField,
+        childPath: ['body'] as Path,
+        childValue: mockValue.body,
+        documentValue: mockValue,
+        openPath,
+      })
+
+      // Override the schema to use the one with custom components
+      const propsWithCustom = {
+        ...props,
+        rootSchemaType: docSchema,
+      }
+
+      const result = buildArrayStatePTE(propsWithCustom)
+
+      // relativePath SHOULD be set when block has custom components.input
+      // because components.input is often just a wrapper
+      expect(result.relativePath).toEqual(['body', {_key: 'custom1'}])
+      // Should build menu items for blocks with custom components.input
+      expect(result.childrenMenuItems.length).toBeGreaterThan(0)
+    })
+
+    test('should set relativePath when nested fields have custom components but block type does not', () => {
+      // Create a schema where the block itself has no custom components,
+      // but nested fields do (simulating the nested structure scenario)
+      const schemaWithNestedCustom = Schema.compile({
+        name: 'default',
+        types: [
+          {
+            name: 'testDocument',
+            type: 'document',
+            fields: [
+              {
+                name: 'body',
+                type: 'array',
+                of: [
+                  {
+                    type: 'block',
+                  },
+                  {
+                    name: 'customBlock',
+                    type: 'object',
+                    // No custom components on the block itself
+                    fields: [
+                      {name: 'title', type: 'string'},
+                      {
+                        name: 'items',
+                        type: 'array',
+                        of: [
+                          {name: 'item', type: 'object', fields: [{name: 'name', type: 'string'}]},
+                        ],
+                        components: {
+                          input: () => null, // Custom input on nested field
+                        },
+                      },
+                    ],
+                  },
+                ],
+              },
+            ],
+          },
+        ],
+      })
+
+      const docSchema = schemaWithNestedCustom.get('testDocument') as ObjectSchemaType
+
+      const mockValue = {
+        body: [
+          {
+            _key: 'custom1',
+            _type: 'customBlock',
+            title: 'Custom Block',
+            items: [{_key: 'item1', _type: 'item', name: 'Item 1'}],
+          },
+        ],
+      }
+
+      const openPath: Path = ['body', {_key: 'custom1'}]
+      const props = createTestProps({
+        childField: bodyField,
+        childPath: ['body'] as Path,
+        childValue: mockValue.body,
+        documentValue: mockValue,
+        openPath,
+      })
+
+      // Override the schema to use the one with nested custom components
+      const propsWithNested = {
+        ...props,
+        rootSchemaType: docSchema,
+      }
+
+      const result = buildArrayStatePTE(propsWithNested)
+
+      // relativePath SHOULD be set because the block itself has no custom components
+      expect(result.relativePath).toEqual(['body', {_key: 'custom1'}])
+      // Should build menu items for the block
+      expect(result.childrenMenuItems.length).toBeGreaterThan(0)
+    })
+  })
 })

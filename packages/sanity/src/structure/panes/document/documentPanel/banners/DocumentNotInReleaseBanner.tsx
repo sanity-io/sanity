@@ -31,7 +31,7 @@ export function DocumentNotInReleaseBanner({
   documentId: string
   currentRelease: ReleaseDocument
   isScheduledRelease?: boolean
-}): React.JSX.Element {
+}) {
   const tone = getReleaseTone(currentRelease ?? LATEST)
   const {t} = useTranslation(structureLocaleNamespace)
   const {t: tCore} = useTranslation()

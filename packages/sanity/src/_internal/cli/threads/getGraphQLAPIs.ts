@@ -17,7 +17,7 @@ async function main() {
   await getGraphQLAPIsForked(parentPort)
 }
 
-main().then(() => process.exit())
+void main().then(() => process.exit())
 
 async function getGraphQLAPIsForked(parent: MessagePort): Promise<void> {
   const {cliConfig, cliConfigPath, workDir} = workerData

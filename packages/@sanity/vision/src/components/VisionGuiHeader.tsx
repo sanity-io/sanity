@@ -59,6 +59,7 @@ export interface VisionGuiHeaderProps {
   onChangePerspective: (evt: ChangeEvent<HTMLSelectElement>) => void
   url?: string
   perspective?: SupportedPerspective
+  isScheduledDraftsEnabled: boolean
 }
 
 export function VisionGuiHeader({
@@ -74,6 +75,7 @@ export function VisionGuiHeader({
   onChangePerspective,
   url,
   perspective,
+  isScheduledDraftsEnabled,
 }: VisionGuiHeaderProps) {
   const pinnedPerspective = usePerspective()
   const {t} = useTranslation(visionLocaleNamespace)
@@ -176,6 +178,14 @@ export function VisionGuiHeader({
                       </option>
                       <hr />
                     </Fragment>
+                  )
+                }
+                if (perspectiveName === 'scheduledDrafts') {
+                  if (!isScheduledDraftsEnabled) return null
+                  return (
+                    <option key="scheduledDrafts" value="scheduledDrafts">
+                      {t('settings.perspectives.scheduled-drafts')}
+                    </option>
                   )
                 }
                 return <option key={perspectiveName}>{perspectiveName}</option>

@@ -4,6 +4,7 @@ import {styled} from 'styled-components'
 
 import {usePerspective} from '../../perspective/usePerspective'
 import {useReleasesToolAvailable} from '../../schedules/hooks/useReleasesToolAvailable'
+import {useWorkspace} from '../../studio/workspace'
 import {ReleasesToolLink} from '../ReleasesToolLink'
 import {type ReleasesNavMenuItemPropsGetter} from '../types'
 import {CurrentGlobalPerspectiveLabel} from './currentGlobalPerspectiveLabel'
@@ -45,6 +46,7 @@ interface Props {
  */
 export const ReleasesNav: ComponentType<Props> = ({withReleasesToolButton, menuItemProps}) => {
   const releasesToolAvailable = useReleasesToolAvailable()
+  const isReleasesEnabled = !!useWorkspace().releases?.enabled
   const {selectedPerspective, selectedReleaseId} = usePerspective()
 
   return (
@@ -53,7 +55,7 @@ export const ReleasesNav: ComponentType<Props> = ({withReleasesToolButton, menuI
       <CurrentGlobalPerspectiveLabel selectedPerspective={selectedPerspective} />
       <GlobalPerspectiveMenu
         selectedReleaseId={selectedReleaseId}
-        areReleasesEnabled={releasesToolAvailable}
+        areReleasesEnabled={releasesToolAvailable && isReleasesEnabled}
         menuItemProps={menuItemProps}
       />
     </ReleasesNavContainer>

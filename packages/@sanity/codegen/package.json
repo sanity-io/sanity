@@ -1,6 +1,6 @@
 {
   "name": "@sanity/codegen",
-  "version": "4.11.0",
+  "version": "4.15.0",
   "description": "Codegen toolkit for Sanity.io",
   "keywords": [
     "sanity",
@@ -69,13 +69,17 @@
     "@repo/eslint-config": "workspace:*",
     "@repo/package.config": "workspace:*",
     "@repo/test-config": "workspace:*",
+    "@repo/tsconfig": "workspace:*",
+    "@sanity/pkg-utils": "catalog:",
     "@types/babel__core": "^7.20.5",
     "@types/babel__generator": "^7.27.0",
     "@types/babel__register": "^7.17.3",
     "@types/babel__traverse": "^7.28.0",
     "@types/debug": "^4.1.12",
+    "@types/node": "catalog:",
+    "eslint": "catalog:",
     "rimraf": "^5.0.10",
-    "vitest": "^3.2.4"
+    "vitest": "catalog:"
   },
   "engines": {
     "node": ">=20.19 <22 || >=22.12"

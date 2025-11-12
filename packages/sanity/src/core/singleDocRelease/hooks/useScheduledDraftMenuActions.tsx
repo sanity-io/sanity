@@ -1,5 +1,5 @@
 import {type ReleaseDocument} from '@sanity/client'
-import {CalendarIcon, PublishIcon, TrashIcon} from '@sanity/icons'
+import {EditIcon, PublishIcon, TrashIcon} from '@sanity/icons'
 import {useToast} from '@sanity/ui'
 import {type ComponentProps, useCallback, useMemo, useState} from 'react'
 
@@ -12,14 +12,13 @@ import {ScheduleDraftDialog} from '../components/ScheduleDraftDialog'
 import {useScheduledDraftDocument} from './useScheduledDraftDocument'
 import {useScheduleDraftOperations} from './useScheduleDraftOperations'
 
-type ScheduledDraftAction = 'publish-now' | 'edit-schedule' | 'delete-schedule'
+export type ScheduledDraftAction = 'publish-now' | 'edit-schedule' | 'delete-schedule'
 
 export interface UseScheduledDraftMenuActionsOptions {
   release: ReleaseDocument | undefined
   documentType?: string
   disabled?: boolean
   onActionComplete?: () => void
-  onEditSchedule?: () => void
 }
 
 interface ScheduledDraftActionProps {
@@ -34,6 +33,8 @@ export interface UseScheduledDraftMenuActionsReturn {
   actions: Record<'publishNow' | 'editSchedule' | 'deleteSchedule', ScheduledDraftActionProps>
   dialogs: React.ReactNode
   isPerformingOperation: boolean
+  selectedAction: ScheduledDraftAction | null
+  handleDialogClose: () => void
 }
 
 /**
@@ -44,7 +45,7 @@ export interface UseScheduledDraftMenuActionsReturn {
 export function useScheduledDraftMenuActions(
   options: UseScheduledDraftMenuActionsOptions,
 ): UseScheduledDraftMenuActionsReturn {
-  const {release, documentType, disabled = false, onActionComplete, onEditSchedule} = options
+  const {release, documentType, disabled = false, onActionComplete} = options
 
   const {t} = useTranslation()
   const toast = useToast()
@@ -88,10 +89,9 @@ export function useScheduledDraftMenuActions(
     [release, operations, onActionComplete, toast, t, firstDocumentPreview?.title],
   )
 
-  const handleMenuItemClick = useCallback(
-    (action: ScheduledDraftAction) => setSelectedAction(action),
-    [],
-  )
+  const handleMenuItemClick = useCallback((action: ScheduledDraftAction) => {
+    setSelectedAction(action)
+  }, [])
 
   const handleDialogClose = useCallback(() => {
     if (!isPerformingOperation) {
@@ -112,10 +112,10 @@ export function useScheduledDraftMenuActions(
         'data-testid': 'publish-now-menu-item',
       },
       editSchedule: {
-        'icon': CalendarIcon,
+        'icon': EditIcon,
         'text': t('release.action.edit-schedule'),
         'tone': 'default' as const,
-        'onClick': onEditSchedule || (() => handleMenuItemClick('edit-schedule')),
+        'onClick': () => handleMenuItemClick('edit-schedule'),
         'disabled': baseDisabled,
         'data-testid': 'edit-schedule-menu-item',
       },
@@ -128,7 +128,7 @@ export function useScheduledDraftMenuActions(
         'data-testid': 'delete-schedule-menu-item',
       },
     }
-  }, [t, handleMenuItemClick, disabled, isPerformingOperation, onEditSchedule])
+  }, [t, handleMenuItemClick, disabled, isPerformingOperation])
 
   const dialogs = useMemo(() => {
     if (!selectedAction || !release) return null
@@ -179,5 +179,7 @@ export function useScheduledDraftMenuActions(
     actions,
     dialogs,
     isPerformingOperation,
+    selectedAction,
+    handleDialogClose,
   }
 }

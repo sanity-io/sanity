@@ -69,12 +69,6 @@ export interface GroupableActionDescription<GroupType = unknown> extends BaseAct
 }
 
 /**
- * Symbol for enabling releases outside of quota restrictions for single docs
- * @internal
- */
-export const QUOTA_EXCLUDED_RELEASES_ENABLED = Symbol('__internal_quotaExcludedReleasesEnabled')
-
-/**
  * Symbol for configuring decision parameters schema
  * @beta
  */
@@ -266,8 +260,6 @@ export interface ConfigContext {
    * Localization resources
    */
   i18n: LocaleSource
-  /** @internal */
-  [QUOTA_EXCLUDED_RELEASES_ENABLED]?: boolean
   /** @beta */
   [DECISION_PARAMETERS_SCHEMA]?: DecisionParametersConfig
 }
@@ -438,7 +430,7 @@ export type AppsOptions = {
   canvas?: {
     enabled: boolean
     /**
-     * To allow the "Link to canvas" action on localhost, or in studios not listed under Studios in sanity.io/manage
+     * To allow the "Link to canvas" action on localhost, or in studios not listed under Studios in https://www.sanity.io/manage
      * provide a fallback origin as a string.
      *
      * The string must be the exactly equal `name` as shown for the Studio in manage, and the studio must have create-manifest.json available.
@@ -514,8 +506,8 @@ export interface PluginOptions {
   /** @internal */
   __internal_serverDocumentActions?: WorkspaceOptions['__internal_serverDocumentActions']
 
-  /** @internal */
-  [QUOTA_EXCLUDED_RELEASES_ENABLED]?: WorkspaceOptions[typeof QUOTA_EXCLUDED_RELEASES_ENABLED]
+  /** Configuration for Scheduled drafts */
+  scheduledDrafts?: DefaultPluginsWorkspaceOptions['scheduledDrafts']
 
   /** @beta */
   [DECISION_PARAMETERS_SCHEMA]?: DecisionParametersConfig
@@ -641,11 +633,7 @@ export interface WorkspaceOptions extends SourceOptions {
     enabled?: boolean
   }
 
-  /**
-   * @hidden
-   * @internal
-   */
-  [QUOTA_EXCLUDED_RELEASES_ENABLED]?: boolean
+  scheduledDrafts?: DefaultPluginsWorkspaceOptions['scheduledDrafts']
 
   /**
    * @beta
@@ -726,8 +714,6 @@ export interface DocumentActionsContext extends ConfigContext {
   releaseId: string | undefined
   /** the type of the currently active document. */
   versionType: DocumentActionsVersionType
-  /** @internal */
-  [QUOTA_EXCLUDED_RELEASES_ENABLED]?: boolean
 }
 
 /**
@@ -1010,6 +996,9 @@ export interface Source {
   /** @beta */
   tasks?: WorkspaceOptions['tasks']
 
+  scheduledDrafts?: {
+    enabled: boolean
+  }
   /** @beta */
   releases?: {
     enabled?: boolean
@@ -1201,6 +1190,7 @@ export type {
 /** @beta */
 export type DefaultPluginsWorkspaceOptions = {
   tasks: {enabled: boolean}
+  scheduledDrafts: {enabled: boolean}
   scheduledPublishing: ScheduledPublishingPluginOptions
   releases: {
     enabled?: boolean
@@ -1237,16 +1227,15 @@ export interface MediaLibraryConfig {
  * Configuration for studio beta features.
  * */
 export interface BetaFeatures {
-  /**
-   * @beta
-   * @hidden
-   * @deprecated beta feature is no longer available.
-   * */
-  treeArrayEditing?: {
+  /** beta features with the form namespace */
+  form?: {
     /**
-     * @deprecated beta feature is no longer available.
+     * Enhanced Object Dialog is a new dialog for editing objects in the studio.
+     * @beta
      */
-    enabled: boolean
+    enhancedObjectDialog?: {
+      enabled: boolean
+    }
   }
 
   /**
@@ -1266,7 +1255,7 @@ export interface BetaFeatures {
     startInCreateEnabled?: boolean
 
     /**
-     * To show the "Start in Create" button on localhost, or in studios not listed under Studios in sanity.io/manage
+     * To show the "Start in Create" button on localhost, or in studios not listed under Studios in https://www.sanity.io/manage
      * provide a fallback origin as a string.
      *
      * The string must be the exactly equal `name` as shown for the Studio in manage, and the studio must have create-manifest.json available.

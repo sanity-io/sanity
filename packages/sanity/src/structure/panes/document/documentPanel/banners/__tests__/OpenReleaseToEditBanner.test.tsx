@@ -1,11 +1,11 @@
-import {cleanup, render, screen} from '@testing-library/react'
+import {render, screen} from '@testing-library/react'
 import {
   getReleaseIdFromReleaseDocumentId,
   type ReleaseDocument,
   useActiveReleases,
   useOnlyHasVersions,
 } from 'sanity'
-import {afterEach, beforeEach, describe, expect, it, type Mock, vi} from 'vitest'
+import {beforeEach, describe, expect, it, type Mock, vi} from 'vitest'
 
 import {createTestProvider} from '../../../../../../../test/testUtils/TestProvider'
 import {structureUsEnglishLocaleBundle} from '../../../../../i18n'
@@ -63,10 +63,6 @@ describe('OpenReleaseToEditbanner', () => {
   beforeEach(() => {
     mockUseActiveReleases.mockClear()
     vi.clearAllMocks()
-  })
-
-  afterEach(() => {
-    cleanup()
   })
 
   it('does not show when is draft', async () => {
@@ -136,6 +132,6 @@ describe('OpenReleaseToEditbanner', () => {
       wrapper,
     })
 
-    expect(screen.queryByTestId('open-release-to-edit-banner')).not.toBeNull()
+    expect(screen.getByTestId('open-release-to-edit-banner')).not.toBeNull()
   })
 })

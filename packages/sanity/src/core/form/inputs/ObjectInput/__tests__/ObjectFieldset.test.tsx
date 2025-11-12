@@ -125,7 +125,7 @@ describe('collapsible fieldset with default options', () => {
     expect(result.queryByTestId('input-collapsibleWithDefaults1')).toBeNull()
 
     expect(toggleButton).toBeDefined()
-    userEvent.click(toggleButton!)
+    await userEvent.click(toggleButton!)
     expect(onSetFieldSetCollapsed).toHaveBeenCalledTimes(1)
   })
 
@@ -145,7 +145,7 @@ describe('collapsible fieldset with default options', () => {
 
     const toggleButton = fieldset!.querySelector('legend button')
     expect(toggleButton).toBeDefined()
-    userEvent.click(toggleButton!)
+    await userEvent.click(toggleButton!)
     expect(onFocus).not.toHaveBeenCalled()
   })
 })

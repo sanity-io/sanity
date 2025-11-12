@@ -98,5 +98,12 @@ export default defineType({
       title: 'Sort order',
       type: 'string',
     }),
+    // Shop details
+    defineField({
+      name: 'shop',
+      title: 'Shop',
+      type: 'shop',
+      description: 'Shopify Shop details',
+    }),
   ],
 })

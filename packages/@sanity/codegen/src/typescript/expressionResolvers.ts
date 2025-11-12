@@ -500,7 +500,7 @@ function resolveExportSpecifier({
       node: binding.path.node,
       file: tree,
       scope: newScope,
-      filename: importFileName,
+      filename: resolvedFile,
       babelConfig,
       resolver,
       fnArguments,

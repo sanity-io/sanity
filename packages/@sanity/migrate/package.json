@@ -1,6 +1,6 @@
 {
   "name": "@sanity/migrate",
-  "version": "4.11.0",
+  "version": "4.15.0",
   "description": "Tooling for running data migrations on Sanity.io projects",
   "keywords": [
     "sanity",
@@ -49,7 +49,7 @@
     "watch": "pkg-utils watch"
   },
   "dependencies": {
-    "@sanity/client": "^7.12.0",
+    "@sanity/client": "^7.12.1",
     "@sanity/mutate": "^0.14.0",
     "@sanity/types": "workspace:*",
     "@sanity/util": "workspace:*",
@@ -63,9 +63,12 @@
     "@repo/eslint-config": "workspace:*",
     "@repo/package.config": "workspace:*",
     "@repo/test-config": "workspace:*",
+    "@repo/tsconfig": "workspace:*",
+    "@sanity/pkg-utils": "catalog:",
     "@types/debug": "^4.1.12",
+    "eslint": "catalog:",
     "rimraf": "^5.0.10",
-    "vitest": "^3.2.4"
+    "vitest": "catalog:"
   },
   "engines": {
     "node": ">=20.19 <22 || >=22.12"

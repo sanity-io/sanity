@@ -3,6 +3,40 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [4.15.0](https://github.com/sanity-io/sanity/compare/v4.14.2...v4.15.0) (2025-11-11)
+
+**Note:** Version bump only for package @repo/test-dts-exports
+
+## [4.14.2](https://github.com/sanity-io/sanity/compare/v4.14.1...v4.14.2) (2025-11-07)
+
+**Note:** Version bump only for package @repo/test-dts-exports
+
+## [4.14.1](https://github.com/sanity-io/sanity/compare/v4.14.0...v4.14.1) (2025-11-06)
+
+**Note:** Version bump only for package @repo/test-dts-exports
+
+## [4.14.0](https://github.com/sanity-io/sanity/compare/v4.13.0...v4.14.0) (2025-11-06)
+
+### Features
+
+* **core:** adds `scheduledDrafts` config option (on by default) ([#11026](https://github.com/sanity-io/sanity/issues/11026)) ([bb05c55](https://github.com/sanity-io/sanity/commit/bb05c557c1f0861d9e29ab1c1516afbcdb4194f1)) by Pedro Bonamin (46196328+pedrobonamin@users.noreply.github.com)
+
+## [4.13.0](https://github.com/sanity-io/sanity/compare/v4.12.0...v4.13.0) (2025-11-03)
+
+### Bug Fixes
+
+* **deps:** catalog vitest, jsdom add overrides ([a54467e](https://github.com/sanity-io/sanity/commit/a54467e2e5a2b6cd0fceb46b37f3143577cb45bc)) by Bjørge Næss (bjoerge@gmail.com)
+
+## [4.12.0](https://github.com/sanity-io/sanity/compare/v4.11.0...v4.12.0) (2025-10-28)
+
+### Features
+
+* add config flag for nested object dialog (beta) ([#10912](https://github.com/sanity-io/sanity/issues/10912)) ([07a25d3](https://github.com/sanity-io/sanity/commit/07a25d3d1b79b926b2df2e5818f7878c6a36ade9)) by RitaDias (rita@sanity.io)
+
+### Bug Fixes
+
+* **core:** remove useRawPerspective in favor of perspective ([#10947](https://github.com/sanity-io/sanity/issues/10947)) ([1e9d639](https://github.com/sanity-io/sanity/commit/1e9d6399848ee187eb7bf46c0779cc232fd35d30)) by Pedro Bonamin (46196328+pedrobonamin@users.noreply.github.com)
+
 ## [4.11.0](https://github.com/sanity-io/sanity/compare/v4.10.3...v4.11.0) (2025-10-21)
 
 ### Features

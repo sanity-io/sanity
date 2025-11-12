@@ -5,17 +5,12 @@ import {BookIcon} from '@sanity/icons'
 import {SanityMonogram} from '@sanity/logos'
 import {debugSecrets} from '@sanity/preview-url-secret/sanity-plugin-debug-secrets'
 import {visionTool} from '@sanity/vision'
-import {
-  DECISION_PARAMETERS_SCHEMA,
-  defineConfig,
-  definePlugin,
-  QUOTA_EXCLUDED_RELEASES_ENABLED,
-  type WorkspaceOptions,
-} from 'sanity'
+import {DECISION_PARAMETERS_SCHEMA, defineConfig, definePlugin, type WorkspaceOptions} from 'sanity'
 import {defineDocuments, defineLocations, presentationTool} from 'sanity/presentation'
 import {structureTool} from 'sanity/structure'
 import {unsplashAssetSource, UnsplashIcon} from 'sanity-plugin-asset-source-unsplash'
 import {imageHotspotArrayPlugin} from 'sanity-plugin-hotspot-array'
+import {internationalizedArray} from 'sanity-plugin-internationalized-array'
 import {markdownSchema} from 'sanity-plugin-markdown'
 import {media} from 'sanity-plugin-media'
 import {muxInput} from 'sanity-plugin-mux-input'
@@ -90,8 +85,10 @@ const sharedSettings = ({projectId}: {projectId: string}) => {
     },
 
     beta: {
-      treeArrayEditing: {
-        enabled: true,
+      form: {
+        enhancedObjectDialog: {
+          enabled: true,
+        },
       },
     },
 
@@ -199,6 +196,14 @@ const sharedSettings = ({projectId}: {projectId: string}) => {
       markdownSchema(),
       wave(),
       autoCloseBrackets(),
+      internationalizedArray({
+        languages: [
+          {id: 'en', title: 'English'},
+          {id: 'fr', title: 'French'},
+        ],
+        defaultLanguages: ['en'],
+        fieldTypes: ['string'],
+      }),
     ],
   })()
 }
@@ -232,7 +237,6 @@ const defaultWorkspace = defineConfig({
   mediaLibrary: {
     enabled: true,
   },
-  [QUOTA_EXCLUDED_RELEASES_ENABLED]: true,
   [DECISION_PARAMETERS_SCHEMA]: {
     audiences: ['aud-a', 'aud-b', 'aud-c'],
     locales: ['en-GB', 'en-US'],
@@ -368,6 +372,25 @@ export default defineConfig([
     ...envConfig.staging,
     plugins: [sharedSettings({projectId: 'exx11uqh'})],
     basePath: '/staging',
+    auth: {
+      loginMethod: 'token',
+    },
+    unstable_tasks: {
+      enabled: true,
+    },
+    mediaLibrary: {
+      enabled: true,
+    },
+  },
+  {
+    name: 'growth',
+    title: 'Growth (staging)',
+
+    projectId: 'qroupali',
+    dataset: 'production',
+    ...envConfig.staging,
+    plugins: [sharedSettings({projectId: 'qroupali'})],
+    basePath: '/growth',
     auth: {
       loginMethod: 'token',
     },

@@ -1,9 +1,9 @@
 import {type ReleaseDocument} from '@sanity/client'
 import {memo, useEffect, useRef, useState} from 'react'
 
+import {type UseScheduledDraftMenuActionsReturn} from '../../../../singleDocRelease/hooks/useScheduledDraftMenuActions'
 import {useDocumentPairPermissions} from '../../../../store/_legacy/grants/documentPairPermissions'
 import {getPublishedId, isPublishedId} from '../../../../util/draftUtils'
-import {isCardinalityOneRelease} from '../../../../util/releaseUtils'
 import {useReleaseOperations} from '../../../store/useReleaseOperations'
 import {useReleasePermissions} from '../../../store/useReleasePermissions'
 import {getReleaseDefaults} from '../../../util/util'
@@ -18,13 +18,16 @@ interface VersionContextMenuProps {
   isVersion: boolean
   onDiscard: () => void
   onCreateRelease: () => void
+  onCopyToDrafts: () => void
+  onCopyToDraftsNavigate: () => void
   onCreateVersion: (targetId: string) => void
   disabled?: boolean
   locked?: boolean
   type: string
   isGoingToUnpublish?: boolean
   release?: ReleaseDocument
-  onChangeSchedule?: () => void
+  isScheduledDraft?: boolean
+  scheduledDraftMenuActions?: UseScheduledDraftMenuActionsReturn
 }
 
 export const VersionContextMenu = memo(function VersionContextMenu(props: VersionContextMenuProps) {
@@ -36,13 +39,16 @@ export const VersionContextMenu = memo(function VersionContextMenu(props: Versio
     isVersion,
     onDiscard,
     onCreateRelease,
+    onCopyToDrafts,
+    onCopyToDraftsNavigate,
     onCreateVersion,
     disabled,
     locked,
     type,
     isGoingToUnpublish = false,
     release,
-    onChangeSchedule,
+    isScheduledDraft,
+    scheduledDraftMenuActions,
   } = props
   const isPublished = isPublishedId(documentId) && !isVersion
 
@@ -65,7 +71,7 @@ export const VersionContextMenu = memo(function VersionContextMenu(props: Versio
   useEffect(() => {
     isMounted.current = true
 
-    checkWithPermissionGuard(createRelease, getReleaseDefaults()).then((hasPermission) => {
+    void checkWithPermissionGuard(createRelease, getReleaseDefaults()).then((hasPermission) => {
       if (isMounted.current) setHasCreatePermission(hasPermission)
     })
 
@@ -74,22 +80,22 @@ export const VersionContextMenu = memo(function VersionContextMenu(props: Versio
     }
   }, [checkWithPermissionGuard, createRelease])
 
-  const isScheduledDraft = release && isCardinalityOneRelease(release)
-
   // Scheduled drafts use different menu with publish-now, reschedule, and delete actions
-  if (isScheduledDraft && isVersion && release) {
+  if (isScheduledDraft && isVersion && release && scheduledDraftMenuActions) {
     return (
       <ScheduledDraftContextMenu
         releases={releases}
         fromRelease={fromRelease}
         onCreateRelease={onCreateRelease}
+        onCopyToDrafts={onCopyToDrafts}
+        onCopyToDraftsNavigate={onCopyToDraftsNavigate}
         onCreateVersion={onCreateVersion}
         disabled={disabled}
-        type={type}
         isGoingToUnpublish={isGoingToUnpublish}
-        release={release}
-        onChangeSchedule={onChangeSchedule}
         hasCreatePermission={hasCreatePermission}
+        scheduledDraftMenuActions={scheduledDraftMenuActions}
+        documentId={documentId}
+        documentType={type}
       />
     )
   }
@@ -102,6 +108,8 @@ export const VersionContextMenu = memo(function VersionContextMenu(props: Versio
       isVersion={isVersion}
       onDiscard={onDiscard}
       onCreateRelease={onCreateRelease}
+      onCopyToDrafts={onCopyToDrafts}
+      onCopyToDraftsNavigate={onCopyToDraftsNavigate}
       onCreateVersion={onCreateVersion}
       disabled={disabled}
       locked={locked}
@@ -109,6 +117,8 @@ export const VersionContextMenu = memo(function VersionContextMenu(props: Versio
       hasCreatePermission={hasCreatePermission}
       hasDiscardPermission={hasDiscardPermission || false}
       isPublished={isPublished}
+      documentId={documentId}
+      documentType={type}
     />
   )
 })

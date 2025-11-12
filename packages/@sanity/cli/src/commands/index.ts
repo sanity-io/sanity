@@ -4,6 +4,7 @@ import blueprintsGroup from './blueprints/blueprintsGroup'
 import configBlueprintsCommand from './blueprints/configBlueprintsCommand'
 import deployBlueprintsCommand from './blueprints/deployBlueprintsCommand'
 import destroyBlueprintsCommand from './blueprints/destroyBlueprintsCommand'
+import doctorBlueprintsCommand from './blueprints/doctorBlueprintsCommand'
 import infoBlueprintsCommand from './blueprints/infoBlueprintsCommand'
 import initBlueprintsCommand from './blueprints/initBlueprintsCommand'
 import logsBlueprintsCommand from './blueprints/logsBlueprintsCommand'
@@ -78,6 +79,7 @@ export const baseCommands: (CliCommandDefinition | CliCommandGroupDefinition)[] 
   configBlueprintsCommand,
   deployBlueprintsCommand,
   destroyBlueprintsCommand,
+  doctorBlueprintsCommand,
   infoBlueprintsCommand,
   initBlueprintsCommand,
   listBlueprintsCommand,

@@ -193,5 +193,3 @@ describe('array types', () => {
     })
   })
 })
-
-export {}

@@ -1,6 +1,6 @@
 {
   "name": "@repo/bundle-manager",
-  "version": "4.11.0",
+  "version": "4.15.0",
   "private": true,
   "description": "Internal tool for building and uploading bundles to modules.sanity-cdn.com",
   "license": "MIT",
@@ -43,7 +43,8 @@
     "@repo/tsconfig": "workspace:*",
     "@repo/utils": "workspace:*",
     "@types/lodash-es": "^4.17.12",
-    "vitest": "^3.2.4"
+    "eslint": "catalog:",
+    "vitest": "catalog:"
   },
   "engines": {
     "node": ">=20.19 <22 || >=22.12"

@@ -8,12 +8,13 @@ import {
   type DocumentActionDescription,
   type DocumentActionProps,
 } from '../../../config/document/actions'
-import {useFeatureEnabled, useValidationStatus} from '../../../hooks'
-import {FEATURES} from '../../../hooks/useFeatureEnabled'
+import {useValidationStatus} from '../../../hooks'
 import {Translate, useTranslation} from '../../../i18n'
-import {useSetPerspective} from '../../../perspective/useSetPerspective'
 import {getReleaseIdFromReleaseDocumentId} from '../../../releases/util/getReleaseIdFromReleaseDocumentId'
 import {ScheduleDraftDialog} from '../../components/ScheduleDraftDialog'
+import {useSingleDocReleaseEnabled} from '../../context/SingleDocReleaseEnabledProvider'
+import {useSingleDocRelease} from '../../context/SingleDocReleaseProvider'
+import {useSingleDocReleaseUpsell} from '../../context/SingleDocReleaseUpsellProvider'
 import {useHasCardinalityOneReleaseVersions} from '../../hooks/useHasCardinalityOneReleaseVersions'
 import {useScheduleDraftOperations} from '../../hooks/useScheduleDraftOperations'
 import {singleDocReleaseNamespace} from '../../i18n'
@@ -28,9 +29,8 @@ export const SchedulePublishAction: DocumentActionComponent = (
   const {t} = useTranslation(singleDocReleaseNamespace)
   const {createScheduledDraft} = useScheduleDraftOperations()
   const toast = useToast()
-  const setPerspective = useSetPerspective()
-  const {enabled: singleDocReleaseEnabled} = useFeatureEnabled(FEATURES.singleDocRelease)
-
+  const {enabled: singleDocReleaseEnabled, mode} = useSingleDocReleaseEnabled()
+  const {handleOpenDialog: handleOpenUpsellDialog} = useSingleDocReleaseUpsell()
   // Check validation status
   const validationStatus = useValidationStatus(id, type)
   const hasValidationErrors = validationStatus.validation.some(isValidationErrorMarker)
@@ -40,10 +40,14 @@ export const SchedulePublishAction: DocumentActionComponent = (
 
   const [dialogOpen, setDialogOpen] = useState(false)
   const [isScheduling, setIsScheduling] = useState(false)
-
+  const {onSetScheduledDraftPerspective} = useSingleDocRelease()
   const handleOpenDialog = useCallback(() => {
-    setDialogOpen(true)
-  }, [])
+    if (mode === 'upsell') {
+      handleOpenUpsellDialog('document_action')
+    } else {
+      setDialogOpen(true)
+    }
+  }, [mode, handleOpenUpsellDialog])
 
   const handleCloseDialog = useCallback(() => {
     setDialogOpen(false)
@@ -69,7 +73,7 @@ export const SchedulePublishAction: DocumentActionComponent = (
             />
           ),
         })
-        setPerspective(getReleaseIdFromReleaseDocumentId(releaseDocumentId))
+        onSetScheduledDraftPerspective(getReleaseIdFromReleaseDocumentId(releaseDocumentId))
         setDialogOpen(false)
       } catch (error) {
         console.error('Failed to schedule document publish:', error)
@@ -84,7 +88,7 @@ export const SchedulePublishAction: DocumentActionComponent = (
         setIsScheduling(false)
       }
     },
-    [id, createScheduledDraft, toast, t, setPerspective],
+    [id, createScheduledDraft, toast, t, onSetScheduledDraftPerspective],
   )
 
   if (!draft || !singleDocReleaseEnabled) {

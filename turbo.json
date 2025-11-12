@@ -26,7 +26,13 @@
     "SANITY_APP_BASEPATH",
     "SANITY_CLI_EXTRACT_MANIFEST_ENABLED",
     "SANITY_CLI_EXTRACT_MANIFEST_LOG_ERRORS",
-    "SANITY_CLI_QUERY_API_VERSION"
+    "SANITY_CLI_QUERY_API_VERSION",
+    "SANITY_STUDIO_EFPS_EXPERIMENT_PROJECT_ID",
+    "SANITY_STUDIO_EFPS_EXPERIMENT_DATASET",
+    "SANITY_STUDIO_EFPS_EXPERIMENT_API_HOST",
+    "SANITY_STUDIO_EFPS_REFERENCE_PROJECT_ID",
+    "SANITY_STUDIO_EFPS_REFERENCE_DATASET",
+    "SANITY_STUDIO_EFPS_REFERENCE_API_HOST"
   ],
   // Variables that should be passed through but not invalidate the cache
   "globalPassThroughEnv": [
@@ -55,11 +61,9 @@
     "SYSTEMROOT",
     "VISUAL",
     "EDITOR",
-    // These are for the dev/efps perf suite and should not be cached
-    "VITE_PERF_EFPS_PROJECT_ID",
-    "VITE_PERF_EFPS_DATASET",
     // These should be passed through but not be used as cache keys since they are tokens
-    "PERF_EFPS_SANITY_TOKEN",
+    "EFPS_SANITY_TOKEN_STAGING",
+    "EFPS_SANITY_TOKEN_PROD,",
     "SANITY_E2E_SESSION_TOKEN",
     "SANITY_CI_CLI_AUTH_TOKEN_STAGING",
     "SANITY_AUTH_TOKEN"

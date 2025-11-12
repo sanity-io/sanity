@@ -1,6 +1,6 @@
 {
   "name": "create-sanity",
-  "version": "4.11.0",
+  "version": "4.15.0",
   "description": "Initialize a new Sanity project",
   "keywords": [
     "sanity",
@@ -33,7 +33,8 @@
     "resolve-pkg": "^2.0.0"
   },
   "devDependencies": {
-    "@repo/eslint-config": "workspace:*"
+    "@repo/eslint-config": "workspace:*",
+    "eslint": "catalog:"
   },
   "engines": {
     "node": ">=20.19 <22 || >=22.12"

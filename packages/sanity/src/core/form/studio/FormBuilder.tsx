@@ -40,7 +40,11 @@ import {
 import {DocumentFieldActionsProvider} from './contexts/DocumentFieldActions'
 import {FormBuilderInputErrorBoundary} from './FormBuilderInputErrorBoundary'
 import {FormProvider} from './FormProvider'
-import {TreeEditingDialog, TreeEditingEnabledProvider, useTreeEditingEnabled} from './tree-editing'
+import {
+  EnhancedObjectDialog,
+  EnhancedObjectDialogProvider,
+  useEnhancedObjectDialog,
+} from './tree-editing'
 
 /**
  * @alpha
@@ -315,14 +319,16 @@ export function FormBuilder(props: FormBuilderProps) {
         <FormValueProvider value={value}>
           <DocumentFieldActionsProvider actions={fieldActions}>
             <FullscreenPTEProvider>
-              <TreeEditingEnabledProvider>
+              {/** The id 'root' is always attributed to being in a document,
+               * if there is not root then it means it's outside of the document and so it doesn't have access to the dialog */}
+              <EnhancedObjectDialogProvider isDialogAvailable={id === 'root'}>
                 <RootInput
                   rootInputProps={rootInputProps}
                   onPathOpen={onPathOpen}
                   openPath={openPath}
                   renderInput={renderInput}
                 />
-              </TreeEditingEnabledProvider>
+              </EnhancedObjectDialogProvider>
             </FullscreenPTEProvider>
           </DocumentFieldActionsProvider>
         </FormValueProvider>
@@ -340,11 +346,10 @@ interface RootInputProps {
 
 function RootInput(props: RootInputProps) {
   const {rootInputProps, onPathOpen, openPath, renderInput} = props
-  const treeEditing = useTreeEditingEnabled()
-  const isRoot = rootInputProps.id === 'root'
+  const {enabled: enhancedObjectDialogEnabled} = useEnhancedObjectDialog()
 
-  const arrayEditingModal = treeEditing.enabled && isRoot && (
-    <TreeEditingDialog
+  const arrayEditingModal = enhancedObjectDialogEnabled && (
+    <EnhancedObjectDialog
       // eslint-disable-next-line react/jsx-handler-names
       onPathFocus={rootInputProps.onPathFocus}
       onPathOpen={onPathOpen}
@@ -357,6 +362,6 @@ function RootInput(props: RootInputProps) {
   return renderInput({
     ...rootInputProps,
     // eslint-disable-next-line camelcase
-    __internal_arrayEditingModal: arrayEditingModal,
+    __internal_enhancedbjectDialog: arrayEditingModal,
   })
 }

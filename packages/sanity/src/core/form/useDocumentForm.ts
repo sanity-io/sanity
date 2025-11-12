@@ -51,6 +51,7 @@ import {
   usePresenceStore,
 } from '../store'
 import {isNewDocument} from '../store/_legacy/document/isNewDocument'
+import {useWorkspace} from '../studio/workspace'
 import {
   EMPTY_ARRAY,
   getDraftId,
@@ -157,6 +158,11 @@ export function useDocumentForm(options: DocumentFormOptions): DocumentFormValue
   const presenceStore = usePresenceStore()
   const {data: releases} = useActiveReleases()
   const {data: documentVersions} = useDocumentVersions({documentId})
+  const workspace = useWorkspace()
+
+  const enhancedObjectDialogEnabled = useMemo(() => {
+    return workspace.beta?.form?.enhancedObjectDialog?.enabled
+  }, [workspace])
 
   const schemaType = schema.get(documentType) as ObjectSchemaType | undefined
   if (!schemaType) {
@@ -538,20 +544,24 @@ export function useDocumentForm(options: DocumentFormOptions): DocumentFormValue
       if (nextFocusPath !== focusPathRef.current) {
         setFocusPath(pathFor(nextFocusPath))
 
-        // When focusing on an object field, set openPath to the field's parent.
-        // Exception: if focusing directly on an array item (so it has a key),
-        // it should skip updating openPath - let explicit onPathOpen calls handle it.
-        const lastSegment = nextFocusPath[nextFocusPath.length - 1]
+        if (enhancedObjectDialogEnabled) {
+          // When focusing on an object field, set openPath to the field's parent.
+          // Exception: if focusing directly on an array item (so it has a key),
+          // it should skip updating openPath - let explicit onPathOpen calls handle it.
+          const lastSegment = nextFocusPath[nextFocusPath.length - 1]
 
-        if (!isKeySegment(lastSegment)) {
-          // For fields inside array items, find the last key segment to preserve context
-          const lastKeyIndex = nextFocusPath.findLastIndex((seg) => isKeySegment(seg))
-          const newOpenPath =
-            lastKeyIndex >= 0
-              ? nextFocusPath.slice(0, lastKeyIndex + 1)
-              : nextFocusPath.slice(0, -1)
+          if (!isKeySegment(lastSegment)) {
+            // For fields inside array items, find the last key segment to preserve context
+            const lastKeyIndex = nextFocusPath.findLastIndex((seg) => isKeySegment(seg))
+            const newOpenPath =
+              lastKeyIndex >= 0
+                ? nextFocusPath.slice(0, lastKeyIndex + 1)
+                : nextFocusPath.slice(0, -1)
 
-          handleSetOpenPath(pathFor(newOpenPath))
+            handleSetOpenPath(pathFor(newOpenPath))
+          }
+        } else {
+          handleSetOpenPath(pathFor(nextFocusPath.slice(0, -1)))
         }
 
         focusPathRef.current = nextFocusPath
@@ -559,7 +569,13 @@ export function useDocumentForm(options: DocumentFormOptions): DocumentFormValue
       }
       updatePresenceThrottled(nextFocusPath, payload)
     },
-    [onFocusPath, setFocusPath, handleSetOpenPath, updatePresenceThrottled],
+    [
+      onFocusPath,
+      setFocusPath,
+      handleSetOpenPath,
+      updatePresenceThrottled,
+      enhancedObjectDialogEnabled,
+    ],
   )
 
   const handleBlur = useCallback(

@@ -24,7 +24,7 @@ const RootStack = styled(Stack)`
  * @beta */
 export const ObjectInput = memo(function ObjectInput(props: ObjectInputProps) {
   const {
-    __internal_arrayEditingModal: arrayEditingModal = null,
+    __internal_enhancedbjectDialog: arrayEditingModal = null,
     groups,
     id,
     members,

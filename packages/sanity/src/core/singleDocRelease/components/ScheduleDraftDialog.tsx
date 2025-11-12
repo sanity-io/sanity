@@ -132,6 +132,7 @@ export function ScheduleDraftDialog(props: ScheduleDraftDialogProps): React.JSX.
               }
               constrainSize={false}
               isPastDisabled
+              showTimeZone
               timeZoneScope={CONTENT_RELEASES_TIME_ZONE_SCOPE}
             />
           </Stack>

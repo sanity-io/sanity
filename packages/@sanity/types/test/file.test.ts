@@ -154,5 +154,3 @@ describe('file types', () => {
     assignableToFile = defineType(assignableToFile)
   })
 })
-
-export {}

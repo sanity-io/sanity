@@ -1,7 +1,5 @@
-import getRandomValues from 'get-random-values-esm'
-
 const getByteHexTable = (() => {
-  let table: any[]
+  let table: string[]
   return () => {
     if (table) {
       return table
@@ -18,7 +16,7 @@ const getByteHexTable = (() => {
 // WHATWG crypto RNG - https://w3c.github.io/webcrypto/Overview.html
 function whatwgRNG(length = 16) {
   const rnds8 = new Uint8Array(length)
-  getRandomValues(rnds8)
+  crypto.getRandomValues(rnds8)
   return rnds8
 }
 

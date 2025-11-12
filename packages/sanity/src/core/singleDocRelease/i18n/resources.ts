@@ -5,7 +5,7 @@
  */
 const singleDocReleaseLocaleStrings = {
   /** Action text for scheduling publish of a draft document */
-  'action.schedule-publish': 'Schedule Publish',
+  'action.schedule-publish': 'Schedule publish',
   /** Tooltip text for when a document is scheduled for publishing */
   'action.schedule-publish-success': 'Document scheduled for publishing',
   /** Tooltip description for when a document is scheduled for publishing */
@@ -21,6 +21,13 @@ const singleDocReleaseLocaleStrings = {
   /** Tooltip text for when schedule publish is disabled due to cardinality one releases */
   'action.schedule-publish.disabled.cardinality-one':
     'A Scheduled Draft for this document already exists.',
+  /** Empty state title for scheduled drafts */
+  'empty-state.title': 'Scheduled Drafts',
+  /** Empty state description for scheduled drafts */
+  'empty-state.description':
+    'Schedule and lock draft documents for publishing at a future date and time.',
+  /** Empty state action documentation for scheduled drafts */
+  'empty-state.action.documentation': 'Learn about scheduling',
 }
 
 /**

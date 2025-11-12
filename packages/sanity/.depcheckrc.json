@@ -1,13 +1,8 @@
 {
   "ignores": [
-    "@repo/tsconfig",
-    "@sanity/pkg-utils",
-    "globby",
     "sanity",
-    "@sanity/codegen",
-    "@types/react",
-    "eslint-plugin-boundaries",
     "react-compiler-runtime",
-    "eslint"
+    "@sanity/codegen",
+    "eslint-plugin-testing-library"
   ]
 }

@@ -27,3 +27,4 @@
 
 # Dotenv and similar local-only files
 *.local
+/results

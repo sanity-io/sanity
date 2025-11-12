@@ -17,8 +17,9 @@ import {useHoveredChange} from '../../../../changeIndicators/useHoveredChange'
 import {pathToString} from '../../../../field'
 import {useTranslation} from '../../../../i18n'
 import {EMPTY_ARRAY} from '../../../../util'
-import {useFormCallbacks, useTreeEditingEnabled} from '../../../studio'
+import {useFormCallbacks} from '../../../studio'
 import {useChildPresence} from '../../../studio/contexts/Presence'
+import {useEnhancedObjectDialog} from '../../../studio/tree-editing/context/enabled/useEnhancedObjectDialog'
 import {
   type BlockProps,
   type RenderAnnotationCallback,
@@ -115,7 +116,10 @@ export function BlockObject(props: BlockObjectProps) {
   const memberItem = usePortableTextMemberItem(pathToString(path))
   const isDeleting = useRef<boolean>(false)
 
-  const {enabled: nestedObjectNavigationEnabled} = useTreeEditingEnabled()
+  const {enabled: nestedObjectNavigationEnabled, isDialogAvailable} = useEnhancedObjectDialog()
+  // If there's an EnhancedObjectDialog available, it will handle the opening
+  // Otherwise, we render our own modal
+  const shouldUseEnhancedDialog = nestedObjectNavigationEnabled && isDialogAvailable
 
   const selfSelection = useMemo(
     (): EditorSelection => ({
@@ -236,7 +240,7 @@ export function BlockObject(props: BlockObjectProps) {
       renderAnnotation,
       renderBlock,
       renderDefault: DefaultBlockObjectComponent,
-      nestedObjectNavigationEnabled,
+      shouldUseEnhancedDialog,
       renderField,
       renderInlineBlock,
       renderInput,
@@ -265,7 +269,7 @@ export function BlockObject(props: BlockObjectProps) {
       readOnly,
       renderAnnotation,
       renderBlock,
-      nestedObjectNavigationEnabled,
+      shouldUseEnhancedDialog,
       renderField,
       renderInlineBlock,
       renderInput,
@@ -363,14 +367,14 @@ export function BlockObject(props: BlockObjectProps) {
 }
 
 export const DefaultBlockObjectComponent = (
-  props: BlockProps & {nestedObjectNavigationEnabled: boolean},
+  props: BlockProps & {shouldUseEnhancedDialog: boolean},
 ) => {
   const {
     __unstable_floatingBoundary,
     __unstable_referenceBoundary,
     __unstable_referenceElement,
     children,
-    nestedObjectNavigationEnabled,
+    shouldUseEnhancedDialog,
     focused,
     markers,
     onClose,
@@ -439,7 +443,7 @@ export const DefaultBlockObjectComponent = (
        * In situations where we are using the new nested method, we do not want to show this object edit modal.
        * However, in cases where we aren't, the old modal needs to work as expected
        */}
-      {open && !nestedObjectNavigationEnabled && (
+      {open && !shouldUseEnhancedDialog && (
         <ObjectEditModal
           floatingBoundary={__unstable_floatingBoundary}
           defaultType="dialog"

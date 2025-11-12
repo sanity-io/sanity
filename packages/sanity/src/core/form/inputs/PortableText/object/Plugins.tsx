@@ -1,19 +1,16 @@
 import {usePortableTextEditor} from '@portabletext/editor'
 import {defineBehavior} from '@portabletext/editor/behaviors'
-import {
-  BehaviorPlugin,
-  MarkdownPlugin,
-  type MarkdownPluginConfig,
-  OneLinePlugin,
-} from '@portabletext/editor/plugins'
+import {BehaviorPlugin} from '@portabletext/editor/plugins'
+import {MarkdownShortcutsPlugin} from '@portabletext/plugin-markdown-shortcuts'
+import {OneLinePlugin} from '@portabletext/plugin-one-line'
 import {type ArraySchemaType, type PortableTextBlock} from '@sanity/types'
 import {type ComponentType, useMemo} from 'react'
 
 import {useMiddlewareComponents} from '../../../../config/components/useMiddlewareComponents'
 import {pickPortableTextEditorPluginsComponent} from '../../../form-components-hooks/picks'
-import {type PortableTextPluginsProps} from '../../../types/blockProps'
+import {type MarkdownConfig, type PortableTextPluginsProps} from '../../../types/blockProps'
 
-const markdownConfig: MarkdownPluginConfig = {
+const markdownConfig: MarkdownConfig = {
   boldDecorator: ({schema}) =>
     schema.decorators.find((decorator) => decorator.name === 'strong')?.name,
   codeDecorator: ({schema}) =>
@@ -75,7 +72,26 @@ export const PortableTextEditorPlugins = (props: {
 export const DefaultPortableTextEditorPlugins = (
   props: Omit<PortableTextPluginsProps, 'renderDefault'>,
 ) => {
-  return <MarkdownPlugin config={props.plugins.markdown.config} />
+  if (!props.plugins.markdown.config) {
+    const {enabled, config, ...markdownShortcutsPluginProps} = props.plugins.markdown
+
+    if (enabled === false) {
+      return null
+    }
+
+    return <MarkdownShortcutsPlugin {...markdownShortcutsPluginProps} />
+  }
+
+  const {orderedList, orderedListStyle, unorderedList, unorderedListStyle, ...restMarkdownConfig} =
+    props.plugins.markdown.config
+
+  return (
+    <MarkdownShortcutsPlugin
+      orderedList={orderedList ?? orderedListStyle}
+      unorderedList={unorderedList ?? unorderedListStyle}
+      {...restMarkdownConfig}
+    />
+  )
 }
 
 export const RenderDefault = (props: Omit<PortableTextPluginsProps, 'renderDefault'>) => {

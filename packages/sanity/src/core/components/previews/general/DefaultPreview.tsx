@@ -4,6 +4,7 @@ import {styled} from 'styled-components'
 import {getDevicePixelRatio} from 'use-device-pixel-ratio'
 
 import {useTranslation} from '../../../i18n'
+import {LinearProgress} from '../../progress/LinearProgress'
 import {Media} from '../_common/Media'
 import {PREVIEW_SIZES} from '../constants'
 import {renderPreviewNode} from '../helpers'
@@ -53,9 +54,10 @@ const SKELETON_DELAY = 300
  * @hidden
  * @beta */
 export function DefaultPreview(props: DefaultPreviewProps) {
-  const {title, subtitle, media, status, isPlaceholder, children, styles} = props
+  const {title, subtitle, media, status, isPlaceholder, children, styles, progress} = props
   const {t} = useTranslation()
   const rootClassName = classNames(styles?.root, Boolean(subtitle) && styles?.hasSubtitle)
+  const isUploading = typeof progress === 'number' && progress > -1
 
   const statusNode = status && (
     <Box className={styles?.status} data-testid="default-preview__status">
@@ -118,25 +120,30 @@ export function DefaultPreview(props: DefaultPreviewProps) {
         )}
 
         <Stack className={styles?.heading} data-testid="default-preview__header" flex={1} space={2}>
-          <Text
-            className={styles?.title}
-            size={1}
-            style={{color: 'inherit'}}
-            textOverflow="ellipsis"
-            weight="medium"
-          >
-            {title && renderPreviewNode(title, 'default')}
-            {!title && (
-              <span style={{color: 'var(--card-muted-fg-color)'}}>
-                {t('preview.default.title-fallback')}
-              </span>
-            )}
-          </Text>
+          {isUploading && <LinearProgress value={progress} />}
+          {!isUploading && (
+            <>
+              <Text
+                className={styles?.title}
+                size={1}
+                style={{color: 'inherit'}}
+                textOverflow="ellipsis"
+                weight="medium"
+              >
+                {title && renderPreviewNode(title, 'default')}
+                {!title && (
+                  <span style={{color: 'var(--card-muted-fg-color)'}}>
+                    {t('preview.default.title-fallback')}
+                  </span>
+                )}
+              </Text>
 
-          {subtitle && (
-            <Text muted size={1} textOverflow="ellipsis" className={styles?.subtitle}>
-              {renderPreviewNode(subtitle, 'default')}
-            </Text>
+              {subtitle && (
+                <Text muted size={1} textOverflow="ellipsis" className={styles?.subtitle}>
+                  {renderPreviewNode(subtitle, 'default')}
+                </Text>
+              )}
+            </>
           )}
         </Stack>
 

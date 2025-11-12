@@ -74,10 +74,6 @@ etc
 .tsdoc
 
 # Automated testing files
-/test/e2e/report
-/test/e2e/results
-/test/e2e/state
-blob-report
 /artifacts
 
 # Developer scratch

@@ -12,7 +12,6 @@ import {
 
 import {MenuItem} from '../../../../../ui-components'
 import {useTranslation} from '../../../../i18n'
-import {useReleasesUpsell} from '../../../contexts/upsell/useReleasesUpsell'
 import {useIsReleasesPlus} from '../../../hooks/useIsReleasesPlus'
 import {releasesLocaleNamespace} from '../../../i18n'
 import {useReleaseOperations} from '../../../store'
@@ -39,7 +38,6 @@ export const ReleaseMenu = ({
 }: ReleaseMenuProps) => {
   const releaseMenuDisabled = !release || disabled
   const {t} = useTranslation(releasesLocaleNamespace)
-  const {mode} = useReleasesUpsell()
   const {archive, unarchive, deleteRelease, publishRelease, schedule, createRelease} =
     useReleaseOperations()
   const {checkWithPermissionGuard} = useReleasePermissions()
@@ -59,28 +57,28 @@ export const ReleaseMenu = ({
     if (!releaseMenuDisabled) {
       if (release.state !== 'published') {
         if (release.state === 'archived') {
-          checkWithPermissionGuard(unarchive, release._id).then((hasPermission) => {
+          void checkWithPermissionGuard(unarchive, release._id).then((hasPermission) => {
             if (isMounted.current) setHasUnarchivePermission(hasPermission)
           })
         } else {
-          checkWithPermissionGuard(archive, release._id).then((hasPermission) => {
+          void checkWithPermissionGuard(archive, release._id).then((hasPermission) => {
             if (isMounted.current) setHasArchivePermission(hasPermission)
           })
 
-          checkWithPermissionGuard(publishRelease, release._id).then((hasPermission) => {
+          void checkWithPermissionGuard(publishRelease, release._id).then((hasPermission) => {
             if (isMounted.current) setHasPublishPermission(hasPermission)
           })
-          checkWithPermissionGuard(schedule, release._id, new Date()).then((hasPermission) => {
+          void checkWithPermissionGuard(schedule, release._id, new Date()).then((hasPermission) => {
             if (isMounted.current) setHasSchedulePermission(hasPermission)
           })
         }
-        checkWithPermissionGuard(createRelease, getReleaseDefaults()).then((hasPermission) => {
+        void checkWithPermissionGuard(createRelease, getReleaseDefaults()).then((hasPermission) => {
           if (isMounted.current) setHasDuplicatePermission(hasPermission)
         })
       }
 
       if (release.state === 'archived' || release.state == 'published') {
-        checkWithPermissionGuard(deleteRelease, release._id).then((hasPermission) => {
+        void checkWithPermissionGuard(deleteRelease, release._id).then((hasPermission) => {
           if (isMounted.current) setHasDeletePermission(hasPermission)
         })
       }
@@ -91,7 +89,6 @@ export const ReleaseMenu = ({
     }
   }, [
     release._id,
-    mode,
     releaseMenuDisabled,
     release.state,
     checkWithPermissionGuard,
@@ -121,7 +118,7 @@ export const ReleaseMenu = ({
         <MenuItem
           key="unarchive"
           data-value="unarchive"
-          disabled={releaseMenuDisabled || mode === 'disabled' || !hasUnarchivePermission}
+          disabled={releaseMenuDisabled || !hasUnarchivePermission}
           onClick={handleOnInitiateAction}
           icon={UnarchiveIcon}
           text={t('action.unarchive')}
@@ -158,7 +155,6 @@ export const ReleaseMenu = ({
   }, [
     release.state,
     releaseMenuDisabled,
-    mode,
     hasUnarchivePermission,
     handleOnInitiateAction,
     t,
@@ -246,7 +242,7 @@ export const ReleaseMenu = ({
         key="duplicate"
         data-value="duplicate"
         onClick={handleOnInitiateAction}
-        disabled={releaseMenuDisabled || !hasDuplicatePermission || mode === 'disabled'}
+        disabled={releaseMenuDisabled || !hasDuplicatePermission}
         icon={CopyIcon}
         text={t('action.duplicate-release')}
         data-testid="duplicate-release-menu-item"
@@ -259,7 +255,6 @@ export const ReleaseMenu = ({
     handleOnInitiateAction,
     hasDuplicatePermission,
     isReleasesPlus,
-    mode,
     release.state,
     releaseMenuDisabled,
     t,

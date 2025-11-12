@@ -2,6 +2,7 @@ import {type SanityDocument} from '@sanity/types'
 import {studioTheme, ThemeProvider} from '@sanity/ui'
 import {type CellContext} from '@tanstack/react-table'
 import {fireEvent, render, screen} from '@testing-library/react'
+import {userEvent} from '@testing-library/user-event'
 import {beforeEach, describe, expect, it, vi} from 'vitest'
 
 import {DocumentSheetListSelect} from '../DocumentSheetListSelect'
@@ -52,7 +53,7 @@ describe('DocumentSheetListSelect', () => {
 
     expect(checkbox).not.toBeChecked()
 
-    fireEvent.click(checkbox)
+    await userEvent.click(checkbox)
     expect(mockToggleSelected).toHaveBeenCalledTimes(1)
     expect(mockSetSelectedAnchor).toHaveBeenCalledWith(3)
   })
@@ -68,12 +69,12 @@ describe('DocumentSheetListSelect', () => {
 
     expect(checkbox).toBeChecked()
 
-    fireEvent.click(checkbox)
+    await userEvent.click(checkbox)
     expect(mockToggleSelected).toHaveBeenCalledTimes(1)
     expect(selectProps.table.options.meta?.setSelectedAnchor).toHaveBeenCalledWith(null)
   })
 
-  it('disables the checkbox when row is not selectable', () => {
+  it('disables the checkbox when row is not selectable', async () => {
     const selectProps = {...props, row: {...props.row, getCanSelect: () => false}}
     renderTest(selectProps)
 
@@ -81,28 +82,29 @@ describe('DocumentSheetListSelect', () => {
 
     expect(checkbox).toBeDisabled()
 
-    fireEvent.click(checkbox)
+    await userEvent.click(checkbox)
     expect(mockToggleSelected).not.toHaveBeenCalled()
   })
 
-  it('resets the select anchor if shift not pressed on check', () => {
+  it('resets the select anchor if shift not pressed on check', async () => {
     const selectProps = {...props}
     selectProps.table.options.meta!.selectedAnchor = 5
     renderTest(selectProps)
 
     const checkbox = screen.getByRole('checkbox')
 
-    fireEvent.click(checkbox)
+    await userEvent.click(checkbox)
     expect(mockSetSelectedAnchor).toHaveBeenCalledWith(3)
   })
 
-  it('selects multiple rows when shift key is pressed and anchor exists', () => {
+  it('selects multiple rows when shift key is pressed and anchor exists', async () => {
     const selectProps = {...props}
     selectProps.table.options.meta!.selectedAnchor = 1
     renderTest(selectProps)
 
     const checkbox = screen.getByRole('checkbox')
 
+    // eslint-disable-next-line testing-library/prefer-user-event
     fireEvent.click(checkbox, {shiftKey: true})
     const setRowSelectionCall = mockSetRowSelection.mock.calls[0][0] as () => unknown
     expect(setRowSelectionCall()).toEqual({

@@ -17,14 +17,14 @@ const coreUiUnsupportedContext = {
   env: 'production',
 }
 
-it('ignores the `_context` URL search parameter if the mode is not "core-ui"', () => {
-  expect(() => coreUiRenderingContext(urlSearch(coreUiUnsupportedContext))).toMatchEmissions([
+it('ignores the `_context` URL search parameter if the mode is not "core-ui"', async () => {
+  await expect(() => coreUiRenderingContext(urlSearch(coreUiUnsupportedContext))).toMatchEmissions([
     [undefined, undefined],
   ])
 })
 
-it('parses the `_context` URL search parameter', () => {
-  expect(() => coreUiRenderingContext(urlSearch(coreUiProductionContext))).toMatchEmissions([
+it('parses the `_context` URL search parameter', async () => {
+  await expect(() => coreUiRenderingContext(urlSearch(coreUiProductionContext))).toMatchEmissions([
     [
       undefined,
       {
@@ -36,7 +36,7 @@ it('parses the `_context` URL search parameter', () => {
     ],
   ])
 
-  expect(() => coreUiRenderingContext(urlSearch(coreUiStagingContext))).toMatchEmissions([
+  await expect(() => coreUiRenderingContext(urlSearch(coreUiStagingContext))).toMatchEmissions([
     [
       undefined,
       {
@@ -49,10 +49,10 @@ it('parses the `_context` URL search parameter', () => {
   ])
 })
 
-it('fails gracefully if the `_context` URL search parameter cannot be parsed', () => {
+it('fails gracefully if the `_context` URL search parameter cannot be parsed', async () => {
   const invalidCoreUiContextString = urlSearch(coreUiProductionContext).slice(0, -10)
 
-  expect(() => coreUiRenderingContext(invalidCoreUiContextString)).toMatchEmissions([
+  await expect(() => coreUiRenderingContext(invalidCoreUiContextString)).toMatchEmissions([
     [undefined, undefined],
   ])
 })

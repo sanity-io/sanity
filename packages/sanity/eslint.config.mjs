@@ -1,15 +1,15 @@
-import {dirname, resolve} from 'node:path'
+import {dirname} from 'node:path'
 import {fileURLToPath} from 'node:url'
 
 import baseConfig from '@repo/eslint-config'
 import i18nConfig from '@sanity/eslint-config-i18n'
 import {defineConfig} from 'eslint/config'
 import boundaries from 'eslint-plugin-boundaries'
+import testingLibrary from 'eslint-plugin-testing-library'
 import globals from 'globals'
 
 const __filename = fileURLToPath(import.meta.url)
 const __dirname = dirname(__filename)
-const ROOT_PATH = resolve(__dirname, '../..')
 
 // @TODO these could be moved to oxlint, it's just that oxlint doesn't support merging individual rules atm so doing it there would create a lot of rules duplication
 const noRestrictedImportPaths = [
@@ -60,7 +60,6 @@ export default defineConfig([
     name: 'sanity/overrides',
     rules: {
       '@typescript-eslint/no-require-imports': 'off',
-      'import/no-extraneous-dependencies': ['error', {packageDir: [ROOT_PATH, __dirname]}],
       'i18next/no-literal-string': ['error'],
       '@sanity/i18n/no-attribute-string-literals': [
         'error',
@@ -172,7 +171,6 @@ export default defineConfig([
     rules: {
       ...boundaries.configs.recommended.rules,
       '@typescript-eslint/no-require-imports': 'off',
-      'import/no-extraneous-dependencies': ['error', {packageDir: [ROOT_PATH, __dirname]}],
       'i18next/no-literal-string': ['error'],
       '@sanity/i18n/no-attribute-string-literals': [
         'error',
@@ -426,8 +424,27 @@ export default defineConfig([
   {
     files: ['src/core/form/studio/**/*'],
     rules: {
-      'import/no-extraneous-dependencies': 'off',
       'import/no-unresolved': 'off',
+    },
+  },
+  {
+    files: [
+      'src/_internal/**/*',
+      'src/desk/**/*',
+      'src/media-library/**/*',
+      'src/presentation/**/*',
+      'src/structure/**/*',
+      'test/**/*',
+      'playwright-ct/**/*',
+    ],
+    rules: {
+      'import/no-extraneous-dependencies': [
+        'error',
+        {
+          includeTypes: true,
+          packageDir: [__dirname, `${__dirname}/.eslint_no_extraneous_dependencies_workaround`],
+        },
+      ],
     },
   },
   // An issue with the vitest suite prevented this file from changing the 'react-i18next' import to 'sanity'.
@@ -436,6 +453,22 @@ export default defineConfig([
     files: ['src/ui-components/dialog/Dialog.tsx'],
     rules: {
       '@sanity/i18n/no-i18next-import': 'off',
+    },
+  },
+  // Enable rules that aid with ensuring react tests don't have race conditions
+  {
+    ...testingLibrary.configs['flat/react'],
+    files: ['**/__tests__/**/*.[jt]s?(x)', '**/?(*.)+(spec|test).[jt]s?(x)'],
+    rules: {
+      ...testingLibrary.configs['flat/react'].rules,
+      'testing-library/prefer-user-event': 'error',
+      // Rules that require follow up work to be enabled
+      'testing-library/prefer-screen-queries': 'warn',
+      'testing-library/no-node-access': 'warn',
+      'testing-library/no-container': 'warn',
+      'testing-library/prefer-query-by-disappearance': 'warn',
+      'testing-library/render-result-naming-convention': 'warn',
+      'testing-library/no-render-in-lifecycle': 'warn',
     },
   },
 ])

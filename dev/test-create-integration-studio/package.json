@@ -1,6 +1,6 @@
 {
   "name": "test-create-integration-studio",
-  "version": "4.11.0",
+  "version": "4.15.0",
   "private": true,
   "license": "MIT",
   "author": "Sanity.io <hello@sanity.io>",
@@ -13,11 +13,15 @@
     "start": "sanity preview"
   },
   "dependencies": {
-    "@repo/eslint-config": "workspace:*",
     "@sanity/code-input": "^6.0.3",
     "react": "catalog:",
     "react-dom": "catalog:",
     "sanity": "workspace:*",
     "styled-components": "catalog:"
+  },
+  "devDependencies": {
+    "@repo/eslint-config": "workspace:*",
+    "eslint": "catalog:",
+    "rimraf": "^5.0.10"
   }
 }

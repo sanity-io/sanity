@@ -3,6 +3,62 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [4.15.0](https://github.com/sanity-io/sanity/compare/v4.14.2...v4.15.0) (2025-11-11)
+
+### Bug Fixes
+
+* enhancedObjectDialog where custom items are being used ([#11090](https://github.com/sanity-io/sanity/issues/11090)) ([f45045b](https://github.com/sanity-io/sanity/commit/f45045b68e0973043d70d46e4c0abe9d4b79126d)) by RitaDias (rita@sanity.io)
+* issue where initialFullscreen ptes weren't being able to close ([#11106](https://github.com/sanity-io/sanity/issues/11106)) ([8207267](https://github.com/sanity-io/sanity/commit/8207267806715b9327c095f7134fa276ffa71404)) by RitaDias (rita@sanity.io)
+* issue where reference inputs were behaving oddly with the dialog ([#11047](https://github.com/sanity-io/sanity/issues/11047)) ([c5db32e](https://github.com/sanity-io/sanity/commit/c5db32e982fd89716cd5aa14ef6c8750e28838c6)) by RitaDias (rita@sanity.io)
+
+## [4.14.2](https://github.com/sanity-io/sanity/compare/v4.14.1...v4.14.2) (2025-11-07)
+
+**Note:** Version bump only for package sanity-test-studio
+
+## [4.14.1](https://github.com/sanity-io/sanity/compare/v4.14.0...v4.14.1) (2025-11-06)
+
+### Bug Fixes
+
+* **deps:** upgrade `@portabletext/*` deps ([#11068](https://github.com/sanity-io/sanity/issues/11068)) ([87b84eb](https://github.com/sanity-io/sanity/commit/87b84ebed96a4e01562fdc3c6c71982714d7f1cd)) by Cody Olsen (81981+stipsan@users.noreply.github.com)
+
+## [4.14.0](https://github.com/sanity-io/sanity/compare/v4.13.0...v4.14.0) (2025-11-06)
+
+### Features
+
+* **core:** adds `scheduledDrafts` config option (on by default) ([#11026](https://github.com/sanity-io/sanity/issues/11026)) ([bb05c55](https://github.com/sanity-io/sanity/commit/bb05c557c1f0861d9e29ab1c1516afbcdb4194f1)) by Pedro Bonamin (46196328+pedrobonamin@users.noreply.github.com)
+* **core:** allow disabling the built-in PTE Markdown shortcuts plugin ([1b9a227](https://github.com/sanity-io/sanity/commit/1b9a227971a5a69a60f8171e0d22f783bc3c2e26)) by Christian Hamburger Grøngaard (christian.groengaard@sanity.io)
+
+### Bug Fixes
+
+* **deps:** update dependency @portabletext/plugin-character-pair-decorator to ^2.0.1 ([#11039](https://github.com/sanity-io/sanity/issues/11039)) ([22ac6c9](https://github.com/sanity-io/sanity/commit/22ac6c93947a42fb085792333b205c9b76aaebcf)) by renovate[bot] (29139614+renovate[bot]@users.noreply.github.com)
+* **deps:** update dependency @portabletext/react to v5 ([#11034](https://github.com/sanity-io/sanity/issues/11034)) ([486476a](https://github.com/sanity-io/sanity/commit/486476a321c18f3c83eb5cc6d7eeecfc94668a97)) by renovate[bot] (29139614+renovate[bot]@users.noreply.github.com)
+* **deps:** update dependency @sanity/client to ^7.12.1 ([#11029](https://github.com/sanity-io/sanity/issues/11029)) ([df2aa67](https://github.com/sanity-io/sanity/commit/df2aa672f39c9a847e4102f1f0e18d240e1aa808)) by renovate[bot] (29139614+renovate[bot]@users.noreply.github.com)
+* **deps:** Update portabletext ([#10981](https://github.com/sanity-io/sanity/issues/10981)) ([a27f27b](https://github.com/sanity-io/sanity/commit/a27f27b87c91fd860d13bc4f6246557e59f7724c)) by renovate[bot] (29139614+renovate[bot]@users.noreply.github.com)
+* **deps:** Update portabletext ([#11031](https://github.com/sanity-io/sanity/issues/11031)) ([870a2f5](https://github.com/sanity-io/sanity/commit/870a2f5371f6c133dc64cda963e67259b8303de3)) by renovate[bot] (29139614+renovate[bot]@users.noreply.github.com)
+* **deps:** Update portabletext ([#11045](https://github.com/sanity-io/sanity/issues/11045)) ([184152b](https://github.com/sanity-io/sanity/commit/184152bdcbaba5e0e81a6b5ec4eb2ec0b02c1bad)) by renovate[bot] (29139614+renovate[bot]@users.noreply.github.com)
+* **deps:** Update portabletext to v4 (major) ([#11027](https://github.com/sanity-io/sanity/issues/11027)) ([73dcb1d](https://github.com/sanity-io/sanity/commit/73dcb1d157492e9f7e9c9c8db0df3be10eb07997)) by renovate[bot] (29139614+renovate[bot]@users.noreply.github.com)
+* replace deprecated `MarkdownPlugin` ([684c799](https://github.com/sanity-io/sanity/commit/684c799caa0f3f463ff14c72694a814108d682ab)) by Christian Hamburger Grøngaard (christian.groengaard@sanity.io)
+
+## [4.13.0](https://github.com/sanity-io/sanity/compare/v4.12.0...v4.13.0) (2025-11-03)
+
+### Bug Fixes
+
+* **deps:** Update portabletext ([#10977](https://github.com/sanity-io/sanity/issues/10977)) ([3fe929d](https://github.com/sanity-io/sanity/commit/3fe929d56356f3d58c2b0d1ad87f520e7bbcb7ea)) by renovate[bot] (29139614+renovate[bot]@users.noreply.github.com)
+
+## [4.12.0](https://github.com/sanity-io/sanity/compare/v4.11.0...v4.12.0) (2025-10-28)
+
+### Features
+
+* add config flag for nested object dialog (beta) ([#10912](https://github.com/sanity-io/sanity/issues/10912)) ([07a25d3](https://github.com/sanity-io/sanity/commit/07a25d3d1b79b926b2df2e5818f7878c6a36ade9)) by RitaDias (rita@sanity.io)
+* add initial  approach to a nested objects navigation dialog ([#10759](https://github.com/sanity-io/sanity/issues/10759)) ([c1be253](https://github.com/sanity-io/sanity/commit/c1be2530095d24a0190903c39f3a407ba1e83111)) by RitaDias (rita@sanity.io)
+
+### Bug Fixes
+
+* **core:** use release limit instead of count for upsell dialog ([#10929](https://github.com/sanity-io/sanity/issues/10929)) ([14a614c](https://github.com/sanity-io/sanity/commit/14a614c49583d175c98dd74bd3d10b5b4714a1e3)) by Pedro Bonamin (46196328+pedrobonamin@users.noreply.github.com)
+* **deps:** update dependency @portabletext/editor to ^2.15.5 ([#10927](https://github.com/sanity-io/sanity/issues/10927)) ([d62524f](https://github.com/sanity-io/sanity/commit/d62524f3a3c2ed9c48d9103d37b43afd57cf36f4)) by renovate[bot] (29139614+renovate[bot]@users.noreply.github.com)
+* **deps:** Update portabletext ([#10902](https://github.com/sanity-io/sanity/issues/10902)) ([f829425](https://github.com/sanity-io/sanity/commit/f829425f5fa0ff5ec0e0b7b8e103322ab5f49bb9)) by renovate[bot] (29139614+renovate[bot]@users.noreply.github.com)
+* **sanity:** add more detailed version info for deployed test-studios ([#10908](https://github.com/sanity-io/sanity/issues/10908)) ([b2c8975](https://github.com/sanity-io/sanity/commit/b2c8975b64ee9cda5927e6dfd1824df50aa946f2)) by Bjørge Næss (bjoerge@gmail.com)
+
 ## [4.11.0](https://github.com/sanity-io/sanity/compare/v4.10.3...v4.11.0) (2025-10-21)
 
 ### Features

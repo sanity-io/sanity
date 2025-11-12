@@ -95,7 +95,7 @@ export function useReleaseHistory(
 
   useEffect(() => {
     cancelledRef.current = false
-    fetchAndParse()
+    void fetchAndParse()
     return () => {
       cancelledRef.current = true
     }

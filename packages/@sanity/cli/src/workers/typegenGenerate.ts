@@ -225,4 +225,4 @@ function walkAndCountQueryTypeNodeStats(typeNode: TypeNode): {
   }
 }
 
-main()
+void main()

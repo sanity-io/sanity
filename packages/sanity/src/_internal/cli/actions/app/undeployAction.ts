@@ -34,6 +34,7 @@ export default async function undeployAppAction(
   const userApplication = await getUserApplication({
     client,
     appId,
+    isSdkApp: true,
   })
 
   spinner.succeed()

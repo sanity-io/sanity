@@ -1,6 +1,6 @@
 {
   "name": "@sanity/util",
-  "version": "4.11.0",
+  "version": "4.15.0",
   "description": "Utilities shared across projects of Sanity",
   "keywords": [
     "sanity",
@@ -117,18 +117,21 @@
   "dependencies": {
     "@date-fns/tz": "^1.4.1",
     "@date-fns/utc": "^2.1.1",
-    "@sanity/client": "^7.12.0",
+    "@sanity/client": "^7.12.1",
     "@sanity/types": "workspace:*",
     "date-fns": "^4.1.0",
-    "get-random-values-esm": "1.0.2",
     "rxjs": "^7.8.2"
   },
   "devDependencies": {
     "@repo/eslint-config": "workspace:*",
     "@repo/package.config": "workspace:*",
     "@repo/test-config": "workspace:*",
+    "@repo/tsconfig": "workspace:*",
+    "@sanity/pkg-utils": "catalog:",
+    "@types/node": "catalog:",
+    "eslint": "catalog:",
     "rimraf": "^5.0.10",
-    "vitest": "^3.2.4"
+    "vitest": "catalog:"
   },
   "engines": {
     "node": ">=20.19 <22 || >=22.12"
