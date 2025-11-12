@@ -73,7 +73,11 @@ export const DefaultPortableTextEditorPlugins = (
   props: Omit<PortableTextPluginsProps, 'renderDefault'>,
 ) => {
   if (!props.plugins.markdown.config) {
-    const {config, ...markdownShortcutsPluginProps} = props.plugins.markdown
+    const {enabled, config, ...markdownShortcutsPluginProps} = props.plugins.markdown
+
+    if (enabled === false) {
+      return null
+    }
 
     return <MarkdownShortcutsPlugin {...markdownShortcutsPluginProps} />
   }

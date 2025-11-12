@@ -15,7 +15,7 @@ test.describe('@sanity/default-layout: Navbar', () => {
 
     await expect(page.getByLabel('Help and resources')).toBeVisible()
 
-    expect(page.getByLabel('Help and resources')).toBeVisible()
+    await expect(page.getByLabel('Help and resources')).toBeVisible()
 
     await page.getByLabel('Help and resources').click()
 

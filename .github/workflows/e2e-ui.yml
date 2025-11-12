@@ -61,6 +61,7 @@ jobs:
           path: artifacts
       - name: Install project dependencies
         run: pnpm install
+      # For this trick to work there needs to be a `"@sanity/ui@3": "$@sanity/ui"` override in the root package.json, with a `@sanity/ui` entry in `devDependencies`
       - run: pnpm add -w ./artifacts/sanity-ui-*.tgz
 
       - name: Build CLI

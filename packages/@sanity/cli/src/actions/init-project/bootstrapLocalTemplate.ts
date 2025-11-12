@@ -128,7 +128,7 @@ export async function bootstrapLocalTemplate(
 
   // Now create a package manifest (`package.json`) with the merged dependencies
   spinner = output.spinner('Creating default project files').start()
-  const packageManifest = await createPackageManifest({
+  const packageManifest = createPackageManifest({
     name: packageJsonName,
     dependencies,
     devDependencies,

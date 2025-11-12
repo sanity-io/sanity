@@ -3,6 +3,35 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [4.15.0](https://github.com/sanity-io/sanity/compare/v4.14.2...v4.15.0) (2025-11-11)
+
+### Bug Fixes
+
+* **typegen:** allow generating types to absolute path ([#7620](https://github.com/sanity-io/sanity/issues/7620)) ([#11081](https://github.com/sanity-io/sanity/issues/11081)) ([f8b4e87](https://github.com/sanity-io/sanity/commit/f8b4e87fdb54a8d294a7ffc754cf5f662adfdaab)) by Kristoffer Brabrand (kristoffer@brabrand.no)
+
+### Reverts
+
+* **deps:** add patch-package as direct dependency ([#11085](https://github.com/sanity-io/sanity/issues/11085)) ([#11086](https://github.com/sanity-io/sanity/issues/11086)) ([45a5dbf](https://github.com/sanity-io/sanity/commit/45a5dbf56a174884032b212e4dc5b61cba1acb31)) by Bjørge Næss (bjoerge@gmail.com)
+
+## [4.14.2](https://github.com/sanity-io/sanity/compare/v4.14.1...v4.14.2) (2025-11-07)
+
+### Bug Fixes
+
+* **cli:** disable dynamic-import when running cli from local source ([#11078](https://github.com/sanity-io/sanity/issues/11078)) ([a30a092](https://github.com/sanity-io/sanity/commit/a30a0923467591cf1c57638d0e370bbbd0856d06)) by Kristoffer Brabrand (kristoffer@brabrand.no)
+* **deps:** add patch-package as direct dependency ([#11085](https://github.com/sanity-io/sanity/issues/11085)) ([3a6536c](https://github.com/sanity-io/sanity/commit/3a6536ca7c5fc64daec42057dc56a06c14cd74e2)) by Bjørge Næss (bjoerge@gmail.com)
+
+## [4.14.1](https://github.com/sanity-io/sanity/compare/v4.14.0...v4.14.1) (2025-11-06)
+
+**Note:** Version bump only for package @sanity/cli
+
+## [4.14.0](https://github.com/sanity-io/sanity/compare/v4.13.0...v4.14.0) (2025-11-06)
+
+### Bug Fixes
+
+* **cli:** add new function test flag ([#11007](https://github.com/sanity-io/sanity/issues/11007)) ([22bd071](https://github.com/sanity-io/sanity/commit/22bd07126984e872f3fd3817f54c52a0da1114e9)) by Simon MacDonald (simon.macdonald@gmail.com)
+* **deps:** add `@babel/parser`, an implicit dep of `recast` ([#11042](https://github.com/sanity-io/sanity/issues/11042)) ([bc08d28](https://github.com/sanity-io/sanity/commit/bc08d286f2cf618152dd483765df70304a120155)) by Cody Olsen (81981+stipsan@users.noreply.github.com)
+* **deps:** update dependency @sanity/client to ^7.12.1 ([#11029](https://github.com/sanity-io/sanity/issues/11029)) ([df2aa67](https://github.com/sanity-io/sanity/commit/df2aa672f39c9a847e4102f1f0e18d240e1aa808)) by renovate[bot] (29139614+renovate[bot]@users.noreply.github.com)
+
 ## [4.13.0](https://github.com/sanity-io/sanity/compare/v4.12.0...v4.13.0) (2025-11-03)
 
 ### Features

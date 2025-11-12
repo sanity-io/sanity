@@ -1,6 +1,6 @@
 {
   "name": "studio-e2e-testing",
-  "version": "4.13.0",
+  "version": "4.15.0",
   "private": true,
   "keywords": [
     "sanity"
@@ -25,9 +25,10 @@
     "react": "catalog:",
     "react-dom": "catalog:",
     "sanity": "workspace:*",
+    "sanity-plugin-internationalized-array": "^3.2.0",
     "sanity-plugin-markdown": "^6.0.0",
     "sanity-plugin-media": "^4.0.0",
-    "sanity-plugin-mux-input": "^2.9.1",
+    "sanity-plugin-mux-input": "^2.10.0",
     "sanity-test-studio": "workspace:*",
     "styled-components": "catalog:"
   },

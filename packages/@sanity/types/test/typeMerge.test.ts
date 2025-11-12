@@ -47,5 +47,3 @@ describe('types', () => {
     })
   })
 })
-
-export {}

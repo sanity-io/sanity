@@ -1,6 +1,6 @@
 {
   "name": "efps-tests",
-  "version": "4.13.0",
+  "version": "4.15.0",
   "private": true,
   "description": "Sanity Studio eFPS perf suite",
   "keywords": [],
@@ -28,7 +28,8 @@
     "@sanity/client": "^7.12.1",
     "@types/react": "catalog:",
     "@types/react-dom": "catalog:",
-    "@types/yargs": "^17.0.33",
+    "@types/yargs": "^17.0.34",
+    "babel-plugin-react-compiler": "19.1.0-rc.3",
     "chalk": "^4.1.2",
     "cli-table3": "^0.6.5",
     "dotenv": "^16.6.1",

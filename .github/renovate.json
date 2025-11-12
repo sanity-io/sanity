@@ -128,7 +128,7 @@
     {
       "description": "Always upgrade oxlint together",
       "groupName": "oxlint",
-      "matchPackageNames": ["oxlint", "eslint-plugin-oxlint"]
+      "matchPackageNames": ["oxlint", "eslint-plugin-oxlint", "oxlint-tsgolint"]
     },
     {
       "description": "Due to our usage of useEffectEvent we need to use the experimental version of the plugin. Otherwise the exhaustive-deps rule will have false negatives",

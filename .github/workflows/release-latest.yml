@@ -18,7 +18,7 @@ permissions:
 jobs:
   build-and-validate:
     if: >
-      github.event_name == 'workflow_dispatch' || 
+      github.event_name == 'workflow_dispatch' ||
       startsWith(github.event.head_commit.message, 'chore(release): publish ')
     runs-on: ubuntu-latest
     permissions:
@@ -98,7 +98,7 @@ jobs:
     env:
       TURBO_TOKEN: ${{ secrets.TURBO_TOKEN }}
       TURBO_TEAM: ${{ vars.TURBO_TEAM }}
-      EXPECTED_NPM_USER: sanity-io
+      EXPECTED_NPM_USER: sanity-svc.npm
     steps:
       - uses: actions/checkout@v5
         with:

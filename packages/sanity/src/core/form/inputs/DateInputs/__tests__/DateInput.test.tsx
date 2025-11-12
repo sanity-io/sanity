@@ -22,6 +22,7 @@ test('does not emit onChange after invalid value has been typed', async () => {
 
   const input = result.container.querySelector('input')!
 
+  // eslint-disable-next-line testing-library/prefer-user-event
   fireEvent.change(input, {target: {value: 'this is invalid'}})
   expect(input.value).toBe('this is invalid')
   expect(onChange.mock.calls.length).toBe(0)
@@ -43,6 +44,7 @@ test('emits onChange on correct format if a valid value has been typed', async (
   const input = result.container.querySelector('input')!
 
   // NOTE: the date is entered and displayed in local time zone
+  // eslint-disable-next-line testing-library/prefer-user-event
   fireEvent.change(input, {target: {value: '2021-03-28'}})
   expect(input.value).toBe('2021-03-28')
 
@@ -79,6 +81,7 @@ test('change the date should show the correct date in the input (save on enter)'
   })
 
   const input = result.container.querySelector('input')!
+  // eslint-disable-next-line testing-library/prefer-user-event
   fireEvent.change(input, {target: {value: '2021-03-30'}})
   fireEvent.blur(input)
   expect(onChange.mock.calls).toMatchSnapshot()

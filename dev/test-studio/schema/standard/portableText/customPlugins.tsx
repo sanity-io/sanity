@@ -1,5 +1,6 @@
 import {defineBehavior, effect, forward} from '@portabletext/editor/behaviors'
-import {BehaviorPlugin, DecoratorShortcutPlugin} from '@portabletext/editor/plugins'
+import {BehaviorPlugin} from '@portabletext/editor/plugins'
+import {CharacterPairDecoratorPlugin} from '@portabletext/plugin-character-pair-decorator'
 import {defineArrayMember, defineType} from 'sanity'
 
 export const customPlugins = defineType({
@@ -135,9 +136,38 @@ export const customPlugins = defineType({
     },
 
     /**
+     * Markdown Shortcuts Disabled
+     */
+    {
+      type: 'array',
+      name: 'markdownShortcutsDisabled',
+      title: 'Markdown Shortcuts Disabled',
+      description: 'The markdown shortcuts are disabled',
+      of: [
+        {
+          type: 'block',
+        },
+      ],
+      components: {
+        portableText: {
+          plugins: (props) => {
+            return props.renderDefault({
+              ...props,
+              plugins: {
+                markdown: {
+                  enabled: false,
+                },
+              },
+            })
+          },
+        },
+      },
+    },
+
+    /**
      * Custom Decorator Shortcuts
      *
-     * Uses the `DecoratorShortcutPlugin` add custom decorator shortcuts in the
+     * Uses the `CharacterPairDecoratorPlugin` add custom decorator shortcuts in the
      * editor.
      */
     {
@@ -167,7 +197,7 @@ export const customPlugins = defineType({
                     },
                   },
                 })}
-                <DecoratorShortcutPlugin
+                <CharacterPairDecoratorPlugin
                   decorator={({schema}) =>
                     schema.decorators.find((decorator) => decorator.name === 'strong')?.name
                   }
@@ -176,7 +206,7 @@ export const customPlugins = defineType({
                     amount: 2,
                   }}
                 />
-                <DecoratorShortcutPlugin
+                <CharacterPairDecoratorPlugin
                   decorator={({schema}) =>
                     schema.decorators.find((decorator) => decorator.name === 'strong')?.name
                   }
@@ -185,7 +215,7 @@ export const customPlugins = defineType({
                     amount: 2,
                   }}
                 />
-                <DecoratorShortcutPlugin
+                <CharacterPairDecoratorPlugin
                   decorator={({schema}) =>
                     schema.decorators.find((decorator) => decorator.name === 'em')?.name
                   }
@@ -194,7 +224,7 @@ export const customPlugins = defineType({
                     amount: 1,
                   }}
                 />
-                <DecoratorShortcutPlugin
+                <CharacterPairDecoratorPlugin
                   decorator={({schema}) =>
                     schema.decorators.find((decorator) => decorator.name === 'em')?.name
                   }

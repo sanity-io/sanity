@@ -134,14 +134,20 @@ export const studioLocaleStrings = defineLocalesResources('studio', {
   'asset-source.dialog.default-title_file': 'Select file',
   /** Select asset dialog title for images */
   'asset-source.dialog.default-title_image': 'Select image',
+  /** Select asset dialog title for videos */
+  'asset-source.dialog.default-title_video': 'Select video',
   /** Insert asset error */
   'asset-source.dialog.insert-asset-error':
     'Error inserting asset. See the console for more information.',
   /** Select asset dialog load more items */
   'asset-source.dialog.load-more': 'Load more',
-  /** Text shown when selecting a file but there's no files to select from */
+  /** Text shown when selecting a file but there's no files to select from
+   * @deprecated no longer in use
+   */
   'asset-source.dialog.no-assets_file': 'No files',
-  /** Text shown when selecting an image but there's no images to select from */
+  /** Text shown when selecting an image but there's no images to select from
+   * @deprecated no longer in use
+   */
   'asset-source.dialog.no-assets_image': 'No images',
   'asset-source.file.asset-list.action.delete.disabled-cannot-delete-current-file':
     'Cannot delete currently selected file',
@@ -211,7 +217,9 @@ export const studioLocaleStrings = defineLocalesResources('studio', {
   'asset-sources.media-library.image.title': 'Media Library',
 
   /** Info messages for the Media Library Asset Source  */
-  'asset-sources.media-library.select-dialog.title': 'Selecting {{assetType}} for {{targetTitle}}',
+  'asset-sources.media-library.select-dialog.title_file': 'Selecting file for {{targetTitle}}',
+  'asset-sources.media-library.select-dialog.title_image': 'Selecting image for {{targetTitle}}',
+  'asset-sources.media-library.select-dialog.title_video': 'Selecting video for {{targetTitle}}',
 
   /** Warning message shown when uploading already existing files to the Media Library Asset Source */
   'asset-sources.media-library.warning.file-already-exist.description':
@@ -486,6 +494,9 @@ export const studioLocaleStrings = defineLocalesResources('studio', {
   'document-status.revision-not-found': 'Revision not found',
   /** Label to indicate that a document type was not found */
   'document.type.not-found': 'Document type "{{type}}" not found',
+
+  /** Error message shown when an action cannot be performed */
+  'errors.unable-to-perform-action': 'Unable to perform this action',
 
   /** The value of the <code>_key</code> property must be a unique string. */
   'form.error.duplicate-keys-alert.details.additional-description':
@@ -1304,6 +1315,8 @@ export const studioLocaleStrings = defineLocalesResources('studio', {
   'release.action.copy-to': 'Copy version to',
   /** Action message for creating new releases */
   'release.action.create-new': 'New release',
+  /** Description for toast when version creation failed */
+  'release.action.create-version.failure': 'Failed to create version',
   /** Action message for deleting a scheduled publish */
   'release.action.delete-schedule': 'Delete schedule',
   /** Action message for when document is already in release  */
@@ -1423,10 +1436,9 @@ export const studioLocaleStrings = defineLocalesResources('studio', {
   /** The placeholder text when the release doesn't have a title */
   'release.placeholder-untitled-release': 'Untitled release',
   /** Description for warning that the published schedule time is in the past */
-  'release.schedule-dialog.publish-date-in-past-warning':
-    'Schedule this release for a future time and date.',
+  'release.schedule-dialog.publish-date-in-past-warning': 'Schedule for a future time and date.',
   /** Label for date picker when scheduling a release */
-  'release.schedule-dialog.select-publish-date-label': 'Schedule on',
+  'release.schedule-dialog.select-publish-date-label': 'Publish on',
   /** The toast description that will be shown when the user has a release perspective which is now archived */
   'release.toast.archived-release.description': 'This release has been unpinned',
   /** The toast title that will be shown when the user has a release perspective which is now archived */
@@ -1475,7 +1487,7 @@ export const studioLocaleStrings = defineLocalesResources('studio', {
   /** Description for the schedule publish dialog */
   'schedule-publish-dialog.description': 'Select when this document should be published.',
   /** Header for the schedule publish dialog */
-  'schedule-publish-dialog.header': 'Schedule draft for Publish',
+  'schedule-publish-dialog.header': 'Schedule draft for publishing',
 
   /** Title for a scheduled draft release */
   'scheduled-drafts.release.title': 'Scheduled publish',

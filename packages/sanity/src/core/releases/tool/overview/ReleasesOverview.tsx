@@ -159,7 +159,7 @@ export function ReleasesOverview() {
   const isMounted = useRef(false)
   useEffect(() => {
     isMounted.current = true
-    checkWithPermissionGuard(createRelease, getReleaseDefaults()).then((hasPermissions) => {
+    void checkWithPermissionGuard(createRelease, getReleaseDefaults()).then((hasPermissions) => {
       if (isMounted.current) setHasCreatePermission(hasPermissions)
     })
 
@@ -290,9 +290,7 @@ export function ReleasesOverview() {
     return (
       <Button
         icon={AddIcon}
-        disabled={
-          !hasCreatePermission || isCreateReleaseDialogOpen || releasesUpsellMode === 'disabled'
-        }
+        disabled={!hasCreatePermission || isCreateReleaseDialogOpen}
         onClick={handleOnClickCreateRelease}
         text={tCore('release.action.create-new')}
         tooltipProps={{
@@ -305,7 +303,6 @@ export function ReleasesOverview() {
     cardinalityView,
     hasCreatePermission,
     isCreateReleaseDialogOpen,
-    releasesUpsellMode,
     handleOnClickCreateRelease,
     tCore,
     isScheduledDraftsEnabled,

@@ -49,24 +49,27 @@ export function ColumnsControl({table}: ColumnsControlProps) {
                 {table
                   .getAllLeafColumns()
                   .filter((column) => column.getCanHide())
-                  .map((column) => (
-                    <Flex key={column.id} marginY={2} align="center">
-                      <Checkbox
-                        readOnly={getColumnVisibilityDisabled(column)}
-                        checked={column.getIsVisible()}
-                        onChange={handleColumnOnChange(column)}
-                        id={`col-visibility-${column.id}`}
-                        style={{display: 'block'}}
-                      />
-                      <Box flex={1} paddingLeft={3}>
-                        <Text size={1}>
-                          <label htmlFor={`col-visibility-${column.id}`}>
-                            {column.columnDef.header?.toString()}
-                          </label>
-                        </Text>
-                      </Box>
-                    </Flex>
-                  ))}
+                  .map((column) => {
+                    const columnId = column.id.replace(/ /g, '-')
+                    return (
+                      <Flex key={column.id} marginY={2} align="center">
+                        <Checkbox
+                          readOnly={getColumnVisibilityDisabled(column)}
+                          checked={column.getIsVisible()}
+                          onChange={handleColumnOnChange(column)}
+                          id={`col-visibility-${columnId}`}
+                          style={{display: 'block'}}
+                        />
+                        <Box flex={1} paddingLeft={3}>
+                          <Text size={1}>
+                            <label htmlFor={`col-visibility-${columnId}`}>
+                              {column.columnDef.header?.toString()}
+                            </label>
+                          </Text>
+                        </Box>
+                      </Flex>
+                    )
+                  })}
               </Stack>
             </Flex>
             <Button

@@ -1,6 +1,6 @@
 {
   "name": "@sanity/cli",
-  "version": "4.13.0",
+  "version": "4.15.0",
   "description": "Sanity CLI tool for managing Sanity installations, managing plugins, schemas and datasets",
   "keywords": [
     "sanity",
@@ -56,6 +56,7 @@
     "watch": "pkg-utils watch"
   },
   "dependencies": {
+    "@babel/parser": "^7.28.5",
     "@babel/traverse": "^7.28.4",
     "@sanity/client": "^7.12.1",
     "@sanity/codegen": "workspace:*",

@@ -42,5 +42,3 @@ describe('slug types', () => {
     })
   })
 })
-
-export {}

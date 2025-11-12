@@ -1,3 +1,4 @@
+import {randomUUID} from 'node:crypto'
 import {readFile, writeFile} from 'node:fs/promises'
 
 import {describe, expect, test} from 'vitest'
@@ -116,6 +117,34 @@ describeCliTest('CLI: `sanity typegen`', () => {
       const types = await readFile(`${studiosPath}/cli-test-studio/out/types.ts`)
       expect(types.toString()).not.toContain(`Query TypeMap`)
       expect(types.toString()).toMatchSnapshot()
+    })
+
+    test('sanity typegen generate: with absolute output path', async () => {
+      const randomId = randomUUID()
+      const typesPath = `${studiosPath}/cli-test-studio/out/types-${randomId}.ts`
+
+      await writeFile(
+        `${studiosPath}/cli-test-studio/absolute-path-config-${randomId}.json`,
+        `${JSON.stringify({
+          schema: './working-schema.json',
+          generates: typesPath,
+        })}\n`,
+      )
+
+      const result = await runSanityCmdCommand(studioName, [
+        'typegen',
+        'generate',
+        '--config-path',
+        `${studiosPath}/cli-test-studio/absolute-path-config-${randomId}.json`,
+      ])
+
+      const types = await readFile(typesPath)
+      expect(types.length).toBeGreaterThan(100)
+
+      expect(result.code).toBe(0)
+      expect(result.stderr).toContain(
+        'Generated TypeScript types for 2 schema types and 1 GROQ queries in 1 file',
+      )
     })
   })
 })

@@ -24,9 +24,9 @@ const keyValueStoreKey = STORED_QUERIES_NAMESPACE
 
 export function useSavedQueries(): {
   queries: QueryConfig[]
-  saveQuery: (query: Omit<QueryConfig, '_key'>) => void
-  updateQuery: (query: QueryConfig) => void
-  deleteQuery: (key: string) => void
+  saveQuery: (query: Omit<QueryConfig, '_key'>) => Promise<void>
+  updateQuery: (query: QueryConfig) => Promise<void>
+  deleteQuery: (key: string) => Promise<void>
   saving: boolean
   deleting: string[]
   saveQueryError: Error | undefined
@@ -66,14 +66,14 @@ export function useSavedQueries(): {
   }, [queries, keyValueStore])
 
   const saveQuery = useCallback(
-    (query: Omit<QueryConfig, '_key'>) => {
+    async (query: Omit<QueryConfig, '_key'>) => {
       setSaving(true)
       setSaveQueryError(undefined)
       try {
         const newQuery = {...query, _key: uuid()} // Add a unique _key to the query
         const newQueries = [newQuery, ...value.queries]
         setValue({queries: newQueries})
-        keyValueStore.setKey(keyValueStoreKey, {
+        await keyValueStore.setKey(keyValueStoreKey, {
           queries: newQueries,
         } as unknown as KeyValueStoreValue)
       } catch (err) {
@@ -86,7 +86,7 @@ export function useSavedQueries(): {
   )
 
   const updateQuery = useCallback(
-    (query: QueryConfig) => {
+    async (query: QueryConfig) => {
       setSaving(true)
       setSaveQueryError(undefined)
       try {
@@ -94,7 +94,7 @@ export function useSavedQueries(): {
           q._key === query._key ? {...q, ...query} : q,
         )
         setValue({queries: updatedQueries})
-        keyValueStore.setKey(keyValueStoreKey, {
+        await keyValueStore.setKey(keyValueStoreKey, {
           queries: updatedQueries,
         } as unknown as KeyValueStoreValue)
       } catch (err) {
@@ -107,13 +107,13 @@ export function useSavedQueries(): {
   )
 
   const deleteQuery = useCallback(
-    (key: string) => {
+    async (key: string) => {
       setDeleting((prev) => [...prev, key])
       setDeleteQueryError(undefined)
       try {
         const filteredQueries = value.queries.filter((q) => q._key !== key)
         setValue({queries: filteredQueries})
-        keyValueStore.setKey(keyValueStoreKey, {
+        await keyValueStore.setKey(keyValueStoreKey, {
           queries: filteredQueries,
         } as unknown as KeyValueStoreValue)
       } catch (err) {

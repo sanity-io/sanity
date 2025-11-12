@@ -23,7 +23,7 @@ catalog:
   '@types/react-dom': ^19.1.7
   '@types/react-is': ^19.0.0
   '@vitejs/plugin-react': ^4.6.0
-  esbuild: 0.25.11
+  esbuild: 0.25.12
   esbuild-register: ^3.6.0
   eslint: ^9.37.0
   globals: ^16.2.0
@@ -53,8 +53,13 @@ linkWorkspacePackages: deep
 
 minimumReleaseAge: 4320
 minimumReleaseAgeExclude:
-  - '@sanity/*'
+  - '@oxlint/*'
+  - '@oxlint-tsgolint/*'
   - '@portabletext/*'
+  - '@sanity/*'
+  - 'groq-js'
+  - 'oxlint'
+  - 'oxlint-tsgolint'
+  - 'eslint-plugin-oxlint'
   - 'react-rx'
   - 'use-effect-event'
-  - 'groq-js'

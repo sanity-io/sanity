@@ -35,7 +35,7 @@ async function inlineCommentCreationTest(props: InlineCommentCreationTestProps) 
 
   const button = page.getByTestId('inline-comment-button')
   await expect(button).toBeVisible()
-  button.click({
+  await button.click({
     delay: 1000,
   })
 

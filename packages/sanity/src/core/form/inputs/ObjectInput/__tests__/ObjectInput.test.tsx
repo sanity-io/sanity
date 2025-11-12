@@ -84,8 +84,8 @@ describe('ObjectInput', () => {
       ),
     })
 
-    expect(result.queryByTestId('field-first-field')).toBeInTheDocument()
-    expect(result.queryByTestId('input-first-field')).toBeInTheDocument()
+    expect(result.getByTestId('field-first-field')).toBeInTheDocument()
+    expect(result.getByTestId('input-first-field')).toBeInTheDocument()
     expect(renderField.mock.calls.length).toBe(1)
     expect(renderInput.mock.calls.length).toBe(1)
   })

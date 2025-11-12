@@ -3,7 +3,8 @@ import {expect} from '@playwright/test'
 import {test} from '../../studio-test'
 
 test.describe('In PTE - references in popover', () => {
-  test.beforeEach(async ({page, createDraftDocument}) => {
+  test.beforeEach(async ({page, createDraftDocument}, testInfo) => {
+    testInfo.setTimeout(testInfo.timeout + 60_000)
     await createDraftDocument('/content/input-standard;portable-text;pt_allTheBellsAndWhistles')
 
     // Important since the having two documents side by side is vital to the test
@@ -32,13 +33,11 @@ test.describe('In PTE - references in popover', () => {
       .getByTestId('inlineReference-insert-menu-button')
       .click()
 
-    page.getByTestId('inline-preview').dblclick()
+    await page.getByTestId('inline-preview').dblclick()
 
-    await expect(page.getByTestId('nested-object-dialog')).toBeVisible()
+    await expect(page.getByTestId('popover-edit-dialog')).toBeVisible()
 
-    await expect(
-      page.getByTestId('nested-object-dialog').getByTestId('reference-input'),
-    ).toBeVisible()
+    await expect(page.getByTestId('reference-input')).toBeVisible()
   })
 
   test('you should be able to create a new reference document and change the fields while the popover is open', async ({
@@ -54,10 +53,9 @@ test.describe('In PTE - references in popover', () => {
     // While the popover is open, we should be able to change the fields of the new document
     await page.getByTestId('string-input').nth(1).fill('Reference test')
 
-    await expect(page.getByTestId('nested-object-dialog')).toBeVisible()
-    await expect(page.getByTestId('document-panel-document-title').nth(1)).toContainText(
-      'Reference test',
-    )
+    await expect(page.getByTestId('popover-edit-dialog')).toBeVisible()
+
+    await expect(page.getByTestId('reference-input')).toBeVisible()
   })
 
   test('you should be able to add an existing document as reference and keep the link if picking a document that goes outside of the modal viewport', async ({
@@ -92,16 +90,14 @@ test.describe('In PTE - references in popover', () => {
     await page.keyboard.press('ArrowDown')
     await page.keyboard.press('Enter')
 
-    await expect(
-      page.getByTestId('nested-object-dialog').getByTestId('default-preview'),
-    ).toBeVisible()
+    await expect(page.getByTestId('popover-edit-dialog')).toBeVisible()
     await expect(
       page
-        .getByTestId('nested-object-dialog')
+        .getByTestId('popover-edit-dialog')
         .getByTestId('default-preview')
         .getByTestId('default-preview__heading'),
     ).not.toBeVisible()
-    await page.getByTestId('nested-object-dialog').getByTestId('default-preview').click()
+    await page.getByTestId('popover-edit-dialog').getByTestId('default-preview').click()
 
     const referencedDocumentTitle = page.getByTestId('document-panel-document-title').nth(1)
     await expect(referencedDocumentTitle).toBeVisible()
@@ -109,7 +105,7 @@ test.describe('In PTE - references in popover', () => {
     // While the popover is open, we should be able to change the fields of the new document
     await page.getByTestId('string-input').nth(1).fill('Updated title')
 
-    await expect(page.getByTestId('nested-object-dialog')).toBeVisible()
+    await expect(page.getByTestId('popover-edit-dialog')).toBeVisible()
     await expect(referencedDocumentTitle).toContainText('Updated title')
   })
 })

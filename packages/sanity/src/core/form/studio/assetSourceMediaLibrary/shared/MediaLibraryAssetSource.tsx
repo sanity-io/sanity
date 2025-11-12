@@ -50,7 +50,7 @@ const MediaLibraryAssetSourceComponent = function MediaLibraryAssetSourceCompone
           dialogHeaderTitle={
             dialogHeaderTitle ||
             t('asset-sources.media-library.select-dialog.title', {
-              assetType: assetType,
+              context: assetType === 'sanity.video' ? 'video' : assetType,
               targetTitle: schemaType?.title,
             })
           }

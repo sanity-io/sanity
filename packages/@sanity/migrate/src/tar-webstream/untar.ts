@@ -54,7 +54,7 @@ export function untar(
           readingChunk = true
           controller.enqueue([
             header,
-            entryStream(reader, header.size!, buffer, () => {
+            entryStream(reader, header.size, buffer, () => {
               readingChunk = false
             }),
           ])
@@ -90,7 +90,7 @@ function entryStream(
         throw new Error('Premature end of tar stream')
       }
       controller.enqueue(chunk)
-      totalBytesRead += chunk!.byteLength
+      totalBytesRead += chunk.byteLength
       if (chunk?.byteLength === remaining) {
         // We've reached the end of the entry, discard any padding at the end (
         discardPadding(buffer, expectedBytes)

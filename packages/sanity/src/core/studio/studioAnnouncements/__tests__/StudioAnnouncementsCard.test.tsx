@@ -1,6 +1,7 @@
 /* eslint-disable camelcase */
 import {Menu} from '@sanity/ui'
-import {fireEvent, render, screen} from '@testing-library/react'
+import {render, screen} from '@testing-library/react'
+import {userEvent} from '@testing-library/user-event'
 import {type ReactNode} from 'react'
 import {afterEach, describe, expect, test, vi} from 'vitest'
 
@@ -129,7 +130,7 @@ describe('StudioAnnouncementsCard', () => {
     )
 
     const cardButton = screen.getByLabelText('Open announcements')
-    fireEvent.click(cardButton)
+    await userEvent.click(cardButton)
 
     expect(onCardClickMock).toHaveBeenCalled()
   })
@@ -149,7 +150,7 @@ describe('StudioAnnouncementsCard', () => {
     )
 
     const closeButton = screen.getByLabelText('Dismiss announcements')
-    fireEvent.click(closeButton)
+    await userEvent.click(closeButton)
 
     expect(onCardDismissMock).toHaveBeenCalled()
   })

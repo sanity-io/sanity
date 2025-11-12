@@ -34,7 +34,7 @@ function installProcessExitHack(finalTask: () => Promise<unknown>) {
 
   // @ts-expect-error ignore TS2534
   process.exit = (exitCode?: number | undefined): never => {
-    finalTask().finally(() => originalProcessExit(exitCode))
+    void finalTask().finally(() => originalProcessExit(exitCode))
   }
 }
 
@@ -253,13 +253,15 @@ function warnOnNonProductionEnvironment(): void {
     return
   }
 
-  console.warn(
-    chalk.yellow(
-      knownEnvs.includes(sanityEnv)
-        ? `[WARN] Running in ${sanityEnv} environment mode\n`
-        : `[WARN] Running in ${chalk.red('UNKNOWN')} "${sanityEnv}" environment mode\n`,
-    ),
-  )
+  if (process.env.TEST !== 'true') {
+    console.warn(
+      chalk.yellow(
+        knownEnvs.includes(sanityEnv)
+          ? `[WARN] Running in ${sanityEnv} environment mode\n`
+          : `[WARN] Running in ${chalk.red('UNKNOWN')} "${sanityEnv}" environment mode\n`,
+      ),
+    )
+  }
 }
 
 function loadAndSetEnvFromDotEnvFiles({

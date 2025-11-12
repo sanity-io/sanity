@@ -10,6 +10,7 @@ import {type ComponentType, type ReactNode, useCallback, useContext, useState} f
 import {type ObjectSchemaType, useTranslation} from 'sanity'
 import {PresentationContext} from 'sanity/_singletons'
 import {useIntentLink} from 'sanity/router'
+import {usePaneRouter} from 'sanity/structure'
 
 import {DEFAULT_TOOL_NAME, DEFAULT_TOOL_TITLE} from '../constants'
 import {presentationLocaleNamespace} from '../i18n'
@@ -163,6 +164,7 @@ function LocationItem(props: {
   const currentPresentationToolName = useCurrentPresentationToolName()
   const isCurrentTool = toolName === currentPresentationToolName
   const navigate = presentation?.navigate
+  const {params: paneParams} = usePaneRouter()
 
   const presentationLinkProps = useIntentLink({
     intent: 'edit',
@@ -172,6 +174,7 @@ function LocationItem(props: {
       mode: 'presentation',
       presentation: toolName,
       ...presentation?.structureParams,
+      ...paneParams,
       preview: node.href,
     },
   })

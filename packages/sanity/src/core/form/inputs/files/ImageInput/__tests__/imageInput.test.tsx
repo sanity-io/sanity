@@ -132,7 +132,7 @@ describe('ImageInput with empty state', () => {
     })
     // const {result} = renderImageInput({type: imagesTest})
     expect(result.queryByTestId('file-button-input')!.getAttribute('value')).toBe('')
-    expect(result.queryByText('Drag or paste image here')).toBeInTheDocument()
+    expect(result.getByText('Drag or paste image here')).toBeInTheDocument()
   })
 
   // it.todo('renders new image when a new image in uploaded')

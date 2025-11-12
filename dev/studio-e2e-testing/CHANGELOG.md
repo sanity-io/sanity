@@ -3,6 +3,25 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [4.15.0](https://github.com/sanity-io/sanity/compare/v4.14.2...v4.15.0) (2025-11-11)
+
+### Bug Fixes
+
+* enhancedObjectDialog where custom items are being used ([#11090](https://github.com/sanity-io/sanity/issues/11090)) ([f45045b](https://github.com/sanity-io/sanity/commit/f45045b68e0973043d70d46e4c0abe9d4b79126d)) by RitaDias (rita@sanity.io)
+* issue where when enhancedObjectDialog was turned off, the old dialog wasn't opening ([#11108](https://github.com/sanity-io/sanity/issues/11108)) ([be015c5](https://github.com/sanity-io/sanity/commit/be015c582b5651fb23d20c97170380b3e08b01c6)) by RitaDias (rita@sanity.io)
+
+## [4.14.2](https://github.com/sanity-io/sanity/compare/v4.14.1...v4.14.2) (2025-11-07)
+
+**Note:** Version bump only for package studio-e2e-testing
+
+## [4.14.1](https://github.com/sanity-io/sanity/compare/v4.14.0...v4.14.1) (2025-11-06)
+
+**Note:** Version bump only for package studio-e2e-testing
+
+## [4.14.0](https://github.com/sanity-io/sanity/compare/v4.13.0...v4.14.0) (2025-11-06)
+
+**Note:** Version bump only for package studio-e2e-testing
+
 ## [4.13.0](https://github.com/sanity-io/sanity/compare/v4.12.0...v4.13.0) (2025-11-03)
 
 **Note:** Version bump only for package studio-e2e-testing

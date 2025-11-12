@@ -18,6 +18,8 @@ interface VersionContextMenuProps {
   isVersion: boolean
   onDiscard: () => void
   onCreateRelease: () => void
+  onCopyToDrafts: () => void
+  onCopyToDraftsNavigate: () => void
   onCreateVersion: (targetId: string) => void
   disabled?: boolean
   locked?: boolean
@@ -37,6 +39,8 @@ export const VersionContextMenu = memo(function VersionContextMenu(props: Versio
     isVersion,
     onDiscard,
     onCreateRelease,
+    onCopyToDrafts,
+    onCopyToDraftsNavigate,
     onCreateVersion,
     disabled,
     locked,
@@ -67,7 +71,7 @@ export const VersionContextMenu = memo(function VersionContextMenu(props: Versio
   useEffect(() => {
     isMounted.current = true
 
-    checkWithPermissionGuard(createRelease, getReleaseDefaults()).then((hasPermission) => {
+    void checkWithPermissionGuard(createRelease, getReleaseDefaults()).then((hasPermission) => {
       if (isMounted.current) setHasCreatePermission(hasPermission)
     })
 
@@ -83,11 +87,15 @@ export const VersionContextMenu = memo(function VersionContextMenu(props: Versio
         releases={releases}
         fromRelease={fromRelease}
         onCreateRelease={onCreateRelease}
+        onCopyToDrafts={onCopyToDrafts}
+        onCopyToDraftsNavigate={onCopyToDraftsNavigate}
         onCreateVersion={onCreateVersion}
         disabled={disabled}
         isGoingToUnpublish={isGoingToUnpublish}
         hasCreatePermission={hasCreatePermission}
         scheduledDraftMenuActions={scheduledDraftMenuActions}
+        documentId={documentId}
+        documentType={type}
       />
     )
   }
@@ -100,6 +108,8 @@ export const VersionContextMenu = memo(function VersionContextMenu(props: Versio
       isVersion={isVersion}
       onDiscard={onDiscard}
       onCreateRelease={onCreateRelease}
+      onCopyToDrafts={onCopyToDrafts}
+      onCopyToDraftsNavigate={onCopyToDraftsNavigate}
       onCreateVersion={onCreateVersion}
       disabled={disabled}
       locked={locked}
@@ -107,6 +117,8 @@ export const VersionContextMenu = memo(function VersionContextMenu(props: Versio
       hasCreatePermission={hasCreatePermission}
       hasDiscardPermission={hasDiscardPermission || false}
       isPublished={isPublished}
+      documentId={documentId}
+      documentType={type}
     />
   )
 })

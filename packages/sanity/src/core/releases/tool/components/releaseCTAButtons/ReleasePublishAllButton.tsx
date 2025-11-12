@@ -63,7 +63,7 @@ export const ReleasePublishAllButton = ({
   useEffect(() => {
     isMounted.current = true
 
-    checkWithPermissionGuard(publishRelease, release._id).then((hasPermission) => {
+    void checkWithPermissionGuard(publishRelease, release._id).then((hasPermission) => {
       if (isMounted.current) setPublishPermission(hasPermission)
     })
 

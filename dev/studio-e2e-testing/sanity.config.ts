@@ -5,6 +5,7 @@ import {visionTool} from '@sanity/vision'
 import {defineConfig, type ReleaseActionComponent} from 'sanity'
 import {presentationTool} from 'sanity/presentation'
 import {structureTool} from 'sanity/structure'
+import {internationalizedArray} from 'sanity-plugin-internationalized-array'
 import {markdownSchema} from 'sanity-plugin-markdown'
 import {media} from 'sanity-plugin-media'
 import {muxInput} from 'sanity-plugin-mux-input'
@@ -120,6 +121,14 @@ const defaultConfig = defineConfig({
     muxInput({mp4_support: 'standard'}),
     media(),
     markdownSchema(),
+    internationalizedArray({
+      languages: [
+        {id: 'en', title: 'English'},
+        {id: 'fr', title: 'French'},
+      ],
+      defaultLanguages: ['en'],
+      fieldTypes: ['string'],
+    }),
   ],
   beta: {
     form: {
@@ -159,5 +168,35 @@ export default defineConfig([
     title: 'studio-e2e-testing-firefox',
     dataset: process.env.SANITY_E2E_DATASET_FIREFOX || process.env.SANITY_E2E_DATASET!,
     apiHost: 'https://api.sanity.work',
+  },
+  {
+    ...defaultConfig,
+    basePath: '/chromium-no-enhanced-dialog',
+    name: 'chromium-no-enhanced-dialog',
+    title: 'studio-e2e-testing-chromium-no-enhanced-dialog',
+    dataset: process.env.SANITY_E2E_DATASET_CHROMIUM || process.env.SANITY_E2E_DATASET!,
+    apiHost: 'https://api.sanity.work',
+    beta: {
+      form: {
+        enhancedObjectDialog: {
+          enabled: false,
+        },
+      },
+    },
+  },
+  {
+    ...defaultConfig,
+    basePath: '/firefox-no-enhanced-dialog',
+    name: 'firefox-no-enhanced-dialog',
+    title: 'studio-e2e-testing-firefox-no-enhanced-dialog',
+    dataset: process.env.SANITY_E2E_DATASET_FIREFOX || process.env.SANITY_E2E_DATASET!,
+    apiHost: 'https://api.sanity.work',
+    beta: {
+      form: {
+        enhancedObjectDialog: {
+          enabled: false,
+        },
+      },
+    },
   },
 ])

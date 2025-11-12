@@ -319,7 +319,9 @@ export function FormBuilder(props: FormBuilderProps) {
         <FormValueProvider value={value}>
           <DocumentFieldActionsProvider actions={fieldActions}>
             <FullscreenPTEProvider>
-              <EnhancedObjectDialogProvider>
+              {/** The id 'root' is always attributed to being in a document,
+               * if there is not root then it means it's outside of the document and so it doesn't have access to the dialog */}
+              <EnhancedObjectDialogProvider isDialogAvailable={id === 'root'}>
                 <RootInput
                   rootInputProps={rootInputProps}
                   onPathOpen={onPathOpen}
@@ -345,9 +347,8 @@ interface RootInputProps {
 function RootInput(props: RootInputProps) {
   const {rootInputProps, onPathOpen, openPath, renderInput} = props
   const {enabled: enhancedObjectDialogEnabled} = useEnhancedObjectDialog()
-  const isRoot = rootInputProps.id === 'root'
 
-  const arrayEditingModal = enhancedObjectDialogEnabled && isRoot && (
+  const arrayEditingModal = enhancedObjectDialogEnabled && (
     <EnhancedObjectDialog
       // eslint-disable-next-line react/jsx-handler-names
       onPathFocus={rootInputProps.onPathFocus}

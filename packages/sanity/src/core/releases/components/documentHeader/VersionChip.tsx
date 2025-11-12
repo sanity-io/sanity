@@ -32,6 +32,7 @@ import {getReleaseIdFromReleaseDocumentId} from '../../util/getReleaseIdFromRele
 import {DiscardVersionDialog} from '../dialog/DiscardVersionDialog'
 import {ReleaseAvatarIcon} from '../ReleaseAvatar'
 import {VersionContextMenu} from './contextMenu/VersionContextMenu'
+import {CopyToDraftsDialog} from './dialog/CopyToDraftsDialog'
 import {CopyToNewReleaseDialog} from './dialog/CopyToNewReleaseDialog'
 
 const ChipButtonContainer = styled.span`
@@ -46,7 +47,7 @@ const ChipButton = styled(Button)`
   --card-border-color: var(--border-color);
 `
 
-type VersionChipDialogState = 'idle' | 'discard-version' | 'create-release'
+type VersionChipDialogState = 'idle' | 'discard-version' | 'create-release' | 'copy-to-drafts'
 
 const useVersionIsLinked = (documentId: string, fromRelease: string) => {
   const versionId = useMemo(() => {
@@ -75,6 +76,7 @@ export const VersionChip = memo(function VersionChip(props: {
   text: string
   tone: BadgeTone
   locked?: boolean
+  onCopyToDraftsNavigate: () => void
   contextValues: {
     documentId: string
     releases: ReleaseDocument[]
@@ -97,6 +99,7 @@ export const VersionChip = memo(function VersionChip(props: {
     text,
     tone,
     locked = false,
+    onCopyToDraftsNavigate,
     contextValues: {
       documentId,
       releases,
@@ -165,6 +168,10 @@ export const VersionChip = memo(function VersionChip(props: {
 
   const openCreateReleaseDialog = useCallback(() => {
     setDialogState('create-release')
+  }, [])
+
+  const openCopyToDraftsDialog = useCallback(() => {
+    setDialogState('copy-to-drafts')
   }, [])
 
   const handleAddVersion = useCallback(
@@ -252,6 +259,8 @@ export const VersionChip = memo(function VersionChip(props: {
             isVersion={isVersion}
             onDiscard={openDiscardDialog}
             onCreateRelease={openCreateReleaseDialog}
+            onCopyToDrafts={openCopyToDraftsDialog}
+            onCopyToDraftsNavigate={onCopyToDraftsNavigate}
             disabled={contextMenuDisabled}
             onCreateVersion={handleAddVersion}
             locked={locked}
@@ -296,6 +305,15 @@ export const VersionChip = memo(function VersionChip(props: {
           documentType={documentType}
           tone={tone}
           title={text}
+        />
+      )}
+
+      {dialogState === 'copy-to-drafts' && (
+        <CopyToDraftsDialog
+          onClose={() => setDialogState('idle')}
+          documentId={documentId}
+          fromRelease={fromRelease}
+          onNavigate={onCopyToDraftsNavigate}
         />
       )}
       {isScheduledDraft && scheduledDraftMenuActions.dialogs}

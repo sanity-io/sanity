@@ -101,8 +101,8 @@ describe('DocumentHeaderTitle', () => {
     const client = createMockSanityClient()
     const wrapper = await createWrapperComponent(client as any)
 
-    const {getByText} = render(<DocumentHeaderTitle />, {wrapper})
-    await waitFor(() => expect(getByText('New Test Schema')).toBeInTheDocument())
+    const {getByText, findByText} = render(<DocumentHeaderTitle />, {wrapper})
+    await findByText('New Test Schema')
   })
 
   it('should return an empty fragment when connectionState is not "connected" and editState is empty', async () => {
@@ -129,8 +129,8 @@ describe('DocumentHeaderTitle', () => {
       title: 'Test Value',
     })
 
-    const {getByText} = render(<DocumentHeaderTitle />)
-    await waitFor(() => expect(getByText('Test Title')).toBeInTheDocument())
+    const {getByText, findByText} = render(<DocumentHeaderTitle />)
+    await findByText('Test Title')
   })
 
   it('should return the title if it is provided', async () => {
@@ -142,8 +142,8 @@ describe('DocumentHeaderTitle', () => {
     const client = createMockSanityClient()
     const wrapper = await createWrapperComponent(client as any)
 
-    const {getByText} = render(<DocumentHeaderTitle />, {wrapper})
-    await waitFor(() => expect(getByText('Test Title')).toBeInTheDocument())
+    const {getByText, findByText} = render(<DocumentHeaderTitle />, {wrapper})
+    await findByText('Test Title')
   })
 
   it('should return "New {schemaType?.title || schemaType?.name}" if documentValue is not provided', async () => {
@@ -155,8 +155,8 @@ describe('DocumentHeaderTitle', () => {
     const client = createMockSanityClient()
     const wrapper = await createWrapperComponent(client as any)
 
-    const {getByText} = render(<DocumentHeaderTitle />, {wrapper})
-    await waitFor(() => expect(getByText('New Test Schema')).toBeInTheDocument())
+    const {getByText, findByText} = render(<DocumentHeaderTitle />, {wrapper})
+    await findByText('New Test Schema')
   })
 
   it('should return the value.title if value is provided and no error occurred', async () => {
@@ -168,8 +168,8 @@ describe('DocumentHeaderTitle', () => {
     const client = createMockSanityClient()
     const wrapper = await createWrapperComponent(client as any)
 
-    const {getByText} = render(<DocumentHeaderTitle />, {wrapper})
-    await waitFor(() => expect(getByText('New Test Schema')).toBeInTheDocument())
+    const {getByText, findByText} = render(<DocumentHeaderTitle />, {wrapper})
+    await findByText('New Test Schema')
   })
 
   it('should return "New Test Schema" if value is not provided and no error occurred', async () => {
@@ -178,8 +178,8 @@ describe('DocumentHeaderTitle', () => {
     const client = createMockSanityClient()
     const wrapper = await createWrapperComponent(client as any)
 
-    const {getByText} = render(<DocumentHeaderTitle />, {wrapper})
-    await waitFor(() => expect(getByText('New Test Schema')).toBeInTheDocument())
+    const {getByText, findByText} = render(<DocumentHeaderTitle />, {wrapper})
+    await findByText('New Test Schema')
   })
 
   it('should return "Error: {error.message}" if an error occurred while getting the preview value', async () => {
@@ -196,8 +196,8 @@ describe('DocumentHeaderTitle', () => {
     const client = createMockSanityClient()
     const wrapper = await createWrapperComponent(client as any)
 
-    const {getByText} = render(<DocumentHeaderTitle />, {wrapper})
-    await waitFor(() => expect(getByText('Error: Test Error')).toBeInTheDocument())
+    const {getByText, findByText} = render(<DocumentHeaderTitle />, {wrapper})
+    await findByText('Error: Test Error')
   })
 
   it('should display the value returned by useValuePreview hook correctly when no error occurs', async () => {
@@ -209,7 +209,7 @@ describe('DocumentHeaderTitle', () => {
     const client = createMockSanityClient()
     const wrapper = await createWrapperComponent(client as any)
 
-    const {getByText} = render(<DocumentHeaderTitle />, {wrapper})
-    await waitFor(() => expect(getByText('New Test Schema')).toBeInTheDocument())
+    const {getByText, findByText} = render(<DocumentHeaderTitle />, {wrapper})
+    await findByText('New Test Schema')
   })
 })

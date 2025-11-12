@@ -4,12 +4,22 @@ const {register} = require('esbuild-register/dist/node')
 
 register({
   target: `node${process.version.slice(1)}`,
-  supported: {'dynamic-import': true},
   jsx: 'automatic',
+
+  /**
+   * Set 'dynamic-import': false to force esbuild to transpile dynamic import() calls
+   * to require() calls. When set to true, esbuild preserves dynamic imports, causing
+   * Node.js to try resolving them natively, which fails for .ts files since Node.js
+   * can't find TypeScript files. By transpiling to require(), esbuild-register can
+   * properly handle the module resolution for TypeScript files during development.
+   */
+  supported: {'dynamic-import': false},
 })
 
-// oxlint-disable-next-line no-console
-console.log('\n️ⓘ Running local Sanity CLI from source\n')
+if (process.env.TEST !== 'true') {
+  // oxlint-disable-next-line no-console
+  console.log('\n️ⓘ Running local Sanity CLI from source\n')
+}
 
 // Define the global `__DEV__` flag which is used to
 // - determine when to use `esbuild-register` in the Sanity development server

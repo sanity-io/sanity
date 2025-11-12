@@ -1,6 +1,6 @@
 {
   "name": "sanity-test-studio",
-  "version": "4.13.0",
+  "version": "4.15.0",
   "private": true,
   "license": "MIT",
   "author": "Sanity.io <hello@sanity.io>",
@@ -18,11 +18,12 @@
     "workshop:dev": "tsx scripts/workshop/dev.ts"
   },
   "dependencies": {
-    "@portabletext/block-tools": "^3.5.14",
-    "@portabletext/editor": "^2.17.2",
-    "@portabletext/react": "^4.0.3",
-    "@portabletext/toolkit": "^3.0.1",
-    "@sanity/assist": "^5.0.0",
+    "@portabletext/block-tools": "^4.0.0",
+    "@portabletext/editor": "^2.19.2",
+    "@portabletext/plugin-character-pair-decorator": "^3.0.3",
+    "@portabletext/react": "^5.0.0",
+    "@portabletext/toolkit": "^4.0.0",
+    "@sanity/assist": "^5.0.2",
     "@sanity/cli": "workspace:*",
     "@sanity/client": "^7.12.1",
     "@sanity/color": "^3.0.6",
@@ -57,9 +58,10 @@
     "sanity": "workspace:*",
     "sanity-plugin-asset-source-unsplash": "^4.0.1",
     "sanity-plugin-hotspot-array": "^3.0.1",
+    "sanity-plugin-internationalized-array": "^3.2.0",
     "sanity-plugin-markdown": "^6.0.0",
     "sanity-plugin-media": "^4.0.0",
-    "sanity-plugin-mux-input": "^2.9.1",
+    "sanity-plugin-mux-input": "^2.10.0",
     "styled-components": "catalog:"
   },
   "devDependencies": {

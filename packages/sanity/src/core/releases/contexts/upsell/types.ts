@@ -3,11 +3,10 @@ import {type UpsellData} from '../../../studio/upsell/types'
 
 export interface ReleasesUpsellContextValue {
   /**
-   * Is upsell mode when the user has reached the release limit and there is upsell data available
-   * Is disabled mode when the user has reached the release limit and there is no upsell data available due to some error in the journey api
+   * Is upsell mode when the user has reached the release limit
    * Is default mode when the user has not reached the release limits
    */
-  mode: 'upsell' | 'default' | 'disabled'
+  mode: 'upsell' | 'default'
   upsellDialogOpen: boolean
   upsellData: UpsellData | null
   guardWithReleaseLimitUpsell: (
