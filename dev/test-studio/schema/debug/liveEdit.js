@@ -47,7 +47,7 @@ export default {
     select: {
       title: 'title',
       authorName: 'author.name',
-      publicationYear: 'publicationYear',
+      // publicationYear: 'publicationYear',
     },
     prepare(thesis) {
       return Object.assign({}, thesis, {

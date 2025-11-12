@@ -3,16 +3,14 @@ import {colorInput} from '@sanity/color-input'
 import {googleMapsInput} from '@sanity/google-maps-input'
 import {BookIcon} from '@sanity/icons'
 import {SanityMonogram} from '@sanity/logos'
-import {debugSecrets} from '@sanity/preview-url-secret/sanity-plugin-debug-secrets'
 import {visionTool} from '@sanity/vision'
 import {DECISION_PARAMETERS_SCHEMA, defineConfig, definePlugin, type WorkspaceOptions} from 'sanity'
-import {defineDocuments, defineLocations, presentationTool} from 'sanity/presentation'
+import {defineLocations, presentationTool} from 'sanity/presentation'
 import {structureTool} from 'sanity/structure'
 import {unsplashAssetSource, UnsplashIcon} from 'sanity-plugin-asset-source-unsplash'
 import {imageHotspotArrayPlugin} from 'sanity-plugin-hotspot-array'
 import {internationalizedArray} from 'sanity-plugin-internationalized-array'
 import {markdownSchema} from 'sanity-plugin-markdown'
-import {media} from 'sanity-plugin-media'
 import {muxInput} from 'sanity-plugin-mux-input'
 
 import {imageAssetSource} from './assetSources'
@@ -40,11 +38,9 @@ import {assistFieldActionGroup} from './fieldActions/assistFieldActionGroup'
 import {resolveInitialValueTemplates} from './initialValueTemplates'
 import {customInspector} from './inspectors/custom'
 import {testStudioLocaleBundles} from './locales'
-import {errorReportingTestPlugin} from './plugins/error-reporting-test'
 import {autoCloseBrackets} from './plugins/input/auto-close-brackets-plugin'
 import {wave} from './plugins/input/wave-plugin'
 import {languageFilter} from './plugins/language-filter'
-import {routerDebugTool} from './plugins/router-debug'
 import {ArchiveAndDeleteCustomAction} from './releases/customReleaseActions'
 import {createSchemaTypes} from './schema'
 import {StegaDebugger} from './schema/debug/components/DebugStega'
@@ -52,7 +48,6 @@ import {CustomNavigator} from './schema/presentation/CustomNavigator'
 import {types as presentationNextSanitySchemaTypes} from './schema/presentation/next-sanity'
 import {types as presentationPreviewKitSchemaTypes} from './schema/presentation/preview-kit'
 import {defaultDocumentNode, newDocumentOptions, structure} from './structure'
-import {workshopTool} from './workshop'
 
 // @ts-expect-error - defined by vite
 const isStaging = globalThis.__SANITY_STAGING__ === true
@@ -126,35 +121,35 @@ const sharedSettings = ({projectId}: {projectId: string}) => {
         structure,
         defaultDocumentNode,
       }),
-      debugSecrets(),
-      presentationTool({
-        allowOrigins: ['https://*.sanity.dev', 'http://localhost:*'],
-        previewUrl: '/preview/index.html',
-        resolve: {
-          mainDocuments: defineDocuments([
-            {
-              route: '/preview/index.html',
-              filter: `_type == "simpleBlock" && isMain`,
-            },
-          ]),
-          locations: {
-            simpleBlock: defineLocations({
-              select: {title: 'title'},
-              resolve: (doc) => {
-                if (!doc?.title) return {}
-                return {
-                  locations: [
-                    {
-                      title: doc.title,
-                      href: `/preview/index.html?${new URLSearchParams({title: doc.title})}`,
-                    },
-                  ],
-                }
-              },
-            }),
-          },
-        },
-      }),
+      // debugSecrets(),
+      // presentationTool({
+      //   allowOrigins: ['https://*.sanity.dev', 'http://localhost:*'],
+      //   previewUrl: '/preview/index.html',
+      //   resolve: {
+      //     mainDocuments: defineDocuments([
+      //       {
+      //         route: '/preview/index.html',
+      //         filter: `_type == "simpleBlock" && isMain`,
+      //       },
+      //     ]),
+      //     locations: {
+      //       simpleBlock: defineLocations({
+      //         select: {title: 'title'},
+      //         resolve: (doc) => {
+      //           if (!doc?.title) return {}
+      //           return {
+      //             locations: [
+      //               {
+      //                 title: doc.title,
+      //                 href: `/preview/index.html?${new URLSearchParams({title: doc.title})}`,
+      //               },
+      //             ],
+      //           }
+      //         },
+      //       }),
+      //     },
+      //   },
+      // }),
       languageFilter({
         defaultLanguages: ['nb'],
         supportedLanguages: [
@@ -176,23 +171,23 @@ const sharedSettings = ({projectId}: {projectId: string}) => {
         },
       }),
       colorInput(),
-      workshopTool({
-        collections: [
-          {name: 'sanity', title: 'sanity'},
-          {name: 'structure-tool', title: 'sanity/structure'},
-          {name: 'form-builder', title: '@sanity/form-builder'},
-        ],
-      }),
-      visionTool({
-        // uncomment to test
-        //defaultApiVersion: '2025-02-05',
-      }),
+      // workshopTool({
+      //   collections: [
+      //     {name: 'sanity', title: 'sanity'},
+      //     {name: 'structure-tool', title: 'sanity/structure'},
+      //     {name: 'form-builder', title: '@sanity/form-builder'},
+      //   ],
+      // }),
+      // visionTool({
+      //   // uncomment to test
+      //   //defaultApiVersion: '2025-02-05',
+      // }),
       // eslint-disable-next-line camelcase
       muxInput({mp4_support: 'standard'}),
       imageHotspotArrayPlugin(),
-      routerDebugTool(),
-      errorReportingTestPlugin(),
-      media(),
+      // routerDebugTool(),
+      // errorReportingTestPlugin(),
+      // media(),
       markdownSchema(),
       wave(),
       autoCloseBrackets(),
@@ -210,9 +205,9 @@ const sharedSettings = ({projectId}: {projectId: string}) => {
 
 const defaultWorkspace = defineConfig({
   name: 'default',
-  title: 'Test Studio',
+  title: 'Demo Studio',
   projectId: 'ppsg7ml5',
-  dataset: 'test',
+  dataset: 'jordan-all-hands-demo',
   ...envConfig.production,
   plugins: [sharedSettings({projectId: 'ppsg7ml5'})],
 
