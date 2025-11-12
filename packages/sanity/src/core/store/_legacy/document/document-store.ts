@@ -15,7 +15,7 @@ import {checkoutPair, type DocumentVersionEvent, type Pair} from './document-pai
 import {consistencyStatus} from './document-pair/consistencyStatus'
 import {documentEvents} from './document-pair/documentEvents'
 import {editOperations} from './document-pair/editOperations'
-import {editState} from './document-pair/editState'
+import {editState, type EditStateFor} from './document-pair/editState'
 import {
   type OperationError,
   operationEvents,

@@ -40,13 +40,14 @@ export const validation = memoize(
   ): Observable<ValidationStatus> => {
     const document$ = editState(ctx, {draftId, publishedId, versionId}, typeName).pipe(
       map((state) => {
+        const {version, draft, published} = state
+
         if (displayedDocumentId) {
-          const {version: documentVersionId, published, draft} = state
-          return [documentVersionId, published, draft].find(
+          return [version, draft, published].find(
             (doc) => doc?._id === displayedDocumentId,
           )
         }
-        return state.version || state.draft || state.published
+        return version || draft || published
       }),
       throttleTime(DOC_UPDATE_DELAY, asyncScheduler, {trailing: true}),
       distinctUntilChanged((prev, next) => {
