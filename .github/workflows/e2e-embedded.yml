@@ -89,8 +89,8 @@ jobs:
         if: steps.cache-playwright-browsers.outputs.cache-hit != 'true'
         run: npx playwright install --with-deps
 
-      - name: Build E2E Embedded Studio Vite
-        run: pnpm embedded-studio-vite:build
+      - name: Build
+        run: pnpm build
 
       - name: Run E2E Embedded Tests
         run: pnpm embedded-studio-vite:test --project ${{ matrix.project }}

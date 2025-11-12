@@ -76,6 +76,8 @@ const playwrightConfig: PlaywrightTestConfig = {
   },
   projects: [CHROMIUM_PROJECT, FIREFOX_PROJECT],
   webServer: {
+    // Running dev mode even in CI because when using the build mode `process.env` is transformed to an empty object
+    // and so the error we are trying to catch is not thrown
     command: 'pnpm dev',
     port: 5173,
     reuseExistingServer: true,
