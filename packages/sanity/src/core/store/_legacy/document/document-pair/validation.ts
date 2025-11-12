@@ -43,9 +43,7 @@ export const validation = memoize(
         const {version, draft, published} = state
 
         if (displayedDocumentId) {
-          return [version, draft, published].find(
-            (doc) => doc?._id === displayedDocumentId,
-          )
+          return [version, draft, published].find((doc) => doc?._id === displayedDocumentId)
         }
         return version || draft || published
       }),
