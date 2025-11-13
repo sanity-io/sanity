@@ -21,6 +21,8 @@ import {
 import {type Subscription} from 'rxjs'
 
 import {useTranslation} from '../../../../i18n'
+import {useAssetLimitsUpsellContext} from '../../../../limits/context/assets/AssetLimitUpsellProvider'
+import {isAssetLimitError} from '../../../../limits/context/assets/isAssetLimitError'
 import {FormInput} from '../../../components'
 import {MemberField, MemberFieldError, MemberFieldSet} from '../../../members'
 import {PatchEvent, set, setIfMissing, unset} from '../../../patch'
@@ -81,6 +83,7 @@ function BaseImageInputComponent(props: BaseImageInputProps): React.JSX.Element 
   // it when closing the dialog (see `handleAssetSourceClosed`)
   const [menuButtonElement, setMenuButtonElement] = useState<HTMLButtonElement | null>(null)
   const [isMenuOpen, setMenuOpen] = useState(false)
+  const {handleOpenDialog: handleAssetLimitUpsellDialog} = useAssetLimitsUpsellContext()
 
   const uploadSubscription = useRef<null | Subscription>(null)
 
@@ -294,10 +297,18 @@ function BaseImageInputComponent(props: BaseImageInputProps): React.JSX.Element 
                     title: t('asset-sources.common.uploader.upload-failed.title'),
                   })
                   break
-                case 'all-complete':
+                case 'all-complete': {
+                  // Asset limit errors only come through after all file uploads attemps have been made
+                  const hasAssetLimitError = event.files.some(
+                    (file) => file.status === 'error' && isAssetLimitError(file.error),
+                  )
+                  if (hasAssetLimitError) {
+                    handleAssetLimitUpsellDialog('field_action')
+                  }
                   onChange(PatchEvent.from([unset([UPLOAD_STATUS_KEY])]))
                   setMenuOpen(false)
                   break
+                }
                 default:
               }
             }),
@@ -321,7 +332,7 @@ function BaseImageInputComponent(props: BaseImageInputProps): React.JSX.Element 
         }
       }
     },
-    [assetSourceUploader, onChange, push, schemaType, t],
+    [handleAssetLimitUpsellDialog, assetSourceUploader, onChange, push, schemaType, t],
   )
 
   // Abort asset source uploads and unsubscribe from the uploader is the component unmounts

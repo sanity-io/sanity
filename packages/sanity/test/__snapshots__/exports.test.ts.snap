@@ -661,6 +661,7 @@ exports[`exports snapshot 1`] = `
     "ActiveWorkspaceMatcherContext": "object",
     "AddonDatasetContext": "object",
     "AppIdCacheContext": "object",
+    "AssetLimitUpsellContext": "object",
     "CalendarContext": "object",
     "ChangeIndicatorTrackerContextGetSnapshot": "object",
     "ChangeIndicatorTrackerContextStore": "object",
