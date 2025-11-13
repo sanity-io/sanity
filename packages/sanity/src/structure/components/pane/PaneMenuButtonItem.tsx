@@ -104,7 +104,6 @@ function PaneContextMenuItem(props: {disabled?: boolean; node: _PaneMenuItem}) {
         hotkeys={node.hotkey?.split('+')}
         icon={node.icon}
         iconRight={node.iconRight || (node.selected && CheckmarkIcon)}
-        // eslint-disable-next-line react/jsx-handler-names
         onClick={node.onAction}
         pressed={node.selected}
         text={title}

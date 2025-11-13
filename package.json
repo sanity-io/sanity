@@ -54,6 +54,8 @@
     "efps:dev": "cd dev/efps && pnpm dev",
     "efps:test": "cd dev/efps && pnpm test",
     "efps:write:report": "cd dev/efps && pnpm write:report",
+    "embedded-studio-vite:dev": "pnpm --filter e2e-embedded-studio-vite dev",
+    "embedded-studio-vite:test": "pnpm --filter e2e-embedded-studio-vite test",
     "example:blog-studio": "cd examples/studios/blog-studio && pnpm start",
     "example:clean-studio": "cd examples/studios/clean-studio && pnpm start",
     "example:ecommerce-studio": "cd examples/studios/ecommerce-studio && pnpm start",

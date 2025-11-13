@@ -122,7 +122,6 @@ export function InspectDialog(props: InspectDialogProps) {
               tabIndex={0}
               onKeyDown={maybeSelectAll}
               onDoubleClick={select}
-              onFocus={select}
               size={1}
             >
               {JSON.stringify(value, null, 2)}

@@ -11,6 +11,9 @@ Examples
   # Start dev server on default port
   sanity functions dev
 
+  # Start dev server on specific host
+  sanity functions dev --host 0.0.0.0
+
   # Start dev server on specific port
   sanity functions dev --port 3333
 
@@ -20,11 +23,13 @@ Examples
 
 export interface FunctionsDevFlags {
   open?: boolean
+  host?: string
   port?: number
 }
 
 const defaultFlags: FunctionsDevFlags = {
   open: false,
+  host: 'localhost',
   port: 8080,
 }
 
@@ -32,7 +37,7 @@ const devFunctionsCommand: CliCommandDefinition<FunctionsDevFlags> = {
   name: 'dev',
   group: 'functions',
   helpText,
-  signature: '[--port <port> --open]',
+  signature: '[--host <host> --port <port> --open]',
   description: 'Start the Sanity Function emulator',
   async action(args, context) {
     const {apiClient, output} = context
@@ -58,6 +63,7 @@ const devFunctionsCommand: CliCommandDefinition<FunctionsDevFlags> = {
     const {success, error} = await functionDevCore({
       ...cmdConfig.value,
       flags: {
+        host: flags.host,
         port: flags.port,
       },
     })
@@ -65,7 +71,7 @@ const devFunctionsCommand: CliCommandDefinition<FunctionsDevFlags> = {
     if (!success) throw new Error(error)
 
     if (shouldOpen) {
-      await open(`http://localhost:${flags.port}`)
+      await open(`http://${flags.host}:${flags.port}`)
     }
   },
 }

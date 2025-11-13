@@ -105,6 +105,7 @@ export async function runCli(cliRoot: string, {cliPkg}: {cliPkg: PackageJson}): 
 
   warnOnNUnsupportedRuntime(cliPkg)
   warnOnNonProductionEnvironment()
+  warnOnCliConfigName()
   warnOnInferredProjectDir(isInit, cwd, workDir)
 
   const core = args.coreOptions
@@ -262,6 +263,23 @@ function warnOnNonProductionEnvironment(): void {
       ),
     )
   }
+}
+
+function warnOnCliConfigName(): void {
+  if (!process.env.SANITY_CLI_TEST_CONFIG_NAME) {
+    return
+  }
+
+  if (process.env.TEST !== 'true') {
+    console.warn(
+      chalk.yellow('[WARN] Ignored SANITY_CLI_TEST_CONFIG_NAME. It can only be used in tests.'),
+    )
+    return
+  }
+
+  console.warn(
+    chalk.yellow(`[WARN] Loading CLI config from ${process.env.SANITY_CLI_TEST_CONFIG_NAME}.ts/js`),
+  )
 }
 
 function loadAndSetEnvFromDotEnvFiles({

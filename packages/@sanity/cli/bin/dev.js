@@ -16,10 +16,8 @@ register({
   supported: {'dynamic-import': false},
 })
 
-if (process.env.TEST !== 'true') {
-  // oxlint-disable-next-line no-console
-  console.log('\n️ⓘ Running local Sanity CLI from source\n')
-}
+// oxlint-disable-next-line no-console
+console.warn('\n️ⓘ Running local Sanity CLI from source\n')
 
 // Define the global `__DEV__` flag which is used to
 // - determine when to use `esbuild-register` in the Sanity development server

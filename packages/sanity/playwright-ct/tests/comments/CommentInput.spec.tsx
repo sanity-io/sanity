@@ -52,7 +52,6 @@ test.describe('Comments', () => {
       let resolve!: () => void
       const submitted = Object.assign(new Promise<void>((r) => (resolve = r)), {resolve})
 
-      // eslint-disable-next-line react/jsx-handler-names
       await mount(<CommentsInputStory onSubmit={submitted.resolve} />)
       const $editable = page.getByTestId('comment-input-editable')
       await $editable.waitFor({state: 'visible'})

@@ -31,30 +31,27 @@ export function getReferenceInfo(
   documentPreviewStore: DocumentPreviewStore,
   id: string,
   referenceType: ReferenceSchemaType,
-  {version, perspective}: {version?: string; perspective?: StackablePerspective[]} = {},
+  perspective?: StackablePerspective[],
 ): Observable<ReferenceInfo> {
-  const {publishedId, draftId, versionId} = getIdPair(id, {version})
+  const {publishedId, draftId} = getIdPair(id)
 
-  const pairAvailability$ = documentPreviewStore.unstable_observeDocumentPairAvailability(id, {
-    version,
-  })
+  const documentStackAvailability$ = documentPreviewStore.unstable_observeDocumentStackAvailability(
+    id,
+    perspective ?? ['published'],
+  )
 
-  return pairAvailability$.pipe(
-    switchMap((pairAvailability) => {
-      if (
-        !pairAvailability.draft.available &&
-        !pairAvailability.published.available &&
-        !pairAvailability.version?.available
-      ) {
-        // combine availability of draft + published
+  return documentStackAvailability$.pipe(
+    switchMap((stackAvailability) => {
+      // we only care about the first document in the stack that exists
+      const firstMatch = stackAvailability.find((doc) => {
+        return doc.availability.available || doc.availability.reason === 'PERMISSION_DENIED'
+      })
+
+      if (!firstMatch?.availability.available) {
         const availability =
-          pairAvailability.version?.reason === 'PERMISSION_DENIED' ||
-          pairAvailability.draft.reason === 'PERMISSION_DENIED' ||
-          pairAvailability.published.reason === 'PERMISSION_DENIED'
-            ? PERMISSION_DENIED
-            : NOT_FOUND
+          firstMatch?.availability?.reason === 'PERMISSION_DENIED' ? PERMISSION_DENIED : NOT_FOUND
 
-        // short circuit, neither draft nor published nor version is available so no point in trying to get preview
+        // short circuit, no version is available so no point in trying to get preview
         return of({
           id,
           type: undefined,
@@ -67,23 +64,17 @@ export function getReferenceInfo(
         } as const)
       }
 
-      const typeName$ = combineLatest([
-        documentPreviewStore.observeDocumentTypeFromId(draftId),
-        documentPreviewStore.observeDocumentTypeFromId(publishedId),
-        ...(versionId ? [documentPreviewStore.observeDocumentTypeFromId(versionId)] : []),
-      ]).pipe(
-        // assume draft + published + version are always same type
-        map(
-          ([draftTypeName, publishedTypeName, versionTypeName]) =>
-            versionTypeName || draftTypeName || publishedTypeName,
-        ),
+      const typeName$ = documentPreviewStore.observeDocumentTypeFromId(
+        draftId,
+        undefined,
+        perspective,
       )
 
       return typeName$.pipe(
         switchMap((typeName) => {
           if (!typeName) {
-            // we have already asserted that either the draft or the published document is readable, so
-            // if we get here we can't read the _type, so we're likely to be in an inconsistent state
+            // We have already asserted that there exists a readable version of the document.
+            // So if we get here, it means we can't read the _type, which again indicates we're in an inconsistent state and
             // waiting for an update to reach the client. Since we're in the context of a reactive stream based on
             // the _type we'll get it eventually
             return of({
@@ -127,16 +118,7 @@ export function getReferenceInfo(
 
           return combineLatest([previewState$, publishedDocumentExists$]).pipe(
             map(([previewState, publishedDocumentExists]): ReferenceInfo => {
-              const availability =
-                pairAvailability.version?.available ||
-                pairAvailability.draft.available ||
-                pairAvailability.published.available
-                  ? READABLE
-                  : pairAvailability.version?.reason === 'PERMISSION_DENIED' ||
-                      pairAvailability.draft.reason === 'PERMISSION_DENIED' ||
-                      pairAvailability.published.reason === 'PERMISSION_DENIED'
-                    ? PERMISSION_DENIED
-                    : NOT_FOUND
+              const availability = READABLE
               return {
                 type: typeName,
                 id: publishedId,
@@ -187,7 +169,7 @@ export function referenceSearch(
     ...options,
     maxDepth: options.maxFieldDepth || DEFAULT_MAX_FIELD_DEPTH,
   })
-  return search(textTerm, {includeDrafts: true}).pipe(
+  return search(textTerm).pipe(
     map(({hits}) => hits.map(({hit}) => hit)),
     map((docs) =>
       docs.map((doc) => ({

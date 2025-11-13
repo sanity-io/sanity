@@ -1,4 +1,3 @@
-/* eslint-disable react/jsx-handler-names */
 import {WarningOutlineIcon} from '@sanity/icons'
 import {Box, Card, Container, Flex, Text} from '@sanity/ui'
 import {styled} from 'styled-components'
