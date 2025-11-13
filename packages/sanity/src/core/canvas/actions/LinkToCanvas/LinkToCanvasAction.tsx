@@ -57,9 +57,9 @@ export const LinkToCanvasAction: DocumentActionComponent = (props: DocumentActio
       return {disabled: true, reason: t('action.link-document-disabled.missing-permissions')}
     }
 
-    // if (!isInDashboard) {
-    //   return {disabled: true, reason: t('action.link-document-disabled.not-in-dashboard')}
-    // }
+    if (!isInDashboard) {
+      return {disabled: true, reason: t('action.link-document-disabled.not-in-dashboard')}
+    }
 
     if (isVersionDocument) {
       return {disabled: true, reason: t('action.link-document-disabled.version-document')}
@@ -83,7 +83,7 @@ export const LinkToCanvasAction: DocumentActionComponent = (props: DocumentActio
   if (selectedPerspective === 'published' && !props.liveEditSchemaType) return null
 
   // Hide the action in the dashboard - TODO Remove this once dashboard is released
-  // if (!isInDashboard) return null
+  if (!isInDashboard) return null
 
   return {
     disabled: disabled.disabled,
