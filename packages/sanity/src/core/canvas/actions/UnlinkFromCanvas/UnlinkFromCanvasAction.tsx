@@ -11,9 +11,9 @@ import {useTranslation} from '../../../i18n/hooks/useTranslation'
 import {DEFAULT_STUDIO_CLIENT_OPTIONS} from '../../../studioClient'
 import {canvasLocaleNamespace} from '../../i18n'
 import {useCanvasTelemetry} from '../../useCanvasTelemetry'
+import {getDocumentIdFromDocumentActionProps} from '../documentActionUtils'
 import {useCanvasCompanionDoc} from '../useCanvasCompanionDoc'
 import {UnlinkFromCanvasDialog} from './UnlinkFromCanvasDialog'
-import {getDocumentIdFromDocumentActionProps} from '../../../../structure/components/RenderActionCollectionState'
 
 export const UnlinkFromCanvasAction: DocumentActionComponent = (props: DocumentActionProps) => {
   const {t} = useTranslation(canvasLocaleNamespace)
@@ -35,7 +35,6 @@ export const UnlinkFromCanvasAction: DocumentActionComponent = (props: DocumentA
   }, [unlinkCtaClicked])
 
   const handleUnlink = useCallback(async () => {
-    
     try {
       if (!companionDoc?._id) {
         throw new Error('Companion doc not found')
