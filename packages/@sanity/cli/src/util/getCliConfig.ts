@@ -80,13 +80,7 @@ async function getCliConfigForked(cwd: string): Promise<CliConfigResult | null> 
 export function getSanityCliConfig(cwd: string, clearCache = false): CliConfigResult | null {
   let configName = 'sanity.cli'
 
-  /**
-   * Allow loading cli config from a different file name when in test
-   */
-  if (process.env.SANITY_CLI_TEST_CONFIG_NAME && process.env.TEST !== 'true') {
-    warn(`SANITY_CLI_TEST_CONFIG_NAME is intended for testing only and should never be used`)
-  } else if (process.env.SANITY_CLI_TEST_CONFIG_NAME) {
-    warn(`Loading CLI config from ${configName}.ts/js`)
+  if(process.env.SANITY_CLI_TEST_CONFIG_NAME && process.env.TEST === 'true') {
     configName = process.env.SANITY_CLI_TEST_CONFIG_NAME
   }
 
