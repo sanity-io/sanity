@@ -350,7 +350,6 @@ function RootInput(props: RootInputProps) {
 
   const arrayEditingModal = enhancedObjectDialogEnabled && (
     <EnhancedObjectDialog
-      // eslint-disable-next-line react/jsx-handler-names
       onPathFocus={rootInputProps.onPathFocus}
       onPathOpen={onPathOpen}
       openPath={openPath}

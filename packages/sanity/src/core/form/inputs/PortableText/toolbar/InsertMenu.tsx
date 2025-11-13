@@ -53,7 +53,6 @@ export const InsertMenu = memo(function InsertMenu(props: InsertMenuProps) {
           }
           data-testid={`${item.type.name}-insert-menu-button`}
           icon={item.icon}
-          // eslint-disable-next-line react/jsx-handler-names
           onClick={item.handle}
           text={title}
           tooltipText={t(

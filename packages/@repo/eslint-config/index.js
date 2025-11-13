@@ -108,6 +108,7 @@ export default [
       'import/default': 'off',
       'tsdoc/syntax': 'error',
       'react/no-unescaped-entities': 'off',
+      'react/jsx-handler-names': 'off',
       '@typescript-eslint/no-explicit-any': ['warn'],
       '@typescript-eslint/no-dupe-class-members': ['error'],
       '@typescript-eslint/no-shadow': ['error'],

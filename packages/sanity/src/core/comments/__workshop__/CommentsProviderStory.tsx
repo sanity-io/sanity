@@ -1,4 +1,3 @@
-/* eslint-disable react/jsx-handler-names */
 import {useSelect, useString} from '@sanity/ui-workshop'
 import {useMemo} from 'react'
 

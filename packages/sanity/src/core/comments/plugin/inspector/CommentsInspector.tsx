@@ -372,9 +372,7 @@ function CommentsInspectorInner(
       return (
         <CommentsUpsellPanel
           data={upsellData}
-          // eslint-disable-next-line react/jsx-handler-names
           onPrimaryClick={upsellTelemetryLogs.panelPrimaryClicked}
-          // eslint-disable-next-line react/jsx-handler-names
           onSecondaryClick={upsellTelemetryLogs.panelSecondaryClicked}
         />
       )
