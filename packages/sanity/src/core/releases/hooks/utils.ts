@@ -79,7 +79,8 @@ export function getReleasesPerspectiveStack({
   )
   const selectedIndex = sorted.indexOf(selectedPerspectiveName)
   if (selectedIndex === -1) {
-    return EMPTY
+    // we're in a non-release stack
+    return [selectedPerspectiveName, ...defaultPerspective]
   }
   return sorted
     .slice(selectedIndex)
