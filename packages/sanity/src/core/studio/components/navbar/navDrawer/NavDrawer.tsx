@@ -227,7 +227,6 @@ export const NavDrawer = memo(function NavDrawer(props: NavDrawerProps) {
                       iconRight={LeaveIcon}
                       justify="flex-start"
                       mode="bleed"
-                      // eslint-disable-next-line react/jsx-handler-names
                       onClick={auth.logout}
                       size="large"
                       text={t('user-menu.action.sign-out')}
