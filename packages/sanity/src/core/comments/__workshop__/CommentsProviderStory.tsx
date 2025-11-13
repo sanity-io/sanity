@@ -1,7 +1,6 @@
 import {useSelect, useString} from '@sanity/ui-workshop'
 import {useMemo} from 'react'
 
-import {ConditionalWrapper} from '../../../ui-components'
 import {useCurrentUser} from '../../store'
 import {AddonDatasetProvider} from '../../studio'
 import {CommentsList, CommentsUpsellPanel} from '../components'
@@ -21,17 +20,17 @@ export default function CommentsProviderStory() {
   const _type = useString('_type', 'author') || 'author'
   const _id = useString('_id', 'grrm') || 'grrm'
   const _mode = useSelect('_mode', MODES) || ('default' as keyof typeof MODES)
+  const children = <Inner mode={_mode} />
 
   return (
     <AddonDatasetProvider>
       <CommentsEnabledProvider documentType={_type} documentId={_id}>
         <CommentsProvider documentType={_type} documentId={_id} type="field" sortOrder="desc">
-          <ConditionalWrapper
-            condition={_mode === 'upsell'}
-            wrapper={(children) => <CommentsUpsellProvider>{children}</CommentsUpsellProvider>}
-          >
-            <Inner mode={_mode} />
-          </ConditionalWrapper>
+          {_mode === 'upsell' ? (
+            <CommentsUpsellProvider>{children}</CommentsUpsellProvider>
+          ) : (
+            children
+          )}
         </CommentsProvider>
       </CommentsEnabledProvider>
     </AddonDatasetProvider>
