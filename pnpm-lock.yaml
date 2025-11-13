@@ -12,6 +12,9 @@ catalogs:
     '@playwright/test':
       specifier: 1.56.1
       version: 1.56.1
+    '@sanity/client':
+      specifier: ^7.12.1
+      version: 7.12.1
     '@sanity/eslint-config-i18n':
       specifier: ^2.0.0
       version: 2.0.0
@@ -296,7 +299,7 @@ importers:
         specifier: workspace:*
         version: link:../../packages/@repo/utils
       '@sanity/client':
-        specifier: ^7.12.1
+        specifier: 'catalog:'
         version: 7.12.1(debug@4.4.3)
       '@types/react':
         specifier: 'catalog:'
@@ -614,7 +617,7 @@ importers:
         specifier: workspace:*
         version: link:../../packages/@sanity/cli
       '@sanity/client':
-        specifier: ^7.12.1
+        specifier: 'catalog:'
         version: 7.12.1(debug@4.4.3)
       '@sanity/color':
         specifier: ^3.0.6
@@ -762,7 +765,7 @@ importers:
         specifier: workspace:*
         version: link:../packages/@repo/utils
       '@sanity/client':
-        specifier: ^7.12.1
+        specifier: 'catalog:'
         version: 7.12.1(debug@4.4.3)
       '@sanity/uuid':
         specifier: ^3.0.2
@@ -1061,7 +1064,7 @@ importers:
         specifier: ^7.28.4
         version: 7.28.5(supports-color@5.5.0)
       '@sanity/client':
-        specifier: ^7.12.1
+        specifier: 'catalog:'
         version: 7.12.1(debug@4.4.3)
       '@sanity/codegen':
         specifier: workspace:*
@@ -1391,7 +1394,7 @@ importers:
   packages/@sanity/migrate:
     dependencies:
       '@sanity/client':
-        specifier: ^7.12.1
+        specifier: 'catalog:'
         version: 7.12.1(debug@4.4.3)
       '@sanity/mutate':
         specifier: ^0.14.0
@@ -1568,7 +1571,7 @@ importers:
   packages/@sanity/types:
     dependencies:
       '@sanity/client':
-        specifier: ^7.12.1
+        specifier: 'catalog:'
         version: 7.12.1(debug@4.4.3)
       '@sanity/media-library-types':
         specifier: ^1.0.1
@@ -1620,7 +1623,7 @@ importers:
         specifier: ^2.1.1
         version: 2.1.1
       '@sanity/client':
-        specifier: ^7.12.1
+        specifier: 'catalog:'
         version: 7.12.1(debug@4.4.3)
       '@sanity/types':
         specifier: workspace:*
@@ -1757,7 +1760,7 @@ importers:
         specifier: workspace:*
         version: link:../../@repo/tsconfig
       '@sanity/client':
-        specifier: ^7.12.1
+        specifier: 'catalog:'
         version: 7.12.1(debug@4.4.3)
       '@sanity/eslint-config-i18n':
         specifier: 'catalog:'
@@ -1905,7 +1908,7 @@ importers:
         specifier: workspace:*
         version: link:../@sanity/cli
       '@sanity/client':
-        specifier: ^7.12.1
+        specifier: 'catalog:'
         version: 7.12.1(debug@4.4.3)
       '@sanity/color':
         specifier: ^3.0.6
@@ -2501,7 +2504,7 @@ importers:
         specifier: 'catalog:'
         version: 1.56.1
       '@sanity/client':
-        specifier: ^7.12.1
+        specifier: 'catalog:'
         version: 7.12.1(debug@4.4.3)
       '@sanity/uuid':
         specifier: ^3.0.2
@@ -2562,7 +2565,7 @@ importers:
         specifier: workspace:*
         version: link:../packages/@repo/utils
       '@sanity/client':
-        specifier: ^7.12.1
+        specifier: 'catalog:'
         version: 7.12.1(debug@4.4.3)
       '@types/lodash-es':
         specifier: ^4.17.12
