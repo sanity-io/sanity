@@ -31,6 +31,7 @@ const createScheduledDraftAction = (
     const {actions, dialogs} = useScheduledDraftMenuActions({
       release: releaseDocument,
       documentType: type,
+      documentId: id,
     })
 
     // This action is only shown for scheduled-draft version type
