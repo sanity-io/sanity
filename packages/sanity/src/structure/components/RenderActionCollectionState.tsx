@@ -31,6 +31,23 @@ export interface RenderActionCollectionProps {
 }
 
 /** @internal */
+export const getDocumentIdFromDocumentActionProps = (actionProps: DocumentActionProps) => {
+  if (actionProps.liveEditSchemaType) {
+    return getPublishedId(actionProps.id)
+  }
+
+  if (actionProps.version) {
+    return actionProps.version._id
+  }
+
+  if (actionProps.draft) {
+    return actionProps.draft._id
+  }
+
+  return getDraftId(actionProps.id)
+}
+
+/** @internal */
 export const RenderActionCollectionState = memo((props: RenderActionCollectionProps) => {
   const {actions, children, actionProps, onActionComplete, group} = props
 
@@ -41,18 +58,16 @@ export const RenderActionCollectionState = memo((props: RenderActionCollectionPr
       args={actionProps}
       group={group}
     >
-      {({states}) => (
-        <ActionsGuardWrapper
-          states={states}
-          documentId={
-            actionProps.liveEditSchemaType
-              ? getPublishedId(actionProps.id)
-              : getDraftId(actionProps.id)
-          }
-        >
-          {children}
-        </ActionsGuardWrapper>
-      )}
+      {({states}) => {
+        return (
+          <ActionsGuardWrapper
+            states={states}
+            documentId={getDocumentIdFromDocumentActionProps(actionProps)}
+          >
+            {children}
+          </ActionsGuardWrapper>
+        )
+      }}
     </GetHookCollectionState>
   )
 })

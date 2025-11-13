@@ -9,17 +9,18 @@ import {
 import {useClient} from '../../../hooks/useClient'
 import {useTranslation} from '../../../i18n/hooks/useTranslation'
 import {DEFAULT_STUDIO_CLIENT_OPTIONS} from '../../../studioClient'
-import {getDraftId, getPublishedId} from '../../../util/draftUtils'
 import {canvasLocaleNamespace} from '../../i18n'
 import {useCanvasTelemetry} from '../../useCanvasTelemetry'
 import {useCanvasCompanionDoc} from '../useCanvasCompanionDoc'
 import {UnlinkFromCanvasDialog} from './UnlinkFromCanvasDialog'
+import {getDocumentIdFromDocumentActionProps} from '../../../../structure/components/RenderActionCollectionState'
 
 export const UnlinkFromCanvasAction: DocumentActionComponent = (props: DocumentActionProps) => {
   const {t} = useTranslation(canvasLocaleNamespace)
   const {isLinked, companionDoc, loading} = useCanvasCompanionDoc(
-    props.liveEditSchemaType ? getPublishedId(props.id) : getDraftId(props.id),
+    getDocumentIdFromDocumentActionProps(props),
   )
+
   const client = useClient(DEFAULT_STUDIO_CLIENT_OPTIONS)
   const {unlinkCtaClicked, unlinkApproved} = useCanvasTelemetry()
   const toast = useToast()
@@ -34,6 +35,7 @@ export const UnlinkFromCanvasAction: DocumentActionComponent = (props: DocumentA
   }, [unlinkCtaClicked])
 
   const handleUnlink = useCallback(async () => {
+    
     try {
       if (!companionDoc?._id) {
         throw new Error('Companion doc not found')

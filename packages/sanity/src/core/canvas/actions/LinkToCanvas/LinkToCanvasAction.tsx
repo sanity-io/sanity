@@ -10,14 +10,13 @@ import {useGetFormValue} from '../../../form/contexts/GetFormValue'
 import {useSchema} from '../../../hooks/useSchema'
 import {useTranslation} from '../../../i18n/hooks/useTranslation'
 import {usePerspective} from '../../../perspective/usePerspective'
-import {isReleaseDocument} from '../../../releases/store/types'
 import {useProjectOrganizationId} from '../../../store/_legacy/project/useProjectOrganizationId'
 import {useRenderingContext} from '../../../store/renderingContext/useRenderingContext'
-import {getDraftId, getPublishedId} from '../../../util/draftUtils'
 import {canvasLocaleNamespace} from '../../i18n'
 import {useCanvasTelemetry} from '../../useCanvasTelemetry'
 import {useCanvasCompanionDoc} from '../useCanvasCompanionDoc'
 import {LinkToCanvasDialog} from './LinkToCanvasDialog'
+import {getDocumentIdFromDocumentActionProps} from '../../../../structure/components/RenderActionCollectionState'
 
 const useIsExcludedType = (type: string) => {
   const schema = useSchema()
@@ -29,9 +28,7 @@ export const LinkToCanvasAction: DocumentActionComponent = (props: DocumentActio
   const {t} = useTranslation(canvasLocaleNamespace)
   const [isDialogOpen, setIsDialogOpen] = useState(false)
   const {selectedPerspective} = usePerspective()
-  const {isLinked, loading} = useCanvasCompanionDoc(
-    props.liveEditSchemaType ? getPublishedId(props.id) : getDraftId(props.id),
-  )
+  const {isLinked, loading} = useCanvasCompanionDoc(getDocumentIdFromDocumentActionProps(props))
   const {value: organizationId} = useProjectOrganizationId()
   const {linkCtaClicked} = useCanvasTelemetry()
 
@@ -49,7 +46,6 @@ export const LinkToCanvasAction: DocumentActionComponent = (props: DocumentActio
     const value = getFormValue([]) as SanityDocument
     setFormValue({
       ...value,
-      _id: props.liveEditSchemaType ? getPublishedId(value._id) : getDraftId(value._id),
     })
     setIsDialogOpen(true)
   }, [getFormValue, props.liveEditSchemaType, linkCtaClicked])
@@ -58,18 +54,21 @@ export const LinkToCanvasAction: DocumentActionComponent = (props: DocumentActio
     if (!organizationId) {
       return {disabled: true, reason: t('action.link-document-disabled.missing-permissions')}
     }
+
     if (!isInDashboard) {
       return {disabled: true, reason: t('action.link-document-disabled.not-in-dashboard')}
     }
+
     if (isVersionDocument) {
       return {disabled: true, reason: t('action.link-document-disabled.version-document')}
     }
+
     if (!props.initialValueResolved) {
       return {disabled: true, reason: t('action.link-document-disabled.initial-value-not-resolved')}
     }
 
     return {disabled: false, reason: undefined}
-  }, [isVersionDocument, t, props.initialValueResolved, isInDashboard, organizationId])
+  }, [t, props.initialValueResolved, isInDashboard, organizationId])
 
   useEffect(() => {
     if (isLinked) {
@@ -80,8 +79,6 @@ export const LinkToCanvasAction: DocumentActionComponent = (props: DocumentActio
   if (isLinked || loading || isExcludedType) return null
   // Hide the action in published perspective unless the document is live editable
   if (selectedPerspective === 'published' && !props.liveEditSchemaType) return null
-  // Release documents are not yet supported in Canvas
-  if (isReleaseDocument(selectedPerspective)) return null
 
   // Hide the action in the dashboard - TODO Remove this once dashboard is released
   if (!isInDashboard) return null
