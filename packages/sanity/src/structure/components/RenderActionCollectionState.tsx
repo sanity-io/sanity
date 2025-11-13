@@ -31,7 +31,9 @@ export interface RenderActionCollectionProps {
 }
 
 /** @internal */
-export const getDocumentIdFromDocumentActionProps = (actionProps: DocumentActionProps) => {
+export const getDocumentIdFromDocumentActionProps = (
+  actionProps: Omit<DocumentActionProps, 'onComplete'>,
+) => {
   if (actionProps.liveEditSchemaType) {
     return getPublishedId(actionProps.id)
   }
