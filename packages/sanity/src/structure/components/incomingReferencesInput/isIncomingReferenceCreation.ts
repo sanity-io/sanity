@@ -42,12 +42,9 @@ export interface IncomingReferenceCreationParams {
 export function isIncomingReferenceCreation(
   initialValue: DocumentDefinition['initialValue'],
 ): initialValue is IncomingReferenceCreationParams {
-  if (
+  return (
     typeof initialValue === 'object' &&
     initialValue !== null &&
     '__internal_isIncomingReferenceCreation' in initialValue
-  ) {
-    return true
-  }
-  return false
+  )
 }

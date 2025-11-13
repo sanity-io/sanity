@@ -56,7 +56,11 @@ export const IncomingReferenceDocument = (props: {
   const {t} = useTranslation(structureLocaleNamespace)
 
   const handleClick = useCallback(() => {
-    if (!type || !referencePaths.length) return // This should not happen
+    if (!referencePaths.length) {
+      // This should not happen because if we don't have reference paths, then this function won't be passed to the
+      // IncomingReferencePreview component
+      throw new Error('No reference paths found')
+    }
     navigate({
       panes: [
         ...routerPanesState.slice(0, groupIndex + 1),
@@ -65,14 +69,10 @@ export const IncomingReferenceDocument = (props: {
     })
   }, [routerPanesState, groupIndex, type, navigate, id, referencePaths])
 
-  const schemaType = schema.get(document._type)
+  const schemaType = schema.get(type)
 
   if (!schemaType)
-    return (
-      <ErrorCard
-        message={t('incoming-references-input.schema-type-not-found', {type: document._type})}
-      />
-    )
+    return <ErrorCard message={t('incoming-references-input.schema-type-not-found', {type})} />
 
   return (
     <Root
