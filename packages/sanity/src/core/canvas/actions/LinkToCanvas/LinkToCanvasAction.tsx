@@ -68,7 +68,7 @@ export const LinkToCanvasAction: DocumentActionComponent = (props: DocumentActio
     }
 
     return {disabled: false, reason: undefined}
-  }, [t, props.initialValueResolved, isInDashboard, organizationId])
+  }, [isVersionDocument, t, props.initialValueResolved, isInDashboard, organizationId])
 
   useEffect(() => {
     if (isLinked) {
