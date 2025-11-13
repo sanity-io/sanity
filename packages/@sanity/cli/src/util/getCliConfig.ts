@@ -78,8 +78,14 @@ async function getCliConfigForked(cwd: string): Promise<CliConfigResult | null> 
 }
 
 export function getSanityCliConfig(cwd: string, clearCache = false): CliConfigResult | null {
-  const jsConfigPath = path.join(cwd, 'sanity.cli.js')
-  const tsConfigPath = path.join(cwd, 'sanity.cli.ts')
+  let configName = 'sanity.cli'
+
+  if (process.env.SANITY_CLI_TEST_CONFIG_NAME && process.env.TEST === 'true') {
+    configName = process.env.SANITY_CLI_TEST_CONFIG_NAME
+  }
+
+  const jsConfigPath = path.join(cwd, `${configName}.js`)
+  const tsConfigPath = path.join(cwd, `${configName}.ts`)
 
   const [js, ts] = [fs.existsSync(jsConfigPath), fs.existsSync(tsConfigPath)]
 
@@ -95,7 +101,7 @@ export function getSanityCliConfig(cwd: string, clearCache = false): CliConfigRe
   }
 
   if (js && ts) {
-    warn('Found both `sanity.cli.js` and `sanity.cli.ts` - using sanity.cli.js')
+    warn(`Found both \`${configName}.js\` and \`${configName}.ts\` - using ${configName}.js`)
   }
 
   return {
