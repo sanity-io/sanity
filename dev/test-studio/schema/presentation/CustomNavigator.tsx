@@ -91,7 +91,6 @@ export function CustomNavigator(): React.JSX.Element {
             icon={AddDocumentIcon}
             text="New Page"
             mode="ghost"
-            // eslint-disable-next-line react/jsx-handler-names
             onClick={createPageIntent.onClick}
             href={createPageIntent.href}
             as="a"

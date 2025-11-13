@@ -5,7 +5,7 @@ import {isString} from '../../util/isString'
  *
  * @param perspective - the list with perspective ids or a simple perspective id
  * @returns true if the perspective is 'raw'
- *
+ * @deprecated – use perspective === 'raw' instead
  * @internal
  */
 export function isPerspectiveRaw(perspective: string[] | string | undefined): boolean {

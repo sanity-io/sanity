@@ -3,6 +3,7 @@ import {defineBehavior} from '@portabletext/editor/behaviors'
 import {BehaviorPlugin} from '@portabletext/editor/plugins'
 import {MarkdownShortcutsPlugin} from '@portabletext/plugin-markdown-shortcuts'
 import {OneLinePlugin} from '@portabletext/plugin-one-line'
+import {createDecoratorGuard, TypographyPlugin} from '@portabletext/plugin-typography'
 import {type ArraySchemaType, type PortableTextBlock} from '@sanity/types'
 import {type ComponentType, useMemo} from 'react'
 
@@ -35,7 +36,19 @@ export const PortableTextEditorPlugins = (props: {
 
   const componentProps = useMemo(
     (): PortableTextPluginsProps => ({
-      plugins: {markdown: {config: markdownConfig}},
+      plugins: {
+        markdown: {
+          config: markdownConfig,
+        },
+        typography: {
+          guard: createDecoratorGuard({
+            decorators: ({context}) =>
+              context.schema.decorators.flatMap((decorator) =>
+                decorator.name === 'code' ? [] : [decorator.name],
+              ),
+          }),
+        },
+      },
       renderDefault: RenderDefault,
     }),
     [],
@@ -69,11 +82,22 @@ export const PortableTextEditorPlugins = (props: {
   )
 }
 
-export const DefaultPortableTextEditorPlugins = (
-  props: Omit<PortableTextPluginsProps, 'renderDefault'>,
-) => {
-  if (!props.plugins.markdown.config) {
-    const {enabled, config, ...markdownShortcutsPluginProps} = props.plugins.markdown
+function DefaultPortableTextEditorPlugins(props: Omit<PortableTextPluginsProps, 'renderDefault'>) {
+  return (
+    <>
+      <DefaultMarkdownShortcutsPlugin {...props.plugins.markdown} />
+      <DefaultTypographyPlugin {...props.plugins.typography} />
+    </>
+  )
+}
+
+function DefaultMarkdownShortcutsPlugin(
+  incomingProps: PortableTextPluginsProps['plugins']['markdown'],
+) {
+  const props = incomingProps ?? {}
+
+  if (!props.config) {
+    const {enabled, config, ...markdownShortcutsPluginProps} = props
 
     if (enabled === false) {
       return null
@@ -83,7 +107,7 @@ export const DefaultPortableTextEditorPlugins = (
   }
 
   const {orderedList, orderedListStyle, unorderedList, unorderedListStyle, ...restMarkdownConfig} =
-    props.plugins.markdown.config
+    props.config
 
   return (
     <MarkdownShortcutsPlugin
@@ -92,6 +116,16 @@ export const DefaultPortableTextEditorPlugins = (
       {...restMarkdownConfig}
     />
   )
+}
+
+function DefaultTypographyPlugin(props: PortableTextPluginsProps['plugins']['typography']) {
+  const {enabled, ...typographyPluginProps} = props ?? {}
+
+  if (enabled === false) {
+    return null
+  }
+
+  return <TypographyPlugin {...typographyPluginProps} />
 }
 
 export const RenderDefault = (props: Omit<PortableTextPluginsProps, 'renderDefault'>) => {

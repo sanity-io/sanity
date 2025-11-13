@@ -29,9 +29,7 @@ export function ModalDialog(props: {dialog: DocumentActionModalDialogProps}) {
         footer={footer}
         header={dialog.header}
         id={dialogId}
-        // eslint-disable-next-line react/jsx-handler-names
         onClose={dialog.onClose}
-        // eslint-disable-next-line react/jsx-handler-names
         onClickOutside={dialog.onClose}
         width={dialog.width === undefined ? 1 : DIALOG_WIDTH_TO_UI_WIDTH[dialog.width]}
       >

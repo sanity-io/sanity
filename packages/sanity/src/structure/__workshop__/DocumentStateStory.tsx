@@ -96,7 +96,6 @@ function Debug(props: {documentId: string; documentType: string}) {
                     key={idx}
                     disabled={actionItem.disabled}
                     icon={actionItem.icon}
-                    // eslint-disable-next-line react/jsx-handler-names
                     onClick={actionItem.onHandle}
                     tone={actionItem.tone}
                     text={actionItem.label}
@@ -114,7 +113,6 @@ function Debug(props: {documentId: string; documentType: string}) {
                   footer={actionItem.dialog.footer}
                   header={actionItem.dialog.header}
                   id={`document-action-modal-${idx}`}
-                  // eslint-disable-next-line react/jsx-handler-names
                   onClose={actionItem.dialog.onClose}
                 >
                   {actionItem.dialog.content}

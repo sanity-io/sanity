@@ -1,5 +1,3 @@
-/* eslint-disable react/jsx-handler-names */
-
 import {EllipsisHorizontalIcon} from '@sanity/icons'
 import {Card, Menu} from '@sanity/ui'
 import {memo, useCallback, useId, useMemo, useState} from 'react'
