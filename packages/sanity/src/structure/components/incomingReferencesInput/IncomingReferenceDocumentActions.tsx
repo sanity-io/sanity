@@ -1,8 +1,7 @@
 import {Box, Menu} from '@sanity/ui'
-import {type Dispatch, type SetStateAction, useCallback, useMemo, useState} from 'react'
+import {type Dispatch, type SetStateAction, useCallback, useState} from 'react'
 import {
   ContextMenuButton,
-  type DocumentActionDescription,
   GetHookCollectionState,
   LegacyLayerProvider,
   type SanityDocument,
@@ -24,14 +23,14 @@ const IncomingReferenceDocumentActionsInner = ({
   setIsExecutingAction,
   isExecutingAction,
 }: {
-  states: DocumentActionDescription[]
+  states: IncomingReferenceActionDescription[]
   document: SanityDocument
   setIsExecutingAction: Dispatch<SetStateAction<boolean>>
   isExecutingAction: boolean
 }) => {
   const [actionIndex, setActionIndex] = useState(-1)
   const [referenceElement, setReferenceElement] = useState<HTMLDivElement | null>(null)
-  const currentAction = useMemo(() => states[actionIndex], [actionIndex, states])
+  const currentAction = states[actionIndex]
 
   if (!states.length) return null
   return (
@@ -81,7 +80,7 @@ export const IncomingReferenceDocumentActions = (props: {
   const {getClient} = useSource()
 
   const renderActions = useCallback<
-    (props: {states: DocumentActionDescription[]}) => React.ReactNode
+    (props: {states: IncomingReferenceActionDescription[]}) => React.ReactNode
   >(
     ({states}) => (
       <IncomingReferenceDocumentActionsInner

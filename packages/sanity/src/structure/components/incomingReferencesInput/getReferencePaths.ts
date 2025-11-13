@@ -1,5 +1,6 @@
 import {type Path, type SanityDocument} from 'sanity'
 
+const INTERNAL_KEYS = ['_id', '_type', '_createdAt', '_updatedAt', '_rev']
 export function getReferencePaths(document: SanityDocument, referenceToId: string): Path[] {
   const referencePaths: Path[] = []
 
@@ -31,10 +32,10 @@ export function getReferencePaths(document: SanityDocument, referenceToId: strin
     // Handle objects
     if (typeof obj === 'object') {
       Object.keys(obj).forEach((key) => {
-        // Skip Sanity metadata fields when traversing deeper
-        if (!key.startsWith('_') || key === '_ref' || key === '_type') {
-          traverse(obj[key], [...currentPath, key])
+        if (INTERNAL_KEYS.includes(key)) {
+          return
         }
+        traverse(obj[key], [...currentPath, key])
       })
     }
   }
