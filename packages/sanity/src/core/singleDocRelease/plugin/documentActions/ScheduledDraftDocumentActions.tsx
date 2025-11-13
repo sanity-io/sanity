@@ -18,7 +18,7 @@ const createScheduledDraftAction = (
   actionKey: keyof UseScheduledDraftMenuActionsReturn['actions'],
 ): DocumentActionComponent => {
   return (props: DocumentActionProps): DocumentActionDescription | null => {
-    const {type, release} = props
+    const {type, release, id} = props
     const {data: releases = []} = useAllReleases()
 
     const releaseDocument = releases.find(
@@ -28,6 +28,7 @@ const createScheduledDraftAction = (
     const {actions, dialogs} = useScheduledDraftMenuActions({
       release: releaseDocument,
       documentType: type,
+      documentId: id,
     })
 
     // This action is only shown for scheduled-draft version type
