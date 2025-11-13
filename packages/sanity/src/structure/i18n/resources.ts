@@ -430,9 +430,11 @@ const structureLocaleStrings = defineLocalesResources('structure', {
   'incoming-references-input.schema-type-not-found': 'Schema type {{type}} not found',
   /** The text for the type to search in the incoming references input */
   'incoming-references-input.type-to-search': 'Type to search',
+  /** The text for the loading state in the incoming references input */
+  'incoming-references-input.types-loading': 'Loading documents...',
   /** The text for the no references defined in the incoming references input */
   'incoming-references-input.types-not-defined':
-    ' No incoming references defined for this type, see the docs for more information.',
+    'No incoming references defined for this type, see the docs for more information.',
 
   /** The text shown if there are no incoming references for a type */
   'incoming-references-pane.no-references-found': 'No references of this type found.',

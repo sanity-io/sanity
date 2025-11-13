@@ -15,6 +15,7 @@ import {
   PreviewCard,
   SanityDefaultPreview,
   useActiveReleases,
+  useTranslation,
   VersionInlineBadge,
 } from 'sanity'
 
@@ -35,6 +36,7 @@ const getPerspective = (id: string) => {
 export function LinkToExistingPreview(props: LinkToExistingPreviewProps) {
   const {schemaType, value, onLinkToDocument} = props
   const {data: releases} = useActiveReleases()
+  const {t} = useTranslation()
 
   const previewStateObservable = useMemo(() => {
     return getPreviewStateObservable(
@@ -54,10 +56,10 @@ export function LinkToExistingPreview(props: LinkToExistingPreviewProps) {
   const badgeProps = useMemo(() => {
     const id = value._id
     if (isDraftId(id)) {
-      return {tone: getReleaseTone('drafts'), text: 'Draft'}
+      return {tone: getReleaseTone('drafts'), text: t('release.chip.draft')}
     }
     if (isPublishedId(id)) {
-      return {tone: getReleaseTone('published'), text: 'Published'}
+      return {tone: getReleaseTone('published'), text: t('release.chip.published')}
     }
     if (isVersionId(id)) {
       const releaseId = getVersionFromId(id)
@@ -67,7 +69,7 @@ export function LinkToExistingPreview(props: LinkToExistingPreviewProps) {
       }
     }
     return null
-  }, [releases, value._id])
+  }, [releases, value._id, t])
 
   return (
     <PreviewCard __unstable_focusRing onClick={onLinkToDocument} as="button" radius={2}>
