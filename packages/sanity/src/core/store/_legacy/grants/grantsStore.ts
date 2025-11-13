@@ -13,6 +13,7 @@ import {
   type Grant,
   type GrantsStore,
   type PermissionCheckResult,
+  type ProjectGrants,
 } from './types'
 
 async function getDatasetGrants(
@@ -24,6 +25,15 @@ async function getDatasetGrants(
   const grants: Grant[] = await client.request({
     uri: `/projects/${projectId}/datasets/${dataset}/acl`,
     tag: 'acl.get',
+  })
+
+  return grants
+}
+
+async function getProjectGrants(client: SanityClient, projectId: string): Promise<ProjectGrants> {
+  const grants = await client.request<ProjectGrants>({
+    uri: `/projects/${projectId}/grants`,
+    tag: 'grants.get',
   })
 
   return grants
@@ -94,10 +104,34 @@ export function createGrantsStore(opts: GrantsStoreOptions): GrantsStore {
     refCountDelay(1000),
   )
 
+  const projectGrants$ = defer(() => of(versionedClient.config())).pipe(
+    switchMap(({projectId}) => {
+      if (!projectId) {
+        throw new Error('Missing projectId')
+      }
+      return getProjectGrants(versionedClient, projectId)
+    }),
+    publishReplay(1),
+    refCountDelay(1000),
+  )
+
   return {
     checkDocumentPermission(permission: DocumentValuePermission, document: SanityDocument) {
       return currentUserDatasetGrants.pipe(
         switchMap((grants) => grantsPermissionOn(userId, grants, permission, document)),
+        distinctUntilChanged(shallowEquals),
+      )
+    },
+    checkProjectPermission(permissions) {
+      return projectGrants$.pipe(
+        switchMap((grants) => {
+          const allGranted = permissions.every(({permission, grant}) => {
+            const resources = grants[permission]
+            return resources && resources.some((r) => r.grants.some((g) => g.name === grant))
+          })
+
+          return of(allGranted)
+        }),
         distinctUntilChanged(shallowEquals),
       )
     },

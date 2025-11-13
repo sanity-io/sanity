@@ -10,7 +10,16 @@ import {useEnvAwareSanityWebsiteUrl} from '../../../hooks/useEnvAwareSanityWebsi
 import {useWorkspace} from '../../../workspace'
 import {WorkspacePreviewIcon} from './WorkspacePreview'
 
-export function ManageMenu({multipleWorkspaces}: {multipleWorkspaces: boolean}) {
+import {useGrantsStore} from 'sanity'
+import {useObservable} from 'react-rx'
+
+interface ManageMenuProps {
+  multipleWorkspaces: boolean
+  canInviteMembers: boolean
+}
+
+export function ManageMenu(props: ManageMenuProps) {
+  const {multipleWorkspaces, canInviteMembers} = props
   const {projectId, currentUser} = useWorkspace()
   const {value: project} = useProject()
   const {activeWorkspace} = useActiveWorkspace()
@@ -43,7 +52,7 @@ export function ManageMenu({multipleWorkspaces}: {multipleWorkspaces: boolean}) 
           // @ts-expect-error -- Custom CSS property for Button component, needs to be unset so the border works as default
           style={{'--card-border-color': 'unset'}}
         />
-        {isAdmin && (
+        {canInviteMembers && (
           <Button
             mode="bleed"
             as="a"

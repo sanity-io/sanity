@@ -19,6 +19,8 @@ import {WorkspaceMenuButton} from '../workspace'
 import {AppearanceMenu} from './ApperanceMenu'
 import {LocaleMenu} from './LocaleMenu'
 import {ManageMenu} from './ManageMenu'
+import {useObservable} from 'react-rx'
+import {useGrantsStore} from 'sanity'
 
 const ANIMATION_TRANSITION: Transition = {
   bounce: 0,
@@ -79,10 +81,18 @@ interface NavDrawerProps {
   isOpen: boolean
   onClose: () => void
   tools: Tool[]
+  canInviteMembers: boolean
 }
 
 export const NavDrawer = memo(function NavDrawer(props: NavDrawerProps) {
-  const {__internal_actions: actions, activeToolName, isOpen, onClose, tools} = props
+  const {
+    __internal_actions: actions,
+    activeToolName,
+    isOpen,
+    onClose,
+    tools,
+    canInviteMembers,
+  } = props
 
   const setScheme = useColorSchemeSetValue()
   const {auth, currentUser} = useWorkspace()
@@ -189,7 +199,7 @@ export const NavDrawer = memo(function NavDrawer(props: NavDrawerProps) {
                   {workspaces.length > 1 && (
                     <Flex flex={1} gap={1}>
                       <HomeButton />
-                      <WorkspaceMenuButton />
+                      <WorkspaceMenuButton canInviteMembers={canInviteMembers} />
                     </Flex>
                   )}
                 </Stack>
@@ -216,7 +226,7 @@ export const NavDrawer = memo(function NavDrawer(props: NavDrawerProps) {
 
                   {setScheme && <AppearanceMenu setScheme={setScheme} />}
                   <LocaleMenu />
-                  <ManageMenu />
+                  <ManageMenu canInviteMembers={canInviteMembers} />
                 </Flex>
               </Flex>
 

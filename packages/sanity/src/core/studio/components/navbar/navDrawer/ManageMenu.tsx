@@ -8,7 +8,12 @@ import {useEnvAwareSanityWebsiteUrl} from '../../../hooks/useEnvAwareSanityWebsi
 import {useWorkspace} from '../../../workspace'
 import {FreeTrial} from '../free-trial'
 
-export function ManageMenu() {
+interface ManageMenuProps {
+  canInviteMembers: boolean
+}
+
+export function ManageMenu(props: ManageMenuProps) {
+  const {canInviteMembers} = props
   const {currentUser, projectId} = useWorkspace()
   const isAdmin = Boolean(currentUser && userHasRole(currentUser, 'administrator'))
 
@@ -36,7 +41,7 @@ export function ManageMenu() {
           />
         </Stack>
 
-        {isAdmin && (
+        {canInviteMembers && (
           <Stack as="li">
             <Button
               aria-label={t('user-menu.action.invite-members-aria-label')}

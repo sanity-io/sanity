@@ -38,6 +38,8 @@ import {SearchPopover} from './search/components/SearchPopover'
 import {SearchProvider} from './search/contexts/search/SearchProvider'
 import {UserMenu} from './userMenu'
 import {WorkspaceMenuButton} from './workspace'
+import {useGrantsStore} from 'sanity'
+import {useObservable} from 'react-rx'
 
 const EMPTY_ARRAY: [] = []
 
@@ -85,6 +87,13 @@ export function StudioNavbar(props: Omit<NavbarProps, 'renderDefault'>) {
   } = useContext(NavbarContext)
 
   const {selectedPerspective, perspectiveStack} = usePerspective()
+
+  const store = useGrantsStore()
+
+  const canInviteMembers = useObservable(
+    store.checkProjectPermission([{permission: 'sanity.project.members', grant: 'invite'}]),
+    false,
+  )
 
   const ToolMenu = useToolMenuComponent()
 
@@ -214,7 +223,7 @@ export function StudioNavbar(props: Omit<NavbarProps, 'renderDefault'>) {
                   {/* Home + workspace menu buttons */}
                   <Flex gap={1}>
                     <HomeButton />
-                    <WorkspaceMenuButton />
+                    <WorkspaceMenuButton canInviteMembers={canInviteMembers} />
                   </Flex>
                 </Flex>
                 {/* New document button */}
@@ -297,6 +306,7 @@ export function StudioNavbar(props: Omit<NavbarProps, 'renderDefault'>) {
           <NavDrawer
             __internal_actions={actions}
             activeToolName={activeToolName}
+            canInviteMembers={canInviteMembers}
             isOpen={drawerOpen}
             onClose={handleCloseDrawer}
             tools={tools}

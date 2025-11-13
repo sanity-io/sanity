@@ -17,6 +17,8 @@ import {useWorkspaces} from '../../../workspaces'
 import {useWorkspaceAuthStates} from './hooks'
 import {ManageMenu} from './ManageMenu'
 import {STATE_TITLES, WorkspacePreviewIcon} from './WorkspacePreview'
+import {useGrantsStore} from 'sanity'
+import {useObservable} from 'react-rx'
 
 const POPOVER_PROPS: MenuButtonProps['popover'] = {
   constrainSize: true,
@@ -25,7 +27,11 @@ const POPOVER_PROPS: MenuButtonProps['popover'] = {
   tone: 'default',
 }
 
-export function WorkspaceMenuButton() {
+interface WorkspaceMenuButtonProps {
+  canInviteMembers: boolean
+}
+export function WorkspaceMenuButton(props: WorkspaceMenuButtonProps) {
+  const {canInviteMembers} = props
   const workspaces = useWorkspaces()
   const {activeWorkspace} = useActiveWorkspace()
   const [authStates] = useWorkspaceAuthStates(workspaces)
@@ -57,7 +63,11 @@ export function WorkspaceMenuButton() {
       menu={
         !disabled && authStates ? (
           <Menu padding={0} style={{maxWidth: '350px', minWidth: '250px', overflowY: 'hidden'}}>
-            <ManageMenu multipleWorkspaces={workspaces.length > 1} />
+            <ManageMenu
+              multipleWorkspaces={workspaces.length > 1}
+              canInviteMembers={canInviteMembers}
+            />
+
             {workspaces.length > 1 && (
               <>
                 <MenuDivider style={{padding: 0}} />

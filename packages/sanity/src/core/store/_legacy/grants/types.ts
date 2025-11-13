@@ -38,9 +38,30 @@ export interface GrantsStore {
     checkPermissionName: DocumentValuePermission,
     document: Partial<SanityDocument> | null,
   ): Observable<PermissionCheckResult>
+  checkProjectPermission(permissions: {permission: string; grant: string}[]): Observable<boolean>
 }
 
 /** @internal */
 export interface EvaluationParams {
   identity?: string
 }
+
+/** @internal */
+export interface ProjectGrant {
+  name: string
+  params: Record<string, unknown>
+}
+
+/** @internal */
+export interface ProjectResource {
+  id: string
+  name: string
+  title: string
+  description: string | null
+  isCustom: boolean
+  config: Record<string, unknown>
+  grants: ProjectGrant[]
+}
+
+/** @internal */
+export type ProjectGrants = Record<string, ProjectResource[]>
