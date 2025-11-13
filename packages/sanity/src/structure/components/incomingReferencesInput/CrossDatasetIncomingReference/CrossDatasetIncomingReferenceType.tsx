@@ -47,7 +47,7 @@ export function CrossDatasetIncomingReferenceType({
 
   if (!schemaType) return null
   if (loading) {
-    return <LoadingBlock showText title={'Loading documents'} />
+    return <LoadingBlock showText title={t('incoming-references-input.types-loading')} />
   }
   return (
     <Stack space={2} marginBottom={2}>
