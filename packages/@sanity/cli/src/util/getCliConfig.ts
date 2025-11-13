@@ -80,7 +80,7 @@ async function getCliConfigForked(cwd: string): Promise<CliConfigResult | null> 
 export function getSanityCliConfig(cwd: string, clearCache = false): CliConfigResult | null {
   let configName = 'sanity.cli'
 
-  if(process.env.SANITY_CLI_TEST_CONFIG_NAME && process.env.TEST === 'true') {
+  if (process.env.SANITY_CLI_TEST_CONFIG_NAME && process.env.TEST === 'true') {
     configName = process.env.SANITY_CLI_TEST_CONFIG_NAME
   }
 
