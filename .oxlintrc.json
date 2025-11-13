@@ -59,6 +59,11 @@
             "message": "Please use JSX instead of createElement, for example `createElement(Icon)` should be `<Icon />`"
           },
           {
+            "name": "react",
+            "importNames": ["createRef"],
+            "message": "Please use useRef instead of createRef, unless it's for a legacy React.Component class"
+          },
+          {
             "name": "react/jsx-runtime",
             "message": "Do not attempt importing from the jsx runtime manually, instead use JSX syntax and let the bundler transform it"
           },
