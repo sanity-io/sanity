@@ -21,6 +21,8 @@ import {usEnglishLocale} from '../../src/core/i18n/locales'
 import {perspectiveContextValueMock} from '../../src/core/perspective/__mocks__/usePerspective.mock'
 import {ActiveWorkspaceMatcherProvider} from '../../src/core/studio/activeWorkspaceMatcher/ActiveWorkspaceMatcherProvider'
 import {route, RouterProvider} from '../../src/router'
+import {type Panes} from '../../src/structure/structureResolvers'
+import {ResolvedPanesProvider} from '../../src/structure/structureResolvers/provider/ResolvedPanesProvider'
 import {getMockWorkspace} from './getMockWorkspaceFromConfig'
 
 export interface TestProviderOptions {
@@ -35,6 +37,14 @@ export async function createTestProvider({
   resources = [studioDefaultLocaleResources],
 }: TestProviderOptions = {}) {
   const workspace = await getMockWorkspace({client, config})
+
+  const resolvedPanes: Panes = {
+    paneDataItems: [],
+    routerPanes: [],
+    resolvedPanes: [],
+    focusedPane: null,
+    setFocusedPane: noop,
+  }
 
   const locales = [usEnglishLocale]
   const {i18next} = prepareI18n({
@@ -73,15 +83,17 @@ export async function createTestProvider({
                         setActiveWorkspace={noop}
                         history={history}
                       >
-                        <CopyPasteProvider>
-                          <ResourceCacheProvider>
-                            <AddonDatasetContext.Provider value={addonDatasetContextValue}>
-                              <PerspectiveContext.Provider value={perspectiveContextValueMock}>
-                                {children}
-                              </PerspectiveContext.Provider>
-                            </AddonDatasetContext.Provider>
-                          </ResourceCacheProvider>
-                        </CopyPasteProvider>
+                        <ResolvedPanesProvider value={resolvedPanes}>
+                          <CopyPasteProvider>
+                            <ResourceCacheProvider>
+                              <AddonDatasetContext.Provider value={addonDatasetContextValue}>
+                                <PerspectiveContext.Provider value={perspectiveContextValueMock}>
+                                  {children}
+                                </PerspectiveContext.Provider>
+                              </AddonDatasetContext.Provider>
+                            </ResourceCacheProvider>
+                          </CopyPasteProvider>
+                        </ResolvedPanesProvider>
                       </ActiveWorkspaceMatcherProvider>
                     </SourceProvider>
                   </WorkspaceProvider>

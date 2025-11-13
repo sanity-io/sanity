@@ -63,7 +63,17 @@ interface DocumentPaneProviderProps extends DocumentPaneProviderWrapperProps {
  */
 // eslint-disable-next-line max-statements
 export const DocumentPaneProvider = memo((props: DocumentPaneProviderProps) => {
-  const {children, index, pane, paneKey, onFocusPath, forcedVersion, historyStore} = props
+  const {
+    children,
+    index,
+    pane,
+    paneKey,
+    onFocusPath,
+    onSetFocusedPane,
+    focused = false,
+    forcedVersion,
+    historyStore,
+  } = props
   const {
     store: timelineStore,
     error: timelineError,
@@ -561,6 +571,8 @@ export const DocumentPaneProvider = memo((props: DocumentPaneProviderProps) => {
         onSetActiveFieldGroup,
         onSetCollapsedPath,
         onSetCollapsedFieldSet,
+        onSetFocusedPane,
+        focused,
         openInspector,
         openPath,
         index,
@@ -624,6 +636,8 @@ export const DocumentPaneProvider = memo((props: DocumentPaneProviderProps) => {
       onSetActiveFieldGroup,
       onSetCollapsedPath,
       onSetCollapsedFieldSet,
+      onSetFocusedPane,
+      focused,
       openInspector,
       openPath,
       index,

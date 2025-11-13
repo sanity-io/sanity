@@ -1,11 +1,14 @@
 import {useTranslation} from 'sanity'
 
 import {structureLocaleNamespace} from '../../../../i18n'
+import {useResolvedPanesList} from '../../../../structureResolvers/useResolvedPanesList'
 import {useDocumentPane} from '../../useDocumentPane'
 import {useDocumentTitle} from '../../useDocumentTitle'
+import {DocumentHeaderBreadcrumb} from './DocumentHeaderBreadcrumb'
 
 export function DocumentHeaderTitle(): React.JSX.Element {
-  const {connectionState, schemaType, title, value: documentValue} = useDocumentPane()
+  const {connectionState, schemaType, title, value: documentValue, index} = useDocumentPane()
+  const {paneDataItems} = useResolvedPanesList()
   const {title: documentTitle, error} = useDocumentTitle()
   const subscribed = Boolean(documentValue)
 
@@ -33,12 +36,22 @@ export function DocumentHeaderTitle(): React.JSX.Element {
     return <>{t('panes.document-header-title.error.text', {error: error})}</>
   }
 
+  const hasFocusedPane = paneDataItems.some((paneData) => paneData.focused)
+  const currentPaneIndex = index
+
   return (
     <>
-      {documentTitle || (
-        <span style={{color: 'var(--card-muted-fg-color)'}}>
-          {t('panes.document-header-title.untitled.text')}
-        </span>
+      {hasFocusedPane ? (
+        <DocumentHeaderBreadcrumb
+          paneDataItems={paneDataItems}
+          currentPaneIndex={currentPaneIndex}
+        />
+      ) : (
+        documentTitle || (
+          <span style={{color: 'var(--card-muted-fg-color)'}}>
+            {t('panes.document-header-title.untitled.text')}
+          </span>
+        )
       )}
     </>
   )

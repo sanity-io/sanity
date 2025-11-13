@@ -1,4 +1,5 @@
-import {ArrowLeftIcon, CloseIcon, SplitVerticalIcon} from '@sanity/icons'
+import {ArrowLeftIcon, CloseIcon, CollapseIcon, ExpandIcon, SplitVerticalIcon} from '@sanity/icons'
+import {useTelemetry} from '@sanity/telemetry/react'
 import {Box, Card, Flex} from '@sanity/ui'
 // eslint-disable-next-line camelcase
 import {getTheme_v2, rgba} from '@sanity/ui/theme'
@@ -27,11 +28,13 @@ import {
 import {type _PaneMenuNode} from '../../../../components/pane/types'
 import {structureLocaleNamespace} from '../../../../i18n'
 import {isMenuNodeButton, isNotMenuNodeButton, resolveMenuNodes} from '../../../../menuNodes'
+import {useResolvedPanesList} from '../../../../structureResolvers/useResolvedPanesList'
 import {type PaneMenuItem} from '../../../../types'
 import {useStructureTool} from '../../../../useStructureTool'
 import {ActionDialogWrapper, ActionMenuListItem} from '../../statusBar/ActionMenuButton'
 import {isRestoreAction} from '../../statusBar/DocumentStatusBarActions'
 import {useDocumentPane} from '../../useDocumentPane'
+import {FocusDocumentPaneClicked, FocusDocumentPaneCollapsed} from './__telemetry__/focus.telemetry'
 import {DocumentHeaderTitle} from './DocumentHeaderTitle'
 import {useChipScrollPosition} from './hook/useChipScrollPosition'
 import {DocumentPerspectiveList} from './perspective/DocumentPerspectiveList'
@@ -86,18 +89,22 @@ export const DocumentPanelHeader = memo(
       isInitialValueLoading,
       onPaneClose,
       onPaneSplit,
+      onSetFocusedPane,
       menuItemGroups,
       schemaType,
       connectionState,
       views,
       unstable_languageFilter,
+      documentId,
     } = useDocumentPane()
     const {features} = useStructureTool()
     const {index, BackLink, hasGroupSiblings} = usePaneRouter()
+    const {focusedPane} = useResolvedPanesList()
     const {actions: fieldActions} = useFieldActions()
     const [referenceElement, setReferenceElement] = useState<HTMLElement | null>(null)
     const scrollContainerRef = useRef<HTMLDivElement>(null)
     const showGradient = useChipScrollPosition(scrollContainerRef)
+    const telemetry = useTelemetry()
 
     // The restore action has a dedicated place in the UI; it's only visible when the user is
     // viewing a different document revision. It must be omitted from this collection.
@@ -147,6 +154,24 @@ export const DocumentPanelHeader = memo(
 
     const {t} = useTranslation(structureLocaleNamespace)
 
+    const isFocusedPane = useMemo(() => {
+      return (
+        focusedPane?.pane &&
+        typeof focusedPane.pane === 'object' &&
+        focusedPane.pane.type === 'document' &&
+        focusedPane.pane.options.id === documentId
+      )
+    }, [focusedPane, documentId])
+
+    const handleFocusPane = useCallback(() => {
+      onSetFocusedPane?.()
+
+      if (isFocusedPane) {
+        telemetry.log(FocusDocumentPaneCollapsed)
+      } else {
+        telemetry.log(FocusDocumentPaneClicked)
+      }
+    }, [onSetFocusedPane, isFocusedPane, telemetry])
     const renderPaneActions = useCallback<
       (props: {states: DocumentActionDescription[]}) => React.ReactNode
     >(
@@ -222,6 +247,26 @@ export const DocumentPanelHeader = memo(
             />
           )}
 
+          {onSetFocusedPane && (
+            <Button
+              key="focus-pane-button"
+              aria-label={
+                isFocusedPane
+                  ? t('buttons.focus-pane-button.aria-label.collapse')
+                  : t('buttons.focus-pane-button.aria-label.focus')
+              }
+              icon={isFocusedPane ? CollapseIcon : ExpandIcon}
+              mode="bleed"
+              onClick={handleFocusPane}
+              tooltipProps={{
+                content: isFocusedPane
+                  ? t('buttons.focus-pane-button.tooltip.collapse')
+                  : t('buttons.focus-pane-button.tooltip.focus'),
+              }}
+              data-testid={isFocusedPane ? 'focus-pane-button-collapse' : 'focus-pane-button-focus'}
+            />
+          )}
+
           {showPaneGroupCloseButton && (
             <Button
               key="close-view-button"
@@ -237,10 +282,13 @@ export const DocumentPanelHeader = memo(
         BackLink,
         actions,
         editState,
+        handleFocusPane,
+        isFocusedPane,
         isInitialValueLoading,
         menuButtonNodes,
         onPaneClose,
         onPaneSplit,
+        onSetFocusedPane,
         renderPaneActions,
         schemaType,
         showPaneGroupCloseButton,
