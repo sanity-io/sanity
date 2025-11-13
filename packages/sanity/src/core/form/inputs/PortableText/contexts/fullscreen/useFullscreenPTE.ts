@@ -1,6 +1,5 @@
 import {useContext} from 'react'
-
-import {FullscreenPTEContext} from './FullscreenPTEContext'
+import {FullscreenPTEContext} from 'sanity/_singletons'
 
 /**
  * Hook to access fullscreen PTE context
