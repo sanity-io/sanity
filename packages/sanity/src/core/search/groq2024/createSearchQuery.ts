@@ -1,4 +1,3 @@
-import {type ClientPerspective} from '@sanity/client'
 import {DEFAULT_MAX_FIELD_DEPTH} from '@sanity/schema/_internal'
 import {
   type CrossDatasetType,
@@ -8,7 +7,6 @@ import {
 import {groupBy} from 'lodash'
 
 import {deriveSearchWeightsFromType2024} from '../common/deriveSearchWeightsFromType2024'
-import {isPerspectiveRaw} from '../common/isPerspectiveRaw'
 import {prefixLast} from '../common/token'
 import {
   type SearchFactoryOptions,
@@ -60,14 +58,26 @@ function toOrderClause(orderBy: SearchSort[]): string {
 export function createSearchQuery(
   searchTerms: SearchTerms<SchemaType | CrossDatasetType | GlobalDocumentReferenceType>,
   searchParams: string | SearchTerms<SchemaType>,
-  {includeDrafts = true, perspective, ...options}: SearchOptions & SearchFactoryOptions = {},
+  {
+    includeDrafts = true,
+    perspective,
+    sort,
+    isCrossDataset,
+    tag,
+    maxDepth,
+    cursor,
+    limit,
+    params,
+    comments,
+    filter,
+  }: SearchOptions & SearchFactoryOptions = {},
 ): SearchQuery {
   const specs = searchTerms.types
     .map((schemaType) =>
       deriveSearchWeightsFromType2024({
         schemaType,
-        maxDepth: options.maxDepth || DEFAULT_MAX_FIELD_DEPTH,
-        isCrossDataset: options.isCrossDataset,
+        maxDepth: maxDepth || DEFAULT_MAX_FIELD_DEPTH,
+        isCrossDataset: isCrossDataset,
         processPaths: (paths) => paths.filter(({weight}) => weight !== 1),
       }),
     )
@@ -93,30 +103,20 @@ export function createSearchQuery(
     })
     .concat(baseMatch)
 
-  const sortOrder = options?.sort ?? [{field: '_score', direction: 'desc'}]
+  const sortOrder = sort ?? [{field: '_score', direction: 'desc'}]
   const isScored = sortOrder.some(({field}) => field === '_score')
 
-  let activePerspective: ClientPerspective | undefined = perspective
-
-  // No perspective, or empty perspective array, provided.
-  if (
-    typeof perspective === 'undefined' ||
-    (Array.isArray(perspective) && perspective.length === 0)
-  ) {
-    activePerspective = 'raw'
-  }
-
-  const isRaw = isPerspectiveRaw(activePerspective)
+  // 'raw' is default, and changing that would be a breaking change
+  const isRaw = !perspective || perspective.length === 0 || perspective === 'raw'
 
   const filters: string[] = [
     '_type in $__types',
     // If the search request doesn't use scoring, directly filter documents.
     isScored ? [] : baseMatch,
-    options.filter ? `(${options.filter})` : [],
+    filter ? `(${filter})` : [],
     searchTerms.filter ? `(${searchTerms.filter})` : [],
-    isRaw ? [] : '!(_id in path("versions.**"))',
-    includeDrafts === false ? `!(_id in path('drafts.**'))` : [],
-    options.cursor ?? [],
+    isRaw && includeDrafts === false ? `!(_id in path('drafts.**'))` : [],
+    cursor ?? [],
   ].flat()
 
   const projectionFields = sortOrder.map(({field}) => field).concat('_type', '_id', '_originalId')
@@ -135,27 +135,27 @@ export function createSearchQuery(
 
   const rawQuery = typeof searchParams === 'string' ? searchParams : searchParams.query
 
-  const params: SearchParams = {
+  const finalParams: SearchParams = {
     __types: searchTerms.types.map((type) => (isSchemaType(type) ? type.name : type.type)),
     // Overfetch by 1 to determine whether there is another page to fetch.
-    __limit: (options?.limit ?? DEFAULT_LIMIT) + 1,
+    __limit: (limit ?? DEFAULT_LIMIT) + 1,
     __query: prefixLast(rawQuery),
     __rawQuery: rawQuery,
-    ...options.params,
+    ...params,
   }
 
   const pragma = [`findability-mvi:${FINDABILITY_MVI}`]
-    .concat(options?.comments || [])
+    .concat(comments || [])
     .map((s) => `// ${s}`)
     .join('\n')
 
   return {
     query: [pragma, query].join('\n'),
     options: {
-      tag: options.tag,
-      perspective: activePerspective,
+      tag: tag,
+      perspective: isRaw ? 'raw' : perspective,
     },
-    params,
+    params: finalParams,
     sortOrder,
   }
 }

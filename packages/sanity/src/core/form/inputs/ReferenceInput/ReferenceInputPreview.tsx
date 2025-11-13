@@ -15,7 +15,6 @@ import {IntentLink} from 'sanity/router'
 import {MenuButton, MenuItem, TooltipDelayGroupProvider} from '../../../../ui-components'
 import {ContextMenuButton} from '../../../components/contextMenuButton'
 import {useTranslation} from '../../../i18n'
-import {usePerspective} from '../../../perspective/usePerspective'
 import {EMPTY_ARRAY} from '../../../util/empty'
 import {useDidUpdate} from '../../hooks/useDidUpdate'
 import {set, unset} from '../../patch'
@@ -51,7 +50,6 @@ export function ReferenceInputPreview(props: ReferenceInputProps & {children: Re
   const elementRef = useRef<HTMLDivElement | null>(null)
   const {schemaType, path, children, focusPath} = props
   const {readOnly, focused, renderPreview, onChange, onPathFocus, id: inputId} = props
-  const {selectedReleaseId} = usePerspective()
 
   const handleClear = useCallback(() => onChange(unset()), [onChange])
   const value: Reference | undefined = props.value as any
@@ -61,7 +59,6 @@ export function ReferenceInputPreview(props: ReferenceInputProps & {children: Re
       path,
       schemaType,
       value,
-      version: selectedReleaseId,
     })
 
   useDidUpdate(focused, (hadFocus, hasFocus) => {

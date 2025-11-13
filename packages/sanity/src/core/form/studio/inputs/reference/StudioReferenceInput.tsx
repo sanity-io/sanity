@@ -1,3 +1,7 @@
+/* eslint-disable max-nested-callbacks */
+import {type ClientPerspective, type SanityDocument} from '@sanity/client'
+import {getPublishedId} from '@sanity/client/csm'
+import {DEFAULT_MAX_FIELD_DEPTH} from '@sanity/schema/_internal'
 import {type Reference, type ReferenceSchemaType} from '@sanity/types'
 import * as PathUtils from '@sanity/util/paths'
 import {
@@ -9,16 +13,15 @@ import {
   useMemo,
   useRef,
 } from 'react'
-import {from, throwError} from 'rxjs'
-import {catchError, mergeMap} from 'rxjs/operators'
+import {combineLatest, from, throwError} from 'rxjs'
+import {catchError, map, mergeMap, switchMap} from 'rxjs/operators'
 
-import {type FIXME} from '../../../../FIXME'
 import {useSchema} from '../../../../hooks'
 import {usePerspective} from '../../../../perspective/usePerspective'
+import {createSearch} from '../../../../search'
 import {useDocumentPreviewStore} from '../../../../store'
 import {useSource} from '../../../../studio'
 import {useSearchMaxFieldDepth} from '../../../../studio/components/navbar/search/hooks/useSearchMaxFieldDepth'
-import {DEFAULT_STUDIO_CLIENT_OPTIONS} from '../../../../studioClient'
 import {isNonNullable} from '../../../../util'
 import {useFormValue} from '../../../contexts/FormValue'
 import {ReferenceInput} from '../../../inputs/ReferenceInput/ReferenceInput'
@@ -55,18 +58,32 @@ type SearchError = {
 }
 
 /**
+ * createSearchQuery currently defaults to explicitly set `raw` perspective if no perspective is given
+ * so we here need to bypass that default by explicitly setting `published` if no perspective or empty array
+ * @param perspective - a perspective or perspective stack
+ */
+function ensurePublished(
+  perspective: Exclude<ClientPerspective, 'raw' | 'previewDrafts'> | undefined,
+) {
+  // note: perspective may be a string here too, but that's ok
+  if (!perspective || perspective.length === 0) {
+    return ['published']
+  }
+  return perspective
+}
+
+/**
  *
  * @hidden
  * @beta
  */
 export function StudioReferenceInput(props: StudioReferenceInputProps) {
   const source = useSource()
-  const searchClient = source.getClient(DEFAULT_STUDIO_CLIENT_OPTIONS)
+  const searchClient = source.getClient({apiVersion: 'vX'})
   const {perspectiveStack} = usePerspective()
   const schema = useSchema()
   const maxFieldDepth = useSearchMaxFieldDepth()
   const documentPreviewStore = useDocumentPreviewStore()
-  const {selectedReleaseId} = usePerspective()
   const {path, schemaType} = props
   const {
     EditReferenceLinkComponent,
@@ -77,7 +94,7 @@ export function StudioReferenceInput(props: StudioReferenceInputProps) {
   } = useReferenceInputOptions()
   const {strategy: searchStrategy} = source.search
 
-  const documentValue = useFormValue([]) as FIXME
+  const documentValue = useFormValue([]) as SanityDocument
   const documentRef = useValueRef(documentValue)
   const documentTypeName = documentRef.current?._type
   const refType = schema.get(documentTypeName)
@@ -89,37 +106,93 @@ export function StudioReferenceInput(props: StudioReferenceInputProps) {
 
   const handleSearch = useCallback(
     (searchString: string) =>
-      from(resolveUserDefinedFilter(schemaType.options, documentRef.current, path, getClient)).pipe(
-        mergeMap(({filter, params}) =>
-          adapter.referenceSearch(searchClient, searchString, schemaType, {
+      from(
+        resolveUserDefinedFilter({
+          options: schemaType.options,
+          document: documentRef.current,
+          perspective: perspectiveStack,
+          valuePath: path,
+          getClient,
+        }),
+      ).pipe(
+        mergeMap(({filter, params, perspective: userDefinedFilterPerspective}) => {
+          if (
+            userDefinedFilterPerspective?.includes('raw') ||
+            userDefinedFilterPerspective?.includes('previewDrafts')
+          ) {
+            throw new Error(
+              'Invalid perspective returned from reference filter: Neither raw nor previewDrafts is supported.',
+            )
+          }
+
+          const options = {
             ...schemaType.options,
             filter,
             params,
             tag: 'search.reference',
             maxFieldDepth,
             strategy: searchStrategy,
-            perspective: perspectiveStack,
-          }),
-        ),
+            perspective: userDefinedFilterPerspective || perspectiveStack,
+          }
 
+          const search = createSearch(schemaType.to, searchClient, {
+            ...options,
+            maxDepth: options.maxFieldDepth || DEFAULT_MAX_FIELD_DEPTH,
+          })
+
+          return search(searchString, {
+            perspective: ensurePublished(options.perspective),
+            limit: 101,
+          }).pipe(
+            map(({hits}) => hits.map(({hit}) => hit)),
+            switchMap((docs) => {
+              // Note: It might seem like this step is redundant, but it's here for a reason:
+              // The list of search hits returned from here will be passed as options to the reference input's autocomplete. When
+              // one of them gets selected by the user, it will then be passed as the argument to the `onChange` handler in the
+              // Reference Input. This handler will then look at the passed value to determine whether to make a link to a
+              // draft (using _strengthenOnPublish) or a published document.
+              //
+              // Without this step, in a case where both a draft and a published version exist but only the draft matches
+              // the search term, we'd end up making a reference with `_strengthenOnPublish: true`, when we instead should be
+              // making a normal reference to the published id
+              return combineLatest(
+                docs.map((doc) =>
+                  documentPreviewStore.observePaths({_id: getPublishedId(doc._id)}, ['_rev']).pipe(
+                    map((published) => ({
+                      id: doc._id,
+                      type: doc._type,
+                      published: Boolean(published),
+                    })),
+                  ),
+                ),
+              )
+            }),
+          )
+        }),
         catchError((err: SearchError) => {
           const isQueryError = err.details && err.details.type === 'queryParseError'
           if (schemaType.options?.filter && isQueryError) {
-            err.message = `Invalid reference filter, please check the custom "filter" option`
+            return throwError(
+              () =>
+                new Error(`Invalid reference filter, please check the custom "filter" option`, {
+                  cause: err,
+                }),
+            )
           }
-          return throwError(err)
+          return throwError(() => err)
         }),
       ),
-
     [
-      schemaType,
+      schemaType.options,
+      schemaType.to,
       documentRef,
+      perspectiveStack,
       path,
       getClient,
-      searchClient,
       maxFieldDepth,
       searchStrategy,
-      perspectiveStack,
+      searchClient,
+      documentPreviewStore,
     ],
   )
 
@@ -192,8 +265,8 @@ export function StudioReferenceInput(props: StudioReferenceInputProps) {
 
   const getReferenceInfo = useCallback(
     (id: string, _type: ReferenceSchemaType) =>
-      adapter.getReferenceInfo(documentPreviewStore, id, _type),
-    [documentPreviewStore],
+      adapter.getReferenceInfo(documentPreviewStore, id, _type, perspectiveStack),
+    [documentPreviewStore, perspectiveStack],
   )
 
   return (
@@ -206,7 +279,6 @@ export function StudioReferenceInput(props: StudioReferenceInputProps) {
       editReferenceLinkComponent={EditReferenceLink}
       createOptions={createOptions}
       onEditReference={handleEditReference}
-      version={selectedReleaseId}
     />
   )
 }

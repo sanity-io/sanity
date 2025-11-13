@@ -54,7 +54,6 @@ export function ReferenceInput(props: ReferenceInputProps) {
     id,
     onPathFocus,
     value,
-    version,
     renderPreview,
     path,
     elementProps,
@@ -66,7 +65,6 @@ export function ReferenceInput(props: ReferenceInputProps) {
     path,
     schemaType,
     value,
-    version,
   })
 
   const [searchState, setSearchState] = useState<ReferenceSearchState>(INITIAL_SEARCH_STATE)
@@ -141,12 +139,12 @@ export function ReferenceInput(props: ReferenceInputProps) {
       if (!hit) {
         throw new Error('Selected an item that wasnt part of the result set')
       }
-      // if there's no published version of this document, set the reference to weak
 
+      // if there's no published version of this document, set the reference to weak
       const patches = [
         setIfMissing({}),
         set(schemaType.name, ['_type']),
-        set(getPublishedId(nextId), ['_ref']),
+        set(getPublishedId(hit.id), ['_ref']),
         hit.published && !schemaType.weak ? unset(['_weak']) : set(true, ['_weak']),
         hit.published
           ? unset(['_strengthenOnPublish'])
@@ -198,7 +196,7 @@ export function ReferenceInput(props: ReferenceInputProps) {
               })
 
               console.error(error)
-              return of({hits: []})
+              return of({hits: [], searchString, isLoading: false})
             }),
           ),
         ),
@@ -228,20 +226,18 @@ export function ReferenceInput(props: ReferenceInputProps) {
 
   const renderOption = useCallback(
     (option: AutocompleteOption) => {
-      const documentId = option.hit.draft?._id || option.hit.published?._id || option.value
-
       return (
         <ReferenceInputPreviewCard forwardedAs="button" type="button" radius={2} tone="inherit">
           <OptionPreview
-            getReferenceInfo={getReferenceInfo}
-            id={documentId}
+            id={option.hit.id}
+            type={option.hit.type}
             renderPreview={renderPreview}
-            type={schemaType}
+            referenceType={schemaType}
           />
         </ReferenceInputPreviewCard>
       )
     },
-    [schemaType, getReferenceInfo, renderPreview],
+    [schemaType, renderPreview],
   )
 
   const renderValue = useCallback(() => {
