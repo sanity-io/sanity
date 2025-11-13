@@ -358,7 +358,6 @@ exports[`exports snapshot 1`] = `
     "isArrayOfPrimitivesSchemaType": "function",
     "isArraySchemaType": "function",
     "isAssetAspect": "function",
-    "isAssetLimitError": "function",
     "isAuthStore": "function",
     "isBlockChildrenObjectField": "function",
     "isBlockListObjectField": "function",
