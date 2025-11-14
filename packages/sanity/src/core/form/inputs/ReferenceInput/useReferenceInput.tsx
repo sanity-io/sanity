@@ -1,14 +1,6 @@
 import {type Path, type Reference, type ReferenceSchemaType} from '@sanity/types'
 import * as PathUtils from '@sanity/util/paths'
-import {
-  type ComponentProps,
-  type ForwardedRef,
-  forwardRef,
-  useCallback,
-  useEffect,
-  useMemo,
-  useRef,
-} from 'react'
+import {type ComponentProps, type ForwardedRef, forwardRef, useCallback, useMemo} from 'react'
 
 import {type FIXME} from '../../../FIXME'
 import {useSchema} from '../../../hooks'
@@ -19,14 +11,6 @@ import {useFormValue} from '../../contexts/FormValue'
 import {useReferenceInputOptions} from '../../studio'
 import * as adapter from '../../studio/inputs/client-adapters/reference'
 import {type EditReferenceEvent} from './types'
-
-function useValueRef<T>(value: T): {current: T} {
-  const ref = useRef(value)
-  useEffect(() => {
-    ref.current = value
-  }, [value])
-  return ref
-}
 
 interface Options {
   path: Path
@@ -48,9 +32,8 @@ export function useReferenceInput(options: Options) {
   } = useReferenceInputOptions()
 
   const documentValue = useFormValue([]) as FIXME
-  const documentRef = useValueRef(documentValue)
 
-  const documentTypeName = documentRef.current?._type
+  const documentTypeName = documentValue?._type
 
   const isCurrentDocumentLiveEdit = useMemo(() => {
     return schema.get(documentTypeName)?.liveEdit
