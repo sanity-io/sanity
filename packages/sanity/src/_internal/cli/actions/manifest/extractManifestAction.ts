@@ -221,8 +221,8 @@ async function writeWorkspaceFile(
       {
         id: `edit-workspace-${workspace.name}`,
         action: 'edit',
-        title: 'Edit',
-        description: 'Edit an existing document',
+        title: 'Open in Studio',
+        description: 'Open document in Studio',
         filters: [
           {
             projectId: workspace.projectId,
