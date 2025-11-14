@@ -1,4 +1,3 @@
-import {type StackablePerspective} from '@sanity/client'
 import {type Path, type ReferenceOptions, type SanityDocument} from '@sanity/types'
 import {evaluate, parse} from 'groq-js'
 
@@ -11,7 +10,6 @@ export async function documentMatchesGroqFilter(ctx: {
   referencedDocument: SanityDocument
   schemaTypeOptions: ReferenceOptions
   targetRootPath: Path
-  perspective: StackablePerspective[]
   getClient: Source['getClient']
 }): Promise<boolean> {
   const {targetRootPath, rootDocumentValue, referencedDocument, getClient, schemaTypeOptions} = ctx

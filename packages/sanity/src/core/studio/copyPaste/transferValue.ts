@@ -638,8 +638,6 @@ async function collateObjectValue({
             referencedDocument: reference,
             schemaTypeOptions: targetSchemaType.options,
             targetRootPath,
-            // todo: what to do here?
-            perspective: ['drafts'],
             getClient,
           })
 
