@@ -37,7 +37,8 @@ export function PublishScheduledDraftDialog(
 
   const handlePublishScheduledDraft = useCallback(async () => {
     setIsPublishing(true)
-    try {
+    // Workaround for React Compiler not yet fully supporting try/catch/finally syntax
+    const run = async () => {
       await operations.publishScheduledDraft(release)
       toast.push({
         closable: true,
@@ -50,6 +51,9 @@ export function PublishScheduledDraftDialog(
           />
         ),
       })
+    }
+    try {
+      await run()
     } catch (error) {
       console.error('Failed to run scheduled draft:', error)
       toast.push({
@@ -66,10 +70,9 @@ export function PublishScheduledDraftDialog(
           />
         ),
       })
-    } finally {
-      setIsPublishing(false)
-      onClose()
     }
+    setIsPublishing(false)
+    onClose()
   }, [operations, release, toast, t, firstDocumentPreview?.title, onClose])
 
   return (

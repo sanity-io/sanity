@@ -35,7 +35,8 @@ export function useCopyToDrafts(options: UseCopyToDraftsOptions) {
   const hasDraftVersion = Boolean(documentVersionInfo.draft)
 
   const handleCopyToDrafts = useCallback(async () => {
-    try {
+    // Workaround for React Compiler not yet fully supporting try/catch syntax
+    const run = async () => {
       const sourceDoc = await client.getDocument(sourceDocumentId)
 
       if (!sourceDoc) {
@@ -53,6 +54,9 @@ export function useCopyToDrafts(options: UseCopyToDraftsOptions) {
       })
 
       onNavigate()
+    }
+    try {
+      await run()
     } catch (err) {
       toast.push({
         closable: true,

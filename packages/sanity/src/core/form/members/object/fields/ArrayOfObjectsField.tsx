@@ -449,50 +449,6 @@ export function ArrayOfObjectsField(props: {
     elementProps,
   ])
 
-  const renderedInput = useMemo(() => renderInput(inputProps), [inputProps, renderInput])
-
-  const fieldProps = useMemo((): Omit<ArrayFieldProps, 'renderDefault'> => {
-    return {
-      actions: fieldActions,
-      name: member.name,
-      index: member.index,
-      level: member.field.level,
-      value: member.field.value,
-      title: member.field.schemaType.title,
-      description: member.field.schemaType.description,
-      collapsible: member.collapsible,
-      collapsed: member.collapsed,
-      changed: member.field.changed,
-      onCollapse: handleCollapse,
-      onExpand: handleExpand,
-      schemaType: member.field.schemaType,
-      inputId: member.field.id,
-      path: member.field.path,
-      presence: member.field.presence,
-      validation: member.field.validation,
-      children: renderedInput,
-      inputProps: inputProps as ArrayOfObjectsInputProps,
-    }
-  }, [
-    fieldActions,
-    member.name,
-    member.index,
-    member.field.level,
-    member.field.value,
-    member.field.schemaType,
-    member.field.changed,
-    member.field.id,
-    member.field.path,
-    member.field.presence,
-    member.field.validation,
-    member.collapsible,
-    member.collapsed,
-    handleCollapse,
-    handleExpand,
-    renderedInput,
-    inputProps,
-  ])
-
   return (
     <FormCallbacksProvider
       onFieldGroupSelect={onFieldGroupSelect}
@@ -503,7 +459,47 @@ export function ArrayOfObjectsField(props: {
       onPathBlur={onPathBlur}
       onPathFocus={onPathFocus}
     >
-      {useMemo(() => renderField(fieldProps), [fieldProps, renderField])}
+      <RenderField
+        actions={fieldActions}
+        name={member.name}
+        index={member.index}
+        level={member.field.level}
+        value={member.field.value}
+        title={member.field.schemaType.title}
+        description={member.field.schemaType.description}
+        collapsible={member.collapsible}
+        collapsed={member.collapsed}
+        changed={member.field.changed}
+        onCollapse={handleCollapse}
+        onExpand={handleExpand}
+        schemaType={member.field.schemaType}
+        inputId={member.field.id}
+        path={member.field.path}
+        presence={member.field.presence}
+        validation={member.field.validation}
+        inputProps={inputProps as ArrayOfObjectsInputProps}
+        render={renderField}
+      >
+        <RenderInput {...inputProps} render={renderInput} />
+      </RenderField>
     </FormCallbacksProvider>
   )
+}
+
+// The RenderInput and RenderField wrappers workaround the strict refs checks in React Compiler
+function RenderInput({
+  render,
+  ...props
+}: Omit<ArrayOfObjectsInputProps, 'renderDefault'> & {
+  render: RenderInputCallback
+}) {
+  return render(props)
+}
+function RenderField({
+  render,
+  ...props
+}: Omit<ArrayFieldProps, 'renderDefault'> & {
+  render: RenderFieldCallback
+}) {
+  return render(props)
 }
