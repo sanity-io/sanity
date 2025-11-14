@@ -4,18 +4,19 @@ import {Flex, Stack, Text} from '@sanity/ui'
 import {Button} from '../../../../../ui-components/button/Button'
 import {useTranslation} from '../../../../i18n'
 import {useProject} from '../../../../store/_legacy/project/useProject'
-import {userHasRole} from '../../../../util/userHasRole'
 import {useActiveWorkspace} from '../../../activeWorkspaceMatcher/useActiveWorkspace'
 import {useEnvAwareSanityWebsiteUrl} from '../../../hooks/useEnvAwareSanityWebsiteUrl'
 import {useWorkspace} from '../../../workspace'
+import {useCanInviteProjectMembers} from '../useCanInviteMembers'
 import {WorkspacePreviewIcon} from './WorkspacePreview'
 
 export function ManageMenu({multipleWorkspaces}: {multipleWorkspaces: boolean}) {
-  const {projectId, currentUser} = useWorkspace()
+  const {projectId} = useWorkspace()
   const {value: project} = useProject()
   const {activeWorkspace} = useActiveWorkspace()
-  const isAdmin = Boolean(currentUser && userHasRole(currentUser, 'administrator'))
   const envAwareWebsiteUrl = useEnvAwareSanityWebsiteUrl()
+
+  const canInviteMembers = useCanInviteProjectMembers()
 
   const {t} = useTranslation()
 
@@ -43,7 +44,7 @@ export function ManageMenu({multipleWorkspaces}: {multipleWorkspaces: boolean}) 
           // @ts-expect-error -- Custom CSS property for Button component, needs to be unset so the border works as default
           style={{'--card-border-color': 'unset'}}
         />
-        {isAdmin && (
+        {canInviteMembers && (
           <Button
             mode="bleed"
             as="a"

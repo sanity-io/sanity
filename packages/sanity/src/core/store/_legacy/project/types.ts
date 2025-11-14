@@ -58,8 +58,29 @@ export interface ProjectDatasetData {
 /**
  * @hidden
  * @beta */
+export type ProjectGrants = Record<
+  string,
+  | {
+      id: string
+      name: string
+      title: string
+      description: string | null
+      isCustom: boolean
+      config: Record<string, unknown>
+      grants: {
+        name: string
+        params: Record<string, unknown>
+      }[]
+    }[]
+  | undefined
+>
+
+/**
+ * @hidden
+ * @beta */
 export interface ProjectStore {
   get: () => Observable<ProjectData>
   getDatasets: () => Observable<ProjectDatasetData[]>
   getOrganizationId: () => Observable<string | null>
+  getGrants: () => Observable<ProjectGrants>
 }

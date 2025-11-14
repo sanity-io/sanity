@@ -1,8 +1,18 @@
 import {type SanityClient} from '@sanity/client'
-import {catchError, map, type Observable, of, repeat, ReplaySubject, share, timer} from 'rxjs'
+import {
+  catchError,
+  map,
+  type Observable,
+  of,
+  repeat,
+  ReplaySubject,
+  share,
+  shareReplay,
+  timer,
+} from 'rxjs'
 
 import {memoize} from '../document/utils/createMemoizer'
-import {type ProjectData, type ProjectStore} from './types'
+import {type ProjectData, type ProjectGrants, type ProjectStore} from './types'
 
 const REFETCH_INTERVAL = 5 * 60 * 1000 // 5 minutes
 
@@ -60,5 +70,18 @@ export function createProjectStore(context: {client: SanityClient}): ProjectStor
     })
   }
 
-  return {get, getDatasets, getOrganizationId: () => getOrganizationId(versionedClient)}
+  // Share and replay the grants result so permission checks reuse the same response.
+  const grants$ = versionedClient.observable
+    .request<ProjectGrants>({
+      url: `/projects/${projectId}/grants`,
+      tag: 'get-grants',
+    })
+    .pipe(shareReplay(1))
+
+  return {
+    get,
+    getDatasets,
+    getGrants: () => grants$,
+    getOrganizationId: () => getOrganizationId(versionedClient),
+  }
 }
