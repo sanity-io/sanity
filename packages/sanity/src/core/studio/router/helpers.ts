@@ -65,13 +65,20 @@ export function resolveIntentState(
 
   const orderedTools = getOrderedTools(tools)
 
+  const {tool: intentToolName} = (isRecord(nextState.params) && nextState.params) || {}
+
+  const intentMatchedTool =
+    isRecord(nextState.params) && nextState.params
+      ? orderedTools.find((tool) => tool.name === intentToolName)
+      : null
+
   const currentTool = prevState?.tool
     ? orderedTools.find((tool) => tool.name === prevState.tool)
     : null
 
-  const otherTools = currentTool
-    ? orderedTools.filter((tool) => tool !== currentTool)
-    : orderedTools
+  const otherTools = orderedTools.filter(
+    (tool) => tool !== intentMatchedTool && tool !== currentTool,
+  )
 
   let weightedParams: string[] = []
   if (intent === 'create') {
@@ -84,7 +91,7 @@ export function resolveIntentState(
   // Only the ones defined in `WEIGHTED_*_INTENT_PARAMS` are considered, and on ties in score,
   // the first tool wins. Any active tool is considered first, then the rest.
   const initialMatch: {score: number; tool: Tool<any> | null} = {score: -1, tool: null}
-  const {tool: matchingTool} = (currentTool ? [currentTool, ...otherTools] : orderedTools).reduce(
+  const {tool: matchingTool} = [intentMatchedTool, currentTool, ...otherTools].reduce(
     (prev, tool) => {
       if (!tool || typeof tool.canHandleIntent !== 'function') {
         return prev
