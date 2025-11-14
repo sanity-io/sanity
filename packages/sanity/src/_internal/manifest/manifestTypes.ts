@@ -17,11 +17,13 @@ export interface CreateManifest {
   createdAt: string
   workspaces: ManifestWorkspaceFile[]
   studioVersion: string | null
+  intents?: string // filename for apps only
 }
 
 export interface ManifestWorkspaceFile extends Omit<CreateWorkspaceManifest, 'schema' | 'tools'> {
   schema: string // filename
   tools: string // filename
+  intents?: string // filename for studios (workspace-scoped)
 }
 
 export interface CreateWorkspaceManifest {
@@ -106,6 +108,20 @@ export interface ManifestTool {
    */
   icon: string | null
   type: string | null
+}
+
+export interface ManifestIntentFilter {
+  projectId?: string
+  dataset?: string
+  types?: string[]
+}
+
+export interface ManifestIntent {
+  id: string
+  action: string
+  title: string
+  description: string
+  filters: ManifestIntentFilter[]
 }
 
 export type DefaultWorkspaceSchemaId = `${typeof SANITY_WORKSPACE_SCHEMA_ID_PREFIX}.${string}`

@@ -370,6 +370,16 @@ export interface CliConfig {
      */
     aspectsPath: string
   }
+  /**
+   * Configuration for Sanity SDK intents.
+   */
+  intents?: {
+    /**
+     * The path to the intents directory. When using the CLI to sync intents, this
+     * is the directory they will be read from. Defaults to `_intents`.
+     */
+    directory?: string
+  }
 }
 
 export type UserViteConfig =

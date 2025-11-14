@@ -10,15 +10,18 @@ import readPkgUp from 'read-pkg-up'
 import {
   type CreateManifest,
   type CreateWorkspaceManifest,
+  type ManifestIntent,
   type ManifestWorkspaceFile,
 } from '../../../manifest/manifestTypes'
 import {type ExtractManifestWorkerData} from '../../threads/extractManifest'
 import {readModuleVersion} from '../../util/readModuleVersion'
 import {getTimer} from '../../util/timing'
+import {extractIntents} from './extractIntentsAction'
 
 export const MANIFEST_FILENAME = 'create-manifest.json'
 const SCHEMA_FILENAME_SUFFIX = '.create-schema.json'
 const TOOLS_FILENAME_SUFFIX = '.create-tools.json'
+const INTENTS_FILENAME_SUFFIX = '.sdk-intents.json'
 
 /** Escape-hatch env flags to change action behavior */
 const FEATURE_ENABLED_ENV_NAME = 'SANITY_CLI_EXTRACT_MANIFEST_ENABLED'
@@ -35,6 +38,7 @@ const EXTRACT_FAILURE_MESSAGE =
 
 export interface ExtractManifestFlags {
   path?: string
+  intentsDir?: string
 }
 
 /**
@@ -64,9 +68,10 @@ async function extractManifest(
   args: CliCommandArguments<ExtractManifestFlags>,
   context: CliCommandContext,
 ): Promise<void> {
-  const {output, workDir} = context
+  const {output, workDir, cliConfig} = context
 
   const flags = args.extOptions
+  const isApp = Boolean(cliConfig && 'app' in cliConfig)
   const defaultOutputDir = resolve(join(workDir, 'dist'))
 
   const outputDir = resolve(defaultOutputDir)
@@ -84,34 +89,55 @@ async function extractManifest(
   const timer = getTimer()
   timer.start(CREATE_TIMER)
   const spinner = output.spinner({}).start('Extracting manifest')
+  let workspaceFiles: ManifestWorkspaceFile[] = []
 
-  try {
-    const workspaceManifests = await getWorkspaceManifests({rootPkgPath, workDir})
+  let intentsFilename: string | undefined
+
+  if (isApp) {
     await mkdir(staticPath, {recursive: true})
 
-    const workspaceFiles = await writeWorkspaceFiles(workspaceManifests, staticPath)
+    // For apps: extract intents from directory
+    const baseIntents = await extractIntents({
+      workDir,
+      intentsDir: flags.intentsDir,
+    })
 
-    const manifest: CreateManifest = {
-      /**
-       * Version history:
-       * 1: Initial release.
-       * 2: Added tools file.
-       * 3. Added studioVersion field.
-       */
-      version: 3,
-      createdAt: new Date().toISOString(),
-      workspaces: workspaceFiles,
-      studioVersion: await readModuleVersion(workDir, 'sanity'),
+    // Create a single intents file for apps
+    if (baseIntents.length > 0) {
+      intentsFilename = await createFile(staticPath, baseIntents, INTENTS_FILENAME_SUFFIX)
     }
+  } else {
+    try {
+      const workspaceManifests = await getWorkspaceManifests({rootPkgPath, workDir})
+      await mkdir(staticPath, {recursive: true})
 
-    await writeFile(path, JSON.stringify(manifest, null, 2))
-    const manifestDuration = timer.end(CREATE_TIMER)
-
-    spinner.succeed(`Extracted manifest (${manifestDuration.toFixed()}ms)`)
-  } catch (err) {
-    spinner.fail(err.message)
-    throw err
+      // For studios: auto-generate workspace-scoped intents from schema
+      workspaceFiles = await writeWorkspaceFiles(workspaceManifests, staticPath)
+    } catch (err) {
+      spinner.fail(err.message)
+      throw err
+    }
   }
+
+  const manifest: CreateManifest = {
+    /**
+     * Version history:
+     * 1: Initial release.
+     * 2: Added tools file.
+     * 3: Added studioVersion field.
+     * 4: Added intents file for apps and auto-generated workspace-scoped intents for studios.
+     */
+    version: 4,
+    createdAt: new Date().toISOString(),
+    workspaces: workspaceFiles,
+    studioVersion: await readModuleVersion(workDir, 'sanity'),
+    ...(intentsFilename ? {intents: intentsFilename} : {}),
+  }
+
+  await writeFile(path, JSON.stringify(manifest, null, 2))
+  const manifestDuration = timer.end(CREATE_TIMER)
+
+  spinner.succeed(`Extracted manifest (${manifestDuration.toFixed()}ms)`)
 }
 
 async function getWorkspaceManifests({
@@ -181,10 +207,40 @@ async function writeWorkspaceFile(
     createFile(staticPath, workspace.tools, TOOLS_FILENAME_SUFFIX),
   ])
 
+  // Auto-generate workspace-scoped intents from schema types
+  // Get all document type names (filter out system types)
+  const documentTypeNames = workspace.schema
+    .filter((type) => type.type === 'document')
+    .map((type) => type.name)
+
+  let intentsFilename: string | undefined
+  if (documentTypeNames.length > 0) {
+    // Generate edit intent with all types in one filter
+    // Use workspace name to ensure unique IDs across workspaces
+    const workspaceIntents: ManifestIntent[] = [
+      {
+        id: `edit-workspace-${workspace.name}`,
+        action: 'edit',
+        title: 'Open in Studio',
+        description: 'Open document in Studio',
+        filters: [
+          {
+            projectId: workspace.projectId,
+            dataset: workspace.dataset,
+            types: documentTypeNames,
+          },
+        ],
+      },
+    ]
+
+    intentsFilename = await createFile(staticPath, workspaceIntents, INTENTS_FILENAME_SUFFIX)
+  }
+
   return {
     ...workspace,
     schema: schemaFilename,
     tools: toolsFilename,
+    ...(intentsFilename ? {intents: intentsFilename} : {}),
   }
 }
 

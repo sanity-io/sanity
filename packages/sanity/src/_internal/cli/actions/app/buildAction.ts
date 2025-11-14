@@ -18,6 +18,7 @@ import {readModuleVersion} from '../../util/readModuleVersion'
 import {shouldAutoUpdate} from '../../util/shouldAutoUpdate'
 import {getTimer} from '../../util/timing'
 import {warnAboutMissingAppId} from '../../util/warnAboutMissingAppId'
+import {extractManifestSafe} from '../manifest/extractManifestAction'
 import {BuildTrace} from './build.telemetry'
 
 export interface BuildSanityAppCommandFlags {
@@ -29,6 +30,7 @@ export interface BuildSanityAppCommandFlags {
   'auto-updates'?: boolean
 }
 
+// eslint-disable-next-line complexity
 export default async function buildSanityApp(
   args: CliCommandArguments<BuildSanityAppCommandFlags>,
   context: CliCommandContext,
@@ -217,6 +219,27 @@ export default async function buildSanityApp(
     spin.fail()
     trace.error(err)
     throw err
+  }
+
+  // Extract manifest with intents for apps
+  output.print(`Extracting manifest with intents for apps`)
+  const manifestExtractError = await extractManifestSafe(
+    {
+      ...args,
+      extOptions: {
+        path: `${outputDir}/static`,
+        intentsDir: cliConfig?.intents?.directory || '_intents',
+      },
+    },
+    context,
+  )
+
+  if (manifestExtractError) {
+    output.warn(
+      chalk.yellow(
+        `\nWarning: Failed to extract manifest with intents: ${manifestExtractError.message}`,
+      ),
+    )
   }
 
   return {didCompile: true}
