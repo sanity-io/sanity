@@ -7,6 +7,7 @@ import {
 } from 'sanity'
 
 import {SideBySideObjectInput, SideBySideObjectItem} from './components/SideBySideObjectInput'
+import {PageBlockAnchor} from './PageBlockAnchor'
 
 const animal = defineField({
   type: 'object',
@@ -105,6 +106,11 @@ const animal = defineField({
                                           ],
                                         },
                                       ],
+                                    },
+                                    {
+                                      type: 'internationalizedArrayString',
+                                      name: 'internationalizedArrayString',
+                                      title: 'Internationalized array string',
                                     },
                                   ],
                                 },
@@ -909,6 +915,27 @@ export const objectsDebug = defineType({
       name: 'internationalizedArrayStringValue',
       type: 'internationalizedArrayStringValue',
       title: 'Internationalized array string value',
+    }),
+    defineField({
+      name: 'arrayofObjectsWithItem',
+      type: 'array',
+      title: 'Array of objects with custom item',
+      of: [
+        {
+          type: 'object',
+          name: 'item',
+          fields: [
+            {
+              name: 'object1',
+              type: 'string',
+              title: 'String 1',
+            },
+          ],
+          components: {
+            item: PageBlockAnchor,
+          },
+        },
+      ],
     }),
     animals,
     arrayOfMixedTypes,
