@@ -78,6 +78,22 @@ describe('findQueries with the groq template', () => {
       expect(queryResult?.result).toEqual('*[_type == "author2"]')
     })
 
+    test('with string constant in object', () => {
+      const source = `
+      import { groq } from "groc";
+      import {DOCTYPES} from "./__tests__/fixtures/exportObject";
+
+      const query = groq\`*[_type == '\${DOCTYPES.AUTHOR}']\`;
+      const res = sanity.fetch(query);
+      `
+
+      const queries = findQueriesInSource(source, __filename, undefined)
+
+      const queryResult = queries[0]
+
+      expect(queryResult?.result).toEqual("*[_type == 'author']")
+    })
+
     test('with block comment', () => {
       const source = `
         import { groq } from "groq";
