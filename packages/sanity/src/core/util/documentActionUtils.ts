@@ -1,6 +1,9 @@
-import {type DocumentActionProps} from '../../config/document/actions'
-import {getDraftId, getPublishedId} from '../../util/draftUtils'
+import {type DocumentActionProps} from '../config/document/actions'
+import {getDraftId, getPublishedId} from './draftUtils'
 
+/**
+ * @internal
+ */
 export function getDocumentIdFromDocumentActionProps(
   actionProps: Omit<DocumentActionProps, 'onComplete'>,
 ): string {

@@ -1,5 +1,6 @@
 export * from './catchWithCount'
 export * from './createHookFromObservableFactory'
+export * from './documentActionUtils'
 export * from './draftUtils'
 export * from './empty'
 export * from './formatRelativeLocale'

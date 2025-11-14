@@ -5,9 +5,9 @@ import {
   type DocumentActionProps,
 } from '../../../config/document/actions'
 import {useTranslation} from '../../../i18n/hooks/useTranslation'
+import {getDocumentIdFromDocumentActionProps} from '../../../util/documentActionUtils'
 import {canvasLocaleNamespace} from '../../i18n'
 import {useNavigateToCanvasDoc} from '../../useNavigateToCanvasDoc'
-import {getDocumentIdFromDocumentActionProps} from '../documentActionUtils'
 import {useCanvasCompanionDoc} from '../useCanvasCompanionDoc'
 
 export const EditInCanvasAction: DocumentActionComponent = (props: DocumentActionProps) => {

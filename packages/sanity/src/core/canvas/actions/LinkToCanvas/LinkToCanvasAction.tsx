@@ -10,12 +10,13 @@ import {useGetFormValue} from '../../../form/contexts/GetFormValue'
 import {useSchema} from '../../../hooks/useSchema'
 import {useTranslation} from '../../../i18n/hooks/useTranslation'
 import {usePerspective} from '../../../perspective/usePerspective'
+import {isReleaseDocument} from '../../../releases/store/types'
 import {useProjectOrganizationId} from '../../../store/_legacy/project/useProjectOrganizationId'
 import {useRenderingContext} from '../../../store/renderingContext/useRenderingContext'
+import {getDocumentIdFromDocumentActionProps} from '../../../util/documentActionUtils'
 import {getDraftId, getPublishedId} from '../../../util/draftUtils'
 import {canvasLocaleNamespace} from '../../i18n'
 import {useCanvasTelemetry} from '../../useCanvasTelemetry'
-import {getDocumentIdFromDocumentActionProps} from '../documentActionUtils'
 import {useCanvasCompanionDoc} from '../useCanvasCompanionDoc'
 import {LinkToCanvasDialog} from './LinkToCanvasDialog'
 
@@ -81,6 +82,9 @@ export const LinkToCanvasAction: DocumentActionComponent = (props: DocumentActio
   if (isLinked || loading || isExcludedType) return null
   // Hide the action in published perspective unless the document is live editable
   if (selectedPerspective === 'published' && !props.liveEditSchemaType) return null
+
+  // Release documents are not yet supported in Canvas
+  if (isReleaseDocument(selectedPerspective)) return null
 
   // Hide the action in the dashboard - TODO Remove this once dashboard is released
   if (!isInDashboard) return null

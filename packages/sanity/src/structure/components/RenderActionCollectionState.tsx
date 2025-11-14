@@ -4,9 +4,8 @@ import {
   type DocumentActionDescription,
   type DocumentActionGroup,
   type DocumentActionProps,
-  getDraftId,
+  getDocumentIdFromDocumentActionProps,
   GetHookCollectionState,
-  getPublishedId,
   useCanvasCompanionDoc,
   useTranslation,
 } from 'sanity'
@@ -45,11 +44,7 @@ export const RenderActionCollectionState = memo((props: RenderActionCollectionPr
         return (
           <ActionsGuardWrapper
             states={states}
-            documentId={
-              actionProps.liveEditSchemaType
-                ? getPublishedId(actionProps.id)
-                : (actionProps.version?._id ?? actionProps.draft?._id ?? getDraftId(actionProps.id))
-            }
+            documentId={getDocumentIdFromDocumentActionProps(actionProps)}
           >
             {children}
           </ActionsGuardWrapper>
@@ -73,6 +68,8 @@ const SUPPORTED_LINKED_TO_CANVAS_ACTIONS: DocumentActionComponent['action'][] = 
   'editInCanvas',
   'linkToCanvas',
   'schedule',
+  'discardVersion',
+  'unpublishVersion',
 ]
 
 interface ActionsGuardWrapperProps {
