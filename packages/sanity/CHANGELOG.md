@@ -3,6 +3,23 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [4.16.0](https://github.com/sanity-io/sanity/compare/v4.15.0...v4.16.0) (2025-11-14)
+
+### Features
+
+* **core:** add configurable `typography` plugin to PTE inputs ([f6e394d](https://github.com/sanity-io/sanity/commit/f6e394d21f790e135af309dd9cb5cb8ce9954a71)) by Christian Hamburger Grøngaard (christian.groengaard@sanity.io)
+* **form:** pass perspective stack to custom reference filters, apply returned perspective ([#11127](https://github.com/sanity-io/sanity/issues/11127)) ([22123ed](https://github.com/sanity-io/sanity/commit/22123ed113c484d9449b7b05d20c9a4f1abbe8ae)) by Bjørge Næss (bjoerge@gmail.com)
+* **limits:** add asset limit upsell dialog ([#11066](https://github.com/sanity-io/sanity/issues/11066)) ([0b5b953](https://github.com/sanity-io/sanity/commit/0b5b9531e3921eec64e078d9181fcf50c9c87e70)) by Matthew Ritter (matthew.ritter@sanity.io)
+
+### Bug Fixes
+
+* add FullscreenPTEContext and SchedulesContext to singletons exports ([#11134](https://github.com/sanity-io/sanity/issues/11134)) ([c987fe4](https://github.com/sanity-io/sanity/commit/c987fe42db0bd4ab7129f0444bfc3d7caf37295b)) by Cody Olsen (81981+stipsan@users.noreply.github.com)
+* **cli:** undeploy based on `appId`/`studioHost` ([#11131](https://github.com/sanity-io/sanity/issues/11131)) ([0e05188](https://github.com/sanity-io/sanity/commit/0e0518887ecf2528ca77bcce70fbc23dff160978)) by Espen Hovlandsdal (espen@hovlandsdal.com)
+* **i18n:** deprecate `minimalDays` property on week info ([#11005](https://github.com/sanity-io/sanity/issues/11005)) ([26496b6](https://github.com/sanity-io/sanity/commit/26496b663bee9f2740f4d3511946636bda56acab)) by Espen Hovlandsdal (espen@hovlandsdal.com)
+* make it possible to double click specific items in the inspect ([#11120](https://github.com/sanity-io/sanity/issues/11120)) ([b8b13bb](https://github.com/sanity-io/sanity/commit/b8b13bb15f6c6b45178267832da60cdd4c31ad5b)) by RitaDias (rita@sanity.io)
+* **perf:** avoid 1s render root loop ([#11149](https://github.com/sanity-io/sanity/issues/11149)) ([7270dfe](https://github.com/sanity-io/sanity/commit/7270dfebad28a209a15276755b7bddb5011b6c97)) by Cody Olsen (81981+stipsan@users.noreply.github.com)
+* **perf:** remove unsafe ref reads during render ([#11148](https://github.com/sanity-io/sanity/issues/11148)) ([93eaf26](https://github.com/sanity-io/sanity/commit/93eaf26f0c84cc572fc27af8c30e117582033ee4)) by Cody Olsen (81981+stipsan@users.noreply.github.com)
+
 ## [4.15.0](https://github.com/sanity-io/sanity/compare/v4.14.2...v4.15.0) (2025-11-11)
 
 ### Features
