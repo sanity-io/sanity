@@ -1,8 +1,13 @@
 /* eslint-disable max-nested-callbacks */
+import {type StackablePerspective} from '@sanity/client'
 import {type SanityDocument} from '@sanity/client'
 import {getPublishedId} from '@sanity/client/csm'
 import {DEFAULT_MAX_FIELD_DEPTH} from '@sanity/schema/_internal'
-import {type Reference, type ReferenceSchemaType} from '@sanity/types'
+import {
+  type Reference,
+  type ReferenceFilterSearchOptions,
+  type ReferenceSchemaType,
+} from '@sanity/types'
 import * as PathUtils from '@sanity/util/paths'
 import {
   type ComponentProps,
@@ -58,6 +63,20 @@ type SearchError = {
   }
 }
 
+function getInvalidUserDefinedPerspectives(
+  valid: StackablePerspective[],
+  perspective: ReferenceFilterSearchOptions['perspective'],
+) {
+  const normalizedUserDefinedFilterPerspective = perspective
+    ? Array.isArray(perspective)
+      ? perspective
+      : [perspective]
+    : []
+
+  return normalizedUserDefinedFilterPerspective.filter(
+    (p) => p !== 'drafts' && p !== 'published' && !valid.includes(p),
+  )
+}
 /**
  *
  * @hidden
@@ -102,12 +121,14 @@ export function StudioReferenceInput(props: StudioReferenceInputProps) {
         }),
       ).pipe(
         mergeMap(({filter, params, perspective: userDefinedFilterPerspective}) => {
-          if (
-            userDefinedFilterPerspective?.includes('raw') ||
-            userDefinedFilterPerspective?.includes('previewDrafts')
-          ) {
+          const invalidPerspectives = getInvalidUserDefinedPerspectives(
+            perspectiveStack,
+            userDefinedFilterPerspective,
+          )
+
+          if (invalidPerspectives.length > 0) {
             throw new Error(
-              'Invalid perspective returned from reference filter: Neither raw nor previewDrafts is supported.',
+              `Custom reference filter returned an invalid perspective. Filters can only remove perspectives from the passed stack, not add new ones. Expected a subset of [${perspectiveStack.join(', ')}], but received [${userDefinedFilterPerspective}].`,
             )
           }
 

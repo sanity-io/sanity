@@ -125,7 +125,7 @@ export default defineType({
       options: {
         filter: (ctx) => {
           return {
-            perspective: [],
+            perspective: ['published'],
           }
         },
       },
