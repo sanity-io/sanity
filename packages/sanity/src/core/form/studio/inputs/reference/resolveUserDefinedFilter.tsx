@@ -1,3 +1,4 @@
+import {type StackablePerspective} from '@sanity/client'
 import {
   type Path,
   type ReferenceFilterSearchOptions,
@@ -13,8 +14,9 @@ export async function resolveUserDefinedFilter(ctx: {
   document: SanityDocument
   valuePath: Path
   getClient: Source['getClient']
+  perspective: StackablePerspective[]
 }): Promise<ReferenceFilterSearchOptions> {
-  const {options, document, valuePath, getClient} = ctx
+  const {options, document, valuePath, perspective, getClient} = ctx
   if (!options) {
     return {}
   }
@@ -26,6 +28,7 @@ export async function resolveUserDefinedFilter(ctx: {
       document,
       parentPath,
       parent,
+      perspective,
       getClient,
     })
     return resolvedFilter

@@ -40,6 +40,8 @@ async function resolveUserDefinedFilter(
       document,
       parentPath,
       parent,
+      // published is default, so this should be good for x-dataset refs
+      perspective: [],
       getClient,
     })
     return resolvedFilter
