@@ -5,7 +5,7 @@ import {
   type DocumentActionProps,
 } from '../../../config/document/actions'
 import {useTranslation} from '../../../i18n/hooks/useTranslation'
-import {getDraftId, getPublishedId} from '../../../util/draftUtils'
+import {getDocumentIdFromDocumentActionProps} from '../../../util/documentActionUtils'
 import {canvasLocaleNamespace} from '../../i18n'
 import {useNavigateToCanvasDoc} from '../../useNavigateToCanvasDoc'
 import {useCanvasCompanionDoc} from '../useCanvasCompanionDoc'
@@ -13,7 +13,7 @@ import {useCanvasCompanionDoc} from '../useCanvasCompanionDoc'
 export const EditInCanvasAction: DocumentActionComponent = (props: DocumentActionProps) => {
   const {t} = useTranslation(canvasLocaleNamespace)
   const {isLinked, companionDoc, loading} = useCanvasCompanionDoc(
-    props.liveEditSchemaType ? getPublishedId(props.id) : getDraftId(props.id),
+    getDocumentIdFromDocumentActionProps(props),
   )
   const navigateToCanvas = useNavigateToCanvasDoc(companionDoc?.canvasDocumentId, 'action')
 
