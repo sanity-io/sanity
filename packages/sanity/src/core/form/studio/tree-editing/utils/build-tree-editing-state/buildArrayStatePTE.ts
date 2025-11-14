@@ -182,10 +182,7 @@ export function buildArrayStatePTE(props: BuildArrayStatePTEProps): {
             if (itemSchemaType && isReferenceSchemaType(itemSchemaType)) return
           }
 
-          if (
-            isObjectSchemaType(blockField.type) &&
-            isArrayItemSelected(blockFieldPath, openPath)
-          ) {
+          if (isArrayItemSelected(blockFieldPath, openPath)) {
             // Use openPath as relativePath for more precise targeting
             // meaning that we in fact want to go deeper into the nested structure
             relativePath = getRelativePath(openPath)
