@@ -8,12 +8,13 @@ import {get} from '@sanity/util/paths'
 
 import {type Source} from '../../../../config'
 
-export async function resolveUserDefinedFilter(
-  options: ReferenceOptions | undefined,
-  document: SanityDocument,
-  valuePath: Path,
-  getClient: Source['getClient'],
-): Promise<ReferenceFilterSearchOptions> {
+export async function resolveUserDefinedFilter(ctx: {
+  options: ReferenceOptions | undefined
+  document: SanityDocument
+  valuePath: Path
+  getClient: Source['getClient']
+}): Promise<ReferenceFilterSearchOptions> {
+  const {options, document, valuePath, getClient} = ctx
   if (!options) {
     return {}
   }
@@ -21,7 +22,12 @@ export async function resolveUserDefinedFilter(
   if (typeof options.filter === 'function') {
     const parentPath = valuePath.slice(0, -1)
     const parent = get(document, parentPath) as Record<string, unknown>
-    const resolvedFilter = await options.filter({document, parentPath, parent, getClient})
+    const resolvedFilter = await options.filter({
+      document,
+      parentPath,
+      parent,
+      getClient,
+    })
     return resolvedFilter
   }
 

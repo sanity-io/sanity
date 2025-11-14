@@ -30,7 +30,7 @@ export type ReferenceFilterSearchOptions = {
   tag?: string
   maxFieldDepth?: number
   strategy?: SearchStrategy
-  perspective?: ClientPerspective
+  perspective?: Exclude<ClientPerspective, 'raw' | 'previewDrafts'>
 }
 
 /** @public */

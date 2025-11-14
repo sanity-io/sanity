@@ -1,13 +1,11 @@
-import {type SanityClient, type StackablePerspective} from '@sanity/client'
-import {DEFAULT_MAX_FIELD_DEPTH} from '@sanity/schema/_internal'
-import {type ReferenceFilterSearchOptions, type ReferenceSchemaType} from '@sanity/types'
+import {type StackablePerspective} from '@sanity/client'
+import {type ReferenceSchemaType} from '@sanity/types'
 import {combineLatest, type Observable, of} from 'rxjs'
-import {map, mergeMap, switchMap} from 'rxjs/operators'
+import {map, switchMap} from 'rxjs/operators'
 
 import {type DocumentPreviewStore, getPreviewStateObservable} from '../../../../preview'
-import {createSearch} from '../../../../search'
-import {collate, type CollatedHit, getDraftId, getIdPair} from '../../../../util'
-import {type ReferenceInfo, type ReferenceSearchHit} from '../../../inputs/ReferenceInput/types'
+import {getIdPair} from '../../../../util'
+import {type ReferenceInfo} from '../../../inputs/ReferenceInput/types'
 
 const READABLE = {
   available: true,
@@ -26,6 +24,12 @@ const NOT_FOUND = {
 
 /**
  * Takes an id and a reference schema type, returns metadata about it
+ * This metadata includes both preview fields and availability, e.g. readable, nonexistent or inaccessible (due to user permissions)
+ * Note that using calling this function with a document returned by a search should not be needed, since
+ * a document returned by search already per definition must be accessible/readable to the current user.
+ *
+ *  In other words: this function is designed for cases where you have a known document id that may
+ *  or may not be available for the current user, typically a reference with an existing value
  */
 export function getReferenceInfo(
   documentPreviewStore: DocumentPreviewStore,
@@ -61,7 +65,7 @@ export function getReferenceInfo(
             snapshot: null,
             original: null,
           },
-        } as const)
+        })
       }
 
       const typeName$ = documentPreviewStore.observeDocumentTypeFromId(
@@ -128,86 +132,6 @@ export function getReferenceInfo(
               }
             }),
           )
-        }),
-      )
-    }),
-  )
-}
-
-/**
- * when we get a search result it may not include all [draft, published] id pairs for documents matching the
- * query. For example: searching for "potato" may yield a hit in the draft, but not the published (or vice versa)
- *
- * This method takes a list of collated search hits and returns an array of the missing "counterpart" ids
- */
-function getCounterpartIds(collatedHits: CollatedHit[]): string[] {
-  return collatedHits
-    .filter(
-      (collatedHit) =>
-        // we're interested in hits where either draft or published is missing
-        !collatedHit.draft || !collatedHit.published,
-    )
-    .map((collatedHit) =>
-      // if we have the draft, return the published id or vice versa
-      collatedHit.draft ? collatedHit.id : getDraftId(collatedHit.id),
-    )
-}
-
-function getExistingCounterparts(client: SanityClient, ids: string[]) {
-  return ids.length === 0
-    ? of([])
-    : client.observable.fetch(`*[_id in $ids]._id`, {ids}, {tag: 'get-counterpart-ids'})
-}
-
-export function referenceSearch(
-  client: SanityClient,
-  textTerm: string,
-  type: ReferenceSchemaType,
-  options: ReferenceFilterSearchOptions,
-): Observable<ReferenceSearchHit[]> {
-  const search = createSearch(type.to, client, {
-    ...options,
-    maxDepth: options.maxFieldDepth || DEFAULT_MAX_FIELD_DEPTH,
-  })
-  return search(textTerm).pipe(
-    map(({hits}) => hits.map(({hit}) => hit)),
-    map((docs) =>
-      docs.map((doc) => ({
-        ...doc,
-        // Pass the original id if available, it could be a `draftId` or a `versionId` , the _id will be the published one when using perspectives to query the data.
-        _id: (doc._originalId as string) || doc._id,
-      })),
-    ),
-    map((docs) => collate(docs)),
-    // pick the 100 best matches
-    map((collated) => collated.slice(0, 100)),
-    mergeMap((collated) => {
-      // Note: It might seem like this step is redundant, but it's here for a reason:
-      // The list of search hits returned from here will be passed as options to the reference input's autocomplete. When
-      // one of them gets selected by the user, it will then be passed as the argument to the `onChange` handler in the
-      // Reference Input. This handler will then look at the passed value to determine whether to make a link to a
-      // draft (using _strengthenOnPublish) or a published document.
-      //
-      // Without this step, in a case where both a draft and a published version exist but only the draft matches
-      // the search term, we'd end up making a reference with `_strengthenOnPublish: true`, when we instead should be
-      // making a normal reference to the published id
-      return getExistingCounterparts(client, getCounterpartIds(collated)).pipe(
-        map((existingCounterpartIds) => {
-          return collated.map((entry) => {
-            const draftId = getDraftId(entry.id)
-            return {
-              id: entry.id,
-              type: entry.type,
-              draft:
-                entry.draft || existingCounterpartIds.includes(draftId)
-                  ? {_id: draftId, _type: entry.type}
-                  : undefined,
-              published:
-                entry.published || existingCounterpartIds.includes(entry.id)
-                  ? {_id: entry.id, _type: entry.type}
-                  : undefined,
-            }
-          })
         }),
       )
     }),

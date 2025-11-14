@@ -54,7 +54,6 @@ export function ReferenceInput(props: ReferenceInputProps) {
     id,
     onPathFocus,
     value,
-    version,
     renderPreview,
     path,
     elementProps,
@@ -66,7 +65,6 @@ export function ReferenceInput(props: ReferenceInputProps) {
     path,
     schemaType,
     value,
-    version,
   })
 
   const [searchState, setSearchState] = useState<ReferenceSearchState>(INITIAL_SEARCH_STATE)

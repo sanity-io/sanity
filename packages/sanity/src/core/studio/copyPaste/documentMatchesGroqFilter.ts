@@ -5,24 +5,26 @@ import {type Source} from '../../config'
 import {resolveUserDefinedFilter} from '../../form/studio/inputs/reference/resolveUserDefinedFilter'
 import {isEmptyValue} from './utils'
 
-export async function documentMatchesGroqFilter(
-  rootDocumentValue: unknown,
-  referencedDocument: SanityDocument,
-  schemaTypeOptions: ReferenceOptions,
-  targetRootPath: Path,
-  getClient: Source['getClient'],
-): Promise<boolean> {
+export async function documentMatchesGroqFilter(ctx: {
+  rootDocumentValue: unknown
+  referencedDocument: SanityDocument
+  schemaTypeOptions: ReferenceOptions
+  targetRootPath: Path
+  getClient: Source['getClient']
+}): Promise<boolean> {
+  const {targetRootPath, rootDocumentValue, referencedDocument, getClient, schemaTypeOptions} = ctx
+
   // If no filter is provided, all documents match
   if (!schemaTypeOptions.filter) {
     return true
   }
 
-  const options = await resolveUserDefinedFilter(
-    schemaTypeOptions,
-    rootDocumentValue as SanityDocument,
-    targetRootPath,
+  const options = await resolveUserDefinedFilter({
+    options: schemaTypeOptions,
+    document: rootDocumentValue as SanityDocument,
+    valuePath: targetRootPath,
     getClient,
-  )
+  })
 
   if (!options.filter) {
     return true

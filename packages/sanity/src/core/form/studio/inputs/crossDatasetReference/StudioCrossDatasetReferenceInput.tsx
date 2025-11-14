@@ -36,7 +36,12 @@ async function resolveUserDefinedFilter(
   if (typeof options.filter === 'function') {
     const parentPath = valuePath.slice(0, -1)
     const parent = get(document, parentPath) as Record<string, unknown>
-    const resolvedFilter = await options.filter({document, parentPath, parent, getClient})
+    const resolvedFilter = await options.filter({
+      document,
+      parentPath,
+      parent,
+      getClient,
+    })
     return resolvedFilter
   }
 

@@ -32,7 +32,6 @@ interface Options {
   path: Path
   schemaType: ReferenceSchemaType
   value?: Reference
-  version?: string
 }
 
 export function useReferenceInput(options: Options) {
