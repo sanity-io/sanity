@@ -66,8 +66,12 @@ export function StudioRootErrorHandler(props: {children: ReactNode}) {
       }
 
       let eventId: string | undefined
+      // The run() wrapper instead of doing it inline in try/catch is because of the React Compiler not fully supporting the syntax yet
+      const run = () => {
+        eventId = errorReporter.reportError(event.error as unknown as Error)?.eventId
+      }
       try {
-        eventId = errorReporter.reportError(event.error)?.eventId
+        run()
       } catch (e) {
         e.message = `Encountered an additional error when reporting error: ${e.message}`
         console.error(e)

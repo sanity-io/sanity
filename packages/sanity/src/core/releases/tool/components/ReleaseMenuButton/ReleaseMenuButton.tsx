@@ -135,7 +135,8 @@ export const ReleaseMenuButton = ({
       }
       const actionValues = RELEASE_ACTION_MAP[action]
 
-      try {
+      // The .catch/.finally syntax instead of try/catch/finally is because of the React Compiler not fully supporting the syntax yet
+      const run = async () => {
         if (
           (action === 'archive' || action === 'delete') &&
           selectedReleaseId === getReleaseIdFromReleaseDocumentId(release._id)
@@ -170,28 +171,31 @@ export const ReleaseMenuButton = ({
             ),
           })
         }
-      } catch (actionError) {
-        if (isReleaseLimitError(actionError)) return
-
-        if (typeof actionValues.toastFailureI18nKey !== 'undefined') {
-          toast.push({
-            status: 'error',
-            title: (
-              <Text muted size={1}>
-                <Translate
-                  t={t}
-                  i18nKey={actionValues.toastFailureI18nKey}
-                  values={{title: releaseTitle, error: actionError.toString()}}
-                />
-              </Text>
-            ),
-          })
-        }
-        console.error(actionError)
-      } finally {
-        setIsPerformingOperation(false)
-        setSelectedAction(undefined)
       }
+      await run()
+        .catch((actionError) => {
+          if (isReleaseLimitError(actionError)) return
+
+          if (typeof actionValues.toastFailureI18nKey !== 'undefined') {
+            toast.push({
+              status: 'error',
+              title: (
+                <Text muted size={1}>
+                  <Translate
+                    t={t}
+                    i18nKey={actionValues.toastFailureI18nKey}
+                    values={{title: releaseTitle, error: actionError.toString()}}
+                  />
+                </Text>
+              ),
+            })
+          }
+          console.error(actionError)
+        })
+        .finally(() => {
+          setIsPerformingOperation(false)
+          setSelectedAction(undefined)
+        })
     },
     [
       releaseMenuDisabled,
@@ -272,14 +276,14 @@ export const ReleaseMenuButton = ({
     handleAction,
   ])
 
-  const handleOnButtonClick = () => {
+  const closePopover = useCallback(() => {
+    setOpenPopover(false)
+  }, [])
+
+  const handleOnButtonClick = useCallback(() => {
     if (openPopover) closePopover()
     else setOpenPopover(true)
-  }
-
-  const closePopover = () => {
-    setOpenPopover(false)
-  }
+  }, [closePopover, openPopover])
 
   useClickOutsideEvent(
     () => {
@@ -295,7 +299,7 @@ export const ReleaseMenuButton = ({
       if (!action) closePopover()
       setSelectedAction(action)
     },
-    [],
+    [closePopover],
   )
 
   // Create menu items for custom actions
@@ -317,7 +321,7 @@ export const ReleaseMenuButton = ({
         tooltipProps={action.title ? {content: action.title} : undefined}
       />
     ))
-  }, [customActionDescriptions, isPerformingOperation])
+  }, [customActionDescriptions, isPerformingOperation, closePopover])
 
   const hasCustomActions = customActions.length > 0
 

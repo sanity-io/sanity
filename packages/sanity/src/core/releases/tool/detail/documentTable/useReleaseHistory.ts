@@ -68,7 +68,8 @@ export function useReleaseHistory(
     }
 
     await acquireHistorySlot()
-    try {
+    // The run().catch().finally() syntax instead of try/catch/finally is because of the React Compiler not fully supporting the syntax yet
+    const run = async () => {
       const transactions = await getTransactionsLogs(client, versionId, {
         tag: 'sanity.studio.releases.documents.history',
         effectFormat: 'mendoza',
@@ -85,12 +86,15 @@ export function useReleaseHistory(
           transactions,
         }
       }
-    } catch (error) {
-      console.error('Failed to fetch or parse document history:', error)
-      if (!cancelledRef.current) setHistory([])
-    } finally {
-      releaseHistorySlot()
     }
+    await run()
+      .catch((error) => {
+        console.error('Failed to fetch or parse document history:', error)
+        if (!cancelledRef.current) setHistory([])
+      })
+      .finally(() => {
+        releaseHistorySlot()
+      })
   }, [versionId, releaseDocumentId, documentRevision, client])
 
   useEffect(() => {

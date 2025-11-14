@@ -85,16 +85,6 @@ export function PrimitiveField(props: {
     [member.name, member.field.schemaType, onChange],
   )
 
-  const validationError =
-    useMemo(
-      () =>
-        member.field.validation
-          .filter((item) => item.level === 'error')
-          .map((item) => item.message)
-          .join('\n'),
-      [member.field.validation],
-    ) || undefined
-
   const elementProps = useMemo(
     (): PrimitiveInputProps['elementProps'] => ({
       'onBlur': handleBlur,
@@ -124,6 +114,11 @@ export function PrimitiveField(props: {
   )
 
   const inputProps = useMemo((): Omit<PrimitiveInputProps, 'renderDefault'> => {
+    const validationError =
+      member.field.validation
+        .filter((item) => item.level === 'error')
+        .map((item) => item.message)
+        .join('\n') || undefined
     return {
       value: member.field.value as any,
       compareValue: member.field.compareValue,
@@ -159,45 +154,46 @@ export function PrimitiveField(props: {
     member.field.validation,
     member.field.presence,
     handleChange,
-    validationError,
     elementProps,
   ])
 
-  const renderedInput = useMemo(() => renderInput(inputProps), [inputProps, renderInput])
+  return (
+    <RenderField
+      actions={fieldActions}
+      changed={member.field.changed}
+      description={member.field.schemaType.description}
+      index={member.index}
+      inputId={member.field.id}
+      inputProps={inputProps as any}
+      level={member.field.level}
+      name={member.name}
+      path={member.field.path}
+      presence={member.field.presence}
+      schemaType={member.field.schemaType as any}
+      title={member.field.schemaType.title}
+      validation={member.field.validation}
+      value={member.field.value as any}
+      render={renderField}
+    >
+      <RenderInput {...inputProps} render={renderInput} />
+    </RenderField>
+  )
+}
 
-  const fieldProps = useMemo((): Omit<PrimitiveFieldProps, 'renderDefault'> => {
-    return {
-      actions: fieldActions,
-      changed: member.field.changed,
-      children: renderedInput,
-      description: member.field.schemaType.description,
-      index: member.index,
-      inputId: member.field.id,
-      inputProps: inputProps as any,
-      level: member.field.level,
-      name: member.name,
-      path: member.field.path,
-      presence: member.field.presence,
-      schemaType: member.field.schemaType as any,
-      title: member.field.schemaType.title,
-      validation: member.field.validation,
-      value: member.field.value as any,
-    }
-  }, [
-    fieldActions,
-    member.field.level,
-    member.field.value,
-    member.field.schemaType,
-    member.field.id,
-    member.field.path,
-    member.field.validation,
-    member.field.presence,
-    member.field.changed,
-    member.name,
-    member.index,
-    renderedInput,
-    inputProps,
-  ])
-
-  return <>{renderField(fieldProps)}</>
+// The RenderInput and RenderField wrappers workaround the strict refs checks in React Compiler
+function RenderInput({
+  render,
+  ...props
+}: Omit<PrimitiveInputProps, 'renderDefault'> & {
+  render: RenderInputCallback<PrimitiveInputProps>
+}) {
+  return render(props)
+}
+function RenderField({
+  render,
+  ...props
+}: Omit<PrimitiveFieldProps, 'renderDefault'> & {
+  render: RenderFieldCallback<PrimitiveFieldProps>
+}) {
+  return render(props)
 }
