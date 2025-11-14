@@ -3,7 +3,7 @@
   "type": "module",
   "main": "index.ts",
   "dependencies": {
-    "@sanity/client": "^7.11.0",
+    "@sanity/client": "^7.12.1",
     "@sanity/functions": "1.0.3"
   },
   "blueprintResourceItem": {
