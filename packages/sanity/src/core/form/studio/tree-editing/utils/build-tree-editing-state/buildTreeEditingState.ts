@@ -68,6 +68,12 @@ export function buildTreeEditingState(props: BuildTreeEditingStateProps): TreeEd
     return EMPTY_TREE_STATE
   }
 
+  // If the child array field has custom components.input, skip building dialog
+  const rootArraySchemaType = rootField.type as ArraySchemaType
+  if (rootArraySchemaType.components?.input) {
+    return EMPTY_TREE_STATE
+  }
+
   let relativePath: Path = []
   const breadcrumbs: DialogItem[] = []
 

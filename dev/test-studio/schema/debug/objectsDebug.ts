@@ -112,6 +112,12 @@ const animal = defineField({
                                       name: 'internationalizedArrayString',
                                       title: 'Internationalized array string',
                                     },
+
+                                    {
+                                      type: 'image',
+                                      name: 'imageChild',
+                                      title: 'Image',
+                                    },
                                   ],
                                 },
                               ],

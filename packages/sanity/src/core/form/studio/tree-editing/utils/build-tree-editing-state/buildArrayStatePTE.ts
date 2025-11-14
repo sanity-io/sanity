@@ -108,10 +108,8 @@ export function buildArrayStatePTE(props: BuildArrayStatePTEProps): {
 
     if (!blockSchemaType) return
 
-    // If the item schema type ITSELF has custom components.item, skip building
-    // array dialog for this block. This handles cases like internationalized arrays.
-    // NOTE: We only check the block type itself, NOT nested fields within it.
-    if (blockSchemaType.components?.item) {
+    // If the child array field has custom components.input, skip building dialog
+    if (blockSchemaType.components?.input) {
       return
     }
 
@@ -184,9 +182,15 @@ export function buildArrayStatePTE(props: BuildArrayStatePTEProps): {
             if (itemSchemaType && isReferenceSchemaType(itemSchemaType)) return
           }
 
-          // Use openPath as relativePath for more precise targeting
-          // meaning that we in fact want to go deeper into the nested structure
-          relativePath = getRelativePath(openPath)
+          if (
+            isObjectSchemaType(blockField.type) &&
+            isArrayItemSelected(blockFieldPath, openPath)
+          ) {
+            // Use openPath as relativePath for more precise targeting
+            // meaning that we in fact want to go deeper into the nested structure
+            relativePath = getRelativePath(openPath)
+          }
+
           // Process array fields even if they're empty (for new blocks)
           // But ensure the value is at least an empty array for processing
           const arrayFieldValue = Array.isArray(blockFieldValue) ? blockFieldValue : []

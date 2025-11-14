@@ -94,10 +94,8 @@ export function buildArrayState(props: BuildArrayState): TreeEditingState {
     // Skip references early, references are handled by the reference input and shouldn't open the enhanced dialog
     if (isReferenceSchemaType(itemSchemaField)) return
 
-    // If the item schema type itself has custom components.item, skip building
-    // Array dialog for this item. This handles cases like internationalized arrays.
-    // NOTE: We only check the item type itself, NOT nested fields within it.
-    if (itemSchemaField.components?.item) {
+    // If the child array field has custom components.input, skip building dialog
+    if (itemSchemaField.components?.input) {
       return
     }
 
@@ -179,6 +177,14 @@ export function buildArrayState(props: BuildArrayState): TreeEditingState {
           // Skip references early, references are handled by the reference input and shouldn't open the enhanced dialog
           if (isReferenceSchemaType(nestedArrayField.type)) return
 
+          // If the child array field has custom components.input, skip building dialog
+          if (isArrayOfObjectsSchemaType(nestedArrayField.type)) {
+            const nestedArraySchemaType = nestedArrayField.type as ArraySchemaType
+            if (nestedArraySchemaType.components?.input) {
+              return
+            }
+          }
+
           // Update the relative path if the array field is selected.
           if (isArrayItemSelected(fieldPath, openPath)) {
             relativePath = getRelativePath(fieldPath)
@@ -228,6 +234,12 @@ export function buildArrayState(props: BuildArrayState): TreeEditingState {
 
       // Handle regular arrays of objects (not portable text)
       if (IsArrayOfObjects) {
+        // If the child array field has custom components.input, skip building dialog
+        const childArraySchemaType = childField.type as ArraySchemaType
+        if (childArraySchemaType.components?.input) {
+          return
+        }
+
         const childArray = Array.isArray(childValue) ? childValue : []
 
         // Check if any item in this array is selected and update the index
