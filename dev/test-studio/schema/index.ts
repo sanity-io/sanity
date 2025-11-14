@@ -82,6 +82,7 @@ import uploads from './debug/uploads'
 import validation, {validationArraySuperType} from './debug/validation'
 import {virtualizationDebug} from './debug/virtualizationDebug'
 import {virtualizationInObject} from './debug/virtualizationInObject'
+import {expression} from './decideSchema/expressionSchema'
 import {v3docs} from './docs/v3'
 import markdown from './externalPlugins/markdown'
 import mux from './externalPlugins/mux'
@@ -162,6 +163,7 @@ const codeInputType = {
 
 export function createSchemaTypes(projectId: string) {
   return [
+    expression,
     // Test documents with standard inputs
     arrays,
     topLevelArrayType,
