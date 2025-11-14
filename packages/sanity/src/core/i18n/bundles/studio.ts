@@ -811,6 +811,9 @@ export const studioLocaleStrings = defineLocalesResources('studio', {
   /** Gotcha: Serving vector images with hotspot and crop from the Sanity Image API */
   'inputs.imagetool.vector-warning.title':
     "Warning: Hotspot and crop might not be applied to this image where it's presented.",
+  /** Internal form decorator description for the default input, it requires always a custom input */
+  'inputs.internal-form-decorator':
+    'To use this field you need to provide a custom input component',
   /** Convert to `{{targetType}}` */
   'inputs.invalid-value.convert-button.text': 'Convert to {{targetType}}',
   /** The current value (<code>`{{actualType}}`</code>) */

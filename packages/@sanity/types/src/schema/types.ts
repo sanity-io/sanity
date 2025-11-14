@@ -52,6 +52,7 @@ export type SchemaType =
   | ObjectSchemaType
   | StringSchemaType
   | ReferenceSchemaType
+  | InternalFormDecoratorSchemaType
 
 /** @public */
 export interface SchemaValidationError {
@@ -263,6 +264,11 @@ export interface StringSchemaType extends BaseSchemaType {
 /** @public */
 export interface TextSchemaType extends StringSchemaType {
   rows?: number
+}
+
+/** @public */
+export interface InternalFormDecoratorSchemaType extends BaseSchemaType {
+  jsonType: 'null'
 }
 
 /** @public */
