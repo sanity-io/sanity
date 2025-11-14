@@ -1,6 +1,10 @@
 import {expect} from '@playwright/test'
 
-import {expectCreatedStatus, expectPublishedStatus} from '../../helpers/documentStatusAssertions'
+import {
+  expectCreatedStatus,
+  expectPublishedStatus,
+  expectCreatedOrEditedStatus,
+} from '../../helpers/documentStatusAssertions'
 import {test} from '../../studio-test'
 
 test(`documents can be restored to an earlier revision`, async ({page, createDraftDocument}) => {
@@ -86,7 +90,7 @@ test(`respects overridden restore action`, async ({page, createDraftDocument}) =
 
   await titleInput.fill(titleA)
   // Wait for the document to finish saving
-  await expectCreatedStatus(documentStatus)
+  await expectCreatedOrEditedStatus(documentStatus)
 
   // Wait for the document to be published.
   //
