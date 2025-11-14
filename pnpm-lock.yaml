@@ -311,8 +311,8 @@ importers:
         specifier: ^17.0.34
         version: 17.0.34
       babel-plugin-react-compiler:
-        specifier: 19.1.0-rc.3
-        version: 19.1.0-rc.3
+        specifier: 1.0.0
+        version: 1.0.0
       chalk:
         specifier: ^4.1.2
         version: 4.1.2
@@ -399,8 +399,8 @@ importers:
         specifier: workspace:*
         version: link:../../packages/@sanity/vision
       babel-plugin-react-compiler:
-        specifier: 19.1.0-rc.3
-        version: 19.1.0-rc.3
+        specifier: 1.0.0
+        version: 1.0.0
       react:
         specifier: 'catalog:'
         version: 19.2.0
@@ -458,8 +458,8 @@ importers:
   dev/starter-studio:
     dependencies:
       babel-plugin-react-compiler:
-        specifier: 19.1.0-rc.3
-        version: 19.1.0-rc.3
+        specifier: 1.0.0
+        version: 1.0.0
       react:
         specifier: 'catalog:'
         version: 19.2.0
@@ -528,8 +528,8 @@ importers:
         specifier: workspace:*
         version: link:../../packages/@sanity/vision
       babel-plugin-react-compiler:
-        specifier: 19.1.0-rc.3
-        version: 19.1.0-rc.3
+        specifier: 1.0.0
+        version: 1.0.0
       react:
         specifier: 'catalog:'
         version: 19.2.0
@@ -735,8 +735,8 @@ importers:
         specifier: workspace:*
         version: link:../../packages/@repo/eslint-config
       babel-plugin-react-compiler:
-        specifier: 19.1.0-rc.3
-        version: 19.1.0-rc.3
+        specifier: 1.0.0
+        version: 1.0.0
       eslint:
         specifier: 'catalog:'
         version: 9.39.0(jiti@2.6.1)
@@ -907,7 +907,7 @@ importers:
         version: link:../tsconfig
       '@sanity/pkg-utils':
         specifier: 'catalog:'
-        version: 8.1.29(@types/babel__core@7.20.5)(@types/node@24.6.1)(babel-plugin-macros@3.1.0)(babel-plugin-react-compiler@19.1.0-rc.3)(oxc-resolver@11.8.4)(typescript@5.9.3)
+        version: 8.1.29(@types/babel__core@7.20.5)(@types/node@24.6.1)(babel-plugin-macros@3.1.0)(babel-plugin-react-compiler@1.0.0)(debug@4.4.3)(oxc-resolver@11.8.4)(typescript@5.9.3)
       '@types/node':
         specifier: 'catalog:'
         version: 24.6.1
@@ -1129,7 +1129,7 @@ importers:
         version: 3.0.0
       '@sanity/pkg-utils':
         specifier: 'catalog:'
-        version: 8.1.29(@types/babel__core@7.20.5)(@types/node@24.6.1)(babel-plugin-macros@3.1.0)(babel-plugin-react-compiler@19.1.0-rc.3)(debug@4.4.3)(oxc-resolver@11.8.4)(typescript@5.9.3)
+        version: 8.1.29(@types/babel__core@7.20.5)(@types/node@24.6.1)(babel-plugin-macros@3.1.0)(babel-plugin-react-compiler@1.0.0)(debug@4.4.3)(oxc-resolver@11.8.4)(typescript@5.9.3)
       '@sanity/types':
         specifier: workspace:*
         version: link:../types
@@ -1176,8 +1176,8 @@ importers:
         specifier: 4.1.3
         version: 4.1.3
       babel-plugin-react-compiler:
-        specifier: 19.1.0-rc.3
-        version: 19.1.0-rc.3
+        specifier: 1.0.0
+        version: 1.0.0
       boxen:
         specifier: ^4.2.0
         version: 4.2.0
@@ -1337,7 +1337,7 @@ importers:
         version: link:../../@repo/tsconfig
       '@sanity/pkg-utils':
         specifier: 'catalog:'
-        version: 8.1.29(@types/babel__core@7.20.5)(@types/node@24.6.1)(babel-plugin-macros@3.1.0)(babel-plugin-react-compiler@19.1.0-rc.3)(debug@4.4.3)(oxc-resolver@11.8.4)(typescript@5.9.3)
+        version: 8.1.29(@types/babel__core@7.20.5)(@types/node@24.6.1)(babel-plugin-macros@3.1.0)(babel-plugin-react-compiler@1.0.0)(debug@4.4.3)(oxc-resolver@11.8.4)(typescript@5.9.3)
       '@types/babel__core':
         specifier: ^7.20.5
         version: 7.20.5
@@ -1383,7 +1383,7 @@ importers:
         version: link:../../@repo/tsconfig
       '@sanity/pkg-utils':
         specifier: 'catalog:'
-        version: 8.1.29(@types/babel__core@7.20.5)(@types/node@24.6.1)(babel-plugin-macros@3.1.0)(babel-plugin-react-compiler@19.1.0-rc.3)(oxc-resolver@11.8.4)(typescript@5.9.3)
+        version: 8.1.29(@types/babel__core@7.20.5)(@types/node@24.6.1)(babel-plugin-macros@3.1.0)(babel-plugin-react-compiler@1.0.0)(debug@4.4.3)(oxc-resolver@11.8.4)(typescript@5.9.3)
       eslint:
         specifier: 'catalog:'
         version: 9.39.0(jiti@2.6.1)
@@ -1435,7 +1435,7 @@ importers:
         version: link:../../@repo/tsconfig
       '@sanity/pkg-utils':
         specifier: 'catalog:'
-        version: 8.1.29(@types/babel__core@7.20.5)(@types/node@24.6.1)(babel-plugin-macros@3.1.0)(babel-plugin-react-compiler@19.1.0-rc.3)(debug@4.4.3)(oxc-resolver@11.8.4)(typescript@5.9.3)
+        version: 8.1.29(@types/babel__core@7.20.5)(@types/node@24.6.1)(babel-plugin-macros@3.1.0)(babel-plugin-react-compiler@1.0.0)(debug@4.4.3)(oxc-resolver@11.8.4)(typescript@5.9.3)
       '@types/debug':
         specifier: ^4.1.12
         version: 4.1.12
@@ -1481,7 +1481,7 @@ importers:
         version: link:../../@repo/tsconfig
       '@sanity/pkg-utils':
         specifier: 'catalog:'
-        version: 8.1.29(@types/babel__core@7.20.5)(@types/node@24.6.1)(babel-plugin-macros@3.1.0)(babel-plugin-react-compiler@19.1.0-rc.3)(debug@4.4.3)(oxc-resolver@11.8.4)(typescript@5.9.3)
+        version: 8.1.29(@types/babel__core@7.20.5)(@types/node@24.6.1)(babel-plugin-macros@3.1.0)(babel-plugin-react-compiler@1.0.0)(debug@4.4.3)(oxc-resolver@11.8.4)(typescript@5.9.3)
       '@types/debug':
         specifier: ^4.1.12
         version: 4.1.12
@@ -1548,7 +1548,7 @@ importers:
         version: 3.7.4(react@19.2.0)
       '@sanity/pkg-utils':
         specifier: 'catalog:'
-        version: 8.1.29(@types/babel__core@7.20.5)(@types/node@24.6.1)(babel-plugin-macros@3.1.0)(babel-plugin-react-compiler@19.1.0-rc.3)(oxc-resolver@11.8.4)(typescript@5.9.3)
+        version: 8.1.29(@types/babel__core@7.20.5)(@types/node@24.6.1)(babel-plugin-macros@3.1.0)(babel-plugin-react-compiler@1.0.0)(debug@4.4.3)(oxc-resolver@11.8.4)(typescript@5.9.3)
       '@types/lodash':
         specifier: ^4.17.20
         version: 4.17.20
@@ -1594,7 +1594,7 @@ importers:
         version: 2.1.0(@emotion/is-prop-valid@1.4.0)(@sanity/types@packages+@sanity+types)(react-dom@19.2.0(react@19.2.0))(react-is@19.2.0)(react@19.2.0)(styled-components@6.1.19(react-dom@19.2.0(react@19.2.0))(react@19.2.0))
       '@sanity/pkg-utils':
         specifier: 'catalog:'
-        version: 8.1.29(@types/babel__core@7.20.5)(@types/node@24.6.1)(babel-plugin-macros@3.1.0)(babel-plugin-react-compiler@19.1.0-rc.3)(oxc-resolver@11.8.4)(typescript@5.9.3)
+        version: 8.1.29(@types/babel__core@7.20.5)(@types/node@24.6.1)(babel-plugin-macros@3.1.0)(babel-plugin-react-compiler@1.0.0)(debug@4.4.3)(oxc-resolver@11.8.4)(typescript@5.9.3)
       '@types/react':
         specifier: 'catalog:'
         version: 19.2.2
@@ -1649,7 +1649,7 @@ importers:
         version: link:../../@repo/tsconfig
       '@sanity/pkg-utils':
         specifier: 'catalog:'
-        version: 8.1.29(@types/babel__core@7.20.5)(@types/node@24.6.1)(babel-plugin-macros@3.1.0)(babel-plugin-react-compiler@19.1.0-rc.3)(oxc-resolver@11.8.4)(typescript@5.9.3)
+        version: 8.1.29(@types/babel__core@7.20.5)(@types/node@24.6.1)(babel-plugin-macros@3.1.0)(babel-plugin-react-compiler@1.0.0)(debug@4.4.3)(oxc-resolver@11.8.4)(typescript@5.9.3)
       '@types/node':
         specifier: 'catalog:'
         version: 24.6.1
@@ -1729,8 +1729,8 @@ importers:
         specifier: ^5.1.1
         version: 5.1.1
       react-compiler-runtime:
-        specifier: 19.1.0-rc.3
-        version: 19.1.0-rc.3(react@19.2.0)
+        specifier: 1.0.0
+        version: 1.0.0(react@19.2.0)
       react-fast-compare:
         specifier: ^3.2.2
         version: 3.2.2
@@ -1767,7 +1767,7 @@ importers:
         version: 2.0.0(eslint@9.39.0(jiti@2.6.1))
       '@sanity/pkg-utils':
         specifier: 'catalog:'
-        version: 8.1.29(@types/babel__core@7.20.5)(@types/node@24.6.1)(babel-plugin-macros@3.1.0)(babel-plugin-react-compiler@19.1.0-rc.3)(oxc-resolver@11.8.4)(typescript@5.9.3)
+        version: 8.1.29(@types/babel__core@7.20.5)(@types/node@24.6.1)(babel-plugin-macros@3.1.0)(babel-plugin-react-compiler@1.0.0)(debug@4.4.3)(oxc-resolver@11.8.4)(typescript@5.9.3)
       '@testing-library/react':
         specifier: ^16.3.0
         version: 16.3.0(@testing-library/dom@10.4.1)(@types/react-dom@19.2.2(@types/react@19.2.2))(@types/react@19.2.2)(react-dom@19.2.0(react@19.2.0))(react@19.2.0)
@@ -1781,8 +1781,8 @@ importers:
         specifier: 'catalog:'
         version: 4.7.0(vite@7.1.12(@types/node@24.6.1)(jiti@2.6.1)(lightningcss@1.30.2)(terser@5.44.0)(tsx@4.20.6)(yaml@2.8.1))
       babel-plugin-react-compiler:
-        specifier: 19.1.0-rc.3
-        version: 19.1.0-rc.3
+        specifier: 1.0.0
+        version: 1.0.0
       eslint:
         specifier: 'catalog:'
         version: 9.39.0(jiti@2.6.1)
@@ -1837,7 +1837,7 @@ importers:
         version: link:../@repo/tsconfig
       '@sanity/pkg-utils':
         specifier: 'catalog:'
-        version: 8.1.29(@types/babel__core@7.20.5)(@types/node@24.6.1)(babel-plugin-macros@3.1.0)(babel-plugin-react-compiler@19.1.0-rc.3)(oxc-resolver@11.8.4)(typescript@5.9.3)
+        version: 8.1.29(@types/babel__core@7.20.5)(@types/node@24.6.1)(babel-plugin-macros@3.1.0)(babel-plugin-react-compiler@1.0.0)(debug@4.4.3)(oxc-resolver@11.8.4)(typescript@5.9.3)
       '@types/node':
         specifier: 'catalog:'
         version: 24.6.1
@@ -2184,8 +2184,8 @@ importers:
         specifier: ^3.4.1
         version: 3.4.1
       react-compiler-runtime:
-        specifier: 19.1.0-rc.3
-        version: 19.1.0-rc.3(react@19.2.0)
+        specifier: 1.0.0
+        version: 1.0.0(react@19.2.0)
       react-fast-compare:
         specifier: ^3.2.2
         version: 3.2.2
@@ -2321,7 +2321,7 @@ importers:
         version: 3.0.0
       '@sanity/pkg-utils':
         specifier: 'catalog:'
-        version: 8.1.29(@types/babel__core@7.20.5)(@types/node@24.6.1)(babel-plugin-macros@3.1.0)(babel-plugin-react-compiler@19.1.0-rc.3)(debug@4.4.3)(oxc-resolver@11.8.4)(typescript@5.9.3)
+        version: 8.1.29(@types/babel__core@7.20.5)(@types/node@24.6.1)(babel-plugin-macros@3.1.0)(babel-plugin-react-compiler@1.0.0)(debug@4.4.3)(oxc-resolver@11.8.4)(typescript@5.9.3)
       '@sanity/ui-workshop':
         specifier: 'catalog:'
         version: 3.4.0(@sanity/ui@3.1.11(@emotion/is-prop-valid@1.4.0)(react-dom@19.2.0(react@19.2.0))(react-is@19.2.0)(react@19.2.0)(styled-components@6.1.19(react-dom@19.2.0(react@19.2.0))(react@19.2.0)))(@types/node@24.6.1)(babel-plugin-macros@3.1.0)(jiti@2.6.1)(lightningcss@1.30.2)(react-dom@19.2.0(react@19.2.0))(react@19.2.0)(terser@5.44.0)(tsx@4.20.6)(yaml@2.8.1)
@@ -2389,8 +2389,8 @@ importers:
         specifier: ^3.2.4
         version: 3.2.4
       babel-plugin-react-compiler:
-        specifier: 19.1.0-rc.3
-        version: 19.1.0-rc.3
+        specifier: 1.0.0
+        version: 1.0.0
       blob-polyfill:
         specifier: ^9.0.20240710
         version: 9.0.20240710
@@ -2470,8 +2470,8 @@ importers:
   perf/studio:
     dependencies:
       babel-plugin-react-compiler:
-        specifier: 19.1.0-rc.3
-        version: 19.1.0-rc.3
+        specifier: 1.0.0
+        version: 1.0.0
       react:
         specifier: 'catalog:'
         version: 19.2.0
@@ -3283,6 +3283,9 @@ packages:
 
   '@codemirror/lint@6.9.1':
     resolution: {integrity: sha512-te7To1EQHePBQQzasDKWmK2xKINIXpk+xAiSYr9ZN+VB4KaT+/Hi2PEkeErTk5BV3PTz1TLyQL4MtJfPkKZ9sw==}
+
+  '@codemirror/lint@6.9.2':
+    resolution: {integrity: sha512-sv3DylBiIyi+xKwRCJAAsBZZZWo82shJ/RTMymLabAdtbkV5cSKwWDeCgtUq3v8flTaXS2y1kKkICuRYtUswyQ==}
 
   '@codemirror/search@6.5.11':
     resolution: {integrity: sha512-KmWepDE6jUdL6n8cAAqIpRmLPBZ5ZKnicE8oGU/s3QrAVID+0VhLFrzUucVKHG5035/BSykhExDL/Xm7dHthiA==}
@@ -6778,8 +6781,8 @@ packages:
     peerDependencies:
       '@babel/core': ^7.4.0 || ^8.0.0-0 <8.0.0
 
-  babel-plugin-react-compiler@19.1.0-rc.3:
-    resolution: {integrity: sha512-mjRn69WuTz4adL0bXGx8Rsyk1086zFJeKmes6aK0xPuK3aaXmDJdLHqwKKMrpm6KAI1MCoUK72d2VeqQbu8YIA==}
+  babel-plugin-react-compiler@1.0.0:
+    resolution: {integrity: sha512-Ixm8tFfoKKIPYdCCKYTsqv+Fd4IJ0DQqMyEimo+pxUOMUR9cVPlwTrFt9Avu+3cb6Zp3mAzl+t1MrG2fxxKsxw==}
 
   babel-plugin-styled-components@2.1.4:
     resolution: {integrity: sha512-Xgp9g+A/cG47sUyRwwYxGM4bR/jDRg5N6it/8+HxCnbT5XNKSKDT9xm4oag/osgqjC2It/vH0yXsomOG6k558g==}
@@ -11028,11 +11031,6 @@ packages:
     peerDependencies:
       react: ^17.0.0 || ^18.0.0 || ^19.0.0 || ^0.0.0-experimental
 
-  react-compiler-runtime@19.1.0-rc.3:
-    resolution: {integrity: sha512-Cssogys2XZu6SqxRdX2xd8cQAf57BBvFbLEBlIa77161lninbKUn/EqbecCe7W3eqDQfg3rIoOwzExzgCh7h/g==}
-    peerDependencies:
-      react: ^17.0.0 || ^18.0.0 || ^19.0.0 || ^0.0.0-experimental
-
   react-dom@18.3.1:
     resolution: {integrity: sha512-5m4nQKp+rZRb09LNH59GM4BxTh9251/ylbKIbpe7TpGxfJ+9kv6BLkLBXIjjspbgbnIBNqlI23tRnTWT0snUIw==}
     peerDependencies:
@@ -14133,6 +14131,12 @@ snapshots:
       '@codemirror/view': 6.38.6
       crelt: 1.0.6
 
+  '@codemirror/lint@6.9.2':
+    dependencies:
+      '@codemirror/state': 6.5.2
+      '@codemirror/view': 6.38.6
+      crelt: 1.0.6
+
   '@codemirror/search@6.5.11':
     dependencies:
       '@codemirror/state': 6.5.2
@@ -16378,7 +16382,7 @@ snapshots:
       - '@types/react'
       - supports-color
 
-  '@sanity/pkg-utils@8.1.29(@types/babel__core@7.20.5)(@types/node@24.6.1)(babel-plugin-macros@3.1.0)(babel-plugin-react-compiler@19.1.0-rc.3)(debug@4.4.3)(oxc-resolver@11.8.4)(typescript@5.9.3)':
+  '@sanity/pkg-utils@8.1.29(@types/babel__core@7.20.5)(@types/node@24.6.1)(babel-plugin-macros@3.1.0)(babel-plugin-react-compiler@1.0.0)(debug@4.4.3)(oxc-resolver@11.8.4)(typescript@5.9.3)':
     dependencies:
       '@babel/core': 7.28.5
       '@babel/parser': 7.28.5
@@ -16427,68 +16431,7 @@ snapshots:
       zod: 4.1.12
       zod-validation-error: 4.0.2(zod@4.1.12)
     optionalDependencies:
-      babel-plugin-react-compiler: 19.1.0-rc.3
-    transitivePeerDependencies:
-      - '@ts-macro/tsc'
-      - '@types/babel__core'
-      - '@types/node'
-      - '@typescript/native-preview'
-      - babel-plugin-macros
-      - debug
-      - oxc-resolver
-      - supports-color
-      - vue-tsc
-
-  '@sanity/pkg-utils@8.1.29(@types/babel__core@7.20.5)(@types/node@24.6.1)(babel-plugin-macros@3.1.0)(babel-plugin-react-compiler@19.1.0-rc.3)(oxc-resolver@11.8.4)(typescript@5.9.3)':
-    dependencies:
-      '@babel/core': 7.28.5
-      '@babel/parser': 7.28.5
-      '@babel/preset-typescript': 7.28.5(@babel/core@7.28.5)
-      '@babel/types': 7.28.5
-      '@microsoft/api-extractor': 7.53.3(@types/node@24.6.1)
-      '@microsoft/tsdoc-config': 0.17.1
-      '@optimize-lodash/rollup-plugin': 5.0.2(rollup@4.52.5)
-      '@rollup/plugin-alias': 5.1.1(rollup@4.52.5)
-      '@rollup/plugin-babel': 6.1.0(@babel/core@7.28.5)(@types/babel__core@7.20.5)(rollup@4.52.5)
-      '@rollup/plugin-commonjs': 29.0.0(rollup@4.52.5)
-      '@rollup/plugin-json': 6.1.0(rollup@4.52.5)
-      '@rollup/plugin-node-resolve': 16.0.3(rollup@4.52.5)
-      '@rollup/plugin-replace': 6.0.3(rollup@4.52.5)
-      '@rollup/plugin-terser': 0.4.4(rollup@4.52.5)
-      '@sanity/browserslist-config': 1.0.5
-      '@vanilla-extract/rollup-plugin': 1.4.1(babel-plugin-macros@3.1.0)(rollup@4.52.5)
-      browserslist: 4.27.0
-      cac: 6.7.14
-      chalk: 5.6.2
-      chokidar: 4.0.3
-      esbuild: 0.25.12
-      find-config: 1.0.0
-      get-latest-version: 5.1.0(debug@4.4.3)
-      git-url-parse: 16.1.0
-      globby: 15.0.0
-      jsonc-parser: 3.3.1
-      lightningcss: 1.30.2
-      mkdirp: 3.0.1
-      outdent: 0.8.0
-      package-up: 5.0.0
-      prettier: 3.6.2
-      pretty-bytes: 7.1.0
-      prompts: 2.4.2
-      recast: 0.23.11
-      rimraf: 6.1.0
-      rolldown: 1.0.0-beta.45
-      rolldown-plugin-dts: 0.17.3(oxc-resolver@11.8.4)(rolldown@1.0.0-beta.45)(typescript@5.9.3)
-      rollup: 4.52.5
-      rollup-plugin-esbuild: 6.2.1(esbuild@0.25.12)(rollup@4.52.5)
-      rxjs: 7.8.2
-      treeify: 1.1.0
-      tsx: 4.20.6
-      typescript: 5.9.3
-      uuid: 13.0.0
-      zod: 4.1.12
-      zod-validation-error: 4.0.2(zod@4.1.12)
-    optionalDependencies:
-      babel-plugin-react-compiler: 19.1.0-rc.3
+      babel-plugin-react-compiler: 1.0.0
     transitivePeerDependencies:
       - '@ts-macro/tsc'
       - '@types/babel__core'
@@ -18335,7 +18278,7 @@ snapshots:
     transitivePeerDependencies:
       - supports-color
 
-  babel-plugin-react-compiler@19.1.0-rc.3:
+  babel-plugin-react-compiler@1.0.0:
     dependencies:
       '@babel/types': 7.28.5
 
@@ -18788,7 +18731,7 @@ snapshots:
       '@codemirror/autocomplete': 6.19.1
       '@codemirror/commands': 6.10.0
       '@codemirror/language': 6.11.3
-      '@codemirror/lint': 6.9.1
+      '@codemirror/lint': 6.9.2
       '@codemirror/search': 6.5.11
       '@codemirror/state': 6.5.2
       '@codemirror/view': 6.38.6
@@ -22973,10 +22916,6 @@ snapshots:
       react: 19.2.0
 
   react-compiler-runtime@19.1.0-rc.2(react@19.2.0):
-    dependencies:
-      react: 19.2.0
-
-  react-compiler-runtime@19.1.0-rc.3(react@19.2.0):
     dependencies:
       react: 19.2.0
 
