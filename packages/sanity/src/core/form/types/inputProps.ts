@@ -228,6 +228,39 @@ export interface ArrayOfObjectsInputProps<
    * @beta */
   onItemMove: (event: ArrayInputMoveItemEvent) => void
 
+  selectActive?: boolean
+  /**
+   * @hidden
+   * @beta */
+  selectedItemKeys: string[]
+  /**
+   * @hidden
+   * @beta */
+  onItemSelect: (
+    itemKey: string,
+    options?: {shiftKey?: boolean; metaKey?: boolean; force?: boolean},
+  ) => void
+
+  onSelectAll: () => void
+  onSelectNone: () => void
+
+  /**
+   * @hidden
+   * @beta */
+  onItemUnselect: (itemKey: string) => void
+
+  /**
+   * @hidden
+   * @beta */
+  onSelectedItemsRemove: () => void
+
+  /**
+   * @hidden
+   * @beta */
+  onSelectBegin: () => void
+
+  onSelectEnd: () => void
+
   /**
    * @hidden
    * @beta */

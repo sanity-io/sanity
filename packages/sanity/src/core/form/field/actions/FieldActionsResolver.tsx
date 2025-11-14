@@ -46,10 +46,12 @@ export const FieldActionsResolver = memo(function FieldActionsResolver(props: Fi
 
   const fieldActionsRef = useRef(fieldActions)
 
-  const setFieldAction = useCallback((index: number, node: DocumentFieldActionNode) => {
+  const setFieldAction = useCallback((index: number, node: DocumentFieldActionNode | undefined) => {
     setFieldActions((prev) => {
       const next = [...prev]
-      next[index] = node
+      if (node) {
+        next[index] = node
+      }
       return next
     })
   }, [])
@@ -117,7 +119,7 @@ function defineFieldActionComponent({
   index: number
   path: Path
   schemaType: SchemaType
-  setFieldAction: (index: number, node: DocumentFieldActionNode) => void
+  setFieldAction: (index: number, node: DocumentFieldActionNode | undefined) => void
 }) {
   const {useAction} = action
   return memo(function FieldAction() {
@@ -130,7 +132,7 @@ function defineFieldActionComponent({
     const node = useUnique(_action)
 
     useEffect(() => {
-      setFieldAction(index, node)
+      setFieldAction(index, node || undefined)
     }, [node])
 
     return null

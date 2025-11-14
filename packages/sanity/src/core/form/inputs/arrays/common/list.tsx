@@ -52,7 +52,7 @@ const AUTO_SCROLL_OPTIONS: AutoScrollOptions = {
     y: 0.02,
   },
 }
-const SENSOR_OPTIONS: SensorOptions = {
+const KEYBOARD_SENSOR_OPTIONS: SensorOptions = {
   coordinateGetter: sortableKeyboardCoordinates,
 }
 
@@ -69,11 +69,18 @@ function restrictToAxis(axis: Axis) {
 function sortingStrategy(axis: Axis) {
   return axis === 'x' ? horizontalListSortingStrategy : verticalListSortingStrategy
 }
-
+const POINTER_SENSOR_OPTIONS = {
+  activationConstraint: {
+    distance: 8,
+  },
+}
 const SortableList = memo(function SortableList(props: ListProps) {
   const {items, axis, onItemMove, onItemMoveStart, onItemMoveEnd, children, ...rest} = props
 
-  const sensors = useSensors(useSensor(PointerSensor), useSensor(KeyboardSensor, SENSOR_OPTIONS))
+  const sensors = useSensors(
+    useSensor(PointerSensor, POINTER_SENSOR_OPTIONS),
+    useSensor(KeyboardSensor, KEYBOARD_SENSOR_OPTIONS),
+  )
 
   const handleDragEnd = useCallback(
     (event: DragEndEvent) => {

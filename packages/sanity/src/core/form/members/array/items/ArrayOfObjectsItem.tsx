@@ -40,6 +40,7 @@ import {createProtoValue} from '../../../utils/createProtoValue'
 import {ensureKey} from '../../../utils/ensureKey'
 import {createDescriptionId} from '../../common/createDescriptionId'
 import {resolveInitialArrayValues} from '../../common/resolveInitialArrayValues'
+import {useParentArrayInput} from '../../object/fields/ArrayOfObjectsField'
 
 /**
  *
@@ -90,6 +91,7 @@ export function ArrayOfObjectsItem(props: MemberItemProps) {
   const {onCopy} = useCopyPaste()
   const telemetry = useTelemetry()
   const {enabled: enhancedObjectDialogEnabled} = useEnhancedObjectDialog()
+  const {selectedItemKeys, active, onItemSelect, onItemUnselect} = useParentArrayInput(true)
 
   useDidUpdate(member.item.focused, (hadFocus, hasFocus) => {
     if (!hadFocus && hasFocus) {
@@ -296,6 +298,17 @@ export function ArrayOfObjectsItem(props: MemberItemProps) {
     onPathOpen(member.item.path)
   }, [enhancedObjectDialogEnabled, onPathOpen, member.item.path, telemetry])
 
+  const handleSelect = useCallback(
+    (options?: {shiftKey?: boolean; metaKey?: boolean; force?: boolean}) => {
+      onItemSelect(member.key, options)
+    },
+    [member.key, onItemSelect],
+  )
+
+  const handleUnselect = useCallback(() => {
+    onItemUnselect(member.key)
+  }, [member.key, onItemUnselect])
+
   const isEmptyValue = !member.item.value || isEmptyItem(member.item.value)
   const handleClose = useCallback(() => {
     if (isEmptyValue) {
@@ -417,6 +430,10 @@ export function ArrayOfObjectsItem(props: MemberItemProps) {
       collapsed: member.collapsed,
       schemaType: member.item.schemaType,
       parentSchemaType: member.parentSchemaType,
+      onSelect: handleSelect,
+      onUnselect: handleUnselect,
+      selected: selectedItemKeys.includes(member.key),
+      selectable: active,
       onInsert: handleInsert,
       onCopy: handleCopy,
       onRemove,
@@ -457,6 +474,10 @@ export function ArrayOfObjectsItem(props: MemberItemProps) {
     member.collapsed,
     member.parentSchemaType,
     member.open,
+    handleSelect,
+    handleUnselect,
+    selectedItemKeys,
+    active,
     handleInsert,
     handleCopy,
     onRemove,

@@ -1,7 +1,7 @@
 import {memo} from 'react'
 
 import {type FIXME} from '../../../FIXME'
-import {type FieldMember} from '../../store'
+import {type FieldMember, type PrimitiveFormNode} from '../../store'
 import {
   type RenderAnnotationCallback,
   type RenderArrayOfObjectsItemCallback,

@@ -82,7 +82,7 @@ export function ReferenceInputPreview(props: ReferenceInputProps & {children: Re
     ? schemaType.to.find((toType) => toType.name === refTypeName)
     : undefined
   const pressed = selectedState === 'pressed'
-  const selected = selectedState === 'selected'
+  const selected = selectedState === 'active'
 
   const hasRef = value?._ref
   const publishedReferenceExists = hasRef && loadableReferenceInfo.result?.isPublished
