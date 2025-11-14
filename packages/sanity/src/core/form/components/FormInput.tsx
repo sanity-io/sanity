@@ -47,24 +47,14 @@ export const FormInput = memo(function FormInput(
     return hasAbsolutePath(props) ? props.absolutePath : props.path.concat(props.relativePath)
   }, [props])
 
-  // TODO: Refactor this at some point in Studio v4
-  //
-  // renderBlock, renderInlineBlock and renderAnnotation
-  // was introduced as optional InputProps after the initial
-  // release of v3, in order to not introduce breaking changes.
-  // They are still required in this inner internal component.
-  // Ignoring string literal because it is a developer error
-  // eslint-disable-next-line i18next/no-literal-string
-  const nullRender = useCallback(() => <>Missing destination render function</>, [])
-
   return (
     <FormInputInner
       {...props}
       absolutePath={absolutePath}
-      destinationRenderAnnotation={props.renderAnnotation || nullRender}
-      destinationRenderBlock={props.renderBlock || nullRender}
+      destinationRenderAnnotation={props.renderAnnotation || NullRender}
+      destinationRenderBlock={props.renderBlock || NullRender}
       destinationRenderField={props.renderField}
-      destinationRenderInlineBlock={props.renderInlineBlock || nullRender}
+      destinationRenderInlineBlock={props.renderInlineBlock || NullRender}
       destinationRenderInput={props.renderInput}
       destinationRenderItem={props.renderItem}
       destinationRenderPreview={props.renderPreview}
@@ -75,7 +65,7 @@ export const FormInput = memo(function FormInput(
 /**
  * An input that takes input props for object or array and renders an input for a given sub-path
  */
-const FormInputInner = memo(function FormInputInner(
+function FormInputInner(
   props: (ArrayOfObjectsInputProps | ObjectInputProps) & {
     absolutePath: Path
     includeField?: boolean
@@ -290,4 +280,16 @@ const FormInputInner = memo(function FormInputInner(
   }
 
   throw new Error('FormInput can only be used with arrays or objects')
-})
+}
+
+// TODO: Refactor this at some point in Studio v4
+//
+// renderBlock, renderInlineBlock and renderAnnotation
+// was introduced as optional InputProps after the initial
+// release of v3, in order to not introduce breaking changes.
+// They are still required in this inner internal component.
+// Ignoring string literal because it is a developer error
+function NullRender() {
+  // eslint-disable-next-line i18next/no-literal-string
+  return <>Missing destination render function</>
+}

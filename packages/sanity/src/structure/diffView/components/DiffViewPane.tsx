@@ -128,6 +128,7 @@ export const DiffViewPane = forwardRef<HTMLDivElement, DiffViewPaneProps>(functi
                 <PortalProvider element={portalElement}>
                   <DialogProvider position="absolute">
                     <Container ref={containerElement} padding={4} width={1}>
+                      {/* eslint-disable-next-line react-hooks/static-components -- this is intentional and how the middleware components has to work */}
                       <DocumentLayout documentId={documentId} documentType={documentType} />
                     </Container>
                   </DialogProvider>

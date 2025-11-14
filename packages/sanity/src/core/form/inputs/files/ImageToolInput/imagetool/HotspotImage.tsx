@@ -90,7 +90,7 @@ export const HotspotImage = memo(function HotspotImage(props: HotspotImageProps)
       imageElement.src = imageElement.src
     }
 
-    updateContainerAspect()
+    startTransition(() => updateContainerAspect())
 
     window.addEventListener('resize', updateContainerAspect)
 

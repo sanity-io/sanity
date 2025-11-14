@@ -75,6 +75,10 @@ export class TimelineController {
 
   private _reconstruction?: Reconstruction
 
+  setHandler(handler: TimelineControllerOptions['handler']): void {
+    this.handler = handler
+  }
+
   clearRange(): void {
     this.setRange(null, null)
   }

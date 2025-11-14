@@ -1,4 +1,3 @@
-/* eslint-disable max-statements */
 import {useTelemetry} from '@sanity/telemetry/react'
 import {isIndexSegment, isKeySegment, type Path, type PathSegment} from '@sanity/types'
 import {useToast} from '@sanity/ui'
@@ -250,7 +249,8 @@ export const CopyPasteProvider: React.FC<{
       }
       copiedJsonTypes.push(sourceSchemaType.jsonType)
 
-      try {
+      // Workaround for try/catch not being fully supported by the React Compiler yet
+      const run = async () => {
         const {targetValue, errors} = await transferValue(transferValueOptions)
         const nonWarningErrors = errors.filter((error) => error.level !== 'warning')
         const _isEmptyValue = isEmptyValue(targetValue)
@@ -309,6 +309,9 @@ export const CopyPasteProvider: React.FC<{
             : [...prefixPatches, set(targetValue, targetPath)],
           targetSchemaTypeTitle,
         })
+      }
+      try {
+        await run()
       } catch (error) {
         toast.push({
           status: 'error',

@@ -1,15 +1,22 @@
 import {Box, Stack} from '@sanity/ui'
-import {Fragment, type HTMLAttributes, useCallback, useContext, useMemo, useState} from 'react'
+import {
+  Fragment,
+  type HTMLAttributes,
+  startTransition,
+  useCallback,
+  useContext,
+  useEffect,
+  useMemo,
+  useState,
+} from 'react'
 import {DiffContext} from 'sanity/_singletons'
 
 import {useDocumentOperation} from '../../../hooks'
-import {useTranslation} from '../../../i18n'
 import {usePerspective} from '../../../perspective/usePerspective'
 import {useDocumentPairPermissions} from '../../../store'
 import {pathsAreEqual} from '../../paths'
 import {type GroupChangeNode} from '../../types'
 import {isPTSchemaType} from '../../types/portableText/diff'
-import {useHover} from '../../utils/useHover'
 import {undoChange} from '../changes/undoChange'
 import {isFieldChange} from '../helpers'
 import {useDocumentChange} from '../hooks'
@@ -37,14 +44,22 @@ export function GroupChange(
     rootDiff,
     isComparingCurrent,
   } = useDocumentChange()
-  const {t} = useTranslation()
 
   const isPortableText = changes.every(
     (change) => isFieldChange(change) && isPTSchemaType(change.schemaType),
   )
 
   const isNestedInDiff = pathsAreEqual(diffPath, groupPath)
-  const [revertButtonRef, isRevertButtonHovered] = useHover<HTMLButtonElement>()
+  const [revertButtonElement, _setRevertButtonElement] = useState<HTMLButtonElement | null>(null)
+  const setRevertButtonElement = (element: HTMLButtonElement | null) => {
+    /**
+     * The startTransition wrapper here is to avoid an issue when on React 18 where this error can happen:
+     * \>Maximum update depth exceeded. This can happen when a component repeatedly calls setState inside componentWillUpdate or componentDidUpdate. React limits the number of nested updates to prevent infinite loops.
+     * This doesn't happen on React 19 due to automatic batching of all state updates, the startTransition wrapper here gives a type of batching for 18 users in a way that still works with 19.
+     */
+    startTransition(() => _setRevertButtonElement(element))
+  }
+  const isRevertButtonHovered = useHover<HTMLButtonElement>(revertButtonElement)
 
   const {selectedReleaseId} = usePerspective()
   const docOperations = useDocumentOperation(documentId, schemaType.name, selectedReleaseId)
@@ -98,7 +113,7 @@ export function GroupChange(
                 <RevertChangesButton
                   changeCount={changes.length}
                   onClick={handleRevertChangesConfirm}
-                  ref={revertButtonRef}
+                  ref={setRevertButtonElement}
                   selected={confirmRevertOpen}
                   disabled={readOnly}
                   data-testid={`group-change-revert-button-${group.fieldsetName}`}
@@ -112,7 +127,7 @@ export function GroupChange(
             onConfirm={handleRevertChanges}
             onCancel={closeRevertChangesConfirmDialog}
             changeCount={changes.length}
-            referenceElement={revertButtonRef.current}
+            referenceElement={revertButtonElement}
           />
         </>
       ),
@@ -129,9 +144,9 @@ export function GroupChange(
       isRevertButtonHovered,
       permissions?.granted,
       readOnly,
-      revertButtonRef,
       handleRevertChanges,
       closeRevertChangesConfirmDialog,
+      revertButtonElement,
     ],
   )
 
@@ -151,4 +166,27 @@ export function GroupChange(
       )}
     </Stack>
   )
+}
+
+function useHover<T extends HTMLElement>(node: T | null): boolean {
+  const [value, setValue] = useState(false)
+
+  useEffect(() => {
+    if (!node) {
+      return undefined
+    }
+
+    const handleMouseOver = () => startTransition(() => setValue(true))
+    const handleMouseOut = () => startTransition(() => setValue(false))
+
+    node.addEventListener('mouseover', handleMouseOver)
+    node.addEventListener('mouseout', handleMouseOut)
+
+    return () => {
+      node.removeEventListener('mouseover', handleMouseOver)
+      node.removeEventListener('mouseout', handleMouseOut)
+    }
+  }, [node])
+
+  return value
 }

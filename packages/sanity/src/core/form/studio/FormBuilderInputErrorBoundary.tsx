@@ -1,5 +1,5 @@
 import {Box, Card, Code, Stack, Text} from '@sanity/ui'
-import {useCallback, useMemo, useState} from 'react'
+import {useState} from 'react'
 import {useHotModuleReload} from 'use-hot-module-reload'
 
 import {ErrorBoundary} from '../../../ui-components/errorBoundary'
@@ -28,7 +28,7 @@ export function FormBuilderInputErrorBoundary(
     error: null,
     info: {},
   })
-  const handleRetry = useCallback(() => setError({error: null, info: {}}), [])
+  const handleRetry = () => setError({error: null, info: {}})
 
   if (!error) {
     return <ErrorBoundary onCatch={setError}>{children}</ErrorBoundary>
@@ -52,18 +52,9 @@ function ErrorCard(props: {error: unknown; info?: React.ErrorInfo; onRetry: () =
   }
 
   const {t} = useTranslation()
-  const message = useMemo(
-    () => isRecord(error) && typeof error.message === 'string' && error.message,
-    [error],
-  )
-  const callStack = useMemo(
-    () => isRecord(error) && typeof error.stack === 'string' && error.stack,
-    [error],
-  )
-  const componentStack = useMemo(
-    () => typeof info?.componentStack === 'string' && info.componentStack,
-    [info?.componentStack],
-  )
+  const message = isRecord(error) && typeof error.message === 'string' && error.message
+  const callStack = isRecord(error) && typeof error.stack === 'string' && error.stack
+  const componentStack = typeof info?.componentStack === 'string' && info.componentStack
 
   useHotModuleReload(onRetry)
 

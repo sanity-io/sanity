@@ -44,25 +44,14 @@ export const ReleaseNameCell: VisibleColumn<TableRelease>['cell'] = ({
     }
   }, [isDraftModelEnabled, isReleasePinned, releaseId, setPerspective])
 
-  const WrapperBox = useCallback(
-    ({children}: {children: React.ReactNode}) => {
-      return (
-        <Box {...cellProps} paddingLeft={3} flex={1} paddingY={1} paddingRight={2} sizing="border">
-          {children}
-        </Box>
-      )
-    },
-    [cellProps],
-  )
-
   if (release.isLoading) {
     return (
-      <WrapperBox>
+      <Box {...cellProps} paddingLeft={3} flex={1} paddingY={1} paddingRight={2} sizing="border">
         <Flex align="center" gap={2}>
           <Skeleton animated radius={1} style={PREVIEW_SIZES.default.media} />
           <TitleSkeleton />
         </Flex>
-      </WrapperBox>
+      </Box>
     )
   }
 
@@ -79,7 +68,7 @@ export const ReleaseNameCell: VisibleColumn<TableRelease>['cell'] = ({
   const displayTitle = release.metadata.title || tCore('release.placeholder-untitled-release')
 
   return (
-    <WrapperBox>
+    <Box {...cellProps} paddingLeft={3} flex={1} paddingY={1} paddingRight={2} sizing="border">
       <Tooltip
         disabled={!release.isDeleted}
         content={
@@ -126,6 +115,6 @@ export const ReleaseNameCell: VisibleColumn<TableRelease>['cell'] = ({
           </Card>
         </Flex>
       </Tooltip>
-    </WrapperBox>
+    </Box>
   )
 }

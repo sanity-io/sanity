@@ -7,7 +7,7 @@ import {
 } from '@sanity/types'
 import {useToast} from '@sanity/ui'
 import {fromString as pathFromString, resolveKeyedPath} from '@sanity/util/paths'
-import {memo, useCallback, useEffect, useMemo, useRef, useState} from 'react'
+import {useEffect, useRef, useState} from 'react'
 import {
   type DocumentActionsContext,
   type DocumentActionsVersionType,
@@ -22,6 +22,7 @@ import {
   isVersionId,
   type PartialContext,
   pathToString,
+  type ReleaseDocument,
   selectUpstreamVersion,
   useActiveReleases,
   useCopyPaste,
@@ -62,7 +63,7 @@ interface DocumentPaneProviderProps extends DocumentPaneProviderWrapperProps {
  * @internal
  */
 // eslint-disable-next-line max-statements
-export const DocumentPaneProvider = memo((props: DocumentPaneProviderProps) => {
+export function DocumentPaneProvider(props: DocumentPaneProviderProps) {
   const {children, index, pane, paneKey, onFocusPath, forcedVersion, historyStore} = props
   const {
     store: timelineStore,
@@ -96,7 +97,7 @@ export const DocumentPaneProvider = memo((props: DocumentPaneProviderProps) => {
     options,
     menuItemGroups = DEFAULT_MENU_ITEM_GROUPS,
     title = null,
-    views: viewsProp = [],
+    views: viewsProp = EMPTY_ARRAY,
   } = pane
   const paneOptions = useUnique(options)
   const documentIdRaw = paneOptions.id
@@ -114,21 +115,15 @@ export const DocumentPaneProvider = memo((props: DocumentPaneProviderProps) => {
     beta,
   } = useWorkspace()
 
-  const enhancedObjectDialogEnabled = useMemo(() => {
-    return beta?.form?.enhancedObjectDialog?.enabled
-  }, [beta])
+  const enhancedObjectDialogEnabled = beta?.form?.enhancedObjectDialog?.enabled
 
-  const {selectedReleaseId, selectedPerspectiveName} = useMemo(() => {
-    // TODO: COREL - Remove this after updating sanity-assist to use <PerspectiveProvider>
-    if (forcedVersion) {
-      return forcedVersion
-    }
-
-    return {
-      selectedPerspectiveName: perspective.selectedPerspectiveName,
-      selectedReleaseId: perspective.selectedReleaseId,
-    }
-  }, [forcedVersion, perspective.selectedPerspectiveName, perspective.selectedReleaseId])
+  const {selectedReleaseId, selectedPerspectiveName} = forcedVersion
+    ? // TODO: COREL - Remove this after updating sanity-assist to use <PerspectiveProvider>
+      forcedVersion
+    : {
+        selectedPerspectiveName: perspective.selectedPerspectiveName,
+        selectedReleaseId: perspective.selectedReleaseId,
+      }
 
   const diffViewRouter = useDiffViewRouter()
 
@@ -168,73 +163,52 @@ export const DocumentPaneProvider = memo((props: DocumentPaneProviderProps) => {
    * skipping this check means that in these cases, users will at least be able to create new documents
    * without them being incorrectly marked as deleted.
    */
-  const getIsDeleted = useCallback(
-    (editState: EditStateFor) => {
-      if (!timelineReady) return false
-      return (
-        Boolean(!editState?.draft && !editState?.published && !editState?.version) && !isPristine
-      )
-    },
-    [timelineReady, isPristine],
-  )
+  const getIsDeleted = (editState: EditStateFor) => {
+    if (!timelineReady) return false
+    return Boolean(!editState?.draft && !editState?.published && !editState?.version) && !isPristine
+  }
 
-  const getComparisonValue = useCallback(
-    (upstreamEditState: EditStateFor) => {
-      const upstream = selectUpstreamVersion(upstreamEditState)
-      if (changesOpen) {
-        return sinceDocument || upstream
-      }
-      return upstream || null
-    },
-    [changesOpen, sinceDocument],
-  )
+  const getComparisonValue = (upstreamEditState: EditStateFor) => {
+    const upstream = selectUpstreamVersion(upstreamEditState)
+    if (changesOpen) {
+      return sinceDocument || upstream
+    }
+    return upstream || null
+  }
 
   const schemaType = schema.get(documentType) as ObjectSchemaType | undefined
 
-  const getIsReadOnly = useCallback(
-    (editState: EditStateFor): boolean => {
-      const isDeleted = getIsDeleted(editState)
-      const seeingHistoryDocument = Boolean(params.rev)
-      return (
-        seeingHistoryDocument ||
-        isDeleting ||
-        isDeleted ||
-        !isPerspectiveWriteable({
-          selectedPerspective: perspective.selectedPerspective,
-          isDraftModelEnabled,
-          schemaType,
-        }).result
-      )
-    },
-    [
-      getIsDeleted,
-      isDeleting,
-      isDraftModelEnabled,
-      params.rev,
-      perspective.selectedPerspective,
-      schemaType,
-    ],
-  )
+  const getIsReadOnly = (editState: EditStateFor): boolean => {
+    const isDeleted = getIsDeleted(editState)
+    const seeingHistoryDocument = Boolean(params.rev)
+    return (
+      seeingHistoryDocument ||
+      isDeleting ||
+      isDeleted ||
+      !isPerspectiveWriteable({
+        selectedPerspective: perspective.selectedPerspective,
+        isDraftModelEnabled,
+        schemaType,
+      }).result
+    )
+  }
 
-  const getDisplayed = useCallback(
-    (value: SanityDocumentLike) => {
-      if (onOlderRevision) {
-        return revisionDocument || {_id: value._id, _type: value._type}
+  const getDisplayed = (value: SanityDocumentLike) => {
+    if (onOlderRevision) {
+      return revisionDocument || {_id: value._id, _type: value._type}
+    }
+
+    // If the document is deleted (no draft, published, or version), return the last revision
+    const isDeleted = !value._createdAt && !value._updatedAt
+    if (isDeleted && lastNonDeletedRevId) {
+      // Return the fetched last revision document if available
+      if (lastRevisionDocument) {
+        return lastRevisionDocument
       }
+    }
 
-      // If the document is deleted (no draft, published, or version), return the last revision
-      const isDeleted = !value._createdAt && !value._updatedAt
-      if (isDeleted && lastNonDeletedRevId) {
-        // Return the fetched last revision document if available
-        if (lastRevisionDocument) {
-          return lastRevisionDocument
-        }
-      }
-
-      return value
-    },
-    [onOlderRevision, revisionDocument, lastNonDeletedRevId, lastRevisionDocument],
-  )
+    return value
+  }
 
   const {
     editState,
@@ -276,89 +250,49 @@ export const DocumentPaneProvider = memo((props: DocumentPaneProviderProps) => {
     displayInlineChanges: router.stickyParams.displayInlineChanges === 'true',
   })
 
-  const {data: releases = []} = useActiveReleases()
+  const {data: releases = EMPTY_ARRAY} = useActiveReleases()
 
-  const getDocumentVersionType = useCallback(() => {
-    let version: DocumentActionsVersionType
-    switch (true) {
-      case Boolean(params.rev):
-        version = 'revision'
-        break
-      case selectedReleaseId && isVersionId(value._id): {
-        // Check if this is a scheduled draft (cardinality one release)
-        const releaseDocument = releases.find(
-          (r) => getReleaseIdFromReleaseDocumentId(r._id) === selectedReleaseId,
-        )
-
-        if (releaseDocument && isCardinalityOneRelease(releaseDocument)) {
-          version = 'scheduled-draft'
-        } else {
-          version = 'version'
-        }
-        break
-      }
-      case selectedPerspectiveName === 'published':
-        version = 'published'
-        break
-      case draftsEnabled:
-        version = 'draft'
-        break
-      default:
-        version = 'published'
-    }
-
-    return version
-  }, [params.rev, selectedReleaseId, value._id, selectedPerspectiveName, draftsEnabled, releases])
-
-  const actionsPerspective = useMemo(() => getDocumentVersionType(), [getDocumentVersionType])
-
-  const documentActionsProps: PartialContext<DocumentActionsContext> = useMemo(
-    () => ({
-      schemaType: documentType,
-      documentId,
-      versionType: actionsPerspective,
-      releaseId: selectedReleaseId,
-    }),
-    [documentType, documentId, actionsPerspective, selectedReleaseId],
+  const actionsPerspective = getDocumentVersionType(
+    params,
+    selectedReleaseId,
+    value,
+    selectedPerspectiveName,
+    draftsEnabled,
+    releases,
   )
+
+  const documentActionsProps: PartialContext<DocumentActionsContext> = {
+    schemaType: documentType,
+    documentId,
+    versionType: actionsPerspective,
+    releaseId: selectedReleaseId,
+  }
 
   // Resolve document actions
-  const actions = useMemo(
-    () => documentActions(documentActionsProps),
-    [documentActions, documentActionsProps],
-  )
+  const actions = documentActions(documentActionsProps)
 
-  const handlePathOpen = useCallback(
-    (path: Path) => {
-      // Update internal open path
-      onPathOpen(path)
+  const handlePathOpen = (path: Path) => {
+    // Update internal open path
+    onPathOpen(path)
 
-      if (enhancedObjectDialogEnabled) {
-        /**
-         * Before we used to set the path open based on the focus path
-         * Now we set it based on open path, which changes what it represents and is something that could become a source of confusion.
-         * There is upcoming work to refactor this and other aspects of the control of the focus path which means that this might return to the focus path in the future.
-         */
-        const nextPath = pathToString(path)
-        if (params.path !== nextPath) {
-          setPaneParams({...params, path: nextPath})
-        }
+    if (enhancedObjectDialogEnabled) {
+      /**
+       * Before we used to set the path open based on the focus path
+       * Now we set it based on open path, which changes what it represents and is something that could become a source of confusion.
+       * There is upcoming work to refactor this and other aspects of the control of the focus path which means that this might return to the focus path in the future.
+       */
+      const nextPath = pathToString(path)
+      if (params.path !== nextPath) {
+        setPaneParams({...params, path: nextPath})
       }
-    },
-    [onPathOpen, params, setPaneParams, enhancedObjectDialogEnabled],
-  )
+    }
+  }
 
   // Resolve document badges
-  const badges = useMemo(
-    () => documentBadges({schemaType: documentType, documentId}),
-    [documentBadges, documentId, documentType],
-  )
+  const badges = documentBadges({schemaType: documentType, documentId})
 
   // Resolve document language filter
-  const languageFilter = useMemo(
-    () => languageFilterResolver({schemaType: documentType, documentId}),
-    [documentId, documentType, languageFilterResolver],
-  )
+  const languageFilter = languageFilterResolver({schemaType: documentType, documentId})
 
   const views = useUnique(viewsProp)
 
@@ -370,10 +304,9 @@ export const DocumentPaneProvider = memo((props: DocumentPaneProviderProps) => {
 
   const {t} = useTranslation(structureLocaleNamespace)
 
-  const fieldActions: DocumentFieldAction[] = useMemo(
-    () => (schemaType ? fieldActionsResolver({documentId, documentType, schemaType}) : []),
-    [documentId, documentType, fieldActionsResolver, schemaType],
-  )
+  const fieldActions: DocumentFieldAction[] = schemaType
+    ? fieldActionsResolver({documentId, documentType, schemaType})
+    : EMPTY_ARRAY
 
   /**
    * Note that in addition to connection and edit state, we also wait for a valid document timeline
@@ -389,10 +322,7 @@ export const DocumentPaneProvider = memo((props: DocumentPaneProviderProps) => {
    */
   const ready = formReady && (!params.rev || timelineReady || !!timelineError)
 
-  const displayed: Partial<SanityDocument> | undefined = useMemo(
-    () => getDisplayed(value),
-    [getDisplayed, value],
-  )
+  const displayed: Partial<SanityDocument> | undefined = getDisplayed(value)
 
   const {previousId} = useDocumentIdStack({
     strict: true,
@@ -401,22 +331,19 @@ export const DocumentPaneProvider = memo((props: DocumentPaneProviderProps) => {
     editState,
   })
 
-  const setTimelineRange = useCallback(
-    (newSince: string, newRev: string | null) => {
-      setPaneParams({
-        ...params,
-        since: newSince,
-        rev: newRev || undefined,
-      })
-    },
-    [params, setPaneParams],
-  )
+  const setTimelineRange = (newSince: string, newRev: string | null) => {
+    setPaneParams({
+      ...params,
+      since: newSince,
+      rev: newRev || undefined,
+    })
+  }
 
-  const handlePaneClose = useCallback(() => paneRouter.closeCurrent(), [paneRouter])
+  const handlePaneClose = () => paneRouter.closeCurrent()
 
-  const handlePaneSplit = useCallback(() => paneRouter.duplicateCurrent(), [paneRouter])
+  const handlePaneSplit = () => paneRouter.duplicateCurrent()
 
-  const toggleInlineChanges = useCallback(() => {
+  const toggleInlineChanges = () => {
     const nextState = router.stickyParams.displayInlineChanges !== 'true'
     telemetry.log(nextState ? InlineChangesSwitchedOn : InlineChangesSwitchedOff)
 
@@ -425,83 +352,66 @@ export const DocumentPaneProvider = memo((props: DocumentPaneProviderProps) => {
         displayInlineChanges: String(nextState),
       },
     })
-  }, [router, telemetry])
+  }
 
-  const handleMenuAction = useCallback(
-    async (item: PaneMenuItem) => {
-      if (item.action === 'production-preview' && previewUrl) {
-        window.open(previewUrl)
-        return true
-      }
+  const handleMenuAction = async (item: PaneMenuItem) => {
+    if (item.action === 'production-preview' && previewUrl) {
+      window.open(previewUrl)
+      return true
+    }
 
-      if (item.action === 'copy-document-url' && navigator) {
-        telemetry.log(DocumentURLCopied)
-        // Chose to copy the user's current URL instead of
-        // the document's edit intent link because
-        // of bugs when resolving a document that has
-        // multiple access paths within Structure
-        const copyUrl = buildStudioUrl({
-          coreUi: (url) => `${url}/intent/edit/id=${documentId};type=${documentType}`,
-        })
-        await navigator.clipboard.writeText(copyUrl)
-        pushToast({
-          id: 'copy-document-url',
-          status: 'info',
-          title: t('panes.document-operation-results.operation-success_copy-url'),
-        })
-        return true
-      }
+    if (item.action === 'copy-document-url' && navigator) {
+      telemetry.log(DocumentURLCopied)
+      // Chose to copy the user's current URL instead of
+      // the document's edit intent link because
+      // of bugs when resolving a document that has
+      // multiple access paths within Structure
+      const copyUrl = buildStudioUrl({
+        coreUi: (url) => `${url}/intent/edit/id=${documentId};type=${documentType}`,
+      })
+      await navigator.clipboard.writeText(copyUrl)
+      pushToast({
+        id: 'copy-document-url',
+        status: 'info',
+        title: t('panes.document-operation-results.operation-success_copy-url'),
+      })
+      return true
+    }
 
-      if (item.action === 'reviewChanges') {
-        handleHistoryOpen()
-        return true
-      }
+    if (item.action === 'reviewChanges') {
+      handleHistoryOpen()
+      return true
+    }
 
-      if (
-        item.action === 'inspect' ||
-        (typeof item.action === 'string' && item.action.startsWith(INSPECT_ACTION_PREFIX))
-      ) {
-        handleInspectorAction(item)
-      }
+    if (
+      item.action === 'inspect' ||
+      (typeof item.action === 'string' && item.action.startsWith(INSPECT_ACTION_PREFIX))
+    ) {
+      handleInspectorAction(item)
+    }
 
-      if (item.action === 'compareVersions' && typeof previousId !== 'undefined') {
-        diffViewRouter.navigateDiffView({
-          mode: 'version',
-          previousDocument: {
-            type: documentType,
-            id: previousId,
-          },
-          nextDocument: {
-            type: documentType,
-            id: value._id,
-          },
-        })
-        return true
-      }
+    if (item.action === 'compareVersions' && typeof previousId !== 'undefined') {
+      diffViewRouter.navigateDiffView({
+        mode: 'version',
+        previousDocument: {
+          type: documentType,
+          id: previousId,
+        },
+        nextDocument: {
+          type: documentType,
+          id: value._id,
+        },
+      })
+      return true
+    }
 
-      if (item.action === 'toggleInlineChanges') {
-        toggleInlineChanges()
-        return true
-      }
+    if (item.action === 'toggleInlineChanges') {
+      toggleInlineChanges()
+      return true
+    }
 
-      return false
-    },
-    [
-      previewUrl,
-      previousId,
-      telemetry,
-      buildStudioUrl,
-      pushToast,
-      t,
-      documentId,
-      documentType,
-      handleHistoryOpen,
-      handleInspectorAction,
-      diffViewRouter,
-      value._id,
-      toggleInlineChanges,
-    ],
-  )
+    return false
+  }
 
   useEffect(() => {
     setDocumentMeta({
@@ -512,149 +422,13 @@ export const DocumentPaneProvider = memo((props: DocumentPaneProviderProps) => {
     })
   }, [documentId, documentType, schemaType, onChange, setDocumentMeta])
 
-  const compareValue = useMemo(
-    () => getComparisonValue(upstreamEditState),
-    [upstreamEditState, getComparisonValue],
-  )
+  const compareValue = getComparisonValue(upstreamEditState)
 
-  const isDeleted = useMemo(() => getIsDeleted(editState), [editState, getIsDeleted])
+  const isDeleted = getIsDeleted(editState)
   const revisionNotFound = onOlderRevision && !revisionDocument
 
-  const currentDisplayed = useMemo(() => {
-    if (editState.version && isGoingToUnpublish(editState.version)) {
-      return editState.published
-    }
-    return displayed
-  }, [editState.version, editState.published, displayed])
-
-  const documentPane: DocumentPaneContextValue = useMemo(
-    () =>
-      ({
-        actions,
-        activeViewId,
-        badges,
-        changesOpen,
-        closeInspector,
-        collapsedFieldSets,
-        collapsedPaths,
-        compareValue,
-        connectionState,
-        displayed: currentDisplayed,
-        documentId,
-        documentIdRaw,
-        documentType,
-        editState,
-        fieldActions,
-        focusPath,
-        inspector: currentInspector || null,
-        inspectors,
-        onBlur,
-        onChange,
-        onFocus,
-        onPathOpen: handlePathOpen,
-        onHistoryClose: handleHistoryClose,
-        onHistoryOpen: handleHistoryOpen,
-        onInspectClose: handleLegacyInspectClose,
-        onMenuAction: handleMenuAction,
-        onPaneClose: handlePaneClose,
-        onPaneSplit: handlePaneSplit,
-        onSetActiveFieldGroup,
-        onSetCollapsedPath,
-        onSetCollapsedFieldSet,
-        openInspector,
-        openPath,
-        index,
-        inspectOpen,
-        validation,
-        menuItemGroups: menuItemGroups || [],
-        paneKey,
-        previewUrl,
-        ready,
-        schemaType: schemaType!,
-        hasUpstreamVersion,
-        isPermissionsLoading,
-        isInitialValueLoading,
-        permissions,
-        setTimelineRange,
-        setIsDeleting,
-        isDeleting,
-        isDeleted,
-        timelineError,
-        timelineStore,
-        title,
-        value,
-        selectedReleaseId,
-        views,
-        formState,
-        unstable_languageFilter: languageFilter,
-        revisionId,
-        revisionNotFound,
-        lastNonDeletedRevId,
-        lastRevisionDocument,
-      }) satisfies DocumentPaneContextValue,
-    [
-      actions,
-      activeViewId,
-      badges,
-      changesOpen,
-      closeInspector,
-      collapsedFieldSets,
-      collapsedPaths,
-      compareValue,
-      connectionState,
-      currentDisplayed,
-      documentId,
-      documentIdRaw,
-      documentType,
-      editState,
-      fieldActions,
-      focusPath,
-      currentInspector,
-      inspectors,
-      onBlur,
-      onChange,
-      onFocus,
-      handlePathOpen,
-      handleHistoryClose,
-      handleHistoryOpen,
-      handleLegacyInspectClose,
-      handleMenuAction,
-      handlePaneClose,
-      handlePaneSplit,
-      onSetActiveFieldGroup,
-      onSetCollapsedPath,
-      onSetCollapsedFieldSet,
-      openInspector,
-      openPath,
-      index,
-      inspectOpen,
-      validation,
-      menuItemGroups,
-      paneKey,
-      previewUrl,
-      ready,
-      schemaType,
-      hasUpstreamVersion,
-      isPermissionsLoading,
-      isInitialValueLoading,
-      permissions,
-      setTimelineRange,
-      isDeleting,
-      isDeleted,
-      timelineError,
-      timelineStore,
-      title,
-      value,
-      selectedReleaseId,
-      views,
-      formState,
-      languageFilter,
-      revisionId,
-      revisionNotFound,
-      lastNonDeletedRevId,
-      lastRevisionDocument,
-    ],
-  )
+  const currentDisplayed =
+    editState.version && isGoingToUnpublish(editState.version) ? editState.published : displayed
 
   const pathRef = useRef<string | undefined>(undefined)
   useEffect(() => {
@@ -678,8 +452,114 @@ export const DocumentPaneProvider = memo((props: DocumentPaneProviderProps) => {
   }, [formStateRef, onProgrammaticFocus, paneRouter, params, ready, enhancedObjectDialogEnabled])
 
   return (
-    <DocumentPaneContext.Provider value={documentPane}>{children}</DocumentPaneContext.Provider>
+    <DocumentPaneContext.Provider
+      value={
+        {
+          actions,
+          activeViewId,
+          badges,
+          changesOpen,
+          closeInspector,
+          collapsedFieldSets,
+          collapsedPaths,
+          compareValue,
+          connectionState,
+          displayed: currentDisplayed!,
+          documentId,
+          documentIdRaw,
+          documentType,
+          editState,
+          fieldActions,
+          focusPath,
+          inspector: currentInspector || null,
+          inspectors,
+          onBlur,
+          onChange,
+          onFocus,
+          onPathOpen: handlePathOpen,
+          onHistoryClose: handleHistoryClose,
+          onHistoryOpen: handleHistoryOpen,
+          onInspectClose: handleLegacyInspectClose,
+          onMenuAction: handleMenuAction,
+          onPaneClose: handlePaneClose,
+          onPaneSplit: handlePaneSplit,
+          onSetActiveFieldGroup,
+          onSetCollapsedPath,
+          onSetCollapsedFieldSet,
+          openInspector,
+          openPath,
+          index,
+          inspectOpen,
+          validation,
+          menuItemGroups: menuItemGroups || EMPTY_ARRAY,
+          paneKey,
+          previewUrl,
+          ready,
+          schemaType: schemaType!,
+          hasUpstreamVersion,
+          isPermissionsLoading,
+          isInitialValueLoading,
+          permissions,
+          setTimelineRange,
+          setIsDeleting,
+          isDeleting,
+          isDeleted,
+          timelineError,
+          timelineStore,
+          title,
+          value,
+          selectedReleaseId,
+          views,
+          formState,
+          unstable_languageFilter: languageFilter,
+          revisionId,
+          revisionNotFound,
+          lastNonDeletedRevId,
+          lastRevisionDocument,
+        } satisfies DocumentPaneContextValue
+      }
+    >
+      {children}
+    </DocumentPaneContext.Provider>
   )
-})
+}
 
-DocumentPaneProvider.displayName = 'Memo(DocumentPaneProvider)'
+// eslint-disable-next-line max-params
+function getDocumentVersionType(
+  params: Record<string, string | undefined> | undefined,
+  selectedReleaseId: string | undefined,
+  value: SanityDocumentLike,
+  selectedPerspectiveName: string | undefined,
+  draftsEnabled: boolean,
+  releases: ReleaseDocument[],
+) {
+  let version: DocumentActionsVersionType
+  switch (true) {
+    case Boolean(params?.rev):
+      version = 'revision'
+      break
+    case selectedReleaseId && isVersionId(value._id): {
+      // Check if this is a scheduled draft (cardinality one release)
+      const releaseDocument = releases.find(
+        (r) => getReleaseIdFromReleaseDocumentId(r._id) === selectedReleaseId,
+      )
+
+      if (releaseDocument && isCardinalityOneRelease(releaseDocument)) {
+        version = 'scheduled-draft'
+      } else {
+        version = 'version'
+      }
+      break
+    }
+    case selectedPerspectiveName === 'published':
+      version = 'published'
+      break
+    case draftsEnabled:
+      version = 'draft'
+      break
+    default:
+      version = 'published'
+  }
+
+  return version
+}

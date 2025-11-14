@@ -4,15 +4,7 @@ import {getPublishedId} from '@sanity/client/csm'
 import {DEFAULT_MAX_FIELD_DEPTH} from '@sanity/schema/_internal'
 import {type Reference, type ReferenceSchemaType} from '@sanity/types'
 import * as PathUtils from '@sanity/util/paths'
-import {
-  type ComponentProps,
-  type ForwardedRef,
-  forwardRef,
-  useCallback,
-  useEffect,
-  useMemo,
-  useRef,
-} from 'react'
+import {type ComponentProps, type ForwardedRef, forwardRef, useCallback, useMemo} from 'react'
 import {combineLatest, from, throwError} from 'rxjs'
 import {catchError, map, mergeMap, switchMap} from 'rxjs/operators'
 
@@ -41,14 +33,6 @@ import {resolveUserDefinedFilter} from './resolveUserDefinedFilter'
  * @beta
  */
 export type StudioReferenceInputProps = ObjectInputProps<Reference, ReferenceSchemaType>
-
-function useValueRef<T>(value: T): {current: T} {
-  const ref = useRef(value)
-  useEffect(() => {
-    ref.current = value
-  }, [value])
-  return ref
-}
 
 type SearchError = {
   message: string
@@ -81,8 +65,7 @@ export function StudioReferenceInput(props: StudioReferenceInputProps) {
   const {strategy: searchStrategy} = source.search
 
   const documentValue = useFormValue([]) as SanityDocument
-  const documentRef = useValueRef(documentValue)
-  const documentTypeName = documentRef.current?._type
+  const documentTypeName = documentValue?._type
   const refType = schema.get(documentTypeName)
 
   const isDocumentLiveEdit = useMemo(() => refType?.liveEdit, [refType])
@@ -95,7 +78,7 @@ export function StudioReferenceInput(props: StudioReferenceInputProps) {
       from(
         resolveUserDefinedFilter({
           options: schemaType.options,
-          document: documentRef.current,
+          document: documentValue,
           valuePath: path,
           getClient,
         }),
@@ -156,7 +139,7 @@ export function StudioReferenceInput(props: StudioReferenceInputProps) {
     [
       schemaType.options,
       schemaType.to,
-      documentRef,
+      documentValue,
       perspectiveStack,
       path,
       getClient,

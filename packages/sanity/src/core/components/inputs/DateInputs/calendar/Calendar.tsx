@@ -76,8 +76,8 @@ export const Calendar = forwardRef(function Calendar(
   const {
     selectTime,
     onFocusedDateChange,
-    selectedDate = new Date(),
-    focusedDate = selectedDate,
+    selectedDate: _selectedDate,
+    focusedDate: _focusedDate,
     timeStep = 1,
     onSelect,
     labels,
@@ -88,6 +88,8 @@ export const Calendar = forwardRef(function Calendar(
     timeZoneScope,
     ...restProps
   } = props
+  const selectedDate = useMemo(() => _selectedDate ?? new Date(), [_selectedDate])
+  const focusedDate = _focusedDate ?? selectedDate
 
   const {timeZone} = useTimeZone(timeZoneScope)
 

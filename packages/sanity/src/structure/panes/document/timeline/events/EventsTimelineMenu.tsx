@@ -85,7 +85,8 @@ export function EventsTimelineMenu({event, events, mode, placement}: TimelineMen
 
   const selectRev = useCallback(
     (revEvent: DocumentGroupEvent) => {
-      try {
+      // Workaround for React Compiler not yet fully supporting try/catch/finally syntax
+      const run = () => {
         if (
           isDeleteDocumentVersionEvent(revEvent) ||
           isDeleteDocumentGroupEvent(revEvent) ||
@@ -99,6 +100,9 @@ export function EventsTimelineMenu({event, events, mode, placement}: TimelineMen
         const [since, rev] = findRangeForRevision(revEvent?.id)
         setTimelineRange(since, rev)
         handleClose()
+      }
+      try {
+        run()
       } catch (err) {
         toast.push({
           closable: true,

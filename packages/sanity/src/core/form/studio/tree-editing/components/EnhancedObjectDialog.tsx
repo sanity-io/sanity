@@ -68,7 +68,11 @@ export function EnhancedObjectDialog(props: EnhancedObjectDialogProps): React.JS
   const telemetry = useTelemetry()
 
   const handleBuildTreeEditingState = useCallback(
-    (opts: BuildTreeEditingStateProps) => {
+    (
+      opts: BuildTreeEditingStateProps,
+      // eslint-disable-next-line @typescript-eslint/no-shadow -- workaround the React Compiler flagging refs being passed to lodash's `debounce`
+      treeStateRef: React.RefObject<TreeEditingState>,
+    ) => {
       const currentTreeState = treeStateRef.current
       const isPathWithinPTEtext = isPathTextInPTEField(
         schemaType.fields,
@@ -285,11 +289,14 @@ export function EnhancedObjectDialog(props: EnhancedObjectDialogProps): React.JS
     // as that might happen frequently when the user is editing the document.
 
     if (isInitialRender || openPathChanged || !isMarksDefinition) {
-      handleBuildTreeEditingState({
-        schemaType,
-        documentValue: value,
-        openPath,
-      })
+      handleBuildTreeEditingState(
+        {
+          schemaType,
+          documentValue: value,
+          openPath,
+        },
+        treeStateRef,
+      )
 
       valueRef.current = value
       openPathRef.current = openPath
@@ -306,11 +313,14 @@ export function EnhancedObjectDialog(props: EnhancedObjectDialogProps): React.JS
     valueRef.current = value
     openPathRef.current = openPath
 
-    debouncedBuildTreeEditingState({
-      schemaType,
-      documentValue: value,
-      openPath,
-    })
+    debouncedBuildTreeEditingState(
+      {
+        schemaType,
+        documentValue: value,
+        openPath,
+      },
+      treeStateRef,
+    )
 
     return () => {
       // Cancel any debounced state building on unmount.

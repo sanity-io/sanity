@@ -63,17 +63,6 @@ export function useRovingFocus(props: RovingFocusProps): undefined {
   const prevKey = direction === 'horizontal' ? 'ArrowLeft' : 'ArrowUp'
 
   /**
-   * Set focusable elements in state
-   */
-  const handleSetElements = useCallback(() => {
-    if (rootElement) {
-      const els = getFocusableElements(rootElement)
-
-      setFocusableElements(els)
-    }
-  }, [rootElement])
-
-  /**
    * Set focused index
    */
   const handleFocus = useCallback((index: number) => {
@@ -137,16 +126,20 @@ export function useRovingFocus(props: RovingFocusProps): undefined {
   )
 
   /**
-   * Set focusable elements on mount
+   * 1. Set focusable elements on mount
+   * 2. Listen to DOM mutations to update focusableElements with latest state
    */
   useEffect(() => {
-    handleSetElements()
-  }, [handleSetElements, initialFocus, direction])
+    const handleSetElements = () => {
+      if (rootElement) {
+        const els = getFocusableElements(rootElement)
 
-  /**
-   * Listen to DOM mutations to update focusableElements with latest state
-   */
-  useEffect(() => {
+        setFocusableElements(els)
+      }
+    }
+
+    handleSetElements()
+
     const mo = new MutationObserver(handleSetElements)
 
     if (rootElement) {
@@ -160,7 +153,7 @@ export function useRovingFocus(props: RovingFocusProps): undefined {
     return () => {
       mo.disconnect()
     }
-  }, [focusableElements, handleSetElements, rootElement])
+  }, [rootElement])
 
   /**
    * Set focus on elements in focusableElements depending on focusedIndex

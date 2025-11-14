@@ -108,7 +108,9 @@
       "dependsOn": ["transit"]
     },
     "//#check:format": {},
-    "//#check:oxlint": {},
+    "//#check:oxlint": {
+      "cache": false
+    },
     "//#chore:format:fix": {},
     "//#chore:oxlint:fix": {
       "cache": false
