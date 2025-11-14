@@ -37,7 +37,8 @@ export function DeleteScheduledDraftDialog(
 
   const handleDeleteSchedule = useCallback(async () => {
     setIsDeleting(true)
-    try {
+    // The run().catch().finally() syntax instead of try/catch/finally is because of the React Compiler not fully supporting the syntax yet
+    const run = async () => {
       await operations.deleteScheduledDraft(release._id)
       toast.push({
         closable: true,
@@ -50,26 +51,29 @@ export function DeleteScheduledDraftDialog(
           />
         ),
       })
-    } catch (error) {
-      console.error('Failed to delete scheduled draft:', error)
-      toast.push({
-        closable: true,
-        status: 'error',
-        description: (
-          <Translate
-            t={t}
-            i18nKey="release.toast.delete-schedule-draft.error"
-            values={{
-              title: firstDocumentPreview?.title || t('preview.default.title-fallback'),
-              error: getErrorMessage(error),
-            }}
-          />
-        ),
-      })
-    } finally {
-      setIsDeleting(false)
-      onClose()
     }
+    await run()
+      .catch((error) => {
+        console.error('Failed to delete scheduled draft:', error)
+        toast.push({
+          closable: true,
+          status: 'error',
+          description: (
+            <Translate
+              t={t}
+              i18nKey="release.toast.delete-schedule-draft.error"
+              values={{
+                title: firstDocumentPreview?.title || t('preview.default.title-fallback'),
+                error: getErrorMessage(error),
+              }}
+            />
+          ),
+        })
+      })
+      .finally(() => {
+        setIsDeleting(false)
+        onClose()
+      })
   }, [release._id, operations, toast, t, firstDocumentPreview?.title, onClose])
 
   return (
