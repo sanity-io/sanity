@@ -1,5 +1,5 @@
 import {Card, Flex} from '@sanity/ui'
-import {motion} from 'framer-motion'
+import {motion} from 'motion/react'
 import {type Ref, useCallback, useMemo, useState} from 'react'
 import {
   type CreateLinkMetadata,

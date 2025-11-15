@@ -2075,9 +2075,6 @@ importers:
       form-data:
         specifier: ^4.0.4
         version: 4.0.4
-      framer-motion:
-        specifier: ^12.23.24
-        version: 12.23.24(@emotion/is-prop-valid@1.4.0)(react-dom@19.2.0(react@19.2.0))(react@19.2.0)
       get-it:
         specifier: ^8.6.10
         version: 8.6.10(debug@4.4.3)
@@ -2132,6 +2129,9 @@ importers:
       module-alias:
         specifier: ^2.2.3
         version: 2.2.3
+      motion:
+        specifier: ^12.23.24
+        version: 12.23.24(@emotion/is-prop-valid@1.4.0)(react-dom@19.2.0(react@19.2.0))(react@19.2.0)
       nano-pubsub:
         specifier: ^3.0.0
         version: 3.0.0
