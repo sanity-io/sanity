@@ -36,9 +36,17 @@ export const validation = memoize(
     },
     {draftId, publishedId, versionId}: IdPair,
     typeName: string,
+    displayedDocumentId?: string,
   ): Observable<ValidationStatus> => {
     const document$ = editState(ctx, {draftId, publishedId, versionId}, typeName).pipe(
-      map(({version, draft, published}) => version || draft || published),
+      map((state) => {
+        const {version, draft, published} = state
+
+        if (displayedDocumentId) {
+          return [version, draft, published].find((doc) => doc?._id === displayedDocumentId)
+        }
+        return version || draft || published
+      }),
       throttleTime(DOC_UPDATE_DELAY, asyncScheduler, {trailing: true}),
       distinctUntilChanged((prev, next) => {
         if (prev?._rev === next?._rev) {
@@ -53,7 +61,6 @@ export const validation = memoize(
 
     return validateDocumentWithReferences(ctx, document$)
   },
-  (ctx, idPair, typeName) => {
-    return memoizeKeyGen(ctx.client, idPair, typeName)
-  },
+  (ctx, idPair, typeName, displayedDocumentId) =>
+    `${memoizeKeyGen(ctx.client, idPair, typeName)}-${displayedDocumentId ?? 'default'}`,
 )

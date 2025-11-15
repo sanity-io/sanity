@@ -94,6 +94,7 @@ export interface DocumentStore {
       publishedId: string,
       type: string,
       version?: string,
+      displayedDocumentId?: string,
     ) => Observable<ValidationStatus>
   }
 }
@@ -212,9 +213,9 @@ export function createDocumentStore({
           }),
         )
       },
-      validation(publishedId, type, version) {
+      validation(publishedId, type, version, displayedDocumentId) {
         const idPair = getIdPairFromPublished(publishedId, version)
-        return validation(ctx, idPair, type)
+        return validation(ctx, idPair, type, displayedDocumentId)
       },
     },
   }

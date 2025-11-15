@@ -11,12 +11,13 @@ export function useValidationStatus(
   publishedDocId: string,
   docTypeName: string,
   version?: string,
+  displayedDocumentId?: string,
 ): ValidationStatus {
   const documentStore = useDocumentStore()
 
   const observable = useMemo(
-    () => documentStore.pair.validation(publishedDocId, docTypeName, version),
-    [docTypeName, documentStore.pair, publishedDocId, version],
+    () => documentStore.pair.validation(publishedDocId, docTypeName, version, displayedDocumentId),
+    [docTypeName, documentStore.pair, publishedDocId, version, displayedDocumentId],
   )
   return useObservable(observable, INITIAL)
 }
