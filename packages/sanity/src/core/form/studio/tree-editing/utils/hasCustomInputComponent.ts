@@ -71,31 +71,26 @@ export function hasCustomInputComponent(
       return hasComponentsInput(field.type)
     }
 
+    const checkVisitedTypes = (type: SchemaType) => {
+      if (isObjectSchemaType(type)) {
+        const typeName = type.name
+        if (!visitedTypes.has(typeName)) {
+          const newVisitedTypes = new Set(visitedTypes)
+          newVisitedTypes.add(typeName)
+          return checkPathForComponents(type.fields, remainingPath, newVisitedTypes)
+        }
+      }
+      return false
+    }
+
     // Continue traversing the path
     if (isObjectSchemaType(field.type)) {
-      const typeName = field.type.name
-      if (!visitedTypes.has(typeName)) {
-        const newVisitedTypes = new Set(visitedTypes)
-        newVisitedTypes.add(typeName)
-        return checkPathForComponents(field.type.fields, remainingPath, newVisitedTypes)
-      }
+      return checkVisitedTypes(field.type)
     }
 
     // If the field is an array of objects, check inside the array members
     if (isArrayOfObjectsSchemaType(field.type)) {
-      return (
-        field.type.of?.some((memberType) => {
-          if (isObjectSchemaType(memberType)) {
-            const typeName = memberType.name
-            if (!visitedTypes.has(typeName)) {
-              const newVisitedTypes = new Set(visitedTypes)
-              newVisitedTypes.add(typeName)
-              return checkPathForComponents(memberType.fields, remainingPath, newVisitedTypes)
-            }
-          }
-          return false
-        }) ?? false
-      )
+      return field.type.of?.some((memberType) => checkVisitedTypes(memberType)) ?? false
     }
 
     return false
