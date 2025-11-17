@@ -35,7 +35,7 @@ export const StructureTool = memo(function StructureTool({onPaneChange}: Structu
   const routerState = useRouterState()
   const {layoutCollapsed, setLayoutCollapsed} = useStructureTool()
   const resolvedPanesValue = useResolvedPanes()
-  const {paneDataItems, resolvedPanes, setFocusedPane, focusedPane} = resolvedPanesValue
+  const {paneDataItems, resolvedPanes, setMaximisedPane, maximisedPane} = resolvedPanesValue
   // Intent resolving is processed by the sibling `<IntentResolver />` but it doesn't have a UI for indicating progress.
   // We handle that here, so if there are only 1 pane (the root structure), and there's an intent state in the router, we need to show a placeholder LoadingPane until
   // the structure is resolved and we know what panes to load/display
@@ -54,13 +54,13 @@ export const StructureTool = memo(function StructureTool({onPaneChange}: Structu
   // When a pane is focused, show only from that pane up to and including its group
   // It's important to use the last index as there might be panes that have the same document (so ids and such)
   // But the structure should be kept
-  const focusedLastIndex = paneDataItems.findLastIndex((pane) => pane.focused)
+  const maximisedLastIndex = paneDataItems.findLastIndex((pane) => pane.maximised)
   const paneItemsToShow =
-    focusedLastIndex === -1
+    maximisedLastIndex === -1
       ? paneDataItems
       : paneDataItems
-          .slice(focusedLastIndex)
-          .filter((pane) => pane.groupIndex <= paneDataItems[focusedLastIndex].groupIndex)
+          .slice(maximisedLastIndex)
+          .filter((pane) => pane.groupIndex <= paneDataItems[maximisedLastIndex].groupIndex)
 
   useEffect(() => {
     // we check for length before emitting here to skip the initial empty array
@@ -93,14 +93,14 @@ export const StructureTool = memo(function StructureTool({onPaneChange}: Structu
 
   const hasDefinedDocumentTypes = schema._original?.types.some(_isCustomDocumentTypeDefinition)
 
-  const onSetFocusedPane = useCallback(
+  const onSetMaximisedPane = useCallback(
     (paneData: (typeof paneDataItems)[number] | null) => {
       if (!paneData) return
 
       const currentPanes = (routerState?.panes || []) as RouterPanes
 
-      if (paneData.focused) {
-        setFocusedPane(null)
+      if (paneData.maximised) {
+        setMaximisedPane(null)
         // Resets all the panes to the current state
         navigate({
           panes: currentPanes,
@@ -112,13 +112,13 @@ export const StructureTool = memo(function StructureTool({onPaneChange}: Structu
       if (paneData.pane !== LOADING_PANE && paneData.pane.type === 'document') {
         // Navigate to this pane, closing all panes after it
         const slicedPanes = currentPanes.slice(0, paneData.groupIndex)
-        setFocusedPane(paneData)
+        setMaximisedPane(paneData)
         navigate({
           panes: slicedPanes,
         })
       }
     },
-    [navigate, routerState?.panes, setFocusedPane],
+    [navigate, routerState?.panes, setMaximisedPane],
   )
 
   const previousSelectedIndexRef = useRef(-1)
@@ -129,11 +129,11 @@ export const StructureTool = memo(function StructureTool({onPaneChange}: Structu
     const prevSelectedIndex = previousSelectedIndexRef.current
     previousSelectedIndexRef.current = selectedIndex
 
-    if (!focusedPane) return
+    if (!maximisedPane) return
 
     // Clear focus if the focused pane is not a document pane (focus only works with documents)
-    if (focusedPane.pane !== LOADING_PANE && focusedPane.pane.type !== 'document') {
-      setFocusedPane(null)
+    if (maximisedPane.pane !== LOADING_PANE && maximisedPane.pane.type !== 'document') {
+      setMaximisedPane(null)
       return
     }
 
@@ -142,25 +142,25 @@ export const StructureTool = memo(function StructureTool({onPaneChange}: Structu
     if (selectedIndex !== -1 && selectedIndex !== prevSelectedIndex) {
       const selectedPane = paneDataItems[selectedIndex]
       // Only set focus if the newly selected pane is a document pane
-      setFocusedPane(selectedPane)
+      setMaximisedPane(selectedPane)
 
       return
     }
 
     // Clean up or find fallback when focused pane no longer exists
-    const isFocusedPanePresent = paneDataItems.some((pane) => pane.key === focusedPane.key)
+    const isMaximisedPanePresent = paneDataItems.some((pane) => pane.key === maximisedPane.key)
 
-    if (!isFocusedPanePresent) {
+    if (!isMaximisedPanePresent) {
       const fallbackPane = paneDataItems.find(
         (pane) =>
-          pane.groupIndex === focusedPane.groupIndex &&
-          pane.siblingIndex === focusedPane.siblingIndex &&
+          pane.groupIndex === maximisedPane.groupIndex &&
+          pane.siblingIndex === maximisedPane.siblingIndex &&
           pane.pane !== LOADING_PANE &&
           pane.pane.type === 'document',
       )
-      setFocusedPane(fallbackPane || null)
+      setMaximisedPane(fallbackPane || null)
     }
-  }, [focusedPane, paneDataItems, setFocusedPane])
+  }, [maximisedPane, paneDataItems, setMaximisedPane])
 
   if (!hasDefinedDocumentTypes) {
     return <NoDocumentTypesScreen />
@@ -190,7 +190,7 @@ export const StructureTool = memo(function StructureTool({onPaneChange}: Structu
               payload,
               siblingIndex,
               selected,
-              focused,
+              maximised,
             } = paneData
             return (
               <Fragment key={`${pane === LOADING_PANE ? 'loading' : pane.type}-${paneIndex}`}>
@@ -210,8 +210,8 @@ export const StructureTool = memo(function StructureTool({onPaneChange}: Structu
                     path={path}
                     selected={selected}
                     siblingIndex={siblingIndex}
-                    focused={focused}
-                    onSetFocusedPane={() => onSetFocusedPane(paneData)}
+                    maximised={maximised}
+                    onSetMaximisedPane={() => onSetMaximisedPane(paneData)}
                   />
                 )}
               </Fragment>

@@ -21,15 +21,15 @@ interface PaneData {
   payload: unknown
   selected: boolean
   siblingIndex: number
-  focused: boolean
+  maximised: boolean
 }
 
 export interface Panes {
   paneDataItems: PaneData[]
   routerPanes: RouterPanes
   resolvedPanes: (PaneNode | typeof LOADING_PANE)[]
-  focusedPane: PaneData | null
-  setFocusedPane: (pane: PaneData | null) => void
+  maximisedPane: PaneData | null
+  setMaximisedPane: (pane: PaneData | null) => void
 }
 
 function useRouterPanesStream() {
@@ -54,12 +54,12 @@ export function useResolvedPanes(): Panes {
   // will bubble the error to react where it can be picked up by standard error
   // boundaries
   const [error, setError] = useState<unknown>()
-  const [focusedPane, setFocusedPane] = useState<PaneData | null>(null)
+  const [maximisedPane, setMaximisedPane] = useState<PaneData | null>(null)
   if (error) throw error
 
   const {structureContext, rootPaneNode} = useStructureTool()
 
-  const [data, setData] = useState<Omit<Panes, 'focusedPane' | 'setFocusedPane'>>({
+  const [data, setData] = useState<Omit<Panes, 'maximisedPane' | 'setMaximisedPane'>>({
     paneDataItems: [],
     resolvedPanes: [],
     routerPanes: [],
@@ -103,7 +103,7 @@ export function useResolvedPanes(): Panes {
             payload: routerPaneSibling.payload,
             selected: flatIndex === resolvedPanes.length - 1,
             siblingIndex,
-            focused: false,
+            maximised: false,
           }
 
           return paneDataItem
@@ -125,17 +125,17 @@ export function useResolvedPanes(): Panes {
     return () => subscription.unsubscribe()
   }, [rootPaneNode, routerPanesStream, structureContext])
 
-  const paneDataItemsWithFocus = useMemo(() => {
+  const paneDataItemsWithMaximised = useMemo(() => {
     return data.paneDataItems.map((item) => ({
       ...item,
-      focused: focusedPane ? item.key === focusedPane.key : false,
+      maximised: maximisedPane ? item.key === maximisedPane.key : false,
     }))
-  }, [data.paneDataItems, focusedPane])
+  }, [data.paneDataItems, maximisedPane])
 
   return {
     ...data,
-    paneDataItems: paneDataItemsWithFocus,
-    focusedPane,
-    setFocusedPane,
+    paneDataItems: paneDataItemsWithMaximised,
+    maximisedPane,
+    setMaximisedPane,
   }
 }

@@ -36,12 +36,12 @@ export function DocumentHeaderTitle(): React.JSX.Element {
     return <>{t('panes.document-header-title.error.text', {error: error})}</>
   }
 
-  const hasFocusedPane = paneDataItems.some((paneData) => paneData.focused)
+  const hasMaximisedPane = paneDataItems.some((paneData) => paneData.maximised)
   const currentPaneIndex = index
 
   return (
     <>
-      {hasFocusedPane ? (
+      {hasMaximisedPane ? (
         <DocumentHeaderBreadcrumb
           paneDataItems={paneDataItems}
           currentPaneIndex={currentPaneIndex}

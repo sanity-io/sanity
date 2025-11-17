@@ -89,7 +89,7 @@ export const DocumentPanelHeader = memo(
       isInitialValueLoading,
       onPaneClose,
       onPaneSplit,
-      onSetFocusedPane,
+      onSetMaximisedPane,
       menuItemGroups,
       schemaType,
       connectionState,
@@ -99,7 +99,7 @@ export const DocumentPanelHeader = memo(
     } = useDocumentPane()
     const {features} = useStructureTool()
     const {index, BackLink, hasGroupSiblings} = usePaneRouter()
-    const {focusedPane} = useResolvedPanesList()
+    const {maximisedPane} = useResolvedPanesList()
     const {actions: fieldActions} = useFieldActions()
     const [referenceElement, setReferenceElement] = useState<HTMLElement | null>(null)
     const scrollContainerRef = useRef<HTMLDivElement>(null)
@@ -154,24 +154,24 @@ export const DocumentPanelHeader = memo(
 
     const {t} = useTranslation(structureLocaleNamespace)
 
-    const isFocusedPane = useMemo(() => {
+    const isMaximisedPane = useMemo(() => {
       return (
-        focusedPane?.pane &&
-        typeof focusedPane.pane === 'object' &&
-        focusedPane.pane.type === 'document' &&
-        focusedPane.pane.options.id === documentId
+        maximisedPane?.pane &&
+        typeof maximisedPane.pane === 'object' &&
+        maximisedPane.pane.type === 'document' &&
+        maximisedPane.pane.options.id === documentId
       )
-    }, [focusedPane, documentId])
+    }, [maximisedPane, documentId])
 
     const handleFocusPane = useCallback(() => {
-      onSetFocusedPane?.()
+      onSetMaximisedPane?.()
 
-      if (isFocusedPane) {
+      if (isMaximisedPane) {
         telemetry.log(FocusDocumentPaneCollapsed)
       } else {
         telemetry.log(FocusDocumentPaneClicked)
       }
-    }, [onSetFocusedPane, isFocusedPane, telemetry])
+    }, [onSetMaximisedPane, isMaximisedPane, telemetry])
     const renderPaneActions = useCallback<
       (props: {states: DocumentActionDescription[]}) => React.ReactNode
     >(
@@ -247,23 +247,25 @@ export const DocumentPanelHeader = memo(
             />
           )}
 
-          {onSetFocusedPane && (
+          {onSetMaximisedPane && (
             <Button
               key="focus-pane-button"
               aria-label={
-                isFocusedPane
+                isMaximisedPane
                   ? t('buttons.focus-pane-button.aria-label.collapse')
                   : t('buttons.focus-pane-button.aria-label.focus')
               }
-              icon={isFocusedPane ? CollapseIcon : ExpandIcon}
+              icon={isMaximisedPane ? CollapseIcon : ExpandIcon}
               mode="bleed"
               onClick={handleFocusPane}
               tooltipProps={{
-                content: isFocusedPane
+                content: isMaximisedPane
                   ? t('buttons.focus-pane-button.tooltip.collapse')
                   : t('buttons.focus-pane-button.tooltip.focus'),
               }}
-              data-testid={isFocusedPane ? 'focus-pane-button-collapse' : 'focus-pane-button-focus'}
+              data-testid={
+                isMaximisedPane ? 'focus-pane-button-collapse' : 'focus-pane-button-focus'
+              }
             />
           )}
 
@@ -283,12 +285,12 @@ export const DocumentPanelHeader = memo(
         actions,
         editState,
         handleFocusPane,
-        isFocusedPane,
         isInitialValueLoading,
+        isMaximisedPane,
         menuButtonNodes,
         onPaneClose,
         onPaneSplit,
-        onSetFocusedPane,
+        onSetMaximisedPane,
         renderPaneActions,
         schemaType,
         showPaneGroupCloseButton,

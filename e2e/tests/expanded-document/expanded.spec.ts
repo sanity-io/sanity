@@ -2,7 +2,7 @@ import {expect} from '@playwright/test'
 
 import {test} from '../../studio-test'
 
-test.describe('focused document', () => {
+test.describe('maximised document', () => {
   test.beforeEach(async ({page, createDraftDocument}) => {
     test.slow()
     await createDraftDocument('/content/input-standard;referenceTest')
@@ -37,7 +37,7 @@ test.describe('focused document', () => {
     await expect(page.getByTestId('document-header-breadcrumb')).not.toBeVisible()
   })
 
-  test('navigation to referenced document works when document is focused', async ({page}) => {
+  test('navigation to referenced document works when document is maximised', async ({page}) => {
     test.slow()
 
     await page.getByTestId('focus-pane-button-focus').click()
@@ -125,12 +125,12 @@ test.describe('focused document', () => {
   })
 })
 
-test.describe('focused document - with enhanced object dialog', () => {
+test.describe('maximised document - with enhanced object dialog', () => {
   test.beforeEach(async ({createDraftDocument}) => {
     await createDraftDocument('/content/input-debug;objectsDebug')
   })
 
-  test('when the enhanced object dialog is open, the focused document should be the one that is open', async ({
+  test('when the enhanced object dialog is open, the maximised document should be the one that is open', async ({
     page,
   }) => {
     await page.getByTestId('focus-pane-button-focus').click()

@@ -19,8 +19,8 @@ interface StructureToolPaneProps {
   path: string
   selected: boolean
   siblingIndex: number
-  focused: boolean
-  onSetFocusedPane?: () => void
+  maximised: boolean
+  onSetMaximisedPane?: () => void
 }
 
 // TODO: audit this creates separate chunks
@@ -51,8 +51,8 @@ export const StructureToolPane = memo(
       path,
       selected,
       siblingIndex,
-      focused,
-      onSetFocusedPane,
+      maximised,
+      onSetMaximisedPane,
     } = props
 
     const PaneComponent = paneMap[pane.type] || UnknownPane
@@ -75,8 +75,8 @@ export const StructureToolPane = memo(
             paneKey={paneKey}
             // @ts-expect-error TS doesn't know how to handle this intersection
             pane={pane}
-            focused={focused}
-            onSetFocusedPane={onSetFocusedPane}
+            maximised={maximised}
+            onSetMaximisedPane={onSetMaximisedPane}
           />
         </Suspense>
       </PaneRouterProvider>
