@@ -49,18 +49,21 @@ export function parse(dateString: string, dateFormat?: string, timeZone?: string
     // 1. A timezone is specified, AND
     // 2. A dateFormat was provided (meaning this is user input, not an ISO string being deserialized)
     if (timeZone && isValidTimeZoneString(timeZone) && dateFormat) {
-      // Extract the date/time component values that the user typed
-      const year = parsed.getFullYear()
-      const month = parsed.getMonth()
-      const day = parsed.getDate()
-      const hours = parsed.getHours()
-      const minutes = parsed.getMinutes()
-      const seconds = parsed.getSeconds()
-      const ms = parsed.getMilliseconds()
-
-      // Create TZDateMini using the component constructor
-      // This interprets the components as being in the target timezone
-      parsedDate = new TZDateMini(year, month, day, hours, minutes, seconds, ms, timeZone)
+      // Create TZDateMini using the component constructor to interpret the parsed
+      // components as being in the target timezone. We can't use new TZDateMini(parsed, timeZone)
+      // because dateFnsParse already created the Date in the browser's local timezone, which
+      // would cause an incorrect conversion. By extracting components, we tell TZDateMini:
+      // "these values represent the time in the target timezone directly"
+      parsedDate = new TZDateMini(
+        parsed.getFullYear(),
+        parsed.getMonth(),
+        parsed.getDate(),
+        parsed.getHours(),
+        parsed.getMinutes(),
+        parsed.getSeconds(),
+        parsed.getMilliseconds(),
+        timeZone,
+      )
     } else if (timeZone && isValidTimeZoneString(timeZone)) {
       // For ISO strings, just wrap in TZDateMini for display without conversion
       parsedDate = new TZDateMini(parsed, timeZone)
