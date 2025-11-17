@@ -108,7 +108,9 @@ export async function createTestProvider({
                             <ResourceCacheProvider>
                               <AddonDatasetContext.Provider value={addonDatasetContextValue}>
                                 <PerspectiveContext.Provider value={perspectiveContextValueMock}>
-                                  {children}
+                                  <DocumentLimitUpsellProvider>
+                                    <AssetLimitUpsellProvider>{children}</AssetLimitUpsellProvider>
+                                  </DocumentLimitUpsellProvider>
                                 </PerspectiveContext.Provider>
                               </AddonDatasetContext.Provider>
                             </ResourceCacheProvider>
