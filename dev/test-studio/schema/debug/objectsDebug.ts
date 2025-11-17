@@ -7,6 +7,7 @@ import {
 } from 'sanity'
 
 import {SideBySideObjectInput, SideBySideObjectItem} from './components/SideBySideObjectInput'
+import {PageBlockAnchor} from './PageBlockAnchor'
 
 const animal = defineField({
   type: 'object',
@@ -103,8 +104,24 @@ const animal = defineField({
                                               title: 'Title Three',
                                             },
                                           ],
+                                          components: {
+                                            input: (inputProps: any) => {
+                                              return inputProps.renderDefault(inputProps)
+                                            },
+                                          },
                                         },
                                       ],
+                                    },
+                                    {
+                                      type: 'internationalizedArrayString',
+                                      name: 'internationalizedArrayString',
+                                      title: 'Internationalized array string',
+                                    },
+
+                                    {
+                                      type: 'image',
+                                      name: 'imageChild',
+                                      title: 'Image',
                                     },
                                   ],
                                 },
@@ -469,6 +486,22 @@ const body = defineField({
       ],
     }),
     animal,
+    defineArrayMember({
+      type: 'object',
+      name: 'arrayOfObjects',
+      fields: [
+        {
+          type: 'string',
+          name: 'string',
+          title: 'String',
+        },
+      ],
+      components: {
+        input: (inputProps: any) => {
+          return inputProps.renderDefault(inputProps)
+        },
+      },
+    }),
   ],
 })
 
@@ -909,6 +942,27 @@ export const objectsDebug = defineType({
       name: 'internationalizedArrayStringValue',
       type: 'internationalizedArrayStringValue',
       title: 'Internationalized array string value',
+    }),
+    defineField({
+      name: 'arrayofObjectsWithItem',
+      type: 'array',
+      title: 'Array of objects with custom item',
+      of: [
+        {
+          type: 'object',
+          name: 'item',
+          fields: [
+            {
+              name: 'object1',
+              type: 'string',
+              title: 'String 1',
+            },
+          ],
+          components: {
+            item: PageBlockAnchor,
+          },
+        },
+      ],
     }),
     animals,
     arrayOfMixedTypes,
