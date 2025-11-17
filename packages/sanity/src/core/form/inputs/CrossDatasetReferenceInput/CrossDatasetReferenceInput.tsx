@@ -1,7 +1,7 @@
 /* eslint-disable complexity */
 import {ResetIcon as ClearIcon, SyncIcon as ReplaceIcon} from '@sanity/icons'
 import {type CrossDatasetReferenceSchemaType, type CrossDatasetReferenceValue} from '@sanity/types'
-import {Box, Card, Flex, Inline, Menu, Stack, useClickOutsideEvent, useToast} from '@sanity/ui'
+import {Card, Flex, Inline, Menu, Stack, useClickOutsideEvent, useToast} from '@sanity/ui'
 import {
   type FocusEvent,
   type KeyboardEvent,
@@ -17,7 +17,7 @@ import {catchError, distinctUntilChanged, filter, map, scan, switchMap, tap} fro
 
 import {MenuButton, MenuItem} from '../../../../ui-components'
 import {ChangeIndicator} from '../../../changeIndicators'
-import {PreviewCard} from '../../../components'
+import {PreviewCard, ReferenceInputPreviewCard} from '../../../components'
 import {ContextMenuButton} from '../../../components/contextMenuButton'
 import {type FIXME} from '../../../FIXME'
 import {useFeatureEnabled} from '../../../hooks'
@@ -207,7 +207,12 @@ export function CrossDatasetReferenceInput(props: CrossDatasetReferenceInputProp
         concat(
           of({isLoading: true}),
           onSearch(searchString).pipe(
-            map((hits) => ({hits, searchString, isLoading: false})),
+            map((hits) => ({
+              // eslint-disable-next-line max-nested-callbacks
+              hits: hits.filter((hit) => hit.published),
+              searchString,
+              isLoading: false,
+            })),
             catchError((error) => {
               push({
                 title: 'Reference search failed',
@@ -250,15 +255,13 @@ export function CrossDatasetReferenceInput(props: CrossDatasetReferenceInputProp
   const renderOption = useCallback(
     (option: FIXME) => {
       return (
-        <PreviewCard as="button" type="button" radius={2}>
-          <Box paddingX={3} paddingY={1}>
-            <OptionPreview
-              referenceType={schemaType}
-              document={option.hit.published}
-              getReferenceInfo={getReferenceInfoMemo}
-            />
-          </Box>
-        </PreviewCard>
+        <ReferenceInputPreviewCard forwardedAs="button" type="button" radius={2} tone="inherit">
+          <OptionPreview
+            referenceType={schemaType}
+            document={option.hit.published}
+            getReferenceInfo={getReferenceInfoMemo}
+          />
+        </ReferenceInputPreviewCard>
       )
     },
     [schemaType, getReferenceInfoMemo],
@@ -318,7 +321,7 @@ export function CrossDatasetReferenceInput(props: CrossDatasetReferenceInputProp
                 padding={0}
                 border
                 flex={1}
-                radius={1}
+                radius={2}
                 tone={
                   readOnly
                     ? 'transparent'
@@ -336,7 +339,6 @@ export function CrossDatasetReferenceInput(props: CrossDatasetReferenceInputProp
                       href={studioUrl}
                       data-as="a"
                       flex={1}
-                      padding={1}
                       paddingRight={3}
                       radius={2}
                       tone="inherit"
@@ -357,7 +359,6 @@ export function CrossDatasetReferenceInput(props: CrossDatasetReferenceInputProp
                   ) : (
                     <PreviewCard
                       flex={1}
-                      padding={1}
                       paddingRight={3}
                       radius={2}
                       tone="inherit"
