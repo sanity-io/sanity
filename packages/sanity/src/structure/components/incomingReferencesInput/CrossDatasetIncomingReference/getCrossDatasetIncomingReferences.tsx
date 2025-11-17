@@ -6,6 +6,7 @@ import {
   type DocumentAvailability,
   type DocumentPreviewStore,
   getPreviewPaths,
+  getPublishedId,
   isNonNullable,
   prepareForPreview,
   type SanityClient,
@@ -75,7 +76,7 @@ export function getCrossDatasetIncomingReferences({
     // Now that we have all the references from the dataset the user defined, we need to get the document type from the documentId
     mergeMapArray((document) =>
       documentPreviewStore
-        .observeDocumentTypeFromId(document.documentId, {
+        .observeDocumentTypeFromId(getPublishedId(document.documentId), {
           dataset: document.datasetName,
           projectId: document.projectId,
         })
@@ -111,7 +112,7 @@ export function getCrossDatasetIncomingReferences({
       const previewPaths = getPreviewPaths(type.preview) || []
       //  Now we get the preview values for the document so we can display it in the preview
       return documentPreviewStore
-        .observePaths({_id: document.documentId}, previewPaths, {
+        .observePaths({_id: getPublishedId(document.documentId)}, previewPaths, {
           dataset: document.datasetName,
           projectId: document.projectId,
         })
