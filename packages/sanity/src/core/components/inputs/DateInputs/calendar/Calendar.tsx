@@ -148,8 +148,9 @@ export const Calendar = forwardRef(function Calendar(
       }
 
       const utcDate = zonedTimeToUtc(newDate, timeZone.name)
+      const zonedDate = utcToZonedTime(utcDate, timeZone.name)
 
-      onSelect(utcDate)
+      onSelect(zonedDate)
     },
     [onSelect, savedSelectedDate, timeZone],
   )
@@ -366,7 +367,7 @@ export const Calendar = forwardRef(function Calendar(
               <Flex align="center">
                 <TimeInput
                   aria-label={labels.selectTime}
-                  value={format(savedSelectedDate, 'HH:mm')}
+                  value={format(savedSelectedDate, 'HH:mm', {timeZone: timeZone?.name})}
                   onChange={handleTimeChangeInputChange}
                 />
                 <Box marginLeft={2}>

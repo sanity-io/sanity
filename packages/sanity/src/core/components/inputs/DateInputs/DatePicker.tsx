@@ -44,9 +44,9 @@ export const DatePicker = forwardRef(function DatePicker(
       {...rest}
       labels={calendarLabels}
       ref={ref}
-      selectedDate={utcToCurrentZoneDate(value)}
+      selectedDate={value}
       onSelect={handleSelect}
-      focusedDate={utcToCurrentZoneDate(focusedDate || value)}
+      focusedDate={focusedDate || value}
       onFocusedDateChange={setFocusedDay}
       padding={padding}
       showTimeZone={showTimeZone}
