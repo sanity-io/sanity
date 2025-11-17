@@ -6,7 +6,8 @@ import {
   useEditor,
 } from '@portabletext/editor'
 import {defineBehavior, forward, raise} from '@portabletext/editor/behaviors'
-import {BehaviorPlugin, EventListenerPlugin, OneLinePlugin} from '@portabletext/editor/plugins'
+import {BehaviorPlugin, EventListenerPlugin} from '@portabletext/editor/plugins'
+import {OneLinePlugin} from '@portabletext/plugin-one-line'
 import {type Path} from '@sanity/types'
 import {Card, useArrayProp, useRootTheme} from '@sanity/ui'
 import {useCallback, useEffect, useState} from 'react'
