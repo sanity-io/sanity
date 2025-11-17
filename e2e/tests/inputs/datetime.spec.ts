@@ -81,7 +81,7 @@ test(`date time when manually changing the hour in an input, shouldn't alter it 
   await createDraftDocument('/content/input-standard;datetimeTest')
 
   await expect(
-    await page
+    page
       .getByTestId('field-aDateTimeWithDisplayTimezoneInAmericaLosAngeles')
       .getByTestId('date-input'),
   ).toBeVisible()
