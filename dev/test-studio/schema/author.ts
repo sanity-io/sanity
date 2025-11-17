@@ -1,7 +1,6 @@
 import {UserIcon as icon} from '@sanity/icons'
 import {type StringRule} from '@sanity/types'
-import {defineField, defineType} from 'sanity'
-import {defineIncomingReferenceField, isIncomingReferenceCreation} from 'sanity/structure'
+import {defineDecoration, defineField, defineType, isIncomingReferenceCreation} from 'sanity'
 
 import {AudienceSelectInput} from '../components/AudienceSelectInput'
 import {RemoveReferenceAction} from '../components/IncomingReferencesActions'
@@ -105,7 +104,8 @@ export default defineType({
       },
       validation: (rule: StringRule) => rule.required(),
     }),
-    defineIncomingReferenceField({
+    defineDecoration({
+      type: 'incomingReferences',
       name: 'incomingReferencesDesigner',
       title: 'Incoming references with the same role',
       options: {
@@ -125,7 +125,8 @@ export default defineType({
         types: [{type: 'author'}],
       },
     }),
-    defineIncomingReferenceField({
+    defineDecoration({
+      type: 'incomingReferences',
       name: 'booksCreated',
       title: 'Books created by this author',
       options: {
