@@ -533,7 +533,11 @@ function EditorChangePlugin(
           })
           break
         case 'mutation':
-          props.onChange(event)
+          props.onChange({
+            type: 'mutation',
+            snapshot: event.value,
+            patches: event.patches,
+          })
           break
         case 'patch': {
           if (event.patch.type === 'diffMatchPatch' && event.patch.origin === 'local') {
