@@ -16,6 +16,7 @@ import {getValueAtPath, pathToString} from '../../../../../field/paths/helpers'
 import {EMPTY_ARRAY} from '../../../../../util/empty'
 import {getItemType} from '../../../../store/utils/getItemType'
 import {type DialogItem} from '../../types'
+import {hasCustomInputComponent} from '../hasCustomInputComponent'
 import {isPathTextInPTEField} from '../isPathTextInPTEField'
 import {buildBreadcrumbsState} from './buildBreadcrumbsState'
 import {type RecursiveProps, type TreeEditingState} from './buildTreeEditingState'
@@ -82,7 +83,6 @@ export function buildArrayStatePTE(props: BuildArrayStatePTEProps): {
   // If openPath points to text content within this portable text field, we still need to process
   // the PTE to build siblings for nested arrays, but we won't set a relativePath
   const isTextContent = isPathTextInPTEField(rootSchemaType.fields, openPath, documentValue)
-
   if (isTextContent) {
     return {
       breadcrumbs,
@@ -182,11 +182,9 @@ export function buildArrayStatePTE(props: BuildArrayStatePTEProps): {
             if (itemSchemaType && isReferenceSchemaType(itemSchemaType)) return
           }
 
-          if (isArrayItemSelected(blockFieldPath, openPath)) {
-            // Use openPath as relativePath for more precise targeting
-            // meaning that we in fact want to go deeper into the nested structure
-            relativePath = getRelativePath(openPath)
-          }
+          // Use openPath as relativePath for more precise targeting
+          // meaning that we in fact want to go deeper into the nested structure
+          relativePath = getRelativePath(openPath)
 
           // Process array fields even if they're empty (for new blocks)
           // But ensure the value is at least an empty array for processing
@@ -252,8 +250,11 @@ export function buildArrayStatePTE(props: BuildArrayStatePTEProps): {
   // This is for deeply nested PTEs
   relativePath = validateRelativePathExists(relativePath, documentValue)
 
+  // If the openPath has a custom input component, we don't want to set a relativePath
+  const hasCustomInput = hasCustomInputComponent(rootSchemaType.fields, openPath)
+
   return {
-    relativePath: isTextContent ? null : relativePath,
+    relativePath: isTextContent || hasCustomInput ? null : relativePath,
     breadcrumbs,
     childrenMenuItems,
     siblings,
