@@ -12,8 +12,10 @@ import {FocusDocumentPaneNavigated} from './__telemetry__/focus.telemetry'
 
 export function DocumentHeaderBreadcrumbItem({
   paneData,
+  index,
 }: {
   paneData: Panes['paneDataItems'][number]
+  index: number
 }) {
   const {pane} = paneData
   const router = useRouter()
@@ -57,6 +59,7 @@ export function DocumentHeaderBreadcrumbItem({
       text={displayTitle || t('panes.document-header-title.untitled.text')}
       tooltipProps={{content: displayTitle || t('panes.document-header-title.untitled.text')}}
       onClick={handleClick}
+      paddingLeft={index === 0 ? 0 : 1}
     />
   )
 }

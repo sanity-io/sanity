@@ -51,9 +51,11 @@ export const StructureTool = memo(function StructureTool({onPaneChange}: Structu
   const handleRootCollapse = useCallback(() => setLayoutCollapsed(true), [setLayoutCollapsed])
   const handleRootExpand = useCallback(() => setLayoutCollapsed(false), [setLayoutCollapsed])
 
-  // When a pane is focused, show only from that pane up to and including its group
-  // It's important to use the last index as there might be panes that have the same document (so ids and such)
-  // But the structure should be kept
+  /* When a pane is maximised, show only from that pane up to and including itself
+   * - Take the deepest maximised pane.
+   * - Combine with all panes that are deeper than it that are in the same group, or an ancestral group.
+   * - Only show these matching panes.
+   */
   const maximisedLastIndex = paneDataItems.findLastIndex((pane) => pane.maximised)
   const paneItemsToShow =
     maximisedLastIndex === -1
@@ -108,7 +110,7 @@ export const StructureTool = memo(function StructureTool({onPaneChange}: Structu
         return
       }
 
-      // Only allow document panes to be focused
+      // Only allow document panes to be maximised
       if (paneData.pane !== LOADING_PANE && paneData.pane.type === 'document') {
         // Navigate to this pane, closing all panes after it
         const slicedPanes = currentPanes.slice(0, paneData.groupIndex)
@@ -123,7 +125,7 @@ export const StructureTool = memo(function StructureTool({onPaneChange}: Structu
 
   const previousSelectedIndexRef = useRef(-1)
 
-  // Manage focused pane: sync with navigation and handle cleanup
+  // Manage maximised pane: sync with navigation and handle cleanup
   useEffect(() => {
     const selectedIndex = paneDataItems.findIndex((pane) => pane.selected)
     const prevSelectedIndex = previousSelectedIndexRef.current
@@ -131,7 +133,7 @@ export const StructureTool = memo(function StructureTool({onPaneChange}: Structu
 
     if (!maximisedPane) return
 
-    // Clear focus if the focused pane is not a document pane (focus only works with documents)
+    // Clear focus if the maximised pane is not a document pane (focus only works with documents)
     if (maximisedPane.pane !== LOADING_PANE && maximisedPane.pane.type !== 'document') {
       setMaximisedPane(null)
       return
@@ -147,7 +149,7 @@ export const StructureTool = memo(function StructureTool({onPaneChange}: Structu
       return
     }
 
-    // Clean up or find fallback when focused pane no longer exists
+    // Clean up or find fallback when maximised pane no longer exists
     const isMaximisedPanePresent = paneDataItems.some((pane) => pane.key === maximisedPane.key)
 
     if (!isMaximisedPanePresent) {

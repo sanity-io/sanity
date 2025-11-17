@@ -20,7 +20,7 @@ export function DocumentHeaderBreadcrumb({
         const isDocumentPane = paneData.pane !== LOADING_PANE && paneData.pane.type === 'document'
         return (
           <Fragment key={`breadcrumb-item-${paneData.key}-${idx}`}>
-            <DocumentHeaderBreadcrumbItem paneData={paneData} />
+            <DocumentHeaderBreadcrumbItem paneData={paneData} index={idx} />
 
             {idx < currentPaneIndex &&
               (isDocumentPane ? (
