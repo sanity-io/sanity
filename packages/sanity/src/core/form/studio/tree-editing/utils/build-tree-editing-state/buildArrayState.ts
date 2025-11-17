@@ -94,11 +94,6 @@ export function buildArrayState(props: BuildArrayState): TreeEditingState {
     // Skip references early, references are handled by the reference input and shouldn't open the enhanced dialog
     if (isReferenceSchemaType(itemSchemaField)) return
 
-    // If the child array field has custom components.input, skip building dialog
-    if (itemSchemaField.components?.input) {
-      return
-    }
-
     // Check if this is the currently selected item and store its index
     if (isArrayItemSelected(itemPath, openPath)) {
       relativePath = getRelativePath(itemPath)
@@ -180,9 +175,6 @@ export function buildArrayState(props: BuildArrayState): TreeEditingState {
           // If the child array field has custom components.input, skip building dialog
           if (isArrayOfObjectsSchemaType(nestedArrayField.type)) {
             const nestedArraySchemaType = nestedArrayField.type as ArraySchemaType
-            if (nestedArraySchemaType.components?.input) {
-              return
-            }
           }
 
           // Update the relative path if the array field is selected.
@@ -234,12 +226,6 @@ export function buildArrayState(props: BuildArrayState): TreeEditingState {
 
       // Handle regular arrays of objects (not portable text)
       if (IsArrayOfObjects) {
-        // If the child array field has custom components.input, skip building dialog
-        const childArraySchemaType = childField.type as ArraySchemaType
-        if (childArraySchemaType.components?.input) {
-          return
-        }
-
         const childArray = Array.isArray(childValue) ? childValue : []
 
         // Check if any item in this array is selected and update the index

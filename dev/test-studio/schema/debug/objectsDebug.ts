@@ -104,6 +104,11 @@ const animal = defineField({
                                               title: 'Title Three',
                                             },
                                           ],
+                                          components: {
+                                            input: (inputProps: any) => {
+                                              return inputProps.renderDefault(inputProps)
+                                            },
+                                          },
                                         },
                                       ],
                                     },
@@ -481,6 +486,22 @@ const body = defineField({
       ],
     }),
     animal,
+    defineArrayMember({
+      type: 'object',
+      name: 'arrayOfObjects',
+      fields: [
+        {
+          type: 'string',
+          name: 'string',
+          title: 'String',
+        },
+      ],
+      components: {
+        input: (inputProps: any) => {
+          return inputProps.renderDefault(inputProps)
+        },
+      },
+    }),
   ],
 })
 

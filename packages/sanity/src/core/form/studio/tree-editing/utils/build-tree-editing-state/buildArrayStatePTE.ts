@@ -109,9 +109,6 @@ export function buildArrayStatePTE(props: BuildArrayStatePTEProps): {
     if (!blockSchemaType) return
 
     // If the child array field has custom components.input, skip building dialog
-    if (blockSchemaType.components?.input) {
-      return
-    }
 
     if (!blockSchemaType || !isObjectSchemaType(blockSchemaType)) return
     if (!blockSchemaType.fields) return

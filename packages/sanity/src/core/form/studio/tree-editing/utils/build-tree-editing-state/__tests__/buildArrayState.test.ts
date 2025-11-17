@@ -1139,9 +1139,9 @@ describe('buildArrayState', () => {
 
       // relativePath SHOULD be set when item has custom components.input
       // because components.input is often just a wrapper
-      expect(result.relativePath).toEqual([])
+      expect(result.relativePath).toEqual(['customArray', {_key: 'item1'}])
       // Should build menu items for items with custom components.input
-      expect(result.menuItems.length).toEqual(0)
+      expect(result.menuItems.length).toBeGreaterThan(0)
     })
 
     test('should set relativePath when nested fields have custom components but item type does not', () => {

@@ -11,6 +11,7 @@ import {getSchemaTypeTitle} from '../../../../../schema/helpers'
 import {type DialogItem} from '../../types'
 import {getRootPath} from '../getRootPath'
 import {getSchemaField} from '../getSchemaField'
+import {hasCustomInputComponent} from '../hasCustomInputComponent'
 import {buildArrayState} from './buildArrayState'
 
 const EMPTY_ARRAY: [] = []
@@ -69,11 +70,9 @@ export function buildTreeEditingState(props: BuildTreeEditingStateProps): TreeEd
   }
 
   // If the child array field has custom components.input, skip building dialog
-  const rootArraySchemaType = rootField.type as ArraySchemaType
-  if (rootArraySchemaType.components?.input) {
+  if (hasCustomInputComponent((props.schemaType as ObjectSchemaType).fields || [], openPath)) {
     return EMPTY_TREE_STATE
   }
-
   let relativePath: Path = []
   const breadcrumbs: DialogItem[] = []
 
