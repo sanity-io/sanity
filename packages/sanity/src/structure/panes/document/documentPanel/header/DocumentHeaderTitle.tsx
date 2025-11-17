@@ -1,3 +1,4 @@
+import {useMemo} from 'react'
 import {useTranslation} from 'sanity'
 
 import {structureLocaleNamespace} from '../../../../i18n'
@@ -13,6 +14,11 @@ export function DocumentHeaderTitle(): React.JSX.Element {
   const subscribed = Boolean(documentValue)
 
   const {t} = useTranslation(structureLocaleNamespace)
+
+  const hasMaximisedPane = useMemo(
+    () => paneDataItems.some((paneData) => paneData.maximised),
+    [paneDataItems],
+  )
 
   if (connectionState === 'connecting' && !subscribed) {
     return <></>
@@ -36,16 +42,10 @@ export function DocumentHeaderTitle(): React.JSX.Element {
     return <>{t('panes.document-header-title.error.text', {error: error})}</>
   }
 
-  const hasMaximisedPane = paneDataItems.some((paneData) => paneData.maximised)
-  const currentPaneIndex = index
-
   return (
     <>
       {hasMaximisedPane ? (
-        <DocumentHeaderBreadcrumb
-          paneDataItems={paneDataItems}
-          currentPaneIndex={currentPaneIndex}
-        />
+        <DocumentHeaderBreadcrumb paneDataItems={paneDataItems} currentPaneIndex={index} />
       ) : (
         documentTitle || (
           <span style={{color: 'var(--card-muted-fg-color)'}}>
