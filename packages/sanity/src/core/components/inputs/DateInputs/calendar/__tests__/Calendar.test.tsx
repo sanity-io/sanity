@@ -102,7 +102,7 @@ describe('Calendar', () => {
   })
 
   describe('handleDateChange', () => {
-    it('calls onSelect with timezone-adjusted date should not change the time', async () => {
+    it('calls onSelect with timezone-adjusted date should have the time in UTC', async () => {
       const spy = vi
         .spyOn(useTimeZoneModule, 'useTimeZone')
         .mockReturnValue(mockUseTimeZoneWithTokyo)
@@ -130,7 +130,7 @@ describe('Calendar', () => {
 
       // Verify onSelect was called with timezone-adjusted date
       expect(mockOnSelect).toHaveBeenCalledTimes(1)
-      expect(mockOnSelect).toHaveBeenCalledWith(new Date('2024-01-20T14:30:00Z'))
+      expect(mockOnSelect).toHaveBeenCalledWith(new Date('2024-01-19T21:30:00Z'))
 
       spy.mockRestore()
     })

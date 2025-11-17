@@ -1,6 +1,6 @@
 import {type ComponentProps, type ForwardedRef, forwardRef, useCallback, useState} from 'react'
 
-import {type TimeZoneScope} from '../../../hooks/useTimeZone'
+import {type TimeZoneScope, useTimeZone} from '../../../hooks/useTimeZone'
 import {Calendar, type CalendarProps} from './calendar/Calendar'
 import {type CalendarLabels} from './calendar/types'
 
@@ -28,6 +28,7 @@ export const DatePicker = forwardRef(function DatePicker(
     timeZoneScope,
     ...rest
   } = props
+  const {utcToCurrentZoneDate} = useTimeZone(timeZoneScope)
   const [focusedDate, setFocusedDay] = useState<Date>()
 
   const handleSelect = useCallback(
@@ -43,9 +44,9 @@ export const DatePicker = forwardRef(function DatePicker(
       {...rest}
       labels={calendarLabels}
       ref={ref}
-      selectedDate={value}
+      selectedDate={utcToCurrentZoneDate(value)}
       onSelect={handleSelect}
-      focusedDate={focusedDate || value}
+      focusedDate={utcToCurrentZoneDate(focusedDate || value)}
       onFocusedDateChange={setFocusedDay}
       padding={padding}
       showTimeZone={showTimeZone}
