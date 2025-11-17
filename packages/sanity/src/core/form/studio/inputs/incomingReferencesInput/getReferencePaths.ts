@@ -1,6 +1,28 @@
-import {type Path, type SanityDocument} from 'sanity'
+import {type Path, type SanityDocument} from '@sanity/types'
 
 const INTERNAL_KEYS = ['_id', '_type', '_createdAt', '_updatedAt', '_rev']
+
+/**
+ * Given a document and a reference id, it returns the paths in where the reference is located.
+ * Example:
+ * ```ts
+ * const document = {
+ *   _type: 'book',
+ *   _id: '123',
+ *   author: {
+ *     _ref: 'foo',
+ *     _type: "reference"
+ *   },
+ * }
+ * const referenceToId = 'foo'
+ * const referencePaths = getReferencePaths(document, referenceToId)
+ * console.log(referencePaths) // [['author']]
+ * ```
+ * @param document - The document to get the reference paths from.
+ * @param referenceToId - The id of the reference to get the paths from.
+ * @returns The reference paths.
+ * @internal
+ */
 export function getReferencePaths(document: SanityDocument, referenceToId: string): Path[] {
   const referencePaths: Path[] = []
 

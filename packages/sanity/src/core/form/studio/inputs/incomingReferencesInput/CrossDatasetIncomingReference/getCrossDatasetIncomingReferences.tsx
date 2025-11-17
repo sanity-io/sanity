@@ -1,18 +1,15 @@
+import {type SanityClient} from '@sanity/client'
 import {DocumentIcon} from '@sanity/icons'
-import {type PreviewValue} from '@sanity/types'
+import {type CrossDatasetIncomingReference, type PreviewValue} from '@sanity/types'
 import {map, type Observable, of, startWith} from 'rxjs'
 import {mergeMapArray} from 'rxjs-mergemap-array'
-import {
-  type DocumentAvailability,
-  type DocumentPreviewStore,
-  getPreviewPaths,
-  isNonNullable,
-  prepareForPreview,
-  type SanityClient,
-} from 'sanity'
 
-import {fetchCrossDatasetReferences} from '../../confirmDeleteDialog/useReferringDocuments'
-import {type CrossDatasetIncomingReference} from '../types'
+import {type DocumentPreviewStore} from '../../../../../preview/documentPreviewStore'
+import {type DocumentAvailability} from '../../../../../preview/types'
+import {getPreviewPaths} from '../../../../../preview/utils/getPreviewPaths'
+import {prepareForPreview} from '../../../../../preview/utils/prepareForPreview'
+import {isNonNullable} from '../../../../../util/isNonNullable'
+import {fetchCrossDatasetReferences} from './fetchCrossDatasetReferences'
 
 export const INITIAL_STATE = {
   documents: [],
@@ -48,6 +45,10 @@ export interface CrossDatasetIncomingReferenceDocument {
   projectId: string
   dataset: string
 }
+/**
+ * Given a document id and a type, it returns all the references to this document from any other dataset.
+ * @internal
+ */
 export function getCrossDatasetIncomingReferences({
   documentId,
   type,

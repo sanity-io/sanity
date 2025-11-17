@@ -1,13 +1,14 @@
+import {type SanityClient} from '@sanity/client'
+import {
+  type IncomingReferencesFilterResolver,
+  type IncomingReferencesOptions,
+  type SanityDocument,
+} from '@sanity/types'
 import {distinctUntilChanged, filter, map, type Observable, of, startWith, switchMap} from 'rxjs'
 import {mergeMapArray} from 'rxjs-mergemap-array'
-import {
-  type DocumentPreviewStore,
-  getPublishedId,
-  type SanityClient,
-  type SanityDocument,
-} from 'sanity'
 
-import {type IncomingReferencesFilterResolver, type IncomingReferencesOptions} from './types'
+import {type DocumentPreviewStore} from '../../../../preview/documentPreviewStore'
+import {getPublishedId} from '../../../../util/draftUtils'
 
 export const INITIAL_STATE = {
   documents: [],
@@ -46,6 +47,10 @@ interface InspectorIncomingReferencesOptions {
   filterParams?: undefined
 }
 
+/**
+ * Given a document id and a type, it returns all the references to this document from the same dataset.
+ * @internal
+ */
 export function getIncomingReferences({
   documentId,
   documentPreviewStore,

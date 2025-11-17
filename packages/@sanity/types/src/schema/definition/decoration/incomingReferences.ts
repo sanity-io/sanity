@@ -1,12 +1,13 @@
-import {type SelectableTone} from '@sanity/ui'
-import {
-  type ActionComponent,
-  type DocumentActionDialogProps,
-  type PreviewConfig,
-  type SanityClient,
-  type SanityDocument,
-} from 'sanity'
+import {type SanityClient} from '@sanity/client'
 
+import {type SanityDocument} from '../../../documents/types'
+import {type PreviewConfig} from '../../preview'
+
+/**
+ * Context for incoming reference actions.
+ *
+ * @beta
+ */
 export type IncomingReferenceActionsContext = {
   /**
    * The document that is linked to the reference.
@@ -15,13 +16,19 @@ export type IncomingReferenceActionsContext = {
   getClient: (options: {apiVersion: string}) => SanityClient
 }
 
+/**
+ * Description of an incoming reference action.
+ * Dialog support is not yet implemented.
+ * @beta
+ */
 export type IncomingReferenceActionDescription = {
   label: string
   icon?: React.ElementType
-  tone?: SelectableTone
+  tone?: 'default' | 'neutral' | 'primary' | 'suggest' | 'positive' | 'caution' | 'critical'
   disabled?: boolean
   onHandle: (() => Promise<void>) | (() => void)
-  dialog?: DocumentActionDialogProps | false | null
+  // TODO: Add support for dialogs
+  dialog?: null // DocumentActionDialogProps | false | null
 }
 
 /**
@@ -41,11 +48,14 @@ export type IncomingReferenceActionDescription = {
  *
  * @beta
  */
-export type IncomingReferenceAction = ActionComponent<
-  IncomingReferenceActionsContext,
-  IncomingReferenceActionDescription
->
+export type IncomingReferenceAction = {
+  (props: IncomingReferenceActionsContext): IncomingReferenceActionDescription | null
+}
 
+/**
+ * Cross-dataset incoming reference type.
+ * @beta
+ */
 export interface CrossDatasetIncomingReference {
   type: string
   title?: string
@@ -54,24 +64,40 @@ export interface CrossDatasetIncomingReference {
   studioUrl?: (document: {id: string; type?: string}) => string | null
 }
 
+/**
+ * Incoming reference type.
+ * @beta
+ */
 export interface IncomingReferenceType {
   type: string
   dataset?: never
   title?: string
 }
 
+/**
+ * Asserts if a type is an incoming reference type.
+ * @beta
+ */
 export function isIncomingReferenceType(
   type: IncomingReferenceType | CrossDatasetIncomingReference,
 ): type is IncomingReferenceType {
   return !type.dataset
 }
 
+/**
+ * Asserts if a type is a cross-dataset incoming reference type.
+ * @beta
+ */
 export function isCrossDatasetIncomingReference(
   type: IncomingReferenceType | CrossDatasetIncomingReference,
 ): type is CrossDatasetIncomingReference {
   return Boolean(type.dataset)
 }
 
+/**
+ * Resolver for incoming references filter.
+ * @beta
+ */
 export type IncomingReferencesFilterResolver = (context: {
   document: SanityDocument
   getClient: (options: {apiVersion: string}) => SanityClient
@@ -80,6 +106,24 @@ export type IncomingReferencesFilterResolver = (context: {
   | {filter: string; filterParams?: Record<string, string>}
   | Promise<{filter: string; filterParams?: Record<string, string>}>
 
+/**
+ * Options for incoming references decoration component.
+ * ```ts
+ *  defineDecoration({
+ *   type: "incomingReferences"
+ *   name: "incomingReferencesAuthor",
+ *   options: {
+ *     types: [{type: 'author'}],
+ *     filter: (context) => {
+ *       return {filter: 'author == $author', filterParams: {author: context.document.author}}
+ *     },
+ *     onLinkDocument: (document, reference) => {
+ *       return {...document, author: reference}
+ *     },
+ *  })
+ * ```
+ * @beta
+ */
 export type IncomingReferencesOptions = {
   /**
    * The type of the incoming references.

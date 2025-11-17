@@ -1,21 +1,19 @@
-import {Box, Menu} from '@sanity/ui'
-import {type Dispatch, type SetStateAction, useCallback, useState} from 'react'
-import {
-  ContextMenuButton,
-  GetHookCollectionState,
-  LegacyLayerProvider,
-  type SanityDocument,
-  useSource,
-} from 'sanity'
-
-import {MenuButton} from '../../../ui-components/menuButton/MenuButton'
-import {MenuItem} from '../../../ui-components/menuItem/MenuItem'
-import {ActionStateDialog} from '../../panes/document/statusBar/ActionStateDialog'
 import {
   type IncomingReferenceAction,
   type IncomingReferenceActionDescription,
   type IncomingReferenceActionsContext,
-} from './types'
+  type SanityDocument,
+} from '@sanity/types'
+import {Box, Menu, Text} from '@sanity/ui'
+import {type Dispatch, type SetStateAction, useCallback, useState} from 'react'
+
+// import { ActionStateDialog } from '../../../../../structure/panes/document/statusBar/ActionStateDialog'
+import {MenuButton} from '../../../../../ui-components/menuButton/MenuButton'
+import {MenuItem} from '../../../../../ui-components/menuItem/MenuItem'
+import {ContextMenuButton} from '../../../../components/contextMenuButton/ContextMenuButton'
+import {GetHookCollectionState} from '../../../../components/hookCollection/GetHookCollectionState'
+import {LegacyLayerProvider} from '../../../../components/transitional/LegacyLayerProvider'
+import {useSource} from '../../../../studio/source'
 
 const IncomingReferenceDocumentActionsInner = ({
   states,
@@ -63,7 +61,11 @@ const IncomingReferenceDocumentActionsInner = ({
       </Box>
       {currentAction && currentAction.dialog && (
         <LegacyLayerProvider zOffset="pane">
-          <ActionStateDialog dialog={currentAction.dialog} referenceElement={referenceElement} />
+          <div>
+            {/* eslint-disable-next-line i18next/no-literal-string */}
+            <Text size={1}>Dialogs are not supported yet.</Text>
+          </div>
+          {/* <ActionStateDialog dialog={currentAction.dialog} referenceElement={referenceElement} /> */}
         </LegacyLayerProvider>
       )}
     </>

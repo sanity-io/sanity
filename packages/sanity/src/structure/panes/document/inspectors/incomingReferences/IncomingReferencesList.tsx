@@ -5,6 +5,9 @@ import {useObservable} from 'react-rx'
 import {map} from 'rxjs'
 import {
   DEFAULT_STUDIO_CLIENT_OPTIONS,
+  getCrossDatasetIncomingReferences,
+  getIncomingReferences,
+  IncomingReferenceCrossDatasetPreview,
   LoadingBlock,
   useClient,
   useDocumentPreviewStore,
@@ -13,12 +16,6 @@ import {
   useTranslation,
 } from 'sanity'
 
-import {CrossDatasetIncomingReferenceDocumentPreview} from '../../../../components/incomingReferencesInput/CrossDatasetIncomingReference/CrossDatasetIncomingReferenceDocumentPreview'
-import {
-  type CrossDatasetIncomingReferenceDocument,
-  getCrossDatasetIncomingReferences,
-} from '../../../../components/incomingReferencesInput/CrossDatasetIncomingReference/getCrossDatasetIncomingReferences'
-import {getIncomingReferences} from '../../../../components/incomingReferencesInput/getIncomingReferences'
 import {structureLocaleNamespace} from '../../../../i18n'
 import {useDocumentPane} from '../../useDocumentPane'
 import {IncomingReferenceDocument} from './IncomingReferenceDocument'
@@ -84,7 +81,7 @@ export function IncomingReferencesList() {
               else acc[type] = [doc]
               return acc
             },
-            {} as Record<string, CrossDatasetIncomingReferenceDocument[]>,
+            {} as Record<string, typeof documents>,
           )
           return Object.entries(documentsByType).map(([type, docs]) => ({type, documents: docs}))
         }),
@@ -143,7 +140,7 @@ export function IncomingReferencesList() {
                   tone="default"
                   overflow="hidden"
                 >
-                  <CrossDatasetIncomingReferenceDocumentPreview document={document} />
+                  <IncomingReferenceCrossDatasetPreview document={document} />
                 </Card>
               ))}
             </Stack>

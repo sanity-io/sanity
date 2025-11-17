@@ -1,22 +1,19 @@
+import {type CrossDatasetIncomingReference} from '@sanity/types'
 import {Box, Card, Flex, Stack, Text} from '@sanity/ui'
 import {useMemo} from 'react'
 import {useObservable} from 'react-rx'
-import {
-  DEFAULT_STUDIO_CLIENT_OPTIONS,
-  LoadingBlock,
-  useClient,
-  useDocumentPreviewStore,
-  useSchema,
-  useTranslation,
-} from 'sanity'
 
-import {structureLocaleNamespace} from '../../../i18n'
+import {LoadingBlock} from '../../../../../components/loadingBlock/LoadingBlock'
+import {useClient} from '../../../../../hooks/useClient'
+import {useSchema} from '../../../../../hooks/useSchema'
+import {useTranslation} from '../../../../../i18n/hooks/useTranslation'
+import {useDocumentPreviewStore} from '../../../../../store/_legacy/datastores'
+import {DEFAULT_STUDIO_CLIENT_OPTIONS} from '../../../../../studioClient'
 import {INITIAL_STATE} from '../getIncomingReferences'
-import {type CrossDatasetIncomingReference} from '../types'
-import {CrossDatasetIncomingReferenceDocumentPreview} from './CrossDatasetIncomingReferenceDocumentPreview'
 import {getCrossDatasetIncomingReferences} from './getCrossDatasetIncomingReferences'
+import {IncomingReferenceCrossDatasetPreview} from './IncomingReferenceCrossDatasetPreview'
 
-export function CrossDatasetIncomingReferenceType({
+export function CrossDatasetIncomingReferences({
   type,
   referenced,
   shouldRenderTitle,
@@ -42,12 +39,12 @@ export function CrossDatasetIncomingReferenceType({
   const {documents, loading} = useObservable(references$, INITIAL_STATE)
 
   const schema = useSchema()
-  const {t} = useTranslation(structureLocaleNamespace)
+  const {t} = useTranslation()
   const schemaType = schema.get(type.type)
 
   if (!schemaType) return null
   if (loading) {
-    return <LoadingBlock showText title={t('incoming-references-input.types-loading')} />
+    return <LoadingBlock showText title={t('incoming-references.input.types-loading')} />
   }
   return (
     <Stack space={2} marginBottom={2}>
@@ -62,7 +59,7 @@ export function CrossDatasetIncomingReferenceType({
         {documents && documents.length > 0 ? (
           <Stack space={1}>
             {documents.map((document) => (
-              <CrossDatasetIncomingReferenceDocumentPreview
+              <IncomingReferenceCrossDatasetPreview
                 key={document.id}
                 document={document}
                 type={type}
@@ -73,7 +70,7 @@ export function CrossDatasetIncomingReferenceType({
           <>
             <Flex align="center" justify="center" padding={2}>
               <Text size={1} muted>
-                {t('incoming-references-input.no-items')}
+                {t('incoming-references.input.no-items')}
               </Text>
             </Flex>
           </>

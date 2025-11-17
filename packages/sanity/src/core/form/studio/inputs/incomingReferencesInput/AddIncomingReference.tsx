@@ -1,27 +1,22 @@
+import {type SanityClient} from '@sanity/client'
 import {DEFAULT_MAX_FIELD_DEPTH} from '@sanity/schema/_internal'
+import {type IncomingReferencesOptions, type SchemaType, type SearchStrategy} from '@sanity/types'
 import {Box, Grid, Stack, Text, useToast} from '@sanity/ui'
 import {useCallback, useMemo, useState} from 'react'
 import {useObservableEvent} from 'react-rx'
 import {catchError, concat, filter, map, type Observable, of, scan, switchMap, tap} from 'rxjs'
-import {
-  createSearch,
-  DEFAULT_STUDIO_CLIENT_OPTIONS,
-  isNonNullable,
-  ReferenceAutocomplete,
-  type SanityClient,
-  type SchemaType,
-  type SearchStrategy,
-  useClient,
-  useDocumentPreviewStore,
-  useSchema,
-  useSource,
-  useTranslation,
-} from 'sanity'
 
-import {structureLocaleNamespace} from '../../i18n'
+import {useClient} from '../../../../hooks/useClient'
+import {useSchema} from '../../../../hooks/useSchema'
+import {useTranslation} from '../../../../i18n/hooks/useTranslation'
+import {createSearch} from '../../../../search/search'
+import {useDocumentPreviewStore} from '../../../../store/_legacy/datastores'
+import {useSource} from '../../../../studio/source'
+import {DEFAULT_STUDIO_CLIENT_OPTIONS} from '../../../../studioClient'
+import {isNonNullable} from '../../../../util/isNonNullable'
+import {ReferenceAutocomplete} from '../../../inputs/ReferenceInput/ReferenceAutocomplete'
 import {CreateNewIncomingReference} from './CreateNewIncomingReference'
 import {LinkToExistingPreview} from './LinkToExistingPreview'
-import {type IncomingReferencesOptions} from './types'
 
 interface ReferenceSearchState {
   hits: ReferenceSearchHit[]
@@ -87,7 +82,7 @@ export function AddIncomingReference({
   fieldName: string
   creationAllowed: IncomingReferencesOptions['creationAllowed']
 }) {
-  const {t} = useTranslation(structureLocaleNamespace)
+  const {t} = useTranslation()
   const {push} = useToast()
   const schema = useSchema()
   const schemaType = schema.get(type)
@@ -161,7 +156,7 @@ export function AddIncomingReference({
     <Stack space={2} padding={2}>
       <Box paddingY={2}>
         <Text size={1} weight="medium">
-          {t('incoming-references-input.reference-from', {type})}
+          {t('incoming-references.input.reference-from', {type})}
         </Text>
       </Box>
       <Grid gap={creationAllowed ? 2 : 0} style={{gridTemplateColumns: '1fr min-content'}}>
@@ -170,7 +165,7 @@ export function AddIncomingReference({
           radius={2}
           autoFocus
           options={options}
-          placeholder={t('incoming-references-input.type-to-search')}
+          placeholder={t('incoming-references.input.type-to-search')}
           onQueryChange={handleQueryChange}
           filterOption={NO_FILTER}
           // @ts-expect-error - Types are not derived correctly
