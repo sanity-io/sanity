@@ -29,9 +29,8 @@ export function TasksStatus(props: TasksStatusProps) {
         }
       } catch (error) {
         console.error('An error occurred while updating the task status', error)
-      } finally {
-        setIsLoading(false)
       }
+      setIsLoading(false)
     },
     [documentId, operations],
   )
