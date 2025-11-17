@@ -204,8 +204,8 @@ function DocumentActionHook(props: {
     () => ({
       ...editState,
       onComplete,
-      // @todo
       revision: undefined,
+      initialValueResolved: true,
     }),
     [editState, onComplete],
   )

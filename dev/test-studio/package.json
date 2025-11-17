@@ -66,6 +66,8 @@
   },
   "devDependencies": {
     "@repo/eslint-config": "workspace:*",
+    "@types/react": "catalog:",
+    "@types/react-dom": "catalog:",
     "babel-plugin-react-compiler": "1.0.0",
     "chokidar": "^3.6.0",
     "eslint": "catalog:",
