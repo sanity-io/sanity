@@ -15,15 +15,15 @@ export const canvasIntegration = definePlugin(() => {
 
     document: {
       actions: (prev, context) => {
-        if (context.versionType === 'published') {
-          return prev
+        if (context.versionType === 'draft' || context.versionType === 'version') {
+          return prev.flatMap((action) =>
+            action.action === 'duplicate'
+              ? [LinkToCanvasAction, UnlinkFromCanvasAction, EditInCanvasAction, action]
+              : action,
+          )
         }
 
-        return prev.flatMap((action) =>
-          action.action === 'duplicate'
-            ? [LinkToCanvasAction, UnlinkFromCanvasAction, EditInCanvasAction, action]
-            : action,
-        )
+        return prev
       },
     },
   }
