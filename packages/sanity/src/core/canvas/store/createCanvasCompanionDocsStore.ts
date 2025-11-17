@@ -8,7 +8,6 @@ import {
   shareReplay,
   startWith,
   switchMap,
-  tap,
   timer,
 } from 'rxjs'
 import {mergeMapArray} from 'rxjs-mergemap-array'
