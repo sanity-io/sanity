@@ -1106,6 +1106,7 @@ import type {
   PrimitiveMemberItemProps,
   ProjectData,
   ProjectDatasetData,
+  ProjectGrants,
   ProjectStore,
   ProvenanceDiffAnnotation,
   PublishDocumentVersionEvent,
@@ -4994,6 +4995,9 @@ describe('sanity', () => {
   })
   test('ProjectDatasetData', () => {
     expectTypeOf<ProjectDatasetData>().toBeObject()
+  })
+  test('ProjectGrants', () => {
+    expectTypeOf<ProjectGrants>().not.toBeNever()
   })
   test('ProjectStore', () => {
     expectTypeOf<ProjectStore>().toBeObject()
