@@ -461,6 +461,7 @@ import type {
   DocumentRemoteMutationVersionEvent,
   DocumentRevision,
   DocumentRule,
+  DocumentStackAvailability,
   DocumentStatus,
   DocumentStatusIndicator,
   DocumentStore,
@@ -3046,6 +3047,9 @@ describe('sanity', () => {
   })
   test('DocumentRule', () => {
     expectTypeOf<DocumentRule>().toBeObject()
+  })
+  test('DocumentStackAvailability', () => {
+    expectTypeOf<DocumentStackAvailability>().toBeObject()
   })
   test('DocumentStatus', () => {
     expectTypeOf<typeof DocumentStatus>().toBeFunction()

@@ -97,7 +97,7 @@ export function CrossDatasetReferencePreview(props: {
       )}
 
       <Box paddingLeft={3}>
-        <Inline space={4}>
+        <Inline space={4} paddingRight={1}>
           {refType && showTypeLabel && (
             <Badge mode="outline">{refType.title || refType.type}</Badge>
           )}

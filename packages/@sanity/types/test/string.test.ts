@@ -147,5 +147,3 @@ describe('string types', () => {
     })
   })
 })
-
-export {}

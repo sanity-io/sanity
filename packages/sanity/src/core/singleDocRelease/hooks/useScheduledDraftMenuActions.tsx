@@ -62,9 +62,13 @@ export function useScheduledDraftMenuActions(
       if (!release) return
 
       setIsPerformingOperation(true)
-      try {
+      // Workaround for React Compiler not yet fully supporting try/catch/finally syntax
+      const run = async () => {
         await operations.rescheduleScheduledDraft(release, newPublishAt)
         onActionComplete?.()
+      }
+      try {
+        await run()
       } catch (error) {
         console.error('Failed to reschedule draft:', error)
         toast.push({
@@ -81,10 +85,9 @@ export function useScheduledDraftMenuActions(
             />
           ),
         })
-      } finally {
-        setIsPerformingOperation(false)
-        setSelectedAction(null)
       }
+      setIsPerformingOperation(false)
+      setSelectedAction(null)
     },
     [release, operations, onActionComplete, toast, t, firstDocumentPreview?.title],
   )

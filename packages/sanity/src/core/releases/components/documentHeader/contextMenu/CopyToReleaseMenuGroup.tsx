@@ -9,6 +9,7 @@ import {MenuItem} from '../../../../../ui-components/menuItem/MenuItem'
 import {useTranslation} from '../../../../i18n'
 import {useWorkspace} from '../../../../studio/workspace'
 import {CreateReleaseMenuItem} from '../../CreateReleaseMenuItem'
+import {CopyToDraftsMenuItem} from './CopyToDraftsMenuItem'
 import {VersionContextMenuItem} from './VersionContextMenuItem'
 
 const ReleasesList = styled(Stack)`
@@ -21,16 +22,30 @@ interface CopyToReleaseMenuGroupProps {
   releases: ReleaseDocument[]
   fromRelease: string
   onCreateRelease: () => void
+  onCopyToDrafts: () => void
+  onCopyToDraftsNavigate: () => void
   onCreateVersion: (targetId: string) => void
   disabled: boolean
   hasCreatePermission: boolean | null
+  documentId: string
+  documentType: string
 }
 
 export const CopyToReleaseMenuGroup = memo(function CopyToReleaseMenuGroup(
   props: CopyToReleaseMenuGroupProps,
 ) {
-  const {releases, fromRelease, onCreateRelease, onCreateVersion, disabled, hasCreatePermission} =
-    props
+  const {
+    releases,
+    fromRelease,
+    onCreateRelease,
+    onCopyToDrafts,
+    onCopyToDraftsNavigate,
+    onCreateVersion,
+    disabled,
+    hasCreatePermission,
+    documentId,
+    documentType,
+  } = props
   const {t} = useTranslation()
   const isReleasesEnabled = !!useWorkspace().releases?.enabled
 
@@ -47,6 +62,13 @@ export const CopyToReleaseMenuGroup = memo(function CopyToReleaseMenuGroup(
       data-testid="copy-version-to-release-button-group"
     >
       <ReleasesList key={fromRelease} space={1}>
+        <CopyToDraftsMenuItem
+          documentType={documentType}
+          documentId={documentId}
+          fromRelease={fromRelease}
+          onClick={onCopyToDrafts}
+          onNavigate={onCopyToDraftsNavigate}
+        />
         {releases.map((targetRelease) => {
           return (
             <MenuItem

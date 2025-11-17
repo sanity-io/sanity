@@ -1,4 +1,5 @@
 import {type MarkdownShortcutsPluginProps} from '@portabletext/plugin-markdown-shortcuts'
+import {type TypographyPluginProps} from '@portabletext/plugin-typography'
 import {
   type ArraySchemaType,
   type BlockDecoratorDefinition,
@@ -445,7 +446,7 @@ export interface BlockProps {
 export interface PortableTextPluginsProps {
   renderDefault: (props: PortableTextPluginsProps) => React.JSX.Element
   plugins: {
-    markdown:
+    markdown?:
       | {
           /**
            * @deprecated - add the configuration directly to `markdown` instead
@@ -459,6 +460,12 @@ export interface PortableTextPluginsProps {
            */
           enabled?: boolean
         })
+    typography?: {
+      /**
+       * @defaultValue true
+       */
+      enabled?: boolean
+    } & TypographyPluginProps
   }
 }
 

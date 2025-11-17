@@ -11,6 +11,7 @@ import {LoadingBlock} from '../components/loadingBlock'
 import {AppIdCacheProvider} from '../create/studio-app/AppIdCacheProvider'
 import {errorReporter} from '../error/errorReporter'
 import {LocaleProvider} from '../i18n'
+import {AssetLimitUpsellProvider} from '../limits/context/assets/AssetLimitUpsellProvider'
 import {DocumentLimitUpsellProvider} from '../limits/context/documents/DocumentLimitUpsellProvider'
 import {GlobalPerspectiveProvider} from '../perspective/GlobalPerspectiveProvider'
 import {ResourceCacheProvider} from '../store'
@@ -79,7 +80,9 @@ export function StudioProvider({
                   <ComlinkRouteHandler />
                   <StudioAnnouncementsProvider>
                     <GlobalPerspectiveProvider>
-                      <DocumentLimitUpsellProvider>{children}</DocumentLimitUpsellProvider>
+                      <DocumentLimitUpsellProvider>
+                        <AssetLimitUpsellProvider>{children}</AssetLimitUpsellProvider>
+                      </DocumentLimitUpsellProvider>
                     </GlobalPerspectiveProvider>
                   </StudioAnnouncementsProvider>
                 </AppIdCacheProvider>

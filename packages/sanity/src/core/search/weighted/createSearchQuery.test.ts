@@ -45,7 +45,7 @@ describe('createSearchQuery', () => {
 
       expect(query).toEqual(
         `// findability-mvi:${FINDABILITY_MVI}\n` +
-          '*[_type in $__types && (_id match $t0 || _type match $t0 || title match $t0) && !(_id in path("versions.**"))]' +
+          '*[_type in $__types && (_id match $t0 || _type match $t0 || title match $t0)]' +
           '| order(_id asc)' +
           '[0...$__limit]' +
           '{_type, _id, _originalId, ...select(_type == "basic-schema-test" => { "w0": _id,"w1": _type,"w2": title })}',
@@ -105,7 +105,7 @@ describe('createSearchQuery', () => {
       })
 
       expect(query).toContain(
-        '*[_type in $__types && (_id match $t0 || _type match $t0 || title match $t0 || object.field match $t0) && !(_id in path("versions.**"))]',
+        '*[_type in $__types && (_id match $t0 || _type match $t0 || title match $t0 || object.field match $t0)]',
       )
     })
 
@@ -116,7 +116,7 @@ describe('createSearchQuery', () => {
       })
 
       expect(query).toContain(
-        '*[_type in $__types && (_id match $t0 || _type match $t0 || title match $t0) && (_id match $t1 || _type match $t1 || title match $t1) && !(_id in path("versions.**"))]',
+        '*[_type in $__types && (_id match $t0 || _type match $t0 || title match $t0) && (_id match $t1 || _type match $t1 || title match $t1)]',
       )
       expect(params.t0).toEqual('term0*')
       expect(params.t1).toEqual('term1*')
@@ -146,7 +146,7 @@ describe('createSearchQuery', () => {
 
       const result = [
         `// findability-mvi:${FINDABILITY_MVI}\n` +
-          '*[_type in $__types && (_id match $t0 || _type match $t0 || title match $t0) && !(_id in path("versions.**"))]{_type, _id, _originalId, object{field}}',
+          '*[_type in $__types && (_id match $t0 || _type match $t0 || title match $t0)]{_type, _id, _originalId, object{field}}',
         '|order(_id asc)[0...$__limit]',
         '{_type, _id, _originalId, ...select(_type == "basic-schema-test" => { "w0": _id,"w1": _type,"w2": title })}',
       ].join('')
@@ -156,18 +156,6 @@ describe('createSearchQuery', () => {
   })
 
   describe('searchOptions', () => {
-    it('should exclude drafts when configured', () => {
-      const {query} = createSearchQuery(
-        {
-          query: 'term0',
-          types: [testType],
-        },
-        {includeDrafts: false},
-      )
-
-      expect(query).toContain("!(_id in path('drafts.**'))")
-    })
-
     it('should use provided limit', () => {
       const {params} = createSearchQuery(
         {
@@ -192,7 +180,7 @@ describe('createSearchQuery', () => {
       )
 
       expect(query).toContain(
-        '*[_type in $__types && (_id match $t0 || _type match $t0 || title match $t0) && (randomCondition == $customParam) && !(_id in path("versions.**"))]',
+        '*[_type in $__types && (_id match $t0 || _type match $t0 || title match $t0) && (randomCondition == $customParam)]',
       )
       expect(params.customParam).toEqual('custom')
     })
@@ -240,7 +228,7 @@ describe('createSearchQuery', () => {
 
       expect(query).toEqual(
         `// findability-mvi:${FINDABILITY_MVI}\n` +
-          '*[_type in $__types && (_id match $t0 || _type match $t0 || title match $t0) && !(_id in path("versions.**"))]' +
+          '*[_type in $__types && (_id match $t0 || _type match $t0 || title match $t0)]' +
           '| order(exampleField desc)' +
           '[0...$__limit]' +
           '{_type, _id, _originalId, ...select(_type == "basic-schema-test" => { "w0": _id,"w1": _type,"w2": title })}',
@@ -274,7 +262,7 @@ describe('createSearchQuery', () => {
 
       const result = [
         `// findability-mvi:${FINDABILITY_MVI}\n`,
-        '*[_type in $__types && (_id match $t0 || _type match $t0 || title match $t0) && !(_id in path("versions.**"))]| ',
+        '*[_type in $__types && (_id match $t0 || _type match $t0 || title match $t0)]| ',
         'order(exampleField desc,anotherExampleField asc,lower(mapWithField) asc)',
         '[0...$__limit]{_type, _id, _originalId, ...select(_type == "basic-schema-test" => { "w0": _id,"w1": _type,"w2": title })}',
       ].join('')
@@ -290,7 +278,7 @@ describe('createSearchQuery', () => {
 
       expect(query).toEqual(
         `// findability-mvi:${FINDABILITY_MVI}\n` +
-          '*[_type in $__types && (_id match $t0 || _type match $t0 || title match $t0) && !(_id in path("versions.**"))]' +
+          '*[_type in $__types && (_id match $t0 || _type match $t0 || title match $t0)]' +
           '| order(_id asc)' +
           '[0...$__limit]' +
           '{_type, _id, _originalId, ...select(_type == "basic-schema-test" => { "w0": _id,"w1": _type,"w2": title })}',
@@ -402,7 +390,7 @@ describe('createSearchQuery', () => {
          * This is an improvement over before, where an illegal term was used (number-as-string, ala ["0"]),
          * which lead to no hits at all. */
         `// findability-mvi:${FINDABILITY_MVI}\n` +
-          '*[_type in $__types && (_id match $t0 || _type match $t0 || cover[].cards[].title match $t0) && (_id match $t1 || _type match $t1 || cover[].cards[].title match $t1) && !(_id in path("versions.**"))]' +
+          '*[_type in $__types && (_id match $t0 || _type match $t0 || cover[].cards[].title match $t0) && (_id match $t1 || _type match $t1 || cover[].cards[].title match $t1)]' +
           '| order(_id asc)' +
           '[0...$__limit]' +
           // at this point we could refilter using cover[0].cards[0].title.

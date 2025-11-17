@@ -63,7 +63,8 @@ const ConfirmReleaseDialog = ({
 
     const revertReleaseId = createReleaseId()
 
-    try {
+    // The run().catch().finally() syntax instead of try/catch/finally is because of the React Compiler not fully supporting the syntax yet
+    const run = async () => {
       if (!documentRevertStates) {
         throw new Error('Unable to find documents to revert')
       }
@@ -137,21 +138,24 @@ const ConfirmReleaseDialog = ({
           ),
         })
       }
-    } catch (revertError) {
-      if (isReleaseLimitError(revertError)) return
-
-      toast.push({
-        status: 'error',
-        title: (
-          <Text muted size={1}>
-            <Translate t={t} i18nKey="toast.revert.error" values={{error: revertError.message}} />
-          </Text>
-        ),
-      })
-      console.error(revertError)
-    } finally {
-      setRevertReleaseStatus('idle')
     }
+    await run()
+      .catch((revertError) => {
+        if (isReleaseLimitError(revertError)) return
+
+        toast.push({
+          status: 'error',
+          title: (
+            <Text muted size={1}>
+              <Translate t={t} i18nKey="toast.revert.error" values={{error: revertError.message}} />
+            </Text>
+          ),
+        })
+        console.error(revertError)
+      })
+      .finally(() => {
+        setRevertReleaseStatus('idle')
+      })
   }, [
     setRevertReleaseStatus,
     getDocumentRevertStates,
@@ -235,7 +239,7 @@ export const ReleaseRevertButton = ({
 }: ReleasePublishAllButtonProps) => {
   const {t} = useTranslation(releasesLocaleNamespace)
   const {t: tCore} = useTranslation()
-  const {guardWithReleaseLimitUpsell, mode} = useReleasesUpsell()
+  const {guardWithReleaseLimitUpsell} = useReleasesUpsell()
   const [revertReleaseStatus, setRevertReleaseStatus] = useState<RevertReleaseStatus>('idle')
   const [isPendingGuardResponse, setIsPendingGuardResponse] = useState<boolean>(false)
   const {createRelease} = useReleaseOperations()
@@ -281,7 +285,7 @@ export const ReleaseRevertButton = ({
          * Permissions to create a request (implemented)
          * @todo Permissions to create each schema type within the release (not implemented)
          */
-        disabled={isPendingGuardResponse || !hasCreatePermission || disabled || mode === 'disabled'}
+        disabled={isPendingGuardResponse || !hasCreatePermission || disabled}
         data-testid="revert-button"
       />
       {revertReleaseStatus !== 'idle' && (

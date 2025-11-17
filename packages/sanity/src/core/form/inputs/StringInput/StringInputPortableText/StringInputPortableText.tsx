@@ -9,7 +9,7 @@ import {defineBehavior, forward, raise} from '@portabletext/editor/behaviors'
 import {BehaviorPlugin, EventListenerPlugin, OneLinePlugin} from '@portabletext/editor/plugins'
 import {type Path} from '@sanity/types'
 import {Card, useArrayProp, useRootTheme} from '@sanity/ui'
-import {useCallback, useEffect, useRef} from 'react'
+import {useCallback, useEffect, useState} from 'react'
 import {styled} from 'styled-components'
 
 import {set, unset} from '../../../patch/patch'
@@ -132,7 +132,7 @@ export function StringInputPortableText(props: StringInputProps) {
     [onFocus, onBlur, onOptimisticChange, definitiveValue, onChange],
   )
 
-  const initialConfig = useRef<EditorConfig>({
+  const [initialConfig] = useState<EditorConfig>(() => ({
     initialValue: packageValue(props.value),
     readOnly: props.readOnly ?? false,
     schema: {
@@ -144,7 +144,7 @@ export function StringInputPortableText(props: StringInputProps) {
         },
       ],
     },
-  })
+  }))
 
   const rootTheme = useRootTheme()
   const fontSize = useArrayProp(2)
@@ -176,7 +176,7 @@ export function StringInputPortableText(props: StringInputProps) {
 
   return (
     <StyledRoot>
-      <EditorProvider initialConfig={initialConfig.current}>
+      <EditorProvider initialConfig={initialConfig}>
         <OneLinePlugin />
         <EventListenerPlugin on={handleEditorEvent} />
         <UpdateValuePlugin value={props.value} />

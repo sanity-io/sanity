@@ -151,6 +151,14 @@ const releasesLocaleStrings = {
   /** Title for dialog for discarding a version of a document */
   'discard-version-dialog.title-release': 'Remove from release',
 
+  /** Title for dialog when copying version to draft that already exists */
+  'copy-to-draft-dialog.title': 'Draft version already exists',
+  /** Description for dialog when copying version to draft that already exists */
+  'copy-to-draft-dialog.description':
+    'A draft version of this document already exists. Copy the current version to the draft and override the existing draft version.',
+  /** Confirm button text for overriding existing draft */
+  'copy-to-draft-dialog.confirm-button': 'Yes, override Draft',
+
   /** Label for when a document in a release has multiple validation warnings */
   'document-validation.error_other': '{{count}} validation errors',
   /** Label for when a document in a release has a single validation warning */

@@ -3,6 +3,16 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [4.15.0](https://github.com/sanity-io/sanity/compare/v4.14.2...v4.15.0) (2025-11-11)
+
+### Bug Fixes
+
+* **typegen:** allow generating types to absolute path ([#7620](https://github.com/sanity-io/sanity/issues/7620)) ([#11081](https://github.com/sanity-io/sanity/issues/11081)) ([f8b4e87](https://github.com/sanity-io/sanity/commit/f8b4e87fdb54a8d294a7ffc754cf5f662adfdaab)) by Kristoffer Brabrand (kristoffer@brabrand.no)
+
+### Reverts
+
+* **deps:** add patch-package as direct dependency ([#11085](https://github.com/sanity-io/sanity/issues/11085)) ([#11086](https://github.com/sanity-io/sanity/issues/11086)) ([45a5dbf](https://github.com/sanity-io/sanity/commit/45a5dbf56a174884032b212e4dc5b61cba1acb31)) by Bjørge Næss (bjoerge@gmail.com)
+
 ## [4.14.2](https://github.com/sanity-io/sanity/compare/v4.14.1...v4.14.2) (2025-11-07)
 
 ### Bug Fixes

@@ -1,3 +1,4 @@
+import {useToast} from '@sanity/ui'
 import {useCallback, useMemo, useState} from 'react'
 import {firstValueFrom, tap} from 'rxjs'
 import {ReleasesUpsellContext} from 'sanity/_singletons'
@@ -5,6 +6,7 @@ import {ReleasesUpsellContext} from 'sanity/_singletons'
 import {useFeatureEnabled} from '../../../hooks'
 import {FEATURES} from '../../../hooks/useFeatureEnabled'
 import {useUpsellData} from '../../../hooks/useUpsellData'
+import {useTranslation} from '../../../i18n'
 import {type UpsellDialogViewedInfo} from '../../../studio/upsell/__telemetry__/upsell.telemetry'
 import {UpsellDialog} from '../../../studio/upsell/UpsellDialog'
 import {useActiveReleases} from '../../store/useActiveReleases'
@@ -32,24 +34,23 @@ export function ReleasesUpsellProvider(props: {children: React.ReactNode}) {
   const [upsellDialogOpen, setUpsellDialogOpen] = useState(false)
   const {data: activeReleases} = useActiveReleases()
   const {enabled: isReleasesFeatureEnabled} = useFeatureEnabled(FEATURES.contentReleases)
-  const {upsellData, telemetryLogs} = useUpsellData({
+  const {upsellData, telemetryLogs, hasError} = useUpsellData({
     dataUri: '/journey/content-releases',
     feature: 'content-releases',
   })
+  const toast = useToast()
+  const {t} = useTranslation()
 
   const mode = useMemo(() => {
     /**
      * upsell if:
      * plan is free, ie releases is not feature enabled
      */
-    if (!isReleasesFeatureEnabled && upsellData) {
+    if (!isReleasesFeatureEnabled) {
       return 'upsell'
     }
-    if (isReleasesFeatureEnabled && !upsellData) {
-      return 'disabled'
-    }
     return 'default'
-  }, [isReleasesFeatureEnabled, upsellData])
+  }, [isReleasesFeatureEnabled])
 
   const handlePrimaryButtonClick = useCallback(() => {
     telemetryLogs.dialogPrimaryClicked()
@@ -67,11 +68,20 @@ export function ReleasesUpsellProvider(props: {children: React.ReactNode}) {
   const [releaseLimit, setReleaseLimit] = useState<number | null>(null)
   const handleOpenDialog = useCallback(
     (source: UpsellDialogViewedInfo['source'] = 'navbar') => {
+      if (hasError) {
+        toast.push({
+          status: 'error',
+          title: t('errors.unable-to-perform-action'),
+          closable: true,
+        })
+        return
+      }
+
       setUpsellDialogOpen(true)
 
       telemetryLogs.dialogViewed(source)
     },
-    [telemetryLogs],
+    [hasError, toast, t, telemetryLogs],
   )
 
   const {releaseLimits$} = useReleaseLimits()
@@ -191,20 +201,34 @@ export function ReleasesUpsellProvider(props: {children: React.ReactNode}) {
     ],
   )
 
-  const interpolation = releaseLimit === null ? undefined : {releaseLimit: releaseLimit}
+  const interpolation = useMemo(
+    () => (releaseLimit === null ? undefined : {releaseLimit: releaseLimit}),
+    [releaseLimit],
+  )
+
+  const dialogProps = useMemo(
+    () => ({
+      data: upsellData,
+      open: upsellDialogOpen,
+      interpolation,
+      onClose: handleClose,
+      onPrimaryClick: handlePrimaryButtonClick,
+      onSecondaryClick: handleSecondaryButtonClick,
+    }),
+    [
+      upsellData,
+      upsellDialogOpen,
+      interpolation,
+      handleClose,
+      handlePrimaryButtonClick,
+      handleSecondaryButtonClick,
+    ],
+  )
 
   return (
     <ReleasesUpsellContext.Provider value={ctxValue}>
       {props.children}
-      {upsellData && upsellDialogOpen && (
-        <UpsellDialog
-          interpolation={interpolation}
-          data={upsellData}
-          onClose={handleClose}
-          onPrimaryClick={handlePrimaryButtonClick}
-          onSecondaryClick={handleSecondaryButtonClick}
-        />
-      )}
+      <UpsellDialog {...dialogProps} />
     </ReleasesUpsellContext.Provider>
   )
 }

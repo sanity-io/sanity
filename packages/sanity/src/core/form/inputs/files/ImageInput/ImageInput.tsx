@@ -21,6 +21,8 @@ import {
 import {type Subscription} from 'rxjs'
 
 import {useTranslation} from '../../../../i18n'
+import {useAssetLimitsUpsellContext} from '../../../../limits/context/assets/AssetLimitUpsellProvider'
+import {isAssetLimitError} from '../../../../limits/context/assets/isAssetLimitError'
 import {FormInput} from '../../../components'
 import {MemberField, MemberFieldError, MemberFieldSet} from '../../../members'
 import {PatchEvent, set, setIfMissing, unset} from '../../../patch'
@@ -81,6 +83,7 @@ function BaseImageInputComponent(props: BaseImageInputProps): React.JSX.Element 
   // it when closing the dialog (see `handleAssetSourceClosed`)
   const [menuButtonElement, setMenuButtonElement] = useState<HTMLButtonElement | null>(null)
   const [isMenuOpen, setMenuOpen] = useState(false)
+  const {handleOpenDialog: handleAssetLimitUpsellDialog} = useAssetLimitsUpsellContext()
 
   const uploadSubscription = useRef<null | Subscription>(null)
 
@@ -269,8 +272,9 @@ function BaseImageInputComponent(props: BaseImageInputProps): React.JSX.Element 
       }
       setSelectedAssetSource(assetSource)
       if (assetSource.Uploader) {
-        try {
-          const uploader = new assetSource.Uploader()
+        // Workaround for React Compiler not yet fully supporting try/catch/finally syntax
+        const run = () => {
+          const uploader = new assetSource.Uploader!()
           // Unsubscribe from the previous uploader
           assetSourceUploader?.unsubscribe()
           setAssetSourceUploader({
@@ -294,10 +298,18 @@ function BaseImageInputComponent(props: BaseImageInputProps): React.JSX.Element 
                     title: t('asset-sources.common.uploader.upload-failed.title'),
                   })
                   break
-                case 'all-complete':
+                case 'all-complete': {
+                  // Asset limit errors only come through after all file uploads attemps have been made
+                  const hasAssetLimitError = event.files.some(
+                    (file) => file.status === 'error' && isAssetLimitError(file.error),
+                  )
+                  if (hasAssetLimitError) {
+                    handleAssetLimitUpsellDialog('field_action')
+                  }
                   onChange(PatchEvent.from([unset([UPLOAD_STATUS_KEY])]))
                   setMenuOpen(false)
                   break
+                }
                 default:
               }
             }),
@@ -306,6 +318,9 @@ function BaseImageInputComponent(props: BaseImageInputProps): React.JSX.Element 
           setIsUploading(true)
           onChange(PatchEvent.from(createInitialUploadPatches(files[0])))
           uploader.upload(files, {schemaType, onChange: onChange as (patch: unknown) => void})
+        }
+        try {
+          run()
         } catch (err) {
           onChange(PatchEvent.from([unset([UPLOAD_STATUS_KEY])]))
           setIsUploading(false)
@@ -321,7 +336,7 @@ function BaseImageInputComponent(props: BaseImageInputProps): React.JSX.Element 
         }
       }
     },
-    [assetSourceUploader, onChange, push, schemaType, t],
+    [handleAssetLimitUpsellDialog, assetSourceUploader, onChange, push, schemaType, t],
   )
 
   // Abort asset source uploads and unsubscribe from the uploader is the component unmounts
@@ -453,58 +468,59 @@ function BaseImageInputComponent(props: BaseImageInputProps): React.JSX.Element 
     },
     [handleCancelUpload, handleStaleUpload, isUploading],
   )
-  const renderAsset = useCallback(() => {
-    if (value && typeof value.asset !== 'undefined' && !value?._upload && !isImageSource(value)) {
-      // eslint-disable-next-line react/display-name
-      return () => <InvalidImageWarning onClearValue={handleClearField} />
-    }
+  const renderAsset = useCallback(
+    (inputProps: Omit<InputProps, 'renderDefault'>) => {
+      if (value && typeof value.asset !== 'undefined' && !value?._upload && !isImageSource(value)) {
+        return <InvalidImageWarning onClearValue={handleClearField} />
+      }
 
-    // eslint-disable-next-line react/display-name
-    return (inputProps: Omit<InputProps, 'renderDefault'>) => (
-      <ImageInputAsset
-        assetSources={assetSources}
-        directUploads={directUploads !== false}
-        elementProps={elementProps}
-        handleClearUploadState={handleClearUploadState}
-        handleFileTargetFocus={handleFileTargetFocus}
-        hoveringFiles={hoveringFiles}
-        imageUrlBuilder={imageUrlBuilder}
-        inputProps={inputProps}
-        isStale={isStale}
-        onSelectFiles={handleSelectFilesToUpload}
-        readOnly={readOnly}
-        renderAssetMenu={renderAssetMenu}
-        renderPreview={renderPreview}
-        renderUploadPlaceholder={renderUploadPlaceholder}
-        renderUploadState={renderUploadState}
-        schemaType={schemaType}
-        setHoveringFiles={setHoveringFiles}
-        selectedAssetSource={selectedAssetSource}
-        tone={getFileTone()}
-        value={value}
-      />
-    )
-  }, [
-    assetSources,
-    directUploads,
-    elementProps,
-    getFileTone,
-    handleClearField,
-    handleClearUploadState,
-    handleFileTargetFocus,
-    handleSelectFilesToUpload,
-    hoveringFiles,
-    imageUrlBuilder,
-    isStale,
-    readOnly,
-    renderAssetMenu,
-    renderPreview,
-    renderUploadPlaceholder,
-    renderUploadState,
-    schemaType,
-    selectedAssetSource,
-    value,
-  ])
+      return (
+        <ImageInputAsset
+          assetSources={assetSources}
+          directUploads={directUploads !== false}
+          elementProps={elementProps}
+          handleClearUploadState={handleClearUploadState}
+          handleFileTargetFocus={handleFileTargetFocus}
+          hoveringFiles={hoveringFiles}
+          imageUrlBuilder={imageUrlBuilder}
+          inputProps={inputProps}
+          isStale={isStale}
+          onSelectFiles={handleSelectFilesToUpload}
+          readOnly={readOnly}
+          renderAssetMenu={renderAssetMenu}
+          renderPreview={renderPreview}
+          renderUploadPlaceholder={renderUploadPlaceholder}
+          renderUploadState={renderUploadState}
+          schemaType={schemaType}
+          setHoveringFiles={setHoveringFiles}
+          selectedAssetSource={selectedAssetSource}
+          tone={getFileTone()}
+          value={value}
+        />
+      )
+    },
+    [
+      assetSources,
+      directUploads,
+      elementProps,
+      getFileTone,
+      handleClearField,
+      handleClearUploadState,
+      handleFileTargetFocus,
+      handleSelectFilesToUpload,
+      hoveringFiles,
+      imageUrlBuilder,
+      isStale,
+      readOnly,
+      renderAssetMenu,
+      renderPreview,
+      renderUploadPlaceholder,
+      renderUploadState,
+      schemaType,
+      selectedAssetSource,
+      value,
+    ],
+  )
   const renderHotspotInput = useCallback(
     (inputProps: Omit<InputProps, 'renderDefault'>) => {
       return (
@@ -568,7 +584,7 @@ function BaseImageInputComponent(props: BaseImageInputProps): React.JSX.Element 
               renderAnnotation={renderAnnotation}
               renderBlock={renderBlock}
               renderInlineBlock={renderInlineBlock}
-              renderInput={member.name === 'asset' ? renderAsset() : renderInput}
+              renderInput={member.name === 'asset' ? renderAsset : renderInput}
               renderField={member.name === 'asset' ? passThrough : renderField}
               renderItem={renderItem}
               renderPreview={renderPreviewProp}
