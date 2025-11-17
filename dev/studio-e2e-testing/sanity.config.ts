@@ -121,13 +121,6 @@ const defaultConfig = defineConfig({
     media(),
     markdownSchema(),
   ],
-  beta: {
-    form: {
-      enhancedObjectDialog: {
-        enabled: true,
-      },
-    },
-  },
   announcements: {
     enabled: false,
   },
