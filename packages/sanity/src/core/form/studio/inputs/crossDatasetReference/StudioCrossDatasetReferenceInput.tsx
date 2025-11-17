@@ -7,7 +7,7 @@ import {
   type SanityDocument,
 } from '@sanity/types'
 import {get} from '@sanity/util/paths'
-import {useCallback, useEffect, useMemo, useRef} from 'react'
+import {useCallback, useMemo} from 'react'
 import {from, throwError} from 'rxjs'
 import {catchError, mergeMap} from 'rxjs/operators'
 
@@ -36,7 +36,14 @@ async function resolveUserDefinedFilter(
   if (typeof options.filter === 'function') {
     const parentPath = valuePath.slice(0, -1)
     const parent = get(document, parentPath) as Record<string, unknown>
-    const resolvedFilter = await options.filter({document, parentPath, parent, getClient})
+    const resolvedFilter = await options.filter({
+      document,
+      parentPath,
+      parent,
+      // published is default, so this should be good for x-dataset refs
+      perspective: [],
+      getClient,
+    })
     return resolvedFilter
   }
 
@@ -55,14 +62,6 @@ export type StudioCrossDatasetReferenceInputProps = ObjectInputProps<
   CrossDatasetReferenceValue,
   CrossDatasetReferenceSchemaType
 >
-
-function useValueRef<T>(value: T): {current: T} {
-  const ref = useRef(value)
-  useEffect(() => {
-    ref.current = value
-  }, [value])
-  return ref
-}
 
 type SearchError = {
   message: string
@@ -90,7 +89,7 @@ export function StudioCrossDatasetReferenceInput(props: StudioCrossDatasetRefere
       client
         .withConfig({
           dataset: schemaType.dataset,
-          apiVersion: '2023-11-13',
+          apiVersion: DEFAULT_STUDIO_CLIENT_OPTIONS.apiVersion,
           ignoreBrowserTokenWarning: true,
         })
 
@@ -100,11 +99,10 @@ export function StudioCrossDatasetReferenceInput(props: StudioCrossDatasetRefere
   }, [client, schemaType.dataset])
   const maxFieldDepth = useSearchMaxFieldDepth(crossDatasetClient)
   const documentValue = useFormValue([]) as FIXME
-  const documentRef = useValueRef(documentValue)
 
   const handleSearch = useCallback(
     (searchString: string) =>
-      from(resolveUserDefinedFilter(schemaType.options, documentRef.current, path, getClient)).pipe(
+      from(resolveUserDefinedFilter(schemaType.options, documentValue, path, getClient)).pipe(
         mergeMap(({filter, params}) =>
           search(crossDatasetClient, searchString, schemaType, {
             ...schemaType.options,
@@ -113,6 +111,7 @@ export function StudioCrossDatasetReferenceInput(props: StudioCrossDatasetRefere
             tag: 'search.cross-dataset-reference',
             maxFieldDepth,
             strategy: searchStrategy,
+            perspective: 'published',
           }),
         ),
 
@@ -125,7 +124,7 @@ export function StudioCrossDatasetReferenceInput(props: StudioCrossDatasetRefere
         }),
       ),
 
-    [schemaType, documentRef, path, getClient, crossDatasetClient, maxFieldDepth, searchStrategy],
+    [schemaType, documentValue, path, getClient, crossDatasetClient, maxFieldDepth, searchStrategy],
   )
 
   const getReferenceInfo = useMemo(

@@ -30,30 +30,34 @@ export const ReleaseUnscheduleButton = ({
   const [status, setStatus] = useState<'idle' | 'confirm' | 'unscheduling'>('idle')
 
   const handleConfirmSchedule = useCallback(async () => {
-    try {
+    // The run().catch().finally() syntax instead of try/catch/finally is because of the React Compiler not fully supporting the syntax yet
+    const run = async () => {
       setStatus('unscheduling')
       await unschedule(release._id)
       telemetry.log(UnscheduledRelease)
-    } catch (schedulingError) {
-      toast.push({
-        status: 'error',
-        title: (
-          <Text muted size={1}>
-            <Translate
-              t={t}
-              i18nKey="toast.unschedule.error"
-              values={{
-                title: release.metadata.title || tCore('release.placeholder-untitled-release'),
-                error: schedulingError.message,
-              }}
-            />
-          </Text>
-        ),
-      })
-      console.error(schedulingError)
-    } finally {
-      setStatus('idle')
     }
+    await run()
+      .catch((schedulingError) => {
+        toast.push({
+          status: 'error',
+          title: (
+            <Text muted size={1}>
+              <Translate
+                t={t}
+                i18nKey="toast.unschedule.error"
+                values={{
+                  title: release.metadata.title || tCore('release.placeholder-untitled-release'),
+                  error: schedulingError.message,
+                }}
+              />
+            </Text>
+          ),
+        })
+        console.error(schedulingError)
+      })
+      .finally(() => {
+        setStatus('idle')
+      })
   }, [unschedule, release._id, release.metadata.title, telemetry, toast, t, tCore])
 
   const confirmScheduleDialog = useMemo(() => {

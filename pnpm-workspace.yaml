@@ -14,6 +14,7 @@ packages:
 catalog:
   '@playwright/experimental-ct-react': 1.56.1
   '@playwright/test': 1.56.1
+  '@sanity/client': ^7.12.1
   '@sanity/eslint-config-i18n': ^2.0.0
   '@sanity/pkg-utils': ^8.1.13
   '@sanity/ui': ^3.1.5
@@ -35,13 +36,27 @@ catalog:
   # Note: there is currently a test failure in src/core/form/inputs/files/FileInput/__tests__/fileInput.test.tsx
   # that blocks us from upgrading to jsdom@27 – once that test is passing, the jsdom override can be removed from
   # the workspace package.json.
-  # × FileInput with empty state > renders the browse button with a tooltip when it has at least one element in assetSources 255ms
+  # The test failure looks like this:
+  # × FileInput with empty state > renders the browse button with a tooltip when it has at least one element in assetSources
   #     → Cannot create property 'border-width' on string '1px solid var(--card-border-color)'
   jsdom: ^26.1.0
   vite: ^7.1.7
   vitest: ^3.2.4
   styled-components: ^6.1.18
   typescript: 5.9.3
+
+overrides:
+  # The e2e-ui.yml workflow needs a @sanity/ui related override in the root package.json in order for it's pnpm add -w ./artifacts/sanity-ui-*.tgz to work its magic.
+  '@sanity/ui@3': '$@sanity/ui'
+  # We are currently blocked from upgrading to jsdom 27 because of a strange build error related to the new version of
+  # cssstyle required by jsdom 27. If this error is no longer present, it's safe to remove the following override.
+  jsdom: 26.1.0
+  vitest: $vitest
+
+peerDependencyRules:
+  allowAny:
+    - 'react'
+    - 'react-dom'
 
 catalogs:
   react18:

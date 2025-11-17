@@ -21,7 +21,7 @@ import {
   useToast,
 } from '@sanity/ui'
 import {AnimatePresence, motion} from 'framer-motion'
-import {lazy, memo, Suspense, useCallback, useEffect, useMemo, useState} from 'react'
+import {lazy, Suspense, useCallback, useEffect, useMemo, useState} from 'react'
 import {useClient, useCurrentUser, useTranslation} from 'sanity'
 import {styled} from 'styled-components'
 
@@ -58,9 +58,7 @@ const MotionSpinner = motion.create(Spinner)
 const MotionText = motion.create(Text)
 const MotionMonogram = motion.create(StyledSanityMonogram)
 
-export const SharePreviewMenu = memo(function SharePreviewMenuComponent(
-  props: SharePreviewMenuProps,
-) {
+export function SharePreviewMenu(props: SharePreviewMenuProps): React.JSX.Element {
   const {
     canToggleSharePreviewAccess,
     canUseSharedPreviewAccess,
@@ -103,8 +101,9 @@ export const SharePreviewMenu = memo(function SharePreviewMenuComponent(
     })
   }, [pushToast, t])
 
-  const handleDisableSharing = useCallback(async () => {
-    try {
+  const handleDisableSharing = async () => {
+    // Workaround for React Compiler not yet fully supporting try/catch/finally syntax
+    const run = async () => {
       setDisabling(true)
       await disablePreviewAccessSharing(
         client,
@@ -113,14 +112,17 @@ export const SharePreviewMenu = memo(function SharePreviewMenuComponent(
         currentUser?.id,
       )
       setSecret(null)
+    }
+    try {
+      await run()
     } catch (error) {
       setError(error)
-    } finally {
-      setDisabling(false)
     }
-  }, [client, currentUser?.id])
-  const handleEnableSharing = useCallback(async () => {
-    try {
+    setDisabling(false)
+  }
+  const handleEnableSharing = async () => {
+    // Workaround for React Compiler not yet fully supporting try/catch/finally syntax
+    const run = async () => {
       setEnabling(true)
 
       const previewUrlSecret = await enablePreviewAccessSharing(
@@ -130,24 +132,30 @@ export const SharePreviewMenu = memo(function SharePreviewMenuComponent(
         currentUser?.id,
       )
       setSecret(previewUrlSecret.secret)
+    }
+    try {
+      await run()
     } catch (error) {
       setError(error)
-    } finally {
-      setEnabling(false)
     }
-  }, [client, currentUser?.id])
+    setEnabling(false)
+  }
 
-  const handleCopyUrl = useCallback(() => {
-    try {
+  const handleCopyUrl = useCallback(async () => {
+    // Workaround for React Compiler not yet fully supporting try/catch/finally syntax
+    const run = async () => {
       if (!url) {
         throw new Error('No URL to copy')
       }
-      void navigator.clipboard.writeText(url.toString())
+      await navigator.clipboard.writeText(url.toString())
       pushToast({
         closable: true,
         status: 'success',
         title: t('share-url.clipboard.status', {context: 'success'}),
       })
+    }
+    try {
+      await run()
     } catch (error) {
       setError(error)
     }
@@ -335,5 +343,4 @@ export const SharePreviewMenu = memo(function SharePreviewMenuComponent(
       }}
     />
   )
-})
-SharePreviewMenu.displayName = 'Memo(SharePreviewMenu)'
+}

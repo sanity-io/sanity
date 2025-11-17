@@ -78,10 +78,9 @@ export function CreateReleaseDialog(props: CreateReleaseDialogProps): React.JSX.
             title: t('release.toast.create-release-error.title'),
           })
         }
-      } finally {
-        setIsSubmitting(false)
-        clearReleaseDataFromStorage()
       }
+      setIsSubmitting(false)
+      clearReleaseDataFromStorage()
     },
     [
       releasePromise,

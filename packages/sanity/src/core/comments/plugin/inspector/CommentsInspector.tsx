@@ -251,9 +251,8 @@ function CommentsInspectorInner(
         closeDeleteDialog()
       } catch (err) {
         setDeleteError(err)
-      } finally {
-        setDeleteLoading(false)
       }
+      setDeleteLoading(false)
     },
     [closeDeleteDialog, operation],
   )

@@ -25,9 +25,11 @@ export default async function undeployStudioAction(
   // Check that the project has a studio hostname
   let spinner = output.spinner('Checking project info').start()
 
+  const appId = cliConfig?.deployment?.appId || undefined
+  const appHost = cliConfig?.studioHost || undefined
   const userApplication = await getUserApplication({
     client,
-    appHost: cliConfig && 'studioHost' in cliConfig ? cliConfig.studioHost : undefined,
+    ...(appId ? {appId} : {appHost}),
   })
 
   spinner.succeed()

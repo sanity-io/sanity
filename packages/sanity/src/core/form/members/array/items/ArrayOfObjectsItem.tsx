@@ -400,76 +400,6 @@ export function ArrayOfObjectsItem(props: MemberItemProps) {
     renderPreview,
   ])
 
-  const renderedInput = useMemo(() => renderInput(inputProps), [inputProps, renderInput])
-
-  const itemProps = useMemo((): Omit<ObjectItemProps, 'renderDefault'> => {
-    return {
-      key: member.key,
-      index: member.index,
-      level: member.item.level,
-      value: member.item.value,
-      compareValue: member.item.compareValue,
-      __unstable_computeDiff: member.item.__unstable_computeDiff,
-      hasUpstreamVersion: member.item.hasUpstreamVersion,
-      title: member.item.schemaType.title,
-      description: member.item.schemaType.description,
-      collapsible: member.collapsible,
-      collapsed: member.collapsed,
-      schemaType: member.item.schemaType,
-      parentSchemaType: member.parentSchemaType,
-      onInsert: handleInsert,
-      onCopy: handleCopy,
-      onRemove,
-      presence: member.item.presence,
-      validation: member.item.validation,
-      open: member.open,
-      onOpen: handleOpen,
-      onClose: handleClose,
-      onExpand: handleExpand,
-      onCollapse: handleCollapse,
-      readOnly: member.item.readOnly,
-      focused: member.item.focused,
-      onFocus: handleFocus,
-      onBlur: handleBlur,
-      inputId: member.item.id,
-      path: member.item.path,
-      children: renderedInput,
-      changed: member.item.changed,
-      inputProps,
-    }
-  }, [
-    member.key,
-    member.index,
-    member.item.level,
-    member.item.value,
-    member.item.compareValue,
-    member.item.__unstable_computeDiff,
-    member.item.hasUpstreamVersion,
-    member.item.schemaType,
-    member.item.presence,
-    member.item.validation,
-    member.item.readOnly,
-    member.item.focused,
-    member.item.id,
-    member.item.path,
-    member.item.changed,
-    member.collapsible,
-    member.collapsed,
-    member.parentSchemaType,
-    member.open,
-    handleInsert,
-    handleCopy,
-    onRemove,
-    handleOpen,
-    handleClose,
-    handleExpand,
-    handleCollapse,
-    handleFocus,
-    handleBlur,
-    renderedInput,
-    inputProps,
-  ])
-
   return (
     <FormCallbacksProvider
       onFieldGroupSelect={onFieldGroupSelect}
@@ -480,7 +410,60 @@ export function ArrayOfObjectsItem(props: MemberItemProps) {
       onPathBlur={onPathBlur}
       onPathFocus={onPathFocus}
     >
-      {useMemo(() => renderItem(itemProps), [itemProps, renderItem])}
+      <RenderItem
+        key={member.key}
+        index={member.index}
+        level={member.item.level}
+        value={member.item.value}
+        compareValue={member.item.compareValue}
+        __unstable_computeDiff={member.item.__unstable_computeDiff}
+        hasUpstreamVersion={member.item.hasUpstreamVersion}
+        title={member.item.schemaType.title}
+        description={member.item.schemaType.description}
+        collapsible={member.collapsible}
+        collapsed={member.collapsed}
+        schemaType={member.item.schemaType}
+        parentSchemaType={member.parentSchemaType}
+        onInsert={handleInsert}
+        onCopy={handleCopy}
+        onRemove={onRemove}
+        presence={member.item.presence}
+        validation={member.item.validation}
+        open={member.open}
+        onOpen={handleOpen}
+        onClose={handleClose}
+        onExpand={handleExpand}
+        onCollapse={handleCollapse}
+        readOnly={member.item.readOnly}
+        focused={member.item.focused}
+        onFocus={handleFocus}
+        onBlur={handleBlur}
+        inputId={member.item.id}
+        path={member.item.path}
+        changed={member.item.changed}
+        inputProps={inputProps}
+        render={renderItem}
+      >
+        <RenderInput {...inputProps} render={renderInput} />
+      </RenderItem>
     </FormCallbacksProvider>
   )
+}
+
+// The RenderInput and RenderItem wrappers workaround the strict refs checks in React Compiler
+function RenderInput({
+  render,
+  ...props
+}: Omit<ObjectInputProps, 'renderDefault'> & {
+  render: RenderInputCallback
+}) {
+  return render(props)
+}
+function RenderItem({
+  render,
+  ...props
+}: Omit<ObjectItemProps, 'renderDefault'> & {
+  render: RenderArrayOfObjectsItemCallback
+}) {
+  return render(props)
 }

@@ -7,6 +7,8 @@ import type {
   ActiveWorkspaceMatcherContext,
   AddonDatasetContext,
   AppIdCacheContext,
+  AssetLimitUpsellContext,
+  AssetLimitUpsellContextValue,
   CalendarContext,
   ChangeIndicatorTrackerContextGetSnapshot,
   ChangeIndicatorTrackerContextStore,
@@ -123,6 +125,12 @@ describe('sanity/_singletons', () => {
   })
   test('AppIdCacheContext', () => {
     expectTypeOf<typeof AppIdCacheContext>().not.toBeNever()
+  })
+  test('AssetLimitUpsellContext', () => {
+    expectTypeOf<typeof AssetLimitUpsellContext>().not.toBeNever()
+  })
+  test('AssetLimitUpsellContextValue', () => {
+    expectTypeOf<AssetLimitUpsellContextValue>().toBeObject()
   })
   test('CalendarContext', () => {
     expectTypeOf<typeof CalendarContext>().not.toBeNever()
