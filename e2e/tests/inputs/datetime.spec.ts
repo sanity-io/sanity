@@ -73,3 +73,31 @@ test(`datetime inputs shows validation on entering date in the textfield and onB
     page.getByTestId('field-requiredDatetime').getByTestId('input-validation-icon-error'),
   ).toBeVisible({timeout: 5_000})
 })
+
+test(`date time when manually changing the hour in an input, shouldn't alter it based on the timezone`, async ({
+  page,
+  createDraftDocument,
+}) => {
+  await createDraftDocument('/content/input-standard;datetimeTest')
+
+  await expect(
+    await page
+      .getByTestId('field-aDateTimeWithDisplayTimezoneInAmericaLosAngeles')
+      .getByTestId('date-input'),
+  ).toBeVisible()
+
+  await page
+    .getByTestId('field-aDateTimeWithDisplayTimezoneInAmericaLosAngeles')
+    .getByTestId('date-input')
+    .fill('2023-01-01 10:00')
+  await page
+    .getByTestId('field-aDateTimeWithDisplayTimezoneInAmericaLosAngeles')
+    .getByTestId('date-input')
+    .blur()
+
+  await expect(
+    page
+      .getByTestId('field-aDateTimeWithDisplayTimezoneInAmericaLosAngeles')
+      .getByTestId('date-input'),
+  ).toHaveValue('2023-01-01 20:00')
+})
