@@ -99,5 +99,20 @@ test(`date time when manually changing the hour in an input, shouldn't alter it 
     page
       .getByTestId('field-aDateTimeWithDisplayTimezoneInAmericaLosAngeles')
       .getByTestId('date-input'),
+  ).toHaveValue('2023-01-01 10:00')
+
+  await page
+    .getByTestId('field-aDateTimeWithDisplayTimezoneInAmericaLosAngeles')
+    .getByTestId('date-input')
+    .fill('2023-01-01 20:00')
+  await page
+    .getByTestId('field-aDateTimeWithDisplayTimezoneInAmericaLosAngeles')
+    .getByTestId('date-input')
+    .blur()
+
+  await expect(
+    page
+      .getByTestId('field-aDateTimeWithDisplayTimezoneInAmericaLosAngeles')
+      .getByTestId('date-input'),
   ).toHaveValue('2023-01-01 20:00')
 })
