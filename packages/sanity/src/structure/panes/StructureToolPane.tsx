@@ -19,8 +19,8 @@ interface StructureToolPaneProps {
   path: string
   selected: boolean
   siblingIndex: number
-  maximised: boolean
-  onSetMaximisedPane?: () => void
+  maximized: boolean
+  onSetMaximizedPane?: () => void
 }
 
 // TODO: audit this creates separate chunks
@@ -51,8 +51,8 @@ export const StructureToolPane = memo(
       path,
       selected,
       siblingIndex,
-      maximised,
-      onSetMaximisedPane,
+      maximized,
+      onSetMaximizedPane,
     } = props
 
     const PaneComponent = paneMap[pane.type] || UnknownPane
@@ -75,8 +75,8 @@ export const StructureToolPane = memo(
             paneKey={paneKey}
             // @ts-expect-error TS doesn't know how to handle this intersection
             pane={pane}
-            maximised={maximised}
-            onSetMaximisedPane={onSetMaximisedPane}
+            maximized={maximized}
+            onSetMaximizedPane={onSetMaximizedPane}
           />
         </Suspense>
       </PaneRouterProvider>

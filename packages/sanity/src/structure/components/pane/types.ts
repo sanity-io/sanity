@@ -7,7 +7,7 @@ import {type Intent} from '../../structureBuilder'
  * @internal
  */
 export interface PaneData {
-  maximised: boolean
+  maximized: boolean
   element: HTMLElement
   collapsed: boolean
   currentMinWidth?: number

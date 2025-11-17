@@ -18,7 +18,7 @@ export type PaneLayoutStateObserver = (state: PaneLayoutState) => void
 export interface PaneLayoutController {
   collapse: (element: HTMLElement) => void
   expand: (element: HTMLElement) => void
-  maximise: (element: HTMLElement) => void
+  maximize: (element: HTMLElement) => void
   mount: (element: HTMLElement, options: PaneConfigOpts) => () => void
   resize: (type: 'start' | 'move' | 'end', leftElement: HTMLElement, deltaX: number) => void
   setRootElement: (nextRootElement: HTMLElement | null) => void
@@ -37,7 +37,7 @@ export function createPaneLayoutController(): PaneLayoutController {
   let rootElement: HTMLElement | null = null
   let rootWidth = 0
   let expandedElement: HTMLElement | null = null
-  let maximisedElement: HTMLElement | null = null
+  let maximizedElement: HTMLElement | null = null
   let resizeDataMap = new Map<HTMLElement, PaneResizeData>()
   let resizing = false
 
@@ -59,8 +59,8 @@ export function createPaneLayoutController(): PaneLayoutController {
     _notifyObservers()
   }
 
-  function maximise(element: HTMLElement) {
-    maximisedElement = element
+  function maximize(element: HTMLElement) {
+    maximizedElement = element
 
     _notifyObservers()
   }
@@ -85,8 +85,8 @@ export function createPaneLayoutController(): PaneLayoutController {
 
       optionsMap.delete(element)
 
-      if (maximisedElement === element) {
-        maximisedElement = null
+      if (maximizedElement === element) {
+        maximizedElement = null
       }
 
       _notifyObservers()
@@ -193,7 +193,7 @@ export function createPaneLayoutController(): PaneLayoutController {
     }
   }
 
-  return {collapse, expand, maximise, mount, resize, setRootElement, setRootWidth, subscribe}
+  return {collapse, expand, maximize, mount, resize, setRootElement, setRootWidth, subscribe}
 
   function _notifyObservers() {
     if (!rootWidth) return
@@ -244,7 +244,7 @@ export function createPaneLayoutController(): PaneLayoutController {
         currentMinWidth: resizeData?.width ?? options.currentMinWidth,
         currentMaxWidth: resizeData?.width ?? options.currentMaxWidth,
         flex: resizeData?.flex ?? options.flex ?? 1,
-        maximised: element === maximisedElement,
+        maximized: element === maximizedElement,
       })
 
       // Update remaining width

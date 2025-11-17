@@ -15,8 +15,8 @@ export function DocumentHeaderTitle(): React.JSX.Element {
 
   const {t} = useTranslation(structureLocaleNamespace)
 
-  const hasMaximisedPane = useMemo(
-    () => paneDataItems.some((paneData) => paneData.maximised),
+  const hasMaximizedPane = useMemo(
+    () => paneDataItems.some((paneData) => paneData.maximized),
     [paneDataItems],
   )
 
@@ -44,7 +44,7 @@ export function DocumentHeaderTitle(): React.JSX.Element {
 
   return (
     <>
-      {hasMaximisedPane ? (
+      {hasMaximizedPane ? (
         <DocumentHeaderBreadcrumb paneDataItems={paneDataItems} currentPaneIndex={index} />
       ) : (
         documentTitle || (
