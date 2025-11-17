@@ -208,8 +208,7 @@ export function CrossDatasetReferenceInput(props: CrossDatasetReferenceInputProp
           of({isLoading: true}),
           onSearch(searchString).pipe(
             map((hits) => ({
-              // eslint-disable-next-line max-nested-callbacks
-              hits: hits.filter((hit) => hit.published),
+              hits,
               searchString,
               isLoading: false,
             })),
