@@ -81,12 +81,13 @@ export function buildTreeEditingState(props: BuildTreeEditingStateProps): TreeEd
   // If the child array field has custom components.input, skip building dialog
   // but preserve breadcrumbs, menuItems, and siblings
   if (hasCustomInputComponent((props.schemaType as ObjectSchemaType).fields || [], openPath)) {
+    const {menuItems, siblings} = result
     return {
       relativePath: EMPTY_ARRAY,
       breadcrumbs,
-      menuItems: result.menuItems,
+      menuItems: menuItems,
       rootTitle,
-      siblings: result.siblings,
+      siblings: siblings,
     }
   }
 

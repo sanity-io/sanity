@@ -108,8 +108,6 @@ export function buildArrayStatePTE(props: BuildArrayStatePTEProps): {
 
     if (!blockSchemaType) return
 
-    // If the child array field has custom components.input, skip building dialog
-
     if (!blockSchemaType || !isObjectSchemaType(blockSchemaType)) return
     if (!blockSchemaType.fields) return
 
@@ -186,7 +184,6 @@ export function buildArrayStatePTE(props: BuildArrayStatePTEProps): {
           // Use openPath as relativePath for more precise targeting
           // meaning that we in fact want to go deeper into the nested structure
           relativePath = getRelativePath(openPath)
-
           // Process array fields even if they're empty (for new blocks)
           // But ensure the value is at least an empty array for processing
           const arrayFieldValue = Array.isArray(blockFieldValue) ? blockFieldValue : []
@@ -254,11 +251,8 @@ export function buildArrayStatePTE(props: BuildArrayStatePTEProps): {
   // This is for deeply nested PTEs
   relativePath = validateRelativePathExists(relativePath, documentValue)
 
-  // If the openPath has a custom input component, we don't want to set a relativePath
-  const hasCustomInput = hasCustomInputComponent(rootSchemaType.fields, openPath)
-
   return {
-    relativePath: isTextContent || hasCustomInput ? null : relativePath,
+    relativePath: isTextContent ? null : relativePath,
     breadcrumbs,
     childrenMenuItems,
     siblings,
