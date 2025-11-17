@@ -1,6 +1,6 @@
 import {useTelemetry} from '@sanity/telemetry/react'
 import {useCallback, useMemo} from 'react'
-import {useTranslation} from 'sanity'
+import {useDocumentPreviewValues, usePerspective, useTranslation} from 'sanity'
 import {useRouter, useRouterState} from 'sanity/router'
 
 import {Button} from '../../../../../ui-components/button/Button'
@@ -9,7 +9,6 @@ import {structureLocaleNamespace} from '../../../../i18n'
 import {type Panes} from '../../../../structureResolvers/useResolvedPanes'
 import {type RouterPanes} from '../../../../types'
 import {FocusDocumentPaneNavigated} from './__telemetry__/focus.telemetry'
-import {useDocumentPreviewTitle} from './hook/useDocumentPreviewTitle'
 
 export function DocumentHeaderBreadcrumbItem({
   paneData,
@@ -23,22 +22,27 @@ export function DocumentHeaderBreadcrumbItem({
   const telemetry = useTelemetry()
   const routerPanes = useMemo(() => (routerState?.panes || []) as RouterPanes, [routerState?.panes])
 
+  const {perspectiveStack} = usePerspective()
   // In case if it's a pane with a title, use the title
   const staticTitle = pane !== LOADING_PANE && 'title' in pane ? pane.title : null
 
   // In case if it's a document pane, we need to fetch the document preview title
   const documentId = pane !== LOADING_PANE && pane.type === 'document' ? pane.options.id : null
   const documentType = pane !== LOADING_PANE && pane.type === 'document' ? pane.options.type : null
-  const {title: previewTitle, isLoading} = useDocumentPreviewTitle(documentId, documentType)
+  const {value: previewValue, isLoading} = useDocumentPreviewValues({
+    documentId: documentId ?? '',
+    documentType: documentType ?? '',
+    perspectiveStack: perspectiveStack,
+  })
 
   // Use preview title for documents, static title for other panes
   const displayTitle = useMemo(() => {
     if (documentId && !isLoading) {
-      return previewTitle ? previewTitle : t('panes.document-header-title.untitled.text')
+      return previewValue?.title || t('panes.document-header-title.untitled.text')
     }
 
     return staticTitle
-  }, [documentId, previewTitle, staticTitle, t, isLoading])
+  }, [documentId, previewValue, staticTitle, t, isLoading])
 
   const handleClick = useCallback(() => {
     telemetry.log(FocusDocumentPaneNavigated)
