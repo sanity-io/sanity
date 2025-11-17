@@ -18,6 +18,7 @@ import {getItemType} from '../../../../store/utils/getItemType'
 import {type DialogItem} from '../../types'
 import {findArrayTypePaths} from '../findArrayTypePaths'
 import {getSchemaField} from '../getSchemaField'
+import {hasCustomInputComponent} from '../hasCustomInputComponent'
 import {isPathTextInPTEField} from '../isPathTextInPTEField'
 import {buildArrayStatePTE} from './buildArrayStatePTE'
 import {buildBreadcrumbsState} from './buildBreadcrumbsState'
@@ -115,7 +116,10 @@ export function buildArrayState(props: BuildArrayState): TreeEditingState {
     const childrenFields = itemSchemaField?.fields || []
     const childrenMenuItems: DialogItem[] = []
 
-    if (shouldBeInBreadcrumb(itemPath, openPath, documentValue)) {
+    if (
+      shouldBeInBreadcrumb(itemPath, openPath, documentValue) &&
+      !hasCustomInputComponent(rootSchemaType.fields, itemPath)
+    ) {
       const breadcrumbsResult = buildBreadcrumbsState({
         arraySchemaType,
         arrayValue,
@@ -245,7 +249,10 @@ export function buildArrayState(props: BuildArrayState): TreeEditingState {
         }
         childArray.forEach(updateChildArrayIndex)
 
-        if (shouldBeInBreadcrumb(childPath, openPath, documentValue)) {
+        if (
+          shouldBeInBreadcrumb(childPath, openPath, documentValue) &&
+          !hasCustomInputComponent(rootSchemaType.fields, childPath)
+        ) {
           const breadcrumbsResult = buildBreadcrumbsState({
             arraySchemaType: childField.type as ArraySchemaType,
             arrayValue: childValue as Record<string, unknown>[],

@@ -69,10 +69,6 @@ export function buildTreeEditingState(props: BuildTreeEditingStateProps): TreeEd
     return EMPTY_TREE_STATE
   }
 
-  // If the child array field has custom components.input, skip building dialog
-  if (hasCustomInputComponent((props.schemaType as ObjectSchemaType).fields || [], openPath)) {
-    return EMPTY_TREE_STATE
-  }
   let relativePath: Path = []
   const breadcrumbs: DialogItem[] = []
 
@@ -81,6 +77,18 @@ export function buildTreeEditingState(props: BuildTreeEditingStateProps): TreeEd
     documentValue: props.documentValue,
     path: rootPath,
   })
+
+  // If the child array field has custom components.input, skip building dialog
+  // but preserve breadcrumbs, menuItems, and siblings
+  if (hasCustomInputComponent((props.schemaType as ObjectSchemaType).fields || [], openPath)) {
+    return {
+      relativePath: EMPTY_ARRAY,
+      breadcrumbs,
+      menuItems: result.menuItems,
+      rootTitle,
+      siblings: result.siblings,
+    }
+  }
 
   function recursive(recursiveProps: RecursiveProps): TreeEditingState {
     const {schemaType, path, documentValue} = recursiveProps
