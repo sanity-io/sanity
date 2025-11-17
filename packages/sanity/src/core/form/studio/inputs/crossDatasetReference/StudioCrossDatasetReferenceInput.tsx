@@ -89,7 +89,7 @@ export function StudioCrossDatasetReferenceInput(props: StudioCrossDatasetRefere
       client
         .withConfig({
           dataset: schemaType.dataset,
-          apiVersion: '2023-11-13',
+          apiVersion: DEFAULT_STUDIO_CLIENT_OPTIONS.apiVersion,
           ignoreBrowserTokenWarning: true,
         })
 
@@ -111,6 +111,7 @@ export function StudioCrossDatasetReferenceInput(props: StudioCrossDatasetRefere
             tag: 'search.cross-dataset-reference',
             maxFieldDepth,
             strategy: searchStrategy,
+            perspective: 'published',
           }),
         ),
 
