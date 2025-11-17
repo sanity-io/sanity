@@ -1,10 +1,14 @@
+import {type CrossDatasetIncomingReference} from '@sanity/types'
 import {Box, Flex} from '@sanity/ui'
-import {CrossDatasetReferencePreview, PreviewCard} from 'sanity'
 
-import {type CrossDatasetIncomingReference} from '../types'
+import {PreviewCard} from '../../../../../components/previewCard/PreviewCard'
+import {CrossDatasetReferencePreview} from '../../../../inputs/CrossDatasetReferenceInput/CrossDatasetReferencePreview'
 import {type CrossDatasetIncomingReferenceDocument} from './getCrossDatasetIncomingReferences'
 
-export function CrossDatasetIncomingReferenceDocumentPreview({
+/**
+ * @internal
+ */
+export function IncomingReferenceCrossDatasetPreview({
   type,
   document,
 }: {

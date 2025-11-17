@@ -609,9 +609,23 @@ export const studioLocaleStrings = defineLocalesResources('studio', {
   /** Title for help and resources menus */
   'help-resources.title': 'Help and resources',
 
+  /** The text for the add reference item in the incoming references input */
+  'incoming-references.input.add-reference-item': 'Add item',
+  /** The text for the no items in the incoming references input */
+  'incoming-references.input.no-items': 'No items',
+  /** The text for the reference from in the incoming references input */
+  'incoming-references.input.reference-from': 'Reference from {{type}}',
+  /** The text for the schema type not found in the incoming references input */
+  'incoming-references.input.schema-type-not-found': 'Schema type {{type}} not found',
+  /** The text for the type to search in the incoming references input */
+  'incoming-references.input.type-to-search': 'Type to search',
+  /** The text for the loading state in the incoming references input */
+  'incoming-references.input.types-loading': 'Loading documents...',
+  /** The text for the no references defined in the incoming references input */
+  'incoming-references.input.types-not-defined':
+    'No incoming references defined for this type, see the docs for more information.',
   /**Incoming references inspector title */
   'incoming-references.title': 'Incoming references',
-
   /** Text for button to cancel an ongoing upload */
   'input.files.common.cancel-upload': 'Cancel',
   /** Text for menuitem upload button default asset source */

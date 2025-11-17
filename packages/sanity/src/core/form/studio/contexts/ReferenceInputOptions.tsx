@@ -29,6 +29,7 @@ export interface EditReferenceLinkComponentProps {
   parentRefPath: Path
   template?: TemplateOption
   children: ReactNode
+  childParameters?: Record<string, unknown>
 }
 
 /**

@@ -1,21 +1,23 @@
-import {type StringInputProps} from 'sanity'
+import {type IncomingReferencesOptions} from '@sanity/types'
 
+import {type StringInputProps} from '../../../types/inputProps'
 import {IncomingReferencesList} from './IncomingReferencesList'
-import {type IncomingReferencesOptions} from './types'
 
 /**
  * @beta
  */
-export function IncomingReferencesInput(props: StringInputProps & IncomingReferencesOptions) {
+export function IncomingReferencesInput(
+  props: StringInputProps & {schemaType: {options: IncomingReferencesOptions}},
+) {
+  const {id: fieldName, schemaType} = props
   const {
     onLinkDocument,
     actions,
     filter,
     filterParams,
-    id: fieldName,
     creationAllowed = true,
     types,
-  } = props
+  } = schemaType.options as IncomingReferencesOptions
 
   return (
     <IncomingReferencesList

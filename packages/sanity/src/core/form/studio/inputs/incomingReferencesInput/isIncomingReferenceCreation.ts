@@ -1,4 +1,4 @@
-import {type DocumentDefinition} from 'sanity'
+import {type DocumentDefinition} from '@sanity/types'
 
 export interface IncomingReferenceCreationParams {
   reference: {

@@ -1,6 +1,6 @@
 import {BookIcon} from '@sanity/icons'
 import {defineType, type Rule} from '@sanity/types'
-import {isIncomingReferenceCreation} from 'sanity/structure'
+import {isIncomingReferenceCreation} from 'sanity'
 
 function formatSubtitle(book: any) {
   return [

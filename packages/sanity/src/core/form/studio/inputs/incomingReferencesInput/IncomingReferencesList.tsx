@@ -1,11 +1,11 @@
+import {type IncomingReferencesOptions, isCrossDatasetIncomingReference} from '@sanity/types'
 import {Card, Flex, Stack, Text} from '@sanity/ui'
-import {useTranslation} from 'sanity'
 
-import {structureLocaleNamespace} from '../../i18n'
-import {useDocumentPane} from '../../panes/document/useDocumentPane'
-import {CrossDatasetIncomingReferenceType} from './CrossDatasetIncomingReference/CrossDatasetIncomingReferenceType'
-import {IncomingReferencesType} from './IncomingReferencesType'
-import {type IncomingReferencesOptions, isCrossDatasetIncomingReference} from './types'
+import {useTranslation} from '../../../../i18n/hooks/useTranslation'
+import {getPublishedId} from '../../../../util/draftUtils'
+import {useFormValue} from '../../../contexts/FormValue'
+import {CrossDatasetIncomingReferences} from './CrossDatasetIncomingReference/CrossDatasetIncomingReferences'
+import {IncomingReferences} from './IncomingReferences'
 
 interface IncomingReferencesListProps extends IncomingReferencesOptions {
   fieldName: string
@@ -19,15 +19,17 @@ export function IncomingReferencesList({
   fieldName,
   creationAllowed,
 }: IncomingReferencesListProps) {
-  const {documentId, documentType} = useDocumentPane()
-  const {t} = useTranslation(structureLocaleNamespace)
+  const documentId = useFormValue(['_id']) as string
+  const documentType = useFormValue(['_type']) as string
+
+  const {t} = useTranslation()
 
   if (!types || types?.length === 0) {
     return (
       <Card border radius={2} padding={3} tone="critical">
         <Flex align="center" justify="center">
           <Text size={1} muted>
-            {t('incoming-references-input.types-not-defined')}
+            {t('incoming-references.input.types-not-defined')}
           </Text>
         </Flex>
       </Card>
@@ -39,7 +41,7 @@ export function IncomingReferencesList({
       {types.map((type) => {
         if (isCrossDatasetIncomingReference(type)) {
           return (
-            <CrossDatasetIncomingReferenceType
+            <CrossDatasetIncomingReferences
               key={`${type.type}-${type.dataset || ''}`}
               type={type}
               referenced={{id: documentId, type: documentType}}
@@ -48,10 +50,10 @@ export function IncomingReferencesList({
           )
         }
         return (
-          <IncomingReferencesType
+          <IncomingReferences
             key={type.type}
             type={type}
-            referenced={{id: documentId, type: documentType}}
+            referenced={{id: getPublishedId(documentId), type: documentType}}
             onLinkDocument={onLinkDocument}
             actions={actions}
             shouldRenderTitle={types.length > 1}

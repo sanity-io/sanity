@@ -5,7 +5,15 @@ import {ChildLink} from './ChildLink'
 import {type ReferenceChildLinkProps} from './types'
 
 export const ReferenceChildLink = forwardRef(function ReferenceChildLink(
-  {documentId, documentType, parentRefPath, children, template, ...rest}: ReferenceChildLinkProps,
+  {
+    documentId,
+    documentType,
+    parentRefPath,
+    children,
+    template,
+    childParameters,
+    ...rest
+  }: ReferenceChildLinkProps,
   ref: ForwardedRef<HTMLAnchorElement>,
 ) {
   return (
@@ -18,6 +26,7 @@ export const ReferenceChildLink = forwardRef(function ReferenceChildLink(
         type: documentType,
         parentRefPath: pathToString(parentRefPath),
         ...(template && {template: template?.id}),
+        ...childParameters,
       }}
     >
       {children}

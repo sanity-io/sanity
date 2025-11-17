@@ -30,6 +30,7 @@ export interface ReferenceChildLinkProps {
   parentRefPath: Path
   template?: {id: string; params?: Record<string, string | number | boolean>}
   children: ReactNode
+  childParameters?: Record<string, unknown>
 }
 
 /**

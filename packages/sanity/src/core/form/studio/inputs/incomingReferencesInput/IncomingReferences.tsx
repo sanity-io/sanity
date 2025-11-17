@@ -1,31 +1,26 @@
 import {AddIcon} from '@sanity/icons'
+import {type IncomingReferencesOptions, type IncomingReferenceType} from '@sanity/types'
 import {Box, Card, Flex, Stack, Text, useToast} from '@sanity/ui'
 import {useCallback, useEffect, useMemo, useState} from 'react'
 import {useObservable} from 'react-rx'
-import {
-  DEFAULT_STUDIO_CLIENT_OPTIONS,
-  getDraftId,
-  getPublishedId,
-  isPublishedId,
-  LoadingBlock,
-  SanityDefaultPreview,
-  useClient,
-  useDocumentPreviewStore,
-  useSchema,
-  useSource,
-  useTranslation,
-} from 'sanity'
 
-import {Button} from '../../../ui-components/button/Button'
-import {structureLocaleNamespace} from '../../i18n'
-import {useDocumentPane} from '../../panes/document/useDocumentPane'
+import {Button} from '../../../../../ui-components/button/Button'
+import {LoadingBlock} from '../../../../components/loadingBlock/LoadingBlock'
+import {useClient} from '../../../../hooks/useClient'
+import {useEditState} from '../../../../hooks/useEditState'
+import {useSchema} from '../../../../hooks/useSchema'
+import {useTranslation} from '../../../../i18n/hooks/useTranslation'
+import {SanityDefaultPreview} from '../../../../preview/components/SanityDefaultPreview'
+import {useDocumentPreviewStore} from '../../../../store/_legacy/datastores'
+import {useSource} from '../../../../studio/source'
+import {DEFAULT_STUDIO_CLIENT_OPTIONS} from '../../../../studioClient'
+import {getDraftId, getPublishedId, isPublishedId} from '../../../../util/draftUtils'
 import {AddIncomingReference} from './AddIncomingReference'
 import {CreateNewIncomingReference} from './CreateNewIncomingReference'
 import {getIncomingReferences, INITIAL_STATE} from './getIncomingReferences'
 import {IncomingReferenceDocument} from './IncomingReferenceDocument'
-import {type IncomingReferencesOptions, type IncomingReferenceType} from './types'
 
-export function IncomingReferencesType({
+export function IncomingReferences({
   type,
   referenced,
   onLinkDocument,
@@ -47,31 +42,29 @@ export function IncomingReferencesType({
   filterParams: IncomingReferencesOptions['filterParams']
 }) {
   const documentPreviewStore = useDocumentPreviewStore()
-  const {displayed} = useDocumentPane()
   const {getClient} = useSource()
-  const displayedId = displayed?._id as string
+
   const references$ = useMemo(
     () =>
       getIncomingReferences({
-        documentId: displayedId,
+        documentId: referenced.id,
         documentPreviewStore,
         type: type.type,
         filter,
         filterParams,
         getClient,
       }),
-    [documentPreviewStore, type, filter, filterParams, displayedId, getClient],
+    [documentPreviewStore, type, filter, filterParams, referenced.id, getClient],
   )
 
   const {documents, loading} = useObservable(references$, INITIAL_STATE)
-
   const schema = useSchema()
-  const {t} = useTranslation(structureLocaleNamespace)
+  const {t} = useTranslation()
   const schemaType = schema.get(type.type)
   const client = useClient(DEFAULT_STUDIO_CLIENT_OPTIONS)
   const [isAdding, setIsAdding] = useState(false)
   const [newReferenceId, setNewReferenceId] = useState<string | null>(null)
-  const {editState} = useDocumentPane()
+  const editState = useEditState(referenced.id, referenced.type)
   const toast = useToast()
   const handleAdd = useCallback(() => {
     setIsAdding((p) => !p)
@@ -160,7 +153,7 @@ export function IncomingReferencesType({
               hidden={isAdding || Boolean(newReferenceId)}
             >
               <Text size={1} muted>
-                {t('incoming-references-input.no-items')}
+                {t('incoming-references.input.no-items')}
               </Text>
             </Flex>
           </>
@@ -187,7 +180,7 @@ export function IncomingReferencesType({
           icon={AddIcon}
           mode="ghost"
           onClick={handleAdd}
-          text={t('incoming-references-input.add-reference-item')}
+          text={t('incoming-references.input.add-reference-item')}
         />
       ) : (
         <CreateNewIncomingReference
