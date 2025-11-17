@@ -17,7 +17,7 @@ const canvasLocaleStrings = defineLocalesResources('canvas', {
     "You don't have permissions to link this document to Canvas",
   /** The text for the "Link to Canvas" action when the document is a version document. */
   'action.link-document-disabled.version-document':
-    'Version documents can only be linked from Canvas',
+    'Version documents are not yet supported in Canvas',
   /** The text for the "Link to Canvas" action when the document is not yet resolved. */
   'action.link-document-disabled.initial-value-not-resolved':
     'Please wait until the document initial values are resolved',
