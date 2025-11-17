@@ -93,7 +93,7 @@ export function CreateButton(props: Props) {
                 />
               }
               portal
-              data-testid={`create-new-document-select-${createOption.title.toLowerCase().replace(' ', '-')}-selectTypeMenuButton`}
+              data-testid={`create-new-document-select-${createOption.title.toLowerCase().replaceAll(' ', '-')}-selectTypeMenuButton`}
             >
               {/* this wrapper div is needed because disabled button doesn't trigger mouse events */}
               <div>
@@ -102,7 +102,7 @@ export function CreateButton(props: Props) {
                   icon={createOption.icon}
                   text={getI18nText(createOption).title}
                   onClick={() => onCreate(createOption)}
-                  data-testid={`create-new-document-select-${createOption.title.toLowerCase().replace(' ', '-')}-selectTypeMenuItem`}
+                  data-testid={`create-new-document-select-${createOption.title.toLowerCase().replaceAll(' ', '-')}-selectTypeMenuItem`}
                 />
               </div>
             </Tooltip>
