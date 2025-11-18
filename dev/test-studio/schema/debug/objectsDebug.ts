@@ -240,6 +240,12 @@ const animal = defineField({
           title: 'Author',
           to: [{type: 'author'}],
         },
+        {
+          type: 'reference',
+          name: 'species',
+          title: 'Species',
+          to: [{type: 'species'}],
+        },
       ],
     },
     {
