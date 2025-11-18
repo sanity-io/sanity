@@ -18,6 +18,7 @@ import customInputsWithPatches from './debug/customInputsWithPatches'
 import customNumber from './debug/customNumber'
 import dateTimeValidation from './debug/dateTimeValidation'
 import dateValidation from './debug/dateValidation'
+import decorationFields from './debug/decorationFields'
 import {deprecatedDocument} from './debug/deprecatedDocument'
 import {
   deprecatedFields,
@@ -208,6 +209,7 @@ export function createSchemaTypes(projectId: string) {
     customNumber,
     dateTimeValidation,
     dateValidation,
+    decorationFields,
     deprecatedDocument,
     deprecatedFields,
     documentActions,

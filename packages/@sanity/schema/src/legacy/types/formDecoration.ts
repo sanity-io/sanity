@@ -8,7 +8,7 @@ const OVERRIDABLE_FIELDS = [...DEFAULT_OVERRIDEABLE_FIELDS]
 
 const FORM_DECORATION_CORE = {
   name: FORM_DECORATION,
-  title: 'Form Decorator',
+  title: 'Form Decoration',
   type: null,
   jsonType: 'null',
 }

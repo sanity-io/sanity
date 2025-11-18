@@ -191,10 +191,6 @@ export default defineType({
       description: 'Used for testing the "locked" permissions pattern',
       type: 'boolean',
     },
-    defineField({
-      type: 'internalFormDecorator',
-      name: 'incomingReferencesPlaceholder',
-    }),
   ],
 
   initialValue: () => ({
