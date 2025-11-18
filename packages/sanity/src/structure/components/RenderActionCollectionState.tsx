@@ -70,6 +70,7 @@ const SUPPORTED_LINKED_TO_CANVAS_ACTIONS: DocumentActionComponent['action'][] = 
   'schedule',
   'discardVersion',
   'unpublishVersion',
+  'schedule',
 ]
 
 interface ActionsGuardWrapperProps {
