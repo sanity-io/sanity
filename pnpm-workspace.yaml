@@ -14,7 +14,8 @@ packages:
 catalog:
   '@playwright/experimental-ct-react': 1.56.1
   '@playwright/test': 1.56.1
-  '@sanity/client': ^7.12.1
+  # todo: remove
+  '@sanity/client': 'https://pkg.pr.new/sanity-io/client/@sanity/client@c291a5a'
   '@sanity/eslint-config-i18n': ^2.0.0
   '@sanity/pkg-utils': ^8.1.13
   '@sanity/ui': ^3.1.5
@@ -52,6 +53,8 @@ overrides:
   # cssstyle required by jsdom 27. If this error is no longer present, it's safe to remove the following override.
   jsdom: 26.1.0
   vitest: $vitest
+  #todo: remove
+  '@sanity/client': 'https://pkg.pr.new/sanity-io/client/@sanity/client@c291a5a'
 
 peerDependencyRules:
   allowAny:
