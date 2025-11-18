@@ -88,7 +88,7 @@ export async function measureFpsForPte({
   const getBlockingTime = measureBlockingTime(page)
   for (const character of characters) {
     inputEvents.push({character, timestamp: Date.now()})
-    await contentEditable.press(character)
+    await contentEditable.pressSequentially(character)
     await new Promise((resolve) => setTimeout(resolve, 0))
   }
 

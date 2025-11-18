@@ -11,7 +11,6 @@ import {getTheme_v2} from '@sanity/ui/theme'
 import {type ReactNode, useEffect, useMemo, useState} from 'react'
 import {css, styled} from 'styled-components'
 
-import {ConditionalWrapper} from '../../../../ui-components/conditionalWrapper'
 import {interpolateTemplate} from '../../../util/interpolateTemplate'
 import {transformBlocks} from './helpers'
 
@@ -90,8 +89,6 @@ const DynamicIconContainer = styled.span<{$inline: boolean}>`
     }
   }
 `
-
-const accentSpanWrapper = (children: ReactNode) => <AccentSpan>{children}</AccentSpan>
 
 const DynamicIcon = (props: {icon: {url: string}; inline?: boolean}) => {
   const [__html, setHtml] = useState('')
@@ -268,19 +265,20 @@ const createComponents = ({
     },
     types: {
       inlineIcon: (props) => {
-        return (
-          <ConditionalWrapper condition={props.value.accent} wrapper={accentSpanWrapper}>
-            {props.value.sanityIcon ? (
-              <InlineIcon
-                symbol={props.value.sanityIcon}
-                $hasTextLeft={props.value.hasTextLeft}
-                $hasTextRight={props.value.hasTextRight}
-              />
-            ) : (
-              <>{props.value.icon?.url && <DynamicIcon icon={props.value.icon} inline />}</>
-            )}
-          </ConditionalWrapper>
+        const children = props.value.sanityIcon ? (
+          <InlineIcon
+            symbol={props.value.sanityIcon}
+            $hasTextLeft={props.value.hasTextLeft}
+            $hasTextRight={props.value.hasTextRight}
+          />
+        ) : (
+          <>{props.value.icon?.url && <DynamicIcon icon={props.value.icon} inline />}</>
         )
+
+        if (props.value.accent) {
+          return <AccentSpan>{children}</AccentSpan>
+        }
+        return children
       },
       divider: () => (
         <Box marginY={3}>

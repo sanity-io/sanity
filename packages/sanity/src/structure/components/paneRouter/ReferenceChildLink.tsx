@@ -1,5 +1,6 @@
 import {toString as pathToString} from '@sanity/util/paths'
 import {type ForwardedRef, forwardRef} from 'react'
+import {getPublishedId} from 'sanity'
 
 import {ChildLink} from './ChildLink'
 import {type ReferenceChildLinkProps} from './types'
@@ -20,7 +21,7 @@ export const ReferenceChildLink = forwardRef(function ReferenceChildLink(
     <ChildLink
       {...rest}
       ref={ref}
-      childId={documentId}
+      childId={getPublishedId(documentId)}
       childPayload={template?.params}
       childParameters={{
         type: documentType,

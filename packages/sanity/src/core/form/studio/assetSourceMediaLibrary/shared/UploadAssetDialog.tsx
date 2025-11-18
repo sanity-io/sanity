@@ -5,7 +5,7 @@ import {
   type ImageSchemaType,
 } from '@sanity/types'
 import {useToast} from '@sanity/ui'
-import {createRef, type ReactNode, useCallback, useEffect, useState} from 'react'
+import {type ReactNode, useCallback, useEffect, useRef, useState} from 'react'
 
 import {useTranslation} from '../../../../i18n'
 import {useAuthType} from '../hooks/useAuthType'
@@ -28,9 +28,7 @@ export interface UploadAssetsDialogProps {
   schemaType?: FileSchemaType | ImageSchemaType
 }
 
-export const UploadAssetsDialog = function UploadAssetsDialog(
-  props: UploadAssetsDialogProps,
-): ReactNode {
+export function UploadAssetsDialog(props: UploadAssetsDialogProps): ReactNode {
   const mediaLibraryIds = useMediaLibraryIds()
   const {schemaType} = props
 
@@ -46,10 +44,10 @@ export const UploadAssetsDialog = function UploadAssetsDialog(
   const appHost = pluginConfig.__internal.hosts.app
   const appBasePath = pluginConfig.__internal.appBasePath
   const iframeUrl = `${appHost}${appBasePath}/plugin/v1/library/${mediaLibraryIds?.libraryId}/upload?auth=${authType}`
-  const uploaderRef = createRef<{
+  const uploaderRef = useRef<{
     uploader: AssetSourceUploader
     unsubscribe: () => void
-  }>()
+  } | null>(null)
 
   const [pageReadyForUploads, setPageReadyForUploads] = useState(false)
 

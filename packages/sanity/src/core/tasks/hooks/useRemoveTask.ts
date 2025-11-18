@@ -24,20 +24,23 @@ export function useRemoveTask({id, onError, onRemoved}: RemoveTaskOptions): Remo
   const operations = useTaskOperations()
 
   const handleRemove = useCallback(async () => {
-    try {
+    // Workaround for React Compiler not yet fully supporting try/catch/finally syntax
+    const run = async () => {
       setRemoveStatus('loading')
       await operations.remove(id)
       onRemoved?.()
       setRemoveStatus('idle')
       await new Promise((resolve) => setTimeout(resolve, 300))
       setShowDialog(false)
+    }
+    try {
+      await run()
     } catch (e) {
       onError?.(e.message)
       setError(e.message)
       setRemoveStatus('error')
-    } finally {
-      setRemoveStatus('idle')
     }
+    setRemoveStatus('idle')
   }, [id, operations, onError, onRemoved])
 
   const handleOpenDialog = useCallback(() => {

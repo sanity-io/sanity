@@ -461,6 +461,7 @@ import type {
   DocumentRemoteMutationVersionEvent,
   DocumentRevision,
   DocumentRule,
+  DocumentStackAvailability,
   DocumentStatus,
   DocumentStatusIndicator,
   DocumentStore,
@@ -1105,6 +1106,7 @@ import type {
   PrimitiveMemberItemProps,
   ProjectData,
   ProjectDatasetData,
+  ProjectGrants,
   ProjectStore,
   ProvenanceDiffAnnotation,
   PublishDocumentVersionEvent,
@@ -3046,6 +3048,9 @@ describe('sanity', () => {
   })
   test('DocumentRule', () => {
     expectTypeOf<DocumentRule>().toBeObject()
+  })
+  test('DocumentStackAvailability', () => {
+    expectTypeOf<DocumentStackAvailability>().toBeObject()
   })
   test('DocumentStatus', () => {
     expectTypeOf<typeof DocumentStatus>().toBeFunction()
@@ -4990,6 +4995,9 @@ describe('sanity', () => {
   })
   test('ProjectDatasetData', () => {
     expectTypeOf<ProjectDatasetData>().toBeObject()
+  })
+  test('ProjectGrants', () => {
+    expectTypeOf<ProjectGrants>().not.toBeNever()
   })
   test('ProjectStore', () => {
     expectTypeOf<ProjectStore>().toBeObject()

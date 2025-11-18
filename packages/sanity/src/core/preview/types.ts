@@ -104,6 +104,21 @@ export interface DraftsModelDocumentAvailability {
 /**
  * @hidden
  * @beta */
+export interface DocumentStackAvailability {
+  /**
+   * Document id
+   */
+  id: string
+
+  /**
+   * Availability for the document in this stack
+   */
+  availability: DocumentAvailability
+}
+
+/**
+ * @hidden
+ * @beta */
 export interface DraftsModelDocument<T extends SanityDocumentLike = SanityDocumentLike> {
   id: string
   type: string | null

@@ -7,6 +7,8 @@ import type {
   ActiveWorkspaceMatcherContext,
   AddonDatasetContext,
   AppIdCacheContext,
+  AssetLimitUpsellContext,
+  AssetLimitUpsellContextValue,
   CalendarContext,
   ChangeIndicatorTrackerContextGetSnapshot,
   ChangeIndicatorTrackerContextStore,
@@ -41,6 +43,7 @@ import type {
   FormFieldPresenceContext,
   FormValueContext,
   FreeTrialContext,
+  FullscreenPTEContext,
   GetFormValueContext,
   GetFormValueContextValue,
   HoveredFieldContext,
@@ -86,6 +89,7 @@ import type {
   ScheduledPublishingEnabledContextValue,
   SchedulePublishUpsellContext,
   SchedulePublishUpsellContextValue,
+  SchedulesContext,
   ScrollContext,
   SearchContext,
   SingleDocReleaseContext,
@@ -121,6 +125,12 @@ describe('sanity/_singletons', () => {
   })
   test('AppIdCacheContext', () => {
     expectTypeOf<typeof AppIdCacheContext>().not.toBeNever()
+  })
+  test('AssetLimitUpsellContext', () => {
+    expectTypeOf<typeof AssetLimitUpsellContext>().not.toBeNever()
+  })
+  test('AssetLimitUpsellContextValue', () => {
+    expectTypeOf<AssetLimitUpsellContextValue>().toBeObject()
   })
   test('CalendarContext', () => {
     expectTypeOf<typeof CalendarContext>().not.toBeNever()
@@ -223,6 +233,9 @@ describe('sanity/_singletons', () => {
   })
   test('FreeTrialContext', () => {
     expectTypeOf<typeof FreeTrialContext>().not.toBeNever()
+  })
+  test('FullscreenPTEContext', () => {
+    expectTypeOf<typeof FullscreenPTEContext>().not.toBeNever()
   })
   test('GetFormValueContext', () => {
     expectTypeOf<typeof GetFormValueContext>().not.toBeNever()
@@ -358,6 +371,9 @@ describe('sanity/_singletons', () => {
   })
   test('SchedulePublishUpsellContextValue', () => {
     expectTypeOf<SchedulePublishUpsellContextValue>().toBeObject()
+  })
+  test('SchedulesContext', () => {
+    expectTypeOf<typeof SchedulesContext>().not.toBeNever()
   })
   test('ScrollContext', () => {
     expectTypeOf<typeof ScrollContext>().not.toBeNever()

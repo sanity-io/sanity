@@ -48,7 +48,8 @@ export function UnpublishVersionDialog(props: {
   const handleUnpublish = useCallback(async () => {
     setIsUnpublishing(true)
 
-    try {
+    // The run() wrapper instead of doing it inline in try/catch is because of the React Compiler not fully supporting the syntax yet
+    const run = async () => {
       await unpublishVersion(documentVersionId)
       toast.push({
         closable: true,
@@ -61,6 +62,9 @@ export function UnpublishVersionDialog(props: {
           />
         ),
       })
+    }
+    try {
+      await run()
     } catch (err) {
       toast.push({
         closable: true,
@@ -103,7 +107,6 @@ export function UnpublishVersionDialog(props: {
         ) : (
           <LoadingBlock />
         )}
-
         <Text muted size={1}>
           <Translate
             t={t}
@@ -133,7 +136,6 @@ export function UnpublishVersionDialog(props: {
             }}
           />
         </Text>
-
         <Text muted size={1}>
           {t('unpublish-dialog.description.lost-changes')}
         </Text>

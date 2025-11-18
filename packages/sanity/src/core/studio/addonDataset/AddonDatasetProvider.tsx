@@ -61,12 +61,13 @@ function AddonDatasetProviderInner(props: AddonDatasetSetupProviderProps) {
         setIsCreatingDataset(false)
         return client
       }
-    } catch (_) {
+    } catch {
       // If the dataset does not exist we will get an error, but we can ignore
       // it since we will create the dataset in the next step.
     }
 
-    try {
+    // Workaround for React Compiler not yet fully supporting try/catch/finally syntax
+    const run = async () => {
       // 1. Create the addon dataset
       const res = await originalClient.request({
         uri: `/comments/${dataset}/setup`,
@@ -89,11 +90,10 @@ function AddonDatasetProviderInner(props: AddonDatasetSetupProviderProps) {
 
       // 4. Return the client so that the caller can use it to execute operations
       return client
-    } catch (err) {
-      throw err
-    } finally {
-      setIsCreatingDataset(false)
     }
+    return run().finally(() => {
+      setIsCreatingDataset(false)
+    })
   }, [dataset, getAddonDatasetName, handleCreateClient, originalClient])
 
   useEffect(() => {
@@ -107,7 +107,7 @@ function AddonDatasetProviderInner(props: AddonDatasetSetupProviderProps) {
         const client = handleCreateClient(addonDatasetName)
         setAddonDatasetClient(client)
       })
-      .catch((err) => {
+      .catch(() => {
         // If the addon dataset does not exist or we don't have permission to access it,
         // We can ignore this error.
         // TODO: Surface error to the user when they try to use the comments feature.

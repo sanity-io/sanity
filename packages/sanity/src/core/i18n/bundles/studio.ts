@@ -783,6 +783,9 @@ export const studioLocaleStrings = defineLocalesResources('studio', {
     'An upload has made no progress for at least {{staleThresholdMinutes}} minutes and likely got interrupted. You can safely clear the incomplete upload and try uploading again.',
   /** Incomplete upload */
   'inputs.files.common.stale-upload-warning.title': 'Incomplete upload',
+  /** Internal form decorator description for the default input, it requires always a custom input */
+  'inputs.form-decoration-default':
+    'To use this field you need to provide a custom input component',
   /** Tooltip text for action to crop image */
   'inputs.image.actions-menu.crop-image-tooltip': 'Crop image',
   /** Accessibility label for button to open image edit dialog */
@@ -1486,6 +1489,8 @@ export const studioLocaleStrings = defineLocalesResources('studio', {
   /** Success toast for rescheduling a draft */
   'release.toast.reschedule-scheduled-draft.success':
     'The scheduled draft document <strong>{{title}}</strong> has been rescheduled.',
+  /** The toast title that will be shown when the user has a scheduled draft perspective which is now published */
+  'release.toast.scheduled-draft-published.title': 'The scheduled draft was published',
   /** Label for when a version of a document has already been added to the release */
   'release.tooltip.already-added': 'A version of this document has already been added',
   /** Label for when a release is scheduled / scheduling and a user can't add a document version to it */

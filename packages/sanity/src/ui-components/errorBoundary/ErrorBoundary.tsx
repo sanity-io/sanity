@@ -20,8 +20,13 @@ export function ErrorBoundary({onCatch, ...rest}: ErrorBoundaryProps): React.JSX
   const handleCatch = useCallback(
     ({error: caughtError, info: caughtInfo}: {error: Error; info: React.ErrorInfo}) => {
       // Send the error to the source if it has an onUncaughtError method
-      try {
+
+      // Workaround for React Compiler not yet fully supporting try/catch/finally syntax
+      const run = () => {
         source?.onUncaughtError?.(caughtError, caughtInfo)
+      }
+      try {
+        run()
       } catch (e) {
         e.message = `Encountered an additional error when calling custom "onUncaughtError()": ${e.message}`
         console.error(e)

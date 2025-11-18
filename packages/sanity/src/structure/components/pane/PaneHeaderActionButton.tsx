@@ -67,7 +67,6 @@ export function PaneHeaderMenuItemActionButton(props: PaneHeaderMenuItemActionBu
     <StatusButton
       disabled={isDisabled}
       icon={node.icon}
-      // eslint-disable-next-line react/jsx-handler-names
       onClick={node.onAction}
       selected={node.selected}
       tone={node.tone}

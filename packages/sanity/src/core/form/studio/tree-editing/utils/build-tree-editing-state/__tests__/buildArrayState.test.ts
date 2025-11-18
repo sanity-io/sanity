@@ -1024,7 +1024,7 @@ describe('buildArrayState', () => {
   })
 
   describe('custom components', () => {
-    test('should NOT set relativePath when item type has custom components.item', () => {
+    test('should set relativePath when item type has custom components.item', () => {
       // Create a schema with custom components.item
       const schemaWithCustomItem = Schema.compile({
         name: 'default',
@@ -1078,9 +1078,9 @@ describe('buildArrayState', () => {
       const result = buildArrayState(props)
 
       // relativePath should NOT be set when item has custom components
-      expect(result.relativePath).toEqual([])
+      expect(result.relativePath).toEqual(['customArray', {_key: 'item1'}])
       // Should not build menu items for items with custom components
-      expect(result.menuItems).toEqual([])
+      expect(result.menuItems.length).toBeGreaterThan(0)
     })
 
     test('should set relativePath when item type has custom components.input', () => {

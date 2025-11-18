@@ -3,7 +3,7 @@ import {AccessDeniedIcon, HelpCircleIcon, LaunchIcon} from '@sanity/icons'
 import imageUrlBuilder from '@sanity/image-url'
 import {type CrossDatasetType, type PreviewValue} from '@sanity/types'
 import {Badge, Box, Flex, Inline, Text} from '@sanity/ui'
-import {isValidElement as ReactIsValidElement, useMemo} from 'react'
+import {isValidElement as reactIsValidElement, useMemo} from 'react'
 
 import {Tooltip} from '../../../../ui-components'
 import {DefaultPreview, type PreviewMediaDimensions, TextWithTone} from '../../../components'
@@ -50,7 +50,7 @@ export function CrossDatasetReferencePreview(props: {
     if (previewMedia) {
       const isValidImageAsset =
         typeof (previewMedia as FIXME)?.asset !== 'undefined' && isImageSource(previewMedia)
-      const isValidElement = ReactIsValidElement(previewMedia)
+      const isValidElement = reactIsValidElement(previewMedia)
 
       if (!isValidImageAsset && !isValidElement) {
         return null
@@ -97,7 +97,7 @@ export function CrossDatasetReferencePreview(props: {
       )}
 
       <Box paddingLeft={3}>
-        <Inline space={4}>
+        <Inline space={4} paddingRight={1}>
           {refType && showTypeLabel && (
             <Badge mode="outline">{refType.title || refType.type}</Badge>
           )}

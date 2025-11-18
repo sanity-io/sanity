@@ -74,6 +74,87 @@ describe('undeployStudioAction', () => {
     expect(mockContext.output.print).toHaveBeenCalledWith('Nothing to undeploy.')
   })
 
+  it('resolves app using `appId` (preferred)', async () => {
+    helpers.getUserApplication.mockResolvedValueOnce(mockApplication)
+    helpers.deleteUserApplication.mockResolvedValueOnce(undefined)
+    ;(mockContext.prompt.single as Mock<typeof mockContext.prompt.single>).mockResolvedValueOnce(
+      true,
+    ) // User confirms
+
+    await undeployStudioAction(
+      {
+        extOptions: {},
+      } as CliCommandArguments<UndeployStudioActionFlags>,
+      {
+        ...mockContext,
+        cliConfig: {
+          ...mockContext.cliConfig,
+          deployment: {appId: mockApplication.id},
+          studioHost: 'abc123',
+        },
+      },
+    )
+
+    expect(helpers.getUserApplication).toHaveBeenCalledWith({
+      appId: mockApplication.id,
+      client: expect.anything(),
+    })
+
+    expect(mockContext.prompt.single).toHaveBeenCalledWith({
+      type: 'confirm',
+      default: false,
+      message: expect.stringContaining('undeploy'),
+    })
+    expect(helpers.deleteUserApplication).toHaveBeenCalledWith({
+      client: expect.anything(),
+      applicationId: 'app-id',
+      appType: 'studio',
+    })
+    expect(mockContext.output.print).toHaveBeenCalledWith(
+      expect.stringContaining('Studio undeploy scheduled.'),
+    )
+  })
+
+  it('resolves app using `studioHost` (fallback)', async () => {
+    helpers.getUserApplication.mockResolvedValueOnce(mockApplication)
+    helpers.deleteUserApplication.mockResolvedValueOnce(undefined)
+    ;(mockContext.prompt.single as Mock<typeof mockContext.prompt.single>).mockResolvedValueOnce(
+      true,
+    ) // User confirms
+
+    await undeployStudioAction(
+      {
+        extOptions: {},
+      } as CliCommandArguments<UndeployStudioActionFlags>,
+      {
+        ...mockContext,
+        cliConfig: {
+          ...mockContext.cliConfig,
+          studioHost: 'abc123',
+        },
+      },
+    )
+
+    expect(helpers.getUserApplication).toHaveBeenCalledWith({
+      appHost: 'abc123',
+      client: expect.anything(),
+    })
+
+    expect(mockContext.prompt.single).toHaveBeenCalledWith({
+      type: 'confirm',
+      default: false,
+      message: expect.stringContaining('undeploy'),
+    })
+    expect(helpers.deleteUserApplication).toHaveBeenCalledWith({
+      client: expect.anything(),
+      applicationId: 'app-id',
+      appType: 'studio',
+    })
+    expect(mockContext.output.print).toHaveBeenCalledWith(
+      expect.stringContaining('Studio undeploy scheduled.'),
+    )
+  })
+
   it('prompts the user for confirmation and undeploys if confirmed', async () => {
     helpers.getUserApplication.mockResolvedValueOnce(mockApplication)
     helpers.deleteUserApplication.mockResolvedValueOnce(undefined)

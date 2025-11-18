@@ -3,17 +3,17 @@ import {Card, Stack} from '@sanity/ui'
 
 import {Button} from '../../../../../ui-components'
 import {useTranslation} from '../../../../i18n'
-import {userHasRole} from '../../../../util'
 import {useEnvAwareSanityWebsiteUrl} from '../../../hooks/useEnvAwareSanityWebsiteUrl'
 import {useWorkspace} from '../../../workspace'
 import {FreeTrial} from '../free-trial'
+import {useCanInviteProjectMembers} from '../useCanInviteMembers'
 
 export function ManageMenu() {
-  const {currentUser, projectId} = useWorkspace()
-  const isAdmin = Boolean(currentUser && userHasRole(currentUser, 'administrator'))
+  const {projectId} = useWorkspace()
 
   const {t} = useTranslation()
   const envAwareWebsiteUrl = useEnvAwareSanityWebsiteUrl()
+  const canInviteMembers = useCanInviteProjectMembers()
 
   return (
     <Card borderTop flex="none" padding={2}>
@@ -36,7 +36,7 @@ export function ManageMenu() {
           />
         </Stack>
 
-        {isAdmin && (
+        {canInviteMembers && (
           <Stack as="li">
             <Button
               aria-label={t('user-menu.action.invite-members-aria-label')}

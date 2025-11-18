@@ -20,7 +20,7 @@ export const DatePicker = forwardRef(function DatePicker(
   ref: ForwardedRef<HTMLDivElement>,
 ) {
   const {
-    value = new Date(),
+    value: _value,
     onChange,
     calendarLabels,
     padding = 2,
@@ -28,6 +28,7 @@ export const DatePicker = forwardRef(function DatePicker(
     timeZoneScope,
     ...rest
   } = props
+  const value = _value ?? new Date()
   const {utcToCurrentZoneDate} = useTimeZone(timeZoneScope)
   const [focusedDate, setFocusedDay] = useState<Date>()
 

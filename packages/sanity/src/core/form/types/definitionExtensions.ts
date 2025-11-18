@@ -22,6 +22,7 @@ import {
   type ArrayFieldProps,
   type ArrayOfPrimitivesFieldProps,
   type BooleanFieldProps,
+  type FormDecorationFieldProps,
   type NumberFieldProps,
   type ObjectFieldProps,
   type StringFieldProps,
@@ -30,6 +31,7 @@ import {
   type ArrayOfObjectsInputProps,
   type ArrayOfPrimitivesInputProps,
   type BooleanInputProps,
+  type FormDecorationInputProps,
   type NumberInputProps,
   type ObjectInputProps,
   type StringInputProps,
@@ -307,6 +309,16 @@ declare module '@sanity/types' {
     preview?: ComponentType<PreviewProps>
   }
 
+  /**
+   *
+   * @hidden
+   * @beta
+   */
+  export interface FormDecorationComponents {
+    field?: ComponentType<FormDecorationFieldProps>
+    input?: ComponentType<FormDecorationInputProps>
+  }
+
   export interface ArrayDefinition {
     /**
      *
@@ -566,5 +578,14 @@ declare module '@sanity/types' {
      * @beta
      */
     components?: EmailComponents
+  }
+
+  export interface FormDecorationDefinition {
+    /**
+     *
+     * @hidden
+     * @beta
+     */
+    components?: FormDecorationComponents
   }
 }

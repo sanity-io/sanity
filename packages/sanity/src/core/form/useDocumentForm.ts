@@ -11,15 +11,7 @@ import {
 } from '@sanity/types'
 import {pathFor} from '@sanity/util/paths'
 import {throttle} from 'lodash'
-import {
-  type RefObject,
-  useCallback,
-  useEffect,
-  useInsertionEffect,
-  useMemo,
-  useRef,
-  useState,
-} from 'react'
+import {type RefObject, useEffect, useInsertionEffect, useMemo, useRef, useState} from 'react'
 import deepEquals from 'react-fast-compare'
 
 import {useCanvasCompanionDoc} from '../canvas/actions/useCanvasCompanionDoc'
@@ -160,9 +152,7 @@ export function useDocumentForm(options: DocumentFormOptions): DocumentFormValue
   const {data: documentVersions} = useDocumentVersions({documentId})
   const workspace = useWorkspace()
 
-  const enhancedObjectDialogEnabled = useMemo(() => {
-    return workspace.beta?.form?.enhancedObjectDialog?.enabled
-  }, [workspace])
+  const enhancedObjectDialogEnabled = workspace.beta?.form?.enhancedObjectDialog?.enabled
 
   const schemaType = schema.get(documentType) as ObjectSchemaType | undefined
   if (!schemaType) {
@@ -287,30 +277,25 @@ export function useDocumentForm(options: DocumentFormOptions): DocumentFormValue
   const [collapsedPaths, onSetCollapsedPath] = useState<StateTree<boolean>>()
   const [collapsedFieldSets, onSetCollapsedFieldSets] = useState<StateTree<boolean>>()
 
-  const handleOnSetCollapsedPath = useCallback((path: Path, collapsed: boolean) => {
+  const handleOnSetCollapsedPath = (path: Path, collapsed: boolean) => {
     onSetCollapsedPath((prevState) => setAtPath(prevState, path, collapsed))
-  }, [])
+  }
 
-  const handleOnSetCollapsedFieldSet = useCallback((path: Path, collapsed: boolean) => {
+  const handleOnSetCollapsedFieldSet = (path: Path, collapsed: boolean) => {
     onSetCollapsedFieldSets((prevState) => setAtPath(prevState, path, collapsed))
-  }, [])
+  }
 
-  const handleSetActiveFieldGroup = useCallback(
-    (path: Path, groupName: string) =>
-      onSetFieldGroupState((prevState) => setAtPath(prevState, path, groupName)),
-    [],
-  )
+  const handleSetActiveFieldGroup = (path: Path, groupName: string) =>
+    onSetFieldGroupState((prevState) => setAtPath(prevState, path, groupName))
 
   const requiredPermission = value._createdAt ? 'update' : 'create'
-  const targetDocumentId = useMemo(() => {
-    if (releaseId) {
-      return getVersionId(publishedId, releaseId)
-    }
-
-    // in cases where there is a draft in a live edit, we need to use it so that it can be published
-    // in case if the user has permissions to do so otherwise just use the published id
-    return liveEdit ? editState?.draft?._id || publishedId : getDraftId(documentId)
-  }, [documentId, editState?.draft?._id, liveEdit, publishedId, releaseId])
+  const targetDocumentId = releaseId
+    ? getVersionId(publishedId, releaseId)
+    : // in cases where there is a draft in a live edit, we need to use it so that it can be published
+      // in case if the user has permissions to do so otherwise just use the published id
+      liveEdit
+      ? editState?.draft?._id || publishedId
+      : getDraftId(documentId)
   const docPermissionsInput = useMemo(() => {
     return {
       ...value,
@@ -427,7 +412,7 @@ export function useDocumentForm(options: DocumentFormOptions): DocumentFormValue
       'Attempted to patch the Sanity document during initial render or in an `useInsertionEffect`. Input components should only call `onChange()` in a useEffect or an event handler.',
     )
   })
-  const handleChange = useCallback((event: PatchEvent) => patchRef.current(event), [])
+  const handleChange = (event: PatchEvent) => patchRef.current(event)
 
   useInsertionEffect(() => {
     // Create-linked documents enter a read-only state in Studio. However, unlinking a Create-linked
@@ -498,115 +483,91 @@ export function useDocumentForm(options: DocumentFormOptions): DocumentFormValue
 
   useComlinkViewHistory({editState})
 
-  const handleSetOpenPath = useCallback(
-    (path: Path) => {
-      const ops = getExpandOperations(formStateRef.current!, path)
-      ops.forEach((op) => {
-        if (op.type === 'expandPath') {
-          onSetCollapsedPath((prevState) => setAtPath(prevState, op.path, false))
-        }
-        if (op.type === 'expandFieldSet') {
-          onSetCollapsedFieldSets((prevState) => setAtPath(prevState, op.path, false))
-        }
-        if (op.type === 'setSelectedGroup') {
-          onSetFieldGroupState((prevState) => setAtPath(prevState, op.path, op.groupName))
-        }
-      })
-      onSetOpenPath(path)
-    },
-    [formStateRef],
-  )
+  const handleSetOpenPath = (path: Path) => {
+    const ops = getExpandOperations(formStateRef.current!, path)
+    ops.forEach((op) => {
+      if (op.type === 'expandPath') {
+        onSetCollapsedPath((prevState) => setAtPath(prevState, op.path, false))
+      }
+      if (op.type === 'expandFieldSet') {
+        onSetCollapsedFieldSets((prevState) => setAtPath(prevState, op.path, false))
+      }
+      if (op.type === 'setSelectedGroup') {
+        onSetFieldGroupState((prevState) => setAtPath(prevState, op.path, op.groupName))
+      }
+    })
+    onSetOpenPath(path)
+  }
 
-  const updatePresence = useCallback(
-    (nextFocusPath: Path, payload?: OnPathFocusPayload) => {
-      presenceStore.setLocation([
-        {
-          type: 'document',
-          documentId: value._id,
-          path: nextFocusPath,
-          lastActiveAt: new Date().toISOString(),
-          selection: payload?.selection,
-        },
-      ])
-    },
-    [presenceStore, value._id],
-  )
+  const updatePresence = (nextFocusPath: Path, payload?: OnPathFocusPayload) => {
+    presenceStore.setLocation([
+      {
+        type: 'document',
+        documentId: value._id,
+        path: nextFocusPath,
+        lastActiveAt: new Date().toISOString(),
+        selection: payload?.selection,
+      },
+    ])
+  }
 
-  const updatePresenceThrottled = useMemo(
-    () => throttle(updatePresence, 1000, {leading: true, trailing: true}),
-    [updatePresence],
-  )
+  const updatePresenceThrottled = throttle(updatePresence, 1000, {leading: true, trailing: true})
   const focusPathRef = useRef<Path>([])
 
-  const handleFocus = useCallback(
-    (_nextFocusPath: Path, payload?: OnPathFocusPayload) => {
-      const nextFocusPath = pathFor(_nextFocusPath)
-      if (nextFocusPath !== focusPathRef.current) {
-        setFocusPath(pathFor(nextFocusPath))
+  const handleFocus = (_nextFocusPath: Path, payload?: OnPathFocusPayload) => {
+    const nextFocusPath = pathFor(_nextFocusPath)
+    if (nextFocusPath !== focusPathRef.current) {
+      setFocusPath(pathFor(nextFocusPath))
 
-        if (enhancedObjectDialogEnabled) {
-          // When focusing on an object field, set openPath to the field's parent.
-          // Exception: if focusing directly on an array item (so it has a key),
-          // it should skip updating openPath - let explicit onPathOpen calls handle it.
-          const lastSegment = nextFocusPath[nextFocusPath.length - 1]
+      if (enhancedObjectDialogEnabled) {
+        // When focusing on an object field, set openPath to the field's parent.
+        // Exception: if focusing directly on an array item (so it has a key),
+        // it should skip updating openPath - let explicit onPathOpen calls handle it.
+        const lastSegment = nextFocusPath[nextFocusPath.length - 1]
 
-          if (!isKeySegment(lastSegment)) {
-            // For fields inside array items, find the last key segment to preserve context
-            const lastKeyIndex = nextFocusPath.findLastIndex((seg) => isKeySegment(seg))
-            const newOpenPath =
-              lastKeyIndex >= 0
-                ? nextFocusPath.slice(0, lastKeyIndex + 1)
-                : nextFocusPath.slice(0, -1)
+        if (!isKeySegment(lastSegment)) {
+          // For fields inside array items, find the last key segment to preserve context
+          const lastKeyIndex = nextFocusPath.findLastIndex((seg) => isKeySegment(seg))
+          const newOpenPath =
+            lastKeyIndex >= 0
+              ? nextFocusPath.slice(0, lastKeyIndex + 1)
+              : nextFocusPath.slice(0, -1)
 
-            handleSetOpenPath(pathFor(newOpenPath))
-          }
-        } else {
-          handleSetOpenPath(pathFor(nextFocusPath.slice(0, -1)))
+          handleSetOpenPath(pathFor(newOpenPath))
         }
-
-        focusPathRef.current = nextFocusPath
-        onFocusPath?.(nextFocusPath)
-      }
-      updatePresenceThrottled(nextFocusPath, payload)
-    },
-    [
-      onFocusPath,
-      setFocusPath,
-      handleSetOpenPath,
-      updatePresenceThrottled,
-      enhancedObjectDialogEnabled,
-    ],
-  )
-
-  const handleBlur = useCallback(
-    (_blurredPath: Path) => {
-      setFocusPath(EMPTY_ARRAY)
-
-      if (focusPathRef.current !== EMPTY_ARRAY) {
-        focusPathRef.current = EMPTY_ARRAY
-        onFocusPath?.(EMPTY_ARRAY)
+      } else {
+        handleSetOpenPath(pathFor(nextFocusPath.slice(0, -1)))
       }
 
-      // note: we're deliberately not syncing presence here since it would make the user avatar disappear when a
-      // user clicks outside a field without focusing another one
-    },
-    [onFocusPath, setFocusPath],
-  )
+      focusPathRef.current = nextFocusPath
+      onFocusPath?.(nextFocusPath)
+    }
+    updatePresenceThrottled(nextFocusPath, payload)
+  }
 
-  const handleProgrammaticFocus = useCallback(
-    (nextPath: Path) => {
-      // Supports changing the focus path not by a user interaction, but by a programmatic change, e.g. the url path changes.
+  const handleBlur = (_blurredPath: Path) => {
+    setFocusPath(EMPTY_ARRAY)
 
-      if (!deepEquals(focusPathRef.current, nextPath)) {
-        setFocusPath(nextPath)
-        handleSetOpenPath(nextPath)
-        onFocusPath?.(nextPath)
+    if (focusPathRef.current !== EMPTY_ARRAY) {
+      focusPathRef.current = EMPTY_ARRAY
+      onFocusPath?.(EMPTY_ARRAY)
+    }
 
-        focusPathRef.current = nextPath
-      }
-    },
-    [onFocusPath, handleSetOpenPath],
-  )
+    // note: we're deliberately not syncing presence here since it would make the user avatar disappear when a
+    // user clicks outside a field without focusing another one
+  }
+
+  const handleProgrammaticFocus = (nextPath: Path) => {
+    // Supports changing the focus path not by a user interaction, but by a programmatic change, e.g. the url path changes.
+
+    if (!deepEquals(focusPathRef.current, nextPath)) {
+      setFocusPath(nextPath)
+      handleSetOpenPath(nextPath)
+      onFocusPath?.(nextPath)
+
+      focusPathRef.current = nextPath
+    }
+  }
   return {
     editState,
     upstreamEditState,

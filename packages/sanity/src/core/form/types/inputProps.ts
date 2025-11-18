@@ -12,6 +12,7 @@ import {
   type BooleanSchemaType,
   type CrossDatasetReferenceValue,
   type FileValue,
+  type FormDecorationSchemaType,
   type GeopointValue,
   type ImageValue,
   type NumberSchemaType,
@@ -36,6 +37,7 @@ import {type FormFieldGroup} from '../store'
 import {
   type ArrayOfObjectsFormNode,
   type ArrayOfPrimitivesFormNode,
+  type BaseFormNode,
   type BooleanFormNode,
   type NumberFormNode,
   type ObjectFormNode,
@@ -586,6 +588,23 @@ export interface PortableTextInputProps
 /**
  * @hidden
  * @public */
+export interface FormDecorationInputProps<
+  S extends FormDecorationSchemaType = FormDecorationSchemaType,
+> extends Omit<BaseInputProps, 'displayInlineChanges'>,
+    BaseFormNode<null | undefined, S> {
+  /**
+   * This function
+   */
+  onChange?: undefined
+  /**
+   * @hidden
+   * @beta */
+  elementProps: ComplexElementProps
+}
+
+/**
+ * @hidden
+ * @public */
 export type InputProps =
   | ArrayOfObjectsInputProps
   | ArrayOfPrimitivesInputProps
@@ -600,3 +619,4 @@ export type InputProps =
   | ObjectInputProps<SlugValue>
   | PortableTextInputProps
   | StringInputProps
+  | FormDecorationInputProps

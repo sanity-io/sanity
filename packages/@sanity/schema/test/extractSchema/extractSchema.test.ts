@@ -5,6 +5,7 @@ import {type DocumentSchemaType} from 'groq-js'
 import {describe, expect, test} from 'vitest'
 
 import {Schema} from '../../src/legacy/Schema'
+import {FORM_DECORATION} from '../../src/legacy/types/constants'
 import {builtinTypes} from '../../src/sanity/builtinTypes'
 import {extractSchema} from '../../src/sanity/extractSchema'
 import {groupProblems} from '../../src/sanity/groupProblems'
@@ -770,5 +771,61 @@ describe('Extract schema test', () => {
     assert(inlineRef.type === 'type')
     assert(inlineRef.value.type === 'object')
     expect(inlineRef.value.dereferencesTo).toBe('thing')
+  })
+  test(`does not extract ${FORM_DECORATION} type`, () => {
+    const schema = createSchema(
+      {
+        name: 'test',
+        types: [
+          defineType({
+            title: 'Valid document',
+            name: 'validDocument',
+            type: 'document',
+            fields: [
+              {
+                type: 'string',
+                name: 'title',
+              },
+              {
+                type: FORM_DECORATION,
+                name: 'decorator',
+              },
+              {
+                type: 'object',
+                name: 'withDecorator',
+                fields: [
+                  {
+                    type: 'string',
+                    name: 'title',
+                  },
+                  {
+                    type: FORM_DECORATION,
+                    name: 'innerDecorator',
+                  },
+                ],
+              },
+            ],
+          }),
+        ],
+      },
+      true,
+    )
+
+    const extracted = extractSchema(schema)
+    expect(extracted.map((v) => v.name)).toStrictEqual(['validDocument'])
+    expect(extracted).toMatchSnapshot()
+    const validDocument = extracted.find((type) => type.name === 'validDocument')
+    expect(validDocument).toBeDefined()
+    assert(validDocument !== undefined) // this is a workaround for TS, but leave the expect above for clarity in case of failure
+    assert(validDocument.type === 'document')
+
+    // The `formDecoration` type is not extracted by the schema extractor
+    expect(validDocument.attributes.decorator).not.toBeDefined()
+    expect(validDocument.attributes.title).toBeDefined()
+
+    // Check that the fields are extracted correctly in the inner object
+    assert(validDocument.attributes.withDecorator.value.type === 'object')
+    expect(validDocument.attributes.withDecorator.value.attributes.innerDecorator).not.toBeDefined()
+    expect(validDocument.attributes.withDecorator.value.attributes.title).toBeDefined()
   })
 })

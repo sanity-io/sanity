@@ -12,6 +12,7 @@ import {getReleaseIdFromReleaseDocumentId} from '../releases/util/getReleaseIdFr
 import {isPublishedPerspective} from '../releases/util/util'
 import {useWorkspace} from '../studio/workspace'
 import {EMPTY_ARRAY} from '../util/empty'
+import {isCardinalityOneRelease} from '../util/releaseUtils'
 import {PerspectiveProvider} from './PerspectiveProvider'
 import {type ReleaseId} from './types'
 import {usePerspective} from './usePerspective'
@@ -22,11 +23,17 @@ const getToastTitleAndDescription = (
 ): {title: string; description?: string} => {
   if (!archived) return {title: 'release.toast.not-found-release.title'}
 
-  if (archived.state === 'published')
+  if (archived.state === 'published') {
+    if (isCardinalityOneRelease(archived)) {
+      return {
+        title: 'release.toast.scheduled-draft-published.title',
+      }
+    }
     return {
       title: 'release.toast.published-release.title',
       description: 'release.toast.published-release.description',
     }
+  }
 
   return {
     title: 'release.toast.archived-release.title',

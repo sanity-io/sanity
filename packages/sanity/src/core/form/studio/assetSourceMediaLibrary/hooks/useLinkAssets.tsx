@@ -86,7 +86,7 @@ export function useLinkAssets({
         defaultValue: [],
       })
     },
-    [client, mediaLibraryIds?.libraryId, schemaType],
+    [client, mediaLibraryIds, schemaType],
   )
   return {onLinkAssets: handleLinkAssets}
 }

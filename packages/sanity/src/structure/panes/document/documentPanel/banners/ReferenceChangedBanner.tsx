@@ -40,9 +40,7 @@ export const ReferenceChangedBanner = memo(() => {
   const parentSibling = parentGroup?.[0]
   const parentId = parentSibling?.id
   const hasHistoryOpen = Boolean(parentSibling?.params?.rev)
-  const parentRefPath = useMemo(() => {
-    return (params?.parentRefPath && pathFromString(params.parentRefPath)) || null
-  }, [params?.parentRefPath])
+  const parentRefPath = (params?.parentRefPath && pathFromString(params.parentRefPath)) || null
   const {t} = useTranslation(structureLocaleNamespace)
 
   /**

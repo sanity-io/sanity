@@ -22,3 +22,11 @@ export const DEFAULT_OVERRIDEABLE_FIELDS = [
 export const OWN_PROPS_NAME = '_internal_ownProps'
 
 export const ALL_FIELDS_GROUP_NAME = 'all-fields'
+
+/**
+ * Name for configuring a decoration field type
+ * this fields are rendered in the form but are not extracted by the schema extractor.
+ * They serve only for UI purposes.
+ * @beta
+ */
+export const FORM_DECORATION = 'formDecoration'

@@ -210,16 +210,12 @@ export function CommentsListItemLayout(props: CommentsListItemLayoutProps) {
   const hasValue = useMemo(() => hasCommentMessageValue(value), [value])
 
   // Filter out reactions that's been optimistically removed from the comment.
-  const reactions = useMemo(
-    () =>
-      (comment?.reactions?.filter((r) => r?._optimisticState !== 'removed') || EMPTY_ARRAY).filter(
-        (r) => {
-          // Filter out reactions that might have to incorrect format
-          return 'userId' in r && 'shortName' in r
-        },
-      ),
-    [comment?.reactions],
-  )
+  const reactions = (
+    comment?.reactions?.filter((r) => r?._optimisticState !== 'removed') || EMPTY_ARRAY
+  ).filter((r) => {
+    // Filter out reactions that might have to incorrect format
+    return 'userId' in r && 'shortName' in r
+  })
 
   const hasReactions = Boolean(reactions?.length)
 

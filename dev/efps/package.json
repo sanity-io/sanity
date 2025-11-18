@@ -25,11 +25,11 @@
   "devDependencies": {
     "@repo/eslint-config": "workspace:*",
     "@repo/utils": "workspace:*",
-    "@sanity/client": "^7.12.1",
+    "@sanity/client": "catalog:",
     "@types/react": "catalog:",
     "@types/react-dom": "catalog:",
     "@types/yargs": "^17.0.34",
-    "babel-plugin-react-compiler": "19.1.0-rc.3",
+    "babel-plugin-react-compiler": "1.0.0",
     "chalk": "^4.1.2",
     "cli-table3": "^0.6.5",
     "dotenv": "^16.6.1",

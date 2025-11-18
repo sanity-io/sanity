@@ -110,7 +110,8 @@ export const ReleaseScheduleButton = ({
       return
     }
 
-    try {
+    // Workaround for React Compiler not yet fully supporting try/catch/finally syntax
+    const run = async () => {
       setStatus('scheduling')
       await schedule(release._id, publishAt)
       telemetry.log(ScheduledRelease)
@@ -129,6 +130,9 @@ export const ReleaseScheduleButton = ({
           </Text>
         ),
       })
+    }
+    try {
+      await run()
     } catch (schedulingError) {
       toast.push({
         status: 'error',
@@ -146,10 +150,9 @@ export const ReleaseScheduleButton = ({
         ),
       })
       console.error(schedulingError)
-    } finally {
-      onConfirmDialogClose?.()
-      setStatus('idle')
     }
+    onConfirmDialogClose?.()
+    setStatus('idle')
   }, [
     publishAt,
     isMenuItem,
