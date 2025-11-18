@@ -819,7 +819,7 @@ describe('Extract schema test', () => {
     assert(validDocument !== undefined) // this is a workaround for TS, but leave the expect above for clarity in case of failure
     assert(validDocument.type === 'document')
 
-    // The `sanity_internalFormDecorator` type is not extracted by the schema extractor
+    // The `internalFormDecorator` type is not extracted by the schema extractor
     expect(validDocument.attributes.decorator).not.toBeDefined()
     expect(validDocument.attributes.title).toBeDefined()
 

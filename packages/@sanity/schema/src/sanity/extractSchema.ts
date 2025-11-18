@@ -167,11 +167,11 @@ export function extractSchema(
       return null
     }
     if (isStringType(schemaType)) {
-      return createStringTypeNodeDefinition(schemaType)
+      return createStringTypeNodeDefintion(schemaType)
     }
 
     if (isNumberType(schemaType)) {
-      return createNumberTypeNodeDefinition(schemaType)
+      return createNumberTypeNodeDefintion(schemaType)
     }
 
     // map some known types
@@ -428,7 +428,7 @@ function isNumberType(typeDef: SanitySchemaType): typeDef is NumberSchemaType {
 function isDecoratorType(typeDef: SanitySchemaType): typeDef is InternalFormDecoratorSchemaType {
   return isType(typeDef, INTERNAL_FORM_DECORATOR)
 }
-function createStringTypeNodeDefinition(
+function createStringTypeNodeDefintion(
   stringSchemaType: StringSchemaType,
 ): StringTypeNode | UnionTypeNode<StringTypeNode> {
   const listOptions = stringSchemaType.options?.list
@@ -446,7 +446,7 @@ function createStringTypeNodeDefinition(
   }
 }
 
-function createNumberTypeNodeDefinition(
+function createNumberTypeNodeDefintion(
   numberSchemaType: NumberSchemaType,
 ): NumberTypeNode | UnionTypeNode<NumberTypeNode> {
   const listOptions = numberSchemaType.options?.list

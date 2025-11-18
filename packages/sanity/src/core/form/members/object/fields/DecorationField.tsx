@@ -1,4 +1,4 @@
-import {useCallback, useEffect, useMemo, useRef} from 'react'
+import {useCallback, useMemo, useRef} from 'react'
 
 import {type FieldMember, type InternalFormDecoratorFormNode} from '../../../store'
 import {useDocumentFieldActions} from '../../../studio/contexts/DocumentFieldActions'
@@ -30,12 +30,6 @@ export function DecorationField(props: {
   const focusRef = useRef<{focus: () => void}>(undefined)
 
   const {onPathBlur, onPathFocus} = useFormCallbacks()
-
-  useEffect(() => {
-    if (member.field.focused) {
-      focusRef.current?.focus()
-    }
-  }, [member.field.focused])
 
   const handleBlur = useCallback(() => {
     onPathBlur(member.field.path)
