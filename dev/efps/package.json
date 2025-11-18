@@ -28,7 +28,7 @@
     "@sanity/client": "catalog:",
     "@types/react": "catalog:",
     "@types/react-dom": "catalog:",
-    "@types/yargs": "^17.0.34",
+    "@types/yargs": "^17.0.35",
     "babel-plugin-react-compiler": "1.0.0",
     "chalk": "^4.1.2",
     "cli-table3": "^0.6.5",
