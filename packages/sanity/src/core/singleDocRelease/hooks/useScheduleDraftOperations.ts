@@ -1,13 +1,15 @@
 import {type BaseActionOptions, type ReleaseDocument} from '@sanity/client'
 import {useCallback} from 'react'
 
+import {useClient} from '../../hooks/useClient'
 import {useTranslation} from '../../i18n'
 import {useAllReleases} from '../../releases/store/useAllReleases'
 import {useReleaseOperations} from '../../releases/store/useReleaseOperations'
 import {createReleaseId} from '../../releases/util/createReleaseId'
 import {getReleaseIdFromReleaseDocumentId} from '../../releases/util/getReleaseIdFromReleaseDocumentId'
+import {RELEASES_STUDIO_CLIENT_OPTIONS} from '../../releases/util/releasesClient'
 import {isReleaseScheduledOrScheduling} from '../../releases/util/util'
-import {getDraftId} from '../../util'
+import {getDraftId, getPublishedId, getVersionId} from '../../util'
 
 export interface ScheduleDraftOperationsValue {
   /**
@@ -43,6 +45,7 @@ export function useScheduleDraftOperations(): ScheduleDraftOperationsValue {
   const {t} = useTranslation()
   const releaseOperations = useReleaseOperations()
   const {data: allReleases} = useAllReleases()
+  const releasesClient = useClient(RELEASES_STUDIO_CLIENT_OPTIONS)
 
   const createScheduledDraftRelease = useCallback(
     async (title: string, scheduleAt: Date, opts?: BaseActionOptions): Promise<string> => {
@@ -75,15 +78,26 @@ export function useScheduleDraftOperations(): ScheduleDraftOperationsValue {
 
       // Create a version of the document in the release (using draft as base)
       const draftId = getDraftId(documentId)
-      const releaseId = getReleaseIdFromReleaseDocumentId(releaseDocumentId)
-      await releaseOperations.createVersion(releaseId, draftId, opts)
+
+      await releasesClient.action([
+        {
+          actionType: 'sanity.action.document.version.create',
+          baseId: draftId,
+          publishedId: getPublishedId(documentId),
+          versionId: getVersionId(documentId, getReleaseIdFromReleaseDocumentId(releaseDocumentId)),
+        },
+        {
+          actionType: 'sanity.action.document.version.discard',
+          versionId: draftId,
+        },
+      ])
 
       // Now schedule the release after adding the document
       await releaseOperations.schedule(releaseDocumentId, publishAt, opts)
 
       return releaseDocumentId
     },
-    [releaseOperations, createScheduledDraftRelease, t],
+    [releaseOperations, createScheduledDraftRelease, t, releasesClient],
   )
 
   // used to immediately publish a scheduled draft
