@@ -1488,7 +1488,6 @@ import type {
   useDocumentPairPermissionsFromHookFactory,
   useDocumentPresence,
   useDocumentPreviewStore,
-  useDocumentPreviewValues,
   useDocumentStore,
   useDocumentType,
   useDocumentValuePermissions,
@@ -6156,9 +6155,6 @@ describe('sanity', () => {
   })
   test('useDocumentPreviewStore', () => {
     expectTypeOf<typeof useDocumentPreviewStore>().toBeFunction()
-  })
-  test('useDocumentPreviewValues', () => {
-    expectTypeOf<typeof useDocumentPreviewValues>().toBeFunction()
   })
   test('useDocumentStore', () => {
     expectTypeOf<typeof useDocumentStore>().toBeFunction()
