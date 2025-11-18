@@ -749,7 +749,7 @@ function resolveSource({
       },
       form: {
         enhancedObjectDialog: {
-          enabled: enhancedObjectDialogEnabledReducer({config, initialValue: true}),
+          enabled: enhancedObjectDialogEnabledReducer({config, initialValue: false}),
         },
       },
       create: {
