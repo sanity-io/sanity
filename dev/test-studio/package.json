@@ -19,7 +19,7 @@
   },
   "dependencies": {
     "@portabletext/block-tools": "^4.0.0",
-    "@portabletext/editor": "^2.19.2",
+    "@portabletext/editor": "^3.0.0",
     "@portabletext/plugin-character-pair-decorator": "^3.0.3",
     "@portabletext/react": "^5.0.0",
     "@portabletext/toolkit": "^4.0.0",
