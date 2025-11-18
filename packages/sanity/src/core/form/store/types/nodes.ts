@@ -3,6 +3,7 @@ import {
   type ArraySchemaType,
   type BooleanSchemaType,
   type FormNodeValidation,
+  type InternalFormDecoratorSchemaType,
   type KeyedObject,
   type NumberSchemaType,
   type ObjectSchemaType,
@@ -190,3 +191,10 @@ export type StringFormNode<S extends StringSchemaType = StringSchemaType> = Base
  * @hidden
  * @beta */
 export type PrimitiveFormNode = BooleanFormNode | NumberFormNode | StringFormNode
+
+/**
+ * @hidden
+ * @beta */
+export type InternalFormDecoratorFormNode<
+  S extends InternalFormDecoratorSchemaType = InternalFormDecoratorSchemaType,
+> = BaseFormNode<null | undefined, S>

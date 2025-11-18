@@ -1,5 +1,4 @@
 import {UserIcon as icon} from '@sanity/icons'
-import {INTERNAL_FORM_DECORATOR} from '@sanity/schema/_internal'
 import {type StringRule} from '@sanity/types'
 import {defineField, defineType} from 'sanity'
 
@@ -193,7 +192,7 @@ export default defineType({
       type: 'boolean',
     },
     defineField({
-      type: INTERNAL_FORM_DECORATOR,
+      type: 'internalFormDecorator',
       name: 'incomingReferencesPlaceholder',
     }),
   ],

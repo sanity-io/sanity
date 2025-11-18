@@ -400,6 +400,7 @@ exports[`exports snapshot 1`] = `
     "isImageSchemaType": "function",
     "isIndexSegment": "function",
     "isIndexTuple": "function",
+    "isInternalFormDecoratorSchemaType": "function",
     "isKeySegment": "function",
     "isKeyedObject": "function",
     "isNewDocument": "function",

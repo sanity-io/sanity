@@ -22,6 +22,7 @@ import {
   type ArrayFieldProps,
   type ArrayOfPrimitivesFieldProps,
   type BooleanFieldProps,
+  type InternalFormDecoratorFieldProps,
   type NumberFieldProps,
   type ObjectFieldProps,
   type StringFieldProps,
@@ -314,6 +315,7 @@ declare module '@sanity/types' {
    * @beta
    */
   export interface InternalFormDecoratorComponents {
+    field?: ComponentType<InternalFormDecoratorFieldProps>
     input?: ComponentType<InternalFormDecoratorInputProps>
   }
 

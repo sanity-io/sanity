@@ -6,6 +6,7 @@ import {
   type FormNodeValidation,
   type GeopointValue,
   type ImageValue,
+  type InternalFormDecoratorSchemaType,
   type NumberSchemaType,
   type ObjectSchemaType,
   type Path,
@@ -22,6 +23,7 @@ import {
   type ArrayOfObjectsInputProps,
   type ArrayOfPrimitivesInputProps,
   type BooleanInputProps,
+  type InternalFormDecoratorInputProps,
   type NumberInputProps,
   type ObjectInputProps,
   type StringInputProps,
@@ -139,6 +141,15 @@ export type PrimitiveFieldProps = NumberFieldProps | BooleanFieldProps | StringF
 /**
  * @hidden
  * @public */
+export type InternalFormDecoratorFieldProps = BaseFieldProps & {
+  schemaType: InternalFormDecoratorSchemaType
+  value: null
+  inputProps: InternalFormDecoratorInputProps
+}
+
+/**
+ * @hidden
+ * @public */
 export type FieldProps =
   | ObjectFieldProps
   | ObjectFieldProps<CrossDatasetReferenceValue>
@@ -151,3 +162,4 @@ export type FieldProps =
   | NumberFieldProps
   | BooleanFieldProps
   | StringFieldProps
+  | InternalFormDecoratorFieldProps

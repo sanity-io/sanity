@@ -587,11 +587,20 @@ export interface PortableTextInputProps
 
 /**
  * @hidden
- * @beta */
+ * @public */
 export interface InternalFormDecoratorInputProps<
   S extends InternalFormDecoratorSchemaType = InternalFormDecoratorSchemaType,
 > extends Omit<BaseInputProps, 'displayInlineChanges'>,
-    BaseFormNode<null | undefined, S> {}
+    BaseFormNode<null | undefined, S> {
+  /**
+   * This function
+   */
+  onChange?: undefined
+  /**
+   * @hidden
+   * @beta */
+  elementProps: ComplexElementProps
+}
 
 /**
  * @hidden
@@ -610,3 +619,4 @@ export type InputProps =
   | ObjectInputProps<SlugValue>
   | PortableTextInputProps
   | StringInputProps
+  | InternalFormDecoratorInputProps

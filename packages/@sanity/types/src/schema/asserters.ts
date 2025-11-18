@@ -12,6 +12,7 @@ import {
   type DeprecationConfiguration,
   type FileSchemaType,
   type ImageSchemaType,
+  type InternalFormDecoratorSchemaType,
   type NumberSchemaType,
   type ObjectSchemaType,
   type ReferenceSchemaType,
@@ -102,6 +103,14 @@ export function isDateTimeSchemaType(type: unknown): type is StringSchemaType {
 export function isNumberSchemaType(type: unknown): type is NumberSchemaType {
   if (!isRecord(type)) return false
   return type.jsonType === 'number'
+}
+
+/** @internal */
+export function isInternalFormDecoratorSchemaType(
+  type: unknown,
+): type is InternalFormDecoratorSchemaType {
+  if (!isRecord(type)) return false
+  return type.jsonType === 'null' && type.name === 'internalFormDecorator'
 }
 
 /** @internal */
