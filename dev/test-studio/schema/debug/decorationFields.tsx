@@ -5,6 +5,7 @@ export default defineType({
   name: 'decorationFields',
   type: 'document',
   fields: [
+    // @ts-expect-error - This field has no default components, so it will use the default input component which shows a warning. We are testing that the warning is shown.
     defineField({
       name: 'noDefaultComponents',
       type: 'formDecoration',

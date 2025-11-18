@@ -316,7 +316,7 @@ declare module '@sanity/types' {
    */
   export interface FormDecorationComponents {
     field?: ComponentType<FormDecorationFieldProps>
-    input?: ComponentType<FormDecorationInputProps>
+    input: ComponentType<FormDecorationInputProps>
   }
 
   export interface ArrayDefinition {
@@ -586,6 +586,6 @@ declare module '@sanity/types' {
      * @hidden
      * @beta
      */
-    components?: FormDecorationComponents
+    components: FormDecorationComponents
   }
 }
