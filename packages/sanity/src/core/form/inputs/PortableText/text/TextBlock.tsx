@@ -277,95 +277,69 @@ export function TextBlock(props: TextBlockProps) {
     [memberItem, setElementRef, setDivElement],
   )
 
-  return useMemo(
-    () => (
-      <Box
-        {...outerPaddingProps}
-        data-testid="text-block"
-        data-fullscreen={isFullscreen}
-        ref={setRef}
-        style={debugRender()}
-      >
-        <TextBlockFlexWrapper data-testid="text-block__wrapper">
-          <Flex flex={1} {...innerPaddingProps}>
-            <Box flex={1}>
-              <Tooltip
-                content={toolTipContent}
-                disabled={!tooltipEnabled}
-                placement="top"
-                portal="editor"
+  return (
+    <Box
+      {...outerPaddingProps}
+      data-testid="text-block"
+      data-fullscreen={isFullscreen}
+      ref={setRef}
+      style={debugRender()}
+    >
+      <TextBlockFlexWrapper data-testid="text-block__wrapper">
+        <Flex flex={1} {...innerPaddingProps}>
+          <Box flex={1}>
+            <Tooltip
+              content={toolTipContent}
+              disabled={!tooltipEnabled}
+              placement="top"
+              portal="editor"
+            >
+              <TextRoot
+                $level={value.level || 1}
+                data-error={hasError ? '' : undefined}
+                data-list-item={value.listItem}
+                data-markers={hasMarkers ? '' : undefined}
+                data-read-only={readOnly}
+                data-testid="text-block__text"
+                data-warning={hasWarning ? '' : undefined}
+                spellCheck={spellCheck}
               >
-                <TextRoot
-                  $level={value.level || 1}
-                  data-error={hasError ? '' : undefined}
-                  data-list-item={value.listItem}
-                  data-markers={hasMarkers ? '' : undefined}
-                  data-read-only={readOnly}
-                  data-testid="text-block__text"
-                  data-warning={hasWarning ? '' : undefined}
-                  spellCheck={spellCheck}
-                >
-                  {renderBlock && renderBlock(componentProps)}
-                </TextRoot>
-              </Tooltip>
-            </Box>
+                {renderBlock && renderBlock(componentProps)}
+              </TextRoot>
+            </Tooltip>
+          </Box>
 
-            {blockActionsEnabled && (
-              <BlockActionsOuter contentEditable={false} marginRight={3}>
-                <BlockActionsInner>
-                  {focused && (
-                    <BlockActions
-                      block={value}
-                      onChange={onChange}
-                      renderBlockActions={renderBlockActions}
-                    />
-                  )}
-                </BlockActionsInner>
-              </BlockActionsOuter>
-            )}
+          {blockActionsEnabled && (
+            <BlockActionsOuter contentEditable={false} marginRight={3}>
+              <BlockActionsInner>
+                {focused && (
+                  <BlockActions
+                    block={value}
+                    onChange={onChange}
+                    renderBlockActions={renderBlockActions}
+                  />
+                )}
+              </BlockActionsInner>
+            </BlockActionsOuter>
+          )}
 
-            {changeIndicatorVisible && (
-              <ChangeIndicatorWrapper
-                $hasChanges={memberItem.member.item.changed}
-                contentEditable={false}
-              >
-                <StyledChangeIndicatorWithProvidedFullPath
-                  hasFocus={focused}
-                  isChanged={memberItem.member.item.changed}
-                  path={memberItem.member.item.path}
-                  withHoverEffect={false}
-                />
-              </ChangeIndicatorWrapper>
-            )}
-            {changeHovered && <ReviewChangesHighlightBlock $fullScreen={Boolean(isFullscreen)} />}
-          </Flex>
-        </TextBlockFlexWrapper>
-      </Box>
-    ),
-    [
-      blockActionsEnabled,
-      changeIndicatorVisible,
-      componentProps,
-      focused,
-      hasError,
-      hasMarkers,
-      hasWarning,
-      innerPaddingProps,
-      memberItem?.member.item.changed,
-      memberItem?.member.item.path,
-      isFullscreen,
-      onChange,
-      outerPaddingProps,
-      readOnly,
-      renderBlock,
-      renderBlockActions,
-      changeHovered,
-      setRef,
-      spellCheck,
-      toolTipContent,
-      tooltipEnabled,
-      value,
-    ],
+          {changeIndicatorVisible && (
+            <ChangeIndicatorWrapper
+              $hasChanges={memberItem.member.item.changed}
+              contentEditable={false}
+            >
+              <StyledChangeIndicatorWithProvidedFullPath
+                hasFocus={focused}
+                isChanged={memberItem.member.item.changed}
+                path={memberItem.member.item.path}
+                withHoverEffect={false}
+              />
+            </ChangeIndicatorWrapper>
+          )}
+          {changeHovered && <ReviewChangesHighlightBlock $fullScreen={Boolean(isFullscreen)} />}
+        </Flex>
+      </TextBlockFlexWrapper>
+    </Box>
   )
 }
 

@@ -1,4 +1,4 @@
-import {type ComponentType, type ReactNode, useEffect, useState} from 'react'
+import {type ComponentType, type ReactNode, startTransition, useEffect, useState} from 'react'
 import {WorkspacesContext} from 'sanity/_singletons'
 
 import {type Config, prepareConfig} from '../../config'
@@ -22,7 +22,7 @@ export function WorkspacesProvider({
   const [workspaces, setWorkspaces] = useState<WorkspacesContextValue | null>(null)
 
   useEffect(() => {
-    setWorkspaces(prepareConfig(config, {basePath}).workspaces)
+    startTransition(() => setWorkspaces(prepareConfig(config, {basePath}).workspaces))
   }, [basePath, config])
 
   if (workspaces === null) {
