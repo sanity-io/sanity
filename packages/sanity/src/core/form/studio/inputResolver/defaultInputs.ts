@@ -14,6 +14,7 @@ import {TextInput} from '../../inputs/TextInput'
 import {UrlInput} from '../../inputs/UrlInput'
 import {StudioCrossDatasetReferenceInput} from '../inputs/crossDatasetReference/StudioCrossDatasetReferenceInput'
 import {StudioGlobalDocumentReferenceInput} from '../inputs/globalDocumentReference/StudioGlobalDocumentReferenceInput'
+import {IncomingReferencesInput} from '../inputs/incomingReferencesInput/IncomingReferencesInput'
 import {StudioFileInput} from '../inputs/StudioFileInput'
 import {StudioImageInput} from '../inputs/StudioImageInput'
 
@@ -35,4 +36,5 @@ export const defaultInputs: Record<string, ComponentType<FIXME>> = {
   crossDatasetReference: StudioCrossDatasetReferenceInput,
   globalDocumentReference: StudioGlobalDocumentReferenceInput,
   formDecoration: FormDecorationInput,
+  incomingReferences: IncomingReferencesInput,
 }

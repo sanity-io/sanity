@@ -1,11 +1,11 @@
 import {Box, Card, Text} from '@sanity/ui'
-import {defineField, defineType} from 'sanity'
+import {defineDecoration, defineField, defineType} from 'sanity'
 
 export default defineType({
   name: 'decorationFields',
   type: 'document',
   fields: [
-    defineField({
+    defineDecoration({
       name: 'noDefaultComponents',
       type: 'formDecoration',
       title: 'No default components',

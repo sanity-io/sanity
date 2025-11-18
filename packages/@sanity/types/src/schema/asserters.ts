@@ -108,7 +108,10 @@ export function isNumberSchemaType(type: unknown): type is NumberSchemaType {
 /** @internal */
 export function isFormDecorationSchemaType(type: unknown): type is FormDecorationSchemaType {
   if (!isRecord(type)) return false
-  return type.jsonType === 'null' && type.name === 'formDecoration'
+  return (
+    type.jsonType === 'null' &&
+    (type.name === 'formDecoration' || type.name === 'incomingReferences')
+  )
 }
 
 /** @internal */

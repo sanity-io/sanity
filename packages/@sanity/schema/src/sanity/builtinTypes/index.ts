@@ -8,6 +8,7 @@ import imageHotspot from './imageHotspot'
 import imageMetadata from './imageMetadata'
 import imagePalette from './imagePalette'
 import imagePaletteSwatch from './imagePaletteSwatch'
+import incomingReferences from './incomingReferences'
 import slug from './slug'
 
 export const builtinTypes = [
@@ -23,4 +24,5 @@ export const builtinTypes = [
   imageDimensions,
   imagePalette,
   imagePaletteSwatch,
+  incomingReferences,
 ]

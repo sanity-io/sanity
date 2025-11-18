@@ -23,6 +23,7 @@ const coreTypes = [
   {name: 'text', jsonType: 'string', type: 'type'},
   {name: 'url', jsonType: 'string', type: 'type'},
   {name: FORM_DECORATION, jsonType: 'null', type: 'type'},
+  {name: 'incomingReferences', jsonType: 'null', type: 'type'},
 ] as const
 
 export const coreTypeNames = coreTypes.map((t) => t.name)
