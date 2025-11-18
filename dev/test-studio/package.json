@@ -20,7 +20,7 @@
   "dependencies": {
     "@portabletext/block-tools": "^4.0.0",
     "@portabletext/editor": "^3.0.0",
-    "@portabletext/plugin-character-pair-decorator": "^3.0.3",
+    "@portabletext/plugin-character-pair-decorator": "^4.0.0",
     "@portabletext/react": "^5.0.0",
     "@portabletext/toolkit": "^4.0.0",
     "@sanity/assist": "^5.0.2",
