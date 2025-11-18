@@ -12,8 +12,6 @@ export function useVisibilityDetection(parentRef: RefObject<HTMLElement | null>)
   const prevVisible = useRef(true)
 
   useEffect(() => {
-    if (!parentRef.current) return
-
     const resizeObserver = new ResizeObserver((entries) => {
       const entry = entries[0]
       if (!entry) return
@@ -34,7 +32,9 @@ export function useVisibilityDetection(parentRef: RefObject<HTMLElement | null>)
       }
     })
 
-    resizeObserver.observe(parentRef.current)
+    if (parentRef.current) {
+      resizeObserver.observe(parentRef.current)
+    }
 
     return () => resizeObserver.disconnect()
   }, [parentRef])
