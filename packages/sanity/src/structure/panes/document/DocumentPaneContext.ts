@@ -61,8 +61,6 @@ export interface DocumentPaneContextValue extends Pick<NodeChronologyProps, 'has
   onSetActiveFieldGroup: (path: Path, groupName: string) => void
   onSetCollapsedPath: (path: Path, expanded: boolean) => void
   onSetCollapsedFieldSet: (path: Path, expanded: boolean) => void
-  onSetMaximizedPane?: () => void
-  maximized: boolean
   openInspector: (inspectorName: string, paneParams?: Record<string, string>) => void
   openPath: Path
   paneKey: string

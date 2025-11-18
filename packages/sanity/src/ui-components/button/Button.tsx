@@ -15,7 +15,6 @@ type BaseButtonProps = Pick<
   | 'loading'
   | 'mode'
   | 'paddingY'
-  | 'paddingLeft'
   | 'selected'
   | 'tone'
   | 'type'
@@ -65,7 +64,6 @@ export const Button = forwardRef(function Button(
     size = 'default',
     mode = 'default',
     paddingY,
-    paddingLeft,
     tone = 'default',
     tooltipProps,
     ...rest
@@ -75,15 +73,7 @@ export const Button = forwardRef(function Button(
   const sizeProps = size === 'default' ? DEFAULT_BUTTON_PROPS : LARGE_BUTTON_PROPS
 
   const children = (
-    <UIButton
-      {...rest}
-      {...sizeProps}
-      paddingY={paddingY}
-      paddingLeft={paddingLeft}
-      ref={ref}
-      mode={mode}
-      tone={tone}
-    />
+    <UIButton {...rest} {...sizeProps} paddingY={paddingY} ref={ref} mode={mode} tone={tone} />
   )
 
   if (tooltipProps) {

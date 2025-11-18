@@ -214,15 +214,6 @@ const structureLocaleStrings = defineLocalesResources('structure', {
   /** The action menu button tooltip */
   'buttons.action-menu-button.tooltip': 'Document actions',
 
-  /** The aria-label for the collapse pane button on the document panel header */
-  'buttons.focus-pane-button.aria-label.collapse': 'Collapse all panes',
-  /** The aria-label for the focus pane button on the document panel header */
-  'buttons.focus-pane-button.aria-label.focus': 'Focus pane',
-
-  /** The tooltip for the collapse pane button on the document panel header */
-  'buttons.focus-pane-button.tooltip.collapse': 'Collapse all panes',
-  /** The tooltip for the focus pane button on the document panel header */
-  'buttons.focus-pane-button.tooltip.focus': 'Focus pane',
   /** The aria-label for the split pane button on the document panel header */
   'buttons.split-pane-button.aria-label': 'Split pane right',
   /** The tool tip for the split pane button on the document panel header */

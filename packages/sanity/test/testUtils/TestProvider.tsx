@@ -24,8 +24,6 @@ import {DocumentLimitUpsellProvider} from '../../src/core/limits/context/documen
 import {perspectiveContextValueMock} from '../../src/core/perspective/__mocks__/usePerspective.mock'
 import {ActiveWorkspaceMatcherProvider} from '../../src/core/studio/activeWorkspaceMatcher/ActiveWorkspaceMatcherProvider'
 import {route, RouterProvider} from '../../src/router'
-import {type Panes} from '../../src/structure/structureResolvers'
-import {ResolvedPanesProvider} from '../../src/structure/structureResolvers/provider/ResolvedPanesProvider'
 import {getMockWorkspace} from './getMockWorkspaceFromConfig'
 
 // Mock the useUpsellData hook to prevent API calls in tests
@@ -57,14 +55,6 @@ export async function createTestProvider({
   resources = [studioDefaultLocaleResources],
 }: TestProviderOptions = {}) {
   const workspace = await getMockWorkspace({client, config})
-
-  const resolvedPanes: Panes = {
-    paneDataItems: [],
-    routerPanes: [],
-    resolvedPanes: [],
-    focusedPane: null,
-    setFocusedPane: noop,
-  }
 
   const locales = [usEnglishLocale]
   const {i18next} = prepareI18n({
@@ -103,19 +93,17 @@ export async function createTestProvider({
                         setActiveWorkspace={noop}
                         history={history}
                       >
-                        <ResolvedPanesProvider value={resolvedPanes}>
-                          <CopyPasteProvider>
-                            <ResourceCacheProvider>
-                              <AddonDatasetContext.Provider value={addonDatasetContextValue}>
-                                <PerspectiveContext.Provider value={perspectiveContextValueMock}>
-                                  <DocumentLimitUpsellProvider>
-                                    <AssetLimitUpsellProvider>{children}</AssetLimitUpsellProvider>
-                                  </DocumentLimitUpsellProvider>
-                                </PerspectiveContext.Provider>
-                              </AddonDatasetContext.Provider>
-                            </ResourceCacheProvider>
-                          </CopyPasteProvider>
-                        </ResolvedPanesProvider>
+                        <CopyPasteProvider>
+                          <ResourceCacheProvider>
+                            <AddonDatasetContext.Provider value={addonDatasetContextValue}>
+                              <PerspectiveContext.Provider value={perspectiveContextValueMock}>
+                                <DocumentLimitUpsellProvider>
+                                  <AssetLimitUpsellProvider>{children}</AssetLimitUpsellProvider>
+                                </DocumentLimitUpsellProvider>
+                              </PerspectiveContext.Provider>
+                            </AddonDatasetContext.Provider>
+                          </ResourceCacheProvider>
+                        </CopyPasteProvider>
                       </ActiveWorkspaceMatcherProvider>
                     </SourceProvider>
                   </WorkspaceProvider>
