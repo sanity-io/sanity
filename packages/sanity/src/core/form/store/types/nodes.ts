@@ -2,8 +2,8 @@ import {type Diff} from '@sanity/diff'
 import {
   type ArraySchemaType,
   type BooleanSchemaType,
+  type FormDecorationSchemaType,
   type FormNodeValidation,
-  type InternalFormDecoratorSchemaType,
   type KeyedObject,
   type NumberSchemaType,
   type ObjectSchemaType,
@@ -195,6 +195,5 @@ export type PrimitiveFormNode = BooleanFormNode | NumberFormNode | StringFormNod
 /**
  * @hidden
  * @beta */
-export type InternalFormDecoratorFormNode<
-  S extends InternalFormDecoratorSchemaType = InternalFormDecoratorSchemaType,
-> = BaseFormNode<null | undefined, S>
+export type FormDecorationFormNode<S extends FormDecorationSchemaType = FormDecorationSchemaType> =
+  BaseFormNode<null | undefined, S>

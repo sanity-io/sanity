@@ -12,9 +12,9 @@ import {
   type BooleanSchemaType,
   type CrossDatasetReferenceValue,
   type FileValue,
+  type FormDecorationSchemaType,
   type GeopointValue,
   type ImageValue,
-  type InternalFormDecoratorSchemaType,
   type NumberSchemaType,
   type ObjectSchemaType,
   type Path,
@@ -588,8 +588,8 @@ export interface PortableTextInputProps
 /**
  * @hidden
  * @public */
-export interface InternalFormDecoratorInputProps<
-  S extends InternalFormDecoratorSchemaType = InternalFormDecoratorSchemaType,
+export interface FormDecorationInputProps<
+  S extends FormDecorationSchemaType = FormDecorationSchemaType,
 > extends Omit<BaseInputProps, 'displayInlineChanges'>,
     BaseFormNode<null | undefined, S> {
   /**
@@ -619,4 +619,4 @@ export type InputProps =
   | ObjectInputProps<SlugValue>
   | PortableTextInputProps
   | StringInputProps
-  | InternalFormDecoratorInputProps
+  | FormDecorationInputProps

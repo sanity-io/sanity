@@ -12,10 +12,10 @@ import {
   type DocumentDefinition,
   type EmailDefinition,
   type FileDefinition,
+  type FormDecorationDefinition,
   type GeopointDefinition,
   type GlobalDocumentReferenceDefinition,
   type ImageDefinition,
-  type InternalFormDecoratorDefinition,
   type NumberDefinition,
   type ObjectDefinition,
   type ReferenceDefinition,
@@ -61,7 +61,7 @@ export interface IntrinsicDefinitions {
   text: TextDefinition
   url: UrlDefinition
   email: EmailDefinition
-  internalFormDecorator: InternalFormDecoratorDefinition
+  formDecoration: FormDecorationDefinition
 }
 
 /**

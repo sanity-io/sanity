@@ -1,6 +1,6 @@
 import {
   type ArraySchemaType,
-  type InternalFormDecoratorSchemaType,
+  type FormDecorationSchemaType,
   type NumberSchemaType,
   type ObjectField,
   type ObjectFieldType,
@@ -28,7 +28,7 @@ import {
   type UnknownTypeNode,
 } from 'groq-js'
 
-import {INTERNAL_FORM_DECORATOR} from '../legacy/types/constants'
+import {FORM_DECORATION} from '../legacy/types/constants'
 
 const documentDefaultFields = (typeName: string): Record<string, ObjectAttribute> => ({
   _id: {
@@ -163,7 +163,7 @@ export function extractSchema(
       return {type: 'inline', name: schemaType.name} satisfies InlineTypeNode
     }
 
-    if (isDecoratorType(schemaType)) {
+    if (isFormDecorationType(schemaType)) {
       return null
     }
     if (isStringType(schemaType)) {
@@ -425,8 +425,8 @@ function isStringType(typeDef: SanitySchemaType): typeDef is StringSchemaType {
 function isNumberType(typeDef: SanitySchemaType): typeDef is NumberSchemaType {
   return isType(typeDef, 'number')
 }
-function isDecoratorType(typeDef: SanitySchemaType): typeDef is InternalFormDecoratorSchemaType {
-  return isType(typeDef, INTERNAL_FORM_DECORATOR)
+function isFormDecorationType(typeDef: SanitySchemaType): typeDef is FormDecorationSchemaType {
+  return isType(typeDef, FORM_DECORATION)
 }
 function createStringTypeNodeDefintion(
   stringSchemaType: StringSchemaType,

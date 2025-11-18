@@ -1,21 +1,21 @@
 import {pick} from 'lodash'
 
 import primitivePreview from '../preview/primitivePreview'
-import {DEFAULT_OVERRIDEABLE_FIELDS, INTERNAL_FORM_DECORATOR, OWN_PROPS_NAME} from './constants'
+import {DEFAULT_OVERRIDEABLE_FIELDS, FORM_DECORATION, OWN_PROPS_NAME} from './constants'
 import {hiddenGetter} from './utils'
 
 const OVERRIDABLE_FIELDS = [...DEFAULT_OVERRIDEABLE_FIELDS]
 
-const FORM_DECORATOR_CORE = {
-  name: INTERNAL_FORM_DECORATOR,
+const FORM_DECORATION_CORE = {
+  name: FORM_DECORATION,
   title: 'Form Decorator',
   type: null,
   jsonType: 'null',
 }
 
-export const InternalFormDecoratorType = {
+export const formDecorationType = {
   get() {
-    return FORM_DECORATOR_CORE
+    return FORM_DECORATION_CORE
   },
   extend(subTypeDef: any) {
     const ownProps = {
@@ -23,8 +23,8 @@ export const InternalFormDecoratorType = {
       preview: primitivePreview,
     }
 
-    const parsed = Object.assign(pick(FORM_DECORATOR_CORE, OVERRIDABLE_FIELDS), ownProps, {
-      type: FORM_DECORATOR_CORE,
+    const parsed = Object.assign(pick(FORM_DECORATION_CORE, OVERRIDABLE_FIELDS), ownProps, {
+      type: FORM_DECORATION_CORE,
     })
 
     hiddenGetter(parsed, OWN_PROPS_NAME, ownProps)

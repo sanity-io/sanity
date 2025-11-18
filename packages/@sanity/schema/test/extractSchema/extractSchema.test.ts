@@ -5,7 +5,7 @@ import {type DocumentSchemaType} from 'groq-js'
 import {describe, expect, test} from 'vitest'
 
 import {Schema} from '../../src/legacy/Schema'
-import {INTERNAL_FORM_DECORATOR} from '../../src/legacy/types/constants'
+import {FORM_DECORATION} from '../../src/legacy/types/constants'
 import {builtinTypes} from '../../src/sanity/builtinTypes'
 import {extractSchema} from '../../src/sanity/extractSchema'
 import {groupProblems} from '../../src/sanity/groupProblems'
@@ -772,7 +772,7 @@ describe('Extract schema test', () => {
     assert(inlineRef.value.type === 'object')
     expect(inlineRef.value.dereferencesTo).toBe('thing')
   })
-  test(`does not extract ${INTERNAL_FORM_DECORATOR} type`, () => {
+  test(`does not extract ${FORM_DECORATION} type`, () => {
     const schema = createSchema(
       {
         name: 'test',
@@ -787,7 +787,7 @@ describe('Extract schema test', () => {
                 name: 'title',
               },
               {
-                type: INTERNAL_FORM_DECORATOR,
+                type: FORM_DECORATION,
                 name: 'decorator',
               },
               {
@@ -799,7 +799,7 @@ describe('Extract schema test', () => {
                     name: 'title',
                   },
                   {
-                    type: INTERNAL_FORM_DECORATOR,
+                    type: FORM_DECORATION,
                     name: 'innerDecorator',
                   },
                 ],
@@ -819,7 +819,7 @@ describe('Extract schema test', () => {
     assert(validDocument !== undefined) // this is a workaround for TS, but leave the expect above for clarity in case of failure
     assert(validDocument.type === 'document')
 
-    // The `internalFormDecorator` type is not extracted by the schema extractor
+    // The `formDecoration` type is not extracted by the schema extractor
     expect(validDocument.attributes.decorator).not.toBeDefined()
     expect(validDocument.attributes.title).toBeDefined()
 

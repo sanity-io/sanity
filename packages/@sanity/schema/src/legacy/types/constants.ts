@@ -24,9 +24,9 @@ export const OWN_PROPS_NAME = '_internal_ownProps'
 export const ALL_FIELDS_GROUP_NAME = 'all-fields'
 
 /**
- * Name for configuring a decorator field type
+ * Name for configuring a decoration field type
  * this fields are rendered in the form but are not extracted by the schema extractor.
  * They serve only for UI purposes.
  * @beta
  */
-export const INTERNAL_FORM_DECORATOR = 'internalFormDecorator'
+export const FORM_DECORATION = 'formDecoration'

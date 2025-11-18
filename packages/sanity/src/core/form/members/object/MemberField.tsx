@@ -15,7 +15,7 @@ import {ArrayOfPrimitivesField} from './fields/ArrayOfPrimitivesField'
 import {
   isMemberArrayOfObjects,
   isMemberArrayOfPrimitives,
-  isMemberInternalFormDecorator,
+  isMemberFormDecoration,
   isMemberObject,
   isMemberPrimitive,
 } from './fields/asserters'
@@ -98,7 +98,7 @@ export const MemberField = memo(function MemberField(props: MemberFieldProps) {
   if (isMemberPrimitive(member)) {
     return <PrimitiveField member={member} renderField={renderField} renderInput={renderInput} />
   }
-  if (isMemberInternalFormDecorator(member)) {
+  if (isMemberFormDecoration(member)) {
     return <DecorationField member={member} renderField={renderField} renderInput={renderInput} />
   }
 

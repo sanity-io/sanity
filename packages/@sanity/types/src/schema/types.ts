@@ -52,7 +52,7 @@ export type SchemaType =
   | ObjectSchemaType
   | StringSchemaType
   | ReferenceSchemaType
-  | InternalFormDecoratorSchemaType
+  | FormDecorationSchemaType
 
 /** @public */
 export interface SchemaValidationError {
@@ -267,7 +267,7 @@ export interface TextSchemaType extends StringSchemaType {
 }
 
 /** @public */
-export interface InternalFormDecoratorSchemaType extends BaseSchemaType {
+export interface FormDecorationSchemaType extends BaseSchemaType {
   jsonType: 'null'
   options?: undefined
 }

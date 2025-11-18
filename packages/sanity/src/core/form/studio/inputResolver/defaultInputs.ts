@@ -5,7 +5,7 @@ import {UniversalArrayInput} from '../../inputs/arrays/UniversalArrayInput'
 import {BooleanInput} from '../../inputs/BooleanInput'
 import {DateInput, DateTimeInput} from '../../inputs/DateInputs'
 import {EmailInput} from '../../inputs/EmailInput'
-import {InternalFormDecoratorInput} from '../../inputs/internalFormDecoratorInput/internalFormDecoratorInput'
+import {FormDecorationInput} from '../../inputs/FormDecorationInput/FormDecoratorInput'
 import {NumberInput} from '../../inputs/NumberInput/NumberInput'
 import {ObjectInput} from '../../inputs/ObjectInput'
 import {SlugInput} from '../../inputs/Slug/SlugInput'
@@ -34,5 +34,5 @@ export const defaultInputs: Record<string, ComponentType<FIXME>> = {
   slug: SlugInput,
   crossDatasetReference: StudioCrossDatasetReferenceInput,
   globalDocumentReference: StudioGlobalDocumentReferenceInput,
-  internalFormDecorator: InternalFormDecoratorInput,
+  formDecoration: FormDecorationInput,
 }

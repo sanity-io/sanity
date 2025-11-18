@@ -1,6 +1,6 @@
 import {
   isArraySchemaType,
-  isInternalFormDecoratorSchemaType,
+  isFormDecorationSchemaType,
   isObjectSchemaType,
   isPrimitiveSchemaType,
 } from '@sanity/types'
@@ -9,7 +9,7 @@ import {
   type ArrayOfObjectsFormNode,
   type ArrayOfPrimitivesFormNode,
   type FieldMember,
-  type InternalFormDecoratorFormNode,
+  type FormDecorationFormNode,
   type ObjectFormNode,
   type PrimitiveFormNode,
 } from '../../../store'
@@ -40,8 +40,8 @@ export function isMemberPrimitive(member: FieldMember): member is FieldMember<Pr
   return isPrimitiveSchemaType(member.field.schemaType)
 }
 
-export function isMemberInternalFormDecorator(
+export function isMemberFormDecoration(
   member: FieldMember,
-): member is FieldMember<InternalFormDecoratorFormNode> {
-  return isInternalFormDecoratorSchemaType(member.field.schemaType)
+): member is FieldMember<FormDecorationFormNode> {
+  return isFormDecorationSchemaType(member.field.schemaType)
 }

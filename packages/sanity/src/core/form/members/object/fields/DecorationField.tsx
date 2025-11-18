@@ -1,12 +1,12 @@
 import {useCallback, useMemo, useRef} from 'react'
 
-import {type FieldMember, type InternalFormDecoratorFormNode} from '../../../store'
+import {type FieldMember, type FormDecorationFormNode} from '../../../store'
 import {useDocumentFieldActions} from '../../../studio/contexts/DocumentFieldActions'
 import {useFormCallbacks} from '../../../studio/contexts/FormCallbacks'
 import {
   type ComplexElementProps,
-  type InternalFormDecoratorFieldProps,
-  type InternalFormDecoratorInputProps,
+  type FormDecorationFieldProps,
+  type FormDecorationInputProps,
   type RenderFieldCallback,
   type RenderInputCallback,
 } from '../../../types'
@@ -19,9 +19,9 @@ import {createDescriptionId} from '../../common/createDescriptionId'
  * @internal
  */
 export function DecorationField(props: {
-  member: FieldMember<InternalFormDecoratorFormNode>
-  renderInput: RenderInputCallback<InternalFormDecoratorInputProps>
-  renderField: RenderFieldCallback<InternalFormDecoratorFieldProps>
+  member: FieldMember<FormDecorationFormNode>
+  renderInput: RenderInputCallback<FormDecorationInputProps>
+  renderField: RenderFieldCallback<FormDecorationFieldProps>
 }) {
   const {member, renderInput, renderField} = props
 
@@ -50,7 +50,7 @@ export function DecorationField(props: {
     [handleBlur, handleFocus, member.field.id, member.field.schemaType],
   )
 
-  const inputProps = useMemo((): Omit<InternalFormDecoratorInputProps, 'renderDefault'> => {
+  const inputProps = useMemo((): Omit<FormDecorationInputProps, 'renderDefault'> => {
     return {
       value: member.field.value as any,
       compareValue: member.field.compareValue,
@@ -113,16 +113,16 @@ export function DecorationField(props: {
 function RenderInput({
   render,
   ...props
-}: Omit<InternalFormDecoratorInputProps, 'renderDefault'> & {
-  render: RenderInputCallback<InternalFormDecoratorInputProps>
+}: Omit<FormDecorationInputProps, 'renderDefault'> & {
+  render: RenderInputCallback<FormDecorationInputProps>
 }) {
   return render(props)
 }
 function RenderField({
   render,
   ...props
-}: Omit<InternalFormDecoratorFieldProps, 'renderDefault'> & {
-  render: RenderFieldCallback<InternalFormDecoratorFieldProps>
+}: Omit<FormDecorationFieldProps, 'renderDefault'> & {
+  render: RenderFieldCallback<FormDecorationFieldProps>
 }) {
   return render(props)
 }

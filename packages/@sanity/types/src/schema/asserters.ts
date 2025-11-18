@@ -11,8 +11,8 @@ import {
   type DeprecatedSchemaType,
   type DeprecationConfiguration,
   type FileSchemaType,
+  type FormDecorationSchemaType,
   type ImageSchemaType,
-  type InternalFormDecoratorSchemaType,
   type NumberSchemaType,
   type ObjectSchemaType,
   type ReferenceSchemaType,
@@ -106,11 +106,9 @@ export function isNumberSchemaType(type: unknown): type is NumberSchemaType {
 }
 
 /** @internal */
-export function isInternalFormDecoratorSchemaType(
-  type: unknown,
-): type is InternalFormDecoratorSchemaType {
+export function isFormDecorationSchemaType(type: unknown): type is FormDecorationSchemaType {
   if (!isRecord(type)) return false
-  return type.jsonType === 'null' && type.name === 'internalFormDecorator'
+  return type.jsonType === 'null' && type.name === 'formDecoration'
 }
 
 /** @internal */

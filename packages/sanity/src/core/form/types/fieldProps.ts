@@ -3,10 +3,10 @@ import {
   type BooleanSchemaType,
   type CrossDatasetReferenceValue,
   type FileValue,
+  type FormDecorationSchemaType,
   type FormNodeValidation,
   type GeopointValue,
   type ImageValue,
-  type InternalFormDecoratorSchemaType,
   type NumberSchemaType,
   type ObjectSchemaType,
   type Path,
@@ -23,7 +23,7 @@ import {
   type ArrayOfObjectsInputProps,
   type ArrayOfPrimitivesInputProps,
   type BooleanInputProps,
-  type InternalFormDecoratorInputProps,
+  type FormDecorationInputProps,
   type NumberInputProps,
   type ObjectInputProps,
   type StringInputProps,
@@ -141,10 +141,10 @@ export type PrimitiveFieldProps = NumberFieldProps | BooleanFieldProps | StringF
 /**
  * @hidden
  * @public */
-export type InternalFormDecoratorFieldProps = BaseFieldProps & {
-  schemaType: InternalFormDecoratorSchemaType
+export type FormDecorationFieldProps = BaseFieldProps & {
+  schemaType: FormDecorationSchemaType
   value: null
-  inputProps: InternalFormDecoratorInputProps
+  inputProps: FormDecorationInputProps
 }
 
 /**
@@ -162,4 +162,4 @@ export type FieldProps =
   | NumberFieldProps
   | BooleanFieldProps
   | StringFieldProps
-  | InternalFormDecoratorFieldProps
+  | FormDecorationFieldProps
