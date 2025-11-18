@@ -152,7 +152,7 @@
     "@isaacs/ttlcache": "^1.4.1",
     "@juggle/resize-observer": "^3.4.0",
     "@mux/mux-player-react": "^3.6.0",
-    "@portabletext/block-tools": "^4.0.0",
+    "@portabletext/block-tools": "^4.0.2",
     "@portabletext/editor": "^3.0.0",
     "@portabletext/patches": "^2.0.0",
     "@portabletext/plugin-markdown-shortcuts": "^4.0.0",

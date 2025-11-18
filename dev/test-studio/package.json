@@ -18,7 +18,7 @@
     "workshop:dev": "tsx scripts/workshop/dev.ts"
   },
   "dependencies": {
-    "@portabletext/block-tools": "^4.0.0",
+    "@portabletext/block-tools": "^4.0.2",
     "@portabletext/editor": "^3.0.0",
     "@portabletext/plugin-character-pair-decorator": "^4.0.0",
     "@portabletext/react": "^5.0.0",
