@@ -42,26 +42,26 @@ import {type BaseSchemaDefinition} from './type/common'
  * @public
  */
 export interface IntrinsicDefinitions {
-  'array': ArrayDefinition
-  'block': BlockDefinition
-  'boolean': BooleanDefinition
-  'date': DateDefinition
-  'datetime': DatetimeDefinition
-  'document': DocumentDefinition
-  'file': FileDefinition
-  'geopoint': GeopointDefinition
-  'image': ImageDefinition
-  'number': NumberDefinition
-  'object': ObjectDefinition
-  'reference': ReferenceDefinition
-  'crossDatasetReference': CrossDatasetReferenceDefinition
-  'globalDocumentReference': GlobalDocumentReferenceDefinition
-  'slug': SlugDefinition
-  'string': StringDefinition
-  'text': TextDefinition
-  'url': UrlDefinition
-  'email': EmailDefinition
-  'sanity.internalFormDecorator': InternalFormDecoratorDefinition
+  array: ArrayDefinition
+  block: BlockDefinition
+  boolean: BooleanDefinition
+  date: DateDefinition
+  datetime: DatetimeDefinition
+  document: DocumentDefinition
+  file: FileDefinition
+  geopoint: GeopointDefinition
+  image: ImageDefinition
+  number: NumberDefinition
+  object: ObjectDefinition
+  reference: ReferenceDefinition
+  crossDatasetReference: CrossDatasetReferenceDefinition
+  globalDocumentReference: GlobalDocumentReferenceDefinition
+  slug: SlugDefinition
+  string: StringDefinition
+  text: TextDefinition
+  url: UrlDefinition
+  email: EmailDefinition
+  internalFormDecorator: InternalFormDecoratorDefinition
 }
 
 /**

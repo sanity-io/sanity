@@ -4603,7 +4603,7 @@ exports[`Extract schema test > Extracts  schema general 1`] = `
 ]
 `;
 
-exports[`Extract schema test > does not extract sanity.internalFormDecorator type 1`] = `
+exports[`Extract schema test > does not extract internalFormDecorator type 1`] = `
 [
   {
     "attributes": {

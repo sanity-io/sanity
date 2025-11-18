@@ -29,4 +29,4 @@ export const ALL_FIELDS_GROUP_NAME = 'all-fields'
  * They serve only for UI purposes.
  * @beta
  */
-export const INTERNAL_FORM_DECORATOR = 'sanity.internalFormDecorator' as const
+export const INTERNAL_FORM_DECORATOR = 'internalFormDecorator'

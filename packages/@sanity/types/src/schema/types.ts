@@ -269,6 +269,7 @@ export interface TextSchemaType extends StringSchemaType {
 /** @public */
 export interface InternalFormDecoratorSchemaType extends BaseSchemaType {
   jsonType: 'null'
+  options?: undefined
 }
 
 /** @public */

@@ -590,7 +590,7 @@ export interface PortableTextInputProps
  * @beta */
 export interface InternalFormDecoratorInputProps<
   S extends InternalFormDecoratorSchemaType = InternalFormDecoratorSchemaType,
-> extends BaseInputProps,
+> extends Omit<BaseInputProps, 'displayInlineChanges'>,
     BaseFormNode<null | undefined, S> {}
 
 /**
