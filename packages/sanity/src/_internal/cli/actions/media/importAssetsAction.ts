@@ -112,7 +112,7 @@ interface Options {
 
 interface Context extends Options {
   workingPath: string
-  ndjson: () => ReadStream
+  ndjson: () => ReadStream | null
 }
 
 // TODO: Order assets lexicographically before processing, allow resumable import
@@ -178,7 +178,7 @@ export function importer(options: Options): Observable<State> {
       const context: Context = {
         ...options,
         workingPath,
-        ndjson: () => createReadStream(aspectsNdjsonPath),
+        ndjson: () => (aspectsNdjsonPath ? createReadStream(aspectsNdjsonPath) : null),
       }
 
       return from(files).pipe(
@@ -241,11 +241,12 @@ export function resolveSource({
     }),
     tap(({aspectsNdjsonPath, importSourcePath}) => {
       if (typeof aspectsNdjsonPath === 'undefined') {
-        throw new Error(
-          `No ${chalk.bold('data.ndjson')} file found in import source ${chalk.bold(importSourcePath)}`,
+        debug(
+          `[No data.ndjson file] No predefined aspect data will be imported from ${importSourcePath}`,
         )
+      } else {
+        debug(`[Found NDJSON file] ${aspectsNdjsonPath}`)
       }
-      debug(`[Found NDJSON file] ${aspectsNdjsonPath}`)
     }),
     switchMap(({aspectsNdjsonPath, workingPath}) => {
       return from(
@@ -362,10 +363,20 @@ function fetchExistingAssets({
  * @internal
  */
 function resolveAspectData({ndjson}: Context): OperatorFunction<ResolvedAsset, AssetWithAspects> {
-  return mergeMap((resolvedAsset) =>
-    from(
+  return mergeMap((resolvedAsset) => {
+    const ndjsonStream = ndjson()
+
+    // If no ndjson file exists, return asset with undefined aspects
+    if (!ndjsonStream) {
+      return of({
+        ...resolvedAsset,
+        aspects: undefined,
+      })
+    }
+
+    return from(
       findNdjsonEntry<{aspects: unknown}>(
-        ndjson(),
+        ndjsonStream,
         (line) =>
           typeof line === 'object' &&
           line !== null &&
@@ -377,8 +388,8 @@ function resolveAspectData({ndjson}: Context): OperatorFunction<ResolvedAsset, A
         ...resolvedAsset,
         aspects: aspectsFromImport?.aspects,
       })),
-    ),
-  )
+    )
+  })
 }
 
 // TODO: Batch mutations to reduce HTTP request count.

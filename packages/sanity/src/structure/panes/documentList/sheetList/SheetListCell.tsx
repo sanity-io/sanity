@@ -36,7 +36,7 @@ type InputRef = CellInputElement | null
 export function SheetListCellInner(props: SheetListCellInnerProps) {
   const {getValue, column, row, fieldType} = props
   const cellId = `cell-${column.id}-${row.index}`
-  const [renderValue, setRenderValue] = useState<string>(getValue() as string)
+  const [renderValue, setRenderValue] = useState<string>(() => getValue() as string)
   const [isDirty, setIsDirty] = useState(false)
   const inputRef = useRef<InputRef>(null)
   const {

@@ -11,6 +11,7 @@ import {
   type ReactNode,
   useCallback,
   useId,
+  useImperativeHandle,
   useMemo,
   useRef,
   useState,
@@ -71,7 +72,7 @@ export function GlobalDocumentReferenceInput(props: GlobalDocumentReferenceInput
     schemaType,
     validation,
     value,
-    elementProps,
+    elementProps: {ref: forwardRef, ...elementProps},
   } = props
 
   const {t} = useTranslation()
@@ -151,7 +152,8 @@ export function GlobalDocumentReferenceInput(props: GlobalDocumentReferenceInput
   const hasFocusAtRef = focusPath.length === 1 && focusPath[0] === '_ref'
 
   // --- focus handling
-  const focusElementRef = elementProps.ref
+  const focusElementRef = useRef<HTMLDivElement | null>(null)
+  useImperativeHandle(forwardRef, () => focusElementRef.current)
   useDidUpdate({hasFocusAt: hasFocusAtRef, ref: value?._ref}, (prev, current) => {
     const refUpdated = prev?.ref !== current.ref
     const focusAtUpdated = prev?.hasFocusAt !== current.hasFocusAt
@@ -178,22 +180,20 @@ export function GlobalDocumentReferenceInput(props: GlobalDocumentReferenceInput
 
   const handleFocus = useCallback(
     (event: FocusEvent<HTMLDivElement>) => {
-      if (event.currentTarget === elementProps.ref.current) {
+      if (event.currentTarget === focusElementRef.current) {
         onPathFocus?.([])
       }
     },
-    [elementProps.ref, onPathFocus],
+    [onPathFocus],
   )
-
-  const handleBlur = useCallback((event: FocusEvent) => elementProps.onBlur(event), [elementProps])
 
   const handleAutocompleteFocus = useCallback(
     (event: FocusEvent<HTMLInputElement>) => {
-      if (event.currentTarget === elementProps.ref.current) {
+      if (event.currentTarget === focusElementRef.current) {
         onPathFocus?.(REF_PATH)
       }
     },
-    [elementProps.ref, onPathFocus],
+    [onPathFocus],
   )
   const handleReplace = useCallback(() => {
     onPathFocus?.(REF_PATH)
@@ -321,6 +321,7 @@ export function GlobalDocumentReferenceInput(props: GlobalDocumentReferenceInput
                 filterOption={NO_FILTER}
                 renderOption={renderOption}
                 openButton={{onClick: handleAutocompleteOpenButtonClick}}
+                ref={focusElementRef as unknown as React.Ref<HTMLInputElement>}
               />
             </div>
           </ChangeIndicator>
@@ -356,8 +357,8 @@ export function GlobalDocumentReferenceInput(props: GlobalDocumentReferenceInput
                   __unstable_focusRing
                   tabIndex={0}
                   onFocus={handleFocus}
-                  onBlur={handleBlur}
-                  ref={elementProps.ref}
+                  onBlur={elementProps.onBlur}
+                  ref={focusElementRef}
                 >
                   <PreviewReferenceValue
                     value={value}
@@ -377,8 +378,8 @@ export function GlobalDocumentReferenceInput(props: GlobalDocumentReferenceInput
                   __unstable_focusRing
                   tabIndex={0}
                   onFocus={handleFocus}
-                  onBlur={handleBlur}
-                  ref={elementProps.ref}
+                  onBlur={elementProps.onBlur}
+                  ref={focusElementRef}
                 >
                   <PreviewReferenceValue
                     value={value}

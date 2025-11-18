@@ -15,7 +15,6 @@ import * as importPlugin from 'eslint-plugin-import'
 import oxlint from 'eslint-plugin-oxlint'
 import pluginReact from 'eslint-plugin-react'
 import reactHooks from 'eslint-plugin-react-hooks'
-import reactHooksWithUseEffectEvent from 'eslint-plugin-react-hooks-with-use-effect-event'
 import simpleImportSort from 'eslint-plugin-simple-import-sort'
 import tsdocPlugin from 'eslint-plugin-tsdoc'
 import unicorn from 'eslint-plugin-unicorn'
@@ -82,8 +81,7 @@ export default [
     name: 'react/recommended',
     ...pluginReact.configs.flat.recommended,
   },
-  // @ts-expect-error - configs is not typed but exists, and it enables React Compiler linter checks
-  ...reactHooks.configs['flat/recommended'],
+  reactHooks.configs.flat['recommended-latest'],
   {
     name: 'sanity/recommended',
     // Equivalent to `extends: ['sanity', 'sanity/react', 'sanity/import', 'sanity/typescript']` in ESLint 8
@@ -194,28 +192,22 @@ export default [
   // oxlint should be the last one so it is able to turn off rules that it's handling
   ...oxlint.buildFromOxlintConfigFile(rootOxlintrc),
   {
-    // Since we use useEffectEvent, we can't use the oxlint checker for this rule, we must use the ESLint variant.
-    // We're using eslint-plugin-react-hooks@rc, which runs React Compiler checks which matches our babel-plugin-react-compiler@rc setup.
-    // However, we're also using the experimental useEffectEvent API using the use-effect-event package, which requires eslint-plugin-react-hooks@experimental (https://react.dev/reference/react/experimental_useEffectEvent).
-    // To make all this work we disable the exhaustive-deps rule from the rc react-hooks plugin and enable it with the experimental react-hooks plugin.
-    name: 'react-hooks/exhaustive-deps/useEffectEvent',
-    plugins: {
-      'react-hooks-with-use-effect-event': reactHooksWithUseEffectEvent,
-    },
+    // While the recommended-latest react-hooks config enables most react compiler rules, it doesn't enable all of them yet, so we do that here
+    name: 'react-hooks/react-compiler',
     rules: {
-      'react-hooks/exhaustive-deps': 'off',
-      'react-hooks-with-use-effect-event/exhaustive-deps': 'error',
-    },
-  },
-  {
-    // React Compiler RC3 added a lot of new checks, it'll take a while to fix all of them so we'll change them from error to warn in the mean time
-    name: 'react-hooks/react-compiler/temp-disable',
-    rules: {
-      'react-hooks/immutability': 'warn',
-      'react-hooks/preserve-manual-memoization': 'warn',
-      'react-hooks/refs': 'warn',
-      'react-hooks/set-state-in-effect': 'warn',
-      'react-hooks/static-components': 'warn',
+      // Enabled by default, but are `warn` while we want them to be `error`
+      'react-hooks/unsupported-syntax': 'error',
+      // Temporarily disabled due to false negatives
+      'react-hooks/set-state-in-effect': 'off',
+      // Disabled by default, enabled here (https://github.com/facebook/react/blob/5f2b571878ec3b5884f5739915a974b98d7384d5/compiler/packages/babel-plugin-react-compiler/src/CompilerError.ts#L734-L1004)
+      'react-hooks/capitalized-calls': 'error',
+      'react-hooks/memoized-effect-dependencies': 'error',
+      'react-hooks/no-deriving-state-in-effects': 'error',
+      'react-hooks/hooks': 'error',
+      'react-hooks/invariant': 'error',
+      'react-hooks/rule-suppression': 'error',
+      'react-hooks/syntax': 'error',
+      'react-hooks/todo': 'error',
     },
   },
   {
@@ -231,8 +223,8 @@ export default [
     rules: {
       'react-hooks/preserve-manual-memoization': 'warn',
       'react-hooks/refs': 'warn',
-      'react-hooks/set-state-in-effect': 'warn',
       'react-hooks/static-components': 'warn',
+      'react-hooks/todo': 'warn',
     },
   },
   // Since we also use no-restricted-imports in oxlint, we need to add this after `buildFromOxlintConfigFile` or the rule is disabled

@@ -18,9 +18,9 @@
     "workshop:dev": "tsx scripts/workshop/dev.ts"
   },
   "dependencies": {
-    "@portabletext/block-tools": "^4.0.0",
-    "@portabletext/editor": "^2.19.2",
-    "@portabletext/plugin-character-pair-decorator": "^3.0.3",
+    "@portabletext/block-tools": "^4.0.2",
+    "@portabletext/editor": "^3.0.0",
+    "@portabletext/plugin-character-pair-decorator": "^4.0.0",
     "@portabletext/react": "^5.0.0",
     "@portabletext/toolkit": "^4.0.0",
     "@sanity/assist": "^5.0.2",
@@ -66,7 +66,7 @@
   },
   "devDependencies": {
     "@repo/eslint-config": "workspace:*",
-    "babel-plugin-react-compiler": "19.1.0-rc.3",
+    "babel-plugin-react-compiler": "1.0.0",
     "chokidar": "^3.6.0",
     "eslint": "catalog:",
     "rimraf": "^5.0.10",

@@ -858,7 +858,7 @@ describe('buildArrayStatePTE', () => {
   })
 
   describe('custom components', () => {
-    test('should NOT set relativePath when PTE block type has custom components.item', () => {
+    test('should set relativePath when PTE block type has custom components.item', () => {
       // Create a schema with custom components.item on a block
       const schemaWithCustomBlock = Schema.compile({
         name: 'default',
@@ -922,14 +922,19 @@ describe('buildArrayStatePTE', () => {
       const result = buildArrayStatePTE(propsWithCustom)
 
       // relativePath should NOT be set when block has custom components
-      expect(result.relativePath).toBeNull()
+      expect(result.relativePath).toEqual([
+        'body',
+        {
+          _key: 'custom1',
+        },
+      ])
       // Should not build menu items for blocks with custom components
-      expect(result.childrenMenuItems).toEqual([])
+      expect(result.childrenMenuItems.length).toBeGreaterThan(0)
     })
 
     test('should set relativePath when PTE block type has custom components.input', () => {
       // Create a schema with custom components.input on a block
-      // components.input is allowed as it's often just a wrapper
+      // Blocks with custom components.input are skipped as they handle their own UI
       const schemaWithCustomBlock = Schema.compile({
         name: 'default',
         types: [
@@ -960,6 +965,7 @@ describe('buildArrayStatePTE', () => {
       })
 
       const docSchema = schemaWithCustomBlock.get('testDocument') as ObjectSchemaType
+      const customBodyField = docSchema.fields.find((f) => f.name === 'body')!
 
       const mockValue = {
         body: [
@@ -973,7 +979,7 @@ describe('buildArrayStatePTE', () => {
 
       const openPath: Path = ['body', {_key: 'custom1'}]
       const props = createTestProps({
-        childField: bodyField,
+        childField: customBodyField,
         childPath: ['body'] as Path,
         childValue: mockValue.body,
         documentValue: mockValue,
@@ -988,10 +994,10 @@ describe('buildArrayStatePTE', () => {
 
       const result = buildArrayStatePTE(propsWithCustom)
 
-      // relativePath SHOULD be set when block has custom components.input
-      // because components.input is often just a wrapper
+      // relativePath should NOT be set when block has custom components.input
+      // because the custom input handles its own UI
       expect(result.relativePath).toEqual(['body', {_key: 'custom1'}])
-      // Should build menu items for blocks with custom components.input
+      // Should NOT build menu items for blocks with custom components.input
       expect(result.childrenMenuItems.length).toBeGreaterThan(0)
     })
 

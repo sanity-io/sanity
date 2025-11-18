@@ -1,6 +1,6 @@
 import {type ObjectSchemaType, type Path} from '@sanity/types'
 import {Stack} from '@sanity/ui'
-import {Fragment, type HTMLAttributes, useCallback, useMemo, useRef, useState} from 'react'
+import {Fragment, type HTMLAttributes, startTransition, useCallback, useMemo, useState} from 'react'
 import {DiffContext} from 'sanity/_singletons'
 
 import {useDocumentOperation} from '../../../hooks'
@@ -71,7 +71,15 @@ export function FieldChange(
   const ops = useDocumentOperation(documentId, schemaType.name, selectedReleaseId)
   const [confirmRevertOpen, setConfirmRevertOpen] = useState(false)
   const [revertHovered, setRevertHovered] = useState(false)
-  const buttonRef = useRef<HTMLButtonElement | null>(null)
+  const [buttonElement, _setButtonElement] = useState<HTMLButtonElement | null>(null)
+  const setButtonElement = (element: HTMLButtonElement | null) => {
+    /**
+     * The startTransition wrapper here is to avoid an issue when on React 18 where this error can happen:
+     * \>Maximum update depth exceeded. This can happen when a component repeatedly calls setState inside componentWillUpdate or componentDidUpdate. React limits the number of nested updates to prevent infinite loops.
+     * This doesn't happen on React 19 due to automatic batching of all state updates, the startTransition wrapper here gives a type of batching for 18 users in a way that still works with 19.
+     */
+    startTransition(() => _setButtonElement(element))
+  }
   const {t} = useTranslation()
 
   const [permissions, isPermissionsLoading] = useDocumentPairPermissions({
@@ -115,88 +123,65 @@ export function FieldChange(
 
   const value = useMemo(() => ({path: change.path}), [change.path])
 
-  const content = useMemo(
-    () =>
-      hidden ? null : (
-        <>
-          <Stack space={1} as={FieldChangeContainer} {...restProps}>
-            {change.showHeader && <ChangeBreadcrumb change={change} titlePath={change.titlePath} />}
-            <ParentWrapper
-              path={fieldPath}
-              hasRevertHover={revertHovered}
-              wrap={Boolean(addParentWrapper)}
+  if (hidden) {
+    return null
+  }
+
+  return (
+    <>
+      <Stack space={1} as={FieldChangeContainer} {...restProps}>
+        {change.showHeader && <ChangeBreadcrumb change={change} titlePath={change.titlePath} />}
+        <ParentWrapper
+          path={fieldPath}
+          hasRevertHover={revertHovered}
+          wrap={Boolean(addParentWrapper)}
+        >
+          <FieldWrapper path={fieldPath} hasRevertHover={revertHovered}>
+            <DiffInspectWrapper
+              change={change}
+              as={DiffBorder}
+              data-revert-field-hover={revertHovered ? '' : undefined}
+              data-error={change.error ? '' : undefined}
+              data-revert-all-hover
+              data-ui="field-diff-inspect-wrapper"
             >
-              <FieldWrapper path={fieldPath} hasRevertHover={revertHovered}>
-                <DiffInspectWrapper
-                  change={change}
-                  as={DiffBorder}
-                  data-revert-field-hover={revertHovered ? '' : undefined}
-                  data-error={change.error ? '' : undefined}
-                  data-revert-all-hover
-                  data-ui="field-diff-inspect-wrapper"
-                >
-                  {change.error ? (
-                    <ValueError error={change.error} />
-                  ) : (
-                    <DiffErrorBoundary t={t}>
-                      <DiffContext.Provider value={value}>
-                        <DiffComponent
-                          diff={change.diff}
-                          schemaType={change.schemaType as ObjectSchemaType}
-                        />
-                      </DiffContext.Provider>
-                    </DiffErrorBoundary>
-                  )}
-
-                  {isComparingCurrent && !isPermissionsLoading && permissions?.granted && (
-                    <RevertChangesButton
-                      changeCount={1}
-                      onClick={handleRevertChangesConfirm}
-                      onMouseEnter={handleRevertButtonMouseEnter}
-                      onMouseLeave={handleRevertButtonMouseLeave}
-                      selected={confirmRevertOpen}
-                      disabled={readOnly}
-                      ref={buttonRef}
-                      data-testid={`single-change-revert-button-${change?.key}`}
+              {change.error ? (
+                <ValueError error={change.error} />
+              ) : (
+                <DiffErrorBoundary t={t}>
+                  <DiffContext.Provider value={value}>
+                    <DiffComponent
+                      diff={change.diff}
+                      schemaType={change.schemaType as ObjectSchemaType}
                     />
-                  )}
-                </DiffInspectWrapper>
-              </FieldWrapper>
-            </ParentWrapper>
-          </Stack>
+                  </DiffContext.Provider>
+                </DiffErrorBoundary>
+              )}
 
-          <RevertChangesConfirmDialog
-            open={confirmRevertOpen}
-            onConfirm={handleRevertChanges}
-            onCancel={closeRevertChangesConfirmDialog}
-            changeCount={1}
-            referenceElement={buttonRef.current}
-          />
-        </>
-      ),
-    [
-      hidden,
-      change,
-      fieldPath,
-      revertHovered,
-      addParentWrapper,
-      FieldWrapper,
-      restProps,
-      t,
-      value,
-      DiffComponent,
-      isComparingCurrent,
-      isPermissionsLoading,
-      permissions?.granted,
-      handleRevertChangesConfirm,
-      handleRevertButtonMouseEnter,
-      handleRevertButtonMouseLeave,
-      readOnly,
-      confirmRevertOpen,
-      handleRevertChanges,
-      closeRevertChangesConfirmDialog,
-    ],
+              {isComparingCurrent && !isPermissionsLoading && permissions?.granted && (
+                <RevertChangesButton
+                  changeCount={1}
+                  onClick={handleRevertChangesConfirm}
+                  onMouseEnter={handleRevertButtonMouseEnter}
+                  onMouseLeave={handleRevertButtonMouseLeave}
+                  selected={confirmRevertOpen}
+                  disabled={readOnly}
+                  ref={setButtonElement}
+                  data-testid={`single-change-revert-button-${change?.key}`}
+                />
+              )}
+            </DiffInspectWrapper>
+          </FieldWrapper>
+        </ParentWrapper>
+      </Stack>
+
+      <RevertChangesConfirmDialog
+        open={confirmRevertOpen}
+        onConfirm={handleRevertChanges}
+        onCancel={closeRevertChangesConfirmDialog}
+        changeCount={1}
+        referenceElement={buttonElement}
+      />
+    </>
   )
-
-  return content
 }

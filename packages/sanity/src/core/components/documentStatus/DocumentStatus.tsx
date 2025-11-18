@@ -74,7 +74,7 @@ export function DocumentStatus({draft, published, versions, singleLine}: Documen
         return (
           <VersionStatus
             key={versionName}
-            mode={snapshot?._updatedAt === snapshot?._createdAt ? 'created' : 'edited'}
+            mode={snapshot._updatedAt === snapshot._createdAt ? 'created' : 'edited'}
             title={release?.metadata.title || t('release.placeholder-untitled-release')}
             timestamp={snapshot?._updatedAt}
             tone={release ? getReleaseTone(release) : 'default'}

@@ -1,6 +1,14 @@
 import {type HotspotPreview, type Image, type ImageSchemaType} from '@sanity/types'
 import {Box, Card, Flex, Grid, Heading, Stack, Text} from '@sanity/ui'
-import {type ReactNode, useCallback, useEffect, useMemo, useState} from 'react'
+import {
+  type ReactNode,
+  useCallback,
+  useEffect,
+  useImperativeHandle,
+  useMemo,
+  useRef,
+  useState,
+} from 'react'
 import {styled} from 'styled-components'
 
 import {ChangeIndicator} from '../../../../changeIndicators'
@@ -60,8 +68,10 @@ export function ImageToolInput(props: ImageToolInputProps) {
     schemaType,
     onPathFocus,
     readOnly,
-    elementProps,
+    elementProps: {ref: forwardRef},
   } = props
+  const ref = useRef<HTMLDivElement | null>(null)
+  useImperativeHandle(forwardRef, () => ref.current)
 
   const [localValue, setLocalValue] = useState(value || DEFAULT_VALUE)
 
@@ -83,7 +93,7 @@ export function ImageToolInput(props: ImageToolInputProps) {
 
   useDidUpdate(hasFocus, (hadFocus) => {
     if (!hadFocus && hasFocus) {
-      elementProps.ref.current?.focus()
+      ref.current?.focus()
     }
   })
 
@@ -162,7 +172,7 @@ export function ImageToolInput(props: ImageToolInputProps) {
           __unstable_checkered
           __unstable_focusRing
           tabIndex={0}
-          ref={elementProps.ref}
+          ref={ref}
           onFocus={handleFocus}
           border
         >

@@ -47,6 +47,29 @@ describe('resolveSource', () => {
 
     expect(result.workingPath).toMatch(/\/test-media-library-export/)
   })
+
+  it('accepts a directory without data.ndjson file', async () => {
+    const [result] = await lastValueFrom(
+      resolveSource({
+        sourcePath: path.resolve(__dirname, 'test/fixtures/test-media-library-directory-no-ndjson'),
+        chalk,
+      }).pipe(toArray()),
+    )
+
+    // Should not have an aspectsNdjsonPath when file is missing
+    expect(result.aspectsNdjsonPath).toBeUndefined()
+
+    // Should still find all files
+    expect(result.files).toEqual(['files/4b1cf41766d3671f22f2c614c278f60493e28474.zip'])
+
+    // Should still find all images
+    expect(result.images).toEqual([
+      'images/2167dbd2135fce8298cc1448eeb512ed60b3224b-5472x3648.jpg',
+      'images/a2e6ee830963242992e07afd2773b02a65821939-166x112.jpg',
+    ])
+
+    expect(result.workingPath).toMatch(/\/test-media-library-directory-no-ndjson$/)
+  })
 })
 
 describe('setAspects', () => {
