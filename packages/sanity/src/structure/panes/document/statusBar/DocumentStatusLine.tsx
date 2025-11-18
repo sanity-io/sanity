@@ -35,6 +35,14 @@ const RELATIVE_TIME_OPTIONS = {
 const MotionButton = motion.create(Button)
 const MotionBox = motion.create(Box)
 
+function getDocumentStatusKey(timelineKey: string): string {
+  // the status line should show a different label than timeline changes view
+  if (timelineKey === 'timeline.operation.published') {
+    return 'document-status.last-published'
+  }
+  return timelineKey
+}
+
 const ButtonSkeleton = () => {
   return (
     <Flex align="center" gap={3} paddingLeft={1} paddingRight={2} paddingY={2}>
@@ -148,7 +156,9 @@ const EventsStatus = () => {
   return (
     <DocumentStatusButton
       author={event.author}
-      translationKey={TIMELINE_ITEM_I18N_KEY_MAPPING[event.documentVariantType][event.type]}
+      translationKey={getDocumentStatusKey(
+        TIMELINE_ITEM_I18N_KEY_MAPPING[event.documentVariantType][event.type],
+      )}
       timestamp={event.timestamp}
     />
   )
@@ -171,7 +181,7 @@ const TimelineStatus = () => {
   return (
     <DocumentStatusButton
       author={author}
-      translationKey={TIMELINE_ITEM_I18N_KEY_MAPPING_LEGACY[event.type]}
+      translationKey={getDocumentStatusKey(TIMELINE_ITEM_I18N_KEY_MAPPING_LEGACY[event.type])}
       timestamp={event.endTimestamp}
     />
   )
