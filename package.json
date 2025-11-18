@@ -140,18 +140,6 @@
     "vitest": "catalog:"
   },
   "packageManager": "pnpm@10.22.0",
-  "pnpm": {
-    "peerDependencyRules": {
-      "allowAny": [
-        "react",
-        "react-dom"
-      ]
-    },
-    "overrides": {
-      "@sanity/ui@3": "$@sanity/ui",
-      "jsdom": "26.1.0",
-      "vitest": "$vitest"
-    }
-  },
+  "//": "pnpm settings moved to pnpm-workspace.yaml",
   "isSanityMonorepo": true
 }
