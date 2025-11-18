@@ -7,8 +7,6 @@ import {type BaseStructureToolPaneProps} from '../types'
 export type DocumentPaneProviderProps = {
   children?: React.ReactNode
   onFocusPath?: (path: Path) => void
-  onSetMaximizedPane?: () => void
-  maximized?: boolean
 } & BaseStructureToolPaneProps<'document'>
 
 /** @internal */
