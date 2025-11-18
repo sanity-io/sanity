@@ -65,6 +65,7 @@ import {
   promptForStudioPath,
 } from './prompts/nextjs'
 import {readPackageJson} from './readPackageJson'
+import {setupMCP} from './setupMCP'
 import templates from './templates'
 import {
   sanityCliTemplate,
@@ -676,6 +677,15 @@ export default async function initSanity(
   // Try initializing a git repository
   if (useGit) {
     tryGitInit(outputPath, typeof commitMessage === 'string' ? commitMessage : undefined)
+  }
+
+  // Set up MCP integration (automatic unless --skip-mcp)
+  try {
+    await setupMCP(context, {skipMcp: cliFlags['skip-mcp'] || false})
+  } catch (err) {
+    // Don't fail init if MCP setup fails
+    // setupMCP already logs warnings internally
+    debug('MCP setup error: %s', err instanceof Error ? err.message : 'Unknown error')
   }
 
   // Prompt for dataset import (if a dataset is defined)
