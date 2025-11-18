@@ -52,13 +52,13 @@
     "watch": "pkg-utils watch"
   },
   "dependencies": {
-    "@codemirror/autocomplete": "^6.19.0",
-    "@codemirror/commands": "^6.9.0",
+    "@codemirror/autocomplete": "^6.19.1",
+    "@codemirror/commands": "^6.10.0",
     "@codemirror/lang-javascript": "^6.2.4",
     "@codemirror/language": "^6.11.3",
     "@codemirror/search": "^6.5.11",
     "@codemirror/state": "^6.5.2",
-    "@codemirror/view": "^6.38.6",
+    "@codemirror/view": "^6.38.7",
     "@juggle/resize-observer": "^3.4.0",
     "@lezer/highlight": "^1.2.1",
     "@rexxars/react-json-inspector": "^9.0.1",
