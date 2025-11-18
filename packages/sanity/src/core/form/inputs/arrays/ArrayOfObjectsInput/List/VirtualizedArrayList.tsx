@@ -1,6 +1,3 @@
-'use no memo'
-// The `use no memo` directive is due to a known issue with react-virtual and react compiler: https://github.com/TanStack/virtual/issues/736
-
 import {type DragStartEvent} from '@dnd-kit/core'
 import {Card, useTheme} from '@sanity/ui'
 import {
