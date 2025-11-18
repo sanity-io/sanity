@@ -42,7 +42,7 @@ export function SelectInput(props: StringInputProps) {
   } = props
   const items = useMemo(
     () => (schemaType.options?.list || []).map(toSelectItem),
-    [schemaType.options?.list],
+    [schemaType.options],
   )
   const currentItem = items.find((item) => item.value === value)
   const isRadio = schemaType.options && schemaType.options.layout === 'radio'

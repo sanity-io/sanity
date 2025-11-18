@@ -98,7 +98,7 @@ export function RouterProvider(props: RouterProviderProps): React.JSX.Element {
         }),
       })
     },
-    [routerProp, state._searchParams],
+    [routerProp, state],
   )
 
   const resolvePathFromState = useCallback(
