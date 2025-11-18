@@ -23,7 +23,7 @@ import {
   useToast,
 } from '@sanity/ui'
 import {useSelector} from '@xstate/react'
-import {AnimatePresence, motion, MotionConfig} from 'framer-motion'
+import {AnimatePresence, motion, MotionConfig} from 'motion/react'
 import {
   forwardRef,
   memo,

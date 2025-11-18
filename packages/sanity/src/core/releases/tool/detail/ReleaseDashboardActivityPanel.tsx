@@ -1,6 +1,6 @@
 import {type ReleaseDocument} from '@sanity/client'
 import {Box, Card, Flex, Text} from '@sanity/ui'
-import {AnimatePresence, motion} from 'framer-motion'
+import {AnimatePresence, motion} from 'motion/react'
 import {styled} from 'styled-components'
 
 import {LoadingBlock} from '../../../components/loadingBlock/LoadingBlock'

@@ -1,6 +1,6 @@
 import {type SanityDocument} from '@sanity/client'
 import {Box, Card, Stack, Text} from '@sanity/ui'
-import {AnimatePresence, motion} from 'framer-motion'
+import {AnimatePresence, motion} from 'motion/react'
 import {useId} from 'react'
 
 import {Dialog} from '../../../../ui-components'
