@@ -3,6 +3,18 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [4.16.0](https://github.com/sanity-io/sanity/compare/v4.15.0...v4.16.0) (2025-11-18)
+
+### Features
+
+* allow configuring sanity CLI config in testing ([#11133](https://github.com/sanity-io/sanity/issues/11133)) ([dd909ce](https://github.com/sanity-io/sanity/commit/dd909ce127696298e35a4810ed2c6cad9e4ffe40)) by Kristoffer Brabrand (kristoffer@brabrand.no)
+
+### Bug Fixes
+
+* **deps:** Update babel monorepo to ^7.28.5 ([#11181](https://github.com/sanity-io/sanity/issues/11181)) ([08d6e66](https://github.com/sanity-io/sanity/commit/08d6e66c0aa5cc7103da8e734c4bb151d9b0a179)) by renovate[bot] (29139614+renovate[bot]@users.noreply.github.com)
+* **deps:** upgrade react compiler to v1 ([#10834](https://github.com/sanity-io/sanity/issues/10834)) ([2573cb1](https://github.com/sanity-io/sanity/commit/2573cb15c224c762636500b339d0c2701aad1e68)) by Cody Olsen (81981+stipsan@users.noreply.github.com)
+* **functions:** support host flag in functions dev ([#11118](https://github.com/sanity-io/sanity/issues/11118)) ([9588b8b](https://github.com/sanity-io/sanity/commit/9588b8b805bdf4c1d911e7700be2f476a88a2f12)) by Simon MacDonald (simon.macdonald@gmail.com)
+
 ## [4.15.0](https://github.com/sanity-io/sanity/compare/v4.14.2...v4.15.0) (2025-11-11)
 
 ### Bug Fixes

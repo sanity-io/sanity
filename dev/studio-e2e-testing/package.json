@@ -1,6 +1,6 @@
 {
   "name": "studio-e2e-testing",
-  "version": "4.15.0",
+  "version": "4.16.0",
   "private": true,
   "keywords": [
     "sanity"
