@@ -26,7 +26,7 @@ import {
   usePaneRouter,
 } from '../../../../components'
 import {type _PaneMenuNode} from '../../../../components/pane/types'
-import {HistoryRestoreAction} from '../../../../documentActions/HistoryRestoreAction'
+import {useHistoryRestoreAction} from '../../../../documentActions/HistoryRestoreAction'
 import {structureLocaleNamespace} from '../../../../i18n'
 import {isMenuNodeButton, isNotMenuNodeButton, resolveMenuNodes} from '../../../../menuNodes'
 import {type PaneMenuItem} from '../../../../types'
@@ -274,7 +274,7 @@ const DocumentPanelHeaderActionDialogDeferred = memo(
         // The restore action has a dedicated place in the UI; it's only visible when the user is
         // viewing a different document revision. It must be omitted from this collection.
         states={states.filter((state) =>
-          state.action ? state.action !== HistoryRestoreAction.action : true,
+          state.action ? state.action !== useHistoryRestoreAction.action : true,
         )}
       />
     )

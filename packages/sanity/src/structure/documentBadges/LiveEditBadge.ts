@@ -1,7 +1,8 @@
 import {type DocumentBadgeComponent} from 'sanity'
 
 // React Compiler needs functions that are hooks to have the `use` prefix, pascal case are treated as a component, these are hooks even though they're confusingly named `DocumentBadgeComponent`
-const useLiveEditBadge: DocumentBadgeComponent = (props) => {
+/** @internal */
+export const useLiveEditBadge: DocumentBadgeComponent = (props) => {
   const {liveEditSchemaType, version} = props
 
   if (liveEditSchemaType && !version) {
@@ -14,6 +15,3 @@ const useLiveEditBadge: DocumentBadgeComponent = (props) => {
   return null
 }
 useLiveEditBadge.displayName = 'LiveEditBadge'
-
-/** @internal */
-export const LiveEditBadge = useLiveEditBadge

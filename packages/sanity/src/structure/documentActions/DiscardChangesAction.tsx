@@ -21,7 +21,8 @@ const DISABLED_REASON_KEY = {
 } as const
 
 // React Compiler needs functions that are hooks to have the `use` prefix, pascal case are treated as a component, these are hooks even though they're confusingly named `DocumentActionComponent`
-const useDiscardChangesAction: DocumentActionComponent = ({
+/** @internal */
+export const useDiscardChangesAction: DocumentActionComponent = ({
   id,
   type,
   published,
@@ -109,6 +110,3 @@ const useDiscardChangesAction: DocumentActionComponent = ({
 
 useDiscardChangesAction.action = 'discardChanges'
 useDiscardChangesAction.displayName = 'DiscardChangesAction'
-
-/** @internal */
-export const DiscardChangesAction = useDiscardChangesAction

@@ -13,7 +13,7 @@ import {type ActionComponent, type GroupableActionDescription} from '../types'
 export interface DocumentActionProps extends EditStateFor {
   revision?: string
   /**
-   * @deprecated - do not use, will be removed in a future major version, use local state instead
+   * @deprecated - do not use, will be removed in a future major version, use local state instead, for example call `setDialogOpen(false)` in dialog's `onCancel` callback.
    */
   onComplete: () => void
   /**

@@ -13,7 +13,8 @@ import {structureLocaleNamespace} from '../i18n'
 import {useDocumentPane} from '../panes/document/useDocumentPane'
 
 // React Compiler needs functions that are hooks to have the `use` prefix, pascal case are treated as a component, these are hooks even though they're confusingly named `DocumentActionComponent`
-const useHistoryRestoreAction: DocumentActionComponent = ({id, type, revision, release}) => {
+/** @internal */
+export const useHistoryRestoreAction: DocumentActionComponent = ({id, type, revision, release}) => {
   const {restore} = useDocumentOperation(id, type, release)
   const {revisionNotFound} = useDocumentPane()
   const event = useDocumentOperationEvent(id, type)
@@ -88,6 +89,3 @@ const useHistoryRestoreAction: DocumentActionComponent = ({id, type, revision, r
 
 useHistoryRestoreAction.action = 'restore'
 useHistoryRestoreAction.displayName = 'HistoryRestoreAction'
-
-/** @internal */
-export const HistoryRestoreAction = useHistoryRestoreAction

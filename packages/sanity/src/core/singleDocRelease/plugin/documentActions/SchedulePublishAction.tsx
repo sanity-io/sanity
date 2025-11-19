@@ -20,7 +20,8 @@ import {useScheduleDraftOperations} from '../../hooks/useScheduleDraftOperations
 import {singleDocReleaseNamespace} from '../../i18n'
 
 // React Compiler needs functions that are hooks to have the `use` prefix, pascal case are treated as a component, these are hooks even though they're confusingly named `DocumentActionComponent`
-const useSchedulePublishAction: DocumentActionComponent = (
+/** @internal */
+export const useSchedulePublishAction: DocumentActionComponent = (
   props: DocumentActionProps,
 ): DocumentActionDescription | null => {
   const {id, type, draft} = props
@@ -121,6 +122,3 @@ const useSchedulePublishAction: DocumentActionComponent = (
 
 useSchedulePublishAction.action = 'schedule'
 useSchedulePublishAction.displayName = 'SchedulePublishAction'
-
-/** @internal */
-export const SchedulePublishAction = useSchedulePublishAction

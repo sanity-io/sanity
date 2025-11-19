@@ -14,7 +14,8 @@ import {useCurrentUser} from '../../../store/user/hooks'
 import {DiscardVersionDialog} from '../../components/dialog/DiscardVersionDialog'
 
 // React Compiler needs functions that are hooks to have the `use` prefix, pascal case are treated as a component, these are hooks even though they're confusingly named `DocumentActionComponent`
-const useDiscardVersionAction: DocumentActionComponent = (
+/** @internal */
+export const useDiscardVersionAction: DocumentActionComponent = (
   props: DocumentActionProps,
 ): DocumentActionDescription | null => {
   const {id, type, release, version} = props
@@ -70,6 +71,3 @@ const useDiscardVersionAction: DocumentActionComponent = (
 
 useDiscardVersionAction.action = 'discardVersion'
 useDiscardVersionAction.displayName = 'DiscardVersionAction'
-
-/** @internal */
-export const DiscardVersionAction = useDiscardVersionAction

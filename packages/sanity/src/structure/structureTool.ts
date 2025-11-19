@@ -3,14 +3,14 @@ import {lazy} from 'react'
 import {definePlugin} from 'sanity'
 
 import {
-  DeleteAction,
-  DiscardChangesAction,
-  DuplicateAction,
-  HistoryRestoreAction,
-  PublishAction,
-  UnpublishAction,
+  useDeleteAction,
+  useDiscardChangesAction,
+  useDuplicateAction,
+  useHistoryRestoreAction,
+  usePublishAction,
+  useUnpublishAction,
 } from './documentActions'
-import {LiveEditBadge} from './documentBadges'
+import {useLiveEditBadge} from './documentBadges'
 import {getIntentState} from './getIntentState'
 import {structureUsEnglishLocaleBundle} from './i18n'
 import {changesInspector} from './panes/document/inspectors/changes'
@@ -19,15 +19,15 @@ import {router} from './router'
 import {type StructureToolOptions} from './types'
 
 const documentActions = [
-  PublishAction,
-  UnpublishAction,
-  DiscardChangesAction,
-  DuplicateAction,
-  DeleteAction,
-  HistoryRestoreAction,
+  usePublishAction,
+  useUnpublishAction,
+  useDiscardChangesAction,
+  useDuplicateAction,
+  useDeleteAction,
+  useHistoryRestoreAction,
 ]
 
-const documentBadges = [LiveEditBadge]
+const documentBadges = [useLiveEditBadge]
 
 const inspectors = [validationInspector, changesInspector]
 

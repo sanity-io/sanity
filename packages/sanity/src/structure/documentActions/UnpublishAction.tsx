@@ -21,7 +21,14 @@ const DISABLED_REASON_KEY = {
 }
 
 // React Compiler needs functions that are hooks to have the `use` prefix, pascal case are treated as a component, these are hooks even though they're confusingly named `DocumentActionComponent`
-const useUnpublishAction: DocumentActionComponent = ({id, type, draft, liveEdit, release}) => {
+/** @internal */
+export const useUnpublishAction: DocumentActionComponent = ({
+  id,
+  type,
+  draft,
+  liveEdit,
+  release,
+}) => {
   const {unpublish} = useDocumentOperation(id, type)
   const [isConfirmDialogOpen, setConfirmDialogOpen] = useState(false)
   const [permissions, isPermissionsLoading] = useDocumentPairPermissions({
@@ -110,6 +117,3 @@ const useUnpublishAction: DocumentActionComponent = ({id, type, draft, liveEdit,
 
 useUnpublishAction.action = 'unpublish'
 useUnpublishAction.displayName = 'UnpublishAction'
-
-/** @internal */
-export const UnpublishAction = useUnpublishAction

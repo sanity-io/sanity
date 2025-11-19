@@ -64,7 +64,7 @@ export {
 } from './releases'
 export {
   EditScheduleForm,
-  ScheduleAction,
+  useScheduleAction as ScheduleAction,
   ScheduledBadge,
   SchedulesContext,
 } from './scheduled-publishing'
