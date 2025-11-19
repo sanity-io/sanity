@@ -8,6 +8,7 @@ import {
   type KeyboardEvent,
   type PropsWithoutRef,
   type RefAttributes,
+  type RefObject,
   useCallback,
   useEffect,
   useImperativeHandle,
@@ -53,6 +54,9 @@ type Props = {
   // Triggered by the user dragging files out of the target component
   onFilesOut?: () => void
 
+  // Optional element to use as HTML element target for paste events
+  pasteTargetRef?: RefObject<HTMLElement | null>
+
   disabled?: boolean
 }
 
@@ -81,7 +85,7 @@ export function fileTarget<ComponentProps>(
     props: Omit<ComponentProps, ManagedProps> & Props,
     forwardedRef: ForwardedRef<HTMLElement>,
   ) {
-    const {onFiles, onFilesOver, onFilesOut, disabled, ...rest} = props
+    const {onFiles, onFilesOver, onFilesOut, pasteTargetRef, disabled, ...rest} = props
     const [showPasteInput, setShowPasteInput] = useState(false)
 
     const pasteInput = useRef<HTMLDivElement | null>(null)
@@ -98,15 +102,27 @@ export function fileTarget<ComponentProps>(
       [onFiles],
     )
 
-    const handleKeyDown = useCallback((event: KeyboardEvent) => {
-      if (event.target === ref.current && (event.ctrlKey || event.metaKey) && event.key === 'v') {
-        setShowPasteInput(true)
-      }
-    }, [])
+    const handleKeyDown = useCallback(
+      (event: KeyboardEvent) => {
+        if (
+          !pasteTargetRef &&
+          event.target === ref.current &&
+          (event.ctrlKey || event.metaKey) &&
+          event.key === 'v'
+        ) {
+          setShowPasteInput(true)
+        }
+      },
+      [pasteTargetRef],
+    )
+
     const handlePaste = useCallback(
       (event: ClipboardEvent) => {
         void extractPastedFiles(event.clipboardData)
           .then((files) => {
+            if (pasteTargetRef) {
+              return files
+            }
             if (!pasteInput.current) {
               return []
             }
@@ -117,12 +133,39 @@ export function fileTarget<ComponentProps>(
           })
           .then((files) => {
             emitFiles(files)
-            setShowPasteInput(false)
-            ref.current?.focus()
+            if (!pasteTargetRef) {
+              setShowPasteInput(false)
+              ref.current?.focus()
+            }
           })
       },
-      [emitFiles],
+      [emitFiles, pasteTargetRef],
     )
+
+    useEffect(() => {
+      const pasteTargetElement = pasteTargetRef?.current
+      if (pasteTargetElement) {
+        const pasteTargetElementListener = (event: globalThis.ClipboardEvent) => {
+          // Some applications may put both text and files on the clipboard when content is copied (Word, Excel etc).
+          // If we have both text and html on the clipboard, the intention is probably to paste text, so ignore the files.
+          const hasHtml = !!event.clipboardData?.getData('text/html')
+          const hasText = !!event.clipboardData?.getData('text/plain')
+          if (hasHtml && hasText) {
+            console.warn(
+              'Clipboard contains both text and HTML, ignoring additional file data on the clipboard.',
+            )
+            return
+          }
+          handlePaste(event as unknown as ClipboardEvent)
+        }
+        pasteTargetElement.addEventListener('paste', pasteTargetElementListener)
+        return () => {
+          pasteTargetElement.removeEventListener('paste', pasteTargetElementListener)
+        }
+      }
+      return undefined
+    }, [pasteTargetRef, handlePaste])
+
     const handleDrop = useCallback(
       (event: DragEvent) => {
         enteredElements.current = []
@@ -239,7 +282,7 @@ export function fileTarget<ComponentProps>(
         pasteInput.current?.focus()
       }
       prevShowPasteInput.current = showPasteInput
-    }, [showPasteInput])
+    }, [pasteTargetRef, showPasteInput])
 
     return (
       <>
