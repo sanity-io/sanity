@@ -6,7 +6,7 @@ import shallowEquals from 'shallow-equals'
 
 import {useTranslation} from '../../../../../i18n'
 import {type ArrayOfObjectsInputProps, type ObjectItem} from '../../../../types'
-import {UploadTargetCard} from '../../common/UploadTargetCard'
+import {UploadTargetCard} from '../../../files/common/uploadTarget/UploadTargetCard'
 import {ArrayOfObjectsFunctions} from '../ArrayOfObjectsFunctions'
 import {createProtoArrayValue} from '../createProtoArrayValue'
 import {useMemoCompare} from './useMemoCompare'
@@ -22,6 +22,7 @@ export function ListArrayInput<Item extends ObjectItem>(props: ArrayOfObjectsInp
     members,
     onChange,
     onItemMove,
+    onSelectFile,
     onUpload,
     focusPath,
     readOnly,
@@ -34,7 +35,6 @@ export function ListArrayInput<Item extends ObjectItem>(props: ArrayOfObjectsInp
     renderInput,
     renderItem,
     renderPreview,
-    resolveUploader,
     schemaType,
     value = EMPTY,
   } = props
@@ -81,12 +81,13 @@ export function ListArrayInput<Item extends ObjectItem>(props: ArrayOfObjectsInp
   return (
     <Stack space={2} ref={parentRef}>
       <UploadTargetCard
-        $radius={radius}
-        types={schemaType.of}
-        resolveUploader={resolveUploader}
-        onUpload={onUpload}
         {...elementProps}
+        $radius={radius}
+        isReadOnly={readOnly}
+        onSelectFile={onSelectFile}
+        onUpload={onUpload}
         tabIndex={0}
+        types={schemaType.of}
       >
         <Stack data-ui="ArrayInput__content" space={2}>
           {members.length === 0 ? (

@@ -1,5 +1,11 @@
 import {type EditorSelection, PortableTextEditor, usePortableTextEditor} from '@portabletext/editor'
-import {isImage, type ObjectSchemaType, type Path, type PortableTextBlock} from '@sanity/types'
+import {
+  isImage,
+  type ObjectSchemaType,
+  type Path,
+  type PortableTextBlock,
+  type UploadState,
+} from '@sanity/types'
 import {Box, Flex, type ResponsivePaddingProps} from '@sanity/ui'
 import {isEqual} from '@sanity/util/paths'
 import {
@@ -20,6 +26,7 @@ import {EMPTY_ARRAY} from '../../../../util'
 import {useFormCallbacks} from '../../../studio'
 import {useChildPresence} from '../../../studio/contexts/Presence'
 import {useEnhancedObjectDialog} from '../../../studio/tree-editing/context/enabled/useEnhancedObjectDialog'
+import {UPLOAD_STATUS_KEY} from '../../../studio/uploads/constants'
 import {
   type BlockProps,
   type RenderAnnotationCallback,
@@ -384,6 +391,10 @@ export const DefaultBlockObjectComponent = (
   const hasMarkers = Boolean(markers.length > 0)
   const tone = selected || focused ? 'primary' : 'default'
 
+  const uploadState = (value as any)[UPLOAD_STATUS_KEY] as UploadState | undefined
+  const uploadProgress =
+    typeof uploadState?.progress === 'number' ? uploadState?.progress : undefined
+
   const handleDoubleClickToOpen = useCallback(
     (e: MouseEvent<Element, globalThis.MouseEvent>) => {
       e.preventDefault()
@@ -421,6 +432,7 @@ export const DefaultBlockObjectComponent = (
               value={value}
             />
           ),
+          progress: uploadProgress,
           layout: isImagePreview ? 'blockImage' : 'block',
           schemaType,
           skipVisibilityCheck: true,
