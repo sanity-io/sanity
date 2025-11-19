@@ -1,14 +1,7 @@
 import {type ReleaseDocument} from '@sanity/client'
 import {type PreviewValue} from '@sanity/types'
 import {Box, Checkbox, Flex, Stack, Text, useToast} from '@sanity/ui'
-import {
-  type ChangeEvent,
-  type ReactNode,
-  useCallback,
-  useMemo,
-  useState,
-  useTransition,
-} from 'react'
+import {type ChangeEvent, type ReactNode, useCallback, useMemo, useState} from 'react'
 
 import {Dialog} from '../../../ui-components'
 import {LoadingBlock} from '../../components'
@@ -20,9 +13,12 @@ import {getErrorMessage, getPublishedId} from '../../util'
 import {useScheduledDraftDocument} from '../hooks/useScheduledDraftDocument'
 import {useScheduleDraftOperations} from '../hooks/useScheduleDraftOperations'
 
-interface DeleteScheduledDraftDialogProps {
+interface DeleteScheduledDraftDialogBaseProps {
   onClose: () => void
   release: ReleaseDocument
+}
+
+interface DeleteScheduledDraftDialogProps extends DeleteScheduledDraftDialogBaseProps {
   documentId: string | undefined
   documentType?: string
 }
@@ -34,47 +30,48 @@ function useDeleteScheduledDraft(
 ) {
   const {t} = useTranslation()
   const toast = useToast()
-  const [isDeleting, startTransition] = useTransition()
+  const [isDeleting, setIsDeleting] = useState(false)
 
-  const handleDeleteSchedule = useCallback(
-    () =>
-      startTransition(async () => {
-        try {
-          await deleteOperation()
-
-          toast.push({
-            closable: true,
-            status: 'success',
-            description: (
-              <Translate
-                t={t}
-                i18nKey="release.toast.delete-schedule-draft.success"
-                values={{title: firstDocumentPreview?.title || t('preview.default.title-fallback')}}
-              />
-            ),
-          })
-        } catch (error) {
-          console.error('Failed to delete scheduled draft:', error)
-          toast.push({
-            closable: true,
-            status: 'error',
-            description: (
-              <Translate
-                t={t}
-                i18nKey="release.toast.delete-schedule-draft.error"
-                values={{
-                  title: firstDocumentPreview?.title || t('preview.default.title-fallback'),
-                  error: getErrorMessage(error),
-                }}
-              />
-            ),
-          })
-        } finally {
-          onClose()
-        }
-      }),
-    [deleteOperation, toast, t, firstDocumentPreview?.title, onClose],
-  )
+  const handleDeleteSchedule = useCallback(async () => {
+    setIsDeleting(true)
+    // The run().catch().finally() syntax instead of try/catch/finally is because of the React Compiler not fully supporting the syntax yet
+    const run = async () => {
+      await deleteOperation()
+      toast.push({
+        closable: true,
+        status: 'success',
+        description: (
+          <Translate
+            t={t}
+            i18nKey="release.toast.delete-schedule-draft.success"
+            values={{title: firstDocumentPreview?.title || t('preview.default.title-fallback')}}
+          />
+        ),
+      })
+    }
+    await run()
+      .catch((error) => {
+        console.error('Failed to delete scheduled draft:', error)
+        toast.push({
+          closable: true,
+          status: 'error',
+          description: (
+            <Translate
+              t={t}
+              i18nKey="release.toast.delete-schedule-draft.error"
+              values={{
+                title: firstDocumentPreview?.title || t('preview.default.title-fallback'),
+                error: getErrorMessage(error),
+              }}
+            />
+          ),
+        })
+      })
+      .finally(() => {
+        setIsDeleting(false)
+        onClose()
+      })
+  }, [toast, t, firstDocumentPreview?.title, onClose, deleteOperation])
 
   return {isDeleting, handleDeleteSchedule}
 }
@@ -123,14 +120,24 @@ function DeleteScheduledDraftDialogContent({
   )
 }
 
-export function DeleteScheduledDraftDialog(props: DeleteScheduledDraftDialogProps) {
-  const {documentId} = props
-
+export function DeleteScheduledDraftDialog({
+  documentId,
+  documentType,
+  onClose,
+  release,
+}: DeleteScheduledDraftDialogProps) {
   if (documentId) {
-    return <DeleteScheduledDraftDialogWithCopyToDraft {...props} documentId={documentId} />
+    return (
+      <DeleteScheduledDraftDialogWithCopyToDraft
+        documentId={documentId}
+        documentType={documentType}
+        onClose={onClose}
+        release={release}
+      />
+    )
   }
 
-  return <DeleteScheduledDraftDialogWithEmptyRelease {...props} />
+  return <DeleteScheduledDraftDialogWithEmptyRelease onClose={onClose} release={release} />
 }
 
 function DeleteScheduledDraftDialogWithCopyToDraft({
@@ -237,7 +244,7 @@ function DeleteScheduledDraftDialogWithCopyToDraft({
 function DeleteScheduledDraftDialogWithEmptyRelease({
   onClose,
   release,
-}: DeleteScheduledDraftDialogProps) {
+}: DeleteScheduledDraftDialogBaseProps) {
   const {t} = useTranslation()
   const operations = useScheduleDraftOperations()
 
