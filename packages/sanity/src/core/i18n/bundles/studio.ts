@@ -1399,12 +1399,12 @@ export const studioLocaleStrings = defineLocalesResources('studio', {
     'Are you sure you want to delete this scheduled draft? This action cannot be undone.',
   /** Confirm button text for deleting a scheduled draft */
   'release.dialog.delete-schedule-draft.confirm': 'Yes, delete schedule',
-  /** Warning text shown when deleting a scheduled draft with different content from draft */
-  'release.dialog.delete-schedule-draft.copy-warning':
-    'The changes in this scheduled draft will be lost.',
   /** Checkbox label for copying scheduled draft to draft before deletion */
   'release.dialog.delete-schedule-draft.copy-checkbox':
     'Copy scheduled draft to draft before deleting',
+  /** Warning text shown when deleting a scheduled draft with different content from draft */
+  'release.dialog.delete-schedule-draft.copy-warning':
+    'The changes in this scheduled draft will be lost.',
   /** Header for the dialog confirming deletion of a scheduled draft */
   'release.dialog.delete-schedule-draft.header': 'Delete scheduled draft',
   /** Body text for change schedule dialog */
