@@ -3,6 +3,7 @@ import {type StringRule} from '@sanity/types'
 import {defineField, defineType} from 'sanity'
 
 import {AudienceSelectInput} from '../components/AudienceSelectInput'
+import {PTEInterpolationPlugin} from './PTEInterpolationPlugin'
 
 // Generic decide field implementation that works for all types
 const defineLocalDecideField = (config: any) => {
@@ -66,6 +67,9 @@ const AUTHOR_ROLES = [
   {value: 'designer', title: 'Designer'},
   {value: 'ops', title: 'Operations'},
 ]
+
+// Create interpolation plugin instance with available values
+const interpolationPlugin = PTEInterpolationPlugin(['currentTime', 'userLocale'])
 
 export default defineType({
   name: 'author',
@@ -175,8 +179,16 @@ export default defineType({
             decorators: [],
             annotations: [],
           },
+          // Add interpolation variables as inline objects
+          of: [interpolationPlugin.inlineObject],
         },
       ],
+      // Add the dropdown toolbar component
+      components: {
+        portableText: {
+          plugins: interpolationPlugin.toolbarPluginComponent,
+        },
+      },
     },
     // {
     //   name: 'specie',
