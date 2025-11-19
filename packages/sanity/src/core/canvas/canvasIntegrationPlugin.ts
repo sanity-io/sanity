@@ -1,7 +1,7 @@
 import {definePlugin} from '../config'
-import {EditInCanvasAction} from './actions/EditInCanvas/EditInCanvasAction'
-import {LinkToCanvasAction} from './actions/LinkToCanvas/LinkToCanvasAction'
-import {UnlinkFromCanvasAction} from './actions/UnlinkFromCanvas/UnlinkFromCanvasAction'
+import {useEditInCanvasAction} from './actions/EditInCanvas/EditInCanvasAction'
+import {useLinkToCanvasAction} from './actions/LinkToCanvas/LinkToCanvasAction'
+import {useUnlinkFromCanvasAction} from './actions/UnlinkFromCanvas/UnlinkFromCanvasAction'
 import {canvasUsEnglishLocaleBundle} from './i18n'
 
 export const CANVAS_INTEGRATION_NAME = 'sanity/canvas-integration'
@@ -17,7 +17,7 @@ export const canvasIntegration = definePlugin(() => {
       actions: (prev) => {
         return prev.flatMap((action) =>
           action.action === 'publish'
-            ? [action, LinkToCanvasAction, UnlinkFromCanvasAction, EditInCanvasAction]
+            ? [action, useLinkToCanvasAction, useUnlinkFromCanvasAction, useEditInCanvasAction]
             : action,
         )
       },

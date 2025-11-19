@@ -1,25 +1,26 @@
 import {LaunchIcon} from '@sanity/icons'
 import {Button, Stack, Text, useToast} from '@sanity/ui'
-import {useCallback, useMemo, useState} from 'react'
+import {useState} from 'react'
 import {type DocumentActionComponent, type DocumentActionDescription} from 'sanity'
 
-export const TestPopoverDialogAction: DocumentActionComponent = () => {
+export const useTestPopoverDialogAction: DocumentActionComponent = () => {
   const [dialogOpen, setDialogOpen] = useState(false)
   const {push: pushToast} = useToast()
 
-  const handleOpen = useCallback(() => {
+  const handleOpen = () => {
     setDialogOpen(true)
     pushToast({closable: true, title: '[Popover] Opened'})
-  }, [pushToast])
+  }
 
-  const handleClose = useCallback(() => {
+  const handleClose = () => {
     setDialogOpen(false)
     pushToast({closable: true, title: '[Popover] Closed'})
-  }, [pushToast])
+  }
 
-  const dialog: DocumentActionDescription['dialog'] = useMemo(
-    () =>
-      dialogOpen && {
+  return {
+    dialog:
+      dialogOpen &&
+      ({
         type: 'popover',
         content: (
           <Stack padding={4} space={4}>
@@ -30,14 +31,11 @@ export const TestPopoverDialogAction: DocumentActionComponent = () => {
           </Stack>
         ),
         onClose: handleClose,
-      },
-    [dialogOpen, handleClose],
-  )
-
-  return {
-    dialog,
+      } satisfies DocumentActionDescription['dialog']),
     icon: LaunchIcon,
     label: 'Test popover dialog',
     onHandle: handleOpen,
-  }
+  } satisfies DocumentActionDescription
 }
+
+useTestPopoverDialogAction.displayName = 'TestPopoverDialogAction'

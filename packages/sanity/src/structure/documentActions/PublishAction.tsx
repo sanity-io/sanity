@@ -47,8 +47,8 @@ function AlreadyPublished({publishedAt}: {publishedAt: string}) {
   return <span>{t('action.publish.already-published.tooltip', {timeSincePublished})}</span>
 }
 
-/** @internal */
-export const PublishAction: DocumentActionComponent = (props) => {
+// React Compiler needs functions that are hooks to have the `use` prefix, pascal case are treated as a component, these are hooks even though they're confusingly named `DocumentActionComponent`
+const usePublishAction: DocumentActionComponent = (props) => {
   const {id, type, liveEdit, draft, published, release} = props
   const [publishState, setPublishState] = useState<
     {status: 'publishing'; publishRevision: string | undefined} | {status: 'published'} | null
@@ -241,5 +241,8 @@ export const PublishAction: DocumentActionComponent = (props) => {
   ])
 }
 
-PublishAction.action = 'publish'
-PublishAction.displayName = 'PublishAction'
+usePublishAction.action = 'publish'
+usePublishAction.displayName = 'PublishAction'
+
+/** @internal */
+export const PublishAction = usePublishAction

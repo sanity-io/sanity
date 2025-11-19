@@ -12,8 +12,8 @@ import {useRouter} from 'sanity/router'
 import {structureLocaleNamespace} from '../i18n'
 import {useDocumentPane} from '../panes/document/useDocumentPane'
 
-/** @internal */
-export const HistoryRestoreAction: DocumentActionComponent = ({id, type, revision, release}) => {
+// React Compiler needs functions that are hooks to have the `use` prefix, pascal case are treated as a component, these are hooks even though they're confusingly named `DocumentActionComponent`
+const useHistoryRestoreAction: DocumentActionComponent = ({id, type, revision, release}) => {
   const {restore} = useDocumentOperation(id, type, release)
   const {revisionNotFound} = useDocumentPane()
   const event = useDocumentOperationEvent(id, type)
@@ -26,6 +26,10 @@ export const HistoryRestoreAction: DocumentActionComponent = ({id, type, revisio
     restore.execute(revision!)
     setConfirmDialogOpen(false)
   }, [restore, revision])
+
+  const handleCancel = useCallback(() => {
+    setConfirmDialogOpen(false)
+  }, [])
 
   /**
    * If the restore operation is successful, navigate to the document edit view
@@ -49,14 +53,14 @@ export const HistoryRestoreAction: DocumentActionComponent = ({id, type, revisio
       return {
         type: 'confirm',
         tone: 'critical',
-        onCancel: () => setConfirmDialogOpen(false),
+        onCancel: handleCancel,
         onConfirm: handleConfirm,
         message: t('action.restore.confirm.message'),
       }
     }
 
     return null
-  }, [handleConfirm, isConfirmDialogOpen, t])
+  }, [handleConfirm, handleCancel, isConfirmDialogOpen, t])
 
   const isRevisionInitial = revision === '@initial'
   const isRevisionLatest = revision === undefined // undefined means latest revision
@@ -82,5 +86,8 @@ export const HistoryRestoreAction: DocumentActionComponent = ({id, type, revisio
   }, [dialog, handle, isRevisionInitial, isRevisionLatest, revisionNotFound, t])
 }
 
-HistoryRestoreAction.action = 'restore'
-HistoryRestoreAction.displayName = 'HistoryRestoreAction'
+useHistoryRestoreAction.action = 'restore'
+useHistoryRestoreAction.displayName = 'HistoryRestoreAction'
+
+/** @internal */
+export const HistoryRestoreAction = useHistoryRestoreAction

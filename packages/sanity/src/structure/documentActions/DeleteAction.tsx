@@ -18,8 +18,8 @@ const DISABLED_REASON_TITLE_KEY = {
   NOT_READY: 'action.delete.disabled.not-ready',
 }
 
-/** @internal */
-export const DeleteAction: DocumentActionComponent = ({id, type, draft, release}) => {
+// React Compiler needs functions that are hooks to have the `use` prefix, pascal case are treated as a component, these are hooks even though they're confusingly named `DocumentActionComponent`
+const useDeleteAction: DocumentActionComponent = ({id, type, draft, release}) => {
   const {setIsDeleting: paneSetIsDeleting} = useDocumentPane()
   const {delete: deleteOp} = useDocumentOperation(id, type, release)
   const [isDeleting, setIsDeleting] = useState(false)
@@ -103,5 +103,8 @@ export const DeleteAction: DocumentActionComponent = ({id, type, draft, release}
   ])
 }
 
-DeleteAction.action = 'delete'
-DeleteAction.displayName = 'DeleteAction'
+useDeleteAction.action = 'delete'
+useDeleteAction.displayName = 'DeleteAction'
+
+/** @internal */
+export const DeleteAction = useDeleteAction

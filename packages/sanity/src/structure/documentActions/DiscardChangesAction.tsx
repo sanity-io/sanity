@@ -20,8 +20,8 @@ const DISABLED_REASON_KEY = {
   NOT_READY: 'action.discard-changes.disabled.not-ready',
 } as const
 
-/** @internal */
-export const DiscardChangesAction: DocumentActionComponent = ({
+// React Compiler needs functions that are hooks to have the `use` prefix, pascal case are treated as a component, these are hooks even though they're confusingly named `DocumentActionComponent`
+const useDiscardChangesAction: DocumentActionComponent = ({
   id,
   type,
   published,
@@ -47,6 +47,10 @@ export const DiscardChangesAction: DocumentActionComponent = ({
     setConfirmDialogOpen(false)
   }, [discardChanges])
 
+  const handleCancel = useCallback(() => {
+    setConfirmDialogOpen(false)
+  }, [])
+
   const handle = useCallback(() => {
     setConfirmDialogOpen(true)
   }, [])
@@ -56,11 +60,11 @@ export const DiscardChangesAction: DocumentActionComponent = ({
       isConfirmDialogOpen && {
         type: 'confirm',
         tone: 'critical',
-        onCancel: () => setConfirmDialogOpen(false),
+        onCancel: handleCancel,
         onConfirm: handleConfirm,
         message: t('action.discard-changes.confirm-dialog.confirm-discard-changes'),
       },
-    [handleConfirm, isConfirmDialogOpen, t],
+    [handleConfirm, isConfirmDialogOpen, handleCancel, t],
   )
 
   return useMemo(() => {
@@ -103,5 +107,8 @@ export const DiscardChangesAction: DocumentActionComponent = ({
   ])
 }
 
-DiscardChangesAction.action = 'discardChanges'
-DiscardChangesAction.displayName = 'DiscardChangesAction'
+useDiscardChangesAction.action = 'discardChanges'
+useDiscardChangesAction.displayName = 'DiscardChangesAction'
+
+/** @internal */
+export const DiscardChangesAction = useDiscardChangesAction

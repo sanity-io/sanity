@@ -20,13 +20,8 @@ const DISABLED_REASON_KEY = {
   NOT_READY: 'action.duplicate.disabled.not-ready',
 }
 
-/** @internal */
-export const DuplicateAction: DuplicateDocumentActionComponent = ({
-  id,
-  type,
-  release,
-  mapDocument,
-}) => {
+// React Compiler needs functions that are hooks to have the `use` prefix, pascal case are treated as a component, these are hooks even though they're confusingly named `DocumentActionComponent`
+const useDuplicateAction: DuplicateDocumentActionComponent = ({id, type, release, mapDocument}) => {
   const documentStore = useDocumentStore()
   const {duplicate} = useDocumentOperation(id, type, release)
   const {navigateIntent} = useRouter()
@@ -93,5 +88,8 @@ export const DuplicateAction: DuplicateDocumentActionComponent = ({
   ])
 }
 
-DuplicateAction.action = 'duplicate'
-DuplicateAction.displayName = 'DuplicateAction'
+useDuplicateAction.action = 'duplicate'
+useDuplicateAction.displayName = 'DuplicateAction'
+
+/** @internal */
+export const DuplicateAction = useDuplicateAction

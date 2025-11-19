@@ -1,25 +1,26 @@
 import {CopyIcon} from '@sanity/icons'
 import {Button, Grid, Text, useToast} from '@sanity/ui'
-import {useCallback, useMemo, useState} from 'react'
+import {useState} from 'react'
 import {type DocumentActionComponent, type DocumentActionDescription} from 'sanity'
 
-export const TestModalDialogAction: DocumentActionComponent = () => {
+export const useTestModalDialogAction: DocumentActionComponent = () => {
   const [dialogOpen, setDialogOpen] = useState(false)
   const {push: pushToast} = useToast()
 
-  const handleOpen = useCallback(() => {
+  const handleOpen = () => {
     setDialogOpen(true)
     pushToast({closable: true, title: '[Modal] Opened'})
-  }, [pushToast])
+  }
 
-  const handleClose = useCallback(() => {
+  const handleClose = () => {
     setDialogOpen(false)
     pushToast({closable: true, title: '[Modal] Closed'})
-  }, [pushToast])
+  }
 
-  const dialog: DocumentActionDescription['dialog'] = useMemo(
-    () =>
-      dialogOpen && {
+  return {
+    dialog:
+      dialogOpen &&
+      ({
         type: 'dialog',
         content: (
           <Text>
@@ -35,14 +36,11 @@ export const TestModalDialogAction: DocumentActionComponent = () => {
         onClose: handleClose,
         showCloseButton: false,
         width: 'medium',
-      },
-    [dialogOpen, handleClose],
-  )
-
-  return {
-    dialog,
+      } satisfies DocumentActionDescription['dialog']),
     icon: CopyIcon,
     label: 'Test dialog modal',
     onHandle: handleOpen,
-  }
+  } satisfies DocumentActionDescription
 }
+
+useTestModalDialogAction.displayName = 'TestModalDialogAction'

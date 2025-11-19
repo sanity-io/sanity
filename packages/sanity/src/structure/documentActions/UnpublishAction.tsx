@@ -20,8 +20,8 @@ const DISABLED_REASON_KEY = {
   LIVE_EDIT_ENABLED: 'action.unpublish.disabled.live-edit-enabled',
 }
 
-/** @internal */
-export const UnpublishAction: DocumentActionComponent = ({id, type, draft, liveEdit, release}) => {
+// React Compiler needs functions that are hooks to have the `use` prefix, pascal case are treated as a component, these are hooks even though they're confusingly named `DocumentActionComponent`
+const useUnpublishAction: DocumentActionComponent = ({id, type, draft, liveEdit, release}) => {
   const {unpublish} = useDocumentOperation(id, type)
   const [isConfirmDialogOpen, setConfirmDialogOpen] = useState(false)
   const [permissions, isPermissionsLoading] = useDocumentPairPermissions({
@@ -48,7 +48,7 @@ export const UnpublishAction: DocumentActionComponent = ({id, type, draft, liveE
     if (isConfirmDialogOpen) {
       return {
         type: 'dialog',
-        onClose: () => setConfirmDialogOpen(false),
+        onClose: handleCancel,
         content: (
           <ConfirmDeleteDialog
             id={draft?._id || id}
@@ -108,5 +108,8 @@ export const UnpublishAction: DocumentActionComponent = ({id, type, draft, liveE
   ])
 }
 
-UnpublishAction.action = 'unpublish'
-UnpublishAction.displayName = 'UnpublishAction'
+useUnpublishAction.action = 'unpublish'
+useUnpublishAction.displayName = 'UnpublishAction'
+
+/** @internal */
+export const UnpublishAction = useUnpublishAction
