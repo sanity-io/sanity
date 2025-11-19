@@ -1,4 +1,4 @@
-import {definePlugin} from '../config'
+import {definePlugin, DocumentActionComponent} from '../config'
 import {EditInCanvasAction} from './actions/EditInCanvas/EditInCanvasAction'
 import {LinkToCanvasAction} from './actions/LinkToCanvas/LinkToCanvasAction'
 import {UnlinkFromCanvasAction} from './actions/UnlinkFromCanvas/UnlinkFromCanvasAction'
@@ -16,11 +16,25 @@ export const canvasIntegration = definePlugin(() => {
     document: {
       actions: (prev, context) => {
         if (context.versionType === 'draft' || context.versionType === 'version') {
-          return prev.flatMap((action) =>
-            action.action === 'duplicate'
-              ? [LinkToCanvasAction, UnlinkFromCanvasAction, EditInCanvasAction, action]
-              : action,
+          const deleteAndDiscardActionNames: DocumentActionComponent['action'][] = [
+            'delete',
+            'discardVersion',
+          ]
+
+          const deleteAndDiscardActions = prev.filter((action) =>
+            deleteAndDiscardActionNames.includes(action.action),
           )
+          const otherActions = prev.filter(
+            (action) => !deleteAndDiscardActionNames.includes(action.action),
+          )
+
+          return [
+            ...otherActions,
+            LinkToCanvasAction,
+            UnlinkFromCanvasAction,
+            EditInCanvasAction,
+            ...deleteAndDiscardActions,
+          ]
         }
 
         return prev
