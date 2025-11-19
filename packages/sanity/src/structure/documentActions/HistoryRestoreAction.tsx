@@ -13,13 +13,7 @@ import {structureLocaleNamespace} from '../i18n'
 import {useDocumentPane} from '../panes/document/useDocumentPane'
 
 /** @internal */
-export const HistoryRestoreAction: DocumentActionComponent = ({
-  id,
-  type,
-  revision,
-  onComplete,
-  release,
-}) => {
+export const HistoryRestoreAction: DocumentActionComponent = ({id, type, revision, release}) => {
   const {restore} = useDocumentOperation(id, type, release)
   const {revisionNotFound} = useDocumentPane()
   const event = useDocumentOperationEvent(id, type)
@@ -30,8 +24,8 @@ export const HistoryRestoreAction: DocumentActionComponent = ({
 
   const handleConfirm = useCallback(() => {
     restore.execute(revision!)
-    onComplete()
-  }, [restore, revision, onComplete])
+    setConfirmDialogOpen(false)
+  }, [restore, revision])
 
   /**
    * If the restore operation is successful, navigate to the document edit view
@@ -55,14 +49,14 @@ export const HistoryRestoreAction: DocumentActionComponent = ({
       return {
         type: 'confirm',
         tone: 'critical',
-        onCancel: onComplete,
+        onCancel: () => setConfirmDialogOpen(false),
         onConfirm: handleConfirm,
         message: t('action.restore.confirm.message'),
       }
     }
 
     return null
-  }, [handleConfirm, isConfirmDialogOpen, onComplete, t])
+  }, [handleConfirm, isConfirmDialogOpen, t])
 
   const isRevisionInitial = revision === '@initial'
   const isRevisionLatest = revision === undefined // undefined means latest revision

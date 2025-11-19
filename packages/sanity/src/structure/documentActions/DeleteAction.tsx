@@ -19,7 +19,7 @@ const DISABLED_REASON_TITLE_KEY = {
 }
 
 /** @internal */
-export const DeleteAction: DocumentActionComponent = ({id, type, draft, onComplete, release}) => {
+export const DeleteAction: DocumentActionComponent = ({id, type, draft, release}) => {
   const {setIsDeleting: paneSetIsDeleting} = useDocumentPane()
   const {delete: deleteOp} = useDocumentOperation(id, type, release)
   const [isDeleting, setIsDeleting] = useState(false)
@@ -29,16 +29,15 @@ export const DeleteAction: DocumentActionComponent = ({id, type, draft, onComple
 
   const handleCancel = useCallback(() => {
     setConfirmDialogOpen(false)
-    onComplete()
-  }, [onComplete])
+  }, [])
 
   const handleConfirm = useCallback(() => {
     setIsDeleting(true)
     setConfirmDialogOpen(false)
     paneSetIsDeleting(true)
     deleteOp.execute()
-    onComplete()
-  }, [deleteOp, onComplete, paneSetIsDeleting])
+    setIsDeleting(false)
+  }, [deleteOp, paneSetIsDeleting])
 
   const handle = useCallback(() => {
     setConfirmDialogOpen(true)

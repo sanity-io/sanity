@@ -24,7 +24,6 @@ const DISABLED_REASON_KEY = {
 export const DuplicateAction: DuplicateDocumentActionComponent = ({
   id,
   type,
-  onComplete,
   release,
   mapDocument,
 }) => {
@@ -61,8 +60,8 @@ export const DuplicateAction: DuplicateDocumentActionComponent = ({
     await duplicateSuccess
     navigateIntent('edit', {id: dupeId, type})
 
-    onComplete()
-  }, [documentStore.pair, duplicate, id, mapDocument, navigateIntent, onComplete, type])
+    setDuplicating(false)
+  }, [documentStore.pair, duplicate, id, mapDocument, navigateIntent, type])
 
   return useMemo(() => {
     if (!isPermissionsLoading && !permissions?.granted) {

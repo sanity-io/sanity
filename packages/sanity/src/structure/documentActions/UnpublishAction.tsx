@@ -21,14 +21,7 @@ const DISABLED_REASON_KEY = {
 }
 
 /** @internal */
-export const UnpublishAction: DocumentActionComponent = ({
-  id,
-  type,
-  draft,
-  onComplete,
-  liveEdit,
-  release,
-}) => {
+export const UnpublishAction: DocumentActionComponent = ({id, type, draft, liveEdit, release}) => {
   const {unpublish} = useDocumentOperation(id, type)
   const [isConfirmDialogOpen, setConfirmDialogOpen] = useState(false)
   const [permissions, isPermissionsLoading] = useDocumentPairPermissions({
@@ -44,20 +37,18 @@ export const UnpublishAction: DocumentActionComponent = ({
 
   const handleCancel = useCallback(() => {
     setConfirmDialogOpen(false)
-    onComplete()
-  }, [onComplete])
+  }, [])
 
   const handleConfirm = useCallback(() => {
     setConfirmDialogOpen(false)
     unpublish.execute()
-    onComplete()
-  }, [onComplete, unpublish])
+  }, [unpublish])
 
   const dialog: DocumentActionModalDialogProps | null = useMemo(() => {
     if (isConfirmDialogOpen) {
       return {
         type: 'dialog',
-        onClose: onComplete,
+        onClose: () => setConfirmDialogOpen(false),
         content: (
           <ConfirmDeleteDialog
             id={draft?._id || id}
@@ -71,7 +62,7 @@ export const UnpublishAction: DocumentActionComponent = ({
     }
 
     return null
-  }, [draft, id, handleCancel, handleConfirm, isConfirmDialogOpen, onComplete, type])
+  }, [draft, id, handleCancel, handleConfirm, isConfirmDialogOpen, type])
 
   return useMemo(() => {
     if (release || isDraft) {

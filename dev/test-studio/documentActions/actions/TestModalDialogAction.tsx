@@ -3,8 +3,7 @@ import {Button, Grid, Text, useToast} from '@sanity/ui'
 import {useCallback, useMemo, useState} from 'react'
 import {type DocumentActionComponent, type DocumentActionDescription} from 'sanity'
 
-export const TestModalDialogAction: DocumentActionComponent = (props) => {
-  const {onComplete} = props
+export const TestModalDialogAction: DocumentActionComponent = () => {
   const [dialogOpen, setDialogOpen] = useState(false)
   const {push: pushToast} = useToast()
 
@@ -16,8 +15,7 @@ export const TestModalDialogAction: DocumentActionComponent = (props) => {
   const handleClose = useCallback(() => {
     setDialogOpen(false)
     pushToast({closable: true, title: '[Modal] Closed'})
-    onComplete()
-  }, [onComplete, pushToast])
+  }, [pushToast])
 
   const dialog: DocumentActionDescription['dialog'] = useMemo(
     () =>

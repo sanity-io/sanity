@@ -26,7 +26,6 @@ export const DiscardChangesAction: DocumentActionComponent = ({
   type,
   published,
   liveEdit,
-  onComplete,
   release,
 }) => {
   const {discardChanges} = useDocumentOperation(id, type, release)
@@ -45,8 +44,8 @@ export const DiscardChangesAction: DocumentActionComponent = ({
 
   const handleConfirm = useCallback(() => {
     discardChanges.execute()
-    onComplete()
-  }, [discardChanges, onComplete])
+    setConfirmDialogOpen(false)
+  }, [discardChanges])
 
   const handle = useCallback(() => {
     setConfirmDialogOpen(true)
@@ -57,11 +56,11 @@ export const DiscardChangesAction: DocumentActionComponent = ({
       isConfirmDialogOpen && {
         type: 'confirm',
         tone: 'critical',
-        onCancel: onComplete,
+        onCancel: () => setConfirmDialogOpen(false),
         onConfirm: handleConfirm,
         message: t('action.discard-changes.confirm-dialog.confirm-discard-changes'),
       },
-    [handleConfirm, isConfirmDialogOpen, onComplete, t],
+    [handleConfirm, isConfirmDialogOpen, t],
   )
 
   return useMemo(() => {
