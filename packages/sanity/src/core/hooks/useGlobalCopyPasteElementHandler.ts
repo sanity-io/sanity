@@ -3,7 +3,7 @@ import {isHotkey} from 'is-hotkey-esm'
 import {useEffect} from 'react'
 import {useEffectEvent} from 'use-effect-event'
 
-import {isFileTargetElement} from '../form/inputs/common/fileTarget/fileTarget'
+import {isFileTargetElement} from '../form/inputs/files/common/fileTarget/fileTarget'
 import {type FormDocumentValue} from '../form/types/formDocumentValue'
 import {useCopyPaste} from '../studio/copyPaste'
 import {hasSelection, isEmptyFocusPath, isNativeEditableElement} from '../studio/copyPaste/utils'

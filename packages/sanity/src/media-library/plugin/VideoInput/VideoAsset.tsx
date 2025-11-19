@@ -1,6 +1,5 @@
 import {type AssetSource} from '@sanity/types'
 import {Box, Card, type ThemeColorToneKey} from '@sanity/ui'
-import {get} from 'lodash'
 import {useCallback, useMemo, useState} from 'react'
 
 import {ChangeIndicator} from '../../../core/changeIndicators/ChangeIndicator'
@@ -58,7 +57,6 @@ export function VideoAsset(props: VideoAssetProps) {
   const [assetSourceDestination, setAssetSourceDestination] = useState<AssetSource | null>(null)
   const [showDestinationSourcePicker, setShowDestinationSourcePicker] = useState<boolean>(false)
   const [filesToUploadFromPaste, setFilesToUploadFromPaste] = useState<File[]>([])
-  const elementRef = elementProps.ref?.current
 
   const hasMultipleUploadSources = assetSources.filter((s) => Boolean(s.Uploader)).length > 1
 
@@ -249,7 +247,6 @@ export function VideoAsset(props: VideoAssetProps) {
                 <UploadDestinationPicker
                   assetSources={assetSources}
                   onSelectAssetSource={handleSetAssetSourceDestination}
-                  referenceElement={elementRef}
                   onClose={handleUploadDestinationPickerClose}
                   text={t(
                     'inputs.files.common.placeholder.select-asset-source-upload-destination',
@@ -281,20 +278,7 @@ export function VideoAsset(props: VideoAssetProps) {
 }
 
 function FileUploadPlaceHolder(props: VideoAssetProps) {
-  const {
-    assetSources,
-    directUploads,
-    hoveringFiles,
-    onSelectFiles,
-    readOnly,
-    resolveUploader,
-    schemaType,
-  } = props
-
-  const acceptedFiles = hoveringFiles.filter((file) => resolveUploader?.(schemaType, file))
-  const rejectedFilesCount = hoveringFiles.length - acceptedFiles.length
-
-  const accept = get(schemaType, 'options.accept', '')
+  const {assetSources, directUploads, hoveringFiles, onSelectFiles, readOnly, schemaType} = props
 
   return (
     <>
@@ -311,15 +295,13 @@ function FileUploadPlaceHolder(props: VideoAssetProps) {
         }
       >
         <UploadPlaceholder
-          accept={accept}
-          acceptedFiles={acceptedFiles}
           assetSources={assetSources}
           browse={<Browser {...props} />}
           directUploads={directUploads}
           hoveringFiles={hoveringFiles}
           onUpload={onSelectFiles}
           readOnly={readOnly}
-          rejectedFilesCount={rejectedFilesCount}
+          schemaType={schemaType}
           type="file"
         />
       </Card>

@@ -22,8 +22,7 @@ interface Props {
   onChange: (patch: FormPatch | FormPatch[] | PatchEvent) => void
   type: FileSchemaType | ImageSchemaType | VideoSchemaType
   resolveUploader: UploaderResolver
-  uploadWith: (uploader: Uploader, file: DOMFile, assetDocumentProps?: UploadOptions) => void
-  isImage?: boolean
+  uploadWith?: (uploader: Uploader, file: DOMFile, assetDocumentProps?: UploadOptions) => void
 }
 
 export function handleSelectAssetFromSource({
@@ -32,7 +31,6 @@ export function handleSelectAssetFromSource({
   type,
   resolveUploader,
   uploadWith,
-  isImage,
 }: Props): void {
   if (!assetsFromSource) {
     throw new Error('No asset given')
@@ -54,6 +52,8 @@ export function handleSelectAssetFromSource({
     {label, title, description, creditLine, source},
     (value) => value !== null && value !== undefined && value !== '',
   )
+
+  const isImage = type.name === 'image'
 
   const assetPatches: FormPatch[] = isImage
     ? [unset(['hotspot']), unset(['crop']), unset(['media'])]
@@ -109,7 +109,7 @@ export function handleSelectAssetFromSource({
       break
     case 'file': {
       const uploader = resolveUploader(type, firstAsset.value as FIXME)
-      if (uploader) {
+      if (uploader && uploadWith) {
         uploadWith(uploader, firstAsset.value as FIXME, assetOptions)
       }
       break
@@ -117,7 +117,7 @@ export function handleSelectAssetFromSource({
     case 'base64':
       void base64ToFile(firstAsset.value as FIXME, originalFilename).then((file) => {
         const uploader = resolveUploader(type, file)
-        if (uploader) {
+        if (uploader && uploadWith) {
           uploadWith(uploader, file, assetOptions)
         }
       })
@@ -125,7 +125,7 @@ export function handleSelectAssetFromSource({
     case 'url':
       void urlToFile(firstAsset.value as FIXME, originalFilename).then((file) => {
         const uploader = resolveUploader(type, file)
-        if (uploader) {
+        if (uploader && uploadWith) {
           uploadWith(uploader, file, assetOptions)
         }
       })

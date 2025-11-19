@@ -119,7 +119,7 @@ test.describe('Portable Text Input', () => {
       const $pte = await getFocusedPortableTextEditor('field-body')
 
       await pasteFileOverPortableTextEditor(imagePath, 'image/jpeg', $pte)
-
+      await page.getByTestId('upload-destination-sanity-default').click()
       await expect($pte.getByTestId('block-preview')).toBeVisible()
     })
     test(`Added dropped image as a block`, async ({mount, page}) => {
@@ -141,6 +141,8 @@ test.describe('Portable Text Input', () => {
       await dropFileOverPortableTextEditor(imagePath, 'image/jpeg', $pte)
 
       await expect(page.getByText('Drop to upload 1 file')).not.toBeVisible()
+
+      await page.getByTestId('upload-destination-sanity-default').click()
 
       await expect($pte.getByTestId('block-preview')).toBeVisible()
     })
