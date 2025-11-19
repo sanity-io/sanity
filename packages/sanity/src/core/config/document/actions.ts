@@ -12,6 +12,9 @@ import {type ActionComponent, type GroupableActionDescription} from '../types'
  * @beta */
 export interface DocumentActionProps extends EditStateFor {
   revision?: string
+  /**
+   * @deprecated - do not use, will be removed in a future major version, use local state instead
+   */
   onComplete: () => void
   /**
    * Whether the initial value has been resolved.
