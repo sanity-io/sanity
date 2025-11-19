@@ -9,14 +9,12 @@ import {TimeZoneButton} from '../../components/timeZone/timeZoneButton/TimeZoneB
 import {useTimeZone} from '../../hooks/useTimeZone'
 import {useTranslation} from '../../i18n/hooks/useTranslation'
 import {useScheduledPublishingEnabled} from '../../scheduledPublishing/contexts/ScheduledPublishingEnabledProvider'
-import {useReleasesToolAvailable} from '../../schedules/hooks/useReleasesToolAvailable'
 import {useScheduledDraftsEnabled} from '../../singleDocRelease/hooks/useScheduledDraftsEnabled'
 import {RELEASES_SCHEDULED_DRAFTS_INTENT} from '../../singleDocRelease/plugin'
 import {useWorkspace} from '../../studio/workspace'
 import TimeZoneButtonElementQuery from '../components/dialogs/TimeZoneButtonElementQuery'
 import ErrorCallout from '../components/errorCallout/ErrorCallout'
 import InfoCallout from '../components/infoCallout/InfoCallout'
-import {WarningBanner} from '../components/warningBanner/WarningBanner'
 import {
   SCHEDULE_FILTERS,
   SCHEDULED_PUBLISHING_TIME_ZONE_SCOPE,
@@ -62,8 +60,7 @@ function ScheduledDraftsBanner() {
 
 export default function Tool() {
   const router = useRouter()
-  const {scheduledPublishing, releases} = useWorkspace()
-  const releasesToolAvailable = useReleasesToolAvailable()
+  const {scheduledPublishing} = useWorkspace()
 
   const {sanity: theme} = useTheme()
   const {error, isInitialLoading, schedules = NO_SCHEDULE} = usePollSchedules()
@@ -136,7 +133,6 @@ export default function Tool() {
 
   return (
     <SchedulesProvider value={schedulesContext}>
-      {releasesToolAvailable && scheduledPublishing.showReleasesBanner && <WarningBanner />}
       <Flex direction="column" height="fill" flex={1} overflow="hidden">
         <Flex flex={1} height="fill">
           {/* LHS Column */}
