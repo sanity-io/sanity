@@ -66,7 +66,14 @@ export const objectValidators: Validators = {
 
   assetRequired: (flag, value, message, {i18n}) => {
     if (!value || !value.asset || !value.asset._ref) {
-      return message || i18n.t('validation:object.asset-required', {context: flag.assetType || ''})
+      return {
+        // eslint-disable-next-line camelcase
+        __internal_metadata: {
+          name: 'assetRequired',
+        },
+        message:
+          message || i18n.t('validation:object.asset-required', {context: flag.assetType || ''}),
+      }
     }
 
     return true
