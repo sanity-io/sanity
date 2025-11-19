@@ -118,16 +118,6 @@ export function getPairListener(
       ) as Observable<WelcomeEvent | MutationEvent | ReconnectEvent | WelcomeBackEvent | ResetEvent>
     ).pipe(
       dedupeListenerEvents(),
-      map((event): WelcomeEvent | MutationEvent | ReconnectEvent | WelcomeBackEvent | ResetEvent =>
-        event.type === 'mutation'
-          ? {
-              ...event,
-              // client equivalent of `event.messageDispatchedAt`
-              // note: consider moving this to client.listen()
-              messageReceivedAt: new Date().toString(),
-            }
-          : event,
-      ),
       shareReplayLatest({
         predicate: (event) =>
           event.type === 'welcome' ||
@@ -139,7 +129,6 @@ export function getPairListener(
   )
 
   const pairEvents$ = sharedEvents.pipe(
-    filter(Boolean),
     concatMap((event) => {
       // note: resumability may not be enabled – if so, treat welcome the same way as a reset
       const shouldSyncDocument = event.type === 'welcome' || event.type === 'reset'

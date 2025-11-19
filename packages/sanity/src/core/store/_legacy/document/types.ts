@@ -1,11 +1,5 @@
 import {type MutationPayload} from './buffered-doc/types'
 
-/** @beta */
-export interface WelcomeEvent {
-  type: 'welcome'
-  listenerName: string
-}
-
 /** @internal */
 export interface MutationEvent {
   type: 'mutation'
@@ -24,28 +18,6 @@ export interface MutationEvent {
   transition: 'update' | 'appear' | 'disappear'
 }
 
-/**
- * @hidden
- * @beta
- */
-export interface ResetEvent {
-  type: 'reset'
-}
-
-/**
- * @hidden
- * @beta
- */
-export interface WelcomeBackEvent {
-  type: 'welcomeback'
-}
-/**
- * @hidden
- * @beta */
-export interface ReconnectEvent {
-  type: 'reconnect'
-}
-
 /** @internal */
 export interface PendingMutationsEvent {
   type: 'pending'
@@ -58,3 +30,5 @@ export interface IdPair {
   publishedId: string
   versionId?: string
 }
+
+export type {ReconnectEvent, ResetEvent, WelcomeBackEvent, WelcomeEvent} from '@sanity/client'
