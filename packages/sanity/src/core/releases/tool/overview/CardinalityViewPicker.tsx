@@ -15,7 +15,6 @@ interface CardinalityViewPickerProps {
   cardinalityView: CardinalityView
   loading: boolean
   isScheduledDraftsEnabled: boolean
-  isDraftModelEnabled: boolean
   isReleasesEnabled: boolean
   allReleases: ReleaseDocument[]
   onCardinalityViewChange: (view: CardinalityView) => () => void
@@ -26,16 +25,14 @@ const getPickerView = ({
   isScheduledDraftsEnabled,
   isReleasesEnabled,
   cardinalityView,
-  isDraftModelEnabled,
 }: {
   hasSingleDocRelease: boolean
   isScheduledDraftsEnabled: boolean
   isReleasesEnabled: boolean
   cardinalityView: CardinalityView
-  isDraftModelEnabled: boolean
 }): 'contentReleases' | 'singleDocReleases' | 'both' => {
   if (isReleasesEnabled) {
-    if (hasSingleDocRelease || (isScheduledDraftsEnabled && isDraftModelEnabled)) return 'both'
+    if (hasSingleDocRelease || isScheduledDraftsEnabled) return 'both'
     return cardinalityView === 'drafts' ? 'both' : 'contentReleases'
   }
 
@@ -47,7 +44,6 @@ export const CardinalityViewPicker = ({
   loading,
   isScheduledDraftsEnabled,
   isReleasesEnabled,
-  isDraftModelEnabled,
   allReleases,
   onCardinalityViewChange,
 }: CardinalityViewPickerProps) => {
@@ -63,7 +59,6 @@ export const CardinalityViewPicker = ({
     isScheduledDraftsEnabled,
     isReleasesEnabled,
     cardinalityView,
-    isDraftModelEnabled,
   })
   //  If only one is enabled, show the label
   if (pickerView === 'contentReleases' || pickerView === 'singleDocReleases') {

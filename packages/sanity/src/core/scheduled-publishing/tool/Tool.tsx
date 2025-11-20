@@ -9,7 +9,7 @@ import {TimeZoneButton} from '../../components/timeZone/timeZoneButton/TimeZoneB
 import {useTimeZone} from '../../hooks/useTimeZone'
 import {useTranslation} from '../../i18n/hooks/useTranslation'
 import {useScheduledPublishingEnabled} from '../../scheduledPublishing/contexts/ScheduledPublishingEnabledProvider'
-import {useScheduledDraftsEnabled} from '../../singleDocRelease/hooks/useScheduledDraftsEnabled'
+import {useScheduledDraftsConfigEnabled} from '../../singleDocRelease/hooks/useScheduledDraftsConfigEnabled'
 import {RELEASES_SCHEDULED_DRAFTS_INTENT} from '../../singleDocRelease/plugin'
 import {useWorkspace} from '../../studio/workspace'
 import TimeZoneButtonElementQuery from '../components/dialogs/TimeZoneButtonElementQuery'
@@ -40,7 +40,7 @@ const DATE_SLUG_FORMAT = 'yyyy-MM-dd' // date-fns format
 
 function ScheduledDraftsBanner() {
   const router = useRouter()
-  const isScheduledDraftsEnabled = useScheduledDraftsEnabled()
+  const isScheduledDraftsEnabled = useScheduledDraftsConfigEnabled()
 
   const releasesUrl = router.resolveIntentLink(RELEASES_SCHEDULED_DRAFTS_INTENT, {view: 'drafts'})
 

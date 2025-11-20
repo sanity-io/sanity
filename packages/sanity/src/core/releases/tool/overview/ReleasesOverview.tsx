@@ -82,7 +82,11 @@ export function ReleasesOverview() {
   const [releaseGroupMode, setReleaseGroupMode] = useState<Mode>(getInitialReleaseGroupMode(router))
 
   const [cardinalityView, setCardinalityView] = useState<CardinalityView>(
-    getInitialCardinalityView({router, isScheduledDraftsEnabled, isReleasesEnabled}),
+    getInitialCardinalityView({
+      router,
+      isScheduledDraftsEnabled,
+      isReleasesEnabled,
+    }),
   )
 
   const [releaseFilterDate, setReleaseFilterDate] = useState<Date | undefined>(
@@ -139,8 +143,7 @@ export function ReleasesOverview() {
   const hasReleases = releases.length > 0 || archivedReleases.length > 0
   // banner that shows when drafts mode is disabled, or scheduled drafts are disabled
   // but there are still scheduled drafts
-  const showDraftsDisabledBanner =
-    cardinalityView === 'drafts' && (!isDraftModelEnabled || !isScheduledDraftsEnabled)
+  const showDraftsDisabledBanner = cardinalityView === 'drafts' && !isScheduledDraftsEnabled
   const showConfirmActiveScheduledDraftsBanner =
     cardinalityView === 'drafts' &&
     releases.some((release) => release.state === 'active' && isCardinalityOneRelease(release))
@@ -446,7 +449,6 @@ export function ReleasesOverview() {
                   isScheduledDraftsEnabled={isScheduledDraftsEnabled}
                   allReleases={allReleases}
                   isReleasesEnabled={isReleasesEnabled}
-                  isDraftModelEnabled={isDraftModelEnabled}
                 />
               </Inline>
 

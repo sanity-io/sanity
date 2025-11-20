@@ -6,7 +6,7 @@ import {
 
 import {useFeatureEnabled} from '../../hooks'
 import {FEATURES} from '../../hooks/useFeatureEnabled'
-import {useScheduledDraftsEnabled} from '../hooks/useScheduledDraftsEnabled'
+import {useScheduledDraftsConfigEnabled} from '../hooks/useScheduledDraftsConfigEnabled'
 
 interface SingleDocReleaseEnabledProviderProps {
   children: React.ReactNode
@@ -18,7 +18,7 @@ interface SingleDocReleaseEnabledProviderProps {
 
 export function SingleDocReleaseEnabledProvider({children}: SingleDocReleaseEnabledProviderProps) {
   const {enabled: featureEnabled, isLoading, error} = useFeatureEnabled(FEATURES.singleDocRelease)
-  const isWorkspaceEnabled = useScheduledDraftsEnabled()
+  const isWorkspaceEnabled = useScheduledDraftsConfigEnabled()
 
   const value: SingleDocReleaseEnabledContextValue = useMemo(() => {
     if (!isWorkspaceEnabled || isLoading || error) {
