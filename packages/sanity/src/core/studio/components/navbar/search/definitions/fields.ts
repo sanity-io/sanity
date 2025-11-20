@@ -44,14 +44,20 @@ export function createFieldDefinitions(
 
   // Get user-defined schema types, partitioned into documents and objects
   const {documentTypes, objectTypes} = (schema._original?.types || [])
-    // Ignore document types hidden by omnisearch
-    .filter((t) =>
-      isDocumentObjectDefinition(t) ? searchableDocumentTypeNames.includes(t.name) : true,
-    )
-    // Ignore the 'slug' object to prevent surfacing 'current' and (deprecated) 'source field' fields.
-    .filter((schemaType) => schemaType.name !== 'slug')
-    // Ignore sanity documents and assets
-    .filter((schemaType) => !schemaType.name.startsWith('sanity.'))
+    .filter((t) => {
+      // Ignore document types hidden by omnisearch
+      const isNotTypeNotIgnored = isDocumentObjectDefinition(t)
+        ? searchableDocumentTypeNames.includes(t.name)
+        : true
+
+      return (
+        isNotTypeNotIgnored &&
+        // Ignore the 'slug' object to prevent surfacing 'current' and (deprecated) 'source field' fields.
+        t.name !== 'slug' &&
+        // Ignore sanity documents and assets
+        !t.name.startsWith('sanity.')
+      )
+    })
     // Partition
     .reduce<{
       documentTypes: Record<string, ObjectDefinition>
