@@ -1,5 +1,5 @@
-import {capitalize} from 'lodash-es'
-import {memo, useCallback} from 'react'
+import {capitalize} from 'lodash'
+import {memo, useCallback, useMemo} from 'react'
 
 import {FormFieldSet} from '../../components/formField'
 import {type FieldSetMember} from '../../store'
@@ -47,6 +47,13 @@ export const MemberFieldSet = memo(function MemberFieldSet(props: {
     onSetFieldSetCollapsed(member.fieldSet.path, false)
   }, [member.fieldSet.path, onSetFieldSetCollapsed])
 
+  const fieldsetMembers = useMemo(() => {
+    if (member.renderMembers) {
+      return member.renderMembers(member.fieldSet.members)
+    }
+    return member.fieldSet.members
+  }, [member])
+
   return (
     <FormFieldSet
       title={member.fieldSet.title || capitalize(member.fieldSet.name)}
@@ -60,7 +67,10 @@ export const MemberFieldSet = memo(function MemberFieldSet(props: {
       data-testid={`fieldset-${member.fieldSet.name}`}
       inputId={member.fieldSet.name}
     >
-      {member.fieldSet.members.map((fieldsetMember) => {
+      {fieldsetMembers.map((fieldsetMember) => {
+        if (fieldsetMember.kind === 'fieldSet') {
+          return null
+        }
         if (fieldsetMember.kind === 'error') {
           return <MemberFieldError key={member.key} member={fieldsetMember} />
         }
