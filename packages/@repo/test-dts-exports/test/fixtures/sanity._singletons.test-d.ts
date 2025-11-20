@@ -81,6 +81,8 @@ import type {
   ReferenceItemRefContext,
   ReleasesMetadataContext,
   ReleasesUpsellContext,
+  ResolvedPanesContext,
+  ResolvedPanesProvider,
   ResourceCacheContext,
   ReviewChangesContext,
   RouterContext,
@@ -348,6 +350,12 @@ describe('sanity/_singletons', () => {
   })
   test('ReleasesUpsellContext', () => {
     expectTypeOf<typeof ReleasesUpsellContext>().not.toBeNever()
+  })
+  test('ResolvedPanesContext', () => {
+    expectTypeOf<typeof ResolvedPanesContext>().not.toBeNever()
+  })
+  test('ResolvedPanesProvider', () => {
+    expectTypeOf<typeof ResolvedPanesProvider>().toBeFunction()
   })
   test('ResourceCacheContext', () => {
     expectTypeOf<typeof ResourceCacheContext>().not.toBeNever()
