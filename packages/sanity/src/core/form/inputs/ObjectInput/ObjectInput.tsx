@@ -44,6 +44,14 @@ export const ObjectInput = memo(function ObjectInput(props: ObjectInputProps) {
     onPathFocus,
   } = props
 
+  const renderedMembers = useMemo(() => {
+    if (!schemaType.renderMembers) {
+      return members
+    }
+
+    return schemaType.renderMembers(members)
+  }, [schemaType, members])
+
   const wrapperRef = useRef<HTMLDivElement>(null)
   const {columns} = schemaType.options || {}
 
@@ -89,7 +97,7 @@ export const ObjectInput = memo(function ObjectInput(props: ObjectInputProps) {
   const renderObjectMembers = useCallback(
     () => (
       <ObjectInputMembers
-        members={members}
+        members={renderedMembers}
         renderAnnotation={renderAnnotation}
         renderBlock={renderBlock}
         renderField={renderField}
@@ -100,7 +108,7 @@ export const ObjectInput = memo(function ObjectInput(props: ObjectInputProps) {
       />
     ),
     [
-      members,
+      renderedMembers,
       renderAnnotation,
       renderBlock,
       renderField,
