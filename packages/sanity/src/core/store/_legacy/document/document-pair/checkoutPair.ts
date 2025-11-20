@@ -30,6 +30,8 @@ import {
   type MutationEvent,
   type PendingMutationsEvent,
   type ReconnectEvent,
+  type ResetEvent,
+  type WelcomeBackEvent,
   type WelcomeEvent,
 } from '../types'
 import {actionsApiClient} from './utils/actionsApiClient'
@@ -53,7 +55,7 @@ export type WithVersion<T> = T & {version: DocumentVariantType}
  * @hidden
  * @beta */
 export type DocumentVersionEvent = WithVersion<
-  ReconnectEvent | BufferedDocumentEvent | WelcomeEvent
+  ReconnectEvent | BufferedDocumentEvent | WelcomeEvent | WelcomeBackEvent | ResetEvent
 >
 
 /**
@@ -254,8 +256,14 @@ export function checkoutPair(
   const listenerEvents$ = getPairListener(client, idPair, {onSyncErrorRecovery, tag}).pipe(share())
 
   const connectionChangeEvents$ = listenerEvents$.pipe(
-    filter((ev) => ev.type === 'reconnect' || ev.type === 'welcome'),
-  ) as Observable<ReconnectEvent | WelcomeEvent>
+    filter(
+      (ev) =>
+        ev.type === 'reconnect' ||
+        ev.type === 'welcome' ||
+        ev.type === 'welcomeback' ||
+        ev.type === 'reset',
+    ),
+  )
 
   const draft = createBufferedDocument(
     draftId,
