@@ -31,7 +31,7 @@ export const useSchedulePublishAction: DocumentActionComponent = (
   const {enabled: singleDocReleaseEnabled, mode} = useSingleDocReleaseEnabled()
   const {handleOpenDialog: handleOpenUpsellDialog} = useSingleDocReleaseUpsell()
   // Check validation status
-  const validationStatus = useValidationStatus(id, type)
+  const validationStatus = useValidationStatus(id, type, draft?._id || id)
   const hasValidationErrors = validationStatus.validation.some(isValidationErrorMarker)
 
   // Check if document has versions in cardinality one releases

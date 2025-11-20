@@ -8,7 +8,7 @@ import {type LocaleSource} from '../../../i18n'
 import {type DocumentPreviewStore} from '../../../preview'
 import {DEFAULT_STUDIO_CLIENT_OPTIONS} from '../../../studioClient'
 import {type Template} from '../../../templates'
-import {getIdPair, isDraftId, isVersionId} from '../../../util'
+import {getDocumentVariantType, getIdPair, isDraftId, isVersionId} from '../../../util'
 import {type ValidationStatus} from '../../../validation'
 import {type HistoryStore} from '../history'
 import {checkoutPair, type DocumentVersionEvent, type Pair} from './document-pair/checkoutPair'
@@ -93,8 +93,8 @@ export interface DocumentStore {
     validation: (
       publishedId: string,
       type: string,
-      version?: string,
-      displayedDocumentId?: string,
+      displayedDocumentId: string,
+      releaseId?: string,
     ) => Observable<ValidationStatus>
   }
 }
@@ -213,9 +213,10 @@ export function createDocumentStore({
           }),
         )
       },
-      validation(publishedId, type, version, displayedDocumentId) {
-        const idPair = getIdPairFromPublished(publishedId, version)
-        return validation(ctx, idPair, type, displayedDocumentId)
+      validation(publishedId, type, displayedDocumentId, releaseId) {
+        const idPair = getIdPairFromPublished(publishedId, releaseId)
+        const validationTarget = getDocumentVariantType(displayedDocumentId)
+        return validation(ctx, idPair, type, validationTarget)
       },
     },
   }

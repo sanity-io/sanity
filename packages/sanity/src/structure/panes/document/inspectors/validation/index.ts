@@ -21,12 +21,14 @@ function useMenuItem(props: DocumentInspectorUseMenuItemProps): DocumentInspecto
   const {documentId, documentType} = props
   const {t} = useTranslation('validation')
   const {selectedReleaseId} = usePerspective()
+  const {value} = useDocumentPane()
+
   const {validation: validationMarkers} = useValidationStatus(
     documentId,
     documentType,
+    value._id,
     selectedReleaseId,
   )
-  const {value} = useDocumentPane()
 
   const validation: FormNodeValidation[] = useMemo(
     () =>

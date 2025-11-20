@@ -8,6 +8,7 @@ import shallowEquals from 'shallow-equals'
 import {type SourceClientOptions} from '../../../../config'
 import {type LocaleSource} from '../../../../i18n'
 import {type DraftsModelDocumentAvailability} from '../../../../preview'
+import {type DocumentVariantType} from '../../../../util/getDocumentVariantType'
 import {validateDocumentWithReferences, type ValidationStatus} from '../../../../validation'
 import {type DocumentStoreExtraOptions} from '../getPairListener'
 import {type IdPair} from '../types'
@@ -22,7 +23,14 @@ function shareLatestWithRefCount<T>() {
   return shareReplay<T>({bufferSize: 1, refCount: true})
 }
 
-/** @internal */
+/**
+ * Validates a document for the specified version target.
+ * @param validationTarget - Which document version to validate:
+ *   - 'draft': Validate the draft document (drafts.\{id\})
+ *   - 'published': Validate the published document (\{id\})
+ *   - 'version': Validate the release version document (versions.\{releaseId\}.\{id\})
+ * @internal
+ */
 export const validation = memoize(
   (
     ctx: {
@@ -36,16 +44,15 @@ export const validation = memoize(
     },
     {draftId, publishedId, versionId}: IdPair,
     typeName: string,
-    displayedDocumentId?: string,
+    validationTarget: DocumentVariantType,
   ): Observable<ValidationStatus> => {
     const document$ = editState(ctx, {draftId, publishedId, versionId}, typeName).pipe(
       map((state) => {
         const {version, draft, published} = state
 
-        if (displayedDocumentId) {
-          return [version, draft, published].find((doc) => doc?._id === displayedDocumentId)
-        }
-        return version || draft || published
+        if (validationTarget === 'draft') return draft
+        if (validationTarget === 'version') return version
+        return published
       }),
       throttleTime(DOC_UPDATE_DELAY, asyncScheduler, {trailing: true}),
       distinctUntilChanged((prev, next) => {
@@ -61,6 +68,6 @@ export const validation = memoize(
 
     return validateDocumentWithReferences(ctx, document$)
   },
-  (ctx, idPair, typeName, displayedDocumentId) =>
-    `${memoizeKeyGen(ctx.client, idPair, typeName)}-${displayedDocumentId ?? 'default'}`,
+  (ctx, idPair, typeName, validationTarget) =>
+    `${memoizeKeyGen(ctx.client, idPair, typeName)}-${validationTarget}`,
 )

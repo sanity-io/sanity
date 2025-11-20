@@ -57,10 +57,9 @@ function Debug(props: {documentId: string; documentType: string}) {
   })
 
   const editState = useEditState(documentId, documentType)
-  const {validation} = useValidationStatus(documentId, documentType)
-  const connectionState = useConnectionState(documentId, documentType)
-
   const value = editState?.draft || editState?.published || initialValue.value
+  const {validation} = useValidationStatus(documentId, documentType, value._id)
+  const connectionState = useConnectionState(documentId, documentType)
 
   const documentActions = useDocumentActions(documentId, documentType, editState)
 

@@ -10,14 +10,15 @@ const INITIAL: ValidationStatus = {validation: [], isValidating: false}
 export function useValidationStatus(
   publishedDocId: string,
   docTypeName: string,
-  version?: string,
-  displayedDocumentId?: string,
+  displayedDocumentId: string,
+  releaseId?: string,
 ): ValidationStatus {
   const documentStore = useDocumentStore()
 
   const observable = useMemo(
-    () => documentStore.pair.validation(publishedDocId, docTypeName, version, displayedDocumentId),
-    [docTypeName, documentStore.pair, publishedDocId, version, displayedDocumentId],
+    () =>
+      documentStore.pair.validation(publishedDocId, docTypeName, displayedDocumentId, releaseId),
+    [docTypeName, documentStore.pair, publishedDocId, displayedDocumentId, releaseId],
   )
   return useObservable(observable, INITIAL)
 }
