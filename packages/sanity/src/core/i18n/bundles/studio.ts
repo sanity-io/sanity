@@ -1425,6 +1425,8 @@ export const studioLocaleStrings = defineLocalesResources('studio', {
   'release.layer.hide': 'Hide release',
   /** Label for the release menu */
   'release.menu.label': 'Release menu',
+  /** Menu item label for scheduled drafts */
+  'release.menu.scheduled-drafts': 'Scheduled Drafts',
   /** Tooltip for the release menu */
   'release.menu.tooltip': 'Actions',
   /** Label for draft perspective in navbar */
