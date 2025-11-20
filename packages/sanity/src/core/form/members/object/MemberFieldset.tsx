@@ -64,6 +64,10 @@ export const MemberFieldSet = memo(function MemberFieldSet(props: {
         if (fieldsetMember.kind === 'error') {
           return <MemberFieldError key={member.key} member={fieldsetMember} />
         }
+        if (fieldsetMember.kind === 'decoration') {
+          const Component = fieldsetMember.component
+          return <Component key={fieldsetMember.key} />
+        }
         return (
           <MemberField
             key={fieldsetMember.key}
