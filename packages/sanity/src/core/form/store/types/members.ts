@@ -1,11 +1,12 @@
 import {type ArraySchemaType} from '@sanity/types'
+import {type ReactNode} from 'react'
 
 import {type FieldsetState} from './fieldsetState'
 import {type ArrayItemError, type FieldError} from './memberErrors'
 import {type BaseFormNode, type ObjectArrayFormNode, type PrimitiveFormNode} from './nodes'
 
 /** @public */
-export type ObjectMember = FieldMember | FieldSetMember | FieldError
+export type ObjectMember = FieldMember | FieldSetMember | FieldError | DecorationMember
 
 /**
  * @hidden
@@ -124,4 +125,10 @@ export interface FieldSetMember {
    * The state of the field set.
    */
   fieldSet: FieldsetState
+}
+
+export interface DecorationMember {
+  kind: 'decoration'
+  key: string
+  component: () => ReactNode
 }
