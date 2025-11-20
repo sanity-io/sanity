@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [4.16.0](https://github.com/sanity-io/sanity/compare/v4.15.0...v4.16.0) (2025-11-18)
+
+### Bug Fixes
+
+* bug where changing the time manually in an input when the timezone was selected would change the time based on the computer timezone ([#11161](https://github.com/sanity-io/sanity/issues/11161)) ([28ba0ae](https://github.com/sanity-io/sanity/commit/28ba0ae8d9f178f91fa5f5a44df808e8ab5ded0c)) by RitaDias (rita@sanity.io)
+
 ## [4.15.0](https://github.com/sanity-io/sanity/compare/v4.14.2...v4.15.0) (2025-11-11)
 
 **Note:** Version bump only for package @sanity/util

@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [4.16.0](https://github.com/sanity-io/sanity/compare/v4.15.0...v4.16.0) (2025-11-18)
+
+### Bug Fixes
+
+* **deps:** upgrade react compiler to v1 ([#10834](https://github.com/sanity-io/sanity/issues/10834)) ([2573cb1](https://github.com/sanity-io/sanity/commit/2573cb15c224c762636500b339d0c2701aad1e68)) by Cody Olsen (81981+stipsan@users.noreply.github.com)
+
 ## [4.15.0](https://github.com/sanity-io/sanity/compare/v4.14.2...v4.15.0) (2025-11-11)
 
 **Note:** Version bump only for package @repo/eslint-config

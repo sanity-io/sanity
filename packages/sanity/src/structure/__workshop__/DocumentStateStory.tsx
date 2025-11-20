@@ -194,7 +194,7 @@ function DocumentActionHook(props: {
   index: number
   onUpdate: (desc: DocumentActionDescription | null, idx: number) => void
 }) {
-  const {actionHook: useActionDescription, editState, index, onUpdate} = props
+  const {actionHook, editState, index, onUpdate} = props
 
   const onComplete = useCallback(() => {
     // @todo
@@ -204,13 +204,13 @@ function DocumentActionHook(props: {
     () => ({
       ...editState,
       onComplete,
-      // @todo
       revision: undefined,
+      initialValueResolved: true,
     }),
     [editState, onComplete],
   )
 
-  const actionDescription = useUnique(useActionDescription(actionProps))
+  const actionDescription = useUnique(actionHook(actionProps))
 
   useEffect(() => {
     onUpdate(actionDescription, index)

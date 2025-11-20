@@ -3,6 +3,47 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [4.16.0](https://github.com/sanity-io/sanity/compare/v4.15.0...v4.16.0) (2025-11-18)
+
+### Features
+
+* add sentiment-analysis function example ([#10106](https://github.com/sanity-io/sanity/issues/10106)) ([860d5cc](https://github.com/sanity-io/sanity/commit/860d5cc3fb5b112e10589a0b80c413d37d8ff145)) by Ken Jones (ken@sanity.io)
+* allow configuring sanity CLI config in testing ([#11133](https://github.com/sanity-io/sanity/issues/11133)) ([dd909ce](https://github.com/sanity-io/sanity/commit/dd909ce127696298e35a4810ed2c6cad9e4ffe40)) by Kristoffer Brabrand (kristoffer@brabrand.no)
+* **core:** add configurable `typography` plugin to PTE inputs ([f6e394d](https://github.com/sanity-io/sanity/commit/f6e394d21f790e135af309dd9cb5cb8ce9954a71)) by Christian Hamburger Grøngaard (christian.groengaard@sanity.io)
+* **form:** pass perspective stack to custom reference filters, apply returned perspective ([#11127](https://github.com/sanity-io/sanity/issues/11127)) ([22123ed](https://github.com/sanity-io/sanity/commit/22123ed113c484d9449b7b05d20c9a4f1abbe8ae)) by Bjørge Næss (bjoerge@gmail.com)
+* **limits:** add asset limit upsell dialog ([#11066](https://github.com/sanity-io/sanity/issues/11066)) ([0b5b953](https://github.com/sanity-io/sanity/commit/0b5b9531e3921eec64e078d9181fcf50c9c87e70)) by Matthew Ritter (matthew.ritter@sanity.io)
+* make enhancedObjectDialog opt out ([#11094](https://github.com/sanity-io/sanity/issues/11094)) ([f58536e](https://github.com/sanity-io/sanity/commit/f58536e844516005c4a63fdea7edc49558f955eb)) by RitaDias (rita@sanity.io)
+* **sanity:** check permissions for invite members button ([#11138](https://github.com/sanity-io/sanity/issues/11138)) ([50990e7](https://github.com/sanity-io/sanity/commit/50990e7c72d0e61d4163417b58a4fb5588df91a4)) by Herman Wikner (wiknerherman@gmail.com)
+* **structure:** add ability to maximise a document ([#10997](https://github.com/sanity-io/sanity/issues/10997)) ([3720d9b](https://github.com/sanity-io/sanity/commit/3720d9b1be0c4a297c8e14de5d6588136d405adb)) by RitaDias (rita@sanity.io)
+
+### Bug Fixes
+
+* add FullscreenPTEContext and SchedulesContext to singletons exports ([#11134](https://github.com/sanity-io/sanity/issues/11134)) ([c987fe4](https://github.com/sanity-io/sanity/commit/c987fe42db0bd4ab7129f0444bfc3d7caf37295b)) by Cody Olsen (81981+stipsan@users.noreply.github.com)
+* bug where changing the time manually in an input when the timezone was selected would change the time based on the computer timezone ([#11161](https://github.com/sanity-io/sanity/issues/11161)) ([28ba0ae](https://github.com/sanity-io/sanity/commit/28ba0ae8d9f178f91fa5f5a44df808e8ab5ded0c)) by RitaDias (rita@sanity.io)
+* **cli:** undeploy based on `appId`/`studioHost` ([#11131](https://github.com/sanity-io/sanity/issues/11131)) ([0e05188](https://github.com/sanity-io/sanity/commit/0e0518887ecf2528ca77bcce70fbc23dff160978)) by Espen Hovlandsdal (espen@hovlandsdal.com)
+* **core:** disable `typography` PTE plugin by default ([f7660dd](https://github.com/sanity-io/sanity/commit/f7660dd7b11bb5142173aff297b26a01462507ef)) by Christian Hamburger Grøngaard (christian.groengaard@sanity.io)
+* **core:** fix crossDatasetReference input previews ([#11154](https://github.com/sanity-io/sanity/issues/11154)) ([3fc1c5f](https://github.com/sanity-io/sanity/commit/3fc1c5f5ca248bf723c698204bbfcdf3d32501c4)) by Pedro Bonamin (46196328+pedrobonamin@users.noreply.github.com)
+* **core:** improve error state for invalid reference filter ([#11124](https://github.com/sanity-io/sanity/issues/11124)) ([a463854](https://github.com/sanity-io/sanity/commit/a4638547841afe3ec047c35d1d591dbb36b9cbcc)) by Bjørge Næss (bjoerge@gmail.com)
+* **core:** replace deprecated `OneLinePlugin` ([31dcd7c](https://github.com/sanity-io/sanity/commit/31dcd7cbdf1a3a238610584bf423c42d46e6a9f7)) by Christian Hamburger Grøngaard (christian.groengaard@sanity.io)
+* **core:** use `drafts` perspective for cross dataset refs previews ([#11158](https://github.com/sanity-io/sanity/issues/11158)) ([b7b4e5e](https://github.com/sanity-io/sanity/commit/b7b4e5edc804fbb8c51748f78403cabf5e85d0a3)) by Pedro Bonamin (46196328+pedrobonamin@users.noreply.github.com)
+* **core:** use publishedId when creating a child link ([#11163](https://github.com/sanity-io/sanity/issues/11163)) ([f0b2bf9](https://github.com/sanity-io/sanity/commit/f0b2bf94e29a0dce41f760c2e257a2f6478f957c)) by Pedro Bonamin (46196328+pedrobonamin@users.noreply.github.com)
+* **deps:** Update babel monorepo to ^7.28.5 ([#11181](https://github.com/sanity-io/sanity/issues/11181)) ([08d6e66](https://github.com/sanity-io/sanity/commit/08d6e66c0aa5cc7103da8e734c4bb151d9b0a179)) by renovate[bot] (29139614+renovate[bot]@users.noreply.github.com)
+* **deps:** Update CodeMirror ([#11182](https://github.com/sanity-io/sanity/issues/11182)) ([d90e127](https://github.com/sanity-io/sanity/commit/d90e127a8b952538ffaadf06b0323875ccc16c95)) by renovate[bot] (29139614+renovate[bot]@users.noreply.github.com)
+* **deps:** update dependency @portabletext/block-tools to ^4.0.2 ([#11055](https://github.com/sanity-io/sanity/issues/11055)) ([0cb63b4](https://github.com/sanity-io/sanity/commit/0cb63b46442457cc6ab7b73f90f9bc12b8318499)) by renovate[bot] (29139614+renovate[bot]@users.noreply.github.com)
+* **deps:** update dependency @sanity/client to ^7.12.1 ([#11129](https://github.com/sanity-io/sanity/issues/11129)) ([db726ea](https://github.com/sanity-io/sanity/commit/db726eaea3cdf89d5d0823cb7dea764f4c3d48b3)) by renovate[bot] (29139614+renovate[bot]@users.noreply.github.com)
+* **deps:** Update portabletext to v3 (major) ([#11156](https://github.com/sanity-io/sanity/issues/11156)) ([3448d67](https://github.com/sanity-io/sanity/commit/3448d6747dcd769c7213b24e2d92f2d48436155b)) by renovate[bot] (29139614+renovate[bot]@users.noreply.github.com)
+* **deps:** Update portabletext to v4 (major) ([#11157](https://github.com/sanity-io/sanity/issues/11157)) ([697beee](https://github.com/sanity-io/sanity/commit/697beeea25123b33efdefba7767a008650a532cb)) by renovate[bot] (29139614+renovate[bot]@users.noreply.github.com)
+* **deps:** upgrade react compiler to v1 ([#10834](https://github.com/sanity-io/sanity/issues/10834)) ([2573cb1](https://github.com/sanity-io/sanity/commit/2573cb15c224c762636500b339d0c2701aad1e68)) by Cody Olsen (81981+stipsan@users.noreply.github.com)
+* **functions:** support host flag in functions dev ([#11118](https://github.com/sanity-io/sanity/issues/11118)) ([9588b8b](https://github.com/sanity-io/sanity/commit/9588b8b805bdf4c1d911e7700be2f476a88a2f12)) by Simon MacDonald (simon.macdonald@gmail.com)
+* **i18n:** deprecate `minimalDays` property on week info ([#11005](https://github.com/sanity-io/sanity/issues/11005)) ([26496b6](https://github.com/sanity-io/sanity/commit/26496b663bee9f2740f4d3511946636bda56acab)) by Espen Hovlandsdal (espen@hovlandsdal.com)
+* issues where component.items weren't opening the enhanced object dialog ([#11152](https://github.com/sanity-io/sanity/issues/11152)) ([7627bfa](https://github.com/sanity-io/sanity/commit/7627bfa20f67efcf2abe81c4b51220d56acf442f)) by RitaDias (rita@sanity.io)
+* make it possible to double click specific items in the inspect ([#11120](https://github.com/sanity-io/sanity/issues/11120)) ([b8b13bb](https://github.com/sanity-io/sanity/commit/b8b13bb15f6c6b45178267832da60cdd4c31ad5b)) by RitaDias (rita@sanity.io)
+* **perf:** avoid 1s render root loop ([#11149](https://github.com/sanity-io/sanity/issues/11149)) ([7270dfe](https://github.com/sanity-io/sanity/commit/7270dfebad28a209a15276755b7bddb5011b6c97)) by Cody Olsen (81981+stipsan@users.noreply.github.com)
+* **perf:** remove unsafe ref reads during render ([#11148](https://github.com/sanity-io/sanity/issues/11148)) ([93eaf26](https://github.com/sanity-io/sanity/commit/93eaf26f0c84cc572fc27af8c30e117582033ee4)) by Cody Olsen (81981+stipsan@users.noreply.github.com)
+* **sanity:** allow importing assets without a data.ndjson file ([#11159](https://github.com/sanity-io/sanity/issues/11159)) ([393b11b](https://github.com/sanity-io/sanity/commit/393b11bd8ea2ece03b53114cf2dead87798bcfad)) by Fred Carlsen (fred@sjelfull.no)
+* **sanity:** revert switch on enhanced object dialog by default ([#11094](https://github.com/sanity-io/sanity/issues/11094)) ([#11191](https://github.com/sanity-io/sanity/issues/11191)) ([dbb28d7](https://github.com/sanity-io/sanity/commit/dbb28d7ca421b63e18b1a4b61c96b2ec7f2d9596)) by Ash (ash@sanity.io)
+* **structure:** revert add ability to maximise a document ([#10997](https://github.com/sanity-io/sanity/issues/10997)) ([#11190](https://github.com/sanity-io/sanity/issues/11190)) ([abb4d4d](https://github.com/sanity-io/sanity/commit/abb4d4d05674a382b234c5e86750523edbe6d83c)) by Ash (ash@sanity.io)
+
 ## [4.15.0](https://github.com/sanity-io/sanity/compare/v4.14.2...v4.15.0) (2025-11-11)
 
 ### Features

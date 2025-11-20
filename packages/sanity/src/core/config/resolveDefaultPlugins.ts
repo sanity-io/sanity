@@ -75,7 +75,6 @@ export function getDefaultPluginsOptions(
       enabled: true,
       // 25/12/2022 22:00
       inputDateTimeFormat: 'dd/MM/yyyy HH:mm',
-      showReleasesBanner: true,
       ...workspace.scheduledPublishing,
       // If the user has explicitly enabled scheduled publishing, we should respect that
       // eslint-disable-next-line camelcase

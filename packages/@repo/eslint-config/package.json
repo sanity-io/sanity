@@ -1,6 +1,6 @@
 {
   "name": "@repo/eslint-config",
-  "version": "4.15.0",
+  "version": "4.16.0",
   "private": true,
   "type": "module",
   "exports": {
@@ -11,22 +11,21 @@
     "lint": "eslint ."
   },
   "dependencies": {
-    "@eslint/js": "^9.39.0",
+    "@eslint/js": "^9.39.1",
     "eslint": "catalog:",
     "eslint-config-prettier": "^10.1.8",
     "eslint-config-sanity": "^7.1.4",
-    "eslint-config-turbo": "^2.6.0",
+    "eslint-config-turbo": "^2.6.1",
     "eslint-import-resolver-typescript": "^4.4.4",
     "eslint-plugin-import": "^2.32.0",
-    "eslint-plugin-oxlint": "1.28.0",
+    "eslint-plugin-oxlint": "1.29.0",
     "eslint-plugin-react": "^7.37.5",
-    "eslint-plugin-react-hooks": "6.0.0-rc.2",
-    "eslint-plugin-react-hooks-with-use-effect-event": "npm:eslint-plugin-react-hooks@0.0.0-experimental-4fdf7cf2-20251003",
+    "eslint-plugin-react-hooks": "7.0.1",
     "eslint-plugin-simple-import-sort": "^12.1.1",
-    "eslint-plugin-tsdoc": "^0.4.0",
+    "eslint-plugin-tsdoc": "^0.5.0",
     "eslint-plugin-unicorn": "^60.0.0",
     "eslint-plugin-unused-imports": "^4.3.0",
     "globals": "catalog:",
-    "typescript-eslint": "^8.46.2"
+    "typescript-eslint": "^8.46.4"
   }
 }

@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [4.16.0](https://github.com/sanity-io/sanity/compare/v4.15.0...v4.16.0) (2025-11-18)
+
+### Bug Fixes
+
+* **deps:** Update babel monorepo to ^7.28.5 ([#11181](https://github.com/sanity-io/sanity/issues/11181)) ([08d6e66](https://github.com/sanity-io/sanity/commit/08d6e66c0aa5cc7103da8e734c4bb151d9b0a179)) by renovate[bot] (29139614+renovate[bot]@users.noreply.github.com)
+
 ## [4.15.0](https://github.com/sanity-io/sanity/compare/v4.14.2...v4.15.0) (2025-11-11)
 
 **Note:** Version bump only for package @sanity/codegen

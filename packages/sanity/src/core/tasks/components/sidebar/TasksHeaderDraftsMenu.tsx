@@ -1,11 +1,12 @@
 import {CheckmarkIcon, ChevronDownIcon} from '@sanity/icons'
 import {Box, Menu, MenuDivider, Text} from '@sanity/ui'
-import {useCallback, useMemo} from 'react'
+import {useCallback} from 'react'
 import {styled} from 'styled-components'
 
 import {Button, MenuButton, type MenuButtonProps, MenuItem} from '../../../../ui-components'
 import {useTranslation} from '../../../i18n'
 import {useCurrentUser} from '../../../store'
+import {EMPTY_ARRAY} from '../../../util'
 import {useTasks, useTasksNavigation} from '../../context'
 import {tasksLocaleNamespace} from '../../i18n'
 import {type TaskDocument} from '../../types'
@@ -55,17 +56,15 @@ export function TasksHeaderDraftsMenu() {
 
   const currentUser = useCurrentUser()
 
-  const draftTasks = useMemo(() => {
-    if (!currentUser?.id) return []
-
-    return data.filter((task) => {
-      const isAuthoredByUser = task.authorId === currentUser.id
-      const isDraft = !task.createdByUser
-      const hasEdits = task._updatedAt !== task._createdAt
-      const isNotTheTaskBeingCreated = viewMode === 'create' ? task._id !== selectedTask : true
-      return isAuthoredByUser && isDraft && isNotTheTaskBeingCreated && hasEdits
-    })
-  }, [data, selectedTask, currentUser?.id, viewMode])
+  const draftTasks = currentUser?.id
+    ? data.filter((task) => {
+        const isAuthoredByUser = task.authorId === currentUser.id
+        const isDraft = !task.createdByUser
+        const hasEdits = task._updatedAt !== task._createdAt
+        const isNotTheTaskBeingCreated = viewMode === 'create' ? task._id !== selectedTask : true
+        return isAuthoredByUser && isDraft && isNotTheTaskBeingCreated && hasEdits
+      })
+    : EMPTY_ARRAY
 
   const handleSelectTask = useCallback(
     (id: string) => {

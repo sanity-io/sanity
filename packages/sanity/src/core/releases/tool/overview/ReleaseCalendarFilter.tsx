@@ -1,6 +1,6 @@
 import {CloseIcon} from '@sanity/icons'
 import {format} from 'date-fns'
-import {AnimatePresence, motion} from 'framer-motion'
+import {AnimatePresence, motion} from 'motion/react'
 import {useMemo, useState} from 'react'
 
 import {Button} from '../../../../ui-components'

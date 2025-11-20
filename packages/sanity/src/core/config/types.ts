@@ -1115,7 +1115,7 @@ export interface ScheduledPublishingPluginOptions {
   __internal__workspaceEnabled?: boolean
   /**
    * Whether to show the use releases warning banner in the tool.
-   * @defaultValue true
+   * @deprecated The banner this controls is no longer being used
    */
   showReleasesBanner?: boolean
 }

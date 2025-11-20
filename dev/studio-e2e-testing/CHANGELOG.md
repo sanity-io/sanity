@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [4.16.0](https://github.com/sanity-io/sanity/compare/v4.15.0...v4.16.0) (2025-11-18)
+
+### Features
+
+* make enhancedObjectDialog opt out ([#11094](https://github.com/sanity-io/sanity/issues/11094)) ([f58536e](https://github.com/sanity-io/sanity/commit/f58536e844516005c4a63fdea7edc49558f955eb)) by RitaDias (rita@sanity.io)
+
+### Bug Fixes
+
+* **deps:** upgrade react compiler to v1 ([#10834](https://github.com/sanity-io/sanity/issues/10834)) ([2573cb1](https://github.com/sanity-io/sanity/commit/2573cb15c224c762636500b339d0c2701aad1e68)) by Cody Olsen (81981+stipsan@users.noreply.github.com)
+* **sanity:** revert switch on enhanced object dialog by default ([#11094](https://github.com/sanity-io/sanity/issues/11094)) ([#11191](https://github.com/sanity-io/sanity/issues/11191)) ([dbb28d7](https://github.com/sanity-io/sanity/commit/dbb28d7ca421b63e18b1a4b61c96b2ec7f2d9596)) by Ash (ash@sanity.io)
+
 ## [4.15.0](https://github.com/sanity-io/sanity/compare/v4.14.2...v4.15.0) (2025-11-11)
 
 ### Bug Fixes

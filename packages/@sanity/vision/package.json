@@ -1,6 +1,6 @@
 {
   "name": "@sanity/vision",
-  "version": "4.15.0",
+  "version": "4.16.0",
   "description": "Sanity plugin for running/debugging GROQ-queries against Sanity datasets",
   "keywords": [
     "sanity",
@@ -52,13 +52,13 @@
     "watch": "pkg-utils watch"
   },
   "dependencies": {
-    "@codemirror/autocomplete": "^6.19.0",
-    "@codemirror/commands": "^6.9.0",
+    "@codemirror/autocomplete": "^6.19.1",
+    "@codemirror/commands": "^6.10.0",
     "@codemirror/lang-javascript": "^6.2.4",
     "@codemirror/language": "^6.11.3",
     "@codemirror/search": "^6.5.11",
     "@codemirror/state": "^6.5.2",
-    "@codemirror/view": "^6.38.6",
+    "@codemirror/view": "^6.38.7",
     "@juggle/resize-observer": "^3.4.0",
     "@lezer/highlight": "^1.2.1",
     "@rexxars/react-json-inspector": "^9.0.1",
@@ -73,7 +73,7 @@
     "json5": "^2.2.3",
     "lodash": "^4.17.21",
     "quick-lru": "^5.1.1",
-    "react-compiler-runtime": "19.1.0-rc.3",
+    "react-compiler-runtime": "1.0.0",
     "react-fast-compare": "^3.2.2",
     "react-rx": "^4.2.2",
     "rxjs": "^7.8.2",
@@ -92,7 +92,7 @@
     "@types/lodash": "^4.17.20",
     "@types/react": "catalog:",
     "@vitejs/plugin-react": "catalog:",
-    "babel-plugin-react-compiler": "19.1.0-rc.3",
+    "babel-plugin-react-compiler": "1.0.0",
     "eslint": "catalog:",
     "react": "catalog:",
     "react-dom": "catalog:",

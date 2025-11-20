@@ -3,7 +3,7 @@ import {type PortableTextBlock} from '@sanity/types'
 import {Stack, useBoundaryElement} from '@sanity/ui'
 import * as PathUtils from '@sanity/util/paths'
 import {uuid} from '@sanity/uuid'
-import {AnimatePresence, motion, type Variants} from 'framer-motion'
+import {AnimatePresence, motion, type Variants} from 'motion/react'
 import {useCallback, useMemo, useRef, useState} from 'react'
 import {css, styled} from 'styled-components'
 

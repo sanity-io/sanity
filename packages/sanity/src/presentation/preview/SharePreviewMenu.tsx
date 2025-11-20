@@ -20,7 +20,7 @@ import {
   Text,
   useToast,
 } from '@sanity/ui'
-import {AnimatePresence, motion} from 'framer-motion'
+import {AnimatePresence, motion} from 'motion/react'
 import {lazy, Suspense, useCallback, useEffect, useMemo, useState} from 'react'
 import {useClient, useCurrentUser, useTranslation} from 'sanity'
 import {styled} from 'styled-components'

@@ -1,6 +1,6 @@
 {
   "name": "@sanity/codegen",
-  "version": "4.15.0",
+  "version": "4.16.0",
   "description": "Codegen toolkit for Sanity.io",
   "keywords": [
     "sanity",
@@ -49,14 +49,14 @@
     "watch": "pkg-utils watch"
   },
   "dependencies": {
-    "@babel/core": "^7.28.4",
-    "@babel/generator": "^7.28.3",
-    "@babel/preset-env": "^7.28.3",
-    "@babel/preset-react": "^7.27.1",
-    "@babel/preset-typescript": "^7.27.1",
+    "@babel/core": "^7.28.5",
+    "@babel/generator": "^7.28.5",
+    "@babel/preset-env": "^7.28.5",
+    "@babel/preset-react": "^7.28.5",
+    "@babel/preset-typescript": "^7.28.5",
     "@babel/register": "^7.28.3",
-    "@babel/traverse": "^7.28.4",
-    "@babel/types": "^7.28.4",
+    "@babel/traverse": "^7.28.5",
+    "@babel/types": "^7.28.5",
     "debug": "^4.4.3",
     "globby": "^11.1.0",
     "groq": "workspace:*",

@@ -84,6 +84,14 @@ const sharedSettings = ({projectId}: {projectId: string}) => {
       bundles: testStudioLocaleBundles,
     },
 
+    beta: {
+      form: {
+        enhancedObjectDialog: {
+          enabled: true,
+        },
+      },
+    },
+
     mediaLibrary: {
       enabled: true,
     },
@@ -221,7 +229,6 @@ const defaultWorkspace = defineConfig({
   scheduledPublishing: {
     enabled: true,
     inputDateTimeFormat: 'MM/dd/yy h:mm a',
-    showReleasesBanner: false,
   },
   tasks: {
     enabled: true,

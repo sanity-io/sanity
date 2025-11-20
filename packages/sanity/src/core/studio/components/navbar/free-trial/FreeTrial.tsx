@@ -1,5 +1,5 @@
 import {useTelemetry} from '@sanity/telemetry/react'
-import {useCallback, useEffect, useState} from 'react'
+import {useEffect, useState} from 'react'
 
 import {Popover} from '../../../../../ui-components'
 import {useColorSchemeValue} from '../../../colorScheme'
@@ -35,55 +35,49 @@ export function FreeTrial({type}: FreeTrialProps) {
       setShowPopover(true)
     }
   }, [ref])
-  const closeAndReOpen = useCallback(() => toggleShowContent(true), [toggleShowContent])
-  const toggleDialog = useCallback(() => {
+  const closeAndReOpen = () => toggleShowContent(true)
+  const toggleDialog = () => {
     ref?.focus()
     toggleShowContent(false)
-  }, [toggleShowContent, ref])
+  }
 
-  const handleClose = useCallback(
-    (dialogType?: 'modal' | 'popover') => {
-      return (action?: TrialDialogDismissedInfo['dialogDismissAction']) => {
-        const dialog = data?.showOnLoad || data?.showOnClick
+  const handleClose = (dialogType?: 'modal' | 'popover') => {
+    return (action?: TrialDialogDismissedInfo['dialogDismissAction']) => {
+      const dialog = data?.showOnLoad || data?.showOnClick
 
-        if (dialog)
-          telemetry.log(TrialDialogDismissed, {
-            dialogId: dialog.id,
-            dialogRevision: dialog._rev,
-            dialogType,
-            source: 'studio',
-            trialDaysLeft: data.daysLeft,
-            dialogTrialStage: getTrialStage({showOnLoad, dialogId: dialog.id}),
-            dialogDismissAction: action,
-          })
+      if (dialog)
+        telemetry.log(TrialDialogDismissed, {
+          dialogId: dialog.id,
+          dialogRevision: dialog._rev,
+          dialogType,
+          source: 'studio',
+          trialDaysLeft: data.daysLeft,
+          dialogTrialStage: getTrialStage({showOnLoad, dialogId: dialog.id}),
+          dialogDismissAction: action,
+        })
 
-        toggleDialog()
-      }
-    },
-    [data, toggleDialog, showOnLoad, telemetry],
-  )
+      toggleDialog()
+    }
+  }
 
-  const handleDialogCTAClick = useCallback(
-    (action?: 'openURL' | 'openNext') => {
-      return () => {
-        const dialog = data?.showOnLoad || data?.showOnClick
-        if (dialog)
-          telemetry.log(TrialDialogCTAClicked, {
-            dialogId: dialog.id,
-            dialogRevision: dialog._rev,
-            dialogType: 'modal',
-            source: 'studio',
-            trialDaysLeft: data.daysLeft,
-            dialogTrialStage: getTrialStage({showOnLoad, dialogId: dialog.id}),
-            dialogCtaType: action === 'openURL' ? 'upgrade' : 'learnMore',
-          })
-        closeAndReOpen()
-      }
-    },
-    [data, closeAndReOpen, telemetry, showOnLoad],
-  )
+  const handleDialogCTAClick = (action?: 'openURL' | 'openNext') => {
+    return () => {
+      const dialog = data?.showOnLoad || data?.showOnClick
+      if (dialog)
+        telemetry.log(TrialDialogCTAClicked, {
+          dialogId: dialog.id,
+          dialogRevision: dialog._rev,
+          dialogType: 'modal',
+          source: 'studio',
+          trialDaysLeft: data.daysLeft,
+          dialogTrialStage: getTrialStage({showOnLoad, dialogId: dialog.id}),
+          dialogCtaType: action === 'openURL' ? 'upgrade' : 'learnMore',
+        })
+      closeAndReOpen()
+    }
+  }
 
-  const handlePopoverCTAClick = useCallback(() => {
+  const handlePopoverCTAClick = () => {
     if (data?.showOnLoad)
       telemetry.log(TrialDialogCTAClicked, {
         dialogId: data.showOnLoad.id,
@@ -95,9 +89,9 @@ export function FreeTrial({type}: FreeTrialProps) {
         dialogCtaType: 'learnMore',
       })
     closeAndReOpen()
-  }, [data?.showOnLoad, data?.daysLeft, closeAndReOpen, telemetry])
+  }
 
-  const handleOnTrialButtonClick = useCallback(() => {
+  const handleOnTrialButtonClick = () => {
     if (data?.showOnClick)
       telemetry.log(TrialDialogViewed, {
         dialogId: data.showOnClick.id,
@@ -109,7 +103,7 @@ export function FreeTrial({type}: FreeTrialProps) {
         dialogTrialStage: getTrialStage({showOnLoad: true, dialogId: data.showOnClick.id}),
       })
     closeAndReOpen()
-  }, [data?.showOnClick, data?.daysLeft, telemetry, closeAndReOpen])
+  }
 
   if (!data?.id) return null
   const dialogToRender = showOnLoad ? data.showOnLoad : data.showOnClick

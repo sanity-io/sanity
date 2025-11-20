@@ -3,6 +3,14 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [4.16.0](https://github.com/sanity-io/sanity/compare/v4.15.0...v4.16.0) (2025-11-18)
+
+### Bug Fixes
+
+* add FullscreenPTEContext and SchedulesContext to singletons exports ([#11134](https://github.com/sanity-io/sanity/issues/11134)) ([c987fe4](https://github.com/sanity-io/sanity/commit/c987fe42db0bd4ab7129f0444bfc3d7caf37295b)) by Cody Olsen (81981+stipsan@users.noreply.github.com)
+* **deps:** upgrade react compiler to v1 ([#10834](https://github.com/sanity-io/sanity/issues/10834)) ([2573cb1](https://github.com/sanity-io/sanity/commit/2573cb15c224c762636500b339d0c2701aad1e68)) by Cody Olsen (81981+stipsan@users.noreply.github.com)
+* **structure:** revert add ability to maximise a document ([#10997](https://github.com/sanity-io/sanity/issues/10997)) ([#11190](https://github.com/sanity-io/sanity/issues/11190)) ([abb4d4d](https://github.com/sanity-io/sanity/commit/abb4d4d05674a382b234c5e86750523edbe6d83c)) by Ash (ash@sanity.io)
+
 ## [4.15.0](https://github.com/sanity-io/sanity/compare/v4.14.2...v4.15.0) (2025-11-11)
 
 **Note:** Version bump only for package @repo/test-dts-exports

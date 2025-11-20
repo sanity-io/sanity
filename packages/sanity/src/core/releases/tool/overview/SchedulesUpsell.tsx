@@ -1,5 +1,5 @@
 import {Box, Container, Flex} from '@sanity/ui'
-import {motion} from 'framer-motion'
+import {motion} from 'motion/react'
 import {useCallback} from 'react'
 import {styled} from 'styled-components'
 

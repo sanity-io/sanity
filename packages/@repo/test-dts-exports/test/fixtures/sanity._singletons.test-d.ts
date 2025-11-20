@@ -25,6 +25,7 @@ import type {
   CopyPasteContext,
   DiffContext,
   DocumentActionPropsContext,
+  DocumentActionsStateContext,
   DocumentChangeContext,
   DocumentFieldActionsContext,
   DocumentFieldActionsContextValue,
@@ -179,6 +180,9 @@ describe('sanity/_singletons', () => {
   })
   test('DocumentActionPropsContext', () => {
     expectTypeOf<typeof DocumentActionPropsContext>().not.toBeNever()
+  })
+  test('DocumentActionsStateContext', () => {
+    expectTypeOf<typeof DocumentActionsStateContext>().not.toBeNever()
   })
   test('DocumentChangeContext', () => {
     expectTypeOf<typeof DocumentChangeContext>().not.toBeNever()
