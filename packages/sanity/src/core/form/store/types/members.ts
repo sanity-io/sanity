@@ -1,6 +1,7 @@
 import {type ArraySchemaType} from '@sanity/types'
 import {type ReactNode} from 'react'
 
+import {type RenderMembersCallback} from '../../types/inputProps'
 import {type FieldsetState} from './fieldsetState'
 import {type ArrayItemError, type FieldError} from './memberErrors'
 import {type BaseFormNode, type ObjectArrayFormNode, type PrimitiveFormNode} from './nodes'
@@ -125,6 +126,12 @@ export interface FieldSetMember {
    * The state of the field set.
    */
   fieldSet: FieldsetState
+  /**
+   * @hidden
+   * @beta
+   * The callback to render the members of the field set.
+   */
+  renderMembers?: RenderMembersCallback
 }
 
 /**

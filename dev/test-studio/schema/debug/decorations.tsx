@@ -1,6 +1,6 @@
 import {ConfettiIcon} from '@sanity/icons'
 import {Card, Text} from '@sanity/ui'
-import {type DecorationMember, defineField, defineType} from 'sanity'
+import {defineField, defineType} from 'sanity'
 
 export function Decoration({title}: {title: string}) {
   return (
@@ -20,6 +20,16 @@ export const decorations = defineType({
     {
       name: 'settings',
       title: 'Settings',
+      renderMembers: (members) => {
+        return [
+          ...members,
+          {
+            key: 'decoration',
+            kind: 'decoration',
+            component: () => <Decoration title={'This is inside a fieldset'} />,
+          },
+        ]
+      },
     },
   ],
   fields: [
@@ -81,25 +91,7 @@ export const decorations = defineType({
         kind: 'decoration',
         component: () => <Decoration title={'This is a fancy decorated schema type!'} />,
       },
-      ...members.map((member) => {
-        if (member.kind === 'fieldSet') {
-          return {
-            ...member,
-            fieldSet: {
-              ...member.fieldSet,
-              members: [
-                ...member.fieldSet.members,
-                {
-                  key: 'decoration',
-                  kind: 'decoration',
-                  component: () => <Decoration title={'This is a fieldset decoration!'} />,
-                } as DecorationMember,
-              ],
-            },
-          }
-        }
-        return member
-      }),
+      ...members,
     ]
   },
 })
