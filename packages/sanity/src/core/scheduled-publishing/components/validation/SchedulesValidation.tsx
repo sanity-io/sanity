@@ -1,6 +1,7 @@
 import {useEffect, useState} from 'react'
 
 import {useValidationStatus} from '../../../hooks/useValidationStatus'
+import {getDraftId} from '../../../util/draftUtils'
 import {useScheduleSchemaType} from '../../hooks/useSchemaType'
 import {type Schedule, type ValidationStatus} from '../../types'
 import {getScheduledDocumentId} from '../../utils/paneItemHelpers'
@@ -62,7 +63,7 @@ function DelayedValidationRunner({id, schemaName, updateValidation}: ValidationR
 }
 
 function ValidationRunner({id, schemaName, updateValidation}: ValidationRunnerProps) {
-  const draftId = `drafts.${id}`
+  const draftId = getDraftId(id)
   const validationStatus = useValidationStatus(id, schemaName, draftId)
 
   useEffect(() => {
