@@ -136,7 +136,7 @@ function getDocumentFieldDefinitions(
     const targetObject = existingDocument || existingObject || inlineObject
 
     if (targetObject) {
-      targetObject?.fields?.forEach((field) =>
+      for (const field of targetObject.fields ?? []) {
         addFieldDefinitionRecursive({
           acc,
           defType: field as ObjectDefinition,
@@ -144,8 +144,8 @@ function getDocumentFieldDefinitions(
           documentType,
           prevFieldPath: fieldPath,
           prevTitlePath: titlePath,
-        }),
-      )
+        })
+      }
       return
     }
 
