@@ -5,6 +5,7 @@ import {
   createCustomPublishAction,
   createNoopPatchPublishAction,
 } from './actions/createCustomPublishAction'
+import {useDebugAction} from './actions/DebugAction'
 import {TestConfirmDialogAction} from './actions/TestConfirmDialogAction'
 import {TestCustomComponentAction} from './actions/TestCustomComponentAction'
 import {TestCustomRestoreAction} from './actions/TestCustomRestoreAction'
@@ -14,6 +15,7 @@ import {TestPopoverDialogAction} from './actions/TestPopoverDialogAction'
 export const resolveDocumentActions: DocumentActionsResolver = (prev, {schemaType}) => {
   if (schemaType === 'documentActionsTest') {
     return [
+      useDebugAction,
       TestConfirmDialogAction,
       TestModalDialogAction,
       TestPopoverDialogAction,

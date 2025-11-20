@@ -550,7 +550,7 @@ importers:
         version: 4.0.0(@emotion/is-prop-valid@1.4.0)(@types/react@19.2.2)(react-dom@19.2.0(react@19.2.0))(react-is@19.2.0)(react@19.2.0)(sanity@packages+sanity)(styled-components@6.1.19(react-dom@19.2.0(react@19.2.0))(react@19.2.0))
       sanity-plugin-mux-input:
         specifier: ^2.11.2
-        version: 2.11.2(@emotion/is-prop-valid@1.4.0)(@types/react@19.2.2)(react-dom@19.2.0(react@19.2.0))(react-is@19.2.0)(react@19.2.0)(sanity@packages+sanity)(styled-components@6.1.19(react-dom@19.2.0(react@19.2.0))(react@19.2.0))
+        version: 2.11.2(@emotion/is-prop-valid@1.4.0)(@types/react-dom@19.2.2(@types/react@19.2.2))(@types/react@19.2.2)(react-dom@19.2.0(react@19.2.0))(react-is@19.2.0)(react@19.2.0)(sanity@packages+sanity)(styled-components@6.1.19(react-dom@19.2.0(react@19.2.0))(react@19.2.0))
       sanity-test-studio:
         specifier: workspace:*
         version: link:../test-studio
@@ -726,7 +726,7 @@ importers:
         version: 4.0.0(@emotion/is-prop-valid@1.4.0)(@types/react@19.2.2)(react-dom@19.2.0(react@19.2.0))(react-is@19.2.0)(react@19.2.0)(sanity@packages+sanity)(styled-components@6.1.19(react-dom@19.2.0(react@19.2.0))(react@19.2.0))
       sanity-plugin-mux-input:
         specifier: ^2.11.2
-        version: 2.11.2(@emotion/is-prop-valid@1.4.0)(@types/react@19.2.2)(react-dom@19.2.0(react@19.2.0))(react-is@19.2.0)(react@19.2.0)(sanity@packages+sanity)(styled-components@6.1.19(react-dom@19.2.0(react@19.2.0))(react@19.2.0))
+        version: 2.11.2(@emotion/is-prop-valid@1.4.0)(@types/react-dom@19.2.2(@types/react@19.2.2))(@types/react@19.2.2)(react-dom@19.2.0(react@19.2.0))(react-is@19.2.0)(react@19.2.0)(sanity@packages+sanity)(styled-components@6.1.19(react-dom@19.2.0(react@19.2.0))(react@19.2.0))
       styled-components:
         specifier: 'catalog:'
         version: 6.1.19(react-dom@19.2.0(react@19.2.0))(react@19.2.0)
@@ -734,6 +734,12 @@ importers:
       '@repo/eslint-config':
         specifier: workspace:*
         version: link:../../packages/@repo/eslint-config
+      '@types/react':
+        specifier: 'catalog:'
+        version: 19.2.2
+      '@types/react-dom':
+        specifier: 'catalog:'
+        version: 19.2.2(@types/react@19.2.2)
       babel-plugin-react-compiler:
         specifier: 1.0.0
         version: 1.0.0
@@ -23476,7 +23482,7 @@ snapshots:
       - debug
       - supports-color
 
-  sanity-plugin-mux-input@2.11.2(@emotion/is-prop-valid@1.4.0)(@types/react@19.2.2)(react-dom@19.2.0(react@19.2.0))(react-is@19.2.0)(react@19.2.0)(sanity@packages+sanity)(styled-components@6.1.19(react-dom@19.2.0(react@19.2.0))(react@19.2.0)):
+  sanity-plugin-mux-input@2.11.2(@emotion/is-prop-valid@1.4.0)(@types/react-dom@19.2.2(@types/react@19.2.2))(@types/react@19.2.2)(react-dom@19.2.0(react@19.2.0))(react-is@19.2.0)(react@19.2.0)(sanity@packages+sanity)(styled-components@6.1.19(react-dom@19.2.0(react@19.2.0))(react@19.2.0)):
     dependencies:
       '@mux/mux-player-react': 3.8.0(@types/react-dom@19.2.2(@types/react@19.2.2))(@types/react@19.2.2)(react-dom@19.2.0(react@19.2.0))(react@19.2.0)
       '@mux/upchunk': 3.5.0

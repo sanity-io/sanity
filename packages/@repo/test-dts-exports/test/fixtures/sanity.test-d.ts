@@ -3605,7 +3605,7 @@ describe('sanity', () => {
     expectTypeOf<typeof GetFormValueProvider>().not.toBeNever()
   })
   test('GetHookCollectionState', () => {
-    expectTypeOf<typeof GetHookCollectionState>().not.toBeNever()
+    expectTypeOf<typeof GetHookCollectionState>().toBeFunction()
   })
   test('GetHookCollectionStateProps', () => {
     expectTypeOf<GetHookCollectionStateProps<any, any>>().toBeObject()

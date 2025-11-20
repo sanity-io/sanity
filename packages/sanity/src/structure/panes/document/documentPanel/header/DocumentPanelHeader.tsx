@@ -21,16 +21,17 @@ import {
   PaneHeader,
   PaneHeaderActionButton,
   RenderActionCollectionState,
+  type ResolvedAction,
   usePane,
   usePaneRouter,
 } from '../../../../components'
 import {type _PaneMenuNode} from '../../../../components/pane/types'
+import {HistoryRestoreAction} from '../../../../documentActions/HistoryRestoreAction'
 import {structureLocaleNamespace} from '../../../../i18n'
 import {isMenuNodeButton, isNotMenuNodeButton, resolveMenuNodes} from '../../../../menuNodes'
 import {type PaneMenuItem} from '../../../../types'
 import {useStructureTool} from '../../../../useStructureTool'
 import {ActionDialogWrapper, ActionMenuListItem} from '../../statusBar/ActionMenuButton'
-import {isRestoreAction} from '../../statusBar/DocumentStatusBarActions'
 import {useDocumentPane} from '../../useDocumentPane'
 import {DocumentHeaderTitle} from './DocumentHeaderTitle'
 import {useChipScrollPosition} from './hook/useChipScrollPosition'
@@ -80,10 +81,8 @@ export const DocumentPanelHeader = memo(
   ) {
     const {menuItems} = _props
     const {
-      actions: allActions,
       editState,
       onMenuAction,
-      isInitialValueLoading,
       onPaneClose,
       onPaneSplit,
       menuItemGroups,
@@ -91,6 +90,7 @@ export const DocumentPanelHeader = memo(
       connectionState,
       views,
       unstable_languageFilter,
+      documentId,
     } = useDocumentPane()
     const {features} = useStructureTool()
     const {index, BackLink, hasGroupSiblings} = usePaneRouter()
@@ -98,13 +98,6 @@ export const DocumentPanelHeader = memo(
     const [referenceElement, setReferenceElement] = useState<HTMLElement | null>(null)
     const scrollContainerRef = useRef<HTMLDivElement>(null)
     const showGradient = useChipScrollPosition(scrollContainerRef)
-
-    // The restore action has a dedicated place in the UI; it's only visible when the user is
-    // viewing a different document revision. It must be omitted from this collection.
-    const actions = useMemo(
-      () => (allActions ?? []).filter((action) => !isRestoreAction(action)),
-      [allActions],
-    )
 
     const menuNodes = useMemo(
       () =>
@@ -114,7 +107,6 @@ export const DocumentPanelHeader = memo(
 
     const menuButtonNodes = useMemo(() => menuNodes.filter(isMenuNodeButton), [menuNodes])
     const contextMenuNodes = useMemo(() => menuNodes.filter(isNotMenuNodeButton), [menuNodes])
-    const showTabs = views.length > 1
 
     const {collapsed, isLast} = usePane()
     // Prevent focus if this is the last (non-collapsed) pane.
@@ -147,20 +139,6 @@ export const DocumentPanelHeader = memo(
 
     const {t} = useTranslation(structureLocaleNamespace)
 
-    const renderPaneActions = useCallback<
-      (props: {states: DocumentActionDescription[]}) => React.ReactNode
-    >(
-      ({states}) => (
-        <DocumentPanelHeaderActionDialogDeferred
-          contextMenuNodes={contextMenuNodes}
-          setReferenceElement={setReferenceElement}
-          referenceElement={referenceElement}
-          states={states}
-        />
-      ),
-      [contextMenuNodes, referenceElement],
-    )
-
     const title = useMemo(() => <DocumentHeaderTitle />, [])
     const backButton = useMemo(
       () =>
@@ -174,81 +152,6 @@ export const DocumentPanelHeader = memo(
           />
         ),
       [BackLink, showBackButton, t],
-    )
-    const renderedActions = useMemo(
-      () => (
-        <Flex align="center" gap={1}>
-          {unstable_languageFilter.length > 0 && (
-            <>
-              {unstable_languageFilter.map((LanguageFilterComponent, idx) => {
-                return (
-                  <LanguageFilterComponent key={`language-filter-${idx}`} schemaType={schemaType} />
-                )
-              })}
-            </>
-          )}
-
-          {menuButtonNodes.map((item) => (
-            <PaneHeaderActionButton key={item.key} node={item} />
-          ))}
-          {editState && (
-            <RenderActionCollectionState
-              actions={actions}
-              actionProps={{...editState, initialValueResolved: !isInitialValueLoading}}
-              group="paneActions"
-            >
-              {renderPaneActions}
-            </RenderActionCollectionState>
-          )}
-
-          {showSplitPaneButton && (
-            <Button
-              key="split-pane-button"
-              aria-label={t('buttons.split-pane-button.aria-label')}
-              icon={SplitVerticalIcon}
-              mode="bleed"
-              onClick={onPaneSplit}
-              tooltipProps={{content: t('buttons.split-pane-button.tooltip')}}
-            />
-          )}
-
-          {showSplitPaneCloseButton && (
-            <Button
-              key="close-view-button"
-              icon={CloseIcon}
-              mode="bleed"
-              onClick={onPaneClose}
-              tooltipProps={{content: t('buttons.split-pane-close-button.title')}}
-            />
-          )}
-
-          {showPaneGroupCloseButton && (
-            <Button
-              key="close-view-button"
-              icon={CloseIcon}
-              mode="bleed"
-              tooltipProps={{content: t('buttons.split-pane-close-group-button.title')}}
-              as={BackLink}
-            />
-          )}
-        </Flex>
-      ),
-      [
-        BackLink,
-        actions,
-        editState,
-        isInitialValueLoading,
-        menuButtonNodes,
-        onPaneClose,
-        onPaneSplit,
-        renderPaneActions,
-        schemaType,
-        showPaneGroupCloseButton,
-        showSplitPaneButton,
-        showSplitPaneCloseButton,
-        t,
-        unstable_languageFilter,
-      ],
     )
 
     return (
@@ -279,7 +182,67 @@ export const DocumentPanelHeader = memo(
               </HorizontalScroller>
 
               <Box flex="none" paddingRight={3}>
-                {renderedActions}
+                <Flex align="center" gap={1}>
+                  {unstable_languageFilter.length > 0 && (
+                    <>
+                      {unstable_languageFilter.map((LanguageFilterComponent, idx) => {
+                        return (
+                          <LanguageFilterComponent
+                            key={`language-filter-${idx}`}
+                            schemaType={schemaType}
+                          />
+                        )
+                      })}
+                    </>
+                  )}
+
+                  {menuButtonNodes.map((item) => (
+                    <PaneHeaderActionButton key={item.key} node={item} />
+                  ))}
+                  {editState && (
+                    <RenderActionCollectionState group="paneActions">
+                      {({states}) => (
+                        <DocumentPanelHeaderActionDialogDeferred
+                          contextMenuNodes={contextMenuNodes}
+                          setReferenceElement={setReferenceElement}
+                          referenceElement={referenceElement}
+                          states={states}
+                        />
+                      )}
+                    </RenderActionCollectionState>
+                  )}
+
+                  {showSplitPaneButton && (
+                    <Button
+                      key="split-pane-button"
+                      aria-label={t('buttons.split-pane-button.aria-label')}
+                      icon={SplitVerticalIcon}
+                      mode="bleed"
+                      onClick={onPaneSplit}
+                      tooltipProps={{content: t('buttons.split-pane-button.tooltip')}}
+                    />
+                  )}
+
+                  {showSplitPaneCloseButton && (
+                    <Button
+                      key="close-view-button"
+                      icon={CloseIcon}
+                      mode="bleed"
+                      onClick={onPaneClose}
+                      tooltipProps={{content: t('buttons.split-pane-close-button.title')}}
+                    />
+                  )}
+
+                  {showPaneGroupCloseButton && (
+                    <Button
+                      key="close-view-button"
+                      icon={CloseIcon}
+                      mode="bleed"
+                      tooltipProps={{content: t('buttons.split-pane-close-group-button.title')}}
+                      as={BackLink}
+                    />
+                  )}
+                </Flex>
               </Box>
             </Flex>
           </Card>
@@ -291,7 +254,7 @@ export const DocumentPanelHeader = memo(
 
 const DocumentPanelHeaderActionDialogDeferred = memo(
   function DocumentPanelHeaderActionDialogDeferred(props: {
-    states: DocumentActionDescription[]
+    states: ResolvedAction[]
     setReferenceElement: React.Dispatch<React.SetStateAction<HTMLElement | null>>
     referenceElement: HTMLElement | null
     contextMenuNodes: _PaneMenuNode[]
@@ -308,7 +271,11 @@ const DocumentPanelHeaderActionDialogDeferred = memo(
         setReferenceElement={setReferenceElement}
         referenceElement={referenceElement}
         contextMenuNodes={contextMenuNodes}
-        states={states}
+        // The restore action has a dedicated place in the UI; it's only visible when the user is
+        // viewing a different document revision. It must be omitted from this collection.
+        states={states.filter((state) =>
+          state.action ? state.action !== HistoryRestoreAction.action : true,
+        )}
       />
     )
   },
