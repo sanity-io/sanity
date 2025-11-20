@@ -1,4 +1,5 @@
-import {ArrowLeftIcon, CloseIcon, SplitVerticalIcon} from '@sanity/icons'
+import {ArrowLeftIcon, CloseIcon, CollapseIcon, ExpandIcon, SplitVerticalIcon} from '@sanity/icons'
+import {useTelemetry} from '@sanity/telemetry/react'
 import {Box, Card, Flex} from '@sanity/ui'
 // eslint-disable-next-line camelcase
 import {getTheme_v2, rgba} from '@sanity/ui/theme'
@@ -29,10 +30,12 @@ import {type _PaneMenuNode} from '../../../../components/pane/types'
 import {HistoryRestoreAction} from '../../../../documentActions/HistoryRestoreAction'
 import {structureLocaleNamespace} from '../../../../i18n'
 import {isMenuNodeButton, isNotMenuNodeButton, resolveMenuNodes} from '../../../../menuNodes'
+import {useResolvedPanesList} from '../../../../structureResolvers/useResolvedPanesList'
 import {type PaneMenuItem} from '../../../../types'
 import {useStructureTool} from '../../../../useStructureTool'
 import {ActionDialogWrapper, ActionMenuListItem} from '../../statusBar/ActionMenuButton'
 import {useDocumentPane} from '../../useDocumentPane'
+import {FocusDocumentPaneClicked, FocusDocumentPaneCollapsed} from './__telemetry__/focus.telemetry'
 import {DocumentHeaderTitle} from './DocumentHeaderTitle'
 import {useChipScrollPosition} from './hook/useChipScrollPosition'
 import {DocumentPerspectiveList} from './perspective/DocumentPerspectiveList'
@@ -85,6 +88,7 @@ export const DocumentPanelHeader = memo(
       onMenuAction,
       onPaneClose,
       onPaneSplit,
+      onSetMaximizedPane,
       menuItemGroups,
       schemaType,
       connectionState,
@@ -94,10 +98,12 @@ export const DocumentPanelHeader = memo(
     } = useDocumentPane()
     const {features} = useStructureTool()
     const {index, BackLink, hasGroupSiblings} = usePaneRouter()
+    const {maximizedPane} = useResolvedPanesList()
     const {actions: fieldActions} = useFieldActions()
     const [referenceElement, setReferenceElement] = useState<HTMLElement | null>(null)
     const scrollContainerRef = useRef<HTMLDivElement>(null)
     const showGradient = useChipScrollPosition(scrollContainerRef)
+    const telemetry = useTelemetry()
 
     const menuNodes = useMemo(
       () =>
@@ -138,6 +144,38 @@ export const DocumentPanelHeader = memo(
     const showPaneGroupCloseButton = !showSplitPaneCloseButton && !showBackButton && !!BackLink
 
     const {t} = useTranslation(structureLocaleNamespace)
+
+    const isMaximizedPane = useMemo(() => {
+      return (
+        maximizedPane?.pane &&
+        typeof maximizedPane.pane === 'object' &&
+        maximizedPane.pane.type === 'document' &&
+        maximizedPane.pane.options.id === documentId
+      )
+    }, [maximizedPane, documentId])
+
+    const handleFocusPane = useCallback(() => {
+      onSetMaximizedPane?.()
+
+      if (isMaximizedPane) {
+        telemetry.log(FocusDocumentPaneCollapsed)
+      } else {
+        telemetry.log(FocusDocumentPaneClicked)
+      }
+    }, [onSetMaximizedPane, isMaximizedPane, telemetry])
+    const renderPaneActions = useCallback<
+      (props: {states: DocumentActionDescription[]}) => React.ReactNode
+    >(
+      ({states}) => (
+        <DocumentPanelHeaderActionDialogDeferred
+          contextMenuNodes={contextMenuNodes}
+          setReferenceElement={setReferenceElement}
+          referenceElement={referenceElement}
+          states={states}
+        />
+      ),
+      [contextMenuNodes, referenceElement],
+    )
 
     const title = useMemo(() => <DocumentHeaderTitle />, [])
     const backButton = useMemo(
@@ -230,6 +268,28 @@ export const DocumentPanelHeader = memo(
                       mode="bleed"
                       onClick={onPaneClose}
                       tooltipProps={{content: t('buttons.split-pane-close-button.title')}}
+                    />
+                  )}
+
+                  {onSetMaximizedPane && (
+                    <Button
+                      key="focus-pane-button"
+                      aria-label={
+                        isMaximizedPane
+                          ? t('buttons.focus-pane-button.aria-label.collapse')
+                          : t('buttons.focus-pane-button.aria-label.focus')
+                      }
+                      icon={isMaximizedPane ? CollapseIcon : ExpandIcon}
+                      mode="bleed"
+                      onClick={handleFocusPane}
+                      tooltipProps={{
+                        content: isMaximizedPane
+                          ? t('buttons.focus-pane-button.tooltip.collapse')
+                          : t('buttons.focus-pane-button.tooltip.focus'),
+                      }}
+                      data-testid={
+                        isMaximizedPane ? 'focus-pane-button-collapse' : 'focus-pane-button-focus'
+                      }
                     />
                   )}
 
