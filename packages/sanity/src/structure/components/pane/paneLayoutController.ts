@@ -18,6 +18,7 @@ export type PaneLayoutStateObserver = (state: PaneLayoutState) => void
 export interface PaneLayoutController {
   collapse: (element: HTMLElement) => void
   expand: (element: HTMLElement) => void
+  maximize: (element: HTMLElement) => void
   mount: (element: HTMLElement, options: PaneConfigOpts) => () => void
   resize: (type: 'start' | 'move' | 'end', leftElement: HTMLElement, deltaX: number) => void
   setRootElement: (nextRootElement: HTMLElement | null) => void
@@ -36,6 +37,7 @@ export function createPaneLayoutController(): PaneLayoutController {
   let rootElement: HTMLElement | null = null
   let rootWidth = 0
   let expandedElement: HTMLElement | null = null
+  let maximizedElement: HTMLElement | null = null
   let resizeDataMap = new Map<HTMLElement, PaneResizeData>()
   let resizing = false
 
@@ -53,6 +55,12 @@ export function createPaneLayoutController(): PaneLayoutController {
     userCollapsedElementSet.delete(element)
 
     expandedElement = element
+
+    _notifyObservers()
+  }
+
+  function maximize(element: HTMLElement) {
+    maximizedElement = element
 
     _notifyObservers()
   }
@@ -76,6 +84,10 @@ export function createPaneLayoutController(): PaneLayoutController {
       }
 
       optionsMap.delete(element)
+
+      if (maximizedElement === element) {
+        maximizedElement = null
+      }
 
       _notifyObservers()
     }
@@ -181,7 +193,7 @@ export function createPaneLayoutController(): PaneLayoutController {
     }
   }
 
-  return {collapse, expand, mount, resize, setRootElement, setRootWidth, subscribe}
+  return {collapse, expand, maximize, mount, resize, setRootElement, setRootWidth, subscribe}
 
   function _notifyObservers() {
     if (!rootWidth) return
@@ -232,6 +244,7 @@ export function createPaneLayoutController(): PaneLayoutController {
         currentMinWidth: resizeData?.width ?? options.currentMinWidth,
         currentMaxWidth: resizeData?.width ?? options.currentMaxWidth,
         flex: resizeData?.flex ?? options.flex ?? 1,
+        maximized: element === maximizedElement,
       })
 
       // Update remaining width

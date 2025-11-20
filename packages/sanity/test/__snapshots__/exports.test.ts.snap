@@ -551,6 +551,7 @@ exports[`exports snapshot 1`] = `
     "useDocumentPairPermissionsFromHookFactory": "function",
     "useDocumentPresence": "function",
     "useDocumentPreviewStore": "function",
+    "useDocumentPreviewValues": "function",
     "useDocumentStore": "function",
     "useDocumentType": "function",
     "useDocumentValuePermissions": "function",

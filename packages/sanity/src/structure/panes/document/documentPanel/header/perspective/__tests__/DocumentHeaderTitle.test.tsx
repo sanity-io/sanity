@@ -112,8 +112,11 @@ describe('DocumentHeaderTitle', () => {
       editState: null,
     } as unknown as DocumentPaneContextValue)
 
-    const {container} = render(<DocumentHeaderTitle />)
-    await waitFor(() => expect(container.firstChild).toBeNull())
+    const client = createMockSanityClient()
+    const wrapper = await createWrapperComponent(client as any)
+
+    const {container} = render(<DocumentHeaderTitle />, {wrapper})
+    await waitFor(() => expect(container.textContent).toBe(''))
   })
 
   it('should render the header title when connectionState is not "connected" and editState has values', async () => {
@@ -129,7 +132,10 @@ describe('DocumentHeaderTitle', () => {
       title: 'Test Value',
     })
 
-    const {getByText, findByText} = render(<DocumentHeaderTitle />)
+    const client = createMockSanityClient()
+    const wrapper = await createWrapperComponent(client as any)
+
+    const {findByText} = render(<DocumentHeaderTitle />, {wrapper})
     await findByText('Test Title')
   })
 
