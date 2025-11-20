@@ -29,7 +29,8 @@ export function NewScheduleInfo({id, schemaType}: Props) {
 function ValidationWarning({id, type}: {id: string; type: string}) {
   const publishedId = usePublishedId(id)
   const schema = useSchemaType(type)
-  const validationStatus = useValidationStatus(publishedId, type)
+  const draftId = id.startsWith('drafts.') ? id : `drafts.${publishedId}`
+  const validationStatus = useValidationStatus(publishedId, type, draftId)
   const {hasError} = useValidationState(validationStatus.validation)
 
   if (!hasError) {

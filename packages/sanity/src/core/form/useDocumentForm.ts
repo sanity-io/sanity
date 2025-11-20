@@ -239,8 +239,8 @@ export function useDocumentForm(options: DocumentFormOptions): DocumentFormValue
   const {validation: validationRaw} = useValidationStatus(
     documentId,
     documentType,
-    releaseId,
     value._id,
+    releaseId,
   )
   const validation = useUnique(validationRaw)
 
