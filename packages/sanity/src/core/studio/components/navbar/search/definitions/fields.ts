@@ -99,6 +99,8 @@ function getDocumentFieldDefinitions(
   documentTypes: Record<string, ObjectDefinition>,
   objectTypes: Record<string, ObjectDefinition>,
 ) {
+  const supportedFieldTypeSet = new Set<string>(supportedFieldTypes)
+
   // Recursively iterate through all documents and resolve objects
   function addFieldDefinitionRecursive({
     acc,
@@ -145,7 +147,7 @@ function getDocumentFieldDefinitions(
     }
 
     // Return if the current field type doesn't have a corresponding filter
-    if (!supportedFieldTypes.includes(defType.type)) return
+    if (!supportedFieldTypeSet.has(defType.type)) return
 
     acc.push({
       documentTypes: documentType && !isInternalField ? [documentType] : [],
