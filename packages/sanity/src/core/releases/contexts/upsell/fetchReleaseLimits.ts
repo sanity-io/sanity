@@ -2,7 +2,11 @@ import {type ClientError, type SanityClient} from '@sanity/client'
 import {catchError, map, type Observable, of} from 'rxjs'
 
 export interface ReleaseLimits {
+  // count of all active releases (including content releases and scheduled drafts)
   orgActiveReleaseCount: number
+  // counts all content releases that contribute towards reaching the org active release limit
+  // excludes scheduled drafts (cardinality `one` releases)
+  orgMeterActiveReleaseCount: number
   defaultOrgActiveReleaseLimit: number
   datasetReleaseLimit: number
   // internal server error has no fallback number - it uses null

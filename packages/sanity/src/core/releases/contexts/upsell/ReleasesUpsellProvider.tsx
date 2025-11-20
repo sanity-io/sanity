@@ -132,18 +132,18 @@ export function ReleasesUpsellProvider(props: {children: React.ReactNode}) {
         return cb()
       }
 
-      const [orgActiveReleaseCount, releaseLimits] = result
+      const [orgMeteredActiveReleaseCount, releaseLimits] = result
 
-      if (releaseLimits === null || orgActiveReleaseCount === null) {
+      if (releaseLimits === null || orgMeteredActiveReleaseCount === null) {
         whenResolved?.(true)
         return cb()
       }
 
       const {orgActiveReleaseLimit, datasetReleaseLimit} = releaseLimits
 
-      // orgActiveReleaseCount might be missing due to internal server error
+      // orgMeteredActiveReleaseCount might be missing due to internal server error
       // allow pass through guard in that case
-      if (orgActiveReleaseCount === null) {
+      if (orgMeteredActiveReleaseCount === null) {
         whenResolved?.(true)
         return cb()
       }
@@ -154,7 +154,7 @@ export function ReleasesUpsellProvider(props: {children: React.ReactNode}) {
       const isCurrentDatasetAtAboveOrgLimit =
         orgActiveReleaseLimit !== null && activeReleasesCount >= orgActiveReleaseLimit
       const isOrgAtAboveOrgLimit =
-        orgActiveReleaseLimit !== null && orgActiveReleaseCount >= orgActiveReleaseLimit
+        orgActiveReleaseLimit !== null && orgMeteredActiveReleaseCount >= orgActiveReleaseLimit
 
       const shouldShowDialog =
         isCurrentDatasetAtAboveDatasetLimit ||
