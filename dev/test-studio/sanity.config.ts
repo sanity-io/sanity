@@ -35,7 +35,7 @@ import {
   studioComponentsPlugin,
 } from './components/studioComponents'
 import {resolveDocumentActions as documentActions} from './documentActions'
-import {TestVersionAction} from './documentActions/actions/TestVersionAction'
+import {useTestVersionAction} from './documentActions/actions/TestVersionAction'
 import {assistFieldActionGroup} from './fieldActions/assistFieldActionGroup'
 import {resolveInitialValueTemplates} from './initialValueTemplates'
 import {customInspector} from './inspectors/custom'
@@ -45,7 +45,7 @@ import {autoCloseBrackets} from './plugins/input/auto-close-brackets-plugin'
 import {wave} from './plugins/input/wave-plugin'
 import {languageFilter} from './plugins/language-filter'
 import {routerDebugTool} from './plugins/router-debug'
-import {ArchiveAndDeleteCustomAction} from './releases/customReleaseActions'
+import {useArchiveAndDeleteCustomAction} from './releases/customReleaseActions'
 import {createSchemaTypes} from './schema'
 import {StegaDebugger} from './schema/debug/components/DebugStega'
 import {CustomNavigator} from './schema/presentation/CustomNavigator'
@@ -82,14 +82,6 @@ const sharedSettings = ({projectId}: {projectId: string}) => {
 
     i18n: {
       bundles: testStudioLocaleBundles,
-    },
-
-    beta: {
-      form: {
-        enhancedObjectDialog: {
-          enabled: true,
-        },
-      },
     },
 
     mediaLibrary: {
@@ -244,10 +236,10 @@ const defaultWorkspace = defineConfig({
   document: {
     actions: (prev, ctx) => {
       if (ctx.schemaType === 'book' && ctx.releaseId) {
-        return [TestVersionAction, ...prev]
+        return [useTestVersionAction, ...prev]
       }
       if (ctx.schemaType === 'author' && ctx.releaseId) {
-        return [...prev, TestVersionAction]
+        return [...prev, useTestVersionAction]
       }
       if (ctx.schemaType === 'playlist') {
         return prev.filter(({action}) => action === 'delete')
@@ -259,7 +251,7 @@ const defaultWorkspace = defineConfig({
   releases: {
     actions: (prev, ctx) => {
       if (ctx.release.state === 'active') {
-        return [...prev, ArchiveAndDeleteCustomAction]
+        return [...prev, useArchiveAndDeleteCustomAction]
       }
       return prev
     },

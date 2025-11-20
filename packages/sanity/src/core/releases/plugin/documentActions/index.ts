@@ -1,7 +1,7 @@
 import {type DocumentActionComponent} from '../../../config/document/actions'
 import {type DocumentActionsContext} from '../../../config/types'
-import {DiscardVersionAction} from './DiscardVersionAction'
-import {UnpublishVersionAction} from './UnpublishVersionAction'
+import {useDiscardVersionAction} from './DiscardVersionAction'
+import {useUnpublishVersionAction} from './UnpublishVersionAction'
 
 type Action = DocumentActionComponent
 
@@ -13,7 +13,7 @@ export default function resolveDocumentActions(
 
   if (context.versionType === 'version') {
     // For regular version documents, show traditional version actions
-    return duplicateAction.concat(DiscardVersionAction, UnpublishVersionAction)
+    return duplicateAction.concat(useDiscardVersionAction, useUnpublishVersionAction)
   }
 
   return existingActions

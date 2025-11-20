@@ -26,7 +26,8 @@ const useIsExcludedType = (type: string) => {
   return isExcludedType
 }
 
-export const LinkToCanvasAction: DocumentActionComponent = (props: DocumentActionProps) => {
+// React Compiler needs functions that are hooks to have the `use` prefix, pascal case are treated as a component, these are hooks even though they're confusingly named `DocumentActionComponent`
+export const useLinkToCanvasAction: DocumentActionComponent = (props: DocumentActionProps) => {
   const {t} = useTranslation(canvasLocaleNamespace)
   const [isDialogOpen, setIsDialogOpen] = useState(false)
   const {selectedPerspective} = usePerspective()
@@ -105,5 +106,5 @@ export const LinkToCanvasAction: DocumentActionComponent = (props: DocumentActio
   }
 }
 
-LinkToCanvasAction.action = 'linkToCanvas'
-LinkToCanvasAction.displayName = 'LinkToCanvasAction'
+useLinkToCanvasAction.action = 'linkToCanvas'
+useLinkToCanvasAction.displayName = 'LinkToCanvasAction'

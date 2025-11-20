@@ -19,10 +19,9 @@ import {useHasCardinalityOneReleaseVersions} from '../../hooks/useHasCardinality
 import {useScheduleDraftOperations} from '../../hooks/useScheduleDraftOperations'
 import {singleDocReleaseNamespace} from '../../i18n'
 
-/**
- * @internal
- */
-export const SchedulePublishAction: DocumentActionComponent = (
+// React Compiler needs functions that are hooks to have the `use` prefix, pascal case are treated as a component, these are hooks even though they're confusingly named `DocumentActionComponent`
+/** @internal */
+export const useSchedulePublishAction: DocumentActionComponent = (
   props: DocumentActionProps,
 ): DocumentActionDescription | null => {
   const {id, type, draft} = props
@@ -84,9 +83,8 @@ export const SchedulePublishAction: DocumentActionComponent = (
           title: t('action.schedule-publish-error'),
           description: error instanceof Error ? error.message : 'An unknown error occurred',
         })
-      } finally {
-        setIsScheduling(false)
       }
+      setIsScheduling(false)
     },
     [id, createScheduledDraft, toast, t, onSetScheduledDraftPerspective],
   )
@@ -122,5 +120,5 @@ export const SchedulePublishAction: DocumentActionComponent = (
   }
 }
 
-SchedulePublishAction.action = 'schedule'
-SchedulePublishAction.displayName = 'SchedulePublishAction'
+useSchedulePublishAction.action = 'schedule'
+useSchedulePublishAction.displayName = 'SchedulePublishAction'

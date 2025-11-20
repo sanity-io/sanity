@@ -64,7 +64,7 @@ export {
 } from './releases'
 export {
   EditScheduleForm,
-  ScheduleAction,
+  useScheduleAction as ScheduleAction,
   ScheduledBadge,
   SchedulesContext,
 } from './scheduled-publishing'
@@ -75,7 +75,7 @@ export * from './singleDocRelease'
 export * from './store'
 export * from './studio'
 export {DEFAULT_STUDIO_CLIENT_OPTIONS} from './studioClient'
-export {IsLastPaneProvider} from './tasks'
+export {IsLastPaneProvider, useDocumentPreviewValues} from './tasks'
 export * from './templates'
 export * from './theme'
 export * from './user-color'

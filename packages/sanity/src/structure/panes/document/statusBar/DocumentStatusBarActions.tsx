@@ -5,7 +5,7 @@ import {Hotkeys, isSanityDefinedAction, usePerspective, useSource} from 'sanity'
 
 import {Button, Tooltip} from '../../../../ui-components'
 import {RenderActionCollectionState, type ResolvedAction, usePaneRouter} from '../../../components'
-import {HistoryRestoreAction} from '../../../documentActions'
+import {useHistoryRestoreAction} from '../../../documentActions'
 import {toLowerCaseNoSpaces} from '../../../util/toLowerCaseNoSpaces'
 import {useDocumentPane} from '../useDocumentPane'
 import {ActionMenuButton} from './ActionMenuButton'
@@ -107,7 +107,7 @@ function RenderDocumentStatusBarActions(props: {states: ResolvedAction[]}) {
   // The restore action has a dedicated place in the UI; it's only visible when the user is viewing
   // a different document revision. It must be omitted from this collection.
   const states = props.states.filter((state) =>
-    state.action ? state.action !== HistoryRestoreAction.action : true,
+    state.action ? state.action !== useHistoryRestoreAction.action : true,
   )
 
   if (states.length === 0) return null
@@ -140,7 +140,7 @@ function RenderHistoryStatusBarActions({states}: {states: ResolvedAction[]}) {
       disabled={connectionState !== 'connected' || Boolean(disabled)}
       // If multiple `restore` actions are defined, ensure only the final one is used.
       states={states
-        .filter((state) => (state.action ? state.action === HistoryRestoreAction.action : false))
+        .filter((state) => (state.action ? state.action === useHistoryRestoreAction.action : false))
         .slice(-1)}
     />
   )

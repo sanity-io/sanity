@@ -130,13 +130,6 @@ const defaultConfig = defineConfig({
       fieldTypes: ['string'],
     }),
   ],
-  beta: {
-    form: {
-      enhancedObjectDialog: {
-        enabled: true,
-      },
-    },
-  },
   announcements: {
     enabled: false,
   },
