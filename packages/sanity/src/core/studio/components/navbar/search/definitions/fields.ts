@@ -127,8 +127,6 @@ function getDocumentFieldDefinitions(
     const fieldPath = prevFieldPath ? `${prevFieldPath}.${defType.name}` : defType.name
     const titlePath = prevTitlePath ? [...prevTitlePath, title] : [title]
 
-    if (!continueRecursion) return
-
     // Map to an existing document, object or inline object if found
     const existingObject = objectTypes[defType.type]
     const existingDocument = documentTypes[defType.type]
@@ -164,35 +162,38 @@ function getDocumentFieldDefinitions(
     })
   }
 
-  const fieldDefinitions = Object.values(documentTypes)
-    .reduce<SearchFieldDefinition[]>((acc, documentType) => {
-      const documentFields = (documentType.fields as ObjectDefinition[]).reduce<
-        SearchFieldDefinition[]
-      >((a, field) => {
-        addFieldDefinitionRecursive({acc: a, defType: field, documentType: documentType.name})
-        return a
-      }, [])
-      acc.push(...documentFields)
-      return acc
-    }, [])
-    .reduce<SearchFieldDefinition[]>((acc, val) => {
-      const prevIndex = acc.findIndex(
-        (v) => v.fieldPath === val.fieldPath && v.title === val.title && v.type === val.type,
-      )
-      if (prevIndex > -1) {
-        acc[prevIndex] = {
-          ...acc[prevIndex],
-          documentTypes: [...acc[prevIndex].documentTypes, ...val.documentTypes],
-        }
-      } else {
-        acc.push(val)
-      }
-      return acc
-    }, [])
-    .map(addFieldDefinitionId)
-    .sort(sortFieldDefinitions)
+  const fieldDefinitions: Array<SearchFieldDefinition> = []
 
-  return fieldDefinitions
+  for (const documentType of Object.values(documentTypes)) {
+    const documentFields: Array<SearchFieldDefinition> = []
+
+    for (const documentField of (documentType.fields ?? []) as Array<ObjectDefinition>) {
+      addFieldDefinitionRecursive({
+        acc: documentFields,
+        defType: documentField,
+        documentType: documentType.name,
+      })
+    }
+
+    fieldDefinitions.push(...documentFields.map(addFieldDefinitionId))
+  }
+
+  const consolidatedFieldDefinitionMap = new Map<string, SearchFieldDefinition>()
+  for (const fieldDefinitionWithId of fieldDefinitions) {
+    const consolidated = consolidatedFieldDefinitionMap.get(fieldDefinitionWithId.id)
+
+    if (consolidated) {
+      consolidated.documentTypes.push(...fieldDefinitionWithId.documentTypes)
+      continue
+    }
+
+    consolidatedFieldDefinitionMap.set(fieldDefinitionWithId.id, fieldDefinitionWithId)
+  }
+
+  const consolidatedFieldDefinitions = Array.from(consolidatedFieldDefinitionMap.values())
+  consolidatedFieldDefinitions.sort(sortFieldDefinitions)
+
+  return consolidatedFieldDefinitions
 }
 
 /**
@@ -262,11 +263,9 @@ function resolveFilterName(schemaType: SchemaTypeDefinition) {
  * Sort definitions by title, joined titlePath and fieldPath (in that order)
  */
 function sortFieldDefinitions(a: SearchFieldDefinition, b: SearchFieldDefinition): number {
-  const aTitlePath = a.titlePath.slice(0, -1).join('/')
-  const bTitlePath = b.titlePath.slice(0, -1).join('/')
   return (
     a.title.localeCompare(b.title) ||
-    aTitlePath.localeCompare(bTitlePath) ||
+    a.titlePath.slice(0, -1).join('/').localeCompare(b.titlePath.slice(0, -1).join('/')) ||
     a.fieldPath.localeCompare(b.fieldPath)
   )
 }
