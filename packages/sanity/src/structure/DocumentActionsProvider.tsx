@@ -5,9 +5,7 @@ import {
   type DocumentActionProps,
   EMPTY_ARRAY,
   getDocumentIdFromDocumentActionProps,
-  getDraftId,
   GetHookCollectionState,
-  getPublishedId,
   useCanvasCompanionDoc,
   useTranslation,
 } from 'sanity'
