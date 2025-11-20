@@ -38,6 +38,11 @@ export const ObjectInputMember = memo(function ObjectInputMember(props: ObjectIn
     renderPreview,
   } = props
 
+  if (member.kind === 'decoration') {
+    const Component = member.component
+    return <Component key={member.key} />
+  }
+
   if (member.kind === 'field') {
     return (
       <MemberField

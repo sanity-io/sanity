@@ -1,7 +1,7 @@
 import {type Path} from '@sanity/types'
 
 import {type FieldError} from './memberErrors'
-import {type FieldMember} from './members'
+import {type DecorationMember, type FieldMember} from './members'
 
 /**
  * @hidden
@@ -16,5 +16,5 @@ export interface FieldsetState {
   collapsible?: boolean
   collapsed?: boolean
   columns?: number | number[]
-  members: (FieldMember | FieldError)[]
+  members: (FieldMember | FieldError | DecorationMember)[]
 }

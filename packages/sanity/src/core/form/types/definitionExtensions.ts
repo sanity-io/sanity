@@ -32,6 +32,7 @@ import {
   type BooleanInputProps,
   type NumberInputProps,
   type ObjectInputProps,
+  type RenderMembersCallback,
   type StringInputProps,
 } from './inputProps'
 import {type ObjectItem, type ObjectItemProps, type PrimitiveItemProps} from './itemProps'
@@ -499,6 +500,28 @@ declare module '@sanity/types' {
      * @beta
      */
     components?: ObjectComponents
+    /**
+     * Callback that allows developers to customize the members of the object input.
+     * It can be used to add decoration members to the object input, instead of using empty fields.
+     * For example:
+     * ```ts
+     * import { Decoration } from './Decoration'
+     *
+     * renderMembers: (members) => {
+     *   return [
+     *     ...members,
+     *     {
+     *       key: 'decoration',
+     *       kind: 'decoration',
+     *       component: Decoration,
+     *     },
+     *   ]
+     * ```
+     *
+     * @hidden
+     * @beta
+     */
+    renderMembers?: RenderMembersCallback
   }
 
   export interface ReferenceDefinition {
