@@ -476,6 +476,14 @@ export const studioLocaleStrings = defineLocalesResources('studio', {
   /** Title for the default ordering/SortOrder if no orderings are provided and the title field is found */
   'default-orderings.title': 'Sort by Title',
 
+  /** Descriptive message informing user that a new Studio deployment is available and that reloading will yield the latest changes */
+  'deployment-notifier.description':
+    'A new version of this studio has been deployed. Reload to get the latest changes.',
+  /** Button text to reload the studio when a new deployment is available */
+  'deployment-notifier.reload': 'Reload ',
+  /** Title for the new studio deployment notifier */
+  'deployment-notifier.title': 'New version available',
+
   /** Label to show in the document footer indicating the creation date of the document */
   'document-status.created': 'Created {{date}}',
 

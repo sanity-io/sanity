@@ -679,6 +679,7 @@ exports[`exports snapshot 1`] = `
     "CommentsSelectedPathContext": "object",
     "CommentsUpsellContext": "object",
     "CopyPasteContext": "object",
+    "DeploymentNotificationContext": "object",
     "DiffContext": "object",
     "DocumentActionPropsContext": "object",
     "DocumentActionsStateContext": "object",
