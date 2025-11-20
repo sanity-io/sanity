@@ -117,7 +117,10 @@ function getDocumentFieldDefinitions(
     prevFieldPath?: string
     prevTitlePath?: string[]
   }) {
-    const continueRecursion = depth <= MAX_OBJECT_TRAVERSAL_DEPTH
+    if (depth <= MAX_OBJECT_TRAVERSAL_DEPTH) {
+      return
+    }
+
     const isInternalField = defType.name.startsWith('_')
     // Sanitize schema titles (which may either be a string or React element)
     const title = defType?.title ? sanitizeFieldValue(defType.title) : startCase(defType.name)
