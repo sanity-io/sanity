@@ -127,6 +127,11 @@ export interface FieldSetMember {
   fieldSet: FieldsetState
 }
 
+/**
+ * Represents a decoration member for a form.
+ * @hidden
+ * @public
+ */
 export interface DecorationMember {
   kind: 'decoration'
   key: string
