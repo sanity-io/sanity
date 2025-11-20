@@ -524,6 +524,15 @@ declare module '@sanity/types' {
     renderMembers?: RenderMembersCallback
   }
 
+  export interface FieldsetDefinition {
+    /**
+     *
+     * @hidden
+     * @beta
+     */
+    renderMembers?: RenderMembersCallback
+  }
+
   export interface ReferenceDefinition {
     /**
      *
