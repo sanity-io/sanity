@@ -725,6 +725,8 @@ exports[`exports snapshot 1`] = `
     "ReferenceItemRefContext": "object",
     "ReleasesMetadataContext": "object",
     "ReleasesUpsellContext": "object",
+    "ResolvedPanesContext": "object",
+    "ResolvedPanesProvider": "function",
     "ResourceCacheContext": "object",
     "ReviewChangesContext": "object",
     "RouterContext": "object",
