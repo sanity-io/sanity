@@ -19,6 +19,19 @@ export interface CreateManifest {
   studioVersion: string | null
 }
 
+export interface AppManifest {
+  version: number
+  createdAt: string
+  name: string
+  title?: string
+  subtitle?: string
+  basePath: string
+  /**
+   * returns null in the case of the icon not being able to be stringified
+   */
+  icon: string | null
+}
+
 export interface ManifestWorkspaceFile extends Omit<CreateWorkspaceManifest, 'schema' | 'tools'> {
   schema: string // filename
   tools: string // filename
