@@ -17,7 +17,10 @@ import {
 const createScheduledDraftAction = (
   actionKey: keyof UseScheduledDraftMenuActionsReturn['actions'],
 ): DocumentActionComponent => {
-  return (props: DocumentActionProps): DocumentActionDescription | null => {
+  // Using hook naming conventions is required for React Compiler to detect this function and memoize it
+  const useScheduledDraftAction: DocumentActionComponent = (
+    props: DocumentActionProps,
+  ): DocumentActionDescription | null => {
     const {type, release} = props
     const {data: releases = []} = useAllReleases()
 
@@ -52,6 +55,7 @@ const createScheduledDraftAction = (
       onHandle: actionProps.onClick,
     }
   }
+  return useScheduledDraftAction
 }
 
 /**

@@ -6,24 +6,24 @@ import {
   createNoopPatchPublishAction,
 } from './actions/createCustomPublishAction'
 import {useDebugAction} from './actions/DebugAction'
-import {TestConfirmDialogAction} from './actions/TestConfirmDialogAction'
-import {TestCustomComponentAction} from './actions/TestCustomComponentAction'
-import {TestCustomRestoreAction} from './actions/TestCustomRestoreAction'
-import {TestModalDialogAction} from './actions/TestModalDialogAction'
-import {TestPopoverDialogAction} from './actions/TestPopoverDialogAction'
+import {useTestConfirmDialogAction} from './actions/TestConfirmDialogAction'
+import {useTestCustomComponentAction} from './actions/TestCustomComponentAction'
+import {createTestCustomRestoreAction} from './actions/TestCustomRestoreAction'
+import {useTestModalDialogAction} from './actions/TestModalDialogAction'
+import {useTestPopoverDialogAction} from './actions/TestPopoverDialogAction'
 
 export const resolveDocumentActions: DocumentActionsResolver = (prev, {schemaType}) => {
   if (schemaType === 'documentActionsTest') {
     return [
       useDebugAction,
-      TestConfirmDialogAction,
-      TestModalDialogAction,
-      TestPopoverDialogAction,
-      TestCustomComponentAction,
+      useTestConfirmDialogAction,
+      useTestModalDialogAction,
+      useTestPopoverDialogAction,
+      useTestCustomComponentAction,
       ...prev,
     ].flatMap((action) => {
       if (action.action === 'restore') {
-        return TestCustomRestoreAction(action)
+        return createTestCustomRestoreAction(action)
       }
       if (action.action === 'publish') {
         return [createCustomPublishAction(action), createNoopPatchPublishAction(action)]

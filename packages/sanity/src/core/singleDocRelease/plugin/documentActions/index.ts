@@ -5,7 +5,7 @@ import {
   EditScheduledDraftAction,
   PublishScheduledDraftAction,
 } from './ScheduledDraftDocumentActions'
-import {SchedulePublishAction} from './SchedulePublishAction'
+import {useSchedulePublishAction} from './SchedulePublishAction'
 
 export default function resolveDocumentActions(
   existingActions: DocumentActionComponent[],
@@ -34,7 +34,7 @@ export default function resolveDocumentActions(
       ? actionsExcludingOriginalSchedule.slice(nextAfterPublishIndex)
       : actionsExcludingOriginalSchedule
 
-    return [...actionsBeforePublish, SchedulePublishAction, ...actionsAfterPublish]
+    return [...actionsBeforePublish, useSchedulePublishAction, ...actionsAfterPublish]
   }
   return existingActions
 }

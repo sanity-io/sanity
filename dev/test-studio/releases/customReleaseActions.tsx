@@ -1,8 +1,14 @@
 import {BookIcon} from '@sanity/icons'
-import {getReleaseIdFromReleaseDocumentId, type ReleaseActionComponent, useClient} from 'sanity'
+import {
+  getReleaseIdFromReleaseDocumentId,
+  type ReleaseActionComponent,
+  type ReleaseActionDescription,
+  useClient,
+} from 'sanity'
 import {useRouter} from 'sanity/router'
 
-export const ArchiveAndDeleteCustomAction: ReleaseActionComponent = ({release}) => {
+// React Compiler needs functions that are hooks to have the `use` prefix, pascal case are treated as a component, these are hooks even though they're confusingly named `ReleaseActionComponent`
+export const useArchiveAndDeleteCustomAction: ReleaseActionComponent = ({release}) => {
   const releaseId = getReleaseIdFromReleaseDocumentId(release._id)
   const sanityClient = useClient({apiVersion: '2025-05-21'})
   const router = useRouter()
@@ -22,5 +28,5 @@ export const ArchiveAndDeleteCustomAction: ReleaseActionComponent = ({release}) 
     disabled: false,
     title: 'Archive and Delete this release',
     onHandle: handleArchiveAndDelete,
-  }
+  } satisfies ReleaseActionDescription
 }

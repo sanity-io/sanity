@@ -1,6 +1,6 @@
 import {type DocumentActionComponent} from '../../../../config/document/actions'
 import {type DocumentActionsContext} from '../../../../config/types'
-import {ScheduleAction} from './ScheduleAction'
+import {useScheduleAction} from './ScheduleAction'
 
 type Action = DocumentActionComponent
 
@@ -15,9 +15,9 @@ export default function resolveDocumentActions(
   // Add schedule action after default publish action
   const index = existingActions.findIndex((a) => a.action === 'publish')
   if (index < 0) {
-    return [ScheduleAction, ...existingActions]
+    return [useScheduleAction, ...existingActions]
   }
   return existingActions.flatMap((action) =>
-    action.action === 'publish' ? [action, ScheduleAction] : action,
+    action.action === 'publish' ? [action, useScheduleAction] : action,
   )
 }

@@ -8,11 +8,8 @@ import usePollSchedules from '../../../hooks/usePollSchedules'
 
 const debug = debugWithName('ScheduledBadge')
 
-/**
- * @deprecated we will be dropping support for scheduled publishing on a future major version
- * @beta
- */
-export const ScheduledBadge: DocumentBadgeComponent = (props) => {
+// React Compiler needs functions that are hooks to have the `use` prefix, pascal case are treated as a component, these are hooks even though they're confusingly named `DocumentBadgeComponent`
+const useScheduledBadge: DocumentBadgeComponent = (props) => {
   // Poll for document schedules
   const {schedules} = usePollSchedules({documentId: props.id, state: 'scheduled'})
   debug('schedules', schedules)
@@ -33,3 +30,10 @@ export const ScheduledBadge: DocumentBadgeComponent = (props) => {
     } on ${formattedDateTime} (local time)`,
   }
 }
+useScheduledBadge.displayName = 'ScheduledBadge'
+
+/**
+ * @deprecated we will be dropping support for scheduled publishing on a future major version
+ * @beta
+ */
+export const ScheduledBadge = useScheduledBadge

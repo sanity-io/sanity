@@ -685,7 +685,7 @@ importers:
       history:
         specifier: ^5.3.0
         version: 5.3.0
-      lodash:
+      lodash-es:
         specifier: ^4.17.21
         version: 4.17.21
       qs:
@@ -734,6 +734,9 @@ importers:
       '@repo/eslint-config':
         specifier: workspace:*
         version: link:../../packages/@repo/eslint-config
+      '@types/lodash-es':
+        specifier: ^4.17.12
+        version: 4.17.12
       '@types/react':
         specifier: 'catalog:'
         version: 19.2.2
