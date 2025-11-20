@@ -6,6 +6,7 @@ import {type ReactNode} from 'react'
 import {AddonDatasetContext, PerspectiveContext} from 'sanity/_singletons'
 import {vi} from 'vitest'
 
+import {ResolvedPanesProvider} from '../../src/_singletons/context/ResolvedPanesContext'
 import {
   CopyPasteProvider,
   type LocaleResourceBundle,
@@ -25,7 +26,6 @@ import {perspectiveContextValueMock} from '../../src/core/perspective/__mocks__/
 import {ActiveWorkspaceMatcherProvider} from '../../src/core/studio/activeWorkspaceMatcher/ActiveWorkspaceMatcherProvider'
 import {route, RouterProvider} from '../../src/router'
 import {type Panes} from '../../src/structure/structureResolvers'
-import {ResolvedPanesProvider} from '../../src/structure/structureResolvers/provider/ResolvedPanesProvider'
 import {getMockWorkspace} from './getMockWorkspaceFromConfig'
 
 // Mock the useUpsellData hook to prevent API calls in tests

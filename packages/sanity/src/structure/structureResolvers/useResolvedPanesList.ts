@@ -1,6 +1,6 @@
 import {useContext, useMemo} from 'react'
+import {ResolvedPanesContext} from 'sanity/_singletons'
 
-import {ResolvedPanesContext} from './provider/ResolvedPanesProvider'
 import {type Panes} from './useResolvedPanes'
 
 export function useResolvedPanesList(): Panes {
