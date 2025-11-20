@@ -1,6 +1,7 @@
 import {useMemo} from 'react'
 import {useObservable} from 'react-rx'
 
+import {getPublishedId} from '../../util/draftUtils'
 import {useCanvasCompanionDocsStore} from '../store/useCanvasCompanionDocsStore'
 
 /**
@@ -9,10 +10,11 @@ import {useCanvasCompanionDocsStore} from '../store/useCanvasCompanionDocsStore'
  */
 export const useCanvasCompanionDoc = (documentId: string) => {
   const companionDocsStore = useCanvasCompanionDocsStore()
+  const publishedId = getPublishedId(documentId)
 
   const companionDocs$ = useMemo(
-    () => companionDocsStore.getCompanionDocs(documentId),
-    [documentId, companionDocsStore],
+    () => companionDocsStore.getCompanionDocs(publishedId),
+    [publishedId, companionDocsStore],
   )
   const companionDocs = useObservable(companionDocs$)
 
