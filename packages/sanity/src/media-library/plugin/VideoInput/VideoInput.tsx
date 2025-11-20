@@ -333,6 +333,10 @@ export function BaseVideoInput(props: BaseVideoInputProps) {
             />
           )
         }
+        if (member.kind === 'decoration') {
+          const Component = member.component
+          return <Component key={member.key} />
+        }
         if (member.kind === 'error') {
           return <MemberFieldError key={member.key} member={member} />
         }

@@ -531,6 +531,10 @@ function BaseImageInputComponent(props: BaseImageInputProps): React.JSX.Element 
         if (member.kind === 'error') {
           return <MemberFieldError key={member.key} member={member} />
         }
+        if (member.kind === 'decoration') {
+          const Component = member.component
+          return <Component key={member.key} />
+        }
 
         return (
           <Fragment
