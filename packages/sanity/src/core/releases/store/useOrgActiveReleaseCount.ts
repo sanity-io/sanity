@@ -33,7 +33,7 @@ function createOrgActiveReleaseCountStore(
 
         return fetchReleaseLimits(client, 'orgActiveReleaseCount').pipe(
           tap(() => activeReleaseCountAtFetch.next(activeReleasesCount)),
-          map((data) => data.orgMeterActiveReleaseCount),
+          map((data) => data.orgMeteredActiveReleaseCount),
           catchError((error) => {
             console.error('Failed to fetch org release count', error)
 

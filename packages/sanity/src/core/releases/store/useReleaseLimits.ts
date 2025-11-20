@@ -9,7 +9,7 @@ import {fetchReleaseLimits, type ReleaseLimits} from '../contexts/upsell/fetchRe
 interface ReleaseLimitsStore {
   releaseLimits$: Observable<Omit<
     ReleaseLimits,
-    'orgActiveReleaseCount' | 'orgMeterActiveReleaseCount'
+    'orgActiveReleaseCount' | 'orgMeteredActiveReleaseCount'
   > | null>
 }
 

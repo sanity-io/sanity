@@ -6,7 +6,7 @@ export interface ReleaseLimits {
   orgActiveReleaseCount: number
   // counts all content releases that contribute towards reaching the org active release limit
   // excludes scheduled drafts (cardinality `one` releases)
-  orgMeterActiveReleaseCount: number
+  orgMeteredActiveReleaseCount: number
   defaultOrgActiveReleaseLimit: number
   datasetReleaseLimit: number
   // internal server error has no fallback number - it uses null
