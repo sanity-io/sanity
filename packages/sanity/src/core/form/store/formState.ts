@@ -956,6 +956,8 @@ export function createPrepareFormState({
             key: `fieldset-${fieldSet.name}`,
             _inSelectedGroup: isFieldEnabledByGroupFilter(groups, fieldSet.group, selectedGroup),
             groups: fieldSet.group ? castArray(fieldSet.group) : [],
+            // @ts-expect-error - TODO: fix this
+            renderMembers: fieldSet.renderMembers,
             fieldSet: {
               path: pathFor(props.path.concat(fieldSet.name)),
               name: fieldSet.name,
