@@ -1,10 +1,8 @@
 import {isMainThread, parentPort, workerData as _workerData} from 'node:worker_threads'
 
-import {groupProblems, validateSchema} from '@sanity/schema/_internal'
 import {type SchemaValidationProblem, type SchemaValidationProblemGroup} from '@sanity/types'
-import {resolveSchemaTypes} from 'sanity'
 
-import {getStudioConfig} from '../util/getStudioWorkspaces'
+import {getStudioWorkspaces} from '../util/getStudioWorkspaces'
 import {mockBrowserEnvironment} from '../util/mockBrowserEnvironment'
 
 /** @internal */
@@ -33,7 +31,7 @@ async function main() {
   const cleanup = mockBrowserEnvironment(workDir)
 
   try {
-    const workspaces = getStudioConfig({basePath: workDir})
+    const workspaces = await getStudioWorkspaces({basePath: workDir})
 
     if (!workspaces.length) {
       throw new Error(`Configuration did not return any workspaces.`)
@@ -54,12 +52,8 @@ async function main() {
       workspace = workspaces[0]
     }
 
-    const schemaTypes = resolveSchemaTypes({
-      config: workspace,
-      context: {dataset: workspace.dataset, projectId: workspace.projectId},
-    })
-
-    const validation = groupProblems(validateSchema(schemaTypes).getTypes())
+    const schema = workspace.schema
+    const validation = schema._validation!
 
     const result: ValidateSchemaWorkerResult = {
       validation: validation
