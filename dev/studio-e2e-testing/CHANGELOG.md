@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [4.18.0](https://github.com/sanity-io/sanity/compare/v4.17.0...v4.18.0) (2025-11-21)
+
+### Bug Fixes
+
+* **sanity:** switch enhanced object dialog off by default ([#11201](https://github.com/sanity-io/sanity/issues/11201)) ([#11227](https://github.com/sanity-io/sanity/issues/11227)) ([4e8100e](https://github.com/sanity-io/sanity/commit/4e8100e46e200846957ae5d91005d59ddd7a5581)) by Ash (ash@sanity.io)
+
 ## [4.17.0](https://github.com/sanity-io/sanity/compare/v4.16.0...v4.17.0) (2025-11-20)
 
 ### Features
