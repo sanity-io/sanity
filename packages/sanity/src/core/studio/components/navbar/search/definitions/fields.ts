@@ -117,7 +117,7 @@ function getDocumentFieldDefinitions(
     prevFieldPath?: string
     prevTitlePath?: string[]
   }) {
-    if (depth <= MAX_OBJECT_TRAVERSAL_DEPTH) {
+    if (depth > MAX_OBJECT_TRAVERSAL_DEPTH) {
       return
     }
 
