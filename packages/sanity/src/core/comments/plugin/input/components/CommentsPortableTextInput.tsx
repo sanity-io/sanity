@@ -10,9 +10,10 @@ import {isPortableTextTextBlock} from '@sanity/types'
 import {BoundaryElementProvider, Stack, usePortal} from '@sanity/ui'
 import * as PathUtils from '@sanity/util/paths'
 import {uuid} from '@sanity/uuid'
-import {debounce} from 'lodash'
+import {debounce, pick} from 'lodash'
 import {AnimatePresence} from 'motion/react'
 import {memo, startTransition, useCallback, useEffect, useMemo, useRef, useState} from 'react'
+import deepEquals from 'react-fast-compare'
 
 import {type PortableTextInputProps} from '../../../../form'
 import {useCurrentUser} from '../../../../store'
@@ -279,11 +280,18 @@ export const CommentsPortableTextInputInner = memo(function CommentsPortableText
     // Update the range decoration with the new selection.
     setAddedCommentsDecorations((prev) => {
       const next = prev.map((p) => {
-        if (p.payload?.commentId === commentId) {
+        const isCurrentSelection = deepEquals(
+          p.selection,
+          pick(rangeDecoration.selection, 'anchor', 'focus'),
+        )
+
+        if (p.payload?.commentId === commentId && isCurrentSelection) {
+          const rangeIsEqual = deepEquals(p.payload?.range, rangeDecoration.payload?.range)
+
           const nextDecoration: RangeDecoration = {
             ...rangeDecoration,
             selection: newSelection,
-            payload: {...rangeDecoration.payload, dirty: true},
+            payload: {...rangeDecoration.payload, dirty: !rangeIsEqual},
           }
           return nextDecoration
         }
