@@ -1,10 +1,14 @@
 import {type ArraySchemaType} from '@sanity/types'
 import {type ReactNode} from 'react'
 
-import {type RenderMembersCallback} from '../../types/inputProps'
 import {type FieldsetState} from './fieldsetState'
 import {type ArrayItemError, type FieldError} from './memberErrors'
-import {type BaseFormNode, type ObjectArrayFormNode, type PrimitiveFormNode} from './nodes'
+import {
+  type BaseFormNode,
+  type ObjectArrayFormNode,
+  type PrimitiveFormNode,
+  type RenderMembersCallback,
+} from './nodes'
 
 /** @public */
 export type ObjectMember = FieldMember | FieldSetMember | FieldError | DecorationMember
