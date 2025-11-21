@@ -32,7 +32,7 @@ import {
 } from 'react'
 
 import {type FormPatch, type PatchEvent} from '../patch'
-import {type FormFieldGroup, type ObjectMember} from '../store'
+import {type FormFieldGroup} from '../store'
 import {
   type ArrayOfObjectsFormNode,
   type ArrayOfPrimitivesFormNode,
@@ -91,16 +91,9 @@ export interface BaseInputProps {
 /**
  * @hidden
  * @public */
-export type RenderMembersCallback = (members: ObjectMember[]) => ObjectMember[]
-
-/**
- * @hidden
- * @public */
 export interface ObjectInputProps<
   T = Record<string, any>,
-  S extends ObjectSchemaType = ObjectSchemaType & {
-    renderMembers?: RenderMembersCallback
-  },
+  S extends ObjectSchemaType = ObjectSchemaType,
 > extends BaseInputProps,
     Omit<ObjectFormNode<T, S>, '_allMembers' | 'displayInlineChanges'> {
   /**

@@ -9,6 +9,7 @@ import {
 import {type ComponentType} from 'react'
 
 import {type PreviewProps} from '../../components'
+import {type RenderMembersCallback} from '../store/types/nodes'
 import {type CrossDatasetReferenceInputProps, type ReferenceInputProps} from '../studio'
 import {
   type BlockAnnotationProps,
@@ -32,7 +33,6 @@ import {
   type BooleanInputProps,
   type NumberInputProps,
   type ObjectInputProps,
-  type RenderMembersCallback,
   type StringInputProps,
 } from './inputProps'
 import {type ObjectItem, type ObjectItemProps, type PrimitiveItemProps} from './itemProps'
@@ -526,6 +526,22 @@ declare module '@sanity/types' {
 
   export interface FieldsetDefinition {
     /**
+     * Callback that allows developers to customize the members present in the fieldset.
+     * It can be used to add decoration members to the fieldset, instead of using empty fields.
+     * For example:
+     * ```ts
+     * import { Decoration } from './Decoration'
+     *
+     * renderMembers: (members) => {
+     *   return [
+     *     ...members,
+     *     {
+     *       key: 'decoration',
+     *       kind: 'decoration',
+     *       component: Decoration,
+     *     },
+     *   ]
+     * ```
      *
      * @hidden
      * @beta

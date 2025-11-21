@@ -26,7 +26,7 @@ import {
   type UploadOptions,
 } from '../../../studio/uploads/types'
 import {createInitialUploadPatches} from '../../../studio/uploads/utils'
-import {type ObjectInputProps, type RenderMembersCallback} from '../../../types'
+import {type ObjectInputProps} from '../../../types'
 import {handleSelectAssetFromSource as handleSelectAssetFromSourceShared} from '../common/assetSource'
 import {type FileInfo} from '../common/styles'
 import {FileAsset as FileAssetComponent} from './FileAsset'
@@ -46,10 +46,7 @@ function passThrough({children}: {children?: React.ReactNode}) {
 /**
  * @hidden
  * @beta */
-export interface BaseFileInputProps extends ObjectInputProps<
-  BaseFileInputValue,
-  FileSchemaType & {renderMembers?: RenderMembersCallback}
-> {
+export interface BaseFileInputProps extends ObjectInputProps<BaseFileInputValue, FileSchemaType> {
   assetSources: AssetSource[]
   directUploads?: boolean
   observeAsset: (documentId: string) => Observable<FileAsset>
