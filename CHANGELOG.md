@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [4.18.1](https://github.com/sanity-io/sanity/compare/v4.18.0...v4.18.1) (2025-11-21)
+
+### Bug Fixes
+
+* **deps:** update dependency @sanity/preview-url-secret to ^2.1.16 ([#11211](https://github.com/sanity-io/sanity/issues/11211)) ([2cab14a](https://github.com/sanity-io/sanity/commit/2cab14a7ededaee445b470b1ee155f29e95a9c4e)) by renovate[bot] (29139614+renovate[bot]@users.noreply.github.com)
+
 ## [4.18.0](https://github.com/sanity-io/sanity/compare/v4.17.0...v4.18.0) (2025-11-21)
 
 ### Features
