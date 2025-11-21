@@ -24,7 +24,12 @@ export function mockBrowserEnvironment(basePath: string): () => void {
     }
   }
 
+  const btoa = global.btoa
   const domCleanup = jsdomGlobal(jsdomDefaultHtml, {url: 'http://localhost:3333/'})
+
+  // Don't use jsdom's btoa as it's using the deprecatd `abab` package.
+  if (typeof btoa === 'function') global.btoa = btoa
+
   const windowCleanup = () => global.window.close()
   const globalCleanup = provideFakeGlobals(basePath)
   const cleanupFileLoader = addHook(
