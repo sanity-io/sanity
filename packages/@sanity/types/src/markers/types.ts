@@ -21,4 +21,12 @@ export interface ValidationMarker {
    * are not compatible with deep getters like lodash/get
    */
   path: Path
+
+  /**
+   * Extra metadata for the validation marker. Currently used by the Media Library asset source to ignore
+   * certain validation markers when validating asset source media library assets.
+   *
+   * @internal
+   */
+  __internal_metadata?: unknown
 }
