@@ -3,6 +3,24 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [4.18.0](https://github.com/sanity-io/sanity/compare/v4.17.0...v4.18.0) (2025-11-21)
+
+### Features
+
+* **sanity:** Add Canvas document actions to version documents ([#11141](https://github.com/sanity-io/sanity/issues/11141)) ([078a0ac](https://github.com/sanity-io/sanity/commit/078a0ac9a9fa8f1058b282343b7195b2f191af42)) by Josef Hlavacek (josef.hlavacek@sanity.io)
+
+### Bug Fixes
+
+* **core:** flush pending Portable Text Input changes on unmount ([7de417d](https://github.com/sanity-io/sanity/commit/7de417db8a87ce16d62741b3ab6d1e200a3475fb)) by Christian Hamburger Grøngaard (christian.groengaard@sanity.io)
+* **deps:** update dependency @sanity/preview-url-secret to ^2.1.16 ([#11212](https://github.com/sanity-io/sanity/issues/11212)) ([917e212](https://github.com/sanity-io/sanity/commit/917e2123c612a0b13b9efe5000acf18fd055b8fb)) by renovate[bot] (29139614+renovate[bot]@users.noreply.github.com)
+* **deps:** update dependency groq-js to ^1.21.0 ([#11216](https://github.com/sanity-io/sanity/issues/11216)) ([fc8f483](https://github.com/sanity-io/sanity/commit/fc8f4832c1a80162bdc54a229f66c3af911a3d21)) by renovate[bot] (29139614+renovate[bot]@users.noreply.github.com)
+* release limits use only metered org count to exclude scheduled drafts ([#11208](https://github.com/sanity-io/sanity/issues/11208)) ([cc41a87](https://github.com/sanity-io/sanity/commit/cc41a87608786657864aa046258feb0c1dc7d17d)) by Jordan Lawrence (jordanl17@me.com)
+* **sanity:** switch enhanced object dialog off by default ([#11201](https://github.com/sanity-io/sanity/issues/11201)) ([#11227](https://github.com/sanity-io/sanity/issues/11227)) ([4e8100e](https://github.com/sanity-io/sanity/commit/4e8100e46e200846957ae5d91005d59ddd7a5581)) by Ash (ash@sanity.io)
+
+### Performance Improvements
+
+* Improve createFieldDefinitions and related ([#11209](https://github.com/sanity-io/sanity/issues/11209)) ([484e953](https://github.com/sanity-io/sanity/commit/484e953ed01bfc4547e4582055f09ef1f37a674f)) by Tegan Churchill (99214770+tegan-rbi@users.noreply.github.com)
+
 ## [4.17.0](https://github.com/sanity-io/sanity/compare/v4.16.0...v4.17.0) (2025-11-20)
 
 ### Features
