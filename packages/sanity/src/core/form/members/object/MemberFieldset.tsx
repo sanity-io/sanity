@@ -68,9 +68,6 @@ export const MemberFieldSet = memo(function MemberFieldSet(props: {
       inputId={member.fieldSet.name}
     >
       {fieldsetMembers.map((fieldsetMember) => {
-        if (fieldsetMember.kind === 'fieldSet') {
-          return null
-        }
         if (fieldsetMember.kind === 'error') {
           return <MemberFieldError key={member.key} member={fieldsetMember} />
         }

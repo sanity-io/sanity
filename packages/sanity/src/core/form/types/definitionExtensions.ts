@@ -9,7 +9,8 @@ import {
 import {type ComponentType} from 'react'
 
 import {type PreviewProps} from '../../components'
-import {type RenderMembersCallback} from '../store/types/nodes'
+import {type FieldsetRenderMembersCallback} from '../store/types/members'
+import {type ObjectRenderMembersCallback} from '../store/types/nodes'
 import {type CrossDatasetReferenceInputProps, type ReferenceInputProps} from '../studio'
 import {
   type BlockAnnotationProps,
@@ -521,7 +522,7 @@ declare module '@sanity/types' {
      * @hidden
      * @beta
      */
-    renderMembers?: RenderMembersCallback
+    renderMembers?: ObjectRenderMembersCallback
   }
 
   export interface FieldsetDefinition {
@@ -546,7 +547,7 @@ declare module '@sanity/types' {
      * @hidden
      * @beta
      */
-    renderMembers?: RenderMembersCallback
+    renderMembers?: FieldsetRenderMembersCallback
   }
 
   export interface ReferenceDefinition {

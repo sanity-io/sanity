@@ -5,6 +5,11 @@ import {type DecorationMember, type FieldMember} from './members'
 
 /**
  * @hidden
+ * @public */
+export type FieldsetMembers = FieldMember | FieldError | DecorationMember
+
+/**
+ * @hidden
  * @beta */
 export interface FieldsetState {
   path: Path
@@ -16,5 +21,5 @@ export interface FieldsetState {
   collapsible?: boolean
   collapsed?: boolean
   columns?: number | number[]
-  members: (FieldMember | FieldError | DecorationMember)[]
+  members: FieldsetMembers[]
 }
