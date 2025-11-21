@@ -11,6 +11,7 @@ import {
 import {useValidationStatus} from '../../../hooks'
 import {Translate, useTranslation} from '../../../i18n'
 import {getReleaseIdFromReleaseDocumentId} from '../../../releases/util/getReleaseIdFromReleaseDocumentId'
+import {getDraftId} from '../../../util/draftUtils'
 import {ScheduleDraftDialog} from '../../components/ScheduleDraftDialog'
 import {useSingleDocReleaseEnabled} from '../../context/SingleDocReleaseEnabledProvider'
 import {useSingleDocRelease} from '../../context/SingleDocReleaseProvider'
@@ -31,7 +32,7 @@ export const useSchedulePublishAction: DocumentActionComponent = (
   const {enabled: singleDocReleaseEnabled, mode} = useSingleDocReleaseEnabled()
   const {handleOpenDialog: handleOpenUpsellDialog} = useSingleDocReleaseUpsell()
   // Check validation status
-  const validationStatus = useValidationStatus(id, type)
+  const validationStatus = useValidationStatus(getDraftId(id), type)
   const hasValidationErrors = validationStatus.validation.some(isValidationErrorMarker)
 
   // Check if document has versions in cardinality one releases

@@ -18,15 +18,16 @@ import {useDocumentPane} from '../../useDocumentPane'
 import {ValidationInspector} from './ValidationInspector'
 
 function useMenuItem(props: DocumentInspectorUseMenuItemProps): DocumentInspectorMenuItem {
-  const {documentId, documentType} = props
+  const {documentType} = props
   const {t} = useTranslation('validation')
   const {selectedReleaseId} = usePerspective()
+  const {value} = useDocumentPane()
+
   const {validation: validationMarkers} = useValidationStatus(
-    documentId,
+    value._id,
     documentType,
     selectedReleaseId,
   )
-  const {value} = useDocumentPane()
 
   const validation: FormNodeValidation[] = useMemo(
     () =>

@@ -8,6 +8,7 @@ import shallowEquals from 'shallow-equals'
 import {type SourceClientOptions} from '../../../../config'
 import {type LocaleSource} from '../../../../i18n'
 import {type DraftsModelDocumentAvailability} from '../../../../preview'
+import {type DocumentVariantType} from '../../../../util/getDocumentVariantType'
 import {validateDocumentWithReferences, type ValidationStatus} from '../../../../validation'
 import {type DocumentStoreExtraOptions} from '../getPairListener'
 import {type IdPair} from '../types'
@@ -36,9 +37,16 @@ export const validation = memoize(
     },
     {draftId, publishedId, versionId}: IdPair,
     typeName: string,
+    validationTarget: DocumentVariantType,
   ): Observable<ValidationStatus> => {
     const document$ = editState(ctx, {draftId, publishedId, versionId}, typeName).pipe(
-      map(({version, draft, published}) => version || draft || published),
+      map((state) => {
+        const {version, draft, published} = state
+
+        if (validationTarget === 'draft') return draft
+        if (validationTarget === 'version') return version
+        return published
+      }),
       throttleTime(DOC_UPDATE_DELAY, asyncScheduler, {trailing: true}),
       distinctUntilChanged((prev, next) => {
         if (prev?._rev === next?._rev) {
@@ -53,7 +61,14 @@ export const validation = memoize(
 
     return validateDocumentWithReferences(ctx, document$)
   },
-  (ctx, idPair, typeName) => {
-    return memoizeKeyGen(ctx.client, idPair, typeName)
+  (ctx, idPair, typeName, validationTarget) => {
+    // Use the actual document ID being validated in the cache key for explicitness
+    const documentId =
+      validationTarget === 'draft'
+        ? idPair.draftId
+        : validationTarget === 'version'
+          ? idPair.versionId
+          : idPair.publishedId
+    return `${memoizeKeyGen(ctx.client, idPair, typeName)}-${documentId}`
   },
 )

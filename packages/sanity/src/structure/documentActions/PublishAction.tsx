@@ -55,9 +55,9 @@ export const usePublishAction: DocumentActionComponent = (props) => {
     {status: 'publishing'; publishRevision: string | undefined} | {status: 'published'} | null
   >(null)
   const {publish} = useDocumentOperation(id, type)
-  const validationStatus = useValidationStatus(id, type)
-  const syncState = useSyncState(id, type)
   const {changesOpen, documentId, documentType, value} = useDocumentPane()
+  const validationStatus = useValidationStatus(value._id, type)
+  const syncState = useSyncState(id, type)
   const editState = useEditState(documentId, documentType)
   const {t} = useTranslation(structureLocaleNamespace)
 
