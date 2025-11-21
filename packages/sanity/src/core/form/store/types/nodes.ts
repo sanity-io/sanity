@@ -105,12 +105,23 @@ export interface HiddenField {
   name: string
   index: number
 }
+/**
+ * @hidden
+ * @public */
+export type RenderMembersCallback = (members: ObjectMember[]) => ObjectMember[]
 
 /** @public */
 export interface ObjectFormNode<
   T = {[key in string]: unknown},
   S extends ObjectSchemaType = ObjectSchemaType,
-> extends BaseFormNode<T, S> {
+> extends BaseFormNode<
+    T,
+    S & {
+      // RenderMembers is part of the schema but it's "augmented" in the definitionExtensions
+      // so we need to add it here, we cannot make it part of the schema type because we don't have access there to the ObjectMember type
+      renderMembers?: RenderMembersCallback
+    }
+  > {
   /** The focus path of the form node. */
   focusPath: Path
   /**
