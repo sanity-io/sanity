@@ -7,12 +7,15 @@ import {type CliCommandArguments, type CliCommandContext} from '@sanity/cli'
 import {minutesToMilliseconds} from 'date-fns'
 import readPkgUp from 'read-pkg-up'
 
+import {extractAppManifest} from '../../../manifest/extractAppManifest'
 import {
+  type AppManifest,
   type CreateManifest,
   type CreateWorkspaceManifest,
   type ManifestWorkspaceFile,
 } from '../../../manifest/manifestTypes'
 import {type ExtractManifestWorkerData} from '../../threads/extractManifest'
+import {determineIsApp} from '../../util/determineIsApp'
 import {readModuleVersion} from '../../util/readModuleVersion'
 import {getTimer} from '../../util/timing'
 
@@ -64,7 +67,7 @@ async function extractManifest(
   args: CliCommandArguments<ExtractManifestFlags>,
   context: CliCommandContext,
 ): Promise<void> {
-  const {output, workDir} = context
+  const {output, workDir, cliConfig} = context
 
   const flags = args.extOptions
   const defaultOutputDir = resolve(join(workDir, 'dist'))
@@ -76,35 +79,47 @@ async function extractManifest(
 
   const path = join(staticPath, MANIFEST_FILENAME)
 
-  const rootPkgPath = readPkgUp.sync({cwd: __dirname})?.path
-  if (!rootPkgPath) {
-    throw new Error('Could not find root directory for `sanity` package')
-  }
+  const isApp = determineIsApp(cliConfig)
 
   const timer = getTimer()
   timer.start(CREATE_TIMER)
   const spinner = output.spinner({}).start('Extracting manifest')
 
   try {
-    const workspaceManifests = await getWorkspaceManifests({rootPkgPath, workDir})
     await mkdir(staticPath, {recursive: true})
 
-    const workspaceFiles = await writeWorkspaceFiles(workspaceManifests, staticPath)
+    if (isApp) {
+      const manifest: AppManifest = await extractAppManifest({
+        workDir,
+        cliConfig,
+      })
 
-    const manifest: CreateManifest = {
-      /**
-       * Version history:
-       * 1: Initial release.
-       * 2: Added tools file.
-       * 3. Added studioVersion field.
-       */
-      version: 3,
-      createdAt: new Date().toISOString(),
-      workspaces: workspaceFiles,
-      studioVersion: await readModuleVersion(workDir, 'sanity'),
+      await writeFile(path, JSON.stringify(manifest, null, 2))
+    } else {
+      const rootPkgPath = readPkgUp.sync({cwd: __dirname})?.path
+      if (!rootPkgPath) {
+        throw new Error('Could not find root directory for `sanity` package')
+      }
+
+      const workspaceManifests = await getWorkspaceManifests({rootPkgPath, workDir})
+      const workspaceFiles = await writeWorkspaceFiles(workspaceManifests, staticPath)
+
+      const manifest: CreateManifest = {
+        /**
+         * Version history:
+         * 1: Initial release.
+         * 2: Added tools file.
+         * 3. Added studioVersion field.
+         */
+        version: 3,
+        createdAt: new Date().toISOString(),
+        workspaces: workspaceFiles,
+        studioVersion: await readModuleVersion(workDir, 'sanity'),
+      }
+
+      await writeFile(path, JSON.stringify(manifest, null, 2))
     }
 
-    await writeFile(path, JSON.stringify(manifest, null, 2))
     const manifestDuration = timer.end(CREATE_TIMER)
 
     spinner.succeed(`Extracted manifest (${manifestDuration.toFixed()}ms)`)
