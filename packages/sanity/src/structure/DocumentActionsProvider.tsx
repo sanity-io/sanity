@@ -4,7 +4,7 @@ import {
   type DocumentActionDescription,
   type DocumentActionProps,
   EMPTY_ARRAY,
-  getDocumentIdFromDocumentActionProps,
+  getDocumentIdForCanvasLink,
   GetHookCollectionState,
   useCanvasCompanionDoc,
   useTranslation,
@@ -42,8 +42,6 @@ export function DocumentActionsProvider(props: {children: React.ReactNode}) {
     return null
   }
 
-  const documentId = getDocumentIdFromDocumentActionProps(actionProps)
-
   return (
     <GetHookCollectionState<DocumentActionProps, ResolvedAction>
       args={{
@@ -54,7 +52,7 @@ export function DocumentActionsProvider(props: {children: React.ReactNode}) {
       resetRef={onCompleteRef}
     >
       {({states}) => (
-        <ActionsGuardWrapper states={states} documentId={documentId}>
+        <ActionsGuardWrapper states={states} actionProps={actionProps}>
           {children}
         </ActionsGuardWrapper>
       )}
@@ -81,15 +79,16 @@ const SUPPORTED_LINKED_TO_CANVAS_ACTIONS: DocumentActionComponent['action'][] = 
 
 interface ActionsGuardWrapperProps {
   states: ResolvedAction[]
-  documentId: string
+  actionProps: Omit<DocumentActionProps, 'onComplete'>
   children: React.ReactNode
 }
 
 // merge this into the DocumentActionsProvider itself
 function ActionsGuardWrapper(props: ActionsGuardWrapperProps) {
-  const {states, children, documentId} = props
+  const {states, children, actionProps} = props
   const {t} = useTranslation(structureLocaleNamespace)
-  const {isLinked} = useCanvasCompanionDoc(documentId)
+
+  const {isLinked} = useCanvasCompanionDoc(getDocumentIdForCanvasLink(actionProps))
 
   return (
     <DocumentActionsStateContext.Provider

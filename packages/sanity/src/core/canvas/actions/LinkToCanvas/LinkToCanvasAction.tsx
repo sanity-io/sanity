@@ -13,10 +13,10 @@ import {usePerspective} from '../../../perspective/usePerspective'
 import {isReleaseDocument} from '../../../releases/store/types'
 import {useProjectOrganizationId} from '../../../store/_legacy/project/useProjectOrganizationId'
 import {useRenderingContext} from '../../../store/renderingContext/useRenderingContext'
-import {getDocumentIdFromDocumentActionProps} from '../../../util/documentActionUtils'
 import {getDraftId, getPublishedId} from '../../../util/draftUtils'
 import {canvasLocaleNamespace} from '../../i18n'
 import {useCanvasTelemetry} from '../../useCanvasTelemetry'
+import {getDocumentIdForCanvasLink} from '../../utils/getDocumentIdForCanvasLink'
 import {useCanvasCompanionDoc} from '../useCanvasCompanionDoc'
 import {LinkToCanvasDialog} from './LinkToCanvasDialog'
 
@@ -31,7 +31,7 @@ export const useLinkToCanvasAction: DocumentActionComponent = (props: DocumentAc
   const {t} = useTranslation(canvasLocaleNamespace)
   const [isDialogOpen, setIsDialogOpen] = useState(false)
   const {selectedPerspective} = usePerspective()
-  const {isLinked, loading} = useCanvasCompanionDoc(getDocumentIdFromDocumentActionProps(props))
+  const {isLinked, loading} = useCanvasCompanionDoc(getDocumentIdForCanvasLink(props))
   const {value: organizationId} = useProjectOrganizationId()
   const {linkCtaClicked} = useCanvasTelemetry()
 

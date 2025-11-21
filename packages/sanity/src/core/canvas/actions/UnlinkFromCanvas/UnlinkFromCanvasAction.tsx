@@ -9,18 +9,16 @@ import {
 import {useClient} from '../../../hooks/useClient'
 import {useTranslation} from '../../../i18n/hooks/useTranslation'
 import {DEFAULT_STUDIO_CLIENT_OPTIONS} from '../../../studioClient'
-import {getDocumentIdFromDocumentActionProps} from '../../../util/documentActionUtils'
 import {canvasLocaleNamespace} from '../../i18n'
 import {useCanvasTelemetry} from '../../useCanvasTelemetry'
+import {getDocumentIdForCanvasLink} from '../../utils/getDocumentIdForCanvasLink'
 import {useCanvasCompanionDoc} from '../useCanvasCompanionDoc'
 import {UnlinkFromCanvasDialog} from './UnlinkFromCanvasDialog'
 
 // React Compiler needs functions that are hooks to have the `use` prefix, pascal case are treated as a component, these are hooks even though they're confusingly named `DocumentActionComponent`
 export const useUnlinkFromCanvasAction: DocumentActionComponent = (props: DocumentActionProps) => {
   const {t} = useTranslation(canvasLocaleNamespace)
-  const {isLinked, companionDoc, loading} = useCanvasCompanionDoc(
-    getDocumentIdFromDocumentActionProps(props),
-  )
+  const {isLinked, companionDoc, loading} = useCanvasCompanionDoc(getDocumentIdForCanvasLink(props))
 
   const client = useClient(DEFAULT_STUDIO_CLIENT_OPTIONS)
   const {unlinkCtaClicked, unlinkApproved} = useCanvasTelemetry()

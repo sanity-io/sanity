@@ -1,10 +1,10 @@
-import {type DocumentActionProps} from '../config/document/actions'
-import {getDraftId, getPublishedId} from './draftUtils'
+import {type DocumentActionProps} from '../../config/document/actions'
+import {getDraftId, getPublishedId} from '../../util/draftUtils'
 
 /**
  * @internal
  */
-export function getDocumentIdFromDocumentActionProps(
+export function getDocumentIdForCanvasLink(
   actionProps: Omit<DocumentActionProps, 'onComplete'>,
 ): string {
   if (actionProps.version) {
