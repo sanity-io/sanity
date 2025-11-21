@@ -1,9 +1,12 @@
 import {ArrowLeftIcon} from '@sanity/icons'
+import {useMemo} from 'react'
 
 import {Button} from '../../../ui-components'
 import {BackLink, PaneHeader, PaneHeaderActions, usePane} from '../../components'
 import {type PaneMenuItem, type PaneMenuItemGroup} from '../../types'
 import {useStructureTool} from '../../useStructureTool'
+import {ListHeaderTabs} from './ListHeaderTabs'
+import {useListPane} from './useListPane'
 
 interface ListPaneHeaderProps {
   index: number
@@ -15,8 +18,14 @@ interface ListPaneHeaderProps {
 export const ListPaneHeader = ({index, menuItems, menuItemGroups, title}: ListPaneHeaderProps) => {
   const {features} = useStructureTool()
   const {collapsed, isLast} = usePane()
+  const {views} = useListPane()
+
   // Prevent focus if this is the last (non-collapsed) pane.
   const tabIndex = isLast && !collapsed ? -1 : 0
+
+  // Show tabs if views are defined
+  const showTabs = views && views.length > 0
+  const tabs = useMemo(() => showTabs && <ListHeaderTabs />, [showTabs])
 
   return (
     <PaneHeader
@@ -33,6 +42,7 @@ export const ListPaneHeader = ({index, menuItems, menuItemGroups, title}: ListPa
           />
         )
       }
+      tabs={tabs}
       tabIndex={tabIndex}
       title={title}
     />
