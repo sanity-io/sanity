@@ -79,7 +79,7 @@ export type ObjectMarker = {__type: 'object'; value: EncodableObject}
  */
 export interface CoreTypeDef extends CommonTypeDef {
   extends: null
-  jsonType: 'boolean' | 'number' | 'string' | 'object' | 'array'
+  jsonType: 'boolean' | 'number' | 'string' | 'object' | 'array' | 'null'
 }
 
 /**

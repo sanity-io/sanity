@@ -4603,6 +4603,71 @@ exports[`Extract schema test > Extracts  schema general 1`] = `
 ]
 `;
 
+exports[`Extract schema test > does not extract formDecoration type 1`] = `
+[
+  {
+    "attributes": {
+      "_createdAt": {
+        "type": "objectAttribute",
+        "value": {
+          "type": "string",
+        },
+      },
+      "_id": {
+        "type": "objectAttribute",
+        "value": {
+          "type": "string",
+        },
+      },
+      "_rev": {
+        "type": "objectAttribute",
+        "value": {
+          "type": "string",
+        },
+      },
+      "_type": {
+        "type": "objectAttribute",
+        "value": {
+          "type": "string",
+          "value": "validDocument",
+        },
+      },
+      "_updatedAt": {
+        "type": "objectAttribute",
+        "value": {
+          "type": "string",
+        },
+      },
+      "title": {
+        "optional": true,
+        "type": "objectAttribute",
+        "value": {
+          "type": "string",
+        },
+      },
+      "withDecorator": {
+        "optional": true,
+        "type": "objectAttribute",
+        "value": {
+          "attributes": {
+            "title": {
+              "optional": true,
+              "type": "objectAttribute",
+              "value": {
+                "type": "string",
+              },
+            },
+          },
+          "type": "object",
+        },
+      },
+    },
+    "name": "validDocument",
+    "type": "document",
+  },
+]
+`;
+
 exports[`Extract schema test > inline reference types works 1`] = `
 [
   {

@@ -394,6 +394,7 @@ exports[`exports snapshot 1`] = `
     "isEmptyObject": "function",
     "isFieldChange": "function",
     "isFileSchemaType": "function",
+    "isFormDecorationSchemaType": "function",
     "isGlobalDocumentReference": "function",
     "isGoingToUnpublish": "function",
     "isGroupChange": "function",

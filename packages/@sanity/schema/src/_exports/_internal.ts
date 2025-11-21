@@ -6,7 +6,7 @@ export {
   resolveSearchConfig,
   resolveSearchConfigForBaseFieldPaths,
 } from '../legacy/searchConfig/resolve'
-export {ALL_FIELDS_GROUP_NAME} from '../legacy/types/constants'
+export {ALL_FIELDS_GROUP_NAME, FORM_DECORATION} from '../legacy/types/constants'
 export {builtinTypes} from '../sanity/builtinTypes'
 export {createSchemaFromManifestTypes} from '../sanity/createSchemaFromManifestTypes'
 export {extractSchema} from '../sanity/extractSchema'
