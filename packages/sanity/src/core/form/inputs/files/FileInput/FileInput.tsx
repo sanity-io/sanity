@@ -10,7 +10,7 @@ import {
 } from '@sanity/types'
 import {useToast} from '@sanity/ui'
 import {get} from 'lodash-es'
-import {Fragment, useCallback, useEffect, useRef, useState} from 'react'
+import {Fragment, useCallback, useEffect, useMemo, useRef, useState} from 'react'
 import {type Observable} from 'rxjs'
 
 import {useTranslation} from '../../../../i18n'
@@ -26,7 +26,7 @@ import {
   type UploadOptions,
 } from '../../../studio/uploads/types'
 import {createInitialUploadPatches} from '../../../studio/uploads/utils'
-import {type ObjectInputProps} from '../../../types'
+import {type ObjectInputProps, type RenderMembersCallback} from '../../../types'
 import {handleSelectAssetFromSource as handleSelectAssetFromSourceShared} from '../common/assetSource'
 import {type FileInfo} from '../common/styles'
 import {FileAsset as FileAssetComponent} from './FileAsset'
@@ -46,7 +46,10 @@ function passThrough({children}: {children?: React.ReactNode}) {
 /**
  * @hidden
  * @beta */
-export interface BaseFileInputProps extends ObjectInputProps<BaseFileInputValue, FileSchemaType> {
+export interface BaseFileInputProps extends ObjectInputProps<
+  BaseFileInputValue,
+  FileSchemaType & {renderMembers?: RenderMembersCallback}
+> {
   assetSources: AssetSource[]
   directUploads?: boolean
   observeAsset: (documentId: string) => Observable<FileAsset>
@@ -84,6 +87,13 @@ export function BaseFileInput(props: BaseFileInputProps) {
     unsubscribe: () => void
     uploader: AssetSourceUploader
   } | null>(null)
+
+  const renderedMembers = useMemo(() => {
+    if (schemaType.renderMembers) {
+      return schemaType.renderMembers(members)
+    }
+    return members
+  }, [members, schemaType])
 
   const setBrowseButtonElement = useCallback(
     (element: HTMLButtonElement | null) => {
@@ -300,7 +310,7 @@ export function BaseFileInput(props: BaseFileInputProps) {
 
   return (
     <>
-      {members.map((member) => {
+      {renderedMembers.map((member) => {
         if (member.kind === 'field') {
           return (
             <MemberField

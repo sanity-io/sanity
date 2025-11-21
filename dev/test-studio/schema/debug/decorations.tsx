@@ -75,6 +75,28 @@ export const decorations = defineType({
             ]
           },
         }),
+        defineField({
+          type: 'file',
+          name: 'file',
+          title: 'File',
+          fields: [
+            defineField({
+              type: 'string',
+              name: 'url',
+              title: 'URL',
+            }),
+          ],
+          renderMembers: (members) => {
+            return [
+              {
+                key: 'imageDecoration',
+                kind: 'decoration',
+                component: () => <Decoration title={'This is a file decoration!'} />,
+              },
+              ...members,
+            ]
+          },
+        }),
       ],
       renderMembers: (members) => {
         return [
