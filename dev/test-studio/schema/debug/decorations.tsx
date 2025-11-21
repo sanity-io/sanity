@@ -53,6 +53,28 @@ export const decorations = defineType({
           name: 'country',
           title: 'Country',
         }),
+        defineField({
+          type: 'image',
+          name: 'image',
+          title: 'Image',
+          fields: [
+            defineField({
+              type: 'string',
+              name: 'url',
+              title: 'URL',
+            }),
+          ],
+          renderMembers: (members) => {
+            return [
+              {
+                key: 'imageDecoration',
+                kind: 'decoration',
+                component: () => <Decoration title={'This is a image decoration!'} />,
+              },
+              ...members,
+            ]
+          },
+        }),
       ],
       renderMembers: (members) => {
         return [

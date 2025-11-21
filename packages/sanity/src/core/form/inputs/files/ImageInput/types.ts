@@ -9,7 +9,7 @@ import {
 import {type Observable} from 'rxjs'
 
 import {type UploaderResolver} from '../../../studio/uploads/types'
-import {type ObjectInputProps} from '../../../types'
+import {type ObjectInputProps, type RenderMembersCallback} from '../../../types'
 import {type ImageUrlBuilder} from '../types'
 
 /**
@@ -33,7 +33,10 @@ export interface BaseImageInputValue extends Partial<BaseImage> {
  * @hidden
  * @beta */
 export interface BaseImageInputProps
-  extends ObjectInputProps<BaseImageInputValue, ImageSchemaType> {
+  extends ObjectInputProps<
+    BaseImageInputValue,
+    ImageSchemaType & {renderMembers?: RenderMembersCallback}
+  > {
   assetSources: AssetSource[]
   directUploads?: boolean
   imageUrlBuilder: ImageUrlBuilder
