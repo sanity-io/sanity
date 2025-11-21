@@ -21,6 +21,7 @@ import {AuthBoundary} from './AuthBoundary'
 import {ColorSchemeProvider} from './colorScheme'
 import {ComlinkRouteHandler} from './components/ComlinkRouteHandler'
 import {Z_OFFSET} from './constants'
+import {DeploymentNotificationProvider, DeploymentNotificationToast} from './deploymentNotification'
 import {MaybeEnableErrorReporting} from './MaybeEnableErrorReporting'
 import {PackageVersionStatusProvider} from './packageVersionStatus/PackageVersionStatusProvider'
 import {
@@ -74,19 +75,22 @@ export function StudioProvider({
         <StudioTelemetryProvider config={config}>
           <LocaleProvider>
             <PackageVersionStatusProvider>
-              <MaybeEnableErrorReporting errorReporter={errorReporter} />
-              <ResourceCacheProvider>
-                <AppIdCacheProvider>
-                  <ComlinkRouteHandler />
-                  <StudioAnnouncementsProvider>
-                    <GlobalPerspectiveProvider>
-                      <DocumentLimitUpsellProvider>
-                        <AssetLimitUpsellProvider>{children}</AssetLimitUpsellProvider>
-                      </DocumentLimitUpsellProvider>
-                    </GlobalPerspectiveProvider>
-                  </StudioAnnouncementsProvider>
-                </AppIdCacheProvider>
-              </ResourceCacheProvider>
+              <DeploymentNotificationProvider>
+                <DeploymentNotificationToast />
+                <MaybeEnableErrorReporting errorReporter={errorReporter} />
+                <ResourceCacheProvider>
+                  <AppIdCacheProvider>
+                    <ComlinkRouteHandler />
+                    <StudioAnnouncementsProvider>
+                      <GlobalPerspectiveProvider>
+                        <DocumentLimitUpsellProvider>
+                          <AssetLimitUpsellProvider>{children}</AssetLimitUpsellProvider>
+                        </DocumentLimitUpsellProvider>
+                      </GlobalPerspectiveProvider>
+                    </StudioAnnouncementsProvider>
+                  </AppIdCacheProvider>
+                </ResourceCacheProvider>
+              </DeploymentNotificationProvider>
             </PackageVersionStatusProvider>
           </LocaleProvider>
         </StudioTelemetryProvider>
