@@ -41,7 +41,7 @@ catalog:
   #     → Cannot create property 'border-width' on string '1px solid var(--card-border-color)'
   jsdom: ^26.1.0
   vite: ^7.1.7
-  vitest: ^3.2.4
+  vitest: ^4.0.0
   styled-components: ^6.1.18
   typescript: 5.9.3
 
