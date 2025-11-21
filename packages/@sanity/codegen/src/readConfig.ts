@@ -6,7 +6,7 @@ import * as z from 'zod'
 /**
  * @internal
  */
-export const configDefintion = z.object({
+export const configDefinition = z.object({
   path: z
     .string()
     .or(z.array(z.string()))
@@ -21,7 +21,7 @@ export const configDefintion = z.object({
   overloadClientMethods: z.boolean().default(true),
 })
 
-export type CodegenConfig = z.infer<typeof configDefintion>
+export type CodegenConfig = z.infer<typeof configDefinition>
 
 /**
  * Read, parse and process a config file
@@ -31,7 +31,7 @@ export async function readConfig(path: string): Promise<CodegenConfig> {
   try {
     const content = await readFile(path, 'utf-8')
     const json = json5.parse(content)
-    return configDefintion.parseAsync(json)
+    return configDefinition.parseAsync(json)
   } catch (error) {
     if (error instanceof z.ZodError) {
       throw new Error(
@@ -40,7 +40,7 @@ export async function readConfig(path: string): Promise<CodegenConfig> {
       )
     }
     if (typeof error === 'object' && error !== null && 'code' in error && error.code === 'ENOENT') {
-      return configDefintion.parse({})
+      return configDefinition.parse({})
     }
 
     throw error

@@ -1,4 +1,4 @@
-export {type CodegenConfig, configDefintion, readConfig} from '../readConfig'
+export {type CodegenConfig, configDefinition, readConfig} from '../readConfig'
 export {readSchema} from '../readSchema'
 export {safeParseQuery} from '../safeParseQuery'
 export {findQueriesInPath} from '../typescript/findQueriesInPath'
