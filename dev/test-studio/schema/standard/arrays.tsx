@@ -114,16 +114,21 @@ export default defineType({
       title: 'Array with no title',
       type: 'array',
       components: {
-        field: (props: any) => {
-          return (
-            <div style={{border: '1px solid palegreen', borderRadius: 4}}>
-              {props.renderDefault({
-                ...props,
-                title: undefined,
-              })}
-            </div>
-          )
-        },
+        // field: (props: any) => {
+        //   return (
+        //     <div style={{border: '1px solid palegreen', borderRadius: 4}}>
+        //       {props.renderDefault({
+        //         ...props,
+        //         title: undefined,
+        //       })}
+        //     </div>
+        //   )
+        // },
+        input: (props) => (
+          <div style={{border: '1px solid purple', borderRadius: 4}}>
+            {props.renderDefault(props)}
+          </div>
+        ),
       },
       of: [
         {
