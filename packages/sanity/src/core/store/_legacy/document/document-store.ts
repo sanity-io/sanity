@@ -8,7 +8,13 @@ import {type LocaleSource} from '../../../i18n'
 import {type DocumentPreviewStore} from '../../../preview'
 import {DEFAULT_STUDIO_CLIENT_OPTIONS} from '../../../studioClient'
 import {type Template} from '../../../templates'
-import {getDocumentVariantType, getIdPair, isDraftId, isVersionId} from '../../../util'
+import {
+  getDocumentVariantType,
+  getIdPair,
+  getPublishedId,
+  isDraftId,
+  isVersionId,
+} from '../../../util'
 import {type ValidationStatus} from '../../../validation'
 import {type HistoryStore} from '../history'
 import {checkoutPair, type DocumentVersionEvent, type Pair} from './document-pair/checkoutPair'
@@ -91,9 +97,8 @@ export interface DocumentStore {
       type: string,
     ) => Observable<OperationSuccess | OperationError>
     validation: (
-      publishedId: string,
+      validationTargetId: string,
       type: string,
-      displayedDocumentId: string,
       releaseId?: string,
     ) => Observable<ValidationStatus>
   }
@@ -213,9 +218,10 @@ export function createDocumentStore({
           }),
         )
       },
-      validation(publishedId, type, displayedDocumentId, releaseId) {
+      validation(validationTargetId, type, releaseId) {
+        const publishedId = getPublishedId(validationTargetId)
         const idPair = getIdPairFromPublished(publishedId, releaseId)
-        const validationTarget = getDocumentVariantType(displayedDocumentId)
+        const validationTarget = getDocumentVariantType(validationTargetId)
         return validation(ctx, idPair, type, validationTarget)
       },
     },
