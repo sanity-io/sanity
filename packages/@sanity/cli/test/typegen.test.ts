@@ -1,7 +1,7 @@
 import {randomUUID} from 'node:crypto'
 import {readFile, unlink, writeFile} from 'node:fs/promises'
 
-import {beforeEach, describe, expect, test} from 'vitest'
+import {describe, expect, test} from 'vitest'
 
 import {describeCliTest} from './shared/describe'
 import {runSanityCmdCommand, studioNames, studiosPath} from './shared/environment'
@@ -21,13 +21,10 @@ const workingTypegen = {
 async function writeTypegenConfig(path: string, config: any, type: 'legacy' | 'cli') {
   // write to legacy config
   if (type === 'legacy') {
-    if (!config) {
-      await unlink(path)
-      return
-    }
-
     await writeFile(path, JSON.stringify(config))
-    return
+    return {
+      cleanup: () => unlink(path),
+    }
   }
 
   // get the cli config template, add the typegen bits and write it
@@ -46,32 +43,32 @@ export default defineCliConfig({
 })
 `,
   )
+  return {
+    cleanup: () => unlink(path),
+  }
 }
 
 const withConfig =
-  <T extends boolean>(
-    {config, legacyConfig}: {config: any; legacyConfig: T},
-    t: T extends true ? (path: string) => Promise<void> : () => Promise<void>,
+  (
+    {config, legacyConfig}: {config: any; legacyConfig: boolean},
+    t: (configFileName: string) => Promise<void>,
   ) =>
   async (): Promise<void> => {
-    const legacyConfigName = `legacy-config-${randomUUID()}.json`
-    const path = `${studiosPath}/cli-test-studio/${legacyConfig ? legacyConfigName : 'sanity.cli.ts'}`
+    const configFileName = legacyConfig
+      ? `legacy-config-${randomUUID()}.json`
+      : `sanity.cli.${randomUUID()}.ts`
+    const path = `${studiosPath}/cli-test-studio/${configFileName}`
 
-    await writeTypegenConfig(path, config, legacyConfig ? 'legacy' : 'cli')
+    const {cleanup} = await writeTypegenConfig(path, config, legacyConfig ? 'legacy' : 'cli')
 
     try {
-      await t(legacyConfigName)
+      await t(configFileName.replace(/\.ts$/, ''))
     } finally {
-      await writeTypegenConfig(path, undefined, legacyConfig ? 'legacy' : 'cli')
+      await cleanup()
     }
   }
 
 describeCliTest('CLI: `sanity typegen`', () => {
-  beforeEach(async () => {
-    // reset the sanity.cli.ts before each test
-    await writeTypegenConfig(`${studiosPath}/cli-test-studio/sanity.cli.ts`, undefined, 'cli')
-  })
-
   describe.each(studioNames)('%s', (studioName) => {
     test('sanity typegen generate: missing schema, default path', async () => {
       const err = await runSanityCmdCommand('cli-test-studio', ['typegen', 'generate']).catch(
@@ -92,10 +89,12 @@ describeCliTest('CLI: `sanity typegen`', () => {
           },
           legacyConfig: false,
         },
-        async () => {
-          const err = await runSanityCmdCommand(studioName, ['typegen', 'generate']).catch(
-            (error) => error,
-          )
+        async (configFileName) => {
+          const err = await runSanityCmdCommand(studioName, ['typegen', 'generate'], {
+            env: {
+              SANITY_CLI_TEST_CONFIG_NAME: configFileName,
+            },
+          }).catch((error) => error)
           expect(err.code).toBe(1)
           expect(err.stderr).toContain('Schema path is not a file')
         },
@@ -117,25 +116,28 @@ describeCliTest('CLI: `sanity typegen`', () => {
       'sanity typegen generate: typegen defined in both cli and legacy config',
       withConfig(
         {
-          config: {
-            schema: 'does-not-exist.json',
-          },
+          // using the sanity cli config
+          config: {schema: 'does-not-exist.json'},
           legacyConfig: false,
         },
-        async () => {
-          const legacyConfigFile = 'conflicting-config.json'
+        async (configFileName) => {
+          // also using a legacy config
+          const legacyConfigFile = `${randomUUID()}.json`
           await writeTypegenConfig(
             `${studiosPath}/cli-test-studio/${legacyConfigFile}`,
             workingTypegen,
             'legacy',
           )
 
-          const result = await runSanityCmdCommand(studioName, [
-            'typegen',
-            'generate',
-            '--config-path',
-            legacyConfigFile,
-          ]).catch((error) => error)
+          const result = await runSanityCmdCommand(
+            studioName,
+            ['typegen', 'generate', '--config-path', legacyConfigFile],
+            {
+              env: {
+                SANITY_CLI_TEST_CONFIG_NAME: configFileName,
+              },
+            },
+          ).catch((error) => error)
 
           expect(result.code).toBe(0)
           expect(result.stderr).toContain(
@@ -176,6 +178,17 @@ describeCliTest('CLI: `sanity typegen`', () => {
       ['cli config', false],
       ['legacy config', true],
     ])('%s', (title, legacyConfig) => {
+      const getParams = (fileName: string) => ({
+        cmdOptions: legacyConfig
+          ? {}
+          : {
+              env: {
+                SANITY_CLI_TEST_CONFIG_NAME: fileName,
+              },
+            },
+        cmdArgs: legacyConfig ? ['--config-path', fileName] : [],
+      })
+
       test(
         'sanity typegen generate: missing schema, custom path',
         withConfig(
@@ -185,12 +198,13 @@ describeCliTest('CLI: `sanity typegen`', () => {
             },
             legacyConfig,
           },
-          async (legacyConfigFile) => {
-            const err = await runSanityCmdCommand(studioName, [
-              'typegen',
-              'generate',
-              ...(legacyConfig ? ['--config-path', legacyConfigFile] : []),
-            ]).catch((error) => error)
+          async (configFileName) => {
+            const {cmdOptions, cmdArgs} = getParams(configFileName)
+            const err = await runSanityCmdCommand(
+              studioName,
+              ['typegen', 'generate', ...cmdArgs],
+              cmdOptions,
+            ).catch((error) => error)
             expect(err.code).toBe(1)
             expect(err.stderr).not.toContain('did you run "sanity schema extract"')
             expect(err.stderr).toContain('schema-that-doesnt-exist.json')
@@ -205,12 +219,14 @@ describeCliTest('CLI: `sanity typegen`', () => {
             config: workingTypegen,
             legacyConfig,
           },
-          async (legacyConfigFile) => {
-            const result = await runSanityCmdCommand(studioName, [
-              'typegen',
-              'generate',
-              ...(legacyConfig ? ['--config-path', legacyConfigFile] : []),
-            ])
+          async (configFileName) => {
+            const {cmdOptions, cmdArgs} = getParams(configFileName)
+
+            const result = await runSanityCmdCommand(
+              studioName,
+              ['typegen', 'generate', ...cmdArgs],
+              cmdOptions,
+            )
 
             expect(result.code).toBe(0)
             expect(result.stderr).toContain(
@@ -227,17 +243,19 @@ describeCliTest('CLI: `sanity typegen`', () => {
             config: workingTypegen,
             legacyConfig,
           },
-          async (legacyConfigFile) => {
+          async (configFileName) => {
+            const {cmdOptions, cmdArgs} = getParams(configFileName)
+
             // Write a prettier config to the output folder, with single quotes. The defeault is double quotes.
             await writeFile(
               `${studiosPath}/cli-test-studio/out/.prettierrc`,
               '{\n  "singleQuote": true\n}\n',
             )
-            const result = await runSanityCmdCommand(studioName, [
-              'typegen',
-              'generate',
-              ...(legacyConfig ? ['--config-path', legacyConfigFile] : []),
-            ])
+            const result = await runSanityCmdCommand(
+              studioName,
+              ['typegen', 'generate', ...cmdArgs],
+              cmdOptions,
+            )
 
             expect(result.code).toBe(0)
             expect(result.stderr).toContain(
@@ -258,13 +276,15 @@ describeCliTest('CLI: `sanity typegen`', () => {
             config: workingTypegen,
             legacyConfig,
           },
-          async (legacyConfigFile) => {
+          async (configFileName) => {
+            const {cmdOptions, cmdArgs} = getParams(configFileName)
+
             // Write a prettier config to the output folder, with single quotes. The defeault is double quotes.
-            const result = await runSanityCmdCommand(studioName, [
-              'typegen',
-              'generate',
-              ...(legacyConfig ? ['--config-path', legacyConfigFile] : []),
-            ])
+            const result = await runSanityCmdCommand(
+              studioName,
+              ['typegen', 'generate', ...cmdArgs],
+              cmdOptions,
+            )
 
             expect(result.code).toBe(0)
             expect(result.stderr).toContain(
@@ -290,16 +310,18 @@ describeCliTest('CLI: `sanity typegen`', () => {
             },
             legacyConfig,
           },
-          async (legacyConfigFile) => {
+          async (configFileName) => {
+            const {cmdOptions, cmdArgs} = getParams(configFileName)
+
             await writeFile(
               `${studiosPath}/cli-test-studio/out/.prettierrc`,
               '{\n  "singleQuote": true\n}\n',
             )
-            const result = await runSanityCmdCommand(studioName, [
-              'typegen',
-              'generate',
-              ...(legacyConfig ? ['--config-path', legacyConfigFile] : []),
-            ])
+            const result = await runSanityCmdCommand(
+              studioName,
+              ['typegen', 'generate', ...cmdArgs],
+              cmdOptions,
+            )
 
             expect(result.code).toBe(0)
             expect(result.stderr).toContain(
@@ -323,12 +345,14 @@ describeCliTest('CLI: `sanity typegen`', () => {
             },
             legacyConfig,
           },
-          async (legacyConfigFile) => {
-            const result = await runSanityCmdCommand(studioName, [
-              'typegen',
-              'generate',
-              ...(legacyConfig ? ['--config-path', legacyConfigFile] : []),
-            ])
+          async (configFileName) => {
+            const {cmdOptions, cmdArgs} = getParams(configFileName)
+
+            const result = await runSanityCmdCommand(
+              studioName,
+              ['typegen', 'generate', ...cmdArgs],
+              cmdOptions,
+            )
 
             const types = await readFile(
               `${studiosPath}/cli-test-studio/out/absolute-path-types.ts`,
