@@ -90,6 +90,13 @@ function BaseImageInputComponent(props: BaseImageInputProps): React.JSX.Element 
     uploader: AssetSourceUploader
   } | null>(null)
 
+  const renderedMembers = useMemo(() => {
+    if (schemaType.renderMembers) {
+      return schemaType.renderMembers(members)
+    }
+    return members
+  }, [members, schemaType])
+
   const isImageToolEnabled = useCallback(() => {
     const hotspotOptions = get(schemaType, 'options.hotspot')
     return typeof hotspotOptions === 'object' || hotspotOptions === true
@@ -491,7 +498,7 @@ function BaseImageInputComponent(props: BaseImageInputProps): React.JSX.Element 
   return (
     // The Stack space should match the space in ObjectInput
     <Stack space={5} data-testid="image-input">
-      {members.map((member) => {
+      {renderedMembers.map((member) => {
         if (member.kind === 'field' && (member.name === 'crop' || member.name === 'hotspot')) {
           // we're rendering these separately
           return null
