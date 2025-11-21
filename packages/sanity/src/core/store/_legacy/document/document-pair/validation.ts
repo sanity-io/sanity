@@ -23,14 +23,7 @@ function shareLatestWithRefCount<T>() {
   return shareReplay<T>({bufferSize: 1, refCount: true})
 }
 
-/**
- * Validates a document for the specified version target.
- * @param validationTarget - Which document version to validate:
- *   - 'draft': Validate the draft document (drafts.\{id\})
- *   - 'published': Validate the published document (\{id\})
- *   - 'version': Validate the release version document (versions.\{releaseId\}.\{id\})
- * @internal
- */
+/** @internal */
 export const validation = memoize(
   (
     ctx: {
@@ -68,6 +61,14 @@ export const validation = memoize(
 
     return validateDocumentWithReferences(ctx, document$)
   },
-  (ctx, idPair, typeName, validationTarget) =>
-    `${memoizeKeyGen(ctx.client, idPair, typeName)}-${validationTarget}`,
+  (ctx, idPair, typeName, validationTarget) => {
+    // Use the actual document ID being validated in the cache key for explicitness
+    const documentId =
+      validationTarget === 'draft'
+        ? idPair.draftId
+        : validationTarget === 'version'
+          ? idPair.versionId
+          : idPair.publishedId
+    return `${memoizeKeyGen(ctx.client, idPair, typeName)}-${documentId}`
+  },
 )
