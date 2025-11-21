@@ -10,7 +10,7 @@ import {
 } from '@sanity/types'
 import {useToast} from '@sanity/ui'
 import {get} from 'lodash'
-import {Fragment, useCallback, useEffect, useRef, useState} from 'react'
+import {Fragment, useCallback, useEffect, useMemo, useRef, useState} from 'react'
 import {type Observable} from 'rxjs'
 
 import {useTranslation} from '../../../../i18n'
@@ -84,6 +84,13 @@ export function BaseFileInput(props: BaseFileInputProps) {
     unsubscribe: () => void
     uploader: AssetSourceUploader
   } | null>(null)
+
+  const renderedMembers = useMemo(() => {
+    if (schemaType.renderMembers) {
+      return schemaType.renderMembers(members)
+    }
+    return members
+  }, [members, schemaType])
 
   const setBrowseButtonElement = useCallback(
     (element: HTMLButtonElement | null) => {
@@ -300,7 +307,7 @@ export function BaseFileInput(props: BaseFileInputProps) {
 
   return (
     <>
-      {members.map((member) => {
+      {renderedMembers.map((member) => {
         if (member.kind === 'field') {
           return (
             <MemberField
@@ -334,7 +341,10 @@ export function BaseFileInput(props: BaseFileInputProps) {
         if (member.kind === 'error') {
           return <MemberFieldError key={member.key} member={member} />
         }
-
+        if (member.kind === 'decoration') {
+          const Component = member.component
+          return <Component key={member.key} />
+        }
         return (
           <Fragment
             key={
