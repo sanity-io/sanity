@@ -6,7 +6,7 @@
 
 import {flatten} from 'lodash'
 
-import {type FIXME} from '../../../../../FIXME'
+import {type FIXME} from '../../../../../../FIXME'
 
 export function extractPastedFiles(dataTransfer: DataTransfer): Promise<File[]> {
   if (dataTransfer.files && dataTransfer.files.length > 0) {

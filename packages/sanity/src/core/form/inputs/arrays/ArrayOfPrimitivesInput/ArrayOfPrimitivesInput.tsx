@@ -8,8 +8,8 @@ import {type ArrayOfPrimitivesInputProps} from '../../../types'
 import {type PrimitiveItemProps} from '../../../types/itemProps'
 import {ErrorItem} from '../ArrayOfObjectsInput/List/ErrorItem'
 import {Item, List} from '../common/list'
-import {UploadTargetCard} from '../common/UploadTargetCard'
 import {ArrayOfPrimitivesFunctions} from './ArrayOfPrimitivesFunctions'
+import {UploadTargetCard} from './arrayOfPrimitiveUploadTarget'
 import {getEmptyValue} from './getEmptyValue'
 import {ItemRow} from './ItemRow'
 import {NoItemsPlaceholder} from './NoItemsPlaceholder'
@@ -171,11 +171,11 @@ export class ArrayOfPrimitivesInput extends PureComponent<ArrayOfPrimitivesInput
     return (
       <Stack space={2} data-testid="array-primitives-input">
         <UploadTargetCard
-          types={schemaType.of}
-          resolveUploader={resolveUploader}
-          onUpload={onUpload}
           {...elementProps}
+          onUpload={onUpload}
+          resolveUploader={resolveUploader}
           tabIndex={0}
+          types={schemaType.of}
         >
           <Stack space={1}>
             {membersWithSortIds.length === 0 ? (
