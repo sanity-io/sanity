@@ -16,6 +16,7 @@ import {useRenderingContext} from '../../../store/renderingContext/useRenderingC
 import {getDraftId, getPublishedId} from '../../../util/draftUtils'
 import {canvasLocaleNamespace} from '../../i18n'
 import {useCanvasTelemetry} from '../../useCanvasTelemetry'
+import {getDocumentIdForCanvasLink} from '../../utils/getDocumentIdForCanvasLink'
 import {useCanvasCompanionDoc} from '../useCanvasCompanionDoc'
 import {LinkToCanvasDialog} from './LinkToCanvasDialog'
 
@@ -30,9 +31,7 @@ export const useLinkToCanvasAction: DocumentActionComponent = (props: DocumentAc
   const {t} = useTranslation(canvasLocaleNamespace)
   const [isDialogOpen, setIsDialogOpen] = useState(false)
   const {selectedPerspective} = usePerspective()
-  const {isLinked, loading} = useCanvasCompanionDoc(
-    props.liveEditSchemaType ? getPublishedId(props.id) : getDraftId(props.id),
-  )
+  const {isLinked, loading} = useCanvasCompanionDoc(getDocumentIdForCanvasLink(props))
   const {value: organizationId} = useProjectOrganizationId()
   const {linkCtaClicked} = useCanvasTelemetry()
 
@@ -59,12 +58,15 @@ export const useLinkToCanvasAction: DocumentActionComponent = (props: DocumentAc
     if (!organizationId) {
       return {disabled: true, reason: t('action.link-document-disabled.missing-permissions')}
     }
+
     if (!isInDashboard) {
       return {disabled: true, reason: t('action.link-document-disabled.not-in-dashboard')}
     }
+
     if (isVersionDocument) {
       return {disabled: true, reason: t('action.link-document-disabled.version-document')}
     }
+
     if (!props.initialValueResolved) {
       return {disabled: true, reason: t('action.link-document-disabled.initial-value-not-resolved')}
     }
@@ -81,6 +83,7 @@ export const useLinkToCanvasAction: DocumentActionComponent = (props: DocumentAc
   if (isLinked || loading || isExcludedType) return null
   // Hide the action in published perspective unless the document is live editable
   if (selectedPerspective === 'published' && !props.liveEditSchemaType) return null
+
   // Release documents are not yet supported in Canvas
   if (isReleaseDocument(selectedPerspective)) return null
 
