@@ -26,8 +26,8 @@ export const AuthorReferenceInput = forwardRef(function AuthorReferenceInput(
   ref: ForwardedRef<any>,
 ) {
   // @todo fix
-  const {inputProps, type, value} = props
-  const {readOnly} = inputProps
+  const {readOnly, schemaType, value} = props
+
   const client = useClient({apiVersion: '2022-09-09'})
   const current = value && value._ref
   const imageBuilder = imageUrlBuilder(client)
@@ -62,16 +62,16 @@ export const AuthorReferenceInput = forwardRef(function AuthorReferenceInput(
       return
     }
 
-    props.onChange(
+    props.onChange([
       // A reference is an object, so we need to initialize it before attempting to set subproperties
-      setIfMissing({_type: type.name, _ref: item._id}),
+      setIfMissing({_type: schemaType.name, _ref: item._id}),
 
       // Allow setting weak reference in schema options
-      type.weak === true ? set(true, ['_weak']) : unset(['_weak']),
+      schemaType.weak === true ? set(true, ['_weak']) : unset(['_weak']),
 
       // Set the actual reference value
       set(item._id, ['_ref']),
-    )
+    ])
   }
 
   const handleClear = () => {
