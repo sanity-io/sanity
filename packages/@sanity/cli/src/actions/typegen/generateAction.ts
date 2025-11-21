@@ -2,7 +2,7 @@ import {constants, mkdir, open, stat} from 'node:fs/promises'
 import {dirname, isAbsolute, join} from 'node:path'
 import {Worker} from 'node:worker_threads'
 
-import {type CodegenConfig, configDefintion, readConfig} from '@sanity/codegen'
+import {type CodegenConfig, configDefinition, readConfig} from '@sanity/codegen'
 import chalk from 'chalk'
 import {format as prettierFormat, resolveConfig as resolvePrettierConfig} from 'prettier'
 
@@ -89,7 +89,7 @@ The typegen config is loaded, but it's a deprecated feature and we advice moving
 
   // we only have cli config
   return {
-    config: configDefintion.parse(config?.config?.typegen || {}),
+    config: configDefinition.parse(config?.config?.typegen || {}),
     type: 'cli',
   }
 }
