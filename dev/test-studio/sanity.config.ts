@@ -84,6 +84,14 @@ const sharedSettings = ({projectId}: {projectId: string}) => {
       bundles: testStudioLocaleBundles,
     },
 
+    beta: {
+      form: {
+        enhancedObjectDialog: {
+          enabled: true,
+        },
+      },
+    },
+
     mediaLibrary: {
       enabled: true,
     },
