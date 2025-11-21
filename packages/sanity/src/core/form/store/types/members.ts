@@ -1,14 +1,9 @@
 import {type ArraySchemaType} from '@sanity/types'
 import {type ReactNode} from 'react'
 
-import {type FieldsetState} from './fieldsetState'
+import {type FieldsetMembers, type FieldsetState} from './fieldsetState'
 import {type ArrayItemError, type FieldError} from './memberErrors'
-import {
-  type BaseFormNode,
-  type ObjectArrayFormNode,
-  type PrimitiveFormNode,
-  type RenderMembersCallback,
-} from './nodes'
+import {type BaseFormNode, type ObjectArrayFormNode, type PrimitiveFormNode} from './nodes'
 
 /** @public */
 export type ObjectMember = FieldMember | FieldSetMember | FieldError | DecorationMember
@@ -106,6 +101,12 @@ export interface FieldMember<Node extends BaseFormNode = BaseFormNode> {
 }
 
 /**
+ * @hidden
+ * @public
+ */
+export type FieldsetRenderMembersCallback = (members: FieldsetMembers[]) => FieldsetMembers[]
+
+/**
  * Represents a member of a field set.
  * @public
  */
@@ -135,7 +136,7 @@ export interface FieldSetMember {
    * @beta
    * The callback to render the members of the field set.
    */
-  renderMembers?: RenderMembersCallback
+  renderMembers?: FieldsetRenderMembersCallback
 }
 
 /**
