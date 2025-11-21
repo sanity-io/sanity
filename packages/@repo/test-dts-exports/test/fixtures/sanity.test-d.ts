@@ -636,6 +636,7 @@ import type {
   getCalendarLabels,
   getConfigContextFromSource,
   getDiffAtPath,
+  getDocumentIdForCanvasLink,
   getDocumentIsInPerspective,
   getDocumentPairPermissions,
   getDocumentValuePermissions,
@@ -3580,6 +3581,9 @@ describe('sanity', () => {
   })
   test('getDiffAtPath', () => {
     expectTypeOf<typeof getDiffAtPath>().toBeFunction()
+  })
+  test('getDocumentIdForCanvasLink', () => {
+    expectTypeOf<typeof getDocumentIdForCanvasLink>().toBeFunction()
   })
   test('getDocumentIsInPerspective', () => {
     expectTypeOf<typeof getDocumentIsInPerspective>().toBeFunction()
