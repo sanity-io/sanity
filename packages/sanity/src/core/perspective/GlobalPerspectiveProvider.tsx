@@ -136,7 +136,7 @@ export function GlobalPerspectiveProvider({children}: {children: ReactNode}) {
       excludedPerspectives={excludedPerspectives}
     >
       {children}
-      <ResetPerspectiveHandler />
+      {/* todo: consider if we can do without this: <ResetPerspectiveHandler />*/}
     </PerspectiveProvider>
   )
 }

@@ -98,7 +98,7 @@ export function OpenReleaseToEditBannerInner({
                 }}
                 values={{count: documentVersionsTitleList.length - 1}}
               />
-            ) : (
+            ) : documentVersionsTitleList.length === 1 ? (
               <Translate
                 t={t}
                 i18nKey="banners.release.navigate-to-edit-description-single"
@@ -108,16 +108,22 @@ export function OpenReleaseToEditBannerInner({
                   ),
                 }}
               />
+            ) : (
+              <Translate t={t} i18nKey="banners.release.navigate-to-edit-description-none" />
             )}
           </Flex>
         </Text>
       }
-      action={{
-        text: t('banners.release.action.open-to-edit'),
-        tone: tone,
-        onClick: handleGoToEdit,
-        mode: 'default',
-      }}
+      action={
+        documentVersionsTitleList.length > 0
+          ? {
+              text: t('banners.release.action.open-to-edit'),
+              tone: tone,
+              onClick: handleGoToEdit,
+              mode: 'default',
+            }
+          : undefined
+      }
     />
   )
 }
