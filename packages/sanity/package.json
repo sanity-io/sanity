@@ -48,6 +48,7 @@
     },
     "./cli": {
       "source": "./src/_exports/cli.ts",
+      "import": "./lib/cli.mjs",
       "require": "./lib/cli.js",
       "default": "./lib/cli.js"
     },
