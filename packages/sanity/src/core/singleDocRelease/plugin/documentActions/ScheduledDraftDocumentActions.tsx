@@ -21,7 +21,7 @@ const createScheduledDraftAction = (
   const useScheduledDraftAction: DocumentActionComponent = (
     props: DocumentActionProps,
   ): DocumentActionDescription | null => {
-    const {type, release} = props
+    const {type, release, id} = props
     const {data: releases = []} = useAllReleases()
 
     const releaseDocument = releases.find(
