@@ -39,6 +39,7 @@ export const DatePicker = forwardRef(function DatePicker(
   const value = useMemo(() => {
     if (_value) return _value
     const now = new Date()
+    // If no value is provided initialize the date with seconds and milliseconds set to 0
     now.setSeconds(0, 0)
     return now
   }, [_value])

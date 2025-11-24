@@ -36,7 +36,7 @@ export const MONTH_PICKER_VARIANT = {
 
 export type CalendarProps = Omit<ComponentProps<'div'>, 'onSelect'> & {
   selectTime?: boolean
-  selectedDate?: Date
+  selectedDate: Date
   timeStep?: number
   onSelect: (date: Date) => void
   focusedDate: Date
@@ -76,7 +76,7 @@ export const Calendar = forwardRef(function Calendar(
   const {
     selectTime,
     onFocusedDateChange,
-    selectedDate: _selectedDate,
+    selectedDate,
     focusedDate: _focusedDate,
     timeStep = 1,
     onSelect,
@@ -88,15 +88,6 @@ export const Calendar = forwardRef(function Calendar(
     timeZoneScope,
     ...restProps
   } = props
-
-  const selectedDate = useMemo(() => {
-    if (_selectedDate) return _selectedDate
-
-    const now = new Date()
-    now.setSeconds(0, 0)
-    now.setMilliseconds(0)
-    return now
-  }, [_selectedDate])
 
   const focusedDate = _focusedDate ?? selectedDate
 
