@@ -78,7 +78,9 @@ The config from the Sanity CLI config is used.
   if (hasLegacyConfig) {
     console.warn(
       chalk.yellow(
-        'The separate typegen config has been deprecated. Use `typegen` in the sanity CLI config instead.',
+        `The separate typegen config has been deprecated. Use \`typegen\` in the sanity CLI config instead.
+
+See: https://www.sanity.io/docs/help/configuring-typegen-in-sanity-cli-config`,
       ),
     )
     return {
