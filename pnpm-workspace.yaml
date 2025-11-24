@@ -53,11 +53,6 @@ overrides:
   jsdom: 26.1.0
   vitest: $vitest
 
-peerDependencyRules:
-  allowAny:
-    - 'react'
-    - 'react-dom'
-
 catalogs:
   react18:
     react: ^18.3.1
