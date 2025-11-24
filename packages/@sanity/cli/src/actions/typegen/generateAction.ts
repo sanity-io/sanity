@@ -59,9 +59,19 @@ async function getConfig(
 
   // we have both legacy and cli config with typegen
   if (config?.config?.typegen && hasLegacyConfig) {
-    throw new Error(
-      `You've specified typegen in your Sanity CLI config, but also have a typegen config.`,
+    console.warn(
+      chalk.yellow(
+        `You've specified typegen in your Sanity CLI config, but also have a typegen config.
+
+The config from the Sanity CLI config is used.
+`,
+      ),
     )
+
+    return {
+      config: configDefinition.parse(config.config.typegen || {}),
+      type: 'cli',
+    }
   }
 
   // we only have legacy typegen config
