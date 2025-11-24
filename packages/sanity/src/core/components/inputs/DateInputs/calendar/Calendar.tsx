@@ -179,10 +179,27 @@ export const Calendar = forwardRef(function Calendar(
     [onSelect, savedSelectedDate, timeZone],
   )
 
+  const timeFromDate = useMemo(() => format(savedSelectedDate, 'HH:mm'), [savedSelectedDate])
+  const [timeValue, setTimeValue] = useState<string | undefined>(timeFromDate)
+
+  useEffect(() => {
+    // The change is coming from another source, so we need to update the timeValue to the new value.
+    // eslint-disable-next-line react-hooks/no-deriving-state-in-effects
+    setTimeValue(timeFromDate)
+  }, [timeFromDate])
+
   const handleTimeChangeInputChange = useCallback(
     (event: FormEvent<HTMLInputElement>) => {
-      const date = parse(event.currentTarget.value, 'HH:mm', new Date())
-      handleTimeChange(date.getHours(), date.getMinutes())
+      const value = event.currentTarget.value
+      if (value) {
+        const date = parse(value, 'HH:mm', new Date())
+        handleTimeChange(date.getHours(), date.getMinutes())
+      } else {
+        // Setting the timeValue to undefined will let the input behave correctly as a time input while the user types.
+        // This means, that until it has a valid value the time input input won't emit a new onChange event.
+        // but we cannot send the undefined value to the handleTimeChange, because it expects a valid date.
+        setTimeValue(undefined)
+      }
     },
     [handleTimeChange],
   )
@@ -377,7 +394,7 @@ export const Calendar = forwardRef(function Calendar(
               <Flex align="center">
                 <TimeInput
                   aria-label={labels.selectTime}
-                  value={format(savedSelectedDate, 'HH:mm')}
+                  value={timeValue}
                   onChange={handleTimeChangeInputChange}
                   /**
                    * Values received in timeStep are defined in minutes as shown in the docs https://www.sanity.io/docs/studio/datetime-type#timestep-47de7f21-25bc-468d-b925-cd30e2690a7b
