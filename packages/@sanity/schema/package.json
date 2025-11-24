@@ -57,7 +57,7 @@
     "watch": "pkg-utils watch"
   },
   "dependencies": {
-    "@sanity/descriptors": "^1.1.1",
+    "@sanity/descriptors": "^1.2.1",
     "@sanity/generate-help-url": "^3.0.0",
     "@sanity/types": "workspace:*",
     "arrify": "^2.0.1",

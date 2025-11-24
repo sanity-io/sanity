@@ -1531,8 +1531,8 @@ importers:
   packages/@sanity/schema:
     dependencies:
       '@sanity/descriptors':
-        specifier: ^1.1.1
-        version: 1.1.1
+        specifier: ^1.2.1
+        version: 1.2.1
       '@sanity/generate-help-url':
         specifier: ^3.0.0
         version: 3.0.0
@@ -2356,8 +2356,8 @@ importers:
         specifier: workspace:*
         version: link:../@sanity/codegen
       '@sanity/descriptors':
-        specifier: ^1.1.1
-        version: 1.1.1
+        specifier: ^1.2.1
+        version: 1.2.1
       '@sanity/eslint-config-i18n':
         specifier: 'catalog:'
         version: 2.0.0(eslint@9.39.1(jiti@2.6.1))
@@ -5265,8 +5265,8 @@ packages:
     resolution: {integrity: sha512-KhxRuCtJeZXxX8NGkNaBBgFfbIK3PYBDh2nnFrvw90QOl1Hm0P7SP/D1Sf64FCwUz6H73sq4iBhNKxFZWiwRpw==}
     engines: {node: '>=18'}
 
-  '@sanity/descriptors@1.1.1':
-    resolution: {integrity: sha512-pTqpyLhH3z4NDhjKHyfL+quVN0ixA8NikcdqxRmL2iqPZuJavi81eKm631PaUqJGbY1kh1+vHnO1/GgWIcjgxw==}
+  '@sanity/descriptors@1.2.1':
+    resolution: {integrity: sha512-QrniEsAHdKhiaEs+67ukCTZcWRBE4VqF+z/ATn27vBYcQAJ3LvlZUBXloAhaEcmgqRkT1G+RnuakpjWNnELm1A==}
     engines: {node: '>=18.0.0'}
 
   '@sanity/diff-match-patch@3.2.0':
@@ -16246,7 +16246,7 @@ snapshots:
       - debug
       - typescript
 
-  '@sanity/descriptors@1.1.1':
+  '@sanity/descriptors@1.2.1':
     dependencies:
       sha256-uint8array: 0.10.7
 

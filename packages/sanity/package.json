@@ -280,7 +280,7 @@
     "@repo/test-config": "workspace:*",
     "@repo/tsconfig": "workspace:*",
     "@sanity/codegen": "workspace:*",
-    "@sanity/descriptors": "^1.1.1",
+    "@sanity/descriptors": "^1.2.1",
     "@sanity/eslint-config-i18n": "catalog:",
     "@sanity/generate-help-url": "^3.0.0",
     "@sanity/pkg-utils": "catalog:",
