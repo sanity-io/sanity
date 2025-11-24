@@ -19,6 +19,7 @@ import {isEqual, isObject} from 'lodash'
 import {Rule} from '../legacy/Rule'
 import {OWN_PROPS_NAME} from '../legacy/types/constants'
 import {
+  type ArrayElement,
   type ArrayTypeDef,
   type CommonTypeDef,
   type CoreTypeDef,
@@ -62,10 +63,42 @@ export class DescriptorConverter {
     let value = this.cache.get(schema)
     if (value) return value
 
-    const builder = new SetBuilder()
-    for (const name of schema.getLocalTypeNames()) {
-      const typeDef = convertTypeDef(schema.get(name)!, {})
-      builder.addObject('sanity.schema.namedType', {name, typeDef})
+    const options: Options = {
+      fields: new Map(),
+      duplicateFields: new Map(),
+      arrayElements: new Map(),
+      duplicateArrayElements: new Map(),
+    }
+
+    const namedTypes = schema.getLocalTypeNames().map((name) => {
+      const typeDef = convertTypeDef(schema.get(name)!, name, options)
+      return {name, typeDef}
+    })
+
+    const rewriteMap = new Map<EncodableObject, EncodableObject>()
+
+    // First we populate the rewrite map with the duplications:
+    for (const [fieldDef, key] of options.duplicateFields.entries()) {
+      rewriteMap.set(fieldDef, {__type: 'hoisted', key})
+    }
+
+    for (const [arrayElem, key] of options.duplicateArrayElements.entries()) {
+      rewriteMap.set(arrayElem, {__type: 'hoisted', key})
+    }
+
+    const builder = new SetBuilder({rewriteMap})
+
+    // Now we can build the de-duplicated objects:
+    for (const [fieldDef, key] of options.duplicateFields.entries()) {
+      builder.addObject('sanity.schema.hoisted', {key, value: {...fieldDef}})
+    }
+
+    for (const [arrayElem, key] of options.duplicateArrayElements.entries()) {
+      builder.addObject('sanity.schema.hoisted', {key, value: {...arrayElem}})
+    }
+
+    for (const namedType of namedTypes) {
+      builder.addObject('sanity.schema.namedType', namedType)
     }
 
     if (schema.parent) {
@@ -78,21 +111,35 @@ export class DescriptorConverter {
   }
 }
 
-function convertCommonTypeDef(schemaType: SchemaType, opts: Options): CommonTypeDef {
+function convertCommonTypeDef(schemaType: SchemaType, path: string, opts: Options): CommonTypeDef {
   // Note that OWN_PROPS_NAME is only set on subtypes, not the core types.
   // We might consider setting OWN_PROPS_NAME on _all_ types to avoid this branch.
   const ownProps = OWN_PROPS_NAME in schemaType ? (schemaType as any)[OWN_PROPS_NAME] : schemaType
 
   let fields: ObjectField[] | undefined
   if (Array.isArray(ownProps.fields)) {
-    fields = (ownProps.fields as ObjectSchemaType['fields']).map(
-      ({name, group, fieldset, type}) => ({
+    fields = (ownProps.fields as ObjectSchemaType['fields']).map((field) => {
+      const fieldPath = `${path}.${field.name}`
+      const value = opts.fields.get(field)
+      if (value) {
+        // We've seen it before. Mark it as duplicate.
+        const otherPath = opts.duplicateFields.get(value)
+        // We always keep the _smallest_ path around.
+        if (!otherPath || isLessCanonicalName(fieldPath, otherPath))
+          opts.duplicateFields.set(value, fieldPath)
+        return value
+      }
+
+      const {name, group, fieldset, type} = field
+      const converted: ObjectField = {
         name,
-        typeDef: convertTypeDef(type, opts),
+        typeDef: convertTypeDef(type, fieldPath, opts),
         groups: arrayifyString(group),
         fieldset,
-      }),
-    )
+      }
+      opts.fields.set(field, converted)
+      return converted
+    })
   }
 
   let fieldsets: ObjectFieldset[] | undefined
@@ -157,15 +204,28 @@ function convertCommonTypeDef(schemaType: SchemaType, opts: Options): CommonType
   }
 }
 
-/**
- * Options used when converting the schema.
- *
- * We know we need this in order to handle validations.
- **/
-export type Options = Record<never, never>
+type Options = {
+  /** Mapping of fields to descriptor value. Used for de-duping. */
+  fields: Map<object, ObjectField>
 
-export function convertTypeDef(schemaType: SchemaType, opts: Options): TypeDef {
-  const common = convertCommonTypeDef(schemaType, opts)
+  /**
+   * Once a field has been seen twice it's inserted into this map.
+   * The value here is the canonical name.
+   **/
+  duplicateFields: Map<ObjectField, string>
+
+  /** Mapping of array element to descriptor value. Used for de-duping. */
+  arrayElements: Map<object, ArrayElement>
+
+  /**
+   * Once an array element has been seen twice it's inserted into this map.
+   * The value here is the canonical name.
+   **/
+  duplicateArrayElements: Map<ArrayElement, string>
+}
+
+export function convertTypeDef(schemaType: SchemaType, path: string, opts: Options): TypeDef {
+  const common = convertCommonTypeDef(schemaType, path, opts)
 
   if (!schemaType.type) {
     return {
@@ -183,10 +243,24 @@ export function convertTypeDef(schemaType: SchemaType, opts: Options): TypeDef {
     case 'array': {
       return {
         extends: 'array',
-        of: (schemaType as ArraySchemaType).of.map((ofType) => ({
-          name: ofType.name,
-          typeDef: convertTypeDef(ofType, opts),
-        })),
+        of: (schemaType as ArraySchemaType).of.map((ofType, idx) => {
+          const itemPath = `${path}.${ofType.name}`
+          const value = opts.arrayElements.get(ofType)
+          if (value) {
+            // We've seen it before. Mark it as duplicate.
+            const otherPath = opts.duplicateArrayElements.get(value)
+            // We always keep the _smallest_ path around.
+            if (!otherPath || isLessCanonicalName(itemPath, otherPath))
+              opts.duplicateArrayElements.set(value, itemPath)
+            return value
+          }
+          const converted: ArrayElement = {
+            name: ofType.name,
+            typeDef: convertTypeDef(ofType, `${path}.${ofType.name}`, opts),
+          }
+          opts.arrayElements.set(ofType, converted)
+          return converted
+        }),
         ...common,
       } satisfies ArrayTypeDef
     }
@@ -726,4 +800,11 @@ function maybeOrderingBy(val: unknown): ObjectOrderingBy | undefined {
   if (!field || !direction) return undefined
 
   return {field, direction}
+}
+
+/**
+ * Checks if `a` is smaller than `b` for determining a canonical name.
+ */
+function isLessCanonicalName(a: string, b: string): boolean {
+  return a.length < b.length || (a.length === b.length && a < b)
 }

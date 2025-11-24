@@ -34,6 +34,7 @@ export type SeralizedSchemaDebug = {
   size: number
   parent?: SeralizedSchemaDebug
   types: Record<string, SerializedTypeDebug>
+  hoisted: Record<string, SerializedTypeDebug>
 }
 
 /**
@@ -120,19 +121,40 @@ async function main() {
 function getSeralizedSchemaDebug(set: SetSynchronization<string>): SeralizedSchemaDebug {
   let size = 0
   const types: Record<string, SerializedTypeDebug> = {}
+  const hoisted: Record<string, SerializedTypeDebug> = {}
 
   for (const [id, value] of Object.entries(set.objectValues)) {
-    const typeName = typeof value.name === 'string' ? value.name : id
-    if (isEncodableObject(value.typeDef)) {
-      const debug = getSerializedTypeDebug(value.typeDef)
-      types[typeName] = debug
-      size += debug.size
+    const descType = typeof value.type === 'string' ? value.type : '<unknown>'
+    switch (descType) {
+      case 'sanity.schema.namedType': {
+        const typeName = typeof value.name === 'string' ? value.name : id
+        if (isEncodableObject(value.typeDef)) {
+          const debug = getSerializedTypeDebug(value.typeDef)
+          types[typeName] = debug
+          size += debug.size
+        }
+        break
+      }
+      case 'sanity.schema.hoisted': {
+        const key = typeof value.key === 'string' ? value.key : id
+        // The `hoisted` can technically  hoist _anything_,
+        // but we detect the common case of field + array element.
+        if (isEncodableObject(value.value) && isEncodableObject(value.value.typeDef)) {
+          const debug = getSerializedTypeDebug(value.value.typeDef)
+          hoisted[key] = debug
+          size += debug.size
+        }
+        break
+      }
+      default:
     }
+    size += JSON.stringify(value).length
   }
 
   return {
     size,
     types,
+    hoisted,
   }
 }
 

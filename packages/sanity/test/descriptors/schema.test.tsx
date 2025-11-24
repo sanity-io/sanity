@@ -1,5 +1,6 @@
 import {createSchemaFromManifestTypes, ValidationError} from '@sanity/schema/_internal'
 import {
+  defineArrayMember,
   defineField,
   type FieldGroupDefinition,
   type FieldsetDefinition,
@@ -1124,6 +1125,7 @@ describe('Base features', () => {
       })
 
       assert(objectType?.typeDef?.fields)
+      assert('name' in objectType.typeDef.fields[0])
       expect(objectType.typeDef.fields[0].typeDef.validation).toMatchObject([
         {
           level: 'error',
@@ -1156,6 +1158,7 @@ describe('Base features', () => {
       })
 
       assert(objectType?.typeDef?.fields)
+      assert('name' in objectType.typeDef.fields[0])
       expect(objectType.typeDef.fields[0].typeDef.validation).toMatchObject([
         {
           level: 'error',
@@ -1182,6 +1185,7 @@ describe('Base features', () => {
       })
 
       assert(objectType?.typeDef?.fields)
+      assert('name' in objectType.typeDef.fields[0])
       expect(objectType.typeDef.fields[0].typeDef.validation).toMatchObject([
         {
           level: 'error',
@@ -1357,6 +1361,7 @@ describe('Object', () => {
 
     let i = 0
     for (const field of desc.typeDef.fields) {
+      assert('name' in field)
       fieldTests[i].assert(field)
       i++
     }
@@ -2011,7 +2016,9 @@ describe('Block', () => {
     })
 
     assert(type.typeDef.fields)
-    const style = type.typeDef.fields.find(({name}) => name === 'style')
+    const style = type.typeDef.fields.find(
+      (field): field is ObjectField => 'name' in field && field.name === 'style',
+    )
     assert(style)
     expect(style.typeDef.extends).toBe('string')
     expect(style.typeDef.options).toEqual({
@@ -2059,7 +2066,9 @@ describe('Block', () => {
       ],
     })
 
-    const listItem = type.typeDef.fields.find(({name}) => name === 'listItem')
+    const listItem = type.typeDef.fields.find(
+      (field): field is ObjectField => 'name' in field && field.name === 'listItem',
+    )
     assert(listItem)
     expect(listItem.typeDef.extends).toBe('string')
     expect(listItem.typeDef.options).toEqual({
@@ -2077,13 +2086,17 @@ describe('Block', () => {
       ],
     })
 
-    const markDefs = type.typeDef.fields.find(({name}) => name === 'markDefs')
+    const markDefs = type.typeDef.fields.find(
+      (field): field is ObjectField => 'name' in field && field.name === 'markDefs',
+    )
     assert(markDefs)
     expect(markDefs.typeDef.extends).toBe('array')
     assert(markDefs.typeDef.of)
     expect((markDefs.typeDef.of as any[]).map(({name}) => name)).toEqual(['link'])
 
-    const level = type.typeDef.fields.find(({name}) => name === 'level')
+    const level = type.typeDef.fields.find(
+      (field): field is ObjectField => 'name' in field && field.name === 'level',
+    )
     assert(level)
     expect(level.typeDef.extends).toBe('number')
   })
@@ -2103,7 +2116,9 @@ describe('Block', () => {
     })
 
     assert(type.typeDef.fields)
-    const style = type.typeDef.fields.find(({name}) => name === 'style')
+    const style = type.typeDef.fields.find(
+      (field): field is ObjectField => 'name' in field && field.name === 'style',
+    )
     assert(style)
     expect(style.typeDef.extends).toBe('string')
     expect(style.typeDef.options).toEqual({
@@ -2120,7 +2135,9 @@ describe('Block', () => {
       ],
     })
 
-    const listItem = type.typeDef.fields.find(({name}) => name === 'listItem')
+    const listItem = type.typeDef.fields.find(
+      (field): field is ObjectField => 'name' in field && field.name === 'listItem',
+    )
     assert(listItem)
     expect(listItem.typeDef.extends).toBe('string')
     expect(listItem.typeDef.options).toEqual({
@@ -2132,13 +2149,17 @@ describe('Block', () => {
       ],
     })
 
-    const markDefs = type.typeDef.fields.find(({name}) => name === 'markDefs')
+    const markDefs = type.typeDef.fields.find(
+      (field): field is ObjectField => 'name' in field && field.name === 'markDefs',
+    )
     assert(markDefs)
     expect(markDefs.typeDef.extends).toBe('array')
     assert(markDefs.typeDef.of)
     expect((markDefs.typeDef.of as any[]).map(({name}) => name)).toEqual(['internalLink'])
 
-    const level = type.typeDef.fields.find(({name}) => name === 'level')
+    const level = type.typeDef.fields.find(
+      (field): field is ObjectField => 'name' in field && field.name === 'level',
+    )
     assert(level)
     expect(level.typeDef.extends).toBe('number')
   })
@@ -2463,5 +2484,35 @@ describe('Manifest conversion limitations', () => {
       // Manifest conversion will lose the null value
       expect(() => convertType(type)).toThrow()
     })
+  })
+})
+
+describe('hoisting', () => {
+  test('hoists the same field definition', () => {
+    const titleField = defineField({
+      name: 'title',
+      type: 'string',
+    })
+    const encoded = justConvertType(
+      {name: 'foo', type: 'object', fields: [titleField]},
+      {name: 'bar', type: 'object', fields: [titleField]},
+    )
+    assert(encoded.typeDef.fields)
+    expect(encoded.typeDef.fields).toHaveLength(1)
+    expect(encoded.typeDef.fields[0]).toMatchObject({__type: 'hoisted'})
+  })
+
+  test('hoists array members', () => {
+    const arrayMember = defineArrayMember({
+      type: 'string',
+    })
+    const encoded = justConvertType(
+      {name: 'foo', type: 'array', of: [arrayMember]},
+      {name: 'bar', type: 'array', of: [arrayMember]},
+    )
+    assert(encoded.typeDef.extends === 'array')
+    assert(Array.isArray(encoded.typeDef.of))
+    expect(encoded.typeDef.of).toHaveLength(1)
+    expect(encoded.typeDef.of[0]).toMatchObject({__type: 'hoisted'})
   })
 })
