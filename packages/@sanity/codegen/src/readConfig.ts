@@ -21,7 +21,12 @@ export const configDefinition = z.object({
   overloadClientMethods: z.boolean().default(true),
 })
 
-export type CodegenConfig = z.infer<typeof configDefinition>
+export type TypeGenConfig = z.infer<typeof configDefinition>
+
+/**
+ * @deprecated use TypeGenConfig
+ */
+export type CodegenConfig = TypeGenConfig
 
 /**
  * Read, parse and process a config file
