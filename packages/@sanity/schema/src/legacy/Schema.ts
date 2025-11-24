@@ -1,4 +1,16 @@
+import {startCase} from 'lodash'
+
 import * as types from './types'
+import {lazyGetter} from './types/utils'
+
+interface ExtendHelper {
+  /** Creates a new type based on the definition. */
+  (memberDef: any): any
+
+  cached(def: any): any
+  cachedField(fieldDef: any): any
+  cachedObjectField(fieldDef: any): any
+}
 
 function compileRegistry(schemaDef: any) {
   const registry = Object.create(null)
@@ -21,6 +33,56 @@ function compileRegistry(schemaDef: any) {
     return acc
   }, {})
 
+  const memberCache = new Map()
+  const fieldCache = new Map()
+  const objectFieldCache = new Map()
+
+  const extendHelper: ExtendHelper = Object.assign(extendMember, {
+    cached(def: any) {
+      let member = memberCache.get(def)
+      if (!member) {
+        member = extendMember(def)
+        memberCache.set(def, member)
+      }
+      return member
+    },
+
+    cachedField(fieldDef: any) {
+      let field = fieldCache.get(fieldDef)
+      if (!field) {
+        const {name, ...type} = fieldDef
+        field = {
+          name,
+          type: extendMember(type),
+        }
+        fieldCache.set(fieldDef, field)
+      }
+      return field
+    },
+
+    cachedObjectField(fieldDef: any) {
+      let field = objectFieldCache.get(fieldDef)
+      if (!field) {
+        const {name, fieldset, group, ...rest} = fieldDef
+
+        field = {
+          name,
+          group,
+          fieldset,
+        }
+
+        lazyGetter(field, 'type', () => {
+          return extendMember({
+            ...rest,
+            title: fieldDef.title || startCase(name),
+          })
+        })
+        objectFieldCache.set(fieldDef, field)
+      }
+      return field
+    },
+  })
+
   schemaDef.types.forEach(add)
 
   return {
@@ -39,7 +101,7 @@ function compileRegistry(schemaDef: any) {
 
   function extendMember(memberDef: any) {
     ensure(memberDef.type)
-    return registry[memberDef.type].extend(memberDef, extendMember).get()
+    return registry[memberDef.type].extend(memberDef, extendHelper).get()
   }
 
   function add(typeDef: any) {
