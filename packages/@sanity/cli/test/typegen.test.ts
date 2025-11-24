@@ -139,12 +139,9 @@ describeCliTest('CLI: `sanity typegen`', () => {
             },
           ).catch((error) => error)
 
-          expect(result.code).toBe(0)
+          expect(result.code).toBe(1)
           expect(result.stderr).toContain(
             `You've specified typegen in your Sanity CLI config, but also have a typegen config`,
-          )
-          expect(result.stderr).toContain(
-            'Generated TypeScript types for 2 schema types and 1 GROQ queries',
           )
         },
       ),

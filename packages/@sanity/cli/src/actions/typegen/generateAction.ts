@@ -59,19 +59,9 @@ async function getConfig(
 
   // we have both legacy and cli config with typegen
   if (config?.config?.typegen && hasLegacyConfig) {
-    console.warn(
-      chalk.yellow(
-        `You've specified typegen in your Sanity CLI config, but also have a typegen config.
-
-The typegen config is loaded, but it's a deprecated feature and we advice moving to the config in the CLI config.
-`,
-      ),
+    throw new Error(
+      `You've specified typegen in your Sanity CLI config, but also have a typegen config.`,
     )
-
-    return {
-      config: await readConfig(legacyConfigPath),
-      type: 'legacy',
-    }
   }
 
   // we only have legacy typegen config
