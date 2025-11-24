@@ -379,6 +379,13 @@ export const Calendar = forwardRef(function Calendar(
                   aria-label={labels.selectTime}
                   value={format(savedSelectedDate, 'HH:mm')}
                   onChange={handleTimeChangeInputChange}
+                  /**
+                   * Values received in timeStep are defined in minutes as shown in the docs https://www.sanity.io/docs/studio/datetime-type#timestep-47de7f21-25bc-468d-b925-cd30e2690a7b
+                   * the input type="time" step is in seconds, so we need to multiply by 60.
+                   *
+                   * The UI will show all the minutes anyways, from 0 to 59, but it rounds the value to the nearest step once blurred.
+                   */
+                  step={timeStep * 60}
                 />
                 <Box marginLeft={2}>
                   <Button text={labels.setToCurrentTime} mode="bleed" onClick={handleNowClick} />
