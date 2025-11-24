@@ -147,16 +147,13 @@ export function ReleaseTypePicker(props: {release: NotArchivedRelease}): React.J
     [publishDate],
   )
 
-  const handlePublishAtCalendarChange = useCallback(
-    (date: Date | null) => {
-      if (!date) return
+  const handlePublishAtCalendarChange = useCallback((date: Date | null) => {
+    if (!date) return
 
-      const cleanDate = zoneDateToUtc(startOfMinute(new Date(date)))
-      setIsIntendedScheduleDateInPast(isBefore(cleanDate, new Date()))
-      setIntendedPublishAt(cleanDate)
-    },
-    [zoneDateToUtc],
-  )
+    const cleanDate = startOfMinute(new Date(date))
+    setIsIntendedScheduleDateInPast(isBefore(cleanDate, new Date()))
+    setIntendedPublishAt(cleanDate)
+  }, [])
 
   const handlePublishAtInputChange = useCallback(
     (event: React.FocusEvent<HTMLInputElement>) => {
@@ -254,7 +251,7 @@ export function ReleaseTypePicker(props: {release: NotArchivedRelease}): React.J
                 calendarLabels={calendarLabels}
                 selectTime
                 padding={0}
-                value={intendedPublishAtTimezoneAdjusted}
+                value={intendedPublishAt}
                 onChange={handlePublishAtCalendarChange}
                 isPastDisabled
                 showTimeZone
