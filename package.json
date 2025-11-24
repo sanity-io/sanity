@@ -139,7 +139,7 @@
     "vercel": "^48.6.0",
     "vitest": "catalog:"
   },
-  "packageManager": "pnpm@10.22.0",
+  "packageManager": "pnpm@10.23.0",
   "//": "pnpm settings moved to pnpm-workspace.yaml",
   "isSanityMonorepo": true
 }
