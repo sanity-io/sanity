@@ -1923,8 +1923,8 @@ importers:
         specifier: ^3.0.6
         version: 3.0.6
       '@sanity/comlink':
-        specifier: ^4.0.0
-        version: 4.0.0
+        specifier: ^4.0.1
+        version: 4.0.1
       '@sanity/diff':
         specifier: workspace:*
         version: link:../@sanity/diff
@@ -5219,6 +5219,10 @@ packages:
 
   '@sanity/comlink@4.0.0':
     resolution: {integrity: sha512-vTidwlsO/I/sYcepdPRrSBA8TX4JGrO3wa703pxpSfXMUAClNYXi/3vtq9uhE2KUu8gbgUo1IO59mWBiQ39Ofg==}
+    engines: {node: '>=20.19 <22 || >=22.12'}
+
+  '@sanity/comlink@4.0.1':
+    resolution: {integrity: sha512-vdGOd6sxNjqTo2H3Q3L2/Gepy+cDBiQ1mr9ck7c/A9o4NnmBLoDliifsNHIwgNwBUz37oH4+EIz/lIjNy8hSew==}
     engines: {node: '>=20.19 <22 || >=22.12'}
 
   '@sanity/core-loader@2.0.0':
@@ -16115,10 +16119,16 @@ snapshots:
       uuid: 11.1.0
       xstate: 5.24.0
 
+  '@sanity/comlink@4.0.1':
+    dependencies:
+      rxjs: 7.8.2
+      uuid: 13.0.0
+      xstate: 5.24.0
+
   '@sanity/core-loader@2.0.0(@sanity/types@packages+@sanity+types)(typescript@5.9.3)':
     dependencies:
       '@sanity/client': 7.13.0(debug@4.4.3)
-      '@sanity/comlink': 4.0.0
+      '@sanity/comlink': 4.0.1
       '@sanity/presentation-comlink': 2.0.0(@sanity/client@7.13.0(debug@4.4.3))(@sanity/types@packages+@sanity+types)
       '@sanity/visual-editing-csm': 2.0.26(@sanity/client@7.13.0(debug@4.4.3))(@sanity/types@packages+@sanity+types)(typescript@5.9.3)
     transitivePeerDependencies:
@@ -16278,7 +16288,7 @@ snapshots:
 
   '@sanity/message-protocol@0.17.6':
     dependencies:
-      '@sanity/comlink': 4.0.0
+      '@sanity/comlink': 4.0.1
 
   '@sanity/mutate@0.11.0-canary.4(xstate@5.24.0)':
     dependencies:
@@ -16394,7 +16404,7 @@ snapshots:
 
   '@sanity/presentation-comlink@2.0.0(@sanity/client@7.13.0(debug@4.4.3))(@sanity/types@packages+@sanity+types)':
     dependencies:
-      '@sanity/comlink': 4.0.0
+      '@sanity/comlink': 4.0.1
       '@sanity/visual-editing-types': 1.1.8(@sanity/client@7.13.0(debug@4.4.3))(@sanity/types@packages+@sanity+types)
     transitivePeerDependencies:
       - '@sanity/client'
