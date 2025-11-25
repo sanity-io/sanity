@@ -20667,7 +20667,7 @@ snapshots:
 
   groq-js@1.21.0:
     dependencies:
-      debug: 4.4.3(supports-color@5.5.0)
+      debug: 4.4.3(supports-color@8.1.1)
     transitivePeerDependencies:
       - supports-color
 
