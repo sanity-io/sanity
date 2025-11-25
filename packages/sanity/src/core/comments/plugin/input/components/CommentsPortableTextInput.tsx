@@ -10,7 +10,7 @@ import {isPortableTextTextBlock} from '@sanity/types'
 import {BoundaryElementProvider, Stack, usePortal} from '@sanity/ui'
 import * as PathUtils from '@sanity/util/paths'
 import {uuid} from '@sanity/uuid'
-import {debounce} from 'lodash'
+import {debounce, isEqual} from 'lodash'
 import {AnimatePresence} from 'motion/react'
 import {memo, startTransition, useCallback, useEffect, useMemo, useRef, useState} from 'react'
 
@@ -324,7 +324,8 @@ export const CommentsPortableTextInputInner = memo(function CommentsPortableText
             ...(comment.target.path?.selection?.value
               .filter((r) => r._key !== nextRange[0]?._key)
               .concat(nextRange)
-              .flat() || EMPTY_ARRAY),
+              .flat()
+              .sort((a, b) => a._key.localeCompare(b._key)) || EMPTY_ARRAY),
           ]
         : EMPTY_ARRAY
 
@@ -342,7 +343,11 @@ export const CommentsPortableTextInputInner = memo(function CommentsPortableText
         },
       }
 
-      void operation.update(comment._id, nextComment)
+      const hasChanged = !isEqual(comment.target, nextComment.target)
+
+      if (hasChanged) {
+        void operation.update(comment._id, nextComment)
+      }
     })
 
     // Mark the range decorations as not dirty
