@@ -3,6 +3,23 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [4.19.0](https://github.com/sanity-io/sanity/compare/v4.18.0...v4.19.0) (2025-11-25)
+
+### Features
+
+* clarifying published doc has been edited and last published ([#11186](https://github.com/sanity-io/sanity/issues/11186)) ([5681cc5](https://github.com/sanity-io/sanity/commit/5681cc58e4f7f95b5557943cc91c66488c08d4db)) by Jordan Lawrence (jordanl17@me.com)
+
+### Bug Fixes
+
+* **cli:** load config properly in `sanity schema validate` ([#11223](https://github.com/sanity-io/sanity/issues/11223)) ([e3f4e7d](https://github.com/sanity-io/sanity/commit/e3f4e7df0327fb96f506a8a4fdcb7d31ade55933)) by Magnus Holm (judofyr@gmail.com)
+* **core:** releases time input behaves incorrectly with timezones offset ([#11242](https://github.com/sanity-io/sanity/issues/11242)) ([8a358fa](https://github.com/sanity-io/sanity/commit/8a358fa40e19ebb507379f28271ade275942c668)) by Pedro Bonamin (46196328+pedrobonamin@users.noreply.github.com)
+* **deps:** update dependency @sanity/comlink to ^4.0.1 ([#11248](https://github.com/sanity-io/sanity/issues/11248)) ([2493536](https://github.com/sanity-io/sanity/commit/2493536ce99bd33db3e6f6667967207ca6462e50)) by renovate[bot] (29139614+renovate[bot]@users.noreply.github.com)
+* **deps:** update dependency @sanity/presentation-comlink to ^2.0.1 ([#11249](https://github.com/sanity-io/sanity/issues/11249)) ([2035ff2](https://github.com/sanity-io/sanity/commit/2035ff263d3ec4acdceb8c5f65878f52de1a27b1)) by renovate[bot] (29139614+renovate[bot]@users.noreply.github.com)
+* **deps:** update dependency @sanity/preview-url-secret to v3 ([#11234](https://github.com/sanity-io/sanity/issues/11234)) ([67f4ffb](https://github.com/sanity-io/sanity/commit/67f4ffb31f8f54318cde955b7d5520a6d056a233)) by Cody Olsen (81981+stipsan@users.noreply.github.com)
+* **deps:** Update portabletext ([#11217](https://github.com/sanity-io/sanity/issues/11217)) ([86feb1f](https://github.com/sanity-io/sanity/commit/86feb1f6db5cea4f6d52b5aee85b931ca11e1191)) by renovate[bot] (29139614+renovate[bot]@users.noreply.github.com)
+* **sanity:** excessive comment mutations when editing in PTE ([#11230](https://github.com/sanity-io/sanity/issues/11230)) ([c64b279](https://github.com/sanity-io/sanity/commit/c64b279625461a3e9f8b4c7836c07d56e855799a)) by Ash (ash@sanity.io)
+* **sanity:** skip assetRequired rule to allow selection in media library ([#11197](https://github.com/sanity-io/sanity/issues/11197)) ([dbeeea0](https://github.com/sanity-io/sanity/commit/dbeeea0a99fc84a7aa62eaf0b11380be9c604369)) by Fred Carlsen (fred@sjelfull.no)
+
 ## [4.18.0](https://github.com/sanity-io/sanity/compare/v4.17.0...v4.18.0) (2025-11-21)
 
 ### Features

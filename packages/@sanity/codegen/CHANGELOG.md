@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [4.19.0](https://github.com/sanity-io/sanity/compare/v4.18.0...v4.19.0) (2025-11-25)
+
+### Features
+
+* **cli:** add typegen configuration through cli config ([#11135](https://github.com/sanity-io/sanity/issues/11135)) ([cfd2d9c](https://github.com/sanity-io/sanity/commit/cfd2d9c26870a7dbfebfef97ac575507f7a0edbe)) by Kristoffer Brabrand (kristoffer@brabrand.no)
+
 ## [4.18.0](https://github.com/sanity-io/sanity/compare/v4.17.0...v4.18.0) (2025-11-21)
 
 ### Bug Fixes
