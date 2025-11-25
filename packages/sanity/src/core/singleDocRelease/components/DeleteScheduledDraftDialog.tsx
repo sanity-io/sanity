@@ -8,6 +8,7 @@ import {LoadingBlock} from '../../components'
 import {useSchema} from '../../hooks'
 import {Translate, useTranslation} from '../../i18n'
 import {Preview} from '../../preview'
+import {type VersionInfoDocumentStub} from '../../releases/store/types'
 import {useDocumentVersionInfo} from '../../releases/store/useDocumentVersionInfo'
 import {getErrorMessage, getPublishedId} from '../../util'
 import {useScheduledDraftDocument} from '../hooks/useScheduledDraftDocument'
@@ -21,6 +22,48 @@ interface DeleteScheduledDraftDialogBaseProps {
 interface DeleteScheduledDraftDialogProps extends DeleteScheduledDraftDialogBaseProps {
   documentId: string | undefined
   documentType?: string
+}
+
+interface DeleteScheduledDraftDialogWithCopyToDraftProps
+  extends DeleteScheduledDraftDialogBaseProps {
+  documentId: string
+  documentType: string
+}
+
+interface DialogDescription {
+  bodyKey: string
+  copy: {
+    visible: boolean
+    default: boolean
+  }
+}
+
+function getDialogDescription(
+  draftVersionInfo: VersionInfoDocumentStub | undefined,
+  scheduledDraftBaseRev: string | undefined,
+): DialogDescription {
+  // No draft exists - automatically copy the scheduled draft
+  if (!draftVersionInfo) {
+    return {
+      bodyKey: 'release.dialog.delete-schedule-draft.body-will-save-to-draft',
+      copy: {visible: false, default: true},
+    }
+  }
+
+  // Revisions match - automatically skip copying (already current)
+  const revisionsMatch = scheduledDraftBaseRev === draftVersionInfo._rev
+  if (revisionsMatch) {
+    return {
+      bodyKey: 'release.dialog.delete-schedule-draft.body-already-current',
+      copy: {visible: false, default: false},
+    }
+  }
+
+  // Different content - let user decide
+  return {
+    bodyKey: 'release.dialog.delete-schedule-draft.body-with-choice',
+    copy: {visible: true, default: true},
+  }
 }
 
 function useDeleteScheduledDraft(
@@ -120,32 +163,12 @@ function DeleteScheduledDraftDialogContent({
   )
 }
 
-export function DeleteScheduledDraftDialog({
+export function DeleteScheduledDraftDialogWithCopyToDraft({
   documentId,
   documentType,
   onClose,
   release,
-}: DeleteScheduledDraftDialogProps) {
-  if (documentId) {
-    return (
-      <DeleteScheduledDraftDialogWithCopyToDraft
-        documentId={documentId}
-        documentType={documentType}
-        onClose={onClose}
-        release={release}
-      />
-    )
-  }
-
-  return <DeleteScheduledDraftDialogWithEmptyRelease onClose={onClose} release={release} />
-}
-
-function DeleteScheduledDraftDialogWithCopyToDraft({
-  onClose,
-  release,
-  documentType,
-  documentId,
-}: DeleteScheduledDraftDialogProps & {documentId: string}) {
+}: DeleteScheduledDraftDialogWithCopyToDraftProps) {
   const {t} = useTranslation()
   const schema = useSchema()
   const operations = useScheduleDraftOperations()
@@ -153,48 +176,32 @@ function DeleteScheduledDraftDialogWithCopyToDraft({
   const {firstDocument, firstDocumentPreview} = useScheduledDraftDocument(release._id, {
     includePreview: true,
   })
-  const schemaType = documentType ? schema.get(documentType) : null
 
   const publishedId = useMemo(() => getPublishedId(documentId), [documentId])
-  const documentVersionInfo = useDocumentVersionInfo(publishedId)
-  const draftDocument = documentVersionInfo.draft
+  const {draft: draftVersionInfo} = useDocumentVersionInfo(publishedId)
 
-  const {showCopyCheckbox, shouldCopyByDefault} = useMemo(() => {
-    if (!draftDocument) {
-      return {showCopyCheckbox: false, shouldCopyByDefault: true}
-    }
-
+  const dialogDescription = useMemo(() => {
     const scheduledDraftBaseRev = firstDocument?._system?.base?.rev
-    const draftRev = draftDocument._rev
+    return getDialogDescription(draftVersionInfo, scheduledDraftBaseRev)
+  }, [draftVersionInfo, firstDocument])
 
-    // if the revision Ids on the current draft and the scheduled draft are the same
-    // don't need checkbox confirmation, no need to copy back to draft
-    if (scheduledDraftBaseRev && draftRev && scheduledDraftBaseRev === draftRev) {
-      return {showCopyCheckbox: false, shouldCopyByDefault: false}
-    }
-
-    return {showCopyCheckbox: true, shouldCopyByDefault: true}
-  }, [draftDocument, firstDocument])
-
-  const [shouldCopyToDraft, setShouldCopyToDraft] = useState(shouldCopyByDefault)
+  const [shouldCopyToDraft, setShouldCopyToDraft] = useState(dialogDescription.copy.default)
 
   const deleteOperation = useCallback(async () => {
-    const shouldCopy = showCopyCheckbox ? shouldCopyToDraft : shouldCopyByDefault
+    const shouldCopy = dialogDescription.copy.visible
+      ? shouldCopyToDraft
+      : dialogDescription.copy.default
+
     await operations.deleteScheduledDraft(release._id, shouldCopy, publishedId)
-  }, [
-    release._id,
-    operations,
-    showCopyCheckbox,
-    shouldCopyToDraft,
-    shouldCopyByDefault,
-    publishedId,
-  ])
+  }, [release._id, operations, dialogDescription, shouldCopyToDraft, publishedId])
 
   const {isDeleting, handleDeleteSchedule} = useDeleteScheduledDraft(
     firstDocumentPreview,
     onClose,
     deleteOperation,
   )
+
+  const schemaType = schema.get(documentType)
 
   return (
     <DeleteScheduledDraftDialogContent
@@ -209,18 +216,18 @@ function DeleteScheduledDraftDialogWithCopyToDraft({
       )}
       <Box paddingX={2}>
         <Text size={1} muted>
-          {t('release.dialog.delete-schedule-draft.body')}
+          {t(dialogDescription.bodyKey)}
         </Text>
       </Box>
-      {showCopyCheckbox && (
+      {dialogDescription.copy.visible && (
         <>
           <Box paddingX={2}>
             <Text size={1} muted>
-              {t('release.dialog.delete-schedule-draft.copy-warning')}
+              {t('release.dialog.delete-schedule-draft.different-changes-explanation')}
             </Text>
           </Box>
           <Box paddingX={2}>
-            <Flex align="center" gap={3}>
+            <Flex align="center" gap={3} as="label">
               <Checkbox
                 checked={shouldCopyToDraft}
                 onChange={(event: ChangeEvent<HTMLInputElement>) =>
@@ -253,7 +260,7 @@ function DeleteScheduledDraftDialogWithEmptyRelease({
   })
 
   const deleteOperation = useCallback(async () => {
-    await operations.deleteScheduledDraft(release._id, false)
+    await operations.deleteScheduledDraft(release._id, false, undefined)
   }, [release._id, operations])
 
   const {isDeleting, handleDeleteSchedule} = useDeleteScheduledDraft(
@@ -270,9 +277,29 @@ function DeleteScheduledDraftDialogWithEmptyRelease({
     >
       <Box paddingX={2}>
         <Text size={1} muted>
-          {t('release.dialog.delete-schedule-draft.body')}
+          {t('release.dialog.delete-schedule-draft.body-already-current')}
         </Text>
       </Box>
     </DeleteScheduledDraftDialogContent>
+  )
+}
+
+export function DeleteScheduledDraftDialog({
+  documentId,
+  documentType,
+  onClose,
+  release,
+}: DeleteScheduledDraftDialogProps) {
+  if (!documentId || !documentType) {
+    return <DeleteScheduledDraftDialogWithEmptyRelease onClose={onClose} release={release} />
+  }
+
+  return (
+    <DeleteScheduledDraftDialogWithCopyToDraft
+      documentId={documentId}
+      documentType={documentType}
+      onClose={onClose}
+      release={release}
+    />
   )
 }
