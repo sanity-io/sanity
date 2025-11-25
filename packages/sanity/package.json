@@ -331,7 +331,7 @@
     "date-fns-tz": "2.0.1",
     "eslint": "catalog:",
     "eslint-plugin-boundaries": "^5.2.0",
-    "eslint-plugin-testing-library": "^7.13.4",
+    "eslint-plugin-testing-library": "^7.13.5",
     "globals": "catalog:",
     "react": "catalog:",
     "react-dom": "catalog:",
