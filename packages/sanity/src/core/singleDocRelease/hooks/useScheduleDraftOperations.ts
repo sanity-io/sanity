@@ -145,18 +145,11 @@ export function useScheduleDraftOperations(): ScheduleDraftOperationsValue {
 
         if (scheduledDraftDoc) {
           const draftId = getDraftId(publishedId)
-          const draftDoc = await client.getDocument(draftId)
 
-          // If draft exists, discard it first
-          if (draftDoc) {
-            await client.discardVersion({publishedId}, false)
-          }
-
-          // Create a new draft version from the scheduled draft
-          await client.createVersion({
-            baseId: scheduledDraftId,
-            ifBaseRevisionId: scheduledDraftDoc._rev,
-            publishedId,
+          const {_rev, ...contentWithoutRev} = scheduledDraftDoc
+          await client.createOrReplace({
+            ...contentWithoutRev,
+            _id: draftId,
           })
         }
       }
