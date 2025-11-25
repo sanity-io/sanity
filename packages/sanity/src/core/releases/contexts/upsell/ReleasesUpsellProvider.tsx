@@ -119,7 +119,7 @@ export function ReleasesUpsellProvider(props: {children: React.ReactNode}) {
             firstValueFrom(orgActiveReleaseCount$),
             firstValueFrom(
               releaseLimits$.pipe(
-                tap((limit) => setReleaseLimit(limit?.orgActiveReleaseLimit || null)),
+                tap((limit) => setReleaseLimit(limit?.orgActiveReleaseLimit || 0)),
               ),
             ),
           ])
