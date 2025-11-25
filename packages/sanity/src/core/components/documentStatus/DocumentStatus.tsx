@@ -89,7 +89,7 @@ type Mode = 'edited' | 'created' | 'draft' | 'published'
 
 const labels: Record<Mode, string> = {
   draft: 'document-status.edited',
-  published: 'document-status.date',
+  published: 'document-status.published',
   edited: 'document-status.edited',
   created: 'document-status.created',
 }
@@ -116,7 +116,7 @@ const VersionStatus = ({
     <Flex align="center" gap={2}>
       <ReleaseAvatar tone={tone} padding={0} />
       <Text size={1}>
-        {title || t('release.placeholder-untitled-release')}{' '}
+        {title || t('release.placeholder-untitled-release')} -{' '}
         <span style={{color: 'var(--card-muted-fg-color)'}}>
           {t(labels[mode], {date: relativeTime})}
         </span>
