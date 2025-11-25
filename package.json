@@ -125,7 +125,7 @@
     "eslint": "catalog:",
     "eslint-formatter-gha": "^1.6.0",
     "husky": "^9.1.7",
-    "lint-staged": "^16.1.0",
+    "lint-staged": "^16.2.7",
     "npm-run-all2": "^6.2.6",
     "oxlint": "1.29.0",
     "oxlint-tsgolint": "0.7.1",
