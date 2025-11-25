@@ -186,7 +186,7 @@ importers:
         specifier: ^4.20.6
         version: 4.20.6
       turbo:
-        specifier: ^2.5.8
+        specifier: ^2.6.1
         version: 2.6.1
       typescript:
         specifier: 'catalog:'
