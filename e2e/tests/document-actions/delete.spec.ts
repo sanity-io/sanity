@@ -15,7 +15,7 @@ test(`unpublished documents can be deleted`, async ({page, createDraftDocument})
 
   await page.getByTestId('action-menu-button').click()
   await page.getByTestId('action-Delete').click()
-  await page.getByRole('button', {name: 'Delete now'}).click()
+  await page.getByRole('button', {name: 'Delete all versions'}).click()
 
   await expect(page.getByText('The document was successfully deleted')).toBeVisible()
 })
@@ -35,7 +35,7 @@ test(`published documents can be deleted`, async ({page, createDraftDocument}) =
 
   await page.getByTestId('action-menu-button').click()
   await page.getByTestId('action-Delete').click()
-  await page.getByRole('button', {name: 'Delete now'}).click()
+  await page.getByRole('button', {name: 'Delete all versions'}).click()
 
   await expect(page.getByText('The document was successfully deleted')).toBeVisible()
 })
@@ -59,7 +59,7 @@ test(`deleted document shows the right name from last revision`, async ({
   // Delete the document
   await page.getByTestId('action-menu-button').click()
   await page.getByTestId('action-Delete').click()
-  await page.getByRole('button', {name: 'Delete now'}).click()
+  await page.getByRole('button', {name: 'Delete all versions'}).click()
 
   // Wait for deletion to complete
   await expect(page.getByText('The document was successfully deleted')).toBeVisible()
