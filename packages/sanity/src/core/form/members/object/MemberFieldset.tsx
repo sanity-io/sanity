@@ -12,6 +12,7 @@ import {
   type RenderInputCallback,
   type RenderPreviewCallback,
 } from '../../types'
+import {MemberDecoration} from './MemberDecoration'
 import {MemberField} from './MemberField'
 import {MemberFieldError} from './MemberFieldError'
 
@@ -72,8 +73,7 @@ export const MemberFieldSet = memo(function MemberFieldSet(props: {
           return <MemberFieldError key={member.key} member={fieldsetMember} />
         }
         if (fieldsetMember.kind === 'decoration') {
-          const Component = fieldsetMember.component
-          return <Component key={fieldsetMember.key} />
+          return <MemberDecoration key={fieldsetMember.key} member={fieldsetMember} />
         }
         return (
           <MemberField

@@ -24,6 +24,7 @@ import {useAssetLimitsUpsellContext} from '../../../../limits/context/assets/Ass
 import {isAssetLimitError} from '../../../../limits/context/assets/isAssetLimitError'
 import {FormInput} from '../../../components'
 import {MemberField, MemberFieldError, MemberFieldSet} from '../../../members'
+import {MemberDecoration} from '../../../members/object/MemberDecoration'
 import {PatchEvent, set, setIfMissing, unset} from '../../../patch'
 import {type FieldMember} from '../../../store'
 import {UPLOAD_STATUS_KEY} from '../../../studio/uploads/constants'
@@ -539,8 +540,7 @@ function BaseImageInputComponent(props: BaseImageInputProps): React.JSX.Element 
           return <MemberFieldError key={member.key} member={member} />
         }
         if (member.kind === 'decoration') {
-          const Component = member.component
-          return <Component key={member.key} />
+          return <MemberDecoration key={member.key} member={member} />
         }
 
         return (
