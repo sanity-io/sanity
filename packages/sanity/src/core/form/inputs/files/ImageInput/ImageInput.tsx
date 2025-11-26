@@ -25,6 +25,7 @@ import {isAssetLimitError} from '../../../../limits/context/assets/isAssetLimitE
 import {FormInput} from '../../../components'
 import {MemberField, MemberFieldError, MemberFieldSet} from '../../../members'
 import {MemberDecoration} from '../../../members/object/MemberDecoration'
+import {useRenderMembers} from '../../../members/object/useRenderMembets'
 import {PatchEvent, set, setIfMissing, unset} from '../../../patch'
 import {type FieldMember} from '../../../store'
 import {UPLOAD_STATUS_KEY} from '../../../studio/uploads/constants'
@@ -73,6 +74,7 @@ function BaseImageInputComponent(props: BaseImageInputProps): React.JSX.Element 
   } = props
   const {push} = useToast()
   const {t} = useTranslation()
+  const renderedMembers = useRenderMembers(schemaType, members)
 
   const [selectedAssetSource, setSelectedAssetSource] = useState<AssetSource | null>(null)
   const [isUploading, setIsUploading] = useState(false)
@@ -90,13 +92,6 @@ function BaseImageInputComponent(props: BaseImageInputProps): React.JSX.Element 
     unsubscribe: () => void
     uploader: AssetSourceUploader
   } | null>(null)
-
-  const renderedMembers = useMemo(() => {
-    if (schemaType.renderMembers) {
-      return schemaType.renderMembers(members)
-    }
-    return members
-  }, [members, schemaType])
 
   const isImageToolEnabled = useCallback(() => {
     const hotspotOptions = get(schemaType, 'options.hotspot')
