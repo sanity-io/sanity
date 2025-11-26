@@ -1397,11 +1397,11 @@ export const studioLocaleStrings = defineLocalesResources('studio', {
   /** Body text when deleting scheduled draft and draft is already up to date */
   'release.dialog.delete-schedule-draft.body-already-current':
     'Delete this scheduled draft? Your draft is already up to date.',
-  /** Body text when deleting scheduled draft with checkbox shown for user choice */
-  'release.dialog.delete-schedule-draft.body-with-choice': 'Delete this scheduled draft?',
   /** Body text when deleting scheduled draft and changes will be saved to draft */
   'release.dialog.delete-schedule-draft.body-will-save-to-draft':
     'Delete this scheduled draft? Your changes will be saved to draft.',
+  /** Body text when deleting scheduled draft with checkbox shown for user choice */
+  'release.dialog.delete-schedule-draft.body-with-choice': 'Delete this scheduled draft?',
   /** Confirm button text for deleting a scheduled draft */
   'release.dialog.delete-schedule-draft.confirm': 'Yes, delete schedule',
   /** Checkbox label for copying scheduled draft to draft before deletion */
