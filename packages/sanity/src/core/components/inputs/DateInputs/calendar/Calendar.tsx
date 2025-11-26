@@ -36,7 +36,7 @@ export const MONTH_PICKER_VARIANT = {
 
 export type CalendarProps = Omit<ComponentProps<'div'>, 'onSelect'> & {
   selectTime?: boolean
-  selectedDate?: Date
+  selectedDate: Date
   timeStep?: number
   onSelect: (date: Date) => void
   focusedDate: Date
@@ -76,7 +76,7 @@ export const Calendar = forwardRef(function Calendar(
   const {
     selectTime,
     onFocusedDateChange,
-    selectedDate: _selectedDate,
+    selectedDate,
     focusedDate: _focusedDate,
     timeStep = 1,
     onSelect,
@@ -88,7 +88,7 @@ export const Calendar = forwardRef(function Calendar(
     timeZoneScope,
     ...restProps
   } = props
-  const selectedDate = useMemo(() => _selectedDate ?? new Date(), [_selectedDate])
+
   const focusedDate = _focusedDate ?? selectedDate
 
   const {timeZone} = useTimeZone(timeZoneScope)
@@ -170,10 +170,27 @@ export const Calendar = forwardRef(function Calendar(
     [onSelect, savedSelectedDate, timeZone],
   )
 
+  const timeFromDate = useMemo(() => format(savedSelectedDate, 'HH:mm'), [savedSelectedDate])
+  const [timeValue, setTimeValue] = useState<string | undefined>(timeFromDate)
+
+  useEffect(() => {
+    // The change is coming from another source, so we need to update the timeValue to the new value.
+    // eslint-disable-next-line react-hooks/no-deriving-state-in-effects
+    setTimeValue(timeFromDate)
+  }, [timeFromDate])
+
   const handleTimeChangeInputChange = useCallback(
     (event: FormEvent<HTMLInputElement>) => {
-      const date = parse(event.currentTarget.value, 'HH:mm', new Date())
-      handleTimeChange(date.getHours(), date.getMinutes())
+      const value = event.currentTarget.value
+      if (value) {
+        const date = parse(value, 'HH:mm', new Date())
+        handleTimeChange(date.getHours(), date.getMinutes())
+      } else {
+        // Setting the timeValue to undefined will let the input behave correctly as a time input while the user types.
+        // This means, that until it has a valid value the time input input won't emit a new onChange event.
+        // but we cannot send the undefined value to the handleTimeChange, because it expects a valid date.
+        setTimeValue(undefined)
+      }
     },
     [handleTimeChange],
   )
@@ -368,8 +385,15 @@ export const Calendar = forwardRef(function Calendar(
               <Flex align="center">
                 <TimeInput
                   aria-label={labels.selectTime}
-                  value={format(savedSelectedDate, 'HH:mm')}
+                  value={timeValue}
                   onChange={handleTimeChangeInputChange}
+                  /**
+                   * Values received in timeStep are defined in minutes as shown in the docs https://www.sanity.io/docs/studio/datetime-type#timestep-47de7f21-25bc-468d-b925-cd30e2690a7b
+                   * the input type="time" step is in seconds, so we need to multiply by 60.
+                   *
+                   * The UI will show all the minutes anyways, from 0 to 59, but it rounds the value to the nearest step once blurred.
+                   */
+                  step={timeStep * 60}
                 />
                 <Box marginLeft={2}>
                   <Button text={labels.setToCurrentTime} mode="bleed" onClick={handleNowClick} />
