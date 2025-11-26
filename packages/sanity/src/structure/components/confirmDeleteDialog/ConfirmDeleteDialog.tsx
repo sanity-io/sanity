@@ -108,6 +108,8 @@ export function ConfirmDeleteDialog({
             datasetNames={datasetNames}
             hasUnknownDatasetNames={hasUnknownDatasetNames}
             onReferenceLinkClick={onCancel}
+            documentId={id}
+            documentType={type}
           />
         ) : (
           <LoadingContainer data-testid="loading-container">

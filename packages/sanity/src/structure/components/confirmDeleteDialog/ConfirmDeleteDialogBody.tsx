@@ -21,11 +21,14 @@ import {
 } from './ConfirmDeleteDialogBody.styles'
 import {ReferencePreviewLink} from './ReferencePreviewLink'
 import {type ReferringDocuments} from './useReferringDocuments'
+import {VersionsPreviewList} from './VersionsPreviewList'
 
 type DeletionConfirmationDialogBodyProps = Required<ReferringDocuments> & {
   documentTitle: React.ReactNode
   action: 'unpublish' | 'delete'
   onReferenceLinkClick?: () => void
+  documentId: string
+  documentType: string
 }
 
 /**
@@ -40,6 +43,8 @@ export function ConfirmDeleteDialogBody({
   action,
   datasetNames,
   hasUnknownDatasetNames,
+  documentId,
+  documentType,
   onReferenceLinkClick,
 }: DeletionConfirmationDialogBodyProps) {
   const schema = useSchema()
@@ -47,7 +52,7 @@ export function ConfirmDeleteDialogBody({
   const {t} = useTranslation(structureLocaleNamespace)
 
   const renderPreviewItem = useCallback(
-    (item: any) => {
+    (item: {_id: string; _type: string}) => {
       const type = schema.get(item._type)
       if (type) {
         return <ReferencePreviewLink type={type} value={item} onClick={onReferenceLinkClick} />
@@ -69,18 +74,27 @@ export function ConfirmDeleteDialogBody({
     },
     [schema, t, onReferenceLinkClick],
   )
+  const confirmationMessage = useCallback(
+    () => (
+      <Stack space={4}>
+        <Text as="p" size={1}>
+          <Translate
+            t={t}
+            i18nKey="confirm-delete-dialog.confirmation.text"
+            context={action}
+            components={{DocumentTitle: () => <strong>{documentTitle}</strong>}}
+          />
+        </Text>
+        {action === 'delete' && (
+          <VersionsPreviewList documentId={documentId} documentType={documentType} />
+        )}
+      </Stack>
+    ),
+    [t, action, documentTitle, documentId, documentType],
+  )
 
   if (internalReferences?.totalCount === 0 && crossDatasetReferences?.totalCount === 0) {
-    return (
-      <Text as="p" size={1}>
-        <Translate
-          t={t}
-          i18nKey="confirm-delete-dialog.confirmation.text"
-          context={action}
-          components={{DocumentTitle: () => <strong>{documentTitle}</strong>}}
-        />
-      </Text>
-    )
+    return confirmationMessage()
   }
 
   // We do some extra checks to handle cases where you have unavailable dataset
@@ -100,23 +114,28 @@ export function ConfirmDeleteDialogBody({
 
   return (
     <Flex direction="column" gap={4}>
-      <Card padding={3} radius={2} tone="caution" flex="none">
-        <Flex>
-          <Text aria-hidden="true" size={1}>
-            <WarningOutlineIcon />
-          </Text>
-          <Box flex={1} marginLeft={3}>
-            <Text size={1}>
-              <Translate
-                i18nKey="confirm-delete-dialog.referring-document-count.text"
-                components={{DocumentTitle: () => documentTitle}}
-                t={t}
-                values={{count: totalCount}}
-              />
+      {confirmationMessage()}
+      <div>
+        <Card borderTop padding={1} />
+        <Card padding={3} radius={2} tone="caution" flex="none">
+          <Flex>
+            <Text aria-hidden="true" size={1}>
+              <WarningOutlineIcon />
             </Text>
-          </Box>
-        </Flex>
-      </Card>
+            <Box flex={1} marginLeft={3}>
+              <Text size={1}>
+                <Translate
+                  i18nKey="confirm-delete-dialog.referring-document-count.text"
+                  components={{DocumentTitle: () => documentTitle}}
+                  t={t}
+                  values={{count: totalCount}}
+                />
+              </Text>
+            </Box>
+          </Flex>
+        </Card>
+      </div>
+
       <Box flex="none">
         <Text size={1}>
           <Translate
@@ -127,10 +146,10 @@ export function ConfirmDeleteDialogBody({
           />
         </Text>
       </Box>
-      <Card radius={2} shadow={1} flex="auto" padding={2}>
+      <Card radius={2} shadow={1} flex="auto" padding={1}>
         <Flex direction="column">
           {internalReferences.totalCount > 0 && (
-            <Stack as="ul" marginBottom={2} space={2} data-testid="internal-references">
+            <Stack as="ul" space={2} data-testid="internal-references">
               {internalReferences?.references.map((item) => (
                 <Box key={item._id} as="li">
                   {renderPreviewItem(item)}
@@ -216,7 +235,7 @@ export function ConfirmDeleteDialogBody({
                       .filter((reference): reference is Required<typeof reference> => {
                         return 'projectId' in reference
                       })
-                      .map(({projectId, datasetName, documentId}, index) => (
+                      .map(({projectId, datasetName, documentId: referenceId}, index) => (
                         <tr key={`${documentId}-${index}`}>
                           <td>
                             <Text size={1}>{projectId}</Text>
@@ -227,9 +246,9 @@ export function ConfirmDeleteDialogBody({
                           <td>
                             <DocumentIdFlex align="center" gap={2} justify="flex-end">
                               <Text textOverflow="ellipsis" size={1}>
-                                {documentId || 'unavailable'}
+                                {referenceId || 'unavailable'}
                               </Text>
-                              {documentId && (
+                              {referenceId && (
                                 <Button
                                   mode="bleed"
                                   icon={CopyIcon}
@@ -239,7 +258,7 @@ export function ConfirmDeleteDialogBody({
                                     ),
                                   }}
                                   onClick={() => {
-                                    navigator.clipboard.writeText(documentId).catch(() => {
+                                    navigator.clipboard.writeText(referenceId).catch(() => {
                                       toast.push({
                                         status: 'error',
                                         title: t(

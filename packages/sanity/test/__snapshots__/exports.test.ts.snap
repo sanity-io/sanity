@@ -157,6 +157,7 @@ exports[`exports snapshot 1`] = `
     "ReferenceInputPreviewCard": "object",
     "RelativeTime": "function",
     "ReleaseAvatar": "function",
+    "ReleaseAvatarIcon": "function",
     "ReleasesNav": "function",
     "Resizable": "function",
     "ResourceCacheProvider": "function",

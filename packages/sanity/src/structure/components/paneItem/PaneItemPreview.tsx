@@ -24,7 +24,7 @@ export interface PaneItemPreviewProps {
   layout: GeneralPreviewLayoutKey
   presence?: DocumentPresence[]
   schemaType: SchemaType
-  value: SanityDocument
+  value: SanityDocument | {_id: string; _type: string}
 }
 
 /**
