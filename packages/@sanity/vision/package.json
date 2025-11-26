@@ -25,18 +25,15 @@
   "license": "MIT",
   "author": "Sanity.io <hello@sanity.io>",
   "sideEffects": false,
-  "type": "commonjs",
+  "type": "module",
   "exports": {
     ".": {
       "source": "./src/index.ts",
-      "import": "./lib/index.mjs",
-      "require": "./lib/index.js",
       "default": "./lib/index.js"
     },
     "./package.json": "./package.json"
   },
   "main": "./lib/index.js",
-  "module": "./lib/index.mjs",
   "types": "./lib/index.d.ts",
   "files": [
     "lib"

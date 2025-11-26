@@ -27,14 +27,11 @@
   "exports": {
     ".": {
       "source": "./src/index.ts",
-      "import": "./lib/index.mjs",
-      "require": "./lib/index.js",
       "default": "./lib/index.js"
     },
     "./package.json": "./package.json"
   },
   "main": "./lib/index.js",
-  "module": "./lib/index.mjs",
   "types": "./lib/index.d.ts",
   "bin": {
     "sanity": "./bin/sanity"
@@ -68,6 +65,7 @@
     "esbuild": "catalog:",
     "esbuild-register": "catalog:",
     "get-it": "^8.6.10",
+    "get-latest-version": "^5.1.0",
     "groq-js": "^1.21.0",
     "pkg-dir": "^5.0.0",
     "prettier": "catalog:",
@@ -107,7 +105,6 @@
     "dotenv-expand": "^9.0.0",
     "eslint": "catalog:",
     "execa": "^2.1.0",
-    "get-latest-version": "^5.1.0",
     "git-user-info": "^2.0.3",
     "globals": "catalog:",
     "inquirer": "^6.5.2",

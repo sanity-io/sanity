@@ -1,8 +1,8 @@
 // oxlint-disable no-console
 
 const {BufferedDocument, Mutation} = require('../lib')
-const mutations = require('./fixtures/patches')
-const snapshot = require('./fixtures/snapshot')
+const mutations = require('./fixtures/patches.cjs')
+const snapshot = require('./fixtures/snapshot.cjs')
 
 const bufferedDocument = new BufferedDocument(snapshot)
 const labelAll = `Adding ${mutations.length} mutations`

@@ -14,6 +14,8 @@ import {describe, expect, test} from 'vitest'
 import {readSchema} from '../../readSchema'
 import {TypeGenerator} from '../typeGenerator'
 
+const __dirname = path.dirname(new URL(import.meta.url).pathname)
+
 describe('generateSchemaTypes', () => {
   test('should generate TypeScript type declarations for a schema', async () => {
     const schema = await readSchema(path.join(__dirname, 'fixtures', 'schema.json'))

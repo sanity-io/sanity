@@ -7,6 +7,8 @@ import {describe, expect, it} from 'vitest'
 import {type AssetWithAspects, resolveSource, setAspects} from './importAssetsAction'
 import {createMockClient} from './test/createMockClient'
 
+const __dirname = path.dirname(new URL(import.meta.url).pathname)
+
 describe('resolveSource', () => {
   it('accepts a directory source', async () => {
     const [result] = await lastValueFrom(

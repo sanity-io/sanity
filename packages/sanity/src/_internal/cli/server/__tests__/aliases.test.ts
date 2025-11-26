@@ -11,6 +11,8 @@ import {
 } from '../getBrowserAliases'
 import {getMonorepoAliases} from '../sanityMonorepo'
 
+const __dirname = path.dirname(new URL(import.meta.url).pathname)
+
 const sanityPkgPath = path.resolve(__dirname, '../../../../../package.json')
 
 const pkg = await import(sanityPkgPath)

@@ -1,7 +1,9 @@
 import {existsSync} from 'node:fs'
-import {join, resolve} from 'node:path'
+import {dirname, join, resolve} from 'node:path'
 
 import {type TransformOptions} from '@babel/core'
+
+const __dirname = dirname(new URL(import.meta.url).pathname)
 
 /**
  * Because of bundlers and compilers, knowing the exact path the babel configuration will be

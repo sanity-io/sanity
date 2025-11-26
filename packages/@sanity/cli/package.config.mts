@@ -1,11 +1,14 @@
 import fs from 'node:fs'
 import {isBuiltin} from 'node:module'
 import path from 'node:path'
+import {fileURLToPath} from 'node:url'
 
 import baseConfig from '@repo/package.config'
 import {nodeResolve} from '@rollup/plugin-node-resolve'
 import {defineConfig} from '@sanity/pkg-utils'
 
+const __filename = fileURLToPath(import.meta.url)
+const __dirname = path.dirname(__filename)
 const workersDir = path.join(__dirname, 'src', 'workers')
 
 const workerNames = fs

@@ -1,3 +1,5 @@
+import path from 'node:path'
+
 import {expect, test} from 'vitest'
 
 import {readFileAsWebStream} from '../../fs-webstream/readFileAsWebStream'
@@ -6,6 +8,8 @@ import {concatUint8Arrays} from '../../uint8arrays'
 import {streamToAsyncIterator} from '../../utils/streamToAsyncIterator'
 import {drain} from '../drain'
 import {untar} from '../untar'
+
+const __dirname = path.dirname(new URL(import.meta.url).pathname)
 
 function getCrypto() {
   if (typeof globalThis.crypto === 'undefined') {

@@ -2,7 +2,7 @@ import path from 'node:path'
 
 import {type CliOutputter} from '@sanity/cli'
 import chalk from 'chalk'
-import {warning} from 'log-symbols'
+import logSymbols from 'log-symbols'
 
 import {baseUrl} from './baseUrl'
 
@@ -20,7 +20,7 @@ export function warnAboutMissingAppId({
   const manageUrl = `${baseUrl}/manage${projectId ? `/project/${projectId}/studios` : ''}`
   const cliConfigFile = cliConfigPath ? path.basename(cliConfigPath) : 'sanity.cli.js'
   output.print(
-    `${warning} No ${chalk.bold('appId')} configured. This ${appType} will auto-update to the ${chalk.green.bold('latest')} channel. To enable fine grained version selection, head over to ${chalk.cyan(manageUrl)} and add the appId to the ${chalk.bold('deployment')} section in ${chalk.bold(cliConfigFile)}.
+    `${logSymbols.warning} No ${chalk.bold('appId')} configured. This ${appType} will auto-update to the ${chalk.green.bold('latest')} channel. To enable fine grained version selection, head over to ${chalk.cyan(manageUrl)} and add the appId to the ${chalk.bold('deployment')} section in ${chalk.bold(cliConfigFile)}.
         `,
   )
 }

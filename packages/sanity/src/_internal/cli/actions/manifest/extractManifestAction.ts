@@ -16,6 +16,8 @@ import {type ExtractManifestWorkerData} from '../../threads/extractManifest'
 import {readModuleVersion} from '../../util/readModuleVersion'
 import {getTimer} from '../../util/timing'
 
+const __dirname = dirname(new URL(import.meta.url).pathname)
+
 export const MANIFEST_FILENAME = 'create-manifest.json'
 const SCHEMA_FILENAME_SUFFIX = '.create-schema.json'
 const TOOLS_FILENAME_SUFFIX = '.create-tools.json'
@@ -127,7 +129,7 @@ async function getWorkspaceManifests({
     '_internal',
     'cli',
     'threads',
-    'extractManifest.js',
+    'extractManifest.cjs',
   )
 
   const worker = new Worker(workerPath, {

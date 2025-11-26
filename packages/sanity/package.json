@@ -21,76 +21,55 @@
   "license": "MIT",
   "author": "Sanity.io <hello@sanity.io>",
   "sideEffects": false,
-  "type": "commonjs",
+  "type": "module",
   "exports": {
     ".": {
       "source": "./src/_exports/index.ts",
-      "import": "./lib/index.mjs",
-      "require": "./lib/index.js",
       "default": "./lib/index.js"
     },
     "./_internal": {
       "source": "./src/_exports/_internal.ts",
-      "require": "./lib/_internal.js",
       "default": "./lib/_internal.js"
     },
     "./_singletons": {
       "source": "./src/_exports/_singletons.ts",
-      "import": "./lib/_singletons.mjs",
-      "require": "./lib/_singletons.js",
       "default": "./lib/_singletons.js"
     },
     "./_createContext": {
       "source": "./src/_exports/_createContext.ts",
-      "import": "./lib/_createContext.mjs",
-      "require": "./lib/_createContext.js",
       "default": "./lib/_createContext.js"
     },
     "./cli": {
       "source": "./src/_exports/cli.ts",
-      "require": "./lib/cli.js",
       "default": "./lib/cli.js"
     },
     "./desk": {
       "source": "./src/_exports/desk.ts",
-      "import": "./lib/desk.mjs",
-      "require": "./lib/desk.js",
       "default": "./lib/desk.js"
     },
     "./presentation": {
       "source": "./src/_exports/presentation.ts",
-      "import": "./lib/presentation.mjs",
-      "require": "./lib/presentation.js",
       "default": "./lib/presentation.js"
     },
     "./router": {
       "source": "./src/_exports/router.ts",
-      "import": "./lib/router.mjs",
-      "require": "./lib/router.js",
       "default": "./lib/router.js"
     },
     "./structure": {
       "source": "./src/_exports/structure.ts",
-      "import": "./lib/structure.mjs",
-      "require": "./lib/structure.js",
       "default": "./lib/structure.js"
     },
     "./media-library": {
       "source": "./src/_exports/media-library.ts",
-      "import": "./lib/media-library.mjs",
-      "require": "./lib/media-library.js",
       "default": "./lib/media-library.js"
     },
     "./migrate": {
       "source": "./src/_exports/migrate.ts",
-      "import": "./lib/migrate.mjs",
-      "require": "./lib/migrate.js",
       "default": "./lib/migrate.js"
     },
     "./package.json": "./package.json"
   },
   "main": "./lib/index.js",
-  "module": "./lib/index.mjs",
   "types": "./lib/index.d.ts",
   "typesVersions": {
     "*": {
@@ -317,6 +296,7 @@
     "@types/jsdom": "27.0.0",
     "@types/lodash": "^4.17.20",
     "@types/log-symbols": "^2.0.0",
+    "@types/module-alias": "^2.0.4",
     "@types/node": "catalog:",
     "@types/raf": "^3.4.3",
     "@types/react": "catalog:",
