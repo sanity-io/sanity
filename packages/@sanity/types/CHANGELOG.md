@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [4.19.0](https://github.com/sanity-io/sanity/compare/v4.18.0...v4.19.0) (2025-11-25)
+
+### Bug Fixes
+
+* **sanity:** skip assetRequired rule to allow selection in media library ([#11197](https://github.com/sanity-io/sanity/issues/11197)) ([dbeeea0](https://github.com/sanity-io/sanity/commit/dbeeea0a99fc84a7aa62eaf0b11380be9c604369)) by Fred Carlsen (fred@sjelfull.no)
+
 ## [4.18.0](https://github.com/sanity-io/sanity/compare/v4.17.0...v4.18.0) (2025-11-21)
 
 **Note:** Version bump only for package @sanity/types

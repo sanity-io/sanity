@@ -3,6 +3,14 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [4.19.0](https://github.com/sanity-io/sanity/compare/v4.18.0...v4.19.0) (2025-11-25)
+
+### Bug Fixes
+
+* **deps:** update dependency @sanity/preview-url-secret to ^2.1.16 ([#11211](https://github.com/sanity-io/sanity/issues/11211)) ([2cab14a](https://github.com/sanity-io/sanity/commit/2cab14a7ededaee445b470b1ee155f29e95a9c4e)) by renovate[bot] (29139614+renovate[bot]@users.noreply.github.com)
+* **deps:** update dependency @sanity/preview-url-secret to v3 ([#11234](https://github.com/sanity-io/sanity/issues/11234)) ([67f4ffb](https://github.com/sanity-io/sanity/commit/67f4ffb31f8f54318cde955b7d5520a6d056a233)) by Cody Olsen (81981+stipsan@users.noreply.github.com)
+* **deps:** Update portabletext ([#11217](https://github.com/sanity-io/sanity/issues/11217)) ([86feb1f](https://github.com/sanity-io/sanity/commit/86feb1f6db5cea4f6d52b5aee85b931ca11e1191)) by renovate[bot] (29139614+renovate[bot]@users.noreply.github.com)
+
 ## [4.18.0](https://github.com/sanity-io/sanity/compare/v4.17.0...v4.18.0) (2025-11-21)
 
 ### Bug Fixes
