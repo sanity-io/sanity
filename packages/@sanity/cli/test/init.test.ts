@@ -314,6 +314,9 @@ describeCliTest('CLI: `sanity init`', () => {
               // minimumReleaseAge, so this should not make a big difference
               // eslint-disable-next-line camelcase
               npm_config_minimum_release_age: '0',
+              // the same is true for `trustPolicy`, it doesn't pick up `trustPolicyExclude`
+              // eslint-disable-next-line camelcase
+              npm_config_trust_policy: 'off',
             },
           },
         )
