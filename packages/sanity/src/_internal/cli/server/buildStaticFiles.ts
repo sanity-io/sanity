@@ -10,6 +10,8 @@ import {extendViteConfigWithUserConfig, finalizeViteConfig, getViteConfig} from 
 import {writeSanityRuntime} from './runtime'
 import {generateWebManifest} from './webManifest'
 
+const __dirname = path.dirname(new URL(import.meta.url).pathname)
+
 const debug = serverDebug.extend('static')
 
 export interface ChunkModule {

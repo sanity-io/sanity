@@ -4,5 +4,6 @@ if (!__DEV__) {
   register({
     target: `node${process.version.slice(1)}`,
     supported: {'dynamic-import': true},
+    format: 'cjs',
   })
 }

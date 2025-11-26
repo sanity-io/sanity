@@ -6,6 +6,8 @@ import {describe, expect, it} from 'vitest'
 
 import {extractDocumentsFromNdjsonOrTarball} from '../extractDocumentsFromNdjsonOrTarball'
 
+const __dirname = path.dirname(new URL(import.meta.url).pathname)
+
 describe('extractDocumentsFromNdjsonOrTarball', () => {
   it('extracts the contents of a tarball, finds the ndjson file, parses it, and yields each document', async () => {
     // note this archive was created on a mac with the command

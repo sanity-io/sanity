@@ -4,7 +4,7 @@ import path from 'node:path'
 import {type CliCommandArguments, type CliCommandContext} from '@sanity/cli'
 import {noopLogger} from '@sanity/telemetry'
 import chalk from 'chalk'
-import {info} from 'log-symbols'
+import logSymbols from 'log-symbols'
 import {rimraf} from 'rimraf'
 import semver from 'semver'
 
@@ -78,7 +78,7 @@ export default async function buildSanityApp(
       ...(cleanSanityVersion ? [{name: 'sanity' as const, version: cleanSanityVersion}] : []),
     ]
     autoUpdatesImports = getAutoUpdatesImportMap(autoUpdatedPackages, {appId})
-    output.print(`${info} Building with auto-updates enabled`)
+    output.print(`${logSymbols.info} Building with auto-updates enabled`)
 
     // note: we want to show this warning only if running `sanity build`
     // since `sanity deploy` will prompt for appId if it's missing and tell the user to add it to sanity.cli.ts when done

@@ -12,6 +12,8 @@ import readPkgUp from 'read-pkg-up'
 import {debug as debugIt} from '../../debug'
 import {determineIsApp} from '../../util/determineIsApp'
 
+const __dirname = path.dirname(new URL(import.meta.url).pathname)
+
 export const debug = debugIt.extend('deploy')
 
 // TODO: replace with `Promise.withResolvers()` once it lands in node

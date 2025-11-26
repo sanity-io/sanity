@@ -3,6 +3,8 @@ import path from 'node:path'
 import {defineConfig} from '@repo/test-config/vitest'
 import react from '@vitejs/plugin-react'
 
+const __dirname = path.dirname(new URL(import.meta.url).pathname)
+
 export default defineConfig({
   test: {
     environment: 'jsdom',

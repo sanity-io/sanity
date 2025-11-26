@@ -3,7 +3,7 @@ import path from 'node:path'
 
 import {type UserViteConfig} from '@sanity/cli'
 import chalk from 'chalk'
-import {type InlineConfig} from 'vite'
+import {type InlineConfig, version} from 'vite'
 
 import {debug as serverDebug} from './debug'
 import {extendViteConfigWithUserConfig} from './getViteConfig'
@@ -92,7 +92,7 @@ export async function startPreviewServer(options: PreviewServerOptions): Promise
 
   info(
     `Sanity ${isApp ? 'application' : 'Studio'} ` +
-      `using ${chalk.cyan(`vite@${require('vite/package.json').version}`)} ` +
+      `using ${chalk.cyan(`vite@${version}`)} ` +
       `ready in ${chalk.cyan(`${Math.ceil(startupDuration)}ms`)} ` +
       `and running at ${chalk.cyan(url)} (production preview mode)`,
   )

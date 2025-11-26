@@ -6,6 +6,8 @@ import {beforeEach, describe, expect, it, vi} from 'vitest'
 
 import {buildVendorDependencies} from '../buildVendorDependencies'
 
+const __dirname = path.dirname(new URL(import.meta.url).pathname)
+
 // Mocking the vite.build function to inspect its calls. This allows us to test
 // that the function is called with the correct configuration without actually
 // performing the build process.

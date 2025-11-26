@@ -1,4 +1,5 @@
 import {createRequire} from 'node:module'
+import {fileURLToPath} from 'node:url'
 
 import {type NodePath, type TransformOptions, traverse} from '@babel/core'
 import {type Scope} from '@babel/traverse'
@@ -8,6 +9,7 @@ import {getBabelConfig} from '../getBabelConfig'
 import {type NamedQueryResult, resolveExpression} from './expressionResolvers'
 import {parseSourceFile} from './parseSource'
 
+const __filename = fileURLToPath(import.meta.url)
 const require = createRequire(__filename)
 
 const groqTagName = 'groq'

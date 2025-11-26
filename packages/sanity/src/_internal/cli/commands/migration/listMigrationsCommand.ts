@@ -81,6 +81,7 @@ export async function resolveMigrations(workDir: string): Promise<ResolvedMigrat
     unregister = register({
       target: `node${process.version.slice(1)}`,
       supported: {'dynamic-import': true},
+      format: 'cjs',
     }).unregister
   }
 

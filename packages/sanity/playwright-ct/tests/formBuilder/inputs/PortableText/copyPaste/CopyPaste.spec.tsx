@@ -15,6 +15,8 @@ import {
   UNICODE_TEXT,
 } from './input'
 
+const __dirname = path.dirname(new URL(import.meta.url).pathname)
+
 export type UpdateFn = () => {focusPath: Path; document: SanityDocument}
 
 const document: SanityDocument = {

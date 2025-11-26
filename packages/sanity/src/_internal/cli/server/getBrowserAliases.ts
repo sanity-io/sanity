@@ -1,7 +1,7 @@
 import path from 'node:path'
 
 import {escapeRegExp} from 'lodash'
-import resolve from 'resolve.exports'
+import * as resolve from 'resolve.exports'
 import {type Alias} from 'vite'
 
 /**

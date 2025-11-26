@@ -11,6 +11,8 @@ import {
 } from '../../threads/extractSchema'
 import {SchemaExtractedTrace} from './extractSchema.telemetry'
 
+const __dirname = dirname(new URL(import.meta.url).pathname)
+
 interface ExtractFlags {
   'workspace'?: string
   'path'?: string
@@ -39,7 +41,7 @@ export default async function extractAction(
     '_internal',
     'cli',
     'threads',
-    'extractSchema.js',
+    'extractSchema.cjs',
   )
 
   const spinner = output
