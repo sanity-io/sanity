@@ -1149,6 +1149,7 @@ import type {
   ReleaseActionsContext,
   ReleaseActionsResolver,
   ReleaseAvatar,
+  ReleaseAvatarIcon,
   ReleaseDocument,
   ReleaseId,
   RELEASES_INTENT,
@@ -5128,6 +5129,9 @@ describe('sanity', () => {
   })
   test('ReleaseAvatar', () => {
     expectTypeOf<typeof ReleaseAvatar>().toBeFunction()
+  })
+  test('ReleaseAvatarIcon', () => {
+    expectTypeOf<typeof ReleaseAvatarIcon>().not.toBeNever()
   })
   test('ReleaseDocument', () => {
     expectTypeOf<ReleaseDocument>().toBeObject()
