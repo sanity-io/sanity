@@ -16,6 +16,7 @@ export function Decoration({title}: {title: string}) {
 export const decorations = defineType({
   type: 'document',
   name: 'decorations',
+  icon: 'hey',
   fieldsets: [
     {
       name: 'settings',
@@ -89,9 +90,9 @@ export const decorations = defineType({
           renderMembers: (members) => {
             return [
               {
-                key: 'imageDecoration',
+                key: 'fileDecoration',
                 kind: 'decoration',
-                component: () => <Decoration title={'This is a file decoration!'} />,
+                component: <Decoration title={'This is a file decoration!'} />,
               },
               ...members,
             ]

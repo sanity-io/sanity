@@ -17,6 +17,7 @@ import {useTranslation} from '../../../../i18n'
 import {useAssetLimitsUpsellContext} from '../../../../limits/context/assets/AssetLimitUpsellProvider'
 import {isAssetLimitError} from '../../../../limits/context/assets/isAssetLimitError'
 import {MemberField, MemberFieldError, MemberFieldSet} from '../../../members'
+import {MemberDecoration} from '../../../members/object/MemberDecoration'
 import {PatchEvent, set, setIfMissing, unset} from '../../../patch'
 import {UPLOAD_STATUS_KEY} from '../../../studio/uploads/constants'
 import {resolveUploader} from '../../../studio/uploads/resolveUploader'
@@ -342,8 +343,7 @@ export function BaseFileInput(props: BaseFileInputProps) {
           return <MemberFieldError key={member.key} member={member} />
         }
         if (member.kind === 'decoration') {
-          const Component = member.component
-          return <Component key={member.key} />
+          return <MemberDecoration key={member.key} member={member} />
         }
         return (
           <Fragment

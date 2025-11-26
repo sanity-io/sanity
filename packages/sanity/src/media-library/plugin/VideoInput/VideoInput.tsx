@@ -13,6 +13,7 @@ import {type Observable} from 'rxjs'
 import {handleSelectAssetFromSource as handleSelectAssetFromSourceShared} from '../../../core/form/inputs/files/common/assetSource'
 import {type FileInfo} from '../../../core/form/inputs/files/common/styles'
 import {MemberField, MemberFieldError, MemberFieldSet} from '../../../core/form/members'
+import {MemberDecoration} from '../../../core/form/members/object/MemberDecoration'
 import {PatchEvent, set, setIfMissing, unset} from '../../../core/form/patch'
 import {UPLOAD_STATUS_KEY} from '../../../core/form/studio/uploads/constants'
 import {resolveUploader} from '../../../core/form/studio/uploads/resolveUploader'
@@ -334,8 +335,7 @@ export function BaseVideoInput(props: BaseVideoInputProps) {
           )
         }
         if (member.kind === 'decoration') {
-          const Component = member.component
-          return <Component key={member.key} />
+          return <MemberDecoration key={member.key} member={member} />
         }
         if (member.kind === 'error') {
           return <MemberFieldError key={member.key} member={member} />
