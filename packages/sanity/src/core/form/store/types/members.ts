@@ -1,5 +1,5 @@
 import {type ArraySchemaType} from '@sanity/types'
-import {type ReactNode} from 'react'
+import {type ComponentType, type JSX} from 'react'
 
 import {type FieldsetMembers, type FieldsetState} from './fieldsetState'
 import {type ArrayItemError, type FieldError} from './memberErrors'
@@ -147,5 +147,5 @@ export interface FieldSetMember {
 export interface DecorationMember {
   kind: 'decoration'
   key: string
-  component: () => ReactNode
+  component: JSX.Element | ComponentType
 }
