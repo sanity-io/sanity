@@ -1486,6 +1486,14 @@ export const studioLocaleStrings = defineLocalesResources('studio', {
   /** Tooltip for the dropdown to show all versions of document */
   'release.version-list.tooltip': 'See all document versions',
 
+  /** Button text for contacting support in the releases misconfiguration dialog */
+  'releases.upsell.misconfiguration.contact-support': 'Contact Support',
+  /** Header for the releases misconfiguration dialog */
+  'releases.upsell.misconfiguration.header': 'Content releases configuration issue',
+  /** Message shown in the releases misconfiguration dialog */
+  'releases.upsell.misconfiguration.message':
+    'Content releases are enabled for your project, but there appears to be a configuration issue with your release limits. Please contact support to have your content releases properly configured.',
+
   /** Confirm button text for the schedule publish dialog */
   'schedule-publish-dialog.confirm': 'Schedule',
   /** Description for the schedule publish dialog */
