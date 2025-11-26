@@ -82,7 +82,7 @@ trustPolicy: no-downgrade
 trustPolicyExclude:
   - '@octokit/endpoint@9.0.6'
   - '@octokit/plugin-paginate-rest@9.2.2'
-  - '@reduxjs/toolkit@2.9.0'
+  - '@reduxjs/toolkit@2.9.0 || 2.10.1'
   - '@sanity/mutate@0.11.0-canary.4'
   - '@sanity/sdk@2.1.2'
   - '@swc/core@1.13.5'
