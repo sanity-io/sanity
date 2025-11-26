@@ -10,7 +10,7 @@ import {
 } from '@sanity/types'
 import {useToast} from '@sanity/ui'
 import {get} from 'lodash-es'
-import {Fragment, useCallback, useEffect, useMemo, useRef, useState} from 'react'
+import {Fragment, useCallback, useEffect, useRef, useState} from 'react'
 import {type Observable} from 'rxjs'
 
 import {useTranslation} from '../../../../i18n'
@@ -18,6 +18,7 @@ import {useAssetLimitsUpsellContext} from '../../../../limits/context/assets/Ass
 import {isAssetLimitError} from '../../../../limits/context/assets/isAssetLimitError'
 import {MemberField, MemberFieldError, MemberFieldSet} from '../../../members'
 import {MemberDecoration} from '../../../members/object/MemberDecoration'
+import {useRenderMembers} from '../../../members/object/useRenderMembets'
 import {PatchEvent, set, setIfMissing, unset} from '../../../patch'
 import {UPLOAD_STATUS_KEY} from '../../../studio/uploads/constants'
 import {resolveUploader} from '../../../studio/uploads/resolveUploader'
@@ -73,6 +74,8 @@ export function BaseFileInput(props: BaseFileInputProps) {
   } = props
   const {push} = useToast()
   const {t} = useTranslation()
+  const renderedMembers = useRenderMembers(schemaType, members)
+
   const [hoveringFiles, setHoveringFiles] = useState<FileInfo[]>([])
   const [isStale, setIsStale] = useState(false)
   const [isUploading, setIsUploading] = useState(false)
@@ -85,13 +88,6 @@ export function BaseFileInput(props: BaseFileInputProps) {
     unsubscribe: () => void
     uploader: AssetSourceUploader
   } | null>(null)
-
-  const renderedMembers = useMemo(() => {
-    if (schemaType.renderMembers) {
-      return schemaType.renderMembers(members)
-    }
-    return members
-  }, [members, schemaType])
 
   const setBrowseButtonElement = useCallback(
     (element: HTMLButtonElement | null) => {
