@@ -508,7 +508,7 @@ export function DocumentPaneProvider(props: DocumentPaneProviderProps) {
   )
 
   const isDeleted = useMemo(() => getIsDeleted(editState), [editState, getIsDeleted])
-  const revisionNotFound = onOlderRevision && !revisionDocument
+  const revisionNotFound = onOlderRevision && !revisionDocument && ready
 
   const currentDisplayed = useMemo(() => {
     if (editState.version && isGoingToUnpublish(editState.version)) {
