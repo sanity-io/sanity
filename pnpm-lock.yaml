@@ -1672,7 +1672,7 @@ importers:
   packages/@sanity/vision:
     dependencies:
       '@codemirror/autocomplete':
-        specifier: ^6.19.1
+        specifier: ^6.20.0
         version: 6.20.0
       '@codemirror/commands':
         specifier: ^6.10.0
@@ -1690,7 +1690,7 @@ importers:
         specifier: ^6.5.2
         version: 6.5.2
       '@codemirror/view':
-        specifier: ^6.38.7
+        specifier: ^6.38.8
         version: 6.38.8
       '@juggle/resize-observer':
         specifier: ^3.4.0
