@@ -19,6 +19,7 @@ import {
 import {ReleaseTypeMenuSection} from './ReleaseTypeMenuSection'
 import {ScheduledDraftsMenuItem} from './ScheduledDraftsMenuItem'
 import {type ScrollElement} from './useScrollIndicatorVisibility'
+import {ViewContentReleasesMenuItem} from './ViewContentReleasesMenuItem'
 
 const orderedReleaseTypes: ReleaseType[] = ['asap', 'scheduled', 'undecided']
 
@@ -167,6 +168,7 @@ export function ReleasesList({
         <>
           <MenuDivider />
           <ScheduledDraftsMenuItem />
+          <ViewContentReleasesMenuItem />
           <CreateReleaseMenuItem onCreateRelease={handleOpenBundleDialog} />
         </>
       )}
