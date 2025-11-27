@@ -20,7 +20,7 @@ const STATUS_DICTIONARY: Record<StatusType, {i18nKey: string; tone: ButtonTone}>
   },
 }
 
-export const DocumentStatusPulse = (props: ReviewChangesButtonProps) => {
+export const DocumentStatusPulse = (props: ReviewChangesButtonProps): React.JSX.Element | null => {
   const {status} = props
   const {t} = useTranslation(structureLocaleNamespace)
 

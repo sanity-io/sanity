@@ -2,7 +2,7 @@ import {ErrorOutlineIcon} from '@sanity/icons'
 import {Flex, Stack} from '@sanity/ui'
 import {TextWithTone, useTranslation} from 'sanity'
 
-export function TimelineError({versionError}: {versionError?: boolean}) {
+export function TimelineError({versionError}: {versionError?: boolean}): React.JSX.Element {
   const {t} = useTranslation('studio')
 
   return (

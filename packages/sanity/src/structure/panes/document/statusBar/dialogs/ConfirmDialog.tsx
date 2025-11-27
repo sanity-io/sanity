@@ -7,7 +7,7 @@ import {POPOVER_FALLBACK_PLACEMENTS} from './constants'
 export function ConfirmDialog(props: {
   dialog: DocumentActionConfirmDialogProps
   referenceElement: HTMLElement | null
-}) {
+}): React.JSX.Element {
   const {dialog, referenceElement} = props
   const {t} = useTranslation(structureLocaleNamespace)
 

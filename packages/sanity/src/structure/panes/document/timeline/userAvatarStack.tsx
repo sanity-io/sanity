@@ -13,7 +13,7 @@ export function UserAvatarStack({
   userIds,
   size,
   withTooltip = true,
-}: UserAvatarStackProps) {
+}: UserAvatarStackProps): React.JSX.Element {
   return (
     <AvatarStack maxLength={maxLength} size={size}>
       {userIds.map((userId) => (
