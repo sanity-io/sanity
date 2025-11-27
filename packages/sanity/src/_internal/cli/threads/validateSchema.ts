@@ -92,7 +92,7 @@ async function main() {
 
     if (debugSerialize) {
       const conv = new DescriptorConverter()
-      const set = conv.get(schema)
+      const set = await conv.get(schema)
       serializedDebug = getSeralizedSchemaDebug(set)
     }
 

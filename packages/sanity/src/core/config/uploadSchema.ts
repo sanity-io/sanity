@@ -73,7 +73,7 @@ export async function uploadSchema(
   // process where it tries to synchronize as much as possible in each step.
 
   const before = performance.now()
-  const sync = DESCRIPTOR_CONVERTER.get(schema)
+  const sync = await DESCRIPTOR_CONVERTER.get(schema)
   const after = performance.now()
   const duration = after - before
   if (duration > 1000) {
