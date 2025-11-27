@@ -52,6 +52,7 @@ overrides:
   # We are currently blocked from upgrading to jsdom 27 because of a strange build error related to the new version of
   # cssstyle required by jsdom 27. If this error is no longer present, it's safe to remove the following override.
   jsdom: 26.1.0
+  vite: npm:rolldown-vite@latest
   vitest: $vitest
 
 catalogs:

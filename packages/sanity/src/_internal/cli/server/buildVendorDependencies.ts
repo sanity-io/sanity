@@ -236,7 +236,7 @@ export async function buildVendorDependencies({
           exports: 'named',
           format: 'es',
         },
-        treeshake: {preset: 'recommended'},
+        treeshake: true,
       },
     },
   })) as BuildResult
