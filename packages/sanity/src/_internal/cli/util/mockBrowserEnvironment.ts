@@ -1,3 +1,5 @@
+import {createRequire} from 'node:module'
+
 import {ResizeObserver} from '@juggle/resize-observer'
 import {register as registerESBuild} from 'esbuild-register/dist/node'
 import jsdomGlobal from 'jsdom-global'
@@ -5,6 +7,8 @@ import {addHook} from 'pirates'
 import resolveFrom from 'resolve-from'
 
 import {getStudioEnvironmentVariables} from '../server/getStudioEnvironmentVariables'
+
+const require = createRequire(import.meta.url)
 
 const jsdomDefaultHtml = `<!doctype html>
 <html>

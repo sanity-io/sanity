@@ -1,9 +1,12 @@
+import {createRequire} from 'node:module'
 import path from 'node:path'
 
 import {type Migration} from '@sanity/migrate'
 import {isPlainObject} from 'lodash'
 
 import {MIGRATION_SCRIPT_EXTENSIONS, MIGRATIONS_DIRECTORY} from '../constants'
+
+const require = createRequire(import.meta.url)
 
 interface ResolvedMigrationScript {
   /**
