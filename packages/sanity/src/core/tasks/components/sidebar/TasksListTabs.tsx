@@ -1,6 +1,5 @@
 import {TabList, Text} from '@sanity/ui'
-import {useCallback, useMemo} from 'react'
-import {type CSSProperties} from 'styled-components'
+import {type CSSProperties, useCallback, useMemo} from 'react'
 
 import {Tab} from '../../../../ui-components'
 import {useTranslation} from '../../../i18n'
