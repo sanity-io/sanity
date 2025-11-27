@@ -124,8 +124,20 @@ export const Calendar = forwardRef(function Calendar(
 
   useEffect(() => {
     if (timeZone) {
-      // Convert the selected date to the timezone
-      const zonedDate = new TZDate(selectedDate, timeZone.name)
+      // Replicate the old date-fns-tz behavior:
+      // fromZonedTime(selectedDate, tz) interprets selectedDate components as being in the timezone
+      const utcDate = createTZDateFromComponents(selectedDate, timeZone.name)
+      // toZonedTime(utcDate, tz) converts to timezone and returns a Date with local getters
+      const tzDate = new TZDate(utcDate, timeZone.name)
+      const zonedDate = new Date(
+        tzDate.getFullYear(),
+        tzDate.getMonth(),
+        tzDate.getDate(),
+        tzDate.getHours(),
+        tzDate.getMinutes(),
+        tzDate.getSeconds(),
+        tzDate.getMilliseconds(),
+      )
       setSavedSelectedDate(zonedDate)
     }
   }, [selectedDate, timeZone])
