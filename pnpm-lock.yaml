@@ -22,7 +22,7 @@ catalogs:
       specifier: ^9.1.4
       version: 9.1.4
     '@sanity/ui':
-      specifier: ^3.1.5
+      specifier: ^3.1.11
       version: 3.1.11
     '@sanity/ui-workshop':
       specifier: ^3.1.2
@@ -90,7 +90,7 @@ catalogs:
       version: 18.3.1
 
 overrides:
-  '@sanity/ui@3': ^3.1.5
+  '@sanity/ui@3': ^3.1.11
   jsdom: 26.1.0
   vitest: ^3.2.4
 
@@ -5462,7 +5462,7 @@ packages:
     resolution: {integrity: sha512-vEa+dd7jJgeHkYceyBM760C4jhcbSOVEMG/EW0tGZ/Mkz6HxqB0SNeZzoc7kI8aCPBaqQA961bz83aku6UqqAg==}
     hasBin: true
     peerDependencies:
-      '@sanity/ui': ^3.1.5
+      '@sanity/ui': ^3.1.11
       react: ^19
       react-dom: ^19
 
