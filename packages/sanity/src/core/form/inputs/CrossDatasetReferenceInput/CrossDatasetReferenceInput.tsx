@@ -59,7 +59,7 @@ const REF_PATH = ['_ref']
 const CROSS_DATASET_FEATUREKEY = 'crossDatasetReferences'
 
 /** @internal */
-export function CrossDatasetReferenceInput(props: CrossDatasetReferenceInputProps) {
+export function CrossDatasetReferenceInput(props: CrossDatasetReferenceInputProps) : React.JSX.Element {
   const {
     changed,
     focused,

@@ -30,7 +30,7 @@ interface DocumentStatusProps {
  *
  * @internal
  */
-export function DocumentStatus({draft, published, versions, singleLine}: DocumentStatusProps) {
+export function DocumentStatus({draft, published, versions, singleLine}: DocumentStatusProps) : React.JSX.Element {
   const {data: releases} = useActiveReleases()
   const versionsList = useMemo(() => Object.entries(versions ?? {}), [versions])
   const {t} = useTranslation()

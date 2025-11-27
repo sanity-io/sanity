@@ -35,7 +35,7 @@ const SCHEMA_TYPES = [
   }),
 ]
 
-export function DecoratorsStory() {
+export function DecoratorsStory() : React.JSX.Element {
   return (
     <TestWrapper schemaTypes={SCHEMA_TYPES}>
       <TestForm />

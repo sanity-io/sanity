@@ -10,7 +10,7 @@ import {isBlockType} from '../_helpers'
 const NONEXISTENT_PATH = ['@@_NONEXISTENT_PATH_@@']
 
 /** @internal */
-export function useMemberValidation(member: BaseFormNode | undefined) {
+export function useMemberValidation(member: BaseFormNode | undefined) : React.JSX.Element {
   const prev = useRef<FormNodeValidation[] | null>(null)
   const memberValidation =
     member?.validation && member.validation.length > 0 ? member.validation : EMPTY_ARRAY

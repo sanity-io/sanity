@@ -168,7 +168,7 @@ interface ListProps extends ComponentProps<typeof Grid> {
   children?: ReactNode
 }
 
-export function List(props: ListProps) {
+export function List(props: ListProps) : React.JSX.Element {
   const {onItemMove, onItemMoveEnd, onItemMoveStart, sortable, ...rest} = props
 
   // Note: this is here to make SortableList API compatible with onItemMove

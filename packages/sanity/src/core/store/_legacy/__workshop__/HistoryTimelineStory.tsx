@@ -13,7 +13,7 @@ import {useConnectionState, useEditState, useSchema} from '../../../hooks'
 import {useInitialValue} from '../document'
 import {useTimelineSelector, useTimelineStore} from '../history'
 
-export default function HistoryTimelineStory() {
+export default function HistoryTimelineStory() : React.JSX.Element {
   const schema = useSchema()
   const documentId = useMemo(() => 'test', [])
   const documentType = useMemo(() => 'author', [])

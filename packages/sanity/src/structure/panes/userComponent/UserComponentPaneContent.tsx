@@ -12,7 +12,7 @@ const Root = styled(Box)`
   position: relative;
 `
 
-export function UserComponentPaneContent(props: UserComponentPaneContentProps) {
+export function UserComponentPaneContent(props: UserComponentPaneContentProps) : React.JSX.Element {
   const {children} = props
   const {collapsed} = usePane()
 

@@ -90,7 +90,7 @@ function noop() {
   return null
 }
 
-export default function CommentsListItemLayoutStory() {
+export default function CommentsListItemLayoutStory() : React.JSX.Element {
   const currentUser = useCurrentUser()
   const withContentSnapshot = useBoolean('With content snapshot', true)
   const hasReferencedValue = useBoolean('hasReferencedValue', true)

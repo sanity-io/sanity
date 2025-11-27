@@ -18,7 +18,7 @@ const CenterAlignedBox = styled(Box)`
  * @hidden
  * @beta
  */
-export function BooleanInput(props: BooleanInputProps) {
+export function BooleanInput(props: BooleanInputProps) : React.JSX.Element {
   const {t} = useTranslation()
   const {
     focused,

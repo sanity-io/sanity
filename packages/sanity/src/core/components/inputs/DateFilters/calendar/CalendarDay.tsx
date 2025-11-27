@@ -14,7 +14,7 @@ export interface CalendarDayProps {
   disabled?: boolean
 }
 
-export function CalendarDay(props: CalendarDayProps) {
+export function CalendarDay(props: CalendarDayProps) : React.JSX.Element {
   const {
     date,
     focused,

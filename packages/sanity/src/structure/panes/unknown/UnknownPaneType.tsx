@@ -13,7 +13,7 @@ interface UnknownPaneProps {
 /**
  * @internal
  */
-export function UnknownPane(props: UnknownPaneProps) {
+export function UnknownPane(props: UnknownPaneProps) : React.JSX.Element {
   const {isSelected, pane, paneKey} = props
   const type = (isRecord(pane) && pane.type) || null
   const {t} = useTranslation(structureLocaleNamespace)

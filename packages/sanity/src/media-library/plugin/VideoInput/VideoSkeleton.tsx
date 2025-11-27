@@ -1,6 +1,6 @@
 import {Card, Flex, Skeleton, Stack, TextSkeleton} from '@sanity/ui'
 
-export function VideoSkeleton({error}: {error?: Error}) {
+export function VideoSkeleton({error}: {error?: Error}) : React.JSX.Element {
   return (
     <Card padding={0} radius={0} tone={error ? 'critical' : 'default'}>
       <Flex align="center" justify="flex-start" padding={2}>

@@ -148,7 +148,7 @@ function regionsWithComputedRects(
 }
 
 type Props = {margins: Margins; children: ReactNode}
-export function StickyOverlay(props: Props) {
+export function StickyOverlay(props: Props) : React.JSX.Element {
   const {children, margins = DEFAULT_MARGINS} = props
   const reportedValues = usePresenceReportedValues()
   const [element, setElement] = useState<HTMLDivElement | null>(null)

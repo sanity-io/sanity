@@ -41,7 +41,7 @@ const isBundleDocumentRow = (
   'document' in maybeBundleDocumentRow &&
   'validation' in maybeBundleDocumentRow
 
-export function ReleaseSummary(props: ReleaseSummaryProps) {
+export function ReleaseSummary(props: ReleaseSummaryProps) : React.JSX.Element {
   const {documents, isLoading = false, release} = props
   const [scrollContainerRef, setScrollContainerRef] = useState<HTMLDivElement | null>(null)
   const toast = useToast()

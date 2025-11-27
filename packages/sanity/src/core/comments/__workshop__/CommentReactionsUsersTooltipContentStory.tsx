@@ -108,7 +108,7 @@ const INCLUDES_YOU_OPTIONS = {
   No: 'no',
 }
 
-export default function CommentReactionsUsersTooltipContentStory() {
+export default function CommentReactionsUsersTooltipContentStory() : React.JSX.Element {
   const currentUser = useCurrentUser()
   const currentUserId = currentUser?.id
   const usersLength = useNumber('Users length', 10, 'Props') || 10

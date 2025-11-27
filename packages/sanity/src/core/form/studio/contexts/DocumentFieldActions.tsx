@@ -16,7 +16,7 @@ export function DocumentFieldActionsProvider(props: {
   )
 }
 
-export function useDocumentFieldActions() {
+export function useDocumentFieldActions() : React.JSX.Element {
   const context = useContext(DocumentFieldActionsContext)
   if (!context) {
     throw new Error('useDocumentFieldActions must be used within a DocumentFieldActionsProvider')

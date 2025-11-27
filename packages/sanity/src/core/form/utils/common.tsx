@@ -5,7 +5,7 @@ import {
 } from '@sanity/types'
 import {Children, cloneElement, isValidElement, type ReactNode, useMemo} from 'react'
 
-export function isThenable(value: any) {
+export function isThenable(value: any) : React.JSX.Element {
   return typeof value?.then === 'function'
 }
 
@@ -74,7 +74,7 @@ type ChildrenWithPropsProps = {
   childProps: Record<string, unknown>
 }
 
-export function mappedChildren({children, childProps}: ChildrenWithPropsProps) {
+export function mappedChildren({children, childProps}: ChildrenWithPropsProps) : React.JSX.Element {
   if (!Array.isArray(children)) {
     children = [children]
   }

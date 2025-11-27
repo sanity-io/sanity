@@ -10,7 +10,7 @@ interface EventsProviderProps {
 /**
  * @internal
  */
-export function EventsProvider({value, children}: EventsProviderProps) {
+export function EventsProvider({value, children}: EventsProviderProps) : React.JSX.Element {
   return <EventsContext.Provider value={value}>{children}</EventsContext.Provider>
 }
 

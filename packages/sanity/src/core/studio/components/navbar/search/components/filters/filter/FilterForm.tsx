@@ -23,7 +23,7 @@ interface ErrorParams {
   info: ErrorInfo
 }
 
-export function FilterForm({filter}: FilterFormProps) {
+export function FilterForm({filter}: FilterFormProps) : React.JSX.Element {
   const [errorParams, setErrorParams] = useState<ErrorParams | null>(null)
   const {
     dispatch,

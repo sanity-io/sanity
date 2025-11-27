@@ -7,7 +7,7 @@ import {Dialog} from '../../../ui-components'
 import {getProviderTitle} from '../../store'
 import {useActiveWorkspace} from '../activeWorkspaceMatcher'
 
-export function NotAuthenticatedScreen() {
+export function NotAuthenticatedScreen() : React.JSX.Element {
   const [currentUser, setCurrentUser] = useState<CurrentUser | null>(null)
   const [error, handleError] = useState<unknown>(null)
 

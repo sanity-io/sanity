@@ -350,7 +350,7 @@ export const CopyPasteProvider: React.FC<{
  * @beta
  * @hidden
  */
-export const useCopyPaste = () => {
+export const useCopyPaste = () : React.JSX.Element => {
   const context = useContext(CopyPasteContext)
   if (!context) {
     throw new Error('useCopyPaste must be used within a CopyPasteProvider')

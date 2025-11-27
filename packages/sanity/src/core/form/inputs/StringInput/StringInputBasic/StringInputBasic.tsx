@@ -9,7 +9,7 @@ import {type StringInputProps} from '../../../types'
  * @hidden
  * @beta
  */
-export function StringInputBasic(props: StringInputProps) {
+export function StringInputBasic(props: StringInputProps) : React.JSX.Element {
   const {validationError, elementProps} = props
   return <TextInput {...elementProps} customValidity={validationError} data-testid="string-input" />
 }

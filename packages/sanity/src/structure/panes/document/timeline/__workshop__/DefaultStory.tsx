@@ -17,7 +17,7 @@ const PANE: DocumentPaneNode = {
   title: 'Workshop',
 }
 
-export default function DefaultStory() {
+export default function DefaultStory() : React.JSX.Element {
   return (
     <StructureToolProvider>
       <DocumentPaneProviderWrapper index={0} itemId={DOCUMENT_ID} pane={PANE} paneKey={DOCUMENT_ID}>

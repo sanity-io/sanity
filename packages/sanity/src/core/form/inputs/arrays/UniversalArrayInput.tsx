@@ -17,7 +17,7 @@ import {ArrayOfPrimitivesInput} from './ArrayOfPrimitivesInput'
  * @hidden
  * @beta
  */
-export function UniversalArrayInput(props: ArrayOfObjectsInputProps | ArrayOfPrimitivesInputProps) {
+export function UniversalArrayInput(props: ArrayOfObjectsInputProps | ArrayOfPrimitivesInputProps) : React.JSX.Element {
   const isArrayOfOptionsInput = useMemo(
     () => Array.isArray(props.schemaType.options?.list),
     [props.schemaType],

@@ -21,7 +21,7 @@ import {type FileAssetProps} from './types'
 
 const ASSET_FIELD_PATH = ['asset']
 
-export function FileAsset(props: FileAssetProps) {
+export function FileAsset(props: FileAssetProps) : React.JSX.Element {
   const {
     assetSources,
     changed,

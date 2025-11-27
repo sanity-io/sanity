@@ -31,7 +31,7 @@ const DEFAULT_MEDIA_DIMENSIONS: PreviewMediaDimensions = {
 /**
  * @hidden
  * @beta */
-export function DetailPreview(props: DetailPreviewProps) {
+export function DetailPreview(props: DetailPreviewProps) : React.JSX.Element {
   const {
     title,
     subtitle,

@@ -5,7 +5,7 @@ import {Button} from '../../../../ui-components'
 import {useDocumentStore} from '../datastores'
 import {type RemoteSnapshotVersionEvent} from '../document/document-pair/checkoutPair'
 
-export default function DocumentPairStory() {
+export default function DocumentPairStory() : React.JSX.Element {
   const documentStore = useDocumentStore()
   const [draftSnapshot, setDraftSnapshot] = useState<RemoteSnapshotVersionEvent | null>(null)
   const [publishedSnapshot, setPublishedSnapshot] = useState<RemoteSnapshotVersionEvent | null>(

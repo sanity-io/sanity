@@ -10,7 +10,7 @@ import {useWorkspace} from '../../../workspace'
 import {useCanInviteProjectMembers} from '../useCanInviteMembers'
 import {WorkspacePreviewIcon} from './WorkspacePreview'
 
-export function ManageMenu({multipleWorkspaces}: {multipleWorkspaces: boolean}) {
+export function ManageMenu({multipleWorkspaces}: {multipleWorkspaces: boolean}) : React.JSX.Element {
   const {projectId} = useWorkspace()
   const {value: project} = useProject()
   const {activeWorkspace} = useActiveWorkspace()

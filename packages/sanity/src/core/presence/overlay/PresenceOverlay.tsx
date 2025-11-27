@@ -12,7 +12,7 @@ export interface PresenceOverlayProps {
 const DEFAULT_MARGINS: [number, number, number, number] = [0, 0, 0, 0]
 
 /** @internal */
-export function PresenceOverlay({children, margins}: PresenceOverlayProps) {
+export function PresenceOverlay({children, margins}: PresenceOverlayProps) : React.JSX.Element {
   return (
     <PresenceTracker>
       <StickyOverlay margins={margins || DEFAULT_MARGINS}>{children}</StickyOverlay>

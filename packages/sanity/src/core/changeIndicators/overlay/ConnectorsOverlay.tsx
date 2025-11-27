@@ -98,7 +98,7 @@ function getState(
   return {connectors, isHoverConnector}
 }
 
-export function ConnectorsOverlay(props: ConnectorsOverlayProps) {
+export function ConnectorsOverlay(props: ConnectorsOverlayProps) : React.JSX.Element {
   const {rootElement, onSetFocus} = props
   const [hovered, setHovered] = useState<string | null>(null)
   const allReportedValues = useChangeIndicatorsReportedValues()

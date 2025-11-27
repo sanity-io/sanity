@@ -9,7 +9,7 @@ interface UseRectCalculationsProps {
   value: {crop?: Crop; hotspot?: Hotspot}
 }
 
-export function useRectCalculations({size, value}: UseRectCalculationsProps) {
+export function useRectCalculations({size, value}: UseRectCalculationsProps) : React.JSX.Element {
   // Calculate dimensions and positions
   const imageRect = useMemo(
     () => ({left: 0, top: 0, width: size.width, height: size.height}),

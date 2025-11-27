@@ -17,7 +17,7 @@ interface Props {
 const STYLES_FILENAME = {paddingLeft: '2.2rem'}
 const STYLES_GRID = {gridTemplateColumns: '3fr 1fr 1fr 2fr 30px'}
 
-export function FileListView(props: Props) {
+export function FileListView(props: Props) : React.JSX.Element {
   const mediaIndex = useMediaIndex()
   const isMobile = mediaIndex < 2
   const {assets, onClick, onKeyPress, onDeleteFinished, selectedAssets, isLoading} = props

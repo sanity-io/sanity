@@ -53,7 +53,7 @@ interface PaneHeaderCreateButtonProps {
   templateItems: InitialValueTemplateItem[]
 }
 
-export function PaneHeaderCreateButton({templateItems}: PaneHeaderCreateButtonProps) {
+export function PaneHeaderCreateButton({templateItems}: PaneHeaderCreateButtonProps) : React.JSX.Element {
   const templates = useTemplates()
   const {selectedReleaseId} = usePerspective()
 

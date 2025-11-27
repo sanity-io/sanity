@@ -4,7 +4,7 @@ import {useString} from '@sanity/ui-workshop'
 
 import {Button} from '../button'
 
-export default function ButtonStory() {
+export default function ButtonStory() : React.JSX.Element {
   const text = useString('Text', 'Text', 'Props') || ''
 
   return (

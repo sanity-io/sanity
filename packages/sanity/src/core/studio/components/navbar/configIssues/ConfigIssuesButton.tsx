@@ -10,7 +10,7 @@ import {useTranslation} from '../../../../i18n'
 import {useColorSchemeValue} from '../../../colorScheme'
 import {SchemaProblemGroups} from '../../../screens/schemaErrors/SchemaProblemGroups'
 
-export function ConfigIssuesButton() {
+export function ConfigIssuesButton() : React.JSX.Element {
   const schema = useSchema()
   const groupsWithWarnings =
     schema._validation?.filter((group) =>

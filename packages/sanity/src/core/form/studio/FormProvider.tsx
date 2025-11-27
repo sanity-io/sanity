@@ -62,7 +62,7 @@ export interface FormProviderProps {
  *
  * @alpha This API might change.
  */
-export function FormProvider(props: FormProviderProps) {
+export function FormProvider(props: FormProviderProps) : React.JSX.Element {
   const {
     __internal_fieldActions: fieldActions,
     __internal_patchChannel: patchChannel,

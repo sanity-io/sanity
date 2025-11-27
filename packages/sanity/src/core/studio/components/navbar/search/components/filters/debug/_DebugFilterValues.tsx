@@ -8,7 +8,7 @@ interface DebugFilterValuesProps {
   filter: SearchFilter
 }
 
-export function DebugFilterValues({filter}: DebugFilterValuesProps) {
+export function DebugFilterValues({filter}: DebugFilterValuesProps) : React.JSX.Element {
   const {
     state: {definitions},
   } = useSearchState()

@@ -6,7 +6,7 @@ interface DelayedSpinnerProps {
 }
 
 // Waits for X ms before showing a spinner
-export function DelayedSpinner(props: DelayedSpinnerProps) {
+export function DelayedSpinner(props: DelayedSpinnerProps) : React.JSX.Element {
   const [show, setShow] = useState(false)
 
   useEffect(() => {

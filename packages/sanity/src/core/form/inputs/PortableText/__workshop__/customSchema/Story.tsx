@@ -3,7 +3,7 @@ import {useBoolean, useSelect} from '@sanity/ui-workshop'
 
 import {valueOptions, values} from './values'
 
-export default function Story() {
+export default function Story() : React.JSX.Element {
   const readOnly = useBoolean('Read only', false)
   const withError = useBoolean('With error', false)
   const withWarning = useBoolean('With warning', false)

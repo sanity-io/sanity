@@ -27,7 +27,7 @@ interface CommentsOnboardingProviderProps {
   children: ReactNode
 }
 
-export function CommentsOnboardingProvider(props: CommentsOnboardingProviderProps) {
+export function CommentsOnboardingProvider(props: CommentsOnboardingProviderProps) : React.JSX.Element {
   const {children} = props
   const [dismissed, setDismissed] = useState<boolean>(getLocalStorage())
 

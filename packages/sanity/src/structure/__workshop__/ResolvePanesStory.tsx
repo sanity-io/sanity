@@ -17,7 +17,7 @@ const testPaths: RouterPanes[] = [
   [[{id: 'author'}], [{id: 'foo'}]],
 ]
 
-export default function ResolvePanesStoryWrapper() {
+export default function ResolvePanesStoryWrapper() : React.JSX.Element {
   return (
     <StructureToolProvider structure={useCallback((S: any) => S.list().title('Content'), [])}>
       <ResolvePanesStory />

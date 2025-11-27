@@ -12,7 +12,7 @@ type VideoPlayerProps = {
   tokens?: VideoPlaybackTokens
 }
 
-export function VideoPlayer({customDomain, playbackId, tokens, aspectRatio}: VideoPlayerProps) {
+export function VideoPlayer({customDomain, playbackId, tokens, aspectRatio}: VideoPlayerProps) : React.JSX.Element {
   return (
     <MuxPlayer
       customDomain={customDomain}

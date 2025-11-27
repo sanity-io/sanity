@@ -7,7 +7,7 @@ import {UpsellDialog} from '../../../studio/upsell/UpsellDialog'
  * @beta
  * @hidden
  */
-export function TasksUpsellProvider(props: {children: React.ReactNode}) {
+export function TasksUpsellProvider(props: {children: React.ReactNode}) : React.JSX.Element {
   const contextValue = useUpsellContext({
     dataUri: '/journey/tasks',
     feature: 'tasks',

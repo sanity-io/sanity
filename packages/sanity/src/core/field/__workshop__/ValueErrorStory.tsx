@@ -4,7 +4,7 @@ import {useMemo} from 'react'
 import {ValueError} from '../diff/components/ValueError'
 import {type FieldValueError} from '../validation'
 
-export default function ValueErrorStory() {
+export default function ValueErrorStory() : React.JSX.Element {
   const error: FieldValueError = useMemo(
     () => ({
       value: 123,

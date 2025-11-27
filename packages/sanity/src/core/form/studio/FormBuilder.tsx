@@ -92,7 +92,7 @@ export interface FormBuilderProps
 /**
  * @alpha
  */
-export function FormBuilder(props: FormBuilderProps) {
+export function FormBuilder(props: FormBuilderProps) : React.JSX.Element {
   const {
     __internal_fieldActions: fieldActions,
     __internal_patchChannel: patchChannel,

@@ -6,7 +6,7 @@ import {PresenceContext} from 'sanity/_singletons'
 import {type FormNodePresence} from '../../../presence'
 import {immutableReconcile} from '../../store/utils/immutableReconcile'
 
-export function PresenceProvider(props: {presence: FormNodePresence[]; children: ReactNode}) {
+export function PresenceProvider(props: {presence: FormNodePresence[]; children: ReactNode}) : React.JSX.Element {
   return (
     <PresenceContext.Provider value={props.presence}>{props.children}</PresenceContext.Provider>
   )

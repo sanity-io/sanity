@@ -20,7 +20,7 @@ interface Props {
 /** Putting this too low will result in 429 too many requests when scrolling in big lists */
 const SCHEDULE_RENDER_DELAY_MS = 200
 
-export function VirtualListItem(props: Props) {
+export function VirtualListItem(props: Props) : React.JSX.Element {
   const {
     item: {content, virtualRow},
     measureElement,

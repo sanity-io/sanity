@@ -6,7 +6,7 @@ export interface FormDebuggerOptions {
   focusPath: Path
 }
 
-export function FormDebugger(props: FormDebuggerOptions) {
+export function FormDebugger(props: FormDebuggerOptions) : React.JSX.Element {
   const {value, focusPath} = props
   return (
     <Card padding={4} tone="default" border>

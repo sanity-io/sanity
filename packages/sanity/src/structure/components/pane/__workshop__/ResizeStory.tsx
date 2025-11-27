@@ -15,7 +15,7 @@ const PaneLayoutRoot = styled(Flex)`
   }
 `
 
-export default function ResizeStory() {
+export default function ResizeStory() : React.JSX.Element {
   const [rootElement, setRootElement] = useState<HTMLDivElement | null>(null)
   const [controller] = useState(() => createPaneLayoutController())
   const collapsed = false

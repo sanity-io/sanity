@@ -8,7 +8,7 @@ import {Tooltip} from '../../../../ui-components/tooltip/Tooltip'
 import {useTranslation} from '../../../i18n/hooks/useTranslation'
 import {releasesLocaleNamespace} from '../../i18n'
 
-export function CalendarPopover({content}: {content: ReactNode}) {
+export function CalendarPopover({content}: {content: ReactNode}) : React.JSX.Element {
   const buttonRef = useRef<HTMLButtonElement | null>(null)
   const popoverRef = useRef<HTMLDivElement | null>(null)
   const [isCalendarOpen, setIsCalendarOpen] = useState(false)

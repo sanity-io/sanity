@@ -17,7 +17,7 @@ export type TagsArrayInputProps = ArrayOfPrimitivesInputProps<string>
  * @hidden
  * @beta
  */
-export function TagsArrayInput(props: TagsArrayInputProps) {
+export function TagsArrayInput(props: TagsArrayInputProps) : React.JSX.Element {
   const {onChange, readOnly, value = [], elementProps, path, changed} = props
   const tagInputValue = useMemo(() => value?.map((v) => ({value: v})), [value])
 

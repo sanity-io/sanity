@@ -43,7 +43,7 @@ const padding: Record<PortableTextPreviewLayoutKey, number> = {
   inline: 1,
 }
 
-export default function PortableTextPreviewStory() {
+export default function PortableTextPreviewStory() : React.JSX.Element {
   const layout = useSelect('Layout', LAYOUT_OPTIONS, 'block')
 
   const withActions = useBoolean('With actions', false)

@@ -14,7 +14,7 @@ interface Props {
   upload: ReactNode
 }
 
-export function ActionsMenu(props: Props) {
+export function ActionsMenu(props: Props) : React.JSX.Element {
   const {onReset, readOnly, browse, downloadUrl, copyUrl, upload} = props
 
   const {push: pushToast} = useToast()

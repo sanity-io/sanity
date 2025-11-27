@@ -7,7 +7,7 @@ type Props = {
   maxDepth?: number
   _depth?: number
 }
-export function PreviewObject(props: Props) {
+export function PreviewObject(props: Props) : React.JSX.Element {
   const {value, maxDepth = 4, _depth = 0, ...rest} = props
   const {_type, _key, ...restValue} = value
   const keys = Object.keys(restValue)

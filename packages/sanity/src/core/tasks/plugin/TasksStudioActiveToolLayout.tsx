@@ -76,7 +76,7 @@ function TasksStudioActiveToolLayoutInner(props: ActiveToolLayoutProps) {
   )
 }
 
-export function TasksStudioActiveToolLayout(props: ActiveToolLayoutProps) {
+export function TasksStudioActiveToolLayout(props: ActiveToolLayoutProps) : React.JSX.Element {
   const {enabled} = useTasksEnabled()
   if (!enabled) {
     return props.renderDefault(props)

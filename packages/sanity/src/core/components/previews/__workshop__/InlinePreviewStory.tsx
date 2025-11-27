@@ -21,7 +21,7 @@ const PreviewWrapper = styled.span`
   }
 `
 
-export default function InlinePreviewStory() {
+export default function InlinePreviewStory() : React.JSX.Element {
   const title = useString('Title', 'Inline object', 'Props')
   const withImage = useBoolean('With image', true, 'Props')
 

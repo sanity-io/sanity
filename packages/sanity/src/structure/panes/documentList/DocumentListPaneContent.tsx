@@ -74,7 +74,7 @@ function LoadingView(props: {layout?: GeneralPreviewLayoutKey}) {
   )
 }
 
-export function DocumentListPaneContent(props: DocumentListPaneContentProps) {
+export function DocumentListPaneContent(props: DocumentListPaneContentProps) : React.JSX.Element {
   const {
     childItemId,
     error,

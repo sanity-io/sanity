@@ -91,7 +91,7 @@ const schema = Schema.compile({
   types: [portableTextType],
 })
 
-export default function PresenceInputStory() {
+export default function PresenceInputStory() : React.JSX.Element {
   const [value, setValue] = useState<PortableTextBlock[]>(INITIAL_VALUE)
   const [presence, setPresence] = useState<FormNodePresence[]>(INITIAL_PRESENCE)
 

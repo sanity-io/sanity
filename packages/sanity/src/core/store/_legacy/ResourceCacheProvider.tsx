@@ -15,7 +15,7 @@ export interface ResourceCacheProviderProps {
 }
 
 /** @internal */
-export function ResourceCacheProvider({children}: ResourceCacheProviderProps) {
+export function ResourceCacheProvider({children}: ResourceCacheProviderProps) : React.JSX.Element {
   const [resourceCache] = useState((): ResourceCache => {
     const namespaces = new Map<string, MultiKeyWeakMap>()
 

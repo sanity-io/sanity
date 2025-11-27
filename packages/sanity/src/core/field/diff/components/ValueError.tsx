@@ -5,7 +5,7 @@ import {useTranslation} from '../../../i18n'
 import {type FieldValueError} from '../../validation'
 
 /** @internal */
-export function ValueError({error}: {error: FieldValueError}) {
+export function ValueError({error}: {error: FieldValueError}) : React.JSX.Element {
   const {t} = useTranslation()
   return (
     <Card tone="critical" padding={3}>

@@ -52,7 +52,7 @@ interface CommentThreadLayoutProps {
   readOnly?: boolean
 }
 
-export function CommentThreadLayout(props: CommentThreadLayoutProps) {
+export function CommentThreadLayout(props: CommentThreadLayoutProps) : React.JSX.Element {
   const {
     breadcrumbs,
     canCreateNewThread,

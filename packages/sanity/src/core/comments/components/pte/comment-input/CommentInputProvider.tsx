@@ -39,7 +39,7 @@ interface CommentInputProviderProps {
   value: CommentMessage
 }
 
-export function CommentInputProvider(props: CommentInputProviderProps) {
+export function CommentInputProvider(props: CommentInputProviderProps) : React.JSX.Element {
   const {
     children,
     expandOnFocus = false,

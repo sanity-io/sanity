@@ -6,7 +6,7 @@ import {structureLocaleNamespace} from '../../../../i18n'
 import {useDocumentPane} from '../../useDocumentPane'
 import {Banner} from './Banner'
 
-export function RevisionNotFoundBanner() {
+export function RevisionNotFoundBanner() : React.JSX.Element {
   const {revisionNotFound} = useDocumentPane()
   const {t} = useTranslation(structureLocaleNamespace)
 

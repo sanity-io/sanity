@@ -10,7 +10,7 @@ interface AppIdCacheProviderProps {
 /**
  * @internal
  */
-export function AppIdCacheProvider(props: AppIdCacheProviderProps) {
+export function AppIdCacheProvider(props: AppIdCacheProviderProps) : React.JSX.Element {
   const {children} = props
   const parentCache = useContext(AppIdCacheContext)
 

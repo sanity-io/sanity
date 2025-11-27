@@ -9,7 +9,7 @@ import {applyAll} from '../patch/applyPatch'
 import {FilterFieldInput, FormDebugger, TypeTester} from './_common'
 import {getDummyDocument} from './_common/data'
 
-export default function ExampleStory() {
+export default function ExampleStory() : React.JSX.Element {
   const {setPropValue} = useProps()
   // const ref = useRef<{focus: () => void} | null>(null)
   const toast = useToast()

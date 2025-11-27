@@ -55,7 +55,7 @@ export interface BaseFileInputProps extends ObjectInputProps<BaseFileInputValue,
 }
 
 /** @internal */
-export function BaseFileInput(props: BaseFileInputProps) {
+export function BaseFileInput(props: BaseFileInputProps) : React.JSX.Element {
   const {
     client,
     members,

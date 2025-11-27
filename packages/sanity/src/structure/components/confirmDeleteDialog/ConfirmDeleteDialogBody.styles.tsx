@@ -49,7 +49,7 @@ export const DocumentIdFlex = styled(Flex)`
   min-height: 33px;
 `
 
-export const OtherReferenceCount = (props: {totalCount: number; references: unknown[]}) => {
+export const OtherReferenceCount = (props: {totalCount: number; references: unknown[]}) : React.JSX.Element => {
   const {t} = useTranslation(structureLocaleNamespace)
   const difference = props.totalCount - props.references.length
 

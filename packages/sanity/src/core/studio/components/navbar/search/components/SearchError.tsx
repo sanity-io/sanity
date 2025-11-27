@@ -4,7 +4,7 @@ import {Box, Flex} from '@sanity/ui'
 import {TextWithTone} from '../../../../../components/textWithTone/TextWithTone'
 import {useTranslation} from '../../../../../i18n'
 
-export function SearchError() {
+export function SearchError() : React.JSX.Element {
   const {t} = useTranslation()
 
   return (

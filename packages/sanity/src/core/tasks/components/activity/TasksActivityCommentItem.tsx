@@ -31,7 +31,7 @@ const CommentListItemRoot = styled.div((props) => {
     }
   `
 })
-export function TasksActivityCommentItem(props: TasksActivityCommentItemProps) {
+export function TasksActivityCommentItem(props: TasksActivityCommentItemProps) : React.JSX.Element {
   const {parentComment} = props
   const {mode} = useTasksEnabled()
 

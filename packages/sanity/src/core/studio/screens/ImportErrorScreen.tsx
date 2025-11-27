@@ -18,7 +18,7 @@ function reloadPage() {
   window.location.reload()
 }
 const COUNTDOWN_SECONDS = 5
-export function ImportErrorScreen(props: {error: Error; eventId?: string; autoReload?: boolean}) {
+export function ImportErrorScreen(props: {error: Error; eventId?: string; autoReload?: boolean}) : React.JSX.Element {
   const {error, eventId, autoReload} = props
 
   const countdownSeconds = useObservable(

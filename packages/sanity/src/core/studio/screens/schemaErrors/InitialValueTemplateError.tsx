@@ -3,7 +3,7 @@ import {Stack, Text} from '@sanity/ui'
 
 import {Dialog} from '../../../../ui-components'
 
-export function InitialValueTemplateError({errors}: {errors: Error[]}) {
+export function InitialValueTemplateError({errors}: {errors: Error[]}) : React.JSX.Element {
   return (
     <Dialog header="Initial value template error" id="initial-value-error-dialog" width={1}>
       <Stack space={4}>

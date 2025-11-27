@@ -32,7 +32,7 @@ export interface PaneHeaderActionButtonProps {
   node: _PaneMenuItem | _PaneMenuGroup
 }
 
-export function PaneHeaderActionButton(props: PaneHeaderActionButtonProps) {
+export function PaneHeaderActionButton(props: PaneHeaderActionButtonProps) : React.JSX.Element {
   const {node} = props
 
   if (node.type === 'item') {
@@ -52,7 +52,7 @@ export interface PaneHeaderMenuItemActionButtonProps {
   node: _PaneMenuItem
 }
 
-export function PaneHeaderMenuItemActionButton(props: PaneHeaderMenuItemActionButtonProps) {
+export function PaneHeaderMenuItemActionButton(props: PaneHeaderMenuItemActionButtonProps) : React.JSX.Element {
   const {node} = props
   const {title} = useI18nText(node)
   const {t} = useTranslation()

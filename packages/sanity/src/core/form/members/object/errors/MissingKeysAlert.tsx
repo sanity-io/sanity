@@ -16,7 +16,7 @@ interface Props {
   onChange: (patchEvent: PatchEvent) => void
 }
 
-export function MissingKeysAlert(props: Props) {
+export function MissingKeysAlert(props: Props) : React.JSX.Element {
   const {error, onChange} = props
   const handleFixMissingKeys = useCallback(() => {
     onChange(

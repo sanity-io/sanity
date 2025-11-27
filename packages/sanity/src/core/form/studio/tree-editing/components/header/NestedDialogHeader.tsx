@@ -9,7 +9,7 @@ interface NestedDialogHeaderProps {
   onHandlePathSelect: (path: Path) => void
 }
 
-export function NestedDialogHeader(props: NestedDialogHeaderProps) {
+export function NestedDialogHeader(props: NestedDialogHeaderProps) : React.JSX.Element {
   const {treeState, onHandlePathSelect} = props
   const {relativePath, siblings} = treeState
 

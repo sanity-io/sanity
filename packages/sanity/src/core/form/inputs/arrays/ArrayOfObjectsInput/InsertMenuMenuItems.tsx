@@ -20,7 +20,7 @@ type InsertMenuItemsProps = {
 /**
  * @internal
  */
-export function useInsertMenuMenuItems(props: InsertMenuItemsProps) {
+export function useInsertMenuMenuItems(props: InsertMenuItemsProps) : React.JSX.Element {
   const {t} = useTranslation()
   const {onInsert, schemaTypes: types} = props
   const insertBefore = useInsertMenuPopover({

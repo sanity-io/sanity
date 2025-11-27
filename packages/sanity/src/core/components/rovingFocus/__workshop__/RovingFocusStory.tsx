@@ -22,7 +22,7 @@ const FLEX_DIRECTION: Record<string, 'column' | 'row'> = {
 
 const OPTIONS = [...Array(5).keys()]
 
-export default function RovingFocusStory() {
+export default function RovingFocusStory() : React.JSX.Element {
   const direction = useSelect('Direction', DIRECTION_OPTIONS, 'horizontal')
   const initialFocus = useSelect('Initial focus', INITIAL_FOCUS, 'first')
   const loop = useBoolean('Loop', true)

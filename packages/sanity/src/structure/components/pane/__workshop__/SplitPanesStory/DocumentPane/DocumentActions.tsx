@@ -10,7 +10,7 @@ const MENU_BUTTON_POPOVER_PROPS: MenuButtonProps['popover'] = {
   portal: true,
 }
 
-export function DocumentActions() {
+export function DocumentActions() : React.JSX.Element {
   const {push: pushToast} = useToast()
 
   const publish = useCallback(

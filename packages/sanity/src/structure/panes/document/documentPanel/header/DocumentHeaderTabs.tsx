@@ -15,7 +15,7 @@ import {useDocumentPane} from '../../useDocumentPane'
  * it will not change back to tabs, this is a limitation of the current implementation but an ok tradeoff to avoid mounting
  * ghost elements just to measure the width.
  */
-export function DocumentHeaderTabs() {
+export function DocumentHeaderTabs() : React.JSX.Element {
   const {activeViewId, paneKey, views} = useDocumentPane()
 
   const tabPanelId = `${paneKey}tabpanel`

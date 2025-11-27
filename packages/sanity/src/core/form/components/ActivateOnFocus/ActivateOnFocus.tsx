@@ -28,7 +28,7 @@ export interface ActivateOnFocusProps {
  * @internal
  */
 
-export function ActivateOnFocus(props: ActivateOnFocusProps) {
+export function ActivateOnFocus(props: ActivateOnFocusProps) : React.JSX.Element {
   const {children, message, onActivate, isOverlayActive} = props
   const [focused, setFocused] = useState(false)
   const {t} = useTranslation()

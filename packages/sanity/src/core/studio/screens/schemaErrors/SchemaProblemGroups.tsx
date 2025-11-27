@@ -26,7 +26,7 @@ const ErrorMessageText = styled(Text)`
   white-space: pre-line;
 `
 
-export function SchemaProblemGroups(props: {problemGroups: SchemaValidationProblemGroup[]}) {
+export function SchemaProblemGroups(props: {problemGroups: SchemaValidationProblemGroup[]}) : React.JSX.Element {
   const {problemGroups} = props
   const {t} = useTranslation()
 

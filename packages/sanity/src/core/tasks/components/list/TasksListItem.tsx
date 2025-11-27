@@ -87,7 +87,7 @@ function TaskDueDate({dueBy}: {dueBy: string}) {
   )
 }
 
-export function TasksListItem(props: TasksListItemProps) {
+export function TasksListItem(props: TasksListItemProps) : React.JSX.Element {
   const {assignedTo, title, dueBy, target, onSelect, documentId, status} = props
   const targetDocument = useMemo(() => getTargetDocumentMeta(target), [target])
 

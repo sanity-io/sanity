@@ -16,7 +16,7 @@ const CARD_TONE_OPTIONS = {
 
 const tones = ['default', 'primary', 'positive', 'caution', 'critical']
 
-export default function TextWithToneStory() {
+export default function TextWithToneStory() : React.JSX.Element {
   const size = useSelect('Size', TEXT_SIZE_OPTIONS, 2)
   const dimmed = useBoolean('Dimmed', false)
   const muted = useBoolean('Muted', false)

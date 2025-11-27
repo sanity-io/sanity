@@ -8,7 +8,7 @@ import {Button, MenuButton, MenuItem} from '../../../../../ui-components'
 import {useTranslation} from '../../../../i18n'
 import {type FileAssetProps} from './types'
 
-export function Browser(props: FileAssetProps) {
+export function Browser(props: FileAssetProps) : React.JSX.Element {
   const {
     assetSources,
     readOnly,

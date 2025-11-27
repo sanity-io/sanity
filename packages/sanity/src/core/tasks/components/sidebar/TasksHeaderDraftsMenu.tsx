@@ -49,7 +49,7 @@ function TasksDraftsMenuItem(props: TasksDraftsMenuItemProps) {
   )
 }
 
-export function TasksHeaderDraftsMenu() {
+export function TasksHeaderDraftsMenu() : React.JSX.Element {
   const {data} = useTasks()
   const {state, setViewMode} = useTasksNavigation()
   const {viewMode, selectedTask} = state

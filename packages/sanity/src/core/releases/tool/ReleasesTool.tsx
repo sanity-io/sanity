@@ -3,7 +3,7 @@ import {useRouter} from 'sanity/router'
 import {ReleaseDetail} from './detail/ReleaseDetail'
 import {ReleasesOverview} from './overview/ReleasesOverview'
 
-export function ReleasesTool() {
+export function ReleasesTool() : React.JSX.Element {
   const router = useRouter()
 
   const {releaseId} = router.state as {releaseId?: string}

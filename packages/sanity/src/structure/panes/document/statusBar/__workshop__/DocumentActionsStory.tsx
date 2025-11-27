@@ -6,7 +6,7 @@ import {type DocumentPaneNode} from '../../../../types'
 import {DocumentPaneProvider} from '../../DocumentPaneProvider'
 import {DocumentStatusBarActions} from '../DocumentStatusBarActions'
 
-export default function DocumentActionsStory() {
+export default function DocumentActionsStory() : React.JSX.Element {
   const pane: DocumentPaneNode = useMemo(
     () => ({
       type: 'document',

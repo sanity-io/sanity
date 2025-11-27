@@ -22,7 +22,7 @@ interface CreateNewThreadInputProps {
   readOnly?: boolean
 }
 
-export function CreateNewThreadInput(props: CreateNewThreadInputProps) {
+export function CreateNewThreadInput(props: CreateNewThreadInputProps) : React.JSX.Element {
   const {
     currentUser,
     fieldTitle,

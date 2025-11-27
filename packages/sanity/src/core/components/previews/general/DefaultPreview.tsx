@@ -53,7 +53,7 @@ const SKELETON_DELAY = 300
 /**
  * @hidden
  * @beta */
-export function DefaultPreview(props: DefaultPreviewProps) {
+export function DefaultPreview(props: DefaultPreviewProps) : React.JSX.Element {
   const {title, subtitle, media, status, isPlaceholder, children, styles, progress} = props
   const {t} = useTranslation()
   const rootClassName = classNames(styles?.root, Boolean(subtitle) && styles?.hasSubtitle)

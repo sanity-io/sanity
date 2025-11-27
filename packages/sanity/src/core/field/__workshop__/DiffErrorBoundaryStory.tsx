@@ -5,7 +5,7 @@ import {Button} from '../../../ui-components'
 import {useTranslation} from '../../i18n'
 import {DiffErrorBoundary} from '../diff/components/DiffErrorBoundary'
 
-export default function DiffErrorBoundaryStory() {
+export default function DiffErrorBoundaryStory() : React.JSX.Element {
   const {t} = useTranslation()
   return (
     <Box padding={4}>

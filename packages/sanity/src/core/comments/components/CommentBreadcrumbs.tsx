@@ -27,7 +27,7 @@ const renderItem = (item: string, index: number) => {
   )
 }
 
-export function CommentBreadcrumbs(props: CommentBreadcrumbsProps) {
+export function CommentBreadcrumbs(props: CommentBreadcrumbsProps) : React.JSX.Element {
   const {titlePath, maxLength} = props
 
   const items: Item[] = useMemo(() => {

@@ -161,7 +161,7 @@ function StudioAnnouncementsProviderInner({children}: StudioAnnouncementsProvide
  * @internal
  * @hidden
  */
-export function StudioAnnouncementsProvider(props: StudioAnnouncementsProviderProps) {
+export function StudioAnnouncementsProvider(props: StudioAnnouncementsProviderProps) : React.JSX.Element {
   const source = useSource()
 
   if (source.announcements?.enabled) {

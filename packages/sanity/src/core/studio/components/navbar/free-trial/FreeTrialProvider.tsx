@@ -17,7 +17,7 @@ export interface FreeTrialProviderProps {
 /**
  * @internal
  */
-export const FreeTrialProvider = ({children}: FreeTrialProviderProps) => {
+export const FreeTrialProvider = ({children}: FreeTrialProviderProps) : React.JSX.Element => {
   const router = useRouter()
   const [data, setData] = useState<FreeTrialResponse | null>(null)
   const [showDialog, setShowDialog] = useState(false)

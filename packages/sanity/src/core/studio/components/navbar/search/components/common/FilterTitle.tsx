@@ -10,7 +10,7 @@ interface FilterTitleProps {
   maxLength?: number
 }
 
-export function FilterTitle({filter, maxLength}: FilterTitleProps) {
+export function FilterTitle({filter, maxLength}: FilterTitleProps) : React.JSX.Element {
   const {
     state: {definitions},
   } = useSearchState()

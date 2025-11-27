@@ -118,7 +118,7 @@ const schema = Schema.compile({
   ],
 })
 
-export default function CommentInlineHighlightDebugStory() {
+export default function CommentInlineHighlightDebugStory() : React.JSX.Element {
   const [value, setValue] = useState<PortableTextBlock[]>(INITIAL_VALUE)
   const [commentDocuments, setCommentDocuments] = useState<CommentDocument[]>([])
   const [canAddComment, setCanAddComment] = useState<boolean>(false)

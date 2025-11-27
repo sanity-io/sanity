@@ -6,7 +6,7 @@ import {LoadingBlock} from '../../../components/loadingBlock/LoadingBlock'
 import {UpsellPanel} from '../../../studio/upsell/UpsellPanel'
 import {useDocumentLimitsUpsellContext} from './DocumentLimitUpsellProvider'
 
-export function DocumentLimitsUpsellPanel() {
+export function DocumentLimitsUpsellPanel() : React.JSX.Element {
   const {upsellData, telemetryLogs} = useDocumentLimitsUpsellContext()
 
   const handlePrimaryButtonClick = useCallback(() => {

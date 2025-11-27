@@ -11,7 +11,7 @@ type Props = {
   onClearValue?: () => void
 }
 
-export function DisabledFeatureWarning({value, onClearValue}: Props) {
+export function DisabledFeatureWarning({value, onClearValue}: Props) : React.JSX.Element {
   const hasRef = useMemo(() => Boolean(value?._ref), [value?._ref])
   const {t} = useTranslation()
 

@@ -16,7 +16,7 @@ interface PresenceTooltipProps {
  * Therefore, another portal element (i.e. the "documentScrollElement") is being used to solve this.
  */
 
-export function PresenceTooltip(props: PresenceTooltipProps) {
+export function PresenceTooltip(props: PresenceTooltipProps) : React.JSX.Element {
   const {children, items} = props
 
   const content = useMemo(

@@ -14,7 +14,7 @@ interface Props {
   error: MixedArrayError
   onChange: (patchEvent: PatchEvent) => void
 }
-export function MixedArrayAlert(props: Props) {
+export function MixedArrayAlert(props: Props) : React.JSX.Element {
   const {error, onChange} = props
 
   const handleRemoveNonObjectValues = () => {

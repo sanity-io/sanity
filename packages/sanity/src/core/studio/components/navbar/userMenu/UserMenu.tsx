@@ -34,7 +34,7 @@ const AvatarBox = styled(Box)`
   min-height: ${({theme}) => theme.sanity.avatar.sizes[2].size}px;
 `
 
-export function UserMenu() {
+export function UserMenu() : React.JSX.Element {
   const {currentUser, auth} = useWorkspace()
   const scheme = useColorSchemeValue()
   const setScheme = useColorSchemeSetValue()

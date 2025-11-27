@@ -7,7 +7,7 @@ import {usePaneRouter} from '../../components/paneRouter/usePaneRouter'
  * @internal
  * Exposes cardinality one releases as selectedPerspective through PerspectiveContext
  */
-export function DocumentPerspectiveProvider({children}: {children: ReactNode}) {
+export function DocumentPerspectiveProvider({children}: {children: ReactNode}) : React.JSX.Element {
   const paneRouter = usePaneRouter()
   const {excludedPerspectives} = usePerspective()
   const {scheduledDraft} = paneRouter.params as {scheduledDraft?: string}

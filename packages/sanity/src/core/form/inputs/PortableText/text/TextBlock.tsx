@@ -70,7 +70,7 @@ export interface TextBlockProps {
   value: PortableTextTextBlock
 }
 
-export function TextBlock(props: TextBlockProps) {
+export function TextBlock(props: TextBlockProps) : React.JSX.Element {
   const {
     children,
     floatingBoundary,
@@ -343,6 +343,6 @@ export function TextBlock(props: TextBlockProps) {
   )
 }
 
-export const DefaultComponent = (props: BlockProps) => {
+export const DefaultComponent = (props: BlockProps) : React.JSX.Element => {
   return <>{props.children}</>
 }

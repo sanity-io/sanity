@@ -184,7 +184,7 @@ const TimelineStatus = () => {
 const SYNCING_TIMEOUT = 1000
 const SAVED_TIMEOUT = 3000
 
-export function DocumentStatusLine() {
+export function DocumentStatusLine() : React.JSX.Element {
   const {documentId, documentType, editState, value} = useDocumentPane()
   const [status, setStatus] = useState<'saved' | 'syncing' | null>(null)
   const source = useSource()

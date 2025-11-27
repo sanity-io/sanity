@@ -17,7 +17,7 @@ const StyledMenu = styled(Menu)`
   min-width: 200px;
 `
 
-export function ResourcesButton() {
+export function ResourcesButton() : React.JSX.Element {
   const {t} = useTranslation()
 
   const {value, error, isLoading} = useGetHelpResources()

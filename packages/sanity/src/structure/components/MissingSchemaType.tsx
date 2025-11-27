@@ -9,7 +9,7 @@ export interface MissingSchemaTypeProps {
   value: SanityDocument
 }
 
-export function MissingSchemaType(props: MissingSchemaTypeProps) {
+export function MissingSchemaType(props: MissingSchemaTypeProps) : React.JSX.Element {
   const {t} = useTranslation(structureLocaleNamespace)
   const {layout, value} = props
 

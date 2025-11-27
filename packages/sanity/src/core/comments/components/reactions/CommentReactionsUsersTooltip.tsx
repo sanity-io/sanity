@@ -64,7 +64,7 @@ interface CommentReactionsUsersTooltipProps {
   userIds: string[]
 }
 
-export function CommentReactionsUsersTooltip(props: CommentReactionsUsersTooltipProps) {
+export function CommentReactionsUsersTooltip(props: CommentReactionsUsersTooltipProps) : React.JSX.Element {
   const {children, ...restProps} = props
 
   return (

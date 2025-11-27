@@ -14,7 +14,7 @@ interface DocumentInspectorMenuItemsResolverProps {
 // The `InspectorMenuItem` will resolve the menu item in a React hook and call the `setMenuItem` callback
 // with the resolved menu item and the index of the inspector.
 // Finally, we call the `onMenuItems` callback with the resolved menu items.
-export function DocumentInspectorMenuItemsResolver(props: DocumentInspectorMenuItemsResolverProps) {
+export function DocumentInspectorMenuItemsResolver(props: DocumentInspectorMenuItemsResolverProps) : React.JSX.Element {
   const {documentId, documentType, inspectors, onMenuItems} = props
 
   const len = inspectors.length

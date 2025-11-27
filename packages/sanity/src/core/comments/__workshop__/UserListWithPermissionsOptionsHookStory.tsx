@@ -10,7 +10,7 @@ const DOCUMENT = {
   _updatedAt: '2021-05-04T14:54:37Z',
 }
 
-export default function MentionOptionsHookStory() {
+export default function MentionOptionsHookStory() : React.JSX.Element {
   const {data, loading} = useUserListWithPermissions({
     documentValue: DOCUMENT,
     permission: 'read',

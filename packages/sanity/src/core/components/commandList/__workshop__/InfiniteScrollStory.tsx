@@ -26,7 +26,7 @@ const StyledLink = styled.a<{$index: number}>`
   }
 `
 
-export default function InfiniteScrollStory() {
+export default function InfiniteScrollStory() : React.JSX.Element {
   const [items, setItems] = useState([...Array(20).keys()])
   const [inputElement, setInputElement] = useState<HTMLInputElement | null>(null)
   const [loading, setLoading] = useState(false)

@@ -37,7 +37,7 @@ export const GroupTab = forwardRef(function GroupTab(
   )
 })
 
-export const GroupOption = (props: Omit<GroupType, 'onClick' | 'autoFocus'>) => {
+export const GroupOption = (props: Omit<GroupType, 'onClick' | 'autoFocus'>) : React.JSX.Element => {
   const {name, title, ...rest} = props
   const {selected} = props
 

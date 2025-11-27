@@ -6,7 +6,7 @@ import {type DocumentPaneNode} from '../../../../types'
 import {DocumentPaneProvider} from '../../DocumentPaneProvider'
 import {DocumentBadges} from '../DocumentBadges'
 
-export default function DocumentBadgesStory() {
+export default function DocumentBadgesStory() : React.JSX.Element {
   const pane: DocumentPaneNode = useMemo(
     () => ({
       type: 'document',

@@ -31,7 +31,7 @@ const SCHEMA_TYPES = [
     ],
   }),
 ]
-export function StylesStory() {
+export function StylesStory() : React.JSX.Element {
   return (
     <TestWrapper schemaTypes={SCHEMA_TYPES}>
       <TestForm />

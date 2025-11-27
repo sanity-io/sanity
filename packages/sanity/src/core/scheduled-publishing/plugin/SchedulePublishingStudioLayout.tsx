@@ -18,7 +18,7 @@ function SchedulePublishingStudioLayoutInner(props: LayoutProps) {
   return children
 }
 
-export function SchedulePublishingStudioLayout(props: LayoutProps) {
+export function SchedulePublishingStudioLayout(props: LayoutProps) : React.JSX.Element {
   return (
     <ScheduledPublishingEnabledProvider>
       <SchedulePublishingStudioLayoutInner {...props} />

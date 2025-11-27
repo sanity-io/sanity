@@ -23,7 +23,7 @@ const FooterStack = styled(Stack)`
   background-color: var(--card-bg-color);
 `
 
-export function PresenceMenu() {
+export function PresenceMenu() : React.JSX.Element {
   const presence = useGlobalPresence()
   const {projectId} = useWorkspace()
   const scheme = useColorSchemeValue()

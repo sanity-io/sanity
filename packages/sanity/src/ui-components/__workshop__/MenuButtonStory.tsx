@@ -4,7 +4,7 @@ import {Button} from '../button'
 import {MenuButton} from '../menuButton'
 import {MenuItem} from '../menuItem'
 
-export default function MenuButtonStory() {
+export default function MenuButtonStory() : React.JSX.Element {
   return (
     <Container width={0} padding={4}>
       <Stack space={4}>

@@ -40,7 +40,7 @@ const debugLoggingStore: CreateBatchedStoreOptions = {
 
 // Wrap the app in a TelemetryProvider
 // This will enable usage of the `useTelemetry()` hook
-export function StudioTelemetryProvider(props: {children: ReactNode; config: Config}) {
+export function StudioTelemetryProvider(props: {children: ReactNode; config: Config}) : React.JSX.Element {
   const client = useClient({apiVersion: 'v2023-12-18'})
 
   const projectId = client.config().projectId

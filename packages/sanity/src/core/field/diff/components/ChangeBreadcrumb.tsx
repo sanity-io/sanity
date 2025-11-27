@@ -5,7 +5,7 @@ import {type ChangeTitlePath, type FieldChangeNode} from '../../types'
 import {ChangeTitleSegment} from './ChangeTitleSegment'
 
 /** @internal */
-export function ChangeBreadcrumb(props: {change?: FieldChangeNode; titlePath: ChangeTitlePath}) {
+export function ChangeBreadcrumb(props: {change?: FieldChangeNode; titlePath: ChangeTitlePath}) : React.JSX.Element {
   const {change, titlePath} = props
 
   return (

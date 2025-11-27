@@ -1,6 +1,6 @@
 import {useChangeIndicatorsReportedValues} from './tracker'
 
-export function useHoveredChange() {
+export function useHoveredChange() : React.JSX.Element {
   const reportedValues = useChangeIndicatorsReportedValues()
 
   const hoveredEntry = reportedValues

@@ -6,7 +6,7 @@ import {MissingSinceDocumentError} from '../../../store/events/getDocumentChange
 /**
  * @internal
  * */
-export function ChangesError({error}: {error?: Error | null}) {
+export function ChangesError({error}: {error?: Error | null}) : React.JSX.Element {
   const {t} = useTranslation()
   const revisionNotFoundError = error instanceof MissingSinceDocumentError
   return (

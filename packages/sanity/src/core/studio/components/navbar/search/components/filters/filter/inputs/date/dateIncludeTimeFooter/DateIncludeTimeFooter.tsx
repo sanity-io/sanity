@@ -12,7 +12,7 @@ const TimeLabelText = styled(Text)`
   cursor: default;
 `
 
-export function DateIncludeTimeFooter({onChange, value}: DateIncludeTimeFooterProps) {
+export function DateIncludeTimeFooter({onChange, value}: DateIncludeTimeFooterProps) : React.JSX.Element {
   const {t} = useTranslation()
   return (
     <Flex align="center" gap={2} justify="flex-end" marginTop={1}>

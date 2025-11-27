@@ -12,7 +12,7 @@ import {DocumentTypesPopoverContent} from './DocumentTypesPopoverContent'
 
 const FALLBACK_PLACEMENTS: Placement[] = ['top-start', 'bottom-start']
 
-export function DocumentTypesButton() {
+export function DocumentTypesButton() : React.JSX.Element {
   const [open, setOpen] = useState(false)
   const [buttonElement, setButtonElement] = useState<HTMLElement | null>(null)
   const popoverRef = useRef<HTMLDivElement | null>(null)

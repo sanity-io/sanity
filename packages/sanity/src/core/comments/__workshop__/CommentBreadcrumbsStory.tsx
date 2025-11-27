@@ -3,7 +3,7 @@ import {useNumber} from '@sanity/ui-workshop'
 
 import {CommentBreadcrumbs} from '../components'
 
-export default function CommentBreadcrumbsStory() {
+export default function CommentBreadcrumbsStory() : React.JSX.Element {
   const maxLength = useNumber('Max length', 3, 'Props') || 3
 
   return (

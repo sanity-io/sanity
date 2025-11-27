@@ -11,7 +11,7 @@ import {useSanityCreateTelemetry} from '../useSanityCreateTelemetry'
 import {CreateUnlinkConfirmDialog} from './CreateUnlinkConfirmDialog'
 import {DialogPortalProvider} from './DialogPortalProvider'
 
-export function CreateLinkedActions(props: CreateLinkedActionsProps) {
+export function CreateLinkedActions(props: CreateLinkedActionsProps) : React.JSX.Element {
   const {metadata, panelPortalElementId, onDocumentChange, documentTitle} = props
   const {t} = useTranslation(createLocaleNamespace)
   const href = getCreateDocumentUrl(metadata)

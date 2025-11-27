@@ -40,7 +40,7 @@ function Editor() {
   )
 }
 
-export default function UserPresenceCursorStory() {
+export default function UserPresenceCursorStory() : React.JSX.Element {
   return (
     <Flex height="fill">
       <Stack flex={1}>

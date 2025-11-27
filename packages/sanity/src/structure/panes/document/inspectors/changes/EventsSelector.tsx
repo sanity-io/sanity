@@ -25,7 +25,7 @@ const Scroller = styled(ScrollContainer)`
   scroll-behavior: smooth;
 `
 
-export function EventsSelector({showList}: {showList: boolean}) {
+export function EventsSelector({showList}: {showList: boolean}) : React.JSX.Element {
   const [scrollRef, setScrollRef] = useState<HTMLDivElement | null>(null)
   const [listHeight, setListHeight] = useState(0)
   const {setTimelineRange} = useDocumentPane()

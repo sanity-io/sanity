@@ -8,7 +8,7 @@ import {useLocale} from '../../../../i18n/hooks/useLocale'
 // TODO: re-enable locale selection once schema localization is available
 const LOCALE_SELECTION_DISABLED = true
 
-export function LocaleMenu() {
+export function LocaleMenu() : React.JSX.Element {
   const {changeLocale, currentLocale, locales} = useLocale()
 
   if (LOCALE_SELECTION_DISABLED) {

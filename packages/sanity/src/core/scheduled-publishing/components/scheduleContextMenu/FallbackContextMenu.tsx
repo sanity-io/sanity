@@ -16,7 +16,7 @@ interface Props {
  * 'Fallback' context menu used with schedules that don't have any valid associated documentType.
  * Currently, all users can delete schedules that don't have any associated documents, so we don't need to check for permissions here.
  */
-export const FallbackContextMenu = (props: Props) => {
+export const FallbackContextMenu = (props: Props) : React.JSX.Element => {
   const {onDelete, schedule} = props
   const {deleteSchedule} = useScheduleOperation()
 

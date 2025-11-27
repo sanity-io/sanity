@@ -68,7 +68,7 @@ const StyledPlaceholder = styled.span<TextInputResponsivePaddingStyleProps>`
  * @hidden
  * @beta
  */
-export function StringInputPortableText(props: StringInputProps) {
+export function StringInputPortableText(props: StringInputProps) : React.JSX.Element {
   const {
     elementProps,
     onChange,

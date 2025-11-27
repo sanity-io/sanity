@@ -16,7 +16,7 @@ import {structureLocaleNamespace} from '../../../../i18n'
 import {useDocumentPane} from '../../useDocumentPane'
 import {Banner} from './Banner'
 
-export function DeletedDocumentBanners() {
+export function DeletedDocumentBanners() : React.JSX.Element {
   const {isDeleted, isDeleting, ready} = useDocumentPane()
   const {selectedPerspective} = usePerspective()
   if (!ready) return null

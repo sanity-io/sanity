@@ -13,7 +13,7 @@ interface TaksEnabledProviderProps {
 /**
  * @internal
  */
-export function TasksEnabledProvider({children}: TaksEnabledProviderProps) {
+export function TasksEnabledProvider({children}: TaksEnabledProviderProps) : React.JSX.Element {
   const {enabled, isLoading, error} = useFeatureEnabled(FEATURES.sanityTasks)
 
   const isWorkspaceEnabled = useWorkspace().tasks?.enabled

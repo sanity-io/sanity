@@ -17,7 +17,7 @@ export interface ChangeResolverProps {
 }
 
 /** @internal */
-export function ChangeResolver(props: ChangeResolverProps) {
+export function ChangeResolver(props: ChangeResolverProps) : React.JSX.Element {
   const {change, hidden, readOnly} = props
   const {value = Fragment} = useDocumentChange()
 

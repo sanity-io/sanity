@@ -29,7 +29,7 @@ interface ImageActionsMenuProps {
   onMenuOpen: (flag: boolean) => void
 }
 
-export function ImageActionsMenu(props: ImageActionsMenuProps) {
+export function ImageActionsMenu(props: ImageActionsMenuProps) : React.JSX.Element {
   const {
     onEdit,
     children,

@@ -8,7 +8,7 @@ interface DebugDocumentTypesProps {
   filter: SearchFilter
 }
 
-export function DebugDocumentTypes({filter}: DebugDocumentTypesProps) {
+export function DebugDocumentTypes({filter}: DebugDocumentTypesProps) : React.JSX.Element {
   const {
     state: {
       definitions: {fields},

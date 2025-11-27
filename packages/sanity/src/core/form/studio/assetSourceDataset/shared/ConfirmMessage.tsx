@@ -24,7 +24,7 @@ const STYLE_CONFIRM_CARD: CSSProperties = {
 }
 const STYLE_IMAGE_WRAPPER: CSSProperties = {height: '100%'}
 
-export const ConfirmMessage = ({asset, assetType, hasResults = false}: ConfirmMessageProps) => {
+export const ConfirmMessage = ({asset, assetType, hasResults = false}: ConfirmMessageProps) : React.JSX.Element => {
   const isImage = assetType === 'image'
   const {t} = useTranslation()
 

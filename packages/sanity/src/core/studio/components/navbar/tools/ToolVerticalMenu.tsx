@@ -12,7 +12,7 @@ interface ToolVerticalMenuProps {
   tools: Tool[]
 }
 
-export function ToolVerticalMenu(props: ToolVerticalMenuProps) {
+export function ToolVerticalMenu(props: ToolVerticalMenuProps) : React.JSX.Element {
   const {activeToolName, isVisible, tools} = props
 
   return useMemo(

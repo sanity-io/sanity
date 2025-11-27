@@ -22,7 +22,7 @@ import {useBundleDocuments} from './useBundleDocuments'
 export type ReleaseInspector = 'activity'
 const MotionCard = motion.create(Card)
 
-export const ReleaseDetail = () => {
+export const ReleaseDetail = () : React.JSX.Element => {
   const router = useRouter()
   const [inspector, setInspector] = useState<ReleaseInspector | undefined>(undefined)
   const {t} = useTranslation(releasesLocaleNamespace)

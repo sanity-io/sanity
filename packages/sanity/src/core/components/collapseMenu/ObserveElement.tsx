@@ -7,7 +7,7 @@ interface ObserveElementProps {
   onIntersectionChange: IntersectionObserverCallback
 }
 
-export function ObserveElement(props: ObserveElementProps) {
+export function ObserveElement(props: ObserveElementProps) : React.JSX.Element {
   const {onIntersectionChange, children, options, ...rest} = props
   const [el, setEl] = useState<HTMLSpanElement | null>(null)
 

@@ -26,7 +26,7 @@ interface WorkspaceLoaderProps {
 /**
  * @internal
  */
-export function useWorkspaceLoader(activeWorkspace: WorkspaceSummary) {
+export function useWorkspaceLoader(activeWorkspace: WorkspaceSummary) : React.JSX.Element {
   const [error, handleError] = useState<unknown>(null)
   if (error) throw error
 

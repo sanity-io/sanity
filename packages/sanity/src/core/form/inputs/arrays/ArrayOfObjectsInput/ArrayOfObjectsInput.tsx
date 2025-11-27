@@ -7,7 +7,7 @@ import {ListArrayInput} from './List/ListArrayInput'
  * @hidden
  * @beta
  */
-export function ArrayOfObjectsInput(props: ArrayOfObjectsInputProps) {
+export function ArrayOfObjectsInput(props: ArrayOfObjectsInputProps) : React.JSX.Element {
   const isGrid = props.schemaType.options?.layout === 'grid'
   return isGrid ? <GridArrayInput {...props} /> : <ListArrayInput {...props} />
 }

@@ -55,7 +55,7 @@ function LoadStatus(props: {children: ReactNode}) {
   )
 }
 
-export function ImageToolInput(props: ImageToolInputProps) {
+export function ImageToolInput(props: ImageToolInputProps) : React.JSX.Element {
   const {
     imageUrl,
     value,

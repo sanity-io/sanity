@@ -9,7 +9,7 @@ const SIZE_OPTIONS: Record<string, AvatarSize> = {
   '2': 2,
 }
 
-export default function UserAvatarStory() {
+export default function UserAvatarStory() : React.JSX.Element {
   const size = useSelect('Size', SIZE_OPTIONS, 0)
   const withTooltip = useBoolean('With tooltip')
 

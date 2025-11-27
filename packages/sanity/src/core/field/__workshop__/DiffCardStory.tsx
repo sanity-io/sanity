@@ -4,7 +4,7 @@ import {useMemo} from 'react'
 import {DiffCard} from '../diff'
 import {type Diff} from '../types'
 
-export default function DiffCardStory() {
+export default function DiffCardStory() : React.JSX.Element {
   const diff: Diff = useMemo(
     () => ({
       type: 'boolean',

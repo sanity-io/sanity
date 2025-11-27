@@ -24,7 +24,7 @@ export interface NewDocumentListProps {
   textInputElement: HTMLInputElement | null
 }
 
-export function NewDocumentList(props: NewDocumentListProps) {
+export function NewDocumentList(props: NewDocumentListProps) : React.JSX.Element {
   const {currentUser, loading, onDocumentClick, options, preview, searchQuery, textInputElement} =
     props
   const {t} = useTranslation()

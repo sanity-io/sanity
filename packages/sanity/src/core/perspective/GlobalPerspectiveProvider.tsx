@@ -107,7 +107,7 @@ const ResetPerspectiveHandler = () => {
  * If you need to add the PerspectiveProvider you should use that component directly.
  * It's up to you to define how the selectedPerspectiveName and excludedPerspectives should worl.
  */
-export function GlobalPerspectiveProvider({children}: {children: ReactNode}) {
+export function GlobalPerspectiveProvider({children}: {children: ReactNode}) : React.JSX.Element {
   const router = useRouter()
 
   const {

@@ -18,7 +18,7 @@ type Props = {
   readOnly?: boolean
 }
 
-export function UnknownFields(props: Props) {
+export function UnknownFields(props: Props) : React.JSX.Element {
   const {fieldNames, onChange, readOnly, value} = props
   const fieldsLen = fieldNames.length
 

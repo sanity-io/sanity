@@ -42,7 +42,7 @@ const Root = styled(Card)`
   }
 `
 
-export function RowLayout(props: RowLayoutProps) {
+export function RowLayout(props: RowLayoutProps) : React.JSX.Element {
   const {
     validation,
     selected,

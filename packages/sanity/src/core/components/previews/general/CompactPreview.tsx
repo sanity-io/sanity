@@ -33,7 +33,7 @@ const TitleSkeleton = styled(TextSkeleton).attrs({animated: true, radius: 1, siz
 /**
  * @hidden
  * @beta */
-export function CompactPreview(props: CompactPreviewProps) {
+export function CompactPreview(props: CompactPreviewProps) : React.JSX.Element {
   const {children, isPlaceholder, media, status, title} = props
 
   const {t} = useTranslation()

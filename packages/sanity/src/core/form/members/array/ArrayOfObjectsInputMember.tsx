@@ -26,7 +26,7 @@ export interface ArrayOfObjectsMemberProps {
  * Convenience component for rendering an "array of objects"-item
  * @internal
  */
-export function ArrayOfObjectsInputMember(props: ArrayOfObjectsMemberProps) {
+export function ArrayOfObjectsInputMember(props: ArrayOfObjectsMemberProps) : React.JSX.Element {
   const {
     member,
     renderAnnotation,

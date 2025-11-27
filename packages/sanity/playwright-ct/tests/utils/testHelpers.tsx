@@ -5,7 +5,7 @@ import {expect, type Locator, type PlaywrightTestArgs} from '@playwright/test'
 
 export const DEFAULT_TYPE_DELAY = 20
 
-export function testHelpers({page}: {page: PlaywrightTestArgs['page']}) {
+export function testHelpers({page}: {page: PlaywrightTestArgs['page']}) : React.JSX.Element {
   const activatePTInputOverlay = async ($pteField: Locator) => {
     const $overlay = $pteField.getByTestId('activate-overlay')
     if (await $overlay.isVisible()) {

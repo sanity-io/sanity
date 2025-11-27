@@ -3,7 +3,7 @@ import {Box} from '@sanity/ui'
 import {ReferenceAutocomplete} from '../components/filters/filter/inputs/reference/ReferenceAutocomplete'
 import {SearchProvider} from '../contexts/search/SearchProvider'
 
-export default function ReferenceAutocompleteStory() {
+export default function ReferenceAutocompleteStory() : React.JSX.Element {
   return (
     <SearchProvider>
       <Box padding={3}>

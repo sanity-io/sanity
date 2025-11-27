@@ -7,7 +7,7 @@ const DefaultComponent = (dProps: BlockListItemProps) => {
   return <>{dProps.children}</>
 }
 
-export const ListItem = (props: BlockListItemRenderProps) => {
+export const ListItem = (props: BlockListItemRenderProps) : React.JSX.Element => {
   const {block, children, schemaType, selected, focused, level, value} = props
   const {title, component: CustomComponent} = schemaType
   return useMemo(() => {

@@ -1,6 +1,6 @@
 import {Flex, Skeleton, Stack, TextSkeleton} from '@sanity/ui'
 
-export function FileSkeleton() {
+export function FileSkeleton() : React.JSX.Element {
   return (
     <Flex align="center" justify="flex-start" padding={2}>
       <Skeleton padding={3} radius={1} animated />

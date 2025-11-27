@@ -13,7 +13,7 @@ import {structureLocaleNamespace} from '../../../../i18n'
 import {useDocumentPane} from '../../useDocumentPane'
 import {Banner} from './Banner'
 
-export function UnpublishedDocumentBanner() {
+export function UnpublishedDocumentBanner() : React.JSX.Element {
   const {value, editState} = useDocumentPane()
   const {selectedPerspective} = usePerspective()
   const isCurrentVersionGoingToUnpublish =

@@ -27,7 +27,7 @@ function SetActiveDocumentInner(document: ActiveDocument) {
   return null
 }
 
-export function SetActiveDocument(document: ActiveDocument) {
+export function SetActiveDocument(document: ActiveDocument) : React.JSX.Element {
   const {enabled} = useTasksEnabled()
   if (!enabled) return null
   return <SetActiveDocumentInner {...document} />

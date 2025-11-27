@@ -31,7 +31,7 @@ const getRatio = (dimensions: PreviewMediaDimensions) => {
 /**
  * @hidden
  * @beta */
-export function BlockImagePreview(props: BlockImagePreviewProps) {
+export function BlockImagePreview(props: BlockImagePreviewProps) : React.JSX.Element {
   const {
     actions,
     title,

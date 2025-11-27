@@ -9,7 +9,7 @@ type Props = {
   onClearStale?: () => void
 }
 
-export function UploadWarning({onClearStale}: Props) {
+export function UploadWarning({onClearStale}: Props) : React.JSX.Element {
   const {t} = useTranslation()
 
   return (

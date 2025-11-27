@@ -170,7 +170,7 @@ interface CommentsListItemLayoutProps {
 
 const RELATIVE_TIME_OPTIONS: RelativeTimeOptions = {useTemporalPhrase: true}
 
-export function CommentsListItemLayout(props: CommentsListItemLayoutProps) {
+export function CommentsListItemLayout(props: CommentsListItemLayoutProps) : React.JSX.Element {
   const {
     avatarSize = 1,
     canDelete,

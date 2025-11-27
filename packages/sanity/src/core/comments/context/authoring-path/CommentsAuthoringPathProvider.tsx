@@ -17,7 +17,7 @@ interface CommentsAuthoringPathProviderProps {
  * the component re-renders, for example, when the form is temporarily set to `readOnly`
  * while reconnecting.
  */
-export function CommentsAuthoringPathProvider(props: CommentsAuthoringPathProviderProps) {
+export function CommentsAuthoringPathProvider(props: CommentsAuthoringPathProviderProps) : React.JSX.Element {
   const {children} = props
   const [authoringPath, setAuthoringPath] = useState<string | null>(null)
 

@@ -54,7 +54,7 @@ const StyledChangeConnectorRoot = styled(ChangeConnectorRoot)`
   min-width: 0;
 `
 
-export function DocumentLayout() {
+export function DocumentLayout() : React.JSX.Element {
   const {
     changesOpen,
     displayed,

@@ -12,7 +12,7 @@ interface ReferenceItemRefProviderProps extends ReferenceItemRef {
  *
  * @internal
  */
-export function ReferenceItemRefProvider(props: ReferenceItemRefProviderProps) {
+export function ReferenceItemRefProvider(props: ReferenceItemRefProviderProps) : React.JSX.Element {
   const {menuRef, menuButtonRef, containerRef} = props
   const value = useMemo(
     () => ({menuRef, menuButtonRef, containerRef}),

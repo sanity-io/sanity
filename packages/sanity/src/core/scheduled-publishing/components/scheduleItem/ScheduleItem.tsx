@@ -14,7 +14,7 @@ interface Props {
   type: 'document' | 'tool'
 }
 
-export const ScheduleItem = (props: Props) => {
+export const ScheduleItem = (props: Props) : React.JSX.Element => {
   const {schedule, type} = props
 
   const firstDocument = getScheduledDocument(schedule)

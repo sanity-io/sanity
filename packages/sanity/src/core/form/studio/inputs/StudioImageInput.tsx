@@ -26,7 +26,7 @@ export type ImageInputProps = Omit<
 /**
  * @hidden
  * @beta */
-export function StudioImageInput(props: ImageInputProps) {
+export function StudioImageInput(props: ImageInputProps) : React.JSX.Element {
   const sourcesFromSchema = props.schemaType.options?.sources
   const {image: imageConfig} = useFormBuilder().__internal
   const documentPreviewStore = useDocumentPreviewStore()

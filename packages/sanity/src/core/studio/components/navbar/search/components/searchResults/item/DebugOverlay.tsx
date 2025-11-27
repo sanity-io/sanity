@@ -16,7 +16,7 @@ const DebugScoreCard = styled(Card)`
   top: 0;
 `
 
-export function DebugOverlay({data}: DebugScoreProps) {
+export function DebugOverlay({data}: DebugScoreProps) : React.JSX.Element {
   const {score} = data
 
   let tone: CardTone = 'default'

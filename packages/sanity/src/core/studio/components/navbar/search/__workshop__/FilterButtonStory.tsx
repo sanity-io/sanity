@@ -7,7 +7,7 @@ import {SearchProvider} from '../contexts/search/SearchProvider'
 import {useSearchState} from '../contexts/search/useSearchState'
 import {type SearchFilter} from '../types'
 
-export default function FilterButtonStory() {
+export default function FilterButtonStory() : React.JSX.Element {
   const fullscreen = useBoolean('Fullscreen layout', false, 'Props')
 
   return (

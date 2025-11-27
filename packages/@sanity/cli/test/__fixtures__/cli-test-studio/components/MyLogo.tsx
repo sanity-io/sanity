@@ -13,7 +13,7 @@ const fromActualEnv = process.env.SANITY_STUDIO_FROM_ACTUAL_ENV || 'notset'
  *
  * @internal
  */
-export function MyLogo() {
+export function MyLogo() : React.JSX.Element {
   return (
     <div
       className={styles.logo}

@@ -23,7 +23,7 @@ function DocumentActionPortalProvider(props: {children: ReactNode}) {
   return <PortalProvider element={portalElement}>{children}</PortalProvider>
 }
 
-export function ActionStateDialog(props: ActionStateDialogProps) {
+export function ActionStateDialog(props: ActionStateDialogProps) : React.JSX.Element {
   const {dialog, referenceElement = null} = props
   const modalId = useId()
 

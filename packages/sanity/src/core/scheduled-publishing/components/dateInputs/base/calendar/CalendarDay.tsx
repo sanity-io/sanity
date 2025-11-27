@@ -12,7 +12,7 @@ interface CalendarDayProps {
   selected?: boolean
 }
 
-export function CalendarDay(props: CalendarDayProps) {
+export function CalendarDay(props: CalendarDayProps) : React.JSX.Element {
   const {date, focused, isCurrentMonth, isToday, customValidation, onSelect, selected} = props
 
   // Round date to the end of day when passing to custom validate function.

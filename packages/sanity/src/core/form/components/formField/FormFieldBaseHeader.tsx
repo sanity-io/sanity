@@ -141,7 +141,7 @@ interface FormFieldBaseHeaderProps {
   presence?: FormNodePresence[]
 }
 
-export function FormFieldBaseHeader(props: FormFieldBaseHeaderProps) {
+export function FormFieldBaseHeader(props: FormFieldBaseHeaderProps) : React.JSX.Element {
   const {
     __internal_comments: comments,
     __internal_slot: slot,

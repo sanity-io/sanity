@@ -4,7 +4,7 @@ import {type PropsWithChildren, useMemo} from 'react'
 import {type InputProps} from '../../../form/types/inputProps'
 import {ScheduleBanner} from './ScheduleBanner'
 
-export function ScheduledDocumentInput(props: PropsWithChildren<InputProps>) {
+export function ScheduledDocumentInput(props: PropsWithChildren<InputProps>) : React.JSX.Element {
   const {value, validation, children} = props
   const doc: {_id?: string} = value as unknown as {_id: string}
 

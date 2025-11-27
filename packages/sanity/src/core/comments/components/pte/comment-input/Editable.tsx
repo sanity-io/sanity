@@ -73,7 +73,7 @@ export interface EditableHandle {
   setShowMentionOptions: (show: boolean) => void
 }
 
-export function Editable(props: EditableProps) {
+export function Editable(props: EditableProps) : React.JSX.Element {
   const {t} = useTranslation(commentsLocaleNamespace)
   const {
     focusLock,

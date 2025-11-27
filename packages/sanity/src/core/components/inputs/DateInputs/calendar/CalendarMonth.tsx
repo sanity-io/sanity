@@ -23,7 +23,7 @@ interface CalendarMonthProps {
   ]
 }
 
-export function CalendarMonth(props: CalendarMonthProps) {
+export function CalendarMonth(props: CalendarMonthProps) : React.JSX.Element {
   const {
     weekInfo: {firstDay: weekStartDay},
   } = useCurrentLocale()

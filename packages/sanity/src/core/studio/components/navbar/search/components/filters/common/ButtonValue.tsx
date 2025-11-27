@@ -15,7 +15,7 @@ import {ReferencePreviewTitle} from './ReferencePreviewTitle'
 
 const DEFAULT_DATE_FORMAT = 'yyyy-MM-dd'
 
-export function SearchButtonValueBoolean({value}: OperatorButtonValueComponentProps<boolean>) {
+export function SearchButtonValueBoolean({value}: OperatorButtonValueComponentProps<boolean>) : React.JSX.Element {
   const {t} = useTranslation()
   return <>{value ? t('search.filter-boolean-true') : t('search.filter-boolean-false')}</>
 }
@@ -59,7 +59,7 @@ export function SearchButtonValueDateRange({
   return <>{`${from} → ${to}`}</>
 }
 
-export function SearchButtonValueReference({value}: OperatorButtonValueComponentProps<Reference>) {
+export function SearchButtonValueReference({value}: OperatorButtonValueComponentProps<Reference>) : React.JSX.Element {
   const schema = useSchema()
   const documentId = value._ref
   const schemaType = schema.get(value._type)

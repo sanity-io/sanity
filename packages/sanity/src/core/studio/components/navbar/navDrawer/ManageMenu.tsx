@@ -8,7 +8,7 @@ import {useWorkspace} from '../../../workspace'
 import {FreeTrial} from '../free-trial'
 import {useCanInviteProjectMembers} from '../useCanInviteMembers'
 
-export function ManageMenu() {
+export function ManageMenu() : React.JSX.Element {
   const {projectId} = useWorkspace()
 
   const {t} = useTranslation()

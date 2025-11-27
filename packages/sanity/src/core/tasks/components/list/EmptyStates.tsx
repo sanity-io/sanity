@@ -43,7 +43,7 @@ const HEADING_BY_STATUS: Record<
   },
 }
 
-export function EmptyStatusListState({status}: {status: TaskStatus}) {
+export function EmptyStatusListState({status}: {status: TaskStatus}) : React.JSX.Element {
   const {
     state: {activeTabId},
   } = useTasksNavigation()
@@ -103,7 +103,7 @@ const AnimatedText = styled(Text)`
   animation: fadeIn 0.2s ease-in-out;
 `
 
-export function EmptyTasksListState() {
+export function EmptyTasksListState() : React.JSX.Element {
   const {activeDocument} = useTasks()
   const {mode} = useTasksEnabled()
   const {

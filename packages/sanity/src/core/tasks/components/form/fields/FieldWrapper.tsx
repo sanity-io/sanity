@@ -22,6 +22,6 @@ export const FieldWrapperRoot = styled.div((props) => {
   `
 })
 
-export function FieldWrapper(props: StringFieldProps) {
+export function FieldWrapper(props: StringFieldProps) : React.JSX.Element {
   return <FieldWrapperRoot>{props.renderDefault(props)}</FieldWrapperRoot>
 }

@@ -3,7 +3,7 @@ import {type BadgeTone, Box, Text} from '@sanity/ui'
 import {type CSSProperties} from 'react'
 
 /** @internal */
-export const ReleaseAvatarIcon = ({tone}: {tone: BadgeTone}) => {
+export const ReleaseAvatarIcon = ({tone}: {tone: BadgeTone}) : React.JSX.Element => {
   return (
     <DotIcon
       data-testid={`release-avatar-${tone}`}

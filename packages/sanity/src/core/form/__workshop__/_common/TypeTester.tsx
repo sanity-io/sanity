@@ -32,7 +32,7 @@ interface TypeTesterProps {
   readOnly?: boolean
 }
 
-export function TypeTester({readOnly}: TypeTesterProps) {
+export function TypeTester({readOnly}: TypeTesterProps) : React.JSX.Element {
   const textAreaRef = useRef<HTMLTextAreaElement | null>(null)
   const [focusedInput, setFocusedInput] = useState<HTMLInputElement | HTMLTextAreaElement>()
   const [testOutput, setTestOutput] = useState('')

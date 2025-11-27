@@ -30,7 +30,7 @@ const getIsSelectable = (event: DocumentGroupEvent) => {
   )
 }
 
-export function EventTimelineItem({event, isSelected, onSelect, optionsMenu}: TimelineItemProps) {
+export function EventTimelineItem({event, isSelected, onSelect, optionsMenu}: TimelineItemProps) : React.JSX.Element {
   const {t} = useTranslation('studio')
   const isSelectable = getIsSelectable(event)
   const handleClick = useCallback(

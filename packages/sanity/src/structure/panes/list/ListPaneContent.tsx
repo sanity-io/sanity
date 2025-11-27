@@ -62,7 +62,7 @@ function DividerItem({item}: DividerItemProps) {
 /**
  * @internal
  */
-export function ListPaneContent(props: ListPaneContentProps) {
+export function ListPaneContent(props: ListPaneContentProps) : React.JSX.Element {
   const {childItemId, items, isActive, layout, showIcons, title} = props
   const {collapsed: layoutCollapsed} = usePaneLayout()
   const getI18nText = useGetI18nText(

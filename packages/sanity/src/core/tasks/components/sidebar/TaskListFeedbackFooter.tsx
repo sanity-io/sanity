@@ -26,7 +26,7 @@ function LinkComponent(props: {children?: React.ReactNode}) {
   )
 }
 
-export function TasksListFeedbackFooter() {
+export function TasksListFeedbackFooter() : React.JSX.Element {
   const {t} = useTranslation(tasksLocaleNamespace)
   return (
     <Box padding={4}>

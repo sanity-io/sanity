@@ -29,7 +29,7 @@ interface MentionInlineBlockProps {
   selected: boolean
 }
 
-export function MentionInlineBlock(props: MentionInlineBlockProps) {
+export function MentionInlineBlock(props: MentionInlineBlockProps) : React.JSX.Element {
   const {selected, userId} = props
   const [user, loading] = useUser(userId)
   const currentUser = useCurrentUser()

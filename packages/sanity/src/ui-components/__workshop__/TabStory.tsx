@@ -2,7 +2,7 @@ import {Box, Card, Container, Stack, TabList, Text} from '@sanity/ui'
 
 import {Tab} from '../tab'
 
-export default function TabStory() {
+export default function TabStory() : React.JSX.Element {
   return (
     <Container width={0} padding={4}>
       <Stack space={4}>

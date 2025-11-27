@@ -19,7 +19,7 @@ interface ReferencePreviewLinkProps {
   value: {_id: string; _type: string}
 }
 
-export function ReferencePreviewLink(props: ReferencePreviewLinkProps) {
+export function ReferencePreviewLink(props: ReferencePreviewLinkProps) : React.JSX.Element {
   const {onClick, type, value} = props
   const publishedId = getPublishedId(value?._id)
   const documentPresence = useDocumentPresence(publishedId)

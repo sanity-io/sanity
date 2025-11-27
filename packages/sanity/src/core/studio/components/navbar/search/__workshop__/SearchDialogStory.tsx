@@ -5,7 +5,7 @@ import {SearchProvider} from '../contexts/search/SearchProvider'
 
 const noop = () => null
 
-export default function SearchDialogStory() {
+export default function SearchDialogStory() : React.JSX.Element {
   return (
     <LayerProvider>
       <SearchProvider fullscreen>

@@ -100,7 +100,7 @@ function TasksNotificationTargetInner(props: ObjectFieldProps<TaskDocument>) {
 }
 
 // This component is listening to the changes to the form value and will update the notification target in the task document.
-export function TasksNotificationTarget(props: ObjectFieldProps<TaskDocument>) {
+export function TasksNotificationTarget(props: ObjectFieldProps<TaskDocument>) : React.JSX.Element {
   return (
     <CurrentWorkspaceProvider>
       <TasksNotificationTargetInner {...props} />

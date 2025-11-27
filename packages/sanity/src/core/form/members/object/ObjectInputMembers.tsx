@@ -27,7 +27,7 @@ export interface ObjectMembersProps {
  * Convenience component for wrapping an object input
  * @internal
  */
-export function ObjectInputMembers(props: ObjectMembersProps) {
+export function ObjectInputMembers(props: ObjectMembersProps) : React.JSX.Element {
   const {
     members,
     renderAnnotation,

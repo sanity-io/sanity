@@ -45,7 +45,7 @@ function getMemberTypeOfItem(schemaType: ArraySchemaType, option: NormalizedPrim
  * @hidden
  * @beta
  */
-export function ArrayOfPrimitiveOptionsInput(props: ArrayOfPrimitivesInputProps) {
+export function ArrayOfPrimitiveOptionsInput(props: ArrayOfPrimitivesInputProps) : React.JSX.Element {
   const {
     schemaType,
     onChange,

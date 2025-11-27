@@ -65,7 +65,7 @@ function getInvalidUserDefinedPerspectives(
  * @hidden
  * @beta
  */
-export function StudioReferenceInput(props: StudioReferenceInputProps) {
+export function StudioReferenceInput(props: StudioReferenceInputProps) : React.JSX.Element {
   const source = useSource()
   const searchClient = source.getClient(DEFAULT_STUDIO_CLIENT_OPTIONS)
   const {perspectiveStack} = usePerspective()

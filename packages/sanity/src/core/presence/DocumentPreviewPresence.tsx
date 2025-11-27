@@ -31,7 +31,7 @@ const AvatarStackBox = styled.div((props) => {
 })
 
 /** @internal */
-export function DocumentPreviewPresence(props: DocumentPreviewPresenceProps) {
+export function DocumentPreviewPresence(props: DocumentPreviewPresenceProps) : React.JSX.Element {
   const {presence} = props
   const {t} = useTranslation(releasesLocaleNamespace)
 

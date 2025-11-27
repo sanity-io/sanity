@@ -58,7 +58,7 @@ interface ObjectOption {
  * @hidden
  * @beta
  */
-export function ArrayOfObjectOptionsInput(props: ArrayOfObjectsInputProps) {
+export function ArrayOfObjectOptionsInput(props: ArrayOfObjectsInputProps) : React.JSX.Element {
   const {
     renderPreview,
     schemaType,

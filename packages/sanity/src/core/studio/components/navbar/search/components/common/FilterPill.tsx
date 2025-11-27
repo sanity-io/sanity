@@ -12,7 +12,7 @@ const FilterPillCard = styled(Card)`
   cursor: default;
 `
 
-export function FilterPill({filter}: FilterPillProps) {
+export function FilterPill({filter}: FilterPillProps) : React.JSX.Element {
   return (
     <FilterPillCard border padding={2} radius={2} tone="primary">
       <FilterLabel filter={filter} />

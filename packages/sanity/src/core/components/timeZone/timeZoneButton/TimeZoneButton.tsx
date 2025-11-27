@@ -14,7 +14,7 @@ export interface TimeZoneButtonZoneProps {
   tooltipContent: ReactNode
 }
 
-export const TimeZoneButton = (props: TimeZoneButtonZoneProps) => {
+export const TimeZoneButton = (props: TimeZoneButtonZoneProps) : React.JSX.Element => {
   const {useElementQueries, timeZoneScope, allowTimeZoneSwitch = true, tooltipContent} = props
   const {timeZone} = useTimeZone(timeZoneScope)
   const {DialogTimeZone, dialogProps, dialogTimeZoneShow} = useDialogTimeZone(timeZoneScope)

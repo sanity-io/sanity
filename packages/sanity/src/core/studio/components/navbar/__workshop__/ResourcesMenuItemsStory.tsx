@@ -3,7 +3,7 @@ import {useBoolean} from '@sanity/ui-workshop'
 
 import {ResourcesMenuItems} from '../resources/ResourcesMenuItems'
 
-export default function ResourcesMenuItemsStory() {
+export default function ResourcesMenuItemsStory() : React.JSX.Element {
   const isLoading = useBoolean('Loading', false, 'Props') || false
   const noItems = useBoolean('Error / no items', false, 'Props') || false
   const error = noItems ? new Error() : null

@@ -27,7 +27,7 @@ const Image = styled.img`
   object-fit: contain;
 `
 
-export function ImageReferencePreview({reference}: ImageReferencePreviewProps) {
+export function ImageReferencePreview({reference}: ImageReferencePreviewProps) : React.JSX.Element {
   const documentPreviewStore = useDocumentPreviewStore()
   const observeAsset = useCallback(
     (id: string) => observeImageAsset(documentPreviewStore, id),

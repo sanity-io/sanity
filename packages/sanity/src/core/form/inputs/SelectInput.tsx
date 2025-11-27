@@ -28,7 +28,7 @@ const EMPTY_ITEM = {title: '', value: undefined}
  * @hidden
  * @beta
  */
-export function SelectInput(props: StringInputProps) {
+export function SelectInput(props: StringInputProps) : React.JSX.Element {
   const {
     value,
     readOnly,

@@ -71,7 +71,7 @@ function nameToInitials(fullName: string) {
 /**
  * @hidden
  * @beta */
-export function UserAvatar(props: UserAvatarProps) {
+export function UserAvatar(props: UserAvatarProps) : React.JSX.Element {
   const {user, withTooltip, ...restProps} = props
 
   if (isRecord(user)) {

@@ -30,7 +30,7 @@ interface RecentSearchesProps {
   inputElement?: HTMLInputElement | null
 }
 
-export function RecentSearches({inputElement}: RecentSearchesProps) {
+export function RecentSearches({inputElement}: RecentSearchesProps) : React.JSX.Element {
   const {
     dispatch,
     state: {filtersVisible, fullscreen},

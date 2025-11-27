@@ -4,7 +4,7 @@ import {Box, Card, Container, Menu, Stack, Text} from '@sanity/ui'
 import {MenuGroup} from '../menuGroup'
 import {MenuItem} from '../menuItem'
 
-export default function MenuGroupStory() {
+export default function MenuGroupStory() : React.JSX.Element {
   return (
     <Container width={0} padding={4}>
       <Stack space={4}>

@@ -20,7 +20,7 @@ export interface CommentInputDiscardDialogProps {
  * @beta
  * @hidden
  */
-export function CommentInputDiscardDialog(props: CommentInputDiscardDialogProps) {
+export function CommentInputDiscardDialog(props: CommentInputDiscardDialogProps) : React.JSX.Element {
   const {t} = useTranslation(commentsLocaleNamespace)
   const {onClose, onConfirm} = props
 

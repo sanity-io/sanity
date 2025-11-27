@@ -29,7 +29,7 @@ const errorChannel = globalScope.__sanityErrorChannel
  * per Studio application.
  * To wrap React subtrees, use the {@link StudioErrorBoundary} component instead.
  */
-export function StudioRootErrorHandler(props: {children: ReactNode}) {
+export function StudioRootErrorHandler(props: {children: ReactNode}) : React.JSX.Element {
   const {children} = props
   const [errorState, setErrorState] = useState<ErrorState>()
 

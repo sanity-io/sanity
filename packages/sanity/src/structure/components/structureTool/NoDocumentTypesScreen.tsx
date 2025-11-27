@@ -4,7 +4,7 @@ import {useTranslation} from 'sanity'
 
 import {structureLocaleNamespace} from '../../i18n'
 
-export function NoDocumentTypesScreen() {
+export function NoDocumentTypesScreen() : React.JSX.Element {
   const {t} = useTranslation(structureLocaleNamespace)
 
   return (

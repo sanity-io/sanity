@@ -35,7 +35,7 @@ const DescriptionInputRoot = styled.div<{$mode: FormMode; $minHeight: number}>((
   `
 })
 
-export function DescriptionInput(props: ArrayFieldProps & {mode: FormMode}) {
+export function DescriptionInput(props: ArrayFieldProps & {mode: FormMode}) : React.JSX.Element {
   const {
     value: _propValue,
     mode,

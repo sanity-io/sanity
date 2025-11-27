@@ -3,7 +3,7 @@ import {useMemo} from 'react'
 import scrollIntoView from 'scroll-into-view-if-needed'
 
 // This hook is used to scroll the editor selection into place when actively editing the document.
-export function useScrollSelectionIntoView(scrollElement: HTMLElement | null) {
+export function useScrollSelectionIntoView(scrollElement: HTMLElement | null) : React.JSX.Element {
   return useMemo(
     () =>
       (editor: PortableTextEditor, domRange: Range): void => {

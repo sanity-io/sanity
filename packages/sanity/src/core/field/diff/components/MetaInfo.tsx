@@ -16,7 +16,7 @@ const MetaText = styled(Text)`
 `
 
 /** @internal */
-export function MetaInfo(props: MetaInfoProps) {
+export function MetaInfo(props: MetaInfoProps) : React.JSX.Element {
   const {title, action, icon: Icon, children, markRemoved} = props
 
   return (

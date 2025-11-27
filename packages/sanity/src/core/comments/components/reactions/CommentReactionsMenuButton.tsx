@@ -23,7 +23,7 @@ export interface CommentReactionsMenuButtonProps {
   }) => React.JSX.Element
 }
 
-export function CommentReactionsMenuButton(props: CommentReactionsMenuButtonProps) {
+export function CommentReactionsMenuButton(props: CommentReactionsMenuButtonProps) : React.JSX.Element {
   const {onMenuClose, onMenuOpen, onSelect, options, readOnly, renderMenuButton, mode} = props
   const [buttonElement, setButtonElement] = useState<HTMLButtonElement | null>(null)
   const popoverRef = useRef<HTMLDivElement | null>(null)

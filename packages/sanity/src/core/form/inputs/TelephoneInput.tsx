@@ -14,7 +14,7 @@ export type TelephoneInputProps = StringInputProps
  * @hidden
  * @beta
  */
-export function TelephoneInput(props: TelephoneInputProps) {
+export function TelephoneInput(props: TelephoneInputProps) : React.JSX.Element {
   const {schemaType, validationError, value, elementProps} = props
 
   return (

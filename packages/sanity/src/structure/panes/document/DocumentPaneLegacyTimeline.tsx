@@ -8,7 +8,7 @@ import {usePaneOptions} from './DocumentPane'
 import {DocumentPaneProvider} from './DocumentPaneProvider'
 import {type DocumentPaneProviderProps} from './types'
 
-export const DocumentPaneWithLegacyTimelineStore = (props: DocumentPaneProviderProps) => {
+export const DocumentPaneWithLegacyTimelineStore = (props: DocumentPaneProviderProps) : React.JSX.Element => {
   const {pane} = props
   const paneRouter = usePaneRouter()
   const options = usePaneOptions(pane.options, paneRouter.params)

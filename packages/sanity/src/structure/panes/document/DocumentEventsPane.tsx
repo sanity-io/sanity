@@ -23,7 +23,7 @@ import {usePaneOptions} from './DocumentPane'
 import {DocumentPaneProvider} from './DocumentPaneProvider'
 import {type DocumentPaneProviderProps} from './types'
 
-export const DocumentEventsPane = (props: DocumentPaneProviderProps) => {
+export const DocumentEventsPane = (props: DocumentPaneProviderProps) : React.JSX.Element => {
   const {params = EMPTY_PARAMS} = usePaneRouter()
   const options = usePaneOptions(props.pane.options, params)
   const schema = useSchema()

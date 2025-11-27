@@ -6,7 +6,7 @@ import {CommonDateEqualInput} from '../components/filters/filter/inputs/date/Com
 import {SearchProvider} from '../contexts/search/SearchProvider'
 import {type OperatorDateEqualValue} from '../definitions/operators/dateOperators'
 
-export default function CommonDateEqualStory() {
+export default function CommonDateEqualStory() : React.JSX.Element {
   const isDateTime = useBoolean('Datetime', true, 'Props')
 
   const [value, setValue] = useState<OperatorDateEqualValue | null>(null)

@@ -42,7 +42,7 @@ const SearchDialogBox = styled(Box)`
 /**
  * @internal
  */
-export function SearchDialog({onClose, onOpen, open}: SearchDialogProps) {
+export function SearchDialog({onClose, onOpen, open}: SearchDialogProps) : React.JSX.Element {
   const [inputElement, setInputElement] = useState<HTMLInputElement | null>(null)
   const scheme = useColorSchemeValue()
 

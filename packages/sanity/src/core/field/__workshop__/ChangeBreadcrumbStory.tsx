@@ -2,7 +2,7 @@ import {Card, Container, Flex} from '@sanity/ui'
 
 import {ChangeBreadcrumb} from '../diff/components/ChangeBreadcrumb'
 
-export default function ChangeBreadCrumbStory() {
+export default function ChangeBreadCrumbStory() : React.JSX.Element {
   return (
     <Card height="fill" padding={4} tone="transparent">
       <Flex align="center" height="fill" justify="center">

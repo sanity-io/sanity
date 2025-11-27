@@ -27,7 +27,7 @@ const PENDING_STATE = {loading: false, error: false, status: 'pending'}
 const EXPIRED_STATE = {loading: false, error: false, status: 'expired'}
 
 /** @internal */
-export const useRoleRequestsStatus = () => {
+export const useRoleRequestsStatus = () : React.JSX.Element => {
   const client = useClient({apiVersion: '2024-07-01'})
   const projectId = useProjectId()
 

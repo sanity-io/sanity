@@ -16,7 +16,7 @@ interface SingleDocReleaseEnabledProviderProps {
  * @internal
  */
 
-export function SingleDocReleaseEnabledProvider({children}: SingleDocReleaseEnabledProviderProps) {
+export function SingleDocReleaseEnabledProvider({children}: SingleDocReleaseEnabledProviderProps) : React.JSX.Element {
   const {enabled: featureEnabled, isLoading, error} = useFeatureEnabled(FEATURES.singleDocRelease)
   const isWorkspaceEnabled = useScheduledDraftsEnabled()
 

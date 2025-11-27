@@ -15,7 +15,7 @@ type Props = {
 }
 const elapsedMs = (date: string): number => new Date().getTime() - new Date(date).getTime()
 
-export function UploadProgress({uploadState, onCancel, onStale}: Props) {
+export function UploadProgress({uploadState, onCancel, onStale}: Props) : React.JSX.Element {
   const filename = uploadState.file.name
 
   useEffect(() => {

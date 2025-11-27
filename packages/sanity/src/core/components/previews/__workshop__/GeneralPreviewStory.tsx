@@ -36,7 +36,7 @@ const previewComponents: {
   media: MediaPreview,
 }
 
-export default function GeneralPreviewStory() {
+export default function GeneralPreviewStory() : React.JSX.Element {
   const layout = useSelect('Layout', LAYOUT_OPTIONS, 'compact')
 
   const isPlaceholder = useBoolean('Is placeholder', false)

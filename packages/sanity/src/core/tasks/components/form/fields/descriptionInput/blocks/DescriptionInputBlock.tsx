@@ -10,7 +10,7 @@ interface NormalBlockProps {
   children: ReactNode
 }
 
-export function DescriptionInputBlock(props: NormalBlockProps) {
+export function DescriptionInputBlock(props: NormalBlockProps) : React.JSX.Element {
   const {children} = props
 
   return (

@@ -19,7 +19,7 @@ const Sticky = styled(Box)`
   margin: auto;
 `
 
-export function DropMessage(props: Props) {
+export function DropMessage(props: Props) : React.JSX.Element {
   const {hoveringFiles, types, resolveUploader} = props
   const acceptedFiles = hoveringFiles.filter((file) =>
     types.some((type) => resolveUploader(type, file)),

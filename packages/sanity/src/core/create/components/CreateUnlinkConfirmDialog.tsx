@@ -13,7 +13,7 @@ export interface CreateUnlinkConfirmDialogProps {
   documentTitle?: string
 }
 
-export function CreateUnlinkConfirmDialog(props: CreateUnlinkConfirmDialogProps) {
+export function CreateUnlinkConfirmDialog(props: CreateUnlinkConfirmDialogProps) : React.JSX.Element {
   const {onClose, onDocumentChange, documentTitle} = props
   const id = useId()
   const [unlinking, setUnlinking] = useState(false)

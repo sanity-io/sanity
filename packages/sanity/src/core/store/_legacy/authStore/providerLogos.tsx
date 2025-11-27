@@ -57,7 +57,7 @@ const GoogleLogo = () => (
   </svg>
 )
 
-export function CustomLogo(props: {provider: AuthProvider}) {
+export function CustomLogo(props: {provider: AuthProvider}) : React.JSX.Element {
   const {provider} = props
 
   return provider.logo ? (

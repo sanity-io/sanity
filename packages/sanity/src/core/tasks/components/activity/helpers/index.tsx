@@ -37,7 +37,7 @@ export const NoWrap = styled.span`
   white-space: nowrap;
 `
 
-export function useUpdatedTimeAgo(timestamp: string) {
+export function useUpdatedTimeAgo(timestamp: string) : React.JSX.Element {
   const date = new Date(timestamp)
   const dateFormatter = useDateTimeFormat(DATE_FORMAT_OPTIONS)
   const formattedDate = dateFormatter.format(date)
@@ -47,7 +47,7 @@ export function useUpdatedTimeAgo(timestamp: string) {
   return {timeAgo: updatedTimeAgo, formattedDate}
 }
 
-export function UserName({userId}: {userId: string}) {
+export function UserName({userId}: {userId: string}) : React.JSX.Element {
   const [user, isLoading] = useUser(userId)
   return isLoading ? <TextSkeleton style={{width: '15ch'}} /> : <Strong>{user?.displayName}</Strong>
 }

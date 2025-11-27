@@ -61,7 +61,7 @@ interface CommentsListItemContextMenuProps {
   status: CommentStatus
 }
 
-export function CommentsListItemContextMenu(props: CommentsListItemContextMenuProps) {
+export function CommentsListItemContextMenu(props: CommentsListItemContextMenuProps) : React.JSX.Element {
   const {
     canDelete,
     canEdit,

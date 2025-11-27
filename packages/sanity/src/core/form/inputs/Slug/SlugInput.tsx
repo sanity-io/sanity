@@ -53,7 +53,7 @@ async function getNewFromSource(
  * @hidden
  * @beta
  */
-export function SlugInput(props: SlugInputProps) {
+export function SlugInput(props: SlugInputProps) : React.JSX.Element {
   const getFormValue = useGetFormValue()
   const {
     path,

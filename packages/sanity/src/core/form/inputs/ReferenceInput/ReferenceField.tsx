@@ -13,7 +13,7 @@ interface ReferenceFieldProps extends Omit<ObjectFieldProps, 'renderDefault'> {
   schemaType: ReferenceSchemaType
 }
 
-export function ReferenceField(props: ReferenceFieldProps) {
+export function ReferenceField(props: ReferenceFieldProps) : React.JSX.Element {
   const elementRef = useRef<HTMLDivElement | null>(null)
   const {schemaType, path, open, inputId, children, inputProps} = props
 

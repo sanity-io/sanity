@@ -75,7 +75,7 @@ export function DiffStringSegment(props: {segment: StringDiffSegment}): React.JS
 }
 
 /** @internal */
-export function DiffString(props: {diff: StringDiff}) {
+export function DiffString(props: {diff: StringDiff}) : React.JSX.Element {
   const {diff} = props
 
   return (

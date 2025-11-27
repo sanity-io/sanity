@@ -75,7 +75,7 @@ function resolveGithubURLFromVersion(ver: SemVer) {
   }
   return undefined
 }
-export function StudioInfoDialog(props: StudioInfoDialogProps) {
+export function StudioInfoDialog(props: StudioInfoDialogProps) : React.JSX.Element {
   const {t} = useTranslation()
   const {onClose} = props
   const dialogId = useId()

@@ -16,7 +16,7 @@ export interface ScheduleFiltersProps {
   selectedDate?: Date
 }
 
-export const ScheduleFilters = (props: ScheduleFiltersProps) => {
+export const ScheduleFilters = (props: ScheduleFiltersProps) : React.JSX.Element => {
   const {onClearDate, selectedDate} = props
   const {navigate} = useRouter()
   const {schedules, scheduleState} = useSchedules()

@@ -125,7 +125,7 @@ interface AnimatedStatusIconProps {
   status?: 'changes' | 'saved' | 'syncing'
 }
 
-export function AnimatedStatusIcon(props: AnimatedStatusIconProps) {
+export function AnimatedStatusIcon(props: AnimatedStatusIconProps) : React.JSX.Element {
   const {status} = props
 
   if (!status) {

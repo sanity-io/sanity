@@ -104,7 +104,7 @@ export interface ParsedUrlState {
   url: string
 }
 
-export function VisionGui(props: VisionGuiProps) {
+export function VisionGui(props: VisionGuiProps) : React.JSX.Element {
   const {datasets, config, projectId, defaultDataset} = props
   const toast = useToast()
   const {t} = useTranslation(visionLocaleNamespace)

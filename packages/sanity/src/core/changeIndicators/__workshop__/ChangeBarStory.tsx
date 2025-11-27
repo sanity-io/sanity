@@ -3,7 +3,7 @@ import {useBoolean} from '@sanity/ui-workshop'
 
 import {ElementWithChangeBar} from '../ElementWithChangeBar'
 
-export default function ChangeBarStory() {
+export default function ChangeBarStory() : React.JSX.Element {
   const isChanged = useBoolean('Changed', true, 'Props')
 
   return (

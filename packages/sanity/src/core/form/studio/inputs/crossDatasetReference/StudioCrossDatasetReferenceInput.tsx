@@ -76,7 +76,7 @@ type SearchError = {
  * @hidden
  * @beta
  */
-export function StudioCrossDatasetReferenceInput(props: StudioCrossDatasetReferenceInputProps) {
+export function StudioCrossDatasetReferenceInput(props: StudioCrossDatasetReferenceInputProps) : React.JSX.Element {
   const {path, schemaType} = props
   const source = useSource()
   const client = source.getClient(DEFAULT_STUDIO_CLIENT_OPTIONS)

@@ -48,7 +48,7 @@ GetFormValueProvider.displayName = 'GetFormValueProvider'
  * ```
  */
 
-export function useGetFormValue() {
+export function useGetFormValue() : React.JSX.Element {
   const ctx = useContext(GetFormValueContext)
   if (!ctx) {
     throw new Error('useGetFormValue must be used within a GetFormValueProvider')

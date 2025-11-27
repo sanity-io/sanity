@@ -5,7 +5,7 @@ import {useTranslation} from '../../../../../../../../../i18n'
 import {useSearchState} from '../../../../../contexts/search/useSearchState'
 import {type OperatorInputComponentProps} from '../../../../../definitions/operators/operatorTypes'
 
-export function SearchFilterBooleanInput({onChange, value}: OperatorInputComponentProps<boolean>) {
+export function SearchFilterBooleanInput({onChange, value}: OperatorInputComponentProps<boolean>) : React.JSX.Element {
   const {
     state: {fullscreen},
   } = useSearchState()

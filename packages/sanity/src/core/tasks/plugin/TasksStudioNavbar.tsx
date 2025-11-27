@@ -74,7 +74,7 @@ function TasksStudioNavbarInner(props: NavbarProps) {
   })
 }
 
-export function TasksStudioNavbar(props: NavbarProps) {
+export function TasksStudioNavbar(props: NavbarProps) : React.JSX.Element {
   const {enabled} = useTasksEnabled()
 
   if (!enabled) {

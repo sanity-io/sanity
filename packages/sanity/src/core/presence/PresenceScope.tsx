@@ -17,7 +17,7 @@ export interface PresenceScopeProps {
 }
 
 /** @internal */
-export function PresenceScope(props: PresenceScopeProps) {
+export function PresenceScope(props: PresenceScopeProps) : React.JSX.Element {
   const {readOnly, path, children} = props
   const contextPresence = useContext(FormFieldPresenceContext)
 

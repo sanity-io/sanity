@@ -6,7 +6,7 @@ import {useMeasurePerformanceTelemetry} from './useMeasurePerformanceTelemetry'
 /**
  * @internal
  */
-export function PerformanceTelemetryTracker(props: PropsWithChildren) {
+export function PerformanceTelemetryTracker(props: PropsWithChildren) : React.JSX.Element {
   useMeasurePerformanceTelemetry()
   return props.children
 }

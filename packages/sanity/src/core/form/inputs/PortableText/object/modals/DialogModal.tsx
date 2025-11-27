@@ -14,7 +14,7 @@ interface DefaultEditDialogProps {
   autoFocus?: boolean
 }
 
-export function DefaultEditDialog(props: DefaultEditDialogProps) {
+export function DefaultEditDialog(props: DefaultEditDialogProps) : React.JSX.Element {
   const {onClose, children, title, width = 1, autoFocus} = props
   const dialogId = useId()
   // This seems to work with regular refs as well, but it might be safer to use state.

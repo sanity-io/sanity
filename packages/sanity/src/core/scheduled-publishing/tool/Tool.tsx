@@ -58,7 +58,7 @@ function ScheduledDraftsBanner() {
   }
 }
 
-export default function Tool() {
+export default function Tool() : React.JSX.Element {
   const router = useRouter()
   const {scheduledPublishing} = useWorkspace()
 

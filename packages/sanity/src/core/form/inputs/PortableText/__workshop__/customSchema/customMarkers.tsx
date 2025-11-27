@@ -3,7 +3,7 @@ import {Box, Flex, Text} from '@sanity/ui'
 
 import {type PortableTextMarker} from '../../../../types'
 
-export function renderCustomMarkers(markers: PortableTextMarker[]) {
+export function renderCustomMarkers(markers: PortableTextMarker[]) : React.JSX.Element {
   return markers.map((marker) => {
     if (marker.type === 'customMarkerTest') {
       return (

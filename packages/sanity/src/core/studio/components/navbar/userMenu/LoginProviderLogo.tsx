@@ -97,7 +97,7 @@ interface Props {
   provider: string | undefined
 }
 
-export const LoginProviderLogo = ({provider}: Props) => {
+export const LoginProviderLogo = ({provider}: Props) : React.JSX.Element => {
   const isSaml = provider?.startsWith('saml-')
   const logoName = isSaml ? 'saml' : provider
 

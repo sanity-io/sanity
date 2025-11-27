@@ -18,7 +18,7 @@ interface InspectDialogProps {
   value: Partial<SanityDocument> | null
 }
 
-export function InspectDialog(props: InspectDialogProps) {
+export function InspectDialog(props: InspectDialogProps) : React.JSX.Element {
   const {value} = props
   const {onInspectClose, paneKey} = useDocumentPane()
   const dialogIdPrefix = `${paneKey}_inspect_`

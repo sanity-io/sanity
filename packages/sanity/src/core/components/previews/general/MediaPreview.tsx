@@ -31,7 +31,7 @@ const DEFAULT_MEDIA_DIMENSIONS: PreviewMediaDimensions = {
 /**
  * @hidden
  * @beta */
-export function MediaPreview(props: MediaPreviewProps) {
+export function MediaPreview(props: MediaPreviewProps) : React.JSX.Element {
   const {
     media,
     mediaDimensions = DEFAULT_MEDIA_DIMENSIONS,

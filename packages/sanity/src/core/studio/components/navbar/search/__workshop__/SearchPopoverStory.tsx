@@ -5,7 +5,7 @@ import {SearchProvider} from '../contexts/search/SearchProvider'
 
 const noop = () => null
 
-export default function SearchFieldStory() {
+export default function SearchFieldStory() : React.JSX.Element {
   return (
     <LayerProvider>
       <SearchProvider>

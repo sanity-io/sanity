@@ -96,7 +96,7 @@ const ReleasesUpsell = () => {
   )
 }
 
-export function SchedulesUpsell({cardinalityView}: {cardinalityView: CardinalityView}) {
+export function SchedulesUpsell({cardinalityView}: {cardinalityView: CardinalityView}) : React.JSX.Element {
   if (cardinalityView === 'drafts') {
     return <SingleDocReleasesUpsell />
   }

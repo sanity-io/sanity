@@ -146,7 +146,7 @@ export const TIME_ZONE_SCOPE_TYPE = {
   input: 'input',
 }
 
-export const useTimeZone = (scope: TimeZoneScope) => {
+export const useTimeZone = (scope: TimeZoneScope) : React.JSX.Element => {
   const toast = useToast()
   const keyValueStore = useKeyValueStore()
   const currentLocale = navigator.language

@@ -5,7 +5,7 @@ const degreesToRadians = (degrees: number) => (degrees * Math.PI) / 180
  * @param progress - The progress percentage (0-100)
  * @returns The progress icon based on the progress percentage
  */
-export function ProgressIcon(props: {progress: number}) {
+export function ProgressIcon(props: {progress: number}) : React.JSX.Element {
   const {progress, ...rest} = props
 
   const circlePath = partialCircle(

@@ -28,7 +28,7 @@ type Props = {
   setMenuButtonElement: (element: HTMLButtonElement | null) => void
 }
 
-export function FileActionsMenu(props: Props) {
+export function FileActionsMenu(props: Props) : React.JSX.Element {
   const {
     originalFilename,
     size,

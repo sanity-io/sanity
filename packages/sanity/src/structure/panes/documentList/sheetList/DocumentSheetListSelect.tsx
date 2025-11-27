@@ -6,7 +6,7 @@ import {Checkbox} from '@sanity/ui'
 import {type CellContext} from '@tanstack/react-table'
 import {type MouseEvent, useCallback} from 'react'
 
-export function DocumentSheetListSelect(props: CellContext<SanityDocument, unknown>) {
+export function DocumentSheetListSelect(props: CellContext<SanityDocument, unknown>) : React.JSX.Element {
   const {row, table} = props
 
   const {selectedAnchor, setSelectedAnchor} = table.options.meta || {}

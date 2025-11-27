@@ -22,7 +22,7 @@ const SCHEMA_TYPES = [
   }),
 ]
 
-export function AnnotationsStory() {
+export function AnnotationsStory() : React.JSX.Element {
   return (
     <TestWrapper schemaTypes={SCHEMA_TYPES}>
       <TestForm />

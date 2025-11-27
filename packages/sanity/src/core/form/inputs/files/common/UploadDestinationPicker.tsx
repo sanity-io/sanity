@@ -23,7 +23,7 @@ interface UploadDestinationPickerProps {
   referenceElement?: HTMLElement | null
 }
 
-export function UploadDestinationPicker(props: UploadDestinationPickerProps) {
+export function UploadDestinationPicker(props: UploadDestinationPickerProps) : React.JSX.Element {
   const {assetSources, onSelectAssetSource, text, onClose} = props
   const {t} = useTranslation()
 

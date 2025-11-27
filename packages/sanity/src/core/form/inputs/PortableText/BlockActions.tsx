@@ -21,7 +21,7 @@ const Root = styled.div`
   pointer-events: all;
 `
 
-export function BlockActions(props: BlockActionsProps) {
+export function BlockActions(props: BlockActionsProps) : React.JSX.Element {
   const editor = usePortableTextEditor()
   const {block, onChange, renderBlockActions} = props
   const decoratorValues = useMemo(() => editor.schemaTypes.decorators.map((d) => d.value), [editor])

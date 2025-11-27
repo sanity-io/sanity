@@ -12,7 +12,7 @@ interface ListPaneHeaderProps {
   title: string
 }
 
-export const ListPaneHeader = ({index, menuItems, menuItemGroups, title}: ListPaneHeaderProps) => {
+export const ListPaneHeader = ({index, menuItems, menuItemGroups, title}: ListPaneHeaderProps) : React.JSX.Element => {
   const {features} = useStructureTool()
   const {collapsed, isLast} = usePane()
   // Prevent focus if this is the last (non-collapsed) pane.

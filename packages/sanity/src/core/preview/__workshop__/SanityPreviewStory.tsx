@@ -23,7 +23,7 @@ const VALUE_TYPES: Record<string, 'document' | 'image'> = {
   Image: 'image',
 }
 
-export default function SanityPreviewStory() {
+export default function SanityPreviewStory() : React.JSX.Element {
   const layout = useSelect('Layout', LAYOUT_OPTIONS)
   const type = useSelect('Value type', VALUE_TYPES)
 

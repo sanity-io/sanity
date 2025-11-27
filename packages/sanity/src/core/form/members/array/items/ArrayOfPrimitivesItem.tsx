@@ -36,7 +36,7 @@ export interface PrimitiveMemberItemProps {
  * @hidden
  * @beta
  */
-export function ArrayOfPrimitivesItem(props: PrimitiveMemberItemProps) {
+export function ArrayOfPrimitivesItem(props: PrimitiveMemberItemProps) : React.JSX.Element {
   const focusRef = useRef<{focus: () => void}>(undefined)
   const {member, renderItem, renderInput} = props
 

@@ -31,7 +31,7 @@ class StudioReleaseLimitExceededError extends Error {
  * @beta
  * @hidden
  */
-export function ReleasesUpsellProvider(props: {children: React.ReactNode}) {
+export function ReleasesUpsellProvider(props: {children: React.ReactNode}) : React.JSX.Element {
   const [upsellDialogOpen, setUpsellDialogOpen] = useState(false)
   const {data: allActiveReleases} = useActiveReleases()
   const {enabled: isReleasesFeatureEnabled} = useFeatureEnabled(FEATURES.contentReleases)

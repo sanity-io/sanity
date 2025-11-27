@@ -202,7 +202,7 @@ const listStyleIcons: Record<string, ComponentType> = {
   bullet: UlistIcon,
 }
 
-export function getActionIcon(action: PTEToolbarAction, active: boolean) {
+export function getActionIcon(action: PTEToolbarAction, active: boolean) : React.JSX.Element {
   if (action.icon) {
     if (typeof action.icon === 'string') {
       return <CustomIcon active={active} icon={action.icon} />

@@ -24,7 +24,7 @@ export interface ParamsEditorChange {
   valid: boolean
 }
 
-export function ParamsEditor(props: ParamsEditorProps) {
+export function ParamsEditor(props: ParamsEditorProps) : React.JSX.Element {
   const {onChange, paramsError, hasValidParams, editorRef} = props
   const {t} = useTranslation(visionLocaleNamespace)
 

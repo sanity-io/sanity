@@ -30,7 +30,7 @@ const ContentFlex = styled(Flex)`
 /**
  * @internal
  */
-export function TasksStudioSidebarInner() {
+export function TasksStudioSidebarInner() : React.JSX.Element {
   const {mode} = useTasksEnabled()
   const {activeDocument, data, isLoading} = useTasks()
   const {state, setActiveTab, setViewMode} = useTasksNavigation()
@@ -109,7 +109,7 @@ export function TasksStudioSidebarInner() {
 /**
  * @internal
  */
-export function TasksStudioSidebar() {
+export function TasksStudioSidebar() : React.JSX.Element {
   const {enabled} = useTasksEnabled()
 
   if (!enabled) {

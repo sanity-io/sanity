@@ -28,7 +28,7 @@ const config = defineConfig({
   unstable_clientFactory: () => createMockSanityClient() as unknown as SanityClient,
 })
 
-export default function Story() {
+export default function Story() : React.JSX.Element {
   return (
     <StudioProvider config={config}>
       <Card height="fill" padding={4} sizing="border">

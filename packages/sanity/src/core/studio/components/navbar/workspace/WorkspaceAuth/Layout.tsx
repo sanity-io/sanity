@@ -38,7 +38,7 @@ interface LayoutProps {
   footer?: ReactNode
 }
 
-export function Layout(props: LayoutProps) {
+export function Layout(props: LayoutProps) : React.JSX.Element {
   const {children, footer, header} = props
   const prefersDark = usePrefersDark()
 

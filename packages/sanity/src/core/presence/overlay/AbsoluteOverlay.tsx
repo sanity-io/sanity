@@ -24,7 +24,7 @@ const ITEM_STYLE = {
 }
 
 // This renders regions as they are reported from the RegionReporter. Useful for debugging
-export function AbsoluteOverlay(props: any) {
+export function AbsoluteOverlay(props: any) : React.JSX.Element {
   const {regions, trackerRef, children, ...rest} = props
   return (
     <div ref={trackerRef} style={{position: 'relative'}}>

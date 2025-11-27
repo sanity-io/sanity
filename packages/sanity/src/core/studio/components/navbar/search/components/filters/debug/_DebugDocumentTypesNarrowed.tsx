@@ -2,7 +2,7 @@ import {Card, Code, Stack} from '@sanity/ui'
 
 import {useSearchState} from '../../../contexts/search/useSearchState'
 
-export function DebugDocumentTypesNarrowed() {
+export function DebugDocumentTypesNarrowed() : React.JSX.Element {
   const {
     state: {documentTypesNarrowed},
   } = useSearchState()

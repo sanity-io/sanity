@@ -7,7 +7,7 @@ import {useUserListWithPermissions} from '../../../hooks'
 /**
  * @internal
  */
-export function MentionUserProvider(props: {children: React.ReactNode}) {
+export function MentionUserProvider(props: {children: React.ReactNode}) : React.JSX.Element {
   const [selectedDocument, setSelectedDocument] = useState<SanityDocument | null>(null)
   const mentionOptions = useUserListWithPermissions({
     documentValue: selectedDocument,

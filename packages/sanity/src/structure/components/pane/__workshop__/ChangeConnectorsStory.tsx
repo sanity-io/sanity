@@ -45,7 +45,7 @@ const Scroller = styled(ScrollContainer)`
   scroll-behavior: smooth;
 `
 
-export default function ChangeConnectorsStory() {
+export default function ChangeConnectorsStory() : React.JSX.Element {
   const [reviewChanges, setReviewChanges] = useState(false)
   const onSetFocus = useCallback(() => undefined, [])
   const [focusPath, setFocusPath] = useState<Path>([])

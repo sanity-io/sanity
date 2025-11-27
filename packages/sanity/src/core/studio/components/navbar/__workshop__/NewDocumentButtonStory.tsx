@@ -10,7 +10,7 @@ const MODAL_OPTIONS: Record<string, ModalType> = {
   dialog: 'dialog',
 }
 
-export default function NewDocumentButtonStory() {
+export default function NewDocumentButtonStory() : React.JSX.Element {
   const {options, loading, canCreateDocument} = useNewDocumentOptions()
 
   const modal = useSelect('Modal', MODAL_OPTIONS, 'popover') || 'popover'

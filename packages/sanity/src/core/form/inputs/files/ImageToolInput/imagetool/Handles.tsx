@@ -10,7 +10,7 @@ type CropHandleRect = {
   rotation?: number
 }
 
-export const getHotspotHandlePosition = (hotspotRect: Rect) => {
+export const getHotspotHandlePosition = (hotspotRect: Rect) : React.JSX.Element => {
   const angle = Math.PI * 0.25
   const rx = hotspotRect.width / 2
   const ry = hotspotRect.height / 2
@@ -52,7 +52,7 @@ const HANDLE_PATHS = {
   },
 } as const
 
-export const calculateCropHandles = (cropRect: Rect) => {
+export const calculateCropHandles = (cropRect: Rect) : React.JSX.Element => {
   const hitAreaSize = HANDLE_INTERACTIVE_SIZE
   const halfHitAreaSize = hitAreaSize / 2
   const edgeHitWidth = HANDLE_INTERACTIVE_SIZE

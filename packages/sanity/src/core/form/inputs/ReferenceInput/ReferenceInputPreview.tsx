@@ -46,7 +46,7 @@ function getTone({
 }
 const MENU_POPOVER_PROPS = {portal: true, tone: 'default'} as const
 
-export function ReferenceInputPreview(props: ReferenceInputProps & {children: React.ReactNode}) {
+export function ReferenceInputPreview(props: ReferenceInputProps & {children: React.ReactNode}) : React.JSX.Element {
   const elementRef = useRef<HTMLDivElement | null>(null)
   const {schemaType, path, children, focusPath} = props
   const {readOnly, focused, renderPreview, onChange, onPathFocus, id: inputId} = props

@@ -31,7 +31,7 @@ export const VersionInlineBadge = ({
 /**
  * @internal
  */
-export const getVersionInlineBadge = (release?: ReleaseDocument) => {
+export const getVersionInlineBadge = (release?: ReleaseDocument) : React.JSX.Element => {
   const tone = getReleaseTone(release ?? LATEST)
 
   const ReturnComponent: FC<PropsWithChildren> = ({children}) => (

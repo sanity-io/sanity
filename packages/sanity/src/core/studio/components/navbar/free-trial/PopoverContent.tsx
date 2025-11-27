@@ -19,7 +19,7 @@ interface PopoverContentProps {
   handleOpenNext: () => void
 }
 
-export function PopoverContent({content, handleClose, handleOpenNext}: PopoverContentProps) {
+export function PopoverContent({content, handleClose, handleOpenNext}: PopoverContentProps) : React.JSX.Element {
   return (
     <Card radius={3} overflow={'hidden'} width={0}>
       <Container width={0}>

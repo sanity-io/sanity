@@ -22,7 +22,7 @@ export interface ValidationListProps {
 }
 
 /** @internal */
-export function ValidationList(props: ValidationListProps) {
+export function ValidationList(props: ValidationListProps) : React.JSX.Element {
   const {documentType, kind, validation, onFocus, onClose, truncate} = props
   const errors = validation.filter(isValidationErrorMarker)
   const warnings = validation.filter(isValidationWarningMarker)

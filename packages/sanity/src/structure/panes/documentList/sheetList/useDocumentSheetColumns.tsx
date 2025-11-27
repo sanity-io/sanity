@@ -128,7 +128,7 @@ const flatColumns = (cols: Columns): AccessorKeyColumnDef<SanityDocument, unknow
   })
 }
 
-export function useDocumentSheetColumns(documentSchemaType?: ObjectSchemaType) {
+export function useDocumentSheetColumns(documentSchemaType?: ObjectSchemaType) : React.JSX.Element {
   const documentPreviewStore = useDocumentPreviewStore()
 
   const columns: Columns = useMemo(() => {

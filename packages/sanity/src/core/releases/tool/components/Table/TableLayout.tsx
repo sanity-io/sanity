@@ -11,7 +11,7 @@ interface TableLayoutProps {
 /**
  * @internal
  */
-export const TableLayout = ({isEmptyState, header, content, contentHeight}: TableLayoutProps) => {
+export const TableLayout = ({isEmptyState, header, content, contentHeight}: TableLayoutProps) : React.JSX.Element => {
   if (isEmptyState) {
     // Empty state layout - use CSS Grid to fill height
     return (

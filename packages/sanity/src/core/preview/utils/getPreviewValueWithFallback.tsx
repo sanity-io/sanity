@@ -41,6 +41,6 @@ const EMPTY: {[key: string]: never} = {}
  *
  * @internal
  */
-export function getPreviewValueWithFallback({snapshot, original, fallback}: Sources) {
+export function getPreviewValueWithFallback({snapshot, original, fallback}: Sources) : React.JSX.Element {
   return snapshot || original || getMissingDocumentFallback(fallback || EMPTY)
 }

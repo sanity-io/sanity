@@ -15,7 +15,7 @@ interface CommentReactionsMenuProps {
   onSelect: (option: CommentReactionOption) => void
 }
 
-export function CommentReactionsMenu(props: CommentReactionsMenuProps) {
+export function CommentReactionsMenu(props: CommentReactionsMenuProps) : React.JSX.Element {
   const {options, onSelect} = props
   const {t} = useTranslation(commentsLocaleNamespace)
   const [rootElement, setRootElement] = useState<HTMLDivElement | null>(null)

@@ -7,7 +7,7 @@ import {TooltipOfDisabled} from '../../../components'
 import {type DocumentFieldActionItem} from '../../../config'
 import {useI18nText} from '../../../i18n'
 
-export function FieldActionMenuItem(props: {action: DocumentFieldActionItem}) {
+export function FieldActionMenuItem(props: {action: DocumentFieldActionItem}) : React.JSX.Element {
   const {action} = props
 
   const {title} = useI18nText(action)

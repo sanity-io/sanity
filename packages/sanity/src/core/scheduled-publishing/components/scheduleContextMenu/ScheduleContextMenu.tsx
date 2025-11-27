@@ -19,7 +19,7 @@ interface Props {
   schemaType: SchemaType
 }
 
-export const ScheduleContextMenu = (props: Props) => {
+export const ScheduleContextMenu = (props: Props) : React.JSX.Element => {
   const {actions, onDelete, onEdit, schedule, schemaType} = props
 
   return (

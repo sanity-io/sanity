@@ -8,7 +8,7 @@ export interface DocTitleProps {
   document: SanityDocumentLike
 }
 
-export function DocTitle(props: DocTitleProps) {
+export function DocTitle(props: DocTitleProps) : React.JSX.Element {
   const {document: documentValue} = props
   const schema = useSchema()
   const schemaType = schema.get(documentValue._type)

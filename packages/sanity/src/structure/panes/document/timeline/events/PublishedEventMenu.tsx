@@ -28,7 +28,7 @@ import {usePaneRouter} from '../../../../components/paneRouter/usePaneRouter'
 import {structureLocaleNamespace} from '../../../../i18n'
 import {TIMELINE_MENU_PORTAL} from '../timelineMenu'
 
-export function PublishedEventMenu({event}: {event: PublishDocumentVersionEvent}) {
+export function PublishedEventMenu({event}: {event: PublishDocumentVersionEvent}) : React.JSX.Element {
   const {t} = useTranslation(structureLocaleNamespace)
   const {t: tCore} = useTranslation()
   const portalContext = usePortal()

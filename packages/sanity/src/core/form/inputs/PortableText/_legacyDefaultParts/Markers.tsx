@@ -40,7 +40,7 @@ const IconText = styled(Text)(({theme}: {theme: Theme}) => {
   `
 })
 
-export function DefaultMarkers(props: MarkersProps) {
+export function DefaultMarkers(props: MarkersProps) : React.JSX.Element {
   const {markers, validation, renderCustomMarkers} = props
   const {CustomMarkers} = useFormBuilder().__internal.components
 

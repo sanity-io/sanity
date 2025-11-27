@@ -26,7 +26,7 @@ function getThemeValues(theme: StudioTheme): RootTheme {
 }
 
 /** @internal */
-export function StudioThemeProvider({children}: StudioThemeProviderProps) {
+export function StudioThemeProvider({children}: StudioThemeProviderProps) : React.JSX.Element {
   const theme = useActiveWorkspace().activeWorkspace.theme
 
   if (theme.__legacy) {

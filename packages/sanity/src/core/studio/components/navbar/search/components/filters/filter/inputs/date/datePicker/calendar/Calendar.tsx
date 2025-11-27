@@ -39,7 +39,7 @@ const PRESERVE_FOCUS_ELEMENT = (
   />
 )
 
-export function Calendar(props: CalendarProps) {
+export function Calendar(props: CalendarProps) : React.JSX.Element {
   const {date, endDate, onSelect, selectRange, selectTime} = props
 
   const [calendarElement, setCalendarElement] = useState<HTMLElement | null>(null)

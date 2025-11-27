@@ -9,7 +9,7 @@ function isPortableTextInputProps(
   return isArrayOfBlocksSchemaType(inputProps.schemaType)
 }
 
-export function CommentsInput(props: InputProps) {
+export function CommentsInput(props: InputProps) : React.JSX.Element {
   if (isPortableTextInputProps(props)) {
     return <CommentsPortableTextInput {...props} />
   }

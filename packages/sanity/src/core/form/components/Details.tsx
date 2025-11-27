@@ -51,7 +51,7 @@ const IconBox = styled(Flex)`
   }
 `
 
-export function Details(props: DetailsProps) {
+export function Details(props: DetailsProps) : React.JSX.Element {
   const {children, open: openProp, icon, title = 'Details', ...restProps} = props
   const [open, setOpen] = useState(openProp || false)
 

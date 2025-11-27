@@ -14,7 +14,7 @@ const EMPTY_ARRAY: [] = []
 /**
  * @internal
  */
-export function TasksProvider(props: TasksProviderProps) {
+export function TasksProvider(props: TasksProviderProps) : React.JSX.Element {
   const {children} = props
   const [activeDocument, setActiveDocument] = useState<ActiveDocument | null>(null)
   const {data = EMPTY_ARRAY, isLoading} = useTasksStore({})

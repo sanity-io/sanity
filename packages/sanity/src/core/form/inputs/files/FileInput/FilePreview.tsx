@@ -14,7 +14,7 @@ import {FileActionsMenu} from './FileActionsMenu'
 import {FileSkeleton} from './FileSkeleton'
 import {type FileAssetProps} from './types'
 
-export function FilePreview(props: FileAssetProps) {
+export function FilePreview(props: FileAssetProps) : React.JSX.Element {
   const {
     assetSources,
     clearField,

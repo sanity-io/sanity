@@ -6,7 +6,7 @@ import {useSingleDocReleaseEnabled} from '../../../singleDocRelease/context/Sing
 import {singleDocReleaseNamespace} from '../../../singleDocRelease/i18n'
 import {ReleaseIllustration} from '../resources/ReleaseIllustration'
 
-export const ScheduledDraftsEmptyState = () => {
+export const ScheduledDraftsEmptyState = () : React.JSX.Element => {
   const {t} = useTranslation(singleDocReleaseNamespace)
   const {mode} = useSingleDocReleaseEnabled()
   if (mode === 'upsell') {

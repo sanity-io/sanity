@@ -15,7 +15,7 @@ export const BooleanPreview: FieldPreviewComponent<boolean> = function BooleanPr
   return <Preview checked={value} color={color} />
 }
 
-export function Checkbox({checked, color}: BooleanProps) {
+export function Checkbox({checked, color}: BooleanProps) : React.JSX.Element {
   return (
     <svg
       width="17"
@@ -33,7 +33,7 @@ export function Checkbox({checked, color}: BooleanProps) {
   )
 }
 
-export function Switch({checked, color}: BooleanProps) {
+export function Switch({checked, color}: BooleanProps) : React.JSX.Element {
   return (
     <svg width="38" height="22" viewBox="0 0 38 22" xmlns="http://www.w3.org/2000/svg">
       <rect width="38" height="22" rx="11" fill={checked ? color?.border : color?.background} />

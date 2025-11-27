@@ -27,7 +27,7 @@ const cardStyles: CSSProperties = {
 }
 
 /** @internal */
-export function DiffFromTo(props: DiffFromToProps) {
+export function DiffFromTo(props: DiffFromToProps) : React.JSX.Element {
   const {
     align,
     cardClassName,

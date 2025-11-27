@@ -35,7 +35,7 @@ interface StructureErrorProps {
   error: unknown
 }
 
-export function StructureError({error}: StructureErrorProps) {
+export function StructureError({error}: StructureErrorProps) : React.JSX.Element {
   if (!(error instanceof PaneResolutionError)) {
     throw error
   }

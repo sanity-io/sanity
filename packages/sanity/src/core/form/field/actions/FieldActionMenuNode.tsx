@@ -10,7 +10,7 @@ interface FieldActionMenuNodeProps {
   prevIsGroup: boolean
 }
 
-export function FieldActionMenuNode(props: FieldActionMenuNodeProps) {
+export function FieldActionMenuNode(props: FieldActionMenuNodeProps) : React.JSX.Element {
   const {action, isFirst, prevIsGroup} = props
 
   if (action.type === 'divider') {

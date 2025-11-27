@@ -8,7 +8,7 @@ type Props = {
   onClearValue?: () => void
 }
 
-export function InvalidImageWarning({onClearValue}: Props) {
+export function InvalidImageWarning({onClearValue}: Props) : React.JSX.Element {
   const {t} = useTranslation()
   return (
     <Card tone="caution" padding={4} border radius={2}>

@@ -6,7 +6,7 @@ import {ImageReferencePreview} from './ImageReferencePreview'
 interface AssetPreviewProps {
   reference: ReferenceValue
 }
-export function AssetPreview({reference}: AssetPreviewProps) {
+export function AssetPreview({reference}: AssetPreviewProps) : React.JSX.Element {
   if (!reference) {
     return null
   }

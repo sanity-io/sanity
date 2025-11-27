@@ -76,7 +76,7 @@ const missingPatchChannel: PatchChannel = {
   },
 }
 
-export function FormBuilderProvider(props: FormBuilderProviderProps) {
+export function FormBuilderProvider(props: FormBuilderProviderProps) : React.JSX.Element {
   const {
     __internal_fieldActions: fieldActions = EMPTY_ARRAY,
     __internal_patchChannel: patchChannel = missingPatchChannel,

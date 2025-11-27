@@ -25,7 +25,7 @@ export interface ArrayOfObjectsInputMembersProps {
  * Convenience component for wrapping an array of objects
  * @internal
  */
-export function ArrayOfObjectsInputMembers(props: ArrayOfObjectsInputMembersProps) {
+export function ArrayOfObjectsInputMembers(props: ArrayOfObjectsInputMembersProps) : React.JSX.Element {
   const {members, ...rest} = props
   return (
     <>

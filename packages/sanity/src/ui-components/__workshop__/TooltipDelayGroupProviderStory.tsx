@@ -5,7 +5,7 @@ import {Button} from '../button'
 import {Tooltip} from '../tooltip'
 import {TooltipDelayGroupProvider} from '../tooltipDelayGroupProvider'
 
-export default function TooltipDelayGroupProviderStory() {
+export default function TooltipDelayGroupProviderStory() : React.JSX.Element {
   const text = useString('Tooltip content', 'Tooltip content', 'Props') || ''
 
   return (

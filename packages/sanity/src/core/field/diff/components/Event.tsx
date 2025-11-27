@@ -124,7 +124,7 @@ interface TimelineItemProps {
 /**
  * @internal
  */
-export function Event({event, showChangesBy = 'tooltip'}: TimelineItemProps) {
+export function Event({event, showChangesBy = 'tooltip'}: TimelineItemProps) : React.JSX.Element {
   const {t} = useTranslation('studio')
   const {type, timestamp, documentVariantType} = event
 

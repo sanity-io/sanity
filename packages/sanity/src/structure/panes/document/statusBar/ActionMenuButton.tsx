@@ -52,7 +52,7 @@ export const ActionDialogWrapper = memo(function ActionDialogWrapper({
 /**
  * @internal
  */
-export function ActionMenuButton(props: ActionMenuButtonProps) {
+export function ActionMenuButton(props: ActionMenuButtonProps) : React.JSX.Element {
   const {actionStates, disabled} = props
   const idPrefix = useId()
 
@@ -117,7 +117,7 @@ interface ActionMenuListItemProps {
   onAction: (idx: number) => void
 }
 
-export function ActionMenuListItem(props: ActionMenuListItemProps) {
+export function ActionMenuListItem(props: ActionMenuListItemProps) : React.JSX.Element {
   const {actionState, disabled, index, onAction} = props
   const {onHandle} = actionState
 

@@ -34,7 +34,7 @@ export interface UpsellContextValue {
  *
  * @internal
  */
-export function getDialogPropsFromContext(contextValue: UpsellContextValue) {
+export function getDialogPropsFromContext(contextValue: UpsellContextValue) : React.JSX.Element {
   return {
     data: contextValue.upsellData,
     open: contextValue.upsellDialogOpen,

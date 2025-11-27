@@ -39,7 +39,7 @@ interface CommentsFieldButtonProps {
   value: CommentMessage
 }
 
-export function CommentsFieldButton(props: CommentsFieldButtonProps) {
+export function CommentsFieldButton(props: CommentsFieldButtonProps) : React.JSX.Element {
   const {
     count,
     currentUser,

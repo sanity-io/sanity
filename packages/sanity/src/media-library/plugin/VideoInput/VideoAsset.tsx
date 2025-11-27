@@ -28,7 +28,7 @@ function isVideoSource(source: any) {
   return source?.asset?._ref?.startsWith('media-library:')
 }
 
-export function VideoAsset(props: VideoAssetProps) {
+export function VideoAsset(props: VideoAssetProps) : React.JSX.Element {
   const {
     assetSources,
     changed,

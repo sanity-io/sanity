@@ -4,7 +4,7 @@ import {AssetLimitUpsellContext, type AssetLimitUpsellContextValue} from 'sanity
 import {getDialogPropsFromContext, useUpsellContext} from '../../../hooks/useUpsellContext'
 import {UpsellDialog} from '../../../studio/upsell/UpsellDialog'
 
-export function AssetLimitUpsellProvider({children}: PropsWithChildren) {
+export function AssetLimitUpsellProvider({children}: PropsWithChildren) : React.JSX.Element {
   const contextValue = useUpsellContext({
     dataUri: '/journey/asset-limit',
     feature: 'asset-limits',

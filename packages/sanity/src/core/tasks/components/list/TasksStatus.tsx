@@ -8,7 +8,7 @@ interface TasksStatusProps {
   status?: string
 }
 
-export function TasksStatus(props: TasksStatusProps) {
+export function TasksStatus(props: TasksStatusProps) : React.JSX.Element {
   const operations = useTaskOperations()
   const {documentId, status} = props
 

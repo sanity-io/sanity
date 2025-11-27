@@ -19,7 +19,7 @@ interface FreeTrialProps {
   type: 'sidebar' | 'topbar'
 }
 
-export function FreeTrial({type}: FreeTrialProps) {
+export function FreeTrial({type}: FreeTrialProps) : React.JSX.Element {
   const {data, showDialog, showOnLoad, toggleShowContent} = useFreeTrialContext()
   const scheme = useColorSchemeValue()
   const telemetry = useTelemetry()

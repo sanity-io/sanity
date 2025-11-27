@@ -20,7 +20,7 @@ const serialize = (date: Date) => format(date, DEFAULT_DATE_FORMAT)
 /**
  * @hidden
  * @beta */
-export function DateInput(props: DateInputProps) {
+export function DateInput(props: DateInputProps) : React.JSX.Element {
   const {readOnly, onChange, schemaType, elementProps, value, id} = props
   const dateFormat = schemaType.options?.dateFormat || DEFAULT_DATE_FORMAT
   const {t} = useTranslation()

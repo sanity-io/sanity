@@ -6,7 +6,7 @@ import {WithReferencedAsset} from '../../../utils/WithReferencedAsset'
 import {FileSkeleton} from './FileSkeleton'
 import {type FileAssetProps} from './types'
 
-export function FileAssetSource(props: FileAssetProps) {
+export function FileAssetSource(props: FileAssetProps) : React.JSX.Element {
   const {
     isUploading,
     observeAsset,

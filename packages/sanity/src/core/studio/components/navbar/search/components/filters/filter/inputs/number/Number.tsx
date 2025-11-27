@@ -5,7 +5,7 @@ import {useTranslation} from '../../../../../../../../../i18n'
 import {useSearchState} from '../../../../../contexts/search/useSearchState'
 import {type OperatorInputComponentProps} from '../../../../../definitions/operators/operatorTypes'
 
-export function SearchFilterNumberInput({value, onChange}: OperatorInputComponentProps<number>) {
+export function SearchFilterNumberInput({value, onChange}: OperatorInputComponentProps<number>) : React.JSX.Element {
   const [uncontrolledValue, setUncontrolledValue] = useState(value ?? '')
 
   const {

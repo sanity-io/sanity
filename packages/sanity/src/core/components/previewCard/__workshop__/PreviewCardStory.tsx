@@ -6,7 +6,7 @@ import {DocumentPreviewPresence} from '../../../presence'
 import {TextWithTone} from '../../textWithTone'
 import {PreviewCard} from '../PreviewCard'
 
-export default function PreviewCardStory() {
+export default function PreviewCardStory() : React.JSX.Element {
   const selected = useBoolean('Selected', true)
 
   return (

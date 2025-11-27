@@ -44,7 +44,7 @@ const HIGHLIGHT_BLOCK_VARIANTS: Variants = {
   },
 }
 
-export function CommentsField(props: FieldProps) {
+export function CommentsField(props: FieldProps) : React.JSX.Element {
   const {enabled, mode} = useCommentsEnabled()
 
   if (!enabled) {

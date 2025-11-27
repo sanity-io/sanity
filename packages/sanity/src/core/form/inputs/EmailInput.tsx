@@ -14,7 +14,7 @@ export type EmailInputProps = StringInputProps
  * @hidden
  * @beta
  */
-export function EmailInput(props: EmailInputProps) {
+export function EmailInput(props: EmailInputProps) : React.JSX.Element {
   const {validationError, elementProps} = props
   return (
     <TextInput {...elementProps} type="email" inputMode="email" customValidity={validationError} />

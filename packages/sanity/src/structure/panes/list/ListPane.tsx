@@ -12,7 +12,7 @@ type ListPaneProps = BaseStructureToolPaneProps<'list'>
 /**
  * @internal
  */
-export function ListPane(props: ListPaneProps) {
+export function ListPane(props: ListPaneProps) : React.JSX.Element {
   const {childItemId, index, isActive, isSelected, pane, paneKey} = props
 
   const {defaultLayout, displayOptions, items, menuItems, menuItemGroups} = pane

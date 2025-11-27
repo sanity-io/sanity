@@ -8,7 +8,7 @@ import {useTranslation} from '../../../../i18n'
  *
  * @internal
  */
-export function NoItemsPlaceholder({schemaType}: {schemaType: ArraySchemaType}) {
+export function NoItemsPlaceholder({schemaType}: {schemaType: ArraySchemaType}) : React.JSX.Element {
   const {t} = useTranslation()
   return (
     <Card padding={3} border radius={2}>

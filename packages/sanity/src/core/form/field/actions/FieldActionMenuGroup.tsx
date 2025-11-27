@@ -10,7 +10,7 @@ const POPOVER_PROPS: MenuGroupProps['popover'] = {
   fallbackPlacements: ['top', 'bottom'],
 }
 
-export function FieldActionMenuGroup(props: {group: DocumentFieldActionGroup}) {
+export function FieldActionMenuGroup(props: {group: DocumentFieldActionGroup}) : React.JSX.Element {
   const {group} = props
   const {title} = useI18nText(group)
 

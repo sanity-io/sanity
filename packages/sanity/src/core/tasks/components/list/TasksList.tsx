@@ -91,7 +91,7 @@ interface TasksListProps {
 /**
  * @internal
  */
-export function TasksList(props: TasksListProps) {
+export function TasksList(props: TasksListProps) : React.JSX.Element {
   const {items = EMPTY_ARRAY, onTaskSelect} = props
 
   const tasksByStatus = useMemo(

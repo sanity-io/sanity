@@ -26,7 +26,7 @@ interface TestInputProps {
   withCustomMarkers?: boolean
 }
 
-export function TestInput(props: TestInputProps) {
+export function TestInput(props: TestInputProps) : React.JSX.Element {
   const {
     markers: markersProp = [],
     validation: validationProp = [],

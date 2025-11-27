@@ -7,7 +7,7 @@ import {SANITY_VERSION} from '../../version'
 import {WhatsNewHelpMenuItemClicked} from './__telemetry__/studioAnnouncements.telemetry'
 import {useStudioAnnouncements} from './useStudioAnnouncements'
 
-export function StudioAnnouncementsMenuItem({text}: {text: string}) {
+export function StudioAnnouncementsMenuItem({text}: {text: string}) : React.JSX.Element {
   const {onDialogOpen, studioAnnouncements} = useStudioAnnouncements()
   const telemetry = useTelemetry()
 

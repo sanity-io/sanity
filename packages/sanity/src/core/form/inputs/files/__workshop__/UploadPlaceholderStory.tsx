@@ -3,7 +3,7 @@ import {Card, Container, Flex} from '@sanity/ui'
 import {Button} from '../../../../../ui-components'
 import {UploadPlaceholder} from '../common/UploadPlaceholder'
 
-export default function UploadPlaceholderStory() {
+export default function UploadPlaceholderStory() : React.JSX.Element {
   return (
     <Flex align="center" height="fill" justify="center" padding={3}>
       <Container width={1}>

@@ -29,7 +29,7 @@ const getTaskSubscribers = (task: TaskDocument): string[] => {
   }
   return subscribers
 }
-export function FormCreate(props: ObjectInputProps) {
+export function FormCreate(props: ObjectInputProps) : React.JSX.Element {
   const [creating, setCreating] = useState(false)
   const {onChange} = props
   const {setViewMode, setActiveTab} = useTasksNavigation()

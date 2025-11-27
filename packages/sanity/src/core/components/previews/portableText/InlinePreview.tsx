@@ -20,7 +20,7 @@ const DEFAULT_MEDIA_DIMENSIONS: PreviewMediaDimensions = {
 /**
  * @hidden
  * @beta */
-export function InlinePreview(props: InlinePreviewProps) {
+export function InlinePreview(props: InlinePreviewProps) : React.JSX.Element {
   const {
     title,
     fallbackTitle = 'Untitled',

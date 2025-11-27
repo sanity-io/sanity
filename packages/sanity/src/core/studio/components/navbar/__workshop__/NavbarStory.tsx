@@ -38,7 +38,7 @@ export const NavbarContext = createContext<NavbarContextValue>({
   onSearchOpenChange: () => '',
 })
 
-export default function NavbarStory() {
+export default function NavbarStory() : React.JSX.Element {
   const projectName = useString('Project name', undefined)
   const [portalEl, setPortalEl] = useState<HTMLDivElement | null>(null)
   const Navbar = useNavbarComponent()

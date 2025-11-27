@@ -17,7 +17,7 @@ interface MentionsItemProps {
   onSelect: (userId: string) => void
 }
 
-export function MentionsMenuItem(props: MentionsItemProps) {
+export function MentionsMenuItem(props: MentionsItemProps) : React.JSX.Element {
   const {user, onSelect} = props
   const [loadedUser] = useUser(user.id)
   const {t} = useTranslation(commentsLocaleNamespace)

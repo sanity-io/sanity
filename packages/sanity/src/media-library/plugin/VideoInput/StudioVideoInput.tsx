@@ -16,7 +16,7 @@ export type VideoInputProps = Omit<
   'assetSources' | 'directUploads' | 'observeAsset' | 'resolveUploader' | 'client' | 't'
 >
 
-export function StudioVideoInput(props: VideoInputProps) {
+export function StudioVideoInput(props: VideoInputProps) : React.JSX.Element {
   const sourcesFromSchema = props.schemaType.options?.sources
   const documentPreviewStore = useDocumentPreviewStore()
   const {file: fileConfig} = useFormBuilder().__internal

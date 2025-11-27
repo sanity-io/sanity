@@ -20,7 +20,7 @@ interface ScheduleDatePickerProps {
 
 const inputDateFormat = 'PP HH:mm'
 
-export const ScheduleDatePicker = ({value, onChange, timeZoneScope}: ScheduleDatePickerProps) => {
+export const ScheduleDatePicker = ({value, onChange, timeZoneScope}: ScheduleDatePickerProps) : React.JSX.Element => {
   const {t} = useTranslation()
   const {timeZone, utcToCurrentZoneDate, zoneDateToUtc} = useTimeZone(timeZoneScope)
   const {dialogTimeZoneShow, DialogTimeZone, dialogProps} = useDialogTimeZone(timeZoneScope)

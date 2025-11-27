@@ -23,7 +23,7 @@ const StyledLink = styled.a<{$index: number}>`
   }
 `
 
-export default function FilterableStory() {
+export default function FilterableStory() : React.JSX.Element {
   const [inputElement, setInputElement] = useState<HTMLInputElement | null>(null)
   const [filter, setFilter] = useState<string>('')
   const [message, setMessage] = useState('')

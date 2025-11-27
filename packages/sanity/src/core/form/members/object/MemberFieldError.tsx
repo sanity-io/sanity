@@ -11,7 +11,7 @@ import {MissingKeysAlert} from './errors/MissingKeysAlert'
 import {MixedArrayAlert} from './errors/MixedArrayAlert'
 
 /** @internal */
-export function MemberFieldError(props: {member: FieldError}) {
+export function MemberFieldError(props: {member: FieldError}) : React.JSX.Element {
   const {member} = props
   const {onChange} = useFormCallbacks()
 

@@ -46,7 +46,7 @@ interface UpsellDialogProps {
   interpolation?: InterpolationProp
 }
 
-export function UpsellDialog(props: UpsellDialogProps) {
+export function UpsellDialog(props: UpsellDialogProps) : React.JSX.Element {
   const {data, open = true, onClose, onPrimaryClick, onSecondaryClick, interpolation} = props
 
   if (!data || !open) {

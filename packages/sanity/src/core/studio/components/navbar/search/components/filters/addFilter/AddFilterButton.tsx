@@ -9,7 +9,7 @@ import {useSearchState} from '../../../contexts/search/useSearchState'
 import {FilterPopoverWrapper} from '../common/FilterPopoverWrapper'
 import {AddFilterPopoverContent} from './AddFilterPopoverContent'
 
-export function AddFilterButton() {
+export function AddFilterButton() : React.JSX.Element {
   const [open, setOpen] = useState(false)
   const [buttonElement, setButtonElement] = useState<HTMLElement | null>(null)
   const popoverRef = useRef<HTMLDivElement | null>(null)

@@ -4,7 +4,7 @@ import {useMemo} from 'react'
 
 import {createSchema} from '../createSchema'
 
-export default function ReferenceSchemaStory() {
+export default function ReferenceSchemaStory() : React.JSX.Element {
   const authorTypeDef = useMemo(
     () => ({
       type: 'document',

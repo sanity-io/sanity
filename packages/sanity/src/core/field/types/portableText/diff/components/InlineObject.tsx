@@ -45,7 +45,7 @@ const InlineObjectWrapper = styled(Card)`
   }
 `
 
-export function InlineObject({diff, object, schemaType, ...restProps}: InlineObjectProps) {
+export function InlineObject({diff, object, schemaType, ...restProps}: InlineObjectProps) : React.JSX.Element {
   const {t} = useTranslation()
   if (!schemaType) {
     return (

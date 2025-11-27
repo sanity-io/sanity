@@ -22,7 +22,7 @@ const StyledTextArea = styled(TextArea)`
  * @hidden
  * @beta
  */
-export function TextInput(props: TextInputProps) {
+export function TextInput(props: TextInputProps) : React.JSX.Element {
   const {schemaType, validationError, value, elementProps} = props
 
   return (

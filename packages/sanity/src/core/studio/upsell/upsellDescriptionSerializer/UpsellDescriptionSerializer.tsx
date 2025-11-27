@@ -330,7 +330,7 @@ interface DescriptionSerializerProps {
  * Not meant for public consumption.
  * @internal
  */
-export function UpsellDescriptionSerializer(props: DescriptionSerializerProps) {
+export function UpsellDescriptionSerializer(props: DescriptionSerializerProps) : React.JSX.Element {
   const {blocks, onLinkClick, interpolation} = props
 
   const value = useMemo(() => transformBlocks(blocks), [blocks])

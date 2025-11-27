@@ -7,7 +7,7 @@ import {useEffect, useState} from 'react'
  * @returns showGradient - A boolean that determines if the gradient should be shown
  * @internal
  */
-export function useChipScrollPosition(containerRef: React.RefObject<HTMLDivElement | null>) {
+export function useChipScrollPosition(containerRef: React.RefObject<HTMLDivElement | null>) : React.JSX.Element {
   const [showGradient, setShowGradient] = useState(false)
 
   useEffect(() => {

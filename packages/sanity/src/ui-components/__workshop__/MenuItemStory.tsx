@@ -8,7 +8,7 @@ import {MenuItem} from '../menuItem'
 const HOTKEYS = ['Ctrl', 'Alt', 'P']
 const AVATAR_INITIALS = 'AW'
 
-export default function MenuItemStory() {
+export default function MenuItemStory() : React.JSX.Element {
   const text = useString('Text', 'Text', 'Props') || ''
 
   return (

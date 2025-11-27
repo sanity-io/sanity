@@ -23,7 +23,7 @@ const ASSET_FIELDS = ['originalFilename']
 // To trigger deleted state, set `id` to valid, non-existant image asset ID,
 // eg: 'image-1217bc35db5030739b7be571c79d3c401551911d-300x200-png'
 
-export const NoImagePreview = () => {
+export const NoImagePreview = () : React.JSX.Element => {
   const {t} = useTranslation()
   return (
     <Card flex={1} tone="transparent" padding={4} radius={2} height="stretch">

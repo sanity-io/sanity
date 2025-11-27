@@ -30,7 +30,7 @@ const Root = styled.div`
 `
 
 /** @internal */
-export function FormFieldStatus({children, maxAvatars, position = 'bottom'}: FieldStatusProps) {
+export function FormFieldStatus({children, maxAvatars, position = 'bottom'}: FieldStatusProps) : React.JSX.Element {
   return (
     <Root data-max-avatars={maxAvatars} data-position={position}>
       {children}

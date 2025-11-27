@@ -7,7 +7,7 @@ type Props = Omit<ComponentProps<typeof LazyTextInput>, 'onChange' | 'value'> & 
   onChange: (year: number) => void
 }
 
-export const YearInput = ({onChange, ...props}: Props) => {
+export const YearInput = ({onChange, ...props}: Props) : React.JSX.Element => {
   const handleChange = useCallback(
     (event: FocusEvent<HTMLInputElement> | ChangeEvent<HTMLInputElement>) => {
       const numericValue = parseInt(event.currentTarget.value, 10)

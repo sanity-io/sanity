@@ -11,7 +11,7 @@ export interface ImageToolProps extends Omit<ToolSVGProps, 'image' | 'size'> {
   src: string
 }
 
-export function ImageTool(props: ImageToolProps) {
+export function ImageTool(props: ImageToolProps) : React.JSX.Element {
   const containerRef = useRef<HTMLDivElement>(null)
   const [containerWidth, setContainerWidth] = useState<number | null>(null)
   const [containerHeight, setContainerHeight] = useState<number | null>(null)

@@ -64,7 +64,7 @@ export interface ReferenceInputOptions {
 /**
  * @internal
  */
-export function useReferenceInputOptions() {
+export function useReferenceInputOptions() : React.JSX.Element {
   return useContext(ReferenceInputOptionsContext)
 }
 

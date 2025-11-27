@@ -12,7 +12,7 @@ interface CalendarDayProps {
   isPastDisabled?: boolean
 }
 
-export function CalendarDay(props: CalendarDayProps) {
+export function CalendarDay(props: CalendarDayProps) : React.JSX.Element {
   const {date, focused, isCurrentMonth, isToday, onSelect, selected, isPastDisabled} = props
 
   const handleClick = useCallback(() => {

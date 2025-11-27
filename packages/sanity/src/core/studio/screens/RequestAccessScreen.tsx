@@ -29,7 +29,7 @@ export interface AccessRequest {
 
 const MAX_NOTE_LENGTH = 150
 
-export function RequestAccessScreen() {
+export function RequestAccessScreen() : React.JSX.Element {
   const [currentUser, setCurrentUser] = useState<CurrentUser | null>(null)
   const [client, setClient] = useState<SanityClient | undefined>()
   const [projectId, setProjectId] = useState<string | undefined>()

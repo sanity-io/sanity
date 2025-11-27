@@ -30,7 +30,7 @@ const Root = styled(Popover)`
 
 export const TIMELINE_MENU_PORTAL = 'timeline-menu'
 
-export function TimelineMenu({chunk, mode, placement}: TimelineMenuProps) {
+export function TimelineMenu({chunk, mode, placement}: TimelineMenuProps) : React.JSX.Element {
   const {setTimelineRange, timelineError, ready, timelineStore} = useDocumentPane()
   const [open, setOpen] = useState(false)
   const [button, setButton] = useState<HTMLButtonElement | null>(null)

@@ -23,7 +23,7 @@ const emptyRowStyle = {
 /**
  * @internal
  */
-export const TableEmptyState = ({emptyState, colSpan}: TableEmptyStateProps) => {
+export const TableEmptyState = ({emptyState, colSpan}: TableEmptyStateProps) : React.JSX.Element => {
   if (typeof emptyState === 'string') {
     return (
       <Card borderBottom display="flex" padding={4} as="tr" style={emptyRowStyle}>

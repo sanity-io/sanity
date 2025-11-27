@@ -4,7 +4,7 @@ import {useState} from 'react'
 import {Button} from '../button'
 import {Popover} from '../popover'
 
-export default function PopoverStory() {
+export default function PopoverStory() : React.JSX.Element {
   const [popoverOpen, setPopoverOpen] = useState(false)
 
   return (

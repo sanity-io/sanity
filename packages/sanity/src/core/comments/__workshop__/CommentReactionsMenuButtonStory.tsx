@@ -5,7 +5,7 @@ import {CommentReactionsMenuButton} from '../components'
 import {COMMENT_REACTION_OPTIONS} from '../constants'
 import {type CommentReactionOption, type CommentReactionShortNames} from '../types'
 
-export default function CommentReactionsMenuButtonStory() {
+export default function CommentReactionsMenuButtonStory() : React.JSX.Element {
   const [selectedOptions, setSelectedOptions] = useState<CommentReactionShortNames[]>([])
 
   const handleOnSelect = useCallback(

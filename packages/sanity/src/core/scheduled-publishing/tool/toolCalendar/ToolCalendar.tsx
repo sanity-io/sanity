@@ -10,7 +10,7 @@ export interface ToolCalendarProps {
   timeZoneScope: TimeZoneScope
 }
 
-export const ToolCalendar = (props: ToolCalendarProps) => {
+export const ToolCalendar = (props: ToolCalendarProps) : React.JSX.Element => {
   const {onSelect, selectedDate, timeZoneScope} = props
 
   const {getCurrentZoneDate, utcToCurrentZoneDate} = useTimeZone(timeZoneScope)

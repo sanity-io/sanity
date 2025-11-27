@@ -32,7 +32,7 @@ const TasksStudioLayoutInner = (props: LayoutProps) => {
   return <AddonDatasetProvider>{children}</AddonDatasetProvider>
 }
 
-export function TasksStudioLayout(props: LayoutProps) {
+export function TasksStudioLayout(props: LayoutProps) : React.JSX.Element {
   return (
     <TasksEnabledProvider>
       <TasksStudioLayoutInner {...props} />

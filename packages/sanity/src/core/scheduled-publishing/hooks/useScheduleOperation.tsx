@@ -66,7 +66,7 @@ export const scheduleCustomEvent = <
   },
 ): CustomEvent<D> => new CustomEvent(name, payload)
 
-export default function useScheduleOperation() {
+export default function useScheduleOperation() : React.JSX.Element {
   const toast = useToast()
   const {formatDateTz} = useTimeZone({type: 'scheduledPublishing'})
   const api = useScheduleApi()

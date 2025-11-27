@@ -29,7 +29,7 @@ const Divider = styled.div((props) => {
  * @internal
  * Navigation buttons for the active tab the user selected, will be shown when editing a task.
  */
-export function TasksActiveTabNavigation(props: TasksActiveTabNavigationProps) {
+export function TasksActiveTabNavigation(props: TasksActiveTabNavigationProps) : React.JSX.Element {
   const {items: allItems} = props
   const {state, setViewMode} = useTasksNavigation()
   const {selectedTask} = state

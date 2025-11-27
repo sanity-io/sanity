@@ -8,7 +8,7 @@ interface FilterIconProps {
   filter: SearchFilter
 }
 
-export function FilterIcon({filter}: FilterIconProps) {
+export function FilterIcon({filter}: FilterIconProps) : React.JSX.Element {
   const {
     state: {definitions},
   } = useSearchState()

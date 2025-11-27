@@ -43,7 +43,7 @@ function Content() {
   )
 }
 
-export default function CommentInlineHighlightSpanStory() {
+export default function CommentInlineHighlightSpanStory() : React.JSX.Element {
   return (
     <Flex align="center" height="fill">
       <Container width={1}>

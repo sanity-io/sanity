@@ -102,7 +102,7 @@ interface BuildRangeDecorationsProps {
 /**
  * @internal
  */
-export function buildCommentRangeDecorations(props: BuildRangeDecorationsProps) {
+export function buildCommentRangeDecorations(props: BuildRangeDecorationsProps) : React.JSX.Element {
   const {
     comments,
     currentHoveredCommentId,

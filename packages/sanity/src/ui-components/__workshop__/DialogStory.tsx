@@ -4,7 +4,7 @@ import {useState} from 'react'
 import {Button} from '../button'
 import {Dialog} from '../dialog'
 
-export default function DialogStory() {
+export default function DialogStory() : React.JSX.Element {
   const [dialogDefaultOpen, setDialogDefaultOpen] = useState(false)
   const [dialogPaddingOpen, setDialogPaddingOpen] = useState(false)
 

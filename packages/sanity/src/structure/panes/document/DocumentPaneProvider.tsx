@@ -63,7 +63,7 @@ interface DocumentPaneProviderProps extends DocumentPaneProviderWrapperProps {
  * @internal
  */
 // eslint-disable-next-line max-statements
-export function DocumentPaneProvider(props: DocumentPaneProviderProps) {
+export function DocumentPaneProvider(props: DocumentPaneProviderProps) : React.JSX.Element {
   const {
     children,
     index,

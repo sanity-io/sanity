@@ -32,7 +32,7 @@ interface InlineCommentInputPopoverProps {
   value: CommentInputProps['value']
 }
 
-export function InlineCommentInputPopover(props: InlineCommentInputPopoverProps) {
+export function InlineCommentInputPopover(props: InlineCommentInputPopoverProps) : React.JSX.Element {
   const {
     currentUser,
     mentionOptions,

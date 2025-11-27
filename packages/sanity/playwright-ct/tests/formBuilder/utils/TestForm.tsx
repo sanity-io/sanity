@@ -66,7 +66,7 @@ const Scroller = styled(ScrollContainer)<{$disabled: boolean}>(({$disabled}) => 
   `
 })
 
-export function TestForm(props: TestFormProps) {
+export function TestForm(props: TestFormProps) : React.JSX.Element {
   const {
     document: documentFromProps,
     focusPath: focusPathFromProps,

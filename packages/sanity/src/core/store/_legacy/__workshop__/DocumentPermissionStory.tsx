@@ -4,7 +4,7 @@ import {useEffect, useState} from 'react'
 import {useGrantsStore} from '../datastores'
 import {type PermissionCheckResult} from '../grants/types'
 
-export default function DocumentPermissionStory() {
+export default function DocumentPermissionStory() : React.JSX.Element {
   const grantsStore = useGrantsStore()
   const [permission, setPermission] = useState<PermissionCheckResult | null>(null)
 

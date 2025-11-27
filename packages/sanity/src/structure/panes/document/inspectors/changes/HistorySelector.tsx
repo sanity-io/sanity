@@ -20,7 +20,7 @@ const Scroller = styled(ScrollContainer)`
   scroll-behavior: smooth;
 `
 
-export function HistorySelector({showList}: {showList: boolean}) {
+export function HistorySelector({showList}: {showList: boolean}) : React.JSX.Element {
   const {timelineError, setTimelineRange, timelineStore} = useDocumentPane()
   const {selectedReleaseId} = usePerspective()
   const [scrollRef, setScrollRef] = useState<HTMLDivElement | null>(null)

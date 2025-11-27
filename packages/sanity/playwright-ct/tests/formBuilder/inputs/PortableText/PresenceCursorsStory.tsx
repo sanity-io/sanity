@@ -28,7 +28,7 @@ interface PresenceCursorsStoryProps {
   document: SanityDocument
 }
 
-export function PresenceCursorsStory(props: PresenceCursorsStoryProps) {
+export function PresenceCursorsStory(props: PresenceCursorsStoryProps) : React.JSX.Element {
   const {document, presence} = props
 
   return (

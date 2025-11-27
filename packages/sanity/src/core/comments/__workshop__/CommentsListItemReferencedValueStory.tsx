@@ -4,7 +4,7 @@ import {useMemo} from 'react'
 
 import {CommentsListItemReferencedValue} from '../components'
 
-export default function CommentsListItemReferencedValueStory() {
+export default function CommentsListItemReferencedValueStory() : React.JSX.Element {
   const text = useText('value', 'This is a referenced value') || 'This is a referenced value'
   const hasReferencedValue = useBoolean('Has referenced value', true)
 

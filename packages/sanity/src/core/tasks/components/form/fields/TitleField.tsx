@@ -94,7 +94,7 @@ export function Title(props: {
   )
 }
 
-export function TitleField(props: StringFieldProps) {
+export function TitleField(props: StringFieldProps) : React.JSX.Element {
   const {value, inputProps} = props
   const {onChange, schemaType} = inputProps
 

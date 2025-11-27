@@ -43,7 +43,7 @@ interface NewDocumentButtonProps {
 /**
  * @internal
  */
-export function NewDocumentButton(props: NewDocumentButtonProps) {
+export function NewDocumentButton(props: NewDocumentButtonProps) : React.JSX.Element {
   const {canCreateDocument, modal = 'popover', loading, options} = props
 
   const [open, setOpen] = useState<boolean>(false)

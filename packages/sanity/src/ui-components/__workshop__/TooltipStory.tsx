@@ -4,7 +4,7 @@ import {useString} from '@sanity/ui-workshop'
 import {Button} from '../button'
 import {Tooltip} from '../tooltip'
 
-export default function TooltipStory() {
+export default function TooltipStory() : React.JSX.Element {
   const text = useString('Tooltip content', 'Tooltip content', 'Props') || ''
 
   return (

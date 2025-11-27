@@ -13,7 +13,7 @@ export interface UsageDialogProps {
   onClose: () => void
 }
 
-export function AssetUsageDialog({asset, assetType, onClose}: UsageDialogProps) {
+export function AssetUsageDialog({asset, assetType, onClose}: UsageDialogProps) : React.JSX.Element {
   const {isLoading, referringDocuments} = useLegacyReferringDocuments(asset._id)
 
   const publishedDocuments = useMemo(() => {

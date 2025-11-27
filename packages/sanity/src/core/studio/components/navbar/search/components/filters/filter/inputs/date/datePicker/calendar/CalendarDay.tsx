@@ -48,7 +48,7 @@ const CustomCard = styled(Card)`
   }
 `
 
-export function CalendarDay({date, onSelect}: CalendarDayProps) {
+export function CalendarDay({date, onSelect}: CalendarDayProps) : React.JSX.Element {
   const handleClick = useCallback(() => {
     onSelect(date)
   }, [date, onSelect])

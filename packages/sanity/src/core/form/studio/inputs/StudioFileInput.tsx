@@ -21,7 +21,7 @@ export type FileInputProps = Omit<
 /**
  * @hidden
  * @beta */
-export function StudioFileInput(props: FileInputProps) {
+export function StudioFileInput(props: FileInputProps) : React.JSX.Element {
   const sourcesFromSchema = props.schemaType.options?.sources
   const documentPreviewStore = useDocumentPreviewStore()
   const {file: fileConfig} = useFormBuilder().__internal

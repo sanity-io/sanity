@@ -3,7 +3,7 @@ import {Box, Card} from '@sanity/ui'
 
 import {MetaInfo} from '../diff'
 
-export default function MetaInfoStory() {
+export default function MetaInfoStory() : React.JSX.Element {
   return (
     <Box padding={4}>
       <MetaInfo action="Action" icon={ImageIcon} markRemoved title="Title">

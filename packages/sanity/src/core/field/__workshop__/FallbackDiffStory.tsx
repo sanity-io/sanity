@@ -5,7 +5,7 @@ import {FallbackDiff} from '../diff/components/FallbackDiff'
 /**
  * TODO
  */
-export default function FallbackDiffStory() {
+export default function FallbackDiffStory() : React.JSX.Element {
   return (
     <Box padding={4}>
       <FallbackDiff {...({} as any)} />

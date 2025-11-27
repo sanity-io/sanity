@@ -14,7 +14,7 @@ interface Props {
   src: string
 }
 
-export function ImagePreview(props: ComponentProps<typeof Card> & Props) {
+export function ImagePreview(props: ComponentProps<typeof Card> & Props) : React.JSX.Element {
   const {drag, readOnly, isRejected, src, ...rest} = props
   const [isLoaded, setLoaded] = useState(false)
   const acceptTone = isRejected || readOnly ? 'critical' : 'primary'

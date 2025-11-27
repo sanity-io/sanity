@@ -74,7 +74,7 @@ const SCHEMA_TYPES = [
   }),
 ]
 
-export function ObjectBlockStory() {
+export function ObjectBlockStory() : React.JSX.Element {
   return (
     <TestWrapper schemaTypes={SCHEMA_TYPES}>
       <TestForm />

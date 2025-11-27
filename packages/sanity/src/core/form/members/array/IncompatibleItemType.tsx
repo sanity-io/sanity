@@ -17,7 +17,7 @@ interface Props {
   vertical?: boolean
 }
 
-export function IncompatibleItemType(props: Props) {
+export function IncompatibleItemType(props: Props) : React.JSX.Element {
   const {value, onFocus, vertical, ...rest} = props
   const [showDetails, setShowDetails] = useState(false)
   const popoverRef = useRef<HTMLDivElement | null>(null)

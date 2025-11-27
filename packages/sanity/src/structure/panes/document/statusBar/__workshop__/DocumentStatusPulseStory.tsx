@@ -8,7 +8,7 @@ const STATUS_OPTIONS: Record<string, 'saved' | 'syncing'> = {
   syncing: 'syncing',
 }
 
-export default function DocumentStatusPulseStory() {
+export default function DocumentStatusPulseStory() : React.JSX.Element {
   const status = useSelect('Status', STATUS_OPTIONS) || 'saved'
 
   return (

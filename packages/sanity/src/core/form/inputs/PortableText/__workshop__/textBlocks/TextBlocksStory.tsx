@@ -36,7 +36,7 @@ const blockBase = {
   ],
 }
 
-export function TextBlocksStory() {
+export function TextBlocksStory() : React.JSX.Element {
   const hasErrors = useBoolean('Has errors', false)
   const hasMarkers = useBoolean('Has markers', false)
   const markers: PortableTextMarker[] = useMemo(

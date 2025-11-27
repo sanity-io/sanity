@@ -30,7 +30,7 @@ interface CommentsListStatusProps {
   status: CommentStatus
 }
 
-export function CommentsListStatus(props: CommentsListStatusProps) {
+export function CommentsListStatus(props: CommentsListStatusProps) : React.JSX.Element {
   const {status, error, loading, hasNoComments} = props
   const {t} = useTranslation(commentsLocaleNamespace)
   const emptyStateMessages = getEmptyStateMessages(t)

@@ -60,7 +60,7 @@ const StatusText = styled(Text)<{$status: 'error' | 'warning' | 'info'}>(({$stat
 })
 
 /** @internal */
-export function FormFieldValidationStatus(props: FormFieldValidationStatusProps) {
+export function FormFieldValidationStatus(props: FormFieldValidationStatusProps) : React.JSX.Element {
   const {validation = EMPTY_ARRAY, __unstable_showSummary: showSummary, fontSize, placement} = props
 
   const hasErrors = validation.some((v) => v.level === 'error')

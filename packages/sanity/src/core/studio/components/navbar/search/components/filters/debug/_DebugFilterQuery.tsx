@@ -2,7 +2,7 @@ import {Card, Code, Stack} from '@sanity/ui'
 
 import {useSearchState} from '../../../contexts/search/useSearchState'
 
-export function DebugFilterQuery() {
+export function DebugFilterQuery() : React.JSX.Element {
   const {
     state: {
       terms: {filter},

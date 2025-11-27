@@ -57,7 +57,7 @@ const SubtitleSkeleton = styled(TextSkeleton).attrs({animated: true, radius: 1, 
 /**
  * @hidden
  * @beta */
-export function TemplatePreview(props: TemplatePreviewProps) {
+export function TemplatePreview(props: TemplatePreviewProps) : React.JSX.Element {
   const {
     description,
     isPlaceholder,

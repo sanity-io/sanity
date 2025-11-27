@@ -43,7 +43,7 @@ interface CommentsUpsellPanelProps {
  */
 const HORIZONTAL_PADDING_Y = [3, 3, 5]
 
-export function UpsellPanel(props: CommentsUpsellPanelProps) {
+export function UpsellPanel(props: CommentsUpsellPanelProps) : React.JSX.Element {
   const {
     data,
     onPrimaryClick,

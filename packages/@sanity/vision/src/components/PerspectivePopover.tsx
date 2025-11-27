@@ -28,7 +28,7 @@ const Dot = styled.div<{$tone: CardTone}>`
 
 const SHOW_DEFAULT_PERSPECTIVE_NOTIFICATION = false
 
-export function PerspectivePopover() {
+export function PerspectivePopover() : React.JSX.Element {
   const [open, setOpen] = useState(false)
   const buttonRef = useRef<HTMLButtonElement | null>(null)
   const popoverRef = useRef<HTMLDivElement | null>(null)

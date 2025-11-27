@@ -64,7 +64,7 @@ function TasksAddonWorkspaceProviderInner({
  * Provides a workspace for the addon dataset, with the correct schema for tasks.
  * It also, creates the addon dataset if it doesn't exist.
  */
-export function TasksAddonWorkspaceProvider(props: {children: React.ReactNode; mode: FormMode}) {
+export function TasksAddonWorkspaceProvider(props: {children: React.ReactNode; mode: FormMode}) : React.JSX.Element {
   const {client: addonDatasetClient, ready, createAddonDataset} = useAddonDataset()
   const addonDataset = addonDatasetClient?.config().dataset
 

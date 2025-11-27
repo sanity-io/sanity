@@ -16,7 +16,7 @@ const StyledLink = styled.a`
   }
 `
 
-export default function MinimalStory() {
+export default function MinimalStory() : React.JSX.Element {
   const commandListRef = useRef<CommandListHandle | null>(null)
 
   const handleScrollToTop = useCallback(() => {

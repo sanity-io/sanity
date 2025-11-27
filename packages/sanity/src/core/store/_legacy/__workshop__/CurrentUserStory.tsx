@@ -3,7 +3,7 @@ import {Box, Code, Text} from '@sanity/ui'
 import {Button} from '../../../../ui-components'
 import {useSource} from '../../../studio'
 
-export default function CurrentUserStory() {
+export default function CurrentUserStory() : React.JSX.Element {
   const {currentUser} = useSource()
 
   return (

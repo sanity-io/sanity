@@ -6,7 +6,7 @@ import {structureLocaleNamespace} from '../../../../i18n'
 import {useDocumentPane} from '../../useDocumentPane'
 import {Banner} from './Banner'
 
-export function DeprecatedDocumentTypeBanner() {
+export function DeprecatedDocumentTypeBanner() : React.JSX.Element {
   const {schemaType} = useDocumentPane()
   const {t} = useTranslation(structureLocaleNamespace)
 

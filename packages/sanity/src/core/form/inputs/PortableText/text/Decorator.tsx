@@ -18,7 +18,7 @@ const Root = styled.span(({theme}: {theme: Theme}) => {
   `
 })
 
-export function Decorator(props: BlockDecoratorRenderProps) {
+export function Decorator(props: BlockDecoratorRenderProps) : React.JSX.Element {
   const {value, focused, selected, children, schemaType} = props
   const tag = TEXT_DECORATOR_TAGS[value]
   const CustomComponent = schemaType.component

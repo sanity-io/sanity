@@ -15,7 +15,7 @@ interface ActivityItemProps {
   children: React.ReactNode
   avatarPaddingTop?: number
 }
-export function ActivityItem({avatarPaddingTop = 1, userId, children}: ActivityItemProps) {
+export function ActivityItem({avatarPaddingTop = 1, userId, children}: ActivityItemProps) : React.JSX.Element {
   return (
     <Flex>
       <Box marginRight={3} paddingTop={avatarPaddingTop}>

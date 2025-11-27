@@ -113,7 +113,7 @@ interface CommentInputInnerProps {
   withAvatar?: boolean
 }
 
-export function CommentInputInner(props: CommentInputInnerProps) {
+export function CommentInputInner(props: CommentInputInnerProps) : React.JSX.Element {
   const {
     avatarSize = 1,
     currentUser,

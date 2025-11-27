@@ -15,7 +15,7 @@ const SCROLL_ALIGN_OPTIONS = {
   end: 'end',
 } as const
 
-export default function PopoverStory() {
+export default function PopoverStory() : React.JSX.Element {
   const initialSelectedScrollAlign = useSelect(
     'Initial scroll align',
     SCROLL_ALIGN_OPTIONS,

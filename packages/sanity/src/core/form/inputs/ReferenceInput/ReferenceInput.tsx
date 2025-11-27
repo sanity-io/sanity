@@ -43,7 +43,7 @@ interface AutocompleteOption {
   hit: ReferenceSearchHit
   value: string
 }
-export function ReferenceInput(props: ReferenceInputProps) {
+export function ReferenceInput(props: ReferenceInputProps) : React.JSX.Element {
   const {
     createOptions,
     onChange,

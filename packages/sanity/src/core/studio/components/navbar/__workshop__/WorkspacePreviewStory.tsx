@@ -15,7 +15,7 @@ const STATE_OPTIONS: Record<string, 'logged-in' | 'logged-out' | 'no-access'> = 
   'no-access': 'no-access',
 }
 
-export default function WorkspacePreviewStory() {
+export default function WorkspacePreviewStory() : React.JSX.Element {
   const title = useString('Title', 'Title') || ''
   const subtitle = useString('Subtitle', 'Subtitle') || ''
   const state = useSelect('State', STATE_OPTIONS, 'logged-in') || 'logged-in'

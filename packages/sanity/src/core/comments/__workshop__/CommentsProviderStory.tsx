@@ -16,7 +16,7 @@ const MODES = {
   upsell: 'upsell',
 } as const
 
-export default function CommentsProviderStory() {
+export default function CommentsProviderStory() : React.JSX.Element {
   const _type = useString('_type', 'author') || 'author'
   const _id = useString('_id', 'grrm') || 'grrm'
   const _mode = useSelect('_mode', MODES) || ('default' as keyof typeof MODES)

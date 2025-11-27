@@ -3,7 +3,7 @@ import {isEqual, startsWith} from '@sanity/util/paths'
 import {type ReactNode, useContext, useMemo} from 'react'
 import {ValidationContext} from 'sanity/_singletons'
 
-export function ValidationProvider(props: {validation: ValidationMarker[]; children: ReactNode}) {
+export function ValidationProvider(props: {validation: ValidationMarker[]; children: ReactNode}) : React.JSX.Element {
   return (
     <ValidationContext.Provider value={props.validation}>
       {props.children}

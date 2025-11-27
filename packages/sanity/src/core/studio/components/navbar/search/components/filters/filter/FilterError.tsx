@@ -4,7 +4,7 @@ import {Box, Flex, type ResponsivePaddingProps, Stack} from '@sanity/ui'
 import {TextWithTone} from '../../../../../../../components'
 import {useTranslation} from '../../../../../../../i18n'
 
-export function FilterError(props: ResponsivePaddingProps) {
+export function FilterError(props: ResponsivePaddingProps) : React.JSX.Element {
   const {t} = useTranslation()
 
   return (

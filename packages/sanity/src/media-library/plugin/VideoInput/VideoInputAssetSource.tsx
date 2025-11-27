@@ -7,7 +7,7 @@ import {useTranslation} from '../../../core/i18n'
 import {type VideoAssetProps} from './types'
 import {VideoSkeleton} from './VideoSkeleton'
 
-export function VideoInputAssetSource(props: VideoAssetProps) {
+export function VideoInputAssetSource(props: VideoAssetProps) : React.JSX.Element {
   const {
     isUploading,
     observeAsset,

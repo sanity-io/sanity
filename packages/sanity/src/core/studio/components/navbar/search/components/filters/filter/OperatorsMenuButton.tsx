@@ -38,7 +38,7 @@ function CustomMenuItem({
   )
 }
 
-export function OperatorsMenuButton({filter, operator}: OperatorsMenuButtonProps) {
+export function OperatorsMenuButton({filter, operator}: OperatorsMenuButtonProps) : React.JSX.Element {
   const menuButtonId = useId()
 
   const {t} = useTranslation()

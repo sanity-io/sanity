@@ -14,7 +14,7 @@ import {type SanityDocument} from 'sanity'
 
 import {Button, TooltipDelayGroupProvider} from '../../../../ui-components'
 
-export function DocumentSheetListPaginator({table}: {table: Table<SanityDocument>}) {
+export function DocumentSheetListPaginator({table}: {table: Table<SanityDocument>}) : React.JSX.Element {
   return (
     <TooltipDelayGroupProvider>
       <Flex gap={3} align={'center'}>

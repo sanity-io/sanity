@@ -31,7 +31,7 @@ function nodesHasTone(nodes: _PaneMenuNode[], tone: NonNullable<_PaneMenuItem['t
  * @hidden
  * @beta This API will change. DO NOT USE IN PRODUCTION.
  */
-export function PaneContextMenuButton(props: PaneContextMenuButtonProps) {
+export function PaneContextMenuButton(props: PaneContextMenuButtonProps) : React.JSX.Element {
   const {nodes, actionsNodes} = props
   const id = useId()
 

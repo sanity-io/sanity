@@ -11,7 +11,7 @@ const HIDDEN_STUDIO_MENU_TOOLS = ['releases']
 /**
  * @hidden
  * @beta */
-export function StudioToolMenu(props: ToolMenuProps) {
+export function StudioToolMenu(props: ToolMenuProps) : React.JSX.Element {
   const {context, isSidebarOpen, tools, ...restProps} = props
   const {enabled: scheduledPublishingEnabled} = useScheduledPublishingEnabled()
 

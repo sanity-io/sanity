@@ -18,7 +18,7 @@ export interface MediaProps {
   }
 }
 
-export function Media(props: MediaProps) {
+export function Media(props: MediaProps) : React.JSX.Element {
   const {border = true, dimensions, layout, media, radius = 1, responsive = false, styles} = props
 
   return (

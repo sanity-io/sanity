@@ -27,7 +27,7 @@ interface FloatingButtonPopoverProps {
   referenceElement: PopoverProps['referenceElement']
 }
 
-export function FloatingButtonPopover(props: FloatingButtonPopoverProps) {
+export function FloatingButtonPopover(props: FloatingButtonPopoverProps) : React.JSX.Element {
   const {disabled, onClick, onClickOutside, referenceElement} = props
   const buttonRef = useRef<HTMLButtonElement | null>(null)
   const {t} = useTranslation(commentsLocaleNamespace)

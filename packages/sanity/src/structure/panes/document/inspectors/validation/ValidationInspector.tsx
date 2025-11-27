@@ -32,7 +32,7 @@ const MARKER_TONE: Record<'error' | 'warning' | 'info', CardTone> = {
   info: 'primary',
 }
 
-export function ValidationInspector(props: DocumentInspectorProps) {
+export function ValidationInspector(props: DocumentInspectorProps) : React.JSX.Element {
   const {onClose} = props
   const {onFocus, onPathOpen, schemaType, validation, value, editState} = useDocumentPane()
   const {t} = useTranslation('validation')

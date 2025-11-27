@@ -17,7 +17,7 @@ import {DocumentPaneProvider} from '../panes'
 import {StructureToolProvider} from '../StructureToolProvider'
 import {type DocumentPaneNode} from '../types'
 
-export default function InitialValueStory() {
+export default function InitialValueStory() : React.JSX.Element {
   const documentId = 'test'
   const documentType = 'author'
 

@@ -62,7 +62,7 @@ export interface MemberItemProps {
  * @hidden
  * @beta
  */
-export function ArrayOfObjectsItem(props: MemberItemProps) {
+export function ArrayOfObjectsItem(props: MemberItemProps) : React.JSX.Element {
   const focusRef = useRef<{focus: () => void}>(undefined)
   const {
     member,

@@ -10,7 +10,7 @@ import {UpsellDialog} from '../../../studio/upsell/UpsellDialog'
 /**
  * @beta
  */
-export function SchedulePublishingUpsellProvider(props: {children: React.ReactNode}) {
+export function SchedulePublishingUpsellProvider(props: {children: React.ReactNode}) : React.JSX.Element {
   const contextValue = useUpsellContext({
     dataUri: '/journey/scheduled-publishing',
     feature: 'scheduled_publishing',

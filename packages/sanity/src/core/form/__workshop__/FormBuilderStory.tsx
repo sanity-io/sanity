@@ -6,7 +6,7 @@ import {useDocumentOperation, useEditState, useSchema, useValidationStatus} from
 import {useUnique} from '../../util'
 import {createPatchChannel} from '../patch/PatchChannel'
 
-export default function FormBuilderStory() {
+export default function FormBuilderStory() : React.JSX.Element {
   const documentId = '8ab96211-501c-45e3-9eb0-4ed1da1b50df'
   const documentType = 'author'
   // @todo: there should be a hook for this

@@ -3,7 +3,7 @@ import {useReleasesToolAvailable} from '../../schedules/hooks/useReleasesToolAva
 import {ReleasesMetadataProvider} from '../contexts/ReleasesMetadataProvider'
 import {ReleasesUpsellProvider} from '../contexts/upsell/ReleasesUpsellProvider'
 
-export function ReleasesStudioLayout(props: LayoutProps) {
+export function ReleasesStudioLayout(props: LayoutProps) : React.JSX.Element {
   const releasesToolAvailable = useReleasesToolAvailable()
 
   if (!releasesToolAvailable) {

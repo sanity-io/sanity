@@ -43,7 +43,7 @@ type ErrorBoundaryState = {
  * - Async errors/promise rejections (i.e. fetch(), setTimeout()) even if initially triggered by React
  * @param props - {@link StudioErrorBoundaryProps}
  */
-export function StudioErrorBoundary(props: StudioErrorBoundaryProps) {
+export function StudioErrorBoundary(props: StudioErrorBoundaryProps) : React.JSX.Element {
   const {children, heading = 'An error occurred', getErrorScreen} = props
   const [caughtError, setCaughtError] = useState<ErrorBoundaryState>()
   const [errorScreen, setErrorScreen] = useState<ReactNode>()

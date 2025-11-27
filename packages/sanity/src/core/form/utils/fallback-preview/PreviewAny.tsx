@@ -14,7 +14,7 @@ export interface PreviewAnyProps {
   _depth?: number
 }
 
-export function PreviewAny(props: PreviewAnyProps) {
+export function PreviewAny(props: PreviewAnyProps) : React.JSX.Element {
   const {value, ...rest} = props
 
   switch (typeof value) {

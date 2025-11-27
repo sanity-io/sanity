@@ -1,7 +1,7 @@
 import {type SanityConfig} from '@sanity/sdk'
 import {SanityApp} from '@sanity/sdk-react'
 
-export function App() {
+export function App() : React.JSX.Element {
   // apps can access many different projects or other sources of data
   const sanityConfigs: SanityConfig[] = [
     {

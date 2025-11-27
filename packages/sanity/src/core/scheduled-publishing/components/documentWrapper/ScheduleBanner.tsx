@@ -15,7 +15,7 @@ interface Props {
   markers: ValidationMarker[]
 }
 
-export function ScheduleBanner(props: Props) {
+export function ScheduleBanner(props: Props) : React.JSX.Element {
   const {id, markers} = props
   const publishedId = usePublishedId(id)
   const {hasError} = useValidationState(markers)

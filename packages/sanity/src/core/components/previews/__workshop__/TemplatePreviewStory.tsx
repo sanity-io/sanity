@@ -26,7 +26,7 @@ const previewComponents: Record<LayoutKey, ComponentType<TemplatePreviewProps>> 
   createDocument: TemplatePreview,
 }
 
-export default function TemplatePreviewStory() {
+export default function TemplatePreviewStory() : React.JSX.Element {
   const layout = useSelect('Layout', LAYOUT_OPTIONS, 'createDocument')
 
   const isPlaceholder = useBoolean('Is placeholder', false)

@@ -6,7 +6,7 @@ function ConfigErrorsScreen() {
   return <div>Config errors</div>
 }
 
-export function CurrentWorkspaceProvider({children}: {children: React.ReactNode}) {
+export function CurrentWorkspaceProvider({children}: {children: React.ReactNode}) : React.JSX.Element {
   return (
     <WorkspaceLoader LoadingComponent={LoadingBlock} ConfigErrorsComponent={ConfigErrorsScreen}>
       {children}

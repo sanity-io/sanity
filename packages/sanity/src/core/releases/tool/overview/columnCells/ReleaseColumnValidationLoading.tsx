@@ -4,7 +4,7 @@ import {getReleaseIdFromReleaseDocumentId} from '../../../util/getReleaseIdFromR
 import {useBundleDocuments} from '../../detail/useBundleDocuments'
 import {ValidationProgressIndicator} from '../../detail/ValidationProgressIndicator'
 
-export function ReleaseColumnValidationLoading({releaseId}: {releaseId: string}) {
+export function ReleaseColumnValidationLoading({releaseId}: {releaseId: string}) : React.JSX.Element {
   const rId = getReleaseIdFromReleaseDocumentId(releaseId)
   const {results: documents, loading} = useBundleDocuments(rId)
 

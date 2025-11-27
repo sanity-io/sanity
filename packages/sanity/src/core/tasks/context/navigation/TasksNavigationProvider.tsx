@@ -71,7 +71,7 @@ function reducer(state: State, action: Action): State {
   }
 }
 
-export const TasksNavigationProvider = ({children}: {children: ReactNode}) => {
+export const TasksNavigationProvider = ({children}: {children: ReactNode}) : React.JSX.Element => {
   const [state, dispatch] = useReducer(reducer, initialState)
   const router = useRouter()
   const toast = useToast()

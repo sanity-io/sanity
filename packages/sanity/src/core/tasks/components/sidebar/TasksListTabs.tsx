@@ -26,7 +26,7 @@ interface TasksListTab {
 /**
  * @internal
  */
-export function TasksListTabs({activeTabId, onChange}: TasksListTabsProps) {
+export function TasksListTabs({activeTabId, onChange}: TasksListTabsProps) : React.JSX.Element {
   const {t} = useTranslation(tasksLocaleNamespace)
 
   const tabs: TasksListTab[] = useMemo(

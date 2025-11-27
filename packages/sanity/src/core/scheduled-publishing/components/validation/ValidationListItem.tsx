@@ -28,7 +28,7 @@ export interface ValidationListItemProps {
 /**
  * @internal
  */
-export function ValidationListItem(props: ValidationListItemProps) {
+export function ValidationListItem(props: ValidationListItemProps) : React.JSX.Element {
   const {marker, onClick, path, truncate} = props
 
   const handleClick = useCallback(() => {

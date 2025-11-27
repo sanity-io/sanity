@@ -9,7 +9,7 @@ import {useCurrentUser} from '../../../../store'
 const DEBUG = false
 const noop = () => undefined
 
-export default function ExampleStory() {
+export default function ExampleStory() : React.JSX.Element {
   const inputId = 'test'
   const validationErrors = useBoolean('Validation errors', false, 'Props')
   const title = useString('Title', 'Title', 'Props')

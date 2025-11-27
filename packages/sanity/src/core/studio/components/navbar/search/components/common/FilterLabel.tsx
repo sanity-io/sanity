@@ -21,7 +21,7 @@ const CustomBox = styled(Box)<{$flexShrink?: number}>`
   flex-shrink: ${({$flexShrink = 0}) => $flexShrink};
 `
 
-export function FilterLabel({filter, fontSize = 1, showContent = true}: FilterLabelProps) {
+export function FilterLabel({filter, fontSize = 1, showContent = true}: FilterLabelProps) : React.JSX.Element {
   const {t} = useTranslation()
   const {
     state: {definitions, fullscreen},

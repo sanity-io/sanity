@@ -105,7 +105,7 @@ const CanvasLinkedBannerContent = ({documentId}: {documentId: string}) => {
   )
 }
 
-export function CanvasLinkedBanner() {
+export function CanvasLinkedBanner() : React.JSX.Element {
   const {documentId, displayed} = useDocumentPane()
   const {t} = useTranslation(structureLocaleNamespace)
   const id = displayed?._id || documentId

@@ -41,7 +41,7 @@ interface PopoverDialogProps {
 }
 
 /** @internal */
-export function PopoverDialog(props: PopoverDialogProps) {
+export function PopoverDialog(props: PopoverDialogProps) : React.JSX.Element {
   const {children, header, onClose, referenceElement, containerRef, width} = props
 
   const handleClose = useCallback(() => {

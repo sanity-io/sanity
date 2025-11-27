@@ -15,7 +15,7 @@ interface TasksSubscriberProps {
   currentUserId: string
 }
 
-export function TasksSubscribers(props: TasksSubscriberProps) {
+export function TasksSubscribers(props: TasksSubscriberProps) : React.JSX.Element {
   const {value, onChange, path, currentUserId} = props
 
   const userIsSubscribed = value.subscribers?.includes(currentUserId)
@@ -54,7 +54,7 @@ interface TasksSubscriberAvatarsProps {
   subscriberIds?: string[]
 }
 
-export function TasksSubscriberAvatars(props: TasksSubscriberAvatarsProps) {
+export function TasksSubscriberAvatars(props: TasksSubscriberAvatarsProps) : React.JSX.Element {
   const {subscriberIds: subscriberIdsProp} = props
 
   const subscriberIds = useMemo(() => {

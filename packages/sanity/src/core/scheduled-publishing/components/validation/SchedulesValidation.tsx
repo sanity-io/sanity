@@ -19,7 +19,7 @@ const VALIDATION_DELAY_MS = 1500
  * This a boilerplate wrapper component around it,
  * so we conditionally call back with updated status whenver it is possible.
  * */
-export function ValidateScheduleDoc({schedule, updateValidation}: Props) {
+export function ValidateScheduleDoc({schedule, updateValidation}: Props) : React.JSX.Element {
   const schemaType = useScheduleSchemaType(schedule)
   const id = getScheduledDocumentId(schedule)
 

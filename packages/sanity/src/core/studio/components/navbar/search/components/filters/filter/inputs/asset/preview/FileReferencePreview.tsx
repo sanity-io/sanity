@@ -12,7 +12,7 @@ interface FileReferencePreviewProps {
   reference: ReferenceValue
 }
 
-export function FileReferencePreview({reference}: FileReferencePreviewProps) {
+export function FileReferencePreview({reference}: FileReferencePreviewProps) : React.JSX.Element {
   const documentPreviewStore = useDocumentPreviewStore()
   const observeAsset = useCallback(
     (id: string) => observeFileAsset(documentPreviewStore, id),

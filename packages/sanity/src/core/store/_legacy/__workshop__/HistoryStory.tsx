@@ -9,7 +9,7 @@ const MINUTE = SECOND * 60
 const HOUR = MINUTE * 60
 const DAY = HOUR * 24
 
-export default function HistoryStory() {
+export default function HistoryStory() : React.JSX.Element {
   const historyStore = useHistoryStore()
   const [history, setHistory] = useState<{documents: SanityDocument[]} | null>(null)
 

@@ -6,7 +6,7 @@ import {
 } from '../../context'
 import {useCommentsEnabled} from '../../hooks'
 
-export function CommentsDocumentLayout(props: DocumentLayoutProps) {
+export function CommentsDocumentLayout(props: DocumentLayoutProps) : React.JSX.Element {
   const {documentId, documentType} = props
   const parentContext = useCommentsEnabled()
 

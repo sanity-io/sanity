@@ -19,7 +19,7 @@ interface BannerProps {
   paddingY?: number
 }
 
-export function Banner(props: BannerProps) {
+export function Banner(props: BannerProps) : React.JSX.Element {
   const {action, content, icon: Icon, tone = 'transparent', paddingY = 2, ...rest} = props
 
   return (

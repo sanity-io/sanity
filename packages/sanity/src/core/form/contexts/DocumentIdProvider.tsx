@@ -3,7 +3,7 @@ import {DocumentIdContext} from 'sanity/_singletons'
 
 import {getDraftId, getPublishedId} from '../../util'
 
-export function DocumentIdProvider(props: {id: string; children: ReactNode}) {
+export function DocumentIdProvider(props: {id: string; children: ReactNode}) : React.JSX.Element {
   const value = useMemo(() => ({id: props.id}), [props.id])
   return <DocumentIdContext.Provider value={value}>{props.children}</DocumentIdContext.Provider>
 }
@@ -19,7 +19,7 @@ function useGivenDocumentId(): string {
 /**
  * @internal
  */
-export function useDocumentIds() {
+export function useDocumentIds() : React.JSX.Element {
   return {draft: useDraftId(), published: usePublishedId()}
 }
 

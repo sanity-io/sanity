@@ -2,7 +2,7 @@ import {CogIcon} from '@sanity/icons'
 
 import {type WorkshopSchemaProps, wrapSchema} from '../data'
 
-export default function getSchema(props: WorkshopSchemaProps) {
+export default function getSchema(props: WorkshopSchemaProps) : React.JSX.Element {
   const {hiddenGroup = false} = props
 
   return wrapSchema({

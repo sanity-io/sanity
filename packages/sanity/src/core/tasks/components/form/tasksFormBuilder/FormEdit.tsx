@@ -187,7 +187,7 @@ function FormEditInner(props: ObjectInputProps) {
   )
 }
 
-export function FormEdit(props: ObjectInputProps) {
+export function FormEdit(props: ObjectInputProps) : React.JSX.Element {
   const value = props.value as TaskDocument
   const currentUser = useCurrentUser()
   const subscribers = useMemo(() => value.subscribers || [], [value.subscribers])

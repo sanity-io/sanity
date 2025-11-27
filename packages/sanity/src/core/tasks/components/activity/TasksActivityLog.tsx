@@ -58,7 +58,7 @@ type Activity =
       timestamp: string
     }
 
-export function TasksActivityLog(props: TasksActivityLogProps) {
+export function TasksActivityLog(props: TasksActivityLogProps) : React.JSX.Element {
   const {value, onChange, path, activityData = []} = props
   const currentUser = useCurrentUser()
 

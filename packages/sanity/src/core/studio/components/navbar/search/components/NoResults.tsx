@@ -2,7 +2,7 @@ import {Container, Stack, Text} from '@sanity/ui'
 
 import {useTranslation} from '../../../../../i18n'
 
-export function NoResults() {
+export function NoResults() : React.JSX.Element {
   const {t} = useTranslation()
 
   return (

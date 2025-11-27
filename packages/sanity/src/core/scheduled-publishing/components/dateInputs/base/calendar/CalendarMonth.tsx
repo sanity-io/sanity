@@ -16,7 +16,7 @@ interface CalendarMonthProps {
   timeZoneScope: TimeZoneScope
 }
 
-export function CalendarMonth(props: CalendarMonthProps) {
+export function CalendarMonth(props: CalendarMonthProps) : React.JSX.Element {
   const {customValidation, timeZoneScope} = props
   const {getCurrentZoneDate} = useTimeZone(timeZoneScope)
   return (

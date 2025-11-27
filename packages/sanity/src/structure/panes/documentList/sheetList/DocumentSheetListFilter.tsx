@@ -6,7 +6,7 @@ const SearchContainer = styled(Flex)`
   flex-shrink: 0;
 `
 
-export function DocumentSheetListFilter() {
+export function DocumentSheetListFilter() : React.JSX.Element {
   const {
     state: {filtersVisible},
   } = useSearchState()

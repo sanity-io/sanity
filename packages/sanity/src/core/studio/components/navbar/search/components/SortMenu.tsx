@@ -46,7 +46,7 @@ function CustomMenuItem({ordering}: {ordering: SearchOrdering}) {
   )
 }
 
-export function SortMenu() {
+export function SortMenu() : React.JSX.Element {
   const {t} = useTranslation()
   const {strategy: searchStrategy} = useWorkspace().search
   const {

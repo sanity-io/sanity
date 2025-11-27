@@ -29,7 +29,7 @@ interface CommentsOnboardingPopoverProps extends Omit<PopoverProps, 'content'> {
   onDismiss: () => void
 }
 
-export function CommentsOnboardingPopover(props: CommentsOnboardingPopoverProps) {
+export function CommentsOnboardingPopover(props: CommentsOnboardingPopoverProps) : React.JSX.Element {
   const {onDismiss, ...rest} = props
   const {t} = useTranslation(commentsLocaleNamespace)
 

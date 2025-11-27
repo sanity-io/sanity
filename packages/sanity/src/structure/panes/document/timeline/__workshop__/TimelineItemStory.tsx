@@ -145,7 +145,7 @@ const CHUNKS: Chunk[] = [
   },
 ]
 
-export default function TimelineItemStory() {
+export default function TimelineItemStory() : React.JSX.Element {
   const {t: coreT} = useTranslation()
   const [date, setDate] = useState<Date>(() => new Date())
   const [selected, setSelected] = useState<string | null>(null)

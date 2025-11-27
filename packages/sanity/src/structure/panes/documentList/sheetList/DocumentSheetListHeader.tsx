@@ -40,7 +40,7 @@ type DocumentSheetListHeaderProps = {
   headerGroup: HeaderGroup<SanityDocument>
 }
 
-export function DocumentSheetListHeader(props: DocumentSheetListHeaderProps) {
+export function DocumentSheetListHeader(props: DocumentSheetListHeaderProps) : React.JSX.Element {
   const {header, headerGroup} = props
   const {t} = useTranslation()
 

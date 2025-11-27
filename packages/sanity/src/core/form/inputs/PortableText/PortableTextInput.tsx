@@ -616,7 +616,7 @@ function UpdateValuePlugin(props: {value: Array<PortableTextBlock> | undefined})
  *
  * @internal
  */
-export function UpdateReadOnlyPlugin(props: {readOnly: boolean}) {
+export function UpdateReadOnlyPlugin(props: {readOnly: boolean}) : React.JSX.Element {
   const editor = useEditor()
 
   useEffect(() => {

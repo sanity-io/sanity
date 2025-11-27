@@ -5,7 +5,7 @@ import {GroupChange} from '../diff/components/GroupChange'
 /**
  * TODO
  */
-export default function GroupChangeStory() {
+export default function GroupChangeStory() : React.JSX.Element {
   return (
     <Box padding={4}>
       <GroupChange {...({} as any)} />

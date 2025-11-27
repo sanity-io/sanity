@@ -31,7 +31,7 @@ const CONTAINER_BREAKPOINT = 480 // px
 
 const AnimatedCard = motion.create(Card)
 
-export function DocumentStatusBar(props: DocumentStatusBarProps) {
+export function DocumentStatusBar(props: DocumentStatusBarProps) : React.JSX.Element {
   const {actionsBoxRef, createLinkMetadata} = props
   const {editState, onChange: onDocumentChange, revisionNotFound} = useDocumentPane()
   const {params = EMPTY_PARAMS} = usePaneRouter()

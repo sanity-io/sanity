@@ -7,7 +7,7 @@ import {useSchema} from '../../hooks'
 import {ChangeList, type DocumentChangeContextInstance} from '../diff'
 import {type ObjectDiff, type StringDiff} from '../types'
 
-export default function ChangeListStory() {
+export default function ChangeListStory() : React.JSX.Element {
   const documentId = 'test'
   const documentType = 'author'
   const schema = useSchema()

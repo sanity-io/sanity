@@ -121,7 +121,7 @@ const DOCUMENT_VALUE = {
   ],
 }
 
-export default function TreeEditingSearchStory() {
+export default function TreeEditingSearchStory() : React.JSX.Element {
   const {menuItems} = useMemo((): TreeEditingState => {
     return buildTreeEditingState({
       schemaType: schema.get('testDocument'),

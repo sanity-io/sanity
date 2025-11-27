@@ -147,7 +147,7 @@ function DocumentSheetListPaneInner({
   )
 }
 
-export function DocumentSheetListPane(props: DocumentSheetListPaneProps) {
+export function DocumentSheetListPane(props: DocumentSheetListPaneProps) : React.JSX.Element {
   const schema = useSchema()
   const typeName = props.pane.schemaTypeName
 

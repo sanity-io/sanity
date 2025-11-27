@@ -18,7 +18,7 @@ const SuffixBox = styled(Box)`
   border-top: 1px solid var(--card-border-color);
 `
 
-export function Alert(props: AlertProps) {
+export function Alert(props: AlertProps) : React.JSX.Element {
   const {children, status = 'warning', suffix, title, ...rest} = props
 
   return (

@@ -61,7 +61,7 @@ export const TitleContainer = styled(Stack)`
  * Document type is hidden if the document `_id` matches the current document `_type`.
  * The entire header is hidden if container queries are not supported.
  */
-export const FormHeader = ({documentId, schemaType, title}: DocumentHeaderProps) => {
+export const FormHeader = ({documentId, schemaType, title}: DocumentHeaderProps) : React.JSX.Element => {
   const isSingleton = documentId === schemaType.name
   const description = schemaType.description
   const {t} = useTranslation(structureLocaleNamespace)

@@ -1,4 +1,4 @@
-export const ReleaseIllustration = () => {
+export const ReleaseIllustration = () : React.JSX.Element => {
   return (
     <svg
       data-testid="release-illustration"

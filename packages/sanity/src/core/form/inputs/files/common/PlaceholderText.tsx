@@ -19,7 +19,7 @@ const RootFlex = styled(Flex)`
   pointer-events: none;
 `
 
-export function PlaceholderText(props: Props) {
+export function PlaceholderText(props: Props) : React.JSX.Element {
   const {hoveringFiles, type, readOnly, acceptedFiles, rejectedFilesCount, directUploads} = props
   const isFileType = type === 'file'
 

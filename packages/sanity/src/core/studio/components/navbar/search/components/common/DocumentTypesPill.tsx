@@ -10,7 +10,7 @@ interface TypePillsProps {
   types: SchemaType[]
 }
 
-export function DocumentTypesPill({availableCharacters, types}: TypePillsProps) {
+export function DocumentTypesPill({availableCharacters, types}: TypePillsProps) : React.JSX.Element {
   const {t} = useTranslation()
   const title = useMemo(
     () => documentTypesTruncated({availableCharacters, types, t}),

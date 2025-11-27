@@ -2,7 +2,7 @@ import {useAction, useBoolean} from '@sanity/ui-workshop'
 
 import {CommentDeleteDialog} from '../components'
 
-export default function CommentDeleteDialogStory() {
+export default function CommentDeleteDialogStory() : React.JSX.Element {
   const isParent = useBoolean('Is parent', false, 'Props') || false
   const error = useBoolean('Error', false, 'Props') || false
   const loading = useBoolean('Loading', false, 'Props') || false

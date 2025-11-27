@@ -14,6 +14,6 @@ export const ResolvedPanesContext = createContext<Panes | null>(
 /**
  * @internal
  */
-export function ResolvedPanesProvider({children, value}: {children: ReactNode; value: Panes}) {
+export function ResolvedPanesProvider({children, value}: {children: ReactNode; value: Panes}) : React.JSX.Element {
   return <ResolvedPanesContext.Provider value={value}>{children}</ResolvedPanesContext.Provider>
 }

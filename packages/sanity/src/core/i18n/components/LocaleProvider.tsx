@@ -14,7 +14,7 @@ import {type Locale} from '../types'
  * @internal
  * @hidden
  */
-export function LocaleProvider(props: PropsWithChildren) {
+export function LocaleProvider(props: PropsWithChildren) : React.JSX.Element {
   const {
     projectId,
     name: sourceId,

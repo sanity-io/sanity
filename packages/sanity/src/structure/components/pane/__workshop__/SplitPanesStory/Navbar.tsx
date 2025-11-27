@@ -12,7 +12,7 @@ const features = {
   inverted: true,
 }
 
-export function Navbar(props: {path: string[]; setPath: Dispatch<SetStateAction<string[]>>}) {
+export function Navbar(props: {path: string[]; setPath: Dispatch<SetStateAction<string[]>>}) : React.JSX.Element {
   const {path, setPath} = props
   const theme = useTheme()
   const {dark} = theme.sanity.color

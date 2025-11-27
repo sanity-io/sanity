@@ -26,7 +26,7 @@ const ClearButtonBox = styled(Box)`
 
 const POPOVER_STYLES = {width: '250px'}
 
-export function DocumentTypesPopoverContent() {
+export function DocumentTypesPopoverContent() : React.JSX.Element {
   const [inputElement, setInputElement] = useState<HTMLInputElement | null>(null)
   const [typeFilter, setTypeFilter] = useState('')
   const commandListRef = useRef<CommandListHandle | null>(null)

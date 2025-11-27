@@ -49,7 +49,7 @@ const getSanityImportMapEntryValue = memoize(() =>
 // but for now, we only care about the `sanity`-package
 const REFERENCE_PACKAGE = 'sanity'
 
-export function PackageVersionStatusProvider({children}: {children: ReactNode}) {
+export function PackageVersionStatusProvider({children}: {children: ReactNode}) : React.JSX.Element {
   const importMapInfo = useMemo(() => {
     const importMapUrl = getSanityImportMapEntryValue()
     if (!importMapUrl) {

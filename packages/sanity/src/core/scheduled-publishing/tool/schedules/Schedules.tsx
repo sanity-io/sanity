@@ -13,7 +13,7 @@ const Panel = styled(Container)`
   width: auto;
 `
 
-export const Schedules = () => {
+export const Schedules = () : React.JSX.Element => {
   const {activeSchedules, selectedDate, scheduleState} = useSchedules()
   const {upsellData, telemetryLogs} = useSchedulePublishingUpsell()
   const {mode} = useScheduledPublishingEnabled()

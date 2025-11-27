@@ -7,7 +7,7 @@ import {releasesLocaleNamespace} from '../../../i18n'
 import {getReleaseIdFromReleaseDocumentId} from '../../../util/getReleaseIdFromReleaseDocumentId'
 import {type ActionResult} from './ReleaseMenuButton'
 
-export const DuplicateReleaseToastLink = ({actionResult}: {actionResult: ActionResult}) => {
+export const DuplicateReleaseToastLink = ({actionResult}: {actionResult: ActionResult}) : React.JSX.Element => {
   const router = useRouter()
   const {t} = useTranslation(releasesLocaleNamespace)
 

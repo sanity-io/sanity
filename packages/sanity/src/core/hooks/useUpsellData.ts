@@ -18,7 +18,7 @@ interface UpsellDataProps {
   feature: string
 }
 
-export const useUpsellData = ({dataUri, feature}: UpsellDataProps) => {
+export const useUpsellData = ({dataUri, feature}: UpsellDataProps) : React.JSX.Element => {
   const [upsellData, setUpsellData] = useState<UpsellData | null>(null)
   const [hasError, setHasError] = useState(false)
   const telemetry = useTelemetry()

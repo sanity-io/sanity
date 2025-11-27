@@ -26,7 +26,7 @@ interface InvalidValueProps {
   resolution: InvalidValueResolution
 }
 
-export function InvalidValue(props: InvalidValueProps) {
+export function InvalidValue(props: InvalidValueProps) : React.JSX.Element {
   const {onChange, onIgnore, resolution, readOnly} = props
   const telemetry = useTelemetry()
 

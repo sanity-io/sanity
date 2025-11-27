@@ -129,7 +129,7 @@ const TasksFormBuilderInner = ({
 /**
  * @internal
  */
-export function TasksFormBuilder() {
+export function TasksFormBuilder() : React.JSX.Element {
   const currentUser = useCurrentUser()
   const {activeDocument} = useTasks()
   const {dataset, projectId} = useWorkspace()

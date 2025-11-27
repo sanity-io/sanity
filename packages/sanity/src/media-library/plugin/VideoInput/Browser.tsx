@@ -10,7 +10,7 @@ import {MenuButton} from '../../../ui-components/menuButton'
 import {MenuItem} from '../../../ui-components/menuItem'
 import {type VideoAssetProps} from './types'
 
-export function Browser(props: VideoAssetProps) {
+export function Browser(props: VideoAssetProps) : React.JSX.Element {
   const {
     assetSources,
     readOnly,

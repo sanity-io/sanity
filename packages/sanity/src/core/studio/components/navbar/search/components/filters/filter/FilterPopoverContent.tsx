@@ -19,7 +19,7 @@ const ContainerFlex = styled(Flex)`
   width: 100%;
 `
 
-export function FilterPopoverContent({filter}: FilterPopoverContentProps) {
+export function FilterPopoverContent({filter}: FilterPopoverContentProps) : React.JSX.Element {
   return (
     <ContainerFlex direction="column">
       <FilterForm filter={filter} />

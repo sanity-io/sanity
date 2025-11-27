@@ -12,7 +12,7 @@ interface FilterDetailsProps {
   filter: SearchFilter
 }
 
-export function FilterDetails({filter}: FilterDetailsProps) {
+export function FilterDetails({filter}: FilterDetailsProps) : React.JSX.Element {
   const {
     state: {definitions},
   } = useSearchState()

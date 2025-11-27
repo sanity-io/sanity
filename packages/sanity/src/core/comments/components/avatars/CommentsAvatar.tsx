@@ -26,7 +26,7 @@ interface CommentsAvatarProps extends AvatarProps {
   user: User | undefined | null
 }
 
-export function CommentsAvatar(props: CommentsAvatarProps) {
+export function CommentsAvatar(props: CommentsAvatarProps) : React.JSX.Element {
   const {user: userProp, ...restProps} = props
   const user = userProp as User
   const initials = useMemo(() => nameToInitials(user?.displayName || ''), [user?.displayName])

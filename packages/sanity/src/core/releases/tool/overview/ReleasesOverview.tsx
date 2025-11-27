@@ -67,7 +67,7 @@ const DEFAULT_ARCHIVED_RELEASES_OVERVIEW_SORT: TableSort = {
   direction: 'desc',
 }
 
-export function ReleasesOverview() {
+export function ReleasesOverview() : React.JSX.Element {
   const {data: allReleases, loading: loadingReleases} = useActiveReleases()
   const {data: allArchivedReleases} = useArchivedReleases()
   const {mode: releasesUpsellMode, handleOpenDialog: handleOpenReleasesUpsellDialog} =

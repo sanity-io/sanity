@@ -11,7 +11,7 @@ const DIRECTION_OPTIONS: Record<string, 'after' | 'before'> = {
   before: 'before',
 }
 
-export default function CommonDateDirectionStory() {
+export default function CommonDateDirectionStory() : React.JSX.Element {
   const isDateTime = useBoolean('Datetime', true, 'Props')
   const direction = useSelect('Direction', DIRECTION_OPTIONS, 'after')
 

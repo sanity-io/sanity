@@ -10,7 +10,7 @@ export type SourceProviderProps =
   | {name: string; children?: ReactNode}
 
 /** @internal */
-export function SourceProvider({children, ...props}: SourceProviderProps) {
+export function SourceProvider({children, ...props}: SourceProviderProps) : React.JSX.Element {
   const parentSource = useContext(SourceContext)
   const {unstable_sources: sources} = useWorkspace()
 

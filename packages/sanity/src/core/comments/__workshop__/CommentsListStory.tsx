@@ -178,7 +178,7 @@ const MENTION_HOOK_OPTIONS = {
 
 const STATUS_OPTIONS: Record<CommentStatus, CommentStatus> = {open: 'open', resolved: 'resolved'}
 
-export default function CommentsListStory() {
+export default function CommentsListStory() : React.JSX.Element {
   const [state, setState] = useState<CommentDocument[]>([
     BASE,
     INTENT,

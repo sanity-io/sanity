@@ -8,7 +8,7 @@ import {DocumentPane} from './DocumentPane'
 import {ListPane} from './ListPane'
 import {Navbar} from './Navbar'
 
-export function SplitPanesStory() {
+export function SplitPanesStory() : React.JSX.Element {
   const debug = useBoolean('Debug', false) || false
   const [portalElement, setPortalElement] = useState<HTMLDivElement | null>(null)
   const [layoutCollapsed, setLayoutCollapsed] = useState(false)

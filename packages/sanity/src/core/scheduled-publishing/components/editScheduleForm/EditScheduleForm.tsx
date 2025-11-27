@@ -14,7 +14,7 @@ interface Props {
  * @deprecated we will be dropping support for scheduled publishing on a future major version
  * @internal
  */
-export function EditScheduleForm(props: PropsWithChildren<Props>) {
+export function EditScheduleForm(props: PropsWithChildren<Props>) : React.JSX.Element {
   const {onChange, value} = props
 
   return (

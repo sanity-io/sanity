@@ -13,7 +13,7 @@ type ColumnsControlProps = {
   table: Table<SanityDocument>
 }
 
-export function ColumnsControl({table}: ColumnsControlProps) {
+export function ColumnsControl({table}: ColumnsControlProps) : React.JSX.Element {
   const {t} = useTranslation()
   const isVisibleLimitReached =
     table.getVisibleLeafColumns().filter((col) => col.getCanHide()).length >= VISIBLE_COLUMN_LIMIT

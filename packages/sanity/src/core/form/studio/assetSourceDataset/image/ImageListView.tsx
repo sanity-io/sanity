@@ -18,7 +18,7 @@ const ThumbGrid = styled(Grid)`
   grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
 `
 
-export function ImageListView(props: ImageListViewProps) {
+export function ImageListView(props: ImageListViewProps) : React.JSX.Element {
   const {isLoading, assets, selectedAssets, onItemClick, onItemKeyPress, onDeleteFinished} = props
   return (
     <Box padding={4}>

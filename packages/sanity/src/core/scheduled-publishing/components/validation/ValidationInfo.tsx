@@ -32,7 +32,7 @@ const POPOVER_PROPS = {
   placement: 'bottom-end',
 } as const
 
-export function ValidationInfo(props: ValidationProps) {
+export function ValidationInfo(props: ValidationProps) : React.JSX.Element {
   const {type, markers, menuHeader, documentId} = props
   const router = useRouter()
   const {hasError, hasWarning} = useValidationState(markers)

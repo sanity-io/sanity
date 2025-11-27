@@ -34,7 +34,7 @@ export interface PaneItemPreviewProps {
  * despite being pane items! Non-document previews bypass this entirely
  * and are rendered by `<SanityDefaultPreview>`.
  */
-export function PaneItemPreview(props: PaneItemPreviewProps) {
+export function PaneItemPreview(props: PaneItemPreviewProps) : React.JSX.Element {
   const {icon, layout, presence, schemaType, value} = props
 
   const versionsInfo = useDocumentVersionInfo(value._id)

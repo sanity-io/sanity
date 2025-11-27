@@ -22,7 +22,7 @@ interface AddFilterPopoverContentProps {
 
 const POPOVER_STYLES = {width: '300px'}
 
-export function AddFilterPopoverContent({onClose}: AddFilterPopoverContentProps) {
+export function AddFilterPopoverContent({onClose}: AddFilterPopoverContentProps) : React.JSX.Element {
   const [inputElement, setInputElement] = useState<HTMLInputElement | null>(null)
   const [titleFilter, setTitleFilter] = useState('')
   const {t} = useTranslation()

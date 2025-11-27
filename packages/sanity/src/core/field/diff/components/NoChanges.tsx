@@ -3,7 +3,7 @@ import {Stack, Text} from '@sanity/ui'
 import {useTranslation} from '../../../i18n'
 
 /** @internal */
-export function NoChanges() {
+export function NoChanges() : React.JSX.Element {
   const {t} = useTranslation()
   return (
     <Stack space={3} paddingTop={2}>

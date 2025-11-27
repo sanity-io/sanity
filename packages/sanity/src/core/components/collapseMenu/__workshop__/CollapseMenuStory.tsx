@@ -7,7 +7,7 @@ import {CollapseMenu, CollapseMenuButton} from '../'
 
 const GAP_OPTIONS = {'0': 0, '1': 1, '2': 2, '3': 3, '4': 4}
 
-export default function CollapseMenuStory() {
+export default function CollapseMenuStory() : React.JSX.Element {
   const collapsed = useBoolean('Collapsed', false)
   const gap = useSelect('Gap', GAP_OPTIONS, 1)
   const collapseText = useBoolean('Collapse text', true)

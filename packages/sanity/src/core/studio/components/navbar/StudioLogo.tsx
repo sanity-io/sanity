@@ -5,7 +5,7 @@ import {type LogoProps} from '../../../config'
 /**
  * @hidden
  * @beta */
-export function StudioLogo(props: LogoProps) {
+export function StudioLogo(props: LogoProps) : React.JSX.Element {
   const {title} = props
 
   return (

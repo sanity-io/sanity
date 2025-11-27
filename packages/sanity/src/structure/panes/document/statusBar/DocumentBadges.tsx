@@ -59,7 +59,7 @@ const DocumentBadgesDeferred = memo(function DocumentBadgesDeferred(
   return <DocumentBadgesInner states={states} />
 })
 
-export function DocumentBadges() {
+export function DocumentBadges() : React.JSX.Element {
   const {badges, editState} = useDocumentPane()
 
   const renderDocumentBadges = useCallback<

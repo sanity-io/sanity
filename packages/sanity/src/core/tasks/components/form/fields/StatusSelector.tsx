@@ -39,7 +39,7 @@ interface StatusSelectorProps {
   onChange: (patch: FormPatch | PatchEvent | FormPatch[]) => void
 }
 
-export function StatusSelector(props: StatusSelectorProps) {
+export function StatusSelector(props: StatusSelectorProps) : React.JSX.Element {
   const {value, onChange, options, path} = props
   const telemetry = useTelemetry()
 

@@ -11,7 +11,7 @@ import {ArrayOfPrimitiveOptionsInput} from './ArrayOfPrimitiveOptionsInput'
  * @hidden
  * @beta
  */
-export function ArrayOfOptionsInput(props: ArrayOfObjectsInputProps | ArrayOfPrimitivesInputProps) {
+export function ArrayOfOptionsInput(props: ArrayOfObjectsInputProps | ArrayOfPrimitivesInputProps) : React.JSX.Element {
   return isArrayOfObjectsInputProps(props) ? (
     <ArrayOfObjectOptionsInput {...props} />
   ) : (

@@ -119,7 +119,7 @@ const StyledText = styled(Text)`
  *
  * @internal
  */
-export function LoadingBlock({fill, showText, title}: LoadingTestProps) {
+export function LoadingBlock({fill, showText, title}: LoadingTestProps) : React.JSX.Element {
   return (
     <StyledCard $fill={fill} as={fill ? Layer : 'div'} data-testid="loading-block">
       <StyledSpinner $animatePosition={!!showText} muted />

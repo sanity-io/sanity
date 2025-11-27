@@ -11,7 +11,7 @@ interface InputStoryProps {
   ptInputProps?: Partial<PortableTextInputProps>
 }
 
-export function InputStory(props: InputStoryProps) {
+export function InputStory(props: InputStoryProps) : React.JSX.Element {
   const {editorRef, ptInputProps} = props
 
   const schemaTypes = useMemo(

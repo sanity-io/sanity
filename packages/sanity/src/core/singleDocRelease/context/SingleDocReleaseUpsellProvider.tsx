@@ -10,7 +10,7 @@ import {UpsellDialog} from '../../studio/upsell/UpsellDialog'
 /**
  * @beta
  */
-export function SingleDocReleaseUpsellProvider(props: {children: React.ReactNode}) {
+export function SingleDocReleaseUpsellProvider(props: {children: React.ReactNode}) : React.JSX.Element {
   const contextValue = useUpsellContext({
     dataUri: '/journey/scheduled-drafts',
     feature: 'single_doc_release',

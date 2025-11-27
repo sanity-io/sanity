@@ -14,7 +14,7 @@ const DOC = {
   permission: 'read' as const,
 }
 
-export default function MentionsMenuStory() {
+export default function MentionsMenuStory() : React.JSX.Element {
   const {data, loading} = useUserListWithPermissions(DOC)
 
   return (

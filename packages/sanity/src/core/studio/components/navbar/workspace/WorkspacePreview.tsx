@@ -55,7 +55,7 @@ export interface WorkspacePreviewProps {
   title: string
 }
 
-export function WorkspacePreview(props: WorkspacePreviewProps) {
+export function WorkspacePreview(props: WorkspacePreviewProps) : React.JSX.Element {
   const {state, subtitle, selected, title, icon, iconRight} = props
 
   const iconRightComponent = useMemo(() => createIcon(iconRight), [iconRight])

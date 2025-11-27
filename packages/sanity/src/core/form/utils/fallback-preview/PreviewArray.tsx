@@ -6,7 +6,7 @@ type Props = {
   _depth?: number
 }
 
-export function PreviewArray(props: Props) {
+export function PreviewArray(props: Props) : React.JSX.Element {
   const {value, maxDepth = 4, _depth = 0, ...rest} = props
   if (_depth >= maxDepth) {
     // eslint-disable-next-line i18next/no-literal-string

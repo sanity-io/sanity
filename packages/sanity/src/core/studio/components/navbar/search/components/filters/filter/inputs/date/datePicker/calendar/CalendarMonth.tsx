@@ -27,7 +27,7 @@ const CustomGrid = styled(Grid)`
   grid-template-columns: repeat(7, minmax(44px, auto));
 `
 
-export function CalendarMonth({hidden, onSelect}: CalendarMonthProps) {
+export function CalendarMonth({hidden, onSelect}: CalendarMonthProps) : React.JSX.Element {
   const {focusedDate, firstWeekDay} = useCalendar()
   const {t} = useTranslation()
 

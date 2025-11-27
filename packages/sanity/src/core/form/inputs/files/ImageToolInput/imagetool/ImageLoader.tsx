@@ -10,7 +10,7 @@ interface ImageLoaderProps {
   }) => React.JSX.Element | null
 }
 
-export function ImageLoader(props: ImageLoaderProps) {
+export function ImageLoader(props: ImageLoaderProps) : React.JSX.Element {
   const {src, children} = props
   const [isLoading, setIsLoading] = useState(true)
   const [image, setImage] = useState<HTMLImageElement | null>(null)

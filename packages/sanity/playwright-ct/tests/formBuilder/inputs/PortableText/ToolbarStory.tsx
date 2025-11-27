@@ -10,7 +10,7 @@ interface InputStoryProps {
   ptInputProps?: Partial<PortableTextInputProps>
 }
 
-export function ToolbarStory(props: InputStoryProps) {
+export function ToolbarStory(props: InputStoryProps) : React.JSX.Element {
   const {id = 'root', ptInputProps} = props
 
   const schemaTypes = useMemo(

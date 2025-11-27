@@ -87,7 +87,7 @@ export interface FieldPresenceProps {
 }
 
 /** @internal */
-export function FieldPresence(props: FieldPresenceProps) {
+export function FieldPresence(props: FieldPresenceProps) : React.JSX.Element {
   const contextPresence = useContext(FormFieldPresenceContext)
   const {presence = contextPresence, maxAvatars = DEFAULT_MAX_AVATARS_FIELDS} = props
   const [element, setElement] = useState<HTMLDivElement | null>(null)

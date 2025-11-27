@@ -33,7 +33,7 @@ type CellInputElement = HTMLInputElement | HTMLSelectElement
 type InputRef = CellInputElement | null
 
 /** @internal */
-export function SheetListCellInner(props: SheetListCellInnerProps) {
+export function SheetListCellInner(props: SheetListCellInnerProps) : React.JSX.Element {
   const {getValue, column, row, fieldType} = props
   const cellId = `cell-${column.id}-${row.index}`
   const [renderValue, setRenderValue] = useState<string>(() => getValue() as string)
@@ -203,7 +203,7 @@ export function SheetListCellInner(props: SheetListCellInnerProps) {
 }
 
 /** @internal */
-export function SheetListCell(cell: Cell<SanityDocument, unknown>) {
+export function SheetListCell(cell: Cell<SanityDocument, unknown>) : React.JSX.Element {
   const isPinned = cell.column.getIsPinned()
   const Cell = isPinned ? PinnedDataCell : DataCell
   const borderWidth = isPinned && cell.column.getIsLastColumn('left') ? 2 : 1

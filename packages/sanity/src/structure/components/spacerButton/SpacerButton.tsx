@@ -15,7 +15,7 @@ interface SpacerButtonProps {
  *
  * @internal
  */
-export function SpacerButton({size}: SpacerButtonProps) {
+export function SpacerButton({size}: SpacerButtonProps) : React.JSX.Element {
   return (
     <Button
       aria-hidden

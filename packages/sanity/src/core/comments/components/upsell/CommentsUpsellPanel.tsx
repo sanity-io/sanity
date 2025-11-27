@@ -9,7 +9,7 @@ interface CommentsUpsellPanelProps {
   onSecondaryClick: () => void
 }
 
-export function CommentsUpsellPanel(props: CommentsUpsellPanelProps) {
+export function CommentsUpsellPanel(props: CommentsUpsellPanelProps) : React.JSX.Element {
   const {data, onPrimaryClick, onSecondaryClick} = props
   return (
     <Container width={1}>

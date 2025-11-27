@@ -46,7 +46,7 @@ const LabelButton = styled(Button)`
   width: 100%;
 `
 
-export function FilterButton({filter, initialOpen}: FilterButtonProps) {
+export function FilterButton({filter, initialOpen}: FilterButtonProps) : React.JSX.Element {
   const [open, setOpen] = useState(initialOpen)
   const [buttonElement, setButtonElement] = useState<HTMLElement | null>(null)
   const popoverRef = useRef<HTMLDivElement | null>(null)

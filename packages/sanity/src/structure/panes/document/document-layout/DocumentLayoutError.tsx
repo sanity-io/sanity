@@ -11,7 +11,7 @@ interface DocumentLayoutErrorProps {
   value?: Record<string, unknown>
 }
 
-export function DocumentLayoutError(props: DocumentLayoutErrorProps) {
+export function DocumentLayoutError(props: DocumentLayoutErrorProps) : React.JSX.Element {
   const {documentType, value, currentMinWidth, paneKey, minWidth} = props
   const {t} = useTranslation()
 

@@ -3,7 +3,7 @@ import {Flex, Inline, Text} from '@sanity/ui'
 
 import {Translate, useTranslation} from '../../../../../i18n'
 
-export function Instructions() {
+export function Instructions() : React.JSX.Element {
   const {t} = useTranslation()
 
   return (

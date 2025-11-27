@@ -45,7 +45,7 @@ interface CommentsListItemReferencedValueProps {
   value: CommentDocument['contentSnapshot']
 }
 
-export function CommentsListItemReferencedValue(props: CommentsListItemReferencedValueProps) {
+export function CommentsListItemReferencedValue(props: CommentsListItemReferencedValueProps) : React.JSX.Element {
   const {hasReferencedValue, value} = props
 
   const {t} = useTranslation(commentsLocaleNamespace)

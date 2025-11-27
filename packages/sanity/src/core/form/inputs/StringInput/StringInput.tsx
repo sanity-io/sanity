@@ -6,7 +6,7 @@ import {StringInputPortableText} from './StringInputPortableText/StringInputPort
  * @hidden
  * @beta
  */
-export function StringInput(props: StringInputProps) {
+export function StringInput(props: StringInputProps) : React.JSX.Element {
   if (props.displayInlineChanges) {
     return <StringInputPortableText {...props} />
   }

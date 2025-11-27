@@ -22,7 +22,7 @@ interface CommentsWrapperProps {
  * A wrapper that conditionally wraps the document layout in a comments provider
  * if the feature is enabled for the project and the current document.
  */
-export function CommentsWrapper(props: CommentsWrapperProps) {
+export function CommentsWrapper(props: CommentsWrapperProps) : React.JSX.Element {
   const {children, documentId, documentType} = props
 
   return (

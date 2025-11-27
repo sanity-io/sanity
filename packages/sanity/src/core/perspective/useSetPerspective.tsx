@@ -7,7 +7,7 @@ import {useGetDefaultPerspective} from './useGetDefaultPerspective'
 /**
  * @internal
  */
-export function useSetPerspective() {
+export function useSetPerspective() : React.JSX.Element {
   const router = useRouter()
 
   const defaultPerspective = useGetDefaultPerspective()

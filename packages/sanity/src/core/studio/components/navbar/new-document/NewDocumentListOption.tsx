@@ -22,7 +22,7 @@ interface NewDocumentListOptionProps {
   preview: PreviewLayout
 }
 
-export function NewDocumentListOption(props: NewDocumentListOptionProps) {
+export function NewDocumentListOption(props: NewDocumentListOptionProps) : React.JSX.Element {
   const {option, currentUser, onClick, preview} = props
   const {selectedReleaseId} = usePerspective()
   const params = useMemo(

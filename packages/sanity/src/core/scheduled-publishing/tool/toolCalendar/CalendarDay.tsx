@@ -20,7 +20,7 @@ interface CalendarDayProps {
   selected?: boolean
 }
 
-export function CalendarDay(props: CalendarDayProps) {
+export function CalendarDay(props: CalendarDayProps) : React.JSX.Element {
   const {date, focused, isCurrentMonth, isToday, onSelect, selected} = props
 
   const {schedulesByDate} = useSchedules()

@@ -62,7 +62,7 @@ export interface BaseVideoInputProps
 }
 
 /** @internal */
-export function BaseVideoInput(props: BaseVideoInputProps) {
+export function BaseVideoInput(props: BaseVideoInputProps) : React.JSX.Element {
   const {
     client,
     members,

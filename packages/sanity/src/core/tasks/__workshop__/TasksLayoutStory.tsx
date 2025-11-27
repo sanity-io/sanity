@@ -7,7 +7,7 @@ import {type SidebarTabsIds, TasksNavigationProvider, TasksProvider} from '../co
 function noop(id: string) {
   return null
 }
-export default function TasksLayoutStory() {
+export default function TasksLayoutStory() : React.JSX.Element {
   const [activeTabId, setActiveTabId] = useState<SidebarTabsIds>('assigned')
 
   return (

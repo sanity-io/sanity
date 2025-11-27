@@ -15,7 +15,7 @@ interface Props {
   onChange: (patchEvent: PatchEvent) => void
 }
 
-export function DuplicateKeysAlert(props: Props) {
+export function DuplicateKeysAlert(props: Props) : React.JSX.Element {
   const {error, onChange} = props
 
   const handleFixDuplicateKeys = useCallback(() => {

@@ -40,7 +40,7 @@ export interface CommentDeleteDialogProps {
  * @beta
  * @hidden
  */
-export function CommentDeleteDialog(props: CommentDeleteDialogProps) {
+export function CommentDeleteDialog(props: CommentDeleteDialogProps) : React.JSX.Element {
   const {isParent, onClose, commentId, onConfirm, loading, error} = props
   const {t} = useTranslation(commentsLocaleNamespace)
   const dialogCopy = getDialogCopy(t)

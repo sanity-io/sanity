@@ -13,7 +13,7 @@ interface StructureToolBoundaryProps {
   tool: Tool<StructureToolOptions>
 }
 
-export function StructureToolBoundary({tool: {options}}: StructureToolBoundaryProps) {
+export function StructureToolBoundary({tool: {options}}: StructureToolBoundaryProps) : React.JSX.Element {
   const {unstable_sources: sources} = useWorkspace()
   const [firstSource] = sources
   const {source, defaultDocumentNode, structure} = options || {}

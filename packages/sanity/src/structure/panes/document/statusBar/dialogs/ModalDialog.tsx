@@ -11,7 +11,7 @@ import {DIALOG_WIDTH_TO_UI_WIDTH} from './constants'
  * Dialog rendered by custom document actions of dialog type `dialog`.
  * As these are user configurable with public facing APIs, internal studio ui-components are not used.
  */
-export function ModalDialog(props: {dialog: DocumentActionModalDialogProps}) {
+export function ModalDialog(props: {dialog: DocumentActionModalDialogProps}) : React.JSX.Element {
   const {dialog} = props
   const dialogId = useId()
 

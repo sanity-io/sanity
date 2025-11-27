@@ -70,7 +70,7 @@ const PassthroughTitle = (props: {title?: string}) => {
   return null
 }
 
-export const StructureTitle = (props: StructureTitleProps) => {
+export const StructureTitle = (props: StructureTitleProps) : React.JSX.Element => {
   const {resolvedPanes} = props
 
   if (!resolvedPanes?.length) return null

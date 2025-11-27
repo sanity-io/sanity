@@ -15,7 +15,7 @@ import {FilterButton} from './filter/FilterButton'
 /**
  * @internal
  */
-export function Filters({showTypeFilter = true}: {showTypeFilter?: boolean}) {
+export function Filters({showTypeFilter = true}: {showTypeFilter?: boolean}) : React.JSX.Element {
   const {
     dispatch,
     state: {

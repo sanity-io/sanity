@@ -25,7 +25,7 @@ const POPOVER_PROPS: MenuButtonProps['popover'] = {
   tone: 'default',
 }
 
-export function WorkspaceMenuButton() {
+export function WorkspaceMenuButton() : React.JSX.Element {
   const workspaces = useWorkspaces()
   const {activeWorkspace} = useActiveWorkspace()
   const [authStates] = useWorkspaceAuthStates(workspaces)

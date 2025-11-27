@@ -21,7 +21,7 @@ const Root = styled(ChangeConnectorRoot)`
   position: relative;
 `
 
-export default function ChangeConnectorStory() {
+export default function ChangeConnectorStory() : React.JSX.Element {
   const isReviewChangesOpen = true
   const onOpenReviewChanges = useCallback(() => undefined, [])
   const onSetFocus = useCallback(() => undefined, [])

@@ -14,7 +14,7 @@ interface ToolCollapseMenuProps {
   tools: Tool[]
 }
 
-export function ToolCollapseMenu(props: ToolCollapseMenuProps) {
+export function ToolCollapseMenu(props: ToolCollapseMenuProps) : React.JSX.Element {
   const {activeToolName, tools} = props
   const scheme = useColorSchemeValue()
   const [collapseMenuEl, setCollapseMenuEl] = useState<HTMLDivElement | null>(null)

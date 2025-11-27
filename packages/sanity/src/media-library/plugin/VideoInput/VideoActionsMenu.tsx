@@ -41,7 +41,7 @@ export const MenuActionsWrapper = styled(Inline)`
   right: 0;
 `
 
-export function VideoActionsMenu(props: Props) {
+export function VideoActionsMenu(props: Props) : React.JSX.Element {
   const {
     customDomain,
     playbackId,

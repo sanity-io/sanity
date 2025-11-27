@@ -65,7 +65,7 @@ const Root = styled(Card)`
 /**
  * Use this to get the layout for grid items
  */
-export function CellLayout(props: RowLayoutProps & ComponentProps<typeof Root>) {
+export function CellLayout(props: RowLayoutProps & ComponentProps<typeof Root>) : React.JSX.Element {
   const {
     validation,
     selected,

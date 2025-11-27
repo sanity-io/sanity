@@ -5,7 +5,7 @@ import {useTranslation} from '../../../i18n'
 import {type useRemoveTask} from '../../hooks'
 import {tasksLocaleNamespace} from '../../i18n'
 
-export function RemoveTaskDialog(props: ReturnType<typeof useRemoveTask>) {
+export function RemoveTaskDialog(props: ReturnType<typeof useRemoveTask>) : React.JSX.Element {
   const {handleCloseDialog, handleRemove, removeStatus, showDialog} = props
   const {t} = useTranslation(tasksLocaleNamespace)
   if (showDialog) {

@@ -136,7 +136,7 @@ function AddonDatasetProviderInner(props: AddonDatasetSetupProviderProps) {
  * @beta
  * @hidden
  */
-export function AddonDatasetProvider(props: AddonDatasetSetupProviderProps) {
+export function AddonDatasetProvider(props: AddonDatasetSetupProviderProps) : React.JSX.Element {
   const context = useContext(AddonDatasetContext)
   // Avoid mounting the provider if it's already provided by a parent
   if (context) return props.children

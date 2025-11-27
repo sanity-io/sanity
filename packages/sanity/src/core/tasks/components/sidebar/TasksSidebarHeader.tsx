@@ -23,7 +23,7 @@ interface TasksSidebarHeaderProps {
 /**
  * @internal
  */
-export function TasksSidebarHeader(props: TasksSidebarHeaderProps) {
+export function TasksSidebarHeader(props: TasksSidebarHeaderProps) : React.JSX.Element {
   const {items: allItems} = props
   const {mode} = useTasksEnabled()
   const {state, setViewMode, handleCloseTasks} = useTasksNavigation()

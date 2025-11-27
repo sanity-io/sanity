@@ -6,7 +6,7 @@ import {CommonDateRangeInput} from '../components/filters/filter/inputs/date/Com
 import {SearchProvider} from '../contexts/search/SearchProvider'
 import {type OperatorDateRangeValue} from '../definitions/operators/dateOperators'
 
-export default function CommonDateRangeStory() {
+export default function CommonDateRangeStory() : React.JSX.Element {
   const isDateTime = useBoolean('Datetime', true, 'Props')
 
   const [value, setValue] = useState<OperatorDateRangeValue | null>(null)

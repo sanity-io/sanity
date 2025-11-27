@@ -21,7 +21,7 @@ interface CopyToDraftsMenuItemProps {
  * Copy version to draft option shown as long as document type supports drafts (not live edit),
  * so long as draft mode is enabled in project, and the selected version is not draft
  */
-export const useHasCopyToDraftOption = (documentType: string, fromRelease: string) => {
+export const useHasCopyToDraftOption = (documentType: string, fromRelease: string) : React.JSX.Element => {
   const {document} = useWorkspace()
   const schema = useSchema()
 

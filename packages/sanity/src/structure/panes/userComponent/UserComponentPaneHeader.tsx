@@ -17,7 +17,7 @@ interface UserComponentPaneHeaderProps {
   title: string
 }
 
-export function UserComponentPaneHeader(props: UserComponentPaneHeaderProps) {
+export function UserComponentPaneHeader(props: UserComponentPaneHeaderProps) : React.JSX.Element {
   const {actionHandlers, index, menuItems, menuItemGroups, title} = props
   const {features} = useStructureTool()
 

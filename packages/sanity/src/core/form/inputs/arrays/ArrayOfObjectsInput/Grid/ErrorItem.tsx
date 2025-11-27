@@ -13,7 +13,7 @@ import {IncompatibleItemType} from './IncompatibleItemType'
 
 const MENU_POPOVER_PROPS = {portal: true, tone: 'default'} as const
 
-export function ErrorItem(props: {member: ArrayItemError; sortable?: boolean; readOnly?: boolean}) {
+export function ErrorItem(props: {member: ArrayItemError; sortable?: boolean; readOnly?: boolean}) : React.JSX.Element {
   const {member, sortable, readOnly} = props
   const id = useId()
   const {onChange} = useFormCallbacks()

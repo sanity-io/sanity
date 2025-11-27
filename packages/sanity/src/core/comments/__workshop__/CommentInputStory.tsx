@@ -11,7 +11,7 @@ const noop = () => {
   // ...
 }
 
-export default function CommentsInputStory() {
+export default function CommentsInputStory() : React.JSX.Element {
   const [value, setValue] = useState<PortableTextBlock[] | null>(null)
   const currentUser = useCurrentUser()
   const expandOnFocus = useBoolean('Expand on focus', false, 'Props')

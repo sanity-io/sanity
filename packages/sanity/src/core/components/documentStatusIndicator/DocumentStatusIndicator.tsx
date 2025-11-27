@@ -53,7 +53,7 @@ type Status = 'published' | 'draft' | 'asap' | 'scheduled' | 'undecided'
  *
  * @internal
  */
-export function DocumentStatusIndicator({draft, published, versions}: DocumentStatusProps) {
+export function DocumentStatusIndicator({draft, published, versions}: DocumentStatusProps) : React.JSX.Element {
   const {data: releases} = useActiveReleases()
 
   const {

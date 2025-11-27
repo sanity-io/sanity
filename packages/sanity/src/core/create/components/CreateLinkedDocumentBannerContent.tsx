@@ -21,7 +21,7 @@ import {CreateSvg} from './media/CreateSvg'
 
 const POPOVER_RADIUS = 3
 
-export function CreateLinkedDocumentBannerContent(props: CreateLinkedDocumentBannerContentProps) {
+export function CreateLinkedDocumentBannerContent(props: CreateLinkedDocumentBannerContentProps) : React.JSX.Element {
   const {metadata} = props
   const [infoOpen, setInfoOpen] = useState(false)
   const popoverRef = useRef<HTMLDivElement | null>(null)

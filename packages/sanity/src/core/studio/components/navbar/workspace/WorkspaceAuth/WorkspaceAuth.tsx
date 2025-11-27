@@ -12,7 +12,7 @@ import {useWorkspaceAuthStates} from '../hooks'
 import {WorkspacePreview} from '../WorkspacePreview'
 import {Layout} from './Layout'
 
-export function WorkspaceAuth() {
+export function WorkspaceAuth() : React.JSX.Element {
   const workspaces = useWorkspaces()
   const {activeWorkspace, setActiveWorkspace} = useActiveWorkspace()
   const [authStates] = useWorkspaceAuthStates(workspaces)

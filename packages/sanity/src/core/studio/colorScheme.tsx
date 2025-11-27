@@ -152,7 +152,7 @@ export function useColorSchemeValue(): ThemeColorSchemeKey {
  * @deprecated Use `useColorSchemeValue` or `useColorSchemeSetValue` instead
  * @internal
  */
-export function useColorScheme() {
+export function useColorScheme() : React.JSX.Element {
   useEffect(() => {
     console.warn(
       'useColorScheme() is deprecated, use useColorSchemeValue() or useColorSchemeSetValue() instead',

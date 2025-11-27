@@ -24,7 +24,7 @@ function getMediaLibraryId(assetRef: string) {
   return id
 }
 
-export function VideoPreview(props: VideoAssetProps) {
+export function VideoPreview(props: VideoAssetProps) : React.JSX.Element {
   const {
     assetSources,
     clearField,

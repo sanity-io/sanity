@@ -6,7 +6,7 @@ import {ReleaseAvatar} from '../../../components'
 import {getReleaseTone} from '../../../util/getReleaseTone'
 import {ReleaseTime} from '../ReleaseTime'
 
-export function ReleasePreviewCard({release}: {release: ReleaseDocument}) {
+export function ReleasePreviewCard({release}: {release: ReleaseDocument}) : React.JSX.Element {
   const {t} = useTranslation()
   return (
     <Card border padding={1} radius={2}>

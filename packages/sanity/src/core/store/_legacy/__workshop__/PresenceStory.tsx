@@ -4,7 +4,7 @@ import {useEffect, useState} from 'react'
 import {usePresenceStore} from '../datastores'
 import {type GlobalPresence} from '../presence'
 
-export default function PresenceStory() {
+export default function PresenceStory() : React.JSX.Element {
   const presenceStore = usePresenceStore()
   const [globalPresence, setGlobalPresence] = useState<GlobalPresence[] | null>(null)
 

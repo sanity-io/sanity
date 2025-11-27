@@ -44,7 +44,7 @@ const formatParams = {
   timestamp: {dateStyle: 'medium', timeStyle: 'short'},
 }
 
-export function EventsTimelineMenu({event, events, mode, placement}: TimelineMenuProps) {
+export function EventsTimelineMenu({event, events, mode, placement}: TimelineMenuProps) : React.JSX.Element {
   const {setTimelineRange} = useDocumentPane()
   const [open, setOpen] = useState(false)
   const [button, setButton] = useState<HTMLButtonElement | null>(null)

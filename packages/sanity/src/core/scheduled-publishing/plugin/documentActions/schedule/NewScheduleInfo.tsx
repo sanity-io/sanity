@@ -12,7 +12,7 @@ interface Props {
   schemaType: string
 }
 
-export function NewScheduleInfo({id, schemaType}: Props) {
+export function NewScheduleInfo({id, schemaType}: Props) : React.JSX.Element {
   return (
     <Stack space={4}>
       <Text size={1}>

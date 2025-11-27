@@ -56,7 +56,7 @@ function preventWheel(event: WheelEvent) {
  * @hidden
  * @beta
  */
-export function NumberInput(props: NumberInputProps) {
+export function NumberInput(props: NumberInputProps) : React.JSX.Element {
   const {schemaType, validationError, elementProps: _elementProps} = props
   const {ref, ...elementProps} = _elementProps
 

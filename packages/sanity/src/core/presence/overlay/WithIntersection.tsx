@@ -9,7 +9,7 @@ export interface WithIntersectionProps {
   id: string
 }
 
-export const WithIntersection = (props: WithIntersectionProps & HTMLProps<HTMLDivElement>) => {
+export const WithIntersection = (props: WithIntersectionProps & HTMLProps<HTMLDivElement>) : React.JSX.Element => {
   const {onIntersection, io, id, ...rest} = props
   const element = useRef<HTMLDivElement | null>(null)
   useEffect(() => {

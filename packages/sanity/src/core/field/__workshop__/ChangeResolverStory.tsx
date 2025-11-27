@@ -7,7 +7,7 @@ import {useSchema} from '../../hooks'
 import {ChangeResolver, type DocumentChangeContextInstance} from '../diff'
 import {type FieldChangeNode, type ObjectDiff, type StringDiff} from '../types'
 
-export default function ChangeResolverStory() {
+export default function ChangeResolverStory() : React.JSX.Element {
   const documentId = 'test'
   const documentType = 'author'
   const schema = useSchema()

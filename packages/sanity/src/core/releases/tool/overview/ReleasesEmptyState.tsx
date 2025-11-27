@@ -10,7 +10,7 @@ interface ReleasesEmptyStateProps {
   createReleaseButton?: React.ReactNode
 }
 
-export const ReleasesEmptyState = ({createReleaseButton}: ReleasesEmptyStateProps) => {
+export const ReleasesEmptyState = ({createReleaseButton}: ReleasesEmptyStateProps) : React.JSX.Element => {
   const {t} = useTranslation(releasesLocaleNamespace)
   const {mode} = useReleasesUpsell()
 

@@ -18,7 +18,7 @@ interface Options {
   value?: Reference
 }
 
-export function useReferenceInput(options: Options) {
+export function useReferenceInput(options: Options) : React.JSX.Element {
   const {path, schemaType} = options
   const schema = useSchema()
   const perspective = usePerspective()

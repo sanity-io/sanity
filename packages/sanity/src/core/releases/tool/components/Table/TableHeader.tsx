@@ -78,7 +78,7 @@ const TableHeaderSearch = ({
  *
  * @internal
  */
-export const TableHeader = ({headers, searchDisabled}: TableHeaderProps) => {
+export const TableHeader = ({headers, searchDisabled}: TableHeaderProps) : React.JSX.Element => {
   return (
     <Card as="thead" borderBottom>
       <Flex

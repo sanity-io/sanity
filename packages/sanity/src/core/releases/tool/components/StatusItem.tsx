@@ -1,7 +1,7 @@
 import {Box, Card, Flex, Text} from '@sanity/ui'
 import {type ReactNode} from 'react'
 
-export function StatusItem(props: {avatar?: ReactNode; text: ReactNode; testId?: string}) {
+export function StatusItem(props: {avatar?: ReactNode; text: ReactNode; testId?: string}) : React.JSX.Element {
   const {avatar, text, testId} = props
 
   return (

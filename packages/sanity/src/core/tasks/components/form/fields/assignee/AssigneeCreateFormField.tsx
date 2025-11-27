@@ -24,7 +24,7 @@ const FocusableCard = styled(Card)((props) => {
   `
 })
 
-export function AssigneeCreateFormField(props: StringInputProps) {
+export function AssigneeCreateFormField(props: StringInputProps) : React.JSX.Element {
   const {value, onChange} = props
   const {mentionOptions} = useMentionUser()
   const mentionedUser = useMemo(

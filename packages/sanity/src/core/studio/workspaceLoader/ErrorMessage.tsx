@@ -21,7 +21,7 @@ export interface ErrorMessageProps {
 /**
  * @internal
  */
-export function ErrorMessage({error, message, path, stack}: ErrorMessageProps) {
+export function ErrorMessage({error, message, path, stack}: ErrorMessageProps) : React.JSX.Element {
   useEffect(() => {
     console.error(error)
   }, [error])

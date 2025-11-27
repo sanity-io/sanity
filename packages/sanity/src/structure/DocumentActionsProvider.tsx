@@ -19,7 +19,7 @@ interface ResolvedAction extends DocumentActionDescription {
 }
 
 /** @internal */
-export function DocumentActionsProvider(props: {children: React.ReactNode}) {
+export function DocumentActionsProvider(props: {children: React.ReactNode}) : React.JSX.Element {
   const {children} = props
 
   const {actions, editState, isInitialValueLoading, revisionId} = useDocumentPane()

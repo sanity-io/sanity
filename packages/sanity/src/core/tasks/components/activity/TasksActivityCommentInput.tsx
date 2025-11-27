@@ -18,7 +18,7 @@ interface TasksCommentActivityInputProps {
   onSubmit: (message: CommentInputProps['value']) => void
 }
 
-export function TasksActivityCommentInput(props: TasksCommentActivityInputProps) {
+export function TasksActivityCommentInput(props: TasksCommentActivityInputProps) : React.JSX.Element {
   const {mentionOptions, currentUser, onSubmit} = props
   const {mode} = useTasksEnabled()
   const [value, setValue] = useState<CommentInputProps['value']>(null)

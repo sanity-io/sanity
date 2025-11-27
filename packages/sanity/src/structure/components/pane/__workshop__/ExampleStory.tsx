@@ -19,7 +19,7 @@ const PANE_TONE_OPTIONS = {
   Critical: 'critical',
 } as const
 
-export default function ExampleStory() {
+export default function ExampleStory() : React.JSX.Element {
   const layoutCollapsed = useBoolean('Layout collapsed', false, 'Props')
   const manyTabs = useBoolean('Many tabs', false, 'Props')
   const tone = useSelect('Tone', PANE_TONE_OPTIONS, 'default', 'Props')

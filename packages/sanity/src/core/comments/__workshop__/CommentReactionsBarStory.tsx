@@ -21,7 +21,7 @@ const INITIAL_REACTIONS: CommentReactionItem[] = [
   },
 ]
 
-export default function CommentReactionsBarStory() {
+export default function CommentReactionsBarStory() : React.JSX.Element {
   const [selectedOptions, setSelectedOptions] = useState<CommentReactionItem[]>(INITIAL_REACTIONS)
   const currentUser = useCurrentUser()
 

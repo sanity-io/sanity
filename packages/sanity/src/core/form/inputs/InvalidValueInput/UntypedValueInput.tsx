@@ -75,7 +75,7 @@ function UnsetItemButton({
  * When the value does not have an `_type` property,
  * but the schema has a named type
  */
-export function UntypedValueInput({validTypes, value, onChange}: UntypedValueInputProps) {
+export function UntypedValueInput({validTypes, value, onChange}: UntypedValueInputProps) : React.JSX.Element {
   const schema = useSchema()
   const isSingleValidType = validTypes.length === 1
   const isHoistedType = schema.has(validTypes[0])

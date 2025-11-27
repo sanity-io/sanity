@@ -45,7 +45,7 @@ const EMPTY_ARRAY: [] = []
 
 const AI_ASSIST_TYPE = 'sanity.assist.instruction.prompt'
 
-export function CommentsPortableTextInput(props: PortableTextInputProps) {
+export function CommentsPortableTextInput(props: PortableTextInputProps) : React.JSX.Element {
   const {enabled, mode} = useCommentsEnabled()
 
   // This is a workaround solution to disable comments for the AI assist type.

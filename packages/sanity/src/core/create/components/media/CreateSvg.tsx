@@ -1,4 +1,4 @@
-export function CreateSvg() {
+export function CreateSvg() : React.JSX.Element {
   return (
     <svg
       height="auto"

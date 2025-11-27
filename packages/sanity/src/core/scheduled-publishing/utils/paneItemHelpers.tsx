@@ -74,7 +74,7 @@ export function getPreviewStateObservable(
 /**
  * Whilst schedules can contain multiple documents, this plugin specifically limits schedules to one document only
  */
-export function getScheduledDocument(schedule: Schedule) {
+export function getScheduledDocument(schedule: Schedule) : React.JSX.Element {
   return schedule.documents?.[0]
 }
 

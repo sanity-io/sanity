@@ -14,7 +14,7 @@ interface VirtualizerScrollInstanceProviderProps extends VirtualizerScrollInstan
  *
  * @internal
  */
-export function VirtualizerScrollInstanceProvider(props: VirtualizerScrollInstanceProviderProps) {
+export function VirtualizerScrollInstanceProvider(props: VirtualizerScrollInstanceProviderProps) : React.JSX.Element {
   const {scrollElement, containerElement} = props
 
   const value = useMemo(

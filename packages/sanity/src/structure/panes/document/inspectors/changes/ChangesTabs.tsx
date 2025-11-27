@@ -32,7 +32,7 @@ const isValidTab = (tab: string | undefined): tab is (typeof TABS)[number] =>
   // @ts-expect-error TS doesn't understand the type guard
   tab && TABS.includes(tab)
 
-export function ChangesTabs(props: DocumentInspectorProps) {
+export function ChangesTabs(props: DocumentInspectorProps) : React.JSX.Element {
   const {params, setParams} = usePaneRouter()
   const source = useSource()
   const [parentRef, setParentRef] = useState<HTMLDivElement | null>(null)

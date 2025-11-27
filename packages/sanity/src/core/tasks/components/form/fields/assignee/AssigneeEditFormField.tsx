@@ -29,7 +29,7 @@ interface AssigneeEditFormFieldProps {
   onChange: (patch: FormPatch | PatchEvent | FormPatch[]) => void
 }
 
-export function AssigneeEditFormField(props: AssigneeEditFormFieldProps) {
+export function AssigneeEditFormField(props: AssigneeEditFormFieldProps) : React.JSX.Element {
   const {value, onChange, path} = props
   const subscribers = useFormValue(['subscribers']) as string[] | undefined
   const {mentionOptions} = useMentionUser()

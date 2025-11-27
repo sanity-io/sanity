@@ -20,7 +20,7 @@ const FooterCard = styled(Card)({
   zIndex: '1',
 })
 
-export function CommentsInspectorFeedbackFooter() {
+export function CommentsInspectorFeedbackFooter() : React.JSX.Element {
   const {t} = useTranslation(commentsLocaleNamespace)
   return (
     <FooterCard padding={4}>

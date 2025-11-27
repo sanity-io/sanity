@@ -13,7 +13,7 @@ type UserComponentPaneProps = BaseStructureToolPaneProps<'component'>
 /**
  * @internal
  */
-export function UserComponentPane(props: UserComponentPaneProps) {
+export function UserComponentPane(props: UserComponentPaneProps) : React.JSX.Element {
   const {index, pane, paneKey, ...restProps} = props
   const {
     child,

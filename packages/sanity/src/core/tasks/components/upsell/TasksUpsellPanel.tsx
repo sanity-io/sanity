@@ -3,7 +3,7 @@ import {Box, Container} from '@sanity/ui'
 import {UpsellPanel} from '../../../studio/upsell/UpsellPanel'
 import {useTasksUpsell} from '../../context'
 
-export function TasksUpsellPanel() {
+export function TasksUpsellPanel() : React.JSX.Element {
   const {
     upsellData: data,
     telemetryLogs: {panelPrimaryClicked: onPrimaryClick, panelSecondaryClicked: onSecondaryClick},

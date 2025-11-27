@@ -13,7 +13,7 @@ function preventSave(evt: MouseEvent<HTMLButtonElement>) {
   return evt.preventDefault()
 }
 
-export function SaveCsvButton({blobUrl}: SaveButtonProps) {
+export function SaveCsvButton({blobUrl}: SaveButtonProps) : React.JSX.Element {
   const {t} = useTranslation(visionLocaleNamespace)
   const isDisabled = !blobUrl
 
@@ -41,7 +41,7 @@ export function SaveCsvButton({blobUrl}: SaveButtonProps) {
   )
 }
 
-export function SaveJsonButton({blobUrl}: SaveButtonProps) {
+export function SaveJsonButton({blobUrl}: SaveButtonProps) : React.JSX.Element {
   return (
     <Button
       as="a"

@@ -36,7 +36,7 @@ const StyledCard = styled(Card)`
  *
  * - Displays the workspace icon only.
  */
-export function HomeButton() {
+export function HomeButton() : React.JSX.Element {
   const {activeWorkspace} = useActiveWorkspace()
   const {href: rootHref, onClick: handleRootClick} = useStateLink({state: {}})
 

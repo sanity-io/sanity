@@ -15,7 +15,7 @@ export type UrlInputProps = StringInputProps
  * @hidden
  * @beta
  */
-export function UrlInput(props: UrlInputProps) {
+export function UrlInput(props: UrlInputProps) : React.JSX.Element {
   const {schemaType, validationError, elementProps} = props
 
   const uriRule = getValidationRule(schemaType, 'uri')

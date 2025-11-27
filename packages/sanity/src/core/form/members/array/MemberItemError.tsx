@@ -3,7 +3,7 @@ import {type ArrayItemError} from '../../store/types/memberErrors'
 import {IncompatibleItemType} from './IncompatibleItemType'
 
 /** @internal */
-export function MemberItemError(props: {member: ArrayItemError}) {
+export function MemberItemError(props: {member: ArrayItemError}) : React.JSX.Element {
   const {member} = props
   const {t} = useTranslation()
 

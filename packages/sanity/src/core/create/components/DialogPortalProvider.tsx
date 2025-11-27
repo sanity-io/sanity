@@ -1,7 +1,7 @@
 import {PortalProvider, usePortal} from '@sanity/ui'
 import {type ReactNode} from 'react'
 
-export function DialogPortalProvider(props: {portalElementId: string; children: ReactNode}) {
+export function DialogPortalProvider(props: {portalElementId: string; children: ReactNode}) : React.JSX.Element {
   const {children, portalElementId} = props
   const {element, elements} = usePortal()
   const portalElement = elements?.[portalElementId] || element

@@ -78,7 +78,7 @@ interface BlockObjectProps extends PropsWithChildren {
   value: PortableTextBlock
 }
 
-export function BlockObject(props: BlockObjectProps) {
+export function BlockObject(props: BlockObjectProps) : React.JSX.Element {
   const {
     floatingBoundary,
     focused,

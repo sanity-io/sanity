@@ -62,7 +62,7 @@ export function getIconWithFallback(
   return icon || (schemaType && schemaType.icon) || defaultIcon || false
 }
 
-export function PaneItem(props: PaneItemProps) {
+export function PaneItem(props: PaneItemProps) : React.JSX.Element {
   const {
     icon,
     id,

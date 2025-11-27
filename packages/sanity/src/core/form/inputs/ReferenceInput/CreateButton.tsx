@@ -35,7 +35,7 @@ const POPOVER_PROPS: MenuButtonProps['popover'] = {
   preventOverflow: true,
 }
 
-export function CreateButton(props: Props) {
+export function CreateButton(props: Props) : React.JSX.Element {
   const {createOptions, onCreate, id, menuRef, ...rest} = props
   const currentUser = useCurrentUser()
 

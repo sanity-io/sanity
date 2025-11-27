@@ -5,7 +5,7 @@ import {AddonDatasetProvider} from '../../studio'
 import {TasksFormBuilder} from '../components'
 import {TasksProvider} from '../context'
 
-export default function TasksCreateStory() {
+export default function TasksCreateStory() : React.JSX.Element {
   const value = useMemo(
     () =>
       ({

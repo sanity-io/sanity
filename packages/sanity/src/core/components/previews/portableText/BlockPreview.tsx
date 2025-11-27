@@ -21,7 +21,7 @@ const HeaderFlex = styled(Flex).attrs({align: 'center'})`
 /**
  * @hidden
  * @beta */
-export function BlockPreview(props: Omit<PreviewProps<'block'>, 'renderDefault'>) {
+export function BlockPreview(props: Omit<PreviewProps<'block'>, 'renderDefault'>) : React.JSX.Element {
   const {
     actions,
     title,

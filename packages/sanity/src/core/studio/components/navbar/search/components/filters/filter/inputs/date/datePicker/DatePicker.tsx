@@ -10,7 +10,7 @@ interface DatePickerProps {
   selectTime?: boolean
 }
 
-export function DatePicker({date, endDate, onChange, selectRange, selectTime}: DatePickerProps) {
+export function DatePicker({date, endDate, onChange, selectRange, selectTime}: DatePickerProps) : React.JSX.Element {
   const handleSelect = useCallback(
     (dates: {date: Date | null; endDate?: Date | null}) => {
       onChange(dates)

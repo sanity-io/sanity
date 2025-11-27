@@ -161,7 +161,7 @@ const InnerToolbar = memo(function InnerToolbar({
   )
 })
 
-export function Toolbar(props: ToolbarProps) {
+export function Toolbar(props: ToolbarProps) : React.JSX.Element {
   const {collapsible, hotkeys, isFullscreen, readOnly, onMemberOpen, onToggleFullscreen} = props
   const editor = usePortableTextEditor()
   const selection = usePortableTextEditorSelection()

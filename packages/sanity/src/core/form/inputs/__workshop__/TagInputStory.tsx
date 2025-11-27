@@ -10,7 +10,7 @@ interface Tag {
 
 const INITIAL_VALUE: Tag[] = [{value: 'foo'}, {value: 'bar'}, {value: 'baz'}]
 
-export default function TagInputStory() {
+export default function TagInputStory() : React.JSX.Element {
   const readOnly = useBoolean('readOnly', false)
   const [tags, setTags] = useState<Tag[]>(INITIAL_VALUE)
 

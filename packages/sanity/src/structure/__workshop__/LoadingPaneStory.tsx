@@ -3,7 +3,7 @@ import {Card, Stack, Text} from '@sanity/ui'
 import {PaneLayout} from '../components'
 import {LoadingPane} from '../panes'
 
-export default function LoadingPaneStory() {
+export default function LoadingPaneStory() : React.JSX.Element {
   return (
     <Stack space={3}>
       <Card padding={4} tone="positive">
