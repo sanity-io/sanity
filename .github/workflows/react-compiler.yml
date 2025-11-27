@@ -36,7 +36,7 @@ jobs:
             echo "changed=false" >> $GITHUB_OUTPUT
           fi
       - if: steps.check-changes.outputs.changed == 'true'
-        uses: peter-evans/create-pull-request@271a8d0340265f705b14b6d32b9829c1cb33d45e # v7
+        uses: peter-evans/create-pull-request@84ae59a2cdc2258d6fa0732dd66352dddae2a412 # v7
         id: create-pull-request
         with:
           body: I ran `pnpm -r up --ignore-scripts react-compiler-runtime@latest babel-plugin-react-compiler@latest eslint-plugin-react-hooks@latest` 🧑‍💻
