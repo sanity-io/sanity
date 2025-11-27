@@ -29,6 +29,23 @@ import {type CalendarLabels, type MonthNames} from './types'
 import {formatTime} from './utils'
 import {YearInput} from './YearInput'
 
+/**
+ * Helper function to create a TZDate from a Date's components in a specific timezone.
+ * This is useful for interpreting local date/time values as being in a specific timezone.
+ */
+function createTZDateFromComponents(date: Date, timeZone: string): TZDate {
+  return new TZDate(
+    date.getFullYear(),
+    date.getMonth(),
+    date.getDate(),
+    date.getHours(),
+    date.getMinutes(),
+    date.getSeconds(),
+    date.getMilliseconds(),
+    timeZone,
+  )
+}
+
 export const MONTH_PICKER_VARIANT = {
   select: 'select',
   carousel: 'carousel',
@@ -151,16 +168,7 @@ export const Calendar = forwardRef(function Calendar(
 
       // Create a TZDate in the timezone with the new date values
       // This interprets the local date/time as being in the specified timezone
-      const tzDate = new TZDate(
-        newDate.getFullYear(),
-        newDate.getMonth(),
-        newDate.getDate(),
-        newDate.getHours(),
-        newDate.getMinutes(),
-        newDate.getSeconds(),
-        newDate.getMilliseconds(),
-        timeZone.name,
-      )
+      const tzDate = createTZDateFromComponents(newDate, timeZone.name)
 
       onSelect(tzDate)
     },
@@ -177,16 +185,7 @@ export const Calendar = forwardRef(function Calendar(
       const zonedDate = new TZDate(savedSelectedDate, timeZone.name)
       const newZonedDate = setHours(setMinutes(zonedDate, mins), hours)
       // Create a TZDate with the new time in the timezone
-      const tzDate = new TZDate(
-        newZonedDate.getFullYear(),
-        newZonedDate.getMonth(),
-        newZonedDate.getDate(),
-        newZonedDate.getHours(),
-        newZonedDate.getMinutes(),
-        newZonedDate.getSeconds(),
-        newZonedDate.getMilliseconds(),
-        timeZone.name,
-      )
+      const tzDate = createTZDateFromComponents(newZonedDate, timeZone.name)
       onSelect(tzDate)
     },
     [onSelect, savedSelectedDate, timeZone],

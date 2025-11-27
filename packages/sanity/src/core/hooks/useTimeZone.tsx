@@ -13,6 +13,23 @@ import ToastDescription from '../studio/timezones/toastDescription/ToastDescript
 import {type NormalizedTimeZone} from '../studio/timezones/types'
 import {debugWithName} from '../studio/timezones/utils/debug'
 
+/**
+ * Helper function to create a TZDate from a Date's components in a specific timezone.
+ * This is useful for interpreting local date/time values as being in a specific timezone.
+ */
+function createTZDateFromComponents(date: Date, timeZone: string): TZDate {
+  return new TZDate(
+    date.getFullYear(),
+    date.getMonth(),
+    date.getDate(),
+    date.getHours(),
+    date.getMinutes(),
+    date.getSeconds(),
+    date.getMilliseconds(),
+    timeZone,
+  )
+}
+
 const TimeZoneEvents = {
   update: 'timeZoneEventUpdate' as const,
 }
@@ -352,16 +369,7 @@ export const useTimeZone = (scope: TimeZoneScope) => {
     (date: Date) => {
       if (!timeZone) return date
       // Create a TZDate by interpreting the date components as being in the timezone
-      return new TZDate(
-        date.getFullYear(),
-        date.getMonth(),
-        date.getDate(),
-        date.getHours(),
-        date.getMinutes(),
-        date.getSeconds(),
-        date.getMilliseconds(),
-        timeZone.name,
-      )
+      return createTZDateFromComponents(date, timeZone.name)
     },
     [timeZone],
   )
