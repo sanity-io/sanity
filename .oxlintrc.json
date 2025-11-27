@@ -118,7 +118,7 @@
     "react/rules-of-hooks": "error",
     "eslint/no-console": ["error", {"allow": ["warn", "error"]}],
     "typescript/explicit-module-boundary-types": [
-      "warn",
+      "error",
       {"allowArgumentsExplicitlyTypedAsAny": true}
     ],
     // These rules should be enabled in the future, they are disabled for now to reduce the PR scope for landing oxlint
