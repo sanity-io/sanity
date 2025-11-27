@@ -1,4 +1,10 @@
-import {type ForwardedRef, forwardRef, type HTMLProps} from 'react'
+import {
+  type ForwardedRef,
+  forwardRef,
+  type ForwardRefExoticComponent,
+  type HTMLProps,
+  type RefAttributes,
+} from 'react'
 
 import {useStateLink} from './useStateLink'
 
@@ -41,7 +47,9 @@ export interface StateLinkProps {
  * }
  * ```
  */
-export const StateLink = forwardRef(function StateLink(
+export const StateLink: ForwardRefExoticComponent<
+  StateLinkProps & Omit<HTMLProps<HTMLAnchorElement>, 'href'> & RefAttributes<HTMLAnchorElement>
+> = forwardRef(function StateLink(
   props: StateLinkProps & Omit<HTMLProps<HTMLAnchorElement>, 'href'>,
   ref: ForwardedRef<HTMLAnchorElement>,
 ) {

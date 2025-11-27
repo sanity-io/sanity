@@ -1,6 +1,15 @@
 /* eslint-disable react/no-unused-prop-types */
 import {type Path} from '@sanity/types'
-import {memo, type ReactNode, useCallback, useContext, useEffect, useMemo, useRef} from 'react'
+import {
+  memo,
+  type MemoExoticComponent,
+  type ReactNode,
+  useCallback,
+  useContext,
+  useEffect,
+  useMemo,
+  useRef,
+} from 'react'
 import {FormCallbacksContext} from 'sanity/_singletons'
 
 import {type OnPathFocusPayload} from '../..'
@@ -19,9 +28,9 @@ export interface FormCallbacksValue {
 }
 
 /** @internal */
-export const FormCallbacksProvider = memo(function FormCallbacksProvider(
-  props: FormCallbacksValue & {children: ReactNode},
-) {
+export const FormCallbacksProvider: MemoExoticComponent<
+  (props: FormCallbacksValue & {children: ReactNode}) => React.JSX.Element
+> = memo(function FormCallbacksProvider(props: FormCallbacksValue & {children: ReactNode}) {
   const ref = useRef<FormCallbacksValue>(props)
   useEffect(() => {
     ref.current = props

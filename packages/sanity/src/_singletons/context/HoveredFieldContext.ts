@@ -1,4 +1,5 @@
 import type {Path} from '@sanity/types'
+import {type Context} from 'react'
 import {createContext} from 'sanity/_createContext'
 
 /** @internal */
@@ -12,14 +13,12 @@ export interface HoveredFieldContextValue {
 }
 
 /** @internal */
-export const HoveredFieldContext = createContext<HoveredFieldContextValue>(
-  'sanity/_singletons/context/hovered-field',
-  {
+export const HoveredFieldContext: Context<HoveredFieldContextValue> =
+  createContext<HoveredFieldContextValue>('sanity/_singletons/context/hovered-field', {
     store: {
       subscribe: () => () => undefined,
       getSnapshot: () => [],
     },
     onMouseEnter: () => undefined,
     onMouseLeave: () => undefined,
-  },
-)
+  })

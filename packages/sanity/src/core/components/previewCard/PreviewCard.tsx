@@ -1,5 +1,13 @@
 import {Card, type CardProps} from '@sanity/ui'
-import {type ForwardedRef, forwardRef, type HTMLProps, useContext, useMemo} from 'react'
+import {
+  type ForwardedRef,
+  forwardRef,
+  type ForwardRefExoticComponent,
+  type HTMLProps,
+  type RefAttributes,
+  useContext,
+  useMemo,
+} from 'react'
 import {PreviewCardContext} from 'sanity/_singletons'
 import {css, styled} from 'styled-components'
 
@@ -35,7 +43,9 @@ export function usePreviewCard(): PreviewCardContextValue {
 }
 
 /** @internal */
-export const PreviewCard = forwardRef(function PreviewCard(
+export const PreviewCard: ForwardRefExoticComponent<
+  CardProps & Omit<HTMLProps<HTMLDivElement>, 'height'> & RefAttributes<HTMLDivElement>
+> = forwardRef(function PreviewCard(
   props: CardProps & Omit<HTMLProps<HTMLDivElement>, 'height'>,
   ref: ForwardedRef<HTMLDivElement>,
 ) {
@@ -57,8 +67,13 @@ export const PreviewCard = forwardRef(function PreviewCard(
  * The workaround is to colocate the styled component with the component itself.
  * @internal
  */
-export const ReferenceInputPreviewCard = styled(PreviewCard)`
+/**
+ * @internal
+ */
+export const ReferenceInputPreviewCard: ReturnType<typeof styled<typeof PreviewCard>> = styled(
+  PreviewCard,
+)`
   /* this is a hack to avoid layout jumps while previews are loading
-there's probably better ways of solving this */
+  there's probably better ways of solving this */
   min-height: 36px;
 `

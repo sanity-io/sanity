@@ -1,10 +1,13 @@
 import {useMemo} from 'react'
 import {useObservable} from 'react-rx'
 
-import {useDocumentStore} from '../store'
+import {type OperationError, type OperationSuccess, useDocumentStore} from '../store'
 
 /** @internal */
-export function useDocumentOperationEvent(publishedDocId: string, docTypeName: string) {
+export function useDocumentOperationEvent(
+  publishedDocId: string,
+  docTypeName: string,
+): OperationSuccess | OperationError | undefined {
   const documentStore = useDocumentStore()
 
   const observable = useMemo(

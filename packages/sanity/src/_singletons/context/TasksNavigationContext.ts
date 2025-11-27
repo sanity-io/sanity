@@ -1,3 +1,4 @@
+import {type Context} from 'react'
 import {createContext} from 'sanity/_createContext'
 
 import type {TasksNavigationContextValue} from '../../core/tasks/context/navigation/types'
@@ -5,7 +6,8 @@ import type {TasksNavigationContextValue} from '../../core/tasks/context/navigat
 /**
  * @internal
  */
-export const TasksNavigationContext = createContext<TasksNavigationContextValue | null>(
-  'sanity/_singletons/context/tasks-navigation',
-  null,
-)
+export const TasksNavigationContext: Context<TasksNavigationContextValue | null> =
+  createContext<TasksNavigationContextValue | null>(
+    'sanity/_singletons/context/tasks-navigation',
+    null,
+  )

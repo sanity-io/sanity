@@ -1,4 +1,4 @@
-import {memo, useCallback} from 'react'
+import {memo, type MemoExoticComponent, useCallback} from 'react'
 import {SingleDocReleaseProvider, useSource} from 'sanity'
 
 import {usePaneRouter} from '../../components/paneRouter/usePaneRouter'
@@ -10,7 +10,9 @@ import {type DocumentPaneProviderProps} from './types'
 /**
  * @internal
  */
-export const DocumentPaneProviderWrapper = memo((props: DocumentPaneProviderProps) => {
+export const DocumentPaneProviderWrapper: MemoExoticComponent<
+  (props: DocumentPaneProviderProps) => React.JSX.Element
+> = memo((props: DocumentPaneProviderProps) => {
   const source = useSource()
   const {setParams, params} = usePaneRouter()
   const handleSetScheduledDraftPerspective = useCallback(

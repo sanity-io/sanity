@@ -1,3 +1,4 @@
+import {type Context} from 'react'
 import {createContext} from 'sanity/_createContext'
 
 import type {TasksEnabledContextValue} from '../../core/tasks/context/enabled/types'
@@ -11,10 +12,8 @@ import type {TasksEnabledContextValue} from '../../core/tasks/context/enabled/ty
 /**
  * @internal
  */
-export const TasksEnabledContext = createContext<TasksEnabledContextValue>(
-  'sanity/_singletons/context/tasks-enabled',
-  {
+export const TasksEnabledContext: Context<TasksEnabledContextValue> =
+  createContext<TasksEnabledContextValue>('sanity/_singletons/context/tasks-enabled', {
     enabled: false,
     mode: null,
-  },
-)
+  })

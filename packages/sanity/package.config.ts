@@ -59,4 +59,8 @@ export default defineConfig({
 
   babel: {reactCompiler: true},
   reactCompilerOptions: {target: '18'},
+
+  // oxc powered dts generation, requires --isolatedDeclarations support
+  dts: 'rolldown',
+  tsconfig: 'tsconfig.rolldown.json',
 })

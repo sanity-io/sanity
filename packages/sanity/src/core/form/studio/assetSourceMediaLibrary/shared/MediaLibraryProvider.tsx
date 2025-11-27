@@ -25,7 +25,7 @@ export function MediaLibraryProvider({
   projectId: string
   libraryId?: string | null
   children: React.ReactNode
-}) {
+}): React.JSX.Element {
   const [mediaLibraryIds, setMediaLibraryIds] = useState<MediaLibraryIds | null>(
     () =>
       (projectId && cachedMediaLibraryIdsMap.get(projectId)) ||

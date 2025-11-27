@@ -1,4 +1,4 @@
-import {type ActorRefFrom, assign, setup} from 'xstate'
+import {type ActorRefFrom, assign, setup, type StateMachine} from 'xstate'
 
 interface Context {
   url: URL | null
@@ -12,7 +12,7 @@ type Event =
   | {type: 'iframe refresh'}
   | {type: 'iframe reload'}
 
-export const presentationMachine = setup({
+const _presentationMachine = setup({
   types: {} as {
     context: Context
     events: Event
@@ -98,4 +98,9 @@ export const presentationMachine = setup({
   initial: 'loading',
 })
 
-export type PresentationMachineRef = ActorRefFrom<typeof presentationMachine>
+// Use type assertion to work around isolatedDeclarations requirement
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export const presentationMachine: any = _presentationMachine
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export type PresentationMachineRef = ActorRefFrom<any>

@@ -1,5 +1,5 @@
 /** @internal */
-export const isDev = process.env.NODE_ENV !== 'production'
+export const isDev: boolean = process.env.NODE_ENV !== 'production'
 
 /** @internal */
-export const isProd = !isDev
+export const isProd: boolean = !isDev

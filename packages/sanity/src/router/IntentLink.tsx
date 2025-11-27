@@ -1,4 +1,10 @@
-import {type ForwardedRef, forwardRef, type HTMLProps} from 'react'
+import {
+  type ForwardedRef,
+  forwardRef,
+  type ForwardRefExoticComponent,
+  type HTMLProps,
+  type RefAttributes,
+} from 'react'
 
 import {type IntentParameters, type SearchParam} from './types'
 import {useIntentLink} from './useIntentLink'
@@ -44,7 +50,9 @@ export interface IntentLinkProps {
  * }
  * ```
  */
-export const IntentLink = forwardRef(function IntentLink(
+export const IntentLink: ForwardRefExoticComponent<
+  IntentLinkProps & HTMLProps<HTMLAnchorElement> & RefAttributes<HTMLAnchorElement>
+> = forwardRef(function IntentLink(
   props: IntentLinkProps & HTMLProps<HTMLAnchorElement>,
   ref: ForwardedRef<HTMLAnchorElement>,
 ) {

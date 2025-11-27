@@ -25,4 +25,4 @@ try {
  * @hidden
  * @beta
  */
-export const SANITY_VERSION = buildVersion || `${version}-dev`
+export const SANITY_VERSION: string = buildVersion || `${version}-dev`

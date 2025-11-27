@@ -64,7 +64,7 @@ export interface ReferenceInputOptions {
 /**
  * @internal
  */
-export function useReferenceInputOptions() {
+export function useReferenceInputOptions(): ReferenceInputOptions {
   return useContext(ReferenceInputOptionsContext)
 }
 
@@ -73,7 +73,7 @@ export function useReferenceInputOptions() {
  */
 export function ReferenceInputOptionsProvider(
   props: ReferenceInputOptions & {children: ReactNode},
-) {
+): React.JSX.Element {
   const {
     children,
     activePath,

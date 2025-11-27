@@ -22,5 +22,9 @@ export const useCanvasCompanionDoc = (documentId: string) => {
     () => companionDocs?.data.find((companion) => companion?.studioDocumentId === documentId),
     [companionDocs, documentId],
   )
-  return {isLinked: Boolean(companionDoc), companionDoc, loading: companionDocs?.loading}
+  return {
+    isLinked: Boolean(companionDoc) as boolean,
+    companionDoc: companionDoc as typeof companionDoc,
+    loading: companionDocs?.loading as boolean | undefined,
+  }
 }

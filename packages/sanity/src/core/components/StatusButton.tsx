@@ -1,4 +1,12 @@
-import {type ForwardedRef, forwardRef, type HTMLProps, type ReactNode, useMemo} from 'react'
+import {
+  type ForwardedRef,
+  forwardRef,
+  type ForwardRefExoticComponent,
+  type HTMLProps,
+  type ReactNode,
+  type RefAttributes,
+  useMemo,
+} from 'react'
 import {styled} from 'styled-components'
 
 import {Button, type ButtonProps} from '../../ui-components'
@@ -31,7 +39,11 @@ const Dot = styled.div({
 })
 
 /** @hidden @beta */
-export const StatusButton = forwardRef(function StatusButton(
+export const StatusButton: ForwardRefExoticComponent<
+  StatusButtonProps &
+    Omit<HTMLProps<HTMLButtonElement>, 'disabled' | 'ref' | 'size' | 'title'> &
+    RefAttributes<HTMLButtonElement>
+> = forwardRef(function StatusButton(
   props: StatusButtonProps &
     Omit<HTMLProps<HTMLButtonElement>, 'disabled' | 'ref' | 'size' | 'title'>,
   ref: ForwardedRef<HTMLButtonElement>,

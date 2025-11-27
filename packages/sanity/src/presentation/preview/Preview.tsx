@@ -26,7 +26,10 @@ import {useSelector} from '@xstate/react'
 import {AnimatePresence, motion, MotionConfig} from 'motion/react'
 import {
   forwardRef,
+  type ForwardRefExoticComponent,
   memo,
+  type MemoExoticComponent,
+  type RefAttributes,
   useCallback,
   useEffect,
   useImperativeHandle,
@@ -85,7 +88,9 @@ export interface PreviewProps {
   previewUrlRef: PreviewUrlRef
 }
 
-export const Preview = memo(
+export const Preview: MemoExoticComponent<
+  ForwardRefExoticComponent<PreviewProps & RefAttributes<HTMLIFrameElement>>
+> = memo(
   forwardRef<HTMLIFrameElement, PreviewProps>(function PreviewComponent(props, forwardedRef) {
     const {
       header,

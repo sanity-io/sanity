@@ -7,7 +7,7 @@ import {startTransition, useEffect, useState} from 'react'
  */
 export function useConditionalToast(
   params: ToastParams & {id: string; enabled?: boolean; delay?: number},
-) {
+): void {
   const toast = useToast()
 
   const [enabledAt, setEnabledAt] = useState<Date | undefined>()

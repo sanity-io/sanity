@@ -1,3 +1,4 @@
+import {type Context} from 'react'
 import {createContext} from 'sanity/_createContext'
 
 import type {HasUsedScheduledPublishing} from '../../core/scheduledPublishing/tool/contexts/useHasUsedScheduledPublishing'
@@ -29,7 +30,7 @@ const DEFAULT: ScheduledPublishingEnabledContextValue = {
 /**
  * @internal
  */
-export const ScheduledPublishingEnabledContext =
+export const ScheduledPublishingEnabledContext: Context<ScheduledPublishingEnabledContextValue> =
   createContext<ScheduledPublishingEnabledContextValue>(
     'sanity/_singletons/context/scheduled-publishing-enabled',
     DEFAULT,

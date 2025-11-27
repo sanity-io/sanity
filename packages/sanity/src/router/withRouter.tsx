@@ -80,4 +80,6 @@ export interface WithRouterProps {
  * }
  * ```
  */
-export const WithRouter = withRouter((props: WithRouterProps) => props.children(props.router))
+export const WithRouter: FunctionComponent<Omit<WithRouterProps, 'router'>> = withRouter(
+  (props: WithRouterProps) => props.children(props.router),
+)

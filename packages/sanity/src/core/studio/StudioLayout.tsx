@@ -70,7 +70,7 @@ export interface NavbarContextValue {
  *</StudioProvider>
  * ```
  */
-export function StudioLayout() {
+export function StudioLayout(): React.JSX.Element {
   // Use the layout component that is resolved by the Components API (`studio.components.layout`).
   // The default component is the `StudioLayoutComponent` defined below.
   const Layout = useLayoutComponent()
@@ -83,7 +83,7 @@ export function StudioLayout() {
  * @internal
  * The default Studio Layout component
  * */
-export function StudioLayoutComponent() {
+export function StudioLayoutComponent(): React.JSX.Element {
   const {name, title, tools} = useWorkspace()
 
   // In the background, check if the network protocol used to communicate with the

@@ -6,7 +6,7 @@ import {VisionGui} from '../components/VisionGui'
 import {useDatasets} from '../hooks/useDatasets'
 import {type VisionProps} from '../types'
 
-export function VisionContainer(props: VisionProps) {
+export function VisionContainer(props: VisionProps): React.JSX.Element {
   const datasetsClient = useClient({apiVersion: 'v2025-06-27'})
   const loadedDatasets = useDatasets({client: datasetsClient, datasets: props.config.datasets})
 

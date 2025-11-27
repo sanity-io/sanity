@@ -1,12 +1,7 @@
 /* eslint sort-keys: "error" */
 import {defineLocalesResources} from 'sanity'
 
-/**
- * Defined locale strings for the vision tool, in US English.
- *
- * @internal
- */
-const visionLocaleStrings = defineLocalesResources('vision', {
+const raw = {
   /** Label for action "Copy to clipboard", tied to the "Query URL" field. Also used for accessibility purposes on button */
   'action.copy-url-to-clipboard': 'Copy to clipboard',
   /** Label for deleting a query */
@@ -124,7 +119,14 @@ const visionLocaleStrings = defineLocalesResources('vision', {
   'settings.perspectives.scheduled-drafts': 'Scheduled drafts',
   /** Title for popover that explains what "Perspectives" are */
   'settings.perspectives.title': 'Perspectives',
-} as const)
+} as const
+
+/**
+ * Defined locale strings for the vision tool, in US English.
+ *
+ * @internal
+ */
+const visionLocaleStrings: typeof raw = defineLocalesResources('vision', raw)
 
 /**
  * @alpha

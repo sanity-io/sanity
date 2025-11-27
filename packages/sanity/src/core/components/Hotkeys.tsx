@@ -26,7 +26,11 @@ export type HotkeysProps = UIHotkeysProps & {
  * @returns React element
  * @public
  */
-export function Hotkeys({makePlatformAware = true, keys: hotKeys = [], ...props}: HotkeysProps) {
+export function Hotkeys({
+  makePlatformAware = true,
+  keys: hotKeys = [],
+  ...props
+}: HotkeysProps): React.JSX.Element {
   const keys = makePlatformAware ? hotKeys.map(platformifyKey) : hotKeys
   return <UIHotkeys {...props} keys={keys} />
 }

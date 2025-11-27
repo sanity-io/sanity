@@ -7,7 +7,9 @@ import {useGetDefaultPerspective} from './useGetDefaultPerspective'
 /**
  * @internal
  */
-export function useSetPerspective() {
+export function useSetPerspective(): (
+  releaseId: 'published' | 'drafts' | ReleaseId | undefined,
+) => void {
   const router = useRouter()
 
   const defaultPerspective = useGetDefaultPerspective()

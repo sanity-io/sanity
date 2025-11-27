@@ -1,3 +1,4 @@
+import {type Context} from 'react'
 import {createContext} from 'sanity/_createContext'
 import type {SemVer} from 'semver'
 
@@ -47,14 +48,12 @@ export type PackageVersionInfoContextValue = {
  * @hidden
  * @internal
  */
-export const PackageVersionInfoContext = createContext<PackageVersionInfoContextValue>(
-  'sanity/_singletons/context/package-version-info',
-  {
+export const PackageVersionInfoContext: Context<PackageVersionInfoContextValue> =
+  createContext<PackageVersionInfoContextValue>('sanity/_singletons/context/package-version-info', {
     isAutoUpdating: false,
     checkForUpdates: () => {},
     get currentVersion(): never {
       throw new Error('PackageVersionInfoContext not provided')
     },
     versionCheckStatus: {lastCheckedAt: null, checking: false},
-  },
-)
+  })

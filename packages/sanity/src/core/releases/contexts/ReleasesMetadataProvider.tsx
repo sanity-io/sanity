@@ -92,7 +92,11 @@ const ReleasesMetadataProviderInner = ({children}: {children: React.ReactNode}) 
   )
 }
 
-export const ReleasesMetadataProvider = ({children}: {children: React.ReactNode}) => {
+export const ReleasesMetadataProvider = ({
+  children,
+}: {
+  children: React.ReactNode
+}): React.ReactNode => {
   const context = useContext(ReleasesMetadataContext)
 
   // Avoid mounting the provider if it's already provided by a parent

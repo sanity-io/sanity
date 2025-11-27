@@ -19,6 +19,6 @@ export function WithReferringDocuments({
    */
   documentStore?: DocumentStore
   id: string
-}) {
+}): React.JSX.Element {
   return children(useReferringDocuments(id, EMPTY))
 }

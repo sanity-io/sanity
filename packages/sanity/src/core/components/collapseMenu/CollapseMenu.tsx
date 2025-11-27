@@ -5,9 +5,11 @@ import {
   cloneElement,
   type ForwardedRef,
   forwardRef,
+  type ForwardRefExoticComponent,
   Fragment,
   memo,
   type ReactNode,
+  type RefAttributes,
   useCallback,
   useMemo,
   useState,
@@ -85,46 +87,51 @@ interface IntersectionEntry {
 type ElementIntersections = Record<string, IntersectionEntry>
 
 /** @internal */
-export const CollapseMenu = forwardRef(function CollapseMenu(
-  props: CollapseMenuProps,
-  ref: ForwardedRef<any>,
-) {
-  const {children, collapsed, disableRestoreFocusOnClose, onMenuClose, menuButtonProps, ...rest} =
-    props
+export const CollapseMenu: ForwardRefExoticComponent<CollapseMenuProps & RefAttributes<any>> =
+  forwardRef(function CollapseMenu(props: CollapseMenuProps, ref: ForwardedRef<any>) {
+    const {children, collapsed, disableRestoreFocusOnClose, onMenuClose, menuButtonProps, ...rest} =
+      props
 
-  const menuOptions = useMemo(() => Children.toArray(children).filter(_isReactElement), [children])
-  const menuButton = useMemo(
-    () => menuButtonProps?.button || <ContextMenuButton />,
-    [menuButtonProps],
-  )
+    const menuOptions = useMemo(
+      () => Children.toArray(children).filter(_isReactElement),
+      [children],
+    )
+    const menuButton = useMemo(
+      () => menuButtonProps?.button || <ContextMenuButton />,
+      [menuButtonProps],
+    )
 
-  if (collapsed) {
-    // We're showing everything collapsed (e.g. not auto-collapsing), so just delegate straight to the Menu
+    if (collapsed) {
+      // We're showing everything collapsed (e.g. not auto-collapsing), so just delegate straight to the Menu
+      return (
+        <CollapseOverflowMenu
+          ref={ref}
+          disableRestoreFocusOnClose={disableRestoreFocusOnClose}
+          menuButton={menuButton}
+          menuButtonProps={menuButtonProps}
+          menuOptions={menuOptions}
+          onMenuClose={onMenuClose}
+        />
+      )
+    }
     return (
-      <CollapseOverflowMenu
+      <AutoCollapseMenu
+        {...rest}
         ref={ref}
         disableRestoreFocusOnClose={disableRestoreFocusOnClose}
-        menuButton={menuButton}
         menuButtonProps={menuButtonProps}
         menuOptions={menuOptions}
         onMenuClose={onMenuClose}
       />
     )
-  }
-  return (
-    <AutoCollapseMenu
-      {...rest}
-      ref={ref}
-      disableRestoreFocusOnClose={disableRestoreFocusOnClose}
-      menuButtonProps={menuButtonProps}
-      menuOptions={menuOptions}
-      onMenuClose={onMenuClose}
-    />
-  )
-})
+  })
 
 /** @internal */
-export const AutoCollapseMenu = forwardRef(function AutoCollapseMenu(
+export const AutoCollapseMenu: ForwardRefExoticComponent<
+  Omit<CollapseMenuProps, 'children' | 'collapsed'> & {
+    menuOptions: React.JSX.Element[]
+  } & RefAttributes<HTMLDivElement>
+> = forwardRef(function AutoCollapseMenu(
   props: Omit<CollapseMenuProps, 'children' | 'collapsed'> & {menuOptions: React.JSX.Element[]},
   ref: ForwardedRef<HTMLDivElement>,
 ) {

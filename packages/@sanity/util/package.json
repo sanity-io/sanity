@@ -60,31 +60,6 @@
   },
   "main": "./lib/index.js",
   "types": "./lib/index.d.ts",
-  "typesVersions": {
-    "*": {
-      "fs": [
-        "./lib/fs.d.ts"
-      ],
-      "client": [
-        "./lib/client.d.ts"
-      ],
-      "concurrency-limiter": [
-        "./lib/concurrency-limiter.d.ts"
-      ],
-      "content": [
-        "./lib/content.d.ts"
-      ],
-      "createSafeJsonParser": [
-        "./lib/createSafeJsonParser.d.ts"
-      ],
-      "legacyDateFormat": [
-        "./lib/legacyDateFormat.d.ts"
-      ],
-      "paths": [
-        "./lib/paths.d.ts"
-      ]
-    }
-  },
   "files": [
     "lib"
   ],

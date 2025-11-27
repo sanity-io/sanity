@@ -20,7 +20,7 @@ import {useCanvasTelemetry} from './useCanvasTelemetry'
 export const useNavigateToCanvasDoc = (
   canvasDocId: string | undefined,
   origin: OpenCanvasOrigin,
-) => {
+): (() => void) => {
   const {value: organizationId} = useProjectOrganizationId()
   const client = useClient(DEFAULT_STUDIO_CLIENT_OPTIONS)
   const {node} = useComlinkStore()

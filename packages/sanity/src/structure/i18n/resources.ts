@@ -6,7 +6,7 @@ import {defineLocalesResources} from 'sanity'
  *
  * @internal
  */
-const structureLocaleStrings = defineLocalesResources('structure', {
+const structureLocaleStrings: Record<string, string> = defineLocalesResources('structure', {
   /** Label for the "Copy Document URL" document action */
   'action.copy-document-url.label': 'Copy Document URL',
   /** Tooltip when action button is disabled because the operation is not ready   */

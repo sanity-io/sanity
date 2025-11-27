@@ -34,7 +34,7 @@ const EMPTY_ARRAY = [] as never[]
 export function InsufficientPermissionsMessage({
   currentUser,
   context,
-}: InsufficientPermissionsMessageProps) {
+}: InsufficientPermissionsMessageProps): React.JSX.Element {
   const {t} = useTranslation()
 
   const list = useListFormat({style: 'short', type: 'unit'})

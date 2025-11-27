@@ -1,3 +1,4 @@
+import {type Context} from 'react'
 import {createContext} from 'sanity/_createContext'
 
 import type {DocumentFieldAction} from '../../core/config/document/fieldActions/types'
@@ -12,7 +13,8 @@ export interface DocumentFieldActionsContextValue {
 /**
  * @internal
  */
-export const DocumentFieldActionsContext = createContext<DocumentFieldActionsContextValue | null>(
-  'sanity/_singletons/context/document-field-actions',
-  null,
-)
+export const DocumentFieldActionsContext: Context<DocumentFieldActionsContextValue | null> =
+  createContext<DocumentFieldActionsContextValue | null>(
+    'sanity/_singletons/context/document-field-actions',
+    null,
+  )

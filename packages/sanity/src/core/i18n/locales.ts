@@ -2,6 +2,7 @@ import {copyPasteLocaleResources} from './bundles/copy-paste'
 import {studioDefaultLocaleResources} from './bundles/studio'
 import {validationLocaleResources} from './bundles/validation'
 import {defineLocale} from './helpers'
+import {type LocaleDefinition} from './types'
 
 /**
  * The default US English locale for the studio.
@@ -9,7 +10,7 @@ import {defineLocale} from './helpers'
  * @internal
  * @hidden
  */
-export const usEnglishLocale = defineLocale({
+export const usEnglishLocale: LocaleDefinition = defineLocale({
   id: 'en-US',
   title: 'English (US)',
   bundles: [studioDefaultLocaleResources, validationLocaleResources, copyPasteLocaleResources],
@@ -26,4 +27,4 @@ export const usEnglishLocale = defineLocale({
  * @internal
  * @hidden
  */
-export const defaultLocale = usEnglishLocale
+export const defaultLocale: LocaleDefinition = usEnglishLocale

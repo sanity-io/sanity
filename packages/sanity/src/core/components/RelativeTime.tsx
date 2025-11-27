@@ -10,7 +10,7 @@ export interface RelativeTimeProps extends RelativeTimeOptions {
 /**
  * @internal
  */
-export function RelativeTime({time, ...options}: RelativeTimeProps) {
+export function RelativeTime({time, ...options}: RelativeTimeProps): React.JSX.Element {
   const timestamp = time instanceof Date ? time : new Date(time)
   const timeAgo = useRelativeTime(timestamp, options)
 

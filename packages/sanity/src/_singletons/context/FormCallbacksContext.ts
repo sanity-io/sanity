@@ -1,3 +1,4 @@
+import {type Context} from 'react'
 import {createContext} from 'sanity/_createContext'
 
 import type {FormCallbacksValue} from '../../core/form/studio/contexts/FormCallbacks'
@@ -5,7 +6,5 @@ import type {FormCallbacksValue} from '../../core/form/studio/contexts/FormCallb
 /**
  * @internal
  */
-export const FormCallbacksContext = createContext<FormCallbacksValue | null>(
-  'sanity/_singletons/context/form-callbacks',
-  null,
-)
+export const FormCallbacksContext: Context<FormCallbacksValue | null> =
+  createContext<FormCallbacksValue | null>('sanity/_singletons/context/form-callbacks', null)

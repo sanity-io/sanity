@@ -1,3 +1,4 @@
+import {type Context} from 'react'
 import {createContext} from 'sanity/_createContext'
 
 /**
@@ -10,7 +11,5 @@ export interface DocumentIdContextValue {
 /**
  * @internal
  */
-export const DocumentIdContext = createContext<DocumentIdContextValue | null>(
-  'sanity/_singletons/context/document-id',
-  null,
-)
+export const DocumentIdContext: Context<DocumentIdContextValue | null> =
+  createContext<DocumentIdContextValue | null>('sanity/_singletons/context/document-id', null)

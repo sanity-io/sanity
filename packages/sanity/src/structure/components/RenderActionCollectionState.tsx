@@ -1,4 +1,4 @@
-import {memo, useContext} from 'react'
+import {memo, type MemoExoticComponent, useContext} from 'react'
 import {
   type DocumentActionComponent,
   type DocumentActionDescription,
@@ -21,7 +21,9 @@ export interface RenderActionCollectionProps {
 }
 
 /** @internal */
-export const RenderActionCollectionState = memo((props: RenderActionCollectionProps) => {
+export const RenderActionCollectionState: MemoExoticComponent<
+  (props: RenderActionCollectionProps) => React.ReactNode
+> = memo((props: RenderActionCollectionProps) => {
   const {children, group} = props
   const states = useContext(DocumentActionsStateContext)
 

@@ -1,6 +1,6 @@
 import {Card, Code} from '@sanity/ui'
 import {isEqual} from 'lodash'
-import {memo, useMemo, useState} from 'react'
+import {memo, type MemoExoticComponent, useMemo, useState} from 'react'
 import {
   EMPTY_ARRAY,
   type GeneralDocumentListLayoutKey,
@@ -60,9 +60,9 @@ export function useShallowUnique<ValueType>(value: ValueType): ValueType {
 /**
  * @internal
  */
-export const PaneContainer = memo(function PaneContainer(
-  props: BaseStructureToolPaneProps<'documentList'>,
-) {
+export const PaneContainer: MemoExoticComponent<
+  (props: BaseStructureToolPaneProps<'documentList'>) => React.JSX.Element
+> = memo(function PaneContainer(props: BaseStructureToolPaneProps<'documentList'>) {
   const {index, isSelected, pane, paneKey} = props
   const {name: parentSourceName} = useSource()
 

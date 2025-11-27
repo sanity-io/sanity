@@ -1,4 +1,4 @@
-import {memo, type ReactNode, useCallback, useMemo} from 'react'
+import {memo, type MemoExoticComponent, type ReactNode, useCallback, useMemo} from 'react'
 import {FormCallbacksContext} from 'sanity/_singletons'
 
 import {type FormPatch, PatchEvent} from '../patch'
@@ -9,9 +9,9 @@ type PatchTransformer = (patches: FormPatch[]) => FormPatch[]
 /**
  * @hidden
  * @beta */
-export const TransformPatches = memo(function OnChangeProvider(
-  props: {transform: PatchTransformer} & {children: ReactNode},
-) {
+export const TransformPatches: MemoExoticComponent<
+  (props: {transform: PatchTransformer} & {children: ReactNode}) => React.JSX.Element
+> = memo(function OnChangeProvider(props: {transform: PatchTransformer} & {children: ReactNode}) {
   const {transform} = props
   const callbacks = useFormCallbacks()
 

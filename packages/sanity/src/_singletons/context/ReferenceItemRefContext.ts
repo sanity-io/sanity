@@ -1,4 +1,5 @@
 import type {MutableRefObject} from 'react'
+import {type Context} from 'react'
 import {createContext} from 'sanity/_createContext'
 
 /**
@@ -15,7 +16,5 @@ export interface ReferenceItemRef {
  * so it can be used down the tree for clickOutside handling
  * @internal
  */
-export const ReferenceItemRefContext = createContext<ReferenceItemRef | null>(
-  'sanity/_singletons/context/reference-item-ref',
-  null,
-)
+export const ReferenceItemRefContext: Context<ReferenceItemRef | null> =
+  createContext<ReferenceItemRef | null>('sanity/_singletons/context/reference-item-ref', null)

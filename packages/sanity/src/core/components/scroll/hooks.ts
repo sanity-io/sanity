@@ -3,7 +3,7 @@ import {useContext, useEffect} from 'react'
 import {ScrollContext} from 'sanity/_singletons'
 
 /** @internal */
-export function useOnScroll(callback: Subscriber<Event>) {
+export function useOnScroll(callback: Subscriber<Event>): void {
   const parentContext = useContext(ScrollContext)
   useEffect(() => {
     return parentContext?.subscribe(callback)

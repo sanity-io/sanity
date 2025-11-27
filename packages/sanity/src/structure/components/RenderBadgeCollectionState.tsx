@@ -1,4 +1,4 @@
-import {memo, type ReactNode} from 'react'
+import {memo, type MemoExoticComponent, type ReactNode} from 'react'
 import {
   type DocumentBadgeDescription,
   type DocumentBadgeProps,
@@ -19,7 +19,9 @@ export interface RenderBadgeCollectionProps {
 }
 
 /** @internal */
-export const RenderBadgeCollectionState = memo((props: RenderBadgeCollectionProps) => {
+const RenderBadgeCollectionStateComponent = (
+  props: RenderBadgeCollectionProps,
+): React.JSX.Element => {
   const {badges, children, badgeProps} = props
 
   return (
@@ -30,5 +32,10 @@ export const RenderBadgeCollectionState = memo((props: RenderBadgeCollectionProp
       {children}
     </GetHookCollectionState>
   )
-})
+}
+
+/** @internal */
+export const RenderBadgeCollectionState: MemoExoticComponent<
+  typeof RenderBadgeCollectionStateComponent
+> = memo(RenderBadgeCollectionStateComponent)
 RenderBadgeCollectionState.displayName = 'Memo(RenderBadgeCollectionState)'

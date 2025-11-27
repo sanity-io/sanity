@@ -1,7 +1,7 @@
 import {type Path} from '@sanity/types'
 import {Stack, Text} from '@sanity/ui'
 import {fromString as pathFromString} from '@sanity/util/paths'
-import {memo, useMemo} from 'react'
+import {memo, type MemoExoticComponent, useMemo} from 'react'
 import {
   CopyPasteProvider,
   ReferenceInputOptionsProvider,
@@ -32,7 +32,9 @@ type DocumentPaneOptions = DocumentPaneNode['options']
 /**
  * @internal
  */
-export const DocumentPane = memo(function DocumentPane(props: DocumentPaneProviderProps) {
+export const DocumentPane: MemoExoticComponent<
+  (props: DocumentPaneProviderProps) => React.JSX.Element
+> = memo(function DocumentPane(props: DocumentPaneProviderProps) {
   const {name: parentSourceName} = useSource()
 
   return (

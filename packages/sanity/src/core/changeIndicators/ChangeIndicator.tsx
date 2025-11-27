@@ -113,7 +113,7 @@ export interface ChangeIndicatorProps {
 /** @internal */
 export function ChangeIndicator(
   props: ChangeIndicatorProps & Omit<HTMLProps<HTMLDivElement>, 'as'>,
-) {
+): React.JSX.Element {
   const {children, hasFocus, isChanged, path, withHoverEffect, ...restProps} = props
   const {isInteractive} = useContext(ReviewChangesContext)
 

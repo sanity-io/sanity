@@ -22,7 +22,7 @@ export interface FormValueContextValue {
 export function FormValueProvider(props: {
   value: FormDocumentValue | undefined
   children: ReactNode
-}) {
+}): React.JSX.Element {
   const value = useMemo(() => ({value: props.value}), [props.value])
   return <FormValueContext.Provider value={value}>{props.children}</FormValueContext.Provider>
 }

@@ -1,0 +1,4 @@
+{
+  "extends": ["./tsconfig.lib.json", "@sanity/pkg-utils/tsconfig/isolated-declarations.json"],
+  "include": ["./src"]
+}

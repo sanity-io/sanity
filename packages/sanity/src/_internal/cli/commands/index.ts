@@ -140,7 +140,10 @@ const commands: (CliCommandDefinition | CliCommandGroupDefinition)[] = [
  * @deprecated Not actually deprecated, but these are internals and should not be relied upon outside of the Sanity team
  * @internal
  */
-export const cliProjectCommands = {
+export const cliProjectCommands: {
+  requiredCliVersionRange: string
+  commands: (CliCommandDefinition | CliCommandGroupDefinition)[]
+} = {
   requiredCliVersionRange: '^3.0.0',
   commands,
 }

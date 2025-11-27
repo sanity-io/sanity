@@ -24,7 +24,7 @@ const Root = styled(Card)({
 /** @internal */
 export function DocumentInspectorHeader(
   props: DocumentInspectorHeaderProps & Omit<HTMLProps<HTMLDivElement>, 'as' | 'height' | 'ref'>,
-) {
+): React.JSX.Element {
   const {as: forwardedAs, children, closeButtonLabel, onClose, title, ...restProps} = props
   const {t} = useTranslation(structureLocaleNamespace)
 

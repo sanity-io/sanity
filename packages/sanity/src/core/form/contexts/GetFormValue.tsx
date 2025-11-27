@@ -1,6 +1,6 @@
 import {type Path} from '@sanity/types'
 import {type ReactNode, useCallback, useContext, useEffect, useRef} from 'react'
-import {GetFormValueContext} from 'sanity/_singletons'
+import {GetFormValueContext, type GetFormValueContextValue} from 'sanity/_singletons'
 
 import {getValueAtPath} from '../../field'
 import {type FormDocumentValue} from '../types'
@@ -10,10 +10,10 @@ import {type FormDocumentValue} from '../types'
  * @internal
  * @hidden
  */
-export const GetFormValueProvider = function GetFormValueProvider(props: {
+function GetFormValueProviderComponent(props: {
   value: FormDocumentValue | undefined
   children: ReactNode
-}) {
+}): React.JSX.Element {
   const valueRef = useRef(props.value)
   useEffect(() => {
     valueRef.current = props.value
@@ -24,7 +24,10 @@ export const GetFormValueProvider = function GetFormValueProvider(props: {
     <GetFormValueContext.Provider value={getValue}>{props.children}</GetFormValueContext.Provider>
   )
 }
-GetFormValueProvider.displayName = 'GetFormValueProvider'
+GetFormValueProviderComponent.displayName = 'GetFormValueProvider'
+
+export const GetFormValueProvider: typeof GetFormValueProviderComponent & {displayName: string} =
+  GetFormValueProviderComponent
 
 /**
  * React hook that returns a function that can be called to look up the value from the current document at the given path.
@@ -48,7 +51,7 @@ GetFormValueProvider.displayName = 'GetFormValueProvider'
  * ```
  */
 
-export function useGetFormValue() {
+export function useGetFormValue(): GetFormValueContextValue {
   const ctx = useContext(GetFormValueContext)
   if (!ctx) {
     throw new Error('useGetFormValue must be used within a GetFormValueProvider')

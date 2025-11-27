@@ -1,3 +1,4 @@
+import {type Context} from 'react'
 import {createContext} from 'sanity/_createContext'
 
 import type {CalendarContextValue} from '../../core/studio/components/navbar/search/components/filters/filter/inputs/date/datePicker/calendar/contexts/CalendarContext'
@@ -5,7 +6,6 @@ import type {CalendarContextValue} from '../../core/studio/components/navbar/sea
 /**
  * @internal
  */
-export const CalendarContext = createContext<CalendarContextValue | undefined>(
-  'sanity/_singletons/context/calendar',
-  undefined,
-)
+export const CalendarContext: Context<CalendarContextValue | undefined> = createContext<
+  CalendarContextValue | undefined
+>('sanity/_singletons/context/calendar', undefined)

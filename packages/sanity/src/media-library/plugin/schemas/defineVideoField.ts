@@ -24,7 +24,7 @@ import {type VideoDefinition} from './types'
  *
  * @beta
  */
-export function defineVideoField(definition: Omit<VideoDefinition, 'type'>) {
+export function defineVideoField(definition: Omit<VideoDefinition, 'type'>): VideoDefinition {
   // @ts-expect-error FIXME
   return defineField({
     ...definition,

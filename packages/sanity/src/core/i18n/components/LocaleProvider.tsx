@@ -14,7 +14,7 @@ import {type Locale} from '../types'
  * @internal
  * @hidden
  */
-export function LocaleProvider(props: PropsWithChildren) {
+export function LocaleProvider(props: PropsWithChildren): React.JSX.Element {
   const {
     projectId,
     name: sourceId,
@@ -49,7 +49,7 @@ export function LocaleProviderBase({
   sourceId: string
   locales: Locale[]
   i18next: i18n
-}>) {
+}>): React.JSX.Element {
   const subscribe = useCallback(
     (callback: () => void) => {
       i18next.on('languageChanged', callback)

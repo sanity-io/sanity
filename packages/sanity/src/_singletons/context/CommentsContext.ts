@@ -1,3 +1,4 @@
+import {type Context} from 'react'
 import {createContext} from 'sanity/_createContext'
 
 import type {CommentsContextValue} from '../../core/comments/context/comments/types'
@@ -5,7 +6,5 @@ import type {CommentsContextValue} from '../../core/comments/context/comments/ty
 /**
  * @internal
  */
-export const CommentsContext = createContext<CommentsContextValue | null>(
-  'sanity/_singletons/context/comments',
-  null,
-)
+export const CommentsContext: Context<CommentsContextValue | null> =
+  createContext<CommentsContextValue | null>('sanity/_singletons/context/comments', null)

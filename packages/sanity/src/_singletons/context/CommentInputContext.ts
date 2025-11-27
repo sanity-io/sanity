@@ -1,3 +1,4 @@
+import {type Context} from 'react'
 import {createContext} from 'sanity/_createContext'
 
 import type {CommentInputContextValue} from '../../core/comments/components/pte/comment-input/CommentInputProvider'
@@ -5,7 +6,5 @@ import type {CommentInputContextValue} from '../../core/comments/components/pte/
 /**
  * @internal
  */
-export const CommentInputContext = createContext<CommentInputContextValue | null>(
-  'sanity/_singletons/context/comment-input',
-  null,
-)
+export const CommentInputContext: Context<CommentInputContextValue | null> =
+  createContext<CommentInputContextValue | null>('sanity/_singletons/context/comment-input', null)

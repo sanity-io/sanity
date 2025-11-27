@@ -33,7 +33,7 @@ const DEFAULT_FIELDS: DocumentField[] = ['_id', '_type']
 export function useReferringDocuments<DocumentType extends SanityDocument>(
   id: string,
   fields: DocumentField[] = DEFAULT_FIELDS,
-) {
+): {isLoading: boolean; referringDocuments: DocumentType[]} {
   const documentStore = useDocumentStore()
 
   const projection = useMemo(() => {

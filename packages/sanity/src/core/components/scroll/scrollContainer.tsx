@@ -5,6 +5,7 @@ import {
   forwardRef,
   type HTMLProps,
   memo,
+  type MemoExoticComponent,
   useContext,
   useEffect,
   useImperativeHandle,
@@ -20,7 +21,9 @@ export interface ScrollContainerProps<T extends ElementType>
   onScroll?: (event: Event) => () => void
 }
 
-const ScrollContainerComponent = forwardRef(function ScrollContainerComponent<
+const ScrollContainerComponent: <T extends ElementType = 'div'>(
+  props: ScrollContainerProps<T> & {ref?: ForwardedRef<HTMLDivElement>},
+) => React.JSX.Element = forwardRef(function ScrollContainerComponent<
   T extends ElementType = 'div',
 >(props: ScrollContainerProps<T>, forwardedRef: ForwardedRef<HTMLDivElement>) {
   const {as: As = 'div', onScroll, ...rest} = props
@@ -80,5 +83,8 @@ const ScrollContainerComponent = forwardRef(function ScrollContainerComponent<
  *
  * @internal
  */
-export const ScrollContainer = memo(ScrollContainerComponent)
-ScrollContainer.displayName = 'Memo(Forwardref(ScrollContainer))'
+export const ScrollContainer: MemoExoticComponent<typeof ScrollContainerComponent> & {
+  displayName: string
+} = Object.assign(memo(ScrollContainerComponent), {
+  displayName: 'Memo(Forwardref(ScrollContainer))',
+})

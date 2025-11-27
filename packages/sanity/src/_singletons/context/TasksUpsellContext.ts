@@ -1,3 +1,4 @@
+import {type Context} from 'react'
 import {createContext} from 'sanity/_createContext'
 
 import type {TasksUpsellContextValue} from '../../core/tasks/context/upsell/types'
@@ -6,7 +7,5 @@ import type {TasksUpsellContextValue} from '../../core/tasks/context/upsell/type
  * @beta
  * @hidden
  */
-export const TasksUpsellContext = createContext<TasksUpsellContextValue | null>(
-  'sanity/_singletons/context/tasks-upsell',
-  null,
-)
+export const TasksUpsellContext: Context<TasksUpsellContextValue | null> =
+  createContext<TasksUpsellContextValue | null>('sanity/_singletons/context/tasks-upsell', null)

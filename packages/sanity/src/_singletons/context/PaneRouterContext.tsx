@@ -1,3 +1,4 @@
+import {type Context} from 'react'
 import {createContext} from 'sanity/_createContext'
 
 import type {PaneRouterContextValue} from '../../structure/components/paneRouter/types'
@@ -11,9 +12,8 @@ function missingContext<T = unknown>(): T {
  * @hidden
  * @beta
  */
-export const PaneRouterContext = createContext<PaneRouterContextValue>(
-  'sanity/_singletons/context/pane-router',
-  {
+export const PaneRouterContext: Context<PaneRouterContextValue> =
+  createContext<PaneRouterContextValue>('sanity/_singletons/context/pane-router', {
     index: 0,
     groupIndex: 0,
     siblingIndex: 0,
@@ -36,5 +36,4 @@ export const PaneRouterContext = createContext<PaneRouterContextValue>(
     setPayload: () => missingContext(),
     navigateIntent: () => missingContext(),
     createPathWithParams: () => missingContext(),
-  },
-)
+  })

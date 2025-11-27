@@ -1,6 +1,6 @@
 import {MasterDetailIcon} from '@sanity/icons'
 import {lazy} from 'react'
-import {definePlugin} from 'sanity'
+import {definePlugin, type Plugin} from 'sanity'
 
 import {
   useDeleteAction,
@@ -77,54 +77,55 @@ const inspectors = [validationInspector, changesInspector]
  * })
  * ```
  * */
-export const structureTool = definePlugin<StructureToolOptions | void>((options) => {
-  const icon = options?.icon || MasterDetailIcon
+export const structureTool: Plugin<StructureToolOptions | void> =
+  definePlugin<StructureToolOptions | void>((options) => {
+    const icon = options?.icon || MasterDetailIcon
 
-  return {
-    name: 'sanity/structure',
-    document: {
-      actions: (prevActions) => {
-        // NOTE: since it's possible to have several structure tools in one Studio,
-        // we need to check whether the document actions already exist in the Studio config
-        return Array.from(new Set([...prevActions, ...documentActions]))
-      },
-      badges: (prevBadges) => {
-        // NOTE: since it's possible to have several structure tools in one Studio,
-        // we need to check whether the document badges already exist in the Studio config
-        return Array.from(new Set([...prevBadges, ...documentBadges]))
-      },
-      inspectors: (prevInspectors) => {
-        // NOTE: since it's possible to have several structure tools in one Studio,
-        // we need to check whether the inspectors already exist in the Studio config
-        return Array.from(new Set([...prevInspectors, ...inspectors]))
-      },
-    },
-
-    tools: [
-      {
-        name: options?.name || 'structure',
-        title: options?.title || 'Structure',
-        icon,
-        component: lazy(() => import('./components/structureTool')),
-        canHandleIntent: (intent, params) => {
-          if (intent === 'create') return canHandleCreateIntent(params)
-          if (intent === 'edit') return canHandleEditIntent(params)
-          return false
+    return {
+      name: 'sanity/structure',
+      document: {
+        actions: (prevActions) => {
+          // NOTE: since it's possible to have several structure tools in one Studio,
+          // we need to check whether the document actions already exist in the Studio config
+          return Array.from(new Set([...prevActions, ...documentActions]))
         },
-        getIntentState,
-        // Controlled by sanity/src/structure/components/structureTool/StructureTitle.tsx
-        controlsDocumentTitle: true,
-        options,
-        router,
-        __internalApplicationType: 'sanity/structure',
+        badges: (prevBadges) => {
+          // NOTE: since it's possible to have several structure tools in one Studio,
+          // we need to check whether the document badges already exist in the Studio config
+          return Array.from(new Set([...prevBadges, ...documentBadges]))
+        },
+        inspectors: (prevInspectors) => {
+          // NOTE: since it's possible to have several structure tools in one Studio,
+          // we need to check whether the inspectors already exist in the Studio config
+          return Array.from(new Set([...prevInspectors, ...inspectors]))
+        },
       },
-    ],
 
-    i18n: {
-      bundles: [structureUsEnglishLocaleBundle],
-    },
-  }
-})
+      tools: [
+        {
+          name: options?.name || 'structure',
+          title: options?.title || 'Structure',
+          icon,
+          component: lazy(() => import('./components/structureTool')),
+          canHandleIntent: (intent, params) => {
+            if (intent === 'create') return canHandleCreateIntent(params)
+            if (intent === 'edit') return canHandleEditIntent(params)
+            return false
+          },
+          getIntentState,
+          // Controlled by sanity/src/structure/components/structureTool/StructureTitle.tsx
+          controlsDocumentTitle: true,
+          options,
+          router,
+          __internalApplicationType: 'sanity/structure',
+        },
+      ],
+
+      i18n: {
+        bundles: [structureUsEnglishLocaleBundle],
+      },
+    }
+  })
 
 function canHandleCreateIntent(params: Record<string, unknown>) {
   // We can't handle create intents without a `type` parameter

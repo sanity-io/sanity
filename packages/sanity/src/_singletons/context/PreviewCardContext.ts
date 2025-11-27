@@ -1,3 +1,4 @@
+import {type Context} from 'react'
 import {createContext} from 'sanity/_createContext'
 
 import type {PreviewCardContextValue} from '../../core/components/previewCard/PreviewCard'
@@ -5,9 +6,7 @@ import type {PreviewCardContextValue} from '../../core/components/previewCard/Pr
 /**
  * @internal
  */
-export const PreviewCardContext = createContext<PreviewCardContextValue>(
-  'sanity/_singletons/context/preview-card',
-  {
+export const PreviewCardContext: Context<PreviewCardContextValue> =
+  createContext<PreviewCardContextValue>('sanity/_singletons/context/preview-card', {
     selected: false,
-  },
-)
+  })

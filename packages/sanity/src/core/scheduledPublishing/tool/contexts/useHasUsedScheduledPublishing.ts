@@ -14,10 +14,10 @@ export interface HasUsedScheduledPublishing {
 
 const HAS_USED_SCHEDULED_PUBLISHING: HasUsedScheduledPublishing = {used: false, loading: true}
 
-export const cachedUsedScheduledPublishing = new Map<
+export const cachedUsedScheduledPublishing: Map<
   string,
   Observable<HasUsedScheduledPublishing>
->()
+> = new Map<string, Observable<HasUsedScheduledPublishing>>()
 
 function fetchUsedScheduledPublishing(
   client: SanityClient,
@@ -39,7 +39,7 @@ export function useHasUsedScheduledPublishing({
 }: {
   explicitEnabled?: boolean
   isWorkspaceEnabled?: boolean
-}) {
+}): HasUsedScheduledPublishing {
   const client = useClient(DEFAULT_STUDIO_CLIENT_OPTIONS)
   const {projectId, dataset} = useWorkspace()
   const key = `${projectId}-${dataset}`

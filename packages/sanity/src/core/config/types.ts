@@ -72,7 +72,7 @@ export interface GroupableActionDescription<GroupType = unknown> extends BaseAct
  * Symbol for configuring decision parameters schema
  * @beta
  */
-export const DECISION_PARAMETERS_SCHEMA = Symbol('__decisionParametersSchema')
+export const DECISION_PARAMETERS_SCHEMA: symbol = Symbol('__decisionParametersSchema')
 
 /**
  * Configuration for decision parameters

@@ -1,3 +1,4 @@
+import {type Context} from 'react'
 import {createContext} from 'sanity/_createContext'
 
 import type {StudioAnnouncementsContextValue} from '../../core/studio/studioAnnouncements/types'
@@ -5,7 +6,8 @@ import type {StudioAnnouncementsContextValue} from '../../core/studio/studioAnno
 /**
  * @internal
  */
-export const StudioAnnouncementContext = createContext<StudioAnnouncementsContextValue | undefined>(
-  'sanity/_singletons/context/studioAnnouncements',
-  undefined,
-)
+export const StudioAnnouncementContext: Context<StudioAnnouncementsContextValue | undefined> =
+  createContext<StudioAnnouncementsContextValue | undefined>(
+    'sanity/_singletons/context/studioAnnouncements',
+    undefined,
+  )

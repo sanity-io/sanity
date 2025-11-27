@@ -69,7 +69,7 @@ export interface RouteScopeProps {
  * }
  * ```
  */
-export const RouteScope = function RouteScope(props: RouteScopeProps): React.JSX.Element {
+function RouteScopeComponent(props: RouteScopeProps): React.JSX.Element {
   const {children, scope, __unsafe_disableScopedSearchParams} = props
   const parentRouter = useRouter()
   const {resolvePathFromState: parent_resolvePathFromState, navigate: parent_navigate} =
@@ -148,4 +148,6 @@ export const RouteScope = function RouteScope(props: RouteScopeProps): React.JSX
 
   return <RouterContext.Provider value={childRouter}>{children}</RouterContext.Provider>
 }
-RouteScope.displayName = 'RouteScope'
+RouteScopeComponent.displayName = 'RouteScope'
+
+export const RouteScope: typeof RouteScopeComponent & {displayName: string} = RouteScopeComponent

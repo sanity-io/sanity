@@ -1,4 +1,4 @@
-import {memo, useContext} from 'react'
+import {memo, type MemoExoticComponent, useContext} from 'react'
 import {
   ChangeIndicatorTrackerContextGetSnapshot,
   ChangeIndicatorTrackerContextStore,
@@ -15,7 +15,7 @@ import {type ChangeIndicatorTrackerContextValue} from './types'
 
 export * from './types'
 
-function ChangeIndicatorsTrackerComponent(props: {children: React.ReactNode}) {
+function ChangeIndicatorsTrackerComponent(props: {children: React.ReactNode}): React.JSX.Element {
   const {children} = props
   const {store, snapshot} = useTrackerStore<ChangeIndicatorTrackerContextValue>()
 
@@ -31,7 +31,8 @@ function ChangeIndicatorsTrackerComponent(props: {children: React.ReactNode}) {
 /**
  * @internal
  */
-export const ChangeIndicatorsTracker = memo(ChangeIndicatorsTrackerComponent)
+export const ChangeIndicatorsTracker: MemoExoticComponent<typeof ChangeIndicatorsTrackerComponent> =
+  memo(ChangeIndicatorsTrackerComponent)
 
 const EMPTY_ARRAY: Reported<ChangeIndicatorTrackerContextValue>[] = []
 

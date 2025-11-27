@@ -2,8 +2,10 @@ import {
   type ElementType,
   type ForwardedRef,
   forwardRef,
+  type ForwardRefExoticComponent,
   type HTMLProps,
   type ReactNode,
+  type RefAttributes,
 } from 'react'
 
 import {Button, type ButtonProps, type TooltipProps} from '../../../ui-components'
@@ -25,7 +27,11 @@ export interface CollapseMenuButtonProps extends CommonProps {
 }
 
 /** @internal */
-export const CollapseMenuButton = forwardRef(function CollapseMenuButton(
+export const CollapseMenuButton: ForwardRefExoticComponent<
+  CollapseMenuButtonProps &
+    Omit<HTMLProps<HTMLButtonElement>, 'as' | 'size'> &
+    RefAttributes<HTMLButtonElement>
+> = forwardRef(function CollapseMenuButton(
   props: CollapseMenuButtonProps & Omit<HTMLProps<HTMLButtonElement>, 'as' | 'size'>,
   ref: ForwardedRef<HTMLButtonElement>,
 ) {

@@ -7,7 +7,7 @@ import {useConditionalToast} from './useConditionalToast'
  * @hidden
  * @param isReconnecting -
  */
-export const useReconnectingToast = (isReconnecting: boolean) => {
+export const useReconnectingToast = (isReconnecting: boolean): void => {
   const {t} = useTranslation()
 
   useConditionalToast({

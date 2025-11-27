@@ -781,281 +781,288 @@ export type ViewBuilder = _ViewBuilder
  * @hidden
  * @beta
  */
-export const ComponentBuilder = _ComponentBuilder
+export const ComponentBuilder: typeof _ComponentBuilder = _ComponentBuilder
 /**
  * @deprecated Import from `sanity/structure` instead!
  * @hidden
  * @beta
  */
-export const ComponentViewBuilder = _ComponentViewBuilder
+export const ComponentViewBuilder: typeof _ComponentViewBuilder = _ComponentViewBuilder
 /**
  * @deprecated Import from `sanity/structure` instead!
  * @hidden
  * @beta
  */
-export const ConfirmDeleteDialog = _ConfirmDeleteDialog
+export const ConfirmDeleteDialog: typeof _ConfirmDeleteDialog = _ConfirmDeleteDialog
 /**
  * @deprecated Import from `sanity/structure` instead!
  * @hidden
  * @beta
  */
-export const DEFAULT_INTENT_HANDLER = _DEFAULT_INTENT_HANDLER
+export const DEFAULT_INTENT_HANDLER: typeof _DEFAULT_INTENT_HANDLER = _DEFAULT_INTENT_HANDLER
 /**
  * @deprecated Import `StructureToolProvider` from `sanity/structure` instead!
  * @hidden
  * @beta
  */
-export const DeskToolProvider = _DeskToolProvider
+export const DeskToolProvider: typeof _DeskToolProvider = _DeskToolProvider
 /**
  * @deprecated Import from `sanity/structure` instead!
  * @hidden
  * @beta
  */
-export const DocumentBuilder = _DocumentBuilder
+export const DocumentBuilder: typeof _DocumentBuilder = _DocumentBuilder
 /**
  * @deprecated Import from `sanity/structure` instead!
  * @hidden
  * @beta
  */
-export const DocumentInspectorHeader = _DocumentInspectorHeader
+export const DocumentInspectorHeader: typeof _DocumentInspectorHeader = _DocumentInspectorHeader
 /**
  * @deprecated Import from `sanity/structure` instead!
  * @hidden
  * @beta
  */
-export const DocumentListBuilder = _DocumentListBuilder
+export const DocumentListBuilder: typeof _DocumentListBuilder = _DocumentListBuilder
 /**
  * @deprecated Import from `sanity/structure` instead!
  * @hidden
  * @beta
  */
-export const DocumentListItemBuilder = _DocumentListItemBuilder
+export const DocumentListItemBuilder: typeof _DocumentListItemBuilder = _DocumentListItemBuilder
 /**
  * @deprecated Import from `sanity/structure` instead!
  * @hidden
  * @beta
  */
-export const DocumentListPane = _DocumentListPane
+export const DocumentListPane: typeof _DocumentListPane = _DocumentListPane
 /**
  * @deprecated Import from `sanity/structure` instead!
  * @hidden
  * @beta
  */
-export const DocumentPane = _DocumentPane
+export const DocumentPane: typeof _DocumentPane = _DocumentPane
 /**
  * @deprecated Import from `sanity/structure` instead!
  * @hidden
  * @beta
  */
-export const DocumentPaneProvider = _DocumentPaneProvider
+export const DocumentPaneProvider: typeof _DocumentPaneProvider = _DocumentPaneProvider
 /**
  * @deprecated Import from `sanity/structure` instead!
  * @hidden
  * @beta
  */
-export const DocumentTypeListBuilder = _DocumentTypeListBuilder
+export const DocumentTypeListBuilder: typeof _DocumentTypeListBuilder = _DocumentTypeListBuilder
 /**
  * @deprecated Import from `sanity/structure` instead!
  * @hidden
  * @beta
  */
-export const FormViewBuilder = _FormViewBuilder
+export const FormViewBuilder: typeof _FormViewBuilder = _FormViewBuilder
 /**
  * @deprecated Import from `sanity/structure` instead!
  * @hidden
  * @beta
  */
-export const GenericListBuilder = _GenericListBuilder
+export const GenericListBuilder: typeof _GenericListBuilder = _GenericListBuilder
 /**
  * @deprecated Import from `sanity/structure` instead!
  * @hidden
  * @beta
  */
-export const GenericViewBuilder = _GenericViewBuilder
+export const GenericViewBuilder: typeof _GenericViewBuilder = _GenericViewBuilder
 /**
  * @deprecated Import from `sanity/structure` instead!
  * @hidden
  * @beta
  */
-export const HELP_URL = _HELP_URL
+export const HELP_URL: typeof _HELP_URL = _HELP_URL
 /**
  * @deprecated Import from `sanity/structure` instead!
  * @hidden
  * @beta
  */
-export const InitialValueTemplateItemBuilder = _InitialValueTemplateItemBuilder
+export const InitialValueTemplateItemBuilder: typeof _InitialValueTemplateItemBuilder =
+  _InitialValueTemplateItemBuilder
 /**
  * @deprecated Import from `sanity/structure` instead!
  * @hidden
  * @beta
  */
-export const ListBuilder = _ListBuilder
+export const ListBuilder: typeof _ListBuilder = _ListBuilder
 /**
  * @deprecated Import from `sanity/structure` instead!
  * @hidden
  * @beta
  */
-export const ListItemBuilder = _ListItemBuilder
+export const ListItemBuilder: typeof _ListItemBuilder = _ListItemBuilder
 /**
  * @deprecated Import from `sanity/structure` instead!
  * @hidden
  * @beta
  */
-export const MenuItemBuilder = _MenuItemBuilder
+export const MenuItemBuilder: typeof _MenuItemBuilder = _MenuItemBuilder
 /**
  * @deprecated Import from `sanity/structure` instead!
  * @hidden
  * @beta
  */
-export const MenuItemGroupBuilder = _MenuItemGroupBuilder
+export const MenuItemGroupBuilder: typeof _MenuItemGroupBuilder = _MenuItemGroupBuilder
 /**
  * @deprecated Import from `sanity/structure` instead!
  * @hidden
  * @beta
  */
-export const PaneLayout = _PaneLayout
+export const PaneLayout: typeof _PaneLayout = _PaneLayout
 
 /**
  * @deprecated Import from `sanity/structure` instead!
  * @hidden
  * @beta
  */
-export const SerializeError = _SerializeError
+export const SerializeError: typeof _SerializeError = _SerializeError
 /**
  * @deprecated Import from `sanity/structure` instead!
  * @hidden
  * @beta
  */
-export const component = _component
+export const component: typeof _component = _component
 /**
  * @deprecated Import from `sanity/structure` instead!
  * @hidden
  * @beta
  */
-export const createStructureBuilder = _createStructureBuilder
+export const createStructureBuilder: typeof _createStructureBuilder = _createStructureBuilder
 /**
  * @deprecated Import from `sanity/structure` instead!
  * @hidden
  * @beta
  */
-export const defaultInitialValueTemplateItems = _defaultInitialValueTemplateItems
+export const defaultInitialValueTemplateItems: typeof _defaultInitialValueTemplateItems =
+  _defaultInitialValueTemplateItems
 /**
  * @deprecated Import from `sanity/structure` instead!
  * @hidden
  * @beta
  */
-export const defaultIntentChecker = _defaultIntentChecker
+export const defaultIntentChecker: typeof _defaultIntentChecker = _defaultIntentChecker
 /**
  * @deprecated Import `structureTool` from `sanity/structure` instead!
  * @hidden
  * @public
  */
-export const deskTool = _structureTool
+export const deskTool: typeof _structureTool = _structureTool
 /**
  * @deprecated Import from `sanity/structure` instead!
  * @hidden
  * @beta
  */
-export const documentFromEditor = _documentFromEditor
+export const documentFromEditor: typeof _documentFromEditor = _documentFromEditor
 /**
  * @deprecated Import from `sanity/structure` instead!
  * @hidden
  * @beta
  */
-export const documentFromEditorWithInitialValue = _documentFromEditorWithInitialValue
+export const documentFromEditorWithInitialValue: typeof _documentFromEditorWithInitialValue =
+  _documentFromEditorWithInitialValue
 /**
  * @deprecated Import from `sanity/structure` instead!
  * @hidden
  * @beta
  */
-export const form = _form
+export const form: typeof _form = _form
 /**
  * @deprecated Import from `sanity/structure` instead!
  * @hidden
  * @beta
  */
-export const getOrderingMenuItem = _getOrderingMenuItem
+export const getOrderingMenuItem: typeof _getOrderingMenuItem = _getOrderingMenuItem
 /**
  * @deprecated Import from `sanity/structure` instead!
  * @hidden
  * @beta
  */
-export const getOrderingMenuItemsForSchemaType = _getOrderingMenuItemsForSchemaType
+export const getOrderingMenuItemsForSchemaType: typeof _getOrderingMenuItemsForSchemaType =
+  _getOrderingMenuItemsForSchemaType
 /**
  * @deprecated Import from `sanity/structure` instead!
  * @hidden
  * @beta
  */
-export const getTypeNamesFromFilter = _getTypeNamesFromFilter
+export const getTypeNamesFromFilter: typeof _getTypeNamesFromFilter = _getTypeNamesFromFilter
 /**
  * @deprecated Import from `sanity/structure` instead!
  * @hidden
  * @beta
  */
-export const isDocumentListItem = _isDocumentListItem
+export const isDocumentListItem: typeof _isDocumentListItem = _isDocumentListItem
 /**
  * @deprecated Import from `sanity/structure` instead!
  * @hidden
  * @beta
  */
-export const maybeSerializeInitialValueTemplateItem = _maybeSerializeInitialValueTemplateItem
+export const maybeSerializeInitialValueTemplateItem: typeof _maybeSerializeInitialValueTemplateItem =
+  _maybeSerializeInitialValueTemplateItem
 /**
  * @deprecated Import from `sanity/structure` instead!
  * @hidden
  * @beta
  */
-export const maybeSerializeMenuItem = _maybeSerializeMenuItem
+export const maybeSerializeMenuItem: typeof _maybeSerializeMenuItem = _maybeSerializeMenuItem
 /**
  * @deprecated Import from `sanity/structure` instead!
  * @hidden
  * @beta
  */
-export const maybeSerializeMenuItemGroup = _maybeSerializeMenuItemGroup
+export const maybeSerializeMenuItemGroup: typeof _maybeSerializeMenuItemGroup =
+  _maybeSerializeMenuItemGroup
 /**
  * @deprecated Import from `sanity/structure` instead!
  * @hidden
  * @beta
  */
-export const maybeSerializeView = _maybeSerializeView
+export const maybeSerializeView: typeof _maybeSerializeView = _maybeSerializeView
 /**
  * @deprecated Import from `sanity/structure` instead!
  * @hidden
  * @beta
  */
-export const menuItemsFromInitialValueTemplateItems = _menuItemsFromInitialValueTemplateItems
+export const menuItemsFromInitialValueTemplateItems: typeof _menuItemsFromInitialValueTemplateItems =
+  _menuItemsFromInitialValueTemplateItems
 /**
  * @deprecated Import from `sanity/structure` instead!
  * @hidden
  * @beta
  */
-export const shallowIntentChecker = _shallowIntentChecker
+export const shallowIntentChecker: typeof _shallowIntentChecker = _shallowIntentChecker
 /**
  * @deprecated Import from `sanity/structure` instead!
  * @hidden
  * @beta
  */
-export const structureLocaleNamespace = _structureLocaleNamespace
+export const structureLocaleNamespace: typeof _structureLocaleNamespace = _structureLocaleNamespace
 /**
  * @deprecated Import `useStructureTool` from `sanity/structure` instead!
  * @hidden
  * @beta
  */
-export const useDeskTool = _useStructureTool
+export const useDeskTool: typeof _useStructureTool = _useStructureTool
 /**
  * @deprecated Import from `sanity/structure` instead!
  * @hidden
  * @beta
  */
-export const useDocumentPane = _useDocumentPane
+export const useDocumentPane: typeof _useDocumentPane = _useDocumentPane
 /**
  * @deprecated Import from `sanity/structure` instead!
  * @hidden
  * @beta
  */
-export const useDocumentTitle = _useDocumentTitle
+export const useDocumentTitle: typeof _useDocumentTitle = _useDocumentTitle
 /**
  * @deprecated Import from `sanity/structure` instead!
  * @hidden
  * @beta
  */
-export const usePaneRouter = _usePaneRouter
+export const usePaneRouter: typeof _usePaneRouter = _usePaneRouter

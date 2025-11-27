@@ -26,7 +26,7 @@ export const ChangeFieldWrapper = (props: {
   path: Path
   children: ReactNode
   hasRevertHover: boolean
-}) => {
+}): React.JSX.Element => {
   const {path, hasRevertHover} = props
   const {onSetFocus} = useContext(ReviewChangesContext)
   const zIndex = useZIndex()

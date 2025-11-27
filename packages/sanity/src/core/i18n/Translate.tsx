@@ -86,7 +86,7 @@ export interface TranslationProps {
  *
  * @public
  */
-export function Translate(props: TranslationProps) {
+export function Translate(props: TranslationProps): React.JSX.Element {
   /**
    * The i18next API is kinda weird - the second parameter to `t` is a mixture of options and
    * replacement values. All of the following properties are options for the `t` function, at

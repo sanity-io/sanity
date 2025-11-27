@@ -23,7 +23,7 @@ export function ChangeConnectorRoot({
   onOpenReviewChanges,
   onSetFocus,
   ...restProps
-}: ChangeConnectorRootProps) {
+}: ChangeConnectorRootProps): React.JSX.Element {
   const [rootElement, setRootElement] = useState<HTMLDivElement | null>()
 
   const contextValue = useMemo(

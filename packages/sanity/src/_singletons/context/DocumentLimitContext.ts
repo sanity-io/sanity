@@ -1,3 +1,4 @@
+import {type Context} from 'react'
 import {createContext} from 'sanity/_createContext'
 
 import type {UpsellDialogViewedInfo} from '../../core/studio/upsell'
@@ -22,7 +23,8 @@ export interface DocumentLimitUpsellContextValue {
 /**
  * @internal
  */
-export const DocumentLimitUpsellContext = createContext<DocumentLimitUpsellContextValue | null>(
-  'sanity/_singletons/context/document-limit-upsell',
-  null,
-)
+export const DocumentLimitUpsellContext: Context<DocumentLimitUpsellContextValue | null> =
+  createContext<DocumentLimitUpsellContextValue | null>(
+    'sanity/_singletons/context/document-limit-upsell',
+    null,
+  )

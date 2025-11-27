@@ -20,7 +20,7 @@ export function PerspectiveProvider({
   children: React.ReactNode
   selectedPerspectiveName: 'published' | ReleaseId | undefined
   excludedPerspectives?: string[]
-}) {
+}): React.JSX.Element {
   const {data: releases} = useActiveReleases()
 
   const {

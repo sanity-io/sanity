@@ -12,7 +12,7 @@ type ArgType<T> = T extends (arg: infer U) => unknown ? U : never
 type ErrorInfo = ArgType<ComponentProps<typeof ErrorBoundary>['onCatch']>
 
 /** @internal */
-function ConfirmDeleteDialogContainer(props: ConfirmDeleteDialogProps) {
+function ConfirmDeleteDialogContainer(props: ConfirmDeleteDialogProps): React.JSX.Element {
   const {t} = useTranslation(structureLocaleNamespace)
   const id = useId()
   const [error, setError] = useState<ErrorInfo | null>(null)

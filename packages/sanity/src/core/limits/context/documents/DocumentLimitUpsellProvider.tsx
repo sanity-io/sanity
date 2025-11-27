@@ -4,7 +4,7 @@ import {DocumentLimitUpsellContext, type DocumentLimitUpsellContextValue} from '
 import {getDialogPropsFromContext, useUpsellContext} from '../../../hooks/useUpsellContext'
 import {UpsellDialog} from '../../../studio/upsell/UpsellDialog'
 
-export function DocumentLimitUpsellProvider({children}: PropsWithChildren) {
+export function DocumentLimitUpsellProvider({children}: PropsWithChildren): React.JSX.Element {
   const contextValue = useUpsellContext({
     dataUri: '/journey/document-limit',
     feature: 'document-limits',
