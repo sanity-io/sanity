@@ -1,41 +1,52 @@
 import {getImageDimensions, isImageSource, type SanityImageDimensions} from '@sanity/asset-utils'
-import {type ImageUrlBuilder} from '@sanity/image-url'
-import {type CSSProperties, useMemo} from 'react'
+import {type SanityClient} from '@sanity/client'
+import {type ImageUrlBuilder, type SanityImageSource} from '@sanity/image-url'
+import {type CSSProperties, useCallback, useMemo} from 'react'
 import {useDevicePixelRatio} from 'use-device-pixel-ratio'
 
 import {type BaseImageInputValue} from './types'
+import {useImageUrl} from './useImageUrl'
 
-export function usePreviewImageSource<Value extends BaseImageInputValue | undefined>({
-  value,
+export function usePreviewImageSource({
+  client,
   imageUrlBuilder,
+  value,
 }: {
-  value: Value
+  client?: SanityClient
   imageUrlBuilder: ImageUrlBuilder
+  value?: BaseImageInputValue
 }): {
-  url: Value extends undefined ? undefined : string
+  url: string | undefined
   dimensions: SanityImageDimensions
   customProperties: CSSProperties
 } {
   const dpr = useDevicePixelRatio()
 
-  const url = useMemo(
-    () =>
-      value && isImageSource(value)
-        ? imageUrlBuilder.width(2000).fit('max').image(value).dpr(dpr).auto('format').url()
+  const transform = useCallback(
+    (builder: ImageUrlBuilder, val: SanityImageSource) =>
+      isImageSource(val)
+        ? builder.width(2000).fit('max').image(val).dpr(dpr).auto('format').url()
         : undefined,
-    [dpr, imageUrlBuilder, value],
-  ) as Value extends undefined ? undefined : string
+    [dpr],
+  )
+
+  const {url} = useImageUrl({
+    client,
+    imageSource: value,
+    imageUrlBuilder,
+    transform,
+  })
 
   const dimensions = useMemo<SanityImageDimensions>(
     () =>
-      url
-        ? getImageDimensions(url)
+      value?.asset
+        ? getImageDimensions(value.asset)
         : {
             width: 0,
             height: 0,
             aspectRatio: 0,
           },
-    [url],
+    [value],
   )
 
   const customProperties = useMemo(

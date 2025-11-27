@@ -1072,6 +1072,7 @@ import type {
   PortableTextSpan,
   PortableTextTextBlock,
   Position,
+  prefetchAssetAccessPolicies,
   prefixPath,
   prepareConfig,
   PreparedConfig,
@@ -4896,6 +4897,9 @@ describe('sanity', () => {
   })
   test('Position', () => {
     expectTypeOf<Position>().not.toBeNever()
+  })
+  test('prefetchAssetAccessPolicies', () => {
+    expectTypeOf<typeof prefetchAssetAccessPolicies>().toBeFunction()
   })
   test('prefixPath', () => {
     expectTypeOf<typeof prefixPath>().toBeFunction()

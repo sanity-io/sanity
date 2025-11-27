@@ -348,6 +348,7 @@ function BaseImageInputComponent(props: BaseImageInputProps): React.JSX.Element 
     }
     return (
       <ImageInputPreview
+        client={client}
         directUploads={directUploads}
         handleOpenDialog={handleOpenDialog}
         hoveringFiles={hoveringFiles}
@@ -359,6 +360,7 @@ function BaseImageInputComponent(props: BaseImageInputProps): React.JSX.Element 
       />
     )
   }, [
+    client,
     directUploads,
     handleOpenDialog,
     hoveringFiles,

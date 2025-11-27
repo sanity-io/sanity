@@ -113,11 +113,15 @@ export default {
       title: 'originalFilename',
       mimeType: 'mimeType',
       size: 'size',
+      media: 'media',
     },
     prepare(doc: Partial<SanityDocument>) {
       return {
         title: doc.title || (typeof doc.path === 'string' && doc.path.split('/').slice(-1)[0]),
-        media: {asset: {_ref: doc.id}},
+        media: {
+          asset: {_ref: doc.id},
+          ...(doc.media ? {media: doc.media} : {}),
+        },
         subtitle: `${doc.mimeType} (${(Number(doc.size) / 1024 / 1024).toFixed(2)} MB)`,
       }
     },

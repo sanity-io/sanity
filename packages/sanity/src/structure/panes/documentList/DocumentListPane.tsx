@@ -4,8 +4,11 @@ import {memo, useCallback, useEffect, useMemo, useState} from 'react'
 import {useObservableEvent} from 'react-rx'
 import {debounce, map, type Observable, of, tap, timer} from 'rxjs'
 import {
+  DEFAULT_STUDIO_CLIENT_OPTIONS,
   type GeneralPreviewLayoutKey,
+  prefetchAssetAccessPolicies,
   useActiveReleases,
+  useClient,
   useI18nText,
   usePerspective,
   useReconnectingToast,
@@ -103,6 +106,11 @@ export const DocumentListPane = memo(function DocumentListPane(props: DocumentLi
 
   const sortOrder = useUnique(sortWithOrderingFn)
 
+  const client = useClient({
+    ...DEFAULT_STUDIO_CLIENT_OPTIONS,
+    apiVersion: apiVersion || DEFAULT_STUDIO_CLIENT_OPTIONS.apiVersion,
+  })
+
   const {
     error,
     isLoadingFullList,
@@ -117,7 +125,7 @@ export const DocumentListPane = memo(function DocumentListPane(props: DocumentLi
     onLoadFullList,
     onRetry,
   } = useDocumentList({
-    apiVersion,
+    client,
     filter,
     perspective: perspectiveStack,
     params,
@@ -166,6 +174,10 @@ export const DocumentListPane = memo(function DocumentListPane(props: DocumentLi
     handleClearSearch()
     setEnableSearchSpinner()
   }, [paneKey, handleClearSearch])
+
+  useEffect(() => {
+    prefetchAssetAccessPolicies(items, client)
+  }, [client, items])
 
   const loadingVariant: LoadingVariant = useMemo(() => {
     if (connected && isLoading && enableSearchSpinner === paneKey) {

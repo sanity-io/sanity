@@ -234,7 +234,7 @@
     "polished": "^4.3.1",
     "preferred-pm": "^4.1.1",
     "pretty-ms": "^7.0.1",
-    "quick-lru": "^5.1.1",
+    "quick-lru": "^7.3.0",
     "raf": "^3.4.1",
     "react-compiler-runtime": "1.0.0",
     "react-fast-compare": "^3.2.2",
