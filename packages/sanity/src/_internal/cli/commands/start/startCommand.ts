@@ -1,3 +1,5 @@
+import {createRequire} from 'node:module'
+
 import {
   type CliCommandArguments,
   type CliCommandContext,
@@ -7,6 +9,8 @@ import {
 import {type StartPreviewServerCommandFlags} from '../../actions/preview/previewAction'
 import {isInteractive} from '../../util/isInteractive'
 import {getDevAction} from '../dev/devCommand'
+
+const require = createRequire(import.meta.url)
 
 const helpText = `
 Notes

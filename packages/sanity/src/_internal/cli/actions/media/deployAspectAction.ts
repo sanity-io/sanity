@@ -1,4 +1,5 @@
 import fs from 'node:fs/promises'
+import {createRequire} from 'node:module'
 import {EOL} from 'node:os'
 import path from 'node:path'
 
@@ -37,6 +38,8 @@ import {
 import {ASPECT_FILE_EXTENSIONS, MINIMUM_API_VERSION} from './constants'
 import {determineTargetMediaLibrary} from './lib/determineTargetMediaLibrary'
 import {withMediaLibraryConfig} from './lib/withMediaLibraryConfig'
+
+const require = createRequire(import.meta.url)
 
 interface DeployAspectFlags {
   'media-library-id'?: string
