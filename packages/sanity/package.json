@@ -124,6 +124,7 @@
     "watch": "pkg-utils watch"
   },
   "dependencies": {
+    "@date-fns/tz": "^1.4.1",
     "@dnd-kit/core": "^6.3.1",
     "@dnd-kit/modifiers": "^6.0.1",
     "@dnd-kit/sortable": "^7.0.2",
@@ -309,7 +310,6 @@
     "@vitest/expect": "^3.2.4",
     "babel-plugin-react-compiler": "1.0.0",
     "blob-polyfill": "^9.0.20240710",
-    "date-fns-tz": "3.2.0",
     "eslint": "catalog:",
     "eslint-plugin-boundaries": "^5.2.0",
     "eslint-plugin-testing-library": "^7.13.5",
