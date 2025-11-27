@@ -30,7 +30,7 @@
     "test": "vitest run"
   },
   "dependencies": {
-    "@google-cloud/storage": "^7.16.0",
+    "@google-cloud/storage": "^7.17.3",
     "@repo/utils": "workspace:*",
     "lodash-es": "^4.17.21",
     "read-package-up": "^11.0.0",
