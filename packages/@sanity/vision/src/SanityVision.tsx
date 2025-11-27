@@ -9,7 +9,7 @@ interface SanityVisionProps {
   tool: Tool<VisionConfig>
 }
 
-function SanityVision(props: SanityVisionProps) {
+function SanityVision(props: SanityVisionProps): React.JSX.Element {
   const client = useClient({apiVersion: '1'})
   const config: VisionConfig = {
     defaultApiVersion: DEFAULT_API_VERSION,

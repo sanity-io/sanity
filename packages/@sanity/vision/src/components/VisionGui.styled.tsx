@@ -1,7 +1,7 @@
 import {Box, Card, Flex, Label, rem, Text} from '@sanity/ui'
-import {css, styled} from 'styled-components'
+import {css, styled, type StyledComponent} from 'styled-components'
 
-export const Root = styled(Flex)`
+export const Root: StyledComponent<typeof Flex, any> = styled(Flex)`
   .sidebarPanes .Pane {
     overflow-y: auto;
     overflow-x: hidden;
@@ -48,24 +48,24 @@ export const Root = styled(Flex)`
 
 Root.displayName = 'Root'
 
-export const Header = styled(Card)`
+export const Header: StyledComponent<typeof Card, any> = styled(Card)`
   border-bottom: 1px solid var(--card-border-color);
 `
 
-export const StyledLabel = styled(Label)`
+export const StyledLabel: StyledComponent<typeof Label, any> = styled(Label)`
   flex: 1;
 `
 
-export const SplitpaneContainer = styled(Box)`
+export const SplitpaneContainer: StyledComponent<typeof Box, any> = styled(Box)`
   position: relative;
 `
 
-export const QueryCopyLink = styled.a`
+export const QueryCopyLink: StyledComponent<'a', any> = styled.a`
   cursor: pointer;
   margin-right: auto;
 `
 
-export const InputBackgroundContainer = styled(Box)`
+export const InputBackgroundContainer: StyledComponent<typeof Box, any> = styled(Box)`
   position: absolute;
   top: 1rem;
   left: 0;
@@ -79,27 +79,30 @@ export const InputBackgroundContainer = styled(Box)`
   }
 `
 
-export const InputBackgroundContainerLeft = styled(InputBackgroundContainer)`
-  // This is so its aligned with the gutters of CodeMirror
-  left: 33px;
-`
+export const InputBackgroundContainerLeft: StyledComponent<typeof InputBackgroundContainer, any> =
+  styled(InputBackgroundContainer)`
+    // This is so its aligned with the gutters of CodeMirror
+    left: 33px;
+  `
 
-export const InputContainer = styled(Card)`
+export const InputContainer: StyledComponent<typeof Card, any> = styled(Card)`
   width: 100%;
   height: 100%;
   position: relative;
   flex-direction: column;
 `
 
-export const ResultOuterContainer = styled(Flex)`
+export const ResultOuterContainer: StyledComponent<typeof Flex, any> = styled(Flex)`
   height: 100%;
 `
 
-export const ResultInnerContainer = styled(Box)`
+export const ResultInnerContainer: StyledComponent<typeof Box, any> = styled(Box)`
   position: relative;
 `
 
-export const ResultContainer = styled(Card)<{$isInvalid: boolean}>`
+export const ResultContainer: StyledComponent<typeof Card, any, {$isInvalid: boolean}> = styled(
+  Card,
+)<{$isInvalid: boolean}>`
   height: 100%;
   width: 100%;
   position: absolute;
@@ -120,27 +123,27 @@ export const ResultContainer = styled(Card)<{$isInvalid: boolean}>`
     `}
 `
 
-export const Result = styled(Box)`
+export const Result: StyledComponent<typeof Box, any> = styled(Box)`
   position: relative;
   width: 100%;
   height: 100%;
   z-index: 20;
 `
 
-export const ResultFooter = styled(Flex)`
+export const ResultFooter: StyledComponent<typeof Flex, any> = styled(Flex)`
   border-top: 1px solid var(--card-border-color);
 `
 
-export const TimingsCard = styled(Card)`
+export const TimingsCard: StyledComponent<typeof Card, any> = styled(Card)`
   position: relative;
 `
 
-export const TimingsContainer = styled(Box)`
+export const TimingsContainer: StyledComponent<typeof Box, any> = styled(Box)`
   width: 100%;
   height: 100%;
 `
 
-export const TimingsTextContainer = styled(Flex)`
+export const TimingsTextContainer: StyledComponent<typeof Flex, any> = styled(Flex)`
   height: 100%;
   min-height: ${({theme}) =>
     rem(
@@ -151,11 +154,11 @@ export const TimingsTextContainer = styled(Flex)`
     )};
 `
 
-export const DownloadsCard = styled(Card)`
+export const DownloadsCard: StyledComponent<typeof Card, any> = styled(Card)`
   position: relative;
 `
 
-export const SaveResultLabel = styled(Text)`
+export const SaveResultLabel: StyledComponent<typeof Text, any> = styled(Text)`
   transform: initial;
   &:before,
   &:after {
@@ -168,6 +171,6 @@ export const SaveResultLabel = styled(Text)`
   }
 `
 
-export const ControlsContainer = styled(Box)`
+export const ControlsContainer: StyledComponent<typeof Box, any> = styled(Box)`
   border-top: 1px solid var(--card-border-color);
 `

@@ -42,7 +42,7 @@ export function VisionGuiResult({
   dataset,
   queryTime,
   e2eTime,
-}: VisionGuiResultProps) {
+}: VisionGuiResultProps): React.JSX.Element {
   const {t} = useTranslation(visionLocaleNamespace)
   const hasResult = !error && !queryInProgress && typeof queryResult !== 'undefined'
 

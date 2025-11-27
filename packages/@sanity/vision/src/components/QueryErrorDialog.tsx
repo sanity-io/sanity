@@ -3,7 +3,7 @@ import {Stack} from '@sanity/ui'
 import {QueryErrorDetails} from './QueryErrorDetails'
 import {ErrorCode} from './QueryErrorDialog.styled'
 
-export function QueryErrorDialog(props: {error: Error}) {
+export function QueryErrorDialog(props: {error: Error}): React.JSX.Element {
   return (
     <Stack space={5} marginTop={2}>
       <ErrorCode size={1}>{props.error.message}</ErrorCode>

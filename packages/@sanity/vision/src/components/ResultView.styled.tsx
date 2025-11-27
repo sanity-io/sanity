@@ -1,7 +1,9 @@
 import {rem, type Theme} from '@sanity/ui'
-import {css, styled} from 'styled-components'
+import {css, styled, type StyledComponent} from 'styled-components'
 
-export const ResultViewWrapper = styled.div<{theme: Theme}>(({theme}) => {
+export const ResultViewWrapper: StyledComponent<'div', any, {theme: Theme}> = styled.div<{
+  theme: Theme
+}>(({theme}) => {
   const {color, fonts, space} = theme.sanity
 
   return css`

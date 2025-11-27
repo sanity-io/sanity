@@ -23,7 +23,7 @@ export function VisionGuiControls({
   queryInProgress,
   onQueryExecution,
   onListenExecution,
-}: VisionGuiControlsProps) {
+}: VisionGuiControlsProps): React.JSX.Element {
   const {t} = useTranslation(visionLocaleNamespace)
 
   return (

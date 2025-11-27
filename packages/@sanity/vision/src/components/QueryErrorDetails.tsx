@@ -15,7 +15,11 @@ interface ContentLakeQueryError {
   }
 }
 
-export function QueryErrorDetails({error}: {error: ContentLakeQueryError | Error}) {
+export function QueryErrorDetails({
+  error,
+}: {
+  error: ContentLakeQueryError | Error
+}): React.JSX.Element | null {
   const {t} = useTranslation(visionLocaleNamespace)
 
   if (!('details' in error)) {
