@@ -117,6 +117,13 @@
     "react/exhaustive-deps": "error",
     "react/rules-of-hooks": "error",
     "eslint/no-console": ["error", {"allow": ["warn", "error"]}],
+    // We no longer allow commonjs as we ship ESM only (except for in CLI scenarios for legacy reasons)
+    "import/no-commonjs ": "error",
+    "no-restricted-globals": [
+      "error",
+      {"name": "__dirname", "message": "Use path.dirname(fileURLToPath(import.meta.url)) instead"},
+      {"name": "__filename", "message": "Use fileURLToPath(import.meta.url) instead"}
+    ],
     // These rules should be enabled in the future, they are disabled for now to reduce the PR scope for landing oxlint
     "typescript/no-explicit-any": "warn",
     "eslint/no-await-in-loop": "warn",
@@ -190,6 +197,14 @@
         "no-unnecessary-type-assertion": "off",
         "no-unsafe-type-assertion": "off",
         "unbound-method": "off"
+      }
+    },
+    {
+      // We still allow CJS in some places, for legacy reasons
+      "files": ["packages/@sanity/cli/**/*", "packages/create-sanity/**/*", "scripts/**/*"],
+      "rules": {
+        "import/no-commonjs ": "off",
+        "no-restricted-globals": "off"
       }
     }
   ]

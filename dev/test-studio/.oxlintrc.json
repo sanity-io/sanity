@@ -7,6 +7,8 @@
     "no-explicit-any": "off",
     "jsx_a11y/iframe-has-title": "off",
     "react/iframe-missing-sandbox": "off",
-    "unicorn/prefer-array-find": "off"
+    "unicorn/prefer-array-find": "off",
+    "no-restricted-globals": "off",
+    "import/no-commonjs": "off"
   }
 }
