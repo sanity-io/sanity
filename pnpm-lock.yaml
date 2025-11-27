@@ -1085,8 +1085,8 @@ importers:
         specifier: workspace:*
         version: link:../codegen
       '@sanity/runtime-cli':
-        specifier: ^11.1.3
-        version: 11.1.3(@types/node@24.10.0)(debug@4.4.3)(lightningcss@1.30.2)(terser@5.44.1)(tsx@4.20.6)(typescript@5.9.3)(yaml@2.8.1)
+        specifier: ^11.1.4
+        version: 11.1.4(@types/node@24.10.0)(debug@4.4.3)(lightningcss@1.30.2)(terser@5.44.1)(tsx@4.20.6)(typescript@5.9.3)(yaml@2.8.1)
       '@sanity/telemetry':
         specifier: ^0.8.0
         version: 0.8.1(react@19.2.0)
@@ -5422,8 +5422,8 @@ packages:
     peerDependencies:
       react: ^18.3 || ^19
 
-  '@sanity/runtime-cli@11.1.3':
-    resolution: {integrity: sha512-jxpw+H8MlC6kg6I2Q3SpKOpfIIq6UV5EZdlWZP3BIH5e60ikrWOQNP3RAXjkjuabjqwRfWxBArWE5hbcDx7HBA==}
+  '@sanity/runtime-cli@11.1.4':
+    resolution: {integrity: sha512-azQhvFUiKNFR5iXmEaH9mGbWtsl2oGVhggV+ST56OnrKBxnHfV7pXAM3r7IWOrmav4AqCOObQldPvgByeWHF2g==}
     engines: {node: '>=20.19'}
     hasBin: true
 
@@ -16515,7 +16515,7 @@ snapshots:
       - debug
       - typescript
 
-  '@sanity/runtime-cli@11.1.3(@types/node@24.10.0)(debug@4.4.3)(lightningcss@1.30.2)(terser@5.44.1)(tsx@4.20.6)(typescript@5.9.3)(yaml@2.8.1)':
+  '@sanity/runtime-cli@11.1.4(@types/node@24.10.0)(debug@4.4.3)(lightningcss@1.30.2)(terser@5.44.1)(tsx@4.20.6)(typescript@5.9.3)(yaml@2.8.1)':
     dependencies:
       '@architect/hydrate': 4.0.10
       '@architect/inventory': 4.0.9
