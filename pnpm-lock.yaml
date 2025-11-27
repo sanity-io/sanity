@@ -73,7 +73,7 @@ catalogs:
       specifier: ^19.1.1
       version: 19.2.0
     styled-components:
-      specifier: ^6.1.18
+      specifier: ^6.1.19
       version: 6.1.19
     typescript:
       specifier: 5.9.3
