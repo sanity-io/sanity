@@ -33,4 +33,5 @@ export default defineConfig({
     noImplicitBrowsersList: 'off',
     noImplicitSideEffects: 'error',
   },
+  dts: 'rolldown',
 })
