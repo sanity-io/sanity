@@ -50,6 +50,8 @@ export default defineConfig({
 
   extract: {
     ...baseConfig.extract,
+    // @TODO temporary
+    enabled: false,
     rules: {
       ...baseConfig.extract.rules,
       'ae-incompatible-release-tags': 'error',
@@ -59,4 +61,6 @@ export default defineConfig({
 
   babel: {reactCompiler: true},
   reactCompilerOptions: {target: '18'},
+
+  // dts: 'api-extractor'
 })

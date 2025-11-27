@@ -2,7 +2,7 @@
 import {WarningOutlineIcon} from '@sanity/icons'
 import {Box, Card, Container, Flex, Stack, Text} from '@sanity/ui'
 
-export function ToolNotFoundScreen(props: {toolName: string}) {
+export function ToolNotFoundScreen(props: {toolName: string}): React.JSX.Element {
   const {toolName} = props
 
   return (

@@ -20,7 +20,7 @@ const NoJsStyles = `
 `
 
 /** @internal */
-export function NoJavascript() {
+export function NoJavascript(): React.JSX.Element {
   return (
     <noscript>
       <div className="sanity-app-no-js__root">

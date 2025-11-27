@@ -6,7 +6,9 @@ import {PreviewLoader} from '../index'
 /**
  * @internal
  */
-export function Preview(props: RenderPreviewCallbackProps & {perspectiveStack?: PerspectiveStack}) {
+export function Preview(
+  props: RenderPreviewCallbackProps & {perspectiveStack?: PerspectiveStack},
+): React.JSX.Element {
   const PreviewComponent = usePreviewComponent()
   return <PreviewLoader {...props} component={PreviewComponent} />
 }

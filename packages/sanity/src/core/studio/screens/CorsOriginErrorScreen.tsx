@@ -22,7 +22,7 @@ export const ScreenReaderLabel = styled.label`
   width: 1px;
 `
 
-export function CorsOriginErrorScreen(props: CorsOriginErrorScreenProps) {
+export function CorsOriginErrorScreen(props: CorsOriginErrorScreenProps): React.JSX.Element {
   const {projectId, isStaging} = props
 
   const origin = window.location.origin

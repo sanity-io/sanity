@@ -13,7 +13,7 @@ interface CollapseMenuDividerProps {
   hidden?: boolean
 }
 
-export function CollapseMenuDivider(props: CollapseMenuDividerProps) {
+export function CollapseMenuDivider(props: CollapseMenuDividerProps): React.JSX.Element {
   const {hidden, ...rest} = props
 
   return (

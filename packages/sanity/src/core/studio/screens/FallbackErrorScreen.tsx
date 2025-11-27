@@ -14,7 +14,7 @@ export function FallbackErrorScreen(props: {
   eventId?: string
   heading?: string
   onReset: () => void
-}) {
+}): React.JSX.Element {
   const {error, eventId, heading = 'An error occurred', onReset} = props
   const message = error?.message
   const stack = typeof error?.stack === 'string' && error?.stack

@@ -3,7 +3,7 @@ export interface FaviconProps {
   basePath?: string
 }
 
-export function Favicons(_props: FaviconProps) {
+export function Favicons(_props: FaviconProps): React.JSX.Element {
   const base = '/static'
   return (
     <>

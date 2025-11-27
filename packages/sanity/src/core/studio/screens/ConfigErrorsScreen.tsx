@@ -1,4 +1,4 @@
-export function ConfigErrorsScreen() {
+export function ConfigErrorsScreen(): React.JSX.Element {
   /* This screen is not currently being used anywhere. We're keeping it as a basis for future work */
   /* eslint-disable-next-line i18next/no-literal-string */
   return <>TODO: implement config errors screen</>

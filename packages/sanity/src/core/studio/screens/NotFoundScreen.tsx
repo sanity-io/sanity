@@ -3,7 +3,9 @@ import {Card, Flex, Heading, Inline, Stack} from '@sanity/ui'
 
 import {Button} from '../../../ui-components'
 
-export function NotFoundScreen(props: {onNavigateToDefaultWorkspace: () => void}) {
+export function NotFoundScreen(props: {
+  onNavigateToDefaultWorkspace: () => void
+}): React.JSX.Element {
   return (
     <Card height="fill" sizing="border" tone="caution" display="flex">
       <Flex direction="row" justify="center" flex={1} align="center">

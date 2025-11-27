@@ -2,7 +2,7 @@
 import {WarningOutlineIcon} from '@sanity/icons'
 import {Box, Card, Container, Flex, Stack, Text} from '@sanity/ui'
 
-export function NoSourcesScreen() {
+export function NoSourcesScreen(): React.JSX.Element {
   return (
     <Card height="fill">
       <Flex align="center" height="fill" justify="center" padding={4} sizing="border">
