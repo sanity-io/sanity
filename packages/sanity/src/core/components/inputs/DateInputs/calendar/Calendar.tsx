@@ -2,7 +2,7 @@ import {ChevronLeftIcon, ChevronRightIcon, EarthGlobeIcon} from '@sanity/icons'
 import {Box, Flex, Grid, Select, Text} from '@sanity/ui'
 import {format} from '@sanity/util/legacyDateFormat'
 import {addDays, addMonths, parse, setDate, setHours, setMinutes, setMonth, setYear} from 'date-fns'
-import {utcToZonedTime, zonedTimeToUtc} from 'date-fns-tz'
+import {toZonedTime, fromZonedTime} from 'date-fns-tz'
 import {
   type ComponentProps,
   type FormEvent,
@@ -107,8 +107,8 @@ export const Calendar = forwardRef(function Calendar(
 
   useEffect(() => {
     if (timeZone) {
-      const utcDate = zonedTimeToUtc(selectedDate, timeZone.name)
-      const zonedDate = utcToZonedTime(utcDate, timeZone.name)
+      const utcDate = fromZonedTime(selectedDate, timeZone.name)
+      const zonedDate = toZonedTime(utcDate, timeZone.name)
       setSavedSelectedDate(zonedDate)
     }
   }, [selectedDate, timeZone])
@@ -149,7 +149,7 @@ export const Calendar = forwardRef(function Calendar(
         return
       }
 
-      const utcDate = zonedTimeToUtc(newDate, timeZone.name)
+      const utcDate = fromZonedTime(newDate, timeZone.name)
 
       onSelect(utcDate)
     },
@@ -162,9 +162,9 @@ export const Calendar = forwardRef(function Calendar(
         onSelect(setHours(setMinutes(savedSelectedDate, mins), hours))
         return
       }
-      const zonedDate = utcToZonedTime(savedSelectedDate, timeZone.name)
+      const zonedDate = toZonedTime(savedSelectedDate, timeZone.name)
       const newZonedDate = setHours(setMinutes(zonedDate, mins), hours)
-      const utcDate = zonedTimeToUtc(newZonedDate, timeZone.name)
+      const utcDate = fromZonedTime(newZonedDate, timeZone.name)
       onSelect(utcDate)
     },
     [onSelect, savedSelectedDate, timeZone],
