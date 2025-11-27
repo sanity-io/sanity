@@ -108,14 +108,14 @@ export function StudioLayoutComponent() {
   const [searchOpen, setSearchOpen] = useState<boolean>(false)
 
   const documentTitle = useMemo(() => {
-    const mainTitle = title || startCase(name)
-
-    if (activeToolName) {
-      return `${startCase(activeToolName)} | ${mainTitle}`
+    const workspaceTitle = title || startCase(name)
+    const toolTitle = activeTool ? activeTool.title || activeTool.name : undefined
+    if (toolTitle) {
+      return `${toolTitle} | ${workspaceTitle}`
     }
+    return workspaceTitle
+  }, [activeTool, name, title])
 
-    return mainTitle
-  }, [activeToolName, name, title])
   const toolControlsDocumentTitle = !!activeTool?.controlsDocumentTitle
 
   useEffect(() => {
