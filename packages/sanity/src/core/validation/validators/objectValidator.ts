@@ -144,14 +144,32 @@ export const objectValidators: Validators = {
       clearTimeout(slowTimer)
     }
 
-    if (isLocalizedMessages(result)) {
-      return localizeMessage(result, context.i18n)
+    const validationErrorMetadata = {
+      // eslint-disable-next-line camelcase
+      __internal_metadata: {
+        name: 'media',
+      },
     }
 
-    if (typeof result === 'string') {
-      return message || result
+    // Valid, no errors
+    if (result === true) {
+      return result
     }
 
-    return result
+    // Ensure we always return ValidationMarker with metadata
+    return Array.isArray(result)
+      ? result
+      : [result].map((res) => {
+          if (typeof res === 'string') {
+            return {...validationErrorMetadata, message: message || res}
+          }
+          if (isLocalizedMessages(res)) {
+            return {
+              ...validationErrorMetadata,
+              message: message || localizeMessage(res, context.i18n),
+            }
+          }
+          return {...validationErrorMetadata, ...res, message: message || res.message}
+        })
   },
 }
