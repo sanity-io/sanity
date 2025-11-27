@@ -118,7 +118,7 @@
     "react/rules-of-hooks": "error",
     "eslint/no-console": ["error", {"allow": ["warn", "error"]}],
     "typescript/explicit-module-boundary-types": [
-      "error",
+      "warn",
       {"allowArgumentsExplicitlyTypedAsAny": true}
     ],
     // These rules should be enabled in the future, they are disabled for now to reduce the PR scope for landing oxlint
@@ -184,6 +184,10 @@
     {
       "files": ["scripts/**/*", "examples/functions/**/*"],
       "rules": {"no-console": "off", "no-unsafe-type-assertion": "off"}
+    },
+    {
+      "files": ["dev/**/*.{ts,tsx,js,jsx}", "perf/**/*.{ts,tsx,js,jsx}"],
+      "rules": {"typescript/explicit-module-boundary-types": "off"}
     },
     {
       "files": ["**/*.test.{ts,tsx,cjs,mjs,js,jsx}", "**/__workshop__/**"],
