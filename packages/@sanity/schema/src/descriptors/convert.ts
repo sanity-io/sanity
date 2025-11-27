@@ -59,7 +59,7 @@ export class DescriptorConverter {
    *
    * This is automatically cached in a weak map.
    */
-  get(schema: Schema): SetSynchronization<RegistryType> {
+  async get(schema: Schema): Promise<SetSynchronization<RegistryType>> {
     let value = this.cache.get(schema)
     if (value) return value
 
@@ -102,7 +102,7 @@ export class DescriptorConverter {
     }
 
     if (schema.parent) {
-      builder.addSet(this.get(schema.parent))
+      builder.addSet(await this.get(schema.parent))
     }
 
     value = builder.build('sanity.schema.registry')
