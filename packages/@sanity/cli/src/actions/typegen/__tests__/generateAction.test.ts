@@ -42,6 +42,9 @@ vi.mock('../../../util/cliWorker', () => ({
 vi.mock('node:fs/promises', () => ({
   mkdir: vi.fn(),
   writeFile: vi.fn(),
+  stat: vi.fn().mockResolvedValue({
+    isFile: () => true,
+  }),
 }))
 
 const oraHandler = vi.fn<(message: string) => Ora>(() => ora)
@@ -334,6 +337,7 @@ test(generateAction.name, async () => {
   expect(trace.log.mock.lastCall).toMatchInlineSnapshot(`
     [
       {
+        "configMethod": "legacy",
         "configOverloadClientMethods": true,
         "emptyUnionTypeNodesGenerated": 0,
         "filesWithErrors": 1,

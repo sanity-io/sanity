@@ -1,5 +1,5 @@
 /* eslint-disable max-statements */
-import { mkdir, stat, writeFile} from 'node:fs/promises'
+import {mkdir, stat, writeFile} from 'node:fs/promises'
 import {dirname, isAbsolute, join} from 'node:path'
 import {env} from 'node:process'
 import {Worker} from 'node:worker_threads'
@@ -38,7 +38,7 @@ const generatedFileWarning = `/**
 async function getConfig(
   workDir: string,
   configPath?: string,
-): Promise<{config: CodegenConfig; path?: string, type: 'legacy' | 'cli'}> {
+): Promise<{config: CodegenConfig; path?: string; type: 'legacy' | 'cli'}> {
   const config = await getCliConfig(workDir)
 
   // check if the legacy config exist
@@ -127,10 +127,11 @@ export default async function typegenGenerateAction(
 
   const spinner = output.spinner({}).start('Loading config…')
 
-  const {config: typegenConfig, type: typegenConfigMethod, path: configPath} = await getConfig(
-    workDir,
-    flags['config-path'],
-  )
+  const {
+    config: typegenConfig,
+    type: typegenConfigMethod,
+    path: configPath,
+  } = await getConfig(workDir, flags['config-path'])
 
   spinner.succeed(`Loaded config from ${configPath}`)
 
@@ -240,7 +241,7 @@ export default async function typegenGenerateAction(
       emptyUnionTypeNodesGenerated,
       unknownTypeNodesRatio:
         typeNodesGenerated > 0 ? unknownTypeNodesGenerated / typeNodesGenerated : 0,
-      configMethod: typegenConfigMethod
+      configMethod: typegenConfigMethod,
     })
 
     if (filesWithErrors > 0) {

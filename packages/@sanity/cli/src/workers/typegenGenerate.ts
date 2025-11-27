@@ -8,6 +8,7 @@ import {
   readSchema,
   registerBabel,
   TypeGenerator,
+  type TypegenWorkerChannel as CodegenTypegenWorkerChannel,
 } from '@sanity/codegen'
 import {type WorkerChannel, WorkerChannelReporter} from '@sanity/worker-channels'
 
@@ -24,17 +25,12 @@ if (isMainThread || !parentPort) {
 
 registerBabel()
 
-type DefinitionOf<T> =
-  T extends WorkerChannelReporter<infer TDefinition> ? TDefinition['__definition'] : never
-
-type TypeGeneratorReporter = NonNullable<Parameters<TypeGenerator['generateTypes']>[0]['reporter']>
-
 export type TypegenWorkerChannel = WorkerChannel.Definition<
   {
     loadedSchema: WorkerChannel.Event
     typegenStarted: WorkerChannel.Event<{expectedFileCount: number}>
     typegenComplete: WorkerChannel.Event<{code: string}>
-  } & DefinitionOf<TypeGeneratorReporter>
+  } & CodegenTypegenWorkerChannel['__definition']
 >
 
 async function main({
@@ -84,4 +80,7 @@ async function main({
   report.event.typegenComplete(result)
 }
 
-main(workerData)
+main(workerData).catch((err) => {
+  // worker will terminate and parent will catch the error
+  throw err
+})
