@@ -133,7 +133,7 @@ export default async function typegenGenerateAction(
     path: configPath,
   } = await getConfig(workDir, flags['config-path'])
 
-  spinner.succeed(`Loaded config from ${configPath}`)
+  spinner.succeed(`Config loaded from ${configPath?.replace(workDir, '.')}`)
 
   const {
     generates,
@@ -162,9 +162,8 @@ export default async function typegenGenerateAction(
 
   try {
     spinner.start(`Loading schema…`)
-
     await receiver.event.loadedSchema()
-    spinner.succeed(`Loaded schema from ${schemaPath}`)
+    spinner.succeed(`Schema loaded from ${schemaPath}`)
 
     spinner.start('Generating schema types…')
     const {expectedFileCount} = await receiver.event.typegenStarted()

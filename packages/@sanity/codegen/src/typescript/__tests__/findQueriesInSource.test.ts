@@ -144,9 +144,9 @@ describe('findQueries with the groq template', () => {
       import {query}  from "../__tests__/fixtures/deeplyNestedImports/root";
       const someQuery = groq\`$\{query}\`
     `
-    const queries = findQueriesInSource(source, __filename, undefined)
+    const {queries} = findQueriesInSource(source, __filename, undefined)
     expect(queries.length).toBe(1)
-    expect(queries[0].result).toBe('* { foo, bar }')
+    expect(queries[0].query).toBe('* { foo, bar }')
   })
 
   test('can import from export *', () => {
@@ -339,9 +339,9 @@ describe('findQueries with defineQuery', () => {
       import {query}  from "../__tests__/fixtures/deeplyNestedImports/root";
       const someQuery = defineQuery(\`$\{query}\`);
     `
-    const queries = findQueriesInSource(source, __filename, undefined)
+    const {queries} = findQueriesInSource(source, __filename, undefined)
     expect(queries.length).toBe(1)
-    expect(queries[0].result).toBe('* { foo, bar }')
+    expect(queries[0].query).toBe('* { foo, bar }')
   })
 
   test('should detect defineQuery calls that have been required', () => {
