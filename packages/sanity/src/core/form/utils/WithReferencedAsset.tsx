@@ -10,7 +10,7 @@ interface Props<AssetDoc> {
   waitPlaceholder?: ReactNode
 }
 
-export function WithReferencedAsset<Asset>(props: Props<Asset>) {
+export function WithReferencedAsset<Asset>(props: Props<Asset>) : React.JSX.Element {
   const {reference, children, observeAsset, waitPlaceholder} = props
   const documentId = reference?._ref
   const observable = useMemo(() => observeAsset(documentId), [documentId, observeAsset])

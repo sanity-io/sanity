@@ -30,7 +30,7 @@ export class VisionErrorBoundary extends Component<
     this.state = {error: null, numRetries: 0}
   }
 
-  static getDerivedStateFromError(error: unknown) {
+  static getDerivedStateFromError(error: unknown) : React.JSX.Element {
     // oxlint-disable-next-line restrict-template-expressions - @TODO use new Error(msg, {cause: error}) instead of casting to string, and console.error() the full error
     return {error: error instanceof Error ? error.message : `${error}`}
   }
@@ -43,7 +43,7 @@ export class VisionErrorBoundary extends Component<
     this.handleRetryRender()
   }
 
-  render() {
+  render() : React.JSX.Element {
     if (!this.state.error) {
       return this.props.children
     }

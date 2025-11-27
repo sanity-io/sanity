@@ -1,16 +1,16 @@
 import {InfoOutlineIcon} from '@sanity/icons'
 import {Box, Flex, Inline, rem, Text} from '@sanity/ui'
 import {useTranslation} from 'sanity'
-import {styled} from 'styled-components'
+import {styled, type StyledComponent} from 'styled-components'
 
 import {Tooltip} from '../../../ui-components'
 import {structureLocaleNamespace} from '../../i18n'
 
-export const ChevronWrapper = styled(Box)`
+export const ChevronWrapper: StyledComponent<typeof Box, any> = styled(Box)`
   margin-left: auto;
 `
 
-export const CrossDatasetReferencesDetails = styled.details`
+export const CrossDatasetReferencesDetails: StyledComponent<'details', any> = styled.details`
   flex: none;
 
   &[open] ${ChevronWrapper} {
@@ -18,7 +18,7 @@ export const CrossDatasetReferencesDetails = styled.details`
   }
 `
 
-export const CrossDatasetReferencesSummary = styled.summary`
+export const CrossDatasetReferencesSummary: StyledComponent<'summary', any> = styled.summary`
   list-style: none;
 
   &::-webkit-details-marker {
@@ -26,7 +26,7 @@ export const CrossDatasetReferencesSummary = styled.summary`
   }
 `
 
-export const Table = styled.table`
+export const Table: StyledComponent<'table', any> = styled.table`
   width: 100%;
   text-align: left;
   padding: 0 ${({theme}) => rem(theme.sanity.space[2])};
@@ -45,7 +45,7 @@ export const Table = styled.table`
   }
 `
 
-export const DocumentIdFlex = styled(Flex)`
+export const DocumentIdFlex: StyledComponent<typeof Flex, any> = styled(Flex)`
   min-height: 33px;
 `
 

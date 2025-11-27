@@ -76,7 +76,7 @@ const Scroller = styled(ScrollContainer)<{$disabled: boolean}>(({$disabled}) => 
   `
 })
 
-export const DocumentPanel = function DocumentPanel(props: DocumentPanelProps) {
+export const DocumentPanel = function DocumentPanel(props: DocumentPanelProps) : React.JSX.Element {
   const {
     footerHeight,
     headerHeight,

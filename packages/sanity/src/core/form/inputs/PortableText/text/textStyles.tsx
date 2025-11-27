@@ -1,6 +1,6 @@
 import {Heading, Text} from '@sanity/ui'
 import {type ComponentType, type HTMLProps} from 'react'
-import {styled} from 'styled-components'
+import {styled, type StyledComponent} from 'styled-components'
 
 type TextStyleProps = Omit<HTMLProps<HTMLDivElement>, 'as' | 'ref'>
 type BlockQuoteStyleProps = Omit<HTMLProps<HTMLQuoteElement>, 'as' | 'ref'>
@@ -8,7 +8,7 @@ type BlockQuoteStyleProps = Omit<HTMLProps<HTMLQuoteElement>, 'as' | 'ref'>
 /**
  * Without this container, editing with Android breaks due to how Text is styled via `responsiveFont` in `@sanity/ui`
  */
-export const TextContainer = styled.div`
+export const TextContainer: StyledComponent<'div', any> = styled.div`
   display: block;
 `
 

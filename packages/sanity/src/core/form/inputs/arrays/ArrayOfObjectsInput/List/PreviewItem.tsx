@@ -50,7 +50,7 @@ const MENU_POPOVER_PROPS = {portal: true, tone: 'default'} as const
 
 const BUTTON_CARD_STYLE = {position: 'relative'} as const
 const EMPTY_ARRAY: never[] = []
-export function PreviewItem<Item extends ObjectItem = ObjectItem>(props: PreviewItemProps<Item>) {
+export function PreviewItem<Item extends ObjectItem = ObjectItem>(props: PreviewItemProps<Item>) : React.JSX.Element {
   const {
     schemaType,
     parentSchemaType,

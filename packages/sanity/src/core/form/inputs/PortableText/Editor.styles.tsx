@@ -2,12 +2,12 @@
 
 import {Card, rem} from '@sanity/ui'
 import {getTheme_v2} from '@sanity/ui/theme'
-import {css, styled} from 'styled-components'
+import {css, styled, type StyledComponent} from 'styled-components'
 
 import {ScrollContainer} from '../../../components/scroll'
 import {createListName, TEXT_LEVELS} from './text'
 
-export const Root = styled(Card)<{$isOneLine: boolean}>`
+export const Root: StyledComponent<typeof Card, any, {$isOneLine: boolean}> = styled(Card)<{$isOneLine: boolean}>`
   &[data-fullscreen='true'] {
     height: 100%;
   }
@@ -26,12 +26,12 @@ export const Root = styled(Card)<{$isOneLine: boolean}>`
   flex-direction: column;
 `
 
-export const ToolbarCard = styled(Card)`
+export const ToolbarCard: StyledComponent<typeof Card, any> = styled(Card)`
   z-index: 10;
   line-height: 0;
 `
 
-export const EditableCard = styled(Card)`
+export const EditableCard: StyledComponent<typeof Card, any> = styled(Card)`
   position: relative;
   overflow: hidden;
   overflow: clip;
@@ -55,7 +55,7 @@ export const EditableCard = styled(Card)`
   }
 `
 
-export const Scroller = styled(ScrollContainer)`
+export const Scroller: StyledComponent<typeof ScrollContainer, any> = styled(ScrollContainer)`
   position: relative;
   overflow: auto;
   height: 100%;
@@ -68,7 +68,7 @@ export const Scroller = styled(ScrollContainer)`
   }
 `
 
-export const EditableWrapper = styled(Card)<{$isFullscreen: boolean; $isOneLine: boolean}>`
+export const EditableWrapper: StyledComponent<typeof Card, any, {$isFullscreen: boolean; $isOneLine: boolean}> = styled(Card)<{$isFullscreen: boolean; $isOneLine: boolean}>`
   height: 100%;
   width: 100%;
   counter-reset: ${TEXT_LEVELS.map((l) => createListName(l)).join(' ')};

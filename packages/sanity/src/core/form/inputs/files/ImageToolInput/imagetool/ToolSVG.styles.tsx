@@ -1,8 +1,8 @@
 import {type ThemeProps} from '@sanity/ui'
 import {getTheme_v2 as getThemeV2} from '@sanity/ui/theme'
-import {css, styled} from 'styled-components'
+import {css, styled, type StyledComponent} from 'styled-components'
 
-export const SVGContainer = styled.div`
+export const SVGContainer: StyledComponent<'div', any> = styled.div`
   position: relative;
   display: flex;
   justify-content: center;
@@ -17,13 +17,13 @@ export const SVGContainer = styled.div`
   -webkit-user-select: none;
 `
 
-export const StyledSVG = styled.svg`
+export const StyledSVG: StyledComponent<'svg', any> = styled.svg`
   display: block;
   overflow: visible;
   shape-rendering: crispEdges;
 `
 
-export const DarkenedOverlay = styled.rect`
+export const DarkenedOverlay: StyledComponent<'rect', any> = styled.rect`
   fill: rgba(0, 0, 0, 0.5);
   pointer-events: none;
 `
@@ -107,13 +107,13 @@ export const CropHandleInteractionArea = styled.rect<StyledElementProps>`
   pointer-events: all;
 `
 
-export const HotspotHandleInteractionArea = styled.circle`
+export const HotspotHandleInteractionArea: StyledComponent<'circle', any> = styled.circle`
   fill: transparent;
   stroke: transparent;
   pointer-events: all;
 `
 
-export const Guidelines = styled.g`
+export const Guidelines: StyledComponent<'g', any> = styled.g`
   ${(props) : React.JSX.Element => {
     const {color} = getThemeV2(props.theme)
     return css`

@@ -23,7 +23,7 @@ interface DragHandleProps {
   readOnly: boolean
 }
 
-export const DragHandle = function DragHandle(props: DragHandleProps) {
+export const DragHandle = function DragHandle(props: DragHandleProps) : React.JSX.Element {
   const id = useContext(SortableItemIdContext)!
   const {mode = 'bleed', readOnly, ...rest} = props
   const {listeners, attributes} = useSortable({id, disabled: readOnly})

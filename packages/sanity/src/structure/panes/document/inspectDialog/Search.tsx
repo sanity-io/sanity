@@ -5,7 +5,7 @@ import {useTranslation} from 'sanity'
 
 import {structureLocaleNamespace} from '../../../i18n'
 
-export function Search(props: {onChange: (q: string) => void; query: string}) {
+export function Search(props: {onChange: (q: string) => void; query: string}) : React.JSX.Element {
   const {onChange, query} = props
 
   const handleChange = useCallback(

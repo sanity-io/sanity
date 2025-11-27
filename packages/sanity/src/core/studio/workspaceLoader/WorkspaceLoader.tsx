@@ -107,7 +107,7 @@ function WorkspaceLoader({
 /**
  * @internal
  */
-function WorkspaceLoaderBoundary({ConfigErrorsComponent, ...props}: WorkspaceLoaderProps) {
+function WorkspaceLoaderBoundary({ConfigErrorsComponent, ...props}: WorkspaceLoaderProps) : React.JSX.Element {
   const [{error}, setError] = useState<{error: unknown}>({error: null})
 
   // TODO: implement this

@@ -178,7 +178,7 @@ interface ColorSchemeOption {
 export function useColorSchemeOptions(
   setScheme: (nextScheme: StudioThemeColorSchemeKey) => void,
   t: TFunction<'studio', undefined>,
-) {
+) : React.JSX.Element {
   const scheme = useColorSchemeInternalValue()
 
   return useMemo<ColorSchemeOption[]>(() => {

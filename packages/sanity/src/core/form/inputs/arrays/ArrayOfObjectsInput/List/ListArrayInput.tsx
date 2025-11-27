@@ -15,7 +15,7 @@ import {VirtualizedArrayList} from './VirtualizedArrayList'
 
 const EMPTY: [] = []
 
-export function ListArrayInput<Item extends ObjectItem>(props: ArrayOfObjectsInputProps<Item>) {
+export function ListArrayInput<Item extends ObjectItem>(props: ArrayOfObjectsInputProps<Item>) : React.JSX.Element {
   const {
     arrayFunctions: ArrayFunctions = ArrayOfObjectsFunctions,
     elementProps,

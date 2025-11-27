@@ -68,13 +68,13 @@ export class ArrayOfPrimitivesInput extends PureComponent<ArrayOfPrimitivesInput
     this.setState({disableTransition: true})
   }
 
-  focus() {
+  focus() : React.JSX.Element {
     if (this._element) {
       this._element.focus()
     }
   }
 
-  getSnapshotBeforeUpdate(prevProps: ArrayOfPrimitivesInputProps) {
+  getSnapshotBeforeUpdate(prevProps: ArrayOfPrimitivesInputProps) : React.JSX.Element {
     const {focusPath: prevFocusPath = [], value: prevValue = []} = prevProps
     const {focusPath = [], value = []} = this.props
     if (prevFocusPath[0] === focusPath[0] && prevValue.length !== value.length) {
@@ -145,7 +145,7 @@ export class ArrayOfPrimitivesInput extends PureComponent<ArrayOfPrimitivesInput
     return <ItemRow key={key} {...rest} sortable={sortable} insertableTypes={schemaType.of} />
   }
 
-  render() {
+  render() : React.JSX.Element {
     const {
       schemaType,
       members,

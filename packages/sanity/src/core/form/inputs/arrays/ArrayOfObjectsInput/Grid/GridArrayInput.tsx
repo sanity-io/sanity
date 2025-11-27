@@ -17,7 +17,7 @@ import {GridItem} from './GridItem'
 
 const EMPTY: [] = []
 
-export function GridArrayInput<Item extends ObjectItem>(props: ArrayOfObjectsInputProps<Item>) {
+export function GridArrayInput<Item extends ObjectItem>(props: ArrayOfObjectsInputProps<Item>) : React.JSX.Element {
   const {
     arrayFunctions: ArrayFunctions = ArrayOfObjectsFunctions,
     elementProps,

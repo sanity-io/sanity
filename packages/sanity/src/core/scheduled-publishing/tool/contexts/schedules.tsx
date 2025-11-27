@@ -128,7 +128,7 @@ function SchedulesProvider({
   return <SchedulesContext.Provider value={context}>{children}</SchedulesContext.Provider>
 }
 
-function useSchedules() {
+function useSchedules() : React.JSX.Element {
   const context = useContext(SchedulesContext)
   if (context === undefined) {
     throw new Error('useSchedules must be used within a SchedulesProvider')

@@ -18,19 +18,19 @@ export interface DiffErrorBoundaryState {
 
 /** @internal */
 export class DiffErrorBoundary extends Component<DiffErrorBoundaryProps, DiffErrorBoundaryState> {
-  static getDerivedStateFromError(error: Error) {
+  static getDerivedStateFromError(error: Error) : React.JSX.Element {
     return {error}
   }
 
   state: DiffErrorBoundaryState = {}
 
   // eslint-disable-next-line class-methods-use-this
-  componentDidCatch(error: Error) {
+  componentDidCatch(error: Error) : React.JSX.Element {
     console.error('Error rendering diff component: ')
     console.error(error)
   }
 
-  render() {
+  render() : React.JSX.Element {
     const {t} = this.props
     const {error} = this.state
 

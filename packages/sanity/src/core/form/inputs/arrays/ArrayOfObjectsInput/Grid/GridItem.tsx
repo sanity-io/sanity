@@ -67,7 +67,7 @@ function getTone({
 }
 const MENU_POPOVER_PROPS = {portal: true, tone: 'default'} as const
 const EMPTY_ARRAY: never[] = []
-export function GridItem<Item extends ObjectItem = ObjectItem>(props: GridItemProps<Item>) {
+export function GridItem<Item extends ObjectItem = ObjectItem>(props: GridItemProps<Item>) : React.JSX.Element {
   const {
     schemaType,
     parentSchemaType,

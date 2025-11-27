@@ -5,7 +5,7 @@ import {Button} from '../../../../../../ui-components'
 import {PaneHeader} from '../../../PaneHeader'
 import {usePane} from '../../../usePane'
 
-export function ReviewChangesPanel(props: {onClose: () => void}) {
+export function ReviewChangesPanel(props: {onClose: () => void}) : React.JSX.Element {
   const {collapsed} = usePane()
 
   return (
