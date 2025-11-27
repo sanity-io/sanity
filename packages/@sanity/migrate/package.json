@@ -38,7 +38,7 @@
   ],
   "scripts": {
     "build": "pkg-utils build --strict --check --clean",
-    "check:types": "(cd ../../.. && tsc --project packages/@sanity/migrate/tsconfig.lib.json --erasableSyntaxOnly)",
+    "check:types": "(cd ../../.. && tsgo --project packages/@sanity/migrate/tsconfig.lib.json --erasableSyntaxOnly)",
     "clean": "rimraf lib coverage",
     "lint": "eslint .",
     "prepublishOnly": "turbo run build",
@@ -63,6 +63,7 @@
     "@repo/tsconfig": "workspace:*",
     "@sanity/pkg-utils": "catalog:",
     "@types/debug": "^4.1.12",
+    "@typescript/native-preview": "catalog:",
     "eslint": "catalog:",
     "rimraf": "^5.0.10",
     "vitest": "catalog:"

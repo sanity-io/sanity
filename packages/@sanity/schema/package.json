@@ -48,7 +48,7 @@
   ],
   "scripts": {
     "build": "pnpm clean && pkg-utils build --strict --check --clean",
-    "check:types": "(cd ../../.. && tsc --project packages/@sanity/schema/tsconfig.lib.json --erasableSyntaxOnly)",
+    "check:types": "(cd ../../.. && tsgo --project packages/@sanity/schema/tsconfig.lib.json --erasableSyntaxOnly)",
     "clean": "rimraf _internal.js lib",
     "lint": "eslint .",
     "prepublishOnly": "turbo run build",
@@ -77,6 +77,7 @@
     "@types/lodash": "^4.17.20",
     "@types/object-inspect": "^1.13.0",
     "@types/react": "catalog:",
+    "@typescript/native-preview": "catalog:",
     "eslint": "catalog:",
     "rimraf": "^5.0.10",
     "vitest": "catalog:"
