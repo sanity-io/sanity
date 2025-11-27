@@ -1,23 +1,6 @@
 import {createContext} from 'sanity/_createContext'
 
-import type {UpsellDialogViewedInfo} from '../../core/studio/upsell'
-import type {UpsellData} from '../../core/studio/upsell/types'
-
-/**
- * @internal
- */
-export interface DocumentLimitUpsellContextValue {
-  upsellDialogOpen: boolean
-  handleOpenDialog: (source: UpsellDialogViewedInfo['source']) => void
-  handleClose: () => void
-  upsellData: UpsellData | null
-  telemetryLogs: {
-    dialogSecondaryClicked: () => void
-    dialogPrimaryClicked: () => void
-    panelPrimaryClicked: () => void
-    panelSecondaryClicked: () => void
-  }
-}
+import type {DocumentLimitUpsellContextValue} from '../../core/studio/upsell/types'
 
 /**
  * @internal

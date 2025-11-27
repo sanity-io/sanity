@@ -34,4 +34,5 @@ export default defineConfig({
     noImplicitSideEffects: 'error',
     noPublishConfigExports: 'error',
   },
+  dts: 'rolldown',
 })

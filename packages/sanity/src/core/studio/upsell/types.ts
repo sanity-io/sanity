@@ -1,5 +1,7 @@
 import {type PortableTextBlock} from '@sanity/types'
 
+import {type UpsellDialogViewedInfo} from './__telemetry__/upsell.telemetry'
+
 /**
  * @beta
  * @hidden
@@ -25,5 +27,21 @@ export interface UpsellData {
   secondaryButton: {
     url: string
     text: string
+  }
+}
+
+/**
+ * @internal
+ */
+export interface DocumentLimitUpsellContextValue {
+  upsellDialogOpen: boolean
+  handleOpenDialog: (source: UpsellDialogViewedInfo['source']) => void
+  handleClose: () => void
+  upsellData: UpsellData | null
+  telemetryLogs: {
+    dialogSecondaryClicked: () => void
+    dialogPrimaryClicked: () => void
+    panelPrimaryClicked: () => void
+    panelSecondaryClicked: () => void
   }
 }

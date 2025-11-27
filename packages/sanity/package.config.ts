@@ -53,15 +53,6 @@ export default defineConfig({
     },
   ],
 
-  extract: {
-    ...baseConfig.extract,
-    rules: {
-      ...baseConfig.extract.rules,
-      'ae-incompatible-release-tags': 'error',
-      'ae-missing-release-tag': 'error',
-    },
-  },
-
   babel: {reactCompiler: true, styledComponents: true},
   reactCompilerOptions: {target: '19'},
 })
