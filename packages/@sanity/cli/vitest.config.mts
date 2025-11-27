@@ -12,4 +12,7 @@ export default defineConfig({
     globalSetup: ['./test/shared/globalSetup.ts'],
     testTimeout: 30000, // 30s
   },
+  define: {
+    __DEV__: JSON.stringify(true),
+  },
 })
